@@ -80,7 +80,7 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-xref:	../lib/Prague.xref ../lib/Prague.syn
+xref:	../lib/Berlin.xref ../lib/Berlin.syn
 
 doc:	$(MANUAL)
 
