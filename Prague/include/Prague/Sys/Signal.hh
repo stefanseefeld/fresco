@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ public:
   enum type { hangup = SIGHUP, interrupt = SIGINT, quit = SIGQUIT, illegal = SIGILL,
 	      trap = SIGTRAP, abort = SIGABRT, iotrap = SIGIOT, bus = SIGBUS, fpe = SIGFPE,
 	      segv = SIGSEGV,
-	      usr1 = SIGUSR1, usr2 = SIGUSR2, alarm = SIGALRM, terminate = SIGTERM, child = SIGCLD, io = SIGIO,
+	      usr1 = SIGUSR1, usr2 = SIGUSR2, alarm = SIGALRM, terminate = SIGTERM, child = SIGCHLD, io = SIGIO,
 	      pipe = SIGPIPE, kill = SIGKILL};
   static bool set (int, Notifier *);
   //. add a notifier to be executed whenever the given signal is catched
