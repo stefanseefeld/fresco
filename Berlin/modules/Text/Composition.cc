@@ -103,7 +103,6 @@ void Composition::traverse(Traversal_ptr traversal)
   Trace trace("Composition::traverse");
   if (num_children())
     {
-      Region_var given = traversal->current_allocation();
       /*
        * this cull test is not accurate, it assumes that the children
        * don't draw outside the box' allocation.
@@ -111,6 +110,7 @@ void Composition::traverse(Traversal_ptr traversal)
        *              -stefan
        */
       if (!traversal->intersects_allocation()) return;
+      Region_var given = traversal->current_allocation();
       RegionImpl **result = children_allocations(given);
       CORBA::Long size = num_children();
       CORBA::Long begin, end, incr;
@@ -130,9 +130,10 @@ void Composition::traverse(Traversal_ptr traversal)
 	  end = -1;
 	  incr = -1;
 	}
-      for (CORBA::Long i = begin; i != end; i += incr)
+      for (CORBA::Long i = begin; i != end && traversal->ok(); i += incr)
 	{
-	  if (CORBA::is_nil(_children[i].peer)) continue;
+	  Graphic_var child = _children [i].peer;
+	  if (CORBA::is_nil(child)) continue;
 	  Vertex origin;
 	  result[i]->normalize(origin);
 	  tx->load_identity();
@@ -141,8 +142,9 @@ void Composition::traverse(Traversal_ptr traversal)
 	   * only translating them -stefan
 	   */
 	  tx->translate(origin);
-	  traversal->traverse_child(_children[i].peer, _children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));
-	  if (!traversal->ok()) break;
+	  try { traversal->traverse_child (child, _children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Warsaw::Graphic::_nil();}
+	  catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
 	}
       for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
       delete [] result;

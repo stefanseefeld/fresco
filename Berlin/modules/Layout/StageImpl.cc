@@ -449,6 +449,7 @@ void StageTraversal::execute()
 void StageTraversal::traverse(StageHandleImpl *handle)
 {
   Trace trace("StageTraversal::traverse");
+  if (CORBA::is_nil(handle->_child)) return;
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   handle->bbox(*region);
   Vertex origin;
@@ -456,7 +457,9 @@ void StageTraversal::traverse(StageHandleImpl *handle)
   Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
   transformation->load_identity();
   transformation->translate(origin);
-  traversal->traverse_child(handle->_child, handle->_tag, Region_var(region->_this()), Transform_var(transformation->_this()));
+  try { traversal->traverse_child (handle->_child, handle->_tag, Region_var(region->_this()), Transform_var(transformation->_this()));}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { handle->_child = Warsaw::Graphic::_nil();}
+  catch (const CORBA::COMM_FAILURE &) { handle->_child = Warsaw::Graphic::_nil();}
 }
 
 StageImpl::StageImpl()

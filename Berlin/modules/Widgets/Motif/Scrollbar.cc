@@ -160,5 +160,7 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));
-  traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
+  try { traversal->traverse_child (child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }

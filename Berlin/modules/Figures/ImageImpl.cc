@@ -71,18 +71,15 @@ Texture::~Texture() {}
 void Texture::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
 void Texture::draw(DrawTraversal_ptr traversal)
 {
-  Graphic_var g = body();
-  if (CORBA::is_nil(g)) return;
   DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   drawing->texture(raster);
   drawing->surface_fillstyle(DrawingKit::textured);
-  g->traverse(traversal);
+  MonoGraphic::traverse(traversal);
   drawing->restore();
 }
 
 void Texture::pick(PickTraversal_ptr traversal)
 {
-  Graphic_var g = body();
-  if (!CORBA::is_nil(g)) g->traverse(traversal);
+  MonoGraphic::traverse(traversal);
 }

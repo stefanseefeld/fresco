@@ -31,7 +31,7 @@ bdir		:= $(builddir)/bin
 include $(cdir)/local.mk
 include $(cdir)/Server/local.mk
 
-CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(version)"'
+CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
 LIBS		+= -lBerlin -lWarsaw -lPrague -lggi
 
 TARGETS		:= $(bdir)/server $(bdir)/kits

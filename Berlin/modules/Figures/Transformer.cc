@@ -49,27 +49,23 @@ void Transformer::request(Warsaw::Graphic::Requisition &requisition)
 void Transformer::traverse(Traversal_ptr traversal)
 {
   Trace trace("Transformer::traverse");
-  Graphic_var child = body();
-  if (CORBA::is_nil(child)) return;
-  if (!transform->identity())
+  if (transform->identity()) Allocator::traverse(traversal);
+  else
     {
-      Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
-      rr->copy(traversal->current_allocation());
-	  
       Warsaw::Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
-	  
       Allocator::request(r);
-
-      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-      tx->load_identity();
-//       cout << "allocation before trafo " << *rr << endl;
+      Graphic_var child = body();
+      if (CORBA::is_nil(child))	return;
+      Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
+      rr->copy(traversal->current_allocation());
       Vertex delta = GraphicImpl::transform_allocate(*rr, r, Transform_var(transform->_this()));
-//       cout << "allocation after trafo " << *rr << endl;
+      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->copy(Transform_var(transform->_this()));
-      traversal->traverse_child(child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));
+      try { traversal->traverse_child (child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+      catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
     }
-  else Allocator::traverse(traversal);
 }
 
 void Transformer::allocate(Tag, const Allocation::Info &info)

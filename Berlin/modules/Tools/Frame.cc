@@ -60,21 +60,21 @@ void Frame::traverse(Traversal_ptr traversal)
   Trace trace("Frame::traverse");
   if (!traversal->intersects_allocation()) return;
   traversal->visit(Graphic_var(_this()));
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+  allocation->copy(Region_var(traversal->current_allocation()));
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
+  tx->load_identity();
+  
+  Allocation::Info info;
+  info.allocation = allocation->_this();
+  info.transformation = tx->_this();
+  allocate(0, info);
+
   Graphic_var child = body();
-  if (!CORBA::is_nil(child))
-    {
-      Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-      allocation->copy(Region_var(traversal->current_allocation()));
-
-      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-      tx->load_identity();
-
-      Allocation::Info info;
-      info.allocation = allocation->_this();
-      info.transformation = tx->_this();
-      allocate(0, info);
-      traversal->traverse_child(child, 0, info.allocation, info.transformation);
-    }
+  if (CORBA::is_nil(child)) return;
+  try { traversal->traverse_child (child, 0, info.allocation, info.transformation);}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }
 
 void Frame::extension(const Allocation::Info &info, Region_ptr region)

@@ -69,7 +69,10 @@ bool NonPositionalFocus::request(Controller_ptr c)
    * ...remove the old controllers in reverse order,...
    */
   for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
-    (*o)->lose_focus(device());
+    try { (*o)->lose_focus(device());}
+    catch (const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
+
   _controllers.erase(of, _controllers.end());
   /*
    * ...add the new controllers,...
@@ -83,10 +86,20 @@ bool NonPositionalFocus::request(Controller_ptr c)
   return true;
 }
 
+/*
+ * Dispatch a non-positional event. Try the controllers in turn, until
+ * one handles the event. Remove from the list non-existent
+ * controllers.
+ */
 void NonPositionalFocus::dispatch(Input::Event &event)
 {
   Trace trace("NonPositionalFocus::dispatch");
+  CORBA::Boolean done = false;
   MutexGuard guard(_mutex);
-  if (_controllers.size())
-    _controllers.back()->handle_non_positional(event);
+  for (size_t i = _controllers.size() - 1; i >= 0 && !done; --i)
+    {
+      try { done = _controllers [i]->handle_non_positional(event);}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { _controllers.resize (i);}
+      catch (const CORBA::COMM_FAILURE &) { _controllers.resize (i);}
+    }
 }

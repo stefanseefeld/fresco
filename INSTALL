@@ -68,7 +68,7 @@ for the libraries, and, in case you use the python environment, tell
 python where to find the berlin modules:
 
 > setenv LD_LIBRARY_PATH $berlin-build/lib:$LD_LIBRARY_PATH
-> setenv PYTHONPATH $berlin/build/lib/python:$PYTHONPATH
+> setenv PYTHONPATH $berlin-build/lib/python:$PYTHONPATH
 
 or similar depending on your shell.
 The berlin server is in $berlin-build/bin/server, and to tell him about

@@ -46,5 +46,6 @@ void Terminal::keyPress(const Input::Event &event)
     default: return; // don't know how to handle...
     }
   buffer->write(data);
+  cout << "sent character to tty" << endl;
 //   buffer->flush();
 }

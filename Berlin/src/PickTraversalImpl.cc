@@ -75,7 +75,7 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   push(child, tag, region, cumulative._retn());
   _cursor++;
   try { child->traverse(__this);}
-  catch (...) { pop(); throw;}
+  catch (...) { _cursor--; pop(); throw;}
   _cursor--;
   pop(); 
 }

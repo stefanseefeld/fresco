@@ -355,7 +355,9 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
   transform->load_identity();
 
   region->normalize(Transform_var(transform->_this()));
-  traversal->traverse_child(_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
+  try { traversal->traverse_child (_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
   drawing->restore();
 }
 
@@ -375,7 +377,9 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
   transform->load_identity();
 
   region->normalize(Transform_var(transform->_this()));
-  traversal->traverse_child(_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
+  try { traversal->traverse_child (_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }
 
 void ViewportImpl::need_resize()

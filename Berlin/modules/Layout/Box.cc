@@ -221,7 +221,9 @@ void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
        * only translating them -stefan
        */
       tx->translate(origin);
-      t->traverse_child(_children[i].peer, _children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));
+      try { t->traverse_child(_children[i].peer, _children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Warsaw::Graphic::_nil ();}
+      catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
       if (!t->ok()) break;
     }
   for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
@@ -232,19 +234,25 @@ void Box::traverse_without_allocation(Traversal_ptr t)
 {
   Trace trace("Box::traverse_without_allocation");
   if (t->direction() == Traversal::up)
-    for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
-      {
-	if (CORBA::is_nil((*i).peer)) continue;
-	t->traverse_child((*i).peer, (*i).localId, Region::_nil(), Transform::_nil());
-	if (!t->ok()) break;
-      }
+    {
+      for (glist_t::iterator i = _children.begin(); i != _children.end() && t->ok(); i++)
+	{
+	  if (CORBA::is_nil(i->peer)) continue;
+	  try { t->traverse_child (i->peer, i->localId, Region::_nil (), Transform::_nil ());}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Warsaw::Graphic::_nil ();}
+	  catch (const CORBA::COMM_FAILURE &) { i->peer = Warsaw::Graphic::_nil ();}
+	}
+    }
   else
-    for (glist_t::reverse_iterator i = _children.rbegin(); i != _children.rend(); i++)
-      {
-	if (CORBA::is_nil((*i).peer)) continue;
-	t->traverse_child((*i).peer, (*i).localId, Region::_nil(), Transform::_nil());
-	if (!t->ok()) break;
-      }
+    {
+      for (glist_t::reverse_iterator i = _children.rbegin(); i != _children.rend() && t->ok(); i++)
+	{
+	  if (CORBA::is_nil (i->peer)) continue;
+	  try { t->traverse_child (i->peer, i->localId, Region::_nil(), Transform::_nil());}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Warsaw::Graphic::_nil();}
+	  catch (const CORBA::COMM_FAILURE &) { i->peer = Warsaw::Graphic::_nil();}
+	}
+    }
 }
 
 BoxAlignElements::BoxAlignElements(LayoutManager *layout, Axis a, Alignment align)

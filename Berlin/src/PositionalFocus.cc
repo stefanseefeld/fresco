@@ -159,7 +159,9 @@ void PositionalFocus::dispatch(Input::Event &event)
       Controller_var top = _controllers.back();
       while (!CORBA::is_nil(top))
 	{
-	  top->traverse(Traversal_var(_traversal->_this()));
+	  try { top->traverse(Traversal_var(_traversal->_this()));}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) {}
+	  catch (const CORBA::COMM_FAILURE &) {}
 	  if (_traversal->picked()) break;
 	  top = _traversal->top_controller();
 	  _traversal->pop_controller();
@@ -195,9 +197,9 @@ void PositionalFocus::dispatch(Input::Event &event)
    * ...remove the old controllers in reverse order,...
    */
   for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
-    {
-      (*o)->lose_focus(device());
-    }
+    try { (*o)->lose_focus(device());}
+    catch (const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
   _controllers.erase(of, _controllers.end());
   /*
    * ...add the new controllers,...

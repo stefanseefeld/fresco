@@ -54,12 +54,18 @@ void Allocator::request(Warsaw::Graphic::Requisition &r)
 void Allocator::traverse(Traversal_ptr traversal)
 {
   Trace trace("Allocator::traverse");
-//   updateRequisition();
+  Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
   Region_var allocation = traversal->current_allocation();
-  if (!CORBA::is_nil(allocation))
-    traversal->traverse_child(Graphic_var(body()), 0, allocation, Transform::_nil());
-  else
-    traversal->traverse_child(Graphic_var(body()), 0, Region_var(_natural->_this()), Transform::_nil());
+  try
+    {
+      if (!CORBA::is_nil(allocation))
+	traversal->traverse_child(child, 0, allocation, Transform::_nil());
+      else
+	traversal->traverse_child(child, 0, Region_var(_natural->_this()), Transform::_nil());
+    }
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }
 
 void Allocator::need_resize()
@@ -202,6 +208,8 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 void TransformAllocator::traverse(Traversal_ptr traversal)
 {
   Trace trace("TransformAllocator::traverse");
+  Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
   cache_allocation();
@@ -209,7 +217,12 @@ void TransformAllocator::traverse(Traversal_ptr traversal)
   traversal->bounds(lower, upper, v);
   compute_delta(lower, upper, v);
   tx->translate(v);
-  traversal->traverse_child(Graphic_var(body()), 0, Region_var(_natural->_this()), Transform_var(tx->_this()));
+  try
+    {
+      traversal->traverse_child(child, 0, Region_var(_natural->_this()), Transform_var(tx->_this()));
+    }
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }
 
 void TransformAllocator::compute_delta(const Vertex &lower, const Vertex &upper, Vertex &delta)

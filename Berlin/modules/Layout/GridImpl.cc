@@ -475,14 +475,18 @@ void GridImpl::traverse_with_allocation(Traversal_ptr t, Region_ptr given, const
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   Dimension &d = _dimensions[yaxis];
   Layout::Grid::Index i;
-  for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
-    for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
+  for (i.row = range.lower.row; i.row != range.upper.row && t->ok(); i.row++)
+    for (i.col = range.lower.col; i.col != range.upper.col && t->ok(); i.col++)
       {
+	Graphic_var child = d.children [i.row][i.col];
+	if (CORBA::is_nil(child)) continue;
 	tx->load_identity();
 	spans_to_region(xspans[i.col], yspans[i.row], region);
 	offset_region(region, dx, dy);
 	region->normalize(Transform_var(tx->_this()));
-	t->traverse_child(d.children[i.row][i.col], index_to_tag(i), Region_var(region->_this()), Transform_var(tx->_this()));
+	try { t->traverse_child (child, index_to_tag(i), Region_var(region->_this()), Transform_var(tx->_this()));}
+	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
+	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
       }
   delete [] xspans;
   delete [] yspans;
@@ -492,9 +496,15 @@ void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::
 {
   Dimension &d = _dimensions[yaxis];
   Layout::Grid::Index i;
-  for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
-    for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
-      t->traverse_child(d.children[i.row][i.col], index_to_tag(i), Region::_nil(), Transform::_nil());
+  for (i.row = range.lower.row; i.row != range.upper.row && t->ok(); i.row++)
+    for (i.col = range.lower.col; i.col != range.upper.col && t->ok(); i.col++)
+      {
+	Graphic_var child = d.children [i.row][i.col];
+	if (CORBA::is_nil (child)) continue;
+	try { t->traverse_child (child, index_to_tag(i), Region::_nil(), Transform::_nil());}
+	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
+	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
+      }
 }
 
 SubGridImpl::SubGridImpl(Grid_ptr grid, const Layout::Grid::Range &r)
@@ -505,6 +515,9 @@ void SubGridImpl::request(Warsaw::Graphic::Requisition &r) { _child->request_ran
 
 void SubGridImpl::traverse(Traversal_ptr t)
 {
-  t->traverse_child(_child, 0, Region::_nil(), Transform::_nil());
+  if (CORBA::is_nil(_child)) return;
+  try { t->traverse_child (_child, 0, Region::_nil(), Transform::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { _child = Layout::Grid::_nil();}
+  catch (const CORBA::COMM_FAILURE &) { _child = Layout::Grid::_nil();}
 }
 

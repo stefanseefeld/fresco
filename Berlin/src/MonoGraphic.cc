@@ -139,6 +139,10 @@ void MonoGraphic::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("MonoGraphic::request");
   Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
+  try { child->request(r);}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body (Warsaw::Graphic::_nil ());}
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
@@ -172,6 +176,8 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
 {
   Trace trace("MonoGraphic::traverse");
   Graphic_var child = body();
-  if (!CORBA::is_nil(child))
-    traversal->traverse_child(child, 0, Region::_nil(), Transform::_nil());
+  if (CORBA::is_nil(child)) return;
+  try { traversal->traverse_child (child, 0, Region::_nil(), Transform::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body (Warsaw::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }

@@ -56,5 +56,9 @@ void Deck::extension(const Allocation::Info &a, Region_ptr r)
 
 void Deck::traverse(Traversal_ptr t)
 {
-  if (size_t n = _children.size()) t->traverse_child(_children[n - 1].peer, _children[n - 1].localId, Region::_nil(), Transform::_nil());
+  size_t n = _children.size ();
+  if (n == 0) return;
+  try { t->traverse_child (_children [n-1].peer, _children [n-1].localId, Region::_nil(), Transform::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [n-1].peer = Warsaw::Graphic::_nil();}
+  catch (const CORBA::COMM_FAILURE &) { _children [n-1].peer = Warsaw::Graphic::_nil();}
 }

@@ -61,6 +61,7 @@ void TerminalView::need_resize()
 
 void TerminalView::update(const CORBA::Any &)
 {
+  cout << "TerminalView::update" << endl;
   Trace trace("TerminalView::update");  
   {
 //     MutexGuard guard(childMutex);

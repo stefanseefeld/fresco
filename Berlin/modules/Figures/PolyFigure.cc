@@ -115,17 +115,19 @@ void PolyFigure::traverse(Traversal_ptr traversal)
 {
   Trace trace("PolyFigure::traverse");
   update_bbox();
-  if (_bbox->valid)
-    {
-      Impl_var<RegionImpl> region(new RegionImpl(Region_var(_bbox->_this()), Transform_var(_tx->_this())));
-      if (!traversal->intersects_region(Region_var(region->_this()))) return;
-    }
-  else return;
+  if (!_bbox->valid) return;
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
+  region->copy(Region_var(_bbox->_this()));
+  region->apply_transform(Transform_var(_tx->_this()));
+  if (!traversal->intersects_region(Region_var(region->_this()))) return;
   CORBA::Long n = num_children();
-  for (CORBA::Long i = 0; i != n; i++)
+  for (CORBA::Long i = 0; i != n && traversal->ok(); i++)
     {
-      traversal->traverse_child(_children[i].peer, _children[i].localId, Region_var(_bbox->_this()), Transform_var(_tx->_this()));
-      if (!traversal->ok()) break;
+      Graphic_var child = _children[i].peer;
+      if (CORBA::is_nil(child)) continue;
+      try { traversal->traverse_child(child, _children[i].localId, Region_var(_bbox->_this()), Transform_var(_tx->_this()));}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Warsaw::Graphic::_nil ();}
+      catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
     }
 
 }

@@ -20,9 +20,10 @@
  * MA 02139, USA.
  */
 
-#include "Drawing/openGL/GLUnifont.hh"
 #include <Prague/Sys/MMap.hh>
+#include <Prague/Sys/Path.hh>
 #include <Berlin/RCManager.hh>
+#include "Drawing/openGL/GLUnifont.hh"
 
 #include <GL/gl.h>
 #include <string>
@@ -45,8 +46,8 @@ GLUnifont::GLUnifont()
     _fullname(),
     _style(Unicode::toCORBA(Unicode::String("monospace")))
 {
-  Prague::Path path = RCManager::get_path ("unifontpath");
-  string glyphDB = path.lookup_file ("glyph.dat");
+  Prague::Path path = RCManager::get_path("unifontpath");
+  string glyphDB = path.lookup_file("glyph.dat");
   glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
 }
 

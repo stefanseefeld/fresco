@@ -46,27 +46,24 @@ void Placement::request(Warsaw::Graphic::Requisition::Requisition &r)
 
 void Placement::traverse(Traversal_ptr traversal)
 {
-  Graphic_var child = body();
-  if (CORBA::is_nil(child)) return;
-  /*
-   * cheap and dirty cull test -stefan
-   */
-//   if (!traversal->intersectsAllocation()) return;
-  Region_var allocation = Region::_duplicate(traversal->current_allocation());
+  Region_var allocation = traversal->current_allocation();
   if (!CORBA::is_nil(allocation))
     {
-      Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());
-      result->copy(allocation);
-
       Warsaw::Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
       MonoGraphic::request(r);
+      Graphic_var child = body();
+      if (CORBA::is_nil(child)) return;
+      Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());
+      result->copy(allocation);
       RegionImpl *tmp = static_cast<RegionImpl *>(result);
       layout->allocate(1, &r, allocation, &tmp);
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->load_identity();
       result->normalize(Transform_var(tx->_this()));
-      traversal->traverse_child(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
+      try { traversal->traverse_child (child, 0, Region_var(result->_this()), Transform_var(tx->_this()));}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { body (Warsaw::Graphic::_nil());}
+      catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
     }
   else MonoGraphic::traverse(traversal);
 }
@@ -99,7 +96,13 @@ LayoutLayer::~LayoutLayer()
 
 void LayoutLayer::traverse(Traversal_ptr t)
 {
-  if (!CORBA::is_nil(under)) under->traverse(t);
+  if (!CORBA::is_nil(under))
+    try { under->traverse (t);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { under = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { under = Warsaw::Graphic::_nil();}
   MonoGraphic::traverse(t);
-  if (!CORBA::is_nil(over)) over->traverse(t);
+  if (!CORBA::is_nil(over))
+    try { over->traverse (t);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { over = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { over = Warsaw::Graphic::_nil();}
 }
