@@ -72,7 +72,7 @@ python where to find the berlin modules:
 
 > setenv LD_LIBRARY_PATH $berlin-build/lib:$LD_LIBRARY_PATH
 > setenv PYTHONPATH $berlin-build/lib/python:$PYTHONPATH
-> setenv BABYLONPATH $berlin-build/modules/Babylon
+> setenv BABYLON_PATH $berlin-build/modules/Babylon
 
 or similar depending on your shell.
 The berlin server is in $berlin-build/bin/server, and to tell him about
