@@ -63,7 +63,6 @@ class MenuItem (pywarsaw.PyController):
 	self.callback_command = None
 	self.__parent_menu = None
 	self.__orientation = (orient == Warsaw.yaxis)
-	self.__allocation = pywarsaw.PyRegion()
 
 	# Construct the graphics to display this item
 	self.glabel = self.label #Label(self.label)
@@ -98,27 +97,21 @@ class MenuItem (pywarsaw.PyController):
 		self.button.append_graphic(tri)
 	    self.frame._set_body(self.button)
 
-    def allocate(self, tag, alloc_info): # --> void
-	if not self.submenu: return
-	pywarsaw.PyGraphic.extension(self, alloc_info, self.__allocation._this())
-	self._move_submenu()
-
     def first_focus(self, input_device): # --> boolean
-	if 0 and self.submenu and self.root.test(Warsaw.Controller.running):
-	    # Ask children first
-	    self.sub_pulldown._set_mapped(1)
-	    if self.submenu.first_focus(input_device):
+	if 1 and self.submenu and self.root.test(Warsaw.Controller.running):
+	    if self.parent_controller().is_identical(self.root):
+		# Open submenu instead
+		self._show_submenu(input_device)
 		return 1
-	    # else unmap?
 	# Request ourself
 	parent = self.parent_controller()
 	if not parent: return false
 	return parent.request_focus(self._this(), input_device)
     def last_focus(self, input_device): # --> boolean
-	if 0 and self.submenu and self.root.test(Warsaw.Controller.running):
-	    # Ask children first
-	    self.sub_pulldown._set_mapped(1)
-	    if self.submenu.first_focus(input_device):
+	if 1 and self.submenu and self.root.test(Warsaw.Controller.running):
+	    if self.parent_controller().is_identical(self.root):
+		# Open submenu instead
+		self._show_submenu(input_device)
 		return 1
 	# Request ourself
 	parent = self.parent_controller()
@@ -134,7 +127,7 @@ class MenuItem (pywarsaw.PyController):
     def receive_focus(self, focus):
 	device = focus._get_device()
 	#print self, "receive focus",device
-	if device == 1 and not self._test_focus(0):
+	if device != 0 and not self._test_focus(0):
 	    # Grab KB focus too
 	    self.request_focus(self._this(), 0)
 	return pywarsaw.PyController.receive_focus(self, focus)
@@ -145,17 +138,15 @@ class MenuItem (pywarsaw.PyController):
 	key = input_event[0].attr.selection.number
 	device = input_event[0].dev
 	parent = self.parent_controller()
-	if not self.__orientation: # Horizontal
+	if not self.__orientation: # Horizontal menuitem
 	    if key == Babylon.KEY_CURSOR_LEFT:
 		self.circular_prev_focus(device)
 	    elif key == Babylon.KEY_CURSOR_RIGHT:
 		self.circular_next_focus(device)
 	    elif key == Babylon.KEY_CURSOR_DOWN and self.submenu:
 		self.root.set(Warsaw.Controller.running)
-		self.sub_pulldown._set_mapped(1)
-		if device != 0: self.request_focus(self.sub_pulldown, 0)
-		self.submenu.first_focus(device)
-	else:
+		self._show_submenu(device)
+	else: # Vertical menuitem
 	    if key == Babylon.KEY_CURSOR_UP:
 		self.circular_prev_focus(device)
 	    elif key == Babylon.KEY_CURSOR_DOWN:
@@ -163,15 +154,16 @@ class MenuItem (pywarsaw.PyController):
 	    elif key == Babylon.KEY_CURSOR_RIGHT:
 		if self.submenu:
 		    # Open submenu
-		    self.root.set(Warsaw.Controller.running)
-		    self.sub_pulldown._set_mapped(1)
-		    if device != 0: self.request_focus(self.sub_pulldown, 0)
-		    self.submenu.first_focus(device)
+		    self._show_submenu(device)
 		else:
-		    # Move to next sibling
-		    parent.next_focus(device)
+		    # FIXME: Move focus to menu of next horizontal item
+		    if parent.parent_controller().parent_controller().parent_controller().is_identical(self.root):
+			parent.next_focus(device)
+		    else:
+			pass # FIXME: how to find next horiz?
 	    elif key == Babylon.KEY_CURSOR_LEFT:
-		# This is not nice..
+		# FIXME: Give focus only to parent item (not our menu)
+		# (this works, but isn't nice)
 		menu = self.parent_controller()
 		window = menu.parent_controller()
 		item = window.parent_controller()
@@ -220,12 +212,13 @@ class MenuItem (pywarsaw.PyController):
 		self.callback.execute(nullAny)
 	    # Show submenu
 	    if self.submenu is not None:
-		self.sub_pulldown._set_mapped(1)
-		if event[0].dev != 0: self.request_focus(self.sub_pulldown, 0)
-		self.submenu.first_focus(event[0].dev)
+		self._show_submenu(event[0].dev)
 	    else:
 		# Else close this menu and all parents
-		self.root.request_focus(self.root, 0)
+		try: self.root.request_focus(self.root, 0)
+		except CORBA.OBJECT_NOT_EXIST:
+		    # Quit will cause this error
+		    pass
 	except:
 	    print "An error occurred somewhere in clicked()"
 	    import traceback
@@ -235,11 +228,19 @@ class MenuItem (pywarsaw.PyController):
 	self.allocations(alloc._this())
 	info = alloc.get(0) # controller only has one parent
 	region = pywarsaw.PyRegion()
-	self.extension(info, region._this())
+	pywarsaw.PyGraphic.extension(self, info, region._this())
 	return region
 
+    def _show_submenu(self, device):
+	if not self.submenu: return
+	self._move_submenu()
+	self.sub_pulldown._set_mapped(1)
+	if device != 0:
+	    self.request_focus(self.sub_pulldown, 0)
+	self.submenu.first_focus(device)
+
     def _move_submenu(self):
-	region = self.__allocation
+	region = self.get_alloc()
 	sub = self.sub_pulldown
 	# Move to right place
 	lower, upper = region.bounds()
