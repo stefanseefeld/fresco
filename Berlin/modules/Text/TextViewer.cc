@@ -41,6 +41,7 @@ TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Co
 TextViewer::~TextViewer() {}
 
 void TextViewer::update(const CORBA::Any &a) {
+    cerr << "TextViewer.cc: update() StARTED" << endl;
     Trace trace1("TextViewer::update");
     TextBuffer::Change *ch;  
     if (a >>= ch) {
@@ -66,6 +67,7 @@ void TextViewer::update(const CORBA::Any &a) {
 	    break;
 	    
 	case TextBuffer::remove:
+	case TextBuffer::clear:
 	    {
 		Trace trace2("TextViewer::update - remove");
 		Prague::Guard<Mutex> guard(_mutex);
@@ -87,21 +89,11 @@ void TextViewer::update(const CORBA::Any &a) {
 		// we'll do some cursor-ish stuff someday
 	    }
 	    break;
-	    
-	case TextBuffer::clear:
-	    {
-		Trace trace2("TextViewer::update - clear");
-		for (Warsaw::GraphicIterator_var it = first_child_graphic();
-		     it->_is_equivalent(last_child_graphic());
-		     // do nothing as remove() indirectly advances the iterator!
-		     )
-		    it->remove();
-		break;
-	    }
 	}
 	//   need_redraw();
 	need_resize();
     }
+    cerr << "TextViewer.cc: update() ENDED" << endl;
 }
     
 void TextViewer::activate_composite()

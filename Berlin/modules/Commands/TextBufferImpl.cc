@@ -181,7 +181,7 @@ void TextBufferImpl::remove_forward(CORBA::Long n)
 
 void TextBufferImpl::clear() {
     Warsaw::TextBuffer::Change ch;
-    ch.type = Warsaw::TextBuffer::clear;
+    ch.type = Warsaw::TextBuffer::remove;
     {
 	Prague::Guard<Mutex> guard(mutex);
 	ch.len = buffer.size();
