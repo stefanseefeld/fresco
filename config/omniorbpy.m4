@@ -22,7 +22,7 @@ dnl
 dnl BERLIN_OMNIORBPY_CHECK
 dnl
 dnl Checks if omniORBpy is found. If it is, $berlin_cv_lib_omniORBpy is
-dnl set to "yes".
+dnl set to "yes". Also, the variable IDLPY is defined.
 
 AC_DEFUN([BERLIN_OMNIORBPY_CHECK],[
 
@@ -37,7 +37,7 @@ AC_DEFUN([BERLIN_OMNIORBPY_CHECK],[
 	else
 		omniorb_path=$PATH
 	fi
-	AC_PATH_PROG(OMNIIDL, omniidl, no, $omniorb_path)
+	AC_PATH_PROG(IDLPY, omniidl, no, $omniorb_path)
 
 	dnl Test whether omniidl knows about the python backend
 	AC_CACHE_CHECK([whether omniidl supports Python],
@@ -47,7 +47,7 @@ AC_DEFUN([BERLIN_OMNIORBPY_CHECK],[
 dnl	#line __oline__ configure
 	interface foo {};
 EOF
-	if $OMNIIDL -bpython conftest.idl; then
+	if $IDLPY -bpython conftest.idl; then
 	dnl Don't remove the temporary files here, so they can be examined.
   	  ifelse([$2], , , [$2])
 	  berlin_cv_sys_omniidl_py=yes
@@ -59,5 +59,6 @@ dnl  	  cat conftest.$ac_ext >&AC_FD_CC
 	  berlin_cv_sys_omniidl_py=no
 	fi
 	rm -fr conftest*
-	rm -fr _GlobalIDL POA__GlobalIDL])
+	rm -fr _GlobalIDL _GlobalIDL__POA])
+	AC_SUBST(IDLPY)
 ])

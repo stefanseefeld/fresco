@@ -70,7 +70,7 @@ distclean:	clean
 		rm -f Makefile $(hdir)/Server/config.hh $(cdir)/Server/subdirs.mk \
 			$(cdir)/Server/local.mk $(cdir)/Server/module.mk \
 			$(cdir)/Server/config.log $(cdir)/Server/config.status \
-			$(bdir)/Berlin-config
+			$(bdir)/Berlin-config $(builddir)/config/berlinrc
 
 maintainer-clean: distclean
 		rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/config.hh.in \

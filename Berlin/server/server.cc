@@ -99,8 +99,10 @@ int main(int argc, char **argv)
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
   if (~prefix.empty()) RCManager::read(prefix + "/share/berlin/berlinrc");
-  RCManager::read(string(User().home()) + "/.berlin");
 
+  const char *rcfile = getenv("BERLINRC");
+  if (rcfile) RCManager::read(Prague::Path::expand_user(rcfile));
+  else RCManager::read(string(User().home()) + "/.berlin");
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");

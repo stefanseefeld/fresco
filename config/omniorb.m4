@@ -200,11 +200,6 @@ dnl CPPFLAGS="$save_CPPFLAGS"
 
 	if test ".$no_omniorb" = "." ; then
 		berlin_cv_lib_omniORB="yes"
-
-		dnl Additional output variables
-		IDLCXXFLAGS="-bcxx"
-		IDLDYNFLAGS="-Wba"
-		IDLTIEFLAGS="-Wbtp"
 	fi
 
 	AC_LANG_RESTORE

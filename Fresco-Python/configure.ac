@@ -70,11 +70,11 @@ dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
 mkdir -p $builddir/bin
-mkdir -p $builddir/clients/python/Warsaw
+mkdir -p $builddir/clients/python
+mkdir -p $builddir/lib/python
 
 AC_OUTPUT([
 	$builddir/config/Clients-Python/subdirs.mk:config/Clients-Python/subdirs.mk.in
 	$builddir/config/Clients-Python/local.mk:config/Clients-Python/local.mk.in
-	$builddir/clients/python/Makefile:clients/python/Makefile.in
-	$builddir/clients/python/Warsaw/Makefile:config/Clients-Python/Makefile.omniorb.in
+	$builddir/clients/python/Makefile:config/Clients-Python/Makefile.omniorb.in
 ])

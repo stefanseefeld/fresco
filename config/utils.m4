@@ -130,6 +130,7 @@ topdir="${srcdir}"
 changequote([, ])dnl
 AC_DIVERT_POP()
 AC_SUBST(topdir)
+AC_SUBST(builddir)
 ])dnl
 
 dnl ##

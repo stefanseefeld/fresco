@@ -33,9 +33,6 @@ bdir		:= $(builddir)/bin
 include $(cdir)/local.mk
 
 IDLCXX		:= @IDLCXX@
-IDLCXXFLAGS	:= @IDLCXXFLAGS@
-IDLDYNFLAGS	:= @IDLDYNFLAGS@
-IDLTIEFLAGS	:= @IDLTIEFLAGS@
 
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
@@ -45,7 +42,9 @@ LDFLAGS		+= $(SO_LDFLAGS)
 LIBS		+= @LIBS@
 
 # Extra compilation and linking flags.
-IDLCXXFLAGS	+= -nf -Wbkeep_inc_path -C$(builddir)/src/Warsaw -I.
+IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(builddir)/src/Warsaw -I.
+IDLDYNFLAGS	:= -Wba
+IDLTIEFLAGS	:= -Wbtp
 
 DYNINT		:= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl \
 		   Selection.idl

@@ -223,5 +223,4 @@ mkdir -p config
 AC_OUTPUT([
 	Makefile:Makefile.in
 	config/local.mk:config/local.mk.in
-	config/berlinrc:config/berlinrc.in
 ])

@@ -222,6 +222,7 @@ AC_OUTPUT([
 	$builddir/src/Berlin/Makefile:src/Berlin/Makefile.in
 	$builddir/server/Makefile:server/Makefile.in
 	$kit_output
+	$builddir/config/berlinrc:config/berlinrc.in
 ],[
 	chmod +x $builddir/bin/Berlin-config
 ],[

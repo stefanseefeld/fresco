@@ -22,15 +22,13 @@
 SHELL		:= /bin/sh
 VERSION		:= @VERSION@
 
-builddir	:= ../../..
+builddir	:= ../..
 cdir		:= $(builddir)/config
 idir		:= @top_srcdir@/idl
 
 include $(cdir)/local.mk
 
-IDLPY		:= omniidl
-IDLPYFLAGS	:= -I$(idir) -nf -bpython
-IDLDYNFLAGS	:= 
+IDLPY		:= @IDLPY@
 
 INT		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Server.idl Kit.idl Transform.idl Region.idl \
@@ -46,7 +44,7 @@ INT		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   TextKit.idl Raster.idl ImageKit.idl Desktop.idl \
 		   Window.idl DesktopKit.idl GGIKit.idl UnidrawKit.idl
 
-SRC		:= $(patsubst %.idl, %_idl.py, $(INT))
+SRC		:= $(patsubst %.idl, $(builddir)/lib/python/%_idl.py, $(INT))
 CPY		:= $(patsubst %.py, %.pyc, $(SRC))
 
 all:	$(SRC)
@@ -62,7 +60,7 @@ distclean:	clean
 
 maintainer-clean:	distclean
 
-%_idl.py:	$(idir)/Warsaw/%.idl
+$(builddir)/lib/python/%_idl.py:	$(idir)/Warsaw/%.idl
 	@echo generating $(@F)
-	$(IDLPY) $(IDLPYFLAGS) $<
+	$(IDLPY) -nf -bpython -C$(builddir)/lib/python -I$(idir) $^
 
