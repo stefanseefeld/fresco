@@ -50,6 +50,8 @@ AC_DEFUN([FRESCO_OMNIORB],
               [Define whether special colocation optimizations are supported])
   fi
 
+  AC_SEARCH_LIBS(recv, resolv)
+
   dnl Check for omniidl.
   if test ".$omniorb_prefix" != "." ; then
     omniorb_path="$omniorb_prefix/bin:$PATH"
@@ -159,8 +161,6 @@ AC_DEFUN([FRESCO_OMNIORB],
 
   dnl Check for omniORB libraries
   if test ".$no_omniorb" = "." ; then
-    LIBS="$LIBS"
-    echo "LIBS is $LIBS"
     FRESCO_CHECK_LIB(ORB_LIBS, omnithread, [omni_mutex my_mutex], omnithread.h)
     dnl Hard to check the GateKeeper lib because of circular
     dnl dependency between it and libomniORB3

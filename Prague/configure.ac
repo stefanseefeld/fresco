@@ -58,6 +58,9 @@ AC_CHECK_FUNCS(strsignal)
 AC_CHECK_HEADERS(string.h)
 AC_NEED_DECLARATION(strsignal)
 AC_HEADER_SYS_WAIT
+
+AC_SEARCH_LIBS(recv, resolv)
+
 AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB, 1, [Define if you have the zlib library.]), [AC_MSG_ERROR([update your zlib, please])])
 
 FRESCO_FLAG_SO
