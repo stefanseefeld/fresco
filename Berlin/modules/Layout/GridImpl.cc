@@ -24,7 +24,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Layout/Grid.hh"
+#include "Layout/GridImpl.hh"
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
 #include "Berlin/RegionImpl.hh"
