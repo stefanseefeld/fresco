@@ -21,6 +21,7 @@
  * MA 02139, USA.
  */
 
+#include "Warsaw/config.hh"
 #include "Warsaw/ClientContext.hh"
 #include "Berlin/ServerContextImpl.hh"
 #include "Berlin/ServerImpl.hh"

@@ -21,6 +21,7 @@
  * MA 02139, USA.
  */
 
+#include "Warsaw/config.hh"
 #include "Image/PNG.hh"
 #include <Berlin/Logger.hh>
 #include <Prague/Sys/Memory.hh>

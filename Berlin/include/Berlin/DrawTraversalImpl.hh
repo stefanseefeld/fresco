@@ -23,7 +23,7 @@
 #ifndef _DrawTraversal_hh
 #define _DrawTraversal_hh
 
-#include <Warsaw/config.hh>
+#include "Warsaw/config.hh"
 #include <Warsaw/DrawTraversal.hh>
 #include <Berlin/TraversalImpl.hh>
 #include <Berlin/ImplVar.hh>

@@ -20,6 +20,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+
 #ifndef _DrawingKitBase_hh
 #define _DrawingKitBase_hh
 
@@ -28,134 +29,136 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Raster.hh>
+#include <bitset>
 #include <stack>
 
 class DrawingKitBase : implements(DrawingKit)
 {
- public:
-  void continueRestoring()
-    {
-      State *state = states.top();
-      states.pop();
-      state->restore(this);
-      delete state;
-    }
+
  private:
+  typedef enum {
+    st_trafo = 0, 
+    st_clip,
+    st_fg_color, 
+    st_point_size, 
+    st_line_width,
+    st_line_end_style, 
+    st_surface_fill_style,
+    st_texture, 
+    st_font_size, 
+    st_font_weight,
+    st_font_family, 
+    st_font_subfamily,
+    st_font_fullname,
+    st_font_style, 
+    st_font_attr = 14
+  } gstate;  
 
-  /** we now define a set of mementos which are stored on a state stack inside
-   * the DrawingKit. every time you change something in the kit, it pushes a
-   * state onto the stack. when you call gsave(), it pushes a StateMaker on the
-   * stack. when you call grestore(), it begins restoring from the top of the
-   * stack. the StateMarker will stop restoring, whereas all other mementos will
-   * restore themselves and continue restoration down the memento stack. in this
-   * way, we achieve a simple imperative state system which nonetheless can
-   * follow the scene graph's concepts of nesting as the scene is traversed. */
+  static const gstate last_state = st_font_attr;
+  typedef struct {
+    bitset<15> flags;
+    Transform_var saved_trafo;
+    Region_var saved_clip;
+    Color saved_fg_color;
+    Coord saved_point_size;
+    Coord saved_line_width;
+    Endstyle saved_line_end_style;
+    Fillstyle saved_surface_fill_style;
+    Raster_var saved_texture;
+    CORBA::ULong saved_font_size;
+    CORBA::ULong saved_font_weight;
+    Unistring_var saved_font_family;
+    Unistring_var saved_font_subfamily;
+    Unistring_var saved_font_fullname;
+    Unistring_var saved_font_style;
+    // something here...
+    // for holding NVPair saved_font_attr;
+  } DrawState;
 
-  struct State
-  {
-    virtual ~State(){}
-    virtual void restore(DrawingKitBase *) const {};
-  };
+  stack<DrawState> myStates;
 
-  struct StateMarker : State { void restore(DrawingKitBase *) const {}};
+ public:
+  virtual void saveState() { DrawState st; myStates.push(st);}
+  virtual void restoreState() {
 
-  template <class T> struct SimpleState : State
-  //. for primitive types...
-  {
-    typedef void (DrawingKitBase::*method)(T);
-    SimpleState(T v, method mm) : val(v), m(mm) {}
-    void restore(DrawingKitBase *dk) const
-    {
-      (dk->*m)(val);
-      dk->continueRestoring();
-    }
-    T val;
-    method m;
-  };
-  template <class T> struct RefState : State
-  //. for fixed size structs...
-  {
-    typedef void (DrawingKitBase::*method)(const T &);
-    RefState(const T &v, method mm) : val(v), m(mm) {}
-    void restore(DrawingKitBase *dk) const
-    {
-      (dk->*m)(val);
-      dk->continueRestoring();
-    }
-    T val;
-    method m;
-  }; 
-  template <class T> struct VarState : State
-  //. for var size structs...
-  {
-    typedef void (DrawingKitBase::*method)(const T &);
-    VarState(T *v, method mm) : val(v), m(mm) {}
-    void restore(DrawingKitBase *dk) const
-    {
-      (dk->*m)(val);
-      dk->continueRestoring();
-    }
-    typename T::_var_type val;
-    method m;
-  };
-  template <class Ptr> struct PtrState : State
-  //. for CORBA object references...
-  {
-    typedef void (DrawingKitBase::*method)(typename Ptr::_ptr_type);
-    PtrState(typename Ptr::_ptr_type v, method mm) : val(v), m(mm) {} // the absence of _duplicate() is intentional...
-    void restore(DrawingKitBase *dk) const
-    {
-      (dk->*m)(val);
-      dk->continueRestoring();
-    }
-    typename Ptr::_var_type val;
-    method m;
-  };
-  typedef stack<State *> stack_t;
-public:
+    if (myStates.empty()) return; // no state to restore
+    
+    DrawState &prev = myStates.top();
 
-  virtual void saveState() { states.push(new StateMarker);}
-  virtual void restoreState() { continueRestoring();}
+    if(prev.flags[st_trafo])
+      setTransformation(prev.saved_trafo);
+    
+    if(prev.flags[st_clip])
+      setClipping(prev.saved_clip);
+    
+    if(prev.flags[st_fg_color])
+      setForeground(prev.saved_fg_color);
+    
+    if(prev.flags[st_point_size])
+      setPointSize(prev.saved_point_size);
+    
+    if(prev.flags[st_line_width])
+      setLineWidth(prev.saved_line_width);
+    
+    if(prev.flags[st_line_end_style])
+      setLineEndstyle(prev.saved_line_end_style);
+    
+    if(prev.flags[st_surface_fill_style])
+      setSurfaceFillstyle(prev.saved_surface_fill_style);
+    
+    if(prev.flags[st_texture])
+      setTexture(prev.saved_texture);
+    
+    if(prev.flags[st_font_size])
+      setFontSize(prev.saved_font_size);
+    
+    if(prev.flags[st_font_weight])
+      setFontWeight(prev.saved_font_weight);
+    
+    if(prev.flags[st_font_family])
+      setFontFamily(prev.saved_font_family);
+    
+    if(prev.flags[st_font_subfamily])
+      setFontSubFamily(prev.saved_font_subfamily);
+    
+    if(prev.flags[st_font_fullname])
+      setFontFullName(prev.saved_font_fullname);
+    
+    if(prev.flags[st_font_style])
+      setFontStyle(prev.saved_font_style);
+    
+    //    if(prev.flags[st_font_attr]) {
+    //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
+    // 	     setFontAttr(prev.saved_font_attr[i]);
+    //    }
 
-  // drawing business
-  virtual void transformation(Transform_ptr);
+    myStates.pop();
+  }
+
+  //######################################################
+  //############### subclass signatures ##################
+  //######################################################
+
+
   virtual Transform_ptr transformation() = 0;
-  virtual void clipping(Region_ptr);
   virtual Region_ptr clipping() = 0;
-  virtual void foreground(const Color &);
   virtual Color foreground() = 0;
-  virtual void pointSize(Coord);
   virtual Coord pointSize() = 0;
-  virtual void lineWidth(Coord);
   virtual Coord lineWidth() = 0;
-  virtual void lineEndstyle(Endstyle);
   virtual Endstyle lineEndstyle() = 0;
-  virtual void surfaceFillstyle(Fillstyle);
   virtual Fillstyle surfaceFillstyle() = 0;
-  virtual void texture(Raster_ptr);
   virtual Raster_ptr texture() = 0;
 
   virtual void flush() = 0;
 
-  // font business
   virtual CORBA::ULong fontSize() = 0;
-  virtual void fontSize(CORBA::ULong);
   virtual CORBA::ULong fontWeight() = 0;
-  virtual void fontWeight(CORBA::ULong);
   virtual Unistring* fontFamily() = 0;
-  virtual void fontFamily(const Unistring&);
   virtual Unistring* fontSubFamily() = 0;
-  virtual void fontSubFamily(const Unistring&);
   virtual Unistring* fontFullName() = 0;
-  virtual void fontFullName(const Unistring&);
   virtual Unistring* fontStyle() = 0;
-  virtual void fontStyle(const Unistring&);
   virtual FontMetrics metrics() = 0;
-  virtual void fontAttr(const NVPair & nvp);
   virtual CORBA::Any * getFontAttr(const Unistring & name) = 0;
-
-  // if you subclass this, you'll need to provide these
-  // mechanisms in addition to the getters above.
 
   virtual void setTransformation(Transform_ptr) = 0;
   virtual void setClipping(Region_ptr) = 0;
@@ -174,106 +177,115 @@ public:
   virtual void setFontStyle(const Unistring&) = 0;
   virtual void setFontAttr(const NVPair & nvp) = 0;
 
-private:
-  stack_t states;
+  //########################################################
+  //############### public setter methods ##################
+  //########################################################
+
+  // sorry, I hate macros as much as the next guy,
+  // but in this case, templates are simply not cutting it.
+
+#define REMEMBER(state,ty,val) \
+ if (!(myStates.empty() || myStates.top().flags[st_## state])) { \
+  DrawState &st = myStates.top(); \
+  ty tmp(val); \
+  st.saved_## state = tmp; \
+  st.flags[st_## state] = true; \
+ }
+
+  
+  inline void transformation(Transform_ptr t)
+    {
+      REMEMBER(trafo,Transform_var,transformation());
+      setTransformation(t);
+    }
+
+  inline void clipping(Region_ptr c)
+    {
+      REMEMBER(clip,Region_var,clipping());
+      setClipping(c);
+    }
+
+  inline void foreground(const Color &c)
+    {
+      REMEMBER(fg_color,Color,foreground())
+      setForeground(c);
+    }
+
+  inline void pointSize(Coord s)
+    {
+      REMEMBER(point_size,Coord,pointSize());
+      setPointSize(s);
+    }
+
+  inline void lineWidth(Coord w)
+    {
+      REMEMBER(line_width,Coord,lineWidth());
+      setLineWidth(w);
+    }
+
+  inline void lineEndstyle(Endstyle s)
+    {
+      REMEMBER(line_end_style,Endstyle,lineEndstyle())
+      setLineEndstyle(s);
+    }
+
+  inline void surfaceFillstyle(Fillstyle s)
+    {
+      REMEMBER(surface_fill_style,Fillstyle,surfaceFillstyle());
+      setSurfaceFillstyle(s);
+    }
+
+  inline void texture(Raster_ptr t)
+    {
+      REMEMBER(texture,Raster_var,texture());
+      setTexture(t);
+    }
+
+  ////////
+  // text
+  ////////
+
+  inline void fontSize(CORBA::ULong s)
+    {
+      REMEMBER(font_size,CORBA::ULong,fontSize());
+      setFontSize(s);
+    }
+
+  inline void fontWeight(CORBA::ULong w)
+    {
+      REMEMBER(font_weight,CORBA::ULong,fontWeight());
+      setFontWeight(w);
+    }
+
+  inline void fontFamily(const Unistring &f)
+    {
+      REMEMBER(font_family,Unistring_var,fontFamily());
+      setFontFamily(f);
+    }
+
+  inline void fontSubFamily(const Unistring &f)
+    {
+      REMEMBER(font_subfamily,Unistring_var,fontSubFamily());
+      setFontSubFamily(f);
+    }
+
+  inline void fontFullName(const Unistring &f)
+    {
+      REMEMBER(font_fullname,Unistring_var,fontFullName());
+      setFontFullName(f);
+    }
+
+  inline void fontStyle(const Unistring &s)
+    {
+      REMEMBER(font_style,Unistring_var,fontStyle());
+      setFontStyle(s);
+    }
+
+  inline void fontAttr(const NVPair &nvp)
+    {
+      // !FIXME! fill this in.. it's not _too_ hard
+    }
+
 };
-
-inline void DrawingKitBase::transformation(Transform_ptr t)
-{
-  states.push(new PtrState<Transform>(transformation(), &DrawingKitBase::setTransformation));
-  setTransformation(t);
-}
-
-inline void DrawingKitBase::clipping(Region_ptr c)
-{
-  states.push(new PtrState<Region>(clipping(), &DrawingKitBase::setClipping));
-  setClipping(c);
-}
-
-inline void DrawingKitBase::foreground(const Color &c)
-{
-  states.push(new RefState<Color>(foreground(), &DrawingKitBase::setForeground));
-  setForeground(c);
-}
-
-inline void DrawingKitBase::pointSize(Coord s)
-{
- states.push(new SimpleState<Coord>(pointSize(), &DrawingKitBase::setPointSize));
- setPointSize(s);
-}
-
-inline void DrawingKitBase::lineWidth(Coord w)
-{
-  states.push(new SimpleState<Coord>(lineWidth(), &DrawingKitBase::setLineWidth));
-  setLineWidth(w);
-}
-
-inline void DrawingKitBase::lineEndstyle(Endstyle s)
-{
-  states.push(new SimpleState<Endstyle>(lineEndstyle(), &DrawingKitBase::setLineEndstyle));
-  setLineEndstyle(s);
-}
-
-inline void DrawingKitBase::surfaceFillstyle(Fillstyle s)
-{
-  states.push(new SimpleState<Fillstyle>(surfaceFillstyle(), &DrawingKitBase::setSurfaceFillstyle));
-  setSurfaceFillstyle(s);
-}
-
-inline void DrawingKitBase::texture(Raster_ptr t)
-{
-  states.push(new PtrState<Raster>(texture(), &DrawingKitBase::setTexture));
-  setTexture(t);
-}
-
-////////
-// text
-////////
-
-inline void DrawingKitBase::fontSize(CORBA::ULong s)
-{
-  states.push(new SimpleState<CORBA::ULong>(fontSize(), &DrawingKitBase::setFontSize));
-  setFontSize(s);
-}
-
-inline void DrawingKitBase::fontWeight(CORBA::ULong w)
-{
-  states.push(new SimpleState<CORBA::ULong>(fontWeight(), &DrawingKitBase::setFontWeight));
-  setFontWeight(w);
-}
-
-inline void DrawingKitBase::fontFamily(const Unistring &f)
-{
-  states.push(new VarState<Unistring>(fontFamily(), &DrawingKitBase::setFontFamily));
-  setFontFamily(f);
-}
-
-inline void DrawingKitBase::fontSubFamily(const Unistring &f)
-{
-  states.push(new VarState<Unistring>(fontSubFamily(), &DrawingKitBase::setFontSubFamily));
-  setFontSubFamily(f);
-}
-
-inline void DrawingKitBase::fontFullName(const Unistring &f)
-{
-  states.push(new VarState<Unistring>(fontFullName(), &DrawingKitBase::setFontFullName));
-  setFontFullName(f);
-}
-
-inline void DrawingKitBase::fontStyle(const Unistring &s)
-{
-  states.push(new VarState<Unistring>(fontStyle(), &DrawingKitBase::setFontStyle));
-  setFontStyle(s);
-}
-
-inline void DrawingKitBase::fontAttr(const NVPair &nvp)
-{
-//   NVPair save;
-//   save.name = nvp.name;
-//   save.val = getFontAttr(nvp.name);
-//   states.push(new RefState<NVPair>(save, &DrawingKitBase::setFontAttr));
-//   setFontAttr(nvp);
-}
-
-
-#endif /* _DrawingKitBase_hh */
+  
+#endif

@@ -21,6 +21,7 @@
  * MA 02139, USA.
  */
 
+#include "Warsaw/config.hh"
 #include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends

@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 
+#include "Warsaw/config.hh"
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Subject.hh"
