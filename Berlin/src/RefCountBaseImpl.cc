@@ -28,20 +28,22 @@ using namespace Warsaw;
 
 static Mutex mutex;
 
-RefCountBaseImpl::RefCountBaseImpl() : refcount(1) {}
-RefCountBaseImpl::~RefCountBaseImpl() { Trace trace("RefCountBaseImpl::~RefCountBaseImpl");}
-void RefCountBaseImpl::increment()
-{
-  Trace trace("RefCountBaseImpl::increment");
-  Prague::Guard<Mutex> guard(mutex);
-  ++refcount;
+RefCountBaseImpl::RefCountBaseImpl() : _refcount(1) {}
+
+RefCountBaseImpl::~RefCountBaseImpl() {
+    Trace trace("RefCountBaseImpl::~RefCountBaseImpl");
 }
 
-void RefCountBaseImpl::decrement()
-{
+void RefCountBaseImpl::increment() {
+  Trace trace("RefCountBaseImpl::increment");
+  Prague::Guard<Mutex> guard(mutex);
+  ++_refcount;
+}
+
+void RefCountBaseImpl::decrement() {
   Trace trace("RefCountBaseImpl::decrement");
   Prague::Guard<Mutex> guard(mutex);
-  --refcount;
-  if (!refcount) deactivate();
+  --_refcount;
+  if (!_refcount) deactivate();
 }
 

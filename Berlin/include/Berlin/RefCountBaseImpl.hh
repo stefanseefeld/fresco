@@ -37,7 +37,7 @@ public:
   virtual void increment();
   virtual void decrement();
 private:
-  int refcount;
+  int _refcount;
 };
 
 #endif
