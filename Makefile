@@ -22,7 +22,6 @@
 SHELL	= /bin/sh
 
 -include config/local.mk
-include config/packages.mk
 
 #subdirs	= $(wildcard src server clients)
 # doc
@@ -76,6 +75,10 @@ install: all
 	@for dir in ${subdirs}; do \
 	  (cd $$dir && $(MAKE) install); \
 	done
+
+# Someone said there was a way to include these rules only if the person
+# invokes the export target. I don't know how to do that...
+include config/packages.mk
 
 debs:
 	dpkg-buildpackage -rfakeroot -uc -us
