@@ -10,6 +10,8 @@ allows you to implement, for example, Graphics or Controllers and embed them
 in the remove display. Of course, its really slow, but also really useful for
 prototyping purposes!
 """
+import math
+
 # Import the Warsaw stubs
 import Warsaw, Unidraw
 import Warsaw__POA
@@ -33,6 +35,126 @@ class PyRefCountBase (Warsaw__POA.RefCountBase):
 	self.__refcount = self.__refcount - 1
 	if self.__refcount < 1:
 	    print "PyRefCountBase.decrement(): RefCount reached",self.__refcount
+
+class PyRegion (Warsaw__POA.Region):
+    def __init__(self):
+	self.__lower = Warsaw.Vertex(0, 0, 0)
+	self.__upper = Warsaw.Vertex(0, 0, 0)
+	self.__align = Warsaw.Vertex(0, 0, 0) # align isnt a vertex but...
+	self.__valid = 0
+    def defined(self): # --> boolean
+	return self.__valid
+    def contains(self, v): # --> boolean
+	return self.__valid and \
+	    v.x >= self.__lower.x and v.x <= self.__upper.x and \
+	    v.y >= self.__lower.y and v.y <= self.__upper.y and \
+	    v.z >= self.__lower.z and v.z <= self.__upper.z
+    def contains_plane(self, v, axis): # --> boolean
+	if not self.__valid: return 0
+	if axis == Warsaw.xaxis:
+	    return  v.y >= self.__lower.y and v.y <= self.__upper.y and \
+		    v.z >= self.__lower.z and v.z <= self.__upper.z
+	if axis == Warsaw.yaxis:
+	    return  v.x >= self.__lower.x and v.x <= self.__upper.x and \
+		    v.z >= self.__lower.z and v.z <= self.__upper.z
+	if axis == Warsaw.zaxis:
+	    return  v.x >= self.__lower.x and v.x <= self.__upper.x and \
+		    v.y >= self.__lower.y and v.y <= self.__upper.y
+	return 0
+    def intersects(self, region): # --> boolean
+	l, u = region.bounds()
+	return self.__valid and \
+	    self.__lower.x <= u.x and self.__upper.x >= l.x and \
+	    self.__lower.y <= u.y and self.__upper.y >= l.y and \
+	    self.__lower.z <= u.z and self.__upper.z >= l.z
+    def copy(self, region): # region is a corba var
+	if not region.defined(): return
+	allot_x = region.span(Warsaw.xaxis)
+	allot_y = region.span(Warsaw.yaxis)
+	allot_z = region.span(Warsaw.zaxis)
+	self.__valid = 1
+	self.__lower.x = allot_x.begin
+	self.__lower.y = allot_y.begin
+	self.__lower.z = allot_z.begin
+	self.__upper.x = allot_x.end
+	self.__upper.y = allot_y.end
+	self.__upper.z = allot_z.end
+	self.__align.x = allot_x.align
+	self.__align.y = allot_y.align
+	self.__align.z = allot_z.align
+    def merge_intersect(self, region):
+	if not region.defined(): return
+	if not self.__valid: return self.copy(region)
+	l, u = region.bounds()
+	self.merge_max(self.__lower, l)
+	self.merge_min(self.__upper, u)
+    def merge_union(self, region):
+	if not region.defined(): return
+	if not self.__valid: return self.copy(region)
+	l, u = region.bounds()
+	self.merge_min(self.__lower, l)
+	self.merge_max(self.__upper, u)
+    def subtract(self, region):
+	pass #NYI
+    def apply_transform(self, tr):
+	# See comment in RegionImpl.cc for info about this math
+	if not self.__valid: return
+	o = tr.transform_vertex(self.origin())
+	m = tr.store_matrix()
+	lx = self.__upper.x - self.__lower.x
+	ly = self.__upper.y - self.__lower.y
+	lz = self.__upper.z - self.__lower.z
+	center = tr.transform_vertex(self.center())
+	nlx = math.fabs(lx * m[0][0]) + math.fabs(ly * m[0][1]) + math.fabs(lz * m[0][2])
+	nly = math.fabs(lx * m[1][0]) + math.fabs(ly * m[1][1]) + math.fabs(lz * m[1][2])
+	nlz = math.fabs(lx * m[2][0]) + math.fabs(ly * m[2][1]) + math.fabs(lz * m[2][2])
+	# form the new box
+	self.__lower.x = center.x - nlx * 0.5;
+	self.__upper.x = center.x + nlx * 0.5;
+	self.__lower.y = center.y - nly * 0.5;
+	self.__upper.y = center.y + nly * 0.5;
+	self.__lower.z = center.z - nlz * 0.5;
+	self.__upper.z = center.z + nlz * 0.5;
+	if math.fabs(nlx) > 1e-4: xalign = (o.x - self.__lower.x) / nlx
+	if math.fabs(nly) > 1e-4: yalign = (o.y - self.__lower.y) / nly
+	if math.fabs(nlz) > 1e-4: zalign = (o.z - self.__lower.z) / nlz
+    def bounds(self): # --> (Vertex, Vertex)
+	return self.__lower, self.__upper
+    def center(self): # --> Vertex
+	return Warsaw.Vertex(
+	    (self.__upper.x + self.__lower.x) * .5,
+	    (self.__upper.y + self.__lower.y) * .5,
+	    (self.__upper.z + self.__lower.z) * .5)
+    def origin(self): # --> Vertex
+	return Warsaw.Vertex(
+	    self.span_origin(self.__lower.x, self.__upper.x, self.__align.x),
+	    self.span_origin(self.__lower.y, self.__upper.y, self.__align.y),
+	    self.span_origin(self.__lower.z, self.__upper.z, self.__align.z))
+    def span(self, axis): # --> Region.Allotment
+	Allotment = Warsaw.Region.Allotment
+	if axis == Warsaw.xaxis:
+	    return Allotment(self.__lower.x, self.__upper.x, self.__align.x)
+	if axis == Warsaw.yaxis:
+	    return Allotment(self.__lower.y, self.__upper.y, self.__align.y)
+	if axis == Warsaw.zaxis:
+	    return Allotment(self.__lower.z, self.__upper.z, self.__align.z)
+    def outline(self): # --> Path
+	pass # NYI
+    # non-i/f utility methods
+    def span_origin(self, lower, upper, align):
+	if math.fabs(lower - upper) < 1e-4: return 0
+	return lower + align * (upper - lower)
+    def span_align(self, lower, upper, origin):
+	if math.fabs(lower - upper) < 1e-4: return 0
+	return (origin - lower) / (upper - lower)
+    def merge_min(self, v0, v):
+	v0.x = math.min(v0.x, v.x)
+	v0.y = math.min(v0.y, v.y)
+	v0.z = math.min(v0.z, v.z)
+    def merge_max(self, v0, v):
+	v0.x = math.max(v0.x, v.x)
+	v0.y = math.max(v0.y, v.y)
+	v0.z = math.max(v0.z, v.z)
 
 class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
     def __init__(self):
@@ -105,9 +227,14 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	return req
 	
     def extension(self, alloc_info, region): # --> void
-	#Allocation::Info a, Region r
-	region.merge_union(alloc_info.allocation)
-	# TODO: should use alloc_info.transformation
+	if alloc_info.transformation:
+	    tmp = PyRegion()
+	    tmp.copy(alloc_info.allocation)
+	    if not alloc_info.transformation.identity():
+		tmp.apply_transform(alloc_info.transformation)
+	    region.merge_union(tmp._this())
+	else:
+	    region.merge_union(alloc_info.allocation)
     def shape(self, Region): # --> void
 	pass
 
