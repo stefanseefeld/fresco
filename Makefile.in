@@ -29,7 +29,7 @@ distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 mandatory	:= Prague Babylon Fresco Berlin 
 optional	:= GGI SDL Clients-C++ Clients-Python Clients-Java Clients-Perl
 
-ifneq (,$(findstring config install, $(MAKECMDGOALS)))
+ifneq (,$(filter config install, $(MAKECMDGOALS)))
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
 else
