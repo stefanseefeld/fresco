@@ -61,7 +61,7 @@ FocusDemo::FocusDemo(Application *a)
   /*
    * second group
    */
-  Choice_var c2 = widget->toggleChoice();
+  Choice_var c2 = widget->checkboxChoice();
   for (size_t i = 0; i != 5; i++)
     c2->appendItem(Graphic_var(Graphic::_nil()));
   c2->attach(Observer_var(observer->_this()));
@@ -80,7 +80,7 @@ FocusDemo::FocusDemo(Application *a)
   /*
    * fourth group
    */
-  Choice_var c4 = widget->toggleChoice();
+  Choice_var c4 = widget->checkboxChoice();
   for (size_t i = 0; i != 5; i++)
     c4->appendItem(Graphic_var(Graphic::_nil()));
   c4->attach(Observer_var(observer->_this()));

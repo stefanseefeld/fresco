@@ -174,10 +174,12 @@ void GLDrawingKit::drawPath(const Path &path)
     }
   else if (fs == textured)
     {
-      cerr << "sorry, implementation for textured polygons not finished..." << endl;
-//       GLTexture *gltextures = textures.lookup(tx);
       glBegin(GL_POLYGON);
-      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      for (unsigned long i = 0; i < path.length(); i++)
+	{
+	  glTexCoord2f(path[i].x * tx->width * 10., path[i].y * tx->height * 10.); 
+	  glVertex3f(path[i].x, path[i].y, path[i].z);
+	}
       glEnd();
     }
   else

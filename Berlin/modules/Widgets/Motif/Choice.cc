@@ -185,7 +185,7 @@ ToggleChoice::ToggleChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr 
 Tag ToggleChoice::appendItem(Graphic_ptr g)
 {
   SectionLog section("ToggleChoice::append");
-  Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)));
+  Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)));
   Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
@@ -193,14 +193,17 @@ Tag ToggleChoice::appendItem(Graphic_ptr g)
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
-  box->append(item);
+  ToolKit::FrameSpec none, colored;
+  Color black = {0., 0., 0., 1.};
+  colored.foreground(black);
+  box->append(Graphic_var(tools->dynamic(item, 20., Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
 Tag ToggleChoice::prependItem(Graphic_ptr g)
 {
   SectionLog section("ToggleChoice::prepend");
-  Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)));
+  Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)));
   Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
@@ -208,7 +211,10 @@ Tag ToggleChoice::prependItem(Graphic_ptr g)
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
-  box->prepend(item);
+  ToolKit::FrameSpec none, colored;
+  Color black = {0., 0., 0., 1.};
+  colored.foreground(black);
+  box->prepend(Graphic_var(tools->dynamic(item, 20., Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
@@ -234,7 +240,8 @@ Tag CheckboxChoice::appendItem(Graphic_ptr g)
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
-  Graphic_var frame = tools->dynamicDiamond(g, 20., Controller::toggled, s1, s2, true, toggle);
+  Graphic_var frame = tools->dynamicDiamond(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)),
+					    20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
   Graphic_var item = layout->hbox();
@@ -242,7 +249,10 @@ Tag CheckboxChoice::appendItem(Graphic_ptr g)
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
-  box->append(item);
+  ToolKit::FrameSpec none, colored;
+  Color black = {0., 0., 0., 1.};
+  colored.foreground(black);
+  box->append(Graphic_var(tools->dynamic(item, 20., Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
@@ -256,7 +266,8 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
-  Graphic_var frame = tools->dynamicDiamond(g, 20., Controller::toggled, s1, s2, true, toggle);
+  Graphic_var frame = tools->dynamicDiamond(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)),
+					    20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
   Graphic_var item = layout->hbox();
@@ -264,7 +275,10 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
-  box->prepend(item);
+  ToolKit::FrameSpec none, colored;
+  Color black = {0., 0., 0., 1.};
+  colored.foreground(black);
+  box->prepend(Graphic_var(tools->dynamic(item, 20., Controller::active, colored, none, false, toggle)));
   return tag;
 }
 

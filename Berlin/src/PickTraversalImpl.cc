@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -59,7 +59,6 @@ CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr region)
   local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
   Vertex lower, upper;
   region->bounds(lower, upper);
-//   cout << "PickTraversalImpl::intersectsRegion " << local << endl;
   return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
 }
 

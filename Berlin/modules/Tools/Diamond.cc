@@ -150,7 +150,6 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
 
   Vertex center = {(u.x + l.x)/2, (u.y + l.y)/2, 0.};
   Vertex length = {(u.x - l.x), (u.y - l.y), 0.};
-  Coord slope = length.y / length.x;
   Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
   Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 

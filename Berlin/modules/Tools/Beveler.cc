@@ -327,7 +327,6 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
   Vertex length = {(right - left), (bottom - top), 0.};
-  Coord slope = length.y / length.x;
   Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
   Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
@@ -357,8 +356,18 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[4] = path[0];
   drawing->drawPath(path);
   /*
+   * top right
+   */
+  path[0].x = center.x, path[0].y = top, path[0].z = 0;
+  path[1].x = center.x, path[1].y = top + dy, path[1].z = 0;
+  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
+  path[3].x = right, path[3].y = center.y, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
    * bottom left
    */
+  drawing->foreground(light);
   path[0].x = left, path[0].y = center.y, path[0].z = 0;
   path[1].x = center.x, path[1].y = bottom, path[1].z = 0;
   path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
@@ -368,20 +377,10 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   /*
    * bottom right
    */
-  drawing->foreground(light);
   path[0].x = center.x, path[0].y = bottom, path[0].z = 0;
   path[1].x = right, path[1].y = center.y, path[1].z = 0;
   path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
   path[3].x = center.x, path[3].y = bottom - dy, path[3].z = 0;
-  path[4] = path[0];
-  drawing->drawPath(path);
-  /*
-   * top right
-   */
-  path[0].x = center.x, path[0].y = top, path[0].z = 0;
-  path[1].x = center.x, path[1].y = top + dy, path[1].z = 0;
-  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
-  path[3].x = right, path[3].y = center.y, path[3].z = 0;
   path[4] = path[0];
   drawing->drawPath(path);
   drawing->restoreState();
