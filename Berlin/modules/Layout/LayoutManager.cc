@@ -58,70 +58,40 @@ void LayoutManager::set_span(RegionImpl *r, Axis a, Coord origin, Coord length, 
 
 // class LayoutAlign
 
-LayoutAlign::LayoutAlign(Axis a, bool r) : axis(a), relaxed(r) {}
+LayoutAlign::LayoutAlign(Axis a) : axis(a) {}
 LayoutAlign::~LayoutAlign() {}
-LayoutManager *LayoutAlign::clone() { return new LayoutAlign(axis, relaxed);}
+LayoutManager *LayoutAlign::clone() { return new LayoutAlign(axis);}
 
 void LayoutAlign::request(long n, Graphic::Requisition *requests, Graphic::Requisition &result)
 {
   Graphic::Requirement *r, *rr = GraphicImpl::requirement(result, axis);
   rr->defined = false;
-  Coord natural_lead = Coord(0);
-  Coord natural_trail = Coord(0);
+
+  Coord natural_lead, natural_trail;
   Coord min_lead, max_lead, min_trail, max_trail;
   
-  if (!relaxed)
+  natural_lead = natural_trail = min_lead = max_lead = min_trail = max_trail = 0;
+
+  for (int i = 0; i < n; i++)
     {
-      min_lead = -GraphicImpl::infinity;
-      max_lead = GraphicImpl::infinity;
-      min_trail = -GraphicImpl::infinity;
-      max_trail = GraphicImpl::infinity;
-      for (long i = 0; i < n; i++)
+      r = GraphicImpl::requirement(requests[i], axis);
+      if (r->defined)
 	{
-	  r = GraphicImpl::requirement(requests[i], axis);
-	  if (r->defined)
-	    {
-	      Coord r_nat = r->natural;
-	      Coord r_max = r->maximum;
-	      Coord r_min = r->minimum;
-	      Coord r_align = r->align;
-	      Coord r_inv_align = Coord(1) - r_align;
-	      natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
-	      max_lead = Math::min(max_lead, Coord(r_max * r_align));
-	      min_lead = Math::max(min_lead, Coord(r_min * r_align));
-	      natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
-	      max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
-	      min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
-	      rr->defined = true;
-	    }
+	  Coord r_nat = r->natural;
+	  Coord r_max = r->maximum;
+	  Coord r_min = r->minimum;
+	  Coord r_align = r->align;
+	  Coord r_inv_align = Coord(1) - r_align;
+	  natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
+	  max_lead = Math::max(max_lead, Coord(r_max * r_align));
+	  min_lead = Math::max(min_lead, Coord(r_min * r_align));
+	  natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
+	  max_trail = Math::max(max_trail, Coord(r_max * r_inv_align));
+	  min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
+	  rr->defined = true;
 	}
     }
-  else
-    {
-      min_lead = GraphicImpl::infinity;
-      max_lead = -GraphicImpl::infinity;
-      min_trail = GraphicImpl::infinity;
-      max_trail = -GraphicImpl::infinity;
-      for (long i = 0; i < n; i++)
-	{
-	  r = GraphicImpl::requirement(requests[i], axis);
-	  if (r->defined)
-	    {
-	      Coord r_nat = r->natural;
-	      Coord r_max = r->maximum;
-	      Coord r_min = r->minimum;
-	      Coord r_align = r->align;
-	      Coord r_inv_align = Coord(1) - r_align;
-	      natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
-	      max_lead = Math::max(max_lead, Coord(r_max * r_align));
-	      min_lead = Math::min(min_lead, Coord(r_min * r_align));
-	      natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
-	      max_trail = Math::max(max_trail, Coord(r_max * r_inv_align));
-	      min_trail = Math::min(min_trail, Coord(r_min * r_inv_align));
-	      rr->defined = true;
-	    }
-	}
-    }
+
   if (rr->defined)
     GraphicImpl::require_lead_trail(*rr, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
 }
