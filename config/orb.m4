@@ -20,7 +20,7 @@ dnl MA 02139, USA.
 
 dnl ------------------------------------------------------------------
 
-dnl FRESCO_LIB_ORB(mandatory-flag)
+dnl FRESCO_ORB
 dnl
 dnl Try to find a usable ORB. If mandatory-flag is "mandatory", abort if
 dnl none is found.
@@ -30,7 +30,7 @@ dnl secondary macros, which checks if the specific ORB is available and
 dnl sets ORB_LIBS, ORB_CPPFLAGS, IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS and
 dnl IDLTIEFLAGS. Those variables are AC_SUBSTed here.
 
-AC_DEFUN([FRESCO_LIB_ORB],[
+AC_DEFUN([FRESCO_ORB],[
 
 	AC_MSG_NOTICE(ORB)
 	AC_ARG_WITH(orb,
@@ -42,7 +42,7 @@ AC_DEFUN([FRESCO_LIB_ORB],[
 
 	case "$ORB" in
 		omniORB|auto)
-			FRESCO_LIB_OMNIORB
+			FRESCO_OMNIORB
 			if test ".$fresco_cv_lib_omniORB" != ".yes"; then
 				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
 			else
@@ -50,7 +50,7 @@ AC_DEFUN([FRESCO_LIB_ORB],[
 			fi		
 			;;
 		TAO)
-			FRESCO_LIB_TAO
+			FRESCO_TAO
 			if test ".$fresco_cv_lib_TAO" != ".yes"; then
 				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
 			else

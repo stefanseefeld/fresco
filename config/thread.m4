@@ -1,5 +1,5 @@
 dnl $Id$
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org>
 dnl http://www.fresco.org/
 dnl
@@ -19,11 +19,11 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl AC_THREAD_CHECK
+dnl FRESCO_THREAD
 dnl
 dnl Try to find a usable thread library.
 dnl Add the necessary stuff to LIBS and CPPFLAGS
-AC_DEFUN([AC_THREAD_CHECK],
+AC_DEFUN([FRESCO_THREAD],
   [AC_MSG_NOTICE([Threading])
    AC_ARG_ENABLE(pthreads,
      [  --enable-pthreads       use POSIX threads for multi-threading (default: yes)],
@@ -32,11 +32,9 @@ AC_DEFUN([AC_THREAD_CHECK],
      enable_pthreads=yes
    fi
    if test ".$enable_pthreads" = .yes ; then
-     AC_PTHREAD
+     FRESCO_PTHREAD
      if test ".$ac_cv_pthread" != .yes; then
-       if test ".$1" = .mandatory; then
-         AC_MSG_ERROR([No supported thread API found!])
-       fi
+       AC_MSG_ERROR([No supported thread API found!])
      else
        AC_MSG_RESULT([use pthreads])
        CPPFLAGS="$CPPFLAGS $pthread_cppflags"

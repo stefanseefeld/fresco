@@ -19,11 +19,11 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl AC_PTHREAD
+dnl FRESCO_PTHREAD
 dnl
 dnl Checks for pthread support. If found, $ac_cv_pthread is set to "yes",
 dnl and $pthread_cppflags and $pthread_lib are defined
-AC_DEFUN([AC_PTHREAD],[
+AC_DEFUN([FRESCO_PTHREAD],[
 
     dnl This is used on Linux for glibc binary compatibility (Doh!)
     AC_ARG_ENABLE(pthread-sem, [    --enable-pthread-sem  use pthread semaphores [default=yes]],, enable_pthread_sem=yes)
@@ -32,10 +32,6 @@ AC_DEFUN([AC_PTHREAD],[
             pthread_cppflags="-D_THREAD_SAFE"
 # causes Carbon.p complaints?
 #            pthread_cppflags="-D_REENTRANT -D_THREAD_SAFE"
-            ;;
-        *-*-freebsd*)
-            pthread_cppflags="-D_REENTRANT -D_THREAD_SAFE"
-            pthread_lib="-pthread"
             ;;
         *-*-openbsd*)
             pthread_cppflags="-D_REENTRANT"

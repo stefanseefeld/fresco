@@ -33,6 +33,9 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_CXX
@@ -45,7 +48,7 @@ dnl ------------------------------------------------------------------
 
 AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
 
-FRESCO_LIB_ORB(mandatory)
+FRESCO_ORB
 MAKEFILE=
 if test ".$ORB" = .omniORB ; then
   MAKEFILE="Makefile.omniorb.in"

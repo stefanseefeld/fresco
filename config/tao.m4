@@ -26,7 +26,7 @@ dnl is, $fresco_cv_lib_TAO is set to "yes". Also, the
 dnl variables IDLCXX, ORB_LIBS
 dnl and ORB_CPPFLAGS are set, and necessary definitions are added.
 
-AC_DEFUN([FRESCO_LIB_TAO],[
+AC_DEFUN([FRESCO_TAO],[
 
 	AC_REQUIRE([AC_CANONICAL_SYSTEM])
 	AC_REQUIRE([AC_PROG_CC])

@@ -37,7 +37,7 @@ dnl CORBA environment
 dnl ------------------------------------------------------------------
 
 dnl AC_MSG_PART(CORBA Environment)
-FRESCO_OMNIORBPY_CHECK
+FRESCO_OMNIORBPY
 
 FRESCO_IDL_PATH
 

@@ -19,12 +19,12 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl FRESCO_OMNIORBPY_CHECK
+dnl FRESCO_OMNIORBPY
 dnl
 dnl Checks if omniORBpy is found. If it is, $berlin_cv_lib_omniORBpy is
 dnl set to "yes". Also, the variable IDLPY is defined.
 
-AC_DEFUN([FRESCO_OMNIORBPY_CHECK],
+AC_DEFUN([FRESCO_OMNIORBPY],
   [AC_ARG_WITH(omniorbpy-prefix,
 	       AC_HELP_STRING([--with-omniorbpy-prefix],[Prefix for omniORBpy]),
                [omniorbpy_prefix="$withval"])

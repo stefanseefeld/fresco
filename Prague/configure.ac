@@ -31,6 +31,9 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)
 
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 
@@ -65,7 +68,7 @@ dnl Thread support
 dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Thread Implementation])
-AC_THREAD_CHECK(mandatory)
+FRESCO_THREAD
 
 dnl ------------------------------------------------------------------
 dnl Plugin support

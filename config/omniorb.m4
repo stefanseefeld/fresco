@@ -19,12 +19,12 @@ dnl License along with this library; if not, write to the
 dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
-dnl dnl FRESCO_LIB_OMNIORB dnl dnl Checks if omniORB is found. If it
+dnl dnl FRESCO_OMNIORB dnl dnl Checks if omniORB is found. If it
 dnl is, $fresco_cv_lib_omniORB is set to "yes". Also, the
 dnl variables IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS, IDLTIEFLAGS, ORB_LIBS
 dnl and ORB_CPPFLAGS are set, and necessary definitions are added.
 
-AC_DEFUN([FRESCO_LIB_OMNIORB],
+AC_DEFUN([FRESCO_OMNIORB],
 [
 
   AC_REQUIRE([AC_CANONICAL_SYSTEM])
@@ -32,6 +32,7 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
   AC_REQUIRE([AC_PROG_CXX])
   AC_REQUIRE([AC_PROG_CPP])
   AC_REQUIRE([AC_PROG_CXXCPP])
+  AC_REQUIRE([FRESCO_PTHREAD])
 
   AC_ARG_WITH(omniorb-prefix,
     [  --with-omniorb-prefix  Prefix for omniORB],
