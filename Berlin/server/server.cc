@@ -27,6 +27,7 @@
 #include <Prague/Sys/Timer.hh>
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/User.hh>
+#include <Prague/Sys/Fork.hh>
 #include <Prague/Sys/GetOpt.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
@@ -88,6 +89,36 @@ struct Dump : Signal::Notifier
     }
 };
 
+//. Execute a client using the command in 'value'. The process is stored in
+//. client
+void exec_child(Fork*& child, std::string& value)
+{
+  // Fork to create child process to execute client in
+  child = new Fork(true, true);
+  if (child->child())
+    {
+      std::vector<char*> args;
+      // Split 'value' into command and arguments for execvp
+      int start = 0, index = 0;
+      value.push_back('\0');
+      while ( (index = value.find(' ', index)) != std::string::npos)
+	{
+	  value[index] = '\0';
+	  args.push_back(value.begin() + start);
+	  start = index + 1;
+	}
+      args.push_back(value.begin() + start);
+      args.push_back(NULL);
+
+      // Execute command
+      execvp(args[0], args.begin());
+
+      // Should not get here
+      perror("client execvp");
+      exit(1);
+    }
+}
+
 int main(int argc, char **argv)
 {
   /*
@@ -110,6 +141,7 @@ int main(int argc, char **argv)
   getopt.add('p', "profiling", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
   getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
+  getopt.add('e', "execute", GetOpt::mandatory, "the command to execute upon startup");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
@@ -214,6 +246,14 @@ int main(int argc, char **argv)
   Logger::log(Logger::corba) << "listening for clients" << std::endl;
   // initialize the event distributor and draw thread
   Logger::log(Logger::corba) << "event manager is constructed" << std::endl;
+
+  // Start client via --execute argument
+  Fork *child = NULL;
+  value = "";
+  getopt.get("execute", &value);
+  if (!value.empty())
+    exec_child(child, value);
+
   try
     {
       smanager->run();
@@ -230,6 +270,8 @@ int main(int argc, char **argv)
     {
       std::cout << "unknown exception caught" << std::endl;
     };
+
+  if (child) delete child;
   orb->destroy();
   return 0;
 }
