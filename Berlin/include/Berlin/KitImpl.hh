@@ -60,7 +60,7 @@ template <typename T>
 inline T *create_kit(const std::string &repo, std::string props[], size_t n)
 {
   Warsaw::Kit::PropertySeq properties;
-  properties.length(n);
+  properties.length(n/2);
   for (size_t i = 0; i != n/2; ++i)
     {
       properties[i].name = CORBA::string_dup((props++)->c_str());
