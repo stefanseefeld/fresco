@@ -120,6 +120,10 @@ int main (int argc, char *argv[])
       printf("\n*** 'freetype-config --version' returned %d.%d.%d, but the minimum version\n", $freetype_major_version, $freetype_minor_version, $freetype_micro_version);
       printf("*** of freetype required is %d.%d.%d. If freetype-config is correct, then it is\n", major, minor, micro);
       printf("*** best to upgrade to the required version.\n");
+      printf("***\n");
+      printf("*** NOTE: freetype library numbers are often confusing or misleading!\n");
+      printf("*** The simplest thing to do is to just upgrade to the latest freetype.\n");
+      printf("***\n");
       printf("*** If freetype-config was wrong, set the environment variable FREETYPE_CONFIG\n");
       printf("*** to point to the correct copy of freetype-config, and remove the file\n");
       printf("*** config.cache before re-running configure\n");
