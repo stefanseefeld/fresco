@@ -227,13 +227,18 @@ void SDL::GLPointer::save()
 
   Fresco::PixelCoord x = _position[0] - _origin[0];
   Fresco::PixelCoord y = _max_y_size - _position[1] - _size[1] + _origin[1];
+  int offset = 0;
+  if (y >= _max_y_size) {
+    offset = y - _max_y_size + 1;
+    y = _max_y_size-1;
+  }
   glDisable(GL_BLEND);
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
 
   glReadBuffer(GL_FRONT);
   glReadPixels(x, y,
-	       _size[0], _size[1],
+	       _size[0], _size[1]-offset,
 	       GL_RGB, GL_UNSIGNED_BYTE,
 	       _saved_area);
   glEnable(GL_BLEND);
@@ -248,13 +253,18 @@ void SDL::GLPointer::restore()
 
   Fresco::PixelCoord x = _position[0] - _origin[0];
   Fresco::PixelCoord y = _position[1] + _size[1] - _origin[1];
+  int offset = 0;
+  if (y >= _max_y_size) {
+    offset = y - _max_y_size + 1;
+    y = _max_y_size-1;
+  }
   glDisable(GL_BLEND);
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
 
   glRasterPos2i((int)(x * _scale[0]), (int)(y * _scale[1]));
   glDrawBuffer(GL_FRONT);
-  glDrawPixels(_size[0], _size[1], GL_RGB, GL_UNSIGNED_BYTE, _saved_area); 
+  glDrawPixels(_size[0], _size[1]-offset, GL_RGB, GL_UNSIGNED_BYTE, _saved_area); 
 
   glEnable(GL_BLEND);
   glEnable(GL_ALPHA);
@@ -269,11 +279,16 @@ void SDL::GLPointer::draw()
 
   Fresco::PixelCoord x = _position[0] - _origin[0];
   Fresco::PixelCoord y = _position[1] + _size[1] - _origin[1];
+  int offset = 0;
+  if (y >= _max_y_size) {
+    offset = y - _max_y_size + 1;
+    y = _max_y_size-1;
+  }
   glDisable(GL_SCISSOR_TEST);
 
   glDrawBuffer(GL_FRONT);
   glRasterPos2i((int)(x * _scale[0]), (int)(y * _scale[1]));
-  glDrawPixels(_size[0], _size[1], GL_RGBA, GL_UNSIGNED_BYTE, _cursor); 
+  glDrawPixels(_size[0], _size[1]-offset, GL_RGBA, GL_UNSIGNED_BYTE, _cursor+(offset*_size[0]*4));
 
   glEnable(GL_SCISSOR_TEST);
   glFlush();
