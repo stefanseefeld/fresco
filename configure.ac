@@ -35,6 +35,19 @@ echo "The Fresco Windowing System,
 Copyright (c) 2000 The Fresco Project <devel@fresco.org>
 "
 
+AC_ARG_ENABLE(ggi,
+              AC_HELP_STRING([--enable-ggi],[Configure with ggi support]),
+              [config_ggi="$enableval"],[config_ggi="yes"])
+AC_ARG_ENABLE(sdl,
+              AC_HELP_STRING([--enable-sdl],[Configure with sdl support]),
+              [config_sdl="$enableval"],[config_sdl="yes"])
+AC_ARG_ENABLE(clients-c++,
+              AC_HELP_STRING([--enable-clients-c++],[Configure c++ clients support]),
+              [config_clients_cxx="$enableval"],[config_clients_cxx="yes"])
+AC_ARG_ENABLE(clients-python,
+              AC_HELP_STRING([--enable-clients-py],[Configure python clients support]),
+              [config_clients_py="$enableval"],[config_clients_py="yes"])
+
 if test -d $srcdir/Prague; then
   AC_CONFIG_SUBDIRS(Prague)
 fi
@@ -47,16 +60,16 @@ fi
 if test -d $srcdir/Berlin; then
   AC_CONFIG_SUBDIRS(Berlin)
 fi
-if test -d $srcdir/GGI; then
+if test -d $srcdir/GGI -a ".$config_ggi" = ".yes"; then
   AC_CONFIG_SUBDIRS(GGI)
 fi
-if test -d $srcdir/SDL; then
+if test -d $srcdir/SDL -a ".$config_sdl" = ".yes"; then
   AC_CONFIG_SUBDIRS(SDL)
 fi
-if test -d $srcdir/Clients-C++; then
+if test -d $srcdir/Clients-C++ -a ".$config_clients_cxx" = ".yes"; then
   AC_CONFIG_SUBDIRS(Clients-C++)
 fi
-if test -d $srcdir/Clients-Python; then
+if test -d $srcdir/Clients-Python -a ".$config_clients_py" = ".yes"; then
   AC_CONFIG_SUBDIRS(Clients-Python)
 fi
 if test -d $srcdir/Clients-Java; then

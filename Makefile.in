@@ -19,43 +19,29 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL		:= /bin/sh
+SHELL				:= /bin/sh
 
-srcdir		:= @abs_srcdir@
-builddir	:= @abs_builddir@
+srcdir			:= @abs_srcdir@
+builddir			:= @abs_builddir@
 
-distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
+distdir			:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-mandatory	:= Prague Babylon Fresco Berlin 
-optional	:= GGI SDL Clients-C++ Clients-Python Clients-Java Clients-Perl
+mandatory		:= Prague Babylon Fresco Berlin 
+optional			:= GGI SDL Clients-C++ Clients-Python Clients-Java Clients-Perl
 
-ifneq (,$(filter foo config install, $(MAKECMDGOALS)))
-mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
-optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
-else
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
-endif
-subdirs		:= $(mandatory_dirs) $(optional_dirs)
-
-Makefiles	:= $(patsubst %, %/Makefile, $(subdirs))
+subdirs			:= $(mandatory_dirs) $(optional_dirs)
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
 action	:= all
 
-.FORCE:
-
 .PHONY: all $(subdirs)
-.PHONY: config depend doc install install-doc dist \
+.PHONY: depend doc install install-doc dist \
         clean distclean maintainer-clean
 
-ifeq ($(strip $(subdirs)),)
-all:
-	@echo "please use 'make config' to prepare the build tree first"
-else
 all:	$(subdirs)
-endif
 
 $(mandatory_dirs): %: %/Makefile
 	@echo "making $(action) in $@"
@@ -65,42 +51,14 @@ $(optional_dirs): %: %/Makefile
 	@echo "making $(action) in $@ (optional)"
 	-$(MAKE) -C $@ $(action)
 
-config: $(Makefiles)
-
 depend:
 	$(MAKE) action="depend"
 
 doc:	config
 	$(MAKE) action="doc"
 
-foo:
-	for subdir in GGI; do \
-	  echo "configuring package $$subdir with $(configure_args)";\
-	  (mkdir -p $$subdir && \
-	   cd $$subdir && \
-           $(srcdir)/$$subdir/configure $(configure_args) && \
-	   echo "making install in $$subdir" && \
-	   $(MAKE) install) || \
-           test 1 == `echo "$(optional_dirs)" | grep -c $$subdir -` || \
-	   case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-        done && test -z "$$fail"
-
-
-# this target command needs some explanation:
-# * attempt to configure, build, and install all subdirs
-# * if an optional one fails, skip silently
-# * else bail out
 install:
-	for subdir in $(subdirs); do \
-	  echo "configuring package $$subdir with $(configure_args)";\
-	  (mkdir -p $$subdir && \
-	   cd $$subdir && \
-           $(srcdir)/$$subdir/configure $(configure_args) && \
-	   echo "making install in $$subdir" && \
-	   $(MAKE) install) || \
-           `echo "$(optional_dirs)" | grep -c $$subdir -` || \
-	   case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-        done && test -z "$$fail"
+	$(MAKE) action="install"
 
 install-doc:	config
 	$(MAKE) action="install-doc"
@@ -132,51 +90,3 @@ maintainer-clean:
 	@echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
 	rm -f Makefile config.cache config.log config.status configure
-
-%/Makefile: $(srcdir)/%/Makefile.in
-	@echo configuring package $(@D) with $(configure_args)
-	mkdir -p $(@D)
-	-(cd $(@D); $(srcdir)/$(@D)/configure $(configure_args))
-	-$(MAKE) -C $(@D) config
-
-ifneq ($(findstring Prague, $(subdirs)),)
-Prague	:= --with-Prague-prefix=$(builddir)/Prague
-
-Babylon/Makefile:	Prague/Makefile
-Berlin/Makefile:	Prague/Makefile
-Clients-C++/Makefile:	Prague/Makefile
-endif
-ifneq ($(findstring Babylon, $(subdirs)),)
-Babylon	:= --with-Babylon-prefix=$(builddir)/Babylon
-
-Fresco/Makefile:		Babylon/Makefile
-Berlin/Makefile:		Babylon/Makefile
-Clients-C++/Makefile:	Babylon/Makefile
-endif
-ifneq ($(findstring Fresco, $(subdirs)),)
-Fresco	:= --with-Fresco-prefix=$(builddir)/Fresco
-
-Berlin/Makefile:		Fresco/Makefile
-Clients-C++/Makefile:	Fresco/Makefile
-Clients-Python/Makefile:	Fresco/Makefile
-Clients-Perl/Makefile:	Fresco/Makefile
-endif
-ifneq ($(findstring Berlin, $(subdirs)),)
-Berlin	:= --with-Berlin-prefix=$(builddir)/Berlin
-
-GGI/Makefile:		Berlin/Makefile
-SDL/Makefile:		Berlin/Makefile
-Clients-C++:	Berlin #this has to go !
-endif
-
-Babylon/Makefile: override configure_args	+= $(Prague)
-Fresco/Makefile: override configure_args	+= $(Prague) $(Babylon)
-Berlin/Makefile: override configure_args	+= $(Prague) $(Babylon) $(Fresco)
-GGI/Makefile: override configure_args		+= $(Prague) $(Fresco) $(Berlin)
-SDL/Makefile: override configure_args		+= $(Prague) $(Fresco) $(Berlin)
-Clients-C++/Makefile: override configure_args	+= $(Prague) $(Babylon) $(Fresco) $(Berlin)
-Clients-Python/Makefile: override configure_args+= $(Fresco)
-
-ifneq (,$(findstring config, $(MAKECMDGOALS)))
-%/Makefile: .FORCE
-endif
