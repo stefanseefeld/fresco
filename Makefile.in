@@ -36,7 +36,7 @@ optional	:= GGI SDL \
 testbase_dir	:= $(shell test -d Fresco-Test && echo 'Fresco-Test')
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
-subdirs		:= $(mandatory_dirs) $(optional_dirs)
+subdirs		:= $(testbase_dir) $(mandatory_dirs) $(optional_dirs)
 sxrdirs		:= Prague Babylon Berlin
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
@@ -53,7 +53,7 @@ $(mandatory_dirs): %: %/Makefile
 	@echo "making $(action) in $@"
 	$(MAKE) -C $@ $(action)
 
-$(optional_dirs): %: %/Makefile
+$(optional_dirs) $(testbase_dir): %: %/Makefile
 	@echo "making $(action) in $@ (optional)"
 	-$(MAKE) -C $@ $(action)
 
