@@ -48,7 +48,7 @@ DVIPS       =
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../../../NORM/include -pthread
 CXXFLAGS   	= -Wall -D__x86__ -I../../../../NORM/include -I../../../include -pthread
-LDFLAGS    	= -L../../../../NORM/lib -lPrague -lBabylon
+LDFLAGS    	= -L../../../../build/lib -lPrague -lBabylon
 OPTFLAGS	= -O3
 SOFLAGS		= -fpic
 GDBFLAGS	= -ggdb -DGDB
@@ -64,7 +64,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -lBabylon -ldl -lpthread
 
-ALL             = UnicodeData Blocks Uni_perf
+ALL             = UnicodeData Blocks
 
 world:		$(ALL)
 
