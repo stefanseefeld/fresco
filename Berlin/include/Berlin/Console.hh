@@ -63,13 +63,20 @@ public:
   {
   public:
     virtual ~Loader() {}
-    virtual Console *load(int &, char **) = 0;
+    virtual Console *load(int &, char **, 
+                          Fresco::PixelCoord, Fresco::PixelCoord) = 0;
+
   };
   template <typename T>
   class LoaderT : public Loader
   {
   public:
-    virtual T *load(int &argc, char **argv) { return new T(argc, argv);}
+    virtual T *load(int &argc, char **argv, 
+                    Fresco::PixelCoord x, Fresco::PixelCoord y)
+    { 
+      return new T(argc, argv, x, y);
+    }
+
   };
 
 
@@ -77,7 +84,9 @@ public:
   //. of the server (argc and argv), checks them for any console-related options and
   //. afterwards passes them on to the graphic's library. Finally you need to pass
   //. the POA to this method.
-  static int open(const std::string &, int argc, char **argv, PortableServer::POA_ptr)
+  static int open(const std::string &, int argc, char **argv, 
+                  PortableServer::POA_ptr, 
+                  Fresco::PixelCoord x, Fresco::PixelCoord y)
     throw(std::runtime_error);
 
   //. Get the active instance of the Console.

@@ -102,9 +102,9 @@ public:
 class Console : public ::Console
 {
 public:
-  Console(int &, char **);
-
+  Console(int &, char **, Fresco::PixelCoord, Fresco::PixelCoord);
   virtual ~Console();
+
   static Console *instance() { return static_cast<SDL::Console *>(Console::instance());}
 
   // Create:
@@ -155,6 +155,7 @@ private:
 
   int                 _wakeupPipe[2];
   long                _position[2];
+  Fresco::PixelCoord  _size[2];
 
 #ifdef RMDEBUG
   SDL_Surface       * _backup;

@@ -50,7 +50,10 @@ Console::Reaper::~Reaper()
   delete plugin;
 }
 
-int Console::open(const std::string &console, int argc, char **argv, PortableServer::POA_ptr poa)
+int Console::open(const std::string &console, int argc, char **argv, 
+                  PortableServer::POA_ptr poa, 
+                  Fresco::PixelCoord x, Fresco::PixelCoord y)
+
   throw(std::runtime_error)
 {
   Prague::Path path = RCManager::get_path("modulepath");
@@ -75,6 +78,7 @@ int Console::open(const std::string &console, int argc, char **argv, PortableSer
 	     j != directory.end() && !plugin;
 	     ++j)
 	  try { plugin = new Plugin<Console::Loader>((*j)->long_name());}
+
 	  catch (const std::runtime_error &e)
 	    { 
 	      Logger::log(Logger::loader) << (*j)->name() << " not loadable "
@@ -83,7 +87,7 @@ int Console::open(const std::string &console, int argc, char **argv, PortableSer
 	    }
       }
   if (!plugin) throw std::runtime_error("No console found in modulepath.");
-  _console = (*plugin)->load(argc, argv);
+  _console = (*plugin)->load(argc, argv, x, y);
   _console->_poa = PortableServer::POA::_duplicate(poa);
   return argc;
 }

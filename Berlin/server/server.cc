@@ -184,6 +184,7 @@ int main(int argc, char **argv) /*FOLD00*/
   getopt.add('e', "execute", GetOpt::mandatory,
 	     "the command to execute upon startup");
   getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
+  getopt.add('s', "pixels", GetOpt::mandatory, "number of pixels (eg. '640x480')");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
@@ -233,10 +234,10 @@ int main(int argc, char **argv) /*FOLD00*/
   }
   value = "";
   
-  // Find our resorce file:
+  // Find our resource file:
   if (getopt.get("resource", &value))
   {
-      // Load resorcefile given on the commandline:
+      // Load resourcefile given on the commandline:
       try
       {
 	  value = Prague::Path::expand_user(value);
@@ -373,14 +374,40 @@ int main(int argc, char **argv) /*FOLD00*/
        // Open the Console
        // ---------------------------------------------------------------
       
+       std::string pixels;
+       Fresco::PixelCoord x_pixels(640), y_pixels(480);
+       if (getopt.is_set("pixels")) 
+       {
+	 getopt.get("pixels",&pixels);
+	 unsigned x_position = pixels.find("x");
+	 bool invalid_format = false;
+	 if (x_position == std::string::npos) invalid_format = true;
+	 else
+	 {
+	   stringstream s(pixels.substr(0,x_position));
+	   s >> x_pixels;
+	   stringstream t(pixels.substr(x_position+1,pixels.size()));
+	   t >> y_pixels;
+	 }
+	 if ((x_pixels <= 0) || (y_pixels <= 0)) invalid_format = true;
+	 if (invalid_format)
+	 {
+	   std::cerr << "ERROR: Format of 'pixels' option should be:\n"
+		     << " --pixels 800x600, with 800 and 600 replaced\n"
+		     << "by the desired x and y values"
+		     << endl;
+	   exit(1);
+	 }
+       }
+       
        value = "";
        getopt.get("console", &value);
-       try { Console::open(value, argc, argv, poa); }
+       try { Console::open(value, argc, argv, poa, x_pixels, y_pixels); }
        catch (const std::runtime_error &e)
        {
-           std::cerr << "ERROR: Failed to open the Console \"" << value
-		     << "\": " << e.what() << std::endl;
-	   exit(2);
+	 std::cerr << "ERROR: Failed to open the Console \"" << value
+		   << "\": " << e.what() << std::endl;
+	 exit(2);
        }
        
        Logger::log(Logger::console) << "Console is initialized." << std::endl;

@@ -45,8 +45,9 @@ class Console : public ::Console
   typedef std::vector<Drawable *> dlist_t;
   typedef std::vector<Prague::Plugin<Extension> *> elist_t;
 public:
-  Console(int &, char **);
+  Console(int &, char **, Fresco::PixelCoord, Fresco::PixelCoord);
   virtual ~Console();
+
   virtual Pointer *pointer(Fresco::Raster_ptr);
   virtual Drawable *drawable();
   virtual Drawable *create_drawable(Fresco::PixelCoord, Fresco::PixelCoord,

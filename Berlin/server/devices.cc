@@ -58,7 +58,8 @@ int main(int argc, char **argv)
 
   value = "";
   getopt.get("console",&value);
-  try { Console::open(value, argc, argv, PortableServer::POA::_nil());}
+  try { Console::open(value, argc, argv, PortableServer::POA::_nil(), 1, 1);}
+
   catch (const std::exception &e)
     {
       std::cerr << "Exception: " << e.what() << std::endl;

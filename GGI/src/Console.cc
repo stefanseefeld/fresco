@@ -88,11 +88,12 @@ void write_event(ggi_event &e)
 }
 };
 
-GGI::Console::Console(int &argc, char **argv)
+GGI::Console::Console(int &argc, char **argv, 
+                      Fresco::PixelCoord x, Fresco::PixelCoord y)
   : _autoplay(false)
 {
   ggiInit();
-  GGI::Drawable *drawable = new GGI::Drawable(0);
+  GGI::Drawable *drawable = new GGI::Drawable(0, x, y);
   _visual = drawable->_visual;
 #ifdef RMDEBUG
    // make a fullscreen backup visual

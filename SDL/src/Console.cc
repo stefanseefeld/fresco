@@ -102,7 +102,10 @@ namespace
 // class SDL::Console (implementation)
 // ---------------------------------------------------------------
 
-SDL::Console::Console(int &argc, char **argv) :
+SDL::Console::Console(int &argc, char **argv,
+		      Fresco::PixelCoord x, Fresco::PixelCoord y)
+  :
+
 #ifdef RMDEBUG
   _backup(0),
 #endif
@@ -111,6 +114,9 @@ SDL::Console::Console(int &argc, char **argv) :
   _pointer_mgr(new PointerManagerT<nonGLPointer>),
   _expose(0)
 {
+  _size[0] = x;
+  _size[1] = y;
+
   Prague::Trace trace("SDL::Console::Console");
   Logger::log(Logger::loader) << "trying to open SDL console" << std::endl;
 
@@ -144,7 +150,7 @@ Console::Drawable *SDL::Console::drawable()
   Prague::Trace trace("SDL::Console::drawable");
 
   if (_drawables.empty())
-    _drawables.push_back(new SDL::Drawable(0));
+    _drawables.push_back(new SDL::Drawable(0, _size[0], _size[1]));
   
   return _drawables.front();
 }
