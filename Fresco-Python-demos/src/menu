@@ -9,7 +9,7 @@
 # state-heavy guis, rather than berlin's lightweight graphic model.
 # Disclaimer: This is just an experiment :)
 
-import sys, string
+import sys, string, os
 from omniORB import CORBA
 
 # Import Berlin module
@@ -17,7 +17,7 @@ import berlin
 from berlin import Label, Callback, nullAny
 
 # Import the Warsaw stubs
-import Warsaw, Unidraw
+import Warsaw, Unidraw, Layout
 import Warsaw__POA
 
 # Import Python client lib
@@ -223,7 +223,7 @@ class MenuBar(Menu):
 	# Create menu
 	self.box = kits.layout.hbox()
 
-	self.hspace = kits.layout.hspace(20.)
+	self.hspace = kits.layout.hspace(80.)
 	map(self._add_item, self.items)
 	
 	spacer_box = kits.layout.hbox()
@@ -263,6 +263,18 @@ class About:
     def cb_show(self, any):
 	self._mapper_show.execute(any)
 
+class RunApp(Warsaw__POA.Command):
+    """Small wrapper command which calls a python function with a single
+    argument which is the Any."""
+    def __init__(self, command, *args):
+	self.command = command
+	self.args = args
+    def execute(self, any):
+	print "Running",self.command, self.args
+	if os.fork() == 0:
+	    os.execv(self.command, self.args)
+	    print "Failed"
+
 class MenuApp (berlin.App):
     def run(self):
 	def add(menu, items): 
@@ -271,7 +283,7 @@ class MenuApp (berlin.App):
 	    return menu
 	kit = MenuKit()
 	menu = add(kit.menu_bar(), [
-	    kit.menu_item_sub('File', add(kit.menu(), [
+	    kit.menu_item_sub('Test', add(kit.menu(), [
 		kit.menu_item_sub('New', add(kit.menu(), [
 		    kit.menu_item('One', None),
 		    kit.menu_item('Two', None),
@@ -286,6 +298,17 @@ class MenuApp (berlin.App):
 		kit.menu_item('Close', None),
 		kit.menu_item('Quit', Callback(self.exit)),
 	    ])),
+	    kit.menu_item_sub('Clients', add(kit.menu(), [
+		kit.menu_item_sub('C++', add(kit.menu(), [
+		    kit.menu_item('demo', RunApp('../../build/bin/demo')),
+		    kit.menu_item('canvas', RunApp('../../build/bin/canvas','','-r','ggi-dots')),
+		])),
+		kit.menu_item_sub('Python', add(kit.menu(), [
+		    kit.menu_item('demo', RunApp('demo.py')),
+		    kit.menu_item('transform', RunApp('transform.py')),
+		    kit.menu_item('clock', RunApp('graphictest')),
+		])),
+	    ])),
 	    kit.menu_item_sub('Help', add(kit.menu(), [
 		kit.menu_item('Contents', None),
 		kit.menu_item('About', Callback(About().cb_show)),
@@ -294,7 +317,11 @@ class MenuApp (berlin.App):
 
 	vbox = kits.layout.vbox()
 	vbox.append_graphic(menu._this())
-	vbox.append_graphic(kits.layout.fixed_size(None,6400.,4800.))
+	contents = kits.figure.pixmap(kits.image.create("marble.png"))
+	grid = kits.layout.fixed_grid(Layout.Grid.Index(5,4))
+	for i in range(5*4):
+	    grid.append_graphic(contents)
+	vbox.append_graphic(kits.layout.fixed_size(grid,6400.,4800.))
 
 	self.window = kits.desktop.shell(kits.tool.group(vbox))
 	pos = self.window._get_position()
