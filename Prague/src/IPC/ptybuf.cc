@@ -23,6 +23,7 @@
  * MA 02139, USA.
  */
 #include <Prague/IPC/ptybuf.hh>
+#include <Prague/config.hh>
 #include <cerrno>
 #include <sstream>
 #include <iostream>
@@ -57,16 +58,13 @@ inline void throw_runtime_error(const std::string s) throw(std::runtime_error)
     throw std::runtime_error(s + ": " + strerror(errno));
 }
 
-//inline char ctrl(char c) { return c & 0x1f;}
-
 ptybuf::ptybuf() :
   ipcbuf(std::ios::in | std::ios::out)
 { }
 
 ptybuf::~ptybuf()
 {
-    if (my_tty != -1)
-        close(my_tty);
+    if (my_tty != -1) close(my_tty);
 }
 
 std::streamsize ptybuf::sys_read(char *buf, std::streamsize len) throw(std::runtime_error)
