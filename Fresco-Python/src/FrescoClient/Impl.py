@@ -156,6 +156,193 @@ class PyRegion (Warsaw__POA.Region):
 	v0.y = math.max(v0.y, v.y)
 	v0.z = math.max(v0.z, v.z)
 
+class PyTransform (Warsaw__POA.Transform):
+    """Transform impl.
+            [ r00 r01 r02 tx]
+        M = [ r10 r11 r12 ty]
+            [ r20 r21 r22 tz]
+            [ 0   0   0   1 ]
+    """
+    def __init__(self):
+	self.__dirty = 0
+	self.__identity =  1
+	self.__translation = 1 
+	self.__xy = 1
+	self.__matrix = [[0.]*4]*4
+	self.init()
+    def __getitem__(self, ix): return self.__matrix[ix]
+    def init(self):
+	for x in range(4):
+	    self[x][x] = 1.
+	    for y in range(4):
+		if y != x: 
+		    self[x][y] = 0.
+	self.__identity = 1
+	self.__translation = 1
+	self.__xy = 1
+	self.__dirty = 0
+    def recompute(self):
+	self.__translation = (
+	    math.abs(self[0][0] - 1.) < 1e4 and \
+	    math.abs(self[1][1] - 1.) < 1e4 and \
+	    math.abs(self[2][2] - 1.) < 1e4 and \
+	    math.abs(self[0][1]) < 1e4 and \
+	    math.abs(self[1][0]) < 1e4 and \
+	    math.abs(self[0][2]) < 1e4 and \
+	    math.abs(self[2][0]) < 1e4 and \
+	    math.abs(self[1][2]) < 1e4 and \
+	    math.abs(self[2][1]) < 1e4)
+	self.__xy = (self.__translation or (
+	    math.abs(self[2][2] - 1.) < 1e4 and \
+	    math.abs(self[0][2]) < 1e4 and \
+	    math.abs(self[2][0]) < 1e4 and \
+	    math.abs(self[1][2]) < 1e4 and \
+	    math.abs(self[2][1]) < 1e4)) and \
+	    math.abs(self[2][3]) < 1e4
+	self.__identity = self.__translation and \
+	    math.abs(self[0][3]) < 1e4 and \
+	    math.abs(self[1][3]) < 1e4 and \
+	    math.abs(self[2][3]) < 1e4
+	self.__dirty = 0
+    def det(self):
+	sum =       self[0][0] * self[1][1] * self[2][2]
+	sum = sum + self[0][1] * self[1][2] * self[2][0]
+	sum = sum + self[0][2] * self[1][0] * self[2][1]
+	sum = sum - self[0][2] * self[1][1] * self[2][0]
+	sum = sum - self[0][1] * self[1][0] * self[2][2]
+	sum = sum - self[0][0] * self[1][2] * self[2][1]
+	return sum
+    def copy(self, transform):
+	if not transform: self.init()
+	else: self.load_matrix(transform.store_matrix(self.__matrix))
+    def load_identity(self): self.init()
+    def load_matrix(self, matrix):
+	for x in range(3):
+	    for y in range(4):
+		self[i][j] = matrix[i][j]
+	self[3][0] = self[3][1] = self[3][2] = 0.
+	self[3][3] = 1.
+	self.modified()
+    def store_matrix(self): # --> Matrix
+	return map(list, self.__matrix)
+    def equal(self, transform): # --> bool
+	if self.__dirty: self.recompute()
+	if transform is None: return false
+	if self.__identity != transform.identity(): return false
+	m = transform.store_matrix()
+	for x in range(3):
+	    for y in range(4):
+		if self[x][y] != m[x][y]: return false
+	return true
+    def identity(self): # --> bool
+	if self.__dirty: self.recompute()
+	return self.__identity
+    def translation(self): # --> bool
+	if self.__dirty: self.recompute()
+	return self.__translation
+    def det_is_zero(self): # --> bool
+	if self.__dirty: self.recompute()
+	return math.abs(self.det()) < 1e4
+    def scale(self, vertex):
+	self[0][0] = self[0][0] * vertex.x
+	self[0][1] = self[0][1] * vertex.x
+	self[0][2] = self[0][2] * vertex.x
+	self[1][0] = self[1][0] * vertex.y
+	self[1][1] = self[1][1] * vertex.y
+	self[1][2] = self[1][2] * vertex.y
+	self[2][0] = self[2][0] * vertex.z
+	self[2][1] = self[2][1] * vertex.z
+	self[2][2] = self[2][2] * vertex.z
+	self.modified()
+    def rotate(self, angle, axis):
+	r_angle = ange * math.pi / 180
+	c = math.cos(r_angle)
+	s = math.sin(r_angle)
+	mi, mj = [0.]*4, [0.]*4
+	i, j = 0, 1
+	if axis == Warsaw.xaxis: i = 2
+	elif axis == Warsaw.yaxis: j = 2
+	for y in range(4):
+	    mi[y], mj[i] = self[i][y], self[j][y]
+	for y in range(4):
+	    self[i][y] = c * mi[y] - s * mj[y]
+	    self[j][y] = s * mi[y] + c * mj[y]
+	self.modified()
+    def translate(self, vertex):
+	self[0][3] = self[0][3] + vertex.x
+	self[1][3] = self[1][3] + vertex.y
+	self[2][3] = self[2][3] + vertex.z
+	self.modified()
+    def premultiple(self, transform):
+	if not transform or transform.identity(): return
+	m = transform.store_matrix()
+	if self.__identity:
+	    self.load_matrix(m)
+	    return
+	for i in range(3):
+	    mi = list(self[i])
+	    for j in range(4):
+		self[i][j] = mi[0]*m[0][j] + mi[1]*m[1][j] + mi[2]*m[2][j] + mi[3]*m[3][j]
+	self.modified()
+    def postmultiple(self, transform):
+	if not transform or transform.identity(): return
+	m = transform.store_matrix()
+	if self.__identity:
+	    self.load_matrix(m)
+	    return
+	for j in range(4):
+	    mj = (self[0][j], self[1][j], self[2][j])
+	    for i in range(3):
+		self[i][j] = mj[0]*m[i][0] + mj[1]*m[i][1] + mj[2]*m[i][2]
+	self.modified()
+    def invert(self):
+	if self.__dirty: self.recompute()
+	if self.__translation:
+	    self[0][3] = -self[0][3]
+	    self[1][3] = -self[1][3]
+	    self[2][3] = -self[2][3]
+	    self.modifed()
+	    return
+	d = self.det()
+	if math.abs(d) < 1e4: return
+	m = map(list, self.__matrix[0:3]) + [0., 0., 0., 1.]
+	self[0][0] =  (m[1][1] * m[2][2] - m[1][2] * m[2][1]) / d
+	self[0][1] = -(m[0][1] * m[2][2] - m[0][2] * m[2][1]) / d
+	self[0][2] =  (m[0][1] * m[1][2] - m[0][2] * m[1][1]) / d
+	self[1][0] = -(m[1][0] * m[2][2] - m[1][2] * m[2][0]) / d
+	self[1][1] =  (m[0][0] * m[2][2] - m[0][2] * m[2][0]) / d
+	self[1][2] = -(m[0][0] * m[1][2] - m[0][2] * m[1][0]) / d
+	self[2][0] =  (m[1][0] * m[2][1] - m[1][1] * m[2][0]) / d
+	self[2][1] = -(m[0][0] * m[2][1] - m[0][1] * m[2][0]) / d
+	self[2][2] =  (m[0][0] * m[1][1] - m[0][1] * m[1][0]) / d
+	self[0][3] = - (m[0][3] * self[0][0] + m[1][3] * self[0][1] + m[2][3] * self[0][2])
+	self[1][3] = - (m[0][3] * self[1][0] + m[1][3] * self[1][1] + m[2][3] * self[1][2])
+	self[2][3] = - (m[0][3] * self[2][0] + m[1][3] * self[2][1] + m[2][3] * self[2][2])
+	self.modified()
+    def transform_vertex(self, vertex): # --> Vertex
+	tx, ty, tz = vertex.x, vertex.y, vertex.z
+	nx = self[0][0] * tx + self[0][1] * ty + self[0][2] * tz + self[0][3]
+	ny = self[1][0] * tx + self[1][1] * ty + self[1][2] * tz + self[1][3]
+	nz = self[2][0] * tx + self[2][1] * ty + self[2][2] * tz + self[2][3]
+	return Warsaw.Vertex(nx, ny, nz)
+    def inverse_transform_vertex(self, vertex): # --> Vertex
+	d = self.det()
+	if math.abs(d) < 1e4: return Warsaw.Vertex(0,0,0)
+	tmp = Warsaw.Vertex(vertex.x, vertex.y, vertex.z)
+	tmp.x = tmp.x - self[0][3];
+	tmp.y = tmp.y - self[1][3];
+	tmp.z = tmp.z - self[2][3];
+	v.x = ((self[1][1] * self[2][2] - self[1][2] * self[2][1]) * tmp.x -
+	     (self[0][1] * self[2][2] - self[0][2] * self[2][1]) * tmp.y +
+	     (self[0][1] * self[1][2] - self[0][2] * self[1][1]) * tmp.z) / d
+	v.y = (-(self[1][0] * self[2][2] - self[1][2] * self[2][0]) * tmp.x +
+	     (self[0][0] * self[2][2] - self[0][2] * self[2][0]) * tmp.y -
+	     (self[0][0] * self[1][2] - self[0][2] * self[1][0])) / d
+	v.z = ((self[1][0] * self[2][1] - self[1][1] * self[2][0]) -
+	     (self[0][0] * self[2][1] - self[0][1] * self[2][0]) +
+	     (self[0][0] * self[1][1] - self[0][1] * self[1][0])) / d
+	return v
+
 class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
     def __init__(self):
 	PyRefCountBase.__init__(self)
@@ -308,11 +495,18 @@ class PyMonoGraphic (PyGraphic):
 	    self.__child.peer.request()
     def extension(self, info, region):
 	if not self.__child.peer: return
-	# the C++ code creates a new info struct
-	# it also calls 'allocate(0, i)'
-	# TODO: find if this is necessary
-	#self.__child.peer.extension
-# This is where I ran out of time. More updates soon :)	
+	my_region = PyRegion()
+	my_region.copy(info.allocation)
+	my_trans = PyTransform()
+	my_trans.copy(info.transformation)
+	my_info = Warsaw.Allocation.Info(my_region._this(), my_trans._this(), None)
+	self.allocate(0, my_info) # Template method to modify as per the concrete Graphic type (eg layout decorators etc)
+	self.__child.peer.extension(my_info, region)
+    def shape(self, region):
+	if self.__child.peer: self.__child.peer.shape(region)
+    def traverse(self, traversal):
+	if not self.__child.peer: return
+	traveral.traverse_child(self.__child.peer, 0, None, None)
 	    
 
 
