@@ -131,6 +131,8 @@ class FindTestsVisitor(AST.Visitor):
             return
         if node.realname()[-1] in ignore_methods:
             return
+        if node.accessibility() != AST.PUBLIC:
+            return
         method = ParsedTestMethod(node.realname()[-1],
                                   node.realname()[-1],
                                   "Description goes here")
