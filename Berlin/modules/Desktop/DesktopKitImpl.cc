@@ -77,7 +77,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
   activate(window);
   Window_var wptr = window->_this();
 
-  RefCount_var<Graphic> vbox = _layout->vbox();
+  Graphic_var vbox = _layout->vbox();
   RefCount_var<Graphic> hbox = _layout->hbox();
   Graphic_var down = _layout->vbox();
 
@@ -103,14 +103,14 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
   Raster_var raster = _image->create("exit.png");
   Image_var exitgraphic = _figure->pixmap(raster);
   Trigger_var exitbutton = _widget->button(exitgraphic, _exit);
+
   raster = _image->create("shade.png");
-  // Take out the shader for now, as it doesn't work yet.
-  //Image_var shadergraphic = _figure->pixmap(raster);
-  //Command_var shade = shader(wptr, down);
-  //Trigger_var shaderbutton = _widget->button(shadergraphic, shade);
+  Image_var shadergraphic = _figure->pixmap(raster);
+  Command_var shade = shader(wptr, vbox, down);
+  Trigger_var shaderbutton = _widget->button(shadergraphic, shade);
 
   RefCount_var<Graphic> tbbuttons = _layout->hbox();
-  //  tbbuttons->append_graphic(shaderbutton);
+  tbbuttons->append_graphic(shaderbutton);
   tbbuttons->append_graphic(RefCount_var<Graphic>(_layout->hspace(20.)));
   tbbuttons->append_graphic(exitbutton);
 
@@ -332,17 +332,13 @@ Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window, CORBA::Boolean flag)
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::shader(Fresco::Window_ptr window, Fresco::Graphic_var to_shade)
+Command_ptr DesktopKitImpl::shader(Fresco::Window_ptr window,
+				   Fresco::Graphic_var container,
+				   Fresco::Graphic_var to_shade)
 {
   Manipulator *manipulator;
-  if (CORBA::is_nil(to_shade)) {
-    std::cout << "1" << std::endl;
-  } else {
-    if (CORBA::is_nil(to_shade->body())) {
-      std::cout << "2" << std::endl;
-    }
-  }
-  manipulator = new Shader(window, to_shade);
+
+  manipulator = new Shader(window, container, to_shade);
   activate(manipulator);
   return manipulator->_this();
 }

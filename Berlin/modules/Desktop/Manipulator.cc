@@ -164,25 +164,14 @@ void Relayerer::execute(const CORBA::Any &any)
 void Mapper::execute(const CORBA::Any &) { window->mapped(true);}
 void Unmapper::execute(const CORBA::Any &) { window->mapped(false);}
 
-Shader::Shader(Window_ptr window, Graphic_var _shade)
-  : Manipulator(window), is_shaded(false), swap(Fresco::Graphic::_nil()),
-  to_shade(_shade) {}
+Shader::Shader(Window_ptr window, Graphic_var c, Graphic_var s)
+  : Manipulator(window), is_shaded(false), container(c), to_shade(s)
+{}
 
 void Shader::execute(const CORBA::Any &any) {
-  if (CORBA::is_nil(swap)) {
-    std::cout << "case a" << std::endl;
-    if (CORBA::is_nil(to_shade)) {
-      std::cout << "X" << std::endl;
-    } else {
-      if (CORBA::is_nil(to_shade->body())) {
-	std::cout << "Y" << std::endl;
-      }
-    }
-    swap->body(to_shade->body());
-    //to_shade->body(Fresco::Graphic::_nil());
-  } else {
-    std::cout << "case b" << std::endl;
-    //to_shade->body(swap);
-    swap->body(Fresco::Graphic::_nil());
-  }
+  if (!is_shaded)
+    container->last_child_graphic()->remove();
+  else
+    container->append_graphic(to_shade);
+  is_shaded = !is_shaded;
 }
