@@ -30,9 +30,9 @@
 #include "Berlin/ServerContextImpl.hh"
 #include "Berlin/Debug.hh"
 
-ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Graphic_ptr g) {
+ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g) {
   myFactoryFinder = FactoryFinderImpl::getInstance(factory);
-  mySceneRoot = g;
+  mySceneRoot = Stage::_duplicate(g);
 }
 
 // this needs to be fleshed out :)
@@ -42,9 +42,7 @@ bool ServerContextManagerImpl::verify() {return true;};
 ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c) 
 throw (SecurityException) {
     myMutex.lock();
-    ServerContextImpl *temp = 
-	new ServerContextImpl(myFactoryFinder->_this(), c, 
-			      Graphic::_duplicate(mySceneRoot));
+    ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, mySceneRoot);
     temp->_obj_is_ready(this->_boa());
     allocatedServerContexts.push_back(temp->_this());
     myMutex.unlock();

@@ -28,6 +28,7 @@
 #define _DebugGraphic_hh
 
 #include <Berlin/MonoGraphic.hh>
+#include <string>
 
 class DebugGraphic : public MonoGraphic
 {

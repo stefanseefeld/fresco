@@ -156,6 +156,8 @@ private:
   RegionImpl *bbregion;
   bool need_redraw : 1;
   bool need_resize : 1;
+  typedef omni_mutex_lock Guard;
+  omni_mutex myMutex;
 };
 
 #endif

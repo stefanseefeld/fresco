@@ -26,8 +26,8 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Cloneable.hh"
-#include "Warsaw/ClientContext.hh"
-#include "Warsaw/Graphic.hh"
+#include "Warsaw/ServerContext.hh"
+#include "Warsaw/Stage.hh"
 #include <vector>
 #include <string>
 #include <map>
@@ -37,13 +37,13 @@ class GenericFactory_impl;
 class ServerContextImpl : implements(ServerContext) {
 
 public:  
-  ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr client, Graphic_ptr root);
+  ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr client, Stage_ptr root);
   bool verify();
 
   // stuff declared in IDL, that the client will access
   ClientContext_ptr myClient();
   CosLifeCycle::FactoryFinder_ptr myFactoryFinder();
-  Graphic_ptr sceneRoot();
+  Stage_ptr sceneRoot();
   
   CORBA::Object_ptr create(const char *interfaceName) 
       throw (SecurityException, CreationFailureException);
@@ -68,7 +68,7 @@ protected:
   // things which all sessions share access to
   static map<string, CosLifeCycle::LifeCycleObject_var> singletons;
   static omni_mutex singletons_mutex;
-  static Graphic_var ourSceneRoot;
+  static Stage_var ourSceneRoot;
 };
 
 #endif

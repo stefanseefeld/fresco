@@ -25,7 +25,6 @@
 //
 
 #include "Warsaw/Cloneable.hh"
-#include "Berlin/ServerContextImpl.hh"
 
 // cloneable is a subclass of LifeCycleObject with some handy methods
 // tacked on the side, a "copyStateToOther" pure virtual it forces
@@ -35,8 +34,7 @@
 // replaced some day in the future when we know more.
 
 
-class CloneableImpl : public virtual _lc_sk_Cloneable, 
-		       public virtual omniLC::_threadControl
+class CloneableImpl : implements(Cloneable), public virtual omniLC::_threadControl
 {
 public: 
   virtual CosLifeCycle::LifeCycleObject_ptr copy ( CosLifeCycle::FactoryFinder_ptr  there, 

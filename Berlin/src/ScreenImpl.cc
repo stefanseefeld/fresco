@@ -49,54 +49,5 @@ ScreenImpl::~ScreenImpl()
   delete manager;
 }
 
-void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr allocation)
-{
-  allocation->add(region->_this(), damage->_this());
-  long l = findChild(g);
-  long last = allocation->size() - 1;
-  allocateChild(l, *allocation->get(last));
-}
-
-void ScreenImpl::allocateChild(long i, Allocation::Info &a)
-{
-  long n = numChildren();
-  Graphic::Requisition *r = childrenRequests();
-  Graphic::Requisition &requisition = r[i];
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
-  region->valid = true;
-  region->lower.x = region->lower.y = 0;
-  region->upper.x = requisition.x.natural;
-  region->xalign = requisition.x.align;
-  region->upper.y = requisition.y.natural;
-  region->yalign = requisition.y.align;
-  a.allocation->copy(region->_this());
-  region->_dispose();
-  pool.deallocate(r);
-}
-
 Coord ScreenImpl::width() { return region->upper.x;}
 Coord ScreenImpl::height() { return region->upper.y;}
-
-/*
- * this is a hack !!
- * Screen should be a Stage or be a MonoGraphic who's body is a Stage.   -stefan
- */
-void ScreenImpl::traverse(Traversal_ptr t)
-{
-  long n = numChildren();
-  Graphic::Requisition *r = childrenRequests();
-  RegionImpl *result = new RegionImpl;
-  result->_obj_is_ready(_boa());
-  result->valid = true;
-  result->lower.x = result->lower.y = result->lower.z = 0.;
-  for (long i = 0; i < n; i++)
-    {
-      result->upper.x = r[i].x.natural;
-      result->upper.y = r[i].y.natural;
-      result->upper.z = r[i].z.natural;
-      t->traverseChild(children[i], result->_this(), Transform::_nil());
-    }
-  result->_dispose();
-  pool.deallocate(r);
-}

@@ -1,172 +1,311 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
- * MA 02139, USA.
- -P*/
-static char *rcsid = "$Id$";
+#include <iostream>
 
-#include "OffiX/Base/Magic.h"
-#include <fstream.h>
+static char quote = '\'';
 
-class Magic::Number : public Magic::Signum
+string Magic::nextline(istream &is)
 {
-public:
-protected:
-  long number;
-};
-
-class Magic::String : public Magic::Signum
-{
-public:
-protected:
-  const char *string;
-};
-
-class Magic::Expression : public Magic::Signum
-{
-public:
-protected:
-  Regex regex;
-};
-
-Magic::Magic(const char *filename)
-{
-  ifstream ifs (filename);
-  int hsiz;
-  
-  if(!hdrbuf)
+  string line;
+  int c = 0;
+  bool quoting = false;
+  bool commenting = false;
+  linenum++;
+  while(is)
     {
-      hdrbuf = (char *) malloc(maxhdr + 1);
-      hdrbufsiz = maxhdr;
-    }
-  
-  if(!ifs) return;
-  while(ifs.getline(linebuf, MAXLIN))
-    {
-      char *cptr, *sptr;
-      int cnt = 0;
-      int l;
-      l = strlen(linebuf);
-      while(l < MAXLIN && linebuf[--l] == '\n' && linebuf[--l] == '\\')
-	if(!ifs.getline(linebuf + l, MAXLIN - l)) break;
-	else l = strlen(linebuf);
-      
-      cptr = linebuf;
-      if(cptr[0] == '>')	/* Sub-type */
+      c = is.get();
+      if (!is) return line;
+      if (c == '\n') break;
+      if (commenting) continue;
+      if ((c == '#') && ! quoting)
 	{
-	  cptr++;
-	  mtypes[top].subtypes++;
+	  commenting = true;
+	  continue;
 	}
-      else if(cptr[0] == '#' || cptr[0] == '\n' || cptr[0] == '\r') continue;
+      if (c == quote) quoting = !quoting;
+      line += c;
+    }
+  return line;
+}
+
+bool special(char c) { c == '[' || c == ']' || c == '(' || c == ')';}
+
+template <InputIterator>
+static bool nonws(InputIterator src) { return !isspace(*src);}
+
+static void skipws(string &buffer)
+{
+  string::iterator i = find_if(line.begin(), line.end(), nonws);
+  buffer.erase(buffer.begin(), i);
+}
+
+template <InputIterator>
+static string parseWord(InputIterator &src, InputIterator end)
+{
+  string dest;
+  skipws(src);
+  if (special(*src))
+    {
+      dest += *src++;
+      return dest;
+    }
+  for (; *src && !isspace(*src) && !special(*src) && src < end; src++) dest += *src;
+  return dest;
+}
+
+template <InputIterator>
+static string parseByteString(InputIterator &src, InputIterator end)
+{
+  string dest;
+  while(src < end)
+    {
+      skipws(src);
+      if (*src == quote)
+	{
+	  for (src++; *src && *src != quote && src != end; src++) dest += *src;
+	  if (*src != quote)
+	    {
+	      GD_ERROR("Missing endquote");
+	      return string();
+	    }
+	  src++;
+	  continue;
+	}
+      if (isdigit(*src) || *src == '-')
+	{
+	  string numbuf = parseWord(src, end);
+	  int val;
+	  istrstream iss(numbuf.c_str());
+	  iss >> val;
+	  if (!iss)
+	    {
+	      GD_ERROR("Bad number");
+	      return string();
+	    }
+	  if (val < 0 || val > 255)
+	    {
+	      GD_ERROR("Illegal byte value");
+	      return string();
+	    }
+	  dest += static_cast<unsigned char>(val);
+	  continue;
+	}
+      return dest;
+    }
+  GD_ERROR("ByteString overflow");
+  return string();  /* not actually reached */
+}
+
+static int handleName(dttype &t, char *line, int length)
+{
+  dtname name;
+  char *end = line + length;
+  string tokbuf = parseWord(line, end);
+  if (!istrstream(tokbuf) >> name.score)
+    {
+      GD_ERROR("Bad name score.", tokbuf);
+      return -1;
+    }
+  name.name = parseByteString(line, end);
+  if (name.name.empty())
+    {
+      GD_ERROR("Bad name string.");
+      return -1;
+    }
+  dt.names.push_back(name);
+  GD_DEBUG3("Added name '%s' for type %s.", name.name, dt.datatype);
+  return 0;
+}
+
+static int handleParts(DtMagic &magic, char *line, int length)
+{
+  char *end = line + length;
+  dtmagicpart part;
+
+  while(1)
+    {
+      bool approx = false;
+      string tokbuf = parseWord(line, end);
+      if (!istrstream(tokbuf) >> part.offset || part.offset < 0)
+	{
+	  GD_ERROR("Bad part offset.");
+	  return -1;
+	}
+      tokbuf = parseWord(line, end);
+      if (tokbuf != "[")
+	{
+	  GD_ERROR("Expecting '[', Got '%s'.", tokbuf);
+	  return -1;
+	}
+      tokbuf = parseWord(line, end);
+      if (!istrstream(tokbuf) >> part.length || part.length <= 0)
+	{
+	  GD_ERROR("Bad part length.");
+	  return -1;
+	}	
+      if (part.length > DT_MAX_PARTLEN)
+	{		
+	  GD_ERROR("Part length too long.");
+	  return -1;
+	}
+      tokbuf = parseWord(line, end);
+      if (tokbuf != "]")
+	{
+	  GD_ERROR("Expecting ']'.");
+	  return -1;
+	}	
+      if (part.offset + part.length > DATATYPE_DATALEN)
+	GD_DEBUG1("WARNING, offset+length > %d", DATATYPE_DATALEN);
+      part.mask.assign(part.length, 0xff);
+      tokbuf = parseWord(line, end);
+      if (tokbuf == "&")
+	{
+	  part.mask = parseByteString(line, end);
+	  if (part.mask.length() < part.length)
+	    {
+	      GD_ERROR("Mask data too short");
+	      return -1;
+	    }
+	  if (part.mask.length() > part.length)
+	    {
+	      GD_ERROR("Mask data too long");
+	      return -1;
+	    }
+	  tokbuf = parseWord(line, end);
+	}
+      if (tokbuf == "~=") approx = true;
+      if (tokbuf != "==" && tokbuf != "~=")
+	{
+	  GD_ERROR("Operator %s unknown.", tokbuf);
+	  return -1;
+	}
+      part.match = parseByteString(line, end);
+      if (part.match.length() < part.length)
+	{
+	  GD_ERROR("Match data too short");
+	  return -1;
+	}
+      if (part.match.length() > part.length)
+	{
+	  GD_ERROR("Match data too long");
+	  return -1;
+	}
+      /* Update match/mask for the ~= approximator */
+      for (int i = part.length - 1; i >= 0; i--)
+	{
+	  if (isalpha(part.match[len]))
+	    {		
+	      part.match[i] &= 0xdf;
+	      part.mask[i]  &= 0xdf;
+	    }
+	  if (part.match[i] & ~part.mask[i])
+	    {
+	      GD_ERROR("Match data is outside mask.");
+	      return -1;
+	    }
+	}
+      magic.parts.push_back(part);
+      skipws(line);
+      if (*line == 0) return 0;
+      tokbuf = parseWord(line, end);
+      if (tokbuf != "&&")
+	{
+	  GD_ERROR("Expecting '&&'.");
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+static int handle_magic(DtDataType &dt, char *line, int length)
+{
+  char *end = line + length;
+  dtmagic magic;
+
+  string token = parseWord(line, end);
+  if (!istrstream(token) >> magic.score)
+    {
+      GD_ERROR("Bad magic score.");
+      return -1;
+    }	
+  if (handle_parts(magic, line, end - line) < 0) return -1;
+  dt.magics.push_back(magic);
+  GD_DEBUG3("Added magic for type %s.", dt.datatype);
+  return 0;
+}
+
+bool Magic::load(const string &filename)
+{
+  dttype *entry = 0;
+  /*
+   * open config file 
+   */
+  istream is(filename);
+  int linenum = 0;
+  if (!is)
+    {
+      error = "Failed to open";
+      return false;
+    }
+  /*
+   * for each line...
+   */
+  do
+    {
+      line = nextline(is);
+      if (!is) return false;
+      /*
+       * ...parse the line...
+       */
+      skipws(line);
+      if (line.empty()) continue;
+      if (line.compare("type:", 0, 5) == 0)
+	{
+	  line.erase(0, 5);
+ 	  if (entry) datatypes.push_back(entry);
+ 	  entry = new datatype;
+	  entry->datatype = parseWord(line);
+	  if (entry->datatype.empty())
+	    {
+	      GD_NOTICE("Error occurred in line %d.", linenum);
+	    }
+	  GD_DEBUG2("PARSING %s", entry->datatype);
+	  continue;
+
+	}
+      else if (line.compare("mime:", 0, 5) == 0)
+	{
+	  line.erase(0, 5);
+	  entry->mimetype = parseWord(line);
+	  if (entry->mimetype.empty())
+	    {
+	      GD_NOTICE("Error occurred in line %d.", linenum);
+	    }
+	  continue;			
+	}
+      else if (line.compare("name:", 0, 5) == 0)
+	{
+	  line.erase(0, 5);
+	  if (handle_name(entry, line) < 0) 
+	    {
+	      GD_NOTICE("Error occurred in line %d.", linenum);
+	    }
+	  continue;
+	}
+      else if (line.compare("magic:", 0, 6) == 0)
+	{
+	  line.erase(0, 6);
+	  if (handle_magic(entry, line) < 0)
+	    {
+	      GD_NOTICE("Error occurred in line %d.", linenum);
+	    }
+	  continue;
+	}
       else
 	{
-	  top = count;
-	  mtypes[top].subtypes = 0;
+	  GD_ERROR("Unknown keyword in line %d of %s.", linenum, filename);
+	  return -1;
 	}
-      mtypes[count].offset = strtol(cptr, &cptr, 0);
-      while(isspace(*cptr)) cptr++;
-      while(islower(cptr[cnt])) cnt++;
-      if(!strncmp("string", cptr, cnt))
-	{
-	  mtypes[count].flags = M_STRING;
-	  cptr += cnt;
-	  sptr = parse_string(&cptr);
-	  mtypes[count].mask = strlen(sptr);
-	  mtypes[count].value.string = strcpy((char *)malloc(mtypes[count].mask + 1), sptr);
-	  hsiz = mtypes[count].offset + mtypes[count].mask;
-	  if(hsiz > maxhdr) maxhdr = hsiz;
-	}
-      else if(!strncmp("builtin", cptr, cnt))
-	{
-	  mtypes[count].flags = M_BUILTIN;
-	  cptr += cnt;
-	  sptr = parse_string(&cptr);
-	  mtypes[count].value.string = strcpy((char *)malloc(strlen(sptr) + 1), sptr);
-	}
-      else if(!strncmp("regexp", cptr, cnt))
-	{
-	  mtypes[count].flags = M_REGEXP;
-	  cptr += cnt;
-	  if(*cptr == '&')
-	    {
-	      cptr++;
-	      mtypes[count].mask = strtol(cptr, &cptr, 0);
-	    }
-	  else mtypes[count].mask = REGLEN;
-	  hsiz = mtypes[count].offset + mtypes[count].mask;
-	  if(hsiz > maxhdr) maxhdr = hsiz;
-	  sptr = parse_string(&cptr);
-	  mtypes[count].value.expr = regcomp(sptr);
-	}
-      else
-	{
-	  if (!strncmp("byte", cptr, cnt))
-	    {
-	      mtypes[count].flags = M_BYTE;
-	      hsiz = mtypes[count].offset + 1;
-	      if (hsiz > maxhdr) maxhdr = hsiz;
-	    }
-	  else if (!strncmp("short", cptr, cnt))
-	    {
-	      mtypes[count].flags = M_SHORT;
-	      hsiz = mtypes[count].offset + 2;
-	      if (hsiz > maxhdr) maxhdr = hsiz;
-	    }
-	  else if (!strncmp("long", cptr, cnt))
-	    {
-	      mtypes[count].flags = M_LONG;
-	      hsiz = mtypes[count].offset + 4;
-	      if(hsiz > maxhdr) maxhdr = hsiz;
-	    }
-	  else if (!strncmp("mode", cptr, cnt)) mtypes[count].flags = M_MODE;
-	  else if (!strncmp("lmode", cptr, cnt)) mtypes[count].flags = M_LMODE;
-	  else continue;		/* Error. Skip line. */
-	  cptr += cnt;
-	  if (*cptr == '&')
-	    {
-	      mtypes[count].flags |= M_MASKED;
-	      cptr++;
-	      mtypes[count].mask = strtol(cptr, &cptr, 0);
-	    }
-	  while(isspace(*cptr)) cptr++;
-	  switch(*cptr)
-	    {
-	    case '=': mtypes[count].flags |= M_EQ; cptr++; break;
-	    case '<': mtypes[count].flags |= M_LT; cptr++; break;
-	    case '>': mtypes[count].flags |= M_GT; cptr++; break;
-	    case '&': mtypes[count].flags |= M_SET; cptr++; break;
-	    case '^': mtypes[count].flags |= M_OR; cptr++; break;
-	    case 'x': mtypes[count].flags |= M_ANY; cptr++; break;
-	    default:  mtypes[count].flags |= M_EQ;
-	    }
-	  mtypes[count].value.number = strtol(cptr, &cptr, 0);
-	}
-      while (isspace(*cptr)) cptr++;
-      sptr = cptr;
-      while (*cptr != '\n' && *cptr != '\r' && *cptr != '\0') cptr++;
-      *cptr = '\0';
-      mtypes[count].message = strcpy((char *)malloc(strlen(sptr) + 1), sptr);
-      count++;
     }
-  if (maxhdr > hdrbufsiz)
-    {
-      free(hdrbuf);
-      hdrbuf = (char *) malloc(maxhdr + 1);
-      hdrbufsiz = maxhdr;
-    }
+  if (entry) datatypes.push_back(entry);
+  GD_DEBUG1("Loading DataTypes: successful !");
+  return 0;
 }

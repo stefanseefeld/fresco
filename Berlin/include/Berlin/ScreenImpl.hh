@@ -26,26 +26,22 @@
 #include <Warsaw/Screen.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/DamageImpl.hh>
-#include <Berlin/PolyGraphic.hh>
+#include <Berlin/MonoGraphic.hh>
 #include <Drawing/openGL/GLDrawingKit.hh>
 
 class ScreenManager;
 
-class ScreenImpl : implements(Screen), virtual public PolyGraphic
+class ScreenImpl : implements(Screen), virtual public MonoGraphic
 {
 public:
   ScreenImpl(GLDrawingKit *, Coord, Coord);
   virtual ~ScreenImpl();
-  
-  virtual void traverse(Traversal_ptr t);
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
 
   Coord width();
   Coord height();
   ScreenManager *Manager() { return manager;}
   Region_ptr getRegion() {return region->_this();}
 protected:
-  virtual void allocateChild(long, Allocation::Info &);
   ScreenManager *manager;
   RegionImpl *region;
   DamageImpl *damage;

@@ -261,8 +261,7 @@ void GraphicImpl::needRedraw()
 {
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).parent->allocate(_this(), allocation->_this());
+  allocateParents(allocation->_this());
   for (CORBA::Long i = 0; i < allocation->size(); i++)
     {
       Allocation::Info *a = allocation->get(i);
@@ -284,8 +283,7 @@ void GraphicImpl::needRedrawRegion(Region_ptr r)
     {
       AllocationImpl *allocation = new AllocationImpl;
       allocation->_obj_is_ready(_boa());
-      for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-	(*i).parent->allocate(_this(), allocation->_this());
+      allocateParents(allocation->_this());
       RegionImpl *dr = new RegionImpl;
       dr->_obj_is_ready(_boa());
       for (CORBA::Long i = 0; i < allocation->size(); i++)

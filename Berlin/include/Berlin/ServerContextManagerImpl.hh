@@ -29,7 +29,7 @@
 // the incoming ClientContext's credentials, but at the moment it doesn't.
 
 #include "Warsaw/config.hh"
-#include "Warsaw/Cloneable.hh"
+#include "Warsaw/ServerContext.hh"
 #include "Warsaw/Graphic.hh"
 #include "Berlin/FactoryFinderImpl.hh"
 #include "Berlin/GenericFactoryImpl.hh"
@@ -37,7 +37,7 @@
 class ServerContextManagerImpl : implements(ServerContextManager) {
 
 public:  
-  ServerContextManagerImpl(GenericFactoryImpl *factory, Graphic_ptr g);
+  ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g);
   bool verify();
 
   // declared in IDL
@@ -47,7 +47,7 @@ protected:
   FactoryFinderImpl *myFactoryFinder;
   omni_mutex myMutex;
   vector<ServerContext_var> allocatedServerContexts;
-  Graphic_var mySceneRoot;
+  Stage_var mySceneRoot;
 
 };
 
