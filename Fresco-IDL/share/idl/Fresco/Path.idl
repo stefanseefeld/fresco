@@ -1,0 +1,87 @@
+/*$Id$
+ *
+ * This source file is a part of the Fresco Project.
+ * Portions Copyright (C) 2003 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#ifndef _Fresco_Path_idl
+#define _Fresco_Path_idl
+
+#include <Fresco/Types.idl>
+
+#pragma prefix "fresco.org"
+
+module Fresco
+{
+
+typedef sequence<Vertex> Polyline;
+struct Quadric
+{
+  double           matrix[4][4];
+  double           phi_begin;
+  double           phi_end;
+};
+struct Bezier
+{
+  unsigned short   order;
+  sequence<Vertex> controls;
+};
+struct Nurbs
+{
+  unsigned short   order;
+  sequence<Vertex> controls;
+  sequence<double> weights;
+  sequence<double> knots;
+};
+
+enum PathSegmentType { polylinetype, arctype, beziertype, nurbstype};
+
+union PathSegment switch (PathSegmentType)
+{
+  case polylinetype: Polyline the_polyline;
+  case arctype:      Quadric  the_quadric;
+  case beziertype:   Bezier   the_bezier;
+  case nurbstype:    Nurbs    the_nurbs;
+};
+
+//. moveto: the next segment's CS is the same as this,
+//.         end points are not connected
+//.
+//. lineto: the next segment's CS is the same as this,
+//.         end points are connected by a line
+//.
+//. align: the next segment's CS is this plus a translation
+//.        that aligns the last point of this segment with
+//.        the first point of the next segment
+enum PathSegmentConnection { moveto, lineto, align};
+
+struct PathSegmentItem
+{
+  PathSegment    segment;
+  //. connection defines the connection to the next
+  //. segment. If this is the last one, moveto implies
+  //. an open path, lineto a closed path. Align is
+  //. undefined...
+  PathSegmentConnection connection;
+};
+
+typedef sequence<PathSegmentItem> NewPath;
+
+};
+
+#endif

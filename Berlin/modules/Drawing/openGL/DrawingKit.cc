@@ -408,6 +408,10 @@ void openGL::DrawingKit::draw_path(const Fresco::Path &path)
   my_glcontext->add_to_queue(new DrawPath(path));
 }
 
+void openGL::DrawingKit::draw_new_path(const Fresco::NewPath &)
+{
+}
+
 void openGL::DrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
   Fresco::Path path;

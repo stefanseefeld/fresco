@@ -56,7 +56,7 @@ CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
 DYNINT		:= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl \
-		   Selection.idl
+		   Selection.idl Path.idl
 STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Kit.idl Transform.idl Region.idl Allocation.idl Traversal.idl \
 		   PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \

@@ -112,6 +112,7 @@ public:
 
   virtual Fresco::Coord resolution(Fresco::Axis a) { return _drawable->resolution(a);}
   virtual void draw_path(const Fresco::Path &);
+  virtual void draw_new_path(const Fresco::NewPath &);
 //   virtual void drawPatch(const Fresco::Patch &);
   virtual void draw_rectangle(const Fresco::Vertex &, const Fresco::Vertex &);
   virtual void draw_quadric(const Fresco::DrawingKit::Quadric, Fresco::Coord, Fresco::Coord);

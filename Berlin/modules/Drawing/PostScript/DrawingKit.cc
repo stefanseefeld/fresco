@@ -251,6 +251,10 @@ void PostScript::DrawingKit::draw_path(const Fresco::Path &path)
   _os << std::endl;
 }
 
+void PostScript::DrawingKit::draw_new_path(const Fresco::NewPath &path)
+{
+}
+
 void PostScript::DrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
   _os << "%draw_rectangle" << std::endl;

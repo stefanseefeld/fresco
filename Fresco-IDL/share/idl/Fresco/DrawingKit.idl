@@ -23,6 +23,7 @@
 #ifndef _Fresco_DrawingKit_idl
 #define _Fresco_DrawingKit_idl
 
+#include <Fresco/Path.idl>
 #include <Fresco/Kit.idl>
 #include <Fresco/Graphic.idl>
 
@@ -132,6 +133,7 @@ module Fresco
       //. FIXME: Which restrictions need to apply for paths/polygons?
       //.        Direction? Convex? Simple? 
       void draw_path(in Path p);
+      void draw_new_path(in NewPath p);
       //   void drawPatch(in Patch p);
       //. Draws a rectangle. You need to provide the coordinates of the
       //. lower left corner of the rectangle (lower) and the upper right

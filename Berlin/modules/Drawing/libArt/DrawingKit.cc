@@ -244,6 +244,10 @@ void libArt::DrawingKit::draw_path(const Path &p)
   art_svp_free(svp2);
 }
 
+void libArt::DrawingKit::draw_new_path(const NewPath &p) 
+{
+}
+
 //void libArt;;DrawingKit::drawPatch(const Patch &);
 
 void libArt::DrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top) 
