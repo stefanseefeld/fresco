@@ -22,18 +22,21 @@
 
 #include <Prague/Sys/Env.hh>
 #include <Prague/config.hh>
-#include <iosfwd>
+#include <iostream>
 
 bool Prague::putenv(const std::string & name, const std::string & value)
 {
 #ifdef HAVE_SETENV
   return setenv(name.c_str(), value.c_str(), 1) == 0;
 #elif HAVE_PUTENV
-  std::string env_var(name);
-  env_var += "=" + value;
-  return ::putenv(env_var.c_str());
+  char * env_var = new char[name.length() + value.length() + 2];
+  strncpy(env_var, name.c_str(), name.length());
+  env_var[name.length()] = '=';
+  strncpy((env_var + name.length() + 1), value.c_str(), value.length());
+  env_var[name.length() + value.length() + 1] = '\0'; // make sure there's a \0
+  return ::putenv(env_var);
 #else
-  std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
+  std::cerr << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
 #endif
   return false;
@@ -44,9 +47,12 @@ bool Prague::putenv(const std::string & name)
 #ifdef HAVE_UNSETENV
   return unsetenv(name.c_str());
 #elif HAVE_PUTENV
-  return ::putenv(name.c_str());
+  char * env_var = new char[name.length() + 1];
+  strncpy(env_var, name.c_str(), name.length());
+  env_var[name.length()] = '\0'; // make sure there's a \0
+  return ::putenv(env_var);
 #else
-  std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
+  std::cerr << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
 #endif
   return false;
