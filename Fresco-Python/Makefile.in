@@ -46,7 +46,7 @@ xref: #do nothing
 doc: #do nothing here
 
 install:
-	./setup.py install --prefix=$(prefix)
+	./setup.py install --prefix=$(DESTDIR)$(prefix)
 
 install-doc: #do nothing here
 
