@@ -442,8 +442,8 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
 {
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
-  GLfloat light_position[] = { 5., 5., 10., 0.};
-  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+//   GLfloat light_position[] = { 5., 5., 10., 0.};
+//   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
   glEnable(GL_COLOR_MATERIAL);
   glEnable(GL_CULL_FACE);
 
@@ -462,6 +462,10 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
       glVertex3f(a.x, a.y, a.z);
       glVertex3f(b.x, b.y, b.z);
       glVertex3f(c.x, c.y, c.z);
+      cout << "triangle :" << endl;
+      cout << '(' << a.x << ',' << a.y << ',' << a.z << ')' << endl;
+      cout << '(' << b.x << ',' << b.y << ',' << b.z << ')' << endl;
+      cout << '(' << c.x << ',' << c.y << ',' << c.z << ')' << endl;
     }
   glEnd();
   glDisable(GL_LIGHTING);
