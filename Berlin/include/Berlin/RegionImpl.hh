@@ -66,9 +66,9 @@ namespace Berlin
       virtual void origin(Fresco::Vertex &);
       virtual void span(Fresco::Axis, Fresco::Region::Allotment &);
       virtual void outline(Fresco::Path_out);
-      
+
       void clear();
-      
+
       Fresco::Region_ptr _this ()
       {
       if (!my_this_valid)
@@ -78,8 +78,7 @@ namespace Berlin
       }
       return Fresco::Region::_duplicate (my_this);
       }
-      
-    public:
+
       void normalize(Fresco::Vertex &);
       void normalize(Fresco::Transform_ptr);
       bool valid;
@@ -98,12 +97,12 @@ namespace Berlin
       bool my_this_valid;
       Fresco::Region_var my_this;
   };
-  
+
   template <> struct Initializer<RegionImpl>
   {
       static void initialize(RegionImpl *r) { r->clear();}
   };
-  
+
   inline Fresco::Coord RegionImpl::span_origin(Fresco::Coord lower,
                            Fresco::Coord upper,
                            Fresco::Coord align)
@@ -131,7 +130,7 @@ namespace Berlin
       v0.y = Math::min(v0.y, v.y);
       v0.z = Math::min(v0.z, v.z);
   }
-  
+
   inline void RegionImpl::merge_max(Fresco::Vertex &v0,
                     const Fresco::Vertex &v)
   {
@@ -139,7 +138,7 @@ namespace Berlin
       v0.y = Math::max(v0.y, v.y);
       v0.z = Math::max(v0.z, v.z);
   }
-  
+
   inline void RegionImpl::normalize(Fresco::Vertex &o)
   {
       o.x = span_origin(lower.x, upper.x, xalign);
@@ -148,7 +147,7 @@ namespace Berlin
       lower -= o;
       upper -= o;
   }
-  
+
   inline void RegionImpl::normalize(Fresco::Transform_ptr t)
   {
       Fresco::Vertex o;

@@ -38,7 +38,7 @@ namespace Berlin
   //. reference is transferred to the smart pointer. Programmatically this
   //. is accomplished by not increasing the reference count. This is in
   //. contrast to passing another smart pointer, in which case the
-  //. reference count will be incremented to the objectrepresenting a
+  //. reference count will be incremented to the object representing a
   //. duplicated reference to the object.
   //.
   //. Whenever the smart pointer loses or removes its reference to an
