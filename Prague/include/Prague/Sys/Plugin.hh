@@ -24,8 +24,7 @@
 
 #include <Prague/Sys/DLL.hh>
 
-namespace Prague
-{
+namespace Prague {
 
 template <class T>
 class Plugin : public DLL
@@ -37,8 +36,9 @@ public:
       DL dl = (DL) resolve(loader);
       t = dl ? (T *) dl() : 0;
     }
-  ~Dynamic() { delete t;}
-  T *operator () { return t;}
+  ~Plugin() { delete t; }
+  T * operator () () { return t; }
+protected:
 private:
   T *t;
 };
