@@ -97,7 +97,7 @@ class VBoxAlignElements : public BoxAlignElements
 {
 public:
   VBoxAlignElements(double align)
-    : BoxAlignElements(new LayoutSuperpose(new LayoutTileReversed(Warsaw::yaxis), new LayoutAlign(Warsaw::xaxis)), Warsaw::xaxis, align) {}
+    : BoxAlignElements(new LayoutSuperpose(new LayoutTile(Warsaw::yaxis), new LayoutAlign(Warsaw::xaxis)), Warsaw::xaxis, align) {}
 };
 
 class Overlay : public Box
