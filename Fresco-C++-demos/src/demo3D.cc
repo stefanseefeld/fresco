@@ -25,17 +25,27 @@
 #include "Application.hh"
 #include "PrimitiveDemo.hh"
 #include "CubeDemo.hh"
-
+#include <memory>
 
 using namespace Prague;
 using namespace Fresco;
 
-bool running;
+template <typename T> T *create_demo(Application *a)
+{
+   try { return new T(a);}
+   catch (...)
+   {
+      std::cerr << "unable to create one of the demo applets\n"
+                << "this probably means that the server doesn't provide\n"
+                << "some of the resources requested by this applet" << std::endl;
+      return 0;
+   }
+}
 
 int main(int argc, char **argv)
 {
-  try
-    {
+   try
+   {
       CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
       PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
       DefaultPOA::default_POA(poa);
@@ -51,24 +61,23 @@ int main(int argc, char **argv)
       
       // Then try accessing the name service
       if (CORBA::is_nil(s))
-	{
-	  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-	  s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
-	}
-
+      {
+         CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+         s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
+      }
+      
       ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
       
       Application *application = new Application(server, ClientContext_var(client->_this()));
-
-      Demo *primitive = new PrimitiveDemo(application);
-      Demo *cube = new CubeDemo(application);
+      
+      std::auto_ptr<Demo> primitive(create_demo<PrimitiveDemo>(application));
+      std::auto_ptr<Demo> cube(create_demo<CubeDemo>(application));
+      
       application->run();
-      delete cube;
-      delete primitive;
       delete application;
-    }
-  catch (const CORBA::COMM_FAILURE &)
-    {
+   }
+   catch (const CORBA::COMM_FAILURE &)
+   {
       std::cerr << "Could not connect to the display server (CORBA::COMM_FAILURE)." << std::endl;
-    }
+   }
 }
