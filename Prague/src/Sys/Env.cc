@@ -47,10 +47,17 @@ bool Prague::putenv(const std::string & name)
 #ifdef HAVE_UNSETENV
   return unsetenv(name.c_str());
 #elif HAVE_PUTENV
-  char * env_var = new char[name.length() + 1];
-  strncpy(env_var, name.c_str(), name.length());
-  env_var[name.length()] = '\0'; // make sure there's a \0
-  return ::putenv(env_var);
+  char * value = ::getenv(name.c_str());
+  if (value != 0)
+  {
+      char * env_var = new char[name.length() + 1];
+      strncpy(env_var, name.c_str(), name.length());
+      env_var[name.length()] = '\0'; // make sure there's a \0
+      
+      ::putenv(env_var);
+      delete[] value;
+      return true;
+  }
 #else
   std::cerr << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);

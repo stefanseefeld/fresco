@@ -29,40 +29,52 @@
 namespace Prague
 {
 
-template <class Task, class Acceptor, class Handler>
-class ThreadPool
-{
-  typedef std::vector<Thread *> tlist_t;
-public:
-  ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) : _tasks(t), _acceptor(a), _threads(s, 0)
+  template <class Task, class Acceptor, class Handler>
+  class ThreadPool
   {
-    for (tlist_t::iterator i = _threads.begin(); i != _threads.end(); ++i)
-      (*i) = new Thread(run, this);
-  }
-  ~ThreadPool()
-  {
-    for (tlist_t::iterator i = _threads.begin(); i != _threads.end(); i++) delete *i;
-  }
-  void start() { for (tlist_t::iterator i = _threads.begin(); i != _threads.end(); i++) (*i)->start();}
-private:
-  static void *run(void *X)
-  {
-    ThreadPool *_this = reinterpret_cast<ThreadPool *>(X);
-    while (1)
-    {
-      Task task = _this->_tasks.top();
-      _this->_tasks.pop();
-      Handler *handler = _this->_acceptor.consume(task);
-      handler->process();
-      delete handler;
-      Thread::testcancel();
-    }
-    return 0;
-  }
-  Thread::Queue<Task> &_tasks;
-  Acceptor            &_acceptor;
-  tlist_t              _threads;
-};
+      typedef std::vector<Thread *> tlist_t;
+  public:
+      ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) :
+	  _tasks(t), _acceptor(a), _threads(s, 0)
+      {
+	  for (tlist_t::iterator i = _threads.begin();
+	       i != _threads.end();
+	       ++i)
+	      (*i) = new Thread(run, this);
+      }
+      ~ThreadPool()
+      {
+	  for (tlist_t::iterator i = _threads.begin();
+	       i != _threads.end();
+	       i++) delete *i;
+      }
+      void start()
+      {
+	  for (tlist_t::iterator i = _threads.begin();
+	       i != _threads.end();
+	       i++)
+	      (*i)->start();
+      }
+  private:
+      static void *run(void *X)
+      {
+	  ThreadPool *_this = reinterpret_cast<ThreadPool *>(X);
+	  while (1)
+	  {
+	      Task task = _this->_tasks.top();
+	      _this->_tasks.pop();
+	      Handler *handler = _this->_acceptor.consume(task);
+	      handler->process();
+	      delete handler;
+	      Thread::testcancel();
+	  }
+	  return 0;
+      }
+
+      Thread::Queue<Task> &_tasks;
+      Acceptor            &_acceptor;
+      tlist_t              _threads;
+  };
 
 };
 
