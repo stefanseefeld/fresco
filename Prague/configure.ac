@@ -107,6 +107,7 @@ mkdir -p $builddir/src/Prague/Examples/Thread
 mkdir -p $builddir/src/Prague/Examples/IPC
 mkdir -p $builddir/src/Prague/Examples/Filter
 mkdir -p $builddir/src/Prague/Examples/Network
+mkdir -p $builddir/src/Prague/Examples/bin
 
 AC_OUTPUT([
 	$builddir/bin/Prague-config:config/package-config.in
