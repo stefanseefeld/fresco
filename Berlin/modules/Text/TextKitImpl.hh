@@ -39,28 +39,25 @@ declare_corba_ptr_type(DrawingKit)
 class TextKitImpl : lcimplements(TextKit), 
 		    public virtual CloneableImpl 
 {
-
   static Mutex staticMutex;
   static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
   static DrawingKit_var canonicalDK;
 
   Mutex localMutex;
   vector<MonoGraphic *> myDecorators;
-  
  public:
-
-    TextKitImpl();
-    virtual ~TextKitImpl();
-    virtual void bind(ServerContext_ptr);
-
-    Graphic_ptr chunk(const Unistring & u);
-    Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
-    Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);
-    Graphic_ptr family(Graphic_ptr body, const Unistring & fam);
-    Graphic_ptr subFamily(Graphic_ptr body, const Unistring & fam);
-    Graphic_ptr fullName(Graphic_ptr body, const Unistring & name);
-    Graphic_ptr style(Graphic_ptr body, const Unistring & sty);
-    Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
+  TextKitImpl();
+  virtual ~TextKitImpl();
+  virtual void bind(ServerContext_ptr);
+  
+  Graphic_ptr chunk(const Unistring & u);
+  Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
+  Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);
+  Graphic_ptr family(Graphic_ptr body, const Unistring & fam);
+  Graphic_ptr subFamily(Graphic_ptr body, const Unistring & fam);
+  Graphic_ptr fullName(Graphic_ptr body, const Unistring & name);
+  Graphic_ptr style(Graphic_ptr body, const Unistring & sty);
+  Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
 };
 
 

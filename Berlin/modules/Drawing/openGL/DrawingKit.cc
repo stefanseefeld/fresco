@@ -25,7 +25,7 @@
 #include "Warsaw/Transform.hh"
 #include "Drawing/openGL/GLQuadric.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
-// #include "Warsaw/Text.hh"
+#include "Drawing/openGL/GLUnifont.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Plugin.hh"
 
@@ -34,7 +34,13 @@
 #include <iostream>
 
 GLDrawingKit::GLDrawingKit()
-  : drawable(GGI::drawable()), tr(new TransformImpl), cl(new RegionImpl), tx(0), textures(100), images(500)
+  : drawable(GGI::drawable()),
+    tr(new TransformImpl),
+    cl(new RegionImpl),
+    tx(0),
+    font(new GLUnifont),
+    textures(100),
+    images(500)
 {
   tr->_obj_is_ready(_boa());
   cl->_obj_is_ready(_boa());
@@ -73,6 +79,7 @@ GLDrawingKit::GLDrawingKit()
 GLDrawingKit::~GLDrawingKit()
 {
   GGIMesaDestroyContext(context);
+  delete font;
   cl->_dispose();
   tr->_dispose();
 }
@@ -228,32 +235,6 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
-CORBA::ULong GLDrawingKit::fontSize() { return 16; }
-CORBA::ULong GLDrawingKit::fontWeight() { return 100;}
-Unistring *GLDrawingKit::fontFamily()
-{
-  Unistring *name = new Unistring(Unicode::toCORBA(Unicode::String("GNU Unifont")));
-  return name;
-}
-Unistring* GLDrawingKit::fontSubFamily() { return 0; }
-Unistring* GLDrawingKit::fontFullName() { return 0; }
-Unistring* GLDrawingKit::fontStyle() 
-{
-  Unistring *name = new Unistring(Unicode::toCORBA(Unicode::String("monospace")));
-  return name; 
-}
-
-FontMetrics GLDrawingKit::metrics() 
-{
-  FontMetrics m;
-  return m;
-}
-
-CORBA::Any *GLDrawingKit::getFontAttr(const Unistring &name) 
-{
-  return new CORBA::Any();
-}
-
 void GLDrawingKit::setFontSize(CORBA::ULong) {}
 void GLDrawingKit::setFontWeight(CORBA::ULong) {}
 void GLDrawingKit::setFontFamily(const Unistring&) {}
@@ -262,21 +243,15 @@ void GLDrawingKit::setFontFullName(const Unistring&) {}
 void GLDrawingKit::setFontStyle(const Unistring&) {}
 void GLDrawingKit::setFontAttr(const NVPair & nvp) {}
 
-void GLDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & req) 
+void GLDrawingKit::allocateText(const Unistring &s, Graphic::Requisition &req) 
 {
-  unifont.allocateText(s,req);
+  font->allocateText(s, req);
 }
 
 void GLDrawingKit::drawText(const Unistring &us)
 {
-  /*
-   * the real thing to do would be to use the current trafo and
-   * look up glyphs of appropriate pixel sizes within the current
-   * font.   -stefan
-   */
-  Vertex origin = {0., 0., 0.};
-  tr->transformVertex(origin);
-  unifont.drawText(us, origin);
+  Vertex origin;
+  font->drawText(us, origin);
 }
 
 EXPORT_PLUGIN(GLDrawingKit, interface(DrawingKit))

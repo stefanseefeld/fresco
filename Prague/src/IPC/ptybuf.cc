@@ -20,6 +20,8 @@
  * MA 02139, USA.
  */
 #include <Prague/IPC/ptybuf.hh>
+#include <cstdio>
+#include <cerrno>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -67,6 +69,16 @@ ptybuf::~ptybuf()
       */
     }
   delete save;
+}
+
+streamsize ptybuf::sys_read(char *buf, streamsize len)
+{
+  streamsize rval = -1;
+  do rval = ::read(fd(), buf, len);
+  while (rval == -1 && errno == EINTR);
+  if (rval == -1 && errno == EIO) return 0;
+  if (rval == -1 && errno != EAGAIN) perror("ptybuf::read");
+  return rval;
 }
 
 void ptybuf::setup()

@@ -38,6 +38,7 @@ class ptybuf : public ipcbuf
 public:
   ptybuf();
   virtual ~ptybuf();
+  virtual streamsize sys_read (char *, streamsize);
   const string &name() const { return ptydev;}
   int openpty();
   int opentty();

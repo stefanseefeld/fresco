@@ -25,7 +25,7 @@
 
 #include <Drawing/DrawingKitBase.hh>
 #include <Berlin/CloneableImpl.hh>
-#include "Drawing/openGL/GLUnifont.hh"
+#include <Drawing/openGL/GLFont.hh>
 #include <Drawing/openGL/GLRaster.hh>
 #include <Berlin/Thread.hh>
 #include <Berlin/ObjectCache.hh>
@@ -61,14 +61,14 @@ public:
   virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Raster_ptr texture() { return tx ? Raster::_duplicate(tx->remote) : Raster::_nil();}
 
-  virtual CORBA::ULong fontSize();
-  virtual CORBA::ULong fontWeight();
-  virtual Unistring* fontFamily();
-  virtual Unistring* fontSubFamily();
-  virtual Unistring* fontFullName();
-  virtual Unistring* fontStyle();
-  virtual FontMetrics metrics();
-  virtual CORBA::Any * getFontAttr(const Unistring & name);
+  virtual CORBA::ULong fontSize() { return font->size();}
+  virtual CORBA::ULong fontWeight() { return font->weight();}
+  virtual Unistring *fontFamily() { return font->family();}
+  virtual Unistring *fontSubFamily() { return font->subfamily();}
+  virtual Unistring *fontFullName() { return font->fullname();}
+  virtual Unistring *fontStyle() { return font->style();}
+  virtual FontMetrics metrics() { return FontMetrics();}
+  virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
 
   virtual void setTransformation(Transform_ptr);
   virtual void setClipping(Region_ptr);
@@ -81,11 +81,11 @@ public:
 
   virtual void setFontSize(CORBA::ULong);
   virtual void setFontWeight(CORBA::ULong);
-  virtual void setFontFamily(const Unistring&);
-  virtual void setFontSubFamily(const Unistring&);
-  virtual void setFontFullName(const Unistring&);
-  virtual void setFontStyle(const Unistring&);
-  virtual void setFontAttr(const NVPair & nvp);
+  virtual void setFontFamily(const Unistring &);
+  virtual void setFontSubFamily(const Unistring &);
+  virtual void setFontFullName(const Unistring &);
+  virtual void setFontStyle(const Unistring &);
+  virtual void setFontAttr(const NVPair &);
 
   virtual Coord resolution(Axis a) { return drawable->resolution(a);}
   virtual void drawPath(const Path &);
@@ -101,7 +101,6 @@ public:
 //   Coord width() { return drawable->width();}
 //   Coord height() { return drawable->height();}
  private:
-  GLUnifont unifont;
   GGI::Drawable *drawable;
   GGIMesaContext context;
   Mutex mutex;
@@ -113,6 +112,7 @@ public:
   Endstyle       es;
   Fillstyle      fs;
   GLRaster      *tx;
+  GLFont        *font;
   
   ObjectCache<Raster_var, GLTexture> textures;
   ObjectCache<Raster_var, GLImage> images;

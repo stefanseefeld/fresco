@@ -34,7 +34,7 @@ class CloneableImpl : lcimplements(Cloneable), public virtual omniLC::_threadCon
 //. replaced some day in the future when we know more.
 {
  public: 
-  virtual void bind(ServerContext_ptr);
+  virtual void bind(ServerContext_ptr) {}
   virtual CosLifeCycle::LifeCycleObject_ptr copy(CosLifeCycle::FactoryFinder_ptr, const CosLifeCycle::Criteria &);
   virtual void move(CosLifeCycle::FactoryFinder_ptr, const CosLifeCycle::Criteria &);
   virtual Cloneable_ptr clone(); // override with caution!
@@ -47,8 +47,6 @@ class CloneableImpl : lcimplements(Cloneable), public virtual omniLC::_threadCon
   // all hooked up with lifecycle to register it with the appropriate
   // implementation managers.
   virtual void registerWithMyManagers();
- protected:
-  ServerContext_var context;
 };
 
 #endif

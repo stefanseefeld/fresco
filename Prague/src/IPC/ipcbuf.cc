@@ -124,7 +124,7 @@ int ipcbuf::sync()
 {
   if (pptr() && pbase() < pptr() && pptr() <= epptr())
     {
-      write(pbase(), pptr() - pbase());
+      sys_write(pbase(), pptr() - pbase());
       setp(pbase(), (char *) data->pend);
     }
   return 0;
@@ -150,7 +150,7 @@ ipcbuf::int_type ipcbuf::underflow()
 {
   if (gptr() == 0) return EOF; // input stream has been disabled
   if (gptr() < egptr()) return *gptr();
-  ssize_t rlen = read(eback(), data->gend - eback());
+  ssize_t rlen = sys_read(eback(), data->gend - eback());
   switch (rlen)
     {
     case 0: data->eofbit = true;
@@ -202,14 +202,15 @@ streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, streamsize n)
   return rval;
 }
 
-int ipcbuf::write(const void *buf, int len)
+streamsize ipcbuf::sys_write(const char *buf, streamsize len)
 {
 //   if (!writeready ()) return 0;
-  int wlen = 0;
+  cout << "write "; cout.write(buf, len); cout << endl;
+  streamsize wlen = 0;
   while(len > 0)
     {
       int wval = -1;
-      do wval = ::write(fd(), (char*) buf, len);
+      do wval = ::write(fd(), buf, len);
       while (wval == -1 && errno == EINTR);
       if (wval == -1)
         {
@@ -222,17 +223,13 @@ int ipcbuf::write(const void *buf, int len)
   return wlen; // == len if every thing is all right
 }
 
-int ipcbuf::read(void *buf, int len)
+streamsize ipcbuf::sys_read(char *buf, streamsize len)
 {
-  int rval = -1;
-  do
-    {
-      rval = ::read(fd(), (char *)buf, len);
-//       cout << "read " << rval << endl;
-    }
+  streamsize rval = -1;
+  cout << "reading" << endl;
+  do rval = ::read(fd(), buf, len);
   while (rval == -1 && errno == EINTR);
-//   cout << rval << ' ' << errno << ' ' << '(' << EINTR << ')' << endl;
+  cout << rval << ' ' << errno << endl;
   if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");
-  if (rval == 0) cerr << "ipcbuf::read returned 0" << endl;
   return rval;
 }

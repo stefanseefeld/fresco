@@ -49,6 +49,12 @@ GLUnifont::GLUnifont()
 }
 
 GLUnifont::~GLUnifont() { delete glyphmap ;}
+unsigned long GLUnifont::size() { return 16;}
+unsigned long GLUnifont::weight() { return 100;}
+Unistring *GLUnifont::family() { return new Unistring(Unicode::toCORBA(Unicode::String("GNU Unifont")));}
+Unistring *GLUnifont::subfamily() { return 0;}
+Unistring *GLUnifont::fullname() { return 0;}
+Unistring *GLUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
 
 void GLUnifont::drawText(const Unistring &u, const Vertex &p) 
 {

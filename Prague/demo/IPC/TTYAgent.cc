@@ -34,8 +34,11 @@ public:
     if (mask != Agent::outready) return false;
     istream is(agent->obuf());
     string line;
-    getline(is, line);
-    cout << "output : '" <<  line << '\'' << endl;
+    while (is)
+      {
+	getline(is, line);
+	cout << line;
+      }
     return true;
   }
 };

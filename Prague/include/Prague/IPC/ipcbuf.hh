@@ -53,8 +53,10 @@ public:
   bool writeready() const;
   //. return true if write wouldn't block
   bool exceptionpending() const;
-  int write (const void *, int);
-  int read (void *, int);
+  virtual streamsize sys_read(char *, streamsize);
+  virtual streamsize sys_write(const char *, streamsize);
+//   virtual int write (const void *, int);
+//   virtual int read (void *, int);
   int fd() const { return data->fd;}
   void setnonblocking(bool flag = true);
   //. set the buffer to nonblocking mode if <i>flag</i> is true, to blocking mode otherwise

@@ -28,24 +28,31 @@
 #include "Warsaw/Types.hh"
 #include "Warsaw/Graphic.hh"
 #include "Prague/Sys/MMap.hh"
+#include "Drawing/openGL/GLFont.hh"
 #include <Warsaw/Unicode.hh>
 
-// This is a default font, just in case -- a character cell bitmapped unicode
-// font which is generated "on the fly" from the GNU unifont, which we're
-// storing in a packed binary array we mmap() in. this is so that, even if all
-// the font manufactureres in the world turn against us, we can still render
-// multilingual text, albeit not quite as well as certain (ahem) proprietary
-// text systems
-
-class GLUnifont 
+class GLUnifont : public GLFont
+//. This is a default font, just in case -- a character cell bitmapped unicode
+//. font which is generated "on the fly" from the GNU unifont, which we're
+//. storing in a packed binary array we mmap() in. this is so that, even if all
+//. the font manufactureres in the world turn against us, we can still render
+//. multilingual text, albeit not quite as well as certain (ahem) proprietary
+//. text systems
 {
 public:
   GLUnifont();
   virtual ~GLUnifont();
-  
+  virtual unsigned long size();
+  virtual void size(unsigned long) {}
+  virtual unsigned long weight();
+  virtual void weight(unsigned long) {}
+  virtual Unistring *family();
+  virtual Unistring *subfamily();
+  virtual Unistring *fullname();
+  virtual Unistring *style();
+
   void drawText(const Unistring &u, const Vertex &v);
   void allocateText(const Unistring &u, Graphic::Requisition &r);
-  void setColor(Color c); 
 protected:
   MMap *glyphmap;
 };

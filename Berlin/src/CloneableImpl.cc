@@ -29,12 +29,6 @@
 // session-management system which is rudimentary and probably will be
 // replaced some day in the future when we know more.
 
-void CloneableImpl::bind(ServerContext_ptr sc)
-{
-  context = ServerContext::_duplicate(sc);
-}
-
-
 // copy produces a new clone on the machine found by the FactoryFinder "there", which 
 // in most cases will actually be "here". But anyway, it copies state. That's what's important!
 

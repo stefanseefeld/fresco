@@ -36,11 +36,11 @@ DesktopKitImpl::~DesktopKitImpl()
 void DesktopKitImpl::bind(ServerContext_ptr sc)
 {
   CloneableImpl::bind(sc);
-  CORBA::Object_var object = context->getSingleton(interface(Desktop));
+  CORBA::Object_var object = sc->getSingleton(interface(Desktop));
   desktop = Desktop::_narrow(object);
   
-  lk = obtain(context, LayoutKit);
-  wk = obtain(context, WidgetKit);
+  lk = obtain(sc, LayoutKit);
+  wk = obtain(sc, WidgetKit);
 }
 
 Desktop_ptr DesktopKitImpl::desk()
