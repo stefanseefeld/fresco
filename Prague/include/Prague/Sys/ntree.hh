@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca>
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.ca>
  * http://www.berlin-consortium.org
  *
  * this code was originally written by
@@ -33,6 +33,8 @@ template<class T> class _ntree_node_child_iterator;
 template<class T> class _const_ntree_node_child_iterator;
 template<class T> class _ntree_node_up_iterator;
 template<class T> class _const_ntree_node_up_iterator;
+template<class T> class _ntree_node_iterator;
+template<class T> class _const_ntree_node_iterator;
 
 //General notes:  No storage is shared between ntrees.  If part of one
 //ntree t1 is assigned to or inserted into another ntree t2, that part is either
@@ -49,6 +51,8 @@ public:
   typedef _const_ntree_node_child_iterator<T> const_child_iterator;
   typedef _ntree_node_up_iterator<T> up_iterator;
   typedef _const_ntree_node_up_iterator<T> const_up_iterator;
+  typedef _ntree_node_iterator<T> iterator;
+  typedef _const_ntree_node_iterator<T> const_iterator;
 
   ntree();                    // empty ntree
   ntree(const ntree &);        // does a deep copy
@@ -73,8 +77,13 @@ public:
   //REQUIRE: ntree not empty.
 
   bool empty() const;              // Test if ntree is empty
-  void swap(ntree &);               // O(1) time swap of values
+  void swap(ntree &);              // O(1) time swap of values
   void erase();                    // Make ntree empty
+
+  iterator begin();
+  iterator end();
+  const_iterator begin() const;
+  const_iterator end() const;
 private:
   node *root_;
   void destruct(node *);
@@ -191,6 +200,7 @@ private:
   _ntree_node_up_iterator(node *);  // iterator pointing at *p
   friend class _ntree_node<T>;
   friend class _const_ntree_node_up_iterator<T>;
+  friend class _ntree_node_iterator<T>;
 };
 
 template <class T>
@@ -218,6 +228,8 @@ private:
   const node *ptr;
   _const_ntree_node_up_iterator(const node *);  // iterator pointing at *p
   friend class _ntree_node<T>;
+  friend class _ntree_node_up_iterator<T>;
+  friend class _const_ntree_node_iterator<T>;
 };
 
 template <class T>
@@ -230,14 +242,15 @@ public:
   _ntree_node_child_iterator();
   //generate default assignment, copy ctor
 
-  self& operator++();
+  self &operator++();
   self operator++(int);
-  self& operator--();
+  self &operator--();
   self operator--(int);
-  node& operator*() const;
-  node * operator->() const;
-  friend bool operator == <>(self x, self y);
-  friend bool operator < <> (self x, self y);
+  node &operator*() const;
+  node *operator->() const;
+  friend bool operator == <>(self, self);
+  friend bool operator == <>(self, _ntree_node_iterator<T>);
+  friend bool operator < <> (self, self);
   //STL templates provide !=, <=, >, >=
 
 private:
@@ -267,6 +280,7 @@ public:
   const node &operator*() const;
   const node *operator->() const;
   friend bool operator == <>(self, self);
+  friend bool operator == <>(self, _const_ntree_node_iterator<T>);
   friend bool operator < <>(self, self);
   //STL templates provide !=, <=, >, >=
 private:
@@ -274,6 +288,60 @@ private:
   iter_t it;
   _const_ntree_node_child_iterator(const iter_t& i);
   friend class _ntree_node<T>;
+};
+
+template <class T>
+class _ntree_node_iterator : public forward_iterator<_ntree_node<T>, ptrdiff_t>
+{
+  friend class ntree<T>;
+public:
+  typedef _ntree_node_iterator<T> self;
+  typedef _ntree_node_child_iterator<T> child_iterator;
+  typedef _ntree_node_up_iterator<T> up_iterator;
+  typedef _ntree_node<T> node;
+
+  _ntree_node_iterator() : ptr(0) {}
+
+  self &operator++();
+  self operator++(int);
+  const node &operator*() const;
+  const node *operator->() const;
+  friend bool operator == <>(self, self);
+  friend bool operator == <>(_ntree_node_child_iterator<T>, self);
+  //STL templates provide !=
+private:
+  friend class _const_ntree_node_iterator<T>;
+  _ntree_node_iterator(node &);
+  self &operator = (node &);
+  node *ptr;
+};
+
+template <class T>
+class _const_ntree_node_iterator : public forward_iterator<_ntree_node<T>, ptrdiff_t>
+{
+  friend class ntree<T>;
+public:
+  typedef _const_ntree_node_iterator<T> self;
+  typedef _const_ntree_node_child_iterator<T> const_child_iterator;
+  typedef _const_ntree_node_up_iterator<T> const_up_iterator;
+  typedef _ntree_node_iterator<T> iterator;
+  typedef _ntree_node<T> node;
+
+  _const_ntree_node_iterator() : ptr(0) {}
+  _const_ntree_node_iterator(const iterator &i) : ptr(i.ptr) {}  // conversion
+
+  self &operator++();
+  self operator++(int);
+  const node &operator*() const;
+  const node *operator->() const;
+  friend bool operator == <>(self, self);
+  friend bool operator == <>(_const_ntree_node_child_iterator<T>, self);
+  //STL templates provide !=
+private:
+  friend class _ntree_node_iterator<T>;
+  _const_ntree_node_iterator(const node &);
+  self &operator = (const node &);
+  const node *ptr;
 };
 
 //ntree<T> inlines
@@ -367,6 +435,18 @@ inline void ntree<T>::swap(self &t)
   t.root_ = tmp;
 }
 
+template <class T>
+inline _ntree_node_iterator<T> ntree<T>::begin() { return root_ ? iterator(*root_) : iterator();}
+
+template <class T>
+inline _ntree_node_iterator<T> ntree<T>::end() { return iterator();}
+
+template <class T>
+inline _const_ntree_node_iterator<T> ntree<T>::begin() const { return root_ ? const_iterator(*root_) : const_iterator();}
+
+template <class T>
+inline _const_ntree_node_iterator<T> ntree<T>::end() const { return const_iterator();}
+
 //ntree_node_up_iterator<T> inlines
 
 template <class T>
@@ -424,7 +504,7 @@ template <class T>
 inline _const_ntree_node_up_iterator<T> _const_ntree_node_up_iterator<T>::operator++(int)
 { 
   assert(ptr);
-  up_iterator tmp = *this;
+  _const_ntree_node_up_iterator tmp = *this;
   ptr = ptr->parent;
   return tmp;
 }
@@ -554,6 +634,12 @@ template <class T>
 inline bool operator==(_ntree_node_child_iterator<T> x, _ntree_node_child_iterator<T> y) { return x.it == y.it;}
 
 template <class T>
+inline bool operator==(_ntree_node_child_iterator<T> x, _ntree_node_iterator<T> y) { return *x.it == y.ptr;}
+
+template <class T>
+inline bool operator!=(_ntree_node_child_iterator<T> x, _ntree_node_iterator<T> y) { return !operator == (x,y);}
+
+template <class T>
 inline bool operator<(_ntree_node_child_iterator<T> x, _ntree_node_child_iterator<T> y) { return x.it < y.it;}
 
 template <class T>
@@ -591,14 +677,145 @@ template <class T>
 inline bool operator==(_const_ntree_node_child_iterator<T> x, _const_ntree_node_child_iterator<T> y) { return x.it == y.it;}
 
 template <class T>
+inline bool operator==(_const_ntree_node_child_iterator<T> x, _const_ntree_node_iterator<T> y) { return *x.it == y.ptr;}
+
+template <class T>
+inline bool operator!=(_const_ntree_node_child_iterator<T> x, _const_ntree_node_iterator<T> y) { return !operator == (x,y);}
+
+template <class T>
 inline bool operator<(_const_ntree_node_child_iterator<T> x, _const_ntree_node_child_iterator<T> y) { return x.it < y.it;}
 
 template <class T>
 inline _const_ntree_node_child_iterator<T>::_const_ntree_node_child_iterator(const iter_t &i) : it(i) {}
 
-// start of ntree.cc
-// #include "ntree.h"
-//
+//_ntree_node_iterator<T> inlines
+
+template <class T>
+inline _ntree_node_iterator<T>::_ntree_node_iterator(_ntree_node<T> &n) : ptr(&n) {}
+
+template <class T>
+inline _ntree_node_iterator<T> &_ntree_node_iterator<T>::operator = (_ntree_node<T> &n) { ptr = &n;}
+
+template <class T>
+inline _ntree_node_iterator<T> &_ntree_node_iterator<T>::operator++()
+{ 
+  assert(ptr);
+  node::child_iterator ci = ptr->child_begin();
+  if (ci != ptr->child_end()) // child found
+    {
+      ptr = &(*ci);
+      return *this;
+    }
+  /*
+   * look for sibling
+   */
+  for (up_iterator parent = ++ptr->up_begin(); parent != ptr->up_end(); parent++)
+    {
+      child_iterator sibling = (*parent).child_begin();
+      while (sibling != *this) sibling++;
+      if (++sibling != (*parent).child_end()) // sibling found
+	{
+	  ptr = &(*sibling);
+	  return *this;
+	}
+      else ptr = &(*parent);
+    }
+  ptr = 0;
+  return *this;
+}
+
+template <class T>
+inline _ntree_node_iterator<T> _ntree_node_iterator<T>::operator++(int)
+{
+  _ntree_node_iterator<T> tmp(*this);
+  operator ++();
+  return tmp;
+}
+
+template <class T>
+inline const _ntree_node<T> &_ntree_node_iterator<T>::operator*() const
+{
+  assert(ptr); 
+  return *ptr;
+}
+
+template <class T>
+inline const _ntree_node<T> *_ntree_node_iterator<T>::operator->() const
+{
+  assert(ptr); 
+  return ptr;
+}
+
+template <class T>
+inline bool operator == (_ntree_node_iterator<T> n1, _ntree_node_iterator<T> n2)
+{
+  return n1.ptr == n2.ptr;
+}
+
+//_const_ntree_node_iterator<T> inlines
+
+template <class T>
+inline _const_ntree_node_iterator<T>::_const_ntree_node_iterator(const _ntree_node<T> &n) : ptr(&n) {}
+
+template <class T>
+inline _const_ntree_node_iterator<T> &_const_ntree_node_iterator<T>::operator = (const _ntree_node<T> &n) { ptr = &n;}
+
+template <class T>
+inline _const_ntree_node_iterator<T> &_const_ntree_node_iterator<T>::operator++()
+{ 
+  assert(ptr);
+  node::const_child_iterator ci = ptr->child_begin();
+  if (ci != ptr->child_end()) // child found
+    {
+      ptr = &(*ci);
+      return *this;
+    }
+  /*
+   * look for sibling
+   */
+  for (const_up_iterator parent = ++ptr->up_begin(); parent != ptr->up_end(); parent++)
+    {
+      const_child_iterator sibling = (*parent).child_begin();
+      while (sibling != *this) sibling++;
+      if (++sibling != (*parent).child_end()) // sibling found
+	{
+	  ptr = &(*sibling);
+	  return *this;
+	}
+      else ptr = &(*parent);
+    }
+  ptr = 0;
+  return *this;
+}
+
+template <class T>
+inline _const_ntree_node_iterator<T> _const_ntree_node_iterator<T>::operator++(int)
+{
+  assert(ptr);
+  _const_ntree_node_iterator<T> tmp(*this);
+  operator ++();
+}
+
+template <class T>
+inline const _ntree_node<T> &_const_ntree_node_iterator<T>::operator*() const
+{
+  assert(ptr); 
+  return *ptr;
+}
+
+template <class T>
+inline const _ntree_node<T> *_const_ntree_node_iterator<T>::operator->() const
+{
+  assert(ptr); 
+  return ptr;
+}
+
+template <class T>
+inline bool operator == (_const_ntree_node_iterator<T> n1, _const_ntree_node_iterator<T> n2)
+{
+  return n1.ptr == n2.ptr;
+}
+
 template <class T>
 void _ntree_node<T>::destruct(self *p)
 {
