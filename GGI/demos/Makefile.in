@@ -54,14 +54,15 @@ all:	$(TARGET)
 depend:	
 
 install:	all
-		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(bindir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(bindir)
 
 uninstall:
-		rm -f $(DESTDIR)$(bindir)/$(TARGET)
+	rm -f $(DESTDIR)$(bindir)/$(TARGET)
 
 clean:	
-		rm -f $(TARGETS)
-		rm -f *.o
+	rm -f $(TARGETS)
+	rm -f *.o
 
 distclean:	clean 
 	rm -f Makefile
