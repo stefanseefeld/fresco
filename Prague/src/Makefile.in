@@ -66,6 +66,7 @@ XREF		:= $(patsubst %, %.xref, $(notdir $(HDR)))
 XREF		+= $(patsubst %, %.xref, $(SRC))
 
 TARGET		:= ../lib/libPrague.so
+MANUAL		:= ../share/doc/Prague/html
 
 vpath %.hh  $(hdir):$(hdir)/Sys:$(hdir)/IPC:$(hdir)/Filter:$(hdir)/Network
 vpath %.cc  $(srcdir)/Sys:$(srcdir)/IPC:$(srcdir)/Filter:$(srcdir)/Network
@@ -82,19 +83,20 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-sxr:	Prague.xref Prague.syn
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=SXR -o sxr Prague.syn
+xref:	../lib/Prague.xref ../lib/Prague.syn
+#	don't do more, as the sxr stuff is too specific to be hardcoded here...
+#	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=SXR -o sxr ../lib/Prague.syn
 
-doc:	../share/doc/Prague/html 
+doc:	$(MANUAL)
 
-Prague.xref:	$(XREF)
+../lib/Prague.xref:	$(XREF)
 	compile-xref -o $@ $^
 
-Prague.syn:	$(SSYN) $(HSYN)
+../lib/Prague.syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
 	@$(SYNOPSIS) -o $@ $^
 
-../share/doc/Prague/html:	$(HSYN)
+$(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
 	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
