@@ -91,7 +91,7 @@ DrawingKit::GlyphMetrics openGL::FTFont::metrics(Unichar uc)
 {
   DrawingKit::GlyphMetrics gm;
 
-  FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (char)uc), FT_LOAD_DEFAULT);
+  FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT);
 
   double scale = 1.;
   gm.width = static_cast<CORBA::Long>(my_face->glyph->metrics.width / scale);
@@ -136,7 +136,11 @@ void openGL::FTFont::draw_char(Unichar uc)
   GraphicImpl::init_requisition(r);
   allocate_char(uc, r);
 
-  assert(!FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (char)uc), FT_LOAD_DEFAULT));
+  //std::cerr << "loading: " << (FT_ULong)uc << " (";
+  //std::cerr << FT_Get_Char_Index(my_face, (FT_ULong)uc) << ")";
+  if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT)) { return; }
+  //assert(!FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT));
+  //std::cerr << std::endl;
 
   FT_Vector origin; origin.x = 0; origin.y = 0;
 
@@ -159,12 +163,15 @@ void openGL::FTFont::draw_char(Unichar uc)
   GLint maxsize, w, h; 
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxsize);
   w = next_pow2(width);
-  if (w > maxsize) return;
   h = next_pow2(height);
-  if (h > maxsize) return;
 
   while (w*h < 64)
     if (w < h) { w = next_pow2(w+1); } else { h = next_pow2(h+1); }
+
+  if (w > maxsize || h > maxsize) {
+    std::cerr << "Character too large to render." << std::endl;
+    return;
+  }
 
   vector<unsigned char> pixels(w*h, 0);
 
@@ -182,10 +189,8 @@ void openGL::FTFont::draw_char(Unichar uc)
       type = GL_UNSIGNED_BYTE;
       //x_zoom = 10; y_zoom = 10;
       for (int i = 0; i < height; i++) {
-	for (int j = 0; j < width/8; j++) {
-	  for (int k = 0; k < 8; k++) {
-	    pixels[i*w + j + k] = ((buffer[i+j*width] << k) & 0x80) ? 0xFF : 0;
-	  }
+	for (int j = 0; j < width; j++) {
+	  pixels[i*w + j] = (buffer[i*(width/8)+(j/8)] & (0x80 >> j%8)) ? 0xFF : 0;
 	}
       }
       break;
@@ -243,7 +248,7 @@ void openGL::FTFont::draw_char(Unichar uc)
 
 void openGL::FTFont::allocate_char(Unichar uc, Graphic::Requisition &r)
 {
-  FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (char)uc), FT_LOAD_DEFAULT);
+  FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT);
 
   DrawingKit::GlyphMetrics gm = metrics(uc);
   r.x.natural = r.x.minimum = r.x.maximum = (gm.horiAdvance*10) >> 6;
