@@ -72,7 +72,7 @@ template <class T>
 inline void Pool<T>::deallocate(T *d)
 {
   for (vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); i++)
-    if ((*i).data != d)
+    if ((*i).data == d)
       {
 	(*i).used = false;
 	break;

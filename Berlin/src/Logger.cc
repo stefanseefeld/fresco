@@ -31,7 +31,7 @@ bool         Logger::active[numGroups] = {false, false, false, false, false, fal
 const char * Logger::groupname[numGroups] = {"corba", "loader", "traversal", "thread", "main",
 					     "agent", "message", "command", "subject", 
 					     "observer", "text", "widget", "image", "figure",
-					     "layout", "drawing", "picking", "focus", "geometry"};
+					     "layout", "drawing", "desktop", "picking", "focus", "geometry"};
 logbuf       Logger::buf(1024 * 64);
 logstream    Logger::los(&buf);
 EventLogger  Logger::events(256);

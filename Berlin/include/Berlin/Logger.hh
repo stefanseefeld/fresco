@@ -49,7 +49,7 @@ public:
   { corba, loader, traversal, thread,
     main, agent, message, command,
     subject, observer, text, widget,
-    image, figure, layout, drawing,
+    image, figure, layout, drawing, desktop,
     picking, focus, geometry};
 private:
   struct _streamlock;
@@ -60,7 +60,7 @@ private:
       los << t;
       if (active[g]) cerr << t;
     }
-  static const int numGroups = 19;
+  static const int numGroups = 20;
 public:
   static void set(group g) { active[g] = true; }
   static void clear(group g) { active[g] = false; }

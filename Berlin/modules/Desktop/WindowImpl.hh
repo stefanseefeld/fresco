@@ -45,8 +45,9 @@ class WindowImpl : implements(Window), public ControllerImpl
   WindowImpl();
   virtual ~WindowImpl();
   void insert(Desktop_ptr);
-  Command_ptr reposition();
+  Command_ptr move();
   Command_ptr resize();
+  Command_ptr moveResize(Alignment, Alignment, CORBA::Short);
   Command_ptr relayer();
 
   virtual void pick(PickTraversal_ptr);

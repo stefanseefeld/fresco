@@ -31,8 +31,13 @@ interface Window : Controller
 //. is directly contained in the Desktop. It contains
 //. methods to manipulate its position in the Desktop.
 {
-  Command reposition();
+  const short left = 1;
+  const short right = 2;
+  const short top = 4;
+  const short bottom = 8;
+  Command move();
   Command resize();
+  Command moveResize(in Alignment x, in Alignment y, in short b);
   Command relayer();
 };
 

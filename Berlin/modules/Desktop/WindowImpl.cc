@@ -24,7 +24,7 @@
 #include "Berlin/Logger.hh"
 #include "Desktop/WindowImpl.hh"
 
-class Repositioner : public WindowImpl::Manipulator
+class Mover : public WindowImpl::Manipulator
 {
 public:
   virtual void execute(const Message &message)
@@ -36,7 +36,7 @@ public:
  	  Vertex p = handle->position();
 	  handle->position(p + *delta);
 	}
-      else  cerr << "Repositioner::execute : wrong message type !" << endl;
+      else  cerr << "Mover::execute : wrong message type !" << endl;
     }
 };
 
@@ -50,10 +50,70 @@ public:
       if (message.payload >>= delta)
 	{
  	  Vertex s = handle->size();
-	  handle->size(s + *delta);
+          Graphic::Requisition r;
+          handle->child()->request(r);
+          if (r.x.defined)
+            {
+              if (delta->x > 0.) s.x = min(s.x + delta->x, r.x.maximum);
+              else s.x = max(s.x + delta->x, r.x.minimum);
+            }
+          else s.x += delta->x;
+          if (r.y.defined)
+            {
+              if (delta->y > 0.) s.y = min(s.y + delta->y, r.y.maximum);
+              else s.y = max(s.y + delta->y, r.y.minimum);
+            }
+          else s.y += delta->y;
+	  handle->size(s);
 	}
       else cerr << "Resizer::execute : wrong message type !" << endl;
     }
+};
+
+class MoveResizer : public WindowImpl::Manipulator
+{
+public:
+  MoveResizer(Alignment x, Alignment y, CORBA::Short b) : xalign(x), yalign(y), border(b) {}
+  virtual void execute(const Message &message)
+    {
+      SectionLog section(Logger::desktop, "MoveResizer::execute");
+      if (CORBA::is_nil(handle)) return;
+      Vertex *vertex;
+      if (message.payload >>= vertex)
+	{
+          Graphic::Requisition r;
+          handle->child()->request(r);
+ 	  Vertex pos = handle->position();
+ 	  Vertex size = handle->size();
+	  Vertex p = pos, s = size;
+	  if (border & Window::left && xalign != 0.)
+	    {
+	      s.x = min(r.x.maximum, max(r.x.minimum, size.x + vertex->x/xalign));
+	      p.x = pos.x - xalign * (s.x - size.x);
+	    }
+	  else if (border & Window::right && xalign != 1.)
+	    {
+	      s.x = min(r.x.maximum, max(r.x.minimum, size.x + vertex->x/(1.-xalign)));
+	      p.x = pos.x - xalign * (s.x - size.x);
+	    }
+	  if (border & Window::top && yalign != 0.)
+	    {
+	      s.y = min(r.y.maximum, max(r.y.minimum, size.y + vertex->y/yalign));
+	      p.y = pos.y - yalign * (s.y - size.y);
+	    }
+	  else if (border & Window::bottom && yalign != 1.)
+	    {
+	      s.y = min(r.y.maximum, max(r.y.minimum, size.y + vertex->y/(1.-yalign)));
+	      p.y = pos.y - yalign * (s.y - size.y);
+	    }
+	  handle->position(p);
+	  handle->size(s);
+	}
+      else cerr << "MoveResizer::execute : wrong message type !" << endl;
+    }
+private:
+  Alignment xalign, yalign;
+  CORBA::Short border;
 };
 
 class Relayerer : public WindowImpl::Manipulator
@@ -74,7 +134,7 @@ public:
 WindowImpl::WindowImpl()
   : ControllerImpl(true), manipulators(3)
 {
-  manipulators[0] = new Repositioner;
+  manipulators[0] = new Mover;
   manipulators[0]->_obj_is_ready(_boa());
   manipulators[1] = new Resizer;
   manipulators[1]->_obj_is_ready(_boa());
@@ -84,16 +144,18 @@ WindowImpl::WindowImpl()
 
 WindowImpl::~WindowImpl()
 {
-  manipulators[0]->_dispose();
-  manipulators[1]->_dispose();  
-  manipulators[2]->_dispose();  
+  for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
+    (*i)->_dispose();
 }
 
 void WindowImpl::insert(Desktop_ptr desktop)
 {
+  SectionLog section(Logger::desktop, "WindowImpl::insert");
   Vertex position, size;
-  position.x = position.y = position.z = 100;
-  size.x = size.y = size.z = 0;
+  position.x = position.y = 100., position.z = 0.;
+  Graphic::Requisition r;
+  request(r);
+  size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
   desktop->begin();
   handle = desktop->insert(Graphic_var(_this()), position, size, 0);
   desktop->end();
@@ -101,8 +163,14 @@ void WindowImpl::insert(Desktop_ptr desktop)
     (*i)->bind(handle);
 }
 
-Command_ptr WindowImpl::reposition() { return manipulators[0]->_this();}
+Command_ptr WindowImpl::move() { return manipulators[0]->_this();}
 Command_ptr WindowImpl::resize() { return manipulators[1]->_this();}
+Command_ptr WindowImpl::moveResize(Alignment x, Alignment y, CORBA::Short b)
+{
+  manipulators.push_back(new MoveResizer(x, y, b));
+  manipulators.back()->_obj_is_ready(_boa());
+  return manipulators.back()->_this();
+}
 Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
 
 void WindowImpl::pick(PickTraversal_ptr traversal)

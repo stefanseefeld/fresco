@@ -32,16 +32,16 @@
 using namespace Geometry;
 
 StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Stage::Index ll)
-  : parent(pa), child(Graphic::_duplicate(g)), tag(t), p(pp), s(ss), l(ll)
+  : parent(pa), c(Graphic::_duplicate(g)), tag(t), p(pp), s(ss), l(ll)
 {
-  child->addParent(Stage_var(parent->_this()), tag);
+  c->addParent(Stage_var(parent->_this()), tag);
   cacheBBox();
 }
 
 void StageHandleImpl::position(const Vertex &pp)
 {
   parent->begin();
-  parent->reposition(this, pp);
+  parent->move(this, pp);
   parent->end();
 }
 
@@ -64,7 +64,7 @@ void StageHandleImpl::cacheBBox()
   SectionLog section(Logger::layout, "StageHandleImpl::cacheBBox");
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
-  child->request(r);
+  c->request(r);
   if (r.x.defined && r.y.defined)
     {
       xalign = r.x.align;
@@ -246,7 +246,7 @@ void StageQuad::contains(const Point<Coord> &point, StageFinder &finder)
       {
 	/*
 	  RegionImpl region;
-	  (*i)->child->shape(region);
+	  (*i)->c->shape(region);
 	  if (region->contains(point.x, point.y)) finder.found(*i);
 	*/
 	finder.found(*i);
@@ -262,7 +262,7 @@ void StageQuad::intersects(const Rectangle<Coord> &r, StageFinder &finder)
 	{
 	  /*
 	    RegionImpl shape;
-	    (*i)->child->shape(region);
+	    (*i)->c->shape(region);
 	    if (shape->intersects(region.l, region.b, region.r, region.t)) finder.found(item);
 	  */
 	  finder.found(*i);
@@ -306,7 +306,7 @@ void StageQuad::intersects(const Rectangle<Coord> &r, const Polygon<Coord> &poly
       {
 	/*
 	  RegionImpl shape;
-	  Glyph_var(item->child())->shape(region);
+	  Graphic_var(item->child())->shape(region);
 	  if (shape->intersects(Geometry::Polygon)) finder.found(item);
 	*/
 	finder.found(*i);
@@ -459,7 +459,7 @@ void StageTraversal::traverse(StageHandleImpl *handle)
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(CORBA::BOA::getBOA());
   handle->bbox(*region);
-  traversal->traverseChild(handle->child, handle->tag, Region_var(region->_this()), Transform_var(Transform::_nil()));
+  traversal->traverseChild(handle->c, handle->tag, Region_var(region->_this()), Transform_var(Transform::_nil()));
   region->_dispose();
 }
 
@@ -683,9 +683,9 @@ void StageImpl::remove(StageHandle_ptr h)
   need_resize = true;
 }
 
-void StageImpl::reposition(StageHandleImpl *handle, const Vertex &p)
+void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
-  SectionLog section(Logger::layout, "StageImpl::reposition");
+  SectionLog section(Logger::layout, "StageImpl::move");
   MutexGuard guard(childMutex);
   tree.remove(handle);
 

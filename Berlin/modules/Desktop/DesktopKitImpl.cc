@@ -20,10 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Desktop/DesktopKitImpl.hh>
-#include <Desktop/WindowImpl.hh>
-#include <Desktop/Titlebar.hh>
-#include <Berlin/Logger.hh>
+#include "Desktop/DesktopKitImpl.hh"
+#include "Desktop/WindowImpl.hh"
+#include "Desktop/Titlebar.hh"
+#include "Desktop/Border.hh"
+#include "Berlin/Logger.hh"
 #include "Berlin/Plugin.hh"
 
 DesktopKitImpl::DesktopKitImpl() {}
@@ -41,19 +42,44 @@ void DesktopKitImpl::bind(ServerContext_ptr sc)
 
 Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
 {
-  SectionLog section(Logger::traversal, "DesktopKitImpl::shell");
+  SectionLog section(Logger::desktop, "DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
   Color gray = {0.5, 0.5, 0.5, 1.0};
+
   Titlebar *tb = new Titlebar(gray);
   tb->_obj_is_ready(_boa());
-  Command_var move = window->reposition();
-  Graphic_var frame = wk->outset(Graphic_var(tb->_this()), gray);
-  Graphic_var dragger = wk->dragger(frame, move);
-  Graphic_var box = lk->vbox();
-  box->append(dragger);
-  box->append(g);
-  window->body(box);
+  Command_var move = window->move();
+  Graphic_var tbframe = wk->outset(Graphic_var(tb->_this()), gray);
+  Graphic_var tbdragger = wk->dragger(tbframe, move);
+
+  Corner *left = new Corner(gray);
+  left->_obj_is_ready(_boa());
+  Command_var lresize = window->moveResize(1.0, 0.0, Window::left|Window::bottom);
+  Graphic_var lframe = wk->outset(Graphic_var(left->_this()), gray);
+  Graphic_var ldragger = wk->dragger(lframe, lresize);
+
+  Border *border = new Border(gray);
+  border->_obj_is_ready(_boa());
+  Command_var bresize = window->moveResize(0.0, 0.0, Window::bottom);
+  Graphic_var bframe = wk->outset(Graphic_var(border->_this()), gray);
+  Graphic_var bdragger = wk->dragger(bframe, bresize);
+
+  Corner *right = new Corner(gray);
+  right->_obj_is_ready(_boa());
+  Command_var rresize = window->moveResize(0.0, 0.0, Window::right|Window::bottom);
+  Graphic_var rframe = wk->outset(Graphic_var(right->_this()), gray);
+  Graphic_var rdragger = wk->dragger(rframe, rresize);
+
+  Graphic_var vbox = lk->vbox();
+  Graphic_var hbox = lk->hbox();
+  hbox->append(ldragger);
+  hbox->append(bdragger);
+  hbox->append(rdragger);
+  vbox->append(tbdragger);
+  vbox->append(g);
+  vbox->append(hbox);
+  window->body(vbox);
   window->insert(desktop);
   windows.push_back(window);
   desktop->appendController(Controller_var(window->_this()));

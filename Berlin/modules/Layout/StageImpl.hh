@@ -37,6 +37,7 @@ class StageHandleImpl : implements(StageHandle)
 {
  public:
   StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
+  virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
   virtual Vertex position() { MutexGuard guard(mutex); return p;}
   virtual void position(const Vertex &);
   virtual Vertex size() { MutexGuard guard(mutex); return s;}
@@ -58,7 +59,7 @@ class StageHandleImpl : implements(StageHandle)
 //  private:
   void cacheBBox();
   StageImpl *parent;
-  Graphic_var child;
+  Graphic_var c;
   Tag tag;
   Vertex p;
   Vertex s;
@@ -155,7 +156,7 @@ class StageImpl : implements(Stage), public GraphicImpl
   virtual StageHandle_ptr insert(Graphic_ptr, const Vertex &, const Vertex &, Index);
   virtual void remove(StageHandle_ptr);
 
-  void reposition(StageHandleImpl *, const Vertex &);
+  void move(StageHandleImpl *, const Vertex &);
   void resize(StageHandleImpl *, const Vertex &);
   void relayer(StageHandleImpl *, Stage::Index);
 private:
