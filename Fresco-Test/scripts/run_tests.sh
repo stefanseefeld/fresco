@@ -6,13 +6,15 @@
 # It is meant as a quick and dirty way to run our tests from a Makefile
 # without needing to register all tests with qmtest manually.
 
+TEST_LOG=test.log
+
 ALL_PASSED=1
 
 function run_test()
 {
     TESTPROG="$1"
     for TEST in `$TESTPROG list` ; do
-        if ! $TESTPROG run $TEST | egrep -q '^Result:[[:space:]]+PASS'; then
+        if ! $TESTPROG run $TEST | tee -a $TEST_LOG | egrep -q '^Result:[[:space:]]+PASS'; then
             echo "Test $TEST in $TESTPROG FAILED!"
             ALL_PASSED=0;
 	else
@@ -20,6 +22,11 @@ function run_test()
         fi
     done
 }
+
+date >> $TEST_LOG
+echo "Running \"$*\":" >> $TEST_LOG
+echo "Using LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> $TEST_LOG
+echo >> $TEST_LOG
 
 for CURRENT in "$@"; do
     run_test "$CURRENT"
