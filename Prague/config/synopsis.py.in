@@ -1,0 +1,42 @@
+# Synopsis configuration file for Prague
+
+from Synopsis.Config import Base
+
+top_srcdir = '@top_srcdir@'
+
+class Config(Base):
+
+    class Parser(Base.Parser):
+
+	class CXX(Base.Parser.CXX):
+	    "Parser for C++ headers, extends C++ parser"
+	    main_file = 1
+	    preprocessor = 'gcc'
+	    extract_tails = 1
+	    include_path = ['../include', top_srcdir + '/include']
+	    basename = top_srcdir + '/include/'
+	
+	modules = {'Prague' : CXX}
+
+    class Linker (Base.Linker):
+
+	class Fresco(Base.Linker.Linker):
+	    "Fresco style linker - override the comment stuff"
+	    comment_processors = ['ssd', 'prev', 'group']
+	
+	modules = {'Prague' : Fresco}
+
+    class Formatter(Base.Formatter):
+
+	class HTML(Base.Formatter.HTML):
+	    "Set some local options common to all manuals"
+	    stylesheet = 'manual.css'
+	    stylesheet_file = top_srcdir + '/config/manual.css'
+	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
+	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
+	    toc_out = '../share/Prague/doc/html/Prague.toc'
+	
+	# Here we extend the base modules, so you can still use DUMP, ASCII etc
+	modules = Base.Formatter.modules
+	modules['HTML'] = HTML
+

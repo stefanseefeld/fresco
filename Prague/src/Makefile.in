@@ -37,16 +37,19 @@ $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 endef
 
 define parse
-@echo parsing $(@F)
+@echo parsing $^
 @$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
 endef
 
 include ../config/local.mk
 
-CPPFLAGS	+= @CPPFLAGS@ -I$(hdir)
+edit		:= sed \
+	           -e 's,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),g' \
+	           -e 's,@CXXFLAGS\@,@CXXFLAGS@,g' \
+		   -e 's,@LIBS\@,@LIBS@,g'
+
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
-LIBS		+= @LIBS@
 
 Sys		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
 	  	   File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
@@ -75,49 +78,68 @@ vpath %.hh  $(hdir)/Prague/Sys $(hdir)/Prague/IPC $(hdir)/Prague/Filter $(hdir)/
 
 .PHONY: clean distclean maintainer-clean dist install
 
-all:	$(TARGET)
+all:	$(TARGET) ../bin/Prague-config
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
 
-doc:	$(SYN)
+../bin/Prague-config: $(top_srcdir)/config/Prague-config.in
+	rm -f $@ $@.tmp
+	$(edit) \
+	  -e 's,@prefix\@,@abs_top_builddir@,g' \
+	  -e 's,@exec_prefix\@,@abs_top_builddir@,g' \
+	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include ,g'
+	  $< > $@.tmp
+	chmod +x $@.tmp
+	mv $@.tmp $@
+
+doc:	../share/Prague/doc/html ../bin/Prague-config
+
+../share/Prague/doc/html:	$(SYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=PragueHTML -o $@ $(SYN)
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Sys
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/IPC
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Filter
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Network
+	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
 	@if ! cmp -s ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh 2>/dev/null; then \
-	  echo "$(INSTALL) -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh"; \
-	  $(INSTALL) -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh; \
+	  echo "$(INSTALL) -D -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh"; \
+	  $(INSTALL) -D -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh; \
 	else \
           echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
         fi
 	@for header in $(HDR); do \
 	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
-	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
+	    $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
 	  else \
 	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
 	  fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -m 755 ../bin/Prague-config $(DESTDIR)$(bindir)
+	rm -f $(DESTDIR)$(bindir)/Prague-config $(DESTDIR)$(bindir)/Prague-config.tmp
+	$(edit) \
+	  -e 's,@prefix\@,$(prefix),g' \
+          -e 's,@exec_prefix\@,$(exec_prefix),g' \
+	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
+        $(top_srcdir)/config/Prague-config.in > $(DESTDIR)$(bindir)/Prague-config.tmp
+	chmod +x $(DESTDIR)$(bindir)/Prague-config.tmp
+	mv $(DESTDIR)$(bindir)/Prague-config.tmp $(DESTDIR)$(bindir)/Prague-config
+	@if test -d ../share/Prague/doc/html; then \
+	  mkdir -p $(DESTDIR)$(datadir)/Prague/doc; \
+	  cp -r ../share/Prague/doc/html $(DESTDIR)$(datadir)/Prague/doc; \
+	fi;
 
 uninstall:
+	rm -fr $(DESTDIR)$(datadir)/Babylon/doc
 	rm -f $(DESTDIR)$(bindir)/Prague-config
 	rm -rf $(DESTDIR)$(includedir)/Prague
 	rm -f $(DESTDIR)$(libdir)/libPrague.so
 
 clean:	
 	rm -f $(TARGET)
-	rm -f *.o *.d
+	rm -f $(OBJ) $(SYN)
 #	cd Examples; $(MAKE) clean;
 
 distclean:	clean
@@ -150,6 +172,8 @@ DataTypeManager.o:	$(srcdir)/Sys/DataTypeManager.cc
 %.o:	$(srcdir)/Network/%.cc
 	$(compile)
 
+%.syn:	$(hdir)/Prague/%.hh
+	$(parse)
 Sys/%.syn:	$(hdir)/Prague/Sys/%.hh
 	$(parse)
 IPC/%.syn:	$(hdir)/Prague/IPC/%.hh

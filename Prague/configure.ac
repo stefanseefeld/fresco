@@ -113,8 +113,7 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-AC_CONFIG_FILES([bin/Prague-config:config/Prague-config.in], [chmod +x bin/Prague-config])
-AC_CONFIG_FILES([config/local.mk Makefile src/Makefile])
+AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile])
 AC_CONFIG_FILES([demo/Makefile demo/Sys/Makefile demo/Thread/Makefile demo/IPC/Makefile
                  demo/Filter/Makefile demo/Network/Makefile])
 
