@@ -198,14 +198,21 @@ for GGI console.
 (Note: the GGI/Mesa console isn't hardware accelerated, so if you
 have a good video card use the SDL console instead).
 
-If you're brave you can check http://www.fresco.org/contrib.html to find "real" applications
-to run under Berlin (they may be broken, or not, contact their authors for more information).
+If you're brave you can check http://www.fresco.org/contrib.html to find
+"real" applications to run under Fresco/Berlin (they may be broken, or not,
+contact their authors for more information).
 
 Finally here they are other options you may use when invoking the server:
 
--l --logger [list of groups to log]: log messages (the special group 'lifecycle' requires configuration with --enable-lclog)
--t --tracer :                        trace method calls (requires configuration with --enable-tracer)
--p --profiler :                      use jprof profiler (requires configuration with --enable-jprof)
+  -l --logger [list of groups to log]: log messages (the special group
+                                       'lifecycle' requires configuration
+                                       with --enable-lclog)
+
+  -t --tracer :                        trace method calls (requires configuration
+                                       with --enable-tracer)
+
+  -p --profiler :                      use jprof profiler (requires configuration
+                                       with --enable-jprof)
 
 
 
