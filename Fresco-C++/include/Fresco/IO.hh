@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_io_hh
+#ifndef _Warsaw_IO_hh
 #define _Warsaw_IO_hh
 
 #include <Warsaw/Graphic.hh>
@@ -34,5 +34,6 @@ ostream &operator << (ostream &, const Warsaw::Graphic::Requisition &);
 ostream &operator << (ostream &, const Warsaw::Region::Allotment &);
 ostream &operator << (ostream &, Warsaw::Region_ptr);
 ostream &operator << (ostream &, const Warsaw::Transform::Matrix &);
+ostream &operator << (ostream &, Warsaw::Transform_ptr);
 
-#endif /* _Warsaw_IO_hh */
+#endif

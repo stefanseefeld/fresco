@@ -98,3 +98,10 @@ ostream &operator << (ostream &os, const Transform::Matrix &m)
      << '[' << m[3][0] << ',' << m[3][1] << ',' << m[3][2] << ',' << m[3][3] << ']' << endl;
   return os;
 };
+
+ostream &operator << (ostream &os, Transform_ptr &transform)
+{
+  Transform::Matrix matrix;
+  transform->store_matrix(matrix);
+  return os << matrix;
+};
