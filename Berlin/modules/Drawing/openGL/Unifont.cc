@@ -53,7 +53,7 @@ GLUnifont::GLUnifont() : rendered(65536)
 	cerr << "Please set environment variable BERLIN_ROOT first" << endl;
 	exit(-1);
       }
-    string glyphDB = string(env) + "/etc/glyphs.db";
+    string glyphDB = string(env) + "/etc/glyph.db";
     if (Db::open(glyphDB.c_str(), DB_BTREE, DB_RDONLY|DB_NOMMAP, 0644, NULL, NULL,&glyphdb) == DB_RUNRECOVERY)
       perror("Unifont initialization");
     myDisplaylistOffset = glGenLists(65536);
