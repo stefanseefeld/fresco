@@ -31,6 +31,7 @@ module Warsaw
   interface Transform;
   interface Region;
   interface Raster;
+  interface DrawingKit3D;
   
   interface DrawingKit : Kit
     {
@@ -108,6 +109,9 @@ module Warsaw
       
       //. Flush the drawing kit.
       void flush();
+
+      //. 3D drawing extensions
+      readonly attribute DrawingKit3D dk3D;
     };
 };
 
