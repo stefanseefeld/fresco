@@ -22,13 +22,14 @@
 #ifndef _Motif_WidgetKitImpl_hh
 #define _Motif_WidgetKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/WidgetKit.hh"
-#include "Warsaw/CommandKit.hh"
-#include "Warsaw/LayoutKit.hh"
-#include "Warsaw/ToolKit.hh"
-#include "Warsaw/TextKit.hh"
-#include "Berlin/KitImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/WidgetKit.hh>
+#include <Warsaw/CommandKit.hh>
+#include <Warsaw/LayoutKit.hh>
+#include <Warsaw/ToolKit.hh>
+#include <Warsaw/TextKit.hh>
+#include <Berlin/KitImpl.hh>
+#include <Berlin/RefCountBaseImpl.hh>
 #include <vector>
 
 class GraphicImpl;
@@ -39,7 +40,10 @@ namespace Motif
 class WidgetKit : public virtual POA_WidgetKit, public KitImpl
 {
  public:
-  class CommandImpl : public virtual POA_Command {};
+  class CommandImpl : public virtual POA_Command,
+		      public virtual PortableServer::RefCountServantBase,
+		      public virtual RefCountBaseImpl
+  {};
 
   WidgetKit(KitFactory *, const PropertySeq &);
   virtual ~WidgetKit();

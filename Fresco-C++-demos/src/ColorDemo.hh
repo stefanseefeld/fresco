@@ -28,7 +28,17 @@
 
 class ColorDemo : public Demo
 {
-  class Adapter : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
+  class RefCountBaseImpl : public virtual POA_Observer,
+			   public virtual PortableServer::RefCountServantBase
+  {
+  public:
+    RefCountBaseImpl() : refcount(1) {}
+    virtual void increment() { refcount++;}
+    virtual void decrement() { if (!--refcount) deactivate(this);}
+  private:
+    int refcount;
+  };
+  class Adapter : public virtual POA_Observer, public virtual RefCountBaseImpl
   {
   public:
     Adapter(ColorDemo *d, Tag t) : demo(d), tag(t) {}

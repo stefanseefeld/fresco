@@ -61,7 +61,17 @@ class Application
     Command_var settings;
   };
   typedef vector<Item> list_t;
-  class Mapper : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+  class RefCountBaseImpl : public virtual POA_Command,
+			   public virtual PortableServer::RefCountServantBase
+  {
+  public:
+    RefCountBaseImpl() : refcount(1) {}
+    virtual void increment() { refcount++;}
+    virtual void decrement() { if (!--refcount) deactivate(this);}
+  private:
+    int refcount;
+  };
+  class Mapper : public RefCountBaseImpl
   {
   public:
     Mapper(Application::list_t &d, Selection_ptr s) : demos(d), selection(Selection::_duplicate(s)) {}

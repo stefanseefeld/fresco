@@ -27,9 +27,12 @@
 #include <Warsaw/BoundedValue.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/RefCountBaseImpl.hh>
 #include "Demo.hh"
 
-class Forward : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+class Forward : public virtual POA_Command,
+		public virtual PortableServer::RefCountServantBase,
+		public virtual RefCountBaseImpl
 {
  public:
   Forward(BoundedValue_ptr v) : value(BoundedValue::_duplicate(v)) {}
@@ -38,7 +41,9 @@ class Forward : public virtual POA_Command, public virtual PortableServer::RefCo
   BoundedValue_var value;
 };
 
-class Backward : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+class Backward : public virtual POA_Command,
+		 public virtual PortableServer::RefCountServantBase,
+		 public virtual RefCountBaseImpl
 {
  public:
   Backward(BoundedValue_ptr v) : value(BoundedValue::_duplicate(v)) {}
@@ -47,7 +52,9 @@ class Backward : public virtual POA_Command, public virtual PortableServer::RefC
   BoundedValue_var value;
 };
 
-class Rotator : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
+class Rotator : public virtual POA_Observer,
+		public virtual PortableServer::RefCountServantBase,
+		public virtual RefCountBaseImpl
 {
  public:
   Rotator(BoundedValue_ptr, Graphic_ptr, Graphic_ptr, Coord);

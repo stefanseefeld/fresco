@@ -33,7 +33,7 @@ namespace Motif
 
 class Slider : public ControllerImpl
 {
-  class Observer : public virtual POA_Observer
+  class Observer : public ObserverImpl
   {
   public:
     Observer(Slider *s) : slider(s) {}

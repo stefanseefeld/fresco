@@ -26,7 +26,9 @@
 
 using namespace Motif;
 
-class Scrollbar::Dragger : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+class Scrollbar::Dragger : public virtual POA_Command,
+		           public virtual PortableServer::RefCountServantBase,
+	                   public virtual RefCountBaseImpl
 {
 public:
   Dragger(BoundedRange_ptr v, Axis a) : value(BoundedRange::_duplicate(v)), axis(a) {}

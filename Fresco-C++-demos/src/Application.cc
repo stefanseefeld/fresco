@@ -40,7 +40,7 @@ void Application::Mapper::execute(const CORBA::Any &)
     if (t == (*i).id) (*i).mapper->execute(any);
 }
 
-class ExitCommand : public virtual POA_Command, public virtual PortableServer::RefCountServantBase 
+class ExitCommand : public Application::RefCountBaseImpl
 {
  public:
   void execute(const CORBA::Any &) { exit(0);}

@@ -35,7 +35,7 @@ namespace Motif
 
 class Terminal : public MonoGraphic
 {
-  class Input : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
+  class Input : public ObserverImpl
   {
   public:
     Input(Terminal *t) : terminal(t) {}

@@ -24,28 +24,27 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Kit.hh>
-#include "Berlin/KitFactory.hh"
+#include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/KitFactory.hh>
 
 class ServerContextImpl;
 
-class KitImpl : public virtual POA_Kit, public virtual PortableServer::RefCountServantBase
+class KitImpl : public virtual POA_Kit,
+		public virtual PortableServer::RefCountServantBase,
+		public virtual RefCountBaseImpl
 {
   friend class ServerContextImpl;
  protected:
   typedef Kit::PropertySeq PropertySeq;
  public:
-  KitImpl(KitFactory *f, const PropertySeq &p) : counter(0), fact(f), props(p) { fact->increment();}
+  KitImpl(KitFactory *f, const PropertySeq &p) : fact(f), props(p) { fact->increment();}
   ~KitImpl() { fact->decrement();}
   //. notify the factory about our (non) existence so it knows when it is safe to get unloaded
   virtual PropertySeq *properties() { return new PropertySeq(props);}
-  virtual void bind(ServerContext_ptr) { counter = 1;}
+  virtual void bind(ServerContext_ptr) {};// { counter = 1;}
   virtual void remove() {}//{ if (!decrement()) _dispose();}
   virtual CORBA::Boolean supports(const PropertySeq &p) { return KitFactory::supports(props, p);}
- protected:
-  void increment() { counter++;}
-  bool decrement() { return --counter;}
  private:
-  unsigned short     counter;
   KitFactory        *fact;
   const PropertySeq &props;
 };

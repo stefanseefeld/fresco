@@ -35,7 +35,9 @@ class Choice::State : public virtual POA_Selection, public SubjectImpl
 {
   class Observer;
   friend class Observer;
-  class Observer : public virtual POA_Observer
+  class Observer : public virtual POA_Observer,
+                   public virtual PortableServer::RefCountServantBase,
+                   public virtual RefCountBaseImpl
     {
     public:
       Observer(State *, Telltale_ptr, Tag);

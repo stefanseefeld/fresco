@@ -8,10 +8,10 @@ from omniORB import CORBA
 
 # Import the Warsaw stubs
 import Warsaw
-import POA_Warsaw
+import Warsaw__POA
 import CosNaming
 # Define an implementation of the ClientContext interface
-class ClientContextImpl (POA_Warsaw.ClientContext):
+class ClientContextImpl (Warsaw__POA.ClientContext):
     def userName(self): return "joe"
     def ping(self): return
 

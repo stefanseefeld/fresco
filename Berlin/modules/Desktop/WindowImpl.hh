@@ -35,7 +35,9 @@ class UnmappedStageHandle;
 
 class WindowImpl : public virtual POA_Window, public ControllerImpl
 {
-  class Manipulator : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+  class Manipulator : public virtual POA_Command,
+		      public virtual PortableServer::RefCountServantBase,
+		      public virtual RefCountBaseImpl
   {
   public:
     virtual ~Manipulator() {}
@@ -44,7 +46,9 @@ class WindowImpl : public virtual POA_Window, public ControllerImpl
   protected:
     StageHandle_var handle;
   };
-  class Mapper : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+  class Mapper : public virtual POA_Command,
+		 public virtual PortableServer::RefCountServantBase,
+		 public virtual RefCountBaseImpl
   {
   public:
     Mapper(WindowImpl *w, bool f) : window(w), flag(f) {}

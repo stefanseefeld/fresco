@@ -28,7 +28,9 @@
 #include <list>
 #include "Berlin/RefCountBaseImpl.hh"
 
-class SubjectImpl : public virtual POA_Subject, public virtual PortableServer::RefCountServantBase, public virtual RefCountBaseImpl
+class SubjectImpl : public virtual POA_Subject,
+		    public virtual PortableServer::RefCountServantBase,
+		    public virtual RefCountBaseImpl
 {
 public:
   SubjectImpl();
@@ -37,11 +39,17 @@ public:
   void notify(const CORBA::Any &);
   virtual void notify();
   void block(CORBA::Boolean b);  
-protected:
+private:
   list<Observer_var> observers;
   CORBA::Boolean blocked;
   Prague::Mutex observerMutex;
   Prague::Mutex myMutex;
+};
+
+class ObserverImpl : public virtual POA_Observer,
+		     public virtual PortableServer::RefCountServantBase,
+		     public virtual RefCountBaseImpl
+{
 };
 
 #endif /* _SubjectImpl_hh */

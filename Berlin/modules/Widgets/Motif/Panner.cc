@@ -27,7 +27,9 @@
 using namespace Motif;
 using namespace Prague;
 
-class Panner::Dragger : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
+class Panner::Dragger : public virtual POA_Command,
+	                public virtual PortableServer::RefCountServantBase,
+	                public virtual RefCountBaseImpl
 {
 public:
   Dragger(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(BoundedRange::_duplicate(x)), yvalue(BoundedRange::_duplicate(y)) {}

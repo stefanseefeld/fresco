@@ -22,11 +22,13 @@
 #ifndef _Kit_idl
 #define _Kit_idl
 
+#include <Warsaw/RefCountBase.idl>
+
 interface ServerContext;
 
 //. ths kit interface is the base type for most of the objects
 //. you will allocate in a berlin server.
-interface Kit
+interface Kit : RefCountBase
 {
   struct Property
   {

@@ -23,7 +23,7 @@ SHELL	= /bin/sh
 
 
 cpath	= ../../../config
-wpath	= ../../../idl/Warsaw
+wpath	= ../../../idl
 ipath	= ../../../include
 lpath	= ../../../lib
 dpath	= dep
@@ -35,7 +35,7 @@ IDL	= omniidl
 IDLFLAGS= -I$(wpath) -nf -bpython -Wbglobal=Warsaw
 
 DYNINT	= Types.idl
-STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
+STATINT	= RefCountBase.idl ClientContext.idl Server.idl Kit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl \
 	  DrawingKit.idl \
@@ -63,15 +63,15 @@ vpath %.d $(dpath)
 
 world:	$(SRC)
 
-$(STATSRC): %_idl.py:		$(wpath)/%.idl
+$(STATSRC): %_idl.py:		$(wpath)/Warsaw/%.idl
 		$(IDL) $(IDLFLAGS) $<
-$(DYNSTATSRC): %_idl.py: 	$(wpath)/%.idl
+$(DYNSTATSRC): %_idl.py: 	$(wpath)/Warsaw/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(DYNSRC): %DynSK.py:	$(wpath)/%.idl
+$(DYNSRC): %DynSK.py:	$(wpath)/Warsaw/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 
 clean:	
-		rm -rf $(SRC) $(CMP) CosNaming Input Figures POA_* Warsaw *~
+		rm -rf $(SRC) $(CMP) Input Figures POA_* Warsaw *~
 
 distclean:	clean
 		rm -f $(TARGET)

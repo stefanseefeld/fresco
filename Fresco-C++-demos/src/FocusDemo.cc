@@ -23,9 +23,12 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Subject.hh>
 #include <Warsaw/Choice.hh>
+#include <Berlin/RefCountBaseImpl.hh>
 #include "FocusDemo.hh"
 
-class FocusDemo::Observer : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
+class FocusDemo::Observer : public virtual POA_Observer,
+                	    public virtual PortableServer::RefCountServantBase,
+		            public virtual RefCountBaseImpl
 {
  public:
   virtual void update(const CORBA::Any &any)

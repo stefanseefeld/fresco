@@ -23,10 +23,12 @@
 #ifndef _Command_idl
 #define _Command_idl
 
+#include <Warsaw/RefCountBase.idl>
+
 interface Command;
 
 //. commands are anonymous encapsulated actions. 
-interface Command
+interface Command : RefCountBase
 {
   void execute(in any a);
 };

@@ -38,7 +38,7 @@ class Panner : public ControllerImpl
     Coord lower;
     Coord upper;
   }; 
-  class Observer : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
+  class Observer : public ObserverImpl
   {
   public:
     Observer(Panner *p) : panner(p) {}
