@@ -93,10 +93,10 @@ int main(int argc, char **argv)
   string value;
   getopt.get("version", &value);
   if (value == "true") { cout << "version is " << "0.2" << endl; exit(0);}
-  value == "";
+  value = "";
   getopt.get("help", &value);
   if (value == "true") { getopt.usage(); exit(0);}
-  value == "";  
+  value = "";  
   getopt.get("logging", &value);
   if (value == "true")
     {
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     }
 
 #ifdef JPROF
-  value == "";
+  value = "";
   getopt.get("profiling", &value);
   if (value == "true") setupProfilingStuff();
 #endif
@@ -165,24 +165,17 @@ int main(int argc, char **argv)
 
   // make a Screen graphic to hold this server's scene graph
   ScreenImpl *screen = new ScreenImpl(drawing);
-  cout << "here" << endl;
   props.length(0);
   ToolKit_var tools = server->resolve<ToolKit>(ToolKit::_PD_repoId, props);
-  cout << "here" << endl;
   DesktopImpl *desktop = new DesktopImpl;
-  cout << "here" << endl;
 //   ToolKit::FrameSpec spec;
 //   Color color = {0.7, 1.0, 0.7, 1.0};
 //   spec.foreground(color);
 //   screen->body(Graphic_var(tools->frame(Desktop_var(desktop->_this()), 10., spec, true)));
   screen->body(Desktop_var(desktop->_this()));
-  cout << "here" << endl;
   screen->appendController(Desktop_var(desktop->_this()));
-  cout << "here" << endl;
   LayoutKit_var layout = server->resolve<LayoutKit>(LayoutKit::_PD_repoId, props);
-  cout << "here" << endl;
   Stage_var stage = layout->createStage();
-  cout << "here" << endl;
   desktop->init(stage);
 
   Logger::log(Logger::layout) << "[3/5] created desktop" << endl;

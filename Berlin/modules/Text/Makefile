@@ -23,13 +23,13 @@ SHELL	= /bin/sh
 
 top     = ../..
 cpath   = $(top)/config
-hpath   = $(top)/include/Berlin
+hpath   = $(top)/include/Text
 
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath) 
+LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
 SRC	= TextChunk.cc Compositor.cc Composition.cc TextViewer.cc TerminalView.cc TextKitImpl.cc

@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
+#include <Prague/Sys/Tracer.hh>
 
 // there is an annoying warning message produced by gcc.
 // unless I find out how to supress that I'm going to use ObjectId *
@@ -32,6 +33,7 @@
 template <typename Servant>
 inline Servant activate(Servant servant)
 {
+  Prague::Trace trace("activate");
   PortableServer::POA_var poa = servant->_default_POA();
 //   PortableServer::ObjectId_var oid = poa->servant_to_id(servant);
   PortableServer::ObjectId *oid = poa->activate_object(servant);
@@ -42,6 +44,7 @@ inline Servant activate(Servant servant)
 
 inline void deactivate(PortableServer::Servant servant)
 {
+  Prague::Trace trace("deactivate");
   PortableServer::POA_var poa = servant->_default_POA();
 //   PortableServer::ObjectId_var oid = poa->servant_to_id(servant);
   PortableServer::ObjectId *oid = poa->servant_to_id(servant);

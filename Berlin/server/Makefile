@@ -51,6 +51,8 @@ server:		server.o
 
 kits:		kits.o
 		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
+bug:		bug.o
+		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
 
 install:	world
 		install -m755 server $(bindir)
@@ -66,6 +68,8 @@ server.d:	server.cc
 		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@'
 server.o:	server.cc
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+bug.o:		bug.cc
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))

@@ -41,8 +41,7 @@ using namespace Prague;
 
 int main(int argc, char **argv)
 {
-  CORBA::ORB_ptr orb = CORBA::ORB_init(argc,argv,"omniORB2");
-  CORBA::BOA_ptr boa = orb->BOA_init(argc,argv,"omniORB2_BOA");
+//  CORBA::ORB_ptr orb = CORBA::ORB_init(argc, argv, "omniORB3");
 
 //   GetOpt getopt(argv[0], "a berlin display server");
 //   getopt.add('h', "help", GetOpt::novalue, "help message");

@@ -65,29 +65,15 @@ public:
     void provide(Lease<T> &L)
     {
       T *impl;
-      if (cache.fetch(impl))
-	{
-	  Lease newlease(impl,this);	
-	  L = newlease;
-	}
-      else
-	{
-	  impl = new T();
-	  Lease newlease(impl,this);	
-	  L = newlease;
-	}
+      if (cache.fetch(impl)) { Lease tmp(impl, this, false); L = tmp;}
+      else                   { Lease tmp(new T(), this, true); L = tmp;}
     }
   };
   
 
+  Lease() : t(0), p(0) {}
   Lease(Lease<T> &i) : t(i._retn()), p(i.p) {}
-  explicit Lease(T *tt = 0, Provider<T> *pp  = 0) : t(tt), p(pp) { if (t) activate(t);}
-  Lease &operator = (T *tt)
-  {
-    if (t) p->adopt(t);
-    t = tt;
-    if (t) activate(t);
-  }
+  explicit Lease(T *tt, Provider<T> *pp, bool activ) : t(tt), p(pp) { if (t && activ) activate(t);}
   Lease &operator = (Lease<T> &i)
   {
     if (&i != this)

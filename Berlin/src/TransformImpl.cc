@@ -22,10 +22,12 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Berlin/Logger.hh"
-// #include "Prague/Sys/Profiler.hh"
+#include <Prague/Sys/Tracer.hh>
 
 static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;
+
+using namespace Prague;
 
 /*
  * transformation matrices are of the form:
@@ -93,6 +95,7 @@ TransformImpl::TransformImpl() { init();}
 
 TransformImpl::TransformImpl(Transform::Matrix m)
 {
+  Trace trace("TransformImpl::TransformImpl(Transform::Matrix)");
   loadMatrix(m);
   identity = false;
   translate_only = false;
@@ -153,6 +156,7 @@ Coord TransformImpl::det()
 
 void TransformImpl::copy(Transform_ptr transform)
 {
+  Trace trace("TransformImpl::copy");
   if (CORBA::is_nil(transform)) init();
   else
     {
@@ -164,6 +168,7 @@ void TransformImpl::copy(Transform_ptr transform)
 
 void TransformImpl::loadMatrix(const Matrix m)
 {
+  Trace trace("TransformImpl::loadMatrix");
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
       mat[i][j] = m[i][j];
@@ -175,6 +180,7 @@ void TransformImpl::loadIdentity() { init();}
 
 void TransformImpl::storeMatrix(Matrix m)
 {
+  Trace trace("TransformImpl::storeMatrix");
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
       m[i][j] = mat[i][j];
@@ -183,6 +189,7 @@ void TransformImpl::storeMatrix(Matrix m)
 
 CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
 {
+  Trace trace("TransformImpl::equal");
   if (!valid) recompute();
   if (identity) return CORBA::is_nil(transform) || transform->Identity();
   if (CORBA::is_nil(transform) || transform->Identity()) return false;

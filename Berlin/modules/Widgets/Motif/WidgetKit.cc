@@ -92,8 +92,8 @@ Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
 {
   Trigger_var trigger = tool->button(g, c);
   ToolKit::FrameSpec s1, s2;
-  s1.brightness(0.5); s1._d(ToolKit::outset);
-  s2.brightness(0.5); s2._d(ToolKit::inset);
+  s1.brightness(0.5); s1._d(ToolKit::inset);
+  s2.brightness(0.5); s2._d(ToolKit::outset);
   Graphic_var frame = tool->dynamic(g, 20., Controller::pressed, s1, s2, true, trigger);
   trigger->body(frame);
   return trigger._retn();
@@ -103,8 +103,8 @@ Controller_ptr WidgetKit::toggle(Graphic_ptr g)
 {
   Controller_var toggle = tool->toggle(Graphic_var(Graphic::_nil()));
   ToolKit::FrameSpec s1, s2;
-  s1.brightness(0.5); s1._d(ToolKit::outset);
-  s2.brightness(0.5); s2._d(ToolKit::inset);
+  s1.brightness(0.5); s1._d(ToolKit::inset);
+  s2.brightness(0.5); s2._d(ToolKit::outset);
   Graphic_var frame = tool->dynamic(g, 20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   return toggle._retn();

@@ -21,9 +21,9 @@
 
 SHELL	= /bin/sh
 
-top	= ../..
-cpath	= $(top)/config
-hpath	= $(top)/include/Berlin
+top     = ../..
+cpath   = $(top)/config
+hpath   = $(top)/include/Command
 
 include $(cpath)/local.mk
 

@@ -49,7 +49,7 @@ bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
 
 void EventManager::nextEvent()
 {
-//   Trace trace("EventManager::nextEvent");
+  Trace trace("EventManager::nextEvent");
   ggi_event e;
   if (!drawable->nextEvent(e)) return; // repair
   Input::Event event;
