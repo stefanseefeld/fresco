@@ -40,20 +40,21 @@ class RegionImpl;
 class ScreenManager
 {
 public:
-  ScreenManager(Warsaw::Graphic_ptr, EventManager *, Warsaw::DrawingKit_ptr);
-  ~ScreenManager();
-  void damage(Warsaw::Region_ptr);
-  void repair();
-  void run();
+    ScreenManager(Warsaw::Graphic_ptr, EventManager *, Warsaw::DrawingKit_ptr);
+    ~ScreenManager();
+    void damage(Warsaw::Region_ptr);
+    void repair();
+    //. Main event loop.
+    void run();
 private:
-  Warsaw::Graphic_var         _screen;
-  EventManager               *_emanager;
-  Warsaw::DrawingKit_var      _drawing;
-  Console::Drawable          *_drawable;
-  Impl_var<RegionImpl>        _theDamage;
-  Impl_var<RegionImpl>        _tmpDamage;
-  Impl_var<DrawTraversalImpl> _traversal;
-  Prague::Mutex               _mutex;
+    Warsaw::Graphic_var         _screen;
+    EventManager               *_emanager;
+    Warsaw::DrawingKit_var      _drawing;
+    Console::Drawable          *_drawable;
+    Impl_var<RegionImpl>        _theDamage;
+    Impl_var<RegionImpl>        _tmpDamage;
+    Impl_var<DrawTraversalImpl> _traversal;
+    Prague::Mutex               _mutex;
 };
 
 #endif

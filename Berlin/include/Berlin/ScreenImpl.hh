@@ -36,30 +36,32 @@ class ScreenImpl : public virtual POA_Warsaw::Screen,
                    public ControllerImpl
 {
 public:
-  ScreenImpl();
-  virtual ~ScreenImpl();
-  void bind_managers(EventManager *, ScreenManager *);
-
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void allocations(Warsaw::Allocation_ptr);
-  virtual void need_resize() { need_redraw();}
-
-  virtual Warsaw::Coord width();
-  virtual Warsaw::Coord height();
-  virtual void damage(Warsaw::Region_ptr);
-
-  virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr) { return true;}
-  virtual void lose_focus(Warsaw::Input::Device) {}
-  virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
-  virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &) { return false;}
-
-  Warsaw::Region_ptr allocation();
+    //. Sets up the screen to the sizes given by the console in use.
+    ScreenImpl();
+    virtual ~ScreenImpl();
+    //. Sets up the Event- and Screenmanager for this screen.
+    void bind_managers(EventManager *, ScreenManager *);
+    
+    virtual void pick(Warsaw::PickTraversal_ptr);
+    virtual void allocations(Warsaw::Allocation_ptr);
+    virtual void need_resize() { need_redraw();}
+    
+    virtual Warsaw::Coord width();
+    virtual Warsaw::Coord height();
+    virtual void damage(Warsaw::Region_ptr);
+    
+    virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+    virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr) { return true;}
+    virtual void lose_focus(Warsaw::Input::Device) {}
+    virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
+    virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &) { return false;}
+    
+    Warsaw::Region_ptr allocation();
 protected:
-  Warsaw::Screen_ptr    __this;
-  EventManager          *_emanager;
-  ScreenManager         *_smanager;
-  Impl_var<RegionImpl>   _region;
+    Warsaw::Screen_ptr    __this;
+    EventManager          *_emanager;
+    ScreenManager         *_smanager;
+    Impl_var<RegionImpl>   _region;
 };
 
 #endif 
