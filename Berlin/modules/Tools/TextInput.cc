@@ -36,11 +36,25 @@ void TextInput::key_press(const Input::Event &event)
     Trace trace("TextInput::key_press");
     const Input::Toggle &toggle = event[0].attr.selection();
     Babylon::Char uc(static_cast<Babylon::UCS4>(toggle.number));
+
     switch (toggle.number)
     {
     case Babylon::UC_BACKSPACE:
     my_buffer->remove_backward(1);
     break; // backspace
+    case Babylon::UC_DELETE:
+    my_buffer->remove_forward(1);
+    break; // delete
+#if 1
+    case Babylon::UC_KEY_CURSOR_UP:
+    case Babylon::UC_KEY_HOME:
+    my_buffer->position(0);
+    break; // up/home
+    case Babylon::UC_KEY_CURSOR_DOWN:
+    case Babylon::UC_KEY_END:
+    my_buffer->position(my_buffer->size());
+    break; // down/end
+#endif
     case Babylon::UC_KEY_CURSOR_LEFT:
     my_buffer->backward();
     break; // left
