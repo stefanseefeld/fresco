@@ -98,7 +98,16 @@ namespace SyUnit
           }
           else
           {
-              std::cout << my_tests[my_test_name]->run();
+              if (my_tests.find(my_test_name) != my_tests.end())
+              {
+                  std::cout << my_tests[my_test_name]->run();
+              }
+              else
+              {
+                  std::cerr << "No such test '" << my_test_name
+                            << "'" << std::endl;
+                  std::exit(2);
+              }
           }
           
       }
