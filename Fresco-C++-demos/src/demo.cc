@@ -33,6 +33,7 @@
 #include "ViewportDemo.hh"
 #include "DocDemo.hh"
 #include "TermDemo.hh"
+#include "GridDemo.hh"
 #include <memory>
 
 using namespace Prague;
@@ -88,6 +89,7 @@ int main(int argc, char **argv)
      std::auto_ptr<Demo> text(create_demo<TextDemo>(application));
      std::auto_ptr<Demo> edit(create_demo<EditTextDemo>(application));
      std::auto_ptr<Demo> raster(create_demo<RasterDemo>(application));
+     std::auto_ptr<Demo> grid(create_demo<GridDemo>(application));
      std::auto_ptr<Demo> color(create_demo<ColorDemo>(application));
      std::auto_ptr<Demo> logo(create_demo<LogoDemo>(application));
      std::auto_ptr<Demo> focus(create_demo<FocusDemo>(application));
