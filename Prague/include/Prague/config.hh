@@ -22,5 +22,9 @@ inline const char *strsignal(int signo) { return _sys_siglist[signo];}
 extern "C" const char *strsignal(int);
 #endif
 
+#ifndef HAVE_SOCKLEN_T
+typedef int socklen_t;
+#endif
+
 #endif
 
