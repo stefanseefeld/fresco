@@ -40,6 +40,7 @@ public:
     }
   ~Plugin() { delete t; }
   T *operator ->() { return t;}
+  operator T *() { return t; }
 protected:
 private:
   T *t;
