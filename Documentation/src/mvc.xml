@@ -40,7 +40,7 @@
   <section><title>application space vs. representation space</title>
     <para>
       <!-- talk about application space vs. representation space -->The
-      aforementionned separation between process address spaces is, in
+      aforementioned separation between process address spaces is, in
       general, referred to as the client/server separation. In many windowing
       systems, the client stores the majority of data structures, and the
       display server stores the minimum data required to represent its drawing
@@ -48,7 +48,7 @@
       for two reasons: the client/server communication protocol is generated
       automatically by the CORBA stub compiler, so it is very easy to add
       semantically rich concepts to its "vocabulary"; and the display server
-      has no special operating-system level privilidges, so can be much more
+      has no special operating-system level privilege, so can be much more
       promiscuous about the sort of dynamic extensions it loads. The resulting
       flexibility means that we can load most of the representation code of a
       user interface metaphor into the display server, and just "attach"
@@ -67,13 +67,13 @@
     <para>
       <!-- talk about models in application space -->Models support a common
       interface, which we have named <classname>Subject</classname> in order
-      to be familliar to Java programmers. It includes operations for adding
+      to be familiar to Java programmers. It includes operations for adding
       and removing <classname>Observers</classname> (such as
       <classname>Views</classname>, as well as a common notification method
       which a client (or the model itself) should call when observers should
       be notified of a change to the model. In addition, most models subclass
       the <classname>Subject</classname> interface a little, to provide
-      accessors for their concrete datatype.
+      accessors for their concrete data-type.
     </para>
     <section><title>a special case: Controllers</title>
       <para>
@@ -91,9 +91,9 @@
         in this telltale which are observable.
         In other words - you never ask the controller whether it has keyboard focus or whether
         it holds a grab for a positional device. You ask whether it is <emphasis>active</emphasis>,
-        <emphasis>pressed</emphasis>, <emphasis>choosen</emphasis>, etc. For buttons for example
+        <emphasis>pressed</emphasis>, <emphasis>chosen</emphasis>, etc. For buttons for example
         you typically use frames or highlights to reflect these state flags.
-        This decoupling has the advantage that you can customize the behavior - i.e. the mapping 
+        This decoupling has the advantage that you can customize the behaviour - i.e. the mapping 
         from events to these semantic flags - and therefor have greater freedom to adapt the interface 
         to your own needs. Here are the predefined flags declared in the Telltale interface:
         <table frame="all">
@@ -114,7 +114,7 @@
               </row>
               <row>
                 <entry>chosen</entry>
-                <entry>a flag used in toggable widgets</entry>
+                <entry>a flag used in togglable widgets</entry>
               </row>
               <row>
                 <entry>running</entry>
@@ -140,10 +140,10 @@
         <para>
 	  <!-- talk about bounded values -->A <classname>BoundedValue</classname>
 	  is a double precision floating point value with some built-in named
- 	  incriments. The incriments are important, because it allows
+ 	  increments. The increments are important, because it allows
 	  general-purpose controllers to be constructed which "step through" the
 	  numeric range without needing to care exactly how large the range is or
-	  what the incriments of stepping are. When the value is changed, the
+	  what the increments of stepping are. When the value is changed, the
 	  <classname>BoundedValue</classname> inspects the change to make sure it
 	  represents an actual numeric difference (this step is important to avoid
 	  notification loops) and then notifies all observers.
@@ -180,7 +180,7 @@
       previously, views of models (a.k.a. "representation space") reside
       primarily though not exclusively in the display server process. While it
       is possible to attach remote "view" nodes to the scene graph, 2 reasons
-      prevent this from occuring in the common case: CORBA itself is somewhat
+      prevent this from occurring in the common case: CORBA itself is somewhat
       slow when making a large number of inter-process calls, and doing so
       would also eliminate any user preferences which might effect the view's
       concrete appearance. Since part of our goal is to allow users to
@@ -188,16 +188,16 @@
       issue is considered quite serious. It is recommended that you let the
       server construct views for you in as many cases as possible.
     </para>
-    <section><title>concete examples</title>
+    <section><title>concrete examples</title>
       <para>
-	<!-- talk about concete examples -->Here we give some specific views of
+	<!-- talk about concrete examples -->Here we give some specific views of
 	abstract models. This will help set the concept of
 	<classname>View</classname>.
       </para>
       <section><title>radio boxes</title>
         <para>
  	  <!-- talk about radio boxes -->Radio boxes are a specific view of a set
-	  of mutually excluside telltales. Selecting one will unselect any
+	  of mutually exclusive telltales. Selecting one will unselect any
 	  other. They are usually presented with a set of labelled, bevelled discs
 	  or rectangles, possibly with checkmarks drawn on top of them. 
         </para>
@@ -223,9 +223,9 @@
       <para>
 	<!-- talk about concrete examples -->
       </para>
-      <section><title>incrimenting a value</title>
+      <section><title>incrementing a value</title>
         <para>
-	  <!-- talk about incrimenting a value -->
+	  <!-- talk about incrementing a value -->
         </para>
       </section>
       <section><title>editing a buffer</title>
