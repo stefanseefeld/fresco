@@ -10,10 +10,10 @@
  
 // this cruft is intended to help handle differences in ORBs. it's sad, really.
 #define interface(name) name##_IntfRepoID
-#define applyscope(scope, thing) scope##::##thing
-#define skeletonize(interfacename) _lc_sk_##interfacename
+#define applyscope(scope,thing) scope ## :: ## thing
+#define skeletonize(interfacename) _lc_sk_ ## interfacename
 #define implements(interface) virtual public skeletonize(interface)
-#define implementsscoped(scope, interface) virtual public applyscope(scope, skeletonize(interface))
+#define implementsscoped(scope,interface) virtual public applyscope(scope,skeletonize(interface))
 #define obtain(sc,in) applyscope(in,_narrow(sc->create(interface(in))))
 
 #endif /* _config_hh */
