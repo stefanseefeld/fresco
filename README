@@ -1,10 +1,10 @@
 Welcome to the Fresco windowing system
 
-The current release is 0.3, which means it is not even into the stage
-where the most adventuresome users will gain any productivity from
-it. It's a *developer's* release. If you want to help develop fresco,
-you can work off this release with some modicum of confidence and
-convenience. Please read the INSTALL file for further instructions about
+The current release is not even refered to as 'beta', which means it is
+not even into the stage where the most adventuresome users will gain any
+productivity from it. It's a *developer's* release. If you want to help
+develop fresco, you can work off this release with some modicum of confidence
+and convenience. Please read the INSTALL file for further instructions about
 how to build the system.
 
 Please do not hesitate to customize the build process for an
@@ -19,6 +19,9 @@ Questions / comments are best directed towards the mailing list:
 
 Archives of the mailing list & FAQ are on our web site: 
   http://www.fresco.org
+
+Please report bugs at:
+  http://issues.fresco.org/
 
 Hope you enjoy it
 -graydon <graydon@pobox.com>
