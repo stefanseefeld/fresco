@@ -1,5 +1,9 @@
 This is the directory where perl demo stuff for Berlin goes.
 
+Note that it hasn't been touched for months, and has doubtlessly bit-rotted
+madly.  And it was a terrible kluge to start with.  So don't expect anything
+to work...
+
 Requirements:
   1) threaded perl
      This is needed for CORBA callbacks to work right -- the boa has to run
