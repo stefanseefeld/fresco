@@ -97,7 +97,7 @@ maintainer-clean: distclean
 
 $(SYN): $(CXX_TESTS)
 	@echo generating $(@F)
-	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
+	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -I$(top_builddir)/include -o $@ $<
 
 $(HARNESS): $(SYN)
 	@echo generating test harness for $(@F)
@@ -105,8 +105,8 @@ $(HARNESS): $(SYN)
 
 $(DEP): $(HARNESS)
 	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+	$(SHELL) -ec '$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(CPPFLAGS) -I$(top_builddir)/include $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 $(OBJ): $(HARNESS)
 	@echo compiling $(@F)
-	$(CXX) `$(FRESCO_TEST_CONFIG) --cppflags` `$(FRESCO_TEST_CONFIG) --cxxflags` -c $< -o $@
+	$(CXX) `$(FRESCO_TEST_CONFIG) --cppflags` `$(FRESCO_TEST_CONFIG) --cxxflags` $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(CPPFLAGS) -I$(top_builddir)/include -c $< -o $@
