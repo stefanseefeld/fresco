@@ -56,8 +56,8 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Telltale.idl StreamBuffer.idl Trigger.idl Canvas.idl State.idl ToolKit.idl Choice.idl \
 		   WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 		   Image.idl FigureKit.idl Command.idl CommandKit.idl Metrics.idl \
-		   TextKit.idl Desktop.idl Window.idl DesktopKit.idl Types3D.idl \
-		   DrawingKit3D.idl Primitive.idl GGIKit.idl UnidrawKit.idl
+		   TextKit.idl Desktop.idl Window.idl DesktopKit.idl \
+		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl GGIKit.idl UnidrawKit.idl
 
 INT		:= $(DYNINT) $(STATINT)
 

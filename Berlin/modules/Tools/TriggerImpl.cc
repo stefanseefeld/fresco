@@ -64,7 +64,8 @@ void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event
   if (inside(traversal) && test(Warsaw::Controller::pressed))
     {
       CORBA::Any dummy;
-      execute(dummy);
+      try { execute(dummy);}
+      catch (...) {}
     }
   ControllerImpl::release(traversal, event);
 }

@@ -152,7 +152,7 @@ dnl ------------------------------------------------------------------
 dnl Enable all Kits present if $enable_kits == all (the default)
 if test ".$enable_kits" = .all ; then
 	enable_kits=
-	for kit in Layout Command Tool Image Figure Text Widget/Motif Gadget Desktop Unidraw
+	for kit in Layout Command Tool Image Figure Primitive Text Widget/Motif Gadget Desktop Unidraw
 	do
 		if test -d $srcdir/src/$kit ; then
 			enable_kits="$enable_kits $kit"

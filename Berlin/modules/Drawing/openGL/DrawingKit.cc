@@ -315,15 +315,7 @@ void GLDrawingKit::draw_text(const Unistring &us) {}
 void GLDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { _font->allocate_char(c, req);}
 void GLDrawingKit::draw_char(Unichar c) { _font->draw_char(c);}
 
-void GLDrawingKit::draw_triangles(const Warsaw::Vertices &coords, const Warsaw::Vertices &normals, const Warsaw::TexCoords &tcs)
-{
-}
-
-void GLDrawingKit::draw_lines(const Warsaw::Vertices &coords, const Warsaw::TexCoords &tcs)
-{
-}
-
-void GLDrawingKit::draw_points(const Warsaw::Vertices &coords)
+void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
 {
 }
 

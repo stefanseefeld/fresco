@@ -64,7 +64,15 @@ module Warsaw
   {
     Coord x, y, z;
   };
+  typedef sequence<Vertex> Vertices;
   
+  //. Texture coordinates (used by all texture mapping modes)
+  struct TexCoord
+  {
+    Coord u, v, w;
+  };
+  typedef sequence<TexCoord> TexCoords;
+
   //. An alignment is a floating point value that represents
   //. a relative position.  Alignments are typically between
   //. zero and one inclusive, with zero indicating the position
@@ -81,8 +89,34 @@ module Warsaw
     double alpha;
   };
   
-  typedef sequence<Vertex> Path;
+  interface Raster;
+  //. Sequence of rasters (for multitexturing)
+  typedef sequence<Raster> Rasters;
+
+  struct MaterialAttr
+  {
+    Color ambient;
+    Color diffuse;
+    Color specular;
+    Color emissive;
+    float shininess;
+  };
+
+  typedef Vertices Path;
   
+  struct Triangle
+  {
+    long a, b, c;
+  };
+
+  typedef sequence<Triangle> TriangleSeq;
+
+  struct Mesh
+  {
+    Path vertices;
+    TriangleSeq triangles;    
+  };
+
   //. this is a character in the unicode range U+0000 - U+FFFF. It is a
   //. coded representation of a "unit" of textual information. it is not
   //. a picture on a screen, nor a particular semantic value. it is only

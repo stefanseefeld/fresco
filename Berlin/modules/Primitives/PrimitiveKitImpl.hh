@@ -1,9 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Niklas Elmqvist <elm@3dwm.org>
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,27 +20,25 @@
  * MA 02139, USA.
  */
 
-#ifndef _DrawingKit3D_idl
-#define _DrawingKit3D_idl
+#ifndef _PrimitiveKitImpl_hh
+#define _PrimitiveKitImpl_hh
 
-#include <Warsaw/DrawingKit.idl>
+#include <Warsaw/config.hh>
+#include <Warsaw/PrimitiveKit.hh>
+#include <Warsaw/Primitive.hh>
+#include <Berlin/KitImpl.hh>
+#include <vector>
 
-module Warsaw
+class PrimitiveKitImpl : public virtual POA_Warsaw::PrimitiveKit,
+			 public KitImpl
 {
-  interface DrawingKit3D : DrawingKit
-  {
-    enum TextureMode { TextureOff, Texture1D, Texture2D, Texture3D};
-    enum LightingMode { LightOff, LightOn};
-    enum FoggingMode { FogOff, FogLinear, FogExponential};
-    attribute MaterialAttr material;
-    attribute Rasters textures;
-    attribute TextureMode tex_mode;
-    attribute FoggingMode fog_mode;
-    
-    void draw_mesh(in Mesh m);    
-  };
+public:
+  PrimitiveKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  virtual ~PrimitiveKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new PrimitiveKitImpl(repo_id(), p);}
 
+  Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
+  Primitive::Box_ptr cube(const Warsaw::Vertex &, const Warsaw::Vertex &);
 };
-  
 
 #endif

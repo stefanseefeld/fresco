@@ -123,9 +123,9 @@ public:
   virtual void allocate_text(const Warsaw::Unistring &, Warsaw::Graphic::Requisition &);
   virtual void draw_text(const Warsaw::Unistring &);
 
-  virtual void draw_triangles(const Warsaw::Vertices &coords, const Warsaw::Vertices &normals, const Warsaw::TexCoords &tcs);    
-  virtual void draw_lines(const Warsaw::Vertices &coords, const Warsaw::TexCoords &tcs);
-  virtual void draw_points(const Warsaw::Vertices &coords);
+  virtual void draw_mesh(const Warsaw::Mesh &);
+//   virtual void draw_lines(const Warsaw::Vertices &coords, const Warsaw::TexCoords &tcs);
+//   virtual void draw_points(const Warsaw::Vertices &coords);
 
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
   virtual void flush() { glFlush();}

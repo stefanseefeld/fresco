@@ -1,9 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Niklas Elmqvist <elm@3dwm.org>
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,27 +20,23 @@
  * MA 02139, USA.
  */
 
-#ifndef _DrawingKit3D_idl
-#define _DrawingKit3D_idl
+#ifndef _Root_hh
+#define _Root_hh
 
-#include <Warsaw/DrawingKit.idl>
+#include <Warsaw/config.hh>
+#include <Warsaw/DrawingKit3D.hh>
+#include <Berlin/Allocator.hh>
 
-module Warsaw
+//. Root is supposed to be the root node in a 3D scene graph hierarchy.
+//. It therefor switches on all the necessary flags in the DrawingKit
+//. that are necessary only when rendering 3D
+class Root : public TransformAllocator
 {
-  interface DrawingKit3D : DrawingKit
-  {
-    enum TextureMode { TextureOff, Texture1D, Texture2D, Texture3D};
-    enum LightingMode { LightOff, LightOn};
-    enum FoggingMode { FogOff, FogLinear, FogExponential};
-    attribute MaterialAttr material;
-    attribute Rasters textures;
-    attribute TextureMode tex_mode;
-    attribute FoggingMode fog_mode;
-    
-    void draw_mesh(in Mesh m);    
-  };
-
+public:
+  Root(Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
 };
-  
 
 #endif
