@@ -53,6 +53,8 @@ BERLIN_LIB_ORB(mandatory)
 MAKEFILE=
 if test ".$ORB" = .omniORB ; then
 	MAKEFILE="Makefile.omniorb.in"
+elif test ".$ORB" = .TAO ; then
+	MAKEFILE="Makefile.tao.in"
 fi
 
 dnl ------------------------------------------------------------------

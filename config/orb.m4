@@ -24,7 +24,7 @@ dnl BERLIN_LIB_ORB(mandatory-flag)
 dnl
 dnl Try to find a usable ORB. If mandatory-flag is "mandatory", abort if
 dnl none is found.
-dnl For now, only omniORB is supported, more to come.
+dnl For now, omniORB and TAO are supported.
 dnl This macro doesn't check anything by itself. It just delegates it to
 dnl secondary macros, which checks if the specific ORB is available and
 dnl sets ORB_LIBS, ORB_CPPFLAGS, IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS and
@@ -48,7 +48,15 @@ AC_DEFUN([BERLIN_LIB_ORB],[
 				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
 			else
 				ORB=omniORB
-			fi				
+			fi		
+			;;
+		TAO)
+			BERLIN_LIB_TAO
+			if test ".$berlin_cv_lib_TAO" != ".yes"; then
+				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
+			else
+				ORB=TAO
+			fi		
 			;;
  		*)
  			msg="$ORB is not supported (yet)."
@@ -61,6 +69,9 @@ AC_DEFUN([BERLIN_LIB_ORB],[
 	case $ORB in
 		omniORB)
 			AC_DECIDE(OMNIORB, [use omniORB])
+			;;
+		TAO)
+			AC_DECIDE(TAO, [use TAO])
 			;;
 		none)
 			AC_DECIDE(NONE, [none found])

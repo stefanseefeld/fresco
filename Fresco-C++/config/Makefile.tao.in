@@ -33,11 +33,10 @@ bdir		:= $(builddir)/bin
 include $(cdir)/local.mk
 
 IDLCXX		:= @IDLCXX@
-IDLCXX		:= /usr/local/src/ACE_wrappers/TAO/TAO_IDL/tao_idl
 
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
-CPPFLAGS	+= @CPPFLAGS) -include $(hdir)/Warsaw/config.hh -I/usr/local/src/ACE_wrappers -I/usr/local/src/ACE_wrappers/TAO
+CPPFLAGS	+= @CPPFLAGS@ -include $(hdir)/Warsaw/config.hh -I/usr/local/src/ACE_wrappers -I/usr/local/src/ACE_wrappers/TAO
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 LIBS		+= @LIBS@
