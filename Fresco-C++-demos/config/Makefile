@@ -50,7 +50,7 @@ configure: configure.in aclocal.m4
 
 aclocal.m4: $(cpath)/macros/*.m4
 	@echo Running aclocal...
-	@aclocal -I $(cpath)/macros
+	@(aclocal -I $(cpath)/macros || cat $(cpath)/macros/*.m4 > aclocal.m4)
 
 clean:	
 	rm -f *~ local.mk config.status config.log
