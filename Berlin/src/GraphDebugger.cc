@@ -21,6 +21,7 @@
  */
 
 #include <Fresco/Controller.hh>
+#include <Fresco/Transform.hh>
 
 #include <Berlin/GraphDebugger.hh>
 #include <Berlin/GraphicImpl.hh>
@@ -70,8 +71,50 @@ void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
     out << "    n" << info.id << " ";
     
     // label: name
-    out << "[label=\"" << info.name << "(n" << info.id << ")\","
-	<< std::endl;
+    out << "[label=\"" << info.name << "(n" << info.id << ")\\n";
+
+    // label: allocation
+    Fresco::Graphic::Requisition r;
+    g->request(r);
+    out << "X(";
+    if (r.x.defined)
+	out << r.x.minimum << ","
+	    << r.x.natural << ","
+	    << r.x.maximum << ")";
+    else
+	out << "-";
+    out << "):Y(";
+    if (r.y.defined)
+	out << r.y.minimum << ","
+	    << r.y.natural << ","
+	    << r.y.maximum << ")";
+    else
+	out << "-";
+    out << "):Z(";
+    if (r.z.defined)
+	out << r.z.minimum << ","
+	    << r.z.natural << ","
+	    << r.z.maximum << ")";
+    else
+	out << "-";
+    out << ")";
+    
+    // label: transformation
+    Fresco::Transform_var t = g->transformation();
+    if (!CORBA::is_nil(t) && !t->identity())
+    {
+	Fresco::Transform::Matrix m;
+	t->store_matrix(m);
+	out << "[" << m[0][0] << ", " << m[0][1] << ", "
+	    << m[0][2] << ", "  << m[0][3] << "]\\n";
+	out << "[" << m[1][0] << ", " << m[1][1] << ", "
+	    << m[1][2] << ", "  << m[1][3] << "]\\n";
+	out << "[" << m[2][0] << ", " << m[2][1] << ", "
+	    << m[2][2] << ", "  << m[2][3] << "]\\n";
+	out << "[" << m[3][0] << ", " << m[3][1] << ", "
+	    << m[3][2] << ", "  << m[3][3] << "]\\n";
+    }
+    out << "\"," << std::endl;
     
     // shape (depending on type of g)
     out << "        shape=\"";
@@ -103,7 +146,8 @@ void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
 	children.push_back(g->body());
 
     // children contain all childgraphics now!
-    for (std::vector<Fresco::Graphic_ptr>::const_iterator i = children.begin();
+    for (std::vector<Fresco::Graphic_ptr>::const_iterator i =
+	     children.begin();
 	 i != children.end();
 	 ++i)
     {
@@ -111,7 +155,8 @@ void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
 	out << "    n" << info.id << " -> n" << target.id << std::endl;
     }
 
-    for (std::vector<Fresco::Graphic_ptr>::const_iterator i = children.begin();
+    for (std::vector<Fresco::Graphic_ptr>::const_iterator i =
+	     children.begin();
 	 i != children.end();
 	 ++i)
 	dump_graphic(*i, out);
@@ -130,7 +175,7 @@ Berlin::GraphDebugger::find_or_insert(Fresco::Graphic_ptr g)
 	     my_known_graphics.begin();
 	 i != my_known_graphics.end();
 	 ++i)
-	if ((hash == i->hash) &&
+	if (hash == i->hash &&
 	    (p == i->impl ||
 	     g->is_identical(i->graphic)))
 		return *i; // we allready know this one
