@@ -48,6 +48,7 @@ private:
   DrawingKit_var drawing;
 //   Drawable_var drawable;
   Region_var clipping;
+  TransformImpl *id;
 };
 
 #endif /* _DrawTraversalImpl_hh */

@@ -56,6 +56,7 @@ class WindowImpl : implements(Window), public ControllerImpl
  public:
   WindowImpl();
   virtual ~WindowImpl();
+  virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
   void insert(Desktop_ptr, bool);
   CORBA::Boolean mapped() { Prague::MutexGuard guard(mutex); return !unmapped;}
   Command_ptr move();
@@ -72,6 +73,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   mtable_t manipulators;
   Mapper *mapper, *unmapper;
   Prague::Mutex mutex;
+  vector<Controller_var> focus;
 };
 
 class UnmappedStageHandle : implements(StageHandle)
