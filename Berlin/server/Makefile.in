@@ -62,11 +62,11 @@ ifeq ($(JPROF),yes)
 
 endif
 
-../bin/server:	server.o ServerImpl.o ServerContextImpl.o
+../bin/server:	ServerImpl.o ServerContextImpl.o server.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../bin/kits:	kits.o ServerImpl.o ServerContextImpl.o
+../bin/kits:	ServerImpl.o ServerContextImpl.o kits.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
@@ -75,27 +75,32 @@ endif
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 install:	all
-		$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-		$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
-		$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
-		$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
-		$(INSTALL) -m 644 ../etc/glyph.dat $(DESTDIR)$(sysconfdir)
-		$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)/PNG
-		for IMAGE in ../etc/PNG/*.png; do \
-		   $(INSTALL) -m 644 $$IMAGE $(DESTDIR)$(sysconfdir)/PNG; \
-		done
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m 644 $(top_srcdir)/share/glyph.dat $(DESTDIR)$(datadir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG
+	@for image in $(patsubst $(top_srcdir)/share/PNG/%, %, $(wildcard $(top_srcdir)/share/PNG/*.png)); do \
+	  if ! cmp -s $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image 2>/dev/null; then \
+	    echo "$(INSTALL) -m 644 $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image"; \
+	    $(INSTALL) -m 644 $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image; \
+	  else \
+	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/$$image is up to date"; \
+	  fi; \
+	done
 
 uninstall:
-		for target in $TARGETS ; do \
-		  rm -f $(DESTDIR)$(bindir)/$$target \
-		done
-		rm -f $(DESTDIR)$(sysconfdir)/berlinrc
+	for target in $TARGETS ; do \
+	  rm -f $(DESTDIR)$(bindir)/$$target \
+	done
+	rm -f $(DESTDIR)$(sysconfdir)/berlinrc
 clean:	
-		rm -f $(TARGETS)
-		rm -f *.o
+	rm -f $(TARGETS)
+	rm -f *.o
 
 distclean:	clean
-		rm -f Makefile
+	rm -f Makefile
 
 maintainer-clean: distclean
 

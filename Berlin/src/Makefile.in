@@ -70,10 +70,12 @@ install:	all
           echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
         fi
 	for header in $(HDR); do \
-	  if test -f $(hdir)/$$header; then \
+	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
 	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
 	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
-	  else :; fi; \
+	  else \
+	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+	  fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 ../bin/Berlin-config $(DESTDIR)$(bindir)
