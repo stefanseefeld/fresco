@@ -1,10 +1,10 @@
-<chapter>
+<chapter ID="user-chapter">
   <title>User's Guide</title>
   <abstract>
     <para>This chapter, while currently a little weak, will hopefully
 evolve into a decent man page for users.</para>
   </abstract>
-  <sect1>
+  <sect1 ID="prerequisites">
     <title>Prerequisites</title>
       <para>Berlin is developed using a lot of "bleeding edge" stuff,
 and as such you have to do a certain amount of work before it will
@@ -33,7 +33,7 @@ productivity gain to a user.
 </para>
     </sect1>
 
-    <sect1>
+    <sect1 ID="running-berlin">
       <title>Running berlin</title>
       <para>Starting up the display server is relatively simple. You
 need to obviously have installed all the above software. Since we have 

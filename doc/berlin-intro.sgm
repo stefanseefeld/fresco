@@ -1,5 +1,5 @@
  
-<chapter>
+<chapter ID="intro-chapter">
   <title>Introduction</title>
   
     <abstract>
@@ -13,7 +13,7 @@
 implementation design</para>      
     </abstract>
 
-    <sect1>
+    <sect1 ID="background">
       <title>Background</title>
 
       <para>Berlin is a long term project which was conceived of in
@@ -118,7 +118,7 @@ implementation design</para>
       abstraction. </para>
     </sect1>
 
-    <sect1>
+    <sect1 ID="design">
       <title>The Design</title>
       
       <para>We sought a design which would solve the shortcomings of
