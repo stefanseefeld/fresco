@@ -33,6 +33,7 @@ optional	:= GGI SDL \
                    Fresco-C++-demos Fresco-Python-demos \
                    contrib/daVinci
 
+testbase_dir	:= $(shell test -d Fresco-Test && echo 'Fresco-Test')
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
 subdirs		:= $(mandatory_dirs) $(optional_dirs)
@@ -90,6 +91,17 @@ $(distdir).tar.gz:
        --exclude '*~' \
        $(distdir)
 	-rm -rf $(distdir)
+
+gen-test:
+	$(MAKE) action="gen-test"
+
+build-test:
+ifdef testbase_dir
+	$(MAKE) -C $(testbase_dir)
+	$(MAKE) action="build-test"
+else
+	@echo "you need 'Fresco-Test' in order to build the tests"
+endif
 
 uninstall:
 	$(MAKE) action="uninstall"

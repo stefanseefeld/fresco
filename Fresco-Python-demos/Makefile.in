@@ -47,6 +47,10 @@ install:
 
 install-doc: #do nothing here
 
+gen-test:
+
+build-test:
+
 uninstall:
 	$(MAKE) action="uninstall"
 
