@@ -161,8 +161,8 @@ dnl	os_major_version=2
 	dnl Check for omniORB libs
 	if test x$no_omniorb = x ; then
 		
-		if test x$omniorb2_eprefix != x ; then
-			omniorb2_libs=-L$omniorb2_eprefix/lib
+		if test x$omniorb2_prefix != x ; then
+			omniorb2_libs=-L$omniorb2_prefix/lib
 		fi
 		omniorb2_libs="$omniorb2_libs -lomniORB2 -lomnithread"
 		omniorb2_libs="$omniorb2_libs -ltcpwrapGK -lomniLC"
