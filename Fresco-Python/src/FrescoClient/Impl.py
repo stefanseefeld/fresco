@@ -418,7 +418,6 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def add_parent_graphic(self, graphic, parent_tag): # --> Tag
 	mytag = len(self.__parents)
 	self.__parents.append( Edge(graphic, parent_tag, mytag) )
-	print self.__class__.__name__, "added parent"
 	return mytag
     def remove_parent_graphic(self, parent_tag): # --> void
 	for i in range(len(self.__parents)):
