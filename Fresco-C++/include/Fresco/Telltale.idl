@@ -24,12 +24,23 @@
 
 #include <Subject.idl>
 
+interface TelltaleConstraint;
+
 interface Telltale : Subject
 {
   enum Flag {enabled, visible, active, chosen, running, stepping, choosable, toggle};
+  attribute TelltaleConstraint constraint;
   void set(in Telltale::Flag f);
   void clear(in Telltale::Flag f);
   boolean test(in Telltale::Flag f);
+  void modify(in Telltale::Flag f, in boolean b);
+};
+
+interface TelltaleConstraint
+{
+  void add(in Telltale t);
+  void remove(in Telltale t);
+  void trymodify(in Telltale t, in Telltale::Flag f, in boolean b);
 };
 
 #endif /* _Telltale_idl */
