@@ -59,7 +59,7 @@ Thread::Guard::~Guard()
   delete Thread::main;
 }
 
-Thread::Thread(proc pp, void *a, priority_t prio = normal)
+Thread::Thread(proc pp, void *a, priority_t prio)
   : p(pp), arg(a), _priority(prio), _state(ready), detached(false)
 {
 }
