@@ -26,30 +26,38 @@ builddir	:= @abs_builddir@
 
 distdir	:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-packages	:= Prague Babylon Fresco Berlin GGI SDL \
-           Clients-C++ Clients-Python Clients-Java Clients-Perl
+mandatory	:= Prague Babylon Fresco Berlin 
+optional	:= GGI SDL \
+                   Clients-C++ Clients-Python Clients-Java Clients-Perl
+
 ifeq ($(action), config)
-subdirs	:= $(foreach package, $(packages), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
+mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
+optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
 else
-subdirs	:= $(foreach package, $(packages), $(shell test -d $(package) && echo '$(package)'))
+mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
+optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
 endif
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
 action	:= all
 
-.PHONY: all $(subdirs)
+.PHONY: all $(mandatory_dirs) $(optional_dirs)
 .PHONY: config doc install install-doc depclean clean distclean maintainer-clean dist clean
 
-ifeq ($(strip $(subdirs)),)
+ifeq ($(strip $(mandatory_dirs) $(optional_dirs)),)
 all:
-		@echo "please use 'make config' to prepare the build tree first"
+	@echo "please use 'make config' to prepare the build tree first"
 else
-all:	$(subdirs)
+all:	$(mandatory_dirs) $(optional_dirs)
 endif
 
-$(subdirs): %: %/Makefile
-	@echo making $(action) in $@
+$(mandatory_dirs): %: %/Makefile
+	@echo "making $(action) in $@"
+	$(MAKE) -C $@ $(action)
+
+$(optional_dirs): %: %/Makefile
+	@echo "making $(action) in $@ (optional)"
 	-$(MAKE) -C $@ $(action)
 
 config:
@@ -100,21 +108,21 @@ maintainer-clean:
 	mkdir -p $(@D)
 	-(cd $(@D); $(srcdir)/$(@D)/configure $(configure_args))
 
-ifneq ($(findstring Prague, $(subdirs)),)
+ifneq ($(findstring Prague, $(mandatory_dirs) $(optional_dirs)),)
 Prague	:= --with-Prague-prefix=$(builddir)/Prague
 
 Babylon/Makefile:	Prague/Makefile
 Berlin/Makefile:	Prague/Makefile
 Clients-C++/Makefile:	Prague/Makefile
 endif
-ifneq ($(findstring Babylon, $(subdirs)),)
+ifneq ($(findstring Babylon, $(mandatory_dirs) $(optional_dirs)),)
 Babylon	:= --with-Babylon-prefix=$(builddir)/Babylon
 
 Fresco/Makefile:		Babylon/Makefile
 Berlin/Makefile:		Babylon/Makefile
 Clients-C++/Makefile:	Babylon/Makefile
 endif
-ifneq ($(findstring Fresco, $(subdirs)),)
+ifneq ($(findstring Fresco, $(mandatory_dirs) $(optional_dirs)),)
 Fresco	:= --with-Fresco-prefix=$(builddir)/Fresco
 
 Berlin/Makefile:		Fresco/Makefile
@@ -122,7 +130,7 @@ Clients-C++/Makefile:	Fresco/Makefile
 Clients-Python/Makefile:	Fresco/Makefile
 Clients-Perl/Makefile:	Fresco/Makefile
 endif
-ifneq ($(findstring Berlin, $(subdirs)),)
+ifneq ($(findstring Berlin, $(mandatory_dirs) $(optional_dirs)),)
 Berlin	:= --with-Berlin-prefix=$(builddir)/Berlin
 
 GGI/Makefile:		Berlin/Makefile
