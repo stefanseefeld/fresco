@@ -67,15 +67,18 @@ DYNSRC		:= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
 DYNSTATSRC	:= $(patsubst %.idl, %SK.cc, $(DYNINT)) 
 STATSRC		:= $(patsubst %.idl, %SK.cc, $(STATINT))
 UTILSRC		:= IO.cc Unicode.cc ClientContextImpl.cc
-SRC		:= $(DYNSTATSRC) $(DYNSRC) $(STATSRC)
+SRC			:= $(DYNSTATSRC) $(DYNSRC) $(STATSRC)
 
 DYNHDR		:= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR		:= $(patsubst %.idl, %.hh, $(STATINT))
 UTILHDR		:= ImplVar.hh resolve.hh exception.hh IO.hh Unicode.hh ClientContextImpl.hh
-HDR		:= $(patsubst %, %, $(DYNHDR) $(STATHDR))
+GENHDR		:= $(DYNHDR) $(STATHDR)
+HDR			:= $(GENHDR) $(UTILHDR)
 
-SYN		:= $(patsubst %.idl, %.syn, $(INT))
-OBJ		:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
+DEP			:= $(patsubst %, %.d, $(notdir $(INT) $(SRC)))
+
+SYN			:= $(patsubst %.idl, %.syn, $(INT))
+OBJ			:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
 TARGET		:= ../lib/libFresco.so
 
@@ -89,23 +92,11 @@ vpath %.cc $(srcdir)
 
 all: $(TARGET)
 
-# this split enforces that all idl code is translated
-# before the first source is compiled
-$(TARGET): config
-	@$(MAKE) sources
-	@$(MAKE) objects
+$(TARGET): $(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-
-sources:	$(SRC)
-objects:	$(OBJ)
-
-ifeq (,$(findstring config, $(MAKECMDGOALS)))
 ../bin/Fresco-config: $(top_srcdir)/config/Fresco-config.in
-else
-../bin/Fresco-config: $(top_srcdir)/config/Fresco-config.in .FORCE
-endif
 	rm -f $@ $@.tmp
 	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
 		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
@@ -117,9 +108,9 @@ endif
 config:  ../bin/Fresco-config
 	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
 
-depend:
+depend: $(DEP)
 
-doc:	../share/doc/Fresco/html sources
+doc:	../share/doc/Fresco/html $(HDR)
 
 ../share/doc/Fresco/html:	$(SYN)
 	@echo formatting $(@F)
@@ -131,7 +122,7 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -m 644 $(patsubst %, $(top_srcdir)/idl/Fresco/%, $(INT)) $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
-	for header in acconfig.hh $(HDR) ; do \
+	for header in acconfig.hh $(GENHDR) ; do \
 	  if ! cmp -s $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header 2>/dev/null; then \
 	    echo "$(INSTALL) -m 644 $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header"; \
 	    $(INSTALL) -m 644 $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header; \
@@ -169,7 +160,7 @@ uninstall:
 clean:	
 	rm -f $(TARGET)
 	rm -f *.o *.d
-	rm -f $(SRC) $(patsubst %, $(h2dir)/Fresco/%, $(HDR))
+	rm -f $(SRC) $(patsubst %, $(h2dir)/Fresco/%, $(GENHDR))
 
 distclean:	clean
 	rm -f Makefile $(h2dir)/Fresco/acconfig.hh \
@@ -196,15 +187,20 @@ $(DYNSRC): %DynSK.cc:	%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
+$(STATHDR): %.hh:	%.idl
+	@echo generating $(@F)
+	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
+	mv $*.hh $(h2dir)/Fresco
 $(DYNHDR): %.hh:	%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 
-%.cc.d:	%.cc
+%.cc.d:	%.cc $(GENHDR)
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $< \
 	| sed "s/$*\\.o[ :]*/$*\\.cc.d $*\\.o : /g" > $@'
+
 %.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
@@ -213,9 +209,14 @@ $(DYNHDR): %.hh:	%.idl
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wp,-b,$(idir) -Wc,parser=Fresco,linker=Fresco -o $@ $?
 
-ifeq ($(MAKECMDGOALS), sources)
--include $(patsubst %, %.d, $(notdir $(INT)))
+ifneq (,$(findstring config, $(MAKECMDGOALS)))
+../bin/Fresco-config: .FORCE
 endif
-ifeq ($(MAKECMDGOALS), objects)
--include $(patsubst %, %.d, $(notdir $(SRC)))
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), config depend doc install-doc clean distclean maintainer-clean))
+-include $(DEP)
 endif

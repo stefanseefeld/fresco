@@ -64,17 +64,17 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-ifeq (,$(findstring depend, $(MAKECMDGOALS)))
 %.d:	%.cc
-else
-%.d:	%.cc .FORCE
-endif
 	@echo generating dependencies for $<
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 %.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
 
 ifeq (,$(filter $(MAKECMDGOALS), depend clean distclean maintainer-clean))
 -include $(DEP)

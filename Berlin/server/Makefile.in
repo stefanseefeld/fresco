@@ -39,15 +39,15 @@ CPPFLAGS	+= -DVERSION='"$(VERSION)"'
 endif
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
-TARGETS		:= ../bin/server ../bin/kits ../bin/devices ../etc/berlinrc
+TARGETS		:= ../bin/server ../bin/kits ../bin/devices
 
 ifeq ($(JPROF),yes)
 JPROFTARGETS	:= ../lib/libjprof.so ../bin/jprof
 LIBS		+= -ljprof
 
-all:	$(JPROFTARGETS) $(TARGETS)
+all:	$(JPROFTARGETS) $(TARGETS)  ../etc/berlinrc
 else
-all:	$(TARGETS)
+all:	$(TARGETS) ../etc/berlinrc
 endif
 
 config: #do nothing
