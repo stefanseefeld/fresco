@@ -33,16 +33,14 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_HEADER(include/Berlin/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
 AC_PROG_MAKE_SET
-AC_LANG(C++)
-
-dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
+FRESCO_PROG_CC_CXX
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
 FRESCO_FLAG_SO
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl Text rendering
@@ -53,7 +51,7 @@ AC_MSG_NOTICE([Text Rendering])
 FRESCO_FREETYPE_CHECK(9.2.3,,[AC_MSG_ERROR([can't compile Server without freetype])])
 
 AC_ARG_WITH(png-prefix,
-  [  --with-png-prefix=PFX   Prefix where PNG library is installed (optional)],
+  AC_HELP_STRING([--with-png-prefix=PFX], [Prefix where PNG library is installed (optional)]),
   [png_prefix="$withval"; png_path="$PATH:$withval/bin"],
   [png_prefix=""; png_path="$PATH"])
 

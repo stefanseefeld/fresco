@@ -33,9 +33,13 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
 AC_PROG_MAKE_SET
+FRESCO_PROG_CC_CXX
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
+FRESCO_FLAG_SO
 AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
@@ -53,12 +57,6 @@ fi
 FRESCO_IDL_PATH
 
 AC_SUBST(Fresco_IDL_prefix)
-
-dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
-FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Graphics environment

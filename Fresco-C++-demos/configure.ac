@@ -37,13 +37,11 @@ dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>
 dnl VERSION)
 
 AC_PROG_MAKE_SET
-AC_LANG(C++)
-
-dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
+FRESCO_PROG_CC_CXX
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
 FRESCO_FLAG_SO
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl Warsaw and Prague

@@ -41,8 +41,8 @@ AC_ARG_ENABLE(ggi,
 AC_ARG_ENABLE(sdl,
               AC_HELP_STRING([--enable-sdl],[Configure with sdl support]),
               [config_sdl="$enableval"],[config_sdl="yes"])
-AC_ARG_ENABLE(c++-demos,
-              AC_HELP_STRING([--enable-c++-demos],[Configure c++ demos support]),
+AC_ARG_ENABLE(cxx-demos,
+              AC_HELP_STRING([--enable-cxx-demos],[Configure c++ demos support]),
               [config_cxx_demos="$enableval"],[config_cxx_demos="yes"])
 AC_ARG_ENABLE(python-runtime,
               AC_HELP_STRING([--enable-python-runtime],[Configure python runtime support]),

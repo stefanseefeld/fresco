@@ -33,6 +33,10 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 
 AC_PROG_MAKE_SET
+FRESCO_PROG_CC_CXX
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
+FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

@@ -35,9 +35,14 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Babylon/acconfig.hh:config/acconfig.hh.in)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
 AC_PROG_MAKE_SET
+FRESCO_PROG_CC_CXX
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
+FRESCO_FLAG_SO
+
 AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
@@ -72,8 +77,6 @@ AC_ARG_ENABLE(unicode-blocks,
               AC_HELP_STRING([--enable-unicode-blocks],[complete or latin unicode support]),
               [AC_SUBST(UNICODE_BLOCKS,"$enableval")],
               [AC_SUBST(UNICODE_BLOCKS,complete)])
-
-FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

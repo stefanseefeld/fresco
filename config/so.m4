@@ -26,7 +26,7 @@ AC_DEFUN([FRESCO_FLAG_SO],[
 
 	dnl TODO: Add checks to set the right flag for all compilers
 	SO_CXXFLAGS="-fPIC"
-	SO_LDFLAGS="-shared -rdynamic"
+	SO_LDFLAGS="-shared"
 
 	AC_SUBST(SO_CXXFLAGS)
 	AC_SUBST(SO_LDFLAGS)

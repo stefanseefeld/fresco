@@ -31,17 +31,21 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
 AC_PROG_MAKE_SET
+FRESCO_PROG_CC_CXX
+FRESCO_FLAG_SO
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
 
 dnl ------------------------------------------------------------------
 dnl Environment (this needs to go before AC_LANG(C++)
 dnl ------------------------------------------------------------------
 
+AC_LANG(C)
 AC_HEADER_STDC
 AC_CHECK_FUNCS(getenv putenv setenv unsetenv)
-
 AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
@@ -61,8 +65,6 @@ AC_HEADER_SYS_WAIT
 AC_SEARCH_LIBS(recv, [socket resolv])
 
 AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB, 1, [Define if you have the zlib library.]), [AC_MSG_ERROR([update your zlib, please])])
-
-FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Thread support

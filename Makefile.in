@@ -34,9 +34,10 @@ optional	:= GGI SDL \
                    contrib/daVinci
 
 testbase_dir	:= $(shell test -d Fresco-Test && echo 'Fresco-Test')
-mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
-optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
-subdirs		:= $(testbase_dir) $(mandatory_dirs) $(optional_dirs)
+mandatory_dirs  := $(foreach package, $(mandatory), $(shell if test -d $(package) -a -f $(package)/Makefile ; then echo '$(package)'; fi ))
+missing_mandatory_dirs := $(foreach package, $(mandatory), $(shell if test ! -d $(package) -o ! -f $(package)/Makefile ; then echo '$(package)'; fi ))
+optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && test -f $(package)/Makefile && echo '$(package)'))
+subdirs		:= $(missing_mandatory_dirs) $(testbase_dir) $(mandatory_dirs) $(optional_dirs)
 sxrdirs		:= Prague Babylon Berlin
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
@@ -48,6 +49,10 @@ action		:= all
         clean distclean maintainer-clean
 
 all:	$(subdirs)
+
+$(missing_mandatory_dirs):
+	@echo "The mandatory package \"$@\" not properly configured!"
+	@exit 1
 
 $(mandatory_dirs): %: %/Makefile
 	@echo "making $(action) in $@"

@@ -33,14 +33,14 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_HEADER(include/daVinci/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
 
+AC_CANONICAL_HOST
+
 AC_PROG_MAKE_SET
-AC_LANG(C++)
-
-dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
+FRESCO_PROG_CC_CXX
+FRESCO_CHECK_OPTIMIZE
+FRESCO_CHECK_DEBUGGING
 FRESCO_FLAG_SO
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl Prague, Babylon, and Fresco
