@@ -34,24 +34,24 @@ namespace Berlin
     //. The Stepper class implements a button with autorepeat.
     class Stepper : public TriggerImpl
     {
-	class Notifier;
-	friend class Notifier;
+    class Notifier;
+    friend class Notifier;
       public:
-	Stepper();
-	~Stepper();
+    Stepper();
+    ~Stepper();
 //      protected:
-	virtual void press(Fresco::PickTraversal_ptr,
-			   const Fresco::Input::Event &);
-	virtual void release(Fresco::PickTraversal_ptr,
-			     const Fresco::Input::Event &);
-	virtual void step();
+    virtual void press(Fresco::PickTraversal_ptr,
+               const Fresco::Input::Event &);
+    virtual void release(Fresco::PickTraversal_ptr,
+                 const Fresco::Input::Event &);
+    virtual void step();
       private:
-	void start();
-	void stop();
-	Prague::Time  my_delay;
-	Prague::Time  my_delta;
-	Notifier     *my_notifier;
-	Prague::Timer my_timer;
+    void start();
+    void stop();
+    Prague::Time  my_delay;
+    Prague::Time  my_delta;
+    Notifier     *my_notifier;
+    Prague::Timer my_timer;
     };
 
   } // namespace

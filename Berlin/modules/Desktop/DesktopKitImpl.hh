@@ -44,41 +44,41 @@ namespace Berlin
     class DesktopImpl;
 
     class DesktopKitImpl : public virtual POA_Fresco::DesktopKit,
-			   public KitImpl
+               public KitImpl
     {
       public:
-	DesktopKitImpl(const std::string &,
-		       const Fresco::Kit::PropertySeq &,
-		       ServerContextImpl *);
-	virtual ~DesktopKitImpl();
-	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
-				       ServerContextImpl *c)
+    DesktopKitImpl(const std::string &,
+               const Fresco::Kit::PropertySeq &,
+               ServerContextImpl *);
+    virtual ~DesktopKitImpl();
+    virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+                       ServerContextImpl *c)
         { return new DesktopKitImpl(repo_id(), p, c); }
-	virtual void bind(Fresco::ServerContext_ptr);
-	virtual Fresco::Desktop_ptr desk();
-	virtual Fresco::Window_ptr shell(Fresco::Controller_ptr,
-					 Fresco::ClientContext_ptr);
-	virtual Fresco::Window_ptr transient(Fresco::Controller_ptr);
-	virtual Fresco::Window_ptr pulldown(Fresco::Controller_ptr);
+    virtual void bind(Fresco::ServerContext_ptr);
+    virtual Fresco::Desktop_ptr desk();
+    virtual Fresco::Window_ptr shell(Fresco::Controller_ptr,
+                     Fresco::ClientContext_ptr);
+    virtual Fresco::Window_ptr transient(Fresco::Controller_ptr);
+    virtual Fresco::Window_ptr pulldown(Fresco::Controller_ptr);
 
-	virtual Fresco::Command_ptr move(Fresco::Window_ptr);
-	virtual Fresco::Command_ptr resize(Fresco::Window_ptr);
-	virtual Fresco::Command_ptr move_resize(Fresco::Window_ptr,
-						Fresco::Alignment,
-						Fresco::Alignment,
-						CORBA::Short);
-	virtual Fresco::Command_ptr relayer(Fresco::Window_ptr);
-	virtual Fresco::Command_ptr map(Fresco::Window_ptr,
-					CORBA::Boolean);
+    virtual Fresco::Command_ptr move(Fresco::Window_ptr);
+    virtual Fresco::Command_ptr resize(Fresco::Window_ptr);
+    virtual Fresco::Command_ptr move_resize(Fresco::Window_ptr,
+                        Fresco::Alignment,
+                        Fresco::Alignment,
+                        CORBA::Short);
+    virtual Fresco::Command_ptr relayer(Fresco::Window_ptr);
+    virtual Fresco::Command_ptr map(Fresco::Window_ptr,
+                    CORBA::Boolean);
       private:
-	RefCount_var<Fresco::Desktop>    my_desktop;
-	RefCount_var<Fresco::LayoutKit>  my_layout;
-	RefCount_var<Fresco::ToolKit>    my_tools;
-	RefCount_var<Fresco::WidgetKit>  my_widgets;
-	RefCount_var<Fresco::TextKit>    my_text;
-	RefCount_var<Fresco::RasterKit>  my_rasters;
-	RefCount_var<Fresco::FigureKit>  my_figures;
-	Fresco::Command_var              my_exit;
+    RefCount_var<Fresco::Desktop>    my_desktop;
+    RefCount_var<Fresco::LayoutKit>  my_layout;
+    RefCount_var<Fresco::ToolKit>    my_tools;
+    RefCount_var<Fresco::WidgetKit>  my_widgets;
+    RefCount_var<Fresco::TextKit>    my_text;
+    RefCount_var<Fresco::RasterKit>  my_rasters;
+    RefCount_var<Fresco::FigureKit>  my_figures;
+    Fresco::Command_var              my_exit;
     };
 
   } // namespace

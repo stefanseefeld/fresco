@@ -49,7 +49,7 @@ namespace Berlin
         };
       public:
         SelectionImpl(Fresco::Selection::Policy,
-		      Fresco::TelltaleConstraint_ptr);
+              Fresco::TelltaleConstraint_ptr);
         virtual ~SelectionImpl();
         virtual Fresco::Selection::Policy type();
         virtual void type(Fresco::Selection::Policy);

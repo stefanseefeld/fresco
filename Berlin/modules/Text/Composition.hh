@@ -38,22 +38,22 @@ namespace Berlin
     class Composition : public PolyGraphic
     {
       public:
-	Composition(Fresco::DrawingKit_ptr, Compositor *);
-	virtual ~Composition();
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
-	virtual void traverse(Fresco::Traversal_ptr);
-	virtual void need_resize();
-	virtual void need_resize(Fresco::Tag);
-	virtual void allocate(Fresco::Tag,
-			      const Fresco::Allocation::Info &);
+    Composition(Fresco::DrawingKit_ptr, Compositor *);
+    virtual ~Composition();
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void extension(const Fresco::Allocation::Info &,
+                   Fresco::Region_ptr);
+    virtual void traverse(Fresco::Traversal_ptr);
+    virtual void need_resize();
+    virtual void need_resize(Fresco::Tag);
+    virtual void allocate(Fresco::Tag,
+                  const Fresco::Allocation::Info &);
       protected:
-	RegionImpl **children_allocations(Fresco::Region_ptr);
-	Fresco::DrawingKit_var my_canonicalDK;
-	Compositor  *my_compositor;
-	bool my_requested;
-	Fresco::Graphic::Requisition my_requisition;
+    RegionImpl **children_allocations(Fresco::Region_ptr);
+    Fresco::DrawingKit_var my_canonicalDK;
+    Compositor  *my_compositor;
+    bool my_requested;
+    Fresco::Graphic::Requisition my_requisition;
     };
     
   } // namespace

@@ -10,36 +10,36 @@ sub new
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next if ($info eq "");
+    next if ($info eq "");
 
-	my @list = split /;/, $info, 15;
+    my @list = split /;/, $info, 15;
 
-	my $decomp = $list[5];  
-	my $dType = "";
-	my $tmp = "";
-	if ($decomp =~ /^<(\w+)>$/)
-	{
-	    $tmp = $1;
-	    $tmp =~ tr/a-z/A-Z/;
-	    $dType = "DECOMP_".$tmp;
-	}
-	elsif ($decomp =~ /^<(\w+)> ([A-F0-9 ]*)$/)
-	{
-	    $tmp = $1;
-	    $tmp =~ tr/a-z/A-Z/;
-	    $dType = "DECOMP_".$tmp;
-	}
-	else
-	{
-	    $dType = "DECOMP_CANONICAL";
-	}
+    my $decomp = $list[5];  
+    my $dType = "";
+    my $tmp = "";
+    if ($decomp =~ /^<(\w+)>$/)
+    {
+        $tmp = $1;
+        $tmp =~ tr/a-z/A-Z/;
+        $dType = "DECOMP_".$tmp;
+    }
+    elsif ($decomp =~ /^<(\w+)> ([A-F0-9 ]*)$/)
+    {
+        $tmp = $1;
+        $tmp =~ tr/a-z/A-Z/;
+        $dType = "DECOMP_".$tmp;
+    }
+    else
+    {
+        $dType = "DECOMP_CANONICAL";
+    }
 
-	$self->{hex($list[0])} = $dType;
+    $self->{hex($list[0])} = $dType;
     }
 
     close(UCD);
@@ -92,21 +92,21 @@ sub setup_for
 
     if ($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef")
-	    {
-		$self->{_ELEM} = $self->data($i) if ($self->{_ELEM} eq "");
-		if ($self->{_ELEM} ne $self->data($i))
-		{
-		    $self->{_ATTENTION_NEEDED} = 1;
-		    last;
-		}
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef")
+        {
+        $self->{_ELEM} = $self->data($i) if ($self->{_ELEM} eq "");
+        if ($self->{_ELEM} ne $self->data($i))
+        {
+            $self->{_ATTENTION_NEEDED} = 1;
+            last;
+        }
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -122,9 +122,9 @@ sub function
     
     if ($self->{_ATTENTION_NEEDED} == 1)
     {
-	$tmp .= "            return Babylon::Char_Decomp($bl_name\:\:my_decomp\[uc - my_first_letter\]);\n";
-	$tmp .= "        }\n\n";
-	return $tmp;
+    $tmp .= "            return Babylon::Char_Decomp($bl_name\:\:my_decomp\[uc - my_first_letter\]);\n";
+    $tmp .= "        }\n\n";
+    return $tmp;
     }
     $tmp .= sprintf "            return Babylon\:\:Char_Decomp(%s);\n        }\n\n",
     $self->{_ELEM};
@@ -138,7 +138,7 @@ sub var_def
     my $bl_length = $_[1] - $_[0] + 1;
     
     return "        static const unsigned char my_decomp\[$bl_length\];\n"
-	if ($self->{_ATTENTION_NEEDED});
+    if ($self->{_ATTENTION_NEEDED});
     return "";
 }
 
@@ -153,22 +153,22 @@ sub var
 
     if ($self->{_ATTENTION_NEEDED})
     {
-	my $tmp = "    const unsigned char $bl_name\:\:my_decomp\[\] = {";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= "\n        " if (($i - $bl_start) % 4 == 0);
-	    if ($self->data($i) eq "undef")
-	    {
-		$tmp .= $self->{_ELEM};
-	    }
-	    else
-	    {
-		$tmp .= $self->data($i);
-	    }
-	    $tmp .= ", " if ( $i != $bl_end);
-	}
-	$tmp .= "\n    };\n\n";
-	return $tmp;
+    my $tmp = "    const unsigned char $bl_name\:\:my_decomp\[\] = {";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= "\n        " if (($i - $bl_start) % 4 == 0);
+        if ($self->data($i) eq "undef")
+        {
+        $tmp .= $self->{_ELEM};
+        }
+        else
+        {
+        $tmp .= $self->data($i);
+        }
+        $tmp .= ", " if ( $i != $bl_end);
+    }
+    $tmp .= "\n    };\n\n";
+    return $tmp;
     }
     return "";
 }

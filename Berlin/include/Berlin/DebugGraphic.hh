@@ -34,14 +34,14 @@ namespace Berlin
     public:
       enum Flags
       {
-	  none = 0x0,
-	  requests = 0x1,
-	  draws = 0x2,
-	  picks = 0x4,
-	  traversals = 0x7
+      none = 0x0,
+      requests = 0x1,
+      draws = 0x2,
+      picks = 0x4,
+      traversals = 0x7
       };
       DebugGraphic(std::ostream &, const std::string &,
-		   unsigned int f = traversals);
+           unsigned int f = traversals);
       virtual ~DebugGraphic();
       
       virtual void request(Fresco::Graphic::Requisition &);

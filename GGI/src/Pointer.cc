@@ -29,123 +29,125 @@
 using namespace Prague;
 using namespace Fresco;
 
-GGI::Pointer::Pointer(GGI::Drawable *drawable, Raster_ptr raster)
-  : _screen(drawable), _dbuffer(new GGI::DirectBuffer()), _raster(Raster::_duplicate(raster))
+GGI::Pointer::Pointer(GGI::Drawable *drawable, Raster_ptr raster) : 
+    my_screen(drawable),
+    my_dbuffer(new GGI::DirectBuffer()),
+    my_raster(Raster::_duplicate(raster))
 {
-  _dbuffer->attach(_screen);
-  Raster::Info info = raster->header();
-  Raster::ColorSeq_var pixels;
-  Raster::Index lower, upper;
-  lower.x = lower.y = 0;
-  upper.x = info.width, upper.y = info.height;
-  raster->store_pixels(lower, upper, pixels);
-  _origin[0] = _origin[1] = 0;
-  _position[0] = _position[1] = 8;
-  _size[0] = info.width;
-  _size[1] = info.height;
-  _scale[0] = 1/_screen->resolution(xaxis);
-  _scale[1] = 1/_screen->resolution(yaxis);
+    my_dbuffer->attach(my_screen);
+    Raster::Info info = raster->header();
+    Raster::ColorSeq_var pixels;
+    Raster::Index lower, upper;
+    lower.x = lower.y = 0;
+    upper.x = info.width, upper.y = info.height;
+    raster->store_pixels(lower, upper, pixels);
+    my_origin[0] = my_origin[1] = 0;
+    my_position[0] = my_position[1] = 8;
+    my_size[0] = info.width;
+    my_size[1] = info.height;
+    my_scale[0] = 1/my_screen->resolution(xaxis);
+    my_scale[1] = 1/my_screen->resolution(yaxis);
   
-  Fresco::Drawable::PixelFormat format = _screen->pixel_format();
+    Fresco::Drawable::PixelFormat format = my_screen->pixel_format();
 
-  /*
-   * create the pointer image
-   */
-  PixelCoord depth =  format.size >> 3;
-  _image = new data_type[_size[0]*_size[1] * depth];
-  for (unsigned short y = 0; y != _size[1]; y++)
-    for (unsigned short x = 0; x != _size[0]; x++)
-      {
-	Pixel color = _screen->map(*(pixels->get_buffer() + y * info.width + x));
- 	for (unsigned short d = 0; d != depth; d++)
-	  _image[y*depth*_size[0] + depth*x + d] = (color >> d) & 0xff;
-      }
-  /*
-   * create the pointer mask
-   */
-  _mask = new data_type[_size[0]*_size[1]*depth];
-  for (unsigned short y = 0; y != _size[1]; y++)
-    for (unsigned short x = 0; x != _size[0]; x++)
-      {
-	char flag = (pixels->get_buffer() + y*_size[0] + x)->alpha <= 0.5 ? 0 : ~0;
-	for (unsigned short d = 0; d != depth; d++)
-	  _mask[y*depth*_size[0]+depth*x + d] = flag;
-      }
-  /*
-   * create the save and restore cache
-   */
-  _cache = new Drawable("memory", _size[0], _size[1], depth);
+    // create the pointer image
+    PixelCoord depth =  format.size >> 3;
+    my_image = new data_type[my_size[0]*my_size[1] * depth];
+    for (unsigned short y = 0; y != my_size[1]; ++y)
+    for (unsigned short x = 0; x != my_size[0]; ++x)
+    {
+        Pixel color =
+        my_screen->map(*(pixels->get_buffer() +
+                 y * info.width + x));
+        for (unsigned short d = 0; d != depth; d++)
+        my_image[y*depth*my_size[0] + depth*x + d] =
+            (color >> d) & 0xff;
+    }
 
+    // create the pointer mask
+    my_mask = new data_type[my_size[0]*my_size[1]*depth];
+    for (unsigned short y = 0; y != my_size[1]; y++)
+    for (unsigned short x = 0; x != my_size[0]; x++)
+    {
+        char flag =
+        (pixels->get_buffer() + y*my_size[0] + x)->alpha <= 0.5 ?
+        0 : ~0;
+        for (unsigned short d = 0; d != depth; d++)
+        my_mask[y*depth*my_size[0]+depth*x + d] = flag;
+    }
+
+    // create the save and restore cache
+    my_cache = new Drawable("memory", my_size[0], my_size[1], depth);
 }
 
 GGI::Pointer::~Pointer()
 {
-  delete _dbuffer;
-  delete [] _image;
-  delete _cache;
+    delete my_dbuffer;
+    delete [] my_image;
+    delete my_cache;
 }
 
 Raster_ptr GGI::Pointer::raster()
-{
-  return Raster::_duplicate(_raster);
-}
+{ return Raster::_duplicate(my_raster); }
 
 bool GGI::Pointer::intersects(Coord l, Coord r, Coord t, Coord b)
 {
-  return
-    l/_scale[0] <= _position[0] + _size[0] &&
-    r/_scale[0] >= _position[0] &&
-    t/_scale[1] <= _position[1] + _size[1] &&
-    b/_scale[1] >= _position[1];
+    return
+    l/my_scale[0] <= my_position[0] + my_size[0] &&
+    r/my_scale[0] >= my_position[0] &&
+    t/my_scale[1] <= my_position[1] + my_size[1] &&
+    b/my_scale[1] >= my_position[1];
 }
 
 void GGI::Pointer::move(Coord x, Coord y)
 {
-  restore();
-  _position[0] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(x/_scale[0]), _origin[0]));
-  _position[1] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(y/_scale[1]), _origin[1]));
-  save();
-  draw();
-};
+    restore();
+    my_position[0] = static_cast<PixelCoord>
+    (std::max(static_cast<PixelCoord>(x/my_scale[0]), my_origin[0]));
+    my_position[1] = static_cast<PixelCoord>
+    (std::max(static_cast<PixelCoord>(y/my_scale[1]), my_origin[1]));
+    save();
+    draw();
+}
 
 void GGI::Pointer::save()
 {
-  PixelCoord x = _position[0] - _origin[0];
-  PixelCoord y = _position[1] - _origin[1];
-  PixelCoord w = _size[0];
-  PixelCoord h = _size[1];
-  _cache->blit(*_screen, x, y, w, h, 0, 0);
+    PixelCoord x = my_position[0] - my_origin[0];
+    PixelCoord y = my_position[1] - my_origin[1];
+    PixelCoord w = my_size[0];
+    PixelCoord h = my_size[1];
+    my_cache->blit(*my_screen, x, y, w, h, 0, 0);
 }
 
 void GGI::Pointer::restore()
 {
-  PixelCoord x = _position[0] - _origin[0];
-  PixelCoord y = _position[1] - _origin[1];
-  PixelCoord w = _size[0];
-  PixelCoord h = _size[1];
-  _screen->blit(*_cache, 0, 0, w, h, x, y);
-  _screen->flush(x, y, w, h);
+    PixelCoord x = my_position[0] - my_origin[0];
+    PixelCoord y = my_position[1] - my_origin[1];
+    PixelCoord w = my_size[0];
+    PixelCoord h = my_size[1];
+    my_screen->blit(*my_cache, 0, 0, w, h, x, y);
+    my_screen->flush(x, y, w, h);
 }
 
 void GGI::Pointer::draw()
 {
-  PixelCoord x = _position[0] - _origin[0];
-  PixelCoord y = _position[1] - _origin[1];
-  PixelCoord w = _size[0];
-  PixelCoord h = _size[1];
-  PixelCoord r = _screen->row_length();
-  PixelCoord s = _screen->vwidth() * _screen->vheight();
-  PixelCoord d = _screen->pixel_format().size >> 3;
-  data_type *from = _image;
-  data_type *bits = _mask;
-  const ggi_directbuffer *dbuf = _screen->buffer(0);
-  ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_WRITE);
-  data_type *to = static_cast<char*>(dbuf->write) + y*r + x*d;
-  for (PixelCoord i = 0; i != h && (y+i)*r/d+x+w<s; i++, to += r - w * d)
-    for (PixelCoord j = 0; j != w * d ; j++, from++, bits++, to++)
-      if (x*d+j < r)
+    PixelCoord x = my_position[0] - my_origin[0];
+    PixelCoord y = my_position[1] - my_origin[1];
+    PixelCoord w = my_size[0];
+    PixelCoord h = my_size[1];
+    PixelCoord r = my_screen->row_length();
+    PixelCoord s = my_screen->vwidth() * my_screen->vheight();
+    PixelCoord d = my_screen->pixel_format().size >> 3;
+    data_type *from = my_image;
+    data_type *bits = my_mask;
+    const ggi_directbuffer *dbuf = my_screen->buffer(0);
+    ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_WRITE);
+    data_type *to = static_cast<char*>(dbuf->write) + y*r + x*d;
+    for (PixelCoord i = 0; i != h && (y+i)*r/d+x+w<s; i++, to += r - w * d)
+    for (PixelCoord j = 0; j != w * d ; ++j, ++from, ++bits, ++to)
+        if (x*d+j < r)
         *to = (*from & *bits) | (*to & ~*bits);
-  _screen->flush(x, y, w, h);
-  ggiResourceRelease(dbuf->resource);
+    my_screen->flush(x, y, w, h);
+    ggiResourceRelease(dbuf->resource);
 }
 

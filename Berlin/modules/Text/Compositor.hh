@@ -40,26 +40,26 @@ namespace Berlin
     class Compositor
     {
       public:
-	typedef RegionImpl **Allocations;
-	virtual ~Compositor() { }
-	virtual void request(long n,
-			     Fresco::Graphic::Requisition *requests,
-			     Fresco::DrawingKit_ptr dk,
-			     Fresco::Graphic::Requisition &result) = 0;
-	virtual void allocate(long n,
-			      Fresco::Graphic::Requisition *requests,
-			      Fresco::DrawingKit_ptr dk,
-			      Fresco::Region_ptr given,
-			      Allocations result) = 0;
-	static void set_span(RegionImpl *r, Fresco::Axis a,
-			     Fresco::Coord origin, Fresco::Coord length,
-			     Fresco::Alignment align);
-	static Fresco::Coord
-	compute_length(const Fresco::Graphic::Requirement &,
-		       const Fresco::Region::Allotment &);
-	static Fresco::Coord
-	compute_squeeze(const Fresco::Graphic::Requirement &, 
-			Fresco::Coord);
+    typedef RegionImpl **Allocations;
+    virtual ~Compositor() { }
+    virtual void request(long n,
+                 Fresco::Graphic::Requisition *requests,
+                 Fresco::DrawingKit_ptr dk,
+                 Fresco::Graphic::Requisition &result) = 0;
+    virtual void allocate(long n,
+                  Fresco::Graphic::Requisition *requests,
+                  Fresco::DrawingKit_ptr dk,
+                  Fresco::Region_ptr given,
+                  Allocations result) = 0;
+    static void set_span(RegionImpl *r, Fresco::Axis a,
+                 Fresco::Coord origin, Fresco::Coord length,
+                 Fresco::Alignment align);
+    static Fresco::Coord
+    compute_length(const Fresco::Graphic::Requirement &,
+               const Fresco::Region::Allotment &);
+    static Fresco::Coord
+    compute_squeeze(const Fresco::Graphic::Requirement &, 
+            Fresco::Coord);
     };
 
     //. left to right compositor -- aligns vertically, tiles left to right
@@ -68,14 +68,14 @@ namespace Berlin
     class LRCompositor : public Compositor
     {
       public:
-	virtual void request(long, Fresco::Graphic::Requisition *,
-			     Fresco::DrawingKit_ptr,
-			     Fresco::Graphic::Requisition &);
-	virtual void allocate(long, Fresco::Graphic::Requisition *,
-			      Fresco::DrawingKit_ptr, Fresco::Region_ptr,
-			      Allocations);    
+    virtual void request(long, Fresco::Graphic::Requisition *,
+                 Fresco::DrawingKit_ptr,
+                 Fresco::Graphic::Requisition &);
+    virtual void allocate(long, Fresco::Graphic::Requisition *,
+                  Fresco::DrawingKit_ptr, Fresco::Region_ptr,
+                  Allocations);    
       private:
-	Fresco::Graphic::Requisition my_requisition;
+    Fresco::Graphic::Requisition my_requisition;
     };
 
     //. top to button compositor -- aligns horicontally, tiles top to
@@ -84,14 +84,14 @@ namespace Berlin
     class TBCompositor : public Compositor
     {
       public:
-	virtual void request(long, Fresco::Graphic::Requisition *,
-			     Fresco::DrawingKit_ptr,
-			     Fresco::Graphic::Requisition &);
-	virtual void allocate(long, Fresco::Graphic::Requisition *,
-			      Fresco::DrawingKit_ptr, Fresco::Region_ptr,
-			      Allocations);    
+    virtual void request(long, Fresco::Graphic::Requisition *,
+                 Fresco::DrawingKit_ptr,
+                 Fresco::Graphic::Requisition &);
+    virtual void allocate(long, Fresco::Graphic::Requisition *,
+                  Fresco::DrawingKit_ptr, Fresco::Region_ptr,
+                  Allocations);    
       private:
-	Fresco::Graphic::Requisition my_requisition;
+    Fresco::Graphic::Requisition my_requisition;
     };
 
   } // namespace

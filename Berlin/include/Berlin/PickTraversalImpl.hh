@@ -49,13 +49,13 @@ namespace Berlin
   //. strategy for generating a memento. Derived classes may want to
   //. cache the memento to avoid frequent object activation
   class PickTraversalImpl : public virtual POA_Fresco::PickTraversal,
-			    public TraversalImpl
+                public TraversalImpl
   {
       typedef std::vector<Fresco::Controller_var> cstack_t;
       typedef std::vector<size_t> pstack_t;
     public:
       PickTraversalImpl(Fresco::Graphic_ptr, Fresco::Region_ptr,
-			Fresco::Transform_ptr, PositionalFocus *);
+            Fresco::Transform_ptr, PositionalFocus *);
       PickTraversalImpl(const PickTraversalImpl &);
       ~PickTraversalImpl();
       PickTraversalImpl &operator = (const PickTraversalImpl &);
@@ -64,7 +64,7 @@ namespace Berlin
       virtual Fresco::Transform_ptr current_transformation();
       virtual Fresco::Graphic_ptr current_graphic();
       virtual void traverse_child(Fresco::Graphic_ptr, Fresco::Tag,
-				  Fresco::Region_ptr, Fresco::Transform_ptr);
+                  Fresco::Region_ptr, Fresco::Transform_ptr);
       virtual void visit(Fresco::Graphic_ptr);
       virtual Fresco::Traversal::order direction();
       virtual CORBA::Boolean ok();
@@ -99,10 +99,10 @@ namespace Berlin
       Prague::Trace trace("PickTraversal::pop_controller");
       if (my_controllers.size())
       {
-	  while (size() > my_positions.back()) pop();
-	  my_cursor = size() - 1;
-	  my_controllers.pop_back();
-	  my_positions.pop_back();
+      while (size() > my_positions.back()) pop();
+      my_cursor = size() - 1;
+      my_controllers.pop_back();
+      my_positions.pop_back();
       }
   }
 
@@ -119,10 +119,10 @@ namespace Berlin
       my_positions.clear();
       while (size() > 1)
       {
-	  CORBA::release(get_graphic(size() - 1));
-	  Provider<RegionImpl>::adopt(get_allocation(size() - 1));
-	  Provider<TransformImpl>::adopt(get_transformation(size() - 1));
-	  pop();
+      CORBA::release(get_graphic(size() - 1));
+      Provider<RegionImpl>::adopt(get_allocation(size() - 1));
+      Provider<TransformImpl>::adopt(get_transformation(size() - 1));
+      pop();
       }
       my_cursor = 0;
   }
@@ -130,8 +130,8 @@ namespace Berlin
   inline Fresco::Controller_ptr PickTraversalImpl::top_controller()
   {
       return my_controllers.size() ?
-	  Fresco::Controller::_duplicate(my_controllers.back()) :
-	  Fresco::Controller::_nil();
+      Fresco::Controller::_duplicate(my_controllers.back()) :
+      Fresco::Controller::_nil();
   }
 
 } // namespace

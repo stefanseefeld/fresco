@@ -19,13 +19,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Drawable_hh
-#define _Drawable_hh
+#ifndef _GGI_Drawable_hh
+#define _GGI_Drawable_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Types.hh>
 #include <Fresco/Input.hh>
-#include <Berlin/Logger.hh>
 #include <Berlin/Console.hh>
 #include <Berlin/Console/GGIDrawableFactory.hh>
 #include <vector>
@@ -36,64 +35,63 @@ extern "C"
 
 namespace GGI
 {
+  class Console;
 
-class Console;
-
-class Drawable : public virtual ::Console::Drawable,
-		 public virtual ::GGIDrawable
-{
-  friend class Console;
-public:
-  Drawable(const char *, Fresco::PixelCoord = 0, Fresco::PixelCoord = 0, Fresco::PixelCoord = 0);
-  virtual ~Drawable();
-  virtual Fresco::Drawable::PixelFormat pixel_format();
-  virtual Fresco::Drawable::BufferFormat buffer_format();
-  virtual Fresco::PixelCoord width() const;
-  virtual Fresco::PixelCoord height() const;
-  virtual Fresco::PixelCoord vwidth() const;
-  virtual Fresco::PixelCoord vheight() const;
-  virtual Fresco::Coord resolution(Fresco::Axis a) const;
-  virtual Fresco::Coord dpi(Fresco::Axis a) const;
-  virtual Fresco::PixelCoord row_length() const;
-
-  virtual void flush();
-  virtual void flush(Fresco::PixelCoord, Fresco::PixelCoord, Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual void init();
-  virtual void finish();
-
-  /*
-   * fast blit
-   */
-  virtual void blit(Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual void blit(const ::Console::Drawable &,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual void blit(const Drawable &,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual void blit(Fresco::Drawable_ptr,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord,
-		    Fresco::PixelCoord, Fresco::PixelCoord);
-
-  virtual const std::string &name() const { return _name;}
-  virtual ggi_mode           mode() const { return _mode;}
-  virtual ggi_visual_t       visual() const { return _visual;}
-  /*
-   * if you really must ask...
-   */
-  const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (_visual, i);}
-  ggi_pixel               map(const Fresco::Color &) const;
-private:
-  std::string   _name;
-  ggi_visual_t  _visual;
-  ggi_mode      _mode;
-};
-
+  class Drawable : public virtual Berlin::Console::Drawable,
+           public virtual Berlin::Console_Extension::GGIDrawable
+  {
+      friend class GGI::Console;
+    public:
+      Drawable(const char *, Fresco::PixelCoord = 0,
+           Fresco::PixelCoord = 0, Fresco::PixelCoord = 0);
+      virtual ~Drawable();
+      virtual Fresco::Drawable::PixelFormat pixel_format();
+      virtual Fresco::Drawable::BufferFormat buffer_format();
+      virtual Fresco::PixelCoord width() const;
+      virtual Fresco::PixelCoord height() const;
+      virtual Fresco::PixelCoord vwidth() const;
+      virtual Fresco::PixelCoord vheight() const;
+      virtual Fresco::Coord resolution(Fresco::Axis a) const;
+      virtual Fresco::Coord dpi(Fresco::Axis a) const;
+      virtual Fresco::PixelCoord row_length() const;
+      
+      virtual void flush();
+      virtual void flush(Fresco::PixelCoord, Fresco::PixelCoord,
+             Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void init();
+      virtual void finish();
+      
+      // fast blit
+      virtual void blit(Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void blit(const Berlin::Console::Drawable &,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void blit(const Drawable &,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void blit(Fresco::Drawable_ptr,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord,
+            Fresco::PixelCoord, Fresco::PixelCoord);
+      
+      virtual const std::string &name() const { return my_name; }
+      virtual ggi_mode mode() const { return my_mode; }
+      virtual ggi_visual_t visual() const { return my_visual; }
+     
+      // if you really must ask...
+      const ggi_directbuffer *buffer(unsigned int i) const
+      { return ggiDBGetBuffer(my_visual, i); }
+      ggi_pixel map(const Fresco::Color &) const;
+    private:
+      std::string my_name;
+      ggi_visual_t my_visual;
+      ggi_mode my_mode;
+  };
+  
 }
 
 #endif

@@ -42,7 +42,7 @@ void Filler::traverse(Traversal_ptr traversal)
     traversal->visit(Graphic_var(_this()));
     Graphic_var child = body();
     if (!CORBA::is_nil(child))
-	MonoGraphic::traverse(traversal);
+    MonoGraphic::traverse(traversal);
 }
 
 void Filler::draw(DrawTraversal_ptr traversal)

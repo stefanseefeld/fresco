@@ -36,33 +36,34 @@ extern "C"
 namespace GGI
 {
 
-class DirectBuffer;
-
-class Pointer : public ::Console::Pointer
-{
-  typedef ::Console::Drawable::data_type data_type;
-  typedef ggi_pixel Pixel;
-public:
-  Pointer(Drawable *, Fresco::Raster_ptr);
-  virtual ~Pointer();
-  virtual Fresco::Raster_ptr raster();
-  virtual void move(Fresco::Coord, Fresco::Coord);
-  virtual void draw();
-  virtual void save();
-  virtual void restore();
-  virtual bool intersects(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
-private:
-  Drawable           *_screen;
-  DirectBuffer       *_dbuffer;
-  Fresco::PixelCoord  _origin[2];
-  Fresco::PixelCoord  _position[2];
-  Fresco::PixelCoord  _size[2];
-  Fresco::Coord       _scale[2];
-  Fresco::Raster_ptr  _raster;
-  data_type          *_image;
-  data_type          *_mask;
-  Drawable           *_cache;
-};
+  class DirectBuffer;
+  
+  class Pointer : public Berlin::Console::Pointer
+  {
+      typedef Berlin::Console::Drawable::data_type data_type;
+      typedef ggi_pixel Pixel;
+    public:
+      Pointer(Drawable *, Fresco::Raster_ptr);
+      virtual ~Pointer();
+      virtual Fresco::Raster_ptr raster();
+      virtual void move(Fresco::Coord, Fresco::Coord);
+      virtual void draw();
+      virtual void save();
+      virtual void restore();
+      virtual bool intersects(Fresco::Coord, Fresco::Coord,
+                  Fresco::Coord, Fresco::Coord);
+    private:
+      Drawable           *my_screen;
+      DirectBuffer       *my_dbuffer;
+      Fresco::PixelCoord  my_origin[2];
+      Fresco::PixelCoord  my_position[2];
+      Fresco::PixelCoord  my_size[2];
+      Fresco::Coord       my_scale[2];
+      Fresco::Raster_ptr  my_raster;
+      data_type          *my_image;
+      data_type          *my_mask;
+      Drawable           *my_cache;
+  };
 
 }
 

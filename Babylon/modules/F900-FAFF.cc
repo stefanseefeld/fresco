@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         CJK_Compatibility_IdeographsF900() :
-	    my_first_letter(0xF900),
-	    my_last_letter(0xFAFF)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0xF900),
+        my_last_letter(0xFAFF)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "CJK Compatibility Ideographs";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "CJK Compatibility Ideographs";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -337,7 +337,7 @@ namespace Babylon
         // functions
         CJK_Compatibility_IdeographsF900(const CJK_Compatibility_IdeographsF900 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

@@ -29,7 +29,7 @@ using namespace Fresco;
 namespace
 {
   class ExitCommand : public virtual POA_Fresco::Command,
-		      public virtual PortableServer::RefCountServantBase
+              public virtual PortableServer::RefCountServantBase
   {
   public:
     virtual void execute(const CORBA::Any &) { exit(0);} // the point of no return...

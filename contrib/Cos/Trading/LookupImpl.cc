@@ -25,9 +25,9 @@ using namespace CosTrading;
 
 LookupImpl::LookupImpl() {}
 void LookupImpl::query(const char *type, const char *constr, const char *pref, const PolicySeq &policies,
-		       const Lookup::SpecifiedProps &desired_props, CORBA::ULong how_many,
-		       OfferSeq *&offers, OfferIterator_ptr &offer_itr,
-		       PolicyNameSeq *&limits_applied)
+               const Lookup::SpecifiedProps &desired_props, CORBA::ULong how_many,
+               OfferSeq *&offers, OfferIterator_ptr &offer_itr,
+               PolicyNameSeq *&limits_applied)
 {
   trader->import(type, constr, pref, policies, desired_props, how_many, offers, offer_itr, limits_applied);
 }

@@ -36,18 +36,18 @@ void Deck::request(Fresco::Graphic::Requisition &r)
 {
     if (!my_requested)
     {
-	GraphicImpl::init_requisition(my_requisition);
-	long n = my_children.size();
-	if (n > 0)
-	{
-	    Fresco::Graphic::Requisition *r = children_requests();
-	    LayoutAlign x(xaxis);
-	    x.request(n, r, my_requisition);
-	    LayoutAlign y(yaxis);
-	    y.request(n, r, my_requisition);
-	    my_pool.deallocate(r);
-	}
-	my_requested = true;
+    GraphicImpl::init_requisition(my_requisition);
+    long n = my_children.size();
+    if (n > 0)
+    {
+        Fresco::Graphic::Requisition *r = children_requests();
+        LayoutAlign x(xaxis);
+        x.request(n, r, my_requisition);
+        LayoutAlign y(yaxis);
+        y.request(n, r, my_requisition);
+        my_pool.deallocate(r);
+    }
+    my_requested = true;
     }
     r = my_requisition;
 }
@@ -55,7 +55,7 @@ void Deck::request(Fresco::Graphic::Requisition &r)
 void Deck::extension(const Allocation::Info &a, Region_ptr r)
 {
     if (size_t n = my_children.size())
-	my_children[n - 1].peer->extension(a, r);
+    my_children[n - 1].peer->extension(a, r);
 }
 
 void Deck::traverse(Traversal_ptr t)
@@ -64,9 +64,9 @@ void Deck::traverse(Traversal_ptr t)
     if (n == 0) return;
     try
     {
-	t->traverse_child(my_children [n-1].peer,
-			  my_children [n-1].localId, Region::_nil(),
-			  Transform::_nil());
+    t->traverse_child(my_children [n-1].peer,
+              my_children [n-1].localId, Region::_nil(),
+              Transform::_nil());
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     { my_children[n-1].peer = Fresco::Graphic::_nil(); }

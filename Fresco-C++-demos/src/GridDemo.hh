@@ -18,15 +18,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GridDemo_hh
-#define _GridDemo_hh
+#ifndef _CXX_demos_GridDemo_hh
+#define _CXX_demos_GridDemo_hh
 
 #include "Demo.hh"
 
 class GridDemo : public Demo
 {
-public:
-  GridDemo(Application *);
+  public:
+    GridDemo(Application *);
 };
 
 #endif

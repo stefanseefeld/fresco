@@ -36,25 +36,25 @@ namespace Berlin
     class Transformer : public Allocator
     {
     public:
-	Transformer();
-	virtual ~Transformer();
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void traverse(Fresco::Traversal_ptr);
-	virtual Fresco::Transform_ptr transformation();
-	void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+    Transformer();
+    virtual ~Transformer();
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void traverse(Fresco::Traversal_ptr);
+    virtual Fresco::Transform_ptr transformation();
+    void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
     private:
-	Impl_var<TransformImpl> my_transform;
+    Impl_var<TransformImpl> my_transform;
     };
 
     class BodyTransformer : public Transformer
     {
     public:
-	BodyTransformer(Transformer*, unsigned d = 0);
-	BodyTransformer(Fresco::Transform_ptr, unsigned d = 0);
-	virtual void body(Fresco::Graphic_ptr);
-	virtual Fresco::Graphic_ptr body();
+    BodyTransformer(Transformer*, unsigned d = 0);
+    BodyTransformer(Fresco::Transform_ptr, unsigned d = 0);
+    virtual void body(Fresco::Graphic_ptr);
+    virtual Fresco::Graphic_ptr body();
       protected:
-	unsigned my_depth;
+    unsigned my_depth;
     };
 
   } // namespace

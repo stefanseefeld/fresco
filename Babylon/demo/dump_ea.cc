@@ -51,25 +51,25 @@ void output(std::ostream & out, Char s, EA_Width c)
     switch (s.EA_width())
     {
     case EA_WIDTH_W:
-	out << "W";
-	break;
+    out << "W";
+    break;
     case EA_WIDTH_F:
-	out << "F";
-	break;
+    out << "F";
+    break;
     case EA_WIDTH_Na:
-	out << "Na";
-	break;
+    out << "Na";
+    break;
     case EA_WIDTH_H:
-	out << "H";
-	break;
+    out << "H";
+    break;
     case EA_WIDTH_A:
-	out << "A";
-	break;
+    out << "A";
+    break;
     case EA_WIDTH_N:
-	out << "N";
-	break;
+    out << "N";
+    break;
     default:
-	out << "UNKNOWN";
+    out << "UNKNOWN";
     }
     out << std::endl;
 }
@@ -78,26 +78,26 @@ int main(int argc, char** argv)
 {
     try
     {
-	if (argc == 2) Babylon::override_path(std::string(argv[1]));
-	
-	for (Char A(UC_NULL); A.value() < 0x110000; ++A)
-	{
-	    if (A.EA_width() == EA_WIDTH_MAX) continue;
-	    output(std::cout, A, A.EA_width());
-	}
+    if (argc == 2) Babylon::override_path(std::string(argv[1]));
+    
+    for (Char A(UC_NULL); A.value() < 0x110000; ++A)
+    {
+        if (A.EA_width() == EA_WIDTH_MAX) continue;
+        output(std::cout, A, A.EA_width());
+    }
     }
     catch(std::runtime_error &e)
     {
-	std::cout << "Caught an runtime exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an runtime exception: " << e.what()
+          << std::endl;
     }
     catch(std::exception &e)
     {
-	std::cout << "Caught an exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an exception: " << e.what()
+          << std::endl;
     }
     catch(...)
     {
-	std::cout << "Some exception happened!" << std::endl;
+    std::cout << "Some exception happened!" << std::endl;
     }
 }

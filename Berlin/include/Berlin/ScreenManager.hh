@@ -48,7 +48,7 @@ namespace Berlin
   {
     public:
       ScreenManager(Fresco::Graphic_ptr, EventManager *,
-		    Fresco::DrawingKit_ptr);
+            Fresco::DrawingKit_ptr);
       ~ScreenManager();
       //. This method marks the given Region as damaged.
       void damage(Fresco::Region_ptr);

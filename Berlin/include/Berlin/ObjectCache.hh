@@ -38,7 +38,7 @@ namespace Berlin
   };
 
   template <typename Remote, typename Local,
-	    typename Trait = DefaultObjectCacheTrait<Remote, Local> >
+        typename Trait = DefaultObjectCacheTrait<Remote, Local> >
   class ObjectCache
   {
       typedef std::vector<Local *> bucket_t;
@@ -47,10 +47,10 @@ namespace Berlin
       typedef std::list<Local *> counter_t;
       struct Predicate
       {
-	  Predicate(Remote r) : remote(r) { }
-	  bool operator () (Local *l) const
-	  { return remote->_is_equivalent(Trait::remote(l));}
-	  Remote remote;
+      Predicate(Remote r) : remote(r) { }
+      bool operator () (Local *l) const
+      { return remote->_is_equivalent(Trait::remote(l));}
+      Remote remote;
       };
     public:
       ObjectCache(int i, int b = 193) : my_items(i), my_buckets(b) { }
@@ -77,16 +77,16 @@ namespace Berlin
       hash_t hash = r->_hash(my_buckets);
       bucket_t &bucket = my_cache[hash];
       typename bucket_t::iterator i =
-	  find_if(bucket.begin(), bucket.end(), Predicate(r));
+      find_if(bucket.begin(), bucket.end(), Predicate(r));
       if (i == bucket.end())
       {
-	  Local *local = Trait::create(r);
-	  bucket.push_back(local);
-	  return bucket.back();
+      Local *local = Trait::create(r);
+      bucket.push_back(local);
+      return bucket.back();
       }
       else
       {
-	  return *i;
+      return *i;
       }
   }
 

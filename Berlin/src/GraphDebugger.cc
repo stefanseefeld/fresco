@@ -58,7 +58,7 @@ void Berlin::GraphDebugger::debug()
 }
 
 void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
-					 std::ostream & out)
+                     std::ostream & out)
 {
     if (CORBA::is_nil(g)) return;
     
@@ -78,51 +78,51 @@ void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
     g->request(r);
     out << "X(";
     if (r.x.defined)
-	out << r.x.minimum << ","
-	    << r.x.natural << ","
-	    << r.x.maximum << ")";
+    out << r.x.minimum << ","
+        << r.x.natural << ","
+        << r.x.maximum << ")";
     else
-	out << "-";
+    out << "-";
     out << "):Y(";
     if (r.y.defined)
-	out << r.y.minimum << ","
-	    << r.y.natural << ","
-	    << r.y.maximum << ")";
+    out << r.y.minimum << ","
+        << r.y.natural << ","
+        << r.y.maximum << ")";
     else
-	out << "-";
+    out << "-";
     out << "):Z(";
     if (r.z.defined)
-	out << r.z.minimum << ","
-	    << r.z.natural << ","
-	    << r.z.maximum << ")";
+    out << r.z.minimum << ","
+        << r.z.natural << ","
+        << r.z.maximum << ")";
     else
-	out << "-";
+    out << "-";
     out << ")";
     
     // label: transformation
     Fresco::Transform_var t = g->transformation();
     if (!CORBA::is_nil(t) && !t->identity())
     {
-	Fresco::Transform::Matrix m;
-	t->store_matrix(m);
-	out << "\\n";
-	out << "[" << m[0][0] << ", " << m[0][1] << ", "
-	    << m[0][2] << ", "  << m[0][3] << "]\\n";
-	out << "[" << m[1][0] << ", " << m[1][1] << ", "
-	    << m[1][2] << ", "  << m[1][3] << "]\\n";
-	out << "[" << m[2][0] << ", " << m[2][1] << ", "
-	    << m[2][2] << ", "  << m[2][3] << "]\\n";
-	out << "[" << m[3][0] << ", " << m[3][1] << ", "
-	    << m[3][2] << ", "  << m[3][3] << "]\\n";
+    Fresco::Transform::Matrix m;
+    t->store_matrix(m);
+    out << "\\n";
+    out << "[" << m[0][0] << ", " << m[0][1] << ", "
+        << m[0][2] << ", "  << m[0][3] << "]\\n";
+    out << "[" << m[1][0] << ", " << m[1][1] << ", "
+        << m[1][2] << ", "  << m[1][3] << "]\\n";
+    out << "[" << m[2][0] << ", " << m[2][1] << ", "
+        << m[2][2] << ", "  << m[2][3] << "]\\n";
+    out << "[" << m[3][0] << ", " << m[3][1] << ", "
+        << m[3][2] << ", "  << m[3][3] << "]\\n";
     }
     out << "\"," << std::endl;
     
     // shape (depending on type of g)
     out << "        shape=\"";
     if (CORBA::is_nil(Fresco::Controller::_narrow(g)))
-	out << "ellipse";
+    out << "ellipse";
     else
-	out << "box";
+    out << "box";
     out << "\"]" << std::endl;
     
     
@@ -135,32 +135,32 @@ void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
 
     if (CORBA::is_nil(g->body()))
     {
-	Fresco::GraphicIterator_var i = g->first_child_graphic();
-	if (CORBA::is_nil(i)) return; // leaf graphic!
+    Fresco::GraphicIterator_var i = g->first_child_graphic();
+    if (CORBA::is_nil(i)) return; // leaf graphic!
 
-	for ( ; !CORBA::is_nil(i->child()); i->next())
-	{
-	    children.push_back(i->child());
-	}
+    for ( ; !CORBA::is_nil(i->child()); i->next())
+    {
+        children.push_back(i->child());
+    }
     }
     else
-	children.push_back(g->body());
+    children.push_back(g->body());
 
     // children contain all childgraphics now!
     for (std::vector<Fresco::Graphic_ptr>::const_iterator i =
-	     children.begin();
-	 i != children.end();
-	 ++i)
+         children.begin();
+     i != children.end();
+     ++i)
     {
-	graphic_info & target = find_or_insert(*i);
-	out << "    n" << info.id << " -> n" << target.id << std::endl;
+    graphic_info & target = find_or_insert(*i);
+    out << "    n" << info.id << " -> n" << target.id << std::endl;
     }
 
     for (std::vector<Fresco::Graphic_ptr>::const_iterator i =
-	     children.begin();
-	 i != children.end();
-	 ++i)
-	dump_graphic(*i, out);
+         children.begin();
+     i != children.end();
+     ++i)
+    dump_graphic(*i, out);
 }
 
 
@@ -168,22 +168,22 @@ Berlin::GraphDebugger::graphic_info &
 Berlin::GraphDebugger::find_or_insert(Fresco::Graphic_ptr g)
 {
     unsigned long hash =
-	g->_hash(std::numeric_limits<unsigned int>::max());
+    g->_hash(std::numeric_limits<unsigned int>::max());
     const GraphicImpl * const p(Berlin::GraphicDictionary::instance()->
-				implementation(g));
+                implementation(g));
 
     for (std::vector<graphic_info>::iterator i =
-	     my_known_graphics.begin();
-	 i != my_known_graphics.end();
-	 ++i)
-	if (hash == i->hash &&
-	    g->_is_equivalent(i->graphic))
-		return *i; // we allready know this one
+         my_known_graphics.begin();
+     i != my_known_graphics.end();
+     ++i)
+    if (hash == i->hash &&
+        g->_is_equivalent(i->graphic))
+        return *i; // we allready know this one
 
     // the graphic is unknown: register it and return a reference to it.
     my_known_graphics.push_back(
-	graphic_info(g, p, hash, my_current_id,
-		     Berlin::GraphicDictionary::instance()->name(g)));
+    graphic_info(g, p, hash, my_current_id,
+             Berlin::GraphicDictionary::instance()->name(g)));
     ++my_current_id;
 
     return my_known_graphics.back();

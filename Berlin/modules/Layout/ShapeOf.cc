@@ -38,22 +38,22 @@ void ShapeOf::request(Fresco::Graphic::Requisition &r)
     if (CORBA::is_nil(my_y) && CORBA::is_nil(my_z)) my_x->request(r);
     else
     {
-	Fresco::Graphic::Requisition req;
-	GraphicImpl::init_requisition(req);
-	if (!CORBA::is_nil(my_x))
-	{
-	    my_x->request(req);
-	    r.x = req.x;
-	}
-	if (!CORBA::is_nil(my_y))
-	{
-	    my_y->request(req);
-	    r.y = req.y;
-	}
-	if (CORBA::is_nil(my_z))
-	{
-	    my_z->request(req);
-	    r.z = req.z;
-	}
+    Fresco::Graphic::Requisition req;
+    GraphicImpl::init_requisition(req);
+    if (!CORBA::is_nil(my_x))
+    {
+        my_x->request(req);
+        r.x = req.x;
+    }
+    if (!CORBA::is_nil(my_y))
+    {
+        my_y->request(req);
+        r.y = req.y;
+    }
+    if (CORBA::is_nil(my_z))
+    {
+        my_z->request(req);
+        r.z = req.z;
+    }
     }
 }

@@ -32,12 +32,12 @@ namespace Berlin
     class Strut : public GraphicImpl
     {
       public:
-	Strut(const Fresco::Graphic::Requisition &r) : my_requisition(r)
-	{ }
-	virtual void request(Fresco::Graphic::Requisition &r)
-	{ r = my_requisition;}
+    Strut(const Fresco::Graphic::Requisition &r) : my_requisition(r)
+    { }
+    virtual void request(Fresco::Graphic::Requisition &r)
+    { r = my_requisition;}
       private:
-	Fresco::Graphic::Requisition my_requisition;
+    Fresco::Graphic::Requisition my_requisition;
     };
 
   } // namespace

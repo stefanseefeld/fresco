@@ -55,11 +55,11 @@ namespace Berlin
 
         void insert(StageHandleImpl *);
         void remove(StageHandleImpl *);
-	
+    
         StageHandleImpl *find(Layout::Stage::Index layer)
-	{
-	    iterator i = lookup(layer);
-	    return i == end() ? 0 : *i;
+    {
+        iterator i = lookup(layer);
+        return i == end() ? 0 : *i;
         }
         StageHandleImpl *front() { return size() ? parent_t::front() : 0; }
         StageHandleImpl *back() { return size() ? parent_t::back() : 0; }
@@ -81,24 +81,24 @@ namespace Berlin
 
     class Quad : public QTNode<Coord, StageHandleImpl *>
     {
-	typedef QTNode<Coord, StageHandleImpl *> parent_t;
+    typedef QTNode<Coord, StageHandleImpl *> parent_t;
       public:
-	Quad(const Geometry::Rectangle<Coord> &);
-	Quad(const Geometry::Rectangle<Coord> &, Quad *);
-	Quad *node(int i)
-	{ return static_cast<Quad *>(parent_t::node(static_cast<index>(i))); }
-	void within(const Geometry::Rectangle<Coord> &, Finder &);
-	void contains(const Geometry::Point<Coord> &, Finder &);
-	void intersects(const Geometry::Rectangle<Coord> &, Finder &);
-	void intersects(const Geometry::Rectangle<Coord> &,
-			const Geometry::Polygon<Coord> &, Finder &);
+    Quad(const Geometry::Rectangle<Coord> &);
+    Quad(const Geometry::Rectangle<Coord> &, Quad *);
+    Quad *node(int i)
+    { return static_cast<Quad *>(parent_t::node(static_cast<index>(i))); }
+    void within(const Geometry::Rectangle<Coord> &, Finder &);
+    void contains(const Geometry::Point<Coord> &, Finder &);
+    void intersects(const Geometry::Rectangle<Coord> &, Finder &);
+    void intersects(const Geometry::Rectangle<Coord> &,
+            const Geometry::Polygon<Coord> &, Finder &);
     };
 
   } // namespace
 } // namespace
 
 class StageImpl::QuadTree : public Berlin::QuadTree<Coord,
-	                                            StageHandleImpl *>
+                                                StageHandleImpl *>
 {
     typedef Berlin::QuadTree<Coord, StageHandleImpl *> parent_t;
 
@@ -151,7 +151,7 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
     // FIXME: Shouldn't this be back(), not front() ? --tobias
     else i = lookup(layer);
     for (iterator j = i; j != end(); ++j)
-	(*j)->my_layer = ++layer;
+    (*j)->my_layer = ++layer;
     parent_t::insert(i, handle);
 }
 
@@ -162,7 +162,7 @@ void StageImpl::Sequence::remove(StageHandleImpl *handle)
     iterator old = lookup(layer);
     if (old == begin() + my_cursor)
         if (current()->my_layer <= (front()->my_layer / 2)) my_cursor++;
-	else my_cursor--;
+    else my_cursor--;
     for (iterator i = old++; i != end(); ++i)
         (*i)->my_layer = layer++;
     parent_t::erase(--old);
@@ -187,48 +187,48 @@ Quad::Quad(const Rectangle<Coord> &r, Quad *node) : parent_t(r)
     Coord dr = r.r - b.r;
     if (dl < dr)
     { 
-	idx |= left;
-	my_region.l = b.l;
-	my_region.r = b.r + b.w();
+    idx |= left;
+    my_region.l = b.l;
+    my_region.r = b.r + b.w();
     }
     else
     {
-	idx |= right;
-	my_region.l = b.l - b.w();
-	my_region.r = b.r;
+    idx |= right;
+    my_region.l = b.l - b.w();
+    my_region.r = b.r;
     }
 
     Coord dt = b.t - r.t;
     Coord db = r.b - b.b;
     if (dt < db)
     {
-	idx |= top;
-	my_region.t = b.t;
-	my_region.b = b.b + b.h();
+    idx |= top;
+    my_region.t = b.t;
+    my_region.b = b.b + b.h();
     }
     else
     {
-	idx |= bottom;
-	my_region.t = b.t - b.h();
-	my_region.b = b.b;
+    idx |= bottom;
+    my_region.t = b.t - b.h();
+    my_region.b = b.b;
     }
 
     my_quadrants[lefttop] =
         idx == lefttop ? node :
         new Quad(Rectangle<Coord>(my_region.l, my_region.t,
-				  my_region.cx(), my_region.cy()));
+                  my_region.cx(), my_region.cy()));
     my_quadrants[righttop] =
         idx == righttop ? node :
         new Quad(Rectangle<Coord>(my_region.cx(), my_region.t,
-				  my_region.r, my_region.cy()));
+                  my_region.r, my_region.cy()));
     my_quadrants[leftbottom] =
         idx == leftbottom ? node :
         new Quad(Rectangle<Coord>(my_region.l, my_region.cy(),
-				  my_region.cx(), my_region.b));
+                  my_region.cx(), my_region.b));
     my_quadrants[rightbottom] =
         idx == rightbottom ? node :
         new Quad(Rectangle<Coord>(my_region.cx(), my_region.cy(),
-				  my_region.r, my_region.b));
+                  my_region.r, my_region.b));
 }
 
 void Quad::within(const Rectangle<Coord> &r, Finder &finder)
@@ -237,8 +237,8 @@ void Quad::within(const Rectangle<Coord> &r, Finder &finder)
     if (idx == fence)
     {
         for (list::iterator i = my_items.begin();
-	     i != my_items.end();
-	     ++i)
+         i != my_items.end();
+         ++i)
             if ((*i)->bbox().within(r)) finder.found(*i);
         if (!leaf())
         {
@@ -263,7 +263,7 @@ void Quad::within(const Rectangle<Coord> &r, Finder &finder)
                 node(rightbottom)->within(r, finder);
             }
             else for (int i = 0; i < 4; ++i)
-		node(i)->within(r, finder);
+        node(i)->within(r, finder);
         }
     }
     else node(idx)->within(r, finder);
@@ -294,7 +294,7 @@ void Quad::intersects(const Rectangle<Coord> &r, Finder &finder)
                RegionImpl shape;
                (*i)->c->shape(my_region);
                if (shape->intersects(my_region.l, my_region.b,
-	                             my_region.r, my_region.t))
+                                 my_region.r, my_region.t))
                    finder.found(item);
              */
             finder.found(*i);
@@ -326,7 +326,7 @@ void Quad::intersects(const Rectangle<Coord> &r, Finder &finder)
                 node(rightbottom)->intersects(r, finder);
             }
             else for (int i = 0; i < 4; ++i)
-		node(i)->intersects(r, finder);
+        node(i)->intersects(r, finder);
         }
     }
     else node(idx)->intersects(r, finder);
@@ -374,7 +374,7 @@ void Quad::intersects(const Rectangle<Coord> &r,
                 node(rightbottom)->intersects(r, finder);
             }
             else for (int i = 0; i < 4; i++)
-		node(i)->intersects(r, finder);
+        node(i)->intersects(r, finder);
         }
     }
     else node(idx)->intersects(r, finder);
@@ -394,7 +394,7 @@ void StageImpl::QuadTree::insert(StageHandleImpl *handle)
      *                -stefan
      */
     else while (!bbox.within(node()->extension()))
-	my_quad = new Quad(bbox, node());
+    my_quad = new Quad(bbox, node());
     node()->insert(handle);
 }
 
@@ -422,17 +422,17 @@ namespace Berlin
     class StageQuadTreeContains : public Finder
     {
       public:
-	StageQuadTreeContains(Traversal::order o) : handle(0), order(o) { }
-	virtual void found(StageHandleImpl *h)
-	    {
-		if (!handle ||
-		    (order == Traversal::down &&
-		     handle->my_layer > h->my_layer) ||
-		    handle->my_layer < h->my_layer)
-		    handle = h;
-	    }
-	StageHandleImpl *handle;
-	Traversal::order order;
+    StageQuadTreeContains(Traversal::order o) : handle(0), order(o) { }
+    virtual void found(StageHandleImpl *h)
+        {
+        if (!handle ||
+            (order == Traversal::down &&
+             handle->my_layer > h->my_layer) ||
+            handle->my_layer < h->my_layer)
+            handle = h;
+        }
+    StageHandleImpl *handle;
+    Traversal::order order;
     };
   } // namespace
 } // namespace
@@ -450,7 +450,7 @@ StageHandleImpl *StageImpl::QuadTree::contains(const Point<Coord> &point)
 }
 
 void StageImpl::QuadTree::intersects(const Polygon<Coord> &polygon,
-				     Finder &finder)
+                     Finder &finder)
 {
     if (node())
     {
@@ -467,14 +467,14 @@ namespace Berlin
     class StageTraversal : public Finder
     {
       public:
-	StageTraversal(Traversal_ptr t);
-	virtual ~StageTraversal();
-	virtual void found(StageHandleImpl *h) { my_buffer.push_back(h);}
-	void execute();
+    StageTraversal(Traversal_ptr t);
+    virtual ~StageTraversal();
+    virtual void found(StageHandleImpl *h) { my_buffer.push_back(h);}
+    void execute();
       private:
-	void traverse(StageHandleImpl *);
-	Traversal_ptr                  my_traversal;
-	std::vector<StageHandleImpl *> my_buffer;
+    void traverse(StageHandleImpl *);
+    Traversal_ptr                  my_traversal;
+    std::vector<StageHandleImpl *> my_buffer;
     };
   } // namespace
 } // namespace
@@ -487,7 +487,7 @@ namespace std
 
   template <>
   struct greater<StageHandleImpl *> :
-	public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
+    public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
   {
       bool operator() (StageHandleImpl *a, StageHandleImpl *b) const
       { return a->my_layer > b->my_layer; }
@@ -495,7 +495,7 @@ namespace std
 
   template <>
   struct less<StageHandleImpl *> :
-	public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
+    public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
   {
       bool operator() (StageHandleImpl *a, StageHandleImpl *b) const
       { return a->my_layer < b->my_layer; }
@@ -506,10 +506,10 @@ void StageTraversal::execute()
 {
     if (my_traversal->direction() == Traversal::down)
         sort(my_buffer.begin(), my_buffer.end(),
-	     std::less<StageHandleImpl *>());
+         std::less<StageHandleImpl *>());
     else
         sort(my_buffer.begin(), my_buffer.end(),
-	     std::greater<StageHandleImpl *>());
+         std::greater<StageHandleImpl *>());
     for (std::vector<StageHandleImpl *>::iterator i = my_buffer.begin();
          i != my_buffer.end() && my_traversal->ok();
          ++i)
@@ -528,15 +528,15 @@ void StageTraversal::traverse(StageHandleImpl *handle)
     Vertex origin;
     region->normalize(origin);
     Lease_var<TransformImpl>
-	transformation(Provider<TransformImpl>::provide());
+    transformation(Provider<TransformImpl>::provide());
     transformation->load_identity();
     transformation->translate(origin);
     try
     {
         my_traversal->traverse_child(handle->my_child,
-				     handle->my_tag,
-				     Region_var(region->_this()),
-				     Transform_var(transformation->_this()));
+                     handle->my_tag,
+                     Region_var(region->_this()),
+                     Transform_var(transformation->_this()));
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     { handle->my_child = Fresco::Graphic::_nil(); }
@@ -549,18 +549,18 @@ class StageImpl::Iterator : public virtual POA_Fresco::GraphicIterator,
 {
   public:
     Iterator(StageImpl *p, Tag c) :
-	my_parent(p),
-	my_cursor(c)
+    my_parent(p),
+    my_cursor(c)
     { my_parent->_add_ref(); }
     virtual ~Iterator() { my_parent->_remove_ref(); }
 
     virtual Fresco::Graphic_ptr child()
     {
-	Prague::Guard<Mutex> guard(my_parent->my_mutex);
-	if (my_cursor >= my_parent->my_children->size())
+    Prague::Guard<Mutex> guard(my_parent->my_mutex);
+    if (my_cursor >= my_parent->my_children->size())
             return Fresco::Graphic::_nil();
         return RefCount_var<Fresco::Graphic>::increment(
-	    my_parent->my_children->find(my_cursor)->child());
+        my_parent->my_children->find(my_cursor)->child());
     }
     virtual void next() { my_cursor++; }
     virtual void prev() { my_cursor--; }
@@ -601,7 +601,7 @@ Fresco::GraphicIterator_ptr StageImpl::last_child_graphic()
 {
     Iterator *iterator =
         new Iterator(this, my_children->size() ?
-		     my_children->size() - 1 : 0);
+             my_children->size() - 1 : 0);
     activate(iterator);
     return iterator->_this();
 }
@@ -644,7 +644,7 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
     {
         Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
         Lease_var<TransformImpl>
-	    transform(Provider<TransformImpl>::provide());
+        transform(Provider<TransformImpl>::provide());
         transform->load_identity();
         Vertex origin;
         handle->bbox(*region);
@@ -659,7 +659,7 @@ void StageImpl::need_redraw()
 {
     Trace trace(this, "StageImpl::need_redraw");
     Lease_var<AllocationImpl>
-	allocation(Provider<AllocationImpl>::provide());
+    allocation(Provider<AllocationImpl>::provide());
     allocations(Allocation_var(allocation->_this()));
     Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
     Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
@@ -676,7 +676,7 @@ void StageImpl::need_redraw()
             tx->translate(origin);
             region->apply_transform(Transform_var(tx->_this()));
             if (region->valid)
-		info->root->damage(Region_var(region->_this()));
+        info->root->damage(Region_var(region->_this()));
         }
     }
 }
@@ -685,7 +685,7 @@ void StageImpl::need_redraw_region(Region_ptr region)
 {
     Trace trace(this, "StageImpl::need_redraw_region");
     Lease_var<AllocationImpl>
-	allocation(Provider<AllocationImpl>::provide());
+    allocation(Provider<AllocationImpl>::provide());
     allocations(Allocation_var(allocation->_this()));
     CORBA::Long size = allocation->size();
     Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
@@ -779,7 +779,7 @@ void StageImpl::unlock()
 
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position,
                                   const Vertex &size,
-				  Layout::Stage::Index layer)
+                  Layout::Stage::Index layer)
 {
     Trace trace(this, "StageImpl::insert");
     Prague::Guard<Mutex> guard(my_mutex);
@@ -877,8 +877,8 @@ Tag StageImpl::unique_tag()
 StageHandleImpl *StageImpl::tag_to_handle(Tag tag)
 {
     for (Sequence::iterator i = my_children->begin();
-	 i != my_children->end();
-	 ++i)
+     i != my_children->end();
+     ++i)
         if ((*i)->my_tag == tag) return *i;
     return 0;
 }
@@ -888,7 +888,7 @@ void StageImpl::damage(StageHandleImpl *handle)
     Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
     handle->bbox(*region);
     if (my_need_redraw)
-	my_damage->merge_union(Region_var(region->_this()));
+    my_damage->merge_union(Region_var(region->_this()));
     else
     {
         my_need_redraw = true;

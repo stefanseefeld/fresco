@@ -38,14 +38,14 @@ namespace Babylon {
 
       struct Dict_Guard
       {
-	  ~Dict_Guard() { delete Dictionary::my_dictionary; }
+      ~Dict_Guard() { delete Dictionary::my_dictionary; }
       };
       friend struct Dict_Guard;
       
   public:
       //. Scans a directory for modules.
       void update(const std::string &)
-	  throw (std::runtime_error, Block_Error);
+      throw (std::runtime_error, Block_Error);
       
       //. Finds the current dictionary.
       //. If no dictionary exists it will create one.
@@ -78,38 +78,38 @@ namespace Babylon {
       UCS4 titlecase(const UCS4 uc) const throw (Block_Error);
       
       float numeric_value(const UCS4 uc) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       bool is_Numeric(const UCS4 uc) const
-	  throw (Block_Error);
+      throw (Block_Error);
       int dec_digit_value(const UCS4 uc) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       bool is_Decimal_Digit(const UCS4 uc) const
-	  throw (Block_Error);
+      throw (Block_Error);
       int digit_value(const UCS4 uc) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       bool is_Digit(const UCS4 uc) const
-	  throw (Block_Error);
+      throw (Block_Error);
       
       std::string blockname(const UCS4 uc) const
-	  throw (Block_Error);
+      throw (Block_Error);
       
       Gen_Cat category(const UCS4) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       Can_Comb_Class comb_class(const UCS4) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       Bidir_Props bidir_props(const UCS4) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       Char_Decomp decomp_type(const UCS4) const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       UTF32_string decompose(const UCS4) const
-	  throw (Block_Error);
+      throw (Block_Error);
       
       UTF32_string recursive_decompose(const bool compat, const UCS4 uc) const
-	  throw (Block_Error);
+      throw (Block_Error);
       
       bool exclude_from_composition(const UCS4) const throw (Block_Error);
       UCS4 compose(const UCS4 starter, const UCS4 last) const
-	  throw (Block_Error);
+      throw (Block_Error);
       
       bool must_mirror(const UCS4 uc) const throw (Block_Error);
       
@@ -141,7 +141,7 @@ namespace Babylon {
       bool is_Radical(const UCS4) const throw (Block_Error);
       bool is_Unified_Ideograph(const UCS4) const throw (Block_Error);
       bool is_Other_Default_Ignorable_Code_Point(const UCS4) const
-	  throw (Block_Error);
+      throw (Block_Error);
       bool is_Deprecated(const UCS4) const throw (Block_Error);
       bool is_Soft_Dotted(const UCS4) const throw (Block_Error);
       bool is_Logical_Order_Exception(const UCS4) const throw (Block_Error);
@@ -157,12 +157,12 @@ namespace Babylon {
       bool is_XID_Start(const UCS4) const throw (Block_Error);
       bool is_XID_Continue(const UCS4) const throw (Block_Error);
       bool is_Default_Ignorable_Code_Point(const UCS4) const
-	  throw (Block_Error);
+      throw (Block_Error);
       bool is_Grapheme_Extend(const UCS4) const throw (Block_Error);
       bool is_Grapheme_Base(const UCS4) const throw (Block_Error);
       bool is_FC_NFKC_Closure(const UCS4) const throw (Block_Error);
       bool is_Full_Composition_Exclusion(const UCS4) const
-	  throw (Block_Error);
+      throw (Block_Error);
       bool is_NFD_QuickCheck(const UCS4) const throw (Block_Error);
       bool is_NFC_QuickCheck(const UCS4) const throw (Block_Error);
       bool is_NFKD_QuickCheck(const UCS4) const throw (Block_Error);
@@ -191,7 +191,7 @@ namespace Babylon {
       bool is_Bidi_Boundary_Neutral(const UCS4) const throw (Block_Error);
       bool is_Bidi_PDF(const UCS4) const throw (Block_Error);
       bool is_Bidi_Embedding_or_Override(const UCS4) const
-	  throw (Block_Error);
+      throw (Block_Error);
       bool is_Bidi_Other_Neutral(const UCS4) const throw (Block_Error);
       bool is_Virama(const UCS4) const throw (Block_Error);
       bool is_Printable(const UCS4) const throw (Block_Error);
@@ -202,32 +202,32 @@ namespace Babylon {
 
       struct Data
       {
-	  UCS4 my_start;
-	  UCS4 my_end;
-	  std::string my_file;
-	  int operator < (const Data & data) const
-	  {
-	      return my_start < data.my_start;
-	  }
-	  bool my_can_remove;
-	  Prague::Plugin<Babylon::Block> * my_block;
-	  
-	  Data(UCS4 start, UCS4 end)
-	  {
-	      my_start = start;
-	      my_end = end;
-	      my_file = "";
-	      my_can_remove = 0;
-	      my_block = 0;
-	  }
+      UCS4 my_start;
+      UCS4 my_end;
+      std::string my_file;
+      int operator < (const Data & data) const
+      {
+          return my_start < data.my_start;
+      }
+      bool my_can_remove;
+      Prague::Plugin<Babylon::Block> * my_block;
+      
+      Data(UCS4 start, UCS4 end)
+      {
+          my_start = start;
+          my_end = end;
+          my_file = "";
+          my_can_remove = 0;
+          my_block = 0;
+      }
       }; // struct Data
 
       class DataLess {
       public:
-	  bool operator() (const Data & d1, const Data & d2)
-	  {
-	      return d1.my_end < d2.my_start;
-	  }
+      bool operator() (const Data & d1, const Data & d2)
+      {
+          return d1.my_end < d2.my_start;
+      }
       }; // class DataLess
       
       Prague::Plugin<Babylon::Block> * my_undef_block;

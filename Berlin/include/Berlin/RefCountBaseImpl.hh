@@ -33,7 +33,7 @@ namespace Berlin
   //.Implements distributed reference counting. To ease the process of
   //. keeping track of references, see the RefCount_var template.
   class RefCountBaseImpl : public virtual POA_Fresco::RefCountBase,
-			   public virtual ServantBase
+               public virtual ServantBase
   {
     public:
       RefCountBaseImpl();

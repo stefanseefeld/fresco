@@ -38,7 +38,7 @@ Prague::Mutex Berlin::GraphicDictionary::my_singleton_mutex;
 // ----------------------------------------------------------------------
 
 Berlin::GraphicDictionary::word_equal::word_equal(const Fresco::Graphic_ptr g,
-					   const GraphicImpl * i) :
+                       const GraphicImpl * i) :
     my_hash(g->_hash(std::numeric_limits<unsigned int>::max())),
     my_impl(i),
     my_graphic(g)
@@ -47,13 +47,13 @@ bool
 Berlin::GraphicDictionary::word_equal::operator() (const Berlin::GraphicDictionary::word & w)
 {
     if (CORBA::is_nil(my_graphic))
-	if (my_impl == w.impl) return true;
-	else return false;
-	    
+    if (my_impl == w.impl) return true;
+    else return false;
+        
     if ((w.hash == my_hash) &&
-	((my_impl != 0 && my_impl == w.impl) ||
-	 (my_impl == 0 && my_graphic->is_identical(w.graphic))))
-	return true;
+    ((my_impl != 0 && my_impl == w.impl) ||
+     (my_impl == 0 && my_graphic->is_identical(w.graphic))))
+    return true;
     return false;
     
 }
@@ -71,8 +71,8 @@ Berlin::GraphicDictionary::word::word() :
 { }
 
 Berlin::GraphicDictionary::word::word(const Fresco::Graphic_ptr g,
-				      const GraphicImpl * const p,
-				      const std::string & n) :
+                      const GraphicImpl * const p,
+                      const std::string & n) :
     name(n),
     graphic(Fresco::Graphic::_duplicate(g)),
     impl(const_cast<GraphicImpl *>(p)),
@@ -118,8 +118,8 @@ Berlin::GraphicDictionary * Berlin::GraphicDictionary::instance() {
 
 
 void Berlin::GraphicDictionary::add(const Fresco::Graphic_ptr g,
-				    const GraphicImpl * const p,
-				    const std::string & n)
+                    const GraphicImpl * const p,
+                    const std::string & n)
 {
     if (!p) return;
 
@@ -127,20 +127,20 @@ void Berlin::GraphicDictionary::add(const Fresco::Graphic_ptr g,
 
     // Is the Graphic allready known?
     dictionary_type::iterator i(find_if(my_dictionary.begin(),
-					my_dictionary.end(),
-					word_equal(g, p)));
+                    my_dictionary.end(),
+                    word_equal(g, p)));
     word w(g, p, n);
     if (my_dictionary.end() == i && my_active)
     {
-	// register new graphic
-	my_dictionary.push_back(w);
-	i = my_dictionary.end() - 1; // works, we just added one element.
+    // register new graphic
+    my_dictionary.push_back(w);
+    i = my_dictionary.end() - 1; // works, we just added one element.
     }
 
     Logger::log(Logger::lifecycle)
-	<< "GraphicDictionary: \"" << w.name
-	<< "\" (#" << w.hash
-	<< ") registered." << std::endl;
+    << "GraphicDictionary: \"" << w.name
+    << "\" (#" << w.hash
+    << ") registered." << std::endl;
 
     return;
 }
@@ -151,19 +151,19 @@ void Berlin::GraphicDictionary::remove(const GraphicImpl * const p)
     Prague::Guard<Prague::Mutex> guard(my_mutex);
 
     dictionary_type::iterator i(find_if(my_dictionary.begin(),
-					my_dictionary.end(),
-					word_equal(Fresco::Graphic::_nil(), p)));
+                    my_dictionary.end(),
+                    word_equal(Fresco::Graphic::_nil(), p)));
     if (my_dictionary.end() != i)
     {
-	Logger::log(Logger::lifecycle)
-	    << "GraphicDictionary: \"" << i->name
-	    << "\" (#" << i->hash
-	    << ") removed." << std::endl;
-	my_dictionary.erase(i);
+    Logger::log(Logger::lifecycle)
+        << "GraphicDictionary: \"" << i->name
+        << "\" (#" << i->hash
+        << ") removed." << std::endl;
+    my_dictionary.erase(i);
     }
     else
-	Logger::log(Logger::lifecycle)
-	    << "GraphicDictionary: unknown graphic removed." << std::endl;
+    Logger::log(Logger::lifecycle)
+        << "GraphicDictionary: unknown graphic removed." << std::endl;
     return;
 }
 
@@ -176,10 +176,10 @@ Berlin::GraphicDictionary::name(const Fresco::Graphic_ptr g) const
 
     Prague::Guard<Prague::Mutex> guard(my_mutex);
     dictionary_type::const_iterator i(find_if(my_dictionary.begin(),
-					      my_dictionary.end(),
-					      word_equal(g, 0)));
+                          my_dictionary.end(),
+                          word_equal(g, 0)));
     if (my_dictionary.end() != i)
-	result = i->name;
+    result = i->name;
 
     return result;
 }
@@ -189,10 +189,10 @@ Berlin::GraphicDictionary::implementation(const Fresco::Graphic_ptr g) const
 {
     Prague::Guard<Prague::Mutex> guard(my_mutex);
     dictionary_type::const_iterator i(find_if(my_dictionary.begin(),
-					      my_dictionary.end(),
-					      word_equal(g, 0)));
+                          my_dictionary.end(),
+                          word_equal(g, 0)));
     if (my_dictionary.end() != i)
-	return i->impl;
+    return i->impl;
     else
-	return 0;
+    return 0;
 }

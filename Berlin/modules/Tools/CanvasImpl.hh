@@ -35,26 +35,26 @@ namespace Berlin
   {
 
     class CanvasImpl : public virtual POA_Fresco::Canvas,
-		       public GraphicImpl
+               public GraphicImpl
     {
       public:
-	CanvasImpl(Fresco::PixelCoord, Fresco::PixelCoord);
-	virtual ~CanvasImpl();
-	virtual CORBA::Long shm_id();
-	virtual Fresco::Canvas::PixelFormat pixel_format();
-	virtual Fresco::Canvas::BufferFormat buffer_format();
-	virtual void lock();
-	virtual void unlock();
-	
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    CanvasImpl(Fresco::PixelCoord, Fresco::PixelCoord);
+    virtual ~CanvasImpl();
+    virtual CORBA::Long shm_id();
+    virtual Fresco::Canvas::PixelFormat pixel_format();
+    virtual Fresco::Canvas::BufferFormat buffer_format();
+    virtual void lock();
+    virtual void unlock();
+    
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void draw(Fresco::DrawTraversal_ptr);
       private:
-	static Console_Extension::SHMDrawableFactory *my_factory;
-	Fresco::PixelCoord my_width;
-	Fresco::PixelCoord my_height;
-	Fresco::Drawable_var my_drawable;
-	Prague::Mutex my_mutex;
-	CORBA::Long my_shm;
+    static Console_Extension::SHMDrawableFactory *my_factory;
+    Fresco::PixelCoord my_width;
+    Fresco::PixelCoord my_height;
+    Fresco::Drawable_var my_drawable;
+    Prague::Mutex my_mutex;
+    CORBA::Long my_shm;
     };
 
   } // namespace

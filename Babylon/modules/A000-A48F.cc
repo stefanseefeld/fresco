@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         Yi_SyllablesA000() :
-	    my_first_letter(0xA000),
-	    my_last_letter(0xA48F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0xA000),
+        my_last_letter(0xA48F)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Yi Syllables";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Yi Syllables";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -336,7 +336,7 @@ namespace Babylon
         // functions
         Yi_SyllablesA000(const Yi_SyllablesA000 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

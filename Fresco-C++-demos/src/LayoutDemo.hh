@@ -19,15 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _LayoutDemo_hh
-#define _LayoutDemo_hh
+#ifndef _CXX_demos_LayoutDemo_hh
+#define _CXX_demos_LayoutDemo_hh
 
 #include "Demo.hh"
 
 class LayoutDemo : public Demo
 {
-public:
-  LayoutDemo(Application *);
+  public:
+    LayoutDemo(Application *);
 };
 
 #endif

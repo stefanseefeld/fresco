@@ -36,7 +36,7 @@ my $roster = {};
 jab_connect($uid, $host, $resource, $pass);
 # $main_window->{log_in_out}->position(0);
 #$main_window->{log_in_out}->removeForward($main_window->{log_in_out}
-#					  ->size());
+#                      ->size());
 #$main_window->insertString(Warsaw::Utility::asc2uni("Logout"));
 #$main_window->command(...)
 chat_starter_window();
@@ -75,9 +75,9 @@ sub start_gui() {
     my $buf = $kits->{CommandKit}->text();
     $buf->insertString(Warsaw::Utility::asc2uni("Babel $version"));
     my $status_area = $kits->{ToolKit}->rgb($kits->{TextKit}->simpleViewer($buf),
-					    1,
-					    1,
-					    1,);
+                        1,
+                        1,
+                        1,);
     
 # Overall layout
     my $vbox = $kits->{LayoutKit}->vbox();
@@ -97,18 +97,18 @@ sub start_gui() {
     my $window = $kits->{DesktopKit}->shell($group);
 
     my $quit_command = Warsaw::Utility::command {
-	foreach my $name (keys %$convs) {
-	    Warsaw::Utility::unthunk($convs->{$name}->{window}->map(0));
-	}
-	Warsaw::Utility::unthunk($window->map(0));
-	exit(0);
+    foreach my $name (keys %$convs) {
+        Warsaw::Utility::unthunk($convs->{$name}->{window}->map(0));
+    }
+    Warsaw::Utility::unthunk($window->map(0));
+    exit(0);
     };
     $quit_b->action($quit_command);
 
     return {
-	status => $buf,
-	roster => $roster,
-	log_in_out => $login_buf,  # contains text of login/logout button
+    status => $buf,
+    roster => $roster,
+    log_in_out => $login_buf,  # contains text of login/logout button
     };
 }
 
@@ -138,9 +138,9 @@ sub chat_starter_window() {
     my $chat_label = $kits->{TextKit}->chunk(Warsaw::Utility::asc2uni("Chat!"));
     my $chat_label = $kits->{ToolKit}->rgb($chat_label, 1, 1, 1);
     my $chat_c = Warsaw::Utility::command {
-	my $name = Warsaw::Utility::uni2asc($name_buf->value());
-	print("chat with \"$name\" requested\n");
-	init_chat($name);
+    my $name = Warsaw::Utility::uni2asc($name_buf->value());
+    print("chat with \"$name\" requested\n");
+    init_chat($name);
     };
     my $chat_b = $kits->{WidgetKit}->button($chat_label, $chat_c);
 
@@ -167,15 +167,15 @@ sub init_chat($) {
     $name =~ s|/.*$||;
     print "init_chat with $name\n";
     if (!defined($convs->{$name})) {
-	print "need new conversation window\n";
-	$convs->{$name} = new_conversation($name);
-	print "got it\n";
+    print "need new conversation window\n";
+    $convs->{$name} = new_conversation($name);
+    print "got it\n";
     }
     print "checking mapped status\n";
     if (! $convs->{$name}->{window}->mapped()) {
-	print "need to be mapped\n";
-	# FIXME: blank $convs->{$name}->$body?
-	Warsaw::Utility::unthunk($convs->{$name}->{window}->map(1));
+    print "need to be mapped\n";
+    # FIXME: blank $convs->{$name}->$body?
+    Warsaw::Utility::unthunk($convs->{$name}->{window}->map(1));
     }
     print "init_chat'ed\n";
 }
@@ -190,20 +190,20 @@ sub new_conversation($) {
     my $body = $kits->{LayoutKit}->vbox();
     my $decorated_body = $kits->{ToolKit}->rgb($body, 1, 1, 1);
     my $area = $kits->{LayoutKit}->fixedSize($decorated_body,
-					     5000,
-					     5000,);
+                         5000,
+                         5000,);
 #    my $pager = $kits->{WidgetKit}->scrollable($decorated_text);
 #    my $decorated_pager = $kits->{ToolKit}->rgb($pager, 0, 0, 0);
 #    my $area = $kits->{LayoutKit}->fixedSize($decorated_pager,
-#					     2000,
-#					     2000,);
+#                         2000,
+#                         2000,);
     my $pager = $kits->{WidgetKit}->scrollable($kits->{ToolKit}->rgb($area,
-								     0,
-								     0,
-								     0,));
+                                     0,
+                                     0,
+                                     0,));
     my $fixed_pager = $kits->{LayoutKit}->fixedSize($pager,
-						    2000,
-						    2000,);
+                            2000,
+                            2000,);
     $vbox->append($fixed_pager);
 
     print "1 ";
@@ -216,9 +216,9 @@ sub new_conversation($) {
 #      my $spec = ToolKit::FrameSpec->new(ToolKit::outset);
 #      $spec->bbrightness(0.5);
 #      my $entry_frame = $kits->{ToolKit}->frame($decorated_entry,
-#    					      10,
-#    					      $spec,
-#    					      1);
+#                              10,
+#                              $spec,
+#                              1);
     my $entry_margin = $kits->{LayoutKit}->margin($decorated_entry, 40);
 #    my $decorated_entry_margin = $kits->{ToolKit}->rgb($entry_margin, 0, 0, 0);
     my $editable = $kits->{ToolKit}->textInput($entry_margin, $buf);
@@ -237,17 +237,17 @@ sub new_conversation($) {
     print "3 ";
     
     my $send_command = Warsaw::Utility::command {
-	my $text = Warsaw::Utility::uni2asc($buf->value());
-	$buf->position(0);
-	$buf->removeForward($buf->size());
-	print "User entered \"$text\" for $name\n";
-	my $line = $kits->{TextKit}->chunk(Warsaw::Utility::asc2uni("$uid: $text"));
-	$body->append($line);
-	$line->needRedraw();
-	$con->MessageSend(to => $name, body => $text);
+    my $text = Warsaw::Utility::uni2asc($buf->value());
+    $buf->position(0);
+    $buf->removeForward($buf->size());
+    print "User entered \"$text\" for $name\n";
+    my $line = $kits->{TextKit}->chunk(Warsaw::Utility::asc2uni("$uid: $text"));
+    $body->append($line);
+    $line->needRedraw();
+    $con->MessageSend(to => $name, body => $text);
     };
     my $send = $kits->{WidgetKit}->button($send_label,
-					  $send_command);
+                      $send_command);
 
     # "Close" button
     my $close_label = $kits->{TextKit}->chunk(Warsaw::Utility::asc2uni("Close"));
@@ -285,14 +285,14 @@ sub jab_connect($$$$) {
     my ($uid, $host, $resource, $pass) = @_;
     
     if (!defined($pass)) {
-	return "Error: bad call to jab_connect()";
+    return "Error: bad call to jab_connect()";
     }
 
     $con = Net::Jabber::Client->new();
     $con->Connect( name => $host );
     $con->SetCallBacks(message => \&message_handler,
-		       presence => \&presence_handler,
-		       iq => \&iq_handler, );
+               presence => \&presence_handler,
+               iq => \&iq_handler, );
     my @err = $con->AuthSend(username => $uid, password => $pass, resource => $resource);
     (@err[0] eq "ok") or return @err[1];
     
@@ -305,8 +305,8 @@ sub jab_connect($$$$) {
 sub main_loop() {
     print "Entering main loop\n";
     while (1) {
-	$con->Process();
-	print "Looping\n";
+    $con->Process();
+    print "Looping\n";
     }
 }
 
@@ -314,12 +314,12 @@ sub message_handler {
     my $m = new Net::Jabber::Message(@_);
 
     if ($m->GetType() eq "error") {
-	print "got an error message ", $m->GetXML, "\n";
-	return;
+    print "got an error message ", $m->GetXML, "\n";
+    return;
     }
     
     print("Received message from ", $m->GetFrom(), " saying ",
-	  $m->GetBody(), "\n");
+      $m->GetBody(), "\n");
     my $name = $m->GetFrom();
     $name =~ s|/.*$||;
     $name =~ m/^(.*)\@/;

@@ -33,8 +33,8 @@ using namespace Fresco;
 using namespace Berlin::TextKit;
 
 TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk,
-	                   DrawingKit_ptr dk, Compositor *l,
-			   Compositor *p) :
+                       DrawingKit_ptr dk, Compositor *l,
+               Compositor *p) :
     Composition(dk, p),
     my_stream(StreamBuffer::_duplicate(s)),
     my_kit(Fresco::TextKit::_duplicate(tk)),
@@ -62,48 +62,48 @@ void TerminalView::update(const CORBA::Any &)
     Trace trace("TerminalView::update");  
     {
 //       Prague::Guard<Mutex> guard(childMutex);
-	begin();
-	if (!my_lines.size())
-	{
-	    Composition *composition =
-		new Composition(my_canonicalDK, my_compositor);
-	    activate(composition);
-	    my_lines.push_back(composition);
-	    append_graphic(Graphic_var(my_lines.back()->_this()));
-	}
-	StreamBuffer::Data_var data = my_stream->read();
-	char *begin = (char *)data->get_buffer();
-	char *end   = begin + data->length();
-	for (char *i = begin; i != end; i++)
-	{
-	    if (isprint(*i))
-	    {
-		Babylon::Char uc(*i);
-		Unistring us;
-		us.length(1);
-		us[0] = Unicode::to_CORBA(uc);
-		Graphic_var child = my_kit->chunk(us);
-		my_lines.back()->append_graphic(child);
-	    }
-	    else switch(*i)
-	    {
-	    case '\r':
-	    case '\n':
-	    {
-		Composition *composition =
-		    new Composition(my_canonicalDK, my_compositor);
-		activate(composition);
-		my_lines.push_back(composition);
-		my_lines.back()->
-		    append_graphic(Graphic_var(my_kit->strut()));
-		append_graphic(Graphic_var(my_lines.back()->_this()));
-	    }
-	    break;
-	    case '\b':
-		break;
-	    }
-	}
-	this->end();
+    begin();
+    if (!my_lines.size())
+    {
+        Composition *composition =
+        new Composition(my_canonicalDK, my_compositor);
+        activate(composition);
+        my_lines.push_back(composition);
+        append_graphic(Graphic_var(my_lines.back()->_this()));
+    }
+    StreamBuffer::Data_var data = my_stream->read();
+    char *begin = (char *)data->get_buffer();
+    char *end   = begin + data->length();
+    for (char *i = begin; i != end; i++)
+    {
+        if (isprint(*i))
+        {
+        Babylon::Char uc(*i);
+        Unistring us;
+        us.length(1);
+        us[0] = Unicode::to_CORBA(uc);
+        Graphic_var child = my_kit->chunk(us);
+        my_lines.back()->append_graphic(child);
+        }
+        else switch(*i)
+        {
+        case '\r':
+        case '\n':
+        {
+        Composition *composition =
+            new Composition(my_canonicalDK, my_compositor);
+        activate(composition);
+        my_lines.push_back(composition);
+        my_lines.back()->
+            append_graphic(Graphic_var(my_kit->strut()));
+        append_graphic(Graphic_var(my_lines.back()->_this()));
+        }
+        break;
+        case '\b':
+        break;
+        }
+    }
+    this->end();
     }
     need_resize();
     need_redraw();

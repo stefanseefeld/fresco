@@ -31,9 +31,9 @@ namespace Berlin
   {
     public:
       Requestor(Fresco::Alignment xalign = .5,
-		Fresco::Alignment yalign = .5,
-		Fresco::Coord xspan = 1,
-		Fresco::Coord yspan = 1);
+        Fresco::Alignment yalign = .5,
+        Fresco::Coord xspan = 1,
+        Fresco::Coord yspan = 1);
       Requestor(const Fresco::Graphic::Requisition &);
       ~Requestor();
       

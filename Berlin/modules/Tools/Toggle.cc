@@ -35,13 +35,13 @@ void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
     Trace trace("Toggle::press");
     ControllerImpl::press(traversal, event);
     if (test(Fresco::Controller::toggled))
-	clear(Fresco::Controller::toggled);
+    clear(Fresco::Controller::toggled);
     else
-	set(Fresco::Controller::toggled);
+    set(Fresco::Controller::toggled);
 }
 
 void Toggle::release(PickTraversal_ptr traversal,
-		     const Input::Event &event)
+             const Input::Event &event)
 {
     Trace trace("Toggle::release");
     ControllerImpl::release(traversal, event);
@@ -53,10 +53,10 @@ void Toggle::key_press(const Input::Event &event)
     const Input::Toggle &toggle = event[0].attr.selection();
     if (toggle.number == 32) // space
     {
-	if (test(Fresco::Controller::toggled))
-	    clear(Fresco::Controller::toggled);
-	else
-	    set(Fresco::Controller::toggled);
+    if (test(Fresco::Controller::toggled))
+        clear(Fresco::Controller::toggled);
+    else
+        set(Fresco::Controller::toggled);
     }
     else ControllerImpl::key_press(event);
 }

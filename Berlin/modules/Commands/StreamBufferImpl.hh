@@ -37,7 +37,7 @@ namespace Berlin
     {
       public:
         StreamBufferImpl(long l) : my_length(l)
-	{ my_buffer.reserve(my_length); }
+    { my_buffer.reserve(my_length); }
         virtual ~StreamBufferImpl() { }
         virtual CORBA::Long size();
         virtual CORBA::Long available();

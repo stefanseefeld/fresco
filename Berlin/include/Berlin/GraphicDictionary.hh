@@ -56,7 +56,7 @@ namespace Berlin
       //. returns the total number of times this Graphic was registered
       // (including this try).
       void add(const Fresco::Graphic_ptr, const GraphicImpl * const,
-	       const std::string &);
+           const std::string &);
       //. Remove a Graphic from the Dictionary.
       //.
       //. Returns the number of times this Graphic used to be registered
@@ -76,28 +76,28 @@ namespace Berlin
       //. A dictionary contains words...
       struct word
       {
-	  std::string name;
-	  Fresco::Graphic_var graphic;
-	  unsigned int hash;
-	  GraphicImpl * impl;
+      std::string name;
+      Fresco::Graphic_var graphic;
+      unsigned int hash;
+      GraphicImpl * impl;
 
-	  word();
-	  word(const Fresco::Graphic_ptr, const GraphicImpl * const,
-	       const std::string &);
-	  word(const word &);
-	  word & operator = (const word &);
+      word();
+      word(const Fresco::Graphic_ptr, const GraphicImpl * const,
+           const std::string &);
+      word(const word &);
+      word & operator = (const word &);
       };
 
       class word_equal
       {
-	public:
-	  word_equal(const Fresco::Graphic_ptr g,
-		     const GraphicImpl * i);
-	  bool operator() (const Berlin::GraphicDictionary::word & w);
-	private:
-	  const unsigned int my_hash;
-	  const GraphicImpl * my_impl;
-	  const Fresco::Graphic_ptr my_graphic;
+    public:
+      word_equal(const Fresco::Graphic_ptr g,
+             const GraphicImpl * i);
+      bool operator() (const Berlin::GraphicDictionary::word & w);
+    private:
+      const unsigned int my_hash;
+      const GraphicImpl * my_impl;
+      const Fresco::Graphic_ptr my_graphic;
       };
 
       typedef std::vector<word> dictionary_type;

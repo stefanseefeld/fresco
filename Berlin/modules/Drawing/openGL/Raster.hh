@@ -38,46 +38,46 @@ namespace Berlin
 
       class Texture
       {
-	public:
-	  Texture(Fresco::Raster_var);
-	  ~Texture();
-	  void activate(Console_Extension::GLContext *);
-	  Fresco::Raster_var remote;
-	  Fresco::PixelCoord width;
-	  Fresco::PixelCoord height;
-	  Fresco::PixelCoord texgen_w;
-	  Fresco::PixelCoord texgen_h;
-	  GLuint texture;
-	private:
-	  class Activate;
-	  class Bind;
-	  class Delete;
-	  bool my_is_bound;
-	  Console_Extension::GLContext *my_glcontext;
-	  std::vector<unsigned char> my_data;
+    public:
+      Texture(Fresco::Raster_var);
+      ~Texture();
+      void activate(Console_Extension::GLContext *);
+      Fresco::Raster_var remote;
+      Fresco::PixelCoord width;
+      Fresco::PixelCoord height;
+      Fresco::PixelCoord texgen_w;
+      Fresco::PixelCoord texgen_h;
+      GLuint texture;
+    private:
+      class Activate;
+      class Bind;
+      class Delete;
+      bool my_is_bound;
+      Console_Extension::GLContext *my_glcontext;
+      std::vector<unsigned char> my_data;
       };
 
 
       class Image
       {
-	public:
-	  Image(Fresco::Raster_var r);
-	  ~Image();
-	  void activate(Console_Extension::GLContext *);
-	  GLfloat s, t;
-	  Fresco::Raster_var remote;
-	  Fresco::PixelCoord width;
-	  Fresco::PixelCoord height;
-	  Fresco::PixelCoord texgen_w;
-	  Fresco::PixelCoord texgen_h;
-	  GLuint texture;
-	private:
-	  class Activate;
-	  class Bind;
-	  class Delete;
-	  bool my_is_bound;
-	  Console_Extension::GLContext *my_glcontext;
-	  std::vector<unsigned char> my_data;
+    public:
+      Image(Fresco::Raster_var r);
+      ~Image();
+      void activate(Console_Extension::GLContext *);
+      GLfloat s, t;
+      Fresco::Raster_var remote;
+      Fresco::PixelCoord width;
+      Fresco::PixelCoord height;
+      Fresco::PixelCoord texgen_w;
+      Fresco::PixelCoord texgen_h;
+      GLuint texture;
+    private:
+      class Activate;
+      class Bind;
+      class Delete;
+      bool my_is_bound;
+      Console_Extension::GLContext *my_glcontext;
+      std::vector<unsigned char> my_data;
       };
       
     } // namespace

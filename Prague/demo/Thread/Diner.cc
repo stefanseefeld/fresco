@@ -41,8 +41,8 @@ public:
   void cancel()
     {
       {
-	Prague::Guard<Mutex> guard(mutex);
-	running = false;
+    Prague::Guard<Mutex> guard(mutex);
+    running = false;
       }
       server.join(0);
     }
@@ -102,13 +102,13 @@ void Diner::start()
 //       Thread::delay(Time(1000));
 //       mutex.lock();
       for (int i = 0; i < seats; i++)
-	{
-	  if (!philosophers[i])
-	    {
-	      philosophers[i] = new Philosopher(i, this);
-	      occupancy++;
-	    }
-	}
+    {
+      if (!philosophers[i])
+        {
+          philosophers[i] = new Philosopher(i, this);
+          occupancy++;
+        }
+    }
     }
 }
 

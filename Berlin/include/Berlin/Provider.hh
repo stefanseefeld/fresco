@@ -85,13 +85,13 @@ namespace Berlin
       Prague::Guard<Prague::Mutex> guard(mutex);
       if (!pool.empty())
       {
-	  t = pool.top();
-	  pool.pop();
+      t = pool.top();
+      pool.pop();
       }
       else
       {
-	  t = new T();
-	  activate(t);
+      t = new T();
+      activate(t);
       }
       t->my_active = true;
       I::initialize(t);

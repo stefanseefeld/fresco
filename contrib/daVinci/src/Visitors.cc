@@ -83,7 +83,7 @@ bool CmdVisitor::visit (Graphic_ptr graphic)
   if (!CORBA::is_nil(m))
     {
       if (_execute) m->execute(_command);
-      else	    m->unexecute(_command);
+      else        m->unexecute(_command);
     }
   return true;
 }
@@ -111,7 +111,7 @@ bool RecurCmdVisitor::visit (Graphic_ptr graphic)
   if (!CORBA::is_nil(m))
     {
       if (_execute) m->execute(_command);
-      else 	    m->unexecute(_command);
+      else         m->unexecute(_command);
       return true;
     }
   else return false;
@@ -130,7 +130,7 @@ bool ManipCopier::visit(Graphic_ptr graphic)
   if (!CORBA::is_nil(m))
     {
       if (_shallow) _manipulators->push_back(Manipulator::_duplicate(m));
-      else	    _manipulators->append(m->deep_copy());
+      else        _manipulators->append(m->deep_copy());
     }
   return true;
 }

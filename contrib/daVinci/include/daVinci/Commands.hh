@@ -31,7 +31,7 @@
 namespace daVinci
 {
   class Command : public virtual POA_Unidraw::Command,
-		  public ServantBase
+          public ServantBase
   {
   public:
     Command();

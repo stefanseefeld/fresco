@@ -38,16 +38,16 @@ namespace Berlin
   class ServantBase;
   
   class KitImpl : public virtual POA_Fresco::Kit,
-		  public virtual PortableServer::RefCountServantBase,
-		  private DefaultPOA
+          public virtual PortableServer::RefCountServantBase,
+          private DefaultPOA
   {
       friend class ServerImpl;
     public:
       KitImpl(const std::string &,
-	      const Fresco::Kit::PropertySeq &, ServerContextImpl *);
+          const Fresco::Kit::PropertySeq &, ServerContextImpl *);
       ~KitImpl();
       virtual KitImpl *clone(const Fresco::Kit::PropertySeq &,
-			     ServerContextImpl *) = 0;
+                 ServerContextImpl *) = 0;
       const std::string &repo_id() const { return my_repo_id;}
       virtual Fresco::Kit::PropertySeq *properties()
       { return new Fresco::Kit::PropertySeq(*my_props); }
@@ -71,27 +71,27 @@ namespace Berlin
       template <typename I, typename Im>
       typename I::_ptr_type create(Im * impl, std::string n)
       {
-	  typename I::_ptr_type var = private_create<I>(impl);
-	  Berlin::GraphicDictionary::instance()->add(var, impl, n);
-	  return var;
+      typename I::_ptr_type var = private_create<I>(impl);
+      Berlin::GraphicDictionary::instance()->add(var, impl, n);
+      return var;
       }
 
       template <typename I, typename Im>
       typename I::_ptr_type create_and_set_body(Im *impl,
-						Fresco::Graphic_ptr g,
-						std::string n)
+                        Fresco::Graphic_ptr g,
+                        std::string n)
       {
-	  typename I::_ptr_type var = create<I>(impl, n);
-	  var->body(g);
-	  return var;
+      typename I::_ptr_type var = create<I>(impl, n);
+      var->body(g);
+      return var;
       }
 
     private:
       template <typename I, typename Im>
       typename I::_ptr_type private_create(Im *impl)
       {
-	  activate(impl);
-	  return impl->_this();
+      activate(impl);
+      return impl->_this();
       }
 
       void activate(PortableServer::POA_ptr);
@@ -110,14 +110,14 @@ namespace Berlin
 
   template <typename T>
   inline T *create_prototype(const std::string &repo, std::string props[],
-			     size_t n)
+                 size_t n)
   {
       Fresco::Kit::PropertySeq properties;
       properties.length(n/2);
       for (size_t i = 0; i != n/2; ++i)
       {
-	  properties[i].name = CORBA::string_dup((props++)->c_str());
-	  properties[i].value = CORBA::string_dup((props++)->c_str());
+      properties[i].name = CORBA::string_dup((props++)->c_str());
+      properties[i].value = CORBA::string_dup((props++)->c_str());
       }
       return new T(repo, properties, 0);
   }

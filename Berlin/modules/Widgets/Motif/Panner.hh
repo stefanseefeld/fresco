@@ -37,31 +37,31 @@ namespace Berlin
 
       class Panner : public Adjustable
       {
-	  struct Offset
-	  {
-	      Fresco::Coord lower;
-	      Fresco::Coord upper;
-	  }; 
-	public:
-	  Panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
-	  void init(Fresco::Controller_ptr);
-	  virtual void draw(Fresco::DrawTraversal_ptr);
-	  virtual void pick(Fresco::PickTraversal_ptr);
-	  virtual void allocate(Fresco::Tag,
-				const Fresco::Allocation::Info &);
-	protected:
-	  virtual void update(const CORBA::Any &any);
-	  virtual void adjust(const Fresco::OriginatedDelta &);
-	private:
-	  void traverse_thumb(Fresco::Traversal_ptr);
-	  RefCount_var<Fresco::BoundedRange> my_xvalue;
-	  RefCount_var<Fresco::BoundedRange> my_yvalue;
-	  Offset my_offset[2];
-	  TransformImpl my_pickTrafo;
-	  Fresco::Vertex my_upperBounds; //.< upper bounds from last
-	                                 //.< pick traversal, in
+      struct Offset
+      {
+          Fresco::Coord lower;
+          Fresco::Coord upper;
+      }; 
+    public:
+      Panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
+      void init(Fresco::Controller_ptr);
+      virtual void draw(Fresco::DrawTraversal_ptr);
+      virtual void pick(Fresco::PickTraversal_ptr);
+      virtual void allocate(Fresco::Tag,
+                const Fresco::Allocation::Info &);
+    protected:
+      virtual void update(const CORBA::Any &any);
+      virtual void adjust(const Fresco::OriginatedDelta &);
+    private:
+      void traverse_thumb(Fresco::Traversal_ptr);
+      RefCount_var<Fresco::BoundedRange> my_xvalue;
+      RefCount_var<Fresco::BoundedRange> my_yvalue;
+      Offset my_offset[2];
+      TransformImpl my_pickTrafo;
+      Fresco::Vertex my_upperBounds; //.< upper bounds from last
+                                     //.< pick traversal, in
                                          //.< local coords.
-	  Fresco::Vertex my_scale;
+      Fresco::Vertex my_scale;
       };
       
     } // namespace

@@ -42,27 +42,27 @@ namespace Berlin
     public:
       enum group
       {
-	  corba,
-	  loader,
-	  console,
-	  traversal,
-	  thread,
-	  lifecycle,
-	  agent,
-	  message,
-	  command,
-	  subject,
-	  observer,
-	  text,
-	  widget,
-	  image,
-	  figure,
-	  layout,
-	  drawing,
-	  desktop,
-	  picking,
-	  focus,
-	  geometry
+      corba,
+      loader,
+      console,
+      traversal,
+      thread,
+      lifecycle,
+      agent,
+      message,
+      command,
+      subject,
+      observer,
+      text,
+      widget,
+      image,
+      figure,
+      layout,
+      drawing,
+      desktop,
+      picking,
+      focus,
+      geometry
       };
     private:
       struct streamlock;
@@ -70,8 +70,8 @@ namespace Berlin
       template <class T>
       static void write(group g, const T &t)
       {
-	  my_los << t;
-	  if (my_active[g]) std::cerr << t;
+      my_los << t;
+      if (my_active[g]) std::cerr << t;
       }
       static const int my_numGroups = 21;
     public:
@@ -81,35 +81,35 @@ namespace Berlin
       { for (int i = 0; i < my_numGroups; i++) my_active[i] = true; }
       static streamlock log(group g)
       {
-	  streamlock slock(g);
-	  write(g, '[');
-	  write(g, static_cast<double>(Prague::Time::currentTime() -
-				       my_start));
-	  write(g, ':');
-	  write(g, Prague::Thread::id());
-	  write(g, ':');
-	  write(g, my_groupname[g]);
-	  write(g, "]\t");
-	  return slock;
+      streamlock slock(g);
+      write(g, '[');
+      write(g, static_cast<double>(Prague::Time::currentTime() -
+                       my_start));
+      write(g, ':');
+      write(g, Prague::Thread::id());
+      write(g, ':');
+      write(g, my_groupname[g]);
+      write(g, "]\t");
+      return slock;
       } 
       static void dump(std::ostream &);
     protected:
     private:
       struct streamlock
       {
-	  streamlock(group gg) :
-	      owner(true), g(gg)
-	  { Logger::my_mutex.lock(); }
-	  streamlock(const streamlock &sl) :
-	      owner(true), g(sl.g)
-	  { sl.owner = false; }
-	  ~streamlock() { if (owner) Logger::my_mutex.unlock(); }
-	  mutable bool owner;
-	  group g;
+      streamlock(group gg) :
+          owner(true), g(gg)
+      { Logger::my_mutex.lock(); }
+      streamlock(const streamlock &sl) :
+          owner(true), g(sl.g)
+      { sl.owner = false; }
+      ~streamlock() { if (owner) Logger::my_mutex.unlock(); }
+      mutable bool owner;
+      group g;
       };
       friend const streamlock &
       operator << (const streamlock &sl,
-		   std::ostream & (func)(std::ostream &))
+           std::ostream & (func)(std::ostream &))
       { Logger::write(sl.g, func); return sl; }
       template <class T>
       friend const streamlock &

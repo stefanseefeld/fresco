@@ -16,10 +16,10 @@ public:
     std::string line;
     while (is)
       {
-	std::getline(is, line);
-	std::cout << line;
-	if (is) std::cout << std::endl;
-	else std::cout << std::flush;
+    std::getline(is, line);
+    std::cout << line;
+    if (is) std::cout << std::endl;
+    else std::cout << std::flush;
       }
     return true;
   }
@@ -62,9 +62,9 @@ int main (int argc, char **argv)
   if (!agent->ibuf())
     {
       if (agent->state() == Coprocess::exited)
-	std::cerr << "process exited with value " << agent->value() << std::endl;
+    std::cerr << "process exited with value " << agent->value() << std::endl;
       else if (agent->state() == Coprocess::signaled)
-	std::cerr << "process killed with signal " << agent->value() << std::endl;
+    std::cerr << "process killed with signal " << agent->value() << std::endl;
     }
   delete agent;
   delete eof;

@@ -34,9 +34,9 @@ namespace Berlin
 {
 
   class RasterImpl : public virtual POA_Fresco::Raster,
-		     public SubjectImpl
-						  
-  {  	
+             public SubjectImpl
+                          
+  {      
     public:
       RasterImpl(const Fresco::Raster::Info &);
       RasterImpl(const std::string &file);
@@ -46,15 +46,15 @@ namespace Berlin
       virtual void load_data(const Fresco::Raster::Data &);
       virtual void store_data(Fresco::Raster::Data_out);
       virtual void load_pixel(const Fresco::Raster::Index &,
-			      const Fresco::Color &);
+                  const Fresco::Color &);
       virtual void store_pixel(const Fresco::Raster::Index &,
-			       Fresco::Color &);
+                   Fresco::Color &);
       virtual void load_pixels(const Fresco::Raster::Index &,
-			       const Fresco::Raster::Index &,
-			       const Fresco::Raster::ColorSeq &);
+                   const Fresco::Raster::Index &,
+                   const Fresco::Raster::ColorSeq &);
       virtual void store_pixels(const Fresco::Raster::Index &,
-				const Fresco::Raster::Index &,
-				Fresco::Raster::ColorSeq_out);
+                const Fresco::Raster::Index &,
+                Fresco::Raster::ColorSeq_out);
       void write(const char *);
     private:
       PNG my_png;

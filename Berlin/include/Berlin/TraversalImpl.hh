@@ -44,24 +44,24 @@ namespace Berlin
   //. The number of push and pop operations called on a single TraversalImpl
   //. object therefor need to be balanced.
   class TraversalImpl : public virtual POA_Fresco::Traversal,
-			public virtual ServantBase
+            public virtual ServantBase
   {
       struct State
       {
-	  State() : id(0), transformation(0) { }
-	  State(Fresco::Graphic_ptr g, Fresco::Tag i,
-		RegionImpl *a, TransformImpl *t) :
-	      graphic(g), id(i), allocation(a), transformation(t)
-	  { }
-	  Fresco::Graphic_ptr      graphic;
-	  Fresco::Tag              id;
-	  RegionImpl              *allocation;
-	  TransformImpl           *transformation;    
+      State() : id(0), transformation(0) { }
+      State(Fresco::Graphic_ptr g, Fresco::Tag i,
+        RegionImpl *a, TransformImpl *t) :
+          graphic(g), id(i), allocation(a), transformation(t)
+      { }
+      Fresco::Graphic_ptr      graphic;
+      Fresco::Tag              id;
+      RegionImpl              *allocation;
+      TransformImpl           *transformation;    
       };
       typedef std::vector<State> stack_t;
     public:
       TraversalImpl(Fresco::Graphic_ptr, Fresco::Region_ptr,
-		    Fresco::Transform_ptr);
+            Fresco::Transform_ptr);
       TraversalImpl(const TraversalImpl &);
       ~TraversalImpl();
       TraversalImpl &operator = (const TraversalImpl &);
@@ -69,12 +69,12 @@ namespace Berlin
       virtual Fresco::Transform_ptr current_transformation();
       virtual Fresco::Graphic_ptr current_graphic();
       virtual CORBA::Boolean bounds(Fresco::Vertex &, Fresco::Vertex &,
-				    Fresco::Vertex &);
+                    Fresco::Vertex &);
       virtual CORBA::Boolean intersects_allocation() = 0;
       virtual CORBA::Boolean intersects_region(Fresco::Region_ptr) = 0;
       virtual void traverse_child(Fresco::Graphic_ptr, Fresco::Tag,
-				  Fresco::Region_ptr,
-				  Fresco::Transform_ptr) = 0;
+                  Fresco::Region_ptr,
+                  Fresco::Transform_ptr) = 0;
       virtual void visit(Fresco::Graphic_ptr) = 0;
       virtual Fresco::Traversal::order direction() = 0;
       virtual CORBA::Boolean ok() = 0;
@@ -85,7 +85,7 @@ namespace Berlin
       //. scope. Alternatively, values not removed from the stack are
       //. deallocated in the destructor.
       void push(Fresco::Graphic_ptr, Fresco::Tag,
-		RegionImpl *, TransformImpl *);
+        RegionImpl *, TransformImpl *);
       void pop();
       size_t size() const { return my_stack.size(); }
       RegionImpl *get_allocation(size_t i) { return my_stack[i].allocation; }

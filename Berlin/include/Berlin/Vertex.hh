@@ -27,7 +27,7 @@
 #include <iostream>
 
 inline Fresco::Vertex &operator += (Fresco::Vertex &p,
-				    const Fresco::Vertex &q)
+                    const Fresco::Vertex &q)
 {
     p.x += q.x;
     p.y += q.y;
@@ -36,7 +36,7 @@ inline Fresco::Vertex &operator += (Fresco::Vertex &p,
 }
 
 inline Fresco::Vertex &operator -= (Fresco::Vertex &p,
-				    const Fresco::Vertex &q)
+                    const Fresco::Vertex &q)
 {
     p.x -= q.x;
     p.y -= q.y;
@@ -45,7 +45,7 @@ inline Fresco::Vertex &operator -= (Fresco::Vertex &p,
 }
 
 inline Fresco::Vertex operator + (const Fresco::Vertex &p,
-				  const Fresco::Vertex &q)
+                  const Fresco::Vertex &q)
 {
     Fresco::Vertex r;
     r.x = p.x + q.x;
@@ -55,7 +55,7 @@ inline Fresco::Vertex operator + (const Fresco::Vertex &p,
 }
 
 inline Fresco::Vertex operator - (const Fresco::Vertex &p,
-				  const Fresco::Vertex &q)
+                  const Fresco::Vertex &q)
 {
     Fresco::Vertex r;
     r.x = p.x - q.x;

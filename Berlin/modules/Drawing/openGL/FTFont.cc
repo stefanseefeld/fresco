@@ -60,7 +60,7 @@ openGL::FTFont::FTFont(GLContext *glcontext) :
     std::string font_file = path.lookup_file("unifont.bdf");
     FT_Init_FreeType(&my_library);
     if (FT_New_Face(my_library, font_file.c_str(), 0, &my_face) != 0)
-	throw std::runtime_error("unifont.bdf not found. Please check your font path!");
+    throw std::runtime_error("unifont.bdf not found. Please check your font path!");
     FT_Set_Char_Size(my_face, 0, my_size*64, 72, 72);
 }
 
@@ -80,18 +80,18 @@ Fresco::DrawingKit::FontMetrics openGL::FTFont::metrics()
 
     if (!FT_IS_SCALABLE(my_face))
     {
-	// FIXME: the bdf reader returns all 0s through size->metrics.
-	fm.ascender = 16 << 6;
-	fm.descender = 0;
-	fm.height = 16 << 6;
-	fm.max_advance = 16 << 6;
+    // FIXME: the bdf reader returns all 0s through size->metrics.
+    fm.ascender = 16 << 6;
+    fm.descender = 0;
+    fm.height = 16 << 6;
+    fm.max_advance = 16 << 6;
     }
     else
     {
-	fm.ascender = my_face->size->metrics.ascender;
-	fm.descender = my_face->size->metrics.descender;
-	fm.height = my_face->size->metrics.height;
-	fm.max_advance = my_face->size->metrics.max_advance;
+    fm.ascender = my_face->size->metrics.ascender;
+    fm.descender = my_face->size->metrics.descender;
+    fm.height = my_face->size->metrics.height;
+    fm.max_advance = my_face->size->metrics.max_advance;
     }
 
     return fm;
@@ -102,31 +102,31 @@ Fresco::DrawingKit::GlyphMetrics openGL::FTFont::metrics(Unichar uc)
     Fresco::DrawingKit::GlyphMetrics gm;
 
     FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc),
-		  FT_LOAD_DEFAULT);
+          FT_LOAD_DEFAULT);
 
     double scale = 1.;
     gm.width = static_cast<CORBA::Long>(my_face->glyph->metrics.width /
-					scale);
+                    scale);
     gm.height = static_cast<CORBA::Long>(my_face->glyph->metrics.height /
-					 scale);
+                     scale);
     gm.horiBearingX =
-	static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingX /
-				 scale);
+    static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingX /
+                 scale);
     gm.horiBearingY = 
-	static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingY /
-				 scale);
+    static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingY /
+                 scale);
     gm.horiAdvance = 
-	static_cast<CORBA::Long>(my_face->glyph->metrics.horiAdvance /
-				 scale);
+    static_cast<CORBA::Long>(my_face->glyph->metrics.horiAdvance /
+                 scale);
     gm.vertBearingX =
-	static_cast<CORBA::Long>(my_face->glyph->metrics.vertBearingX /
-				 scale);
+    static_cast<CORBA::Long>(my_face->glyph->metrics.vertBearingX /
+                 scale);
     gm.vertBearingY =
-	static_cast<CORBA::Long>(my_face->glyph->metrics.vertBearingY /
-				 scale);
+    static_cast<CORBA::Long>(my_face->glyph->metrics.vertBearingY /
+                 scale);
     gm.vertAdvance =
-	static_cast<CORBA::Long>(my_face->glyph->metrics.vertAdvance / 
-				 scale);
+    static_cast<CORBA::Long>(my_face->glyph->metrics.vertAdvance / 
+                 scale);
 
     return gm;
 }
@@ -141,7 +141,7 @@ static inline unsigned int highest_bit_set(unsigned int x)
 
     unsigned int k;
     for (k = 0; x >>= 1; k++)
-	; // nothing
+    ; // nothing
     return k;
 }
 
@@ -158,10 +158,10 @@ void openGL::FTFont::set_transform(const Fresco::Transform_var tr)
 
 // magnitude of a - b.
 inline float delta_magnitude(const Fresco::Vertex &a,
-			     const Fresco::Vertex &b)
+                 const Fresco::Vertex &b)
 {
     return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) +
-		(a.z-b.z)*(a.z-b.z));
+        (a.z-b.z)*(a.z-b.z));
 }
 
 class openGL::FTFont::DrawChar : public virtual GLContext::Callback
@@ -169,156 +169,156 @@ class openGL::FTFont::DrawChar : public virtual GLContext::Callback
   public:
     DrawChar::DrawChar(Unichar uc, FTFont *that)
     {
-	Berlin::Console::Drawable *drawable =
-	    Berlin::Console::instance()->drawable();
+    Berlin::Console::Drawable *drawable =
+        Berlin::Console::instance()->drawable();
 
-	GraphicImpl::init_requisition(my_r);
-	that->allocate_char(uc, my_r);
+    GraphicImpl::init_requisition(my_r);
+    that->allocate_char(uc, my_r);
     
-	Fresco::Vertex  o = {0, 0, 0};
-	Fresco::Vertex e1 = {1, 0, 0};
-	Fresco::Vertex e2 = {0, 1, 0};
-	
-	that->my_tr->transform_vertex(o);
-	that->my_tr->transform_vertex(e1);
-	that->my_tr->transform_vertex(e2);
+    Fresco::Vertex  o = {0, 0, 0};
+    Fresco::Vertex e1 = {1, 0, 0};
+    Fresco::Vertex e2 = {0, 1, 0};
     
-	my_x_zoom = 1./(drawable->resolution(Fresco::xaxis)*
-			delta_magnitude(e1, o));
-	my_y_zoom = 1./(drawable->resolution(Fresco::xaxis)*
-		       delta_magnitude(e2, o));
+    that->my_tr->transform_vertex(o);
+    that->my_tr->transform_vertex(e1);
+    that->my_tr->transform_vertex(e2);
+    
+    my_x_zoom = 1./(drawable->resolution(Fresco::xaxis)*
+            delta_magnitude(e1, o));
+    my_y_zoom = 1./(drawable->resolution(Fresco::xaxis)*
+               delta_magnitude(e2, o));
 
-	// the other option is better looking but *SLOW*
+    // the other option is better looking but *SLOW*
 #if 1
-	FT_Matrix matrix = {delta_magnitude(e1, o)*0x10000, 0,
-			    0, delta_magnitude(e2, o)*0x10000};
-	
-	FT_Set_Transform(that->my_face, &matrix, 0);
+    FT_Matrix matrix = {delta_magnitude(e1, o)*0x10000, 0,
+                0, delta_magnitude(e2, o)*0x10000};
+    
+    FT_Set_Transform(that->my_face, &matrix, 0);
 #else
-	FT_Set_Char_Size(that->my_face, 0, that->my_size*64,
-			 72*delta_magnitude(e1, o),
-			 72*delta_magnitude(e2, o));
+    FT_Set_Char_Size(that->my_face, 0, that->my_size*64,
+             72*delta_magnitude(e1, o),
+             72*delta_magnitude(e2, o));
 #endif
 
-	FT_Load_Char(that->my_face, uc, FT_LOAD_DEFAULT);
+    FT_Load_Char(that->my_face, uc, FT_LOAD_DEFAULT);
 
-	FT_Vector origin;
-	origin.x = 0;//(o.x - floorf(o.x)) * 0x10000;
-	origin.y = 0;//(o.y - floorf(o.y)) * 0x10000;
-	
-	FT_Get_Glyph(that->my_face->glyph, &my_glyph);
-	
-	FT_Glyph_To_Bitmap(&my_glyph, ft_render_mode_normal, &origin, 1);
-	my_glyph_bitmap = (FT_BitmapGlyph)my_glyph;
-	
-	FT_Set_Transform(that->my_face, 0, 0);
+    FT_Vector origin;
+    origin.x = 0;//(o.x - floorf(o.x)) * 0x10000;
+    origin.y = 0;//(o.y - floorf(o.y)) * 0x10000;
+    
+    FT_Get_Glyph(that->my_face->glyph, &my_glyph);
+    
+    FT_Glyph_To_Bitmap(&my_glyph, ft_render_mode_normal, &origin, 1);
+    my_glyph_bitmap = (FT_BitmapGlyph)my_glyph;
+    
+    FT_Set_Transform(that->my_face, 0, 0);
     }
     
     void operator()()
     {
-	unsigned char *buffer = my_glyph_bitmap->bitmap.buffer;
-	int width = my_glyph_bitmap->bitmap.width;
-	int height = my_glyph_bitmap->bitmap.rows;
+    unsigned char *buffer = my_glyph_bitmap->bitmap.buffer;
+    int width = my_glyph_bitmap->bitmap.width;
+    int height = my_glyph_bitmap->bitmap.rows;
   
-	// FIXME: We should be breaking oversized characters into pieces of
-	//        textures and drawing them all.
-	GLint maxsize, w, h; 
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxsize);
-	w = next_pow2(width);
-	h = next_pow2(height);
+    // FIXME: We should be breaking oversized characters into pieces of
+    //        textures and drawing them all.
+    GLint maxsize, w, h; 
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxsize);
+    w = next_pow2(width);
+    h = next_pow2(height);
     
-	while (w*h < 64)
-	    if (w < h) w = next_pow2(w+1);
-	    else h = next_pow2(h+1);
+    while (w*h < 64)
+        if (w < h) w = next_pow2(w+1);
+        else h = next_pow2(h+1);
     
-	if (w > maxsize || h > maxsize)
-	{
-	    std::cerr << "Character too large to render." << std::endl;
-	    delete this; return;
-	}
+    if (w > maxsize || h > maxsize)
+    {
+        std::cerr << "Character too large to render." << std::endl;
+        delete this; return;
+    }
     
-	std::vector<unsigned char> pixels(w*h, 0);
+    std::vector<unsigned char> pixels(w*h, 0);
     
-	GLint internal_format;
-	GLenum format, type;  
+    GLint internal_format;
+    GLenum format, type;  
     
-	switch (my_glyph_bitmap->bitmap.pixel_mode)
-	{
-	case FT_PIXEL_MODE_NONE:
-	    // should never happen
-	    std::cout << "WTF;FT_PIXEL_MODE_NONE" << std::endl;
-	    break;
-	case FT_PIXEL_MODE_MONO: // MSB 1 bpp
-	    internal_format = GL_ALPHA;
-	    format = GL_ALPHA;
-	    type = GL_UNSIGNED_BYTE;
-	    {
-		Berlin::Console::Drawable *drawable = 
-		    Berlin::Console::instance()->drawable();
-		my_x_zoom = 1./drawable->resolution(Fresco::xaxis);
-		my_y_zoom = 1./drawable->resolution(Fresco::yaxis);
-	    }
-	    // FIXME: Use memcopy?
-	    for (int i = 0; i < height; i++)
-		for (int j = 0; j < width; j++)
-		    pixels[i*w + j] = (buffer[i*(width/8)+(j/8)] &
-				       (0x80 >> j%8)) ? 0xFF : 0;
-	    break;
-	case FT_PIXEL_MODE_GRAY: // 8 bpp count of grey levels in num_bytes
-	    internal_format = GL_ALPHA;
-	    format = GL_ALPHA;
-	    type = GL_UNSIGNED_BYTE;
-	    // FIXME: Use memcopy?
-	    for (int i = 0; i < height; i++)
-		for (int j = 0; j < width; j++)
-		    pixels[i*w+j] = buffer[i*width+j];
-	    break;
-	case FT_PIXEL_MODE_GRAY2: // 2bpp (no known fonts)
-	    std::cout << "NYI;FT_PIXEL_MODE_GRAY2" << std::endl;
-	    break;
-	case FT_PIXEL_MODE_GRAY4: // 4bpp (no known fonts)
-	    std::cout << "NYI;FT_PIXEL_MODE_GRAY4" << std::endl;
-	    break;
-	case FT_PIXEL_MODE_LCD: // 8bpp RGB or BGR, width=3*glyph_width
-	    std::cout << "NYI;FT_PIXEL_MODE_LCD" << std::endl;
-	    break;
-	case FT_PIXEL_MODE_LCD_V: // 8bpp RGB or BGR, height=3*glyph_rows
-	    std::cout << "NYI;FT_PIXEL_MODE_LCD_V" << std::endl;
-	    break;
-	default:
-	    std::cout << "Unknown: " << my_glyph_bitmap->bitmap.pixel_mode
-		      << std::endl;
-	    break;
-	}
+    switch (my_glyph_bitmap->bitmap.pixel_mode)
+    {
+    case FT_PIXEL_MODE_NONE:
+        // should never happen
+        std::cout << "WTF;FT_PIXEL_MODE_NONE" << std::endl;
+        break;
+    case FT_PIXEL_MODE_MONO: // MSB 1 bpp
+        internal_format = GL_ALPHA;
+        format = GL_ALPHA;
+        type = GL_UNSIGNED_BYTE;
+        {
+        Berlin::Console::Drawable *drawable = 
+            Berlin::Console::instance()->drawable();
+        my_x_zoom = 1./drawable->resolution(Fresco::xaxis);
+        my_y_zoom = 1./drawable->resolution(Fresco::yaxis);
+        }
+        // FIXME: Use memcopy?
+        for (int i = 0; i < height; i++)
+        for (int j = 0; j < width; j++)
+            pixels[i*w + j] = (buffer[i*(width/8)+(j/8)] &
+                       (0x80 >> j%8)) ? 0xFF : 0;
+        break;
+    case FT_PIXEL_MODE_GRAY: // 8 bpp count of grey levels in num_bytes
+        internal_format = GL_ALPHA;
+        format = GL_ALPHA;
+        type = GL_UNSIGNED_BYTE;
+        // FIXME: Use memcopy?
+        for (int i = 0; i < height; i++)
+        for (int j = 0; j < width; j++)
+            pixels[i*w+j] = buffer[i*width+j];
+        break;
+    case FT_PIXEL_MODE_GRAY2: // 2bpp (no known fonts)
+        std::cout << "NYI;FT_PIXEL_MODE_GRAY2" << std::endl;
+        break;
+    case FT_PIXEL_MODE_GRAY4: // 4bpp (no known fonts)
+        std::cout << "NYI;FT_PIXEL_MODE_GRAY4" << std::endl;
+        break;
+    case FT_PIXEL_MODE_LCD: // 8bpp RGB or BGR, width=3*glyph_width
+        std::cout << "NYI;FT_PIXEL_MODE_LCD" << std::endl;
+        break;
+    case FT_PIXEL_MODE_LCD_V: // 8bpp RGB or BGR, height=3*glyph_rows
+        std::cout << "NYI;FT_PIXEL_MODE_LCD_V" << std::endl;
+        break;
+    default:
+        std::cout << "Unknown: " << my_glyph_bitmap->bitmap.pixel_mode
+              << std::endl;
+        break;
+    }
     
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, w, h, 0, 
-		     format, type, &pixels[0]);
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-	glEnable(GL_TEXTURE_2D);
-	glBegin(GL_QUADS);
-	float top = -height * my_r.y.align;
-	glTexCoord2f(0, 1); glVertex3f(0.0, (top+h)*my_y_zoom, 0.0);
-	glTexCoord2f(1, 1); glVertex3f(w*my_x_zoom,
-				       (top+h)*my_y_zoom,
-				       0.0);
-	glTexCoord2f(1, 0); glVertex3f(w*my_x_zoom,
-				       top*my_y_zoom,
-				       0.0);
-	glTexCoord2f(0, 0); glVertex3f(0.0, top*my_y_zoom, 0.0);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDeleteTextures(1, &texture);
-	
-	delete this;
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, w, h, 0, 
+             format, type, &pixels[0]);
+    
+    glEnable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
+    float top = -height * my_r.y.align;
+    glTexCoord2f(0, 1); glVertex3f(0.0, (top+h)*my_y_zoom, 0.0);
+    glTexCoord2f(1, 1); glVertex3f(w*my_x_zoom,
+                       (top+h)*my_y_zoom,
+                       0.0);
+    glTexCoord2f(1, 0); glVertex3f(w*my_x_zoom,
+                       top*my_y_zoom,
+                       0.0);
+    glTexCoord2f(0, 0); glVertex3f(0.0, top*my_y_zoom, 0.0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDeleteTextures(1, &texture);
+    
+    delete this;
     }
   private:
     Fresco::Graphic::Requisition my_r;
@@ -333,18 +333,18 @@ void openGL::FTFont::draw_char(Unichar uc)
 void openGL::FTFont::allocate_char(Unichar uc, Graphic::Requisition &r)
 {
     FT_Load_Glyph(my_face,
-		  FT_Get_Char_Index(my_face, (FT_ULong)uc),
-		  FT_LOAD_DEFAULT);
+          FT_Get_Char_Index(my_face, (FT_ULong)uc),
+          FT_LOAD_DEFAULT);
 
     Fresco::DrawingKit::GlyphMetrics gm = metrics(uc);
     r.x.natural = r.x.minimum = r.x.maximum = (gm.horiAdvance*10) >> 6;
     r.x.defined = true;
     r.x.align = gm.width == 0 ? 0. :
-	((double)gm.horiBearingX)/((double)gm.horiAdvance);
+    ((double)gm.horiBearingX)/((double)gm.horiAdvance);
     r.y.natural = r.y.minimum = r.y.maximum = (gm.height*10) >> 6;
     r.y.defined = true;
     r.y.align = gm.height == 0 ? 0. :
-	((double)gm.horiBearingY)/((double)gm.height); 
+    ((double)gm.horiBearingY)/((double)gm.height); 
 }
 
 // what's this in? points? Fresco::Coord? Fresco::PixelCoord?

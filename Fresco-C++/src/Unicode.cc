@@ -36,10 +36,10 @@ Unistring Unicode::to_CORBA(const Babylon::String &s)
 {
     std::string tmp = s.convert(Babylon::UTF16_format);
     const Babylon::UCS2 * ucs2str =
-	reinterpret_cast<const Babylon::UCS2 *>(tmp.data());
+    reinterpret_cast<const Babylon::UCS2 *>(tmp.data());
     // Don't copy, don't release:
     Fresco::Unistring res(tmp.length() / 2, tmp.length() / 2,
-			  const_cast<Babylon::UCS2 *>(ucs2str), 0);
+              const_cast<Babylon::UCS2 *>(ucs2str), 0);
     return res;
 }
 
@@ -51,7 +51,7 @@ Fresco::Unichar Unicode::to_CORBA(const Babylon::Char c)
 Babylon::String Unicode::to_internal(const Unistring & us)
 {
     std::string tmp(reinterpret_cast<const char *>(us.get_buffer()),
-		    us.length() * 2);
+            us.length() * 2);
     Babylon::String res(tmp, 0, Babylon::UTF16_format);
     return res;
 }

@@ -45,7 +45,7 @@ namespace Berlin
         ~ViewportImpl();
         virtual void body(Fresco::Graphic_ptr);
         virtual Fresco::Graphic_ptr body() { return MonoGraphic::body();}
-	
+    
         virtual Fresco::Transform_ptr transformation();
         virtual void request(Fresco::Graphic::Requisition &);
 

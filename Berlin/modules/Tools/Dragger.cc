@@ -59,14 +59,14 @@ void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
     CORBA::Any any;
     any <<= od;
     if (!CORBA::is_nil(my_command))
-	try { my_command->execute(any); }
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_command = Fresco::Command::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_command = Fresco::Command::_nil(); }
+    try { my_command->execute(any); }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_command = Fresco::Command::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_command = Fresco::Command::_nil(); }
     my_offset += delta;
 }
 
 void Dragger::release(PickTraversal_ptr traversal,
-		      const Input::Event &event)
+              const Input::Event &event)
 { ControllerImpl::release(traversal, event); }

@@ -36,34 +36,34 @@ namespace Berlin
 
       class Scrollbar : public Adjustable
       {
-	  struct Offset
-	  {
-	      Fresco::Coord lower;
-	      Fresco::Coord upper;
-	  }; 
-	public:
-	  Scrollbar(Fresco::BoundedRange_ptr, Fresco::Axis,
-		    const Fresco::Graphic::Requisition &);
-	  void init(Fresco::Controller_ptr);
-	  virtual void request(Fresco::Graphic::Requisition &r)
-	  { r = my_requisition; }
-	  virtual void draw(Fresco::DrawTraversal_ptr);
-	  virtual void pick(Fresco::PickTraversal_ptr);
-	  virtual void allocate(Fresco::Tag,
-				const Fresco::Allocation::Info &);
-	protected:
-	  virtual void update(const CORBA::Any &any);
-	  virtual void adjust(const Fresco::OriginatedDelta &);
-	private:
-	  void traverse_thumb(Fresco::Traversal_ptr);
-	  Fresco::Graphic::Requisition my_requisition;
-	  RefCount_var<Fresco::BoundedRange> my_value;
-	  Offset my_offset;
-	  Fresco::Axis my_axis;
-	  TransformImpl my_pickTrafo; //.< transformation at the last
-	                              //.< pick traversal.
-	  double my_length;
-	  double my_scale;
+      struct Offset
+      {
+          Fresco::Coord lower;
+          Fresco::Coord upper;
+      }; 
+    public:
+      Scrollbar(Fresco::BoundedRange_ptr, Fresco::Axis,
+            const Fresco::Graphic::Requisition &);
+      void init(Fresco::Controller_ptr);
+      virtual void request(Fresco::Graphic::Requisition &r)
+      { r = my_requisition; }
+      virtual void draw(Fresco::DrawTraversal_ptr);
+      virtual void pick(Fresco::PickTraversal_ptr);
+      virtual void allocate(Fresco::Tag,
+                const Fresco::Allocation::Info &);
+    protected:
+      virtual void update(const CORBA::Any &any);
+      virtual void adjust(const Fresco::OriginatedDelta &);
+    private:
+      void traverse_thumb(Fresco::Traversal_ptr);
+      Fresco::Graphic::Requisition my_requisition;
+      RefCount_var<Fresco::BoundedRange> my_value;
+      Offset my_offset;
+      Fresco::Axis my_axis;
+      TransformImpl my_pickTrafo; //.< transformation at the last
+                                  //.< pick traversal.
+      double my_length;
+      double my_scale;
       };
 
     } // namespace

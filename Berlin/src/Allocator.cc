@@ -57,12 +57,12 @@ void Allocator::traverse(Traversal_ptr traversal)
     Region_var allocation = traversal->current_allocation();
     try
     {
-	if (!CORBA::is_nil(allocation))
-	    traversal->traverse_child(child, 0, allocation,
-				      Transform::_nil());
-	else
-	    traversal->traverse_child(child, 0, Region_var(my_natural->_this()),
-				      Transform::_nil());
+    if (!CORBA::is_nil(allocation))
+        traversal->traverse_child(child, 0, allocation,
+                      Transform::_nil());
+    else
+        traversal->traverse_child(child, 0, Region_var(my_natural->_this()),
+                      Transform::_nil());
     }
     catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil()); }
     catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil()); }
@@ -83,9 +83,9 @@ void Allocator::need_resize()
     cache_requisition();
     cache_allocation();
     if (my_extension->valid)
-	region->merge_union(Region_var(my_extension->_this()));
+    region->merge_union(Region_var(my_extension->_this()));
     if (region->valid)
-	need_damage(region, Allocation_var(allocation->_this()));
+    need_damage(region, Allocation_var(allocation->_this()));
     MonoGraphic::need_resize();
 }
 
@@ -97,28 +97,28 @@ void Allocator::allocate(Tag, const Allocation::Info &i)
 }
 
 void Allocator::natural_allocation(const Fresco::Graphic::Requisition &r,
-				   RegionImpl &natural)
+                   RegionImpl &natural)
 {
     if (r.x.defined)
     {
-	natural.xalign = r.x.align;
-	natural.lower.x = -r.x.align * r.x.natural;
-	natural.upper.x = natural.lower.x + r.x.natural;
-	natural.valid = true;
+    natural.xalign = r.x.align;
+    natural.lower.x = -r.x.align * r.x.natural;
+    natural.upper.x = natural.lower.x + r.x.natural;
+    natural.valid = true;
     }
     if (r.y.defined)
     {
-	natural.yalign = r.y.align;
-	natural.lower.y = -r.y.align * r.y.natural;
-	natural.upper.y = natural.lower.y + r.y.natural;
-	natural.valid = true;
+    natural.yalign = r.y.align;
+    natural.lower.y = -r.y.align * r.y.natural;
+    natural.upper.y = natural.lower.y + r.y.natural;
+    natural.valid = true;
     }
     if (r.z.defined)
     {
-	natural.zalign = r.z.align;
-	natural.lower.z = -r.z.align * r.z.natural;
-	natural.upper.z = natural.lower.z + r.z.natural;
-	natural.valid = true;
+    natural.zalign = r.z.align;
+    natural.lower.z = -r.z.align * r.z.natural;
+    natural.upper.z = natural.lower.z + r.z.natural;
+    natural.valid = true;
     }
 }
 
@@ -127,11 +127,11 @@ void Allocator::cache_requisition()
     Trace trace(this, "Allocator::cache_requisition");
     if (!my_requested)
     {
-	Fresco::Graphic::Requisition r;
-	GraphicImpl::init_requisition(r);
-	MonoGraphic::request(r);
-	my_requisition = r;
-	my_requested = true; //r.x.defined && r.y.defined && r.z.defined;
+    Fresco::Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    MonoGraphic::request(r);
+    my_requisition = r;
+    my_requested = true; //r.x.defined && r.y.defined && r.z.defined;
     }
 }
 
@@ -141,18 +141,18 @@ void Allocator::cache_allocation()
     cache_requisition();
     if (!my_allocated)
     {
-	natural_allocation(my_requisition, *my_natural);
-	my_extension->valid = false;
-	Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
-	tmp->clear();
-	Lease_var<TransformImpl>
-	    transform(Provider<TransformImpl>::provide());
-	transform->load_identity();
-	Allocation::Info info;
-	info.allocation = tmp->_this();
-	info.transformation = transform->_this();
-	MonoGraphic::extension(info, Region_var(my_extension->_this()));
-	my_allocated = true;
+    natural_allocation(my_requisition, *my_natural);
+    my_extension->valid = false;
+    Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
+    tmp->clear();
+    Lease_var<TransformImpl>
+        transform(Provider<TransformImpl>::provide());
+    transform->load_identity();
+    Allocation::Info info;
+    info.allocation = tmp->_this();
+    info.transformation = transform->_this();
+    MonoGraphic::extension(info, Region_var(my_extension->_this()));
+    my_allocated = true;
     }
 }
 
@@ -163,16 +163,16 @@ void Allocator::need_damage(RegionImpl *e, Allocation_ptr allocation)
 
     for (long i = 0; i < allocation->size(); i++)
     {
-	Allocation::Info_var info = allocation->get(i);
-	region->copy(Region_var(e->_this()));
-	region->apply_transform(info->transformation);
-	info->root->damage(Region_var(region->_this()));
+    Allocation::Info_var info = allocation->get(i);
+    region->copy(Region_var(e->_this()));
+    region->apply_transform(info->transformation);
+    info->root->damage(Region_var(region->_this()));
     }
 }
 
 TransformAllocator::TransformAllocator(Alignment xp, Alignment yp,
-				       Alignment zp, Alignment xc,
-				       Alignment yc, Alignment zc) :
+                       Alignment zp, Alignment xc,
+                       Alignment yc, Alignment zc) :
     my_xparent(xp), my_yparent(yp),
     my_zparent(zp), my_xchild(xc),
     my_ychild(yc), my_zchild(zc)
@@ -228,9 +228,9 @@ void TransformAllocator::traverse(Traversal_ptr traversal)
     tx->translate(v);
     try
     {
-	traversal->traverse_child(child, 0,
-				  Region_var(my_natural->_this()),
-				  Transform_var(tx->_this()));
+    traversal->traverse_child(child, 0,
+                  Region_var(my_natural->_this()),
+                  Transform_var(tx->_this()));
     }
     catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil()); }
     catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil()); }
@@ -238,15 +238,15 @@ void TransformAllocator::traverse(Traversal_ptr traversal)
 }
 
 void TransformAllocator::compute_delta(const Vertex &lower,
-				       const Vertex &upper, Vertex &delta)
+                       const Vertex &upper, Vertex &delta)
 {
     delta.x = (lower.x - my_natural->lower.x + my_xparent *
-	       (upper.x - lower.x) -
-	       my_xchild * (my_natural->upper.x - my_natural->lower.x));
+           (upper.x - lower.x) -
+           my_xchild * (my_natural->upper.x - my_natural->lower.x));
     delta.y = (lower.y - my_natural->lower.y + my_yparent *
-	       (upper.y - lower.y) -
-	       my_ychild * (my_natural->upper.y - my_natural->lower.y));
+           (upper.y - lower.y) -
+           my_ychild * (my_natural->upper.y - my_natural->lower.y));
     delta.z = (lower.z - my_natural->lower.z + my_zparent *
-	       (upper.z - lower.z) -
-	       my_zchild * (my_natural->upper.z - my_natural->lower.z));
+           (upper.z - lower.z) -
+           my_zchild * (my_natural->upper.z - my_natural->lower.z));
 }

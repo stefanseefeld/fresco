@@ -97,15 +97,15 @@ protected:
     bool operator ()(const TGlyphSpec &a, const TGlyphSpec &b)
     {
       return 
-	// this is why a generalized product type constructor is better than
-	// ad-hoc memory structure definition. *sigh*
-	((a.first.xx < b.first.xx)) ||
-	((a.first.xx == b.first.xx) && (a.first.xy < b.first.xy)) ||
-	((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx < b.first.yx)) ||
-	((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx == b.first.yx) && (a.first.yy < b.first.yy)) ||
-	((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx == b.first.yx) && (a.first.yy == b.first.yy) &&
-	 (a.second < b.second))
-	;      
+    // this is why a generalized product type constructor is better than
+    // ad-hoc memory structure definition. *sigh*
+    ((a.first.xx < b.first.xx)) ||
+    ((a.first.xx == b.first.xx) && (a.first.xy < b.first.xy)) ||
+    ((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx < b.first.yx)) ||
+    ((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx == b.first.yx) && (a.first.yy < b.first.yy)) ||
+    ((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx == b.first.yx) && (a.first.yy == b.first.yy) &&
+     (a.second < b.second))
+    ;      
     }
   };
 
@@ -154,10 +154,10 @@ protected:
 
   // caches!
   LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, 
-	   std::map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > _glyphCache;
+       std::map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > _glyphCache;
   LRUCache<FaceSpec, Fresco::DrawingKit::FontMetrics, FaceMetricsFactory> _faceMetricsCache;
   LRUCache<TGlyphSpec, Fresco::DrawingKit::GlyphMetrics, GlyphMetricsFactory,
-	   std::map<TGlyphSpec, Fresco::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;
+       std::map<TGlyphSpec, Fresco::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;
 private:
   bool chooseFaceInteractively(const std::map<FamStyle, FT_Face> &, const char *, Babylon::String &, Babylon::String &);
 };

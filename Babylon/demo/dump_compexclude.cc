@@ -47,34 +47,34 @@ int main(int argc, char** argv)
 {
     try
     {
-	if (argc == 2) Babylon::override_path(std::string(argv[1]));
+    if (argc == 2) Babylon::override_path(std::string(argv[1]));
 
-	for (Char A(UC_NULL); A.value() < 0x110000; ++A)
-	    if (A.exclude_from_composition())
-	    {
-		output_char(std::cout, A);
-		std::cout << std::endl;
-	    }
-	    else if (A.is_Full_Composition_Exclusion())
-	    {
-		std::cout << "# ";
-		output_char(std::cout, A);
-		std::cout << std::endl;
-	    }
-	 
+    for (Char A(UC_NULL); A.value() < 0x110000; ++A)
+        if (A.exclude_from_composition())
+        {
+        output_char(std::cout, A);
+        std::cout << std::endl;
+        }
+        else if (A.is_Full_Composition_Exclusion())
+        {
+        std::cout << "# ";
+        output_char(std::cout, A);
+        std::cout << std::endl;
+        }
+     
     }
     catch(std::runtime_error &e)
     {
-	std::cout << "Caught an runtime exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an runtime exception: " << e.what()
+          << std::endl;
     }
     catch(std::exception &e)
     {
-	std::cout << "Caught an exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an exception: " << e.what()
+          << std::endl;
     }
     catch(...)
     {
-	std::cout << "Some exception happened!" << std::endl;
+    std::cout << "Some exception happened!" << std::endl;
     }
 }

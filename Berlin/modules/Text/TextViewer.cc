@@ -33,7 +33,7 @@ using namespace Fresco;
 using namespace Berlin::TextKit;
 
 TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk,
-		       DrawingKit_ptr dk, Compositor *c) :
+               DrawingKit_ptr dk, Compositor *c) :
     Composition(dk, c),
     my_kit(Fresco::TextKit::_duplicate(tk)),
     my_buffer(Fresco::TextBuffer::_duplicate(txt))
@@ -47,59 +47,59 @@ void TextViewer::update(const CORBA::Any &a)
     TextBuffer::Change *ch;  
     if (a >>= ch)
     {
-	switch (ch->type)
-	{
-	case TextBuffer::insert:
-	{
-	    Trace trace2("TextViewer::update - insert");
-	    Prague::Guard<Mutex> guard(my_mutex);
-	    Unistring_var us = 
-		my_buffer->get_chars(ch->pos, (CORBA::ULong)ch->len);
-	    CORBA::ULong len = us->length();
-	    for (unsigned long i = 0; i < len; i++)
-	    {
-		Graphic_var child = my_kit->glyph(us[i]);
-		// FIXME: rewrite that with iterators
-		Edge edge;
-		edge.peer = Fresco::Graphic::_duplicate(child);
-		edge.localId = unique_child_id();
-		edge.peerId =
-		    child->add_parent_graphic(Graphic_var(_this()),
-					      edge.localId);
-		my_children.insert(my_children.begin() + ch->pos + i,
-				   edge);
-	    }
-	}
-	break;
-	case TextBuffer::remove:
-	{
-	    Trace trace2("TextViewer::update - remove");
-	    Prague::Guard<Mutex> guard(my_mutex);
-	    // FIXME: rewrite that with iterators
-	    unsigned long start = 
-		std::min(ch->pos,
-			 static_cast<CORBA::ULong>(my_children.size()));
-	    unsigned long end =
-		std::min(ch->pos + ch->len,
-			 static_cast<CORBA::ULong>(my_children.size()));
-	    if (ch->len < 0) std::swap(start, end);
-	    for (glist_t::iterator i = my_children.begin() + start;
-		 i != my_children.begin() + end;
-		 ++i)
-		(*i).peer->remove_parent_graphic((*i).peerId);
-	    my_children.erase(my_children.begin() + start,
-			      my_children.begin() + end);
-	}
-	break;
-	case TextBuffer::cursor:
-	{
-	    Trace trace2("TextViewer::update - cursor");
-	    // FIXME: we'll do some cursor-ish stuff someday
-	}
-	break;
-	}
-	//   need_redraw();
-	need_resize();
+    switch (ch->type)
+    {
+    case TextBuffer::insert:
+    {
+        Trace trace2("TextViewer::update - insert");
+        Prague::Guard<Mutex> guard(my_mutex);
+        Unistring_var us = 
+        my_buffer->get_chars(ch->pos, (CORBA::ULong)ch->len);
+        CORBA::ULong len = us->length();
+        for (unsigned long i = 0; i < len; i++)
+        {
+        Graphic_var child = my_kit->glyph(us[i]);
+        // FIXME: rewrite that with iterators
+        Edge edge;
+        edge.peer = Fresco::Graphic::_duplicate(child);
+        edge.localId = unique_child_id();
+        edge.peerId =
+            child->add_parent_graphic(Graphic_var(_this()),
+                          edge.localId);
+        my_children.insert(my_children.begin() + ch->pos + i,
+                   edge);
+        }
+    }
+    break;
+    case TextBuffer::remove:
+    {
+        Trace trace2("TextViewer::update - remove");
+        Prague::Guard<Mutex> guard(my_mutex);
+        // FIXME: rewrite that with iterators
+        unsigned long start = 
+        std::min(ch->pos,
+             static_cast<CORBA::ULong>(my_children.size()));
+        unsigned long end =
+        std::min(ch->pos + ch->len,
+             static_cast<CORBA::ULong>(my_children.size()));
+        if (ch->len < 0) std::swap(start, end);
+        for (glist_t::iterator i = my_children.begin() + start;
+         i != my_children.begin() + end;
+         ++i)
+        (*i).peer->remove_parent_graphic((*i).peerId);
+        my_children.erase(my_children.begin() + start,
+                  my_children.begin() + end);
+    }
+    break;
+    case TextBuffer::cursor:
+    {
+        Trace trace2("TextViewer::update - cursor");
+        // FIXME: we'll do some cursor-ish stuff someday
+    }
+    break;
+    }
+    //   need_redraw();
+    need_resize();
     }
 }
 
@@ -112,13 +112,13 @@ void TextViewer::activate_composite()
     CORBA::ULong len = us->length();
     for (unsigned long i = 0; i < len; i++)
     {
-	Graphic_var child = my_kit->glyph(us[i]);
-	Edge edge;
-	edge.peer = Fresco::Graphic::_duplicate(child);
-	edge.localId = unique_child_id();
-	edge.peerId = child->add_parent_graphic(Graphic_var(_this()),
-						edge.localId);
-	my_children.insert(my_children.begin() + i, edge);
+    Graphic_var child = my_kit->glyph(us[i]);
+    Edge edge;
+    edge.peer = Fresco::Graphic::_duplicate(child);
+    edge.localId = unique_child_id();
+    edge.peerId = child->add_parent_graphic(Graphic_var(_this()),
+                        edge.localId);
+    my_children.insert(my_children.begin() + i, edge);
     }
 }
 

@@ -31,7 +31,7 @@ using namespace Fresco;
 using namespace Berlin::WidgetKit::Motif;
 
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a,
-		     const Fresco::Graphic::Requisition &r) :
+             const Fresco::Graphic::Requisition &r) :
     my_requisition(r),
     my_value(RefCount_var<BoundedRange>::increment(v)),
     my_axis(a)
@@ -60,12 +60,12 @@ void Scrollbar::pick(PickTraversal_ptr traversal)
 //       traversal->intersects_allocation())
     if (traversal->intersects_allocation())
     {
-	traversal->enter_controller(Controller_var(_this()));
-	MonoGraphic::traverse(traversal);
+    traversal->enter_controller(Controller_var(_this()));
+    MonoGraphic::traverse(traversal);
 //       if (!grabbed(traversal->device())) traverse_thumb(traversal);
-	traverse_thumb(traversal);
-	if (!traversal->picked()) traversal->hit();
-	traversal->leave_controller();
+    traverse_thumb(traversal);
+    if (!traversal->picked()) traversal->hit();
+    traversal->leave_controller();
     }
 }
 
@@ -75,17 +75,17 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
     allocation->copy(info.allocation);
     if (my_axis == xaxis)
     {
-	Coord lower = allocation->lower.x;
-	Coord scale = allocation->upper.x - allocation->lower.x;
-	allocation->lower.x = lower + scale*my_offset.lower;
-	allocation->upper.x = lower + scale*my_offset.upper;
+    Coord lower = allocation->lower.x;
+    Coord scale = allocation->upper.x - allocation->lower.x;
+    allocation->lower.x = lower + scale*my_offset.lower;
+    allocation->upper.x = lower + scale*my_offset.upper;
     }
     else
     {
-	Coord lower = allocation->lower.y;
-	Coord scale = allocation->upper.y - allocation->lower.y;
-	allocation->lower.y = lower + scale*my_offset.lower;
-	allocation->upper.y = lower + scale*my_offset.upper;
+    Coord lower = allocation->lower.y;
+    Coord scale = allocation->upper.y - allocation->lower.y;
+    allocation->lower.y = lower + scale*my_offset.lower;
+    allocation->upper.y = lower + scale*my_offset.upper;
     }
     allocation->lower.z = allocation->upper.z = 0.;
     allocation->normalize(info.transformation);
@@ -105,20 +105,20 @@ void Scrollbar::adjust(const OriginatedDelta &od)
     
     if (my_axis == xaxis)
     {
-	delta = newpt.x - origin.x;
-	if (origin.x < 0.)
-	    delta = std::max(origin.x + delta, 0.);
-	else if (origin.x > my_length)
-	    delta = std::min(origin.x + delta, 0.);
-	
+    delta = newpt.x - origin.x;
+    if (origin.x < 0.)
+        delta = std::max(origin.x + delta, 0.);
+    else if (origin.x > my_length)
+        delta = std::min(origin.x + delta, 0.);
+    
     }
     else if (my_axis == yaxis)
     {
-	delta = newpt.y - origin.y;
-	if (origin.y < 0.)
-	    delta = std::max(origin.y + delta, 0.);
-	else if (origin.y > my_length)
-	    delta = std::min(origin.y + delta, 0.);
+    delta = newpt.y - origin.y;
+    if (origin.y < 0.)
+        delta = std::max(origin.y + delta, 0.);
+    else if (origin.y > my_length)
+        delta = std::min(origin.y + delta, 0.);
     }
     if (delta != 0.) my_value->adjust(my_scale*delta);
 }
@@ -128,9 +128,9 @@ void Scrollbar::update(const CORBA::Any &any)
     BoundedRange::Settings *settings;
     any >>= settings;
     my_offset.lower = (settings->lvalue - settings->lower)/
-	(settings->upper - settings->lower);
+    (settings->upper - settings->lower);
     my_offset.upper = (settings->uvalue - settings->lower)/
-	(settings->upper - settings->lower);
+    (settings->upper - settings->lower);
     need_redraw();
 }
 
@@ -144,20 +144,20 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
     tx->load_identity();
     if (my_axis == xaxis)
     {
-	Coord lower = allocation->lower.x;
-	Coord scale = allocation->upper.x - allocation->lower.x;
-	my_length = scale;
-	allocation->lower.x = lower + scale*my_offset.lower;
-	allocation->upper.x = lower + scale*my_offset.upper;
-	allocation->lower.z = allocation->upper.z = 0.;
+    Coord lower = allocation->lower.x;
+    Coord scale = allocation->upper.x - allocation->lower.x;
+    my_length = scale;
+    allocation->lower.x = lower + scale*my_offset.lower;
+    allocation->upper.x = lower + scale*my_offset.upper;
+    allocation->lower.z = allocation->upper.z = 0.;
     }
     else if (my_axis == yaxis)
     {
-	Coord lower = allocation->lower.y;
-	Coord scale = allocation->upper.y - allocation->lower.y;
-	my_length = scale;
-	allocation->lower.y = lower + scale*my_offset.lower;
-	allocation->upper.y = lower + scale*my_offset.upper;
+    Coord lower = allocation->lower.y;
+    Coord scale = allocation->upper.y - allocation->lower.y;
+    my_length = scale;
+    allocation->lower.y = lower + scale*my_offset.lower;
+    allocation->upper.y = lower + scale*my_offset.upper;
     }
     allocation->lower.z = allocation->upper.z = 0.;
     allocation->normalize(Transform_var(tx->_this()));
@@ -165,9 +165,9 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
     my_pickTrafo.copy(traversal->current_transformation());
     try
     {
-	traversal->traverse_child(child, 0,
-				  Region_var(allocation->_this()),
-				  Transform_var(tx->_this()));
+    traversal->traverse_child(child, 0,
+                  Region_var(allocation->_this()),
+                  Transform_var(tx->_this()));
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     { body(Fresco::Graphic::_nil()); }

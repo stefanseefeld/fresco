@@ -48,7 +48,7 @@ Fresco::Raster_ptr GlyphImpl::bitmap(CORBA::ULong xdpi, CORBA::ULong ydpi)
   FT_Set_Transform(my_face, &my_tr, 0);
 
   if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
-		    FT_LOAD_DEFAULT) != 0)
+            FT_LOAD_DEFAULT) != 0)
       std::cerr << "FontKit bitmap: load glyph failed." << std::endl;
 
   FT_Glyph glyph;
@@ -130,7 +130,7 @@ Fresco::FontShape *GlyphImpl::decompose()
   FT_Set_Char_Size(my_face, 0, my_size, 0, 0);
   FT_Set_Transform(my_face, &my_tr, 0);
   if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
-		    FT_LOAD_DEFAULT) != 0)
+            FT_LOAD_DEFAULT) != 0)
       std::cerr << "FontKit decompose: load glyph failed." << std::endl;
   Fresco::FontShape *f = new Fresco::FontShape(); f->length(0);
   // use FT_Outline_Decompose
@@ -157,7 +157,7 @@ Fresco::FontShape *GlyphImpl::decompose()
 void GlyphImpl::char_info(Fresco::GlyphMetrics &gm)
 {
   if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
-		    FT_LOAD_DEFAULT) != 0)
+            FT_LOAD_DEFAULT) != 0)
       std::cerr << "FontKit char_info: load glyph failed." << std::endl;
 
   double scale = 1.;

@@ -42,7 +42,7 @@ namespace Berlin
   namespace LayoutKit
   {
     class ViewportImpl::Adjustment :
-	  public virtual POA_Fresco::BoundedRange, public SubjectImpl
+      public virtual POA_Fresco::BoundedRange, public SubjectImpl
     {
       public:
         Adjustment();
@@ -69,7 +69,7 @@ namespace Berlin
         virtual void end();
         virtual void adjust(Coord);
         virtual const char *object_name()
-	{ return "ViewportImpl::Adjustment"; }
+    { return "ViewportImpl::Adjustment"; }
       private:
         Fresco::BoundedRange::Settings my_settings;
         Coord                          my_s;
@@ -79,8 +79,8 @@ namespace Berlin
     
     ViewportImpl::Adjustment::Adjustment() : my_s(10.), my_p(10.)
     {
-	my_settings.lower = my_settings.upper =
-	    my_settings.lvalue = my_settings.uvalue = 0.;
+    my_settings.lower = my_settings.upper =
+        my_settings.lvalue = my_settings.uvalue = 0.;
     }
 
     ViewportImpl::Adjustment::~Adjustment() { }
@@ -111,9 +111,9 @@ namespace Berlin
             if (l == my_settings.lower) return;
             my_settings.lower = l;
             my_settings.lvalue = std::max(my_settings.lvalue,
-					  my_settings.lower);
+                      my_settings.lower);
             my_settings.uvalue = std::max(my_settings.uvalue,
-					  my_settings.lower);
+                      my_settings.lower);
             any <<= my_settings;
         }
         notify(any);
@@ -133,9 +133,9 @@ namespace Berlin
             if (my_settings.upper == u) return;
             my_settings.upper = u;
             my_settings.lvalue = std::min(my_settings.lvalue,
-					  my_settings.upper);
+                      my_settings.upper);
             my_settings.uvalue = std::min(my_settings.uvalue,
-					  my_settings.upper);
+                      my_settings.upper);
             any <<= my_settings;
         }
         notify(any);
@@ -171,7 +171,7 @@ namespace Berlin
         {
             Prague::Guard<Mutex> guard(my_mutex);
             Coord t = std::min(my_s,
-			       my_settings.upper - my_settings.uvalue);
+                   my_settings.upper - my_settings.uvalue);
             if (t <= 0.) return;
             my_settings.lvalue += t;
             my_settings.uvalue += t;
@@ -186,7 +186,7 @@ namespace Berlin
         {
             Prague::Guard<Mutex> guard(my_mutex);
             Coord t = std::min(my_s,+
-			       my_settings.lvalue - my_settings.lower);
+                   my_settings.lvalue - my_settings.lower);
             if (t <= 0.) return;
             my_settings.lvalue -= t;
             my_settings.uvalue -= t;
@@ -201,7 +201,7 @@ namespace Berlin
         {
             Prague::Guard<Mutex> guard(my_mutex);
             Coord t = std::min(my_p,
-			       my_settings.upper - my_settings.uvalue);
+                   my_settings.upper - my_settings.uvalue);
             if (t <= 0.) return;
             my_settings.lvalue += t;
             my_settings.uvalue += t;
@@ -216,7 +216,7 @@ namespace Berlin
         {
             Prague::Guard<Mutex> guard(my_mutex);
             Coord t = std::min(my_p,
-			       my_settings.lvalue - my_settings.lower);
+                   my_settings.lvalue - my_settings.lower);
             if (t <= 0.) return;
             my_settings.lvalue -= t;
             my_settings.uvalue -= t;
@@ -258,7 +258,7 @@ namespace Berlin
         CORBA::Any any;
         {
             lv = std::min(std::max(my_settings.lower, lv),
-			  my_settings.upper);
+              my_settings.upper);
             Prague::Guard<Mutex> guard(my_mutex);
             if (lv == my_settings.lvalue) return;
             my_settings.lvalue = lv;
@@ -279,7 +279,7 @@ namespace Berlin
         CORBA::Any any;
         {
             uv = std::min(std::max(my_settings.lower, uv),
-			  my_settings.upper);
+              my_settings.upper);
             Prague::Guard<Mutex> guard(my_mutex);
             if (my_settings.uvalue == uv) return;
             my_settings.uvalue = uv;
@@ -301,9 +301,9 @@ namespace Berlin
         {
             Prague::Guard<Mutex> guard(my_mutex);
             Coord t =
-		std::min(std::max(d,
-				  my_settings.lower - my_settings.lvalue),
-			 my_settings.upper - my_settings.uvalue);
+        std::min(std::max(d,
+                  my_settings.lower - my_settings.lvalue),
+             my_settings.upper - my_settings.uvalue);
             if (t == 0.) return;
             my_settings.lvalue += t;
             my_settings.uvalue += t;
@@ -338,14 +338,14 @@ namespace Berlin
         cache_requisition();
         GraphicImpl::require(r.x, my_requisition.x.natural, 0.,
                              my_requisition.x.natural,
-			     my_requisition.x.align);
+                 my_requisition.x.align);
         GraphicImpl::require(r.y, my_requisition.y.natural, 0.,
                              my_requisition.y.natural,
-			     my_requisition.y.align);
+                 my_requisition.y.align);
         if(my_requisition.z.defined)
             GraphicImpl::require(r.z, my_requisition.z.natural, 0.,
                                  my_requisition.z.natural,
-				 my_requisition.z.align);
+                 my_requisition.z.align);
     }
 
     void ViewportImpl::traverse(Traversal_ptr traversal)
@@ -385,7 +385,7 @@ namespace Berlin
         region->copy(Region_var(b->_this()));
 
         Lease_var<TransformImpl>
-	    transform(Provider<TransformImpl>::provide());
+        transform(Provider<TransformImpl>::provide());
         transform->load_identity();
 
         region->normalize(Transform_var(transform->_this()));
@@ -396,11 +396,11 @@ namespace Berlin
                                       Transform_var(transform->_this()));
         }
         catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ body(Fresco::Graphic::_nil()); }
+    { body(Fresco::Graphic::_nil()); }
         catch (const CORBA::COMM_FAILURE &)
-	{ body(Fresco::Graphic::_nil()); }
+    { body(Fresco::Graphic::_nil()); }
         catch (const CORBA::TRANSIENT &)
-	{ body(Fresco::Graphic::_nil()); }
+    { body(Fresco::Graphic::_nil()); }
         drawing->restore();
     }
 
@@ -417,7 +417,7 @@ namespace Berlin
         region->copy(Region_var(b->_this()));
 
         Lease_var<TransformImpl>
-	    transform(Provider<TransformImpl>::provide());
+        transform(Provider<TransformImpl>::provide());
         transform->load_identity();
 
         region->normalize(Transform_var(transform->_this()));
@@ -428,11 +428,11 @@ namespace Berlin
                                        Transform_var(transform->_this()));
         }
         catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ body(Fresco::Graphic::_nil()); }
+    { body(Fresco::Graphic::_nil()); }
         catch (const CORBA::COMM_FAILURE &)
-	{ body(Fresco::Graphic::_nil()); }
+    { body(Fresco::Graphic::_nil()); }
         catch (const CORBA::TRANSIENT &)
-	{ body(Fresco::Graphic::_nil()); }
+    { body(Fresco::Graphic::_nil()); }
     }
 
     void ViewportImpl::need_resize()
@@ -447,7 +447,7 @@ namespace Berlin
     {
         /*
          * we are only interested in changes concerning the outer range
-	 * (body) or the offset
+     * (body) or the offset
          */
         Fresco::BoundedRange::Settings x = my_xadjustment->state();
         Fresco::BoundedRange::Settings y = my_yadjustment->state();
@@ -469,14 +469,14 @@ namespace Berlin
         Adjustment *adjustment = new Adjustment;
         activate(adjustment);
         my_xadjustment =
-	    RefCount_var<BoundedRange>::increment(adjustment->_this(),
-						  false);
+        RefCount_var<BoundedRange>::increment(adjustment->_this(),
+                          false);
         my_xadjustment->attach(Observer_var(_this()));
         adjustment = new Adjustment;
         activate(adjustment);
         my_yadjustment =
-	    RefCount_var<BoundedRange>::increment(adjustment->_this(),
-						  false);
+        RefCount_var<BoundedRange>::increment(adjustment->_this(),
+                          false);
         my_yadjustment->attach(Observer_var(_this()));
     }
 
@@ -496,8 +496,8 @@ namespace Berlin
         //        but it is allowed for input and should not just return
         //        the value for the yaxis. -- tobias
         return a == xaxis ?
-	    RefCount_var<BoundedRange>::increment(my_xadjustment) :
-	    RefCount_var<BoundedRange>::increment(my_yadjustment);
+        RefCount_var<BoundedRange>::increment(my_xadjustment) :
+        RefCount_var<BoundedRange>::increment(my_yadjustment);
     }
 
     void ViewportImpl::cache_requisition()
@@ -540,18 +540,18 @@ namespace Berlin
             allocation->span(yaxis, ya);
 
             if (!Math::equal(xa.end - xa.begin,
-			     my_settings[xaxis].uvalue -
-			     my_settings[xaxis].lvalue,
-			     epsilon))
+                 my_settings[xaxis].uvalue -
+                 my_settings[xaxis].lvalue,
+                 epsilon))
             {
                 my_settings[xaxis].uvalue =
-		    my_settings[xaxis].lvalue + xa.end - xa.begin;
+            my_settings[xaxis].lvalue + xa.end - xa.begin;
                 my_xadjustment->uvalue(my_settings[xaxis].uvalue);
             }
             if (!Math::equal(ya.end - ya.begin,
-			     my_settings[yaxis].uvalue -
-			     my_settings[yaxis].lvalue,
-			     epsilon))
+                 my_settings[yaxis].uvalue -
+                 my_settings[yaxis].lvalue,
+                 epsilon))
             {
                 my_settings[yaxis].uvalue = ya.end - ya.begin;
                 my_yadjustment->uvalue(my_settings[yaxis].uvalue);
@@ -563,18 +563,18 @@ namespace Berlin
     {
         /*
          * FIXME!! : this implementation ignores completely the body
-	 *           alignment...
+     *           alignment...
          */
         ca->valid = true;
         ca->lower.x = -(my_settings[xaxis].lvalue -
-			my_settings[xaxis].lower);
+            my_settings[xaxis].lower);
         ca->lower.y = -(my_settings[yaxis].lvalue -
-			my_settings[yaxis].lower);
+            my_settings[yaxis].lower);
         ca->lower.z = 0.;
         ca->upper.x = -(my_settings[xaxis].lvalue -
-			my_settings[xaxis].upper);
+            my_settings[xaxis].upper);
         ca->upper.y = -(my_settings[yaxis].lvalue -
-			my_settings[yaxis].upper);
+            my_settings[yaxis].upper);
         ca->upper.z = 0.;
         ca->xalign = ca->yalign = ca->yalign = 0.;
     }

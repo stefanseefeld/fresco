@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Pointer_hh
-#define _Pointer_hh
+#ifndef _SDL_Pointer_hh
+#define _SDL_Pointer_hh
 
 #include <Fresco/config.hh>
 #include <Berlin/Logger.hh>
@@ -39,58 +39,56 @@ extern "C"
 namespace SDL
 {
 
-// ---------------------------------------------------------------
-// class Pointer
-// ---------------------------------------------------------------
+  // ---------------------------------------------------------------
+  // class Pointer
+  // ---------------------------------------------------------------
 
-class GLPointer;
+  class GLPointer;
 
-class Pointer : public ::Console::Pointer
-{
-  friend class nonGLPointer;
-  friend class GLPointer;
-public:
-  Fresco::Raster_ptr raster();
+  class Pointer : public Berlin::Console::Pointer
+  {
+      friend class nonGLPointer;
+      friend class GLPointer;
+    public:
+      Fresco::Raster_ptr raster();
+      
+      void move(Fresco::Coord, Fresco::Coord);
 
-  void move(Fresco::Coord, Fresco::Coord);
+      bool intersects(Fresco::Coord, Fresco::Coord,
+              Fresco::Coord, Fresco::Coord);
+      
+      virtual void draw() = 0;
+      virtual void save() = 0;
+      virtual void restore() = 0;
 
-  bool intersects(Fresco::Coord, Fresco::Coord,
-		  Fresco::Coord, Fresco::Coord);
+    private:
+      Fresco::PixelCoord my_size[2];
+      Fresco::Raster_ptr my_raster;
+      
+      Fresco::PixelCoord my_origin[2];
+      Fresco::PixelCoord my_position[2];
+      Fresco::PixelCoord my_old_x, my_old_y;
+      Fresco::PixelCoord my_old_size_x, my_old_size_y;
+      Fresco::PixelCoord my_x, my_y;
+      Fresco::Coord      my_scale[2];
+  };
 
-  virtual void draw() = 0;
-  virtual void save() = 0;
-  virtual void restore() = 0;
-
-private:
-  Fresco::PixelCoord _size[2];
-  Fresco::Raster_ptr _raster;
-
-  Fresco::PixelCoord _origin[2];
-  Fresco::PixelCoord _position[2];
-  Fresco::PixelCoord _old_x, _old_y;
-  Fresco::PixelCoord _old_size_x, _old_size_y;
-  Fresco::PixelCoord _x, _y;
-  Fresco::Coord      _scale[2];
-};
-
-
-
-class nonGLPointer : public SDL::Pointer
-{
-public:
-  nonGLPointer(Drawable *, Fresco::Raster_ptr, void *);
-  ~nonGLPointer();
-
-  void draw();
-  void save();
-  void restore();
-private:
-  SDL::Drawable    * _screen;
-  SDL::Drawable    * _saved_area;
-  SDL::Drawable    * _cursor;
-};
+  class nonGLPointer : public SDL::Pointer
+  {
+    public:
+      nonGLPointer(Drawable *, Fresco::Raster_ptr, void *);
+      ~nonGLPointer();
+      
+      void draw();
+      void save();
+      void restore();
+    private:
+      SDL::Drawable *my_screen;
+      SDL::Drawable *my_saved_area;
+      SDL::Drawable *my_cursor;
+  };
 
 
-}; // namespace SDL
+} // namespace SDL
 
 #endif

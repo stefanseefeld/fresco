@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         Alphabetic_Presentation_FormsFB00() :
-	    my_first_letter(0xFB00),
-	    my_last_letter(0xFB4F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0xFB00),
+        my_last_letter(0xFB4F)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x0000FB49, 0x000005C1)] = 0xFB2C;
@@ -54,24 +54,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Alphabetic Presentation Forms";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Alphabetic Presentation Forms";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -360,7 +360,7 @@ namespace Babylon
         // functions
         Alphabetic_Presentation_FormsFB00(const Alphabetic_Presentation_FormsFB00 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         Supplemental_Mathematical_Operators2A00() :
-	    my_first_letter(0x2A00),
-	    my_last_letter(0x2AFF)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x2A00),
+        my_last_letter(0x2AFF)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x00002ADD, 0x00000338)] = 0x2ADC;
@@ -53,24 +53,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Supplemental Mathematical Operators";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Supplemental Mathematical Operators";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -365,7 +365,7 @@ namespace Babylon
         // functions
         Supplemental_Mathematical_Operators2A00(const Supplemental_Mathematical_Operators2A00 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

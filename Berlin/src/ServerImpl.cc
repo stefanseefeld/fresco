@@ -65,7 +65,7 @@ ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c)
 }
 
 void ServerImpl::set_singleton(const char *name,
-			       CORBA::Object_ptr singleton) 
+                   CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException)
 {
   Prague::Guard<Mutex> guard(my_mutex);
@@ -135,11 +135,11 @@ void ServerImpl::scan(const std::string &name)
       Plugin<KitImpl> *plugin;
       try { plugin = new Plugin<KitImpl>((*i)->long_name());}
       catch(const std::runtime_error &e)
-	{
-	  // not loadable, skip over it
-	  Logger::log(Logger::loader) << (*i)->name() << " not loadable " << e.what() << std::endl;
-	  continue;
-	}
+    {
+      // not loadable, skip over it
+      Logger::log(Logger::loader) << (*i)->name() << " not loadable " << e.what() << std::endl;
+      continue;
+    }
       my_plugins.push_back(plugin);
       Logger::log(Logger::loader) << "ServerImpl: loaded plugin for " << (*plugin)->repo_id() << " from " << (*i)->name() << std::endl;
     }
@@ -162,9 +162,9 @@ ServerImpl::PluginList ServerImpl::list()
 }
 
 KitImpl *ServerImpl::create(const char *type,
-			    const Kit::PropertySeq &properties,
-			    PortableServer::POA_ptr poa,
-			    ServerContextImpl *context)
+                const Kit::PropertySeq &properties,
+                PortableServer::POA_ptr poa,
+                ServerContextImpl *context)
 {
   Trace trace("ServerImpl::create");
   for (pmap_t::iterator i = my_plugins.begin(); i != my_plugins.end(); ++i)
@@ -205,37 +205,37 @@ void ServerImpl::destroy_context(ServerContextImpl *context)
   catch (const CORBA::OBJECT_NOT_EXIST &)
   {
     std::cerr << "Caught CORBA::OBJECT_NOT_EXIST while cleaning up "
-	      << "a ServerContext" << std::endl;
+          << "a ServerContext" << std::endl;
   }
   catch (const CORBA::COMM_FAILURE &)
   {
     std::cerr << "Caught CORBA::COMM_FAILURE while cleaning up "
-	      << "a ServerContext" << std::endl;
+          << "a ServerContext" << std::endl;
   }
   catch (const CORBA::TRANSIENT &)
   {
     std::cerr << "Caught CORBA::TRANSIENT while cleaning up "
-	      << "a ServerContext" << std::endl;
+          << "a ServerContext" << std::endl;
   }
   catch (const PortableServer::POA::ObjectNotActive &)
   {
     std::cerr << "Caught POA::ObjectNotActive while cleaning up "
-	      << "a ServerContext" << std::endl;
+          << "a ServerContext" << std::endl;
   }
   catch (const PortableServer::POA::WrongPolicy &)
   {
     std::cerr << "Caught POA::WrongPolicy while cleaning up "
-	      << "a ServerContext" << std::endl;
+          << "a ServerContext" << std::endl;
   }
   catch(const std::exception & e)
   {
     std::cerr << "Caught a std::exeception while cleaning up "
-	      << "a ServerContext (" << e.what() << ")" << std::endl;
+          << "a ServerContext (" << e.what() << ")" << std::endl;
   }
   catch(...)
   {
     std::cerr << "Caught unknown exception while cleaning up "
-	      << "a ServerContext" << std::endl;
+          << "a ServerContext" << std::endl;
   }
   delete oid;
 }

@@ -47,15 +47,15 @@ class DirectFBDrawable {
     friend class DrawableTie<DirectFBDrawable>;
 public:
     DirectFBDrawable(const char *,
-		     IDirectFB *,
-		     DFBSurfaceDescription &);
+             IDirectFB *,
+             DFBSurfaceDescription &);
     ~DirectFBDrawable();
     
     typedef unsigned int Pixel; // unsigned int should be 32 bit:-)
     
     Warsaw::Drawable::PixelFormat pixel_format() {
-	Prague::Trace("DirectFBDrawable::pixel_format()");
-	return m_format;
+    Prague::Trace("DirectFBDrawable::pixel_format()");
+    return m_format;
     }
     Warsaw::Drawable::BufferFormat buffer_format();
     Warsaw::PixelCoord width() const;
@@ -78,74 +78,74 @@ public:
      */
     void set_color(Pixel);
     void draw_pixel(Warsaw::PixelCoord,
-		    Warsaw::PixelCoord);
+            Warsaw::PixelCoord);
     void draw_hline(Warsaw::PixelCoord,
-		    Warsaw::PixelCoord,
-		    Warsaw::PixelCoord);
+            Warsaw::PixelCoord,
+            Warsaw::PixelCoord);
     void draw_vline(Warsaw::PixelCoord,
-		    Warsaw::PixelCoord,
-		    Warsaw::PixelCoord);
+            Warsaw::PixelCoord,
+            Warsaw::PixelCoord);
     void draw_line(Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   Warsaw::PixelCoord);
+           Warsaw::PixelCoord,
+           Warsaw::PixelCoord,
+           Warsaw::PixelCoord);
     void draw_box(Warsaw::PixelCoord,
-		  Warsaw::PixelCoord,
-		  Warsaw::PixelCoord,
-		  Warsaw::PixelCoord);
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord);
     /*
      * draw primitives with the given color (Pixel)
      */
     void put_pixel(Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   Pixel);
+           Warsaw::PixelCoord,
+           Pixel);
     void put_hline(Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   void *);
+           Warsaw::PixelCoord,
+           Warsaw::PixelCoord,
+           void *);
     void put_vline(Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   Warsaw::PixelCoord,
-		   void *);
+           Warsaw::PixelCoord,
+           Warsaw::PixelCoord,
+           void *);
     void draw_pixels(Warsaw::PixelCoord,
-		     Warsaw::PixelCoord,
-		     Warsaw::PixelCoord,
-		     Warsaw::PixelCoord,
-		     void *);
+             Warsaw::PixelCoord,
+             Warsaw::PixelCoord,
+             Warsaw::PixelCoord,
+             void *);
     /*
      * fast blits
      */
     void blit(Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord);
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord);
     void blit(const DirectFBDrawable &,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord);
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord);
     void blit(Warsaw::Drawable_ptr,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord,
-	      Warsaw::PixelCoord);
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord,
+          Warsaw::PixelCoord);
     
     void flush();
     void flush(Warsaw::PixelCoord,
-	       Warsaw::PixelCoord,
-	       Warsaw::PixelCoord,
-	       Warsaw::PixelCoord);
+           Warsaw::PixelCoord,
+           Warsaw::PixelCoord,
+           Warsaw::PixelCoord);
     void init() {
-	Prague::Trace("DirectFBConsole::init()");
+    Prague::Trace("DirectFBConsole::init()");
     }
     void finish() {
-	Prague::Trace("DirectFBConsole::finish()");
+    Prague::Trace("DirectFBConsole::finish()");
     }
 
     // DirectFB specific:
@@ -184,8 +184,8 @@ public:
     ~DirectFBConsole();
     static DrawableTie<Drawable> * drawable();
     static DrawableTie<Drawable> * create_drawable(Warsaw::PixelCoord,
-						   Warsaw::PixelCoord,
-						   Warsaw::PixelCoord);
+                           Warsaw::PixelCoord,
+                           Warsaw::PixelCoord);
     static DrawableTie<Drawable> * create_drawable(Drawable *);
     static Warsaw::Drawable_ptr activate_drawable(DrawableTie<DirectFBDrawable> *);
     static DrawableTie<Drawable> * reference_to_servant(Warsaw::Drawable_ptr);
@@ -194,8 +194,8 @@ public:
     Warsaw::Input::Event *next_event();
     void wakeup();
     void activate_autoplay() {
-	Prague::Trace("DirectFBConsole::activate_autoplay()");
-	m_autoplay = true;
+    Prague::Trace("DirectFBConsole::activate_autoplay()");
+    m_autoplay = true;
     }
 
 private:
@@ -268,8 +268,8 @@ inline Warsaw::Coord DirectFBDrawable::resolution(Warsaw::Axis a) const {
      */
     Prague::Trace("DirectFBDrawable::resolution(...)");
     return a == Warsaw::xaxis ?
-	3200.0 / double(m_width):
-	2400.0 / double(m_height);
+    3200.0 / double(m_width):
+    2400.0 / double(m_height);
 }
 
 inline Warsaw::Coord DirectFBDrawable::dpi(Warsaw::Axis a) const {
@@ -288,9 +288,9 @@ inline DirectFBDrawable::Pixel
 DirectFBDrawable::map(const Warsaw::Color &c) const {
     Prague::Trace("DirectFBDrawable::map(...)");
     return ((static_cast<unsigned char>(c.alpha * 0xFF) << 24) &
-	    (static_cast<unsigned char>(c.red   * 0xFF) << 16) &
-	    (static_cast<unsigned char>(c.green * 0xFF) <<  8) &
-	    (static_cast<unsigned char>(c.blue  * 0xFF)));
+        (static_cast<unsigned char>(c.red   * 0xFF) << 16) &
+        (static_cast<unsigned char>(c.green * 0xFF) <<  8) &
+        (static_cast<unsigned char>(c.blue  * 0xFF)));
 }
 
 inline void DirectFBDrawable::set_color(Pixel c) {
@@ -304,44 +304,44 @@ inline void DirectFBDrawable::set_color(Pixel c) {
 }
 
 inline void DirectFBDrawable::draw_pixel(Warsaw::PixelCoord x,
-					 Warsaw::PixelCoord y) {
+                     Warsaw::PixelCoord y) {
     Prague::Trace("DirectFBDrawable::draw_pixel(...)");
     m_surface->DrawLine(m_surface, x, y, x, y);  
 }
 
 inline void DirectFBDrawable::draw_hline(Warsaw::PixelCoord x,
-					 Warsaw::PixelCoord y,
-					 Warsaw::PixelCoord w) {
+                     Warsaw::PixelCoord y,
+                     Warsaw::PixelCoord w) {
     Prague::Trace("DirectFBDrawable::draw_hline(...)");
     m_surface->DrawLine(m_surface, x, y, x + w, y);
 }
 
 inline void DirectFBDrawable::draw_vline(Warsaw::PixelCoord x,
-					 Warsaw::PixelCoord y,
-					 Warsaw::PixelCoord h) {
+                     Warsaw::PixelCoord y,
+                     Warsaw::PixelCoord h) {
     Prague::Trace("DirectFBDrawable::draw_vline(...)");
     m_surface->DrawLine(m_surface, x, y, x, y + h);  
 }
 
 inline void DirectFBDrawable::draw_line(Warsaw::PixelCoord x,
-					Warsaw::PixelCoord y,
-					Warsaw::PixelCoord w,
-					Warsaw::PixelCoord h) {
+                    Warsaw::PixelCoord y,
+                    Warsaw::PixelCoord w,
+                    Warsaw::PixelCoord h) {
     Prague::Trace("DirectFBDrawable::draw_line(...)");
     m_surface->DrawLine(m_surface, x, y, x + w, y + h);
 }
 
 inline void DirectFBDrawable::draw_box(Warsaw::PixelCoord x,
-				       Warsaw::PixelCoord y,
-				       Warsaw::PixelCoord w,
-				       Warsaw::PixelCoord h) {
+                       Warsaw::PixelCoord y,
+                       Warsaw::PixelCoord w,
+                       Warsaw::PixelCoord h) {
     Prague::Trace("DirectFBDrawable::draw_box(...)");
     m_surface->FillRectangle(m_surface, x, y, w, h);
 }
 
 inline void DirectFBDrawable::put_pixel(Warsaw::PixelCoord x,
-					Warsaw::PixelCoord y,
-					Pixel c) {
+                    Warsaw::PixelCoord y,
+                    Pixel c) {
     Prague::Trace("DirectFBDrawable::put_pixel(...)");
     Pixel old_col = m_cur_col;
     set_color(c);
@@ -350,9 +350,9 @@ inline void DirectFBDrawable::put_pixel(Warsaw::PixelCoord x,
 }
 
 inline void DirectFBDrawable::put_hline(Warsaw::PixelCoord x,
-					Warsaw::PixelCoord y,
-					Warsaw::PixelCoord w,
-					void * src) {
+                    Warsaw::PixelCoord y,
+                    Warsaw::PixelCoord w,
+                    void * src) {
     Prague::Trace("DirectFBDrawable::put_hline(...)");
     IDirectFBSurface * surface;
     DFBSurfaceDescription desc;
@@ -369,9 +369,9 @@ inline void DirectFBDrawable::put_hline(Warsaw::PixelCoord x,
 }
 
 inline void DirectFBDrawable::put_vline(Warsaw::PixelCoord x,
-					Warsaw::PixelCoord y,
-					Warsaw::PixelCoord h,
-					void * src) {
+                    Warsaw::PixelCoord y,
+                    Warsaw::PixelCoord h,
+                    void * src) {
     Prague::Trace("DirectFBDrawable::put_vline(...)");;
     IDirectFBSurface * surface;
     DFBSurfaceDescription desc;
@@ -388,10 +388,10 @@ inline void DirectFBDrawable::put_vline(Warsaw::PixelCoord x,
 }
 
 inline void DirectFBDrawable::draw_pixels(Warsaw::PixelCoord x,
-					  Warsaw::PixelCoord y,
-					  Warsaw::PixelCoord w,
-					  Warsaw::PixelCoord h,
-					  void * src) {
+                      Warsaw::PixelCoord y,
+                      Warsaw::PixelCoord w,
+                      Warsaw::PixelCoord h,
+                      void * src) {
     Prague::Trace("DirectFBDrawable::draw_pixels(...)");
     IDirectFBSurface * surface;
     DFBSurfaceDescription desc;
@@ -408,11 +408,11 @@ inline void DirectFBDrawable::draw_pixels(Warsaw::PixelCoord x,
 }
 
 inline void DirectFBDrawable::blit(Warsaw::PixelCoord x1,
-				   Warsaw::PixelCoord y1, 
-				   Warsaw::PixelCoord w,
-				   Warsaw::PixelCoord h, 
-				   Warsaw::PixelCoord x2,
-				   Warsaw::PixelCoord y2) {
+                   Warsaw::PixelCoord y1, 
+                   Warsaw::PixelCoord w,
+                   Warsaw::PixelCoord h, 
+                   Warsaw::PixelCoord x2,
+                   Warsaw::PixelCoord y2) {
     Prague::Trace("DirectFBDrawable::blit(PixelCoord, ...)");
     DFBRectangle rect;
     rect.x = x1; rect.y = y1; rect.w = w; rect.h = h;
@@ -420,12 +420,12 @@ inline void DirectFBDrawable::blit(Warsaw::PixelCoord x1,
 }
     
 inline void DirectFBDrawable::blit(const DirectFBDrawable & src,
-				   Warsaw::PixelCoord x1,
-				   Warsaw::PixelCoord y1, 
-				   Warsaw::PixelCoord w,
-				   Warsaw::PixelCoord h,
-				   Warsaw::PixelCoord x2,
-				   Warsaw::PixelCoord y2) {
+                   Warsaw::PixelCoord x1,
+                   Warsaw::PixelCoord y1, 
+                   Warsaw::PixelCoord w,
+                   Warsaw::PixelCoord h,
+                   Warsaw::PixelCoord x2,
+                   Warsaw::PixelCoord y2) {
     Prague::Trace("DirectFBDrawable::blit(DirectFBDrawable &, ...)");
     DFBRectangle rect;
     rect.x = x1; rect.y = y1; rect.w = w; rect.h = h;
@@ -433,20 +433,20 @@ inline void DirectFBDrawable::blit(const DirectFBDrawable & src,
 }
     
 inline void DirectFBDrawable::blit(Warsaw::Drawable_ptr d, 
-				   Warsaw::PixelCoord x1,
-				   Warsaw::PixelCoord y1, 
-				   Warsaw::PixelCoord w,
-				   Warsaw::PixelCoord h, 
-				   Warsaw::PixelCoord x2,
-				   Warsaw::PixelCoord y2) {
+                   Warsaw::PixelCoord x1,
+                   Warsaw::PixelCoord y1, 
+                   Warsaw::PixelCoord w,
+                   Warsaw::PixelCoord h, 
+                   Warsaw::PixelCoord x2,
+                   Warsaw::PixelCoord y2) {
     Prague::Trace("DirectFBDrawable::blit(Drawable_ptr, ...)");
     DrawableTie<DirectFBDrawable> *servant =
-	DirectFBConsole::reference_to_servant(d);
+    DirectFBConsole::reference_to_servant(d);
     if (servant) blit(servant->impl(), x1, y1, w, h, x2, y2);
     else
-	Logger::log(Logger::drawing)
-	    << "DirectFBDrawable::blit: unable to obtain servant from reference"
-	    << endl; 
+    Logger::log(Logger::drawing)
+        << "DirectFBDrawable::blit: unable to obtain servant from reference"
+        << endl; 
 }
 
 inline void DirectFBDrawable::flush() {
@@ -455,9 +455,9 @@ inline void DirectFBDrawable::flush() {
 }
 
 inline void DirectFBDrawable::flush(Warsaw::PixelCoord x,
-				    Warsaw::PixelCoord y,
-				    Warsaw::PixelCoord w,
-				    Warsaw::PixelCoord h) {
+                    Warsaw::PixelCoord y,
+                    Warsaw::PixelCoord w,
+                    Warsaw::PixelCoord h) {
     Prague::Trace("DirectFBDrawable::flush(PixelCoord, ...)");
     DFBRegion region;
     region.x1 = x; region.x2 = x + w; region.y1 = y; region.y2 = y + h;

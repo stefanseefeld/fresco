@@ -19,15 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TransformDemo_hh
-#define _TransformDemo_hh
+#ifndef _CXX_demos_TransformDemo_hh
+#define _CXX_demos_TransformDemo_hh
 
 #include "Demo.hh"
 
 class TransformDemo : public Demo
 {
-public:
-  TransformDemo(Application *);
+  public:
+    TransformDemo(Application *);
 };
 
 #endif

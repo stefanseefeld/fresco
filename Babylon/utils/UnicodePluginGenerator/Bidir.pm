@@ -10,16 +10,16 @@ sub new
     
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next if ($info eq "");
-	
-	my @list = split /;/, $info, 15;
+    next if ($info eq "");
+    
+    my @list = split /;/, $info, 15;
 
-	$self->{hex($list[0])} = "BIDIR_".$list[4];
+    $self->{hex($list[0])} = "BIDIR_".$list[4];
     }
     
     close(UCD);
@@ -67,12 +67,12 @@ sub setup_for
 
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
-	if ($self->{_ELEM} eq "") {
-	  $self->{_ELEM} = $self->data($i);
-	} elsif ($self->{_ELEM} ne $self->data($i)) {
-	  $self->{_ATTENTION_NEEDED} = 1;
-	  last;
-	}
+    if ($self->{_ELEM} eq "") {
+      $self->{_ELEM} = $self->data($i);
+    } elsif ($self->{_ELEM} ne $self->data($i)) {
+      $self->{_ATTENTION_NEEDED} = 1;
+      last;
+    }
       }
       $self->{_ATTENTION_NEEDED} = 0;
     }
@@ -101,13 +101,13 @@ sub function
     
     if ($self->{_ATTENTION_NEEDED} == 1)
     {
-	$tmp .= "            return $bl_name\:\:my_bidir\[uc - my_first_letter\];\n";
-	$tmp .= "        }\n\n";
-	return $tmp;
+    $tmp .= "            return $bl_name\:\:my_bidir\[uc - my_first_letter\];\n";
+    $tmp .= "        }\n\n";
+    return $tmp;
     } else {
-	$tmp .= sprintf "            return %s;\n        }\n\n",
-	$self->{_ELEM};
-	return $tmp;
+    $tmp .= sprintf "            return %s;\n        }\n\n",
+    $self->{_ELEM};
+    return $tmp;
     }
 }
 
@@ -134,24 +134,24 @@ sub var
 
     if ($self->{_ATTENTION_NEEDED})
     {
-	my $tmp = "    const Babylon::Bidir_Props $bl_name\:\:my_bidir\[\] =\n    {";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= "\n        " if (($i - $bl_start) % 4 == 0);
+    my $tmp = "    const Babylon::Bidir_Props $bl_name\:\:my_bidir\[\] =\n    {";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= "\n        " if (($i - $bl_start) % 4 == 0);
 
-	    if ($self->data($i) eq "undef")
-	    {
-		$tmp .= $self->{_ELEM};
-	    }
-	    else
-	    {
-		$tmp .= $self->data($i);
-	    }
-	    $tmp .= ", " if ( $i != $bl_end);
-	}
-	$tmp .= "\n    };\n\n";
+        if ($self->data($i) eq "undef")
+        {
+        $tmp .= $self->{_ELEM};
+        }
+        else
+        {
+        $tmp .= $self->data($i);
+        }
+        $tmp .= ", " if ( $i != $bl_end);
+    }
+    $tmp .= "\n    };\n\n";
 
-	return $tmp;
+    return $tmp;
     }
     return "";
 }

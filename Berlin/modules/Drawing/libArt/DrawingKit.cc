@@ -50,7 +50,7 @@ libArt::DrawingKit::~DrawingKit() { }
 
 libArt::DrawingKit::DrawingKit(const std::string &id,
                                const Fresco::Kit::PropertySeq &p,
-			       ServerContextImpl *c) :
+                   ServerContextImpl *c) :
     KitImpl(id, p, c),
     my_drawable(0),
     my_xres(1.),
@@ -69,7 +69,7 @@ libArt::DrawingKit::DrawingKit(const std::string &id,
 
 Berlin::KitImpl *
 libArt::DrawingKit::clone(const Fresco::Kit::PropertySeq &p,
-			  ServerContextImpl *c)
+              ServerContextImpl *c)
 {
     libArt::DrawingKit *kit = new libArt::DrawingKit(repo_id(), p, c);
     kit->init();
@@ -91,18 +91,18 @@ void libArt::DrawingKit::init()
   
     my_agam = art_alphagamma_new(2.5);
     my_buffer = console->create_drawable(my_drawable->width(),
-					 my_drawable->height(), 3);
+                     my_drawable->height(), 3);
     my_renderer =
-	console->get_extension<Console_Extension::Renderer>("Renderer");
+    console->get_extension<Console_Extension::Renderer>("Renderer");
     my_renderer->attach(my_buffer);
     my_direct = console->
-	get_extension<Console_Extension::DirectBuffer>("DirectBuffer");
+    get_extension<Console_Extension::DirectBuffer>("DirectBuffer");
     my_direct->attach(my_buffer);
     my_bbox.x0 = my_bbox.y0 = my_bbox.x1 = my_bbox.y1 = 0;    
     double step = 1. / 256.;
     for (int i = 0; i < 256; ++i)
-	for (int j = 0; j < 256; ++j) 
-	    my_alphabank[i][j] = (art_u8)(i * (j * step));
+    for (int j = 0; j < 256; ++j) 
+        my_alphabank[i][j] = (art_u8)(i * (j * step));
 }
 
 namespace
@@ -110,9 +110,9 @@ namespace
   inline art_u32 artColor(const Color &c)
   {
       return (((art_u8)(c.blue * 0xff) << 24) | 
-	      ((art_u8)(c.green * 0xff) << 16) | 
-	      ((art_u8)(c.red * 0xff) << 8) | 
-	      ((art_u8)(c.alpha * 0xff)));
+          ((art_u8)(c.green * 0xff) << 16) | 
+          ((art_u8)(c.red * 0xff) << 8) | 
+          ((art_u8)(c.alpha * 0xff)));
   }
 
   inline void fix_order_of_irect(ArtIRect &ir)
@@ -128,15 +128,15 @@ void libArt::DrawingKit::set_transformation(Transform_ptr t)
     if (CORBA::is_nil(t)) art_affine_identity(my_affine);
     else
     {
-	my_tr = Transform::_duplicate(t);
-	Transform::Matrix matrix;
-	my_tr->store_matrix(matrix);
-	my_affine[0] = matrix[0][0];
-	my_affine[1] = matrix[1][0];
-	my_affine[2] = matrix[0][1];
-	my_affine[3] = matrix[1][1];
-	my_affine[4] = matrix[0][3];
-	my_affine[5] = matrix[1][3];
+    my_tr = Transform::_duplicate(t);
+    Transform::Matrix matrix;
+    my_tr->store_matrix(matrix);
+    my_affine[0] = matrix[0][0];
+    my_affine[1] = matrix[1][0];
+    my_affine[2] = matrix[0][1];
+    my_affine[3] = matrix[1][1];
+    my_affine[4] = matrix[0][3];
+    my_affine[5] = matrix[1][3];
     }
     my_scaled_affine[0] = my_affine[0] * my_xres;
     my_scaled_affine[1] = my_affine[1] * my_xres;
@@ -150,8 +150,8 @@ void libArt::DrawingKit::set_clipping(Region_ptr r)
 {
     if (CORBA::is_nil(r))
     {
-	my_clip = my_screen;
-	return; 
+    my_clip = my_screen;
+    return; 
     }
     my_cl = Region::_duplicate(r);
     
@@ -159,9 +159,9 @@ void libArt::DrawingKit::set_clipping(Region_ptr r)
     climpl->copy(my_cl);
 
     ArtDRect dclip = {climpl->lower.x * my_xres,
-		      climpl->lower.y * my_yres, 		      
-		      climpl->upper.x * my_xres,
-		      climpl->upper.y * my_yres};
+              climpl->lower.y * my_yres,               
+              climpl->upper.x * my_xres,
+              climpl->upper.y * my_yres};
     art_drect_to_irect(&my_clip, &dclip); 
     art_irect_intersect(&my_clip, &my_clip, &my_screen);
 }
@@ -208,28 +208,28 @@ void libArt::DrawingKit::draw_path(const Path &p)
 
     if (my_fs == Fresco::DrawingKit::outlined)
     {
-	for (int i = 0; i < len; ++i)
-	{
-	    vpath[i].x = p.nodes[i].x; 
-	    vpath[i].y = p.nodes[i].y;
-	    vpath[i].code = ART_LINETO;
-	}
-	vpath[0].code = ART_MOVETO_OPEN;
-	vpath[len-1].code = ART_END;
+    for (int i = 0; i < len; ++i)
+    {
+        vpath[i].x = p.nodes[i].x; 
+        vpath[i].y = p.nodes[i].y;
+        vpath[i].code = ART_LINETO;
+    }
+    vpath[0].code = ART_MOVETO_OPEN;
+    vpath[len-1].code = ART_END;
       
     }
     else
     {
-	for (int i = 0; i < len; ++i)
-	{
-	    vpath[i].x = p.nodes[i].x; 
-	    vpath[i].y = p.nodes[i].y;
-	    vpath[i].code = ART_LINETO;
-	}
-	vpath[0].code = ART_MOVETO;
-	vpath[len].x = vpath[0].x;
-	vpath[len].y = vpath[0].y;
-	vpath[len].code = ART_END;
+    for (int i = 0; i < len; ++i)
+    {
+        vpath[i].x = p.nodes[i].x; 
+        vpath[i].y = p.nodes[i].y;
+        vpath[i].code = ART_LINETO;
+    }
+    vpath[0].code = ART_MOVETO;
+    vpath[len].x = vpath[0].x;
+    vpath[len].y = vpath[0].y;
+    vpath[len].code = ART_END;
     }
     
     ArtDRect locd; ArtIRect loc;
@@ -244,16 +244,16 @@ void libArt::DrawingKit::draw_path(const Path &p)
     art_irect_union(&my_bbox, &my_bbox, &loc);
     fix_order_of_irect(loc);
     Console_Extension::DirectBuffer::Guard pb_buf =
-	my_direct->write_buffer();
+    my_direct->write_buffer();
     ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
-					       my_drawable->width(),
-					       my_drawable->height(),
-					       my_buffer->row_length());
+                           my_drawable->width(),
+                           my_drawable->height(),
+                           my_buffer->row_length());
     art_rgb_svp_alpha(svp, loc.x0, loc.y0, loc.x1, loc.y1, my_art_fg,
-		      (art_u8 *)(pb_buf.get()) +
-		      (loc.y0 * pb->rowstride) +
-		      (loc.x0 * 3), 
-		      my_buffer->row_length(), my_agam);
+              (art_u8 *)(pb_buf.get()) +
+              (loc.y0 * pb->rowstride) +
+              (loc.x0 * 3), 
+              my_buffer->row_length(), my_agam);
     art_svp_free(svp);
     art_svp_free(svp1);
     art_svp_free(svp2);
@@ -264,67 +264,67 @@ void libArt::DrawingKit::draw_new_path(const NewPath &p) { }
 //void libArt;;DrawingKit::drawPatch(const Patch &);
 
 void libArt::DrawingKit::draw_rectangle(const Vertex &bot,
-					const Vertex &top) 
+                    const Vertex &top) 
 {
     // fast path opaque non-transformed rectangles
     if (my_fg.alpha == 1. &&
-	my_affine[0] == 1 &&
-	my_affine[1] == 0 &&
-	my_affine[2] == 0 &&
-	my_affine[3] == 1)
+    my_affine[0] == 1 &&
+    my_affine[1] == 0 &&
+    my_affine[2] == 0 &&
+    my_affine[3] == 1)
     {
-	ArtIRect rect;
-	rect.x0 = (int)((bot.x + my_affine[4]) * my_xres);
-	rect.x1 = (int)((top.x  + my_affine[4])* my_xres);
-	rect.y0 = (int)((bot.y + my_affine[5]) * my_yres);
-	rect.y1 = (int)((top.y + my_affine[5]) * my_yres);
-	art_irect_intersect(&rect, &rect, &my_clip);
-	int width = (rect.x1 - rect.x0);
-	int height = (rect.y1 - rect.y0);
-	if ((height * width) < 1) return;
-	my_renderer->set_color(my_con_fg);
-	if (my_fs == Fresco::DrawingKit::solid)
-	    my_renderer->draw_box(rect.x0, rect.y0, width, height);
-	else
-	{
-	    my_renderer->draw_hline(rect.x0, rect.y0, width);
-	    my_renderer->draw_hline(rect.x0, rect.y1, width);
-	    my_renderer->draw_vline(rect.x0, rect.y0, height);
-	    my_renderer->draw_vline(rect.x1, rect.y0, height);
-	}
-	art_irect_union (&my_bbox, &my_bbox, &rect);
-	return;
-	
-	// non-degenerate rectangles
+    ArtIRect rect;
+    rect.x0 = (int)((bot.x + my_affine[4]) * my_xres);
+    rect.x1 = (int)((top.x  + my_affine[4])* my_xres);
+    rect.y0 = (int)((bot.y + my_affine[5]) * my_yres);
+    rect.y1 = (int)((top.y + my_affine[5]) * my_yres);
+    art_irect_intersect(&rect, &rect, &my_clip);
+    int width = (rect.x1 - rect.x0);
+    int height = (rect.y1 - rect.y0);
+    if ((height * width) < 1) return;
+    my_renderer->set_color(my_con_fg);
+    if (my_fs == Fresco::DrawingKit::solid)
+        my_renderer->draw_box(rect.x0, rect.y0, width, height);
+    else
+    {
+        my_renderer->draw_hline(rect.x0, rect.y0, width);
+        my_renderer->draw_hline(rect.x0, rect.y1, width);
+        my_renderer->draw_vline(rect.x0, rect.y0, height);
+        my_renderer->draw_vline(rect.x1, rect.y0, height);
+    }
+    art_irect_union (&my_bbox, &my_bbox, &rect);
+    return;
+    
+    // non-degenerate rectangles
     }
     else
     {
-	Path path;
-	if (my_fs == Fresco::DrawingKit::outlined)
-	{
-	    path.nodes.length(4);
-	    path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
-	    path.nodes[1].x = top.x, path.nodes[1].y = bot.y;
-	    path.nodes[2].x = top.x, path.nodes[2].y = top.y;
-	    path.nodes[3].x = bot.x, path.nodes[2].y = top.y;
-	    path.shape = convex;
-	}
-	else
-	{
-	    path.nodes.length(5);
-	    path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
-	    path.nodes[1].x = top.x, path.nodes[1].y = bot.y;
-	    path.nodes[2].x = top.x, path.nodes[2].y = top.y;
-	    path.nodes[3].x = bot.x, path.nodes[3].y = top.y;
-	    path.nodes[4].x = bot.x, path.nodes[4].y = bot.y;
-	    path.shape = convex;
-	}
-	draw_path(static_cast<const Path>(path));
+    Path path;
+    if (my_fs == Fresco::DrawingKit::outlined)
+    {
+        path.nodes.length(4);
+        path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
+        path.nodes[1].x = top.x, path.nodes[1].y = bot.y;
+        path.nodes[2].x = top.x, path.nodes[2].y = top.y;
+        path.nodes[3].x = bot.x, path.nodes[2].y = top.y;
+        path.shape = convex;
+    }
+    else
+    {
+        path.nodes.length(5);
+        path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
+        path.nodes[1].x = top.x, path.nodes[1].y = bot.y;
+        path.nodes[2].x = top.x, path.nodes[2].y = top.y;
+        path.nodes[3].x = bot.x, path.nodes[3].y = top.y;
+        path.nodes[4].x = bot.x, path.nodes[4].y = bot.y;
+        path.shape = convex;
+    }
+    draw_path(static_cast<const Path>(path));
     }
 }
 
 void libArt::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric,
-		                      Fresco::Coord, Fresco::Coord) { }
+                              Fresco::Coord, Fresco::Coord) { }
 
 void libArt::DrawingKit::draw_ellipse(const Vertex &, const Vertex &) { }
 
@@ -351,11 +351,11 @@ void libArt::DrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
     art_irect_intersect(&rect, &rect, &my_clip);
     if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
     Console_Extension::DirectBuffer::Guard pb_buf =
-	my_direct->write_buffer();
+    my_direct->write_buffer();
     ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
-					       my_drawable->width(),
-					       my_drawable->height(),
-					       my_buffer->row_length());
+                           my_drawable->width(),
+                           my_drawable->height(),
+                           my_buffer->row_length());
     art_u8 *dst = pb->pixels + rect.y0 * pb->rowstride + rect.x0 * 3;
     art_u8 *src = pixbuf->pixels + dy * pixbuf->rowstride + dx;
     int width = (rect.x1 - rect.x0);
@@ -371,20 +371,20 @@ void libArt::DrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
     art_u8 *ptab;
 
     for (int row = 0;
-	 row < height;
-	 ++row, dst += dst_skip, src += src_skip)
-	for (int col = 0;
-	     col < width;
-	     ++col, dst += 3, ++src)
-	{            
-	    ptab = my_alphabank[*src];
-	    dst[0] = t = dst[0] + atab[rtab[*src]] - atab[ptab[dst[0]]]; 
-	    t &= 0x100; t >>= 8; t -= 1; t =~ t; dst[0] |= (t & 0xff);
-	    dst[1] = t = dst[1] + atab[gtab[*src]] - atab[ptab[dst[1]]]; 
-	    t &= 0x100; t >>= 8; t -= 1; t =~ t; dst[1] |= (t & 0xff);
-	    dst[2] = t = dst[2] + atab[btab[*src]] - atab[ptab[dst[2]]]; 
-	    t &= 0x100; t >>= 8; t -= 1; t =~ t; dst[2] |= (t & 0xff);
-	}
+     row < height;
+     ++row, dst += dst_skip, src += src_skip)
+    for (int col = 0;
+         col < width;
+         ++col, dst += 3, ++src)
+    {            
+        ptab = my_alphabank[*src];
+        dst[0] = t = dst[0] + atab[rtab[*src]] - atab[ptab[dst[0]]]; 
+        t &= 0x100; t >>= 8; t -= 1; t =~ t; dst[0] |= (t & 0xff);
+        dst[1] = t = dst[1] + atab[gtab[*src]] - atab[ptab[dst[1]]]; 
+        t &= 0x100; t >>= 8; t -= 1; t =~ t; dst[1] |= (t & 0xff);
+        dst[2] = t = dst[2] + atab[btab[*src]] - atab[ptab[dst[2]]]; 
+        t &= 0x100; t >>= 8; t -= 1; t =~ t; dst[2] |= (t & 0xff);
+    }
     art_irect_union (&my_bbox, &my_bbox, &rect);
 }
 
@@ -398,13 +398,13 @@ void libArt::DrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
     // device space and work with it there.
   
     double dev_affine[6] = {my_affine[0], my_affine[1],
-			    my_affine[2], my_affine[3],
-			    my_affine[4] * my_xres,
-			    my_affine[5] * my_yres};
-  			      
+                my_affine[2], my_affine[3],
+                my_affine[4] * my_xres,
+                my_affine[5] * my_yres};
+                    
     // pre-transformation target rectangle, in device space coords
     ArtDRect slocd = {0,0,(double)(pixbuf->width),
-		      (double)(pixbuf->height)};
+              (double)(pixbuf->height)};
     ArtDRect tslocd; 
     ArtIRect tsloci; 
 
@@ -413,7 +413,7 @@ void libArt::DrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
     int row = (width) * pix;
     int skip = (pixbuf->rowstride - row);
     int size = (my_fg.alpha == 1. ? 0 :
-		(pixbuf->height - 1) * pixbuf->rowstride + width * pix);      
+        (pixbuf->height - 1) * pixbuf->rowstride + width * pix);      
 
     art_u8 tmp[size];
     art_u8 *save = pixbuf->pixels;
@@ -421,23 +421,23 @@ void libArt::DrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
     // alpha-correct the image
     if (my_fg.alpha != 1.)
     {
-	art_u8 *end_write = tmp + (size - 1);
-	art_u8 *reader = pixbuf->pixels;
-	art_u8 *tab = my_alphabank[(art_u8)(my_art_fg & 0x000000ff)];
-	art_u8 *eol;
-	for (art_u8 *writer = tmp;
-	     writer < end_write;
-	     reader += skip, writer += skip)
-	{
-	    memcpy(writer,reader,row);
-	    eol = writer + row;      
-	    while (writer < eol)
-	    {
-		writer += 3; reader += 3;
-		*writer++ = *(tab + *reader++);      
-	    }
-	}
-	pixbuf->pixels = tmp;
+    art_u8 *end_write = tmp + (size - 1);
+    art_u8 *reader = pixbuf->pixels;
+    art_u8 *tab = my_alphabank[(art_u8)(my_art_fg & 0x000000ff)];
+    art_u8 *eol;
+    for (art_u8 *writer = tmp;
+         writer < end_write;
+         reader += skip, writer += skip)
+    {
+        memcpy(writer,reader,row);
+        eol = writer + row;      
+        while (writer < eol)
+        {
+        writer += 3; reader += 3;
+        *writer++ = *(tab + *reader++);      
+        }
+    }
+    pixbuf->pixels = tmp;
     }
   
     // transform target (in device space)
@@ -451,18 +451,18 @@ void libArt::DrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   
     // paint
     Console_Extension::DirectBuffer::Guard pb_buf =
-	my_direct->write_buffer();
+    my_direct->write_buffer();
     ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
-					       my_drawable->width(),
-					       my_drawable->height(),
-					       my_buffer->row_length());
+                           my_drawable->width(),
+                           my_drawable->height(),
+                           my_buffer->row_length());
     art_rgb_pixbuf_affine((art_u8 *)(pb_buf.get()) + 
-			  (tsloci.y0 * pb->rowstride) + 
-			  (tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
-			  tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
-			  my_buffer->row_length(),
-			  pixbuf, dev_affine,
-			  ART_FILTER_NEAREST, my_agam);
+              (tsloci.y0 * pb->rowstride) + 
+              (tsloci.x0 * 3), // 3 for "R,G,B" packed pixels            
+              tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
+              my_buffer->row_length(),
+              pixbuf, dev_affine,
+              ART_FILTER_NEAREST, my_agam);
     pixbuf->pixels = save;
 }
 
@@ -486,16 +486,16 @@ void libArt::DrawingKit::draw_char(Unichar c)
   
     if (c > 127)
     {
-	my_unifont->allocate_char(c,r);
-	width = (int) (r.x.maximum * my_xres);
-	height = (int) (r.y.maximum * my_yres);
+    my_unifont->allocate_char(c,r);
+    width = (int) (r.x.maximum * my_xres);
+    height = (int) (r.y.maximum * my_yres);
     }
     else
     {
-	my_font->allocate_char(c,r);
-	Fresco::DrawingKit::GlyphMetrics gm = my_font->metrics(c);
-	width = (int) (gm.width >> 6);
-	height = (int) (gm.height >> 6);
+    my_font->allocate_char(c,r);
+    Fresco::DrawingKit::GlyphMetrics gm = my_font->metrics(c);
+    width = (int) (gm.width >> 6);
+    height = (int) (gm.height >> 6);
     }
   
     ArtPixBuf *pb;
@@ -506,49 +506,49 @@ void libArt::DrawingKit::draw_char(Unichar c)
 
     if (c > 127)
     {
-	transformed = my_unifont->transform(matrix);
-	my_unifont->buffer(c, pb);
+    transformed = my_unifont->transform(matrix);
+    my_unifont->buffer(c, pb);
     }
     else
     {  
-	transformed = my_font->transform(matrix);
-	my_font->buffer(c, pb);
+    transformed = my_font->transform(matrix);
+    my_font->buffer(c, pb);
     }
 
     if (transformed || (my_affine[0] == 1 &&
-			my_affine[1] == 0 &&
-			my_affine[2] == 0 &&
-			my_affine[3] == 1))
+            my_affine[1] == 0 &&
+            my_affine[2] == 0 &&
+            my_affine[3] == 1))
     {
-	my_affine[5] -= (my_affine[2] * r.x.maximum * r.x.align) +
-	    (my_affine[3] * r.y.maximum * r.y.align);
-	identity_pixbuf(pb);      
+    my_affine[5] -= (my_affine[2] * r.x.maximum * r.x.align) +
+        (my_affine[3] * r.y.maximum * r.y.align);
+    identity_pixbuf(pb);      
     }
     else
     {   
-	// *sigh* use primitive libart pixel functions
-	my_affine[4] -= (r.y.maximum * r.y.align * my_affine[2]);
-	my_affine[5] -= (r.y.maximum * r.y.align * my_affine[3]);        
-	int pix = 4;
-	int row = width * pix; 
-	int size = height * row;
-	art_u8 pixels[size];    
-	//setup foreground color
-	for (int i = 0; i < row; ++i)
-	{
-	    pixels[i] =   (unsigned char) ((my_art_fg >> 24) & 0x000000ff);
-	    pixels[++i] = (unsigned char) ((my_art_fg >> 16) & 0x000000ff);
-	    pixels[++i] = (unsigned char) ((my_art_fg >> 8) & 0x000000ff);
-	    pixels[++i] = (unsigned char) 0;
-	}
-	for (int i = 0; i < height; ++i)
-	    memcpy(pixels + (i * row), pixels, row);
-	for (int i = 0; i < (width * height); ++i)
-	    pixels[pix*i + 3] = pb->pixels[i];    
-	ArtPixBuf *pb2 =
-	    art_pixbuf_new_const_rgba(pixels, width, height, row);  
-	rasterize_pixbuf(pb2);
-	art_pixbuf_free(pb2);
+    // *sigh* use primitive libart pixel functions
+    my_affine[4] -= (r.y.maximum * r.y.align * my_affine[2]);
+    my_affine[5] -= (r.y.maximum * r.y.align * my_affine[3]);        
+    int pix = 4;
+    int row = width * pix; 
+    int size = height * row;
+    art_u8 pixels[size];    
+    //setup foreground color
+    for (int i = 0; i < row; ++i)
+    {
+        pixels[i] =   (unsigned char) ((my_art_fg >> 24) & 0x000000ff);
+        pixels[++i] = (unsigned char) ((my_art_fg >> 16) & 0x000000ff);
+        pixels[++i] = (unsigned char) ((my_art_fg >> 8) & 0x000000ff);
+        pixels[++i] = (unsigned char) 0;
+    }
+    for (int i = 0; i < height; ++i)
+        memcpy(pixels + (i * row), pixels, row);
+    for (int i = 0; i < (width * height); ++i)
+        pixels[pix*i + 3] = pb->pixels[i];    
+    ArtPixBuf *pb2 =
+        art_pixbuf_new_const_rgba(pixels, width, height, row);  
+    rasterize_pixbuf(pb2);
+    art_pixbuf_free(pb2);
     }
   
     my_affine[4] = x0;
@@ -556,7 +556,7 @@ void libArt::DrawingKit::draw_char(Unichar c)
 }
 
 void libArt::DrawingKit::allocate_char(Unichar c,
-				       Graphic::Requisition & req)
+                       Graphic::Requisition & req)
 {
     if (c > 127) my_unifont->allocate_char(c, req);
     else my_font->allocate_char(c, req);
@@ -564,20 +564,20 @@ void libArt::DrawingKit::allocate_char(Unichar c,
 
 
 void libArt::DrawingKit::allocate_text(const Unistring & s,
-		                       Graphic::Requisition & req)
+                               Graphic::Requisition & req)
 {
     // font->allocate(s,req);
 }
 
 void libArt::DrawingKit::copy_drawable(Drawable_ptr d,
-		                       PixelCoord x, PixelCoord y,
-				       PixelCoord w, PixelCoord h)
+                               PixelCoord x, PixelCoord y,
+                       PixelCoord w, PixelCoord h)
 {
     CORBA::Double x2 = my_affine[4] * my_buffer->resolution(xaxis);
     CORBA::Double y2 = my_affine[5] * my_buffer->resolution(yaxis);
     my_buffer->blit(d, x, y, w, h,
-		    static_cast<long>(x2 + x),
-		    static_cast<long>(y2 + y));
+            static_cast<long>(x2 + x),
+            static_cast<long>(y2 + y));
 }
 
 void libArt::DrawingKit::flush()

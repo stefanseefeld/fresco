@@ -33,8 +33,8 @@ using namespace Fresco;
 using namespace Berlin::PrimitiveKit;
 
 PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id,
-		                   const Fresco::Kit::PropertySeq &p,
-				   ServerContextImpl *c) :
+                           const Fresco::Kit::PropertySeq &p,
+                   ServerContextImpl *c) :
     Berlin::KitImpl(id, p, c)
 { }
 
@@ -43,15 +43,15 @@ PrimitiveKitImpl::~PrimitiveKitImpl() { }
 Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr g)
 {
     return create_and_set_body<Graphic>(
-	new Root(Alignment(0.5), Alignment(0.5),
-		 Alignment(0.5), Alignment(0.5),
-		 Alignment(0.5), Alignment(0.5)), g, "PrimitiveKit/root");
+    new Root(Alignment(0.5), Alignment(0.5),
+         Alignment(0.5), Alignment(0.5),
+         Alignment(0.5), Alignment(0.5)), g, "PrimitiveKit/root");
 }
 
 Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Fresco::Mesh &mesh)
 {
     return create<Primitive::Geometry>(new GeometryImpl(mesh),
-				       "PrimitiveKit/geometry");
+                       "PrimitiveKit/geometry");
 }
 
 Graphic_ptr PrimitiveKitImpl::cube()
@@ -72,60 +72,60 @@ Graphic_ptr PrimitiveKitImpl::cube()
     mesh.triangles.length(12);
     // x=0 side
     mesh.triangles[0].a = 0, mesh.triangles[0].b = 2,
-	mesh.triangles[0].c = 3;
+    mesh.triangles[0].c = 3;
     mesh.triangles[1].a = 0, mesh.triangles[1].b = 1,
-	mesh.triangles[1].c = 2;
+    mesh.triangles[1].c = 2;
     // y=0 side
     mesh.triangles[2].a = 0, mesh.triangles[2].b = 5,
-	mesh.triangles[2].c = 1;
+    mesh.triangles[2].c = 1;
     mesh.triangles[3].a = 0, mesh.triangles[3].b = 6,
-	mesh.triangles[3].c = 5;
+    mesh.triangles[3].c = 5;
     // z=0 side
     mesh.triangles[4].a = 0, mesh.triangles[4].b = 3,
-	mesh.triangles[4].c = 7;
+    mesh.triangles[4].c = 7;
     mesh.triangles[5].a = 0, mesh.triangles[5].b = 7,
-	mesh.triangles[5].c = 6;
+    mesh.triangles[5].c = 6;
     // x=1 side
     mesh.triangles[6].a = 4, mesh.triangles[6].b = 5,
-	mesh.triangles[6].c = 6;
+    mesh.triangles[6].c = 6;
     mesh.triangles[7].a = 4, mesh.triangles[7].b = 6,
-	mesh.triangles[7].c = 7;
+    mesh.triangles[7].c = 7;
     // y=1 side
     mesh.triangles[8].a = 4, mesh.triangles[8].b = 7,
-	mesh.triangles[8].c = 3;
+    mesh.triangles[8].c = 3;
     mesh.triangles[9].a = 4, mesh.triangles[9].b = 3,
-	mesh.triangles[9].c = 2;
+    mesh.triangles[9].c = 2;
     // z=1 side
     mesh.triangles[10].a = 4, mesh.triangles[10].b = 1,
-	mesh.triangles[10].c = 5;
+    mesh.triangles[10].c = 5;
     mesh.triangles[11].a = 4, mesh.triangles[11].b = 2,
-	mesh.triangles[11].c = 1;
+    mesh.triangles[11].c = 1;
     
     mesh.normals.length(12);
     mesh.normals[0].x = -1., mesh.normals[0].y =  0.,
-	mesh.normals[0].z =  0.;
+    mesh.normals[0].z =  0.;
     mesh.normals[1].x = -1., mesh.normals[1].y =  0.,
-	mesh.normals[1].z =  0.;
+    mesh.normals[1].z =  0.;
     mesh.normals[2].x =  0., mesh.normals[2].y = -1.,
-	mesh.normals[2].z =  0.;
+    mesh.normals[2].z =  0.;
     mesh.normals[3].x =  0., mesh.normals[3].y = -1.,
-	mesh.normals[3].z =  0.;
+    mesh.normals[3].z =  0.;
     mesh.normals[4].x =  0., mesh.normals[4].y =  0.,
-	mesh.normals[4].z = -1.;
+    mesh.normals[4].z = -1.;
     mesh.normals[5].x =  0., mesh.normals[5].y =  0.,
-	mesh.normals[5].z = -1.;
+    mesh.normals[5].z = -1.;
     mesh.normals[6].x =  1., mesh.normals[6].y =  0.,
-	mesh.normals[6].z =  0.;
+    mesh.normals[6].z =  0.;
     mesh.normals[7].x =  1., mesh.normals[7].y =  0.,
-	mesh.normals[7].z =  0.;
+    mesh.normals[7].z =  0.;
     mesh.normals[8].x =  0., mesh.normals[8].y =  1.,
-	mesh.normals[8].z =  0.;
+    mesh.normals[8].z =  0.;
     mesh.normals[9].x =  0., mesh.normals[9].y =  1.,
-	mesh.normals[9].z =  0.;
+    mesh.normals[9].z =  0.;
     mesh.normals[10].x =  0., mesh.normals[10].y =  0.,
-	mesh.normals[10].z =  1.;
+    mesh.normals[10].z =  1.;
     mesh.normals[11].x =  0., mesh.normals[11].y =  0.,
-	mesh.normals[11].z =  1.;
+    mesh.normals[11].z =  1.;
 
     return geometry(mesh);
 }
@@ -134,37 +134,37 @@ Graphic_ptr PrimitiveKitImpl::cube()
 Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {
     return create_and_set_body<Graphic>(new Transformer, g,
-					"PrimitiveKit/transformer");
+                    "PrimitiveKit/transformer");
 }
 
 Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
-						const Fresco::Color &c,
-						CORBA::Float i,
-						const Fresco::Vertex &d)
+                        const Fresco::Color &c,
+                        CORBA::Float i,
+                        const Fresco::Vertex &d)
 {
     return create_and_set_body<Graphic>(new DirectionalLight(c, i, d), g,
-					"PrimitiveKit/directional_light");
+                    "PrimitiveKit/directional_light");
 }
 
 Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
-					  const Fresco::Color &c,
-					  CORBA::Float i,
-					  const Fresco::Vertex &p)
+                      const Fresco::Color &c,
+                      CORBA::Float i,
+                      const Fresco::Vertex &p)
 {
     return create_and_set_body<Graphic>(new PointLight(c, i, p), g,
-					"PrmitiveKit/point_light");
+                    "PrmitiveKit/point_light");
 }
 
 Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
-					 const Fresco::Color &c,
-					 CORBA::Float i,
-					 const Fresco::Vertex &p,
-					 const Fresco::Vertex &d,
-					 CORBA::Float r,
-					 CORBA::Float a)
+                     const Fresco::Color &c,
+                     CORBA::Float i,
+                     const Fresco::Vertex &p,
+                     const Fresco::Vertex &d,
+                     CORBA::Float r,
+                     CORBA::Float a)
 {
     return create_and_set_body<Graphic>(new SpotLight(c, i, p, d, r, a), g,
-					"PrimitiveKit/spot_light");
+                    "PrimitiveKit/spot_light");
 }
 
 

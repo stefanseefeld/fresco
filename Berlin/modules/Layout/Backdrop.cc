@@ -55,48 +55,48 @@ void Backdrop::draw(DrawTraversal_ptr t)
     GraphicImpl::init_requisition(requisition);
     offset->child->request(requisition);
     if (!requisition.x.defined)
-	GraphicImpl::require(requisition.x, Coord(1), Coord(0), Coord(0),
-			     Alignment(0));
+    GraphicImpl::require(requisition.x, Coord(1), Coord(0), Coord(0),
+                 Alignment(0));
     if (!requisition.y.defined)
-	GraphicImpl::require(requisition.y, Coord(1), Coord(0), Coord(0),
-			     Alignment(0));
+    GraphicImpl::require(requisition.y, Coord(1), Coord(0), Coord(0),
+                 Alignment(0));
     Coord w = requisition.x.natural;
     Coord h = requisition.y.natural;
     Coord lead_w = w * requisition.x.align;
     Coord lead_h = h * requisition.y.align;
     Long below_x = Long(((origin.x - lead_w - lower.x) + (w - epsilon)) /
-			w);
+            w);
     Long below_y = Long(((origin.y - lead_h - lower.y) + (h - epsilon)) /
-			h);
+            h);
     Coord x = origin.x - Coord(below_x) * w;
     Coord y = origin.y - Coord(below_y) * h;
   
     // Figure out how many times to draw.
     CORBA::ULong count_x = CORBA::ULong(((upper.x - x) + (w - epsilon)) /
-					w);
+                    w);
     CORBA::ULong count_y = CORBA::ULong(((upper.y - y) + (h - epsilon)) /
-					h);
+                    h);
 
     // Do the drawing.
     Coord current_x = x;
     for (CORBA::ULong i_x = 0; i_x < count_x; ++i_x)
     {
-	Coord current_y = y;
-	for (CORBA::ULong i_y = 0; i_y < count_y; ++i_y)
-	{
-	    RegionImpl* a = new RegionImpl;
-	    a->valid = true;
-	    a->lower.x = current_x - lead_w;
-	    a->lower.y = current_y - lead_h;
-	    a->upper.x = current_x - lead_w + w;
-	    a->upper.y = current_y - lead_h + h;
-	    a->xalign = requisition.x.align;
-	    a->yalign = requisition.y.align;
-	    t->traverse_child(offset, a);
-	    CORBA::release(a);
-	    current_y += h;
-	}
-	current_x += w;
+    Coord current_y = y;
+    for (CORBA::ULong i_y = 0; i_y < count_y; ++i_y)
+    {
+        RegionImpl* a = new RegionImpl;
+        a->valid = true;
+        a->lower.x = current_x - lead_w;
+        a->lower.y = current_y - lead_h;
+        a->upper.x = current_x - lead_w + w;
+        a->upper.y = current_y - lead_h + h;
+        a->xalign = requisition.x.align;
+        a->yalign = requisition.y.align;
+        t->traverse_child(offset, a);
+        CORBA::release(a);
+        current_y += h;
+    }
+    current_x += w;
     }
 }
 
@@ -104,9 +104,9 @@ void Backdrop::traverse(Traversal_ptr t)
 {
     if (t->op() == GraphicTraversal::draw)
     {
-	if (!is_nil(offset->child))
-	    draw(t);
+    if (!is_nil(offset->child))
+        draw(t);
     }
     else
-	MonoGraphic::traverse(t);
+    MonoGraphic::traverse(t);
 }

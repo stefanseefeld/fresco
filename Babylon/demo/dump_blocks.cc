@@ -49,35 +49,35 @@ int main(int argc, char** argv)
 {
     try
     {
-	if (argc == 2) Babylon::override_path(std::string(argv[1]));
-	
-	for(Char A(UC_NULL);
-	    A.value() != UC_MAX_DEFINED;
-	    A = Dictionary::instance()->start_of_next_block(A.value()))
-	{
-	    output_char(std::cout,
-			Char(Dictionary::instance()->
-			     first_letter_of_block(A.value())));
-	    std::cout << "..";
-	    output_char(std::cout,
-			Char(Dictionary::instance()->
-			     last_letter_of_block(A.value())));
-	    std::cout << "; "
-		      << A.blockname() << std::endl;
-	}
+    if (argc == 2) Babylon::override_path(std::string(argv[1]));
+    
+    for(Char A(UC_NULL);
+        A.value() != UC_MAX_DEFINED;
+        A = Dictionary::instance()->start_of_next_block(A.value()))
+    {
+        output_char(std::cout,
+            Char(Dictionary::instance()->
+                 first_letter_of_block(A.value())));
+        std::cout << "..";
+        output_char(std::cout,
+            Char(Dictionary::instance()->
+                 last_letter_of_block(A.value())));
+        std::cout << "; "
+              << A.blockname() << std::endl;
+    }
     }
     catch(std::runtime_error &e)
     {
-	std::cout << "Caught an runtime exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an runtime exception: " << e.what()
+          << std::endl;
     }
     catch(std::exception &e)
     {
-	std::cout << "Caught an exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an exception: " << e.what()
+          << std::endl;
     }
     catch(...)
     {
-	std::cout << "Some exception happened!" << std::endl;
+    std::cout << "Some exception happened!" << std::endl;
     }
 }

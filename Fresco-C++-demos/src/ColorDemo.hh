@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ColorDemo_hh
-#define _ColorDemo_hh
+#ifndef _CXX_demos_ColorDemo_hh
+#define _CXX_demos_ColorDemo_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/BoundedValue.hh>
@@ -29,27 +29,28 @@
 
 class ColorDemo : public Demo
 {
-  class Adapter : public ObserverImpl
-  {
+    class Adapter : public Berlin::ObserverImpl
+    {
+      public:
+    Adapter(ColorDemo *d, Fresco::Tag t) : my_demo(d), my_tag(t) { }
+    virtual void update(const CORBA::Any &)
+    { my_demo->adjust(my_tag); }
+      private:
+    ColorDemo *my_demo;
+    Fresco::Tag my_tag;
+    };
+    friend class Adapter;
   public:
-    Adapter(ColorDemo *d, Fresco::Tag t) : demo(d), tag(t) {}
-    virtual void update(const CORBA::Any &) { demo->adjust(tag);}
+    ColorDemo(Application *);
   private:
-    ColorDemo *demo;
-    Fresco::Tag tag;
-  };
-  friend class Adapter;
-public:
-  ColorDemo(Application *);
-private:
-  void adjust(Fresco::Tag);
-  Fresco::BoundedValue_var red;
-  Fresco::BoundedValue_var green;
-  Fresco::BoundedValue_var blue;
-  Fresco::BoundedValue_var hue;
-  Fresco::BoundedValue_var saturation;
-  Fresco::BoundedValue_var value;
-  Adapter *adapter[6];
+    void adjust(Fresco::Tag);
+    Fresco::BoundedValue_var my_red;
+    Fresco::BoundedValue_var my_green;
+    Fresco::BoundedValue_var my_blue;
+    Fresco::BoundedValue_var my_hue;
+    Fresco::BoundedValue_var my_saturation;
+    Fresco::BoundedValue_var my_value;
+    Adapter *my_adapter[6];
 };
 
 #endif

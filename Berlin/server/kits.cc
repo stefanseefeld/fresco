@@ -44,41 +44,41 @@ int main(int argc, char **argv)
     getopt.add('h', "help", Prague::GetOpt::novalue, "help message");
     getopt.add('v', "version", Prague::GetOpt::novalue, "version number");
     getopt.add('r', "resource", Prague::GetOpt::mandatory,
-	       "the resource file to load");
+           "the resource file to load");
     size_t argo = getopt.parse(argc, argv);
     argc -= argo;
     argv += argo;
     if (getopt.is_set("version"))
     {
-	std::cout << "version is " << version << std::endl;
-	exit(0);
+    std::cout << "version is " << version << std::endl;
+    exit(0);
     }
     if (getopt.is_set("help"))
     {
-	getopt.usage();
-	exit(0);
+    getopt.usage();
+    exit(0);
     }
     
     Berlin::RCManager::setup(getopt);
     
     CORBA::PolicyList policies;
     Berlin::ServerImpl *server =
-	Berlin::ServerImpl::create(PortableServer::POA::_nil(),policies);
+    Berlin::ServerImpl::create(PortableServer::POA::_nil(),policies);
 
     Prague::Path path = Berlin::RCManager::get_path("modulepath");
     for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
-	server->scan(*i);
+    server->scan(*i);
 
     Berlin::ServerImpl::PluginList listing = server->list();
     for (Berlin::ServerImpl::PluginList::iterator i = listing.begin();
-	 i != listing.end();
-	 ++i)
+     i != listing.end();
+     ++i)
     {
-	std::cout << (*i).first << " supports :\n";
-	Fresco::Kit::Property *begin = (*i).second->get_buffer();
-	Fresco::Kit::Property *end =
-	    (*i).second->get_buffer() + (*i).second->length();
-	for (Fresco::Kit::Property *p = begin; p != end; ++p)
-	    std::cout << "  " << (*p).name << " : " << (*p).value << '\n';
+    std::cout << (*i).first << " supports :\n";
+    Fresco::Kit::Property *begin = (*i).second->get_buffer();
+    Fresco::Kit::Property *end =
+        (*i).second->get_buffer() + (*i).second->length();
+    for (Fresco::Kit::Property *p = begin; p != end; ++p)
+        std::cout << "  " << (*p).name << " : " << (*p).value << '\n';
     }
 }

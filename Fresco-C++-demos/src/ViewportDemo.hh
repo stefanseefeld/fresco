@@ -19,15 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ViewportDemo_hh
-#define _ViewportDemo_hh
+#ifndef _CXX_demos_ViewportDemo_hh
+#define _CXX_demos_ViewportDemo_hh
 
 #include "Demo.hh"
 
 class ViewportDemo : public Demo
 {
-public:
-  ViewportDemo(Application *);
+  public:
+    ViewportDemo(Application *);
 };
 
 #endif

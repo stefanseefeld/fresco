@@ -45,13 +45,13 @@ CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h) :
     Trace trace("CanvasImpl::CanvasImpl");
     Console *console = Console::instance();
     if (!my_factory)
-	my_factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
+    my_factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
     Fresco::Drawable::PixelFormat format =
-	console->drawable()->pixel_format();
+    console->drawable()->pixel_format();
     size_t size = w * h * format.size;
     my_shm = SHM::allocate(size);
     Console::Drawable *drawable =
-	my_factory->create_drawable(my_shm, w, h, 3);
+    my_factory->create_drawable(my_shm, w, h, 3);
     my_drawable = console->activate_drawable(drawable);
 }
 
@@ -80,12 +80,12 @@ void CanvasImpl::request(Fresco::Graphic::Requisition &requisition)
     Trace trace("CanvasImpl::request");
     requisition.x.defined = true;
     requisition.x.natural = requisition.x.maximum =
-	requisition.x.minimum = my_width * 10;
+    requisition.x.minimum = my_width * 10;
         // FIXME: my_drawable->resolution(xaxis);
     requisition.x.align = 0.;
     requisition.y.defined = true;
     requisition.y.natural = requisition.y.maximum =
-	requisition.y.minimum = my_height * 10;
+    requisition.y.minimum = my_height * 10;
         // FIXME: my_drawable->resolution(yaxis);
     requisition.y.align = 0.;
     requisition.z.defined = false;

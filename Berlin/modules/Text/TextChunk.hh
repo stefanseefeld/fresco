@@ -43,21 +43,21 @@ namespace Berlin
     class TextChunk : public virtual GraphicImpl
     {
       public:
-	TextChunk(const Fresco::Unichar ch,
-		  const Fresco::Graphic::Requisition &);
-	virtual ~TextChunk();
-	
-	virtual void draw(Fresco::DrawTraversal_ptr);
-	virtual void request(Fresco::Graphic::Requisition &);
+    TextChunk(const Fresco::Unichar ch,
+          const Fresco::Graphic::Requisition &);
+    virtual ~TextChunk();
+    
+    virtual void draw(Fresco::DrawTraversal_ptr);
+    virtual void request(Fresco::Graphic::Requisition &);
   
-	virtual const char *object_name();
-	void get_text(Babylon::String &); 
-	unsigned long get_length();
+    virtual const char *object_name();
+    void get_text(Babylon::String &); 
+    unsigned long get_length();
       protected:
-	Fresco::Coord     my_width, my_height;
-	Fresco::Alignment my_xalign, my_yalign;
-	Fresco::Unichar   my_char;
-	const char       *my_obj_name;
+    Fresco::Coord     my_width, my_height;
+    Fresco::Alignment my_xalign, my_yalign;
+    Fresco::Unichar   my_char;
+    const char       *my_obj_name;
     };
 
   } // namespace

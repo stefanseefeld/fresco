@@ -36,53 +36,53 @@ namespace Berlin
   {
 
     class TransformFigure : public virtual POA_Figure::FigureBase,
-			    public GraphicImpl
+                public GraphicImpl
     {
       public:
-	TransformFigure();
-	~TransformFigure();
-	virtual Fresco::Transform_ptr transformation();
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
-	virtual void pick(Fresco::PickTraversal_ptr);
-	virtual void need_redraw();
-	
-	Figure::Mode type() { return my_mode; }
-	void type(Figure::Mode m) { my_mode = m; need_redraw(); }
-	Fresco::Color foreground() { return my_fg; }
-	void foreground(const Fresco::Color &f) { my_fg = f; need_redraw(); }
-	Fresco::Color background() { return my_bg; }
-	void background(const Fresco::Color &b) { my_bg = b; need_redraw(); }
+    TransformFigure();
+    ~TransformFigure();
+    virtual Fresco::Transform_ptr transformation();
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void extension(const Fresco::Allocation::Info &,
+                   Fresco::Region_ptr);
+    virtual void pick(Fresco::PickTraversal_ptr);
+    virtual void need_redraw();
+    
+    Figure::Mode type() { return my_mode; }
+    void type(Figure::Mode m) { my_mode = m; need_redraw(); }
+    Fresco::Color foreground() { return my_fg; }
+    void foreground(const Fresco::Color &f) { my_fg = f; need_redraw(); }
+    Fresco::Color background() { return my_bg; }
+    void background(const Fresco::Color &b) { my_bg = b; need_redraw(); }
 
-	virtual void resize();
+    virtual void resize();
 
-	void copy(const TransformFigure &);
+    void copy(const TransformFigure &);
       protected:
-	Figure::Mode            my_mode;
-	Fresco::Color           my_fg, my_bg;
-	Impl_var<TransformImpl> my_tx;
-	Impl_var<RegionImpl>    my_ext;
+    Figure::Mode            my_mode;
+    Fresco::Color           my_fg, my_bg;
+    Impl_var<TransformImpl> my_tx;
+    Impl_var<RegionImpl>    my_ext;
     };
     
     class FigureImpl : public TransformFigure
     {
       public:
-	FigureImpl();
-	virtual ~FigureImpl();
+    FigureImpl();
+    virtual ~FigureImpl();
 
-	void add_point(Fresco::Coord, Fresco::Coord);
-	void reset();
-	virtual void resize();
-	
-	virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
-	virtual void draw(Fresco::DrawTraversal_ptr);
-	virtual void pick(Fresco::PickTraversal_ptr);
-	
-	void copy(const FigureImpl &);
+    void add_point(Fresco::Coord, Fresco::Coord);
+    void reset();
+    virtual void resize();
+    
+    virtual void extension(const Fresco::Allocation::Info &,
+                   Fresco::Region_ptr);
+    virtual void draw(Fresco::DrawTraversal_ptr);
+    virtual void pick(Fresco::PickTraversal_ptr);
+    
+    void copy(const FigureImpl &);
       protected:
-	Fresco::Path_var my_path;
+    Fresco::Path_var my_path;
     };
     
   } // namespace

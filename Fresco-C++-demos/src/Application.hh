@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Application_hh
-#define _Application_hh
+#ifndef _CXX_demos_Application_hh
+#define _CXX_demos_Application_hh
 
 #include <Prague/Sys/Signal.hh>
 #include <Fresco/config.hh>
@@ -48,8 +48,8 @@
 
 class Application
 {
-  struct Item
-  {
+    struct Item
+    {
     Fresco::Tag id;
     Fresco::Command_var mapper;
     Fresco::BoundedValue_var alpha;
@@ -60,70 +60,76 @@ class Application
     Fresco::BoundedValue_var yrotation;
     Fresco::BoundedValue_var zoom;
     Fresco::Command_var settings;
-  };
-  typedef std::vector<Item> list_t;
-  class Mapper;
-  class PrintCommand;
-  friend class Mapper;
-  friend class PrintCommand;
-public:
-  class CommandImpl : public virtual POA_Fresco::Command,
-                      public virtual PortableServer::RefCountServantBase
-  {
+    };
+    typedef std::vector<Item> list_t;
+    class Mapper;
+    class PrintCommand;
+    friend class Mapper;
+    friend class PrintCommand;
   public:
+    class CommandImpl : public virtual POA_Fresco::Command,
+            public virtual PortableServer::RefCountServantBase
+    {
+      public:
     virtual void execute(const CORBA::Any &) = 0;
     virtual void destroy();
-  };
-  Application(Fresco::ServerContext_ptr, Fresco::ClientContext_ptr);
+    };
+    Application(Fresco::ServerContext_ptr, Fresco::ClientContext_ptr);
 
-  template <typename K>
-  typename K::_ptr_type resolve(const char *repoId)
-   { return ::resolve_kit<K>(_server, repoId);}
+    template <typename K>
+    typename K::_ptr_type resolve(const char *repoId)
+    { return ::resolve_kit<K>(my_server, repoId);}
 
-  void append(Fresco::Controller_ptr, const Babylon::String &);
-  void run();
-protected:
-  Item make_item(const Babylon::String &);
-private:
-  Fresco::ServerContext_var _server;
-  Fresco::ClientContext_var _client;
-  Fresco::TextKit_var       _tk;
-  Fresco::DesktopKit_var    _dk;
-  Fresco::LayoutKit_var     _lk;
-  Fresco::ToolKit_var       _ttk;
-  Fresco::WidgetKit_var     _wk;
-  Fresco::FigureKit_var     _fk;
-  Fresco::CommandKit_var    _ck;
-  Fresco::RasterKit_var     _rk;
-  Fresco::GadgetKit_var     _gk;
-  Fresco::Graphic_var       _vbox;
-  Widget::Choice_var        _choice;
-  list_t                    _demos;
-  Mapper                   *_mapper;
-  Fresco::Color             _background;
-  Fresco::Graphic_var       _done;
-  Fresco::Graphic_var       _settings;
-  Fresco::Graphic_var       _print;
+    void append(Fresco::Controller_ptr, const Babylon::String &);
+    void run();
+  protected:
+    Item make_item(const Babylon::String &);
+  private:
+    Fresco::ServerContext_var my_server;
+    Fresco::ClientContext_var my_client;
+    Fresco::TextKit_var my_tk;
+    Fresco::DesktopKit_var my_dk;
+    Fresco::LayoutKit_var my_lk;
+    Fresco::ToolKit_var my_ttk;
+    Fresco::WidgetKit_var my_wk;
+    Fresco::FigureKit_var my_fk;
+    Fresco::CommandKit_var my_ck;
+    Fresco::RasterKit_var my_rk;
+    Fresco::GadgetKit_var my_gk;
+    Fresco::Graphic_var my_vbox;
+    Widget::Choice_var my_choice;
+    list_t my_demos;
+    Mapper *my_mapper;
+    Fresco::Color my_background;
+    Fresco::Graphic_var my_done;
+    Fresco::Graphic_var my_settings;
+    Fresco::Graphic_var my_print;
 };
 
 template <typename T> T *create_demo(Application *a)
 {
-   try { return new T(a);}
+   try { return new T(a); }
    catch (std::exception &e)
    {
-      std::cerr << "Unable to create one of the demo applets:" << std::endl
-                << "The error message I received awas: \""
-                << e.what() << "\"" << std::endl
-                << "This probably means that the server doesn't provide" << std::endl
-                << "some of the resources requested by this applet" << std::endl;
-      return 0;
+       std::cerr << "Unable to create one of the demo applets:"
+         << std::endl
+         << "The error message I received awas: \"" << e.what()
+         << "\"" << std::endl
+         << "This probably means that the server doesn't provide"
+         << std::endl
+         << "some of the resources requested by this applet."
+         << std::endl;
+       return 0;
    }
    catch (...)
    {
-      std::cerr << "Unable to create one of the demo applets." << std::endl
-                << "This probably means that the server doesn't provide" << std::endl
-                << "some of the resources requested by this applet" << std::endl;
-      return 0;
+       std::cerr << "Unable to create one of the demo applets."
+         << std::endl
+         << "This probably means that the server doesn't provide"
+         << std::endl
+         << "some of the resources requested by this applet."
+         << std::endl;
+       return 0;
    }
 }
 

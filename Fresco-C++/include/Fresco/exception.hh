@@ -26,17 +26,25 @@
 #include <Fresco/Types.hh>
 #include <iostream>
 
-inline std::ostream &operator << (std::ostream &os, const CORBA::Exception &exception)
+namespace std
 {
-  CORBA::Any any;
-  any <<= exception;
-  CORBA::TypeCode_var tc = any.type();
-  const char *p = tc->name();
-  if (*p != '\0') os << p;
-  else os << tc->id();
-  return os;
-}
 
-inline std::ostream &operator << (std::ostream &os, CORBA::Exception *exception) { return os << *exception;}
+  inline std::ostream &operator << (std::ostream &os,
+                    const CORBA::Exception &exception)
+  {
+      CORBA::Any any;
+      any <<= exception;
+      CORBA::TypeCode_var tc = any.type();
+      const char *p = tc->name();
+      if (*p != '\0') os << p;
+      else os << tc->id();
+      return os;
+  }
 
-#endif /* _exception_hh */
+  inline std::ostream &operator << (std::ostream &os,
+                    CORBA::Exception *exception)
+  { return os << *exception; }
+
+} // namespace
+
+#endif

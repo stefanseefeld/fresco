@@ -34,46 +34,46 @@ namespace Berlin
     class DirectBuffer : virtual public Console::Drawable::Extension
     {
       public:
-	typedef Console::Drawable::data_type data_type;
-	
-	class Guard
-	{
-	  public:
-	    Guard(const Console::Drawable *drawable, data_type *data) :
-		my_drawable(drawable), my_data(data)
-	    { }
-	    
-	    ~Guard() { }
-	    
-	    Guard(const Guard &buffer)
-	    {
-		my_data = buffer.release();
-		my_drawable = buffer.my_drawable;
-	    }
-	    Guard &operator = (const Guard &buffer)
-	    {
-		my_data = buffer.release();
-		my_drawable = buffer.my_drawable;
-		return *this;
-	    }
+    typedef Console::Drawable::data_type data_type;
+    
+    class Guard
+    {
+      public:
+        Guard(const Console::Drawable *drawable, data_type *data) :
+        my_drawable(drawable), my_data(data)
+        { }
+        
+        ~Guard() { }
+        
+        Guard(const Guard &buffer)
+        {
+        my_data = buffer.release();
+        my_drawable = buffer.my_drawable;
+        }
+        Guard &operator = (const Guard &buffer)
+        {
+        my_data = buffer.release();
+        my_drawable = buffer.my_drawable;
+        return *this;
+        }
 
-	    data_type *get() const { return my_data; }
-	    
-	    data_type *release() const
-	    {
-		data_type *tmp = my_data;
-		my_data = 0;
-		return tmp;
-	    }
-	  private:
-	    const Console::Drawable *my_drawable;
-	    mutable data_type       *my_data;
-	};
-	
-	//. Get the read buffer for this Drawable
-	virtual Guard read_buffer() = 0;
-	//. Get the write buffer for this Drawable
-	virtual Guard write_buffer() = 0;
+        data_type *get() const { return my_data; }
+        
+        data_type *release() const
+        {
+        data_type *tmp = my_data;
+        my_data = 0;
+        return tmp;
+        }
+      private:
+        const Console::Drawable *my_drawable;
+        mutable data_type       *my_data;
+    };
+    
+    //. Get the read buffer for this Drawable
+    virtual Guard read_buffer() = 0;
+    //. Get the write buffer for this Drawable
+    virtual Guard write_buffer() = 0;
     };
 
   } // namespace

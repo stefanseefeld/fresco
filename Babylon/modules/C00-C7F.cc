@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         TeluguC00() :
-	    my_first_letter(0xC00),
-	    my_last_letter(0xC7F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0xC00),
+        my_last_letter(0xC7F)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x00000C46, 0x00000C56)] = 0x0C48;
@@ -53,24 +53,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Telugu";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Telugu";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -467,7 +467,7 @@ namespace Babylon
         // functions
         TeluguC00(const TeluguC00 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

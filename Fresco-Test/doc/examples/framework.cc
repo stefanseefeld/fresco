@@ -30,13 +30,13 @@ namespace SyUnit
       // Allways pass this test.
       void pass()
       {
-	  assert_true(true);
+      assert_true(true);
       }
 
       // Allways fail this test.
       void fail()
       {
-	  assert_true(false);
+      assert_true(false);
       }
   };
 } // namespace

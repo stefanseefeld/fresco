@@ -37,23 +37,23 @@ namespace Berlin
     {
 
       class Gauge : public virtual ViewImpl,
-		    public GraphicImpl
+            public GraphicImpl
       {
-	public:
-	  Gauge(Fresco::BoundedValue_ptr v, const Fresco::Color &c) :
-	      my_value(RefCount_var<Fresco::BoundedValue>::increment(v)),
-	      my_color(c),
-	      my_width(2000.),
-	      my_height(200.)
-	  { }
-	  ~Gauge() { }
-	  virtual void request(Fresco::Graphic::Requisition &);
-	  virtual void draw(Fresco::DrawTraversal_ptr);
-	  virtual void update(const CORBA::Any &);
-	private:
-	  RefCount_var<Fresco::BoundedValue> my_value;
-	  Fresco::Color my_color;
-	  Fresco::Coord my_width, my_height;
+    public:
+      Gauge(Fresco::BoundedValue_ptr v, const Fresco::Color &c) :
+          my_value(RefCount_var<Fresco::BoundedValue>::increment(v)),
+          my_color(c),
+          my_width(2000.),
+          my_height(200.)
+      { }
+      ~Gauge() { }
+      virtual void request(Fresco::Graphic::Requisition &);
+      virtual void draw(Fresco::DrawTraversal_ptr);
+      virtual void update(const CORBA::Any &);
+    private:
+      RefCount_var<Fresco::BoundedValue> my_value;
+      Fresco::Color my_color;
+      Fresco::Coord my_width, my_height;
       };
 
     } // namespace

@@ -98,7 +98,7 @@ void Berlin::RCManager::setup(Prague::GetOpt const &getopt)
     {
         // Search for berlinrc in default places:
         value = sysconfdir + "/berlinrc";
-	
+    
         bool is_configured = 0;
         try
         {
@@ -114,7 +114,7 @@ void Berlin::RCManager::setup(Prague::GetOpt const &getopt)
                       << "\" failed to load: "
                       << e.what() << std::endl;
         }
-	
+    
         // FIXME: merge additional configuration:
         if(getenv("BERLINRC")) value = std::string(getenv("BERLINRC"));
         else value ="";

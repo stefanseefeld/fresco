@@ -20,89 +20,102 @@
  * MA 02139, USA.
  */
 
-#include "Fresco/IO.hh"
+#include <Fresco/IO.hh>
 #include <iomanip>
 
 using namespace Fresco;
 
-inline bool equal(Coord a, Coord b, Coord e) { return a - b < e && b - a < e;}
-
-std::ostream &operator << (std::ostream &os, const Color &c)
-{
-  if (c.alpha != 1.) os << '(' << c.red << ',' << c.green << ',' << c.blue << ';' << c.alpha << ')';
-  else os << '(' << c.red << ',' << c.green << ',' << c.blue << ')';
-  return os;
+namespace {
+  inline bool is_equal(Coord a, Coord b, Coord e)
+  { return a - b < e && b - a < e; }
 }
 
-std::ostream &operator << (std::ostream &os, const Graphic::Requirement &r)
+std::ostream &std::operator << (std::ostream &os, const Color &c)
 {
-  if (!r.defined) os << "undef";
-  else
+    if (c.alpha != 1.)
+    os << '(' << c.red << ',' << c.green << ',' << c.blue << ';'
+       << c.alpha << ')';
+    else os << '(' << c.red << ',' << c.green << ',' << c.blue << ')';
+    return os;
+}
+
+std::ostream &std::operator << (std::ostream &os,
+                const Graphic::Requirement &r)
+{
+    if (!r.defined) os << "undef";
+    else
     {
-      double tol = 1e-2;
-      os << std::setiosflags(std::ios::fixed);
-      if (equal(r.natural, r.minimum, tol))
-	{
-	  if (equal(r.natural, r.maximum, tol))
-	    os << std::setprecision(2) << r.natural;
-	  else
-	    os << '(' << std::setprecision(2) << r.natural
-	       << ',' << std::setprecision(2) << r.maximum << ')';
-	}
-      else if (equal(r.natural, r.maximum, tol))
-	os << '(' << std::setprecision(2) << r.minimum
-	   << ',' << std::setprecision(2) << r.natural << ')';
-      else
-	os << '(' << std::setprecision(2) << r.minimum
-	   << ',' << std::setprecision(2) << r.natural
-	   << ',' << std::setprecision(2) << r.maximum << ')';
-      if (!equal(r.align, 0., tol))
-	os << " @ " << std::setprecision(1) << r.align;
-    }
-  return os;
-};
-
-std::ostream &operator << (std::ostream &os, const Graphic::Requisition &r)
-{
-  return os << r.x << ", " << r.y << ", " << r.z;
-}
-
-std::ostream &operator << (std::ostream &os, const Region::Allotment &a)
-{
-  os << std::setiosflags(std::ios::fixed) << std::setprecision(2) << a.begin << ',' << std::setprecision(2) << a.end;
-  if (!equal(a.align, 0., 1e-2)) os << " @ " << std::setprecision(1) << a.align;
-  return os;
-}
-
-std::ostream &operator << (std::ostream &os, Region_ptr r)
-{
-  if (!r->defined()) os << "undef";
-  else
+    double tol = 1e-2;
+    os << std::setiosflags(std::ios::fixed);
+    if (is_equal(r.natural, r.minimum, tol))
     {
-      Region::Allotment a;
-      os << "X(";
-      r->span(xaxis, a);
-      os << a << "), Y(";
-      r->span(yaxis, a);
-      os << a << "), Z(";
-      r->span(zaxis, a);
-      os << a << ')';
+        if (is_equal(r.natural, r.maximum, tol))
+        os << std::setprecision(2) << r.natural;
+        else
+        os << '(' << std::setprecision(2) << r.natural
+           << ',' << std::setprecision(2) << r.maximum << ')';
     }
-  return os;
+    else if (is_equal(r.natural, r.maximum, tol))
+        os << '(' << std::setprecision(2) << r.minimum
+           << ',' << std::setprecision(2) << r.natural << ')';
+    else
+        os << '(' << std::setprecision(2) << r.minimum
+           << ',' << std::setprecision(2) << r.natural
+           << ',' << std::setprecision(2) << r.maximum << ')';
+    if (!is_equal(r.align, 0., tol))
+        os << " @ " << std::setprecision(1) << r.align;
+    }
+    return os;
 }
 
-std::ostream &operator << (std::ostream &os, const Transform::Matrix &m)
-{
-  os << '[' << m[0][0] << ',' << m[0][1] << ',' << m[0][2] << ',' << m[0][3] << "]\n"
-     << '[' << m[1][0] << ',' << m[1][1] << ',' << m[1][2] << ',' << m[1][3] << "]\n"
-     << '[' << m[2][0] << ',' << m[2][1] << ',' << m[2][2] << ',' << m[2][3] << "]\n"
-     << '[' << m[3][0] << ',' << m[3][1] << ',' << m[3][2] << ',' << m[3][3] << "]\n";
-  return os;
-};
+std::ostream &std::operator << (std::ostream &os,
+                const Graphic::Requisition &r)
+{ return os << r.x << ", " << r.y << ", " << r.z; }
 
-std::ostream &operator << (std::ostream &os, Transform_ptr transform)
+std::ostream &std::operator << (std::ostream &os,
+                const Region::Allotment &a)
 {
-  Transform::Matrix matrix;
-  transform->store_matrix(matrix);
-  return os << matrix;
-};
+    os << std::setiosflags(std::ios::fixed) << std::setprecision(2)
+       << a.begin << ',' << std::setprecision(2) << a.end;
+    if (!is_equal(a.align, 0., 1e-2))
+    os << " @ " << std::setprecision(1) << a.align;
+    return os;
+}
+
+std::ostream &std::operator << (std::ostream &os, Region_ptr r)
+{
+    if (!r->defined()) os << "undef";
+    else
+    {
+    Region::Allotment a;
+    os << "X(";
+    r->span(xaxis, a);
+    os << a << "), Y(";
+    r->span(yaxis, a);
+    os << a << "), Z(";
+    r->span(zaxis, a);
+    os << a << ')';
+    }
+    return os;
+}
+
+std::ostream &std::operator << (std::ostream &os,
+                const Transform::Matrix &m)
+{
+    os << '[' << m[0][0] << ',' << m[0][1] << ','
+       << m[0][2] << ',' << m[0][3] << "]\n"
+       << '[' << m[1][0] << ',' << m[1][1] << ','
+       << m[1][2] << ',' << m[1][3] << "]\n"
+       << '[' << m[2][0] << ',' << m[2][1] << ','
+       << m[2][2] << ',' << m[2][3] << "]\n"
+       << '[' << m[3][0] << ',' << m[3][1] << ','
+       << m[3][2] << ',' << m[3][3] << "]" << std::endl;
+    return os;
+}
+
+std::ostream &std::operator << (std::ostream &os, Transform_ptr transform)
+{
+    Transform::Matrix matrix;
+    transform->store_matrix(matrix);
+    return os << matrix;
+}

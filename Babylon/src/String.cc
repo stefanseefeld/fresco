@@ -33,7 +33,7 @@ Babylon::String::String() :
 { }
 
 Babylon::String::String(const String & s,
-			const size_type p1, const size_type p2) :
+            const size_type p1, const size_type p2) :
     my_norm(s.my_norm),
     my_data(s.my_data, p1, p2)
 { }
@@ -44,7 +44,7 @@ Babylon::String::String(const char_type * c, const Norm n) :
 { }
 
 Babylon::String::String(const char_type * c, const size_type l,
-			const Norm n) :
+            const Norm n) :
     my_norm(n),
     my_data(c, l)
 { }
@@ -61,7 +61,7 @@ Babylon::String::String(const string_type & s) :
 
 template<class InputIterator>
 Babylon::String::String(InputIterator b, InputIterator e,
-			const Norm n) :
+            const Norm n) :
     my_norm(n),
     my_data(b, e)
 { }
@@ -87,72 +87,72 @@ Babylon::String Babylon::String::get_normalized(const Norm n) const
     // Do I need to decompose?
     if (my_norm > n || (n == NORM_KD && my_norm == NORM_C))
     {
-	 for(String::const_iterator i = begin(); i != end(); ++i)
-	 {
-	     String tmp;
-	     get_from_UTF32(dict->recursive_decompose(((n & NORM_MASK_K)
-						       != 0),
-						      i->value()), tmp);
+     for(String::const_iterator i = begin(); i != end(); ++i)
+     {
+         String tmp;
+         get_from_UTF32(dict->recursive_decompose(((n & NORM_MASK_K)
+                               != 0),
+                              i->value()), tmp);
 
-	     for(String::const_iterator j = tmp.begin(); j != tmp.end(); ++j)
-	     {
-		 Can_Comb_Class c_class = dict->comb_class(j->value());
-		 if (CC_SPACING == c_class)
-		     r.push_back(*j);
-		 else
-		 {
-		     size_type k = r.length();
-		     for ( ; k > 0; --k)
-			 if (dict->comb_class(r[k - 1].value()) <= c_class)
-			     break;
-		     r.insert(k, 1, *j);
-		 }
-	     }
-	 }
+         for(String::const_iterator j = tmp.begin(); j != tmp.end(); ++j)
+         {
+         Can_Comb_Class c_class = dict->comb_class(j->value());
+         if (CC_SPACING == c_class)
+             r.push_back(*j);
+         else
+         {
+             size_type k = r.length();
+             for ( ; k > 0; --k)
+             if (dict->comb_class(r[k - 1].value()) <= c_class)
+                 break;
+             r.insert(k, 1, *j);
+         }
+         }
+     }
     }
     else r = my_data;
 
     // Do I need to compose?
     if ((my_norm != NORM_C) && (n & NORM_MASK_C))
     {
-	String::iterator starter = r.begin();
-	String::iterator comp_pos = starter + 1; // we have at least 1 char!
-	Can_Comb_Class last_class = dict->comb_class(starter->value());
-	if (last_class != 0) // fix for irregular comb sequence
-	    last_class = Can_Comb_Class(256);
-	
-	for(String::iterator ch = comp_pos; ch != r.end(); ++ch)
-	{
-	    Can_Comb_Class ch_class = dict->comb_class(ch->value());
-	    UCS4 composite(dict->compose(starter->value(), ch->value()));
-	    if (dict->is_Full_Composition_Exclusion(composite))
-		composite = UC_NULL;
+    String::iterator starter = r.begin();
+    String::iterator comp_pos = starter + 1; // we have at least 1 char!
+    Can_Comb_Class last_class = dict->comb_class(starter->value());
+    if (last_class != 0) // fix for irregular comb sequence
+        last_class = Can_Comb_Class(256);
+    
+    for(String::iterator ch = comp_pos; ch != r.end(); ++ch)
+    {
+        Can_Comb_Class ch_class = dict->comb_class(ch->value());
+        UCS4 composite(dict->compose(starter->value(), ch->value()));
+        if (dict->is_Full_Composition_Exclusion(composite))
+        composite = UC_NULL;
 
-	    if ( (composite != 0) &&
-		 (last_class < ch_class || last_class == 0) )
-		*starter = composite;
-	    else
-	    {
-		if (ch_class == 0) starter = comp_pos;
-		last_class = ch_class;
-		*comp_pos = *ch;
-		comp_pos++;
-	    }
-	}
-	r.resize(std::distance(r.begin(), comp_pos));
+        if ( (composite != 0) &&
+         (last_class < ch_class || last_class == 0) )
+        *starter = composite;
+        else
+        {
+        if (ch_class == 0) starter = comp_pos;
+        last_class = ch_class;
+        *comp_pos = *ch;
+        comp_pos++;
+        }
+    }
+    r.resize(std::distance(r.begin(), comp_pos));
     }
     r.override_norm(n);
     return r;
 }
 
 int Babylon::String::compare(const size_type, const size_type,
-			     const String &) const
+                 const String &) const
 {
     // FIXME:
 }
 
 int Babylon::String::compare(const size_type, const size_type, const String &,
-			     const size_type, const size_type) const
+                 const size_type, const size_type) const
 {
     // FIXME:
 }
@@ -163,13 +163,13 @@ int Babylon::String::compare(const char_type *) const
 }
 
 int Babylon::String::compare(const size_type, const size_type,
-			     const char_type *) const
+                 const char_type *) const
 {
     // FIXME:
 }
 
 int Babylon::String::compare(const size_type, const size_type,
-			     const char_type *, const size_type) const
+                 const char_type *, const size_type) const
 {
     // FIXME:
 }
@@ -186,7 +186,7 @@ Babylon::String::char_type & Babylon::String::at(const size_type p)
 
 Babylon::String &
 Babylon::String::assign(const Babylon::String & s,
-			const size_type p1, const size_type p2)
+            const size_type p1, const size_type p2)
 {
     my_data.assign(s.my_data, p1, p2);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -201,7 +201,7 @@ Babylon::String & Babylon::String::assign(const char_type * c, const Norm n)
 }
 
 Babylon::String &
-Babylon::String::assign(const char_type * c, const size_type l,	const Norm n)
+Babylon::String::assign(const char_type * c, const size_type l,    const Norm n)
 {
     my_data.assign(c, l);
     my_norm = n;
@@ -224,7 +224,7 @@ void Babylon::String::swap(Babylon::String & that) throw()
 
 Babylon::String &
 Babylon::String::append(const Babylon::String & s,
-			const size_type p1, const size_type p2)
+            const size_type p1, const size_type p2)
 {
     size_type start = my_data.length();
     my_data.append(s.my_data, p1, p2);
@@ -233,7 +233,7 @@ Babylon::String::append(const Babylon::String & s,
 }
 
 Babylon::String &
-Babylon::String::append(const char_type * c, const size_type l,	const Norm n)
+Babylon::String::append(const char_type * c, const size_type l,    const Norm n)
 {
     size_type start = my_data.length();
     my_data.append(c, l);
@@ -258,7 +258,7 @@ Babylon::String::append(const size_type l, const char_type c)
 
 Babylon::String &
 Babylon::String::insert(const size_type p1, const Babylon::String & s,
-			const size_type p2, const size_type p3)
+            const size_type p2, const size_type p3)
 {
     my_data.insert(p1, s.my_data, p2, p3);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -267,7 +267,7 @@ Babylon::String::insert(const size_type p1, const Babylon::String & s,
 
 Babylon::String &
 Babylon::String::insert(const size_type p1,
-			const char_type * c, const size_type p2)
+            const char_type * c, const size_type p2)
 {
     my_data.insert(p1, c, p2);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -285,7 +285,7 @@ Babylon::String::insert(const size_type p1, const char_type * c)
 
 Babylon::String &
 Babylon::String::insert(const size_type p1, const size_type p2,
-			const char_type c)
+            const char_type c)
 {
     my_data.insert(p1, p2, c);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -294,8 +294,8 @@ Babylon::String::insert(const size_type p1, const size_type p2,
 
 Babylon::String &
 Babylon::String::replace(const size_type p1, const size_type p2,
-			 const Babylon::String & s,
-			 const size_type p3, const size_type p4)
+             const Babylon::String & s,
+             const size_type p3, const size_type p4)
 {
     my_data.replace(p1, p2, s.my_data, p3, p4);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -304,7 +304,7 @@ Babylon::String::replace(const size_type p1, const size_type p2,
 
 Babylon::String &
 Babylon::String::replace(const size_type p1, const size_type p2,
-			 const char_type * c, const size_type l)
+             const char_type * c, const size_type l)
 {
     my_data.replace(p1, p2, c, l);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -313,7 +313,7 @@ Babylon::String::replace(const size_type p1, const size_type p2,
 
 Babylon::String &
 Babylon::String::replace(const size_type p1,  const size_type p2,
-			 const char_type * c)
+             const char_type * c)
 {
     my_data.replace(p1, p2, c);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -322,7 +322,7 @@ Babylon::String::replace(const size_type p1,  const size_type p2,
 
 Babylon::String &
 Babylon::String::replace(const size_type p1, const size_type p2,
-			 const size_type p3, char_type c)
+             const size_type p3, char_type c)
 {
     my_data.replace(p1, p2, p3, c);
     my_norm = NORM_NONE; // FIXME: Can we do better?
@@ -369,23 +369,23 @@ Babylon::String & Babylon::String::erase(iterator b, iterator e)
 }
 
 Babylon::String::String(const std::string & s, const size_t pos,
-			const std::string format,
-			const Babylon::Norm norm)
+            const std::string format,
+            const Babylon::Norm norm)
 {
     convert(s, pos, format, norm);
 }
 
 Babylon::String::String(const char * c,
-			const std::string format,
-			const Babylon::Norm norm)
+            const std::string format,
+            const Babylon::Norm norm)
 {
     std::string s(c);
     convert(s, 0, format, norm);
 }
 
 Babylon::String::String(const char * c, const size_t len,
-			const std::string format,
-			const Babylon::Norm norm)
+            const std::string format,
+            const Babylon::Norm norm)
 {
     std::string s(c, len);
     convert(s, 0, format, norm);
@@ -403,9 +403,9 @@ std::string Babylon::String::convert(const std::string & format) const
 }
     
 size_t Babylon::String::convert(const std::string & s,
-				const size_t p,
-				const std::string & format,
-				const Babylon::Norm norm)
+                const size_t p,
+                const std::string & format,
+                const Babylon::Norm norm)
     throw (Babylon::Transfer_Error, std::length_error)
 {
     clear();
@@ -413,7 +413,7 @@ size_t Babylon::String::convert(const std::string & s,
     size_type i = (p >= s.length()) ? std::string::npos : p;
     for ( ; i <= s.length(); )
     {
-	push_back(Char(s, i, format));
+    push_back(Char(s, i, format));
         if (i == max_size())
             throw (std::length_error("Input String too long."));
     }
@@ -425,20 +425,20 @@ void Babylon::String::debug_dump() const
 {
     std::cerr << "Babylon::String at " << std::hex << this << " Norm: ";
     if (NORM_NONE == my_norm)
-	std::cerr << "none";
+    std::cerr << "none";
     else if (NORM_D == my_norm)
-	std::cerr << "D";
+    std::cerr << "D";
     else if (NORM_C == my_norm)
-	std::cerr << "C";
+    std::cerr << "C";
     else if (NORM_KD == my_norm)
-	std::cerr << "KD";
+    std::cerr << "KD";
     else if (NORM_KC == my_norm)
-	std::cerr << "KC";
+    std::cerr << "KC";
     else
-	std::cerr << "UNKNOWN";
+    std::cerr << "UNKNOWN";
 
     std::cerr << " (" << length() << ")  >";
     for(const_iterator i = begin(); i != end(); ++i)
-	std::cerr << i->value() << " ";
+    std::cerr << i->value() << " ";
     std::cerr << "<" << std::dec << std::endl;
 }

@@ -39,28 +39,28 @@ namespace Berlin
   {
 
     class EditorImpl : public virtual POA_Unidraw::Editor,
-		       public RefCountBaseImpl
+               public RefCountBaseImpl
     {
-	typedef std::map<Fresco::Tag, RefCount_var<Unidraw::Tool> >
-	    tdict_t;
-	class Observer;
-	friend class Observer;
+    typedef std::map<Fresco::Tag, RefCount_var<Unidraw::Tool> >
+        tdict_t;
+    class Observer;
+    friend class Observer;
       public:
-	EditorImpl(UnidrawKitImpl *);
-	virtual ~EditorImpl();
-	virtual void append_tool(Unidraw::Tool_ptr, Fresco::Graphic_ptr);
-	virtual Unidraw::Tool_ptr current_tool();
-	virtual void current_tool(Unidraw::Tool_ptr);
-	virtual Fresco::Controller_ptr create_viewer(Unidraw::Model_ptr,
-						     Fresco::Coord,
-						     Fresco::Coord);
-	virtual Fresco::Controller_ptr toolbar();
+    EditorImpl(UnidrawKitImpl *);
+    virtual ~EditorImpl();
+    virtual void append_tool(Unidraw::Tool_ptr, Fresco::Graphic_ptr);
+    virtual Unidraw::Tool_ptr current_tool();
+    virtual void current_tool(Unidraw::Tool_ptr);
+    virtual Fresco::Controller_ptr create_viewer(Unidraw::Model_ptr,
+                             Fresco::Coord,
+                             Fresco::Coord);
+    virtual Fresco::Controller_ptr toolbar();
       private:
-	UnidrawKitImpl *my_unidraw;
-	Unidraw::Tool_var my_current;
-	Widget::Choice_var my_choice;
-	tdict_t my_tools;
-	Impl_var<Observer> my_tool_setter;
+    UnidrawKitImpl *my_unidraw;
+    Unidraw::Tool_var my_current;
+    Widget::Choice_var my_choice;
+    tdict_t my_tools;
+    Impl_var<Observer> my_tool_setter;
     };
     
   } // namespace

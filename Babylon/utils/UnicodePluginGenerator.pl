@@ -2,10 +2,10 @@
 use Carp;
 use strict;
 use UnicodePluginGenerator qw( Defined Category CombClass Bidir DecompClass
-			       DecompString DecDigitVal DigitVal NumericVal
-			       Mirror Upper Lower Title Linebreak EAWidth
-			       Compositions CompExclude Block Prop
-			       DerivedProps);
+                   DecompString DecDigitVal DigitVal NumericVal
+                   Mirror Upper Lower Title Linebreak EAWidth
+                   Compositions CompExclude Block Prop
+                   DerivedProps);
 
 my $UCD_File     = "UnicodeData.txt";
 my $Block_File   = "Blocks.txt";
@@ -23,7 +23,7 @@ my $ftp_path     = "ftp://ftp.unicode.org/Public/UNIDATA/";
 
 # Get files if necessary from ftp.unicode.org
 foreach my $file ( $Block_File, $UCD_File, $EA_File, $LB_File,
-		   $Exclude_File, $Prop_File)
+           $Exclude_File, $Prop_File)
 {
     system ("if [ ! -f $file ] ; then wget $ftp_path$file ; fi");
 }
@@ -83,7 +83,7 @@ print "Creating plugins...\n";
 
 foreach my $block (@blocks) {
   my ($name, $filename, $start, $end, $start_string, $end_string, $classname) = 
-  	($block->name(), $block->filename(), $block->start(), $block->end(), $block->start_string(), $block->end_string(), $block->classname() );
+      ($block->name(), $block->filename(), $block->start(), $block->end(), $block->start_string(), $block->end_string(), $block->classname() );
   printf "%s (%04X-%04X)\n", $name, $start, $end;
 
   # open output file
@@ -130,7 +130,7 @@ foreach my $block (@blocks) {
 END
 
   foreach my $obj ( @MODULES ) {
-  	print PLUGIN $obj->include($start, $end);
+      print PLUGIN $obj->include($start, $end);
   }
 
   print PLUGIN <<END;
@@ -145,14 +145,14 @@ namespace Babylon
         void clean() { };
 
         $classname() :
-	    my_first_letter($start_string),
-	    my_last_letter($end_string)
-	    // my_version=\"4.0\" // Not yet supported!
+        my_first_letter($start_string),
+        my_last_letter($end_string)
+        // my_version=\"4.0\" // Not yet supported!
         {
 END
 
   foreach my $obj ( @MODULES ) {
-  	print PLUGIN $obj->init($start, $end);
+      print PLUGIN $obj->init($start, $end);
   }
 
   print PLUGIN <<END;
@@ -169,29 +169,29 @@ END
   print PLUGIN <<END;
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return \"$name\";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return \"$name\";
+    }
 
 END
 
   foreach my $obj ( @MODULES ) {
-  	print PLUGIN $obj->function($start, $end, $classname);
+      print PLUGIN $obj->function($start, $end, $classname);
   }
 
   # ########################################################################
@@ -203,14 +203,14 @@ END
         // functions
         $classname(const $classname &) ; // no implementaion!
 
-	// members
+    // members
         Babylon\:\:UCS4 my_first_letter;
         Babylon\:\:UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;
 END
 
   foreach my $obj ( @MODULES ) {
-  	print PLUGIN $obj->var_def($start, $end);
+      print PLUGIN $obj->var_def($start, $end);
   }
 
   # ########################################################################
@@ -223,7 +223,7 @@ END
 END
 
   foreach my $obj ( @MODULES ) {
-  	print PLUGIN $obj->var($start, $end, $classname);
+      print PLUGIN $obj->var($start, $end, $classname);
   }
 
   # ########################################################################

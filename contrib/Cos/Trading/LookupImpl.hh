@@ -28,16 +28,16 @@
 #include "ImportAttributesImpl.hh"
 
 class LookupImpl : virtual public CosTrading::_sk_Lookup,
-		   virtual public TraderComponentsImpl,
-		   virtual public SupportAttributesImpl,
-		   virtual public ImportAttributesImpl
+           virtual public TraderComponentsImpl,
+           virtual public SupportAttributesImpl,
+           virtual public ImportAttributesImpl
 {
 public:
   LookupImpl();
   virtual void query(const char *, const char *, const char *, const CosTrading::PolicySeq &,
-		     const CosTrading::Lookup::SpecifiedProps &, CORBA::ULong,
-		     CosTrading::OfferSeq *&, CosTrading::OfferIterator_ptr &,
-		     CosTrading::PolicyNameSeq *&);
+             const CosTrading::Lookup::SpecifiedProps &, CORBA::ULong,
+             CosTrading::OfferSeq *&, CosTrading::OfferIterator_ptr &,
+             CosTrading::PolicyNameSeq *&);
 };
 
 #endif

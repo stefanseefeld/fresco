@@ -34,36 +34,36 @@ namespace Berlin
     class InvisibleTriangle : public Frame::Renderer
     {
       public:
-	InvisibleTriangle(Fresco::Coord t, bool f,
-			  Fresco::ToolKit::Direction d) :
-	    Frame::Renderer(t, f), my_direction(d)
-	{ }
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    InvisibleTriangle(Fresco::Coord t, bool f,
+              Fresco::ToolKit::Direction d) :
+        Frame::Renderer(t, f), my_direction(d)
+    { }
+    virtual void draw(Fresco::DrawTraversal_ptr);
       private:
-	Fresco::ToolKit::Direction my_direction;
+    Fresco::ToolKit::Direction my_direction;
     };
 
     class BeveledTriangle : public Bevel
     {
       public:
-	BeveledTriangle(Fresco::Coord t, type s, Fresco::Coord b,
-			bool f, Fresco::ToolKit::Direction d) :
-	    Bevel(t, s, b, f), my_direction(d) { }
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    BeveledTriangle(Fresco::Coord t, type s, Fresco::Coord b,
+            bool f, Fresco::ToolKit::Direction d) :
+        Bevel(t, s, b, f), my_direction(d) { }
+    virtual void draw(Fresco::DrawTraversal_ptr);
       protected:
-	Fresco::ToolKit::Direction my_direction;
+    Fresco::ToolKit::Direction my_direction;
     };
     
     class ColoredTriangle : public ColoredFrame
     {
       public:
-	ColoredTriangle(Fresco::Coord t, const Fresco::Color &c, bool f,
-			Fresco::ToolKit::Direction d) :
-	    ColoredFrame(t, c, f), my_direction(d)
-	{ }
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    ColoredTriangle(Fresco::Coord t, const Fresco::Color &c, bool f,
+            Fresco::ToolKit::Direction d) :
+        ColoredFrame(t, c, f), my_direction(d)
+    { }
+    virtual void draw(Fresco::DrawTraversal_ptr);
       protected:
-	Fresco::ToolKit::Direction my_direction;
+    Fresco::ToolKit::Direction my_direction;
     };
 
   } // namespace

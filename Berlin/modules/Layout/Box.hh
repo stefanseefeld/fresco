@@ -38,30 +38,30 @@ namespace Berlin
 
         virtual void request(Fresco::Graphic::Requisition &);
         virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
+                   Fresco::Region_ptr);
 
         virtual void traverse(Fresco::Traversal_ptr);
         virtual void need_resize();
         virtual void need_resize(Fresco::Tag);
         virtual void allocate(Fresco::Tag,
-			      const Fresco::Allocation::Info &);
+                  const Fresco::Allocation::Info &);
 
         virtual const char* object_name() { return my_obj_name; }
 
       protected:
         LayoutManager::Allocations
-	children_allocations(Fresco::Region_ptr);
+    children_allocations(Fresco::Region_ptr);
         void traverse_with_allocation(Fresco::Traversal_ptr,
-				      Fresco::Region_ptr);
+                      Fresco::Region_ptr);
         void traverse_without_allocation(Fresco::Traversal_ptr);
 
         //. The fixed class name of this object, used for constructing
-	//. name strings
+    //. name strings
         const char *my_box_name;
         //. The changing object name. Note that this is allocated as a
-	//. buffer and strcpy'd into, since it may change over the course
-	//. of a method but cannot be deleted in the scope of a Trace guard
-	//. object
+    //. buffer and strcpy'd into, since it may change over the course
+    //. of a method but cannot be deleted in the scope of a Trace guard
+    //. object
         char *my_obj_name;
       private:
         LayoutManager               *my_layout;

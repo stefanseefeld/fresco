@@ -36,14 +36,14 @@ Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy) :
 {
     BoundedRange::Settings settings = my_xvalue->state();
     my_offset[xaxis].lower = 
-	settings.lvalue/(settings.upper - settings.lower);
+    settings.lvalue/(settings.upper - settings.lower);
     my_offset[xaxis].upper =
-	settings.uvalue/(settings.upper - settings.lower);
+    settings.uvalue/(settings.upper - settings.lower);
     settings = my_yvalue->state();
     my_offset[yaxis].lower =
-	settings.lvalue/(settings.upper - settings.lower);
+    settings.lvalue/(settings.upper - settings.lower);
     my_offset[yaxis].upper =
-	settings.uvalue/(settings.upper - settings.lower);
+    settings.uvalue/(settings.upper - settings.lower);
     my_xvalue->attach(Observer_var(observer()));
     my_yvalue->attach(Observer_var(observer()));
 }
@@ -63,11 +63,11 @@ void Panner::pick(PickTraversal_ptr traversal)
     Trace trace("Panner::pick");
     if (traversal->intersects_allocation())
     {
-	traversal->enter_controller(Controller_var(_this()));
-	MonoGraphic::traverse(traversal);
-	traverse_thumb(traversal);
-	if (!traversal->picked()) traversal->hit();
-	traversal->leave_controller();
+    traversal->enter_controller(Controller_var(_this()));
+    MonoGraphic::traverse(traversal);
+    traverse_thumb(traversal);
+    if (!traversal->picked()) traversal->hit();
+    traversal->leave_controller();
     }
 }
 
@@ -102,14 +102,14 @@ void Panner::adjust(const OriginatedDelta &od)
     delta.y = newpt.y - origin.y;
     
     if (origin.x < 0.)
-	delta.x = std::max(origin.x + delta.x, 0.);
+    delta.x = std::max(origin.x + delta.x, 0.);
     else if (origin.x > my_upperBounds.x)
-	delta.x = std::min(origin.x + delta.x, 0.);
+    delta.x = std::min(origin.x + delta.x, 0.);
   
     if (origin.y < 0.)
-	delta.y = std::max(origin.y + delta.y, 0.);
+    delta.y = std::max(origin.y + delta.y, 0.);
     else if (origin.y > my_upperBounds.y)
-	delta.y = std::min(origin.y + delta.y, 0.);
+    delta.y = std::min(origin.y + delta.y, 0.);
   
     if (delta.x != 0.) my_xvalue->adjust(delta.x*my_scale.x);
     if (delta.y != 0.) my_yvalue->adjust(delta.y*my_scale.y);
@@ -119,14 +119,14 @@ void Panner::update(const CORBA::Any &)
 {
     BoundedRange::Settings settings = my_xvalue->state();
     my_offset[xaxis].lower = (settings.lvalue - settings.lower)/
-	(settings.upper - settings.lower);
+    (settings.upper - settings.lower);
     my_offset[xaxis].upper = (settings.uvalue - settings.lower)/
-	(settings.upper - settings.lower);
+    (settings.upper - settings.lower);
     settings = my_yvalue->state();
     my_offset[yaxis].lower = (settings.lvalue - settings.lower)/
-	(settings.upper - settings.lower);
+    (settings.upper - settings.lower);
     my_offset[yaxis].upper = (settings.uvalue - settings.lower)/
-	(settings.upper - settings.lower);
+    (settings.upper - settings.lower);
     need_redraw();
 }
 
@@ -135,8 +135,8 @@ void Panner::traverse_thumb(Traversal_ptr traversal)
     Graphic_var child = body();
     if (CORBA::is_nil(child)) return;
     Impl_var<RegionImpl>
-	allocation(new RegionImpl(Region_var(traversal->
-					     current_allocation())));
+    allocation(new RegionImpl(Region_var(traversal->
+                         current_allocation())));
     Impl_var<TransformImpl> transformation(new TransformImpl);
     my_upperBounds.x = allocation->upper.x - allocation->lower.x;
     my_upperBounds.y = allocation->upper.y - allocation->lower.y;
@@ -156,9 +156,9 @@ void Panner::traverse_thumb(Traversal_ptr traversal)
     
     try
     {
-	traversal->traverse_child (child, 0,
-				   Region_var(allocation->_this()),
-				   Transform_var(transformation->_this()));
+    traversal->traverse_child (child, 0,
+                   Region_var(allocation->_this()),
+                   Transform_var(transformation->_this()));
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     { body(Fresco::Graphic::_nil()); }

@@ -39,8 +39,8 @@ Viewer::Viewer() : ControllerImpl(false) { }
 Viewer::~Viewer() { }
 
 void Viewer::init(Editor_ptr editor, Model_ptr model,
-		  Coord width, Coord height,
-		  FigureKit_ptr figures, ToolKit_ptr tools)
+          Coord width, Coord height,
+          FigureKit_ptr figures, ToolKit_ptr tools)
 {
     my_editor = RefCount_var<Editor>::increment(editor);
     Requestor *requestor = new Requestor(0., 0., width, height);
@@ -53,8 +53,8 @@ void Viewer::init(Editor_ptr editor, Model_ptr model,
     body(Fresco::Graphic_var(tools->frame(Fresco::Graphic_var(requestor->_this()), 20., background, true)));
     if (!CORBA::is_nil(model))
     {
-	Graphic_var view = model->create_view();
-	my_root->append_graphic(view);
+    Graphic_var view = model->create_view();
+    my_root->append_graphic(view);
     }
 }
 
@@ -71,57 +71,57 @@ Fresco::GraphicIterator_ptr Viewer::last_child_graphic()
 { return my_root->last_child_graphic(); }
 
 void Viewer::press(Fresco::PickTraversal_ptr traversal,
-		   const Fresco::Input::Event &event)
+           const Fresco::Input::Event &event)
 {
     Trace trace("Viewer::press");
     bool ok = false;
     if (CORBA::is_nil(my_active))
     {
-	my_active = my_editor->current_tool();
-	if (CORBA::is_nil(my_active)) return;
-	ok = my_active->grasp(Controller_var(_this()), traversal, event);
+    my_active = my_editor->current_tool();
+    if (CORBA::is_nil(my_active)) return;
+    ok = my_active->grasp(Controller_var(_this()), traversal, event);
     }
     else ok = my_active->manipulate(traversal, event);
     if (!ok && !CORBA::is_nil(my_active))
     {
-	Unidraw::Command_var command = my_active->effect(traversal, event);
-	command->execute();
-	my_active = Unidraw::Tool::_nil();
+    Unidraw::Command_var command = my_active->effect(traversal, event);
+    command->execute();
+    my_active = Unidraw::Tool::_nil();
     }
     ControllerImpl::press(traversal, event);
 }
 
 void Viewer::drag(Fresco::PickTraversal_ptr traversal,
-		  const Fresco::Input::Event &event)
+          const Fresco::Input::Event &event)
 {
     Trace trace("Viewer::drag");
     if (CORBA::is_nil(my_active)) return;
     if (!my_active->manipulate(traversal, event))
     {
-	Unidraw::Command_var command = my_active->effect(traversal, event);
-	command->execute();
-	my_active = Unidraw::Tool::_nil();
+    Unidraw::Command_var command = my_active->effect(traversal, event);
+    command->execute();
+    my_active = Unidraw::Tool::_nil();
     }
 }
 
 void Viewer::move(Fresco::PickTraversal_ptr traversal,
-		  const Fresco::Input::Event &event)
+          const Fresco::Input::Event &event)
 { Viewer::drag(traversal, event); }
 
 void Viewer::release(Fresco::PickTraversal_ptr traversal,
-		     const Fresco::Input::Event &event)
+             const Fresco::Input::Event &event)
 {
     Trace trace("Viewer::release");
     if (CORBA::is_nil(my_active))
     {
-	ControllerImpl::release(traversal, event);
-	return;
+    ControllerImpl::release(traversal, event);
+    return;
     }
     if (!my_active->manipulate(traversal, event))
     {
-	Unidraw::Command_var command = my_active->effect(traversal, event);
-	command->execute();
-	my_active = Unidraw::Tool::_nil();
+    Unidraw::Command_var command = my_active->effect(traversal, event);
+    command->execute();
+    my_active = Unidraw::Tool::_nil();
     }
     ControllerImpl::release(traversal, event);
 }

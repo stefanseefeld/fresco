@@ -37,29 +37,29 @@ namespace Berlin
   {
 
     class WindowImpl : public virtual POA_Fresco::Window,
-		       public ControllerImpl
+               public ControllerImpl
     {
-	class UnmappedStageHandle;
+    class UnmappedStageHandle;
       public:
-	WindowImpl();
-	virtual ~WindowImpl();
-	virtual void need_resize();
-	virtual CORBA::Boolean request_focus(Fresco::Controller_ptr,
-					     Fresco::Input::Device);
-	void insert(Fresco::Desktop_ptr);
-	virtual Fresco::Vertex position();
-	virtual void position(const Fresco::Vertex &);
-	virtual Fresco::Vertex size();
-	virtual void size(const Fresco::Vertex &);
-	virtual Layout::Stage::Index layer();
-	virtual void layer(Layout::Stage::Index);
-	virtual CORBA::Boolean mapped();
-	virtual void mapped(CORBA::Boolean);
+    WindowImpl();
+    virtual ~WindowImpl();
+    virtual void need_resize();
+    virtual CORBA::Boolean request_focus(Fresco::Controller_ptr,
+                         Fresco::Input::Device);
+    void insert(Fresco::Desktop_ptr);
+    virtual Fresco::Vertex position();
+    virtual void position(const Fresco::Vertex &);
+    virtual Fresco::Vertex size();
+    virtual void size(const Fresco::Vertex &);
+    virtual Layout::Stage::Index layer();
+    virtual void layer(Layout::Stage::Index);
+    virtual CORBA::Boolean mapped();
+    virtual void mapped(CORBA::Boolean);
       private:
-	Layout::StageHandle_var             my_handle;
-	Impl_var<UnmappedStageHandle>       my_unmapped;
-	Prague::Mutex                       my_mutex;
-	std::vector<Fresco::Controller_var> my_focus;
+    Layout::StageHandle_var             my_handle;
+    Impl_var<UnmappedStageHandle>       my_unmapped;
+    Prague::Mutex                       my_mutex;
+    std::vector<Fresco::Controller_var> my_focus;
     };
 
   } // namespace

@@ -44,19 +44,19 @@ unsigned long ServerContextImpl::my_counter = 0;
 // occasionally pings the client to make sure it's still there.
 
 ServerContextImpl::ServerContextImpl(ServerImpl *s,
-				     const CORBA::PolicyList &policies,
-				     ClientContext_ptr c) :
+                     const CORBA::PolicyList &policies,
+                     ClientContext_ptr c) :
     my_server(s),
     my_policies(policies),
     my_client(ClientContext::_duplicate(c))
 {
     Trace trace("ServerContextImpl::ServerContextImpl");
     Babylon::String title =
-	Unicode::to_internal(*my_client->application_title());
+    Unicode::to_internal(*my_client->application_title());
     Logger::log(Logger::corba) << (void *)(this)
-			       << " is the ServerContext "
-			       << "for application \"" << title.convert()
-			       << "\"." << std::endl;
+                   << " is the ServerContext "
+                   << "for application \"" << title.convert()
+                   << "\"." << std::endl;
 }
 
 ServerContextImpl::~ServerContextImpl()
@@ -65,7 +65,7 @@ ServerContextImpl::~ServerContextImpl()
   for (klist_t::iterator i = my_kits.begin(); i != my_kits.end(); ++i)
     (*i).second->decrement();
   Logger::log(Logger::corba) << "ServerContext " << (void *)(this)
-			     << " destructed." << std::endl;
+                 << " destructed." << std::endl;
 }
 
 ClientContext_ptr ServerContextImpl::client()
@@ -98,7 +98,7 @@ CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name)
 // this server.
 
 Kit_ptr ServerContextImpl::resolve(const char *type,
-				   const Kit::PropertySeq &properties)    
+                   const Kit::PropertySeq &properties)    
   throw (SecurityException, CreationFailureException)
 {
   /*
@@ -121,7 +121,7 @@ Kit_ptr ServerContextImpl::resolve(const char *type,
   PortableServer::POA_var poa =
     root->create_POA(oss.str().c_str(), manager, my_policies);
   Logger::log(Logger::lifecycle) << "created new POA for kit of type "
-	  << type << " (id is " << oss.str() << ')' << std::endl;
+      << type << " (id is " << oss.str() << ')' << std::endl;
   KitImpl *kit = my_server->create(type, properties, poa, this);
   if (!kit) throw CreationFailureException();
   kit->bind(ServerContext_var(_this()));

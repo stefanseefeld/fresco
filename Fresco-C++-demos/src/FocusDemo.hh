@@ -19,18 +19,18 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FocusDemo_hh
-#define _FocusDemo_hh
+#ifndef _CXX_demos_FocusDemo_hh
+#define _CXX_demos_FocusDemo_hh
 
 #include "Demo.hh"
 
 class FocusDemo : public Demo
 {
-  class Observer;
-public:
-  FocusDemo(Application *);
-private:
-  Observer *observer;
+    class Observer;
+  public:
+    FocusDemo(Application *);
+  private:
+    Observer *my_observer;
 };
 
 #endif

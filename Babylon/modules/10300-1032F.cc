@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         Old_Italic10300() :
-	    my_first_letter(0x10300),
-	    my_last_letter(0x1032F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x10300),
+        my_last_letter(0x1032F)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Old Italic";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Old Italic";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -359,7 +359,7 @@ namespace Babylon
         // functions
         Old_Italic10300(const Old_Italic10300 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

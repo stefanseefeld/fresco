@@ -5,17 +5,17 @@
 using namespace Prague;
 
 const char *text1[] = {"Heut' kommt der Hans zu mir,",
-		       "Freut sich die Lies'.",
-		       "Kommt er aber \"uber Oberammergau,",
-		       "Oder aber \"uber Unterammergau,",
-		       "Ob er aber \"uberhaupt nicht kommt,",
-		       "Ist nicht gewiss."};
+               "Freut sich die Lies'.",
+               "Kommt er aber \"uber Oberammergau,",
+               "Oder aber \"uber Unterammergau,",
+               "Ob er aber \"uberhaupt nicht kommt,",
+               "Ist nicht gewiss."};
 const char *text2[] = {"C-A-F-F-E-E,",
-		       "Trink nicht so viel Kaffee.",
-		       "Nicht f\"ur Kinder dieser T\"urkentrank,",
-		       "Schw\"acht die Nerven, macht dich schwach und krank.",
-		       "Sei doch kein Muselman,",
-		       "Der das nicht lassen kann."};
+               "Trink nicht so viel Kaffee.",
+               "Nicht f\"ur Kinder dieser T\"urkentrank,",
+               "Schw\"acht die Nerven, macht dich schwach und krank.",
+               "Sei doch kein Muselman,",
+               "Der das nicht lassen kann."};
 
 class Singer : public Timer::Notifier
 {
@@ -35,12 +35,12 @@ public:
   virtual void notify(int)
     {
       switch (++count)
-	{
-	case 1: timer1->stop(); break;
-	case 2: timer2->stop(); timer1->start(Time::currentTime(), 1000); break;
-	case 3: timer2->start(Time::currentTime(), 1000); break;
-	case 4: std::cout << "\033[0m" << std::flush; exit(0);
-	};
+    {
+    case 1: timer1->stop(); break;
+    case 2: timer2->stop(); timer1->start(Time::currentTime(), 1000); break;
+    case 3: timer2->start(Time::currentTime(), 1000); break;
+    case 4: std::cout << "\033[0m" << std::flush; exit(0);
+    };
     }
 private:
   Timer *timer1, *timer2;

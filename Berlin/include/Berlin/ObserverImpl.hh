@@ -32,8 +32,8 @@ namespace Berlin
 {
 
   class ObserverImpl : public virtual POA_Fresco::Observer,
-		       public virtual ServantBase,
-		       public virtual IdentifiableImpl
+               public virtual ServantBase,
+               public virtual IdentifiableImpl
   {
     public:
       virtual void destroy() { deactivate(); }

@@ -34,41 +34,41 @@ namespace Berlin
     class Renderer : virtual public Console::Drawable::Extension
     {
       public:
-	//. Set the color used for all drawing operations to the one given.
-	virtual void set_color(const Fresco::Color &) = 0;
-	
-	//. Set the pixel at the given position to the current drawing
-	//. color.
-	virtual void draw_pixel(Fresco::PixelCoord, //.< x position
-				Fresco::PixelCoord) = 0; //.< y position
-	
-	//. Draw a horizontal line starting at the given position with the
-	//. given length using the current drawing color. The line is one
-	//. pixel thick.
-	virtual void draw_hline(Fresco::PixelCoord, //. x position of one end
-				Fresco::PixelCoord, //.< y position
-				Fresco::PixelCoord) = 0; //.< width of the line
-	//. Draw a vertical line starting at the given position with the
-	//. given length using the current drawing color. The line is one
-	//. pixel thick.
-	virtual void draw_vline(Fresco::PixelCoord, //. x positon
-				Fresco::PixelCoord, //. y position of one end
-				Fresco::PixelCoord) = 0; //.< height of the line
-	//. Draw a line starting at the given position using the current
-	//. drawing color. The line is one pixel thick and exact (no more
-	//. then 0.5 pixels from the 'real' position away). It starts at
-	//. the given position and ends at (x + delta_x, y + delta_y).
-	virtual void draw_line(Fresco::PixelCoord, //.< x position of one end
-			       Fresco::PixelCoord, //.< y position of that end
-			       Fresco::PixelCoord, //.< delta_x 
-			       Fresco::PixelCoord) = 0; //.< delta_y
-	//. Draws a rectangle filled with the current drawing color. One
-	//. corner of it is at the given position and it has the given
-	//. width and height.
-	virtual void draw_box(Fresco::PixelCoord, //.< x position of a corner
-			      Fresco::PixelCoord, //.< y position of that corner
-			      Fresco::PixelCoord, //.< width
-			      Fresco::PixelCoord) = 0; //.< height
+    //. Set the color used for all drawing operations to the one given.
+    virtual void set_color(const Fresco::Color &) = 0;
+    
+    //. Set the pixel at the given position to the current drawing
+    //. color.
+    virtual void draw_pixel(Fresco::PixelCoord, //.< x position
+                Fresco::PixelCoord) = 0; //.< y position
+    
+    //. Draw a horizontal line starting at the given position with the
+    //. given length using the current drawing color. The line is one
+    //. pixel thick.
+    virtual void draw_hline(Fresco::PixelCoord, //. x position of one end
+                Fresco::PixelCoord, //.< y position
+                Fresco::PixelCoord) = 0; //.< width of the line
+    //. Draw a vertical line starting at the given position with the
+    //. given length using the current drawing color. The line is one
+    //. pixel thick.
+    virtual void draw_vline(Fresco::PixelCoord, //. x positon
+                Fresco::PixelCoord, //. y position of one end
+                Fresco::PixelCoord) = 0; //.< height of the line
+    //. Draw a line starting at the given position using the current
+    //. drawing color. The line is one pixel thick and exact (no more
+    //. then 0.5 pixels from the 'real' position away). It starts at
+    //. the given position and ends at (x + delta_x, y + delta_y).
+    virtual void draw_line(Fresco::PixelCoord, //.< x position of one end
+                   Fresco::PixelCoord, //.< y position of that end
+                   Fresco::PixelCoord, //.< delta_x 
+                   Fresco::PixelCoord) = 0; //.< delta_y
+    //. Draws a rectangle filled with the current drawing color. One
+    //. corner of it is at the given position and it has the given
+    //. width and height.
+    virtual void draw_box(Fresco::PixelCoord, //.< x position of a corner
+                  Fresco::PixelCoord, //.< y position of that corner
+                  Fresco::PixelCoord, //.< width
+                  Fresco::PixelCoord) = 0; //.< height
     };
 
   } // namespace

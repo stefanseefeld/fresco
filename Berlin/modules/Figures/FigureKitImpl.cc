@@ -35,8 +35,8 @@ using namespace Fresco;
 using namespace Berlin::FigureKit;
 
 FigureKitImpl::FigureKitImpl(const std::string &id,
-			     const Fresco::Kit::PropertySeq &p,
-			     ServerContextImpl *c) :
+                 const Fresco::Kit::PropertySeq &p,
+                 ServerContextImpl *c) :
     KitImpl(id, p, c)
 { }
 FigureKitImpl::~FigureKitImpl() { }
@@ -44,13 +44,13 @@ FigureKitImpl::~FigureKitImpl() { }
 Graphic_ptr FigureKitImpl::root(Graphic_ptr g)
 {
     return
-	create_and_set_body<Graphic>(new TransformAllocator(Alignment(0.5),
-							    Alignment(0.5),
-							    Alignment(0.5),
-							    Alignment(0.5),
-							    Alignment(0.5),
-							    Alignment(0.5)),
-				     g, "FigureKit/root");
+    create_and_set_body<Graphic>(new TransformAllocator(Alignment(0.5),
+                                Alignment(0.5),
+                                Alignment(0.5),
+                                Alignment(0.5),
+                                Alignment(0.5),
+                                Alignment(0.5)),
+                     g, "FigureKit/root");
 }
 
 Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
@@ -77,7 +77,7 @@ Figure::Point_ptr FigureKitImpl::point(Coord x, Coord y)
 }
 
 Figure::Line_ptr FigureKitImpl::line(Coord x0, Coord y0,
-				     Coord x1, Coord y1)
+                     Coord x1, Coord y1)
 {
     Vertex v1, v2;
     v1.x = x0, v1.y = y0, v1.z = 0;
@@ -86,13 +86,13 @@ Figure::Line_ptr FigureKitImpl::line(Coord x0, Coord y0,
 }
 
 Figure::Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t,
-					       Coord r, Coord b)
+                           Coord r, Coord b)
 {
     Vertex lower, upper;
     lower.x = l, lower.y = t, lower.z = 0;
     upper.x = r, upper.y = b, upper.z = 0;
     return create<Figure::Rectangle>(new RectangleImpl(lower, upper),
-				     "FigureKit/rectangle");
+                     "FigureKit/rectangle");
 }
 
 Figure::Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
@@ -100,28 +100,28 @@ Figure::Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
     Vertex center;
     center.x = x, center.y = y; center.z = 0;
     return create<Figure::Circle>(new CircleImpl(center, r),
-				  "FigureKit/circle");
+                  "FigureKit/circle");
 }
 
 Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y,
-					   Coord r1, Coord r2)
+                       Coord r1, Coord r2)
 {
     Vertex center;
     center.x = x, center.y = y, center.z = 0;
     return create<Figure::Ellipse>(new EllipseImpl(center, r1, r2),
-				   "FigureKit/ellipse");
+                   "FigureKit/ellipse");
 }
 
 Figure::Path_ptr FigureKitImpl::multiline(const Fresco::Path &p)
 {
   return create<Figure::Path>(new PathImpl(p, false),
-			      "FigureKit/multiline");
+                  "FigureKit/multiline");
 }
 
 Figure::Path_ptr FigureKitImpl::polygon(const Fresco::Path &p)
 {
     return create<Figure::Path>(new PathImpl(p, true),
-				"FigureKit/polygon");
+                "FigureKit/polygon");
 }
 
 Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
@@ -132,13 +132,13 @@ Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
 Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
 {
     return create_and_set_body<Graphic>(new Texture(raster), g,
-					"FigureKit/texture");
+                    "FigureKit/texture");
 }
 
 Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 {
     return create_and_set_body<Graphic>(new Transformer, g,
-					"FigureKit/transformer");
+                    "FigureKit/transformer");
 }
 
 

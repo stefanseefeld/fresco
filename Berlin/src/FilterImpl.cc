@@ -25,7 +25,7 @@
 using namespace Fresco;
 
 Berlin::Accelerator::Accelerator(Input::Device d, const Input::Toggle &t,
-				 Input::Bitset b, Command_ptr c) :
+                 Input::Bitset b, Command_ptr c) :
     my_device(d),
     my_toggle(t),
     my_modifier(b),

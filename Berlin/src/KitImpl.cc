@@ -38,8 +38,8 @@ namespace
 }
 
 KitImpl::KitImpl(const std::string &id,
-		 const Fresco::Kit::PropertySeq &p,
-		 ServerContextImpl *c) :
+         const Fresco::Kit::PropertySeq &p,
+         ServerContextImpl *c) :
     my_repo_id(id),
     my_props(new Fresco::Kit::PropertySeq(p)),
     my_refcount(1),
@@ -81,8 +81,8 @@ CORBA::Boolean KitImpl::supports(const Fresco::Kit::PropertySeq &p)
     for (property1 = begin1; property1 != end1; property1++)
       if (strcmp(property1->name, property2->name) == 0)
       {
-	if (strcmp(property1->value, property2->value) == 0) break;
-	else return false; // value not supported
+    if (strcmp(property1->value, property2->value) == 0) break;
+    else return false; // value not supported
       }
     if (property1 == end1) return false; // property not supported
   }
@@ -138,8 +138,8 @@ void KitImpl::decrement()
     done = --my_refcount;
 #ifdef LCLOG
     Logger::log(Logger::lifecycle)
-	<< "KitImpl::decrement on " << this << " (" << typeid(*this).name()
-	<< "): new count is " << _refcount << std::endl;
+    << "KitImpl::decrement on " << this << " (" << typeid(*this).name()
+    << "): new count is " << _refcount << std::endl;
 #endif
   }
   if (done) return;

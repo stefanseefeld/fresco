@@ -39,20 +39,20 @@ TriggerImpl::~TriggerImpl()
 {
     Trace trace("Trigger::~Trigger");
     if (!CORBA::is_nil(my_command))
-	try {my_command->destroy(); }
-	catch (const CORBA::OBJECT_NOT_EXIST &) { }
-	catch (const CORBA::COMM_FAILURE &) { }
-	catch (const CORBA::TRANSIENT &) { }
+    try {my_command->destroy(); }
+    catch (const CORBA::OBJECT_NOT_EXIST &) { }
+    catch (const CORBA::COMM_FAILURE &) { }
+    catch (const CORBA::TRANSIENT &) { }
 }
 void TriggerImpl::action(Command_ptr c)
 {
     Trace trace("TriggerImpl::action");
     Prague::Guard<Mutex> guard(my_mutex);
     if (!CORBA::is_nil(my_command))
-	try { my_command->destroy(); }
-	catch (const CORBA::OBJECT_NOT_EXIST &) { }
-	catch (const CORBA::COMM_FAILURE &) { }
-	catch (const CORBA::TRANSIENT &) { }
+    try { my_command->destroy(); }
+    catch (const CORBA::OBJECT_NOT_EXIST &) { }
+    catch (const CORBA::COMM_FAILURE &) { }
+    catch (const CORBA::TRANSIENT &) { }
     my_command = Command::_duplicate(c);
 }
 
@@ -75,15 +75,15 @@ CORBA::Any *TriggerImpl::payload()
 }
 
 void TriggerImpl::release(PickTraversal_ptr traversal,
-			  const Input::Event &event)
+              const Input::Event &event)
 {
     // once we have real focus management the command should be executed
     // if we have focus and the Telltale::toggle is to be released...
     // -stefan
     if (inside(traversal) && test(Fresco::Controller::pressed))
     {
-	try { execute(); }
-	catch (...) { }
+    try { execute(); }
+    catch (...) { }
     }
     ControllerImpl::release(traversal, event);
 }
@@ -93,12 +93,12 @@ void TriggerImpl::key_press(const Input::Event &event)
     const Input::Toggle &toggle = event[0].attr.selection();
     if (toggle.number == 32) // space
     {
-	set(Fresco::Controller::pressed);
-	if (test(Fresco::Controller::pressed))
-	{
-	    execute();
-	    clear(Fresco::Controller::pressed);
-	}
+    set(Fresco::Controller::pressed);
+    if (test(Fresco::Controller::pressed))
+    {
+        execute();
+        clear(Fresco::Controller::pressed);
+    }
     }
     else ControllerImpl::key_press(event);
 }
@@ -108,11 +108,11 @@ void TriggerImpl::execute()
     Trace trace("TriggerImpl::execute");
     Prague::Guard<Mutex> guard(my_mutex);
     if (!CORBA::is_nil(my_command) )
-	try { my_command->execute(my_data); }
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_command = Fresco::Command::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_command = Fresco::Command::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_command = Fresco::Command::_nil(); }
+    try { my_command->execute(my_data); }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_command = Fresco::Command::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_command = Fresco::Command::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_command = Fresco::Command::_nil(); }
 }

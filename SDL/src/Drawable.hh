@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Drawable_hh
-#define _Drawable_hh
+#ifndef _SDL_Drawable_hh
+#define _SDL_Drawable_hh
 
 #include <Fresco/config.hh>
 #include <Berlin/Logger.hh>
@@ -34,75 +34,79 @@ extern "C"
 #include <unistd.h>
 }
 
+namespace Berlin
+{
+  class Console;
+}
+
 namespace SDL
 {
+  class GLContext;
 
-class Console;
-class GLContext;
+  class Drawable : public Berlin::Console::Drawable
+  {
+      friend class Berlin::Console;
+      friend class SDL::GLContext;
 
-class Drawable : public ::Console::Drawable
-{
-  friend class Console;
-  friend class GLContext;
-
-public:
-  typedef Uint32 Pixel;
-
-  Drawable(const char *,
-	   Fresco::PixelCoord = 640, Fresco::PixelCoord = 480, int = 3);
-  virtual ~Drawable();
-
-  virtual Fresco::Drawable::PixelFormat pixel_format();
-  virtual Fresco::Drawable::BufferFormat buffer_format();
-  virtual Fresco::PixelCoord width() const;
-  virtual Fresco::PixelCoord height() const;
-  virtual Fresco::PixelCoord vwidth() const;
-  virtual Fresco::PixelCoord vheight() const;
-  virtual Fresco::Coord resolution(Fresco::Axis a) const;
-  virtual Fresco::Coord dpi(Fresco::Axis a) const;
-  virtual Fresco::PixelCoord row_length() const;
+    public:
+      typedef Uint32 Pixel;
+      
+      Drawable(const char *,
+           Fresco::PixelCoord = 640, Fresco::PixelCoord = 480,
+           int = 3);
+      virtual ~Drawable();
+      
+      virtual Fresco::Drawable::PixelFormat pixel_format();
+      virtual Fresco::Drawable::BufferFormat buffer_format();
+      virtual Fresco::PixelCoord width() const;
+      virtual Fresco::PixelCoord height() const;
+      virtual Fresco::PixelCoord vwidth() const;
+      virtual Fresco::PixelCoord vheight() const;
+      virtual Fresco::Coord resolution(Fresco::Axis a) const;
+      virtual Fresco::Coord dpi(Fresco::Axis a) const;
+      virtual Fresco::PixelCoord row_length() const;
   
-  virtual void flush();
-  virtual void flush(Fresco::PixelCoord, Fresco::PixelCoord,
-                     Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void flush();
+      virtual void flush(Fresco::PixelCoord, Fresco::PixelCoord,
+             Fresco::PixelCoord, Fresco::PixelCoord);
   
-  virtual void init() { }
-  virtual void finish() { }
+      virtual void init() { }
+      virtual void finish() { }
   
-  // fast blits
-  void blit(Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord);
+      // fast blits
+      void blit(Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord);
+      
+      void blit(const Berlin::Console::Drawable &,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord);
+      
+      void blit(const SDL::Drawable &,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord);
+      void blit(Fresco::Drawable_ptr,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord,
+        Fresco::PixelCoord, Fresco::PixelCoord);
+      
+      // SDL specific:
+      SDL_Surface *surface() { return my_surface; }
+      unsigned depth() { return my_depth; }
+      bool need_locking() { return my_need_locking; }
+      
+      Pixel map(const Fresco::Color &) const;
 
-  void blit(const ::Console::Drawable &,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord);
-  
-  void blit(const SDL::Drawable &,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord);
-  void blit(Fresco::Drawable_ptr,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord,
-            Fresco::PixelCoord, Fresco::PixelCoord);
-  
-  // SDL specific:
-  SDL_Surface *surface() { return _surface; }
-  unsigned depth() { return _depth; }
-  bool need_locking() { return _need_locking; }
+    private:
+      SDL_Surface *my_surface;
+      unsigned my_width;
+      unsigned my_height;
+      unsigned my_depth;
+      bool my_need_locking;
+  };
 
-  Pixel map(const Fresco::Color &) const;
-
-private:
-  SDL_Surface *_surface;
-  unsigned     _width;
-  unsigned     _height;
-  unsigned     _depth;
-  bool         _need_locking;
-};
-
-}; // namespace SDL
+} // namespace SDL
 
 #endif

@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         Hebrew590() :
-	    my_first_letter(0x590),
-	    my_last_letter(0x5FF)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x590),
+        my_last_letter(0x5FF)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x000005D0, 0x000005B7)] = 0xFB2E;
@@ -84,24 +84,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Hebrew";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Hebrew";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -371,7 +371,7 @@ namespace Babylon
         // functions
         Hebrew590(const Hebrew590 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

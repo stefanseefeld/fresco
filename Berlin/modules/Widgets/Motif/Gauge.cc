@@ -35,11 +35,11 @@ void Gauge::request(Fresco::Graphic::Requisition &requisition)
 {
     requisition.x.defined = true;
     requisition.x.natural = requisition.x.maximum =
-	requisition.x.minimum = my_width;
+    requisition.x.minimum = my_width;
     requisition.x.align = 0.;
     requisition.y.defined = true;
     requisition.y.natural = requisition.y.maximum =
-	requisition.y.minimum = my_height;
+    requisition.y.minimum = my_height;
     requisition.y.align = 0.;
 }
 
@@ -56,9 +56,9 @@ void Gauge::draw(DrawTraversal_ptr traversal)
     path.nodes[0].x = path.nodes[0].y = path.nodes[0].z = 0;
     path.nodes[2].x = my_width, path.nodes[2].y = my_height, path.nodes[2].z = 0;
     path.nodes[1].x = path.nodes[2].x, path.nodes[1].y = path.nodes[0].y,
-	path.nodes[1].z = 0.;
+    path.nodes[1].z = 0.;
     path.nodes[3].x = path.nodes[0].x, path.nodes[3].y = path.nodes[2].y,
-	path.nodes[3].z = 0.;
+    path.nodes[3].z = 0.;
     path.nodes[4] = path.nodes[0];
 //   Transform_var transform = traversal->transformation();
 //   for (unsigned int i = 0; i != path.p.length(); ++i)
@@ -68,11 +68,11 @@ void Gauge::draw(DrawTraversal_ptr traversal)
     drawing->draw_path(path);
     path.nodes[0].x = path.nodes[0].y = path.nodes[0].z = 0;
     path.nodes[2].x = v/(u-l)*my_width, path.nodes[2].y = my_height,
-	path.nodes[2].z = 0;
+    path.nodes[2].z = 0;
     path.nodes[1].x = path.nodes[2].x, path.nodes[1].y = path.nodes[0].y,
-	path.nodes[1].z = 0.;
+    path.nodes[1].z = 0.;
     path.nodes[3].x = path.nodes[0].x, path.nodes[3].y = path.nodes[2].y,
-	path.nodes[3].z = 0.;
+    path.nodes[3].z = 0.;
     path.nodes[4] = path.nodes[0];
 //   for (unsigned int i = 0; i != path.p.length(); ++i)
 //       transform->transformVertex(path.p[i]);

@@ -58,33 +58,33 @@ bool NonPositionalFocus::request(Controller_ptr c)
     Controller_var p = Controller::_duplicate(c);
     while (!CORBA::is_nil(p))
     {
-	tmp.insert(tmp.begin(), p);
-	p = p->parent_controller();
+    tmp.insert(tmp.begin(), p);
+    p = p->parent_controller();
     }
     Guard<Mutex> guard(my_mutex);
     cstack_t::iterator of = my_controllers.begin();
     std::vector<Controller_var>::iterator nf = tmp.begin();
     // ... skip the unchanged controllers, ...
     while (nf != tmp.end() &&
-	   of != my_controllers.end() &&
-	   (*nf)->is_identical(*of)) ++nf, ++of;
+       of != my_controllers.end() &&
+       (*nf)->is_identical(*of)) ++nf, ++of;
     // ... remove the old controllers in reverse order, ...
     for (cstack_t::reverse_iterator o = my_controllers.rbegin();
-	 o.base() != of;
-	 ++o)
-	try
-	{ (*o)->lose_focus(device()); }
-	catch (const CORBA::OBJECT_NOT_EXIST &) { }
-	catch (const CORBA::COMM_FAILURE &) { }
-	catch (const CORBA::TRANSIENT &) { }
+     o.base() != of;
+     ++o)
+    try
+    { (*o)->lose_focus(device()); }
+    catch (const CORBA::OBJECT_NOT_EXIST &) { }
+    catch (const CORBA::COMM_FAILURE &) { }
+    catch (const CORBA::TRANSIENT &) { }
 
     my_controllers.erase(of, my_controllers.end());
     // ... add the new controllers, ...
     Focus_var __this = _this ();
     for (; nf != tmp.end(); ++nf)
     {
-	(*nf)->receive_focus (__this);
-	my_controllers.push_back(Fresco::Controller::_duplicate(*nf));
+    (*nf)->receive_focus (__this);
+    my_controllers.push_back(Fresco::Controller::_duplicate(*nf));
     }
     return true;
 }
@@ -101,12 +101,12 @@ void NonPositionalFocus::dispatch(Input::Event &event)
     Prague::Guard<Mutex> guard(my_mutex);
     for (int i = my_controllers.size() - 1; i >= 0 && !done; --i)
     {
-	try { done = my_controllers [i]->handle_non_positional(event);}
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_controllers.resize(i); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_controllers.resize(i); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_controllers.resize(i); }
+    try { done = my_controllers [i]->handle_non_positional(event);}
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_controllers.resize(i); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_controllers.resize(i); }
+    catch (const CORBA::TRANSIENT &)
+    { my_controllers.resize(i); }
     }
 }

@@ -34,8 +34,8 @@ namespace Berlin
 {
 
   class SubjectImpl : public virtual POA_Fresco::Subject,
-		      public virtual RefCountBaseImpl,
-		      public virtual IdentifiableImpl
+              public virtual RefCountBaseImpl,
+              public virtual IdentifiableImpl
   {
       typedef std::vector<Fresco::Observer_var> olist_t;
     public:

@@ -22,19 +22,29 @@
 #ifndef _Fresco_IO_hh
 #define _Fresco_IO_hh
 
-#include <Fresco/config.hh>
 #include <Fresco/Graphic.hh>
 #include <Fresco/Region.hh>
 #include <Fresco/Transform.hh>
 #include <iostream>
 
-inline std::ostream &operator << (std::ostream &os, const Fresco::Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
-std::ostream &operator << (std::ostream &, const Fresco::Color &);
-std::ostream &operator << (std::ostream &, const Fresco::Graphic::Requirement &);
-std::ostream &operator << (std::ostream &, const Fresco::Graphic::Requisition &);
-std::ostream &operator << (std::ostream &, const Fresco::Region::Allotment &);
-std::ostream &operator << (std::ostream &, Fresco::Region_ptr);
-std::ostream &operator << (std::ostream &, const Fresco::Transform::Matrix &);
-std::ostream &operator << (std::ostream &, Fresco::Transform_ptr);
+namespace std
+{
 
+  inline std::ostream &operator << (std::ostream &os,
+                    const Fresco::Vertex &v)
+  { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')'; }
+  std::ostream &operator << (std::ostream &, const Fresco::Color &);
+  std::ostream &operator << (std::ostream &,
+                 const Fresco::Graphic::Requirement &);
+  std::ostream &operator << (std::ostream &,
+                 const Fresco::Graphic::Requisition &);
+  std::ostream &operator << (std::ostream &,
+                 const Fresco::Region::Allotment &);
+  std::ostream &operator << (std::ostream &, Fresco::Region_ptr);
+  std::ostream &operator << (std::ostream &,
+                 const Fresco::Transform::Matrix &);
+  std::ostream &operator << (std::ostream &, Fresco::Transform_ptr);
+
+} // namespace
+  
 #endif

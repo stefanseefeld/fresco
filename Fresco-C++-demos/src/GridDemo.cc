@@ -23,25 +23,24 @@
 
 using namespace Fresco;
 
-GridDemo::GridDemo(Application *a)
-  : Demo(a)
+GridDemo::GridDemo(Application *a) : Demo(a)
 {
-  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
-  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+    LayoutKit_var layout =
+    my_application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+    ToolKit_var tools =
+    my_application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
 
-  Layout::Grid::Index upper;
-  upper.col = 3;
-  upper.row = 3;
-  
-  Graphic_var grid = layout->fixed_grid(upper);
-  ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::inset);
-  Graphic_var frame = tools->frame(layout->fixed_size(Graphic_var(Graphic::_nil()), 100., 100.), 20., spec, true);
+    Layout::Grid::Index upper;
+    upper.col = 3;
+    upper.row = 3;
+    
+    Graphic_var grid = layout->fixed_grid(upper);
+    ToolKit::FrameSpec spec;
+    spec.brightness(0.5); spec._d(ToolKit::inset);
+    Graphic_var frame = tools->frame(layout->fixed_size(Graphic_var(Graphic::_nil()), 100., 100.), 20., spec, true);
 
-  for (int i = 0; i < upper.col * upper.row; i++) {
+    for (int i = 0; i < upper.col * upper.row; ++i)
     grid->append_graphic(tools->rgb(Graphic_var(frame), 1.0, (i % 2 ? 0.0 : 1.0), (i % 2 ? 1.0 : 0.0)));
-  }
-  Controller_var group = tools->group(grid);
-
-  application->append(group, Babylon::String("grid"));
+    Controller_var group = tools->group(grid);
+    my_application->append(group, Babylon::String("grid"));
 };

@@ -32,32 +32,32 @@ using namespace Fresco;
 using namespace Berlin::TextKit;
 
 void Compositor::set_span(RegionImpl *r, Axis a,
-	                  Coord origin, Coord length, Alignment align)
+                      Coord origin, Coord length, Alignment align)
 {
     Coord begin = origin - length * align;
     Coord end = begin + length;
     switch (a)
     {
     case xaxis:
-	r->lower.x = begin;
-	r->upper.x = end;
-	r->xalign = align;
-	break;
+    r->lower.x = begin;
+    r->upper.x = end;
+    r->xalign = align;
+    break;
     case yaxis:
-	r->lower.y = begin;
-	r->upper.y = end;
-	r->yalign = align;
-	break;
+    r->lower.y = begin;
+    r->upper.y = end;
+    r->yalign = align;
+    break;
     case zaxis:
-	r->lower.z = begin;
-	r->upper.z = end;
-	r->zalign = align;
-	break;
+    r->lower.z = begin;
+    r->upper.z = end;
+    r->zalign = align;
+    break;
     }
 }
 
 Coord Compositor::compute_length(const Graphic::Requirement &r,
-				 const Region::Allotment &a)
+                 const Region::Allotment &a)
 {
     Coord length = a.end - a.begin;
     Coord s_a = a.align;
@@ -69,33 +69,33 @@ Coord Compositor::compute_length(const Graphic::Requirement &r,
 }
 
 Coord Compositor::compute_squeeze(const Graphic::Requirement &r,
-				  Coord length)
+                  Coord length)
 {
     Coord f;
     Coord nat = r.natural;
     if (length > nat && r.maximum > nat)
-	f = (length - nat) / (r.maximum - nat);
+    f = (length - nat) / (r.maximum - nat);
     else if (length < nat && r.minimum < nat)
-	f = (nat - length) / (nat - r.minimum);
+    f = (nat - length) / (nat - r.minimum);
     else f = 0.0;
     return f;
 }
 
 void LRCompositor::request(long n, Graphic::Requisition *requests,
-			   DrawingKit_ptr, Graphic::Requisition &result)
+               DrawingKit_ptr, Graphic::Requisition &result)
 {
     Fresco::Graphic::Requirement *r;
     // tile horizontally
     Coord natural = 0., min_size = 0., max_size = 0.;
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], xaxis);
-	if (r->defined)
-	{
-	    natural += r->natural;
-	    max_size += r->maximum;
-	    min_size += r->minimum;
-	}
+    r = GraphicImpl::requirement(requests[i], xaxis);
+    if (r->defined)
+    {
+        natural += r->natural;
+        max_size += r->maximum;
+        min_size += r->minimum;
+    }
     }
     r = GraphicImpl::requirement(result, xaxis);
     r->defined = true;
@@ -115,33 +115,33 @@ void LRCompositor::request(long n, Graphic::Requisition *requests,
     max_trail = GraphicImpl::infinity;
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], yaxis);
-	if (r->defined)
-	{
-	    Coord r_nat = r->natural;
-	    Coord r_max = r->maximum;
-	    Coord r_min = r->minimum;
-	    Coord r_align = r->align;
-	    Coord r_inv_align = Coord(1) - r_align;
-	    natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
-	    max_lead = Math::min(max_lead, Coord(r_max * r_align));
-	    min_lead = Math::max(min_lead, Coord(r_min * r_align));
-	    natural_trail = Math::max(natural_trail,
-				      Coord(r_nat * r_inv_align));
-	    max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
-	    min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
-	}
+    r = GraphicImpl::requirement(requests[i], yaxis);
+    if (r->defined)
+    {
+        Coord r_nat = r->natural;
+        Coord r_max = r->maximum;
+        Coord r_min = r->minimum;
+        Coord r_align = r->align;
+        Coord r_inv_align = Coord(1) - r_align;
+        natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
+        max_lead = Math::min(max_lead, Coord(r_max * r_align));
+        min_lead = Math::max(min_lead, Coord(r_min * r_align));
+        natural_trail = Math::max(natural_trail,
+                      Coord(r_nat * r_inv_align));
+        max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
+        min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
+    }
     }
     r = GraphicImpl::requirement(result, yaxis);
     GraphicImpl::require_lead_trail(*r, natural_lead, max_lead, min_lead,
-				    natural_trail, max_trail, min_trail);
+                    natural_trail, max_trail, min_trail);
     
     my_requisition = result;
 }
 
 void LRCompositor::allocate(long n, Graphic::Requisition *requests,
-			    DrawingKit_ptr, Region_ptr given,
-			    Allocations result)
+                DrawingKit_ptr, Region_ptr given,
+                Allocations result)
 {
     Fresco::Graphic::Requirement* r;
     Fresco::Region::Allotment a;
@@ -156,37 +156,37 @@ void LRCompositor::allocate(long n, Graphic::Requisition *requests,
     Coord p = a.begin + a.align * (a.end - a.begin);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], xaxis);
-	if (r->defined)
-	{
-	    Coord cspan = r->natural;
-	    if (growing) cspan += f * (r->maximum - r->natural);
-	    else if (shrinking) cspan -= f * (r->natural - r->minimum);
-	    set_span(result[i], xaxis, p + cspan * r->align,
-		     cspan, r->align);
-	    p += cspan;
+    r = GraphicImpl::requirement(requests[i], xaxis);
+    if (r->defined)
+    {
+        Coord cspan = r->natural;
+        if (growing) cspan += f * (r->maximum - r->natural);
+        else if (shrinking) cspan -= f * (r->natural - r->minimum);
+        set_span(result[i], xaxis, p + cspan * r->align,
+             cspan, r->align);
+        p += cspan;
         }
-	else set_span(result[i], xaxis, p, 0., 0.);
+    else set_span(result[i], xaxis, p, 0., 0.);
     }
 
     // align vertically
     given->span(yaxis, a);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], yaxis);
-	if (r->defined)
-	{
-	    Coord length = Math::max(Math::min(a.end - a.begin,
-					       r->maximum), r->minimum);
-	    set_span(result[i], yaxis, a.begin + a.align*(a.end-a.begin),
-		     length, r->align);
-	}
-	else set_span(result[i], yaxis, 0., 0., 0.);
+    r = GraphicImpl::requirement(requests[i], yaxis);
+    if (r->defined)
+    {
+        Coord length = Math::max(Math::min(a.end - a.begin,
+                           r->maximum), r->minimum);
+        set_span(result[i], yaxis, a.begin + a.align*(a.end-a.begin),
+             length, r->align);
+    }
+    else set_span(result[i], yaxis, 0., 0., 0.);
     }
 }
 
 void TBCompositor::request(long n, Graphic::Requisition *requests,
-			   DrawingKit_ptr, Graphic::Requisition &result)
+               DrawingKit_ptr, Graphic::Requisition &result)
 {
     Fresco::Graphic::Requirement *r;
     
@@ -194,13 +194,13 @@ void TBCompositor::request(long n, Graphic::Requisition *requests,
     Coord natural = 0., min_size = 0., max_size = 0.;
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], yaxis);
-	if (r->defined)
-	{
-	    natural += r->natural;
-	    max_size += r->maximum;
-	    min_size += r->minimum;
-	}
+    r = GraphicImpl::requirement(requests[i], yaxis);
+    if (r->defined)
+    {
+        natural += r->natural;
+        max_size += r->maximum;
+        min_size += r->minimum;
+    }
     }
     r = GraphicImpl::requirement(result, yaxis);
     r->defined = true;
@@ -220,33 +220,33 @@ void TBCompositor::request(long n, Graphic::Requisition *requests,
     max_trail = GraphicImpl::infinity;
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], xaxis);
-	if (r->defined)
-	{
-	    Coord r_nat = r->natural;
-	    Coord r_max = r->maximum;
-	    Coord r_min = r->minimum;
-	    Coord r_align = r->align;
-	    Coord r_inv_align = Coord(1) - r_align;
-	    natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
-	    max_lead = Math::min(max_lead, Coord(r_max * r_align));
-	    min_lead = Math::max(min_lead, Coord(r_min * r_align));
-	    natural_trail = Math::max(natural_trail,
-				      Coord(r_nat * r_inv_align));
-	    max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
-	    min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
-	}
+    r = GraphicImpl::requirement(requests[i], xaxis);
+    if (r->defined)
+    {
+        Coord r_nat = r->natural;
+        Coord r_max = r->maximum;
+        Coord r_min = r->minimum;
+        Coord r_align = r->align;
+        Coord r_inv_align = Coord(1) - r_align;
+        natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
+        max_lead = Math::min(max_lead, Coord(r_max * r_align));
+        min_lead = Math::max(min_lead, Coord(r_min * r_align));
+        natural_trail = Math::max(natural_trail,
+                      Coord(r_nat * r_inv_align));
+        max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
+        min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
+    }
     }
     r = GraphicImpl::requirement(result, xaxis);
     GraphicImpl::require_lead_trail(*r, natural_lead, max_lead, min_lead,
-				    natural_trail, max_trail, min_trail);
+                    natural_trail, max_trail, min_trail);
 
     my_requisition = result;
 }
 
 void TBCompositor::allocate(long n, Graphic::Requisition *requests,
-			    DrawingKit_ptr, Region_ptr given,
-			    Allocations result)
+                DrawingKit_ptr, Region_ptr given,
+                Allocations result)
 {
     Fresco::Graphic::Requirement* r;
     Fresco::Region::Allotment a;
@@ -261,31 +261,31 @@ void TBCompositor::allocate(long n, Graphic::Requisition *requests,
     Coord p = a.begin + a.align * (a.end - a.begin);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], yaxis);
-	if (r->defined)
-	{
-	    Coord cspan = r->natural;
-	    if (growing) cspan += f * (r->maximum - r->natural);
-	    else if (shrinking) cspan -= f * (r->natural - r->minimum);
-	    set_span(result[i], yaxis, p + cspan * r->align,
-		     cspan, r->align);
-	    p += cspan;
+    r = GraphicImpl::requirement(requests[i], yaxis);
+    if (r->defined)
+    {
+        Coord cspan = r->natural;
+        if (growing) cspan += f * (r->maximum - r->natural);
+        else if (shrinking) cspan -= f * (r->natural - r->minimum);
+        set_span(result[i], yaxis, p + cspan * r->align,
+             cspan, r->align);
+        p += cspan;
         }
-	else set_span(result[i], yaxis, p, 0., 0.);
+    else set_span(result[i], yaxis, p, 0., 0.);
     }
     
     // align horizontally
     given->span(xaxis, a);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], xaxis);
-	if (r->defined)
-	{
-	    Coord length = Math::max(Math::min(a.end - a.begin,
-					       r->maximum), r->minimum);
-	    set_span(result[i], xaxis, a.begin + a.align*(a.end-a.begin),
-		     length, r->align);
-	}
-	else set_span(result[i], xaxis, 0., 0., 0.);
+    r = GraphicImpl::requirement(requests[i], xaxis);
+    if (r->defined)
+    {
+        Coord length = Math::max(Math::min(a.end - a.begin,
+                           r->maximum), r->minimum);
+        set_span(result[i], xaxis, a.begin + a.align*(a.end-a.begin),
+             length, r->align);
+    }
+    else set_span(result[i], xaxis, 0., 0., 0.);
     }
 }

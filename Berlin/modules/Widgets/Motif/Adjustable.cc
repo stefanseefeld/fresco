@@ -38,12 +38,12 @@ class Adjustable::Adjust : public CommandImpl
     ~Adjust() { my_adjustable->_remove_ref(); }
     virtual void execute(const CORBA::Any &any)
     {
-	OriginatedDelta *od;
-	if (any >>= od)
-	    my_adjustable->adjust(*od);
-	else
-	    std::cerr << "Adjustable::Adjust::execute: "
-		      << "wrong message type !" << std::endl;
+    OriginatedDelta *od;
+    if (any >>= od)
+        my_adjustable->adjust(*od);
+    else
+        std::cerr << "Adjustable::Adjust::execute: "
+              << "wrong message type !" << std::endl;
     }
   private:
     Adjustable *my_adjustable;

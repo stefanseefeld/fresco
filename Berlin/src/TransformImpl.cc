@@ -47,26 +47,26 @@ bool LUfactor(Coord matrix[N][N], size_t pivot[N])
 {
     for (size_t j = 0; j < N; j++)
     {
-	size_t jp = j;
-	Coord t = Math::abs(matrix[j][j]);
-	for (size_t i = j + 1; i < N; i++)
-	    if (Math::abs(matrix[i][j]) > t)
-	    {
-		jp = i;
-		t = Math::abs(matrix[i][j]);
-	    }
-	pivot[j] = jp;
-	if (Math::equal(matrix[jp][j], 0., 1e-10)) return false;
-	if (jp != j) for (size_t k = 0; k < N; k++)
-	    swap(matrix[j][k], matrix[jp][k]);
-	if (j < N - 1)
+    size_t jp = j;
+    Coord t = Math::abs(matrix[j][j]);
+    for (size_t i = j + 1; i < N; i++)
+        if (Math::abs(matrix[i][j]) > t)
         {
-	    Coord scale =  1. / matrix[j][j];
-	    for (size_t k = j + 1; k < N; k++)
-		matrix[k][j] *= scale;
-	    for (size_t ii = j + 1; ii < N; ii++)
-		for (size_t jj = j + 1; jj < N; jj++)
-		    matrix[ii][jj] -= matrix[ii][j] * matrix[j][jj];
+        jp = i;
+        t = Math::abs(matrix[i][j]);
+        }
+    pivot[j] = jp;
+    if (Math::equal(matrix[jp][j], 0., 1e-10)) return false;
+    if (jp != j) for (size_t k = 0; k < N; k++)
+        swap(matrix[j][k], matrix[jp][k]);
+    if (j < N - 1)
+        {
+        Coord scale =  1. / matrix[j][j];
+        for (size_t k = j + 1; k < N; k++)
+        matrix[k][j] *= scale;
+        for (size_t ii = j + 1; ii < N; ii++)
+        for (size_t jj = j + 1; jj < N; jj++)
+            matrix[ii][jj] -= matrix[ii][j] * matrix[j][jj];
         }
     }
     return true;
@@ -80,20 +80,20 @@ void LUsolve(const Coord matrix[N][N], const size_t pivot[N], Coord v[N])
 
     for (size_t i = 0; i < N; i++) 
     {
-	sum = v[pivot[i]];
-	v[pivot[i]] = v[i];
-	if (ii != -1)
-	    for (size_t j = ii; j <= i - 1; j++) 
-		sum -= matrix[i][j] * v[j];
-	else if (sum) ii = i;
-	v[i] = sum;
+    sum = v[pivot[i]];
+    v[pivot[i]] = v[i];
+    if (ii != -1)
+        for (size_t j = ii; j <= i - 1; j++) 
+        sum -= matrix[i][j] * v[j];
+    else if (sum) ii = i;
+    v[i] = sum;
     }
     for (short i = static_cast<short>(N) - 1; i >= 0; i--) 
     {
-	sum = v[i];
-	for (size_t j = i + 1; j < N; j++) 
-	    sum -= matrix[i][j] * v[j];
-	v[i] = sum / matrix[i][i];
+    sum = v[i];
+    for (size_t j = i + 1; j < N; j++) 
+        sum -= matrix[i][j] * v[j];
+    v[i] = sum / matrix[i][i];
     }
 }
 
@@ -142,7 +142,7 @@ TransformImpl &TransformImpl::operator = (const TransformImpl &transform)
 void TransformImpl::init()
 {
     my_matrix[0][0] = my_matrix[1][1] =
-	my_matrix[2][2] = my_matrix[3][3] = 1.;
+    my_matrix[2][2] = my_matrix[3][3] = 1.;
     my_matrix[0][1] = my_matrix[0][2] = my_matrix[0][3] = 0.;
     my_matrix[1][0] = my_matrix[1][2] = my_matrix[1][3] = 0.;
     my_matrix[2][0] = my_matrix[2][1] = my_matrix[2][3] = 0.;
@@ -156,25 +156,25 @@ void TransformImpl::init()
 void TransformImpl::recompute()
 {
     my_translation = (Math::equal(my_matrix[0][0], 1., tolerance) &&
-		      Math::equal(my_matrix[1][1], 1., tolerance) &&
-		      Math::equal(my_matrix[2][2], 1., tolerance) &&
-		      Math::equal(my_matrix[0][1], 0., tolerance) &&
-		      Math::equal(my_matrix[1][0], 0., tolerance) &&
-		      Math::equal(my_matrix[0][2], 0., tolerance) &&
-		      Math::equal(my_matrix[2][0], 0., tolerance) &&
-		      Math::equal(my_matrix[1][2], 0., tolerance) &&
-		      Math::equal(my_matrix[2][1], 0., tolerance));
+              Math::equal(my_matrix[1][1], 1., tolerance) &&
+              Math::equal(my_matrix[2][2], 1., tolerance) &&
+              Math::equal(my_matrix[0][1], 0., tolerance) &&
+              Math::equal(my_matrix[1][0], 0., tolerance) &&
+              Math::equal(my_matrix[0][2], 0., tolerance) &&
+              Math::equal(my_matrix[2][0], 0., tolerance) &&
+              Math::equal(my_matrix[1][2], 0., tolerance) &&
+              Math::equal(my_matrix[2][1], 0., tolerance));
     my_xy          = ((my_translation ||
-		       (Math::equal(my_matrix[2][2], 1., tolerance) &&
-			Math::equal(my_matrix[0][2], 0., tolerance) &&
-			Math::equal(my_matrix[2][0], 0., tolerance) &&
-			Math::equal(my_matrix[1][2], 0., tolerance) &&
-			Math::equal(my_matrix[2][1], 0., tolerance))) &&
-		      Math::equal(my_matrix[2][3], 0., tolerance));
+               (Math::equal(my_matrix[2][2], 1., tolerance) &&
+            Math::equal(my_matrix[0][2], 0., tolerance) &&
+            Math::equal(my_matrix[2][0], 0., tolerance) &&
+            Math::equal(my_matrix[1][2], 0., tolerance) &&
+            Math::equal(my_matrix[2][1], 0., tolerance))) &&
+              Math::equal(my_matrix[2][3], 0., tolerance));
     my_identity    = (my_translation &&
-		      Math::equal(my_matrix[0][3], 0., tolerance) &&
-		      Math::equal(my_matrix[1][3], 0., tolerance) &&
-		      Math::equal(my_matrix[2][3], 0., tolerance));
+              Math::equal(my_matrix[0][3], 0., tolerance) &&
+              Math::equal(my_matrix[1][3], 0., tolerance) &&
+              Math::equal(my_matrix[2][3], 0., tolerance));
     
     my_dirty       = false;
 }
@@ -203,9 +203,9 @@ void TransformImpl::copy(Transform_ptr transform)
     if (CORBA::is_nil(transform)) init();
     else
     {
-	Fresco::Transform::Matrix matrix;
-	transform->store_matrix(matrix);
-	load_matrix(matrix);
+    Fresco::Transform::Matrix matrix;
+    transform->store_matrix(matrix);
+    load_matrix(matrix);
     }
 }
 
@@ -215,13 +215,13 @@ void TransformImpl::load_matrix(const Fresco::Transform::Matrix matrix)
     assert(my_active);
 #if 0
     for (short i = 0; i != 3; i++)
-	for (short j = 0; j != 4; j++)
-	    _matrix[i][j] = matrix[i][j];
+    for (short j = 0; j != 4; j++)
+        _matrix[i][j] = matrix[i][j];
     my_matrix[3][0] = my_matrix[3][1] = my_matrix[3][2] = 0.,
-	my_matrix[3][3] = 1.;
+    my_matrix[3][3] = 1.;
 #else
     memcpy(&my_matrix[0][0], &matrix[0][0],
-	   sizeof(Fresco::Transform::Matrix));
+       sizeof(Fresco::Transform::Matrix));
 #endif
     modified();
 }
@@ -234,11 +234,11 @@ void TransformImpl::store_matrix(Fresco::Transform::Matrix matrix)
     assert(my_active);
 #if 0
     for (short i = 0; i != 3; i++)
-	for (short j = 0; j != 4; j++)
-	    matrix[i][j] = _matrix[i][j];
+    for (short j = 0; j != 4; j++)
+        matrix[i][j] = _matrix[i][j];
 #else
     memcpy(&matrix[0][0], &my_matrix[0][0],
-	   sizeof(Fresco::Transform::Matrix));
+       sizeof(Fresco::Transform::Matrix));
 #endif
 }
 
@@ -251,18 +251,18 @@ CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
     Fresco::Transform::Matrix matrix;
     transform->store_matrix(matrix);
     return
-	Math::equal(my_matrix[0][0], matrix[0][0], tolerance) &&
-	Math::equal(my_matrix[0][1], matrix[0][1], tolerance) &&
-	Math::equal(my_matrix[0][2], matrix[0][2], tolerance) &&
-	Math::equal(my_matrix[0][3], matrix[0][3], tolerance) &&
-	Math::equal(my_matrix[1][0], matrix[1][0], tolerance) &&
-	Math::equal(my_matrix[1][1], matrix[1][1], tolerance) &&
-	Math::equal(my_matrix[1][2], matrix[1][2], tolerance) &&
-	Math::equal(my_matrix[1][3], matrix[1][3], tolerance) &&
-	Math::equal(my_matrix[2][0], matrix[2][0], tolerance) &&
-	Math::equal(my_matrix[2][1], matrix[2][1], tolerance) &&
-	Math::equal(my_matrix[2][2], matrix[2][2], tolerance) &&
-	Math::equal(my_matrix[2][3], matrix[2][3], tolerance);
+    Math::equal(my_matrix[0][0], matrix[0][0], tolerance) &&
+    Math::equal(my_matrix[0][1], matrix[0][1], tolerance) &&
+    Math::equal(my_matrix[0][2], matrix[0][2], tolerance) &&
+    Math::equal(my_matrix[0][3], matrix[0][3], tolerance) &&
+    Math::equal(my_matrix[1][0], matrix[1][0], tolerance) &&
+    Math::equal(my_matrix[1][1], matrix[1][1], tolerance) &&
+    Math::equal(my_matrix[1][2], matrix[1][2], tolerance) &&
+    Math::equal(my_matrix[1][3], matrix[1][3], tolerance) &&
+    Math::equal(my_matrix[2][0], matrix[2][0], tolerance) &&
+    Math::equal(my_matrix[2][1], matrix[2][1], tolerance) &&
+    Math::equal(my_matrix[2][2], matrix[2][2], tolerance) &&
+    Math::equal(my_matrix[2][3], matrix[2][3], tolerance);
 }
 
 CORBA::Boolean TransformImpl::identity()
@@ -312,9 +312,9 @@ void TransformImpl::rotate(double angle, Axis a)
     else if (a == yaxis) j = 2;
     
     matrix[i][0] = my_matrix[i][0], matrix[i][1] = my_matrix[i][1],
-	matrix[i][2] = my_matrix[i][2], matrix[i][3] = my_matrix[i][3];
+    matrix[i][2] = my_matrix[i][2], matrix[i][3] = my_matrix[i][3];
     matrix[j][0] = my_matrix[j][0], matrix[j][1] = my_matrix[j][1],
-	matrix[j][2] = my_matrix[j][2], matrix[j][3] = my_matrix[j][3];
+    matrix[j][2] = my_matrix[j][2], matrix[j][3] = my_matrix[j][3];
 
     my_matrix[i][0] = c * matrix[i][0] - s * matrix[j][0];
     my_matrix[i][1] = c * matrix[i][1] - s * matrix[j][1];
@@ -344,26 +344,26 @@ void TransformImpl::premultiply(Transform_ptr transform)
     assert(my_active);
     if (!CORBA::is_nil(transform) && !transform->identity())
     {
-	Fresco::Transform::Matrix matrix;
-	transform->store_matrix(matrix);
-	if (identity()) load_matrix(matrix);
-	else
-	{
-	    for (unsigned short i = 0; i != 3; i++)
-	    {
-		Coord mi0 = my_matrix[i][0], mi1 = my_matrix[i][1],
-		    mi2 = my_matrix[i][2], mi3 = my_matrix[i][3];
-		my_matrix[i][0] = mi0 * matrix[0][0] + mi1 * matrix[1][0] +
-		    mi2 * matrix[2][0] + mi3 * matrix[3][0];
-		my_matrix[i][1] = mi0 * matrix[0][1] + mi1 * matrix[1][1] +
-		    mi2 * matrix[2][1] + mi3 * matrix[3][1];
-		my_matrix[i][2] = mi0 * matrix[0][2] + mi1 * matrix[1][2] +
-		    mi2 * matrix[2][2] + mi3 * matrix[3][2];
-		my_matrix[i][3] = mi0 * matrix[0][3] + mi1 * matrix[1][3] +
-		    mi2 * matrix[2][3] + mi3 * matrix[3][3];
-	    }
-	    modified();
-	}
+    Fresco::Transform::Matrix matrix;
+    transform->store_matrix(matrix);
+    if (identity()) load_matrix(matrix);
+    else
+    {
+        for (unsigned short i = 0; i != 3; i++)
+        {
+        Coord mi0 = my_matrix[i][0], mi1 = my_matrix[i][1],
+            mi2 = my_matrix[i][2], mi3 = my_matrix[i][3];
+        my_matrix[i][0] = mi0 * matrix[0][0] + mi1 * matrix[1][0] +
+            mi2 * matrix[2][0] + mi3 * matrix[3][0];
+        my_matrix[i][1] = mi0 * matrix[0][1] + mi1 * matrix[1][1] +
+            mi2 * matrix[2][1] + mi3 * matrix[3][1];
+        my_matrix[i][2] = mi0 * matrix[0][2] + mi1 * matrix[1][2] +
+            mi2 * matrix[2][2] + mi3 * matrix[3][2];
+        my_matrix[i][3] = mi0 * matrix[0][3] + mi1 * matrix[1][3] +
+            mi2 * matrix[2][3] + mi3 * matrix[3][3];
+        }
+        modified();
+    }
     }
 }
 
@@ -373,24 +373,24 @@ void TransformImpl::postmultiply(Transform_ptr transform)
     assert(my_active);
     if (!CORBA::is_nil(transform) && !transform->identity())
     {
-	Fresco::Transform::Matrix matrix;
-	transform->store_matrix(matrix);
-	if (identity()) load_matrix(matrix);
-	else
-	{
-	    for (unsigned short i = 0; i != 4; i++)
-	    {
-		Coord m0i = my_matrix[0][i], m1i = my_matrix[1][i],
-		    m2i = my_matrix[2][i];
-		my_matrix[0][i] = matrix[0][0] * m0i + matrix[0][1] * m1i +
-		    matrix[0][2] * m2i;
-		my_matrix[1][i] = matrix[1][0] * m0i + matrix[1][1] * m1i +
-		    matrix[2][1] * m2i;
-		my_matrix[2][i] = matrix[2][0] * m0i + matrix[2][1] * m1i +
-		    matrix[2][2] * m2i;
-	    }
-	    modified();
-	}
+    Fresco::Transform::Matrix matrix;
+    transform->store_matrix(matrix);
+    if (identity()) load_matrix(matrix);
+    else
+    {
+        for (unsigned short i = 0; i != 4; i++)
+        {
+        Coord m0i = my_matrix[0][i], m1i = my_matrix[1][i],
+            m2i = my_matrix[2][i];
+        my_matrix[0][i] = matrix[0][0] * m0i + matrix[0][1] * m1i +
+            matrix[0][2] * m2i;
+        my_matrix[1][i] = matrix[1][0] * m0i + matrix[1][1] * m1i +
+            matrix[2][1] * m2i;
+        my_matrix[2][i] = matrix[2][0] * m0i + matrix[2][1] * m1i +
+            matrix[2][2] * m2i;
+        }
+        modified();
+    }
     }
 }
 
@@ -401,57 +401,57 @@ void TransformImpl::invert()
     if (my_dirty) recompute();
     if (my_translation)
     {
-	my_matrix[0][3] = -my_matrix[0][3];
-	my_matrix[1][3] = -my_matrix[1][3];
-	my_matrix[2][3] = -my_matrix[2][3];
-	modified();
+    my_matrix[0][3] = -my_matrix[0][3];
+    my_matrix[1][3] = -my_matrix[1][3];
+    my_matrix[2][3] = -my_matrix[2][3];
+    modified();
     }
     else
     {
-	Coord d = det();
-	if (Math::equal(d, 0., tolerance)) return;
-	Fresco::Transform::Matrix matrix;
+    Coord d = det();
+    if (Math::equal(d, 0., tolerance)) return;
+    Fresco::Transform::Matrix matrix;
 
-	matrix[0][0] = my_matrix[0][0], matrix[0][1] = my_matrix[0][1],
-	    matrix[0][2] = my_matrix[0][2], matrix[0][3] = my_matrix[0][3];
-	matrix[1][0] = my_matrix[1][0], matrix[1][1] = my_matrix[1][1],
-	    matrix[1][2] = my_matrix[1][2], matrix[1][3] = my_matrix[1][3];
-	matrix[2][0] = my_matrix[2][0], matrix[2][1] = my_matrix[2][1],
-	    matrix[2][2] = my_matrix[2][2], matrix[2][3] = my_matrix[2][3];
-	matrix[3][0] = 0., matrix[3][1] = 0.,
-	    matrix[3][2] = 0., matrix[3][3] = 1.;
+    matrix[0][0] = my_matrix[0][0], matrix[0][1] = my_matrix[0][1],
+        matrix[0][2] = my_matrix[0][2], matrix[0][3] = my_matrix[0][3];
+    matrix[1][0] = my_matrix[1][0], matrix[1][1] = my_matrix[1][1],
+        matrix[1][2] = my_matrix[1][2], matrix[1][3] = my_matrix[1][3];
+    matrix[2][0] = my_matrix[2][0], matrix[2][1] = my_matrix[2][1],
+        matrix[2][2] = my_matrix[2][2], matrix[2][3] = my_matrix[2][3];
+    matrix[3][0] = 0., matrix[3][1] = 0.,
+        matrix[3][2] = 0., matrix[3][3] = 1.;
 
 
-	my_matrix[0][0] =  (matrix[1][1] * matrix[2][2] -
-			    matrix[1][2] * matrix[2][1]) / d;
-	my_matrix[0][1] = -(matrix[0][1] * matrix[2][2] -
-			    matrix[0][2] * matrix[2][1]) / d;
-	my_matrix[0][2] =  (matrix[0][1] * matrix[1][2] -
-			    matrix[0][2] * matrix[1][1]) / d;
-	my_matrix[1][0] = -(matrix[1][0] * matrix[2][2] -
-			    matrix[1][2] * matrix[2][0]) / d;
-	my_matrix[1][1] =  (matrix[0][0] * matrix[2][2] -
-			    matrix[0][2] * matrix[2][0]) / d;
-	my_matrix[1][2] = -(matrix[0][0] * matrix[1][2] -
-			    matrix[0][2] * matrix[1][0]) / d;
-	my_matrix[2][0] =  (matrix[1][0] * matrix[2][1] -
-			    matrix[1][1] * matrix[2][0]) / d;
-	my_matrix[2][1] = -(matrix[0][0] * matrix[2][1] -
-			    matrix[0][1] * matrix[2][0]) / d;
-	my_matrix[2][2] =  (matrix[0][0] * matrix[1][1] -
-			    matrix[0][1] * matrix[1][0]) / d;
+    my_matrix[0][0] =  (matrix[1][1] * matrix[2][2] -
+                matrix[1][2] * matrix[2][1]) / d;
+    my_matrix[0][1] = -(matrix[0][1] * matrix[2][2] -
+                matrix[0][2] * matrix[2][1]) / d;
+    my_matrix[0][2] =  (matrix[0][1] * matrix[1][2] -
+                matrix[0][2] * matrix[1][1]) / d;
+    my_matrix[1][0] = -(matrix[1][0] * matrix[2][2] -
+                matrix[1][2] * matrix[2][0]) / d;
+    my_matrix[1][1] =  (matrix[0][0] * matrix[2][2] -
+                matrix[0][2] * matrix[2][0]) / d;
+    my_matrix[1][2] = -(matrix[0][0] * matrix[1][2] -
+                matrix[0][2] * matrix[1][0]) / d;
+    my_matrix[2][0] =  (matrix[1][0] * matrix[2][1] -
+                matrix[1][1] * matrix[2][0]) / d;
+    my_matrix[2][1] = -(matrix[0][0] * matrix[2][1] -
+                matrix[0][1] * matrix[2][0]) / d;
+    my_matrix[2][2] =  (matrix[0][0] * matrix[1][1] -
+                matrix[0][1] * matrix[1][0]) / d;
 
-	my_matrix[0][3] = -(matrix[0][3] * my_matrix[0][0] +
-			    matrix[1][3] * my_matrix[0][1] +
-			    matrix[2][3] * my_matrix[0][2]);
-	my_matrix[1][3] = -(matrix[0][3] * my_matrix[1][0] +
-			    matrix[1][3] * my_matrix[1][1] +
-			    matrix[2][3] * my_matrix[1][2]);
-	my_matrix[2][3] = -(matrix[0][3] * my_matrix[2][0] +
-			    matrix[1][3] * my_matrix[2][1] +
-			    matrix[2][3] * my_matrix[2][2]);
+    my_matrix[0][3] = -(matrix[0][3] * my_matrix[0][0] +
+                matrix[1][3] * my_matrix[0][1] +
+                matrix[2][3] * my_matrix[0][2]);
+    my_matrix[1][3] = -(matrix[0][3] * my_matrix[1][0] +
+                matrix[1][3] * my_matrix[1][1] +
+                matrix[2][3] * my_matrix[1][2]);
+    my_matrix[2][3] = -(matrix[0][3] * my_matrix[2][0] +
+                matrix[1][3] * my_matrix[2][1] +
+                matrix[2][3] * my_matrix[2][2]);
 
-	modified();
+    modified();
     }
 }
 
@@ -460,11 +460,11 @@ void TransformImpl::transform_vertex(Vertex &v)
     Coord tx = v.x;
     Coord ty = v.y;
     v.x = my_matrix[0][0] * tx + my_matrix[0][1] * ty +
-	my_matrix[0][2] * v.z + my_matrix[0][3];
+    my_matrix[0][2] * v.z + my_matrix[0][3];
     v.y = my_matrix[1][0] * tx + my_matrix[1][1] * ty +
-	my_matrix[1][2] * v.z + my_matrix[1][3];
+    my_matrix[1][2] * v.z + my_matrix[1][3];
     v.z = my_matrix[2][0] * tx + my_matrix[2][1] * ty +
-	my_matrix[2][2] * v.z + my_matrix[2][3];
+    my_matrix[2][2] * v.z + my_matrix[2][3];
 }
 
 void TransformImpl::inverse_transform_vertex(Vertex &v)
@@ -478,14 +478,14 @@ void TransformImpl::inverse_transform_vertex(Vertex &v)
     vertex[3] = 0.;
     Coord lu[4][4];
     for (short i = 0; i != 4; i++)
-	for (short j = 0; j != 4; j++)
-	    lu[i][j] = my_matrix[i][j];
+    for (short j = 0; j != 4; j++)
+        lu[i][j] = my_matrix[i][j];
     if (LUfactor<4>(lu, pivot))
     {
-	LUsolve<4>(lu, pivot, vertex);
-	v.x = vertex[0];
-	v.y = vertex[1];
-	v.z = vertex[2];
+    LUsolve<4>(lu, pivot, vertex);
+    v.x = vertex[0];
+    v.y = vertex[1];
+    v.z = vertex[2];
     }
 #else
     Coord d = det();
@@ -495,23 +495,23 @@ void TransformImpl::inverse_transform_vertex(Vertex &v)
     tmp.y -= my_matrix[1][3];
     tmp.z -= my_matrix[2][3];
     v.x = ((my_matrix[1][1] * my_matrix[2][2] -
-	    my_matrix[1][2] * my_matrix[2][1]) * tmp.x -
-	   (my_matrix[0][1] * my_matrix[2][2] -
-	    my_matrix[0][2] * my_matrix[2][1]) * tmp.y +
-	   (my_matrix[0][1] * my_matrix[1][2] -
-	    my_matrix[0][2] * my_matrix[1][1]) * tmp.z) / d;
+        my_matrix[1][2] * my_matrix[2][1]) * tmp.x -
+       (my_matrix[0][1] * my_matrix[2][2] -
+        my_matrix[0][2] * my_matrix[2][1]) * tmp.y +
+       (my_matrix[0][1] * my_matrix[1][2] -
+        my_matrix[0][2] * my_matrix[1][1]) * tmp.z) / d;
     v.y = (-(my_matrix[1][0] * my_matrix[2][2] -
-	     my_matrix[1][2] * my_matrix[2][0]) * tmp.x +
-	   (my_matrix[0][0] * my_matrix[2][2] -
-	    my_matrix[0][2] * my_matrix[2][0]) * tmp.y -
-	   (my_matrix[0][0] * my_matrix[1][2] -
-	    my_matrix[0][2] * my_matrix[1][0])) / d;
+         my_matrix[1][2] * my_matrix[2][0]) * tmp.x +
+       (my_matrix[0][0] * my_matrix[2][2] -
+        my_matrix[0][2] * my_matrix[2][0]) * tmp.y -
+       (my_matrix[0][0] * my_matrix[1][2] -
+        my_matrix[0][2] * my_matrix[1][0])) / d;
     v.z = ((my_matrix[1][0] * my_matrix[2][1] -
-	    my_matrix[1][1] * my_matrix[2][0]) -
-	   (my_matrix[0][0] * my_matrix[2][1] -
-	    my_matrix[0][1] * my_matrix[2][0]) +
-	   (my_matrix[0][0] * my_matrix[1][1] -
-	    my_matrix[0][1] * my_matrix[1][0])) / d;
+        my_matrix[1][1] * my_matrix[2][0]) -
+       (my_matrix[0][0] * my_matrix[2][1] -
+        my_matrix[0][1] * my_matrix[2][0]) +
+       (my_matrix[0][0] * my_matrix[1][1] -
+        my_matrix[0][1] * my_matrix[1][0])) / d;
 #endif
 }
 
@@ -522,36 +522,36 @@ void TransformImpl::set_and_premult(TransformImpl* set, Fresco::Transform_ptr mu
 //     assert(my_active);
 //     for (short i = 0; i != 3; i++)
 //         for (short j = 0; j != 4; j++)
-// 	    my_matrix[i][j] = matrix[i][j];
+//         my_matrix[i][j] = matrix[i][j];
 //     my_matrix[3][0] = my_matrix[3][1] = my_matrix[3][2] = 0.,
 //         my_matrix[3][3] = 1.;
 //     modified();
     memcpy(&my_matrix[0][0], &set->my_matrix[0][0],
-	   sizeof(Fresco::Transform::Matrix));
+       sizeof(Fresco::Transform::Matrix));
 //     if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
     if (!CORBA::is_nil(mult) && !mult->identity())
     {
-	Fresco::Transform::Matrix matrix;
-	mult->store_matrix(matrix);
-	if (set->identity())// load_matrix(matrix);
-	    memcpy(&my_matrix[0][0], &matrix[0][0],
-		   sizeof(Fresco::Transform::Matrix));
-	else
-	{
-	    for (unsigned short i = 0; i != 3; i++)
-	    {
-		Coord mi0 = my_matrix[i][0], mi1 = my_matrix[i][1],
-		    mi2 = my_matrix[i][2], mi3 = my_matrix[i][3];
-		my_matrix[i][0] = mi0 * matrix[0][0] + mi1 * matrix[1][0] +
-		    mi2 * matrix[2][0] + mi3 * matrix[3][0];
-		my_matrix[i][1] = mi0 * matrix[0][1] + mi1 * matrix[1][1] +
-		    mi2 * matrix[2][1] + mi3 * matrix[3][1];
-		my_matrix[i][2] = mi0 * matrix[0][2] + mi1 * matrix[1][2] +
-		    mi2 * matrix[2][2] + mi3 * matrix[3][2];
-		my_matrix[i][3] = mi0 * matrix[0][3] + mi1 * matrix[1][3] +
-		    mi2 * matrix[2][3] + mi3 * matrix[3][3];
-	    }
-	}
+    Fresco::Transform::Matrix matrix;
+    mult->store_matrix(matrix);
+    if (set->identity())// load_matrix(matrix);
+        memcpy(&my_matrix[0][0], &matrix[0][0],
+           sizeof(Fresco::Transform::Matrix));
+    else
+    {
+        for (unsigned short i = 0; i != 3; i++)
+        {
+        Coord mi0 = my_matrix[i][0], mi1 = my_matrix[i][1],
+            mi2 = my_matrix[i][2], mi3 = my_matrix[i][3];
+        my_matrix[i][0] = mi0 * matrix[0][0] + mi1 * matrix[1][0] +
+            mi2 * matrix[2][0] + mi3 * matrix[3][0];
+        my_matrix[i][1] = mi0 * matrix[0][1] + mi1 * matrix[1][1] +
+            mi2 * matrix[2][1] + mi3 * matrix[3][1];
+        my_matrix[i][2] = mi0 * matrix[0][2] + mi1 * matrix[1][2] +
+            mi2 * matrix[2][2] + mi3 * matrix[3][2];
+        my_matrix[i][3] = mi0 * matrix[0][3] + mi1 * matrix[1][3] +
+            mi2 * matrix[2][3] + mi3 * matrix[3][3];
+        }
+    }
     }
     modified();
 }

@@ -33,8 +33,8 @@ CORBA::Boolean Berlin::IdentifiableImpl::is_identical(Identifiable_ptr id)
     if (CORBA::is_nil(poa)) poa = _default_POA();
     try
     {
-	PortableServer::ServantBase_var s = poa->reference_to_servant(id);
-	if (s.in() == this) return 1;
+    PortableServer::ServantBase_var s = poa->reference_to_servant(id);
+    if (s.in() == this) return 1;
     }
     catch (const PortableServer::POA::ObjectNotActive &) { }
     catch (const PortableServer::POA::WrongAdapter &) { }

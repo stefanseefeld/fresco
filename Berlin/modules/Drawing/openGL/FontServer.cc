@@ -33,8 +33,8 @@ openGL::FontServer::FontServer()
     my_weight = 100;
     my_font = new GLUnifont;
     my_fonts[key(16, 100,
-		 Unicode::toCORBA(Unicode::String("GNU Unifont")))] =
-	my_font;
+         Unicode::toCORBA(Unicode::String("GNU Unifont")))] =
+    my_font;
 //    char *env = getenv("BERLIN_ROOT");
 //    if (!env)
 //    {

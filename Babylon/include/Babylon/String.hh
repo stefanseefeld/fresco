@@ -62,7 +62,7 @@ namespace Babylon
       // Constructors:
       String();
       String(const String &,
-	     const size_type = 0, const size_type = npos);
+         const size_type = 0, const size_type = npos);
       String(const char_type *, const Norm = NORM_NONE);
       String(const char_type *, const size_type, const Norm = NORM_NONE);
       String(const size_type, const Char, const Norm = NORM_NONE);
@@ -90,13 +90,13 @@ namespace Babylon
       // Comparisons:
       int compare(const String & s) const { return compare(0, npos, s); }
       int compare(const size_type, const size_type,
-		  const String &) const;
+          const String &) const;
       int compare(const size_type, const size_type, const String &,
-		  const size_type, const size_type) const;
+          const size_type, const size_type) const;
       int compare(const char_type *) const;
       int compare(const size_type, const size_type, const char_type *) const;
       int compare(const size_type, const size_type,
-		  const char_type *, const size_type) const;
+          const char_type *, const size_type) const;
       
       // Character Access
       char_type & operator[](const size_type p);
@@ -108,12 +108,12 @@ namespace Babylon
       
       // Modify Operations:
       String & assign(const String & s)
-	  { return assign(s, 0, npos); }
+      { return assign(s, 0, npos); }
       String & assign(const String &,
-			   const size_type, const size_type);
+               const size_type, const size_type);
       String & assign(const char_type *, const Norm = NORM_NONE);
       String & assign(const char_type *, const size_type,
-			   const Norm = NORM_NONE);
+               const Norm = NORM_NONE);
       String & assign(const size_type, const char_type);
       
       String & operator=(const String s) { return assign(s); }
@@ -123,11 +123,11 @@ namespace Babylon
       void swap(String &) throw ();
       
       String & append(const String & s)
-	  { return append(s, 0, npos); }
+      { return append(s, 0, npos); }
       String & append(const String &,
-			   const size_type, const size_type);
+               const size_type, const size_type);
       String & append(const char_type *, const size_type,
-			   const Norm = NORM_NONE);
+               const Norm = NORM_NONE);
       String & append(const char_type *, const Norm = NORM_NONE);
       String & append(const size_type, const char_type);
       template<class InputIterator>
@@ -140,11 +140,11 @@ namespace Babylon
       String & operator+=(const char_type c) { return append(1, c); }
       
       String & insert(const size_type p, const String & s)
-	  { return insert(p, s, 0, npos); }
+      { return insert(p, s, 0, npos); }
       String & insert(const size_type, const String &,
-			   const size_type, const size_type);
+               const size_type, const size_type);
       String & insert(const size_type,
-			   const char_type *, const size_type);
+               const char_type *, const size_type);
       String & insert(const size_type, const char_type *);
       String & insert(const size_type, const size_type, const char_type);
       void insert(iterator, const size_type, const char_type);
@@ -161,21 +161,21 @@ namespace Babylon
       void resize(const size_type, char_type);
       
       String & replace(const size_type p1, const size_type p2,
-			    const String & s)
-	  { return replace(p1, p2, s, 0, npos); }
+                const String & s)
+      { return replace(p1, p2, s, 0, npos); }
       String & replace(iterator, iterator, const String &);
       String & replace(const size_type, const size_type,
-			    const String &,
-			    const size_type, const size_type);
+                const String &,
+                const size_type, const size_type);
       String & replace(const size_type, const size_type,
-			    const char_type *, const size_type);
+                const char_type *, const size_type);
       String & replace(iterator, iterator,
                        const char_type *, const size_type);
       String & replace(const size_type, const size_type,
-			    const char_type *);
+                const char_type *);
       String & replace(iterator, iterator, const char_type *);
       String & replace(const size_type, const size_type,
-			    const size_type, char_type);
+                const size_type, char_type);
       String & replace(iterator, iterator,
                        const size_type, char_type);
       template<class InputIterator>
@@ -184,109 +184,109 @@ namespace Babylon
       
       size_type find(const char_type c) const { return my_data.find(c); }
       size_type find(const char_type c, const size_type i)
-	  { return my_data.find(c, i); }
+      { return my_data.find(c, i); }
       size_type rfind(const char_type c) const { return my_data.rfind(c); }
       size_type rfind(const char_type c, const size_type i)
-	  { return my_data.rfind(c, i); }
+      { return my_data.rfind(c, i); }
       
       size_type find(const String & s) const
-	  { return my_data.find(s.my_data); }
+      { return my_data.find(s.my_data); }
       size_type find(const String & s, const size_type i)
-	  { return my_data.find(s.my_data, i); }
+      { return my_data.find(s.my_data, i); }
       size_type rfind(const String & s) const
-	  { return my_data.rfind(s.my_data); }
+      { return my_data.rfind(s.my_data); }
       size_type rfind(const String & s, const size_type i)
-	  { return my_data.rfind(s.my_data, i); }
+      { return my_data.rfind(s.my_data, i); }
       
       size_type find(const char_type * c) const { return my_data.find(c); }
       size_type find(const char_type * c, const size_type i)
-	  { return my_data.find(c, i); }
+      { return my_data.find(c, i); }
       size_type rfind(const char_type * c) const { return my_data.rfind(c); }
       size_type rfind(const char_type * c, const size_type i)
-	  { return my_data.rfind(c, i); }
+      { return my_data.rfind(c, i); }
       
       size_type find(const char_type * c,
-		     const size_type i, const size_type l) const
-	  { return my_data.find(c, i, l); }
+             const size_type i, const size_type l) const
+      { return my_data.find(c, i, l); }
       size_type rfind(const char_type * c,
-		      const size_type i, const size_type l)
-	  { return my_data.rfind(c, i, l); }
+              const size_type i, const size_type l)
+      { return my_data.rfind(c, i, l); }
       
       size_type find_first_of(const String & s) const
-	  { return my_data.find_first_of(s.my_data); }
+      { return my_data.find_first_of(s.my_data); }
       size_type find_first_of(const String & s, const size_type i)
-	  { return my_data.find_first_of(s.my_data, i); }
+      { return my_data.find_first_of(s.my_data, i); }
       size_type find_first_not_of(const String & s) const
-	  { return my_data.find_first_not_of(s.my_data); }
+      { return my_data.find_first_not_of(s.my_data); }
       size_type find_first_not_of(const String & s, const size_type i)
-	  { return my_data.find_first_not_of(s.my_data, i); }
+      { return my_data.find_first_not_of(s.my_data, i); }
       
       size_type find_first_of(const char_type * c) const
-	  { return my_data.find_first_of(c); }
+      { return my_data.find_first_of(c); }
       size_type find_first_of(const char_type * c, const size_type i)
-	  { return my_data.find_first_of(c, i); }
+      { return my_data.find_first_of(c, i); }
       size_type find_first_not_of(const char_type * c) const
-	  { return my_data.find_first_not_of(c); }
+      { return my_data.find_first_not_of(c); }
       size_type find_first_not_of(const char_type * c, const size_type i)
-	  { return my_data.find_first_not_of(c, i); }
+      { return my_data.find_first_not_of(c, i); }
       
       size_type find_first_of(const char_type * c, const size_type i,
-			      const size_type l) const
-	  { return my_data.find_first_of(c, i, l); }
+                  const size_type l) const
+      { return my_data.find_first_of(c, i, l); }
       size_type find_first_not_of(const char_type * c, const size_type i,
-				  const size_type l) const
-	  { return my_data.find_first_not_of(c, i, l); }
+                  const size_type l) const
+      { return my_data.find_first_not_of(c, i, l); }
       
       size_type find_first_of(const char_type c) const
-	  { return my_data.find_first_of(c); }
+      { return my_data.find_first_of(c); }
       size_type find_first_of(const char_type c, const size_type i)
-	  { return my_data.find_first_of(c, i); }
+      { return my_data.find_first_of(c, i); }
       size_type find_first_not_of(const char_type c) const
-	  { return my_data.find_first_not_of(c); }
+      { return my_data.find_first_not_of(c); }
       size_type find_first_not_of(const char_type c, const size_type i)
-	  { return my_data.find_first_not_of(c, i); }
+      { return my_data.find_first_not_of(c, i); }
       
       size_type find_last_of(const String & s) const
-	  { return my_data.find_last_of(s.my_data); }
+      { return my_data.find_last_of(s.my_data); }
       size_type find_last_of(const String & s, const size_type i)
-	  { return my_data.find_last_of(s.my_data, i); }
+      { return my_data.find_last_of(s.my_data, i); }
       size_type find_flast_not_of(const String & s) const
-	  { return my_data.find_last_not_of(s.my_data); }
+      { return my_data.find_last_not_of(s.my_data); }
       size_type find_last_not_of(const String & s, const size_type i)
-	  { return my_data.find_last_not_of(s.my_data, i); }
+      { return my_data.find_last_not_of(s.my_data, i); }
       
       size_type find_last_of(const char_type * c) const
-	  { return my_data.find_last_of(c); }
+      { return my_data.find_last_of(c); }
       size_type find_last_of(const char_type * c, const size_type i)
-	  { return my_data.find_last_of(c, i); }
+      { return my_data.find_last_of(c, i); }
       size_type find_last_not_of(const char_type * c) const
-	  { return my_data.find_last_not_of(c); }
+      { return my_data.find_last_not_of(c); }
       size_type find_last_not_of(const char_type * c, const size_type i)
-	  { return my_data.find_last_not_of(c, i); }
+      { return my_data.find_last_not_of(c, i); }
       
       size_type find_last_of(const char_type * c, const size_type i,
-			     const size_type l) const
-	  { return my_data.find_last_of(c, i, l); }
+                 const size_type l) const
+      { return my_data.find_last_of(c, i, l); }
       size_type find_last_not_of(const char_type * c, const size_type i,
-				 const size_type l) const
-	  { return my_data.find_last_not_of(c, i, l); }
+                 const size_type l) const
+      { return my_data.find_last_not_of(c, i, l); }
       
       size_type find_last_of(const char_type c) const
-	  { return my_data.find_last_of(c); }
+      { return my_data.find_last_of(c); }
       size_type find_last_of(const char_type c, const size_type i)
-	  { return my_data.find_last_of(c, i); }
+      { return my_data.find_last_of(c, i); }
       size_type find_last_not_of(const char_type c) const
-	  { return my_data.find_last_not_of(c); }
+      { return my_data.find_last_not_of(c); }
       size_type find_last_not_of(const char_type c, const size_type i)
-	  { return my_data.find_last_not_of(c, i); }
+      { return my_data.find_last_not_of(c, i); }
       
       // Substrings and String Concatenation:
       
       String substr() const { return String(my_data.substr()); }
       String substr(const size_type i) const
-	  { return String(my_data.substr(i)); }
+      { return String(my_data.substr(i)); }
       String substr(const size_type i, const size_type l) const
-	  { return String(my_data.substr(i, l)); }
+      { return String(my_data.substr(i, l)); }
       
       // Generating Iterators:
 
@@ -305,15 +305,15 @@ namespace Babylon
 
       // Constructors:
       String(const std::string &, const size_t pos = 0,
-	     const std::string format = Babylon::UTF8_format,
-	     const Babylon::Norm norm = NORM_NONE);
+         const std::string format = Babylon::UTF8_format,
+         const Babylon::Norm norm = NORM_NONE);
       String(const char *,
-	     const std::string format = Babylon::UTF8_format,
-	     const Babylon::Norm norm = NORM_NONE);
+         const std::string format = Babylon::UTF8_format,
+         const Babylon::Norm norm = NORM_NONE);
       String(const char *, const size_t len,
-	     const std::string format = Babylon::UTF8_format,
-	     const Babylon::Norm norm = NORM_NONE);
-	     
+         const std::string format = Babylon::UTF8_format,
+         const Babylon::Norm norm = NORM_NONE);
+         
 
       // Conversion:
 
@@ -322,9 +322,9 @@ namespace Babylon
           throw (Transfer_Error);
       
       size_t convert(const std::string &,
-		     const size_t = 0,
-		     const std::string& = Babylon::UTF8_format,
-		     const Babylon::Norm norm = NORM_NONE)
+             const size_t = 0,
+             const std::string& = Babylon::UTF8_format,
+             const Babylon::Norm norm = NORM_NONE)
           throw (Transfer_Error, std::length_error);
       
       //. returns the norm the string is in

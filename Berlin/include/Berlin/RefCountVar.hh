@@ -69,19 +69,19 @@ namespace Berlin
       //.reference increment *is* done.
       RefCount_var(const RefCount_var<T> &o) : my_t(o.my_t)
       {
-	  if (!CORBA::is_nil(my_t))
-	      try { my_t->increment(); }
-	      catch (const CORBA::OBJECT_NOT_EXIST &) { my_t = T::_nil(); }
-	      catch (const CORBA::COMM_FAILURE &) { my_t = T::_nil(); }
+      if (!CORBA::is_nil(my_t))
+          try { my_t->increment(); }
+          catch (const CORBA::OBJECT_NOT_EXIST &) { my_t = T::_nil(); }
+          catch (const CORBA::COMM_FAILURE &) { my_t = T::_nil(); }
       }
 
       //.Destructor - decrements reference count to object.
       ~RefCount_var()
       {
-	  if (!CORBA::is_nil(my_t))
-	      try { my_t->decrement(); }
-	      catch (const CORBA::OBJECT_NOT_EXIST &) { }
-	      catch (const CORBA::COMM_FAILURE &) { }
+      if (!CORBA::is_nil(my_t))
+          try { my_t->decrement(); }
+          catch (const CORBA::OBJECT_NOT_EXIST &) { }
+          catch (const CORBA::COMM_FAILURE &) { }
       }
 
       //. Assignment operator. Copies the given smart pointer into this
@@ -90,20 +90,20 @@ namespace Berlin
       //. reference is to this smart pointer.
       RefCount_var<T> &operator = (const RefCount_var<T> &o)
       {
-	  if (&o != this)
-	  {
-	      if (!CORBA::is_nil(my_t))
-		  try { my_t->decrement(); }
-		  catch (const CORBA::OBJECT_NOT_EXIST &) { }
-		  catch (const CORBA::COMM_FAILURE &) { }
-	      my_t = o.my_t;
-	      if (!CORBA::is_nil(my_t))
-		  try { my_t->increment(); }
-		  catch (const CORBA::OBJECT_NOT_EXIST &)
-		  { my_t = T::_nil(); }
-		  catch (const CORBA::COMM_FAILURE &) { my_t = T::_nil(); }
-	  }
-	  return *this;
+      if (&o != this)
+      {
+          if (!CORBA::is_nil(my_t))
+          try { my_t->decrement(); }
+          catch (const CORBA::OBJECT_NOT_EXIST &) { }
+          catch (const CORBA::COMM_FAILURE &) { }
+          my_t = o.my_t;
+          if (!CORBA::is_nil(my_t))
+          try { my_t->increment(); }
+          catch (const CORBA::OBJECT_NOT_EXIST &)
+          { my_t = T::_nil(); }
+          catch (const CORBA::COMM_FAILURE &) { my_t = T::_nil(); }
+      }
+      return *this;
       }
 
       //. Assignment operator that takes a T pointer. Decreases the
@@ -112,12 +112,12 @@ namespace Berlin
       //. transferring the reference to this smart pointer.
       RefCount_var<T> &operator = (T_ptr tt)
       {
-	  if (!CORBA::is_nil(my_t))
-	      try { my_t->decrement(); }
-	      catch (const CORBA::OBJECT_NOT_EXIST &) { }
-	      catch (const CORBA::COMM_FAILURE &) { }
-	  my_t = tt;
-	  return *this;
+      if (!CORBA::is_nil(my_t))
+          try { my_t->decrement(); }
+          catch (const CORBA::OBJECT_NOT_EXIST &) { }
+          catch (const CORBA::COMM_FAILURE &) { }
+      my_t = tt;
+      return *this;
       }
 
       //. Member access operator, returns the referenced object.
@@ -140,8 +140,8 @@ namespace Berlin
       //. depending on the value of 'dup'.
       static T_ptr increment(T_ptr t, bool dup = true)
       {
-	  if (!CORBA::is_nil(t)) t->increment();
-	  return dup ? T::_duplicate(t) : t;
+      if (!CORBA::is_nil(t)) t->increment();
+      return dup ? T::_duplicate(t) : t;
       }
     private:
       T_var my_t;

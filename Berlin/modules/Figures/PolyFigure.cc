@@ -56,14 +56,14 @@ void Berlin::FigureKit::PolyFigure::update_bbox()
         {
             Allocation::Info info;
             for (CORBA::ULong i = 0; i < n; i++)
-		my_children[i].peer->
-		    extension(info, Region_var(my_bbox->_this()));
+        my_children[i].peer->
+            extension(info, Region_var(my_bbox->_this()));
         }
     }
 }
 
 void Berlin::FigureKit::PolyFigure::allocate(Tag,
-					     const Allocation::Info &info)
+                         const Allocation::Info &info)
 {
     // undefine the allocation...how ? -Stefan
     // info.allocation->;

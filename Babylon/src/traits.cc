@@ -30,16 +30,16 @@ namespace std {
 
 char_traits<Babylon::Char>::char_type *
 std::char_traits<Babylon::Char>::move(char_type * s,
-				      const char_type * s2,
-				      size_t n)
+                      const char_type * s2,
+                      size_t n)
 {
   return static_cast<char_type *>
     (std::memmove(s, s2, n * sizeof(char_type)));
 }
 std::char_traits<Babylon::Char>::char_type *
 std::char_traits<Babylon::Char>::copy(char_type * s,
-				      const char_type * s2,
-				      size_t n)
+                      const char_type * s2,
+                      size_t n)
 {
   return static_cast<char_type *>
     (std::memcpy(s, s2, n * sizeof(char_type)));
@@ -47,8 +47,8 @@ std::char_traits<Babylon::Char>::copy(char_type * s,
 
 std::char_traits<Babylon::Char>::char_type *
 std::char_traits<Babylon::Char>::assign(char_type * s,
-					size_t n,
-					char_type a)
+                    size_t n,
+                    char_type a)
 {
   for (size_t i = 0; i < n; ++i)
     assign(s[i], a);
@@ -57,8 +57,8 @@ std::char_traits<Babylon::Char>::assign(char_type * s,
 
 int
 std::char_traits<Babylon::Char>::compare(const char_type * s,
-					 const char_type * s2,
-					 size_t n)
+                     const char_type * s2,
+                     size_t n)
 {
   for (size_t i = 0; i < n; ++i)
     {
@@ -79,8 +79,8 @@ std::char_traits<Babylon::Char>::length(const char_type * s)
 
 const std::char_traits<Babylon::Char>::char_type *
 std::char_traits<Babylon::Char>::find(const char_type * s,
-				      size_t n,
-				      const char_type& c)
+                      size_t n,
+                      const char_type& c)
 {
   size_t i = 0;
   while (!(eq(s[i], c))) ++i;
@@ -100,7 +100,7 @@ std::char_traits<Babylon::Char>::not_eof(const int_type & i)
 
 void
 std::char_traits<Babylon::UCS2>::assign(char_type & c1,
-					const char_type & c2)
+                    const char_type & c2)
 { c1 = c2; }
 
 std::char_traits<Babylon::UCS2>::char_type
@@ -111,31 +111,31 @@ std::char_traits<Babylon::UCS2>::to_int_type(const char_type& c) { return(c); }
 
 bool
 std::char_traits<Babylon::UCS2>::eq_int_type(const int_type& i1,
-					     const int_type& i2)
+                         const int_type& i2)
 {
   return(i1 == i2);
 }
 
 bool
 std::char_traits<Babylon::UCS2>::eq(const char_type& c1,
-				    const char_type& c2) { return(c1 == c2); }
+                    const char_type& c2) { return(c1 == c2); }
 
 bool
 std::char_traits<Babylon::UCS2>::lt(const char_type& c1,
-				    const char_type& c2) { return(c1 < c2); }
+                    const char_type& c2) { return(c1 < c2); }
 
 char_traits<Babylon::UCS2>::char_type *
 std::char_traits<Babylon::UCS2>::move(char_type * s,
-				      const char_type * s2,
-				      size_t n)
+                      const char_type * s2,
+                      size_t n)
 {
   return static_cast<char_type *>
     (std::memmove(s, s2, n * sizeof(char_type)));
 }
 std::char_traits<Babylon::UCS2>::char_type *
 std::char_traits<Babylon::UCS2>::copy(char_type * s,
-				      const char_type * s2,
-				      size_t n)
+                      const char_type * s2,
+                      size_t n)
 {
   return static_cast<char_type *>
     (std::memcpy(s, s2, n * sizeof(char_type)));
@@ -143,8 +143,8 @@ std::char_traits<Babylon::UCS2>::copy(char_type * s,
 
 std::char_traits<Babylon::UCS2>::char_type *
 std::char_traits<Babylon::UCS2>::assign(char_type * s,
-					size_t n,
-					char_type a)
+                    size_t n,
+                    char_type a)
 {
   for (size_t i = 0; i < n; ++i)
     assign(s[i], a);
@@ -153,8 +153,8 @@ std::char_traits<Babylon::UCS2>::assign(char_type * s,
 
 int
 std::char_traits<Babylon::UCS2>::compare(const char_type * s,
-					 const char_type * s2,
-					 size_t n)
+                     const char_type * s2,
+                     size_t n)
 {
   for (size_t i = 0; i < n; ++i)
     {
@@ -175,8 +175,8 @@ std::char_traits<Babylon::UCS2>::length(const char_type * s)
 
 const std::char_traits<Babylon::UCS2>::char_type *
 std::char_traits<Babylon::UCS2>::find(const char_type * s,
-				      size_t n,
-				      const char_type& c)
+                      size_t n,
+                      const char_type& c)
 {
   size_t i = 0;
   while (!(eq(s[i], c))) ++i;
@@ -199,7 +199,7 @@ std::char_traits<Babylon::UCS2>::not_eof(const int_type & i)
 
 void
 std::char_traits<Babylon::UCS4>::assign(char_type & c1,
-					const char_type & c2)
+                    const char_type & c2)
 { c1 = c2; }
 
 std::char_traits<Babylon::UCS4>::char_type
@@ -210,23 +210,23 @@ std::char_traits<Babylon::UCS4>::to_int_type(const char_type& c) { return(c); }
 
 bool
 std::char_traits<Babylon::UCS4>::eq_int_type(const int_type& i1,
-					     const int_type& i2)
+                         const int_type& i2)
 {
   return(i1 == i2);
 }
 
 bool
 std::char_traits<Babylon::UCS4>::eq(const char_type& c1,
-				    const char_type& c2) { return(c1 == c2); }
+                    const char_type& c2) { return(c1 == c2); }
 
 bool
 std::char_traits<Babylon::UCS4>::lt(const char_type& c1,
-				    const char_type& c2) { return(c1 < c2); }
+                    const char_type& c2) { return(c1 < c2); }
 
 std::char_traits<Babylon::UCS4>::char_type *
 std::char_traits<Babylon::UCS4>::move(char_type * s,
-				      const char_type * s2,
-				      size_t n)
+                      const char_type * s2,
+                      size_t n)
 {
   return static_cast<char_type *>
     (std::memmove(s, s2, n * sizeof(char_type)));
@@ -234,8 +234,8 @@ std::char_traits<Babylon::UCS4>::move(char_type * s,
 
 std::char_traits<Babylon::UCS4>::char_type *
 std::char_traits<Babylon::UCS4>::copy(char_type * s,
-				      const char_type * s2,
-				      size_t n)
+                      const char_type * s2,
+                      size_t n)
 {
   return static_cast<char_type *>
     (std::memcpy(s, s2, n * sizeof(char_type)));
@@ -243,8 +243,8 @@ std::char_traits<Babylon::UCS4>::copy(char_type * s,
 
 std::char_traits<Babylon::UCS4>::char_type *
 std::char_traits<Babylon::UCS4>::assign(char_type * s,
-					size_t n,
-					char_type a)
+                    size_t n,
+                    char_type a)
 {
   for (size_t i = 0; i < n; ++i)
     assign(s[i], a);
@@ -253,8 +253,8 @@ std::char_traits<Babylon::UCS4>::assign(char_type * s,
 
 int
 std::char_traits<Babylon::UCS4>::compare(const char_type * s,
-					 const char_type * s2,
-					 size_t n)
+                     const char_type * s2,
+                     size_t n)
 {
   for (size_t i = 0; i < n; ++i)
     {
@@ -275,8 +275,8 @@ std::char_traits<Babylon::UCS4>::length(const char_type * s)
 
 const std::char_traits<Babylon::UCS4>::char_type *
 std::char_traits<Babylon::UCS4>::find(const char_type * s,
-				      size_t n,
-				      const char_type& c)
+                      size_t n,
+                      const char_type& c)
 {
   size_t i = 0;
   while (!(eq(s[i], c))) ++i;

@@ -42,7 +42,7 @@ namespace Berlin
     {
       public:
         SelectTraversal(Fresco::Graphic_ptr, Fresco::Region_ptr,
-			Fresco::Transform_ptr);
+            Fresco::Transform_ptr);
         ~SelectTraversal();
         void region(const Vertex &p, const Vertex &q)
         { my_hot.valid = true, my_hot.lower = p, my_hot.upper = q; }
@@ -59,16 +59,16 @@ namespace Berlin
     };
 
     SelectTraversal::SelectTraversal(Fresco::Graphic_ptr g,
-				     Fresco::Region_ptr a,
+                     Fresco::Region_ptr a,
                                      Fresco::Transform_ptr t) :
-	PickTraversalImpl(g, a, t, 0)
+    PickTraversalImpl(g, a, t, 0)
     { }
 
     SelectTraversal::~SelectTraversal()
     {
         // for (std::vector<SelectTraversal *>::iterator i =
-	//      my_selected.begin(); i != _selected.end();
-	//      ++i)
+    //      my_selected.begin(); i != _selected.end();
+    //      ++i)
         //     (*i)->deactivate();
     }
 
@@ -102,20 +102,20 @@ namespace Berlin
     }
 
     class SelectCommand : public virtual POA_Unidraw::Command,
-			  public ServantBase
+              public ServantBase
     {
       public:
         SelectCommand();
         virtual void execute();
         virtual void store(Unidraw::Model_ptr, const CORBA::Any &) {}
         virtual CORBA::Any *recall(Unidraw::Model_ptr)
-	{ return new CORBA::Any(); }
+    { return new CORBA::Any(); }
         virtual void destroy() { deactivate(); }
       private:
     };
 
     SelectTool::SelectTool(Graphic_ptr graphic) :
-	my_graphic(Graphic::_duplicate(graphic))
+    my_graphic(Graphic::_duplicate(graphic))
     { }
     SelectTool::~SelectTool() { }
     CORBA::Boolean SelectTool::grasp(Fresco::Controller_ptr controller,
@@ -143,7 +143,7 @@ namespace Berlin
 
     CORBA::Boolean
     SelectTool::manipulate(Fresco::PickTraversal_ptr traversal,
-			   const Fresco::Input::Event &event)
+               const Fresco::Input::Event &event)
     {
         Trace trace("SelectTool::manipulate");
         if (event[0].attr._d() == Fresco::Input::button) return false;
@@ -161,25 +161,25 @@ namespace Berlin
     
     Unidraw::Command_ptr
     SelectTool::effect(Fresco::PickTraversal_ptr traversal,
-		       const Fresco::Input::Event &event)
+               const Fresco::Input::Event &event)
     {
         Trace trace("SelectTool::effect");
         // traverse the viewer's children and pick all graphics that
-	// intersect with the selected region
+    // intersect with the selected region
         SelectTraversal *
-	    select(new SelectTraversal(my_root,
-				       Region_var(traversal->current_allocation()),
-				       Transform::_nil()));
+        select(new SelectTraversal(my_root,
+                       Region_var(traversal->current_allocation()),
+                       Transform::_nil()));
         select->region(my_begin, my_end);
         // Impl_var<SelectTraversal>
-	//     select(new SelectTraversal(my_root,
-	//                                Region_var(allocation->_this()),
+    //     select(new SelectTraversal(my_root,
+    //                                Region_var(allocation->_this()),
         //                                Fresco::Transform::_nil()));
         my_root->traverse(Traversal_var(select->_this()));
 
         // now walk down the picked trail and find 'Viewer' objects.
         std::cout << "found " << select->selected() << " objects"
-		  << std::endl;
+          << std::endl;
         my_iterator->remove();
         my_iterator->destroy();
         SelectCommand *command = new SelectCommand();

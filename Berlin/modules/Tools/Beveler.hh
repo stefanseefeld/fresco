@@ -34,33 +34,33 @@ namespace Berlin
     {
 
       void rect(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		const Fresco::Color &, const Fresco::Color &,
-		const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		Fresco::Coord, Fresco::Coord, bool);
+        const Fresco::Color &, const Fresco::Color &,
+        const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+        Fresco::Coord, Fresco::Coord, bool);
       void leftArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		     const Fresco::Color &, const Fresco::Color &,
-		     const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		     Fresco::Coord, Fresco::Coord, bool);
+             const Fresco::Color &, const Fresco::Color &,
+             const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+             Fresco::Coord, Fresco::Coord, bool);
       void rightArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		      const Fresco::Color &, const Fresco::Color &,
-		      const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		      Fresco::Coord, Fresco::Coord, bool);
+              const Fresco::Color &, const Fresco::Color &,
+              const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+              Fresco::Coord, Fresco::Coord, bool);
       void upArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		   const Fresco::Color &, const Fresco::Color &,
-		   const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		   Fresco::Coord, Fresco::Coord, bool);
+           const Fresco::Color &, const Fresco::Color &,
+           const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+           Fresco::Coord, Fresco::Coord, bool);
       void downArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		     const Fresco::Color &, const Fresco::Color &,
-		     const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		     Fresco::Coord, Fresco::Coord, bool);
+             const Fresco::Color &, const Fresco::Color &,
+             const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+             Fresco::Coord, Fresco::Coord, bool);
       void diamond(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		   const Fresco::Color &, const Fresco::Color &,
-		   const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		   Fresco::Coord, Fresco::Coord, bool);
+           const Fresco::Color &, const Fresco::Color &,
+           const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+           Fresco::Coord, Fresco::Coord, bool);
       void circle(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		  const Fresco::Color &, const Fresco::Color &,
-		  const Fresco::Color&, Fresco::Coord, Fresco::Coord,
-		  Fresco::Coord, Fresco::Coord, bool);
+          const Fresco::Color &, const Fresco::Color &,
+          const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+          Fresco::Coord, Fresco::Coord, bool);
     } // namespace
     
   } // namespace

@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         Private_Use_AreaE000() :
-	    my_first_letter(0xE000),
-	    my_last_letter(0xF8FF)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0xE000),
+        my_last_letter(0xF8FF)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Private Use Area";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Private Use Area";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -336,7 +336,7 @@ namespace Babylon
         // functions
         Private_Use_AreaE000(const Private_Use_AreaE000 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

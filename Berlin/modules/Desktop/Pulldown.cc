@@ -34,7 +34,7 @@ CORBA::Boolean Pulldown::receive_focus(Fresco::Focus_ptr focus)
     Trace trace("Pulldown::receive_focus");
     // Make sure we're mapped for keyboard focus
     if (focus->device() == 0)
-	mapped(true);
+    mapped(true);
 
     return WindowImpl::receive_focus(focus);
 }
@@ -43,7 +43,7 @@ void Pulldown::lose_focus(Input::Device device)
 {
     Trace trace("Pulldown::lose_focus");
     if (device == 0)
-	mapped(false);
+    mapped(false);
     
     WindowImpl::lose_focus(device);
 }

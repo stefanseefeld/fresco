@@ -32,7 +32,7 @@ namespace Berlin
 {
 
   class ServantBase : virtual public PortableServer::ServantBase,
-		      private DefaultPOA
+              private DefaultPOA
   {
       friend class KitImpl;
       friend class IdentifiableImpl;

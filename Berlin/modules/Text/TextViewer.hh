@@ -36,17 +36,17 @@ namespace Berlin
   {
 
     class TextViewer : public virtual ViewImpl,
-		       public Composition
+               public Composition
     {
       public:
-	TextViewer(Fresco::TextBuffer_ptr, Fresco::TextKit_ptr,
-		   Fresco::DrawingKit_ptr, Compositor *);
-	virtual ~TextViewer();
-	virtual void update(const CORBA::Any &);
+    TextViewer(Fresco::TextBuffer_ptr, Fresco::TextKit_ptr,
+           Fresco::DrawingKit_ptr, Compositor *);
+    virtual ~TextViewer();
+    virtual void update(const CORBA::Any &);
       protected:
-	virtual void activate_composite();
-	Fresco::TextKit_var my_kit;
-	Fresco::TextBuffer_var my_buffer;
+    virtual void activate_composite();
+    Fresco::TextKit_var my_kit;
+    Fresco::TextBuffer_var my_buffer;
     };
 
   } // namespace

@@ -43,45 +43,45 @@ namespace Berlin
     class Strut;
     
     class TextKitImpl : public virtual POA_Fresco::TextKit,
-			public KitImpl
+            public KitImpl
     {
-	typedef std::map<Fresco::Unichar, Fresco::Graphic_var> cache_t;
+    typedef std::map<Fresco::Unichar, Fresco::Graphic_var> cache_t;
       public:
-	TextKitImpl(const std::string &,
-		    const Fresco::Kit::PropertySeq &,
-		    ServerContextImpl *);
-	virtual ~TextKitImpl();
-	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
-				       ServerContextImpl *c)
-	{ return new TextKitImpl(repo_id(), p, c);}
-	virtual void bind(Fresco::ServerContext_ptr);
+    TextKitImpl(const std::string &,
+            const Fresco::Kit::PropertySeq &,
+            ServerContextImpl *);
+    virtual ~TextKitImpl();
+    virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+                       ServerContextImpl *c)
+    { return new TextKitImpl(repo_id(), p, c);}
+    virtual void bind(Fresco::ServerContext_ptr);
 
-	Fresco::Graphic_ptr chunk(const Fresco::Unistring &u);
-	Fresco::Graphic_ptr glyph(Fresco::Unichar c);
-	Fresco::Graphic_ptr strut();
-	Fresco::Graphic_ptr simple_viewer(Fresco::TextBuffer_ptr);  
-	Fresco::Graphic_ptr terminal(Fresco::StreamBuffer_ptr);
-	Fresco::Graphic_ptr size(Fresco::Graphic_ptr, CORBA::ULong);
-	Fresco::Graphic_ptr weight(Fresco::Graphic_ptr, CORBA::ULong);
-	Fresco::Graphic_ptr family(Fresco::Graphic_ptr,
-				   const Fresco::Unistring &);
-	Fresco::Graphic_ptr subfamily(Fresco::Graphic_ptr,
-				      const Fresco::Unistring &);
-	Fresco::Graphic_ptr fullname(Fresco::Graphic_ptr,
-				     const Fresco::Unistring &);
-	Fresco::Graphic_ptr style(Fresco::Graphic_ptr,
-				  const Fresco::Unistring &);
-	Fresco::Graphic_ptr font_attribute(Fresco::Graphic_ptr,
-					   const Fresco::NVPair &);
+    Fresco::Graphic_ptr chunk(const Fresco::Unistring &u);
+    Fresco::Graphic_ptr glyph(Fresco::Unichar c);
+    Fresco::Graphic_ptr strut();
+    Fresco::Graphic_ptr simple_viewer(Fresco::TextBuffer_ptr);  
+    Fresco::Graphic_ptr terminal(Fresco::StreamBuffer_ptr);
+    Fresco::Graphic_ptr size(Fresco::Graphic_ptr, CORBA::ULong);
+    Fresco::Graphic_ptr weight(Fresco::Graphic_ptr, CORBA::ULong);
+    Fresco::Graphic_ptr family(Fresco::Graphic_ptr,
+                   const Fresco::Unistring &);
+    Fresco::Graphic_ptr subfamily(Fresco::Graphic_ptr,
+                      const Fresco::Unistring &);
+    Fresco::Graphic_ptr fullname(Fresco::Graphic_ptr,
+                     const Fresco::Unistring &);
+    Fresco::Graphic_ptr style(Fresco::Graphic_ptr,
+                  const Fresco::Unistring &);
+    Fresco::Graphic_ptr font_attribute(Fresco::Graphic_ptr,
+                       const Fresco::NVPair &);
       private:
-	cache_t                my_cache;
-	Fresco::DrawingKit_var my_canonicalDK;
-	
-	RefCount_var<Fresco::LayoutKit> my_layout;
-	Impl_var<Strut>       my_strut;
-	Prague::Mutex         my_mutex;
-	Compositor           *my_lineCompositor;
-	Compositor           *my_pageCompositor;
+    cache_t                my_cache;
+    Fresco::DrawingKit_var my_canonicalDK;
+    
+    RefCount_var<Fresco::LayoutKit> my_layout;
+    Impl_var<Strut>       my_strut;
+    Prague::Mutex         my_mutex;
+    Compositor           *my_lineCompositor;
+    Compositor           *my_pageCompositor;
     };
     
   } // namespace

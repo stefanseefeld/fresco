@@ -53,7 +53,7 @@ CORBA::Boolean MainControllerImpl::receive_focus(Focus_ptr focus)
     Input::Device d = focus->device();
     bool ret = ControllerImpl::receive_focus(focus);
     if (ret && d == 1 && !CORBA::is_nil(my_cursor))
-	focus->set_cursor(my_cursor);
+    focus->set_cursor(my_cursor);
     return ret;
 }
 

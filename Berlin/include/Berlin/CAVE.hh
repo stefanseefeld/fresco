@@ -149,7 +149,7 @@ class CAVEEventListener {
 public:
     
     CAVEEventListener(CAVEConsole *console, Thread::Queue<Input::Event *> &queue) 
-	: _listener(proc, this), _queue(queue), _console(console) { }
+    : _listener(proc, this), _queue(queue), _console(console) { }
     ~CAVEEventListener() { cancel(); }
     void run() { _listener.start(); }
     void cancel() { _listener.join(0); }
@@ -160,9 +160,9 @@ private:
      * Listener thread bootstrapping function.
      **/
     static void *proc(void *X) {
-	CAVEEventListener *listener = reinterpret_cast<CAVEEventListener *>(X);
-	listener->start();
-	return 0;
+    CAVEEventListener *listener = reinterpret_cast<CAVEEventListener *>(X);
+    listener->start();
+    return 0;
     }
 
     /**

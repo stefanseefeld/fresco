@@ -10,16 +10,16 @@ sub new
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
-	
-	next if ($info eq "");
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    
+    next if ($info eq "");
 
-	my @list = split /;/, $info, 15;
-	
-	$self->{hex($list[0])} = $list[6] if ($list[6] ne "");
+    my @list = split /;/, $info, 15;
+    
+    $self->{hex($list[0])} = $list[6] if ($list[6] ne "");
     }
 
     close(UCD);
@@ -60,18 +60,18 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
 
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef")
-	    {
-		$self->{_ATTENTION_NEEDED} = 1;
-		last;
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef")
+        {
+        $self->{_ATTENTION_NEEDED} = 1;
+        last;
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -96,40 +96,40 @@ sub function {
 
     if ($self->{_ATTENTION_NEEDED} == 1)
     {
-	$tmp .= "            if (!is_defined(uc))\n";
-	$tmp .= "                return 0;\n";
-	$tmp .= "            switch(uc)\n            {\n";
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= sprintf "            case 0x%04Xu:\n                return %d;\n", $i, $self->{$i} if($self->data($i) ne "undef");
-	}
-	$tmp .= "            default:\n";
-	$tmp .= "                return 0;\n";
-	$tmp .= "            }\n";
+    $tmp .= "            if (!is_defined(uc))\n";
+    $tmp .= "                return 0;\n";
+    $tmp .= "            switch(uc)\n            {\n";
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= sprintf "            case 0x%04Xu:\n                return %d;\n", $i, $self->{$i} if($self->data($i) ne "undef");
+    }
+    $tmp .= "            default:\n";
+    $tmp .= "                return 0;\n";
+    $tmp .= "            }\n";
     }
     else
     {
-	$tmp .= "            return 0;\n";
+    $tmp .= "            return 0;\n";
     }
     $tmp   .= "        }\n\n";
 
     $tmp   .= "        bool is_Decimal_Digit(const UCS4 uc) const\n        {\n";
     if ($self->{_ATTENTION_NEEDED} == 1)
     {
-	$tmp .= "            switch(uc)\n            {\n";
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= sprintf "            case 0x%04Xu:\n", $i
-		if ($self->data($i) ne "undef");
-	}
-	$tmp .= "                return 1;\n";
-	$tmp .= "            default:\n";
-	$tmp .= "                return 0;\n";
-	$tmp .= "            }\n";
+    $tmp .= "            switch(uc)\n            {\n";
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= sprintf "            case 0x%04Xu:\n", $i
+        if ($self->data($i) ne "undef");
+    }
+    $tmp .= "                return 1;\n";
+    $tmp .= "            default:\n";
+    $tmp .= "                return 0;\n";
+    $tmp .= "            }\n";
     }
     else
     {
-	$tmp .= "            return 0;\n";
+    $tmp .= "            return 0;\n";
     }
     $tmp   .= "        }\n\n";
     

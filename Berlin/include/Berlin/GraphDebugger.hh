@@ -53,23 +53,23 @@ namespace Berlin
 
       struct graphic_info
       {
-	  Fresco::Graphic_var graphic;
-	  GraphicImpl * impl;
-	  unsigned long hash;
-	  unsigned long id;
-	  bool dumped;
-	  std::string name;
+      Fresco::Graphic_var graphic;
+      GraphicImpl * impl;
+      unsigned long hash;
+      unsigned long id;
+      bool dumped;
+      std::string name;
 
-	  graphic_info(Fresco::Graphic_ptr g, const GraphicImpl * const im,
-		       unsigned long h, unsigned long i,
-		       std::string n, bool d = false) :
-	      graphic(Fresco::Graphic::_duplicate(g)),
-	      impl(const_cast<GraphicImpl *>(im)),
-	      hash(h),
-	      id(i),
-	      name(n),
-	      dumped(d)
-	  { }
+      graphic_info(Fresco::Graphic_ptr g, const GraphicImpl * const im,
+               unsigned long h, unsigned long i,
+               std::string n, bool d = false) :
+          graphic(Fresco::Graphic::_duplicate(g)),
+          impl(const_cast<GraphicImpl *>(im)),
+          hash(h),
+          id(i),
+          name(n),
+          dumped(d)
+      { }
       };
 
       graphic_info & find_or_insert(Fresco::Graphic_ptr);

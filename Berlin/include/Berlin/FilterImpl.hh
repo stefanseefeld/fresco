@@ -30,11 +30,11 @@ namespace Berlin
 {
 
   class Accelerator : public virtual POA_Fresco::Input::Filter,
-		      public virtual PortableServer::RefCountServantBase
+              public virtual PortableServer::RefCountServantBase
   {
     public:
       Accelerator(Fresco::Input::Device, const Fresco::Input::Toggle &,
-		  Fresco::Input::Bitset, Fresco::Command_ptr);
+          Fresco::Input::Bitset, Fresco::Command_ptr);
       virtual ~Accelerator() { }
       virtual CORBA::Boolean handle(const Fresco::Input::Event &);
     private:

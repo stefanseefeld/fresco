@@ -30,7 +30,7 @@ namespace Berlin
 {
 
   class CommandImpl : public virtual POA_Fresco::Command,
-		      public virtual ServantBase
+              public virtual ServantBase
   {
     public:
       virtual void execute(const CORBA::Any &) = 0;

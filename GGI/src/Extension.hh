@@ -19,12 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Extension_hh
-#define _Extension_hh
+#ifndef _GGI_Extension_hh
+#define _GGI_Extension_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Types.hh>
-#include <Berlin/Logger.hh>
 #include <Berlin/Console/Renderer.hh>
 #include <Berlin/Console/DirectBuffer.hh>
 #include <Berlin/Console/SHMDrawableFactory.hh>
@@ -34,60 +33,61 @@
 namespace GGI
 {
 
-class Drawable;
+  class Extension : virtual public Berlin::Console::Drawable::Extension
+  {
+    public:
+      Extension() : my_drawable(0) { }
+      virtual void attach(Berlin::Console::Drawable *drawable);
+      Drawable *drawable() { return my_drawable;}
+    private:
+      Drawable *my_drawable;
+  };
 
-class Extension : virtual public ::Console::Drawable::Extension
-{
-public:
-  Extension() : _drawable(0) {}
-  virtual void attach(::Console::Drawable *drawable);
-  Drawable *drawable() { return _drawable;}
-private:
-  Drawable *_drawable;
-};
+  class Renderer : public Extension,
+           virtual public Berlin::Console_Extension::Renderer
+  {
+    public:
+      Renderer() { }
+      virtual void set_color(const Fresco::Color &);
+      virtual void draw_pixel(Fresco::PixelCoord x, Fresco::PixelCoord y);
+      virtual void draw_hline(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                  Fresco::PixelCoord w);
+      virtual void draw_vline(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                  Fresco::PixelCoord h);
+      virtual void draw_line(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                 Fresco::PixelCoord w, Fresco::PixelCoord h);
+      virtual void draw_box(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                Fresco::PixelCoord w, Fresco::PixelCoord h);
+  };
 
-class Renderer : public Extension,
-		 virtual public ::Renderer
-{
-public:
-  Renderer() {}
-  virtual void set_color(const Fresco::Color &);
-  virtual void draw_pixel(Fresco::PixelCoord x, Fresco::PixelCoord y);
-  virtual void draw_hline(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord w);
-  virtual void draw_vline(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord h);
-  virtual void draw_line(Fresco::PixelCoord x, Fresco::PixelCoord y,
-			 Fresco::PixelCoord w, Fresco::PixelCoord h);
-  virtual void draw_box(Fresco::PixelCoord x, Fresco::PixelCoord y,
-			Fresco::PixelCoord w, Fresco::PixelCoord h);
-};
+  class DirectBuffer : public Extension,
+               virtual public Berlin::Console_Extension::DirectBuffer
+  {
+    public:
+      DirectBuffer() { }
+      virtual Guard read_buffer();
+      virtual Guard write_buffer();
+  };
 
-class DirectBuffer : public Extension,
-		     virtual public ::DirectBuffer
-{
-public:
-  DirectBuffer() {}
-  virtual Guard read_buffer();
-  virtual Guard write_buffer();
-};
+  class SHMDrawableFactory :
+    virtual public Berlin::Console_Extension::SHMDrawableFactory
+  {
+    public:
+      virtual Console::Drawable *create_drawable(int shmid,
+                         Fresco::PixelCoord,
+                         Fresco::PixelCoord,
+                         Fresco::PixelCoord);
+  };
 
-class SHMDrawableFactory : virtual public ::SHMDrawableFactory
-{
-public:
-  virtual Console::Drawable *create_drawable(int shmid,
-					     Fresco::PixelCoord,
-					     Fresco::PixelCoord,
-					     Fresco::PixelCoord);
-};
-
-class GGIDrawableFactory : virtual public ::GGIDrawableFactory
-{
-public:
-  virtual ::GGIDrawable *create_drawable(int shmid,
-					 Fresco::PixelCoord,
-					 Fresco::PixelCoord,
-					 Fresco::PixelCoord);
-};
-
+  class GGIDrawableFactory :
+    virtual public Berlin::Console_Extension::GGIDrawableFactory
+  {
+    public:
+      virtual Berlin::Console_Extension::GGIDrawable *
+      create_drawable(int shmid, Fresco::PixelCoord, Fresco::PixelCoord,
+              Fresco::PixelCoord);
+  };
+  
 }
 
 #endif

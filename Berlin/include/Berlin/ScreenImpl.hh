@@ -36,7 +36,7 @@ namespace Berlin
   class RegionImpl;
   
   class ScreenImpl : public virtual POA_Fresco::Screen,
-		     public ControllerImpl
+             public ControllerImpl
   {
     public:
       //. Sets up the screen to the sizes given by the console in use.
@@ -54,11 +54,11 @@ namespace Berlin
       virtual void damage(Fresco::Region_ptr);
       
       virtual CORBA::Boolean request_focus(Fresco::Controller_ptr,
-					   Fresco::Input::Device);
+                       Fresco::Input::Device);
       virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr) { return true; }
       virtual void lose_focus(Fresco::Input::Device) { }
       virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr,
-					       const Fresco::Input::Event &)
+                           const Fresco::Input::Event &)
       { return false; }
       virtual CORBA::Boolean
       handle_non_positional(const Fresco::Input::Event &) { return false; }

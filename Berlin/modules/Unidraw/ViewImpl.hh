@@ -32,20 +32,20 @@ namespace Berlin
   {
 
     class UViewImpl : public virtual POA_Unidraw::View,
-		      public ControllerImpl
+              public ControllerImpl
     {
       public:
-	UViewImpl(Unidraw::Model_ptr);
-	virtual ~UViewImpl();
-	virtual Unidraw::Model_ptr subject();
-	virtual void traverse(Fresco::Traversal_ptr);
-	virtual void draw(Fresco::DrawTraversal_ptr);
-	virtual void pick(Fresco::PickTraversal_ptr);
-	virtual CORBA::Boolean 
-	handle_positional(Fresco::PickTraversal_ptr,
-			  const Fresco::Input::Event &);
+    UViewImpl(Unidraw::Model_ptr);
+    virtual ~UViewImpl();
+    virtual Unidraw::Model_ptr subject();
+    virtual void traverse(Fresco::Traversal_ptr);
+    virtual void draw(Fresco::DrawTraversal_ptr);
+    virtual void pick(Fresco::PickTraversal_ptr);
+    virtual CORBA::Boolean 
+    handle_positional(Fresco::PickTraversal_ptr,
+              const Fresco::Input::Event &);
       private:
-	Unidraw::Model_var my_model;
+    Unidraw::Model_var my_model;
     };
 
   } // namespace

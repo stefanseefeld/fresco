@@ -19,15 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _RasterDemo_hh
-#define _RasterDemo_hh
+#ifndef _CXX_demos_RasterDemo_hh
+#define _CXX_demos_RasterDemo_hh
 
 #include "Demo.hh"
 
 class RasterDemo : public Demo
 {
-public:
-  RasterDemo(Application *);
+  public:
+    RasterDemo(Application *);
 };
 
 #endif

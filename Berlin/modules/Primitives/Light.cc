@@ -44,7 +44,7 @@ void Light::draw(DrawTraversal_ptr traversal)
     drawing->save();
     DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
     if (!CORBA::is_nil(d3d))
-	do_draw(d3d);
+    do_draw(d3d);
     MonoGraphic::traverse(traversal);
     drawing->restore();
 }
@@ -53,24 +53,24 @@ void Light::pick(Fresco::PickTraversal_ptr traversal)
 { MonoGraphic::traverse(traversal); }
 
 DirectionalLight::DirectionalLight(const Fresco::Color &color,
-				   double intensity,
-				   const Fresco::Vertex &direction) :
+                   double intensity,
+                   const Fresco::Vertex &direction) :
     Light(color, intensity), my_direction(direction)
 { }
 void DirectionalLight::do_draw(Fresco::DrawingKit3D_ptr drawing)
 { drawing->directional_light(my_color, my_intensity, my_direction); }
 
 PointLight::PointLight(const Fresco::Color &color, double intensity,
-		       const Fresco::Vertex &position) :
+               const Fresco::Vertex &position) :
     Light(color, intensity), my_position(position)
 { }
 void PointLight::do_draw(Fresco::DrawingKit3D_ptr drawing)
 { drawing->point_light(my_color, my_intensity, my_position); }
 
 SpotLight::SpotLight(const Fresco::Color &color, double intensity,
-		     const Fresco::Vertex &position,
-		     const Fresco::Vertex &direction,
-		     double dropoffrate, double cutoffangle) :
+             const Fresco::Vertex &position,
+             const Fresco::Vertex &direction,
+             double dropoffrate, double cutoffangle) :
     Light(color, intensity),
     my_position(position),
     my_direction(direction),
@@ -80,6 +80,6 @@ SpotLight::SpotLight(const Fresco::Color &color, double intensity,
 void SpotLight::do_draw(Fresco::DrawingKit3D_ptr drawing)
 {
     drawing->spot_light(my_color, my_intensity, my_position, my_direction,
-			my_dropoffrate, my_cutoffangle);
+            my_dropoffrate, my_cutoffangle);
 }
 

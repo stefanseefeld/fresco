@@ -50,7 +50,7 @@ int main(int argc, char **argv)
       CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
       PortableServer::POA_var poa = 
           resolve_init<PortableServer::POA>(orb, "RootPOA");
-      DefaultPOA::default_POA(poa);
+      Berlin::DefaultPOA::default_POA(poa);
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
       

@@ -50,10 +50,10 @@ void UViewImpl::pick(PickTraversal_ptr traversal)
     Trace trace("UViewImpl::pick");
     if (traversal->intersects_allocation())
     {
-	traversal->enter_controller(Controller_var(_this()));
-	MonoGraphic::traverse(traversal);
-	if (traversal->ok()) traversal->hit();
-	traversal->leave_controller();
+    traversal->enter_controller(Controller_var(_this()));
+    MonoGraphic::traverse(traversal);
+    if (traversal->ok()) traversal->hit();
+    traversal->leave_controller();
     }
 }
 
@@ -61,5 +61,5 @@ Unidraw::Model_ptr UViewImpl::subject()
 { return Unidraw::Model::_duplicate(my_model); }
 
 CORBA::Boolean UViewImpl::handle_positional(PickTraversal_ptr traversal,
-					    const Input::Event &event)
+                        const Input::Event &event)
 { return false; }

@@ -31,8 +31,8 @@ namespace Berlin
 {
 
   class FocusImpl : public virtual POA_Fresco::Focus,
-		    public virtual PortableServer::RefCountServantBase,
-		    private DefaultPOA
+            public virtual PortableServer::RefCountServantBase,
+            private DefaultPOA
   {
       friend class EventManager;
     public:

@@ -37,61 +37,61 @@ namespace Berlin
     class Manipulator : public CommandImpl
     {
       public:
-	Manipulator(Fresco::Window_ptr w) :
-	    my_window(Fresco::Window::_duplicate(w))
-	{ }
-	virtual ~Manipulator()
-	{ Prague::Trace trace("Manipulator::~Manipulator"); }
-	virtual void execute(const CORBA::Any &) = 0;
+    Manipulator(Fresco::Window_ptr w) :
+        my_window(Fresco::Window::_duplicate(w))
+    { }
+    virtual ~Manipulator()
+    { Prague::Trace trace("Manipulator::~Manipulator"); }
+    virtual void execute(const CORBA::Any &) = 0;
       protected:
-	Fresco::Window_var my_window;
+    Fresco::Window_var my_window;
     };
 
     class Mover : public Manipulator
     {
       public:
-	Mover(Fresco::Window_ptr window) : Manipulator(window) { }
-	virtual void execute(const CORBA::Any &);
+    Mover(Fresco::Window_ptr window) : Manipulator(window) { }
+    virtual void execute(const CORBA::Any &);
     };
 
     class Resizer : public Manipulator
     {
       public:
-	Resizer(Fresco::Window_ptr window) : Manipulator(window) {}
-	virtual void execute(const CORBA::Any &);
+    Resizer(Fresco::Window_ptr window) : Manipulator(window) {}
+    virtual void execute(const CORBA::Any &);
     };
 
     class MoveResizer : public Manipulator
     {
       public:
-	MoveResizer(Fresco::Window_ptr, Fresco::Desktop_ptr,
-		    Fresco::Alignment, Fresco::Alignment, CORBA::Short);
-	virtual void execute(const CORBA::Any &);
+    MoveResizer(Fresco::Window_ptr, Fresco::Desktop_ptr,
+            Fresco::Alignment, Fresco::Alignment, CORBA::Short);
+    virtual void execute(const CORBA::Any &);
       private:
-	Fresco::Desktop_var my_desktop;
-	Fresco::Alignment my_xalign, my_yalign;
-	CORBA::Short my_border;
+    Fresco::Desktop_var my_desktop;
+    Fresco::Alignment my_xalign, my_yalign;
+    CORBA::Short my_border;
     };
 
     class Relayerer: public Manipulator
     {
       public:
-	Relayerer(Fresco::Window_ptr window) : Manipulator(window) {}
-	virtual void execute(const CORBA::Any &);
+    Relayerer(Fresco::Window_ptr window) : Manipulator(window) {}
+    virtual void execute(const CORBA::Any &);
     };
 
     class Mapper : public Manipulator
     {
       public:
-	Mapper(Fresco::Window_ptr window) : Manipulator(window) {}
-	virtual void execute(const CORBA::Any &);
+    Mapper(Fresco::Window_ptr window) : Manipulator(window) {}
+    virtual void execute(const CORBA::Any &);
     };
 
     class Unmapper : public Manipulator
     {
       public:
-	Unmapper(Fresco::Window_ptr window) : Manipulator(window) {}
-	virtual void execute(const CORBA::Any &);
+    Unmapper(Fresco::Window_ptr window) : Manipulator(window) {}
+    virtual void execute(const CORBA::Any &);
     };
 
   } // namespace

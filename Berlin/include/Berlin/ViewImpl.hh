@@ -30,7 +30,7 @@ namespace Berlin
 {
 
   class ViewImpl : public virtual POA_Fresco::View,
-		   public virtual ObserverImpl
+           public virtual ObserverImpl
   {
     public:
       virtual void destroy() { }

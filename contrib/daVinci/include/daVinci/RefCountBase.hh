@@ -30,7 +30,7 @@
 namespace daVinci
 {
 class RefCountBase : public virtual POA_Fresco::RefCountBase,
-		     public virtual ServantBase
+             public virtual ServantBase
 {
 public:
   RefCountBase();

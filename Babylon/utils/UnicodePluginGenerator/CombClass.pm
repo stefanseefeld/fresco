@@ -10,16 +10,16 @@ sub new
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next if ($info eq "");
+    next if ($info eq "");
 
-	my @list = split /;/, $info, 15;
-	
-	$self->{hex($list[0])} = $list[3];
+    my @list = split /;/, $info, 15;
+    
+    $self->{hex($list[0])} = $list[3];
     }
 
     close(UCD);
@@ -62,25 +62,25 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
 
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef")
-	    {
-		if ($self->{_ELEM} eq "")
-		{
-		    $self->{_ELEM} = $self->data($i);
-		}
-		elsif ($self->{_ELEM} ne $self->data($i))
-		{
-		    $self->{_ATTENTION_NEEDED} = 1;
-		    last;
-		}
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef")
+        {
+        if ($self->{_ELEM} eq "")
+        {
+            $self->{_ELEM} = $self->data($i);
+        }
+        elsif ($self->{_ELEM} ne $self->data($i))
+        {
+            $self->{_ATTENTION_NEEDED} = 1;
+            last;
+        }
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -105,9 +105,9 @@ sub function {
     
     if ($self->{_ATTENTION_NEEDED})
     {
-	$tmp .= "            return Can_Comb_Class($bl_name\:\:my_comb_cl\[uc - my_first_letter\]);\n";
-	$tmp .= "        }\n\n";
-	return $tmp;
+    $tmp .= "            return Can_Comb_Class($bl_name\:\:my_comb_cl\[uc - my_first_letter\]);\n";
+    $tmp .= "        }\n\n";
+    return $tmp;
     }
     $tmp .= sprintf "            return Babylon\:\:Can_Comb_Class(%s);\n        }\n\n", $self->{_ELEM};
     return $tmp;
@@ -120,7 +120,7 @@ sub var_def
     my $bl_length = $_[1] - $_[0] + 1;
 
     return "        static const unsigned char my_comb_cl\[$bl_length\];\n"
-	if ($self->{_ATTENTION_NEEDED});
+    if ($self->{_ATTENTION_NEEDED});
     return "";
 }
 
@@ -135,23 +135,23 @@ sub var
     
     if ($self->{_ATTENTION_NEEDED})
     {
-	my $tmp = "    const unsigned char $bl_name\:\:my_comb_cl\[\] = {";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
-	    if ($self->data($i) eq "undef")
-	    {
-		$tmp .= $self->{_ELEM};
-	    }
-	    else
-	    {
-		$tmp .= $self->data($i);
-	    }
-	    $tmp .= ", " if ( $i != $bl_end);
-	}
-	$tmp .= "\n    };\n\n";
-	
-	return $tmp;
+    my $tmp = "    const unsigned char $bl_name\:\:my_comb_cl\[\] = {";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
+        if ($self->data($i) eq "undef")
+        {
+        $tmp .= $self->{_ELEM};
+        }
+        else
+        {
+        $tmp .= $self->data($i);
+        }
+        $tmp .= ", " if ( $i != $bl_end);
+    }
+    $tmp .= "\n    };\n\n";
+    
+    return $tmp;
     }
     return "";
 }

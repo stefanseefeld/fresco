@@ -45,18 +45,18 @@ namespace Berlin
       //. into subnodes.
       struct move_down : std::unary_function<I, bool>
       {
-	  move_down(QTNode<T, I> *n) : node(n) {}
-	  bool operator()(I i)
-	  {
-	      QTNode<T, I>::index idx = node->where(i);
-	      if (idx != QTNode<T, I>::fence)
-	      {
-		  node->my_quadrants[idx]->insert(i);
-		  return true;
-	      }
-	      else return false;
-	  };
-	  QTNode<T, I> *node;
+      move_down(QTNode<T, I> *n) : node(n) {}
+      bool operator()(I i)
+      {
+          QTNode<T, I>::index idx = node->where(i);
+          if (idx != QTNode<T, I>::fence)
+          {
+          node->my_quadrants[idx]->insert(i);
+          return true;
+          }
+          else return false;
+      };
+      QTNode<T, I> *node;
       };
       friend class move_down;
 
@@ -64,27 +64,27 @@ namespace Berlin
       //. An enumeration of the quadrants of the QTNode.
       enum index
       {
-	  fence = -1,
-	  none = 0,
-	  left = 0,
-	  right = 1,
-	  top = 0,
-	  bottom = 2,
-	  leftbottom = left|bottom, // = 2
-	  rightbottom = right|bottom, // = 3
-	  lefttop = left|top, // = 0
-	  righttop = right|top // = 1
+      fence = -1,
+      none = 0,
+      left = 0,
+      right = 1,
+      top = 0,
+      bottom = 2,
+      leftbottom = left|bottom, // = 2
+      rightbottom = right|bottom, // = 3
+      lefttop = left|top, // = 0
+      righttop = right|top // = 1
       };
 
       typedef std::vector<I> list;
 
       //. Creates an empty QTNode for the region r.
       QTNode(const Geometry::Rectangle<T> &r) :
-	  my_region(r), 
-	  my_elements(0)
+      my_region(r), 
+      my_elements(0)
       {
-	  my_quadrants[0] = my_quadrants[1] =
-	      my_quadrants[2] = my_quadrants[3] = 0;
+      my_quadrants[0] = my_quadrants[1] =
+          my_quadrants[2] = my_quadrants[3] = 0;
       }
       //. Returns a subnode for the quadrant i.
       QTNode<T, I> *node(index i) { return my_quadrants[i]; }
@@ -124,18 +124,18 @@ namespace Berlin
       //. Frees the memory of this node and the subnodes.
       void free()
       {
-	  if (!leaf())
-	      for (int i = 0; i < 4; i++)
-	      {
-		  delete my_quadrants[i];
-		  my_quadrants[i] = 0;
-	      }
+      if (!leaf())
+          for (int i = 0; i < 4; i++)
+          {
+          delete my_quadrants[i];
+          my_quadrants[i] = 0;
+          }
       }
       //. Returns the index the point p belongs into.
       index where(const Geometry::Point<T> &p)
       {
-	  return index((p.x <= my_region.cx() ? left : right) |
-		       (p.y <= my_region.cy() ? bottom : top));
+      return index((p.x <= my_region.cx() ? left : right) |
+               (p.y <= my_region.cy() ? bottom : top));
       }
       //. Returns the quadrant the given rectangle is in. Returns 'fence'
       // if the rectangle intersects more then one quadrant.
@@ -159,19 +159,19 @@ namespace Berlin
       //. Dumps the data for this node and its subnotes if there are any.
       friend void dumpQuadNode(const QTNode<T,I> &node, short ind)
       {
-	  for (short i = 0; i != ind; i++) std::cout.put(' ');
-	  std::cout << "Node : " << node.elements
-		    << '(' << node.items.size()
-		    << ") elements, extension : "
-		    << node.region << std::endl;
-	  for (typename list::const_iterator i = node.items.begin();
-	       i != node.items.end();
-	       ++i)
-	      std::cout << (*i)->boundingbox << ';';
-	  std::cout << std::endl;
-	  if (!node.leaf())
-	      for (short i = 0; i != 4; i++)
-		  dumpQuadNode(*node.my_quadrants[i], ind + 2);
+      for (short i = 0; i != ind; i++) std::cout.put(' ');
+      std::cout << "Node : " << node.elements
+            << '(' << node.items.size()
+            << ") elements, extension : "
+            << node.region << std::endl;
+      for (typename list::const_iterator i = node.items.begin();
+           i != node.items.end();
+           ++i)
+          std::cout << (*i)->boundingbox << ';';
+      std::cout << std::endl;
+      if (!node.leaf())
+          for (short i = 0; i != 4; i++)
+          dumpQuadNode(*node.my_quadrants[i], ind + 2);
       }
   };
 
@@ -196,7 +196,7 @@ namespace Berlin
       //. Dumps the data for this QuadTree.
       friend void dumpQuadTree(const QuadTree<T,I> &tree)
       {
-	  if (tree.my_quad) dumpQuadNode(*tree.my_quad, 0);
+      if (tree.my_quad) dumpQuadNode(*tree.my_quad, 0);
       }
   };
 
@@ -208,19 +208,19 @@ namespace Berlin
       using namespace Geometry;
       if (leaf())
       {
-	  my_quadrants[lefttop] =
-	      new QTNode<T, I>(Rectangle<T>(my_region.l, my_region.t,
-					    my_region.cx(),
-					    my_region.cy()));
-	  my_quadrants[righttop] =
-	      new QTNode<T, I>(Rectangle<T>(my_region.cx(), my_region.t,
-					    my_region.r, my_region.cy()));
-	  my_quadrants[leftbottom] =
-	      new QTNode<T, I>(Rectangle<T>(my_region.l, my_region.cy(),
-					    my_region.cx(), my_region.b));
-	  my_quadrants[rightbottom] =
-	      new QTNode<T, I>(Rectangle<T>(my_region.cx(), my_region.cy(),
-					    my_region.r, my_region.b));
+      my_quadrants[lefttop] =
+          new QTNode<T, I>(Rectangle<T>(my_region.l, my_region.t,
+                        my_region.cx(),
+                        my_region.cy()));
+      my_quadrants[righttop] =
+          new QTNode<T, I>(Rectangle<T>(my_region.cx(), my_region.t,
+                        my_region.r, my_region.cy()));
+      my_quadrants[leftbottom] =
+          new QTNode<T, I>(Rectangle<T>(my_region.l, my_region.cy(),
+                        my_region.cx(), my_region.b));
+      my_quadrants[rightbottom] =
+          new QTNode<T, I>(Rectangle<T>(my_region.cx(), my_region.cy(),
+                        my_region.r, my_region.b));
       }
   }
   
@@ -230,16 +230,16 @@ namespace Berlin
       // If we are over the maximum then unfold
       // and push down as many objects as we can.
       if (my_items.size() > (uint) max &&
-	  ((my_region.w() > (min_w * 2)) || (my_region.h() > (min_h * 2))))
-	  unfold();
+      ((my_region.w() > (min_w * 2)) || (my_region.h() > (min_h * 2))))
+      unfold();
       if (!leaf())
       {
-	  for (int i = 0; i < 4; ++i)
-	      my_quadrants[i]->adjust(min, max, min_w, min_h);
-	  // If our sub-tree is under the minimum then flatten it away.
-	  if (my_elements < min || my_elements - my_items.size() == 0 ||
-	      (my_region.w() < min_w && my_region.h() < min_h))
-	      collaps();
+      for (int i = 0; i < 4; ++i)
+          my_quadrants[i]->adjust(min, max, min_w, min_h);
+      // If our sub-tree is under the minimum then flatten it away.
+      if (my_elements < min || my_elements - my_items.size() == 0 ||
+          (my_region.w() < min_w && my_region.h() < min_h))
+          collaps();
       }
   }
   
@@ -249,7 +249,7 @@ namespace Berlin
       if (! leaf()) return;
       allocate();
       typename list::iterator i =
-	  remove_if(my_items.begin(), my_items.end(), move_down(this));
+      remove_if(my_items.begin(), my_items.end(), move_down(this));
       my_items.erase(i, my_items.end());
   }
 
@@ -259,11 +259,11 @@ namespace Berlin
       if (leaf()) return;
       for (int i = 0; i < 4; i++)
       {
-	  QTNode<T, I> *node = my_quadrants[i];
-	  node->collaps();
-	  list childItems = node->my_items;
-	  my_items.insert(my_items.end(),
-			  childItems.begin(), childItems.end());
+      QTNode<T, I> *node = my_quadrants[i];
+      node->collaps();
+      list childItems = node->my_items;
+      my_items.insert(my_items.end(),
+              childItems.begin(), childItems.end());
       }
       free();
   }
@@ -275,11 +275,11 @@ namespace Berlin
       int idx = fence;
       if (!leaf())
       {
-	  const T x = my_region.cx();
-	  const T y = my_region.cy();
-	  // is r inside one of the quarters ?
-	  if ((r.r <= x) == (r.l < x) && (r.b <= y) == (r.t < y))
-	      idx = (r.r <= x ? left : right) | (r.b <= y ? top : bottom);
+      const T x = my_region.cx();
+      const T y = my_region.cy();
+      // is r inside one of the quarters ?
+      if ((r.r <= x) == (r.l < x) && (r.b <= y) == (r.t < y))
+          idx = (r.r <= x ? left : right) | (r.b <= y ? top : bottom);
       }
       return static_cast<index>(idx);
   }
@@ -303,49 +303,49 @@ namespace Berlin
       index idx = where(i);
       if (idx == fence)
       {
-	  for (typename list::iterator j = my_items.begin();
-	       j != my_items.end();
-	       ++j)
-	      if (*j == i)
-	      {
-		  my_items.erase(j);
-		  break;
-	      }
+      for (typename list::iterator j = my_items.begin();
+           j != my_items.end();
+           ++j)
+          if (*j == i)
+          {
+          my_items.erase(j);
+          break;
+          }
       }
       else my_quadrants[idx]->remove(i);
       my_elements--;
       
       if (my_boundingbox.touches(i->bbox(), epsilon))
       {
-	  my_boundingbox.clear();
-	  bool first = true;
-	  for (typename list::iterator j = my_items.begin();
-	       j != my_items.end();
-	       ++j)
-	  {
-	      if (first)
-	      {
-		  my_boundingbox = (*j)->bbox();
-		  first = false;
-	      }
-	      else my_boundingbox.merge((*j)->bbox());
-	  }
-	  if (!leaf())
-	  {
-	      for (int j = 0; j < 4; j++)
-	      {
-		  QTNode<T, I> *node = my_quadrants[j];
-		  if (node->my_elements > 0)
-		  {
-		      if (first)
-		      {
-			  my_boundingbox = node->bbox();
-			  first = false;
-		      }
-		      else my_boundingbox.merge(node->bbox());
-		  }
-	      }
-	  }
+      my_boundingbox.clear();
+      bool first = true;
+      for (typename list::iterator j = my_items.begin();
+           j != my_items.end();
+           ++j)
+      {
+          if (first)
+          {
+          my_boundingbox = (*j)->bbox();
+          first = false;
+          }
+          else my_boundingbox.merge((*j)->bbox());
+      }
+      if (!leaf())
+      {
+          for (int j = 0; j < 4; j++)
+          {
+          QTNode<T, I> *node = my_quadrants[j];
+          if (node->my_elements > 0)
+          {
+              if (first)
+              {
+              my_boundingbox = node->bbox();
+              first = false;
+              }
+              else my_boundingbox.merge(node->bbox());
+          }
+          }
+      }
       }
   }
 

@@ -54,7 +54,7 @@ namespace Berlin
       Fresco::Graphic::Requisition *children_requests();
       void deallocate_requisitions(Fresco::Graphic::Requisition *);
       void child_extension(size_t, const Fresco::Allocation::Info &,
-			   Fresco::Region_ptr);
+               Fresco::Region_ptr);
 // private:
       static Pool<Fresco::Graphic::Requisition> my_pool;
       glist_t my_children;
@@ -70,9 +70,9 @@ namespace Berlin
   {
       Fresco::Tag localId;
       for (localId = 0;
-	   find_if(my_children.begin(), my_children.end(),
-		   localId_eq(localId)) != my_children.end();
-	   localId++);
+       find_if(my_children.begin(), my_children.end(),
+           localId_eq(localId)) != my_children.end();
+       localId++);
       return localId;
   }
   
@@ -80,13 +80,13 @@ namespace Berlin
   PolyGraphic::child_id_to_iterator(Fresco::Tag localId)
   {
       return find_if(my_children.begin(), my_children.end(),
-		     localId_eq(localId));
+             localId_eq(localId));
   }
 
   inline CORBA::Long PolyGraphic::child_id_to_index(Fresco::Tag localId)
   {
       return find_if(my_children.begin(), my_children.end(),
-		     localId_eq(localId)) - my_children.begin();
+             localId_eq(localId)) - my_children.begin();
   }
   
 } // namespace

@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         Devanagari900() :
-	    my_first_letter(0x900),
-	    my_last_letter(0x97F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x900),
+        my_last_letter(0x97F)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x00000915, 0x0000093C)] = 0x0958;
@@ -63,24 +63,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Devanagari";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Devanagari";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -478,7 +478,7 @@ namespace Babylon
         // functions
         Devanagari900(const Devanagari900 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

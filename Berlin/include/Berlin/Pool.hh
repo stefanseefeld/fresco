@@ -38,10 +38,10 @@ namespace Berlin
     private:
       struct bucket
       {
-	  bucket(T *d, unsigned int s) : data(d), size(s), used(true) {};
-	  T *data;
-	  unsigned int size;
-	  bool used;
+      bucket(T *d, unsigned int s) : data(d), size(s), used(true) {};
+      T *data;
+      unsigned int size;
+      bool used;
       };
       std::vector<bucket> my_buckets;
   };
@@ -50,20 +50,20 @@ namespace Berlin
   inline Pool<T>::~Pool()
   {
       for (typename std::vector<bucket>::iterator i = my_buckets.begin();
-	   i != my_buckets.end(); ++i)
-	  delete (*i).data;
+       i != my_buckets.end(); ++i)
+      delete (*i).data;
   }
   
   template <class T>
   inline T *Pool<T>::allocate(unsigned int size)
   {
       for (typename std::vector<bucket>::iterator i = my_buckets.begin();
-	   i != my_buckets.end(); ++i)
-	  if (!(*i).used && (*i).size >= size)
-	  {
-	      (*i).used = true;
-	      return (*i).data;
-	  }
+       i != my_buckets.end(); ++i)
+      if (!(*i).used && (*i).size >= size)
+      {
+          (*i).used = true;
+          return (*i).data;
+      }
 #if 1
       bucket b(static_cast<T *>(::operator new(static_cast<size_t>(size * sizeof(T)))), size);
 #else
@@ -77,12 +77,12 @@ namespace Berlin
   inline void Pool<T>::deallocate(T *d)
   {
       for (typename std::vector<bucket>::iterator i = my_buckets.begin();
-	   i != my_buckets.end(); ++i)
-	  if ((*i).data == d)
-	  {
-	      (*i).used = false;
-	      break;
-	  }
+       i != my_buckets.end(); ++i)
+      if ((*i).data == d)
+      {
+          (*i).used = false;
+          break;
+      }
   };
   
 } // namespace

@@ -34,15 +34,15 @@ namespace Berlin
     class Terminal : public ControllerImpl
     {
       public:
-	Terminal(Fresco::StreamBuffer_ptr b) :
-	    ControllerImpl(false),
-	    my_buffer(Fresco::StreamBuffer::_duplicate(b))
-	{ }
-	~Terminal() { }
+    Terminal(Fresco::StreamBuffer_ptr b) :
+        ControllerImpl(false),
+        my_buffer(Fresco::StreamBuffer::_duplicate(b))
+    { }
+    ~Terminal() { }
 // protected:
-	virtual void key_press(const Fresco::Input::Event &);
+    virtual void key_press(const Fresco::Input::Event &);
       private:
-	Fresco::StreamBuffer_var my_buffer;
+    Fresco::StreamBuffer_var my_buffer;
     };
     
   } // namespace

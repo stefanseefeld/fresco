@@ -48,15 +48,15 @@ void Frame::request(Fresco::Graphic::Requisition &requisition)
     Coord t = my_thickness + my_thickness;
     if (requisition.x.defined)
     {
-	requisition.x.natural += t;
-	requisition.x.maximum += t;
-	requisition.x.minimum += t;
+    requisition.x.natural += t;
+    requisition.x.maximum += t;
+    requisition.x.minimum += t;
     }
     if (requisition.y.defined)
     {
-	requisition.y.natural += t;
-	requisition.y.maximum += t;
-	requisition.y.minimum += t;
+    requisition.y.natural += t;
+    requisition.y.maximum += t;
+    requisition.y.minimum += t;
     }
 }
 
@@ -79,8 +79,8 @@ void Frame::traverse(Traversal_ptr traversal)
     if (CORBA::is_nil(child)) return;
     try
     {
-	traversal->traverse_child(child, 0,
-				  info.allocation, info.transformation);
+    traversal->traverse_child(child, 0,
+                  info.allocation, info.transformation);
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     { body(Fresco::Graphic::_nil()); }
@@ -127,7 +127,7 @@ void Frame::allocate(Tag, const Allocation::Info &info)
     delta.z = 0;
     
     my_allocation->lower.z = my_allocation->upper.z =
-	my_allocation->zalign = 0.;
+    my_allocation->zalign = 0.;
     
     info.allocation->copy(Region_var(my_allocation->_this()));
     info.transformation->translate(delta);
@@ -140,8 +140,8 @@ void Frame::draw(Fresco::DrawTraversal_ptr traversal)
 }
 
 void Frame::allocate_span(const Fresco::Graphic::Requirement &r,
-			  Region::Allotment &a, Coord margin,
-			  Alignment align)
+              Region::Allotment &a, Coord margin,
+              Alignment align)
 {
     a.begin += margin;
     a.end -= margin;
@@ -155,27 +155,27 @@ void InvisibleFrame::draw(DrawTraversal_ptr traversal)
     DrawingKit_var drawing = traversal->drawing();
     DrawingKit::Fillstyle style = drawing->surface_fillstyle();
     if (style != DrawingKit::outlined && fill)
-	drawing->draw_rectangle(l, u);
+    drawing->draw_rectangle(l, u);
     else if (fill)
     {
-	drawing->save();
-	drawing->surface_fillstyle(DrawingKit::solid);
-	drawing->draw_rectangle(l, u);
-	drawing->restore();
+    drawing->save();
+    drawing->surface_fillstyle(DrawingKit::solid);
+    drawing->draw_rectangle(l, u);
+    drawing->restore();
     }
     else
     {
-	Vertex ltmp = l, utmp = u;
-	utmp.y = ltmp.y + thickness;
-	drawing->draw_rectangle(ltmp, utmp);
-	ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
-	utmp.y = u.y - thickness;
-	drawing->draw_rectangle(ltmp, utmp);
-	ltmp.x = l.x, utmp.x = l.x + thickness;
-	drawing->draw_rectangle(ltmp, utmp);
-	ltmp.y = u.y - thickness;
-	utmp = u;
-	drawing->draw_rectangle(ltmp, utmp);
+    Vertex ltmp = l, utmp = u;
+    utmp.y = ltmp.y + thickness;
+    drawing->draw_rectangle(ltmp, utmp);
+    ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
+    utmp.y = u.y - thickness;
+    drawing->draw_rectangle(ltmp, utmp);
+    ltmp.x = l.x, utmp.x = l.x + thickness;
+    drawing->draw_rectangle(ltmp, utmp);
+    ltmp.y = u.y - thickness;
+    utmp = u;
+    drawing->draw_rectangle(ltmp, utmp);
     }
 }
 
@@ -192,29 +192,29 @@ void Bevel::draw(DrawTraversal_ptr traversal)
     switch (my_style)
     {
     case inset:
-	Beveler::rect(traversal, thickness, color, dark, light,
-		      l.x, u.x, l.y, u.y, fill);
-	break;
+    Beveler::rect(traversal, thickness, color, dark, light,
+              l.x, u.x, l.y, u.y, fill);
+    break;
     case outset:
-	Beveler::rect(traversal, thickness, color, light, dark,
-		      l.x, u.x, l.y, u.y, fill);
-	break;
+    Beveler::rect(traversal, thickness, color, light, dark,
+              l.x, u.x, l.y, u.y, fill);
+    break;
     case convex:
-	Beveler::rect(traversal, thickness/2, color, light, dark,
-		      l.x, u.x, l.y, u.y, false);
-	l.x += thickness/2, u.x -= thickness/2,
-	    l.y += thickness/2, u.y -= thickness/2;
-	Beveler::rect(traversal, thickness/2, color, dark, light,
-		      l.x, u.x, l.y, u.y, fill);
-	break;
+    Beveler::rect(traversal, thickness/2, color, light, dark,
+              l.x, u.x, l.y, u.y, false);
+    l.x += thickness/2, u.x -= thickness/2,
+        l.y += thickness/2, u.y -= thickness/2;
+    Beveler::rect(traversal, thickness/2, color, dark, light,
+              l.x, u.x, l.y, u.y, fill);
+    break;
     case concav:
-	Beveler::rect(traversal, thickness/2, color, dark, light,
-		      l.x, u.x, l.y, u.y, false);
-	l.x += thickness/2, u.x -= thickness/2,
-	    l.y += thickness/2, u.y -= thickness/2;
-	Beveler::rect(traversal, thickness/2, color, light, dark,
-		      l.x, u.x, l.y, u.y, fill);
-	break;
+    Beveler::rect(traversal, thickness/2, color, dark, light,
+              l.x, u.x, l.y, u.y, false);
+    l.x += thickness/2, u.x -= thickness/2,
+        l.y += thickness/2, u.y -= thickness/2;
+    Beveler::rect(traversal, thickness/2, color, light, dark,
+              l.x, u.x, l.y, u.y, fill);
+    break;
     }
 }
 
@@ -232,22 +232,22 @@ void ColoredFrame::draw(DrawTraversal_ptr traversal)
     tmp.blue = my_color.blue;
     drawing->foreground(tmp);
     if (style == DrawingKit::outlined)
-	drawing->surface_fillstyle(DrawingKit::solid);
+    drawing->surface_fillstyle(DrawingKit::solid);
     if (fill)
-	drawing->draw_rectangle(l, u);
+    drawing->draw_rectangle(l, u);
     else
     {
-	Vertex ltmp = l, utmp = u;
-	utmp.y = ltmp.y + thickness;
-	drawing->draw_rectangle(ltmp, utmp);
-	ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
-	utmp.y = u.y - thickness;
-	drawing->draw_rectangle(ltmp, utmp);
-	ltmp.x = l.x, utmp.x = l.x + thickness;
-	drawing->draw_rectangle(ltmp, utmp);
-	ltmp.y = u.y - thickness;
-	utmp = u;
-	drawing->draw_rectangle(ltmp, utmp);
+    Vertex ltmp = l, utmp = u;
+    utmp.y = ltmp.y + thickness;
+    drawing->draw_rectangle(ltmp, utmp);
+    ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
+    utmp.y = u.y - thickness;
+    drawing->draw_rectangle(ltmp, utmp);
+    ltmp.x = l.x, utmp.x = l.x + thickness;
+    drawing->draw_rectangle(ltmp, utmp);
+    ltmp.y = u.y - thickness;
+    utmp = u;
+    drawing->draw_rectangle(ltmp, utmp);
     }
     drawing->restore();
 }

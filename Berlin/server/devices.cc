@@ -48,19 +48,19 @@ int main(int argc, char **argv)
     getopt.add('v', "version", GetOpt::novalue, "version number");
     getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
     getopt.add('r', "resource", GetOpt::mandatory,
-	       "the resource file to load");
+           "the resource file to load");
     size_t argo = getopt.parse(argc, argv);
     argc -= argo;
     argv += argo;
     if (getopt.is_set("version"))
     {
-	std::cout << "version is " << version << std::endl;
-	return 0;
+    std::cout << "version is " << version << std::endl;
+    return 0;
     }
     if (getopt.is_set("help"))
     {
-	getopt.usage();
-	return 0;
+    getopt.usage();
+    return 0;
     }
 
     Berlin::RCManager::setup(getopt);
@@ -69,17 +69,17 @@ int main(int argc, char **argv)
     getopt.get("console",&value);
     try
     {
-	Berlin::Console::open(value, argc, argv,
-			      PortableServer::POA::_nil(), 1, 1);
+    Berlin::Console::open(value, argc, argv,
+                  PortableServer::POA::_nil(), 1, 1);
     }
     catch (const std::exception &e)
     {
-	std::cerr << "Exception: " << e.what() << std::endl;
-	return 1;
+    std::cerr << "Exception: " << e.what() << std::endl;
+    return 1;
     }
     catch (...)
     {
-	std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
+    std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
     }
     Berlin::Console::instance()->device_info(std::cout);
     return 0;

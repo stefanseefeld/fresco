@@ -39,18 +39,18 @@ void TextInput::key_press(const Input::Event &event)
     switch (toggle.number)
     {
     case Babylon::UC_BACKSPACE:
-	my_buffer->remove_backward(1);
-	break; // backspace
+    my_buffer->remove_backward(1);
+    break; // backspace
     case Babylon::UC_KEY_CURSOR_LEFT:
-	my_buffer->backward();
-	break; // left
+    my_buffer->backward();
+    break; // left
     case Babylon::UC_KEY_CURSOR_RIGHT:
-	my_buffer->forward();
-	break; // right
+    my_buffer->forward();
+    break; // right
     default:
-	if (uc.is_Printable() && !uc.is_Private_Use())
-	    my_buffer->insert_char(Unicode::to_CORBA(uc));
-	else
-	    ControllerImpl::key_press(event); break;
+    if (uc.is_Printable() && !uc.is_Private_Use())
+        my_buffer->insert_char(Unicode::to_CORBA(uc));
+    else
+        ControllerImpl::key_press(event); break;
     };
 }

@@ -112,9 +112,9 @@ int main(int argc, char **argv)
       exit(127);
     default:
       while (1)
-	{
-	  visual->need_redraw();
-	  Thread::delay(250);
-	}
+    {
+      visual->need_redraw();
+      Thread::delay(250);
+    }
     }
 };

@@ -216,10 +216,10 @@ void PathImpl::resize()
     //         );
     //     }
     //     Bspline_curve_to(
-    // 	       vv[n-1].x, vv[n-1].y, vv[n-2].x, vv[n-2].y, vv[n-1].x, vv[n-1].y
+    //            vv[n-1].x, vv[n-1].y, vv[n-2].x, vv[n-2].y, vv[n-1].x, vv[n-1].y
     //     );
     //     Bspline_curve_to(
-    // 	       vv[n-1].x, vv[n-1].y, vv[n-1].x, vv[n-1].y, vv[n-1].x, vv[n-1].y
+    //            vv[n-1].x, vv[n-1].y, vv[n-1].x, vv[n-1].y, vv[n-1].x, vv[n-1].y
     //     );
     // }
     // else if (closed_ && curved_)
@@ -243,9 +243,9 @@ void PathImpl::resize()
     // else
     // {
     for (CORBA::ULong i = 0; i < my_handles->nodes.length(); ++i)
-	add_point(my_handles->nodes[i].x, my_handles->nodes[i].y);
+    add_point(my_handles->nodes[i].x, my_handles->nodes[i].y);
     if (my_closed && my_handles->nodes.length())
-	add_point(my_handles->nodes[0].x, my_handles->nodes[0].y);
+    add_point(my_handles->nodes[0].x, my_handles->nodes[0].y);
     // }
     // std::cerr << "sorry, PathImpl::resize not implemented" << std::endl;
 }

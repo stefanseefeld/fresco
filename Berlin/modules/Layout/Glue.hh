@@ -32,17 +32,17 @@ namespace Berlin
     class Glue : public GraphicImpl
     {
       public:
-	Glue(Fresco::Axis,
-	     Fresco::Coord, Fresco::Coord, Fresco::Coord,
-	     Fresco::Alignment);
-	Glue(const Fresco::Graphic::Requisition &);
-	virtual ~Glue();
-	
-	virtual void request(Fresco::Graphic::Requisition &);
+    Glue(Fresco::Axis,
+         Fresco::Coord, Fresco::Coord, Fresco::Coord,
+         Fresco::Alignment);
+    Glue(const Fresco::Graphic::Requisition &);
+    virtual ~Glue();
+    
+    virtual void request(Fresco::Graphic::Requisition &);
 
-	virtual const char *object_name() { return "Layout/Glue";}
+    virtual const char *object_name() { return "Layout/Glue";}
       private:
-	Fresco::Graphic::Requisition my_requisition;
+    Fresco::Graphic::Requisition my_requisition;
     };
     
   } // namespace

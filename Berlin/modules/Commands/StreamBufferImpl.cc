@@ -41,18 +41,18 @@ void Berlin::CommandKit::StreamBufferImpl::write(const Fresco::StreamBuffer::Dat
 {
     bool overflow = false;
     {
-	Prague::Guard<Mutex> guard(my_mutex);
-	CORBA::ULong l = data.length();
-	CORBA::ULong s = my_buffer.size();
-	if (s + l > my_buffer.capacity()) my_buffer.reserve(s + l);
-	for (unsigned long i = 0; i != l; ++i)
-	    my_buffer.push_back(data[i]);
-	if (my_buffer.size() >= my_length) overflow = true;
+    Prague::Guard<Mutex> guard(my_mutex);
+    CORBA::ULong l = data.length();
+    CORBA::ULong s = my_buffer.size();
+    if (s + l > my_buffer.capacity()) my_buffer.reserve(s + l);
+    for (unsigned long i = 0; i != l; ++i)
+        my_buffer.push_back(data[i]);
+    if (my_buffer.size() >= my_length) overflow = true;
     }
     if (overflow)
     {
-	CORBA::Any any;
-	notify(any);
+    CORBA::Any any;
+    notify(any);
     }
 }
 
@@ -60,13 +60,13 @@ void Berlin::CommandKit::StreamBufferImpl::flush()
 {
     bool overflow = false;
     {
-	Prague::Guard<Mutex> guard(my_mutex);
-	if (my_buffer.size()) overflow = true;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (my_buffer.size()) overflow = true;
     }
     if (overflow)
     {
-	CORBA::Any any;
-	notify(any);
+    CORBA::Any any;
+    notify(any);
     }
 }
 
@@ -76,7 +76,7 @@ Fresco::StreamBuffer::Data * Berlin::CommandKit::StreamBufferImpl::read()
     Fresco::StreamBuffer::Data_var data = new Fresco::StreamBuffer::Data;
     data->length(my_buffer.size());
     for (unsigned long i = 0; i != my_buffer.size(); ++i)
-	data[i] = my_buffer[i];
+    data[i] = my_buffer[i];
     my_buffer.erase(my_buffer.begin(), my_buffer.end());
     my_buffer.reserve(my_length);
     return data._retn();

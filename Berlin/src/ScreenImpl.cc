@@ -63,10 +63,10 @@ void ScreenImpl::pick(PickTraversal_ptr traversal)
     Trace trace(this, "ScreenImpl::pick");
     if (traversal->intersects_allocation())
     {
-	traversal->enter_controller(my_this);
-	MonoGraphic::traverse(traversal);
-	if (!traversal->picked()) traversal->hit();
-	traversal->leave_controller();
+    traversal->enter_controller(my_this);
+    MonoGraphic::traverse(traversal);
+    if (!traversal->picked()) traversal->hit();
+    traversal->leave_controller();
     }
     else std::cout << "no intersection !" << std::endl;
 }

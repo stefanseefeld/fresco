@@ -40,14 +40,14 @@ class EditorImpl::Observer : public ObserverImpl
     ~Observer() { my_parent->_remove_ref(); }
     void update(const CORBA::Any &any)
     {
-	Fresco::Selection::Item *item;
-	if (any >>= item)
-	{
-	    if (item->toggled)
-		my_parent->my_current =
-		    RefCount_var<Tool>::increment(my_parent->my_tools[item->id]);
-	}
-	else  std::cerr << "wrong message type" << std::endl;
+    Fresco::Selection::Item *item;
+    if (any >>= item)
+    {
+        if (item->toggled)
+        my_parent->my_current =
+            RefCount_var<Tool>::increment(my_parent->my_tools[item->id]);
+    }
+    else  std::cerr << "wrong message type" << std::endl;
     }
   private:
     EditorImpl *my_parent;
@@ -78,15 +78,15 @@ Unidraw::Tool_ptr EditorImpl::current_tool()
 void EditorImpl::current_tool(Tool_ptr current)
 { my_current = Unidraw::Tool::_duplicate(current); }
 Controller_ptr EditorImpl::create_viewer(Unidraw::Model_ptr model,
-					 Fresco::Coord width,
-					 Fresco::Coord height)
+                     Fresco::Coord width,
+                     Fresco::Coord height)
 {
     FigureKit_var figures = my_unidraw->figures();
     ToolKit_var tools = my_unidraw->tools();
     Viewer *viewer = new Viewer();
     activate(viewer);
     viewer->init(Editor_var(_this()), model, width, height,
-		 figures, tools);
+         figures, tools);
     return viewer->_this();
 }
 

@@ -24,7 +24,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK @EXPORT_TAGS);
 @EXPORT = ();
 @EXPORT_OK = qw(war_connect asc2uni uni2asc);
 %EXPORT_TAGS = (all => [ @EXPORT_OK ],
-		text => [ qw(asc2uni uni2asc) ]);
+        text => [ qw(asc2uni uni2asc) ]);
 
 BEGIN {
     use Carp;
@@ -40,7 +40,7 @@ sub war_connect($) {
     my $boa = $orb->BOA_init();
 
     my $boa_thr = async {
-	$boa->impl_is_ready(1);
+    $boa->impl_is_ready(1);
     };
     $boa_thr->detach();
     
@@ -52,18 +52,18 @@ sub war_connect($) {
     my $server = $manager->newServerContext($client);
 
     my $kits = { TextKit => '',
-		 DesktopKit => '',
-		 LayoutKit => '',
-		 ToolKit => '',
-		 WidgetKit => '',
-		 FigureKit => '',
-		 CommandKit => '',
-		 ImageKit => '', };
+         DesktopKit => '',
+         LayoutKit => '',
+         ToolKit => '',
+         WidgetKit => '',
+         FigureKit => '',
+         CommandKit => '',
+         ImageKit => '', };
     foreach my $kit (keys %$kits) {
-	my $inter = "IDL:" . $kit . ":1.0";  # silly hack, for now
-	$kits->{$kit} = $server->resolve($inter, []);
-	eval $kit . '->_narrow($kits->{' . $kit . '})';
-	print "Got $kit\n";
+    my $inter = "IDL:" . $kit . ":1.0";  # silly hack, for now
+    $kits->{$kit} = $server->resolve($inter, []);
+    eval $kit . '->_narrow($kits->{' . $kit . '})';
+    print "Got $kit\n";
     }
 
     return $kits;
@@ -100,8 +100,8 @@ sub command(&) {
     my ($closure) = @_;
 
     my $wrap = sub {  # eliminate the $env variable, leaving only $any
-	shift;
-	$closure->(@_);
+    shift;
+    $closure->(@_);
     };
     
     return PerlCommand->new($wrap);
@@ -111,8 +111,8 @@ sub commandClass(&) {
     my ($closure) = @_;
 
     return sub {
-	%oarams = @_;
-	return PerlCommand->new($closure, \%params);
+    %oarams = @_;
+    return PerlCommand->new($closure, \%params);
     }
 }
 
@@ -135,10 +135,10 @@ sub execute($;$) {
 
     print "PerlCommand->execute()\n";
     if (!defined($self->{closure})) {
-	die "Called execute() on a PerlCommand without a subref";
+    die "Called execute() on a PerlCommand without a subref";
     }
     if (!defined($self->{env})) {
-	$self->{env} = undef;
+    $self->{env} = undef;
     }
 
     $self->{closure}->($self->{env}, $any);

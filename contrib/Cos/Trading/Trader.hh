@@ -72,15 +72,15 @@ public:
    */
   void export_offer (Offer *);
   void import(const char *type, const char *constr, const char *pref, const CosTrading::PolicySeq &policies,
-	      const CosTrading::Lookup::SpecifiedProps &desired_props, CORBA::ULong how_many,
-	      CosTrading::OfferSeq *&offers, CosTrading::OfferIterator_ptr &offer_itr,
-	      CosTrading::PolicyNameSeq*& limits_applied);
+          const CosTrading::Lookup::SpecifiedProps &desired_props, CORBA::ULong how_many,
+          CosTrading::OfferSeq *&offers, CosTrading::OfferIterator_ptr &offer_itr,
+          CosTrading::PolicyNameSeq*& limits_applied);
   void remove(const char *);
   CosTrading::Register::OfferInfo *describe(const char *);
   void modify(const char *, const CosTrading::PropertyNameSeq &, const CosTrading::PropertySeq &);
   void withdraw_using_constraint(const char *, const char *);
   char *export_proxy(CosTrading::Lookup_ptr, const char *, const CosTrading::PropertySeq &, CORBA::Boolean,
-		     const char *, const CosTrading::PolicySeq &);
+             const char *, const CosTrading::PolicySeq &);
   void withdraw_proxy(const char *);
   CosTrading::Proxy::ProxyInfo *describe_proxy(const char *);
   CORBA::ULong defSearchCard();

@@ -42,9 +42,9 @@ using namespace Fresco;
 using namespace Berlin::DrawingKit::libArt;
 
 bool FTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &faces,
-					   const char *env, 
-					   Babylon::String &fam,
-					   Babylon::String &style)
+                       const char *env, 
+                       Babylon::String &fam,
+                       Babylon::String &style)
 {
   int idx = -1;
   if (env[0] == '\0')
@@ -52,9 +52,9 @@ bool FTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &faces,
       std::cout << "list of available fonts :\n";
       unsigned int i = 0;
       for (std::map<FamStyle,FT_Face>::const_iterator j = faces.begin(); j != faces.end(); ++i, ++j)
-	{
-	  std::cout << i << ' ' << (*j).second->family_name << ' ' << (*j).second->style_name << std::endl;
-	}
+    {
+      std::cout << i << ' ' << (*j).second->family_name << ' ' << (*j).second->style_name << std::endl;
+    }
       std::cout << "please choose a number :"; std::cin >> idx;
     }
   else idx = atoi(env);
@@ -96,23 +96,23 @@ FTFont::FTFont(double xres, double yres)
       Directory directory(*i, Directory::alpha);
       Logger::log(Logger::text) << "libArt::FTFont: scanning font dir " << *i << std::endl;
       for (Directory::iterator j = directory.begin(); j != directory.end(); ++j)
-	{
-	  if ((*j)->name() == "." || (*j)->name() == "..") continue;	  
-	  std::string file = (*j)->long_name();
-	  if (FT_New_Face(_library, file.c_str(), 0, &_face))
-	    {
-	      Logger::log(Logger::text) << "libArt::FTFont: can't open font " << file << std::endl;
-	      continue;
-	    }
-	  _familyStr = Babylon::String(_face->family_name);
-	  _styleStr = Babylon::String(_face->style_name);
-	  _family = atomize(_familyStr);
-	  _style = atomize(_styleStr);
-	  Logger::log(Logger::text) << "found FT-readable font "
-				    << _face->family_name << " (" << _family << ") " << _face->style_name << " (" << _style << ") in "
-				    << *i << std::endl;
-	  _faces[FamStyle(_family, _style)] = _face;
-	}
+    {
+      if ((*j)->name() == "." || (*j)->name() == "..") continue;      
+      std::string file = (*j)->long_name();
+      if (FT_New_Face(_library, file.c_str(), 0, &_face))
+        {
+          Logger::log(Logger::text) << "libArt::FTFont: can't open font " << file << std::endl;
+          continue;
+        }
+      _familyStr = Babylon::String(_face->family_name);
+      _styleStr = Babylon::String(_face->style_name);
+      _family = atomize(_familyStr);
+      _style = atomize(_styleStr);
+      Logger::log(Logger::text) << "found FT-readable font "
+                    << _face->family_name << " (" << _family << ") " << _face->style_name << " (" << _style << ") in "
+                    << *i << std::endl;
+      _faces[FamStyle(_family, _style)] = _face;
+    }
     }
   Logger::log(Logger::text) << "completed scaning font directories" << std::endl;
   Logger::log(Logger::text) << _faces.size() << " fonts found" << std::endl;
@@ -222,10 +222,10 @@ bool FTFont::load_glyph(Unichar c, FT_Face &f)
     {
       charmap = f->charmaps[n];
       if (charmap->encoding == ft_encoding_unicode)
-	{	
-	  found = charmap;
-	  break;
-	}
+    {    
+      found = charmap;
+      break;
+    }
     }
   if (!found)
     { 

@@ -34,38 +34,38 @@ namespace Berlin
   {
 
     class PrimitiveKitImpl : public virtual POA_Fresco::PrimitiveKit,
-			     public KitImpl
+                 public KitImpl
     {
       public:
-	PrimitiveKitImpl(const std::string &,
-			 const Fresco::Kit::PropertySeq &,
-			 ServerContextImpl *);
-	virtual ~PrimitiveKitImpl();
-	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
-				       ServerContextImpl *c)
-	{ return new PrimitiveKitImpl(repo_id(), p, c);}
+    PrimitiveKitImpl(const std::string &,
+             const Fresco::Kit::PropertySeq &,
+             ServerContextImpl *);
+    virtual ~PrimitiveKitImpl();
+    virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+                       ServerContextImpl *c)
+    { return new PrimitiveKitImpl(repo_id(), p, c);}
 
-	Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
-	Primitive::Geometry_ptr geometry(const Fresco::Mesh &);
-	Fresco::Graphic_ptr cube();
-	//Fresco::Graphic_ptr sphere();
-	//Fresco::Graphic_ptr tetrahedron();
-	Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
-	
-	Fresco::Graphic_ptr directional_light(Fresco::Graphic_ptr,
-					      const Fresco::Color &,
-					      CORBA::Float,
-					      const Fresco::Vertex &);
-	Fresco::Graphic_ptr point_light(Fresco::Graphic_ptr,
-					const Fresco::Color &,
-					CORBA::Float,
-					const Fresco::Vertex &);
-	Fresco::Graphic_ptr spot_light(Fresco::Graphic_ptr,
-				       const Fresco::Color &,
-				       CORBA::Float,
-				       const Fresco::Vertex &,
-				       const Fresco::Vertex &,
-				       CORBA::Float, CORBA::Float);
+    Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
+    Primitive::Geometry_ptr geometry(const Fresco::Mesh &);
+    Fresco::Graphic_ptr cube();
+    //Fresco::Graphic_ptr sphere();
+    //Fresco::Graphic_ptr tetrahedron();
+    Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
+    
+    Fresco::Graphic_ptr directional_light(Fresco::Graphic_ptr,
+                          const Fresco::Color &,
+                          CORBA::Float,
+                          const Fresco::Vertex &);
+    Fresco::Graphic_ptr point_light(Fresco::Graphic_ptr,
+                    const Fresco::Color &,
+                    CORBA::Float,
+                    const Fresco::Vertex &);
+    Fresco::Graphic_ptr spot_light(Fresco::Graphic_ptr,
+                       const Fresco::Color &,
+                       CORBA::Float,
+                       const Fresco::Vertex &,
+                       const Fresco::Vertex &,
+                       CORBA::Float, CORBA::Float);
     };
 
   } // namespace

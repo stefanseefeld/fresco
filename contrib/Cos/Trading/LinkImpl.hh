@@ -7,9 +7,9 @@
 #include "LinkAttributesImpl.hh"
 
 class LinkImpl : virtual public CosTrading::_sk_Link,
-		 public TraderComponents,
-		 public SupportAttributes,
-		 public LinkAttributes,
+         public TraderComponents,
+         public SupportAttributes,
+         public LinkAttributes,
 {
   typedef map<string, CosTrading::Link::LinkInfo> llist_t;
 public:

@@ -26,30 +26,29 @@
 
 using namespace Fresco;
 
-TransformDemo::TransformDemo(Application *a)
-  : Demo(a)
+TransformDemo::TransformDemo(Application *a) : Demo(a)
 {
-  RasterKit_var rasters = application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
-  FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
-  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
-  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
-  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
-  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+    RasterKit_var rasters = my_application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
+    FigureKit_var figures = my_application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
+    LayoutKit_var layout = my_application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+    CommandKit_var commands = my_application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+    ToolKit_var tools = my_application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+    WidgetKit_var widgets = my_application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
   
-  Command_var command1 = commands->log("hello World 1");
-  Command_var command2 = commands->log("hello World 2");
-  Command_var command3 = commands->log("hello World 3");
+    Command_var command1 = commands->log("hello World 1");
+    Command_var command2 = commands->log("hello World 2");
+    Command_var command3 = commands->log("hello World 3");
   
-  Raster_var raster = rasters->create_raster("png.png");
-  Image_var  image = figures->pixmap(raster);
-  
-  Graphic_var hbox = layout->hbox();
-  hbox->append_graphic(Graphic_var(widgets->button(image, command1)));
-  hbox->append_graphic(Graphic_var(widgets->button(image, command2)));
-  hbox->append_graphic(Graphic_var(widgets->button(image, command3)));
-  Graphic_var transformer = figures->transformer(hbox);
-  Transform_var(transformer->transformation())->rotate(45., zaxis);
-  Graphic_var root = layout->halign(transformer, 0.);
-  Controller_var group = tools->group(root);
-  application->append(group, Babylon::String("transformation"));
+    Raster_var raster = rasters->create_raster("png.png");
+    Image_var  image = figures->pixmap(raster);
+    
+    Graphic_var hbox = layout->hbox();
+    hbox->append_graphic(Graphic_var(widgets->button(image, command1)));
+    hbox->append_graphic(Graphic_var(widgets->button(image, command2)));
+    hbox->append_graphic(Graphic_var(widgets->button(image, command3)));
+    Graphic_var transformer = figures->transformer(hbox);
+    Transform_var(transformer->transformation())->rotate(45., zaxis);
+    Graphic_var root = layout->halign(transformer, 0.);
+    Controller_var group = tools->group(root);
+    my_application->append(group, Babylon::String("transformation"));
 };

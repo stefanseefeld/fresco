@@ -26,31 +26,35 @@
 
 using namespace Fresco;
 
-EditTextDemo::EditTextDemo(Application *a)
-  : Demo(a)
+EditTextDemo::EditTextDemo(Application *a) : Demo(a)
 {
-  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
-  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
-  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
-  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
-  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+    TextKit_var text =
+    my_application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
+    LayoutKit_var layout =
+    my_application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+    CommandKit_var commands =
+    my_application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+    ToolKit_var tools =
+    my_application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+    WidgetKit_var widgets =
+    my_application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
 
-  Babylon::Char chars[] =
-  {
+    Babylon::Char chars[] =
+    {
     0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
     0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
     0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
     0x65e5, 0x672c, 0x8a9e, 0x0020, 0x4e2d, 0x6587, 0x0020, 0xd55c,
     0xad6d, 0xc5b4
-  };
+    };
 
-  Babylon::String str(chars, 34);
+    Babylon::String str(chars, 34);
     
-  TextBuffer_var buf = commands->text();
-  Graphic_var txt = text->simple_viewer(buf);
-  ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::inset);
-  Graphic_var frame = tools->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tools->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
-  buf->insert_string(Unicode::to_CORBA(str));
-  application->append(Controller_var(tools->text_input(frame, buf)), Babylon::String("editable text"));
-};
+    TextBuffer_var buf = commands->text();
+    Graphic_var txt = text->simple_viewer(buf);
+    ToolKit::FrameSpec spec;
+    spec.brightness(0.5); spec._d(ToolKit::inset);
+    Graphic_var frame = tools->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tools->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
+    buf->insert_string(Unicode::to_CORBA(str));
+    my_application->append(Controller_var(tools->text_input(frame, buf)), Babylon::String("editable text"));
+}

@@ -59,7 +59,7 @@ void Stepper::press(PickTraversal_ptr traversal, const Input::Event &event)
 }
 
 void Stepper::release(PickTraversal_ptr traversal,
-		      const Input::Event &event)
+              const Input::Event &event)
 {
     Trace trace("Stepper::release");
     stop();

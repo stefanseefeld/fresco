@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         Hangul_Compatibility_Jamo3130() :
-	    my_first_letter(0x3130),
-	    my_last_letter(0x318F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x3130),
+        my_last_letter(0x318F)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Hangul Compatibility Jamo";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Hangul Compatibility Jamo";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -337,7 +337,7 @@ namespace Babylon
         // functions
         Hangul_Compatibility_Jamo3130(const Hangul_Compatibility_Jamo3130 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

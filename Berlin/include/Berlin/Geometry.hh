@@ -41,10 +41,10 @@ namespace Geometry
       //. Returns the distance between this point and the given point.
       T distance(const Point &p) const
       {
-	  return static_cast<T>(sqrt(static_cast<double>((x - p.x) *
-							 (x - p.x) + 
-							 (y - p.y) *
-							 (y - p.y))));
+      return static_cast<T>(sqrt(static_cast<double>((x - p.x) *
+                             (x - p.x) + 
+                             (y - p.y) *
+                             (y - p.y))));
       }
       //. x-coordinate of this point.
       T x;
@@ -90,7 +90,7 @@ namespace Geometry
       Rectangle() : l(0), t(0), r(0), b(0) { }
       //. Copie a rectangle.
       Rectangle(const Rectangle &rect) :
-	  l(rect.l), t(rect.t), r(rect.r), b(rect.b)
+      l(rect.l), t(rect.t), r(rect.r), b(rect.b)
       { }
       //. Create a rectangle with an upper left corner at (ll, tt) and
       //. a lower right corner at (rr, bb).
@@ -161,7 +161,7 @@ namespace Geometry
     public:
       //. Create a polygon with c cornerpoints given in the pointer p.
       Polygon(Point<T> *p, int c) :
-	  points(p), count(c), norm(0), normCount(0)
+      points(p), count(c), norm(0), normCount(0)
       { }
       //. Delete the polygon.
       ~Polygon() { delete [] norm; }
@@ -245,7 +245,7 @@ namespace Geometry
       T r = Math::max(u.x, v.x) + bloat;
       T b = Math::max(u.y, v.y) + bloat;
       if (! (l <= p.x) && (p.x <= r) && (t <= p.y) && (p.y <= b))
-	  return false;
+      return false;
       
       T dx = u.x - v.x;
       T dy = u.y - v.y;
@@ -266,18 +266,18 @@ namespace Geometry
   inline bool Line<T>::intersects(const Line &i) const
   {
       return (l() <= i.r() &&
-	      i.l() <= r() &&
-	      t() <= i.b() &&
-	      i.t() <= b() &&
-	      same(i.u, i.v) <= 0 &&
-	      same(u, v) <= 0);
+          i.l() <= r() &&
+          t() <= i.b() &&
+          i.t() <= b() &&
+          same(i.u, i.v) <= 0 &&
+          same(u, v) <= 0);
   }
 
   template <class T>
   inline bool Rectangle<T>::intersects(const Line<T> &i) const
   {
       return l <= i.r() && i.l() <= r && t <= i.b() && i.t() <= b &&
-	  intersectsLine(i);
+      intersectsLine(i);
   }
   
   template <class T>
@@ -296,7 +296,7 @@ namespace Geometry
   inline bool Rectangle<T>::touches(const Rectangle<T> &a, T epsilon) const
   {
       return equal(l, a.l, epsilon) || equal(r, a.r, epsilon) ||
-	  equal(t, a.t, epsilon) || equal(b, a.b, epsilon);
+      equal(t, a.t, epsilon) || equal(b, a.b, epsilon);
   }
 
   template <class T>
@@ -312,10 +312,10 @@ namespace Geometry
   inline bool Rectangle<T>::intersectsLine(const Line<T> &i) const
   {
       return (contains(i.u) || contains(i.v) ||
-	      i.intersects(Line<T>(l, t, r, t)) ||
-	      i.intersects(Line<T>(r, t, r, b)) ||
-	      i.intersects(Line<T>(r, b, l, b)) ||
-	      i.intersects(Line<T>(l, b, l, t)));
+          i.intersects(Line<T>(l, t, r, t)) ||
+          i.intersects(Line<T>(r, t, r, b)) ||
+          i.intersects(Line<T>(r, b, l, b)) ||
+          i.intersects(Line<T>(l, b, l, t)));
   }
 
   template <class T>
@@ -325,10 +325,10 @@ namespace Geometry
       b.t = b.b = points[0].y;
       for (int i = 1; i < count; i++)
       {
-	  b.l = Math::min(b.l, points[i].x);
-	  b.t = Math::min(b.t, points[i].y);
-	  b.r = Math::max(b.r, points[i].x);
-	  b.b = Math::max(b.b, points[i].y);
+      b.l = Math::min(b.l, points[i].x);
+      b.t = Math::min(b.t, points[i].y);
+      b.r = Math::max(b.r, points[i].x);
+      b.b = Math::max(b.b, points[i].y);
       }
   }
 
@@ -341,30 +341,30 @@ namespace Geometry
       bool cury_sign = norm[0].y >= p.y;
       for (int i = 0; i < normCount - 2; i++)
       {
-	  Line<T> l(norm[i].x - p.x, norm[i].y - p.y,
-		    norm[i+1].x - p.x, norm[i+1].y - p.y);
-	  if (l.contains(p0, bloat)) return true;
-	  bool nexty_sign = l.v.y >= 0.;
-	  if (nexty_sign != cury_sign)
-	  {
-	      bool curx_sign = l.u.x >= 0;
-	      bool nextx_sign = l.v.x >= 0;
-	      if (curx_sign && nextx_sign) count++;
-	      else if (curx_sign || nextx_sign)
-	      {
-		  T dx = l.v.x - l.u.x;
-		  T dy = l.v.y - l.u.y;
-		  if (dy >= 0)
-		  {
-		      if (l.u.x * dy > l.u.y * dx) count++;
-		  }
-		  else
-		  {
-		      if (l.u.x * dy < l.u.y * dx) count++;
-		  }
-	      }
-	  }
-	  cury_sign = nexty_sign;
+      Line<T> l(norm[i].x - p.x, norm[i].y - p.y,
+            norm[i+1].x - p.x, norm[i+1].y - p.y);
+      if (l.contains(p0, bloat)) return true;
+      bool nexty_sign = l.v.y >= 0.;
+      if (nexty_sign != cury_sign)
+      {
+          bool curx_sign = l.u.x >= 0;
+          bool nextx_sign = l.v.x >= 0;
+          if (curx_sign && nextx_sign) count++;
+          else if (curx_sign || nextx_sign)
+          {
+          T dx = l.v.x - l.u.x;
+          T dy = l.v.y - l.u.y;
+          if (dy >= 0)
+          {
+              if (l.u.x * dy > l.u.y * dx) count++;
+          }
+          else
+          {
+              if (l.u.x * dy < l.u.y * dx) count++;
+          }
+          }
+      }
+      cury_sign = nexty_sign;
       }
       return count % 2 == 1;
   }
@@ -378,8 +378,8 @@ namespace Geometry
       boundingBox(b);
       if (b.intersects(l))
       {
-	  const Polygon<T> p(norm, normCount - 1);
-	  intersects = p.intersects(l) || contains(l.u, 0) || contains(l.v, 0);
+      const Polygon<T> p(norm, normCount - 1);
+      intersects = p.intersects(l) || contains(l.u, 0) || contains(l.v, 0);
       }
       return intersects;
   }
@@ -412,7 +412,7 @@ namespace Geometry
       if ((s > 0) && contains(p[0], 0)) return true;
       if ((size() > 0) && p.contains(points[0], 0)) return true;
       for (int i = 0; i < s; i++)
-	  if (intersects(Line<T>(p[i], p[(i + 1) % s]))) return true;
+      if (intersects(Line<T>(p[i], p[(i + 1) % s]))) return true;
       return false;
   }
   
@@ -425,12 +425,12 @@ namespace Geometry
       T lx = points[0].x;
       T ly = points[0].y;
       for (int i = 1; i < count; i++)
-	  if (points[i].y < ly || (points[i].y == ly && points[i].x < lx))
-	  {
-	      ll = i;
-	      lx = points[i].x;
-	      ly = points[i].y;
-	  }
+      if (points[i].y < ly || (points[i].y == ly && points[i].x < lx))
+      {
+          ll = i;
+          lx = points[i].x;
+          ly = points[i].y;
+      }
       return ll;
   }
   
@@ -440,31 +440,31 @@ namespace Geometry
   {
       if (size())
       {
-	  int i, newcount = 1;
-	  int ll, limit = size();
-	  
-	  if (points[0].x == points[size() - 1].x &&
-	      points[0].y == points[size() - 1].y) limit--;
-	  ll = lowestleft(points, limit);
-	  normCount = limit + 2;
-	  norm = new Point<T>[normCount];
-	  
-	  for (i = ll; i < limit; i++, newcount++)
-	  {
-	      norm[newcount].x = points[i].x;
-	      norm[newcount].y = points[i].y;
-	  }
-	  for (i = 0; i < ll; i++, newcount++)
-	  {
-	      norm[newcount].x = points[i].x;
-	      norm[newcount].y = points[i].y;
-	  }
-	  
-	  norm[newcount].x = norm[1].x;
-	  norm[newcount].y = norm[1].y;
-	  newcount--;
-	  norm[0].x = norm[newcount].x;
-	  norm[0].y = norm[newcount].y;
+      int i, newcount = 1;
+      int ll, limit = size();
+      
+      if (points[0].x == points[size() - 1].x &&
+          points[0].y == points[size() - 1].y) limit--;
+      ll = lowestleft(points, limit);
+      normCount = limit + 2;
+      norm = new Point<T>[normCount];
+      
+      for (i = ll; i < limit; i++, newcount++)
+      {
+          norm[newcount].x = points[i].x;
+          norm[newcount].y = points[i].y;
+      }
+      for (i = 0; i < ll; i++, newcount++)
+      {
+          norm[newcount].x = points[i].x;
+          norm[newcount].y = points[i].y;
+      }
+      
+      norm[newcount].x = norm[1].x;
+      norm[newcount].y = norm[1].y;
+      newcount--;
+      norm[0].x = norm[newcount].x;
+      norm[0].y = norm[newcount].y;
       }
   }
   
@@ -475,10 +475,10 @@ namespace std
 
 template <class T>
 std::ostream &operator << (std::ostream &os,
-			   const Geometry::Rectangle<T> &rectangle)
+               const Geometry::Rectangle<T> &rectangle)
 {
     return os << '(' << rectangle.l << ',' << rectangle.t << ','
-	      << rectangle.r << ',' << rectangle.b << ')';
+          << rectangle.r << ',' << rectangle.b << ')';
 }
 
 } // namespace

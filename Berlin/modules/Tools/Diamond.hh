@@ -34,28 +34,28 @@ namespace Berlin
     class InvisibleDiamond : public Frame::Renderer
     {
       public:
-	InvisibleDiamond(Fresco::Coord t, bool f) :
-	    Frame::Renderer(t, f)
-	{ }
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    InvisibleDiamond(Fresco::Coord t, bool f) :
+        Frame::Renderer(t, f)
+    { }
+    virtual void draw(Fresco::DrawTraversal_ptr);
     };
 
     class BeveledDiamond : public Bevel
     {
       public:
-	BeveledDiamond(Fresco::Coord t, type s, Fresco::Coord b, bool f) :
-	    Bevel(t, s, b, f)
-	{ }
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    BeveledDiamond(Fresco::Coord t, type s, Fresco::Coord b, bool f) :
+        Bevel(t, s, b, f)
+    { }
+    virtual void draw(Fresco::DrawTraversal_ptr);
     };
 
     class ColoredDiamond : public ColoredFrame
     {
       public:
-	ColoredDiamond(Fresco::Coord t, const Fresco::Color &c, bool f) :
-	    ColoredFrame(t, c, f)
+    ColoredDiamond(Fresco::Coord t, const Fresco::Color &c, bool f) :
+        ColoredFrame(t, c, f)
         { }
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    virtual void draw(Fresco::DrawTraversal_ptr);
     };
     
   } // namespace

@@ -32,15 +32,15 @@ namespace Fresco
 
     inline int get_position(const Event &event, Input::Position &position)
     {
-	Input::Device device = event[0].dev;
-	for (size_t i = 0; i != event.length(); i++)
-	    if (event[i].dev != device) return -1;
-	    else if (event[i].attr._d() == Input::positional)
-	    {
-		position = event[i].attr.location();
-		return i;
-	    }
-	return -1;
+    Input::Device device = event[0].dev;
+    for (size_t i = 0; i != event.length(); i++)
+        if (event[i].dev != device) return -1;
+        else if (event[i].attr._d() == Input::positional)
+        {
+        position = event[i].attr.location();
+        return i;
+        }
+    return -1;
     }
 
   } // namespace

@@ -38,30 +38,30 @@ namespace Berlin
     class Viewer : public ControllerImpl
     {
       public:
-	Viewer();
-	virtual ~Viewer();
+    Viewer();
+    virtual ~Viewer();
 
-	void init(Unidraw::Editor_ptr, Unidraw::Model_ptr,
-		  Fresco::Coord, Fresco::Coord, Fresco::FigureKit_ptr,
-		  Fresco::ToolKit_ptr);
-	virtual void append_graphic(Fresco::Graphic_ptr);
-	virtual void prepend_graphic(Fresco::Graphic_ptr);
-	virtual Fresco::GraphicIterator_ptr first_child_graphic();
-	virtual Fresco::GraphicIterator_ptr last_child_graphic();
+    void init(Unidraw::Editor_ptr, Unidraw::Model_ptr,
+          Fresco::Coord, Fresco::Coord, Fresco::FigureKit_ptr,
+          Fresco::ToolKit_ptr);
+    virtual void append_graphic(Fresco::Graphic_ptr);
+    virtual void prepend_graphic(Fresco::Graphic_ptr);
+    virtual Fresco::GraphicIterator_ptr first_child_graphic();
+    virtual Fresco::GraphicIterator_ptr last_child_graphic();
       protected:
-	virtual void press(Fresco::PickTraversal_ptr,
-			   const Fresco::Input::Event &);
-	virtual void drag(Fresco::PickTraversal_ptr,
-			  const Fresco::Input::Event &);
-	virtual void move(Fresco::PickTraversal_ptr,
-			  const Fresco::Input::Event &);
-	virtual void release(Fresco::PickTraversal_ptr,
-			     const Fresco::Input::Event &);
+    virtual void press(Fresco::PickTraversal_ptr,
+               const Fresco::Input::Event &);
+    virtual void drag(Fresco::PickTraversal_ptr,
+              const Fresco::Input::Event &);
+    virtual void move(Fresco::PickTraversal_ptr,
+              const Fresco::Input::Event &);
+    virtual void release(Fresco::PickTraversal_ptr,
+                 const Fresco::Input::Event &);
       private:
-	void add(Fresco::Coord, Fresco::Coord);
-	Unidraw::Editor_var my_editor;
-	Unidraw::Tool_var my_active;
-	Fresco::Graphic_var my_root;
+    void add(Fresco::Coord, Fresco::Coord);
+    Unidraw::Editor_var my_editor;
+    Unidraw::Tool_var my_active;
+    Fresco::Graphic_var my_root;
     };
 
   } // namespace

@@ -35,18 +35,18 @@ namespace Berlin
     class Dragger : public ControllerImpl
     {
       public:
-	Dragger(Fresco::Command_ptr);
-	virtual ~Dragger();
+    Dragger(Fresco::Command_ptr);
+    virtual ~Dragger();
       // protected:
-	virtual void press(Fresco::PickTraversal_ptr,
-			   const Fresco::Input::Event &);
-	virtual void drag(Fresco::PickTraversal_ptr,
-			  const Fresco::Input::Event &);
-	virtual void release(Fresco::PickTraversal_ptr,
-			     const Fresco::Input::Event &);
+    virtual void press(Fresco::PickTraversal_ptr,
+               const Fresco::Input::Event &);
+    virtual void drag(Fresco::PickTraversal_ptr,
+              const Fresco::Input::Event &);
+    virtual void release(Fresco::PickTraversal_ptr,
+                 const Fresco::Input::Event &);
       private:
-	Fresco::Vertex      my_offset;
-	Fresco::Command_var my_command;
+    Fresco::Vertex      my_offset;
+    Fresco::Command_var my_command;
     };
     
   } // namespace

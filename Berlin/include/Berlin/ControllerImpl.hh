@@ -38,8 +38,8 @@ namespace Berlin
 {
 
   class ControllerImpl : public virtual POA_Fresco::Controller,
-			 public MonoGraphic,
-			 public SubjectImpl
+             public MonoGraphic,
+             public SubjectImpl
   {
       typedef std::vector<RefCount_var<Fresco::Controller> > clist_t;
       class Iterator;
@@ -64,7 +64,7 @@ namespace Berlin
       virtual Fresco::ControllerIterator_ptr last_child_controller();
 
       virtual CORBA::Boolean request_focus(Fresco::Controller_ptr,
-					   Fresco::Input::Device);
+                       Fresco::Input::Device);
       virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr);
       virtual void lose_focus(Fresco::Input::Device);
       
@@ -73,7 +73,7 @@ namespace Berlin
       virtual CORBA::Boolean next_focus(Fresco::Input::Device);
       virtual CORBA::Boolean prev_focus(Fresco::Input::Device);
       virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr,
-					       const Fresco::Input::Event &);
+                           const Fresco::Input::Event &);
       virtual CORBA::Boolean
       handle_non_positional(const Fresco::Input::Event &);
 
@@ -86,15 +86,15 @@ namespace Berlin
     protected:
       virtual bool inside(Fresco::PickTraversal_ptr);
       virtual void move(Fresco::PickTraversal_ptr,
-			const Fresco::Input::Event &);
+            const Fresco::Input::Event &);
       virtual void press(Fresco::PickTraversal_ptr,
-			 const Fresco::Input::Event &);
+             const Fresco::Input::Event &);
       virtual void drag(Fresco::PickTraversal_ptr,
-			const Fresco::Input::Event &);
+            const Fresco::Input::Event &);
       virtual void release(Fresco::PickTraversal_ptr,
-			   const Fresco::Input::Event &);
+               const Fresco::Input::Event &);
       virtual void double_click(Fresco::PickTraversal_ptr,
-				const Fresco::Input::Event &);
+                const Fresco::Input::Event &);
       virtual void key_press(const Fresco::Input::Event &);
       virtual void key_release(const Fresco::Input::Event &);
       virtual void other(const Fresco::Input::Event &);

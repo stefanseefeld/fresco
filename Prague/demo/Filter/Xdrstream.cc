@@ -15,11 +15,11 @@ int main(int argc, char **argv)
   if (string("-r") == argv[1])
     {
       if (access(file, R_OK))
-	{
+    {
           std::cerr << "please use " << argv[0]
-		    << " -w first to create the data" << std::endl;
-	  exit(-1);
-	}
+            << " -w first to create the data" << std::endl;
+      exit(-1);
+    }
       int    i = 0;
       double d = 0.0;
       char   c = '\0';
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
       is.width(sizeof(buffer));
       is >> i >> d >> buffer >> s >> c;
       std::cout << i << ' ' << d << ' ' << buffer << ' ' << s << ' ' << c
-	        << std::endl;
+            << std::endl;
     }
   else if (string("-w") == argv[1])
     {

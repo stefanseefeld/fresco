@@ -51,7 +51,7 @@ bool Berlin::CommandKit::SelectionImpl::Id_eq::operator()(const SelectionImpl::O
 { return o->id() == id; }
 
 Berlin::CommandKit::SelectionImpl::Observer::Observer(SelectionImpl *s,
-						      Telltale_ptr i,
+                              Telltale_ptr i,
                                                       Tag tt) :
     my_selection(s),
     my_item(RefCount_var<Fresco::Telltale>::increment(i)),
@@ -160,14 +160,14 @@ Tag Berlin::CommandKit::SelectionImpl::uniqueId()
 {
     Tag id;
     for (id = 0;
-	 std::find_if(my_items.begin(), my_items.end(),
-		      Id_eq(id)) != my_items.end();
-	 ++id) { }
+     std::find_if(my_items.begin(), my_items.end(),
+              Id_eq(id)) != my_items.end();
+     ++id) { }
         return id;
 }
 
 CORBA::Long Berlin::CommandKit::SelectionImpl::id_to_index(Tag id)
 {
     return std::find_if(my_items.begin(), my_items.end(),
-			Id_eq(id)) - my_items.begin();
+            Id_eq(id)) - my_items.begin();
 }

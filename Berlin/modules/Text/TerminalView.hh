@@ -35,25 +35,25 @@ namespace Berlin
   {
 
     class TerminalView : public virtual ViewImpl,
-			 public Composition
+             public Composition
     {
-	typedef std::vector<Composition *> lines_t;
+    typedef std::vector<Composition *> lines_t;
       public:
-	TerminalView(Fresco::StreamBuffer_ptr, Fresco::TextKit_ptr,
-		     Fresco::DrawingKit_ptr, Compositor *, Compositor *);
-	virtual ~TerminalView();
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void need_resize();
-	virtual void update(const CORBA::Any &);
+    TerminalView(Fresco::StreamBuffer_ptr, Fresco::TextKit_ptr,
+             Fresco::DrawingKit_ptr, Compositor *, Compositor *);
+    virtual ~TerminalView();
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void need_resize();
+    virtual void update(const CORBA::Any &);
       protected:
-	void begin();
-	void end();
-	Fresco::StreamBuffer_ptr my_stream;
-	Fresco::TextKit_var      my_kit;
-	Fresco::DrawingKit_var   my_canonicalDK;
-	Compositor              *my_compositor;
-	lines_t                  my_lines;
-	bool                     my_locked;
+    void begin();
+    void end();
+    Fresco::StreamBuffer_ptr my_stream;
+    Fresco::TextKit_var      my_kit;
+    Fresco::DrawingKit_var   my_canonicalDK;
+    Compositor              *my_compositor;
+    lines_t                  my_lines;
+    bool                     my_locked;
     };
 
   } // namespace

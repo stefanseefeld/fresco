@@ -41,24 +41,24 @@ class Berlin_Server {
 public:
     Berlin_Server(int argc, char** argv, char const * appname) {
 
-	// CORBA initialization
-	orb = CORBA::ORB_init(argc, argv);
-	name = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-	poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
-	poa_manager = poa->the_POAManager();
-	poa_manager->activate();
-	
-	// Berlin initialization
-	client = new ClientContextImpl(appname);
-	server = resolve_name<Fresco::Server>(name, "IDL:fresco.org/Fresco/Server:1.0");
-	server_context =
-	    server->create_server_context(Fresco::ClientContext_var(client->_this()));
+    // CORBA initialization
+    orb = CORBA::ORB_init(argc, argv);
+    name = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+    poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+    poa_manager = poa->the_POAManager();
+    poa_manager->activate();
+    
+    // Berlin initialization
+    client = new ClientContextImpl(appname);
+    server = resolve_name<Fresco::Server>(name, "IDL:fresco.org/Fresco/Server:1.0");
+    server_context =
+        server->create_server_context(Fresco::ClientContext_var(client->_this()));
     }
  
     template<class T>
     typename T::_ptr_type get_kit(const char *name,
-				  const Fresco::Kit::PropertySeq &props = 0) {
-	return resolve_kit<T>(server_context, name, props);
+                  const Fresco::Kit::PropertySeq &props = 0) {
+    return resolve_kit<T>(server_context, name, props);
     }
 
     CORBA::ORB_ptr get_ORB() { return orb; }

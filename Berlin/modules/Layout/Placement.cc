@@ -53,30 +53,30 @@ void Placement::traverse(Traversal_ptr traversal)
     Region_var allocation = traversal->current_allocation();
     if (!CORBA::is_nil(allocation))
     {
-	Fresco::Graphic::Requisition r;
-	GraphicImpl::init_requisition(r);
-	MonoGraphic::request(r);
-	Graphic_var child = body();
-	if (CORBA::is_nil(child)) return;
-	Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());
-	result->copy(allocation);
-	RegionImpl *tmp = static_cast<RegionImpl *>(result);
-	my_layout->allocate(1, &r, allocation, &tmp);
-	Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-	tx->load_identity();
-	result->normalize(Transform_var(tx->_this()));
-	try
-	{
-	    traversal->traverse_child(child, 0,
-				      Region_var(result->_this()),
-				      Transform_var(tx->_this()));
-	}
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ body(Fresco::Graphic::_nil()); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ body(Fresco::Graphic::_nil()); }
-	catch (const CORBA::TRANSIENT &)
-	{ body(Fresco::Graphic::_nil()); }
+    Fresco::Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    MonoGraphic::request(r);
+    Graphic_var child = body();
+    if (CORBA::is_nil(child)) return;
+    Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());
+    result->copy(allocation);
+    RegionImpl *tmp = static_cast<RegionImpl *>(result);
+    my_layout->allocate(1, &r, allocation, &tmp);
+    Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
+    tx->load_identity();
+    result->normalize(Transform_var(tx->_this()));
+    try
+    {
+        traversal->traverse_child(child, 0,
+                      Region_var(result->_this()),
+                      Transform_var(tx->_this()));
+    }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { body(Fresco::Graphic::_nil()); }
+    catch (const CORBA::COMM_FAILURE &)
+    { body(Fresco::Graphic::_nil()); }
+    catch (const CORBA::TRANSIENT &)
+    { body(Fresco::Graphic::_nil()); }
     }
     else MonoGraphic::traverse(traversal);
 }
@@ -98,7 +98,7 @@ void Placement::allocate(Tag, const Allocation::Info &a)
 }
 
 LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under,
-			 Graphic_ptr over) :
+             Graphic_ptr over) :
     my_under(Fresco::Graphic::_duplicate(under)),
     my_over(Fresco::Graphic::_duplicate(over))
 { body(between); }
@@ -108,20 +108,20 @@ LayoutLayer::~LayoutLayer() { }
 void LayoutLayer::traverse(Traversal_ptr t)
 {
     if (!CORBA::is_nil(my_under))
-	try { my_under->traverse(t); }
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_under = Fresco::Graphic::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_under = Fresco::Graphic::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_under = Fresco::Graphic::_nil(); }
+    try { my_under->traverse(t); }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_under = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_under = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_under = Fresco::Graphic::_nil(); }
     MonoGraphic::traverse(t);
     if (!CORBA::is_nil(my_over))
-	try { my_over->traverse(t); }
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_over = Fresco::Graphic::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_over = Fresco::Graphic::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_over = Fresco::Graphic::_nil(); } 
+    try { my_over->traverse(t); }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_over = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_over = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_over = Fresco::Graphic::_nil(); } 
 }

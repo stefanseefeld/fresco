@@ -47,15 +47,15 @@ namespace Berlin
       //. that are not supported on all Consoles
       class Extension
       {
-	public:
-	  virtual ~Extension() { }
+    public:
+      virtual ~Extension() { }
       };
     private:
       typedef std::vector<Extension *> elist_t;
       //. Deletes this Console in its Destrcuctor.
       struct Reaper
       {
-	  ~Reaper();
+      ~Reaper();
       };
       friend struct Reaper;
       
@@ -65,20 +65,20 @@ namespace Berlin
       //. A helperclass to get the Console-module into memory.
       class Loader
       {
-	public:
-	  virtual ~Loader() {}
-	  virtual Console *load(int &, char **, 
-				Fresco::PixelCoord,
-				Fresco::PixelCoord) = 0;
-	  
+    public:
+      virtual ~Loader() {}
+      virtual Console *load(int &, char **, 
+                Fresco::PixelCoord,
+                Fresco::PixelCoord) = 0;
+      
       };
       template <typename T>
       class LoaderT : public Loader
       {
-	public:
-	  virtual T *load(int &argc, char **argv, 
-			  Fresco::PixelCoord x, Fresco::PixelCoord y)
-	  { return new T(argc, argv, x, y); }
+    public:
+      virtual T *load(int &argc, char **argv, 
+              Fresco::PixelCoord x, Fresco::PixelCoord y)
+      { return new T(argc, argv, x, y); }
 
       };
 
@@ -96,9 +96,9 @@ namespace Berlin
       // FIXME: argc/argv are unused? are we still aiming for cascading
       //        GetOpt?
       static int open(const std::string &, int argc, char **argv, 
-		      PortableServer::POA_ptr, 
-		      Fresco::PixelCoord x, Fresco::PixelCoord y)
-	  throw(std::runtime_error);
+              PortableServer::POA_ptr, 
+              Fresco::PixelCoord x, Fresco::PixelCoord y)
+      throw(std::runtime_error);
 
       //. Get the active instance of the Console.
       static Console *instance();
@@ -112,8 +112,8 @@ namespace Berlin
       //. Creates a new Drawable of the given size (x, y) and depth.
       virtual Drawable *
       create_drawable(Fresco::PixelCoord, //.< Requested x size.
-		      Fresco::PixelCoord, //.< Requested y size.
-		      Fresco::PixelCoord) = 0; //.< Requested color depth.
+              Fresco::PixelCoord, //.< Requested y size.
+              Fresco::PixelCoord) = 0; //.< Requested color depth.
 
       //. Activates a given drawable: After activation it can recieve
       //. requests via CORBA.
@@ -134,23 +134,23 @@ namespace Berlin
       //. red, green and blue betwenn 0.0 and 1.0. If
       //. you do not pass a color it defaults to red.
       virtual void highlight_screen(Fresco::Coord, Fresco::Coord,
-				    Fresco::Coord, Fresco::Coord,
-				    double red = 1.0,
-				    double green = 0.0,
-				    double blue = 0.0) = 0;
+                    Fresco::Coord, Fresco::Coord,
+                    double red = 1.0,
+                    double green = 0.0,
+                    double blue = 0.0) = 0;
       
       template <typename T>
       T *get_extension(const std::string &id)
       {
-	  Extension *extension = create_extension(id);
-	  T *t = dynamic_cast<T *>(extension);
-	  if (!t)
-	  {
-	      delete extension;
-	      throw (std::runtime_error(id + ": no such extension"));
-	  }
-	  my_extensions.push_back(extension);
-	  return t;
+      Extension *extension = create_extension(id);
+      T *t = dynamic_cast<T *>(extension);
+      if (!t)
+      {
+          delete extension;
+          throw (std::runtime_error(id + ": no such extension"));
+      }
+      my_extensions.push_back(extension);
+      return t;
       }
     protected:
       Console() { }
@@ -170,13 +170,13 @@ namespace Berlin
 
 //. This is a chunk of (video-) memory that is used to store raster data.
   class Console::Drawable : public virtual POA_Fresco::Drawable,
-		            public virtual PortableServer::RefCountServantBase
+                    public virtual PortableServer::RefCountServantBase
   {
     public:
       class Extension : public virtual Console::Extension
       {
-	public:
-	  virtual void attach(Drawable *) = 0;
+    public:
+      virtual void attach(Drawable *) = 0;
       };
       typedef char data_type;
       Drawable() {}
@@ -205,7 +205,7 @@ namespace Berlin
       virtual void flush() = 0;
       //. FIXME: Missing documentation!
       virtual void flush(Fresco::PixelCoord, Fresco::PixelCoord,
-			 Fresco::PixelCoord, Fresco::PixelCoord) = 0;
+             Fresco::PixelCoord, Fresco::PixelCoord) = 0;
 
       //. Called by the server when the scene is about to be drawn.
       //. This is a suitable place to add calls for building display
@@ -217,33 +217,33 @@ namespace Berlin
       //. Copy part of this Drawable to a new location in the same
       //. Drawable. These locations may overlap.
       virtual void blit(Fresco::PixelCoord, //.< x position of one corner of the source area
-			Fresco::PixelCoord, //.< y position of one corner of the source area
-			Fresco::PixelCoord, //.< width of the source area
-			Fresco::PixelCoord, //.< height of the source area
-			Fresco::PixelCoord, //.< x position of correspnding corner of the
-			                    //.< destination area
-			Fresco::PixelCoord) = 0; //.< y position of correspnding corner
-		                             //.< of the destination area
+            Fresco::PixelCoord, //.< y position of one corner of the source area
+            Fresco::PixelCoord, //.< width of the source area
+            Fresco::PixelCoord, //.< height of the source area
+            Fresco::PixelCoord, //.< x position of correspnding corner of the
+                                //.< destination area
+            Fresco::PixelCoord) = 0; //.< y position of correspnding corner
+                                     //.< of the destination area
       //. Copy parts of the given Drawable to the specified position in this Drawable.
       virtual void blit(const Drawable &,   //.< source Drawable
-			Fresco::PixelCoord, //.< x position of one corner of the source area
-			Fresco::PixelCoord, //.< y position of one corner of the source area
-			Fresco::PixelCoord, //.< width of the source area
-			Fresco::PixelCoord, //.< height of the source area
-			Fresco::PixelCoord, //.< x position of correspnding corner of the
-			                    //.< destination area
-			Fresco::PixelCoord) = 0; //.< y position of correspnding corner
+            Fresco::PixelCoord, //.< x position of one corner of the source area
+            Fresco::PixelCoord, //.< y position of one corner of the source area
+            Fresco::PixelCoord, //.< width of the source area
+            Fresco::PixelCoord, //.< height of the source area
+            Fresco::PixelCoord, //.< x position of correspnding corner of the
+                                //.< destination area
+            Fresco::PixelCoord) = 0; //.< y position of correspnding corner
                                                  //.< of the destination area
       //. Copy parts of the given Drawable to the specified position in this Drawable
       virtual void blit(Fresco::Drawable_ptr, //.< source Drawable
-			Fresco::PixelCoord, //.< x position of one corner of the source area
-			Fresco::PixelCoord, //.< y position of one corner of the source area
-			Fresco::PixelCoord, //.< width of the source area
-			Fresco::PixelCoord, //.< height of the source area
-			Fresco::PixelCoord, //.< x position of correspnding corner of the
-			                    //.< destination area
-			Fresco::PixelCoord) = 0; //.< y position of correspnding corner
-		                                 //.< of the destination area
+            Fresco::PixelCoord, //.< x position of one corner of the source area
+            Fresco::PixelCoord, //.< y position of one corner of the source area
+            Fresco::PixelCoord, //.< width of the source area
+            Fresco::PixelCoord, //.< height of the source area
+            Fresco::PixelCoord, //.< x position of correspnding corner of the
+                                //.< destination area
+            Fresco::PixelCoord) = 0; //.< y position of correspnding corner
+                                         //.< of the destination area
     private:
       Drawable(const Drawable &);
       Drawable &operator = (const Drawable &);
@@ -251,7 +251,7 @@ namespace Berlin
 
   //. This class is used to render the mousepointer.
   class Console::Pointer :
-	public virtual PortableServer::RefCountServantBase
+    public virtual PortableServer::RefCountServantBase
   {
     public:
       virtual ~Pointer() { }
@@ -268,7 +268,7 @@ namespace Berlin
       virtual void restore() = 0;
       //. FIXME: Missing documentation!
       virtual bool intersects(Fresco::Coord, Fresco::Coord,
-			      Fresco::Coord, Fresco::Coord) = 0;
+                  Fresco::Coord, Fresco::Coord) = 0;
   };
 
 } // namespace

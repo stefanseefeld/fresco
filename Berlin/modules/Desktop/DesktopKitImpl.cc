@@ -43,8 +43,8 @@ using namespace Fresco;
 using namespace Berlin::DesktopKit;
 
 DesktopKitImpl::DesktopKitImpl(const std::string &id,
-			       const Fresco::Kit::PropertySeq &p,
-			       ServerContextImpl *c) :
+                   const Fresco::Kit::PropertySeq &p,
+                   ServerContextImpl *c) :
     KitImpl(id, p, c)
 { }
 DesktopKitImpl::~DesktopKitImpl() { }
@@ -54,35 +54,35 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
     Trace trace("DesktopKitImpl::bind");
     KitImpl::bind(context);
     CORBA::Object_var object =
-	context->get_singleton("IDL:fresco.org/Fresco/Desktop:1.0");
+    context->get_singleton("IDL:fresco.org/Fresco/Desktop:1.0");
     my_desktop = Desktop::_narrow(object);
     my_desktop->increment();
     Fresco::Kit::PropertySeq props;
     props.length(0);
     my_layout =
-	resolve_kit<LayoutKit>(context,
-			       "IDL:fresco.org/Fresco/LayoutKit:1.0",
-			       props);
+    resolve_kit<LayoutKit>(context,
+                   "IDL:fresco.org/Fresco/LayoutKit:1.0",
+                   props);
     my_tools
-	= resolve_kit<ToolKit>(context,
-			       "IDL:fresco.org/Fresco/ToolKit:1.0",
-			       props);
+    = resolve_kit<ToolKit>(context,
+                   "IDL:fresco.org/Fresco/ToolKit:1.0",
+                   props);
     my_widgets
-	= resolve_kit<WidgetKit>(context,
-				 "IDL:fresco.org/Fresco/WidgetKit:1.0",
-				 props);
+    = resolve_kit<WidgetKit>(context,
+                 "IDL:fresco.org/Fresco/WidgetKit:1.0",
+                 props);
     my_text
-	= resolve_kit<TextKit>(context,
-			       "IDL:fresco.org/Fresco/TextKit:1.0",
-			       props);
+    = resolve_kit<TextKit>(context,
+                   "IDL:fresco.org/Fresco/TextKit:1.0",
+                   props);
     my_rasters
-	= resolve_kit<RasterKit>(context,
-				 "IDL:fresco.org/Fresco/RasterKit:1.0",
-				 props);
+    = resolve_kit<RasterKit>(context,
+                 "IDL:fresco.org/Fresco/RasterKit:1.0",
+                 props);
     my_figures
-	= resolve_kit<FigureKit>(context,
-				 "IDL:fresco.org/Fresco/FigureKit:1.0",
-				 props);
+    = resolve_kit<FigureKit>(context,
+                 "IDL:fresco.org/Fresco/FigureKit:1.0",
+                 props);
 
     ClientContext_var client = context->client();
     my_exit = client->exit();
@@ -94,7 +94,7 @@ Desktop_ptr DesktopKitImpl::desk()
 
 
 Window_ptr DesktopKitImpl::shell(Controller_ptr g,
-				 Fresco::ClientContext_ptr n)
+                 Fresco::ClientContext_ptr n)
 {
     WindowImpl *window = new WindowImpl;
     activate(window);
@@ -131,15 +131,15 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g,
     Image_var shadergraphic = my_figures->pixmap(raster);
     
     RefCount_var<Fresco::Controller> shaderbutton =
-	my_widgets->toggle(shadergraphic);
+    my_widgets->toggle(shadergraphic);
     Graphic_var visible = my_tools->create_switch(Graphic::_nil(), down,
-						  Controller::toggled,
-						  shaderbutton);
+                          Controller::toggled,
+                          shaderbutton);
 
     RefCount_var<Graphic> tbbuttons = my_layout->hbox();
     tbbuttons->append_graphic(shaderbutton);
     tbbuttons->
-	append_graphic(RefCount_var<Graphic>(my_layout->hspace(20.)));
+    append_graphic(RefCount_var<Graphic>(my_layout->hspace(20.)));
     tbbuttons->append_graphic(exitbutton);
     
     Command_var mover = move(wptr);
@@ -153,12 +153,12 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g,
     RefCount_var<Graphic> titlebox = my_layout->hbox_align_elements(0.);
     titlebox->append_graphic(RefCount_var<Graphic>(my_layout->hfill()));
     titlebox->append_graphic(RefCount_var<Graphic>(my_tools->rgb(titletext,
-								 0., 0.,
-								 0.)));
+                                 0., 0.,
+                                 0.)));
     titlebox->append_graphic(RefCount_var<Graphic>(my_layout->hfill()));
     titlebox->append_graphic(RefCount_var<Graphic>(my_layout->margin(tbbuttons, 20.)));
     RefCount_var<Graphic> tbframe = my_tools->frame(titlebox, 20.,
-						    spec, true);
+                            spec, true);
 
     RefCount_var<Graphic> tbdragger = my_tools->dragger(tbframe, mover);
 
@@ -166,9 +166,9 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g,
     req.y.natural = 40.;
     req.y.maximum = 40.;
     Command_var lresize = move_resize(wptr, 1.0, 0.0,
-				      Window::left|Window::bottom);
+                      Window::left|Window::bottom);
     RefCount_var<Graphic> lframe =
-	my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
+    my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> ldragger = my_tools->dragger(lframe, lresize);
 
     req.x.minimum = 0.;
@@ -179,7 +179,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g,
     req.y.maximum = 40.;
     Command_var bresize = move_resize(wptr, 0.0, 0.0, Window::bottom);
     RefCount_var<Graphic> bframe =
-	my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
+    my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> bdragger = my_tools->dragger(bframe, bresize);
 
     req.x.minimum = 200.;
@@ -189,9 +189,9 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g,
     req.y.natural = 40.;
     req.y.maximum = 40.;
     Command_var rresize =
-	move_resize(wptr, 0.0, 0.0, Window::right|Window::bottom);
+    move_resize(wptr, 0.0, 0.0, Window::right|Window::bottom);
     RefCount_var<Graphic> rframe =
-	my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
+    my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> rdragger = my_tools->dragger(rframe, rresize);
 
     hbox->append_graphic(ldragger);
@@ -200,7 +200,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g,
     vbox->append_graphic(tbdragger);
     
     down->append_graphic(RefCount_var<Graphic>(my_layout->align(g, 0.,
-								0.)));
+                                0.)));
     down->append_graphic(hbox);
     vbox->append_graphic(visible);
     // RefCount_var<Graphic> background =
@@ -248,7 +248,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 
     Command_var mover = move(wptr);
     RefCount_var<Graphic> tbframe =
-	my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
+    my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> tbdragger = my_tools->dragger(tbframe, mover);
 
     req.x.minimum = 200.;
@@ -258,9 +258,9 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
     req.y.natural = 40.;
     req.y.maximum = 40.;
     Command_var lresize =
-	move_resize(wptr, 1.0, 0.0, Window::left|Window::bottom);
+    move_resize(wptr, 1.0, 0.0, Window::left|Window::bottom);
     RefCount_var<Graphic> lframe =
-	my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
+    my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> ldragger = my_tools->dragger(lframe, lresize);
 
     req.x.minimum = 0.;
@@ -271,7 +271,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
     req.y.maximum = 40.;
     Command_var bresize = move_resize(wptr, 0.0, 0.0, Window::bottom);
     RefCount_var<Graphic> bframe =
-	my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
+    my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> bdragger = my_tools->dragger(bframe, bresize);
 
     req.x.minimum = 200.;
@@ -281,7 +281,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
     req.y.natural = 40.;
     req.y.maximum = 40.;
     Command_var rresize = move_resize(wptr, 0.0, 0.0,
-				      Window::right|Window::bottom);
+                      Window::right|Window::bottom);
     RefCount_var<Graphic> rframe = my_tools->frame(RefCount_var<Graphic>(my_layout->glue_requisition(req)), 20., spec, true);
     RefCount_var<Graphic> rdragger = my_tools->dragger(rframe, rresize);
     
@@ -293,7 +293,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
     hbox->append_graphic(rdragger);
     vbox->append_graphic(tbdragger);
     vbox->append_graphic(RefCount_var<Graphic>(my_layout->align(g, 0.,
-								0.)));
+                                0.)));
     vbox->append_graphic(hbox);
     wptr->body(background);
     /*
@@ -317,7 +317,7 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 
     RefCount_var<Graphic> outset = my_tools->frame(g, 20., spec, true);
     RefCount_var<Graphic> background =
-	my_tools->rgb(outset, 0.8, 0.8, 0.8);
+    my_tools->rgb(outset, 0.8, 0.8, 0.8);
     wptr->body(background);
     wptr->append_controller(g);
     menu->insert(my_desktop);
@@ -340,12 +340,12 @@ Command_ptr DesktopKitImpl::resize(Fresco::Window_ptr window)
 }
 
 Command_ptr DesktopKitImpl::move_resize(Fresco::Window_ptr window,
-					Fresco::Alignment x,
-					Fresco::Alignment y,
-					CORBA::Short border)
+                    Fresco::Alignment x,
+                    Fresco::Alignment y,
+                    CORBA::Short border)
 {
     Manipulator *manipulator =
-	new MoveResizer(window, my_desktop, x, y, border);
+    new MoveResizer(window, my_desktop, x, y, border);
     activate(manipulator);
     return manipulator->_this();
 }
@@ -358,7 +358,7 @@ Command_ptr DesktopKitImpl::relayer(Fresco::Window_ptr window)
 }
 
 Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window,
-				CORBA::Boolean flag)
+                CORBA::Boolean flag)
 {
     Manipulator *manipulator;
     if (flag) manipulator = new Mapper(window);

@@ -19,14 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Console_hh
-#define _Console_hh
+#ifndef _GGI_Console_hh
+#define _GGI_Console_hh
 
 #include <Prague/Sys/Plugin.hh>
 #include <Fresco/config.hh>
 #include <Fresco/Types.hh>
 #include <Fresco/Input.hh>
-#include <Berlin/Logger.hh>
 #include <Berlin/Console.hh>
 #include <vector>
 extern "C"
@@ -37,56 +36,54 @@ extern "C"
 namespace GGI
 {
 
-class Drawable;
-class Pointer;
+  class Drawable;
+  class Pointer;
 
-class Console : public ::Console
-{
-  typedef std::vector<Drawable *> dlist_t;
-  typedef std::vector<Prague::Plugin<Extension> *> elist_t;
-public:
-  Console(int &, char **, Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual ~Console();
+  class Console : public Berlin::Console
+  {
+      typedef std::vector<Drawable *> dlist_t;
+      typedef std::vector<Prague::Plugin<Extension> *> elist_t;
+    public:
+      Console(int &, char **, Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual ~Console();
 
-  virtual Pointer *pointer(Fresco::Raster_ptr);
-  virtual Drawable *drawable();
-  virtual Drawable *create_drawable(Fresco::PixelCoord, Fresco::PixelCoord,
-				    Fresco::PixelCoord);
-  Drawable *reference_to_servant(Fresco::Drawable_ptr);
+      virtual Pointer *pointer(Fresco::Raster_ptr);
+      virtual Drawable *drawable();
+      virtual Drawable *create_drawable(Fresco::PixelCoord,
+                    Fresco::PixelCoord,
+                    Fresco::PixelCoord);
+      Drawable *reference_to_servant(Fresco::Drawable_ptr);
 
-  virtual void device_info(std::ostream &);
-  virtual Fresco::Input::Event *next_event();
-  virtual void wakeup();
-  virtual void activate_autoplay() { _autoplay = true;}
-  virtual void highlight_screen(Fresco::Coord, Fresco::Coord,
-				Fresco::Coord, Fresco::Coord,
-				double red = 1.0,
-				double green = 0.0,
-				double blue = 0.0);
-  void add_drawable(Drawable *);
-private:
-  virtual Console::Extension *create_extension(const std::string &);
-  Fresco::Input::Event *synthesize(const ggi_event &);
-  /*
-   * to be used for event notification
-   */
-  ggi_visual_t  _visual;
+      virtual void device_info(std::ostream &);
+      virtual Fresco::Input::Event *next_event();
+      virtual void wakeup();
+      virtual void activate_autoplay() { my_autoplay = true; }
+      virtual void highlight_screen(Fresco::Coord, Fresco::Coord,
+                    Fresco::Coord, Fresco::Coord,
+                    double red = 1.0,
+                    double green = 0.0,
+                    double blue = 0.0);
+      void add_drawable(Drawable *);
+    private:
+      virtual Console::Extension *create_extension(const std::string &);
+      Fresco::Input::Event *synthesize(const ggi_event &);
+      // to be used for event notification
+
+      ggi_visual_t my_visual;
 #ifdef RMDEBUG
-  ggi_visual_t  _backup;
+      ggi_visual_t my_backup;
 #endif
-  /*
-   * to be used for pointing devices
-   */
-  long          _size[2];
-  long          _position[2];
-  double        _resolution[2];
-  bool          _autoplay;
-  int           _wakeupPipe[2];
-  dlist_t       _drawables;
+      // to be used for pointing devices
+      long my_size[2];
+      long my_position[2];
+      double my_resolution[2];
+      bool my_autoplay;
+      int my_wakeupPipe[2];
+      dlist_t my_drawables;
 
-  elist_t       _modules;
-};
+      elist_t my_modules;
+  };
 
-}
+} // namespace
 
 #endif

@@ -10,8 +10,8 @@ class ProxyImpl : virtual public CosTrading::_sk_Proxy, public TraderComponentsI
 public:  
   ProxyImpl(Trader *);
   char *export_proxy(CosTrading::Lookup_ptr, const char *,
-		     const CosTrading::PropertySeq &, CORBA::Boolean,
-		     const char *, const CosTrading::PolicySeq &);
+             const CosTrading::PropertySeq &, CORBA::Boolean,
+             const char *, const CosTrading::PolicySeq &);
   void withdraw_proxy(const char *);
   CosTrading::Proxy::ProxyInfo *describe_proxy(const char *);
 };

@@ -43,8 +43,8 @@ MonoGraphic::~MonoGraphic()
   if (!CORBA::is_nil(my_child.peer))
       try
       {
-	  my_child.peer->decrement();
-	  my_child.peer->remove_parent_graphic(my_child.peerId);
+      my_child.peer->decrement();
+      my_child.peer->remove_parent_graphic(my_child.peerId);
       }
       catch(const CORBA::OBJECT_NOT_EXIST &) { }
       catch (const CORBA::COMM_FAILURE &) { }
@@ -62,28 +62,28 @@ void MonoGraphic::body(Graphic_ptr c)
 {
     Prague::Guard<Mutex> guard(my_mutex);
     if (!CORBA::is_nil(my_child.peer))
-	try
-	{
-	    my_child.peer->remove_parent_graphic(my_child.peerId);
-	    my_child.peer->decrement();
-	}
-	catch(const CORBA::OBJECT_NOT_EXIST &) { }
-	catch (const CORBA::COMM_FAILURE &) { }
-	catch (const CORBA::TRANSIENT &) { }
+    try
+    {
+        my_child.peer->remove_parent_graphic(my_child.peerId);
+        my_child.peer->decrement();
+    }
+    catch(const CORBA::OBJECT_NOT_EXIST &) { }
+    catch (const CORBA::COMM_FAILURE &) { }
+    catch (const CORBA::TRANSIENT &) { }
     my_child.peer = Fresco::Graphic::_duplicate(c);
     if (!CORBA::is_nil(my_child.peer))
-	try
-	{
-	    my_child.peerId =
-		my_child.peer->add_parent_graphic(Graphic_var(_this()), 0);
-	    my_child.peer->increment();
-	}
-	catch(const CORBA::OBJECT_NOT_EXIST &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
+    try
+    {
+        my_child.peerId =
+        my_child.peer->add_parent_graphic(Graphic_var(_this()), 0);
+        my_child.peer->increment();
+    }
+    catch(const CORBA::OBJECT_NOT_EXIST &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
 //     needResize();
 }
 
@@ -91,28 +91,28 @@ void MonoGraphic::append_graphic(Graphic_ptr c)
 {
     Prague::Guard<Mutex> guard(my_mutex);
     if (!CORBA::is_nil(my_child.peer))
-	try
-	{ my_child.peer->append_graphic(c);}
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
+    try
+    { my_child.peer->append_graphic(c);}
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
 }
 
 void MonoGraphic::prepend_graphic(Graphic_ptr c)
 {
     Prague::Guard<Mutex> guard(my_mutex);
     if (!CORBA::is_nil(my_child.peer))
-	try
-	{ my_child.peer->prepend_graphic(c);}
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
+    try
+    { my_child.peer->prepend_graphic(c);}
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
 }
 
 void MonoGraphic::remove_graphic(Tag localId)
@@ -120,21 +120,21 @@ void MonoGraphic::remove_graphic(Tag localId)
     Trace trace(this, "MonoGraphic::remove_graphic");
     Prague::Guard<Mutex> guard(my_mutex);
     if (!CORBA::is_nil(my_child.peer))
-	try { my_child.peer->remove_graphic(localId);}
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_child.peer = Fresco::Graphic::_nil(); }
+    try { my_child.peer->remove_graphic(localId);}
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_child.peer = Fresco::Graphic::_nil(); }
 }
 
 void MonoGraphic::remove_child_graphic(Tag localId)
 {
     Trace trace(this, "MonoGraphic::remove_child_graphic");
     {
-	Prague::Guard<Mutex> guard(my_mutex);
-	if (localId == 0) my_child.peer = Fresco::Graphic::_nil();
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (localId == 0) my_child.peer = Fresco::Graphic::_nil();
     }
     need_resize();
 }
@@ -143,16 +143,16 @@ Fresco::GraphicIterator_ptr MonoGraphic::first_child_graphic()
 {
     Prague::Guard<Mutex> guard(my_mutex);
     return (CORBA::is_nil (my_child.peer)
-	    ? Fresco::GraphicIterator::_nil()
-	    : my_child.peer->first_child_graphic());
+        ? Fresco::GraphicIterator::_nil()
+        : my_child.peer->first_child_graphic());
 }
 
 Fresco::GraphicIterator_ptr MonoGraphic::last_child_graphic()
 {
     Prague::Guard<Mutex> guard(my_mutex);
     return (CORBA::is_nil (my_child.peer)
-	    ? Fresco::GraphicIterator::_nil()
-	    : my_child.peer->last_child_graphic());
+        ? Fresco::GraphicIterator::_nil()
+        : my_child.peer->last_child_graphic());
 }
 
 Transform_ptr MonoGraphic::transformation()
@@ -173,24 +173,24 @@ void MonoGraphic::request(Fresco::Graphic::Requisition &r)
 }
 
 void MonoGraphic::extension(const Fresco::Allocation::Info &info,
-			    Region_ptr region)
+                Region_ptr region)
 {
     Trace trace(this, "MonoGraphic::extension");
     Graphic_var child = body();
     if (!CORBA::is_nil(child))
     {
-	Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
-	tmp->clear();
-	Lease_var<TransformImpl>
-	    transform(Provider<TransformImpl>::provide());
-	transform->load_identity();
-	Allocation::Info i;
-	i.allocation = tmp->_this();
-	i.allocation->copy(info.allocation);
-	i.transformation = transform->_this();
-	i.transformation->copy(info.transformation);
-	allocate(0, i);
-	child->extension(i, region);
+    Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
+    tmp->clear();
+    Lease_var<TransformImpl>
+        transform(Provider<TransformImpl>::provide());
+    transform->load_identity();
+    Allocation::Info i;
+    i.allocation = tmp->_this();
+    i.allocation->copy(info.allocation);
+    i.transformation = transform->_this();
+    i.transformation->copy(info.transformation);
+    allocate(0, i);
+    child->extension(i, region);
     }
 }
 
@@ -207,8 +207,8 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
     if (CORBA::is_nil(child)) return;
     try
     {
-	traversal->traverse_child(child, 0,
-				  Region::_nil(), Transform::_nil());
+    traversal->traverse_child(child, 0,
+                  Region::_nil(), Transform::_nil());
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     { body (Fresco::Graphic::_nil()); }

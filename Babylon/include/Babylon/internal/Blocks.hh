@@ -43,12 +43,12 @@ namespace Babylon {
       virtual ~Block() { }
       virtual void clean() { }
       virtual bool is_undef_block() const = 0; // returns 1 if this
-	                                       // block is meant to handle
-	                                       // all undefined characters
-	                                       // 
-	                                       // The first undef_block
-	                                       // found will be used!
-	
+                                           // block is meant to handle
+                                           // all undefined characters
+                                           // 
+                                           // The first undef_block
+                                           // found will be used!
+    
       // Query Functions:
       virtual bool is_defined(const UCS4)  const = 0;
       virtual UCS4 uppercase(const UCS4) const = 0;

@@ -34,15 +34,15 @@ namespace Berlin
     class TextInput : public ControllerImpl
     {
       public:
-	TextInput(Fresco::TextBuffer_ptr b) :
-	    ControllerImpl(false),
-	    my_buffer(Fresco::TextBuffer::_duplicate(b))
-	{ }
-	~TextInput() { }
+    TextInput(Fresco::TextBuffer_ptr b) :
+        ControllerImpl(false),
+        my_buffer(Fresco::TextBuffer::_duplicate(b))
+    { }
+    ~TextInput() { }
 //      protected:
-	virtual void key_press(const Fresco::Input::Event &);
+    virtual void key_press(const Fresco::Input::Event &);
       private:
-	Fresco::TextBuffer_var my_buffer;
+    Fresco::TextBuffer_var my_buffer;
     };
     
   } // namespace

@@ -14,10 +14,10 @@ int main(int argc, char **argv)
   if (argc == 3)
     {
       if (argv[1][0] != '-' || argv[1][1] != 'l')
-	{
-	  std::cerr << "Usage: " << argv[0] << " [ -l ] user_name\n";
-	  return 1;
-	}
+    {
+      std::cerr << "Usage: " << argv[0] << " [ -l ] user_name\n";
+      return 1;
+    }
       // use local whois server
       sio->connect(sockinetaddr("128.143.2.20", "whois", "tcp")); 
       sio << argv[2] << "\r\n" << std::flush;

@@ -30,79 +30,77 @@
 using namespace Fresco;
 using namespace Widget;
 
-class FocusDemo::Observer : public ObserverImpl
+class FocusDemo::Observer : public Berlin::ObserverImpl
 {
- public:
-  virtual void update(const CORBA::Any &any)
+  public:
+    virtual void update(const CORBA::Any &any)
     {
-      Fresco::Selection::Item *item;
-      if (any >>= item)
-	std::cout << "new selection" << std::endl;
+    Fresco::Selection::Item *item;
+    if (any >>= item)
+        std::cout << "new selection" << std::endl;
     }
 };
 
-FocusDemo::FocusDemo(Application *a)
-  : Demo(a), observer(new Observer)
+FocusDemo::FocusDemo(Application *a) : Demo(a), my_observer(new Observer)
 {
-  RasterKit_var images = application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
-  FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
-  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
-  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
-  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
-  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
-  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
+    RasterKit_var images =
+    my_application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
+    FigureKit_var figures =
+    my_application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
+    LayoutKit_var layout =
+    my_application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+    CommandKit_var commands =
+    my_application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+    ToolKit_var tools =
+    my_application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+    WidgetKit_var widgets =
+    my_application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+    TextKit_var text =
+    my_application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
 
-  Graphic_var      vbox = layout->vbox();
-  Graphic_var     hbox1 = layout->hbox();
-  ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::concav);
-  /*
-   * first group
-   */
-  Choice_var c1 = widgets->toggle_choice();
-  for (size_t i = 0; i != 5; i++)
+    Graphic_var vbox = layout->vbox();
+    Graphic_var hbox1 = layout->hbox();
+    ToolKit::FrameSpec spec;
+    spec.brightness(0.5); spec._d(ToolKit::concav);
+
+    // first group
+    Choice_var c1 = widgets->toggle_choice();
+    for (size_t i = 0; i != 5; ++i)
     c1->append_item(Graphic_var(Graphic::_nil()));
-  c1->attach(Observer_var(observer->_this()));
-  /*
-   * second group
-   */
-  Choice_var c2 = widgets->checkbox_choice();
-  for (size_t i = 0; i != 5; i++)
+    c1->attach(Observer_var(my_observer->_this()));
+
+    // second group
+    Choice_var c2 = widgets->checkbox_choice();
+    for (size_t i = 0; i != 5; ++i)
     c2->append_item(Graphic_var(Graphic::_nil()));
-  c2->attach(Observer_var(observer->_this()));
-  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c1, 100.)),
-									   20., spec, true)), 100.)));
-  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c2, 100.)),
-									   20., spec, true)), 100.)));
-  Graphic_var     hbox2 = layout->hbox();
-  /*
-   * third group
-   */
-  Choice_var c3 = widgets->toggle_choice();
-  for (size_t i = 0; i != 5; i++)
+    c2->attach(Observer_var(my_observer->_this()));
+    hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c1, 100.)), 20., spec, true)), 100.)));
+    hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c2, 100.)), 20., spec, true)), 100.)));
+    Graphic_var     hbox2 = layout->hbox();
+
+    // third group
+    Choice_var c3 = widgets->toggle_choice();
+    for (size_t i = 0; i != 5; ++i)
     c3->append_item(Graphic_var(Graphic::_nil()));
-  c3->attach(Observer_var(observer->_this()));
-  /*
-   * fourth group
-   */
-  Choice_var c4 = widgets->checkbox_choice();
-  for (size_t i = 0; i != 5; i++)
+    c3->attach(Observer_var(my_observer->_this()));
+
+    // fourth group
+    Choice_var c4 = widgets->checkbox_choice();
+    for (size_t i = 0; i != 5; ++i)
     c4->append_item(Graphic_var(Graphic::_nil()));
-  c4->attach(Observer_var(observer->_this()));
-  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c3, 100.)),
-									   20., spec, true)), 100.)));
-  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c4, 100.)),
-									   20., spec, true)), 100.)));
-  vbox->append_graphic(hbox1);
-  vbox->append_graphic(hbox2);
-  Raster_var raster = images->create_raster("marble.png");
-  Graphic_var texture = figures->texture(vbox, raster);
-  MainController_var gr = tools->group(texture);
-  Raster_var pointer = images->create_raster("ur-cursor.png");
-  gr->cursor(pointer);
-  gr->append_controller(c1);
-  gr->append_controller(c2);
-  gr->append_controller(c3);
-  gr->append_controller(c4);
-  application->append(gr, Babylon::String("focus"));
-};
+    c4->attach(Observer_var(my_observer->_this()));
+    hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c3, 100.)), 20., spec, true)), 100.)));
+    hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c4, 100.)), 20., spec, true)), 100.)));
+    vbox->append_graphic(hbox1);
+    vbox->append_graphic(hbox2);
+    Raster_var raster = images->create_raster("marble.png");
+    Graphic_var texture = figures->texture(vbox, raster);
+    MainController_var gr = tools->group(texture);
+    Raster_var pointer = images->create_raster("ur-cursor.png");
+    gr->cursor(pointer);
+    gr->append_controller(c1);
+    gr->append_controller(c2);
+    gr->append_controller(c3);
+    gr->append_controller(c4);
+    my_application->append(gr, Babylon::String("focus"));
+}

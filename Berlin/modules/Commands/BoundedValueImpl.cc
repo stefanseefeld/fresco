@@ -26,8 +26,8 @@ using namespace Prague;
 using namespace Fresco;
 
 Berlin::CommandKit::BoundedValueImpl::BoundedValueImpl(Coord l, Coord u,
-						       Coord v, Coord s,
-						       Coord p) :
+                               Coord v, Coord s,
+                               Coord p) :
   my_l(l), my_u(u), my_v(v), my_s(s), my_p(p)
 { }
 

@@ -10,23 +10,23 @@ sub new
 
     while(<EA>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next unless ($info);
+    next unless ($info);
 
-	my @list = split /;/, $info;
-	
-	if ($list[0] =~ /[A-F0-9]+\.\.[A-F0-9]+/)
-	{
-	    (my $start, my $end) = split /\.\./, $list[0];
-	    $self->{hex($start)} = "EA_WIDTH_".$list[1];
-	    $list[0] = $end;
-	}
+    my @list = split /;/, $info;
+    
+    if ($list[0] =~ /[A-F0-9]+\.\.[A-F0-9]+/)
+    {
+        (my $start, my $end) = split /\.\./, $list[0];
+        $self->{hex($start)} = "EA_WIDTH_".$list[1];
+        $list[0] = $end;
+    }
 
-	$self->{hex($list[0])} = "EA_WIDTH_".$list[1];
+    $self->{hex($list[0])} = "EA_WIDTH_".$list[1];
     }
     
     close(EA);
@@ -70,21 +70,21 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
-	$self->{_ELEM} = "";
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef")
-	    {
-		$self->{_ELEM} = $self->data($i) if ($self->{_ELEM} eq "");
-		if ($self->{_ELEM} ne $self->data($i)) {
-		    $self->{_ATTENTION_NEEDED} = 1;
-		    last;
-		}
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
+    $self->{_ELEM} = "";
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef")
+        {
+        $self->{_ELEM} = $self->data($i) if ($self->{_ELEM} eq "");
+        if ($self->{_ELEM} ne $self->data($i)) {
+            $self->{_ATTENTION_NEEDED} = 1;
+            last;
+        }
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -110,9 +110,9 @@ sub function
     
     if ($self->{_ATTENTION_NEEDED} == 1)
     {
-	$tmp .= "            return Babylon::EA_Width($bl_name\:\:my_ea\[uc - my_first_letter\]);\n";
-	$tmp .= "        }\n\n";
-	return $tmp;
+    $tmp .= "            return Babylon::EA_Width($bl_name\:\:my_ea\[uc - my_first_letter\]);\n";
+    $tmp .= "        }\n\n";
+    return $tmp;
     }
     $tmp .= sprintf "            return Babylon::EA_Width(%s);\n        }\n\n",
                     $self->{_ELEM};
@@ -126,7 +126,7 @@ sub var_def
     my $bl_length = $_[1] - $_[0] + 1;
 
     return "        static const unsigned char my_ea\[$bl_length\];\n"
-	if ($self->{_ATTENTION_NEEDED});
+    if ($self->{_ATTENTION_NEEDED});
     return "";
 }
 
@@ -141,21 +141,21 @@ sub var
 
     if ($self->{_ATTENTION_NEEDED})
     {
-	my $tmp = "    const unsigned char $bl_name\:\:my_ea\[\] =\n    {";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= "\n        " if (($i - $bl_start) % 4 == 0);
-	    if ($self->data($i) eq "undef") {
-		$tmp .= $self->{_ELEM};
-	    }
-	    else
-	    {
-		$tmp .= $self->data($i);
-	    }
-	    $tmp .= ", " if ( $i != $bl_end);
-	}
-	$tmp .= "\n    };\n\n";
-	return $tmp;
+    my $tmp = "    const unsigned char $bl_name\:\:my_ea\[\] =\n    {";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= "\n        " if (($i - $bl_start) % 4 == 0);
+        if ($self->data($i) eq "undef") {
+        $tmp .= $self->{_ELEM};
+        }
+        else
+        {
+        $tmp .= $self->data($i);
+        }
+        $tmp .= ", " if ( $i != $bl_end);
+    }
+    $tmp .= "\n    };\n\n";
+    return $tmp;
     }
     return "";
 }

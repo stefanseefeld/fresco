@@ -40,36 +40,36 @@ namespace Berlin
 
       class Terminal : public MonoGraphic
       {
-	  class Input : public ObserverImpl
-	  {
-	    public:
-	      Input(Terminal *t) : my_terminal(t) { }
-	      virtual void update(const CORBA::Any &);
-	    private:
-	      Terminal *my_terminal;
-	  };
-	  class Output : public Prague::Coprocess::IONotifier
-	  {
-	    public:
-	      Output(Terminal *t) : my_terminal(t) { }
-	      virtual bool notify(Prague::Agent::iomask);
-	    private:
-	      Terminal *my_terminal;
-	  };
-	  friend class Input;
-	  friend class Output;
-	public:
-	  Terminal(Fresco::CommandKit_ptr);
-	  Fresco::StreamBuffer_ptr input()
-	  { return Fresco::StreamBuffer::_duplicate(my_ibuf); }
-	  Fresco::StreamBuffer_ptr output()
-	  { return Fresco::StreamBuffer::_duplicate(my_obuf); }
-	private:
-	  Input *my_input;
-	  Output *my_output;
-	  Prague::TTYAgent *my_agent;
-	  RefCount_var<Fresco::StreamBuffer> my_ibuf;
-	  RefCount_var<Fresco::StreamBuffer> my_obuf;
+      class Input : public ObserverImpl
+      {
+        public:
+          Input(Terminal *t) : my_terminal(t) { }
+          virtual void update(const CORBA::Any &);
+        private:
+          Terminal *my_terminal;
+      };
+      class Output : public Prague::Coprocess::IONotifier
+      {
+        public:
+          Output(Terminal *t) : my_terminal(t) { }
+          virtual bool notify(Prague::Agent::iomask);
+        private:
+          Terminal *my_terminal;
+      };
+      friend class Input;
+      friend class Output;
+    public:
+      Terminal(Fresco::CommandKit_ptr);
+      Fresco::StreamBuffer_ptr input()
+      { return Fresco::StreamBuffer::_duplicate(my_ibuf); }
+      Fresco::StreamBuffer_ptr output()
+      { return Fresco::StreamBuffer::_duplicate(my_obuf); }
+    private:
+      Input *my_input;
+      Output *my_output;
+      Prague::TTYAgent *my_agent;
+      RefCount_var<Fresco::StreamBuffer> my_ibuf;
+      RefCount_var<Fresco::StreamBuffer> my_obuf;
       };
 
     } // namespace

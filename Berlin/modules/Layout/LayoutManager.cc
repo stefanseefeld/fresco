@@ -51,27 +51,27 @@ LayoutManager::LayoutManager() { }
 LayoutManager::~LayoutManager() { }
 
 void LayoutManager::set_span(RegionImpl *r, Axis a,
-			     Coord origin, Coord length, Alignment align)
+                 Coord origin, Coord length, Alignment align)
 {
     Coord begin = origin - length * align;
     Coord end = begin + length;
     switch (a)
     {
     case xaxis:
-	r->lower.x = begin;
-	r->upper.x = end;
-	r->xalign = align;
-	break;
+    r->lower.x = begin;
+    r->upper.x = end;
+    r->xalign = align;
+    break;
     case yaxis:
-	r->lower.y = begin;
-	r->upper.y = end;
-	r->yalign = align;
-	break;
+    r->lower.y = begin;
+    r->upper.y = end;
+    r->yalign = align;
+    break;
     case zaxis:
-	r->lower.z = begin;
-	r->upper.z = end;
-	r->zalign = align;
-	break;
+    r->lower.z = begin;
+    r->upper.z = end;
+    r->zalign = align;
+    break;
     }
 }
 
@@ -82,10 +82,10 @@ LayoutAlign::~LayoutAlign() { }
 LayoutManager *LayoutAlign::clone() { return new LayoutAlign(my_axis); }
 
 void LayoutAlign::request(long n, Graphic::Requisition *requests,
-			  Graphic::Requisition &result)
+              Graphic::Requisition &result)
 {
     Graphic::Requirement *r, *rr = 
-	GraphicImpl::requirement(result, my_axis);
+    GraphicImpl::requirement(result, my_axis);
     rr->defined = false;
 
     Coord natural_lead = -GraphicImpl::infinity;
@@ -97,51 +97,51 @@ void LayoutAlign::request(long n, Graphic::Requisition *requests,
 
     for (int i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], my_axis);
-	if (r->defined)
-	{
-	    //. maximum of the natural child lengths becomes natural length
-	    natural_lead = Math::max(natural_lead, r->natural * r->align);
-	    //. smallest children's maximum length becomes maximum length
-	    max_lead = Math::min(max_lead, r->maximum * r->align);
-	    //. largest children's minimum length becomes minimum length
-	    min_lead = Math::max(min_lead, r->minimum * r->align);
-	    //. maximum of the natural child lengths becomes natural length
-	    natural_trail = Math::max(natural_trail, 
-				      r->natural * (1. - r->align));
-	    //. smallest children's maximum length becomes maximum length
-	    max_trail = Math::min(max_trail, r->maximum * (1. - r->align));
-	    //. largest children's minimum length becomes minimum length
-	    min_trail = Math::max(min_trail, r->minimum * (1. - r->align));
-	    rr->defined = true;
-	}
+    r = GraphicImpl::requirement(requests[i], my_axis);
+    if (r->defined)
+    {
+        //. maximum of the natural child lengths becomes natural length
+        natural_lead = Math::max(natural_lead, r->natural * r->align);
+        //. smallest children's maximum length becomes maximum length
+        max_lead = Math::min(max_lead, r->maximum * r->align);
+        //. largest children's minimum length becomes minimum length
+        min_lead = Math::max(min_lead, r->minimum * r->align);
+        //. maximum of the natural child lengths becomes natural length
+        natural_trail = Math::max(natural_trail, 
+                      r->natural * (1. - r->align));
+        //. smallest children's maximum length becomes maximum length
+        max_trail = Math::min(max_trail, r->maximum * (1. - r->align));
+        //. largest children's minimum length becomes minimum length
+        min_trail = Math::max(min_trail, r->minimum * (1. - r->align));
+        rr->defined = true;
+    }
     }
     
     if (rr->defined)
-	GraphicImpl::require_lead_trail(*rr,
-					natural_lead, max_lead, min_lead,
-					natural_trail, max_trail,
-					min_trail);
+    GraphicImpl::require_lead_trail(*rr,
+                    natural_lead, max_lead, min_lead,
+                    natural_trail, max_trail,
+                    min_trail);
 }
 
 void LayoutAlign::allocate(long n, Graphic::Requisition *requests, 
-			   Region_ptr given, 
-			   LayoutManager::Allocations result)
+               Region_ptr given, 
+               LayoutManager::Allocations result)
 {
     Graphic::Requirement* r;
     Region::Allotment a;
     given->span(my_axis, a);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], my_axis);
-	if (r->defined)
-	{
-	    Coord length = Math::max(Math::min(a.end - a.begin,
-					       r->maximum), r->minimum);
-	    set_span(result[i], my_axis,
-		     a.begin + a.align*(a.end-a.begin), length, r->align);
-	}
-	else set_span(result[i], my_axis, Coord(0), Coord(0), Coord(0));
+    r = GraphicImpl::requirement(requests[i], my_axis);
+    if (r->defined)
+    {
+        Coord length = Math::max(Math::min(a.end - a.begin,
+                           r->maximum), r->minimum);
+        set_span(result[i], my_axis,
+             a.begin + a.align*(a.end-a.begin), length, r->align);
+    }
+    else set_span(result[i], my_axis, Coord(0), Coord(0), Coord(0));
     }
 }
 
@@ -154,28 +154,28 @@ LayoutManager *LayoutCenter::clone()
 { return new LayoutCenter(my_axis, my_alignment); }
 
 void LayoutCenter::request(long, Graphic::Requisition*,
-			   Graphic::Requisition &result)
+               Graphic::Requisition &result)
 {
     Graphic::Requirement *r = GraphicImpl::requirement(result, my_axis);
     r->align = my_alignment;
 }
 
 void LayoutCenter::allocate(long, Graphic::Requisition *requests,
-			    Region_ptr,
-			    LayoutManager::Allocations result)
+                Region_ptr,
+                LayoutManager::Allocations result)
 {
     Region::Allotment a;
     result[0]->span(my_axis, a);
     Graphic::Requirement *r =
-	GraphicImpl::requirement(requests[0], my_axis);
+    GraphicImpl::requirement(requests[0], my_axis);
     if (r->defined)
     {
-	Coord length = a.end - a.begin;
-	Coord n = Math::min(r->maximum, Math::max(r->minimum, length));
-	set_span(result[0], my_axis,
-		 a.begin + a.align * length +
-		 (r->align - my_alignment) * n,
-		 length, r->align);
+    Coord length = a.end - a.begin;
+    Coord n = Math::min(r->maximum, Math::max(r->minimum, length));
+    set_span(result[0], my_axis,
+         a.begin + a.align * length +
+         (r->align - my_alignment) * n,
+         length, r->align);
     }
 }
 
@@ -186,7 +186,7 @@ LayoutManager *LayoutFixed::clone()
 { return new LayoutFixed(my_axis, my_size); }
 
 void LayoutFixed::request(long, Graphic::Requisition *,
-			  Graphic::Requisition &result)
+              Graphic::Requisition &result)
 {
     Graphic::Requirement *r = GraphicImpl::requirement(result, my_axis);
     r->natural = my_size;
@@ -194,18 +194,18 @@ void LayoutFixed::request(long, Graphic::Requisition *,
     r->minimum = my_size;
     if (!r->defined)
     {
-	r->defined = true;
-	r->align = Alignment(0);
+    r->defined = true;
+    r->align = Alignment(0);
     }
 }
 
 void LayoutFixed::allocate(long, Graphic::Requisition *,
-			   Region_ptr, LayoutManager::Allocations result)
+               Region_ptr, LayoutManager::Allocations result)
 {
     Region::Allotment a;
     result[0]->span(my_axis, a);
     set_span(result[0], my_axis, a.begin + a.align * (a.end - a.begin),
-	     my_size, a.align);
+         my_size, a.align);
 }
 
 // class LayoutMargin
@@ -231,9 +231,9 @@ LayoutMargin::LayoutMargin(Coord l, Coord r, Coord t, Coord b) :
 { }
 
 LayoutMargin::LayoutMargin(Coord lm, Coord lS, Coord ls,
-			   Coord rm, Coord rS, Coord rs,
-			   Coord tm, Coord tS, Coord ts,
-			   Coord bm, Coord bS, Coord bs) :
+               Coord rm, Coord rS, Coord rs,
+               Coord tm, Coord tS, Coord ts,
+               Coord bm, Coord bS, Coord bs) :
     my_lnatural(lm), my_lstretch(lS), my_lshrink(ls),
     my_rnatural(rm), my_rstretch(rS), my_rshrink(rs),
     my_tnatural(tm), my_tstretch(tS), my_tshrink(ts),
@@ -245,21 +245,21 @@ LayoutMargin::~LayoutMargin() { }
 LayoutManager *LayoutMargin::clone()
 {
   return new LayoutMargin(my_lnatural, my_lstretch, my_lshrink,
-			  my_rnatural, my_rstretch, my_rshrink,
-			  my_tnatural, my_tstretch, my_tshrink,
-			  my_bnatural, my_bstretch, my_bshrink);
+              my_rnatural, my_rstretch, my_rshrink,
+              my_tnatural, my_tstretch, my_tshrink,
+              my_bnatural, my_bstretch, my_bshrink);
 }
 
 void LayoutMargin::request(long, Graphic::Requisition *,
-			   Graphic::Requisition &result)
+               Graphic::Requisition &result)
 {
     Graphic::Requirement &rx = result.x;
     if (!rx.defined)
     {
-	rx.defined = true;
-	rx.natural = Coord(0);
-	rx.maximum = Coord(0);
-	rx.minimum = Coord(0);
+    rx.defined = true;
+    rx.natural = Coord(0);
+    rx.maximum = Coord(0);
+    rx.minimum = Coord(0);
     }
     
     Coord dx = my_lnatural + my_rnatural;
@@ -270,10 +270,10 @@ void LayoutMargin::request(long, Graphic::Requisition *,
     Graphic::Requirement &ry = result.y;
     if (!ry.defined)
     {
-	ry.defined = true;
-	ry.natural = Coord(0);
-	ry.maximum = Coord(0);
-	ry.minimum = Coord(0);
+    ry.defined = true;
+    ry.natural = Coord(0);
+    ry.maximum = Coord(0);
+    ry.minimum = Coord(0);
     }
     
     Coord dy = my_bnatural + my_tnatural;
@@ -284,37 +284,37 @@ void LayoutMargin::request(long, Graphic::Requisition *,
 }
 
 void LayoutMargin::allocate(long, Graphic::Requisition *,
-			    Region_ptr, LayoutManager::Allocations result)
+                Region_ptr, LayoutManager::Allocations result)
 {
     allocate_axis(xaxis, my_lnatural, my_lstretch, my_lshrink,
-		  my_rnatural, my_rstretch, my_rshrink, result);
+          my_rnatural, my_rstretch, my_rshrink, result);
     allocate_axis(yaxis, my_tnatural, my_tstretch, my_tshrink,
-		  my_bnatural, my_bstretch, my_bshrink, result);
+          my_bnatural, my_bstretch, my_bshrink, result);
 }
 
 void LayoutMargin::allocate_axis(Axis axis,
-				 Coord natural_lead, Coord stretch_lead,
-				 Coord shrink_lead, Coord natural_trail,
-				 Coord stretch_trail, Coord shrink_trail,
-				 LayoutManager::Allocations result)
+                 Coord natural_lead, Coord stretch_lead,
+                 Coord shrink_lead, Coord natural_trail,
+                 Coord stretch_trail, Coord shrink_trail,
+                 LayoutManager::Allocations result)
 {
     Region::Allotment a;
     result[0]->span(axis, a);
     Graphic::Requirement *r =
-	GraphicImpl::requirement(my_requisition, axis);
+    GraphicImpl::requirement(my_requisition, axis);
     Coord lead = span(a.end - a.begin, *r,
-		      natural_lead, stretch_lead, shrink_lead);
+              natural_lead, stretch_lead, shrink_lead);
     Coord trail = span(a.end - a.begin, *r,
-		       natural_trail, stretch_trail, shrink_trail);
+               natural_trail, stretch_trail, shrink_trail);
     Coord length = a.end - a.begin - (lead + trail);
     Coord origin = a.begin + a.align * (a.end - a.begin) +
-	((1 - r->align) * lead - r->align * trail);
+    ((1 - r->align) * lead - r->align * trail);
     set_span(result[0], axis, origin, length, a.align);
 }
 
 Coord LayoutMargin::span(Coord span,
-			 Graphic::Requirement &total,
-			 Coord natural, Coord stretch, Coord shrink)
+             Graphic::Requirement &total,
+             Coord natural, Coord stretch, Coord shrink)
 {
     Coord extra = span - total.natural;
     Coord result = natural;
@@ -335,7 +335,7 @@ LayoutManager *LayoutNatural::clone()
 { return new LayoutNatural(my_axis, my_natural); }
 
 void LayoutNatural::request(long, Graphic::Requisition *,
-			    Graphic::Requisition &result)
+                Graphic::Requisition &result)
 {
     Graphic::Requirement *r = GraphicImpl::requirement(result, my_axis);
     r->defined = true;
@@ -343,7 +343,7 @@ void LayoutNatural::request(long, Graphic::Requisition *,
 }
 
 void LayoutNatural::allocate(long, Graphic::Requisition *,
-			     Region_ptr, LayoutManager::Allocations)
+                 Region_ptr, LayoutManager::Allocations)
 { } // leave it as is
 
 // class LayoutSuperpose
@@ -357,7 +357,7 @@ LayoutSuperpose::LayoutSuperpose(LayoutManager *f, LayoutManager *s) :
     my_name = strdup(buf.str().c_str());
 }
 LayoutSuperpose::LayoutSuperpose(LayoutManager *f, LayoutManager *s,
-				 LayoutManager *t) : 
+                 LayoutManager *t) : 
     my_first(f), my_second(s), my_third(t)
 {
     // Concatenate names to form this name
@@ -377,12 +377,12 @@ LayoutSuperpose::~LayoutSuperpose()
 LayoutManager *LayoutSuperpose::clone()
 {
     return new LayoutSuperpose(my_first ? my_first->clone() : 0,
-			       my_second ? my_second->clone() : 0,
-			       my_third ? my_third->clone() : 0);
+                   my_second ? my_second->clone() : 0,
+                   my_third ? my_third->clone() : 0);
 }
 
 void LayoutSuperpose::request(long n, Graphic::Requisition *requests,
-			      Graphic::Requisition &result)
+                  Graphic::Requisition &result)
 {
     if (my_first) my_first->request(n, requests, result);
     if (my_second) my_second->request(n, requests, result);
@@ -390,8 +390,8 @@ void LayoutSuperpose::request(long n, Graphic::Requisition *requests,
 }
 
 void LayoutSuperpose::allocate(long n, Graphic::Requisition *requests,
-			       Region_ptr given,
-			       LayoutManager::Allocations result)
+                   Region_ptr given,
+                   LayoutManager::Allocations result)
 {
     if (my_first) my_first->allocate(n, requests, given, result);
     if (my_second) my_second->allocate(n, requests, given, result);
@@ -410,35 +410,35 @@ LayoutTile::~LayoutTile() { free(my_name); }
 LayoutManager *LayoutTile::clone() { return new LayoutTile(my_axis); }
 
 void LayoutTile::request(long n, Graphic::Requisition *requests,
-			 Graphic::Requisition &result)
+             Graphic::Requisition &result)
 {
     compute_request(my_axis, Alignment(0), n, requests, result);
     my_requisition = result;
 }
 
 void LayoutTile::allocate(long n, Graphic::Requisition *requests,
-			  Region_ptr given,
-			  LayoutManager::Allocations result)
+              Region_ptr given,
+              LayoutManager::Allocations result)
 {
     compute_allocations(my_axis, my_requisition, false, n,
-			requests, given, result);
+            requests, given, result);
 }
 
 void LayoutTile::compute_request(Axis a, Alignment align, long n,
-				 Graphic::Requisition *requests,
-				 Graphic::Requisition &result)
+                 Graphic::Requisition *requests,
+                 Graphic::Requisition &result)
 {
     Graphic::Requirement *r;
     Coord natural = Coord(0), min_size = Coord(0), max_size = Coord(0);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], a);
-	if (r->defined)
-	{
-	    natural += r->natural;
-	    max_size += r->maximum;
-	    min_size += r->minimum;
-	}
+    r = GraphicImpl::requirement(requests[i], a);
+    if (r->defined)
+    {
+        natural += r->natural;
+        max_size += r->maximum;
+        min_size += r->minimum;
+    }
     }
     r = GraphicImpl::requirement(result, a);
     r->defined = true;
@@ -449,11 +449,11 @@ void LayoutTile::compute_request(Axis a, Alignment align, long n,
 }
 
 void LayoutTile::compute_allocations(Axis axis,
-				     Graphic::Requisition &total,
-				     bool first_aligned, long n,
-				     Graphic::Requisition *requests,
-				     Region_ptr given,
-				     LayoutManager::Allocations result)
+                     Graphic::Requisition &total,
+                     bool first_aligned, long n,
+                     Graphic::Requisition *requests,
+                     Region_ptr given,
+                     LayoutManager::Allocations result)
 {
     Graphic::Requirement *r = GraphicImpl::requirement(total, axis);
     Region::Allotment a;
@@ -465,23 +465,23 @@ void LayoutTile::compute_allocations(Axis axis,
     Coord p = a.begin + a.align * (a.end - a.begin);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], axis);
-	if (r->defined)
-	{
-	    Coord cspan = r->natural;
-	    if (growing) cspan += f * (r->maximum - r->natural);
-	    else if (shrinking) cspan -= f * (r->natural - r->minimum);
-	    if (first_aligned && i == 0) p -= r->align * cspan;
-	    set_span(result[i], axis, p + cspan * r->align, cspan, 
-		     r->align);
-	    p += cspan;
+    r = GraphicImpl::requirement(requests[i], axis);
+    if (r->defined)
+    {
+        Coord cspan = r->natural;
+        if (growing) cspan += f * (r->maximum - r->natural);
+        else if (shrinking) cspan -= f * (r->natural - r->minimum);
+        if (first_aligned && i == 0) p -= r->align * cspan;
+        set_span(result[i], axis, p + cspan * r->align, cspan, 
+             r->align);
+        p += cspan;
         }
-	else set_span(result[i], axis, p, Coord(0), Coord(0));
+    else set_span(result[i], axis, p, Coord(0), Coord(0));
     }
 }
 
 Coord LayoutTile::compute_length(const Graphic::Requirement &r,
-				 const Region::Allotment &a)
+                 const Region::Allotment &a)
 {
     Coord length = a.end - a.begin;
     Coord s_a = a.align;
@@ -493,14 +493,14 @@ Coord LayoutTile::compute_length(const Graphic::Requirement &r,
 }
 
 Coord LayoutTile::compute_squeeze(const Graphic::Requirement &r,
-				  Coord length)
+                  Coord length)
 {
     Coord f;
     Coord nat = r.natural;
     if (length > nat && r.maximum > nat)
-	f = (length - nat) / (r.maximum - nat);
+    f = (length - nat) / (r.maximum - nat);
     else if (length < nat && r.minimum < nat)
-	f = (nat - length) / (nat - r.minimum);
+    f = (nat - length) / (nat - r.minimum);
     else f = 0.0;
     return f;
 }
@@ -512,27 +512,27 @@ LayoutManager *LayoutTileReversed::clone()
 { return new LayoutTileReversed(my_axis);}
 
 void LayoutTileReversed::request(long n, Graphic::Requisition *requests,
-				 Graphic::Requisition &result)
+                 Graphic::Requisition &result)
 {
     LayoutTile::compute_request(my_axis, Alignment(1), n,
-				requests, result);
+                requests, result);
     my_requisition = result;
 }
 
 void LayoutTileReversed::allocate(long n, Graphic::Requisition *requests,
-				  Region_ptr given,
-				  LayoutManager::Allocations result)
+                  Region_ptr given,
+                  LayoutManager::Allocations result)
 {
     compute_reversed_allocations(my_axis, my_requisition, false, n,
-				 requests, given, result);
+                 requests, given, result);
 }
 
 void LayoutTileReversed::compute_reversed_allocations(Axis axis,
-						      Graphic::Requisition &total, bool first_aligned,
-						      long n, 
-						      Graphic::Requisition *requests,
-						      Region_ptr given,
-						      LayoutManager::Allocations result)
+                              Graphic::Requisition &total, bool first_aligned,
+                              long n, 
+                              Graphic::Requisition *requests,
+                              Region_ptr given,
+                              LayoutManager::Allocations result)
 {
     Graphic::Requirement *r;
     Region::Allotment a;
@@ -545,18 +545,18 @@ void LayoutTileReversed::compute_reversed_allocations(Axis axis,
     Coord p = a.begin + a.align * (a.end - a.begin);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], axis);
-	if (r->defined)
-	{
-	    Coord cspan = r->natural;
-	    if (growing) cspan += f * (r->maximum - r->natural);
-	    else if (shrinking) cspan -= f * (r->natural - r->minimum);
-	    if (first_aligned && i == 0) p += (1 - r->align) * cspan;
-	    p -= cspan;
-	    set_span(result[i], axis, p + r->align * cspan, cspan,
-		     r->align);
+    r = GraphicImpl::requirement(requests[i], axis);
+    if (r->defined)
+    {
+        Coord cspan = r->natural;
+        if (growing) cspan += f * (r->maximum - r->natural);
+        else if (shrinking) cspan -= f * (r->natural - r->minimum);
+        if (first_aligned && i == 0) p += (1 - r->align) * cspan;
+        p -= cspan;
+        set_span(result[i], axis, p + r->align * cspan, cspan,
+             r->align);
         }
-	else set_span(result[i], axis, p, Coord(0), Coord(0));
+    else set_span(result[i], axis, p, Coord(0), Coord(0));
     }
 }
 
@@ -567,25 +567,25 @@ LayoutManager *LayoutTileFirstAligned::clone()
 { return new LayoutTileFirstAligned(my_axis); }
 
 void LayoutTileFirstAligned::request(long n,
-				     Graphic::Requisition *requests,
-				     Graphic::Requisition &result)
+                     Graphic::Requisition *requests,
+                     Graphic::Requisition &result)
 {
     compute_request_first_aligned(my_axis, n, requests, result);
     my_requisition = result;
 }
 
 void LayoutTileFirstAligned::allocate(long n,
-				      Graphic::Requisition *requests,
-				      Region_ptr given,
-				      LayoutManager::Allocations result)
+                      Graphic::Requisition *requests,
+                      Region_ptr given,
+                      LayoutManager::Allocations result)
 {
     LayoutTile::compute_allocations(my_axis, my_requisition, true, n,
-				    requests, given, result);
+                    requests, given, result);
 }
 
 void LayoutTileFirstAligned::compute_request_first_aligned(Axis a, long n,
-							   Graphic::Requisition *requests,
-							   Graphic::Requisition &result)
+                               Graphic::Requisition *requests,
+                               Graphic::Requisition &result)
 {
     Graphic::Requirement *r;
     Coord natural_lead = Coord(0);
@@ -596,31 +596,31 @@ void LayoutTileFirstAligned::compute_request_first_aligned(Axis a, long n,
     Coord max_trail = Coord(0);
     for (long i = 0; i < n; i++)
     {
-	r = GraphicImpl::requirement(requests[i], a);
-	if (r->defined)
-	{
-	    if (i == 0)
-	    {
-		Alignment a = r->align;
-		Alignment aa = 1 - a;
-		natural_lead = a * r->natural;
-		max_lead = a * r->maximum;
-		min_lead = a * r->minimum;
-		natural_trail = aa * r->natural;
-		max_trail = aa * r->maximum;
-		min_trail = aa * r->minimum;
+    r = GraphicImpl::requirement(requests[i], a);
+    if (r->defined)
+    {
+        if (i == 0)
+        {
+        Alignment a = r->align;
+        Alignment aa = 1 - a;
+        natural_lead = a * r->natural;
+        max_lead = a * r->maximum;
+        min_lead = a * r->minimum;
+        natural_trail = aa * r->natural;
+        max_trail = aa * r->maximum;
+        min_trail = aa * r->minimum;
             }
-	    else
-	    {
-		natural_trail += r->natural;
-		max_trail += r->maximum;
-		min_trail += r->minimum;
+        else
+        {
+        natural_trail += r->natural;
+        max_trail += r->maximum;
+        min_trail += r->minimum;
             }
         }
     }
     r = GraphicImpl::requirement(result, a);
     GraphicImpl::require_lead_trail(*r, natural_lead, max_lead, min_lead,
-				    natural_trail, max_trail, min_trail);
+                    natural_trail, max_trail, min_trail);
 }
 
 // class LayoutTileReversedFirstAligned
@@ -632,24 +632,24 @@ LayoutManager *LayoutTileReversedFirstAligned::clone()
 { return new LayoutTileReversedFirstAligned(my_axis); }
 
 void LayoutTileReversedFirstAligned::request(long n,
-					     Graphic::Requisition *requests,
-					     Graphic::Requisition &result)
+                         Graphic::Requisition *requests,
+                         Graphic::Requisition &result)
 {
     LayoutTileFirstAligned::compute_request_first_aligned(my_axis, n,
-							  requests,
-							  result);
+                              requests,
+                              result);
     my_requisition = result;
 }
 
 void LayoutTileReversedFirstAligned::allocate(long n,
-					      Graphic::Requisition *requests,
-					      Region_ptr given,
-					      LayoutManager::Allocations result)
+                          Graphic::Requisition *requests,
+                          Region_ptr given,
+                          LayoutManager::Allocations result)
 {
     LayoutTileReversed::compute_reversed_allocations(my_axis,
-						     my_requisition,
-						     true, n, requests,
-						     given, result);
+                             my_requisition,
+                             true, n, requests,
+                             given, result);
 }
 
 // class LayoutVariable
@@ -661,7 +661,7 @@ LayoutManager *LayoutVariable::clone()
 { return new LayoutVariable(my_axis, my_stretch, my_shrink); }
 
 void LayoutVariable::request(long, Graphic::Requisition *,
-			     Graphic::Requisition &result)
+                 Graphic::Requisition &result)
 {
     Graphic::Requirement *r = GraphicImpl::requirement(result, my_axis);
     r->maximum = r->natural + my_stretch;
@@ -669,5 +669,5 @@ void LayoutVariable::request(long, Graphic::Requisition *,
 }
 
 void LayoutVariable::allocate(long, Graphic::Requisition *,
-			      Region_ptr, LayoutManager::Allocations)
+                  Region_ptr, LayoutManager::Allocations)
 { } // leave it as is

@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         Greek_and_Coptic370() :
-	    my_first_letter(0x370),
-	    my_last_letter(0x3FF)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x370),
+        my_last_letter(0x3FF)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x00000391, 0x00000300)] = 0x1FBA;
@@ -148,24 +148,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Greek and Coptic";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Greek and Coptic";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -439,7 +439,7 @@ namespace Babylon
         // functions
         Greek_and_Coptic370(const Greek_and_Coptic370 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

@@ -126,9 +126,9 @@ void display()
       glBegin(GL_LINE_STRIP);
       for(size_t i = 0; i < points[j]->size(0); ++i)
       {
-	glVertex3f((*points[j])(Points::index[i]).x,
-		   (*points[j])(Points::index[i]).y,
-		   (*points[j])(Points::index[i]).z);
+    glVertex3f((*points[j])(Points::index[i]).x,
+           (*points[j])(Points::index[i]).y,
+           (*points[j])(Points::index[i]).z);
       }
       glEnd();
     }
@@ -142,9 +142,9 @@ void display()
       glBegin(GL_POINTS);
       for(size_t i = 0; i < points[j]->length(); ++i)
       {
-	glVertex3f((*points[j])[i].x,
-		   (*points[j])[i].y,
-		   (*points[j])[i].z);
+    glVertex3f((*points[j])[i].x,
+           (*points[j])[i].y,
+           (*points[j])[i].z);
       }
       glEnd();
     }
@@ -176,11 +176,11 @@ void display()
     for (size_t j = 0; j != SEGMENTS; ++j)
       for(size_t i = 0; i < (*ctrls[j]).length(); ++i)
       {
-	const Vertex &p = (*ctrls[j])[i];
-	glPushMatrix();
-	glTranslatef(p.x, p.y, p.z);
-	glutSolidSphere(0.1, 6, 6);
-	glPopMatrix();
+    const Vertex &p = (*ctrls[j])[i];
+    glPushMatrix();
+    glTranslatef(p.x, p.y, p.z);
+    glutSolidSphere(0.1, 6, 6);
+    glPopMatrix();
       }
   }
   
@@ -207,18 +207,18 @@ void reshape(GLsizei w, GLsizei h)
 int startGL(int argc, char** argv)
 {
   std::cout << "Keys:\n"
-	    << "'p'           switch on/off nurbs calculated points\n"
-	    << "'c'           switch on/off nurbs control points\n"
-	    << "'q'           switch on/off wire-frame visualization\n"
-	    << "'a'           switch on/off animation\n"
-	    << '\n'
-	    << "left/right    rotate around z axis\n"
-	    << "up/down       rotate around x axis\n"
-	    << "pgUp/pgDn     rotate around y axis\n"
-	    << '\n'
-	    << "ESC           exit\n"
-	    << '\n'
-	    << std::endl;
+        << "'p'           switch on/off nurbs calculated points\n"
+        << "'c'           switch on/off nurbs control points\n"
+        << "'q'           switch on/off wire-frame visualization\n"
+        << "'a'           switch on/off animation\n"
+        << '\n'
+        << "left/right    rotate around z axis\n"
+        << "up/down       rotate around x axis\n"
+        << "pgUp/pgDn     rotate around y axis\n"
+        << '\n'
+        << "ESC           exit\n"
+        << '\n'
+        << std::endl;
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
@@ -230,7 +230,7 @@ int startGL(int argc, char** argv)
   glutReshapeFunc(reshape); 
   glutIdleFunc(idle);
   
-  glutKeyboardFunc(key);	
+  glutKeyboardFunc(key);    
   glutSpecialFunc(special_key_down);
   glutSpecialUpFunc(special_key_up);
   init();
@@ -268,8 +268,8 @@ int main(int argc, char *argv[])
     for(size_t i = 0; i < CTRLPOINTS; ++i)
     {
       nurbs1.controls[i] = make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
-				       static_cast<double>(rand() % 500) / 100. -1.,
-				       0.);
+                       static_cast<double>(rand() % 500) / 100. -1.,
+                       0.);
       nurbs1.weights[i] = 1.0;
     }
     nurbs1.knots.length(CTRLPOINTS + DEGREE + 1);
@@ -303,8 +303,8 @@ int main(int argc, char *argv[])
     for(size_t i = 0; i < CTRLPOINTS; ++i)
     {
       nurbs2.controls[i] = make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
-				       static_cast<double>(rand() % 500) / 100. -1.,
-				       0.);
+                       static_cast<double>(rand() % 500) / 100. -1.,
+                       0.);
       nurbs2.weights[i] = 1.0;
     }
     nurbs2.knots.length(CTRLPOINTS + DEGREE + 1);
@@ -382,16 +382,16 @@ int main(int argc, char *argv[])
       size_t length = nurbs2.controls.length();
       ctrls[3] = new Ctrl(&length);
       for (size_t i = 0; i != length; ++i)
-	(*ctrls[3])[i] = nurbs2.controls[i];
+    (*ctrls[3])[i] = nurbs2.controls[i];
       length = nurbs2.weights.length();
       domain<double, PARAMS> weights(&length);
       for (size_t i = 0; i != nurbs2.weights.length(); ++i)
-	weights[i] = nurbs2.weights[i];
+    weights[i] = nurbs2.weights[i];
       array<size_t, PARAMS> degrees(nurbs2.degree);
       array<std::vector<double>, PARAMS> knots;
       knots[0].resize(nurbs2.knots.length());
       for (size_t i = 0; i != knots[0].size(); ++i)
-	knots[0][i] = nurbs2.knots[i];
+    knots[0][i] = nurbs2.knots[i];
 
       // compute the first point of this segment
       array<double, 1> param(knots[0][DEGREE]);
@@ -405,11 +405,11 @@ int main(int argc, char *argv[])
       Vertex delta = (*points[2])[3];
       delta.x -= first.x, delta.y -= first.y, delta.z -= first.z;
       for (size_t i = 0; i != length; ++i)
-	{
-	  (*ctrls[3])[i].x += delta.x;
-	  (*ctrls[3])[i].y += delta.y;
-	  (*ctrls[3])[i].z += delta.z;
-	}
+    {
+      (*ctrls[3])[i].x += delta.x;
+      (*ctrls[3])[i].y += delta.y;
+      (*ctrls[3])[i].z += delta.z;
+    }
       // evaluate the segment
       points[3] = evaluate(*ctrls[3], weights, degrees, knots, steps);
     }
@@ -421,8 +421,8 @@ int main(int argc, char *argv[])
     double dphi = (quadric1.phi2 - quadric1.phi1)/10;
     for (size_t i = 0; i != 10; ++i, phi += dphi)
       (*points[4])[i] = make_vertex(quadric1.a * sin(phi),
-				    quadric1.b * cos(phi),
-				    0.);
+                    quadric1.b * cos(phi),
+                    0.);
     for (size_t i = 0; i != 10; ++i) std::cout << (*points[4])[i].x << ' ' << (*points[4])[i].y << std::endl;
     ctrls[4] = new Ctrl(&length);
     for (size_t i = 0; i != 10; ++i) (*ctrls[4])[i] = (*points[4])[0];

@@ -34,13 +34,13 @@ namespace Berlin
     class GLContext : public virtual Console::Extension
     {
       public:
-	class Callback
-	{
-	  public:
-	    virtual void operator()() = 0;
-	};
-	virtual void add_to_queue(Callback *) = 0;
-	virtual void flush() = 0;
+    class Callback
+    {
+      public:
+        virtual void operator()() = 0;
+    };
+    virtual void add_to_queue(Callback *) = 0;
+    virtual void flush() = 0;
     };
     
   } // namespace

@@ -30,98 +30,98 @@ namespace Berlin
   {
 
 //     class PointImpl : public virtual POA_Figure::Point,
-// 		      public FigureImpl
+//               public FigureImpl
 //     {
 //       public:
-// 	PointImpl();
-// 	PointImpl(const Fresco::Vertex &);
-// 	PointImpl(const PointImpl &);
-// 	virtual ~PointImpl();
-// 	virtual Fresco::Vertex pt();
-// 	virtual void pt(const Fresco::Vertex &);
+//     PointImpl();
+//     PointImpl(const Fresco::Vertex &);
+//     PointImpl(const PointImpl &);
+//     virtual ~PointImpl();
+//     virtual Fresco::Vertex pt();
+//     virtual void pt(const Fresco::Vertex &);
 //     };
   
 //     class LineImpl : public virtual POA_Figure::Line,
-// 		     public FigureImpl
+//              public FigureImpl
 //     {
 //       public:
-// 	LineImpl();
-// 	LineImpl(const Fresco::Vertex &, const Fresco::Vertex &);
-// 	LineImpl(const LineImpl &);
-// 	virtual ~LineImpl();
-// 	virtual Fresco::Vertex pt1();
-// 	virtual void pt1(const Fresco::Vertex &);
-// 	virtual Fresco::Vertex pt2();
-// 	virtual void pt2(const Fresco::Vertex &);
+//     LineImpl();
+//     LineImpl(const Fresco::Vertex &, const Fresco::Vertex &);
+//     LineImpl(const LineImpl &);
+//     virtual ~LineImpl();
+//     virtual Fresco::Vertex pt1();
+//     virtual void pt1(const Fresco::Vertex &);
+//     virtual Fresco::Vertex pt2();
+//     virtual void pt2(const Fresco::Vertex &);
 //     };
 
     class BoxImpl : public virtual POA_Primitive::Box,
-		    public PrimitiveImpl
+            public PrimitiveImpl
     {
       public:
-	BoxImpl();
-	BoxImpl(const Fresco::Vertex &, const Fresco::Vertex &);
-	BoxImpl(const BoxImpl &);
-	virtual ~BoxImpl();
-	virtual Fresco::Vertex pt1();
-	virtual void pt1(const Fresco::Vertex &);
-	virtual Fresco::Vertex pt2();
-	virtual void pt2(const Fresco::Vertex &);
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void draw(Fresco::DrawTraversal_ptr);
+    BoxImpl();
+    BoxImpl(const Fresco::Vertex &, const Fresco::Vertex &);
+    BoxImpl(const BoxImpl &);
+    virtual ~BoxImpl();
+    virtual Fresco::Vertex pt1();
+    virtual void pt1(const Fresco::Vertex &);
+    virtual Fresco::Vertex pt2();
+    virtual void pt2(const Fresco::Vertex &);
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void draw(Fresco::DrawTraversal_ptr);
       private:
-	Fresco::Vertex my_lower;
-	Fresco::Vertex my_upper;
+    Fresco::Vertex my_lower;
+    Fresco::Vertex my_upper;
     };
 
 //     class CircleImpl : public virtual POA_Figure::Circle,
-// 		       public FigureImpl
+//                public FigureImpl
 //     {
 //       public:
-// 	CircleImpl();
-// 	CircleImpl(const Fresco::Vertex &, Fresco::Coord);
-// 	CircleImpl(const CircleImpl &);
-// 	virtual ~CircleImpl();
-// 	virtual void resize();
-// 	virtual Fresco::Vertex center();
-// 	virtual void center(const Fresco::Vertex &);
-// 	virtual Fresco::Coord radius();
-// 	virtual void radius(Fresco::Coord);
+//     CircleImpl();
+//     CircleImpl(const Fresco::Vertex &, Fresco::Coord);
+//     CircleImpl(const CircleImpl &);
+//     virtual ~CircleImpl();
+//     virtual void resize();
+//     virtual Fresco::Vertex center();
+//     virtual void center(const Fresco::Vertex &);
+//     virtual Fresco::Coord radius();
+//     virtual void radius(Fresco::Coord);
 //       protected:
-// 	Fresco::Vertex my_center;
-// 	Fresco::Coord  my_radius;
+//     Fresco::Vertex my_center;
+//     Fresco::Coord  my_radius;
 //     };
 
 //     class EllipseImpl : public virtual POA_Figure::Ellipse,
-// 			public FigureImpl
+//             public FigureImpl
 //     {
 //       public:
-// 	EllipseImpl();
-// 	EllipseImpl(const Fresco::Vertex &, Fresco::Coord, Fresco::Coord);
-// 	EllipseImpl(const EllipseImpl &);
-// 	virtual ~EllipseImpl();
-// 	virtual void resize();
-// 	virtual Fresco::Vertex center();
-// 	virtual void center(const Fresco::Vertex &);
-// 	virtual Fresco::Coord radius1();
-// 	virtual void radius1(Fresco::Coord);
-// 	virtual Fresco::Coord radius2();
-// 	virtual void radius2(Fresco::Coord);
+//     EllipseImpl();
+//     EllipseImpl(const Fresco::Vertex &, Fresco::Coord, Fresco::Coord);
+//     EllipseImpl(const EllipseImpl &);
+//     virtual ~EllipseImpl();
+//     virtual void resize();
+//     virtual Fresco::Vertex center();
+//     virtual void center(const Fresco::Vertex &);
+//     virtual Fresco::Coord radius1();
+//     virtual void radius1(Fresco::Coord);
+//     virtual Fresco::Coord radius2();
+//     virtual void radius2(Fresco::Coord);
 //       protected:
-// 	Fresco::Vertex my_center;
-// 	Fresco::Coord  my_radius1;
-// 	Fresco::Coord  my_radius2;
+//     Fresco::Vertex my_center;
+//     Fresco::Coord  my_radius1;
+//     Fresco::Coord  my_radius2;
 //     };
 
     class GeometryImpl : public virtual POA_Primitive::Geometry,
-			 public PrimitiveImpl
+             public PrimitiveImpl
     {
       public:
-	GeometryImpl(const Fresco::Mesh &);
-	GeometryImpl(const GeometryImpl &);
-	virtual ~GeometryImpl();
-	virtual Fresco::Mesh *mesh();
-	virtual void mesh(const Fresco::Mesh &);
+    GeometryImpl(const Fresco::Mesh &);
+    GeometryImpl(const GeometryImpl &);
+    virtual ~GeometryImpl();
+    virtual Fresco::Mesh *mesh();
+    virtual void mesh(const Fresco::Mesh &);
     };
 
   } // namespace

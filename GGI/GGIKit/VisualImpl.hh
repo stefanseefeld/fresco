@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _VisualImpl_hh
-#define _VisualImpl_hh
+#ifndef _GGIKit_VisualImpl_hh
+#define _GGIKit_VisualImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -36,7 +36,7 @@ namespace GGIKit
 {
 
   class VisualImpl : public virtual POA_GGI::Visual,
-                     public ControllerImpl
+                     public Berlin::ControllerImpl
   {
     public:
       VisualImpl(Fresco::PixelCoord, Fresco::PixelCoord);
@@ -45,22 +45,26 @@ namespace GGIKit
       virtual char *mode();
       virtual void request(Fresco::Graphic::Requisition &);
       virtual void draw(Fresco::DrawTraversal_ptr);
-      virtual void extension(const Fresco::Allocation::Info &info, Fresco::Region_ptr region);
-      virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr,
-                                               const Fresco::Input::Event &);
-      virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &);
+      virtual void extension(const Fresco::Allocation::Info &info,
+                 Fresco::Region_ptr region);
+      virtual CORBA::Boolean
+      handle_positional(Fresco::PickTraversal_ptr,
+            const Fresco::Input::Event &);
+      virtual CORBA::Boolean
+      handle_non_positional(const Fresco::Input::Event &);
       // this overrides ControllerImpl:
-      virtual void move(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+      virtual void move(Fresco::PickTraversal_ptr,
+            const Fresco::Input::Event &);
     private:
       virtual void handle_pointer_button(const Fresco::Input::Event &);
       void forward_event(const ggi_event &);
-      static GGIDrawableFactory *_factory;
-      Fresco::PixelCoord         _width;
-      Fresco::PixelCoord         _height;
-      Fresco::Drawable_var       _drawable;
-      int                        _shm;
-      GGIDrawable               *_ggi;
-      std::string                _mode;
+      static Berlin::Console_Extension::GGIDrawableFactory *my_factory;
+      Fresco::PixelCoord my_width;
+      Fresco::PixelCoord my_height;
+      Fresco::Drawable_var my_drawable;
+      int my_shm;
+      Berlin::Console_Extension::GGIDrawable *my_ggi;
+      std::string my_mode;
   };
 
 } // namespace

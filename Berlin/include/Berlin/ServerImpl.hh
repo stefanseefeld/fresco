@@ -44,7 +44,7 @@ namespace Berlin
   //. the incoming ClientContext's credentials, but at the moment it
   //. doesn't.
   class ServerImpl : public virtual POA_Fresco::Server,
-		     public virtual PortableServer::RefCountServantBase
+             public virtual PortableServer::RefCountServantBase
   {
       friend class ServerContextImpl;
 
@@ -58,12 +58,12 @@ namespace Berlin
       { return PortableServer::POA::_duplicate(my_poa); }
 
       typedef std::multimap<std::string,
-			    Fresco::Kit::PropertySeq_var> PluginList;
+                Fresco::Kit::PropertySeq_var> PluginList;
 
       //. Create() can be called once only! It creates the one
       //. server-object.
       static ServerImpl *create(PortableServer::POA_ptr poa,
-				const CORBA::PolicyList &);
+                const CORBA::PolicyList &);
       //. Get a reference to the server in use.
       static ServerImpl *instance();
   
@@ -74,7 +74,7 @@ namespace Berlin
       //. is no longer able to ping the client).
       virtual Fresco::ServerContext_ptr
       create_server_context(Fresco::ClientContext_ptr c)
-	  throw (Fresco::SecurityException);
+      throw (Fresco::SecurityException);
 
       //. Set_singleton() 'publishes' a given Object under a given name.
       //. Clients then can request access to this object with
@@ -82,22 +82,22 @@ namespace Berlin
       //. objects by the same name, throwing an SingletonFailureException
       //. as soon as someone tries to give a name already known,
       virtual void set_singleton(const char *, CORBA::Object_ptr)
-	  throw (Fresco::SecurityException,
-		 Fresco::SingletonFailureException);
+      throw (Fresco::SecurityException,
+         Fresco::SingletonFailureException);
       //. This method removes the object of the given name from the
       //. list of known singletons. It does not destruct the object
       virtual void remove_singleton(const char *)
-	  throw (Fresco::SecurityException,
-		 Fresco::SingletonFailureException);
+      throw (Fresco::SecurityException,
+         Fresco::SingletonFailureException);
       virtual CORBA::Object_ptr get_singleton(const char *) 
-	  throw (Fresco::SecurityException,
-		 Fresco::SingletonFailureException);
+      throw (Fresco::SecurityException,
+         Fresco::SingletonFailureException);
   
       //. Finds the requested Kit and returns a reference to it.
       template <class K>
       typename K::_ptr_type resolve(const char *,
-				    const Fresco::Kit::PropertySeq &,
-				    PortableServer::POA_ptr);
+                    const Fresco::Kit::PropertySeq &,
+                    PortableServer::POA_ptr);
 
       //. Starts the server.
       void start();
@@ -119,9 +119,9 @@ namespace Berlin
       //. Finds the requested kit and loads it. This is a helper function
       //. only. Use resolve,
       KitImpl *create(const char *,
-		      const Fresco::Kit::PropertySeq &,
-		      PortableServer::POA_ptr,
-		      ServerContextImpl *);
+              const Fresco::Kit::PropertySeq &,
+              PortableServer::POA_ptr,
+              ServerContextImpl *);
 
     private:
       ServerImpl(const CORBA::PolicyList &);
@@ -146,25 +146,25 @@ namespace Berlin
   template <class K>
   typename K::_ptr_type
   ServerImpl::resolve(const char *type,
-		      const Fresco::Kit::PropertySeq &properties,
-		      PortableServer::POA_ptr poa)
+              const Fresco::Kit::PropertySeq &properties,
+              PortableServer::POA_ptr poa)
   {
       KitImpl *kit = create(type, properties, poa, 0);
       if (!kit) return K::_nil();
       typename K::_var_type reference;
       try
       {
-	  reference = K::_narrow(Fresco::Kit_var(kit->_this()));
+      reference = K::_narrow(Fresco::Kit_var(kit->_this()));
       }
       catch (CORBA::Exception &e)
       {
-	  std::cerr << "Cannot narrow reference: " << e << std::endl;
-	  return K::_nil();
+      std::cerr << "Cannot narrow reference: " << e << std::endl;
+      return K::_nil();
       }
       if (CORBA::is_nil(reference))
       {
-	  std::cerr << "Reference has incorrect type" << std::endl;
-	  return K::_nil();
+      std::cerr << "Reference has incorrect type" << std::endl;
+      return K::_nil();
       }
       my_kits.push_back(kit);
       return reference._retn();

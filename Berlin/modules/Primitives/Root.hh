@@ -38,12 +38,12 @@ namespace Berlin
     class Root : public TransformAllocator
     {
       public:
-	Root(Fresco::Alignment, Fresco::Alignment,
-	     Fresco::Alignment, Fresco::Alignment,
-	     Fresco::Alignment, Fresco::Alignment);
-	virtual void traverse(Fresco::Traversal_ptr);
-	virtual void draw(Fresco::DrawTraversal_ptr);
-	virtual void pick(Fresco::PickTraversal_ptr);
+    Root(Fresco::Alignment, Fresco::Alignment,
+         Fresco::Alignment, Fresco::Alignment,
+         Fresco::Alignment, Fresco::Alignment);
+    virtual void traverse(Fresco::Traversal_ptr);
+    virtual void draw(Fresco::DrawTraversal_ptr);
+    virtual void pick(Fresco::PickTraversal_ptr);
     };
 
   } // namespace

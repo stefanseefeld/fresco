@@ -35,7 +35,7 @@ namespace daVinci
 {
 
 class Component : public virtual POA_Unidraw::Component,
-		  public virtual RefCountBase
+          public virtual RefCountBase
 {
   typedef vector<Fresco::Graphic_var> vlist_t;
 public:

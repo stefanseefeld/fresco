@@ -34,18 +34,18 @@ namespace Berlin
   {
 
     class MainControllerImpl : public virtual POA_Fresco::MainController,
-			       public ControllerImpl
+                   public ControllerImpl
     {
       public:
-	MainControllerImpl(bool);
-	virtual ~MainControllerImpl();
-	virtual void cursor(Fresco::Raster_ptr);
-	virtual Fresco::Raster_ptr cursor();
-	
-	virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr f);
+    MainControllerImpl(bool);
+    virtual ~MainControllerImpl();
+    virtual void cursor(Fresco::Raster_ptr);
+    virtual Fresco::Raster_ptr cursor();
+    
+    virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr f);
       private:
-	Prague::Mutex      my_mutex;
-	Fresco::Raster_var my_cursor;
+    Prague::Mutex      my_mutex;
+    Fresco::Raster_var my_cursor;
     };
     
   } // namespace

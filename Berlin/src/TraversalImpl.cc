@@ -58,12 +58,12 @@ TraversalImpl::TraversalImpl(const TraversalImpl &traversal) :
     stack_t::const_iterator j = traversal.my_stack.begin();
     for (; i != my_stack.end(); ++i, ++j)
     {
-	(*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
-	(*i).id      = (*j).id;
-	(*i).allocation = Provider<RegionImpl>::provide();
-	*(*i).allocation = *(*j).allocation;
-	(*i).transformation = Provider<TransformImpl>::provide();
-	*(*i).transformation = *(*j).transformation;
+    (*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
+    (*i).id      = (*j).id;
+    (*i).allocation = Provider<RegionImpl>::provide();
+    *(*i).allocation = *(*j).allocation;
+    (*i).transformation = Provider<TransformImpl>::provide();
+    *(*i).transformation = *(*j).transformation;
     };
 }
 
@@ -88,12 +88,12 @@ TraversalImpl &TraversalImpl::operator = (const TraversalImpl &traversal)
     if (i == my_stack.end() || j == traversal.my_stack.end()) return *this;
     for (++i, ++j; i != my_stack.end(); ++i, ++j)
     {
-	(*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
-	(*i).id      = (*j).id;
-	(*i).allocation = Provider<RegionImpl>::provide();
-	*(*i).allocation = *(*j).allocation;
-	(*i).transformation = Provider<TransformImpl>::provide();
-	*(*i).transformation = *(*j).transformation;
+    (*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
+    (*i).id      = (*j).id;
+    (*i).allocation = Provider<RegionImpl>::provide();
+    *(*i).allocation = *(*j).allocation;
+    (*i).transformation = Provider<TransformImpl>::provide();
+    *(*i).transformation = *(*j).transformation;
     };
     return *this;
 }
@@ -117,7 +117,7 @@ Graphic_ptr TraversalImpl::current_graphic()
 }
 
 CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper,
-				     Vertex &origin) 
+                     Vertex &origin) 
 {
     Trace trace("TraversalImpl::bounds");
     my_stack.back().allocation->bounds(lower, upper);
@@ -148,20 +148,20 @@ void TraversalImpl::update()
     Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
     *allocation = *(*parent).allocation;
     Lease_var<TransformImpl>
-	transformation(Provider<TransformImpl>::provide());
+    transformation(Provider<TransformImpl>::provide());
     *transformation = *(*parent).transformation;
     Allocation::Info info;
     info.allocation = allocation->_this();
     info.transformation = transformation->_this();
     for (stack_t::iterator child = parent + 1;
-	 child != my_stack.end();
-	 ++parent, ++child)
+     child != my_stack.end();
+     ++parent, ++child)
     {
-	// recompute the allocation info for the child, given the (just
-	// updated) allocation for the parent
-	(*parent).graphic->allocate((*child).id, info);
-	*(*child).allocation = *allocation;
-	*(*child).transformation = *transformation;
+    // recompute the allocation info for the child, given the (just
+    // updated) allocation for the parent
+    (*parent).graphic->allocate((*child).id, info);
+    *(*child).allocation = *allocation;
+    *(*child).transformation = *transformation;
     }
 }
 
@@ -178,9 +178,9 @@ void TraversalImpl::clear()
     if (my_stack.begin() == my_stack.end()) return;
     for (stack_t::iterator i = my_stack.begin() + 1; i != my_stack.end(); ++i)
     {
-	CORBA::release((*i).graphic);
-	Provider<RegionImpl>::adopt((*i).allocation);
-	Provider<TransformImpl>::adopt((*i).transformation);
+    CORBA::release((*i).graphic);
+    Provider<RegionImpl>::adopt((*i).allocation);
+    Provider<TransformImpl>::adopt((*i).transformation);
     }
     my_stack.erase(my_stack.begin() + 1, my_stack.end());
 }

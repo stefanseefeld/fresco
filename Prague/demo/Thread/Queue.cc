@@ -77,10 +77,10 @@ private:
     {
       Worker *worker = reinterpret_cast<Worker *>(X);
       while (1)
-	{
-	  worker->read();
-	  Thread::delay(Time(test_random() % reading));
-	}
+    {
+      worker->read();
+      Thread::delay(Time(test_random() % reading));
+    }
       return 0;
     }
 };

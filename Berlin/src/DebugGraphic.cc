@@ -35,7 +35,7 @@ using namespace Fresco;
 using namespace Berlin;
 
 DebugGraphic::DebugGraphic(std::ostream &os, const std::string &msg,
-			   unsigned int f) :
+               unsigned int f) :
     my_os(os),
     my_message(msg),
     my_flags(f)
@@ -48,8 +48,8 @@ void DebugGraphic::request(Fresco::Graphic::Requisition &r)
     MonoGraphic::request(r);
     if (my_flags & requests)
     {
-	heading(" request\t");
-	my_os << r << std::endl;
+    heading(" request\t");
+    my_os << r << std::endl;
     }
 }
 
@@ -65,12 +65,12 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
     Trace trace(this, "DebugGraphic::draw");
     if (my_flags & draws)
     {
-	heading(" draw\t");
-	Region_var r = traversal->current_allocation();
-	Transform_var t = traversal->current_transformation();
-	Impl_var<RegionImpl> region(new RegionImpl(r, t));
-	my_os << "region: " << '\n' << Region_var(region->_this())
-	      << std::endl;
+    heading(" draw\t");
+    Region_var r = traversal->current_allocation();
+    Transform_var t = traversal->current_transformation();
+    Impl_var<RegionImpl> region(new RegionImpl(r, t));
+    my_os << "region: " << '\n' << Region_var(region->_this())
+          << std::endl;
     }
     MonoGraphic::traverse(traversal);
 };
@@ -80,11 +80,11 @@ void DebugGraphic::pick(PickTraversal_ptr traversal)
     Trace trace(this, "DebugGraphic::pick");
     if (my_flags & picks)
     {
-	heading(" pick\t");
-	Region_var r = traversal->current_allocation();
-	Transform_var t = traversal->current_transformation();
-	Impl_var<RegionImpl> region(new RegionImpl(r, t));
-	my_os << Region_var(region->_this()) << std::endl;
+    heading(" pick\t");
+    Region_var r = traversal->current_allocation();
+    Transform_var t = traversal->current_transformation();
+    Impl_var<RegionImpl> region(new RegionImpl(r, t));
+    my_os << Region_var(region->_this()) << std::endl;
     }
     MonoGraphic::traverse(traversal);
 }

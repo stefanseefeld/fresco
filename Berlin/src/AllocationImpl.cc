@@ -37,8 +37,8 @@ AllocationImpl::~AllocationImpl()
 {
     for (list_t::iterator i = my_list.begin(); i != my_list.end(); i++)
     {
-	Provider<RegionImpl>::adopt((*i).allocation);
-	Provider<TransformImpl>::adopt((*i).transformation);
+    Provider<RegionImpl>::adopt((*i).allocation);
+    Provider<TransformImpl>::adopt((*i).transformation);
     }
 }
 
@@ -54,17 +54,17 @@ void AllocationImpl::add(Region_ptr region, Screen_ptr root)
     Screen_ptr scrn = Screen::_duplicate(root);
     try
     {
-	my_list.push_back (State());
+    my_list.push_back (State());
   
-	State &state = my_list.back();
-	state.allocation = reg._retn();
-	state.transformation = trafo._retn();
-	state.root = scrn;
+    State &state = my_list.back();
+    state.allocation = reg._retn();
+    state.transformation = trafo._retn();
+    state.root = scrn;
     }
     catch (...)
     {
-	CORBA::release(scrn);
-	throw;
+    CORBA::release(scrn);
+    throw;
     }
 }
 
@@ -74,8 +74,8 @@ void AllocationImpl::clear()
 { 
     for (list_t::iterator i = my_list.begin(); i != my_list.end(); i++)
     {
-	Provider<RegionImpl>::adopt((*i).allocation);
-	Provider<TransformImpl>::adopt((*i).transformation);
+    Provider<RegionImpl>::adopt((*i).allocation);
+    Provider<TransformImpl>::adopt((*i).transformation);
     }  
     my_list.clear();
 }

@@ -113,7 +113,7 @@ void Unifont::glyph_to_pixels(Unichar ch, unsigned char pix[])
   const unsigned int stride = 33;
   unsigned long base = stride * ch;
   bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-  base++;			// advance past the width marker  
+  base++;            // advance past the width marker  
   unsigned int cols = is_halfwidth ? 1 : 2; 
   const unsigned int rows = 16;
   const unsigned int bitsinbyte = 8;
@@ -125,9 +125,9 @@ void Unifont::glyph_to_pixels(Unichar ch, unsigned char pix[])
   for (unsigned int row = 0; row < rows; ++row) {
     for (unsigned int col = 0; col < cols; ++col) {
       for (unsigned int bit = 0; bit < bitsinbyte; ++bit, pix += pixsz) {
-	if (IS_SET(bit, GLYPHBYTE(row,col))) {
-	  *(pix) = 0xff;
-	}
+    if (IS_SET(bit, GLYPHBYTE(row,col))) {
+      *(pix) = 0xff;
+    }
       }
     }
   }

@@ -34,57 +34,58 @@
 using namespace Prague;
 using namespace Fresco;
 
-GGIDrawableFactory * GGIKit::VisualImpl::_factory = 0;
+Berlin::Console_Extension::GGIDrawableFactory *
+GGIKit::VisualImpl::my_factory = 0;
 
 GGIKit::VisualImpl::VisualImpl(PixelCoord w, PixelCoord h) :
-  ControllerImpl(false),
-  _width(w),
-  _height(h)
+    ControllerImpl(false),
+    my_width(w),
+    my_height(h)
 {
     Trace trace("VisualImpl::VisualImpl");
-    Console *console = Console::instance();
-    if (!_factory) _factory = console->get_extension<GGIDrawableFactory>("GGIDrawableFactory");
-    Fresco::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
-    /*
-     * the drawable plus some memory for the event queue
-     */
-    size_t size = w * h * format.size + 64*1024;
-    _shm = SHM::allocate(size);
+    Berlin::Console *console = Berlin::Console::instance();
+    if (!my_factory)
+    my_factory =
+        console->get_extension<Berlin::Console_Extension::GGIDrawableFactory>("GGIDrawableFactory");
+    Fresco::Drawable::PixelFormat format =
+    console->drawable()->pixel_format();
 
-    _ggi = _factory->create_drawable(_shm, w, h, 3);
-    _drawable = console->activate_drawable(_ggi);
-    ggi_mode mode = _ggi->mode();
+    // the drawable plus some memory for the event queue
+    size_t size = w * h * format.size + 64*1024;
+    my_shm = SHM::allocate(size);
+
+    my_ggi = my_factory->create_drawable(my_shm, w, h, 3);
+    my_drawable = console->activate_drawable(my_ggi);
+    ggi_mode mode = my_ggi->mode();
     char buffer[256];
     ggiSPrintMode(buffer, &mode);
-    _mode = buffer;
+    my_mode = buffer;
 }
 
 GGIKit::VisualImpl::~VisualImpl()
 {
     Trace trace("VisualImpl::~VisualImpl");
-    SHM::deallocate(_shm);
+    SHM::deallocate(my_shm);
 }
 
 char * GGIKit::VisualImpl::name()
-{
-    return CORBA::string_dup(_ggi->name().c_str());
-}
+{ return CORBA::string_dup(my_ggi->name().c_str()); }
 
 char * GGIKit::VisualImpl::mode()
-{
-    return CORBA::string_dup(_mode.c_str());
-}
+{ return CORBA::string_dup(my_mode.c_str()); }
 
 void GGIKit::VisualImpl::request(Fresco::Graphic::Requisition &requisition)
 {
     Trace trace("VisualImpl::request");
     requisition.x.defined = true;
     requisition.x.natural = requisition.x.maximum = requisition.x.minimum =
-      _width / Console::instance()->drawable()->resolution(xaxis);
+    my_width /
+    Berlin::Console::instance()->drawable()->resolution(xaxis);
     requisition.x.align = 0.;
     requisition.y.defined = true;
     requisition.y.natural = requisition.y.maximum = requisition.y.minimum =
-      _height / Console::instance()->drawable()->resolution(yaxis);
+    my_height /
+    Berlin::Console::instance()->drawable()->resolution(yaxis);
     requisition.y.align = 0.;
     requisition.z.defined = false;
 }
@@ -93,35 +94,38 @@ void GGIKit::VisualImpl::draw(DrawTraversal_ptr traversal)
 {
     Trace trace("VisualImpl::draw");
     DrawingKit_var drawing = traversal->drawing();
-    drawing->copy_drawable(_drawable, 0, 0, _width, _height);
+    drawing->copy_drawable(my_drawable, 0, 0, my_width, my_height);
 }
 
-void GGIKit::VisualImpl::extension(const Allocation::Info &info, Region_ptr region)
+void GGIKit::VisualImpl::extension(const Allocation::Info &info,
+                   Region_ptr region)
 {
     Trace trace("VisualImpl::extension");
     GraphicImpl::extension(info, region);
 }
 
-CORBA::Boolean GGIKit::VisualImpl::handle_positional(PickTraversal_ptr traversal,
-                                                     const Fresco::Input::Event &event)
+CORBA::Boolean
+GGIKit::VisualImpl::handle_positional(PickTraversal_ptr traversal,
+                      const Fresco::Input::Event &event)
 {
     Trace trace("VisualImpl::handle_positional");
-
+    
     // Grab keyboard focus
     // FIXME: hardcoded device values == Evil
     if (!have_focus(0)) request_focus(Controller_var(_this()), 0);
-
+    
     if (event[0].attr._d() == Input::button) handle_pointer_button(event);
     else if (event[0].attr._d() == Input::positional) move(traversal, event);
     else
     {
         std::cerr << "VisualImpl::handle_positional: "
-                    << "Ignoring positional event" << std::endl;
+          << "Ignoring positional event" << std::endl;
     }
     return true;
 }
 
-CORBA::Boolean GGIKit::VisualImpl::handle_non_positional(const Fresco::Input::Event &event)
+CORBA::Boolean
+GGIKit::VisualImpl::handle_non_positional(const Fresco::Input::Event &event)
 {
     Trace trace("VisualImpl::handle_non_positional");
     /*
@@ -131,24 +135,28 @@ CORBA::Boolean GGIKit::VisualImpl::handle_non_positional(const Fresco::Input::Ev
     ggi_event ggi;
     // giiEventSend will discard events without this field filled in.
     // I'm not sure if the actual value should depend on the source of the
-    // event, or what (there's ggi.any.source for that, but that's filled in
-    // as being a fake event by EventSend; this seems to be about which of the
-    // input queues are handed the event.
+    // event, or what (there's ggi.any.source for that, but that's filled
+    // in as being a fake event by EventSend; this seems to be about which
+    // of the input queues are handed the event.
     ggi.any.target = GII_EV_TARGET_ALL;
     // XGGI will crash (and understandably so!) if we don't fill this in
     ggi.any.size = sizeof(gii_key_event);
-    if (toggle.actuation == Input::Toggle::press) ggi.any.type = evKeyPress;
-    else if (toggle.actuation == Input::Toggle::hold) ggi.any.type = evKeyRepeat;
-    else if (toggle.actuation == Input::Toggle::release) ggi.any.type = evKeyRelease; // not generated actually
-    ggi.key.modifiers = 0;     // FIXME: wrong, should track state of modifier keys
+    if (toggle.actuation == Input::Toggle::press)
+    ggi.any.type = evKeyPress;
+    else if (toggle.actuation == Input::Toggle::hold)
+    ggi.any.type = evKeyRepeat;
+    else if (toggle.actuation == Input::Toggle::release)
+    ggi.any.type = evKeyRelease; // not generated actually
+    ggi.key.modifiers = 0; // FIXME: should track state of modifier keys
     ggi.key.sym = toggle.number;
     // FIXME: the following is wildly incorrect:
     ggi.key.label = toggle.number;   // XGGI looks at this one
     // ggi.key.label = 'L; // useful for testing, so it's obvious if an app
-                           // is reading this field
-    ggi.key.button = 50;   // == scancode for 'M', ditto
+    // is reading this field
+    ggi.key.button = 50; // FIXME: == scancode for 'M', ditto
     /*
-     * FIXME !: the ggi_event structure is quite incomplete here. The real structure looks so:
+     * FIXME !: the ggi_event structure is quite incomplete here. The real
+     * structure looks so:
 
     typedef struct {
 
@@ -161,8 +169,9 @@ CORBA::Boolean GGIKit::VisualImpl::handle_non_positional(const Fresco::Input::Ev
 
     } gii_key_event;
 
-     * and we need to figure out a way to fill the remaining members, i.e. reconstruct them from the sym
-     * given that this is the only information we conserve in the berlin key event...
+     * and we need to figure out a way to fill the remaining members, i.e.
+     * reconstruct them from the sym given that this is the only
+     * information we conserve in the berlin key event...
      */
     forward_event(ggi);
     return true;
@@ -176,7 +185,7 @@ void GGIKit::VisualImpl::move(Fresco::PickTraversal_ptr traversal,
     ggi_event ggi;
     ggi.any.target = GII_EV_TARGET_ALL;
     ggi.any.size = sizeof(gii_pmove_event);
-
+    
     Input::Position position;
     if (-1 == get_position(event, position))
     {
@@ -191,11 +200,14 @@ void GGIKit::VisualImpl::move(Fresco::PickTraversal_ptr traversal,
     // assume that there's One True Resolution.
     // Perhaps people trying to run pixel-based apps across two displays at
     // different resolutions deserve what they get...
-    const Fresco::Coord res_x = Console::instance()->drawable()->resolution(xaxis);
+    const Fresco::Coord res_x =
+    Berlin::Console::instance()->drawable()->resolution(xaxis);
     ggi.pmove.x = static_cast<int>(position.x * res_x);
-    const Fresco::Coord res_y = Console::instance()->drawable()->resolution(yaxis);
+    const Fresco::Coord res_y =
+    Berlin::Console::instance()->drawable()->resolution(yaxis);
     ggi.pmove.y = static_cast<int>(position.y * res_y);
-    const Fresco::Coord res_z = Console::instance()->drawable()->resolution(zaxis);
+    const Fresco::Coord res_z =
+    Berlin::Console::instance()->drawable()->resolution(zaxis);
     ggi.pmove.z = static_cast<int>(position.z * res_z);
     ggi.pmove.wheel = 0; // I don't even know what this means.
     forward_event(ggi);
@@ -204,7 +216,7 @@ void GGIKit::VisualImpl::move(Fresco::PickTraversal_ptr traversal,
 void GGIKit::VisualImpl::handle_pointer_button(const Input::Event &event)
 {
     Trace trace("VisualImpl::handle_pointer_button");
-
+    
     Input::Toggle toggle;
     // I stole this bit from Event.hh, get_position()
     Input::Device device = event[0].dev;
@@ -239,6 +251,7 @@ void GGIKit::VisualImpl::handle_pointer_button(const Input::Event &event)
 void GGIKit::VisualImpl::forward_event(const ggi_event &event)
 {
     Trace trace("VisualImpl::forward_event");
-    // giiEventSend(ggiJoinInputs(_ggi->visual(), 0), const_cast<ggi_event *>(&event));
-    ggiEventSend(_ggi->visual(), const_cast<ggi_event *>(&event));
+    // giiEventSend(ggiJoinInputs(my_ggi->visual(), 0),
+    //                            const_cast<ggi_event *>(&event));
+    ggiEventSend(my_ggi->visual(), const_cast<ggi_event *>(&event));
 }

@@ -34,7 +34,7 @@ namespace Berlin
   template <> struct Initializer<TransformImpl>;
   
   class TransformImpl : public virtual POA_Fresco::Transform,
-			public virtual ServantBase
+            public virtual ServantBase
   {
       friend class Provider<TransformImpl>;
       friend class Initializer<TransformImpl>;
@@ -67,14 +67,14 @@ namespace Berlin
       const Fresco::Transform::Matrix &matrix() const { return my_matrix;}
       
       Fresco::Transform_ptr _this()
-	  {
-	      if (!my_this_valid)
-	      {
-		  my_this = POA_Fresco::Transform::_this ();
-		  my_this_valid = true;
-	      }
-	      return Fresco::Transform::_duplicate (my_this);
-	  }
+      {
+          if (!my_this_valid)
+          {
+          my_this = POA_Fresco::Transform::_this ();
+          my_this_valid = true;
+          }
+          return Fresco::Transform::_duplicate (my_this);
+      }
       
       // Allow for quicker traversals (test)
       void set_and_premult(TransformImpl* set, Fresco::Transform_ptr mult);

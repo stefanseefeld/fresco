@@ -49,108 +49,108 @@ void output_range(std::ostream & out, Char s, Char e, Line_Break c)
     if (s == e) output_char(out, s);
     else
     {
-	output_char(out, s);
-	out << "..";
-	output_char(out, e);
+    output_char(out, s);
+    out << "..";
+    output_char(out, e);
     }
     out << ";";
     switch (c)
     {
     case LB_BK:
-	out << "BK";
-	break;
+    out << "BK";
+    break;
     case LB_CR:
-	out << "CR";
-	break;
+    out << "CR";
+    break;
     case LB_LF:
-	out << "LF";
-	break;
+    out << "LF";
+    break;
     case LB_CM:
-	out << "CM";
-	break;
+    out << "CM";
+    break;
     case LB_SG:
-	out << "SG";
-	break;
+    out << "SG";
+    break;
     case LB_GL:
-	out << "GL";
-	break;
+    out << "GL";
+    break;
     case LB_CB:
-	out << "CB";
-	break;
+    out << "CB";
+    break;
     case LB_SP:
-	out << "SP";
-	break;
+    out << "SP";
+    break;
     case LB_ZW:
-	out << "ZW";
-	break;
+    out << "ZW";
+    break;
     case LB_NL:
-	out << "NL";
-	break;
+    out << "NL";
+    break;
     case LB_WJ:
-	out << "WJ";
-	break;
+    out << "WJ";
+    break;
     case LB_XX:
-	out << "XX";
-	break;
+    out << "XX";
+    break;
     case LB_OP:
-	out << "OP";
-	break;
+    out << "OP";
+    break;
     case LB_CL:
-	out << "CL";
-	break;
+    out << "CL";
+    break;
     case LB_QU:
-	out << "QU";
-	break;
+    out << "QU";
+    break;
     case LB_NS:
-	out << "NS";
-	break;
+    out << "NS";
+    break;
     case LB_EX:
-	out << "EX";
-	break;
+    out << "EX";
+    break;
     case LB_SY:
-	out << "SY";
-	break;
+    out << "SY";
+    break;
     case LB_IS:
-	out << "IS";
-	break;
+    out << "IS";
+    break;
     case LB_PR:
-	out << "PR";
-	break;
+    out << "PR";
+    break;
     case LB_PO:
-	out << "PO";
-	break;
+    out << "PO";
+    break;
     case LB_NU:
-	out << "NU";
-	break;
+    out << "NU";
+    break;
     case LB_AL:
-	out << "AL";
-	break;
+    out << "AL";
+    break;
     case LB_ID:
-	out << "ID";
-	break;
+    out << "ID";
+    break;
     case LB_IN:
-	out << "IN";
-	break;
+    out << "IN";
+    break;
     case LB_HY:
-	out << "HY";
-	break;
+    out << "HY";
+    break;
     case LB_BB:
-	out << "BB";
-	break;
+    out << "BB";
+    break;
     case LB_BA:
-	out << "BA";
-	break;
+    out << "BA";
+    break;
     case LB_SA:
-	out << "SA";
-	break;
+    out << "SA";
+    break;
     case LB_AI:
-	out << "AI";
-	break;
+    out << "AI";
+    break;
     case LB_B2:
-	out << "B2";
-	break;
+    out << "B2";
+    break;
     default:
-	out << "UNKNOWN";
+    out << "UNKNOWN";
     }
     out << std::endl;
 }
@@ -159,86 +159,86 @@ int main(int argc, char** argv)
 {
     try
     {
-	if (argc == 2) Babylon::override_path(std::string(argv[1]));
-	
-	for (Char A(UC_NULL); A.value() < 0x110000; ++A)
-	{
-	    if (!A.is_defined()) continue;
-	    if (A.value() == 0x3400)
-	    {
-		output_range(std::cout, A, 0x4DB5, A.linebreak());
-		A = 0x4DB5;
-		continue;
-	    }
-	    if (A.value() == 0x4E00)
-	    {
-		output_range(std::cout, A, 0x9FA5, A.linebreak());
-		A = 0x9FA5;
-		continue;
-	    }
-	    if (A.value() == 0xAC00)
-	    {
-		output_range(std::cout, A, 0xD7A3, A.linebreak());
-		A = 0xD7A3;
-		continue;
-	    }
-	    if (A.value() == 0xD800)
-	    {
-		output_range(std::cout, A, 0xDB7F, A.linebreak());
-		A = 0xDB7F;
-		continue;
-	    }
-	    if (A.value() == 0xDB80)
-	    {
-		output_range(std::cout, A, 0xDBFF, A.linebreak());
-		A = 0xDBFF;
-		continue;
-	    }
-	    if (A.value() == 0xDC00)
-	    {
-		output_range(std::cout, A, 0xDFFF, A.linebreak());
-		A = 0xDFFF;
-		continue;
-	    }
-	    if (A.value() == 0xE000)
-	    {
-		output_range(std::cout, A, 0xF8FF, A.linebreak());
-		A = 0xF8FF;
-		continue;
-	    }
-	    if (A.value() == 0x20000)
-	    {
-		output_range(std::cout, A, 0x2A6D6, A.linebreak());
-		A = 0x2A6D6;
-		continue;
-	    }
-	    if (A.value() == 0xF0000)
-	    {
-		output_range(std::cout, A, 0xFFFFD, A.linebreak());
-		A = 0xFFFFD;
-		continue;
-	    }
-	    if (A.value() == 0x100000)
-	    {
-		output_range(std::cout, A, 0x10FFFD, A.linebreak());
-		A = 0x10FFFD;
-		continue;
-	    }
-	    output_range(std::cout, A, A, A.linebreak());
-	}
+    if (argc == 2) Babylon::override_path(std::string(argv[1]));
+    
+    for (Char A(UC_NULL); A.value() < 0x110000; ++A)
+    {
+        if (!A.is_defined()) continue;
+        if (A.value() == 0x3400)
+        {
+        output_range(std::cout, A, 0x4DB5, A.linebreak());
+        A = 0x4DB5;
+        continue;
+        }
+        if (A.value() == 0x4E00)
+        {
+        output_range(std::cout, A, 0x9FA5, A.linebreak());
+        A = 0x9FA5;
+        continue;
+        }
+        if (A.value() == 0xAC00)
+        {
+        output_range(std::cout, A, 0xD7A3, A.linebreak());
+        A = 0xD7A3;
+        continue;
+        }
+        if (A.value() == 0xD800)
+        {
+        output_range(std::cout, A, 0xDB7F, A.linebreak());
+        A = 0xDB7F;
+        continue;
+        }
+        if (A.value() == 0xDB80)
+        {
+        output_range(std::cout, A, 0xDBFF, A.linebreak());
+        A = 0xDBFF;
+        continue;
+        }
+        if (A.value() == 0xDC00)
+        {
+        output_range(std::cout, A, 0xDFFF, A.linebreak());
+        A = 0xDFFF;
+        continue;
+        }
+        if (A.value() == 0xE000)
+        {
+        output_range(std::cout, A, 0xF8FF, A.linebreak());
+        A = 0xF8FF;
+        continue;
+        }
+        if (A.value() == 0x20000)
+        {
+        output_range(std::cout, A, 0x2A6D6, A.linebreak());
+        A = 0x2A6D6;
+        continue;
+        }
+        if (A.value() == 0xF0000)
+        {
+        output_range(std::cout, A, 0xFFFFD, A.linebreak());
+        A = 0xFFFFD;
+        continue;
+        }
+        if (A.value() == 0x100000)
+        {
+        output_range(std::cout, A, 0x10FFFD, A.linebreak());
+        A = 0x10FFFD;
+        continue;
+        }
+        output_range(std::cout, A, A, A.linebreak());
+    }
     }
     catch(std::runtime_error &e)
     {
-	std::cout << "Caught an runtime exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an runtime exception: " << e.what()
+          << std::endl;
     }
     catch(std::exception &e)
     {
-	std::cout << "Caught an exception: " << e.what()
-		  << std::endl;
+    std::cout << "Caught an exception: " << e.what()
+          << std::endl;
     }
     catch(...)
     {
-	std::cout << "Some exception happened!" << std::endl;
+    std::cout << "Some exception happened!" << std::endl;
     }
 }

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _CubeDemo_hh
-#define _CubeDemo_hh
+#ifndef _CXX_demos_CubeDemo_hh
+#define _CXX_demos_CubeDemo_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Command.hh>
@@ -32,28 +32,30 @@
 
 class CubeDemo : public Demo
 {
-  class Rotator : public ObserverImpl
-  {
-  public:
-    Rotator(Fresco::BoundedValue_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Axis);
+    class Rotator : public Berlin::ObserverImpl
+    {
+      public:
+    Rotator(Fresco::BoundedValue_ptr, Fresco::Graphic_ptr,
+        Fresco::Graphic_ptr, Fresco::Axis);
     void update(const CORBA::Any &);
+      private:
+    Fresco::BoundedValue_var my_value;
+    Fresco::Graphic_var my_child;
+    Fresco::Graphic_var my_parent;
+    Fresco::Axis my_axis;
+    };
+    
+  public:
+    CubeDemo(Application *);
+    Fresco::Graphic_ptr make_controller(Fresco::BoundedValue_ptr,
+                    const Fresco::Color &);
   private:
-    Fresco::BoundedValue_var value;
-    Fresco::Graphic_var child;
-    Fresco::Graphic_var parent;
-    Fresco::Axis axis;
-  };
-
-public:
-  CubeDemo(Application *);
-  Fresco::Graphic_ptr make_controller(Fresco::BoundedValue_ptr, const Fresco::Color &);
-private:
-  Fresco::BoundedValue_var phi;
-  Fresco::BoundedValue_var psi;
-  Impl_var<TransformImpl> tx1;
-  Impl_var<TransformImpl> tx2;
-  Impl_var<Rotator> rotator1;
-  Impl_var<Rotator> rotator2;
+    Fresco::BoundedValue_var my_phi;
+    Fresco::BoundedValue_var my_psi;
+    Berlin::Impl_var<Berlin::TransformImpl> my_tx1;
+    Berlin::Impl_var<Berlin::TransformImpl> my_tx2;
+    Berlin::Impl_var<Rotator> my_rotator1;
+    Berlin::Impl_var<Rotator> my_rotator2;
 };
 
 #endif

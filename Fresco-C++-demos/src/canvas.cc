@@ -82,7 +82,7 @@ int main(int argc, char **argv)
   Canvas_var canvas = tool->create_canvas(256, 256);
 
   Window_var window = desktop->shell(Controller_var(tool->group(canvas)),
-				     ClientContext_var(client->_this()));
+                     ClientContext_var(client->_this()));
 
   /*
    * set up the client side visual part...
@@ -120,9 +120,9 @@ int main(int argc, char **argv)
       exit(127);
     default:
       while (1)
-	{
-	  canvas->need_redraw();
-	  Thread::delay(wait);
-	}
+    {
+      canvas->need_redraw();
+      Thread::delay(wait);
+    }
     }
 };

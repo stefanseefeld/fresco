@@ -6,7 +6,7 @@
 // class Register;
 
 class RegisterImpl : virtual public CosTrading::_sk_Register,
-		     public TraderComponentsImpl, public SupportAttributesImpl
+             public TraderComponentsImpl, public SupportAttributesImpl
 {
 public:
   RegisterImpl(Trader *);

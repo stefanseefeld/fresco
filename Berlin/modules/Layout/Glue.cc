@@ -26,11 +26,11 @@ using namespace Fresco;
 using namespace Berlin::LayoutKit;
 
 Glue::Glue(Axis a,
-	   Coord natural, Coord stretch, Coord shrink, Alignment align)
+       Coord natural, Coord stretch, Coord shrink, Alignment align)
 {
     GraphicImpl::init_requisition(my_requisition);
     Fresco::Graphic::Requirement *r =
-	GraphicImpl::requirement(my_requisition, a);
+    GraphicImpl::requirement(my_requisition, a);
     if (r != 0) GraphicImpl::require(*r, natural, stretch, shrink, align);
 }
 

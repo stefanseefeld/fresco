@@ -38,7 +38,7 @@ namespace Berlin
   template <> struct Initializer<RegionImpl>;
 
   class RegionImpl : public virtual POA_Fresco::Region,
-		     public virtual ServantBase
+             public virtual ServantBase
   {
       friend class Provider<RegionImpl>;
     public:
@@ -52,7 +52,7 @@ namespace Berlin
       virtual CORBA::Boolean defined();
       virtual CORBA::Boolean contains(const Fresco::Vertex &);
       virtual CORBA::Boolean contains_plane(const Fresco::Vertex &,
-					    Fresco::Axis a);
+                        Fresco::Axis a);
       virtual CORBA::Boolean intersects(Fresco::Region_ptr);
       CORBA::Boolean intersects(const RegionImpl &) const;
       virtual void copy(Fresco::Region_ptr);
@@ -71,12 +71,12 @@ namespace Berlin
       
       Fresco::Region_ptr _this ()
       {
-	  if (!my_this_valid)
-	  {
-	      my_this = POA_Fresco::Region::_this();
-	      my_this_valid = true;
-	  }
-	  return Fresco::Region::_duplicate (my_this);
+      if (!my_this_valid)
+      {
+          my_this = POA_Fresco::Region::_this();
+          my_this_valid = true;
+      }
+      return Fresco::Region::_duplicate (my_this);
       }
       
     public:
@@ -89,9 +89,9 @@ namespace Berlin
       static void merge_min(Fresco::Vertex &, const Fresco::Vertex &);
       static void merge_max(Fresco::Vertex &, const Fresco::Vertex &);
       static Fresco::Coord span_align(Fresco::Coord, Fresco::Coord,
-				      Fresco::Coord);
+                      Fresco::Coord);
       static Fresco::Coord span_origin(Fresco::Coord, Fresco::Coord,
-				       Fresco::Coord);
+                       Fresco::Coord);
 
     private:
       bool my_active : 1;
@@ -105,8 +105,8 @@ namespace Berlin
   };
   
   inline Fresco::Coord RegionImpl::span_origin(Fresco::Coord lower,
-					       Fresco::Coord upper,
-					       Fresco::Coord align)
+                           Fresco::Coord upper,
+                           Fresco::Coord align)
   {
       Fresco::Coord orig;
       if (Math::equal(lower, upper, 1e-4)) orig = 0.;
@@ -115,8 +115,8 @@ namespace Berlin
   }
 
   inline Fresco::Coord RegionImpl::span_align(Fresco::Coord lower,
-					      Fresco::Coord upper,
-					      Fresco::Coord origin)
+                          Fresco::Coord upper,
+                          Fresco::Coord origin)
   {
       Fresco::Coord s;
       if (Math::equal(lower, upper, 1e-4)) s = 0.;
@@ -125,7 +125,7 @@ namespace Berlin
   }
 
   inline void RegionImpl::merge_min(Fresco::Vertex &v0,
-				    const Fresco::Vertex &v)
+                    const Fresco::Vertex &v)
   {
       v0.x = Math::min(v0.x, v.x);
       v0.y = Math::min(v0.y, v.y);
@@ -133,7 +133,7 @@ namespace Berlin
   }
   
   inline void RegionImpl::merge_max(Fresco::Vertex &v0,
-				    const Fresco::Vertex &v)
+                    const Fresco::Vertex &v)
   {
       v0.x = Math::max(v0.x, v.x);
       v0.y = Math::max(v0.y, v.y);

@@ -56,7 +56,7 @@ namespace Math
   //. general orthogonal matrix transformation
   //. needs to be refined for perspective trafos
   inline Fresco::Vertex &operator *= (Fresco::Vertex &v,
-				      const Fresco::Transform::Matrix &m)
+                      const Fresco::Transform::Matrix &m)
   {
       Fresco::Coord tx = v.x;
       Fresco::Coord ty = v.y;

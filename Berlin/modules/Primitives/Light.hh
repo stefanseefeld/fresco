@@ -35,52 +35,52 @@ namespace Berlin
     class Light : public MonoGraphic
     {
       public:
-	Light(const Fresco::Color &, double);
-	virtual ~Light();
-	virtual void traverse(Fresco::Traversal_ptr);
-	virtual void draw(Fresco::DrawTraversal_ptr);
-	virtual void pick(Fresco::PickTraversal_ptr);  
+    Light(const Fresco::Color &, double);
+    virtual ~Light();
+    virtual void traverse(Fresco::Traversal_ptr);
+    virtual void draw(Fresco::DrawTraversal_ptr);
+    virtual void pick(Fresco::PickTraversal_ptr);  
       protected:
-	virtual void do_draw(Fresco::DrawingKit3D_ptr) = 0;
+    virtual void do_draw(Fresco::DrawingKit3D_ptr) = 0;
 //        //. Whether light is on
 //        bool          _on;
           //. RGB source color
-	Fresco::Color my_color;
-	//. Source intensity (0 to 1)
-	double        my_intensity;
+    Fresco::Color my_color;
+    //. Source intensity (0 to 1)
+    double        my_intensity;
     };
 
     class DirectionalLight : public Light
     {
       public:
-	DirectionalLight(const Fresco::Color &, double,
-			 const Fresco::Vertex &);
+    DirectionalLight(const Fresco::Color &, double,
+             const Fresco::Vertex &);
       protected:
-	virtual void do_draw(Fresco::DrawingKit3D_ptr);
-	Fresco::Vertex my_direction;
+    virtual void do_draw(Fresco::DrawingKit3D_ptr);
+    Fresco::Vertex my_direction;
     };
 
     class PointLight : public Light
     {
       public:
-	PointLight(const Fresco::Color &, double, const Fresco::Vertex &);
+    PointLight(const Fresco::Color &, double, const Fresco::Vertex &);
       protected:
-	virtual void do_draw(Fresco::DrawingKit3D_ptr);
-	Fresco::Vertex my_position;
+    virtual void do_draw(Fresco::DrawingKit3D_ptr);
+    Fresco::Vertex my_position;
     };
 
     class SpotLight : public Light
     {
       public:
-	SpotLight(const Fresco::Color &, double, const Fresco::Vertex &,
-		  const Fresco::Vertex &,
-		  double, double);
+    SpotLight(const Fresco::Color &, double, const Fresco::Vertex &,
+          const Fresco::Vertex &,
+          double, double);
       protected:
-	virtual void do_draw(Fresco::DrawingKit3D_ptr);
-	Fresco::Vertex my_direction;
-	Fresco::Vertex my_position;
-	double         my_dropoffrate;
-	double         my_cutoffangle;
+    virtual void do_draw(Fresco::DrawingKit3D_ptr);
+    Fresco::Vertex my_direction;
+    Fresco::Vertex my_position;
+    double         my_dropoffrate;
+    double         my_cutoffangle;
     };
     
   } // namespace

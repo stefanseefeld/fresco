@@ -47,18 +47,18 @@ namespace Berlin
       class Traversal;
       struct PointerCacheTrait;
       typedef ObjectCache<Fresco::Raster_var, Console::Pointer,
-			  PointerCacheTrait> PointerCache;
+              PointerCacheTrait> PointerCache;
       struct Resources
       {
-	  enum state { set_pointer = 0x1 };
-	  Resources() : flags(0) { }
-	  unsigned long flags;
-	  Console::Pointer *pointer;
+      enum state { set_pointer = 0x1 };
+      Resources() : flags(0) { }
+      unsigned long flags;
+      Console::Pointer *pointer;
       };
       typedef std::stack<Resources> rstack_t;
     public:
       PositionalFocus(Fresco::Input::Device, Fresco::Graphic_ptr,
-		      Fresco::Region_ptr);
+              Fresco::Region_ptr);
       virtual ~PositionalFocus();
       virtual void grab();
       virtual void ungrab();

@@ -32,14 +32,14 @@ namespace Berlin
     class Filler : public MonoGraphic
     {
       public:
-	Filler(const Color &c) : my_color(c) { }
-	~Filler() {}
+    Filler(const Color &c) : my_color(c) { }
+    ~Filler() {}
 
-	virtual void request(Requisition &);
-	virtual void traverse(Traversal_ptr);
-	virtual void draw(DrawTraversal_ptr);
+    virtual void request(Requisition &);
+    virtual void traverse(Traversal_ptr);
+    virtual void draw(DrawTraversal_ptr);
       protected:
-	Color my_color;
+    Color my_color;
     };
     
   } // namespace

@@ -10,16 +10,16 @@ sub new
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next if ($info eq "");
-	
-	my @list = split /;/, $info, 15;
-	
-	$self->{hex($list[0])} = 1;
+    next if ($info eq "");
+    
+    my @list = split /;/, $info, 15;
+    
+    $self->{hex($list[0])} = 1;
     }
 
     close(UCD);
@@ -61,16 +61,16 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) == 0) {
-		$self->{_ATTENTION_NEEDED} = 1 ;
-		last;
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) == 0) {
+        $self->{_ATTENTION_NEEDED} = 1 ;
+        last;
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -93,11 +93,11 @@ sub function
 
     if ($self->{_ATTENTION_NEEDED} == 1)
     {
-	$tmp .= "            return (my_is_defined.test(uc - my_first_letter));\n";
+    $tmp .= "            return (my_is_defined.test(uc - my_first_letter));\n";
     }
     else
     {
-	$tmp .= "            return 1;\n";
+    $tmp .= "            return 1;\n";
     }
     $tmp .= "        }\n\n";
 }
@@ -109,7 +109,7 @@ sub var_def
     my $bl_length = $_[1] - $_[0] + 1;
 
     return "        static const std::bitset<$bl_length> my_is_defined;\n"
-	if ($self->{_ATTENTION_NEEDED});
+    if ($self->{_ATTENTION_NEEDED});
     return "";
 }
 
@@ -124,14 +124,14 @@ sub var
 
     if ($self->{_ATTENTION_NEEDED})
     {
-	my $tmp  = "    const std::bitset<$bl_length> $bl_name\:\:my_is_defined(std::string(\"";
-	my $str  = "";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    $str  = $self->data($i).$str;
-	}
-	$tmp    .= $str."\"));\n\n";
-	return $tmp;
+    my $tmp  = "    const std::bitset<$bl_length> $bl_name\:\:my_is_defined(std::string(\"";
+    my $str  = "";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        $str  = $self->data($i).$str;
+    }
+    $tmp    .= $str."\"));\n\n";
+    return $tmp;
     }
     return "";
 }

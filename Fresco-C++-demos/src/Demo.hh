@@ -19,17 +19,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Demo_hh
-#define _Demo_hh
+#ifndef _CXX_demos_Demo_hh
+#define _CXX_demos_Demo_hh
 
 #include "Application.hh"
 
 class Demo
 {
-public:
-  Demo(Application *a) : application(a) {}
-protected:
-  Application *application;
+  public:
+    Demo(Application *a) : my_application(a) { }
+  protected:
+    Application *my_application;
 };
 
-#endif /* _Demo_hh */
+#endif

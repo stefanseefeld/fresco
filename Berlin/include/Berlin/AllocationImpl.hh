@@ -39,13 +39,13 @@ namespace Berlin
   template <> struct Initializer<AllocationImpl>;
   
   class AllocationImpl : public virtual POA_Fresco::Allocation,
-			 public virtual ServantBase
+             public virtual ServantBase
   {
       struct State
       {
-	  RegionImpl        *allocation;
-	  TransformImpl     *transformation;
-	  Fresco::Screen_var root;
+      RegionImpl        *allocation;
+      TransformImpl     *transformation;
+      Fresco::Screen_var root;
       };
       typedef std::vector<State> list_t;
       friend class Provider<AllocationImpl>;

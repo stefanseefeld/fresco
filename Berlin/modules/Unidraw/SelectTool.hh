@@ -35,25 +35,25 @@ namespace Berlin
   {
 
     class SelectTool : public virtual POA_Unidraw::Tool,
-		       public RefCountBaseImpl
+               public RefCountBaseImpl
     {
       public:
-	SelectTool(Fresco::Graphic_ptr);
-	virtual ~SelectTool();
-	virtual CORBA::Boolean grasp(Fresco::Controller_ptr,
-				     Fresco::PickTraversal_ptr,
-				     const Fresco::Input::Event &);
-	virtual CORBA::Boolean manipulate(Fresco::PickTraversal_ptr,
-					  const Fresco::Input::Event &);
-	virtual Unidraw::Command_ptr effect(Fresco::PickTraversal_ptr,
-					    const Fresco::Input::Event &);
+    SelectTool(Fresco::Graphic_ptr);
+    virtual ~SelectTool();
+    virtual CORBA::Boolean grasp(Fresco::Controller_ptr,
+                     Fresco::PickTraversal_ptr,
+                     const Fresco::Input::Event &);
+    virtual CORBA::Boolean manipulate(Fresco::PickTraversal_ptr,
+                      const Fresco::Input::Event &);
+    virtual Unidraw::Command_ptr effect(Fresco::PickTraversal_ptr,
+                        const Fresco::Input::Event &);
       private:
-	Fresco::Controller_var my_root;
-	Fresco::GraphicIterator_var my_iterator;
-	Fresco::Transform::Matrix my_matrix;
-	Fresco::Graphic_var my_graphic;
-	Fresco::Vertex my_begin;
-	Fresco::Vertex my_end;
+    Fresco::Controller_var my_root;
+    Fresco::GraphicIterator_var my_iterator;
+    Fresco::Transform::Matrix my_matrix;
+    Fresco::Graphic_var my_graphic;
+    Fresco::Vertex my_begin;
+    Fresco::Vertex my_end;
     };
     
   } // namespace

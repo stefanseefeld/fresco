@@ -38,13 +38,13 @@ extern "C" {
 // Local GLUT handler. GLUT 
 class GLUTHandler {
     struct arg_t {
-	arg_t(int c, char **v, const char *n, int ww, int hh)
-	    : argc(c), argv(v), name(n), w(ww), h(hh)
-	{ }
-	int argc;
-	char **argv;
-	const char *name;
-	int w, h;
+    arg_t(int c, char **v, const char *n, int ww, int hh)
+        : argc(c), argv(v), name(n), w(ww), h(hh)
+    { }
+    int argc;
+    char **argv;
+    const char *name;
+    int w, h;
     };
     friend class GLUTDrawable;
 public:
@@ -175,32 +175,32 @@ void GLUTHandler::mouse(int button, int state, int x, int y)
     Trace trace("GLUTHandler::mouse");
     // Is this change in button state?
     if (button_state[button] != state) {
-	Input::Event_var event = new Input::Event;
-	
-	// Fill out the event object
-	Input::Toggle toggle;
-	if (state == GLUT_DOWN)
-	    toggle.actuation = Input::Toggle::press;
-	else
-	    toggle.actuation = Input::Toggle::release;
-	toggle.number = button;
-	Input::Position position;
-	position.x = x / drawable->resolution(xaxis);
-	position.y = y / drawable->resolution(yaxis);
-	position.z = 0;
-	event->length(2);
-	event[0].dev = 1;
-	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
-	event[1].dev = 1;
-	event[1].attr.location(position);
-	
-	// Add the event to the queue and update state info
-	console->_eventQueue.push(event._retn());
-	button_state[button] = state;
-	
-	cerr << "button " << button
-	     << " in pos (" 
-	     << position.x << ", " << position.y << ")" << endl;
+    Input::Event_var event = new Input::Event;
+    
+    // Fill out the event object
+    Input::Toggle toggle;
+    if (state == GLUT_DOWN)
+        toggle.actuation = Input::Toggle::press;
+    else
+        toggle.actuation = Input::Toggle::release;
+    toggle.number = button;
+    Input::Position position;
+    position.x = x / drawable->resolution(xaxis);
+    position.y = y / drawable->resolution(yaxis);
+    position.z = 0;
+    event->length(2);
+    event[0].dev = 1;
+    event[0].attr.selection(toggle); event[0].attr._d(Input::button);
+    event[1].dev = 1;
+    event[1].attr.location(position);
+    
+    // Add the event to the queue and update state info
+    console->_eventQueue.push(event._retn());
+    button_state[button] = state;
+    
+    cerr << "button " << button
+         << " in pos (" 
+         << position.x << ", " << position.y << ")" << endl;
     }
 }
 
@@ -228,8 +228,8 @@ void GLUTHandler::idle()
     Trace trace("GLUTHandler::idle");
     Prague::Guard<Mutex> guard(drawable->_mutex);
     if (drawable->_dirty) {
-	drawable->_dirty = false;
-	glutPostRedisplay();
+    drawable->_dirty = false;
+    glutPostRedisplay();
     }
     else Thread::delay(500);
 }
@@ -255,8 +255,8 @@ Coord GLUTDrawable::resolution(Axis a) const
     // Return the resolution as dots/pixels per tenth of a millimeter    
     // @@@ The 25 below is a 'magic' number. We need to tweak it!
     return a == xaxis 
-	? screenx / (25.0 * screendimx) 
-	: screeny / (25.0 * screendimy);
+    ? screenx / (25.0 * screendimx) 
+    : screeny / (25.0 * screendimy);
 }
 
 void GLUTDrawable::init()
@@ -264,11 +264,11 @@ void GLUTDrawable::init()
     // Start the definition of the display list
     _mutex.lock();
     if (_displist == 0) {
-	_displist = glGenLists(1);
-	if (_displist == 0) {
-	    _mutex.unlock();
-	    throw 0;
-	}
+    _displist = glGenLists(1);
+    if (_displist == 0) {
+        _mutex.unlock();
+        throw 0;
+    }
     }
     cerr << "Locking and rendering in display list " << _displist << endl; 
     glNewList(_displist, GL_COMPILE);
@@ -290,8 +290,8 @@ void GLUTDrawable::render()
     
     // Call display list 
     if (_displist != 0) {
-	glCallList(_displist);
-	cerr << "Rendered display list " << _displist << endl;
+    glCallList(_displist);
+    cerr << "Rendered display list " << _displist << endl;
     }
 }
 
@@ -300,8 +300,8 @@ void GLUTDrawable::reshape(int width, int height)
     Trace trace("GLUTDrawable::reshape");
     _width = width; _height = height;
     cerr << "Reshape to dimensions (" << width << "x" << height 
-	 << ") [ " << _width / resolution(xaxis) << "x"
-	 << _height / resolution(yaxis) <<"]" << endl;
+     << ") [ " << _width / resolution(xaxis) << "x"
+     << _height / resolution(yaxis) <<"]" << endl;
   
     // Reset the viewport
     glViewport(0, 0, (GLsizei) _width, (GLsizei) _height);
@@ -317,7 +317,7 @@ void GLUTDrawable::reshape(int width, int height)
 DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixel_format() {
     // Load dummy values (@@@ How do we fill in this correctly?)
     DrawableTie<GLUTDrawable>::PixelFormat pft = {
-	32, 32, 0xff000000, 24, 0x00ff0000, 16, 0x0000ff00, 8, 0x000000ff, 0
+    32, 32, 0xff000000, 24, 0x00ff0000, 16, 0x0000ff00, 8, 0x000000ff, 0
     };
     return pft;
 }

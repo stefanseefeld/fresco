@@ -35,7 +35,7 @@ namespace daVinci
 {
 
 class Model : public virtual POA_Unidraw::Model,
-	      public virtual RefCountBase
+          public virtual RefCountBase
 {
   typedef std::vector<Fresco::Graphic_var> vlist_t;
 public:

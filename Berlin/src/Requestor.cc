@@ -25,13 +25,13 @@ using namespace Fresco;
 using namespace Berlin;
 
 Requestor::Requestor(Alignment xalign, Alignment yalign,
-		     Coord xspan, Coord yspan)
+             Coord xspan, Coord yspan)
 {
     GraphicImpl::default_requisition(my_requisition);
     Fresco::Graphic::Requirement *rx =
-	GraphicImpl::requirement(my_requisition, xaxis);
+    GraphicImpl::requirement(my_requisition, xaxis);
     Fresco::Graphic::Requirement *ry =
-	GraphicImpl::requirement(my_requisition, yaxis);
+    GraphicImpl::requirement(my_requisition, yaxis);
     rx->align = xalign;
     ry->align = yalign;
     rx->natural = rx->maximum = rx->minimum = xspan;

@@ -9,16 +9,16 @@ sub new {
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next if ($info eq "");
+    next if ($info eq "");
 
-	my @list = split /;/, $info, 15;
+    my @list = split /;/, $info, 15;
 
-	$self->{hex($list[0])} = "CAT_".$list[2];
+    $self->{hex($list[0])} = "CAT_".$list[2];
     }
     
     close(UCD);
@@ -71,27 +71,27 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
 
-	$self->{_ELEM} = "";
-	
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef")
-	    {
-		if ($self->{_ELEM} eq "")
-		{
-		    $self->{_ELEM} = $self->data($i);
-		}
-		elsif ($self->{_ELEM} ne $self->data($i))
-		{
-		    $self->{_ATTENTION_NEEDED} = 1;
-		    last;
-		}
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    $self->{_ELEM} = "";
+    
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef")
+        {
+        if ($self->{_ELEM} eq "")
+        {
+            $self->{_ELEM} = $self->data($i);
+        }
+        elsif ($self->{_ELEM} ne $self->data($i))
+        {
+            $self->{_ATTENTION_NEEDED} = 1;
+            last;
+        }
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -139,16 +139,16 @@ sub var {
       my $tmp = "    const unsigned char $bl_name\:\:my_cat\[\] =\n    {";
       for (my $i= $bl_start; $i <= $bl_end; $i++)
       {
-	  $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
-	  if ($self->data($i) eq "undef")
-	  {
-	      $tmp .= $self->{_ELEM};
-	  }
-	  else
-	  {
-	      $tmp .= $self->data($i);
-	  }
-	  $tmp .= ", " if ( $i != $bl_end);
+      $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
+      if ($self->data($i) eq "undef")
+      {
+          $tmp .= $self->{_ELEM};
+      }
+      else
+      {
+          $tmp .= $self->data($i);
+      }
+      $tmp .= ", " if ( $i != $bl_end);
       }
       $tmp .= "\n    };\n\n";
 

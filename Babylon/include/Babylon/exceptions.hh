@@ -37,8 +37,8 @@ namespace Babylon
   class Undefined_Property : std::exception {
     public:
       Undefined_Property(UCS4 uc, const Char_Props prop) :
-	  my_error_uc(uc),
-	  my_error_prop(prop)
+      my_error_uc(uc),
+      my_error_prop(prop)
       { }
       
       const char * what() const throw();
@@ -51,7 +51,7 @@ namespace Babylon
   {
     public:
       Transfer_Error(Trans_Error transError) :
-	  my_error(transError)
+      my_error(transError)
       { }
       ~Transfer_Error() throw() { }
       const char * what() const throw();
@@ -63,9 +63,9 @@ namespace Babylon
   {
     public:
       Block_Error(UCS4 startUC, UCS4 endUC, const std::string &em) :
-	  my_block_start(startUC),
-	  my_block_end(endUC),
-	  my_error_message(em)
+      my_block_start(startUC),
+      my_block_end(endUC),
+      my_error_message(em)
       { }
       ~Block_Error() throw() {}
       const char * what() const throw();

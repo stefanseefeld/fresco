@@ -39,9 +39,9 @@ namespace Berlin
     class GGIDrawable : public virtual Berlin::Console::Drawable
     {
       public:
-	virtual const std::string &name() const = 0;
-	virtual ggi_mode           mode() const = 0;
-	virtual ggi_visual_t       visual() const = 0;
+    virtual const std::string &name() const = 0;
+    virtual ggi_mode           mode() const = 0;
+    virtual ggi_visual_t       visual() const = 0;
     };
 
     class GGIDrawableFactory : virtual public Berlin::Console::Extension
@@ -49,10 +49,10 @@ namespace Berlin
       public:
       //. Creates a new Drawable of the given size (x, y) and depth.
       //. It is accessable under the given shm-id.
-	virtual GGIDrawable *create_drawable(int shmid,
-					     Fresco::PixelCoord,
-					     Fresco::PixelCoord,
-					     Fresco::PixelCoord) = 0;
+    virtual GGIDrawable *create_drawable(int shmid,
+                         Fresco::PixelCoord,
+                         Fresco::PixelCoord,
+                         Fresco::PixelCoord) = 0;
     };
     
   } // namespace

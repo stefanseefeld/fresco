@@ -31,7 +31,7 @@ using namespace Fresco;
 using namespace Berlin::PrimitiveKit;
 
 Root::Root(Alignment xp, Alignment yp, Alignment zp,
-	   Alignment xc, Alignment yc, Alignment zc) :
+       Alignment xc, Alignment yc, Alignment zc) :
     TransformAllocator(xp, yp, zp, xc, yc, zc)
 { }
 
@@ -43,7 +43,7 @@ void Root::draw(DrawTraversal_ptr traversal)
     DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
     if (!CORBA::is_nil(d3d))
     {
-	// initialize the 3D substate of the DrawingKit here...
+    // initialize the 3D substate of the DrawingKit here...
     }
     TransformAllocator::traverse(traversal);
 }

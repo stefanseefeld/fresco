@@ -40,22 +40,22 @@ namespace Berlin
       // Which parts of the state was stored?
       enum g3dstate
       {
-	  st3d_material,
-	  st3d_textures,
-	  st3d_tex_mode,
-	  st3d_fog_mode,
-	  st3d_last 
+      st3d_material,
+      st3d_textures,
+      st3d_tex_mode,
+      st3d_fog_mode,
+      st3d_last 
       };
     
       // 3D drawing state
       struct Draw3DState
       {
-	  unsigned long flags;
-	  MaterialAttr_var saved_material;
-	  Rasters_var saved_textures;
-	  TextureMode saved_texmode;
-	  FoggingMode saved_fogmode;
-	  // need lights and lots of other stuff here as well
+      unsigned long flags;
+      MaterialAttr_var saved_material;
+      Rasters_var saved_textures;
+      TextureMode saved_texmode;
+      FoggingMode saved_fogmode;
+      // need lights and lots of other stuff here as well
       };
     
     public:
@@ -75,7 +75,7 @@ namespace Berlin
       virtual FoggingMode fogMode() = 0;
       virtual void fogMode(FoggingMode) = 0;
       virtual void drawTriangles(const Vertices &, const Vertices &,
-				 const TexCoords &) = 0;
+                 const TexCoords &) = 0;
       virtual void drawLines(const Vertices &, const TexCoords &) = 0;
       virtual void drawPoints(const Vertices &) = 0;
       
@@ -105,7 +105,7 @@ namespace Berlin
       // We need to restore _only_ those states that were changed 
       DrawState3D prev = states.top();
       if (prev.flags & (1 << st3d_material))
-	  ; // FIXME: Huch? This code is broken!
+      ; // FIXME: Huch? This code is broken!
   }
 
   // This code is unashamedly lifted from the DrawingKitBase.hh...

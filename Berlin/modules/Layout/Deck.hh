@@ -32,18 +32,18 @@ namespace Berlin
     class Deck : public PolyGraphic
     {
       public:
-	Deck();
-	virtual ~Deck();
-	
-	virtual void request(Fresco::Graphic::Requisition &);
-	virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
+    Deck();
+    virtual ~Deck();
+    
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void extension(const Fresco::Allocation::Info &,
+                   Fresco::Region_ptr);
 
-	virtual void traverse(Fresco::Traversal_ptr);
+    virtual void traverse(Fresco::Traversal_ptr);
 
       protected:
-	bool my_requested;
-	Fresco::Graphic::Requisition my_requisition;
+    bool my_requested;
+    Fresco::Graphic::Requisition my_requisition;
     };
     
   } // namespace

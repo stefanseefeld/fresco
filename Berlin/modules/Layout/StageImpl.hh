@@ -84,7 +84,7 @@ namespace Berlin
         //. Return a new unique tag in the scope of this parent
         Fresco::Tag unique_tag();
         //. Return a handle to the child of the Stage that has the given
-	//. tag. It returns 0 if no child has the given tag.
+    //. tag. It returns 0 if no child has the given tag.
         StageHandleImpl *tag_to_handle(Fresco::Tag);
         //. Mark the region occupied by the given StageHandle as damaged.
         //. This is done by either merging that region with the one already
@@ -120,24 +120,24 @@ namespace Berlin
         const Geometry::Rectangle<Fresco::Coord> &bbox();
         void bbox(RegionImpl &);
       // private:
-	// FIXME: These variables should be private!
+    // FIXME: These variables should be private!
 
         //. Calculate the bounding box of the graphic in this StageHandle
-	//. and stores the result in _bbox.
+    //. and stores the result in _bbox.
         void cache_bbox();
         //. The stage this StageHandle belongs into.
         StageImpl                         *my_parent;
         //. The graphic forming this StageHandle.
         Fresco::Graphic_var                my_child;
         //. This tag is unique for the parent-Stage and identifies this
-	//. StageHandle.
+    //. StageHandle.
         Fresco::Tag                        my_tag;
         //. The position of the graphic forming this StageHandle.
         Fresco::Vertex                     my_position;
         //. The size of the graphic forming this StageHandle
         Fresco::Vertex                     my_size;
         //. The bounding box of the graphic of this StageHandle as
-	//. calculated by cache_bbox().
+    //. calculated by cache_bbox().
         Geometry::Rectangle<Fresco::Coord> my_bbox;
         //. The alignment along the x-axis.
         Fresco::Alignment                  my_xalign;
@@ -145,7 +145,7 @@ namespace Berlin
         Fresco::Alignment                  my_yalign;
         //. A mutex for thread safety.
         Prague::Mutex                      my_mutex;
-	//. The layer this StageHandle has.
+    //. The layer this StageHandle has.
         Layout::Stage::Index               my_layer;
     };
 

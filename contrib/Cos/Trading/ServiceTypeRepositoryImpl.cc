@@ -39,9 +39,9 @@ ServiceTypeRepositoryImpl::ServiceTypeRepositoryImpl(Trader *t)
 ServiceTypeRepository::IncarnationNumber ServiceTypeRepositoryImpl::incarnation() { return _incarnation;}
 
 ServiceTypeRepository::IncarnationNumber ServiceTypeRepositoryImpl::add_type(const char *name,
-									     const char *if_name,
-									     const ServiceTypeRepository::PropStructSeq &props,
-									     const ServiceTypeRepository::ServiceTypeNameSeq &super_types)
+                                         const char *if_name,
+                                         const ServiceTypeRepository::PropStructSeq &props,
+                                         const ServiceTypeRepository::ServiceTypeNameSeq &super_types)
 {
   /*
    * check for duplicate entries
@@ -58,9 +58,9 @@ ServiceTypeRepository::IncarnationNumber ServiceTypeRepositoryImpl::add_type(con
   for(CORBA::ULong i = 0; i < super_types.length(); i++)
     if (types.find(string(super_types[i])) != types.end())
       {
-	UnknownServiceType exc;
-	exc.type = CORBA::string_dup(super_types[i]);
-	throw exc;
+    UnknownServiceType exc;
+    exc.type = CORBA::string_dup(super_types[i]);
+    throw exc;
       }
 
   TypeStruct type;
@@ -76,11 +76,11 @@ ServiceTypeRepository::IncarnationNumber ServiceTypeRepositoryImpl::add_type(con
   for(CORBA::ULong j = 0; j < type.props.length(); j++)
     {
       if (properties.find(string(type.props[j].name)) != properties.end())
-	{
-	  DuplicatePropertyName exc;
-	  exc.name = CORBA::string_dup(type.props[j].name);
-	  throw exc;
-	}
+    {
+      DuplicatePropertyName exc;
+      exc.name = CORBA::string_dup(type.props[j].name);
+      throw exc;
+    }
       properties[string(type.props[j].name)] = true;
     }
   
@@ -99,15 +99,15 @@ ServiceTypeRepository::IncarnationNumber ServiceTypeRepositoryImpl::add_type(con
     map<string,CosTradingRepos::ServiceTypeRepository::PropStruct>::iterator i = map2.find(string(tmp.props[l].name));
     if (i != map2.end())
       {
-	if (tmp.props[l] != (*i).second)
-	  {
-	    ServiceTypeRepository::ValueTypeRedefinition exc;
-	    exc.type_1 = CORBA::string_dup("HACK");
-	    exc.type_2 = CORBA::string_dup("HACK");
-	    exc.definition_1 = tmp.props[l];
-	    exc.definition_2 = (*i).second;
-	    throw exc;
-	  }
+    if (tmp.props[l] != (*i).second)
+      {
+        ServiceTypeRepository::ValueTypeRedefinition exc;
+        exc.type_1 = CORBA::string_dup("HACK");
+        exc.type_2 = CORBA::string_dup("HACK");
+        exc.definition_1 = tmp.props[l];
+        exc.definition_2 = (*i).second;
+        throw exc;
+      }
       }
     map2[string(tmp.props[l].name)] = tmp.props[l];
   }
@@ -133,13 +133,13 @@ repository_t::iterator i2 = types.begin();
      // Iterate over all super types
      for(int i = 0; (*i2).second.super_types.length(); i++)
        {
-	 if (strcmp((*i2).second.super_types[i], name) == 0)
-	   {
-	     ServiceTypeRepository::HasSubTypes exc;
-	     exc.the_type = name;
-	     exc.sub_type = CORBA::string_dup((*i2).first.c_str());
-	     throw exc;
-	   }
+     if (strcmp((*i2).second.super_types[i], name) == 0)
+       {
+         ServiceTypeRepository::HasSubTypes exc;
+         exc.the_type = name;
+         exc.sub_type = CORBA::string_dup((*i2).first.c_str());
+         throw exc;
+       }
        }
    }
  types.erase(i);
@@ -168,8 +168,8 @@ ServiceTypeRepositoryImpl::list_types(const ServiceTypeRepository::SpecifiedServ
     if (all) lst.push_back((*i).first);
     else
       {
-	ServiceTypeRepository::IncarnationNumber n = (*i).second.incarnation;
-	if (_incarnation < n) lst.push_back((*i).first);
+    ServiceTypeRepository::IncarnationNumber n = (*i).second.incarnation;
+    if (_incarnation < n) lst.push_back((*i).first);
       }
   /**
    * Create answer
@@ -216,7 +216,7 @@ ServiceTypeRepositoryImpl::fully_describe_type(const char *name)
 }
 
 void ServiceTypeRepositoryImpl::fully_describe_type(ServiceTypeRepository::TypeStruct *result,
-						    ServiceTypeRepository::TypeStruct &super_type)
+                            ServiceTypeRepository::TypeStruct &super_type)
 {
   /*
    * Add properties

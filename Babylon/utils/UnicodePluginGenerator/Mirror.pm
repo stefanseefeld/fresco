@@ -10,20 +10,20 @@ sub new
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next unless ($info);
+    next unless ($info);
 
-	my @list = split /;/, $info, 15;
-	
-	if ($list[9] eq "Y") {
-	    $self->{hex($list[0])} = 1;
-	} else {
-	    $self->{hex($list[0])} = 0;
-	}
+    my @list = split /;/, $info, 15;
+    
+    if ($list[9] eq "Y") {
+        $self->{hex($list[0])} = 1;
+    } else {
+        $self->{hex($list[0])} = 0;
+    }
     }
     
     close(UCD);
@@ -77,20 +77,20 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef")
-	    {
-		$self->{_ELEM} = $self->data($i) if ($self->{_ELEM} eq "");
-		if ($self->{_ELEM} ne $self->data($i)) {
-		    $self->{_ATTENTION_NEEDED} = 1;
-		    last;
-		}
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef")
+        {
+        $self->{_ELEM} = $self->data($i) if ($self->{_ELEM} eq "");
+        if ($self->{_ELEM} ne $self->data($i)) {
+            $self->{_ATTENTION_NEEDED} = 1;
+            last;
+        }
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -104,12 +104,12 @@ sub function
     
     if ($self->{_ATTENTION_NEEDED})
     {
-	$tmp .= "            return my_mirror.test(uc - my_first_letter);\n";
-	$tmp .= "        }\n\n";
+    $tmp .= "            return my_mirror.test(uc - my_first_letter);\n";
+    $tmp .= "        }\n\n";
     }
     else
     {
-	$tmp .= sprintf "            return %s;\n        }\n\n", $self->{_ELEM};
+    $tmp .= sprintf "            return %s;\n        }\n\n", $self->{_ELEM};
     }
     return $tmp;
 }
@@ -121,7 +121,7 @@ sub var_def
     my $bl_length = $_[1] - $_[0] + 1;
 
     return "        static const std::bitset<$bl_length> my_mirror;\n"
-	if ($self->{_ATTENTION_NEEDED});
+    if ($self->{_ATTENTION_NEEDED});
     return "";
 }
 
@@ -136,21 +136,21 @@ sub var
 
     if ($self->{_ATTENTION_NEEDED})
     {
-	my $tmp  = "    const std::bitset<$bl_length> $bl_name\:\:my_mirror(std::string(\"";
-	my $str  = "";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) eq "undef")
-	    {
-		$str = $self->{_ELEM}.$str;
-	    }
-	    else
-	    {
-		$str = $self->data($i).$str;
-	    }
-	}
-	$tmp    .= $str."\"));\n\n";
-	return $tmp;
+    my $tmp  = "    const std::bitset<$bl_length> $bl_name\:\:my_mirror(std::string(\"";
+    my $str  = "";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) eq "undef")
+        {
+        $str = $self->{_ELEM}.$str;
+        }
+        else
+        {
+        $str = $self->data($i).$str;
+        }
+    }
+    $tmp    .= $str."\"));\n\n";
+    return $tmp;
     }
     return "";
 }

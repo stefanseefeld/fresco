@@ -42,54 +42,54 @@ namespace Berlin
   {
       enum gstate
       {
-	  st_trafo, 
-	  st_clip,
-	  st_fg_color,
-	  st_lt_color, 
-	  st_point_size, 
-	  st_line_width,
-	  st_line_end_style, 
-	  st_surface_fill_style,
-	  st_texture, 
-	  st_font_size, 
-	  st_font_weight,
-	  st_font_family, 
-	  st_font_subfamily,
-	  st_font_fullname,
-	  st_font_style, 
-	  st_font_attr,
-	  st_last
+      st_trafo, 
+      st_clip,
+      st_fg_color,
+      st_lt_color, 
+      st_point_size, 
+      st_line_width,
+      st_line_end_style, 
+      st_surface_fill_style,
+      st_texture, 
+      st_font_size, 
+      st_font_weight,
+      st_font_family, 
+      st_font_subfamily,
+      st_font_fullname,
+      st_font_style, 
+      st_font_attr,
+      st_last
       };
   
       struct DrawState
       {
-	  DrawState() : flags(0) { }
-	  // bitset<st_last> flags;
-	  unsigned long flags;
-	  Fresco::Transform_var saved_trafo;
-	  Fresco::Region_var saved_clip;
-	  Fresco::Color saved_fg_color;
-	  Fresco::Color saved_lt_color;
-	  Fresco::Coord saved_point_size;
-	  Fresco::Coord saved_line_width;
-	  Fresco::DrawingKit::Endstyle saved_line_end_style;
-	  Fresco::DrawingKit::Fillstyle saved_surface_fill_style;
-	  Fresco::Raster_var saved_texture;
-	  CORBA::ULong saved_font_size;
-	  CORBA::ULong saved_font_weight;
-	  Fresco::Unistring_var saved_font_family;
-	  Fresco::Unistring_var saved_font_subfamily;
-	  Fresco::Unistring_var saved_font_fullname;
-	  Fresco::Unistring_var saved_font_style;
-	  // something here...
-	  // for holding NVPair saved_font_attr;
+      DrawState() : flags(0) { }
+      // bitset<st_last> flags;
+      unsigned long flags;
+      Fresco::Transform_var saved_trafo;
+      Fresco::Region_var saved_clip;
+      Fresco::Color saved_fg_color;
+      Fresco::Color saved_lt_color;
+      Fresco::Coord saved_point_size;
+      Fresco::Coord saved_line_width;
+      Fresco::DrawingKit::Endstyle saved_line_end_style;
+      Fresco::DrawingKit::Fillstyle saved_surface_fill_style;
+      Fresco::Raster_var saved_texture;
+      CORBA::ULong saved_font_size;
+      CORBA::ULong saved_font_weight;
+      Fresco::Unistring_var saved_font_family;
+      Fresco::Unistring_var saved_font_subfamily;
+      Fresco::Unistring_var saved_font_fullname;
+      Fresco::Unistring_var saved_font_style;
+      // something here...
+      // for holding NVPair saved_font_attr;
       };
 
     public:
       virtual void save()
       {
-	  Prague::Trace trace("DrawingKitBase::save");
-	  my_states.push(DrawState());
+      Prague::Trace trace("DrawingKitBase::save");
+      my_states.push(DrawState());
       }
       virtual void restore();
 
@@ -168,41 +168,41 @@ namespace Berlin
       if (my_states.empty()) return; // no state to restore
       DrawState &prev = my_states.top();
       if(prev.flags & (1 << st_trafo))
-	  set_transformation(prev.saved_trafo);
+      set_transformation(prev.saved_trafo);
       if(prev.flags & (1 << st_clip))
-	  set_clipping(prev.saved_clip);
+      set_clipping(prev.saved_clip);
       if(prev.flags & (1 << st_fg_color)) 
           set_foreground(prev.saved_fg_color);
       if(prev.flags & (1 << st_lt_color))
-	  set_lighting(prev.saved_lt_color);
+      set_lighting(prev.saved_lt_color);
       if(prev.flags & (1 << st_point_size))
-	  set_point_size(prev.saved_point_size);
+      set_point_size(prev.saved_point_size);
       if(prev.flags & (1 << st_line_width)) 
-	  set_line_width(prev.saved_line_width);
+      set_line_width(prev.saved_line_width);
       if(prev.flags & (1 << st_line_end_style))
-	  set_line_endstyle(prev.saved_line_end_style);
+      set_line_endstyle(prev.saved_line_end_style);
       if(prev.flags & (1 << st_surface_fill_style))
-	  set_surface_fillstyle(prev.saved_surface_fill_style);
+      set_surface_fillstyle(prev.saved_surface_fill_style);
       if(prev.flags & (1 << st_texture))
-	  set_texture(prev.saved_texture);
+      set_texture(prev.saved_texture);
       if(prev.flags & (1 << st_font_size)) 
-	  set_font_size(prev.saved_font_size);
+      set_font_size(prev.saved_font_size);
       if(prev.flags & (1 << st_font_weight)) 
-	  set_font_weight(prev.saved_font_weight);
+      set_font_weight(prev.saved_font_weight);
       if(prev.flags & (1 << st_font_family))
-	  set_font_family((Fresco::Unistring &)prev.saved_font_family);
+      set_font_family((Fresco::Unistring &)prev.saved_font_family);
       if(prev.flags & (1 << st_font_subfamily))
-	  set_font_subfamily((Fresco::Unistring &)
-			     prev.saved_font_subfamily);
+      set_font_subfamily((Fresco::Unistring &)
+                 prev.saved_font_subfamily);
       if(prev.flags & (1 << st_font_fullname))
-	  set_font_fullname((Fresco::Unistring &)
-			    prev.saved_font_fullname);
+      set_font_fullname((Fresco::Unistring &)
+                prev.saved_font_fullname);
       if(prev.flags & (1 << st_font_style))
-	  set_font_style((Fresco::Unistring &)prev.saved_font_style);
+      set_font_style((Fresco::Unistring &)prev.saved_font_style);
 //      if(prev.flags[st_font_attr])
 //      {
 //          for (unsigned long i = 0; i < prev.saved_font_attr.length())
-// 	        setFontAttr(prev.saved_font_attr[i]);
+//             setFontAttr(prev.saved_font_attr[i]);
 //      }
       my_states.pop();
   }
@@ -238,13 +238,13 @@ namespace Berlin
   inline void DrawingKitBase::foreground(const Fresco::Color &c)
   {
       REMEMBER(fg_color, Fresco::Color, foreground())
-	  set_foreground(c);
+      set_foreground(c);
   }
 
   inline void DrawingKitBase::lighting(const Fresco::Color &c)
   {
       REMEMBER(lt_color, Fresco::Color, lighting())
-	  set_lighting(c);
+      set_lighting(c);
   }
 
   inline void DrawingKitBase::point_size(Fresco::Coord s)

@@ -84,32 +84,32 @@ void EventManager::next_event()
     // the first item determines which focus to send this event to
     try
     {
-	if (event->length()) my_foci[event[0].dev]->dispatch(event);
+    if (event->length()) my_foci[event[0].dev]->dispatch(event);
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     {
-	std::cerr << "EventManager: warning: corrupt scene graph!"
-		  << std::endl;
+    std::cerr << "EventManager: warning: corrupt scene graph!"
+          << std::endl;
     }
     catch (const CORBA::BAD_PARAM &)
     {
-	std::cerr << "EventManager: caught bad parameter." << std::endl;
+    std::cerr << "EventManager: caught bad parameter." << std::endl;
     }
 }
 
 void EventManager::restore(Region_ptr r)
 {
     for (flist_t::iterator i = my_foci.begin();
-	 i != my_foci.end();
-	 ++i)
-	(*i)->restore(r);
+     i != my_foci.end();
+     ++i)
+    (*i)->restore(r);
 }
 
 void EventManager::damage(Region_ptr r)
 {
     for (flist_t::iterator i = my_foci.begin();
-	 i != my_foci.end();
-	 ++i)
-	(*i)->damage(r);
+     i != my_foci.end();
+     ++i)
+    (*i)->damage(r);
 }
 

@@ -35,7 +35,7 @@ using namespace Fresco;
 using namespace Berlin;
 
 ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em,
-			     DrawingKit_ptr d) :
+                 DrawingKit_ptr d) :
     my_screen(g), 
     my_emanager(em), 
     my_drawing(DrawingKit::_duplicate(d)),
@@ -72,9 +72,9 @@ void ScreenManager::repair()
     Tracer::reset_clock();
     clock_t start = traverse_clock = myclock(), mid, mid2, mid3, end;
     {
-	Guard<Mutex> guard(my_mutex);
-	my_tmpDamage->copy(Region_var(my_theDamage->_this()));
-	my_theDamage->clear();
+    Guard<Mutex> guard(my_mutex);
+    my_tmpDamage->copy(Region_var(my_theDamage->_this()));
+    my_theDamage->clear();
     }
 
     // Place here for single-buffered Consoles:
@@ -87,16 +87,16 @@ void ScreenManager::repair()
     mid = myclock();
     try
     {
-	my_screen->traverse(Traversal_var(my_traversal->_this()));
+    my_screen->traverse(Traversal_var(my_traversal->_this()));
     }
     catch (const CORBA::OBJECT_NOT_EXIST &)
     {
       std::cerr << "ScreenManager: warning: corrupt scene graph!"
-		<< std::endl;
+        << std::endl;
     }
     catch (const CORBA::BAD_PARAM &)
     {
-	std::cerr << "ScreenManager: caught bad parameter" << std::endl;
+    std::cerr << "ScreenManager: caught bad parameter" << std::endl;
     }
     my_drawing->finish_traversal();
     my_traversal->finish();
@@ -109,19 +109,19 @@ void ScreenManager::repair()
     end = myclock();
     my_emanager->damage(Region_var(my_tmpDamage->_this()));
     {
-	std::ostringstream buf;
-	buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
-	buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
-	buf << (end-mid2)/1000. << " ";
-	buf << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
+    std::ostringstream buf;
+    buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
+    buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
+    buf << (end-mid2)/1000. << " ";
+    buf << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
 
-	Logger::log(Logger::drawing) << buf.str();
-	Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is "
-				       << Provider<TransformImpl>::size()
-				       << std::endl;
-	Logger::log(Logger::lifecycle) << "Provider<Region> pool size is "
-				       << Provider<RegionImpl>::size()
-				       << std::endl;
+    Logger::log(Logger::drawing) << buf.str();
+    Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is "
+                       << Provider<TransformImpl>::size()
+                       << std::endl;
+    Logger::log(Logger::lifecycle) << "Provider<Region> pool size is "
+                       << Provider<RegionImpl>::size()
+                       << std::endl;
     }
 }
 
@@ -138,26 +138,26 @@ void ScreenManager::run()
     my_theDamage = new RegionImpl;
     my_tmpDamage = new RegionImpl;
     my_traversal = new DrawTraversalImpl(my_screen,
-					 Region::_nil(),
-					 Transform::_nil(),
-					 my_drawing);
+                     Region::_nil(),
+                     Transform::_nil(),
+                     my_drawing);
     Prague::Time last;
     while (true)
     {
-	bool haveDamage;
-	{
-	    Guard<Mutex> guard(my_mutex);
-	    haveDamage = my_theDamage->defined();
-	}
-	if (haveDamage)
-	{
-	    Prague::Time current = Prague::Time::currentTime();
-	    if (current > last + Prague::Time(33))
-	    {
-		repair();
-		last = current;
-	    }
-	}
-	my_emanager->next_event();
+    bool haveDamage;
+    {
+        Guard<Mutex> guard(my_mutex);
+        haveDamage = my_theDamage->defined();
+    }
+    if (haveDamage)
+    {
+        Prague::Time current = Prague::Time::currentTime();
+        if (current > last + Prague::Time(33))
+        {
+        repair();
+        last = current;
+        }
+    }
+    my_emanager->next_event();
     }
 }

@@ -30,7 +30,7 @@
 #include <map>
 
 bool operator != (const CosTradingRepos::ServiceTypeRepository::PropStruct &p1,
-		  const CosTradingRepos::ServiceTypeRepository::PropStruct &p2)
+          const CosTradingRepos::ServiceTypeRepository::PropStruct &p2)
 {
   if (p1.mode != p2.mode) return true;
   if (!p1.value_type->equal(p2.value_type)) return true;
@@ -38,7 +38,7 @@ bool operator != (const CosTradingRepos::ServiceTypeRepository::PropStruct &p1,
 }
 
 bool operator < (const CosTradingRepos::ServiceTypeRepository::IncarnationNumber &i1,
-		 const CosTradingRepos::ServiceTypeRepository::IncarnationNumber &i2)
+         const CosTradingRepos::ServiceTypeRepository::IncarnationNumber &i2)
 {
   if (i1.high < i2.high) return true;
   if (i1.high > i2.high) return false;

@@ -32,12 +32,12 @@ namespace Berlin
     class Backdrop : public MonoGraphic
     {
       public:
-	Backdrop();
-	~Backdrop();
-	virtual void request(Requisition &);
-	
-	virtual void traverse(Traversal_ptr);
-	virtual void draw(DrawTraversal_ptr);
+    Backdrop();
+    ~Backdrop();
+    virtual void request(Requisition &);
+    
+    virtual void traverse(Traversal_ptr);
+    virtual void draw(DrawTraversal_ptr);
     };
     
   } // namespace

@@ -48,8 +48,8 @@ namespace Babylon {
       out.resize(in.length());
       Babylon::UTF32_string::const_iterator j = in.begin();
       for (Babylon::String::iterator i = out.begin();
-	   i != out.end();
-	   ++i, ++j) i->operator=(*j);
+       i != out.end();
+       ++i, ++j) i->operator=(*j);
   }
 
 
@@ -59,10 +59,10 @@ namespace Babylon {
   public:
       Char_Mapping(size_t start, size_t length)
       {
-	  resize(length);
+      resize(length);
 
-	  for (size_t i = 0; i < length; ++i)
-	      (*this)[i] = i + start;
+      for (size_t i = 0; i < length; ++i)
+          (*this)[i] = i + start;
       }
 
       Char_Mapping() {}

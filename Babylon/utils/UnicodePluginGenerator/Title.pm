@@ -10,16 +10,16 @@ sub new
 
     while(<UCD>)
     {
-	chop;
-	(my $info, my $rest) = split /#/;
-	next unless $info;
-	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+    chop;
+    (my $info, my $rest) = split /#/;
+    next unless $info;
+    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-	next unless ($info);
+    next unless ($info);
 
-	my @list = split /;/, $info, 15;
-	
-	$self->{hex($list[0])} = $list[14] if ($list[14] ne "");
+    my @list = split /;/, $info, 15;
+    
+    $self->{hex($list[0])} = $list[14] if ($list[14] ne "");
     }
 
     $self->{_BL_START} = -1;
@@ -61,16 +61,16 @@ sub setup_for
 
     if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
     {
-	$self->{_BL_START} = $bl_start;
-	$self->{_BL_END} = $bl_end;
-	for (my $i = $bl_start; $i <= $bl_end; $i++)
-	{
-	    if ($self->data($i) ne "undef") {
-		$self->{_ATTENTION_NEEDED} = 1;
-		last;
-	    }
-	    $self->{_ATTENTION_NEEDED} = 0;
-	}
+    $self->{_BL_START} = $bl_start;
+    $self->{_BL_END} = $bl_end;
+    for (my $i = $bl_start; $i <= $bl_end; $i++)
+    {
+        if ($self->data($i) ne "undef") {
+        $self->{_ATTENTION_NEEDED} = 1;
+        last;
+        }
+        $self->{_ATTENTION_NEEDED} = 0;
+    }
     }
 }
 
@@ -92,11 +92,11 @@ sub function {
     my $tmp = "        UCS4 titlecase(const UCS4 uc) const\n        {\n";
     if ($self->{_ATTENTION_NEEDED})
     {
-	$tmp .= "            return $bl_name\:\:my_title\[uc - my_first_letter\];\n";
+    $tmp .= "            return $bl_name\:\:my_title\[uc - my_first_letter\];\n";
     }
     else
     {
-	$tmp .= "            return uc;\n";
+    $tmp .= "            return uc;\n";
     }
     $tmp   .= "        }\n\n";
 
@@ -110,7 +110,7 @@ sub var_def
     my $bl_length = $_[1] - $_[0] + 1;
 
     return "        static const UCS4 my_title\[$bl_length\];\n"
-	if ($self->{_ATTENTION_NEEDED});
+    if ($self->{_ATTENTION_NEEDED});
     return "";
 }
 
@@ -123,22 +123,22 @@ sub var {
     my $bl_name  = $_[2];
 
     if ($self->{_ATTENTION_NEEDED}) {
-	my $tmp = "    const UCS4 $bl_name\:\:my_title\[\] =\n    {";
-	for (my $i= $bl_start; $i <= $bl_end; $i++)
-	{
-	    $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
-	    if ($self->data($i) eq "undef")
-	    {
-		$tmp .= sprintf "0x%04X", $i;
-	    }
-	    else
-	    {
-		$tmp .= "0x".$self->data($i);
-	    }
-	    $tmp .= ", " if ( $i != $bl_end);
-	}
-	$tmp .= "\n    };\n\n";
-	return $tmp;
+    my $tmp = "    const UCS4 $bl_name\:\:my_title\[\] =\n    {";
+    for (my $i= $bl_start; $i <= $bl_end; $i++)
+    {
+        $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
+        if ($self->data($i) eq "undef")
+        {
+        $tmp .= sprintf "0x%04X", $i;
+        }
+        else
+        {
+        $tmp .= "0x".$self->data($i);
+        }
+        $tmp .= ", " if ( $i != $bl_end);
+    }
+    $tmp .= "\n    };\n\n";
+    return $tmp;
     }
     return "";
 }

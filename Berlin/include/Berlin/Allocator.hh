@@ -56,7 +56,7 @@ namespace Berlin
       void cache_allocation();
       void need_damage(RegionImpl *, Fresco::Allocation_ptr);
       static void natural_allocation(const Fresco::Graphic::Requisition &,
-				     RegionImpl &);
+                     RegionImpl &);
   };
 
   //. A TransformAllocator maps its allocate to a translation
@@ -68,8 +68,8 @@ namespace Berlin
   {
     public:
       TransformAllocator(Fresco::Alignment, Fresco::Alignment,
-			 Fresco::Alignment, Fresco::Alignment,
-			 Fresco::Alignment, Fresco::Alignment);
+             Fresco::Alignment, Fresco::Alignment,
+             Fresco::Alignment, Fresco::Alignment);
       ~TransformAllocator();
 
       virtual void request(Fresco::Graphic::Requisition &);
@@ -80,7 +80,7 @@ namespace Berlin
       Fresco::Alignment my_xchild, my_ychild, my_zchild;
       
       void compute_delta(const Fresco::Vertex &, const Fresco::Vertex &,
-			 Fresco::Vertex &);
+             Fresco::Vertex &);
   };
 
 } // namespace

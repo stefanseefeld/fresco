@@ -34,12 +34,12 @@ namespace Berlin
     class SHMDrawableFactory : virtual public Console::Extension
     {
       public:
-	//. Creates a new Drawable of the given size (x, y) and depth. It
-	//. is accessable under the given shm-id.
-	virtual Console::Drawable *create_drawable(int shmid,
-						   Fresco::PixelCoord,
-						   Fresco::PixelCoord,
-						   Fresco::PixelCoord) = 0;
+    //. Creates a new Drawable of the given size (x, y) and depth. It
+    //. is accessable under the given shm-id.
+    virtual Console::Drawable *create_drawable(int shmid,
+                           Fresco::PixelCoord,
+                           Fresco::PixelCoord,
+                           Fresco::PixelCoord) = 0;
     };
 
   } // namespace

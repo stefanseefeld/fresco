@@ -54,10 +54,10 @@ bool Terminal::Output::notify(Agent::iomask mask)
     std::string line;
     while (getline(is, line))
     {
-	StreamBuffer::Data data(line.length(), line.length(),
-				(CORBA::Octet *)line.data(), false);
-	my_terminal->my_obuf->write(data);
-	my_terminal->my_obuf->flush();
+    StreamBuffer::Data data(line.length(), line.length(),
+                (CORBA::Octet *)line.data(), false);
+    my_terminal->my_obuf->write(data);
+    my_terminal->my_obuf->flush();
     }
     return true;
 }

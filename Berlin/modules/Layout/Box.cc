@@ -53,9 +53,9 @@ Box::~Box()
 {
     if (my_cache_allocations)
     {
-	for (CORBA::Long i = 0; i != my_cache_size; ++i)
-	    Provider<RegionImpl>::adopt(my_cache_allocations[i]);
-	delete[] my_cache_allocations;
+    for (CORBA::Long i = 0; i != my_cache_size; ++i)
+        Provider<RegionImpl>::adopt(my_cache_allocations[i]);
+    delete[] my_cache_allocations;
     }
     delete my_obj_name;
     delete my_layout;
@@ -66,16 +66,16 @@ void Box::request(Fresco::Graphic::Requisition &r)
     Trace trace(this, "Box::request");
     if (!my_requested)
     {
-	GraphicImpl::default_requisition(my_requisition);
-	GraphicImpl::init_requisition(my_requisition);
-	long n = num_children();
-	if (n > 0)
-	{
-	    Fresco::Graphic::Requisition *r = children_requests();
-	    my_layout->request(n, r, my_requisition);
-	    deallocate_requisitions(r);
-	}
-	my_requested = true;
+    GraphicImpl::default_requisition(my_requisition);
+    GraphicImpl::init_requisition(my_requisition);
+    long n = num_children();
+    if (n > 0)
+    {
+        Fresco::Graphic::Requisition *r = children_requests();
+        my_layout->request(n, r, my_requisition);
+        deallocate_requisitions(r);
+    }
+    my_requested = true;
     }
     r = my_requisition;
 }
@@ -86,51 +86,51 @@ void Box::extension(const Allocation::Info &info, Region_ptr ext_region)
     long size = num_children();
     if (size > 0)
     {
-	Allocation::Info child;
-	Vertex origin, previous, delta;
-	previous.x = previous.y = previous.z = 0;
+    Allocation::Info child;
+    Vertex origin, previous, delta;
+    previous.x = previous.y = previous.z = 0;
 
-	Lease_var<TransformImpl>
-	    child_tx(Provider<TransformImpl>::provide());
-	Lease_var<TransformImpl>
-	    tmp_tx(Provider<TransformImpl>::provide());  
-	Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());  
-	Region_var region_this(region->_this());
-	Transform_var tmp_tx_this(tmp_tx->_this());
-	tmp_tx->load_identity();
-	child_tx->load_identity();
-	
-	child.transformation = child_tx->_this();
-	child.transformation->copy(info.transformation);
-	LayoutManager::Allocations result =
-	    children_allocations(info.allocation);
-	for (long i = 0; i < size; i++)
-	{
+    Lease_var<TransformImpl>
+        child_tx(Provider<TransformImpl>::provide());
+    Lease_var<TransformImpl>
+        tmp_tx(Provider<TransformImpl>::provide());  
+    Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());  
+    Region_var region_this(region->_this());
+    Transform_var tmp_tx_this(tmp_tx->_this());
+    tmp_tx->load_identity();
+    child_tx->load_identity();
+    
+    child.transformation = child_tx->_this();
+    child.transformation->copy(info.transformation);
+    LayoutManager::Allocations result =
+        children_allocations(info.allocation);
+    for (long i = 0; i < size; i++)
+    {
 #if 1
-	    *region = *result[i];
-	    region->normalize(origin);
-	    delta = origin - previous;
-// 	      tmp_tx->loadIdentity();
-	    tmp_tx->translate(delta);
-	    child.allocation = region_this;
-	    child.transformation->premultiply(tmp_tx_this);
-	    child_extension(i, child, ext_region);
-	    previous = origin;
+        *region = *result[i];
+        region->normalize(origin);
+        delta = origin - previous;
+//           tmp_tx->loadIdentity();
+        tmp_tx->translate(delta);
+        child.allocation = region_this;
+        child.transformation->premultiply(tmp_tx_this);
+        child_extension(i, child, ext_region);
+        previous = origin;
 #else
-	    result[i]->normalize(origin);
-	    delta = origin - previous;
-// 	      tmp_tx->loadIdentity();
-	    tmp_tx->translate(delta);
-	    child.allocation = result[i]->_this();
-	    child.transformation->premultiply(Transform_var(tmp_tx->_this()));
-	    child_extension(i, child, ext_region);
-	    previous = origin;
+        result[i]->normalize(origin);
+        delta = origin - previous;
+//           tmp_tx->loadIdentity();
+        tmp_tx->translate(delta);
+        child.allocation = result[i]->_this();
+        child.transformation->premultiply(Transform_var(tmp_tx->_this()));
+        child_extension(i, child, ext_region);
+        previous = origin;
 #endif
-	}
+    }
 #ifndef USE_ALLOCATION_CACHE
-	for (CORBA::Long i = 0; i != size; ++i)
-	    Provider<RegionImpl>::adopt(result[i]);
-	delete [] result;
+    for (CORBA::Long i = 0; i != size; ++i)
+        Provider<RegionImpl>::adopt(result[i]);
+    delete [] result;
 #endif
     }
 }
@@ -140,19 +140,19 @@ void Box::traverse(Traversal_ptr traversal)
     Trace trace(this, "Box::traverse");
     if (num_children())
     {
-	Region_var given = traversal->current_allocation();
-	if (!CORBA::is_nil(given))
- 	{
-	  /*
-	   * this cull test is not accurate, it assumes that the children
-	   * don't draw outside the box' allocation.
-	   * the alternative - using extension - is expensive...
-	   *              -stefan
-	   */
-	  if (traversal->intersects_allocation())
-	      traverse_with_allocation(traversal, given);
-	}
-	else traverse_without_allocation(traversal);
+    Region_var given = traversal->current_allocation();
+    if (!CORBA::is_nil(given))
+     {
+      /*
+       * this cull test is not accurate, it assumes that the children
+       * don't draw outside the box' allocation.
+       * the alternative - using extension - is expensive...
+       *              -stefan
+       */
+      if (traversal->intersects_allocation())
+          traverse_with_allocation(traversal, given);
+    }
+    else traverse_without_allocation(traversal);
     }
 }
 
@@ -161,16 +161,16 @@ void Box::need_resize()
     my_requested = false;
     if (my_cache_allocations)
     {
-	for (CORBA::Long i = 0; i != my_cache_size; ++i)
-	    Provider<RegionImpl>::adopt(my_cache_allocations[i]);
-	delete [] my_cache_allocations;
-	my_cache_allocations = 0;
+    for (CORBA::Long i = 0; i != my_cache_size; ++i)
+        Provider<RegionImpl>::adopt(my_cache_allocations[i]);
+    delete [] my_cache_allocations;
+    my_cache_allocations = 0;
     }
     {
-	std::ostringstream buf;
-	buf << my_box_name << " " << my_layout->name() << " with " 
-	    << num_children() << " children" << std::ends;
-	strcpy(my_obj_name, buf.str().c_str());
+    std::ostringstream buf;
+    buf << my_box_name << " " << my_layout->name() << " with " 
+        << num_children() << " children" << std::ends;
+    strcpy(my_obj_name, buf.str().c_str());
     }
     PolyGraphic::need_resize();
 }
@@ -189,7 +189,7 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
     // fetch requested (presumably allocated) child regions
     CORBA::Long n = num_children();
     LayoutManager::Allocations result =
-	children_allocations(info.allocation);
+    children_allocations(info.allocation);
     Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
     tx->load_identity();
 
@@ -216,32 +216,32 @@ LayoutManager::Allocations Box::children_allocations(Region_ptr allocation)
     Trace trace(this, "Box::children_allocations");
     if (!my_cache_allocations)
     {
-	CORBA::Long children = num_children();
-	Fresco::Graphic::Requisition *childrenRequisitions =
-	    children_requests();
-	
-	// cache integrated form of children requisitions
-	if (!my_requested)
-	{
-	    GraphicImpl::init_requisition(my_requisition);
-	    my_layout->request(children, childrenRequisitions,
-			       my_requisition);
-	    my_requested = true;
-	}
-	// build region array for children
-	RegionImpl **childrenRegions = new RegionImpl *[children];
-	for (CORBA::Long i = 0; i < children; i++)
-	{
-	    childrenRegions[i] = Provider<RegionImpl>::provide();
-	    childrenRegions[i]->valid = true;
-	}
-	// fill in children regions which are reasonable matches for the
-	// given requesitions
-	my_layout->allocate(children, childrenRequisitions, allocation,
-			  childrenRegions);
-	deallocate_requisitions(childrenRequisitions);
-	my_cache_allocations = childrenRegions;
-	my_cache_size = children;
+    CORBA::Long children = num_children();
+    Fresco::Graphic::Requisition *childrenRequisitions =
+        children_requests();
+    
+    // cache integrated form of children requisitions
+    if (!my_requested)
+    {
+        GraphicImpl::init_requisition(my_requisition);
+        my_layout->request(children, childrenRequisitions,
+                   my_requisition);
+        my_requested = true;
+    }
+    // build region array for children
+    RegionImpl **childrenRegions = new RegionImpl *[children];
+    for (CORBA::Long i = 0; i < children; i++)
+    {
+        childrenRegions[i] = Provider<RegionImpl>::provide();
+        childrenRegions[i]->valid = true;
+    }
+    // fill in children regions which are reasonable matches for the
+    // given requesitions
+    my_layout->allocate(children, childrenRequisitions, allocation,
+              childrenRegions);
+    deallocate_requisitions(childrenRequisitions);
+    my_cache_allocations = childrenRegions;
+    my_cache_size = children;
     }
 #ifndef USE_ALLOCATION_CACHE
     // Return a copy of the region array for old code that changes the
@@ -275,43 +275,43 @@ void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
     CORBA::Long begin, end, incr;
     if (t->direction() == Traversal::up)
     {
-	begin = 0;
-	end = size;
-	incr = 1;
+    begin = 0;
+    end = size;
+    incr = 1;
     }
     else
     {
-	begin = size - 1;
-	end = -1;
-	incr = -1;
+    begin = size - 1;
+    end = -1;
+    incr = -1;
     }
     for (CORBA::Long i = begin; i != end; i += incr)
     {
-	if (CORBA::is_nil(my_children[i].peer)) continue;
-	Vertex origin;
-	*region = *result[i];
-	region->normalize(origin);
-	tx->load_identity();
-	// ok, so we stipulate that Boxes lay out their children 
-	// only translating them -stefan
-	tx->translate(origin);
-	try
-	{
-	    t->traverse_child(my_children[i].peer,
-			      my_children[i].localId,
-			      region_this, tx_this);
-	}
-	catch (const CORBA::OBJECT_NOT_EXIST &)
-	{ my_children [i].peer = Fresco::Graphic::_nil (); }
-	catch (const CORBA::COMM_FAILURE &)
-	{ my_children [i].peer = Fresco::Graphic::_nil (); }
-	catch (const CORBA::TRANSIENT &)
-	{ my_children [i].peer = Fresco::Graphic::_nil (); }
-	if (!t->ok()) break;
+    if (CORBA::is_nil(my_children[i].peer)) continue;
+    Vertex origin;
+    *region = *result[i];
+    region->normalize(origin);
+    tx->load_identity();
+    // ok, so we stipulate that Boxes lay out their children 
+    // only translating them -stefan
+    tx->translate(origin);
+    try
+    {
+        t->traverse_child(my_children[i].peer,
+                  my_children[i].localId,
+                  region_this, tx_this);
+    }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_children [i].peer = Fresco::Graphic::_nil (); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_children [i].peer = Fresco::Graphic::_nil (); }
+    catch (const CORBA::TRANSIENT &)
+    { my_children [i].peer = Fresco::Graphic::_nil (); }
+    if (!t->ok()) break;
     }
 #ifndef USE_ALLOCATION_CACHE
     for (CORBA::Long i = 0; i != size; ++i)
-	Provider<RegionImpl>::adopt(result[i]);
+    Provider<RegionImpl>::adopt(result[i]);
     delete [] result;
 #endif
 }
@@ -321,47 +321,47 @@ void Box::traverse_without_allocation(Traversal_ptr t)
     Trace trace(this, "Box::traverse_without_allocation");
     if (t->direction() == Traversal::up)
     {
-	for (glist_t::iterator i = my_children.begin();
-	     i != my_children.end() && t->ok(); ++i)
-	{
-	    if (CORBA::is_nil(i->peer)) continue;
-	    try
-	    {
-		t->traverse_child (i->peer, i->localId, Region::_nil(),
-				   Transform::_nil());
-	    }
-	    catch (const CORBA::OBJECT_NOT_EXIST &)
-	    { i->peer = Fresco::Graphic::_nil(); }
-	    catch (const CORBA::COMM_FAILURE &)
-	    { i->peer = Fresco::Graphic::_nil(); }
-	    catch (const CORBA::TRANSIENT &)
-	    { i->peer = Fresco::Graphic::_nil(); }
-	}
+    for (glist_t::iterator i = my_children.begin();
+         i != my_children.end() && t->ok(); ++i)
+    {
+        if (CORBA::is_nil(i->peer)) continue;
+        try
+        {
+        t->traverse_child (i->peer, i->localId, Region::_nil(),
+                   Transform::_nil());
+        }
+        catch (const CORBA::OBJECT_NOT_EXIST &)
+        { i->peer = Fresco::Graphic::_nil(); }
+        catch (const CORBA::COMM_FAILURE &)
+        { i->peer = Fresco::Graphic::_nil(); }
+        catch (const CORBA::TRANSIENT &)
+        { i->peer = Fresco::Graphic::_nil(); }
+    }
     }
     else
     {
-	for (glist_t::reverse_iterator i = my_children.rbegin();
-	     i != my_children.rend() && t->ok();
-	     ++i)
-	{
-	    if (CORBA::is_nil (i->peer)) continue;
-	    try
-	    {
-		t->traverse_child (i->peer, i->localId, Region::_nil(),
-				   Transform::_nil());
-	    }
-	    catch (const CORBA::OBJECT_NOT_EXIST &)
-	    { i->peer = Fresco::Graphic::_nil(); }
-	    catch (const CORBA::COMM_FAILURE &)
-	    { i->peer = Fresco::Graphic::_nil(); }
-	    catch (const CORBA::TRANSIENT &)
-	    { i->peer = Fresco::Graphic::_nil(); }
-	}
+    for (glist_t::reverse_iterator i = my_children.rbegin();
+         i != my_children.rend() && t->ok();
+         ++i)
+    {
+        if (CORBA::is_nil (i->peer)) continue;
+        try
+        {
+        t->traverse_child (i->peer, i->localId, Region::_nil(),
+                   Transform::_nil());
+        }
+        catch (const CORBA::OBJECT_NOT_EXIST &)
+        { i->peer = Fresco::Graphic::_nil(); }
+        catch (const CORBA::COMM_FAILURE &)
+        { i->peer = Fresco::Graphic::_nil(); }
+        catch (const CORBA::TRANSIENT &)
+        { i->peer = Fresco::Graphic::_nil(); }
+    }
     }
 }
 
 BoxAlignElements::BoxAlignElements(LayoutManager *layout, Axis a,
-				   Alignment align) :
+                   Alignment align) :
     Box(layout),
     my_axis(a),
     my_alignment(align)
@@ -377,7 +377,7 @@ BoxAlignElements::~BoxAlignElements() { }
 void BoxAlignElements::append_graphic(Graphic_ptr g)
 {
     Placement *placement =
-	new Placement(new LayoutCenter(my_axis, my_alignment));
+    new Placement(new LayoutCenter(my_axis, my_alignment));
     placement->body(g);
     Box::append_graphic(Graphic_var(placement->_this()));
 }
@@ -385,7 +385,7 @@ void BoxAlignElements::append_graphic(Graphic_ptr g)
 void BoxAlignElements::prepend_graphic(Graphic_ptr g)
 {
     Placement *placement = 
-	new Placement(new LayoutCenter(my_axis, my_alignment));
+    new Placement(new LayoutCenter(my_axis, my_alignment));
     placement->body(g);
     Box::prepend_graphic(Graphic_var(placement->_this()));
 }

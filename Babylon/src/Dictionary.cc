@@ -107,7 +107,7 @@ float Dictionary::numeric_value(const UCS4 uc) const
     Prague::Trace trace("Babylon::Dictionary::numeric_value(...)");
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     if (!find_char(uc)->is_Numeric(uc))
-	throw Undefined_Property(uc, PROP_NUMERIC_VALUE);
+    throw Undefined_Property(uc, PROP_NUMERIC_VALUE);
     return find_char(uc)->numeric_value(uc);
 }
 
@@ -117,7 +117,7 @@ int Dictionary::dec_digit_value(const UCS4 uc) const
     Prague::Trace trace("Babylon::Dictionary::dec_digit_value(...)");
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     if (!find_char(uc)->is_Decimal_Digit(uc))
-	throw Undefined_Property(uc, PROP_DEC_DIGIT_VALUE);
+    throw Undefined_Property(uc, PROP_DEC_DIGIT_VALUE);
     return find_char(uc)->dec_digit_value(uc);
 }
     
@@ -127,7 +127,7 @@ int Dictionary::digit_value(const UCS4 uc) const
     Prague::Trace trace("Babylon::Dictionary::digit_value(...)");
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     if (!(find_char(uc)->is_Digit(uc)))
-	throw Undefined_Property(uc, PROP_DIGIT_VALUE);
+    throw Undefined_Property(uc, PROP_DIGIT_VALUE);
     return find_char(uc)->digit_value(uc);
 } 
 
@@ -154,7 +154,7 @@ Can_Comb_Class Dictionary::comb_class(const UCS4 uc) const
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     result = find_char(uc)->comb_class(uc);
     if (result == CC_MAX)
-    	throw Undefined_Property(uc, PROP_CHARACTER);
+        throw Undefined_Property(uc, PROP_CHARACTER);
     return result;
 }
 
@@ -166,7 +166,7 @@ Bidir_Props Dictionary::bidir_props(const UCS4 uc) const
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     result = find_char(uc)->bidir_props(uc);
     if (result == BIDIR_INVALID)
-    	throw Undefined_Property(uc, PROP_CHARACTER);
+        throw Undefined_Property(uc, PROP_CHARACTER);
     return result;
 }
 
@@ -178,7 +178,7 @@ Char_Decomp Dictionary::decomp_type(const UCS4 uc) const
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     result = find_char(uc)->decomp_type(uc);
     if (result == DECOMP_MAX)
-    	throw Undefined_Property(uc, PROP_CHARACTER);
+        throw Undefined_Property(uc, PROP_CHARACTER);
     return result;
 }
 
@@ -485,8 +485,8 @@ bool Dictionary::is_ID_Start(const UCS4 uc) const throw (Block_Error)
     Prague::Trace trace("Babylon::Char::is_ID_Start()");
     Gen_Cat cat = category(uc);
     return (cat == CAT_Lu || cat == CAT_Ll || cat == CAT_Lt ||
-	    cat == CAT_Lm || cat == CAT_Lo || cat == CAT_Nl ||
-	    is_Other_ID_Start(uc));
+        cat == CAT_Lm || cat == CAT_Lo || cat == CAT_Nl ||
+        is_Other_ID_Start(uc));
 }
 
 bool Dictionary::is_ID_Continue(const UCS4 uc) const throw (Block_Error)
@@ -494,9 +494,9 @@ bool Dictionary::is_ID_Continue(const UCS4 uc) const throw (Block_Error)
     Prague::Trace trace("Babylon::Char::is_ID_Continue()");
     Gen_Cat cat = category(uc);
     return (cat != CAT_Cf && // filter out Cf characters.
-	    (is_ID_Start(uc) ||
-	     cat == CAT_Mn || cat == CAT_Mc || cat == CAT_Nd ||
-	     cat == CAT_Pc));
+        (is_ID_Start(uc) ||
+         cat == CAT_Mn || cat == CAT_Mc || cat == CAT_Nd ||
+         cat == CAT_Pc));
 }
 
 bool Dictionary::is_XID_Start(const UCS4 uc) const throw (Block_Error)
@@ -511,7 +511,7 @@ bool Dictionary::is_XID_Continue(const UCS4 uc) const throw (Block_Error)
     Prague::Trace trace("Babylon::Char::is_XID_Continue()");
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     return (is_ID_Continue(uc) ^
-	    find_char(uc)->is_XID_Continue_Closure(uc));
+        find_char(uc)->is_XID_Continue_Closure(uc));
 }
 
 bool Dictionary::is_Default_Ignorable_Code_Point(const UCS4 uc) const
@@ -519,8 +519,8 @@ bool Dictionary::is_Default_Ignorable_Code_Point(const UCS4 uc) const
 {
     Gen_Cat cat = category(uc);
     return ((is_Other_Default_Ignorable_Code_Point(uc) ||
-	     cat == CAT_Cf || cat == CAT_Cc || cat == CAT_Cs) &&
-	    !is_White_Space(uc));
+         cat == CAT_Cf || cat == CAT_Cc || cat == CAT_Cs) &&
+        !is_White_Space(uc));
 }
 
 bool Dictionary::is_Grapheme_Extend(const UCS4 uc) const throw (Block_Error)
@@ -533,9 +533,9 @@ bool Dictionary::is_Grapheme_Base(const UCS4 uc) const throw (Block_Error)
 {
     Gen_Cat cat = category(uc);
    return ((0 <= uc && uc <= 0x10FFFF) &&
-	    !(cat == CAT_Cc || cat == CAT_Cf || cat == CAT_Cs ||
-	      cat == CAT_Co || cat == CAT_Cn || cat == CAT_Zl ||
-	      cat == CAT_Zp || is_Grapheme_Extend(uc)));
+        !(cat == CAT_Cc || cat == CAT_Cf || cat == CAT_Cs ||
+          cat == CAT_Co || cat == CAT_Cn || cat == CAT_Zl ||
+          cat == CAT_Zp || is_Grapheme_Extend(uc)));
 }
 
 bool Dictionary::is_FC_NFKC_Closure(const UCS4 uc) const throw (Block_Error)
@@ -550,9 +550,9 @@ bool Dictionary::is_Full_Composition_Exclusion(const UCS4 uc) const
     UTF32_string decomp = decompose(uc);
     if (decomp.length() == 1)
     {
-	if (decomp[0] == uc) return 0; // no decomposition
-	if (decomp_type(uc) == DECOMP_CANONICAL) return 1;
-	return 0;
+    if (decomp[0] == uc) return 0; // no decomposition
+    if (decomp_type(uc) == DECOMP_CANONICAL) return 1;
+    return 0;
     }
     if (Dictionary::instance()->comb_class(decomp[0]) != CC_SPACING) return 1;
     return 0;
@@ -608,8 +608,8 @@ bool Dictionary::is_Punctuation(const UCS4 uc) const throw (Block_Error)
 {
     Gen_Cat cat = category(uc);
     return (cat == CAT_Pc || cat == CAT_Pd || cat == CAT_Ps ||
-	    cat == CAT_Pe || cat == CAT_Pi || cat == CAT_Pf ||
-	    cat == CAT_Po);
+        cat == CAT_Pe || cat == CAT_Pi || cat == CAT_Pf ||
+        cat == CAT_Po);
 }
 
 bool Dictionary::is_Line_Separator(const UCS4 uc) const throw (Block_Error)
@@ -704,7 +704,7 @@ bool Dictionary::is_Bidi_Embedding_or_Override(const UCS4 uc) const
 {
     Bidir_Props bidi = bidir_props(uc);
     return (bidi == BIDIR_LRE || bidi == BIDIR_RLE || bidi == BIDIR_LRO ||
-	    bidi == BIDIR_RLO);
+        bidi == BIDIR_RLO);
 }
 
 bool Dictionary::is_Bidi_Other_Neutral(const UCS4 uc) const
@@ -731,9 +731,9 @@ bool Dictionary::is_Titlecase(const UCS4 uc) const throw (Block_Error)
 bool Dictionary::is_Private_Use(const UCS4 uc) const throw (Block_Error)
 {
     return ((  0xDB80 <= uc && uc >=   0xDBFF) ||
-	    (  0xE000 <= uc && uc >=   0xF8FF) ||
-	    ( 0xF0000 <= uc && uc >=  0xFFFFF) ||
-	    (0x100000 <= uc && uc >= 0x10FFFF));
+        (  0xE000 <= uc && uc >=   0xF8FF) ||
+        ( 0xF0000 <= uc && uc >=  0xFFFFF) ||
+        (0x100000 <= uc && uc >= 0x10FFFF));
 }
 
 // Other functions:
@@ -742,14 +742,14 @@ UCS4 Dictionary::first_letter_of_block(const UCS4 uc) const throw ()
     Prague::Trace trace("Babylon::Dictionary::first_Letter_of_block(...)");
     UCS4 result = UC_MAX_DEFINED;
     if (uc >= UC_MAX_DEFINED)
-	return result;
+    return result;
 
     std::vector<Data>::const_iterator b;
     Data tmp(uc, uc);
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     b = lower_bound(my_data.begin(), my_data.end(), tmp, DataLess());
     if (b->my_start <= uc && b->my_end >= uc)
-	result = b->my_start;
+    result = b->my_start;
     return result;
 }
 
@@ -758,14 +758,14 @@ UCS4 Dictionary::last_letter_of_block(const UCS4 uc) const throw ()
     Prague::Trace trace("Babylon::Dictionary::last_letter_of_block(...)");
     UCS4 result = UC_MAX_DEFINED;
     if (uc >= UC_MAX_DEFINED)
-	return result;
+    return result;
 
     std::vector<Data>::const_iterator b;
     Data tmp(uc, uc);
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     b = lower_bound(my_data.begin(), my_data.end(), tmp, DataLess());
     if (b->my_start <= uc && b->my_end >= uc)
-	result = b->my_end;
+    result = b->my_end;
     return result;
 }
 
@@ -774,17 +774,17 @@ UCS4 Dictionary::start_of_next_block(const UCS4 uc) const throw ()
     Prague::Trace trace("Babylon::Dictionary::start_of_next_block(...)");
     UCS4 result = UC_MAX_DEFINED;
     if (uc >= UC_MAX_DEFINED)
-	return result;
+    return result;
 
     std::vector<Data>::const_iterator b;
     Data tmp(uc, uc);
     Guard<RWLock, RLockTrait> guard(my_rw_lock);
     b = lower_bound(my_data.begin(), my_data.end(), tmp, DataLess()); 
     if (b != my_data.end()) {
-	if (b->my_end >= uc)
-	    ++b;
-	if (b != my_data.end())
-	    result = b->my_start;
+    if (b->my_end >= uc)
+        ++b;
+    if (b != my_data.end())
+        result = b->my_start;
     }
     return result;
 }
@@ -807,15 +807,15 @@ Dictionary::recursive_decompose(const bool compat, const UCS4 uc) const
     UTF32_string decomp(decompose(uc));
 
     if (uc == decomp[0] ||
-	!(decomp_type(uc) == DECOMP_CANONICAL ||
-	  compat))
-	return UTF32_string(1, uc);
+    !(decomp_type(uc) == DECOMP_CANONICAL ||
+      compat))
+    return UTF32_string(1, uc);
 
     UTF32_string result;
     for (UTF32_string::const_iterator i = decomp.begin();
-	 i != decomp.end();
-	 ++i)
-	result += recursive_decompose(compat, *i);
+     i != decomp.end();
+     ++i)
+    result += recursive_decompose(compat, *i);
 
     return result;
 }
@@ -832,14 +832,14 @@ Block * Dictionary::find_char(const UCS4 uc) const throw (Block_Error)
     // ASCII happens so often that this speeds things up a bit
     if (uc > p->my_end)
     {
-	// binary search for non-ASCII characters
-	++p; // advance past ASCII
-	Data tmp(uc, uc);
-	p = lower_bound(p, my_data.end(), tmp, DataLess());
+    // binary search for non-ASCII characters
+    ++p; // advance past ASCII
+    Data tmp(uc, uc);
+    p = lower_bound(p, my_data.end(), tmp, DataLess());
     }
     
     if (p == my_data.end() || p->my_start > uc) // uc belongs to no block
-	return my_undef_block->get();
+    return my_undef_block->get();
     
     if (p->my_block == 0) // need to dynamically load the script
     {
@@ -848,10 +848,10 @@ Block * Dictionary::find_char(const UCS4 uc) const throw (Block_Error)
             p->my_block = new Prague::Plugin<Block>(p->my_file);
         }
         catch(const std::runtime_error &e)
-	{
-	    // Failed to load the plugin for this block
-	    throw Block_Error(p->my_start, p->my_end, e.what());
-	}
+    {
+        // Failed to load the plugin for this block
+        throw Block_Error(p->my_start, p->my_end, e.what());
+    }
     }
 
     return p->my_block->get();
@@ -869,54 +869,54 @@ void Dictionary::update(const std::string & scanDir)
     Prague::Directory dir(scanDir, 0);
     if (!dir.is(Prague::File::dir))
     {
-	throw std::runtime_error("Babylon: \""+ dir.long_name() +
-	      "\" does not exist. I was looking for my modules there.");
+    throw std::runtime_error("Babylon: \""+ dir.long_name() +
+          "\" does not exist. I was looking for my modules there.");
     }
 
     // start scanning the directory:
     for (Prague::Directory::const_iterator dir_it = dir.begin();
-	 dir_it != dir.end();
-	 ++dir_it)
+     dir_it != dir.end();
+     ++dir_it)
     {
-	std::string name = (*dir_it)->long_name();
-	
-	if ( !((*dir_it)->is(Prague::Directory::reg)) )
-	    continue;
-	
-	Prague::Plugin<Block> * block;
-	try
-	{
-	    block = new Prague::Plugin<Block>(name);
-	}
-	catch(const std::runtime_error &e)
-	{
-	    // block can't be loaded, so skip it
-	    continue;
-	}
-	
-	UCS4 start = (*block)->first_letter();
-	UCS4 end   = (*block)->last_letter();
-	
-	if ((*block)->is_undef_block())
-	{
-	    if(my_undef_block == 0)
-	    {
-		my_undef_block = block;
-		// don't delete the block!
-	    }
-	    else
-		delete block;
-	}
-	else
-	{
-	    Data current(start, end);
-	    current.my_file = name;
-	    current.my_can_remove = 0;
-	    current.my_block = 0;
-	    
-	    my_data.push_back(current);
-	    delete block;
-	}
+    std::string name = (*dir_it)->long_name();
+    
+    if ( !((*dir_it)->is(Prague::Directory::reg)) )
+        continue;
+    
+    Prague::Plugin<Block> * block;
+    try
+    {
+        block = new Prague::Plugin<Block>(name);
+    }
+    catch(const std::runtime_error &e)
+    {
+        // block can't be loaded, so skip it
+        continue;
+    }
+    
+    UCS4 start = (*block)->first_letter();
+    UCS4 end   = (*block)->last_letter();
+    
+    if ((*block)->is_undef_block())
+    {
+        if(my_undef_block == 0)
+        {
+        my_undef_block = block;
+        // don't delete the block!
+        }
+        else
+        delete block;
+    }
+    else
+    {
+        Data current(start, end);
+        current.my_file = name;
+        current.my_can_remove = 0;
+        current.my_block = 0;
+        
+        my_data.push_back(current);
+        delete block;
+    }
     }
     
     std::vector<Data> (my_data).swap(my_data); // shrink vector
@@ -925,12 +925,12 @@ void Dictionary::update(const std::string & scanDir)
     // Sanity tests:
     if (my_undef_block == 0)
     {
-	throw Block_Error(0, 0xFFFFFFFF, "No undef-block defined.");
+    throw Block_Error(0, 0xFFFFFFFF, "No undef-block defined.");
     }
 
     if (my_data.size() == 0)
     {
-	throw Block_Error(0, 0xFFFFFFFF, "No block defined.");
+    throw Block_Error(0, 0xFFFFFFFF, "No block defined.");
     }
 } // update_dictionary
 
@@ -944,7 +944,7 @@ Dictionary::Dictionary()
     }
     
     if (override_module_path.size())
-	update(override_module_path);
+    update(override_module_path);
     else
         update(default_module_path);
 } // Dictionary::Dictionary
@@ -965,8 +965,8 @@ void Dictionary::clean()
     for (std::vector<Data>::const_iterator i = my_data.begin();
          i != my_data.end();
          ++i)
-	if (i->my_block)
-	    delete i->my_block;
+    if (i->my_block)
+        delete i->my_block;
     
     my_data.clear();
     delete my_undef_block;

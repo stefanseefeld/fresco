@@ -16,19 +16,19 @@ for ($code = 0; $code < 65536; $code++) {
       
       $str2 = "";
       while ($str =~ /(..)/g) {
-	$str2 = $1 . $str2;
+    $str2 = $1 . $str2;
       }
       $str = $str2;
       
       if (length($str) == 32) { 
-	print GLYPHS pack (H2, "FF"); # halfwidth marker
-	$str = $str2 . ("0" x 32); 
+    print GLYPHS pack (H2, "FF"); # halfwidth marker
+    $str = $str2 . ("0" x 32); 
       } else {
-	print GLYPHS pack (H2, "FE"); # fullwidth marker
-	$str =~ s/(..)(..)/$2$1/go;
+    print GLYPHS pack (H2, "FE"); # fullwidth marker
+    $str =~ s/(..)(..)/$2$1/go;
       }
       while ($str =~ /(..)/g) {
-	print GLYPHS pack(H2, $1);
+    print GLYPHS pack(H2, $1);
       }
     } else {
       print GLYPHS pack(H65, "0" x 65);

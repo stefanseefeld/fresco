@@ -146,7 +146,7 @@ void display()
           glVertex3f((*points)(Points::index[i][j][k])[0][0],
                      (*points)(Points::index[i][j][k])[0][1],
                      (*points)(Points::index[i][j][k])[0][2]);      
-		
+        
           glVertex3f((*points)(Points::index[i+1][j][k])[0][0],
                      (*points)(Points::index[i+1][j][k])[0][1],
                      (*points)(Points::index[i+1][j][k])[0][2]);
@@ -193,18 +193,18 @@ void reshape(GLsizei w, GLsizei h)
 int startGL(int argc, char** argv)
 {
   std::cout << "Keys:\n"
-	    << "'p'           switch on/off nurbs calculated points\n"
-	    << "'c'           switch on/off nurbs control points\n"
-	    << "'q'           switch on/off wire-frame visualization\n"
-	    << "'a'           switch on/off animation\n"
-	    << '\n'
-	    << "left/right    rotate around z axis\n"
-	    << "up/down       rotate around x axis\n"
-	    << "pgUp/pgDn     rotate around y axis\n"
-	    << '\n'
-	    << "ESC           exit\n"
-	    << '\n'
-	    << std::endl;
+        << "'p'           switch on/off nurbs calculated points\n"
+        << "'c'           switch on/off nurbs control points\n"
+        << "'q'           switch on/off wire-frame visualization\n"
+        << "'a'           switch on/off animation\n"
+        << '\n'
+        << "left/right    rotate around z axis\n"
+        << "up/down       rotate around x axis\n"
+        << "pgUp/pgDn     rotate around y axis\n"
+        << '\n'
+        << "ESC           exit\n"
+        << '\n'
+        << std::endl;
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
@@ -216,7 +216,7 @@ int startGL(int argc, char** argv)
   glutReshapeFunc(reshape); 
   glutIdleFunc(idle);
   
-  glutKeyboardFunc(key);	
+  glutKeyboardFunc(key);    
   glutSpecialFunc(special_key_down);
   glutSpecialUpFunc(special_key_up);
   init();

@@ -40,20 +40,20 @@ namespace Berlin
     public:
       enum color_t
       { 
-	  gray = PNG_COLOR_TYPE_GRAY,
-	  grayalpha = PNG_COLOR_TYPE_GRAY_ALPHA,
-	  palette = PNG_COLOR_TYPE_PALETTE,
-	  rgb = PNG_COLOR_TYPE_RGB,
-	  rgbalpha = PNG_COLOR_TYPE_RGB_ALPHA,
-	  maskpalette = PNG_COLOR_MASK_PALETTE,
-	  maskcolor = PNG_COLOR_MASK_COLOR,
-	  maskalpha = PNG_COLOR_MASK_ALPHA
+      gray = PNG_COLOR_TYPE_GRAY,
+      grayalpha = PNG_COLOR_TYPE_GRAY_ALPHA,
+      palette = PNG_COLOR_TYPE_PALETTE,
+      rgb = PNG_COLOR_TYPE_RGB,
+      rgbalpha = PNG_COLOR_TYPE_RGB_ALPHA,
+      maskpalette = PNG_COLOR_MASK_PALETTE,
+      maskcolor = PNG_COLOR_MASK_COLOR,
+      maskalpha = PNG_COLOR_MASK_ALPHA
       };
       enum interlace_t
       {
-	  none = PNG_INTERLACE_NONE,
-	  adam7 = PNG_INTERLACE_ADAM7,
-	  last = PNG_INTERLACE_LAST
+      none = PNG_INTERLACE_NONE,
+      adam7 = PNG_INTERLACE_ADAM7,
+      last = PNG_INTERLACE_LAST
       };
       PNG();
       PNG(const Fresco::Raster::Info &);
@@ -64,28 +64,28 @@ namespace Berlin
       Fresco::Raster::Data *marshal(unsigned char *const *);
       unsigned char **demarshal(const Fresco::Raster::Data &);
       Fresco::Color pixel(unsigned long, unsigned long,
-			  unsigned char *const *);
+              unsigned char *const *);
       void pixel(unsigned long, unsigned long, const Fresco::Color &, 
-		 unsigned char **);
+         unsigned char **);
       Fresco::Raster::ColorSeq *pixels(unsigned long, unsigned long,
-				       unsigned long, unsigned long,
-				       unsigned char *const *);
+                       unsigned long, unsigned long,
+                       unsigned char *const *);
       void pixels(unsigned long, unsigned long, unsigned long,
-		  unsigned long, const Fresco::Raster::ColorSeq &,
-		  unsigned char **);
+          unsigned long, const Fresco::Raster::ColorSeq &,
+          unsigned char **);
       unsigned char **read(const std::string &);
       void write(const std::string &, unsigned char *const *);
     private:
       void palette_to_rgbalpha(const unsigned char *,
-			       const unsigned char *, 
-			       unsigned char *);
+                   const unsigned char *, 
+                   unsigned char *);
       void gray_to_rgbalpha(const unsigned char *, const unsigned char *, 
-			    unsigned char *);
+                unsigned char *);
       void grayalpha_to_rgbalpha(const unsigned char *,
-				 const unsigned char *, 
-				 unsigned char *);
+                 const unsigned char *, 
+                 unsigned char *);
       void rgb_to_rgbalpha(const unsigned char *, const unsigned char *, 
-			   unsigned char *);
+               unsigned char *);
       png_structp my_rpng;
       png_infop   my_rinfo;
       png_infop   my_rend;

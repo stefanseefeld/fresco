@@ -32,8 +32,8 @@ using namespace Fresco;
 using namespace Berlin::UnidrawKit;
 
 UnidrawKitImpl::UnidrawKitImpl(const std::string &id,
-			       const Fresco::Kit::PropertySeq &p,
-			       ServerContextImpl *c) :
+                   const Fresco::Kit::PropertySeq &p,
+                   ServerContextImpl *c) :
     KitImpl(id, p, c)
 { }
 
@@ -46,17 +46,17 @@ void UnidrawKitImpl::bind(ServerContext_ptr context)
     Fresco::Kit::PropertySeq props;
     props.length(0);
     my_figures =
-	resolve_kit<FigureKit>(context,
-			       "IDL:fresco.org/Fresco/FigureKit:1.0",
-			       props);
+    resolve_kit<FigureKit>(context,
+                   "IDL:fresco.org/Fresco/FigureKit:1.0",
+                   props);
     my_tools
-	= resolve_kit<ToolKit>(context,
-			       "IDL:fresco.org/Fresco/ToolKit:1.0",
-			       props);
+    = resolve_kit<ToolKit>(context,
+                   "IDL:fresco.org/Fresco/ToolKit:1.0",
+                   props);
     my_widgets =
-	resolve_kit<WidgetKit>(context,
-			       "IDL:fresco.org/Fresco/WidgetKit:1.0",
-			       props);
+    resolve_kit<WidgetKit>(context,
+                   "IDL:fresco.org/Fresco/WidgetKit:1.0",
+                   props);
 }
 
 Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
@@ -69,10 +69,10 @@ Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 { return create<Unidraw::Editor>(new EditorImpl(this)); }
 
 Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g,
-					      Unidraw::Model_ptr m)
+                          Unidraw::Model_ptr m)
 {
     return create_and_set_body<Unidraw::View>(new UViewImpl(m), g,
-					      "UnidrawKit/create_view");
+                          "UnidrawKit/create_view");
 }
 
 Fresco::FigureKit_ptr UnidrawKitImpl::figures()

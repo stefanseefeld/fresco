@@ -31,7 +31,7 @@ using namespace Fresco;
 using namespace Berlin;
 
 PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r,
-				     Transform_ptr t, PositionalFocus *f) :
+                     Transform_ptr t, PositionalFocus *f) :
     TraversalImpl(g, r, t),
     my_focus(f),
     my_cursor(0)
@@ -91,8 +91,8 @@ Graphic_ptr PickTraversalImpl::current_graphic()
 }
 
 void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag,
-				       Region_ptr region,
-				       Transform_ptr transform)
+                       Region_ptr region,
+                       Transform_ptr transform)
 {
     Trace trace("PickTraversalImpl::traverse_child");
     if (CORBA::is_nil(region)) region = Region_var(current_allocation());
@@ -105,14 +105,14 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag,
     my_cursor++;
     try
     {
-	child->traverse(my_this);
+    child->traverse(my_this);
     }
     catch (...)
     {
-	// Make sure cumulative does not go out of scope before the pop() ;-)
-	my_cursor--;
-	pop();
-	throw;
+    // Make sure cumulative does not go out of scope before the pop() ;-)
+    my_cursor--;
+    pop();
+    throw;
     }
     my_cursor--;
     pop(); // cumulative still in scope... 

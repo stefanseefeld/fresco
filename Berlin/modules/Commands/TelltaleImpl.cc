@@ -93,8 +93,8 @@ void Berlin::CommandKit::TelltaleConstraintImpl::remove(Telltale_ptr t)
 {
     Prague::Guard<Mutex> guard(my_mutex);
     for (tlist_t::iterator i = my_telltales.begin();
-	 i != my_telltales.end();
-	 ++i)
+     i != my_telltales.end();
+     ++i)
         if ((*i) == t)
         {
             my_telltales.erase(i);
@@ -113,8 +113,8 @@ void Berlin::CommandKit::ExclusiveChoice::trymodify(Telltale_ptr t,
     Prague::Guard<Mutex> guard(my_mutex);
     if (b)
         for (tlist_t::iterator i = my_telltales.begin();
-	     i != my_telltales.end();
-	     ++i)
+         i != my_telltales.end();
+         ++i)
             if ((*i)->test(m)) (*i)->modify(m, false);
     t->modify(m, b);
 }
@@ -131,8 +131,8 @@ void Berlin::CommandKit::SelectionRequired::trymodify(Telltale_ptr t,
     size_t selected = 0;
     if (!b)
         for (tlist_t::iterator i = my_telltales.begin();
-	     i != my_telltales.end();
-	     ++i)
+         i != my_telltales.end();
+         ++i)
             if ((*i)->test(m)) selected++;
     if (b || selected > 1) t->modify(m, b);
 }
@@ -149,8 +149,8 @@ void Berlin::CommandKit::ExclusiveRequired::trymodify(Telltale_ptr t,
     if (b)
     {
         for (tlist_t::iterator i = my_telltales.begin();
-	     i != my_telltales.end();
-	     ++i)
+         i != my_telltales.end();
+         ++i)
             if ((*i)->test(m)) (*i)->modify(m, false);
         t->modify(m, true);
     }
@@ -158,8 +158,8 @@ void Berlin::CommandKit::ExclusiveRequired::trymodify(Telltale_ptr t,
     {
         size_t selected = 0;
         for (tlist_t::iterator i = my_telltales.begin();
-	     i != my_telltales.end();
-	     ++i)
+         i != my_telltales.end();
+         ++i)
             if ((*i)->test(m)) selected++;
         if (selected > 1) t->modify(m, false);
     }

@@ -33,36 +33,37 @@ namespace GGI
   {
     public:
       GLContext() :
-        _drawable(dynamic_cast<GGI::Drawable *>(Console::instance()->drawable()))
+        my_drawable(dynamic_cast<GGI::Drawable *>
+            (Berlin::Console::instance()->drawable()))
       {
-          ggiMesaInit();
-          if (ggiMesaAttach(_drawable->visual()) < 0)
-              throw std::runtime_error("ggiMesaAttach() failed");
-          if (ggiMesaExtendVisual(_drawable->visual(), GL_FALSE, GL_FALSE,
-                                  16, 0, 0, 0, 0, 0, 1) < 0)
-              throw std::runtime_error("ggiMesaExtendVisual() failed");
-          if ((_context = ggiMesaCreateContext(_drawable->visual())) == NULL)
-              throw std::runtime_error("ggiMesaCreateContext() failed");
-          ggiMesaMakeCurrent(_context, _drawable->visual());
+      ggiMesaInit();
+      if (ggiMesaAttach(_drawable->visual()) < 0)
+          throw std::runtime_error("ggiMesaAttach() failed");
+      if (ggiMesaExtendVisual(my_drawable->visual(),
+                  GL_FALSE, GL_FALSE,
+                  16, 0, 0, 0, 0, 0, 1) < 0)
+          throw std::runtime_error("ggiMesaExtendVisual() failed");
+      if ((my_context =
+           ggiMesaCreateContext(_drawable->visual())) == NULL)
+          throw std::runtime_error("ggiMesaCreateContext() failed");
+      ggiMesaMakeCurrent(my_context, my_drawable->visual());
       }
-      virtual ~GGIGLContext()
-      {
-          ggiMesaDestroyContext(_context);
-      }
+      virtual ~GGIGLContext() { ggiMesaDestroyContext(my_context); }
       virtual void flush()
       {
           glFlush();
-          _drawable->flush();
+          my_drawable->flush();
       }
       virtual void add_to_queue(::GLContext::Callback *_cb)
       {
-          (*_cb)();
+          (*my_cb)();
       }
     private:
-      GGI::Drawable   *_drawable;
-      ggi_mesa_context_t _context;
+      GGI::Drawable *my_drawable;
+      ggi_mesa_context_t my_context;
   };
 
 } // namespace
 
-extern "C" Console::Extension *load() { return new GGI::GLContext();}
+extern "C" Berlin::Console::Extension *load()
+{ return new GGI::GLContext(); }

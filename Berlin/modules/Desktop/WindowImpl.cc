@@ -36,7 +36,7 @@ class WindowImpl::UnmappedStageHandle :
 {
   public:
     UnmappedStageHandle(Stage_ptr, Graphic_ptr, const Vertex &,
-			const Vertex &,	Stage::Index);
+            const Vertex &,    Stage::Index);
     UnmappedStageHandle(StageHandle_ptr);
     virtual ~UnmappedStageHandle();
     virtual Stage_ptr parent() { return Stage::_duplicate(my_parent); }
@@ -58,10 +58,10 @@ private:
 };
 
 WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par,
-						     Graphic_ptr cc,
-						     const Vertex &pp,
-						     const Vertex &ss,
-						     Stage::Index ll) :
+                             Graphic_ptr cc,
+                             const Vertex &pp,
+                             const Vertex &ss,
+                             Stage::Index ll) :
   my_parent(Stage::_duplicate(par)),
   my_child(Fresco::Graphic::_duplicate(cc)),
   my_position(pp),
@@ -97,31 +97,31 @@ void WindowImpl::need_resize()
     GraphicImpl::init_requisition(r);
     request(r);
     if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
-	r.y.minimum <= size.y && r.y.maximum >= size.y &&
-	r.z.minimum <= size.z && r.z.maximum >= size.z)
-	need_redraw();
+    r.y.minimum <= size.y && r.y.maximum >= size.y &&
+    r.z.minimum <= size.z && r.z.maximum >= size.z)
+    need_redraw();
     else
     {
-	size.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x));
-	size.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y));
-	size.z = std::min(r.z.maximum, std::max(r.z.minimum, size.z));
-	my_handle->size(size);
+    size.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x));
+    size.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y));
+    size.z = std::min(r.z.maximum, std::max(r.z.minimum, size.z));
+    my_handle->size(size);
     }
 }
 
 // cache the focus holding controllers so we can restore them when the
 //  window receives focus again...
 CORBA::Boolean WindowImpl::request_focus(Controller_ptr c,
-					 Fresco::Input::Device d)
+                     Fresco::Input::Device d)
 {
     if (my_unmapped) return false;
     Controller_var parent = parent_controller();
     if (CORBA::is_nil(parent)) return false;
     if (parent->request_focus(c, d))
     {
-	if (my_focus.size() <= d) my_focus.resize(d + 1);
-	my_focus[d] = Fresco::Controller::_duplicate(c);
-	return true;
+    if (my_focus.size() <= d) my_focus.resize(d + 1);
+    my_focus[d] = Fresco::Controller::_duplicate(c);
+    return true;
     }
     else return false;
 }
@@ -136,10 +136,10 @@ void WindowImpl::insert(Desktop_ptr desktop)
     request(r);
     size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
     my_unmapped = new UnmappedStageHandle(desktop,
-					  Graphic_var(_this()),
-					  position,
-					  size,
-					  0);
+                      Graphic_var(_this()),
+                      position,
+                      size,
+                      0);
     my_handle = my_unmapped->_this();
 }
 
@@ -194,25 +194,25 @@ void WindowImpl::mapped(CORBA::Boolean flag)
     if (flag)
     // map
     {
-	Prague::Guard<Mutex> guard(my_mutex);
-	if (!my_unmapped) return;
-	Stage_var stage = my_handle->parent();
-	stage->lock();
-	StageHandle_var tmp = stage->insert(Graphic_var(_this()),
-					    my_handle->position(),
-					    my_handle->size(),
-					    my_handle->layer());
-	stage->unlock();
-	my_handle = tmp;
-	my_unmapped = 0;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (!my_unmapped) return;
+    Stage_var stage = my_handle->parent();
+    stage->lock();
+    StageHandle_var tmp = stage->insert(Graphic_var(_this()),
+                        my_handle->position(),
+                        my_handle->size(),
+                        my_handle->layer());
+    stage->unlock();
+    my_handle = tmp;
+    my_unmapped = 0;
     }
     else
     // unmap
     {
-	Prague::Guard<Mutex> guard(my_mutex);
-	if (my_unmapped) return;
-	my_unmapped = new UnmappedStageHandle(my_handle);
-	my_handle->remove();
-	my_handle = my_unmapped->_this();
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (my_unmapped) return;
+    my_unmapped = new UnmappedStageHandle(my_handle);
+    my_handle->remove();
+    my_handle = my_unmapped->_this();
     }
 }

@@ -34,22 +34,22 @@ namespace Berlin
 
       class Quadric
       {
-	public:
-	  enum orientation {in, out};
-	  enum normals {none, flat, smooth};
-	  Quadric(Fresco::DrawingKit::Fillstyle s,
-		  orientation o, normals n = none) :
-	      my_style(s), my_orient(o), my_norm(n)
-	  { }
-	  ~Quadric() { }
-	  void cylinder(double, double, double, int, int);
-	  void sphere(double, int, int);
-	  void disk(double, double, int, int);
-	  void partialDisk(double, double, int, int, double, double);
-	private:
-	  Fresco::DrawingKit::Fillstyle my_style;
-	  orientation my_orient;
-	  normals my_norm;
+    public:
+      enum orientation {in, out};
+      enum normals {none, flat, smooth};
+      Quadric(Fresco::DrawingKit::Fillstyle s,
+          orientation o, normals n = none) :
+          my_style(s), my_orient(o), my_norm(n)
+      { }
+      ~Quadric() { }
+      void cylinder(double, double, double, int, int);
+      void sphere(double, int, int);
+      void disk(double, double, int, int);
+      void partialDisk(double, double, int, int, double, double);
+    private:
+      Fresco::DrawingKit::Fillstyle my_style;
+      orientation my_orient;
+      normals my_norm;
       };
       
     } // namespace

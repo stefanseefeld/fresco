@@ -31,7 +31,7 @@ namespace daVinci
 
   class Manipulator;
   class Tool : public virtual POA_Unidraw::Tool,
-	       public RefCountBase
+           public RefCountBase
   {
   public:
     Tool();

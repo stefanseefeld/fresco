@@ -35,7 +35,7 @@ namespace Berlin
   {
 
     class PolyFigure : public virtual POA_Figure::FigureBase,
-		       public PolyGraphic
+               public PolyGraphic
     {
       public:
         PolyFigure();
@@ -44,13 +44,13 @@ namespace Berlin
 
         virtual void request(Fresco::Graphic::Requisition &);
         virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
+                   Fresco::Region_ptr);
         virtual void traverse(Fresco::Traversal_ptr);
         virtual Fresco::Transform_ptr transformation();
         virtual void need_redraw();
         virtual void need_resize();
         virtual void allocate(Fresco::Tag,
-			      const Fresco::Allocation::Info &);
+                  const Fresco::Allocation::Info &);
 
         /*
          * shameless hack !!!: eventually these settings are dealt with

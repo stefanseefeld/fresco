@@ -32,28 +32,29 @@
 
 class LogoDemo : public Demo
 {
-  class Rotator : public ObserverImpl
-  {
-  public:
+    class Rotator : public Berlin::ObserverImpl
+    {
+      public:
     Rotator(Fresco::BoundedValue_ptr,
-	    Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Coord);
+        Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Coord);
     void update(const CORBA::Any &);
+      private:
+    Fresco::BoundedValue_var my_value;
+    Fresco::Graphic_var my_child;
+    Fresco::Graphic_var my_parent;
+    Fresco::Coord my_zdegree;
+    };
+  public:
+    LogoDemo(Application *);
+    Fresco::Graphic_ptr make_controller(Fresco::BoundedValue_ptr,
+                    const Fresco::Color &);
   private:
-    Fresco::BoundedValue_var value;
-    Fresco::Graphic_var child;
-    Fresco::Graphic_var parent;
-    Fresco::Coord zdegree;
-  };
-public:
-  LogoDemo(Application *);
-  Fresco::Graphic_ptr make_controller(Fresco::BoundedValue_ptr, const Fresco::Color &);
-private:
-  Fresco::BoundedValue_var bv1;
-  Fresco::BoundedValue_var bv2;
-  Fresco::BoundedValue_var bv3;
-  Impl_var<Rotator> rotator1;
-  Impl_var<Rotator> rotator2;
-  Impl_var<Rotator> rotator3;
+    Fresco::BoundedValue_var my_bv1;
+    Fresco::BoundedValue_var my_bv2;
+    Fresco::BoundedValue_var my_bv3;
+    Berlin::Impl_var<Rotator> my_rotator1;
+    Berlin::Impl_var<Rotator> my_rotator2;
+    Berlin::Impl_var<Rotator> my_rotator3;
 };
 
 #endif

@@ -84,7 +84,7 @@ void Berlin::PrimitiveKit::TransformPrimitive::extension(const Allocation::Info 
         tmp->copy(Region_var(my_ext->_this()));
         tmp->xalign = tmp->yalign = tmp->zalign = 0.;
         Lease_var<TransformImpl>
-	    transformation(Provider<TransformImpl>::provide());
+        transformation(Provider<TransformImpl>::provide());
         if (!CORBA::is_nil(info.transformation))
             transformation->copy(info.transformation);
         transformation->premultiply(Transform_var(my_tx->_this()));
@@ -96,8 +96,8 @@ void Berlin::PrimitiveKit::TransformPrimitive::extension(const Allocation::Info 
 void Berlin::PrimitiveKit::TransformPrimitive::pick(PickTraversal_ptr traversal)
 {
     if (my_ext->valid &&
-	traversal->intersects_region(Region_var(my_ext->_this())))
-	traversal->hit();
+    traversal->intersects_region(Region_var(my_ext->_this())))
+    traversal->hit();
 }
 
 void Berlin::PrimitiveKit::TransformPrimitive::need_redraw()
@@ -130,7 +130,7 @@ void Berlin::PrimitiveKit::PrimitiveImpl::draw(DrawTraversal_ptr traversal)
     if (my_mesh->nodes.length() > 0)
     {
         // bounding box culling, use extension(...) to add brush effect
-	// into extension.
+    // into extension.
         Allocation::Info info;
         Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
         extension(info, Region_var(region->_this()));
@@ -142,9 +142,9 @@ void Berlin::PrimitiveKit::PrimitiveImpl::draw(DrawTraversal_ptr traversal)
             {
                 if (my_error == false)
                     std::cerr << "No DrawingKit3D interface found."
-			      << std::endl
+                  << std::endl
                               << "Consider passing \"-d GLDrawingKit\" to "
-			      << "Berlin."
+                  << "Berlin."
                               << std::endl;
                 my_error = true;
                 return;
@@ -182,17 +182,17 @@ void Berlin::PrimitiveKit::PrimitiveImpl::resize()
         for (CORBA::ULong i = 1; i < n; ++i)
         {
             my_ext->lower.x = Math::min(my_ext->lower.x,
-					my_mesh->nodes[i].x);
+                    my_mesh->nodes[i].x);
             my_ext->upper.x = Math::max(my_ext->upper.x,
-					my_mesh->nodes[i].x);
+                    my_mesh->nodes[i].x);
             my_ext->lower.y = Math::min(my_ext->lower.y,
-					my_mesh->nodes[i].y);
+                    my_mesh->nodes[i].y);
             my_ext->upper.y = Math::max(my_ext->upper.y,
-					my_mesh->nodes[i].y);
+                    my_mesh->nodes[i].y);
             my_ext->lower.z = Math::min(my_ext->lower.z,
-					my_mesh->nodes[i].z);
+                    my_mesh->nodes[i].z);
             my_ext->upper.z = Math::max(my_ext->upper.z,
-					my_mesh->nodes[i].z);
+                    my_mesh->nodes[i].z);
         }
     }
 }

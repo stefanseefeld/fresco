@@ -43,18 +43,18 @@ RasterImpl::RasterImpl(const std::string &file) :
     std::string pngfile = path.lookup_file(file);
     if (pngfile.empty())
     {
-	std::cerr << "RasterImpl Warning : can't find '" << file 
-		  << "' in current rasterpath" << std::endl;
-	throw CreationFailureException();
+    std::cerr << "RasterImpl Warning : can't find '" << file 
+          << "' in current rasterpath" << std::endl;
+    throw CreationFailureException();
     }
     
     my_rows = my_png.read(pngfile);
 
     if (my_rows == 0) 
     {
-	std::cerr << "RasterImpl Warning : can't read '" << file 
-		  << "' in current rasterpath" << std::endl;
-	throw CreationFailureException();
+    std::cerr << "RasterImpl Warning : can't read '" << file 
+          << "' in current rasterpath" << std::endl;
+    throw CreationFailureException();
     }
 }
 RasterImpl::~RasterImpl() { Trace trace("RasterImpl::~RasterImpl"); }
@@ -88,22 +88,22 @@ void RasterImpl::store_data(Fresco::Raster::Data_out data)
 }
 
 void RasterImpl::store_pixel(const Fresco::Raster::Index &index,
-			     Color &color)
+                 Color &color)
 {
     Trace trace("RasterImpl::store_pixel");
     color = my_png.pixel(index.x, index.y, my_rows);
 }
 
 void RasterImpl::load_pixel(const Fresco::Raster::Index &index,
-			    const Color &color)
+                const Color &color)
 {
     Trace trace("RasterImpl::load_pixel");
     my_png.pixel(index.x, index.y, color, my_rows);
 }
 
 void RasterImpl::store_pixels(const Fresco::Raster::Index &lower,
-			      const Fresco::Raster::Index &upper,
-			      Fresco::Raster::ColorSeq_out pixels)
+                  const Fresco::Raster::Index &upper,
+                  Fresco::Raster::ColorSeq_out pixels)
 {
     Trace trace("RasterImpl::store_pixels");
     delete pixels;
@@ -112,8 +112,8 @@ void RasterImpl::store_pixels(const Fresco::Raster::Index &lower,
 }
 
 void RasterImpl::load_pixels(const Fresco::Raster::Index &lower,
-			     const Fresco::Raster::Index &upper,
-			     const Fresco::Raster::ColorSeq &pixels)
+                 const Fresco::Raster::Index &upper,
+                 const Fresco::Raster::ColorSeq &pixels)
 {
     Trace trace("RasterImpl::load_pixels");
     my_png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, my_rows);

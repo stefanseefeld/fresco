@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Extension_hh
-#define _Extension_hh
+#ifndef _SDL_Extension_hh
+#define _SDL_Extension_hh
 
 #include <Fresco/config.hh>
 #include <Berlin/Console.hh>
@@ -34,82 +34,65 @@
 namespace SDL
 {
 
-class Drawable;
+  class Drawable;
 
-// ---------------------------------------------------------------
-// class Extension
-// ---------------------------------------------------------------
+  // ---------------------------------------------------------------
+  // class Extension
+  // ---------------------------------------------------------------
 
-class Extension : virtual public Console::Drawable::Extension
-{
-public:
-  Extension() : _drawable(0) { }
-
-  virtual void attach(::Console::Drawable *);
-
-  SDL::Drawable * drawable()
+  class Extension : virtual public Console::Drawable::Extension
   {
-    return _drawable;
-  }
+    public:
+      Extension() : my_drawable(0) { }
+      
+      virtual void attach(Berlin::Console::Drawable *);
+      
+      SDL::Drawable * drawable()
+      { return my_drawable; }
+    private:
+      SDL::Drawable * my_drawable;
+  };
 
-private:
-  SDL::Drawable * _drawable;
-};
+  // ---------------------------------------------------------------
+  // class Renderer
+  // ---------------------------------------------------------------
 
-// ---------------------------------------------------------------
-// class Renderer
-// ---------------------------------------------------------------
+  class Renderer : public Extension,
+           virtual public Berlin::Console_Extension::Renderer
+  {
+    public:
+      Renderer();
+      
+      virtual void set_color(const Fresco::Color &);
+      virtual void draw_pixel(Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void draw_hline(Fresco::PixelCoord, Fresco::PixelCoord,
+                  Fresco::PixelCoord);
+      virtual void draw_vline(Fresco::PixelCoord, Fresco::PixelCoord,
+                  Fresco::PixelCoord);
+      virtual void draw_line(Fresco::PixelCoord, Fresco::PixelCoord,
+                 Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual void draw_box(Fresco::PixelCoord, Fresco::PixelCoord,
+                Fresco::PixelCoord, Fresco::PixelCoord);
+    private:
+      void put_pixel(Fresco::PixelCoord, Fresco::PixelCoord);
+      
+      SDL::Drawable::Pixel my_color;
+  };
 
-class Renderer : public Extension,
-		 virtual public ::Renderer
-{
-public:
-  Renderer();
-
-  virtual void set_color(const Fresco::Color &);
-
-  virtual void draw_pixel(Fresco::PixelCoord, Fresco::PixelCoord);
-
-  virtual void draw_hline(Fresco::PixelCoord, Fresco::PixelCoord,
-                          Fresco::PixelCoord);
-
-  virtual void draw_vline(Fresco::PixelCoord, Fresco::PixelCoord,
-                          Fresco::PixelCoord);
-
-  virtual void draw_line(Fresco::PixelCoord, Fresco::PixelCoord,
-                         Fresco::PixelCoord, Fresco::PixelCoord);
-
-  virtual void draw_box(Fresco::PixelCoord, Fresco::PixelCoord,
-                        Fresco::PixelCoord, Fresco::PixelCoord);
-
-private:
-  void put_pixel(Fresco::PixelCoord, Fresco::PixelCoord);
-
-  SDL::Drawable::Pixel _color;
-};
-
-
-
-
-
-// ---------------------------------------------------------------
-// class DirectBuffer
-// ---------------------------------------------------------------
+  // ---------------------------------------------------------------
+  // class DirectBuffer
+  // ---------------------------------------------------------------
  
-class DirectBuffer : public Extension,
-		     virtual public ::DirectBuffer
-{
-public:
-  DirectBuffer();
-  void attach(::Console::Drawable *);
+  class DirectBuffer : public Extension,
+               virtual public Berlin::Console_Extension::DirectBuffer
+  {
+    public:
+      DirectBuffer();
+      void attach(Berlin::Console::Drawable *);
+      virtual Guard read_buffer();
+      virtual Guard write_buffer();
+  };
 
-  virtual Guard read_buffer();
-
-  virtual Guard write_buffer();
-};
-
-
-
-}; // namespace SDL
+} // namespace SDL
 
 #endif

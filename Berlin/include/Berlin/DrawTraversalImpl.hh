@@ -36,7 +36,7 @@ namespace Berlin
   //. asking the DrawingKit to render the nodes as the Traversal
   //. passes through them.
   class DrawTraversalImpl : public virtual POA_Fresco::DrawTraversal,
-			    public TraversalImpl
+                public TraversalImpl
   {
     public:
       //. Generates a DrawTraversal-Object that will start it the given
@@ -48,7 +48,7 @@ namespace Berlin
       //. that might be found during the Traversal). Any graphic in need of
       //. redrawing will do so using the given DrawingKit.
       DrawTraversalImpl(Fresco::Graphic_ptr, Fresco::Region_ptr,
-			Fresco::Transform_ptr, Fresco::DrawingKit_ptr);
+            Fresco::Transform_ptr, Fresco::DrawingKit_ptr);
       DrawTraversalImpl(const DrawTraversalImpl &);
       virtual ~DrawTraversalImpl();
       
@@ -61,7 +61,7 @@ namespace Berlin
       virtual CORBA::Boolean intersects_region(Fresco::Region_ptr);
     
       virtual void traverse_child(Fresco::Graphic_ptr, Fresco::Tag,
-				  Fresco::Region_ptr, Fresco::Transform_ptr);
+                  Fresco::Region_ptr, Fresco::Transform_ptr);
       virtual void visit(Fresco::Graphic_ptr);
       virtual Fresco::Traversal::order direction();
       virtual CORBA::Boolean ok();

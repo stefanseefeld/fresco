@@ -51,30 +51,30 @@ namespace Berlin
 
     public:
       LRUCache(factoryT fact, unsigned int i = 256) :
-	  my_max(i), my_factory(fact)
+      my_max(i), my_factory(fact)
       { }
 
       void get(const kT &k, vT &v) throw () 
       {
-	  typename cacheT::iterator iter = my_cache.find(k);
-	  if (iter != my_cache.end())
-	  {
-	      v = iter->second;
-	      return;
-	  }
-	  else
-	  {
-	      v = my_factory.produce(k);
-	      my_cache.insert(std::pair<kT,vT>(k,v));
-	      my_queue.push_front(k);
-	      if (my_queue.size() >= my_max)
-	      {
-		  kT victim = my_queue.back();
-		  my_factory.recycle(my_cache[victim]);
-		  my_cache.erase(victim);
-		  my_queue.pop_back();
-	      }
-	  }
+      typename cacheT::iterator iter = my_cache.find(k);
+      if (iter != my_cache.end())
+      {
+          v = iter->second;
+          return;
+      }
+      else
+      {
+          v = my_factory.produce(k);
+          my_cache.insert(std::pair<kT,vT>(k,v));
+          my_queue.push_front(k);
+          if (my_queue.size() >= my_max)
+          {
+          kT victim = my_queue.back();
+          my_factory.recycle(my_cache[victim]);
+          my_cache.erase(victim);
+          my_queue.pop_back();
+          }
+      }
       }
   };
 

@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         Gothic10330() :
-	    my_first_letter(0x10330),
-	    my_last_letter(0x1034F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x10330),
+        my_last_letter(0x1034F)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Gothic";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Gothic";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -336,7 +336,7 @@ namespace Babylon
         // functions
         Gothic10330(const Gothic10330 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

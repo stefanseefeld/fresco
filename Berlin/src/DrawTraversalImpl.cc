@@ -35,7 +35,7 @@ using namespace Fresco;
 using namespace Berlin;
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r,
-				     Transform_ptr t, DrawingKit_ptr kit) :
+                     Transform_ptr t, DrawingKit_ptr kit) :
     TraversalImpl(g, r, t),
     my_drawing(DrawingKit::_duplicate(kit)),
     my_clipping(Region_var(current_allocation())),
@@ -108,13 +108,13 @@ CORBA::Boolean DrawTraversalImpl::intersects_region(Region_ptr r)
     RegionImpl region(r, get_transformation(size() - 1));
 //    RegionImpl cl(clipping);
 //    std::cout << "DrawTraversalImpl::intersects_region " << region << ' '
-// 	        << my_clipping << std::endl;
+//             << my_clipping << std::endl;
     return region.intersects(my_clipping);
 }
 
 void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag,
-				       Region_ptr region,
-				       Transform_ptr transform)
+                       Region_ptr region,
+                       Transform_ptr transform)
 {
     Trace trace("DrawTraversalImpl::traverse_child");
     if (CORBA::is_nil(region)) region = Region_var(current_allocation());
@@ -137,13 +137,13 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag,
     push(child, tag, allocation, cumulative); // Keep ownership of cumulative!
     try
     {
-	child->traverse(my_this);
+    child->traverse(my_this);
     }
     catch (...)
     {
-	// Make sure cumulative does not go out of scope before the pop() ;-)
-	pop();
-	throw;
+    // Make sure cumulative does not go out of scope before the pop() ;-)
+    pop();
+    throw;
     }
     pop(); // cumulative still in scope...
 };

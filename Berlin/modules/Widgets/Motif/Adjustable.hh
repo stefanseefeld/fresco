@@ -37,29 +37,29 @@ namespace Berlin
 
       class Adjustable : public ControllerImpl
       {
-	  class Observer : public ObserverImpl
-	  {
-	    public:
-	      Observer(Adjustable *a) : my_adjustable(a)
-	      { my_adjustable->_add_ref(); }
-	      ~Observer() { my_adjustable->_remove_ref(); }
-	      void update(const CORBA::Any &any)
-	      { my_adjustable->update(any); }
-	    private:
-	      Adjustable *my_adjustable;
-	  };
-	  friend class Observer;
-	  class Adjust;
-	  friend class Adjust;
-	public:
-	  Adjustable();
-	  Fresco::Command_ptr create_adjust_cmd();
-	protected:
-	  virtual void update(const CORBA::Any &any) = 0;
-	  virtual void adjust(const Fresco::OriginatedDelta &) = 0;
-	  Fresco::Observer_ptr observer();
-	private:
-	  Impl_var<Observer> my_translate;
+      class Observer : public ObserverImpl
+      {
+        public:
+          Observer(Adjustable *a) : my_adjustable(a)
+          { my_adjustable->_add_ref(); }
+          ~Observer() { my_adjustable->_remove_ref(); }
+          void update(const CORBA::Any &any)
+          { my_adjustable->update(any); }
+        private:
+          Adjustable *my_adjustable;
+      };
+      friend class Observer;
+      class Adjust;
+      friend class Adjust;
+    public:
+      Adjustable();
+      Fresco::Command_ptr create_adjust_cmd();
+    protected:
+      virtual void update(const CORBA::Any &any) = 0;
+      virtual void adjust(const Fresco::OriginatedDelta &) = 0;
+      Fresco::Observer_ptr observer();
+    private:
+      Impl_var<Observer> my_translate;
       };
 
     } // namespace

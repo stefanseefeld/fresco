@@ -40,9 +40,9 @@ namespace Babylon
         void clean() { };
 
         Greek_Extended1F00() :
-	    my_first_letter(0x1F00),
-	    my_last_letter(0x1FFF)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x1F00),
+        my_last_letter(0x1FFF)
+        // my_version="4.0" // Not yet supported!
         {
             {
                 my_composeMap[std::make_pair(0x00001F00, 0x00000300)] = 0x1F02;
@@ -185,24 +185,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "Greek Extended";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "Greek Extended";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -476,7 +476,7 @@ namespace Babylon
         // functions
         Greek_Extended1F00(const Greek_Extended1F00 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

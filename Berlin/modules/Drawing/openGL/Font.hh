@@ -39,23 +39,23 @@ namespace Berlin
 
       class Font
       {
-	public:
-	  Font() { }
-	  virtual ~Font() { }
-	  virtual CORBA::ULong size() = 0;
-	  virtual void size(CORBA::ULong) = 0;
-	  virtual CORBA::ULong weight() = 0;
-	  virtual Fresco::Unistring *family() = 0;
-	  virtual Fresco::Unistring *subfamily() = 0;
-	  virtual Fresco::Unistring *fullname() = 0;
-	  virtual Fresco::Unistring *style() = 0;
-	  virtual Fresco::DrawingKit::FontMetrics metrics() = 0;
-	  virtual Fresco::DrawingKit::GlyphMetrics
-	  metrics(Fresco::Unichar uc) = 0;
+    public:
+      Font() { }
+      virtual ~Font() { }
+      virtual CORBA::ULong size() = 0;
+      virtual void size(CORBA::ULong) = 0;
+      virtual CORBA::ULong weight() = 0;
+      virtual Fresco::Unistring *family() = 0;
+      virtual Fresco::Unistring *subfamily() = 0;
+      virtual Fresco::Unistring *fullname() = 0;
+      virtual Fresco::Unistring *style() = 0;
+      virtual Fresco::DrawingKit::FontMetrics metrics() = 0;
+      virtual Fresco::DrawingKit::GlyphMetrics
+      metrics(Fresco::Unichar uc) = 0;
 
-	  virtual void draw_char(Fresco::Unichar) = 0;
-	  virtual void allocate_char(Fresco::Unichar,
-				     Fresco::Graphic::Requisition &) = 0;
+      virtual void draw_char(Fresco::Unichar) = 0;
+      virtual void allocate_char(Fresco::Unichar,
+                     Fresco::Graphic::Requisition &) = 0;
       };
 
     } // namespace

@@ -45,7 +45,7 @@ namespace Berlin
       virtual Fresco::Transform_ptr transformation();
       virtual void request(Fresco::Graphic::Requisition &);
       virtual void extension(const Fresco::Allocation::Info &,
-			     Fresco::Region_ptr);
+                 Fresco::Region_ptr);
       virtual void shape(Fresco::Region_ptr);
       
       virtual void traverse(Fresco::Traversal_ptr);

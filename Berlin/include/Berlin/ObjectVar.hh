@@ -35,25 +35,25 @@ namespace Berlin
     public:
       explicit Object_var(T_ptr tt = 0) : t(tt) {}
       Object_var(const Object_var &o) :
-	  t(T::_duplicate(o.t))
+      t(T::_duplicate(o.t))
       { if (!CORBA::_is_nil(t)) t->increment(); }
       Object_var &operator = (Object_var &o)
       {
-	  if (&o != this)
-	  {
-	      if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);
-	      t = T::_duplicate(o.t);
-	      if (!CORBA::_is_nil(t)) t->increase();
-	  }
-	  return *this;
+      if (&o != this)
+      {
+          if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);
+          t = T::_duplicate(o.t);
+          if (!CORBA::_is_nil(t)) t->increase();
+      }
+      return *this;
       }
       ~Object_var()
       { if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t); }
       Object_var &operator = (T_ptr tt)
       {
-	  if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);
-	  t = tt;
-	  return *this;
+      if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);
+      t = tt;
+      return *this;
       }
       T_ptr get() const { return t; }
       T &operator *() const { return *t; }

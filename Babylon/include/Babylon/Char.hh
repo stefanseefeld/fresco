@@ -52,12 +52,12 @@ namespace Babylon
       
       std::string
       convert(const std::string format = Babylon::UTF8_format) const
-	  throw (Transfer_Error);
+      throw (Transfer_Error);
       
       size_t convert(const std::string &,
-		     const size_t = 0,
-		     const std::string format = Babylon::UTF8_format)
-	  throw (Transfer_Error);
+             const size_t = 0,
+             const std::string format = Babylon::UTF8_format)
+      throw (Transfer_Error);
       
       // ------------------------------------------------------------
       // QUERIES:
@@ -174,7 +174,7 @@ namespace Babylon
       //.          could not get loaded.
       //.          THIS SHOULD NEVER HAPPEN!
       Can_Comb_Class comb_class() const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       
       //. Returns the decomposition type of a given
       //. unicode character.
@@ -188,7 +188,7 @@ namespace Babylon
       //.          could not get loaded.
       //.          THIS SHOULD NEVER HAPPEN!
       Char_Decomp decomp_type() const
-	  throw (Undefined_Property, Block_Error);
+      throw (Undefined_Property, Block_Error);
       
       //. Returns the decomposition string of a given
       //. unicode character.
@@ -386,7 +386,7 @@ namespace Babylon
       Char(const UCS4 uc) : my_value(uc) { }
       Char(const Char & uc) : my_value(uc.value()) { }
       Char(const std::string &, size_t & pos,
-	   const std::string format = Babylon::UTF8_format);
+       const std::string format = Babylon::UTF8_format);
       
       bool equal(Char uc) const { return my_value == uc.my_value;}
       bool less(Char uc) const { return my_value < uc.my_value;}
@@ -445,7 +445,7 @@ namespace Babylon
       
     private:
       void iconv_wrapper(const std::string &, const char *, size_t &,
-			 const std::string &, char *, size_t &) const;
+             const std::string &, char *, size_t &) const;
       
       UCS4 my_value;
   }; // class Char

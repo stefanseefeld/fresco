@@ -47,38 +47,38 @@ namespace Berlin
       //. This is a Freetype font.
       class FTFont
       {
-	public:
-	  FTFont(Console_Extension::GLContext *my_glcontext);
-	  virtual ~FTFont();
-	  virtual CORBA::ULong size();
-	  virtual CORBA::ULong weight();
-	  virtual Fresco::Unistring *family();
-	  virtual Fresco::Unistring *subfamily();
-	  virtual Fresco::Unistring *fullname();
-	  virtual Fresco::Unistring *style();
-	  virtual Fresco::DrawingKit::FontMetrics metrics();
-	  virtual Fresco::DrawingKit::GlyphMetrics
-	  metrics(Fresco::Unichar);
+    public:
+      FTFont(Console_Extension::GLContext *my_glcontext);
+      virtual ~FTFont();
+      virtual CORBA::ULong size();
+      virtual CORBA::ULong weight();
+      virtual Fresco::Unistring *family();
+      virtual Fresco::Unistring *subfamily();
+      virtual Fresco::Unistring *fullname();
+      virtual Fresco::Unistring *style();
+      virtual Fresco::DrawingKit::FontMetrics metrics();
+      virtual Fresco::DrawingKit::GlyphMetrics
+      metrics(Fresco::Unichar);
 
-	  virtual void set_transform(const Fresco::Transform_var);
-	  virtual void size(CORBA::ULong);
-	  
-	  void draw_char(Fresco::Unichar);
-	  void allocate_char(Fresco::Unichar,
-			     Fresco::Graphic::Requisition &);
-	private:
-	  class DrawChar;
-	  friend class DrawChar;
-	  FT_Face  my_face;
-	  Fresco::Transform_var my_tr;
-	  CORBA::ULong my_size;
-	  FT_Library my_library;
-	  Fresco::Unistring my_family;
-	  Fresco::Unistring my_subfamily;
-	  Fresco::Unistring my_fullname;
-	  Fresco::Unistring my_style;
+      virtual void set_transform(const Fresco::Transform_var);
+      virtual void size(CORBA::ULong);
+      
+      void draw_char(Fresco::Unichar);
+      void allocate_char(Fresco::Unichar,
+                 Fresco::Graphic::Requisition &);
+    private:
+      class DrawChar;
+      friend class DrawChar;
+      FT_Face  my_face;
+      Fresco::Transform_var my_tr;
+      CORBA::ULong my_size;
+      FT_Library my_library;
+      Fresco::Unistring my_family;
+      Fresco::Unistring my_subfamily;
+      Fresco::Unistring my_fullname;
+      Fresco::Unistring my_style;
 
-	  Console_Extension::GLContext *my_glcontext;
+      Console_Extension::GLContext *my_glcontext;
       };
 
     } // namespace

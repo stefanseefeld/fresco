@@ -47,7 +47,7 @@ namespace Berlin
         virtual Fresco::Transform_ptr transformation();
         virtual void request(Fresco::Graphic::Requisition &);
         virtual void extension(const Fresco::Allocation::Info &,
-			       Fresco::Region_ptr);
+                   Fresco::Region_ptr);
         virtual void pick(Fresco::PickTraversal_ptr);
         virtual void need_redraw();
 
@@ -55,10 +55,10 @@ namespace Berlin
         // void type(Figure::Mode m) { my_mode = m; need_redraw(); }
         // Fresco::Color foreground() { return my_fg; }
         // void foreground(const Fresco::Color &f)
-	// { my_fg = f; need_redraw(); }
+    // { my_fg = f; need_redraw(); }
         // Fresco::Color background() { return my_bg; }
         // void background(const Fresco::Color &b)
-	// { my_bg = b; need_redraw(); }
+    // { my_bg = b; need_redraw(); }
 
         virtual void resize();
 

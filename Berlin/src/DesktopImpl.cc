@@ -36,7 +36,7 @@ using namespace Layout;
 using namespace Berlin;
 
 DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb,
-			 Stage_ptr stage,
+             Stage_ptr stage,
                          Prague::Semaphore &shutdown_sem) :
     ControllerImpl(false),
     my_stage(RefCount_var<Layout::Stage>::increment(stage)),
@@ -55,7 +55,7 @@ void DesktopImpl::body(Fresco::Graphic_ptr) { }
 Fresco::Graphic_ptr DesktopImpl::body()
 {
     return CORBA::is_nil(my_stage) ?
-	Layout::Stage::_nil() : Layout::Stage::_duplicate(my_stage);
+    Layout::Stage::_nil() : Layout::Stage::_duplicate(my_stage);
 }
 
 Fresco::Region_ptr DesktopImpl::bbox() { return my_stage->bbox(); }
@@ -69,9 +69,9 @@ void DesktopImpl::lock() { my_stage->lock(); }
 void DesktopImpl::unlock() { my_stage->unlock(); }
 
 Layout::StageHandle_ptr DesktopImpl::insert(Fresco::Graphic_ptr g,
-					    const Fresco::Vertex &p,
-					    const Fresco::Vertex &s,
-					    Layout::Stage::Index l)
+                        const Fresco::Vertex &p,
+                        const Fresco::Vertex &s,
+                        Layout::Stage::Index l)
 { return my_stage->insert(g, p, s, l); }
 
 /*

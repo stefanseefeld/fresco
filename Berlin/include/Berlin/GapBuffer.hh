@@ -61,23 +61,23 @@ namespace Berlin
       iterator cursor() { return begin() + my_cursor;}
       void newgap()
       {
-	  rep_type::insert(gbegin(), gapsize, value_type(0));
-	  my_gapend += gapsize;
+      rep_type::insert(gbegin(), gapsize, value_type(0));
+      my_gapend += gapsize;
       }
       void movegap(int d)
       {
-	  if (d > 0)
-	  {
-	      if (gend() + d > end())
-		  rep_type::insert(end(), size_type(gend() + d - end()),
-				   value_type(0));
-	      copy(gend(), gend() + d, gbegin());
-	  }
-	  else
-	      copy(rep_type::reverse_iterator(gbegin()),
-		   rep_type::reverse_iterator(gbegin() + d),
-		   rep_type::reverse_iterator(gend()));
-	  my_gapbegin += d, my_gapend += d;
+      if (d > 0)
+      {
+          if (gend() + d > end())
+          rep_type::insert(end(), size_type(gend() + d - end()),
+                   value_type(0));
+          copy(gend(), gend() + d, gbegin());
+      }
+      else
+          copy(rep_type::reverse_iterator(gbegin()),
+           rep_type::reverse_iterator(gbegin() + d),
+           rep_type::reverse_iterator(gend()));
+      my_gapbegin += d, my_gapend += d;
       }
       size_type gap() { return my_gapend - my_gapbegin; }
       void editing()
@@ -89,87 +89,87 @@ namespace Berlin
       size_type size() { compact(); return gbegin() - begin(); }
       void forward()
       {
-	  if (my_cursor == my_gapbegin && gend() != end())
-	      my_cursor += gap();
-	  else if (cursor() < end()) my_cursor++;
+      if (my_cursor == my_gapbegin && gend() != end())
+          my_cursor += gap();
+      else if (cursor() < end()) my_cursor++;
       }
       void backward()
       {
-	  if (my_cursor == my_gapend) my_cursor -= gap();
-	  else if (cursor() > begin()) my_cursor--;
+      if (my_cursor == my_gapend) my_cursor -= gap();
+      else if (cursor() > begin()) my_cursor--;
       }
       void shift(size_type d)
       {
-	  size_type tmp = my_cursor + d;
-	  if ((my_cursor > my_gapend && tmp > my_gapend) ||
-	      (my_cursor <= my_gapbegin && tmp <= my_gapbegin))
-	      my_cursor = tmp;
-	  else if (d < 0) my_cursor += d - gap();
-	  else my_cursor += d + gap();
+      size_type tmp = my_cursor + d;
+      if ((my_cursor > my_gapend && tmp > my_gapend) ||
+          (my_cursor <= my_gapbegin && tmp <= my_gapbegin))
+          my_cursor = tmp;
+      else if (d < 0) my_cursor += d - gap();
+      else my_cursor += d + gap();
       }
       size_type position()
       { return my_cursor > my_gapend ? my_cursor - gap() : my_cursor;}
       void position(size_type p) { shift(p - my_cursor);}
       void insert(value_type u)
       {
-	  editing();
-	  if (!gap()) newgap();
-	  *cursor() = u;
-	  my_cursor++, my_gapbegin++;
+      editing();
+      if (!gap()) newgap();
+      *cursor() = u;
+      my_cursor++, my_gapbegin++;
       }
       void insert(value_type *u, size_type n)
       {
-	  editing();
-	  rep_type::insert(cursor(), u, u + n);
-	  my_cursor += n, my_gapbegin += n, my_gapend += n;
+      editing();
+      rep_type::insert(cursor(), u, u + n);
+      my_cursor += n, my_gapbegin += n, my_gapend += n;
       }
       void remove_backward(size_type n)
       {
-	  if (my_cursor <= my_gapbegin)
-	  {
-	      if (my_cursor < n) n = my_cursor;
-	      erase(cursor() - n, cursor());
-	      my_cursor -= n, my_gapbegin -= n, my_gapend -= n;
-	  }
-	  else if (my_cursor - my_gapend > n)
-	  {
-	      erase(cursor() - n, cursor());
-	      my_cursor -= n;
-	  }
-	  else
-	  {
-	      size_type d = my_cursor - my_gapend;
-	      erase(gbegin() - (n - d), gbegin());
-	      erase(cursor() - d, cursor());
-	      my_gapbegin -= n - d, my_gapend -= n - d;
-	      my_cursor -= n;
-	  }
+      if (my_cursor <= my_gapbegin)
+      {
+          if (my_cursor < n) n = my_cursor;
+          erase(cursor() - n, cursor());
+          my_cursor -= n, my_gapbegin -= n, my_gapend -= n;
+      }
+      else if (my_cursor - my_gapend > n)
+      {
+          erase(cursor() - n, cursor());
+          my_cursor -= n;
+      }
+      else
+      {
+          size_type d = my_cursor - my_gapend;
+          erase(gbegin() - (n - d), gbegin());
+          erase(cursor() - d, cursor());
+          my_gapbegin -= n - d, my_gapend -= n - d;
+          my_cursor -= n;
+      }
       }
       void remove_forward(size_type n)
       {
-	  if (my_cursor >= my_gapend)
-	  {
-	      if (size_type(end() - cursor()) < n) n = end() - cursor();
-	      erase(cursor(), cursor() + n);
-	  }
-	  else if (my_gapbegin - my_cursor > n)
-	  {
-	      erase(cursor(), cursor() + n);
-	      my_gapbegin -= n, my_gapend -= n;
-	  }
-	  else
-	  {
-	      size_type d = my_gapbegin - my_cursor;
-	      erase(gend(), gend() + (n - d));
-	      erase(cursor(), cursor() + d);
-	      my_gapbegin -= d, my_gapend -= d;
-	  }
+      if (my_cursor >= my_gapend)
+      {
+          if (size_type(end() - cursor()) < n) n = end() - cursor();
+          erase(cursor(), cursor() + n);
+      }
+      else if (my_gapbegin - my_cursor > n)
+      {
+          erase(cursor(), cursor() + n);
+          my_gapbegin -= n, my_gapend -= n;
+      }
+      else
+      {
+          size_type d = my_gapbegin - my_cursor;
+          erase(gend(), gend() + (n - d));
+          erase(cursor(), cursor() + d);
+          my_gapbegin -= d, my_gapend -= d;
+      }
       }
       const value_type *get() { compact(); return &*begin(); }
       void clear_buffer()
       {
-	  position(0);
-	  remove_forward(size());
+      position(0);
+      remove_forward(size());
       }
     private:
       size_type my_cursor;

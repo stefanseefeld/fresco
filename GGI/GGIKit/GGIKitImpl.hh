@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GGIKitImpl_hh
-#define _GGIKitImpl_hh
+#ifndef _GGIKit_GGIKitImpl_hh
+#define _GGIKIT_GGIKitImpl_hh
 
 #include "config.hh"
 #include <Fresco/GGIKit.hh>
@@ -31,19 +31,18 @@ namespace GGIKit
 {
 
   class GGIKitImpl : public virtual POA_GGI::GGIKit,
-                     public KitImpl
+                     public Berlin::KitImpl
   {
     public:
       GGIKitImpl(const std::string &,
                  const Fresco::Kit::PropertySeq &,
-                 ServerContextImpl *);
+                 Berlin::ServerContextImpl *);
       virtual ~GGIKitImpl();
-      virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p,
-                             ServerContextImpl *c)
-      {
-          return new GGIKitImpl(repo_id(), p, c);
-      }
-      virtual GGI::Visual_ptr create_visual(Fresco::PixelCoord, Fresco::PixelCoord);
+      virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+                     Berlin::ServerContextImpl *c)
+      { return new GGIKitImpl(repo_id(), p, c); }
+      virtual GGI::Visual_ptr
+      create_visual(Fresco::PixelCoord, Fresco::PixelCoord);
   };
 
 } // namespace

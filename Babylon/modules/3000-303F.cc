@@ -39,9 +39,9 @@ namespace Babylon
         void clean() { };
 
         CJK_Symbols_and_Punctuation3000() :
-	    my_first_letter(0x3000),
-	    my_last_letter(0x303F)
-	    // my_version="4.0" // Not yet supported!
+        my_first_letter(0x3000),
+        my_last_letter(0x303F)
+        // my_version="4.0" // Not yet supported!
         {
         }
 
@@ -49,24 +49,24 @@ namespace Babylon
 
         UCS4 first_letter() const
         {
-	    return my_first_letter;
-	}  
+        return my_first_letter;
+    }  
 
-	UCS4 last_letter() const
-	{
-	    return my_last_letter;
-	}
+    UCS4 last_letter() const
+    {
+        return my_last_letter;
+    }
 
-	bool is_undef_block() const
-	{
-	    return 0;
-	}
+    bool is_undef_block() const
+    {
+        return 0;
+    }
 
-	// query functions:
-	std::string blockname(const UCS4 uc) const
-	{
-	    return "CJK Symbols and Punctuation";
-	}
+    // query functions:
+    std::string blockname(const UCS4 uc) const
+    {
+        return "CJK Symbols and Punctuation";
+    }
 
         bool is_defined(const UCS4 uc) const
         {
@@ -387,7 +387,7 @@ namespace Babylon
         // functions
         CJK_Symbols_and_Punctuation3000(const CJK_Symbols_and_Punctuation3000 &) ; // no implementaion!
 
-	// members
+    // members
         Babylon::UCS4 my_first_letter;
         Babylon::UCS4 my_last_letter;
         // Babylon::UCS4_string my_version;

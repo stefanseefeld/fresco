@@ -49,12 +49,12 @@ namespace Berlin
       ~Impl_var() { if (t) deactivate(t); }
       Impl_var<T> &operator = (Impl_var<T> &i)
       {
-	  if (&i != this)
-	  {
-	      if (t) deactivate(t);
-	      t = i._retn();
-	  }
-	  return *this;
+      if (&i != this)
+      {
+          if (t) deactivate(t);
+          t = i._retn();
+      }
+      return *this;
       }
       Impl_var<T> &operator = (T *tt)
       { if (t) deactivate(t); t = tt; if (t) activate(t); return *this; }
@@ -75,8 +75,8 @@ namespace Berlin
       PortableServer::POA_var poa = t->_default_POA();
 #ifdef LCLOG
       Logger::log(Logger::lifecycle) << "activating " << t << " ("
-				     << typeid(*t).name() << ")"
-				     << std::endl;
+                     << typeid(*t).name() << ")"
+                     << std::endl;
 #endif
       PortableServer::ObjectId *oid = poa->activate_object(t);
       t->_remove_ref();
@@ -91,8 +91,8 @@ namespace Berlin
       PortableServer::ObjectId *oid = poa->servant_to_id(t);
 #ifdef LCLOG
       Logger::log(Logger::lifecycle) << "deactivating " << t << " ("
-				     << typeid(*t).name() << ")"
-				     << std::endl;
+                     << typeid(*t).name() << ")"
+                     << std::endl;
 #endif
       poa->deactivate_object(*oid);
       delete oid;

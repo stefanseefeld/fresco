@@ -34,7 +34,7 @@ namespace Berlin {
 namespace ToolKit {
 
 class Switch : public virtual ViewImpl,
-	       public MonoGraphic
+           public MonoGraphic
 {
 public:
   Switch(Fresco::Telltale::Mask mask);

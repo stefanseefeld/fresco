@@ -51,8 +51,8 @@ std::string Babylon::Char::convert(const std::string format) const
     size_t out_bound(16);
 
     iconv_wrapper(Babylon::internal_format,
-		  reinterpret_cast<const char *>(&my_value), in_bound,
-		  format, &out_buf[0], out_bound);
+          reinterpret_cast<const char *>(&my_value), in_bound,
+          format, &out_buf[0], out_bound);
     
     // put result into a string
     std::string result(&out_buf[0], 16 - out_bound);
@@ -61,8 +61,8 @@ std::string Babylon::Char::convert(const std::string format) const
 }
 
 size_t Babylon::Char::convert(const std::string & s,
-			      const size_t pos,
-			      const std::string format)
+                  const size_t pos,
+                  const std::string format)
     throw (Transfer_Error)
 {
     Prague::Trace trace("Babylon::Char::convert(INTO babylon)");
@@ -70,8 +70,8 @@ size_t Babylon::Char::convert(const std::string & s,
     // check wether start position is valid.
     if (pos >= s.length())
     {
-	my_value = Babylon::UC_NULL;
-	return(std::string::npos);
+    my_value = Babylon::UC_NULL;
+    return(std::string::npos);
     }
 
     // prepare input buffer
@@ -82,30 +82,30 @@ size_t Babylon::Char::convert(const std::string & s,
     size_t out_bound(sizeof(UCS4));
 
     iconv_wrapper(format, s.data() + pos, in_bound,
-		  Babylon::internal_format,
-		  reinterpret_cast<char *>(&c), out_bound);
+          Babylon::internal_format,
+          reinterpret_cast<char *>(&c), out_bound);
 
     my_value = c;
     return (0 == in_bound) ? std::string::npos : s.length() - in_bound;
 }
 
 void Babylon::Char::iconv_wrapper(const std::string & in_format,
-				  const char * in_buf,
-				  size_t & in_buf_size,
-				  const std::string & out_format,
-				  char * out_buf,
-				  size_t & out_buf_size) const
+                  const char * in_buf,
+                  size_t & in_buf_size,
+                  const std::string & out_format,
+                  char * out_buf,
+                  size_t & out_buf_size) const
 {
     // Setup iconv
     iconv_t cd = iconv_open(out_format.c_str(), in_format.c_str());
 
     if (iconv_t(-1) == cd)
-	throw Trans_Error(Babylon::TRANS_ICONV_FAILED);
+    throw Trans_Error(Babylon::TRANS_ICONV_FAILED);
 
     // convert
     size_t retval = iconv(cd,
-			  const_cast<char **>(&in_buf), &in_buf_size,
-			  &out_buf, &out_buf_size);
+              const_cast<char **>(&in_buf), &in_buf_size,
+              &out_buf, &out_buf_size);
 
     if (-1 == retval)
     {
@@ -375,7 +375,7 @@ bool Babylon::Char::is_Other_Default_Ignorable_Code_Point() const
     throw (Block_Error)
 {
     return Dictionary::instance()->
-	is_Other_Default_Ignorable_Code_Point(my_value);
+    is_Other_Default_Ignorable_Code_Point(my_value);
 }
 
 bool Babylon::Char::is_Deprecated() const throw (Block_Error)
@@ -631,7 +631,7 @@ bool Babylon::Char::is_Control() const throw (Block_Error)
 bool Babylon::Char::is_hangul_L() const throw (Block_Error)
 {
     if ((0x1100 <= my_value && 0x1159 >= my_value) ||
-	0x115f == my_value) return 1;
+    0x115f == my_value) return 1;
     return 0;
 }
 
@@ -660,7 +660,7 @@ bool Babylon::Char::is_hangul_LVT() const throw (Block_Error)
 }
 
 Babylon::Char::Char(const std::string & s, size_t & pos,
-		    const std::string format)
+            const std::string format)
 {
     pos = convert(s, pos, format);
 }

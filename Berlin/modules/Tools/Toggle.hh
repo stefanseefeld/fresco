@@ -33,14 +33,14 @@ namespace Berlin
     class Toggle : public ControllerImpl
     {
       public:
-	Toggle(bool = false);
-	~Toggle();
+    Toggle(bool = false);
+    ~Toggle();
 //      protected:
-	virtual void press(Fresco::PickTraversal_ptr,
-			   const Fresco::Input::Event &);
-	virtual void release(Fresco::PickTraversal_ptr,
-			     const Fresco::Input::Event &);
-	virtual void key_press(const Fresco::Input::Event &);
+    virtual void press(Fresco::PickTraversal_ptr,
+               const Fresco::Input::Event &);
+    virtual void release(Fresco::PickTraversal_ptr,
+                 const Fresco::Input::Event &);
+    virtual void key_press(const Fresco::Input::Event &);
       private:
     };
 

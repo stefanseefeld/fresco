@@ -30,8 +30,8 @@ namespace Berlin
 {
 
   class IdentifiableImpl : public virtual POA_Fresco::Identifiable,
-			   public virtual ServantBase,
-			   public virtual Prague::NamedObject
+               public virtual ServantBase,
+               public virtual Prague::NamedObject
 
   {
     public:

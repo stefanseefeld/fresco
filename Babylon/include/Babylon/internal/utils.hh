@@ -79,9 +79,9 @@ namespace Babylon {
   bidir_is_explicit_or_separator_or_BN_or_WS(const Babylon::Bidir_Props & p)
   {
       return (p & (Babylon::BIDIR_MASK_EXPLICIT |
-		   Babylon::BIDIR_MASK_SEPARATOR |
-		   Babylon::BIDIR_MASK_BN |
-		   Babylon::BIDIR_MASK_WS));
+           Babylon::BIDIR_MASK_SEPARATOR |
+           Babylon::BIDIR_MASK_BN |
+           Babylon::BIDIR_MASK_WS));
   }
 
   inline bool
@@ -109,23 +109,23 @@ namespace Babylon {
   bidir_explicit_to_override_dir(const Babylon::Bidir_Props & p)
   {
       return (bidir_is_override(p) ?
-	      level_to_bidir(bidir_to_level(p)) : 
-	      BIDIR_ON);
+          level_to_bidir(bidir_to_level(p)) : 
+          BIDIR_ON);
   }
 
   inline bool compact(const Babylon::Embedding_Level & a,
-		      const Babylon::Embedding_Level & b)
+              const Babylon::Embedding_Level & b)
   {
       return (a.bidir_type == b.bidir_type && a.level == b.level);
   }
 
   inline bool compact_neutrals(const Babylon::Embedding_Level & a,
-			       const Babylon::Embedding_Level & b)
+                   const Babylon::Embedding_Level & b)
   {
       return (a.level == b.level &&
-	      (a.bidir_type == b.bidir_type ||
-	       bidir_is_neutral(a.bidir_type) &&
-	       bidir_is_neutral(b.bidir_type)));
+          (a.bidir_type == b.bidir_type ||
+           bidir_is_neutral(a.bidir_type) &&
+           bidir_is_neutral(b.bidir_type)));
   }
 
   inline Babylon::Bidir_Props change_number_to_rtl(Babylon::Bidir_Props p)
@@ -136,7 +136,7 @@ namespace Babylon {
 
   Embedding_Levels::iterator
   compact(const Embedding_Levels::iterator & start,
-	  const Embedding_Levels::iterator & end)
+      const Embedding_Levels::iterator & end)
   {
       Prague::Trace trace("Babylon::compact(...)");
       if (start == end) return(end);
@@ -147,15 +147,15 @@ namespace Babylon {
       
       while(current != end)
       {
-	  if (last_used->level == current->level &&
-	      last_used->bidir_type == current->bidir_type)
-	      last_used->increment_length(current->length());
-	  else
-	  {
-	      ++last_used;
-	      std::iter_swap(last_used, current);
-	  }
-	  ++current;
+      if (last_used->level == current->level &&
+          last_used->bidir_type == current->bidir_type)
+          last_used->increment_length(current->length());
+      else
+      {
+          ++last_used;
+          std::iter_swap(last_used, current);
+      }
+      ++current;
       }
       
       return (++last_used);
@@ -163,7 +163,7 @@ namespace Babylon {
 
   Embedding_Levels::iterator
   compact_neutrals(const Embedding_Levels::iterator & start,
-		   const Embedding_Levels::iterator & end)
+           const Embedding_Levels::iterator & end)
   {
       Prague::Trace trace("Babylon::compact_neutrals(...)");
       if (start == end) return (end);
@@ -174,17 +174,17 @@ namespace Babylon {
       
       while(current != end)
       {
-	  if (last_used->level == current->level &&
-	      (last_used->bidir_type == current->bidir_type ||
-	       bidir_is_neutral(last_used->bidir_type) &&
-	       bidir_is_neutral(current->bidir_type)))
-	      last_used->increment_length(current->length());
-	  else
-	  {
-	      ++last_used;
-	      std::iter_swap(last_used, current);
-	  }
-	  ++current;
+      if (last_used->level == current->level &&
+          (last_used->bidir_type == current->bidir_type ||
+           bidir_is_neutral(last_used->bidir_type) &&
+           bidir_is_neutral(current->bidir_type)))
+          last_used->increment_length(current->length());
+      else
+      {
+          ++last_used;
+          std::iter_swap(last_used, current);
+      }
+      ++current;
       }
 
       return(++last_used);
@@ -192,7 +192,7 @@ namespace Babylon {
 
   Embedding_Levels
   override_lists(const Embedding_Levels & base,
-		 const Embedding_Levels & over)
+         const Embedding_Levels & over)
   {
       Prague::Trace trace("Babylon::override_lists(...)");
       if (base.empty()) return (over);
@@ -205,77 +205,77 @@ namespace Babylon {
       
       while(!(over_it == over.end() && base_it == base.end()))
       {
-	  // One list is empty, copy the other over:
-	  if (over_it == over.end())
-	  {
-	      // copy base
-	      std::copy(base_it, base.end(),
-			std::back_inserter(result));
-	      base_it = base.end();
-	      continue;
-	  }
-	  
-	  if (base_it == base.end())
-	  {
-	      // copy over
-	      std::copy(over_it, over.end(),
-			std::back_inserter(result));
-	      over_it = over.end();
-	      continue;
-	  }
-	  
-	  // skip invalid entries
-	  if (over_it->length() == 0)
-	  {
-	      ++over_it;
-	      continue;
-	  }
-	  
-	  if (base_it->length() == 0)
-	  {
-	      ++base_it;
-	      continue;
-	  }
-	
-	  size_t max_current = base_it->ends_at();
-	  
-	  // copying base:
-	  if (max_current < over_it->starts_at())
-	  {
-	      result.push_back(*base_it);
-	      ++base_it;
-	      continue;
-	  }
-	  
-	  // inserting over_it into base_it
-	  if (max_current >= over_it->starts_at())
-	  {
-	      Babylon::Embedding_Level current = *base_it;
-	      
-	      // Insert first part of base if not empty:
-	      current.length(over_it->starts_at() - current.starts_at());
-	      if (current.length() != 0)
-		  // current.length can't become < 0 as
-		  // max_current >= over_it.start
-		  result.push_back(current);
-	      
-	      // Insert over_it (we allways need to do this!)
-	      result.push_back(*over_it);
-	      
-	      // over_it reaches into the next base_it:
-	      while (base_it != base.end() &&
-		     base_it->ends_at() < over_it->ends_at())
-		  ++base_it;
+      // One list is empty, copy the other over:
+      if (over_it == over.end())
+      {
+          // copy base
+          std::copy(base_it, base.end(),
+            std::back_inserter(result));
+          base_it = base.end();
+          continue;
+      }
+      
+      if (base_it == base.end())
+      {
+          // copy over
+          std::copy(over_it, over.end(),
+            std::back_inserter(result));
+          over_it = over.end();
+          continue;
+      }
+      
+      // skip invalid entries
+      if (over_it->length() == 0)
+      {
+          ++over_it;
+          continue;
+      }
+      
+      if (base_it->length() == 0)
+      {
+          ++base_it;
+          continue;
+      }
+    
+      size_t max_current = base_it->ends_at();
+      
+      // copying base:
+      if (max_current < over_it->starts_at())
+      {
+          result.push_back(*base_it);
+          ++base_it;
+          continue;
+      }
+      
+      // inserting over_it into base_it
+      if (max_current >= over_it->starts_at())
+      {
+          Babylon::Embedding_Level current = *base_it;
+          
+          // Insert first part of base if not empty:
+          current.length(over_it->starts_at() - current.starts_at());
+          if (current.length() != 0)
+          // current.length can't become < 0 as
+          // max_current >= over_it.start
+          result.push_back(current);
+          
+          // Insert over_it (we allways need to do this!)
+          result.push_back(*over_it);
+          
+          // over_it reaches into the next base_it:
+          while (base_it != base.end() &&
+             base_it->ends_at() < over_it->ends_at())
+          ++base_it;
 
-	      if (base_it == base.end()) continue;
-	      
-	      current = *base_it;
-	      current.length(current.ends_at() - over_it->ends_at());
-	      current.starts_at(over_it->ends_at() + 1);
-	      ++base_it;
-	      ++over_it;
-	      continue;
-	  }
+          if (base_it == base.end()) continue;
+          
+          current = *base_it;
+          current.length(current.ends_at() - over_it->ends_at());
+          current.starts_at(over_it->ends_at() + 1);
+          ++base_it;
+          ++over_it;
+          continue;
+      }
       } // while
       
       return (result);

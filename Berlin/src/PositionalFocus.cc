@@ -50,19 +50,19 @@ namespace Berlin
   {
     public:
       Traversal(Fresco::Graphic_ptr g, Fresco::Region_ptr a,
-		Fresco::Transform_ptr t, PositionalFocus *f) :
-	  PickTraversalImpl(g, a, t, f),
-	  my_memento(0),
-	  my_picked(false)
+        Fresco::Transform_ptr t, PositionalFocus *f) :
+      PickTraversalImpl(g, a, t, f),
+      my_memento(0),
+      my_picked(false)
       { }
       Traversal &operator = (const Traversal &t)
       {
-	  PickTraversalImpl::operator = (t);
-	  my_pointer = t.my_pointer; 
-	  my_picked = false;
-	  // Do not touch my_memento so we can keep switching between
-	  // two Traversals (see PositionalFocus::PositionalFocusi() and
-	  // PositionalFocus::dispatch())
+      PickTraversalImpl::operator = (t);
+      my_pointer = t.my_pointer; 
+      my_picked = false;
+      // Do not touch my_memento so we can keep switching between
+      // two Traversals (see PositionalFocus::PositionalFocusi() and
+      // PositionalFocus::dispatch())
       }
       void pointer(const Fresco::Input::Position &p) { my_pointer = p;}
       void memento(Traversal *m) { my_memento = m;}
@@ -103,14 +103,14 @@ PositionalFocus::Traversal::intersects_region(Region_ptr region)
     Vertex lower, upper;
     region->bounds(lower, upper);
     bool inside = lower.x <= local.x && local.x <= upper.x &&
-	lower.y <= local.y && local.y <= upper.y;
+    lower.y <= local.y && local.y <= upper.y;
     if (should_track && inside)
     {
-	Region_var r = current_allocation();
-	Transform_var t = current_transformation();
-	RegionImpl region(r, t);
-	Console::instance()->highlight_screen(region.lower.x, region.lower.y,
-					      region.upper.x, region.upper.y);
+    Region_var r = current_allocation();
+    Transform_var t = current_transformation();
+    RegionImpl region(r, t);
+    Console::instance()->highlight_screen(region.lower.x, region.lower.y,
+                          region.upper.x, region.upper.y);
     }
     return inside;
 }
@@ -118,7 +118,7 @@ PositionalFocus::Traversal::intersects_region(Region_ptr region)
 void PositionalFocus::Traversal::debug()
 {
     std::cout << "PositionalFocus::Traversal::debug : stack size = "
-	      << size() << std::endl;
+          << size() << std::endl;
     Region_var r = current_allocation();
     Transform_var t = current_transformation();
     RegionImpl region(r, t);
@@ -135,7 +135,7 @@ void PositionalFocus::Traversal::debug()
 }
 
 PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g,
-				 Region_ptr r) :
+                 Region_ptr r) :
     FocusImpl(d),
     my_root(g),
     my_default_raster(0),
@@ -148,22 +148,22 @@ PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g,
     std::string name = path.lookup_file("ul-cursor.png");
     if (name.empty())
     {
-	std::string msg = "No default cursor found in rasterpath";
-	throw std::runtime_error(msg);
+    std::string msg = "No default cursor found in rasterpath";
+    throw std::runtime_error(msg);
     }
     else
     {
-	my_default_raster = new RasterImpl(name);
-	my_pointer =
-	    my_pointers->lookup(Raster_var(my_default_raster->_this()));
-	my_pointer->save();
-	my_pointer->draw();
+    my_default_raster = new RasterImpl(name);
+    my_pointer =
+        my_pointers->lookup(Raster_var(my_default_raster->_this()));
+    my_pointer->save();
+    my_pointer->draw();
     }
     // Generate two Traversals
     my_traversal_cache[0] =
-	new Traversal(my_root, r, Transform::_nil(), this);
+    new Traversal(my_root, r, Transform::_nil(), this);
     my_traversal_cache[1] =
-	new Traversal(my_root, r, Transform::_nil(), this);
+    new Traversal(my_root, r, Transform::_nil(), this);
     // have both Traversal's memento point to the other.
     my_traversal_cache[0]->memento(my_traversal_cache[1]);
     my_traversal_cache[1]->memento(my_traversal_cache[0]);
@@ -197,7 +197,7 @@ void PositionalFocus::set_cursor(Raster_ptr r)
 {
     Resources &prev = my_resources.top();
     if (!prev.flags & Resources::set_pointer)
-	prev.pointer = my_pointer;
+    prev.pointer = my_pointer;
     prev.flags |= Resources::set_pointer;
     my_pointer->restore();
     my_pointer = my_pointers->lookup(Raster::_duplicate(r));
@@ -220,7 +220,7 @@ void PositionalFocus::restore(Region_ptr region)
     Vertex l, u;
     region->bounds(l, u);
     if (my_pointer->intersects(l.x, u.x, l.y, u.y)) 
-	my_pointer->restore();
+    my_pointer->restore();
 }
 
 void PositionalFocus::damage(Region_ptr region)
@@ -230,8 +230,8 @@ void PositionalFocus::damage(Region_ptr region)
     region->bounds(l, u);
     if (my_pointer->intersects(l.x, u.x, l.y, u.y))
     {
-	my_pointer->save();
-	my_pointer->draw();
+    my_pointer->save();
+    my_pointer->draw();
     }
     Prague::Guard<Mutex> guard(my_mutex);
     if (!my_grabbed) return;
@@ -274,7 +274,7 @@ void PositionalFocus::dispatch(Input::Event &event)
   if (pidx == -1)
   {
       std::cerr << "PositionalFocus::dispatch error: nonpositional event"
-	        << std::endl;
+            << std::endl;
       return;
   }
   /*
@@ -289,9 +289,9 @@ void PositionalFocus::dispatch(Input::Event &event)
       Traversal *picked = my_traversal->memento();
       if (!picked)
       {
-	  std::cerr << "PositionalFocus::dispatch : no Controller found!"
-	            << " (position is " << position << ")" << std::endl;
-	  return;
+      std::cerr << "PositionalFocus::dispatch : no Controller found!"
+                << " (position is " << position << ")" << std::endl;
+      return;
       }
       else my_traversal = picked; // picked == _traversal->memento():
                                   // switching mentioned above happens here.
@@ -299,51 +299,51 @@ void PositionalFocus::dispatch(Input::Event &event)
       should_track = false;
       if (event[0].attr._d() == Input::button)
       {
-	  const Input::Toggle &toggle = event[0].attr.selection();
-	  if (toggle.actuation == Input::Toggle::press) should_track = true;
+      const Input::Toggle &toggle = event[0].attr.selection();
+      if (toggle.actuation == Input::Toggle::press) should_track = true;
       }
       /*
        * ...now do the [lose/receive]Focus stuff,...
        */
       std::vector<Controller_var>::const_iterator nf =
-	  my_traversal->controllers().begin();
+      my_traversal->controllers().begin();
       cstack_t::iterator of = my_controllers.begin();
       /*
        * ...skip the unchanged controllers,...
        */
       while (nf != my_traversal->controllers().end() &&
-	     of != my_controllers.end() &&
-	     (*nf)->is_identical(*of)) ++nf, ++of;
+         of != my_controllers.end() &&
+         (*nf)->is_identical(*of)) ++nf, ++of;
       /*
        * ...remove the old controllers in reverse order,...
        */
       for (cstack_t::reverse_iterator o = my_controllers.rbegin();
-	   o.base() != of;
-	   ++o)
-	  try
-	  {
-	      (*o)->lose_focus(device());
-	      Resources &prev = my_resources.top();
-	      if (prev.flags & Resources::set_pointer)
-	      {
-		  my_pointer->restore();
-		  my_pointer = prev.pointer;
-		  my_pointer->save();
-		  my_pointer->draw();
-	      }
-	      my_resources.pop();
-	  }
-	  catch (const CORBA::OBJECT_NOT_EXIST &) { }
-	  catch (const CORBA::COMM_FAILURE &) { }
-	  catch (const CORBA::TRANSIENT &) { }
+       o.base() != of;
+       ++o)
+      try
+      {
+          (*o)->lose_focus(device());
+          Resources &prev = my_resources.top();
+          if (prev.flags & Resources::set_pointer)
+          {
+          my_pointer->restore();
+          my_pointer = prev.pointer;
+          my_pointer->save();
+          my_pointer->draw();
+          }
+          my_resources.pop();
+      }
+      catch (const CORBA::OBJECT_NOT_EXIST &) { }
+      catch (const CORBA::COMM_FAILURE &) { }
+      catch (const CORBA::TRANSIENT &) { }
       my_controllers.erase(of, my_controllers.end());
       // ...add the new controllers,...
       Focus_var my_this = _this();
       for (; nf != picked->controllers().end(); ++nf)
       {
-	  my_resources.push(Resources());
-	  (*nf)->receive_focus (my_this);
- 	  my_controllers.push_back(*nf);
+      my_resources.push(Resources());
+      (*nf)->receive_focus (my_this);
+       my_controllers.push_back(*nf);
       }
   }
   // ...and finally dispatch the event
@@ -357,7 +357,7 @@ void PositionalFocus::dispatch(Input::Event &event)
   try
   {
       my_controllers.back()->
-	  handle_positional(PickTraversal_var(my_traversal->_this()), event);
+      handle_positional(PickTraversal_var(my_traversal->_this()), event);
   }
   catch (const CORBA::OBJECT_NOT_EXIST &) { my_controllers.pop_back(); }
   catch (const CORBA::COMM_FAILURE &) { my_controllers.pop_back(); }

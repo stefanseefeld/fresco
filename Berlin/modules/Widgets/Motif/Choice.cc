@@ -58,21 +58,21 @@ Graphic_ptr Choice::create_focus_frame(Controller_ptr g)
     Graphic_var black = my_tools->frame(g, 20., colored, false);
 
     return my_tools->create_switch(black, empty,
-				   Fresco::Controller::active, g);
+                   Fresco::Controller::active, g);
 }
 
 ToggleChoice::ToggleChoice(Selection_ptr s,
-			   Graphic_ptr inbox,
-			   Graphic_ptr outbox,
-			   LayoutKit_ptr l,
-			   ToolKit_ptr t) :
+               Graphic_ptr inbox,
+               Graphic_ptr outbox,
+               LayoutKit_ptr l,
+               ToolKit_ptr t) :
     Choice(s, l, t),
     my_in_box(Fresco::Graphic::_duplicate(inbox)),
     my_out_box(Fresco::Graphic::_duplicate(outbox))
 { }
 
 RefCount_var<Fresco::Graphic> ToggleChoice::create_item(Graphic_ptr g,
-							Tag& t)
+                            Tag& t)
 {
     Trace trace("ToggleChoice::create_item");
     
@@ -84,8 +84,8 @@ RefCount_var<Fresco::Graphic> ToggleChoice::create_item(Graphic_ptr g,
 
     // 'toggle': simply a graphic with bevel dependent upon toggle_box
     Graphic_var toggle =
-	my_tools->create_switch(my_in_box, my_out_box,
-				Fresco::Controller::toggled,  toggle_box);
+    my_tools->create_switch(my_in_box, my_out_box,
+                Fresco::Controller::toggled,  toggle_box);
 
     // now add the toggle button into the button box, along with g
     box->append_graphic(RefCount_var<Fresco::Graphic>(my_layout->valign(RefCount_var<Fresco::Graphic>(my_layout->margin(toggle, 50.)), 0.5)));
@@ -123,17 +123,17 @@ void ToggleChoice::remove_item(Tag t)
 }
 
 CheckboxChoice::CheckboxChoice(Selection_ptr s,
-			       Graphic_ptr inbox,
-			       Graphic_ptr outbox,
-			       LayoutKit_ptr l,
-			       ToolKit_ptr t) :
+                   Graphic_ptr inbox,
+                   Graphic_ptr outbox,
+                   LayoutKit_ptr l,
+                   ToolKit_ptr t) :
     Choice(s, l, t),
     my_in_box(Fresco::Graphic::_duplicate(inbox)),
     my_out_box(Fresco::Graphic::_duplicate(outbox))
 { }
 
 RefCount_var<Fresco::Graphic> CheckboxChoice::create_item(Graphic_ptr g,
-							  Tag& t)
+                              Tag& t)
 {
     Trace trace("CheckboxChoice::create_item");
 
@@ -145,8 +145,8 @@ RefCount_var<Fresco::Graphic> CheckboxChoice::create_item(Graphic_ptr g,
     
     // 'toggle': simply a graphic with bevel dependent upon toggle_box state
     Graphic_var toggle =
-	my_tools->create_switch(my_in_box, my_out_box,
-				Fresco::Controller::toggled, toggle_box);
+    my_tools->create_switch(my_in_box, my_out_box,
+                Fresco::Controller::toggled, toggle_box);
 
     // now add the toggle button into the button box, along with g
     box->append_graphic(RefCount_var<Fresco::Graphic>(my_layout->valign(RefCount_var<Fresco::Graphic>(my_layout->margin(toggle, 50.)), 0.5)));
@@ -192,7 +192,7 @@ Tag ToolChoice::append_item(Graphic_ptr g)
 {
     Trace trace("ToolChoice::append_item");
     RefCount_var<Fresco::Controller> toggle =
-	my_tools->toggle(Fresco::Graphic::_nil());
+    my_tools->toggle(Fresco::Graphic::_nil());
     Tag tag = my_selection->add(toggle);
     append_controller(toggle);
 
@@ -202,8 +202,8 @@ Tag ToolChoice::append_item(Graphic_ptr g)
     out.brightness(0.5); out._d(ToolKit::outset);
     Graphic_var outset = my_tools->frame(g, 20., out, true);
     Graphic_var frame =
-	my_tools->create_switch(inset, outset, Fresco::Controller::toggled,
-				toggle);
+    my_tools->create_switch(inset, outset, Fresco::Controller::toggled,
+                toggle);
     toggle->body(frame);
     Graphic_var box = body();
     box->append_graphic(toggle);
@@ -214,7 +214,7 @@ Tag ToolChoice::prepend_item(Graphic_ptr g)
 {
     Trace trace("ToolChoice::prepend_item");
     RefCount_var<Fresco::Controller> toggle =
-	my_tools->toggle(Fresco::Graphic::_nil());
+    my_tools->toggle(Fresco::Graphic::_nil());
     Tag tag = my_selection->add(toggle);
     prepend_controller(toggle);
     
@@ -224,8 +224,8 @@ Tag ToolChoice::prepend_item(Graphic_ptr g)
     out.brightness(0.5); out._d(ToolKit::outset);
     Graphic_var outset = my_tools->frame(g, 20., out, true);
     Graphic_var frame =
-	my_tools->create_switch(inset, outset, Fresco::Controller::toggled,
-				toggle);
+    my_tools->create_switch(inset, outset, Fresco::Controller::toggled,
+                toggle);
     toggle->body(frame);
     Graphic_var box = body();
     box->prepend_graphic(toggle);
