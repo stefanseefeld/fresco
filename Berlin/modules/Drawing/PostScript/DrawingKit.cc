@@ -57,8 +57,8 @@ KitImpl *PSDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
 void PSDrawingKit::init()
 {
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
-  _os << "%%BoundingBox: 0 -"
-      << (int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
+  _os << "%%BoundingBox: 0 "
+      << 0-(int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
       << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Berlin Consortium" << std::endl;
@@ -92,26 +92,20 @@ void PSDrawingKit::set_clipping(Region_ptr r)
 {
 #if 0
   _os << "%set_clipping" << std::endl;
-  if (CORBA::is_nil(r))
-    { 
-    /* clear _cl */
+  _cl = Region::_duplicate(r);
+  if (CORBA::is_nil(_cl))
+  { 
       _os << "initclip" << std::endl;
       _os << std::endl; // disallowed in EPS
-    }
-  _cl = Region::_duplicate(r);
-
-  Lease_var<RegionImpl> climpl(Provider<RegionImpl>::provide());
-  climpl->copy(_cl);
-
-  Vertex lower = climpl->lower;
-  Vertex upper = climpl->upper;
-  _tr->transform_vertex(lower);
-  _tr->transform_vertex(upper);
-  
-  _os << lower.x << " " << lower.y << " ";
-      << upper.x - lower.x << " "
-      << upper.x - lower.x << " rectclip"
-
+  } else {
+    Vertex lower, upper;
+    _cl->bounds(lower, upper);
+    //_tr->transform_vertex(lower);
+    //_tr->transform_vertex(upper);
+    
+    _os << lower.x << " " << lower.y << " " << upper.x - lower.x << " "
+	<< upper.x - lower.x << " rectclip" << std::endl;
+  }
   _os << std::endl;
 #endif
 }
@@ -176,30 +170,36 @@ void PSDrawingKit::draw_path(const Path &path)
     v = path.nodes[i];
     vertex(v, " lineto");
   }
-  _os << "closepath" << std::endl;
+  _os << "closepath";
   if (_fs == Warsaw::DrawingKit::solid)
-    _os << "fill" << std::endl;
+    _os << " fill" << std::endl;
   else
-    _os << "stroke" << std::endl;
+    _os << " stroke" << std::endl;
   _os << std::endl;
 }
 
 void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
   _os << "%draw_rectangle" << std::endl;
-  Vertex l = lower; Vertex u = upper;
-  _tr->transform_vertex(l);
-  _tr->transform_vertex(u);
-  
-  _os << l.x*resolution(xaxis) << " " << l.y*resolution(yaxis) << " "
-      << (u.x - l.x)*resolution(xaxis) << " "
-      << (u.y - l.y)*resolution(yaxis);
-
+  _os << "newpath" << std::endl;
+  Vertex v;
+  v.x = lower.x; v.y = lower.y; v.z = 0;
+  vertex(v, " moveto");
+  v.x = lower.x; v.y = upper.y; v.z = 0;
+  vertex(v, " lineto");
+  v.x = upper.x; v.y = upper.y; v.z = 0;
+  vertex(v, " lineto");
+  v.x = upper.x; v.y = lower.y; v.z = 0;
+  vertex(v, " lineto");
+  v.x = lower.x; v.y = lower.y; v.z = 0;
+  vertex(v, " lineto");
+  _os << "closepath";
   if (_fs == Warsaw::DrawingKit::solid)
-    _os << " rectfill" << std::endl;
+    _os << " fill" << std::endl;
   else
-    _os << " rectstroke" << std::endl;
-  _os << std::endl;
+    _os << " stroke" << std::endl;
+
+ _os << std::endl;
 }
 
 inline void PSDrawingKit::vertex(const Vertex &x, char *c) {
@@ -220,12 +220,15 @@ void PSDrawingKit::draw_image(Raster_ptr raster)
 {
   Raster_var r = Raster::_duplicate(raster);
   _os << "%draw_image" << std::endl;
-  Vertex o; o.x = 0; o.y = 0; o.z = 0;
-  _tr->transform_vertex(o);
+  Warsaw::Transform::Matrix matrix;
+  _tr->store_matrix(matrix);
+  Vertex o; _tr->transform_vertex(o);
+  o.x *= (matrix[0][0]+matrix[1][0]) * resolution(xaxis);
+  o.y *= (matrix[0][1]+matrix[1][1]) * resolution(yaxis);
+
   _os << r->header().width << " " << r->header().height << " "
       << r->header().depth << std::endl;
-  _os << "[ " << resolution(xaxis) << " 0 0 "
-      << resolution(yaxis) << " -" << o.x*resolution(xaxis)*resolution(xaxis) << " -" << o.y*resolution(yaxis)*resolution(yaxis) << " ]" << std::endl;
+  _os << "[ " << matrix[0][0]*resolution(xaxis) << " " << matrix[0][1]*resolution(xaxis) << " " << matrix[1][0]*resolution(yaxis) << " " << matrix[1][1]*resolution(yaxis) << " " << 0-o.x*resolution(xaxis) << " " << 0-o.y*resolution(yaxis) << " ]" << std::endl;
   _os << "{<" << std::endl;
   Raster::Index i;
   for (i.y = 0; i.y < r->header().height; i.y++) {
@@ -275,10 +278,11 @@ void PSDrawingKit::draw_char(Unichar c)
 {
   _os << "%draw_char" << std::endl;
   _os << "gsave" << std::endl;
-  Vertex o; o.x = 0; o.y = 0; o.z = 0;
-  _tr->transform_vertex(o);
-  _os << o.x*resolution(xaxis) << " " << o.y*resolution(yaxis) << " moveto" << std::endl;
-  _os << "[ " << 1./resolution(xaxis) << " 0 0 -" << 1./resolution(yaxis) << " 0 0 ] concat" << std::endl;
+  Warsaw::Transform::Matrix matrix;
+  _tr->store_matrix(matrix);
+  _os << matrix[0][3]*resolution(xaxis) << " " << matrix[1][3]*resolution(yaxis) << " moveto" << std::endl;
+  _os << "[ " << matrix[0][0] << " " << 0-matrix[0][1] << " " << matrix[1][0] << " " << 0-matrix[1][1] << " 0 0 ] concat" << std::endl;
+  _os << 1./resolution(xaxis) << " " << 1./resolution(yaxis) << " scale" << std::endl;
   _os << "(" << (char)c << ") show" << std::endl;
   _os << "grestore" << std::endl;
   _os << std::endl;
