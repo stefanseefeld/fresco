@@ -21,6 +21,7 @@
  */
 
 #include "Layout/StageImpl.hh"
+#include "Berlin/Providers.hh"
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
 #include <Berlin/AllocationImpl.hh>
@@ -95,7 +96,7 @@ private:
 
 StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 {
-  Trace trace("StageImpl::Sequence::lookup");
+//   Trace trace("StageImpl::Sequence::lookup");
   if (layer == front()->l) return begin();
   if (layer == back()->l) return end() - 1;
   if (layer == current()->l) return begin() + cursor;
@@ -430,7 +431,7 @@ struct less<StageHandleImpl *> : public binary_function<StageHandleImpl *, Stage
 
 void StageTraversal::execute()
 {
-  Profiler prf("StageTraversal::execute");
+//   Profiler prf("StageTraversal::execute");
   if (traversal->direction() == Traversal::down)
     sort(buffer.begin(), buffer.end(), less<StageHandleImpl *>());
   else
@@ -444,11 +445,14 @@ void StageTraversal::execute()
 
 void StageTraversal::traverse(StageHandleImpl *handle)
 {
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);  
   handle->bbox(*region);
   Vertex origin;
   region->normalize(origin);
-  Impl_var<TransformImpl> transformation(new TransformImpl);
+  Lease<TransformImpl> transformation;
+  Providers::trafo.provide(transformation);  
+  transformation->loadIdentity();
   transformation->translate(origin);
   traversal->traverseChild(handle->c, handle->tag, Region_var(region->_this()), Transform_var(transformation->_this()));
 }
@@ -487,8 +491,8 @@ void StageImpl::request(Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr traversal)
 {
-  Trace trace("StageImpl::traverse");
-  Profiler prf("StageImpl::traverse");
+//   Trace trace("StageImpl::traverse");
+//   Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->allocation()));
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;
@@ -506,8 +510,11 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
   StageHandleImpl *handle = tag2handle(tag);
   if (handle)
     {
-      Impl_var<RegionImpl> region(new RegionImpl);
-      Impl_var<TransformImpl> transform(new TransformImpl);
+      Lease<RegionImpl> region;
+      Providers::region.provide(region);  
+      Lease<TransformImpl> transform;
+      Providers::trafo.provide(transform);  
+      transform->loadIdentity();
       Vertex origin;
       handle->bbox(*region);
       region->normalize(origin);
@@ -520,11 +527,14 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
 
 void StageImpl::needRedraw()
 {
-  Trace trace("StageImpl::needRedraw");
-  Impl_var<AllocationImpl> allocation(new AllocationImpl);
+//   Trace trace("StageImpl::needRedraw");
+  Lease<AllocationImpl> allocation;
+  Providers::alloc.provide(allocation);  
   allocations(Allocation_var(allocation->_this()));
-  Impl_var<RegionImpl> region(new RegionImpl);
-  Impl_var<TransformImpl> tx(new TransformImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);  
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
   for (CORBA::Long i = 0; i < allocation->size(); i++)
     {
       const Allocation::Info_var info = allocation->get(i);
@@ -544,12 +554,15 @@ void StageImpl::needRedraw()
 
 void StageImpl::needRedrawRegion(Region_ptr region)
 {
-  Trace trace("StageImpl::needRedrawRegion");
-  Impl_var<AllocationImpl> allocation(new AllocationImpl);
+//   Trace trace("StageImpl::needRedrawRegion");
+  Lease<AllocationImpl> allocation;
+  Providers::alloc.provide(allocation);  
   allocations(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
-  Impl_var<RegionImpl> tmp(new RegionImpl);
-  Impl_var<TransformImpl> tx(new TransformImpl);
+  Lease<RegionImpl> tmp;
+  Providers::region.provide(tmp);  
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
   for (CORBA::Long i = 0; i < size; i++)
     {
       const Allocation::Info_var info = allocation->get(i);
@@ -566,7 +579,7 @@ void StageImpl::needRedrawRegion(Region_ptr region)
 
 void StageImpl::needResize()
 {
-  Trace trace("StageImpl::needResize");
+//   Trace trace("StageImpl::needResize");
   /*
    * FIXME !!!: need to work out how to process this. (which sub region to damage etc...)
    */
@@ -609,7 +622,7 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
-  Trace trace("StageImpl::end");
+//   Trace trace("StageImpl::end");
   MutexGuard guard(childMutex);
   if (!--nesting)
     {
@@ -634,7 +647,7 @@ void StageImpl::end()
 
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
-  Trace trace("StageImpl::insert");
+//   Trace trace("StageImpl::insert");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = new StageHandleImpl(this, g, tag(), position, size, layer);
   handle->_obj_is_ready(_boa());
@@ -647,7 +660,7 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 
 void StageImpl::remove(StageHandle_ptr h)
 {
-  Trace trace("StageImpl::remove");
+//   Trace trace("StageImpl::remove");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = children->find(h->layer());
   if (!handle) return;
@@ -662,8 +675,8 @@ void StageImpl::remove(StageHandle_ptr h)
 
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
-  Trace trace("StageImpl::move");
-  Prague::Profiler prf("StageImpl::move");
+//   Trace trace("StageImpl::move");
+//   Prague::Profiler prf("StageImpl::move");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 
@@ -686,7 +699,7 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
-  Trace trace("StageImpl::resize");
+//   Trace trace("StageImpl::resize");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 
@@ -705,7 +718,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 
 void StageImpl::relayer(StageHandleImpl *handle, Stage::Index l)
 {
-  Trace trace("StageImpl::relayer");
+//   Trace trace("StageImpl::relayer");
   MutexGuard guard(childMutex);
   children->remove(handle);
   handle->l = l;
@@ -736,7 +749,8 @@ StageHandleImpl *StageImpl::tag2handle(Tag tag)
 
 void StageImpl::damage(StageHandleImpl *handle)
 {
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);  
   handle->bbox(*region);
   if (need_redraw) damage_->mergeUnion(Region_var(region->_this()));
   else
@@ -783,7 +797,7 @@ void StageHandleImpl::layer(Stage::Index ll)
 
 void StageHandleImpl::cacheBBox()
 {
-  Trace trace("StageHandleImpl::cacheBBox");
+//   Trace trace("StageHandleImpl::cacheBBox");
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
   c->request(r);

@@ -23,6 +23,7 @@
 #include "Warsaw/config.hh"
 #include "Layout/GridImpl.hh"
 #include "Layout/LayoutManager.hh"
+#include "Berlin/Providers.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/ImplVar.hh"
@@ -42,7 +43,7 @@ static void setSpan(GridImpl::Span &s, Coord origin, Coord length, Alignment ali
   s.align = align;
 }
 
-static void spansToRegion(GridImpl::Span &x_span, GridImpl::Span &y_span, RegionImpl *r)
+static inline void spansToRegion(GridImpl::Span &x_span, GridImpl::Span &y_span, Lease<RegionImpl> &r)
 {
   r->valid = true;
   r->lower.x = x_span.lower;
@@ -319,7 +320,10 @@ void GridImpl::allocateCell(Region_ptr given, const Grid::Index &i, Region_ptr a
 {
   Span *xspans = fullAllocate(xaxis, given);
   Span *yspans = fullAllocate(yaxis, given);
-  Impl_var<RegionImpl> region(new RegionImpl);
+
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);  
+
   spansToRegion(xspans[i.col], yspans[i.row], region);
   a->copy(Region_var(region->_this()));
   delete [] xspans;
@@ -390,9 +394,13 @@ Grid::Index GridImpl::upper()
 
 void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
-  Impl_var<TransformImpl> tx(new TransformImpl);
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
+  tx->loadIdentity();
   allocateCell(info.allocation, tag2index(tag), info.allocation);
-  Impl_var<RegionImpl> region(new RegionImpl(info.allocation));
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);  
+  region->copy(info.allocation);
   region->normalize(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(region->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
@@ -457,8 +465,11 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
   Span *yspans = fullAllocate(yaxis, given);
   Coord dx = xspans[0].lower - xspans[range.lower.col].lower;
   Coord dy = yspans[0].lower - yspans[range.lower.row].lower;
-  Impl_var<TransformImpl> tx(new TransformImpl);
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
+  tx->loadIdentity();
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);  
   GridDimension &d = dimensions[yaxis];
   Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)

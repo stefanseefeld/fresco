@@ -65,50 +65,58 @@ Unistring *LibArtUnifont::subfamily() { return 0;}
 Unistring *LibArtUnifont::fullname() { return 0;}
 Unistring *LibArtUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
 
-void LibArtUnifont::drawText(const Unistring &u, const int x, const int y, ArtPixBuf *pb, Color &myColor)
-{
+void LibArtUnifont::segments(const Unistring u, 
+			     vector< pair<double,ArtPixBuf *> > &segs) {
+  unsigned int len = u.length();
+  segs.reserve(len);
+  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
+  int width = 0;
+  int height = 16;
+  int pixwidth = 4;  
+ 
+  for(unsigned int idx = 0; idx < len; ++idx) {
+    unsigned int stride = 33;
+    Unichar ch = u[idx];
+    unsigned int base = stride * ch;
+    bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+    width = is_halfwidth ? 8 : 16; 
+    if (cache.find(ch) == cache.end()) {
+      unsigned char *pixels = new unsigned char[width * height * pixwidth];
+      memset(pixels,0,width * height * pixwidth);
+      glyph2pixels(ch,pixels);
+      ArtPixBuf *buf = art_pixbuf_new_const_rgba(pixels, 
+						 width, 
+						 height, 
+						 width * pixwidth);
+      cache.insert(pair<Unichar,ArtPixBuf *>(ch,buf));
+    }
+    segs.push_back(pair<double,ArtPixBuf *>(width,cache[ch]));
+  }    
+}
+
+void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
-  // prepare LibArt to draw
+  const unsigned int stride = 33;
+  unsigned long base = stride * ch;
+  bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+  base++;			// advance past the width marker  
+  unsigned int cols = is_halfwidth ? 1 : 2; 
+  const unsigned int rows = 16;
+  const unsigned int bitsinbyte = 8;
+  const unsigned int pixsz = 4;
 
-  int byte_off_in_pixbuf = 0;  
-  for (unsigned long idx = 0; idx < u.length(); idx++)
-    {
-      art_u8 r = (art_u8)(myColor.red * 0xff);
-      art_u8 g = (art_u8)(myColor.green * 0xff);
-      art_u8 b = (art_u8)(myColor.blue * 0xff);
-      art_u8 a = (art_u8)(myColor.alpha * 0xff);
-      int stride = 33;
-      int base = stride * u[idx];
-      bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-      base++;			// advance past the width marker
-
-      int width = is_halfwidth ? 1 : 2; 
-
-#define bitsinbyte 8
-#define bpp 3
-
-      int pixbuf_base = (y * pb->rowstride) + (x * bpp) + byte_off_in_pixbuf;
-      int pixbuf_max_pos = pb->rowstride * pb->height;
-
-#define height 16
-#define colbytes 24
-
-#define GLYPHBYTE(row,col) (glyphs[base + ((height-(row+1))*width) + col])
+#define GLYPHBYTE(row,col) (glyphs[base + ((rows-(row+1))*cols) + col])
 #define IS_SET(bit,byt) (byt & (1 << (bitsinbyte-(bit+1))))
-
-      for (int row = 0; row < height; row++) {
-	for (int col = 0; col < width; col++) {
-	  for (int bit = 0; bit < bitsinbyte; bit++) {
-	    int off = pixbuf_base + row * pb->rowstride + col*colbytes + bit*bpp;
-	    if (IS_SET(bit, GLYPHBYTE(row,col)) 
-		&& (off) < pixbuf_max_pos) {		
-	      art_rgb_run_alpha(pb->pixels + off, r,g,b,a, 1);
-	    }
-	  }
+  
+  for (int row = 0; row < rows; ++row) {
+    for (int col = 0; col < cols; ++col) {
+      for (int bit = 0; bit < bitsinbyte; ++bit, pix += pixsz) {
+	if (IS_SET(bit, GLYPHBYTE(row,col))) {
+	  *(pix + 3) = 0xff;
 	}
       }
-      byte_off_in_pixbuf += width * colbytes;
     }
+  }
 }
 
 void LibArtUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
@@ -116,6 +124,7 @@ void LibArtUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   
   int width = 0;
+  int height = 16;
   
   for(unsigned int idx = 0; idx < u.length(); idx++) {
     unsigned int stride = 33;

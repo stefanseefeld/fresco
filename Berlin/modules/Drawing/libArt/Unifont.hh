@@ -22,6 +22,7 @@
 #ifndef _LibArtUnifont_hh
 #define _LibArtUnifont_hh
 
+#include <map>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
 #include <Warsaw/Graphic.hh>
@@ -49,9 +50,12 @@ public:
   virtual Unistring *fullname();
   virtual Unistring *style();
 
-  void drawText(const Unistring &u, const int x, const int y, ArtPixBuf *, Color &c);
+  void segments(const Unistring u, vector< pair<double,ArtPixBuf *> > &segs);
   void allocateText(const Unistring &u, Graphic::Requisition &r);
 protected:
+  void glyph2pixels(const Unichar ch, unsigned char *pix);
+
+  map<Unichar,ArtPixBuf *> cache;
   MMap *glyphmap;
 };
 

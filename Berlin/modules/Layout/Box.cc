@@ -22,6 +22,7 @@
 #include "Layout/Box.hh"
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
+#include "Berlin/Providers.hh"
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <Warsaw/Traversal.hh>
@@ -40,7 +41,7 @@ Box::~Box() { delete layout;}
 
 void Box::request(Requisition &r)
 {
-  Trace trace("Box::request");
+//   Trace trace("Box::request");
   if (!requested)
     {
       GraphicImpl::defaultRequisition(requisition);
@@ -59,7 +60,7 @@ void Box::request(Requisition &r)
 
 void Box::extension(const Allocation::Info &info, Region_ptr region)
 {
-  Trace trace("Box::extension");  
+//   Trace trace("Box::extension");  
   long n = numChildren();
   if (n > 0)
     {
@@ -67,8 +68,11 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
       Vertex origin, previous, delta;
       previous.x = previous.y = previous.z = 0;
 
-      Impl_var<TransformImpl> child_tx(new TransformImpl);
-      Impl_var<TransformImpl> tmp_tx(new TransformImpl);
+      Lease<TransformImpl> child_tx, tmp_tx;
+      Providers::trafo.provide(child_tx);  
+      Providers::trafo.provide(tmp_tx);  
+      tmp_tx->loadIdentity();
+      child_tx->loadIdentity();
       
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
@@ -92,7 +96,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 
 void Box::traverse(Traversal_ptr traversal)
 {
-  Trace trace("Box::traverse");
+//   Trace trace("Box::traverse");
   if (numChildren())
     {
       Region_var given = traversal->allocation();
@@ -134,7 +138,11 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
    * fetch requested (presumably allocated) child regions
    */
   RegionImpl **result = childrenAllocations(info.allocation);
-  Impl_var<TransformImpl> tx(new TransformImpl);
+
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
+  tx->loadIdentity();
+
   /*
    * copy transformation and region into allocation
    */
@@ -157,7 +165,7 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
  */
 RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 {
-  Trace trace("Box::childrenAllocations");
+//   Trace trace("Box::childrenAllocations");
   CORBA::Long children = numChildren();
   Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
     
@@ -184,11 +192,15 @@ RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
-  Trace trace("Box::traverseWithAllocation");
+//   Trace trace("Box::traverseWithAllocation");
   RegionImpl **result = childrenAllocations(r);
   CORBA::Long size = numChildren();
   CORBA::Long begin, end, incr;
-  Impl_var<TransformImpl> tx(new TransformImpl);
+
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
+  tx->loadIdentity();
+
   if (t->direction() == Traversal::up)
     {
       begin = 0;
@@ -221,7 +233,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)
 {
-  Trace trace("Box::traverseWithoutAllocation");
+//   Trace trace("Box::traverseWithoutAllocation");
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {

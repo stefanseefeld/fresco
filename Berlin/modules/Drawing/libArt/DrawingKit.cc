@@ -24,6 +24,7 @@
 #include <Drawing/libArt/LibArtDrawingKit.hh>
 #include <Drawing/libArt/LibArtUnifont.hh>
 #include <Warsaw/Transform.hh>
+#include <Berlin/Providers.hh>
 
 extern "C"
 {
@@ -46,13 +47,21 @@ LibArtDrawingKit::~LibArtDrawingKit() {}
 LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
     drawable(GGI::drawable()), 
-    tr(new TransformImpl), 
-    cl(new RegionImpl), 
+    xres(drawable->resolution(xaxis)),
+    yres(drawable->resolution(yaxis)),
     font(new LibArtUnifont),
     rasters(500)
   // textures(100), 
   // tx(0)
 {
+  screen.x0 = 0;
+  screen.y0 = 0;
+  screen.x1 = drawable->width();
+  screen.y1 = drawable->height();
+  
+  for (int i = 0; i < max_vpath_sz; i++)
+    vpath[i].code = ART_LINETO;
+
   agam = art_alphagamma_new (2.5);
   memvis = ggiOpen("display-memory", NULL);
   if(!memvis) {
@@ -81,19 +90,41 @@ static inline void fix_order_of_irect(ArtIRect &ir) {
 
 void LibArtDrawingKit::setTransformation(Transform_ptr t)
 {
-  tr->copy(t);
-  Transform::Matrix &matrix = tr->matrix();  
-  affine[0] = matrix[0][0];
-  affine[1] = matrix[1][0];
-  affine[2] = matrix[0][1];
-  affine[3] = matrix[1][1];
-  affine[4] = matrix[0][3];
-  affine[5] = matrix[1][3];
+  if (CORBA::is_nil(t)) {
+    art_affine_identity(affine);
+  } else {
+    tr = Transform::_duplicate(t);
+    Transform::Matrix matrix;
+    tr->storeMatrix(matrix);  
+    affine[0] = matrix[0][0];
+    affine[1] = matrix[1][0];
+    affine[2] = matrix[0][1];
+    affine[3] = matrix[1][1];
+    affine[4] = matrix[0][3];
+    affine[5] = matrix[1][3];
+  }  
+  scaled_affine = affine;
+  scaled_affine[0] *= xres;
+  scaled_affine[1] *= xres;
+  scaled_affine[2] *= yres;
+  scaled_affine[3] *= yres;
+  scaled_affine[4] *= xres;
+  scaled_affine[5] *= yres;
 }
 
 void LibArtDrawingKit::setClipping(Region_ptr r)
 {
-  cl->copy(r);
+  if (CORBA::is_nil(r)) {clip = screen; return;}
+  cl = Region::_duplicate(r);
+    
+  Lease<RegionImpl> climpl;
+  Providers::region.provide(climpl);
+  climpl->copy(cl);
+
+  ArtDRect dclip = {climpl->lower.x * xres, climpl->lower.y * yres, 		      
+		      climpl->upper.x * xres, climpl->upper.y * yres};
+  art_drect_to_irect(&clip, &dclip); 
+  art_irect_intersect(&clip,&clip,&screen);
 }
 
 void LibArtDrawingKit::setForeground(const Color &c)
@@ -141,49 +172,48 @@ void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
 void LibArtDrawingKit::drawPath(const Path &p) 
 {
   int len = p.length();
-  ArtVpath vpath[(fs == outlined ? len : len + 1)];
   ArtVpath *tvpath;
-  ArtVpath *tsvpath;
-  double xres = drawable->resolution(xaxis);
-  double yres = drawable->resolution(yaxis);
-  double resScale[6]  = {xres, 0, 0, yres, 0, 0};
 
-  for (int i = 0; i < len; i++) {
-    vpath[i].code = ART_LINETO;
-    vpath[i].x = p[len-i-1].x; vpath[i].y = p[len-i-1].y;
+  for (int i = 0, j = len - 1; i < len; ++i, --j){
+    // there's a bug in libart; it rasterizes alpha segments
+    // in our "normal" clockwise order incorrectly. so we
+    // are for the time being installing the horrendous hack
+    // of "unclockwising" things. this should _not_ be an issue.
+    // ~FIXME~
+    vpath[i].x = p[j].x; 
+    vpath[i].y = p[j].y;
   }
 
   if (fs == outlined) {
     vpath[0].code = ART_MOVETO_OPEN;
     vpath[len-1].code = ART_END;
   } else {
+    // close off filled path
     vpath[len] = vpath[0];
     vpath[0].code = ART_MOVETO;
     vpath[len].code = ART_END;
   }
   
   ArtDRect locd; ArtIRect loc;
-  ArtDRect clip = {cl->lower.x * xres, cl->lower.y * yres, 		      
-		     cl->upper.x * xres, cl->upper.y * yres};
-  ArtDRect screen = {0,0,drawable->width(), drawable->height()};
-
-  tvpath = art_vpath_affine_transform(vpath,affine);
-  tsvpath = art_vpath_affine_transform(tvpath,resScale);
-  ArtSVP *svp = art_svp_from_vpath (tsvpath); 
+  tvpath = art_vpath_affine_transform(vpath,scaled_affine);
+  ArtSVP *svp = art_svp_from_vpath (tvpath); 
 
   art_drect_svp (&locd, svp);
-  art_drect_intersect(&locd,&locd,&clip);
-  art_drect_intersect(&locd,&locd,&screen);
   art_drect_to_irect(&loc, &locd);
+  art_irect_intersect(&loc,&loc,&clip);
   art_irect_union (&bbox,&bbox,&loc);
-  fix_order_of_irect(loc);
- 
+  fix_order_of_irect(loc); 
   art_rgb_svp_alpha (svp, loc.x0, loc.y0, loc.x1, loc.y1,
  		     artColor(fg),
  		     ((art_u8 *)buf->write) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
  		     buf->buffer.plb.stride,
  		     agam);
   art_svp_free(svp);
+
+  // reset damaged code points
+  vpath[0].code = ART_LINETO;
+  vpath[len].code = ART_LINETO;
+  vpath[len-1].code = ART_LINETO;
 }
 
 //void LibArtDrawingKit::drawPatch(const Patch &);
@@ -191,77 +221,89 @@ void LibArtDrawingKit::drawPath(const Path &p)
 void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top) 
 {
   Path path;
-  path.length(4);
-  path[0].x = top.x, path[0].y = top.y, path[0].z = 0.;
-  path[1].x = bot.x, path[1].y = top.y, path[1].z = 0.;
-  path[2].x = bot.x, path[2].y = bot.y, path[2].z = 0.;
-  path[3].x = top.x, path[3].y = bot.y, path[3].z = 0.;
+  if (fs == outlined) {
+    path.length(4);
+    path[0].x = bot.x, path[0].y = bot.y;
+    path[1].x = top.x, path[1].y = bot.y;
+    path[2].x = top.x, path[2].y = top.y;
+    path[3].x = bot.x, path[2].y = top.y;
+  } else {
+    path.length(5);
+    path[0].x = bot.x, path[0].y = bot.y;
+    path[1].x = top.x, path[1].y = bot.y;
+    path[2].x = top.x, path[2].y = top.y;
+    path[3].x = bot.x, path[3].y = top.y;
+    path[4].x = bot.x, path[4].y = bot.y;
+  }
   this->drawPath(static_cast<const Path>(path));
+
 }
 
 void LibArtDrawingKit::drawEllipse(const Vertex &, const Vertex &) {}
 
 void LibArtDrawingKit::drawImage(Raster_ptr remote) {
+  rasterizePixbuf(rasters.lookup(Raster::_duplicate(remote))->pixbuf);
+}
+
+void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
 
   // NOTE: this entire routine takes place "in device space"
   // since that is (a) the source of the raster and (b) the destination
   // of libart's transformation. the goal is to get everything into
   // device space and work with it there.
 
-  double xres = drawable->resolution(xaxis);
-  double yres = drawable->resolution(yaxis);
-
-  LibArtRaster *r = rasters.lookup(Raster::_duplicate(remote));
   double dev_affine[6] = {affine[0], affine[1], affine[2], affine[3], 
 			    affine[4] * xres, affine[5] * yres };
-			    
-  
+			      
   // pre-transformation target rectangle, in device space coords
-  ArtDRect slocd = {0,0,(double)(r->pixbuf->width),(double)(r->pixbuf->height)};
+  ArtDRect slocd = {0,0,(double)(pixbuf->width),(double)(pixbuf->height)};
   ArtDRect tslocd; 
   ArtIRect tsloci; 
+  bool deletepixbuf = false;
 
   // transform target (in device space)
   art_drect_affine_transform(&tslocd,&slocd,dev_affine); 
   art_drect_to_irect(&tsloci, &tslocd); 
   fix_order_of_irect(tsloci); 
 
-  // extract screen and clip in device space (pixels)
-  ArtIRect screen = {0,0,drawable->width(), drawable->height()}; 
-  ArtDRect clipd = {cl->lower.x * xres, cl->lower.y * yres, 
-		      cl->upper.x * xres, cl->upper.y * yres};
+  // match alpha to fg color
+  if (fg.alpha != 1.) {
+    deletepixbuf = true;
+    pixbuf = art_pixbuf_duplicate(pixbuf);
+    int size = (pixbuf->height - 1) * pixbuf->rowstride +
+      pixbuf->width * ((pixbuf->n_channels * pixbuf->bits_per_sample + 7) >> 3);    
+    for (int i = 0; i < size; ++i) 
+      (pixbuf->pixels)[i] = (unsigned char)(fg.alpha * (pixbuf->pixels)[i]);
+  }
 
-  ArtIRect clip;
-  art_drect_to_irect(&clip, &clipd); 
-  art_irect_intersect(&tsloci,&tsloci,&screen);
+  // clip 
   art_irect_intersect(&tsloci,&tsloci,&clip);
   art_irect_union (&bbox,&bbox,&tsloci);
 
-  art_rgb_pixbuf_affine((art_u8 *)buf->write + (tsloci.y0 * pb->rowstride) + (tsloci.x0 * 3),			
+  // paint
+  art_rgb_pixbuf_affine((art_u8 *)buf->write + 
+			(tsloci.y0 * pb->rowstride) + 
+			(tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
 			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
 			buf->buffer.plb.stride,
-			r->pixbuf, dev_affine,
+			pixbuf, dev_affine,
 			ART_FILTER_NEAREST, agam);  
+
+  if (deletepixbuf) art_pixbuf_free(pixbuf);
+
 }
 
 void LibArtDrawingKit::drawText(const Unistring &u) 
 {
-  // !!FIXME!! this should do arbitrary linear trafo on text,
-  // not just offsets.
-  double xr = drawable->resolution(xaxis);
-  double yr = drawable->resolution(yaxis);
-
-  Graphic::Requisition req;
-  allocateText(u,req);
-  ArtIRect r;
-  r.x0 = (int)(affine[4] * xr);
-  r.y0 = (int)(affine[5] * yr);
-  r.x1 = (int)(affine[4] * xr + req.x.maximum);
-  r.y1 = (int)(affine[5] * yr + req.y.maximum);
-
-  art_irect_union (&bbox,&bbox,&r);
-
-  font->drawText(u,r.x0,r.y0,pb,fg);
+  typedef vector< pair<double, ArtPixBuf *> >::iterator seg_iter;
+  vector< pair<double, ArtPixBuf *> > segs;
+  font->segments(u,segs);
+  for(seg_iter i = segs.begin(); i != segs.end(); i++) {
+    rasterizePixbuf(i->second);
+    // !!!FIXME!!! this does only unidirectional text
+    affine[4] += (i->first * affine[0]) / xres;
+    affine[5] += (i->first * affine[1]) / xres;    
+  }
 }
 
 void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & req) {
@@ -269,12 +311,14 @@ void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & 
 }
 
 void LibArtDrawingKit::flush() {   
-  ggiFlush(memvis);
+  int 
+    x = bbox.x0,
+    y = bbox.y0,
+    w = bbox.x1-bbox.x0,
+    h = bbox.y1-bbox.y0;  
+  ggiFlushRegion(memvis,x,y,w,h);
   ggi_visual_t vis = drawable->visual();
-  ggiCrossBlit(memvis, bbox.x0,bbox.y0,
-	       bbox.x1-bbox.x0,
-	       bbox.y1-bbox.y0, 
-	       vis, bbox.x0,bbox.y0 );
+  ggiCrossBlit(memvis,x,y,w,h,vis,x,y);
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;  
 }
 

@@ -49,6 +49,8 @@ public:
   bool nextEvent(ggi_event &event); // to be encapsulated further...
   void wakeup();
   void flush() { ggiFlush(vis);}
+  void flushbox(PixelCoord x, PixelCoord y, 
+		PixelCoord w, PixelCoord h) { ggiFlushRegion(vis,x,y,w,h);}
   PixelCoord width() const { return mode.visible.x;}
   PixelCoord height() const { return mode.visible.y;}
   PixelCoord vwidth() const { return mode.virt.x;}

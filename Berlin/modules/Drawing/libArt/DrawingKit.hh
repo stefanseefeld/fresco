@@ -38,6 +38,7 @@
 #include <art_misc.h>
 #include <art_alphagamma.h>
 #include <art_rect.h>
+#include <art_vpath.h>
 
 #include <string>
 #include <vector>
@@ -49,9 +50,9 @@ public:
   virtual ~LibArtDrawingKit();
 
   virtual void transformation(Transform_ptr t) { DrawingKitBase::transformation(t);}
-  virtual Transform_ptr transformation() { return tr->_this();}
+  virtual Transform_ptr transformation() { return Transform::_duplicate(tr);}
   virtual void clipping(Region_ptr r) { DrawingKitBase::clipping(r);}
-  virtual Region_ptr clipping() { return cl->_this();}
+  virtual Region_ptr clipping() { return Region::_duplicate(cl);}
   virtual void foreground(const Color &c) { DrawingKitBase::foreground(c);}
   virtual Color foreground() { return fg;}
   virtual void lighting(const Color &c) { DrawingKitBase::lighting(c);}
@@ -106,15 +107,23 @@ public:
   virtual void flush();
 
  private:
+  void rasterizePixbuf(ArtPixBuf *pixbuf);
+
   ggi_visual_t memvis;
   ArtPixBuf *pb;
   ArtIRect bbox;
   const ggi_directbuffer * buf;
   GGI::Drawable *drawable;
+  double xres, yres;
   Prague::Mutex mutex;
+
   double affine[6];
-  Impl_var<TransformImpl> tr;
-  Impl_var<RegionImpl> cl;
+  double scaled_affine[6];
+
+  static const int max_vpath_sz = 1024;
+
+  Transform_var  tr;
+  Region_var     cl;
   Color          fg;
   Color          lt;
   Coord          ps;
@@ -122,8 +131,12 @@ public:
   Endstyle       es;
   Fillstyle      fs;
   LibArtFont   *font;
-  ArtAlphaGamma *agam;
 
+  ArtAlphaGamma *agam;
+  art_u32        art_fg;
+  ArtIRect screen, clip;
+  ArtVpath vpath[max_vpath_sz];
+  
   ObjectCache<Raster_var, LibArtRaster> rasters;
 };
 

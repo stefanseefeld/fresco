@@ -21,6 +21,7 @@
  */
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
 
@@ -54,13 +55,18 @@ void Placement::traverse(Traversal_ptr traversal)
   Region_var allocation = Region::_duplicate(traversal->allocation());
   if (!CORBA::is_nil(allocation))
     {
-      Impl_var<RegionImpl> result(new RegionImpl(allocation));
+      Lease<RegionImpl> result;
+      Providers::region.provide(result);  
+      result->copy(allocation);
+
       Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
       RegionImpl *tmp = result.get();
       layout->allocate(1, &r, allocation, &tmp);
-      Impl_var<TransformImpl> tx(new TransformImpl);
+      Lease<TransformImpl> tx;
+      Providers::trafo.provide(tx);  
+      tx->loadIdentity();
       result->normalize(Transform_var(tx->_this()));
       traversal->traverseChild(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
     }
@@ -74,8 +80,9 @@ void Placement::allocate(Tag, const Allocation::Info &a)
   GraphicImpl::initRequisition(r);
   MonoGraphic::request(r);
   layout->allocate(1, &r, a.allocation, &region);
-
-  Impl_var<TransformImpl> tx(new TransformImpl);
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);  
+  tx->loadIdentity();
   region->normalize(Transform_var(tx->_this()));
   a.transformation->premultiply(Transform_var(tx->_this()));
   a.allocation->copy(Region_var(region->_this()));

@@ -47,7 +47,7 @@ void ScreenManager::damage(Region_ptr r)
 
 void ScreenManager::repair()
 {
-  Profiler prf("ScreenManager::repair");
+  //   Profiler prf("ScreenManager::repair");
   mutex.lock();
   tmpDamage->copy(Region_var(theDamage->_this()));
   theDamage->clear();
@@ -58,8 +58,16 @@ void ScreenManager::repair()
   traversal->finish();
   drawing->flush();
   {
-    Profiler prf("Drawable::flush");
-    drawable->flush();
+    //     Profiler prf("Drawable::flushbox");
+    Vertex l,u;
+    tmpDamage->bounds(l,u);
+    double xres = drawing->resolution(xaxis);
+    double yres = drawing->resolution(yaxis);
+    l.x *= xres;
+    u.x *= xres;
+    l.y *= yres;
+    u.y *= yres;
+    drawable->flushbox(l.x,l.y,u.x-l.x,u.y-l.y);
   }
   emanager->damage(Region_var(tmpDamage->_this()));
 }

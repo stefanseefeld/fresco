@@ -26,6 +26,7 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Types.hh"
 #include <string>
+#include <vector>
 #include <art_misc.h>
 #include <art_pixbuf.h>
 
@@ -43,7 +44,7 @@ public:
   virtual Unistring *fullname() = 0;
   virtual Unistring *style() = 0;
 
-  virtual void drawText(const Unistring &, const int x, const int y, ArtPixBuf *, Color &c) = 0;
+  virtual void segments(const Unistring u, vector< pair<double,ArtPixBuf *> > &segs) = 0;
   virtual void allocateText(const Unistring &, Graphic::Requisition &) = 0;
 };
 

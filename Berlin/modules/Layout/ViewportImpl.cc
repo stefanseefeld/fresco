@@ -28,7 +28,7 @@
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/PickTraversal.hh>
-#include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include "Berlin/TransformImpl.hh"
 
 using namespace Prague;
@@ -345,13 +345,25 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
    */
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
-  Impl_var<RegionImpl> clipping(new RegionImpl(allocation, transformation));
+
+  Lease<RegionImpl> clipping;
+  Providers::region.provide(clipping);
+  clipping->copy(allocation);
+  if (!CORBA::is_nil(transformation) && !transformation->Identity())
+    clipping->applyTransform(transformation);
+
   DrawingKit_var dk = traversal->kit();
   dk->saveState();
   dk->clipping(Region_var(clipping->_this()));
 
-  Impl_var<RegionImpl> region(bodyAllocation(allocation));
-  Impl_var<TransformImpl> transform(new TransformImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
+  region->copy(bodyAllocation(allocation));
+
+  Lease<TransformImpl> transform;
+  Providers::trafo.provide(transform);
+  transform->loadIdentity();
+
   region->normalize(Transform_var(transform->_this()));
   traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
   dk->restoreState();
@@ -364,8 +376,14 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
    * and a suitable offset
    */
   Region_var allocation = traversal->allocation();
-  Impl_var<RegionImpl> region(bodyAllocation(allocation));
-  Impl_var<TransformImpl> transform(new TransformImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
+  region->copy(bodyAllocation(allocation));
+
+  Lease<TransformImpl> transform;
+  Providers::trafo.provide(transform);
+  transform->loadIdentity();
+
   region->normalize(Transform_var(transform->_this()));
   traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
 }
@@ -401,7 +419,9 @@ void ViewportImpl::update(const CORBA::Any &)
 void ViewportImpl::allocateChild(Allocation::Info &info)
 {
   scrollTransform(info.transformation);
-  Impl_var<RegionImpl> region(bodyAllocation(info.allocation));
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
+  region->copy(bodyAllocation(info.allocation));
   info.allocation->copy(Region_var(region->_this()));
 }
 
