@@ -21,10 +21,12 @@
  */
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/Math.hh"
 #include <iomanip>
 #include <cassert>
 
 using namespace Warsaw;
+using namespace Math;
 
 RegionImpl::RegionImpl()
   : valid(false), xalign(0.), yalign(0.), zalign(0.), _this_valid(false)
@@ -56,6 +58,14 @@ RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
   RegionImpl::copy(region);
   if (!CORBA::is_nil(transformation) && !transformation->identity())
     RegionImpl::apply_transform(transformation);
+}
+
+RegionImpl::RegionImpl(Region_ptr region, TransformImpl *transformation)
+  : _this_valid(false)
+{
+  RegionImpl::copy(region);
+  if (!transformation->identity())
+    RegionImpl::apply_transform(transformation->matrix());
 }
 
 RegionImpl::~RegionImpl() {}
@@ -115,6 +125,16 @@ CORBA::Boolean RegionImpl::intersects(Region_ptr region)
   return false;
 }
 
+CORBA::Boolean RegionImpl::intersects(const RegionImpl &region) const
+{
+  if (valid && region.valid)
+    return (lower.x <= region.upper.x &&
+	    upper.x >= region.lower.x &&
+	    lower.y <= region.upper.y &&
+	    upper.y >= region.lower.y);
+  else return false;
+}
+
 void RegionImpl::copy(Region_ptr region)
 {
   if (!CORBA::is_nil(region) && region->defined())
@@ -171,6 +191,14 @@ void RegionImpl::subtract(Region_ptr region)
   // not implemented
 }
 
+void RegionImpl::apply_transform(Transform_ptr transformation)
+{
+  if (!valid) return;
+  Transform::Matrix matrix;
+  transformation->store_matrix(matrix);
+  apply_transform(matrix);
+};
+
 /*
  * note: the new region is the bounding box of the transformed
  *       old region
@@ -189,47 +217,41 @@ void RegionImpl::subtract(Region_ptr region)
  * forms a (w, 0, 0) vector.  After transformation, it becomes
  * (Xw, Yw, Zw). The new width is then given as abs(Xw) + abs(Xh) + abs(Xd)
  */
-void RegionImpl::apply_transform(Transform_ptr transformation)
+void RegionImpl::apply_transform(const Transform::Matrix &matrix)
 {
-  if (valid)
-    {
-      Vertex o;
+  Vertex o;
 
-      origin(o);
-      transformation->transform_vertex(o);
-      Transform::Matrix m;
-      transformation->store_matrix(m);
+  origin(o);
+  o *= matrix;
 
-      Coord lx = upper.x - lower.x;
-      Coord ly = upper.y - lower.y;
-      Coord lz = upper.z - lower.z;
-
-      Vertex center;
-      center.x = (upper.x + lower.x) * 0.5;
-      center.y = (upper.y + lower.y) * 0.5;
-      center.z = (upper.z + lower.z) * 0.5;
-
-      // transform the center
-
-      transformation->transform_vertex(center);
-
-      // optimized computation of new width and height
-      Coord nlx = Math::abs(lx * m[0][0]) + Math::abs(ly * m[0][1]) + Math::abs(lz * m[0][2]);
-      Coord nly = Math::abs(lx * m[1][0]) + Math::abs(ly * m[1][1]) + Math::abs(lz * m[1][2]);
-      Coord nlz = Math::abs(lx * m[2][0]) + Math::abs(ly * m[2][1]) + Math::abs(lz * m[2][2]);
-
-      // form the new box
-      lower.x = center.x - nlx * 0.5;
-      upper.x = center.x + nlx * 0.5;
-      lower.y = center.y - nly * 0.5;
-      upper.y = center.y + nly * 0.5;
-      lower.z = center.z - nlz * 0.5;
-      upper.z = center.z + nlz * 0.5;
-
-      if (!Math::equal(nlx, 0., 1e-4)) xalign = (o.x - lower.x) / nlx;
-      if (!Math::equal(nly, 0., 1e-4)) yalign = (o.y - lower.y) / nly;
-      if (!Math::equal(nlz, 0., 1e-4)) zalign = (o.z - lower.z) / nlz;
-    }
+  Coord lx = upper.x - lower.x;
+  Coord ly = upper.y - lower.y;
+  Coord lz = upper.z - lower.z;
+  
+  Vertex center;
+  center.x = (upper.x + lower.x) * 0.5;
+  center.y = (upper.y + lower.y) * 0.5;
+  center.z = (upper.z + lower.z) * 0.5;
+  
+  // transform the center
+  center *= matrix;
+  
+  // optimized computation of new width and height
+  Coord nlx = Math::abs(lx * matrix[0][0]) + Math::abs(ly * matrix[0][1]) + Math::abs(lz * matrix[0][2]);
+  Coord nly = Math::abs(lx * matrix[1][0]) + Math::abs(ly * matrix[1][1]) + Math::abs(lz * matrix[1][2]);
+  Coord nlz = Math::abs(lx * matrix[2][0]) + Math::abs(ly * matrix[2][1]) + Math::abs(lz * matrix[2][2]);
+  
+  // form the new box
+  lower.x = center.x - nlx * 0.5;
+  upper.x = center.x + nlx * 0.5;
+  lower.y = center.y - nly * 0.5;
+  upper.y = center.y + nly * 0.5;
+  lower.z = center.z - nlz * 0.5;
+  upper.z = center.z + nlz * 0.5;
+  
+  if (!Math::equal(nlx, 0., 1e-4)) xalign = (o.x - lower.x) / nlx;
+  if (!Math::equal(nly, 0., 1e-4)) yalign = (o.y - lower.y) / nly;
+  if (!Math::equal(nlz, 0., 1e-4)) zalign = (o.z - lower.z) / nlz;
 }
 
 void RegionImpl::bounds(Vertex &l, Vertex &u)

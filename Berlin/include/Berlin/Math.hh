@@ -22,28 +22,40 @@
 #ifndef _Math_hh
 #define _Math_hh
 
+#include <Warsaw/Transform.hh>
 #include <algorithm>
 #include <cstdlib>
 #include <cmath>
 
-class Math
+namespace Math
 {
-public:
-  static const double pi = M_PI;
-  template <class T> static T min(T a, T b) { return a < b ? a : b;}
-  template <class T> static T max(T a, T b) { return a < b ? b : a;}
+  const double pi = M_PI;
+  template <class T> inline T min(T a, T b) { return a < b ? a : b;}
+  template <class T> inline T max(T a, T b) { return a < b ? b : a;}
 
-  template <class T> static T min(T a, T b, const T &c, const T &d) { return min(min(a, b), min(c, d));}
-  template <class T> static T max(T a, T b, const T &c, const T &d) { return max(max(a, b), max(c, d));}
+  template <class T> inline T min(T a, T b, const T &c, const T &d) { return min(min(a, b), min(c, d));}
+  template <class T> inline T max(T a, T b, const T &c, const T &d) { return max(max(a, b), max(c, d));}
 
-  static float abs(float a) { return fabs(a);}
-  static double abs(double a) { return fabs(a);}
-  static int abs(int a) { return abs(a);}
-  static long abs(long a) { return labs(a);}
+  inline float abs(float a) { return fabs(a);}
+  inline double abs(double a) { return fabs(a);}
+  inline int abs(int a) { return abs(a);}
+  inline long abs(long a) { return labs(a);}
 
-  template <class T> static int round(T a) { return a > 0 ? static_cast<int>(a + 0.5) : - static_cast<int>(-a + 0.5);}
+  template <class T> inline int round(T a) { return a > 0 ? static_cast<int>(a + 0.5) : - static_cast<int>(-a + 0.5);}
+  template <class T> inline bool equal(T a, T b, T e) { return a - b < e && b - a < e;}
 
-  template <class T> static bool equal(T a, T b, T e) { return a - b < e && b - a < e;}
+  //. general orthogonal matrix transformation
+  //. needs to be refined for perspective trafos
+  inline Warsaw::Vertex &operator *= (Warsaw::Vertex &v, const Warsaw::Transform::Matrix &m)
+  {
+    Warsaw::Coord tx = v.x;
+    Warsaw::Coord ty = v.y;
+    v.x = m[0][0] * tx + m[0][1] * ty + m[0][2] * v.z + m[0][3];
+    v.y = m[1][0] * tx + m[1][1] * ty + m[1][2] * v.z + m[1][3];
+    v.z = m[2][0] * tx + m[2][1] * ty + m[2][2] * v.z + m[2][3];
+    return v;
+  }
+
 };
 
 #endif /* _Math_hh */

@@ -35,6 +35,16 @@
 
 class PositionalFocus;
 
+//. provide an implementation for the PickTraversal interface.
+//. the traversal keeps a stack of controllers that are on the trail
+//.
+//. some methods are not implemented:
+//. 'intersect_region' has to be implemented if the intersecting object
+//. is known (for example a region for node selections, or a vertex for
+//. positional events
+//. the 'hit()' method needs to be implemented as it adds a specific
+//. strategy for generating a memento. Derived classes may want to
+//. cache the memento to avoid frequent object activation
 class PickTraversalImpl : public virtual POA_Warsaw::PickTraversal,
                           public TraversalImpl
 {
