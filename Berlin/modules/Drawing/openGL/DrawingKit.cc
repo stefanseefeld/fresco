@@ -185,19 +185,19 @@ void GLDrawingKit::translatedImage(const GLRaster *raster, Transform_ptr transfo
   transform->transformVertex(origin);
   glRasterPos2d(origin.x, origin.y + raster->height);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, raster->width);
-  cout << "current clip planes :" << endl;
+  //  cout << "current clip planes :" << endl;
   double tmp[4];
   glGetClipPlane(GL_CLIP_PLANE0, tmp);
-  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
+  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
   glGetClipPlane(GL_CLIP_PLANE1, tmp);
-  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
+  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
   glGetClipPlane(GL_CLIP_PLANE2, tmp);
-  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
+  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
   glGetClipPlane(GL_CLIP_PLANE3, tmp);
-  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
-  cout << "glDrawPixels at " << origin << endl;
+  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
+  //  cout << "glDrawPixels at " << origin << endl;
   glDrawPixels(raster->width, raster->height, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
-  sync();
-  char c;
-  cout << "enter any character to continue :"; cin >> c;
+  //  sync();
+  //  char c;
+  //  cout << "enter any character to continue :"; cin >> c;
 }
