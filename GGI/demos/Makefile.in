@@ -59,6 +59,10 @@ install:	all
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/$(TARGET)
 
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f $(TARGETS)
 	rm -f *.o

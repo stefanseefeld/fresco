@@ -64,6 +64,10 @@ endif
 
 install: html
 
+build-tests:
+
+run-tests:
+
 clean:
 	rm -fr *.html figures/*.png figures/*.pdf
 

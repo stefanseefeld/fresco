@@ -1,0 +1,222 @@
+This is a very short FAQ-like introduction to the test framework as it
+functions so far.
+
+
+
+How do I build the tests that are part of the source-tree?
+
+    make build-tests
+
+    will build all tests below the current directory.
+
+
+
+How do I run all tests?
+
+    make run-tests
+
+    will run all tests below the current directory.
+
+
+
+How do I add a set of tests to a subproject?
+
+    1.) Edit configure.ac and include this:
+
+	dnl ------------------------------------------------------------------
+	dnl Test framework
+	dnl ------------------------------------------------------------------
+	
+	FRESCO_PACKAGE([Fresco-Test], [FRESCO_TEST], [$PACKAGE_VERSION], [..])
+	if test "$FRESCO_TEST_prefix." == "." ; then
+	   AC_SUBST(FRESCO_TEST_CONFIG, [""])
+	else
+	   AC_SUBST(FRESCO_TEST_CONFIG, [$FRESCO_TEST_prefix/bin/Fresco-Test-config])
+	fi
+
+    2.) edit config/local.mk.in to include this:
+
+	FRESCO_TEST_CONFIG := @FRESCO_TEST_CONFIG@
+
+    3.) create a directory to hold all the test-files and make that known
+	to your build system (add it to a subdirs = line in a Makefile.in
+	above your new test directory).
+
+    4.) Copy the Makefile.in from Fresco-Test/doc/examples/Makefile.in into
+	your test directory.
+
+	You may want to copy the other files from there to test the
+	system you have so far...
+
+    5.) Run ./autogen.sh in the top source directory to regenerate the
+        configure files.
+
+    6.) Reconfigure your project's directory. The build system should now
+	step into your test directory. make build-tests should build
+	framework.cc if you have copied that over (or complain),
+	make run-tests should run the framework-test and the script.sh
+	if you have copied those (or complain).
+
+    7.) Edit the Makefile.in, throw out framework.cc and script.sh
+	from the TESTS := line and add your own tests there.
+
+	You will further need to supply paths to your include-files and
+	libraries in the $(TARGETS), the $(SYN), the $(DEP) and the $(OBJ)
+	targets. The relevant lines you need to modify look like this:
+		 $(CXX) `$(FRESCO_TEST_CONFIG) --libs` -o $@ $<
+		 $(SYNOPSIS) -pC++ -I$(hdir) -I`$(FRESCO_TEST_CONFIG)
+			  --include-dir` -o $@ $<
+		 $(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< |
+			  sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+	end finally
+		 $(CXX) `$(FRESCO_TEST_CONFIG) --cppflags`
+			  `$(FRESCO_TEST_CONFIG) --cxxflags` -c $< -o $@
+
+    8.) Make sure to regenerate the Makefile after doing those changes
+	by rerunning configure.
+
+    Things should work now...
+
+
+
+How do I write my own tests in C++?
+
+    Check Fresco-Test/doc/examples/framework.cc for a very simple example.
+    All methods defined in this class will be run as a separate test.
+
+    Check Fresco-Test/syunit-c++/include/TestCase.hh for the relevant
+    methods to report your findings (the protected section lists them
+    all).
+
+    Add your new test to the TESTS := Line in the new Makefile.in and make
+    sure to use the .cc extension! Regenerate the Makefile be rerunning
+    configure in your sub-project.
+
+
+
+How do I write my own tests in scripting languages?
+    
+    You have to do everything manually here! Fortunately the protocol is
+    very simple. Here is an excerpt from
+    Fresco-Test/qmtest-ext/testcmd_runner.py explaining things:
+
+    ----------BEGIN QUOTE----------
+    This test class is used to call "Testcmd" executables, which are
+    simply those that fulfil a certain interface.  In particular,
+    they should support being called in the following ways:
+      <executable> list - print to stdout a list of tests this
+        executable can run, one per line
+      <executable> run <test name> - run the test <test name>,
+        printing the result to stdout in the format described below.
+        Should return an exit code of 0.
+      <executable> run all - run all tests, printing the result of
+        each to stdout in the format described below.  Note that
+        'all' is therefore not a valid name for a test.
+      <executable> run - run all tests, printing the result of failed
+        tests to stdout in whatever format is deemed most useful for
+        debugging.
+    This harness only uses the "run <test name>" form, but for
+    consistency and use by real people, your Testcmds should support
+    all of the forms.
+
+    The output format is based on RFC 822 (ie, it looks like email
+    headers).  It was chosen because it's easy to generate, easy to
+    parse, and easy for humans to read (so you don't have to use this
+    test framework to call your Testcmds, if you don't want to).
+    Output should consist of a sequence of key/value pairs, one per
+    logical line, with the key separated by the value by a colon (:)
+    (and possibly whitespace around the colon).  A "logical line" is
+    defined to stretch from the end of the previous logical line (or
+    the beginning of output) until the next newline that is followed
+    by a non-whitespace character.  Keys are case insensitive, and may
+    consist of alphanumerics, hyphens, and underscores.  Other
+    characters are permitted, but are treated as if they were
+    underscores for comparison and the like.  For example:
+
+      Test: warp_18
+      Result: FAIL
+      Cause: The engines canna take it, cap'n!
+      Long-Line: this is one of those stupid examples that only occurs
+        in documentation, as a way to demonstrate how continuation
+        lines work.  Notice that we're indenting.  That's what makes
+        this a single long line, instead of a bunch of shorter ones.
+      Note: This is now the 5th logical line, and the 8th physical line.
+      Note2: Numbers are allowed in keys.
+      Hyphen-Example: hyphen's, too.
+
+    Email headers allow duplicate keys; for simplicity, we do not.
+    This means that the following is a parse error:
+      Foo: bar
+      Foo: baz
+
+    Keys should consist of alphanumerics, underscore (_) and hyphen (-).
+      
+    If multiple tests are run, the results should be printed in this
+    format, with the output for each test separated by a blank line.
+    Eg:
+      Test: test1
+      Note: this is the output from one test
+
+      Test: test2
+      Note: and this is the output from a second, entirely different,
+        one.
+
+    Because of this, all blank lines that don't separate chunks should
+    be "quoted" by placing a single period (.) on them.  Eg:
+
+      Description: Sanity check.
+        This test makes sure that our environment is reasonable.
+        .
+        Currently, it ensures that the oxygen content is within Earth
+        norms, and that the temperature is human-acceptable.
+        .
+        FIXME: add air pressure checks.
+
+    "." is pronounced "this line intentionally left blank".
+
+    The following fields are interpreted specially by the harness:
+      Result - either PASS, FAIL, or ERROR.  PASS means the test
+        passed, FAIL means the test failed, and ERROR means there was
+        some problem in the harness that prevented the test being
+        run.  This field determines whether we consider the test a
+        failure or what.  Case is significant, and any other value is
+        interpreted as an ERROR.
+      Cause - A short, preferably 1 line, description of why the test
+        failed (if it did).  Eg, "Exception thrown".  This will set
+        the CAUSE field of the result object.
+      Exception - if the test failed due to an exception, this should
+        be a brief description of the exception.  It will set the
+        EXCEPTION field of the result object.
+      Traceback - if the test failed due to an exception, this should
+        be a brief description of the exception.  It will set the
+        TRACEBACK field of the result object.
+    The following fields are not interpreted specially by this
+    harness, but do have a conventional meaning:
+      Test - this should be the name of the test, to make the output
+        more useful to humans calling the executable directly.
+      Description - a detailed description of what exactly the test is
+        supposed to be testing.      
+      Details - a detailed description of what went wrong - like
+        "Cause", but you can be as wordy as you want here.  Even if
+        nothing went wrong, this is a fine place to record an
+        execution trace or whatever.
+    In addition, this harness will save the stderr and exit code of
+    the executable, so in extreme cases (eg, things have gone so wrong
+    that the normal output isn't possible to produce) it's ok to dump
+    useful information there.  Beware, though, that we can't get at
+    the exit code on Windows.
+
+    If the program gives invalid output (ie, we encounter an error
+    trying to parse the rfc822-alike output format), we count that as
+    a FAIL.  If the program gives valid output, but the exit code shows
+    that it exited with a non-zero value, or was killed by a signal,
+    then we also count that as a FAIL.  This harness works hard to
+    give reasonable output no matter what weird things happen to the
+    harnessed program.
+    ----------END QUOTE----------
+
+    Integrating your scripts into the build system is very easy again. Just
+    add your scripts to the TEST := line in the Makefile.in (make sure
+    those scripts DO NOT have a .cc extension!) and reconfigure to 
+    regenerate the Makefile in the build tree. Calling "make run-tests"
+    should now run your script and parse the results.

@@ -34,7 +34,7 @@ LDFLAGS		+= $(SO_LDFLAGS)
 
 # All tests ending in .cc will be build, the rest will be run on
 # "make run-tests".
-TESTS		:= framework.cc script.sh
+TESTS		:= 
 
 CXX_TESTS	:= $(filter %.cc, $(TESTS))
 HDR		:= 
@@ -57,14 +57,24 @@ vpath %.cc  $(srcdir)
 
 all:
 
+ifdef FRESCO_TEST_CONFIG
 build-tests: $(TARGETS)
+else
+build-tests:
+	@echo "you need 'Fresco-Test' in order to build the tests"
+endif
 
+ifdef FRESCO_TEST_CONFIG
 run-tests: build-tests $(SCRIPT_SOURCES)
-	LD_LIBRARY_PATH=`$(TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
+	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
+else
+run-tests:
+	@echo "you need 'Fresco-Test' in order to build the tests"
+endif
 
 $(TARGETS): $(OBJ)
 	@echo linking $(@F)
-	$(CXX) `$(TEST_CONFIG) --libs` -o $@ $<
+	$(CXX) `$(FRESCO_TEST_CONFIG) --libs` -o $@ $<
 
 depend: $(DEP)
 
@@ -86,11 +96,11 @@ maintainer-clean: distclean
 
 $(SYN): $(CXX_TESTS)
 	@echo generating $(@F)
-	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(TEST_CONFIG) --include-dir` -o $@ $<
+	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
 
 $(HARNESS): $(SYN)
 	@echo generating test harness for $(@F)
-	`$(TEST_CONFIG) --syn2cc` $< $@
+	`$(FRESCO_TEST_CONFIG) --syn2cc` $< $@
 
 $(DEP): $(HARNESS)
 	@echo generating dependencies for $(<F)
@@ -98,4 +108,4 @@ $(DEP): $(HARNESS)
 
 $(OBJ): $(HARNESS)
 	@echo compiling $(@F)
-	$(CXX) `$(TEST_CONFIG) --cppflags` `$(TEST_CONFIG) --cxxflags` -c $< -o $@
+	$(CXX) `$(FRESCO_TEST_CONFIG) --cppflags` `$(FRESCO_TEST_CONFIG) --cxxflags` -c $< -o $@

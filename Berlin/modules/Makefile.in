@@ -73,6 +73,12 @@ install-doc:
 uninstall:
 	$(MAKE) action="uninstall"
 
+build-tests:
+	$(MAKE) action="build-tests"
+
+run-tests:
+	$(MAKE) action="run-tests"
+
 clean:
 	$(MAKE) action="clean"
 

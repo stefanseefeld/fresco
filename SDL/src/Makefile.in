@@ -64,6 +64,10 @@ install:	all
 uninstall:
 	rm -f $(DESTDIR)$(libdir)/Berlin/Console/$(TARGET)
 
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f $(TARGET)
 	rm -f *.o *.d

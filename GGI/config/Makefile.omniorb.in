@@ -86,6 +86,10 @@ uninstall:
 	rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
 	rm -f $(DESTDIR)$(includedir)/Fresco/GGIKit.hh
 
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f $(TARGET)
 	rm -f $(GENSRC) $(GENHDR) $(OBJ) $(DEP)

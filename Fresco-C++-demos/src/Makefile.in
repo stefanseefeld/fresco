@@ -89,6 +89,10 @@ uninstall:
 	  rm -f $(DESTDIR)$(bindir)/$$target; \
 	done
 
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f ../bin/$(TARGETS)
 	rm -f *.o

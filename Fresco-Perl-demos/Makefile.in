@@ -54,6 +54,10 @@ install-doc: #do nothing
 uninstall:
 	$(MAKE) action="uninstall"
 
+build-tests: # nothing to test yet!
+
+run-tests: # nothing to test yet!
+
 clean:
 	$(MAKE) action="clean"
 

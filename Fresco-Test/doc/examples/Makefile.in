@@ -19,30 +19,23 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-# -----------------------------------------------------------------------
-#     DO NOT USE THIS FILE AS A TEMPLATE FOR YOUR OWN TEST DIRECTORY!
-#    It is adapted to the special needs of the Fresco-Test subproject.
-#       A generic Makefile for your test directory is provided in
-#                         Fresco-Test/doc/examples.
-# ------------------------------------------------------------------------
-
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 top_builddir	:= @top_builddir@
 srcdir		:= @srcdir@
 cdir		:= $(top_builddir)/config
-hdir		:= $(top_srcdir)/syunit-c++/include
-docdir		:= $(top_builddir)/share/doc/Fresco-Test
+hdir		:= $(top_srcdir)/include
 
 include $(cdir)/local.mk
 
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-# All tests ending in .cc will be build, the rest will not get
-# processed but are still run on "make run-tests".
-TESTS		:= test-ResultsMap.cc
+# Add tests here:
+# Files ending in .cc will be processed automatically, everything else
+# will be ignored on "make build-tests" and then run on "make run-tests"
+TESTS		:= framework.cc script.sh
 
 CXX_TESTS	:= $(filter %.cc, $(TESTS))
 HDR		:= 
@@ -65,10 +58,20 @@ vpath %.cc  $(srcdir)
 
 all:
 
+ifdef FRESCO_TEST_CONFIG
 build-tests: $(TARGETS)
+else
+build-tests:
+	@echo "you need 'Fresco-Test' in order to build the tests"
+endif
 
+ifdef FRESCO_TEST_CONFIG
 run-tests: build-tests $(SCRIPT_SOURCES)
 	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
+else
+run-tests:
+	@echo "you need 'Fresco-Test' in order to build the tests"
+endif
 
 $(TARGETS): $(OBJ)
 	@echo linking $(@F)
@@ -94,7 +97,7 @@ maintainer-clean: distclean
 
 $(SYN): $(CXX_TESTS)
 	@echo generating $(@F)
-	$(SYNOPSIS) -pC++ -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
+	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
 
 $(HARNESS): $(SYN)
 	@echo generating test harness for $(@F)

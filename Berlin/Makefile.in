@@ -85,9 +85,11 @@ $(distdir).tar.gz:
        $(distdir)
 	-rm -rf $(distdir)
 
-gen-test:
+build-tests:
+	$(MAKE) action="build-tests"
 
-build-test:
+run-tests:
+	$(MAKE) action="run-tests"
 
 uninstall:
 	$(MAKE) action="uninstall"

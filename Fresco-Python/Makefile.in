@@ -51,9 +51,9 @@ install:
 
 install-doc: #do nothing here
 
-gen-test:
+build-tests:
 
-build-test:
+run-tests:
 
 uninstall: #do nothing here
 

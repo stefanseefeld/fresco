@@ -40,7 +40,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
-TEST_CONFIG     := @abs_top_builddir@/bin/Fresco-Test-config
+FRESCO_TEST_CONFIG := @abs_top_builddir@/bin/Fresco-Test-config
 SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@

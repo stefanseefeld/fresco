@@ -81,12 +81,12 @@ $(distdir).tar.gz:
        $(distdir) config/Fresco-C++.spec
 	-rm -rf $(distdir)
 
-gen-test:
-
-build-test:
-
 uninstall:
 	$(MAKE) action="uninstall"
+
+build-tests: # nothing to test
+
+run-tests: # nothing to test
 
 clean:
 	$(MAKE) action="clean"

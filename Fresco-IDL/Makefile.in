@@ -97,12 +97,13 @@ $(distdir).tar.gz:
        $(distdir)
 	-rm -rf $(distdir)
 
-gen-test: #nothing to test
-build-test: #nothing to test
-
 uninstall:
 	rm -fr $(DESTDIR)$(datadir)/doc/Fresco-IDL
 	rm -rf $(DESTDIR)$(datadir)/idl/Fresco
+
+build-tests: # nothing to test
+
+run-tests: # nothing to test
 
 clean:
 	rm -f $(SYN)

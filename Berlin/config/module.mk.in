@@ -96,6 +96,10 @@ install-doc: doc
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
 	cp -r $(abs_top_builddir)/share/doc/Berlin/$(docdir)/html $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
 
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f $(TARGET)
 	rm -f *.o *.d

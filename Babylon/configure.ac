@@ -44,9 +44,12 @@ dnl ------------------------------------------------------------------
 dnl Test framework
 dnl ------------------------------------------------------------------
 
-FRESCO_PACKAGE([Fresco-Test], [Fresco_Test], [$PACKAGE_VERSION], [..])
-TEST_CONFIG="$Fresco_Test_prefix/bin/Fresco-Test-config"
-AC_SUBST(TEST_CONFIG)
+FRESCO_PACKAGE([Fresco-Test], [FRESCO_TEST], [$PACKAGE_VERSION], [..])
+if test "$FRESCO_TEST_prefix." == "." ; then
+   AC_SUBST(FRESCO_TEST_CONFIG, [""])
+else
+   AC_SUBST(FRESCO_TEST_CONFIG, [$FRESCO_TEST_prefix/bin/Fresco-Test-config])
+fi
 
 dnl ------------------------------------------------------------------
 dnl Prague

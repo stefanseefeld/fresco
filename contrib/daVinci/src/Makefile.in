@@ -71,6 +71,10 @@ install: all
 	  $(SHTOOL) install -C -m 644 $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Berlin/PNG/daVinci; \
 	done
 
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f $(TARGET)
 	rm -f *.o *.d

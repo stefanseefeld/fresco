@@ -40,7 +40,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
-TEST_CONFIG     := @TEST_CONFIG@
+FRESCO_TEST_CONFIG := @FRESCO_TEST_CONFIG@
 SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@

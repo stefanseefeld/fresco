@@ -124,6 +124,11 @@ install-doc: doc
 uninstall:
 	rm -f $(DESTDIR)$(libdir)/$(TARGET)
 	rm -f $(DESTDIR)$(bindir)/Berlin-config
+
+build-tests:
+
+run-tests:
+
 clean:	
 	rm -f $(TARGET)
 	rm -f $(OBJ) $(DEP) $(SYN) $(XREF)
