@@ -4,10 +4,10 @@
 
 using namespace Prague;
 
-struct Guard
+struct DebugGuard
 {
-  Guard() { cout << "Guard::Guard" << endl;}
-  ~Guard() { cout << "Guard::~Guard" << endl;}
+  DebugGuard() { cout << "DebugGuard::DebugGuard" << endl;}
+  ~DebugGuard() { cout << "DebugGuard::~DebugGuard" << endl;}
 };
 
 void *task0(void *a)
@@ -38,7 +38,7 @@ void *task2(void *)
 void *task3(void *)
 {
   cout << "task 3 sleeping forever..." << endl;
-  Guard guard;
+  DebugGuard guard;
   while (true)
     {
       sleep(1);
