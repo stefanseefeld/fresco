@@ -114,7 +114,7 @@ int main(int argc, char **argv)
     
     Window_var root = desktop->shell(viewer, client);
     Window_var popup = desktop->shell(toolbar, client);
-    while (true) Thread::delay(Prague::Time(1000));
+    orb->run();
   }
   catch (const CORBA::COMM_FAILURE &c)
   {

@@ -58,17 +58,17 @@ DragManipulator::~DragManipulator() {}
 CORBA::Boolean DragManipulator::grasp(PickTraversal_ptr traversal, const Input::Event &event)
 {
   _begin = event[1].attr.location();
+  _relative_begin = _begin;
   Transform_var trafo = traversal->current_transformation();
-  trafo->inverse_transform_vertex(_begin);
+  trafo->inverse_transform_vertex(_relative_begin);
   _matrix[0][0] = _matrix[0][1] = _matrix[0][2] = 0.;
   _matrix[1][0] = _matrix[1][1] = _matrix[1][2] = 0.;
   _matrix[2][0] = _matrix[2][1] = _matrix[2][2] = 0.;
-  _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0.;
+  _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = _matrix[3][3] = 0.;
   _matrix[0][3] = _begin.x;
   _matrix[1][3] = _begin.y;
   _matrix[2][3] = _begin.z;
-  Transform_var transform = _graphic->transformation();
-  transform->load_matrix(_matrix);
+  Transform_var(_graphic->transformation())->load_matrix(_matrix);
   _iterator = _controller->last_child_graphic();
   _iterator->insert(_graphic);
   return true;
@@ -78,15 +78,13 @@ CORBA::Boolean DragManipulator::manipulate(PickTraversal_ptr traversal, const In
 {
   if (event[0].attr._d() == Fresco::Input::button) return false;
   _end = event[0].attr.location();
+  _relative_end = _end;
   Transform_var trafo = traversal->current_transformation();
-  trafo->inverse_transform_vertex(_end);
-  Transform::Matrix matrix;
-  trafo->store_matrix(matrix);
+  trafo->inverse_transform_vertex(_relative_end);
   _matrix[0][0] = _end.x - _begin.x;
   _matrix[1][1] = _end.y - _begin.y;
   _matrix[2][2] = _end.z - _begin.z;
-  Transform_var transform = _graphic->transformation();
-  transform->load_matrix(_matrix);
+  Transform_var(_graphic->transformation())->load_matrix(_matrix);
   _graphic->need_resize();
   return true;
 }

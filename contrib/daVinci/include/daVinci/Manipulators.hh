@@ -59,14 +59,16 @@ namespace daVinci
     virtual CORBA::Boolean grasp(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
     virtual CORBA::Boolean manipulate(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
     virtual void effect(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-    Fresco::Vertex begin() { return _begin;}
-    Fresco::Vertex end() { return _end;}
+    Fresco::Vertex begin() { return _relative_begin;}
+    Fresco::Vertex end() { return _relative_end;}
   private:
     Fresco::GraphicIterator_var _iterator;
     Fresco::Transform::Matrix   _matrix;
     Fresco::Graphic_var         _graphic;
     Fresco::Vertex              _begin;
     Fresco::Vertex              _end;
+    Fresco::Vertex              _relative_begin;
+    Fresco::Vertex              _relative_end;
   };
 
   class VertexManipulator : public Manipulator
