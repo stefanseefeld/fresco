@@ -77,8 +77,6 @@ void PSDrawingKit::start_traversal(Traversal_ptr traversal)
       << (region.lower.y - region.upper.y)*resolution(yaxis)*yfactor << ' '
       << (region.upper.x - region.lower.x)*resolution(xaxis)*xfactor << ' '
       << region.lower.y*resolution(yaxis)*yfactor << std::endl;
-//       << 0 - (int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
-//       << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Fresco" << std::endl;
   _os << "/Times-Roman findfont 12 scalefont setfont" << std::endl;
@@ -306,9 +304,11 @@ void PSDrawingKit::draw_char(Unichar c)
   Warsaw::Transform::Matrix matrix;
   _tr->store_matrix(matrix);
   _os << matrix[0][3]*resolution(xaxis) << " " << matrix[1][3]*resolution(yaxis) << " moveto" << std::endl;
-  _os << "[ " << matrix[0][0] << " " << 0-matrix[0][1] << " " << matrix[1][0] << " " << 0-matrix[1][1] << " 0 0 ] concat" << std::endl;
+  _os << "[ " << matrix[0][0] << " " << 0.-matrix[0][1] << " " << matrix[1][0] << " " << 0.-matrix[1][1] << " 0 0 ] concat" << std::endl;
   _os << 1./resolution(xaxis) << " " << 1./resolution(yaxis) << " scale" << std::endl;
-  _os << "(" << (char)c << ") show" << std::endl;
+  char x[2];
+  sprintf(x, "%02x", (int)c);
+  _os << "<" << x << "> show" << std::endl;
   _os << "grestore" << std::endl;
   _os << std::endl;
 }
