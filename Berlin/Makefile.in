@@ -116,16 +116,16 @@ maintainer-clean:
 
 $(docdir)/Berlin.syn: src/Berlin.syn modules/modules.syn
 	@echo linking synopsis files together
-	@mkdir -p $(docdir)/sxr
-	@$(SYNOPSIS) -o $@ $^
+	mkdir -p $(docdir)/sxr
+	$(SYNOPSIS) -o $@ $^
 
 $(docdir)/Berlin.xref: src/Berlin.xref modules/modules.xref
 	@echo linking xref files together
-	@mkdir -p $(docdir)/sxr
-	@compile-xref -m -o $@ $^
+	mkdir -p $(docdir)/sxr
+	compile-xref -m -o $@ $^
 
 src/Berlin.syn src/Berlin.xref:
-	@make -C src xref
+	make -C src xref
 
 modules/modules.syn modules/Berlin.xref:
-	@make -C modules xref
+	make -C modules xref

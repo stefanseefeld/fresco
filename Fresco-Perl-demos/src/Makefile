@@ -96,16 +96,16 @@ distclean:	clean
 # These need a special rule, because they generally have no .hh file
 $(MISCDEP): $(dpath)/%.d: %.cc
 		@echo making dependencies for $<
-		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
+		-if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o : /g" > $@'		
 $(dpath)/%.d:	%.cc %.hh
 		@echo making dependencies for $<
-		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
+		-if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	%.cc
-		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		-if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 ifneq ($(MAKECMDGOALS),clean)

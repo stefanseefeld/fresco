@@ -28,8 +28,8 @@ NTW_PRF = $(patsubst %.cc, $(ppath)/%.o, $(NTW_SRC))
 
 $(dpath)/%.d:	Network/%.cc $(ipath)/Prague/Network/%.hh
 		@echo making dependencies for $<
-		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
+		if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	Network/%.cc
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@

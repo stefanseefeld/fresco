@@ -91,11 +91,11 @@ maintainer-clean:
 
 modules.syn: $(join $(subdirs), $(patsubst %, /%.syn, $(subdirs)))
 	@echo linking synopsis files together
-	@$(SYNOPSIS) -o $@ $^
+	$(SYNOPSIS) -o $@ $^
 
 modules.xref: $(join $(subdirs), $(patsubst %, /%.xref, $(subdirs)))
 	@echo linking xref files together
-	@compile-xref -m -o $@ $^
+	compile-xref -m -o $@ $^
 
 %/Kit.syn %/Kit.xref:
-	@$(MAKE) -C $(@D) xref
+	$(MAKE) -C $(@D) xref

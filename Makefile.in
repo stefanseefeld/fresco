@@ -62,7 +62,7 @@ depend:
 
 sxr:	xref
 	@echo "formatting sxr"
-	@synopsis -c config/synopsis.py -Wc,formatter=SXR -o sxr data.syn
+	synopsis -c config/synopsis.py -Wc,formatter=SXR -o sxr data.syn
 
 xref:	data.syn data.xref sxr_data
 
@@ -130,11 +130,11 @@ maintainer-clean:
 
 data.syn: $(join $(sxrdirs), $(patsubst %, /share/doc/%, $(join $(sxrdirs), $(patsubst %, /sxr/%.syn, $(sxrdirs)))))
 	@echo linking synopsis files together
-	@synopsis -o $@ $^
+	synopsis -o $@ $^
 
 data.xref: $(join $(sxrdirs), $(patsubst %, /share/doc/%, $(join $(sxrdirs), $(patsubst %, /sxr/%.xref, $(sxrdirs)))))
 	@echo linking xref files together
-	@compile-xref -m -o $@ $^
+	compile-xref -m -o $@ $^
 
 sxr_data:
 	for dir in $(sxrdirs); do \
@@ -148,7 +148,7 @@ sxr_data:
         done
 
 %/%.syn %/%.xref:
-	@$(MAKE) -C $(@D) xref
+	$(MAKE) -C $(@D) xref
 
 # insert inter-directory dependencies here, but only if the required package
 # is present

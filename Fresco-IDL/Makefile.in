@@ -61,11 +61,11 @@ doc:	$(MANUAL)
 
 $(docdir)/sxr/Fresco-IDL.syn:	$(SSYN) $(SYN)
 	@echo linking synopsis files together
-	@$(SYNOPSIS) -o $@ $^
+	$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(SYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	$(SYNOPSIS) -c config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
 
 install:

@@ -68,17 +68,17 @@ doc:	$(MANUAL)
 
 $(docdir)/sxr/Fresco-Test.xref:	$(XREF)
 	@echo linking xref files together
-	@mkdir -p $(docdir)/sxr
-	@compile-xref -o $@ $^
+	mkdir -p $(docdir)/sxr
+	compile-xref -o $@ $^
 
 $(docdir)/sxr/Fresco-Test.syn:	$(SYN)
 	@echo linking synopsis files together
-	@mkdir -p $(docdir)/sxr
-	@$(SYNOPSIS) -o $@ $^
+	mkdir -p $(docdir)/sxr
+	$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	# not yet

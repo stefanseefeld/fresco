@@ -75,18 +75,18 @@ doc:	$(MANUAL)
 
 $(MODULE).xref:	$(XREF)
 	@echo linking xref files together
-	@mkdir -p $(docdir)/sxr/modules
-	@compile-xref -o $@ $^
+	mkdir -p $(docdir)/sxr/modules
+	compile-xref -o $@ $^
 
 $(MODULE).syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
-	@mkdir -p $(docdir)/sxr/modules
-	@$(SYNOPSIS) -o $@ $^
+	mkdir -p $(docdir)/sxr/modules
+	$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,formatter=KitHTML -o $@ $(HSYN)
-	@touch $@
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,formatter=KitHTML -o $@ $(HSYN)
+	touch $@
 
 install:	all
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Berlin
