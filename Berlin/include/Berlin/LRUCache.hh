@@ -18,14 +18,14 @@ template
 class LRUCache {
 
 private:
-  int max;
+  unsigned int max;
   cacheT cache;
   list<kT> queue;
   factoryT factory;
 
 public:
 
-  LRUCache(factoryT fact, int i = 256) : max(i), factory(fact) {}
+  LRUCache(factoryT fact, unsigned int i = 256) : max(i), factory(fact) {}
 
   void get(const kT &k, vT &v) throw () 
   {
