@@ -99,11 +99,11 @@ Kit_ptr ServerContextImpl::resolve(const char *type,
    */
   PortableServer::POA_var root = _default_POA();
   std::ostrstream oss;
-  oss << type << '#' << _counter++ << std::ends;
+  oss << '#' << _counter++ << std::ends;
   char *name = oss.str();
   PortableServer::POAManager_var manager = root->the_POAManager();
   PortableServer::POA_var poa = root->create_POA(name, manager, _policies);
-//   PortableServer::POA_var poa = PortableServer::POA::_duplicate(root);
+  Logger::log(Logger::lifecycle) << "created new POA for kit of type " << type << " (id is " << name << ')' << std::endl;
   delete [] name;
   KitImpl *kit = _server->create(type, properties, poa);
   if (!kit) throw CreationFailureException();
@@ -115,7 +115,8 @@ Kit_ptr ServerContextImpl::resolve(const char *type,
 // this will nuke all allocated objects if the client has died, and then tell the caller 
 // (Server) who will most likely destroy this ServerContext.
 
-bool ServerContextImpl::ping() {
+bool ServerContextImpl::ping()
+{
   Trace trace("ServerContextImpl::ping");
   Prague::Guard<Mutex> guard(_mutex);
   bool alive = true;

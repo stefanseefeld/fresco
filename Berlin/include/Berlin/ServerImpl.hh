@@ -26,6 +26,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/Graphic.hh>
+#include <Berlin/DefaultPOA.hh>
 #include <Berlin/KitImpl.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Plugin.hh>
@@ -39,7 +40,8 @@ class ServerContextImpl;
 //. people who are connecting.  it might want to do some checking on
 //. the incoming ClientContext's credentials, but at the moment it doesn't.
 class ServerImpl : public virtual POA_Warsaw::Server,
-                   public virtual PortableServer::RefCountServantBase
+                   public virtual PortableServer::RefCountServantBase,
+		   public DefaultPOA
 {
   friend class ServerContextImpl;
 
@@ -49,6 +51,7 @@ class ServerImpl : public virtual POA_Warsaw::Server,
   typedef std::map<std::string, CORBA::Object_var> smap_t;
 
 public:
+  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
   typedef std::multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
 
   //. Create() can be called once only! It creates the one server-object.
@@ -124,7 +127,7 @@ private:
   smap_t             _singletons;
   clist_t            _contexts;
   pmap_t             _plugins;
-    kmap_t             _kits;
+  kmap_t             _kits;
   static ServerImpl *_server;
 };
 

@@ -92,19 +92,18 @@ public:
     allocation->upper.y = r.y.natural;
     allocation->upper.z = 0; 
 
-    print->start_traversal();
     DrawTraversalImpl *traversal = new DrawTraversalImpl(_graphic,
 							 allocation->_this(),
 							 Transform::_nil(),
 							 print);
+    print->start_traversal(Traversal_var(traversal->_this()));
     traversal->init();
     try { _graphic->traverse(Traversal_var(traversal->_this()));}
     catch (const CORBA::OBJECT_NOT_EXIST &) { std::cerr << "PrintCommand: warning: corrupt scene graph!" << std::endl;}
     catch (const CORBA::BAD_PARAM &) { std::cerr << "PrintCommand: caught bad parameter" << std::endl;}
     traversal->finish();
-    delete traversal;
+    traversal->_remove_ref();
     print->finish_traversal();
-    cout << "still here" << endl;
   }
  private:
   Graphic_var       _graphic;

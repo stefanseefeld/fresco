@@ -143,7 +143,8 @@ void ServerImpl::scan(const std::string &name)
 }
 
 //. hope you know what you are doing if you call this...
-void ServerImpl::clear() {
+void ServerImpl::clear()
+{
   Prague::Guard<Mutex> guard(_mutex);
   for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i) delete *i;
   _plugins.clear();
@@ -167,7 +168,8 @@ KitImpl *ServerImpl::create(const char *type,
       {
 	KitImpl *kit = (**i)->clone(properties);
 	kit->_poa = PortableServer::POA::_duplicate(poa);
-	PortableServer::ObjectId *oid = poa->activate_object(kit);
+	PortableServer::POA_var root = _default_POA();
+	PortableServer::ObjectId *oid = root->activate_object(kit);
 	kit->_remove_ref();
 	delete oid;
 	return kit;

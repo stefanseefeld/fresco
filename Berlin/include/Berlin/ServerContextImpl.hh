@@ -26,6 +26,7 @@
 #include <Prague/Sys/Thread.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
+#include <Berlin/DefaultPOA.hh>
 #include <Berlin/KitImpl.hh>
 #include <multimap.h>
 
@@ -34,12 +35,15 @@ class ServerImpl;
 //. this is an encapsulated "entry point" which a client uses to manufacture
 //. new objects, look up singletons, look up the scene root, etc.
 class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
-			  public virtual PortableServer::RefCountServantBase
+			  public virtual PortableServer::RefCountServantBase,
+			  public DefaultPOA
 {
   typedef std::multimap<std::string, KitImpl *> klist_t;
  public:
   ServerContextImpl(ServerImpl *, const CORBA::PolicyList &, Warsaw::ClientContext_ptr);
   ~ServerContextImpl();
+  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
+
   Warsaw::ClientContext_ptr client();
   Warsaw::Kit_ptr resolve(const char *, const Warsaw::Kit::PropertySeq &)
     throw (Warsaw::SecurityException, Warsaw::CreationFailureException);
@@ -50,8 +54,6 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
   CORBA::Object_ptr get_singleton(const char *) 
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   bool ping();
-
-  PortableServer::POA_ptr _default_poa() { return _my_poa; }
  private:
   static unsigned long      _counter;
   ServerImpl               *_server;
@@ -59,7 +61,6 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
   Warsaw::ClientContext_var _client;
   klist_t                   _kits;
   Prague::Mutex             _mutex;
-  PortableServer::POA_var   _my_poa;
 };
 
 #endif
