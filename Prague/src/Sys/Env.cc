@@ -32,6 +32,8 @@ bool Prague::putenv(const std::string & name, const std::string & value)
   env_var += "=" + value;
   return putenv(env_var.c_str());
 #endif
+  std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
+  exit(1);
 }
 
 bool Prague::putenv(const std::string & name)
@@ -41,9 +43,13 @@ bool Prague::putenv(const std::string & name)
 #elif HAVE_PUTENV
   return putenv(name.c_str());
 #endif
+  std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
+  exit(1);
 }
 
 std::string Prague::getenv(const std::string & name)
 {
-  return std::string(getenv(name.c_str()));
+  char const * const s = ::getenv(name.c_str());
+  std::string const value((s!=0)?s:"");
+  return value;
 }

@@ -58,6 +58,30 @@ bool is_valid_reference_transfer_method(std::string transfer_method)
   return true;
 }
 
+// Internal method to check if a server can be contacted
+// (maybe the reference refers to a non-running server)
+bool server_can_be_contacted(Fresco::Server_ptr server)
+{
+  bool server_can_be_contacted_ = true;
+  try
+  { 
+    if (server->_non_existent()) server_can_be_contacted_ = false;
+  }
+  catch (CORBA::COMM_FAILURE const &)
+  { 
+    server_can_be_contacted_ = false;
+  }
+  catch (CORBA::TRANSIENT const &)
+  { 
+    server_can_be_contacted_ = false;
+  }
+  catch (...)
+  { 
+    server_can_be_contacted_ = false;
+  }
+  return server_can_be_contacted_;
+}
+
 // -----------------------------------------------------------------------------
 // How to find default settings for server-reference transfer
 // -----------------------------------------------------------------------------
@@ -83,10 +107,13 @@ Fresco::Server_ptr resolve_server(std::string server_id,
                                   CORBA::ORB_ptr orb)
 {
   // Validate reference_transfer_method
+  // NOTE: Should always check this first, to avoid user getting confused
+  //       and thinking that some values are valid when they aren't
   if (!is_valid_reference_transfer_method(reference_transfer_method))
   {
     exit(1);
   }
+  
   // Fix form of ior_file_path (append '/' if necessary)
   if ((ior_file_path != "stdin") &&
       (ior_file_path[ior_file_path.length()-1] != '/')) 
@@ -94,7 +121,26 @@ Fresco::Server_ptr resolve_server(std::string server_id,
 
   Fresco::Server_var server;
 
-  // Check through all export methods
+  // if can find environment variable, load using that
+  std::string const stringified_ior(Prague::getenv("FRESCO_DISPLAY"));
+  CORBA::Object_var obj;
+  if (stringified_ior!="")
+  try
+  { 
+      obj = orb->string_to_object(stringified_ior.c_str());
+      server = Fresco::Server::_narrow(obj);
+      if (CORBA::is_nil(server)) throw;
+      if (!server_can_be_contacted(server)) throw;
+      return server._retn();
+  }
+  catch (...)
+  { 
+    std::cerr << std::endl
+              << "WARNING: Server reference from environment-variable\n"
+              << "is invalid. Trying other methods." << std::endl;
+  }
+
+  // Check through all non-env-var export methods
   if (reference_transfer_method == "ior")
   {
     // Find the ior-string
@@ -182,27 +228,7 @@ Fresco::Server_ptr resolve_server(std::string server_id,
     exit(1);
   }
   
-  // Check that the server can be contacted
-  // (maybe the reference refers to a non-running server)
-  bool server_can_be_contacted = true;
-  try
-  { 
-    if (server->_non_existent()) server_can_be_contacted = false;
-  }
-  catch (CORBA::COMM_FAILURE const &)
-  { 
-    server_can_be_contacted = false;
-  }
-  catch (CORBA::TRANSIENT const &)
-  { 
-    server_can_be_contacted = false;
-  }
-  catch (...)
-  { 
-    server_can_be_contacted = false;
-  }
-
-  if (!server_can_be_contacted)
+  if (!server_can_be_contacted(server))
   { 
     std::cerr << "ERROR: Server reference is valid, "
               << "but this server cannot be contacted.\n"
@@ -413,11 +439,9 @@ void publish_server(Fresco::Server_ptr server,
   }
 
   // Reference is published externally, now publish in environment
-#if 0 
   CORBA::String_var const s = orb->object_to_string(server);
   std::string const stringified_ior(s);
   Prague::putenv("FRESCO_DISPLAY", stringified_ior);
-#endif
 }
 // ---------------------------------------------------------------
 // Helpers if using external Prague::GetOpt
