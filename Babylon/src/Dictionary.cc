@@ -720,7 +720,7 @@ bool Dictionary::is_Virama(const UCS4 uc) const throw (Block_Error)
 
 bool Dictionary::is_Printable(const UCS4 uc) const throw (Block_Error)
 {
-    return comb_class(uc) == CC_VIRAMAS;
+    return category(uc) != CAT_Cc;
 }
 
 bool Dictionary::is_Titlecase(const UCS4 uc) const throw (Block_Error)
