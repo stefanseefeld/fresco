@@ -210,7 +210,6 @@ void LibArtDrawingKit::drawPath(const Path &p)
       vpath[i].y = p[i].y;
       vpath[i].code = ART_LINETO;
     }
-//     if (len == 3) cerr << "open triangle" << endl;
     vpath[0].code = ART_MOVETO_OPEN;
     vpath[len-1].code = ART_END;
 
@@ -220,20 +219,11 @@ void LibArtDrawingKit::drawPath(const Path &p)
       vpath[i].y = p[i].y;
       vpath[i].code = ART_LINETO;
     }
-//     if (len == 3) cerr << "closed triangle" << endl;
     vpath[0].code = ART_MOVETO;
     vpath[len].x = vpath[0].x;
     vpath[len].y = vpath[0].y;
     vpath[len].code = ART_END;
   }
-
-//   if (len == 3) {
-//     cerr << "triangle: ";
-//     for (int i = 0; i < 4; i++) {
-//       cerr << "(" << vpath[i].x << "," << vpath[i].y << ") ";
-//     } 
-//     cerr << endl;
-//   }    
   
   ArtDRect locd; ArtIRect loc;
   tvpath = art_vpath_affine_transform(vpath,scaled_affine);
@@ -468,8 +458,10 @@ void LibArtDrawingKit::drawChar(Unichar c)
 		      affine[1] == 0 &&
 		      affine[2] == 0 &&
 		      affine[3] == 1)) {
-    affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
+
+    affine[5] -= (affine[2] * r.x.maximum * r.x.align) + (affine[3] * r.y.maximum * r.y.align);
     identityPixbuf(pb);      
+
   } else {   
     // *sigh* use primitive libart pixel functions
     affine[4] -= (r.y.maximum * r.y.align * affine[2]);

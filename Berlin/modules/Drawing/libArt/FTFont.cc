@@ -68,6 +68,9 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis)),
   mySize(14),
+  myLeft(0),
+  myTop(0),
+  scale(1),
   myGlyphCache(GlyphFactory(this,&myLibrary),256),
   myFaceMetricsCache(FaceMetricsFactory(this,&myLibrary),64),
   myGlyphMetricsCache(GlyphMetricsFactory(this,&myLibrary),256)
@@ -194,7 +197,7 @@ DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
 }
 
 void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf *&pb) {
-  TGlyphSpec key(matrix_, GlyphSpec(ch,FaceSpec(mySize,FamStyle(myFam,myStyle))));
+  TGlyphSpec key(matrix_, GlyphSpec(ch,FaceSpec(((PtSize)(mySize * scale)),FamStyle(myFam,myStyle))));
   myGlyphCache.get(key,pb);
 }
 
@@ -208,9 +211,9 @@ void LibArtFTFont::setup_face(FT_Face &f)
 
 void LibArtFTFont::setup_size(FT_Face &f) {
   FT_Set_Char_Size
-    ( f,                // handle to face object           
-      mySize << 6,     // char_width in 1/64th of points  
-      mySize << 6,     // char_height in 1/64th of points 
+     ( f,                // handle to face object           
+      ((PtSize)(mySize * scale)) << 6,     // char_width in 1/64th of points  
+      ((PtSize)(mySize * scale)) << 6,     // char_height in 1/64th of points 
       (unsigned int)xdpi,   // horizontal device resolution    
       (unsigned int)ydpi ); // vertical device resolution      
 }
@@ -240,10 +243,11 @@ void LibArtFTFont::setup_size(FT_Face &f) {
 }
 
 bool LibArtFTFont::transform(double trafo[4]) {
-  matrix_.xx = (FT_Fixed)(trafo[0] * 0x10000);
-  matrix_.xy = (FT_Fixed)(trafo[1] * 0x10000);
-  matrix_.yx = (FT_Fixed)(trafo[2] * 0x10000);
-  matrix_.yy = (FT_Fixed)(trafo[3] * 0x10000);
+  scale = trafo[0] * trafo[3] - trafo[1] * trafo[2];
+  matrix_.xx = (FT_Fixed)(trafo[0] / scale * 0x10000);
+  matrix_.xy = (FT_Fixed)(trafo[1] / scale * 0x10000);
+  matrix_.yx = (FT_Fixed)(trafo[2] / scale * 0x10000);
+  matrix_.yy = (FT_Fixed)(trafo[3] / scale * 0x10000);
 //   cerr << matrix_.xx << ' ' << matrix_.xy << ' ' << matrix_.yx << ' ' << matrix_.yy << endl;
   return true;
 }
@@ -296,7 +300,9 @@ LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::TGlyphSpec &gs)
   int height = bglyph->bitmap.rows;
   int width = bglyph->bitmap.width;
   int pitch = bglyph->bitmap.pitch;
-  
+
+  font_->setOffset(bglyph->left, bglyph->top);
+
   art_u8 *pixels = new art_u8[width * height]; 
 
   if (width != pitch) {

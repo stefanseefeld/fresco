@@ -64,7 +64,7 @@ public:
   void matrix(FT_Matrix &m) {m = matrix_;}
   
 protected:
-  
+
   typedef unsigned int atom;  
   class Atomizer {
   protected:
@@ -132,7 +132,8 @@ protected:
    
   atom myFam, myStyle;
   Unicode::String myFamStr, myStyleStr;
-  PtSize mySize;
+  PtSize mySize; 
+  double scale;
   FT_Library myLibrary;
   FT_Face myFace;
   map<FamStyle,FT_Face> myFaceMap;
