@@ -54,17 +54,17 @@ public:
   virtual void surface_fillstyle(Warsaw::DrawingKit::Fillstyle f) { DrawingKitBase::surface_fillstyle(f);}
   virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() { return fs;}
   virtual void texture(Warsaw::Raster_ptr r) { DrawingKitBase::texture(r);}
-  virtual Warsaw::Raster_ptr texture();
+  virtual Warsaw::Raster_ptr texture() { return Warsaw::Raster::_nil();}
 
-  virtual CORBA::ULong font_size();
-  virtual CORBA::ULong font_weight();
-  virtual Warsaw::Unistring *font_family();
-  virtual Warsaw::Unistring *font_subfamily();
-  virtual Warsaw::Unistring *font_fullname();
-  virtual Warsaw::Unistring *font_style();
-  virtual Warsaw::DrawingKit::FontMetrics font_metrics();
-  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar);
-  virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring &);
+  virtual CORBA::ULong font_size() { return 0;}
+  virtual CORBA::ULong font_weight() { return 0;}
+  virtual Warsaw::Unistring *font_family() { return 0;}
+  virtual Warsaw::Unistring *font_subfamily() { return 0;}
+  virtual Warsaw::Unistring *font_fullname() { return 0;}
+  virtual Warsaw::Unistring *font_style() { return 0;}
+  virtual Warsaw::DrawingKit::FontMetrics font_metrics() { return Warsaw::DrawingKit::FontMetrics();}
+  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar) { return Warsaw::DrawingKit::GlyphMetrics();}
+  virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring &) { return new CORBA::Any();}
 
   virtual void set_transformation(Warsaw::Transform_ptr);
   virtual void set_clipping(Warsaw::Region_ptr);
@@ -84,7 +84,7 @@ public:
   virtual void set_font_style(const Warsaw::Unistring &);
   virtual void set_font_attribute(const Warsaw::NVPair &);
 
-  virtual Warsaw::Coord resolution(Warsaw::Axis);
+  virtual Warsaw::Coord resolution(Warsaw::Axis) { return 0;}
   virtual void draw_path(const Warsaw::Path &);
 //   virtual void drawPatch(const Warsaw::Patch &);
   virtual void draw_rectangle(const Warsaw::Vertex &, const Warsaw::Vertex &);
@@ -96,7 +96,7 @@ public:
   virtual void allocate_text(const Warsaw::Unistring &, Warsaw::Graphic::Requisition &);
   virtual void draw_text(const Warsaw::Unistring &);
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
-  virtual void flush();
+  virtual void flush() {}
 private:
   Prague::Mutex  mutex;
   Warsaw::Transform_var  tr;
