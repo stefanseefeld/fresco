@@ -41,7 +41,6 @@ module Fresco
                       // for horizontally reading fonts, or
                       // horizontally to the center line of vertical
                       // fonts.
-      Coord font_ascent, font_descent;
       Coord underline_offset, underline_width;
     };
 
@@ -80,10 +79,9 @@ module Fresco
 
   interface Font : RefCountBase, Identifiable
     {
-      // need option to pass in: FT_NO_BITMAP and/or
-      // FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH
       Glyph glyph_char(in Unichar c);
       // need glyph_something for composite characters.
+      // also need to support multiple master fonts. Hm.
 
       //. Is the character available in the selected font? Note that
       //. the Font will provide a Glyph for the character anyways,

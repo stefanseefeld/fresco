@@ -43,6 +43,7 @@ public:
     void transformation(Fresco::Transform_var);
 private:
     FT_Face my_face;
+    FT_Matrix my_tr;
 };
 
 #endif // header guard
