@@ -26,6 +26,7 @@
 #include <Warsaw/BoundedRange.hh>
 #include <Berlin/RefCountVar.hh>
 #include "Widget/Motif/Adjustable.hh"
+#include <Berlin/TransformImpl.hh>
 
 namespace Motif
 {
@@ -51,6 +52,10 @@ private:
   RefCount_var<Warsaw::BoundedRange> _xvalue;
   RefCount_var<Warsaw::BoundedRange> _yvalue;
   Offset _offset[2];
+  TransformImpl _pickTrafo;
+  Warsaw::Vertex _upperBounds; // upper bounds from last pick traversal, in
+                               // local coords.
+  Warsaw::Vertex _scale;
 };
 
 };

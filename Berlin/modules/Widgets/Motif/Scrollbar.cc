@@ -93,8 +93,20 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
 
 void Scrollbar::adjust(const OriginatedDelta &od)
 {
-  if (_axis == xaxis && od.delta.x != 0.) _value->adjust(od.delta.x);
-  else if (_axis == yaxis && od.delta.y != 0.) _value->adjust(od.delta.y);
+  Vertex origin = od.origin;
+  Vertex newpt = od.origin;
+  newpt.x += od.delta.x;
+  newpt.y += od.delta.y;
+  
+  _pickTrafo.inverse_transform_vertex(origin);
+  _pickTrafo.inverse_transform_vertex(newpt);
+
+  Vertex delta;
+  delta.x = newpt.x - origin.x;
+  delta.y = newpt.y - origin.y;
+  
+  if (_axis == xaxis && delta.x != 0. && origin.x >= 0 && origin.x <= _length) _value->adjust(delta.x);
+  else if (_axis == yaxis && delta.y != 0. && origin.y >= 0 && origin.y <= _length) _value->adjust(delta.y);
 }
 
 void Scrollbar::update(const CORBA::Any &any)
@@ -118,6 +130,7 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
     {
       Coord lower = allocation->lower.x;
       Coord scale = allocation->upper.x - allocation->lower.x;
+      _length = scale;
       allocation->lower.x = lower + scale*_offset.lower;
       allocation->upper.x = lower + scale*_offset.upper;
       allocation->lower.z = allocation->upper.z = 0.;
@@ -126,11 +139,13 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
     {
       Coord lower = allocation->lower.y;
       Coord scale = allocation->upper.y - allocation->lower.y;
+      _length = scale;
       allocation->lower.y = lower + scale*_offset.lower;
       allocation->upper.y = lower + scale*_offset.upper;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));
+  _pickTrafo.copy(traversal->current_transformation());
   try { traversal->traverse_child (child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}

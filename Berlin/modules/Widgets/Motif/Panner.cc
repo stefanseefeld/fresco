@@ -86,8 +86,20 @@ void Panner::allocate(Tag, const Allocation::Info &info)
 
 void Panner::adjust(const OriginatedDelta &od)
 {
-  if (od.delta.x != 0.) _xvalue->adjust(od.delta.x);
-  if (od.delta.y != 0.) _yvalue->adjust(od.delta.y);
+  Vertex origin = od.origin;
+  Vertex newpt = od.origin;
+  newpt.x += od.delta.x;
+  newpt.y += od.delta.y;
+  
+  _pickTrafo.inverse_transform_vertex(origin);
+  _pickTrafo.inverse_transform_vertex(newpt);
+
+  Vertex delta;
+  delta.x = newpt.x - origin.x;
+  delta.y = newpt.y - origin.y;
+  
+  if (delta.x != 0. && origin.x >= 0 && origin.x <= _upperBounds.x) _xvalue->adjust(delta.x*_scale.x);
+  if (delta.y != 0. && origin.y >= 0 && origin.y <= _upperBounds.y) _yvalue->adjust(delta.y*_scale.y);
 }
 
 void Panner::update(const CORBA::Any &)
@@ -107,16 +119,22 @@ void Panner::traverse_thumb(Traversal_ptr traversal)
   if (CORBA::is_nil(child)) return;
   Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->current_allocation())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
+  _upperBounds.x = allocation->upper.x - allocation->lower.x;
+  _upperBounds.y = allocation->upper.y - allocation->lower.y;
+  _pickTrafo.copy(traversal->current_transformation());
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;
   allocation->lower.x = lower + scale*_offset[xaxis].lower;
   allocation->upper.x = lower + scale*_offset[xaxis].upper;
   lower = allocation->lower.y;
+  _scale.x = (_xvalue->upper() - _xvalue->lower())/scale;
   scale = allocation->upper.y - allocation->lower.y;
   allocation->lower.y = lower + scale*_offset[yaxis].lower;
   allocation->upper.y = lower + scale*_offset[yaxis].upper;
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
+  _scale.y = (_yvalue->upper() - _yvalue->lower())/scale;
+
   try { traversal->traverse_child (child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}

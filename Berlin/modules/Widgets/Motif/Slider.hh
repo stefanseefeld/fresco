@@ -26,6 +26,8 @@
 #include <Warsaw/BoundedValue.hh>
 #include <Berlin/RefCountVar.hh>
 #include "Widget/Motif/Adjustable.hh"
+#include <Warsaw/Region.hh>
+#include <Berlin/TransformImpl.hh>
 
 namespace Motif
 {
@@ -49,7 +51,9 @@ private:
   RefCount_var<Warsaw::BoundedValue> _value;
   Warsaw::Coord _offset;
   Warsaw::Axis _axis;
+  TransformImpl _pickTrafo; // transformation at the last pick traversal.
   double _scale;
+  double _length;
 };
 
 };

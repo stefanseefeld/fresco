@@ -23,6 +23,7 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/CommandImpl.hh>
 #include "Widget/Motif/Adjustable.hh"
+#include <Warsaw/Region.hh>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -36,8 +37,11 @@ public:
   virtual void execute(const CORBA::Any &any)
   {
     OriginatedDelta *od;
-    if (any >>= od) _adjustable->adjust(*od);
-    else  std::cerr << "Adjustable::Adjust::execute : wrong message type !" << std::endl;
+    if (any >>= od) {
+      _adjustable->adjust(*od);
+    } else {
+      std::cerr << "Adjustable::Adjust::execute : wrong message type !" << std::endl;
+    }
   }
 private:
   Adjustable *_adjustable;

@@ -35,7 +35,7 @@ Slider::Slider(BoundedValue_ptr v, Axis a, const Warsaw::Graphic::Requisition &r
   : _requisition(r),
     _value(RefCount_var<BoundedValue>::increment(v)),
     _offset((_value->value() - _value->lower())/(_value->upper() - _value->lower())),
-    _axis(a)
+  _axis(a)
 {
   Observer_var o = observer();
   _value->attach(o);
@@ -89,8 +89,20 @@ void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::d
 
 void Slider::adjust(const OriginatedDelta &od)
 {
-  if (_axis == xaxis && od.delta.x != 0.) _value->adjust(_scale * od.delta.x);
-  else if (_axis == yaxis && od.delta.y != 0.) _value->adjust(_scale * od.delta.y);
+  Vertex origin = od.origin;
+  Vertex newpt = od.origin;
+  newpt.x += od.delta.x;
+  newpt.y += od.delta.y;
+  
+  _pickTrafo.inverse_transform_vertex(origin);
+  _pickTrafo.inverse_transform_vertex(newpt);
+
+  Vertex delta;
+  delta.x = newpt.x - origin.x;
+  delta.y = newpt.y - origin.y;
+  
+  if (_axis == xaxis && delta.x != 0. && origin.x >= 0 && origin.x <= _length) _value->adjust(_scale * delta.x);
+  else if (_axis == yaxis && delta.y != 0. && origin.y >= 0 && origin.y <= _length) _value->adjust(_scale * delta.y);
 }
 
 void Slider::update(const CORBA::Any &any)
@@ -113,12 +125,14 @@ void Slider::traverse_thumb(Traversal_ptr traversal)
   Coord length;
   if (_axis == xaxis)
     {
+      _length = allocation->upper.x - allocation->lower.x;
       length = allocation->upper.x - allocation->lower.x - 240.;
       allocation->lower.x = _offset * length;
       allocation->upper.x = _offset * length + 240.;
     }
   else if (_axis == yaxis)
     {
+      _length = allocation->upper.y - allocation->lower.y;
       length = allocation->upper.y - allocation->lower.y - 240.;
       allocation->lower.y = _offset * length;
       allocation->upper.y = _offset * length + 240.;
@@ -127,4 +141,5 @@ void Slider::traverse_thumb(Traversal_ptr traversal)
   allocation->normalize(Transform_var(tx->_this()));
   traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
   _scale = (_value->upper() - _value->lower())/length;
+  _pickTrafo.copy(traversal->current_transformation());
 }

@@ -53,7 +53,8 @@ private:
   RefCount_var<Warsaw::BoundedRange> _value;
   Offset _offset;
   Warsaw::Axis _axis;
-  double _scale;
+  TransformImpl _pickTrafo; // transformation at the last pick traversal.
+  double _length;
 };
 
 };
