@@ -268,10 +268,10 @@ Color PNG::pixel(unsigned long x, unsigned long y, unsigned char *const *rows)
       if (_rinfo->color_type != rgbalpha) std::cerr << "wrong color type : " << (int) _rinfo->color_type << std::endl;
       if (_rinfo->bit_depth != 8) std::cerr << "wrong depth : " << (int) _rinfo->bit_depth << std::endl;
       const unsigned char *pixel = rows[y] + 4*x;
-      color.red = static_cast<double>(*pixel) / 256;
-      color.green = static_cast<double>(*(pixel + 1)) / 256;
-      color.blue = static_cast<double>(*(pixel + 2)) / 256;
-      color.alpha = static_cast<double>(*(pixel + 3)) / 256;
+      color.red = static_cast<double>(*pixel) / 255;
+      color.green = static_cast<double>(*(pixel + 1)) / 255;
+      color.blue = static_cast<double>(*(pixel + 2)) / 255;
+      color.alpha = static_cast<double>(*(pixel + 3)) / 255;
     }
   return color;
 }
@@ -288,10 +288,10 @@ void PNG::pixel(unsigned long x, unsigned long y, const Color &color, unsigned c
       if (_rinfo->color_type != rgbalpha) std::cerr << "wrong color type : " << static_cast<int>(_rinfo->color_type) << std::endl;
       if (_rinfo->bit_depth != 8) std::cerr << "wrong depth : " << static_cast<int>(_rinfo->bit_depth) << endl;
       unsigned char *pixel = rows[y] + 4*x;
-      *pixel++ = static_cast<png_byte>(color.red * 256);
-      *pixel++ = static_cast<png_byte>(color.green * 256);
-      *pixel++ = static_cast<png_byte>(color.blue * 256);
-      *pixel = static_cast<png_byte>(color.alpha * 256);
+      *pixel++ = static_cast<png_byte>(color.red * 255);
+      *pixel++ = static_cast<png_byte>(color.green * 255);
+      *pixel++ = static_cast<png_byte>(color.blue * 255);
+      *pixel = static_cast<png_byte>(color.alpha * 255);
     }
 }
 
@@ -330,10 +330,10 @@ Raster::ColorSeq *PNG::pixels(unsigned long xlower, unsigned long ylower, unsign
 	{
 	  const unsigned char *pixel = row + 4*x;
 	  Color &color = (*colors)[i*width + j];
-	  color.red = static_cast<double>(*pixel) / 256;
-	  color.green = static_cast<double>(*(pixel + 1)) / 256;
-	  color.blue = static_cast<double>(*(pixel + 2)) / 256;
-	  color.alpha = static_cast<double>(*(pixel + 3)) / 256;
+	  color.red = static_cast<double>(*pixel) / 255;
+	  color.green = static_cast<double>(*(pixel + 1)) / 255;
+	  color.blue = static_cast<double>(*(pixel + 2)) / 255;
+	  color.alpha = static_cast<double>(*(pixel + 3)) / 255;
 	}
     }
   delete [] buffer;

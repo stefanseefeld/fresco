@@ -267,10 +267,10 @@ GLTexture::GLTexture(Raster_var r)
     for (int x = 0; x != width; x++)
       {
 	Color &color = pixels[y * info.width + x];
-	*pixel++ = static_cast<char>(color.red * 256);
-	*pixel++ = static_cast<char>(color.green * 256);
-	*pixel++ = static_cast<char>(color.blue * 256);
-	*pixel++ = static_cast<char>(color.alpha * 256);
+	*pixel++ = static_cast<char>(color.red * 255);
+	*pixel++ = static_cast<char>(color.green * 255);
+	*pixel++ = static_cast<char>(color.blue * 255);
+	*pixel++ = static_cast<char>(color.alpha * 255);
       }
   texture = bind(GL_RGBA, GL_RGBA, &*data.begin());
 }
@@ -386,10 +386,10 @@ GLImage::GLImage(Raster_var r)
     for (int x = 0; x != width; x++)
       {
 	Color &color = pixels[y * info.width + x];
-	*pixel++ = static_cast<char>(color.red * 256);
-	*pixel++ = static_cast<char>(color.green * 256);
-	*pixel++ = static_cast<char>(color.blue * 256);
-	*pixel++ = static_cast<char>(color.alpha * 256);
+	*pixel++ = static_cast<char>(color.red * 255);
+	*pixel++ = static_cast<char>(color.green * 255);
+	*pixel++ = static_cast<char>(color.blue * 255);
+	*pixel++ = static_cast<char>(color.alpha * 255);
       }
   texture = bind(GL_RGBA, GL_RGBA, &*data.begin());
 }
