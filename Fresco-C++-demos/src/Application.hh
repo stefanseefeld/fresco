@@ -55,7 +55,8 @@ class Application
     BoundedValue_var red;
     BoundedValue_var blue;
     BoundedValue_var green;
-    BoundedValue_var rotation;
+    BoundedValue_var zrotation;
+    BoundedValue_var yrotation;
     BoundedValue_var zoom;
     Command_var settings;
   };

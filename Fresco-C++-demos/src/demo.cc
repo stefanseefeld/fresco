@@ -26,7 +26,7 @@
 #include "TextDemo.hh"
 #include "EditTextDemo.hh"
 #include "RasterDemo.hh"
-// #include "TransformDemo.hh"
+#include "ColorDemo.hh"
 #include "LogoDemo.hh"
 #include "FocusDemo.hh"
 #include "ViewportDemo.hh"
@@ -45,6 +45,7 @@ int main(int argc, char **argv)
   TextDemo *text = new TextDemo(application);
   EditTextDemo *etext = new EditTextDemo(application);
   RasterDemo *raster = new RasterDemo(application);
+  ColorDemo *color = new ColorDemo(application);
   LogoDemo *logo = new LogoDemo(application);
   FocusDemo *focus = new FocusDemo(application);
   ViewportDemo *viewport = new ViewportDemo(application);
@@ -56,6 +57,7 @@ int main(int argc, char **argv)
   delete viewport;
   delete focus;
   delete logo;
+  delete color;
   delete raster;
   delete etext;
   delete text;

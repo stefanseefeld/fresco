@@ -103,7 +103,8 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   Graphic_var decorator = ttk->frame(vb, 20., spec, true);
   decorator = gk->alpha(decorator, item.alpha);
   decorator = gk->lighting(decorator, item.red, item.green, item.blue);
-  decorator = Graphic_var(lk->align(gk->rotator(Graphic_var(lk->align(decorator, 0.5, 0.5)), item.rotation), 0., 0.));
+  decorator = Graphic_var(lk->align(gk->rotator(Graphic_var(lk->align(decorator, 0.5, 0.5)), item.zrotation, zaxis), 0., 0.));
+  decorator = Graphic_var(lk->align(gk->rotator(Graphic_var(lk->align(decorator, 0.5, 0.5)), item.yrotation, yaxis), 0., 0.));
   decorator = gk->zoomer(decorator, item.zoom);
 
   Controller_var group = ttk->group(decorator);
@@ -168,50 +169,57 @@ Application::Item Application::makeItem(const Unicode::String &name)
   item.red = ck->bvalue(0., 1., 1., 0.1, 0.1);
   item.blue = ck->bvalue(0., 1., 1., 0.1, 0.1);
   item.green = ck->bvalue(0., 1., 1., 0.1, 0.1);
-  item.rotation = ck->bvalue(0., 360., 0., 5., 5.);
+  item.zrotation = ck->bvalue(0., 360., 0., 5., 5.);
+  item.yrotation = ck->bvalue(0., 360., 0., 5., 5.);
   item.zoom = ck->bvalue(-1., 1., 0., 0.1, 0.1);
 
   /*
    * create the settings window
    */
   Grid::Index index;
-  index.col = 2, index.row = 6;
+  index.col = 2, index.row = 7;
   Grid_var grid = lk->fixedGrid(index);
   index.row = 0;
   index.col = 0;
   grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("alpha")))), 0., 0., 0.)), index);
   index.col = 1;
-  grid->replace(Graphic_var(wk->slider(item.alpha, xaxis)), index);
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.alpha, xaxis)), 100., 100., 100.)), index);
 
   index.row = 1;
   index.col = 0;
   grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("red")))), 0., 0., 0.)), index);
   index.col = 1;
-  grid->replace(Graphic_var(wk->slider(item.red, xaxis)), index);
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.red, xaxis)), 100., 100., 100.)), index);
 
   index.row = 2;
   index.col = 0;
   grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("green")))), 0., 0., 0.)), index);
   index.col = 1;
-  grid->replace(Graphic_var(wk->slider(item.green, xaxis)), index);
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.green, xaxis)), 100., 100., 100.)), index);
 
   index.row = 3;
   index.col = 0;
   grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("blue")))), 0., 0., 0.)), index);
   index.col = 1;
-  grid->replace(Graphic_var(wk->slider(item.blue, xaxis)), index);
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.blue, xaxis)), 100., 100., 100.)), index);
 
   index.row = 4;
   index.col = 0;
-  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("rotation")))), 0., 0., 0.)), index);
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("z rotation")))), 0., 0., 0.)), index);
   index.col = 1;
-  grid->replace(Graphic_var(wk->slider(item.rotation, xaxis)), index);
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.zrotation, xaxis)), 100., 100., 100.)), index);
 
   index.row = 5;
   index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("y rotation")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.yrotation, xaxis)), 100., 100., 100.)), index);
+
+  index.row = 6;
+  index.col = 0;
   grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("zoom")))), 0., 0., 0.)), index);
   index.col = 1;
-  grid->replace(Graphic_var(wk->slider(item.zoom, xaxis)), index);
+  grid->replace(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.zoom, xaxis)), 100., 100., 100.)), index);
 
   Graphic_var hbox = lk->hbox();
   hbox->append(Graphic_var(lk->hfil()));
