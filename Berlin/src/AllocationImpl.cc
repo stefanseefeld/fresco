@@ -19,12 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/Screen.hh>
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Provider.hh"
 #include "Berlin/TransformImpl.hh"
-#include <Warsaw/Screen.hh>
 
+using namespace Prague;
 using namespace Warsaw;
 
 AllocationImpl::AllocationImpl()
@@ -42,6 +45,7 @@ AllocationImpl::~AllocationImpl()
 
 void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
+  Trace trace("Allocation::add");
   Lease_var<RegionImpl> reg(Provider<RegionImpl>::provide());
   reg->copy(region);
 
