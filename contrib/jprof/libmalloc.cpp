@@ -22,6 +22,7 @@
 // If things don't work for you, try defining this:
 #define JPROF_PTHREAD_HACK
 
+#include <math.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
@@ -172,6 +173,9 @@ static int  realTime = 0;
 static void startSignalCounter(unsigned long milisec)
 {
     struct itimerval tvalue;
+
+    if (milisec)
+      milisec = (unsigned long) ceil (- (double) milisec * log (drand48 ()));
 
     tvalue.it_interval.tv_sec = 0;
     tvalue.it_interval.tv_usec = 0;
