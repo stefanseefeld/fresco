@@ -37,7 +37,7 @@ class FocusDemo::Observer : public ObserverImpl
     {
       Fresco::Selection::Item *item;
       if (any >>= item)
-	cout << "new selection" << endl;
+	std::cout << "new selection" << std::endl;
     }
 };
 

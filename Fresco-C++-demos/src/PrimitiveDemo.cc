@@ -66,7 +66,7 @@ void PrimitiveDemo::Rotator::update(const CORBA::Any &)
   Transform_var tx = child->transformation();
   tx->load_identity();
   tx->rotate(ydegree, axis);
-  cout << "parent needs redraw..." << endl;
+  std::cout << "parent needs redraw..." << std::endl;
   parent->need_redraw();
 }
 
@@ -86,9 +86,9 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   phi = commands->bvalue(0., 360., 0., 5., 5.);
   psi = commands->bvalue(0., 360., 0., 5., 5.);
   
-  Coord a = 2000.;
+  Coord c = 2000.;
   Vertex offset;
-  offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
+  offset.x = -c/2., offset.y = -3./2.*c, offset.z = 0.;
   Fresco::Mesh mesh;
   mesh.nodes.length(4);
   Coord w = 3000.;

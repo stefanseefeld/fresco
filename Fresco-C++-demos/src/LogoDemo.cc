@@ -82,15 +82,15 @@ LogoDemo::LogoDemo(Application *a)
   bv2 = commands->bvalue(0., 360., 0., 5., 5.);
   bv3 = commands->bvalue(0., 360., 0., 5., 5.);
   
-  Coord a = 2000.;
+  Coord c = 2000.;
   Vertex offset;
-  offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
+  offset.x = -c/2., offset.y = -3./2.*c, offset.z = 0.;
   Fresco::Path path;
   path.shape = convex;
   path.nodes.length(3);
-  path.nodes[0].x = a/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;
-  path.nodes[1].x = a + offset.x, path.nodes[1].y = 0.866*a + offset.y, path.nodes[1].z = offset.z;
-  path.nodes[2].x = offset.x, path.nodes[2].y = 0.866*a + offset.y, path.nodes[2].z = offset.z;
+  path.nodes[0].x = c/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;
+  path.nodes[1].x = c + offset.x, path.nodes[1].y = 0.866*c + offset.y, path.nodes[1].z = offset.z;
+  path.nodes[2].x = offset.x, path.nodes[2].y = 0.866*c + offset.y, path.nodes[2].z = offset.z;
   
   Figure::Path_var triangle = figures->polygon(path);
   Graphic_var transformer1 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 1., 0.5, 0.5)));
