@@ -52,7 +52,7 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Kit.idl Transform.idl Region.idl Allocation.idl Traversal.idl \
 		   PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 		   Input.idl Focus.idl Subject.idl Observer.idl Controller.idl View.idl \
-		   Drawable.idl DrawingKit.idl Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
+		   Drawable.idl DrawingKit.idl Grid.idl Viewport.idl Stage.idl Splitter.idl LayoutKit.idl \
 		   Telltale.idl StreamBuffer.idl Trigger.idl Canvas.idl State.idl ToolKit.idl \
 		   Widget.idl WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 		   Image.idl FigureKit.idl Command.idl CommandKit.idl Metrics.idl \
@@ -67,9 +67,9 @@ STATSRC		:= $(patsubst %.idl, %SK.cc, $(STATINT))
 UTILSRC		:= IO.cc Unicode.cc ClientContextImpl.cc
 SRC		:= $(DYNSTATSRC) $(DYNSRC) $(STATSRC)
 
-DYNHDR		:= $(patsubst %.idl, $(hdir)/Warsaw/%.hh, $(DYNINT))
-STATHDR		:= $(patsubst %.idl, $(hdir)/Warsaw/%.hh, $(STATINT))
-HDR		:= $(DYNHDR) $(STATHDR)
+DYNHDR		:= $(patsubst %.idl, %.hh, $(DYNINT))
+STATHDR		:= $(patsubst %.idl, %.hh, $(STATINT))
+HDR		:= $(patsubst %, $(hdir)/Warsaw/%, $(DYNHDR) $(STATHDR))
 
 OBJ		:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
@@ -114,11 +114,19 @@ maintainer-clean: distclean
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idir) $< \
 	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
-%SK.cc:	$(idir)/Warsaw/%.idl
+$(STATSRC): %SK.cc:	$(idir)/Warsaw/%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) Warsaw/$(<F))
 	mv $*.hh $(hdir)/Warsaw
-%DynSK.cc:	$(idir)/Warsaw/%.idl
+$(DYNSTATSRC): %SK.cc:	$(idir)/Warsaw/%.idl
+	@echo generating $(@F)
+	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Warsaw/$(<F))
+	mv $*.hh $(hdir)/Warsaw
+$(DYNSRC): %DynSK.cc:	$(idir)/Warsaw/%.idl
+	@echo generating $(@F)
+	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Warsaw/$(<F))
+	mv $*.hh $(hdir)/Warsaw
+$(DYNHDR): %.hh:	$(idir)/Warsaw/%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Warsaw/$(<F))
 	mv $*.hh $(hdir)/Warsaw
