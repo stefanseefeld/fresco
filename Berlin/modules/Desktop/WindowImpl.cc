@@ -23,6 +23,7 @@
 #include "Desktop/WindowImpl.hh"
 #include <Berlin/Vertex.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Warsaw/IO.hh>
 
 using namespace Prague;
 
@@ -165,9 +166,21 @@ WindowImpl::~WindowImpl()
   unmapper->_dispose();
 }
 
-// void WindowImpl::needResize()
-// {
-// }
+void WindowImpl::needResize()
+{
+  Trace trace("WindowImpl::needResize");
+  Vertex size = handle->size();
+  Graphic::Requisition r;
+  request(r);
+  if (r.x.minimum <= size.x && r.x.maximum >= size.x && r.y.minimum <= size.y && r.y.maximum >= size.y)
+    needRedraw();
+  else
+    {
+      size.x = min(r.x.maximum, max(r.x.minimum, size.x));
+      size.y = min(r.y.maximum, max(r.y.minimum, size.y));
+      handle->size(size);
+    }
+}
 
 
 /*
