@@ -68,7 +68,7 @@ Thread::~Thread()
   if (this != self())
     {
       cancel();
-      join(0);
+      if (!detached) join(0);
     }
 }
 
