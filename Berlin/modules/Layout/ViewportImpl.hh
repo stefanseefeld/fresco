@@ -44,6 +44,8 @@ class ViewportImpl : implements(Viewport), public MonoGraphic
   virtual void request(Requisition &);
 
   virtual void traverse(Traversal_ptr);
+  virtual void draw(DrawTraversal_ptr);
+  virtual void pick(PickTraversal_ptr);
 
   virtual void needResize();
 
@@ -51,11 +53,6 @@ class ViewportImpl : implements(Viewport), public MonoGraphic
 
   virtual void update(Subject_ptr, const CORBA::Any &);
 
-  void scrollTo(Axis, Coord);
-//   Coord lower(Axis);
-//   Coord length(Axis);
-//   Coord offset(Axis);
-//   Coord visible(Axis);
 protected:
   void allocateChild(Allocation::Info &);
   void cacheRequisition();

@@ -42,9 +42,21 @@ private:
   BoundedRange_var yvalue;
 };
 
-Panner::Panner(BoundedRange_ptr x, BoundedRange_ptr y)
-  : ControllerImpl(false), redirect(new PObserver(this)), _drag(new Drag(x, y))
+Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
+  : ControllerImpl(false),
+    redirect(new PObserver(this)),
+    _drag(new Drag(xx, yy)),
+    x(BoundedRange::_duplicate(xx)),
+    y(BoundedRange::_duplicate(yy))
 {
+  BoundedRange::Settings settings = x->getSettings();
+  offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);
+  offset[xaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  settings = y->getSettings();
+  offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
+  offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  x->attach(Observer_var(redirect->_this()));
+  y->attach(Observer_var(redirect->_this()));
 }
 
 void Panner::init(Controller_ptr t)
@@ -57,11 +69,11 @@ void Panner::init(Controller_ptr t)
 void Panner::update(Subject_ptr, const CORBA::Any &)
 {
   BoundedRange::Settings settings = x->getSettings();
-  offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);
-  offset[xaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  offset[xaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
   settings = y->getSettings();
-  offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
-  offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  offset[yaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  offset[yaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
   needRedraw();
 }
 
@@ -90,7 +102,18 @@ void Panner::allocate(Tag t, const Allocation::Info &info)
    * t == 0 is the body, t == 1 is the thumb
    */
   if (t == 0) return;
-  //. not yet implemented
+  Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
+  Coord lower = allocation->lower.x;
+  Coord scale = allocation->upper.x - allocation->lower.x;
+  allocation->lower.x = lower + scale*offset[xaxis].lower;
+  allocation->upper.x = lower + scale*offset[xaxis].upper;
+  lower = allocation->lower.y;
+  scale = allocation->upper.y - allocation->lower.y;
+  allocation->lower.y = lower + scale*offset[yaxis].lower;
+  allocation->upper.y = lower + scale*offset[yaxis].upper;
+  allocation->lower.z = allocation->upper.z = 0.;
+  
+  allocation->normalize(info.transformation);
 }
 
 void Panner::traverseThumb(Traversal_ptr traversal)
@@ -99,12 +122,12 @@ void Panner::traverseThumb(Traversal_ptr traversal)
   Impl_var<TransformImpl> transformation(new TransformImpl);
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;
-  allocation->lower.x = lower + scale*allocation->lower.x;
-  allocation->upper.x = lower + scale*allocation->upper.x;
+  allocation->lower.x = lower + scale*offset[xaxis].lower;
+  allocation->upper.x = lower + scale*offset[xaxis].upper;
   lower = allocation->lower.y;
   scale = allocation->upper.y - allocation->lower.y;
-  allocation->lower.y = lower + scale*allocation->lower.y;
-  allocation->upper.y = lower + scale*allocation->upper.y;
+  allocation->lower.y = lower + scale*offset[yaxis].lower;
+  allocation->upper.y = lower + scale*offset[yaxis].upper;
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
   traversal->traverseChild(thumb, 1, Region_var(allocation->_this()), Transform_var(transformation->_this()));

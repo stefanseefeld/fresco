@@ -50,14 +50,18 @@ def main():
     raster = image.create("../etc/PNG/landscape.png")
     pixmap = figure.pixmap(raster)
     viewport = layout.scrollable(pixmap)
-    adjustment = viewport.adjustment(_GlobalIDL.xaxis)
+    gray = {0.7, 0.7, 0.7, 1.0}
+    xadjustment = viewport.adjustment(_GlobalIDL.xaxis)
+    yadjustment = viewport.adjustment(_GlobalIDL.yaxis)
+    hbox1  = layout.hbox()
+    hbox2  = layout hbox()
+    hbox1.append(viewport)
+    hbox1.append(widget.scrollbar(gray, yadjustment, _GlobalIDL.yaxis)
     group  = widget.group(viewport)
     shell  = desktop.shell(group)
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break
-        offset = string.atof(line)
-	adjustment.adjust(`offset*5`)
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -28,22 +28,23 @@
 #include "Drawing/openGL/GLUnifont.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Plugin.hh"
+#include "Warsaw/Warsaw.hh"
 
-#include <GL/glu.h>
+// #include <GL/glu.h>
 #include <strstream>
 #include <iostream>
 
 GLDrawingKit::GLDrawingKit()
   : drawable(GGI::drawable()),
-    tr(new TransformImpl),
-    cl(new RegionImpl),
+//     tr(new TransformImpl),
+//     cl(new RegionImpl),
     tx(0),
     font(new GLUnifont),
     textures(100),
     images(500)
 {
-  tr->_obj_is_ready(_boa());
-  cl->_obj_is_ready(_boa());
+//   tr->_obj_is_ready(_boa());
+//   cl->_obj_is_ready(_boa());
 
   context = GGIMesaCreateContext();
   if (!context)
@@ -80,14 +81,16 @@ GLDrawingKit::~GLDrawingKit()
 {
   GGIMesaDestroyContext(context);
   delete font;
-  cl->_dispose();
-  tr->_dispose();
+//   cl->_dispose();
+//   tr->_dispose();
 }
 
 void GLDrawingKit::setTransformation(Transform_ptr t)
 {
-  tr->copy(t);
-  Transform::Matrix &matrix = tr->matrix();
+//   tr->copy(t);
+  tr = Transform::_duplicate(t);
+  Transform::Matrix matrix;
+  tr->storeMatrix(matrix);
   GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
 			   matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
 			   matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
@@ -97,11 +100,14 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
 
 void GLDrawingKit::setClipping(Region_ptr r)
 {
-  cl->copy(r);
-  PixelCoord x = static_cast<PixelCoord>(cl->lower.x*drawable->resolution(xaxis) + 0.5);
-  PixelCoord y = static_cast<PixelCoord>((drawable->height()/drawable->resolution(yaxis) - cl->upper.y)*drawable->resolution(yaxis) + 0.5);
-  PixelCoord w = static_cast<PixelCoord>((cl->upper.x - cl->lower.x)*drawable->resolution(xaxis) + 0.5);
-  PixelCoord h = static_cast<PixelCoord>((cl->upper.y - cl->lower.y)*drawable->resolution(yaxis) + 0.5);
+//   cl->copy(r);
+  cl = Region::_duplicate(r);
+  Vertex lower, upper;
+  cl->bounds(lower, upper);
+  PixelCoord x = static_cast<PixelCoord>(lower.x*drawable->resolution(xaxis) + 0.5);
+  PixelCoord y = static_cast<PixelCoord>((drawable->height()/drawable->resolution(yaxis) - upper.y)*drawable->resolution(yaxis) + 0.5);
+  PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*drawable->resolution(xaxis) + 0.5);
+  PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*drawable->resolution(yaxis) + 0.5);
   glScissor(x, y, w, h);
 }
 

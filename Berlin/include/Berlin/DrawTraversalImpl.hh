@@ -46,6 +46,7 @@ public:
   virtual CORBA::Boolean ok() { return true;}
   virtual DrawingKit_ptr kit();
   void init();
+  void finish();
 private:
   DrawingKit_var drawing;
 //   Drawable_var drawable;

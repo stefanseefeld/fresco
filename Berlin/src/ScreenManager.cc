@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,15 +27,14 @@
 #include "Prague/Sys/FdSet.hh"
 #include "Prague/Sys/Time.hh"
 #include "Berlin/Logger.hh"
-
-// static Mutex ggi_mutex;
-// static ggi_event event;
+#include "Warsaw/Warsaw.hh"
 
 using namespace Prague;
 
 ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, DrawingKit_ptr d)
   : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(GGI::drawable())
-{}
+{
+}
 
 ScreenManager::~ScreenManager() {}
 void ScreenManager::damage(Region_ptr r)
@@ -54,6 +53,7 @@ void ScreenManager::repair()
   emanager->restore(Region_var(tmpDamage->_this()));
   traversal->init();
   screen->traverse(Traversal_var(traversal->_this()));
+  traversal->finish();
   drawing->flush();
   drawable->flush();
   emanager->damage(Region_var(tmpDamage->_this()));
@@ -61,7 +61,6 @@ void ScreenManager::repair()
 
 void ScreenManager::run()
 {
-
   theDamage = new RegionImpl;
   tmpDamage = new RegionImpl;
   traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),

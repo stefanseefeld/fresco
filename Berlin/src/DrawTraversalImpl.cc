@@ -27,6 +27,7 @@
 #include "Warsaw/Region.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/GGI.hh"
+#include "Warsaw/Warsaw.hh"
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
@@ -34,10 +35,10 @@ DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr 
     clipping(Region::_duplicate(r)),
     id(new TransformImpl)
 {
-  init();
 }
 
-void DrawTraversalImpl::init() {
+void DrawTraversalImpl::init()
+{
   /*
    * initialize the different drawing kit attributes
    */
@@ -54,6 +55,8 @@ void DrawTraversalImpl::init() {
    */
   drawing->drawRect(l, u);
 }
+
+void DrawTraversalImpl::finish() { drawing->restoreState();}
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
   : TraversalImpl(t),

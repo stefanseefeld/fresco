@@ -25,7 +25,9 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Warsaw.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
+#include "Warsaw/DrawingKit.hh"
+#include "Warsaw/PickTraversal.hh"
 #include "Berlin/ImplVar.hh"
 #include "Berlin/TransformImpl.hh"
 
@@ -58,7 +60,6 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
   virtual void begin();
   virtual void end();
   virtual void adjust(Coord);
-  void scrollTo(Coord);
  protected:
   Settings settings;
   Coord s, p;
@@ -247,6 +248,7 @@ void ViewportImpl::Adjustment::uvalue(Coord uv)
     MutexGuard guard(mutex);
     if (settings.uvalue == uv) return;
     settings.uvalue = uv;
+    any <<= settings;
   }
   notify(any);
 }
@@ -270,12 +272,6 @@ void ViewportImpl::Adjustment::adjust(Coord d)
     any <<= settings;
   }
   notify(any);
-}
-
-void ViewportImpl::Adjustment::scrollTo(Coord vv)
-{
-  Coord delta = vv - lvalue();
-  adjust(delta);
 }
 
 ViewportImpl::ViewportImpl()
@@ -302,11 +298,11 @@ void ViewportImpl::attachAdjustments()
 void ViewportImpl::body(Graphic_ptr g)
 {
   MonoGraphic::body(g);
-  xadjustment->block(true);
-  yadjustment->block(true);
+//   xadjustment->block(true);
+//   yadjustment->block(true);
   needResize();
-  xadjustment->block(false);
-  yadjustment->block(false);
+//   xadjustment->block(false);
+//   yadjustment->block(false);
   MonoGraphic::needResize();
 }
 
@@ -331,15 +327,43 @@ void ViewportImpl::traverse(Traversal_ptr traversal)
        */
       Region_var allocation = traversal->allocation();
       cacheAllocation(allocation);
-      /*
-       * now simply traverse the child with it's desired allocation
-       * and a suitable offset
-       */
-      Impl_var<RegionImpl> region(bodyAllocation(allocation));
-      Impl_var<TransformImpl> transform(new TransformImpl);
-      region->normalize(Transform_var(transform->_this()));
-      traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
+      traversal->visit(Graphic_var(_this()));
     }
+}
+
+void ViewportImpl::draw(DrawTraversal_ptr traversal)
+{
+  /*
+   * now simply traverse the child with it's desired allocation
+   * and a suitable offset
+   */
+  Region_var allocation = traversal->allocation();
+  Transform_var transformation = traversal->transformation();
+  Impl_var<RegionImpl> clipping(new RegionImpl(allocation, transformation));
+  DrawingKit_var dk = traversal->kit();
+  dk->saveState();
+  cout << "Viewport clip" << endl;
+  dk->clipping(Region_var(clipping->_this()));
+
+  Impl_var<RegionImpl> region(bodyAllocation(allocation));
+  Impl_var<TransformImpl> transform(new TransformImpl);
+  region->normalize(Transform_var(transform->_this()));
+  traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
+  dk->restoreState();
+  cout << "~Viewport clip" << endl;
+}
+
+void ViewportImpl::pick(PickTraversal_ptr traversal)
+{
+  /*
+   * now simply traverse the child with it's desired allocation
+   * and a suitable offset
+   */
+  Region_var allocation = traversal->allocation();
+  Impl_var<RegionImpl> region(bodyAllocation(allocation));
+  Impl_var<TransformImpl> transform(new TransformImpl);
+  region->normalize(Transform_var(transform->_this()));
+  traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
 }
 
 void ViewportImpl::needResize()
@@ -362,8 +386,10 @@ void ViewportImpl::update(Subject_ptr, const CORBA::Any &)
   bool damage = (x.lower != settings[xaxis].lower || y.lower != settings[yaxis].lower ||
 		 x.upper != settings[xaxis].upper || y.upper != settings[yaxis].upper ||
 		 x.lvalue != settings[xaxis].lvalue || y.lvalue != settings[yaxis].lvalue);
-  settings[xaxis] = x;
-  settings[yaxis] = y;
+  settings[xaxis].lvalue = x.lvalue;
+  settings[xaxis].uvalue = x.uvalue;
+  settings[yaxis].lvalue = y.lvalue;
+  settings[yaxis].uvalue = y.uvalue;
   if (damage) needRedraw();
 }
 
@@ -372,24 +398,12 @@ void ViewportImpl::allocateChild(Allocation::Info &info)
   scrollTransform(info.transformation);
   Impl_var<RegionImpl> region(bodyAllocation(info.allocation));
   info.allocation->copy(Region_var(region->_this()));
-  region->_dispose();
 }
 
 BoundedRange_ptr ViewportImpl::adjustment(Axis a)
 {
   return a == xaxis ? xadjustment->_this() : yadjustment->_this();
 }
-
-void ViewportImpl::scrollTo(Axis a, Coord lower)
-{
-//   of[a] = lower;
-//   needRedraw();
-}
-
-// Coord ViewportImpl::lower(Axis a) { return lo[a];}
-// Coord ViewportImpl::length(Axis a) { return le[a];}
-// Coord ViewportImpl::offset(Axis a) { return of[a];}
-// Coord ViewportImpl::visible(Axis a) { return vi[a];}
 
 void ViewportImpl::cacheRequisition()
 //. retrieves requisition from body and updates adjustments
@@ -402,15 +416,14 @@ void ViewportImpl::cacheRequisition()
       Requirement &ry = requisition.y;
 
       settings[xaxis].lvalue = settings[xaxis].lower = rx.defined ? - rx.natural * rx.align : 0.;
-      settings[yaxis].lvalue = settings[yaxis].lower = ry.defined ? - ry.natural * ry.align : 0.;
-
       settings[xaxis].uvalue = settings[xaxis].upper = rx.defined ? settings[xaxis].lvalue + rx.natural : 0.;
-      settings[yaxis].uvalue = settings[yaxis].upper = ry.defined ? settings[yaxis].lvalue + ry.natural : 0.;
       if (rx.defined)
 	{
 	  xadjustment->lower(settings[xaxis].lower);
 	  xadjustment->upper(settings[xaxis].upper);
 	}
+      settings[yaxis].lvalue = settings[yaxis].lower = ry.defined ? - ry.natural * ry.align : 0.;
+      settings[yaxis].uvalue = settings[yaxis].upper = ry.defined ? settings[yaxis].lvalue + ry.natural : 0.;
       if (ry.defined)
 	{
 	  yadjustment->lower(settings[yaxis].lower);
@@ -423,90 +436,43 @@ void ViewportImpl::cacheAllocation(Region_ptr allocation)
 {
   if (!CORBA::is_nil(allocation))
     {
-//       cacheRequisition();
       Region::Allotment xa, ya;
-//       Coord xlength, ylength;
-//       Requirement &rx = requisition.x;
-//       Requirement &ry = requisition.y;
       allocation->span(xaxis, xa);
       allocation->span(yaxis, ya);
 
-//       xlength = rx.natural;
-// // 	} else {
-// // 	    xlength = Math::min(  // Constrain span b/w min,max. 
-// // 	        Math::max(xspan.length, rx.minimum), rx.maximum
-// // 	    );
-// // 	}
-//       ylength = ry.natural;
-// // 	} else {
-// // 	    ylength = Math::min(
-// // 	        Math::max(yspan.length, ry.minimum), ry.maximum
-// // 	    );
-// // 	}
-//       if (! Math::equal(xlength, le[xaxis], epsilon))
-// 	{
-// 	  Coord margin = xlength - le[xaxis];
-// 	  lo[xaxis] -= (margin * rx.align);
-// 	  le[xaxis] = xlength;
-// 	}
-//       if (! Math::equal(ylength, le[yaxis], epsilon))
-// 	{
-// 	  Coord margin = ylength - le[yaxis];
-// 	  lo[yaxis] -= (margin * ry.align);
-// 	  le[yaxis] = ylength;
-// 	}
-	
       if (! Math::equal(xa.end - xa.begin, settings[xaxis].uvalue - settings[xaxis].lvalue, epsilon))
  	{
-// 	  Coord margin = xa.end - xa.begin - vi[xaxis];
  	  settings[xaxis].uvalue = settings[xaxis].lvalue + xa.end - xa.begin;
  	  xadjustment->uvalue(settings[xaxis].uvalue);
 	}
       if (! Math::equal(ya.end - ya.begin, settings[yaxis].uvalue - settings[yaxis].lvalue, epsilon))
  	{
-// 	  Coord margin = ya.end - ya.begin - vi[yaxis];
  	  settings[yaxis].uvalue = ya.end - ya.begin;
  	  yadjustment->uvalue(settings[yaxis].uvalue);
 	}
-//       CORBA::Any any;
-// //       xadjustment->notify(any);
-// //       yadjustment->notify(any);
     }
 }
 
 RegionImpl *ViewportImpl::bodyAllocation(Region_ptr)
 {
-//   if (!CORBA::is_nil(a))
-//     {
+  /*
+   * FIXME!! : this implementation ignores completely the body alignment...
+   */
   RegionImpl *ca = new RegionImpl();
-  ca->lower.x = -settings[xaxis].lvalue - settings[xaxis].lower;
-  ca->lower.y = -settings[yaxis].lvalue - settings[yaxis].lower;
+  ca->valid = true;
+  ca->lower.x = -(settings[xaxis].lvalue - settings[xaxis].lower);
+  ca->lower.y = -(settings[yaxis].lvalue - settings[yaxis].lower);
   ca->lower.z = 0.;
-  ca->upper.x = -settings[xaxis].uvalue - settings[xaxis].upper;
-  ca->upper.y = -settings[yaxis].uvalue - settings[yaxis].upper;
+  ca->upper.x = -(settings[xaxis].lvalue - settings[xaxis].upper);
+  ca->upper.y = -(settings[yaxis].lvalue - settings[yaxis].upper);
   ca->upper.z = 0.;
-
-//       Coord margin;
-//       margin = (up[xaxis] - lo[xaxis] - (xa.end - xa.begin));
-//       ca->lower.x -= (margin * xa.align);
-//       ca->upper.x = ca->lower.x + le[xaxis];
-	
-//       margin = (up[yaxis] - lo[yaxis] - (ya.end - ya.begin));
-//       ca->lower.y -= (margin * ya.align);
-//       ca->upper.y = ca->lower.y + le[yaxis];
-//       return ca;
-//     }
+  ca->xalign = ca->yalign = ca->yalign = 0.;
   return ca;
 }
 
 void ViewportImpl::scrollTransform(Transform_ptr tx)
 {
   Vertex v;
-  Requirement &rx = requisition.x;
-  Requirement &ry = requisition.y;
-//   v.x = (le[xaxis] - vi[xaxis]) * rx.align - of[xaxis] - lo[xaxis];
-//   v.y = (le[yaxis] - vi[yaxis]) * ry.align - of[yaxis] - lo[yaxis];
-//   v.z = Coord(0);
   v.x = settings[xaxis].lvalue - settings[xaxis].lower;
   v.y = settings[yaxis].lvalue - settings[yaxis].lower;
   v.z = 0.;

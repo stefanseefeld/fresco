@@ -310,7 +310,7 @@ Controller_ptr WidgetKitImpl::panner(const Color &bg, BoundedRange_ptr x, Bounde
   Panner *panner = new Panner(x, y);
   panner->_obj_is_ready(_boa());
   panner->body(Graphic_var(inset(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.)), bg, true)));
-  Controller_var thumb = dragger(Graphic_var(Graphic::_nil()), Command_var(panner->drag()));
+  Controller_var thumb = dragger(Graphic_var(outset(Graphic_var(Graphic::_nil()), bg, true)), Command_var(panner->drag()));
   panner->init(thumb);
   return panner->_this();
 }
@@ -321,9 +321,9 @@ Controller_ptr WidgetKitImpl::scrollbar(const Color &bg, BoundedRange_ptr x, Axi
   scrollbar->_obj_is_ready(_boa());
   Graphic_var body = a == xaxis ?
     lk->fixedAxis(Graphic_var(Graphic::_nil()), yaxis, 200.) :
-    lk->fixedAxis(Graphic_var(Graphic::_nil()), xaxis, 200.);    
+    lk->fixedAxis(Graphic_var(Graphic::_nil()), xaxis, 200.);
   scrollbar->body(Graphic_var(inset(body, bg, true)));
-  Controller_var thumb = dragger(Graphic_var(Graphic::_nil()), Command_var(scrollbar->drag()));
+  Controller_var thumb = dragger(Graphic_var(outset(Graphic_var(Graphic::_nil()), bg, true)), Command_var(scrollbar->drag()));
   scrollbar->init(thumb);
   return scrollbar->_this();
 }

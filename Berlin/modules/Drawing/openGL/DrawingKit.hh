@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -45,9 +45,9 @@ public:
   ~GLDrawingKit();
 
   virtual void transformation(Transform_ptr t) { DrawingKitBase::transformation(t);}
-  virtual Transform_ptr transformation() { return tr->_this();}
+  virtual Transform_ptr transformation() { return Transform::_duplicate(tr);}
   virtual void clipping(Region_ptr r) { DrawingKitBase::clipping(r);}
-  virtual Region_ptr clipping() { return cl->_this();}
+  virtual Region_ptr clipping() { return Region::_duplicate(cl);}
   virtual void foreground(const Color &c) { DrawingKitBase::foreground(c);}
   virtual Color foreground() { return fg;}
   virtual void pointSize(Coord c) { DrawingKitBase::pointSize(c);}
@@ -104,8 +104,8 @@ public:
   GGI::Drawable *drawable;
   GGIMesaContext context;
   Mutex mutex;
-  TransformImpl *tr;
-  RegionImpl    *cl;
+  Transform_var  tr;
+  Region_var     cl;
   Color          fg;
   Coord          ps;
   Coord          lw;
