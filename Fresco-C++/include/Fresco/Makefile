@@ -30,7 +30,7 @@ rpath	= $(lpath)
 
 include $(cpath)/local.mk
 
-CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I.
+CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I. -I..
 CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
@@ -60,7 +60,7 @@ DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
 STATSRC	= $(patsubst %.idl, %SK.cc, $(DYNINT)) $(patsubst %.idl, %SK.cc, $(STATINT))
 LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
 
-UTIL	= Warsaw.cc
+UTIL	= Warsaw.cc Unicode.cc
 
 SRC	= $(DYNSRC) $(STATSRC) $(LCSRC) $(UTIL)
 
