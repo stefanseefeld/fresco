@@ -35,44 +35,45 @@
 class DrawTraversalImpl : public virtual POA_Fresco::DrawTraversal,
                           public TraversalImpl
 {
-public:
-  //. Generates a DrawTraversal-Object that will start it the given graphic. It
-  //. will consider anything that is inside or intersects the given Region
-  //. to be damaged. The Region is 'watched', it does not matter where it is
-  //. at this time: It will be reevaluated for each traversal. The given
-  //. Transformation will be used on all objects encountered (in addition to
-  //. all the other transformations that might be found during the Traversal).
-  //. Any graphic in need of redrawing will do so using the given DrawingKit.
-  DrawTraversalImpl(Fresco::Graphic_ptr, Fresco::Region_ptr,
-		    Fresco::Transform_ptr, Fresco::DrawingKit_ptr);
-  DrawTraversalImpl(const DrawTraversalImpl &);
-  virtual ~DrawTraversalImpl();
-
-  //. This method is called by the ScreenManager just before a traversal.
-  //. This means the stack contains a single entry. It is this entry which
-  //. this method modifies...
-  void damage(Fresco::Region_ptr);
-
-  virtual CORBA::Boolean intersects_allocation();
-  virtual CORBA::Boolean intersects_region(Fresco::Region_ptr);
-
-  virtual void traverse_child(Fresco::Graphic_ptr, Fresco::Tag,
-			      Fresco::Region_ptr, Fresco::Transform_ptr);
-  virtual void visit(Fresco::Graphic_ptr);
-  virtual Fresco::Traversal::order direction();
-  virtual CORBA::Boolean ok();
-  virtual Fresco::DrawingKit_ptr drawing();
-
-  //. Saves the DrawingKit's state and sets it to sane values for
-  //. the DrawTraversal.
-  void init();
-  //. Restores the DrawingKit's state prior to the DrawTraversal.
-  void finish();
-private:
-  Fresco::DrawingKit_var     _drawing;
-  Fresco::Region_var         _clipping;
-  Impl_var<TransformImpl>    _id;
-  Fresco::DrawTraversal_var __this;
+  public:
+    //. Generates a DrawTraversal-Object that will start it the given
+    //. graphic. It will consider anything that is inside or intersects
+    //. the given Region to be damaged. The Region is 'watched', it does
+    //. not matter where it is at this time: It will be reevaluated for
+    //. each traversal. The given Transformation will be used on all
+    //. objects encountered (in addition to all the other transformations
+    //. that might be found during the Traversal). Any graphic in need of
+    //. redrawing will do so using the given DrawingKit.
+    DrawTraversalImpl(Fresco::Graphic_ptr, Fresco::Region_ptr,
+		      Fresco::Transform_ptr, Fresco::DrawingKit_ptr);
+    DrawTraversalImpl(const DrawTraversalImpl &);
+    virtual ~DrawTraversalImpl();
+    
+    //. This method is called by the ScreenManager just before a traversal.
+    //. This means the stack contains a single entry. It is this entry which
+    //. this method modifies...
+    void damage(Fresco::Region_ptr);
+    
+    virtual CORBA::Boolean intersects_allocation();
+    virtual CORBA::Boolean intersects_region(Fresco::Region_ptr);
+    
+    virtual void traverse_child(Fresco::Graphic_ptr, Fresco::Tag,
+				Fresco::Region_ptr, Fresco::Transform_ptr);
+    virtual void visit(Fresco::Graphic_ptr);
+    virtual Fresco::Traversal::order direction();
+    virtual CORBA::Boolean ok();
+    virtual Fresco::DrawingKit_ptr drawing();
+    
+    //. Saves the DrawingKit's state and sets it to sane values for
+    //. the DrawTraversal.
+    void init();
+    //. Restores the DrawingKit's state prior to the DrawTraversal.
+    void finish();
+  private:
+    Fresco::DrawingKit_var     my_drawing;
+    Fresco::Region_var         my_clipping;
+    Impl_var<TransformImpl>    my_id;
+    Fresco::DrawTraversal_var  my_this;
 };
 
 #endif 

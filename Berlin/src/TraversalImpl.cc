@@ -38,141 +38,148 @@ using namespace Fresco;
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr a, Transform_ptr t)
 {
-  Trace trace("TraversalImpl::TraversalImpl");
-  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-  allocation->copy(a);
-  Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
-  transform->copy(t);
-  push(g, 0, allocation._retn(), transform._retn());
+    Trace trace("TraversalImpl::TraversalImpl");
+    Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+    allocation->copy(a);
+    Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
+    transform->copy(t);
+    push(g, 0, allocation._retn(), transform._retn());
 }
 
-TraversalImpl::TraversalImpl(const TraversalImpl &traversal)
-  : _stack(traversal.size())
+TraversalImpl::TraversalImpl(const TraversalImpl &traversal) :
+    my_stack(traversal.size())
 {
-  Trace trace("TraversalImpl::TraversalImpl(const TraversalImpl &)");
-  // explicitely copy the stack so we are the owner and can delete it in the destructor
-  stack_t::iterator i = _stack.begin();
-  stack_t::const_iterator j = traversal._stack.begin();
-  for (; i != _stack.end(); ++i, ++j)
+    Trace trace("TraversalImpl::TraversalImpl(const TraversalImpl &)");
+    // explicitely copy the stack so we are the owner and can delete it
+    // in the destructor
+    my_stack.reserve(traversal.my_stack.size());
+    stack_t::iterator i = my_stack.begin();
+    stack_t::const_iterator j = traversal.my_stack.begin();
+    for (; i != my_stack.end(); ++i, ++j)
     {
-      (*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
-      (*i).id      = (*j).id;
-      (*i).allocation = Provider<RegionImpl>::provide();
-      *(*i).allocation = *(*j).allocation;
-      (*i).transformation = Provider<TransformImpl>::provide();
-      *(*i).transformation = *(*j).transformation;
+	(*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
+	(*i).id      = (*j).id;
+	(*i).allocation = Provider<RegionImpl>::provide();
+	*(*i).allocation = *(*j).allocation;
+	(*i).transformation = Provider<TransformImpl>::provide();
+	*(*i).transformation = *(*j).transformation;
     };
 }
 
 TraversalImpl::~TraversalImpl()
 {
-  clear();
-  State &state = _stack.front();
-  CORBA::release(state.graphic);
-  Provider<RegionImpl>::adopt(state.allocation);
-  Provider<TransformImpl>::adopt(state.transformation);
+    clear();
+    State &state = my_stack.front();
+    CORBA::release(state.graphic);
+    Provider<RegionImpl>::adopt(state.allocation);
+    Provider<TransformImpl>::adopt(state.transformation);
 }
 
 TraversalImpl &TraversalImpl::operator = (const TraversalImpl &traversal)
 {
-  Trace trace("TraversalImpl::operator = (const TraversalImpl &)");
-  clear();
-  // explicitely copy the stack so we are the owner and can delete it in the destructor
-  _stack.resize(traversal._stack.size());
-  stack_t::iterator i = _stack.begin();
-  stack_t::const_iterator j = traversal._stack.begin();
-  if (i == _stack.end() || j == traversal._stack.end()) return *this;
-  for (++i, ++j; i != _stack.end(); ++i, ++j)
+    Trace trace("TraversalImpl::operator = (const TraversalImpl &)");
+    clear();
+    // explicitely copy the stack so we are the owner and can delete it
+    // in the destructor
+    my_stack.resize(traversal.my_stack.size());
+    stack_t::iterator i = my_stack.begin();
+    stack_t::const_iterator j = traversal.my_stack.begin();
+    if (i == my_stack.end() || j == traversal.my_stack.end()) return *this;
+    for (++i, ++j; i != my_stack.end(); ++i, ++j)
     {
-      (*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
-      (*i).id      = (*j).id;
-      (*i).allocation = Provider<RegionImpl>::provide();
-      *(*i).allocation = *(*j).allocation;
-      (*i).transformation = Provider<TransformImpl>::provide();
-      *(*i).transformation = *(*j).transformation;
+	(*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
+	(*i).id      = (*j).id;
+	(*i).allocation = Provider<RegionImpl>::provide();
+	*(*i).allocation = *(*j).allocation;
+	(*i).transformation = Provider<TransformImpl>::provide();
+	*(*i).transformation = *(*j).transformation;
     };
-  return *this;
+    return *this;
 }
 
 Region_ptr TraversalImpl::current_allocation()
 {
-  Trace trace("TraversalImpl::current_allocation");
-  return _stack.back().allocation->_this();
+    Trace trace("TraversalImpl::current_allocation");
+    return my_stack.back().allocation->_this();
 }
 
 Transform_ptr TraversalImpl::current_transformation() 
 {
-  Trace trace("TraversalImpl::current_transformation");
-  return _stack.back().transformation->_this();
+    Trace trace("TraversalImpl::current_transformation");
+    return my_stack.back().transformation->_this();
 }
 
 Graphic_ptr TraversalImpl::current_graphic()
 {
-  Trace trace("TraversalImpl::current_graphic");
-  return Graphic::_duplicate(_stack.back().graphic);
+    Trace trace("TraversalImpl::current_graphic");
+    return Graphic::_duplicate(my_stack.back().graphic);
 }
 
-CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin) 
+CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper,
+				     Vertex &origin) 
 {
-  Trace trace("TraversalImpl::bounds");
-  _stack.back().allocation->bounds(lower, upper);
-  return true;
+    Trace trace("TraversalImpl::bounds");
+    my_stack.back().allocation->bounds(lower, upper);
+    return true;
 }
 
 void TraversalImpl::push(Graphic_ptr g, Tag id, RegionImpl *r, TransformImpl *t)
 {
-  Trace trace("TraversalImpl::push");
-  // We do not own anything but we push onto the stack.
-  // Exception: The transformation at the very first push. That won't get
-  // popped, so that's OK;-)
-  _stack.push_back(State(g, id, r, t));
+    Trace trace("TraversalImpl::push");
+    // We do not own anything but we push onto the stack.
+    // Exception: The transformation at the very first push. That won't get
+    // popped, so that's OK;-)
+    my_stack.push_back(State(g, id, r, t));
 }
 
 void TraversalImpl::pop()
 {
-  Trace trace("TraversalImpl::pop");
-  // We do not own anything, so we don't clean up after ourselves.
-  _stack.erase(_stack.end() - 1);
+    Trace trace("TraversalImpl::pop");
+    // We do not own anything, so we don't clean up after ourselves.
+    my_stack.erase(my_stack.end() - 1);
 }
 
 void TraversalImpl::update()
 {
-  Trace trace("TraversalImpl::update");
-  if (_stack.size() == 1) return;
-  stack_t::iterator parent = _stack.begin();
-  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-  *allocation = *(*parent).allocation;
-  Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
-  *transformation = *(*parent).transformation;
-  Allocation::Info info;
-  info.allocation = allocation->_this();
-  info.transformation = transformation->_this();
-  for (stack_t::iterator child = parent + 1; child != _stack.end(); ++parent, ++child)
+    Trace trace("TraversalImpl::update");
+    if (my_stack.size() == 1) return;
+    stack_t::iterator parent = my_stack.begin();
+    Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+    *allocation = *(*parent).allocation;
+    Lease_var<TransformImpl>
+	transformation(Provider<TransformImpl>::provide());
+    *transformation = *(*parent).transformation;
+    Allocation::Info info;
+    info.allocation = allocation->_this();
+    info.transformation = transformation->_this();
+    for (stack_t::iterator child = parent + 1;
+	 child != my_stack.end();
+	 ++parent, ++child)
     {
-      // recompute the allocation info for the child, given the (just updated)
-      // allocation for the parent
-      (*parent).graphic->allocate((*child).id, info);
-      *(*child).allocation = *allocation;
-      *(*child).transformation = *transformation;
+	// recompute the allocation info for the child, given the (just
+	// updated) allocation for the parent
+	(*parent).graphic->allocate((*child).id, info);
+	*(*child).allocation = *allocation;
+	*(*child).transformation = *transformation;
     }
 }
 
 void TraversalImpl::clear()
 {
-  // DO NOT CALL DURING A TRAVERSAL.
-
-  // After the Traversal is done it is empty anyway (except for the
-  // very first push done in the constructor), so we won't
-  // delete anything we do not own. If there is something left, then
-  // we were a momento, a deep copy of another partial
-  // Traversal: We own everything and must release it on our
-  // own.
-  if (_stack.begin() == _stack.end()) return;
-  for (stack_t::iterator i = _stack.begin() + 1; i != _stack.end(); ++i)
+    // DO NOT CALL DURING A TRAVERSAL.
+    
+    // After the Traversal is done it is empty anyway (except for the
+    // very first push done in the constructor), so we won't
+    // delete anything we do not own. If there is something left, then
+    // we were a momento, a deep copy of another partial
+    // Traversal: We own everything and must release it on our
+    // own.
+    if (my_stack.begin() == my_stack.end()) return;
+    for (stack_t::iterator i = my_stack.begin() + 1; i != my_stack.end(); ++i)
     {
-      CORBA::release((*i).graphic);
-      Provider<RegionImpl>::adopt((*i).allocation);
-      Provider<TransformImpl>::adopt((*i).transformation);
-    };
-  _stack.erase(_stack.begin() + 1, _stack.end());
+	CORBA::release((*i).graphic);
+	Provider<RegionImpl>::adopt((*i).allocation);
+	Provider<TransformImpl>::adopt((*i).transformation);
+    }
+    my_stack.erase(my_stack.begin() + 1, my_stack.end());
 }
