@@ -28,7 +28,7 @@ class Pulldown : public WindowImpl
 {
 public:
   virtual void loseFocus(Warsaw::Input::Device);
-  virtual void map();
+  virtual void mapped(CORBA::Boolean);
 };
 
 #endif

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,32 +19,19 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_Window_idl
-#define _Warsaw_Window_idl
+#ifndef _CommandImpl_hh
+#define _CommandImpl_hh
 
-#include <Warsaw/Controller.idl>
-#include <Warsaw/Stage.idl>
+#include <Warsaw/config.hh>
+#include <Warsaw/Command.hh>
+#include <Berlin/ServantBase.hh>
 
-module Warsaw
+class CommandImpl : public virtual POA_Warsaw::Command,
+		    public virtual ServantBase
 {
-  interface Command;
-  
-  //. a Window is a top level controller, i.e. one which
-  //. is directly contained in the Desktop. It contains
-  //. methods to manipulate its position in the Desktop.
-  interface Window : Controller
-    {
-      const short left = 1;
-      const short right = 2;
-      const short top = 4;
-      const short bottom = 8;
-      
-      attribute Vertex position;
-      attribute Vertex size;
-      attribute Stage::Index layer;
-      attribute boolean mapped;
-    };
-  
+public:
+  virtual void execute(const CORBA::Any &) = 0;
+  virtual void destroy() { deactivate();}
 };
 
 #endif

@@ -22,6 +22,7 @@
 #ifndef _Warsaw_DesktopKit_idl
 #define _Warsaw_DesktopKit_idl
 
+#include <Warsaw/Types.idl>
 #include <Warsaw/Kit.idl>
 
 module Warsaw
@@ -29,6 +30,7 @@ module Warsaw
   interface Controller;
   interface Window;
   interface Desktop;
+  interface Command;
   
   /*
    * entry point for Moscow :
@@ -51,6 +53,12 @@ module Warsaw
       Window  shell(in Controller g);
       Window  transient(in Controller g);
       Window  pulldown(in Controller g);
+
+      Command move(in Window w);
+      Command resize(in Window w);
+      Command moveResize(in Window w, in Alignment x, in Alignment y, in short b);
+      Command relayer(in Window w);
+      Command map(in Window w, in boolean f);
     };
 };
 

@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath)
 LIBS	= -lPrague -lBerlin
 
-SRC	= WindowImpl.cc Pulldown.cc DesktopKitImpl.cc
+SRC	= WindowImpl.cc Pulldown.cc Manipulator.cc DesktopKitImpl.cc
 
 TARGET	= $(mpath)/libDesktop.so
 

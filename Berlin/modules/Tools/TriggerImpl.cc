@@ -29,6 +29,26 @@
 using namespace Prague;
 using namespace Warsaw;
 
+TriggerImpl::TriggerImpl() : ControllerImpl(false) {}
+TriggerImpl::~TriggerImpl()
+{
+  Trace trace("Trigger::~Trigger");
+  if (!CORBA::is_nil(command)) command->destroy();
+}
+void TriggerImpl::action(Command_ptr c)
+{
+  Trace trace("TriggerImpl::action");
+  MutexGuard guard(mutex);
+  if (!CORBA::is_nil(command)) command->destroy();
+  command = Command::_duplicate(c);
+}
+
+Command_ptr TriggerImpl::action()
+{
+  MutexGuard guard(mutex);
+  return Command::_duplicate(command);
+}
+
 void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
   /*
@@ -57,4 +77,11 @@ void TriggerImpl::keyPress(const Input::Event &event)
 	}
     }
   else ControllerImpl::keyPress(event);
+}
+
+void TriggerImpl::execute(const CORBA::Any &any)
+{
+  Trace trace("TriggerImpl::execute");
+  MutexGuard guard(mutex);
+  if (!CORBA::is_nil(command)) command->execute(any);
 }

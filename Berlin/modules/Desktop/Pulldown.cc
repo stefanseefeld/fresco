@@ -23,11 +23,14 @@
 
 void Pulldown::loseFocus(Warsaw::Input::Device)
 {
-  unmap();
+  mapped(false);
 }
 
-void Pulldown::map()
+void Pulldown::mapped(CORBA::Boolean flag)
 {
-  if (requestFocus(Warsaw::Controller_var(_this()), 1))
-    WindowImpl::map();
+  /*
+   * make sure we get focus before we are mapped
+   */
+  if (!flag || requestFocus(Warsaw::Controller_var(_this()), 1))
+    WindowImpl::mapped(flag);
 }

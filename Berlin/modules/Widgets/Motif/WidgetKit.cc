@@ -29,6 +29,7 @@
 #include <Warsaw/Command.hh>
 #include <Warsaw/Viewport.hh>
 #include <Warsaw/Selection.hh>
+#include <Berlin/CommandImpl.hh>
 #include "Widget/Motif/WidgetKit.hh"
 #include "Widget/Motif/Gauge.hh"
 #include "Widget/Motif/Slider.hh"
@@ -41,7 +42,7 @@ using namespace Warsaw;
 namespace Motif
 {
 
-class Forward : public WidgetKit::CommandImpl
+class Forward : public CommandImpl
 {
 public:
   Forward(BoundedRange_ptr m) : model(RefCount_var<BoundedRange>::increment(m)) {}
@@ -50,7 +51,7 @@ private:
   RefCount_var<BoundedRange> model;
 };
 
-class Backward : public WidgetKit::CommandImpl
+class Backward : public CommandImpl
 {
 public:
   Backward(BoundedRange_ptr m) : model(RefCount_var<BoundedRange>::increment(m)) {}

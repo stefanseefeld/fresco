@@ -23,16 +23,13 @@
 #ifndef _Warsaw_Command_idl
 #define _Warsaw_Command_idl
 
-#include <Warsaw/RefCountBase.idl>
-
 module Warsaw
 {
-  interface Command;
-
   //. commands are anonymous encapsulated actions. 
-  interface Command : RefCountBase
+  interface Command
     {
       void execute(in any a);
+      void destroy();
     };
   
   //. a composite command

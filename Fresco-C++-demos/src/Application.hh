@@ -40,7 +40,6 @@
 #include <Warsaw/Unicode.hh>
 #include <Warsaw/Selection.hh>
 #include <Warsaw/Choice.hh>
-#include <Berlin/ImplVar.hh>
 #include <unistd.h>
 #include <iostream>
 #include <vector>
@@ -61,34 +60,16 @@ class Application
     Warsaw::Command_var settings;
   };
   typedef vector<Item> list_t;
-  class RefCountBaseImpl : public virtual POA_Warsaw::Command,
-			   public virtual PortableServer::RefCountServantBase
-  {
-  public:
-    RefCountBaseImpl() : refcount(1) {}
-    virtual void increment() { refcount++;}
-    virtual void decrement() { if (!--refcount) deactivate();}
-  private:
-    void deactivate()
-    {
-      PortableServer::POA_var poa = _default_POA();
-      PortableServer::ObjectId *oid = poa->servant_to_id(this);
-      poa->deactivate_object(*oid);
-      delete oid;
-    }
-    int refcount;
-  };
-  class Mapper : public RefCountBaseImpl
-  {
-  public:
-    Mapper(Application::list_t &d, Warsaw::Selection_ptr s) : demos(d), selection(Warsaw::Selection::_duplicate(s)) {}
-    virtual void execute(const CORBA::Any &);
-  private:
-    Application::list_t &demos;
-    Warsaw::Selection_var selection;
-  };
+  class Mapper;
   friend class Mapper;
 public:
+  class CommandImpl : public virtual POA_Warsaw::Command,
+                      public virtual PortableServer::RefCountServantBase
+  {
+  public:
+    virtual void execute(const CORBA::Any &) = 0;
+    virtual void destroy();
+  };
   Application(Warsaw::ServerContext_ptr);
   Warsaw::TextKit_ptr text() { return Warsaw::TextKit::_duplicate(tk);}
   Warsaw::DesktopKit_ptr desktop() { return Warsaw::DesktopKit::_duplicate(dk);}
@@ -117,7 +98,7 @@ private:
   Warsaw::Graphic_var vbox;
   Warsaw::Choice_var  choice;
   list_t demos;
-  Impl_var<Mapper> mapper;
+  Mapper *mapper;
   Warsaw::Color background;
   Warsaw::Graphic_var done;
   Warsaw::Graphic_var settings;

@@ -22,15 +22,14 @@
 
 #include "Widget/Motif/Panner.hh"
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/CommandImpl.hh>
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Motif;
 
-class Panner::Dragger : public virtual POA_Warsaw::Command,
-	                public virtual PortableServer::RefCountServantBase,
-	                public virtual RefCountBaseImpl
+class Panner::Dragger : public CommandImpl
 {
 public:
   Dragger(BoundedRange_ptr x, BoundedRange_ptr y)

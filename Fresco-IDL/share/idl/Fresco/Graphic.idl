@@ -41,7 +41,7 @@ module Warsaw
       Graphic child();
       void next();
       void prev();
-      void dispose();
+      void destroy();
     };
   
   //. The Graphic interface defines the common operations for all objects

@@ -30,6 +30,24 @@
 using namespace Prague;
 using namespace Warsaw;
 
+class Application::Mapper : public Application::CommandImpl
+{
+public:
+  Mapper(Application::list_t &d, Warsaw::Selection_ptr s) : demos(d), selection(Warsaw::Selection::_duplicate(s)) {}
+  virtual void execute(const CORBA::Any &);
+private:
+  Application::list_t &demos;
+  Warsaw::Selection_var selection;
+};
+
+void Application::CommandImpl::destroy()
+{
+  PortableServer::POA_var poa = _default_POA();
+  PortableServer::ObjectId *oid = poa->servant_to_id(this);
+  poa->deactivate_object(*oid);
+  delete oid;
+}
+
 void Application::Mapper::execute(const CORBA::Any &)
 {
   Selection::Items *items = selection->toggled();
@@ -41,7 +59,7 @@ void Application::Mapper::execute(const CORBA::Any &)
     if (t == (*i).id) (*i).mapper->execute(any);
 }
 
-class ExitCommand : public Application::RefCountBaseImpl
+class ExitCommand : public Application::CommandImpl
 {
  public:
   void execute(const CORBA::Any &) { exit(0);}
@@ -113,8 +131,8 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   group->appendController(button1);
   group->appendController(button2);
   Window_var window = dk->transient(group);
-  button1->action(Command_var(window->map(false)));
-  item.mapper = window->map(true);
+  button1->action(Command_var(dk->map(window, false)));
+  item.mapper = dk->map(window, true);
   demos.push_back(item);
 }
 
@@ -252,7 +270,7 @@ Application::Item Application::makeItem(const Unicode::String &name)
   outset.brightness(0.5); outset._d(ToolKit::outset);
   Controller_var root = ttk->group(Graphic_var(ttk->frame(Graphic_var(lk->margin(vbox, 100.)), 20., outset, true)));
   Window_var window = dk->transient(root);
-  item.settings = window->map(true);
-  done->action(Command_var(window->map(false)));
+  item.settings = dk->map(window, true);
+  done->action(Command_var(dk->map(window, false)));
   return item;
 }

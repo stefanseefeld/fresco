@@ -23,13 +23,12 @@
 #include "Widget/Motif/Scrollbar.hh"
 #include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/CommandImpl.hh>
 
 using namespace Warsaw;
 using namespace Motif;
 
-class Scrollbar::Dragger : public virtual POA_Warsaw::Command,
-		           public virtual PortableServer::RefCountServantBase,
-	                   public virtual RefCountBaseImpl
+class Scrollbar::Dragger : public CommandImpl
 {
 public:
   Dragger(BoundedRange_ptr v, Axis a) : value(RefCount_var<BoundedRange>::increment(v)), axis(a) {}

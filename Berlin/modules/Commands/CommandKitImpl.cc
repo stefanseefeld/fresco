@@ -22,15 +22,53 @@
  */
 
 #include <Berlin/ImplVar.hh>
+#include <Berlin/CommandImpl.hh>
 #include "Command/CommandKitImpl.hh"
-#include "Command/CommandImpl.hh"
 #include "Command/TelltaleImpl.hh"
 #include "Command/BoundedValueImpl.hh"
 #include "Command/BoundedRangeImpl.hh"
 #include "Command/TextBufferImpl.hh"
 #include "Command/StreamBufferImpl.hh"
+#include <string>
+#include <vector>
 
 using namespace Warsaw;
+
+class MacroCommandImpl : public virtual POA_Warsaw::MacroCommand,
+			 public CommandImpl
+{
+public:
+  virtual ~MacroCommandImpl()
+  {
+    for (vector<Warsaw::Command_var>::iterator i = commands.begin(); i != commands.end(); ++i)
+      (*i)->destroy();
+  }
+  virtual void append(Warsaw::Command_ptr c)
+  {
+    commands.push_back(Warsaw::Command::_duplicate(c));
+  }
+  virtual void prepend(Warsaw::Command_ptr c)
+  {
+    commands.insert(commands.begin(), Warsaw::Command::_duplicate(c));
+  }
+  virtual void execute(const CORBA::Any &any)
+    {
+      for (vector<Warsaw::Command_var>::iterator i = commands.begin(); i != commands.end(); ++i)
+	(*i)->execute(any);
+    }
+ private:
+  vector<Warsaw::Command_var> commands;
+};
+
+class LogCommand : public CommandImpl
+{
+public:
+  LogCommand(ostream &oss, const char *t) : os(oss), text(t) {}
+  virtual void execute(const CORBA::Any &) { os << text << endl;}
+ private:
+  ostream &os;
+  string text;
+};
 
 CommandKitImpl::CommandKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p) {}

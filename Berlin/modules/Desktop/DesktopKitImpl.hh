@@ -45,12 +45,17 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   virtual Warsaw::Window_ptr shell(Warsaw::Controller_ptr);
   virtual Warsaw::Window_ptr transient(Warsaw::Controller_ptr);
   virtual Warsaw::Window_ptr pulldown(Warsaw::Controller_ptr);
+
+  virtual Warsaw::Command_ptr move(Warsaw::Window_ptr);
+  virtual Warsaw::Command_ptr resize(Warsaw::Window_ptr);
+  virtual Warsaw::Command_ptr moveResize(Warsaw::Window_ptr, Warsaw::Alignment, Warsaw::Alignment, CORBA::Short);
+  virtual Warsaw::Command_ptr relayer(Warsaw::Window_ptr);
+  virtual Warsaw::Command_ptr map(Warsaw::Window_ptr, CORBA::Boolean);
  private:
   Warsaw::Desktop_var   desktop;
   Warsaw::LayoutKit_var layout;
   Warsaw::ToolKit_var   tool;
   Warsaw::WidgetKit_var widget;
-  vector<WindowImpl *> windows;
 };
 
 #endif

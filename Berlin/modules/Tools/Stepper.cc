@@ -42,6 +42,7 @@ Stepper::Stepper()
 
 Stepper::~Stepper()
 {
+  Trace trace("Stepper::~Stepper");
   stop();
   delete notifier;
 }

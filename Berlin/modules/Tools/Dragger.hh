@@ -38,7 +38,7 @@ public:
   virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
 private:
   Warsaw::Vertex offset;
-  RefCount_var<Warsaw::Command> command;
+  Warsaw::Command_var command;
 };
 
 #endif

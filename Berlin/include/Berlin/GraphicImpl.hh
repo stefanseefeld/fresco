@@ -98,4 +98,11 @@ private:
   Prague::Mutex parentMutex;
 };
 
+class GraphicIteratorImpl : public virtual POA_Warsaw::GraphicIterator,
+			    public virtual ServantBase
+{
+public:
+  virtual void destroy() { deactivate();}
+};
+
 #endif

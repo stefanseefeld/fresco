@@ -41,11 +41,6 @@ class WidgetKit : public virtual POA_Warsaw::WidgetKit,
 		  public KitImpl
 {
  public:
-  class CommandImpl : public virtual POA_Warsaw::Command,
-		      public virtual PortableServer::RefCountServantBase,
-		      public virtual RefCountBaseImpl
-  {};
-
   WidgetKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~WidgetKit();
   virtual void bind(Warsaw::ServerContext_ptr);

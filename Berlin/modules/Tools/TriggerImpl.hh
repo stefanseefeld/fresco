@@ -22,6 +22,7 @@
 #ifndef _TriggerImpl_hh
 #define _TriggerImpl_hh
 
+#include <Prague/Sys/Thread.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Trigger.hh>
 #include <Warsaw/Command.hh>
@@ -32,15 +33,16 @@ class TriggerImpl : public virtual POA_Warsaw::Trigger,
 		    public ControllerImpl
 {
  public:
-  TriggerImpl() : ControllerImpl(false) {}
-  ~TriggerImpl() {}
-  void action(Warsaw::Command_ptr c) { command = RefCount_var<Warsaw::Command>::increment(c);}
-  Warsaw::Command_ptr action() { return RefCount_var<Warsaw::Command>::increment(command);}
+  TriggerImpl();
+  ~TriggerImpl();
+  void action(Warsaw::Command_ptr);
+  Warsaw::Command_ptr action();
   virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual void keyPress(const Warsaw::Input::Event &);
-  void execute(const CORBA::Any &any) { if (!CORBA::is_nil(command)) command->execute(any);}
+  void execute(const CORBA::Any &);
  private:
-  RefCount_var<Warsaw::Command> command;
+  Prague::Mutex mutex;
+  Warsaw::Command_var command;
 };
 
 #endif

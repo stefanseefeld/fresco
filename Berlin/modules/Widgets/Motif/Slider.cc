@@ -24,6 +24,7 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/DrawTraversal.hh>
+#include <Berlin/CommandImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
@@ -31,9 +32,7 @@
 using namespace Warsaw;
 using namespace Motif;
 
-class Slider::Dragger : public virtual POA_Warsaw::Command,
-		        public virtual PortableServer::RefCountServantBase,
-	                public virtual RefCountBaseImpl
+class Slider::Dragger : public CommandImpl
 {
 public:
   Dragger(BoundedValue_ptr v, Axis a) : value(RefCount_var<BoundedValue>::increment(v)), scale(1.), axis(a) {}

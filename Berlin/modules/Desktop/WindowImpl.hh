@@ -25,97 +25,35 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Window.hh>
-#include <Warsaw/Command.hh>
 #include <Warsaw/Desktop.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class UnmappedStageHandle;
-
 class WindowImpl : public virtual POA_Warsaw::Window,
 		   public ControllerImpl
 {
-  class Manipulator : public virtual POA_Warsaw::Command,
-		      public virtual PortableServer::RefCountServantBase,
-		      public virtual RefCountBaseImpl
-  {
-  public:
-    virtual ~Manipulator() { Prague::Trace trace("WindowImpl::Manipulator::~Manipulator");}
-    void bind(Warsaw::StageHandle_ptr h) { handle = Warsaw::StageHandle::_duplicate(h);}
-    virtual void execute(const CORBA::Any &) = 0;
-  protected:
-    Warsaw::StageHandle_var handle;
-  };
-  class Mapper : public virtual POA_Warsaw::Command,
-		 public virtual PortableServer::RefCountServantBase,
-		 public virtual RefCountBaseImpl
-  {
-  public:
-    Mapper(WindowImpl *w, bool f) : window(w), flag(f) {}
-    virtual void execute(const CORBA::Any &);
-  private:
-    WindowImpl *window;
-    bool flag;
-  };
-  typedef vector<Manipulator *> mtable_t;
- public:
+  class UnmappedStageHandle;
+public:
   WindowImpl();
   virtual ~WindowImpl();
   virtual void needResize();
   virtual CORBA::Boolean requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
   void insert(Warsaw::Desktop_ptr, bool);
-  virtual CORBA::Boolean mapped() { Prague::MutexGuard guard(mutex); return !unmapped;}
-  virtual Warsaw::Command_ptr move();
-  virtual Warsaw::Command_ptr resize();
-  virtual Warsaw::Command_ptr moveResize(Warsaw::Alignment, Warsaw::Alignment, CORBA::Short);
-  virtual Warsaw::Command_ptr relayer();
-  virtual Warsaw::Command_ptr map(CORBA::Boolean);
-//   virtual void pick(PickTraversal_ptr);
-  virtual void map();
-  virtual void unmap();
-protected:
-  virtual void activateComposite();
+  virtual Warsaw::Vertex position();
+  virtual void position(const Warsaw::Vertex &);
+  virtual Warsaw::Vertex size();
+  virtual void size(const Warsaw::Vertex &);
+  virtual Warsaw::Stage::Index layer();
+  virtual void layer(Warsaw::Stage::Index);
+  virtual CORBA::Boolean mapped();
+  virtual void mapped(CORBA::Boolean);
 private:
   Warsaw::StageHandle_var handle;
   Impl_var<UnmappedStageHandle> unmapped;
-  mtable_t manipulators;
-  Impl_var<Mapper> mapper;
-  Impl_var<Mapper> unmapper;
   Prague::Mutex mutex;
   vector<Warsaw::Controller_var> focus;
-};
-
-class UnmappedStageHandle : public virtual POA_Warsaw::StageHandle,
-			    public virtual PortableServer::RefCountServantBase
-{
- public:
-  UnmappedStageHandle(Warsaw::Stage_ptr par, Warsaw::Graphic_ptr cc, const Warsaw::Vertex &pp, const Warsaw::Vertex &ss, Warsaw::Stage::Index ll)
-    : stage(Warsaw::Stage::_duplicate(par)), c(Warsaw::Graphic::_duplicate(cc)), p(pp), s(ss), l(ll) {}
-  UnmappedStageHandle(Warsaw::StageHandle_ptr handle)
-    : stage(handle->parent()),
-    c(handle->child()),
-    p(handle->position()),
-    s(handle->size()),
-    l(handle->layer())
-    {}
-  virtual ~UnmappedStageHandle() { Prague::Trace trace("UnmappedStageHandle::~UnmappedStageHandle");}
-  virtual Warsaw::Stage_ptr parent() { return Warsaw::Stage::_duplicate(stage);}
-  virtual Warsaw::Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
-  virtual void remove() {}
-  virtual Warsaw::Vertex position() { return p;}
-  virtual void position(const Warsaw::Vertex &pp) { p = pp;}
-  virtual Warsaw::Vertex size() { return s;}
-  virtual void size(const Warsaw::Vertex &ss) { s = s;}
-  virtual Warsaw::Stage::Index layer() { return l;}
-  virtual void layer(Warsaw::Stage::Index ll) { l = ll;}
- private:
-  Warsaw::Stage_var stage;
-  Warsaw::Graphic_var c;
-  Warsaw::Vertex p;
-  Warsaw::Vertex s;
-  Warsaw::Stage::Index l;
 };
 
 #endif
