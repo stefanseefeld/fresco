@@ -91,7 +91,7 @@ void RasterImpl::export(Raster::Data*& buffer)
 	encoder.encode(rpng, rinfo, data);
 }
 
-void RasterImpl::getData(Raster::Data*& buffer)
+void RasterImpl::getData(Raster::Data& buffer)
 {
 	/*
 	 * Note:  This differs from 'export' in that it returns
@@ -103,8 +103,8 @@ void RasterImpl::getData(Raster::Data*& buffer)
 	 * to come out right-side-up.
 	 */
 	// Make buffer correct size
-	buffer->length(totBytes);
+	buffer.length(totBytes);
 	
 	for (int i=0; i < totBytes; i++)
-		buffer->operator[](i) = *(data+((totBytes-1)-i));
+		buffer[i] = *(data+((totBytes-1)-i));
 }
