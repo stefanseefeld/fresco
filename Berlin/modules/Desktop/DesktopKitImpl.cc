@@ -58,7 +58,6 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   SectionLog section("DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
-  Color gray = {0.5, 0.5, 0.5, 1.0};
 
   Graphic::Requisition req;
   req.x.defined = true;
@@ -115,7 +114,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   vbox->append(tbdragger);
   vbox->append(g);
   vbox->append(hbox);
-  Graphic_var background = tool->rgb(vbox, 0.5, 0.5, 0.5);
+  Graphic_var background = tool->rgb(vbox, 0.7, 0.7, 0.7);
   window->body(background);
   /*
    * FIXME: we need to take care to include the window control elements 
@@ -190,7 +189,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   vbox->append(tbdragger);
   vbox->append(g);
   vbox->append(hbox);
-  Graphic_var background = tool->rgb(vbox, 0.5, 0.5, 0.5);
+  Graphic_var background = tool->rgb(vbox, 0.7, 0.7, 0.7);
   window->body(background);
   /*
    * FIXME: we need to take care to include the window control elements 

@@ -27,6 +27,8 @@
 // #include "Tool/Filler.hh"
 // #include "Tool/Indicator.hh"
 #include "Tool/Frame.hh"
+#include "Tool/Triangle.hh"
+#include "Tool/Diamond.hh"
 #include "Tool/TriggerImpl.hh"
 #include "Tool/Toggle.hh"
 #include "Tool/Dragger.hh"
@@ -144,6 +146,104 @@ Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Telltale::Flag 
      case convex: renderer2 = new Bevel(thickness, Bevel::convex, s2.cbrightness(), fill); break;
      case concav: renderer2 = new Bevel(thickness, Bevel::concav, s2.dbrightness(), fill); break;
      case colored: renderer2 = new ColoredFrame(thickness, s2.foreground(), fill); break;
+    }
+  DynamicFrame *f = new DynamicFrame(thickness, mask, renderer1, renderer2);
+  f->_obj_is_ready(_boa());
+  f->attach(telltale);
+  graphics.push_back(f);
+  f->body(g);
+  return f->_this();
+}
+
+Graphic_ptr ToolKitImpl::framedTriangle(Graphic_ptr g, Coord thickness, const FrameSpec &spec, CORBA::Boolean fill, Direction d)
+{
+  Frame::Renderer *renderer = 0;
+  switch (spec._d())
+    {
+     case none: renderer = new InvisibleTriangle(thickness, fill, d); break;
+     case inset: renderer = new BeveledTriangle(thickness, Bevel::inset, spec.bbrightness(), fill, d); break;
+     case outset: renderer = new BeveledTriangle(thickness, Bevel::outset, spec.abrightness(), fill, d); break;
+     case convex: renderer = new BeveledTriangle(thickness, Bevel::convex, spec.cbrightness(), fill, d); break;
+     case concav: renderer = new BeveledTriangle(thickness, Bevel::concav, spec.dbrightness(), fill, d); break;
+     case colored: renderer = new ColoredTriangle(thickness, spec.foreground(), fill, d); break;
+    }
+  Frame *f = new Frame(thickness, renderer);
+  f->_obj_is_ready(_boa());
+  graphics.push_back(f);
+  f->body(g);
+  return f->_this();
+}
+
+Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltale::Flag mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Direction d, Telltale_ptr telltale)
+{
+  Frame::Renderer *renderer1 = 0;
+  switch (s1._d())
+    {
+     case none: renderer1 = new InvisibleTriangle(thickness, fill, d); break;
+     case inset: renderer1 = new BeveledTriangle(thickness, Bevel::inset, s1.bbrightness(), fill, d); break;
+     case outset: renderer1 = new BeveledTriangle(thickness, Bevel::outset, s1.abrightness(), fill, d); break;
+     case convex: renderer1 = new BeveledTriangle(thickness, Bevel::convex, s1.cbrightness(), fill, d); break;
+     case concav: renderer1 = new BeveledTriangle(thickness, Bevel::concav, s1.dbrightness(), fill, d); break;
+     case colored: renderer1 = new ColoredTriangle(thickness, s1.foreground(), fill, d); break;
+    }
+  Frame::Renderer *renderer2 = 0;
+  switch (s2._d())
+    {
+     case none: renderer2 = new InvisibleTriangle(thickness, fill, d); break;
+     case inset: renderer2 = new BeveledTriangle(thickness, Bevel::inset, s2.bbrightness(), fill, d); break;
+     case outset: renderer2 = new BeveledTriangle(thickness, Bevel::outset, s2.abrightness(), fill, d); break;
+     case convex: renderer2 = new BeveledTriangle(thickness, Bevel::convex, s2.cbrightness(), fill, d); break;
+     case concav: renderer2 = new BeveledTriangle(thickness, Bevel::concav, s2.dbrightness(), fill, d); break;
+     case colored: renderer2 = new ColoredTriangle(thickness, s2.foreground(), fill, d); break;
+    }
+  DynamicFrame *f = new DynamicFrame(thickness, mask, renderer1, renderer2);
+  f->_obj_is_ready(_boa());
+  f->attach(telltale);
+  graphics.push_back(f);
+  f->body(g);
+  return f->_this();
+}
+
+Graphic_ptr ToolKitImpl::framedDiamond(Graphic_ptr g, Coord thickness, const FrameSpec &spec, CORBA::Boolean fill)
+{
+  Frame::Renderer *renderer = 0;
+  switch (spec._d())
+    {
+     case none: renderer = new InvisibleDiamond(thickness, fill); break;
+     case inset: renderer = new BeveledDiamond(thickness, Bevel::inset, spec.bbrightness(), fill); break;
+     case outset: renderer = new BeveledDiamond(thickness, Bevel::outset, spec.abrightness(), fill); break;
+     case convex: renderer = new BeveledDiamond(thickness, Bevel::convex, spec.cbrightness(), fill); break;
+     case concav: renderer = new BeveledDiamond(thickness, Bevel::concav, spec.dbrightness(), fill); break;
+     case colored: renderer = new ColoredDiamond(thickness, spec.foreground(), fill); break;
+    }
+  Frame *f = new Frame(thickness, renderer);
+  f->_obj_is_ready(_boa());
+  graphics.push_back(f);
+  f->body(g);
+  return f->_this();
+}
+
+Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale::Flag mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
+{
+  Frame::Renderer *renderer1 = 0;
+  switch (s1._d())
+    {
+     case none: renderer1 = new InvisibleDiamond(thickness, fill); break;
+     case inset: renderer1 = new BeveledDiamond(thickness, Bevel::inset, s1.bbrightness(), fill); break;
+     case outset: renderer1 = new BeveledDiamond(thickness, Bevel::outset, s1.abrightness(), fill); break;
+     case convex: renderer1 = new BeveledDiamond(thickness, Bevel::convex, s1.cbrightness(), fill); break;
+     case concav: renderer1 = new BeveledDiamond(thickness, Bevel::concav, s1.dbrightness(), fill); break;
+     case colored: renderer1 = new ColoredDiamond(thickness, s1.foreground(), fill); break;
+    }
+  Frame::Renderer *renderer2 = 0;
+  switch (s2._d())
+    {
+     case none: renderer2 = new InvisibleDiamond(thickness, fill); break;
+     case inset: renderer2 = new BeveledDiamond(thickness, Bevel::inset, s2.bbrightness(), fill); break;
+     case outset: renderer2 = new BeveledDiamond(thickness, Bevel::outset, s2.abrightness(), fill); break;
+     case convex: renderer2 = new BeveledDiamond(thickness, Bevel::convex, s2.cbrightness(), fill); break;
+     case concav: renderer2 = new BeveledDiamond(thickness, Bevel::concav, s2.dbrightness(), fill); break;
+     case colored: renderer2 = new ColoredDiamond(thickness, s2.foreground(), fill); break;
     }
   DynamicFrame *f = new DynamicFrame(thickness, mask, renderer1, renderer2);
   f->_obj_is_ready(_boa());

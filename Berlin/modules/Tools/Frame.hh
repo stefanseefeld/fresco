@@ -81,7 +81,7 @@ public:
   enum type { inset, outset, convex, concav};
   Bevel(Coord t, type s, Coord b, bool f) : Frame::Renderer(t, f), style(s), bright(b) {}
   virtual void draw(DrawTraversal_ptr);
-private:
+protected:
   type style;
   Coord bright;
 };
@@ -91,7 +91,7 @@ class ColoredFrame : public Frame::Renderer
 public:
   ColoredFrame(Coord t, const Color &c, bool f) : Frame::Renderer(t, f), color(c) {}
   virtual void draw(DrawTraversal_ptr);
-private:
+protected:
   Color color;
 };
 

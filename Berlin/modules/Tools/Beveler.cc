@@ -31,29 +31,29 @@
 namespace Beveler
 {
 
-void rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	  Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Coord lefti = left + thickness;
   Coord righti = right - thickness;
   Coord topi = top + thickness;
   Coord bottomi = bottom - thickness;
-  DrawingKit_var dk = dt->kit();
-  dk->saveState();
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
   Path path;
   path.length(5);
   if (fill)
     {
       Vertex lower = {left, top, 0.};
       Vertex upper = {right, bottom, 0.};
-      dk->foreground(medium);
-      dk->drawRect(lower, upper);
+      drawing->foreground(medium);
+      drawing->drawRect(lower, upper);
     }
-  dk->surfaceFillstyle(DrawingKit::solid);
+  drawing->surfaceFillstyle(DrawingKit::solid);
   /*
    * light edges
    */
-  dk->foreground(light);
+  drawing->foreground(light);
   /*
    * left edge
    */
@@ -62,7 +62,7 @@ void rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Colo
   path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
   path[3].x = left, path[3].y = bottom, path[3].z = 0.;
   path[4].x = left, path[4].y = top, path[4].z = 0.;
-  dk->drawPath(path);
+  drawing->drawPath(path);
   /*
    * top edge
    */
@@ -71,11 +71,11 @@ void rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Colo
   path[2].x = righti, path[2].y = topi, path[2].z = 0.;
   path[3].x = lefti, path[3].y = topi, path[3].z = 0.;
   path[4].x = left, path[4].y = top, path[4].z = 0.;
-  dk->drawPath(path);
+  drawing->drawPath(path);
   /*
    * dark edges
    */
-  dk->foreground(dark);
+  drawing->foreground(dark);
   /*
    * right edge
    */
@@ -84,7 +84,7 @@ void rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Colo
   path[2].x = righti, path[2].y = bottomi, path[2].z = 0.;
   path[3].x = righti, path[3].y = topi, path[3].z = 0.;
   path[4].x = right, path[4].y = top, path[4].z = 0.;
-  dk->drawPath(path);
+  drawing->drawPath(path);
   /*
    * bottom edge
    */
@@ -93,36 +93,301 @@ void rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Colo
   path[2].x = righti, path[2].y = bottomi, path[2].z = 0.;
   path[3].x = right, path[3].y = bottom, path[3].z = 0.;
   path[4].x = left, path[4].y = bottom, path[4].z = 0.;
-  dk->drawPath(path);
-  dk->restoreState();
+  drawing->drawPath(path);
+  drawing->restoreState();
 }
 
-void leftArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	       Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
+  Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
+  Vertex length = {(right - left), (bottom - top), 0.};
+
+  Coord slope = length.y / length.x / 2;
+  Coord dx = thickness * sqrt(1/(slope * slope) + 1.0);
+  Coord dy = thickness * (1 + slope);
+
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
+  
+  Path path;
+  if (fill)
+    {
+      path.length(4);
+      drawing->foreground(medium);
+      path[0].x = right, path[0].y = bottom, path[0].z = 0;
+      path[1].x = right, path[1].y = top, path[1].z = 0;
+      path[2].x = left, path[2].y = center.y, path[2].z = 0;
+      path[3] = path[0];
+      drawing->drawPath(path);
+    }
+  path.length(5);
+  /*
+   * top
+   */
+  drawing->foreground(dark);
+  path[0].x = left, path[0].y = center.y, path[0].z = 0.;
+  path[1].x = left + dx, path[1].y = center.y, path[1].z = 0.;
+  path[2].x = right - thickness, path[2].y = top + dy, path[2].z = 0;
+  path[3].x = right, path[3].y = top, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * right
+   */
+  drawing->foreground(light);
+  path[0].x = right, path[0].y = bottom, path[0].z = 0;
+  path[1].x = right, path[1].y = top, path[1].z = 0;
+  path[2].x = right - thickness, path[2].y = top + dy, path[2].z = 0;
+  path[3].x = right - thickness, path[3].y = bottom - dy, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * bottom
+   */
+  path[0].x = left, path[0].y = center.y, path[0].z = 0;
+  path[1].x = right, path[1].y = bottom, path[1].z = 0;
+  path[2].x = right - thickness, path[2].y = bottom - dy, path[2].z = 0;
+  path[3].x = left + dx, path[3].y = center.y, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  drawing->restoreState();
 }
 
-void rightArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 		Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
+  Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
+  Vertex length = {(right - left), (bottom - top), 0.};
+  Coord slope = length.y / length.x / 2;
+  Coord dx = thickness * sqrt(1/(slope * slope) + 1.0);
+  Coord dy = thickness * (1 + slope);
+
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
+
+  Path path;
+  if (fill)
+    {
+      path.length(4);
+      drawing->foreground(medium);
+      path[0].x = right, path[0].y = center.y, path[0].z = 0;
+      path[1].x = left, path[1].y = top, path[1].z = 0;
+      path[2].x = left, path[2].y = bottom, path[2].z = 0;
+      path[3] = path[0];
+      drawing->drawPath(path);
+    }
+  path.length(5);
+  /*
+   * bottom
+   */
+  drawing->foreground(light);
+  path[0].x = left, path[0].y = bottom, path[0].z = 0;
+  path[1].x = right, path[1].y = center.y, path[1].z = 0.;
+  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0.;
+  path[3].x = left + thickness, path[3].y = bottom - dy, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * left
+   */
+  drawing->foreground(dark);
+  path[0].x = left, path[0].y = top, path[0].z = 0;
+  path[1].x = left, path[1].y = bottom, path[1].z = 0;
+  path[2].x = left + thickness, path[2].y = bottom - dy, path[2].z = 0;
+  path[3].x = left + thickness, path[3].y = top + dy, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * top
+   */
+  path[0].x = right, path[0].y = center.y, path[0].z = 0;
+  path[1].x = left, path[1].y = top, path[1].z = 0;
+  path[2].x = left + thickness, path[2].y = top + dy, path[2].z = 0;
+  path[3].x = right - dx, path[3].y = center.y, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  drawing->restoreState();
 }
 
-void upArrow(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	     Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
+  Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
+  Vertex length = {(right - left), (bottom - top), 0.};
+  Coord slope = 2 * length.y / length.x;
+  Coord dy = thickness * sqrt(slope * slope + 1.0);
+  Coord dx = thickness * (1 + 1 / slope);
+
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
+
+  Path path;
+  if (fill)
+    {
+      path.length(4);
+      drawing->foreground(medium);
+      path[0].x = left, path[0].y = bottom, path[0].z = 0;
+      path[1].x = right, path[1].y = bottom, path[1].z = 0;
+      path[2].x = center.x, path[2].y = top, path[2].z = 0;
+      path[3] = path[0];
+      drawing->drawPath(path);
+    }
+  path.length(5);
+  /*
+   * left
+   */
+  drawing->foreground(light);
+  path[0].x = center.x, path[0].y = top, path[0].z = 0;
+  path[1].x = left, path[1].y = bottom, path[1].z = 0;
+  path[2].x = left + dx, path[2].y = bottom - thickness, path[2].z = 0;
+  path[3].x = center.x, path[3].y = top + dy, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * right
+   */
+  drawing->foreground(dark);
+  path[0].x = center.x, path[0].y = top, path[0].z = 0;
+  path[1].x = center.x, path[1].y = top + dy, path[1].z = 0;
+  path[2].x = right - dx, path[2].y = bottom - thickness, path[2].z = 0;
+  path[3].x = right, path[3].y = bottom, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * bottom
+   */
+  path[0].x = left, path[0].y = bottom, path[0].z = 0;
+  path[1].x = right, path[1].y = bottom, path[1].z = 0;
+  path[2].x = right - dx, path[2].y = bottom - thickness, path[2].z = 0;
+  path[3].x = left + dx, path[3].y = bottom - thickness, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  drawing->restoreState();
 }
 
-void downArrow(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	       Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
+  Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
+  Vertex length = {(right - left), (bottom - top), 0.};
+  Coord slope = 2 * length.y / length.x;
+  Coord dy = thickness * sqrt(slope * slope + 1.0);
+  Coord dx = thickness * (1 + 1 / slope);
+
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
+
+  Path path;
+  if (fill)
+    {
+      path.length(4);
+      drawing->foreground(medium);
+      path[0].x = right, path[0].y = top, path[0].z = 0;
+      path[1].x = left, path[1].y = top, path[1].z = 0;
+      path[2].x = center.x, path[2].y = bottom, path[2].z = 0;
+      path[3] = path[0];
+      drawing->drawPath(path);
+    }
+  path.length(5);
+  /*
+   * right
+   */
+  drawing->foreground(light);
+  path[0].x = right, path[0].y = top, path[0].z = 0;
+  path[1].x = right - dx, path[1].y = top + thickness, path[1].z = 0;
+  path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
+  path[3].x = center.x, path[3].y = bottom, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * top
+   */
+  drawing->foreground(dark);
+  path[0].x = right, path[0].y = top, path[0].z = 0;
+  path[1].x = left, path[1].y = top, path[1].z = 0;
+  path[2].x = left + dx, path[2].y = top + thickness, path[2].z = 0;
+  path[3].x = right - dx, path[3].y = top + thickness, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * left
+   */
+  path[0].x = left, path[0].y = top, path[0].z = 0;
+  path[1].x = center.x, path[1].y = bottom, path[1].z = 0;
+  path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
+  path[3].x = left + dx, path[3].y = top + thickness, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  drawing->restoreState();
 }
 
-void diamond(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	     Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
+  Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
+  Vertex length = {(right - left), (bottom - top), 0.};
+  Coord slope = length.y / length.x;
+  Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
+  Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
+
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
+
+  Path path;
+  path.length(5);
+  if (fill)
+    {
+      drawing->foreground(medium);
+      path[0].x = center.x, path[0].y = top, path[0].z = 0;
+      path[1].x = left, path[1].y = center.y, path[1].z = 0;
+      path[2].x = center.x, path[2].y = bottom, path[2].z = 0;
+      path[3].x = right, path[3].y = center.y, path[3].z = 0;
+      path[4] = path[0];
+      drawing->drawPath(path);
+    }
+  /*
+   * top left
+   */
+  drawing->foreground(dark);
+  path[0].x = center.x, path[0].y = top, path[0].z = 0;
+  path[1].x = left, path[1].y = center.y, path[1].z = 0;
+  path[2].x = left + dx, path[2].y = center.y, path[2].z = 0;
+  path[3].x = center.x, path[3].y = top + dy, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * bottom left
+   */
+  path[0].x = left, path[0].y = center.y, path[0].z = 0;
+  path[1].x = center.x, path[1].y = bottom, path[1].z = 0;
+  path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
+  path[3].x = left + dx, path[3].y = center.y, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * bottom right
+   */
+  drawing->foreground(light);
+  path[0].x = center.x, path[0].y = bottom, path[0].z = 0;
+  path[1].x = right, path[1].y = center.y, path[1].z = 0;
+  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
+  path[3].x = center.x, path[3].y = bottom - dy, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  /*
+   * top right
+   */
+  path[0].x = center.x, path[0].y = top, path[0].z = 0;
+  path[1].x = center.x, path[1].y = top + dy, path[1].z = 0;
+  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
+  path[3].x = right, path[3].y = center.y, path[3].z = 0;
+  path[4] = path[0];
+  drawing->drawPath(path);
+  drawing->restoreState();
 }
 
-void circle(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void circle(DrawTraversal_ptr, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	    Coord left, Coord bottom, Coord right, Coord top, bool fill)
 {
 }

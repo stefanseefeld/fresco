@@ -33,72 +33,33 @@ namespace Motif
 
 class Slider : public ControllerImpl
 {
-protected:
-  class Observer : implements(Observer)
+  class SObserver : implements(Observer)
   {
   public:
-    Observer(Slider *s) : slider(s) {}
+    SObserver(Slider *s) : slider(s) {}
     void update(const CORBA::Any &any) { slider->update(any);}
   private:
     Slider *slider;
   };
-  friend class Observer;
+  friend class SObserver;
   class Modifier : implements(Command) {};
 public:
-  Slider();
+  Slider(BoundedValue_ptr, Axis, const Requisition &);
   void init(Controller_ptr);
+  virtual void request(Requisition &r) { r = requisition;}
   virtual void update(const CORBA::Any &);
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
   virtual void allocate(Tag, const Allocation::Info &);
-//protected:
-  virtual void allocateThumb(const Allocation::Info &) = 0;
-  virtual Controller_ptr getStepper(PickTraversal_ptr, const Input::Event &) = 0;
-  virtual void press(PickTraversal_ptr, const Input::Event &);
-  virtual void release(PickTraversal_ptr, const Input::Event &);
-  Controller_var    thumb;
+  Command_ptr drag() { return _drag->_this();}
 private:
-  Controller_var    stepper;
-};
-
-class Slider1D : public Slider
-{
-public:
-  Slider1D(Axis);
-  void init(Controller_ptr, BoundedValue_ptr);
-//protected:
-  void allocateThumb(const Allocation::Info &);
-  Controller_var *getStepper(PickTraversal_ptr, const Input::Event &);
-private:
-  BoundedValue_var   value;
-  Impl_var<Observer> observer; 
-  Impl_var<Modifier> backward;
-  Impl_var<Modifier> forward;
-  Controller_var     backwardStepper;
-  Controller_var     forwardStepper;
-  Coord              offset;
-  Axis               axis;
-};
-
-class Slider2D : public Slider
-{
-  enum { left, right, top, bottom, lefttop, righttop, leftbottom, rightbottom};
-public:
-  Slider2D();
-  void init(Controller_ptr, BoundedValue_ptr, BoundedValue_ptr);
-//protected:
-  void allocateThumb(const Allocation::Info &);
-  Controller_var getStepper(PickTraversal_ptr, const Input::Event &);
-private:
-  BoundedValue_var   xvalue;
-  BoundedValue_var   yvalue;
-  Impl_var<Observer> xobserver; 
-  Impl_var<Observer> yobserver; 
-  Impl_var<Modifier> modifiers[8];
-  Controller_var     steppers[8];
-  Coord              xoffset;
-  Coord              yoffset;
-  Vertex             thumbSize;
+  void traverseThumb(Traversal_ptr);
+  Requisition requisition;
+  Impl_var<SObserver> redirect;
+  Impl_var<Modifier> _drag;
+  BoundedValue_var range;
+  Coord offset;
+  Axis axis;
 };
 
 };

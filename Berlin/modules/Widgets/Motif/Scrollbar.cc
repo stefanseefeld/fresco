@@ -77,7 +77,6 @@ void Scrollbar::update(const CORBA::Any &any)
 
 void Scrollbar::draw(DrawTraversal_ptr traversal)
 {
-  MonoGraphic::traverse(traversal);
   traverseThumb(traversal);
 }
 

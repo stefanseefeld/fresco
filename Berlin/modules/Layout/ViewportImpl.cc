@@ -67,7 +67,7 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
 };                                
 
 ViewportImpl::Adjustment::Adjustment()
-  : s(0.), p(0.)
+  : s(10.), p(10.)
 {
   settings.lower = settings.upper = settings.lvalue = settings.uvalue = 0.;
 }

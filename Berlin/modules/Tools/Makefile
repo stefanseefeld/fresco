@@ -33,7 +33,7 @@ LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
 # Filler.cc Indicator.cc
-SRC	= Beveler.cc Frame.cc \
+SRC	= Beveler.cc Frame.cc Triangle.cc Diamond.cc \
 	  TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
 	  TextInput.cc ToolKitImpl.cc
 

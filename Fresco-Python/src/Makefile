@@ -31,7 +31,7 @@ wpath   = $(ipath)/Warsaw
 
 #include $(cpath)/local.mk
 IDL	= omniidl
-IDLFLAGS= -I$(wpath) -bpython -Wbglobal=Warsaw
+IDLFLAGS= -I$(wpath) -nf -bpython -Wbglobal=Warsaw
 
 DYNINT	= Types.idl
 STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \

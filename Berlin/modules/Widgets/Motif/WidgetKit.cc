@@ -90,7 +90,7 @@ Trigger_ptr Motif::WidgetKit::button(Graphic_ptr g, Command_ptr c)
 
 Controller_ptr Motif::WidgetKit::toggle(Graphic_ptr g)
 {
-  Controller_var toggle = tool->toggle(g);
+  Controller_var toggle = tool->toggle(Graphic_var(Graphic::_nil()));
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
@@ -175,9 +175,9 @@ Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   flexible.maximum = layout->fil();
   flexible.align = 0.;
   fixed.defined = true;
-  fixed.minimum = 200.;
-  fixed.natural = 200.;
-  fixed.maximum = 200.;
+  fixed.minimum = 120.;
+  fixed.natural = 120.;
+  fixed.maximum = 120.;
   fixed.align = 0;
   Graphic::Requisition req;
   if (a == xaxis) req.x = flexible, req.y = fixed;
@@ -194,17 +194,26 @@ Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   /*
    * the triangles
    */
+  ToolKit::FrameSpec in, out;
+  in.abrightness(0.5);
+  out.bbrightness(0.5);
   CommandImpl *backward = new Adapter0<BoundedRange>(x, &BoundedRange::backward);
   backward->_obj_is_ready(_boa());
   commands.push_back(backward);
-  outset = tool->frame(layout->fixedSize(Graphic_var(Graphic::_nil()), 100., 100.), 20., spec, true);
-  Controller_var lower = tool->stepper(outset, Command_var(backward->_this()));
+  Controller_var lower = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(backward->_this()));
+  outset = layout->fixedSize(Graphic_var(tool->dynamicTriangle(Graphic_var(Graphic::_nil()), 20.,
+							       Telltale::toggle, in, out, true,
+							       a == xaxis ? ToolKit::left : ToolKit::up, lower)), 120., 120.);
+  lower->body(outset);
 
   CommandImpl *forward = new Adapter0<BoundedRange>(x, &BoundedRange::forward);
   forward->_obj_is_ready(_boa());
   commands.push_back(forward);
-  outset = tool->frame(layout->fixedSize(Graphic_var(Graphic::_nil()), 100., 100.), 20., spec, true);
-  Controller_var upper = tool->stepper(outset, Command_var(forward->_this()));
+  Controller_var upper = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(forward->_this()));
+  outset = layout->fixedSize(Graphic_var(tool->dynamicTriangle(Graphic_var(Graphic::_nil()), 20.,
+							       Telltale::toggle, in, out, true,
+							       a == xaxis ? ToolKit::right : ToolKit::down, upper)), 120., 120.);
+  upper->body(outset);
 
   Graphic_var box = a == xaxis ? layout->hbox() : layout->vbox();
   box->append(lower);
