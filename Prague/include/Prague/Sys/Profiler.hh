@@ -34,38 +34,26 @@
 namespace Prague
 {
 
-struct CheckPoint
-{
-  CheckPoint(const string &s) : name(s), count(0), start(0), stop(0), elapsed(0) {}
-  CheckPoint(CheckPoint *cp)
-    : name(cp->name),
-      count(cp->count),
-      start(cp->start),
-      stop(cp->stop),
-      elapsed(cp->elapsed)
-    {}
-  void indent(ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
-  void output(ostream &os, unsigned short ind)
-    {
-      indent(os, ind);
-      os << name << ": " << setw(10) << count;
-      os << " Times.  Total Time: ";
-      os << setprecision(8) << setw(12);
-      os.setf( ios::fixed, ios::floatfield);
-      os << elapsed/CLOCKS_PER_SEC;
-      os  << "  Avg/Iter.: ";
-      os << setprecision(8) << setw(12);
-      os << elapsed/count/CLOCKS_PER_SEC << endl;
-    }
-  string name;
-  long count;
-  clock_t start;
-  clock_t stop;
-  double elapsed;
-};
- 
 class Profiler
 {
+  struct CheckPoint
+  {
+    CheckPoint(const string &s) : name(s), count(0), start(0), stop(0), elapsed(0) {}
+    CheckPoint(CheckPoint *cp)
+      : name(cp->name),
+	count(cp->count),
+	start(cp->start),
+	stop(cp->stop),
+	elapsed(cp->elapsed)
+    {}
+    void indent(ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
+    void output(ostream &os, unsigned short ind);
+    string name;
+    long count;
+    clock_t start;
+    clock_t stop;
+    double elapsed;
+  };
   typedef ntree<CheckPoint *> table_t;
   typedef ntree<CheckPoint *>::node item_t;
   typedef ntree<CheckPoint *>::node::child_iterator child_iterator;
