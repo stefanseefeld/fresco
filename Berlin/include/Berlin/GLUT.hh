@@ -61,7 +61,7 @@ private:
   
 public:
     typedef long Pixel;
-    DrawableTie<GLUTDrawable>::PixelFormat pixelFormat() { }
+    DrawableTie<GLUTDrawable>::PixelFormat pixelFormat();
     
     PixelCoord width() const { return _width; }
     PixelCoord height() const { return _height; }
@@ -69,8 +69,8 @@ public:
     PixelCoord vheight() const { return _height;}
     Coord resolution(Axis a) const;
     Coord dpi(Axis a) const { return resolution(a) * 254.0; }
-    PixelCoord rowlength() { }
-    Pixel map(const Color &) { }
+    PixelCoord rowlength() { return 0; }
+    Pixel map(const Color &) { return 0; }
     void *readBuffer() { return 0; }
     void *writeBuffer() { return 0; }
     

@@ -78,7 +78,8 @@ void GLUTHandler::init(GLUTConsole *console, int &argc, char **argv, const char 
     glutInit(&argc, argv);
     
     // Initialize display mode and the window
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    //glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
     glutInitWindowSize(w, h);
     
     // Okay, create the window
@@ -102,16 +103,23 @@ void GLUTHandler::init(GLUTConsole *console, int &argc, char **argv, const char 
 
 void GLUTHandler::render()
 {
+    cerr << "GLUTHandler::render() -- enter" << endl;
+    
+    // Clear the canvas
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
     // Render the Berlin scene graph!
     _console->drawable()->impl().render();
 
     // Need to flip, we're double-buffered!
     glutSwapBuffers();
+    cerr << "GLUTHandler::render() -- done" << endl;
 }
 
 void GLUTHandler::reshape(int width, int height)
 {
     _console->drawable()->impl().reshape(width, height);
+    glutPostRedisplay();
 }
 
 void GLUTHandler::keyboard(unsigned char key, int x, int y)
@@ -128,6 +136,8 @@ void GLUTHandler::keyboard(unsigned char key, int x, int y)
     
     // Add the event to the queue
     _console->_eventQueue.push(event._retn());
+
+    glutPostRedisplay();
 }
 
 void GLUTHandler::special(int key, int x, int y)
@@ -163,6 +173,7 @@ void GLUTHandler::mouse(int button, int state, int x, int y)
 	_console->_eventQueue.push(event._retn());
 	button_state[button] = state;
     }
+    glutPostRedisplay();
 }
 
 void GLUTHandler::mouseMotion(int x, int y)
@@ -180,16 +191,17 @@ void GLUTHandler::mouseMotion(int x, int y)
     event[0].attr.location(position);    
     
     _console->_eventQueue.push(event._retn());
+
+    glutPostRedisplay();
 }
 
 
 // -- GLUTDrawable implementation
 
 GLUTDrawable::GLUTDrawable()
+    : _displist(0)
 {
-    MutexGuard guard(_mutex);    
-    _displist = glGenLists(1);
-    if (_displist == 0) throw 0;
+    // empty (can't allocate display lists before GLUT is initialized)
 }
 
 GLUTDrawable::~GLUTDrawable()
@@ -202,6 +214,11 @@ void GLUTDrawable::init()
 {
     // Start the definition of the display list
     _mutex.lock();
+    if (_displist == 0) {
+	_displist = glGenLists(1);
+	if (_displist == 0) throw 0;
+    }
+    cerr << "Locking and rendering in display list " << _displist << endl; 
     glNewList(_displist, GL_COMPILE);
 }
 
@@ -210,6 +227,7 @@ void GLUTDrawable::finish()
     // End display list definition and tell GLUT to redraw
     glEndList();
     _mutex.unlock();
+    cerr << "Display list finished and unlocked." << endl;
     glutPostRedisplay();
 }
 
@@ -217,7 +235,10 @@ void GLUTDrawable::render()
 {
     // Get access to display list and call it
     MutexGuard guard(_mutex);
-    glCallList(_displist);
+    if (_displist != 0) {
+	glCallList(_displist);
+	cerr << "Rendered display list " << _displist << endl;
+    }
 }
 
 void GLUTDrawable::reshape(int width, int height)
@@ -240,13 +261,27 @@ void GLUTDrawable::reshape(int width, int height)
     glTranslatef(0.375, 0.375, 0.);
 }
 
+DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixelFormat()
+{
+    // Load dummy values (@@@ How do we fill in this correctly?)
+    DrawableTie<GLUTDrawable>::PixelFormat pft = {
+	32, 32, 0xff000000, 24, 0x00ff0000, 16, 0x0000ff00, 8, 0x000000ff, 0
+    };
+    /*    DrawableTie<GLUTDrawable>::PixelFormat pft = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+    */
+    return pft;
+}
+
+
 // -- GLUTConsole implementation 
 
 GLUTConsole::GLUTConsole()
     : _eventQueue(eventQueueCapacity)
 {
     _drawable = new DrawableTie<Drawable>(new GLUTDrawable);
-    
+
     // @@@ Hardcoded stuff for simplicity!
     int argc = 1;
     char *argv[] = { "dummy" };
