@@ -24,6 +24,7 @@ conf_with_header()
 
 echo "Generating toplevel configure..."
 autoconf
+conf Fresco-Test
 conf_with_header Prague
 conf_with_header Babylon
 conf Fresco-IDL

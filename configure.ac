@@ -51,6 +51,9 @@ AC_ARG_ENABLE(python-demos,
               AC_HELP_STRING([--enable-python-demos],[Configure python demos support]),
               [config_python_demos="$enableval"],[config_python_demos="yes"])
 
+if test -d $srcdir/Fresco-Test; then
+  AC_CONFIG_SUBDIRS(Fresco-Test)
+fi
 if test -d $srcdir/Prague; then
   AC_CONFIG_SUBDIRS(Prague)
 fi
