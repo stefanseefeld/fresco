@@ -26,7 +26,7 @@ dnl Autoconf initialization
 dnl ------------------------------------------------------------------
 AC_PREREQ(2.56)
 AC_REVISION($Revision$)
-AC_INIT(Documentation, M1, devel@fresco.org)
+AC_INIT(Documentation, M2, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 

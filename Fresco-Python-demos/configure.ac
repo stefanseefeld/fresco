@@ -27,7 +27,7 @@ dnl ------------------------------------------------------------------
 
 AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-AC_INIT(Berlin, M3, devel@fresco.org)
+AC_INIT(Berlin, M2, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
 
 dnl ------------------------------------------------------------------

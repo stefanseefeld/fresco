@@ -28,7 +28,7 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.53)
 AC_REVISION($Revision$)
 
-AC_INIT(daVinci, M1, devel@fresco.org)
+AC_INIT(daVinci, M2, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_HEADER(include/daVinci/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
