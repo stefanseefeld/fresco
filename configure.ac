@@ -89,4 +89,5 @@ if test -d $srcdir/Fresco-Python-demos -a ".$config_python_demos" = ".yes"; then
 fi
 
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([config/synopsis.py])
 AC_OUTPUT

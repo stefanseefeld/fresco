@@ -1,0 +1,25 @@
+# Synopsis configuration file for Fresco
+
+from Synopsis.Config import Base
+
+top_srcdir = '@top_srcdir@'
+
+class Config(Base):
+    class Formatter(Base.Formatter):
+        class SXR(Base.Formatter.HTML):
+            stylesheet = 'manual.css'
+            pages=['DirBrowse', 'FilePages', 'XRefPages']
+            toc_out = 'sxrPrague.toc'
+            file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
+            default_toc = 'XRefPages'
+            base_dir = top_srcdir
+            start_dir = top_srcdir
+            exclude_globs = ['CVS', '.cvsignore', 'autom4te.cache']
+            class XRefPages:
+                xref_file = 'Prague.xref'
+            class FilePages (Base.Formatter.HTML.FilePages):
+                    toc_from = 'XRefPages'
+            file_path = top_srcdir+'/%s'
+            links_path = 'sxr_data/%s'
+
+        modules['SXR'] = SXR
