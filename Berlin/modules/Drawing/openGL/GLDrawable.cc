@@ -43,9 +43,42 @@ GLDrawable::GLDrawable(unsigned int w, unsigned int h, unsigned int d)
     cerr << "can't set graphmode (" << w << ',' << h << ") " << d << " bpp" << endl;
   if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
     cerr << "GGIMesaSetVisual() failed" << endl;
+  GGIMesaMakeCurrent(context);
+    
+  // let GGIMesa know how big the GGI visual is
+  ggi_mode mode;
+  if( ggiGetMode( visual, &mode ) ) {
+    cerr << "Couldn't set graphics mode!!" << endl;
+  }
+  reshape( mode.visible.x, mode.visible.y );
+
+
+  // initialize some friendly OpenGL states
+  static GLfloat white[4] = {0.1, 0.1, 0.1, 0.1 };
+  glLightfv( GL_LIGHT0, GL_AMBIENT, white ); 
+  glEnable( GL_LIGHTING );  
+  glEnable(GL_LIGHT0);   
+  glEnable( GL_CULL_FACE ); 
+  glEnable( GL_DEPTH_TEST ); 
+  glFrontFace(GL_CW); 
+  glShadeModel(GL_FLAT);
+
+
   clip = new RegionImpl;
   clip->_obj_is_ready(_boa());
 }
+
+// this is just a utility function for reshaping.
+void GLDrawable::reshape( int width, int height )
+{
+   glMatrixMode(GL_PROJECTION); 
+   glLoadIdentity();
+   glOrtho(0, width, height, 0, -1.0, 1.0); 
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+}
+
 
 GLDrawable::~GLDrawable()
 {
