@@ -29,7 +29,7 @@
 #include "Berlin/DesktopImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
-#include "Berlin/ServerImpl.hh"
+// #include "Berlin/ServerImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -62,6 +62,6 @@ Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw:
 void DesktopImpl::key_press(const Input::Event &event)
 {
   Trace trace("DesktopImpl::key_press");
-  const Input::Toggle &toggle = event[0].attr.selection();
-  if (toggle.number == Babylon::UC_ESCAPE) ServerImpl::instance()->stop();
+//   const Input::Toggle &toggle = event[0].attr.selection();
+//   if (toggle.number == Babylon::UC_ESCAPE) ServerImpl::instance()->stop();
 }

@@ -94,7 +94,7 @@ void PositionalFocus::Traversal::debug()
 }
 
 PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g, Region_ptr r)
-  : FocusImpl(d), _root(g), _pointer(new Pointer(Console::drawable())), _traversal(0), _grabbed(false)
+  : FocusImpl(d), _root(g), _pointer(Console::instance()->pointer()), _traversal(0), _grabbed(false)
 {
   Trace trace("PositionalFocus::PositionalFocus");
   _traversal_cache[0] = new Traversal(_root, r, Transform::_nil(), this);

@@ -38,7 +38,7 @@ SRC 		:= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc \
 		   SelectionImpl.cc TextBufferImpl.cc StreamBufferImpl.cc \
 		   CommandKitImpl.cc # ReactorImpl.cc
 
-MODULE		:= Command
+MODULE		:= CommandKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Command
 

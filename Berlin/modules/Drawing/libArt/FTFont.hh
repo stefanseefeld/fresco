@@ -27,7 +27,6 @@
 #include <Warsaw/Types.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Unicode.hh>
-#include <Berlin/Console.hh>
 #include <Berlin/LRUCache.hh>
 #include <Drawing/libArt/LibArtFont.hh>
 #include <freetype/freetype.h>
@@ -38,7 +37,7 @@
 class LibArtFTFont : public LibArtFont
 {
 public:
-  LibArtFTFont(Console::Drawable *drawable);
+  LibArtFTFont(double, double);
   virtual ~LibArtFTFont();
   virtual CORBA::ULong size();
   virtual void size(CORBA::ULong);

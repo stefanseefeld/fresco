@@ -98,20 +98,15 @@ void GLDrawingKit::restore()
 
 void GLDrawingKit::init()
 {   
-  _drawable = Console::drawable();
-  _font = new GLUnifont();
 #if defined(CONSOLE_GGI)
+  _drawable = GGIConsole::instance()->drawable();
   _context = GGIMesaCreateContext();
   if (!_context)
     {
       std::cerr << "GGIMesaCreateContext() failed" << std::endl;
       exit(4);
     }
-  /*
-   * if we made it up to here the console is GGI, so let's use inside info
-   */
-  GGIDrawable &ggi = _drawable->impl();
-  if (GGIMesaSetVisual(_context, ggi.visual(), GL_TRUE, GL_FALSE))
+  if (GGIMesaSetVisual(_context, _drawable->visual(), GL_TRUE, GL_FALSE))
     {
       std::cerr << "GGIMesaSetVisual() failed" << std::endl;
       exit(7);
@@ -121,14 +116,18 @@ void GLDrawingKit::init()
 #elif defined(CONSOLE_SDL)
   
   // Do SDL-specific stuff
+  _drawable = Console::instance()->drawable();
   
 #elif defined(CONSOLE_GLUT)
   
   // Do GLUT-specific stuff
+  _drawable = Console::instance()->drawable();
   
 #else
 #  error "GLDrawingKit cannot be used with this console."
+  _drawable = Console::instance()->drawable();
 #endif
+  _font = new GLUnifont();
   _light = new Light();
   glViewport(0, 0, _drawable->width(), _drawable->height());
   glMatrixMode(GL_PROJECTION); 
@@ -255,16 +254,16 @@ void GLDrawingKit::draw_path(const Path &path)
 {
   if (_fs == Warsaw::DrawingKit::solid)
     {
-//       glBegin(GL_TRIANGLE_FAN);
+//       glBegin(GL_POLYGON);
       glBegin(GL_LINE_LOOP);
-      for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
   else if (_fs == Warsaw::DrawingKit::textured)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
-      for (unsigned long i = 0; i < path.length() - 1; i++)
+      for (unsigned long i = 0; i < path.length(); i++)
 	{
 	  glTexCoord2f(path[i].x * _tx->width * 10., path[i].y * _tx->height * 10.); 
 	  glVertex3f(path[i].x, path[i].y, path[i].z);
@@ -276,7 +275,7 @@ void GLDrawingKit::draw_path(const Path &path)
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       // line strips (no final connecting line)      
-      for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
 }

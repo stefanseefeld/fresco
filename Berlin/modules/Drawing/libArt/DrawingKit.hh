@@ -23,17 +23,18 @@
 #ifndef _LibArtDrawingKit_hh
 #define _LibArtDrawingKit_hh
 
-#include <Berlin/ImplVar.hh>
+#include <Prague/Sys/Thread.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/Image.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/KitImpl.hh>
+#include <Berlin/ObjectCache.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Console/RichConsole.hh>
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/libArt/LibArtFTFont.hh>
 #include <Drawing/libArt/LibArtRaster.hh>
-#include <Berlin/KitImpl.hh>
-#include <Berlin/ObjectCache.hh>
-#include <Berlin/Console.hh>
-#include <Berlin/TransformImpl.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Prague/Sys/Thread.hh>
 
 #include <libart_lgpl/art_misc.h>
 #include <libart_lgpl/art_alphagamma.h>
@@ -117,8 +118,8 @@ public:
   void rasterize_pixbuf(ArtPixBuf *pixbuf);
   void identity_pixbuf(ArtPixBuf *pixbuf);
 
-  Console::Drawable *_drawable;
-  Console::Drawable *_buffer;
+  RichConsole::Drawable      *_drawable;
+  RichConsole::Drawable      *_buffer;
   ArtIRect           _bbox;
 //   const ggi_directbuffer * buf;
   double             _xres, _yres;
@@ -135,13 +136,13 @@ public:
   Warsaw::Coord          _lw;
   Warsaw::DrawingKit::Endstyle       _es;
   Warsaw::DrawingKit::Fillstyle      _fs;
-  LibArtFTFont   *_font;
-  LibArtFont     *_unifont;
-  art_u8 _alphabank[256][256];
-  ArtAlphaGamma *_agam;
-  art_u32         _art_fg;
-  Console::Drawable::Pixel _con_fg;
-  ArtIRect _screen, _clip;
+  LibArtFTFont          *_font;
+  LibArtFont            *_unifont;
+  art_u8                 _alphabank[256][256];
+  ArtAlphaGamma         *_agam;
+  art_u32                _art_fg;
+  RichConsole::Drawable::Pixel    _con_fg;
+  ArtIRect _screen,      _clip;
   
   ObjectCache<Warsaw::Raster_var, LibArtRaster> _rasters;
 };

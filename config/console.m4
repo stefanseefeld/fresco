@@ -53,7 +53,6 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                 SDL)
                         AM_PATH_SDL_BERLIN(1.1.8, [
 				AC_DECIDE(SDLCONSOLE, [use SDL])
-                                CON_IMPL=SDL
 				AC_DEFINE(CONSOLE_SDL)
 				CON_CPPFLAGS="$SDL_CPPFLAGS"
 				CON_LIBS="$SDL_LIBS"
@@ -75,7 +74,6 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                 fi
                         else
 				AC_DECIDE(CAVECONSOLE, [use CAVELib])
-                                CON_IMPL=CAVELIB
 				AC_DEFINE(CONSOLE_CAVELIB)
                         fi
                         ;;
@@ -89,11 +87,10 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                 fi
                         else
 				AC_DECIDE(GLUTCONSOLE, [use GLUT])
-                                CON_IMPL=GLUT
 				AC_DEFINE(CONSOLE_GLUT)
                         fi
                         ;;
-		DirectFB)
+		DirectFB|DFB)
 			BERLIN_DIRECTFB_CHECK
 			if test ".$ac_cv_lib_directfb" != .yes; then
 				if test ".$1" = .mandatory; then
@@ -103,7 +100,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 				fi
 			else
 				AC_DECIDE(DIRECTFBCONSOLE, [use DirectFB])
-				CON_IMPL=DIRECTFB
+				CON_IMPL=DFB
 				AC_DEFINE(CONSOLE_DIRECTFB)
 				CON_CPPFLAGS="$DFB_CPPFLAGS"
 				CON_LIBS="$DFB_LIBS"

@@ -37,7 +37,7 @@ LIBS		+= -lBerlin
 SRC		:= TextChunk.cc Compositor.cc Composition.cc TextViewer.cc \
 		   TerminalView.cc TextKitImpl.cc
 
-MODULE		:= Text
+MODULE		:= TextKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Text
 

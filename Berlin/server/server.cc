@@ -34,13 +34,13 @@
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/DrawingKit.hh>
-#include <Berlin/RCManager.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
-#include <Berlin/ServerImpl.hh>
 #include <Berlin/Console.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
+#include <Berlin/RCManager.hh>
+#include "ServerImpl.hh"
 #include <fstream>
 #include <strstream>
 
@@ -71,8 +71,8 @@ struct Dump : Signal::Notifier
       switch (signo)
 	{
 	case Signal::usr2: 
-	  Console::activate_autoplay(); 
-	  Console::wakeup();
+	  Console::instance()->activate_autoplay(); 
+	  Console::instance()->wakeup();
 	  return;
 	case Signal::hangup: Profiler::dump(cerr); break;
 	case Signal::abort:

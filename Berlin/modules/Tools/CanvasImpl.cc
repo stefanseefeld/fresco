@@ -26,7 +26,6 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
-#include <Berlin/Console.hh>
 #include <Berlin/Logger.hh>
 #include "Tool/CanvasImpl.hh"
 #include <sys/ipc.h>
@@ -35,6 +34,7 @@
 #if !defined(CONSOLE_GGI)
 #warning "CanvasImpl is currently only available for the GGI console"
 #else
+#include <Console/GGI/GGI.hh>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -43,7 +43,7 @@ CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
   : _width(w), _height(h)
 {
   Trace trace("CanvasImpl::CanvasImpl");
-  Console::Drawable::PixelFormat format = Console::drawable()->pixel_format();
+  Warsaw::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
   /*
    * the drawable plus some memory for the event queue
    */
@@ -52,8 +52,8 @@ CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
   ostrstream oss;
   oss << "display-memory:-input:shmid:" << _shm << ends;
   const char *name = oss.str();
-  GGIDrawable *ggi = 0; 
-  try { ggi = new GGIDrawable(name, w, h, 3);}
+  GGIConsole::Drawable *ggi = 0; 
+  try { ggi = new GGIConsole::Drawable(name, w, h, 3);}
   catch (...)
     {
       cerr << "Error : can't open shm GGIDrawable" << endl;
@@ -61,8 +61,9 @@ CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
     }
   Logger::log(Logger::drawing) << "open ggi display with name :'" << name << '\'' << endl;
   delete [] name;
-  Console::Drawable *drawable = Console::create_drawable(ggi);
-  _drawable = Console::activate_drawable(drawable);
+  GGIConsole *console = GGIConsole::instance();
+  console->add_drawable(ggi);
+  _drawable = console->activate_drawable(ggi);
 }
 
 CanvasImpl::~CanvasImpl()

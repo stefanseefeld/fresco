@@ -68,11 +68,11 @@ $(bdir)/jprof:	$(JPROF_OBJ)
 
 endif
 
-$(bdir)/server:	server.o
+$(bdir)/server:	server.o ServerImpl.o ServerContextImpl.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/kits:	kits.o
+$(bdir)/kits:	kits.o ServerImpl.o ServerContextImpl.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

@@ -36,7 +36,7 @@ LIBS		+= -lBerlin @LIBART_LIBS@ @FREETYPE_LIBS@
 
 SRC		:= LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc LibArtDrawingKit.cc 
 
-MODULE		:= ArtDrawing
+MODULE		:= LibArtDrawingKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Drawing/libArt
 

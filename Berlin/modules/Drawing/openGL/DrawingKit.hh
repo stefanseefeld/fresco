@@ -23,20 +23,20 @@
 #ifndef _GLDrawingKit_hh
 #define _GLDrawingKit_hh
 
+#include <Prague/Sys/Thread.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Raster.hh>
 #include <Warsaw/DrawingKit3D.hh>
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/openGL/GLFont.hh>
 #include <Drawing/openGL/GLRaster.hh>
-#include <Prague/Sys/Thread.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/ObjectCache.hh>
-#include <Berlin/Console.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 
 #if defined(CONSOLE_GGI)
+#include <Console/GGI/GGI.hh>
 #  include <GL/ggimesa.h>
 #elif defined(CONSOLE_SDL)
 #elif defined(CONSOLE_GLUT)
@@ -164,9 +164,11 @@ public:
  private:
   void init();
   std::stack<DrawState>                      _states;
-  Console::Drawable                         *_drawable;
 #if defined(CONSOLE_GGI)
+  GGIConsole::Drawable                      *_drawable;
   GGIMesaContext                             _context;
+#elif
+  Console::Drawable                         *_drawable;
 #endif
   Prague::Mutex                              _mutex;
   Warsaw::Transform_var                      _tr;

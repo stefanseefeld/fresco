@@ -36,7 +36,7 @@ LIBS		+= -lBerlin
 
 SRC		:= WindowImpl.cc Pulldown.cc Manipulator.cc DesktopKitImpl.cc
 
-MODULE		:= Desktop
+MODULE		:= DesktopKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Desktop
 

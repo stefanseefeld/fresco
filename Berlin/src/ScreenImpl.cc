@@ -42,10 +42,12 @@ ScreenImpl::ScreenImpl()
     _region(new RegionImpl())
 {
   Trace trace("ScreenImpl::ScreenImpl");
+  Console *console = Console::instance();
+  Console::Drawable *drawable = console->drawable();
   _region->valid = true;
   _region->lower.x = _region->lower.y = _region->lower.z = 0;
-  _region->upper.x = Console::drawable()->width()/Console::drawable()->resolution(xaxis);
-  _region->upper.y = Console::drawable()->height()/Console::drawable()->resolution(yaxis);
+  _region->upper.x = drawable->width() / drawable->resolution(xaxis);
+  _region->upper.y = drawable->height() / drawable->resolution(yaxis);
   _region->upper.z = 0;
 }
 ScreenImpl::~ScreenImpl() {}

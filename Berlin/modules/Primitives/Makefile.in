@@ -37,7 +37,7 @@ LIBS		+= -lBerlin
 SRC		:= Root.cc PrimitiveImpl.cc Primitives.cc Transformer.cc\
 		   Light.cc PrimitiveKitImpl.cc
 
-MODULE		:= Primitive
+MODULE		:= PrimitiveKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Primitive
 

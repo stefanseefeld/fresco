@@ -85,7 +85,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   Command_var mover = move(wptr);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
-  RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
   Graphic_var top = _layout->hbox();
   top->append_graphic(tbdragger);
@@ -97,7 +97,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var lresize = move_resize(wptr, 1.0, 0.0, Window::left|Window::bottom);
-  RefCount_var<Graphic> lframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> lframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> ldragger = _tool->dragger(lframe, lresize);
 
   req.x.minimum = 0.;
@@ -107,7 +107,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var bresize = move_resize(wptr, 0.0, 0.0, Window::bottom);
-  RefCount_var<Graphic> bframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> bframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> bdragger = _tool->dragger(bframe, bresize);
 
   req.x.minimum = 200.;
@@ -117,7 +117,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var rresize = move_resize(wptr, 0.0, 0.0, Window::right|Window::bottom);
-  RefCount_var<Graphic> rframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> rframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> rdragger = _tool->dragger(rframe, rresize);
 
   RefCount_var<Graphic> vbox = _layout->vbox();
@@ -163,7 +163,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.maximum = 200.;
   req.y.align = 0;
   Command_var mover = move(wptr);
-  RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
 
   req.x.minimum = 200.;
@@ -173,7 +173,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var lresize = move_resize(wptr, 1.0, 0.0, Window::left|Window::bottom);
-  RefCount_var<Graphic> lframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> lframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> ldragger = _tool->dragger(lframe, lresize);
 
   req.x.minimum = 0.;
@@ -183,7 +183,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var bresize = move_resize(wptr, 0.0, 0.0, Window::bottom);
-  RefCount_var<Graphic> bframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> bframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> bdragger = _tool->dragger(bframe, bresize);
 
   req.x.minimum = 200.;
@@ -193,7 +193,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var rresize = move_resize(wptr, 0.0, 0.0, Window::right|Window::bottom);
-  RefCount_var<Graphic> rframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
+  RefCount_var<Graphic> rframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> rdragger = _tool->dragger(rframe, rresize);
 
   RefCount_var<Graphic> vbox = _layout->vbox();

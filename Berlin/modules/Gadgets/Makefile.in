@@ -36,7 +36,7 @@ LIBS		+= -lBerlin
 
 SRC		:= GadgetKitImpl.cc
 
-MODULE		:= Gadget
+MODULE		:= GadgetKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Gadget
 

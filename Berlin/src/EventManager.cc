@@ -20,12 +20,12 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/EventManager.hh"
+#include <Prague/Sys/Tracer.hh>
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/NonPositionalFocus.hh"
 #include "Berlin/PositionalFocus.hh"
 #include "Berlin/Vertex.hh"
-#include <Prague/Sys/Tracer.hh>
+#include "Berlin/EventManager.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -75,7 +75,7 @@ bool EventManager::request_focus(Controller_ptr c, Input::Device d)
 void EventManager::next_event()
 {
   Trace trace("EventManager::next_event");
-  Input::Event *e = Console::next_event();
+  Input::Event *e = Console::instance()->next_event();
   if (!e) return; // repair
   Input::Event_var event(e);
   /*

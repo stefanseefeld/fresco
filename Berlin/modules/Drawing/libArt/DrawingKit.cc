@@ -25,7 +25,7 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/Provider.hh>
-#include <Berlin/Console.hh>
+#include <Console/RichConsole.hh>
 #include "Drawing/libArt/LibArtDrawingKit.hh"
 #include "Drawing/libArt/LibArtFTFont.hh"
 #include "Drawing/libArt/LibArtUnifont.hh"
@@ -69,18 +69,18 @@ KitImpl *LibArtDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
 
 void LibArtDrawingKit::init()
 {
-  _drawable = Console::drawable();
+  _drawable = RichConsole::instance()->drawable();
   _xres = _drawable->resolution(xaxis);
   _yres = _drawable->resolution(yaxis);
-  _font = new LibArtFTFont(_drawable);
-  _unifont = new LibArtUnifont(_drawable);
+  _font = new LibArtFTFont(_xres, _yres);
+  _unifont = new LibArtUnifont(_xres, _yres);
   _screen.x0 = 0;
   _screen.y0 = 0;
   _screen.x1 = _drawable->width();
   _screen.y1 = _drawable->height();
   
   _agam = art_alphagamma_new (2.5);
-  _buffer = Console::create_drawable(_drawable->width(), _drawable->height(), 3);
+  _buffer = RichConsole::instance()->create_drawable(_drawable->width(), _drawable->height(), 3);
   _bbox.x0 = _bbox.y0 = _bbox.x1 = _bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)
@@ -223,13 +223,13 @@ void LibArtDrawingKit::draw_path(const Path &p)
   art_irect_intersect(&loc, &loc ,&_clip);
   art_irect_union(&_bbox, &_bbox, &loc);
   fix_order_of_irect(loc);
-  std::auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
-  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
+  RichConsole::Drawable::Buffer pb_buf = _buffer->write_buffer();
+  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
 					     _drawable->width(),
 					     _drawable->height(),
 					     _buffer->row_length());
   art_rgb_svp_alpha(svp, loc.x0, loc.y0, loc.x1, loc.y1, _art_fg,
-		    (art_u8 *)(pb_buf->data()) +
+		    (art_u8 *)(pb_buf.get()) +
 		     (loc.y0 * pb->rowstride) +
 		     (loc.x0 * 3), 
 		    _buffer->row_length(), _agam);
@@ -325,8 +325,8 @@ void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
 
   art_irect_intersect(&rect, &rect, &_clip);
   if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
-  std::auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
-  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
+  RichConsole::Drawable::Buffer pb_buf = _buffer->write_buffer();
+  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
 					     _drawable->width(),
 					     _drawable->height(),
 					     _buffer->row_length());
@@ -415,12 +415,12 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   art_irect_union (&_bbox, &_bbox, &tsloci);
   
   // paint
-  std::auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
-  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
+  RichConsole::Drawable::Buffer pb_buf = _buffer->write_buffer();
+  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
 					     _drawable->width(),
 					     _drawable->height(),
 					     _buffer->row_length());
-  art_rgb_pixbuf_affine((art_u8 *)(pb_buf->data()) + 
+  art_rgb_pixbuf_affine((art_u8 *)(pb_buf.get()) + 
 			(tsloci.y0 * pb->rowstride) + 
 			(tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
 			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,

@@ -34,10 +34,10 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
-#include <Berlin/ServerImpl.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Berlin/RCManager.hh>
+#include "ServerImpl.hh"
 #include <fstream>
 
 #ifdef RC_PREFIX

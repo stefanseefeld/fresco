@@ -35,14 +35,14 @@ include $(cdir)/Server/local.mk
 CXXFLAGS        += $(SO_CXXFLAGS)
 LDFLAGS         += $(SO_LDFLAGS)
 
-SRC		:= Console.cc Pointer.cc Logger.cc ServantBase.cc IdentifiableImpl.cc \
+SRC		:= Console.cc Logger.cc ServantBase.cc IdentifiableImpl.cc \
 	  	   RefCountBaseImpl.cc RegionImpl.cc TransformImpl.cc TraversalImpl.cc \
 	  	   AllocationImpl.cc Provider.cc GraphicImpl.cc MonoGraphic.cc \
 	  	   PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  	   DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
 	  	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
 	  	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
-	  	   KitImpl.cc ServerContextImpl.cc ServerImpl.cc RCManager.cc
+	  	   KitImpl.cc RCManager.cc
 
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))

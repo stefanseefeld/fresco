@@ -38,7 +38,7 @@ SRC		:= LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc \
 		   Deck.cc ShapeOf.cc StageImpl.cc ViewportImpl.cc \
 		   LayoutKitImpl.cc #Backdrop.cc
 
-MODULE		:= Layout
+MODULE		:= LayoutKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Layout
 

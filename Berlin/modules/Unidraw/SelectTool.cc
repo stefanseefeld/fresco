@@ -45,6 +45,7 @@ public:
   virtual void hit();
   virtual CORBA::Boolean ok() { return true;}
   virtual CORBA::Boolean picked() { return _selected.size();}
+  void debug();
 private:
   RegionImpl                     _hot;
   std::vector<SelectTraversal *> _selected;
@@ -61,6 +62,8 @@ SelectTraversal::~SelectTraversal()
 CORBA::Boolean SelectTraversal::intersects_region(Region_ptr r)
 {
   Trace trace("SelectTraversal::intersects_region");
+  std::cout << "intersects_region test" << std::endl;
+  debug();
   RegionImpl region(r, get_transformation(current()));
   return region.intersects(_hot);
   
@@ -74,6 +77,15 @@ void SelectTraversal::hit()
   SelectTraversal *memento = new SelectTraversal(*this);
 //   activate(memento);
   _selected.push_back(memento);
+}
+
+void SelectTraversal::debug()
+{
+  cout << "SelectTraversal::debug : stack size = " << size() << '\n';
+//   Region_var r = current_allocation();
+//   Transform_var t = current_transformation();
+//   RegionImpl region(r, t);
+//   cout << "current allocation is " << region << endl;
 }
 
 class SelectCommand : public virtual POA_Unidraw::Command,

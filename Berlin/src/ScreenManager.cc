@@ -20,21 +20,21 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/ScreenManager.hh"
-#include "Berlin/ScreenImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/EventManager.hh"
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Time.hh>
 #include <Prague/Sys/Profiler.hh>
-#include "Berlin/Logger.hh"
+#include <Warsaw/config.hh>
 #include <Warsaw/IO.hh>
+#include "Berlin/ScreenImpl.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/Logger.hh"
+#include "Berlin/ScreenManager.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 
 ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em, DrawingKit_ptr d)
-  : _screen(g), _emanager(em), _drawing(DrawingKit::_duplicate(d)), _drawable(Console::drawable())
+  : _screen(g), _emanager(em), _drawing(DrawingKit::_duplicate(d)), _drawable(Console::instance()->drawable())
 {
 }
 
@@ -44,7 +44,7 @@ void ScreenManager::damage(Region_ptr r)
   Trace trace("ScreenManager::damage");
   Prague::Guard<Mutex> guard(_mutex);
   _theDamage->merge_union(r);
-  Console::wakeup();
+  Console::instance()->wakeup();
 }
 
 void ScreenManager::repair()

@@ -25,22 +25,21 @@
 #include <map>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
-#include <Berlin/Console.hh>
 #include <Warsaw/Graphic.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
 #include <Warsaw/Unicode.hh>
 
-class LibArtUnifont : public LibArtFont
 //. This is a default font, just in case -- a character cell bitmapped unicode
 //. font which is generated "on the fly" from the GNU unifont, which we're
 //. storing in a packed binary array we mmap() in. this is so that, even if all
 //. the font manufactureres in the world turn against us, we can still render
 //. multilingual text, albeit not quite as well as certain (ahem) proprietary
 //. text systems
+class LibArtUnifont : public LibArtFont
 {
 public:
-  LibArtUnifont(Console::Drawable *drawable);
+  LibArtUnifont(double, double);
   virtual ~LibArtUnifont();
   virtual CORBA::ULong size();
   virtual void size(CORBA::ULong) {}

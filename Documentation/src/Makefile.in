@@ -29,6 +29,7 @@ srcdir		:= $(top_srcdir)/doc/Tutorial/Berlin
 ddir		:= $(builddir)/doc/Tutorial/html
 
 xslt		:= @XSLT@
+fop		:= @FOP@
 dbxsl		:= @DBXSL@
 
 SRC		:= hello.xml kits.xml hello-list.xml book.xml
@@ -40,6 +41,7 @@ JPG		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.jpg, $(FIG))
 .PHONY: depclean clean distclean maintainer-clean dist clean
 
 html		:= book.html # change that as soon as chunking is more widespreadly available
+fo		:= book.fo
 ps		:= book.ps
 pdf		:= book.pdf
 
@@ -57,8 +59,11 @@ $(ps):	$(html)
 #	$(xslt) $(srcdir)/book.xml $(dbxsl)/fo/docbook.xsl > book.fo
 	html2ps -o $@ $<
 
-$(pdf):	$(ps)
-	ps2pdf $<
+$(fo): $(SRC)
+	$(xslt) --define="fop.extensions=1" $(srcdir)/book.xml $(dbxsl)/html/docbook.xsl > book.html
+
+$(pdf):	$(fo)
+	$(FOP) -fo $< -pdf $@
 
 clean:
 	rm -fr $(TARGETS) figures/*.jpg figures/*.pdf figures/*.eps

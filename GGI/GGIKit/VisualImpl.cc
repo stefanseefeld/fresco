@@ -26,8 +26,8 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
-#include <Berlin/Console.hh>
 #include <Berlin/Logger.hh>
+#include <Console/GGI/GGI.hh>
 #include "GGI/VisualImpl.hh"
 #include <sys/ipc.h>
 #include <strstream.h>
@@ -39,7 +39,7 @@ VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
   : ControllerImpl(false), _width(w), _height(h)
 {
   Trace trace("VisualImpl::VisualImpl");
-  Console::Drawable::PixelFormat format = Console::drawable()->pixel_format();
+  Warsaw::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
   /*
    * the drawable plus some memory for the event queue
    */
@@ -61,8 +61,9 @@ VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
   char buffer[256];
   ggiSPrintMode(buffer, &mode);
   _mode = buffer;
-  Console::Drawable *drawable = Console::create_drawable(_ggi);
-  _drawable = Console::activate_drawable(drawable);
+  GGIConsole *console = GGIConsole::instance();
+  console->add_drawable(_ggi);
+  _drawable = console->activate_drawable(_ggi);
 }
 
 VisualImpl::~VisualImpl()

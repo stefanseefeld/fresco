@@ -52,6 +52,6 @@ int main(int argc, char **argv)
   if (getopt.is_set("version")) { cout << "version is " << version << endl; return 0;}
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
   Console::open(argc, argv, PortableServer::POA::_nil());
-  Console::device_info(std::cout);
+  Console::instance()->device_info(std::cout);
   return 0;
 }

@@ -50,9 +50,9 @@
 using namespace Prague;
 using namespace Warsaw;
 
-LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
-  _xres(drawable->resolution(xaxis)),
-  _yres(drawable->resolution(yaxis))
+LibArtUnifont::LibArtUnifont(double xres, double yres)
+  : _xres(xres),
+    _yres(yres)
 {
   Prague::Path path = RCManager::get_path("unifontpath");
   std::string glyphDB = path.lookup_file("glyph.dat");

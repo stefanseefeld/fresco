@@ -201,6 +201,9 @@ for kit in $tested_drawing_kits $enable_kits
 do
 	KITS="$KITS src/$kit"
 done
+
+console=$CON_IMPL
+
 AC_SUBST(KITS)
 
 SERVER="server"
@@ -227,6 +230,7 @@ dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
 AC_MSG_RESULT([Build libBerlin:           $enable_berlin])
+AC_MSG_RESULT([Build Console:             $console])
 AC_MSG_RESULT([Build Kits:               $tested_drawing_kits $enable_kits])
 AC_MSG_RESULT([Add profiling support:     $jprof])
 AC_MSG_RESULT([Add lifecycle log support: $lclog])
@@ -241,6 +245,8 @@ mkdir -p $builddir/lib
 mkdir -p $builddir/config/Server
 mkdir -p $builddir/include/Berlin
 mkdir -p $builddir/src/Berlin
+mkdir -p $builddir/src/Console/$console
+console_output="$builddir/src/Console/$console/Makefile:src/Console/$console/Makefile.in"
 kit_output=
 for kit in $KITS ; do
 	mkdir -p $builddir/$kit
@@ -255,6 +261,7 @@ AC_OUTPUT([
 	$builddir/config/Server/local.mk:config/Server/local.mk.in
 	$builddir/config/Server/module.mk:config/Server/module.mk.in
 	$builddir/src/Berlin/Makefile:src/Berlin/Makefile.in
+	$console_output
 	$kit_output
 	$builddir/server/Makefile:server/Makefile.in
 	$builddir/config/berlinrc:config/berlinrc.in

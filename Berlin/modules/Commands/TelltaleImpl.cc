@@ -25,7 +25,7 @@
 using namespace Prague;
 using namespace Warsaw;
 
-TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long m)
+TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, CORBA::ULong m)
   : _mask(m), _constraint(c)
 {}
 
@@ -54,7 +54,7 @@ CORBA::Boolean TelltaleImpl::test(Warsaw::Telltale::Mask m)
 
 void TelltaleImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
-  unsigned long nf = on ? _mask | m : _mask & ~m;
+  CORBA::ULong nf = on ? _mask | m : _mask & ~m;
   {
     Prague::Guard<Mutex> guard(_mutex);
     if (nf == _mask) return;

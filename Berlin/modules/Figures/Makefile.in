@@ -37,7 +37,7 @@ LIBS		+= -lBerlin
 SRC		:= FigureImpl.cc PolyFigure.cc Figures.cc ImageImpl.cc \
 		   Transformer.cc FigureKitImpl.cc
 
-MODULE		:= Figure
+MODULE		:= FigureKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Figure
 

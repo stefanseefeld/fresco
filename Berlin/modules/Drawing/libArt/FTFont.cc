@@ -65,13 +65,13 @@ bool LibArtFTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &fac
   return true;
 }
 
-LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
+LibArtFTFont::LibArtFTFont(double xres, double yres)
   : //   xdpi(drawable->dpi(xaxis)),
     //   ydpi(drawable->dpi(yaxis)),
   _xdpi(96.),
   _ydpi(96.),
-  _xres(drawable->resolution(xaxis)),
-  _yres(drawable->resolution(yaxis)),
+  _xres(xres),
+  _yres(yres),
   _size(14),
   _scale(1),
   _glyphCache(GlyphFactory(this, &_library), 256),

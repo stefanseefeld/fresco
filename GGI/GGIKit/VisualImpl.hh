@@ -26,7 +26,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/GGIKit.hh>
 #include <Berlin/ControllerImpl.hh>
-#include <Berlin/Console.hh>
+#include <Console/GGI/GGI.hh>
 
 class VisualImpl : public virtual POA_GGI::Visual,
                    public ControllerImpl

@@ -36,7 +36,7 @@ LIBS		+= -lBerlin -lpng
 
 SRC		:= PNG.cc RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
 
-MODULE		:= Image
+MODULE		:= ImageKit
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Image
 

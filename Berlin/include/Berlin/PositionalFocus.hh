@@ -28,7 +28,7 @@
 #include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/FocusImpl.hh>
-#include <Berlin/Pointer.hh>
+#include <Berlin/Console.hh>
 #include <vector>
 
 class CachingPickTraversal;
@@ -53,7 +53,7 @@ protected:
   virtual void activate_composite();
 private:
   Warsaw::Graphic_ptr _root;
-  Pointer            *_pointer;
+  Console::Pointer   *_pointer;
   Traversal          *_traversal_cache[2];
   Traversal          *_traversal;
   cstack_t            _controllers;
