@@ -124,6 +124,8 @@ SDL::nonGLPointer::nonGLPointer(Drawable * drawable, Fresco::Raster_ptr raster) 
   _position[0] = _position[1] = 8;
   _old_x = _position[0] - _origin[0];
   _old_y = _position[1] - _origin[1];
+  _old_size_x = _size[0];
+  _old_size_y = _size[1];
 
   // set SDL_Alpha:
   SDL_SetAlpha(_cursor->surface(), SDL_SRCALPHA, 128);
