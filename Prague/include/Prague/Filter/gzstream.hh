@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _gzstream_h
-#define _gzstream_h
+#ifndef _gzstream_hh
+#define _gzstream_hh
 
-#include <iostream.h>
 #include <Prague/Filter/gzbuf.hh>
+#include <iostream>
 
 namespace Prague
 {
@@ -103,7 +103,7 @@ inline gzomanip<int> setcompressionstrategy(int l)
 
 };
 
-#endif /* _gzstream_h */
+#endif /* _gzstream_hh */
 
 
 
