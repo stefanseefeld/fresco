@@ -62,6 +62,12 @@ GGI::Drawable::Drawable(const char *display, PixelCoord w, PixelCoord h, PixelCo
     }
   _mode.size = _mode.visible; // awful hack around a ggi bug...
   ggiAddFlags(_visual, GGIFLAG_ASYNC);
+
+  if (ggiDBGetNumBuffers(_visual)==0)
+    {
+      std::cerr << "ERROR: GGI Console requires direct-buffer support" << endl;
+      throw std::exception();
+    }
 }
 
 GGI::Drawable::~Drawable()
