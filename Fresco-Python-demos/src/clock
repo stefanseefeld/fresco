@@ -11,13 +11,9 @@ from omniORB import CORBA
 
 # Import the Fresco stubs and client lib
 import Fresco, Unidraw
-import Fresco__POA
-from Fresco import Label, Callback, nullAny
+import FrescoClient
 
-# Import Fresco lib
-import pyfresco
-
-class TickGraphic (pyfresco.PyGraphic):
+class TickGraphic (FrescoClient.Graphic):
     "Simple graphic that draws a 'tick'"
     def request(self): # --> void
 	x = Fresco.Graphic.Requirement(1, 2000., 3000., 100., 0.)
@@ -48,10 +44,10 @@ class TickGraphic (pyfresco.PyGraphic):
 	dk.restore()
 
 
-class ClockGraphic (pyfresco.PyGraphic):
+class ClockGraphic (FrescoClient.Graphic):
     "Simple graphic that draws a clock"
     def __init__(self):
-	pyfresco.PyGraphic.__init__(self)
+	FrescoClient.Graphic.__init__(self)
 	thread.start_new_thread(self._run_update_thread, ())
 	self._offset = 0. #angular offset
 	self._lock = threading.Lock()
@@ -124,9 +120,9 @@ class ClockGraphic (pyfresco.PyGraphic):
 	dk.draw_path(path)
 	dk.restore()
 
-class ClockController (pyfresco.PyController):
+class ClockController (FrescoClient.Controller):
     def __init__(self):
-	pyfresco.PyController.__init__(self, 0)
+	FrescoClient.Controller.__init__(self, 0)
 	self.clock = ClockGraphic()
 	self._set_body(self.clock._this())
 	self._rot = 0.
@@ -136,25 +132,25 @@ class ClockController (pyfresco.PyController):
 	print "Press a key (in the Fresco window) to reset the angle"
 
     def traverse(self, traversal):
-	pyfresco.PyController.traverse(self, traversal)
+	FrescoClient.Controller.traverse(self, traversal)
     def press(self, pickTraversal, input_event):
 	print "Press"
 	self.clock._lock.acquire()
-	pyfresco.PyController.press(self, pickTraversal, input_event)
-	self._pos = pyfresco.get_position(input_event)
+	FrescoClient.Controller.press(self, pickTraversal, input_event)
+	self._pos = FrescoClient.get_position(input_event)
 	self._rot = self.clock._offset
 	self._start_rot = None
 	self._curr_rot = self._rot
     def release(self, pickTraversal, input_event):
 	print "Release"
-	pyfresco.PyController.release(self, pickTraversal, input_event)
-	pos = pyfresco.get_position(input_event)
+	FrescoClient.Controller.release(self, pickTraversal, input_event)
+	pos = FrescoClient.get_position(input_event)
 	bounds = pickTraversal.current_allocation().bounds()
 	bounds = map(pickTraversal.current_transformation().transform_vertex, bounds)
 	self.do_drag(bounds, pos)
 	self.clock._lock.release()
     def drag(self, pickTraversal, input_event):
-	pos = pyfresco.get_position(input_event)
+	pos = FrescoClient.get_position(input_event)
 	bounds = pickTraversal.current_allocation().bounds()
 	bounds = map(pickTraversal.current_transformation().transform_vertex, bounds)
 	self.do_drag(bounds, pos)
@@ -181,10 +177,10 @@ class ClockController (pyfresco.PyController):
 	self.clock.need_redraw()
 	self.clock._lock.release()
 
-class GraphicApp (Fresco.App):
+class GraphicApp (FrescoClient.App):
     def run(self):
 	clock = ClockController()._this()
-	clock_group = kits.tool.group(clock)
+	clock_group = kits.tools.group(clock)
 	clock_group.append_controller(clock)
 	self.window = kits.desktop.shell(clock_group, connection.clientContext)
 
@@ -194,8 +190,8 @@ class GraphicApp (Fresco.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = Fresco.get_connection()
-    kits = Fresco.get_kits()
+    connection = FrescoClient.get_connection()
+    kits = FrescoClient.get_kits()
     app = GraphicApp()
 
     app.run()

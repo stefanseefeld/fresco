@@ -10,38 +10,33 @@ from omniORB import CORBA, PortableServer
 
 # Import the Fresco stubs and client lib
 import Fresco, Unidraw, Layout
-from Fresco import Label, Callback, nullAny
-import Fresco__POA
+import FrescoClient
 
-# Import Python client lib
-import pyfresco
-from pyfresco import Babylon
-
-class Mapper (pyfresco.PyController):
+class Mapper (FrescoClient.Controller):
     def __init__(self, xrange, yrange):
-        pyfresco.PyController.__init__(self, 0)
+        FrescoClient.Controller.__init__(self, 0)
         self.__xrange = xrange
         self.__yrange = yrange
         self._set_body(kits.layout.align(kits.layout.fixed_size(Fresco.Graphic._nil, 200., 200.), 0., 0.))
-        panner = kits.widget.panner(xrange, yrange)
+        panner = kits.widgets.panner(xrange, yrange)
         self.__pulldown = kits.desktop.pulldown(panner)
 
     def press(self, pickTraversal, input_event):
-        position = pyfresco.get_position(input_event)
+        position = FrescoClient.get_position(input_event)
         self.__pulldown._set_position(position)
 	self.__pulldown._set_mapped(1)
 
     def release(self, pickTraversal, input_event):
 	print "Release"
 
-class ViewportApp (Fresco.App):
+class ViewportApp (FrescoClient.App):
     def run(self):
-        Fresco.App.__init__(self)
-        kits = Fresco.get_kits()
-        pixmap = kits.figure.pixmap(kits.image.create("landscape.png"))
+        FrescoClient.App.__init__(self)
+        kits = FrescoClient.get_kits()
+        pixmap = kits.figures.pixmap(kits.rasters.create_raster("landscape.png"))
         viewport = kits.layout.scrollable(pixmap)
-        xscroller = kits.widget.scrollbar(viewport.adjustment(Fresco.xaxis), Fresco.xaxis)
-        yscroller = kits.widget.scrollbar(viewport.adjustment(Fresco.yaxis), Fresco.yaxis)
+        xscroller = kits.widgets.scrollbar(viewport.adjustment(Fresco.xaxis), Fresco.xaxis)
+        yscroller = kits.widgets.scrollbar(viewport.adjustment(Fresco.yaxis), Fresco.yaxis)
         mapper = Mapper(viewport.adjustment(Fresco.xaxis), viewport.adjustment(Fresco.yaxis))._this()
         hbox1 = kits.layout.hbox()
         hbox1.append_graphic(viewport)
@@ -54,8 +49,8 @@ class ViewportApp (Fresco.App):
         vbox1.append_graphic(hbox2)
 
         spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
-        background = kits.tool.frame(vbox1, 10., spec, 1)
-        group = kits.tool.group(background)
+        background = kits.tools.frame(vbox1, 10., spec, 1)
+        group = kits.tools.group(background)
         self.window = kits.desktop.shell(group, connection.clientContext)
 
     def exit(self, any):
@@ -64,8 +59,8 @@ class ViewportApp (Fresco.App):
 def main():
     # Create the singletons
     global app, kits, connection
-    connection = Fresco.get_connection()
-    kits = Fresco.get_kits()
+    connection = FrescoClient.get_connection()
+    kits = FrescoClient.get_kits()
 
     app = ViewportApp()
     app.run()

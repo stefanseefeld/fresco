@@ -10,12 +10,8 @@ import sys, string, time, math, thread, threading
 from omniORB import CORBA
 
 # Import the Fresco stubs and client lib
-import Fresco, Unidraw
-import Fresco__POA
-from Fresco import Label, Callback, nullAny
-
-# Import Fresco lib
-import pyfresco
+import Fresco, Unidraw, Fresco__POA
+import FrescoClient
 
 class Rotator(Fresco__POA.Observer):
     def __init__(self, value, child, parent, axis):
@@ -57,10 +53,10 @@ def generate_mesh(w, h, d):
     return Fresco.Mesh(map(scale, nodes), map(triangulate, triangles), map(normalize, normals))
 
 
-class Primitive (pyfresco.PyGraphic):
+class Primitive (FrescoClient.Graphic):
     "Simple graphic that draws a clock"
     def __init__(self, w, h, d):
-	pyfresco.PyGraphic.__init__(self)
+	FrescoClient.Graphic.__init__(self)
         self.__width = w
         self.__height = h
         self.__depth = d
@@ -88,45 +84,45 @@ class Primitive (pyfresco.PyGraphic):
 	dk.draw_mesh(self.__mesh)
 	dk.restore()
 
-class GraphicApp (Fresco.App):
+class GraphicApp (FrescoClient.App):
     def run(self):
         vbox = kits.layout.vbox()
-	phi = kits.command.bvalue(0., 360., 0., 1., 10.)
-	psi = kits.command.bvalue(0., 360., 0., 1., 10.)
+	phi = kits.commands.bvalue(0., 360., 0., 1., 10.)
+	psi = kits.commands.bvalue(0., 360., 0., 1., 10.)
         hbox = kits.layout.hbox()
         hbox.append_graphic(kits.layout.hfill())
-        hbox.append_graphic(kits.widget.slider(phi, Fresco.xaxis))
+        hbox.append_graphic(kits.widgets.slider(phi, Fresco.xaxis))
         hbox.append_graphic(kits.layout.hfill())
         vbox.append_graphic(hbox)
         hbox = kits.layout.hbox()
         hbox.append_graphic(kits.layout.hfill())
-        hbox.append_graphic(kits.widget.slider(psi, Fresco.xaxis))
+        hbox.append_graphic(kits.widgets.slider(psi, Fresco.xaxis))
         hbox.append_graphic(kits.layout.hfill())
         vbox.append_graphic(hbox)
 
 	#primitive = Primitive(3000., 3000., 3000.)._this()
-        primitive = kits.primitive.geometry(generate_mesh(300., 300., 300.))
-        primitive = kits.tool.rgb(primitive, 0.6, 0.6, 1.0)
-        root = kits.primitive.root(Fresco.Graphic._nil)
+        primitive = kits.primitives.geometry(generate_mesh(300., 300., 300.))
+        primitive = kits.tools.rgb(primitive, 0.6, 0.6, 1.0)
+        root = kits.primitives.root(Fresco.Graphic._nil)
         # heh, try to figure out what the next few lines do :)
-        transformer = kits.primitive.transformer(primitive)
+        transformer = kits.primitives.transformer(primitive)
         phi.attach(Rotator(phi, transformer, root, Fresco.zaxis)._this())
-        transformer = kits.primitive.transformer(transformer)
+        transformer = kits.primitives.transformer(transformer)
         psi.attach(Rotator(psi, transformer, root, Fresco.yaxis)._this())
         green = Fresco.Color(0., 1., 0., 1.)
         direction = Fresco.Vertex(1., 0., 0.)
-        light1 = kits.primitive.directional_light(transformer, green, 1., direction)
+        light1 = kits.primitives.directional_light(transformer, green, 1., direction)
         orange = Fresco.Color(0.8, 1., 0., 1.)
         direction = Fresco.Vertex(0., 1., 0.)
-        light2 = kits.primitive.directional_light(light1, green, 1., direction)
+        light2 = kits.primitives.directional_light(light1, green, 1., direction)
         violet = Fresco.Color(1., 0., 1., 1.)
         direction = Fresco.Vertex(0., 0., 1.)
-        light3 = kits.primitive.directional_light(light2, violet, 1., direction)
+        light3 = kits.primitives.directional_light(light2, violet, 1., direction)
         root._set_body(light3)
         vbox.prepend_graphic(kits.layout.align(root, 0., 0.))
         spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.inset, 0.5)
-        frame = kits.tool.frame(vbox, 10., spec, 1)
-	group = kits.tool.group(frame)
+        frame = kits.tools.frame(vbox, 10., spec, 1)
+	group = kits.tools.group(frame)
 	self.window = kits.desktop.shell(group, connection.clientContext)
 
 	#kits.desktop.shell(kits.tool.group(TickGraphic()._this()))
@@ -135,8 +131,8 @@ class GraphicApp (Fresco.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = Fresco.get_connection()
-    kits = Fresco.get_kits()
+    connection = FrescoClient.get_connection()
+    kits = FrescoClient.get_kits()
     app = GraphicApp()
 
     app.run()

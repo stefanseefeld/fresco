@@ -5,16 +5,17 @@ import string
 
 # Import Fresco stubs and client lib
 import Fresco
+import FrescoClient
 
-class DemoApp (Fresco.App):
+class DemoApp (FrescoClient.App):
     def mk_frame(self, color):
 	spec = Fresco.ToolKit.FrameSpec(
 	    Fresco.ToolKit.colored, apply(Fresco.Color, color))
-	return kits.tool.frame(self.pixmap, 50, spec, 1)
+	return kits.tools.frame(self.pixmap, 50, spec, 1)
     def run(self):
 	# Create a pixmap
-	raster = kits.image.create("berlin-48.png")
-	self.pixmap = kits.figure.pixmap(raster)
+	raster = kits.rasters.create_raster("fresco.png")
+	self.pixmap = kits.figures.pixmap(raster)
 
 	if 1: # The elegant way to do it
 	    colors = (
@@ -30,7 +31,7 @@ class DemoApp (Fresco.App):
 	    # an object instance
 	    map(box.append_graphic, frames)
 	    # We can only shell a controller, so wrap the hbox in a group
-	    group = kits.tool.group(box)
+	    group = kits.tools.group(box)
 	    shell = kits.desktop.shell(group, connection.clientContext)
 	    # Get an iterator that points at the first graphic (frame)
 	    # Note the iterator is a reference to a server-side object
@@ -49,22 +50,22 @@ class DemoApp (Fresco.App):
 	else: # The simple way to do it :)
 	    pixmap = self.pixmap
 	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(1., 0.5, 0.5, 1.))
-	    frame1 = tool.frame(pixmap, 50, spec, 1)
+	    frame1 = tools.frame(pixmap, 50, spec, 1)
 	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(0.5, 1., 0.5, 1.))
-	    frame2 = tool.frame(pixmap, 50, spec, 1)
+	    frame2 = tools.frame(pixmap, 50, spec, 1)
 	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(0.5, 0.5, 1., 1.))
-	    frame3 = tool.frame(pixmap, 50, spec, 1)
+	    frame3 = tools.frame(pixmap, 50, spec, 1)
 	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(1., 1., 0.5, 1.))
-	    frame4 = tool.frame(pixmap, 50, spec, 1)
+	    frame4 = tools.frame(pixmap, 50, spec, 1)
 	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(1., 0.5, 1., 1.))
-	    frame5 = tool.frame(pixmap, 50, spec, 1)
+	    frame5 = tools.frame(pixmap, 50, spec, 1)
 	    box    = layout.hbox()
 	    box.append_graphic(frame1)
 	    box.append_graphic(frame2)
 	    box.append_graphic(frame3)
 	    box.append_graphic(frame4)
 	    box.append_graphic(frame5)
-	    group  = tool.group(box)
+	    group  = tools.group(box)
 	    shell  = desktop.shell(group)
 	    iterator = box.first_child_graphic()
 	    for i in [1,2,3,4,5]:
@@ -85,8 +86,8 @@ class DemoApp (Fresco.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = Fresco.get_connection()
-    kits = Fresco.get_kits()
+    connection = FrescoClient.get_connection()
+    kits = FrescoClient.get_kits()
     app = DemoApp()
 
     app.run()

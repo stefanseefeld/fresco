@@ -13,15 +13,11 @@ import sys, string, os
 from omniORB import CORBA, PortableServer
 
 # Import the Fresco stubs and client lib
-import Fresco, Layout
-import Fresco__POA
-from Fresco import Label, Callback, nullAny
+import Fresco, Layout, Fresco__POA
+import FrescoClient
+from FrescoClient import Label, Callback, nullAny, Babylon
 
-# Import Python client lib
-import pyfresco
-from pyfresco import Babylon
-
-class MenuKitImpl (Fresco__POA.MenuKit):
+class MenuKitImpl(Fresco__POA.MenuKit):
     """Pretend kit that builds menu objects"""
     def menu_bar(self):
 	"""Returns a menubar object"""
@@ -44,7 +40,7 @@ def get_local(object_var, class_obj):
     if not isinstance(obj, class_obj): raise TypeError, "Not local object"
     return obj
 
-class MenuItem (pyfresco.PyController):
+class MenuItem (FrescoClient.Controller):
     """Encapsulates a Menu item with label and optional submenu and callback.
     TODO: provide api to close all parent popups once an item is selected."""
     def __init__(self, root, label, orient, submenu=None, callback=None):
@@ -70,7 +66,7 @@ class MenuItem (pyfresco.PyController):
 	# Construct the dynamic frame that shows when in focus or not
 	fspec_out = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
 	fspec_none = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.none, 1.0)
-	self.frame = kits.tool.dynamic(self.button, 10.,
+	self.frame = kits.tools.dynamic(self.button, 10.,
 	    Fresco.Controller.active, fspec_out, fspec_none, 
 	    0, self._this())
 	self._set_body(self.frame)
@@ -86,7 +82,7 @@ class MenuItem (pyfresco.PyController):
 	    if self.submenu:
 		fspec_focus = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.8)
 		fspec_none = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.3)
-		tri = kits.tool.dynamic_triangle(None,
+		tri = kits.tools.dynamic_triangle(None,
 		    10., Fresco.Controller.active, fspec_focus, fspec_none,
 		    1, Fresco.ToolKit.right, self._this())
 		tri = kits.layout.fixed_size(tri, 140., 140.)
@@ -245,7 +241,7 @@ class MenuItem (pyfresco.PyController):
 	else: to = Fresco.Vertex(lower.x, upper.y, 0.)
 	sub._set_position(to)
 
-class Menu (pyfresco.PyController):
+class Menu (FrescoClient.Controller):
     """Encapsulates a vertical menu of MenuItems"""
     def __init__(self):
 	"Creates menu from sequence of items"
@@ -279,7 +275,7 @@ class Menu (pyfresco.PyController):
 	self.box = kits.layout.vbox()
 	self._set_body(self.box)
 	#fspec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.2)
-	#frame = kits.tool.frame(box, 10.0, fspec, 1)
+	#frame = kits.tools.frame(box, 10.0, fspec, 1)
 
 	map(self._add_item, self.items)
 
@@ -302,7 +298,7 @@ class MenuBar(Menu):
 	spacer_box.append_graphic(kits.layout.hfill())
 
 	fspec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.2)
-	frame = kits.tool.frame(spacer_box, 10.0, fspec, 1)
+	frame = kits.tools.frame(spacer_box, 10.0, fspec, 1)
 	
 	self._set_body(frame)
     
@@ -317,8 +313,8 @@ class About:
 	self.button = kits.widget.button(Label("Okay"), self._get_hide_cmd())
 	self.vbox.append_graphic(self.button)
 	fspec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.none, 0)
-	self.frame = kits.tool.frame(self.vbox, 0.0, fspec, 1)
-	self.group = kits.tool.group(kits.tool.rgb(self.frame, 0.8, 0.8, 0.8))
+	self.frame = kits.tools.frame(self.vbox, 0.0, fspec, 1)
+	self.group = kits.tools.group(kits.tools.rgb(self.frame, 0.8, 0.8, 0.8))
 	self.window = kits.desktop.transient(self.group)
 	self._mapper_show = kits.desktop.map(self.window, 1)
 	self._mapper_hide = kits.desktop.map(self.window, 0)
@@ -345,7 +341,7 @@ class RunApp(Fresco__POA.Command):
 	    print "Failed"
 	    sys.exit(0)
 
-class MenuApp (Fresco.App):
+class MenuApp (FrescoClient.App):
     def run(self):
 	def add(menu, items): 
 	    for item in items: 
@@ -390,13 +386,13 @@ class MenuApp (Fresco.App):
 
 	vbox = kits.layout.vbox()
 	vbox.append_graphic(menu)
-	contents = kits.figure.pixmap(kits.image.create("marble.png"))
+	contents = kits.figure.pixmap(kits.rasters.create("marble.png"))
 	grid = kits.layout.fixed_grid(Layout.Grid.Index(5,4))
 	for i in range(5*4):
 	    grid.append_graphic(contents)
 	vbox.append_graphic(kits.layout.fixed_size(grid,6400.,4800.))
 
-	group = kits.tool.group(vbox)
+	group = kits.tools.group(vbox)
 	group.append_controller(menu)
 	self.window = kits.desktop.shell(group, connection.clientContext)
 	self.window._set_position(Fresco.Vertex(0, -210, 0))
@@ -418,8 +414,8 @@ class MenuApp (Fresco.App):
 def main():
     # Create the singletons
     global app, kits, connection
-    connection = Fresco.get_connection()
-    kits = Fresco.get_kits()
+    connection = FrescoClient.get_connection()
+    kits = FrescoClient.get_kits()
     app = MenuApp()
 
     app.run()

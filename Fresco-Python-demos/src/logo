@@ -5,16 +5,16 @@ import string
 
 # Import Fresco client lib
 import Fresco
-from Fresco import Label, Callback, nullAny
+import FrescoClient
 
-class DemoApp (Fresco.App):
+class DemoApp (FrescoClient.App):
     def run(self):
 	# Create a pixmap
-	pixmap = kits.figure.pixmap(kits.image.create_raster("berlin-128.png"))
+	pixmap = kits.figures.pixmap(kits.rasters.create_raster("fresco.png"))
 	margin = kits.layout.margin_flexible(pixmap, 100., 500., 100.)
 	spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
-        demo = kits.tool.frame(margin, 10., spec, 1)
-	group = kits.tool.group(kits.tool.debugger(demo, "debug"))
+        demo = kits.tools.frame(margin, 10., spec, 1)
+	group = kits.tools.group(kits.tools.debugger(demo, "debug"))
     	shell = kits.desktop.shell(group, connection.clientContext)
 
 
@@ -22,8 +22,8 @@ class DemoApp (Fresco.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = Fresco.get_connection()
-    kits = Fresco.get_kits()
+    connection = FrescoClient.get_connection()
+    kits = FrescoClient.get_kits()
     app = DemoApp()
 
     app.run()
