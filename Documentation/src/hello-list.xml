@@ -33,7 +33,7 @@
 
     Graphic_var label = text-&gt;chunk(Unicode::to_CORBA(Babylon::String("hello world")));
     Graphic_var black = tools->rgb(label, 0., 0., 0.);
-    Controller_var button = widgets-&gt;button(label, Command::_nil());
+    Controller_var button = widgets-&gt;button(black, Command::_nil());
     Window_var window = desktop-&gt;shell(button, client);
 
     while (true) Thread::delay(1000);
