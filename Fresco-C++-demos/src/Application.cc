@@ -83,7 +83,7 @@ Application::Application(ServerContext_ptr sc, ClientContext_ptr cc)
     _mapper(new Mapper(_demos, Selection_var(_choice->state())))
 {
   _background.red = _background.green = _background.blue = 0.6; _background.alpha = 1.;
-  Raster_var raster = _ik->create("berlin-48.png");
+  Raster_var raster = _ik->create("fresco.png");
   Image_var  image = _fk->pixmap(raster);
   Graphic_var hbox = _lk->hbox();
   hbox->append_graphic(image);

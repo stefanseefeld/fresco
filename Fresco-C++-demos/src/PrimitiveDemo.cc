@@ -79,6 +79,7 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   ToolKit_var   tools = application->tool();
   WidgetKit_var widgets = application->widget();
   ImageKit_var  images = application->image();
+  FigureKit_var  figures = application->figure();
   PrimitiveKit_var primitives = application->primitive();
   CommandKit_var commands = application->command();
   
@@ -112,7 +113,8 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   Graphic_var transformer1 = primitives->transformer(Graphic_var(tools->rgb(geometry, 0.6, 0.6, 1.0)));
   Graphic_var transformer2 = primitives->transformer(Graphic_var(transformer1));
   Color white = {1., 1., 1., 1.};
-  Vertex direction = {5., 5., 10.};
+  Vertex direction = {5., 0., 0.};
+
   Graphic_var light = primitives->directional_light(transformer2, white, 1., direction);
   
   Graphic_var root = primitives->root(light);
