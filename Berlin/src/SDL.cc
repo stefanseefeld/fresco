@@ -327,8 +327,22 @@ Input::Event *SDLConsole::synthesize(const SDL_Event &e)
        }
     case SDL_MOUSEMOTION:
       {
-	_position[0] = e.motion.x;
- 	_position[1] = e.motion.y;
+	// grab waiting mouse events and skip to the last one
+	SDL_Event move_events[64];
+	SDL_PumpEvents();
+	int num = SDL_PeepEvents(move_events, 64, SDL_GETEVENT, SDL_MOUSEMOTIONMASK);
+	if (num > 0)
+	  {
+	    // Use last known position of mouse
+	    _position[0] = move_events[num-1].motion.x;
+	    _position[1] = move_events[num-1].motion.y;
+	  }
+	else
+	  {
+	    // Use position from original event
+	    _position[0] = e.motion.x;
+	    _position[1] = e.motion.y;
+	  }
  	Input::Position position;
  	position.x = _position[0]/_resolution[0];
  	position.y = _position[1]/_resolution[1];
