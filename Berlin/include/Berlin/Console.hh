@@ -107,6 +107,7 @@ public:
   virtual void wakeup() = 0;
   //. FIXME: Missing documentation!
   virtual void activate_autoplay() = 0;
+#ifdef RMDEBUG
   //. Highlight the specified region to aid debugging.
   //. You can set the color of the highlight by passing a
   //. red, green and blue betwenn 0.0 and 1.0. If
@@ -116,6 +117,7 @@ public:
 				float red = 1.0,
 				float green = 0.0,
 				float blue = 0.0) = 0;
+#endif
 
   template <typename T>
   T *get_extension(const std::string &id)
