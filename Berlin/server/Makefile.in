@@ -75,7 +75,9 @@ endif
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 install:	all
+		$(INSTALL) -d 755 $(DESTDIR)$(bindir)
 		$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
+		$(INSTALL) -d 755 $(DESTDIR)$(sysconfdir)
 		$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
 
 uninstall:
