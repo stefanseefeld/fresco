@@ -53,4 +53,6 @@ private:
 
 }
 
+#define dload(T) extern "C" T *load() { return new T;}
+
 #endif
