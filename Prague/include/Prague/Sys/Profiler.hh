@@ -63,8 +63,8 @@ class Profiler
   {
     Guard()
       {
-	Profiler::table = new table_t(0);
-	Profiler::current = &Profiler::table->root();
+	Profiler::table = new table_t(new CheckPoint("RootEntry"));
+	Profiler::current = &table->root();
       }
     ~Guard()
       {
