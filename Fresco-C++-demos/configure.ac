@@ -55,6 +55,14 @@ LIBS="$LIBS $Prague_LIBS"
 
 BERLIN_GGI_CHECK
 
+HAS_GGI=0
+if test ".$ac_cv_lib_ggi" = .yes ; then
+	HAS_GGI=1
+fi
+AC_SUBST(HAS_GGI)
+AC_SUBST(GGI_CPPFLAGS)
+AC_SUBST(GGI_LIBS)
+
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------

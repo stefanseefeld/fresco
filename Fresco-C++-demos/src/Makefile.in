@@ -22,6 +22,8 @@
 SHELL		:= /bin/sh
 VERSION		:= @VERSION@
 
+has_ggi		:= @HAS_GGI@
+
 top_srcdir	:= @topdir@
 srcdir		:= $(top_srcdir)/clients/C++
 builddir	:= ../..
@@ -55,7 +57,7 @@ PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
 
 TARGETS		:= $(bdir)/demo $(bdir)/demo3D $(bdir)/pinyin_demo
 
-ifeq (@CON_IMPL@,GGI)
+ifeq ($(has_ggi), 1)
 TARGETS		+= $(bdir)/canvas $(bdir)/ggiwrapper
 endif
 all:	$(TARGETS)
@@ -68,14 +70,14 @@ $(bdir)/demo3D:	$(DEMO3D_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-ifeq (@CON_IMPL@,GGI)
+ifeq ($(has_ggi), 1)
 $(bdir)/canvas:	canvas.o
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @CON_LIBS@
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @GGI_LIBS@
 
 $(bdir)/ggiwrapper:	ggiwrapper.o
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @CON_LIBS@
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @GGI_LIBS@
 endif
 
 $(bdir)/primitive:	primitive.o
@@ -105,8 +107,8 @@ maintainer-clean: distclean
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
-ifeq (@CON_IMPL@,GGI)
+ifeq ($(has_ggi), 1)
 canvas.o ggiwrapper.o: %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) @CON_CPPFLAGS@ $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) @GGI_CPPFLAGS@ $(CXXFLAGS) -c $< -o $@
 endif

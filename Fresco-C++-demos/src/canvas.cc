@@ -29,6 +29,7 @@
 #include <Warsaw/DesktopKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/Canvas.hh>
+#include <Warsaw/MainController.hh>
 #include <unistd.h>
 #include <iostream>
 #include <strstream>
