@@ -91,10 +91,13 @@ DrawTraversalImpl::~DrawTraversalImpl()
 
 CORBA::Boolean DrawTraversalImpl::intersects_allocation()
 {
+  Trace trace("DrawTraversalImpl::intersects_allocation");
   Region_var r = current_allocation();
   Transform_var t = current_transformation();
-  RegionImpl region(r, t);
-  return region.intersects(_clipping);
+  Lease_var<RegionImpl> region( Provider<RegionImpl>::provide() );
+  region->copy(r);
+  region->apply_transform(t);
+  return region->intersects(_clipping);
 }
 
 CORBA::Boolean DrawTraversalImpl::intersects_region(Region_ptr r)
