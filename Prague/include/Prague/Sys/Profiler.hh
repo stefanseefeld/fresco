@@ -36,6 +36,7 @@ namespace Prague
 
 class Profiler
 {
+public:
   struct CheckPoint
   {
     CheckPoint(const string &s) : name(s), count(0), start(0), stop(0), elapsed(0) {}
@@ -54,6 +55,7 @@ class Profiler
     clock_t stop;
     double elapsed;
   };
+private:
   typedef ntree<CheckPoint *> table_t;
   typedef ntree<CheckPoint *>::node item_t;
   typedef ntree<CheckPoint *>::node::child_iterator child_iterator;
