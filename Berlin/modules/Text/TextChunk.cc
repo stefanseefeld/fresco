@@ -28,6 +28,8 @@
 #include <Fresco/IO.hh>
 #include "TextChunk.hh"
 
+#include <strstream>
+
 using namespace Fresco;
 
 TextChunk::TextChunk(Unichar u, const Fresco::Graphic::Requisition &r)
