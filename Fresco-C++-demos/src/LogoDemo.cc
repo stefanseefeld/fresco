@@ -87,23 +87,23 @@ LogoDemo::LogoDemo(Application *a)
   Figures::Path_var triangle3 = figure->polygon(path);
   triangle3->type(Figure::fill);
   triangle3->background(red);
-  Graphic_var transformator1 = figure->projection(triangle1);
-  Graphic_var transformator2 = figure->projection(triangle2);
-  Graphic_var transformator3 = figure->projection(triangle3);
+  Graphic_var transformer1 = figure->transformer(triangle1);
+  Graphic_var transformer2 = figure->transformer(triangle2);
+  Graphic_var transformer3 = figure->transformer(triangle3);
   
   Graphic_var group = figure->group();
   
-  rotator1 = new Rotator(bv1, transformator1, group, 20.);
+  rotator1 = new Rotator(bv1, transformer1, group, 20.);
   bv1->attach(Observer_var(rotator1->_this()));
-  rotator2 = new Rotator(bv2, transformator2, group, 10.);
+  rotator2 = new Rotator(bv2, transformer2, group, 10.);
   bv2->attach(Observer_var(rotator2->_this()));
-  rotator3 = new Rotator(bv3, transformator3, group, -10.);
+  rotator3 = new Rotator(bv3, transformer3, group, -10.);
   bv3->attach(Observer_var(rotator3->_this()));
   
   Graphic_var root = figure->root(group);
-  group->append(transformator1);
-  group->append(transformator2);
-  group->append(transformator3);
+  group->append(transformer1);
+  group->append(transformer2);
+  group->append(transformer3);
   
   Graphic_var hbox1 = layout->hbox();
   hbox1->append(Graphic_var(layout->hfil()));
