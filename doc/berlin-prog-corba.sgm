@@ -1,4 +1,4 @@
-<sect1>
+<sect1 ID="corba-intro">
   <title>A brief intro to Corba</title>
   <abstract>
     <para>The 1 thing all implementations of berlin must have in
@@ -74,7 +74,7 @@ technique in berlin.
       you'd treat any other method in a C++ program.
     </para>
 
-    <sect2>
+    <sect2 ID="corba-example">
       <title>Example</title>
       
       <para>
@@ -210,7 +210,7 @@ client to fall over. In general, if the failure case is real, it's
 worth declaring as an exception.
     </para>
 
-    <sect3>
+    <sect3 ID="corba-client-server">
     <title>How the client and the server meet</title>
 
     <para>

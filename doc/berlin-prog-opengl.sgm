@@ -1,4 +1,4 @@
-  <sect1>
+  <sect1 ID="opengl">
     <title>OpenGL</title>
     
     <abstract>
@@ -9,7 +9,7 @@
       understanding of OpenGL.</para>
     </abstract>
 
-    <sect2>
+    <sect2 ID="opengl-design">
       <title>The design of OpenGL</title> 
 
       <para>OpenGL is a long-standing graphics API put together by a

@@ -1,5 +1,5 @@
 
-  <chapter>
+  <chapter ID="programming-chapter">
     <title>Programming the Display Server</title>
     
     <abstract>
@@ -10,7 +10,7 @@
     intended to give you an idea how it all "fits together".</para>
     </abstract>
  
-    <sect1>
+    <sect1 ID="graphics">
       <title>Graphics</title> 
       
       <para>A <classname>graphic</classname> is any thing which can
@@ -69,7 +69,7 @@
 
       </sect1>
     
-    <sect1>
+    <sect1 ID="composites">
       <title>Composite Graphics</title>
 
       <para>With a little thought, it should be clear that a lot of
@@ -98,7 +98,7 @@
 
     </sect1>
 
-      <sect1>
+      <sect1 ID="reactors">
 	<title>Reactors</title> 
 
 	<para>A <classname>reactor</classname> is a common pattern in
@@ -148,7 +148,7 @@
               <classname>reactor</classname>.</para>
       </sect1>
 
-    <sect1>
+    <sect1 ID="commands">
       <title>Commands</title> 
 
       <para>A <classname>command</classname>, as mentioned in the
@@ -204,7 +204,7 @@
       </informalExample>
     </sect1>
 
-    <sect1>
+    <sect1 ID="events">
       <title>Events</title> 
 
       <para>Events are reasonably important in a GUI. They are the
@@ -251,7 +251,7 @@
       display a debugging log of all events passed through them, etc.
     </sect1>
 
-    <sect1>
+    <sect1 ID="widgets">
       <title>Widgets</title> 
       <para>A widget is a composite graphic and a reactor. No more, no
       less. It was named "widget" because subclasses of it play the
@@ -272,7 +272,7 @@
       sub-widget in berlin can be migrated between hosts.</para>
     </sect1>
 
-    <sect1>
+    <sect1 ID="subjobs">
       <title>Subject/Observer</title> 
 
       <para>The Subject/Observer software pattern is extremely common
@@ -314,7 +314,7 @@
   <!-- include the fabulously well-written threading document  :) -->
   &berlin-prog-thread;
 
-      <sect1>
+      <sect1 ID="factories">
 	<title>Factories</title>
 
       <para>A factory is an easily locatable object which is
@@ -343,7 +343,7 @@
       </sect1>
 
 
-      <sect1>
+      <sect1 ID="sessions">
 	<title>Sessions</title>
       
       <para>A <classname>session</classname> is a logical collection
