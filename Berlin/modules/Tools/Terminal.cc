@@ -30,7 +30,7 @@
 using namespace Prague;
 using namespace Warsaw;
 
-void Terminal::keyPress(const Input::Event &event)
+void Terminal::key_press(const Input::Event &event)
 {
   Trace trace("Terminal::keyPress");
   StreamBuffer::Data data;
@@ -46,6 +46,5 @@ void Terminal::keyPress(const Input::Event &event)
     default: return; // don't know how to handle...
     }
   buffer->write(data);
-  cout << "sent character to tty" << endl;
 //   buffer->flush();
 }

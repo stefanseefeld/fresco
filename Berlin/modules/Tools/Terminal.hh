@@ -32,7 +32,7 @@ class Terminal : public ControllerImpl
   Terminal(Warsaw::StreamBuffer_ptr b) : ControllerImpl(false), buffer(Warsaw::StreamBuffer::_duplicate(b)) {}
   ~Terminal() {}
 // protected:
-  virtual void keyPress(const Warsaw::Input::Event &);
+  virtual void key_press(const Warsaw::Input::Event &);
  private:
   Warsaw::StreamBuffer_var buffer;
 };
