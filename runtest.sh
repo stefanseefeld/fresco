@@ -12,9 +12,10 @@
 export WARSAW=`pwd`/modules
 export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 export BERLIN_DATA=`pwd`/etc
+export GLYPH_DB=$BERLIN_DATA/glyph.db
 
 if  [[ ! (-e $GLYPH_DB) ]]; then
-    test/buildDB etc/unifont.hex $BERLIN_DATA/glyph.db;
+    test/buildDB etc/unifont.hex $GLYPH_DB;
 fi
 
 exec test/$1
