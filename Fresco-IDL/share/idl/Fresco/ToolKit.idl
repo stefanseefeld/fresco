@@ -92,55 +92,23 @@ module Fresco
       //. The frame will have the given thickness and FrameSpec and will be
       //. filled with the current default color if 'filled' is set to true.
       Graphic      frame(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
-      //. Same as frame(), but switches between drawing one of the two
-      //. given FrameSpecs according to the value of the flag
-      //. given by mask and Telltale.
-      //. s1 will be drawn whenever the examined flag is set, s2 will be
-      //. used otherwise.
-      //. FIXME: Changing this to dynamic_frame() would be more consistent.
-      Graphic      dynamic(in Graphic g,
-			   in Coord thickness,
-			   in Telltale::Mask mask,
-			   in FrameSpec s1,
-			   in FrameSpec s2,
-			   in boolean fill,
-			   in Telltale t);
       //. This decorates a given graphic by drawing a triangular frame
       //. around it.
       //. The frame will have the given thickness and framespec and will be
       //. filled with the current default color if filled is set to true.
-      Graphic      framed_triangle(in Graphic g,
-				   in Coord thickness,
-				   in FrameSpec spec,
-				   in boolean fill,
-				   in Direction d);
-      //. Same as framed_triangle(), but switches between drawing one of the
-      //. two given FrameSpecs to draw according to the value of the flag
-      //. given by mask and Telltale.
-      //. s1 will be drawn whenever the examined flag is set, s2 will be
-      //. used otherwise.
-      Graphic      dynamic_triangle(in Graphic g,
-				    in Coord thickness,
-				    in Telltale::Mask mask,
-				    in FrameSpec s1,
-				    in FrameSpec s2,
-				    in boolean fill,
-				    in Direction d,
-				    in Telltale t);
+      Graphic      triangle(in Graphic g,
+			    in Coord thickness,
+			    in FrameSpec spec,
+			    in boolean fill,
+			    in Direction d);
       //. This decorates a given graphic by drawing a diamond-shaped frame
       //. around it.
       //. The frame will have the given thickness and framespec and will be
       //. filled with the current default color if filled is set to true. 
-      Graphic      framed_diamond(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
-      //. Same as framed_diamond(), but switches between using one of the two
-      //. given FrameSpecs to draw according to the value of the flag
-      //. given by mask and Telltale.
-      //. s1 will be drawn whenever the examined flag is set, s2 will be
-      //. used otherwise.
-      Graphic      dynamic_diamond(in Graphic g, in Coord thickness,
-				   in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
-				   in boolean fill, in Telltale t);
-      
+      Graphic      diamond(in Graphic g,
+			   in Coord thickness,
+			   in FrameSpec spec,
+			   in boolean fill);      
       //   Graphic      filler(in Graphic g, in Color c);
       //   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
       //. display one of two child nodes depending on the state of a telltale

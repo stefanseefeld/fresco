@@ -45,16 +45,9 @@ class ToolKitImpl : public virtual POA_Fresco::ToolKit,
   Fresco::Graphic_ptr      lighting(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
 
   Fresco::Graphic_ptr      frame(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
-  Fresco::Graphic_ptr      dynamic(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Telltale::Mask, const Fresco::ToolKit::FrameSpec &,
-			   const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::Telltale_ptr);
-  Fresco::Graphic_ptr      framed_triangle(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean,
+  Fresco::Graphic_ptr      triangle(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean,
 					   Fresco::ToolKit::Direction d);
-  Fresco::Graphic_ptr      dynamic_triangle(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Telltale::Mask, const Fresco::ToolKit::FrameSpec &,
-					    const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::ToolKit::Direction d,
-					    Fresco::Telltale_ptr);
-  Fresco::Graphic_ptr      framed_diamond(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
-  Fresco::Graphic_ptr      dynamic_diamond(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Telltale::Mask, const Fresco::ToolKit::FrameSpec &,
-				           const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::Telltale_ptr);
+  Fresco::Graphic_ptr      diamond(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
   Fresco::Graphic_ptr      create_switch(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Telltale::Mask, Fresco::Telltale_ptr);

@@ -57,24 +57,6 @@ protected:
   Renderer            *_renderer;
 };
 
-class DynamicFrame : public virtual ViewImpl,
-		     public Frame
-{
- public:
-  DynamicFrame(Fresco::Coord t, Fresco::Telltale::Mask, Frame::Renderer *, Frame::Renderer *);
-  virtual ~DynamicFrame();
-  virtual void attach(Fresco::Telltale_ptr);
-  virtual void update(const CORBA::Any &);
-
-  virtual const char *object_name() { return "DynamicFrame";}
- protected:
-  RefCount_var<Fresco::Telltale> _telltale;
-  Frame::Renderer               *_renderer1;
-  Frame::Renderer               *_renderer2;
-  bool                           _on;
-  Fresco::Telltale::Mask         _mask;
-};
-
 class InvisibleFrame : public Frame::Renderer
 {
 public:

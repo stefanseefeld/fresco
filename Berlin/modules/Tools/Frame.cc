@@ -131,46 +131,6 @@ void Frame::allocate_span(const Fresco::Graphic::Requirement &r, Region::Allotme
   a.end -= margin;
 }
 
-DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame::Renderer *r2)
-  : Frame(t, r2), _renderer1(r1), _renderer2(r2), _on(true), _mask(m)
-{
-  Trace trace("DynamicFrame::DynamicFrame");
-}
-
-DynamicFrame::~DynamicFrame()
-{
-  Trace trace("DynamicFrame::~DynamicFrame");
-  delete _renderer1;
-  delete _renderer2;
-}
-
-void DynamicFrame::attach(Telltale_ptr subject)
-{
-  Trace trace("DynamicFrame::attach");
-  if (!CORBA::is_nil(_telltale)) _telltale->detach(Observer_var(_this()));
-  if (!CORBA::is_nil(subject))
-    {
-      _telltale = RefCount_var<Telltale>::increment(subject);
-      _telltale->attach(Observer_var(_this()));
-      bool flag = _telltale->test(_mask);
-      if (flag == _on) return;
-      _on = flag;
-      _renderer = _on ? _renderer1 : _renderer2;
-      need_redraw();
-    }
-  else _telltale = Telltale::_nil();
-}
-
-void DynamicFrame::update(const CORBA::Any &)
-{
-  Trace trace("DynamicFrame::update");
-  bool flag = _telltale->test(_mask);
-  if (flag == _on) return;
-  _on = flag;
-  _renderer = _on ? _renderer1 : _renderer2;
-  need_redraw();
-}
-
 void InvisibleFrame::draw(DrawTraversal_ptr traversal)
 {
   Region_var allocation = traversal->current_allocation();

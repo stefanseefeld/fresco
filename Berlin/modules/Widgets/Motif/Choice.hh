@@ -39,49 +39,62 @@ namespace Motif
 class Choice : public virtual POA_Widget::Choice,
 	       public ControllerImpl
 {
- public:
-  Choice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+public:
+  Choice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr);
   virtual ~Choice();
   virtual Fresco::Selection_ptr state();
   virtual Fresco::Tag append_item(Fresco::Graphic_ptr) = 0;
   virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr) = 0;
   virtual void remove_item(Fresco::Tag) = 0;
- protected:
-  RefCount_var<Fresco::Selection> selection;
-  RefCount_var<Fresco::LayoutKit> layout;
-  RefCount_var<Fresco::ToolKit>   tools;
-  RefCount_var<Fresco::WidgetKit> widgets;
+protected:
+  Fresco::Graphic_ptr create_focus_frame(Fresco::Controller_ptr);
+  RefCount_var<Fresco::Selection> my_selection;
+  RefCount_var<Fresco::LayoutKit> my_layout;
+  RefCount_var<Fresco::ToolKit>   my_tools;
 };
-
+  
 class ToggleChoice : public Choice
 {
- public:
-  ToggleChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+public:
+  ToggleChoice(Fresco::Selection_ptr,
+	       Fresco::Graphic_ptr,
+	       Fresco::Graphic_ptr,
+	       Fresco::LayoutKit_ptr,
+	       Fresco::ToolKit_ptr);
   virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
   virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
   void remove_item(Fresco::Tag);
- private:
+private:
   RefCount_var<Fresco::Graphic> create_item(Fresco::Graphic_ptr, Fresco::Tag &);
+  Fresco::Graphic_var my_in_box;
+  Fresco::Graphic_var my_out_box;
 };
 
 class CheckboxChoice : public Choice
 {
- public:
-  CheckboxChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+public:
+  CheckboxChoice(Fresco::Selection_ptr,
+		 Fresco::Graphic_ptr,
+		 Fresco::Graphic_ptr,
+		 Fresco::LayoutKit_ptr,
+		 Fresco::ToolKit_ptr);
   virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
   virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
   void remove_item(Fresco::Tag);
- private:
+private:
   RefCount_var<Fresco::Graphic> create_item(Fresco::Graphic_ptr, Fresco::Tag &);
+  Fresco::Graphic_var my_in_box;
+  Fresco::Graphic_var my_out_box;
 };
 
 class ToolChoice : public Choice
 {
- public:
-  ToolChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+public:
+  ToolChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr);
   virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
   virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
   void remove_item(Fresco::Tag);
+private:
 };
 
 };

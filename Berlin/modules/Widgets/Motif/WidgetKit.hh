@@ -61,10 +61,23 @@ class WidgetKit : public virtual POA_Fresco::WidgetKit,
 //   Widget::Splitter_ptr     splitter(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Axis);
   Fresco::Controller_ptr   scrollable(Fresco::Graphic_ptr);
  private:
-  RefCount_var<Fresco::LayoutKit>  _layout;
-  RefCount_var<Fresco::CommandKit> _commands;
-  RefCount_var<Fresco::ToolKit>    _tools;
-  RefCount_var<Fresco::TextKit>    _text;
+  RefCount_var<Fresco::LayoutKit>  my_layout;
+  RefCount_var<Fresco::CommandKit> my_commands;
+  RefCount_var<Fresco::ToolKit>    my_tools;
+  RefCount_var<Fresco::TextKit>    my_text;
+  Fresco::Graphic_var              my_strut;
+  Fresco::Graphic_var              my_in_square;
+  Fresco::Graphic_var              my_out_square;
+  Fresco::Graphic_var              my_in_diamond;
+  Fresco::Graphic_var              my_out_diamond;
+  Fresco::Graphic_var              my_up_in_triangle;
+  Fresco::Graphic_var              my_up_out_triangle;
+  Fresco::Graphic_var              my_down_in_triangle;
+  Fresco::Graphic_var              my_down_out_triangle;
+  Fresco::Graphic_var              my_left_in_triangle;
+  Fresco::Graphic_var              my_left_out_triangle;
+  Fresco::Graphic_var              my_right_in_triangle;
+  Fresco::Graphic_var              my_right_out_triangle;
 };
 
 };
