@@ -37,7 +37,7 @@ LIBS	= -lPrague -lBerlin $(GL_LIBS)# -lFT #-lttf
 #SRC	= GLRaster.cc GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
 #	  GLDrawingKit.cc
 
-SRC	= GLRaster.cc GLDrawingKit.cc GLUnifont.cc
+SRC	= GLRaster.cc GLQuadric.cc GLDrawingKit.cc GLUnifont.cc
 
 TARGET	= $(mpath)/libGLDrawing.so
 

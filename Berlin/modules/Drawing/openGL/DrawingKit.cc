@@ -23,6 +23,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Transform.hh"
+#include "Drawing/openGL/GLQuadric.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 // #include "Warsaw/Text.hh"
 #include "Berlin/Logger.hh"
@@ -211,7 +212,12 @@ void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
 
 void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
 {
-  // !!!FIXME!!! quadrics code here
+  glPushMatrix();
+  glScaled(upper.x - lower.x, upper.y - lower.y, upper.z - lower.z);
+  glTranslated(lower.x, lower.y, lower.z);
+  GLQuadric quadric(fs, GLQuadric::out);
+  quadric.disk(0., 1., 360., 100.);
+  glPopMatrix();
 }
 
 
