@@ -1,0 +1,27 @@
+<chapter><title>Overview</title>
+  <para>
+    General ideas concerning berlin's architecture...
+  </para>
+  <sect1>
+    <title>Berlin's mantra: Composition</title>
+    <para>
+    </para>
+  </sect1>
+  <sect1>
+    <title>Warsaw: a protocol stack</title>
+    <para>
+    </para>
+    <sect2>
+      <title>Region management with the Scene Graph</title>
+    </sect2>
+    <sect2>
+      <title>Focus and Event management with the Control Graph</title>
+    </sect2>
+    <sect2>
+      <title>Connecting the application logic with the UI using MVC</title>
+    </sect2>
+    <sect2>
+      <title>Compound Applications serving documents: CDA</title>
+    </sect2>
+  </sect1>
+</chapter>
