@@ -101,7 +101,7 @@ protected:
   FT_Library myLibrary;
   FT_Face myFace;
 private:
-  bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, Unicode::String &, Unicode::String &);
+  bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Unicode::String &, Unicode::String &);
 };
 
 #endif

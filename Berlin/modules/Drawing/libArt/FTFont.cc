@@ -26,6 +26,7 @@
 #include <fstream>
 #include <map>
 #include <string>
+#include <cstdlib>
 
 #define FLOOR(x)  ((x) & -64)
 #define CEIL(x)   (((x)+63) & -64)
@@ -35,19 +36,23 @@
 
 using namespace Prague;
 
-bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, Unicode::String &fam, Unicode::String &style)
+bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, const char *env, 
+					   Unicode::String &fam, Unicode::String &style)
 {
-  unsigned int i = 0;
-  cout << "list of available fonts :\n";
-  for (map<FamStyle,FT_Face>::const_iterator j = faces.begin(); j != faces.end(); ++i, ++j)
-    {
-      cout << i << ' ' << (*j).second->family_name << ' ' << (*j).second->style_name << endl;
-    }
   int idx = -1;
-  cout << "please choose a number :"; cin >> idx;
-  i = 0;
+  if (env[0] == '\0')
+    {
+      cout << "list of available fonts :\n";
+      unsigned int i = 0;
+      for (map<FamStyle,FT_Face>::const_iterator j = faces.begin(); j != faces.end(); ++i, ++j)
+	{
+	  cout << i << ' ' << (*j).second->family_name << ' ' << (*j).second->style_name << endl;
+	}
+      cout << "please choose a number :"; cin >> idx;
+    }
+  else idx = atoi(env);
   map<FamStyle,FT_Face>::const_iterator j = faces.begin();
-  for (; i != idx && j != faces.end(); ++i, ++j);
+  for (unsigned int i = 0; i != idx && j != faces.end(); ++i, ++j);
   if (j == faces.end()) return false;
   fam = Unicode::String((*j).second->family_name);
   style = Unicode::String((*j).second->style_name);
@@ -108,8 +113,9 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       fontdirlist.close();
       Logger::log(Logger::text) << "completed scaning font directories" << endl;
       char *env = getenv("BERLIN_FONT_CHOOSER");
+      cout << env << endl;
       Unicode::String tmpFam, tmpStyle;
-      if (env && chooseFaceInteractively(myFaceMap, tmpFam, tmpStyle))
+      if (env && chooseFaceInteractively(myFaceMap, env, tmpFam, tmpStyle))
 	{
 	  myFamStr = tmpFam;
 	  myFam = atomize(myFamStr);
