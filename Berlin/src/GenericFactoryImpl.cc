@@ -183,23 +183,23 @@ void GenericFactoryImpl::scan(const char *name)
   Logger::log(Logger::loader) << "GenericFactoryImpl: scanning plugin dir " << name << endl;
   for (Directory::iterator i = directory.begin(); i != directory.end(); i++)
     {
-      Plugin *plugin = new Plugin((*i)->LongName());
+      Plugin *plugin = new Plugin((*i)->longName());
       /*
        * if this is not a plugin, skip over it
        */
       if (!plugin->ok()) continue;
-      CosLifeCycle::Key prototypeName;
-      prototypeName.length(1);
-      prototypeName[0].id   = (const char*) plugin->name();    // string copied
-      prototypeName[0].kind = (const char*) "Object";          // string copied    
+      CosLifeCycle::Key prototype;
+      prototype.length(1);
+      prototype[0].id   = (const char*) plugin->name();    // string copied
+      prototype[0].kind = (const char*) "Object";          // string copied    
       
-      plist_t::iterator p = plugins.find(prototypeName);
+      plist_t::iterator p = plugins.find(prototype);
       if (p != plugins.end())
 	Logger::log(Logger::loader) << "GenericFactoryImpl warning: multiple definitions for plugin "
 				    << plugin->name() << endl;
       
       // stash the function pointer for loading new object in the future
-      plugins[prototypeName] = plugin;
+      plugins[prototype] = plugin;
       Logger::log(Logger::loader) << "GenericFactoryImpl loaded plugin " << plugin->name() << endl;
     }
 }
