@@ -20,15 +20,30 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/Focus.hh>
 #include "Desktop/Pulldown.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 
-void Pulldown::lose_focus(Input::Device)
+CORBA::Boolean Pulldown::receive_focus(Warsaw::Focus_ptr focus)
+{
+  Trace trace("Pulldown::receive_focus");
+  // Make sure we're mapped for keyboard focus
+  if (focus->device() == 0)
+    mapped(true);
+
+  return WindowImpl::receive_focus(focus);
+}
+
+void Pulldown::lose_focus(Input::Device device)
 {
   Trace trace("Pulldown::lose_focus");
-  //mapped(false);
+  if (device == 0)
+    mapped(false);
+
+  WindowImpl::lose_focus(device);
 }
 
 void Pulldown::mapped(CORBA::Boolean flag)

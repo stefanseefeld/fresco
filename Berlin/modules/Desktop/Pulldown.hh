@@ -27,6 +27,7 @@
 class Pulldown : public WindowImpl
 {
 public:
+  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr);
   virtual void lose_focus(Warsaw::Input::Device);
   virtual void mapped(CORBA::Boolean);
 };
