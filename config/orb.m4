@@ -42,41 +42,39 @@ AC_DEFUN([FRESCO_ORB],[
 
 	case "$ORB" in
 		omniORB|auto)
-			FRESCO_OMNIORB
-			if test ".$fresco_cv_lib_omniORB" != ".yes"; then
-				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
-			else
-				ORB=omniORB
-			fi		
-			;;
+	  	  FRESCO_OMNIORB
+		  if test ".$fresco_cv_lib_omniORB" != ".yes"; then
+		    AC_MSG_ERROR([No supported CORBA environment found!])
+	 	  else
+		    ORB=omniORB
+		  fi		
+		;;
 		TAO)
-			FRESCO_TAO
-			if test ".$fresco_cv_lib_TAO" != ".yes"; then
-				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
-			else
-				ORB=TAO
-			fi		
-			;;
+		  FRESCO_TAO
+		  if test ".$fresco_cv_lib_TAO" != ".yes"; then
+		    AC_MSG_ERROR([No supported CORBA environment found!])
+		  else
+		    ORB=TAO
+		  fi		
+		;;
  		*)
- 			msg="$ORB is not supported (yet)."
- 			ifelse($1,mandatory,AC_MSG_ERROR($msg),
- 				AC_MSG_WARN($msg))
- 			ORB=none
- 			;;
+ 		  msg="$ORB is not supported (yet)."
+ 		  AC_MSG_ERROR([$ORB is not supported (yet)])
+ 		;;
 	esac
 	
 	case $ORB in
 		omniORB)
-			AC_MSG_RESULT([use omniORB])
-			AC_DEFINE(ORB_omniORB, 1, [Define if omniORB is used.])
-			;;
+		  AC_MSG_RESULT([use omniORB])
+		  AC_DEFINE(ORB_omniORB, 1, [Define if omniORB is used.])
+		;;
 		TAO)
-			AC_MSG_RESULT([use TAO])
-			AC_DEFINE(ORB_TAO, 1, [Define if TAO is used.])
-			;;
+		  AC_MSG_RESULT([use TAO])
+	  	  AC_DEFINE(ORB_TAO, 1, [Define if TAO is used.])
+		;;
 		none)
-			AC_MSG_RESULT([none found])
-			;;
+		  AC_MSG_RESULT([none found])
+		;;
 	esac
 	AC_SUBST(ORB)
 	AC_SUBST(CPPFLAGS)

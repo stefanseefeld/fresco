@@ -35,7 +35,7 @@ include $(cdir)/local.mk
 # into the omni generated sources...
 CPPFLAGS	+= -include $(h2dir)/Fresco/acconfig.hh
 CXXFLAGS	+= $(SO_CXXFLAGS)
-LDFLAGS	+= $(SO_LDFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
 
 # Extra compilation and linking flags.
 IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(abs_builddir) -I.
@@ -135,7 +135,7 @@ clean:
 
 distclean:	clean
 	rm -f Makefile ../include/Fresco/acconfig.hh \
-		../bin/Fresco-C++-config
+          ../bin/Fresco-C++-config
 
 maintainer-clean: distclean
 
