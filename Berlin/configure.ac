@@ -98,6 +98,11 @@ if test ".$HAVE_GL" = .1 ; then
   enabled_drawing_kits="$enabled_drawing_kits Drawing/openGL"
 fi
 
+dnl this test is needed so we catch colocation-optimization
+dnl flags that need to make their way into the acconfig.hh file
+dnl we need to find a better way to do this ! -stefan
+FRESCO_ORB
+
 dnl ------------------------------------------------------------------
 dnl Prague, Babylon, and Fresco
 dnl ------------------------------------------------------------------
@@ -125,10 +130,6 @@ FRESCO_IDL_PATH
 AC_SUBST(INSTALL_CPPFLAGS)
 AC_SUBST(INSTALL_LIBS)
 AC_SUBST(Fresco_IDL_prefix)
-
-dnl this test is needed so we catch colocation-optimization
-dnl flags that need to make their way into the acconfig.hh file
-FRESCO_ORB
 
 dnl ------------------------------------------------------------------
 dnl some helper utils
