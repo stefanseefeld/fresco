@@ -19,36 +19,42 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EventManager_hh
-#define _EventManager_hh
+#ifndef _PositionalFocus_hh
+#define _PositionalFocus_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Event.hh>
+#include <Warsaw/Focus.hh>
 #include <Warsaw/Controller.hh>
-#include <Berlin/ScreenImpl.hh>
-#include <Berlin/FocusImpl.hh>
+#include <Warsaw/Region.hh>
+#include <Prague/Sys/Thread.hh>
 #include <Berlin/ImplVar.hh>
-#include <Berlin/GGI.hh>
 #include <Berlin/Pointer.hh>
+#include <vector>
 
-class Pointer;
+class PickTraversalImpl;
+class ScreenImpl;
 
-class EventManager
+class PositionalFocus : implements(Focus)
 {
-public:
-  EventManager(ScreenImpl *);
-  ~EventManager();
-  void requestFocus(Controller_ptr);
-  void nextEvent();
+  typedef vector<Controller_var> cstack_t;
+ public:
+  PositionalFocus(ScreenImpl *);
+  virtual ~PositionalFocus();
+
+  virtual void grab();
+  virtual void ungrab();
+  virtual void addFilter(Event::Filter_ptr);
+
+  void request(Controller_ptr);
   void damage(Region_ptr);
   void dispatch(const Event::Pointer &);
-  void dispatch(const Event::Key &);
-private:
-  long ptrPositionX;
-  long ptrPositionY;
-  ScreenImpl *screen;
-  GGI::Drawable *drawable;
-  Impl_var<FocusImpl>  focus;
+ private:
+  ScreenImpl        *screen;
+  Pointer           *pointer;
+  PickTraversalImpl *traversal;
+  cstack_t           controllers;
+  bool               grabbed;
+  Prague::Mutex      mutex;
 };
 
-#endif /* _EventManager_hh */
+#endif /* _PositionalFocus_hh */

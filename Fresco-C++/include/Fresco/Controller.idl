@@ -56,7 +56,8 @@ interface Controller : Graphic, Telltale
   boolean receiveFocus(in Focus f);
   void loseFocus(in Focus f);
 
-  boolean handle(in PickTraversal t, in any a);
+  boolean handlePositional(in PickTraversal t, in any a);
+  boolean handleNonPositional(in any a);
 };
 
 #endif /* _Controller_idl */

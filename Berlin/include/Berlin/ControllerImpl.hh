@@ -51,7 +51,8 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void requestFocus(Controller_ptr);//, in Event::Device d);
   virtual CORBA::Boolean receiveFocus(Focus_ptr);
   virtual void loseFocus(Focus_ptr);
-  virtual CORBA::Boolean handle(PickTraversal_ptr, const CORBA::Any &);
+  virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const CORBA::Any &);
+  virtual CORBA::Boolean handleNonPositional(const CORBA::Any &);
 
   virtual void set(Telltale::Flag);
   virtual void clear(Telltale::Flag);
@@ -60,16 +61,15 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void constraint(TelltaleConstraint_ptr c);
   virtual TelltaleConstraint_ptr constraint();
 // protected:
-  virtual bool handlePositionalEvent(PickTraversal_ptr, const Event::Pointer *);
   virtual bool inside(PickTraversal_ptr);
   virtual void move(PickTraversal_ptr, const Event::Pointer *);
   virtual void press(PickTraversal_ptr, const Event::Pointer *);
   virtual void drag(PickTraversal_ptr, const Event::Pointer *);
   virtual void release(PickTraversal_ptr, const Event::Pointer *);
   virtual void doubleClick(PickTraversal_ptr, const Event::Pointer *);
-  virtual void keyPress(PickTraversal_ptr, const Event::Pointer *);
-  virtual void keyRelease(PickTraversal_ptr, const Event::Pointer *);
-  virtual void other(PickTraversal_ptr, const Event::Pointer *);
+  virtual void keyPress(const Event::Key *);
+  virtual void keyRelease(const Event::Key *);
+  virtual void other(const CORBA::Any &);
   void grab(PickTraversal_ptr);
   void ungrab(PickTraversal_ptr);
  private:

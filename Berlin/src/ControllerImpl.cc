@@ -182,28 +182,42 @@ TelltaleConstraint_ptr ControllerImpl::constraint()
   return TelltaleConstraint::_duplicate(myConstraint);
 }
 
-CORBA::Boolean ControllerImpl::handle(PickTraversal_ptr traversal, const CORBA::Any &any)
+CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, const CORBA::Any &any)
 {
-  SectionLog section("ControllerImpl::handle");
+  SectionLog section("ControllerImpl::handlePositional");
   Event::Pointer *pointer;
-  if (any >>= pointer) return handlePositionalEvent(traversal, pointer);
-  /* else key event ? */
+  if (any >>= pointer)
+    {
+      switch (pointer->whatHappened)
+	{
+	case Event::press: press(traversal, pointer); break;
+	case Event::release: release(traversal, pointer); break;
+	case Event::hold:
+	  if (test(Telltale::toggle)) drag(traversal, pointer);
+	  else move(traversal, pointer);
+	  break;
+	default: other(any); break;
+	}
+      return true;
+    }
   else return false;
 }
 
-bool ControllerImpl::handlePositionalEvent(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+bool ControllerImpl::handleNonPositional(const CORBA::Any &any)
 {
-  switch (pointer->whatHappened)
+  SectionLog section("ControllerImpl::handleNonPositional");
+  Event::Key *key;
+  if (any >>= key)
     {
-    case Event::press: press(traversal, pointer); break;
-    case Event::release: release(traversal, pointer); break;
-    case Event::hold:
-      if (test(Telltale::toggle)) drag(traversal, pointer);
-      else move(traversal, pointer);
-      break;
-    default: other(traversal, pointer); break;
+      switch (key->whatHappened)
+	{
+	case Event::press: keyPress(key); break;
+	case Event::release: keyRelease(key); break;
+	default: other(any); break;
+	}
+      return true;
     }
-  return true;
+  else return false;
 }
 
 bool ControllerImpl::inside(PickTraversal_ptr traversal)
@@ -236,15 +250,15 @@ void ControllerImpl::doubleClick(PickTraversal_ptr, const Event::Pointer *)
 {
 }
 
-void ControllerImpl::keyPress(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::keyPress(const Event::Key *)
 {
 }
 
-void ControllerImpl::keyRelease(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::keyRelease(const Event::Key *)
 {
 }
 
-void ControllerImpl::other(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::other(const CORBA::Any &)
 {
 }
 

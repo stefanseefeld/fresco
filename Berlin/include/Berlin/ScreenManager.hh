@@ -28,11 +28,10 @@
 #include "Warsaw/DrawingKit.hh"
 #include "Prague/Sys/Thread.hh"
 #include "Berlin/GGI.hh"
+#include "Berlin/EventManager.hh"
 #include <vector>
 
-class Pointer;
 class ScreenImpl;
-class EventManager;
 class RegionImpl;
 
 class ScreenManager
@@ -43,15 +42,12 @@ public:
   ~ScreenManager();
   void damage(Region_ptr);
   void repair();
-  void nextEvent();
+  void nextEvent() { emanager->nextEvent();}
   void run();
 private:
-  long ptrPositionX;
-  long ptrPositionY;
   ScreenImpl *screen;
   EventManager *emanager;
   DrawingKit_var drawing;
-  Pointer *pointer;
   GGI::Drawable *drawable;
   dlist_t damages;
   Prague::Mutex mutex;

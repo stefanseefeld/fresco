@@ -37,15 +37,8 @@ using namespace Prague;
 
 ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, DrawingKit_ptr d)
   : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(GGI::drawable())
-{
-  pointer = new Pointer(drawable);
-}
-
-ScreenManager::~ScreenManager()
-{
-  delete pointer;
-}
-
+{}
+ScreenManager::~ScreenManager() {}
 void ScreenManager::damage(Region_ptr r)
 {
   SectionLog section("ScreenManager::damage");
@@ -69,8 +62,6 @@ void ScreenManager::repair()
     {
       // Logger::log(Logger::drawing) << "repairing region " << **i << endl;
 //       cout << "repairing region " << **i << endl;
-      bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
-      if (ptr) pointer->restore();
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
  							   Region_var((*i)->_this()),
  							   Transform_var(Transform::_nil()),
@@ -79,65 +70,8 @@ void ScreenManager::repair()
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
-      if (ptr)
-	{
-	  pointer->backup();
-	  pointer->draw();
-	}
       emanager->damage(Region_var((*i)->_this()));
       (*i)->_dispose();
-    }
-}
-
-void ScreenManager::nextEvent()
-{
-  ggi_event event;
-  if (!drawable->nextEvent(event)) return; // repair
-  switch (event.any.type)
-    {
-    case evKeyPress:
-    case evKeyRepeat:
-      {      
-	Event::Key key;
-	key.theChar = event.key.sym;
-	emanager->dispatch(key);
-	break;
-      }
-    case evPtrRelative:
-    case evPtrAbsolute:
-      {
-	if (event.any.type == evPtrRelative) {
-	  if (ptrPositionX + event.pmove.x >= 0 &&
-	      ptrPositionX + event.pmove.x < screen->width()) ptrPositionX += event.pmove.x;
-	  if (ptrPositionY + event.pmove.y >= 0 &&
-	      ptrPositionY + event.pmove.y < screen->height()) ptrPositionY += event.pmove.y;	  
-	} else {
-	  ptrPositionX = event.pmove.x;
-	  ptrPositionY = event.pmove.y;
-	}
-	// absence of break statement here is intentional
-      }
-    case evPtrButtonPress:
-    case evPtrButtonRelease:
-      {
-	Event::Pointer ptrEvent;	  
-	ptrEvent.location.x = ptrPositionX;
-	ptrEvent.location.y = ptrPositionY;	  
-	ptrEvent.location.z = 0; // time being we're using non-3d mice.
-
-	// update the pointer object / image
-	pointer->move(ptrPositionX, ptrPositionY);
-	ggiFlush(drawable);
-
-	ptrEvent.buttonNumber = event.pbutton.button;	  
-	ptrEvent.whatHappened = 
-	  event.any.type == evPtrRelative ? Event::hold :
-	  event.any.type == evPtrAbsolute ? Event::hold :
-	  event.any.type == evPtrButtonPress ? Event::press :
-	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-	emanager->dispatch(ptrEvent);
-	break;
-      }
     }
 }
 
