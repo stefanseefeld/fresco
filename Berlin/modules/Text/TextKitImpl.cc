@@ -90,7 +90,7 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
       Graphic_var hbox = _layout->hbox();
       hbox->append_graphic(Graphic_var(strut()));
       for (unsigned int i = 0; i < len; ++i)
-	hbox->append_graphic(glyph(u[i]));
+	hbox->append_graphic(Graphic_var(glyph(u[i])));
       return hbox._retn();
     }
 }
