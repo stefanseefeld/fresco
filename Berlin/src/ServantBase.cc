@@ -35,6 +35,7 @@ void ServantBase::deactivate()
 void ServantBase::deactivate(ServantBase *servant)
 {
   Trace trace("ServantBase::deactivate(ServantBase *)");
+  return;
   assert(!CORBA::is_nil(servant->poa));
   PortableServer::ObjectId *oid = servant->poa->servant_to_id(servant);
   servant->poa->deactivate_object(*oid);
@@ -44,6 +45,7 @@ void ServantBase::deactivate(ServantBase *servant)
 void ServantBase::activate(ServantBase *servant)
 {
   Trace trace("ServantBase::activate");
+  return;
   assert(!CORBA::is_nil(poa));
   PortableServer::ObjectId *oid = poa->activate_object(servant);
   servant->poa = PortableServer::POA::_duplicate(poa);
