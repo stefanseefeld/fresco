@@ -128,22 +128,34 @@ private:
     TextConverter * converter;
 }; // class InputObserver
 
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv) 
+{
     // Parse args:
     Prague::GetOpt getopt(argv[0], "a simple pinyin input application.");
-    getopt.add('r',
-	       "resource",
-	       Prague::GetOpt::mandatory,
+    getopt.add('h', "help", Prague::GetOpt::novalue, "help text");
+    getopt.add('r', "resource", Prague::GetOpt::mandatory,
 	       "the resource file to load");
+    add_resolving_options_to_getopt(getopt);
     size_t argo = getopt.parse(argc, argv);
     argc -= argo;
     argv += argo;
+
+    if (getopt.is_set("help"))
+    {
+      getopt.usage();
+      return 0;
+    }
+
     std::string value;
-    getopt.get("resource", &value);
-    if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
-    else {
-	getopt.usage();
-	exit(1);
+    if (!getopt.get("resource", &value))
+    {
+      std::cerr << "ERROR: Must specify --resource option" << std::endl;
+      getopt.usage();
+      return 1;
+    }
+    else
+    {
+      RCManager::read(Prague::Path::expand_user(value));
     }
 
     // do the real work:
@@ -161,7 +173,7 @@ int main(int argc, char ** argv) {
 
       client = new ClientContextImpl("Pinyin Demo");
 
-      Fresco::Server_var s = resolve_server(argc, argv, orb);
+      Fresco::Server_var s = resolve_server(getopt, orb);
       
       server = s->create_server_context(Fresco::ClientContext_var(client->_this()));
     } 

@@ -44,6 +44,19 @@ template <typename T> T *create_demo(Application *a)
 
 int main(int argc, char **argv)
 {
+   Prague::GetOpt getopt(argv[0], "C++ fresco demo (3D)");
+   getopt.add('h', "help", Prague::GetOpt::novalue, "help message");
+   add_resolving_options_to_getopt(getopt);
+   size_t argo = getopt.parse(argc, argv);
+   argc -= argo;
+   argv += argo;
+
+   if (getopt.is_set('h'))
+   {
+     getopt.usage();
+     exit(0);
+   }
+
    try
    {
       CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
@@ -53,7 +66,7 @@ int main(int argc, char **argv)
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
       
-      Server_var server = resolve_server(argc, argv, orb);
+      Server_var server = resolve_server(getopt, orb);
       
       ClientContextImpl *client = new ClientContextImpl("Demo3D");
       ClientContext_var client_ref = client->_this();

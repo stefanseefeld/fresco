@@ -28,6 +28,7 @@
 namespace Prague {
 
   //. Set the environment variable name to a value.
+  //. (returns whether it was successful or not)
   bool putenv(const std::string &, const std::string &);
   //. Unset the environment variable name.
   bool putenv(const std::string &);

@@ -155,93 +155,6 @@ void exec_child(Fork*& child, std::string& value) /*fold00*/
 }
 
 // ---------------------------------------------------------------
-// Functions encapsulating reference-export-method dependence
-// ---------------------------------------------------------------
-
-std::string reference_export_method("nameserver"); // ior is default
-PortableServer::POA_var insPOA; // poa for corbaloc use
-
-// check export_method is valid, and set method
-void set_server_reference_export_method(std::string export_method)
-{
-  if ( (export_method != "ior") &&
-       (export_method != "corbaloc") &&
-       (export_method != "nameserver") )
-  {
-    std::cerr << "ERROR: "
-              << "Invalid method for exporting server reference given.\n"
-              << "'" << export_method << "' is not one of\n"
-              << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
-    exit(1);
-  }
-  reference_export_method = export_method;
-}
-
-// get poa to use for creating server
-PortableServer::POA_var get_server_poa(CORBA::ORB_var orb,
-                                       PortableServer::POA_var default_poa)
-{
-  if ("corbaloc"==reference_export_method)
-  {
-    insPOA = resolve_init<PortableServer::POA>(orb,"omniINSPOA");
-    PortableServer::POAManager_var poam = insPOA->the_POAManager();
-    poam->activate();
-    return insPOA;
-  }
-  else
-  {
-    return default_poa;
-  }
-}
-
-// publish server reference
-void publish_server(ServerImpl * server,
-                    CORBA::ORB_var orb)
-{
-  if (reference_export_method == "ior")
-  {
-    Server_var serverRef = server->_this();
-    std::cout << "Export Reference: FrescoServer=" 
-              << orb->object_to_string(serverRef) << std::endl;
-    Logger::log(Logger::corba) << "IOR exported." << std::endl;
-  }
-  else if (reference_export_method == "corbaloc")
-  {
-    PortableServer::ObjectId_var oid =
-       PortableServer::string_to_ObjectId("FrescoServer");
-    insPOA->activate_object_with_id(oid,server);
-   
-    // TODO: Look for host name here
-    std::cout << "Export Reference: FrescoServer="
-              << "corbaloc::localhost/FrescoServer" << std::endl;
-    Logger::log(Logger::corba) << "Corbaloc exported." << std::endl;
-  }
-  else if (reference_export_method == "nameserver")
-  {
-    try
-    {
-       bind_name(orb, Server_var(server->_this()),
-                 "IDL:fresco.org/Fresco/Server:1.0");
-       Logger::log(Logger::corba) << "Nameservice entry created."
-                                  << std::endl;
-    } 
-    catch (CORBA::COMM_FAILURE)
-    {
-      std::cerr << "ERROR: CORBA communications failure finding "
-                << " Fresco. "
-                << "Are you sure the name service is running?"
-                << std::endl;
-      exit(4);
-    }
-    catch (...)
-    {
-      std::cerr << "Unknown exception finding Fresco" << std::endl;
-      exit(5);
-    }
-  }
-}
-
-// ---------------------------------------------------------------
 // Server
 // ---------------------------------------------------------------
 int main(int argc, char **argv) /*FOLD00*/
@@ -262,9 +175,8 @@ int main(int argc, char **argv) /*FOLD00*/
   
   GetOpt getopt(argv[0], "a fresco display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
+  add_resolving_options_to_getopt(getopt);
   getopt.add('v', "version", GetOpt::novalue, "version number");
-  getopt.add('R', "export-ref",
-             GetOpt::mandatory, "means of exporting server reference");
   getopt.add('l', "logger", GetOpt::optional, "switch logging on");
   getopt.add('t', "tracer", GetOpt::novalue, "switch tracing on");
   getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
@@ -600,7 +512,9 @@ int main(int argc, char **argv) /*FOLD00*/
        server->start();
        Logger::log(Logger::loader) << "Server started." << std::endl;
 
-       publish_server(server, orb);
+       Server_var server_ref = server->_this();
+       publish_server(server_ref, getopt, orb); 
+
        Logger::log(Logger::corba) << "Server location published."
                                   << std::endl;
        

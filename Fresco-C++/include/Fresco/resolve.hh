@@ -24,7 +24,9 @@
 
 #include <Fresco/Server.hh>
 #include <Fresco/exception.hh>
+#include <string>
 #include <assert.h>
+#include <Prague/Sys/GetOpt.hh>
 
 template <class T>
 typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *name)
@@ -164,6 +166,59 @@ typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context, const char 
   return resolve_kit<T>(context, name, empty);
 }
 
-Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb);
+// -----------------------------------------------------------------------------
+// Ways to find default settings for server-reference transfer
+// -----------------------------------------------------------------------------
+char const * default_reference_transfer_method();
+char const * default_server_id();
+char const * default_ior_file_path();
+
+// -----------------------------------------------------------------------------
+// Resolve server using strings directly
+// -----------------------------------------------------------------------------
+
+
+// resolve server using strings directly
+Fresco::Server_ptr resolve_server(std::string server_id,
+                                  std::string reference_transfer_method,
+                                  std::string ior_file_path,
+                                  CORBA::ORB_ptr orb);
+
+// -----------------------------------------------------------------------------
+// Used to publish the server reference (call in order)
+// -----------------------------------------------------------------------------
+
+// check export_method is valid, and set method
+void set_server_reference_export_method(std::string export_method);
+
+// get poa to use for creating server
+PortableServer::POA_ptr get_server_poa(CORBA::ORB_ptr orb,
+                                       PortableServer::POA_ptr default_poa);
+
+// publish server reference
+void publish_server(Fresco::Server_ptr server,
+                    std::string server_id,
+                    std::string reference_transfer_method,
+                    std::string ior_file_path,
+                    CORBA::ORB_ptr orb);
+
+
+// -----------------------------------------------------------------------------
+// Helpers if using external Prague::Getopt
+// -----------------------------------------------------------------------------
+
+// add server-publishing/resolving options to a getopt
+void add_resolving_options_to_getopt(Prague::GetOpt &getopt);
+
+// resolve server using getopt
+Fresco::Server_ptr resolve_server(Prague::GetOpt const &getopt, 
+                                  CORBA::ORB_ptr orb);
+
+// publish server using getopt
+// NOTE: call set_server_reference_export_method and get_server_poa before this,
+//       as with publish_server above.
+void publish_server(Fresco::Server_ptr server,
+                    Prague::GetOpt const &getopt,
+                    CORBA::ORB_ptr orb);
 
 #endif

@@ -20,107 +20,83 @@
  * MA 02139, USA.
  */
 
-#include "Fresco/resolve.hh"
-
 #include <Prague/Sys/GetOpt.hh>
 #include <Server.hh>
 #include <Fresco/resolve.hh>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h> // XXX use prague instead
+#include <errno.h>    // XXX use prague instead
+#include <Prague/Sys/Env.hh>
 
-static std::string const default_reference_import_method("nameserver");
+// ---------------------------------------------------------------
+// Internals
+// ---------------------------------------------------------------
 
-Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
+// Internal defaults for server-publishing
+static std::string const my_default_reference_transfer_method("nameserver");
+static std::string const my_default_ior_file_path("/tmp/fresco/");
+static std::string const my_default_server_id("FrescoServer");
+
+// Internal stored data for server-publishing
+static std::string reference_export_method(my_default_reference_transfer_method);
+static PortableServer::POA_var insPOA; // poa for corbaloc use
+
+
+// Internal method to validate reference_transfer_method's
+bool is_valid_reference_transfer_method(std::string transfer_method)
 {
-  // XXX Does not pass through the '-h' option if the client already uses it
-  Prague::GetOpt getopt(argv[0], "fresco client");
-  getopt.add('h', "help", Prague::GetOpt::novalue, "help message");
-  getopt.add('I', "ior-file-path", Prague::GetOpt::mandatory,
-             "location where server (CORBA) locations are published. "
-             "Use stdin to input stringified ior from console");
-  getopt.add('R', "export-ref", Prague::GetOpt::mandatory,
-             "means of exporting server reference[ior|corbaloc|nameserver] "
-             "Default is 'ior'");
-  size_t argo = getopt.parse(argc, argv);
-  argc -= argo;
-  argv += argo;
-
-  if (getopt.is_set('h'))
+  if ( (transfer_method != "ior") &&
+       (transfer_method != "corbaloc") &&
+       (transfer_method != "nameserver") )
   {
-    getopt.usage();
-    exit(0);
+    std::cerr << "ERROR: Invalid method for exporting server reference given.\n"
+              << "'" << transfer_method << "' is not one of\n"
+              << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
+    return false;
   }
+  return true;
+}
 
-  // Determine method of importing server reference
-  // Use a variable rather than checking against the value in "export-ref"
-  // since this allows a default method, plus ensures that the value is valid
-  std::string reference_import_method(default_reference_import_method);
-  if (getopt.is_set("export-ref"))
+// -----------------------------------------------------------------------------
+// How to find default settings for server-reference transfer
+// -----------------------------------------------------------------------------
+char const * default_reference_transfer_method()
+{
+  return my_default_reference_transfer_method.c_str();
+}
+char const * default_server_id()
+{
+  return my_default_server_id.c_str();
+}
+char const * default_ior_file_path()
+{
+  return my_default_ior_file_path.c_str();
+}
+
+// -----------------------------------------------------------------------------
+// Function for resolving a server
+// -----------------------------------------------------------------------------
+Fresco::Server_ptr resolve_server(std::string server_id,
+                                  std::string reference_transfer_method,
+                                  std::string ior_file_path,
+                                  CORBA::ORB_ptr orb)
+{
+  // Validate reference_transfer_method
+  if (!is_valid_reference_transfer_method(reference_transfer_method))
   {
-    getopt.get("export-ref", &reference_import_method);
-    if ( (reference_import_method != "ior") &&
-         (reference_import_method != "corbaloc") &&
-         (reference_import_method != "nameserver") )
-    {
-      std::cerr << "ERROR: "
-                << "Invalid method for importing server reference given.\n"
-                << "'" << reference_import_method << "' is not one of\n"
-                << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
-      exit(1);
-    }
+    exit(1);
   }
+  // Fix form of ior_file_path (append '/' if necessary)
+  if ((ior_file_path != "stdin") &&
+      (ior_file_path[ior_file_path.length()-1] != '/')) 
+    ior_file_path += '/';
 
-  Fresco::Server_var server = Fresco::Server::_nil();
+  Fresco::Server_var server;
 
-  // nameserver
-  if (reference_import_method == "nameserver")
+  // Check through all export methods
+  if (reference_transfer_method == "ior")
   {
-    CosNaming::NamingContext_var context;
-    try
-    {
-      context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-    }
-    catch (...)
-    {
-      std::cerr << "ERROR: "
-                << "Could not contact nameserver; check it is running."
-                << std::endl;
-      exit(1);
-    }
-    try
-    {
-      server = resolve_name<Fresco::Server>(context, 
-                                     "IDL:fresco.org/Fresco/Server:1.0");
-    }
-    catch (...)
-    {
-      std::cerr << "ERROR: "
-                << "Nameservice found, but could not locate server\n"
-                << "in the nameservice. Did you specify the \"nameserver\"\n"
-                << "parameter to the -R option when starting the server?\n"
-                << "If not, then you need not specify it here."
-                << std::endl;
-      exit(1);
-    }
-  }
-
-  // ior
-  if (reference_import_method == "ior")
-  {
-    // Determine server-id to use
-    std::string server_id("server_ior"); // default server-id
-
-    // Determine directory in which ior is saved ("ior" method only)
-    std::string ior_file_path("/tmp/fresco/"); // default path
-    // XXX Ideally the default path is stored in *one* place, maybe libfresco
-    if (getopt.is_set("ior-file-path"))
-    {
-      getopt.get("ior-file-path", &ior_file_path);
-      if ((ior_file_path != "stdin") &&
-          (ior_file_path[ior_file_path.length()-1] != '/')) 
-        ior_file_path += '/';
-    }
-
     // Find the ior-string
     std::string ior_string;
     if (ior_file_path == "stdin")
@@ -143,8 +119,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
       }
       else
       {
-        std::cerr << std::endl
-                  << "ERROR: Cannot open '" << full_path << "'\n" 
+        std::cerr << "ERROR: Cannot open '" << full_path << "'\n" 
                   << "This could signify that the server is not running\n"
                   << "or that a server is running but with a different\n"
                   << "-I option parameter. If the latter, use the same\n"
@@ -167,15 +142,41 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
     }
     catch (...)
     { 
-      std::cerr << std::endl
-                << "ERROR: Server reference is invalid." << std::endl;
+      std::cerr << "ERROR: Server reference is invalid." << std::endl;
       exit(1);
     }
 
   }
-
-  // corbaloc
-  if (reference_import_method == "corbaloc")
+  else if (reference_transfer_method == "nameserver")
+  {
+    CosNaming::NamingContext_var context;
+    try
+    {
+      context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+    }
+    catch (...)
+    {
+      std::cerr << "ERROR: Could not contact nameserver; check it is running."
+                << std::endl;
+      exit(1);
+    }
+    try
+    {
+      server = resolve_name<Fresco::Server>(context, server_id.c_str());
+    }
+    catch (...)
+    {
+      std::cerr << "ERROR: Nameservice found, but could not locate server\n"
+                << "in the nameservice. The server location may have been\n"
+                << "published using a different mechanism (see the \n"
+                << "--export-ref option) or the name given to the server\n"
+                << "might have been different from '" << server_id << "'\n"
+                << "(see the --server-id option)"
+                << std::endl;
+      exit(1);
+    }
+  }
+  else if (reference_transfer_method == "corbaloc")
   {
     std::cerr << "ERROR: corbaloc method not completed in clients" << std::endl;
     exit(1);
@@ -203,17 +204,317 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
 
   if (!server_can_be_contacted)
   { 
-    std::cerr << std::endl
-              << "ERROR: Server reference is valid, "
+    std::cerr << "ERROR: Server reference is valid, "
               << "but this server cannot be contacted.\n"
               << "This server may have terminated or is suspended.\n"
-              << "If this is the case, restart or resume the server and try again.\n"
+              << "If this is the case, restart or resume the server and "
+              << "try again.\n"
               << "Alternatively the most recent valid server reference\n"
-              << "may have been published using a different method or\n"
-              << "in a different place - if this is the case, try using\n"
-              << "different parameters to the -R or -I options."
+              << "may have been published using a different method, \n"
+              << "in a different place or under another name \n"
+              << "- if this is the case, try using\n"
+              << "different parameters to the -R, -I or -i options."
               << std::endl;
     exit(1);
   }
   return server._retn();
+}
+
+// ---------------------------------------------------------------
+// Functions to publish a server (typically called in order)
+// ---------------------------------------------------------------
+
+// check export_method is valid, and set it
+void set_server_reference_export_method(std::string export_method)
+{
+  if (is_valid_reference_transfer_method(export_method))
+  {
+    reference_export_method = export_method;
+  }
+  else exit(1);
+}
+
+// get poa to use for creating server
+PortableServer::POA_ptr get_server_poa(CORBA::ORB_ptr orb,
+                                       PortableServer::POA_ptr default_poa)
+{
+  if ("corbaloc"==reference_export_method)
+  {
+    insPOA = resolve_init<PortableServer::POA>(orb,"omniINSPOA");
+    PortableServer::POAManager_var poam = insPOA->the_POAManager();
+    poam->activate();
+    return PortableServer::POA::_duplicate(insPOA);
+  }
+  else
+  {
+    return default_poa;
+  }
+}
+
+// publish server reference
+void publish_server(Fresco::Server_ptr server,
+                    std::string exported_server_id,
+                    std::string reference_transfer_method,
+                    std::string ior_file_path,
+                    CORBA::ORB_ptr orb)
+{
+  // Check through all export methods
+  if (reference_export_method == "ior")
+  {
+    if (ior_file_path == "stdout")
+    {
+      CORBA::String_var s = orb->object_to_string(server);
+      std::cout << "Export Reference:\n"
+                << exported_server_id << "= " << s << std::endl;
+    }
+    else
+    {
+      if ((ior_file_path != my_default_ior_file_path) &&
+          (ior_file_path[ior_file_path.length()-1] != '/'))
+      {
+        ior_file_path += '/';
+      }
+
+      std::string full_path(ior_file_path);
+      full_path += exported_server_id;
+      std::ifstream ifs(full_path.c_str());
+      bool server_id_file_available = false;
+      if (ifs.is_open())
+      {
+        std::string ior;
+        ifs >> ior;
+        CORBA::Object_var obj;
+        try
+        {
+          obj = orb->string_to_object(ior.c_str());
+        }
+        catch(...)
+        {
+          // => ior is not a valid IOR
+          // It cannot be used to contact a server, so it may as
+          // well be reused
+          std::cerr << std::endl << "WARNING: id is invalid" << std::endl;
+          server_id_file_available = true;
+        }
+        if (CORBA::is_nil(obj)) server_id_file_available = true;
+        else
+        try
+        {
+          if (obj->_non_existent()) server_id_file_available = true;
+        }
+        catch (CORBA::TRANSIENT const &)
+        {
+          // Could not decide if object exists; assume it doesn't
+          server_id_file_available = true;
+          std::cerr << std::endl << 
+                  "WARNING: id might exist (TRANSIENT)" << std::endl;
+        }
+        catch (CORBA::COMM_FAILURE const &)
+        {
+          // Could not decide if object exists; assume it doesn't
+          server_id_file_available = true;
+          std::cerr << std::endl <<
+                  "WARNING: id might exist (COMM_FAILURE)" << std::endl;
+        }
+        catch (...)
+        {
+          server_id_file_available = false;
+        }
+        ifs.close();
+        if (server_id_file_available)
+        {
+          std::cerr << std::endl << "WARNING: Overwriting stale server-id [" 
+                    << exported_server_id << "]" << std::endl;
+        }
+
+      }
+      else
+      {
+        server_id_file_available = true;
+      }
+
+      // If server-id is unavailable
+      if (!server_id_file_available)
+      {
+        std::cerr << std::endl
+                  << "ERROR: A server corresponding to '" << full_path
+                  << "' appears to already be running.\n"
+                  << "If you are sure the server has crashed, "
+                  << "remove '" << full_path
+                  << "' and run the server again.\n"
+                  << "Alternatively specify a different path "
+                  << "using the -I option."
+                  << std::endl;
+        exit(1);
+      }
+
+      // Create/update the ior in the file
+      if ((mkdir(ior_file_path.c_str(),0777) != 0) && (errno != EEXIST))
+      {
+        // TODO Include more error checking for the user here
+        std::cerr << "ERROR: Could not create directory '"
+                  << ior_file_path << "' to store ior\n"
+                  << "Check the access permissions or try specifying a\n"
+                  << "different directory with the -I option."
+                  << std::endl;
+        exit(1);
+      }
+      std::ofstream ofs(full_path.c_str());
+      if (ofs.is_open())
+      {
+        CORBA::String_var s = orb->object_to_string(server);
+        ofs << s << std::endl;
+      }
+      else
+      {
+        std::cerr << "ERROR: Could not open file '"
+                  << full_path << "' to save ior\n"
+                  << "Check the access permissions for file creation\n"
+                  << "in the '" << ior_file_path << "' directory or "
+                  << "try specifying a\n"
+                  << "different directory with the -I option."
+                  << std::endl;
+        exit(1);
+      }
+    }
+  }
+  else if (reference_export_method == "nameserver")
+  {
+    try
+    {
+       bind_name(orb, server, exported_server_id.c_str());
+    }
+    catch (CORBA::COMM_FAILURE)
+    {
+      std::cerr << "ERROR: Could not publish server in nameserver; "
+                << "check it is running."
+                << std::endl;
+      exit(1);
+    }
+    catch (...)
+    {
+      std::cerr << "ERROR: Unknown exception in publishing reference " 
+                << "in nameserver." << std::endl;
+      exit(1);
+    }
+  }
+  else if (reference_export_method == "corbaloc")
+  { // not fully implemented, and activate_object_with_id doesn't work when
+    // within this function; will need doing outside of here
+#if 0
+    PortableServer::ObjectId_var oid =
+       PortableServer::string_to_ObjectId("FrescoServer");
+    insPOA->activate_object_with_id(oid,server);
+
+    // TODO: Look for host name here
+    std::cout << "Export Reference: FrescoServer="
+              << "corbaloc::localhost/FrescoServer" << std::endl;
+#endif
+  }
+
+  // Reference is published externally, now publish in environment
+#if 0 
+  CORBA::String_var const s = orb->object_to_string(server);
+  std::string const stringified_ior(s);
+  Prague::putenv("FRESCO_DISPLAY", stringified_ior);
+#endif
+}
+// ---------------------------------------------------------------
+// Helpers if using external Prague::GetOpt
+// ---------------------------------------------------------------
+
+// Internal method to parse getopt entries
+void parse_getopt_for_resolve_options(Prague::GetOpt const &getopt,
+                                      std::string &server_id,
+                                      std::string &reference_transfer_method,
+                                      std::string &ior_file_path)
+{
+  // Determine server-id to use
+  server_id = my_default_server_id; // default server-id
+  if (getopt.is_set("server-id"))
+  {
+    getopt.get("server-id", &server_id);
+  }
+ 
+  // Determine method of importing server reference
+  // Use a variable rather than checking against the value in "export-ref"
+  // since this allows a default method, plus ensures that the value is valid
+  reference_transfer_method = my_default_reference_transfer_method;
+  if (getopt.is_set("export-ref"))
+  {
+    getopt.get("export-ref", &reference_transfer_method);
+  }
+
+  if (reference_transfer_method == "ior")
+  {
+    ior_file_path = my_default_ior_file_path;
+  }
+ 
+  // Determine directory in which ior is saved ("ior" method only)
+  if (getopt.is_set("ior-file-path"))
+  {
+    if (reference_transfer_method != "ior")
+    {
+      std::cerr << "WARNING: "
+                << "Path for ior to be published to has been specified\n"
+                << "but method of publishing is not via filesystem.\n"
+                << "This option will be ignored."
+                << std::endl;
+    }
+    else
+    {
+      getopt.get("ior-file-path", &ior_file_path);
+    }
+  }
+}
+
+// add options to getopt
+void add_resolving_options_to_getopt(Prague::GetOpt &getopt)
+{
+  {
+    std::string export_ref_text =
+         "Reference export method: ior|corbaloc|nameserver "
+         "(default: ";
+    export_ref_text += my_default_reference_transfer_method;
+    export_ref_text += ")";
+    getopt.add('R', "export-ref", Prague::GetOpt::mandatory, export_ref_text);
+  }
+  getopt.add('I', "ior-file-path", Prague::GetOpt::mandatory,
+             "location where server (CORBA) locations are published. "
+             "Use stdin to input stringified ior from console");
+  {
+    std::string server_id_text = "name to give server (default: ";
+    server_id_text += my_default_server_id;
+    server_id_text += ")";
+    getopt.add('i', "server-id", Prague::GetOpt::mandatory, server_id_text);
+  }
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// resolve server by parsing getopt
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Fresco::Server_ptr resolve_server(Prague::GetOpt const &getopt, 
+                                  CORBA::ORB_ptr orb)
+{
+  std::string server_id, reference_transfer_method, ior_file_path;
+  parse_getopt_for_resolve_options(getopt, server_id, reference_transfer_method,
+                                   ior_file_path);
+  return resolve_server(server_id, reference_transfer_method, 
+                        ior_file_path, orb);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// publish server by parsing getopt
+// NOTE: call set_server_reference_export_method and get_server_poa as with
+//       non-getopt publish_server variant
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void publish_server(Fresco::Server_ptr server,
+                    Prague::GetOpt const &getopt,
+                    CORBA::ORB_ptr orb)
+{
+  std::string server_id, reference_transfer_method, ior_file_path;
+  parse_getopt_for_resolve_options(getopt, server_id, reference_transfer_method,
+                                   ior_file_path);
+  publish_server(server, server_id, reference_transfer_method, 
+                        ior_file_path, orb);
 }

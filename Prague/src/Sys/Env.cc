@@ -25,7 +25,7 @@
 bool Prague::putenv(const std::string & name, const std::string & value)
 {
 #ifdef HAVE_SETENV
-  return setenv(name.c_str(), value.c_str(), 1);
+  return setenv(name.c_str(), value.c_str(), 1)==0;
 #elif HAVE_PUTENV
   std::string env_var(name);
   env_var += "=" + value;
