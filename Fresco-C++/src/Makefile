@@ -87,7 +87,7 @@ $(dpath)/%.d:	%.idl
 # Here there be dragons
 #  (can we remove the $(SHELL) part?  it would help cut down the quoting noise)
 #  note: this passes through both make and the shell; $$ means $ to make, and the \'s are for the shell
-		@$(SHELL) -ec "$(CXX) -x c++ -M $(CPPFLAGS) -I$(wpath) $(CXXFLAGS) $< \
+		@$(SHELL) -ec "$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(wpath) $(CXXFLAGS) $< \
 		| perl -e 'undef \$$/; while(<>)\
 		    {\
 	    	      (/^(.*)\\.idl\\.o:((.|\\n)*)/);\

@@ -60,7 +60,7 @@ distclean:	clean
 
 server.d:	server.cc
 		@echo making dependencies for $<
-		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
+		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@'
 server.o:	server.cc
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@

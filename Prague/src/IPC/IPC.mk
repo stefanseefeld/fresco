@@ -30,7 +30,7 @@ IPC_PRF	= $(patsubst %.cc, $(ppath)/%.o, $(IPC_SRC))
 $(dpath)/%.d:	IPC/%.cc $(ipath)/Prague/IPC/%.hh
 		@echo making dependencies for $<
 		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
+		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	IPC/%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
