@@ -41,8 +41,8 @@ public:
     ImageKitImpl();
     virtual ~ImageKitImpl();
 
-    Raster_ptr empty();
-	Raster_ptr create(char* file);
+    virtual Raster_ptr empty();
+	virtual Raster_ptr create(const char* file);
 
 
 protected:

@@ -30,19 +30,19 @@
 #include <fstream>
 
 RasterImpl::RasterImpl()
-  : data(0)
+	: data(0), totBytes(0)
 {
 	rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
 	rinfo = png_create_info_struct(rpng);
 }
 
-RasterImpl::RasterImpl(const char *file)
+RasterImpl::RasterImpl(const char* file)
 {
 	rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
 	rinfo = png_create_info_struct(rpng);
 	ifstream ifs(file);
 	PNGDecoder decoder(ifs.rdbuf());
-	data = decoder.decode(rpng, rinfo);
+	totBytes = decoder.decode(rpng, rinfo, data);
 }
 
 RasterImpl::~RasterImpl()
@@ -59,6 +59,7 @@ void RasterImpl::load(const Data& buffer)
 	 */
 	delete[] data;
 	data = NULL;
+	totBytes = 0;
 	
 	/*
 	 * create streambuf and associate it with the sequence
@@ -72,7 +73,7 @@ void RasterImpl::load(const Data& buffer)
 	 * read it in
 	 */
  	PNGDecoder decoder(&rbuf);
-	data = decoder.decode(rpng, rinfo);
+	totBytes = decoder.decode(rpng, rinfo, data);
 }
 
 void RasterImpl::export(Data*& buffer)
@@ -90,7 +91,20 @@ void RasterImpl::export(Data*& buffer)
 	encoder.encode(rpng, rinfo, data);
 }
 
-void RasterImpl::draw(DrawTraversal_ptr traversal)
+void RasterImpl::getData(Data*& buffer)
 {
-	DrawingKit_var dk = traversal->kit();
+	/*
+	 * Note:  This differs from 'export' in that it returns
+	 * the actual manipulated block of memory that represents
+	 * the image.
+	 *
+	 * In addition, because of OpenGL's sematics, we need to
+	 * reverse the order of the pixel bytes to get the image
+	 * to come out right-side-up.
+	 */
+	// Make buffer correct size
+	buffer->length(totBytes);
+	
+	for (int i=0; i < totBytes; i++)
+		buffer->operator[](i) = *(data+((totBytes-1)-i));
 }

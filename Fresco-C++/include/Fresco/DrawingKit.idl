@@ -28,13 +28,14 @@
 #include "Cloneable.idl"
 #include "Style.idl"
 #include "Text.idl"
+#include "Image.idl"
 
 interface Drawable;
 interface Pencil;
 
 interface DrawingKit : Cloneable 
 {
-  //void drawPNG(in Image::PNG im);
+  void drawImage(in Image im);
 
   void setFont(in Text::FontDescriptor fd, in Style::Spec sty) 
     raises (Text::NoSuchFontException);

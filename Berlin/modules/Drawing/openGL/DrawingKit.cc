@@ -90,3 +90,19 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
   glColor4d(0, 0, 0, 0);      
   glRectf(l, t, r, b);
 }
+
+void GLDrawingKit::drawImage(const Image_ptr im)
+{
+	// Up here should probably be fancy layout stuff.
+	// NOT IMPLEMENTED
+	
+	// First, get the raster from the image
+	RasterImpl_var r = Image_ptr->getRaster();
+	CORBA::long width = r->getWidth();
+	CORBA::long height = r->getHeight();
+	Data mem;
+	r->getData(mem);
+	
+	glClear(GL_COLOR_BUFFER_BIT);
+	//glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, mem);
+}

@@ -30,6 +30,7 @@
 #include "Drawing/openGL/GLPencil.hh"
 #include "Drawing/openGL/GLFont.hh"
 #include "Berlin/Thread.hh"
+#include "Warsaw/Image.hh"
 
 #include <string>
 #include <vector>
@@ -47,7 +48,8 @@ public:
   void setFont(const Text::FontDescriptor &, const Style::Spec &) throw (Text::NoSuchFontException);
   Text::Font_ptr currentFont();
   Pencil_ptr getPencil(const Style::Spec &);
-
+  void drawImage(const Image_ptr im);
+      
   ggi_visual_t getVisual() { return drawable->Visual();}
   void clear(Coord, Coord, Coord, Coord);
   void sync() { glFlush();}

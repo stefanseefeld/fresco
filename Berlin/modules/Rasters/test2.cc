@@ -49,8 +49,13 @@ int main(int argc, char* argv[])
 	ImageKit* kit = new ImageKit();
 	kit->_obj_is_ready(boa);
 	
-	Raster_ptr rasterfari = kit->open("test.png");
-
+	RasterImpl_var rasterfari = kit->open("test.png");
+	width = rasterfari->getWidth();
+	height = rasterfari->getHeight();
+	Data memory;
+	rasterfari->getData(memory);
+	mem = memory.NP_data();
+		
 	cout << "Well, we have the raster, but I can't do anything with it" << endl;
 
 	GGIMesaContext ctx;
