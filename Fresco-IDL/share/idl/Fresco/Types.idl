@@ -133,6 +133,13 @@ module Warsaw
     Unistring name;
     any val;
   };
+
+  //. this exception is thrown whenever the user attempts to invoke
+  //. an operation that he is not authorized for
+  exception SecurityException {};
+  exception SingletonFailureException {};
+  //. this exception is thrown whenever an object couldn't be created
+  exception CreationFailureException {};
 };
 
 #endif

@@ -23,16 +23,13 @@
 #ifndef _Warsaw_Server_idl
 #define _Warsaw_Server_idl
 
+#include <Warsaw/Types.idl>
 #include <Warsaw/Kit.idl>
 
 module Warsaw
 {
   interface ClientContext;
 
-  exception SecurityException {};
-  exception SingletonFailureException {};
-  exception CreationFailureException {};
-  
   //. the ServerContext is an object you pick up from the berlin
   //. server's root ContextManager, and which you use to create all
   //. generic interfaces (kits, plugins, etc).
