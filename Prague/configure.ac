@@ -34,7 +34,6 @@ AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)
 AC_CANONICAL_SYSTEM
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 
 dnl ------------------------------------------------------------------
 dnl Environment (this needs to go before AC_LANG(C++)

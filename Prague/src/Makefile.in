@@ -106,26 +106,22 @@ $(MANUAL):	$(HSYN)
 	touch $@
 
 install:	all
-	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
-	@if ! cmp -s ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh 2>/dev/null; then \
-	  echo "$(INSTALL) -D -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh"; \
-	  $(INSTALL) -D -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh; \
-	else \
-          echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
-        fi
-	@for header in $(HDR); do \
-	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header"; \
-	    $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header; \
-	  else \
-	    echo "$(DESTDIR)$(includedir)/Prague/$$header is up to date"; \
-	  fi; \
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Sys
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/IPC
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Filter
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Network
+	$(SHTOOL) install -C -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh
+	for header in $(HDR); do \
+	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header; \
 	done
-	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -D -m 755 ../config/Prague-config $(DESTDIR)$(bindir)/Prague-config
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../config/Prague-config $(DESTDIR)$(bindir)/Prague-config
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/doc/Prague
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Prague
 	cp -r ../share/doc/Prague/html $(DESTDIR)$(datadir)/doc/Prague
 
 uninstall:
