@@ -78,7 +78,11 @@ module Warsaw
       
       //   Graphic      filler(in Graphic g, in Color c);
       //   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
+      //. The button makes a given graphic react on clicks and execute
+      //. the given command whenever that happens.
       Trigger      button(in Graphic g, in Command c);
+      //. This is a basic object encoding an on/off state. It is toggled
+      //. by clicking on the given graphic g. 
       Controller   toggle(in Graphic g);
       Controller   dragger(in Graphic g, in Command c);
       Controller   stepper(in Graphic g, in Command c);

@@ -29,26 +29,35 @@ module Warsaw
 {
   interface Telltale;
 
-  //. selection is a subject which provides a higher level perspective
-  //. at groups of telltales, or more precisely, groups of flags.
+  //. Selection is a Subject which provides a higher level perspective
+  //. at groups of Telltales, or more precisely, groups of flags.
   interface Selection : Subject
     {
+      //. FIXME: What is this used for?
       typedef long Policy;
+
       const Policy exclusive = 0x1;
       const Policy required = 0x2;
-      //. an item is used as the payload in the notify call, i.e. it is
+
+      //. An Item is used as the payload in the notify call, i.e. it is
       //. what observers get in the delivered any
       struct Item
       {
 	Tag id;
 	boolean toggled;
       };
-      //. a list of toggled items
+      //. A list of Tags.
       typedef sequence<Tag> Items;
       
+      //. This is the Policy for this Selection.
       attribute Policy type;
+      //. Adds a given Telltale to the Selection and returns a unique Tag
+      //. that can be used to identify it again later.
       Tag add(in Telltale t);
+      //. Removes a Telltale identified by the given Tag from this Selection.
       void remove(in Tag t);
+      //. Returns a sequence that contains the Tags that identify all set
+      //. Telltales.
       Items toggled();
     };
 };

@@ -87,7 +87,10 @@ SelectionImpl::~SelectionImpl()
 }
 
 Warsaw::Selection::Policy SelectionImpl::type() { return policy;}
-void SelectionImpl::type(Warsaw::Selection::Policy) {}
+void SelectionImpl::type(Warsaw::Selection::Policy p) {
+    Prague::Guard<Mutex> guard(mutex);
+    policy = p;
+}
 
 Tag SelectionImpl::add(Telltale_ptr t)
 {
@@ -123,6 +126,7 @@ Selection::Items *SelectionImpl::toggled()
   for (list_t::iterator i = items.begin(); i != items.end(); i++)
     if ((*i)->toggled())
       {
+	// FIXME: Use push_back() once we finally switch to gcc 3 -- tobias
 	ret->length(ret->length() + 1);
 	ret[ret->length() - 1] = (*i)->id();
       }

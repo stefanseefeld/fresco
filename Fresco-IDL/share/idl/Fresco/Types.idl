@@ -65,6 +65,7 @@ module Warsaw
     Coord x, y, z;
   };
   typedef sequence<Vertex> Vertices;
+  typedef Vertices Path;
 
   //. An OriginatedDelta is used (e.g. by Dragger) to specify an
   //. origin and a delta (i.e. displacement) relative to that origin.
@@ -90,15 +91,18 @@ module Warsaw
   //. is left-aligned, a value of one means the position is
   //. right-aligned.
   typedef double Alignment;
-  
+
+  //. This is a RGBA-Color. All values may be between 0.0 and 1.0.
+  //. red = 1.0, green = 1.0, blue = 1.0 is white. A alpha value of 0.0
+  //. makes an object invisible.
+  // FIXME: Shouldn't we use something hardware independent? -- tobias
   struct Color
   {
     double red, green, blue;
     double alpha;
   };
-  
-  typedef Vertices Path;
-  
+
+  //. FIXME: What's this?
   struct Triangle
   {
     long a, b, c;
@@ -113,14 +117,14 @@ module Warsaw
     Vertices normals;
   };
 
-  //. this is a character in the unicode range U+0000 - U+FFFF. It is a
+  //. This is a character in the unicode range U+0000 - U+FFFF. It is a
   //. coded representation of a "unit" of textual information. it is not
   //. a picture on a screen, nor a particular semantic value. it is only
   //. meaningful in the context of an application, a locale, and a human
   //. reader of a particular language.
   typedef unsigned short Unichar;
   
-  //. this is a sequence of unichars. they have a logical memory ordering
+  //. This is a sequence of Unichars. they have a logical memory ordering
   //. which corresponds to the sequence in which they are entered into a
   //. computer, over time, by a human or other process. Even if they are
   //. in a right-to-left writing system, they always go in this order
@@ -128,15 +132,17 @@ module Warsaw
   //. they get special layout properties like screen direction.
   typedef sequence<Unichar> Unistring;
   
+  //. This is a Name-Value Pair.
   struct NVPair 
   {
     Unistring name;
     any val;
   };
 
-  //. this exception is thrown whenever the user attempts to invoke
+  //. This exception is thrown whenever the user attempts to invoke
   //. an operation that he is not authorized for
   exception SecurityException {};
+  //. This exception is  thrown whenever something goes wrong with a Singleton.
   exception SingletonFailureException {};
   //. this exception is thrown whenever an object couldn't be created
   exception CreationFailureException {};

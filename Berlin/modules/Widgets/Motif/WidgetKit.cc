@@ -147,6 +147,8 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   Warsaw::Graphic::Requisition req;
   if (axis == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
   else               req.x = fixed, req.y = flexible, req.z.defined = false;
+  // FIXME: What happens if the axis == zaxis? Throw an exception since it
+  //        is a stupid idea to request it? -- tobias
   Slider *slider = new Slider(value, axis, req);
   activate(slider);
   /*
@@ -214,6 +216,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   Warsaw::Graphic::Requisition req;
   if (a == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
   else            req.x = fixed, req.y = flexible, req.z.defined = false;
+  // FIXME: Again, what happens with axis==zaxis? -- tobias
   Scrollbar *scrollbar = new Scrollbar(x, a, req);
   activate(scrollbar);
   /*

@@ -49,24 +49,67 @@ module Widget
 
 module Warsaw
 {
-  //. this kit is a layer on top of the Graphic interface and
-  //. CommandKit. It is responsible for creating subjects, and binding
+  //. This kit is a layer on top of the Graphic interface and
+  //. CommandKit. It uses the basic commands from the CommandKit and
+  //. adds nice(r) graphics to the objects from there.
+  //. The WidgetKit is responsible for creating subjects, and binding
   //. views and controller strategies to the subjects. These amalgams
   //. are usually called "widgets" -- they react to events in a
   //. particular way by modifying the subjects they're bound to.
   interface WidgetKit : Kit
     {
+      //. Returns a Button labeled with the given Graphic g which executes
+      //. Command c when clicked (actually it reacts to button releases).
       Trigger          button(in Graphic g, in Command c);
+      //. This is a simple controller encoding an on/off state. It gets
+      //. toggled between these states by clicking on it.
       Controller       toggle(in Graphic g);
+      //. This gets you an object that observes the given bounded value v.
+      //. It draws a bar that gets updated to reflect the value v. (It
+      //. can be used as a progress bar for example).
       Graphic          gauge(in BoundedValue v);
+      //. Gets an thumb on a bar that can be dragged along the given
+      //. Axis a. This thumb manipulates the BoundedValue v.
       Controller       slider(in BoundedValue v, in Axis a);
+      //. A panner is a two-dimensional slider: It manipulates the two given
+      //. bounded ranges x and y at once.
       Controller       panner(in BoundedRange x, in BoundedRange y);
+      //. This is what you propably have at the side of your terminal window.
+      //. It adjusts the given bounded range x to the position of the thumb
+      //. and gets drawn along the given axis a.
       Controller       scrollbar(in BoundedRange x, in Axis a);
+      //. This is a radio button (group). You need to append_graphic() your
+      //. selections: Each appended graphic will show up with a small button
+      //. in front of it. You can have exactly on of those graphics selected.
+      //. 
+      //. You will need to attach() an observer to the returned graphic to
+      //. figure out the state.
+      //. FIXME: This is allways a vbox. We need something like axis for the
+      //.        scrollbar (and others) don't we? Or can we pass the graphic
+      //.        used for layout? -- tobias
       Widget::Choice   toggle_choice();
+      //. This is a checkbox (group). You need to append_graphic() your
+      //. selections: Each appended graphic will show up with a small
+      //. diamond-shaped button in front of it. You can select more then
+      //. one of these graphics by clicking on the button.
+      //. 
+      //. You will need to attach() an observer to the returned graphic to
+      //. figure out the state.
+      //. FIXME: see toggle_choice -- tobias
       Widget::Choice   checkbox_choice();
+      //. This implements a toolbar. You will need to append_graphic()
+      //. your possible selections.
+      //. 
+      //. You will need to attach() an observer to the returned graphic to
+      //. figure out the state.
+      //. FIXME: see toggle_choice -- tobias
       Widget::Choice   toolbar();
+      //. This returns a termial widget.
       Controller       terminal();
 //       Widget::Splitter splitter(in Graphic g1, in Graphic g2, in Axis a);
+      //. Adds scrollbars to the given Graphic g.
+      //  FIXME: Same here. It could just use the WidgetKit for the
+      //         Scrollbars and be done with it. -- tobias
       Controller       scrollable(in Graphic g);
     };
 };

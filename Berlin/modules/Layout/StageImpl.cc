@@ -111,14 +111,9 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index l
   Layout::Stage::Index fdist = front()->_layer - layer;
   Layout::Stage::Index bdist = layer;
   Layout::Stage::Index cdist = Math::abs(current()->_layer - layer);
-  if (fdist < bdist)
-    {
-      if (fdist < cdist) _cursor = 0;
-    }
-  else
-    {
-      if (bdist < cdist) _cursor = size() - 1;
-    }
+  if (fdist < bdist) {
+    if (fdist < cdist) _cursor = 0;
+  } else if (bdist < cdist) _cursor = size() - 1;
   _cursor += layer - current()->_layer;
   _cursor = Math::max(size_t(0), Math::min(_cursor, size()-1));
   return begin() + _cursor;
@@ -130,7 +125,7 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
   Layout::Stage::Index layer = handle->_layer;
   iterator i;
   if (!size() || layer == 0) i = begin();
-  else if (front()->_layer < layer) i = end();
+  else if (front()->_layer < layer) i = end(); // FIXME: Shouldn't this be back(), not front() ? --tobias
   else i = lookup(layer);
   for (iterator j = i; j != end(); j++) (*j)->_layer = ++layer;
   parent_t::insert(i, handle);
@@ -336,7 +331,7 @@ void Quad::intersects(const Rectangle<Coord> &r, const Polygon<Coord> &polygon, 
 void StageImpl::QuadTree::insert(StageHandleImpl *handle)
 {
   const Rectangle<Coord> &bbox = handle->bbox();
-  if (!node()) quad = new Quad(bbox);
+  if (!node()) _quad = new Quad(bbox);
   /*
    * FIXME: currently, this code inserts new nodes as long as the outermost
    *        doesn't completely contain the handle's boundingbox. What if the
@@ -345,7 +340,7 @@ void StageImpl::QuadTree::insert(StageHandleImpl *handle)
    *        system, so may be a limiting depth of the tree would be a solution.
    *                -stefan
    */
-  else while (!bbox.within(node()->extension())) quad = new Quad(bbox, node());
+  else while (!bbox.within(node()->extension())) _quad = new Quad(bbox, node());
   node()->insert(handle);
 }
 
@@ -357,20 +352,14 @@ void StageImpl::QuadTree::remove(StageHandleImpl *handle)
 void StageImpl::QuadTree::end()
 {
   _transaction--;
-  if (_transaction == 0)
-    {
-      /*
-       * ??? every 32 operations adjust the StageQuad tree -denis
-       */
-      _operations++;
-      if (_operations & 0x1f == 0)
-	{
-	  /*
-	   * ??? desire min of 8, max of 32, smallest span of 16 -denis
-	   */
-	  node()->adjust(8, 32, 16, 16);
-	}
+  if (_transaction == 0) {
+    // ??? every 32 operations adjust the StageQuad tree -denis
+    _operations++;
+    if (_operations & 0x1f == 0) {
+      // ??? desire min of 8, max of 32, smallest span of 16 -denis
+      node()->adjust(8, 32, 16, 16);
     }
+  }
 }
 
 class StageQuadTreeContains : public Finder

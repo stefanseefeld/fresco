@@ -56,10 +56,9 @@ class StageImpl : public virtual POA_Layout::Stage,
   virtual Warsaw::Region_ptr bbox();
   virtual CORBA::Long layers();
   virtual Layout::StageHandle_ptr layer(Layout::Stage::Index);
-  /*
-   * begin() and end() 'lock' the stage
-   * in that only after the last end() conditions for needRedraw() & needResize() are done
-   */
+  // begin() and end() 'lock' the stage
+  // in that only after the last end() conditions
+  // for needRedraw() & needResize() are done
   virtual void begin();
   virtual void end();
   virtual Layout::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Layout::Stage::Index);
@@ -69,8 +68,15 @@ class StageImpl : public virtual POA_Layout::Stage,
   void resize(StageHandleImpl *, const Warsaw::Vertex &);
   void relayer(StageHandleImpl *, Layout::Stage::Index);
 private:
+  //. Returns a tag that is not yet used by any child of the Stage.
   Warsaw::Tag unique_tag();
+  //. Returns a handle to the child of the Stage that has the given tag.
+  //. It returns 0 is no child has the given tag.
   StageHandleImpl *tag_to_handle(Warsaw::Tag);
+  //. Marks the region occupied by the given StageHandle as damaged.
+  //. This is done by either merging that region with the one allready
+  //. damaged or by creating a setting the damaged region to the region
+  //. of the given StageHandle.
   void damage(StageHandleImpl *);
 
   Sequence            *_children;
@@ -99,17 +105,30 @@ class StageHandleImpl : public virtual POA_Layout::StageHandle
 
   const Geometry::Rectangle<Warsaw::Coord> &bbox();
   void bbox(RegionImpl &);
-//  private:
+ private:
+  //. Calculates the BoundingBox of the graphic in this StageHandle and
+  //. stores the result in _bbox.
   void cache_bbox();
+  //. The stage this StageHandle belongs into.
   StageImpl                         *_parent;
+  //. The graphic forming this StageHandle.
   Warsaw::Graphic_var                _child;
+  //. This tag is unique for the parent-Stage and identifies this StageHandle.
   Warsaw::Tag                        _tag;
+  //. The position of the graphic forming this StageHandle.
   Warsaw::Vertex                     _position;
+  //. The size of the graphic forming this StageHandle
   Warsaw::Vertex                     _size;
+  //. The layer this StageHandle has.
   Layout::Stage::Index               _layer;
+  //. The boundingbox of the graphic of this StageHandle as calculated
+  //. by cache_bbox().
   Geometry::Rectangle<Warsaw::Coord> _bbox;
+  //. The alignment along the x-axis.
   Warsaw::Alignment                  _xalign;
+  //. The alignment along the y-axis.
   Warsaw::Alignment                  _yalign;
+  //. A mutex for thread safety.
   Prague::Mutex                      _mutex;
 };
 
