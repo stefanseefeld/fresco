@@ -181,3 +181,38 @@ int main (int argc, char *argv[])
     rm -f conf.$1test
   fi
 ])
+
+dnl FRESCO_IDL_PATH
+dnl
+dnl test for Fresco IDL interfaces and define FRESCO_IDL_PREFIX
+dnl accordingly
+dnl
+AC_DEFUN(FRESCO_IDL_PATH,
+[dnl 
+
+  AC_ARG_WITH(Fresco-IDL-prefix, AC_HELP_STRING([--with-Fresco-IDL-prefix],
+                                                [Prefix where the Fresco interfaces are installed]),
+              Fresco_IDL_prefix="$withval", Fresco_IDL_prefix="")
+
+
+  AC_MSG_CHECKING([for Fresco IDL prefix])
+
+  if test ".$Fresco_IDL_prefix" = .; then
+    for dir in ${srcdir}/../Fresco-IDL /usr; do
+      if test -r $dir/share/idl/Fresco/Types.idl; then
+        FRESCO_IDL_PREFIX=`cd $dir && pwd`
+        break
+      fi
+    done
+  else
+    if test -r ${Fresco_IDL_prefix}/share/idl/Fresco/Types.idl; then
+      FRESCO_IDL_PREFIX="$Fresco_IDL_prefix"
+      break
+    fi
+  fi
+  if test ".${FRESCO_IDL_PREFIX}" = .; then
+    AC_MSG_ERROR([can not find Fresco interfaces])  
+  else
+    AC_MSG_RESULT($FRESCO_IDL_PREFIX)
+  fi
+])
