@@ -19,15 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/Providers.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <iostream>
 #include "Layout/Box.hh"
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
-#include "Berlin/Providers.hh"
-#include <Berlin/TransformImpl.hh>
-#include <Berlin/ImplVar.hh>
-#include <Warsaw/Traversal.hh>
-#include <Prague/Sys/Tracer.hh>
-#include <iostream>
 
 using namespace Prague;
 
@@ -252,7 +253,6 @@ BoxAlignElements::~BoxAlignElements() {}
 void BoxAlignElements::append(Graphic_ptr g)
 {
   Placement *placement = new Placement(new LayoutCenter(axis, alignment));
-  placement->_obj_is_ready(_boa());
   placement->body(g);
   Box::append(Graphic_var(placement->_this()));
 }
@@ -260,7 +260,6 @@ void BoxAlignElements::append(Graphic_ptr g)
 void BoxAlignElements::prepend(Graphic_ptr g)
 {
   Placement *placement = new Placement(new LayoutCenter(axis, alignment));
-  placement->_obj_is_ready(_boa());
   placement->body(g);
   Box::prepend(Graphic_var(placement->_this()));
 }

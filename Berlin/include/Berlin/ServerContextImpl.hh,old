@@ -23,15 +23,15 @@
 #ifndef _ServerContextImpl_hh
 #define _ServerContextImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Server.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Server.hh>
 #include "Berlin/KitImpl.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Prague/Sys/Thread.hh>
 #include <multimap.h>
 
 class ServerImpl;
 
-class ServerContextImpl : implements(ServerContext)
+class ServerContextImpl : public virtual POA_ServerContext, public virtual PortableServer::RefCountServantBase
 // this is an encapsulated "entry point" which a client uses to manufacture
 // new objects, look up singletons, look up the scene root, etc.
 {

@@ -37,9 +37,13 @@ using namespace Prague;
 ScreenImpl::ScreenImpl(DrawingKit_ptr d)
   : ControllerImpl(false), drawing(d)
 {
+  cout << "@" << endl;
   emanager = new EventManager(this);
+  cout << "@" << endl;
   smanager = new ScreenManager(this, emanager, drawing);
+  cout << "@" << endl;
   region = new RegionImpl;
+  cout << "@" << endl;
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
   region->upper.x = GGI::drawable()->width()/GGI::drawable()->resolution(xaxis);

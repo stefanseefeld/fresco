@@ -23,16 +23,13 @@
 #ifndef _DrawTraversal_hh
 #define _DrawTraversal_hh
 
-#include "Warsaw/config.hh"
+#include <Warsaw/config.hh>
 #include <Warsaw/DrawTraversal.hh>
-#include <Berlin/TraversalImpl.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/TraversalImpl.hh>
 #include <vector>
 
-declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Region)
-
-class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl
+class DrawTraversalImpl : public virtual POA_DrawTraversal, public TraversalImpl
 {
 public:
   DrawTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, DrawingKit_ptr);
@@ -42,14 +39,13 @@ public:
   virtual CORBA::Boolean intersectsRegion(Region_ptr);
   virtual void traverseChild(Graphic_ptr, Tag, Region_ptr, Transform_ptr);
   virtual void visit(Graphic_ptr);
-  virtual order direction() { return up;}
+  virtual order direction() { return Traversal::up;}
   virtual CORBA::Boolean ok() { return true;}
   virtual DrawingKit_ptr kit();
   void init();
   void finish();
 private:
   DrawingKit_var drawing;
-//   Drawable_var drawable;
   Region_var clipping;
   Impl_var<TransformImpl> id;
 };

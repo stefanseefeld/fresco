@@ -24,16 +24,15 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
+#include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/ControllerImpl.hh>
-#include <Berlin/ImplVar.hh>
 
 class ScreenManager;
 class EventManager;
 class RegionImpl;
-class GLDrawingKit;
 
-class ScreenImpl : implements(Screen), public ControllerImpl
+class ScreenImpl : public virtual POA_Screen, public ControllerImpl
 {
 public:
   ScreenImpl(DrawingKit_ptr);

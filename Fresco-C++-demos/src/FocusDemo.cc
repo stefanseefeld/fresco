@@ -25,7 +25,7 @@
 #include <Warsaw/Choice.hh>
 #include "FocusDemo.hh"
 
-class FocusDemo::Observer : implements(Observer)
+class FocusDemo::Observer : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
 {
  public:
   virtual void update(const CORBA::Any &any)
@@ -39,7 +39,6 @@ class FocusDemo::Observer : implements(Observer)
 FocusDemo::FocusDemo(Application *a)
   : Demo(a), observer(new Observer)
 {
-  observer->_obj_is_ready(CORBA::BOA::getBOA());
   TextKit_var text = application->text();
   LayoutKit_var layout = application->layout();
   CommandKit_var command = application->command();
@@ -49,8 +48,8 @@ FocusDemo::FocusDemo(Application *a)
   WidgetKit_var widget = application->widget();
   Graphic_var      vbox = layout->vbox();
   Graphic_var     hbox1 = layout->hbox();
-  ToolKit::FrameSpec concav;
-  concav.dbrightness(0.5);
+  ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(ToolKit::concav);
   /*
    * first group
    */
@@ -66,9 +65,9 @@ FocusDemo::FocusDemo(Application *a)
     c2->appendItem(Graphic_var(Graphic::_nil()));
   c2->attach(Observer_var(observer->_this()));
   hbox1->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c1, 100.)),
-								   20., concav, true)), 100.)));
+								   20., spec, true)), 100.)));
   hbox1->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c2, 100.)),
-								   20., concav, true)), 100.)));
+								   20., spec, true)), 100.)));
   Graphic_var     hbox2 = layout->hbox();
   /*
    * third group
@@ -85,9 +84,9 @@ FocusDemo::FocusDemo(Application *a)
     c4->appendItem(Graphic_var(Graphic::_nil()));
   c4->attach(Observer_var(observer->_this()));
   hbox2->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c3, 100.)),
-								   20., concav, true)), 100.)));
+								   20., spec, true)), 100.)));
   hbox2->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c4, 100.)),
-								   20., concav, true)), 100.)));
+								   20., spec, true)), 100.)));
   vbox->append(hbox1);
   vbox->append(hbox2);
   Raster_var raster = image->create("../etc/PNG/marble.png");

@@ -22,8 +22,8 @@
 #ifndef _TextBuffer_idl
 #define _TextBuffer_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include <Warsaw/Subject.idl>
+#include <Warsaw/Types.idl>
 
 interface TextBuffer : Subject
 {

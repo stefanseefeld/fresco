@@ -328,7 +328,7 @@ AC_ARG_ENABLE(debug,dnl
 if test ".$ac_cv_prog_gcc" = ".yes"; then
     case "$CFLAGS" in
         *-O* ) ;;
-           * ) CFLAGS="$CFLAGS -O2" ;;
+           * ) CFLAGS="$CFLAGS -O3" ;;
     esac
     case "$CFLAGS" in
         *-g* ) ;;
@@ -391,7 +391,7 @@ AC_ARG_ENABLE(profile,dnl
 if test ".$ac_cv_prog_gcc" = ".no"; then
     AC_MSG_ERROR([profiling requires gcc and gprof])
 fi
-CFLAGS=`echo "$CFLAGS" | sed -e 's/-O2//g'`
+CFLAGS=`echo "$CFLAGS" | sed -e 's/-O3//g'`
 CFLAGS="$CFLAGS -O0 -pg"
 LDFLAGS="$LDFLAGS -pg"
 AC_DEFINE(profile)
@@ -465,7 +465,7 @@ AC_ARG_ENABLE(optimize,dnl
 if test ".$ac_cv_prog_gcc" = ".yes"; then
     case "$CFLAGS" in
         *-O* ) ;;
-        * ) CFLAGS="$CFLAGS -O2" ;;
+        * ) CFLAGS="$CFLAGS -O3" ;;
     esac
     case "$CFLAGS" in
         *-pipe* ) ;;

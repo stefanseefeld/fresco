@@ -23,9 +23,8 @@
 #ifndef _DrawingKit_idl
 #define _DrawingKit_idl
 
-#include "Kit.idl"
-// #include "Metrics.idl"
-#include "Graphic.idl"
+#include <Warsaw/Kit.idl>
+#include <Warsaw/Graphic.idl>
 
 interface Transform;
 interface Region;

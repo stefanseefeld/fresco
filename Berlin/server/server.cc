@@ -24,7 +24,6 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/LayoutKit.hh>
-// #include <Warsaw/WidgetKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ScreenImpl.hh>
@@ -75,14 +74,14 @@ struct Dump : Signal::Notifier
 
 int main(int argc, char **argv)
 {
+  /*
+   * start with some administrative stuff...
+   */
   Dump *dump = new Dump;
   Signal::set(Signal::usr2, dump);
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
-
-  CORBA::ORB_ptr orb = CORBA::ORB_init(argc,argv,"omniORB2");
-  CORBA::BOA_ptr boa = orb->BOA_init(argc,argv,"omniORB2_BOA");
 
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('v', "version", GetOpt::novalue, "version number");
@@ -121,9 +120,20 @@ int main(int argc, char **argv)
   if (value == "true") setupProfilingStuff();
 #endif
 
-  boa->impl_is_ready(0,1);
-  Logger::log(Logger::corba) << "[0/5] BOA is running" << endl;
+  /*
+   * ...then start the ORB...
+   */
+  CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
+  CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
+  PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
+  PortableServer::POAManager_var pman = poa->the_POAManager();
+  pman->activate();
 
+  Logger::log(Logger::corba) << "[0/5] POA is activated" << endl;
+
+  /*
+   * ...and finally construct the server.
+   */
   ServerImpl *server = new ServerImpl;
 
   char *pluginDir = getenv("BERLIN_ROOT");
@@ -144,10 +154,10 @@ int main(int argc, char **argv)
   getopt.get("drawing", &value);
   if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
   else props[0].value = CORBA::string_dup("LibArtDrawingKit");
-  DrawingKit_var drawing = server->resolve<DrawingKit>(interface(DrawingKit), props);
+  DrawingKit_var drawing = server->resolve<DrawingKit>(DrawingKit::_PD_repoId, props);
   if (CORBA::is_nil(drawing))
     {
-      cerr << "unable to open " << interface(DrawingKit) << " with " << props[0].name << '=' << props[0].value << endl;
+      cerr << "unable to open " << DrawingKit::_PD_repoId << " with " << props[0].name << '=' << props[0].value << endl;
       exit(-1);
     }
 
@@ -155,32 +165,35 @@ int main(int argc, char **argv)
 
   // make a Screen graphic to hold this server's scene graph
   ScreenImpl *screen = new ScreenImpl(drawing);
-  screen->_obj_is_ready(boa);
-  
+  cout << "here" << endl;
   props.length(0);
-  ToolKit_var tools = server->resolve<ToolKit>(interface(ToolKit), props);
+  ToolKit_var tools = server->resolve<ToolKit>(ToolKit::_PD_repoId, props);
+  cout << "here" << endl;
   DesktopImpl *desktop = new DesktopImpl;
-  desktop->_obj_is_ready(boa);
+  cout << "here" << endl;
 //   ToolKit::FrameSpec spec;
 //   Color color = {0.7, 1.0, 0.7, 1.0};
 //   spec.foreground(color);
 //   screen->body(Graphic_var(tools->frame(Desktop_var(desktop->_this()), 10., spec, true)));
   screen->body(Desktop_var(desktop->_this()));
+  cout << "here" << endl;
   screen->appendController(Desktop_var(desktop->_this()));
-  LayoutKit_var layout = server->resolve<LayoutKit>(interface(LayoutKit), props);
+  cout << "here" << endl;
+  LayoutKit_var layout = server->resolve<LayoutKit>(LayoutKit::_PD_repoId, props);
+  cout << "here" << endl;
   Stage_var stage = layout->createStage();
+  cout << "here" << endl;
   desktop->init(stage);
 
   Logger::log(Logger::layout) << "[3/5] created desktop" << endl;
 
   // initialize the client listener
-  server->setSingleton(interface(Desktop), Desktop_var(desktop->_this()));
-  server->setSingleton(interface(DrawingKit), drawing);
-  server->_obj_is_ready(boa);
+  server->setSingleton(Desktop::_PD_repoId, Desktop_var(desktop->_this()));
+  server->setSingleton(DrawingKit::_PD_repoId, drawing);
   server->start();
 
   Logger::log(Logger::layout) << "started server" << endl;
-  bind_name(orb, Server_var(server->_this()), interface(Server));
+  bind_name(orb, Server_var(server->_this()), Server::_PD_repoId);
 
   Logger::log(Logger::corba) << "[4/5] listening for clients" << endl;
   // initialize the event distributor and draw thread
@@ -192,7 +205,7 @@ int main(int argc, char **argv)
     }
   catch (CORBA::SystemException &se)
     {
-      cout << "system exception " << se.NP_RepositoryId() << endl;
+      cout << "system exception " << endl;//se.NP_RepositoryId() << endl;
     }
   catch(omniORB::fatalException &fe)
     {
@@ -202,5 +215,6 @@ int main(int argc, char **argv)
     {
       cout << "unknown exception caught" << endl;
     };
+  orb->destroy();
   return 0;
 }

@@ -36,7 +36,7 @@ CORBA::Long StreamBufferImpl::available()
   return buffer.size();
 }
 
-void StreamBufferImpl::write(const Data &data)
+void StreamBufferImpl::write(const StreamBuffer::Data &data)
 {
   bool overflow = false;
   {
@@ -71,10 +71,10 @@ void StreamBufferImpl::flush()
 StreamBuffer::Data *StreamBufferImpl::read()
 {
   MutexGuard guard(mutex);
-  Data *data = new Data; data->length(buffer.size());
-  for (unsigned long i = 0; i != buffer.size(); i++) (*data)[i] = buffer[i];
+  StreamBuffer::Data_var data = new StreamBuffer::Data; data->length(buffer.size());
+  for (unsigned long i = 0; i != buffer.size(); i++) data[i] = buffer[i];
   buffer.erase(buffer.begin(), buffer.end());
   buffer.reserve(length);
-  return data;
+  return data._retn();
 }
 

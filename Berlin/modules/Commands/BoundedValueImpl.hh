@@ -23,13 +23,13 @@
 #ifndef _BoundedValueImpl_hh
 #define _BoundedValueImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/BoundedValue.hh"
-#include "Berlin/SubjectImpl.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/BoundedValue.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class BoundedValueImpl : implements(BoundedValue), virtual public SubjectImpl
+class BoundedValueImpl : public virtual POA_BoundedValue, public SubjectImpl
 {
  public:
   BoundedValueImpl(Coord, Coord, Coord, Coord, Coord);

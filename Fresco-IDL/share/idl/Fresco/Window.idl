@@ -22,7 +22,7 @@
 #ifndef _Window_idl
 #define _Window_idl
 
-#include <Controller.idl>
+#include <Warsaw/Controller.idl>
 
 interface Command;
 

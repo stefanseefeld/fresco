@@ -23,7 +23,7 @@
 #include <Drawing/libArt/LibArtUnifont.hh>
 #include <Prague/Sys/MMap.hh>
 
-#include <art_rgb.h> // for art_rgb_run_alpha
+#include <libart_lgpl/art_rgb.h> // for art_rgb_run_alpha
 
 #include <string>
 #include <string.h>

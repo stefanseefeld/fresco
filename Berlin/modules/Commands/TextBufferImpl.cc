@@ -73,7 +73,7 @@ void TextBufferImpl::forward()
     ch.pos = buffer.position();
   }
   ch.len = 0;
-  ch.type = cursor;
+  ch.type = TextBuffer::cursor;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -88,7 +88,7 @@ void TextBufferImpl::backward()
     ch.pos = buffer.position();
   }
   ch.len = 0;
-  ch.type = cursor;
+  ch.type = TextBuffer::cursor;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -103,7 +103,7 @@ void TextBufferImpl::shift(CORBA::Long d)
     ch.pos = buffer.position();
   }
   ch.len = 0;
-  ch.type = cursor;
+  ch.type = TextBuffer::cursor;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -118,7 +118,7 @@ void TextBufferImpl::insertChar(Unichar u)
     buffer.insert(u);
   }
   ch.len = 1;
-  ch.type = insert;
+  ch.type = TextBuffer::insert;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -137,7 +137,7 @@ void TextBufferImpl::insertString(const Unistring &s)
     buffer.insert(u,ch.len);
   }
 
-  ch.type = insert;
+  ch.type = TextBuffer::insert;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -154,7 +154,7 @@ void TextBufferImpl::removeBackward(CORBA::Long n)
     buffer.removeBackward(n);
   }
 
-  ch.type = remove;
+  ch.type = TextBuffer::remove;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -170,7 +170,7 @@ void TextBufferImpl::removeForward(CORBA::Long n)
     ch.pos = buffer.position();
     buffer.removeForward(n);
   }
-  ch.type = remove;
+  ch.type = TextBuffer::remove;
   CORBA::Any any;
   any <<= ch;
   notify(any);

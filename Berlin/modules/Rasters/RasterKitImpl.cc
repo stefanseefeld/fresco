@@ -22,6 +22,7 @@
  * MA 02139, USA.
  */
 
+#include <Berlin/ImplVar.hh>
 #include "Image/ImageKitImpl.hh"
 #include "Image/RasterImpl.hh"
 #include <Prague/Sys/Tracer.hh>
@@ -29,13 +30,16 @@
 using namespace Prague;
 
 ImageKitImpl::ImageKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-ImageKitImpl::~ImageKitImpl() {}
+ImageKitImpl::~ImageKitImpl()
+{
+  for (vector<PortableServer::Servant>::iterator i = rasters.begin(); i != rasters.end(); ++i)
+    deactivate(*i);
+}
 
 Raster_ptr ImageKitImpl::empty()
 {
   Trace trace("ImageKitImpl::empty");
-  RasterImpl *raster = new RasterImpl();
-  raster->_obj_is_ready(_boa());
+  RasterImpl *raster = activate(new RasterImpl());
   rasters.push_back(raster);
   return raster->_this();
 }
@@ -43,8 +47,7 @@ Raster_ptr ImageKitImpl::empty()
 Raster_ptr ImageKitImpl::create(const char *file)
 {
   Trace trace("ImageKitImpl::create");
-  RasterImpl *raster = new RasterImpl(file);
-  raster->_obj_is_ready(_boa());
+  RasterImpl *raster = activate(new RasterImpl(file));
   rasters.push_back(raster);
   return raster->_this();
 }
@@ -52,5 +55,5 @@ Raster_ptr ImageKitImpl::create(const char *file)
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "ImageKitImpl"};
-  return new KitFactoryImpl<ImageKitImpl> (interface(ImageKit), properties, 1);
+  return new KitFactoryImpl<ImageKitImpl> (ImageKit::_PD_repoId, properties, 1);
 }

@@ -20,6 +20,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Berlin/ImplVar.hh"
 #include "Berlin/ServerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
 #include "Berlin/Logger.hh"
@@ -36,8 +37,7 @@ ServerImpl::ServerImpl() : thread(&ServerImpl::run, this) {}
 ServerContext_ptr ServerImpl::newServerContext(ClientContext_ptr c) throw (SecurityException)
 {
   MutexGuard guard (mutex);
-  ServerContextImpl *sc = new ServerContextImpl(this, c);
-  sc->_obj_is_ready(_boa());
+  ServerContextImpl *sc = activate(new ServerContextImpl(this, c));
   contexts.push_back(sc);
   return sc->_this();
 }
@@ -73,7 +73,7 @@ void ServerImpl::ping()
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
     {
       if ((*i)->ping()) tmp.push_back(*i);	    
-      else (*i)->_dispose();
+//      else (*i)->_dispose();
     }
   contexts = tmp;
 };

@@ -145,24 +145,17 @@ void WindowImpl::Mapper::execute(const CORBA::Any &)
 WindowImpl::WindowImpl()
   : ControllerImpl(false), unmapped(0), manipulators(3), mapper(0)
 {
-  manipulators[0] = new Mover;
-  manipulators[0]->_obj_is_ready(_boa());
-  manipulators[1] = new Resizer;
-  manipulators[1]->_obj_is_ready(_boa());
-  manipulators[2] = new Relayerer;
-  manipulators[2]->_obj_is_ready(_boa());
+  manipulators[0] = activate(new Mover);
+  manipulators[1] = activate(new Resizer);
+  manipulators[2] = activate(new Relayerer);
   mapper = new Mapper(this, true);
-  mapper->_obj_is_ready(_boa());
   unmapper = new Mapper(this, false);
-  unmapper->_obj_is_ready(_boa());
 }
 
 WindowImpl::~WindowImpl()
 {
   for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
-    (*i)->_dispose();
-  mapper->_dispose();
-  unmapper->_dispose();
+    deactivate(*i);
 }
 
 void WindowImpl::needResize()
@@ -212,7 +205,6 @@ void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
   unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
-  unmapped->_obj_is_ready(_boa());
   handle = StageHandle_var(unmapped->_this());
   if (mapped) map();
 }
@@ -222,7 +214,6 @@ Command_ptr WindowImpl::resize() { return manipulators[1]->_this();}
 Command_ptr WindowImpl::moveResize(Alignment x, Alignment y, CORBA::Short b)
 {
   manipulators.push_back(new MoveResizer(x, y, b));
-  manipulators.back()->_obj_is_ready(_boa());
   return manipulators.back()->_this();
 }
 Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
@@ -251,7 +242,6 @@ void WindowImpl::map()
   handle = tmp;
   for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
     (*i)->bind(handle);
-  unmapped->_dispose();
   unmapped = 0;
 }
 
@@ -261,10 +251,5 @@ void WindowImpl::unmap()
   MutexGuard guard(mutex);
   if (unmapped) return;
   unmapped = new UnmappedStageHandle(handle);
-  unmapped->_obj_is_ready(_boa());
   handle->remove();
-//  Stage_var stage = handle->parent();
-//  stage->begin();
-//  stage->remove(handle); 
-//  stage->end();
 }

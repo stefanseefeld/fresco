@@ -25,15 +25,15 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Command.hh>
 #include <Warsaw/BoundedValue.hh>
-#include <Berlin/ControllerImpl.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ControllerImpl.hh>
 
 namespace Motif
 {
 
 class Slider : public ControllerImpl
 {
-  class Observer : implements(Observer)
+  class Observer : public virtual POA_Observer
   {
   public:
     Observer(Slider *s) : slider(s) {}

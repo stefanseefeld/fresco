@@ -35,7 +35,7 @@ rpath	= $(lpath)
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
+CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
 CXXFLAGS= -pthread -Wall $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague -lpthread

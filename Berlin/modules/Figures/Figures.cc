@@ -187,17 +187,17 @@ void EllipseImpl::radius1(Coord r) { radius1_ = r; resize();}
 Coord EllipseImpl::radius2() { return radius2_;}
 void EllipseImpl::radius2(Coord r) { radius2_ = r; resize();}
 
-PathImpl::PathImpl() { FigureImpl::handle = new Vertices;}
-PathImpl::PathImpl (const Vertices &v)
+PathImpl::PathImpl() { FigureImpl::handle = new Figure::Vertices;}
+PathImpl::PathImpl (const Figure::Vertices &v)
 {
-  handle = new Vertices(v);
+  handle = new Figure::Vertices(v);
   resize();
 }
 
 PathImpl::PathImpl(const PathImpl &path)
 {
   copy(path);
-  handle = new Vertices(path.handle);
+  handle = new Figure::Vertices(path.handle);
 }
 
 void PathImpl::resize()

@@ -53,7 +53,7 @@ ViewportDemo::ViewportDemo(Application *a)
   hbox->append(margin);
   hbox->append(vbox1);
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::outset);
   Graphic_var background = tool->frame(hbox, 10., spec, true);
   Controller_var group  = tool->group(background);
   group->appendController(panner);

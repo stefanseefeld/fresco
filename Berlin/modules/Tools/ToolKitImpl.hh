@@ -22,14 +22,14 @@
 #ifndef _ToolKitImpl_hh
 #define _ToolKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/ToolKit.hh"
-#include "Berlin/KitImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/ToolKit.hh>
+#include <Berlin/KitImpl.hh>
 #include <vector>
 
 class GraphicImpl;
 
-class ToolKitImpl : implements(ToolKit), public KitImpl
+class ToolKitImpl : public virtual POA_ToolKit, public KitImpl
 {
  public:
   ToolKitImpl(KitFactory *, const PropertySeq &);
@@ -40,12 +40,15 @@ class ToolKitImpl : implements(ToolKit), public KitImpl
   Graphic_ptr      alpha(Graphic_ptr, Coord);
   Graphic_ptr      lighting(Graphic_ptr, Coord, Coord, Coord);
 
-  Graphic_ptr      frame(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean);
-  Graphic_ptr      dynamic(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);
-  Graphic_ptr      framedTriangle(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean, Direction d);
-  Graphic_ptr      dynamicTriangle(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Direction d, Telltale_ptr);
-  Graphic_ptr      framedDiamond(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean);
-  Graphic_ptr      dynamicDiamond(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);
+  Graphic_ptr      frame(Graphic_ptr, Coord, const ToolKit::FrameSpec &, CORBA::Boolean);
+  Graphic_ptr      dynamic(Graphic_ptr, Coord, Telltale::Mask, const ToolKit::FrameSpec &,
+			   const ToolKit::FrameSpec &, CORBA::Boolean, Telltale_ptr);
+  Graphic_ptr      framedTriangle(Graphic_ptr, Coord, const ToolKit::FrameSpec &, CORBA::Boolean, ToolKit::Direction d);
+  Graphic_ptr      dynamicTriangle(Graphic_ptr, Coord, Telltale::Mask, const ToolKit::FrameSpec &,
+				   const ToolKit::FrameSpec &, CORBA::Boolean, ToolKit::Direction d, Telltale_ptr);
+  Graphic_ptr      framedDiamond(Graphic_ptr, Coord, const ToolKit::FrameSpec &, CORBA::Boolean);
+  Graphic_ptr      dynamicDiamond(Graphic_ptr, Coord, Telltale::Mask, const ToolKit::FrameSpec &,
+				  const ToolKit::FrameSpec &, CORBA::Boolean, Telltale_ptr);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
   Trigger_ptr      button(Graphic_ptr, Command_ptr);
@@ -56,7 +59,7 @@ class ToolKitImpl : implements(ToolKit), public KitImpl
   Controller_ptr   group(Graphic_ptr);
   Controller_ptr   toggle(Graphic_ptr);
  private:
-  vector<GraphicImpl *> graphics;
+  vector<PortableServer::Servant> graphics;
 };
 
 #endif /* _ToolKitImpl_hh */

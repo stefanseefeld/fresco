@@ -34,14 +34,10 @@
 #include <map>                         // for the cache
 #include <vector>                      // for the gc
 
-declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(LayoutKit)
-
 class Compositor;
 class Strut;
 
-
-class TextKitImpl : implements(TextKit),  public KitImpl
+class TextKitImpl : public virtual POA_TextKit,  public KitImpl
 {
  public:
   TextKitImpl(KitFactory *, const PropertySeq &);
@@ -49,7 +45,7 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   virtual void bind(ServerContext_ptr);
 
   Graphic_ptr chunk(const Unistring & u);
-  Graphic_ptr ch(Unichar c);
+  Graphic_ptr glyph(Unichar c);
   Graphic_ptr strut();
   Graphic_ptr simpleViewer(TextBuffer_ptr);  
   Graphic_ptr terminal(StreamBuffer_ptr);
@@ -66,11 +62,11 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   static DrawingKit_var canonicalDK;
 
   LayoutKit_var layout;
-  Strut* _strut;
+  Impl_var<Strut> _strut;
   Prague::Mutex localMutex;
   Compositor *lineCompositor;
   Compositor *pageCompositor;
-  vector<GraphicImpl *> allocations;
+  vector<PortableServer::Servant> graphics;
 };
 
 #endif

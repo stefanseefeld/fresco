@@ -22,8 +22,8 @@
 #ifndef _Graphic_idl
 #define _Graphic_idl
 
-#include "Types.idl"
-#include "Allocation.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Allocation.idl>
 
 interface Traversal;
 interface DrawTraversal;

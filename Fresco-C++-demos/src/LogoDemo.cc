@@ -125,7 +125,7 @@ LogoDemo::LogoDemo(Application *a)
   box->append(hbox2);
   box->append(hbox3);
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var foo = tool->frame(box, 10., spec, true);
   Controller_var bar = tool->group(foo);
   application->append(bar, Unicode::String("MVC demo"));
@@ -138,12 +138,10 @@ Graphic_ptr LogoDemo::makeController(BoundedValue_ptr value, const Color &color)
   LayoutKit_var layout = application->layout();
   Graphic_var gauge = widget->gauge(value);
   Forward *forward = new Forward(value);
-  forward->_obj_is_ready(CORBA::BOA::getBOA());
   Backward *backward = new Backward(value);
-  backward->_obj_is_ready(CORBA::BOA::getBOA());
   Graphic_var rectangle = layout->fixedSize(Graphic_var(Graphic::_nil()), 200., 200.);
   ToolKit::FrameSpec spec;
-  spec.abrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::inset);
   Controller_var begin = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(backward->_this()));
   Controller_var end = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(forward->_this()));
   Graphic_var box = layout->hbox();

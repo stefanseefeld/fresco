@@ -31,7 +31,7 @@
 
 class GraphicImpl;
 
-class GadgetKitImpl : implements(GadgetKit), public KitImpl
+class GadgetKitImpl : public virtual POA_GadgetKit, public KitImpl
 {
  public:
   GadgetKitImpl(KitFactory *, const PropertySeq &);
@@ -45,6 +45,7 @@ class GadgetKitImpl : implements(GadgetKit), public KitImpl
  private:
   CommandKit_var command;
   FigureKit_var figure;
+  vector<PortableServer::Servant> gadgets;
 };
 
 #endif /* _GadgetKitImpl_hh */

@@ -78,7 +78,7 @@ DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
 DrawTraversalImpl::~DrawTraversalImpl()
 {
   drawing->restoreState();
-  id->_dispose();
+//  id->_dispose();
 }
 
 CORBA::Boolean DrawTraversalImpl::intersectsAllocation()

@@ -1,14 +1,9 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,15 +26,15 @@
 class RegionImpl;
 class TransformImpl;
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Traversal.hh"
-#include "Berlin/TransformImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
 #include <vector>
+#include "Berlin/TransformImpl.hh"
 
 
-class TraversalImpl : implements(Traversal)
+class TraversalImpl : public virtual POA_Traversal, public virtual PortableServer::RefCountServantBase
 {
   struct State
   {
@@ -49,6 +44,8 @@ class TraversalImpl : implements(Traversal)
     TransformImpl *transformation;    
   };
   typedef vector<State> stack_t;
+ protected:
+  typedef Traversal::order order;
  public:
   TraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr);
   TraversalImpl(const TraversalImpl &);

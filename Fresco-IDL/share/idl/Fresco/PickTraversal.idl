@@ -22,8 +22,8 @@
 #ifndef _PickTraversal_idl
 #define _PickTraversal_idl
 
-#include "Traversal.idl"
-#include "Input.idl"
+#include <Warsaw/Traversal.idl>
+#include <Warsaw/Input.idl>
 
 interface Controller;
 

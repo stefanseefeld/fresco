@@ -22,15 +22,14 @@
 #ifndef _Viewport_hh
 #define _Viewport_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Viewport.hh"
-#include "Warsaw/BoundedRange.hh"
-#include "Berlin/MonoGraphic.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Viewport.hh>
+#include <Warsaw/BoundedRange.hh>
+#include <Berlin/MonoGraphic.hh>
 
-declare_corba_ptr_type(BoundedRange)
 class RegionImpl;
 
-class ViewportImpl : implements(Viewport), public MonoGraphic
+class ViewportImpl : public virtual POA_Viewport, public MonoGraphic
 {
   class Adjustment;
  public:
@@ -57,7 +56,7 @@ protected:
   void allocateChild(Allocation::Info &);
   void cacheRequisition();
   void cacheAllocation(Region_ptr);
-  RegionImpl *bodyAllocation(Region_ptr);
+  void bodyAllocation(Region_ptr, RegionImpl *);
   void scrollTransform(Transform_ptr);
 
   BoundedRange::Settings settings[2];

@@ -24,12 +24,12 @@
 #ifndef _ClientContextImpl_hh
 #define _ClientContextImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/ClientContext.hh"
-#include "Prague/Sys/User.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/ClientContext.hh>
+#include <Prague/Sys/User.hh>
 
 
-class ClientContextImpl : implements(ClientContext)
+class ClientContextImpl : public virtual POA_ClientContext
 // This is a handle to a client application that the display server holds. It
 // provides the display server with enough mechanisms to check to see if the
 // client is alive and to determine the client's security rights. It is

@@ -22,19 +22,19 @@
 #ifndef _StageImpl_hh
 #define _StageImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Stage.hh"
-#include "Warsaw/Traversal.hh"
-#include "Berlin/GraphicImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Geometry.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Stage.hh>
+#include <Warsaw/Traversal.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/GraphicImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/Geometry.hh>
+#include <Prague/Sys/Thread.hh>
 #include <list>
 
 class StageHandleImpl;
 
-class StageImpl : implements(Stage), public GraphicImpl
+class StageImpl : public virtual POA_Stage, public GraphicImpl
 {
   class Sequence;
   class Finder;
@@ -63,7 +63,7 @@ class StageImpl : implements(Stage), public GraphicImpl
    */
   virtual void begin();
   virtual void end();
-  virtual StageHandle_ptr insert(Graphic_ptr, const Vertex &, const Vertex &, Index);
+  virtual StageHandle_ptr insert(Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
   virtual void remove(StageHandle_ptr);
 
   void move(StageHandleImpl *, const Vertex &);
@@ -84,7 +84,7 @@ private:
   Prague::Mutex childMutex;
 };
 
-class StageHandleImpl : implements(StageHandle)
+class StageHandleImpl : public virtual POA_StageHandle
 {
  public:
   StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);

@@ -22,9 +22,9 @@
 #ifndef _Controller_idl
 #define _Controller_idl
 
-#include "Graphic.idl"
-#include "Telltale.idl"
-#include "Input.idl"
+#include <Warsaw/Graphic.idl>
+#include <Warsaw/Telltale.idl>
+#include <Warsaw/Input.idl>
 
 interface PickTraversal;
 interface Focus;

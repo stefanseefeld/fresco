@@ -24,13 +24,13 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Figure.hh>
-#include <Berlin/GraphicImpl.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/GraphicImpl.hh>
 
 class TransformImpl;
 class RegionImpl;
 
-class TransformFigure : implements (Figure), public GraphicImpl
+class TransformFigure : public virtual POA_Figure, public GraphicImpl
 {
  public:
   TransformFigure();
@@ -41,8 +41,8 @@ class TransformFigure : implements (Figure), public GraphicImpl
   virtual void pick(PickTraversal_ptr);
   virtual void needRedraw();
   
-  Mode type() { return mode;}
-  void type(Mode m) { mode = m; needRedraw();}
+  Figure::Mode type() { return mode;}
+  void type(Figure::Mode m) { mode = m; needRedraw();}
   Color foreground() { return fg;}
   void foreground(const Color &f) { fg = f; needRedraw();}
   Color background() { return bg;}
@@ -52,7 +52,7 @@ class TransformFigure : implements (Figure), public GraphicImpl
 
   void copy(const TransformFigure &);
  protected:
-  Mode mode;
+  Figure::Mode mode;
   Color fg, bg;
   Impl_var<TransformImpl> tx;
   Impl_var<RegionImpl> ext;
@@ -74,8 +74,8 @@ public:
 
   void copy(const FigureImpl &);
 protected:
-  Vertices_var path;
-  Vertices_var handle;
+  Figure::Vertices_var path;
+  Figure::Vertices_var handle;
 };
 
 #endif /* _FigureImpl_hh */

@@ -46,7 +46,7 @@ void TextViewer::init()
   CORBA::ULong len = us->length();
   for (unsigned long i = 0; i < len; i++)
     {
-      Graphic_var child = kit->ch(us[i]);
+      Graphic_var child = kit->glyph(us[i]);
       Edge edge;
       edge.parent = Graphic::_duplicate(child);
       edge.id = tag();
@@ -73,7 +73,7 @@ void TextViewer::update(const CORBA::Any &a)
 	    CORBA::ULong len = us->length();
 	    for (unsigned long i = 0; i < len; i++)
 	      {
-		Graphic_var child = kit->ch(us[i]);
+		Graphic_var child = kit->glyph(us[i]);
 		Edge edge;
 		edge.parent = Graphic::_duplicate(child);
 		edge.id = tag();

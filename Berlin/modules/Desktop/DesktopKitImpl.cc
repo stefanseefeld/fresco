@@ -23,6 +23,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/resolve.hh>
+#include <Berlin/ImplVar.hh>
 #include "Desktop/DesktopKitImpl.hh"
 #include "Desktop/WindowImpl.hh"
 #include "Desktop/Pulldown.hh"
@@ -36,21 +37,21 @@ DesktopKitImpl::~DesktopKitImpl()
   for (vector<WindowImpl *>::iterator i = windows.begin(); i != windows.end(); i++)
     {
       (*i)->unmap();
-      (*i)->_dispose();
+      deactivate(*i);
     }
 }
 
 void DesktopKitImpl::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
-  CORBA::Object_var object = context->getSingleton(interface(Desktop));
+  CORBA::Object_var object = context->getSingleton(Desktop::_PD_repoId);
   desktop = Desktop::_narrow(object);
   
   PropertySeq props;
   props.length(0);
-  layout = resolve_kit<LayoutKit>(context, interface(LayoutKit), props);
-  tool   = resolve_kit<ToolKit>(context, interface(ToolKit), props);
-  widget = resolve_kit<WidgetKit>(context, interface(WidgetKit), props);
+  layout = resolve_kit<LayoutKit>(context, LayoutKit::_PD_repoId, props);
+  tool   = resolve_kit<ToolKit>(context, ToolKit::_PD_repoId, props);
+  widget = resolve_kit<WidgetKit>(context, WidgetKit::_PD_repoId, props);
 }
 
 Desktop_ptr DesktopKitImpl::desk()
@@ -62,8 +63,7 @@ Desktop_ptr DesktopKitImpl::desk()
 Window_ptr DesktopKitImpl::shell(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::shell");
-  WindowImpl *window = new WindowImpl;
-  window->_obj_is_ready(_boa());
+  WindowImpl *window = activate(new WindowImpl);
 
   Graphic::Requisition req;
   req.x.defined = true;
@@ -78,7 +78,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.align = 0;
   Command_var move = window->move();
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::outset);
   Graphic_var tbframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
   Graphic_var tbdragger = tool->dragger(tbframe, move);
 
@@ -137,10 +137,9 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
 Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::transient");
-  WindowImpl *window = new WindowImpl;
-  window->_obj_is_ready(_boa());
+  WindowImpl *window = activate(new WindowImpl);
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::outset);
 
   Graphic::Requisition req;
   req.x.defined = true;
@@ -212,12 +211,11 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::pulldown");
-  Pulldown *menu = new Pulldown;
-  menu->_obj_is_ready(_boa());
-  ToolKit::FrameSpec out;
-  out.bbrightness(0.5);
+  Pulldown *menu = activate(new Pulldown);
+  ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(ToolKit::outset);
 
-  Graphic_var outset = tool->frame(g, 20., out, true);
+  Graphic_var outset = tool->frame(g, 20., spec, true);
   menu->body(outset);
   menu->appendController(g);
   menu->insert(desktop, false);
@@ -229,5 +227,5 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "DesktopKitImpl"};
-  return new KitFactoryImpl<DesktopKitImpl> (interface(DesktopKit), properties, 1);
+  return new KitFactoryImpl<DesktopKitImpl> (DesktopKit::_PD_repoId, properties, 1);
 }

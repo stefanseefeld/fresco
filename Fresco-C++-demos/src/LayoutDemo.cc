@@ -48,7 +48,7 @@ LayoutDemo::LayoutDemo(Application *a)
   hbox->append(Graphic_var(tool->rgb(button3, 0.5, 0.5, 1.)));
   Graphic_var margin = layout->marginFlexible(hbox, 100., 500., 100.);
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::outset);
   Graphic_var demo = tool->frame(margin, 10., spec, true);
   Controller_var group = tool->group(demo);
   group->appendController(button1);

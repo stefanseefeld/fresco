@@ -85,7 +85,6 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
    */
   KitImpl *kit = server->create(type, properties);
   if (!kit) throw CreationFailureException();
-  kit->_obj_is_ready(_boa());
   kit->bind(ServerContext_var(_this()));
   kit->increment();
   kits.insert(klist_t::value_type(type, kit));
@@ -111,7 +110,7 @@ bool ServerContextImpl::ping()
   if (!alive)
     for(klist_t::iterator i = kits.begin(); i != kits.end(); i++)
       {
-	(*i).second->_dispose();
+//	(*i).second->_dispose();
 	kits.erase(i);
       }
   return alive;

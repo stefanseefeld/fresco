@@ -22,8 +22,8 @@
 #ifndef _Selection_idl
 #define _Selection_idl
 
-#include "Types.idl"
-#include "Subject.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Subject.idl>
 
 interface Telltale;
 

@@ -24,12 +24,12 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Figure.hh>
-#include <Berlin/PolyGraphic.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/PolyGraphic.hh>
 
 class TransformImpl;
 
-class PolyFigure : implements(Figure), public PolyGraphic
+class PolyFigure : public virtual POA_Figure, public PolyGraphic
 {
 public:
     PolyFigure();
@@ -49,8 +49,8 @@ public:
      *                     by styles so PolyFigures simply ignore it...
      *                     -stefan
      */
-    Mode type() { return 0;}
-    void type(Mode) {}
+    Figure::Mode type() { return 0;}
+    void type(Figure::Mode) {}
     Color foreground() { return Color();}
     void foreground(const Color &) {}
     Color background() { return Color();}

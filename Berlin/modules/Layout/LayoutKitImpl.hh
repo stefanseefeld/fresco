@@ -4,11 +4,6 @@
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -27,14 +22,14 @@
 #ifndef _LayoutKitImpl_hh
 #define _LayoutKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/LayoutKit.hh"
-#include "Berlin/KitImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/LayoutKit.hh>
+#include <Berlin/KitImpl.hh>
 #include <vector>
 
 class GraphicImpl;
 
-class LayoutKitImpl : implements(LayoutKit), public KitImpl
+class LayoutKitImpl : public virtual POA_LayoutKit, public KitImpl
 {
 public:
   LayoutKitImpl(KitFactory *, const PropertySeq &);
@@ -115,10 +110,15 @@ public:
   virtual Graphic_ptr bmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
   virtual Graphic_ptr tmargin(Graphic_ptr, Coord);
   virtual Graphic_ptr tmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
-protected:
+private:
+  template <typename I, typename Im>
+  typename I::_ptr_type create(Im *impl)
+  {
+    graphics.push_back(activate(impl));
+    return impl->_this();
+  }
   Coord fil_;
- public:
-  vector<GraphicImpl *> graphics;
+  vector<PortableServer::Servant> graphics;
 };
 
 #endif /* _LayoutKitImpl_hh */

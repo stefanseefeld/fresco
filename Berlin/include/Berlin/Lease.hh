@@ -1,6 +1,3 @@
-#ifndef _Lease_hh
-#define _Lease_hh
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -22,75 +19,87 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Lease_hh
+#define _Lease_hh
 
-#include <stack>
-#include "Berlin/GraphicImpl.hh"
+#include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
+#include <stack>
 
 // this header defines an interface to "leasable" impl_var's, such that
 // you can borrow one just for a moment, use it, and return it when you're
 // done. it also provides a simple cache object you can use elsewhere
 // if you want more explicit control.
 
-template <class T> class Cache {
+template <class T> class Cache
+{
 protected:
   stack<T> objs;
   Prague::Mutex mutex;
 public:
-  inline bool fetch(T& ref) {
+  bool fetch(T& ref)
+  {
     Prague::MutexGuard guard(mutex);
     if (objs.empty()) return false;
     ref = objs.top(); // copy constructor on ref
     objs.pop();
     return true;
   }
-  inline void stash(T &ref) {
+  void stash(T &ref)
+  {
     Prague::MutexGuard guard(mutex);
     objs.push(ref);
   }
 };
 
 
-template <class T> class Lease {
- public:
-  class Provider {
+template <class T> class Lease
+{
+public:
+  class Provider
+  {
   protected:
     Cache<T *> cache;    
   public:
-    inline void adopt(T *impl) {
-      cache.stash(impl);
-    }
-    
-    inline void provide(Lease<T> &L) {
+    void adopt(T *impl) { cache.stash(impl);}
+    void provide(Lease<T> &L)
+    {
       T *impl;
-      if (cache.fetch(impl)) {
-	Lease newlease(impl,this,false);	
-	L = newlease;
-      } else {
-	impl = new T();
-	Lease newlease(impl,this,true);	
-	L = newlease;
-      }
+      if (cache.fetch(impl))
+	{
+	  Lease newlease(impl,this);	
+	  L = newlease;
+	}
+      else
+	{
+	  impl = new T();
+	  Lease newlease(impl,this);	
+	  L = newlease;
+	}
     }
   };
   
 
   Lease(Lease<T> &i) : t(i.release()), p(i.p) {}
-  explicit Lease(T *tt = 0, Provider<T> *pp  = 0, 
-		 bool activate = true) : t(tt), p(pp) { 
-    if ((t != 0) && activate) t->_obj_is_ready(CORBA::BOA::getBOA());
+  explicit Lease(T *tt = 0, Provider<T> *pp  = 0) : t(tt), p(pp) { activate(t);}
+  Lease &operator = (Lease<T> &i)
+  {
+    if (&i != this)
+      {
+	p = i.p;
+	if (t) p->adopt(t);
+	t = i.release();
+      }
+    return *this;
   }
-  Lease &operator = (Lease<T> &i) { if (&i != this) { 
-    p = i.p; if (t) p->adopt(t); t = i.release();} return *this;
-  }
-
+  
   ~Lease() { if (t) p->adopt(t);}
   T *get() const { return t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}
   T *release() { T *tmp = t; t = 0; return tmp;}
-  void reset(T *tt = 0) { if (t) p->adopt(t); t = tt; t->_obj_is_ready(CORBA::BOA::getBOA());}
+  void reset(T *tt = 0) { if (t) p->adopt(t); t = tt;}
 private:
   T *t;
   Provider<T> *p;

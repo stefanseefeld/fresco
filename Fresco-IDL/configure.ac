@@ -49,7 +49,7 @@ dnl will then override the global.
 AC_CONFIG_LOAD($cpath/config.param)
 AC_CONFIG_LOAD($cpath/Warsaw/config.param)
 
-dnl Required to determine host CPU and OS in BERLIN_OMNIORB2_CHECK
+dnl Required to determine host CPU and OS in BERLIN_OMNIORB_CHECK
 AC_CANONICAL_SYSTEM
 
 dnl ------------------------------------------------------------------

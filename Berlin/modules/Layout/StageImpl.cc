@@ -21,13 +21,12 @@
  */
 
 #include "Layout/StageImpl.hh"
-#include "Berlin/Providers.hh"
+#include <Berlin/Providers.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
 #include <Berlin/AllocationImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/DebugGraphic.hh>
-#include <Berlin/ImplVar.hh>
 #include <Berlin/QuadTree.hh>
 #include <Berlin/Math.hh>
 #include <Prague/Sys/Tracer.hh>
@@ -104,9 +103,9 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
   /*
    * start searching from the closest item
    */
-  Index fdist = front()->l - layer;
-  Index bdist = layer;
-  Index cdist = Math::abs(current()->l - layer);
+  Stage::Index fdist = front()->l - layer;
+  Stage::Index bdist = layer;
+  Stage::Index cdist = Math::abs(current()->l - layer);
   if (fdist < bdist)
     {
       if (fdist < cdist) cursor = 0;
@@ -122,7 +121,7 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::insert");
-  Index layer = handle->l;
+  Stage::Index layer = handle->l;
   iterator i;
   if (!size() || layer == 0) i = begin();
   else if (front()->l < layer) i = end();
@@ -134,7 +133,7 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
 void StageImpl::Sequence::remove(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::remove");
-  Index layer = handle->l;
+  Stage::Index layer = handle->l;
   iterator old = lookup(layer);
   if (old == begin() + cursor)
     if (current()->l <= (front()->l / 2)) cursor++;
@@ -647,12 +646,11 @@ void StageImpl::end()
     }
 }
 
-StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
+StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Stage::Index layer)
 {
   Trace trace("StageImpl::insert");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = new StageHandleImpl(this, g, tag(), position, size, layer);
-  handle->_obj_is_ready(_boa());
   tree->insert(handle);
 //   dumpQuadTree(*tree);
   children->insert(handle);
@@ -671,7 +669,7 @@ void StageImpl::remove(StageHandle_ptr h)
   children->remove(handle);
 
   damage(handle);
-  handle->_dispose();
+//  handle->_dispose();
   need_resize = true;
 }
 

@@ -23,9 +23,9 @@
 #ifndef _ToolKit_idl
 #define _ToolKit_idl
 
-#include "Types.idl"
-#include "Telltale.idl"
-#include "Kit.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Telltale.idl>
+#include <Warsaw/Kit.idl>
 
 interface Graphic;
 interface View;
@@ -44,13 +44,10 @@ interface ToolKit : Kit
   union FrameSpec switch (FrameType)
     {
     case inset:
-      Coord abrightness;
     case outset:
-      Coord bbrightness;
     case convex:
-      Coord cbrightness;
     case concav:
-      Coord dbrightness;
+      Coord brightness;
     case colored:
       Color foreground;
     };

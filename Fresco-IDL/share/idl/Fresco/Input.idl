@@ -22,7 +22,7 @@
 #ifndef _Input_idl
 #define _Input_idl
 
-#include <Types.idl>
+#include <Warsaw/Types.idl>
 
 module Input
 {
@@ -47,8 +47,8 @@ module Input
   //. the data associated with these attributes
   {
   case telltale: Bitset state;
-  case key: Toggle kselection;
-  case button: Toggle bselection;
+  case key:
+  case button: Toggle selection;
   case positional: Position location;
   case valuation: Value val;
   };

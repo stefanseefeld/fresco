@@ -22,7 +22,7 @@
 #ifndef _Focus_idl
 #define _Focus_idl
 
-#include <Input.idl>
+#include <Warsaw/Input.idl>
 
 interface Focus
 {

@@ -102,11 +102,10 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
    */
   if (!traversal)
     {
-      traversal = new PickTraversalImpl(Screen_var(screen->_this()),
-					Region_var(screen->getRegion()),
-					Transform_var(Transform::_nil()),
-					pointer, Focus_var(_this()));
-      traversal->_obj_is_ready(CORBA::BOA::getBOA());
+      traversal = activate(new PickTraversalImpl(Screen_var(screen->_this()),
+						 Region_var(screen->getRegion()),
+						 Transform_var(Transform::_nil()),
+						 pointer, Focus_var(_this())));
       screen->traverse(Traversal_var(traversal->_this()));
     }
   /*
@@ -130,12 +129,12 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
       cerr << "FocusImpl::dispatch : no Controller found ! (position is " << pointer.location << ")" << endl;
       if (traversal)
 	{
-	  traversal->_dispose();
+	  deactivate(traversal);
 	  traversal = 0;
 	}
       return;
     }
-  else picked->_obj_is_ready(CORBA::BOA::getBOA());
+  else activate(picked);
   /*
    * ...now do the [lose/receive]Focus stuff,...
    */
@@ -173,7 +172,7 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
   controllers.back()->handle(PickTraversal_var(traversal->_this()), any);
   if (!grabbed)
     {
-      traversal->_dispose();
+      deactivate(traversal);
       traversal = 0;
     }
 }

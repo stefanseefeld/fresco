@@ -30,7 +30,13 @@ def main():
 	vbox.append(a.layout.margin(textview,40.0))
 
 	# Group and shell the grid
-	group = a.tool.group(a.tool.debugger(vbox, "vbox"))
+	glyph = a.text.chunk(a.toUni("Label"))
+	label = a.layout.margin(glyph, 20.)
+	choice = a.widget.toggleChoice()
+	choice.appendItem(a.tool.rgb(label, 0., 0., 0.))
+	#	button = a.widget.button(a.tool.rgb(label, 0., 0., 0.), a.command._nil)
+	frame = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 0.5)
+	group = a.tool.group(a.tool.frame(choice, 20., frame, 1))
 	shell = a.desktop.shell(group)
 
 	a.loop()

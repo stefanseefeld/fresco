@@ -30,9 +30,7 @@
 #include "Text/Composition.hh"
 #include <map>
 
-declare_corba_ptr_type(TextBuffer)
-
-class TextViewer : implements(View), public Composition
+class TextViewer : public virtual POA_View, public Composition
 {
  public:
   TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);

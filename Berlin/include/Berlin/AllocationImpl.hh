@@ -24,12 +24,13 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
+#include <Berlin/ImplVar.hh>
 #include <vector>
 
 class RegionImpl;
 class TransformImpl;
 
-class AllocationImpl : implements(Allocation)
+class AllocationImpl : public virtual POA_Allocation, public virtual PortableServer::RefCountServantBase
 {
   struct State
   {

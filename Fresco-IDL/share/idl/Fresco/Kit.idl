@@ -36,11 +36,7 @@ interface Kit
   typedef sequence<Property> PropertySeq;
 
   readonly attribute PropertySeq properties;
-#ifdef __OMNIIDL__
   boolean _supports(in PropertySeq p);
-#else
-  boolean supports(in PropertySeq p);
-#endif
   //. query for properties
   void bind(in ServerContext sc);
   //. initializer method which allows a kit to hook up resources it

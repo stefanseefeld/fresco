@@ -23,9 +23,9 @@
 #ifndef _FigureKit_idl
 #define _FigureKit_idl
 
-#include "Types.idl"
-#include "Kit.idl"
-#include "Figure.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Kit.idl>
+#include <Warsaw/Figure.idl>
 
 interface BoundedValue;
 interface Graphic;

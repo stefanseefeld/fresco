@@ -25,9 +25,9 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Controller.hh>
 #include <Warsaw/Region.hh>
+#include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/FocusImpl.hh>
-#include <Berlin/ImplVar.hh>
 #include <vector>
 
 class ScreenImpl;

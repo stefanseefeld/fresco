@@ -28,7 +28,7 @@
 #include <Berlin/GapBuffer.hh>
 #include <Prague/Sys/Thread.hh>
 
-class TextBufferImpl : implements(TextBuffer), public SubjectImpl
+class TextBufferImpl : public virtual POA_TextBuffer, public SubjectImpl
 {
  public:
   TextBufferImpl();

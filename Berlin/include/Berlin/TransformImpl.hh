@@ -25,8 +25,9 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Transform.hh>
 
-class TransformImpl : implements(Transform)
+class TransformImpl : public virtual POA_Transform, public virtual PortableServer::RefCountServantBase
 {
+  typedef Transform::Matrix Matrix;
 public:
   TransformImpl();
   TransformImpl(Transform_ptr t) { copy(t);}

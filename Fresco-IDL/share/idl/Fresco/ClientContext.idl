@@ -22,7 +22,7 @@
 #ifndef _ClientContext_idl
 #define _ClientContext_idl
 
-#include <Types.idl>
+#include <Warsaw/Types.idl>
 
 interface ClientContext
 //. a Client Context object is an interface any client connecting to a

@@ -24,9 +24,9 @@
 #ifndef _Image_idl
 #define _Image_idl
 
-#include "Types.idl"
-#include "Graphic.idl"
-#include "Raster.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Graphic.idl>
+#include <Warsaw/Raster.idl>
 
 /*
  * Image handles the layout issues pertaining to displaying an Image

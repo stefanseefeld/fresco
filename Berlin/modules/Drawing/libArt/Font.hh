@@ -28,8 +28,8 @@
 #include "Warsaw/DrawingKit.hh"
 #include <string>
 #include <vector>
-#include <art_misc.h>
-#include <art_pixbuf.h>
+#include <libart_lgpl/art_misc.h>
+#include <libart_lgpl/art_pixbuf.h>
 
 class LibArtFont
 {

@@ -21,16 +21,7 @@
  * MA 02139, USA.
  */
 
-/*
- * Raster holds the detailed image data corresponding to a picture
- * or texture mapping on the screen (or in memory).
- *
- * It is generally contained within an Image object, which handles
- * all of the nasty details related to layout and so forth.
- *
- */
-
-#include <Types.idl>
+#include <Warsaw/Types.idl>
 
 interface Raster
 //. A raster is a two-dimensional pixel array

@@ -32,15 +32,13 @@ using namespace Prague;
 EventManager::EventManager(ScreenImpl *s)
   : ptrPositionX(0), ptrPositionY(0), screen(s), drawable(GGI::drawable())
 {
-  focus.push_back(new NonPositionalFocus(0, screen)); // keyboard
-  focus.push_back(new PositionalFocus(1, screen));    // mouse
-  focus[0]->_obj_is_ready(CORBA::BOA::getBOA());
-  focus[1]->_obj_is_ready(CORBA::BOA::getBOA());
+  focus.push_back(activate(new NonPositionalFocus(0, screen))); // keyboard
+  focus.push_back(activate(new PositionalFocus(1, screen)));    // mouse
 }
 
 EventManager::~EventManager()
 {
-  for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) (*i)->_dispose();
+  for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) deactivate(*i);
 }
 
 bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
@@ -64,7 +62,7 @@ void EventManager::nextEvent()
 	toggle.number = e.key.sym;
 	event.length(1);
 	event[0].dev = 0;
-	event[0].attr.kselection(toggle);
+	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
 	break;
       }
     case evKeyRepeat:
@@ -74,7 +72,7 @@ void EventManager::nextEvent()
 	toggle.number = e.key.sym;
 	event.length(1);
 	event[0].dev = 0;
-	event[0].attr.kselection(toggle);
+	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
 	break;
       }
     case evPtrRelative:
@@ -120,9 +118,9 @@ void EventManager::nextEvent()
 	position.z = 0;
 	event.length(2);
 	event[0].dev = 1;
-	event[0].attr.bselection(toggle);
+	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
 	event[1].dev = 1;
-	event[1].attr.location(position);	
+	event[1].attr.location(position);
 	break;
       }
     }
@@ -134,11 +132,11 @@ void EventManager::nextEvent()
 
 void EventManager::restore(Region_ptr r)
 {
-  for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) (*i)->restore(r);
+  for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) (*i)->restore(r);
 }
 
 void EventManager::damage(Region_ptr r)
 {
-  for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) (*i)->damage(r);
+  for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) (*i)->damage(r);
 }
 

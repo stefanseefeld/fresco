@@ -34,7 +34,7 @@ void Terminal::keyPress(const Input::Event &event)
   Trace trace("Terminal::keyPress");
   StreamBuffer::Data data;
   data.length(1);
-  const Input::Toggle &toggle = event[0].attr.kselection();
+  const Input::Toggle &toggle = event[0].attr.selection();
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
   char ascii = uc.myUnicode();
   if (isprint(ascii) || ascii == '\r' || ascii == '\n') data[0] = ascii;

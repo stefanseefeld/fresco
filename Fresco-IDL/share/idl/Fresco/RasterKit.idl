@@ -24,9 +24,9 @@
 #ifndef _ImageKit_idl
 #define _ImageKit_idl
 
-#include "Types.idl"
-#include "Kit.idl"
-#include "Raster.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Kit.idl>
+#include <Warsaw/Raster.idl>
 
 /*
  * Raster holds the detailed image data corresponding to a picture

@@ -34,7 +34,7 @@
 class WindowImpl;
 class DesktopImpl;
 
-class DesktopKitImpl : implements(DesktopKit), public KitImpl
+class DesktopKitImpl : public virtual POA_DesktopKit, public KitImpl
 {
  public:
   DesktopKitImpl(KitFactory *, const PropertySeq &);

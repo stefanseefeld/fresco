@@ -30,7 +30,7 @@
 namespace Motif
 {
 
-class Gauge : implements(View), public GraphicImpl
+class Gauge : public virtual POA_View, public GraphicImpl
 {
  public:
   Gauge(BoundedValue_ptr v, const Color &c) : value(BoundedValue::_duplicate(v)), color(c), width(2000.), height(200.) {}

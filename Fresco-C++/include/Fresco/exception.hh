@@ -22,7 +22,7 @@
 #ifndef _exception_hh
 #define _exception_hh
 
-#include <Types.hh>
+#include <Warsaw/Types.hh>
 #include <iostream>
 
 inline ostream &operator << (ostream &os, const CORBA::Exception &exception)

@@ -66,8 +66,7 @@ void TerminalView::update(const CORBA::Any &)
     begin();
     if (!lines.size())
       {
-	lines.push_back(new Composition(canonicalDK, compositor));
-	lines.back()->_obj_is_ready(_boa());
+	lines.push_back(activate(new Composition(canonicalDK, compositor)));
 	append(Graphic_var(lines.back()->_this()));
       }
     StreamBuffer::Data_var data = stream->read();
@@ -88,8 +87,7 @@ void TerminalView::update(const CORBA::Any &)
 	  {
 	  case '\r':
 	  case '\n':
-	    lines.push_back(new Composition(canonicalDK, compositor));
-	    lines.back()->_obj_is_ready(_boa());
+	    lines.push_back(activate(new Composition(canonicalDK, compositor)));
 	    lines.back()->append(Graphic_var(kit->strut()));
 	    append(Graphic_var(lines.back()->_this()));
 	    break;

@@ -24,10 +24,10 @@
 #include "Text/Compositor.hh"
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Traversal.hh>
+#include <Berlin/ImplVar.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Providers.hh>
-#include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <algorithm>

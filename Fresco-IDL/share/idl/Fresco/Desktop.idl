@@ -22,8 +22,8 @@
 #ifndef _Desktop_idl
 #define _Desktop_idl
 
-#include <Controller.idl>
-#include <Stage.idl>
+#include <Warsaw/Controller.idl>
+#include <Warsaw/Stage.idl>
 
 interface Desktop : Controller, Stage
 {

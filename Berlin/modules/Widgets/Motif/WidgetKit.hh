@@ -36,10 +36,10 @@ class GraphicImpl;
 namespace Motif
 {
 
-class WidgetKit : implements(WidgetKit), public KitImpl
+class WidgetKit : public virtual POA_WidgetKit, public KitImpl
 {
  public:
-  class CommandImpl : implements(Command) {};
+  class CommandImpl : public virtual POA_Command {};
 
   WidgetKit(KitFactory *, const PropertySeq &);
   virtual ~WidgetKit();
@@ -61,8 +61,7 @@ class WidgetKit : implements(WidgetKit), public KitImpl
   CommandKit_var   command;
   ToolKit_var   tool;
   TextKit_var   text;
-  vector<GraphicImpl *> graphics;
-  vector<CommandImpl *> commands;
+  vector<PortableServer::Servant> servants;
 };
 
 };

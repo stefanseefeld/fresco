@@ -32,7 +32,7 @@ using namespace Prague;
 void TextInput::keyPress(const Input::Event &event)
 {
   Trace trace("TextInput::keyPress");
-  const Input::Toggle &toggle = event[0].attr.kselection();
+  const Input::Toggle &toggle = event[0].attr.selection();
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
   if (uc.is_printable()) buffer->insertChar(Unicode::toCORBA(uc));
   else switch (toggle.number)

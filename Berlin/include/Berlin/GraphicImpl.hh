@@ -22,20 +22,24 @@
 #ifndef _GraphicImpl_hh
 #define _GraphicImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Graphic.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Graphic.hh>
+#include <Prague/Sys/Thread.hh>
 #include <vector>
 #include <algorithm>
 
-declare_corba_ptr_type(Region)
 class RegionImpl;
 class AllocationImpl;
 
-class GraphicImpl : implements(Graphic)
+class GraphicImpl :  public virtual POA_Graphic, public virtual PortableServer::RefCountServantBase
 {
  protected:
-  typedef vector<Edge> plist_t;
+  typedef Graphic::Edge Edge;
+  typedef Graphic::Iterator Iterator;
+  typedef Graphic::Iterator_ptr Iterator_ptr;
+  typedef Graphic::Requirement Requirement;
+  typedef Graphic::Requisition Requisition;
+  typedef vector<Graphic::Edge> plist_t;
  public:
   static const Coord infinity = 10e6;
   GraphicImpl();

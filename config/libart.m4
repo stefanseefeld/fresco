@@ -1,6 +1,6 @@
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -49,9 +49,9 @@ AC_DEFUN([BERLIN_LIBART_CHECK],[
 	AC_CHECK_HEADER(art_pixbuf.h,:,
 		AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h,[
 			if test ".$LIBART_INCLUDES" = . ; then
-				LIBART_INCLUDES=-I/usr/include/libart_lgpl
+				LIBART_INCLUDES=-I/usr/include
 			else
-				LIBART_INCLUDES="$LIBART_INCLUDES/libart_lgpl"
+				LIBART_INCLUDES="$LIBART_INCLUDES"
 			fi ],no_libart=yes))
 	CPPFLAGS="$save_CPPFLAGS"
 

@@ -22,23 +22,53 @@
 #ifndef _Impl_var_hh
 #define _Impl_var_hh
 
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
+
+// there is an annoying warning message produced by gcc.
+// unless I find out how to supress that I'm going to use ObjectId *
+// instead of the more convenient ObjectId_var...
+// -stefan
+template <typename Servant>
+inline Servant activate(Servant servant)
+{
+  PortableServer::POA_var poa = servant->_default_POA();
+//   PortableServer::ObjectId_var oid = poa->servant_to_id(servant);
+  PortableServer::ObjectId *oid = poa->activate_object(servant);
+  servant->_remove_ref();
+  delete oid;
+  return servant;
+}
+
+inline void deactivate(PortableServer::Servant servant)
+{
+  PortableServer::POA_var poa = servant->_default_POA();
+//   PortableServer::ObjectId_var oid = poa->servant_to_id(servant);
+  PortableServer::ObjectId *oid = poa->servant_to_id(servant);
+  poa->deactivate_object(*oid);
+  delete oid;
+}
+
 template <class T>
 class Impl_var
 //. a special kind of a smart pointer
 //. which hides the BOA/POA details
+//.
+//. update: 15.07.00
+//. now assumes that the wrapper types use a PortableServer::RefCountServantBase
+//. -stefan
 {
 public:
-  explicit Impl_var(T *tt = 0) : t(tt) { if (t) t->_obj_is_ready(CORBA::BOA::getBOA());}
-  Impl_var(Impl_var &i) : t(i.release()) {}
-  Impl_var &operator = (Impl_var &i) { if (&i != this) { if (t) t->_dispose(); t = i.release();} return *this;}
-  ~Impl_var() { if (t) t->_dispose();}
-  Impl_var &operator = (T *tt) { if (t) t->_dispose(); t = tt; t->_obj_is_ready(CORBA::BOA::getBOA()); return *this;}
+  explicit Impl_var(T *tt = 0) : t(tt) { activate(t);}
+  Impl_var(Impl_var &i) : t(i._retn()) {}
+  Impl_var &operator = (Impl_var &i) { if (&i != this) { if (t) deactivate(t); t = i._retn();} return *this;}
+  ~Impl_var() { if (t) deactivate(t);}
+  Impl_var &operator = (T *tt) { if (t) deactivate(t); t = tt; activate(t); return *this;}
   T *get() const { return t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}
-  T *release() { T *tmp = t; t = 0; return tmp;}
-  void reset(T *tt = 0) { if (t) t->_dispose(); t = tt; t->_obj_is_ready(CORBA::BOA::getBOA());}
+  T *_retn() { T *tmp = t; t = 0; return tmp;}
 private:
   T *t;
 };

@@ -35,8 +35,9 @@
 // #include <bitset>
 #include <stack>
 
-class DrawingKitBase : implements(DrawingKit)
+class DrawingKitBase : public virtual POA_DrawingKit
 {
+ private:
   enum gstate
   {
     st_trafo, 
@@ -69,8 +70,8 @@ class DrawingKitBase : implements(DrawingKit)
     Color saved_lt_color;
     Coord saved_point_size;
     Coord saved_line_width;
-    Endstyle saved_line_end_style;
-    Fillstyle saved_surface_fill_style;
+    DrawingKit::Endstyle saved_line_end_style;
+    DrawingKit::Fillstyle saved_surface_fill_style;
     Raster_var saved_texture;
     CORBA::ULong saved_font_size;
     CORBA::ULong saved_font_weight;
@@ -100,10 +101,10 @@ class DrawingKitBase : implements(DrawingKit)
   virtual void pointSize(Coord);
   virtual Coord lineWidth() = 0;
   virtual void lineWidth(Coord);
-  virtual Endstyle lineEndstyle() = 0;
-  virtual void lineEndstyle(Endstyle);
-  virtual Fillstyle surfaceFillstyle() = 0;
-  virtual void surfaceFillstyle(Fillstyle);
+  virtual DrawingKit::Endstyle lineEndstyle() = 0;
+  virtual void lineEndstyle(DrawingKit::Endstyle);
+  virtual DrawingKit::Fillstyle surfaceFillstyle() = 0;
+  virtual void surfaceFillstyle(DrawingKit::Fillstyle);
   virtual Raster_ptr texture() = 0;
   virtual void texture(Raster_ptr);
 
@@ -119,8 +120,8 @@ class DrawingKitBase : implements(DrawingKit)
   virtual void fontFullName(const Unistring &);
   virtual Unistring *fontStyle() = 0;
   virtual void fontStyle(const Unistring &);
-  virtual FontMetrics fmetrics() = 0;
-  virtual GlyphMetrics gmetrics(Unichar) = 0;
+  virtual DrawingKit::FontMetrics fmetrics() = 0;
+  virtual DrawingKit::GlyphMetrics gmetrics(Unichar) = 0;
   virtual CORBA::Any *getFontAttr(const Unistring & name) = 0;
   virtual void fontAttr(const NVPair &nvp);
 
@@ -132,8 +133,8 @@ class DrawingKitBase : implements(DrawingKit)
   virtual void setLighting(const Color &) = 0;
   virtual void setPointSize(Coord) = 0;
   virtual void setLineWidth(Coord) = 0;
-  virtual void setLineEndstyle(Endstyle) = 0;
-  virtual void setSurfaceFillstyle(Fillstyle) = 0;
+  virtual void setLineEndstyle(DrawingKit::Endstyle) = 0;
+  virtual void setSurfaceFillstyle(DrawingKit::Fillstyle) = 0;
   virtual void setTexture(Raster_ptr) = 0;
 
   virtual void setFontSize(CORBA::ULong) = 0;
@@ -226,15 +227,15 @@ inline void DrawingKitBase::lineWidth(Coord w)
   setLineWidth(w);
 }
 
-inline void DrawingKitBase::lineEndstyle(Endstyle s)
+inline void DrawingKitBase::lineEndstyle(DrawingKit::Endstyle s)
 {
-  REMEMBER(line_end_style,Endstyle,lineEndstyle());
+  REMEMBER(line_end_style,DrawingKit::Endstyle,lineEndstyle());
   setLineEndstyle(s);
 }
 
-inline void DrawingKitBase::surfaceFillstyle(Fillstyle s)
+inline void DrawingKitBase::surfaceFillstyle(DrawingKit::Fillstyle s)
 {
-  REMEMBER(surface_fill_style,Fillstyle,surfaceFillstyle());
+  REMEMBER(surface_fill_style,DrawingKit::Fillstyle,surfaceFillstyle());
   setSurfaceFillstyle(s);
 }
 

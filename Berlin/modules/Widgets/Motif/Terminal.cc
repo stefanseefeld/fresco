@@ -72,7 +72,6 @@ Terminal::Terminal(CommandKit_ptr command)
     obuf(StreamBuffer::_duplicate(command->stream(1024)))
 {
   Trace trace("Terminal::Terminal");
-  _input->_obj_is_ready(CORBA::BOA::getBOA());
   ibuf->attach(Observer_var(_input->_this()));
   agent->start();
 }

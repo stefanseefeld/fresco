@@ -21,6 +21,7 @@
  */
 #include "Widget/Motif/Choice.hh"
 #include <Warsaw/Selection.hh>
+#include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Prague/Sys/Tracer.hh>
@@ -30,11 +31,11 @@ using namespace Prague;
 namespace Motif
 {
 
-  class Choice::State : implements(Selection), public SubjectImpl
+class Choice::State : public virtual POA_Selection, public SubjectImpl
 {
   class Observer;
   friend class Observer;
-  class Observer : implements(Observer)
+  class Observer : public virtual POA_Observer
     {
     public:
       Observer(State *, Telltale_ptr, Tag);
@@ -49,19 +50,19 @@ namespace Motif
     };
   typedef vector<Observer *> list_t;
  public:
-  State(Policy, CommandKit_ptr);
+  State(Selection::Policy, CommandKit_ptr);
   ~State();
-  virtual Policy type() { return policy;}
-  virtual void type(Policy) {}
+  virtual Selection::Policy type() { return policy;}
+  virtual void type(Selection::Policy) {}
   Tag add(Telltale_ptr);
   void remove(Tag);
-  Items *toggled();
+  Selection::Items *toggled();
  private:
   void update(Tag, bool);
   Tag tag();
   CORBA::Long index(Tag); 
   Mutex mutex;
-  Policy policy;
+  Selection::Policy policy;
   TelltaleConstraint_var constraint;
   list_t items;
 };
@@ -79,22 +80,21 @@ void Choice::State::Observer::update(const CORBA::Any &any)
   state->update(t, toggled);
 }
 
-Choice::State::State(Policy p, CommandKit_ptr c)
+Choice::State::State(Selection::Policy p, CommandKit_ptr c)
   : policy(p)
 {
-  if (policy == exclusive) constraint = c->exclusive(Controller::toggled);
+  if (policy == Selection::exclusive) constraint = c->exclusive(Controller::toggled);
 }
 Choice::State::~State()
 {
-  for (list_t::iterator i = items.begin(); i != items.end(); i++)
-    (*i)->_dispose();
+//  for (list_t::iterator i = items.begin(); i != items.end(); i++)
+//    (*i)->_dispose();
 }
 
 Tag Choice::State::add(Telltale_ptr t)
 {
   MutexGuard guard(mutex);
-  Observer *observer = new Observer(this, t, tag());
-  observer->_obj_is_ready(CORBA::BOA::getBOA());
+  Observer *observer = activate(new Observer(this, t, tag()));
   t->attach(Observer_var(observer->_this()));
   if (!CORBA::is_nil(constraint)) constraint->add(t);
   items.push_back(observer);
@@ -116,20 +116,20 @@ void Choice::State::remove(Tag t)
 Selection::Items *Choice::State::toggled()
 {
   MutexGuard guard(mutex);
-  Items *ret = new Items;
+  Selection::Items_var ret = new Selection::Items;
   for (list_t::iterator i = items.begin(); i != items.end(); i++)
     if ((*i)->toggled())
       {
 	ret->length(ret->length() + 1);
-	(*ret)[ret->length() - 1] = (*i)->tag();
+	ret[ret->length() - 1] = (*i)->tag();
       }
-  return ret;
+  return ret._retn();
 }
 
 void Choice::State::update(Tag t, bool toggled)
 {
   CORBA::Any any;
-  Item item;
+  Selection::Item item;
   item.id = t;
   item.toggled = toggled;
   any <<= item;
@@ -160,17 +160,16 @@ CORBA::Long Choice::State::index(Tag tag)
 
 Choice::Choice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
   : ControllerImpl(false),
-    _state(new State(p, c)),
+    _state(activate(new State(p, c))),
     layout(LayoutKit::_duplicate(l)),
     tools(ToolKit::_duplicate(t)),
     widgets(WidgetKit::_duplicate(w))
 {
-  _state->_obj_is_ready(CORBA::BOA::getBOA());
 }
   
 Choice::~Choice()
 {
-  _state->_dispose();
+  deactivate(_state);
 }
 
 Selection_ptr Choice::state()
@@ -238,8 +237,8 @@ Tag CheckboxChoice::appendItem(Graphic_ptr g)
   appendController(toggle);
 
   ToolKit::FrameSpec s1, s2;
-  s1.abrightness(0.5);
-  s2.bbrightness(0.5);
+  s1.brightness(0.5); s1._d(ToolKit::outset);
+  s2.brightness(0.5); s2._d(ToolKit::inset);
   Graphic_var frame = tools->dynamicDiamond(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)),
 					    20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
@@ -264,8 +263,8 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
   appendController(toggle);
 
   ToolKit::FrameSpec s1, s2;
-  s1.abrightness(0.5);
-  s2.bbrightness(0.5);
+  s1.brightness(0.5); s1._d(ToolKit::outset);
+  s2.brightness(0.5); s2._d(ToolKit::inset);
   Graphic_var frame = tools->dynamicDiamond(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)),
 					    20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);

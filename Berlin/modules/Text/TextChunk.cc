@@ -27,7 +27,7 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/IO.hh>
 
-TextChunk::TextChunk(Unichar u, const Requisition &r)
+TextChunk::TextChunk(Unichar u, const Graphic::Requisition &r)
   : width(r.x.natural), height(r.y.natural), xalign(r.x.align), yalign(r.y.align), myChar(u)
 {
 }

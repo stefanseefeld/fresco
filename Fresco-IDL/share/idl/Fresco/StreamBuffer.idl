@@ -22,8 +22,8 @@
 #ifndef _StreamBuffer_idl
 #define _StreamBuffer_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include <Warsaw/Subject.idl>
+#include <Warsaw/Types.idl>
 
 interface StreamBuffer : Subject
 {

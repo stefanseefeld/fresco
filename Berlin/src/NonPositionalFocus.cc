@@ -24,7 +24,6 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
 #include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Tracer.hh>
 

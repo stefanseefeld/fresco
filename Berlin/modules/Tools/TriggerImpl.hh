@@ -22,12 +22,12 @@
 #ifndef _TriggerImpl_hh
 #define _TriggerImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Trigger.hh"
-#include "Warsaw/Command.hh"
-#include "Berlin/ControllerImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Trigger.hh>
+#include <Warsaw/Command.hh>
+#include <Berlin/ControllerImpl.hh>
 
-class TriggerImpl : implements(Trigger), public ControllerImpl
+class TriggerImpl : public virtual POA_Trigger, public ControllerImpl
 {
  public:
   TriggerImpl() : ControllerImpl(false) {}

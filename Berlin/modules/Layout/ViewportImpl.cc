@@ -21,26 +21,25 @@
  */
 
 #include "Layout/ViewportImpl.hh"
-#include "Berlin/SubjectImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/Math.hh"
-#include <Warsaw/Warsaw.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/Math.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/PickTraversal.hh>
-#include "Berlin/Providers.hh"
-#include "Berlin/TransformImpl.hh"
+#include <Berlin/Providers.hh>
+#include <Berlin/TransformImpl.hh>
 
 using namespace Prague;
 
 static const double epsilon = 10e-6;
 
-class ViewportImpl::Adjustment : implements(BoundedRange), virtual public SubjectImpl
+class ViewportImpl::Adjustment : public virtual POA_BoundedRange, public SubjectImpl
 {
  public:
   Adjustment();
   virtual ~Adjustment();
-  virtual Settings getSettings();
+  virtual BoundedRange::Settings getSettings();
   virtual Coord lower();
   virtual void lower(Coord);
   virtual Coord upper();
@@ -61,7 +60,7 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
   virtual void end();
   virtual void adjust(Coord);
  protected:
-  Settings settings;
+  BoundedRange::Settings settings;
   Coord s, p;
   Mutex mutex;
 };                                
@@ -288,15 +287,13 @@ ViewportImpl::ViewportImpl()
   : requested(false)
 {
   xadjustment = new Adjustment;
-  xadjustment->_obj_is_ready(CORBA::BOA::getBOA());
   yadjustment = new Adjustment;
-  yadjustment->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 ViewportImpl::~ViewportImpl()
 {
-  xadjustment->_dispose();
-  yadjustment->_dispose();
+//  xadjustment->_dispose();
+//  yadjustment->_dispose();
 }
 
 void ViewportImpl::attachAdjustments()
@@ -358,7 +355,10 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
 
   Lease<RegionImpl> region;
   Providers::region.provide(region);
-  region->copy(bodyAllocation(allocation));
+  Lease<RegionImpl> b;
+  Providers::region.provide(b);
+  bodyAllocation(allocation, b);
+  region->copy(Region_var(b->_this()));
 
   Lease<TransformImpl> transform;
   Providers::trafo.provide(transform);
@@ -378,7 +378,10 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
   Region_var allocation = traversal->allocation();
   Lease<RegionImpl> region;
   Providers::region.provide(region);
-  region->copy(bodyAllocation(allocation));
+  Lease<RegionImpl> b;
+  Providers::region.provide(b);
+  bodyAllocation(allocation, b);
+  region->copy(Region_var(b->_this()));
 
   Lease<TransformImpl> transform;
   Providers::trafo.provide(transform);
@@ -421,7 +424,10 @@ void ViewportImpl::allocateChild(Allocation::Info &info)
   scrollTransform(info.transformation);
   Lease<RegionImpl> region;
   Providers::region.provide(region);
-  region->copy(bodyAllocation(info.allocation));
+  Lease<RegionImpl> b;
+  Providers::region.provide(b);
+  bodyAllocation(info.allocation, b);
+  region->copy(Region_var(b->_this()));
   info.allocation->copy(Region_var(region->_this()));
 }
 
@@ -478,12 +484,11 @@ void ViewportImpl::cacheAllocation(Region_ptr allocation)
     }
 }
 
-RegionImpl *ViewportImpl::bodyAllocation(Region_ptr)
+void ViewportImpl::bodyAllocation(Region_ptr, RegionImpl *ca)
 {
   /*
    * FIXME!! : this implementation ignores completely the body alignment...
    */
-  RegionImpl *ca = new RegionImpl();
   ca->valid = true;
   ca->lower.x = -(settings[xaxis].lvalue - settings[xaxis].lower);
   ca->lower.y = -(settings[yaxis].lvalue - settings[yaxis].lower);
@@ -492,7 +497,6 @@ RegionImpl *ViewportImpl::bodyAllocation(Region_ptr)
   ca->upper.y = -(settings[yaxis].lvalue - settings[yaxis].upper);
   ca->upper.z = 0.;
   ca->xalign = ca->yalign = ca->yalign = 0.;
-  return ca;
 }
 
 void ViewportImpl::scrollTransform(Transform_ptr tx)

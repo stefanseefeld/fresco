@@ -22,18 +22,18 @@
 #ifndef _BoundedRangeImpl_hh
 #define _BoundedRangeImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/BoundedRange.hh"
-#include "Berlin/SubjectImpl.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/BoundedRange.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class BoundedRangeImpl : implements(BoundedRange), virtual public SubjectImpl
+class BoundedRangeImpl : public virtual POA_BoundedRange, public SubjectImpl
 {
  public:
   BoundedRangeImpl(Coord, Coord, Coord, Coord, Coord, Coord);
   virtual ~BoundedRangeImpl();
-  virtual Settings getSettings();
+  virtual BoundedRange::Settings getSettings();
   virtual Coord lower();
   virtual void lower(Coord);
   virtual Coord upper();
@@ -55,7 +55,7 @@ class BoundedRangeImpl : implements(BoundedRange), virtual public SubjectImpl
   virtual void end();
   virtual void adjust(Coord);
 private:  
-  Settings settings;
+  BoundedRange::Settings settings;
   Coord s, p;
   Prague::Mutex mutex;
 };

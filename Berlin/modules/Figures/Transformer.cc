@@ -37,12 +37,11 @@ using namespace Prague;
 Transformer::Transformer()
 {
   transform = new TransformImpl;
-  transform->_obj_is_ready(_boa());
 }
 
 Transformer::~Transformer()
 {
-  transform->_dispose();
+//  transform->_dispose();
 }
 
 Transform_ptr Transformer::transformation()
@@ -105,8 +104,8 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
 	  tx->loadIdentity();
 	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
  	  tx->copy(Transform_var(transform->_this()));
-	  info.transformation->premultiply(tx);
-	  info.allocation->copy(rr);
+	  info.transformation->premultiply(Transform_var(tx->_this()));
+	  info.allocation->copy(Region_var(rr->_this()));
         }
       else
 	{

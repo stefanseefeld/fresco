@@ -33,17 +33,17 @@ extern "C"
 #include <ggi/ggi.h>
 }
 
-#include <art_pathcode.h>
-#include <art_pixbuf.h>
-#include <art_affine.h>
-#include <art_rect.h>
-#include <art_vpath.h>
-#include <art_svp.h>
-#include <art_svp_vpath.h>
-#include <art_svp_wind.h>
-#include <art_rect_svp.h>
-#include <art_rgb_svp.h>
-#include <art_rgb_pixbuf_affine.h>
+#include <libart_lgpl/art_pathcode.h>
+#include <libart_lgpl/art_pixbuf.h>
+#include <libart_lgpl/art_affine.h>
+#include <libart_lgpl/art_rect.h>
+#include <libart_lgpl/art_vpath.h>
+#include <libart_lgpl/art_svp.h>
+#include <libart_lgpl/art_svp_vpath.h>
+#include <libart_lgpl/art_svp_wind.h>
+#include <libart_lgpl/art_rect_svp.h>
+#include <libart_lgpl/art_rgb_svp.h>
+#include <libart_lgpl/art_rgb_pixbuf_affine.h>
 
 
 LibArtDrawingKit::~LibArtDrawingKit() {}
@@ -201,10 +201,10 @@ void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
 void LibArtDrawingKit::drawPath(const Path &p) 
 {
   int len = p.length();
-  ArtVpath vpath[fs == outlined ? len : len + 1];
+  ArtVpath vpath[fs == DrawingKit::outlined ? len : len + 1];
   ArtVpath *tvpath;  
 
-  if (fs == outlined) {
+  if (fs == DrawingKit::outlined) {
     for (int i = 0; i < len; ++i){
       vpath[i].x = p[i].x; 
       vpath[i].y = p[i].y;
@@ -267,7 +267,7 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
     int height = (rect.y1 - rect.y0);
     if ((height * width) < 1) return;
     ggiSetGCForeground(memvis, ggi_fg);
-    if ( fs == solid ) {
+    if ( fs == DrawingKit::solid ) {
       ggiDrawBox(memvis, rect.x0, rect.y0, width, height);
     } else {
       ggiDrawHLine(memvis, rect.x0, rect.y0, width);
@@ -281,7 +281,7 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
     // non-degenerate rectangles
   } else {
     Path path;
-    if (fs == outlined) {
+    if (fs == DrawingKit::outlined) {
       path.length(4);
       path[0].x = bot.x, path[0].y = bot.y;
       path[1].x = top.x, path[1].y = bot.y;
@@ -436,7 +436,7 @@ void LibArtDrawingKit::drawChar(Unichar c)
   else
     {
       font->allocateChar(c,r);
-      GlyphMetrics gm = font->metrics(c);
+      DrawingKit::GlyphMetrics gm = font->metrics(c);
       width = (int) (gm.width >> 6);
       height = (int) (gm.height >> 6);
     }
@@ -517,5 +517,5 @@ void LibArtDrawingKit::flush() {
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "LibArtDrawingKit"};
-  return new KitFactoryImpl<LibArtDrawingKit> (interface(DrawingKit), properties, 1);
+  return new KitFactoryImpl<LibArtDrawingKit> (DrawingKit::_PD_repoId, properties, 1);
 }

@@ -22,7 +22,7 @@
 #ifndef _DesktopKit_idl
 #define _DesktopKit_idl
 
-#include <Kit.idl>
+#include <Warsaw/Kit.idl>
 
 interface Controller;
 interface Window;

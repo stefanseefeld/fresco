@@ -31,7 +31,7 @@
 class CommandImpl;
 class SubjectImpl;
 
-class CommandKitImpl : implements(CommandKit), public KitImpl
+class CommandKitImpl : public virtual POA_CommandKit, public KitImpl
 {
  public:
   CommandKitImpl(KitFactory *, const PropertySeq &);
@@ -45,7 +45,7 @@ class CommandKitImpl : implements(CommandKit), public KitImpl
   BoundedValue_ptr bvalue(Coord, Coord, Coord, Coord, Coord);
   BoundedRange_ptr brange(Coord, Coord, Coord, Coord, Coord, Coord);
   TextBuffer_ptr   text();
-  StreamBuffer_ptr stream(long);
+  StreamBuffer_ptr stream(CORBA::Long);
  private:
   vector<CommandImpl *> commands;
   vector<SubjectImpl *> subjects;

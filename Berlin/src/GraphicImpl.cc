@@ -24,13 +24,13 @@
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/Screen.hh>
 #include <Warsaw/IO.hh>
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Providers.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
-#include "Berlin/ImplVar.hh"
 #include "Berlin/Lease.hh"
 #include <Prague/Sys/Tracer.hh>
 
@@ -82,7 +82,7 @@ static double computeSqueeze(const Graphic::Requirement &r, Coord length)
  * to the individual children (result) based on the individual requisitions (requests)
  */
 static void computeAllocations(Axis a, Graphic::Requisition &total,
-			       CORBA::ULong n, Graphic::Requisition *requests, Region &given,
+			       CORBA::ULong n, Graphic::Requisition *requests, RegionImpl &given,
 			       RegionImpl* result)
 {
   Graphic::Requirement *r;
@@ -587,7 +587,7 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       Providers::trafo.provide(tx);
       tx->copy(t);
       tx->invert();
-      region.applyTransform(tx);
+      region.applyTransform(Transform_var(tx->_this()));
       region.xalign = req.x.align;
       region.yalign = req.y.align;
       region.zalign = req.z.align;

@@ -21,8 +21,9 @@
  * MA 02139, USA.
  */
 
-#include <Command/CommandKitImpl.hh>
-#include <Command/CommandImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include "Command/CommandKitImpl.hh"
+#include "Command/CommandImpl.hh"
 #include "Command/TelltaleImpl.hh"
 #include "Command/BoundedValueImpl.hh"
 #include "Command/BoundedRangeImpl.hh"
@@ -32,53 +33,47 @@
 CommandKitImpl::CommandKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 CommandKitImpl::~CommandKitImpl()
 {
-  for (vector<CommandImpl *>::iterator i = commands.begin(); i != commands.end(); i++) (*i)->_dispose();
+  for (vector<CommandImpl *>::iterator i = commands.begin(); i != commands.end(); i++) deactivate(*i);
 }
 
 Command_ptr CommandKitImpl::log(const char *text)
 {
-  LogCommand *command = new LogCommand(text);
-  command->_obj_is_ready(_boa());
+  LogCommand *command = activate(new LogCommand(text));
   commands.push_back(command);
   return command->_this();
 }
 
 MacroCommand_ptr CommandKitImpl::composite()
 {
-  MacroCommandImpl *command = new MacroCommandImpl();
-  command->_obj_is_ready(_boa());
+  MacroCommandImpl *command = activate(new MacroCommandImpl());
   commands.push_back(command);
   return command->_this();
 }
 
 TelltaleConstraint_ptr CommandKitImpl::exclusive(Telltale::Mask m)
 {
-  ExclusiveChoice *constraint = new ExclusiveChoice(m);
-  constraint->_obj_is_ready(_boa());
+  ExclusiveChoice *constraint = activate(new ExclusiveChoice(m));
 //   subjects.push_back(constraint);
   return constraint->_this();
 }
 
 TelltaleConstraint_ptr CommandKitImpl::selectionRequired()
 {
-  SelectionRequired *constraint = new SelectionRequired;
-  constraint->_obj_is_ready(_boa());
+  SelectionRequired *constraint = activate(new SelectionRequired);
 //   subjects.push_back(constraint);
   return constraint->_this();
 }
 
 Telltale_ptr CommandKitImpl::normalTelltale()
 {
-  TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
-  telltale->_obj_is_ready(_boa());
+  TelltaleImpl *telltale = activate(new TelltaleImpl(TelltaleConstraint::_nil()));
   subjects.push_back(telltale);
   return telltale->_this();
 }
 
 Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
 {
-    TelltaleImpl *telltale = new TelltaleImpl(constraint);
-    telltale->_obj_is_ready(_boa());
+    TelltaleImpl *telltale = activate(new TelltaleImpl(constraint));
     subjects.push_back(telltale);
     constraint->add(telltale->_this());
     return telltale->_this();
@@ -86,32 +81,28 @@ Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constrai
 
 BoundedValue_ptr CommandKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
 {
-  BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
-  bounded->_obj_is_ready(_boa());
+  BoundedValueImpl *bounded = activate(new BoundedValueImpl(l, u, v, s, p));
   subjects.push_back(bounded);
   return bounded->_this();  
 }
 
 BoundedRange_ptr CommandKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
 {
-  BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
-  bounded->_obj_is_ready(_boa());
+  BoundedRangeImpl *bounded = activate(new BoundedRangeImpl(l, u, lv, uv, s, p));
   subjects.push_back(bounded);
   return bounded->_this();  
 }
 
 TextBuffer_ptr CommandKitImpl::text()
 {
-  TextBufferImpl *buffer = new TextBufferImpl();
-  buffer->_obj_is_ready(_boa());
+  TextBufferImpl *buffer = activate(new TextBufferImpl());
   subjects.push_back(buffer);
   return buffer->_this();  
 }
 
-StreamBuffer_ptr CommandKitImpl::stream(long b)
+StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
 {
-  StreamBufferImpl *buffer = new StreamBufferImpl(b);
-  buffer->_obj_is_ready(_boa());
+  StreamBufferImpl *buffer = activate(new StreamBufferImpl(b));
   subjects.push_back(buffer);
   return buffer->_this();  
 }
@@ -119,5 +110,5 @@ StreamBuffer_ptr CommandKitImpl::stream(long b)
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "CommandKitImpl"};
-  return new KitFactoryImpl<CommandKitImpl>(interface(CommandKit), properties, 1);
+  return new KitFactoryImpl<CommandKitImpl>(CommandKit::_PD_repoId, properties, 1);
 }

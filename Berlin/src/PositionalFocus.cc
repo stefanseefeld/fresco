@@ -24,7 +24,6 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
 #include "Berlin/Providers.hh"
 #include "Berlin/GGI.hh"
 #include "Berlin/Event.hh"
@@ -140,7 +139,7 @@ void PositionalFocus::dispatch(Input::Event &event)
 					Region_var(screen->getRegion()),
 					Transform_var(Transform::_nil()),
 					position, Focus_var(_this()));
-      traversal->_obj_is_ready(CORBA::BOA::getBOA());
+//      traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
     }
   /*
@@ -159,14 +158,14 @@ void PositionalFocus::dispatch(Input::Event &event)
 	}
     }
   PickTraversalImpl *picked = traversal->memento();
-  traversal->_dispose();
+//  traversal->_dispose();
   traversal = picked;
   if (!traversal)
     {
       cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << position << ")" << endl;
       return;
     }
-  else traversal->_obj_is_ready(CORBA::BOA::getBOA());
+  else ;//traversal->_obj_is_ready(CORBA::BOA::getBOA());
   /*
    * ...now do the [lose/receive]Focus stuff,...
    */
@@ -203,7 +202,7 @@ void PositionalFocus::dispatch(Input::Event &event)
   controllers.back()->handlePositional(PickTraversal_var(traversal->_this()), event);
   if (!grabbed)
     {
-      traversal->_dispose();
+//      traversal->_dispose();
       traversal = 0;
     }
 }

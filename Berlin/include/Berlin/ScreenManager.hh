@@ -27,9 +27,9 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/Input.hh>
 #include <Warsaw/DrawingKit.hh>
+#include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/GGI.hh>
-#include <Berlin/ImplVar.hh>
 #include <Berlin/EventManager.hh>
 #include <Berlin/DrawTraversalImpl.hh>
 #include <vector>

@@ -19,15 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/DebugGraphic.hh"
-#include "Berlin/Math.hh"
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/PickTraversal.hh>
 #include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
+#include "Berlin/ImplVar.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/DebugGraphic.hh"
+#include "Berlin/Math.hh"
 #include <iostream>
 #include <iomanip>
 

@@ -23,10 +23,10 @@
 #ifndef _CommandKit_idl
 #define _CommandKit_idl
 
-#include "Types.idl"
-#include "Kit.idl"
-#include "Command.idl"
-#include "Telltale.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Kit.idl>
+#include <Warsaw/Command.idl>
+#include <Warsaw/Telltale.idl>
 
 interface BoundedValue;
 interface BoundedRange;

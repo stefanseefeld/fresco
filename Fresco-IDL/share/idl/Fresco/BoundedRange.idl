@@ -22,8 +22,8 @@
 #ifndef _BoundedRange_idl
 #define _BoundedRange_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include <Warsaw/Subject.idl>
+#include <Warsaw/Types.idl>
 
 interface BoundedRange : Subject
 {

@@ -20,16 +20,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/TraversalImpl.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Providers.hh"
+#include <Warsaw/config.hh>
 #include <Warsaw/Allocation.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
+#include "Berlin/ImplVar.hh"
+#include "Berlin/TraversalImpl.hh"
+#include "Berlin/TransformImpl.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/Providers.hh"
 
 using namespace Prague;
 
@@ -53,7 +54,7 @@ TraversalImpl::TraversalImpl(const TraversalImpl &t)
       Lease<TransformImpl> tmp;
       Providers::trafo.provide(tmp);
       state.transformation = tmp.release();
-      state.transformation->copy((*i).transformation);
+      state.transformation->copy(Transform_var((*i).transformation->_this()));
       stack.push_back(state);
     }
 }
@@ -133,7 +134,7 @@ void TraversalImpl::update()
   allocation->copy((*parent).allocation);
   Lease<TransformImpl> transformation;
   Providers::trafo.provide(transformation);  
-  transformation->copy((*parent).transformation);
+  transformation->copy(Transform_var((*parent).transformation->_this()));
   Allocation::Info info;
   info.allocation = allocation->_this();
   info.transformation = transformation->_this();

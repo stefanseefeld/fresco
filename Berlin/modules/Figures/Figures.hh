@@ -26,7 +26,7 @@
 
 namespace Figures
 {
-  class PointImpl : implements(Point), public FigureImpl
+  class PointImpl : public virtual POA_Figures::Point, public FigureImpl
   {
   public:
     PointImpl();
@@ -37,7 +37,7 @@ namespace Figures
     virtual void pt(const Vertex &);
   };
   
-  class LineImpl : implements(Line), public FigureImpl
+  class LineImpl : public virtual POA_Figures::Line, public FigureImpl
   {
   public:
     LineImpl();
@@ -50,7 +50,7 @@ namespace Figures
     virtual void pt2(const Vertex &);
   };
 
-  class RectangleImpl : implements(Rectangle), public FigureImpl
+  class RectangleImpl : public virtual POA_Figures::Rectangle, public FigureImpl
   {
   public:
     RectangleImpl();
@@ -63,7 +63,7 @@ namespace Figures
     virtual void pt2(const Vertex &);
   };
 
-  class CircleImpl : implements(Circle), public FigureImpl
+  class CircleImpl : public virtual POA_Figures::Circle, public FigureImpl
   {
   public:
     CircleImpl();
@@ -80,7 +80,7 @@ namespace Figures
     Coord radius_;
   };
 
-  class EllipseImpl : implements(Ellipse), public FigureImpl
+  class EllipseImpl : public virtual POA_Figures::Ellipse, public FigureImpl
   {
   public:
     EllipseImpl();
@@ -99,15 +99,15 @@ namespace Figures
     Coord radius1_, radius2_;
   };
 
-  class PathImpl : implements(Path), public FigureImpl
+  class PathImpl : public virtual POA_Figures::Path, public FigureImpl
   {
   public:
     PathImpl();
-    PathImpl(const Vertices &);
+    PathImpl(const Figure::Vertices &);
     PathImpl(const PathImpl &);
     virtual ~PathImpl();
     virtual void resize();
-    Vertices *handles();
+    Figure::Vertices *handles();
   };
 
 };

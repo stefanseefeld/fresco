@@ -28,7 +28,7 @@
 #include <stack>
 #include <vector>
 
-class FocusImpl : implements(Focus)
+class FocusImpl : public virtual POA_Focus, public virtual PortableServer::RefCountServantBase
 {
   typedef stack<Input::Filter_var> fstack_t;
   typedef vector<size_t> memento_t;

@@ -22,7 +22,7 @@
 #ifndef _Choice_idl
 #define _Choice_idl
 
-#include "Controller.idl"
+#include <Warsaw/Controller.idl>
 
 interface Selection;
 

@@ -35,12 +35,12 @@
 #include <Warsaw/Trigger.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Warsaw/Server.hh>
-#include <Warsaw/ImplVar.hh>
 #include <Warsaw/ClientContextImpl.hh>
 #include <Prague/Sys/Signal.hh>
 #include <Warsaw/Unicode.hh>
 #include <Warsaw/Selection.hh>
 #include <Warsaw/Choice.hh>
+#include <Berlin/ImplVar.hh>
 #include <unistd.h>
 #include <iostream>
 #include <vector>
@@ -61,7 +61,7 @@ class Application
     Command_var settings;
   };
   typedef vector<Item> list_t;
-  class Mapper : implements(Command)
+  class Mapper : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
   {
   public:
     Mapper(Application::list_t &d, Selection_ptr s) : demos(d), selection(Selection::_duplicate(s)) {}

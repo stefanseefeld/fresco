@@ -29,11 +29,11 @@ include $(cpath)/local.mk
 include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS) $(GGI_INCLUDES)
+CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS) $(GGI_INCLUDES)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague $(GGI_LIBS) #$(ORBLIBS)
 
-SRC 	= Providers.cc GGI.cc Pointer.cc Logger.cc\
+SRC 	= Providers.cc GGI.cc Pointer.cc Logger.cc RefCountBaseImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \
 	  MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \

@@ -22,6 +22,7 @@
 #ifndef _Placement_hh
 #define _Placement_hh
 
+#include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/TransformImpl.hh>
@@ -43,7 +44,7 @@ public:
 
 private:
   LayoutManager *layout;
-  RegionImpl *region;
+  Impl_var<RegionImpl> region;
 };
 
 class LayoutLayer : public MonoGraphic

@@ -20,16 +20,16 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
+#include <Warsaw/config.hh>
+#include <Berlin/ImplVar.hh>
+#include <Warsaw/Traversal.hh>
+#include <Warsaw/IO.hh>
+#include <Berlin/Providers.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/Math.hh>
 #include "Layout/GridImpl.hh"
 #include "Layout/LayoutManager.hh"
-#include "Berlin/Providers.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Math.hh"
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/IO.hh"
 
 ostream &operator << (ostream &os, const GridImpl::Span &span)
 { return os << '(' << span.lower << ',' << span.upper << '@' << span.align << ')';}

@@ -22,8 +22,8 @@
 #ifndef _Allocator_hh
 #define _Allocator_hh
 
-#include <Berlin/MonoGraphic.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/MonoGraphic.hh>
 
 class Allocator : public MonoGraphic
 //. An Allocator is a graphic that always gives its child

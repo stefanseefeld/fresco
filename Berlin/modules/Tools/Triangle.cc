@@ -20,15 +20,14 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Subject.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Berlin/Color.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Subject.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/Logger.hh>
+#include <Berlin/Color.hh>
 #include "Tool/Triangle.hh"
 #include "Tool/Beveler.hh"
 

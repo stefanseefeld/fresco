@@ -23,6 +23,8 @@
 #ifndef _LibArtDrawingKit_hh
 #define _LibArtDrawingKit_hh
 
+#include <Berlin/ImplVar.hh>
+#include <Warsaw/Image.hh>
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/libArt/LibArtFTFont.hh>
 #include <Drawing/libArt/LibArtRaster.hh>
@@ -31,14 +33,12 @@
 #include <Berlin/GGI.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/ImplVar.hh>
-#include <Warsaw/Image.hh>
 #include <Prague/Sys/Thread.hh>
 
-#include <art_misc.h>
-#include <art_alphagamma.h>
-#include <art_rect.h>
-#include <art_vpath.h>
+#include <libart_lgpl/art_misc.h>
+#include <libart_lgpl/art_alphagamma.h>
+#include <libart_lgpl/art_rect.h>
+#include <libart_lgpl/art_vpath.h>
 
 #include <string>
 #include <vector>
@@ -61,10 +61,10 @@ public:
   virtual Coord pointSize() { return ps;}
   virtual void lineWidth(Coord c) { DrawingKitBase::lineWidth(c);}
   virtual Coord lineWidth() { return lw;}
-  virtual void lineEndstyle(Endstyle e) { DrawingKitBase::lineEndstyle(e);}
-  virtual Endstyle lineEndstyle() { return es;}
-  virtual void surfaceFillstyle(Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
-  virtual Fillstyle surfaceFillstyle() { return fs;}
+  virtual void lineEndstyle(DrawingKit::Endstyle e) { DrawingKitBase::lineEndstyle(e);}
+  virtual DrawingKit::Endstyle lineEndstyle() { return es;}
+  virtual void surfaceFillstyle(DrawingKit::Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
+  virtual DrawingKit::Fillstyle surfaceFillstyle() { return fs;}
   virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Raster_ptr texture() { //return tx ? Raster::_duplicate(tx->remote) : 
     return Raster::_nil();}
@@ -75,8 +75,8 @@ public:
   virtual Unistring *fontSubFamily() { return font->subfamily();}
   virtual Unistring *fontFullName() { return font->fullname();}
   virtual Unistring *fontStyle() { return font->style();}
-  virtual FontMetrics fmetrics() { return font->metrics();}
-  virtual GlyphMetrics gmetrics(Unichar uc) { return font->metrics(uc);}
+  virtual DrawingKit::FontMetrics fmetrics() { return font->metrics();}
+  virtual DrawingKit::GlyphMetrics gmetrics(Unichar uc) { return font->metrics(uc);}
   virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
 
   virtual void setTransformation(Transform_ptr);
@@ -85,8 +85,8 @@ public:
   virtual void setLighting(const Color&);
   virtual void setPointSize(Coord);
   virtual void setLineWidth(Coord);
-  virtual void setLineEndstyle(Endstyle);
-  virtual void setSurfaceFillstyle(Fillstyle);
+  virtual void setLineEndstyle(DrawingKit::Endstyle);
+  virtual void setSurfaceFillstyle(DrawingKit::Fillstyle);
   virtual void setTexture(Raster_ptr);
 
   virtual void setFontSize(CORBA::ULong);
@@ -130,8 +130,8 @@ public:
   Color          lt;
   Coord          ps;
   Coord          lw;
-  Endstyle       es;
-  Fillstyle      fs;
+  DrawingKit::Endstyle       es;
+  DrawingKit::Fillstyle      fs;
   LibArtFTFont   *font;
   LibArtFont   *unifont;
   art_u8 alphabank[256][256];

@@ -27,7 +27,6 @@
 #include <Berlin/Geometry.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/ImplVar.hh>
 #include <Berlin/Color.hh>
 #include <Berlin/Vertex.hh>
 #include <Prague/Sys/Tracer.hh>
@@ -37,7 +36,7 @@ using namespace Geometry;
 using namespace Prague;
 
 TransformFigure::TransformFigure()
-  : mode(outline),
+  : mode(Figure::outline),
     tx(new TransformImpl),
     ext(new RegionImpl)
 {
@@ -46,13 +45,13 @@ TransformFigure::TransformFigure()
 }
 
 TransformFigure::~TransformFigure() {}
-Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(tx);}
+Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(Transform_var(tx->_this()));}
 void TransformFigure::request(Requisition &r)
 {
   Trace trace("TransformFigure::request");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
-  extension(info, region);
+  extension(info, Region_var(region->_this()));
   if (region->valid)
     {
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
@@ -74,19 +73,19 @@ void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
   Trace trace("TransformFigure::extension");
   if (ext->valid)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(ext));
+      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(ext->_this())));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
-      transformation->premultiply(tx);
-      tmp->applyTransform(transformation);
-      region->mergeUnion(tmp);
+      transformation->premultiply(Transform_var(tx->_this()));
+      tmp->applyTransform(Transform_var(transformation->_this()));
+      region->mergeUnion(Region_var(tmp->_this()));
     }
 }
 
 void TransformFigure::pick(PickTraversal_ptr traversal)
 {
-  if (ext->valid && traversal->intersectsRegion(ext))
+  if (ext->valid && traversal->intersectsRegion(Region_var(ext->_this())))
     traversal->hit();
 }
 
@@ -95,8 +94,8 @@ void TransformFigure::needRedraw()
   Trace trace("TransformFigure::needRedraw");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
-  extension(info, region);
-  needRedrawRegion(region);
+  extension(info, Region_var(region->_this()));
+  needRedrawRegion(Region_var(region->_this()));
 }
 
 void TransformFigure::resize() {}
@@ -105,8 +104,8 @@ void TransformFigure::copy(const TransformFigure &tf)
   mode = tf.mode;
   fg = tf.fg;
   bg = tf.bg;
-  tx->copy(tf.tx);
-  if (tf.ext->valid) ext->copy(tf.ext);
+  tx->copy(Transform_var(tf.tx->_this()));
+  if (tf.ext->valid) ext->copy(Region_var(tf.ext->_this()));
 }
 
 FigureImpl::FigureImpl() { path = new Figure::Vertices;}
@@ -145,12 +144,12 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
   Trace trace("FigureImpl::extension");
   if (path->length() > 0)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(ext));
+      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(ext->_this())));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
-      transformation->premultiply(tx);
-      tmp->applyTransform(transformation);
+      transformation->premultiply(Transform_var(tx->_this()));
+      tmp->applyTransform(Transform_var(transformation->_this()));
       if (mode & Figure::outline)
 	{
 // 	  Coord w = 1.;
@@ -168,7 +167,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 // 	  tmp->lower.y -= w; tmp->upper.y += w;
 // 	  tmp->lower.z -= w; tmp->upper.z += w;
 	}
-      region->mergeUnion(tmp);
+      region->mergeUnion(Region_var(tmp->_this()));
     }
 }
 
@@ -180,18 +179,18 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
       Impl_var<RegionImpl> region(new RegionImpl);
-      extension(info, region);
-      if (traversal->intersectsRegion(region))
+      extension(info, Region_var(region->_this()));
+      if (traversal->intersectsRegion(Region_var(region->_this())))
 	{
 	  DrawingKit_var drawing = traversal->kit();
 	  drawing->saveState();
- 	  if (mode & fill)
+ 	  if (mode & Figure::fill)
  	    {
 	      drawing->foreground(bg);
 	      drawing->surfaceFillstyle(DrawingKit::solid);
 	      drawing->drawPath(path);
 	    }
- 	  if (mode & outline)
+ 	  if (mode & Figure::outline)
 	    {
 	      drawing->foreground(fg);
 	      drawing->surfaceFillstyle(DrawingKit::outlined);
@@ -334,12 +333,12 @@ void FigureImpl::resize()
 
 void FigureImpl::reset()
 {
-  path = new Vertices;
+  path = new Figure::Vertices;
   ext->valid = false;
 }
 
 void FigureImpl::copy (const FigureImpl &f)
 {
   TransformFigure::copy(f);
-  path = new Vertices(f.path);
+  path = new Figure::Vertices(f.path);
 }

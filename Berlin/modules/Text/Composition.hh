@@ -32,9 +32,6 @@
 
 class Compositor;
 
-declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(DrawTraversal)
-
 class Composition : public PolyGraphic
 {
  public:

@@ -55,7 +55,7 @@ void RasterImpl::clear()
 
 Raster::Info RasterImpl::header()
 {
-  Info info;
+  Raster::Info info;
   png.header(info);
   return info;
 }
@@ -67,7 +67,7 @@ void RasterImpl::loadData(const Raster::Data &data)
   rows = png.demarshal(data);
 }
 
-void RasterImpl::storeData(Raster::Data *&data)
+void RasterImpl::storeData(Raster::Data_out data)
 {
   Trace trace("RasterImpl::storeData");
   delete data;
@@ -75,26 +75,26 @@ void RasterImpl::storeData(Raster::Data *&data)
   data = png.marshal(rows);
 }
 
-void RasterImpl::storePixel(const Index &index, Color &color)
+void RasterImpl::storePixel(const Raster::Index &index, Color &color)
 {
   Trace trace("RasterImpl::storePixel");
   color = png.pixel(index.x, index.y, rows);
 }
 
-void RasterImpl::loadPixel(const Index &index, const Color &color)
+void RasterImpl::loadPixel(const Raster::Index &index, const Color &color)
 {
   Trace trace("RasterImpl::loadPixel");
   png.pixel(index.x, index.y, color, rows);
 }
 
-void RasterImpl::storePixels(const Index &lower, const Index &upper, Raster::ColorSeq *&pixels)
+void RasterImpl::storePixels(const Raster::Index &lower, const Raster::Index &upper, Raster::ColorSeq_out pixels)
 {
   delete pixels;
   pixels = 0;
   pixels = png.pixels(lower.x, lower.y, upper.x, upper.y, rows);
 }
 
-void RasterImpl::loadPixels(const Index &lower, const Index &upper, const Raster::ColorSeq &pixels)
+void RasterImpl::loadPixels(const Raster::Index &lower, const Raster::Index &upper, const Raster::ColorSeq &pixels)
 {
   png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, rows);
 }

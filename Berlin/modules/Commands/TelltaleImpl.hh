@@ -23,13 +23,13 @@
 #ifndef _TelltaleImpl_hh
 #define _TelltaleImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Telltale.hh"
-#include "Berlin/SubjectImpl.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Telltale.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class TelltaleImpl : implements(Telltale), public SubjectImpl
+class TelltaleImpl : public virtual POA_Telltale, public SubjectImpl
 {
  public:
   TelltaleImpl(TelltaleConstraint_ptr, unsigned long m = 0);
@@ -49,7 +49,7 @@ class TelltaleImpl : implements(Telltale), public SubjectImpl
   Prague::Mutex mutex;
 };
 
-class TelltaleConstraintImpl : implements(TelltaleConstraint)
+class TelltaleConstraintImpl : public virtual POA_TelltaleConstraint
 {
   typedef vector<Telltale_var> tlist_t;
  public:
@@ -63,7 +63,7 @@ class TelltaleConstraintImpl : implements(TelltaleConstraint)
   Prague::Mutex mutex;
 };
 
-class ExclusiveChoice : virtual public TelltaleConstraintImpl
+class ExclusiveChoice : public TelltaleConstraintImpl
 {
 public:
   ExclusiveChoice(Telltale::Mask);
@@ -72,7 +72,7 @@ private:
   Telltale::Mask mask;
 };
 
-class SelectionRequired : virtual public TelltaleConstraintImpl
+class SelectionRequired : public TelltaleConstraintImpl
 {
 public:
   SelectionRequired();

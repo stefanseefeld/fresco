@@ -22,7 +22,7 @@
 #ifndef _DrawTraversal_idl
 #define _DrawTraversal_idl
 
-#include "Traversal.idl"
+#include <Warsaw/Traversal.idl>
 
 interface DrawingKit;
 

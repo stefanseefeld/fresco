@@ -25,6 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/CommandKit.hh>
 #include <Warsaw/StreamBuffer.hh>
+#include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Prague/IPC/TTYAgent.hh>
 #include <vector>
@@ -34,7 +35,7 @@ namespace Motif
 
 class Terminal : public MonoGraphic
 {
-  class Input : implements(Observer)
+  class Input : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
   {
   public:
     Input(Terminal *t) : terminal(t) {}
@@ -57,7 +58,7 @@ class Terminal : public MonoGraphic
   StreamBuffer_ptr input() { return StreamBuffer::_duplicate(ibuf);}
   StreamBuffer_ptr output() { return StreamBuffer::_duplicate(obuf);}
  private:
-  Input *_input;
+  Impl_var<Input> _input;
   Output *_output;
   Prague::TTYAgent *agent;
   StreamBuffer_var ibuf;

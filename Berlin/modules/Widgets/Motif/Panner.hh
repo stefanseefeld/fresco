@@ -25,8 +25,8 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Command.hh>
 #include <Warsaw/BoundedRange.hh>
-#include <Berlin/ControllerImpl.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ControllerImpl.hh>
 
 namespace Motif
 {
@@ -38,7 +38,7 @@ class Panner : public ControllerImpl
     Coord lower;
     Coord upper;
   }; 
-  class Observer : implements(Observer)
+  class Observer : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
   {
   public:
     Observer(Panner *p) : panner(p) {}

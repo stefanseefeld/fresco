@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,14 +22,14 @@
 #ifndef _LogoDemo_hh
 #define _LogoDemo_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Command.hh"
-#include "Warsaw/BoundedValue.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/ImplVar.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Command.hh>
+#include <Warsaw/BoundedValue.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/ImplVar.hh>
 #include "Demo.hh"
 
-class Forward : implements(Command)
+class Forward : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
 {
  public:
   Forward(BoundedValue_ptr v) : value(BoundedValue::_duplicate(v)) {}
@@ -38,7 +38,7 @@ class Forward : implements(Command)
   BoundedValue_var value;
 };
 
-class Backward : implements(Command)
+class Backward : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
 {
  public:
   Backward(BoundedValue_ptr v) : value(BoundedValue::_duplicate(v)) {}
@@ -47,7 +47,7 @@ class Backward : implements(Command)
   BoundedValue_var value;
 };
 
-class Rotator : implements(Observer)
+class Rotator : public virtual POA_Observer, public virtual PortableServer::RefCountServantBase
 {
  public:
   Rotator(BoundedValue_ptr, Graphic_ptr, Graphic_ptr, Coord);

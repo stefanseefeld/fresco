@@ -23,7 +23,7 @@
 #ifndef _Figure_idl
 #define _Figure_idl
 
-#include "Graphic.idl"
+#include <Warsaw/Graphic.idl>
 
 interface Figure : Graphic
 {

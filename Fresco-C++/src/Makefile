@@ -27,17 +27,18 @@ cpath	= $(top)/config
 include $(cpath)/local.mk
 include $(cpath)/Warsaw/local.mk
 
-wpath   = $(top)/idl/Warsaw
+wpath   = $(top)/idl
 rpath	= $(lpath)
 
-IDLFLAGS	+= -I$(wpath)
+IDLFLAGS	+= -nf -bcxx -Wbkeep_inc_path -C../src/Warsaw -I.
+DYNIDLFLAGS	+= -Wba
 CPPFLAGS	+= $(ORBCPPFLAGS) $(ORBDEFS) -I$(ipath)/Warsaw
 CXXFLAGS	+= $(SOFLAGS)
 LDFLAGS		+= -shared -rdynamic
 LIBS		+= $(ORBLIBS)
 
 DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl Selection.idl
-STATINT	= ClientContext.idl Server.idl Kit.idl \
+STATINT	= RefCountBase.idl ClientContext.idl Server.idl Kit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl Subject.idl Controller.idl View.idl \
 	  DrawingKit.idl \
@@ -70,7 +71,7 @@ OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
 TARGET	= $(lpath)/libWarsaw.so
 
 vpath %.d $(dpath)
-vpath %.idl $(wpath)
+vpath %.idl $(wpath)/Warsaw
 vpath %.h $(ipath)/Warsaw
 vpath %.mk $(cpath)/Warsaw
 
@@ -95,15 +96,15 @@ $(dpath)/%.d:	%.idl
 		      \$$dep = \$$2;\
 		      print \"\$$file\", \"SK.cc \", \$$file, \"DynSK.cc \",\
 			    \"$(ipath)\/Warsaw\/\", \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
-		      \$$dep =~ s#$(wpath)#$(ipath)/Warsaw#g;\
+		      \$$dep =~ s#$(wpath)#$(ipath)#g;\
 		      \$$dep =~ s/\.idl/\.hh/g;\
 		      print \"$(opath)\/\", \$$file, \"SK.o $(opath)\/\", \$$file, \"DynSK.o\", \": \", \$$dep ;\
 		    }' > $@"
-$(STATHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
-		$(IDL) $(IDLFLAGS) $<
+$(STATHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/Warsaw/%.idl
+		(cd $(wpath) && $(IDL) $(IDLFLAGS) Warsaw/$(<F))
 		mv $(@F) $(ipath)/Warsaw
-$(DYNHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+$(DYNHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/Warsaw/%.idl
+		(cd $(wpath) && $(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) Warsaw/$(<F))
 		mv $(@F) $(ipath)/Warsaw
 # added dependencies at the end aren't there because of any actual dependency;
 # they prevent race conditions during a multithreaded make. Before, make would
@@ -119,14 +120,14 @@ $(DYNHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
 # actually has to, will never be wrong.  Besides, Foo{.hh,SK.cc, DynSK.cc}
 # all have the same dependencies anyway, so if one is rebuilt then they're
 # all going to be rebuilt anyway.
-$(STATSRC): %SK.cc:		$(wpath)/%.idl     $(ipath)/Warsaw/%.hh
-		$(IDL) $(IDLFLAGS) $<
+$(STATSRC): %SK.cc:		$(wpath)/Warsaw/%.idl $(ipath)/Warsaw/%.hh
+		(cd $(wpath) && $(IDL) $(IDLFLAGS) Warsaw/$(<F))
 		mv $(basename $(<F)).hh $(ipath)/Warsaw
-$(DYNSTATSRC): %SK.cc: 	$(wpath)/%.idl             $(ipath)/Warsaw/%.hh
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+$(DYNSTATSRC): %SK.cc: 	$(wpath)/Warsaw/%.idl $(ipath)/Warsaw/%.hh
+		(cd $(wpath) && $(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) Warsaw/$(<F))
 		mv $(basename $(<F)).hh $(ipath)/Warsaw
-$(DYNSRC): %DynSK.cc:	$(wpath)/%.idl             %SK.cc
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+$(DYNSRC): %DynSK.cc:	$(wpath)/Warsaw/%.idl %SK.cc
+		(cd $(wpath) && $(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) Warsaw/$(<F))
 		mv $(basename $(<F)).hh $(ipath)/Warsaw
 $(opath)/%.o:	%.cc
 		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi

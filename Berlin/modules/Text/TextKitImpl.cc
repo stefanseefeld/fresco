@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/resolve.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/resolve.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/LayoutKit.hh>        // for the LK to work on
@@ -31,13 +31,13 @@
 #include <Warsaw/StreamBuffer.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/GraphicImpl.hh>       // GraphicImpl::initRequisition
-#include <Text/TextKitImpl.hh>         // for our own definition
-#include <Text/TextChunk.hh>           // the chunk graphic type
-#include <Text/TextViewer.hh>          // the viewer polygraphic type
-#include <Text/TerminalView.hh>
-#include <Text/Compositor.hh>          // the compositor strategy
-#include <Text/Strut.hh>               // the compositor strategy
-#include <Drawing/DrawDecorator.hh>    // the decorator monographic template
+#include "Text/TextKitImpl.hh"         // for our own definition
+#include "Text/TextChunk.hh"           // the chunk graphic type
+#include "Text/TextViewer.hh"          // the viewer polygraphic type
+#include "Text/TerminalView.hh"
+#include "Text/Compositor.hh"          // the compositor strategy
+#include "Text/Strut.hh"               // the compositor strategy
+// #include <Drawing/DrawDecorator.hh>    // the decorator monographic template
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -53,15 +53,21 @@ TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p)
 {
 }
 
-TextKitImpl::~TextKitImpl() { delete lineCompositor; delete pageCompositor;}
+TextKitImpl::~TextKitImpl()
+{
+  delete lineCompositor;
+  delete pageCompositor;
+  for (vector<PortableServer::Servant>::iterator i = graphics.begin(); i != graphics.end(); ++i)
+    deactivate(*i);
+}
 
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
   KitImpl::bind(sc);
   PropertySeq props;
   props.length(0);
-  canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
-  layout = resolve_kit<LayoutKit>(sc, interface(LayoutKit), props);
+  canonicalDK = DrawingKit::_narrow(sc->getSingleton(DrawingKit::_PD_repoId));
+  layout = resolve_kit<LayoutKit>(sc, LayoutKit::_PD_repoId, props);
 }
 
 // chunks are flyweights
@@ -81,25 +87,27 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 {
   MutexGuard guard(staticMutex);
   unsigned long len = u.length();
-  if (len == 1) return ch(u[0]);
+  if (len == 1) return glyph(u[0]);
   else 
     {
       Graphic_var hbox = layout->hbox();
       hbox->append(Graphic_var(strut()));
       for (unsigned int i = 0; i < len; ++i)
-	hbox->append(this->ch(u[i]));
+	hbox->append(glyph(u[i]));
       return hbox._retn();
     }
 }
 
-Graphic_ptr TextKitImpl::ch(Unichar ch) {
-  if (charCache.find(ch) == charCache.end()){
-    Graphic::Requisition r;
-    GraphicImpl::initRequisition(r);
-    canonicalDK->allocateChar(ch,r);
-    Impl_var<TextChunk> t(new TextChunk(ch, r));
-    charCache[ch] = t;
-  }
+Graphic_ptr TextKitImpl::glyph(Unichar ch)
+{
+  if (charCache.find(ch) == charCache.end())
+    {
+      Graphic::Requisition r;
+      GraphicImpl::initRequisition(r);
+      canonicalDK->allocateChar(ch,r);
+      Impl_var<TextChunk> t(new TextChunk(ch, r));
+      charCache[ch] = t;
+    }
   return charCache[ch]->_this();
 }
 
@@ -115,7 +123,6 @@ Graphic_ptr TextKitImpl::strut()
       r.y.defined = true;
       r.y.align = metrics.height == 0 ? 0.: static_cast<double>(metrics.ascender) / metrics.height; 
       _strut = new Strut(r);
-      _strut->_obj_is_ready(CORBA::BOA::getBOA());
     }
   return _strut->_this();
 }
@@ -125,18 +132,18 @@ Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
   Trace trace("TextKitImpl::simpleViewer");
   Impl_var<TextViewer> tv(new TextViewer(buf, TextKit_var(_this()), canonicalDK, lineCompositor));
   tv->init(); // FIXME: we can get rid of this stuff when we switch to POA
-  allocations.push_back(tv.get());
-  buf->attach(tv.get());
-  return tv.release()->_this();
+  graphics.push_back(tv.get());
+  buf->attach(Observer_var(tv->_this()));
+  return tv._retn()->_this();
 }
 
 Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
 {
   Trace trace("TextKitImpl::terminal");
   Impl_var<TerminalView> tv(new TerminalView(buf, TextKit_var(_this()), canonicalDK, lineCompositor, pageCompositor));
-  allocations.push_back(tv.get());
-  buf->attach(tv.get());
-  return tv.release()->_this();
+  graphics.push_back(tv.get());
+  buf->attach(Observer_var(tv->_this()));
+  return tv._retn()->_this();
 }
 
 ///////////////////////
@@ -145,69 +152,76 @@ Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
   
 Graphic_ptr TextKitImpl::size(Graphic_ptr g, CORBA::ULong ems) 
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<CORBA::ULong> > decor(new DrawDecorator<CORBA::ULong>(&DrawingKit::fontSize, ems));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<CORBA::ULong> > decor(new DrawDecorator<CORBA::ULong>(&DrawingKit::fontSize, ems));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 Graphic_ptr TextKitImpl::weight(Graphic_ptr g, CORBA::ULong wt) 
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<CORBA::ULong> > decor(new DrawDecorator<CORBA::ULong>(&DrawingKit::fontWeight, wt));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<CORBA::ULong> > decor(new DrawDecorator<CORBA::ULong>(&DrawingKit::fontWeight, wt));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 Graphic_ptr TextKitImpl::family(Graphic_ptr g, const Unistring &fam)
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontFamily, fam));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontFamily, fam));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 Graphic_ptr TextKitImpl::subFamily(Graphic_ptr g, const Unistring &fam)
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontSubFamily, fam));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontSubFamily, fam));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 Graphic_ptr TextKitImpl::fullName(Graphic_ptr g, const Unistring &name)
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontFullName, name));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontFullName, name));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 Graphic_ptr TextKitImpl::style(Graphic_ptr g, const Unistring &sty)
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontStyle, sty));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontStyle, sty));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 Graphic_ptr TextKitImpl::fontAttr(Graphic_ptr g, const NVPair &nvp)
 {
-  MutexGuard guard(localMutex);
-  Impl_var<DrawDecorator<const NVPair &> > decor(new DrawDecorator<const NVPair &>(&DrawingKit::fontAttr, nvp));
-  decor->body(g);
-  allocations.push_back(decor.get());
-  return decor.release()->_this();
+//   MutexGuard guard(localMutex);
+//   Impl_var<DrawDecorator<const NVPair &> > decor(new DrawDecorator<const NVPair &>(&DrawingKit::fontAttr, nvp));
+//   decor->body(g);
+//   allocations.push_back(decor.get());
+//   return decor.release()->_this();
+  return Graphic::_nil();
 }
 
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
-  return new KitFactoryImpl<TextKitImpl>(interface(TextKit), properties, 2);
+  return new KitFactoryImpl<TextKitImpl>(TextKit::_PD_repoId, properties, 2);
 } 

@@ -22,7 +22,7 @@
 #ifndef _Grid_idl
 #define _Grid_idl
 
-#include "Graphic.idl"
+#include <Warsaw/Graphic.idl>
 
 interface Traversal;
 

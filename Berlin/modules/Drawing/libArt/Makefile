@@ -30,7 +30,7 @@ include $(cpath)/Server/local.mk
 hpath	= $(ipath)/Drawing/libArt
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(LIBART_INCLUDES) -I/usr/local/include/libart_lgpl $(ORBCPPFLAGS)
+CPPFLAGS= -I$(ipath) $(LIBART_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin $(LIBART_LIBS) -lfreetype
 

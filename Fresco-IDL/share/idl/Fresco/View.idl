@@ -22,8 +22,8 @@
 #ifndef _View_idl
 #define _View_idl
 
-#include "Graphic.idl"
-#include "Subject.idl"
+#include <Warsaw/Graphic.idl>
+#include <Warsaw/Subject.idl>
 
 interface View : Graphic, Observer
 {

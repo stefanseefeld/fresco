@@ -24,8 +24,8 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Raster.hh>
-#include <art_misc.h>
-#include <art_pixbuf.h>
+#include <libart_lgpl/art_misc.h>
+#include <libart_lgpl/art_pixbuf.h>
 
 struct LibArtRaster
 {

@@ -23,7 +23,6 @@
 #define _Warsaw_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/ClientContextImpl.hh>
 #include <iostream>
@@ -39,7 +38,6 @@ public:
   typename T::_ptr_type resolve(const char *name, const Kit::PropertySeq &p) { return resolve_kit<T>(server, name, p);}
 private:
   CORBA::ORB_var orb;
-  CORBA::BOA_var boa;
   ClientContextImpl *client;
   ServerContext_var  server;
 };

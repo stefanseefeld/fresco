@@ -22,8 +22,8 @@
 #ifndef _LayoutKit_idl
 #define _LayoutKit_idl
 
-#include "Kit.idl"
-#include "Grid.idl"
+#include <Warsaw/Kit.idl>
+#include <Warsaw/Grid.idl>
 
 interface Viewport;
 interface Stage;

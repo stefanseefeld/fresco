@@ -23,7 +23,7 @@
 #ifndef _Server_idl
 #define _Server_idl
 
-#include <Kit.idl>
+#include <Warsaw/Kit.idl>
 
 interface ClientContext;
 

@@ -40,22 +40,22 @@ void Application::Mapper::execute(const CORBA::Any &)
     if (t == (*i).id) (*i).mapper->execute(any);
 }
 
-class ExitCommand : implements(Command) 
+class ExitCommand : public virtual POA_Command, public virtual PortableServer::RefCountServantBase 
 {
  public:
   void execute(const CORBA::Any &) { exit(0);}
 };
 
 Application::Application(Warsaw *warsaw)
-  : tk(warsaw->resolve<TextKit>(interface(TextKit))),
-    dk(warsaw->resolve<DesktopKit>(interface(DesktopKit))),
-    lk(warsaw->resolve<LayoutKit>(interface(LayoutKit))),
-    ttk(warsaw->resolve<ToolKit>(interface(ToolKit))),
-    wk(warsaw->resolve<WidgetKit>(interface(WidgetKit))),
-    fk(warsaw->resolve<FigureKit>(interface(FigureKit))),
-    ck(warsaw->resolve<CommandKit>(interface(CommandKit))),
-    ik(warsaw->resolve<ImageKit>(interface(ImageKit))),
-    gk(warsaw->resolve<GadgetKit>(interface(GadgetKit))),
+  : tk(warsaw->resolve<TextKit>(TextKit::_PD_repoId)),
+    dk(warsaw->resolve<DesktopKit>(DesktopKit::_PD_repoId)),
+    lk(warsaw->resolve<LayoutKit>(LayoutKit::_PD_repoId)),
+    ttk(warsaw->resolve<ToolKit>(ToolKit::_PD_repoId)),
+    wk(warsaw->resolve<WidgetKit>(WidgetKit::_PD_repoId)),
+    fk(warsaw->resolve<FigureKit>(FigureKit::_PD_repoId)),
+    ck(warsaw->resolve<CommandKit>(CommandKit::_PD_repoId)),
+    ik(warsaw->resolve<ImageKit>(ImageKit::_PD_repoId)),
+    gk(warsaw->resolve<GadgetKit>(GadgetKit::_PD_repoId)),
     vbox(lk->vbox()),
     choice(wk->toggleChoice()),
     mapper(new Mapper(demos, Selection_var(choice->state())))
@@ -99,7 +99,7 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   vb->append(hbox);
 
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
+  spec.brightness(0.5); spec._d(ToolKit::outset);
   Graphic_var decorator = ttk->frame(vb, 20., spec, true);
   decorator = gk->alpha(decorator, item.alpha);
   decorator = gk->lighting(decorator, item.red, item.green, item.blue);
@@ -121,8 +121,8 @@ void Application::run()
 {
   vbox->append(Graphic_var(lk->vspace(200.)));
   ToolKit::FrameSpec spec;
-  spec.dbrightness(0.5);
-  vbox->append(Graphic_var(ttk->frame(choice, 20., spec, false)));
+  spec.brightness(0.5); spec._d(ToolKit::concav);
+  vbox->append(Graphic_var(ttk->frame(choice, 40., spec, false)));
   vbox->append(Graphic_var(lk->vspace(200.)));
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
   Graphic_var label1 = lk->margin(glyph1, 20.);
@@ -130,7 +130,6 @@ void Application::run()
   Graphic_var glyph2 = tk->chunk(Unicode::toCORBA(Unicode::String("quit")));
   Graphic_var label2 = lk->margin(glyph2, 20.);
   ExitCommand *cmd = new ExitCommand();
-  cmd->_obj_is_ready(CORBA::BOA::getBOA());
   Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
 
   vbox->append(Graphic_var(lk->vspace(200.)));
@@ -144,7 +143,7 @@ void Application::run()
   vbox->append(hbox);
   Graphic_var margin = lk->margin(vbox, 200.);
   
-  spec.bbrightness(1.0);
+  spec.brightness(1.0); spec._d(ToolKit::outset);
   Controller_var group = ttk->group(Graphic_var(ttk->frame(margin, 10., spec, true)));
   group->appendController(choice);
   group->appendController(run);
@@ -249,7 +248,7 @@ Application::Item Application::makeItem(const Unicode::String &name)
   vbox->append(Graphic_var(lk->vspace(200.)));
   vbox->append(hbox);
   ToolKit::FrameSpec outset;
-  outset.bbrightness(0.5);
+  outset.brightness(0.5); outset._d(ToolKit::outset);
   Controller_var root = ttk->group(Graphic_var(ttk->frame(Graphic_var(lk->margin(vbox, 100.)), 20., outset, true)));
   Window_var window = dk->transient(root);
   item.settings = window->map(true);

@@ -29,7 +29,7 @@
 #include <map>
 #include <vector>
 
-class TerminalView : implements(View), public Composition
+class TerminalView : public virtual POA_View, public Composition
 {
   typedef vector<Composition *> lines_t;
  public:

@@ -34,10 +34,7 @@ ColorDemo::ColorDemo(Application *a)
   GadgetKit_var gadget = application->gadget();
   
   for (size_t i = 0; i != 6; ++i)
-    {
-      adapter[i] = new Adapter(this, i);
-      adapter[i]->_obj_is_ready(CORBA::BOA::getBOA());
-    }
+    adapter[i] = new Adapter(this, i);
   
   red = command->bvalue(0., 1., 0., .1, .5);
   green = command->bvalue(0., 1., 0., .1, .5);
@@ -57,9 +54,9 @@ ColorDemo::ColorDemo(Application *a)
 
   Graphic_var hbox = layout->hbox();
   Graphic_var panel = layout->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.);
-  ToolKit::FrameSpec inset;
-  inset.abrightness(0.5);
-  hbox->append(Graphic_var(layout->margin(Graphic_var(gadget->rgb(Graphic_var(tool->frame(panel, 20., inset, true)), red, green, blue)), 500.)));
+  ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(ToolKit::inset);
+  hbox->append(Graphic_var(layout->margin(Graphic_var(gadget->rgb(Graphic_var(tool->frame(panel, 20., spec, true)), red, green, blue)), 500.)));
 
   Graphic_var vbox = layout->vbox();
 

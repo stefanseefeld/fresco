@@ -26,7 +26,7 @@
 #include <Warsaw/Input.hh>
 #include <Warsaw/Command.hh>
 
-class Accelerator : implementsscoped(Input, Filter)
+class Accelerator : public virtual POA_Input::Filter, public virtual PortableServer::RefCountServantBase
 {
  public:
   Accelerator(Input::Device, const Input::Toggle &, Input::Bitset, Command_ptr);
@@ -39,4 +39,4 @@ class Accelerator : implementsscoped(Input, Filter)
   const Command_var command;
 };
 
-#endif /* _FocusImpl_hh */
+#endif /* _FilterImpl_hh */

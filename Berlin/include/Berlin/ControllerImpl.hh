@@ -32,7 +32,7 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class ControllerImpl : implements(Controller), public MonoGraphic, public SubjectImpl
+class ControllerImpl : public virtual POA_Controller, public MonoGraphic, public SubjectImpl
 {
  public:
   ControllerImpl(bool);

@@ -26,15 +26,16 @@
 #include <Warsaw/Window.hh>
 #include <Warsaw/Command.hh>
 #include <Warsaw/Desktop.hh>
+#include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
 class UnmappedStageHandle;
 
-class WindowImpl : implements(Window), public ControllerImpl
+class WindowImpl : public virtual POA_Window, public ControllerImpl
 {
-  class Manipulator : implements(Command)
+  class Manipulator : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
   {
   public:
     virtual ~Manipulator() {}
@@ -43,7 +44,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   protected:
     StageHandle_var handle;
   };
-  class Mapper : implements(Command)
+  class Mapper : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
   {
   public:
     Mapper(WindowImpl *w, bool f) : window(w), flag(f) {}
@@ -70,14 +71,15 @@ class WindowImpl : implements(Window), public ControllerImpl
   virtual void unmap();
  private:
   StageHandle_var handle;
-  UnmappedStageHandle *unmapped;
+  Impl_var<UnmappedStageHandle> unmapped;
   mtable_t manipulators;
-  Mapper *mapper, *unmapper;
+  Impl_var<Mapper> mapper;
+  Impl_var<Mapper> unmapper;
   Prague::Mutex mutex;
   vector<Controller_var> focus;
 };
 
-class UnmappedStageHandle : implements(StageHandle)
+class UnmappedStageHandle : public virtual POA_StageHandle, public virtual PortableServer::RefCountServantBase
 {
  public:
   UnmappedStageHandle(Stage_ptr par, Graphic_ptr cc, const Vertex &pp, const Vertex &ss, Stage::Index ll)

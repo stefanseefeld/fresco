@@ -23,12 +23,12 @@
 #ifndef _ServerImpl_hh
 #define _ServerImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Server.hh"
-#include "Warsaw/Graphic.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Server.hh>
+#include <Warsaw/Graphic.hh>
 #include "Berlin/KitImpl.hh"
-#include "Prague/Sys/Thread.hh"
-#include "Prague/Sys/Plugin.hh"
+#include <Prague/Sys/Thread.hh>
+#include <Prague/Sys/Plugin.hh>
 #include <vector>
 #include <string>
 #include <map>
@@ -36,7 +36,7 @@
 
 class ServerContextImpl;
 
-class ServerImpl : implements(Server)
+class ServerImpl : public virtual POA_Server, public virtual PortableServer::RefCountServantBase
 //. the Server just hands out new ServerContexts to
 //. people who are connecting.  it might want to do some checking on
 //. the incoming ClientContext's credentials, but at the moment it doesn't.
@@ -82,13 +82,12 @@ typename K::_ptr_type ServerImpl::resolve(const char *type, const Kit::PropertyS
 {
   KitImpl *kit = create(type, properties);
   if (!kit) return K::_nil();
-  kit->_obj_is_ready(_boa());
   typename K::_var_type reference;
   try
     {
       reference = K::_narrow(Kit_var(kit->_this()));
     }
-  catch (CORBA::Exception e)
+  catch (CORBA::Exception &e)
     {
       cerr << "Cannot narrow reference: " << e << endl;
       return K::_nil();

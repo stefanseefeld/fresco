@@ -24,18 +24,20 @@
 #include "Warsaw/Server.hh"
 
 Warsaw::Warsaw(int argc, char **argv)
-  : orb(CORBA::ORB_init(argc,argv,"omniORB2")),
-    boa(orb->BOA_init(argc,argv,"omniORB2_BOA")),
+  : orb(CORBA::ORB_init(argc, argv, "omniORB3")),
     client(new ClientContextImpl)
 {
-  boa->impl_is_ready(0,1);
-  client->_obj_is_ready(boa);
+  CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
+  PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
+  PortableServer::POAManager_var pman = poa->the_POAManager();
+  pman->activate();
+
   CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-  Server_var s = resolve_name<Server>(context, interface(Server));
+  Server_var s = resolve_name<Server>(context, Server::_PD_repoId);
   server = s->newServerContext(ClientContext_var(client->_this()));
 }
 
 Warsaw::~Warsaw()
 {
-  client->_dispose();
+//  client->_dispose();
 }

@@ -35,7 +35,7 @@
 namespace Motif
 {
 
-class Choice : implements(Choice), public ControllerImpl
+class Choice : public virtual POA_Choice, public ControllerImpl
 {
   class State;
  public:

@@ -20,13 +20,12 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Color.hh"
-#include "Berlin/Logger.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/Color.hh>
+#include <Berlin/Logger.hh>
 #include "Tool/Beveler.hh"
 
 namespace Beveler

@@ -22,8 +22,8 @@
 #ifndef _GadgetKit_idl
 #define _GadgetKit_idl
 
-#include "Types.idl"
-#include "Kit.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Kit.idl>
 
 interface BoundedValue;
 interface Graphic;

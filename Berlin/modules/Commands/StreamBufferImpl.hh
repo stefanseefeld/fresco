@@ -28,15 +28,15 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class StreamBufferImpl : implements(StreamBuffer), public SubjectImpl
+class StreamBufferImpl : public virtual POA_StreamBuffer, public SubjectImpl
 {
  public:
   StreamBufferImpl(long l) : length(l) { buffer.reserve(length);}
   virtual ~StreamBufferImpl() {}
   virtual CORBA::Long size();
   virtual CORBA::Long available();
-  virtual Data *read();
-  virtual void write(const Data &);
+  virtual StreamBuffer::Data *read();
+  virtual void write(const StreamBuffer::Data &);
   virtual void flush();
  private:
   size_t length;

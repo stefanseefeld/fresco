@@ -27,11 +27,10 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Providers.hh>
 #include <Berlin/TransformImpl.hh>
-#include <Warsaw/Warsaw.hh>
 
 using namespace Motif;
 
-class Slider::Dragger : implements(Command)
+class Slider::Dragger : public virtual POA_Command, public virtual PortableServer::RefCountServantBase
 {
 public:
   Dragger(BoundedValue_ptr v, Axis a) : value(BoundedValue::_duplicate(v)), scale(1.), axis(a) {}

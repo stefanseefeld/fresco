@@ -26,7 +26,6 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -42,7 +41,7 @@ PolyFigure::PolyFigure(const PolyFigure &pf)
     bbox(new RegionImpl)
 {
   bbox->valid = pf.bbox->valid;
-  if (bbox->valid) bbox->copy(pf.bbox);
+  if (bbox->valid) bbox->copy(Region_var(pf.bbox->_this()));
 }
 
 PolyFigure::~PolyFigure()
@@ -58,7 +57,7 @@ void PolyFigure::updateBbox()
 	{
 	  Allocation::Info info;
 	  for (CORBA::ULong i = 0; i < n; i++)
-	    children[i].parent->extension(info, bbox);
+	    children[i].parent->extension(info, Region_var(bbox->_this()));
 	}
     }
 }
@@ -67,7 +66,7 @@ void PolyFigure::allocate(Tag, const Allocation::Info &info)
 {
   // undefine the allocation...how ? -Stefan
 //   info.allocation->;
-  info.transformation->premultiply(tx);
+  info.transformation->premultiply(Transform_var(tx->_this()));
 }
 
 void PolyFigure::request(Requisition &r)
@@ -77,8 +76,8 @@ void PolyFigure::request(Requisition &r)
   updateBbox();
   if (bbox->valid)
     {
-      region->copy(bbox);
-      region->applyTransform(tx);
+      region->copy(Region_var(bbox->_this()));
+      region->applyTransform(Transform_var(tx->_this()));
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
       Coord y_lead = -region->lower.y, y_trail = region->upper.y;
       GraphicImpl::requireLeadTrail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
@@ -98,10 +97,10 @@ void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
     {
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
-      transformation->premultiply(tx);
-      tmp->copy(bbox);
-      tmp->applyTransform(transformation);
-      region->mergeUnion(tmp);
+      transformation->premultiply(Transform_var(tx->_this()));
+      tmp->copy(Region_var(bbox->_this()));
+      tmp->applyTransform(Transform_var(transformation->_this()));
+      region->mergeUnion(Region_var(tmp->_this()));
     }
 }
 
@@ -116,7 +115,7 @@ void PolyFigure::traverse(Traversal_ptr traversal)
   updateBbox();
   if (bbox->valid)
     {
-      Impl_var<RegionImpl> region(new RegionImpl(bbox, tx));
+      Impl_var<RegionImpl> region(new RegionImpl(Region_var(bbox->_this()), Transform_var(tx->_this())));
       if (!traversal->intersectsRegion(Region_var(region->_this()))) return;
     }
   else return;

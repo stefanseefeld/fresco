@@ -24,7 +24,7 @@ dnl BERLIN_ORB_CHECK(mandatory-flag)
 dnl
 dnl Try to find a usable ORB. If mandatory-flag is "mandatory", abort if
 dnl none is found.
-dnl For now, only omniORB2 is supported.
+dnl For now, only omniORB is supported.
 
 AC_DEFUN([BERLIN_ORB_CHECK],[
 
@@ -36,16 +36,16 @@ AC_DEFUN([BERLIN_ORB_CHECK],[
 	AC_REGISTER_PARAM(ORB)
 
 	case $ORB in
-		omniORB2|auto)
-			BERLIN_OMNIORB2_CHECK
-			if test ".$ac_cv_lib_omniORB2" != .yes; then
+		omniORB|auto)
+			BERLIN_OMNIORB_CHECK
+			if test ".$ac_cv_lib_omniORB" != .yes; then
 				if test ".$1" = .mandatory; then
 					AC_MSG_ERROR(No supported CORBA environment found!)
 				else
 					ORB="none"
 				fi
 			else
-				ORB=omniORB2
+				ORB=omniORB
 			fi				
 			;;
 		*)
@@ -58,12 +58,11 @@ AC_DEFUN([BERLIN_ORB_CHECK],[
 	esac
 	
 	case $ORB in
-		omniORB2)
-			IDL="$OMNIIDL2"
-			IDLFLAGS=""
-			LCIDLFLAGS="-l"
-			DYNIDLFLAGS="-a"
-			ORBFLAGS="__OMNIORB2__"
+		omniORB)
+			IDL="$OMNIIDL"
+dnl			IDLFLAGS="$OMNIIDLFLAGS"
+dnl			DYNIDLFLAGS="$OMNIDYNIDLFLAGS"
+			ORBFLAGS="__OMNIORB__"
 		;;
 	esac
 
@@ -71,7 +70,6 @@ AC_DEFUN([BERLIN_ORB_CHECK],[
 	if test ".$ORB" != .none ; then
 		AC_SUBST(IDL)
 		AC_SUBST(IDLFLAGS)
-		AC_SUBST(LCIDLFLAGS)
 		AC_SUBST(DYNIDLFLAGS)
 		AC_DEFINE_UNQUOTED(ORBFLAGS, $ORBFLAGS)
 		AC_SUBST(ORBFLAGS)

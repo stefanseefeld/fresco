@@ -33,7 +33,7 @@
 
 class RasterImpl;
 
-class ImageKitImpl : implements(ImageKit), public KitImpl
+class ImageKitImpl : public virtual POA_ImageKit, public KitImpl
 {
 public:
   ImageKitImpl(KitFactory *, const PropertySeq &);
@@ -42,7 +42,7 @@ public:
   Raster_ptr empty();
   Raster_ptr create(const char *file);
 protected:
-  vector<RasterImpl *> rasters;
+  vector<PortableServer::Servant> rasters;
 };
 
 #endif

@@ -28,7 +28,7 @@
 
 class WindowImpl;
 
-class DesktopImpl : implements(Desktop), public ControllerImpl
+class DesktopImpl : public virtual POA_Desktop, public ControllerImpl
 {
  public:
   DesktopImpl();
@@ -38,8 +38,8 @@ class DesktopImpl : implements(Desktop), public ControllerImpl
 //   virtual void draw(DrawTraversal_ptr);
 
   Region_ptr bbox() { return stage->bbox();}
-  long layers() { return stage->layers();}
-  StageHandle_ptr layer(Index l) { return stage->layer(l);}
+  CORBA::Long layers() { return stage->layers();}
+  StageHandle_ptr layer(Stage::Index l) { return stage->layer(l);}
   void begin() { stage->begin();}
   void end() { stage->end();}
 

@@ -24,14 +24,14 @@
 #ifndef _FigureKitImpl_hh
 #define _FigureKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/FigureKit.hh"
-#include "Berlin/KitImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/FigureKit.hh>
+#include <Berlin/KitImpl.hh>
 #include <vector>
 
 class Figure;
 
-class FigureKitImpl : implements(FigureKit), public KitImpl
+class FigureKitImpl : public virtual POA_FigureKit, public KitImpl
 {
  public:
   FigureKitImpl(KitFactory *, const PropertySeq &);
@@ -56,7 +56,7 @@ class FigureKitImpl : implements(FigureKit), public KitImpl
   Graphic_ptr texture(Graphic_ptr, Raster_ptr);
   Graphic_ptr transformer(Graphic_ptr);
  protected:
-  vector<Figure *> figures;
+  vector<PortableServer::Servant> figures;
 };
 
 

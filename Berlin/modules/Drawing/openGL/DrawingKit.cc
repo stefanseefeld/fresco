@@ -29,7 +29,6 @@
 #include "Drawing/openGL/GLUnifont.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Color.hh"
-#include "Warsaw/Warsaw.hh"
 #include "Prague/Sys/Profiler.hh"
 
 #include <strstream>
@@ -157,9 +156,9 @@ void GLDrawingKit::setLineEndstyle(DrawingKit::Endstyle style)
 
 void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
 {
-  if (fs == textured) glDisable(GL_TEXTURE_2D);
+  if (fs == DrawingKit::textured) glDisable(GL_TEXTURE_2D);
   fs = style;
-  if (fs == textured) glEnable(GL_TEXTURE_2D);
+  if (fs == DrawingKit::textured) glEnable(GL_TEXTURE_2D);
 }
 
 void GLDrawingKit::setTexture(Raster_ptr t)
@@ -176,14 +175,14 @@ void GLDrawingKit::setTexture(Raster_ptr t)
 
 void GLDrawingKit::drawPath(const Path &path)
 {
-  if (fs == solid)
+  if (fs == DrawingKit::solid)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
-  else if (fs == textured)
+  else if (fs == DrawingKit::textured)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
@@ -206,8 +205,8 @@ void GLDrawingKit::drawPath(const Path &path)
 
 void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
 {
-  if (fs == solid) glRectf(lower.x, lower.y, upper.x, upper.y);
-  else if (fs == textured)
+  if (fs == DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
+  else if (fs == DrawingKit::textured)
     {
       double w = (upper.x - lower.x)/(tx->width * 10.);
       double h = (upper.y - lower.y)/(tx->height * 10.);
@@ -244,7 +243,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   Profiler prf("GLDrawingKit::drawImage");
   GLImage *glimage = images.lookup(Raster::_duplicate(raster));
   GLint tbackup = -1;
-  if (fs == textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
+  if (fs == DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
   else glEnable(GL_TEXTURE_2D);
   GLfloat color_cache[4];
   glGetFloatv(GL_CURRENT_COLOR, color_cache);
@@ -265,7 +264,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   glTexCoord2f(0., glimage->t);           glVertex3f(path[0].x, path[0].y, path[0].z);
   glEnd();
   glColor4fv(color_cache);  
-  if (fs != textured) glDisable(GL_TEXTURE_2D);
+  if (fs != DrawingKit::textured) glDisable(GL_TEXTURE_2D);
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
@@ -284,5 +283,5 @@ void GLDrawingKit::drawChar(Unichar c) { font->drawChar(c);}
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "GLDrawingKit"};
-  return new KitFactoryImpl<GLDrawingKit> (interface(DrawingKit), properties, 1);
+  return new KitFactoryImpl<GLDrawingKit> (DrawingKit::_PD_repoId, properties, 1);
 }

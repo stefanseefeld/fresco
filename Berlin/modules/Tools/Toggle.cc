@@ -44,7 +44,7 @@ void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
 void Toggle::keyPress(const Input::Event &event)
 {
   Trace trace("Toggle::press");
-  const Input::Toggle &toggle = event[0].attr.kselection();
+  const Input::Toggle &toggle = event[0].attr.selection();
   if (toggle.number == 32) // space
     {
       if (test(Controller::toggled)) clear(Controller::toggled);

@@ -22,12 +22,12 @@
 #ifndef _SubjectImpl_hh
 #define _SubjectImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Subject.hh"
-#include "Prague/Sys/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Subject.hh>
+#include <Prague/Sys/Thread.hh>
 #include <list>
 
-class SubjectImpl : implements(Subject)
+class SubjectImpl : public virtual POA_Subject, public virtual PortableServer::RefCountServantBase
 {
 public:
   SubjectImpl();

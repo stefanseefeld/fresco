@@ -22,8 +22,9 @@
 #ifndef _resolve_hh
 #define _resolve_hh
 
-#include <Server.hh>
-#include <exception.hh>
+#include <Warsaw/Server.hh>
+#include <Warsaw/exception.hh>
+#include <assert.h>
 
 template <class T>
 typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *name)

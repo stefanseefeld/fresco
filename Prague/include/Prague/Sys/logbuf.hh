@@ -39,7 +39,7 @@ public:
   void dump(ostream &);
 
   int_type sputc(char_type c);
-  int_type xsputn(const char_type *s, streamsize n);
+  streamsize xsputn(const char_type *s, streamsize n);
 private:
   bool wrapped  : 1;
 };

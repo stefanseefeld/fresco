@@ -24,12 +24,12 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Region.hh>
+#include <iostream>
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Math.hh"
-#include <iostream>
 
-class RegionImpl : implements(Region)
+class RegionImpl : public virtual POA_Region, public virtual PortableServer::RefCountServantBase
 {
 public:
   RegionImpl();
@@ -51,7 +51,7 @@ public:
   virtual void center(Vertex &);
   virtual void origin(Vertex &);
   virtual void span(Axis, Region::Allotment &);
-  virtual void outline(Path *&);
+  virtual void outline(Path_out);
 
   void clear();
 

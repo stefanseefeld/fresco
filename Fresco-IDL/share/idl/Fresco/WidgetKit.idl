@@ -23,9 +23,9 @@
 #ifndef _WidgetKit_idl
 #define _WidgetKit_idl
 
-#include "Types.idl"
-#include "Telltale.idl"
-#include "Kit.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Telltale.idl>
+#include <Warsaw/Kit.idl>
 
 interface TelltaleConstraint;
 interface BoundedValue;

@@ -22,7 +22,7 @@
 #ifndef _Region_idl
 #define _Region_idl
 
-#include "Types.idl"
+#include <Warsaw/Types.idl>
 
 interface Transform;
 

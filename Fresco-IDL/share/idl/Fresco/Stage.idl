@@ -22,7 +22,7 @@
 #ifndef _Stage_idl
 #define _Stage_idl
 
-#include <Graphic.idl>
+#include <Warsaw/Graphic.idl>
 
 interface StageHandle;
 

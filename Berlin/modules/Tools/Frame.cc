@@ -20,17 +20,17 @@
  * MA 02139, USA.
  */
 
-#include "Tool/Frame.hh"
-#include "Tool/Beveler.hh"
+#include <Warsaw/config.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Subject.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Providers.hh>
-#include <Berlin/ImplVar.hh>
 #include <Berlin/Color.hh>
 #include <Prague/Sys/Tracer.hh>
+#include "Tool/Frame.hh"
+#include "Tool/Beveler.hh"
 
 using namespace Prague;
 
@@ -38,12 +38,11 @@ Frame::Frame(Coord t, Frame::Renderer *r)
   : thickness(t), renderer(r)
 {
   allocation = new RegionImpl;
-  allocation->_obj_is_ready(_boa());
 }
 
 Frame::~Frame()
 {
-  allocation->_dispose();
+//  allocation->_dispose();
 }
 
 void Frame::request(Requisition &requisition)

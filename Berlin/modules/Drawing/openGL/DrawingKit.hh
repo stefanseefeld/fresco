@@ -57,10 +57,10 @@ public:
   virtual Coord pointSize() { return ps;}
   virtual void lineWidth(Coord c) { DrawingKitBase::lineWidth(c);}
   virtual Coord lineWidth() { return lw;}
-  virtual void lineEndstyle(Endstyle e) { DrawingKitBase::lineEndstyle(e);}
-  virtual Endstyle lineEndstyle() { return es;}
-  virtual void surfaceFillstyle(Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
-  virtual Fillstyle surfaceFillstyle() { return fs;}
+  virtual void lineEndstyle(DrawingKit::Endstyle e) { DrawingKitBase::lineEndstyle(e);}
+  virtual DrawingKit::Endstyle lineEndstyle() { return es;}
+  virtual void surfaceFillstyle(DrawingKit::Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
+  virtual DrawingKit::Fillstyle surfaceFillstyle() { return fs;}
   virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Raster_ptr texture() { return tx ? Raster::_duplicate(tx->remote) : Raster::_nil();}
 
@@ -70,8 +70,8 @@ public:
   virtual Unistring *fontSubFamily() { return font->subfamily();}
   virtual Unistring *fontFullName() { return font->fullname();}
   virtual Unistring *fontStyle() { return font->style();}
-  virtual FontMetrics fmetrics() { return font->metrics();}
-  virtual GlyphMetrics gmetrics(Unichar uc) { return font->metrics(uc);}
+  virtual DrawingKit::FontMetrics fmetrics() { return font->metrics();}
+  virtual DrawingKit::GlyphMetrics gmetrics(Unichar uc) { return font->metrics(uc);}
   virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
 
 //   virtual CORBA::ULong fontSize() { return fontServer.size();}
@@ -89,8 +89,8 @@ public:
   virtual void setLighting(const Color &);
   virtual void setPointSize(Coord);
   virtual void setLineWidth(Coord);
-  virtual void setLineEndstyle(Endstyle);
-  virtual void setSurfaceFillstyle(Fillstyle);
+  virtual void setLineEndstyle(DrawingKit::Endstyle);
+  virtual void setSurfaceFillstyle(DrawingKit::Fillstyle);
   virtual void setTexture(Raster_ptr);
 
   virtual void setFontSize(CORBA::ULong);
@@ -126,8 +126,8 @@ public:
   Color          lt;
   Coord          ps;
   Coord          lw;
-  Endstyle       es;
-  Fillstyle      fs;
+  DrawingKit::Endstyle       es;
+  DrawingKit::Fillstyle      fs;
   GLRaster      *tx;
   GLFont        *font;
   

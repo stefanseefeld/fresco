@@ -28,7 +28,7 @@ hpath   = $(top)/include/Berlin
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
+CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath) 
 LIBS	= -lPrague -lBerlin
 

@@ -253,7 +253,7 @@ CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, con
     }
   if (event[0].attr._d() == Input::button)
     {
-      const Input::Toggle &toggle = event[0].attr.bselection();
+      const Input::Toggle &toggle = event[0].attr.selection();
       if (toggle.actuation == Input::Toggle::press) press(traversal, event);
       else if (toggle.actuation == Input::Toggle::release) release(traversal, event);
     }
@@ -274,7 +274,7 @@ CORBA::Boolean ControllerImpl::handleNonPositional(const Input::Event &event)
       cerr << "ControllerImpl::handleNonPositional fatal error : unknown event" << endl;
       return false;
     }
-  if (event[0].attr.kselection().actuation != Input::Toggle::press) return false;
+  if (event[0].attr.selection().actuation != Input::Toggle::press) return false;
   keyPress(event);
   return true;
 }
@@ -313,7 +313,7 @@ void ControllerImpl::doubleClick(PickTraversal_ptr, const Input::Event &)
 void ControllerImpl::keyPress(const Input::Event &event)
 {
   Trace trace("ControllerImpl::keyPress");
-  const Input::Toggle &toggle = event[0].attr.kselection();
+  const Input::Toggle &toggle = event[0].attr.selection();
 //   cout << "ControllerImpl::keyPress : " << toggle.number << ' ' << (char) toggle.number << endl;
   switch (toggle.number)
     {

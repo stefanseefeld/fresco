@@ -27,8 +27,6 @@
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
 
-declare_corba_ptr_type(DrawingKit)
-
 class RegionImpl;
 
 class Compositor

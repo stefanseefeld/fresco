@@ -22,8 +22,8 @@
 #ifndef _Screen_idl
 #define _Screen_idl
 
-#include "Types.idl"
-#include "Controller.idl"
+#include <Warsaw/Types.idl>
+#include <Warsaw/Controller.idl>
 
 interface DrawingKit;
 interface Region;

@@ -54,7 +54,7 @@ protected:
   Renderer   *renderer;
 };
 
-class DynamicFrame : implements(View), public Frame
+class DynamicFrame : public virtual POA_View, public Frame
 {
  public:
   DynamicFrame(Coord t, Telltale::Mask, Frame::Renderer *, Frame::Renderer *);

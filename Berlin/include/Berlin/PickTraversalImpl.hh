@@ -34,7 +34,7 @@
 #include <Berlin/Vertex.hh>
 #include <Prague/Sys/Tracer.hh>
 
-class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
+class PickTraversalImpl : public virtual POA_PickTraversal, public TraversalImpl
 {
   typedef vector<Controller_var> cstack_t;
   typedef vector<size_t> pstack_t;
@@ -43,7 +43,7 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
   //. to be used when starting from root level
   ~PickTraversalImpl();
   void visit(Graphic_ptr g) { g->pick(PickTraversal_var(_this()));}
-  order direction() { return down;}
+  order direction() { return Traversal::down;}
   CORBA::Boolean ok() { return !mem;}
   CORBA::Boolean intersectsAllocation();
   CORBA::Boolean intersectsRegion(Region_ptr);

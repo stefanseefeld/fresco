@@ -77,7 +77,7 @@ void Allocator::needResize()
   cacheRequisition();
   cacheAllocation();
   if (extension->valid) region->mergeUnion(Region_var(extension->_this()));
-  if (region->valid) needDamage(region, allocation);
+  if (region->valid) needDamage(region, Allocation_var(allocation->_this()));
   MonoGraphic::needResize();
 }
 
@@ -201,7 +201,7 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
   computeDelta(lower, upper, delta);
   tx->translate(delta);
   i.transformation->premultiply(Transform_var(tx->_this()));
-  i.allocation->copy(natural);
+  i.allocation->copy(Region_var(natural->_this()));
 }
 
 void TransformAllocator::traverse(Traversal_ptr traversal)

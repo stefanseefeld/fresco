@@ -19,9 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/TraversalImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Providers.hh"
+#include <Berlin/TraversalImpl.hh>
+#include <Berlin/Providers.hh>
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
 
@@ -29,12 +28,11 @@ Placement::Placement(LayoutManager *l)
 {
   layout = l;
   region = new RegionImpl;
-  region->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 Placement::~Placement()
 {
-  region->_dispose();
+//  region->_dispose();
   delete layout;
 }
 
@@ -79,7 +77,8 @@ void Placement::allocate(Tag, const Allocation::Info &a)
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);
   MonoGraphic::request(r);
-  layout->allocate(1, &r, a.allocation, &region);
+  RegionImpl *cast = region;
+  layout->allocate(1, &r, a.allocation, &cast);
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);  
   tx->loadIdentity();

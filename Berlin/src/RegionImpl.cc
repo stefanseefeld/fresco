@@ -262,7 +262,7 @@ void RegionImpl::span(Axis a, Region::Allotment &s)
     }
 }
 
-void RegionImpl::outline(Path *&p)
+void RegionImpl::outline(Path_out)
 {
 };
 

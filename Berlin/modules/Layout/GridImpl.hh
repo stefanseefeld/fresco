@@ -4,11 +4,6 @@
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -48,7 +43,7 @@ struct GridDimension
   vector<Graphic::Requirement> requirements;
 };
 
-class GridImpl : implements(Grid), public GraphicImpl
+class GridImpl : public virtual POA_Grid, public GraphicImpl
 {
   struct Span
   {
@@ -57,7 +52,7 @@ class GridImpl : implements(Grid), public GraphicImpl
     Alignment align;
   };
 public:
-  GridImpl(const Index &upper);
+  GridImpl(const Grid::Index &upper);
   ~GridImpl();
 
   virtual void append(Graphic_ptr);
