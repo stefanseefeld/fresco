@@ -348,7 +348,7 @@ int main(int argc, char **argv) /*FOLD00*/
 #  elif defined(ORB_TAO)
        // fillin TAO-specific initialisation here...
 #  endif
-      Logger::log(Logger::corba) << "Clolocation optimization activated."
+      Logger::log(Logger::corba) << "Colocation optimization activated."
 	                         << std::endl;
 #endif
       
