@@ -89,7 +89,7 @@ vpath %.hh $(h1dir)/Fresco $(h2dir)/Fresco
 
 .NOTPARALLEL:
 
-all: $(TARGET)
+all: $(TARGET) ../bin/Fresco-config
 
 # this split enforces that all idl code is translated
 # before the first source is compiled
