@@ -301,7 +301,9 @@ public:
 class SDLGLContext : public GLContext,
 		     public SDLExtension
 {
-  typedef void (*GL_Flush_Func)();
+  class SDLGLDrawable;
+  typedef void (*GL_Enable_Func)(unsigned int type);
+  typedef void (*GL_Disable_Func)(unsigned int type);
   typedef void (*GL_CopyPixels_Func)(int x, int y,
 				     int width, int height,
 				     unsigned int type);
@@ -324,6 +326,11 @@ public:
 					     SDL_OPENGL | SDL_OPENGLBLIT |
 					     SDL_DOUBLEBUF | SDL_HWACCEL);
     SDL_WM_SetCaption("Berlin on SDL (OpenGL)", NULL);
+    SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &isDoubleBuffered);
+    if (!isDoubleBuffered) {
+      cout << "SDL_Error: " << SDL_GetError() << endl;
+      throw;
+    }
 
     // HACK: Replace the 'real' drawable with its OpenGL-replacement.
     drawable->_surface = surface;
@@ -343,7 +350,8 @@ public:
 	drawable->_depth = 0;
       }
 
-    glFlush_ptr = (GL_Flush_Func)SDL_GL_GetProcAddress("glFlush");
+    glEnable_ptr     = (GL_Enable_Func)SDL_GL_GetProcAddress("glEnable");
+    glDisable_ptr    = (GL_Disable_Func)SDL_GL_GetProcAddress("glDisable");
     glCopyPixels_ptr = (GL_CopyPixels_Func)SDL_GL_GetProcAddress("glCopyPixels");
     glDrawBuffer_ptr = (GL_DrawBuffer_Func)SDL_GL_GetProcAddress("glDrawBuffer");
     glReadBuffer_ptr = (GL_ReadBuffer_Func)SDL_GL_GetProcAddress("glReadBuffer");
@@ -360,18 +368,25 @@ public:
   void flush() {
     Trace trace("SDLGLContext::flush()");
 
-    glFlush_ptr();
-    SDL_GL_SwapBuffers();
-    glReadBuffer_ptr(0x405); // GL_BACK
-    glDrawBuffer_ptr(0x404); // GL_FRONT
-    glCopyPixels_ptr(0, 0, drawable()->width(), drawable()->height(),
-                     0x1800); // GL_COLOR
-    glReadBuffer_ptr(0x404);
-    glDrawBuffer_ptr(0x405);
+    if (isDoubleBuffered) {
+      SDL_GL_SwapBuffers();
+      glDisable_ptr(0x0BC0); // GL_ALPHA_TEST
+      glDisable_ptr(0x0BE2); // GL_BLEND
+      glDisable_ptr(0x0C11); // GL_SCISSOR_TEST
+      glCopyPixels_ptr(0, 0, drawable()->width(), drawable()->height(),
+		       0x1800); // GL_COLOR
+      glEnable_ptr(0x0BC0); // GL_ALPHA_TEST
+      glEnable_ptr(0x0BE2); // GL_BLEND
+      glEnable_ptr(0x0C11); // GL_SCISSOR_TEST
+    } else {
+      // TODO
+    }
   }
 
 private:
-  GL_Flush_Func      glFlush_ptr;
+  int                isDoubleBuffered;
+  GL_Enable_Func     glEnable_ptr;
+  GL_Disable_Func    glDisable_ptr;
   GL_CopyPixels_Func glCopyPixels_ptr;
   GL_DrawBuffer_Func glDrawBuffer_ptr;
   GL_ReadBuffer_Func glReadBuffer_ptr;

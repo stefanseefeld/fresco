@@ -89,7 +89,8 @@ void ScreenManager::repair()
     l.y *= yres;
     u.y *= yres;
     mid3 = myclock();
-    _drawable->flush(static_cast<long>(l.x), static_cast<long>(l.y), static_cast<long>(u.x - l.x), static_cast<long>(u.y - l.y));
+    _drawing->flush();
+    //_drawable->flush(static_cast<long>(l.x), static_cast<long>(l.y), static_cast<long>(u.x - l.x), static_cast<long>(u.y - l.y));
   }
   end = myclock();
   _emanager->damage(Region_var(_tmpDamage->_this()));
