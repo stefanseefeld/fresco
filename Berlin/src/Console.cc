@@ -80,8 +80,7 @@ void Console::cache_available_consoles()
         delete plugin;
         plugin = 0;
         std::string name = (*file)->name();
-        unsigned const dotpos = name.find(".so");
-            // FIXME: breaks if in middle ?
+        unsigned const dotpos = name.rfind(".so");
         name = name.substr(0,dotpos);
         my_available_consoles.insert(std::make_pair(name, (*file)->long_name()));
     }
