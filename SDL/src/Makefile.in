@@ -31,13 +31,45 @@ srcdir		:= $(top_srcdir)/src/Console/SDL
 hdir		:= $(top_srcdir)/include/Console/SDL
 
 # Compilation and linking flags.
+HAS_MESA	:= @HAS_MESA@
 CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @SDL_CPPFLAGS@)
 LIBS		+= -lBerlin @SDL_LIBS@
 
-SRC		:= Console.cc Drawable.cc Extension.cc Pointer.cc
+ifeq (,$(findstring $(action), SDL SDLGL))
+all:
+	$(MAKE) action='SDL'
+ifeq ($(HAS_MESA), 1)
+	$(MAKE) action='SDLGL'
+endif
+endif
+
+ifeq ($(action), SDL)
+SRC		:= Drawable.cc Extension.cc Pointer.cc Console.cc
 
 MODULE		:= Console/SDL
+endif
+
+ifeq ($(action), SDLGL)
+CPPFLAGS	+= $(filter-out -I/usr/include, @GL_CPPFLAGS@)
+LIBS		+= @GL_LIBS@
+
+SRC		:= SDLGL.cc
+
+MODULE		:= Console/SDLGL
+endif
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Berlin/Console $(top_srcdir)/include/Console/SDL
 
+
+
+ifneq (,$(findstring $(action), SDL SDLGL))
 include $(cdir)/Server/module.mk
+else
+clean:
+		rm -f *.o $(builddir)/modules/Console/SDL.so $(builddir)/modules/Console/SDLGL.so
+
+distclean:	clean
+		rm -f Makefile
+
+maintainer-clean: distclean
+endif

@@ -53,7 +53,33 @@ class Pointer;
 
 
 // ---------------------------------------------------------------
-// class SDLConsole declaration
+// class SDL::PointerManager declaration
+// ---------------------------------------------------------------
+
+class PointerManager
+{
+public:
+  virtual SDL::Pointer * create_pointer(Warsaw::Raster_ptr) = 0;
+};
+
+
+template<typename PointerT>
+class PointerManagerT : public PointerManager
+{
+public:
+  SDL::Pointer * create_pointer(Warsaw::Raster_ptr raster) {
+    return new PointerT(dynamic_cast
+			<SDL::Drawable *>(::Console::instance()->drawable()),
+			raster);
+  }
+};
+
+
+
+
+
+// ---------------------------------------------------------------
+// class SDL::Console declaration
 // ---------------------------------------------------------------
 
 class Console : public ::Console
@@ -86,6 +112,8 @@ public:
   // SDL-specific:
   bool is_gl() const { return _is_gl;}
 
+  void set_PointerManager(PointerManager *);
+
 private:
 
   typedef std::vector<Drawable *> dlist_t;
@@ -98,7 +126,8 @@ private:
   bool                _autoplay;
   dlist_t             _drawables;
   elist_t             _modules;
-  Pointer            *_pointer;
+
+  PointerManager    * _pointer_mgr;
   
   bool                _is_gl;
 

@@ -35,24 +35,10 @@ SDL::Drawable::Drawable(const char *display,
 {
   Prague::Trace trace("SDL::Drawable::Drawable()");
 
-  static unsigned int _redMask;
-  static unsigned int _greenMask;
-  static unsigned int _blueMask;
-  static unsigned int _alphaMask;
+  if (d < 0 || d > 4) throw std::exception();
 
-  int bpp;
+  int bpp(d * 8);
 
-  switch( d ) {
-  case 0: bpp = 0; break;
-  case 1: bpp = 8; break;
-  case 2: bpp = 16; break;
-  case 3: bpp = 24; break;
-  case 4: bpp = 32; break;
-  default:
-    std::cerr << "SDL::Drawable: Warning: " << d
-              << " bytes per pixel not supported" << std::endl;
-  }
-  
   _width = w;
   _height = h;
   Logger::log(Logger::loader) << "setting video mode d = " << display
@@ -61,14 +47,36 @@ SDL::Drawable::Drawable(const char *display,
   if (display == NULL) {
     _surface = SDL_SetVideoMode( w, h, bpp, SDL_HWSURFACE | SDL_HWPALETTE );
     SDL_WM_SetCaption("Berlin on SDL", NULL);
-    _redMask = _surface->format->Rmask;
-    _greenMask = _surface->format->Gmask;
-    _blueMask = _surface->format->Bmask;
-    _alphaMask = _surface->format->Amask;
   } else {
+    Pixel red_mask, green_mask, blue_mask, alpha_mask;
+
+    switch(bpp) {
+    case 8:
+      std::cerr << "SDL::Drawable: indexed palette mode not supported."
+		<< std::endl;
+      throw std::exception();
+    case 16:
+      red_mask   = 0x0000F800;
+      green_mask = 0x000007E0;
+      blue_mask  = 0x0000001F;
+      alpha_mask = 0x00000000;
+      break;
+    case 24:
+      red_mask   = 0x00FF0000;
+      green_mask = 0x0000FF00;
+      blue_mask  = 0x000000FF;
+      alpha_mask = 0x00000000;
+      break;
+    case 32:
+      red_mask   = 0x00FF0000;
+      green_mask = 0x0000FF00;
+      blue_mask  = 0x000000FF;
+      alpha_mask = 0xFF000000;
+      break;
+    }
     _surface = SDL_CreateRGBSurface( SDL_SRCCOLORKEY | SDL_SRCALPHA,
                                      w, h, bpp,
-                                     _redMask, _greenMask, _blueMask, _alphaMask);
+                                     red_mask, green_mask, blue_mask, alpha_mask);
   }
   
   if (!_surface) throw std::exception();
@@ -194,7 +202,6 @@ void SDL::Drawable::blit(Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
   if (r1.y < 0) { r1.h += r1.y; r1.y = 0; } if (r2.y < 0) { r2.h += r2.y; r2.y =
  0; }
   SDL_BlitSurface(_surface, &r1, _surface, &r2);
-  flush(x2, y2, w, h);
 }
 
 
@@ -212,7 +219,6 @@ void SDL::Drawable::blit(const SDL::Drawable &src,
   if (r1.x < 0) { r1.w += r1.x; r1.x = 0; } if (r2.x < 0) { r2.w += r2.x; r2.x = 0; }
   if (r1.y < 0) { r1.h += r1.y; r1.y = 0; } if (r2.y < 0) { r2.h += r2.y; r2.y = 0; }
   SDL_BlitSurface(src._surface, &r1, _surface, &r2);
-  flush(x2, y2, w, h);
 }
 
 

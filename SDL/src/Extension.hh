@@ -38,8 +38,6 @@ class Drawable;
 
 
 
-
-
 // ---------------------------------------------------------------
 // class Extension
 // ---------------------------------------------------------------
@@ -117,38 +115,6 @@ public:
 };
 
 
-
-
-
-// ---------------------------------------------------------------
-// class GLContext
-// ---------------------------------------------------------------
-
-class GLContext : public ::GLContext
-{
-  typedef void (*GL_Enable_Func)(unsigned int type);
-  typedef void (*GL_Disable_Func)(unsigned int type);
-  typedef void (*GL_CopyPixels_Func)(int x, int y,
-                                     int width, int height,
-                                     unsigned int type);
-  typedef void (*GL_DrawBuffer_Func)(unsigned int type);
-  typedef void (*GL_ReadBuffer_Func)(unsigned int type);
-  
-public:
-  GLContext();
-  virtual ~GLContext();
-
-  void flush();
-
-private:
-  SDL::Drawable     *_drawable;
-  int                _isDoubleBuffered;
-  GL_Enable_Func     _glEnable_ptr;
-  GL_Disable_Func    _glDisable_ptr;
-  GL_CopyPixels_Func _glCopyPixels_ptr;
-  GL_DrawBuffer_Func _glDrawBuffer_ptr;
-  GL_ReadBuffer_Func _glReadBuffer_ptr;
-};
 
 }; // namespace SDL
 

@@ -38,6 +38,8 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 	AC_CHECK_HEADER(GL/gl.h,,no_gl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
+	HAS_MESA=
+
 	dnl Check for Mesa libs
 	if test "x$no_gl" = x ; then
 
@@ -52,6 +54,7 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 
 	if test "x$no_gl" = xyes ; then
 
+		HAS_MESA=0
 		ac_cv_lib_Mesa=no		
 		dnl Abort or warn?
 		if test ".$1" = .mandatory ; then
@@ -60,10 +63,12 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 			AC_MSG_WARN(OpenGL library was not found!)
 		fi
 	else
+		HAS_MESA=1
 		ac_cv_lib_Mesa=yes
 		GL_LIBS="$GL_LIBS -lGL -lGLU"
 	fi
 
 	AC_SUBST(GL_CPPFLAGS)
 	AC_SUBST(GL_LIBS)
+	AC_SUBST(HAS_MESA)
 ])

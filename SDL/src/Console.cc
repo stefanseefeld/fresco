@@ -24,6 +24,8 @@
 #include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Path.hh>
+#include <Berlin/RCManager.hh>
 #include <Berlin/Logger.hh>
 
 #include <Console/SDL/Console.hh>
@@ -100,15 +102,14 @@ namespace
 
 SDL::Console::Console(int &argc, char **argv) :
   _autoplay(false),
-  _is_gl(false)
+  _is_gl(false),
+  _pointer_mgr(new PointerManagerT<nonGLPointer>)
 {
   Prague::Trace trace("SDL::Console::Console");
   Logger::log(Logger::loader) << "trying to open SDL console" << endl;
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_ShowCursor(SDL_DISABLE);
-
-  _pointer = 0;
 
   // FIXME: Get some 'real' values!
   _resolution[0] = 0.1;
@@ -138,7 +139,7 @@ SDL::Console::~Console()
 Console::Pointer *SDL::Console::pointer(Raster_ptr raster)
 {
   Prague::Trace trace("SDL::Console::pointer");
-  return new SDL::Pointer(dynamic_cast<SDL::Drawable *>(drawable()), raster);
+  return _pointer_mgr->create_pointer(raster);
 }
 
 Console::Drawable *SDL::Console::drawable()
@@ -270,6 +271,12 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
   return event._retn();
 }
 
+
+void SDL::Console::set_PointerManager(PointerManager * pm) {
+  _pointer_mgr = pm;
+}
+
+
 Console::Extension * SDL::Console::create_extension(const std::string & id)
 {
   Prague::Trace trace("SDL::Console::create_extension()");
@@ -277,8 +284,21 @@ Console::Extension * SDL::Console::create_extension(const std::string & id)
   if (id == "Renderer")
     return new SDL::Renderer();
   if (id == "GLContext") {
-    _is_gl = 1;
-    return new SDL::GLContext();
+    Prague::Path path = RCManager::get_path("modulepath");
+    std::string name = path.lookup_file("Console/SDLGL.so");
+    Prague::Plugin<Extension> * plugin = 0;
+    if (name.empty())
+      {
+	std::string msg =
+	  "GLContext extension for SDL console not found in modulepath.";
+	throw std::runtime_error(msg);
+      }
+    else {
+      plugin = new Prague::Plugin<Extension>(name);
+      _modules.push_back(plugin);
+      _is_gl = 1;
+      return plugin->get();
+    }
   }
   if (id == "DirectBuffer")
     return new SDL::DirectBuffer();

@@ -20,21 +20,14 @@
  * MA 02139, USA.
  */
 
-#ifndef _SDL_Pointer_hh
-#define _SDL_Pointer_hh
+#ifndef _SDL_GL_hh
+#define _SDL_GL_hh
 
-#include <Warsaw/config.hh>
-#include <Berlin/Logger.hh>
-#include <Berlin/Console.hh>
-#include <Console/SDL/Drawable.hh>
+#include <Console/SDL/Pointer.hh>
+#include <Console/GLContext.hh>
 
-#include <Console/SDL/Console.hh>
-
-extern "C"
-{
-#include <SDL.h>
-#include <sys/types.h>
-#include <unistd.h>
+extern "C" {
+#include <GL/gl.h>
 }
 
 namespace SDL
@@ -43,56 +36,61 @@ namespace SDL
 
 
 // ---------------------------------------------------------------
-// class Pointer
+// class GL_PointerManager
 // ---------------------------------------------------------------
 
-  class GLPointer;
-
-class Pointer : public ::Console::Pointer
+class GL_PointerManager : public SDL::PointerManager
 {
-  friend class nonGLPointer;
-  friend class GLPointer;
 public:
-  Warsaw::Raster_ptr raster();
-
-  void move(Warsaw::Coord, Warsaw::Coord);
-
-  bool intersects(Warsaw::Coord, Warsaw::Coord,
-		  Warsaw::Coord, Warsaw::Coord);
-
-  virtual void draw() = 0;
-  virtual void save() = 0;
-  virtual void restore() = 0;
-
-private:
-  Warsaw::PixelCoord _size[2];
-  Warsaw::Raster_ptr _raster;
-
-  Warsaw::PixelCoord _origin[2];
-  Warsaw::PixelCoord _position[2];
-  Warsaw::PixelCoord _old_x, _old_y;
-  Warsaw::PixelCoord _x, _y;
-  Warsaw::Coord      _scale[2];
+  SDL::Pointer * create_pointer(Warsaw::Raster_ptr);
 };
 
 
 
-class nonGLPointer : public SDL::Pointer
+
+
+// ---------------------------------------------------------------
+// class GLContext
+// ---------------------------------------------------------------
+
+class GLContext : public ::GLContext
 {
 public:
-  nonGLPointer(Drawable *, Warsaw::Raster_ptr);
-  ~nonGLPointer();
+  GLContext();
+  virtual ~GLContext();
+
+  void flush();
+
+private:
+  SDL::Drawable     *_drawable;
+  int                _isDoubleBuffered;
+};
+
+
+
+
+
+// ---------------------------------------------------------------
+// class GLPointer
+// ---------------------------------------------------------------
+
+class GLPointer : public SDL::Pointer
+{
+public:
+  GLPointer(Drawable *, Warsaw::Raster_ptr);
+  ~GLPointer();
 
   void draw();
   void save();
   void restore();
-private:
-  SDL::Drawable    * _screen;
-  SDL::Drawable    * _saved_area;
-  SDL::Drawable    * _cursor;
-};
 
+private:
+  Warsaw::PixelCoord _max_y_size;
+
+  Uint8  * _cursor;
+  Uint8  * _saved_area;
+};
 
 }; // namespace SDL
 
-#endif
+#endif // _SDL_GL_hh
