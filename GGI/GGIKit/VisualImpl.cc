@@ -29,7 +29,6 @@
 #include <Berlin/Logger.hh>
 #include "VisualImpl.hh"
 #include <sys/ipc.h>
-#include <strstream.h>
 
 using namespace Prague;
 using namespace Fresco;
@@ -48,7 +47,6 @@ VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
    */
   size_t size = w * h * format.size + 64*1024;
   _shm = SHM::allocate(size);
-  std::ostrstream oss;
 
   _ggi = _factory->create_drawable(_shm, w, h, 3);
   _drawable = console->activate_drawable(_ggi);
