@@ -38,8 +38,8 @@ class GraphicImpl : public virtual POA_Warsaw::Graphic,
                     public virtual RefCountBaseImpl,
                     public virtual IdentifiableImpl
 {
-  class Iterator;
  protected:
+  class Iterator;
   //. An edge is a reference to a graphic within a composite.
   //. Because a graphic might appear twice within the same composite,
   //. a graphic itself is insufficient to identify its position within
