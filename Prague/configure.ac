@@ -102,6 +102,11 @@ mkdir -p $builddir/include/Prague
 mkdir -p $builddir/src/Prague
 mkdir -p $builddir/src/Prague/Unicode/Blocks
 dnl mkdir -p $builddir/src/Prague/SAX/expat
+mkdir -p $builddir/src/Prague/Examples/Sys
+mkdir -p $builddir/src/Prague/Examples/Thread
+mkdir -p $builddir/src/Prague/Examples/IPC
+mkdir -p $builddir/src/Prague/Examples/Filter
+mkdir -p $builddir/src/Prague/Examples/Network
 
 AC_OUTPUT([
 	$builddir/bin/Prague-config:config/package-config.in
@@ -109,6 +114,12 @@ AC_OUTPUT([
 	$builddir/src/Prague/Makefile:src/Prague/Makefile.in
 	$builddir/src/Prague/Unicode/Blocks/Makefile:src/Prague/Unicode/Blocks/Makefile.in
 dnl $builddir/src/Prague/SAX/expat/Makefile:src/Prague/SAX/expat/Makefile.in
+	$builddir/src/Prague/Examples/Makefile:src/Prague/Examples/Makefile.in
+	$builddir/src/Prague/Examples/Sys/Makefile:src/Prague/Examples/Sys/Makefile.in
+	$builddir/src/Prague/Examples/Thread/Makefile:src/Prague/Examples/Thread/Makefile.in
+	$builddir/src/Prague/Examples/IPC/Makefile:src/Prague/Examples/IPC/Makefile.in
+	$builddir/src/Prague/Examples/Filter/Makefile:src/Prague/Examples/Filter/Makefile.in
+	$builddir/src/Prague/Examples/Network/Makefile:src/Prague/Examples/Network/Makefile.in
 ],[
 	chmod +x $builddir/bin/Prague-config
 ],[
