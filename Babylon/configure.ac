@@ -45,7 +45,7 @@ dnl Test framework
 dnl ------------------------------------------------------------------
 
 FRESCO_PACKAGE([Fresco-Test], [Fresco_Test], [$PACKAGE_VERSION], [..])
-TEST_CONFIG="$Fresco-Test-prefix/bin/Fresco-Test-config"
+TEST_CONFIG="$Fresco_Test_prefix/bin/Fresco-Test-config"
 AC_SUBST(TEST_CONFIG)
 
 dnl ------------------------------------------------------------------

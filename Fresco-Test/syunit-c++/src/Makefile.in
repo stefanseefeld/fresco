@@ -55,6 +55,8 @@ vpath %.cc  $(srcdir)
 .PHONY: all doc install install-doc clean distclean maintainer-clean dist
 
 all:	$(TARGET)
+	@echo Copying header files.
+	cp $(hdir)/*.hh $(top_builddir)/include
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)

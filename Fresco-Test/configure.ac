@@ -53,6 +53,7 @@ AC_CONFIG_FILES([syunit-c++/Makefile syunit-c++/src/Makefile])
 AC_CONFIG_FILES([syunit-c++/test/Makefile])
 
 mkdir -p lib
+mkdir -p include
 mkdir -p bin
 
 AC_OUTPUT

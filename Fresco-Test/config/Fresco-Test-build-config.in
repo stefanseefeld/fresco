@@ -39,7 +39,7 @@ while test $# -gt 0; do
       echo @PACKAGE_VERSION@
       ;;
     --cppflags)
-      echo @CPPFLAGS@ -I@abs_top_srcdir@/syunit-c++/include
+      echo @CPPFLAGS@ -I@abs_top_builddir@/include
       ;;
     --cxxflags)
       echo @CXXFLAGS@

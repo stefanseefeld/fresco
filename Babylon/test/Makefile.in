@@ -32,7 +32,7 @@ include $(cdir)/local.mk
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-TESTS		:= 
+TESTS		:= framework.cc
 
 HDR		:= 
 SYN		:= $(patsubst %.cc, %.syn, $(TESTS))
@@ -55,7 +55,7 @@ all:	$(TARGETS)
 
 $(TARGETS): $(OBJ)
 	@echo linking $(@F)
-	$(CXX) `$(CONFIG) --libs` -o $@ $<
+	$(CXX) `$(TEST_CONFIG) --libs` -o $@ $<
 
 depend: $(DEP)
 
@@ -77,7 +77,7 @@ maintainer-clean: distclean
 
 $(SYN): $(TESTS)
 	@echo generating $(@F)
-	$(SYNOPSIS) -pC++ -I$(hdir) -o $@ $<
+	$(SYNOPSIS) -pC++ -I$(hdir) `$(TEST_CONFIG) --cppflags` -o $@ $<
 
 $(HARNESS): $(SYN)
 	@echo generating test harness for $(@F)
@@ -89,4 +89,4 @@ $(DEP): $(HARNESS)
 
 $(OBJ): $(HARNESS)
 	@echo compiling $(@F)
-	$(CXX) `$(CONFIG) --cppflags` `$(CONFIG) --cxxflags` -c $< -o $@
+	$(CXX) `$(TEST_CONFIG) --cppflags` `$(TEST_CONFIG) --cxxflags` -c $< -o $@
