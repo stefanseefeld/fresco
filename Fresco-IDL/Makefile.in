@@ -46,9 +46,9 @@ all:
 
 depend:
 
-doc: share/doc/Fresco/html
+doc: share/doc/Fresco-IDL/html
 
-share/doc/Fresco/html:	$(SYN)
+share/doc/Fresco-IDL/html:	$(SYN)
 	@echo formatting $(@F)
 	$(SYNOPSIS) -c config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
@@ -58,8 +58,8 @@ install:
 	$(INSTALL) -m 644 $(INT) $(DESTDIR)$(datadir)/idl/Fresco
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco
-	cp -a share/doc/Fresco/html $(DESTDIR)$(datadir)/doc/Fresco
+	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco-IDL
+	cp -a share/doc/Fresco-IDL/html $(DESTDIR)$(datadir)/doc/Fresco-IDL
 
 rpm: dist
 	@(unset CDPATH ; rpm -ta $(distdir).tar.gz)
@@ -82,7 +82,7 @@ $(distdir).tar.gz:
 	-rm -rf $(distdir)
 
 uninstall:
-	rm -fr $(DESTDIR)$(datadir)/doc/Fresco
+	rm -fr $(DESTDIR)$(datadir)/doc/Fresco-IDL
 	rm -rf $(DESTDIR)$(datadir)/idl/Fresco
 
 clean:
