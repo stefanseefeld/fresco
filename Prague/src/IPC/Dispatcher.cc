@@ -224,6 +224,7 @@ void Dispatcher::wait()
   FdSet tmpxfds = xfds;
   unsigned int fdsize = max(max(tmprfds.max(), tmpwfds.max()), tmpxfds.max()) + 1;
   int nsel = select(fdsize, tmprfds, tmpwfds, tmpxfds, 0);
+  pthread_testcancel();
   if (nsel == -1)
     {
       if (errno == EINTR || errno == EAGAIN) errno = 0;
