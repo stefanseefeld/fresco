@@ -21,6 +21,8 @@
  * MA 02139, USA.
  */
 
+#include "Warsaw/config.hh"
+#include "Warsaw/Transform.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
@@ -95,14 +97,19 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
   Raster::Info info = raster->header();
-  Raster::Data mem;
-	// Up here should probably be fancy layout stuff.
-	// NOT IMPLEMENTED
-	
-// 	r->getData(mem);
+  Raster::Data pixels;
 
-// 	GLvoid* imgData = mem.NP_data();
-		
+  raster->getData(pixels);
+
+//   Transform::Matrix matrix;
+//   transform->store(matrix);
+
+  Vertex origin;
+  origin.x = origin.y = origin.z;
+  transform->transformVertex(origin);
+
+  glRasterPos2d(origin.x, origin.y);
+//   glPixelStorei(GL_UNPACK_ROW_LENGTH, gpixmap->getPixmapAllocatedWidth());
 // 	glClear(GL_COLOR_BUFFER_BIT);
-// 	glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
+  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels.NP_data());
 }

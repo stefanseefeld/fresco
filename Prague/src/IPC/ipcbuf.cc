@@ -41,7 +41,7 @@ ipcbuf::ipcbuf (int mode)
   if (mode & ios::in)
     {
       char_type *gbuf = new char_type [BUFSIZ];
-      setg (gbuf, gbuf + BUFSIZ, gbuf + BUFSIZ);
+      setg (gbuf, gbuf, gbuf + BUFSIZ);
       data->gend = gbuf + BUFSIZ;
     }
   if (mode & ios::out)
