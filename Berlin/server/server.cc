@@ -141,7 +141,7 @@ int main(int argc, char **argv)
   value = "";
   getopt.get("drawing", &value);
   if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
-  else props[0].value = CORBA::string_dup("GLDrawingKit");
+  else props[0].value = CORBA::string_dup("LibArtDrawingKit");
   DrawingKit_var drawing = server->resolve<DrawingKit>(interface(DrawingKit), props);
   if (CORBA::is_nil(drawing))
     {
