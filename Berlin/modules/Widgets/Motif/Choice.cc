@@ -141,11 +141,11 @@ RefCount_var<Fresco::Graphic> CheckboxChoice::create_item(Graphic_ptr g, Tag& t)
   append_controller(toggle_box);
 
   // 'toggle': simply a graphic with bevel dependent upon toggle_box state
-
   Graphic_var toggle = my_tools->create_switch(my_in_box, my_out_box,
 					       Fresco::Controller::toggled, 
 					       toggle_box);
 
+  // now add the toggle button into the button box, along with g
   box->append_graphic(RefCount_var<Fresco::Graphic>(my_layout->valign(RefCount_var<Fresco::Graphic>(my_layout->margin(toggle, 50.)), 0.5)));
   box->append_graphic(RefCount_var<Fresco::Graphic>(my_layout->hspace(100.)));
   box->append_graphic(RefCount_var<Fresco::Graphic>(my_layout->valign(g, 0.5)));
