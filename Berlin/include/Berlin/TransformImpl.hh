@@ -30,12 +30,14 @@
 class TransformImpl : public virtual POA_Warsaw::Transform,
 		      public virtual ServantBase
 {
+  friend class Provider<TransformImpl>;
 public:
   TransformImpl();
+  TransformImpl(const TransformImpl &);
   TransformImpl(Warsaw::Transform_ptr t) : _this_valid (false) { copy(t);}
   TransformImpl(Warsaw::Transform::Matrix m);
   virtual ~TransformImpl();
-
+  TransformImpl &operator = (const TransformImpl &);
   virtual void copy(Warsaw::Transform_ptr);
   virtual void load_identity();
   virtual void load_matrix(const Warsaw::Transform::Matrix);
@@ -53,9 +55,10 @@ public:
   virtual void transform_vertex(Warsaw::Vertex &);
   virtual void inverse_transform_vertex(Warsaw::Vertex &);
 
-  Warsaw::Transform::Matrix &matrix() { return mat;}
+  Warsaw::Transform::Matrix &matrix() { return _matrix;}
+  const Warsaw::Transform::Matrix &matrix() const { return _matrix;}
 
-  Warsaw::Transform_ptr _this ()
+  Warsaw::Transform_ptr _this()
   {
     if (!_this_valid)
       {
@@ -67,18 +70,18 @@ public:
   }
 
 private:
-  Warsaw::Transform::Matrix mat;
-  bool valid;
-  bool ident;
-  bool translate_only;
-  bool xy;
-
   void init();
-  void modified() { valid = false;}
+  void modified() { _dirty = true;}
   void recompute();
   Warsaw::Coord det();
+  Warsaw::Transform::Matrix _matrix;
+  bool _dirty       : 1;
+  bool _identity    : 1;
+  bool _translation : 1;
+  bool _xy          : 1;
+  bool _this_valid  : 1;
+  bool _active      : 1;
 
-  bool _this_valid;
   Warsaw::Transform_var __this;
 };
 

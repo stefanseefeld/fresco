@@ -53,11 +53,14 @@ PickTraversalImpl::~PickTraversalImpl() {}
 
 PickTraversalImpl &PickTraversalImpl::operator = (const PickTraversalImpl &traversal)
 {
+  Trace trace("PickTraversalImpl::operator =");
   TraversalImpl::operator = (traversal);
   _controllers = traversal._controllers;
   _positions = traversal._positions;
   _pointer = traversal._pointer;
   _focus = traversal._focus;
+  // the current graphic after a pick isn't the top most graphic in the trail
+  // but the top most controller, as it's the controller which will receive the event...
   _cursor = traversal._positions.back() - 1;
   return *this;
 }
@@ -70,19 +73,19 @@ PickTraversal_ptr PickTraversalImpl::_this()
 Region_ptr PickTraversalImpl::current_allocation()
 {
   Trace trace("PickTraversalImpl::current_allocation");
-  return Region::_duplicate(current().allocation);
+  return Region::_duplicate(get_allocation(_cursor));
 }
 
 Transform_ptr PickTraversalImpl::current_transformation() 
 {
   Trace trace("PickTraversalImpl::current_transformation");
-  return current().transformation->_this();
+  return get_transformation(_cursor)->_this();
 }
 
 Graphic_ptr PickTraversalImpl::current_graphic()
 {
   Trace trace("PickTraversalImpl::current_graphic");
-  return Graphic::_duplicate(current().graphic);
+  return Graphic::_duplicate(get_graphic(_cursor));
 }
 
 void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
@@ -90,9 +93,9 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   Trace trace("PickTraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(current_allocation());
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-  cumulative->copy(Transform_var(current_transformation()));
+  *cumulative = *get_transformation(_cursor);
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  push(child, tag, region, cumulative._retn());
+  push(child, tag, region, cumulative);
   _cursor++;
   try { child->traverse(__this);}
   catch (...) { _cursor--; pop(); throw;}
@@ -106,9 +109,10 @@ CORBA::Boolean PickTraversalImpl::ok() { return !picked();}
 
 CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
 {
-  Transform::Matrix matrix;
-  Transform_var transform = current_transformation();
-  transform->store_matrix(matrix);
+  const Transform::Matrix &matrix = get_transformation(_cursor)->matrix();
+//   Transform::Matrix matrix;
+//   Transform_var transform = current_transformation();
+//   transform->store_matrix(matrix);
   Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
   if (d == 0.) return false;
   Coord x = _pointer.x - matrix[0][3];

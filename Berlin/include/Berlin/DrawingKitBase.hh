@@ -84,7 +84,11 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
     // for holding NVPair saved_font_attr;
   };
  public:
-  virtual void save() { DrawState st; states.push(st);}
+  virtual void save()
+  {
+    Prague::Trace trace("DrawingKitBase::save");
+    states.push(DrawState());
+  }
   virtual void restore();
   //######################################################
   //############### subclass signatures ##################

@@ -23,9 +23,6 @@
 #ifndef _TraversalImpl_hh
 #define _TraversalImpl_hh
 
-class RegionImpl;
-class TransformImpl;
-
 #include <Warsaw/config.hh>
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/Graphic.hh>
@@ -34,46 +31,36 @@ class TransformImpl;
 #include <Berlin/TransformImpl.hh>
 #include <vector>
 
+class RegionImpl;
 
+//. TraversalImpl keeps a stack of context information for
+//. the Graphic nodes it visits. Use push and pop to add/remove
+//. new nodes to the stack. Items added via push are assumed to
+//. be managed by the caller, i.e. they are not deleted in the pop
+//. operation. In contrast, if you create a TraversalImpl via the
+//. copy constructor, it creates a deep copy of raw pointer types,
+//. and increments the ref count for ref counted objects.
+//. The number of push and pop operations called on a single TraversalImpl
+//. object therefor need to be balanced.
 class TraversalImpl : public virtual POA_Warsaw::Traversal,
                       public virtual ServantBase
 {
-protected:
   struct State
   {
     State() : id(0), transformation(0) {}
     State(Warsaw::Graphic_ptr g, Warsaw::Tag i, Warsaw::Region_ptr a, TransformImpl *t)
-      : graphic(Warsaw::Graphic::_duplicate(g)),
-	id(i),
-	allocation(Warsaw::Region::_duplicate(a)),
-	transformation(t)
-    {}
-    State(const State &state)
-      : graphic(Warsaw::Graphic::_duplicate(state.graphic)),
-	id(state.id),
-	allocation(Warsaw::Region::_duplicate(state.allocation)),
-	transformation(Provider<TransformImpl>::provide())
-    {
-      transformation->copy(Warsaw::Transform_var(state.transformation->_this()));
-    }
-    ~State() { if (transformation) Provider<TransformImpl>::adopt(transformation);}
-    State &operator = (const State &state)
-    {
-      graphic = Warsaw::Graphic::_duplicate(state.graphic);
-      id = state.id;
-      allocation = Warsaw::Region::_duplicate(state.allocation);
-      transformation = Provider<TransformImpl>::provide();
-      transformation->copy(Warsaw::Transform_var(state.transformation->_this()));
-    }
-    Warsaw::Graphic_var      graphic;
+      : graphic(g), id(i), allocation(a), transformation(t) {}
+    Warsaw::Graphic_ptr      graphic;
     Warsaw::Tag              id;
-    Warsaw::Region_var       allocation;
+    Warsaw::Region_ptr       allocation;
     TransformImpl           *transformation;    
   };
   typedef vector<State> stack_t;
 public:
   TraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr);
+  TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
+  TraversalImpl &operator = (const TraversalImpl &);
   virtual Warsaw::Region_ptr current_allocation();
   virtual Warsaw::Transform_ptr current_transformation();
   virtual Warsaw::Graphic_ptr current_graphic();
@@ -86,11 +73,17 @@ public:
   virtual CORBA::Boolean ok() = 0;
   virtual void update();
 protected:
+  //. push puts the actual trail values on a stack. They are *not* reference counted,
+  //. it is assumed that pop is called in the same scope.
+  //. Alternatively, values not removed from the stack are deallocated in the destructor.
   void push(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, TransformImpl *);
   void pop();
-  size_t size() const { return _stack.size();}  
-  const State &get(size_t i) const { return _stack[i];}
+  size_t size() const { return _stack.size();}
+  Warsaw::Region_ptr get_allocation(size_t i) { return _stack[i].allocation;}
+  TransformImpl *get_transformation(size_t i) { return _stack[i].transformation;}
+  Warsaw::Graphic_ptr get_graphic(size_t i) { return _stack[i].graphic;}
 private:
+  void clean();
   stack_t _stack;
 };
 

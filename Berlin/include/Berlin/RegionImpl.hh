@@ -34,13 +34,14 @@
 class RegionImpl : public virtual POA_Warsaw::Region,
                    public virtual ServantBase
 {
+  friend class Provider<RegionImpl>;
 public:
   RegionImpl();
   RegionImpl(const RegionImpl &);
   RegionImpl(Warsaw::Region_ptr);
   RegionImpl(Warsaw::Region_ptr, Warsaw::Transform_ptr);
   virtual ~RegionImpl();
-
+  RegionImpl &operator = (const RegionImpl &);
   virtual CORBA::Boolean defined();
   virtual CORBA::Boolean contains(const Warsaw::Vertex &);
   virtual CORBA::Boolean contains_plane(const Warsaw::Vertex &, Warsaw::Axis a);
@@ -81,6 +82,7 @@ public:
   static Warsaw::Coord span_origin(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
 
 private:
+  bool _active : 1;
   bool _this_valid;
   Warsaw::Region_var __this;
 };

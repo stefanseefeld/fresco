@@ -42,8 +42,12 @@ unsigned long ServerContextImpl::counter = 0;
 // occasionally pings the client to make sure it's still there.
 
 ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
-    : server(s), cContext(ClientContext::_duplicate(c)) {
-    Trace trace("ServerContextImpl::ServerContextImpl");
+    : server(s), cContext(ClientContext::_duplicate(c))
+{
+  Trace trace("ServerContextImpl::ServerContextImpl");
+//   PortableServer::POA_var root = _default_POA();
+//   policies.length(1);
+//   policies[0] = root->create_implicit_activation_policy(PortableServer::NO_IMPLICIT_ACTIVATION);
 }
 
 ServerContextImpl::~ServerContextImpl()

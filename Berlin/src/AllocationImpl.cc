@@ -23,7 +23,6 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Provider.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Berlin/Provider.hh"
 #include <Warsaw/Screen.hh>
 
 using namespace Warsaw;
@@ -34,7 +33,7 @@ AllocationImpl::AllocationImpl()
 
 AllocationImpl::~AllocationImpl()
 {
-  for (list_t::iterator i = list.begin(); i != list.end(); i++)
+  for (list_t::iterator i = _list.begin(); i != _list.end(); i++)
     {
       Provider<RegionImpl>::adopt((*i).allocation);
       Provider<TransformImpl>::adopt((*i).transformation);
@@ -49,40 +48,40 @@ void AllocationImpl::add(Region_ptr region, Screen_ptr root)
   Lease_var<TransformImpl> trafo(Provider<TransformImpl>::provide());
   trafo->load_identity();
 
-  Screen_ptr scrn = Screen::_duplicate (root);
+  Screen_ptr scrn = Screen::_duplicate(root);
   try
     {
-      list.push_back (State ());
+      _list.push_back (State());
   
-      State &state = list.back ();
+      State &state = _list.back();
       state.allocation = reg._retn();
       state.transformation = trafo._retn();
       state.root = scrn;
     }
   catch (...)
     {
-      CORBA::release (scrn);
+      CORBA::release(scrn);
       throw;
     }
 }
 
-CORBA::Long AllocationImpl::size() { return list.size();}
+CORBA::Long AllocationImpl::size() { return _list.size();}
 
 void AllocationImpl::clear()
 { 
-  for (list_t::iterator i = list.begin(); i != list.end(); i++)
+  for (list_t::iterator i = _list.begin(); i != _list.end(); i++)
     {
       Provider<RegionImpl>::adopt((*i).allocation);
       Provider<TransformImpl>::adopt((*i).transformation);
     }  
-  list.clear();
+  _list.clear();
 }
 
 Allocation::Info *AllocationImpl::get(CORBA::Long l)
 {
   Warsaw::Allocation::Info_var info = new Warsaw::Allocation::Info;
-  info->allocation = list[l].allocation->_this();
-  info->transformation = list[l].transformation->_this();
-  info->root = list[l].root;
+  info->allocation = _list[l].allocation->_this();
+  info->transformation = _list[l].transformation->_this();
+  info->root = _list[l].root;
   return info._retn();
 }

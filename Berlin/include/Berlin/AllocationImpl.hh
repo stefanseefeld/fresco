@@ -26,6 +26,7 @@
 #include <Warsaw/Graphic.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ServantBase.hh>
+#include <Berlin/Provider.hh>
 #include <vector>
 
 class RegionImpl;
@@ -41,6 +42,7 @@ class AllocationImpl : public virtual POA_Warsaw::Allocation,
     Warsaw::Screen_var root;
   };
   typedef vector<State> list_t;
+  friend class Provider<AllocationImpl>;
 public:
   AllocationImpl();
   ~AllocationImpl();
@@ -49,7 +51,8 @@ public:
   Warsaw::Allocation::Info *get(CORBA::Long);
   void clear();
 private:
-  list_t list;
+  bool _active : 1;
+  list_t _list;
 };
 
 #endif 

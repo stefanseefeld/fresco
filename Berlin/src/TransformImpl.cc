@@ -19,10 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/IO.hh>
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Berlin/Logger.hh"
-#include <Prague/Sys/Tracer.hh>
+#include <cassert>
 
 static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;
@@ -92,66 +95,100 @@ void LUsolve(const Coord matrix[N][N], const size_t pivot[N], Coord v[N])
     }
 }
 
-TransformImpl::TransformImpl() : _this_valid (false) { init();}
-
-TransformImpl::TransformImpl(Warsaw::Transform::Matrix m)
-  : _this_valid (false)
+TransformImpl::TransformImpl()
+  : _dirty(false),
+    _identity(true),
+    _translation(true),
+    _xy(true),
+    _this_valid(false),
+    _active(true)
 {
-  Trace trace("TransformImpl::TransformImpl(Warsaw::Transform::Matrix)");
-  load_matrix(m);
-  ident = false;
-  translate_only = false;
-  xy = true;
-  valid = false;
+  init();
 }
 
-TransformImpl::~TransformImpl() { }
+TransformImpl::TransformImpl(const TransformImpl &transform)
+  : _dirty(transform._dirty),
+    _identity(transform._identity),
+    _translation(transform._translation),
+    _xy(transform._xy),
+    _this_valid(false),
+    _active(true)
+{
+  load_matrix(transform._matrix);
+}
+
+TransformImpl::TransformImpl(Warsaw::Transform::Matrix matrix)
+  : _dirty(true),
+    _identity(false),
+    _translation(false),
+    _xy(false),
+    _this_valid(false),
+    _active(true)
+{
+  load_matrix(matrix);
+}
+
+TransformImpl::~TransformImpl() {}
+
+TransformImpl &TransformImpl::operator = (const TransformImpl &transform)
+{
+  Trace trace("TransformImpl::operator =");
+  load_matrix(transform._matrix);
+}
 
 void TransformImpl::init()
 {
-  mat[0][0] = mat[1][1] = mat[2][2] = mat[3][3] = 1.;
-  mat[0][1] = mat[0][2] = mat[0][3] = 0.;
-  mat[1][0] = mat[1][2] = mat[1][3] = 0.;
-  mat[2][0] = mat[2][1] = mat[2][3] = 0.;
-  mat[3][0] = mat[3][1] = mat[3][2] = 0.;
-  ident     = true;
-  translate_only = true;
-  xy = true;
-  valid = true;
+  _matrix[0][0] = _matrix[1][1] = _matrix[2][2] = _matrix[3][3] = 1.;
+  _matrix[0][1] = _matrix[0][2] = _matrix[0][3] = 0.;
+  _matrix[1][0] = _matrix[1][2] = _matrix[1][3] = 0.;
+  _matrix[2][0] = _matrix[2][1] = _matrix[2][3] = 0.;
+  _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0.;
+  _identity     = true;
+  _translation  = true;
+  _xy           = true;
+  _dirty        = false;
 }
 
 void TransformImpl::recompute()
 {
-  translate_only = (Math::equal(mat[0][0], 1., tolerance) &&
-		    Math::equal(mat[1][1], 1., tolerance) &&
-		    Math::equal(mat[2][2], 1., tolerance) &&
-		    Math::equal(mat[0][1], 0., tolerance) &&
-		    Math::equal(mat[1][0], 0., tolerance) &&
-		    Math::equal(mat[0][2], 0., tolerance) &&
-		    Math::equal(mat[2][0], 0., tolerance) &&
-		    Math::equal(mat[1][2], 0., tolerance) &&
-		    Math::equal(mat[2][1], 0., tolerance));
-  ident = (translate_only &&
-	   Math::equal(mat[0][3], 0., tolerance) &&
-	   Math::equal(mat[1][3], 0., tolerance) &&
-	   Math::equal(mat[2][3], 0., tolerance));
-  valid = true;
+  _translation = (Math::equal(_matrix[0][0], 1., tolerance) &&
+		  Math::equal(_matrix[1][1], 1., tolerance) &&
+		  Math::equal(_matrix[2][2], 1., tolerance) &&
+		  Math::equal(_matrix[0][1], 0., tolerance) &&
+		  Math::equal(_matrix[1][0], 0., tolerance) &&
+		  Math::equal(_matrix[0][2], 0., tolerance) &&
+		  Math::equal(_matrix[2][0], 0., tolerance) &&
+		  Math::equal(_matrix[1][2], 0., tolerance) &&
+		  Math::equal(_matrix[2][1], 0., tolerance));
+  _xy          = ((_translation ||
+		   (Math::equal(_matrix[2][2], 1., tolerance) &&
+		    Math::equal(_matrix[0][2], 0., tolerance) &&
+		    Math::equal(_matrix[2][0], 0., tolerance) &&
+		    Math::equal(_matrix[1][2], 0., tolerance) &&
+		    Math::equal(_matrix[2][1], 0., tolerance))) &&
+		  Math::equal(_matrix[2][3], 0., tolerance));
+  _identity    = (_translation &&
+		  Math::equal(_matrix[0][3], 0., tolerance) &&
+		  Math::equal(_matrix[1][3], 0., tolerance) &&
+		  Math::equal(_matrix[2][3], 0., tolerance));
+  
+  _dirty       = false;
 }
 
 Coord TransformImpl::det()
 {
   double pos = 0., neg = 0., t;
-  t =  mat[0][0] * mat[1][1] * mat[2][2];
+  t =  _matrix[0][0] * _matrix[1][1] * _matrix[2][2];
   if (t >= 0.) pos += t; else neg += t;
-  t =  mat[0][1] * mat[1][2] * mat[2][0];
+  t =  _matrix[0][1] * _matrix[1][2] * _matrix[2][0];
   if (t >= 0.) pos += t; else neg += t;
-  t =  mat[0][2] * mat[1][0] * mat[2][1];
+  t =  _matrix[0][2] * _matrix[1][0] * _matrix[2][1];
   if (t >= 0.) pos += t; else neg += t;
-  t = -mat[0][2] * mat[1][1] * mat[2][0];
+  t = -_matrix[0][2] * _matrix[1][1] * _matrix[2][0];
   if (t >= 0.) pos += t; else neg += t;
-  t = -mat[0][1] * mat[1][0] * mat[2][2];
+  t = -_matrix[0][1] * _matrix[1][0] * _matrix[2][2];
   if (t >= 0.) pos += t; else neg += t;
-  t = -mat[0][0] * mat[1][2] * mat[2][1];
+  t = -_matrix[0][0] * _matrix[1][2] * _matrix[2][1];
   if (t >= 0.) pos += t; else neg += t;
   return pos + neg;
 }
@@ -162,66 +199,68 @@ void TransformImpl::copy(Transform_ptr transform)
   if (CORBA::is_nil(transform)) init();
   else
     {
-      Warsaw::Transform::Matrix m;
-      transform->store_matrix(m);
-      load_matrix(m);
+      Warsaw::Transform::Matrix matrix;
+      transform->store_matrix(matrix);
+      load_matrix(matrix);
     }
 }
 
-void TransformImpl::load_matrix(const Warsaw::Transform::Matrix m)
+void TransformImpl::load_matrix(const Warsaw::Transform::Matrix matrix)
 {
   Trace trace("TransformImpl::load_matrix");
+  assert(_active);
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
-      mat[i][j] = m[i][j];
-  mat[3][0] = mat[3][1] = mat[3][2] = 0., mat[3][3] = 1.;
+      _matrix[i][j] = matrix[i][j];
+  _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0., _matrix[3][3] = 1.;
   modified();
 }
 
 void TransformImpl::load_identity() { init();}
 
-void TransformImpl::store_matrix(Warsaw::Transform::Matrix m)
+void TransformImpl::store_matrix(Warsaw::Transform::Matrix matrix)
 {
   Trace trace("TransformImpl::store_matrix");
+  assert(_active);
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
-      m[i][j] = mat[i][j];
-  m[3][0] = m[3][1] = m[3][2] = 0., m[3][3] = 1.;
+      matrix[i][j] = _matrix[i][j];
+  matrix[3][0] = matrix[3][1] = matrix[3][2] = 0., matrix[3][3] = 1.;
 }
 
 CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
 {
   Trace trace("TransformImpl::equal");
-  if (!valid) recompute();
-  if (ident) return CORBA::is_nil(transform) || transform->identity();
+  if (_dirty) recompute();
+  if (_identity) return CORBA::is_nil(transform) || transform->identity();
   if (CORBA::is_nil(transform) || transform->identity()) return false;
-  Warsaw::Transform::Matrix m;
-  transform->store_matrix(m);
+  Warsaw::Transform::Matrix matrix;
+  transform->store_matrix(matrix);
   return
-    Math::equal(mat[0][0], m[0][0], tolerance) &&
-    Math::equal(mat[0][1], m[0][1], tolerance) &&
-    Math::equal(mat[0][2], m[0][2], tolerance) &&
-    Math::equal(mat[0][3], m[0][3], tolerance) &&
-    Math::equal(mat[1][0], m[1][0], tolerance) &&
-    Math::equal(mat[1][1], m[1][1], tolerance) &&
-    Math::equal(mat[1][2], m[1][2], tolerance) &&
-    Math::equal(mat[1][3], m[1][3], tolerance) &&
-    Math::equal(mat[2][0], m[2][0], tolerance) &&
-    Math::equal(mat[2][1], m[2][1], tolerance) &&
-    Math::equal(mat[2][2], m[2][2], tolerance) &&
-    Math::equal(mat[2][3], m[2][3], tolerance);
+    Math::equal(_matrix[0][0], matrix[0][0], tolerance) &&
+    Math::equal(_matrix[0][1], matrix[0][1], tolerance) &&
+    Math::equal(_matrix[0][2], matrix[0][2], tolerance) &&
+    Math::equal(_matrix[0][3], matrix[0][3], tolerance) &&
+    Math::equal(_matrix[1][0], matrix[1][0], tolerance) &&
+    Math::equal(_matrix[1][1], matrix[1][1], tolerance) &&
+    Math::equal(_matrix[1][2], matrix[1][2], tolerance) &&
+    Math::equal(_matrix[1][3], matrix[1][3], tolerance) &&
+    Math::equal(_matrix[2][0], matrix[2][0], tolerance) &&
+    Math::equal(_matrix[2][1], matrix[2][1], tolerance) &&
+    Math::equal(_matrix[2][2], matrix[2][2], tolerance) &&
+    Math::equal(_matrix[2][3], matrix[2][3], tolerance);
 }
 
 CORBA::Boolean TransformImpl::identity()
 {
-  if (!valid) recompute();
-  return ident;
+  if (_dirty) recompute();
+  return _identity;
 }
 
 CORBA::Boolean TransformImpl::translation()
 {
-  if (!valid) recompute();
-  return translate_only;
+  if (_dirty) recompute();
+  return _translation;
 }
 
 CORBA::Boolean TransformImpl::det_is_zero()
@@ -232,93 +271,98 @@ CORBA::Boolean TransformImpl::det_is_zero()
 
 void TransformImpl::scale(const Vertex &v)
 {
-  mat[0][0] *= v.x;
-  mat[0][1] *= v.x;
-  mat[0][2] *= v.x;
+  assert(_active);
+  _matrix[0][0] *= v.x;
+  _matrix[0][1] *= v.x;
+  _matrix[0][2] *= v.x;
   
-  mat[1][0] *= v.y;
-  mat[1][1] *= v.y;
-  mat[1][2] *= v.y;
+  _matrix[1][0] *= v.y;
+  _matrix[1][1] *= v.y;
+  _matrix[1][2] *= v.y;
 
-  mat[2][0] *= v.z;
-  mat[2][1] *= v.z;
-  mat[2][2] *= v.z;
+  _matrix[2][0] *= v.z;
+  _matrix[2][1] *= v.z;
+  _matrix[2][2] *= v.z;
   modified();
 }
 
 void TransformImpl::rotate(double angle, Axis a)
 {
+  assert(_active);
   Coord r_angle = angle * radians_per_degree;
   Coord c = cos(r_angle);
   Coord s = sin(r_angle);
-  Warsaw::Transform::Matrix m;
+  Warsaw::Transform::Matrix matrix;
   short i = 0, j = 1;
   if (a == xaxis) i = 2;
   else if (a == yaxis) j = 2;
 
-  m[i][0] = mat[i][0], m[i][1] = mat[i][1], m[i][2] = mat[i][2], m[i][3] = mat[i][3];
-  m[j][0] = mat[j][0], m[j][1] = mat[j][1], m[j][2] = mat[j][2], m[j][3] = mat[j][3];
+  matrix[i][0] = _matrix[i][0], matrix[i][1] = _matrix[i][1], matrix[i][2] = _matrix[i][2], matrix[i][3] = _matrix[i][3];
+  matrix[j][0] = _matrix[j][0], matrix[j][1] = _matrix[j][1], matrix[j][2] = _matrix[j][2], matrix[j][3] = _matrix[j][3];
 
-  mat[i][0] = c * m[i][0] - s * m[j][0];
-  mat[i][1] = c * m[i][1] - s * m[j][1];
-  mat[i][2] = c * m[i][2] - s * m[j][2];
-  mat[i][3] = c * m[i][3] - s * m[j][3];
+  _matrix[i][0] = c * matrix[i][0] - s * matrix[j][0];
+  _matrix[i][1] = c * matrix[i][1] - s * matrix[j][1];
+  _matrix[i][2] = c * matrix[i][2] - s * matrix[j][2];
+  _matrix[i][3] = c * matrix[i][3] - s * matrix[j][3];
 
-  mat[j][0] = s * m[i][0] + c * m[j][0];
-  mat[j][1] = s * m[i][1] + c * m[j][1];
-  mat[j][2] = s * m[i][2] + c * m[j][2];
-  mat[j][3] = s * m[i][3] + c * m[j][3];
+  _matrix[j][0] = s * matrix[i][0] + c * matrix[j][0];
+  _matrix[j][1] = s * matrix[i][1] + c * matrix[j][1];
+  _matrix[j][2] = s * matrix[i][2] + c * matrix[j][2];
+  _matrix[j][3] = s * matrix[i][3] + c * matrix[j][3];
 
   modified();
 }
 
 void TransformImpl::translate(const Vertex &v)
 {
-  mat[0][3] += v.x;
-  mat[1][3] += v.y;
-  mat[2][3] += v.z;
+  assert(_active);
+  _matrix[0][3] += v.x;
+  _matrix[1][3] += v.y;
+  _matrix[2][3] += v.z;
   modified();
 }
 
 void TransformImpl::premultiply(Transform_ptr transform)
 {
+  Trace trace("TransformImpl::premultiply");
+  assert(_active);
   if (!CORBA::is_nil(transform) && !transform->identity())
     {
-      Warsaw::Transform::Matrix m;
-      transform->store_matrix(m);
-      if (identity ())
-	load_matrix (m);
+      Warsaw::Transform::Matrix matrix;
+      transform->store_matrix(matrix);
+      if (identity()) load_matrix(matrix);
       else
 	{
 	  for (unsigned short i = 0; i != 3; i++)
 	    {
-	      Coord mi0 = mat[i][0], mi1 = mat[i][1], mi2 = mat[i][2], mi3 = mat[i][3];
-	      mat[i][0] = mi0 * m[0][0] + mi1 * m[1][0] + mi2 * m[2][0] + mi3 * m[3][0];
-	      mat[i][1] = mi0 * m[0][1] + mi1 * m[1][1] + mi2 * m[2][1] + mi3 * m[3][1];
-	      mat[i][2] = mi0 * m[0][2] + mi1 * m[1][2] + mi2 * m[2][2] + mi3 * m[3][2];
-	      mat[i][3] = mi0 * m[0][3] + mi1 * m[1][3] + mi2 * m[2][3] + mi3 * m[3][3];
+	      Coord mi0 = _matrix[i][0], mi1 = _matrix[i][1], mi2 = _matrix[i][2], mi3 = _matrix[i][3];
+	      _matrix[i][0] = mi0 * matrix[0][0] + mi1 * matrix[1][0] + mi2 * matrix[2][0] + mi3 * matrix[3][0];
+	      _matrix[i][1] = mi0 * matrix[0][1] + mi1 * matrix[1][1] + mi2 * matrix[2][1] + mi3 * matrix[3][1];
+	      _matrix[i][2] = mi0 * matrix[0][2] + mi1 * matrix[1][2] + mi2 * matrix[2][2] + mi3 * matrix[3][2];
+	      _matrix[i][3] = mi0 * matrix[0][3] + mi1 * matrix[1][3] + mi2 * matrix[2][3] + mi3 * matrix[3][3];
 	    }
 	  modified();
 	}
     }
-}    
+}
 
 void TransformImpl::postmultiply(Transform_ptr transform)
 {
+  Trace trace("TransformImpl::postmultiply");
+  assert(_active);
   if (!CORBA::is_nil(transform) && !transform->identity())
     {
-      Warsaw::Transform::Matrix m;
-      transform->store_matrix(m);
-      if (identity ())
-	load_matrix (m);
+      Warsaw::Transform::Matrix matrix;
+      transform->store_matrix(matrix);
+      if (identity()) load_matrix(matrix);
       else
 	{
 	  for (unsigned short i = 0; i != 4; i++)
 	    {
-	      Coord m0i = mat[0][i], m1i = mat[1][i], m2i = mat[2][i];
-	      mat[0][i] = m[0][0] * m0i + m[0][1] * m1i + m[0][2] * m2i;
-	      mat[1][i] = m[1][0] * m0i + m[1][1] * m1i + m[2][1] * m2i;
-	      mat[2][i] = m[2][0] * m0i + m[2][1] * m1i + m[2][2] * m2i;
+	      Coord m0i = _matrix[0][i], m1i = _matrix[1][i], m2i = _matrix[2][i];
+	      _matrix[0][i] = matrix[0][0] * m0i + matrix[0][1] * m1i + matrix[0][2] * m2i;
+	      _matrix[1][i] = matrix[1][0] * m0i + matrix[1][1] * m1i + matrix[2][1] * m2i;
+	      _matrix[2][i] = matrix[2][0] * m0i + matrix[2][1] * m1i + matrix[2][2] * m2i;
 	    }
 	  modified();
 	}
@@ -327,39 +371,41 @@ void TransformImpl::postmultiply(Transform_ptr transform)
 
 void TransformImpl::invert()
 {
-  if (!valid) recompute();
-  if (translate_only)
+  Trace trace("TransformImpl::invert");
+  assert(_active);
+  if (_dirty) recompute();
+  if (_translation)
     {
-      mat[0][3] = -mat[0][3];
-      mat[1][3] = -mat[1][3];
-      mat[2][3] = -mat[2][3];
+      _matrix[0][3] = -_matrix[0][3];
+      _matrix[1][3] = -_matrix[1][3];
+      _matrix[2][3] = -_matrix[2][3];
       modified();
     }
   else
     {
       Coord d = det();
       if (Math::equal(d, 0., tolerance)) return;
-      Warsaw::Transform::Matrix m;
+      Warsaw::Transform::Matrix matrix;
 
-      m[0][0] = mat[0][0], m[0][1] = mat[0][1], m[0][2] = mat[0][2], m[0][3] = mat[0][3];
-      m[1][0] = mat[1][0], m[1][1] = mat[1][1], m[1][2] = mat[1][2], m[1][3] = mat[1][3];
-      m[2][0] = mat[2][0], m[2][1] = mat[2][1], m[2][2] = mat[2][2], m[2][3] = mat[2][3];
-      m[3][0] = 0., m[3][1] = 0., m[3][2] = 0., m[3][3] = 1.;
+      matrix[0][0] = _matrix[0][0], matrix[0][1] = _matrix[0][1], matrix[0][2] = _matrix[0][2], matrix[0][3] = _matrix[0][3];
+      matrix[1][0] = _matrix[1][0], matrix[1][1] = _matrix[1][1], matrix[1][2] = _matrix[1][2], matrix[1][3] = _matrix[1][3];
+      matrix[2][0] = _matrix[2][0], matrix[2][1] = _matrix[2][1], matrix[2][2] = _matrix[2][2], matrix[2][3] = _matrix[2][3];
+      matrix[3][0] = 0., matrix[3][1] = 0., matrix[3][2] = 0., matrix[3][3] = 1.;
 
 
-      mat[0][0] =  (m[1][1] * m[2][2] - m[1][2] * m[2][1]) / d;
-      mat[0][1] = -(m[0][1] * m[2][2] - m[0][2] * m[2][1]) / d;
-      mat[0][2] =  (m[0][1] * m[1][2] - m[0][2] * m[1][1]) / d;
-      mat[1][0] = -(m[1][0] * m[2][2] - m[1][2] * m[2][0]) / d;
-      mat[1][1] =  (m[0][0] * m[2][2] - m[0][2] * m[2][0]) / d;
-      mat[1][2] = -(m[0][0] * m[1][2] - m[0][2] * m[1][0]) / d;
-      mat[2][0] =  (m[1][0] * m[2][1] - m[1][1] * m[2][0]) / d;
-      mat[2][1] = -(m[0][0] * m[2][1] - m[0][1] * m[2][0]) / d;
-      mat[2][2] =  (m[0][0] * m[1][1] - m[0][1] * m[1][0]) / d;
+      _matrix[0][0] =  (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) / d;
+      _matrix[0][1] = -(matrix[0][1] * matrix[2][2] - matrix[0][2] * matrix[2][1]) / d;
+      _matrix[0][2] =  (matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1]) / d;
+      _matrix[1][0] = -(matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) / d;
+      _matrix[1][1] =  (matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0]) / d;
+      _matrix[1][2] = -(matrix[0][0] * matrix[1][2] - matrix[0][2] * matrix[1][0]) / d;
+      _matrix[2][0] =  (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]) / d;
+      _matrix[2][1] = -(matrix[0][0] * matrix[2][1] - matrix[0][1] * matrix[2][0]) / d;
+      _matrix[2][2] =  (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]) / d;
 
-      mat[0][3] = - (m[0][3] * mat[0][0] + m[1][3] * mat[0][1] + m[2][3] * mat[0][2]);
-      mat[1][3] = - (m[0][3] * mat[1][0] + m[1][3] * mat[1][1] + m[2][3] * mat[1][2]);
-      mat[2][3] = - (m[0][3] * mat[2][0] + m[1][3] * mat[2][1] + m[2][3] * mat[2][2]);
+      _matrix[0][3] = - (matrix[0][3] * _matrix[0][0] + matrix[1][3] * _matrix[0][1] + matrix[2][3] * _matrix[0][2]);
+      _matrix[1][3] = - (matrix[0][3] * _matrix[1][0] + matrix[1][3] * _matrix[1][1] + matrix[2][3] * _matrix[1][2]);
+      _matrix[2][3] = - (matrix[0][3] * _matrix[2][0] + matrix[1][3] * _matrix[2][1] + matrix[2][3] * _matrix[2][2]);
 
       modified();
     }
@@ -367,28 +413,26 @@ void TransformImpl::invert()
 
 void TransformImpl::transform_vertex(Vertex &v)
 {
-//   Prague::Profiler prf("TransformImpl::transform_vertex");
   Coord tx = v.x;
   Coord ty = v.y;
-  v.x = mat[0][0] * tx + mat[0][1] * ty + mat[0][2] * v.z + mat[0][3];
-  v.y = mat[1][0] * tx + mat[1][1] * ty + mat[1][2] * v.z + mat[1][3];
-  v.z = mat[2][0] * tx + mat[2][1] * ty + mat[2][2] * v.z + mat[2][3];
+  v.x = _matrix[0][0] * tx + _matrix[0][1] * ty + _matrix[0][2] * v.z + _matrix[0][3];
+  v.y = _matrix[1][0] * tx + _matrix[1][1] * ty + _matrix[1][2] * v.z + _matrix[1][3];
+  v.z = _matrix[2][0] * tx + _matrix[2][1] * ty + _matrix[2][2] * v.z + _matrix[2][3];
 }
 
 void TransformImpl::inverse_transform_vertex(Vertex &v)
 {
-//   Prague::Profiler prf("TransformImpl::inverse_transform_vertex");
 #if 0
   size_t pivot[4];
   Coord vertex[4];
-  vertex[0] = v.x;//(v.x - mat[0][3]);
-  vertex[1] = v.y;//(v.y - mat[1][3]);
-  vertex[2] = v.z;//(v.z - mat[2][3]);
+  vertex[0] = v.x;//(v.x - _matrix[0][3]);
+  vertex[1] = v.y;//(v.y - _matrix[1][3]);
+  vertex[2] = v.z;//(v.z - _matrix[2][3]);
   vertex[3] = 0.;
   Coord lu[4][4];
   for (short i = 0; i != 4; i++)
     for (short j = 0; j != 4; j++)
-      lu[i][j] = mat[i][j];
+      lu[i][j] = _matrix[i][j];
   if (LUfactor<4>(lu, pivot))
     {
       LUsolve<4>(lu, pivot, vertex);
@@ -400,18 +444,18 @@ void TransformImpl::inverse_transform_vertex(Vertex &v)
   Coord d = det();
   if (Math::equal(d, 0., tolerance)) return;
   Vertex tmp = v;
-  tmp.x -= mat[0][3];
-  tmp.y -= mat[1][3];
-  tmp.z -= mat[2][3];
-  v.x = ((mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) * tmp.x -
-	 (mat[0][1] * mat[2][2] - mat[0][2] * mat[2][1]) * tmp.y +
-	 (mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]) * tmp.z) / d;
-  v.y = (-(mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) * tmp.x +
-	 (mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]) * tmp.y -
-	 (mat[0][0] * mat[1][2] - mat[0][2] * mat[1][0])) / d;
-  v.z = ((mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]) -
-	 (mat[0][0] * mat[2][1] - mat[0][1] * mat[2][0]) +
-	 (mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0])) / d;
+  tmp.x -= _matrix[0][3];
+  tmp.y -= _matrix[1][3];
+  tmp.z -= _matrix[2][3];
+  v.x = ((_matrix[1][1] * _matrix[2][2] - _matrix[1][2] * _matrix[2][1]) * tmp.x -
+	 (_matrix[0][1] * _matrix[2][2] - _matrix[0][2] * _matrix[2][1]) * tmp.y +
+	 (_matrix[0][1] * _matrix[1][2] - _matrix[0][2] * _matrix[1][1]) * tmp.z) / d;
+  v.y = (-(_matrix[1][0] * _matrix[2][2] - _matrix[1][2] * _matrix[2][0]) * tmp.x +
+	 (_matrix[0][0] * _matrix[2][2] - _matrix[0][2] * _matrix[2][0]) * tmp.y -
+	 (_matrix[0][0] * _matrix[1][2] - _matrix[0][2] * _matrix[1][0])) / d;
+  v.z = ((_matrix[1][0] * _matrix[2][1] - _matrix[1][1] * _matrix[2][0]) -
+	 (_matrix[0][0] * _matrix[2][1] - _matrix[0][1] * _matrix[2][0]) +
+	 (_matrix[0][0] * _matrix[1][1] - _matrix[0][1] * _matrix[1][0])) / d;
 #endif
 }
 

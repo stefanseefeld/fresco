@@ -1,45 +1,70 @@
 #!/usr/bin/env python
 
-import sys
+import sys, time
 import string
 
-import Warsaw
+# Import the CORBA module
+from omniORB import CORBA
+import CosNaming
 
+# Import the Warsaw stubs
+import Warsaw
+import Warsaw__POA
+import Layout
+# Define an implementation of the ClientContext interface
+class ClientContextImpl (Warsaw__POA.ClientContext):
+    def userName(self): return "joe"
+    def ping(self): return
 
 def main():
-	# Create a shorter reference to the App module, and initialise it
-	a = Warsaw.App
-	a.init()
+    # Initialise the ORB
+    orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
+    # Find the POA
+    poa = orb.resolve_initial_references("RootPOA")
+    # Activate the POA
+    poaManager = poa._get_the_POAManager()
+    poaManager.activate()
+    # Create an ClientContext
+    ci = ClientContextImpl()
+    # Create an object reference, and implicitly activate the object
+    client = ci._this()
 
-	# Create a pixmap
-	pixmap = a.pixmap("etc/PNG/berlin-128.png")
+    # get a server context
+    object = orb.resolve_initial_references("NameService");
+    context = object._narrow(CosNaming.NamingContext)
+    name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
+    object = context.resolve(name)
+    server = object._narrow(Warsaw.Server)
+    context  = server.create_server_context(client)
 
-	# Create a grid, and place two pixmaps in it
-	grid = a.layout.fixedGrid(Warsaw.Grid.Index(2,1))
-	grid.replace(a.layout.valign(pixmap, 1.0), Warsaw.Grid.Index(0, 0))
-	grid.replace(a.layout.valign(pixmap, 0.5), Warsaw.Grid.Index(1, 0))
+    # get some kits
+    properties = []
+    object  = context.resolve("IDL:Warsaw/ToolKit:1.0", properties)
+    tool    = object._narrow(Warsaw.ToolKit)
+    object  = context.resolve("IDL:Warsaw/ImageKit:1.0", properties)
+    image   = object._narrow(Warsaw.ImageKit)
+    object  = context.resolve("IDL:Warsaw/FigureKit:1.0", properties)
+    figure  = object._narrow(Warsaw.FigureKit)
+    object  = context.resolve("IDL:Warsaw/DesktopKit:1.0", properties)
+    desktop = object._narrow(Warsaw.DesktopKit)
+    object  = context.resolve("IDL:Warsaw/LayoutKit:1.0", properties)
+    layout  = object._narrow(Warsaw.LayoutKit)
+    object  = context.resolve("IDL:Warsaw/CommandKit:1.0", properties)
+    command = object._narrow(Warsaw.CommandKit)
+    object  = context.resolve("IDL:Warsaw/TextKit:1.0", properties)
+    text    = object._narrow(Warsaw.TextKit)
+    object  = context.resolve("IDL:Warsaw/WidgetKit:1.0", properties)
+    widget  = object._narrow(Warsaw.WidgetKit)
 
-	# Create a text buffer and a viewer
-	buffer = a.command.text()
-	buffer.insertString(a.toUni("Welcome to Berlin!"))
-	textview = a.text.simpleViewer(buffer)
-
-	# Create a vertical box of the grid and the text
-	vbox = a.layout.vbox()
-	vbox.append(grid)
-	vbox.append(a.layout.margin(textview,40.0))
-
-	# Group and shell the grid
-	glyph = a.text.chunk(a.toUni("Label"))
-	label = a.layout.margin(glyph, 20.)
-	choice = a.widget.toggleChoice()
-	choice.appendItem(a.tool.rgb(label, 0., 0., 0.))
-	#	button = a.widget.button(a.tool.rgb(label, 0., 0., 0.), a.command._nil)
-	frame = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 0.5)
-	group = a.tool.group(a.tool.frame(choice, 20., frame, 1))
-	shell = a.desktop.shell(group)
-
-	a.loop()
-
+    # Create a pixmap
+    pixmap = figure.pixmap(image.create("berlin-128.png"))
+    
+    group = tool.group(tool.debugger(pixmap, "debug"))
+    shell = desktop.shell(group)
+    
+    while 1:
+	line = sys.stdin.readline()
+	if len(line) == 1: break
+    
 if __name__ == '__main__':
 	main()

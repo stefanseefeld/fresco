@@ -1,4 +1,7 @@
 #include "Berlin/Provider.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/TransformImpl.hh"
+#include "Berlin/AllocationImpl.hh"
 
 using namespace Prague;
 

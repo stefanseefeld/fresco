@@ -24,11 +24,9 @@
 #define _Provider_hh
 
 #include <Berlin/ImplVar.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/TransformImpl.hh>
-#include <Berlin/AllocationImpl.hh>
 #include <Prague/Sys/Thread.hh>
 #include <stack>
+#include <cassert>
 
 //.a global pool for transient objects
 template <class T>
@@ -80,6 +78,7 @@ inline T *Provider<T>::provide()
       t = new T();
       activate(t);
     }
+  t->_active = true;
   return t;
 }
 
@@ -87,6 +86,8 @@ template <class T>
 inline void Provider<T>::adopt(T *t)
 {
   Prague::Trace trace("Provider<T>::adopt");
+  assert(t->_active);
+  t->_active = false;
   Prague::Guard<Prague::Mutex> guard(mutex);
   pool.push(t);
 }

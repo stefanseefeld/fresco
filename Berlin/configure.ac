@@ -162,14 +162,14 @@ else
 fi
 
 dnl ------------------------------------------------------------------
-dnl Warsaw and Prague
+dnl Prague and Warsaw
 dnl ------------------------------------------------------------------
-AC_PACKAGE(Warsaw, $VERSION)
-CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
-LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
 AC_PACKAGE(Prague, $VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 LIBS="$LIBS -lPrague $Prague_LIBS"
+AC_PACKAGE(Warsaw, $VERSION)
+CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
+LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Decisions
@@ -221,8 +221,8 @@ AC_OUTPUT([
 	$builddir/config/Server/local.mk:config/Server/local.mk.in
 	$builddir/config/Server/module.mk:config/Server/module.mk.in
 	$builddir/src/Berlin/Makefile:src/Berlin/Makefile.in
-	$builddir/server/Makefile:server/Makefile.in
 	$kit_output
+	$builddir/server/Makefile:server/Makefile.in
 	$builddir/config/berlinrc:config/berlinrc.in
 ],[
 	chmod +x $builddir/bin/Berlin-config

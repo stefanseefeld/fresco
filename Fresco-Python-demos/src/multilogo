@@ -10,6 +10,7 @@ import CosNaming
 # Import the Warsaw stubs
 import Warsaw
 import Warsaw__POA
+
 # Define an implementation of the ClientContext interface
 class ClientContextImpl (Warsaw__POA.ClientContext):
     def userName(self): return "joe"
@@ -49,7 +50,7 @@ def main():
     object  = context.resolve("IDL:Warsaw/LayoutKit:1.0", properties)
     layout = object._narrow(Warsaw.LayoutKit)
 
-    raster = image.create("../etc/PNG/berlin-48.png")
+    raster = image.create("berlin-48.png")
     pixmap = figure.pixmap(raster)
     spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 0.5, 0.5, 1.))
     frame1 = tool.frame(pixmap, 50, spec, 1)

@@ -20,12 +20,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Allocation.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/IO.hh>
-#include <Prague/Sys/Tracer.hh>
 #include "Berlin/Provider.hh"
 #include "Berlin/ImplVar.hh"
 #include "Berlin/RefCountVar.hh"
@@ -44,8 +44,44 @@ TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
   push(g, 0, r, transform._retn());
 }
 
+TraversalImpl::TraversalImpl(const TraversalImpl &traversal)
+  : _stack(traversal.size())
+{
+  Trace trace("TraversalImpl::TraversalImpl(const TraversalImpl &)");
+  // explicitely copy the stack so we are the owner and can delete it in the destructor
+  stack_t::iterator i = _stack.begin();
+  stack_t::const_iterator j = traversal._stack.begin();
+  for (; i != _stack.end(); ++i, ++j)
+    {
+      (*i).graphic = Warsaw::Graphic::_duplicate((*j).graphic);
+      (*i).id      = (*j).id;
+      (*i).allocation = Warsaw::Region::_duplicate((*j).allocation);
+      (*i).transformation = Provider<TransformImpl>::provide();
+      *(*i).transformation = *(*j).transformation;
+    };
+}
+
 TraversalImpl::~TraversalImpl()
 {
+  clean();
+}
+
+TraversalImpl &TraversalImpl::operator = (const TraversalImpl &traversal)
+{
+  Trace trace("TraversalImpl::operator = (const TraversalImpl &)");
+  clean();
+  // explicitely copy the stack so we are the owner and can delete it in the destructor
+  _stack.resize(traversal._stack.size());
+  stack_t::iterator i = _stack.begin();
+  stack_t::const_iterator j = traversal._stack.begin();
+  for (; i != _stack.end(); ++i, ++j)
+    {
+      (*i).graphic = Warsaw::Graphic::_duplicate((*j).graphic);
+      (*i).id      = (*j).id;
+      (*i).allocation = Warsaw::Region::_duplicate((*j).allocation);
+      (*i).transformation = Provider<TransformImpl>::provide();
+      *(*i).transformation = *(*j).transformation;
+    };
 }
 
 Region_ptr TraversalImpl::current_allocation()
@@ -70,12 +106,11 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
 {
   Trace trace("TraversalImpl::bounds");
   bool b = false;
-  State &state = _stack.back();
-  Region_ptr r = state.allocation;
-  if (!CORBA::is_nil(r))
+  Region_ptr allocation = _stack.back().allocation;
+  if (!CORBA::is_nil(allocation))
     {
-      r->bounds(lower, upper);
-      r->origin(origin);
+      allocation->bounds(lower, upper);
+      allocation->origin(origin);
       b = true;
     }
   return b;
@@ -84,8 +119,7 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
 void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)
 {
   Trace trace("TraversalImpl::push");
-  Lease_var<TransformImpl> tmp(t);
-  _stack.push_back(State(g, id, r, tmp._retn()));
+  _stack.push_back(State(g, id, r, t));
 }
 
 void TraversalImpl::pop()
@@ -102,14 +136,27 @@ void TraversalImpl::update()
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy((*parent).allocation);
   Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
-  transformation->copy(Transform_var((*parent).transformation->_this()));
+  *transformation = *(*parent).transformation;
   Allocation::Info info;
   info.allocation = allocation->_this();
   info.transformation = transformation->_this();
-  for (stack_t::iterator child = parent + 1; child != _stack.end(); parent++, child++)
+  for (stack_t::iterator child = parent + 1; child != _stack.end(); ++parent, ++child)
     {
+      // recompute the allocation info for the child, given the (just updated)
+      // allocation for the parent
       (*parent).graphic->allocate((*child).id, info);
       (*child).allocation->copy(info.allocation);
-      (*child).transformation->copy(info.transformation);
+      *(*child).transformation = *transformation;
     }
+}
+
+void TraversalImpl::clean()
+{
+  // this assumes we own all items
+  for (stack_t::iterator i = _stack.begin(); i != _stack.end(); ++i)
+    {
+      CORBA::release((*i).graphic);
+      CORBA::release((*i).allocation);
+      Provider<TransformImpl>::adopt((*i).transformation);
+    };
 }

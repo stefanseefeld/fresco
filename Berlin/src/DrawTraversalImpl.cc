@@ -19,15 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/DrawTraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/Provider.hh"
-#include "Berlin/Console.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/IO.hh>
-#include <Prague/Sys/Tracer.hh>
+#include "Berlin/DrawTraversalImpl.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/Provider.hh"
+#include "Berlin/Console.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -43,11 +44,11 @@ DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr 
 
 void DrawTraversalImpl::init()
 {
+  Trace trace("DrawTraversalImpl::init");
   __this = _this();
   /*
    * initialize the different drawing kit attributes
    */
-  _drawing->save();
   _drawing->clipping(_clipping);
   Color fg = {0., 0., 0., 1.};
   _drawing->foreground(fg);
@@ -55,6 +56,7 @@ void DrawTraversalImpl::init()
   _drawing->lighting(white);
   _drawing->transformation(Transform_var(_id->_this()));
   _drawing->surface_fillstyle(DrawingKit::solid);
+  _drawing->save();
   Vertex l, u;
   _clipping->bounds(l, u);
   /*
@@ -68,12 +70,16 @@ void DrawTraversalImpl::init()
 #endif
 }
 
-void DrawTraversalImpl::finish() { _drawing->restore();}
+void DrawTraversalImpl::finish()
+{
+  Trace trace("DrawTraversalImpl::finish");
+  _drawing->restore();
+}
 
-DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
-  : TraversalImpl(t),
-    _drawing(t._drawing),
-    _clipping(t._clipping)
+DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &traversal)
+  : TraversalImpl(traversal),
+    _drawing(traversal._drawing),
+    _clipping(traversal._clipping)
 {
 //   drawing->clipping(clipping);
 }
@@ -81,7 +87,6 @@ DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
 DrawTraversalImpl::~DrawTraversalImpl()
 {
   _drawing->restore();
-//  id->_dispose();
 }
 
 CORBA::Boolean DrawTraversalImpl::intersects_allocation()
@@ -106,11 +111,11 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   Trace trace("DrawTraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(current_allocation());
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-  cumulative->copy(Transform_var(current_transformation()));
+  *cumulative = *get_transformation(size() - 1);
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   _drawing->transformation(Transform_var(cumulative->_this()));
   //   drawable->clipping(region, Transform_var(tx->_this()));
-  push(child, tag, region, cumulative._retn());
+  push(child, tag, region, cumulative);
   try { child->traverse(__this);}
   catch (...) { pop(); throw;}
   pop(); 

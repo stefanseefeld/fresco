@@ -88,10 +88,7 @@ static inline void fix_order_of_irect(ArtIRect &ir)
 void LibArtDrawingKit::set_transformation(Transform_ptr t)
 {
   Prague::Trace trace("LibArtDrawingKit::set_transformation");
-  if (CORBA::is_nil(t))
-    {
-      art_affine_identity(affine);
-    }
+  if (CORBA::is_nil(t)) art_affine_identity(affine);
   else
     {
       tr = Transform::_duplicate(t);

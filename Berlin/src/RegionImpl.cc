@@ -22,18 +22,16 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include <iomanip>
+#include <cassert>
 
 using namespace Warsaw;
 
 RegionImpl::RegionImpl()
+  : valid(false), xalign(0.), yalign(0.), zalign(0.), _this_valid(false)
 {
-  Coord zero = Coord(0.0);
-  valid = false;
-  lower.x = lower.y = zero;
-  upper.x = upper.y = zero;
-  lower.z = upper.z = zero;
-  xalign = yalign = zalign = zero;
-  _this_valid = false;
+  lower.x = lower.y = 0.;
+  upper.x = upper.y = 0.;
+  lower.z = upper.z = 0.;
 }
 
 RegionImpl::RegionImpl(const RegionImpl &region)
@@ -47,13 +45,13 @@ RegionImpl::RegionImpl(const RegionImpl &region)
 {}
 
 RegionImpl::RegionImpl(Region_ptr region)
-  : _this_valid (false)
+  : _this_valid(false)
 {
   RegionImpl::copy(region);
 }
 
 RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
-  : _this_valid (false)
+  : _this_valid(false)
 {
   RegionImpl::copy(region);
   if (!CORBA::is_nil(transformation) && !transformation->identity())
@@ -61,6 +59,14 @@ RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
 }
 
 RegionImpl::~RegionImpl() {}
+
+RegionImpl &RegionImpl::operator = (const RegionImpl &region)
+{
+  assert(_active);
+  valid = region.valid;
+  lower = region.lower;
+  upper = region.upper;
+}
 
 CORBA::Boolean RegionImpl::defined() { return valid;}
 void RegionImpl::clear() { valid = false;}

@@ -152,7 +152,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
       tmp->copy(Region_var(_ext->_this()));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
-      if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
+      transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(_tx->_this()));
       tmp->apply_transform(Transform_var(transformation->_this()));
       if (_mode & Figure::outline)
@@ -188,7 +188,9 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       if (traversal->intersects_region(Region_var(region->_this())))
 	{
 	  DrawingKit_var drawing = traversal->drawing();
+	  Color color = drawing->foreground();
 	  drawing->save();
+	  Transform_var tmp = drawing->transformation();
 	  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
 	  cumulative->copy(Transform_var(drawing->transformation()));
 	  cumulative->premultiply(Transform_var(_tx->_this()));

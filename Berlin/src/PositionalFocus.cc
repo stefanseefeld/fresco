@@ -37,6 +37,10 @@ using namespace Prague;
 using namespace Warsaw;
 
 
+//. implement a PickTraversal that keeps a fixed pointer to
+//. a memento cache. As there is always exactly one picked
+//. graphic, we are simply using a static pair of traversals
+//. and switch between them as objects are picked
 class PositionalFocus::Traversal : public PickTraversalImpl
 {
 public:

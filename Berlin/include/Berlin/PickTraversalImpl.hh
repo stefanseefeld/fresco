@@ -70,8 +70,6 @@ public:
   void clear();
   void debug();
 private:
-  const State &top() const { return get(size() - 1);}
-  const State &current() const { return get(_cursor);}
   cstack_t                   _controllers;
   pstack_t                   _positions;
   Warsaw::Input::Position    _pointer;
