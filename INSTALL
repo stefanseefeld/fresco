@@ -251,7 +251,7 @@ Export Reference: FrescoServer=IOR:lots-of-numbers
 You can then start the demo by passing the exported reference to the
 client:
 
-> bin/demo -ORBinitRef FrescoServer=IOR:lots-of-numbers
+> bin/demo -ORBInitRef FrescoServer=IOR:lots-of-numbers
 
 
 Contact
