@@ -39,7 +39,7 @@ Viewer::~Viewer() {}
 void Viewer::init(Editor_ptr editor, Model_ptr model, Coord width, Coord height, FigureKit_ptr figures, ToolKit_ptr tools)
 {
   _editor = RefCount_var<Editor>::increment(editor);
-  Requestor *requestor = new Requestor(0.5, 0.5, width, height);
+  Requestor *requestor = new Requestor(0., 0., width, height);
   activate(requestor);
   _root = figures->group();
   requestor->body(_root);
