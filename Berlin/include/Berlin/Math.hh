@@ -22,6 +22,7 @@
 #ifndef _Math_hh
 #define _Math_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Transform.hh>
 #include <algorithm>
 #include <cstdlib>
