@@ -203,7 +203,8 @@ int main(int argc, char **argv) /*FOLD00*/
              "the resource file to load");
   getopt.add('e', "execute", GetOpt::mandatory,
              "the command to execute upon startup");
-  getopt.add('c', "console", GetOpt::mandatory, "the console to use");
+  getopt.add('c', "console", GetOpt::mandatory, 
+             "console to use (use -C for possible values)");
   getopt.add('C', "list-available-consoles", GetOpt::novalue, 
              "list known consoles");
   getopt.add('s', "pixels", GetOpt::mandatory, 
@@ -491,8 +492,8 @@ int main(int argc, char **argv) /*FOLD00*/
        if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
        else props[0].value = CORBA::string_dup("LibArtDrawingKit");
        DrawingKit_var drawing =
-       server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
-                                   props, poa);
+         server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
+                                     props, poa);
        Logger::log(Logger::drawing) << "DrawingKit is resolved." << std::endl;
        if (CORBA::is_nil(drawing))
        {
