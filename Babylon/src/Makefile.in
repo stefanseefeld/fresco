@@ -34,9 +34,10 @@ CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 CPPFLAGS        += -DRC_MODULEPATH='"$(libdir)/Babylon"'
 
-SRC		:= traits.cc String.cc Char.cc Dictionary.cc utils.cc \
-                   vis_iterator.cc
-HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/*.hh))
+SRC		:= Dictionary.cc Char.cc exceptions.cc traits.cc String.cc \
+		   Boundaries.cc
+HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/*.hh)) \
+		   $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/internal/*.hh))
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 HSYN		:= $(patsubst %, %.syn, $(HDR))
@@ -63,27 +64,23 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-build-tests:
-
-run-tests:
-
 xref:	$(docdir)/sxr/Babylon.xref $(docdir)/sxr/Babylon.syn
 
 doc:	$(MANUAL)
 
 $(docdir)/sxr/Babylon.xref:	$(XREF)
 	@echo linking xref files together
-	mkdir -p $(docdir)/sxr
-	compile-xref -o $@ $^
+	@mkdir -p $(docdir)/sxr
+	@compile-xref -o $@ $^
 
 $(docdir)/sxr/Babylon.syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
-	mkdir -p $(docdir)/sxr
-	$(SYNOPSIS) -o $@ $^
+	@mkdir -p $(docdir)/sxr
+	@$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -91,7 +88,7 @@ install:	all
 	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Babylon
 	for header in $(HDR); do \
-	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon; \
+	    $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon; \
 	done
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
 	$(SHTOOL) install -C -m 755 ../config/Babylon-config $(DESTDIR)$(bindir)
@@ -106,13 +103,17 @@ uninstall:
 	rm -rf $(DESTDIR)$(includedir)/Babylon
 	rm -f $(DESTDIR)$(libdir)/libBabylon.so
 
+build-tests: all
+
+run-tests: build-tests
+
 clean:	
 	rm -f $(TARGET)
 	rm -f *.o *.d *.syn
 
 distclean:	clean
 	rm -f Makefile ../include/Babylon/acconfig.hh \
-          ../bin/Babylon-config
+		../bin/Babylon-config
 
 maintainer-clean: distclean
 
@@ -122,15 +123,15 @@ maintainer-clean: distclean
 
 %.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

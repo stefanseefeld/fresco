@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999-2003 Tobias Hunger <Tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,148 +25,377 @@
 
 /* String class
  * This class stores and manipulates strings of characters defined 
- * acordding to ISO10646. 
+ * according to ISO10646. 
  */
 
-#include <Babylon/defs.hh>
-#include <Babylon/Dictionary.hh>
 #include <Babylon/Char.hh>
 
-namespace Babylon {
-    typedef std::basic_string<size_t> Char_Mapping;
-    struct Paragraph;
-    typedef std::vector<struct Paragraph> Paragraphs;
+namespace Babylon
+{
 
-    // g++ does not yet support char_traits :-(
-    class String : public std::basic_string<Babylon::Char> {
+  class Bidir;
+
+  class String
+  {
+      // Do not inherit from std::basic_string. It's not meant to be derived
+      // from:-(
+
     public:
-	// CONSTRUCTORS:
-	/// Creates a string of the length 0.
-	String();
+      typedef std::basic_string<Babylon::Char> string_type;
+      typedef Babylon::Char char_type;
+      // import types from string_type:
+      typedef string_type::traits_type traits_type;
+      typedef string_type::value_type value_type;
+      typedef string_type::size_type size_type;
+      typedef string_type::difference_type difference_type;
+      typedef string_type::reference reference;
+      typedef string_type::const_reference const_reference;
+      typedef string_type::pointer pointer;
+      typedef string_type::const_pointer const_pointer;
+      typedef string_type::iterator iterator;
+      typedef string_type::const_iterator const_iterator;
+      typedef string_type::reverse_iterator reverse_iterator;
+      typedef string_type::const_reverse_iterator const_reverse_iterator;
 
-	/// Creates a string of the length 1 containing 
-	String(const Char, const Norm norm = NORM_NONE);
-	String(const UCS4, const Norm norm = NORM_NONE);
+      static const size_type npos = string_type::npos;
 
-	// Creates a string out of other types of strings
-	String(const UTF8_string & s, const Norm norm = NORM_NONE);
-	String(const char * s, const Norm norm = NORM_NONE);
-	String(const UTF32_string &, const Norm norm = NORM_NONE);
-	String(size_t len, Char * data, const Norm norm = NORM_NONE);
-	String(const String &);
+      // Constructors:
+      String();
+      String(const String &,
+	     const size_type = 0, const size_type = npos);
+      String(const char_type *, const Norm = NORM_NONE);
+      String(const char_type *, const size_type, const Norm = NORM_NONE);
+      String(const size_type, const Char, const Norm = NORM_NONE);
+      template<class InputIterator>
+      String(InputIterator, InputIterator, const Norm = NORM_NONE);
+      // additional constructors:
+      String(const string_type &);
+      
+      // Destructor:
+      ~String();
+      
+      // Size Operations:
 
-	// Transformators:
-	void utf8(const UTF8_string &, const Norm norm = NORM_NONE)
-	    throw (Trans_Error);
-	void utf8(const char * s, const Norm norm = NORM_NONE)
-	    throw (Trans_Error) { utf8(UTF8_string(s), norm); }
-	void utf16(const UTF16_string &, const Norm norm = NORM_NONE)
-	    throw (Trans_Error);
-	void utf16(const UCS2 * s, const Norm norm = NORM_NONE)
-	    throw (Trans_Error) { utf16(UTF16_string(s), norm); }
-	void utf32(const UTF32_string &, const Norm norm = NORM_NONE);
-	UTF8_string  utf8() const throw (Trans_Error);
-	UTF16_string utf16() const throw(Trans_Error);
-	UTF32_string utf32() const throw(Trans_Error);
+      size_type size() const { return my_data.size(); }
+      size_type length() const { return my_data.length(); }
+      bool empty() const { return my_data.empty(); }
+      size_type max_size() const { return my_data.max_size(); }
+      
+      // Capacity Operations:
+      
+      size_type capacity() const { return my_data.capacity(); }
+      void reserve() { my_data.reserve(); }
+      void reserve(const size_type l) { my_data.reserve(l); }
+      
+      // Comparisons:
+      int compare(const String & s) const { return compare(0, npos, s); }
+      int compare(const size_type, const size_type,
+		  const String &) const;
+      int compare(const size_type, const size_type, const String &,
+		  const size_type, const size_type) const;
+      int compare(const char_type *) const;
+      int compare(const size_type, const size_type, const char_type *) const;
+      int compare(const size_type, const size_type,
+		  const char_type *, const size_type) const;
+      
+      // Character Access
+      char_type & operator[](const size_type p);
+      char_type operator[](const size_type p) const { return my_data[p]; }
+      char_type & at(const size_type p);
+      char_type at(const size_type p) const { return my_data.at(p); }
+      
+      // Generating C-Strings and Character Arrays
+      
+      // Modify Operations:
+      String & assign(const String & s)
+	  { return assign(s, 0, npos); }
+      String & assign(const String &,
+			   const size_type, const size_type);
+      String & assign(const char_type *, const Norm = NORM_NONE);
+      String & assign(const char_type *, const size_type,
+			   const Norm = NORM_NONE);
+      String & assign(const size_type, const char_type);
+      
+      String & operator=(const String s) { return assign(s); }
+      String & operator=(const char_type * c) { return assign(c); }
+      String & operator=(char_type c) { return assign(1, c); }
+      
+      void swap(String &) throw ();
+      
+      String & append(const String & s)
+	  { return append(s, 0, npos); }
+      String & append(const String &,
+			   const size_type, const size_type);
+      String & append(const char_type *, const size_type,
+			   const Norm = NORM_NONE);
+      String & append(const char_type *, const Norm = NORM_NONE);
+      String & append(const size_type, const char_type);
+      template<class InputIterator>
+      String & append(InputIterator, InputIterator);
+      
+      void push_back(char_type c) { append(1, c); }
+      
+      String & operator+=(const String & s) { return append(s); }
+      String & operator+=(const char_type * c) { return append(c); }
+      String & operator+=(const char_type c) { return append(1, c); }
+      
+      String & insert(const size_type p, const String & s)
+	  { return insert(p, s, 0, npos); }
+      String & insert(const size_type, const String &,
+			   const size_type, const size_type);
+      String & insert(const size_type,
+			   const char_type *, const size_type);
+      String & insert(const size_type, const char_type *);
+      String & insert(const size_type, const size_type, const char_type);
+      void insert(iterator, const size_type, const char_type);
+      iterator insert(iterator, const char_type);
+      void insert(iterator, iterator, iterator);
+      
+      void clear();
+      String & erase();
+      String & erase(const size_type);
+      String & erase(const size_type, const size_type);
+      String & erase(iterator, iterator);
+      
+      void resize(const size_type);
+      void resize(const size_type, char_type);
+      
+      String & replace(const size_type p1, const size_type p2,
+			    const String & s)
+	  { return replace(p1, p2, s, 0, npos); }
+      String & replace(iterator, iterator, const String &);
+      String & replace(const size_type, const size_type,
+			    const String &,
+			    const size_type, const size_type);
+      String & replace(const size_type, const size_type,
+			    const char_type *, const size_type);
+      String & replace(iterator, iterator,
+                       const char_type *, const size_type);
+      String & replace(const size_type, const size_type,
+			    const char_type *);
+      String & replace(iterator, iterator, const char_type *);
+      String & replace(const size_type, const size_type,
+			    const size_type, char_type);
+      String & replace(iterator, iterator,
+                       const size_type, char_type);
+      template<class InputIterator>
+      String & replace(iterator, iterator,
+                       InputIterator, InputIterator);
+      
+      size_type find(const char_type c) const { return my_data.find(c); }
+      size_type find(const char_type c, const size_type i)
+	  { return my_data.find(c, i); }
+      size_type rfind(const char_type c) const { return my_data.rfind(c); }
+      size_type rfind(const char_type c, const size_type i)
+	  { return my_data.rfind(c, i); }
+      
+      size_type find(const String & s) const
+	  { return my_data.find(s.my_data); }
+      size_type find(const String & s, const size_type i)
+	  { return my_data.find(s.my_data, i); }
+      size_type rfind(const String & s) const
+	  { return my_data.rfind(s.my_data); }
+      size_type rfind(const String & s, const size_type i)
+	  { return my_data.rfind(s.my_data, i); }
+      
+      size_type find(const char_type * c) const { return my_data.find(c); }
+      size_type find(const char_type * c, const size_type i)
+	  { return my_data.find(c, i); }
+      size_type rfind(const char_type * c) const { return my_data.rfind(c); }
+      size_type rfind(const char_type * c, const size_type i)
+	  { return my_data.rfind(c, i); }
+      
+      size_type find(const char_type * c,
+		     const size_type i, const size_type l) const
+	  { return my_data.find(c, i, l); }
+      size_type rfind(const char_type * c,
+		      const size_type i, const size_type l)
+	  { return my_data.rfind(c, i, l); }
+      
+      size_type find_first_of(const String & s) const
+	  { return my_data.find_first_of(s.my_data); }
+      size_type find_first_of(const String & s, const size_type i)
+	  { return my_data.find_first_of(s.my_data, i); }
+      size_type find_first_not_of(const String & s) const
+	  { return my_data.find_first_not_of(s.my_data); }
+      size_type find_first_not_of(const String & s, const size_type i)
+	  { return my_data.find_first_not_of(s.my_data, i); }
+      
+      size_type find_first_of(const char_type * c) const
+	  { return my_data.find_first_of(c); }
+      size_type find_first_of(const char_type * c, const size_type i)
+	  { return my_data.find_first_of(c, i); }
+      size_type find_first_not_of(const char_type * c) const
+	  { return my_data.find_first_not_of(c); }
+      size_type find_first_not_of(const char_type * c, const size_type i)
+	  { return my_data.find_first_not_of(c, i); }
+      
+      size_type find_first_of(const char_type * c, const size_type i,
+			      const size_type l) const
+	  { return my_data.find_first_of(c, i, l); }
+      size_type find_first_not_of(const char_type * c, const size_type i,
+				  const size_type l) const
+	  { return my_data.find_first_not_of(c, i, l); }
+      
+      size_type find_first_of(const char_type c) const
+	  { return my_data.find_first_of(c); }
+      size_type find_first_of(const char_type c, const size_type i)
+	  { return my_data.find_first_of(c, i); }
+      size_type find_first_not_of(const char_type c) const
+	  { return my_data.find_first_not_of(c); }
+      size_type find_first_not_of(const char_type c, const size_type i)
+	  { return my_data.find_first_not_of(c, i); }
+      
+      size_type find_last_of(const String & s) const
+	  { return my_data.find_last_of(s.my_data); }
+      size_type find_last_of(const String & s, const size_type i)
+	  { return my_data.find_last_of(s.my_data, i); }
+      size_type find_flast_not_of(const String & s) const
+	  { return my_data.find_last_not_of(s.my_data); }
+      size_type find_last_not_of(const String & s, const size_type i)
+	  { return my_data.find_last_not_of(s.my_data, i); }
+      
+      size_type find_last_of(const char_type * c) const
+	  { return my_data.find_last_of(c); }
+      size_type find_last_of(const char_type * c, const size_type i)
+	  { return my_data.find_last_of(c, i); }
+      size_type find_last_not_of(const char_type * c) const
+	  { return my_data.find_last_not_of(c); }
+      size_type find_last_not_of(const char_type * c, const size_type i)
+	  { return my_data.find_last_not_of(c, i); }
+      
+      size_type find_last_of(const char_type * c, const size_type i,
+			     const size_type l) const
+	  { return my_data.find_last_of(c, i, l); }
+      size_type find_last_not_of(const char_type * c, const size_type i,
+				 const size_type l) const
+	  { return my_data.find_last_not_of(c, i, l); }
+      
+      size_type find_last_of(const char_type c) const
+	  { return my_data.find_last_of(c); }
+      size_type find_last_of(const char_type c, const size_type i)
+	  { return my_data.find_last_of(c, i); }
+      size_type find_last_not_of(const char_type c) const
+	  { return my_data.find_last_not_of(c); }
+      size_type find_last_not_of(const char_type c, const size_type i)
+	  { return my_data.find_last_not_of(c, i); }
+      
+      // Substrings and String Concatenation:
+      
+      String substr() const { return String(my_data.substr()); }
+      String substr(const size_type i) const
+	  { return String(my_data.substr(i)); }
+      String substr(const size_type i, const size_type l) const
+	  { return String(my_data.substr(i, l)); }
+      
+      // Generating Iterators:
 
-	void swap(String &);
-    
-	// normalizes a String.
-	void normalize(const Norm);
-    
-	// returns the norm the string is in
-	Norm norm() const { return m_current_norm; }
-    
-	// sets the norm the String is in. Does NOT change the
-	// string itself, so USE WITH CAUTION!
-	void override_norm(const Norm norm) { m_current_norm = norm; }
-    
-	// returns the normalized form of a string without changing it.
-	String norm(const Norm norm) const;
+      iterator begin() { return my_data.begin(); }
+      const_iterator begin() const { return my_data.begin(); }
+      iterator end() { return my_data.end(); }
+      const_iterator end() const { return my_data.end(); }
+      reverse_iterator rbegin() { return my_data.rbegin(); }
+      const_reverse_iterator rbegin() const { return my_data.rbegin(); }
+      reverse_iterator rend() { return my_data.rend(); }
+      const_reverse_iterator rend() const { return my_data.rend(); }
 
-	std::vector<size_t> get_defined();
-	std::vector<size_t> get_Spaces();
-	std::vector<size_t> get_ISO_Controls();
-	std::vector<size_t> get_Punctuations();
-	std::vector<size_t> get_Line_Separators();
-	std::vector<size_t> get_Paragraph_Separators();
-	std::vector<size_t> get_Currency_Symbols();
-	std::vector<size_t> get_Bidi_Left_to_Rights();
-	std::vector<size_t> get_Bidi_European_Digits();
-	std::vector<size_t> get_Bidi_Eur_Num_Separators();
-	std::vector<size_t> get_Bidi_Eur_Num_Terminators();
-	std::vector<size_t> get_Bidi_Arabic_Digits();
-	std::vector<size_t> get_Bidi_Common_Separator();
-	std::vector<size_t> get_Bidi_Block_Separator();
-	std::vector<size_t> get_Bidi_Segment_Separator();
-	std::vector<size_t> get_Bidi_Whitespaces();
-	std::vector<size_t> get_Bidi_Non_spacing_Marks();
-	std::vector<size_t> get_Bidi_Boundary_Neutrals();
-	std::vector<size_t> get_Bidi_PDFs();
-	std::vector<size_t> get_Bidi_Embedding_or_Overrides();
-	std::vector<size_t> get_Bidi_Other_Neutrals();
-	std::vector<size_t> get_Viramas();
-	std::vector<size_t> get_Printables();
-	std::vector<size_t> get_Not_a_Characters();
-	std::vector<size_t> get_Maths();
-	std::vector<size_t> get_Alphabetics();
-	std::vector<size_t> get_Lowercases();
-	std::vector<size_t> get_Uppercases();
-	std::vector<size_t> get_Titlecases();
-	std::vector<size_t> get_ID_Starts();
-	std::vector<size_t> get_ID_Continues();
-	std::vector<size_t> get_XID_Starts();
-	std::vector<size_t> get_XID_Continues();
-	std::vector<size_t> get_Decimals();
-	std::vector<size_t> get_Digits();
-	std::vector<size_t> get_Numerics();
-	std::vector<size_t> get_Private_Uses();
+      // ------------------------------------------------------------
+      // methods *NOT* in basic_string:
+      // ------------------------------------------------------------
 
-	// OPERATORS:
-    
-	// UTILITIES:
-	// void erase();
+      // Constructors:
+      String(const std::string &, const size_t pos = 0,
+	     const std::string format = Babylon::UTF8_format,
+	     const Babylon::Norm norm = NORM_NONE);
+      String(const char *,
+	     const std::string format = Babylon::UTF8_format,
+	     const Babylon::Norm norm = NORM_NONE);
+      String(const char *, const size_t len,
+	     const std::string format = Babylon::UTF8_format,
+	     const Babylon::Norm norm = NORM_NONE);
+	     
 
-	//. Get a list of paragraphs, their beginnings and ends etc.
-	Paragraphs get_paragraphs();
+      // Conversion:
 
-	// DESTRUCTOR:
-	~String(); // nothing special needed...
+      std::string
+      convert(const std::string & format = Babylon::UTF8_format) const
+          throw (Transfer_Error);
+      
+      size_t convert(const std::string &,
+		     const size_t = 0,
+		     const std::string& = Babylon::UTF8_format,
+		     const Babylon::Norm norm = NORM_NONE)
+          throw (Transfer_Error, std::length_error);
+      
+      //. returns the norm the string is in
+      Norm norm() const { return my_norm; }
+      //. normalizes the string to the given norm.
+      void norm(const Norm);
+      //. sets the norm the String is in. Does NOT change the
+      //. string itself, so USE WITH CARE!
+      void override_norm(const Norm n) { my_norm = n; }
+      //. returns the normalized form of a string without changing it.
+      String get_normalized(const Norm) const;
+
+      void debug_dump() const;
 
     protected:
     private:
-	Babylon::Norm m_current_norm;
-	Prague::Mutex _mutex;
-    }; // class String
+      Babylon::Norm my_norm;
+      string_type my_data;
+  }; // class String
+  
+  inline bool operator==(const String & s1, const String & s2)
+  { return 0 == s1.compare(s2); }
+  inline bool operator!=(const String & s1, const String & s2)
+  { return 0 != s1.compare(s2); }
+  inline bool operator<(const String & s1, const String & s2)
+  { return 0 > s1.compare(s2); }
+  inline bool operator>(const String & s1, const String & s2)
+  { return 0 < s1.compare(s2); }
+  inline bool operator<=(const String & s1, const String & s2)
+  { return 0 >= s1.compare(s2); }
+  inline bool operator>=(const String & s1, const String & s2)
+  { return 0 <=s1.compare(s2); }
 
-    struct Paragraph {
-	size_t begin;
-	size_t end;
-	Embedding_Levels levels;
+  inline String operator+(const String & s1, const String & s2)
+  {
+      String r(s1);
+      return r.append(s2);
+  }
+  inline String operator+(const String & s1, String::char_type * c)
+  {
+      String r(s1);
+      return r.append(c);
+  }
+  inline String operator+(String::char_type * c, const String & s1)
+  {
+      String r(c);
+      return r.append(s1);
+  }
+  inline String operator+(const String & s1, String::char_type c)
+  {
+      String r(s1);
+      r.push_back(c);
+      return r;
+  }
+  inline String operator+(String::char_type c, const String & s1)
+  {
+      String r(1, c);
+      return r.append(s1);
+  }
+  
+}; // namespace Babylon
 
-	Paragraph() : begin(0), end(0), levels() {}
-	Paragraph(size_t b, size_t e) : begin(b), end(e), levels() {}
-    };
+namespace std
+{
 
-    class Paragraph_lt {
-    public:
-	Paragraph_lt() {}
-	bool operator() (const Paragraph &, const Paragraph &);
-    };
-
-    class Paragraph_eq {
-    public:
-	Paragraph_eq() {}
-	bool operator() (const Paragraph &, const Paragraph &);
-    };
-
-} // namespace Babylon
-
-namespace std {
-    template<>
-    inline void swap(Babylon::String & a, Babylon::String & b) {
-	a.swap(b);
-    }
-}
+  template<>
+  inline void swap(Babylon::String & a, Babylon::String & b)
+  {
+      a.swap(b);
+  }
+    
+}; // namespace std
 
 #endif // _Babylon_String_hh

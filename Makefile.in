@@ -175,6 +175,12 @@ Berlin: Babylon
 Fresco-C++: Babylon
 Clients-C++: Babylon
 endif
+ifneq ($(findstring Fresco-IDL, $(subdirs)),)
+Fresco-C++: Fresco-IDL
+Fresco-Java: Fresco-IDL
+Fresco-Python: Fresco-IDL
+Fresco-Perl: Fresco-IDL
+endif
 ifneq ($(findstring Fresco-C++, $(subdirs)),)
 Berlin: Fresco-C++
 Fresco-C++-demos: Fresco-C++
@@ -184,5 +190,8 @@ ifneq ($(findstring Berlin, $(subdirs)),)
 GGI:	Berlin
 SDL:	Berlin
 Fresco-C++-demos: Berlin #FIXME !!!
+endif
+ifneq ($(findstring Fresco-Python, $(subdirs)),)
+Fresco-Python-demos: Fresco-Python
 endif
 

@@ -21,18 +21,13 @@
  */
 
 #include "TextBufferImpl.hh"
-#include "VisualTextBufferImpl.hh"
 #include <iostream>
 
 using namespace Prague;
 using namespace Fresco;
 
-TextBufferImpl::TextBufferImpl() : _visual(0) {
-  Prague::Trace trace("TextBufferImpl::TextBufferImpl()");
-}
-TextBufferImpl::~TextBufferImpl() {
-  Prague::Trace trace("TextBufferImpl::~TextBufferImpl()");
-}
+TextBufferImpl::TextBufferImpl() { }
+TextBufferImpl::~TextBufferImpl() { }
 
 CORBA::ULong TextBufferImpl::size()
 {
@@ -240,26 +235,4 @@ void TextBufferImpl::clear() {
   CORBA::Any any;
   any <<= ch;
   notify(any);
-}
-
-Fresco::TextBuffer::StringOrder TextBufferImpl::order() {
-  Prague::Trace trace("TextBufferImpl::order()");
-  return Fresco::TextBuffer::memory_order;
-}
-
-
-TextBuffer_ptr TextBufferImpl::get_memory_buffer() {
-  Prague::Trace trace("TextBufferImpl::get_memory_buffer()");
-  return _this();
-}
-
-TextBuffer_ptr TextBufferImpl::get_visual_buffer() {
-  Prague::Trace trace("TextBufferImpl::get_visualbuffer()");
-  if (!_visual) {
-      VisualTextBufferImpl * visual = new VisualTextBufferImpl(this);
-      Prague::Guard<Mutex> guard(_mutex);
-      _visual = visual;
-      activate(_visual);
-  }
-  return _visual->_this();
 }

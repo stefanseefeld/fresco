@@ -29,14 +29,10 @@
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/GapBuffer.hh>
 
-class VisualTextBufferImpl;
-
 class TextBufferImpl : public virtual POA_Fresco::TextBuffer,
 		       public SubjectImpl
 {
-public:
-    friend class VisualTextBufferImpl;
-
+  public:
     TextBufferImpl();
     virtual ~TextBufferImpl();
     virtual CORBA::ULong size();
@@ -52,13 +48,9 @@ public:
     virtual void remove_backward(CORBA::ULong);
     virtual void remove_forward(CORBA::ULong);
     virtual void clear();
-    virtual Fresco::TextBuffer::StringOrder order();
-    virtual Fresco::TextBuffer_ptr get_memory_buffer();
-    virtual Fresco::TextBuffer_ptr get_visual_buffer();
-private:
+  private:
     GapBuffer<Fresco::Unichar, 32> _buffer;
     Prague::Mutex _mutex;
-    VisualTextBufferImpl * _visual;
 };
 
 #endif

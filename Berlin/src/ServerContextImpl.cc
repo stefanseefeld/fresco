@@ -42,14 +42,20 @@ unsigned long ServerContextImpl::my_counter = 0;
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
-ServerContextImpl::ServerContextImpl(ServerImpl *s, const CORBA::PolicyList &policies, ClientContext_ptr c)
-    : my_server(s), my_policies(policies), my_client(ClientContext::_duplicate(c))
+ServerContextImpl::ServerContextImpl(ServerImpl *s,
+				     const CORBA::PolicyList &policies,
+				     ClientContext_ptr c) :
+    my_server(s),
+    my_policies(policies),
+    my_client(ClientContext::_duplicate(c))
 {
-  Trace trace("ServerContextImpl::ServerContextImpl");
-  Babylon::String title = Unicode::to_internal(*my_client->application_title());
-  Logger::log(Logger::corba) << (void *)(this) << " is the ServerContext "
-			     << "for application \"" << title.utf8()
-			     << "\"." << std::endl;
+    Trace trace("ServerContextImpl::ServerContextImpl");
+    Babylon::String title =
+	Unicode::to_internal(*my_client->application_title());
+    Logger::log(Logger::corba) << (void *)(this)
+			       << " is the ServerContext "
+			       << "for application \"" << title.convert()
+			       << "\"." << std::endl;
 }
 
 ServerContextImpl::~ServerContextImpl()

@@ -26,7 +26,7 @@ top_srcdir	:= @top_srcdir@
 
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-subdirs	:= src modules test
+subdirs	:= src modules demo test
 # insert inter-directory dependencies below
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
@@ -41,6 +41,8 @@ all:	$(subdirs)
 
 # insert inter-directory dependencies here
 modules: src
+demo: src
+test: demo
 
 $(subdirs):
 	@echo making $(action) in $@

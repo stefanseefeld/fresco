@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999-2003 Tobias Hunger <Tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,6 @@
 #ifndef _Babylon_hh
 #define _Babylon_hh
 
-#include <Babylon/defs.hh>
-#include <Babylon/Char.hh>
 #include <Babylon/String.hh>
-#include <Babylon/vis_iterator.hh>
 
 #endif // _Babylon_hh

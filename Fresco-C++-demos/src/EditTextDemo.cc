@@ -1,4 +1,4 @@
- /*$Id$
+/*$Id$
  *
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
@@ -44,14 +44,13 @@ EditTextDemo::EditTextDemo(Application *a)
     0xad6d, 0xc5b4
   };
 
-  Babylon::String str(34, chars);
+  Babylon::String str(chars, 34);
     
   TextBuffer_var buf = commands->text();
-  TextBuffer_var vis_buf = buf->get_visual_buffer();
-  Graphic_var txt = text->simple_viewer(vis_buf);
+  Graphic_var txt = text->simple_viewer(buf);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var frame = tools->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tools->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
   buf->insert_string(Unicode::to_CORBA(str));
-  application->append(Controller_var(tools->text_input(frame, vis_buf)), Babylon::String("editable text"));
+  application->append(Controller_var(tools->text_input(frame, buf)), Babylon::String("editable text"));
 };

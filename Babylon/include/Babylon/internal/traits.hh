@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999-2003 Tobias Hunger <Tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,29 +20,29 @@
  * MA 02139, USA.
  */
 
-#ifndef _Babylon_Traits_hh
-#define _Babylon_Traits_hh
+#ifndef _Babylon_internal_traits_hh
+#define _Babylon_internal_traits_hh
 
 #if __GNUC__ >= 3
 
 #include <Babylon/Char.hh>
-#include <Babylon/defs.hh>
 
 namespace std {
 
 // char_traits
+
 template<>
-struct char_traits<Babylon::Char>
+struct char_traits< ::Babylon::Char >
 {
-    typedef Babylon::Char char_type;
+    typedef ::Babylon::Char char_type;
 
     static void assign(char_type& c1, const char_type& c2) { c1 = c2; }
 
     // integer repressentation of characters
-    typedef Babylon::UCS4 int_type;
+    typedef ::Babylon::UCS4 int_type;
 
     static char_type
-    to_char_type(const int_type& i) { return Babylon::Char(i); }
+    to_char_type(const int_type& i) { return ::Babylon::Char(i); }
   
     static int_type
     to_int_type(const char_type& c) { return(c.value()); }
@@ -80,7 +80,7 @@ struct char_traits<Babylon::Char>
     typedef size_t off_type;
     typedef mbstate_t state_type;
 
-    static int_type eof() { return(Babylon::UC_NULL); }
+    static int_type eof() { return(::Babylon::UC_NULL); }
     static int_type not_eof(const int_type &);
     static state_type get_state(pos_type p) {} // FIXME: What should go here?
 };

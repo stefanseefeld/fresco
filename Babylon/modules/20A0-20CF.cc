@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 20A0-20CF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp 20A0-20CF.cc
  *
  * This source file is a part of the Berlin Project
- * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Thu, 30 May 2002 20:48:08 +0200.
+ * ftp.unicode.org on Mon, 26 May 2003 15:56:00 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -24,305 +24,395 @@
  */
 
 #include <Babylon/defs.hh>
-#include <Babylon/Dictionary.hh>
+#include <Babylon/internal/Blocks.hh>
 #include <bitset>
 #include <utility>
 
-namespace Babylon {
 
-  class Currency_Symbols20A0 : public Babylon::Dictionary::Block {
-  public:
-    void clean () {
+namespace Babylon
+{
+  namespace Module
+  {
+    class Currency_Symbols20A0 : public Babylon::Block
+    {
+      public:
+        void clean() { };
+
+        Currency_Symbols20A0() :
+	    my_first_letter(0x20A0),
+	    my_last_letter(0x20CF)
+	    // my_version="4.0" // Not yet supported!
+        {
+        }
+
+        ~Currency_Symbols20A0() { }
+
+        UCS4 first_letter() const
+        {
+	    return my_first_letter;
+	}  
+
+	UCS4 last_letter() const
+	{
+	    return my_last_letter;
+	}
+
+	bool is_undef_block() const
+	{
+	    return 0;
+	}
+
+	// query functions:
+	std::string blockname(const UCS4 uc) const
+	{
+	    return "Currency Symbols";
+	}
+
+        bool is_defined(const UCS4 uc) const
+        {
+            return (my_is_defined.test(uc - my_first_letter));
+        }
+
+        UCS4 uppercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 lowercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 titlecase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        int dec_digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Decimal_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        int digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        float numeric_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Numeric(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Gen_Cat category(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CAT_MAX;
+            return Babylon::Gen_Cat(CAT_Sc);
+        }
+
+        Can_Comb_Class comb_class(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CC_MAX;
+            return Babylon::Can_Comb_Class(0);
+        }
+
+        Bidir_Props bidir_props(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return BIDIR_INVALID;
+            return BIDIR_ET;
+        }
+
+        Char_Decomp decomp_type(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return DECOMP_MAX;
+            return Babylon::Char_Decomp(Currency_Symbols20A0::my_decomp[uc - my_first_letter]);
+        }
+
+        UTF32_string decompose(const UCS4 uc) const
+        {
+            Babylon::UTF32_string us;
+            us.resize(2);
+            us[0] = Currency_Symbols20A0::my_decompStr[uc - my_first_letter][0];
+            us[1] = Currency_Symbols20A0::my_decompStr[uc - my_first_letter][1];
+            if (0x0000u == us[1])
+                us.resize(1);
+            return us;
+        }
+
+        bool must_mirror(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Line_Break linebreak(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return LB_MAX;
+            return Babylon::Line_Break(Currency_Symbols20A0::my_lb[uc - my_first_letter]);
+        }
+
+        EA_Width EA_width(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return EA_WIDTH_MAX;
+            return Babylon::EA_Width(Currency_Symbols20A0::my_ea[uc - my_first_letter]);
+        }
+
+        UCS4 compose(const UCS4 starter, const UCS4 last)
+        {
+            return 0;
+        }
+
+        bool exclude_from_composition(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_White_Space(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Bidi_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Join_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Dash(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Hyphen(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Quotation_Mark(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Terminal_Punctuation(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Math(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_ASCII_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Alphabetic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Ideographic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Diacritic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Extender(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Lowercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Uppercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Noncharacter_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Grapheme_Extend(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Grapheme_Link(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Binary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Trinary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Radical(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Unified_Ideograph(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Deprecated(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Soft_Dotted(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Logical_Order_Exception(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_ID_Start(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+      private:
+        // functions
+        Currency_Symbols20A0(const Currency_Symbols20A0 &) ; // no implementaion!
+
+	// members
+        Babylon::UCS4 my_first_letter;
+        Babylon::UCS4 my_last_letter;
+        // Babylon::UCS4_string my_version;
+        static const std::bitset<48> my_is_defined;
+        static const unsigned char my_decomp[48];
+        static const UCS2 my_decompStr[48][2];
+        static const unsigned char my_lb[48];
+        static const unsigned char my_ea[48];
+    }; // class Currency_Symbols20A0
+
+    const std::bitset<48> Currency_Symbols20A0::my_is_defined(std::string("000000000000000000000000000000111111111111111111"));
+
+    const unsigned char Currency_Symbols20A0::my_decomp[] = {
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
     };
 
-    Currency_Symbols20A0() {
-      m_first_letter = 0x20A0;
-      m_last_letter  = 0x20CF;
-      // m_version="3.1" // Not yet supported!
-    }
+    const UCS2 Currency_Symbols20A0::my_decompStr[][2] =
+    {
+        { 0x000020A0u, 0x00000000u }, { 0x000020A1u, 0x00000000u },  // 000020A0
+        { 0x000020A2u, 0x00000000u }, { 0x000020A3u, 0x00000000u },  // 000020A2
+        { 0x000020A4u, 0x00000000u }, { 0x000020A5u, 0x00000000u },  // 000020A4
+        { 0x000020A6u, 0x00000000u }, { 0x000020A7u, 0x00000000u },  // 000020A6
+        { 0x00000052u, 0x00000073u }, { 0x000020A9u, 0x00000000u },  // 000020A8
+        { 0x000020AAu, 0x00000000u }, { 0x000020ABu, 0x00000000u },  // 000020AA
+        { 0x000020ACu, 0x00000000u }, { 0x000020ADu, 0x00000000u },  // 000020AC
+        { 0x000020AEu, 0x00000000u }, { 0x000020AFu, 0x00000000u },  // 000020AE
+        { 0x000020B0u, 0x00000000u }, { 0x000020B1u, 0x00000000u },  // 000020B0
+        { 0x000020B2u, 0x00000000u }, { 0x000020B3u, 0x00000000u },  // 000020B2
+        { 0x000020B4u, 0x00000000u }, { 0x000020B5u, 0x00000000u },  // 000020B4
+        { 0x000020B6u, 0x00000000u }, { 0x000020B7u, 0x00000000u },  // 000020B6
+        { 0x000020B8u, 0x00000000u }, { 0x000020B9u, 0x00000000u },  // 000020B8
+        { 0x000020BAu, 0x00000000u }, { 0x000020BBu, 0x00000000u },  // 000020BA
+        { 0x000020BCu, 0x00000000u }, { 0x000020BDu, 0x00000000u },  // 000020BC
+        { 0x000020BEu, 0x00000000u }, { 0x000020BFu, 0x00000000u },  // 000020BE
+        { 0x000020C0u, 0x00000000u }, { 0x000020C1u, 0x00000000u },  // 000020C0
+        { 0x000020C2u, 0x00000000u }, { 0x000020C3u, 0x00000000u },  // 000020C2
+        { 0x000020C4u, 0x00000000u }, { 0x000020C5u, 0x00000000u },  // 000020C4
+        { 0x000020C6u, 0x00000000u }, { 0x000020C7u, 0x00000000u },  // 000020C6
+        { 0x000020C8u, 0x00000000u }, { 0x000020C9u, 0x00000000u },  // 000020C8
+        { 0x000020CAu, 0x00000000u }, { 0x000020CBu, 0x00000000u },  // 000020CA
+        { 0x000020CCu, 0x00000000u }, { 0x000020CDu, 0x00000000u },  // 000020CC
+        { 0x000020CEu, 0x00000000u }, { 0x000020CFu, 0x00000000u }
+    };
 
-    ~Currency_Symbols20A0() {
-    }
+    const unsigned char Currency_Symbols20A0::my_lb[] =
+    {
+        LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PO, 
+        LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
+        LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
+        LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
+        LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
+        LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR
+    };
 
-    UCS4 first_letter() const {
-      return m_first_letter;
-    }
+    const unsigned char Currency_Symbols20A0::my_ea[] =
+    {
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_H, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+        EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
+    };
 
-    UCS4 last_letter() const {
-      return m_last_letter;
-    }
+  }; // namespace
+}; // namespace
 
-    bool is_undef_block() const {
-      return 0;
-    }
-
-    // query functions:
-    std::string blockname(const UCS4 uc) const {
-      return "Currency Symbols";
-    }
-
-    bool is_defined(const UCS4 uc) const {
-      return (m_is_defined.test(uc - m_first_letter));
-    }
-
-    UCS4 uppercase(const UCS4 uc) const {
-      return uc;
-    }
-
-    UCS4 lowercase(const UCS4 uc) const {
-      return uc;
-    }
-
-    UCS4 titlecase(const UCS4 uc) const {
-      return uc;
-    }
-
-    int dec_digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Decimal_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    int digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    float numeric_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Numeric(const UCS4 uc) const {
-      return 0;
-    }
-
-    Gen_Cat category(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CAT_MAX;
-      return Babylon::Gen_Cat(CAT_Sc);
-    }
-
-    Can_Comb_Class comb_class(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CC_MAX;
-      return Babylon::Can_Comb_Class(0);
-    }
-
-    Bidir_Props bidir_props(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return BIDIR_INVALID;
-      return BIDIR_ET;
-    }
-
-    Char_Decomp decomp_type(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return DECOMP_MAX;
-      return Babylon::Char_Decomp(Currency_Symbols20A0::_decomp[uc - m_first_letter]);
-    }
-
-    UTF32_string decompose(const UCS4 uc) const {
-      Babylon::UTF32_string us;
-      us.resize(2);
-      us[0] = Currency_Symbols20A0::m_decompStr[uc - m_first_letter][0];
-      us[1] = Currency_Symbols20A0::m_decompStr[uc - m_first_letter][1];
-      if (us[1] == 0x0000u) {
-        us.resize(1);
-      }
-
-      return us;
-    }
-
-    bool must_mirror(const UCS4 uc) const {
-      return 0;
-    }
-
-    Line_Break linebreak(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return LB_MAX;
-      return Babylon::Line_Break(Currency_Symbols20A0::m_lb[uc - m_first_letter]);
-    }
-
-    EA_Width EA_width(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return EA_WIDTH_MAX;
-      return Babylon::EA_Width(Currency_Symbols20A0::m_ea[uc - m_first_letter]);
-    }
-
-    UCS4 compose (const UCS4 start, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_White_Space(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Dash(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hyphen(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Quotation_Mark(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Terminal_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Alphabetic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Diacritic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Extender(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Uppercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Grapheme_Link(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Binary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Radical(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Unified_Ideograph(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Deprecated(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Soft_Dotted(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Logical_Order_Exception(const UCS4 uc) const {
-      return 0;
-    }
-
-  private:
-    // functions
-    Currency_Symbols20A0(const Currency_Symbols20A0 &) {}
-
-    Babylon::UCS4 m_first_letter;
-    Babylon::UCS4 m_last_letter;
-    // Babylon::UCS4_string m_version;
-    static const std::bitset<48> m_is_defined;
-    static const unsigned char _decomp[48];
-    static const UCS2 m_decompStr[48][2];
-    static const unsigned char m_lb[48];
-    static const unsigned char m_ea[48];
-  }; // class Currency_Symbols20A0
-
-    const std::bitset<48> Currency_Symbols20A0::m_is_defined(std::string("000000000000000000000000000000111111111111111111"));
-
-  const unsigned char Currency_Symbols20A0::_decomp[] = {
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
-  };
-
-  const UCS2 Currency_Symbols20A0::m_decompStr[][2] = {
-    { 0x20A0u, 0x0000u }, { 0x20A1u, 0x0000u }, { 0x20A2u, 0x0000u }, { 0x20A3u, 0x0000u }, 
-    { 0x20A4u, 0x0000u }, { 0x20A5u, 0x0000u }, { 0x20A6u, 0x0000u }, { 0x20A7u, 0x0000u }, 
-    { 0x0052u, 0x0073u }, { 0x20A9u, 0x0000u }, { 0x20AAu, 0x0000u }, { 0x20ABu, 0x0000u }, 
-    { 0x20ACu, 0x0000u }, { 0x20ADu, 0x0000u }, { 0x20AEu, 0x0000u }, { 0x20AFu, 0x0000u }, 
-    { 0x20B0u, 0x0000u }, { 0x20B1u, 0x0000u }, { 0x20B2u, 0x0000u }, { 0x20B3u, 0x0000u }, 
-    { 0x20B4u, 0x0000u }, { 0x20B5u, 0x0000u }, { 0x20B6u, 0x0000u }, { 0x20B7u, 0x0000u }, 
-    { 0x20B8u, 0x0000u }, { 0x20B9u, 0x0000u }, { 0x20BAu, 0x0000u }, { 0x20BBu, 0x0000u }, 
-    { 0x20BCu, 0x0000u }, { 0x20BDu, 0x0000u }, { 0x20BEu, 0x0000u }, { 0x20BFu, 0x0000u }, 
-    { 0x20C0u, 0x0000u }, { 0x20C1u, 0x0000u }, { 0x20C2u, 0x0000u }, { 0x20C3u, 0x0000u }, 
-    { 0x20C4u, 0x0000u }, { 0x20C5u, 0x0000u }, { 0x20C6u, 0x0000u }, { 0x20C7u, 0x0000u }, 
-    { 0x20C8u, 0x0000u }, { 0x20C9u, 0x0000u }, { 0x20CAu, 0x0000u }, { 0x20CBu, 0x0000u }, 
-    { 0x20CCu, 0x0000u }, { 0x20CDu, 0x0000u }, { 0x20CEu, 0x0000u }, { 0x20CFu, 0x0000u }
-  };
-
-  const unsigned char Currency_Symbols20A0::m_lb[] = {
-    LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PO, 
-    LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
-    LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
-    LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
-    LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, 
-    LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR, LB_PR
-  };
-
-  const unsigned char Currency_Symbols20A0::m_ea[] = {
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_H, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
-  };
-
-}; // namespace Babylon
-
-dload(Babylon::Currency_Symbols20A0);
+dload(Babylon::Module::Currency_Symbols20A0);

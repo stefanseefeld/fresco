@@ -67,7 +67,7 @@ const char *TextChunk::object_name()
 
 void TextChunk::get_text(Babylon::String &u) 
 { 
-  u = Babylon::String(_char);
+  u = Babylon::String(1, _char);
 }
 
 unsigned long TextChunk::get_length() 

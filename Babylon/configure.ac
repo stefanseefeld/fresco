@@ -89,7 +89,7 @@ AC_CONFIG_FILES([config/Babylon.spec])
 AC_CONFIG_FILES([config/Babylon-config], [chmod +x config/Babylon-config])
 AC_CONFIG_FILES([bin/Babylon-config:config/Babylon-build-config.in], [chmod +x bin/Babylon-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile])
-AC_CONFIG_FILES([test/Makefile])
+AC_CONFIG_FILES([test/Makefile demo/Makefile])
 
 mkdir -p lib
 mkdir -p modules

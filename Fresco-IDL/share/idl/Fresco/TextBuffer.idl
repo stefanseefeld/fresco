@@ -109,21 +109,6 @@ module Fresco
       void remove_forward(in unsigned long d);
       //. Clear the buffer. It will be empty afterwards.
       void clear();
-
-      //. The order in which the String in this TextBuffer is stored.
-      readonly attribute StringOrder order;
-
-      //. Get the accociated TextBuffer that contains the String stored
-      //. in here in memory order. This operation returns a reference to
-      //. _this() if order() returns StringOrder::memory_order or a
-      //. reference to the associated buffer.
-      TextBuffer get_memory_buffer();
-      
-      //. Get the accociated TextBuffer that contains the String stored
-      //. in here in visual order. This operation returns a reference to
-      //. _this() if order() returns StringOrder::visual_order or a
-      //. reference to the associated buffer.
-      TextBuffer get_visual_buffer(); 
     };
 };
 

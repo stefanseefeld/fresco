@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp F900-FAFF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp F900-FAFF.cc
  *
  * This source file is a part of the Berlin Project
- * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Thu, 30 May 2002 20:49:16 +0200.
+ * ftp.unicode.org on Mon, 26 May 2003 15:56:42 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -24,392 +24,458 @@
  */
 
 #include <Babylon/defs.hh>
-#include <Babylon/Dictionary.hh>
+#include <Babylon/internal/Blocks.hh>
 #include <bitset>
 #include <utility>
 
-namespace Babylon {
 
-  class CJK_Compatibility_IdeographsF900 : public Babylon::Dictionary::Block {
-  public:
-    void clean () {
+namespace Babylon
+{
+  namespace Module
+  {
+    class CJK_Compatibility_IdeographsF900 : public Babylon::Block
+    {
+      public:
+        void clean() { };
+
+        CJK_Compatibility_IdeographsF900() :
+	    my_first_letter(0xF900),
+	    my_last_letter(0xFAFF)
+	    // my_version="4.0" // Not yet supported!
+        {
+        }
+
+        ~CJK_Compatibility_IdeographsF900() { }
+
+        UCS4 first_letter() const
+        {
+	    return my_first_letter;
+	}  
+
+	UCS4 last_letter() const
+	{
+	    return my_last_letter;
+	}
+
+	bool is_undef_block() const
+	{
+	    return 0;
+	}
+
+	// query functions:
+	std::string blockname(const UCS4 uc) const
+	{
+	    return "CJK Compatibility Ideographs";
+	}
+
+        bool is_defined(const UCS4 uc) const
+        {
+            return (my_is_defined.test(uc - my_first_letter));
+        }
+
+        UCS4 uppercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 lowercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 titlecase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        int dec_digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Decimal_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        int digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        float numeric_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Numeric(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Gen_Cat category(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CAT_MAX;
+            return Babylon::Gen_Cat(CAT_Lo);
+        }
+
+        Can_Comb_Class comb_class(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CC_MAX;
+            return Babylon::Can_Comb_Class(0);
+        }
+
+        Bidir_Props bidir_props(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return BIDIR_INVALID;
+            return BIDIR_L;
+        }
+
+        Char_Decomp decomp_type(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return DECOMP_MAX;
+            return Babylon::Char_Decomp(DECOMP_CANONICAL);
+        }
+
+        UTF32_string decompose(const UCS4 uc) const
+        {
+            Babylon::UTF32_string us;
+            us.resize(1);
+            us[0] = CJK_Compatibility_IdeographsF900::my_decompStr[uc - my_first_letter];
+            return us;
+        }
+
+        bool must_mirror(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Line_Break linebreak(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return LB_MAX;
+            return Babylon::Line_Break(LB_ID);
+    }
+
+        EA_Width EA_width(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return EA_WIDTH_MAX;
+            return Babylon::EA_Width(EA_WIDTH_W);
+        }
+
+        UCS4 compose(const UCS4 starter, const UCS4 last)
+        {
+            return 0;
+        }
+
+        bool exclude_from_composition(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_White_Space(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Bidi_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Join_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Dash(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Hyphen(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Quotation_Mark(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Terminal_Punctuation(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Math(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_ASCII_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Alphabetic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Ideographic(const UCS4 uc) const
+        {
+            return my_Ideographic.test(uc - my_first_letter);
+        }
+
+        bool is_Diacritic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Extender(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Lowercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Uppercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Noncharacter_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Grapheme_Extend(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Grapheme_Link(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Binary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Trinary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Radical(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Unified_Ideograph(const UCS4 uc) const
+        {
+            return my_Unified_Ideograph.test(uc - my_first_letter);
+        }
+
+        bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Deprecated(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Soft_Dotted(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Logical_Order_Exception(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_ID_Start(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+      private:
+        // functions
+        CJK_Compatibility_IdeographsF900(const CJK_Compatibility_IdeographsF900 &) ; // no implementaion!
+
+	// members
+        Babylon::UCS4 my_first_letter;
+        Babylon::UCS4 my_last_letter;
+        // Babylon::UCS4_string my_version;
+        static const std::bitset<512> my_is_defined;
+        static const UCS4 my_decompStr[512];
+        static const std::bitset<512> my_Ideographic;
+        static const std::bitset<512> my_Unified_Ideograph;
+    }; // class CJK_Compatibility_IdeographsF900
+
+    const std::bitset<512> CJK_Compatibility_IdeographsF900::my_is_defined(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+
+    const UCS4 CJK_Compatibility_IdeographsF900::my_decompStr[] =
+    {
+        0x00008C48u, 0x000066F4u, 0x00008ECAu, 0x00008CC8u,  // 0000F900
+        0x00006ED1u, 0x00004E32u, 0x000053E5u, 0x00009F9Cu,  // 0000F904
+        0x00009F9Cu, 0x00005951u, 0x000091D1u, 0x00005587u,  // 0000F908
+        0x00005948u, 0x000061F6u, 0x00007669u, 0x00007F85u,  // 0000F90C
+        0x0000863Fu, 0x000087BAu, 0x000088F8u, 0x0000908Fu,  // 0000F910
+        0x00006A02u, 0x00006D1Bu, 0x000070D9u, 0x000073DEu,  // 0000F914
+        0x0000843Du, 0x0000916Au, 0x000099F1u, 0x00004E82u,  // 0000F918
+        0x00005375u, 0x00006B04u, 0x0000721Bu, 0x0000862Du,  // 0000F91C
+        0x00009E1Eu, 0x00005D50u, 0x00006FEBu, 0x000085CDu,  // 0000F920
+        0x00008964u, 0x000062C9u, 0x000081D8u, 0x0000881Fu,  // 0000F924
+        0x00005ECAu, 0x00006717u, 0x00006D6Au, 0x000072FCu,  // 0000F928
+        0x000090CEu, 0x00004F86u, 0x000051B7u, 0x000052DEu,  // 0000F92C
+        0x000064C4u, 0x00006AD3u, 0x00007210u, 0x000076E7u,  // 0000F930
+        0x00008001u, 0x00008606u, 0x0000865Cu, 0x00008DEFu,  // 0000F934
+        0x00009732u, 0x00009B6Fu, 0x00009DFAu, 0x0000788Cu,  // 0000F938
+        0x0000797Fu, 0x00007DA0u, 0x000083C9u, 0x00009304u,  // 0000F93C
+        0x00009E7Fu, 0x00008AD6u, 0x000058DFu, 0x00005F04u,  // 0000F940
+        0x00007C60u, 0x0000807Eu, 0x00007262u, 0x000078CAu,  // 0000F944
+        0x00008CC2u, 0x000096F7u, 0x000058D8u, 0x00005C62u,  // 0000F948
+        0x00006A13u, 0x00006DDAu, 0x00006F0Fu, 0x00007D2Fu,  // 0000F94C
+        0x00007E37u, 0x0000964Bu, 0x000052D2u, 0x0000808Bu,  // 0000F950
+        0x000051DCu, 0x000051CCu, 0x00007A1Cu, 0x00007DBEu,  // 0000F954
+        0x000083F1u, 0x00009675u, 0x00008B80u, 0x000062CFu,  // 0000F958
+        0x00006A02u, 0x00008AFEu, 0x00004E39u, 0x00005BE7u,  // 0000F95C
+        0x00006012u, 0x00007387u, 0x00007570u, 0x00005317u,  // 0000F960
+        0x000078FBu, 0x00004FBFu, 0x00005FA9u, 0x00004E0Du,  // 0000F964
+        0x00006CCCu, 0x00006578u, 0x00007D22u, 0x000053C3u,  // 0000F968
+        0x0000585Eu, 0x00007701u, 0x00008449u, 0x00008AAAu,  // 0000F96C
+        0x00006BBAu, 0x00008FB0u, 0x00006C88u, 0x000062FEu,  // 0000F970
+        0x000082E5u, 0x000063A0u, 0x00007565u, 0x00004EAEu,  // 0000F974
+        0x00005169u, 0x000051C9u, 0x00006881u, 0x00007CE7u,  // 0000F978
+        0x0000826Fu, 0x00008AD2u, 0x000091CFu, 0x000052F5u,  // 0000F97C
+        0x00005442u, 0x00005973u, 0x00005EECu, 0x000065C5u,  // 0000F980
+        0x00006FFEu, 0x0000792Au, 0x000095ADu, 0x00009A6Au,  // 0000F984
+        0x00009E97u, 0x00009ECEu, 0x0000529Bu, 0x000066C6u,  // 0000F988
+        0x00006B77u, 0x00008F62u, 0x00005E74u, 0x00006190u,  // 0000F98C
+        0x00006200u, 0x0000649Au, 0x00006F23u, 0x00007149u,  // 0000F990
+        0x00007489u, 0x000079CAu, 0x00007DF4u, 0x0000806Fu,  // 0000F994
+        0x00008F26u, 0x000084EEu, 0x00009023u, 0x0000934Au,  // 0000F998
+        0x00005217u, 0x000052A3u, 0x000054BDu, 0x000070C8u,  // 0000F99C
+        0x000088C2u, 0x00008AAAu, 0x00005EC9u, 0x00005FF5u,  // 0000F9A0
+        0x0000637Bu, 0x00006BAEu, 0x00007C3Eu, 0x00007375u,  // 0000F9A4
+        0x00004EE4u, 0x000056F9u, 0x00005BE7u, 0x00005DBAu,  // 0000F9A8
+        0x0000601Cu, 0x000073B2u, 0x00007469u, 0x00007F9Au,  // 0000F9AC
+        0x00008046u, 0x00009234u, 0x000096F6u, 0x00009748u,  // 0000F9B0
+        0x00009818u, 0x00004F8Bu, 0x000079AEu, 0x000091B4u,  // 0000F9B4
+        0x000096B8u, 0x000060E1u, 0x00004E86u, 0x000050DAu,  // 0000F9B8
+        0x00005BEEu, 0x00005C3Fu, 0x00006599u, 0x00006A02u,  // 0000F9BC
+        0x000071CEu, 0x00007642u, 0x000084FCu, 0x0000907Cu,  // 0000F9C0
+        0x00009F8Du, 0x00006688u, 0x0000962Eu, 0x00005289u,  // 0000F9C4
+        0x0000677Bu, 0x000067F3u, 0x00006D41u, 0x00006E9Cu,  // 0000F9C8
+        0x00007409u, 0x00007559u, 0x0000786Bu, 0x00007D10u,  // 0000F9CC
+        0x0000985Eu, 0x0000516Du, 0x0000622Eu, 0x00009678u,  // 0000F9D0
+        0x0000502Bu, 0x00005D19u, 0x00006DEAu, 0x00008F2Au,  // 0000F9D4
+        0x00005F8Bu, 0x00006144u, 0x00006817u, 0x00007387u,  // 0000F9D8
+        0x00009686u, 0x00005229u, 0x0000540Fu, 0x00005C65u,  // 0000F9DC
+        0x00006613u, 0x0000674Eu, 0x000068A8u, 0x00006CE5u,  // 0000F9E0
+        0x00007406u, 0x000075E2u, 0x00007F79u, 0x000088CFu,  // 0000F9E4
+        0x000088E1u, 0x000091CCu, 0x000096E2u, 0x0000533Fu,  // 0000F9E8
+        0x00006EBAu, 0x0000541Du, 0x000071D0u, 0x00007498u,  // 0000F9EC
+        0x000085FAu, 0x000096A3u, 0x00009C57u, 0x00009E9Fu,  // 0000F9F0
+        0x00006797u, 0x00006DCBu, 0x000081E8u, 0x00007ACBu,  // 0000F9F4
+        0x00007B20u, 0x00007C92u, 0x000072C0u, 0x00007099u,  // 0000F9F8
+        0x00008B58u, 0x00004EC0u, 0x00008336u, 0x0000523Au,  // 0000F9FC
+        0x00005207u, 0x00005EA6u, 0x000062D3u, 0x00007CD6u,  // 0000FA00
+        0x00005B85u, 0x00006D1Eu, 0x000066B4u, 0x00008F3Bu,  // 0000FA04
+        0x0000884Cu, 0x0000964Du, 0x0000898Bu, 0x00005ED3u,  // 0000FA08
+        0x00005140u, 0x000055C0u, 0x0000FA0Eu, 0x0000FA0Fu,  // 0000FA0C
+        0x0000585Au, 0x0000FA11u, 0x00006674u, 0x0000FA13u,  // 0000FA10
+        0x0000FA14u, 0x000051DEu, 0x0000732Au, 0x000076CAu,  // 0000FA14
+        0x0000793Cu, 0x0000795Eu, 0x00007965u, 0x0000798Fu,  // 0000FA18
+        0x00009756u, 0x00007CBEu, 0x00007FBDu, 0x0000FA1Fu,  // 0000FA1C
+        0x00008612u, 0x0000FA21u, 0x00008AF8u, 0x0000FA23u,  // 0000FA20
+        0x0000FA24u, 0x00009038u, 0x000090FDu, 0x0000FA27u,  // 0000FA24
+        0x0000FA28u, 0x0000FA29u, 0x000098EFu, 0x000098FCu,  // 0000FA28
+        0x00009928u, 0x00009DB4u, 0x0000FA2Eu, 0x0000FA2Fu,  // 0000FA2C
+        0x00004FAEu, 0x000050E7u, 0x0000514Du, 0x000052C9u,  // 0000FA30
+        0x000052E4u, 0x00005351u, 0x0000559Du, 0x00005606u,  // 0000FA34
+        0x00005668u, 0x00005840u, 0x000058A8u, 0x00005C64u,  // 0000FA38
+        0x00005C6Eu, 0x00006094u, 0x00006168u, 0x0000618Eu,  // 0000FA3C
+        0x000061F2u, 0x0000654Fu, 0x000065E2u, 0x00006691u,  // 0000FA40
+        0x00006885u, 0x00006D77u, 0x00006E1Au, 0x00006F22u,  // 0000FA44
+        0x0000716Eu, 0x0000722Bu, 0x00007422u, 0x00007891u,  // 0000FA48
+        0x0000793Eu, 0x00007949u, 0x00007948u, 0x00007950u,  // 0000FA4C
+        0x00007956u, 0x0000795Du, 0x0000798Du, 0x0000798Eu,  // 0000FA50
+        0x00007A40u, 0x00007A81u, 0x00007BC0u, 0x00007DF4u,  // 0000FA54
+        0x00007E09u, 0x00007E41u, 0x00007F72u, 0x00008005u,  // 0000FA58
+        0x000081EDu, 0x00008279u, 0x00008279u, 0x00008457u,  // 0000FA5C
+        0x00008910u, 0x00008996u, 0x00008B01u, 0x00008B39u,  // 0000FA60
+        0x00008CD3u, 0x00008D08u, 0x00008FB6u, 0x00009038u,  // 0000FA64
+        0x000096E3u, 0x000097FFu, 0x0000983Bu, 0x0000FA6Bu,  // 0000FA68
+        0x0000FA6Cu, 0x0000FA6Du, 0x0000FA6Eu, 0x0000FA6Fu,  // 0000FA6C
+        0x0000FA70u, 0x0000FA71u, 0x0000FA72u, 0x0000FA73u,  // 0000FA70
+        0x0000FA74u, 0x0000FA75u, 0x0000FA76u, 0x0000FA77u,  // 0000FA74
+        0x0000FA78u, 0x0000FA79u, 0x0000FA7Au, 0x0000FA7Bu,  // 0000FA78
+        0x0000FA7Cu, 0x0000FA7Du, 0x0000FA7Eu, 0x0000FA7Fu,  // 0000FA7C
+        0x0000FA80u, 0x0000FA81u, 0x0000FA82u, 0x0000FA83u,  // 0000FA80
+        0x0000FA84u, 0x0000FA85u, 0x0000FA86u, 0x0000FA87u,  // 0000FA84
+        0x0000FA88u, 0x0000FA89u, 0x0000FA8Au, 0x0000FA8Bu,  // 0000FA88
+        0x0000FA8Cu, 0x0000FA8Du, 0x0000FA8Eu, 0x0000FA8Fu,  // 0000FA8C
+        0x0000FA90u, 0x0000FA91u, 0x0000FA92u, 0x0000FA93u,  // 0000FA90
+        0x0000FA94u, 0x0000FA95u, 0x0000FA96u, 0x0000FA97u,  // 0000FA94
+        0x0000FA98u, 0x0000FA99u, 0x0000FA9Au, 0x0000FA9Bu,  // 0000FA98
+        0x0000FA9Cu, 0x0000FA9Du, 0x0000FA9Eu, 0x0000FA9Fu,  // 0000FA9C
+        0x0000FAA0u, 0x0000FAA1u, 0x0000FAA2u, 0x0000FAA3u,  // 0000FAA0
+        0x0000FAA4u, 0x0000FAA5u, 0x0000FAA6u, 0x0000FAA7u,  // 0000FAA4
+        0x0000FAA8u, 0x0000FAA9u, 0x0000FAAAu, 0x0000FAABu,  // 0000FAA8
+        0x0000FAACu, 0x0000FAADu, 0x0000FAAEu, 0x0000FAAFu,  // 0000FAAC
+        0x0000FAB0u, 0x0000FAB1u, 0x0000FAB2u, 0x0000FAB3u,  // 0000FAB0
+        0x0000FAB4u, 0x0000FAB5u, 0x0000FAB6u, 0x0000FAB7u,  // 0000FAB4
+        0x0000FAB8u, 0x0000FAB9u, 0x0000FABAu, 0x0000FABBu,  // 0000FAB8
+        0x0000FABCu, 0x0000FABDu, 0x0000FABEu, 0x0000FABFu,  // 0000FABC
+        0x0000FAC0u, 0x0000FAC1u, 0x0000FAC2u, 0x0000FAC3u,  // 0000FAC0
+        0x0000FAC4u, 0x0000FAC5u, 0x0000FAC6u, 0x0000FAC7u,  // 0000FAC4
+        0x0000FAC8u, 0x0000FAC9u, 0x0000FACAu, 0x0000FACBu,  // 0000FAC8
+        0x0000FACCu, 0x0000FACDu, 0x0000FACEu, 0x0000FACFu,  // 0000FACC
+        0x0000FAD0u, 0x0000FAD1u, 0x0000FAD2u, 0x0000FAD3u,  // 0000FAD0
+        0x0000FAD4u, 0x0000FAD5u, 0x0000FAD6u, 0x0000FAD7u,  // 0000FAD4
+        0x0000FAD8u, 0x0000FAD9u, 0x0000FADAu, 0x0000FADBu,  // 0000FAD8
+        0x0000FADCu, 0x0000FADDu, 0x0000FADEu, 0x0000FADFu,  // 0000FADC
+        0x0000FAE0u, 0x0000FAE1u, 0x0000FAE2u, 0x0000FAE3u,  // 0000FAE0
+        0x0000FAE4u, 0x0000FAE5u, 0x0000FAE6u, 0x0000FAE7u,  // 0000FAE4
+        0x0000FAE8u, 0x0000FAE9u, 0x0000FAEAu, 0x0000FAEBu,  // 0000FAE8
+        0x0000FAECu, 0x0000FAEDu, 0x0000FAEEu, 0x0000FAEFu,  // 0000FAEC
+        0x0000FAF0u, 0x0000FAF1u, 0x0000FAF2u, 0x0000FAF3u,  // 0000FAF0
+        0x0000FAF4u, 0x0000FAF5u, 0x0000FAF6u, 0x0000FAF7u,  // 0000FAF4
+        0x0000FAF8u, 0x0000FAF9u, 0x0000FAFAu, 0x0000FAFBu,  // 0000FAF8
+        0x0000FAFCu, 0x0000FAFDu, 0x0000FAFEu, 0x0000FAFFu
     };
 
-    CJK_Compatibility_IdeographsF900() {
-      m_first_letter = 0xF900;
-      m_last_letter  = 0xFAFF;
-      // m_version="3.1" // Not yet supported!
-    }
+    const std::bitset<512> CJK_Compatibility_IdeographsF900::my_Ideographic(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
-    ~CJK_Compatibility_IdeographsF900() {
-    }
+    const std::bitset<512> CJK_Compatibility_IdeographsF900::my_Unified_Ideograph(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001110011010100000000001101011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    UCS4 first_letter() const {
-      return m_first_letter;
-    }
+  }; // namespace
+}; // namespace
 
-    UCS4 last_letter() const {
-      return m_last_letter;
-    }
-
-    bool is_undef_block() const {
-      return 0;
-    }
-
-    // query functions:
-    std::string blockname(const UCS4 uc) const {
-      return "CJK Compatibility Ideographs";
-    }
-
-    bool is_defined(const UCS4 uc) const {
-      return (m_is_defined.test(uc - m_first_letter));
-    }
-
-    UCS4 uppercase(const UCS4 uc) const {
-      return uc;
-    }
-
-    UCS4 lowercase(const UCS4 uc) const {
-      return uc;
-    }
-
-    UCS4 titlecase(const UCS4 uc) const {
-      return uc;
-    }
-
-    int dec_digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Decimal_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    int digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    float numeric_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Numeric(const UCS4 uc) const {
-      return 0;
-    }
-
-    Gen_Cat category(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CAT_MAX;
-      return Babylon::Gen_Cat(CAT_Lo);
-    }
-
-    Can_Comb_Class comb_class(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CC_MAX;
-      return Babylon::Can_Comb_Class(0);
-    }
-
-    Bidir_Props bidir_props(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return BIDIR_INVALID;
-      return BIDIR_L;
-    }
-
-    Char_Decomp decomp_type(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_CANONICAL);
-    }
-
-    UTF32_string decompose(const UCS4 uc) const {
-      Babylon::UTF32_string us;
-      us.resize(1);
-      us[0] = CJK_Compatibility_IdeographsF900::m_decompStr[uc - m_first_letter];
-      return us;
-    }
-
-    bool must_mirror(const UCS4 uc) const {
-      return 0;
-    }
-
-    Line_Break linebreak(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return LB_MAX;
-      return Babylon::Line_Break(LB_ID);
-    }
-
-    EA_Width EA_width(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return EA_WIDTH_MAX;
-      return Babylon::EA_Width(EA_WIDTH_W);
-    }
-
-    UCS4 compose (const UCS4 start, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_White_Space(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Dash(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hyphen(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Quotation_Mark(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Terminal_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Alphabetic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return m_Ideographic.test(uc - m_first_letter);
-    }
-
-    bool is_Diacritic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Extender(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Uppercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Grapheme_Link(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Binary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Radical(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Unified_Ideograph(const UCS4 uc) const {
-      return m_Unified_Ideograph.test(uc - m_first_letter);
-    }
-
-    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Deprecated(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Soft_Dotted(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Logical_Order_Exception(const UCS4 uc) const {
-      return 0;
-    }
-
-  private:
-    // functions
-    CJK_Compatibility_IdeographsF900(const CJK_Compatibility_IdeographsF900 &) {}
-
-    Babylon::UCS4 m_first_letter;
-    Babylon::UCS4 m_last_letter;
-    // Babylon::UCS4_string m_version;
-    static const std::bitset<512> m_is_defined;
-    static const UCS4 m_decompStr[512];
-    static const std::bitset<512> m_Ideographic;
-    static const std::bitset<512> m_Unified_Ideograph;
-  }; // class CJK_Compatibility_IdeographsF900
-
-    const std::bitset<512> CJK_Compatibility_IdeographsF900::m_is_defined(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
-
-  const UCS4 CJK_Compatibility_IdeographsF900::m_decompStr[] = {
-    0x8C48u, 0x66F4u, 0x8ECAu, 0x8CC8u, 
-    0x6ED1u, 0x4E32u, 0x53E5u, 0x9F9Cu, 
-    0x9F9Cu, 0x5951u, 0x91D1u, 0x5587u, 
-    0x5948u, 0x61F6u, 0x7669u, 0x7F85u, 
-    0x863Fu, 0x87BAu, 0x88F8u, 0x908Fu, 
-    0x6A02u, 0x6D1Bu, 0x70D9u, 0x73DEu, 
-    0x843Du, 0x916Au, 0x99F1u, 0x4E82u, 
-    0x5375u, 0x6B04u, 0x721Bu, 0x862Du, 
-    0x9E1Eu, 0x5D50u, 0x6FEBu, 0x85CDu, 
-    0x8964u, 0x62C9u, 0x81D8u, 0x881Fu, 
-    0x5ECAu, 0x6717u, 0x6D6Au, 0x72FCu, 
-    0x90CEu, 0x4F86u, 0x51B7u, 0x52DEu, 
-    0x64C4u, 0x6AD3u, 0x7210u, 0x76E7u, 
-    0x8001u, 0x8606u, 0x865Cu, 0x8DEFu, 
-    0x9732u, 0x9B6Fu, 0x9DFAu, 0x788Cu, 
-    0x797Fu, 0x7DA0u, 0x83C9u, 0x9304u, 
-    0x9E7Fu, 0x8AD6u, 0x58DFu, 0x5F04u, 
-    0x7C60u, 0x807Eu, 0x7262u, 0x78CAu, 
-    0x8CC2u, 0x96F7u, 0x58D8u, 0x5C62u, 
-    0x6A13u, 0x6DDAu, 0x6F0Fu, 0x7D2Fu, 
-    0x7E37u, 0x964Bu, 0x52D2u, 0x808Bu, 
-    0x51DCu, 0x51CCu, 0x7A1Cu, 0x7DBEu, 
-    0x83F1u, 0x9675u, 0x8B80u, 0x62CFu, 
-    0x6A02u, 0x8AFEu, 0x4E39u, 0x5BE7u, 
-    0x6012u, 0x7387u, 0x7570u, 0x5317u, 
-    0x78FBu, 0x4FBFu, 0x5FA9u, 0x4E0Du, 
-    0x6CCCu, 0x6578u, 0x7D22u, 0x53C3u, 
-    0x585Eu, 0x7701u, 0x8449u, 0x8AAAu, 
-    0x6BBAu, 0x8FB0u, 0x6C88u, 0x62FEu, 
-    0x82E5u, 0x63A0u, 0x7565u, 0x4EAEu, 
-    0x5169u, 0x51C9u, 0x6881u, 0x7CE7u, 
-    0x826Fu, 0x8AD2u, 0x91CFu, 0x52F5u, 
-    0x5442u, 0x5973u, 0x5EECu, 0x65C5u, 
-    0x6FFEu, 0x792Au, 0x95ADu, 0x9A6Au, 
-    0x9E97u, 0x9ECEu, 0x529Bu, 0x66C6u, 
-    0x6B77u, 0x8F62u, 0x5E74u, 0x6190u, 
-    0x6200u, 0x649Au, 0x6F23u, 0x7149u, 
-    0x7489u, 0x79CAu, 0x7DF4u, 0x806Fu, 
-    0x8F26u, 0x84EEu, 0x9023u, 0x934Au, 
-    0x5217u, 0x52A3u, 0x54BDu, 0x70C8u, 
-    0x88C2u, 0x8AAAu, 0x5EC9u, 0x5FF5u, 
-    0x637Bu, 0x6BAEu, 0x7C3Eu, 0x7375u, 
-    0x4EE4u, 0x56F9u, 0x5BE7u, 0x5DBAu, 
-    0x601Cu, 0x73B2u, 0x7469u, 0x7F9Au, 
-    0x8046u, 0x9234u, 0x96F6u, 0x9748u, 
-    0x9818u, 0x4F8Bu, 0x79AEu, 0x91B4u, 
-    0x96B8u, 0x60E1u, 0x4E86u, 0x50DAu, 
-    0x5BEEu, 0x5C3Fu, 0x6599u, 0x6A02u, 
-    0x71CEu, 0x7642u, 0x84FCu, 0x907Cu, 
-    0x9F8Du, 0x6688u, 0x962Eu, 0x5289u, 
-    0x677Bu, 0x67F3u, 0x6D41u, 0x6E9Cu, 
-    0x7409u, 0x7559u, 0x786Bu, 0x7D10u, 
-    0x985Eu, 0x516Du, 0x622Eu, 0x9678u, 
-    0x502Bu, 0x5D19u, 0x6DEAu, 0x8F2Au, 
-    0x5F8Bu, 0x6144u, 0x6817u, 0x7387u, 
-    0x9686u, 0x5229u, 0x540Fu, 0x5C65u, 
-    0x6613u, 0x674Eu, 0x68A8u, 0x6CE5u, 
-    0x7406u, 0x75E2u, 0x7F79u, 0x88CFu, 
-    0x88E1u, 0x91CCu, 0x96E2u, 0x533Fu, 
-    0x6EBAu, 0x541Du, 0x71D0u, 0x7498u, 
-    0x85FAu, 0x96A3u, 0x9C57u, 0x9E9Fu, 
-    0x6797u, 0x6DCBu, 0x81E8u, 0x7ACBu, 
-    0x7B20u, 0x7C92u, 0x72C0u, 0x7099u, 
-    0x8B58u, 0x4EC0u, 0x8336u, 0x523Au, 
-    0x5207u, 0x5EA6u, 0x62D3u, 0x7CD6u, 
-    0x5B85u, 0x6D1Eu, 0x66B4u, 0x8F3Bu, 
-    0x884Cu, 0x964Du, 0x898Bu, 0x5ED3u, 
-    0x5140u, 0x55C0u, 0xFA0Eu, 0xFA0Fu, 
-    0x585Au, 0xFA11u, 0x6674u, 0xFA13u, 
-    0xFA14u, 0x51DEu, 0x732Au, 0x76CAu, 
-    0x793Cu, 0x795Eu, 0x7965u, 0x798Fu, 
-    0x9756u, 0x7CBEu, 0x7FBDu, 0xFA1Fu, 
-    0x8612u, 0xFA21u, 0x8AF8u, 0xFA23u, 
-    0xFA24u, 0x9038u, 0x90FDu, 0xFA27u, 
-    0xFA28u, 0xFA29u, 0x98EFu, 0x98FCu, 
-    0x9928u, 0x9DB4u, 0xFA2Eu, 0xFA2Fu, 
-    0x4FAEu, 0x50E7u, 0x514Du, 0x52C9u, 
-    0x52E4u, 0x5351u, 0x559Du, 0x5606u, 
-    0x5668u, 0x5840u, 0x58A8u, 0x5C64u, 
-    0x5C6Eu, 0x6094u, 0x6168u, 0x618Eu, 
-    0x61F2u, 0x654Fu, 0x65E2u, 0x6691u, 
-    0x6885u, 0x6D77u, 0x6E1Au, 0x6F22u, 
-    0x716Eu, 0x722Bu, 0x7422u, 0x7891u, 
-    0x793Eu, 0x7949u, 0x7948u, 0x7950u, 
-    0x7956u, 0x795Du, 0x798Du, 0x798Eu, 
-    0x7A40u, 0x7A81u, 0x7BC0u, 0x7DF4u, 
-    0x7E09u, 0x7E41u, 0x7F72u, 0x8005u, 
-    0x81EDu, 0x8279u, 0x8279u, 0x8457u, 
-    0x8910u, 0x8996u, 0x8B01u, 0x8B39u, 
-    0x8CD3u, 0x8D08u, 0x8FB6u, 0x9038u, 
-    0x96E3u, 0x97FFu, 0x983Bu, 0xFA6Bu, 
-    0xFA6Cu, 0xFA6Du, 0xFA6Eu, 0xFA6Fu, 
-    0xFA70u, 0xFA71u, 0xFA72u, 0xFA73u, 
-    0xFA74u, 0xFA75u, 0xFA76u, 0xFA77u, 
-    0xFA78u, 0xFA79u, 0xFA7Au, 0xFA7Bu, 
-    0xFA7Cu, 0xFA7Du, 0xFA7Eu, 0xFA7Fu, 
-    0xFA80u, 0xFA81u, 0xFA82u, 0xFA83u, 
-    0xFA84u, 0xFA85u, 0xFA86u, 0xFA87u, 
-    0xFA88u, 0xFA89u, 0xFA8Au, 0xFA8Bu, 
-    0xFA8Cu, 0xFA8Du, 0xFA8Eu, 0xFA8Fu, 
-    0xFA90u, 0xFA91u, 0xFA92u, 0xFA93u, 
-    0xFA94u, 0xFA95u, 0xFA96u, 0xFA97u, 
-    0xFA98u, 0xFA99u, 0xFA9Au, 0xFA9Bu, 
-    0xFA9Cu, 0xFA9Du, 0xFA9Eu, 0xFA9Fu, 
-    0xFAA0u, 0xFAA1u, 0xFAA2u, 0xFAA3u, 
-    0xFAA4u, 0xFAA5u, 0xFAA6u, 0xFAA7u, 
-    0xFAA8u, 0xFAA9u, 0xFAAAu, 0xFAABu, 
-    0xFAACu, 0xFAADu, 0xFAAEu, 0xFAAFu, 
-    0xFAB0u, 0xFAB1u, 0xFAB2u, 0xFAB3u, 
-    0xFAB4u, 0xFAB5u, 0xFAB6u, 0xFAB7u, 
-    0xFAB8u, 0xFAB9u, 0xFABAu, 0xFABBu, 
-    0xFABCu, 0xFABDu, 0xFABEu, 0xFABFu, 
-    0xFAC0u, 0xFAC1u, 0xFAC2u, 0xFAC3u, 
-    0xFAC4u, 0xFAC5u, 0xFAC6u, 0xFAC7u, 
-    0xFAC8u, 0xFAC9u, 0xFACAu, 0xFACBu, 
-    0xFACCu, 0xFACDu, 0xFACEu, 0xFACFu, 
-    0xFAD0u, 0xFAD1u, 0xFAD2u, 0xFAD3u, 
-    0xFAD4u, 0xFAD5u, 0xFAD6u, 0xFAD7u, 
-    0xFAD8u, 0xFAD9u, 0xFADAu, 0xFADBu, 
-    0xFADCu, 0xFADDu, 0xFADEu, 0xFADFu, 
-    0xFAE0u, 0xFAE1u, 0xFAE2u, 0xFAE3u, 
-    0xFAE4u, 0xFAE5u, 0xFAE6u, 0xFAE7u, 
-    0xFAE8u, 0xFAE9u, 0xFAEAu, 0xFAEBu, 
-    0xFAECu, 0xFAEDu, 0xFAEEu, 0xFAEFu, 
-    0xFAF0u, 0xFAF1u, 0xFAF2u, 0xFAF3u, 
-    0xFAF4u, 0xFAF5u, 0xFAF6u, 0xFAF7u, 
-    0xFAF8u, 0xFAF9u, 0xFAFAu, 0xFAFBu, 
-    0xFAFCu, 0xFAFDu, 0xFAFEu, 0xFAFFu
-  };
-
-    const std::bitset<512> CJK_Compatibility_IdeographsF900::m_Ideographic(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
-
-    const std::bitset<512> CJK_Compatibility_IdeographsF900::m_Unified_Ideograph(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001110011000000000000001100011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
-
-}; // namespace Babylon
-
-dload(Babylon::CJK_Compatibility_IdeographsF900);
+dload(Babylon::Module::CJK_Compatibility_IdeographsF900);

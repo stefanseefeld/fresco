@@ -44,7 +44,7 @@
 #include <Berlin/GraphDebugger.hh>
 
 // to allow to override the default Babylon path:
-#include <Babylon/Dictionary.hh>
+#include <Babylon/Babylon.hh>
 
 #include <fstream>
 #include <sstream>
@@ -379,7 +379,7 @@ int main(int argc, char **argv) /*FOLD00*/
        
     {
       Prague::Path path = RCManager::get_path("babylonpath");
-      Babylon::override_path(path);
+      Babylon::override_path(path[0]);
     }
 
     Logger::log(Logger::loader) << "Babylon path set." << std::endl;
@@ -452,6 +452,8 @@ int main(int argc, char **argv) /*FOLD00*/
     getopt.get("drawing", &value);
     if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
     else props[0].value = CORBA::string_dup("LibArtDrawingKit");
+    Logger::log(Logger::drawing) << "Trying to resolve DrawingKit \""
+                                 << props[0].value << "\"" << std::endl;
     DrawingKit_var drawing =
       server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
 				  props, poa);

@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 2F00-2FDF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp 2F00-2FDF.cc
  *
  * This source file is a part of the Berlin Project
- * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Thu, 30 May 2002 20:48:13 +0200.
+ * ftp.unicode.org on Mon, 26 May 2003 15:56:03 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -24,349 +24,443 @@
  */
 
 #include <Babylon/defs.hh>
-#include <Babylon/Dictionary.hh>
+#include <Babylon/internal/Blocks.hh>
 #include <bitset>
 #include <utility>
 
-namespace Babylon {
 
-  class Kangxi_Radicals2F00 : public Babylon::Dictionary::Block {
-  public:
-    void clean () {
+namespace Babylon
+{
+  namespace Module
+  {
+    class Kangxi_Radicals2F00 : public Babylon::Block
+    {
+      public:
+        void clean() { };
+
+        Kangxi_Radicals2F00() :
+	    my_first_letter(0x2F00),
+	    my_last_letter(0x2FDF)
+	    // my_version="4.0" // Not yet supported!
+        {
+        }
+
+        ~Kangxi_Radicals2F00() { }
+
+        UCS4 first_letter() const
+        {
+	    return my_first_letter;
+	}  
+
+	UCS4 last_letter() const
+	{
+	    return my_last_letter;
+	}
+
+	bool is_undef_block() const
+	{
+	    return 0;
+	}
+
+	// query functions:
+	std::string blockname(const UCS4 uc) const
+	{
+	    return "Kangxi Radicals";
+	}
+
+        bool is_defined(const UCS4 uc) const
+        {
+            return (my_is_defined.test(uc - my_first_letter));
+        }
+
+        UCS4 uppercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 lowercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 titlecase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        int dec_digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Decimal_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        int digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        float numeric_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Numeric(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Gen_Cat category(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CAT_MAX;
+            return Babylon::Gen_Cat(CAT_So);
+        }
+
+        Can_Comb_Class comb_class(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CC_MAX;
+            return Babylon::Can_Comb_Class(0);
+        }
+
+        Bidir_Props bidir_props(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return BIDIR_INVALID;
+            return BIDIR_ON;
+        }
+
+        Char_Decomp decomp_type(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return DECOMP_MAX;
+            return Babylon::Char_Decomp(Kangxi_Radicals2F00::my_decomp[uc - my_first_letter]);
+        }
+
+        UTF32_string decompose(const UCS4 uc) const
+        {
+            Babylon::UTF32_string us;
+            us.resize(1);
+            us[0] = Kangxi_Radicals2F00::my_decompStr[uc - my_first_letter];
+            return us;
+        }
+
+        bool must_mirror(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Line_Break linebreak(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return LB_MAX;
+            return Babylon::Line_Break(LB_ID);
+    }
+
+        EA_Width EA_width(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return EA_WIDTH_MAX;
+            return Babylon::EA_Width(EA_WIDTH_W);
+        }
+
+        UCS4 compose(const UCS4 starter, const UCS4 last)
+        {
+            return 0;
+        }
+
+        bool exclude_from_composition(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_White_Space(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Bidi_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Join_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Dash(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Hyphen(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Quotation_Mark(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Terminal_Punctuation(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Math(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_ASCII_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Alphabetic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Ideographic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Diacritic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Extender(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Lowercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Uppercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Noncharacter_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Grapheme_Extend(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Grapheme_Link(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Binary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Trinary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Radical(const UCS4 uc) const
+        {
+            return my_Radical.test(uc - my_first_letter);
+        }
+
+        bool is_Unified_Ideograph(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Deprecated(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Soft_Dotted(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Logical_Order_Exception(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_ID_Start(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+      private:
+        // functions
+        Kangxi_Radicals2F00(const Kangxi_Radicals2F00 &) ; // no implementaion!
+
+	// members
+        Babylon::UCS4 my_first_letter;
+        Babylon::UCS4 my_last_letter;
+        // Babylon::UCS4_string my_version;
+        static const std::bitset<224> my_is_defined;
+        static const unsigned char my_decomp[224];
+        static const UCS4 my_decompStr[224];
+        static const std::bitset<224> my_Radical;
+    }; // class Kangxi_Radicals2F00
+
+    const std::bitset<224> Kangxi_Radicals2F00::my_is_defined(std::string("00000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+
+    const unsigned char Kangxi_Radicals2F00::my_decomp[] = {
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+        DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
     };
 
-    Kangxi_Radicals2F00() {
-      m_first_letter = 0x2F00;
-      m_last_letter  = 0x2FDF;
-      // m_version="3.1" // Not yet supported!
-    }
+    const UCS4 Kangxi_Radicals2F00::my_decompStr[] =
+    {
+        0x00004E00u, 0x00004E28u, 0x00004E36u, 0x00004E3Fu,  // 00002F00
+        0x00004E59u, 0x00004E85u, 0x00004E8Cu, 0x00004EA0u,  // 00002F04
+        0x00004EBAu, 0x0000513Fu, 0x00005165u, 0x0000516Bu,  // 00002F08
+        0x00005182u, 0x00005196u, 0x000051ABu, 0x000051E0u,  // 00002F0C
+        0x000051F5u, 0x00005200u, 0x0000529Bu, 0x000052F9u,  // 00002F10
+        0x00005315u, 0x0000531Au, 0x00005338u, 0x00005341u,  // 00002F14
+        0x0000535Cu, 0x00005369u, 0x00005382u, 0x000053B6u,  // 00002F18
+        0x000053C8u, 0x000053E3u, 0x000056D7u, 0x0000571Fu,  // 00002F1C
+        0x000058EBu, 0x00005902u, 0x0000590Au, 0x00005915u,  // 00002F20
+        0x00005927u, 0x00005973u, 0x00005B50u, 0x00005B80u,  // 00002F24
+        0x00005BF8u, 0x00005C0Fu, 0x00005C22u, 0x00005C38u,  // 00002F28
+        0x00005C6Eu, 0x00005C71u, 0x00005DDBu, 0x00005DE5u,  // 00002F2C
+        0x00005DF1u, 0x00005DFEu, 0x00005E72u, 0x00005E7Au,  // 00002F30
+        0x00005E7Fu, 0x00005EF4u, 0x00005EFEu, 0x00005F0Bu,  // 00002F34
+        0x00005F13u, 0x00005F50u, 0x00005F61u, 0x00005F73u,  // 00002F38
+        0x00005FC3u, 0x00006208u, 0x00006236u, 0x0000624Bu,  // 00002F3C
+        0x0000652Fu, 0x00006534u, 0x00006587u, 0x00006597u,  // 00002F40
+        0x000065A4u, 0x000065B9u, 0x000065E0u, 0x000065E5u,  // 00002F44
+        0x000066F0u, 0x00006708u, 0x00006728u, 0x00006B20u,  // 00002F48
+        0x00006B62u, 0x00006B79u, 0x00006BB3u, 0x00006BCBu,  // 00002F4C
+        0x00006BD4u, 0x00006BDBu, 0x00006C0Fu, 0x00006C14u,  // 00002F50
+        0x00006C34u, 0x0000706Bu, 0x0000722Au, 0x00007236u,  // 00002F54
+        0x0000723Bu, 0x0000723Fu, 0x00007247u, 0x00007259u,  // 00002F58
+        0x0000725Bu, 0x000072ACu, 0x00007384u, 0x00007389u,  // 00002F5C
+        0x000074DCu, 0x000074E6u, 0x00007518u, 0x0000751Fu,  // 00002F60
+        0x00007528u, 0x00007530u, 0x0000758Bu, 0x00007592u,  // 00002F64
+        0x00007676u, 0x0000767Du, 0x000076AEu, 0x000076BFu,  // 00002F68
+        0x000076EEu, 0x000077DBu, 0x000077E2u, 0x000077F3u,  // 00002F6C
+        0x0000793Au, 0x000079B8u, 0x000079BEu, 0x00007A74u,  // 00002F70
+        0x00007ACBu, 0x00007AF9u, 0x00007C73u, 0x00007CF8u,  // 00002F74
+        0x00007F36u, 0x00007F51u, 0x00007F8Au, 0x00007FBDu,  // 00002F78
+        0x00008001u, 0x0000800Cu, 0x00008012u, 0x00008033u,  // 00002F7C
+        0x0000807Fu, 0x00008089u, 0x000081E3u, 0x000081EAu,  // 00002F80
+        0x000081F3u, 0x000081FCu, 0x0000820Cu, 0x0000821Bu,  // 00002F84
+        0x0000821Fu, 0x0000826Eu, 0x00008272u, 0x00008278u,  // 00002F88
+        0x0000864Du, 0x0000866Bu, 0x00008840u, 0x0000884Cu,  // 00002F8C
+        0x00008863u, 0x0000897Eu, 0x0000898Bu, 0x000089D2u,  // 00002F90
+        0x00008A00u, 0x00008C37u, 0x00008C46u, 0x00008C55u,  // 00002F94
+        0x00008C78u, 0x00008C9Du, 0x00008D64u, 0x00008D70u,  // 00002F98
+        0x00008DB3u, 0x00008EABu, 0x00008ECAu, 0x00008F9Bu,  // 00002F9C
+        0x00008FB0u, 0x00008FB5u, 0x00009091u, 0x00009149u,  // 00002FA0
+        0x000091C6u, 0x000091CCu, 0x000091D1u, 0x00009577u,  // 00002FA4
+        0x00009580u, 0x0000961Cu, 0x000096B6u, 0x000096B9u,  // 00002FA8
+        0x000096E8u, 0x00009751u, 0x0000975Eu, 0x00009762u,  // 00002FAC
+        0x00009769u, 0x000097CBu, 0x000097EDu, 0x000097F3u,  // 00002FB0
+        0x00009801u, 0x000098A8u, 0x000098DBu, 0x000098DFu,  // 00002FB4
+        0x00009996u, 0x00009999u, 0x000099ACu, 0x00009AA8u,  // 00002FB8
+        0x00009AD8u, 0x00009ADFu, 0x00009B25u, 0x00009B2Fu,  // 00002FBC
+        0x00009B32u, 0x00009B3Cu, 0x00009B5Au, 0x00009CE5u,  // 00002FC0
+        0x00009E75u, 0x00009E7Fu, 0x00009EA5u, 0x00009EBBu,  // 00002FC4
+        0x00009EC3u, 0x00009ECDu, 0x00009ED1u, 0x00009EF9u,  // 00002FC8
+        0x00009EFDu, 0x00009F0Eu, 0x00009F13u, 0x00009F20u,  // 00002FCC
+        0x00009F3Bu, 0x00009F4Au, 0x00009F52u, 0x00009F8Du,  // 00002FD0
+        0x00009F9Cu, 0x00009FA0u, 0x00002FD6u, 0x00002FD7u,  // 00002FD4
+        0x00002FD8u, 0x00002FD9u, 0x00002FDAu, 0x00002FDBu,  // 00002FD8
+        0x00002FDCu, 0x00002FDDu, 0x00002FDEu, 0x00002FDFu
+    };
 
-    ~Kangxi_Radicals2F00() {
-    }
+    const std::bitset<224> Kangxi_Radicals2F00::my_Radical(std::string("00000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
-    UCS4 first_letter() const {
-      return m_first_letter;
-    }
+  }; // namespace
+}; // namespace
 
-    UCS4 last_letter() const {
-      return m_last_letter;
-    }
-
-    bool is_undef_block() const {
-      return 0;
-    }
-
-    // query functions:
-    std::string blockname(const UCS4 uc) const {
-      return "Kangxi Radicals";
-    }
-
-    bool is_defined(const UCS4 uc) const {
-      return (m_is_defined.test(uc - m_first_letter));
-    }
-
-    UCS4 uppercase(const UCS4 uc) const {
-      return uc;
-    }
-
-    UCS4 lowercase(const UCS4 uc) const {
-      return uc;
-    }
-
-    UCS4 titlecase(const UCS4 uc) const {
-      return uc;
-    }
-
-    int dec_digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Decimal_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    int digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    float numeric_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Numeric(const UCS4 uc) const {
-      return 0;
-    }
-
-    Gen_Cat category(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CAT_MAX;
-      return Babylon::Gen_Cat(CAT_So);
-    }
-
-    Can_Comb_Class comb_class(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CC_MAX;
-      return Babylon::Can_Comb_Class(0);
-    }
-
-    Bidir_Props bidir_props(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return BIDIR_INVALID;
-      return BIDIR_ON;
-    }
-
-    Char_Decomp decomp_type(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return DECOMP_MAX;
-      return Babylon::Char_Decomp(Kangxi_Radicals2F00::_decomp[uc - m_first_letter]);
-    }
-
-    UTF32_string decompose(const UCS4 uc) const {
-      Babylon::UTF32_string us;
-      us.resize(1);
-      us[0] = Kangxi_Radicals2F00::m_decompStr[uc - m_first_letter];
-      return us;
-    }
-
-    bool must_mirror(const UCS4 uc) const {
-      return 0;
-    }
-
-    Line_Break linebreak(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return LB_MAX;
-      return Babylon::Line_Break(LB_ID);
-    }
-
-    EA_Width EA_width(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return EA_WIDTH_MAX;
-      return Babylon::EA_Width(EA_WIDTH_W);
-    }
-
-    UCS4 compose (const UCS4 start, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_White_Space(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Dash(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hyphen(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Quotation_Mark(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Terminal_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Alphabetic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Diacritic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Extender(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Uppercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Grapheme_Link(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Binary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Radical(const UCS4 uc) const {
-      return m_Radical.test(uc - m_first_letter);
-    }
-
-    bool is_Unified_Ideograph(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Deprecated(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Soft_Dotted(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Logical_Order_Exception(const UCS4 uc) const {
-      return 0;
-    }
-
-  private:
-    // functions
-    Kangxi_Radicals2F00(const Kangxi_Radicals2F00 &) {}
-
-    Babylon::UCS4 m_first_letter;
-    Babylon::UCS4 m_last_letter;
-    // Babylon::UCS4_string m_version;
-    static const std::bitset<224> m_is_defined;
-    static const unsigned char _decomp[224];
-    static const UCS4 m_decompStr[224];
-    static const std::bitset<224> m_Radical;
-  }; // class Kangxi_Radicals2F00
-
-    const std::bitset<224> Kangxi_Radicals2F00::m_is_defined(std::string("00000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
-
-  const unsigned char Kangxi_Radicals2F00::_decomp[] = {
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
-  };
-
-  const UCS4 Kangxi_Radicals2F00::m_decompStr[] = {
-    0x4E00u, 0x4E28u, 0x4E36u, 0x4E3Fu, 
-    0x4E59u, 0x4E85u, 0x4E8Cu, 0x4EA0u, 
-    0x4EBAu, 0x513Fu, 0x5165u, 0x516Bu, 
-    0x5182u, 0x5196u, 0x51ABu, 0x51E0u, 
-    0x51F5u, 0x5200u, 0x529Bu, 0x52F9u, 
-    0x5315u, 0x531Au, 0x5338u, 0x5341u, 
-    0x535Cu, 0x5369u, 0x5382u, 0x53B6u, 
-    0x53C8u, 0x53E3u, 0x56D7u, 0x571Fu, 
-    0x58EBu, 0x5902u, 0x590Au, 0x5915u, 
-    0x5927u, 0x5973u, 0x5B50u, 0x5B80u, 
-    0x5BF8u, 0x5C0Fu, 0x5C22u, 0x5C38u, 
-    0x5C6Eu, 0x5C71u, 0x5DDBu, 0x5DE5u, 
-    0x5DF1u, 0x5DFEu, 0x5E72u, 0x5E7Au, 
-    0x5E7Fu, 0x5EF4u, 0x5EFEu, 0x5F0Bu, 
-    0x5F13u, 0x5F50u, 0x5F61u, 0x5F73u, 
-    0x5FC3u, 0x6208u, 0x6236u, 0x624Bu, 
-    0x652Fu, 0x6534u, 0x6587u, 0x6597u, 
-    0x65A4u, 0x65B9u, 0x65E0u, 0x65E5u, 
-    0x66F0u, 0x6708u, 0x6728u, 0x6B20u, 
-    0x6B62u, 0x6B79u, 0x6BB3u, 0x6BCBu, 
-    0x6BD4u, 0x6BDBu, 0x6C0Fu, 0x6C14u, 
-    0x6C34u, 0x706Bu, 0x722Au, 0x7236u, 
-    0x723Bu, 0x723Fu, 0x7247u, 0x7259u, 
-    0x725Bu, 0x72ACu, 0x7384u, 0x7389u, 
-    0x74DCu, 0x74E6u, 0x7518u, 0x751Fu, 
-    0x7528u, 0x7530u, 0x758Bu, 0x7592u, 
-    0x7676u, 0x767Du, 0x76AEu, 0x76BFu, 
-    0x76EEu, 0x77DBu, 0x77E2u, 0x77F3u, 
-    0x793Au, 0x79B8u, 0x79BEu, 0x7A74u, 
-    0x7ACBu, 0x7AF9u, 0x7C73u, 0x7CF8u, 
-    0x7F36u, 0x7F51u, 0x7F8Au, 0x7FBDu, 
-    0x8001u, 0x800Cu, 0x8012u, 0x8033u, 
-    0x807Fu, 0x8089u, 0x81E3u, 0x81EAu, 
-    0x81F3u, 0x81FCu, 0x820Cu, 0x821Bu, 
-    0x821Fu, 0x826Eu, 0x8272u, 0x8278u, 
-    0x864Du, 0x866Bu, 0x8840u, 0x884Cu, 
-    0x8863u, 0x897Eu, 0x898Bu, 0x89D2u, 
-    0x8A00u, 0x8C37u, 0x8C46u, 0x8C55u, 
-    0x8C78u, 0x8C9Du, 0x8D64u, 0x8D70u, 
-    0x8DB3u, 0x8EABu, 0x8ECAu, 0x8F9Bu, 
-    0x8FB0u, 0x8FB5u, 0x9091u, 0x9149u, 
-    0x91C6u, 0x91CCu, 0x91D1u, 0x9577u, 
-    0x9580u, 0x961Cu, 0x96B6u, 0x96B9u, 
-    0x96E8u, 0x9751u, 0x975Eu, 0x9762u, 
-    0x9769u, 0x97CBu, 0x97EDu, 0x97F3u, 
-    0x9801u, 0x98A8u, 0x98DBu, 0x98DFu, 
-    0x9996u, 0x9999u, 0x99ACu, 0x9AA8u, 
-    0x9AD8u, 0x9ADFu, 0x9B25u, 0x9B2Fu, 
-    0x9B32u, 0x9B3Cu, 0x9B5Au, 0x9CE5u, 
-    0x9E75u, 0x9E7Fu, 0x9EA5u, 0x9EBBu, 
-    0x9EC3u, 0x9ECDu, 0x9ED1u, 0x9EF9u, 
-    0x9EFDu, 0x9F0Eu, 0x9F13u, 0x9F20u, 
-    0x9F3Bu, 0x9F4Au, 0x9F52u, 0x9F8Du, 
-    0x9F9Cu, 0x9FA0u, 0x2FD6u, 0x2FD7u, 
-    0x2FD8u, 0x2FD9u, 0x2FDAu, 0x2FDBu, 
-    0x2FDCu, 0x2FDDu, 0x2FDEu, 0x2FDFu
-  };
-
-    const std::bitset<224> Kangxi_Radicals2F00::m_Radical(std::string("00000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
-
-}; // namespace Babylon
-
-dload(Babylon::Kangxi_Radicals2F00);
+dload(Babylon::Module::Kangxi_Radicals2F00);

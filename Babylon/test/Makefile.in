@@ -34,7 +34,7 @@ LDFLAGS		+= $(SO_LDFLAGS)
 
 # All tests ending in .cc will be build, the rest will be run on
 # "make run-tests".
-TESTS		:= 
+TESTS		:= ucd.pl
 
 CXX_TESTS	:= $(filter %.cc, $(TESTS))
 HDR		:= 
@@ -46,6 +46,7 @@ OBJ		:= $(patsubst %.cxx, %.o, $(HARNESS))
 TARGETS		:= $(patsubst %.cc, ./%, $(CXX_TESTS))
 SCRIPTS		:= $(filter-out %.cc, $(TESTS))
 SCRIPT_SOURCES	:= $(patsubst %, $(srcdir)/%, $(SCRIPTS))
+SCRIPT_TARGETS  := $(patsubst %, ./%, $(SCRIPTS))
 MANUAL		:= $(docdir)/html
 
 vpath %.hh  $(hdir)
@@ -58,15 +59,16 @@ vpath %.cc  $(srcdir)
 all:
 
 ifdef FRESCO_TEST_CONFIG
-build-tests: $(TARGETS)
+build-tests: $(TARGETS) $(SCRIPTS)
 else
 build-tests:
 	@echo "you need 'Fresco-Test' in order to build the tests"
 endif
 
 ifdef FRESCO_TEST_CONFIG
-run-tests: build-tests $(SCRIPT_SOURCES)
-	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
+run-tests: build-tests
+	@echo Running tests, please wait...
+	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(top_builddir)/lib:$(DESTDIR)$(libdir):$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_TARGETS)
 else
 run-tests:
 	@echo "you need 'Fresco-Test' in order to build the tests"
@@ -75,6 +77,17 @@ endif
 $(TARGETS): $(OBJ)
 	@echo linking $(@F)
 	$(CXX) `$(FRESCO_TEST_CONFIG) --libs` -o $@ $<
+
+$(SCRIPTS):
+	@echo Running sed on scripts...
+	for THIS_SCRIPT in $(SCRIPTS) ; do \
+	    cat $(srcdir)/$$THIS_SCRIPT | \
+		sed -e "s#@MAKE_BINDIR@#$(bindir)#g" | \
+		sed -e "s#@MAKE_SRCDIR@#$(srcdir)#g" | \
+		sed -e "s#@MAKE_TOP_BUILDDIR@#$(abs_top_builddir)#g" \
+		> $$THIS_SCRIPT ; \
+	    chmod 755 $$THIS_SCRIPT ; \
+	done
 
 depend: $(DEP)
 
@@ -87,8 +100,8 @@ install-doc: # not yet
 uninstall: #not yet
 
 clean:	
-	rm -f $(TARGETS)
-	rm -f $(OBJ) $(DEP) $(SYN) $(HARNESS)
+	rm -f $(TARGETS) $(SCRIPT_TARGETS)
+	rm -f $(OBJ) $(DEP) $(SYN) $(HARNESS) test.log
 
 distclean:	clean
 

@@ -1,163 +1,145 @@
 package UnicodePluginGenerator::Title;
 use strict;
 
-sub new {
-  my $self = {};
-  my $ucd_file = $_[1];
+sub new
+{
+    my $self = {};
+    my $ucd_file = $_[1];
+    
+    open(UCD, $ucd_file) or die "Can't open Character Database.\n";
 
-  open(UCD, $ucd_file);
+    while(<UCD>)
+    {
+	chop;
+	(my $info, my $rest) = split /#/;
+	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 
-  while(<UCD>) {
-    my $line = chop;
-    (my $info, my $rest) = split /#/;
-    $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
+	next unless ($info);
 
-    next if ($info eq "");
-
-    my @list = split /;/, $info, 15;
-
-    if ($list[14] ne "") {
-      $self->{hex($list[0])} = $list[14];
+	my @list = split /;/, $info, 15;
+	
+	$self->{hex($list[0])} = $list[14] if ($list[14] ne "");
     }
-  }
 
-  $self->{_BL_START} = -1;
-  $self->{_BL_END} = -1;
-  $self->{_ATTENTION_NEEDED} = 1;
-
-  close(UCD);
-
-  bless($self);
-  return $self;
+    $self->{_BL_START} = -1;
+    $self->{_BL_END} = -1;
+    $self->{_ATTENTION_NEEDED} = 1;
+    
+    close(UCD);
+    
+    bless($self);
+    return $self;
 }
 
 
-sub data {
-  my $self = shift;
+sub data
+{
+    my $self = shift;
+    my $pos = $_[0];
 
-  my $pos = $_[0];
+    if    ($pos > 0x003400 and $pos < 0x004DB5) { $pos = 0x003400; }
+    elsif ($pos > 0x004E00 and $pos < 0x009FA5) { $pos = 0x004E00; }
+    elsif ($pos > 0x00AC00 and $pos < 0x00D7A3) { $pos = 0x00AC00; }
+    elsif ($pos > 0x00D800 and $pos < 0x00DB7F) { $pos = 0x00D800; }
+    elsif ($pos > 0x00DB80 and $pos < 0x00DBFF) { $pos = 0x00DB80; }
+    elsif ($pos > 0x00DC00 and $pos < 0x00DFFF) { $pos = 0x00DC00; }
+    elsif ($pos > 0x00E000 and $pos < 0x00F8FF) { $pos = 0x00E000; }
+    elsif ($pos > 0x020000 and $pos < 0x02A6D6) { $pos = 0x020000; }
+    elsif ($pos > 0x0F0000 and $pos < 0x0FFFFD) { $pos = 0x0F0000; }
+    elsif ($pos > 0x100000 and $pos < 0x10FFFD) { $pos = 0x100000; }
 
-  if    ($pos > 0x003400 and $pos < 0x004DB5) { $pos = 0x003400; }
-  elsif ($pos > 0x004E00 and $pos < 0x009FA5) { $pos = 0x004E00; }
-  elsif ($pos > 0x00AC00 and $pos < 0x00D7A3) { $pos = 0x00AC00; }
-  elsif ($pos > 0x00D800 and $pos < 0x00DB7F) { $pos = 0x00D800; }
-  elsif ($pos > 0x00DB80 and $pos < 0x00DBFF) { $pos = 0x00DB80; }
-  elsif ($pos > 0x00DC00 and $pos < 0x00DFFF) { $pos = 0x00DC00; }
-  elsif ($pos > 0x00E000 and $pos < 0x00F8FF) { $pos = 0x00E000; }
-  elsif ($pos > 0x0F0000 and $pos < 0x0FFFFD) { $pos = 0x0F0000; }
-  elsif ($pos > 0x100000 and $pos < 0x10FFFD) { $pos = 0x100000; }
-
-  if(exists($self->{$pos})) {
-    return $self->{$pos};
-  } else {
+    return $self->{$pos} if (exists($self->{$pos}));
     return "undef";
-  }
 }
 
-sub include {
-  return "";
+sub setup_for
+{
+    my $self = shift;
+    my $bl_start = $_[0];
+    my $bl_end   = $_[1];
+
+    if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end)
+    {
+	$self->{_BL_START} = $bl_start;
+	$self->{_BL_END} = $bl_end;
+	for (my $i = $bl_start; $i <= $bl_end; $i++)
+	{
+	    if ($self->data($i) ne "undef") {
+		$self->{_ATTENTION_NEEDED} = 1;
+		last;
+	    }
+	    $self->{_ATTENTION_NEEDED} = 0;
+	}
+    }
 }
 
-sub init {
-  return "";
+sub include
+{
+    return "";
+}
+
+sub init
+{
+    return "";
 }
 
 sub function {
-  my $self = shift;
+    my $self = shift;
+    $self->setup_for($_[0], $_[1]);
+    my $bl_name  = $_[2];
 
-  my $bl_start = $_[0];
-  my $bl_end   = $_[1];
-  my $bl_name  = $_[2];
-
-  if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
-    $self->{_BL_START} = $bl_start;
-    $self->{_BL_END} = $bl_end;
-    for (my $i = $bl_start; $i <= $bl_end; $i++) {
-      if ($self->data($i) ne "undef") {
-	$self->{_ATTENTION_NEEDED} = 1;
-	last;
-      }
-      $self->{_ATTENTION_NEEDED} = 0;
+    my $tmp = "        UCS4 titlecase(const UCS4 uc) const\n        {\n";
+    if ($self->{_ATTENTION_NEEDED})
+    {
+	$tmp .= "            return $bl_name\:\:my_title\[uc - my_first_letter\];\n";
     }
-  }
+    else
+    {
+	$tmp .= "            return uc;\n";
+    }
+    $tmp   .= "        }\n\n";
 
-  my $tmp = "    UCS4 titlecase(const UCS4 uc) const {\n";
-  if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return $bl_name\:\:m_title\[uc - m_first_letter\];\n";
-  } else {
-    $tmp .= "      return uc;\n";
-  }
-  $tmp   .= "    }\n\n";
-
-  return $tmp;
+    return $tmp;
 }
 
-sub var_def {
-  my $self = shift;
+sub var_def
+{
+    my $self = shift;
+    $self->setup_for($_[0], $_[1]);
+    my $bl_length = $_[1] - $_[0] + 1;
 
-  my $bl_start = $_[0];
-  my $bl_end   = $_[1];
-  my $bl_length = $bl_end - $bl_start + 1;
-
-  if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
-    $self->{_BL_START} = $bl_start;
-    $self->{_BL_END} = $bl_end;
-    for (my $i = $bl_start; $i <= $bl_end; $i++) {
-      if ($self->data($i) ne "undef") {
-	$self->{_ATTENTION_NEEDED} = 1;
-	last;
-      }
-      $self->{_ATTENTION_NEEDED} = 0;
-    }
-  }
-
-  if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const UCS4 m_title\[$bl_length\];\n";
-  } else {
+    return "        static const UCS4 my_title\[$bl_length\];\n"
+	if ($self->{_ATTENTION_NEEDED});
     return "";
-  }
 }
 
 sub var {
-  my $self = shift;
+    my $self = shift;
+    $self->setup_for($_[0], $_[1]);
+    my $bl_length = $_[1] - $_[0] + 1;
+    my $bl_start = $_[0];
+    my $bl_end = $_[1];
+    my $bl_name  = $_[2];
 
-  my $bl_start = $_[0];
-  my $bl_end   = $_[1];
-  my $bl_name  = $_[2];
-  my $bl_length = $bl_end - $bl_start;
-
-  if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
-    $self->{_BL_START} = $bl_start;
-    $self->{_BL_END} = $bl_end;
-    for (my $i = $bl_start; $i <= $bl_end; $i++) {
-      if ($self->data($i) ne "undef") {
-	$self->{_ATTENTION_NEEDED} = 1;
-	last;
-      }
-      $self->{_ATTENTION_NEEDED} = 0;
+    if ($self->{_ATTENTION_NEEDED}) {
+	my $tmp = "    const UCS4 $bl_name\:\:my_title\[\] =\n    {";
+	for (my $i= $bl_start; $i <= $bl_end; $i++)
+	{
+	    $tmp .= "\n        " if (($i - $bl_start) % 8 == 0);
+	    if ($self->data($i) eq "undef")
+	    {
+		$tmp .= sprintf "0x%04X", $i;
+	    }
+	    else
+	    {
+		$tmp .= "0x".$self->data($i);
+	    }
+	    $tmp .= ", " if ( $i != $bl_end);
+	}
+	$tmp .= "\n    };\n\n";
+	return $tmp;
     }
-  }
-
-  if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const UCS4 $bl_name\:\:m_title\[\] = {";
-    for (my $i= $bl_start; $i <= $bl_end; $i++) {
-      if (($i - $bl_start) % 8 == 0) {
-	$tmp .= "\n    ";
-      }
-      if ($self->data($i) eq "undef") {
-	$tmp .= sprintf "0x%04X", $i;
-      } else {
-	$tmp .= "0x".$self->data($i);
-      }
-      if ( $i != $bl_end) {
-	$tmp .= ", ";
-      }
-    }
-    $tmp .= "\n  };\n\n";
-    return $tmp;
-  } else {
     return "";
-  }
 }
 
 1; # for use to succeed...

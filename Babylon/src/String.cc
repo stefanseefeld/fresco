@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999-2003 Tobias Hunger <Tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,661 +20,425 @@
  * MA 02139, USA.
  */
 
-#include <Babylon/Char.hh>
-#include <Babylon/String.hh>
-#include <Babylon/utils.hh>
 #include <Prague/Sys/Tracer.hh>
-#include <functional>
 
-// CONSTRUCTORS:
-Babylon::String::String() : m_current_norm(Babylon::NORM_NONE) {
-    Prague::Trace trace("Babylon::String::String()");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    resize(0);
+#include <Babylon/String.hh>
+#include <Babylon/internal/Dictionary.hh>
+
+// Constructors:
+
+Babylon::String::String() :
+    my_norm(NORM_NONE),
+    my_data()
+{ }
+
+Babylon::String::String(const String & s,
+			const size_type p1, const size_type p2) :
+    my_norm(s.my_norm),
+    my_data(s.my_data, p1, p2)
+{ }
+
+Babylon::String::String(const char_type * c, const Norm n) :
+    my_norm(n),
+    my_data(c)
+{ }
+
+Babylon::String::String(const char_type * c, const size_type l,
+			const Norm n) :
+    my_norm(n),
+    my_data(c, l)
+{ }
+
+Babylon::String::String(const size_type l, const char_type c, const Norm n) :
+    my_norm(n),
+    my_data(l, c)
+{ }
+
+Babylon::String::String(const string_type & s) :
+    my_norm(NORM_NONE),
+    my_data(s)
+{ }
+
+template<class InputIterator>
+Babylon::String::String(InputIterator b, InputIterator e,
+			const Norm n) :
+    my_norm(n),
+    my_data(b, e)
+{ }
+
+Babylon::String::~String() { }
+
+// members:
+
+void Babylon::String::norm(const Norm n)
+{
+    String tmp(get_normalized(n));
+    swap(tmp);
 }
 
-Babylon::String::String(const Char uc, Norm norm)  :
-    m_current_norm(norm) {
-    Prague::Trace trace("Babylon::String::String(Char, ...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    resize(1);
-    (*this)[0] = uc;
-    m_current_norm = norm;
-}
+Babylon::String Babylon::String::get_normalized(const Norm n) const
+{
+    // catch common conditions in which we can just return this string:
+    if (empty() || n == my_norm || n == NORM_NONE) return *this;
 
-Babylon::String::String(const UCS4 uc, Norm norm) :
-    m_current_norm(norm) {
-    Prague::Trace trace("Babylon::String::String(UCS4, ...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    resize(1);
-    (*this)[0] = uc;
-}
+    String r;
+    Dictionary * dict = Dictionary::instance();
 
-Babylon::String::String(const UTF8_string & s, const Norm norm) :
-    m_current_norm(norm) {
-    Prague::Trace trace("Babylon::String::String(UTF8_string, ...)");
-    utf8(s, norm);
-}
+    // Do I need to decompose?
+    if (my_norm > n || (n == NORM_KD && my_norm == NORM_C))
+    {
+	 for(String::const_iterator i = begin(); i != end(); ++i)
+	 {
+	     String tmp;
+	     get_from_UTF32(dict->recursive_decompose(((n & NORM_MASK_K)
+						       != 0),
+						      i->value()), tmp);
 
-Babylon::String::String(const char * s, const Norm norm) {
-    Prague::Trace trace("Babylon::String::String(char *, ...)");
-    utf8(s, norm);
-}
-
-Babylon::String::String(size_t len, Char * data, const Norm norm) :
-    m_current_norm(norm) {
-    Prague::Trace trace("Babylon::String::String(size_t, ...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    this->assign(data, len);
-}
-
-Babylon::String::String(const String & us) {
-    Prague::Trace trace("Babylon::String::String(String)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    resize(us.length());
-    
-    Babylon::String::const_iterator   us_it = us.begin();
-    Babylon::String::iterator       this_it = this->begin();
-    
-    while (us_it != us.end() && this_it != this->end()) {
-	*this_it = *us_it;
-	++this_it; ++us_it;
+	     for(String::const_iterator j = tmp.begin(); j != tmp.end(); ++j)
+	     {
+		 Can_Comb_Class c_class = dict->comb_class(j->value());
+		 if (CC_SPACING == c_class)
+		     r.push_back(*j);
+		 else
+		 {
+		     size_type k = r.length();
+		     for ( ; k > 0; --k)
+			 if (dict->comb_class(r[k - 1].value()) <= c_class)
+			     break;
+		     r.insert(k, 1, *j);
+		 }
+	     }
+	 }
     }
-    m_current_norm = us.norm();
-}
+    else r = my_data;
 
-Babylon::String::String(const UTF32_string & us, Norm norm) :
-    m_current_norm(norm) {
-    Prague::Trace trace("Babylon::String::String(UTF32_string, ...)"); 
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    resize(us.length());
-    
-    Babylon::UTF32_string::const_iterator us_it = us.begin();
-    Babylon::String::iterator this_it = this->begin();
-    
-    while (us_it != us.end() && this_it != this->end()) {
-	*this_it = *us_it;
-	++this_it; ++us_it;
-    }
-}
-
-
-// DESTRUCTORS
-
-Babylon::String::~String() {
-    Prague::Trace trace("Babylon::String::~String()");
-}
-
-void Babylon::String::utf8(const UTF8_string & s, Norm norm)
-    throw (Trans_Error) {
-    Prague::Trace trace("Babylon::String::utf8(...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    m_current_norm = norm;
-    erase();
-    
-    UTF8_string::const_iterator it = s.begin();
-    while(it != s.end()) {
-	Char t;
-	it = t.utf8(s, it);
-	*this += t;
-    }
-}
-
-Babylon::UTF8_string Babylon::String::utf8() const throw (Trans_Error) {
-    Prague::Trace trace("Babylon::String::utf8()");
-    Babylon::UTF8_string res;
-
-    for(String::const_iterator it = this->begin();
-	it != this->end();
-	++it)
-	res += it->utf8();
-    return res;
-}
-
-void Babylon::String::utf16(const UTF16_string & in , const Norm norm)
-    throw (Trans_Error) {
-    Prague::Trace trace("Babylon::String::utf16(...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    m_current_norm = norm;
-    erase();
-
-    UTF16_string::const_iterator it = in.begin();
-    while(it != in.end()) {
-	Char t;
-	it = t.utf16(in, it);
-	*this += t;
-    }
-}
-
-Babylon::UTF16_string Babylon::String::utf16() const throw (Trans_Error) {
-    Prague::Trace trace("Babylon::String::utf16()");
-    UTF16_string res;
-    for(String::const_iterator it = this->begin();
-	it != this->end();
-	++it)
-	res += it->utf16();
-    return res;
-}
-
-void Babylon::String::utf32(const UTF32_string & s, const Norm norm) {
-    Prague::Trace trace("Babylon::String::utf32(...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    erase();
-    m_current_norm = norm;
-    UTF32_string::const_iterator it = s.begin();
-    while(it != s.end()) {
-	Char t;
-	it = t.utf32(s, it);
-	*this += t;
-    }
-}
-
-Babylon::UTF32_string Babylon::String::utf32() const throw (Trans_Error) {
-    Prague::Trace trace("Babylon::String::utf32()");
-    UTF32_string res;
-
-    for(String::const_iterator it = this->begin();
-	it != this->end();
-	++it)
-	res += it->utf32();
-    return res;
-}
-
-void Babylon::String::swap(String & that) {
-    Prague::Trace trace("Babylon::String::swap(...)");
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    std::swap(*this, that);
-    std::swap(m_current_norm, that.m_current_norm);
-}
-
-void Babylon::String::normalize(const Norm norm) {
-    Prague::Trace trace("Babylon::String::normalize(...)");
-    String result;
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    if (length() > 0 && norm < NORM_NONE && norm != m_current_norm) {
-	Dictionary * dict = Dictionary::instance();
+    // Do I need to compose?
+    if ((my_norm != NORM_C) && (n & NORM_MASK_C))
+    {
+	String::iterator starter = r.begin();
+	String::iterator comp_pos = starter + 1; // we have at least 1 char!
+	Can_Comb_Class last_class = dict->comb_class(starter->value());
+	if (last_class != 0) // fix for irregular comb sequence
+	    last_class = Can_Comb_Class(256);
 	
-	// do I need to decompose?
-	if (m_current_norm!=NORM_D || (norm!=NORM_KC && m_current_norm!=NORM_NONE)) {
-	    bool compat = (norm & 2); // compatibility bit
-	    for(String::const_iterator i = this->begin();
-		i != this->end(); ++i) {
-		String tmp = dict->recursive_decompose(compat, i->value());
-		
-		for(String::const_iterator j = tmp.begin();
-		    j != tmp.end(); ++j) {
-		    Can_Comb_Class c_class = dict->find_char(j->value())->
-			comb_class(j->value());
-		    String::iterator k = result.end();
-		    if (c_class == 0)
-			result += *j;
-		    else {
-			for (; k >= result.begin(); k--)
-			    if (dict->find_char((k-1)->value())->
-				comb_class((k-1)->value()) <= c_class) break;
-			result.insert(k, *j);
-		    }
-		}
+	for(String::iterator ch = comp_pos; ch != r.end(); ++ch)
+	{
+	    Can_Comb_Class ch_class = dict->comb_class(ch->value());
+	    UCS4 composite(dict->compose(starter->value(), ch->value()));
+	    if (dict->is_Full_Composition_Exclusion(composite))
+		composite = UC_NULL;
+
+	    if ( (composite != 0) &&
+		 (last_class < ch_class || last_class == 0) )
+		*starter = composite;
+	    else
+	    {
+		if (ch_class == 0) starter = comp_pos;
+		last_class = ch_class;
+		*comp_pos = *ch;
+		comp_pos++;
 	    }
-	}      
-	
-	// do I need to compose?
-	if (m_current_norm != NORM_C && (norm & 1)) {
-	    // decomposition skipped?
-	    if (result.length() == 0) result = *this;
-	    
-	    String::iterator starter = result.begin();
-	    String::iterator comp_pos = starter + 1;
-	    Can_Comb_Class last_class = dict->find_char(starter->value())->
-		comb_class(starter->value());
-	    if (last_class != 0)
-		last_class = Can_Comb_Class(256); // fix for irregular comb sequence
-	    
-	    for(String::iterator ch = starter + 1;
-		ch != result.end(); ++ch) {
-		Can_Comb_Class ch_class = dict->find_char(ch->value())->
-		    comb_class(ch->value());
-		UCS4 composite = dict->find_char(starter->value())->
-		    compose(starter->value(), ch->value());
-		
-		if(composite != 0 && (last_class < ch_class || last_class == 0))
-		    *starter = composite;
-		else {
-		    if(ch_class == 0)
-			starter = comp_pos;
-		    last_class=ch_class;
-		    *comp_pos = *ch;
-		    comp_pos++;
-		}
-	    }
-	    result.resize(comp_pos - result.begin());
-	} // compose
+	}
+	r.resize(std::distance(r.begin(), comp_pos));
     }
-    if(result.length() != 0) {
-	m_current_norm = norm;
-	*this = result;
+    r.override_norm(n);
+    return r;
+}
+
+int Babylon::String::compare(const size_type, const size_type,
+			     const String &) const
+{
+    // FIXME:
+}
+
+int Babylon::String::compare(const size_type, const size_type, const String &,
+			     const size_type, const size_type) const
+{
+    // FIXME:
+}
+
+int Babylon::String::compare(const char_type *) const
+{
+    // FIXME:
+}
+
+int Babylon::String::compare(const size_type, const size_type,
+			     const char_type *) const
+{
+    // FIXME:
+}
+
+int Babylon::String::compare(const size_type, const size_type,
+			     const char_type *, const size_type) const
+{
+    // FIXME:
+}
+
+Babylon::String::char_type & Babylon::String::operator[](const size_type p)
+{
+    return my_data[p];
+}
+
+Babylon::String::char_type & Babylon::String::at(const size_type p)
+{
+    return my_data.at(p);
+}
+
+Babylon::String &
+Babylon::String::assign(const Babylon::String & s,
+			const size_type p1, const size_type p2)
+{
+    my_data.assign(s.my_data, p1, p2);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String & Babylon::String::assign(const char_type * c, const Norm n)
+{
+    my_data.assign(c);
+    my_norm = n;
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::assign(const char_type * c, const size_type l,	const Norm n)
+{
+    my_data.assign(c, l);
+    my_norm = n;
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::assign(const size_type l, const char_type c)
+{
+    my_data.assign(l, c);
+    my_norm = NORM_NONE;
+    return *this;
+}
+
+void Babylon::String::swap(Babylon::String & that) throw()
+{
+    std::swap(my_data, that.my_data);
+    std::swap(my_norm, that.my_norm);
+}
+
+Babylon::String &
+Babylon::String::append(const Babylon::String & s,
+			const size_type p1, const size_type p2)
+{
+    size_type start = my_data.length();
+    my_data.append(s.my_data, p1, p2);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::append(const char_type * c, const size_type l,	const Norm n)
+{
+    size_type start = my_data.length();
+    my_data.append(c, l);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String & Babylon::String::append(const char_type * c, const Norm n)
+{
+    my_data.append(c);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::append(const size_type l, const char_type c)
+{
+    my_data.append(l, c);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::insert(const size_type p1, const Babylon::String & s,
+			const size_type p2, const size_type p3)
+{
+    my_data.insert(p1, s.my_data, p2, p3);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::insert(const size_type p1,
+			const char_type * c, const size_type p2)
+{
+    my_data.insert(p1, c, p2);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::insert(const size_type p1, const char_type * c)
+{
+    size_type old_length = my_data.length();
+    my_data.insert(p1, c);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::insert(const size_type p1, const size_type p2,
+			const char_type c)
+{
+    my_data.insert(p1, p2, c);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::replace(const size_type p1, const size_type p2,
+			 const Babylon::String & s,
+			 const size_type p3, const size_type p4)
+{
+    my_data.replace(p1, p2, s.my_data, p3, p4);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::replace(const size_type p1, const size_type p2,
+			 const char_type * c, const size_type l)
+{
+    my_data.replace(p1, p2, c, l);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::replace(const size_type p1,  const size_type p2,
+			 const char_type * c)
+{
+    my_data.replace(p1, p2, c);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+Babylon::String &
+Babylon::String::replace(const size_type p1, const size_type p2,
+			 const size_type p3, char_type c)
+{
+    my_data.replace(p1, p2, p3, c);
+    my_norm = NORM_NONE; // FIXME: Can we do better?
+    return *this;
+}
+
+void Babylon::String::resize(const size_type l)
+{
+    my_data.resize(l);
+}
+
+void Babylon::String::resize(const size_type l, char_type c)
+{
+    my_data.resize(l, c);
+}
+
+void Babylon::String::clear()
+{
+    my_data.clear();
+}
+
+Babylon::String & Babylon::String::erase()
+{
+    my_data.erase();
+    return *this;
+}
+
+Babylon::String & Babylon::String::erase(const size_type i)
+{
+    my_data.erase(i);
+    return *this;
+}
+
+Babylon::String & Babylon::String::erase(const size_type i, const size_type l)
+{
+    my_data.erase(i, l);
+    return *this;
+}
+
+Babylon::String & Babylon::String::erase(iterator b, iterator e)
+{
+    my_data.erase(b, e);
+    return *this;
+}
+
+Babylon::String::String(const std::string & s, const size_t pos,
+			const std::string format,
+			const Babylon::Norm norm)
+{
+    convert(s, pos, format, norm);
+}
+
+Babylon::String::String(const char * c,
+			const std::string format,
+			const Babylon::Norm norm)
+{
+    std::string s(c);
+    convert(s, 0, format, norm);
+}
+
+Babylon::String::String(const char * c, const size_t len,
+			const std::string format,
+			const Babylon::Norm norm)
+{
+    std::string s(c, len);
+    convert(s, 0, format, norm);
+}
+
+std::string Babylon::String::convert(const std::string & format) const
+    throw (Babylon::Transfer_Error)
+{
+    std::string result;
+    for (Babylon::String::const_iterator i = this->begin();
+         i != this->end();
+         ++i)
+        result.append(i->convert(format));
+    return result;
+}
+    
+size_t Babylon::String::convert(const std::string & s,
+				const size_t p,
+				const std::string & format,
+				const Babylon::Norm norm)
+    throw (Babylon::Transfer_Error, std::length_error)
+{
+    clear();
+
+    size_type i = (p >= s.length()) ? std::string::npos : p;
+    for ( ; i <= s.length(); )
+    {
+	push_back(Char(s, i, format));
+        if (i == max_size())
+            throw (std::length_error("Input String too long."));
     }
+    my_norm = norm;
+    return i;
 }
 
-Babylon::String Babylon::String::norm(Babylon::Norm norm) const {
-    Prague::Trace trace("Babylon::String::norm(...)");
-    String tmp = *this;
-    tmp.normalize(norm);
-    return tmp;
-}
+void Babylon::String::debug_dump() const
+{
+    std::cerr << "Babylon::String at " << std::hex << this << " Norm: ";
+    if (NORM_NONE == my_norm)
+	std::cerr << "none";
+    else if (NORM_D == my_norm)
+	std::cerr << "D";
+    else if (NORM_C == my_norm)
+	std::cerr << "C";
+    else if (NORM_KD == my_norm)
+	std::cerr << "KD";
+    else if (NORM_KC == my_norm)
+	std::cerr << "KC";
+    else
+	std::cerr << "UNKNOWN";
 
-/*
-void Babylon::String::erase() {
-    m_current_norm = Babylon::NORM_NONE;
-    std::basic_string<Char>::erase();
-}
-*/
-
-Babylon::Paragraphs Babylon::String::get_paragraphs() {
-    Prague::Trace trace("Babylon::String::get_paragraphs()");
-    Babylon::Paragraphs result;
-    Babylon::Paragraph current;
-    Prague::Guard<Prague::Mutex> guard(_mutex);
-    if (this->empty()) return result;
-
-    current.begin = 0;
-    for(Babylon::String::iterator i = this->begin();
-	i != this->end();
-	i = find_if(i, this->end(), std::mem_fun_ref
-		    (&Babylon::Char::is_Paragraph_Separator))) {
-	current.end = std::distance(this->begin(), i);
-	result.push_back(current);
-	current.begin = std::distance(this->begin(), i) + 1; 
-	                // i != mem_order.end(), so this is ok.
-    }
-    current.end = std::distance(this->begin(), this->end());
-    result.push_back(current);
-
-    for(Babylon::Paragraphs::iterator i = result.begin();
-	i != result.end();
-	++i)
-	i->levels = analyse(this->begin() + i->begin,
-			    this->begin() + i->end);
-
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_defined() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_defined())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Spaces() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Space())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_ISO_Controls() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_ISO_Control())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Punctuations() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Punctuation())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Line_Separators() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Line_Separator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Paragraph_Separators() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Paragraph_Separator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Currency_Symbols() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Currency_Symbol())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Left_to_Rights() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Left_to_Right())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_European_Digits() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_European_Digit())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Eur_Num_Separators() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Eur_Num_Separator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Eur_Num_Terminators() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Eur_Num_Terminator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Arabic_Digits() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Arabic_Digit())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Common_Separator() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Common_Separator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Block_Separator() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Block_Separator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Segment_Separator() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Segment_Separator())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Whitespaces() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_defined()) result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Non_spacing_Marks() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Non_spacing_Mark())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Boundary_Neutrals() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Boundary_Neutral())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_PDFs() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_PDF())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Embedding_or_Overrides() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Embedding_or_Override())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Bidi_Other_Neutrals() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Bidi_Other_Neutral())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Viramas() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Virama())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Printables() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Printable())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Not_a_Characters() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Not_a_Character())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Maths() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Math())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Alphabetics() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Alphabetic())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Lowercases() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Lowercase())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Uppercases() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Uppercase())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Titlecases() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Titlecase())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_ID_Starts() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_ID_Start())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_ID_Continues() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_ID_Continue())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_XID_Starts() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_XID_Start())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_XID_Continues() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_XID_Continue())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Decimals() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Decimal())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Digits() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Digit())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Numerics() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Numeric())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-std::vector<size_t> Babylon::String::get_Private_Uses() {
-    std::vector<size_t> result;
-    for(Babylon::String::const_iterator i = this->begin();
-	i != this->end();
-	++i)
-	if (i->is_Private_Use())
-	    result.push_back(std::distance(static_cast<Babylon::String::const_iterator>(this->begin()), i));
-    return result;
-}
-
-bool Babylon::Paragraph_lt::operator() (const Paragraph & p1,
-					 const Paragraph & p2) {
-    return p1.end < p2.begin;
-}
-
-
-bool Babylon::Paragraph_eq::operator() (const Paragraph & p1,
-					 const Paragraph & p2) {
-    return p1.begin == p2.begin && p1.end == p2.end;
+    std::cerr << " (" << length() << ")  >";
+    for(const_iterator i = begin(); i != end(); ++i)
+	std::cerr << i->value() << " ";
+    std::cerr << "<" << std::dec << std::endl;
 }

@@ -76,7 +76,8 @@ int main(int argc, char **argv)
 
     Server_var s = resolve_server(getopt, orb);
 
-    ClientContextImpl *client_impl = new ClientContextImpl("daVinci");
+    ClientContextImpl *client_impl =
+	new ClientContextImpl(Babylon::String("daVinci"));
     ClientContext_var client = client_impl->_this();
 
     ServerContext_var server = s->create_server_context(client);

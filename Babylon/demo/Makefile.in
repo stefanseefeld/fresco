@@ -1,0 +1,134 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999-2003 Stefan Seefeld <stefan@fresco.org> and
+#                         Tobias Hunger <tobias@fresco.org>
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+SHELL		:= /bin/sh
+
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+hdir		:= $(top_srcdir)/include/Babylon
+docdir		:= $(top_builddir)/share/doc/Babylon
+
+include $(cdir)/local.mk
+
+CXXFLAGS	+= $(SO_CXXFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
+CPPFLAGS        += -DRC_MODULEPATH='"$(libdir)/Babylon"'
+
+SRC		:= dump_blocks.cc dump_ucd.cc dump_lb.cc dump_ea.cc \
+		   dump_compexclude.cc dump_props.cc normalize.cc
+HDR		:= 
+DEP		:= $(patsubst %.cc, %.d, $(SRC))
+OBJ		:= $(patsubst %.cc, %.o, $(SRC))
+HSYN		:= $(patsubst %, %.syn, $(HDR))
+SSYN		:= $(patsubst %, %.syn, $(SRC))
+SYN		:= $(HSYN) $(SSYN)
+XREF		:= $(patsubst %, %.xref, $(HDR))
+XREF		+= $(patsubst %, %.xref, $(SRC))
+
+TARGETS		:= $(patsubst %.cc, $(top_builddir)/bin/%, $(SRC))
+MANUAL		:= $(docdir)/html
+
+vpath %.hh  $(hdir)
+vpath %.cc  $(srcdir)
+
+.FORCE:
+
+.PHONY: depend doc install install-doc uninstall clean distclean maintainer-clean dist
+
+all:	$(TARGETS)
+
+$(top_builddir)/bin/dump_blocks : dump_blocks.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/dump_ucd : dump_ucd.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/dump_lb : dump_lb.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/dump_ea : dump_ea.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/dump_compexclude : dump_compexclude.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/dump_props : dump_props.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/normalize : normalize.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+$(top_builddir)/bin/bidir : bidir.o
+	@echo linking $(@F)
+	$(CXX) -L../lib -lBabylon $(LIBS) -o $@ $<
+
+depend: $(DEP)
+
+xref:
+
+doc:
+
+$(MANUAL):
+
+install:	all
+
+install-doc:
+
+uninstall:
+
+build-tests: all
+
+run-tests: build-tests
+
+clean:	
+	rm -f $(TARGET)
+	rm -f *.o *.d *.syn
+
+distclean:	clean
+	rm -f Makefile
+
+maintainer-clean: distclean
+
+%.d:	%.cc %.hh
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+%.o:	%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), depend doc install-doc clean distclean maintainer-clean))
+-include $(DEP)
+endif

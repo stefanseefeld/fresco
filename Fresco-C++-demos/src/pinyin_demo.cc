@@ -47,6 +47,7 @@
 
 #include <Fresco/TextBuffer.hh>
 #include <Babylon/Babylon.hh>
+#include <Prague/Sys/Path.hh>
 
 #ifdef DATADIR
 const std::string data_dir = DATADIR;
@@ -94,7 +95,7 @@ public:
 		    // I use insert_string() since the chinese chars might have
 		    // a codepoint above 0xFFFF which insert_char() is not
 		    // able to handle.
-		    output->insert_string(Unicode::to_CORBA(Babylon::String(select_from[last.value() - 'A'])));
+		    output->insert_string(Unicode::to_CORBA(Babylon::String(1, select_from[last.value() - 'A'])));
 		    
 //XXX		    input->clear(); // this clears select too:
 		                    // it results in a call to this function

@@ -48,6 +48,7 @@ SRC	+= 250-2AF.cc \
 	   300-36F.cc \
            370-3FF.cc \
            400-4FF.cc \
+	   500-52F.cc \
            530-58F.cc \
            590-5FF.cc \
            600-6FF.cc \
@@ -74,8 +75,16 @@ SRC	+= 250-2AF.cc \
            1400-167F.cc \
            1680-169F.cc \
            16A0-16FF.cc \
+	   1700-171F.cc \
+	   1720-173F.cc \
+	   1740-175F.cc \
+	   1760-177F.cc \
            1780-17FF.cc \
            1800-18AF.cc \
+	   1900-194F.cc \
+	   1950-197F.cc \
+	   19E0-19FF.cc \
+	   1D00-1D7F.cc \
            1E00-1EFF.cc \
            1F00-1FFF.cc \
            2000-206F.cc \
@@ -95,7 +104,13 @@ SRC	+= 250-2AF.cc \
            25A0-25FF.cc \
            2600-26FF.cc \
            2700-27BF.cc \
+	   27C0-27EF.cc \
+	   27F0-27FF.cc \
            2800-28FF.cc \
+	   2900-297F.cc \
+	   2980-29FF.cc \
+	   2A00-2AFF.cc \
+	   2B00-2BFF.cc \
            2E80-2EFF.cc \
            2F00-2FDF.cc \
            2FF0-2FFF.cc \
@@ -106,9 +121,11 @@ SRC	+= 250-2AF.cc \
            3130-318F.cc \
            3190-319F.cc \
            31A0-31BF.cc \
+	   31F0-31FF.cc \
            3200-32FF.cc \
            3300-33FF.cc \
            3400-4DBF.cc \
+	   4DC0-4DFF.cc \
            4E00-9FFF.cc \
            A000-A48F.cc \
            A490-A4CF.cc \
@@ -120,21 +137,31 @@ SRC	+= 250-2AF.cc \
            F900-FAFF.cc \
            FB00-FB4F.cc \
            FB50-FDFF.cc \
+	   FE00-FE0F.cc \
            FE20-FE2F.cc \
            FE30-FE4F.cc \
            FE50-FE6F.cc \
            FE70-FEFF.cc \
            FF00-FFEF.cc \
            FFF0-FFFF.cc \
+	   10000-1007F.cc \
+	   10080-100FF.cc \
+	   10100-1013F.cc \
            10300-1032F.cc \
 	   10330-1034F.cc \
+	   10380-1039F.cc \
            10400-1044F.cc \
+	   10450-1047F.cc \
+	   10480-104AF.cc \
+	   10800-1083F.cc \
            1D000-1D0FF.cc \
 	   1D100-1D1FF.cc \
+	   1D300-1D35F.cc \
            1D400-1D7FF.cc \
            20000-2A6DF.cc \
            2F800-2FA1F.cc \
            E0000-E007F.cc \
+	   E0100-E01EF.cc \
 	   F0000-FFFFF.cc \
 	   100000-10FFFF.cc
 endif
@@ -158,9 +185,9 @@ install:	all
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Babylon
 	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/Babylon
 
-build-tests:
+build-tests: all
 
-run-tests:
+run-tests: build-tests
 
 install-doc: #nothing to do
 

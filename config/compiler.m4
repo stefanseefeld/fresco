@@ -182,6 +182,15 @@ AC_DEFUN(FRESCO_CHECK_OPTIMIZE, [
 							CFLAGS="$CFLAGS $OPT_CFLAGS")
 							;;
 					esac
+					case $host_cpu in
+					i686*|686*)
+						OPT_CFLAGS='-march=i686 -msse -mfpmath=sse'
+						FRESCO_COMPILER_OPTION(coptimize_686,
+							[-m<xxx> for 686 CPU],
+							$OPT_CFLAGS,
+							CFLAGS="$CFLAGS $OPT_CFLAGS")
+							;;
+					esac
 					AC_LANG_RESTORE
 				else
 					CFLAGS="$CFLAGS -O"
@@ -209,6 +218,14 @@ AC_DEFUN(FRESCO_CHECK_OPTIMIZE, [
 							CXXFLAGS="$CXXFLAGS $OPT_CXXFLAGS")
 							;;
 					esac
+					case $host_cpu in
+                                        i686*|686*)                                                                             OPT_CFLAGS='-march=i686 -msse -mfpmath=sse'
+                                                FRESCO_COMPILER_OPTION(cxxoptimize_686,
+                                                        [-m<xxx> for 686 CPU],
+                                                        $OPT_CFLAGS,
+                                                        CFLAGS="$CFLAGS $OPT_CFLAGS")
+                                                        ;;
+                                        esac
 					AC_LANG_RESTORE
 				else
 					CXXFLAGS="$CXXFLAGS -O"

@@ -1,9 +1,10 @@
 #!/usr/bin/perl -w 
 use Carp;
 use strict;
-use UnicodePluginGenerator qw( Defined Category CombClass Bidir DecompClass DecompString DecDigitVal
-							 DigitVal NumericVal Mirror Upper Lower Title Linebreak EAWidth Compositions
-							 Block Prop);
+use UnicodePluginGenerator qw( Defined Category CombClass Bidir DecompClass
+			       DecompString DecDigitVal DigitVal NumericVal
+			       Mirror Upper Lower Title Linebreak EAWidth
+			       Compositions CompExclude Block Prop);
 
 my $UCD_File     = "UnicodeData.txt";
 my $Block_File   = "Blocks.txt";
@@ -11,10 +12,19 @@ my $EA_File      = "EastAsianWidth.txt";
 my $LB_File      = "LineBreak.txt";
 my $Exclude_File = "CompositionExclusions.txt";
 my $Prop_File    = "PropList.txt";
-my $Prefix       = "./blocks/";
+my $Prefix       = "./modules/";
 
 # make directory if it doesnt exist
 system ("if [ ! -d $Prefix ] ; then mkdir $Prefix ; fi");
+
+my $ftp_path     = "ftp://ftp.unicode.org/Public/UNIDATA/";
+
+# Get files if necessary from ftp.unicode.org
+foreach my $file ( $Block_File, $UCD_File, $EA_File, $LB_File,
+		   $Exclude_File, $Prop_File)
+{
+    system ("if [ ! -f $file ] ; then wget $ftp_path$file ; fi");
+}
 
 ############################################################################
 
@@ -41,7 +51,8 @@ close BlockHandle;
 
 # reading data from the files...
 print "  ...compositions\n";
-my $COMP   = UnicodePluginGenerator::Compositions->new($UCD_File, $Exclude_File); print "  ...props\n";
+my $COMP   = UnicodePluginGenerator::Compositions->new($UCD_File); print "  ...composition excludes\n";
+my $EXCL   = UnicodePluginGenerator::CompExclude->new($Exclude_File); print "  ...props\n";
 my $PROPS  = UnicodePluginGenerator::Props->new($Prop_File); print "  ...categories\n";
 my $CAT    = UnicodePluginGenerator::Category->new($UCD_File); print "  ...defines\n";
 my $DEF    = UnicodePluginGenerator::Defined->new($UCD_File); print "  ...combining classes\n";
@@ -58,6 +69,8 @@ my $LOWER  = UnicodePluginGenerator::Lower->new($UCD_File); print "  ...titlecas
 my $TITLE  = UnicodePluginGenerator::Title->new($UCD_File); print "  ...linebreaking properties\n";
 my $LB     = UnicodePluginGenerator::Linebreak->new($LB_File); print "  ...EA width properties\n";
 my $EA     = UnicodePluginGenerator::EAWidth->new($EA_File);
+
+my @MODULES = ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $EXCL, $PROPS );
 
 print "Creating plugins...\n";
 
@@ -84,8 +97,8 @@ foreach my $block (@blocks) {
 /*\$Id$filename
  *
  * This source file is a part of the Berlin Project
- * Copyright (C) 1999 Tobias Hunger <tobias\@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999-2003 Tobias Hunger <tobias\@fresco.org>
+ * http://www.fresco.org
  *
  * It was automatically created from the files available at
  * ftp.unicode.org on $date.
@@ -107,39 +120,42 @@ foreach my $block (@blocks) {
  */
 
 #include <Babylon/defs.hh>
-#include <Babylon/Dictionary.hh>
+#include <Babylon/internal/Blocks.hh>
 #include <bitset>
 #include <utility>
 
 END
 
-  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  foreach my $obj ( @MODULES ) {
   	print PLUGIN $obj->include($start, $end);
   }
 
   print PLUGIN <<END;
-namespace Babylon {
 
-  class $classname : public Babylon::Dictionary::Block {
-  public:
-    void clean () {
-    };
+namespace Babylon
+{
+  namespace Module
+  {
+    class $classname : public Babylon::Block
+    {
+      public:
+        void clean() { };
 
-    $classname() {
-      m_first_letter = $start_string;
-      m_last_letter  = $end_string;
-      // m_version=\"3.1\" // Not yet supported!
+        $classname() :
+	    my_first_letter($start_string),
+	    my_last_letter($end_string)
+	    // my_version=\"4.0\" // Not yet supported!
+        {
 END
 
-  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  foreach my $obj ( @MODULES ) {
   	print PLUGIN $obj->init($start, $end);
   }
 
   print PLUGIN <<END;
-    }
+        }
 
-    ~$classname() {
-    }
+        ~$classname() { }
 
 END
 
@@ -148,26 +164,30 @@ END
   # ########################################################################
 
   print PLUGIN <<END;
-    UCS4 first_letter() const {
-      return m_first_letter;
-    }
+        UCS4 first_letter() const
+        {
+	    return my_first_letter;
+	}  
 
-    UCS4 last_letter() const {
-      return m_last_letter;
-    }
+	UCS4 last_letter() const
+	{
+	    return my_last_letter;
+	}
 
-    bool is_undef_block() const {
-      return 0;
-    }
+	bool is_undef_block() const
+	{
+	    return 0;
+	}
 
-    // query functions:
-    std::string blockname(const UCS4 uc) const {
-      return \"$name\";
-    }
+	// query functions:
+	std::string blockname(const UCS4 uc) const
+	{
+	    return \"$name\";
+	}
 
 END
 
-  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  foreach my $obj ( @MODULES ) {
   	print PLUGIN $obj->function($start, $end, $classname);
   }
 
@@ -176,16 +196,17 @@ END
   # ########################################################################
 
   print PLUGIN <<END;
-  private:
-    // functions
-    $classname(const $classname &) {}
+      private:
+        // functions
+        $classname(const $classname &) ; // no implementaion!
 
-    Babylon\:\:UCS4 m_first_letter;
-    Babylon\:\:UCS4 m_last_letter;
-    // Babylon::UCS4_string m_version;
+	// members
+        Babylon\:\:UCS4 my_first_letter;
+        Babylon\:\:UCS4 my_last_letter;
+        // Babylon::UCS4_string my_version;
 END
 
-  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  foreach my $obj ( @MODULES ) {
   	print PLUGIN $obj->var_def($start, $end);
   }
 
@@ -194,11 +215,11 @@ END
   # ########################################################################
 
   print PLUGIN <<END;
-  }; // class $classname
+    }; // class $classname
 
 END
 
-  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  foreach my $obj ( @MODULES ) {
   	print PLUGIN $obj->var($start, $end, $classname);
   }
 
@@ -207,9 +228,10 @@ END
   # ########################################################################
 
   print PLUGIN <<END;
-}; // namespace Babylon
+  }; // namespace
+}; // namespace
 
-dload(Babylon::$classname);
+dload(Babylon::Module::$classname);
 END
 
   # close output file

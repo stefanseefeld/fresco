@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp FE50-FE6F.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp FE50-FE6F.cc
  *
  * This source file is a part of the Berlin Project
- * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Thu, 30 May 2002 20:49:19 +0200.
+ * ftp.unicode.org on Mon, 26 May 2003 15:56:43 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -24,301 +24,387 @@
  */
 
 #include <Babylon/defs.hh>
-#include <Babylon/Dictionary.hh>
+#include <Babylon/internal/Blocks.hh>
 #include <bitset>
 #include <utility>
 
-namespace Babylon {
 
-  class Small_Form_VariantsFE50 : public Babylon::Dictionary::Block {
-  public:
-    void clean () {
+namespace Babylon
+{
+  namespace Module
+  {
+    class Small_Form_VariantsFE50 : public Babylon::Block
+    {
+      public:
+        void clean() { };
+
+        Small_Form_VariantsFE50() :
+	    my_first_letter(0xFE50),
+	    my_last_letter(0xFE6F)
+	    // my_version="4.0" // Not yet supported!
+        {
+        }
+
+        ~Small_Form_VariantsFE50() { }
+
+        UCS4 first_letter() const
+        {
+	    return my_first_letter;
+	}  
+
+	UCS4 last_letter() const
+	{
+	    return my_last_letter;
+	}
+
+	bool is_undef_block() const
+	{
+	    return 0;
+	}
+
+	// query functions:
+	std::string blockname(const UCS4 uc) const
+	{
+	    return "Small Form Variants";
+	}
+
+        bool is_defined(const UCS4 uc) const
+        {
+            return (my_is_defined.test(uc - my_first_letter));
+        }
+
+        UCS4 uppercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 lowercase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        UCS4 titlecase(const UCS4 uc) const
+        {
+            return uc;
+        }
+
+        int dec_digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Decimal_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        int digit_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        float numeric_value(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Numeric(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Gen_Cat category(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CAT_MAX;
+            return Babylon::Gen_Cat(Small_Form_VariantsFE50::my_cat[uc - my_first_letter]);
+        }
+
+        Can_Comb_Class comb_class(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return CC_MAX;
+            return Babylon::Can_Comb_Class(0);
+        }
+
+        Bidir_Props bidir_props(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return BIDIR_INVALID;
+            return Small_Form_VariantsFE50::my_bidir[uc - my_first_letter];
+        }
+
+        Char_Decomp decomp_type(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return DECOMP_MAX;
+            return Babylon::Char_Decomp(Small_Form_VariantsFE50::my_decomp[uc - my_first_letter]);
+        }
+
+        UTF32_string decompose(const UCS4 uc) const
+        {
+            Babylon::UTF32_string us;
+            us.resize(1);
+            us[0] = Small_Form_VariantsFE50::my_decompStr[uc - my_first_letter];
+            return us;
+        }
+
+        bool must_mirror(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        Line_Break linebreak(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return LB_MAX;
+            return Babylon::Line_Break(Small_Form_VariantsFE50::my_lb[uc - my_first_letter]);
+        }
+
+        EA_Width EA_width(const UCS4 uc) const
+        {
+            if (!is_defined(uc))
+                return EA_WIDTH_MAX;
+            return Babylon::EA_Width(EA_WIDTH_W);
+        }
+
+        UCS4 compose(const UCS4 starter, const UCS4 last)
+        {
+            return 0;
+        }
+
+        bool exclude_from_composition(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_White_Space(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Bidi_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Join_Control(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Dash(const UCS4 uc) const
+        {
+            return my_Dash.test(uc - my_first_letter);
+        }
+
+        bool is_Hyphen(const UCS4 uc) const
+        {
+            return my_Hyphen.test(uc - my_first_letter);
+        }
+
+        bool is_Quotation_Mark(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Terminal_Punctuation(const UCS4 uc) const
+        {
+            return my_Terminal_Punctuation.test(uc - my_first_letter);
+        }
+
+        bool is_Other_Math(const UCS4 uc) const
+        {
+            return my_Other_Math.test(uc - my_first_letter);
+        }
+
+        bool is_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_ASCII_Hex_Digit(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Alphabetic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Ideographic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Diacritic(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Extender(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Lowercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Uppercase(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Noncharacter_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Grapheme_Extend(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Grapheme_Link(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Binary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_IDS_Trinary_Operator(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Radical(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Unified_Ideograph(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Deprecated(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Soft_Dotted(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Logical_Order_Exception(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_Other_ID_Start(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+      private:
+        // functions
+        Small_Form_VariantsFE50(const Small_Form_VariantsFE50 &) ; // no implementaion!
+
+	// members
+        Babylon::UCS4 my_first_letter;
+        Babylon::UCS4 my_last_letter;
+        // Babylon::UCS4_string my_version;
+        static const std::bitset<32> my_is_defined;
+        static const unsigned char my_cat[32];
+        static const Babylon::Bidir_Props my_bidir[32];
+        static const unsigned char my_decomp[32];
+        static const UCS4 my_decompStr[32];
+        static const unsigned char my_lb[32];
+        static const std::bitset<32> my_Dash;
+        static const std::bitset<32> my_Hyphen;
+        static const std::bitset<32> my_Terminal_Punctuation;
+        static const std::bitset<32> my_Other_Math;
+    }; // class Small_Form_VariantsFE50
+
+    const std::bitset<32> Small_Form_VariantsFE50::my_is_defined(std::string("00001111011111111111111111110111"));
+
+    const unsigned char Small_Form_VariantsFE50::my_cat[] =
+    {
+        CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
+        CAT_Pd, CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, CAT_Po, 
+        CAT_Po, CAT_Po, CAT_Sm, CAT_Pd, CAT_Sm, CAT_Sm, CAT_Sm, CAT_Po, 
+        CAT_Po, CAT_Sc, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po
     };
 
-    Small_Form_VariantsFE50() {
-      m_first_letter = 0xFE50;
-      m_last_letter  = 0xFE6F;
-      // m_version="3.1" // Not yet supported!
-    }
+    const Babylon::Bidir_Props Small_Form_VariantsFE50::my_bidir[] =
+    {
+        BIDIR_CS, BIDIR_ON, BIDIR_CS, BIDIR_CS, 
+        BIDIR_ON, BIDIR_CS, BIDIR_ON, BIDIR_ON, 
+        BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+        BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ET, 
+        BIDIR_ON, BIDIR_ON, BIDIR_ET, BIDIR_ET, 
+        BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_CS, 
+        BIDIR_ON, BIDIR_ET, BIDIR_ET, BIDIR_ON, 
+        BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS
+    };
 
-    ~Small_Form_VariantsFE50() {
-    }
+    const unsigned char Small_Form_VariantsFE50::my_decomp[] = {
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_CANONICAL, 
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_CANONICAL, 
+        DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
+        DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
+    };
 
-    UCS4 first_letter() const {
-      return m_first_letter;
-    }
+    const UCS4 Small_Form_VariantsFE50::my_decompStr[] =
+    {
+        0x0000002Cu, 0x00003001u, 0x0000002Eu, 0x0000FE53u,  // 0000FE50
+        0x0000003Bu, 0x0000003Au, 0x0000003Fu, 0x00000021u,  // 0000FE54
+        0x00002014u, 0x00000028u, 0x00000029u, 0x0000007Bu,  // 0000FE58
+        0x0000007Du, 0x00003014u, 0x00003015u, 0x00000023u,  // 0000FE5C
+        0x00000026u, 0x0000002Au, 0x0000002Bu, 0x0000002Du,  // 0000FE60
+        0x0000003Cu, 0x0000003Eu, 0x0000003Du, 0x0000FE67u,  // 0000FE64
+        0x0000005Cu, 0x00000024u, 0x00000025u, 0x00000040u,  // 0000FE68
+        0x0000FE6Cu, 0x0000FE6Du, 0x0000FE6Eu, 0x0000FE6Fu
+    };
 
-    UCS4 last_letter() const {
-      return m_last_letter;
-    }
+    const unsigned char Small_Form_VariantsFE50::my_lb[] =
+    {
+        LB_CL, LB_ID, LB_CL, LB_CL, LB_NS, LB_NS, LB_EX, LB_EX, 
+        LB_ID, LB_OP, LB_CL, LB_OP, LB_CL, LB_OP, LB_CL, LB_ID, 
+        LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_CL, 
+        LB_ID, LB_PR, LB_PO, LB_ID, LB_CL, LB_CL, LB_CL, LB_CL
+    };
 
-    bool is_undef_block() const {
-      return 0;
-    }
+    const std::bitset<32> Small_Form_VariantsFE50::my_Dash(std::string("00000000000010000000000100000000"));
 
-    // query functions:
-    std::string blockname(const UCS4 uc) const {
-      return "Small Form Variants";
-    }
+    const std::bitset<32> Small_Form_VariantsFE50::my_Hyphen(std::string("00000000000010000000000000000000"));
 
-    bool is_defined(const UCS4 uc) const {
-      return (m_is_defined.test(uc - m_first_letter));
-    }
+    const std::bitset<32> Small_Form_VariantsFE50::my_Terminal_Punctuation(std::string("00000000000000000000000011110111"));
 
-    UCS4 uppercase(const UCS4 uc) const {
-      return uc;
-    }
+    const std::bitset<32> Small_Form_VariantsFE50::my_Other_Math(std::string("00000001000010100001111000000000"));
 
-    UCS4 lowercase(const UCS4 uc) const {
-      return uc;
-    }
+  }; // namespace
+}; // namespace
 
-    UCS4 titlecase(const UCS4 uc) const {
-      return uc;
-    }
-
-    int dec_digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Decimal_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    int digit_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    float numeric_value(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Numeric(const UCS4 uc) const {
-      return 0;
-    }
-
-    Gen_Cat category(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CAT_MAX;
-      return Babylon::Gen_Cat(Small_Form_VariantsFE50::_cat[uc - m_first_letter]);
-    }
-
-    Can_Comb_Class comb_class(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CC_MAX;
-      return Babylon::Can_Comb_Class(0);
-    }
-
-    Bidir_Props bidir_props(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return BIDIR_INVALID;
-      return Small_Form_VariantsFE50::m_bidir[uc - m_first_letter];
-    }
-
-    Char_Decomp decomp_type(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return DECOMP_MAX;
-      return Babylon::Char_Decomp(Small_Form_VariantsFE50::_decomp[uc - m_first_letter]);
-    }
-
-    UTF32_string decompose(const UCS4 uc) const {
-      Babylon::UTF32_string us;
-      us.resize(1);
-      us[0] = Small_Form_VariantsFE50::m_decompStr[uc - m_first_letter];
-      return us;
-    }
-
-    bool must_mirror(const UCS4 uc) const {
-      return 0;
-    }
-
-    Line_Break linebreak(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return LB_MAX;
-      return Babylon::Line_Break(Small_Form_VariantsFE50::m_lb[uc - m_first_letter]);
-    }
-
-    EA_Width EA_width(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return EA_WIDTH_MAX;
-      return Babylon::EA_Width(EA_WIDTH_W);
-    }
-
-    UCS4 compose (const UCS4 start, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_White_Space(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Dash(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hyphen(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Quotation_Mark(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Terminal_Punctuation(const UCS4 uc) const {
-      return m_Terminal_Punctuation.test(uc - m_first_letter);
-    }
-
-    bool is_Other_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Alphabetic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Diacritic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Extender(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Uppercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Grapheme_Link(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Binary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Radical(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Unified_Ideograph(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Deprecated(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Soft_Dotted(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Logical_Order_Exception(const UCS4 uc) const {
-      return 0;
-    }
-
-  private:
-    // functions
-    Small_Form_VariantsFE50(const Small_Form_VariantsFE50 &) {}
-
-    Babylon::UCS4 m_first_letter;
-    Babylon::UCS4 m_last_letter;
-    // Babylon::UCS4_string m_version;
-    static const std::bitset<32> m_is_defined;
-    static const unsigned char _cat[32];
-    static const Babylon::Bidir_Props m_bidir[32];
-    static const unsigned char _decomp[32];
-    static const UCS4 m_decompStr[32];
-    static const unsigned char m_lb[32];
-    static const std::bitset<32> m_Terminal_Punctuation;
-  }; // class Small_Form_VariantsFE50
-
-    const std::bitset<32> Small_Form_VariantsFE50::m_is_defined(std::string("00001111011111111111111111110111"));
-
-  const unsigned char Small_Form_VariantsFE50::_cat[] = {
-    CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
-    CAT_Pd, CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, CAT_Po, 
-    CAT_Po, CAT_Po, CAT_Sm, CAT_Pd, CAT_Sm, CAT_Sm, CAT_Sm, CAT_Po, 
-    CAT_Po, CAT_Sc, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po
-  };
-
-  const Babylon::Bidir_Props Small_Form_VariantsFE50::m_bidir[] = {
-    BIDIR_CS, BIDIR_ON, BIDIR_CS, BIDIR_CS, BIDIR_ON, BIDIR_CS, BIDIR_ON, BIDIR_ON, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ET, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ET, BIDIR_ET, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_CS, 
-    BIDIR_ON, BIDIR_ET, BIDIR_ET, BIDIR_ON, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS
-  };
-
-  const unsigned char Small_Form_VariantsFE50::_decomp[] = {
-    DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_CANONICAL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
-    DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, 
-    DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_CANONICAL, 
-    DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_SMALL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
-  };
-
-  const UCS4 Small_Form_VariantsFE50::m_decompStr[] = {
-    0x002Cu, 0x3001u, 0x002Eu, 0xFE53u, 
-    0x003Bu, 0x003Au, 0x003Fu, 0x0021u, 
-    0x2014u, 0x0028u, 0x0029u, 0x007Bu, 
-    0x007Du, 0x3014u, 0x3015u, 0x0023u, 
-    0x0026u, 0x002Au, 0x002Bu, 0x002Du, 
-    0x003Cu, 0x003Eu, 0x003Du, 0xFE67u, 
-    0x005Cu, 0x0024u, 0x0025u, 0x0040u, 
-    0xFE6Cu, 0xFE6Du, 0xFE6Eu, 0xFE6Fu
-  };
-
-  const unsigned char Small_Form_VariantsFE50::m_lb[] = {
-    LB_CL, LB_ID, LB_CL, LB_CL, LB_NS, LB_NS, LB_EX, LB_EX, 
-    LB_ID, LB_OP, LB_CL, LB_OP, LB_CL, LB_OP, LB_CL, LB_ID, 
-    LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_CL, 
-    LB_ID, LB_PR, LB_PO, LB_ID, LB_CL, LB_CL, LB_CL, LB_CL
-  };
-
-    const std::bitset<32> Small_Form_VariantsFE50::m_Terminal_Punctuation(std::string("00000000000000000000000011110111"));
-
-}; // namespace Babylon
-
-dload(Babylon::Small_Form_VariantsFE50);
+dload(Babylon::Module::Small_Form_VariantsFE50);
