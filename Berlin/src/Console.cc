@@ -36,6 +36,12 @@ namespace
   Plugin<Console::Loader> *plugin = 0;
 };
 
+
+
+// ---------------------------------------------------------------
+// class Console
+// ---------------------------------------------------------------
+
 Console *Console::_console = 0;
 
 Console::Reaper::~Reaper()
@@ -44,29 +50,43 @@ Console::Reaper::~Reaper()
   delete plugin;
 }
 
-int Console::open(int argc, char **argv, PortableServer::POA_ptr poa) throw(std::runtime_error)
+int Console::open(int argc, char **argv, PortableServer::POA_ptr poa)
+throw(std::runtime_error)
 {
+  // Parse commandline arguments
+  // --------------------------------
+  
   GetOpt getopt("Console");
   getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
   int argo = getopt.parse(argc, argv);
   std::string value;
   getopt.get("console", &value);
+
+  // Get modulepath
+  // --------------------------------
+
   Prague::Path path = RCManager::get_path("modulepath");
+
   if (!value.empty())
     {
+      // Console name given: Load exactly the one specified
       std::string name = path.lookup_file(std::string("Console/") + value + ".so");
       if (name.empty()) throw std::runtime_error("no console found");
       else plugin = new Plugin<Console::Loader>(name);
     }
   else
+    // No specific console requested: load whichever is found first
     for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
       {
 	Directory directory(*i + "/Console", Directory::alpha, "\\.so$");
-	for (Directory::iterator j = directory.begin(); j != directory.end() && !plugin; ++j)
+	for (Directory::iterator j = directory.begin();
+	     j != directory.end() && !plugin;
+	     ++j)
 	  try { plugin = new Plugin<Console::Loader>((*j)->long_name());}
 	  catch (const std::runtime_error &e)
 	    { 
-	      Logger::log(Logger::loader) << (*j)->name() << " not loadable " << e.what() << std::endl;
+	      Logger::log(Logger::loader) << (*j)->name() << " not loadable "
+					  << e.what() << std::endl;
 	      continue;
 	    }
       }
