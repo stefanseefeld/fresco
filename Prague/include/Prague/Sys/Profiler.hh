@@ -26,6 +26,8 @@
 #include <hashtable.h>
 #include <hash_set.h>
 #include "time.h"
+#include <iostream.h>
+#include <iomanip.h>
 
 namespace Prague
 {
@@ -44,8 +46,13 @@ struct CheckPoint
 
 	Output()
 	{
-		cout << "Line: " << line << "  Hit: " << count << " times. Tot Time: ";
-		cout << elapsed/CLOCKS_PER_SEC << "  Avg Time PI: ";
+		cout << setw(5) << line << ": " << setw(10) << count;
+		cout << " Times.  Total Time: ";
+		cout << setprecision(8) << setw(12);
+		cout.setf( ios::fixed, ios::floatfield);
+		cout << elapsed/CLOCKS_PER_SEC;
+		cout  << "  Avg/Iter.: ";
+		cout << setprecision(8) << setw(12);
 		cout << elapsed/count/CLOCKS_PER_SEC << endl;
 	}	
 };
@@ -133,5 +140,9 @@ hash_set<CheckPoint*, hash<CheckPoint*>, eqchkpt>* Profiler::Set = NULL;
 long Profiler::refCount = 0;
 
 };
+
+#define CHECKPOINT(LINE) \
+ Prague::Profiler Chk ## LINE ## (LINE)
+
 
 #endif /* _Profiler_hh */
