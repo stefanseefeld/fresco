@@ -59,7 +59,7 @@ TextConverter::convert(const Babylon::String & pinyin) const {
 
     for (size_t i = cur_start; i <= cur_end; i++)
 	if (tree[i].Unicode != 0)
-	    result.push_back(tree[i].Unicode);
+	  result += tree[i].Unicode;
     return result;
 }
 
