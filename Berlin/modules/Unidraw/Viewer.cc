@@ -64,12 +64,12 @@ void Viewer::prepend_graphic(Graphic_ptr c)
   _root->prepend_graphic(c);
 }
 
-Warsaw::Graphic::Iterator_ptr Viewer::first_child_graphic()
+Warsaw::GraphicIterator_ptr Viewer::first_child_graphic()
 {
   return _root->first_child_graphic();
 }
 
-Warsaw::Graphic::Iterator_ptr Viewer::last_child_graphic()
+Warsaw::GraphicIterator_ptr Viewer::last_child_graphic()
 {
   return _root->last_child_graphic();
 }

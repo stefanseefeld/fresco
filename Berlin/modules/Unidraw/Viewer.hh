@@ -35,11 +35,12 @@ class Viewer : public ControllerImpl
 public:
   Viewer();
   virtual ~Viewer();
+
   void init(Unidraw::Editor_ptr, Unidraw::Model_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
   virtual void append_graphic(Warsaw::Graphic_ptr);
   virtual void prepend_graphic(Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic::Iterator_ptr first_child_graphic();
-  virtual Warsaw::Graphic::Iterator_ptr last_child_graphic();
+  virtual Warsaw::GraphicIterator_ptr first_child_graphic();
+  virtual Warsaw::GraphicIterator_ptr last_child_graphic();
 protected:
   virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
