@@ -101,12 +101,26 @@ void Scrollbar::adjust(const OriginatedDelta &od)
   _pickTrafo.inverse_transform_vertex(origin);
   _pickTrafo.inverse_transform_vertex(newpt);
 
-  Vertex delta;
-  delta.x = newpt.x - origin.x;
-  delta.y = newpt.y - origin.y;
+  Coord delta;
   
-  if (_axis == xaxis && delta.x != 0. && origin.x >= 0 && origin.x <= _length) _value->adjust(delta.x);
-  else if (_axis == yaxis && delta.y != 0. && origin.y >= 0 && origin.y <= _length) _value->adjust(delta.y);
+  if (_axis == xaxis) {
+    delta = newpt.x - origin.x;
+    if (origin.x < 0.) {
+      delta = std::max(origin.x + delta, 0.);
+    } else if (origin.x > _length) {
+      delta = std::min(origin.x + delta, 0.);
+    }
+
+    if (delta != 0.) _value->adjust(delta);
+  } else if (_axis == yaxis) {
+    delta = newpt.y - origin.y;
+    if (origin.y < 0.) {
+      delta = std::max(origin.y + delta, 0.);
+    } else if (origin.y > _length) {
+      delta = std::min(origin.y + delta, 0.);
+    }
+    if (delta != 0.) _value->adjust(delta);
+  }
 }
 
 void Scrollbar::update(const CORBA::Any &any)

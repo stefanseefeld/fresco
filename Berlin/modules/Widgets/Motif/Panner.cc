@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 
+#include <utility>
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/CommandImpl.hh>
@@ -97,9 +98,21 @@ void Panner::adjust(const OriginatedDelta &od)
   Vertex delta;
   delta.x = newpt.x - origin.x;
   delta.y = newpt.y - origin.y;
+
+  if (origin.x < 0.) {
+    delta.x = std::max(origin.x + delta.x, 0.);
+  } else if (origin.x > _upperBounds.x) {
+    delta.x = std::min(origin.x + delta.x, 0.);
+  }
   
-  if (delta.x != 0. && origin.x >= 0 && origin.x <= _upperBounds.x) _xvalue->adjust(delta.x*_scale.x);
-  if (delta.y != 0. && origin.y >= 0 && origin.y <= _upperBounds.y) _yvalue->adjust(delta.y*_scale.y);
+  if (origin.y < 0.) {
+    delta.y = std::max(origin.y + delta.y, 0.);
+  } else if (origin.y > _upperBounds.y) {
+    delta.y = std::min(origin.y + delta.y, 0.);
+  }
+  
+  if (delta.x != 0.) _xvalue->adjust(delta.x*_scale.x);
+  if (delta.y != 0.) _yvalue->adjust(delta.y*_scale.y);
 }
 
 void Panner::update(const CORBA::Any &)
