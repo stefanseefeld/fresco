@@ -30,16 +30,17 @@ using namespace Warsaw;
 
 PortableServer::POA_var DirectFBConsole::s_poa;
 DirectFBConsole::dlist_t DirectFBConsole::s_drawables;
+IDirectFB * DirectFBConsole::s_dfb = 0;
 
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // DirectFBDrawable implementation
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 DirectFBDrawable::DirectFBDrawable(const char * name,
 				   IDirectFB * dfb,
 				   DFBSurfaceDescription & dsc) : m_name(name)
 {
     Prague::Trace("DirectFBDrawable::DirectFBDrawable");
-    cerr << "DirectFBDrawable::DirectFBDrawable " << name << ": STARTED" << endl;
+    std::cerr << "DirectFBDrawable::DirectFBDrawable " << name << ": STARTED" << endl;
     dfb->CreateSurface(dfb, &dsc, &m_surface);
 
     DFBSurfacePixelFormat pixel_format;
@@ -117,11 +118,9 @@ Warsaw::Drawable::BufferFormat DirectFBDrawable::buffer_format() {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // DirectFBConsole implementation
-////////////////////////////////////////////////////////////////////////////////
-
-static IDirectFB * s_dfb = 0;
+//////////////////////////////////////////////////////////////////////////////
 
 DirectFBConsole::DirectFBConsole(int &argc, char **argv, PortableServer::POA_ptr poa)// throw (exception)
   : m_autoplay(false)
@@ -143,12 +142,22 @@ DirectFBConsole::DirectFBConsole(int &argc, char **argv, PortableServer::POA_ptr
   Drawable * primary = new DirectFBDrawable("Primary", s_dfb, dsc);
 
   s_drawables.push_back(new DrawableTie<Drawable>(primary));
-  cerr << "DirectFBConsole::DirectFBConsole: primary surface created." << endl;
+  std::cerr << "DirectFBConsole::DirectFBConsole: primary surface created." << endl;
 
-  primary->surface()->
-      SetBlittingFlags(primary->surface(), DSBLIT_BLEND_ALPHACHANNEL);
+  IDirectFBSurface * surface = primary->surface();
+
+  // Enable alpha blending
+  surface->SetBlittingFlags(surface, DSBLIT_BLEND_ALPHACHANNEL);
+
+  // Get resolutions and sizes needed for event handling later:
+  m_size[0] = primary->width(); m_size[1] = primary->height();
+  m_resolution[0] = primary->resolution(Warsaw::xaxis);
+  m_resolution[1] = primary->resolution(Warsaw::yaxis);
+
+  m_position[0] = 0; m_position[1] = 0;
 
   s_poa = PortableServer::POA::_duplicate(poa);
+  pipe(m_wakeup_pipe);
 }
 
 DirectFBConsole::~DirectFBConsole()
@@ -162,6 +171,8 @@ DirectFBConsole::~DirectFBConsole()
   m_mouse_buf->Release(m_mouse_buf);
   m_mouse->Release(m_mouse);
   s_dfb->Release(s_dfb);
+  close(m_wakeup_pipe[0]);
+  close(m_wakeup_pipe[1]);
 }
 
 DrawableTie<DirectFBDrawable> * DirectFBConsole::drawable()
@@ -221,29 +232,63 @@ DrawableTie<DirectFBDrawable> *DirectFBConsole::reference_to_servant(Warsaw::Dra
 static void readEvent(DFBInputEvent &e)
 {
     Prague::Trace("DirectFBConsole::readEvent");
-    cerr << "TRING TO READ EVENT: IGNORED!" << endl;
+    std::cerr << "TRING TO READ EVENT: IGNORED!" << endl;
 }
 
 static void writeEvent(DFBInputEvent &e)
 {
     Prague::Trace("DirectFBConsole::writeEvent");
-    cerr << "TRING TO WRITE EVENT: IGNORED!" << endl;
+    std::cerr << "TRING TO WRITE EVENT: IGNORED!" << endl;
 }
 
 Input::Event *DirectFBConsole::next_event()
 {
     Trace trace("DirectFB::Console::next_event");
-    cerr << "TRING TO WRITE EVENT: IGNORED!" << endl;
+    DFBInputEvent event;
+    m_mouse_buf->WaitForEvent(m_mouse_buf);
+    m_mouse_buf->GetEvent(m_mouse_buf, &event);
+    return synthesize(event);
 }
 
 void DirectFBConsole::wakeup() {
-    Prague::Trace("DirectFBConsole::wakeup");
-    cerr << "WAKEUP: IGNORED!" << endl;  
+    char c = 'z'; write(m_wakeup_pipe[1],&c,1);
 }
 
-Input::Event *DirectFBConsole::synthesize(const DFBInputEvent &e)
-{
+Input::Event *DirectFBConsole::synthesize(const DFBInputEvent &e) {
     Prague::Trace("DirectFBConsole::synthesize");
-    cerr << "SYNTHESIZE EVENT: IGNORED!" << endl;
+    Input::Event_var event = new Input::Event;
+
+    switch (e.flags) {
+    case DIEF_AXISABS:
+	std::cerr << "DirectFBConsole::synthesize: AXISABS"; 
+	break;
+    case DIEF_AXISREL:
+	std::cerr << "DirectFBConsole::synthesize: AXISREL"; 
+	break;
+    case DIEF_BUTTON:
+	Input::Toggle toggle;
+	if (e.type == DIET_BUTTONPRESS)
+	    toggle.actuation = Input::Toggle::press;
+	else
+	    toggle.actuation = Input::Toggle::release;
+	toggle.number = e.button - DIBI_FIRST;
+	Input::Position position;
+	position.x = m_position[0]/m_resolution[0];
+	position.y = m_position[1]/m_resolution[1];
+	position.z = 0;
+	event->length(2);
+	event[0].dev = 1;
+	event[0].attr.selection(toggle);
+	event[0].attr._d(Input::button);
+	event[1].dev = 1;
+	event[1].attr.location(position);
+	break;
+    case DIEF_KEYCODE:
+	break;
+    case DIEF_MODIFIERS:
+	break;
+    default:
+	cerr << "DirectFBConsole::synthesize: unknown DirectFBEvent recived." << endl;
+    }
 }
 
