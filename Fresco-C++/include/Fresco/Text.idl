@@ -1,0 +1,217 @@
+#ifndef _Text_idl
+#define _Text_idl
+
+//
+// $Id$
+//
+// This source file is a part of the Berlin Project.
+// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// http://www.berlin-consortium.org
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public License
+// as published by the Free Software Foundation; either version 2 of
+// the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+//
+//
+
+#include <Types.idl>
+#include <WidgetKit.idl>
+#include <Graphic.idl>
+#include <Metrics.idl>
+
+// this is a reworking of the text module, primarily because the last
+// one didn't work for beans!
+
+module Text {
+    
+    interface Glyph;
+    interface Font;
+    interface BaseFont;
+    interface CompositeFont;
+
+    // ok, this text API is totally ripped off from UNET++, so don't go
+    // getting in a snit like I'm being unoriginal, I fully admit it.
+
+    // a GlyphInstanceKey is a unique identifier for a particular
+    // Glyph in the system. we use these inside the kit to maintain a
+    // fast cache of each Glyph we've produced, so there's only ever
+    // one instance of its bitmap stored offscreen.
+    
+    struct GlyphInstanceKey {
+	Font fontWithGlyph;
+	GlyphIndex glyphIdx;
+    };
+    
+    // a mapped glyph is a glyphKey + a character count for
+    // back-mapping into the edit buffer. i.e. when you delete a set
+    // of n chars where 0 <= n <= charCount, the editing process will
+    // consider this glyph (and possibly some more) invalidated and go
+    // recompute the glyphs. also contains metrics.  when it's passed
+    // into the glyphCache, depending on whether or not the metrics of
+    // the mapped glyph match the intrinsic metrics of the glyph, the
+    // glyph might get wrapped in a glyphAdjustment, which is just a
+    // super-simplified composite with 1 child and 1 attribute,
+    // representing say a kerning adjustment or some hinting.
+
+    struct MappedGlyph {
+	GlyphInstanceKey chosenGlyph;
+	unsigned long charCount;
+	Graphic::Requisition metrics;
+    };
+
+    typedef sequence<MappedGlyph> MappedGlyphString;
+
+
+    // a chunk is a unit on which mappers operate. Most advanced
+    // mappers need access to more than a single character or glyph at
+    // any time, so you make chunks and hope you included enough text
+    // to make the mapper happy.
+    
+    struct Chunk {    
+	Unistring chars;
+	MappedGlyphString glyphs;
+    };
+
+
+    // a mapper takes a chunk, and yields a (hopefully better) chunk
+    // with some (hopefully accurate) mapped glyphs in it. It might
+    // act on the output from another mapper, if you have some logic
+    // you want to combine from multiple mappers.
+
+    interface Mapper {
+	Chunk process(in Chunk c);
+    };
+
+
+    // the idea is that every fontFamily can produce a mapper, which will
+    // process chunks. it might do so by delegating to *inside*
+    // itself, i.e. inheriting from mapper and just returning
+    // this->_this(), or it might do so by looking up a default mapper
+    // from some common singletons, it might do so by phoning bootsy
+    // collins and asking for advice on planning a funkadelica
+    // extravaganza. it's of no intrest to anyone else.
+    //
+    // the important thing to realize is that a fontFamily will most
+    // likely contain a whole tree of fonts, each of which might not
+    // be instantiated until the moment of visiting. The fontFamily
+    // acts as an entry point for a particular text formatting process
+    
+    interface FontFamily {
+	readonly attribute Unistring simpleName;
+	Mapper mapToThisFont(in unsigned long pointsize, in Unistring style);      
+    };
+    
+    typedef sequence<FontFamily> FontFamilySequence;
+    
+    // this is your basic visitor/typer. in the most common case it'll work (I think) much
+    // faster than repeated narrowings, and speed is important in here.
+
+    interface FontVisitor {
+	void visitCompositeFont(in CompositeFont c);
+	void visitBaseFont(in BaseFont f);
+    };
+    
+    // fonts are either composites or bases. You can add more if you
+    // want, like if you want precise control over the layout features
+    // or something. As it is the base interface should be OK for a
+    // lot of applications.
+    
+    interface Font {    
+	void acceptFontVisitor(in FontVisitor v);
+	
+	// default mapping means order-of-preference on composites, and
+	// using the cmap table (or something similarly simple) inside
+	// the font. You can use other mappers if you think you're smart
+	// enough. just add a font subclass, try narrowing to it, and if
+	// you succeed then you have yourself an amazing, stupendous,
+	// advanced typographical mapper
+	
+	Chunk doDefaultMapping(in Chunk ch);
+    };
+
+
+    // this is our basic base-font class which supports settable features and
+    // a simple glyph-by-name access mechanism in addition to the encapsulated
+    // doDefaultMapping it inherits. This should be enough for the common fonts
+    // and a certain number of fancy OT layout or AAT fonts (I think)
+    
+    exception NoSuchGlyphException {};
+    
+    interface BaseFont {
+	GlyphIndex getGlyphByName(in Unistring glyphName) raises (NoSuchGlyphException);
+	Glyph getGlyphByIndex(in GlyphIndex i) raises (NoSuchGlyphException);	
+	FeatureValueList queryFeature(in FeatureType ft);
+	void setFeature(in FeatureType ft, in FeatureValue fv);
+	readonly attribute unsigned long size;
+	readonly attribute Unistring style;
+	readonly attribute FontMetrics metrics;      
+    };
+
+
+    // this lets you build trees of fonts by preference, which can be
+    // handy if you want to share a subtree in the middle of a
+    // composite font (say if you only have one kanji font installed
+    // and you want it in *all* composites)
+    
+    interface CompositeFont : Font {
+	attribute Font primaryChoice;
+	attribute Font backupChoice;
+    };
+
+    exception NoSuchFontException {};
+    
+    // this manages a collection of fontFamilies.
+    interface FontManager : Cloneable {
+	FontFamily getFamily(in Unistring name) raises (NoSuchFontException);
+	void addFamily(in FontFamily ff);
+	void removeFamily(in FontFamily ff) raises (NoSuchFontException);
+	FontFamilySequence enumerateFonts();
+	void init();
+    };
+    
+    // a glyph in our case is a lazy flyweight which inherits from
+    // graphic.  it's stored in a glyph cache.
+    
+    interface Glyph : Graphic {
+	// used to have some special stuff in here, might again in 
+	// the future. time being it's nothing special.
+    };
+    
+    // if you have some fine adjustments to make to a glyph, you can
+    // do so here without hurting anyone's feelings. just put the
+    // glyph *inside* a glyphAdjustment and render like normal.
+
+    interface GlyphAdjustment : Glyph {
+	readonly attribute Glyph child;
+    };
+    
+    // rendering is done through a glyphCache, which just manages a 
+    // flyweight pool of glyphs which have already been instantiated on 
+    // the screen.
+
+    interface GlyphCache {
+	Graphic::GraphicSeq getGlyphs(in Chunk c);
+    };
+    
+    
+    // this is an el-cheapo text editing widget
+    
+    interface Editor : Widget {
+	attribute unsigned long point;
+	attribute unsigned long mark;
+	void insert(in Unistring str);
+	Unistring kill();
+    };
+};
+
+#endif
