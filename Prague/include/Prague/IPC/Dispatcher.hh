@@ -19,61 +19,68 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Dispatcher_h
-#define _Dispatcher_h
+#ifndef _Dispatcher_hh
+#define _Dispatcher_hh
 
-#include <Prague/Sys/Time.h>
-#include <Prague/Sys/FdSet.h>
-#include <Prague/Async/Agent.h>
-#include <string>
+#include <Prague/Sys/Signal.hh>
+#include <Prague/Sys/FdSet.hh>
+#include <Prague/Sys/ThreadPool.hh>
+#include <Prague/IPC/Agent.hh>
 #include <vector>
 #include <map>
 
 namespace Prague
 {
 
-class Timer;
-
 class Dispatcher
 {
-  typedef vector<Agent *> List;
-  typedef vector<Agent *> ChannelList;
-  typedef vector<pair<Agent *, Agent::iomask> > TmpList;
-  typedef map<int, Agent *> Dictionary;
-  class TimerQueue;
+  typedef vector<Agent *> alist_t;
+  typedef pair<Agent *, Agent::iomask> task;
+  typedef vector<task> tlist_t;
+  typedef map<int, Agent *> dictionary_t;
+
+  struct Handler
+  {
+    Handler(Agent *a, Agent::iomask m) : agent(a), mask(m) {}
+    void process();
+    Agent *agent;
+    Agent::iomask mask;
+  };
+  struct Acceptor
+  {
+    Handler *consume(const task &t) const { return new Handler(t.first, t.second);}
+  };
+  struct Cleaner { ~Cleaner();};
+  friend struct Cleaner;
 public:
   static Dispatcher *Instance();
   void start();
   void stop();
-  void step();
-  void bind(Agent *);
+  void bind(Agent *, Agent::iomask);
   void release(Agent *);
-  Agent *search(int pid);
-  bool wait();
-  void addTimeout(Timer *, const Time &);
-  void removeTimeout(const Timer *);
+  void wait();
 private:
-  AsyncManager();
+  Dispatcher();
   virtual ~Dispatcher();
-  void sigChild(const int &);
-  void sigKill(const int &);
-  void dispatchStreams(Agent::iomask, Agent *);
-  void dispatchTimeouts();
+  void dispatch(const tlist_t &);
   static Dispatcher *instance;
+  static Cleaner cleaner;
+  Signal::Notifier *notifier;
+  Mutex         mutex;
   FdSet         rfds;
   FdSet         wfds;
   FdSet         xfds;
-  List          agents;
-  Dictionary    rchannel;
-  Dictionary    wchannel;
-  Dictionary    echannel;
-  TimerQueue   *timers;
-  Action<int>  *killhandler;
-  Action<int>  *childhandler;
+  alist_t       agents;
+  dictionary_t  rchannel;
+  dictionary_t  wchannel;
+  dictionary_t  echannel;
   bool          running;
+  Thread::Queue<task> tasks;
+  Acceptor      acceptor;
+  ThreadPool<task, Acceptor, Handler> workers;
 };
 
 };
 
-#endif /* _Dispatcher_h */
+#endif /* _Dispatcher_hh */
 
