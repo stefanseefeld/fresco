@@ -78,7 +78,7 @@ depend: $(DEP)
 
 doc:	# not yet
 
-install: # not yet
+install: all # not yet
 
 install-doc: # not yet
 

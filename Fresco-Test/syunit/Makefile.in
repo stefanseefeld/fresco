@@ -40,6 +40,8 @@ PYTHON_TARGETS	:= $(patsubst %, $(build_bindir)/%, $(PYTHON))
 
 all:	$(PYTHON_TARGETS)
 
+install: all # do nothing special
+
 $(PYTHON_TARGETS):
 	@echo copying $(@F).
 	cp $(patsubst $(build_bindir)%, $(srcdir)%, $@) $@

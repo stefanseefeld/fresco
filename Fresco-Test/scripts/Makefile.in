@@ -40,6 +40,8 @@ SCRIPT_TARGETS	:= $(patsubst %, $(build_bindir)/%, $(SCRIPTS))
 
 all:	$(SCRIPT_TARGETS)
 
+install: all # do nothing special!
+
 $(SCRIPT_TARGETS):
 	@echo copying $(@F).
 	cp $(patsubst $(build_bindir)%, $(srcdir)%, $@) $@
