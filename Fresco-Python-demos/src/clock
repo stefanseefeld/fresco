@@ -1,0 +1,281 @@
+#!/usr/bin/env python
+# Python Berlin client that implements a client-side Graphic
+# Copyright (c) 2000 by Stephen Davies
+# This file is licensed for use under the GPL.
+#
+# Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
+#
+
+import sys, string
+from omniORB import CORBA
+
+# Import the Warsaw stubs
+import Warsaw, Unidraw
+import Warsaw__POA
+
+# Define an implementation of the ClientContext interface
+class ClientContextImpl (Warsaw__POA.ClientContext):
+    def userName(self): return US("joe")
+    def ping(self): return
+
+def US(s):
+    "Convert the given python string to a Unistring"
+    return map(lambda x:ord(x), s)
+
+# The default kits available. More can be added using kits.add_kit()
+# TODO: include version and property information in the tuple
+_defaultKitNames = {
+    'tool'    : ('Warsaw',  'ToolKit'),
+    'image'   : ('Warsaw',  'ImageKit'),
+    'figure'  : ('Warsaw',  'FigureKit'),
+    'desktop' : ('Warsaw',  'DesktopKit'),
+    'layout'  : ('Warsaw',  'LayoutKit'),
+    'text'    : ('Warsaw',  'TextKit'),
+    'widget'  : ('Warsaw',  'WidgetKit'),
+    'unidraw' : ('Unidraw', 'UnidrawKit'),
+}
+
+# An empty Any object for sending to Commands
+nullAny = CORBA.Any(CORBA.TC_null, None)
+    
+class Kits:
+    """This class resolves kits upon request, and caches the resolved kit
+    objects. It loads _defaultKitNames as the default set of kits, but more
+    can be added using the add_kit method."""
+    def __init__(self):
+	"""Initialise the Kits singleton, and insert it into the global
+	(module) namespace"""
+	global kits
+	kits = self
+	self._kitNames = {}
+	self._kitNames.update(_defaultKitNames)
+	self._kitObjects = {}
+
+    def add_kit(name, module, kit):
+	self._kitNames[name] = (module, kit)
+
+    def __getattr__(self, kit):
+	# Check cache
+	if self._kitObjects.has_key(kit):
+	    return self._kitObjects[kit]
+	# Try and resolve
+	if self._kitNames.has_key(kit):
+	    # Find and resolve the kit
+	    module, name = self._kitNames[kit]
+	    idl = "IDL:%s/%s:1.0"%self._kitNames[kit]
+	    obj = connection.context.resolve(idl, [])
+	    cls = globals()[module].__dict__[name]
+	    obj = obj._narrow(cls)
+	    if obj is not None:
+		self._kitObjects[kit] = obj
+		return obj
+	# FIXME -- what happens here to signal bad attr?
+
+class Connection:
+    """Connection wrapper that does all the CORBA stuff"""
+    def __init__(self, clientContext=None):
+	"""Initialises the singleton, inserts it into the global (module)
+	namespace, and finds the Berlin server. You may pass your own
+	ClientContext object (not CORBA var!), else a ClientContextImpl will
+	be used."""
+	global connection
+	connection = self
+	# Import the CORBA module
+	import CosNaming
+	# Initialise the ORB
+	self.orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
+
+	# Find the POA
+	self.poa = self.orb.resolve_initial_references("RootPOA")
+	# Activate the POA
+	self.poaManager = self.poa._get_the_POAManager()
+	self.poaManager.activate()
+
+	# Create an ClientContext
+	if clientContext is None: clientContext = ClientContextImpl()
+	# Create an object reference, and implicitly activate the object
+	self.clientContext = clientContext._this()
+
+	# get a server context
+	object = self.orb.resolve_initial_references("NameService")
+	context = object._narrow(CosNaming.NamingContext)
+	name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
+	object = context.resolve(name)
+	self.server = object._narrow(Warsaw.Server)
+	print "Got Server var =",self.server
+	print "Client Context var =",self.clientContext
+	self.context  = self.server.create_server_context(self.clientContext)
+
+def Label(string):
+    "Creates a black label from the given string"
+    return kits.tool.rgb(kits.text.chunk(US(string)),0.,0.,0.)
+
+class Callback(Warsaw__POA.Command):
+    """Small wrapper command which calls a python function with a single
+    argument which is the Any."""
+    def __init__(self, callback):
+	self.callback = callback
+    def execute(self, any):
+	print "Callback to",self.callback,"with",any
+	self.callback(any)
+
+class About:
+    text = ["GraphicTest","A test of client-side Graphics","Copyright (c) 2001 by Stephen Davies"]
+    def __init__(self):
+	"Creates the about box but doesn't map it"
+	self.vbox = kits.layout.vbox_align_elements(0.5)
+	for line in self.text: 
+	    self.vbox.append_graphic(Label(line))
+	self.button = kits.widget.button(Label("Okay"), self._get_hide_cmd())
+	self.vbox.append_graphic(self.button)
+	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 0)
+	self.frame = kits.tool.frame(self.vbox, 0.0, fspec, 1)
+	self.group = kits.tool.group(kits.tool.rgb(self.frame, 0.8, 0.8, 0.8))
+	self.window = kits.desktop.transient(self.group)
+	self._mapper_show = kits.desktop.map(self.window, 1)
+	self._mapper_hide = kits.desktop.map(self.window, 0)
+
+    def _get_hide_cmd(self):
+	class HideCommand (Warsaw__POA.Command):
+	    def __init__(self, about): self.about = about
+	    def execute(self, any): self.about._mapper_hide.execute(any)
+	return HideCommand(self)._this()
+
+    def cb_show(self, any):
+	self._mapper_show.execute(any)
+
+class TestGraphic (Warsaw__POA.Graphic):
+    def __init__(self):
+	self.__parents = []
+
+    # -------- RefCountBase
+    def increment(self): pass #print "TestGraphic.increment()"
+    def decrement(self): print "TestGraphic.decrement()"
+
+    # -------- Identifiable
+
+    def is_identical(self, other):
+	print "TestGraphic.is_identical(%s)"%other
+	return 0
+
+    # -------- Graphic
+
+    # Attribute 'body'
+    def _get_body(self): return None
+    def _set_body(self, body): pass
+    
+    # Methods
+    def append_graphic(self, graphic): # --> void
+	pass
+    def prepend_graphic(self, graphic): # --> void
+	pass
+    def remove_graphic(self, tag): # --> void
+	pass
+    def remove_child_graphic(self, tag): # --> void
+	pass
+
+    def add_parent_graphic(self, graphic, parent_tag): # --> Tag
+	print "TestGraphic.add_parent_graphic(graphic: %s, tag: %s)"%(graphic, parent_tag),
+	mytag = len(self.__parents)
+	self.__parents.append( (graphic, parent_tag, mytag) )
+	print "-->",mytag
+	return mytag
+    def remove_parent_graphic(self, parent_tag): # --> void
+	print "TestGraphic.remove_parent_graphic(tag: %s)"%parent_tag
+	for i in range(len(self.__parents)):
+	    if self.__parents[i][1] == parent_tag:
+		del self.__parents[i]
+		return
+
+    def first_child_graphic(self): # --> Iterator
+	print "TestGraphic.first_child_graphic()"
+	pass
+    def last_child_graphic(self): # --> Iterator
+	print "TestGraphic.last_child_graphic()"
+	pass
+
+    def transformation(self): # --> Transform
+	pass
+
+    def request(self): # --> void
+	x = Warsaw.Graphic.Requirement(1, 2000., 3000., 1000., 0.)
+	y = Warsaw.Graphic.Requirement(1, 2000., 3000., 1000., 0.)
+	z = Warsaw.Graphic.Requirement(1, 10., 10., 10., 0.)
+	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	return req
+	
+    def extension(self, alloc_info, region): # --> void
+	#Allocation::Info a, Region r
+	region.merge_union(alloc_info.allocation)
+    def shape(self, Region): # --> void
+	pass
+
+    def traverse(self, traversal): # --> void
+	traversal.visit(self._this())
+
+    def draw(self, drawTraversal): # --> void
+	dk = drawTraversal.drawing()
+	#print "dk is: ", dk
+	transform = drawTraversal.current_transformation()
+	region = drawTraversal.current_allocation()
+	bounds_lower, bounds_upper = region.bounds()
+	dk.save()
+	dk._set_transformation(transform)
+	dk._set_foreground(Warsaw.Color(0.9, 0.9, 0.9, 1.0))
+	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
+	dk.draw_rectangle(bounds_lower, bounds_upper)
+	bounds_delta = (bounds_upper.x - bounds_lower.x,
+	    bounds_upper.y - bounds_lower.y)
+	def scale(point, low=bounds_lower, delta = bounds_delta):
+	    return Warsaw.Vertex(point[0] * delta[0] + low.x, point[1] * delta[1] + low.y, low.z)
+	path = map(scale, [(.2,.6),(.4,.7),(.9,.1),(.4,.8),(.2,.6)])
+	dk._set_foreground(Warsaw.Color(0.2, 0.9, 0.9, 1.0))
+	dk.draw_path(path)
+	dk.restore()
+
+    def pick(self, pickTraversal): # --> void
+	pass
+
+    def allocate(self, tag, alloc_info): # --> void
+	pass
+    def allocations(self, alloc): # --> void
+	pass
+    def need_redraw(self): # --> void
+	pass
+    def need_redraw_region(self, Region): # --> void
+	pass
+    def need_resize(self): # --> void
+	pass
+class GraphicApp:
+    def __init__(self):
+	global app
+	app = self
+	Connection()
+	Kits()
+
+    def run(self):
+
+	graphic = TestGraphic()._this()
+
+	self.window = kits.desktop.shell(kits.tool.group(graphic))
+
+    def exit(self, any):
+	kits.desktop.map(self.window, 0).execute(nullAny)
+	sys.exit(0)
+
+
+def main():
+    # Create singletons
+    GraphicApp()
+
+    app.run()
+
+    print "Hit ENTER to quit."
+    while 1:
+   	line = sys.stdin.readline()
+   	if len(line) == 1: break
+
+if __name__ == '__main__':
+    main()
+
+# vim: ts=8:sts=4:sw=4
