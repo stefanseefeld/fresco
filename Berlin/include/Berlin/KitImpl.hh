@@ -22,39 +22,40 @@
 #ifndef _KitImpl_hh
 #define _KitImpl_hh
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Kit.hh>
-#include <Berlin/RefCountBaseImpl.hh>
 #include <Berlin/KitFactory.hh>
 
 class ServerContextImpl;
+class ServantBase;
+class KitFactory;
 
-class KitImpl : public virtual POA_Kit,
-		public virtual PortableServer::RefCountServantBase,
-		public virtual RefCountBaseImpl
+class KitImpl : public virtual POA_Warsaw::Kit,
+		public virtual PortableServer::RefCountServantBase
 {
   friend class ServerContextImpl;
- protected:
-  typedef Kit::PropertySeq PropertySeq;
- public:
-  KitImpl(KitFactory *f, const PropertySeq &p) : fact(f), props(p) { fact->increment();}
-  ~KitImpl() { fact->decrement();}
-  //. notify the factory about our (non) existence so it knows when it is safe to get unloaded
-  virtual PropertySeq *properties() { return new PropertySeq(props);}
-  virtual void bind(ServerContext_ptr) {};// { counter = 1;}
-  virtual void remove() {}//{ if (!decrement()) _dispose();}
-  virtual CORBA::Boolean supports(const PropertySeq &p) { return KitFactory::supports(props, p);}
- private:
-  KitFactory        *fact;
-  const PropertySeq &props;
-};
+  friend class ::ServantBase;
+  friend class KitFactory;
+public:
+  KitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  ~KitImpl();
+  virtual Warsaw::Kit::PropertySeq *properties();
+  virtual void bind(Warsaw::ServerContext_ptr) {};
+  virtual CORBA::Boolean supports(const Warsaw::Kit::PropertySeq &);
 
-template <class T>
-class KitFactoryImpl : public KitFactory
-{
- public:
-  KitFactoryImpl(const string &type, const string *properties, unsigned short size) : KitFactory(type, properties, size) {}
-  virtual KitImpl *create(const Kit::PropertySeq &) { return new T(this, *props);}
+  void activate(::ServantBase *);
+  void deactivate(::ServantBase *);
+
+  virtual void increment() { refcount++;}
+  virtual void decrement() { if (!--refcount) deactivate();}
+private:
+  void activate(PortableServer::POA_ptr);
+  void deactivate();
+  KitFactory                     *factory;
+  PortableServer::POA_var         poa;
+  const Warsaw::Kit::PropertySeq &props;
+  int                             refcount;
 };
 
 #endif

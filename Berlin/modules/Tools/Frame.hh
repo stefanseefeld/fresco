@@ -22,10 +22,11 @@
 #ifndef _Frame_hh
 #define _Frame_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/View.hh"
-#include "Warsaw/Telltale.hh"
-#include "Warsaw/Region.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/View.hh>
+#include <Warsaw/Telltale.hh>
+#include <Warsaw/Region.hh>
+#include "Berlin/ImplVar.hh"
 #include "Berlin/MonoGraphic.hh"
 
 class Frame : public MonoGraphic
@@ -34,65 +35,66 @@ public:
   class Renderer
   {
   public:
-    Renderer(Coord t, bool f) : thickness(t), fill(f) {}
-    virtual void draw(DrawTraversal_ptr) = 0;
-    Coord thickness;
+    Renderer(Warsaw::Coord t, bool f) : thickness(t), fill(f) {}
+    virtual void draw(Warsaw::DrawTraversal_ptr) = 0;
+    Warsaw::Coord thickness;
     bool  fill;  
   };
-  Frame(Coord, Renderer *);
+  Frame(Warsaw::Coord, Renderer *);
   virtual ~Frame();
-  virtual void request(Requisition &);
-  virtual void traverse(Traversal_ptr);
-  virtual void extension(const Allocation::Info &a, Region_ptr);
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
-  virtual void draw(DrawTraversal_ptr traversal) { if (renderer) renderer->draw(traversal);}
+  virtual void draw(Warsaw::DrawTraversal_ptr traversal) { if (renderer) renderer->draw(traversal);}
 protected:
-  void allocateSpan(const Requirement &, Region::Allotment &, Coord, Alignment);
-  Coord       thickness;
-  RegionImpl *allocation;
-  Renderer   *renderer;
+  void allocateSpan(const Warsaw::Graphic::Requirement &, Warsaw::Region::Allotment &, Warsaw::Coord, Warsaw::Alignment);
+  Warsaw::Coord        thickness;
+  Impl_var<RegionImpl> allocation;
+  Renderer            *renderer;
 };
 
-class DynamicFrame : public virtual POA_View, public Frame
+class DynamicFrame : public virtual POA_Warsaw::View,
+		     public Frame
 {
  public:
-  DynamicFrame(Coord t, Telltale::Mask, Frame::Renderer *, Frame::Renderer *);
+  DynamicFrame(Warsaw::Coord t, Warsaw::Telltale::Mask, Frame::Renderer *, Frame::Renderer *);
   virtual ~DynamicFrame();
-  virtual void attach(Telltale_ptr);
+  virtual void attach(Warsaw::Telltale_ptr);
   virtual void update(const CORBA::Any &);
  protected:
-  Telltale_var telltale;
+  Warsaw::Telltale_var telltale;
   Frame::Renderer *renderer1, *renderer2;
   bool on;
-  Telltale::Mask mask;
+  Warsaw::Telltale::Mask mask;
 };
 
 class InvisibleFrame : public Frame::Renderer
 {
 public:
-  InvisibleFrame(Coord t, bool f) : Frame::Renderer(t, f) {}
-  virtual void draw(DrawTraversal_ptr);
+  InvisibleFrame(Warsaw::Coord t, bool f) : Frame::Renderer(t, f) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 };
 
 class Bevel : public Frame::Renderer
 {
 public:
   enum type { inset, outset, convex, concav};
-  Bevel(Coord t, type s, Coord b, bool f) : Frame::Renderer(t, f), style(s), bright(b) {}
-  virtual void draw(DrawTraversal_ptr);
+  Bevel(Warsaw::Coord t, type s, Warsaw::Coord b, bool f) : Frame::Renderer(t, f), style(s), bright(b) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 protected:
   type style;
-  Coord bright;
+  Warsaw::Coord bright;
 };
 
 class ColoredFrame : public Frame::Renderer
 {
 public:
-  ColoredFrame(Coord t, const Color &c, bool f) : Frame::Renderer(t, f), color(c) {}
-  virtual void draw(DrawTraversal_ptr);
+  ColoredFrame(Warsaw::Coord t, const Warsaw::Color &c, bool f) : Frame::Renderer(t, f), color(c) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 protected:
-  Color color;
+  Warsaw::Color color;
 };
 
-#endif /* _Frame_hh */
+#endif

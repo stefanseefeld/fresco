@@ -34,22 +34,23 @@
 class WindowImpl;
 class DesktopImpl;
 
-class DesktopKitImpl : public virtual POA_DesktopKit, public KitImpl
+class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
+		       public KitImpl
 {
  public:
-  DesktopKitImpl(KitFactory *, const PropertySeq &);
+  DesktopKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~DesktopKitImpl();
-  virtual void bind(ServerContext_ptr);
-  virtual Desktop_ptr desk();
-  virtual Window_ptr shell(Controller_ptr);
-  virtual Window_ptr transient(Controller_ptr);
-  virtual Window_ptr pulldown(Controller_ptr);
+  virtual void bind(Warsaw::ServerContext_ptr);
+  virtual Warsaw::Desktop_ptr desk();
+  virtual Warsaw::Window_ptr shell(Warsaw::Controller_ptr);
+  virtual Warsaw::Window_ptr transient(Warsaw::Controller_ptr);
+  virtual Warsaw::Window_ptr pulldown(Warsaw::Controller_ptr);
  private:
-  Desktop_var   desktop;
-  LayoutKit_var layout;
-  ToolKit_var   tool;
-  WidgetKit_var widget;
+  Warsaw::Desktop_var   desktop;
+  Warsaw::LayoutKit_var layout;
+  Warsaw::ToolKit_var   tool;
+  Warsaw::WidgetKit_var widget;
   vector<WindowImpl *> windows;
 };
 
-#endif /* _DesktopKitImpl_hh */
+#endif

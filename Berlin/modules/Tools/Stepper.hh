@@ -35,8 +35,8 @@ public:
   Stepper();
   ~Stepper();
 //protected:
-  virtual void press(PickTraversal_ptr, const Input::Event &);
-  virtual void release(PickTraversal_ptr, const Input::Event &);
+  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual void step();
 private:
   void start();

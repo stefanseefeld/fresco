@@ -24,47 +24,42 @@
 #include <Warsaw/Server.hh>
 #include <Warsaw/resolve.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/RefCountVar.hh>
 #include "Desktop/DesktopKitImpl.hh"
 #include "Desktop/WindowImpl.hh"
 #include "Desktop/Pulldown.hh"
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
-DesktopKitImpl::DesktopKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-DesktopKitImpl::~DesktopKitImpl()
-{
-  for (vector<WindowImpl *>::iterator i = windows.begin(); i != windows.end(); i++)
-    {
-      (*i)->unmap();
-      deactivate(*i);
-    }
-}
-
+DesktopKitImpl::DesktopKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p) {}
+DesktopKitImpl::~DesktopKitImpl() {}
 void DesktopKitImpl::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
-  CORBA::Object_var object = context->getSingleton(Desktop::_PD_repoId);
+  CORBA::Object_var object = context->getSingleton("IDL:Warsaw/Desktop:1.0");
   desktop = Desktop::_narrow(object);
   
-  PropertySeq props;
+  Warsaw::Kit::PropertySeq props;
   props.length(0);
-  layout = resolve_kit<LayoutKit>(context, LayoutKit::_PD_repoId, props);
-  tool   = resolve_kit<ToolKit>(context, ToolKit::_PD_repoId, props);
-  widget = resolve_kit<WidgetKit>(context, WidgetKit::_PD_repoId, props);
+  layout = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
+  tool   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
+  widget = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
 }
 
 Desktop_ptr DesktopKitImpl::desk()
 {
-  return Desktop::_duplicate(desktop);
+  return Warsaw::Desktop::_duplicate(desktop);
 }
 
 
 Window_ptr DesktopKitImpl::shell(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::shell");
-  WindowImpl *window = activate(new WindowImpl);
-
+  WindowImpl *window = new WindowImpl;
+  activate(window);
   Graphic::Requisition req;
   req.x.defined = true;
   req.x.minimum = 0.;
@@ -129,7 +124,6 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
    */
   window->appendController(g);
   window->insert(desktop, true);
-  windows.push_back(window);
   desktop->appendController(Controller_var(window->_this()));
   return window->_this();
 }
@@ -137,7 +131,8 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
 Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::transient");
-  WindowImpl *window = activate(new WindowImpl);
+  WindowImpl *window = new WindowImpl();
+  activate(window);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
@@ -203,7 +198,6 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
    */
   window->appendController(g);
   window->insert(desktop, false);
-  windows.push_back(window);
   desktop->appendController(Controller_var(window->_this()));
   return window->_this();
 }
@@ -211,7 +205,8 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::pulldown");
-  Pulldown *menu = activate(new Pulldown);
+  Pulldown *menu = new Pulldown();
+  activate(menu);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
@@ -219,7 +214,6 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
   menu->body(outset);
   menu->appendController(g);
   menu->insert(desktop, false);
-  windows.push_back(menu);
   desktop->appendController(Controller_var(menu->_this()));
   return menu->_this();
 }
@@ -227,5 +221,5 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "DesktopKitImpl"};
-  return new KitFactoryImpl<DesktopKitImpl> (DesktopKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<DesktopKitImpl> ("IDL:Warsaw/DesktopKit:1.0", properties, 1);
 }

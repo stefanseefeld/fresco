@@ -27,9 +27,10 @@
 #include "Berlin/ImplVar.hh"
 #include "Berlin/Providers.hh"
 #include "Berlin/Logger.hh"
-#include "Prague/Sys/Profiler.hh"
+#include <Prague/Sys/Profiler.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 FocusImpl::FocusImpl(ScreenImpl *s) : screen(s), traversal(0), grabbed(false) {}
 FocusImpl::~FocusImpl() {}

@@ -24,17 +24,18 @@
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/Screen.hh>
 #include <Warsaw/IO.hh>
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Providers.hh"
+#include "Berlin/Provider.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
-#include "Berlin/Lease.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <algorithm>
+#include <functional>
 
 using namespace Prague;
+using namespace Warsaw;
 
 static double tol = 0.005;
 
@@ -258,39 +259,79 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 /*****************************************************/
 
 GraphicImpl::GraphicImpl() {}
-GraphicImpl::~GraphicImpl() {}
+GraphicImpl::~GraphicImpl()
+{
+  Trace trace("GraphicImpl::~GraphicImpl");
+  MutexGuard guard(parentMutex);
+  for (glist_t::iterator i = parents.begin(); i != parents.end(); ++i)
+    {
+      try
+	{
+	  (*i).peer->removeChild((*i).peerId);
+	}
+      catch(CORBA::OBJECT_NOT_EXIST &)
+	{
+	  cerr << "unable to detach from parent !" << endl;
+	}
+    }
+  parents.clear();
+}
 
-Graphic_ptr GraphicImpl::body() { return Graphic::_nil();}
+Graphic_ptr GraphicImpl::body() { return Warsaw::Graphic::_nil();}
 void GraphicImpl::body(Graphic_ptr) {}
 void GraphicImpl::append(Graphic_ptr) {}
 void GraphicImpl::prepend(Graphic_ptr) {}
 void GraphicImpl::remove(Tag) {}
+void GraphicImpl::removeChild(Tag) {}
 
-void GraphicImpl::addParent(Graphic_ptr parent, Tag tag)
+Tag GraphicImpl::uniqueParentId()
 {
-  MutexGuard guard(parentMutex);
-  Edge edge;
-  edge.parent = Graphic::_duplicate(parent);
-  edge.id = tag;
-  parents.push_back(edge);
+  Tag t = 0;
+  do
+    if (find_if(parents.begin(), parents.end(), localId_eq(t)) == parents.end())
+      return t;
+  while(++t);
 }
 
-void GraphicImpl::removeParent(Graphic_ptr parent, Tag tag)
+Tag GraphicImpl::addParent(Graphic_ptr parent, Tag peerId)
 {
+  Trace trace("GraphicImpl::addParent");
   MutexGuard guard(parentMutex);
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    if ((*i).id == tag && (*i).parent->_is_equivalent(parent))
+  /*
+   * note: we don't do ref counting on the parents to avoid cyclic dependencies.
+   *       whenever a graphic node has no more parents (and no other party holding
+   *       a reference to it, it is considered to be a candidate for deactivation,
+   *       which then will result in the destruction of this servant and by this,
+   *       the decrement of the ref counter for all children. Eventually the loop
+   *       will just start over again then...
+   */
+  Edge edge;
+  edge.peer = Warsaw::Graphic::_duplicate(parent);
+  edge.peerId = peerId;
+  edge.localId = uniqueParentId();
+  parents.push_back(edge);
+  return edge.localId;
+}
+
+void GraphicImpl::removeParent(Tag localId)
+{
+  Trace trace("GraphicImpl::removeParent");
+  MutexGuard guard(parentMutex);
+  for (glist_t::iterator i = parents.begin(); i != parents.end(); ++i)
+    if ((*i).localId == localId)
       {
-	parents.erase(i);
-	break;
+        parents.erase(i);
+        return;
       }
 }
 
 /*
- * the following two methods need to be implemented...
+ * the following four methods need to be implemented...
  */
 Graphic::Iterator_ptr GraphicImpl::firstChild() { return Iterator::_nil();}
 Graphic::Iterator_ptr GraphicImpl::lastChild() { return Iterator::_nil();}
+Graphic::Iterator_ptr GraphicImpl::firstParent() { return Iterator::_nil();}
+Graphic::Iterator_ptr GraphicImpl::lastParent() { return Iterator::_nil();}
 
 /*
  * these are default implementations of the layout, picking and drawing protocol
@@ -312,14 +353,14 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 {
   MutexGuard guard(parentMutex);
   CORBA::Long begin = allocation->size();
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+  for (glist_t::iterator i = parents.begin(); i != parents.end(); i++)
     {
-      (*i).parent->allocations(allocation);      
+      (*i).peer->allocations(allocation);      
       CORBA::Long end = allocation->size();
       for (CORBA::Long j = begin; j != end; j++)
 	{
 	  const Allocation::Info_var info = allocation->get(j);
-	  (*i).parent->allocate((*i).id, info);
+	  (*i).peer->allocate((*i).peerId, info);
 	}
       begin = end;
     }
@@ -346,13 +387,11 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
  */
 void GraphicImpl::needRedraw()
 {
-  // Trace trace("GraphicImpl::needRedraw");
-  Lease<AllocationImpl> allocation;
-  Providers::alloc.provide(allocation);
+  Trace trace("GraphicImpl::needRedraw");
+  Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocation->clear();
   allocations(Allocation_var(allocation->_this()));
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i < size; i++)
     {
@@ -374,12 +413,10 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
   Trace trace("GraphicImpl::needRedrawRegion");
   if (region->defined())
     {
-      Lease<AllocationImpl> allocation;
-      Providers::alloc.provide(allocation);
+      Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
       allocation->clear();
       allocations(Allocation_var(allocation->_this()));
-      Lease<RegionImpl> dr;
-      Providers::region.provide(dr);
+      Lease_var<RegionImpl> dr(Provider<RegionImpl>::provide());
       for (CORBA::Long i = 0; i < allocation->size(); i++)
 	{
 	  Allocation::Info_var info = allocation->get(i);
@@ -393,11 +430,11 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
 void GraphicImpl::needResize()
 {
   MutexGuard guard(parentMutex);
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).parent->needResize();
+  for (glist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i).peer->needResize();
 }
 
-void GraphicImpl::initRequisition(Graphic::Requisition &r)
+void GraphicImpl::initRequisition(Warsaw::Graphic::Requisition &r)
 {
   r.x.defined = false;
   r.y.defined = false;
@@ -405,16 +442,16 @@ void GraphicImpl::initRequisition(Graphic::Requisition &r)
   r.preserve_aspect = false;
 }
 
-void GraphicImpl::defaultRequisition(Graphic::Requisition &r)
+void GraphicImpl::defaultRequisition(Warsaw::Graphic::Requisition &r)
 {
-  Coord zero = Coord(0.0);
+  Coord zero = 0.;
   require(r.x, zero, zero, zero, zero);
   require(r.y, zero, zero, zero, zero);
   require(r.z, zero, zero, zero, zero);
   r.preserve_aspect = false;
 }
 
-void GraphicImpl::require(Graphic::Requirement &r, Coord natural, Coord stretch, Coord shrink, Coord alignment)
+void GraphicImpl::require(Warsaw::Graphic::Requirement &r, Coord natural, Coord stretch, Coord shrink, Coord alignment)
 {
   r.defined = true;
   r.natural = natural;
@@ -423,11 +460,11 @@ void GraphicImpl::require(Graphic::Requirement &r, Coord natural, Coord stretch,
   r.align = alignment;
 }
 
-void GraphicImpl::requireLeadTrail(Graphic::Requirement &r,
+void GraphicImpl::requireLeadTrail(Warsaw::Graphic::Requirement &r,
 				   Coord natural_lead, Coord max_lead, Coord min_lead,
 				   Coord natural_trail, Coord max_trail, Coord min_trail)
 {
-  Coord zero = Coord(0);
+  Coord zero = 0;
   r.defined = true;
   natural_lead = Math::max(min_lead, Math::min(max_lead, natural_lead));
   max_lead = Math::max(max_lead, natural_lead);
@@ -440,13 +477,13 @@ void GraphicImpl::requireLeadTrail(Graphic::Requirement &r,
     {
       r.minimum = min_trail;
       r.maximum = max_trail;
-      r.align = Coord(0);
+      r.align = 0.;
     }
   else if (natural_trail == zero)
     {
       r.minimum = min_lead;
       r.maximum = max_lead;
-      r.align = Coord(1);
+      r.align = 1.;
     }
   else
     {
@@ -459,9 +496,9 @@ void GraphicImpl::requireLeadTrail(Graphic::Requirement &r,
     }
 }
 
-Graphic::Requirement *GraphicImpl::requirement(Graphic::Requisition &r, Axis a)
+Warsaw::Graphic::Requirement *GraphicImpl::requirement(Warsaw::Graphic::Requisition &r, Axis a)
 {
-  Graphic::Requirement *req;
+  Warsaw::Graphic::Requirement *req;
   switch (a)
     {
     case xaxis: req = &r.x; break;
@@ -472,7 +509,7 @@ Graphic::Requirement *GraphicImpl::requirement(Graphic::Requisition &r, Axis a)
   return req;
 }
 
-void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr region)
+void GraphicImpl::defaultExtension (const Warsaw::Allocation::Info &info, Region_ptr region)
 {
   if (!CORBA::is_nil(info.allocation))
     {
@@ -480,8 +517,7 @@ void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr reg
 	region->mergeUnion(info.allocation);
       else
 	{
-	  Lease<RegionImpl> tmp;
-	  Providers::region.provide(tmp);
+	  Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
 	  tmp->clear();
 	  tmp->copy(info.allocation);
 	  if (!CORBA::is_nil(info.transformation) && !info.transformation->Identity())
@@ -520,7 +556,7 @@ void GraphicImpl::naturalAllocation (Graphic_ptr g, RegionImpl &nat)
     }
 }
 
-void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
+void GraphicImpl::transformRequest (Warsaw::Graphic::Requisition &req, Transform_ptr tx)
 {
   if (CORBA::is_nil(tx) || tx->Identity()) return;
   if (Math::equal(req.x.natural, req.x.maximum, tol) &&
@@ -561,7 +597,7 @@ static void compensate(Coord a, Coord &x, Coord &y)
  *   |\ /    |
  *   +-x-----+
  */
-Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &_req, Transform_ptr t)
+Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Warsaw::Graphic::Requisition &_req, Transform_ptr t)
 {
   Trace trace("GraphicImpl::transformAllocation");
   Vertex delta;
@@ -583,8 +619,7 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
 
   if (!rotated(t))
     {
-      Lease<TransformImpl> tx;
-      Providers::trafo.provide(tx);
+      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->copy(t);
       tx->invert();
       region.applyTransform(Transform_var(tx->_this()));
@@ -598,9 +633,9 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       center.x = (region.lower.x + region.upper.x) * 0.5;
       center.y = (region.lower.y + region.upper.y) * 0.5;
       center.z = (region.lower.z + region.upper.z) * 0.5;
-      Transform::Matrix m;
+      Warsaw::Transform::Matrix m;
       t->storeMatrix(m);
-      Graphic::Requisition r[3], total;
+      Warsaw::Graphic::Requisition r[3], total;
       GraphicImpl::initRequisition(r[0]);
       GraphicImpl::initRequisition(r[1]);
       GraphicImpl::initRequisition(r[2]);
@@ -660,16 +695,16 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       r[2].z.defined = true;
 
       total.x.natural = r[0].x.natural + r[1].x.natural + r[2].x.natural;
-      total.x.maximum = r[0].x.maximum + r[1].x.maximum + r[2].x.natural;
-      total.x.minimum = r[0].x.minimum + r[1].x.minimum + r[2].x.natural;
+      total.x.maximum = r[0].x.maximum + r[1].x.maximum + r[2].x.maximum;
+      total.x.minimum = r[0].x.minimum + r[1].x.minimum + r[2].x.minimum;
       total.x.defined = true;
       total.y.natural = r[0].y.natural + r[1].y.natural + r[2].y.natural;
-      total.y.maximum = r[0].y.maximum + r[1].y.maximum + r[2].y.natural;
-      total.y.minimum = r[0].y.minimum + r[1].y.minimum + r[2].y.natural;
+      total.y.maximum = r[0].y.maximum + r[1].y.maximum + r[2].y.maximum;
+      total.y.minimum = r[0].y.minimum + r[1].y.minimum + r[2].y.minimum;
       total.y.defined = true;
       total.z.natural = r[0].z.natural + r[1].z.natural + r[2].z.natural;
-      total.z.maximum = r[0].z.maximum + r[1].z.maximum + r[2].z.natural;
-      total.z.minimum = r[0].z.minimum + r[1].z.minimum + r[2].z.natural;
+      total.z.maximum = r[0].z.maximum + r[1].z.maximum + r[2].z.maximum;
+      total.z.minimum = r[0].z.minimum + r[1].z.minimum + r[2].z.minimum;
       total.z.defined = true;
 
       computeAllocations(xaxis, total, 3, r, region, a);

@@ -37,37 +37,37 @@ class GraphicImpl;
 namespace Motif
 {
 
-class WidgetKit : public virtual POA_WidgetKit, public KitImpl
+class WidgetKit : public virtual POA_Warsaw::WidgetKit,
+		  public KitImpl
 {
  public:
-  class CommandImpl : public virtual POA_Command,
+  class CommandImpl : public virtual POA_Warsaw::Command,
 		      public virtual PortableServer::RefCountServantBase,
 		      public virtual RefCountBaseImpl
   {};
 
-  WidgetKit(KitFactory *, const PropertySeq &);
+  WidgetKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~WidgetKit();
-  virtual void bind(ServerContext_ptr sc);
+  virtual void bind(Warsaw::ServerContext_ptr);
   
-  Trigger_ptr      button(Graphic_ptr, Command_ptr);
-  Controller_ptr   toggle(Graphic_ptr);
-  Graphic_ptr      gauge(BoundedValue_ptr);
-  Controller_ptr   slider(BoundedValue_ptr, Axis);
-  Controller_ptr   panner(BoundedRange_ptr, BoundedRange_ptr);
-  Controller_ptr   scrollbar(BoundedRange_ptr, Axis);
-  Choice_ptr       toggleChoice();
-  Choice_ptr       checkboxChoice();
-  Controller_ptr   terminal();
+  Warsaw::Trigger_ptr      button(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
+  Warsaw::Controller_ptr   toggle(Warsaw::Graphic_ptr);
+  Warsaw::Graphic_ptr      gauge(Warsaw::BoundedValue_ptr);
+  Warsaw::Controller_ptr   slider(Warsaw::BoundedValue_ptr, Warsaw::Axis);
+  Warsaw::Controller_ptr   panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
+  Warsaw::Controller_ptr   scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis);
+  Warsaw::Choice_ptr       toggleChoice();
+  Warsaw::Choice_ptr       checkboxChoice();
+  Warsaw::Controller_ptr   terminal();
 
-  Controller_ptr   scrollable(Graphic_ptr);
+  Warsaw::Controller_ptr   scrollable(Warsaw::Graphic_ptr);
  private:
-  LayoutKit_var layout;
-  CommandKit_var   command;
-  ToolKit_var   tool;
-  TextKit_var   text;
-  vector<PortableServer::Servant> servants;
+  Warsaw::LayoutKit_var  layout;
+  Warsaw::CommandKit_var command;
+  Warsaw::ToolKit_var    tool;
+  Warsaw::TextKit_var    text;
 };
 
 };
 
-#endif /* _Motif_WidgetKit_hh */
+#endif

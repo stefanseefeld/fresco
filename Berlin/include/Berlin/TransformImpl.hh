@@ -24,36 +24,38 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Transform.hh>
+#include <Berlin/ServantBase.hh>
+#include <Berlin/Provider.hh>
 
-class TransformImpl : public virtual POA_Transform, public virtual PortableServer::RefCountServantBase
+class TransformImpl : public virtual POA_Warsaw::Transform,
+		      public virtual ServantBase
 {
-  typedef Transform::Matrix Matrix;
 public:
   TransformImpl();
-  TransformImpl(Transform_ptr t) { copy(t);}
-  TransformImpl(Transform::Matrix m);
+  TransformImpl(Warsaw::Transform_ptr t) { copy(t);}
+  TransformImpl(Warsaw::Transform::Matrix m);
   virtual ~TransformImpl();
 
-  virtual void copy(Transform_ptr);
+  virtual void copy(Warsaw::Transform_ptr);
   virtual void loadIdentity();
-  virtual void loadMatrix(const Matrix);
-  virtual void storeMatrix(Matrix);
-  virtual CORBA::Boolean equal(Transform_ptr);
+  virtual void loadMatrix(const Warsaw::Transform::Matrix);
+  virtual void storeMatrix(Warsaw::Transform::Matrix);
+  virtual CORBA::Boolean equal(Warsaw::Transform_ptr);
   virtual CORBA::Boolean Identity();
   virtual CORBA::Boolean Translation();
   virtual CORBA::Boolean detIsZero();
-  virtual void scale(const Vertex &);
-  virtual void rotate(double, Axis);
-  virtual void translate(const Vertex &);
-  virtual void premultiply(Transform_ptr);
-  virtual void postmultiply(Transform_ptr);
+  virtual void scale(const Warsaw::Vertex &);
+  virtual void rotate(CORBA::Double, Warsaw::Axis);
+  virtual void translate(const Warsaw::Vertex &);
+  virtual void premultiply(Warsaw::Transform_ptr);
+  virtual void postmultiply(Warsaw::Transform_ptr);
   virtual void invert();
-  virtual void transformVertex(Vertex &);
-  virtual void inverseTransformVertex(Vertex &);
+  virtual void transformVertex(Warsaw::Vertex &);
+  virtual void inverseTransformVertex(Warsaw::Vertex &);
 
-  Transform::Matrix &matrix() { return mat;}
+  Warsaw::Transform::Matrix &matrix() { return mat;}
 protected:
-  Transform::Matrix mat;
+  Warsaw::Transform::Matrix mat;
   bool valid;
   bool identity;
   bool translate_only;
@@ -62,7 +64,7 @@ protected:
   void init();
   void modified() { valid = false;}
   void recompute();
-  Coord det();
+  Warsaw::Coord det();
 };
 
 #endif

@@ -23,10 +23,12 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
+#include <Warsaw/config.hh>
 #include "Drawing/openGL/GLQuadric.hh"
 #include "GL/gl.h"
 #include <cmath>
+
+using namespace Warsaw;
 
 /*
  * Convert degrees to radians:

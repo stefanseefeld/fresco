@@ -45,6 +45,7 @@
 #endif
 
 using namespace Prague;
+using namespace Warsaw;
 
 struct Dump : Signal::Notifier 
 {
@@ -124,12 +125,11 @@ int main(int argc, char **argv)
    * ...then start the ORB...
    */
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
-  CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
-  PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
+  PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
-  Logger::log(Logger::corba) << "[0/5] POA is activated" << endl;
+  Logger::log(Logger::corba) << "[0/5] root POA is activated" << endl;
 
   /*
    * ...and finally construct the server.
@@ -156,10 +156,11 @@ int main(int argc, char **argv)
   getopt.get("drawing", &value);
   if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
   else props[0].value = CORBA::string_dup("LibArtDrawingKit");
-  DrawingKit_var drawing = server->resolve<DrawingKit>(DrawingKit::_PD_repoId, props);
+  DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:Warsaw/DrawingKit:1.0", props, poa);
   if (CORBA::is_nil(drawing))
     {
-      cerr << "unable to open " << DrawingKit::_PD_repoId << " with " << props[0].name << '=' << props[0].value << endl;
+      cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0" << " with attribute "
+	   << props[0].name << '=' << props[0].value << endl;
       exit(-1);
     }
 
@@ -168,27 +169,26 @@ int main(int argc, char **argv)
   // make a Screen graphic to hold this server's scene graph
   ScreenImpl *screen = new ScreenImpl(drawing);
   props.length(0);
-  ToolKit_var tools = server->resolve<ToolKit>(ToolKit::_PD_repoId, props);
-  DesktopImpl *desktop = new DesktopImpl;
+  ToolKit_var tools = server->resolve<ToolKit>("IDL:Warsaw/ToolKit:1.0", props, poa);
+  LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
+  Stage_var stage = layout->createStage();
+  DesktopImpl *desktop = new DesktopImpl(stage);
 //   ToolKit::FrameSpec spec;
 //   Color color = {0.7, 1.0, 0.7, 1.0};
 //   spec.foreground(color);
 //   screen->body(Graphic_var(tools->frame(Desktop_var(desktop->_this()), 10., spec, true)));
   screen->body(Desktop_var(desktop->_this()));
   screen->appendController(Desktop_var(desktop->_this()));
-  LayoutKit_var layout = server->resolve<LayoutKit>(LayoutKit::_PD_repoId, props);
-  Stage_var stage = layout->createStage();
-  desktop->init(stage);
 
   Logger::log(Logger::layout) << "[3/5] created desktop" << endl;
 
   // initialize the client listener
-  server->setSingleton(Desktop::_PD_repoId, Desktop_var(desktop->_this()));
-  server->setSingleton(DrawingKit::_PD_repoId, drawing);
+  server->setSingleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
+  server->setSingleton("IDL:Warsaw/DrawingKit:1.0", drawing);
   server->start();
 
   Logger::log(Logger::layout) << "started server" << endl;
-  bind_name(orb, Server_var(server->_this()), Server::_PD_repoId);
+  bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
 
   Logger::log(Logger::corba) << "[4/5] listening for clients" << endl;
   // initialize the event distributor and draw thread

@@ -23,7 +23,8 @@
 #include <Figure/Figures.hh>
 
 // using namespace Geometry;
-using namespace Figures;
+using namespace Warsaw;
+using namespace Warsaw::Figures;
 
 PointImpl::PointImpl() { addPoint(0., 0.);}
 PointImpl::PointImpl (const Vertex &v) { addPoint(v.x, v.y);}
@@ -187,17 +188,17 @@ void EllipseImpl::radius1(Coord r) { radius1_ = r; resize();}
 Coord EllipseImpl::radius2() { return radius2_;}
 void EllipseImpl::radius2(Coord r) { radius2_ = r; resize();}
 
-PathImpl::PathImpl() { FigureImpl::handle = new Figure::Vertices;}
-PathImpl::PathImpl (const Figure::Vertices &v)
+PathImpl::PathImpl() { FigureImpl::handle = new Warsaw::Figure::Vertices;}
+PathImpl::PathImpl (const Warsaw::Figure::Vertices &v)
 {
-  handle = new Figure::Vertices(v);
+  handle = new Warsaw::Figure::Vertices(v);
   resize();
 }
 
 PathImpl::PathImpl(const PathImpl &path)
 {
   copy(path);
-  handle = new Figure::Vertices(path.handle);
+  handle = new Warsaw::Figure::Vertices(path.handle);
 }
 
 void PathImpl::resize()
@@ -243,4 +244,4 @@ void PathImpl::resize()
 
 PathImpl::~PathImpl () {}
 
-Figure::Vertices *PathImpl::handles() { Figure::Vertices *ret = new Figure::Vertices(handle); return ret;}
+Warsaw::Figure::Vertices *PathImpl::handles() { Warsaw::Figure::Vertices *ret = new Warsaw::Figure::Vertices(handle); return ret;}

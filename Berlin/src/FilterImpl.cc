@@ -22,6 +22,8 @@
 
 #include "Berlin/FilterImpl.hh"
 
+using namespace Warsaw;
+
 Accelerator::Accelerator(Input::Device d, const Input::Toggle &t, Input::Bitset b, Command_ptr c)
   : device(d), toggle(t), modifier(b), command(Command::_duplicate(c)) {}
 

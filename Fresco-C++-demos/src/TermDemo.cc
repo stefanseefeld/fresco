@@ -24,6 +24,7 @@
 #include <fstream>
 
 using namespace Prague;
+using namespace Warsaw;
 
 TermDemo::TermDemo(Application *a)
   : Demo(a)

@@ -29,6 +29,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 PolyFigure::PolyFigure()
   : tx(new TransformImpl),
@@ -57,7 +58,7 @@ void PolyFigure::updateBbox()
 	{
 	  Allocation::Info info;
 	  for (CORBA::ULong i = 0; i < n; i++)
-	    children[i].parent->extension(info, Region_var(bbox->_this()));
+	    children[i].peer->extension(info, Region_var(bbox->_this()));
 	}
     }
 }
@@ -122,7 +123,7 @@ void PolyFigure::traverse(Traversal_ptr traversal)
   CORBA::Long n = numChildren();
   for (CORBA::Long i = 0; i != n; i++)
     {
-      traversal->traverseChild(children[i].parent, children[i].id, Region_var(bbox->_this()), Transform_var(tx->_this()));
+      traversal->traverseChild(children[i].peer, children[i].localId, Region_var(bbox->_this()), Transform_var(tx->_this()));
       if (!traversal->ok()) break;
     }
 

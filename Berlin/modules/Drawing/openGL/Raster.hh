@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -30,16 +30,16 @@
 
 struct GLRaster
 {
-  GLRaster(Raster_var r) : remote(Raster::_duplicate(r)) {}
-  Raster_var remote;
-  PixelCoord width;
-  PixelCoord height;
+  GLRaster(Warsaw::Raster_var r) : remote(Warsaw::Raster::_duplicate(r)) {}
+  Warsaw::Raster_var remote;
+  Warsaw::PixelCoord width;
+  Warsaw::PixelCoord height;
   GLuint texture;
 };
 
 struct GLTexture : GLRaster
 {
-  GLTexture(Raster_var);
+  GLTexture(Warsaw::Raster_var);
   ~GLTexture();
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);
@@ -47,11 +47,11 @@ private:
 
 struct GLImage : GLRaster
 {
-  GLImage(Raster_var);
+  GLImage(Warsaw::Raster_var);
   ~GLImage();
   GLfloat s, t;
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);
 };
 
-#endif /* _GLRaster_hh */
+#endif 

@@ -29,25 +29,26 @@
 #include <Berlin/TraversalImpl.hh>
 #include <vector>
 
-class DrawTraversalImpl : public virtual POA_DrawTraversal, public TraversalImpl
+class DrawTraversalImpl : public virtual POA_Warsaw::DrawTraversal,
+                          public TraversalImpl
 {
 public:
-  DrawTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, DrawingKit_ptr);
+  DrawTraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr, Warsaw::DrawingKit_ptr);
   DrawTraversalImpl(const DrawTraversalImpl &);
   virtual ~DrawTraversalImpl();
   virtual CORBA::Boolean intersectsAllocation();
-  virtual CORBA::Boolean intersectsRegion(Region_ptr);
-  virtual void traverseChild(Graphic_ptr, Tag, Region_ptr, Transform_ptr);
-  virtual void visit(Graphic_ptr);
-  virtual order direction() { return Traversal::up;}
+  virtual CORBA::Boolean intersectsRegion(Warsaw::Region_ptr);
+  virtual void traverseChild(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
+  virtual void visit(Warsaw::Graphic_ptr);
+  virtual Warsaw::Traversal::order direction() { return Warsaw::Traversal::up;}
   virtual CORBA::Boolean ok() { return true;}
-  virtual DrawingKit_ptr kit();
+  virtual Warsaw::DrawingKit_ptr kit();
   void init();
   void finish();
 private:
-  DrawingKit_var drawing;
-  Region_var clipping;
+  Warsaw::DrawingKit_var drawing;
+  Warsaw::Region_var clipping;
   Impl_var<TransformImpl> id;
 };
 
-#endif /* _DrawTraversalImpl_hh */
+#endif 

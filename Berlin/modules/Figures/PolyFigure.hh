@@ -29,32 +29,33 @@
 
 class TransformImpl;
 
-class PolyFigure : public virtual POA_Figure, public PolyGraphic
+class PolyFigure : public virtual POA_Warsaw::Figure,
+		   public PolyGraphic
 {
 public:
     PolyFigure();
     PolyFigure(const PolyFigure &);
     virtual ~PolyFigure();
 
-    virtual void request(Requisition &);
-    virtual void extension(const Allocation::Info &, Region_ptr);
-    virtual void traverse(Traversal_ptr);
-    virtual Transform_ptr transformation();
+    virtual void request(Warsaw::Graphic::Requisition &);
+    virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+    virtual void traverse(Warsaw::Traversal_ptr);
+    virtual Warsaw::Transform_ptr transformation();
     virtual void needRedraw();
     virtual void needResize();
-    virtual void allocate(Tag, const Allocation::Info &);
+    virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
     /*
      * shameless hack !!!: eventually these settings are dealt with
      *                     by styles so PolyFigures simply ignore it...
      *                     -stefan
      */
-    Figure::Mode type() { return 0;}
-    void type(Figure::Mode) {}
-    Color foreground() { return Color();}
-    void foreground(const Color &) {}
-    Color background() { return Color();}
-    void background(const Color &) {}
+    Warsaw::Figure::Mode type() { return 0;}
+    void type(Warsaw::Figure::Mode) {}
+    Warsaw::Color foreground() { return Warsaw::Color();}
+    void foreground(const Warsaw::Color &) {}
+    Warsaw::Color background() { return Warsaw::Color();}
+    void background(const Warsaw::Color &) {}
     virtual void resize() {}
 
 protected:
@@ -68,7 +69,7 @@ class UPolyFigure : public PolyFigure
 public:
   UPolyFigure() {}
   UPolyFigure(const UPolyFigure &);
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 };
 
-#endif /* _PolyFigure_hh */
+#endif

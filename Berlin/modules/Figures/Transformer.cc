@@ -27,35 +27,23 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/TransformImpl.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
 #include "Figure/Transformer.hh"
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
-Transformer::Transformer()
-{
-  transform = new TransformImpl;
-}
-
-Transformer::~Transformer()
-{
-//  transform->_dispose();
-}
-
-Transform_ptr Transformer::transformation()
-{
-  return transform->_this();
-}
+Transformer::Transformer() : transform(new TransformImpl) {}
+Transformer::~Transformer() {}
+Transform_ptr Transformer::transformation() { return transform->_this();}
 
 void Transformer::request(Requisition &requisition)
 {
   Trace trace("Transformer::request");
   Allocator::request(requisition);
-//   cout << "request before trafo " << requisition << endl;
   GraphicImpl::transformRequest(requisition, Transform_var(transform->_this()));
-//   cout << "request after trafo " << requisition << endl;
 }
 
 void Transformer::traverse(Traversal_ptr traversal)
@@ -65,17 +53,15 @@ void Transformer::traverse(Traversal_ptr traversal)
   if (CORBA::is_nil(child)) return;
   if (!transform->Identity())
     {
-      Lease<RegionImpl> rr;
-      Providers::region.provide(rr);
+      Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
       rr->copy(traversal->allocation());
 	  
-      Requisition r;
+      Warsaw::Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
 	  
       Allocator::request(r);
 
-      Lease<TransformImpl> tx;
-      Providers::trafo.provide(tx);
+      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->loadIdentity();
 //       cout << "allocation before trafo " << *rr << endl;
       Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
@@ -93,14 +79,12 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
     {
       if (!CORBA::is_nil(info.allocation))
 	{
-	  Lease<RegionImpl> rr;
-	  Providers::region.provide(rr);
+	  Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
 	  rr->copy(info.allocation);
-	  Requisition r;
+	  Warsaw::Graphic::Requisition r;
 	  GraphicImpl::initRequisition(r);
 	  Allocator::request(r);
-	  Lease<TransformImpl> tx;
-	  Providers::trafo.provide(tx);
+	  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
 	  tx->loadIdentity();
 	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
  	  tx->copy(Transform_var(transform->_this()));

@@ -37,36 +37,36 @@
 class Compositor;
 class Strut;
 
-class TextKitImpl : public virtual POA_TextKit,  public KitImpl
+class TextKitImpl : public virtual POA_Warsaw::TextKit,
+		    public KitImpl
 {
  public:
-  TextKitImpl(KitFactory *, const PropertySeq &);
+  TextKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~TextKitImpl();
-  virtual void bind(ServerContext_ptr);
+  virtual void bind(Warsaw::ServerContext_ptr);
 
-  Graphic_ptr chunk(const Unistring & u);
-  Graphic_ptr glyph(Unichar c);
-  Graphic_ptr strut();
-  Graphic_ptr simpleViewer(TextBuffer_ptr);  
-  Graphic_ptr terminal(StreamBuffer_ptr);
-  Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
-  Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);
-  Graphic_ptr family(Graphic_ptr body, const Unistring & fam);
-  Graphic_ptr subFamily(Graphic_ptr body, const Unistring & fam);
-  Graphic_ptr fullName(Graphic_ptr body, const Unistring & name);
-  Graphic_ptr style(Graphic_ptr body, const Unistring & sty);
-  Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
+  Warsaw::Graphic_ptr chunk(const Warsaw::Unistring &u);
+  Warsaw::Graphic_ptr glyph(Warsaw::Unichar c);
+  Warsaw::Graphic_ptr strut();
+  Warsaw::Graphic_ptr simpleViewer(Warsaw::TextBuffer_ptr);  
+  Warsaw::Graphic_ptr terminal(Warsaw::StreamBuffer_ptr);
+  Warsaw::Graphic_ptr size(Warsaw::Graphic_ptr, CORBA::ULong);
+  Warsaw::Graphic_ptr weight(Warsaw::Graphic_ptr, CORBA::ULong);
+  Warsaw::Graphic_ptr family(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
+  Warsaw::Graphic_ptr subFamily(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
+  Warsaw::Graphic_ptr fullName(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
+  Warsaw::Graphic_ptr style(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
+  Warsaw::Graphic_ptr fontAttr(Warsaw::Graphic_ptr, const Warsaw::NVPair &);
  private:
   static Prague::Mutex staticMutex;
-  static map< Unichar, Impl_var<TextChunk> > charCache;
-  static DrawingKit_var canonicalDK;
+  static map<Warsaw::Unichar, Impl_var<TextChunk> > charCache;
+  static Warsaw::DrawingKit_var canonicalDK;
 
-  LayoutKit_var layout;
+  Warsaw::LayoutKit_var layout;
   Impl_var<Strut> _strut;
   Prague::Mutex localMutex;
   Compositor *lineCompositor;
   Compositor *pageCompositor;
-  vector<PortableServer::Servant> graphics;
 };
 
 #endif

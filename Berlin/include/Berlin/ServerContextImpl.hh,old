@@ -25,34 +25,37 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
-#include "Berlin/KitImpl.hh"
+#include <Berlin/KitImpl.hh>
 #include <Prague/Sys/Thread.hh>
 #include <multimap.h>
 
 class ServerImpl;
 
-class ServerContextImpl : public virtual POA_ServerContext, public virtual PortableServer::RefCountServantBase
-// this is an encapsulated "entry point" which a client uses to manufacture
-// new objects, look up singletons, look up the scene root, etc.
+//. this is an encapsulated "entry point" which a client uses to manufacture
+//. new objects, look up singletons, look up the scene root, etc.
+class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
+			  public virtual PortableServer::RefCountServantBase
 {
   typedef multimap<string, KitImpl *> klist_t;
  public:
-  ServerContextImpl(ServerImpl *, ClientContext_ptr);
+  ServerContextImpl(ServerImpl *, Warsaw::ClientContext_ptr);
   ~ServerContextImpl();
-  ClientContext_ptr client();
-  Kit_ptr resolve(const char *, const Kit::PropertySeq &)
-    throw (SecurityException, CreationFailureException);
+  Warsaw::ClientContext_ptr client();
+  Warsaw::Kit_ptr resolve(const char *, const Warsaw::Kit::PropertySeq &)
+    throw (Warsaw::SecurityException, Warsaw::CreationFailureException);
   void setSingleton(const char *, CORBA::Object_ptr) 
-    throw (SecurityException, SingletonFailureException);
+    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   void delSingleton(const char *) 
-    throw (SecurityException, SingletonFailureException);
+    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   CORBA::Object_ptr getSingleton(const char *) 
-    throw (SecurityException, SingletonFailureException);
+    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   bool ping();
  private:
   ServerImpl *server;
-  ClientContext_var cContext;
+  Warsaw::ClientContext_var cContext;
   klist_t kits;
+  unsigned long counter;
+  CORBA::PolicyList policies;
   Prague::Mutex mutex;
 };
 

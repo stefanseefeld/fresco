@@ -29,21 +29,22 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class BoundedValueImpl : public virtual POA_BoundedValue, public SubjectImpl
+class BoundedValueImpl : public virtual POA_Warsaw::BoundedValue,
+			 public SubjectImpl
 {
  public:
-  BoundedValueImpl(Coord, Coord, Coord, Coord, Coord);
+  BoundedValueImpl(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   virtual ~BoundedValueImpl();
-  virtual Coord lower();
-  virtual void lower(Coord);
-  virtual Coord upper();
-  virtual void upper(Coord);
-  virtual Coord step();
-  virtual void step(Coord);
-  virtual Coord page();
-  virtual void page(Coord);
-  virtual Coord value();
-  virtual void value(Coord);
+  virtual Warsaw::Coord lower();
+  virtual void lower(Warsaw::Coord);
+  virtual Warsaw::Coord upper();
+  virtual void upper(Warsaw::Coord);
+  virtual Warsaw::Coord step();
+  virtual void step(Warsaw::Coord);
+  virtual Warsaw::Coord page();
+  virtual void page(Warsaw::Coord);
+  virtual Warsaw::Coord value();
+  virtual void value(Warsaw::Coord);
 
   virtual void forward();
   virtual void backward();
@@ -51,11 +52,11 @@ class BoundedValueImpl : public virtual POA_BoundedValue, public SubjectImpl
   virtual void fastbackward();
   virtual void begin();
   virtual void end();
-  virtual void adjust(Coord);
+  virtual void adjust(Warsaw::Coord);
 private:
-  Coord l, u, v;
-  Coord s, p;
+  Warsaw::Coord l, u, v;
+  Warsaw::Coord s, p;
   Prague::Mutex mutex;
 };
 
-#endif /* _BoundedValueImpl_hh */
+#endif

@@ -23,10 +23,10 @@
 #ifndef _GLFont_hh
 #define _GLFont_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Types.hh"
-#include "Warsaw/Graphic.hh"
-#include "Warsaw/DrawingKit.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
+#include <Warsaw/Graphic.hh>
+#include <Warsaw/DrawingKit.hh>
 #include <string>
 #include <GL/gl.h>
 
@@ -35,17 +35,17 @@ class GLFont
 public:
   GLFont() {}
   virtual ~GLFont() {}
-  virtual unsigned long size() = 0;
-  virtual unsigned long weight() = 0;
-  virtual Unistring *family() = 0;
-  virtual Unistring *subfamily() = 0;
-  virtual Unistring *fullname() = 0;
-  virtual Unistring *style() = 0;
-  virtual DrawingKit::FontMetrics metrics() = 0;
-  virtual DrawingKit::GlyphMetrics metrics(Unichar uc) = 0;
+  virtual CORBA::ULong size() = 0;
+  virtual CORBA::ULong weight() = 0;
+  virtual Warsaw::Unistring *family() = 0;
+  virtual Warsaw::Unistring *subfamily() = 0;
+  virtual Warsaw::Unistring *fullname() = 0;
+  virtual Warsaw::Unistring *style() = 0;
+  virtual Warsaw::DrawingKit::FontMetrics metrics() = 0;
+  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar uc) = 0;
 
-  virtual void drawChar(Unichar) = 0;
-  virtual void allocateChar(Unichar, Graphic::Requisition &) = 0;
+  virtual void drawChar(Warsaw::Unichar) = 0;
+  virtual void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &) = 0;
 };
 
 #endif

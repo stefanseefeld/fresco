@@ -32,71 +32,73 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class ControllerImpl : public virtual POA_Controller, public MonoGraphic, public SubjectImpl
+class ControllerImpl : public virtual POA_Warsaw::Controller,
+                       public MonoGraphic,
+                       public SubjectImpl
 {
  public:
   ControllerImpl(bool);
-  virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
-  virtual void draw(DrawTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
-  virtual void pick(PickTraversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr traversal) { traversal->visit(Warsaw::Graphic_var(_this()));}
+  virtual void draw(Warsaw::DrawTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+  virtual void pick(Warsaw::PickTraversal_ptr);
 
-  virtual Controller_ptr parentController() { Prague::MutexGuard guard(mutex); return Controller::_duplicate(parent);}
-  virtual Controller_ptr nextController() { Prague::MutexGuard guard(mutex); return Controller::_duplicate(next);}
-  virtual Controller_ptr prevController() { Prague::MutexGuard guard(mutex); return Controller::_duplicate(prev);}
-  virtual Controller_ptr firstController() { Prague::MutexGuard guard(mutex); return Controller::_duplicate(first);}
-  virtual Controller_ptr lastController() { Prague::MutexGuard guard(mutex); return Controller::_duplicate(last);}
-  virtual void appendController(Controller_ptr);
-  virtual void prependController(Controller_ptr);
-  virtual void insertController(Controller_ptr);
-  virtual void replaceController(Controller_ptr);
+  virtual Warsaw::Controller_ptr parentController() { Prague::MutexGuard guard(mutex); return Warsaw::Controller::_duplicate(parent);}
+  virtual Warsaw::Controller_ptr nextController() { Prague::MutexGuard guard(mutex); return Warsaw::Controller::_duplicate(next);}
+  virtual Warsaw::Controller_ptr prevController() { Prague::MutexGuard guard(mutex); return Warsaw::Controller::_duplicate(prev);}
+  virtual Warsaw::Controller_ptr firstController() { Prague::MutexGuard guard(mutex); return Warsaw::Controller::_duplicate(first);}
+  virtual Warsaw::Controller_ptr lastController() { Prague::MutexGuard guard(mutex); return Warsaw::Controller::_duplicate(last);}
+  virtual void appendController(Warsaw::Controller_ptr);
+  virtual void prependController(Warsaw::Controller_ptr);
+  virtual void insertController(Warsaw::Controller_ptr);
+  virtual void replaceController(Warsaw::Controller_ptr);
   virtual void removeController();
-  virtual void setControllerLinks(Controller_ptr, Controller_ptr, Controller_ptr);
-  virtual void setFirstController(Controller_ptr);
-  virtual void setLastController(Controller_ptr);
-  virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
-  virtual CORBA::Boolean receiveFocus(Focus_ptr);
-  virtual void loseFocus(Input::Device);
-  virtual CORBA::Boolean firstFocus(Input::Device);
-  virtual CORBA::Boolean lastFocus(Input::Device);
-  virtual CORBA::Boolean nextFocus(Input::Device);
-  virtual CORBA::Boolean prevFocus(Input::Device);
-  virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const Input::Event &);
-  virtual CORBA::Boolean handleNonPositional(const Input::Event &);
+  virtual void setControllerLinks(Warsaw::Controller_ptr, Warsaw::Controller_ptr, Warsaw::Controller_ptr);
+  virtual void setFirstController(Warsaw::Controller_ptr);
+  virtual void setLastController(Warsaw::Controller_ptr);
+  virtual CORBA::Boolean requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  virtual CORBA::Boolean receiveFocus(Warsaw::Focus_ptr);
+  virtual void loseFocus(Warsaw::Input::Device);
+  virtual CORBA::Boolean firstFocus(Warsaw::Input::Device);
+  virtual CORBA::Boolean lastFocus(Warsaw::Input::Device);
+  virtual CORBA::Boolean nextFocus(Warsaw::Input::Device);
+  virtual CORBA::Boolean prevFocus(Warsaw::Input::Device);
+  virtual CORBA::Boolean handlePositional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean handleNonPositional(const Warsaw::Input::Event &);
 
-  virtual void set(Telltale::Mask);
-  virtual void clear(Telltale::Mask);
-  virtual CORBA::Boolean test(Telltale::Mask);
-  virtual void modify(Telltale::Mask, CORBA::Boolean);
-  virtual void constraint(TelltaleConstraint_ptr c);
-  virtual TelltaleConstraint_ptr constraint();
+  virtual void set(Warsaw::Telltale::Mask);
+  virtual void clear(Warsaw::Telltale::Mask);
+  virtual CORBA::Boolean test(Warsaw::Telltale::Mask);
+  virtual void modify(Warsaw::Telltale::Mask, CORBA::Boolean);
+  virtual void constraint(Warsaw::TelltaleConstraint_ptr);
+  virtual Warsaw::TelltaleConstraint_ptr constraint();
  protected:
-  virtual bool inside(PickTraversal_ptr);
-  virtual void move(PickTraversal_ptr, const Input::Event &);
-  virtual void press(PickTraversal_ptr, const Input::Event &);
-  virtual void drag(PickTraversal_ptr, const Input::Event &);
-  virtual void release(PickTraversal_ptr, const Input::Event &);
-  virtual void doubleClick(PickTraversal_ptr, const Input::Event &);
-  virtual void keyPress(const Input::Event &);
-  virtual void keyRelease(const Input::Event &);
-  virtual void other(const Input::Event &);
-  void grab(PickTraversal_ptr t) { t->grab(); grabs |= 1 << t->device(); updateState();} 
-  void ungrab(PickTraversal_ptr t) { t->ungrab(); grabs &= ~(1 << t->device()); updateState();}
-  bool grabbed(Input::Device d) { return grabs & (1 << d);}
-  void setFocus(Input::Device d) { focus |= 1 << d; updateState();}
-  void clearFocus(Input::Device d) { focus &= ~(1 << d); updateState();}
+  virtual bool inside(Warsaw::PickTraversal_ptr);
+  virtual void move(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void doubleClick(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void keyPress(const Warsaw::Input::Event &);
+  virtual void keyRelease(const Warsaw::Input::Event &);
+  virtual void other(const Warsaw::Input::Event &);
+  void grab(Warsaw::PickTraversal_ptr t) { t->grab(); grabs |= 1 << t->device(); updateState();} 
+  void ungrab(Warsaw::PickTraversal_ptr t) { t->ungrab(); grabs &= ~(1 << t->device()); updateState();}
+  bool grabbed(Warsaw::Input::Device d) { return grabs & (1 << d);}
+  void setFocus(Warsaw::Input::Device d) { focus |= 1 << d; updateState();}
+  void clearFocus(Warsaw::Input::Device d) { focus &= ~(1 << d); updateState();}
   virtual void updateState();
  private:
-  Controller_var parent;
-  Controller_var next;
-  Controller_var prev;
-  Controller_var first;
-  Controller_var last;
-  unsigned long telltale;
-  unsigned long focus;
-  unsigned long grabs;
+  Warsaw::Controller_var parent;
+  Warsaw::Controller_var next;
+  Warsaw::Controller_var prev;
+  Warsaw::Controller_var first;
+  Warsaw::Controller_var last;
+  CORBA::ULong telltale;
+  CORBA::ULong focus;
+  CORBA::ULong grabs;
   bool transparent;
-  TelltaleConstraint_var myConstraint;
+  Warsaw::TelltaleConstraint_var myConstraint;
   Prague::Mutex mutex;
 };
 
-#endif /* _ControllerImpl_hh */
+#endif 

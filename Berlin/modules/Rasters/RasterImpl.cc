@@ -21,11 +21,12 @@
  * MA 02139, USA.
  */
 
-#include "Image/RasterImpl.hh"
 #include <Prague/Sys/Tracer.hh>
+#include "Image/RasterImpl.hh"
 #include <string>
 
 using namespace Prague;
+using namespace Warsaw;
 
 RasterImpl::RasterImpl() : rows(0) {}
 RasterImpl::RasterImpl(const char *file) : rows(0)
@@ -44,8 +45,7 @@ RasterImpl::RasterImpl(const char *file) : rows(0)
      rows = png.read(pngfile);
   }
 }
-RasterImpl::~RasterImpl() {}
-
+RasterImpl::~RasterImpl() { Trace trace("RasterImpl::~RasterImpl");}
 void RasterImpl::clear()
 {
   delete [] rows;
@@ -53,21 +53,21 @@ void RasterImpl::clear()
   png.clear();
 }
 
-Raster::Info RasterImpl::header()
+Warsaw::Raster::Info RasterImpl::header()
 {
-  Raster::Info info;
+  Warsaw::Raster::Info info;
   png.header(info);
   return info;
 }
 
-void RasterImpl::loadData(const Raster::Data &data)
+void RasterImpl::loadData(const Warsaw::Raster::Data &data)
 {
   Trace trace("RasterImpl::loadData");
   clear();
   rows = png.demarshal(data);
 }
 
-void RasterImpl::storeData(Raster::Data_out data)
+void RasterImpl::storeData(Warsaw::Raster::Data_out data)
 {
   Trace trace("RasterImpl::storeData");
   delete data;
@@ -75,26 +75,26 @@ void RasterImpl::storeData(Raster::Data_out data)
   data = png.marshal(rows);
 }
 
-void RasterImpl::storePixel(const Raster::Index &index, Color &color)
+void RasterImpl::storePixel(const Warsaw::Raster::Index &index, Color &color)
 {
   Trace trace("RasterImpl::storePixel");
   color = png.pixel(index.x, index.y, rows);
 }
 
-void RasterImpl::loadPixel(const Raster::Index &index, const Color &color)
+void RasterImpl::loadPixel(const Warsaw::Raster::Index &index, const Color &color)
 {
   Trace trace("RasterImpl::loadPixel");
   png.pixel(index.x, index.y, color, rows);
 }
 
-void RasterImpl::storePixels(const Raster::Index &lower, const Raster::Index &upper, Raster::ColorSeq_out pixels)
+void RasterImpl::storePixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, Warsaw::Raster::ColorSeq_out pixels)
 {
   delete pixels;
   pixels = 0;
   pixels = png.pixels(lower.x, lower.y, upper.x, upper.y, rows);
 }
 
-void RasterImpl::loadPixels(const Raster::Index &lower, const Raster::Index &upper, const Raster::ColorSeq &pixels)
+void RasterImpl::loadPixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, const Warsaw::Raster::ColorSeq &pixels)
 {
   png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, rows);
 }

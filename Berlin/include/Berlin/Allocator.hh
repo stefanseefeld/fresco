@@ -25,33 +25,34 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
 
-class Allocator : public MonoGraphic
 //. An Allocator is a graphic that always gives its child
 //. an allocation that matches the child's requisition.
 //. This functionality is useful as a gateway between
 //. figure objects, which ignore their allocation, and
 //. layout objects.
+class Allocator : public MonoGraphic
 {
 public:
   Allocator();
   virtual ~Allocator();
 
-  virtual void request(Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
 
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
   virtual void needResize();
 // private:
   bool requested : 1;
   bool allocated : 1;
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
   Impl_var<RegionImpl> natural;
   Impl_var<RegionImpl> extension;
   
   void cacheRequisition();
   void cacheAllocation();
-  void needDamage(RegionImpl *, Allocation_ptr);
+  void needDamage(RegionImpl *, Warsaw::Allocation_ptr);
+  static void naturalAllocation(const Warsaw::Graphic::Requisition &, RegionImpl &);
 };
 
 class TransformAllocator : public Allocator
@@ -62,17 +63,17 @@ class TransformAllocator : public Allocator
 //. (which ignore their allocation).
 {
 public:
-  TransformAllocator(Alignment, Alignment, Alignment, Alignment, Alignment, Alignment);
+  TransformAllocator(Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment);
   ~TransformAllocator();
 
-  virtual void request(Requisition &);
-  virtual void traverse(Traversal_ptr);
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 protected:
-  Alignment xparent, yparent, zparent;
-  Alignment xchild, ychild, zchild;
+  Warsaw::Alignment xparent, yparent, zparent;
+  Warsaw::Alignment xchild, ychild, zchild;
 
-  void computeDelta(const Vertex &, const Vertex &, Vertex &);
+  void computeDelta(const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Vertex &);
 };
 
-#endif /* _Allocator_hh */
+#endif 

@@ -1,9 +1,9 @@
 /* $Id$ */
-#ifndef _cstream_h
-#define _cstream_h
+#ifndef _cstream_hh
+#define _cstream_hh
 
-#include <iostream.h>
-#include <OffiX/Filter/cbuf.h>
+#include <iostream>
+#include <Prague/Filter/cbuf.hh>
 
 /*
  *	Class name : cstream
@@ -16,4 +16,4 @@ public:
   cstream(istream &is, char comment = '#') : istream(new cbuf(is.rdbuf(), comment)) {}
 };
 
-#endif /* _cstream_h */
+#endif

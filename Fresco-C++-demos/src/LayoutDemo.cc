@@ -22,6 +22,8 @@
 
 #include "LayoutDemo.hh"
 
+using namespace Warsaw;
+
 LayoutDemo::LayoutDemo(Application *a)
   : Demo(a)
 {

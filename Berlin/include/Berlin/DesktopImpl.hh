@@ -28,28 +28,23 @@
 
 class WindowImpl;
 
-class DesktopImpl : public virtual POA_Desktop, public ControllerImpl
+class DesktopImpl : public virtual POA_Warsaw::Desktop,
+                    public ControllerImpl
 {
  public:
-  DesktopImpl();
+  DesktopImpl(Warsaw::Stage_ptr);
   virtual ~DesktopImpl();
-  virtual void body(Graphic_ptr) {}
-  virtual Graphic_ptr body() { return CORBA::is_nil(stage) ? Stage::_nil() : Stage::_duplicate(stage);}
-//   virtual void draw(DrawTraversal_ptr);
-
-  Region_ptr bbox() { return stage->bbox();}
+  virtual void body(Warsaw::Graphic_ptr) {}
+  virtual Warsaw::Graphic_ptr body() { return CORBA::is_nil(stage) ? Warsaw::Stage::_nil() : Warsaw::Stage::_duplicate(stage);}
+//   virtual void draw(Warsaw::DrawTraversal_ptr);
+  Warsaw::Region_ptr bbox() { return stage->bbox();}
   CORBA::Long layers() { return stage->layers();}
-  StageHandle_ptr layer(Stage::Index l) { return stage->layer(l);}
+  Warsaw::StageHandle_ptr layer(Warsaw::Stage::Index l) { return stage->layer(l);}
   void begin() { stage->begin();}
   void end() { stage->end();}
-
-  StageHandle_ptr insert(Graphic_ptr g, const Vertex &p, const Vertex &s, Stage::Index l)
-    {
-      return stage->insert(g, p, s, l);
-    }
-  void init(Stage_ptr);
+  Warsaw::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Stage::Index);
  private:
-  Stage_var stage;
+  Warsaw::Stage_var stage;
 };
 
-#endif /* _DesktopImpl_hh */
+#endif 

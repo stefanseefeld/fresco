@@ -30,16 +30,16 @@ class GLQuadric
 public:
   enum orientation {in, out};
   enum normals {none, flat, smooth};
-  GLQuadric(DrawingKit::Fillstyle s, orientation o, normals n = none) : style(s), orient(o), norm(n) {}
+  GLQuadric(Warsaw::DrawingKit::Fillstyle s, orientation o, normals n = none) : style(s), orient(o), norm(n) {}
   ~GLQuadric() {}
   void cylinder(double, double, double, int, int);
   void sphere(double, int, int);
   void disk(double, double, int, int);
   void partialDisk(double, double, int, int, double, double);
 private:
-  DrawingKit::Fillstyle style;
+  Warsaw::DrawingKit::Fillstyle style;
   orientation orient;
   normals norm;
 };
 
-#endif /* _GLQuadric_hh */
+#endif 

@@ -47,76 +47,67 @@
 class GLDrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
-  GLDrawingKit(KitFactory *, const PropertySeq &);
+  GLDrawingKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~GLDrawingKit();
 
-  virtual void transformation(Transform_ptr t) { DrawingKitBase::transformation(t);}
-  virtual Transform_ptr transformation() { return Transform::_duplicate(tr);}
-  virtual void clipping(Region_ptr r) { DrawingKitBase::clipping(r);}
-  virtual Region_ptr clipping() { return Region::_duplicate(cl);}
+  virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
+  virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(tr);}
+  virtual void clipping(Warsaw::Region_ptr r) { DrawingKitBase::clipping(r);}
+  virtual Warsaw::Region_ptr clipping() { return Warsaw::Region::_duplicate(cl);}
 //   using DrawingKitBase::foreground;
-  virtual void foreground(const Color &c) { DrawingKitBase::foreground(c);}
-  virtual Color foreground() { return fg;}
-  virtual void lighting(const Color &c) { DrawingKitBase::lighting(c);}
-  virtual Color lighting() { return lt;}
-  virtual void pointSize(Coord c) { DrawingKitBase::pointSize(c);}
-  virtual Coord pointSize() { return ps;}
-  virtual void lineWidth(Coord c) { DrawingKitBase::lineWidth(c);}
-  virtual Coord lineWidth() { return lw;}
-  virtual void lineEndstyle(DrawingKit::Endstyle e) { DrawingKitBase::lineEndstyle(e);}
-  virtual DrawingKit::Endstyle lineEndstyle() { return es;}
-  virtual void surfaceFillstyle(DrawingKit::Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
-  virtual DrawingKit::Fillstyle surfaceFillstyle() { return fs;}
-  virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
-  virtual Raster_ptr texture() { return tx ? Raster::_duplicate(tx->remote) : Raster::_nil();}
+  virtual void foreground(const Warsaw::Color &c) { DrawingKitBase::foreground(c);}
+  virtual Warsaw::Color foreground() { return fg;}
+  virtual void lighting(const Warsaw::Color &c) { DrawingKitBase::lighting(c);}
+  virtual Warsaw::Color lighting() { return lt;}
+  virtual void pointSize(Warsaw::Coord c) { DrawingKitBase::pointSize(c);}
+  virtual Warsaw::Coord pointSize() { return ps;}
+  virtual void lineWidth(Warsaw::Coord c) { DrawingKitBase::lineWidth(c);}
+  virtual Warsaw::Coord lineWidth() { return lw;}
+  virtual void lineEndstyle(Warsaw::DrawingKit::Endstyle e) { DrawingKitBase::lineEndstyle(e);}
+  virtual Warsaw::DrawingKit::Endstyle lineEndstyle() { return es;}
+  virtual void surfaceFillstyle(Warsaw::DrawingKit::Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
+  virtual Warsaw::DrawingKit::Fillstyle surfaceFillstyle() { return fs;}
+  virtual void texture(Warsaw::Raster_ptr r) { DrawingKitBase::texture(r);}
+  virtual Warsaw::Raster_ptr texture() { return tx ? Warsaw::Raster::_duplicate(tx->remote) : Warsaw::Raster::_nil();}
 
   virtual CORBA::ULong fontSize() { return font->size();}
   virtual CORBA::ULong fontWeight() { return font->weight();}
-  virtual Unistring *fontFamily() { return font->family();}
-  virtual Unistring *fontSubFamily() { return font->subfamily();}
-  virtual Unistring *fontFullName() { return font->fullname();}
-  virtual Unistring *fontStyle() { return font->style();}
-  virtual DrawingKit::FontMetrics fmetrics() { return font->metrics();}
-  virtual DrawingKit::GlyphMetrics gmetrics(Unichar uc) { return font->metrics(uc);}
-  virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
+  virtual Warsaw::Unistring *fontFamily() { return font->family();}
+  virtual Warsaw::Unistring *fontSubFamily() { return font->subfamily();}
+  virtual Warsaw::Unistring *fontFullName() { return font->fullname();}
+  virtual Warsaw::Unistring *fontStyle() { return font->style();}
+  virtual Warsaw::DrawingKit::FontMetrics fmetrics() { return font->metrics();}
+  virtual Warsaw::DrawingKit::GlyphMetrics gmetrics(Warsaw::Unichar uc) { return font->metrics(uc);}
+  virtual CORBA::Any *getFontAttr(const Warsaw::Unistring & name) { return new CORBA::Any();}
 
-//   virtual CORBA::ULong fontSize() { return fontServer.size();}
-//   virtual CORBA::ULong fontWeight() { return fontServer.weight();}
-//   virtual Unistring *fontFamily() { return new Unistring(fontServer.family());}
-//   virtual Unistring *fontSubFamily() { return new Unistring(fontServer.subfamily());}
-//   virtual Unistring *fontFullName() { return new Unistring(fontServer.fullname());}
-//   virtual Unistring *fontStyle() { return new Unistring(fontServer.style());}
-//   virtual FontMetrics metrics() { return FontMetrics();}
-//   virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
-
-  virtual void setTransformation(Transform_ptr);
-  virtual void setClipping(Region_ptr);
-  virtual void setForeground(const Color &);
-  virtual void setLighting(const Color &);
-  virtual void setPointSize(Coord);
-  virtual void setLineWidth(Coord);
-  virtual void setLineEndstyle(DrawingKit::Endstyle);
-  virtual void setSurfaceFillstyle(DrawingKit::Fillstyle);
-  virtual void setTexture(Raster_ptr);
+  virtual void setTransformation(Warsaw::Transform_ptr);
+  virtual void setClipping(Warsaw::Region_ptr);
+  virtual void setForeground(const Warsaw::Color &);
+  virtual void setLighting(const Warsaw::Color &);
+  virtual void setPointSize(Warsaw::Coord);
+  virtual void setLineWidth(Warsaw::Coord);
+  virtual void setLineEndstyle(Warsaw::DrawingKit::Endstyle);
+  virtual void setSurfaceFillstyle(Warsaw::DrawingKit::Fillstyle);
+  virtual void setTexture(Warsaw::Raster_ptr);
 
   virtual void setFontSize(CORBA::ULong);
   virtual void setFontWeight(CORBA::ULong);
-  virtual void setFontFamily(const Unistring &);
-  virtual void setFontSubFamily(const Unistring &);
-  virtual void setFontFullName(const Unistring &);
-  virtual void setFontStyle(const Unistring &);
-  virtual void setFontAttr(const NVPair &);
+  virtual void setFontFamily(const Warsaw::Unistring &);
+  virtual void setFontSubFamily(const Warsaw::Unistring &);
+  virtual void setFontFullName(const Warsaw::Unistring &);
+  virtual void setFontStyle(const Warsaw::Unistring &);
+  virtual void setFontAttr(const Warsaw::NVPair &);
 
-  virtual Coord resolution(Axis a) { return drawable->resolution(a);}
-  virtual void drawPath(const Path &);
-//   virtual void drawPatch(const Patch &);
-  virtual void drawRect(const Vertex &, const Vertex &);
-  virtual void drawEllipse(const Vertex &, const Vertex &);
-  virtual void drawImage(Raster_ptr);
-  virtual void allocateChar(Unichar, Graphic::Requisition &);
-  virtual void drawChar(Unichar);
-  virtual void allocateText(const Unistring &, Graphic::Requisition &);
-  virtual void drawText(const Unistring &);
+  virtual Warsaw::Coord resolution(Warsaw::Axis a) { return drawable->resolution(a);}
+  virtual void drawPath(const Warsaw::Path &);
+//   virtual void drawPatch(const Warsaw::Patch &);
+  virtual void drawRect(const Warsaw::Vertex &, const Warsaw::Vertex &);
+  virtual void drawEllipse(const Warsaw::Vertex &, const Warsaw::Vertex &);
+  virtual void drawImage(Warsaw::Raster_ptr);
+  virtual void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  virtual void drawChar(Warsaw::Unichar);
+  virtual void allocateText(const Warsaw::Unistring &, Warsaw::Graphic::Requisition &);
+  virtual void drawText(const Warsaw::Unistring &);
   virtual void flush() { glFlush();}
 
 //   void clear(Coord, Coord, Coord, Coord);
@@ -128,19 +119,19 @@ public:
   GGIMesaContext context;
 #endif
   Prague::Mutex  mutex;
-  Transform_var  tr;
-  Region_var     cl;
-  Color          fg;
-  Color          lt;
-  Coord          ps;
-  Coord          lw;
-  DrawingKit::Endstyle       es;
-  DrawingKit::Fillstyle      fs;
+  Warsaw::Transform_var  tr;
+  Warsaw::Region_var     cl;
+  Warsaw::Color          fg;
+  Warsaw::Color          lt;
+  Warsaw::Coord          ps;
+  Warsaw::Coord          lw;
+  Warsaw::DrawingKit::Endstyle       es;
+  Warsaw::DrawingKit::Fillstyle      fs;
   GLRaster      *tx;
   GLFont        *font;
   
-  ObjectCache<Raster_var, GLTexture> textures;
-  ObjectCache<Raster_var, GLImage> images;
+  ObjectCache<Warsaw::Raster_var, GLTexture> textures;
+  ObjectCache<Warsaw::Raster_var, GLImage> images;
 };
 
-#endif /* _GLDrawingKit_hh */
+#endif 

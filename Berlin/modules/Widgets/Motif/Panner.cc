@@ -24,15 +24,17 @@
 #include <Berlin/RegionImpl.hh>
 #include <Prague/Sys/Tracer.hh>
 
-using namespace Motif;
 using namespace Prague;
+using namespace Warsaw;
+using namespace Motif;
 
-class Panner::Dragger : public virtual POA_Command,
+class Panner::Dragger : public virtual POA_Warsaw::Command,
 	                public virtual PortableServer::RefCountServantBase,
 	                public virtual RefCountBaseImpl
 {
 public:
-  Dragger(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(BoundedRange::_duplicate(x)), yvalue(BoundedRange::_duplicate(y)) {}
+  Dragger(BoundedRange_ptr x, BoundedRange_ptr y)
+    : xvalue(RefCount_var<BoundedRange>::increment(x)), yvalue(RefCount_var<BoundedRange>::increment(y)) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -44,16 +46,16 @@ public:
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
-  BoundedRange_var xvalue;
-  BoundedRange_var yvalue;
+  RefCount_var<BoundedRange> xvalue;
+  RefCount_var<BoundedRange> yvalue;
 };
 
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   : ControllerImpl(false),
     redirect(new Observer(this)),
     _drag(new Dragger(xx, yy)),
-    x(BoundedRange::_duplicate(xx)),
-    y(BoundedRange::_duplicate(yy))
+    x(RefCount_var<BoundedRange>::increment(xx)),
+    y(RefCount_var<BoundedRange>::increment(yy))
 {
   BoundedRange::Settings settings = x->getSettings();
   offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);

@@ -24,6 +24,8 @@
 #include "Warsaw/TextBuffer.hh"
 #include "Warsaw/Unicode.hh"
 
+using namespace Warsaw;
+
 EditTextDemo::EditTextDemo(Application *a)
   : Demo(a)
 {

@@ -40,27 +40,27 @@ class LibArtFTFont : public LibArtFont
 public:
   LibArtFTFont(Console::Drawable *drawable);
   virtual ~LibArtFTFont();
-  virtual unsigned long size();
-  virtual void size(unsigned long);
-  virtual unsigned long weight();
-  virtual void weight(unsigned long);
-  virtual void family(const Unistring &);
-  virtual void subfamily(const Unistring &);
-  virtual void fullname(const Unistring &);
-  virtual void style(const Unistring &);
-  virtual Unistring *family();
-  virtual Unistring *subfamily();
-  virtual Unistring *fullname();
-  virtual Unistring *style();
-  virtual DrawingKit::FontMetrics metrics();
-  virtual DrawingKit::GlyphMetrics metrics(Unichar &);
-  virtual void getPixBuf(const Unichar ch, ArtPixBuf *&);
+  virtual CORBA::ULong size();
+  virtual void size(CORBA::ULong);
+  virtual CORBA::ULong weight();
+  virtual void weight(CORBA::ULong);
+  virtual void family(const Warsaw::Unistring &);
+  virtual void subfamily(const Warsaw::Unistring &);
+  virtual void fullname(const Warsaw::Unistring &);
+  virtual void style(const Warsaw::Unistring &);
+  virtual Warsaw::Unistring *family();
+  virtual Warsaw::Unistring *subfamily();
+  virtual Warsaw::Unistring *fullname();
+  virtual Warsaw::Unistring *style();
+  virtual Warsaw::DrawingKit::FontMetrics metrics();
+  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &);
+  virtual void getPixBuf(const Warsaw::Unichar, ArtPixBuf *&);
   virtual bool transform(double trafo[4]);
-  virtual void allocateChar(Unichar ch, Graphic::Requisition &);
+  virtual void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
 
   void setup_face(FT_Face &f);
   void setup_size(FT_Face &f);
-  bool load_glyph(Unichar c, FT_Face &f);
+  bool load_glyph(Warsaw::Unichar c, FT_Face &f);
   void matrix(FT_Matrix &m) {m = matrix_;}
 
   double getScale() const { return scale;} 
@@ -71,7 +71,7 @@ protected:
   class Atomizer {
   protected:
     atom currAtom;
-    map<Unicode::String,atom> atomMap;
+    map<Unicode::String, atom> atomMap;
   public:
     atom atomize(Unicode::String &u);
   };  
@@ -83,7 +83,7 @@ protected:
   FT_Matrix matrix_;
   typedef pair<atom,atom> FamStyle;
   typedef pair<PtSize,FamStyle> FaceSpec;
-  typedef pair<Unichar,FaceSpec>  GlyphSpec;
+  typedef pair<Warsaw::Unichar,FaceSpec>  GlyphSpec;
   typedef pair<FT_Matrix, GlyphSpec>  TGlyphSpec;
 
   class TGlyphSpec_cmp {
@@ -108,8 +108,8 @@ protected:
     FT_Library *lib_;
   public:
     GlyphMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
-    DrawingKit::GlyphMetrics produce(const TGlyphSpec &cs);
-    void recycle(DrawingKit::GlyphMetrics) {};
+    Warsaw::DrawingKit::GlyphMetrics produce(const TGlyphSpec &cs);
+    void recycle(Warsaw::DrawingKit::GlyphMetrics) {};
   };
  
   class FaceMetricsFactory {
@@ -118,8 +118,8 @@ protected:
     FT_Library *lib_;
   public:
     FaceMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
-    DrawingKit::FontMetrics produce(const FaceSpec &fs);
-    void recycle(DrawingKit::FontMetrics) {};
+    Warsaw::DrawingKit::FontMetrics produce(const FaceSpec &fs);
+    void recycle(Warsaw::DrawingKit::FontMetrics) {};
   };
 
   class GlyphFactory {
@@ -143,9 +143,9 @@ protected:
   // caches!
   LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, 
     map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > myGlyphCache;
-  LRUCache<FaceSpec,DrawingKit::FontMetrics, FaceMetricsFactory> myFaceMetricsCache;
-  LRUCache<TGlyphSpec,DrawingKit::GlyphMetrics, GlyphMetricsFactory, 
-    map<TGlyphSpec,DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > myGlyphMetricsCache;   
+  LRUCache<FaceSpec, Warsaw::DrawingKit::FontMetrics, FaceMetricsFactory> myFaceMetricsCache;
+  LRUCache<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics, GlyphMetricsFactory, 
+    map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > myGlyphMetricsCache;   
 
 private:
   bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Unicode::String &, Unicode::String &);

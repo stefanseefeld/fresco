@@ -27,6 +27,7 @@
 #include <Warsaw/StreamBuffer.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
+#include <Berlin/RefCountVar.hh>
 #include <Prague/IPC/TTYAgent.hh>
 #include <vector>
 
@@ -54,16 +55,16 @@ class Terminal : public MonoGraphic
   friend class Input;
   friend class Output;
  public:
-  Terminal(CommandKit_ptr);
-  StreamBuffer_ptr input() { return StreamBuffer::_duplicate(ibuf);}
-  StreamBuffer_ptr output() { return StreamBuffer::_duplicate(obuf);}
+  Terminal(Warsaw::CommandKit_ptr);
+  Warsaw::StreamBuffer_ptr input() { return Warsaw::StreamBuffer::_duplicate(ibuf);}
+  Warsaw::StreamBuffer_ptr output() { return Warsaw::StreamBuffer::_duplicate(obuf);}
  private:
-  Impl_var<Input> _input;
+  Input *_input;
   Output *_output;
   Prague::TTYAgent *agent;
-  StreamBuffer_var ibuf;
-  StreamBuffer_var obuf;
+  RefCount_var<Warsaw::StreamBuffer> ibuf;
+  RefCount_var<Warsaw::StreamBuffer> obuf;
 };
 
 };
-#endif /* _Motif_Terminal_hh */
+#endif

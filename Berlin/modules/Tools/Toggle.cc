@@ -23,6 +23,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 Toggle::Toggle(bool f) : ControllerImpl(f) {}
 Toggle::~Toggle() {}
@@ -31,8 +32,8 @@ void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Trace trace("Toggle::press");
   ControllerImpl::press(traversal, event);
-  if (test(Controller::toggled)) clear(Controller::toggled);
-  else set(Controller::toggled);
+  if (test(Warsaw::Controller::toggled)) clear(Warsaw::Controller::toggled);
+  else set(Warsaw::Controller::toggled);
 }
 
 void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
@@ -47,8 +48,8 @@ void Toggle::keyPress(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.selection();
   if (toggle.number == 32) // space
     {
-      if (test(Controller::toggled)) clear(Controller::toggled);
-      else set(Controller::toggled);
+      if (test(Warsaw::Controller::toggled)) clear(Warsaw::Controller::toggled);
+      else set(Warsaw::Controller::toggled);
     }
   else ControllerImpl::keyPress(event);
 }

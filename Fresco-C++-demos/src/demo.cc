@@ -20,7 +20,8 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/Warsaw.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/resolve.hh>
 #include "Application.hh"
 #include "LayoutDemo.hh"
 #include "TextDemo.hh"
@@ -34,13 +35,24 @@
 #include "TermDemo.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
 bool running;
 
 int main(int argc, char **argv)
 {
-  Warsaw *warsaw = new Warsaw(argc, argv);
-  Application *application = new Application(warsaw);
+  CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
+  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+  PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+  PortableServer::POAManager_var pman = poa->the_POAManager();
+  pman->activate();
+
+  ClientContextImpl *client = new ClientContextImpl;
+
+  Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
+  ServerContext_var server = s->newServerContext(ClientContext_var(client->_this()));
+
+  Application *application = new Application(server);
   LayoutDemo *layout = new LayoutDemo(application);
   TextDemo *text = new TextDemo(application);
   EditTextDemo *etext = new EditTextDemo(application);
@@ -63,5 +75,4 @@ int main(int argc, char **argv)
   delete text;
   delete layout;
   delete application;
-  delete warsaw;
 }

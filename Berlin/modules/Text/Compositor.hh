@@ -36,11 +36,11 @@ class Compositor
 public:
   typedef RegionImpl **Allocations;
   virtual ~Compositor() {}
-  virtual void request(long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Graphic::Requisition &result) = 0;
-  virtual void allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Region_ptr given, Allocations result) = 0;
-  static void setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align);
-  static Coord computeLength(const Graphic::Requirement &, const Region::Allotment &);
-  static Coord computeSqueeze(const Graphic::Requirement &, Coord);
+  virtual void request(long n, Warsaw::Graphic::Requisition *requests, Warsaw::DrawingKit_ptr dk, Warsaw::Graphic::Requisition &result) = 0;
+  virtual void allocate(long n, Warsaw::Graphic::Requisition *requests, Warsaw::DrawingKit_ptr dk, Warsaw::Region_ptr given, Allocations result) = 0;
+  static void setSpan(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
+  static Warsaw::Coord computeLength(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
+  static Warsaw::Coord computeSqueeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
 };
 
 class LRCompositor : public Compositor
@@ -49,10 +49,10 @@ class LRCompositor : public Compositor
 //. no line breaking
 {
 public:
-  virtual void request(long, Graphic::Requisition *, DrawingKit_ptr, Graphic::Requisition &);
-  virtual void allocate(long, Graphic::Requisition *, DrawingKit_ptr, Region_ptr, Allocations);    
+  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Graphic::Requisition &);
+  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Region_ptr, Allocations);    
 private:
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
 class TBCompositor : public Compositor
@@ -61,10 +61,10 @@ class TBCompositor : public Compositor
 //. no line breaking
 {
 public:
-  virtual void request(long, Graphic::Requisition *, DrawingKit_ptr, Graphic::Requisition &);
-  virtual void allocate(long, Graphic::Requisition *, DrawingKit_ptr, Region_ptr, Allocations);    
+  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Graphic::Requisition &);
+  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Region_ptr, Allocations);    
 private:
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
 #endif

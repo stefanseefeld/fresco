@@ -27,19 +27,21 @@
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/PickTraversal.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 static const double epsilon = 10e-6;
 
-class ViewportImpl::Adjustment : public virtual POA_BoundedRange, public SubjectImpl
+class ViewportImpl::Adjustment : public virtual POA_Warsaw::BoundedRange,
+		                 public SubjectImpl
 {
  public:
   Adjustment();
   virtual ~Adjustment();
-  virtual BoundedRange::Settings getSettings();
+  virtual Warsaw::BoundedRange::Settings getSettings();
   virtual Coord lower();
   virtual void lower(Coord);
   virtual Coord upper();
@@ -60,7 +62,7 @@ class ViewportImpl::Adjustment : public virtual POA_BoundedRange, public Subject
   virtual void end();
   virtual void adjust(Coord);
  protected:
-  BoundedRange::Settings settings;
+  Warsaw::BoundedRange::Settings settings;
   Coord s, p;
   Mutex mutex;
 };                                
@@ -75,7 +77,7 @@ ViewportImpl::Adjustment::~Adjustment()
 {
 }
 
-BoundedRange::Settings ViewportImpl::Adjustment::getSettings()
+Warsaw::BoundedRange::Settings ViewportImpl::Adjustment::getSettings()
 {
   MutexGuard guard(mutex);
   return settings;
@@ -343,8 +345,7 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
 
-  Lease<RegionImpl> clipping;
-  Providers::region.provide(clipping);
+  Lease_var<RegionImpl> clipping(Provider<RegionImpl>::provide());
   clipping->copy(allocation);
   if (!CORBA::is_nil(transformation) && !transformation->Identity())
     clipping->applyTransform(transformation);
@@ -353,19 +354,16 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
   dk->saveState();
   dk->clipping(Region_var(clipping->_this()));
 
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
-  Lease<RegionImpl> b;
-  Providers::region.provide(b);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
+  Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
   bodyAllocation(allocation, b);
   region->copy(Region_var(b->_this()));
 
-  Lease<TransformImpl> transform;
-  Providers::trafo.provide(transform);
+  Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
   transform->loadIdentity();
 
   region->normalize(Transform_var(transform->_this()));
-  traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
+  traversal->traverseChild(child.peer, child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
   dk->restoreState();
 }
 
@@ -376,19 +374,16 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
    * and a suitable offset
    */
   Region_var allocation = traversal->allocation();
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
-  Lease<RegionImpl> b;
-  Providers::region.provide(b);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
+  Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
   bodyAllocation(allocation, b);
   region->copy(Region_var(b->_this()));
 
-  Lease<TransformImpl> transform;
-  Providers::trafo.provide(transform);
+  Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
   transform->loadIdentity();
 
   region->normalize(Transform_var(transform->_this()));
-  traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
+  traversal->traverseChild(child.peer, child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
 }
 
 void ViewportImpl::needResize()
@@ -407,8 +402,8 @@ void ViewportImpl::update(const CORBA::Any &)
    * we are only interested in changes concerning the outer range (body)
    * or the offset
    */
-  BoundedRange::Settings x = xadjustment->getSettings();
-  BoundedRange::Settings y = yadjustment->getSettings();
+  Warsaw::BoundedRange::Settings x = xadjustment->getSettings();
+  Warsaw::BoundedRange::Settings y = yadjustment->getSettings();
   bool damage = (x.lower != settings[xaxis].lower || y.lower != settings[yaxis].lower ||
 		 x.upper != settings[xaxis].upper || y.upper != settings[yaxis].upper ||
 		 x.lvalue != settings[xaxis].lvalue || y.lvalue != settings[yaxis].lvalue);
@@ -422,10 +417,8 @@ void ViewportImpl::update(const CORBA::Any &)
 void ViewportImpl::allocateChild(Allocation::Info &info)
 {
   scrollTransform(info.transformation);
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
-  Lease<RegionImpl> b;
-  Providers::region.provide(b);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
+  Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
   bodyAllocation(info.allocation, b);
   region->copy(Region_var(b->_this()));
   info.allocation->copy(Region_var(region->_this()));

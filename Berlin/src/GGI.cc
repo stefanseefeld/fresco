@@ -23,6 +23,9 @@
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
 
+using namespace Prague;
+using namespace Warsaw;
+
 vector<DrawableTie<GGIDrawable> *> GGIConsole::drawables;
 
 GGIConsole::GGIConsole()// throw (exception)
@@ -52,6 +55,7 @@ GGIConsole::~GGIConsole()
 
 DrawableTie<GGIDrawable> *GGIConsole::drawable()
 {
+  Trace trace("GGIConsole::drawable");
 //   if (!drawables.size()) drawables.push_back(new DrawableTie<Drawable>(new GGIDrawable(0)));
   return drawables.front();
 }
@@ -153,7 +157,7 @@ Input::Event *GGIConsole::nextEvent()
 	  int n = ggiEventsQueued(visual, move_mask);
 	  if (m == n)  // nothing but a bunch of moves queued up
 	    {
-	      int x=event.pmove.x, y=event.pmove.y;
+	      int x = event.pmove.x, y = event.pmove.y;
 	      for (int i = 0; i < n; ++i)
 		{
 		  // consume them all

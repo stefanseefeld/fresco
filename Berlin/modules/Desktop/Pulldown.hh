@@ -27,8 +27,8 @@
 class Pulldown : public WindowImpl
 {
 public:
-  virtual void loseFocus(Input::Device);
+  virtual void loseFocus(Warsaw::Input::Device);
   virtual void map();
 };
 
-#endif /* _Pulldown_hh */
+#endif

@@ -29,37 +29,39 @@
 
 class GraphicImpl;
 
-class ToolKitImpl : public virtual POA_ToolKit, public KitImpl
+class ToolKitImpl : public virtual POA_Warsaw::ToolKit,
+		    public KitImpl
 {
  public:
-  ToolKitImpl(KitFactory *, const PropertySeq &);
+  ToolKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~ToolKitImpl();
 
-  Graphic_ptr      debugger(Graphic_ptr, const char *);
-  Graphic_ptr      rgb(Graphic_ptr, Coord, Coord, Coord);
-  Graphic_ptr      alpha(Graphic_ptr, Coord);
-  Graphic_ptr      lighting(Graphic_ptr, Coord, Coord, Coord);
+  Warsaw::Graphic_ptr      debugger(Warsaw::Graphic_ptr, const char *);
+  Warsaw::Graphic_ptr      rgb(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Warsaw::Graphic_ptr      alpha(Warsaw::Graphic_ptr, Warsaw::Coord);
+  Warsaw::Graphic_ptr      lighting(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
 
-  Graphic_ptr      frame(Graphic_ptr, Coord, const ToolKit::FrameSpec &, CORBA::Boolean);
-  Graphic_ptr      dynamic(Graphic_ptr, Coord, Telltale::Mask, const ToolKit::FrameSpec &,
-			   const ToolKit::FrameSpec &, CORBA::Boolean, Telltale_ptr);
-  Graphic_ptr      framedTriangle(Graphic_ptr, Coord, const ToolKit::FrameSpec &, CORBA::Boolean, ToolKit::Direction d);
-  Graphic_ptr      dynamicTriangle(Graphic_ptr, Coord, Telltale::Mask, const ToolKit::FrameSpec &,
-				   const ToolKit::FrameSpec &, CORBA::Boolean, ToolKit::Direction d, Telltale_ptr);
-  Graphic_ptr      framedDiamond(Graphic_ptr, Coord, const ToolKit::FrameSpec &, CORBA::Boolean);
-  Graphic_ptr      dynamicDiamond(Graphic_ptr, Coord, Telltale::Mask, const ToolKit::FrameSpec &,
-				  const ToolKit::FrameSpec &, CORBA::Boolean, Telltale_ptr);
+  Warsaw::Graphic_ptr      frame(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
+  Warsaw::Graphic_ptr      dynamic(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
+			   const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
+  Warsaw::Graphic_ptr      framedTriangle(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean,
+					  Warsaw::ToolKit::Direction d);
+  Warsaw::Graphic_ptr      dynamicTriangle(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
+					   const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::ToolKit::Direction d,
+					   Warsaw::Telltale_ptr);
+  Warsaw::Graphic_ptr      framedDiamond(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
+  Warsaw::Graphic_ptr      dynamicDiamond(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
+				  const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
-  Trigger_ptr      button(Graphic_ptr, Command_ptr);
-  Controller_ptr   dragger(Graphic_ptr, Command_ptr);
-  Controller_ptr   stepper(Graphic_ptr, Command_ptr);
-  Controller_ptr   textInput(Graphic_ptr, TextBuffer_ptr);
-  Controller_ptr   terminal(Graphic_ptr, StreamBuffer_ptr);
-  Controller_ptr   group(Graphic_ptr);
-  Controller_ptr   toggle(Graphic_ptr);
+  Warsaw::Trigger_ptr      button(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
+  Warsaw::Controller_ptr   dragger(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
+  Warsaw::Controller_ptr   stepper(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
+  Warsaw::Controller_ptr   textInput(Warsaw::Graphic_ptr, Warsaw::TextBuffer_ptr);
+  Warsaw::Controller_ptr   terminal(Warsaw::Graphic_ptr, Warsaw::StreamBuffer_ptr);
+  Warsaw::Controller_ptr   group(Warsaw::Graphic_ptr);
+  Warsaw::Controller_ptr   toggle(Warsaw::Graphic_ptr);
  private:
-  vector<PortableServer::Servant> graphics;
 };
 
-#endif /* _ToolKitImpl_hh */
+#endif

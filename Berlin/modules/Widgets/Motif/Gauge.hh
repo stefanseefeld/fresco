@@ -26,24 +26,27 @@
 #include <Warsaw/View.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/RefCountVar.hh>
 
 namespace Motif
 {
 
-class Gauge : public virtual POA_View, public GraphicImpl
+class Gauge : public virtual POA_Warsaw::View,
+	      public GraphicImpl
 {
  public:
-  Gauge(BoundedValue_ptr v, const Color &c) : value(BoundedValue::_duplicate(v)), color(c), width(2000.), height(200.) {}
+  Gauge(Warsaw::BoundedValue_ptr v, const Warsaw::Color &c)
+    : value(RefCount_var<Warsaw::BoundedValue>::increment(v)), color(c), width(2000.), height(200.) {}
   ~Gauge() {}
-  virtual void request(Requisition &);
-  virtual void draw(DrawTraversal_ptr);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void update(const CORBA::Any &);
 private:
-  BoundedValue_var value;
-  Color color;
-  Coord width, height;
+  RefCount_var<Warsaw::BoundedValue> value;
+  Warsaw::Color color;
+  Warsaw::Coord width, height;
 };
 
 };
 
-#endif /* _Motif_Gauge_hh */
+#endif

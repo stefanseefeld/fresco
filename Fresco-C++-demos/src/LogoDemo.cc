@@ -25,6 +25,8 @@
 #include "Warsaw/Command.hh"
 #include "Warsaw/Desktop.hh"
 
+using namespace Warsaw;
+
 Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Coord d)
   : value(BoundedValue::_duplicate(v)),
     child(Graphic::_duplicate(c)),

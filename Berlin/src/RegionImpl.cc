@@ -23,6 +23,8 @@
 #include "Berlin/TransformImpl.hh"
 #include <iomanip>
 
+using namespace Warsaw;
+
 RegionImpl::RegionImpl()
 {
   Coord zero = Coord(0.0);
@@ -107,7 +109,7 @@ void RegionImpl::copy(Region_ptr region)
 {
   if (!CORBA::is_nil(region) && region->defined())
     {
-      Region::Allotment x, y, z;
+      Warsaw::Region::Allotment x, y, z;
       region->span(xaxis, x);
       region->span(yaxis, y);
       region->span(zaxis, z);
@@ -240,7 +242,7 @@ void RegionImpl::origin(Vertex &v)
   v.z = spanOrigin(lower.z, upper.z, zalign);
 }
 
-void RegionImpl::span(Axis a, Region::Allotment &s)
+void RegionImpl::span(Axis a, Warsaw::Region::Allotment &s)
 {
   switch (a)
     {

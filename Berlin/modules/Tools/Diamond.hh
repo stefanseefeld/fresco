@@ -22,29 +22,29 @@
 #ifndef _Diamond_hh
 #define _Diamond_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/ToolKit.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/ToolKit.hh>
 #include "Tool/Frame.hh"
 
 class InvisibleDiamond : public Frame::Renderer
 {
 public:
-  InvisibleDiamond(Coord t, bool f) : Frame::Renderer(t, f) {}
-  virtual void draw(DrawTraversal_ptr);
+  InvisibleDiamond(Warsaw::Coord t, bool f) : Frame::Renderer(t, f) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 };
 
 class BeveledDiamond : public Bevel
 {
 public:
-  BeveledDiamond(Coord t, type s, Coord b, bool f) : Bevel(t, s, b, f) {}
-  virtual void draw(DrawTraversal_ptr);
+  BeveledDiamond(Warsaw::Coord t, type s, Warsaw::Coord b, bool f) : Bevel(t, s, b, f) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 };
 
 class ColoredDiamond : public ColoredFrame
 {
 public:
-  ColoredDiamond(Coord t, const Color &c, bool f) : ColoredFrame(t, c, f) {}
-  virtual void draw(DrawTraversal_ptr);
+  ColoredDiamond(Warsaw::Coord t, const Warsaw::Color &c, bool f) : ColoredFrame(t, c, f) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 };
 
-#endif /* _Diamond_hh */
+#endif

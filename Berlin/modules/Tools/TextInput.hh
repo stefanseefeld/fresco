@@ -22,19 +22,19 @@
 #ifndef _TextInput_hh
 #define _TextInput_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/TextBuffer.hh"
-#include "Berlin/ControllerImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/TextBuffer.hh>
+#include <Berlin/ControllerImpl.hh>
 
 class TextInput : public ControllerImpl
 {
  public:
-  TextInput(TextBuffer_ptr b) : ControllerImpl(false), buffer(TextBuffer::_duplicate(b)) {}
+  TextInput(Warsaw::TextBuffer_ptr b) : ControllerImpl(false), buffer(Warsaw::TextBuffer::_duplicate(b)) {}
   ~TextInput() {}
 // protected:
-  virtual void keyPress(const Input::Event &);
+  virtual void keyPress(const Warsaw::Input::Event &);
  private:
-  TextBuffer_var buffer;
+  Warsaw::TextBuffer_var buffer;
 };
 
-#endif /* _TextInput_hh */
+#endif

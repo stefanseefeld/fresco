@@ -36,11 +36,11 @@ public:
   Placement(LayoutManager *);
   virtual ~Placement();
 
-  virtual void request(Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
 
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
 private:
   LayoutManager *layout;
@@ -50,12 +50,12 @@ private:
 class LayoutLayer : public MonoGraphic
 {
 public:
-  LayoutLayer(Graphic_ptr, Graphic_ptr, Graphic_ptr);
+  LayoutLayer(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
   virtual ~LayoutLayer();
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 private:
-  Graphic_var under;
-  Graphic_var over;
+  Warsaw::Graphic_var under;
+  Warsaw::Graphic_var over;
 };
 
-#endif /* _Placement_hh */
+#endif

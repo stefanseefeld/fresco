@@ -23,6 +23,8 @@
 #include "DocDemo.hh"
 #include <fstream>
 
+using namespace Warsaw;
+
 DocDemo::DocDemo(Application *a)
   : Demo(a)
 {

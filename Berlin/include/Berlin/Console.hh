@@ -35,61 +35,61 @@ public:
   typedef typename T::Pixel Pixel;
   struct PixelFormat
   {
-    long depth;          /* Number of significant bits */
-    long size;           /* Physical size in bits */
-    long red_mask;       /* Bitmask of red bits */
-    long red_shift;      /* Shift  for red bits */
-    long green_mask;     /* Bitmask of green bits */
-    long green_shift;    /* Shift  for green bits */
-    long blue_mask;      /* Bitmask of blue bits */
-    long blue_shift;     /* Shift  for blue bits */
-    long alpha_mask;     /* Bitmask of alphachannel bits */
-    long alpha_shift;    /* Shift  for alpha bits */
+    CORBA::Long depth;          /* Number of significant bits */
+    CORBA::Long size;           /* Physical size in bits */
+    CORBA::Long red_mask;       /* Bitmask of red bits */
+    CORBA::Long red_shift;      /* Shift  for red bits */
+    CORBA::Long green_mask;     /* Bitmask of green bits */
+    CORBA::Long green_shift;    /* Shift  for green bits */
+    CORBA::Long blue_mask;      /* Bitmask of blue bits */
+    CORBA::Long blue_shift;     /* Shift  for blue bits */
+    CORBA::Long alpha_mask;     /* Bitmask of alphachannel bits */
+    CORBA::Long alpha_shift;    /* Shift  for alpha bits */
   };
   DrawableTie(T *tt) : t(tt) {}
   ~DrawableTie() { delete t;}
   PixelFormat pixelFormat() { return t->pixelFormat();}
-  PixelCoord width() const { return t->width();}
-  PixelCoord height() const { return t->height();}
-  PixelCoord vwidth() const { return t->vwidth();}
-  PixelCoord vheight() const { return t->vheight();}
-  Coord resolution(Axis a) const { return t->resolution(a);}
-  Coord dpi(Axis a) const { return t->dpi(a);}
-  PixelCoord rowlength() { return t->rowlength();}
-  Pixel map(const Color &c) { return t->map(c);}
+  Warsaw::PixelCoord width() const { return t->width();}
+  Warsaw::PixelCoord height() const { return t->height();}
+  Warsaw::PixelCoord vwidth() const { return t->vwidth();}
+  Warsaw::PixelCoord vheight() const { return t->vheight();}
+  Warsaw::Coord resolution(Warsaw::Axis a) const { return t->resolution(a);}
+  Warsaw::Coord dpi(Warsaw::Axis a) const { return t->dpi(a);}
+  Warsaw::PixelCoord rowlength() { return t->rowlength();}
+  Pixel map(const Warsaw::Color &c) { return t->map(c);}
   void *readBuffer() { return t->readBuffer();}
   void *writeBuffer() { return t->writeBuffer();}
   /*
    * read one or more pixels from framebuffer
    */
-  void readPixel(PixelCoord x, PixelCoord y, Pixel &p) { t->readPixel(x, y, p);}
-  void readPixels(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h, void *p) { t->readPixels(x, y, w, h, p);}
+  void readPixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Pixel &p) { t->readPixel(x, y, p);}
+  void readPixels(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h, void *p) { t->readPixels(x, y, w, h, p);}
   /*
    * draw primitives with the current color (Pixel)
    */
   void setColor(Pixel p) { t->setColor(p);}
-  void drawPixel(PixelCoord x, PixelCoord y) { t->drawPixel(x, y);}
-  void drawHLine(PixelCoord x, PixelCoord y, PixelCoord w) { t->drawHLine(x, y, w);}
-  void drawVLine(PixelCoord x, PixelCoord y, PixelCoord h) { t->drawVLine(x, y, h);}
-  void drawLine(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { t->drawLine(x, y, w, h);}
-  void drawBox(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { t->drawBox(x, y, w, h);}
+  void drawPixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y) { t->drawPixel(x, y);}
+  void drawHLine(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w) { t->drawHLine(x, y, w);}
+  void drawVLine(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord h) { t->drawVLine(x, y, h);}
+  void drawLine(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h) { t->drawLine(x, y, w, h);}
+  void drawBox(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h) { t->drawBox(x, y, w, h);}
   /*
    * draw primitives with the given color (Pixel)
    */
-  void putPixel(PixelCoord x, PixelCoord y, Pixel p) { t->putPixel(x, y, p);}
-  void putHLine(PixelCoord x, PixelCoord y, PixelCoord w, void *p) { t->putHLine(x, y, w, p);}
-  void putVLine(PixelCoord x, PixelCoord y, PixelCoord h, void *p) { t->putVLine(x, y, h, p);}
-  void drawPixels(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h, void *p) { t->drawPixels(x, y, w, h, p);}
+  void putPixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Pixel p) { t->putPixel(x, y, p);}
+  void putHLine(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, void *p) { t->putHLine(x, y, w, p);}
+  void putVLine(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord h, void *p) { t->putVLine(x, y, h, p);}
+  void drawPixels(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h, void *p) { t->drawPixels(x, y, w, h, p);}
   /*
    * fast blits
    */
-  void blit(PixelCoord x1, PixelCoord y1, PixelCoord w, PixelCoord h, PixelCoord x2, PixelCoord y2)
+  void blit(Warsaw::PixelCoord x1, Warsaw::PixelCoord y1, Warsaw::PixelCoord w, Warsaw::PixelCoord h, Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
   { t->blit(x1, y1, w, h, x2, y2);}
-  void blit(const DrawableTie &d, PixelCoord x1, PixelCoord y1, PixelCoord w, PixelCoord h, PixelCoord x2, PixelCoord y2)
+  void blit(const DrawableTie &d, Warsaw::PixelCoord x1, Warsaw::PixelCoord y1, Warsaw::PixelCoord w, Warsaw::PixelCoord h, Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
   { t->blit(*d.t, x1, y1, w, h, x2, y2);}
 
   void flush() { t->flush();}
-  void flush(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { t->flush(x, y, w, h);}
+  void flush(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h) { t->flush(x, y, w, h);}
 
   /**
    * Init and finish hooks called by the server when the scene is
@@ -118,9 +118,9 @@ public:
   ~ConsoleTie() {}
   static void open(int &argc, char **argv) { if (!t) t = new T(argc, argv);}
   static DrawableTie<typename T::Drawable> *drawable() { return T::drawable();}
-  static DrawableTie<typename T::Drawable> *newDrawable(PixelCoord w, PixelCoord h, PixelCoord d) { return T::newDrawable(w, h, d);}
+  static DrawableTie<typename T::Drawable> *newDrawable(Warsaw::PixelCoord w, Warsaw::PixelCoord h, Warsaw::PixelCoord d) { return T::newDrawable(w, h, d);}
 
-  static Input::Event *nextEvent() { return t->nextEvent();}
+  static Warsaw::Input::Event *nextEvent() { return t->nextEvent();}
   static void wakeup() { t->wakeup();}
   static void activate_autoplay() { t->activate_autoplay();}
 private:

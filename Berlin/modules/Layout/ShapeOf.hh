@@ -27,14 +27,14 @@
 class ShapeOf : public GraphicImpl
 {
 public:
-  ShapeOf(Graphic_ptr, Graphic_ptr, Graphic_ptr);
+  ShapeOf(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
   virtual ~ShapeOf();
 
-  virtual void request(Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
 private:
-  Graphic_ptr x;
-  Graphic_ptr y;
-  Graphic_ptr z;
+  Warsaw::Graphic_ptr x;
+  Warsaw::Graphic_ptr y;
+  Warsaw::Graphic_ptr z;
 };
 
-#endif /* _ShapeOf_hh */
+#endif

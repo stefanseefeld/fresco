@@ -25,29 +25,31 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ServantBase.hh>
 #include <vector>
 
 class RegionImpl;
 class TransformImpl;
 
-class AllocationImpl : public virtual POA_Allocation, public virtual PortableServer::RefCountServantBase
+class AllocationImpl : public virtual POA_Warsaw::Allocation,
+                       public virtual ServantBase
 {
   struct State
   {
-    RegionImpl *allocation;
-    TransformImpl *transformation;
-    Screen_var root;
+    RegionImpl        *allocation;
+    TransformImpl     *transformation;
+    Warsaw::Screen_var root;
   };
   typedef vector<State> list_t;
 public:
   AllocationImpl();
   ~AllocationImpl();
-  void add(Region_ptr, Screen_ptr);
+  void add(Warsaw::Region_ptr, Warsaw::Screen_ptr);
   CORBA::Long size();
-  Allocation::Info *get(CORBA::Long);
+  Warsaw::Allocation::Info *get(CORBA::Long);
   void clear();
 private:
   list_t list;
 };
 
-#endif /* _AllocationImpl_hh */
+#endif 

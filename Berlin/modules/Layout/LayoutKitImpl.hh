@@ -29,96 +29,98 @@
 
 class GraphicImpl;
 
-class LayoutKitImpl : public virtual POA_LayoutKit, public KitImpl
+class LayoutKitImpl : public virtual POA_Warsaw::LayoutKit,
+		      public KitImpl
 {
 public:
-  LayoutKitImpl(KitFactory *, const PropertySeq &);
+  LayoutKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   ~LayoutKitImpl();
-  virtual Coord fil();
-  virtual void fil(Coord);
-  virtual Graphic_ptr clipper(Graphic_ptr);
+  virtual Warsaw::Coord fil();
+  virtual void fil(Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr clipper(Warsaw::Graphic_ptr);
 //   virtual Graphic_ptr create_backdrop();
 //   virtual AutoScroll_ptr create_auto_scroll(Adjustment_ptr x_adjustment, Adjustment_ptr y_adjustment);
 //   virtual FullyVisibleConstraint_ptr create_fully_visible_constraint(Float usable, Float align);
 //   virtual Scrollable* scroll_box(Axis a);
-  virtual Viewport_ptr scrollable(Graphic_ptr);
-  virtual Stage_ptr createStage();
-  virtual Grid_ptr fixedGrid(const Grid::Index &);
-  virtual Graphic_ptr fixedRange(Grid_ptr g, const Grid::Range &);
-  virtual Graphic_ptr hbox();
-  virtual Graphic_ptr vbox();
-  virtual Graphic_ptr hboxFirstAligned();
-  virtual Graphic_ptr vboxFirstAligned();
-  virtual Graphic_ptr hboxAlignElements(Alignment);
-  virtual Graphic_ptr vboxAlignElements(Alignment);
-  virtual Graphic_ptr overlay();
-  virtual Graphic_ptr deck();
-  virtual Graphic_ptr back(Graphic_ptr, Graphic_ptr);
-  virtual Graphic_ptr front(Graphic_ptr, Graphic_ptr);
-  virtual Graphic_ptr between(Graphic_ptr, Graphic_ptr, Graphic_ptr);
-  virtual Graphic_ptr glue(Axis, Coord, Coord, Coord, Alignment);
-  virtual Graphic_ptr glueRequisition(const Graphic::Requisition &);
-  virtual Graphic_ptr hfil();
-  virtual Graphic_ptr hglueFil(Coord);
-  virtual Graphic_ptr hglue(Coord, Coord, Coord);
-  virtual Graphic_ptr hglueAligned(Coord, Coord, Coord, Alignment);
-  virtual Graphic_ptr hspace(Coord);
-  virtual Graphic_ptr vfil();
-  virtual Graphic_ptr vglueFil(Coord);
-  virtual Graphic_ptr vglue(Coord, Coord, Coord);
-  virtual Graphic_ptr vglueAligned(Coord, Coord, Coord, Alignment);
-  virtual Graphic_ptr vspace(Coord);
-  virtual Graphic_ptr shapeOf(Graphic_ptr g);
-  virtual Graphic_ptr shapeOfXY(Graphic_ptr, Graphic_ptr);
-  virtual Graphic_ptr shapeOfXYZ(Graphic_ptr, Graphic_ptr, Graphic_ptr);
-//   virtual Graphic_ptr strut(Font_ptr f, Coord natural, Coord stretch, Coord shrink);
-//   virtual Graphic_ptr hstrut(Coord right_bearing, Coord left_bearing, Coord natural, Coord stretch, Coord shrink);
-//   virtual Graphic_ptr vstrut(Coord ascent, Coord descent, Coord natural, Coord stretch, Coord shrink);
-//   virtual Graphic_ptr spaces(Long count, Coord each, Font_ptr f, Color_ptr c);
-  virtual Graphic_ptr align(Graphic_ptr, Alignment, Alignment);
-  virtual Graphic_ptr alignAxis(Graphic_ptr, Axis, Alignment);
-  virtual Graphic_ptr halign(Graphic_ptr, Alignment);
-  virtual Graphic_ptr valign(Graphic_ptr, Alignment);
-  virtual Graphic_ptr fixedSize(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr fixedAxis(Graphic_ptr, Axis, Coord);
-  virtual Graphic_ptr hfixed(Graphic_ptr, Coord);
-  virtual Graphic_ptr vfixed(Graphic_ptr, Coord);
-  virtual Graphic_ptr flexible(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr flexibleFil(Graphic_ptr);
-  virtual Graphic_ptr flexibleAxis(Graphic_ptr, Axis, Coord, Coord);
-  virtual Graphic_ptr hflexible(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr vflexible(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr natural(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr naturalAxis(Graphic_ptr, Axis, Coord);
-  virtual Graphic_ptr hnatural(Graphic_ptr, Coord);
-  virtual Graphic_ptr vnatural(Graphic_ptr, Coord);
-  virtual Graphic_ptr margin(Graphic_ptr, Coord);
-  virtual Graphic_ptr marginLRBT(Graphic_ptr, Coord, Coord, Coord, Coord);
-  virtual Graphic_ptr marginFlexible(Graphic_ptr, Coord, Coord, Coord);
-  virtual Graphic_ptr marginLRBTFlexible(Graphic_ptr, Coord, Coord, Coord, Coord, Coord, Coord, Coord, Coord, Coord, Coord, Coord, Coord);
-  virtual Graphic_ptr hmargin(Graphic_ptr, Coord);
-  virtual Graphic_ptr hmarginLR(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr hmarginLRFlexible(Graphic_ptr, Coord, Coord, Coord, Coord, Coord, Coord);
-  virtual Graphic_ptr vmargin(Graphic_ptr, Coord);
-  virtual Graphic_ptr vmarginBT(Graphic_ptr, Coord, Coord);
-  virtual Graphic_ptr vmarginBTFlexible(Graphic_ptr, Coord, Coord, Coord, Coord, Coord, Coord);
-  virtual Graphic_ptr lmargin(Graphic_ptr, Coord);
-  virtual Graphic_ptr lmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
-  virtual Graphic_ptr rmargin(Graphic_ptr, Coord);
-  virtual Graphic_ptr rmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
-  virtual Graphic_ptr bmargin(Graphic_ptr, Coord);
-  virtual Graphic_ptr bmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
-  virtual Graphic_ptr tmargin(Graphic_ptr, Coord);
-  virtual Graphic_ptr tmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
+  virtual Warsaw::Viewport_ptr scrollable(Warsaw::Graphic_ptr);
+  virtual Warsaw::Stage_ptr createStage();
+  virtual Warsaw::Grid_ptr fixedGrid(const Warsaw::Grid::Index &);
+  virtual Warsaw::Graphic_ptr fixedRange(Warsaw::Grid_ptr g, const Warsaw::Grid::Range &);
+  virtual Warsaw::Graphic_ptr hbox();
+  virtual Warsaw::Graphic_ptr vbox();
+  virtual Warsaw::Graphic_ptr hboxFirstAligned();
+  virtual Warsaw::Graphic_ptr vboxFirstAligned();
+  virtual Warsaw::Graphic_ptr hboxAlignElements(Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr vboxAlignElements(Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr overlay();
+  virtual Warsaw::Graphic_ptr deck();
+  virtual Warsaw::Graphic_ptr back(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr front(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr between(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr glue(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr glueRequisition(const Warsaw::Graphic::Requisition &);
+  virtual Warsaw::Graphic_ptr hfil();
+  virtual Warsaw::Graphic_ptr hglueFil(Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hglue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hglueAligned(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr hspace(Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vfil();
+  virtual Warsaw::Graphic_ptr vglueFil(Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vglue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vglueAligned(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr vspace(Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr shapeOf(Warsaw::Graphic_ptr g);
+  virtual Warsaw::Graphic_ptr shapeOfXY(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr shapeOfXYZ(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr align(Warsaw::Graphic_ptr, Warsaw::Alignment, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr alignAxis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr halign(Warsaw::Graphic_ptr, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr valign(Warsaw::Graphic_ptr, Warsaw::Alignment);
+  virtual Warsaw::Graphic_ptr fixedSize(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr fixedAxis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hfixed(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vfixed(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr flexibleFil(Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr flexibleAxis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hflexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vflexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr natural(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr naturalAxis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hnatural(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vnatural(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr margin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr marginLRBT(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr marginFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr marginLRBTFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
+						 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
+						 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
+						 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hmarginLR(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr hmarginLRFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
+						Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vmarginBT(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr vmarginBTFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
+						Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr lmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr lmarginFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr rmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr rmarginFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr bmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr bmarginFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr tmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
+  virtual Warsaw::Graphic_ptr tmarginFlexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
 private:
   template <typename I, typename Im>
   typename I::_ptr_type create(Im *impl)
   {
-    graphics.push_back(activate(impl));
+    activate(impl);
     return impl->_this();
   }
-  Coord fil_;
-  vector<PortableServer::Servant> graphics;
+
+  Warsaw::Coord fil_;
 };
 
-#endif /* _LayoutKitImpl_hh */
+#endif

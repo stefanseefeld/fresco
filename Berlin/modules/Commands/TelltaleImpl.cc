@@ -23,6 +23,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long m)
   : mask(m), myConstraint(c)
@@ -31,27 +32,27 @@ TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long m)
 TelltaleImpl::~TelltaleImpl()
 {}
 
-void TelltaleImpl::set(Telltale::Mask m)
+void TelltaleImpl::set(Warsaw::Telltale::Mask m)
 {
   Trace trace("TelltaleImpl::set");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
-void TelltaleImpl::clear(Telltale::Mask m)
+void TelltaleImpl::clear(Warsaw::Telltale::Mask m)
 {
   Trace trace("TelltaleImpl::clear");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
-CORBA::Boolean TelltaleImpl::test(Telltale::Mask m)
+CORBA::Boolean TelltaleImpl::test(Warsaw::Telltale::Mask m)
 {
   MutexGuard guard(mutex);
   return (mask & m) == m;
 }
 
-void TelltaleImpl::modify(Telltale::Mask m, CORBA::Boolean on)
+void TelltaleImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
   unsigned long nf = on ? mask | m : mask & ~m;
   {
@@ -95,11 +96,11 @@ void TelltaleConstraintImpl::remove(Telltale_ptr t)
       }
 }
 
-ExclusiveChoice::ExclusiveChoice(Telltale::Mask m)
+ExclusiveChoice::ExclusiveChoice(Warsaw::Telltale::Mask m)
   : mask(m)
 {}
 
-void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Mask m, CORBA::Boolean b)
+void ExclusiveChoice::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
 {
   MutexGuard guard(mutex);
   if (b)
@@ -111,6 +112,6 @@ void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Mask m, CORBA::Boolean
 SelectionRequired::SelectionRequired()
 {}
 
-void SelectionRequired::trymodify(Telltale_ptr t, Telltale::Mask m, CORBA::Boolean b)
+void SelectionRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
 {
 }

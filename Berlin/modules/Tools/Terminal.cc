@@ -28,6 +28,7 @@
 #include "Tool/Terminal.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
 void Terminal::keyPress(const Input::Event &event)
 {

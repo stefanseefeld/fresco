@@ -24,9 +24,11 @@
 
 #include <Figure/FigureImpl.hh>
 
+namespace Warsaw
+{
 namespace Figures
 {
-  class PointImpl : public virtual POA_Figures::Point, public FigureImpl
+  class PointImpl : public virtual POA_Warsaw::Figures::Point, public FigureImpl
   {
   public:
     PointImpl();
@@ -37,7 +39,7 @@ namespace Figures
     virtual void pt(const Vertex &);
   };
   
-  class LineImpl : public virtual POA_Figures::Line, public FigureImpl
+  class LineImpl : public virtual POA_Warsaw::Figures::Line, public FigureImpl
   {
   public:
     LineImpl();
@@ -50,7 +52,7 @@ namespace Figures
     virtual void pt2(const Vertex &);
   };
 
-  class RectangleImpl : public virtual POA_Figures::Rectangle, public FigureImpl
+  class RectangleImpl : public virtual POA_Warsaw::Figures::Rectangle, public FigureImpl
   {
   public:
     RectangleImpl();
@@ -63,7 +65,7 @@ namespace Figures
     virtual void pt2(const Vertex &);
   };
 
-  class CircleImpl : public virtual POA_Figures::Circle, public FigureImpl
+  class CircleImpl : public virtual POA_Warsaw::Figures::Circle, public FigureImpl
   {
   public:
     CircleImpl();
@@ -80,7 +82,7 @@ namespace Figures
     Coord radius_;
   };
 
-  class EllipseImpl : public virtual POA_Figures::Ellipse, public FigureImpl
+  class EllipseImpl : public virtual POA_Warsaw::Figures::Ellipse, public FigureImpl
   {
   public:
     EllipseImpl();
@@ -99,17 +101,17 @@ namespace Figures
     Coord radius1_, radius2_;
   };
 
-  class PathImpl : public virtual POA_Figures::Path, public FigureImpl
+  class PathImpl : public virtual POA_Warsaw::Figures::Path, public FigureImpl
   {
   public:
     PathImpl();
-    PathImpl(const Figure::Vertices &);
+    PathImpl(const Warsaw::Figure::Vertices &);
     PathImpl(const PathImpl &);
     virtual ~PathImpl();
     virtual void resize();
-    Figure::Vertices *handles();
+    Warsaw::Figure::Vertices *handles();
   };
 
 };
-
-#endif /* _Figures_hh */
+};
+#endif

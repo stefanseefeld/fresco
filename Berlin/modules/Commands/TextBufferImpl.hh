@@ -28,27 +28,27 @@
 #include <Berlin/GapBuffer.hh>
 #include <Prague/Sys/Thread.hh>
 
-class TextBufferImpl : public virtual POA_TextBuffer, public SubjectImpl
+class TextBufferImpl : public virtual POA_Warsaw::TextBuffer,
+		       public SubjectImpl
 {
  public:
   TextBufferImpl();
   virtual ~TextBufferImpl();
   virtual CORBA::Long size();
-  virtual Unistring *value();
-  virtual Unistring *getChars(CORBA::ULong, CORBA::ULong);
+  virtual Warsaw::Unistring *value();
+  virtual Warsaw::Unistring *getChars(CORBA::ULong, CORBA::ULong);
   virtual CORBA::Long position();
   virtual void position(CORBA::Long);
   virtual void forward();
   virtual void backward();
   virtual void shift(CORBA::Long d);
-  virtual void insertChar(Unichar);
-  virtual void insertString(const Unistring &);
+  virtual void insertChar(Warsaw::Unichar);
+  virtual void insertString(const Warsaw::Unistring &);
   virtual void removeBackward(CORBA::Long);
   virtual void removeForward(CORBA::Long);
-
  private:
-  GapBuffer<Unichar, 32> buffer;
+  GapBuffer<Warsaw::Unichar, 32> buffer;
   Prague::Mutex mutex;
 };
 
-#endif /* _TextBuffer_hh */
+#endif

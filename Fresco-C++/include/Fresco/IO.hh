@@ -27,10 +27,12 @@
 #include <Warsaw/Transform.hh>
 #include <iostream>
 
-ostream &operator << (ostream &, const Graphic::Requirement &);
-ostream &operator << (ostream &, const Graphic::Requisition &);
-ostream &operator << (ostream &, const Region::Allotment &);
-ostream &operator << (ostream &, Region_ptr);
-ostream &operator << (ostream &, const Transform::Matrix &);
+inline ostream &operator << (ostream &os, const Warsaw::Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
+ostream &operator << (ostream &, const Warsaw::Color &);
+ostream &operator << (ostream &, const Warsaw::Graphic::Requirement &);
+ostream &operator << (ostream &, const Warsaw::Graphic::Requisition &);
+ostream &operator << (ostream &, const Warsaw::Region::Allotment &);
+ostream &operator << (ostream &, Warsaw::Region_ptr);
+ostream &operator << (ostream &, const Warsaw::Transform::Matrix &);
 
 #endif /* _Warsaw_IO_hh */

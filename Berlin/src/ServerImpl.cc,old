@@ -28,6 +28,7 @@
 #include <Prague/Sys/Directory.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 ServerImpl::ServerImpl() : thread(&ServerImpl::run, this) {}
 //. this is the 1 object you *can* find through nameservice. since nameservice has
@@ -37,9 +38,9 @@ ServerImpl::ServerImpl() : thread(&ServerImpl::run, this) {}
 ServerContext_ptr ServerImpl::newServerContext(ClientContext_ptr c) throw (SecurityException)
 {
   MutexGuard guard (mutex);
-  ServerContextImpl *sc = activate(new ServerContextImpl(this, c));
+  Impl_var<ServerContextImpl> sc(new ServerContextImpl(this, c));
   contexts.push_back(sc);
-  return sc->_this();
+  return sc._retn()->_this();
 }
 
 void ServerImpl::setSingleton(const char *name, CORBA::Object_ptr singleton) 
@@ -73,7 +74,20 @@ void ServerImpl::ping()
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
     {
       if ((*i)->ping()) tmp.push_back(*i);	    
-//      else (*i)->_dispose();
+      else
+	{
+	  PortableServer::POA_var poa = (*i)->_default_POA();
+	  PortableServer::ObjectId *oid = poa->servant_to_id(*i);
+	  try
+	    {
+	      poa->deactivate_object(*oid);
+	    }
+	  catch(...)
+	    {
+	      cout << "trouble deactivating the server context..." << endl;
+	    }
+	  delete oid;
+	}
     }
   contexts = tmp;
 };
@@ -124,12 +138,13 @@ void ServerImpl::start()
   thread.start();
 }
 
-KitImpl *ServerImpl::create(const char *type, const Kit::PropertySeq &properties)
+KitImpl *ServerImpl::create(const char *type, const Kit::PropertySeq &properties, PortableServer::POA_ptr poa)
 {
+  Trace trace("ServerImpl::create");
   fmap_t::iterator f1 = factories.lower_bound(type), f2 = factories.upper_bound(type);
   for (fmap_t::iterator i = f1; i != f2; i++)
     if ((*(*i).second)->supports(properties))
-      return (*(*i).second)->create(properties);
+      return (*(*i).second)->create(properties, poa);
   return 0;
 }
 

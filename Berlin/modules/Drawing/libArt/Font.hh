@@ -23,9 +23,9 @@
 #ifndef _LibArtFont_hh
 #define _LibArtFont_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Types.hh"
-#include "Warsaw/DrawingKit.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
+#include <Warsaw/DrawingKit.hh>
 #include <string>
 #include <vector>
 #include <libart_lgpl/art_misc.h>
@@ -36,21 +36,21 @@ class LibArtFont
 public:
   LibArtFont() {}
   virtual ~LibArtFont() {}
-  virtual unsigned long size() = 0;
-  virtual void size(unsigned long) = 0;
-  virtual unsigned long weight() = 0;
-  virtual void weight(unsigned long) = 0;
-  virtual Unistring *family() = 0;
-  virtual Unistring *subfamily() = 0;
-  virtual Unistring *fullname() = 0;
-  virtual Unistring *style() = 0;
-  virtual DrawingKit::FontMetrics metrics() = 0;
-  virtual DrawingKit::GlyphMetrics metrics(Unichar &) = 0;
+  virtual CORBA::ULong size() = 0;
+  virtual void size(CORBA::ULong) = 0;
+  virtual CORBA::ULong weight() = 0;
+  virtual void weight(CORBA::ULong) = 0;
+  virtual Warsaw::Unistring *family() = 0;
+  virtual Warsaw::Unistring *subfamily() = 0;
+  virtual Warsaw::Unistring *fullname() = 0;
+  virtual Warsaw::Unistring *style() = 0;
+  virtual Warsaw::DrawingKit::FontMetrics metrics() = 0;
+  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &) = 0;
   // this method returns true if the font will handle the trafo internally,
   // false otherwise
   virtual bool transform(double trafo[4]) { return false; };
-  virtual void allocateChar(const Unichar ch, Graphic::Requisition &) = 0;
-  virtual void getPixBuf(const Unichar ch, ArtPixBuf *&) = 0;
+  virtual void allocateChar(const Warsaw::Unichar ch, Warsaw::Graphic::Requisition &) = 0;
+  virtual void getPixBuf(const Warsaw::Unichar ch, ArtPixBuf *&) = 0;
 };
 
 #endif

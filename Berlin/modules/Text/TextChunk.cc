@@ -27,12 +27,14 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/IO.hh>
 
-TextChunk::TextChunk(Unichar u, const Graphic::Requisition &r)
+using namespace Warsaw;
+
+TextChunk::TextChunk(Unichar u, const Warsaw::Graphic::Requisition &r)
   : width(r.x.natural), height(r.y.natural), xalign(r.x.align), yalign(r.y.align), myChar(u)
 {
 }
 
-void TextChunk::request(Graphic::Requisition &r)
+void TextChunk::request(Warsaw::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.minimum = r.x.natural = r.x.maximum = width;

@@ -32,38 +32,39 @@ class ScreenManager;
 class EventManager;
 class RegionImpl;
 
-class ScreenImpl : public virtual POA_Screen, public ControllerImpl
+class ScreenImpl : public virtual POA_Warsaw::Screen,
+                   public ControllerImpl
 {
 public:
-  ScreenImpl(DrawingKit_ptr);
+  ScreenImpl(Warsaw::DrawingKit_ptr);
   virtual ~ScreenImpl();
 
-  virtual void pick(PickTraversal_ptr);
-  virtual void allocations(Allocation_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void allocations(Warsaw::Allocation_ptr);
   virtual void needResize() { needRedraw();}
 
-  virtual Coord width();
-  virtual Coord height();
-  virtual DrawingKit_ptr kit();
-  virtual void damage(Region_ptr);
+  virtual Warsaw::Coord width();
+  virtual Warsaw::Coord height();
+  virtual Warsaw::DrawingKit_ptr kit();
+  virtual void damage(Warsaw::Region_ptr);
 
-  virtual void insertController(Controller_ptr) {}
-  virtual void replaceController(Controller_ptr) {}
+  virtual void insertController(Warsaw::Controller_ptr) {}
+  virtual void replaceController(Warsaw::Controller_ptr) {}
   virtual void removeController() {}
-  virtual void setControllerLinks(Controller_ptr, Controller_ptr, Controller_ptr) {}
-  virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
-  virtual CORBA::Boolean receiveFocus(Focus_ptr) { return true;}
-  virtual void loseFocus(Input::Device) {}
-  virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const Input::Event &) { return false;}
-  virtual CORBA::Boolean handleNonPositional(const Input::Event &) { return false;}
+  virtual void setControllerLinks(Warsaw::Controller_ptr, Warsaw::Controller_ptr, Warsaw::Controller_ptr) {}
+  virtual CORBA::Boolean requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  virtual CORBA::Boolean receiveFocus(Warsaw::Focus_ptr) { return true;}
+  virtual void loseFocus(Warsaw::Input::Device) {}
+  virtual CORBA::Boolean handlePositional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
+  virtual CORBA::Boolean handleNonPositional(const Warsaw::Input::Event &) { return false;}
 
   ScreenManager *manager();
-  Region_ptr getRegion();
+  Warsaw::Region_ptr getRegion();
 protected:
-  DrawingKit_var  drawing;
+  Warsaw::DrawingKit_var  drawing;
   ScreenManager *smanager;
   Impl_var<RegionImpl> region;
   EventManager  *emanager;
 };
 
-#endif /* _ScreenImpl_hh */
+#endif 

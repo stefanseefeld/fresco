@@ -28,6 +28,8 @@
 #include <Berlin/Logger.hh>
 #include "Tool/Beveler.hh"
 
+using namespace Warsaw;
+
 namespace Beveler
 {
 

@@ -26,6 +26,7 @@
 #include <Warsaw/IO.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 class Mover : public WindowImpl::Manipulator
 {
@@ -84,35 +85,36 @@ public:
       Vertex *vertex;
       if (any >>= vertex)
 	{
-          Graphic::Requisition r;
+          Warsaw::Graphic::Requisition r;
           handle->child()->request(r);
  	  Vertex pos = handle->position();
  	  Vertex size = handle->size();
 	  Vertex p = pos, s = size;
-	  if (border & Window::left && xalign != 0.)
+	  if (border & Warsaw::Window::left && xalign != 0.)
 	    {
 	      s.x = min(r.x.maximum, max(r.x.minimum, size.x - vertex->x/xalign));
 	      p.x = pos.x - xalign * (s.x - size.x);
 	    }
-	  else if (border & Window::right && xalign != 1.)
+	  else if (border & Warsaw::Window::right && xalign != 1.)
 	    {
 	      s.x = min(r.x.maximum, max(r.x.minimum, size.x + vertex->x/(1.-xalign)));
 	      p.x = pos.x - xalign * (s.x - size.x);
 	    }
-	  if (border & Window::top && yalign != 0.)
+	  if (border & Warsaw::Window::top && yalign != 0.)
 	    {
 	      s.y = min(r.y.maximum, max(r.y.minimum, size.y - vertex->y/yalign));
 	      p.y = pos.y - yalign * (s.y - size.y);
 	    }
-	  else if (border & Window::bottom && yalign != 1.)
+	  else if (border & Warsaw::Window::bottom && yalign != 1.)
 	    {
 	      s.y = min(r.y.maximum, max(r.y.minimum, size.y + vertex->y/(1.-yalign)));
 	      p.y = pos.y - yalign * (s.y - size.y);
 	    }
-	  handle->parent()->begin();
+	  Stage_var parent = handle->parent();
+	  parent->begin();
 	  handle->position(p);
 	  handle->size(s);
-	  handle->parent()->end();
+	  parent->end();
 	}
       else cerr << "MoveResizer::execute : wrong message type !" << endl;
     }
@@ -127,7 +129,7 @@ public:
   virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
-      Stage::Index i;
+      Warsaw::Stage::Index i;
       if (any >>= i)
 	{
 	  handle->layer(i);
@@ -145,24 +147,40 @@ void WindowImpl::Mapper::execute(const CORBA::Any &)
 WindowImpl::WindowImpl()
   : ControllerImpl(false), unmapped(0), manipulators(3), mapper(0)
 {
-  manipulators[0] = activate(new Mover);
-  manipulators[1] = activate(new Resizer);
-  manipulators[2] = activate(new Relayerer);
+  Trace trace("WindowImpl::WindowImpl");
+  manipulators[0] = new Mover;
+  manipulators[1] = new Resizer;
+  manipulators[2] = new Relayerer;
   mapper = new Mapper(this, true);
   unmapper = new Mapper(this, false);
 }
 
 WindowImpl::~WindowImpl()
 {
-  for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
-    deactivate(*i);
+  Trace trace("WindowImpl::~WindowImpl");
+  MutexGuard guard(mutex);
+  /*
+   * FIXME !!:
+   * is Window the owner of the manipulators or not ?
+   * Should commands be ref counted or not ?
+   * if a Window is the owner of its commands, we need an additinal
+   * callback such that the manipulator can remove itself from the
+   * window (if it was destroyed by the POA before the window...
+   *   -stefan
+   */
+//   for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
+//     {
+//       cout << "deactivate manipulator...";
+//       (*i)->deactivate();
+//       cout << "...done";
+//     }
 }
 
 void WindowImpl::needResize()
 {
   Trace trace("WindowImpl::needResize");
   Vertex size = handle->size();
-  Graphic::Requisition r;
+  Warsaw::Graphic::Requisition r;
   request(r);
   if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
       r.y.minimum <= size.y && r.y.maximum >= size.y &&
@@ -182,7 +200,7 @@ void WindowImpl::needResize()
  * cache the focus holding controllers so we can restore them when the window
  * receives focus again...
  */
-CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Input::Device d)
+CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Warsaw::Input::Device d)
 {
   if (unmapped) return false;
   Controller_var parent = parentController();
@@ -190,7 +208,7 @@ CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Input::Device d)
   if (parent->requestFocus(c, d))
     {
       if (focus.size() <= d) focus.resize(d + 1);
-      focus[d] = Controller::_duplicate(c);
+      focus[d] = Warsaw::Controller::_duplicate(c);
       return true;
     }
   else return false;
@@ -201,7 +219,7 @@ void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
   Trace trace("WindowImpl::insert");
   Vertex position, size;
   position.x = position.y = 1000., position.z = 0.;
-  Graphic::Requisition r;
+  Warsaw::Graphic::Requisition r;
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
   unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
@@ -213,7 +231,9 @@ Command_ptr WindowImpl::move() { return manipulators[0]->_this();}
 Command_ptr WindowImpl::resize() { return manipulators[1]->_this();}
 Command_ptr WindowImpl::moveResize(Alignment x, Alignment y, CORBA::Short b)
 {
+  MutexGuard guard(mutex);
   manipulators.push_back(new MoveResizer(x, y, b));
+  activate(manipulators.back());
   return manipulators.back()->_this();
 }
 Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
@@ -252,4 +272,13 @@ void WindowImpl::unmap()
   if (unmapped) return;
   unmapped = new UnmappedStageHandle(handle);
   handle->remove();
+}
+
+void WindowImpl::activateComposite()
+{
+  Trace trace("WindowImpl::activateComposite");
+  ControllerImpl::activateComposite();
+  MutexGuard guard(mutex);
+  for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); ++i)
+    activate(*i);
 }

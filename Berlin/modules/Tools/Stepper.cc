@@ -24,6 +24,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 class Stepper::Notifier : public Timer::Notifier
 {

@@ -23,25 +23,27 @@
 #define _DebugGraphic_hh
 
 #include "Berlin/MonoGraphic.hh"
-#include "Warsaw/Region.hh"
+#include <Warsaw/Region.hh>
+#include <iostream>
 #include <string>
 
 class DebugGraphic : public MonoGraphic
 {
 public:
   enum Flags {none = 0x0, requests = 0x1, draws = 0x2, picks = 0x4, traversals = 0x7};
-  DebugGraphic(const string &, unsigned int f = traversals);
+  DebugGraphic(ostream &, const string &, unsigned int f = traversals);
   virtual ~DebugGraphic();
 
-  virtual void request(Requisition &);
-  virtual void traverse(Traversal_ptr);
-  virtual void draw(DrawTraversal_ptr);
-  virtual void pick(PickTraversal_ptr);
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 private:
+  ostream     &os;
   string       message;
   unsigned int flags;
   void         heading(const char *);
 };
 
-#endif /* _DebugGraphic_hh */
+#endif 

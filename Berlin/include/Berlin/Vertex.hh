@@ -26,7 +26,7 @@
 #include <Warsaw/Types.hh>
 #include <iostream>
 
-inline Vertex &operator += (Vertex &p, const Vertex &q)
+inline Warsaw::Vertex &operator += (Warsaw::Vertex &p, const Warsaw::Vertex &q)
 {
   p.x += q.x;
   p.y += q.y;
@@ -34,7 +34,7 @@ inline Vertex &operator += (Vertex &p, const Vertex &q)
   return p;
 }
 
-inline Vertex &operator -= (Vertex &p, const Vertex &q)
+inline Warsaw::Vertex &operator -= (Warsaw::Vertex &p, const Warsaw::Vertex &q)
 {
   p.x -= q.x;
   p.y -= q.y;
@@ -42,24 +42,22 @@ inline Vertex &operator -= (Vertex &p, const Vertex &q)
   return p;
 }
 
-inline Vertex operator + (const Vertex &p, const Vertex &q)
+inline Warsaw::Vertex operator + (const Warsaw::Vertex &p, const Warsaw::Vertex &q)
 {
-  Vertex r;
+  Warsaw::Vertex r;
   r.x = p.x + q.x;
   r.y = p.y + q.y;
   r.z = p.z + q.z;
   return r;
 }
 
-inline Vertex operator - (const Vertex &p, const Vertex &q)
+inline Warsaw::Vertex operator - (const Warsaw::Vertex &p, const Warsaw::Vertex &q)
 {
-  Vertex r;
+  Warsaw::Vertex r;
   r.x = p.x - q.x;
   r.y = p.y - q.y;
   r.z = p.z - q.z;
   return r;
 }
-
-inline ostream &operator << (ostream &os, const Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
 
 #endif /* _Vertex_hh */

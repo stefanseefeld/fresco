@@ -38,8 +38,8 @@ include $(cpath)/Server/local.mk
 endif
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw #$(ORBCPPFLAGS)
-CXXFLAGS= -pthread -Wall -Dprofile $(OPTFLAGS)
+CPPFLAGS= -I$(ipath)
+CXXFLAGS= -pthread -Wall $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
 ldlibpath = LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(lpath)

@@ -26,19 +26,20 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
+#include "Berlin/Provider.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/RefCountVar.hh"
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Providers.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 {
   Trace trace("TraversalImpl::TraversalImpl");
-  Lease<TransformImpl> transform;
-  Providers::trafo.provide(transform);  
+  Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
   transform->copy(t);
   push(g, 0, r, transform._retn());
 }
@@ -50,11 +51,9 @@ TraversalImpl::TraversalImpl(const TraversalImpl &t)
     {
       State state;
       state.graphic = Graphic::_duplicate((*i).graphic);
-      state.tag = (*i).tag;
+      state.id = (*i).id;
       state.allocation = Region::_duplicate((*i).allocation);
-      Lease<TransformImpl> tmp;
-      Providers::trafo.provide(tmp);
-      state.transformation = tmp._retn();
+      state.transformation = Provider<TransformImpl>::provide();
       state.transformation->copy(Transform_var((*i).transformation->_this()));
       stack.push_back(state);
     }
@@ -96,23 +95,20 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag,
 {
   Trace trace("TraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
-  Lease<TransformImpl> cumulative;
-  Providers::trafo.provide(cumulative);  
-  cumulative->copy(transformation());
+  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
+  cumulative->copy(Transform_var(transformation()));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   push(child, tag, region, cumulative._retn());
   child->traverse(Traversal_var(_this()));
   pop();
 }
 
-void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
+void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)
 {
   Trace trace("TraversalImpl::push");
-  //   cout << "TraversalImpl::push " << stack.size() << endl;
-  //   cout << t->matrix();
   State state;
   state.graphic = Graphic::_duplicate(g);
-  state.tag = tag;
+  state.id = id;
   state.allocation = Region::_duplicate(r);
   state.transformation = t;
   stack.push_back(state);
@@ -121,7 +117,7 @@ void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 void TraversalImpl::pop()
 {
   Trace trace("TraversalImpl::pop");
-  if (!stack.empty()) Providers::trafo.adopt((stack.end() - 1)->transformation);
+  Provider<TransformImpl>::adopt((stack.end() - 1)->transformation);
   stack.erase(stack.end() - 1);
 }
 
@@ -130,18 +126,16 @@ void TraversalImpl::update()
   Trace trace("TraversalImpl::update");
   if (stack.size() == 1) return;
   stack_t::iterator parent = stack.begin();
-  Lease<RegionImpl> allocation;
-  Providers::region.provide(allocation);  
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy((*parent).allocation);
-  Lease<TransformImpl> transformation;
-  Providers::trafo.provide(transformation);  
+  Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
   transformation->copy(Transform_var((*parent).transformation->_this()));
   Allocation::Info info;
   info.allocation = allocation->_this();
   info.transformation = transformation->_this();
   for (stack_t::iterator child = parent + 1; child != stack.end(); parent++, child++)
     {
-      (*parent).graphic->allocate((*child).tag, info);
+      (*parent).graphic->allocate((*child).id, info);
       (*child).allocation->copy(info.allocation);
       (*child).transformation->copy(info.transformation);
     }

@@ -29,33 +29,36 @@
 #include <Warsaw/Raster.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/MonoGraphic.hh>
+#include <Berlin/RefCountVar.hh>
 
-class ImageImpl : public virtual POA_Image, public GraphicImpl
+class ImageImpl : public virtual POA_Warsaw::Image,
+		  public GraphicImpl
 {
 public:
-  ImageImpl(Raster_ptr);
+  ImageImpl(Warsaw::Raster_ptr);
   ~ImageImpl();
   
-  virtual Raster_ptr data() { return Raster::_duplicate(raster);}
-  virtual void data(Raster_ptr r) { raster = r;}
+  virtual Warsaw::Raster_ptr data() { return Warsaw::Raster::_duplicate(raster);}
+  virtual void data(Warsaw::Raster_ptr r) { raster = r;}
 
-  virtual void request(Requisition &);
-  virtual void draw(DrawTraversal_ptr); 
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void draw(Warsaw::DrawTraversal_ptr); 
+  virtual void update(const CORBA::Any &);
 private:
-  Raster_var raster;
-  Coord width, height;
+  RefCount_var<Warsaw::Raster> raster;
+  Warsaw::Coord width, height;
 };
 
 class Texture : public MonoGraphic
 {
 public:
-  Texture(Raster_ptr);
+  Texture(Warsaw::Raster_ptr);
   ~Texture();
-  virtual void traverse(Traversal_ptr);
-  virtual void draw(DrawTraversal_ptr);
-  virtual void pick(PickTraversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
 private:
-  Raster_var raster;
+  RefCount_var<Warsaw::Raster> raster;
 };
 
 #endif

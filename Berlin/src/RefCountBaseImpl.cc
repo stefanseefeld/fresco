@@ -20,11 +20,11 @@
  * MA 02139, USA.
  */
 #include "Berlin/RefCountBaseImpl.hh"
-#include "Berlin/ImplVar.hh"
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 static Mutex mutex;
 
@@ -41,10 +41,6 @@ void RefCountBaseImpl::decrement()
 {
   Trace trace("RefCountBaseImpl::decrement");
   MutexGuard guard(mutex);
-  if (!--refcount)
-    {
-      cout << "going to deactivate " << this << endl;
-      deactivate(this);
-    }
+  if (!--refcount) deactivate();
 }
 

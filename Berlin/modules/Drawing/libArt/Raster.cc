@@ -22,6 +22,8 @@
 
 #include "Drawing/libArt/LibArtRaster.hh"
 
+using namespace Warsaw;
+
 LibArtRaster::LibArtRaster(Raster_var r) :
   remote(Raster::_duplicate(r)) 
 {  

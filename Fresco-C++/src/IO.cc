@@ -28,6 +28,15 @@
  */
 #include "../Berlin/Math.hh"
 
+using namespace Warsaw;
+
+ostream &operator << (ostream &os, const Color &c)
+{
+  if (c.alpha != 1.) os << '(' << c.red << ',' << c.green << ',' << c.blue << ';' << c.alpha << ')';
+  else os << '(' << c.red << ',' << c.green << ',' << c.blue << ')';
+  return os;
+}
+
 ostream &operator << (ostream &os, const Graphic::Requirement &r)
 {
   if (!r.defined) os << "undef";

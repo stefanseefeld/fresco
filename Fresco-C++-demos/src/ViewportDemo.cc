@@ -24,6 +24,8 @@
 #include "Warsaw/Image.hh"
 #include "Warsaw/Viewport.hh"
 
+using namespace Warsaw;
+
 ViewportDemo::ViewportDemo(Application *a)
   : Demo(a)
 {

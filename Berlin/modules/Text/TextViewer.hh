@@ -30,16 +30,17 @@
 #include "Text/Composition.hh"
 #include <map>
 
-class TextViewer : public virtual POA_View, public Composition
+class TextViewer : public virtual POA_Warsaw::View,
+		   public Composition
 {
  public:
-  TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);
-  void init(); // FIXME: collapse into constructor when we go to POA
+  TextViewer(Warsaw::TextBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *);
   virtual ~TextViewer();
   virtual void update(const CORBA::Any &);
  protected:
-  TextKit_var kit;
-  TextBuffer_var buffer;
+  virtual void activateComposite();
+  Warsaw::TextKit_var kit;
+  Warsaw::TextBuffer_var buffer;
 };
 
 #endif

@@ -24,14 +24,17 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Providers.hh"
+#include "Berlin/Provider.hh"
 #include "Berlin/Console.hh"
 #include "Berlin/Event.hh"
 #include "Berlin/Vertex.hh"
+#include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Profiler.hh>
 
 using namespace Prague;
+using namespace Warsaw;
+
 
 PositionalFocus::PositionalFocus(Input::Device d, ScreenImpl *s)
   : FocusImpl(d), screen(s), pointer(new Pointer(Console::drawable())), traversal(0), grabbed(false)
@@ -88,8 +91,7 @@ void PositionalFocus::damage(Region_ptr region)
   transformation->transformVertex(l);
   transformation->transformVertex(u);
 
-  Lease<RegionImpl> bbox;
-  Providers::region.provide(bbox);
+  Lease_var<RegionImpl> bbox(Provider<RegionImpl>::provide());
 
   bbox->valid = true;
   bbox->lower.x = min(l.x, u.x);

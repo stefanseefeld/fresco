@@ -22,18 +22,32 @@
 #ifndef _Beveler_hh
 #define _Beveler_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawTraversal.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/DrawTraversal.hh>
 
 namespace Beveler
 {
-  void rect(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
-  void leftArrow(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
-  void rightArrow(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
-  void upArrow(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
-  void downArrow(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
-  void diamond(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
-  void circle(DrawTraversal_ptr, Coord, const Color &, const Color &, const Color&, Coord, Coord, Coord, Coord, bool);
+  void rect(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+	    const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+	    Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void leftArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+		 const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+		 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void rightArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+		  const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+		  Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void upArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+	       const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+	       Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void downArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+		 const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+		 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void diamond(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+	       const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+	       Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void circle(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
+	      const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
+	      Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
 };
 
-#endif /* _Beveler_hh */
+#endif

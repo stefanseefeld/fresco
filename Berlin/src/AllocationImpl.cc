@@ -21,9 +21,12 @@
  */
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Providers.hh"
+#include "Berlin/Provider.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/Provider.hh"
 #include <Warsaw/Screen.hh>
+
+using namespace Warsaw;
 
 AllocationImpl::AllocationImpl()
 {
@@ -33,20 +36,18 @@ AllocationImpl::~AllocationImpl()
 {
   for (list_t::iterator i = list.begin(); i != list.end(); i++)
     {
-      Providers::region.adopt((*i).allocation);
-      Providers::trafo.adopt((*i).transformation);
+      Provider<RegionImpl>::adopt((*i).allocation);
+      Provider<TransformImpl>::adopt((*i).transformation);
     }
 }
 
 void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
   State state;
-  Lease<RegionImpl> reg;
-  Providers::region.provide(reg);
+  Lease_var<RegionImpl> reg(Provider<RegionImpl>::provide());
   reg->copy(region);
   state.allocation = reg._retn();
-  Lease<TransformImpl> trafo;
-  Providers::trafo.provide(trafo);
+  Lease_var<TransformImpl> trafo(Provider<TransformImpl>::provide());
   trafo->loadIdentity();
   state.transformation = trafo._retn();
   state.root = Screen::_duplicate(root);
@@ -55,20 +56,21 @@ void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 
 CORBA::Long AllocationImpl::size() { return list.size();}
 
-void AllocationImpl::clear() { 
+void AllocationImpl::clear()
+{ 
   for (list_t::iterator i = list.begin(); i != list.end(); i++)
     {
-      Providers::region.adopt((*i).allocation);
-      Providers::trafo.adopt((*i).transformation);
+      Provider<RegionImpl>::adopt((*i).allocation);
+      Provider<TransformImpl>::adopt((*i).transformation);
     }  
   list.clear();
 }
 
 Allocation::Info *AllocationImpl::get(CORBA::Long l)
 {
-  Allocation::Info *info = new Allocation::Info;
+  Warsaw::Allocation::Info_var info = new Warsaw::Allocation::Info;
   info->allocation = list[l].allocation->_this();
   info->transformation = list[l].transformation->_this();
   info->root = list[l].root;
-  return info;
+  return info._retn();
 }

@@ -21,7 +21,7 @@
  */
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Providers.hh"
+#include "Berlin/Provider.hh"
 #include "Berlin/Console.hh"
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/DrawingKit.hh>
@@ -30,6 +30,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
@@ -46,8 +47,8 @@ void DrawTraversalImpl::init()
    */
   drawing->saveState();
   drawing->clipping(clipping);
-  Color black = {0., 0., 0., 1.};
-  drawing->foreground(black);
+  Color fg = {0., 0., 0., 1.};
+  drawing->foreground(fg);
   Color white = {1., 1., 1., 1.};
   drawing->lighting(white);
   drawing->transformation(Transform_var(id->_this()));
@@ -99,10 +100,9 @@ CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
 
 void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-  //  Trace trace("DrawTraversalImpl::traverseChild");
+  Trace trace("DrawTraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
-  Lease<TransformImpl> cumulative;
-  Providers::trafo.provide(cumulative);
+  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
   cumulative->copy(Transform_var(transformation()));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   drawing->transformation(Transform_var(cumulative->_this()));

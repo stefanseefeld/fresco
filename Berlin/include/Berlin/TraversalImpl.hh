@@ -30,42 +30,43 @@ class TransformImpl;
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
+#include <Berlin/ServantBase.hh>
+#include <Berlin/TransformImpl.hh>
 #include <vector>
-#include "Berlin/TransformImpl.hh"
 
 
-class TraversalImpl : public virtual POA_Traversal, public virtual PortableServer::RefCountServantBase
+class TraversalImpl : public virtual POA_Warsaw::Traversal,
+                      public virtual ServantBase
 {
   struct State
   {
-    Graphic_var    graphic;
-    Tag            tag;
-    Region_var     allocation;
-    TransformImpl *transformation;    
+    Warsaw::Graphic_var graphic;
+    Warsaw::Tag         id;
+    Warsaw::Region_var  allocation;
+    TransformImpl      *transformation;    
   };
   typedef vector<State> stack_t;
- protected:
-  typedef Traversal::order order;
  public:
-  TraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr);
+  TraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr);
   TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
-  virtual Region_ptr allocation();
-  virtual Transform_ptr transformation();
-  virtual CORBA::Boolean bounds(Vertex &, Vertex &, Vertex &);
+  virtual Warsaw::Region_ptr allocation();
+  virtual Warsaw::Transform_ptr transformation();
+  virtual CORBA::Boolean bounds(Warsaw::Vertex &, Warsaw::Vertex &, Warsaw::Vertex &);
   virtual CORBA::Boolean intersectsAllocation() = 0;
-  virtual CORBA::Boolean intersectsRegion(Region_ptr) = 0;
-  virtual void traverseChild(Graphic_ptr, Tag, Region_ptr, Transform_ptr);
-  virtual void visit(Graphic_ptr) = 0;
-  virtual order direction() = 0;
+  virtual CORBA::Boolean intersectsRegion(Warsaw::Region_ptr) = 0;
+  virtual void traverseChild(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
+  virtual void visit(Warsaw::Graphic_ptr) = 0;
+  virtual Warsaw::Traversal::order direction() = 0;
   virtual CORBA::Boolean ok() = 0;
   virtual void update();
  protected:
-  void push(Graphic_ptr, Tag, Region_ptr, TransformImpl *);
+  void push(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, TransformImpl *);
   void pop();
   size_t size() { return stack.size();}  
  private:
   stack_t stack;
 };
 
-#endif /* _TraversalImpl_h */
+#endif
+

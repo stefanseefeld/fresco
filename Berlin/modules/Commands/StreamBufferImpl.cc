@@ -23,6 +23,7 @@
 #include <Command/StreamBufferImpl.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 CORBA::Long StreamBufferImpl::size()
 {
@@ -36,7 +37,7 @@ CORBA::Long StreamBufferImpl::available()
   return buffer.size();
 }
 
-void StreamBufferImpl::write(const StreamBuffer::Data &data)
+void StreamBufferImpl::write(const Warsaw::StreamBuffer::Data &data)
 {
   bool overflow = false;
   {
@@ -68,10 +69,11 @@ void StreamBufferImpl::flush()
     }  
 }
 
-StreamBuffer::Data *StreamBufferImpl::read()
+Warsaw::StreamBuffer::Data *StreamBufferImpl::read()
 {
   MutexGuard guard(mutex);
-  StreamBuffer::Data_var data = new StreamBuffer::Data; data->length(buffer.size());
+  Warsaw::StreamBuffer::Data_var data = new Warsaw::StreamBuffer::Data;
+  data->length(buffer.size());
   for (unsigned long i = 0; i != buffer.size(); i++) data[i] = buffer[i];
   buffer.erase(buffer.begin(), buffer.end());
   buffer.reserve(length);

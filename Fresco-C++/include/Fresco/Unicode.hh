@@ -34,11 +34,11 @@ namespace Unicode {
   // This is ugly but necessary since Unistring does not
   // know iterators! So I can't do decent assigment
   // operators :-(
-  Unistring toCORBA(const Unicode::String &s);
-  Unichar   toCORBA(const Unicode::Char   &c);
+  Warsaw::Unistring toCORBA(const Unicode::String &s);
+  Warsaw::Unichar   toCORBA(const Unicode::Char   &c);
 
-  Unicode::String toPrague(const Unistring & us);
-  Unicode::Char   toPrague(const Unichar   & uc);
+  Unicode::String toPrague(const Warsaw::Unistring & us);
+  Unicode::Char   toPrague(const Warsaw::Unichar   & uc);
 
 }; // namespace Unicode
 

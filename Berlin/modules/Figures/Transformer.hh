@@ -23,32 +23,33 @@
 #ifndef _Transformer_hh
 #define _Transformer_hh
 
-#include "Warsaw/config.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/Allocator.hh"
+#include <Warsaw/config.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/Allocator.hh>
+#include <Berlin/ImplVar.hh>
 
 class Transformer : public Allocator
 {
  public:
   Transformer();
   virtual ~Transformer();
-  virtual void request(Requisition &);
-  virtual void traverse(Traversal_ptr);
-  virtual Transform_ptr transformation();
-  void allocate(Tag, const Allocation::Info &);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual Warsaw::Transform_ptr transformation();
+  void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
  private:
-  TransformImpl *transform;
+  Impl_var<TransformImpl> transform;
 };
 
 class BodyTransformer : public Transformer
 {
 public:
   BodyTransformer(Transformer*, unsigned d = 0);
-  BodyTransformer(Transform_ptr, unsigned d = 0);
-  virtual void body(Graphic_ptr);
-  virtual Graphic_ptr body();
+  BodyTransformer(Warsaw::Transform_ptr, unsigned d = 0);
+  virtual void body(Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr body();
 protected:
   unsigned depth;
 };
 
-#endif /* _Transformer_hh */
+#endif

@@ -24,10 +24,10 @@
 
 #include <GL/gl.h>
 #include <vector>
-#include "Warsaw/config.hh"
-#include "Warsaw/Types.hh"
-#include "Warsaw/Graphic.hh"
-#include "Prague/Sys/MMap.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
+#include <Warsaw/Graphic.hh>
+#include <Prague/Sys/MMap.hh>
 #include "Drawing/openGL/GLFont.hh"
 #include <Warsaw/Unicode.hh>
 
@@ -49,7 +49,7 @@ class GLUnifont : public GLFont
     ~Texture();
     void bind(unsigned char *glyphs, GLubyte block);
     bool bound() const { return data;}
-    void coords(Unichar, float &, float &, float &, float &);
+    void coords(Warsaw::Unichar, float &, float &, float &, float &);
     GLuint id() { return name;}
   private:
     GLuint   name;
@@ -59,23 +59,23 @@ class GLUnifont : public GLFont
 public:
   GLUnifont();
   virtual ~GLUnifont();
-  virtual unsigned long size();
-  virtual unsigned long weight();
-  virtual Unistring *family();
-  virtual Unistring *subfamily();
-  virtual Unistring *fullname();
-  virtual Unistring *style();
-  virtual DrawingKit::FontMetrics metrics();
-  virtual DrawingKit::GlyphMetrics metrics(Unichar);
+  virtual CORBA::ULong size();
+  virtual CORBA::ULong weight();
+  virtual Warsaw::Unistring *family();
+  virtual Warsaw::Unistring *subfamily();
+  virtual Warsaw::Unistring *fullname();
+  virtual Warsaw::Unistring *style();
+  virtual Warsaw::DrawingKit::FontMetrics metrics();
+  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar);
 
-  void drawChar(Unichar);
-  void allocateChar(Unichar, Graphic::Requisition &);
+  void drawChar(Warsaw::Unichar);
+  void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
 private:
   MMap *glyphmap;
-  Unistring _family;
-  Unistring _subfamily;
-  Unistring _fullname;
-  Unistring _style;
+  Warsaw::Unistring _family;
+  Warsaw::Unistring _subfamily;
+  Warsaw::Unistring _fullname;
+  Warsaw::Unistring _style;
   Texture textures[256];
 };
 

@@ -23,6 +23,7 @@
 #include "Command/BoundedValueImpl.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
 BoundedValueImpl::BoundedValueImpl(Coord ll, Coord uu, Coord vv, Coord ss, Coord pp)
   : l(ll), u(uu), v(vv), s(ss), p(pp)

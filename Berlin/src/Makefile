@@ -33,12 +33,12 @@ CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS) $(CON_INCLUDES)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague $(CON_LIBS) #$(ORBLIBS)
 
-SRC 	= Providers.cc Console.cc Pointer.cc Logger.cc RefCountBaseImpl.cc \
-	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \
-	  MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
+SRC 	= Console.cc Pointer.cc Logger.cc RefCountBaseImpl.cc \
+	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc Provider.cc \
+	  GraphicImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \
 	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc \
-	  SubjectImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc
+	  SubjectImpl.cc KitImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc
 
 TARGET	= $(lpath)/libBerlin.so
 

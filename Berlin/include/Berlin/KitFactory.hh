@@ -22,6 +22,7 @@
 #ifndef _KitFactory_hh
 #define _KitFactory_hh
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Kit.hh>
 #include <string>
@@ -36,17 +37,33 @@ public:
   KitFactory(const string &, const string *, unsigned short);
   virtual ~KitFactory() { delete props;}
   const string &type() const { return id;}
-  Kit::PropertySeq *properties() const { return new Kit::PropertySeq(*props);}  
-  virtual KitImpl *create(const Kit::PropertySeq &p) = 0;
-  virtual bool supports(const Kit::PropertySeq &p) { return supports(*props, p);}
-  static bool supports(const Kit::PropertySeq &, const Kit::PropertySeq &);
+  Warsaw::Kit::PropertySeq *properties() const { return new Warsaw::Kit::PropertySeq(*props);}  
+  virtual KitImpl *create(const Warsaw::Kit::PropertySeq &p, PortableServer::POA_ptr) = 0;
+  virtual bool supports(const Warsaw::Kit::PropertySeq &p) { return supports(*props, p);}
+  static bool supports(const Warsaw::Kit::PropertySeq &, const Warsaw::Kit::PropertySeq &);
 protected:
   void increment() { counter++;}
   void decrement() { counter--;}
-  Kit::PropertySeq *props;
+  static void activate(KitImpl *, PortableServer::POA_ptr);
+  Warsaw::Kit::PropertySeq *props;
 private:
   const string      id;
   unsigned short    counter;
+};
+
+template <class T>
+class KitFactoryImpl : public KitFactory
+{
+ public:
+  KitFactoryImpl(const string &type, const string *properties, unsigned short size)
+    : KitFactory(type, properties, size) {}
+  virtual KitImpl *create(const Warsaw::Kit::PropertySeq &, PortableServer::POA_ptr poa)
+  {
+    Prague::Trace trace("KitFactoryImpl::create");
+    T *t = new T(this, *props);
+    KitFactory::activate(t, poa);
+    return t;
+  }
 };
 
 #endif

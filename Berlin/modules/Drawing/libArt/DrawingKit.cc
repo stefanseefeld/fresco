@@ -21,12 +21,12 @@
  */
 
 #include <Warsaw/config.hh>
-#include <Drawing/libArt/LibArtDrawingKit.hh>
-#include <Drawing/libArt/LibArtFTFont.hh>
-#include <Drawing/libArt/LibArtUnifont.hh>
+#include "Drawing/libArt/LibArtDrawingKit.hh"
+#include "Drawing/libArt/LibArtFTFont.hh"
+#include "Drawing/libArt/LibArtUnifont.hh"
 #include <Warsaw/Transform.hh>
 #include <Warsaw/IO.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/Console.hh>
 
 #include <libart_lgpl/art_pathcode.h>
@@ -41,9 +41,10 @@
 #include <libart_lgpl/art_rgb_svp.h>
 #include <libart_lgpl/art_rgb_pixbuf_affine.h>
 
+using namespace Warsaw;
 
 LibArtDrawingKit::~LibArtDrawingKit() {}
-LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
+LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p),
     drawable(Console::drawable()), 
     xres(drawable->resolution(xaxis)),
@@ -61,14 +62,6 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
   
   agam = art_alphagamma_new (2.5);
   buffer = Console::newDrawable(drawable->width(), drawable->height(), 3);
-//   if(!memvis) {
-//     cerr << "memory-visual failed to open in LibArt DrawingKit";
-//     exit(1);
-//   }
-//   ggiSetGraphMode(memvis, drawable->width(), drawable->height(), 
-// 		  drawable->width(), drawable->height(), GT_24BIT);
-//   buf = ggiDBGetBuffer (memvis, 0);
-//   int stride = buf->buffer.plb.stride;
   pb = art_pixbuf_new_const_rgb ((art_u8 *)buffer->writeBuffer(), drawable->width(), drawable->height(), buffer->rowlength());
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;    
   double step = 1. / 256.;
@@ -77,24 +70,13 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
       alphabank[i][j] = (art_u8)(i * (j * step));
 }
 
-static inline art_u32 artColor(Color &c)
+static inline art_u32 artColor(const Color &c)
 {
   return (((art_u8)(c.blue * 0xff) << 24) | 
 	  ((art_u8)(c.green * 0xff) << 16) | 
 	  ((art_u8)(c.red * 0xff) << 8) | 
 	  ((art_u8)(c.alpha * 0xff)));
 }
-
-// static inline ggi_pixel ggiColor(Color c1, ggi_visual_t vis) {
-//   ggi_color c2;
-//   // GGI _appears_ to use 16 bit color + alpha throughout. *sigh*
-//   static double scale = 0xffff;
-//   c2.r = static_cast<uint16>(c1.red * scale);
-//   c2.g = static_cast<uint16>(c1.green * scale);
-//   c2.b = static_cast<uint16>(c1.blue * scale);
-//   c2.a = static_cast<uint16>(c1.alpha * scale);
-//   return ggiMapColor(vis,&c2);
-// }
 
 static inline void fix_order_of_irect(ArtIRect &ir)
 {
@@ -131,8 +113,7 @@ void LibArtDrawingKit::setClipping(Region_ptr r)
   if (CORBA::is_nil(r)) {clip = screen; return;}
   cl = Region::_duplicate(r);
     
-  Lease<RegionImpl> climpl;
-  Providers::region.provide(climpl);
+  Lease_var<RegionImpl> climpl(Provider<RegionImpl>::provide());
   climpl->copy(cl);
 
   ArtDRect dclip = {climpl->lower.x * xres, climpl->lower.y * yres, 		      
@@ -166,8 +147,8 @@ void LibArtDrawingKit::setLighting(const Color &c)
 
 void LibArtDrawingKit::setPointSize(Coord s) { ps = s;}
 void LibArtDrawingKit::setLineWidth(Coord w) { lw = w;}
-void LibArtDrawingKit::setLineEndstyle(DrawingKit::Endstyle style) { es = style;}
-void LibArtDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style) { fs = style;}
+void LibArtDrawingKit::setLineEndstyle(Warsaw::DrawingKit::Endstyle style) { es = style;}
+void LibArtDrawingKit::setSurfaceFillstyle(Warsaw::DrawingKit::Fillstyle style) { fs = style;}
 void LibArtDrawingKit::setTexture(Raster_ptr t) {}
 void LibArtDrawingKit::setFontSize(CORBA::ULong) {}
 void LibArtDrawingKit::setFontWeight(CORBA::ULong) {}
@@ -180,10 +161,10 @@ void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
 void LibArtDrawingKit::drawPath(const Path &p) 
 {
   int len = p.length();
-  ArtVpath vpath[fs == DrawingKit::outlined ? len : len + 1];
+  ArtVpath vpath[fs == Warsaw::DrawingKit::outlined ? len : len + 1];
   ArtVpath *tvpath;  
 
-  if (fs == DrawingKit::outlined) {
+  if (fs == Warsaw::DrawingKit::outlined) {
     for (int i = 0; i < len; ++i){
       vpath[i].x = p[i].x; 
       vpath[i].y = p[i].y;
@@ -246,7 +227,7 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
     int height = (rect.y1 - rect.y0);
     if ((height * width) < 1) return;
     buffer->setColor(con_fg);
-    if (fs == DrawingKit::solid)
+    if (fs == Warsaw::DrawingKit::solid)
       buffer->drawBox(rect.x0, rect.y0, width, height);
     else
       {
@@ -261,7 +242,7 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
     // non-degenerate rectangles
   } else {
     Path path;
-    if (fs == DrawingKit::outlined) {
+    if (fs == Warsaw::DrawingKit::outlined) {
       path.length(4);
       path[0].x = bot.x, path[0].y = bot.y;
       path[1].x = top.x, path[1].y = bot.y;
@@ -416,7 +397,7 @@ void LibArtDrawingKit::drawChar(Unichar c)
   else
     {
       font->allocateChar(c,r);
-      DrawingKit::GlyphMetrics gm = font->metrics(c);
+      Warsaw::DrawingKit::GlyphMetrics gm = font->metrics(c);
       width = (int) (gm.width >> 6);
       height = (int) (gm.height >> 6);
     }
@@ -496,5 +477,5 @@ void LibArtDrawingKit::flush()
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "LibArtDrawingKit"};
-  return new KitFactoryImpl<LibArtDrawingKit> (DrawingKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<LibArtDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
 }

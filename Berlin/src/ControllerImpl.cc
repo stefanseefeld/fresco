@@ -21,16 +21,17 @@
  */
 
 #include "Berlin/ControllerImpl.hh"
-#include "Warsaw/Input.hh"
-#include "Warsaw/Transform.hh"
-#include "Warsaw/Region.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Warsaw/Focus.hh"
+#include <Warsaw/Input.hh>
+#include <Warsaw/Transform.hh>
+#include <Warsaw/Region.hh>
+#include <Warsaw/PickTraversal.hh>
+#include <Warsaw/Focus.hh>
 #include "Berlin/Event.hh"
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Unicode/Unicode.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 ControllerImpl::ControllerImpl(bool t) : telltale(0), focus(0), grabs(0), transparent(t) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
@@ -49,8 +50,8 @@ void ControllerImpl::appendController(Controller_ptr c)
 {
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
-  Controller_ptr nc = Controller::_duplicate(c);
-  nc->setControllerLinks(Controller_var(_this()), last, Controller_var(Controller::_nil()));
+  Controller_ptr nc = Warsaw::Controller::_duplicate(c);
+  nc->setControllerLinks(Controller_var(_this()), last, Controller_var(Warsaw::Controller::_nil()));
   last = nc;
   if (CORBA::is_nil(first)) first = last;
 }
@@ -59,8 +60,8 @@ void ControllerImpl::prependController(Controller_ptr c)
 {
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
-  Controller_ptr nc = Controller::_duplicate(c);
-  nc->setControllerLinks(Controller_var(_this()), Controller_var(Controller::_nil()), first);
+  Controller_ptr nc = Warsaw::Controller::_duplicate(c);
+  nc->setControllerLinks(Controller_var(_this()), Controller_var(Warsaw::Controller::_nil()), first);
   first = nc;
   if (CORBA::is_nil(last)) last = nc;
 }
@@ -68,7 +69,7 @@ void ControllerImpl::prependController(Controller_ptr c)
 void ControllerImpl::insertController(Controller_ptr c)
 {
   if (CORBA::is_nil(c)) return;
-  Controller_ptr nc = Controller::_duplicate(c);
+  Controller_ptr nc = Warsaw::Controller::_duplicate(c);
   nc->setControllerLinks(parent, prev, Controller_var(_this()));
 //   if (is_eq(this, Viewer_var(parent_->first_viewer())))
   if (CORBA::is_nil(prev)) parent->setFirstController(nc);
@@ -84,8 +85,8 @@ void ControllerImpl::replaceController(Controller_ptr c)
       if (CORBA::is_nil(parent)) return;
       if (CORBA::is_nil(prev)) parent->setFirstController(c);
       if (CORBA::is_nil(next)) parent->setLastController(c);
-      prev = Controller::_nil();
-      next = Controller::_nil();
+      prev = Warsaw::Controller::_nil();
+      next = Warsaw::Controller::_nil();
     }
 }
 
@@ -93,29 +94,29 @@ void ControllerImpl::removeController()
 {
   if (CORBA::is_nil(parent)) return;
   if (CORBA::is_nil(prev)) parent->setFirstController(next);
-  else prev->setControllerLinks(Controller_var(Controller::_nil()), Controller_var(prev->prevController()), next);
+  else prev->setControllerLinks(Controller_var(Warsaw::Controller::_nil()), Controller_var(prev->prevController()), next);
   if (CORBA::is_nil(next)) parent->setLastController(prev);
-  else next->setControllerLinks(Controller_var(Controller::_nil()), prev, Controller_var(next->nextController()));
-  parent = Controller::_nil();
-  prev = Controller::_nil();
-  next = Controller::_nil();
+  else next->setControllerLinks(Controller_var(Warsaw::Controller::_nil()), prev, Controller_var(next->nextController()));
+  parent = Warsaw::Controller::_nil();
+  prev = Warsaw::Controller::_nil();
+  next = Warsaw::Controller::_nil();
 }
 
 void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Controller_ptr ne)
 {
   if (!CORBA::is_nil(pa))
     {
-      parent = Controller::_duplicate(pa);
-      prev = Controller::_duplicate(pr);
+      parent = Warsaw::Controller::_duplicate(pa);
+      prev = Warsaw::Controller::_duplicate(pr);
       if (!CORBA::is_nil(pr))
 	{
-	  pr->setControllerLinks(Controller_var(Controller::_nil()),
+	  pr->setControllerLinks(Controller_var(Warsaw::Controller::_nil()),
 				 Controller_var(pr->prevController()), Controller_var(_this()));
 	}
       next = ne;
       if (!CORBA::is_nil(ne))
 	{
-	  ne->setControllerLinks(Controller_var(Controller::_nil()),
+	  ne->setControllerLinks(Controller_var(Warsaw::Controller::_nil()),
 				 Controller_var(_this()), Controller_var(next->nextController()));
 	}
     }
@@ -128,14 +129,14 @@ void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Co
 
 void ControllerImpl::setFirstController(Controller_ptr c)
 {
-  first = Controller::_duplicate(c);
-  if (CORBA::is_nil(c)) last = Controller::_nil();
+  first = Warsaw::Controller::_duplicate(c);
+  if (CORBA::is_nil(c)) last = Warsaw::Controller::_nil();
 }
 
 void ControllerImpl::setLastController(Controller_ptr c)
 {
   last = c;
-  if (CORBA::is_nil(c)) first = Controller::_nil();
+  if (CORBA::is_nil(c)) first = Warsaw::Controller::_nil();
 }
 
 CORBA::Boolean ControllerImpl::requestFocus(Controller_ptr c, Input::Device d)
@@ -148,7 +149,7 @@ CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 {
   Trace trace("ControllerImpl::receiveFocus");  
   setFocus(f->device());
-  if (f->device() == 0) set(Controller::active);
+  if (f->device() == 0) set(Warsaw::Controller::active);
   return true;
 }
 
@@ -156,12 +157,12 @@ void ControllerImpl::loseFocus(Input::Device d)
 {
   Trace trace("ControllerImpl::loseFocus");
   clearFocus(d);
-  if (d == 0) clear(Controller::active);
+  if (d == 0) clear(Warsaw::Controller::active);
 }
 
 CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)
 {
-  Controller_ptr ne = Controller::_nil();
+  Controller_ptr ne = Warsaw::Controller::_nil();
   for (Controller_var c = firstController(); !CORBA::is_nil(c); c = ne)
     {
       if (c->firstFocus(d)) return true;
@@ -173,7 +174,7 @@ CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)
 
 CORBA::Boolean ControllerImpl::lastFocus(Input::Device d)
 {
-  Controller_ptr pr = Controller::_nil();
+  Controller_ptr pr = Warsaw::Controller::_nil();
   for (Controller_var c = lastController(); !CORBA::is_nil(c); c = pr)
     {
       if (c->lastFocus(d)) return true;
@@ -197,27 +198,27 @@ CORBA::Boolean ControllerImpl::prevFocus(Input::Device d)
   else return parent->prevFocus(d);
 }
 
-void ControllerImpl::set(Telltale::Mask m)
+void ControllerImpl::set(Warsaw::Telltale::Mask m)
 {
   Trace trace("ControllerImpl::set");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
-void ControllerImpl::clear(Telltale::Mask m)
+void ControllerImpl::clear(Warsaw::Telltale::Mask m)
 {
   Trace trace("ControllerImpl::clear");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
-CORBA::Boolean ControllerImpl::test(Telltale::Mask m)
+CORBA::Boolean ControllerImpl::test(Warsaw::Telltale::Mask m)
 {
   MutexGuard guard(mutex);
   return (telltale & m) == m;
 }
 
-void ControllerImpl::modify(Telltale::Mask m, CORBA::Boolean on)
+void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
   unsigned long nf = on ? telltale | m : telltale & ~m;
   {
@@ -259,7 +260,7 @@ CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, con
     }
   else if (event[0].attr._d() == Input::positional)
     {
-      if (test(Controller::pressed)) drag(traversal, event);
+      if (test(Warsaw::Controller::pressed)) drag(traversal, event);
       else move(traversal, event);
     }
   else other(event);
@@ -293,7 +294,7 @@ void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
 {
   grab(traversal);
   requestFocus(Controller_var(_this()), 0);
-  set(Controller::pressed);
+  set(Warsaw::Controller::pressed);
 }
 
 void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
@@ -302,7 +303,7 @@ void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
 
 void ControllerImpl::release(PickTraversal_ptr traversal, const Input::Event &)
 {
-  clear(Controller::pressed);
+  clear(Warsaw::Controller::pressed);
   ungrab(traversal);
 }
 

@@ -20,9 +20,12 @@
  * MA 02139, USA.
  */
 #include <Berlin/TraversalImpl.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
+#include <Berlin/ImplVar.hh>
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
+
+using namespace Warsaw;
 
 Placement::Placement(LayoutManager *l)
 {
@@ -32,11 +35,10 @@ Placement::Placement(LayoutManager *l)
 
 Placement::~Placement()
 {
-//  region->_dispose();
   delete layout;
 }
 
-void Placement::request(Requisition &r)
+void Placement::request(Warsaw::Graphic::Requisition::Requisition &r)
 {
   MonoGraphic::request(r);
   layout->request(0, 0, r);
@@ -53,17 +55,15 @@ void Placement::traverse(Traversal_ptr traversal)
   Region_var allocation = Region::_duplicate(traversal->allocation());
   if (!CORBA::is_nil(allocation))
     {
-      Lease<RegionImpl> result;
-      Providers::region.provide(result);  
+      Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());
       result->copy(allocation);
 
-      Graphic::Requisition r;
+      Warsaw::Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
-      RegionImpl *tmp = result.get();
+      RegionImpl *tmp = static_cast<RegionImpl *>(result);
       layout->allocate(1, &r, allocation, &tmp);
-      Lease<TransformImpl> tx;
-      Providers::trafo.provide(tx);  
+      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->loadIdentity();
       result->normalize(Transform_var(tx->_this()));
       traversal->traverseChild(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
@@ -74,13 +74,12 @@ void Placement::traverse(Traversal_ptr traversal)
 void Placement::allocate(Tag, const Allocation::Info &a)
 {
   region->copy(a.allocation);
-  Graphic::Requisition r;
+  Warsaw::Graphic::Requisition r;
   GraphicImpl::initRequisition(r);
   MonoGraphic::request(r);
   RegionImpl *cast = region;
   layout->allocate(1, &r, a.allocation, &cast);
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
   region->normalize(Transform_var(tx->_this()));
   a.transformation->premultiply(Transform_var(tx->_this()));
@@ -90,8 +89,8 @@ void Placement::allocate(Tag, const Allocation::Info &a)
 LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under, Graphic_ptr over)
 {
   body(between);
-  under = Graphic::_duplicate(under);
-  over = Graphic::_duplicate(over);
+  under = Warsaw::Graphic::_duplicate(under);
+  over = Warsaw::Graphic::_duplicate(over);
 }
 
 LayoutLayer::~LayoutLayer()

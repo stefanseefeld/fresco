@@ -30,14 +30,14 @@ public:
   Deck();
   virtual ~Deck();
 
-  virtual void request(Requisition &);
-  virtual void extension(const Allocation::Info &, Region_ptr);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
 
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 
 protected:
   bool requested;
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
-#endif /* _Deck_hh */
+#endif

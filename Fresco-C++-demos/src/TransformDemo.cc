@@ -24,6 +24,8 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Image.hh>
 
+using namespace Warsaw;
+
 TransformDemo::TransformDemo(Application *a)
   : Demo(a)
 {

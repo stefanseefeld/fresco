@@ -28,30 +28,54 @@
 
 class PolyGraphic : public GraphicImpl
 {
-  typedef vector<Edge> clist_t;
 public:
   PolyGraphic();
   virtual ~PolyGraphic();
 
-  virtual void append(Graphic_ptr);
-  virtual void prepend(Graphic_ptr);
-  virtual void remove(Tag);
+  virtual void append(Warsaw::Graphic_ptr);
+  virtual void prepend(Warsaw::Graphic_ptr);
+  virtual void remove(Warsaw::Tag);
+  virtual void removeChild(Warsaw::Tag);
   virtual Iterator_ptr firstChild();
   virtual Iterator_ptr lastChild();
 
   virtual void needResize();
-  virtual void needResize(Tag);
+  virtual void needResize(Warsaw::Tag);
 protected:
   CORBA::Long numChildren();
-  Tag tag();
-  CORBA::Long index(Tag); 
-  Graphic::Requisition *childrenRequests();
-  void deallocateRequisitions(Graphic::Requisition *);
-  void childExtension(size_t, const Allocation::Info &, Region_ptr);
+  Warsaw::Tag uniqueChildId();
+  glist_t::iterator childIdToIterator(Warsaw::Tag);
+  CORBA::Long childIdToIndex(Warsaw::Tag);
+  Warsaw::Graphic::Requisition *childrenRequests();
+  void deallocateRequisitions(Warsaw::Graphic::Requisition *);
+  void childExtension(size_t, const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
 // private:
-  static Pool<Requisition> pool;
-  clist_t children;
+  static Pool<Warsaw::Graphic::Requisition> pool;
+  glist_t children;
   Prague::Mutex childMutex;
 };
 
-#endif /* _PolyGraphic_hh */
+/*
+ * the following methods are inlined for speed.
+ * Attention : they must be used within a PolyGraphic::childMutex locked section !
+ */
+inline Warsaw::Tag PolyGraphic::uniqueChildId()
+{
+  Warsaw::Tag localId = 0;
+  do
+    if (find_if(children.begin(), children.end(), localId_eq(localId)) == children.end())
+      return localId;
+  while(++localId);
+}
+
+inline PolyGraphic::glist_t::iterator PolyGraphic::childIdToIterator(Warsaw::Tag localId)
+{
+  return find_if(children.begin(), children.end(), localId_eq(localId));
+}
+
+inline CORBA::Long PolyGraphic::childIdToIndex(Warsaw::Tag localId)
+{
+  return find_if(children.begin(), children.end(), localId_eq(localId)) - children.begin();
+}
+
+#endif 

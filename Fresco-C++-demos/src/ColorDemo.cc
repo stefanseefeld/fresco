@@ -23,6 +23,8 @@
 #include "ColorDemo.hh"
 #include <Berlin/Color.hh>
 
+using namespace Warsaw;
+
 ColorDemo::ColorDemo(Application *a)
   : Demo(a)
 {

@@ -22,35 +22,35 @@
 #ifndef _Triangle_hh
 #define _Triangle_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/ToolKit.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/ToolKit.hh>
 #include "Tool/Frame.hh"
 
 class InvisibleTriangle : public Frame::Renderer
 {
 public:
-  InvisibleTriangle(Coord t, bool f, ToolKit::Direction d) : Frame::Renderer(t, f), direction(d) {}
-  virtual void draw(DrawTraversal_ptr);
+  InvisibleTriangle(Warsaw::Coord t, bool f, Warsaw::ToolKit::Direction d) : Frame::Renderer(t, f), direction(d) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 private:
-  ToolKit::Direction direction;
+  Warsaw::ToolKit::Direction direction;
 };
 
 class BeveledTriangle : public Bevel
 {
 public:
-  BeveledTriangle(Coord t, type s, Coord b, bool f, ToolKit::Direction d) : Bevel(t, s, b, f), direction(d) {}
-  virtual void draw(DrawTraversal_ptr);
+  BeveledTriangle(Warsaw::Coord t, type s, Warsaw::Coord b, bool f, Warsaw::ToolKit::Direction d) : Bevel(t, s, b, f), direction(d) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 protected:
-  ToolKit::Direction direction;
+  Warsaw::ToolKit::Direction direction;
 };
 
 class ColoredTriangle : public ColoredFrame
 {
 public:
-  ColoredTriangle(Coord t, const Color &c, bool f, ToolKit::Direction d) : ColoredFrame(t, c, f), direction(d) {}
-  virtual void draw(DrawTraversal_ptr);
+  ColoredTriangle(Warsaw::Coord t, const Warsaw::Color &c, bool f, Warsaw::ToolKit::Direction d) : ColoredFrame(t, c, f), direction(d) {}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
 protected:
-  ToolKit::Direction direction;
+  Warsaw::ToolKit::Direction direction;
 };
 
-#endif /* _Triangle_hh */
+#endif

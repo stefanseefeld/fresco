@@ -33,16 +33,16 @@
 
 class RasterImpl;
 
-class ImageKitImpl : public virtual POA_ImageKit, public KitImpl
+class ImageKitImpl : public virtual POA_Warsaw::ImageKit,
+		     public KitImpl
 {
 public:
-  ImageKitImpl(KitFactory *, const PropertySeq &);
+  ImageKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~ImageKitImpl();
 
-  Raster_ptr empty();
-  Raster_ptr create(const char *file);
+  Warsaw::Raster_ptr empty();
+  Warsaw::Raster_ptr create(const char *file);
 protected:
-  vector<PortableServer::Servant> rasters;
 };
 
 #endif

@@ -21,7 +21,7 @@
  */
 
 #include "Drawing/openGL/GLUnifont.hh"
-#include "Prague/Sys/MMap.hh"
+#include <Prague/Sys/MMap.hh>
 
 #include <GL/gl.h>
 #include <string>
@@ -35,6 +35,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
+
+using namespace Warsaw;
 
 GLUnifont::GLUnifont()
   : _family(Unicode::toCORBA(Unicode::String("GNU Unifont"))),
@@ -53,8 +55,8 @@ GLUnifont::GLUnifont()
 }
 
 GLUnifont::~GLUnifont() { delete glyphmap ;}
-unsigned long GLUnifont::size() { return 16;}
-unsigned long GLUnifont::weight() { return 100;}
+CORBA::ULong GLUnifont::size() { return 16;}
+CORBA::ULong GLUnifont::weight() { return 100;}
 Unistring *GLUnifont::family() { return new Unistring(_family);}
 Unistring *GLUnifont::subfamily() { return new Unistring(_subfamily);}
 Unistring *GLUnifont::fullname() { return new Unistring(_fullname);}

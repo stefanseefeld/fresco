@@ -26,17 +26,18 @@
 #include <Warsaw/Input.hh>
 #include <Warsaw/Command.hh>
 
-class Accelerator : public virtual POA_Input::Filter, public virtual PortableServer::RefCountServantBase
+class Accelerator : public virtual POA_Warsaw::Input::Filter,
+                    public virtual PortableServer::RefCountServantBase
 {
  public:
-  Accelerator(Input::Device, const Input::Toggle &, Input::Bitset, Command_ptr);
+  Accelerator(Warsaw::Input::Device, const Warsaw::Input::Toggle &, Warsaw::Input::Bitset, Warsaw::Command_ptr);
   virtual ~Accelerator() {}
-  virtual CORBA::Boolean handle(const Input::Event &);
+  virtual CORBA::Boolean handle(const Warsaw::Input::Event &);
  private:
-  const Input::Device device;
-  const Input::Toggle toggle;
-  const Input::Bitset modifier;
-  const Command_var command;
+  const Warsaw::Input::Device device;
+  const Warsaw::Input::Toggle toggle;
+  const Warsaw::Input::Bitset modifier;
+  const Warsaw::Command_var command;
 };
 
-#endif /* _FilterImpl_hh */
+#endif 

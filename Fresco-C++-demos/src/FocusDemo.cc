@@ -26,14 +26,16 @@
 #include <Berlin/RefCountBaseImpl.hh>
 #include "FocusDemo.hh"
 
-class FocusDemo::Observer : public virtual POA_Observer,
+using namespace Warsaw;
+
+class FocusDemo::Observer : public virtual POA_Warsaw::Observer,
                 	    public virtual PortableServer::RefCountServantBase,
 		            public virtual RefCountBaseImpl
 {
  public:
   virtual void update(const CORBA::Any &any)
     {
-      Selection::Item *item;
+      Warsaw::Selection::Item *item;
       if (any >>= item)
 	cout << "new selection" << endl;
     }

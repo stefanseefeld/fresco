@@ -29,41 +29,42 @@
 
 class RegionImpl;
 
-class ViewportImpl : public virtual POA_Viewport, public MonoGraphic
+class ViewportImpl : public virtual POA_Warsaw::Viewport,
+		     public MonoGraphic
 {
   class Adjustment;
  public:
   ViewportImpl();
   ~ViewportImpl();
   void attachAdjustments();
-  virtual void body(Graphic_ptr);
-  virtual Graphic_ptr body() { return MonoGraphic::body();}
+  virtual void body(Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr body() { return MonoGraphic::body();}
 
-  virtual Transform_ptr transformation();
-  virtual void request(Requisition &);
+  virtual Warsaw::Transform_ptr transformation();
+  virtual void request(Warsaw::Graphic::Requisition &);
 
-  virtual void traverse(Traversal_ptr);
-  virtual void draw(DrawTraversal_ptr);
-  virtual void pick(PickTraversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
 
   virtual void needResize();
 
-  virtual BoundedRange_ptr adjustment(Axis);
+  virtual Warsaw::BoundedRange_ptr adjustment(Warsaw::Axis);
 
   virtual void update(const CORBA::Any &);
 
 protected:
-  void allocateChild(Allocation::Info &);
+  void allocateChild(Warsaw::Allocation::Info &);
   void cacheRequisition();
-  void cacheAllocation(Region_ptr);
-  void bodyAllocation(Region_ptr, RegionImpl *);
-  void scrollTransform(Transform_ptr);
+  void cacheAllocation(Warsaw::Region_ptr);
+  void bodyAllocation(Warsaw::Region_ptr, RegionImpl *);
+  void scrollTransform(Warsaw::Transform_ptr);
 
-  BoundedRange::Settings settings[2];
+  Warsaw::BoundedRange::Settings settings[2];
   Adjustment *xadjustment;
   Adjustment *yadjustment;
   bool        requested;
-  Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
-#endif /* _Viewport_hh */
+#endif

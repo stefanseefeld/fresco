@@ -22,7 +22,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Traversal.hh>
 #include <Berlin/ImplVar.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <iostream>
@@ -31,6 +31,7 @@
 #include "Layout/Placement.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
 Box::Box(LayoutManager *l)
   : layout(l),
@@ -50,7 +51,7 @@ void Box::request(Requisition &r)
       long n = numChildren();
       if (n > 0)
 	{
-	  Graphic::Requisition *r = childrenRequests();
+	  Warsaw::Graphic::Requisition *r = childrenRequests();
 	  layout->request(n, r, requisition);
 	  deallocateRequisitions(r);
 	}
@@ -69,16 +70,14 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
       Vertex origin, previous, delta;
       previous.x = previous.y = previous.z = 0;
 
-      Lease<TransformImpl> child_tx, tmp_tx;
-      Providers::trafo.provide(child_tx);  
-      Providers::trafo.provide(tmp_tx);  
+      Lease_var<TransformImpl> child_tx(Provider<TransformImpl>::provide());
+      Lease_var<TransformImpl> tmp_tx(Provider<TransformImpl>::provide());  
       tmp_tx->loadIdentity();
       child_tx->loadIdentity();
       
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
-      Lease<RegionImpl> result[numChildren()];
-      childrenAllocations(info.allocation,result);
+      LayoutManager::Allocations result = childrenAllocations(info.allocation);
       for (long i = 0; i < n; i++)
 	{
 	  result[i]->normalize(origin);
@@ -90,12 +89,14 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 	  childExtension(i, child, region);
 	  previous = origin;
 	}
+      for (CORBA::Long i = 0; i != n; ++i) Provider<RegionImpl>::adopt(result[i]);
+      delete [] result;
     }
 }
 
 void Box::traverse(Traversal_ptr traversal)
 {
-//   Trace trace("Box::traverse");
+  Trace trace("Box::traverse");
   if (numChildren())
     {
       Region_var given = traversal->allocation();
@@ -136,20 +137,20 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
   /*
    * fetch requested (presumably allocated) child regions
    */
-  Lease<RegionImpl> result[numChildren()];
-  childrenAllocations(info.allocation,result);
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  CORBA::Long n = numChildren();
+  LayoutManager::Allocations result = childrenAllocations(info.allocation);
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
 
   /*
    * copy transformation and region into allocation
    */
-  CORBA::Long idx = index(tag);
+  CORBA::Long idx = childIdToIndex(tag);
   result[idx]->normalize(Transform_var(tx->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
-  CORBA::Long children = numChildren();
+  for (CORBA::Long i = 0; i != n; ++i) Provider<RegionImpl>::adopt(result[i]);
+  delete [] result;
 }
 
 
@@ -160,11 +161,11 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
  * the children's requests so that the real layout (at draw time) will happen
  * faster. 
  */
-void Box::childrenAllocations(Region_ptr allocation, Lease<RegionImpl> *childrenRegions)
+LayoutManager::Allocations Box::childrenAllocations(Region_ptr allocation)
 {
-//   Trace trace("Box::childrenAllocations");
+  Trace trace("Box::childrenAllocations");
   CORBA::Long children = numChildren();
-  Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
+  Warsaw::Graphic::Requisition *childrenRequisitions = childrenRequests();
     
   // cache integrated form of children requisitions
   if (!requested)
@@ -174,29 +175,27 @@ void Box::childrenAllocations(Region_ptr allocation, Lease<RegionImpl> *children
       requested = true;
     }
   // build region array for children
-  RegionImpl *pointerArray[children]; 
-
+  RegionImpl **childrenRegions = new RegionImpl *[children];
   for (CORBA::Long i = 0; i < children; i++)
     {
-      Providers::region.provide(childrenRegions[i]);
+      childrenRegions[i] = Provider<RegionImpl>::provide();
       childrenRegions[i]->valid = true;
-      pointerArray[i] = childrenRegions[i].get();
     }
   // fill in children regions which are reasonable matches for the given requesitions
-  layout->allocate(children, childrenRequisitions, allocation, pointerArray);
+  layout->allocate(children, childrenRequisitions, allocation, childrenRegions);
   deallocateRequisitions(childrenRequisitions);
+  return childrenRegions;
 }
 
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
-//   Trace trace("Box::traverseWithAllocation");
-  Lease<RegionImpl> result[numChildren()];
-  childrenAllocations(r,result);
+  Trace trace("Box::traverseWithAllocation");
+  LayoutManager::Allocations result;
+  result = childrenAllocations(r);
   CORBA::Long size = numChildren();
   CORBA::Long begin, end, incr;
 
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
 
   if (t->direction() == Traversal::up)
@@ -213,7 +212,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
     }
   for (CORBA::Long i = begin; i != end; i += incr)
     {
-      if (CORBA::is_nil(children[i].parent)) continue;
+      if (CORBA::is_nil(children[i].peer)) continue;
       Vertex origin;
       result[i]->normalize(origin);
       tx->loadIdentity();
@@ -222,26 +221,28 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
        * only translating them -stefan
        */
       tx->translate(origin);
-      t->traverseChild(children[i].parent, children[i].id, Region_var(result[i]->_this()), Transform_var(tx->_this()));
+      t->traverseChild(children[i].peer, children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
+  for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
+  delete [] result;
 }
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)
 {
-//   Trace trace("Box::traverseWithoutAllocation");
+  Trace trace("Box::traverseWithoutAllocation");
   if (t->direction() == Traversal::up)
-    for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+    for (glist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	if (CORBA::is_nil((*i).parent)) continue;
-	t->traverseChild((*i).parent, (*i).id, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	if (CORBA::is_nil((*i).peer)) continue;
+	t->traverseChild((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
   else
-    for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
+    for (glist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	if (CORBA::is_nil((*i).parent)) continue;
-	t->traverseChild((*i).parent, (*i).id, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	if (CORBA::is_nil((*i).peer)) continue;
+	t->traverseChild((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
 }

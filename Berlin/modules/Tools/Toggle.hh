@@ -31,10 +31,10 @@ public:
   Toggle(bool = false);
   ~Toggle();
 //protected:
-  virtual void press(PickTraversal_ptr, const Input::Event &);
-  virtual void release(PickTraversal_ptr, const Input::Event &);
-  virtual void keyPress(const Input::Event &);
+  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void keyPress(const Warsaw::Input::Event &);
 private:
 };
 
-#endif /* _Toggle_h */
+#endif

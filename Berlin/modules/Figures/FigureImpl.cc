@@ -34,9 +34,10 @@
 
 using namespace Geometry;
 using namespace Prague;
+using namespace Warsaw;
 
 TransformFigure::TransformFigure()
-  : mode(Figure::outline),
+  : mode(Warsaw::Figure::outline),
     tx(new TransformImpl),
     ext(new RegionImpl)
 {
@@ -108,7 +109,7 @@ void TransformFigure::copy(const TransformFigure &tf)
   if (tf.ext->valid) ext->copy(Region_var(tf.ext->_this()));
 }
 
-FigureImpl::FigureImpl() { path = new Figure::Vertices;}
+FigureImpl::FigureImpl() { path = new Warsaw::Figure::Vertices;}
 FigureImpl::~FigureImpl() {}
 
 void FigureImpl::addPoint(Coord x, Coord y)
@@ -150,7 +151,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(tx->_this()));
       tmp->applyTransform(Transform_var(transformation->_this()));
-      if (mode & Figure::outline)
+      if (mode & Warsaw::Figure::outline)
 	{
 // 	  Coord w = 1.;
 // 	  if (is_not_nil(style_))
@@ -184,13 +185,13 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 	{
 	  DrawingKit_var drawing = traversal->kit();
 	  drawing->saveState();
- 	  if (mode & Figure::fill)
+ 	  if (mode & Warsaw::Figure::fill)
  	    {
 	      drawing->foreground(bg);
 	      drawing->surfaceFillstyle(DrawingKit::solid);
 	      drawing->drawPath(path);
 	    }
- 	  if (mode & Figure::outline)
+ 	  if (mode & Warsaw::Figure::outline)
 	    {
 	      drawing->foreground(fg);
 	      drawing->surfaceFillstyle(DrawingKit::outlined);
@@ -333,12 +334,12 @@ void FigureImpl::resize()
 
 void FigureImpl::reset()
 {
-  path = new Figure::Vertices;
+  path = new Warsaw::Figure::Vertices;
   ext->valid = false;
 }
 
 void FigureImpl::copy (const FigureImpl &f)
 {
   TransformFigure::copy(f);
-  path = new Figure::Vertices(f.path);
+  path = new Warsaw::Figure::Vertices(f.path);
 }

@@ -25,17 +25,18 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
 
+using namespace Warsaw;
 using namespace Motif;
 
-class Slider::Dragger : public virtual POA_Command,
+class Slider::Dragger : public virtual POA_Warsaw::Command,
 		        public virtual PortableServer::RefCountServantBase,
 	                public virtual RefCountBaseImpl
 {
 public:
-  Dragger(BoundedValue_ptr v, Axis a) : value(BoundedValue::_duplicate(v)), scale(1.), axis(a) {}
+  Dragger(BoundedValue_ptr v, Axis a) : value(RefCount_var<BoundedValue>::increment(v)), scale(1.), axis(a) {}
   void setScale(Coord s) { scale = s;}
   virtual void execute(const CORBA::Any &any)
   {
@@ -48,7 +49,7 @@ public:
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
-  BoundedValue_var value;
+  RefCount_var<BoundedValue> value;
   Coord scale;
   Axis axis;
 };
@@ -58,7 +59,7 @@ Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
     requisition(r),
     redirect(new Observer(this)),
     _drag(new Dragger(v, a)),
-    value(BoundedValue::_duplicate(v)),
+    value(RefCount_var<BoundedValue>::increment(v)),
     offset((v->value() - v->lower())/(v->upper() - v->lower())),
     axis(a)
 {
@@ -100,8 +101,7 @@ void Slider::pick(PickTraversal_ptr traversal)
 
 void Slider::allocate(Tag, const Allocation::Info &info)
 {
-  Lease<RegionImpl> allocation;
-  Providers::region.provide(allocation);
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(info.allocation);
   if (axis == xaxis)
     {
@@ -127,11 +127,9 @@ void Slider::traverseThumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  Lease<RegionImpl> allocation;
-  Providers::region.provide(allocation);
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(Region_var(traversal->allocation()));
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
   Coord length;
   if (axis == xaxis)

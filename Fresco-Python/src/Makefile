@@ -32,7 +32,7 @@ rpath	= $(lpath)
 
 #include $(cpath)/local.mk
 IDL	= omniidl
-IDLFLAGS= -I$(wpath) -nf -bpython -Wbglobal=Warsaw
+IDLFLAGS= -I$(wpath) -nf -bpython# -Wbglobal=Warsaw
 
 DYNINT	= Types.idl
 STATINT	= RefCountBase.idl ClientContext.idl Server.idl Kit.idl \
@@ -43,10 +43,10 @@ STATINT	= RefCountBase.idl ClientContext.idl Server.idl Kit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  Command.idl CommandKit.idl \
 	  Subject.idl Controller.idl View.idl \
-	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
+	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl Selection.idl \
 	  Trigger.idl ToolKit.idl \
 	  Choice.idl  WidgetKit.idl GadgetKit.idl \
-	  Metrics.idl TextKit.idl \
+	  TextKit.idl \
 	  Raster.idl ImageKit.idl \
 	  Desktop.idl Window.idl DesktopKit.idl
 

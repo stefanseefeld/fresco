@@ -19,11 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/GraphicImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/Math.hh"
+#include <Berlin/GraphicImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/Math.hh>
 #include "Layout/LayoutManager.hh"
 #include <Warsaw/IO.hh>
+
+using namespace Warsaw;
 
 // class LayoutManager
 

@@ -20,14 +20,15 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Input.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Input.hh>
 #include "Tool/TextInput.hh"
 #include <Prague/Unicode/Unicode.hh>
 #include <Warsaw/Unicode.hh>
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 void TextInput::keyPress(const Input::Event &event)
 {

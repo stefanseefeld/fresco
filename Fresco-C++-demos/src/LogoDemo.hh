@@ -30,51 +30,51 @@
 #include <Berlin/RefCountBaseImpl.hh>
 #include "Demo.hh"
 
-class Forward : public virtual POA_Command,
+class Forward : public virtual POA_Warsaw::Command,
 		public virtual PortableServer::RefCountServantBase,
 		public virtual RefCountBaseImpl
 {
  public:
-  Forward(BoundedValue_ptr v) : value(BoundedValue::_duplicate(v)) {}
+  Forward(Warsaw::BoundedValue_ptr v) : value(Warsaw::BoundedValue::_duplicate(v)) {}
   void execute(const CORBA::Any &) { value->forward();}
  private:
-  BoundedValue_var value;
+  Warsaw::BoundedValue_var value;
 };
 
-class Backward : public virtual POA_Command,
+class Backward : public virtual POA_Warsaw::Command,
 		 public virtual PortableServer::RefCountServantBase,
 		 public virtual RefCountBaseImpl
 {
  public:
-  Backward(BoundedValue_ptr v) : value(BoundedValue::_duplicate(v)) {}
+  Backward(Warsaw::BoundedValue_ptr v) : value(Warsaw::BoundedValue::_duplicate(v)) {}
   void execute(const CORBA::Any &) { value->backward();}
  private:
-  BoundedValue_var value;
+  Warsaw::BoundedValue_var value;
 };
 
-class Rotator : public virtual POA_Observer,
+class Rotator : public virtual POA_Warsaw::Observer,
 		public virtual PortableServer::RefCountServantBase,
 		public virtual RefCountBaseImpl
 {
  public:
-  Rotator(BoundedValue_ptr, Graphic_ptr, Graphic_ptr, Coord);
+  Rotator(Warsaw::BoundedValue_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Coord);
   void update(const CORBA::Any &);
  private:
-  BoundedValue_var value;
-  Graphic_var child;
-  Graphic_var parent;
-  Coord zdegree;
+  Warsaw::BoundedValue_var value;
+  Warsaw::Graphic_var child;
+  Warsaw::Graphic_var parent;
+  Warsaw::Coord zdegree;
 };
 
 class LogoDemo : public Demo
 {
 public:
   LogoDemo(Application *);
-  Graphic_ptr makeController(BoundedValue_ptr, const Color &);
+  Warsaw::Graphic_ptr makeController(Warsaw::BoundedValue_ptr, const Warsaw::Color &);
 private:
-  BoundedValue_var bv1;
-  BoundedValue_var bv2;
-  BoundedValue_var bv3;
+  Warsaw::BoundedValue_var bv1;
+  Warsaw::BoundedValue_var bv2;
+  Warsaw::BoundedValue_var bv3;
   Impl_var<TransformImpl> tx1;
   Impl_var<TransformImpl> tx2;
   Impl_var<TransformImpl> tx3;

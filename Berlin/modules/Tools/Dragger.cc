@@ -20,19 +20,23 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/Vertex.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Berlin/Vertex.hh>
+#include <Berlin/Logger.hh>
 #include "Tool/Dragger.hh"
 
-Dragger::Dragger(Command_ptr c)
-  : ControllerImpl(false), command(Command::_duplicate(c))
-{
-}
+using namespace Prague;
+using namespace Warsaw;
 
+Dragger::Dragger(Command_ptr c)
+  : ControllerImpl(false), command(RefCount_var<Warsaw::Command>::increment(c))
+{}
 Dragger::~Dragger()
 {
+  Trace trace("Dragger::~Dragger");
+  try { CORBA::release(command._retn());}
+  catch (CORBA::OBJECT_NOT_EXIST &) {}
 }
-
 void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   ControllerImpl::press(traversal, event);

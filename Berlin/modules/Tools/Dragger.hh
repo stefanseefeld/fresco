@@ -22,22 +22,23 @@
 #ifndef _Dragger_hh
 #define _Dragger_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Command.hh"
-#include "Berlin/ControllerImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Command.hh>
+#include <Berlin/ControllerImpl.hh>
+#include <Berlin/RefCountVar.hh>
 
 class Dragger : public ControllerImpl
 {
 public:
-  Dragger(Command_ptr);
+  Dragger(Warsaw::Command_ptr);
   virtual ~Dragger();
 //protected:
-  virtual void press(PickTraversal_ptr, const Input::Event &);
-  virtual void drag(PickTraversal_ptr, const Input::Event &);
-  virtual void release(PickTraversal_ptr, const Input::Event &);
+  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
 private:
-  Vertex offset;
-  Command_var command;
+  Warsaw::Vertex offset;
+  RefCount_var<Warsaw::Command> command;
 };
 
-#endif /* _Dragger_hh */
+#endif

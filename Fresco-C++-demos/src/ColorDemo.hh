@@ -28,36 +28,43 @@
 
 class ColorDemo : public Demo
 {
-  class RefCountBaseImpl : public virtual POA_Observer,
+  class RefCountBaseImpl : public virtual POA_Warsaw::Observer,
 			   public virtual PortableServer::RefCountServantBase
   {
   public:
     RefCountBaseImpl() : refcount(1) {}
     virtual void increment() { refcount++;}
-    virtual void decrement() { if (!--refcount) deactivate(this);}
+    virtual void decrement() { if (!--refcount) deactivate();}
   private:
+    void deactivate()
+    {
+      PortableServer::POA_var poa = _default_POA();
+      PortableServer::ObjectId *oid = poa->servant_to_id(this);
+      poa->deactivate_object(*oid);
+      delete oid;
+    }
     int refcount;
   };
-  class Adapter : public virtual POA_Observer, public virtual RefCountBaseImpl
+  class Adapter : public virtual POA_Warsaw::Observer, public virtual RefCountBaseImpl
   {
   public:
-    Adapter(ColorDemo *d, Tag t) : demo(d), tag(t) {}
+    Adapter(ColorDemo *d, Warsaw::Tag t) : demo(d), tag(t) {}
     virtual void update(const CORBA::Any &) { demo->adjust(tag);}
   private:
     ColorDemo *demo;
-    Tag tag;
+    Warsaw::Tag tag;
   };
   friend class Adapter;
 public:
   ColorDemo(Application *);
 private:
-  void adjust(Tag);
-  BoundedValue_var red;
-  BoundedValue_var green;
-  BoundedValue_var blue;
-  BoundedValue_var hue;
-  BoundedValue_var saturation;
-  BoundedValue_var value;
+  void adjust(Warsaw::Tag);
+  Warsaw::BoundedValue_var red;
+  Warsaw::BoundedValue_var green;
+  Warsaw::BoundedValue_var blue;
+  Warsaw::BoundedValue_var hue;
+  Warsaw::BoundedValue_var saturation;
+  Warsaw::BoundedValue_var value;
   Adapter *adapter[6];
 };
 

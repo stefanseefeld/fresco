@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-#include <Drawing/libArt/LibArtUnifont.hh>
+#include "Drawing/libArt/LibArtUnifont.hh"
 #include <Prague/Sys/MMap.hh>
 
 #include <libart_lgpl/art_rgb.h> // for art_rgb_run_alpha
@@ -44,6 +44,8 @@
 // the font manufactureres in the world turn against us, we can still render
 // multilingual text, albeit not quite as well as certain (ahem) proprietary
 // text systems
+
+using namespace Warsaw;
 
 LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
   xres(drawable->resolution(xaxis)),

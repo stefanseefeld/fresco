@@ -23,7 +23,6 @@
 #define _Box_hh
 
 #include <Berlin/PolyGraphic.hh>
-#include <Berlin/Lease.hh>
 #include <Layout/LayoutManager.hh>
 
 class Box : public PolyGraphic
@@ -32,79 +31,79 @@ public:
   Box(LayoutManager *);
   virtual ~Box();
 
-  virtual void request(Requisition &);
-  virtual void extension(const Allocation::Info &, Region_ptr);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
 
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
   virtual void needResize();
-  virtual void needResize(Tag);
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void needResize(Warsaw::Tag);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
 protected:
-  void childrenAllocations(Region_ptr, Lease<RegionImpl> *);
-  void traverseWithAllocation(Traversal_ptr, Region_ptr);
-  void traverseWithoutAllocation(Traversal_ptr);
+  LayoutManager::Allocations  childrenAllocations(Warsaw::Region_ptr);
+  void traverseWithAllocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr);
+  void traverseWithoutAllocation(Warsaw::Traversal_ptr);
 private:
   LayoutManager *layout;
   bool requested;
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
 class BoxAlignElements : public Box
 {
 public:
-  BoxAlignElements(LayoutManager *, Axis, Alignment);
+  BoxAlignElements(LayoutManager *, Warsaw::Axis, Warsaw::Alignment);
   virtual ~BoxAlignElements();
 
-  virtual void append(Graphic_ptr);
-  virtual void prepend(Graphic_ptr);
+  virtual void append(Warsaw::Graphic_ptr);
+  virtual void prepend(Warsaw::Graphic_ptr);
 private:
-  Axis axis;
-  Alignment alignment;
+  Warsaw::Axis axis;
+  Warsaw::Alignment alignment;
 };
 
 class HBox : public Box
 {
 public:
-  HBox() : Box(new LayoutSuperpose(new LayoutTile(xaxis), new LayoutAlign(yaxis), new LayoutAlign(zaxis))) {}
+  HBox() : Box(new LayoutSuperpose(new LayoutTile(Warsaw::xaxis), new LayoutAlign(Warsaw::yaxis), new LayoutAlign(Warsaw::zaxis))) {}
 };
 
 class VBox : public Box
 {
 public:
-  VBox() : Box(new LayoutSuperpose(new LayoutTile(yaxis), new LayoutAlign(xaxis), new LayoutAlign(zaxis))) {}
+  VBox() : Box(new LayoutSuperpose(new LayoutTile(Warsaw::yaxis), new LayoutAlign(Warsaw::xaxis), new LayoutAlign(Warsaw::zaxis))) {}
 };
 
 class HBoxFirstAligned : public Box
 {
 public:
-  HBoxFirstAligned() : Box(new LayoutSuperpose(new LayoutTileFirstAligned(xaxis), new LayoutAlign(yaxis))) {}
+  HBoxFirstAligned() : Box(new LayoutSuperpose(new LayoutTileFirstAligned(Warsaw::xaxis), new LayoutAlign(Warsaw::yaxis))) {}
 };
 
 class VBoxFirstAligned : public Box
 {
 public:
-  VBoxFirstAligned() : Box(new LayoutSuperpose(new LayoutTileReversedFirstAligned(yaxis), new LayoutAlign(xaxis))) {}
+  VBoxFirstAligned() : Box(new LayoutSuperpose(new LayoutTileReversedFirstAligned(Warsaw::yaxis), new LayoutAlign(Warsaw::xaxis))) {}
 };
 
 class HBoxAlignElements : public BoxAlignElements
 {
 public:
   HBoxAlignElements(double align)
-    : BoxAlignElements(new LayoutSuperpose(new LayoutTile(xaxis), new LayoutAlign(yaxis)), yaxis, align) {}
+    : BoxAlignElements(new LayoutSuperpose(new LayoutTile(Warsaw::xaxis), new LayoutAlign(Warsaw::yaxis)), Warsaw::yaxis, align) {}
 };
 
 class VBoxAlignElements : public BoxAlignElements
 {
 public:
   VBoxAlignElements(double align)
-    : BoxAlignElements(new LayoutSuperpose(new LayoutTileReversed(yaxis), new LayoutAlign(xaxis)), xaxis, align) {}
+    : BoxAlignElements(new LayoutSuperpose(new LayoutTileReversed(Warsaw::yaxis), new LayoutAlign(Warsaw::xaxis)), Warsaw::xaxis, align) {}
 };
 
 class Overlay : public Box
 {
 public:
-  Overlay() : Box(new LayoutSuperpose(new LayoutAlign(xaxis, true), new LayoutAlign(yaxis, true))) {}
+  Overlay() : Box(new LayoutSuperpose(new LayoutAlign(Warsaw::xaxis, true), new LayoutAlign(Warsaw::yaxis, true))) {}
 };
 
-#endif /* _Box_hh */
+#endif

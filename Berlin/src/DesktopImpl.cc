@@ -23,43 +23,41 @@
 #include "Berlin/DesktopImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Transform.hh"
-#include "Warsaw/Region.hh"
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Transform.hh>
+#include <Warsaw/Region.hh>
 
-DesktopImpl::DesktopImpl() : ControllerImpl(false) {}
+using namespace Warsaw;
+
+DesktopImpl::DesktopImpl(Stage_ptr s)
+  : ControllerImpl(false), stage(Warsaw::Stage::_duplicate(s))
+{
+  /*
+   * Attention !!: this invokes _this(), which implicitely activates the desktop.
+   */
+  ControllerImpl::body(stage);
+}
 DesktopImpl::~DesktopImpl() {}
 // void DesktopImpl::draw(DrawTraversal_ptr traversal)
 // {  
 //   Region_var allocation = traversal->allocation();
 //   Vertex upper, lower;
 //   allocation->bounds(lower, upper);
-//   Transform_var transformation = traversal->transformation();
-//   transformation->transformVertex(upper);
-//   transformation->transformVertex(lower);
-//   Style::Spec style;
-//   style.length(1);
-//   style[0].a = Style::fillcolor;
+//   DrawingKit_var drawing = traversal->kit();
+//   drawing->saveState();
 //   Color background;
 //   background.red = 1.0;
-//   background.green = 0.8;
-//   background.blue = 1.0;
+//   background.green = 0.9;
+//   background.blue = 0.8;
 //   background.alpha = 1.0;
-//   style[0].val <<= background;
-//   Path path;
-//   path.p.length(4);
-//   path.p[0].x = lower.x, path.p[0].y = lower.y, path.p[0].z = 0.;
-//   path.p[1].x = upper.x, path.p[1].y = lower.y, path.p[1].z = 0.;
-//   path.p[2].x = upper.x, path.p[2].y = upper.y, path.p[2].z = 0.;
-//   path.p[3].x = lower.x, path.p[3].y = upper.y, path.p[3].z = 0.;
-//   DrawingKit_var dk = traversal->kit();
-//   Pencil_var pen = dk->getPencil(style);
-//   pen->drawPath(path);
+//   drawing->foreground(background);
+//   drawing->drawRect(lower, upper);
+//   drawing->restoreState();
+//   MonoGraphic::traverse(traversal);
 // }
 
-void DesktopImpl::init(Stage_ptr s)
+Warsaw::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw::Vertex &p, const Warsaw::Vertex &s, Warsaw::Stage::Index l)
 {
-  stage = Stage::_duplicate(s);
-  ControllerImpl::body(stage);
+  return stage->insert(g, p, s, l);
 }

@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>
@@ -37,6 +38,9 @@
 #include "Tool/TextInput.hh"
 #include "Tool/Terminal.hh"
 #include "Berlin/DebugGraphic.hh"
+
+using namespace Prague;
+using namespace Warsaw;
 
 class RGBDecorator : public MonoGraphic
 {
@@ -98,185 +102,181 @@ private:
   Coord alpha;
 };
 
-ToolKitImpl::ToolKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-ToolKitImpl::~ToolKitImpl()
-{
-  for (vector<PortableServer::Servant>::iterator i = graphics.begin(); i != graphics.end(); ++i)
-    deactivate(*i);
-}
-
+ToolKitImpl::ToolKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p) {}
+ToolKitImpl::~ToolKitImpl() { Trace trace("ToolKitImpl::~ToolKitImpl");}
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {
-  DebugGraphic *debug = activate(new DebugGraphic(s));
-  graphics.push_back(debug);
+  DebugGraphic *debug = new DebugGraphic(cout, s);
+  activate(debug);
   debug->body(g);
   return debug->_this();
 };
 
 Graphic_ptr ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
-  RGBDecorator *decorator = activate(new RGBDecorator(r, g, b));
-  graphics.push_back(decorator);
+  RGBDecorator *decorator = new RGBDecorator(r, g, b);
+  activate(decorator);
   decorator->body(gg);
   return decorator->_this();
 };
 
 Graphic_ptr ToolKitImpl::alpha(Graphic_ptr g, Coord a)
 {
-  AlphaDecorator *decorator = activate(new AlphaDecorator(a));
-  graphics.push_back(decorator);
+  AlphaDecorator *decorator = new AlphaDecorator(a);
+  activate(decorator);
   decorator->body(g);
   return decorator->_this();
 };
 
 Graphic_ptr ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
-  LightingDecorator *decorator = activate(new LightingDecorator(r, g, b));
-  graphics.push_back(decorator);
+  LightingDecorator *decorator = new LightingDecorator(r, g, b);
+  activate(decorator);
   decorator->body(gg);
   return decorator->_this();
 };
 
-Graphic_ptr ToolKitImpl::frame(Graphic_ptr g, Coord thickness, const ToolKit::FrameSpec &spec, CORBA::Boolean fill)
+Graphic_ptr ToolKitImpl::frame(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
 {
   Frame::Renderer *renderer = 0;
   switch (spec._d())
     {
-     case ToolKit::none: renderer = new InvisibleFrame(thickness, fill); break;
-     case ToolKit::inset: renderer = new Bevel(thickness, Bevel::inset, spec.brightness(), fill); break;
-     case ToolKit::outset: renderer = new Bevel(thickness, Bevel::outset, spec.brightness(), fill); break;
-     case ToolKit::convex: renderer = new Bevel(thickness, Bevel::convex, spec.brightness(), fill); break;
-     case ToolKit::concav: renderer = new Bevel(thickness, Bevel::concav, spec.brightness(), fill); break;
-     case ToolKit::colored: renderer = new ColoredFrame(thickness, spec.foreground(), fill); break;
+     case Warsaw::ToolKit::none: renderer = new InvisibleFrame(thickness, fill); break;
+     case Warsaw::ToolKit::inset: renderer = new Bevel(thickness, Bevel::inset, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::outset: renderer = new Bevel(thickness, Bevel::outset, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::convex: renderer = new Bevel(thickness, Bevel::convex, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::concav: renderer = new Bevel(thickness, Bevel::concav, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::colored: renderer = new ColoredFrame(thickness, spec.foreground(), fill); break;
     }
-  Frame *f = activate(new Frame(thickness, renderer));
-  graphics.push_back(f);
+  Frame *f = new Frame(thickness, renderer);
+  activate(f);
   f->body(g);
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const ToolKit::FrameSpec &s1,
-				 const ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Warsaw::Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
+				 const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
     {
-     case ToolKit::none: renderer1 = new InvisibleFrame(thickness, fill); break;
-     case ToolKit::inset: renderer1 = new Bevel(thickness, Bevel::inset, s1.brightness(), fill); break;
-     case ToolKit::outset: renderer1 = new Bevel(thickness, Bevel::outset, s1.brightness(), fill); break;
-     case ToolKit::convex: renderer1 = new Bevel(thickness, Bevel::convex, s1.brightness(), fill); break;
-     case ToolKit::concav: renderer1 = new Bevel(thickness, Bevel::concav, s1.brightness(), fill); break;
-     case ToolKit::colored: renderer1 = new ColoredFrame(thickness, s1.foreground(), fill); break;
+     case Warsaw::ToolKit::none: renderer1 = new InvisibleFrame(thickness, fill); break;
+     case Warsaw::ToolKit::inset: renderer1 = new Bevel(thickness, Bevel::inset, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::outset: renderer1 = new Bevel(thickness, Bevel::outset, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::convex: renderer1 = new Bevel(thickness, Bevel::convex, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::concav: renderer1 = new Bevel(thickness, Bevel::concav, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::colored: renderer1 = new ColoredFrame(thickness, s1.foreground(), fill); break;
     }
   Frame::Renderer *renderer2 = 0;
   switch (s2._d())
     {
-     case ToolKit::none: renderer2 = new InvisibleFrame(thickness, fill); break;
-     case ToolKit::inset: renderer2 = new Bevel(thickness, Bevel::inset, s2.brightness(), fill); break;
-     case ToolKit::outset: renderer2 = new Bevel(thickness, Bevel::outset, s2.brightness(), fill); break;
-     case ToolKit::convex: renderer2 = new Bevel(thickness, Bevel::convex, s2.brightness(), fill); break;
-     case ToolKit::concav: renderer2 = new Bevel(thickness, Bevel::concav, s2.brightness(), fill); break;
-     case ToolKit::colored: renderer2 = new ColoredFrame(thickness, s2.foreground(), fill); break;
+     case Warsaw::ToolKit::none: renderer2 = new InvisibleFrame(thickness, fill); break;
+     case Warsaw::ToolKit::inset: renderer2 = new Bevel(thickness, Bevel::inset, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::outset: renderer2 = new Bevel(thickness, Bevel::outset, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::convex: renderer2 = new Bevel(thickness, Bevel::convex, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::concav: renderer2 = new Bevel(thickness, Bevel::concav, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::colored: renderer2 = new ColoredFrame(thickness, s2.foreground(), fill); break;
     }
-  DynamicFrame *f = activate(new DynamicFrame(thickness, mask, renderer1, renderer2));
+  DynamicFrame *f = new DynamicFrame(thickness, mask, renderer1, renderer2);
+  activate(f);
   f->attach(telltale);
-  graphics.push_back(f);
   f->body(g);
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::framedTriangle(Graphic_ptr g, Coord thickness, const ToolKit::FrameSpec &spec, CORBA::Boolean fill, ToolKit::Direction d)
+Graphic_ptr ToolKitImpl::framedTriangle(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill, Warsaw::ToolKit::Direction d)
 {
   Frame::Renderer *renderer = 0;
   switch (spec._d())
     {
-     case ToolKit::none: renderer = new InvisibleTriangle(thickness, fill, d); break;
-     case ToolKit::inset: renderer = new BeveledTriangle(thickness, Bevel::inset, spec.brightness(), fill, d); break;
-     case ToolKit::outset: renderer = new BeveledTriangle(thickness, Bevel::outset, spec.brightness(), fill, d); break;
-     case ToolKit::convex: renderer = new BeveledTriangle(thickness, Bevel::convex, spec.brightness(), fill, d); break;
-     case ToolKit::concav: renderer = new BeveledTriangle(thickness, Bevel::concav, spec.brightness(), fill, d); break;
-     case ToolKit::colored: renderer = new ColoredTriangle(thickness, spec.foreground(), fill, d); break;
+     case Warsaw::ToolKit::none: renderer = new InvisibleTriangle(thickness, fill, d); break;
+     case Warsaw::ToolKit::inset: renderer = new BeveledTriangle(thickness, Bevel::inset, spec.brightness(), fill, d); break;
+     case Warsaw::ToolKit::outset: renderer = new BeveledTriangle(thickness, Bevel::outset, spec.brightness(), fill, d); break;
+     case Warsaw::ToolKit::convex: renderer = new BeveledTriangle(thickness, Bevel::convex, spec.brightness(), fill, d); break;
+     case Warsaw::ToolKit::concav: renderer = new BeveledTriangle(thickness, Bevel::concav, spec.brightness(), fill, d); break;
+     case Warsaw::ToolKit::colored: renderer = new ColoredTriangle(thickness, spec.foreground(), fill, d); break;
     }
-  Frame *f = activate(new Frame(thickness, renderer));
-  graphics.push_back(f);
+  Frame *f = new Frame(thickness, renderer);
+  activate(f);
   f->body(g);
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const ToolKit::FrameSpec &s1,
-					 const ToolKit::FrameSpec &s2, CORBA::Boolean fill, ToolKit::Direction d, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
+					 const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Warsaw::ToolKit::Direction d, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
     {
-     case ToolKit::none: renderer1 = new InvisibleTriangle(thickness, fill, d); break;
-     case ToolKit::inset: renderer1 = new BeveledTriangle(thickness, Bevel::inset, s1.brightness(), fill, d); break;
-     case ToolKit::outset: renderer1 = new BeveledTriangle(thickness, Bevel::outset, s1.brightness(), fill, d); break;
-     case ToolKit::convex: renderer1 = new BeveledTriangle(thickness, Bevel::convex, s1.brightness(), fill, d); break;
-     case ToolKit::concav: renderer1 = new BeveledTriangle(thickness, Bevel::concav, s1.brightness(), fill, d); break;
-     case ToolKit::colored: renderer1 = new ColoredTriangle(thickness, s1.foreground(), fill, d); break;
+     case Warsaw::ToolKit::none: renderer1 = new InvisibleTriangle(thickness, fill, d); break;
+     case Warsaw::ToolKit::inset: renderer1 = new BeveledTriangle(thickness, Bevel::inset, s1.brightness(), fill, d); break;
+     case Warsaw::ToolKit::outset: renderer1 = new BeveledTriangle(thickness, Bevel::outset, s1.brightness(), fill, d); break;
+     case Warsaw::ToolKit::convex: renderer1 = new BeveledTriangle(thickness, Bevel::convex, s1.brightness(), fill, d); break;
+     case Warsaw::ToolKit::concav: renderer1 = new BeveledTriangle(thickness, Bevel::concav, s1.brightness(), fill, d); break;
+     case Warsaw::ToolKit::colored: renderer1 = new ColoredTriangle(thickness, s1.foreground(), fill, d); break;
     }
   Frame::Renderer *renderer2 = 0;
   switch (s2._d())
     {
-     case ToolKit::none: renderer2 = new InvisibleTriangle(thickness, fill, d); break;
-     case ToolKit::inset: renderer2 = new BeveledTriangle(thickness, Bevel::inset, s2.brightness(), fill, d); break;
-     case ToolKit::outset: renderer2 = new BeveledTriangle(thickness, Bevel::outset, s2.brightness(), fill, d); break;
-     case ToolKit::convex: renderer2 = new BeveledTriangle(thickness, Bevel::convex, s2.brightness(), fill, d); break;
-     case ToolKit::concav: renderer2 = new BeveledTriangle(thickness, Bevel::concav, s2.brightness(), fill, d); break;
-     case ToolKit::colored: renderer2 = new ColoredTriangle(thickness, s2.foreground(), fill, d); break;
+     case Warsaw::ToolKit::none: renderer2 = new InvisibleTriangle(thickness, fill, d); break;
+     case Warsaw::ToolKit::inset: renderer2 = new BeveledTriangle(thickness, Bevel::inset, s2.brightness(), fill, d); break;
+     case Warsaw::ToolKit::outset: renderer2 = new BeveledTriangle(thickness, Bevel::outset, s2.brightness(), fill, d); break;
+     case Warsaw::ToolKit::convex: renderer2 = new BeveledTriangle(thickness, Bevel::convex, s2.brightness(), fill, d); break;
+     case Warsaw::ToolKit::concav: renderer2 = new BeveledTriangle(thickness, Bevel::concav, s2.brightness(), fill, d); break;
+     case Warsaw::ToolKit::colored: renderer2 = new ColoredTriangle(thickness, s2.foreground(), fill, d); break;
     }
-  DynamicFrame *f = activate(new DynamicFrame(thickness, mask, renderer1, renderer2));
+  DynamicFrame *f = new DynamicFrame(thickness, mask, renderer1, renderer2);
+  activate(f);
   f->attach(telltale);
-  graphics.push_back(f);
   f->body(g);
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::framedDiamond(Graphic_ptr g, Coord thickness, const ToolKit::FrameSpec &spec, CORBA::Boolean fill)
+Graphic_ptr ToolKitImpl::framedDiamond(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
 {
   Frame::Renderer *renderer = 0;
   switch (spec._d())
     {
-     case ToolKit::none: renderer = new InvisibleDiamond(thickness, fill); break;
-     case ToolKit::inset: renderer = new BeveledDiamond(thickness, Bevel::inset, spec.brightness(), fill); break;
-     case ToolKit::outset: renderer = new BeveledDiamond(thickness, Bevel::outset, spec.brightness(), fill); break;
-     case ToolKit::convex: renderer = new BeveledDiamond(thickness, Bevel::convex, spec.brightness(), fill); break;
-     case ToolKit::concav: renderer = new BeveledDiamond(thickness, Bevel::concav, spec.brightness(), fill); break;
-     case ToolKit::colored: renderer = new ColoredDiamond(thickness, spec.foreground(), fill); break;
+     case Warsaw::ToolKit::none: renderer = new InvisibleDiamond(thickness, fill); break;
+     case Warsaw::ToolKit::inset: renderer = new BeveledDiamond(thickness, Bevel::inset, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::outset: renderer = new BeveledDiamond(thickness, Bevel::outset, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::convex: renderer = new BeveledDiamond(thickness, Bevel::convex, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::concav: renderer = new BeveledDiamond(thickness, Bevel::concav, spec.brightness(), fill); break;
+     case Warsaw::ToolKit::colored: renderer = new ColoredDiamond(thickness, spec.foreground(), fill); break;
     }
-  Frame *f = activate(new Frame(thickness, renderer));
-  graphics.push_back(f);
+  Frame *f = new Frame(thickness, renderer);
+  activate(f);
   f->body(g);
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const ToolKit::FrameSpec &s1,
-					const ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
+					const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
     {
-     case ToolKit::none: renderer1 = new InvisibleDiamond(thickness, fill); break;
-     case ToolKit::inset: renderer1 = new BeveledDiamond(thickness, Bevel::inset, s1.brightness(), fill); break;
-     case ToolKit::outset: renderer1 = new BeveledDiamond(thickness, Bevel::outset, s1.brightness(), fill); break;
-     case ToolKit::convex: renderer1 = new BeveledDiamond(thickness, Bevel::convex, s1.brightness(), fill); break;
-     case ToolKit::concav: renderer1 = new BeveledDiamond(thickness, Bevel::concav, s1.brightness(), fill); break;
-     case ToolKit::colored: renderer1 = new ColoredDiamond(thickness, s1.foreground(), fill); break;
+     case Warsaw::ToolKit::none: renderer1 = new InvisibleDiamond(thickness, fill); break;
+     case Warsaw::ToolKit::inset: renderer1 = new BeveledDiamond(thickness, Bevel::inset, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::outset: renderer1 = new BeveledDiamond(thickness, Bevel::outset, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::convex: renderer1 = new BeveledDiamond(thickness, Bevel::convex, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::concav: renderer1 = new BeveledDiamond(thickness, Bevel::concav, s1.brightness(), fill); break;
+     case Warsaw::ToolKit::colored: renderer1 = new ColoredDiamond(thickness, s1.foreground(), fill); break;
     }
   Frame::Renderer *renderer2 = 0;
   switch (s2._d())
     {
-     case ToolKit::none: renderer2 = new InvisibleDiamond(thickness, fill); break;
-     case ToolKit::inset: renderer2 = new BeveledDiamond(thickness, Bevel::inset, s2.brightness(), fill); break;
-     case ToolKit::outset: renderer2 = new BeveledDiamond(thickness, Bevel::outset, s2.brightness(), fill); break;
-     case ToolKit::convex: renderer2 = new BeveledDiamond(thickness, Bevel::convex, s2.brightness(), fill); break;
-     case ToolKit::concav: renderer2 = new BeveledDiamond(thickness, Bevel::concav, s2.brightness(), fill); break;
-     case ToolKit::colored: renderer2 = new ColoredDiamond(thickness, s2.foreground(), fill); break;
+     case Warsaw::ToolKit::none: renderer2 = new InvisibleDiamond(thickness, fill); break;
+     case Warsaw::ToolKit::inset: renderer2 = new BeveledDiamond(thickness, Bevel::inset, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::outset: renderer2 = new BeveledDiamond(thickness, Bevel::outset, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::convex: renderer2 = new BeveledDiamond(thickness, Bevel::convex, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::concav: renderer2 = new BeveledDiamond(thickness, Bevel::concav, s2.brightness(), fill); break;
+     case Warsaw::ToolKit::colored: renderer2 = new ColoredDiamond(thickness, s2.foreground(), fill); break;
     }
-  DynamicFrame *f = activate(new DynamicFrame(thickness, mask, renderer1, renderer2));
+  DynamicFrame *f = new DynamicFrame(thickness, mask, renderer1, renderer2);
+  activate(f);
   f->attach(telltale);
-  graphics.push_back(f);
   f->body(g);
   return f->_this();
 }
@@ -302,64 +302,64 @@ Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale
 
 Controller_ptr ToolKitImpl::group(Graphic_ptr g)
 {
-  ControllerImpl *parent = activate(new ControllerImpl(true));
+  ControllerImpl *parent = new ControllerImpl(true);
+  activate(parent);
   parent->body(g);
-  graphics.push_back(parent);
   return parent->_this();
 }
 
 Trigger_ptr ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
 {
-  TriggerImpl *trigger = activate(new TriggerImpl());
+  TriggerImpl *trigger = new TriggerImpl();
+  activate(trigger);
   trigger->action(c);
   trigger->body(g);
-  graphics.push_back(trigger);
   return trigger->_this();
 }
 
 Controller_ptr ToolKitImpl::toggle(Graphic_ptr g)
 {
-  Toggle *t = activate(new Toggle);
+  Toggle *t = new Toggle;
+  activate(t);
   t->body(g);
-  graphics.push_back(t);
   return t->_this();
 }
 
 Controller_ptr ToolKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 {
-  Dragger *dragger = activate(new Dragger(command));
+  Dragger *dragger = new Dragger(command);
+  activate(dragger);
   dragger->body(g);
-  graphics.push_back(dragger);
   return dragger->_this();
 }
 
 Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
 {
-  Stepper *stepper = activate(new Stepper);
+  Stepper *stepper = new Stepper;
+  activate(stepper);
   stepper->body(g);
   stepper->action(command);
-  graphics.push_back(stepper);
   return stepper->_this();
 }
 
 Controller_ptr ToolKitImpl::textInput(Graphic_ptr g, TextBuffer_ptr buffer)
 {
-  TextInput *input = activate(new TextInput(buffer));
+  TextInput *input = new TextInput(buffer);
+  activate(input);
   input->body(g);
-  graphics.push_back(input);
   return input->_this();
 }
 
 Controller_ptr ToolKitImpl::terminal(Graphic_ptr g, StreamBuffer_ptr buffer)
 {
-  Terminal *input = activate(new Terminal(buffer));
+  Terminal *input = new Terminal(buffer);
+  activate(input);
   input->body(g);
-  graphics.push_back(input);
   return input->_this();
 }
 
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "ToolKitImpl"};
-  return new KitFactoryImpl<ToolKitImpl> (ToolKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<ToolKitImpl> ("IDL:Warsaw/ToolKit:1.0", properties, 1);
 }

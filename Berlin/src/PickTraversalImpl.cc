@@ -25,6 +25,7 @@
 #include <Warsaw/IO.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Input::Position &p, Focus_ptr f)
   : TraversalImpl(g, r, t),

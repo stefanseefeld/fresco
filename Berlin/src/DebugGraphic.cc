@@ -29,22 +29,22 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Math.hh"
-#include <iostream>
 #include <iomanip>
 
 using namespace Prague;
+using namespace Warsaw;
 
-DebugGraphic::DebugGraphic(const string &msg, unsigned int f) : message(msg), flags(f) {}
+DebugGraphic::DebugGraphic(ostream &oss, const string &msg, unsigned int f) : os(oss), message(msg), flags(f) {}
 DebugGraphic::~DebugGraphic() {}
 
-void DebugGraphic::request(Requisition &r)
+void DebugGraphic::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("DebugGraphic::request");
   MonoGraphic::request(r);
   if (flags & requests)
     {
       heading(" request\t");
-      cout << r << '\n';
+      os << r << '\n';
     }
 }
 
@@ -64,10 +64,7 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
       Region_var r = traversal->allocation();
       Transform_var t = traversal->transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
-//       Transform::Matrix matrix;
-//       t->storeMatrix(matrix);  
-//       cout << "trafo: " << endl << matrix << endl;
-      cout << "region: " << endl << Region_var(region->_this()) << endl;
+      os << "region: " << endl << Region_var(region->_this()) << endl;
     }
   MonoGraphic::traverse(traversal);
 };
@@ -81,7 +78,7 @@ void DebugGraphic::pick(PickTraversal_ptr traversal)
       Region_var r = traversal->allocation();
       Transform_var t = traversal->transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
-      cout << Region_var(region->_this()) << endl;
+      os << Region_var(region->_this()) << endl;
     }
   MonoGraphic::traverse(traversal);
 }
@@ -92,12 +89,12 @@ void DebugGraphic::allocate(Tag tag, const Allocation::Info &info)
   Region_var r = info.allocation;
   Transform_var t = info.transformation;
   Impl_var<RegionImpl> region(new RegionImpl(r, t));
-  cout << Region_var(region->_this()) << endl;
+  os << Region_var(region->_this()) << endl;
   MonoGraphic::allocate(tag, info);
 }
 
 void DebugGraphic::heading(const char *s)
 {
   Graphic_var g = body();
-  cout << message << " (" << g << ')' << s;
+  os << message << " (" << g << ')' << s;
 }

@@ -28,6 +28,7 @@
 #include <algorithm>
 
 using namespace Prague;
+using namespace Warsaw;
 
 TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *c)
   : Composition(dk, c),
@@ -37,29 +38,11 @@ TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Co
   Trace trace("TextViewer::TextViewer");
 }
 
-// FIXME: move all this to the constructor when we go to POA
-void TextViewer::init()
-{
-  MutexGuard guard(childMutex);
-//   Trace trace("TextViewer::init");
-  Unistring_var us = buffer->value();
-  CORBA::ULong len = us->length();
-  for (unsigned long i = 0; i < len; i++)
-    {
-      Graphic_var child = kit->glyph(us[i]);
-      Edge edge;
-      edge.parent = Graphic::_duplicate(child);
-      edge.id = tag();
-      children.insert(children.begin() + i, edge);
-      child->addParent(Graphic_var(_this()), edge.id);
-    }
-}
-
 TextViewer::~TextViewer() {}
 
 void TextViewer::update(const CORBA::Any &a) 
 {
-//   Trace trace1("TextViewer::update");
+  Trace trace1("TextViewer::update");
   TextBuffer::Change *ch;  
   if (a >>= ch)
     {
@@ -67,7 +50,7 @@ void TextViewer::update(const CORBA::Any &a)
 	{
 	case TextBuffer::insert:
 	  {
-//             Trace trace2("TextViewer::update - insert");
+	    Trace trace2("TextViewer::update - insert");
 	    MutexGuard guard(childMutex);
 	    Unistring_var us = buffer->getChars(ch->pos, (CORBA::ULong)ch->len);
 	    CORBA::ULong len = us->length();
@@ -75,28 +58,28 @@ void TextViewer::update(const CORBA::Any &a)
 	      {
 		Graphic_var child = kit->glyph(us[i]);
 		Edge edge;
-		edge.parent = Graphic::_duplicate(child);
-		edge.id = tag();
+		edge.peer = Warsaw::Graphic::_duplicate(child);
+		edge.localId = uniqueChildId();
+		edge.peerId = child->addParent(Graphic_var(_this()), edge.localId);
 		children.insert(children.begin() + ch->pos + i, edge);
-		child->addParent(Graphic_var(_this()), edge.id);
 	      }
 	  }
 	  break;
 	  
 	case TextBuffer::remove:
 	  {
-//             Trace trace2("TextViewer::update - remove");
+	    Trace trace2("TextViewer::update - remove");
 	    MutexGuard guard(childMutex);
 	    unsigned long start = min(ch->pos, static_cast<CORBA::ULong>(children.size()));
 	    unsigned long end = min(ch->pos + ch->len, static_cast<CORBA::ULong>(children.size()));
 	    if (ch->len < 0) swap(start, end);
-	    for (clist_t::iterator i = children.begin() + start; i != children.begin() + end; i++)
-	      (*i).parent->removeParent(Graphic_var(_this()), (*i).id);
+	    for (glist_t::iterator i = children.begin() + start; i != children.begin() + end; i++)
+	      (*i).peer->removeParent((*i).peerId);
 	    children.erase(children.begin() + start, children.begin() + end);
-	  }	
+	  }
 	  break;
 	case TextBuffer::cursor:
-//           Trace trace2("TextViewer::update - cursor");
+	  Trace trace2("TextViewer::update - cursor");
 	  // we'll do some cursor-ish stuff someday
 	  break;
 	}
@@ -104,3 +87,22 @@ void TextViewer::update(const CORBA::Any &a)
 //   needRedraw();
   needResize();
 }
+
+void TextViewer::activateComposite()
+{
+  Trace trace("TextViewer::activateComposite");
+  Composition::activateComposite();
+  MutexGuard guard(childMutex);
+  Unistring_var us = buffer->value();
+  CORBA::ULong len = us->length();
+  for (unsigned long i = 0; i < len; i++)
+    {
+      Graphic_var child = kit->glyph(us[i]);
+      Edge edge;
+      edge.peer = Warsaw::Graphic::_duplicate(child);
+      edge.localId = uniqueChildId();
+      edge.peerId = child->addParent(Graphic_var(_this()), edge.localId);
+      children.insert(children.begin() + i, edge);
+    }
+}
+

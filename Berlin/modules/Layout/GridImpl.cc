@@ -24,12 +24,14 @@
 #include <Berlin/ImplVar.hh>
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/IO.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/Math.hh>
 #include "Layout/GridImpl.hh"
 #include "Layout/LayoutManager.hh"
+
+using namespace Warsaw;
 
 ostream &operator << (ostream &os, const GridImpl::Span &span)
 { return os << '(' << span.lower << ',' << span.upper << '@' << span.align << ')';}
@@ -43,7 +45,7 @@ static void setSpan(GridImpl::Span &s, Coord origin, Coord length, Alignment ali
   s.align = align;
 }
 
-static inline void spansToRegion(GridImpl::Span &x_span, GridImpl::Span &y_span, Lease<RegionImpl> &r)
+static inline void spansToRegion(GridImpl::Span &x_span, GridImpl::Span &y_span, RegionImpl *r)
 {
   r->valid = true;
   r->lower.x = x_span.lower;
@@ -239,7 +241,7 @@ void LayoutTileAllocate::nextSpan(const Graphic::Requirement &r, GridImpl::Span 
   ++i;
 }
 
-GridImpl::GridImpl(const Grid::Index &upper)
+GridImpl::GridImpl(const Warsaw::Grid::Index &upper)
 {
   dimensions[xaxis].init(upper.col, upper.row);
   dimensions[yaxis].init(upper.row, upper.col);
@@ -281,7 +283,7 @@ void GridImpl::request(Requisition &r)
 
 void GridImpl::traverse(Traversal_ptr traversal)
 {
-  Grid::Range range;
+  Warsaw::Grid::Range range;
   range.lower.col = 0;
   range.upper.col = dimensions[xaxis].size();
   range.lower.row = 0;
@@ -296,18 +298,18 @@ void GridImpl::needResize()
   GraphicImpl::needResize();
 }
 
-void GridImpl::replace(Graphic_ptr g, const Grid::Index &i)
+void GridImpl::replace(Graphic_ptr g, const Warsaw::Grid::Index &i)
 {
   Graphic_var old = dimensions[xaxis].children[i.col][i.row];
-  if (!CORBA::is_nil(old)) old->removeParent(Graphic_var(_this()), index2tag(i));
+  if (!CORBA::is_nil(old)) old->removeParent(index2tag(i));
   dimensions[xaxis].children[i.col][i.row] = g;
-  dimensions[yaxis].children[i.row][i.col] = Graphic::_duplicate(g);
+  dimensions[yaxis].children[i.row][i.col] = Warsaw::Graphic::_duplicate(g);
   g->addParent(Graphic_var(_this()), index2tag(i));
 }
 
-Grid::Index GridImpl::find(Traversal_ptr traversal)
+Warsaw::Grid::Index GridImpl::find(Traversal_ptr traversal)
 {
-  Grid::Range range;
+  Warsaw::Grid::Range range;
   range.lower.col = 0;
   range.upper.col = dimensions[xaxis].size();
   range.lower.row = 0;
@@ -316,21 +318,19 @@ Grid::Index GridImpl::find(Traversal_ptr traversal)
   return findRange(traversal, range);
 }
 
-void GridImpl::allocateCell(Region_ptr given, const Grid::Index &i, Region_ptr a)
+void GridImpl::allocateCell(Region_ptr given, const Warsaw::Grid::Index &i, Region_ptr a)
 {
   Span *xspans = fullAllocate(xaxis, given);
   Span *yspans = fullAllocate(yaxis, given);
 
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);  
-
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   spansToRegion(xspans[i.col], yspans[i.row], region);
   a->copy(Region_var(region->_this()));
   delete [] xspans;
   delete [] yspans;
 }
 
-void GridImpl::requestRange(Graphic::Requisition &r, const Grid::Range &a)
+void GridImpl::requestRange(Warsaw::Graphic::Requisition &r, const Warsaw::Grid::Range &a)
 {
   cacheRequest();
   
@@ -338,7 +338,7 @@ void GridImpl::requestRange(Graphic::Requisition &r, const Grid::Range &a)
   partialRequest(yaxis, a.lower.row, a.upper.row, r.y);
 }
 
-void GridImpl::traverseRange(Traversal_ptr traversal, const Grid::Range &a)
+void GridImpl::traverseRange(Traversal_ptr traversal, const Warsaw::Grid::Range &a)
 {
   Region_var given = traversal->allocation();
   if (!CORBA::is_nil(given))
@@ -350,7 +350,7 @@ void GridImpl::traverseRange(Traversal_ptr traversal, const Grid::Range &a)
     traverseWithoutAllocation(traversal, a);
 }
 
-Grid::Index GridImpl::findRange(Traversal_ptr traversal, const Grid::Range &a)
+Warsaw::Grid::Index GridImpl::findRange(Traversal_ptr traversal, const Warsaw::Grid::Range &a)
 {
   Region_var given = traversal->allocation();
   Span *xspans = fullAllocate(xaxis, given);
@@ -365,7 +365,7 @@ Grid::Index GridImpl::findRange(Traversal_ptr traversal, const Grid::Range &a)
     if (x <= xspans[c].upper) break;
   for (r = a.lower.row; r < (a.upper.row - 1); r++)
     if (y <= yspans[r].upper) break;
-  Grid::Index index;
+  Warsaw::Grid::Index index;
   index.col = c;
   index.row = r;
   delete [] xspans;
@@ -373,7 +373,7 @@ Grid::Index GridImpl::findRange(Traversal_ptr traversal, const Grid::Range &a)
   return index;
 }
 
-void GridImpl::rangePosition(Region_ptr given, const Grid::Range &a, Vertex &pos)
+void GridImpl::rangePosition(Region_ptr given, const Warsaw::Grid::Range &a, Vertex &pos)
 {
   Span *xspans = fullAllocate(xaxis, given);
   Span *yspans = fullAllocate(yaxis, given);
@@ -384,24 +384,22 @@ void GridImpl::rangePosition(Region_ptr given, const Grid::Range &a, Vertex &pos
   delete [] yspans;
 }
 
-Grid::Index GridImpl::upper()
+Warsaw::Grid::Index GridImpl::upper()
 {
-  Grid::Index upper;
+  Warsaw::Grid::Index upper;
   upper.col = dimensions[xaxis].size();
   upper.row = dimensions[yaxis].size();
   return upper;
 }
 
-ostream &operator << (ostream &os, const Grid::Index &i) { return os << i.col << ' ' << i.row;}
+ostream &operator << (ostream &os, const Warsaw::Grid::Index &i) { return os << i.col << ' ' << i.row;}
 
 void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
   allocateCell(info.allocation, tag2index(tag), info.allocation);
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);  
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->copy(info.allocation);
   region->normalize(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(region->_this()));
@@ -418,7 +416,7 @@ void GridImpl::cacheRequest()
     }
 }
 
-void GridImpl::partialRequest(Axis axis, long begin, long end, Graphic::Requirement &r)
+void GridImpl::partialRequest(Axis axis, long begin, long end, Warsaw::Graphic::Requirement &r)
 {
   GridDimension &d = dimensions[axis];
   LayoutTileRequest tile;
@@ -437,17 +435,17 @@ void GridImpl::fullRequest(Axis axis, Axis direction)
       for (vector<Graphic_var>::iterator j = d.children[i].begin(); j != d.children[i].end(); j++)
 	if (!CORBA::is_nil(*j))
 	  {
-	    Graphic::Requisition r;
+	    Warsaw::Graphic::Requisition r;
 	    GraphicImpl::initRequisition(r);
 	    GraphicImpl::defaultRequisition(r);
 	    (*j)->request(r);
 	    align.accumulate(axis == xaxis ? r.x : r.y);
 	  }
-      Graphic::Requirement &r = d.requirements[i];
+      Warsaw::Graphic::Requirement &r = d.requirements[i];
       align.requirement(r);
       tile.accumulate(r);
     }
-  Graphic::Requirement &r = *GraphicImpl::requirement(requisition, axis);
+  Warsaw::Graphic::Requirement &r = *GraphicImpl::requirement(requisition, axis);
   tile.requirement(r);
 }
 
@@ -461,19 +459,17 @@ GridImpl::Span *GridImpl::fullAllocate(Axis axis, Region_ptr given)
   return spans;
 }
 
-void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const Grid::Range &range)
+void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const Warsaw::Grid::Range &range)
 {
   Span *xspans = fullAllocate(xaxis, given);
   Span *yspans = fullAllocate(yaxis, given);
   Coord dx = xspans[0].lower - xspans[range.lower.col].lower;
   Coord dy = yspans[0].lower - yspans[range.lower.row].lower;
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);  
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   GridDimension &d = dimensions[yaxis];
-  Grid::Index i;
+  Warsaw::Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
       {
@@ -487,16 +483,16 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
   delete [] yspans;
 }
 
-void GridImpl::traverseWithoutAllocation(Traversal_ptr t, const Grid::Range &range)
+void GridImpl::traverseWithoutAllocation(Traversal_ptr t, const Warsaw::Grid::Range &range)
 {
   GridDimension &d = dimensions[yaxis];
-  Grid::Index i;
+  Warsaw::Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
       t->traverseChild(d.children[i.row][i.col], index2tag(i), Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 }
 
-SubGridImpl::SubGridImpl(Grid_ptr grid, const Grid::Range &r)
+SubGridImpl::SubGridImpl(Grid_ptr grid, const Warsaw::Grid::Range &r)
  : child(grid), range(r) {}
 
 SubGridImpl::~SubGridImpl() {}

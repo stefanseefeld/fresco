@@ -42,20 +42,20 @@ class LibArtUnifont : public LibArtFont
 public:
   LibArtUnifont(Console::Drawable *drawable);
   virtual ~LibArtUnifont();
-  virtual unsigned long size();
-  virtual void size(unsigned long) {}
-  virtual unsigned long weight();
-  virtual void weight(unsigned long) {}
-  virtual Unistring *family();
-  virtual Unistring *subfamily();
-  virtual Unistring *fullname();
-  virtual Unistring *style();
-  virtual DrawingKit::FontMetrics metrics();
-  virtual DrawingKit::GlyphMetrics metrics(Unichar &);
-  virtual void allocateChar(const Unichar ch, Graphic::Requisition &);
-  virtual void getPixBuf(const Unichar ch, ArtPixBuf *&);
+  virtual CORBA::ULong size();
+  virtual void size(CORBA::ULong) {}
+  virtual CORBA::ULong weight();
+  virtual void weight(CORBA::ULong) {}
+  virtual Warsaw::Unistring *family();
+  virtual Warsaw::Unistring *subfamily();
+  virtual Warsaw::Unistring *fullname();
+  virtual Warsaw::Unistring *style();
+  virtual Warsaw::DrawingKit::FontMetrics metrics();
+  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &);
+  virtual void allocateChar(const Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  virtual void getPixBuf(const Warsaw::Unichar, ArtPixBuf *&);
 protected:
-  void glyph2pixels(const Unichar ch, unsigned char *pix);
+  void glyph2pixels(const Warsaw::Unichar, unsigned char *);
   double xres, yres;  
 
   unsigned char slab[16*16];

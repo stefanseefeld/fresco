@@ -28,24 +28,25 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class BoundedRangeImpl : public virtual POA_BoundedRange, public SubjectImpl
+class BoundedRangeImpl : public virtual POA_Warsaw::BoundedRange,
+			 public SubjectImpl
 {
  public:
-  BoundedRangeImpl(Coord, Coord, Coord, Coord, Coord, Coord);
+  BoundedRangeImpl(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   virtual ~BoundedRangeImpl();
-  virtual BoundedRange::Settings getSettings();
-  virtual Coord lower();
-  virtual void lower(Coord);
-  virtual Coord upper();
-  virtual void upper(Coord);
-  virtual Coord step();
-  virtual void step(Coord);
-  virtual Coord page();
-  virtual void page(Coord);
-  virtual Coord lvalue();
-  virtual void lvalue(Coord);
-  virtual Coord uvalue();
-  virtual void uvalue(Coord);
+  virtual Warsaw::BoundedRange::Settings getSettings();
+  virtual Warsaw::Coord lower();
+  virtual void lower(Warsaw::Coord);
+  virtual Warsaw::Coord upper();
+  virtual void upper(Warsaw::Coord);
+  virtual Warsaw::Coord step();
+  virtual void step(Warsaw::Coord);
+  virtual Warsaw::Coord page();
+  virtual void page(Warsaw::Coord);
+  virtual Warsaw::Coord lvalue();
+  virtual void lvalue(Warsaw::Coord);
+  virtual Warsaw::Coord uvalue();
+  virtual void uvalue(Warsaw::Coord);
 
   virtual void forward();
   virtual void backward();
@@ -53,11 +54,11 @@ class BoundedRangeImpl : public virtual POA_BoundedRange, public SubjectImpl
   virtual void fastbackward();
   virtual void begin();
   virtual void end();
-  virtual void adjust(Coord);
+  virtual void adjust(Warsaw::Coord);
 private:  
-  BoundedRange::Settings settings;
-  Coord s, p;
+  Warsaw::BoundedRange::Settings settings;
+  Warsaw::Coord s, p;
   Prague::Mutex mutex;
 };
 
-#endif /* _BoundedRangeImpl_hh */
+#endif

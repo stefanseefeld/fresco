@@ -24,8 +24,12 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/RefCountBase.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Berlin/ServantBase.hh>
 
-class RefCountBaseImpl : public virtual POA_RefCountBase, public virtual PortableServer::RefCountServantBase
+//.implement distributed reference counting
+class RefCountBaseImpl : public virtual POA_Warsaw::RefCountBase,
+                         public virtual ServantBase
 {
 public:
   RefCountBaseImpl();
@@ -36,4 +40,4 @@ private:
   int refcount;
 };
 
-#endif /* _RefCountBaseImpl_hh */
+#endif

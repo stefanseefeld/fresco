@@ -29,46 +29,49 @@
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/WidgetKit.hh>
+#include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <vector>
 
 namespace Motif
 {
 
-class Choice : public virtual POA_Choice, public ControllerImpl
+class Choice : public virtual POA_Warsaw::Choice,
+	       public ControllerImpl
 {
   class State;
  public:
-  Choice(Selection::Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
+  Choice(Warsaw::Selection::Policy, Warsaw::CommandKit_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
   virtual ~Choice();
-  virtual Selection_ptr state();
-  virtual Tag appendItem(Graphic_ptr) = 0;
-  virtual Tag prependItem(Graphic_ptr) = 0;
-  void removeItem(Tag) = 0;
+  virtual Warsaw::Selection_ptr state();
+  virtual Warsaw::Tag appendItem(Warsaw::Graphic_ptr) = 0;
+  virtual Warsaw::Tag prependItem(Warsaw::Graphic_ptr) = 0;
+  void removeItem(Warsaw::Tag) = 0;
  protected:
-  State *_state;
-  LayoutKit_var layout;
-  ToolKit_var   tools;
-  WidgetKit_var widgets;
+  virtual void activateComposite();
+  State *              _state;
+  Warsaw::LayoutKit_var layout;
+  Warsaw::ToolKit_var   tools;
+  Warsaw::WidgetKit_var widgets;
 };
 
 class ToggleChoice : public Choice
 {
  public:
-  ToggleChoice(Selection::Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
-  virtual Tag appendItem(Graphic_ptr);
-  virtual Tag prependItem(Graphic_ptr);
-  void removeItem(Tag);
+  ToggleChoice(Warsaw::Selection::Policy, Warsaw::CommandKit_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
+  virtual Warsaw::Tag appendItem(Warsaw::Graphic_ptr);
+  virtual Warsaw::Tag prependItem(Warsaw::Graphic_ptr);
+  void removeItem(Warsaw::Tag);
 };
 
 class CheckboxChoice : public Choice
 {
  public:
-  CheckboxChoice(Selection::Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
-  virtual Tag appendItem(Graphic_ptr);
-  virtual Tag prependItem(Graphic_ptr);
-  void removeItem(Tag);
+  CheckboxChoice(Warsaw::Selection::Policy, Warsaw::CommandKit_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
+  virtual Warsaw::Tag appendItem(Warsaw::Graphic_ptr);
+  virtual Warsaw::Tag prependItem(Warsaw::Graphic_ptr);
+  void removeItem(Warsaw::Tag);
 };
 
 };
-#endif /* _Choice_hh */
+#endif

@@ -25,6 +25,8 @@
 
 #include <Warsaw/Unicode.hh>
 
+using namespace Warsaw;
+
 // This is ugly but necessary since Unistring does not
 // know iterators! So I can´t do decent assigment
 // operators :-(

@@ -27,6 +27,7 @@
 #include <algorithm>
 
 using namespace Prague;
+using namespace Warsaw;
 
 static unsigned char pointerImg[256] = 
 

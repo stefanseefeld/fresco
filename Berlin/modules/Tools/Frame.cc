@@ -26,25 +26,17 @@
 #include <Warsaw/Subject.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/Color.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Tool/Frame.hh"
 #include "Tool/Beveler.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
-Frame::Frame(Coord t, Frame::Renderer *r)
-  : thickness(t), renderer(r)
-{
-  allocation = new RegionImpl;
-}
-
-Frame::~Frame()
-{
-//  allocation->_dispose();
-}
-
+Frame::Frame(Coord t, Frame::Renderer *r) : thickness(t), allocation(new RegionImpl), renderer(r) {}
+Frame::~Frame() { Trace trace("Frame::~Frame");}
 void Frame::request(Requisition &requisition)
 {
   MonoGraphic::request(requisition);
@@ -71,12 +63,10 @@ void Frame::traverse(Traversal_ptr traversal)
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
-      Lease<RegionImpl> allocation;
-      Providers::region.provide(allocation);
+      Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
       allocation->copy(Region_var(traversal->allocation()));
 
-      Lease<TransformImpl> tx;
-      Providers::trafo.provide(tx);
+      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->loadIdentity();
 
       Allocation::Info info;
@@ -105,8 +95,7 @@ void Frame::allocate(Tag, const Allocation::Info &info)
    */
   Vertex o;
 
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->copy(info.allocation);
 
   region->normalize(o);
@@ -146,6 +135,7 @@ DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame
 
 DynamicFrame::~DynamicFrame()
 {
+  Trace trace("DynamicFrame::~DynamicFrame");
   if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
   delete renderer1;
   delete renderer2;

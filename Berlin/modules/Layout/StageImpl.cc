@@ -21,7 +21,7 @@
  */
 
 #include "Layout/StageImpl.hh"
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
 #include <Berlin/AllocationImpl.hh>
@@ -34,6 +34,7 @@
 
 using namespace Geometry;
 using namespace Prague;
+using namespace Warsaw;
 
 class StageImpl::Sequence : public vector<StageHandleImpl *>
 {
@@ -45,12 +46,12 @@ public:
   void insert(StageHandleImpl *);
   void remove(StageHandleImpl *);
   
-  StageHandleImpl *find(Stage::Index layer) { iterator i = lookup(layer); return i == end() ? 0 : *i;}
+  StageHandleImpl *find(Warsaw::Stage::Index layer) { iterator i = lookup(layer); return i == end() ? 0 : *i;}
   StageHandleImpl *front() { return size() ? parent_t::front() : 0;}
   StageHandleImpl *back() { return size() ? parent_t::back() : 0;}
   StageHandleImpl *current() { return cursor < size() ? *(begin() + cursor) : 0;}
 private:
-  iterator lookup(Stage::Index layer);
+  iterator lookup(Warsaw::Stage::Index layer);
   size_t cursor;
 };
  
@@ -94,7 +95,7 @@ private:
   unsigned operations;
 };
 
-StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
+StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Warsaw::Stage::Index layer)
 {
   Trace trace("StageImpl::Sequence::lookup");
   if (layer == front()->l) return begin();
@@ -103,9 +104,9 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
   /*
    * start searching from the closest item
    */
-  Stage::Index fdist = front()->l - layer;
-  Stage::Index bdist = layer;
-  Stage::Index cdist = Math::abs(current()->l - layer);
+  Warsaw::Stage::Index fdist = front()->l - layer;
+  Warsaw::Stage::Index bdist = layer;
+  Warsaw::Stage::Index cdist = Math::abs(current()->l - layer);
   if (fdist < bdist)
     {
       if (fdist < cdist) cursor = 0;
@@ -121,7 +122,7 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::insert");
-  Stage::Index layer = handle->l;
+  Warsaw::Stage::Index layer = handle->l;
   iterator i;
   if (!size() || layer == 0) i = begin();
   else if (front()->l < layer) i = end();
@@ -133,7 +134,7 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
 void StageImpl::Sequence::remove(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::remove");
-  Stage::Index layer = handle->l;
+  Warsaw::Stage::Index layer = handle->l;
   iterator old = lookup(layer);
   if (old == begin() + cursor)
     if (current()->l <= (front()->l / 2)) cursor++;
@@ -446,13 +447,11 @@ void StageTraversal::execute()
 
 void StageTraversal::traverse(StageHandleImpl *handle)
 {
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);  
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   handle->bbox(*region);
   Vertex origin;
   region->normalize(origin);
-  Lease<TransformImpl> transformation;
-  Providers::trafo.provide(transformation);  
+  Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
   transformation->loadIdentity();
   transformation->translate(origin);
   traversal->traverseChild(handle->c, handle->tag, Region_var(region->_this()), Transform_var(transformation->_this()));
@@ -511,10 +510,8 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
   StageHandleImpl *handle = tag2handle(tag);
   if (handle)
     {
-      Lease<RegionImpl> region;
-      Providers::region.provide(region);  
-      Lease<TransformImpl> transform;
-      Providers::trafo.provide(transform);  
+      Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
+      Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
       transform->loadIdentity();
       Vertex origin;
       handle->bbox(*region);
@@ -529,13 +526,10 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
 void StageImpl::needRedraw()
 {
   Trace trace("StageImpl::needRedraw");
-  Lease<AllocationImpl> allocation;
-  Providers::alloc.provide(allocation);  
+  Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocations(Allocation_var(allocation->_this()));
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);  
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   for (CORBA::Long i = 0; i < allocation->size(); i++)
     {
       const Allocation::Info_var info = allocation->get(i);
@@ -556,14 +550,11 @@ void StageImpl::needRedraw()
 void StageImpl::needRedrawRegion(Region_ptr region)
 {
   Trace trace("StageImpl::needRedrawRegion");
-  Lease<AllocationImpl> allocation;
-  Providers::alloc.provide(allocation);  
+  Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocations(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
-  Lease<RegionImpl> tmp;
-  Providers::region.provide(tmp);  
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);  
+  Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   for (CORBA::Long i = 0; i < size; i++)
     {
       const Allocation::Info_var info = allocation->get(i);
@@ -602,7 +593,7 @@ Region_ptr StageImpl::bbox()
 
 CORBA::Long StageImpl::layers() { return tree->size();}
 
-StageHandle_ptr StageImpl::layer(Stage::Index i)
+StageHandle_ptr StageImpl::layer(Warsaw::Stage::Index i)
 {
   StageHandleImpl *handle = children->find(i);
   return handle ? handle->_this() : StageHandle::_nil();
@@ -646,7 +637,7 @@ void StageImpl::end()
     }
 }
 
-StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Stage::Index layer)
+StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Warsaw::Stage::Index layer)
 {
   Trace trace("StageImpl::insert");
   MutexGuard guard(childMutex);
@@ -716,7 +707,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
   need_resize = true;
 }
 
-void StageImpl::relayer(StageHandleImpl *handle, Stage::Index l)
+void StageImpl::relayer(StageHandleImpl *handle, Warsaw::Stage::Index l)
 {
   Trace trace("StageImpl::relayer");
   MutexGuard guard(childMutex);
@@ -749,8 +740,7 @@ StageHandleImpl *StageImpl::tag2handle(Tag tag)
 
 void StageImpl::damage(StageHandleImpl *handle)
 {
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);  
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   handle->bbox(*region);
   if (need_redraw) damage_->mergeUnion(Region_var(region->_this()));
   else
@@ -760,7 +750,7 @@ void StageImpl::damage(StageHandleImpl *handle)
     }
 }
 
-StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Stage::Index ll)
+StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Warsaw::Stage::Index ll)
   : stage(pa), c(Graphic::_duplicate(g)), tag(t), p(pp), s(ss), l(ll)
 {
   c->addParent(Stage_var(stage->_this()), tag);
@@ -788,7 +778,7 @@ void StageHandleImpl::size(const Vertex &ss)
   stage->end();
 }
 
-void StageHandleImpl::layer(Stage::Index ll)
+void StageHandleImpl::layer(Warsaw::Stage::Index ll)
 {
   stage->begin();
   stage->relayer(this, ll);

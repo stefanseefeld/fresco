@@ -27,13 +27,13 @@
 class Requestor : public MonoGraphic
 {
 public:
-  Requestor(Alignment xalign = .5, Alignment yalign = .5, Coord xspan = 1, Coord yspan = 1);
-  Requestor(const Graphic::Requisition &r);
+  Requestor(Warsaw::Alignment xalign = .5, Warsaw::Alignment yalign = .5, Warsaw::Coord xspan = 1, Warsaw::Coord yspan = 1);
+  Requestor(const Warsaw::Graphic::Requisition &);
   ~Requestor();
  
-  virtual void request(Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
 protected:
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
-#endif /* _Requestor_hh */
+#endif 

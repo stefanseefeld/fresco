@@ -28,6 +28,7 @@ static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;
 
 using namespace Prague;
+using namespace Warsaw;
 
 /*
  * transformation matrices are of the form:
@@ -93,9 +94,9 @@ void LUsolve(const Coord matrix[N][N], const size_t pivot[N], Coord v[N])
 
 TransformImpl::TransformImpl() { init();}
 
-TransformImpl::TransformImpl(Transform::Matrix m)
+TransformImpl::TransformImpl(Warsaw::Transform::Matrix m)
 {
-  Trace trace("TransformImpl::TransformImpl(Transform::Matrix)");
+  Trace trace("TransformImpl::TransformImpl(Warsaw::Transform::Matrix)");
   loadMatrix(m);
   identity = false;
   translate_only = false;
@@ -160,13 +161,13 @@ void TransformImpl::copy(Transform_ptr transform)
   if (CORBA::is_nil(transform)) init();
   else
     {
-      Transform::Matrix m;
+      Warsaw::Transform::Matrix m;
       transform->storeMatrix(m);
       loadMatrix(m);
     }
 }
 
-void TransformImpl::loadMatrix(const Matrix m)
+void TransformImpl::loadMatrix(const Warsaw::Transform::Matrix m)
 {
   Trace trace("TransformImpl::loadMatrix");
   for (short i = 0; i != 3; i++)
@@ -178,7 +179,7 @@ void TransformImpl::loadMatrix(const Matrix m)
 
 void TransformImpl::loadIdentity() { init();}
 
-void TransformImpl::storeMatrix(Matrix m)
+void TransformImpl::storeMatrix(Warsaw::Transform::Matrix m)
 {
   Trace trace("TransformImpl::storeMatrix");
   for (short i = 0; i != 3; i++)
@@ -193,7 +194,7 @@ CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
   if (!valid) recompute();
   if (identity) return CORBA::is_nil(transform) || transform->Identity();
   if (CORBA::is_nil(transform) || transform->Identity()) return false;
-  Transform::Matrix m;
+  Warsaw::Transform::Matrix m;
   transform->storeMatrix(m);
   return
     Math::equal(mat[0][0], m[0][0], tolerance) &&
@@ -249,7 +250,7 @@ void TransformImpl::rotate(double angle, Axis a)
   Coord r_angle = angle * radians_per_degree;
   Coord c = cos(r_angle);
   Coord s = sin(r_angle);
-  Transform::Matrix m;
+  Warsaw::Transform::Matrix m;
   short i = 0, j = 1;
   if (a == xaxis) i = 2;
   else if (a == yaxis) j = 2;
@@ -283,7 +284,7 @@ void TransformImpl::premultiply(Transform_ptr transform)
   if (!CORBA::is_nil(transform) && !transform->Identity())
     {
 //       Prague::Profiler prf("TransformImpl::premultiply");
-      Transform::Matrix m;
+      Warsaw::Transform::Matrix m;
       transform->storeMatrix(m);
       for (unsigned short i = 0; i != 3; i++)
 	{
@@ -302,7 +303,7 @@ void TransformImpl::postmultiply(Transform_ptr transform)
   if (!CORBA::is_nil(transform) && !transform->Identity())
     {
 //       Prague::Profiler prf("TransformImpl::postmultiply");
-      Transform::Matrix m;
+      Warsaw::Transform::Matrix m;
       transform->storeMatrix(m);
       for (unsigned short i = 0; i != 4; i++)
 	{
@@ -329,7 +330,7 @@ void TransformImpl::invert()
     {
       Coord d = det();
       if (Math::equal(d, 0., tolerance)) return;
-      Transform::Matrix m;
+      Warsaw::Transform::Matrix m;
 
       m[0][0] = mat[0][0], m[0][1] = mat[0][1], m[0][2] = mat[0][2], m[0][3] = mat[0][3];
       m[1][0] = mat[1][0], m[1][1] = mat[1][1], m[1][2] = mat[1][2], m[1][3] = mat[1][3];

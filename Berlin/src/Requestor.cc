@@ -21,16 +21,19 @@
  */
 #include "Berlin/Requestor.hh"
 
+using namespace Warsaw;
+
 Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
 {
   GraphicImpl::defaultRequisition(requisition);
-  Graphic::Requirement *rx = GraphicImpl::requirement(requisition, xaxis);
-  Graphic::Requirement *ry = GraphicImpl::requirement(requisition, yaxis);
+  Warsaw::Graphic::Requirement *rx = GraphicImpl::requirement(requisition, xaxis);
+  Warsaw::Graphic::Requirement *ry = GraphicImpl::requirement(requisition, yaxis);
   rx->align = xalign;
   ry->align = yalign;
   rx->natural = rx->maximum = rx->minimum = xspan;
   ry->natural = ry->maximum = ry->minimum = yspan; 
 }
-Requestor::Requestor(const Graphic::Requisition &r) : requisition(r) {}
+
+Requestor::Requestor(const Warsaw::Graphic::Requisition &r) : requisition(r) {}
 Requestor::~Requestor() {}
 void Requestor::request(Requisition &r) { r = requisition;}

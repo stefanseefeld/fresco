@@ -22,6 +22,8 @@
 #include "Berlin/KitFactory.hh"
 #include "Berlin/KitImpl.hh"
 
+using namespace Warsaw;
+
 KitFactory::KitFactory(const string &t, const string *p, unsigned short s)
   : props(0), id(t), counter(0)
 {
@@ -53,5 +55,14 @@ bool KitFactory::supports(const Kit::PropertySeq &set1, const Kit::PropertySeq &
       if (property1 == end1) return false; // property not supported
     }
   return true;
+}
+
+void KitFactory::activate(KitImpl *kit, PortableServer::POA_ptr poa)
+{
+  Prague::Trace trace("KitFactory::activate");
+  kit->poa = PortableServer::POA::_duplicate(poa);
+  PortableServer::ObjectId *oid = poa->activate_object(kit);
+  kit->_remove_ref();
+  delete oid;
 }
 

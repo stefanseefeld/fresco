@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/Logger.hh"
-#include <Drawing/libArt/LibArtFTFont.hh>
+#include <Berlin/Logger.hh>
+#include "Drawing/libArt/LibArtFTFont.hh"
 #include <Prague/Sys/Directory.hh>
 #include <fstream>
 #include <map>
@@ -37,6 +37,7 @@
 #define MIN(X,Y) (X<Y?X:Y)
 
 using namespace Prague;
+using namespace Warsaw;
 
 bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, const char *env, 
 					   Unicode::String &fam, Unicode::String &style)

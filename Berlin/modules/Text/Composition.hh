@@ -27,7 +27,6 @@
 #include <Warsaw/View.hh>
 #include <Warsaw/TextKit.hh>
 #include <Berlin/PolyGraphic.hh>
-#include <Berlin/Lease.hh>
 #include <map>
 
 class Compositor;
@@ -35,20 +34,20 @@ class Compositor;
 class Composition : public PolyGraphic
 {
  public:
-  Composition(DrawingKit_ptr dk, Compositor *);
+  Composition(Warsaw::DrawingKit_ptr, Compositor *);
   virtual ~Composition();
-  virtual void request(Requisition &);
-  virtual void extension(const Allocation::Info &, Region_ptr);
-  virtual void traverse(Traversal_ptr);
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
   virtual void needResize();
-  virtual void needResize(Tag);
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void needResize(Warsaw::Tag);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
  protected:
-  Lease<RegionImpl> *childrenAllocations(Region_ptr);
-  DrawingKit_var canonicalDK;
+  RegionImpl **childrenAllocations(Warsaw::Region_ptr);
+  Warsaw::DrawingKit_var canonicalDK;
   Compositor  *compositor;
   bool requested;
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
 #endif

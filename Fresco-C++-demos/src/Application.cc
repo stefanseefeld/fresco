@@ -28,6 +28,7 @@
 #include <Warsaw/Window.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 void Application::Mapper::execute(const CORBA::Any &)
 {
@@ -46,16 +47,17 @@ class ExitCommand : public Application::RefCountBaseImpl
   void execute(const CORBA::Any &) { exit(0);}
 };
 
-Application::Application(Warsaw *warsaw)
-  : tk(warsaw->resolve<TextKit>(TextKit::_PD_repoId)),
-    dk(warsaw->resolve<DesktopKit>(DesktopKit::_PD_repoId)),
-    lk(warsaw->resolve<LayoutKit>(LayoutKit::_PD_repoId)),
-    ttk(warsaw->resolve<ToolKit>(ToolKit::_PD_repoId)),
-    wk(warsaw->resolve<WidgetKit>(WidgetKit::_PD_repoId)),
-    fk(warsaw->resolve<FigureKit>(FigureKit::_PD_repoId)),
-    ck(warsaw->resolve<CommandKit>(CommandKit::_PD_repoId)),
-    ik(warsaw->resolve<ImageKit>(ImageKit::_PD_repoId)),
-    gk(warsaw->resolve<GadgetKit>(GadgetKit::_PD_repoId)),
+Application::Application(ServerContext_ptr sc)
+  : server(ServerContext::_duplicate(sc)),
+    tk(resolve_kit<TextKit>(server, "IDL:Warsaw/TextKit:1.0")),
+    dk(resolve_kit<DesktopKit>(server, "IDL:Warsaw/DesktopKit:1.0")),
+    lk(resolve_kit<LayoutKit>(server, "IDL:Warsaw/LayoutKit:1.0")),
+    ttk(resolve_kit<ToolKit>(server, "IDL:Warsaw/ToolKit:1.0")),
+    wk(resolve_kit<WidgetKit>(server, "IDL:Warsaw/WidgetKit:1.0")),
+    fk(resolve_kit<FigureKit>(server, "IDL:Warsaw/FigureKit:1.0")),
+    ck(resolve_kit<CommandKit>(server, "IDL:Warsaw/CommandKit:1.0")),
+    ik(resolve_kit<ImageKit>(server, "IDL:Warsaw/ImageKit:1.0")),
+    gk(resolve_kit<GadgetKit>(server, "IDL:Warsaw/GadgetKit:1.0")),
     vbox(lk->vbox()),
     choice(wk->toggleChoice()),
     mapper(new Mapper(demos, Selection_var(choice->state())))
@@ -67,7 +69,6 @@ Application::Application(Warsaw *warsaw)
       cerr << "Please set environment variabled BERLIN_ROOT first" << endl;
       exit(-1);
     }
-
   background.red = background.green = background.blue = 0.6; background.alpha = 1.;
   Raster_var raster = ik->create((string(berlin_root) + string("/etc/PNG/berlin-48.png")).c_str());
   Image_var  image = fk->pixmap(raster);

@@ -30,6 +30,7 @@
 #include <algorithm>
 
 using namespace Prague;
+using namespace Warsaw;
 
 TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *l, Compositor *p)
   : Composition(dk, p),
@@ -66,8 +67,10 @@ void TerminalView::update(const CORBA::Any &)
     begin();
     if (!lines.size())
       {
-	lines.push_back(activate(new Composition(canonicalDK, compositor)));
-	append(Graphic_var(lines.back()->_this()));
+ 	Composition *composition = new Composition(canonicalDK, compositor);
+	activate(composition);
+ 	lines.push_back(composition);
+ 	append(Graphic_var(lines.back()->_this()));
       }
     StreamBuffer::Data_var data = stream->read();
     char *begin = (char *)data->get_buffer();
@@ -87,9 +90,13 @@ void TerminalView::update(const CORBA::Any &)
 	  {
 	  case '\r':
 	  case '\n':
-	    lines.push_back(activate(new Composition(canonicalDK, compositor)));
-	    lines.back()->append(Graphic_var(kit->strut()));
-	    append(Graphic_var(lines.back()->_this()));
+	    {
+	      Composition *composition = new Composition(canonicalDK, compositor);
+	      activate(composition);
+	      lines.push_back(composition);
+	      lines.back()->append(Graphic_var(kit->strut()));
+	      append(Graphic_var(lines.back()->_this()));
+	    }
 	    break;
 	  case '\b':
 	    break;
@@ -101,12 +108,6 @@ void TerminalView::update(const CORBA::Any &)
   needRedraw();
 }
 
-void TerminalView::begin()
-{
-  locked = true;
-}
+void TerminalView::begin() { locked = true;}
 
-void TerminalView::end()
-{
-  locked = false;
-}
+void TerminalView::end() { locked = false;}

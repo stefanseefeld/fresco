@@ -20,17 +20,18 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/config.hh"
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/Screen.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
+#include <Warsaw/Screen.hh>
 #include "Berlin/Allocator.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Providers.hh"
+#include "Berlin/Provider.hh"
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 Allocator::Allocator()
   : requested(false),
@@ -43,7 +44,7 @@ Allocator::~Allocator()
 { 
 }
 
-void Allocator::request(Requisition &r)
+void Allocator::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("Allocator::request");
   cacheRequisition();
@@ -64,12 +65,10 @@ void Allocator::traverse(Traversal_ptr traversal)
 void Allocator::needResize()
 {
   Trace trace("Allocator::needResize");
-  Lease<AllocationImpl> allocation;
-  Providers::alloc.provide(allocation);
+  Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocation->clear();
   allocations(Allocation_var(allocation->_this()));
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->clear();
   if (extension->valid) region->copy(Region_var(extension->_this()));
   requested = false;
@@ -88,7 +87,7 @@ void Allocator::allocate(Tag, const Allocation::Info &i)
 //  i.allocation->copy(Region_var(natural->_this()));
 }
 
-static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
+void Allocator::naturalAllocation(const Warsaw::Graphic::Requisition &r, RegionImpl &natural)
 {
   if (r.x.defined)
     {
@@ -118,7 +117,7 @@ void Allocator::cacheRequisition()
   Trace trace("Allocator::cacheRequisition");
   if (!requested)
     {
-      Graphic::Requisition r;
+      Warsaw::Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
       requisition = r;
@@ -132,13 +131,11 @@ void Allocator::cacheAllocation()
   cacheRequisition();
   if (!allocated)
     {
-      ::naturalAllocation(requisition, *natural);
+      naturalAllocation(requisition, *natural);
       extension->valid = false;
-      Lease<RegionImpl> tmp;
-      Providers::region.provide(tmp);
+      Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
       tmp->clear();
-      Lease<TransformImpl> transform;
-      Providers::trafo.provide(transform);
+      Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
       transform->loadIdentity();
       Allocation::Info info;
       info.allocation = tmp->_this();
@@ -150,8 +147,7 @@ void Allocator::cacheAllocation()
 
 void Allocator::needDamage(RegionImpl *e, Allocation_ptr allocation)
 {
-  Lease<RegionImpl> region;
-  Providers::region.provide(region);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->clear();
 
   for (long i = 0; i < allocation->size(); i++)
@@ -169,12 +165,12 @@ TransformAllocator::TransformAllocator(Alignment xp, Alignment yp, Alignment zp,
 
 TransformAllocator::~TransformAllocator() {}
 
-void TransformAllocator::request(Requisition &r)
+void TransformAllocator::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("TransformAllocator::request");
   Allocator::request(r);
-  Coord fil = Coord(1000000.0);
-  Coord zero = Coord(0.0);
+  Coord fil = 1000000.;
+  Coord zero = 0.;
   r.x.maximum = fil;
   r.x.minimum = zero;
   r.y.maximum = fil;
@@ -193,8 +189,7 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 {
   Trace trace("TransformAllocator::allocate");
   Vertex lower, upper, delta;
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
   Allocator::allocate(t, i);
   i.allocation->bounds(lower, upper);
@@ -207,8 +202,7 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 void TransformAllocator::traverse(Traversal_ptr traversal)
 {
   Trace trace("TransformAllocator::traverse");
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
   cacheAllocation();
   Vertex lower, upper, v;

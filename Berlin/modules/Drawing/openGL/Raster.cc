@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-#include "Prague/Sys/Memory.hh"
+#include <Prague/Sys/Memory.hh>
 #include "Drawing/openGL/GLRaster.hh"
 
 /*
@@ -29,7 +29,7 @@
  */
 
 using namespace Prague;
-
+using namespace Warsaw;
 
 template <class T>
 T ceiling(T a, T b) { return a % b == 0 ? a/b : a/b + 1;}

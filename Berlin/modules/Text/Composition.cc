@@ -25,14 +25,15 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Traversal.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/Providers.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <algorithm>
 
 using namespace Prague;
+using namespace Warsaw;
 
 Composition::Composition(DrawingKit_ptr dk, Compositor *c)
   : canonicalDK(DrawingKit::_duplicate(dk)),
@@ -44,7 +45,7 @@ Composition::Composition(DrawingKit_ptr dk, Compositor *c)
 
 Composition::~Composition() {}
 
-void Composition::request(Requisition &r)
+void Composition::request(Warsaw::Graphic::Requisition &r)
 {
 //   Trace trace("Composition::request");
   if (!requested)
@@ -54,7 +55,7 @@ void Composition::request(Requisition &r)
       long n = numChildren();
       if (n > 0)
 	{
-	  Graphic::Requisition *r = childrenRequests();
+	  Warsaw::Graphic::Requisition *r = childrenRequests();
 	  compositor->request(n, r, canonicalDK, requisition);
 	  deallocateRequisitions(r);
 	}
@@ -73,15 +74,14 @@ void Composition::extension(const Allocation::Info &info, Region_ptr region)
       Vertex origin, previous, delta;
       previous.x = previous.y = previous.z = 0;
 
-      Lease<TransformImpl> child_tx, tmp_tx;
-      Providers::trafo.provide(child_tx);
-      Providers::trafo.provide(tmp_tx);
+      Lease_var<TransformImpl> child_tx(Provider<TransformImpl>::provide());
+      Lease_var<TransformImpl> tmp_tx(Provider<TransformImpl>::provide());
       tmp_tx->loadIdentity();
       child_tx->loadIdentity();
       
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
-      Lease<RegionImpl> *result = childrenAllocations(info.allocation);
+      RegionImpl **result = childrenAllocations(info.allocation);
 
       for (long i = 0; i < n; i++)
 	{
@@ -94,6 +94,7 @@ void Composition::extension(const Allocation::Info &info, Region_ptr region)
 	  childExtension(i, child, region);
 	  previous = origin;
 	}
+      for (CORBA::Long i = 0; i != n; ++i) Provider<RegionImpl>::adopt(result[i]);
       delete [] result;
     }
 }
@@ -111,12 +112,11 @@ void Composition::traverse(Traversal_ptr traversal)
        *              -stefan
        */
       if (!traversal->intersectsAllocation()) return;
-      Lease<RegionImpl> *result = childrenAllocations(given);
+      RegionImpl **result = childrenAllocations(given);
       CORBA::Long size = numChildren();
       CORBA::Long begin, end, incr;
 
-      Lease<TransformImpl> tx;
-      Providers::trafo.provide(tx);
+      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->loadIdentity();
 
       if (traversal->direction() == Traversal::up)
@@ -133,7 +133,7 @@ void Composition::traverse(Traversal_ptr traversal)
 	}
       for (CORBA::Long i = begin; i != end; i += incr)
 	{
-	  if (CORBA::is_nil(children[i].parent)) continue;
+	  if (CORBA::is_nil(children[i].peer)) continue;
 	  Vertex origin;
 	  result[i]->normalize(origin);
 	  tx->loadIdentity();
@@ -142,9 +142,10 @@ void Composition::traverse(Traversal_ptr traversal)
 	   * only translating them -stefan
 	   */
 	  tx->translate(origin);
-	  traversal->traverseChild(children[i].parent, children[i].id, Region_var(result[i]->_this()), Transform_var(tx->_this()));
+	  traversal->traverseChild(children[i].peer, children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));
 	  if (!traversal->ok()) break;
 	}
+      for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
       delete [] result;
     }
 }
@@ -163,23 +164,23 @@ void Composition::needResize(Tag)
 void Composition::allocate(Tag tag, const Allocation::Info &info)
 {
   Trace trace("Composition::allocate");
-  Lease<RegionImpl> *result = childrenAllocations(info.allocation);
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);
+  RegionImpl **result = childrenAllocations(info.allocation);
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
-  CORBA::Long idx = index(tag);
+  CORBA::Long idx = childIdToIndex(tag);
   result[idx]->normalize(Transform_var(tx->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
   CORBA::Long children = numChildren();
+  for (CORBA::Long i = 0; i != children; ++i) Provider<RegionImpl>::adopt(result[i]);
   delete [] result;
 }
 
-Lease<RegionImpl> *Composition::childrenAllocations(Region_ptr allocation)
+RegionImpl **Composition::childrenAllocations(Region_ptr allocation)
 {
   Trace trace("Composition::childrenAllocations");
   CORBA::Long children = numChildren();
-  Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
+  Warsaw::Graphic::Requisition *childrenRequisitions = childrenRequests();
     
   // cache integrated form of children requisitions
   if (!requested)
@@ -189,17 +190,15 @@ Lease<RegionImpl> *Composition::childrenAllocations(Region_ptr allocation)
       requested = true;
     }
   // build region array for children
-  Lease<RegionImpl> *childrenRegions = new Lease<RegionImpl> [children];
-  RegionImpl *pointerArray[children]; 
+  RegionImpl **childrenRegions = new RegionImpl *[children];
 
   for (CORBA::Long i = 0; i < children; i++)
     {
-      Providers::region.provide(childrenRegions[i]);
+      childrenRegions[i] = Provider<RegionImpl>::provide();
       childrenRegions[i]->valid = true;
-      pointerArray[i] = childrenRegions[i].get();
     }
   // fill in children regions which are reasonable matches for the given requesitions
-  compositor->allocate(children, childrenRequisitions, canonicalDK, allocation, pointerArray);
+  compositor->allocate(children, childrenRequisitions, canonicalDK, allocation, childrenRegions);
   deallocateRequisitions(childrenRequisitions);
   return childrenRegions;
 }

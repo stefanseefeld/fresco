@@ -21,6 +21,7 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
 #include <Berlin/ImplVar.hh>
 #include "Layout/LayoutKitImpl.hh"
 #include "Layout/Box.hh"
@@ -32,11 +33,12 @@
 #include "Layout/ShapeOf.hh"
 #include "Layout/ViewportImpl.hh"
 
-LayoutKitImpl::LayoutKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p), fil_(GraphicImpl::infinity) {}
-LayoutKitImpl::~LayoutKitImpl()
-{
-  for (vector<PortableServer::Servant>::iterator i = graphics.begin(); i != graphics.end(); i++) deactivate(*i);
-}
+using namespace Prague;
+using namespace Warsaw;
+
+LayoutKitImpl::LayoutKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p), fil_(GraphicImpl::infinity) {}
+LayoutKitImpl::~LayoutKitImpl() {}
 void LayoutKitImpl::fil(Coord c) { fil_ = c;}
 Coord LayoutKitImpl::fil() { return fil_;}
 Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
@@ -81,8 +83,8 @@ Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 
 Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
 {
-  ViewportImpl *vp = activate(new ViewportImpl);
-  graphics.push_back(vp);
+  ViewportImpl *vp = new ViewportImpl;
+  activate(vp);
   vp->attachAdjustments();
   vp->body(g);
   return vp->_this();
@@ -111,6 +113,7 @@ Graphic_ptr LayoutKitImpl::hbox()
 
 Graphic_ptr LayoutKitImpl::vbox()
 {
+  Trace trace("LayoutKitImpl::vbox");
   return create<Graphic>(new VBox);
 }
 
@@ -256,17 +259,17 @@ Graphic_ptr LayoutKitImpl::shapeOfXYZ(Graphic_ptr gx, Graphic_ptr gy, Graphic_pt
 
 Graphic_ptr LayoutKitImpl::align(Graphic_ptr g, Alignment x, Alignment y)
 {
-  Placement *placement = activate(new Placement(new LayoutSuperpose(new LayoutCenter(xaxis, x), new LayoutCenter(yaxis, y))));
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutCenter(xaxis, x), new LayoutCenter(yaxis, y)));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::alignAxis(Graphic_ptr g, Axis a, Alignment align)
 {
-  Placement *placement = activate(new Placement(new LayoutCenter(a, align)));
+  Placement *placement = new Placement(new LayoutCenter(a, align));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
  
@@ -282,17 +285,17 @@ Graphic_ptr LayoutKitImpl::valign(Graphic_ptr g, Alignment y)
 
 Graphic_ptr LayoutKitImpl::fixedSize(Graphic_ptr g, Coord x, Coord y)
 {
-  Placement *placement = activate(new Placement(new LayoutSuperpose(new LayoutFixed(xaxis, x), new LayoutFixed(yaxis, y))));
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutFixed(xaxis, x), new LayoutFixed(yaxis, y)));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::fixedAxis(Graphic_ptr g, Axis a, Coord size)
 {
-  Placement *placement = activate(new Placement(new LayoutFixed(a, size)));
+  Placement *placement = new Placement(new LayoutFixed(a, size));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
@@ -308,10 +311,10 @@ Graphic_ptr LayoutKitImpl::vfixed(Graphic_ptr g, Coord y)
 
 Graphic_ptr LayoutKitImpl::flexible(Graphic_ptr g, Coord stretch, Coord shrink)
 {
-  Placement *placement = activate(new Placement(new LayoutSuperpose(new LayoutVariable(xaxis, stretch, shrink),
-								    new LayoutVariable(yaxis, stretch, shrink))));
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutVariable(xaxis, stretch, shrink),
+							   new LayoutVariable(yaxis, stretch, shrink)));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
@@ -322,9 +325,9 @@ Graphic_ptr LayoutKitImpl::flexibleFil(Graphic_ptr g)
 
 Graphic_ptr LayoutKitImpl::flexibleAxis(Graphic_ptr g, Axis a, Coord stretch, Coord shrink)
 {
-  Placement *placement = activate(new Placement(new LayoutVariable(a, stretch, shrink)));
+  Placement *placement = new Placement(new LayoutVariable(a, stretch, shrink));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
@@ -340,17 +343,17 @@ Graphic_ptr LayoutKitImpl::vflexible(Graphic_ptr g, Coord stretch, Coord shrink)
 
 Graphic_ptr LayoutKitImpl::natural(Graphic_ptr g, Coord x, Coord y)
 {
-  Placement *placement = activate(new Placement(new LayoutSuperpose(new LayoutNatural(xaxis, x), new LayoutNatural(yaxis, y))));
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutNatural(xaxis, x), new LayoutNatural(yaxis, y)));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::naturalAxis(Graphic_ptr g, Axis a, Coord size)
 {
-  Placement *placement = activate(new Placement(new LayoutNatural(a, size)));
+  Placement *placement = new Placement(new LayoutNatural(a, size));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
@@ -366,26 +369,26 @@ Graphic_ptr LayoutKitImpl::vnatural(Graphic_ptr g, Coord y)
 
 Graphic_ptr LayoutKitImpl::margin(Graphic_ptr g, Coord all)
 {
-  Placement *placement = activate(new Placement(new LayoutMargin(all)));
+  Placement *placement = new Placement(new LayoutMargin(all));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::marginFlexible(Graphic_ptr g, Coord margin, Coord stretch, Coord shrink)
 {
-  Placement *placement = activate(new Placement(new LayoutMargin(margin, stretch, shrink, margin, stretch, shrink,
-								 margin, stretch, shrink, margin, stretch, shrink)));
+  Placement *placement = new Placement(new LayoutMargin(margin, stretch, shrink, margin, stretch, shrink,
+							margin, stretch, shrink, margin, stretch, shrink));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::marginLRBT(Graphic_ptr g, Coord lmargin, Coord rmargin, Coord bmargin, Coord tmargin)
 {
-  Placement *placement = activate(new Placement(new LayoutMargin(lmargin, rmargin, bmargin, tmargin)));
+  Placement *placement = new Placement(new LayoutMargin(lmargin, rmargin, bmargin, tmargin));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
@@ -394,10 +397,10 @@ Graphic_ptr LayoutKitImpl::marginLRBTFlexible(Graphic_ptr g, Coord lmargin, Coor
 					      Coord tmargin, Coord tstretch, Coord tshrink,
 					      Coord bmargin, Coord bstretch, Coord bshrink)
 {
-  Placement *placement = activate(new Placement(new LayoutMargin(lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
-								 tmargin, tstretch, tshrink, bmargin, bstretch, bshrink)));
+  Placement *placement = new Placement(new LayoutMargin(lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
+							tmargin, tstretch, tshrink, bmargin, bstretch, bshrink));
+  activate(placement);
   placement->body(g);
-  graphics.push_back(placement);
   return placement->_this();
 }
 
@@ -474,5 +477,5 @@ Graphic_ptr LayoutKitImpl::tmarginFlexible(Graphic_ptr g, Coord natural, Coord s
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "LayoutKitImpl"};
-  return new KitFactoryImpl<LayoutKitImpl> (LayoutKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<LayoutKitImpl> ("IDL:Warsaw/LayoutKit:1.0", properties, 1);
 }

@@ -30,30 +30,31 @@
 class TransformImpl;
 class RegionImpl;
 
-class TransformFigure : public virtual POA_Figure, public GraphicImpl
+class TransformFigure : public virtual POA_Warsaw::Figure,
+			public GraphicImpl
 {
  public:
   TransformFigure();
   ~TransformFigure();
-  virtual Transform_ptr transformation();
-  virtual void request(Requisition &);
-  virtual void extension(const Allocation::Info &, Region_ptr r);
-  virtual void pick(PickTraversal_ptr);
+  virtual Warsaw::Transform_ptr transformation();
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void needRedraw();
   
-  Figure::Mode type() { return mode;}
-  void type(Figure::Mode m) { mode = m; needRedraw();}
-  Color foreground() { return fg;}
-  void foreground(const Color &f) { fg = f; needRedraw();}
-  Color background() { return bg;}
-  void background(const Color &b) { bg = b; needRedraw();}
+  Warsaw::Figure::Mode type() { return mode;}
+  void type(Warsaw::Figure::Mode m) { mode = m; needRedraw();}
+  Warsaw::Color foreground() { return fg;}
+  void foreground(const Warsaw::Color &f) { fg = f; needRedraw();}
+  Warsaw::Color background() { return bg;}
+  void background(const Warsaw::Color &b) { bg = b; needRedraw();}
 
   virtual void resize();
 
   void copy(const TransformFigure &);
  protected:
-  Figure::Mode mode;
-  Color fg, bg;
+  Warsaw::Figure::Mode mode;
+  Warsaw::Color fg, bg;
   Impl_var<TransformImpl> tx;
   Impl_var<RegionImpl> ext;
 };
@@ -64,18 +65,18 @@ public:
   FigureImpl();
   virtual ~FigureImpl();
 
-  void addPoint(Coord, Coord);
+  void addPoint(Warsaw::Coord, Warsaw::Coord);
   void reset();
   virtual void resize();
 
-  virtual void extension(const Allocation::Info &, Region_ptr);
-  virtual void draw(DrawTraversal_ptr);
-  virtual void pick(PickTraversal_ptr);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
 
   void copy(const FigureImpl &);
 protected:
-  Figure::Vertices_var path;
-  Figure::Vertices_var handle;
+  Warsaw::Figure::Vertices_var path;
+  Warsaw::Figure::Vertices_var handle;
 };
 
-#endif /* _FigureImpl_hh */
+#endif

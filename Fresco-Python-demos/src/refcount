@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-import sys
+import sys, time
 import string
 
 # Import the CORBA module
 from omniORB import CORBA
+import CosNaming
 
 # Import the Warsaw stubs
 import Warsaw
 import Warsaw__POA
-import CosNaming
 # Define an implementation of the ClientContext interface
 class ClientContextImpl (Warsaw__POA.ClientContext):
     def userName(self): return "joe"
@@ -29,32 +29,47 @@ def main():
     client = ci._this()
 
     # get a server context
-    context = orb.resolve_initial_references("NameService")
-    name = [CosNaming.NameComponent("IDL:Server:1.0", "Object")]
-    server = context.resolve(name)
+    object = orb.resolve_initial_references("NameService");
+    context = object._narrow(CosNaming.NamingContext)
+    name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
+    object = context.resolve(name)
+    server = object._narrow(Warsaw.Server)
     context  = server.newServerContext(client)
 
     # get some kits
     properties = []
-    object  = context.resolve("IDL:ToolKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/ToolKit:1.0", properties)
     tool    = object._narrow(Warsaw.ToolKit)
-    object  = context.resolve("IDL:ImageKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/ImageKit:1.0", properties)
     image   = object._narrow(Warsaw.ImageKit)
-    object  = context.resolve("IDL:FigureKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/FigureKit:1.0", properties)
     figure  = object._narrow(Warsaw.FigureKit)
-    object  = context.resolve("IDL:DesktopKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/DesktopKit:1.0", properties)
     desktop = object._narrow(Warsaw.DesktopKit)
-    object  = context.resolve("IDL:LayoutKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/LayoutKit:1.0", properties)
     layout = object._narrow(Warsaw.LayoutKit)
 
     raster = image.create("../etc/PNG/berlin-48.png")
     pixmap = figure.pixmap(raster)
-    group  = tool.group(pixmap)
+    wrapper1 = layout.margin(pixmap, 50)
+    print "I'm here"
+    pixmap.decrement()
+    wrapper2 = layout.margin(wrapper1, 50)
+    time.sleep(20)
+    sys.exit(1)
+    print "I'm here"
+    wrapper1.decrement()
+    wrapper3 = layout.margin(wrapper2, 50)
+    print "I'm here"
+    wrapper2.decrement()
+    group  = tool.group(wrapper3)
+    print "I'm here"
+    wrapper3.decrement()
     shell  = desktop.shell(group)
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break
-    pixmap.decrement()
+    wrapper3.decrement()
 
 if __name__ == '__main__':
     main()

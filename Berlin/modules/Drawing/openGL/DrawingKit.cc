@@ -35,8 +35,9 @@
 #include <iostream>
 
 using namespace Prague;
+using namespace Warsaw;
 
-GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
+GLDrawingKit::GLDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p),
     drawable(Console::drawable()),
     tx(0),
@@ -167,16 +168,16 @@ void GLDrawingKit::setLineWidth(Coord w)
   glLineWidth(lw);
 }
 
-void GLDrawingKit::setLineEndstyle(DrawingKit::Endstyle style)
+void GLDrawingKit::setLineEndstyle(Warsaw::DrawingKit::Endstyle style)
 {
   es = style;
 }
 
-void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
+void GLDrawingKit::setSurfaceFillstyle(Warsaw::DrawingKit::Fillstyle style)
 {
-  if (fs == DrawingKit::textured) glDisable(GL_TEXTURE_2D);
+  if (fs == Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
   fs = style;
-  if (fs == DrawingKit::textured) glEnable(GL_TEXTURE_2D);
+  if (fs == Warsaw::DrawingKit::textured) glEnable(GL_TEXTURE_2D);
 }
 
 void GLDrawingKit::setTexture(Raster_ptr t)
@@ -193,14 +194,14 @@ void GLDrawingKit::setTexture(Raster_ptr t)
 
 void GLDrawingKit::drawPath(const Path &path)
 {
-  if (fs == DrawingKit::solid)
+  if (fs == Warsaw::DrawingKit::solid)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
-  else if (fs == DrawingKit::textured)
+  else if (fs == Warsaw::DrawingKit::textured)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
@@ -223,8 +224,8 @@ void GLDrawingKit::drawPath(const Path &path)
 
 void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
 {
-  if (fs == DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
-  else if (fs == DrawingKit::textured)
+  if (fs == Warsaw::DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
+  else if (fs == Warsaw::DrawingKit::textured)
     {
       double w = (upper.x - lower.x)/(tx->width * 10.);
       double h = (upper.y - lower.y)/(tx->height * 10.);
@@ -261,7 +262,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   Profiler prf("GLDrawingKit::drawImage");
   GLImage *glimage = images.lookup(Raster::_duplicate(raster));
   GLint tbackup = -1;
-  if (fs == DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
+  if (fs == Warsaw::DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
   else glEnable(GL_TEXTURE_2D);
   GLfloat color_cache[4];
   glGetFloatv(GL_CURRENT_COLOR, color_cache);
@@ -282,7 +283,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   glTexCoord2f(0., glimage->t);           glVertex3f(path[0].x, path[0].y, path[0].z);
   glEnd();
   glColor4fv(color_cache);  
-  if (fs != DrawingKit::textured) glDisable(GL_TEXTURE_2D);
+  if (fs != Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
@@ -301,5 +302,6 @@ void GLDrawingKit::drawChar(Unichar c) { font->drawChar(c);}
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "GLDrawingKit"};
-  return new KitFactoryImpl<GLDrawingKit> (DrawingKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<GLDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
 }
+

@@ -21,11 +21,13 @@
  */
 #include "Layout/ShapeOf.hh"
 
+using namespace Warsaw;
+
 ShapeOf::ShapeOf(Graphic_ptr x, Graphic_ptr y, Graphic_ptr z)
 {
-  x = Graphic::_duplicate(x);
-  y = Graphic::_duplicate(y);
-  z = Graphic::_duplicate(z);
+  x = Warsaw::Graphic::_duplicate(x);
+  y = Warsaw::Graphic::_duplicate(y);
+  z = Warsaw::Graphic::_duplicate(z);
 }
 
 ShapeOf::~ShapeOf()
@@ -35,12 +37,12 @@ ShapeOf::~ShapeOf()
   CORBA::release(z);
 }
 
-void ShapeOf::request(Requisition &r)
+void ShapeOf::request(Warsaw::Graphic::Requisition &r)
 {
   if (CORBA::is_nil(y) && CORBA::is_nil(z)) x->request(r);
   else
     {
-      Graphic::Requisition req;
+      Warsaw::Graphic::Requisition req;
       GraphicImpl::initRequisition(req);
       if (!CORBA::is_nil(x))
 	{

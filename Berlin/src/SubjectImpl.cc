@@ -23,6 +23,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 SubjectImpl::SubjectImpl() : blocked(false) {}
 
@@ -30,7 +31,7 @@ void SubjectImpl::attach(Observer_ptr o)
 {
   Trace trace("SubjectImpl::attach");
   MutexGuard guard(observerMutex);
-  observers.push_back(Observer::_duplicate(o));
+  observers.push_back(Warsaw::Observer::_duplicate(o));
 }
 
 void SubjectImpl::detach(Observer_ptr o)
@@ -47,8 +48,9 @@ void SubjectImpl::block(CORBA::Boolean b)
   blocked = b;
 }
 
-void SubjectImpl::notify() {
-    this->notify(CORBA::Any());
+void SubjectImpl::notify()
+{
+  this->notify(CORBA::Any());
 }
 
 void SubjectImpl::notify(const CORBA::Any &whatChanged)

@@ -33,9 +33,10 @@
 #include <iostream>
 
 using namespace Prague;
+using namespace Warsaw;
 
 ScreenImpl::ScreenImpl(DrawingKit_ptr d)
-  : ControllerImpl(false), drawing(d)
+  : ControllerImpl(false), drawing(DrawingKit::_duplicate(d))
 {
   Trace trace("ScreenImpl::ScreenImpl");
   emanager = new EventManager(this);

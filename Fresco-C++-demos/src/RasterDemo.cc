@@ -21,7 +21,9 @@
  */
 
 #include "RasterDemo.hh"
-#include "Warsaw/Image.hh"
+#include <Warsaw/Image.hh>
+
+using namespace Warsaw;
 
 RasterDemo::RasterDemo(Application *a)
   : Demo(a)

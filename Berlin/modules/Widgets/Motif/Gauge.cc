@@ -20,16 +20,17 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Transform.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Transform.hh>
+#include <Berlin/Color.hh>
 #include "Widget/Motif/Gauge.hh"
-#include "Berlin/Color.hh"
 
+using namespace Warsaw;
 using namespace Motif;
 
-void Gauge::request(Requisition &requisition)
+void Gauge::request(Warsaw::Graphic::Requisition &requisition)
 {
   requisition.x.defined = true;
   requisition.x.natural = requisition.x.maximum = requisition.x.minimum = width;

@@ -59,7 +59,7 @@ DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
 DYNSTATSRC = $(patsubst %.idl, %SK.cc, $(DYNINT)) 
 STATSRC	= $(patsubst %.idl, %SK.cc, $(STATINT))
 
-UTIL	= IO.cc Unicode.cc ClientContextImpl.cc Warsaw.cc
+UTIL	= IO.cc Unicode.cc ClientContextImpl.cc# Warsaw.cc
 
 SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(UTIL)
 

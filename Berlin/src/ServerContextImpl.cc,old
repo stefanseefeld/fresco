@@ -21,26 +21,37 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/ClientContext.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/ClientContext.hh>
 #include "Berlin/ServerContextImpl.hh"
 #include "Berlin/ServerImpl.hh"
 #include "Berlin/KitImpl.hh"
 #include "Berlin/Logger.hh"
-#include "Prague/Sys/Plugin.hh"
-#include "Prague/Sys/Directory.hh"
+#include <Prague/Sys/Plugin.hh>
+#include <Prague/Sys/Directory.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <strstream>
 
 using namespace Prague;
+using namespace Warsaw;
 
 // this is the thing which holds all the references to things a client allocates
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
 ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
-  : server(s), cContext(ClientContext::_duplicate(c)) 
-{}
+  : server(s), cContext(ClientContext::_duplicate(c)), counter(0) 
+{
+  Trace trace("ServerContextImpl::ServerContextImpl");
+}
 
-ServerContextImpl::~ServerContextImpl() {}
+ServerContextImpl::~ServerContextImpl()
+{
+  Trace trace("ServerContextImpl::~ServerContextImpl");
+  for (klist_t::iterator i = kits.begin(); i != kits.end(); ++i)
+    (*i).second->deactivate();
+}
+
 ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(cContext);}
 
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
@@ -83,7 +94,15 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
   /*
    * now try the factories
    */
-  KitImpl *kit = server->create(type, properties);
+  PortableServer::POA_var root = _default_POA();
+  ostrstream oss;
+  oss << type << ' ' << counter++ << ends;
+  char *name = oss.str();
+  PortableServer::POAManager_var manager = root->the_POAManager();
+  PortableServer::POA_var poa = root->create_POA(name, manager, policies);
+//   PortableServer::POA_var poa = PortableServer::POA::_duplicate(root);
+  delete [] name;
+  KitImpl *kit = server->create(type, properties, poa);
   if (!kit) throw CreationFailureException();
   kit->bind(ServerContext_var(_this()));
   kit->increment();
@@ -107,11 +126,5 @@ bool ServerContextImpl::ping()
     {
       alive = false;
     }
-  if (!alive)
-    for(klist_t::iterator i = kits.begin(); i != kits.end(); i++)
-      {
-//	(*i).second->_dispose();
-	kits.erase(i);
-      }
   return alive;
 }

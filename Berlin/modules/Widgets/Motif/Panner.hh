@@ -27,6 +27,7 @@
 #include <Warsaw/BoundedRange.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
+#include <Berlin/RefCountVar.hh>
 
 namespace Motif
 {
@@ -35,8 +36,8 @@ class Panner : public ControllerImpl
 {
   struct Offset
   {
-    Coord lower;
-    Coord upper;
+    Warsaw::Coord lower;
+    Warsaw::Coord upper;
   }; 
   class Observer : public ObserverImpl
   {
@@ -49,22 +50,22 @@ class Panner : public ControllerImpl
   friend class Observer;
   class Dragger;
 public:
-  Panner(BoundedRange_ptr, BoundedRange_ptr);
-  void init(Controller_ptr);
+  Panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
+  void init(Warsaw::Controller_ptr);
   virtual void update(const CORBA::Any &);
-  virtual void draw(DrawTraversal_ptr);
-  virtual void pick(PickTraversal_ptr);
-  virtual void allocate(Tag, const Allocation::Info &);
-  Command_ptr drag();
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  Warsaw::Command_ptr drag();
 private:
-  void traverseThumb(Traversal_ptr);
+  void traverseThumb(Warsaw::Traversal_ptr);
   Impl_var<Observer> redirect;
   Impl_var<Dragger> _drag;
-  BoundedRange_var x;
-  BoundedRange_var y;
+  RefCount_var<Warsaw::BoundedRange> x;
+  RefCount_var<Warsaw::BoundedRange> y;
   Offset offset[2];
 };
 
 };
 
-#endif /* _Motif_Panner_hh */
+#endif

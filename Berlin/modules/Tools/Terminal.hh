@@ -22,19 +22,19 @@
 #ifndef _Terminal_hh
 #define _Terminal_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/StreamBuffer.hh"
-#include "Berlin/ControllerImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/StreamBuffer.hh>
+#include <Berlin/ControllerImpl.hh>
 
 class Terminal : public ControllerImpl
 {
  public:
-  Terminal(StreamBuffer_ptr b) : ControllerImpl(false), buffer(StreamBuffer::_duplicate(b)) {}
+  Terminal(Warsaw::StreamBuffer_ptr b) : ControllerImpl(false), buffer(Warsaw::StreamBuffer::_duplicate(b)) {}
   ~Terminal() {}
 // protected:
-  virtual void keyPress(const Input::Event &);
+  virtual void keyPress(const Warsaw::Input::Event &);
  private:
-  StreamBuffer_var buffer;
+  Warsaw::StreamBuffer_var buffer;
 };
 
-#endif /* _Terminal_hh */
+#endif

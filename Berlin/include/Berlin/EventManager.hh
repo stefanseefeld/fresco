@@ -39,14 +39,14 @@ class EventManager
 public:
   EventManager(ScreenImpl *);
   ~EventManager();
-  bool requestFocus(Controller_ptr, Input::Device);
+  bool requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
   void nextEvent();
-  void restore(Region_ptr);
-  void damage(Region_ptr);
+  void restore(Warsaw::Region_ptr);
+  void damage(Warsaw::Region_ptr);
 private:
   ScreenImpl *screen;
   Console::Drawable *drawable;
   flist_t focus;
 };
 
-#endif /* _EventManager_hh */
+#endif 

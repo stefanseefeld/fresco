@@ -24,6 +24,7 @@
 #include <iostream>
 
 using namespace Prague;
+using namespace Warsaw;
 
 TextBufferImpl::TextBufferImpl() {}
 TextBufferImpl::~TextBufferImpl() {}
@@ -66,14 +67,14 @@ void TextBufferImpl::position(CORBA::Long p)
 
 void TextBufferImpl::forward()
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   {
     MutexGuard guard(mutex);
     buffer.forward();
     ch.pos = buffer.position();
   }
   ch.len = 0;
-  ch.type = TextBuffer::cursor;
+  ch.type = Warsaw::TextBuffer::cursor;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -81,14 +82,14 @@ void TextBufferImpl::forward()
 
 void TextBufferImpl::backward()
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   {
     MutexGuard guard(mutex);
     buffer.backward();
     ch.pos = buffer.position();
   }
   ch.len = 0;
-  ch.type = TextBuffer::cursor;
+  ch.type = Warsaw::TextBuffer::cursor;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -96,14 +97,14 @@ void TextBufferImpl::backward()
 
 void TextBufferImpl::shift(CORBA::Long d)
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   {
     MutexGuard guard(mutex);
     buffer.shift(d);
     ch.pos = buffer.position();
   }
   ch.len = 0;
-  ch.type = TextBuffer::cursor;
+  ch.type = Warsaw::TextBuffer::cursor;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -111,14 +112,14 @@ void TextBufferImpl::shift(CORBA::Long d)
 
 void TextBufferImpl::insertChar(Unichar u)
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   {
     MutexGuard guard(mutex);
     ch.pos = buffer.position();
     buffer.insert(u);
   }
   ch.len = 1;
-  ch.type = TextBuffer::insert;
+  ch.type = Warsaw::TextBuffer::insert;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -126,7 +127,7 @@ void TextBufferImpl::insertChar(Unichar u)
 
 void TextBufferImpl::insertString(const Unistring &s)
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   ch.len = s.length();
   Unichar u[ch.len];
   for (long i = 0; i < ch.len; i++) u[i] = s[i];
@@ -137,7 +138,7 @@ void TextBufferImpl::insertString(const Unistring &s)
     buffer.insert(u,ch.len);
   }
 
-  ch.type = TextBuffer::insert;
+  ch.type = Warsaw::TextBuffer::insert;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -145,7 +146,7 @@ void TextBufferImpl::insertString(const Unistring &s)
 
 void TextBufferImpl::removeBackward(CORBA::Long n)
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   ch.len = -n;
 
   {
@@ -154,7 +155,7 @@ void TextBufferImpl::removeBackward(CORBA::Long n)
     buffer.removeBackward(n);
   }
 
-  ch.type = TextBuffer::remove;
+  ch.type = Warsaw::TextBuffer::remove;
   CORBA::Any any;
   any <<= ch;
   notify(any);
@@ -162,7 +163,7 @@ void TextBufferImpl::removeBackward(CORBA::Long n)
 
 void TextBufferImpl::removeForward(CORBA::Long n)
 {
-  TextBuffer::Change ch;  
+  Warsaw::TextBuffer::Change ch;  
   ch.len = n;
 
   {
@@ -170,7 +171,7 @@ void TextBufferImpl::removeForward(CORBA::Long n)
     ch.pos = buffer.position();
     buffer.removeForward(n);
   }
-  ch.type = TextBuffer::remove;
+  ch.type = Warsaw::TextBuffer::remove;
   CORBA::Any any;
   any <<= ch;
   notify(any);

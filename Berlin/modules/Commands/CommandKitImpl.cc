@@ -30,85 +30,84 @@
 #include "Command/TextBufferImpl.hh"
 #include "Command/StreamBufferImpl.hh"
 
-CommandKitImpl::CommandKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-CommandKitImpl::~CommandKitImpl()
-{
-  for (vector<CommandImpl *>::iterator i = commands.begin(); i != commands.end(); i++) deactivate(*i);
-}
+using namespace Warsaw;
 
+CommandKitImpl::CommandKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p) {}
+CommandKitImpl::~CommandKitImpl() {}
 Command_ptr CommandKitImpl::log(const char *text)
 {
-  LogCommand *command = activate(new LogCommand(text));
-  commands.push_back(command);
+  LogCommand *command = new LogCommand(cout, text);
+  activate(command);
   return command->_this();
 }
 
 MacroCommand_ptr CommandKitImpl::composite()
 {
-  MacroCommandImpl *command = activate(new MacroCommandImpl());
-  commands.push_back(command);
+  MacroCommandImpl *command = new MacroCommandImpl();
+  activate(command);
   return command->_this();
 }
 
 TelltaleConstraint_ptr CommandKitImpl::exclusive(Telltale::Mask m)
 {
-  ExclusiveChoice *constraint = activate(new ExclusiveChoice(m));
-//   subjects.push_back(constraint);
+  ExclusiveChoice *constraint = new ExclusiveChoice(m);
+  activate(constraint);
   return constraint->_this();
 }
 
 TelltaleConstraint_ptr CommandKitImpl::selectionRequired()
 {
-  SelectionRequired *constraint = activate(new SelectionRequired);
-//   subjects.push_back(constraint);
+  SelectionRequired *constraint = new SelectionRequired();
+  activate(constraint);
   return constraint->_this();
 }
 
 Telltale_ptr CommandKitImpl::normalTelltale()
 {
-  TelltaleImpl *telltale = activate(new TelltaleImpl(TelltaleConstraint::_nil()));
-  subjects.push_back(telltale);
+  TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
+  activate(telltale);
   return telltale->_this();
 }
 
 Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
 {
-    TelltaleImpl *telltale = activate(new TelltaleImpl(constraint));
-    subjects.push_back(telltale);
+    TelltaleImpl *telltale = new TelltaleImpl(constraint);
+    activate(telltale);
     constraint->add(telltale->_this());
     return telltale->_this();
 }
 
 BoundedValue_ptr CommandKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
 {
-  BoundedValueImpl *bounded = activate(new BoundedValueImpl(l, u, v, s, p));
-  subjects.push_back(bounded);
+  BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
+  activate(bounded);
   return bounded->_this();  
 }
 
 BoundedRange_ptr CommandKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
 {
-  BoundedRangeImpl *bounded = activate(new BoundedRangeImpl(l, u, lv, uv, s, p));
-  subjects.push_back(bounded);
+  BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
+  activate(bounded);
   return bounded->_this();  
 }
 
 TextBuffer_ptr CommandKitImpl::text()
 {
-  TextBufferImpl *buffer = activate(new TextBufferImpl());
-  subjects.push_back(buffer);
+  TextBufferImpl *buffer = new TextBufferImpl();
+  activate(buffer);
   return buffer->_this();  
 }
 
 StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
 {
-  StreamBufferImpl *buffer = activate(new StreamBufferImpl(b));
-  subjects.push_back(buffer);
+  StreamBufferImpl *buffer = new StreamBufferImpl(b);
+  activate(buffer);
   return buffer->_this();  
 }
 
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "CommandKitImpl"};
-  return new KitFactoryImpl<CommandKitImpl>(CommandKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<CommandKitImpl>("IDL:Warsaw/CommandKit:1.0", properties, 1);
 }

@@ -22,6 +22,8 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Input.hh>
 
+namespace Warsaw
+{
 namespace Input
 {
 
@@ -38,4 +40,5 @@ inline int getPosition(const Event &event, Input::Position &position)
   return -1;
 }
 
+};
 };

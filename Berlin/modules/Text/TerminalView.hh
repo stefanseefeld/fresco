@@ -29,24 +29,25 @@
 #include <map>
 #include <vector>
 
-class TerminalView : public virtual POA_View, public Composition
+class TerminalView : public virtual POA_Warsaw::View,
+		     public Composition
 {
   typedef vector<Composition *> lines_t;
  public:
-  TerminalView(StreamBuffer_ptr, TextKit_ptr, DrawingKit_ptr, Compositor *, Compositor *);
+  TerminalView(Warsaw::StreamBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *, Compositor *);
   virtual ~TerminalView();
-  virtual void request(Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
   virtual void needResize();
   virtual void update(const CORBA::Any &);
  protected:
   void begin();
   void end();
-  StreamBuffer_ptr stream;
-  TextKit_var kit;
-  DrawingKit_var canonicalDK;
+  Warsaw::StreamBuffer_ptr stream;
+  Warsaw::TextKit_var kit;
+  Warsaw::DrawingKit_var canonicalDK;
   Compositor *compositor;
   lines_t lines;
   bool locked;
 };
 
-#endif /* _TerminalView_hh */
+#endif

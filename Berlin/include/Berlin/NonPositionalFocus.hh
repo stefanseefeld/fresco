@@ -34,23 +34,23 @@ class ScreenImpl;
 
 class NonPositionalFocus : public FocusImpl
 {
-  typedef vector<Controller_var> cstack_t;
+  typedef vector<Warsaw::Controller_var> cstack_t;
  public:
-  NonPositionalFocus(Input::Device, ScreenImpl *);
+  NonPositionalFocus(Warsaw::Input::Device, ScreenImpl *);
   virtual ~NonPositionalFocus();
 
   virtual void grab() {}
   virtual void ungrab() {}
-  virtual void addFilter(Input::Filter_ptr);
+  virtual void addFilter(Warsaw::Input::Filter_ptr);
 
-  virtual bool request(Controller_ptr);
-  virtual void restore(Region_ptr) {}
-  virtual void damage(Region_ptr) {}
-  virtual void dispatch(Input::Event &);
+  virtual bool request(Warsaw::Controller_ptr);
+  virtual void restore(Warsaw::Region_ptr) {}
+  virtual void damage(Warsaw::Region_ptr) {}
+  virtual void dispatch(Warsaw::Input::Event &);
  private:
   ScreenImpl        *screen;
   cstack_t           controllers;
   Prague::Mutex      mutex;
 };
 
-#endif /* _NonPositionalFocus_hh */
+#endif 

@@ -23,11 +23,9 @@
 #include <iostream>
 #include <string>
 
+using namespace Warsaw;
+
 ClientContextImpl::ClientContextImpl()
-//. This is a handle to a client application that the display server holds. It
-//. provides the display server with enough mechanisms to check to see if the
-//. client is alive and to determine the client's security rights. It is
-//. instantiated within the client address space.
   : user(new Prague::User())
 {};  
   

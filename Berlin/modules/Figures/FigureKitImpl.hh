@@ -26,37 +26,35 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
+#include <Warsaw/Figure.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
-class Figure;
-
-class FigureKitImpl : public virtual POA_FigureKit, public KitImpl
+class FigureKitImpl : public virtual POA_Warsaw::FigureKit,
+		      public KitImpl
 {
  public:
-  FigureKitImpl(KitFactory *, const PropertySeq &);
+  FigureKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~FigureKitImpl();
   
-  Graphic_ptr root(Graphic_ptr);
-  Graphic_ptr fitter(Graphic_ptr);
-  Graphic_ptr group();
-  Graphic_ptr ugroup();
+  Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
+  Warsaw::Graphic_ptr fitter(Warsaw::Graphic_ptr);
+  Warsaw::Graphic_ptr group();
+  Warsaw::Graphic_ptr ugroup();
   
-  Figures::Point_ptr point(Coord, Coord);
-  Figures::Line_ptr line(Coord, Coord, Coord, Coord);
-  Figures::Rectangle_ptr rectangle(Coord, Coord, Coord, Coord);
-  Figures::Circle_ptr circle(Coord, Coord, Coord);
-  Figures::Ellipse_ptr ellipse(Coord, Coord, Coord, Coord);
+  Warsaw::Figures::Point_ptr point(Warsaw::Coord, Warsaw::Coord);
+  Warsaw::Figures::Line_ptr line(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Warsaw::Figures::Rectangle_ptr rectangle(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Warsaw::Figures::Circle_ptr circle(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Warsaw::Figures::Ellipse_ptr ellipse(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   //   Figures::Path_ptr openBspline(const Figure::Vertices &);
   //   Figures::Path_ptr closedBspline(const Figure::Vertices &);
-  Figures::Path_ptr multiline(const Figure::Vertices &);
-  Figures::Path_ptr polygon(const Figure::Vertices &);
+  Warsaw::Figures::Path_ptr multiline(const Warsaw::Figure::Vertices &);
+  Warsaw::Figures::Path_ptr polygon(const Warsaw::Figure::Vertices &);
   
-  Image_ptr   pixmap(Raster_ptr);
-  Graphic_ptr texture(Graphic_ptr, Raster_ptr);
-  Graphic_ptr transformer(Graphic_ptr);
- protected:
-  vector<PortableServer::Servant> figures;
+  Warsaw::Image_ptr   pixmap(Warsaw::Raster_ptr);
+  Warsaw::Graphic_ptr texture(Warsaw::Graphic_ptr, Warsaw::Raster_ptr);
+  Warsaw::Graphic_ptr transformer(Warsaw::Graphic_ptr);
 };
 
 

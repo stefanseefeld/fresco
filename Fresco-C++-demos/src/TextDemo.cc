@@ -22,6 +22,8 @@
 
 #include "TextDemo.hh"
 
+using namespace Warsaw;
+
 TextDemo::TextDemo(Application *a)
   : Demo(a)
 {

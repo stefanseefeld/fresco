@@ -22,10 +22,12 @@
  */
 
 #include "Text/Compositor.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/GraphicImpl.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Berlin/Math.hh"
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/GraphicImpl.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Berlin/Math.hh>
+
+using namespace Warsaw;
 
 void Compositor::setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align)
 {
@@ -76,7 +78,7 @@ Coord Compositor::computeSqueeze(const Graphic::Requirement &r, Coord length)
 
 void LRCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_ptr, Graphic::Requisition &result)
 {
-  Graphic::Requirement *r;
+  Warsaw::Graphic::Requirement *r;
   /*
    * tile horizontally
    */
@@ -134,8 +136,8 @@ void LRCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
 
 void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr, Region_ptr given, Allocations result)
 {
-  Graphic::Requirement* r;
-  Region::Allotment a;
+  Warsaw::Graphic::Requirement* r;
+  Warsaw::Region::Allotment a;
   /*
    * tile horizontally
    */
@@ -177,7 +179,7 @@ void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
 
 void TBCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_ptr, Graphic::Requisition &result)
 {
-  Graphic::Requirement *r;
+  Warsaw::Graphic::Requirement *r;
   /*
    * tile vertically
    */
@@ -235,8 +237,8 @@ void TBCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
 
 void TBCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr, Region_ptr given, Allocations result)
 {
-  Graphic::Requirement* r;
-  Region::Allotment a;
+  Warsaw::Graphic::Requirement* r;
+  Warsaw::Region::Allotment a;
   /*
    * tile vertically
    */

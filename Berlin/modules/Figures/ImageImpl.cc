@@ -21,22 +21,25 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/PickTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
 #include "Figure/ImageImpl.hh"
 
+using namespace Prague;
+using namespace Warsaw;
+
 ImageImpl::ImageImpl(Raster_ptr r)
-  : raster(Raster::_duplicate(r))
+  : raster(RefCount_var<Warsaw::Raster>::increment(r))
 {
-  Raster::Info info = raster->header();
+  Warsaw::Raster::Info info = raster->header();
   width = info.width*10.;
   height = info.height*10.;
 }
-ImageImpl::~ImageImpl() {}
-
-void ImageImpl::request(Requisition &r)
+ImageImpl::~ImageImpl() { Trace trace("ImageImpl::~ImageImpl");}
+void ImageImpl::request(Warsaw::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.natural = r.x.maximum = r.x.minimum = width;
@@ -53,7 +56,12 @@ void ImageImpl::draw(DrawTraversal_ptr traversal)
   dk->drawImage(raster);
 }
 
-Texture::Texture(Raster_ptr r) : raster(Raster::_duplicate(r)) {}
+void ImageImpl::update(const CORBA::Any &)
+{
+  needRedraw();
+}
+
+Texture::Texture(Raster_ptr r) : raster(RefCount_var<Warsaw::Raster>::increment(r)) {}
 Texture::~Texture() {}
 void Texture::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
 void Texture::draw(DrawTraversal_ptr traversal)

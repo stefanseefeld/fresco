@@ -26,20 +26,21 @@
 #include <Warsaw/Trigger.hh>
 #include <Warsaw/Command.hh>
 #include <Berlin/ControllerImpl.hh>
+#include <Berlin/RefCountVar.hh>
 
-class TriggerImpl : public virtual POA_Trigger, public ControllerImpl
+class TriggerImpl : public virtual POA_Warsaw::Trigger,
+		    public ControllerImpl
 {
  public:
   TriggerImpl() : ControllerImpl(false) {}
   ~TriggerImpl() {}
-  void action(Command_ptr c) { command = Command::_duplicate(c);}
-  Command_ptr action() { return Command::_duplicate(command);}
-// protected:
-  virtual void release(PickTraversal_ptr, const Input::Event &);
-  virtual void keyPress(const Input::Event &);
+  void action(Warsaw::Command_ptr c) { command = RefCount_var<Warsaw::Command>::increment(c);}
+  Warsaw::Command_ptr action() { return RefCount_var<Warsaw::Command>::increment(command);}
+  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void keyPress(const Warsaw::Input::Event &);
   void execute(const CORBA::Any &any) { if (!CORBA::is_nil(command)) command->execute(any);}
  private:
-  Command_var command;
+  RefCount_var<Warsaw::Command> command;
 };
 
-#endif /* _TriggerImpl_hh */
+#endif

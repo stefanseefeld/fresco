@@ -34,23 +34,23 @@ class Pointer
 public:
   Pointer(Console::Drawable *);
   ~Pointer();
-  void move(Coord, Coord);
+  void move(Warsaw::Coord, Warsaw::Coord);
   void draw();
   void save();
   void restore();
-  bool intersects(const Coord &, const Coord &, const Coord &, const Coord &);
+  bool intersects(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
 private:
-  Console::Drawable *screen;
-  PixelCoord         origin[2];
-  PixelCoord         position[2];
-  PixelCoord         size[2];
-  Coord              scale[2];
-  unsigned char     *image;
-  unsigned char     *mask;
-  unsigned char     *cache;
+  Console::Drawable  *screen;
+  Warsaw::PixelCoord  origin[2];
+  Warsaw::PixelCoord  position[2];
+  Warsaw::PixelCoord  size[2];
+  Warsaw::Coord       scale[2];
+  unsigned char      *image;
+  unsigned char      *mask;
+  unsigned char      *cache;
 };
 
-inline bool Pointer::intersects(const Coord &l, const Coord &r, const Coord &t, const Coord &b)
+inline bool Pointer::intersects(Warsaw::Coord l, Warsaw::Coord r, Warsaw::Coord t, Warsaw::Coord b)
 {
   return
     l/scale[0] <= position[0] + size[0] &&

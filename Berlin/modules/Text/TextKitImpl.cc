@@ -21,6 +21,7 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/Server.hh>
@@ -41,33 +42,34 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 Mutex TextKitImpl::staticMutex;
 map<Unichar,Impl_var<TextChunk> > TextKitImpl::charCache;
 DrawingKit_var TextKitImpl::canonicalDK;
 
-TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p)
+TextKitImpl::TextKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p),  _strut(0),
   lineCompositor(new LRCompositor()), 
   pageCompositor(new TBCompositor())
 {
+  Trace trace("TextKitImpl::TextKitImpl");
 }
 
 TextKitImpl::~TextKitImpl()
 {
+  Trace trace("TextKitImpl::~TextKitImpl");
   delete lineCompositor;
   delete pageCompositor;
-  for (vector<PortableServer::Servant>::iterator i = graphics.begin(); i != graphics.end(); ++i)
-    deactivate(*i);
 }
 
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
   KitImpl::bind(sc);
-  PropertySeq props;
+  Warsaw::Kit::PropertySeq props;
   props.length(0);
-  canonicalDK = DrawingKit::_narrow(sc->getSingleton(DrawingKit::_PD_repoId));
-  layout = resolve_kit<LayoutKit>(sc, LayoutKit::_PD_repoId, props);
+  canonicalDK = DrawingKit::_narrow(sc->getSingleton("IDL:Warsaw/DrawingKit:1.0"));
+  layout = resolve_kit<LayoutKit>(sc, "IDL:Warsaw/LayoutKit:1.0", props);
 }
 
 // chunks are flyweights
@@ -130,20 +132,19 @@ Graphic_ptr TextKitImpl::strut()
 Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
 {
   Trace trace("TextKitImpl::simpleViewer");
-  Impl_var<TextViewer> tv(new TextViewer(buf, TextKit_var(_this()), canonicalDK, lineCompositor));
-  tv->init(); // FIXME: we can get rid of this stuff when we switch to POA
-  graphics.push_back(tv.get());
+  TextViewer *tv = new TextViewer(buf, TextKit_var(_this()), canonicalDK, lineCompositor);
+  activate(tv);
   buf->attach(Observer_var(tv->_this()));
-  return tv._retn()->_this();
+  return tv->_this();
 }
 
 Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
 {
   Trace trace("TextKitImpl::terminal");
-  Impl_var<TerminalView> tv(new TerminalView(buf, TextKit_var(_this()), canonicalDK, lineCompositor, pageCompositor));
-  graphics.push_back(tv.get());
+  TerminalView *tv = new TerminalView(buf, TextKit_var(_this()), canonicalDK, lineCompositor, pageCompositor);
+  activate(tv);
   buf->attach(Observer_var(tv->_this()));
-  return tv._retn()->_this();
+  return tv->_this();
 }
 
 ///////////////////////
@@ -223,5 +224,5 @@ Graphic_ptr TextKitImpl::fontAttr(Graphic_ptr g, const NVPair &nvp)
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
-  return new KitFactoryImpl<TextKitImpl>(TextKit::_PD_repoId, properties, 2);
+  return new KitFactoryImpl<TextKitImpl>("IDL:Warsaw/TextKit:1.0", properties, 2);
 } 

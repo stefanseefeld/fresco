@@ -19,64 +19,94 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Tracer.hh>
 #include "Berlin/MonoGraphic.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Providers.hh"
-#include <Prague/Sys/Tracer.hh>
+#include "Berlin/Provider.hh"
+#include "Berlin/RefCountVar.hh"
 
 using namespace Prague;
+using namespace Warsaw;
 
 MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()
 {
+  Trace trace("MonoGraphic::~MonoGraphic");
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()), 0);
+  if (!CORBA::is_nil(child.peer))
+    {
+      try
+	{
+	  child.peer->decrement();
+	  child.peer->removeParent(child.peerId);
+	}
+      catch(CORBA::OBJECT_NOT_EXIST &)
+	{
+	  cerr << "unable to release body graphic !" << endl;
+	}
+    }
 }
 
 Graphic_ptr MonoGraphic::body()
 {
   MutexGuard guard(childMutex);
-  return Graphic::_duplicate(child);
+  return Warsaw::Graphic::_duplicate(child.peer);
 }
 
 void MonoGraphic::body(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()), 0);
-  child = Graphic::_duplicate(c);
-  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), 0);
+  if (!CORBA::is_nil(child.peer))
+    {
+      child.peer->removeParent(child.peerId);
+      child.peer->decrement();
+    }
+  child.peer = Warsaw::Graphic::_duplicate(c);
+  if (!CORBA::is_nil(child.peer))
+    {
+      child.peerId = child.peer->addParent(Graphic_var(_this()), 0);
+      child.peer->increment();
+    }
 }
 
 void MonoGraphic::append(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->append(c);
+  if (!CORBA::is_nil(child.peer)) child.peer->append(c);
 }
 
 void MonoGraphic::prepend(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->prepend(c);
+  if (!CORBA::is_nil(child.peer)) child.peer->prepend(c);
 }
 
-void MonoGraphic::remove(Tag t)
+void MonoGraphic::remove(Tag localId)
 {
+  Trace trace("MonoGraphic::remove");
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->remove(t);
+  if (!CORBA::is_nil(child.peer)) child.peer->remove(localId);
 }
 
-Graphic::Iterator_ptr MonoGraphic::firstChild()
+void MonoGraphic::removeChild(Tag localId)
 {
+  Trace trace("MonoGraphic::removeChild");
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) return child->firstChild();
+  if (localId == 0) child.peer = Warsaw::Graphic::_nil();
 }
 
-Graphic::Iterator_ptr MonoGraphic::lastChild()
+Warsaw::Graphic::Iterator_ptr MonoGraphic::firstChild()
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) return child->lastChild();
+  if (!CORBA::is_nil(child.peer)) return child.peer->firstChild();
+}
+
+Warsaw::Graphic::Iterator_ptr MonoGraphic::lastChild()
+{
+  MutexGuard guard(childMutex);
+  if (!CORBA::is_nil(child.peer)) return child.peer->lastChild();
 }
 
 Transform_ptr MonoGraphic::transformation()
@@ -85,24 +115,22 @@ Transform_ptr MonoGraphic::transformation()
   return CORBA::is_nil(child) ? Transform::_nil() : child->transformation();
 }
 
-void MonoGraphic::request(Graphic::Requisition &r)
+void MonoGraphic::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("MonoGraphic::request");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
-void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
+void MonoGraphic::extension(const Warsaw::Allocation::Info &info, Region_ptr region)
 {
   Trace trace("MonoGraphic::extension");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
-      Lease<RegionImpl> tmp;
-      Providers::region.provide(tmp);
+      Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
       tmp->clear();
-      Lease<TransformImpl> transform;
-      Providers::trafo.provide(transform);
+      Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
       transform->loadIdentity();
       Allocation::Info i;
       i.allocation = tmp->_this();

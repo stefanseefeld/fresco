@@ -29,12 +29,12 @@
 
 struct LibArtRaster
 {
-  LibArtRaster(Raster_var r);
+  LibArtRaster(Warsaw::Raster_var r);
   virtual LibArtRaster::~LibArtRaster();  
-  Raster_var remote;
+  Warsaw::Raster_var remote;
   art_u8 *pixels;
 public:
   ArtPixBuf *pixbuf;
 };
 
-#endif /* _LibArtRaster_hh */
+#endif 

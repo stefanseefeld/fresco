@@ -28,13 +28,26 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
+
+inline void deactivate(PortableServer::Servant servant)
+{
+  Prague::Trace trace("deactivate");
+  PortableServer::POA_var poa = servant->_default_POA();
+  PortableServer::ObjectId *oid = poa->servant_to_id(servant);
+  poa->deactivate_object(*oid);
+  delete oid;
+}
 
 EventManager::EventManager(ScreenImpl *s)
-  : screen(s), drawable(Console::drawable())
+  : screen(s)
 {
   Trace trace("EventManager::EventManager");
-  focus.push_back(activate(new NonPositionalFocus(0, screen))); // keyboard
-  focus.push_back(activate(new PositionalFocus(1, screen)));    // mouse
+  drawable = Console::drawable();
+  Impl_var<FocusImpl> f(new NonPositionalFocus(0, screen));
+  focus.push_back(f._retn()); // keyboard
+  f = new PositionalFocus(1, screen);
+  focus.push_back(f._retn());    // mouse
 }
 
 EventManager::~EventManager()

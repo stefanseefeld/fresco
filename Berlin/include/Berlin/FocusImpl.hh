@@ -28,23 +28,24 @@
 #include <stack>
 #include <vector>
 
-class FocusImpl : public virtual POA_Focus, public virtual PortableServer::RefCountServantBase
+class FocusImpl : public virtual POA_Warsaw::Focus,
+                  public virtual PortableServer::RefCountServantBase
 {
-  typedef stack<Input::Filter_var> fstack_t;
+  typedef stack<Warsaw::Input::Filter_var> fstack_t;
   typedef vector<size_t> memento_t;
  public:
-  FocusImpl(Input::Device dd) : d(dd) {}
+  FocusImpl(Warsaw::Input::Device dd) : d(dd) {}
   virtual ~FocusImpl() {}
-  virtual Input::Device device() { return d;}
+  virtual Warsaw::Input::Device device() { return d;}
 
-  virtual bool request(Controller_ptr) = 0;
-  virtual void restore(Region_ptr) = 0;
-  virtual void damage(Region_ptr) = 0;
-  virtual void dispatch(Input::Event &) = 0;
+  virtual bool request(Warsaw::Controller_ptr) = 0;
+  virtual void restore(Warsaw::Region_ptr) = 0;
+  virtual void damage(Warsaw::Region_ptr) = 0;
+  virtual void dispatch(Warsaw::Input::Event &) = 0;
  private:
-  const Input::Device d;
+  const Warsaw::Input::Device d;
   fstack_t filters;
   memento_t memento;
 };
 
-#endif /* _FocusImpl_hh */
+#endif

@@ -23,8 +23,9 @@
 #include "Widget/Motif/Terminal.hh"
 #include <Prague/Sys/Tracer.hh>
 
-using namespace Motif;
 using namespace Prague;
+using namespace Warsaw;
+using namespace Motif;
 
 void Terminal::Input::update(const CORBA::Any &)
 {
@@ -32,7 +33,7 @@ void Terminal::Input::update(const CORBA::Any &)
   /*
    * the source
    */
-  StreamBuffer::Data_var data = terminal->ibuf->read();
+  Warsaw::StreamBuffer::Data_var data = terminal->ibuf->read();
   char *begin = (char *)data->get_buffer();
   char *end   = begin + data->length();
   /*
@@ -68,8 +69,8 @@ Terminal::Terminal(CommandKit_ptr command)
     _input(new Input(this)),
     _output(new Output(this)),
     agent(new TTYAgent("sh", _output, 0)),
-    ibuf(StreamBuffer::_duplicate(command->stream(1))),
-    obuf(StreamBuffer::_duplicate(command->stream(1024)))
+    ibuf(RefCount_var<StreamBuffer>::increment(command->stream(1))),
+    obuf(RefCount_var<StreamBuffer>::increment(command->stream(1024)))
 {
   Trace trace("Terminal::Terminal");
   ibuf->attach(Observer_var(_input->_this()));

@@ -26,7 +26,8 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/Graphic.hh>
-#include "Berlin/KitImpl.hh"
+#include <Berlin/KitImpl.hh>
+#include <Berlin/KitFactory.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Plugin.hh>
 #include <vector>
@@ -36,7 +37,8 @@
 
 class ServerContextImpl;
 
-class ServerImpl : public virtual POA_Server, public virtual PortableServer::RefCountServantBase
+class ServerImpl : public virtual POA_Warsaw::Server,
+                   public virtual PortableServer::RefCountServantBase
 //. the Server just hands out new ServerContexts to
 //. people who are connecting.  it might want to do some checking on
 //. the incoming ClientContext's credentials, but at the moment it doesn't.
@@ -47,18 +49,18 @@ class ServerImpl : public virtual POA_Server, public virtual PortableServer::Ref
   typedef multimap<string, KitImpl *> kmap_t;
   typedef map<string, CORBA::Object_var> smap_t;
  public:
-  typedef multimap<string, Kit::PropertySeq_var> FactoryList;
+  typedef multimap<string, Warsaw::Kit::PropertySeq_var> FactoryList;
   ServerImpl();
-  virtual ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
+  virtual Warsaw::ServerContext_ptr newServerContext(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
   virtual void setSingleton(const char *, CORBA::Object_ptr)
-    throw (SecurityException, SingletonFailureException);
+    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   virtual void delSingleton(const char *)
-    throw (SecurityException, SingletonFailureException);
+    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   virtual CORBA::Object_ptr getSingleton(const char *) 
-    throw (SecurityException, SingletonFailureException);
+    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   
   template <class K>
-  typename K::_ptr_type resolve(const char *, const Kit::PropertySeq &);
+  typename K::_ptr_type resolve(const char *, const Warsaw::Kit::PropertySeq &, PortableServer::POA_ptr);
   void ping();
   // this builds the plugin table
   void scan(const string &);
@@ -66,7 +68,7 @@ class ServerImpl : public virtual POA_Server, public virtual PortableServer::Ref
   FactoryList list();
   void start();
  protected:
-  KitImpl *create(const char *, const Kit::PropertySeq &);
+  KitImpl *create(const char *, const Warsaw::Kit::PropertySeq &, PortableServer::POA_ptr);
  private:
   static void *run(void *);
   smap_t  singletons;
@@ -78,14 +80,14 @@ class ServerImpl : public virtual POA_Server, public virtual PortableServer::Ref
 };
 
 template <class K>
-typename K::_ptr_type ServerImpl::resolve(const char *type, const Kit::PropertySeq &properties)
+typename K::_ptr_type ServerImpl::resolve(const char *type, const Warsaw::Kit::PropertySeq &properties, PortableServer::POA_ptr poa)
 {
-  KitImpl *kit = create(type, properties);
+  KitImpl *kit = create(type, properties, poa);
   if (!kit) return K::_nil();
   typename K::_var_type reference;
   try
     {
-      reference = K::_narrow(Kit_var(kit->_this()));
+      reference = K::_narrow(Warsaw::Kit_var(kit->_this()));
     }
   catch (CORBA::Exception &e)
     {

@@ -31,24 +31,23 @@
 class CommandImpl;
 class SubjectImpl;
 
-class CommandKitImpl : public virtual POA_CommandKit, public KitImpl
+class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
+		       public KitImpl
 {
  public:
-  CommandKitImpl(KitFactory *, const PropertySeq &);
+  CommandKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~CommandKitImpl();
-  Command_ptr log(const char *);
-  MacroCommand_ptr composite();
-  TelltaleConstraint_ptr exclusive(Telltale::Mask);
-  TelltaleConstraint_ptr selectionRequired();
-  Telltale_ptr     constrainedTelltale(TelltaleConstraint_ptr);
-  Telltale_ptr     normalTelltale();
-  BoundedValue_ptr bvalue(Coord, Coord, Coord, Coord, Coord);
-  BoundedRange_ptr brange(Coord, Coord, Coord, Coord, Coord, Coord);
-  TextBuffer_ptr   text();
-  StreamBuffer_ptr stream(CORBA::Long);
+  Warsaw::Command_ptr log(const char *);
+  Warsaw::MacroCommand_ptr composite();
+  Warsaw::TelltaleConstraint_ptr exclusive(Warsaw::Telltale::Mask);
+  Warsaw::TelltaleConstraint_ptr selectionRequired();
+  Warsaw::Telltale_ptr     constrainedTelltale(Warsaw::TelltaleConstraint_ptr);
+  Warsaw::Telltale_ptr     normalTelltale();
+  Warsaw::BoundedValue_ptr bvalue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Warsaw::BoundedRange_ptr brange(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Warsaw::TextBuffer_ptr   text();
+  Warsaw::StreamBuffer_ptr stream(CORBA::Long);
  private:
-  vector<CommandImpl *> commands;
-  vector<SubjectImpl *> subjects;
 };
 
 #endif

@@ -21,17 +21,18 @@
  */
 
 #include "Widget/Motif/Scrollbar.hh"
-#include <Berlin/Providers.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
 
+using namespace Warsaw;
 using namespace Motif;
 
-class Scrollbar::Dragger : public virtual POA_Command,
+class Scrollbar::Dragger : public virtual POA_Warsaw::Command,
 		           public virtual PortableServer::RefCountServantBase,
 	                   public virtual RefCountBaseImpl
 {
 public:
-  Dragger(BoundedRange_ptr v, Axis a) : value(BoundedRange::_duplicate(v)), axis(a) {}
+  Dragger(BoundedRange_ptr v, Axis a) : value(RefCount_var<BoundedRange>::increment(v)), axis(a) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -43,16 +44,16 @@ public:
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
-  BoundedRange_var value;
+  RefCount_var<BoundedRange> value;
   Axis axis;
 };
 
-Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Requisition &r)
+Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
   : ControllerImpl(false),
     requisition(r),
     redirect(new Observer(this)),
     _drag(new Dragger(v, a)),
-    range(BoundedRange::_duplicate(v)),
+    range(RefCount_var<BoundedRange>::increment(v)),
     axis(a)
 {
   BoundedRange::Settings settings = v->getSettings();
@@ -96,8 +97,7 @@ void Scrollbar::pick(PickTraversal_ptr traversal)
 
 void Scrollbar::allocate(Tag, const Allocation::Info &info)
 {
-  Lease<RegionImpl> allocation;
-  Providers::region.provide(allocation);
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(info.allocation);
   if (axis == xaxis)
     {
@@ -123,11 +123,9 @@ void Scrollbar::traverseThumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  Lease<RegionImpl> allocation;
-  Providers::region.provide(allocation);
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(Region_var(traversal->allocation()));
-  Lease<TransformImpl> tx;
-  Providers::trafo.provide(tx);
+  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->loadIdentity();
   if (axis == xaxis)
     {

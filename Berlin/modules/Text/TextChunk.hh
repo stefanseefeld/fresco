@@ -37,16 +37,16 @@ class TextChunk : public virtual GraphicImpl
 //. winds up being at draw-time.
 {
 public:
-  TextChunk(const Unichar ch, const Graphic::Requisition &);
-  virtual void draw(DrawTraversal_ptr dt);
-  virtual void request(Graphic::Requisition &);
+  TextChunk(const Warsaw::Unichar ch, const Warsaw::Graphic::Requisition &);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void request(Warsaw::Graphic::Requisition &);
   
-  void getText(Unicode::String &u); 
+  void getText(Unicode::String &); 
   unsigned long getLength();
 protected:
-  Coord width, height;
-  Alignment xalign, yalign;
-  Unichar myChar;
+  Warsaw::Coord width, height;
+  Warsaw::Alignment xalign, yalign;
+  Warsaw::Unichar myChar;
 };
 
 #endif

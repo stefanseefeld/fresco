@@ -24,6 +24,7 @@
 #include <algorithm>
 
 using namespace Prague;
+using namespace Warsaw;
 
 BoundedRangeImpl::BoundedRangeImpl(Coord l, Coord u, Coord lv, Coord uv, Coord ss, Coord pp)
   : s(ss), p(pp)

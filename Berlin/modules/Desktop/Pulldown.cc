@@ -21,13 +21,13 @@
  */
 #include "Desktop/Pulldown.hh"
 
-void Pulldown::loseFocus(Input::Device)
+void Pulldown::loseFocus(Warsaw::Input::Device)
 {
   unmap();
 }
 
 void Pulldown::map()
 {
-  if (requestFocus(Controller_var(_this()), 1))
+  if (requestFocus(Warsaw::Controller_var(_this()), 1))
     WindowImpl::map();
 }

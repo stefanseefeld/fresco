@@ -22,7 +22,7 @@
 #ifndef _Application_hh
 #define _Application_hh
 
-#include <Warsaw/Warsaw.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/TextKit.hh>
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
@@ -49,70 +49,78 @@ class Application
 {
   struct Item
   {
-    Tag id;
-    Command_var mapper;
-    BoundedValue_var alpha;
-    BoundedValue_var red;
-    BoundedValue_var blue;
-    BoundedValue_var green;
-    BoundedValue_var zrotation;
-    BoundedValue_var yrotation;
-    BoundedValue_var zoom;
-    Command_var settings;
+    Warsaw::Tag id;
+    Warsaw::Command_var mapper;
+    Warsaw::BoundedValue_var alpha;
+    Warsaw::BoundedValue_var red;
+    Warsaw::BoundedValue_var blue;
+    Warsaw::BoundedValue_var green;
+    Warsaw::BoundedValue_var zrotation;
+    Warsaw::BoundedValue_var yrotation;
+    Warsaw::BoundedValue_var zoom;
+    Warsaw::Command_var settings;
   };
   typedef vector<Item> list_t;
-  class RefCountBaseImpl : public virtual POA_Command,
+  class RefCountBaseImpl : public virtual POA_Warsaw::Command,
 			   public virtual PortableServer::RefCountServantBase
   {
   public:
     RefCountBaseImpl() : refcount(1) {}
     virtual void increment() { refcount++;}
-    virtual void decrement() { if (!--refcount) deactivate(this);}
+    virtual void decrement() { if (!--refcount) deactivate();}
   private:
+    void deactivate()
+    {
+      PortableServer::POA_var poa = _default_POA();
+      PortableServer::ObjectId *oid = poa->servant_to_id(this);
+      poa->deactivate_object(*oid);
+      delete oid;
+    }
     int refcount;
   };
   class Mapper : public RefCountBaseImpl
   {
   public:
-    Mapper(Application::list_t &d, Selection_ptr s) : demos(d), selection(Selection::_duplicate(s)) {}
+    Mapper(Application::list_t &d, Warsaw::Selection_ptr s) : demos(d), selection(Warsaw::Selection::_duplicate(s)) {}
     virtual void execute(const CORBA::Any &);
   private:
     Application::list_t &demos;
-    Selection_var selection;
+    Warsaw::Selection_var selection;
   };
   friend class Mapper;
 public:
-  Application(Warsaw *);
-  TextKit_ptr text() { return TextKit::_duplicate(tk);}
-  DesktopKit_ptr desktop() { return DesktopKit::_duplicate(dk);}
-  LayoutKit_ptr layout() { return LayoutKit::_duplicate(lk);}
-  ToolKit_ptr tool() { return ToolKit::_duplicate(ttk);}
-  WidgetKit_ptr widget() { return WidgetKit::_duplicate(wk);}
-  FigureKit_ptr figure() { return FigureKit::_duplicate(fk);}
-  CommandKit_ptr command() { return CommandKit::_duplicate(ck);}
-  ImageKit_ptr image() { return ImageKit::_duplicate(ik);}
-  GadgetKit_ptr gadget() { return GadgetKit::_duplicate(gk);}
-  void append(Controller_ptr, const Unicode::String &);
+  Application(Warsaw::ServerContext_ptr);
+  Warsaw::TextKit_ptr text() { return Warsaw::TextKit::_duplicate(tk);}
+  Warsaw::DesktopKit_ptr desktop() { return Warsaw::DesktopKit::_duplicate(dk);}
+  Warsaw::LayoutKit_ptr layout() { return Warsaw::LayoutKit::_duplicate(lk);}
+  Warsaw::ToolKit_ptr tool() { return Warsaw::ToolKit::_duplicate(ttk);}
+  Warsaw::WidgetKit_ptr widget() { return Warsaw::WidgetKit::_duplicate(wk);}
+  Warsaw::FigureKit_ptr figure() { return Warsaw::FigureKit::_duplicate(fk);}
+  Warsaw::CommandKit_ptr command() { return Warsaw::CommandKit::_duplicate(ck);}
+  Warsaw::ImageKit_ptr image() { return Warsaw::ImageKit::_duplicate(ik);}
+  Warsaw::GadgetKit_ptr gadget() { return Warsaw::GadgetKit::_duplicate(gk);}
+  void append(Warsaw::Controller_ptr, const Unicode::String &);
   void run();
 protected:
   Item makeItem(const Unicode::String &);
 private:
-  TextKit_var tk;
-  DesktopKit_var dk;
-  LayoutKit_var lk;
-  ToolKit_var ttk;
-  WidgetKit_var wk;
-  FigureKit_var fk;
-  CommandKit_var ck;
-  ImageKit_var ik;
-  GadgetKit_var gk;
-  Graphic_var vbox;
-  Choice_var  choice;
+  Warsaw::ServerContext_var server;
+  Warsaw::TextKit_var tk;
+  Warsaw::DesktopKit_var dk;
+  Warsaw::LayoutKit_var lk;
+  Warsaw::ToolKit_var ttk;
+  Warsaw::WidgetKit_var wk;
+  Warsaw::FigureKit_var fk;
+  Warsaw::CommandKit_var ck;
+  Warsaw::ImageKit_var ik;
+  Warsaw::GadgetKit_var gk;
+  Warsaw::Graphic_var vbox;
+  Warsaw::Choice_var  choice;
   list_t demos;
   Impl_var<Mapper> mapper;
-  Color background;
-  Graphic_var done;
-  Graphic_var settings;
+  Warsaw::Color background;
+  Warsaw::Graphic_var done;
+  Warsaw::Graphic_var settings;
 };
 
-#endif /* _Application_hh */
+#endif

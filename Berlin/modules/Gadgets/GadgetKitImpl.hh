@@ -31,21 +31,21 @@
 
 class GraphicImpl;
 
-class GadgetKitImpl : public virtual POA_GadgetKit, public KitImpl
+class GadgetKitImpl : public virtual POA_Warsaw::GadgetKit,
+		      public KitImpl
 {
  public:
-  GadgetKitImpl(KitFactory *, const PropertySeq &);
+  GadgetKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~GadgetKitImpl();
-  virtual void bind(ServerContext_ptr);
-  virtual Graphic_ptr rgb(Graphic_ptr, BoundedValue_ptr, BoundedValue_ptr, BoundedValue_ptr);
-  virtual Graphic_ptr alpha(Graphic_ptr, BoundedValue_ptr);
-  virtual Graphic_ptr lighting(Graphic_ptr, BoundedValue_ptr, BoundedValue_ptr, BoundedValue_ptr);
-  virtual Graphic_ptr rotator(Graphic_ptr, BoundedValue_ptr, Axis);
-  virtual Graphic_ptr zoomer(Graphic_ptr, BoundedValue_ptr);
+  virtual void bind(Warsaw::ServerContext_ptr);
+  virtual Warsaw::Graphic_ptr rgb(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr, Warsaw::BoundedValue_ptr, Warsaw::BoundedValue_ptr);
+  virtual Warsaw::Graphic_ptr alpha(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr);
+  virtual Warsaw::Graphic_ptr lighting(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr, Warsaw::BoundedValue_ptr, Warsaw::BoundedValue_ptr);
+  virtual Warsaw::Graphic_ptr rotator(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr, Warsaw::Axis);
+  virtual Warsaw::Graphic_ptr zoomer(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr);
  private:
-  CommandKit_var command;
-  FigureKit_var figure;
-  vector<PortableServer::Servant> gadgets;
+  Warsaw::CommandKit_var command;
+  Warsaw::FigureKit_var figure;
 };
 
-#endif /* _GadgetKitImpl_hh */
+#endif

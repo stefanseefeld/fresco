@@ -28,6 +28,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 NonPositionalFocus::NonPositionalFocus(Input::Device d, ScreenImpl *s) : FocusImpl(d), screen(s) {}
 NonPositionalFocus::~NonPositionalFocus() {}

@@ -28,28 +28,28 @@
 #include <list>
 #include "Berlin/RefCountBaseImpl.hh"
 
-class SubjectImpl : public virtual POA_Subject,
+class SubjectImpl : public virtual POA_Warsaw::Subject,
 		    public virtual PortableServer::RefCountServantBase,
 		    public virtual RefCountBaseImpl
 {
 public:
   SubjectImpl();
-  void attach(Observer_ptr);
-  void detach(Observer_ptr);
+  void attach(Warsaw::Observer_ptr);
+  void detach(Warsaw::Observer_ptr);
   void notify(const CORBA::Any &);
   virtual void notify();
-  void block(CORBA::Boolean b);  
+  void block(CORBA::Boolean);  
 private:
-  list<Observer_var> observers;
+  list<Warsaw::Observer_var> observers;
   CORBA::Boolean blocked;
   Prague::Mutex observerMutex;
   Prague::Mutex myMutex;
 };
 
-class ObserverImpl : public virtual POA_Observer,
+class ObserverImpl : public virtual POA_Warsaw::Observer,
 		     public virtual PortableServer::RefCountServantBase,
 		     public virtual RefCountBaseImpl
 {
 };
 
-#endif /* _SubjectImpl_hh */
+#endif 

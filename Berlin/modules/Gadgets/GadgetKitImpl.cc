@@ -29,7 +29,10 @@
 #include <Warsaw/resolve.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
+#include <Berlin/RefCountVar.hh>
 #include <cmath>
+
+using namespace Warsaw;
 
 // class AlphaAdjuster : public virtual POA_View, public MonoGraphic
 // {
@@ -52,13 +55,14 @@
 //   Coord alpha;
 // };
 
-class RGBAdjuster : public virtual POA_View, public MonoGraphic
+class RGBAdjuster : public virtual POA_Warsaw::View,
+		    public MonoGraphic
 {
  public:
   RGBAdjuster(BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
-    : red(BoundedValue::_duplicate(r)),
-    green(BoundedValue::_duplicate(g)),
-    blue(BoundedValue::_duplicate(b))
+    : red(RefCount_var<BoundedValue>::increment(r)),
+      green(RefCount_var<BoundedValue>::increment(g)),
+      blue(RefCount_var<BoundedValue>::increment(b))
     {
       color.red = red->value();
       color.green = green->value();
@@ -85,11 +89,12 @@ class RGBAdjuster : public virtual POA_View, public MonoGraphic
       needRedraw();
     }
  private:
-  BoundedValue_var red, green, blue;
+  RefCount_var<BoundedValue> red, green, blue;
   Color color;
 };
 
-class AlphaAdjuster : public virtual POA_View, public MonoGraphic
+class AlphaAdjuster : public virtual POA_Warsaw::View,
+		      public MonoGraphic
 {
  public:
   AlphaAdjuster(BoundedValue_ptr v) : alpha(v->value()) {}
@@ -111,13 +116,14 @@ class AlphaAdjuster : public virtual POA_View, public MonoGraphic
   Coord alpha;
 };
 
-class LightingAdjuster : public virtual POA_View, public MonoGraphic
+class LightingAdjuster : public virtual POA_Warsaw::View,
+			 public MonoGraphic
 {
  public:
   LightingAdjuster(BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
-    : red(BoundedValue::_duplicate(r)),
-    green(BoundedValue::_duplicate(g)),
-    blue(BoundedValue::_duplicate(b))
+    : red(RefCount_var<BoundedValue>::increment(r)),
+      green(RefCount_var<BoundedValue>::increment(g)),
+      blue(RefCount_var<BoundedValue>::increment(b))
     {
       color.red = red->value();
       color.green = green->value();
@@ -149,11 +155,12 @@ class LightingAdjuster : public virtual POA_View, public MonoGraphic
       needRedraw();
     }
  private:
-  BoundedValue_var red, green, blue;
+  RefCount_var<BoundedValue> red, green, blue;
   Color color;
 };
 
-class RotationAdjuster : public virtual POA_View, public MonoGraphic
+class RotationAdjuster : public virtual POA_Warsaw::View,
+			 public MonoGraphic
 {
  public:
   RotationAdjuster(Axis a) : axis(a) {}
@@ -171,7 +178,8 @@ class RotationAdjuster : public virtual POA_View, public MonoGraphic
   Axis axis;
 };
 
-class ZoomAdjuster : public virtual POA_View, public MonoGraphic
+class ZoomAdjuster : public virtual POA_Warsaw::View,
+		     public MonoGraphic
 {
  public:
   virtual void update(const CORBA::Any &any)
@@ -188,25 +196,22 @@ class ZoomAdjuster : public virtual POA_View, public MonoGraphic
     }
 };
 
-GadgetKitImpl::GadgetKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-GadgetKitImpl::~GadgetKitImpl()
-{
-  for (vector<PortableServer::Servant>::iterator i = gadgets.begin(); i != gadgets.end(); ++i)
-    deactivate(*i);
-}
+GadgetKitImpl::GadgetKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p) {}
+GadgetKitImpl::~GadgetKitImpl() {}
 void GadgetKitImpl::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
-  PropertySeq props;
+  Warsaw::Kit::PropertySeq props;
   props.length(0);
-  command = resolve_kit<CommandKit>(context, CommandKit::_PD_repoId, props);
-  figure = resolve_kit<FigureKit>(context, FigureKit::_PD_repoId, props);
+  command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
+  figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
 }
 
 Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
 {
-  RGBAdjuster *adjuster = activate(new RGBAdjuster(r, g, b));
-  gadgets.push_back(adjuster);
+  RGBAdjuster *adjuster = new RGBAdjuster(r, g, b);
+  activate(adjuster);
   r->attach(Observer_var(adjuster->_this()));
   g->attach(Observer_var(adjuster->_this()));
   b->attach(Observer_var(adjuster->_this()));
@@ -216,8 +221,8 @@ Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr body, BoundedValue_ptr r, BoundedValu
 
 Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
 {
-  AlphaAdjuster *adjuster = activate(new AlphaAdjuster(value));
-  gadgets.push_back(adjuster);
+  AlphaAdjuster *adjuster = new AlphaAdjuster(value);
+  activate(adjuster);
   value->attach(Observer_var(adjuster->_this()));
   adjuster->body(g);
   return adjuster->_this();
@@ -225,8 +230,8 @@ Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
 
 Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
 {
-  LightingAdjuster *adjuster = activate(new LightingAdjuster(r, g, b));
-  gadgets.push_back(adjuster);
+  LightingAdjuster *adjuster = new LightingAdjuster(r, g, b);
+  activate(adjuster);
   r->attach(Observer_var(adjuster->_this()));
   g->attach(Observer_var(adjuster->_this()));
   b->attach(Observer_var(adjuster->_this()));
@@ -236,8 +241,8 @@ Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr body, BoundedValue_ptr r, Bounde
 
 Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value, Axis axis)
 {
-  RotationAdjuster *adjuster = activate(new RotationAdjuster(axis));
-  gadgets.push_back(adjuster);
+  RotationAdjuster *adjuster = new RotationAdjuster(axis);
+  activate(adjuster);
   value->attach(Observer_var(adjuster->_this()));
   Graphic_var transformer = figure->transformer(g);
   adjuster->body(transformer);
@@ -246,8 +251,8 @@ Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value, Axis a
 
 Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 {
-  ZoomAdjuster *adjuster = activate(new ZoomAdjuster());
-  gadgets.push_back(adjuster);
+  ZoomAdjuster *adjuster = new ZoomAdjuster();
+  activate(adjuster);
   value->attach(Observer_var(adjuster->_this()));
   Graphic_var transformer = figure->transformer(g);
   adjuster->body(transformer);
@@ -257,5 +262,5 @@ Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "GadgetKitImpl"};
-  return new KitFactoryImpl<GadgetKitImpl>(GadgetKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<GadgetKitImpl>("IDL:Warsaw/GadgetKit:1.0", properties, 1);
 } 

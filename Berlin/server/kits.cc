@@ -64,9 +64,9 @@ int main(int argc, char **argv)
   for (ServerImpl::FactoryList::iterator i = listing.begin(); i != listing.end(); ++i)
     {
       cout << (*i).first << " supports :\n";
-      Kit::Property *begin = (*i).second->get_buffer();
-      Kit::Property *end = (*i).second->get_buffer() + (*i).second->length();
-      for (Kit::Property *p = begin; p != end; ++p)
+      Warsaw::Kit::Property *begin = (*i).second->get_buffer();
+      Warsaw::Kit::Property *end = (*i).second->get_buffer() + (*i).second->length();
+      for (Warsaw::Kit::Property *p = begin; p != end; ++p)
 	cout << (*p).name << " : " << (*p).value << '\n';
     }
 }

@@ -30,23 +30,24 @@ public:
   MonoGraphic();
   virtual ~MonoGraphic();
 
-  virtual Graphic_ptr body();
-  virtual void body(Graphic_ptr);
-  virtual void append(Graphic_ptr);
-  virtual void prepend(Graphic_ptr);
-  virtual void remove(Tag);
+  virtual Warsaw::Graphic_ptr body();
+  virtual void body(Warsaw::Graphic_ptr);
+  virtual void append(Warsaw::Graphic_ptr);
+  virtual void prepend(Warsaw::Graphic_ptr);
+  virtual void remove(Warsaw::Tag);
+  virtual void removeChild(Warsaw::Tag);
   virtual Iterator_ptr firstChild();
   virtual Iterator_ptr lastChild();
 
-  virtual Transform_ptr transformation();
-  virtual void request(Requisition &);
-  virtual void extension(const Allocation::Info &, Region_ptr);
-  virtual void shape(Region_ptr);
+  virtual Warsaw::Transform_ptr transformation();
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  virtual void shape(Warsaw::Region_ptr);
 
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 protected:
-  Graphic_var child;
+  Edge          child;
   Prague::Mutex childMutex;
 };
 
-#endif /* _MonoGraphic_hh */
+#endif 

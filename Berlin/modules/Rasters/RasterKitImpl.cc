@@ -28,32 +28,30 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
-ImageKitImpl::ImageKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-ImageKitImpl::~ImageKitImpl()
-{
-  for (vector<PortableServer::Servant>::iterator i = rasters.begin(); i != rasters.end(); ++i)
-    deactivate(*i);
-}
+ImageKitImpl::ImageKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p) {}
+ImageKitImpl::~ImageKitImpl() {}
 
 Raster_ptr ImageKitImpl::empty()
 {
   Trace trace("ImageKitImpl::empty");
-  RasterImpl *raster = activate(new RasterImpl());
-  rasters.push_back(raster);
+  RasterImpl *raster = new RasterImpl();
+  activate(raster);
   return raster->_this();
 }
 
 Raster_ptr ImageKitImpl::create(const char *file)
 {
   Trace trace("ImageKitImpl::create");
-  RasterImpl *raster = activate(new RasterImpl(file));
-  rasters.push_back(raster);
+  RasterImpl *raster = new RasterImpl(file);
+  activate(raster);
   return raster->_this();
 }
 
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "ImageKitImpl"};
-  return new KitFactoryImpl<ImageKitImpl> (ImageKit::_PD_repoId, properties, 1);
+  return new KitFactoryImpl<ImageKitImpl> ("IDL:Warsaw/ImageKit:1.0", properties, 1);
 }

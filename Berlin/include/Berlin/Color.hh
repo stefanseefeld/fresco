@@ -26,9 +26,9 @@
 #include <Warsaw/Types.hh>
 #include <iostream>
 
-inline Color brightness(const Color &c1, double adjust)
+inline Warsaw::Color brightness(const Warsaw::Color &c1, double adjust)
 {
-  Color c2;
+  Warsaw::Color c2;
   if (adjust >= 0)
     {
       c2.red   = c1.red + (1 - c1.red) * adjust;
@@ -45,17 +45,17 @@ inline Color brightness(const Color &c1, double adjust)
   return c2;
 };
 
-inline void CMYtoRGB(Coord cyan, Coord magenta, Coord yellow, Color &color)
+inline void CMYtoRGB(Warsaw::Coord cyan, Warsaw::Coord magenta, Warsaw::Coord yellow, Warsaw::Color &color)
 {
   color.red = 1. - cyan;
   color.green = 1. - magenta;
   color.blue = 1. - yellow;
 }
 
-inline void RGBtoHSV(const Color &color, Coord &hue, Coord &saturation, Coord &value)
+inline void RGBtoHSV(const Warsaw::Color &color, Warsaw::Coord &hue, Warsaw::Coord &saturation, Warsaw::Coord &value)
 {
-  Coord max = color.red > color.green ? (color.red > color.blue ? color.red : color.blue) : color.green > color.blue ? color.green : color.blue;
-  Coord min = color.red < color.green ? (color.red < color.blue ? color.red : color.blue) : color.green < color.blue ? color.green : color.blue;
+  Warsaw::Coord max = color.red > color.green ? (color.red > color.blue ? color.red : color.blue) : color.green > color.blue ? color.green : color.blue;
+  Warsaw::Coord min = color.red < color.green ? (color.red < color.blue ? color.red : color.blue) : color.green < color.blue ? color.green : color.blue;
   hue = max;
   saturation = max != 0. ? (max - min) / max : 0.; 
   if (saturation == 0.) hue = 0.; // undefined...
@@ -70,7 +70,7 @@ inline void RGBtoHSV(const Color &color, Coord &hue, Coord &saturation, Coord &v
    }
 }
 
-inline void HSVtoRGB(Coord hue, Coord saturation, Coord value, Color &color)
+inline void HSVtoRGB(Warsaw::Coord hue, Warsaw::Coord saturation, Warsaw::Coord value, Warsaw::Color &color)
 {
   if (saturation == 0.) color.red = color.green = color.blue = value;
   else
@@ -78,10 +78,10 @@ inline void HSVtoRGB(Coord hue, Coord saturation, Coord value, Color &color)
       if (hue == 360.) hue = 0.;
       hue /= 60.;
       int i = static_cast<int>(hue);
-      Coord f = hue - i;
-      Coord p = value * (1. - saturation);
-      Coord q = value * (1. - saturation * f);
-      Coord t = value * (1. - saturation * (1. - f));
+      Warsaw::Coord f = hue - i;
+      Warsaw::Coord p = value * (1. - saturation);
+      Warsaw::Coord q = value * (1. - saturation * f);
+      Warsaw::Coord t = value * (1. - saturation * (1. - f));
       switch (i)
         {
           case 0: color.red = value; color.green = t; color.blue = p; break;
@@ -92,13 +92,6 @@ inline void HSVtoRGB(Coord hue, Coord saturation, Coord value, Color &color)
           case 5: color.red = value; color.green = p; color.blue = q; break;
         }
     }
-}
-
-inline ostream &operator << (ostream &os, const Color &c)
-{
-  if (c.alpha != 1.) os << '(' << c.red << ',' << c.green << ',' << c.blue << ';' << c.alpha << ')';
-  else os << '(' << c.red << ',' << c.green << ',' << c.blue << ')';
-  return os;
 }
 
 #endif /* _Color_hh */

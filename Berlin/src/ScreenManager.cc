@@ -31,6 +31,7 @@
 #include <Warsaw/IO.hh>
 
 using namespace Prague;
+using namespace Warsaw;
 
 ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, DrawingKit_ptr d)
   : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(Console::drawable())

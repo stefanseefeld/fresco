@@ -20,10 +20,14 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Input.hh"
-#include "Warsaw/PickTraversal.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/Input.hh>
+#include <Warsaw/PickTraversal.hh>
 #include "Tool/TriggerImpl.hh"
+
+using namespace Prague;
+using namespace Warsaw;
 
 void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
@@ -31,7 +35,7 @@ void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event
    * once we have real focus management the command should be executed
    * if we have focus and the Telltale::toggle is to be released... -stefan
    */
-  if (inside(traversal) && test(Controller::pressed))
+  if (inside(traversal) && test(Warsaw::Controller::pressed))
     {
       CORBA::Any dummy;
       execute(dummy);
@@ -44,12 +48,12 @@ void TriggerImpl::keyPress(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.selection();
   if (toggle.number == 32) // space
     {
-      set(Controller::pressed);
-      if (test(Controller::pressed))
+      set(Warsaw::Controller::pressed);
+      if (test(Warsaw::Controller::pressed))
 	{
 	  CORBA::Any dummy;
 	  execute(dummy);
-	  clear(Controller::pressed);
+	  clear(Warsaw::Controller::pressed);
 	}
     }
   else ControllerImpl::keyPress(event);

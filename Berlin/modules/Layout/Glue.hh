@@ -27,13 +27,13 @@
 class Glue : public GraphicImpl
 {
 public:
-  Glue(Axis, Coord, Coord, Coord, Alignment);
-  Glue(const Graphic::Requisition &);
+  Glue(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
+  Glue(const Warsaw::Graphic::Requisition &);
   virtual ~Glue();
 
-  virtual void request(Graphic::Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
 private:
-  Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
-#endif /* _Glue_hh */
+#endif

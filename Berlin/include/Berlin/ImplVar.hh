@@ -26,54 +26,51 @@
 #include <Warsaw/Types.hh>
 #include <Prague/Sys/Tracer.hh>
 
-// there is an annoying warning message produced by gcc.
-// unless I find out how to supress that I'm going to use ObjectId *
-// instead of the more convenient ObjectId_var...
-// -stefan
-template <typename Servant>
-inline Servant activate(Servant servant)
-{
-  Prague::Trace trace("activate");
-  PortableServer::POA_var poa = servant->_default_POA();
-//   PortableServer::ObjectId_var oid = poa->servant_to_id(servant);
-  PortableServer::ObjectId *oid = poa->activate_object(servant);
-  servant->_remove_ref();
-  delete oid;
-  return servant;
-}
-
-inline void deactivate(PortableServer::Servant servant)
-{
-  Prague::Trace trace("deactivate");
-  PortableServer::POA_var poa = servant->_default_POA();
-//   PortableServer::ObjectId_var oid = poa->servant_to_id(servant);
-  PortableServer::ObjectId *oid = poa->servant_to_id(servant);
-  poa->deactivate_object(*oid);
-  delete oid;
-}
-
+//.these smart pointers take care of the activation/deactivation of
+//.servants they get assigned to
+//.as such, it is *not* meant to be used for RefCountBase objects as
+//.they deactivate themselfs when the ref counter drops to zero
+//.
+//.The Impl_var class is similar to auto_ptr, i.e. it owns the assigned
+//.object. If you assign one Impl_var to another, the first will lose
+//.ownership.
 template <class T>
 class Impl_var
-//. a special kind of a smart pointer
-//. which hides the BOA/POA details
-//.
-//. update: 15.07.00
-//. now assumes that the wrapper types use a PortableServer::RefCountServantBase
-//. -stefan
 {
 public:
-  explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate(t);}
-  Impl_var(Impl_var &i) : t(i._retn()) {}
-  Impl_var &operator = (Impl_var &i) { if (&i != this) { if (t) deactivate(t); t = i._retn();} return *this;}
-  ~Impl_var() { if (t) deactivate(t);}
-  Impl_var &operator = (T *tt) { if (t) deactivate(t); t = tt; if (t) activate(t); return *this;}
-  T *get() const { return t;}
+  explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate();}
+  Impl_var(Impl_var<T> &i) : t(i._retn()) {}
+  ~Impl_var() { if (t) deactivate();}
+  Impl_var<T> &operator = (Impl_var<T> &i) { if (&i != this) { if (t) deactivate(); t = i._retn();} return *this;}
+  Impl_var<T> &operator = (T *tt) { if (t) deactivate(); t = tt; if (t) activate(); return *this;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}
   T *_retn() { T *tmp = t; t = 0; return tmp;}
 private:
+  void activate();
+  void deactivate();
   T *t;
 };
+
+template <class T>
+inline void Impl_var<T>::activate()
+{
+  Prague::Trace trace("Impl_var::activate");
+  PortableServer::POA_var poa = t->_default_POA();
+  PortableServer::ObjectId *oid = poa->activate_object(t);
+  t->_remove_ref();
+  delete oid;
+}
+
+template <class T>
+inline void Impl_var<T>::deactivate()
+{
+  Prague::Trace trace("Impl_var::deactivate");
+  PortableServer::POA_var poa = t->_default_POA();
+  PortableServer::ObjectId *oid = poa->servant_to_id(t);
+  poa->deactivate_object(*oid);
+  delete oid;
+}
 
 #endif

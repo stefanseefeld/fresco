@@ -31,6 +31,8 @@
 #include "Tool/Triangle.hh"
 #include "Tool/Beveler.hh"
 
+using namespace Warsaw;
+
 void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 {
   Region_var allocation = traversal->allocation();

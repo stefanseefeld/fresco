@@ -34,7 +34,8 @@
 
 class StageHandleImpl;
 
-class StageImpl : public virtual POA_Stage, public GraphicImpl
+class StageImpl : public virtual POA_Warsaw::Stage,
+		  public GraphicImpl
 {
   class Sequence;
   class Finder;
@@ -44,34 +45,34 @@ class StageImpl : public virtual POA_Stage, public GraphicImpl
   StageImpl();
   ~StageImpl();
 
-  virtual void request(Requisition &);
+  virtual void request(Warsaw::Graphic::Requisition &);
 
-  virtual void traverse(Traversal_ptr);
+  virtual void traverse(Warsaw::Traversal_ptr);
 
-  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
   virtual void needRedraw();
-  virtual void needRedrawRegion(Region_ptr);
+  virtual void needRedrawRegion(Warsaw::Region_ptr);
   virtual void needResize();
   //. relayout the children. If the bounding box changes call needResize on the parent
   
-  virtual Region_ptr bbox();
+  virtual Warsaw::Region_ptr bbox();
   virtual CORBA::Long layers();
-  virtual StageHandle_ptr layer(Stage::Index);
+  virtual Warsaw::StageHandle_ptr layer(Warsaw::Stage::Index);
   /*
    * begin() and end() 'lock' the stage
    * in that only after the last end() conditions for needRedraw() & needResize() are done
    */
   virtual void begin();
   virtual void end();
-  virtual StageHandle_ptr insert(Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
-  virtual void remove(StageHandle_ptr);
+  virtual Warsaw::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Stage::Index);
+  virtual void remove(Warsaw::StageHandle_ptr);
 
-  void move(StageHandleImpl *, const Vertex &);
-  void resize(StageHandleImpl *, const Vertex &);
-  void relayer(StageHandleImpl *, Stage::Index);
+  void move(StageHandleImpl *, const Warsaw::Vertex &);
+  void resize(StageHandleImpl *, const Warsaw::Vertex &);
+  void relayer(StageHandleImpl *, Warsaw::Stage::Index);
 private:
-  Tag tag();
-  StageHandleImpl *tag2handle(Tag);
+  Warsaw::Tag tag();
+  StageHandleImpl *tag2handle(Warsaw::Tag);
   void damage(StageHandleImpl *);
 
   Sequence *children;
@@ -84,21 +85,21 @@ private:
   Prague::Mutex childMutex;
 };
 
-class StageHandleImpl : public virtual POA_StageHandle
+class StageHandleImpl : public virtual POA_Warsaw::StageHandle
 {
  public:
-  StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
-  virtual Stage_ptr parent() { return stage->_this();}
-  virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
+  StageHandleImpl(StageImpl *, Warsaw::Graphic_ptr, Warsaw::Tag, const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Stage::Index);
+  virtual Warsaw::Stage_ptr parent() { return stage->_this();}
+  virtual Warsaw::Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
   virtual void remove();
-  virtual Vertex position() { Prague::MutexGuard guard(mutex); return p;}
-  virtual void position(const Vertex &);
-  virtual Vertex size() { Prague::MutexGuard guard(mutex); return s;}
-  virtual void size(const Vertex &);
-  virtual Stage::Index layer() { Prague::MutexGuard guard(mutex); return l;}
-  virtual void layer(Stage::Index);
+  virtual Warsaw::Vertex position() { Prague::MutexGuard guard(mutex); return p;}
+  virtual void position(const Warsaw::Vertex &);
+  virtual Warsaw::Vertex size() { Prague::MutexGuard guard(mutex); return s;}
+  virtual void size(const Warsaw::Vertex &);
+  virtual Warsaw::Stage::Index layer() { Prague::MutexGuard guard(mutex); return l;}
+  virtual void layer(Warsaw::Stage::Index);
 
-  const Geometry::Rectangle<Coord> &bbox() { return boundingbox;}
+  const Geometry::Rectangle<Warsaw::Coord> &bbox() { return boundingbox;}
   void bbox(RegionImpl &region)
     {
       region.valid   = true;
@@ -112,14 +113,14 @@ class StageHandleImpl : public virtual POA_StageHandle
 //  private:
   void cacheBBox();
   StageImpl *stage;
-  Graphic_var c;
-  Tag tag;
-  Vertex p;
-  Vertex s;
-  Stage::Index l;
-  Geometry::Rectangle<Coord> boundingbox;
-  Alignment xalign;
-  Alignment yalign;
+  Warsaw::Graphic_var c;
+  Warsaw::Tag tag;
+  Warsaw::Vertex p;
+  Warsaw::Vertex s;
+  Warsaw::Stage::Index l;
+  Geometry::Rectangle<Warsaw::Coord> boundingbox;
+  Warsaw::Alignment xalign;
+  Warsaw::Alignment yalign;
   Prague::Mutex mutex;
 };
 
