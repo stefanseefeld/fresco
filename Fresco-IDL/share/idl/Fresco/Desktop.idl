@@ -27,6 +27,7 @@
 
 module Warsaw
 {
+  //. FIXME: What is this needed for?
   interface Desktop : Controller, Layout::Stage {};
 };
 

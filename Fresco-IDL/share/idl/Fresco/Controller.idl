@@ -80,21 +80,35 @@ module Warsaw
       const Mask toggled = 0x8;
       const Mask running = 0x10;
       const Mask stepping = 0x20;
-      //. These operations modify the controller hierarchy
-      //. adding a child at the beginning or end of this controller's
+      //. This operation modifies the controller hierarchy
+      //. adding a child at the end of this controller's
       //. list of children.
       void append_controller(in Controller c);
+      //. This operation modifies the controller hierarchy
+      //. adding a child at the begining of this controller's
+      //. list of children.
       void prepend_controller(in Controller c);
+      //. Removes the given Controller from this controller's
+      //. list of children.
       void remove_controller(in Controller c);
+      //. Set this Controller's parent to the given Controller.
       void set_parent_controller(in Controller c);
+      //. Remove this Controller's parent.
       void remove_parent_controller();
+      //. Get this Controller's parent. Returns CORBA::nil if no parent
+      //. Controller is set yet.
       Controller parent_controller();
+      //. Get an Itarator pointing to the first Controller in this 
+      //. Controller's list of children.
       Iterator first_child_controller();
+      //. Get an Itarator pointing to the last Controller in this 
+      //. Controller's list of children.
       Iterator last_child_controller();
-      //. Ask for input focus.  Normally, a controller will call this
+      //. Ask for input focus for the device with the given id. 
+      //. Normally, a controller will call this
       //. operation on its parent. The parent, in turn, may propagate
       //. the call to its parent. The original caller passes
-      //. itself as the requestor, and the same requesting controller
+      //. itself as the requestor, and the same requesting Controller
       //. is passed if the call is propagated.
       boolean request_focus(in Controller c, in Input::Device d);
       //. Notify a controller that it has acquired input focus.
@@ -103,7 +117,8 @@ module Warsaw
       //. it should perform the appropriate operations
       //. on the focus object, such as installing key translations.
       boolean receive_focus(in Focus f);
-      //. Notify a controller that it is losing input focus.
+      //. Notify a controller that it is losing input focus for the
+      //. given device id.
       void lose_focus(in Input::Device d);
       //. These operations ask that this controller "move" the input
       //. focus inside itself, such as navigating through the children
@@ -116,9 +131,13 @@ module Warsaw
       boolean last_focus(in Input::Device d);
       boolean next_focus(in Input::Device d);
       boolean prev_focus(in Input::Device d);
-      //. used for event dispatching. If this Controller holds the focus
-      //. for a given device, it will reveice events associated with it
+      //. Used for event dispatching. If this Controller holds the focus
+      //. for a given device, it will reveice events associated with it.
+      //. This operator handels positional events.
       boolean handle_positional(in PickTraversal t, in Input::Event e);
+      //. Used for event dispatching. If this Controller holds the focus
+      //. for a given device, it will reveice events associated with it.
+      //. This operator handels non-positional events.
       boolean handle_non_positional(in Input::Event e);
     };
 };

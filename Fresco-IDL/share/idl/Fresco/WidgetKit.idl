@@ -74,8 +74,9 @@ module Warsaw
       //. Create a scrollbar, manipulating a BoundedRange.
       Controller       scrollbar(in BoundedRange x, in Axis a);
       //. This is a radio button (group). You need to append_graphic() your
-      //. selections: Each appended graphic will show up with a small button
-      //. in front of it. You can have exactly on of those graphics selected.
+      //. selections: The user will be able to select any one of the appended
+      //. Graphics. Exactly one of these graphics can be selected at any
+      //. given time.
       //. 
       //. You will need to attach() an observer to the returned graphic to
       //. figure out the state.
@@ -84,9 +85,9 @@ module Warsaw
       //.        used for layout? -- tobias
       Widget::Choice   toggle_choice();
       //. This is a checkbox (group). You need to append_graphic() your
-      //. selections: Each appended graphic will show up with a small
-      //. diamond-shaped button in front of it. You can select more then
-      //. one of these graphics by clicking on the button.
+      //. selections: The user will be able to select any one of the appended
+      //. Graphics. More then one of these graphics can be selected at any
+      //. given time.
       //. 
       //. You will need to attach() an observer to the returned graphic to
       //. figure out the state.

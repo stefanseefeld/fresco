@@ -48,15 +48,39 @@ module Warsaw
       /*
        * all names subject to change
        */
+      //. FIXME: What's this? The Rootwindow in X terminology? -- tobias
       Desktop desk();
+      //. Get the decorations for a normal application Window.
+      //. It will wrap the given Controller. A graphic is not sufficient,
+      //. as the contents of a Window must be able to react to Events.
+      //. FIXME: We need to pass a text, icon, etc. too. -- tobias
       Window  shell(in Controller g);
+      //. Get the decorations for a transient Window.
+      //. It will wrap the given Controller. A graphic is not sufficient,
+      //. as the contents of a Window must be able to react to Events.
+      //. FIXME: We need to pass a text, icon, etc. too. -- tobias
       Window  transient(in Controller g);
+      //. Get the decorations for a pulldown Window.
+      //. It will wrap the given Controller. A graphic is not sufficient,
+      //. as the contents of a Window must be able to react to Events.	
+      //. FIXME: We need to pass a text, icon, etc. too. -- tobias
       Window  pulldown(in Controller g);
 
+      //. Get a Command that can be used to move the given Window.
       Command move(in Window w);
+      //. Get a Command that can be used to resize the given Window.
       Command resize(in Window w);
+      //. Get a Command that can be used to move and resize the given Window.
       Command move_resize(in Window w, in Alignment x, in Alignment y, in short b);
+      //. Get a Command that can be used to relayer the given Window (move
+      //. it in the window stack).
       Command relayer(in Window w);
+      //. Get a Command that can be used to map/unmap a Window. This will
+      //. make it display (mapped) or stop it from doing so (unmapped).
+      //. The given flag selects which Command is returned: If set you
+      //. will get a Mapper, if unset you will get an Unmapper.
+      //. FIXME: I'd think map(in Window) and unmap(in Window) would be
+      //.        nicer then this. -- tobias
       Command map(in Window w, in boolean f);
     };
 };
