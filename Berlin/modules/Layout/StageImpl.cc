@@ -530,7 +530,7 @@ void StageImpl::need_redraw()
     {
       const Allocation::Info_var info = allocation->get(i);
       region->valid = false;
-      extension(info, Region_var(region->_this()));
+      extension(info.in(), Region_var(region->_this()));
       if (region->valid)
 	{
 	  Vertex origin;
