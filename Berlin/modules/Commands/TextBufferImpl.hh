@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  *               2001 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
@@ -29,28 +29,35 @@
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/GapBuffer.hh>
 
-class TextBufferImpl : public virtual POA_Fresco::TextBuffer,
-		       public SubjectImpl
+namespace Berlin
 {
-  public:
-    TextBufferImpl();
-    virtual ~TextBufferImpl();
-    virtual CORBA::ULong size();
-    virtual Fresco::Unistring *value();
-    virtual Fresco::Unistring *get_chars(CORBA::ULong, CORBA::ULong);
-    virtual CORBA::ULong position();
-    virtual void position(CORBA::ULong);
-    virtual void forward();
-    virtual void backward();
-    virtual void shift(CORBA::Long d);
-    virtual void insert_char(Fresco::Unichar);
-    virtual void insert_string(const Fresco::Unistring &);
-    virtual void remove_backward(CORBA::ULong);
-    virtual void remove_forward(CORBA::ULong);
-    virtual void clear();
-  private:
-    GapBuffer<Fresco::Unichar, 32> _buffer;
-    Prague::Mutex _mutex;
-};
+  namespace CommandKit
+  {
+    class TextBufferImpl : public virtual POA_Fresco::TextBuffer,
+                           public SubjectImpl
+    {
+      public:
+        TextBufferImpl();
+        virtual ~TextBufferImpl();
+        virtual CORBA::ULong size();
+        virtual Fresco::Unistring *value();
+        virtual Fresco::Unistring *get_chars(CORBA::ULong, CORBA::ULong);
+        virtual CORBA::ULong position();
+        virtual void position(CORBA::ULong);
+        virtual void forward();
+        virtual void backward();
+        virtual void shift(CORBA::Long d);
+        virtual void insert_char(Fresco::Unichar);
+        virtual void insert_string(const Fresco::Unistring &);
+        virtual void remove_backward(CORBA::ULong);
+        virtual void remove_forward(CORBA::ULong);
+        virtual void clear();
+      private:
+        GapBuffer<Fresco::Unichar, 32> _buffer;
+        Prague::Mutex _mutex;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

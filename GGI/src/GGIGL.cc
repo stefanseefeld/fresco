@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,37 +27,42 @@
 using namespace Prague;
 using namespace Fresco;
 
-class GGIGLContext : virtual public GLContext
+namespace GGI
 {
-public:
-  GGIGLContext()
-    : _drawable(dynamic_cast<GGI::Drawable *>(Console::instance()->drawable()))
+  class GLContext : virtual public ::GLContext
   {
-    ggiMesaInit();
-    if (ggiMesaAttach(_drawable->visual()) < 0)
-      throw std::runtime_error("ggiMesaAttach() failed");
-    if (ggiMesaExtendVisual(_drawable->visual(), GL_FALSE, GL_FALSE, 16, 0, 0,
-      0, 0, 0, 1) < 0)
-      throw std::runtime_error("ggiMesaExtendVisual() failed");
-    if ((_context = ggiMesaCreateContext(_drawable->visual())) == NULL)
-      throw std::runtime_error("ggiMesaCreateContext() failed"); 
-    ggiMesaMakeCurrent(_context, _drawable->visual());
-  }
-  virtual ~GGIGLContext()
-  {
-    ggiMesaDestroyContext(_context);
-  }
-  virtual void flush()
-  {
-    glFlush();
-    _drawable->flush();
-  }
-  virtual void add_to_queue(::GLContext::Callback *_cb) {
-    (*_cb)();
-  }
-private:
-  GGI::Drawable   *_drawable;
-  ggi_mesa_context_t _context;  
-};
+    public:
+      GLContext() :
+        _drawable(dynamic_cast<GGI::Drawable *>(Console::instance()->drawable()))
+      {
+          ggiMesaInit();
+          if (ggiMesaAttach(_drawable->visual()) < 0)
+              throw std::runtime_error("ggiMesaAttach() failed");
+          if (ggiMesaExtendVisual(_drawable->visual(), GL_FALSE, GL_FALSE,
+                                  16, 0, 0, 0, 0, 0, 1) < 0)
+              throw std::runtime_error("ggiMesaExtendVisual() failed");
+          if ((_context = ggiMesaCreateContext(_drawable->visual())) == NULL)
+              throw std::runtime_error("ggiMesaCreateContext() failed");
+          ggiMesaMakeCurrent(_context, _drawable->visual());
+      }
+      virtual ~GGIGLContext()
+      {
+          ggiMesaDestroyContext(_context);
+      }
+      virtual void flush()
+      {
+          glFlush();
+          _drawable->flush();
+      }
+      virtual void add_to_queue(::GLContext::Callback *_cb)
+      {
+          (*_cb)();
+      }
+    private:
+      GGI::Drawable   *_drawable;
+      ggi_mesa_context_t _context;
+  };
 
-extern "C" Console::Extension *load() { return new GGIGLContext();}
+} // namespace
+
+extern "C" Console::Extension *load() { return new GGI::GLContext();}

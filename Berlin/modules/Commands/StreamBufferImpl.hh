@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -28,21 +28,28 @@
 #include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class StreamBufferImpl : public virtual POA_Fresco::StreamBuffer,
-			 public SubjectImpl
+namespace Berlin
 {
- public:
-  StreamBufferImpl(long l) : length(l) { buffer.reserve(length);}
-  virtual ~StreamBufferImpl() {}
-  virtual CORBA::Long size();
-  virtual CORBA::Long available();
-  virtual Fresco::StreamBuffer::Data *read();
-  virtual void write(const Fresco::StreamBuffer::Data &);
-  virtual void flush();
- private:
-  size_t length;
-  std::vector<CORBA::Octet> buffer;
-  Prague::Mutex mutex;
-};
+  namespace CommandKit
+  {
+    class StreamBufferImpl : public virtual POA_Fresco::StreamBuffer,
+                             public SubjectImpl
+    {
+      public:
+        StreamBufferImpl(long l) : length(l) { buffer.reserve(length);}
+        virtual ~StreamBufferImpl() { }
+        virtual CORBA::Long size();
+        virtual CORBA::Long available();
+        virtual Fresco::StreamBuffer::Data *read();
+        virtual void write(const Fresco::StreamBuffer::Data &);
+        virtual void flush();
+      private:
+        size_t length;
+        std::vector<CORBA::Octet> buffer;
+        Prague::Mutex mutex;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -25,19 +25,19 @@
 using namespace Prague;
 using namespace Fresco;
 
-CORBA::Long StreamBufferImpl::size()
+CORBA::Long Berlin::CommandKit::StreamBufferImpl::size()
 {
   Prague::Guard<Mutex> guard(mutex);
   return length;
 }
 
-CORBA::Long StreamBufferImpl::available()
+CORBA::Long Berlin::CommandKit::StreamBufferImpl::available()
 {
   Prague::Guard<Mutex> guard(mutex);
   return buffer.size();
 }
 
-void StreamBufferImpl::write(const Fresco::StreamBuffer::Data &data)
+void Berlin::CommandKit::StreamBufferImpl::write(const Fresco::StreamBuffer::Data &data)
 {
   bool overflow = false;
   {
@@ -55,21 +55,21 @@ void StreamBufferImpl::write(const Fresco::StreamBuffer::Data &data)
     }
 }
 
-void StreamBufferImpl::flush()
+void Berlin::CommandKit::StreamBufferImpl::flush()
 {
   bool overflow = false;
   {
-    Prague::Guard<Mutex> guard(mutex); 
+    Prague::Guard<Mutex> guard(mutex);
     if (buffer.size()) overflow = true;
   }
   if (overflow)
     {
       CORBA::Any any;
       notify(any);
-    }  
+    }
 }
 
-Fresco::StreamBuffer::Data *StreamBufferImpl::read()
+Fresco::StreamBuffer::Data * Berlin::CommandKit::StreamBufferImpl::read()
 {
   Guard<Mutex> guard(mutex);
   Fresco::StreamBuffer::Data_var data = new Fresco::StreamBuffer::Data;
@@ -79,4 +79,3 @@ Fresco::StreamBuffer::Data *StreamBufferImpl::read()
   buffer.reserve(length);
   return data._retn();
 }
-

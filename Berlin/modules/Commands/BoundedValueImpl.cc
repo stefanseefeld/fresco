@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -25,22 +25,21 @@
 using namespace Prague;
 using namespace Fresco;
 
-BoundedValueImpl::BoundedValueImpl(Coord l, Coord u, Coord v, Coord s, Coord p)
-  : _l(l), _u(u), _v(v), _s(s), _p(p)
-{
-};
+Berlin::CommandKit::BoundedValueImpl::BoundedValueImpl(Coord l, Coord u, Coord v,
+                                                       Coord s, Coord p) :
+  _l(l), _u(u), _v(v), _s(s), _p(p)
+{ }
 
-BoundedValueImpl::~BoundedValueImpl()
-{
-};
+Berlin::CommandKit::BoundedValueImpl::~BoundedValueImpl()
+{ }
 
-Coord BoundedValueImpl::lower()
+Coord Berlin::CommandKit::BoundedValueImpl::lower()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _l;
 }
 
-void BoundedValueImpl::lower(Coord l)
+void Berlin::CommandKit::BoundedValueImpl::lower(Coord l)
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -52,13 +51,13 @@ void BoundedValueImpl::lower(Coord l)
   notify(any);
 }
 
-Coord BoundedValueImpl::upper()
+Coord Berlin::CommandKit::BoundedValueImpl::upper()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _u;
 }
 
-void BoundedValueImpl::upper(Coord u)
+void Berlin::CommandKit::BoundedValueImpl::upper(Coord u)
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -70,31 +69,31 @@ void BoundedValueImpl::upper(Coord u)
   notify(any);
 }
 
-Coord BoundedValueImpl::step()
-{ 
+Coord Berlin::CommandKit::BoundedValueImpl::step()
+{
   Prague::Guard<Mutex> guard(_mutex);
   return _s;
 }
 
-void BoundedValueImpl::step(Coord s)
+void Berlin::CommandKit::BoundedValueImpl::step(Coord s)
 {
   Prague::Guard<Mutex> guard(_mutex);
   _s = s;
 }
 
-Coord BoundedValueImpl::page()
+Coord Berlin::CommandKit::BoundedValueImpl::page()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _p;
 }
 
-void BoundedValueImpl::page(Coord p)
+void Berlin::CommandKit::BoundedValueImpl::page(Coord p)
 {
   Prague::Guard<Mutex> guard(_mutex);
   _p = p;
 }
 
-void BoundedValueImpl::forward()
+void Berlin::CommandKit::BoundedValueImpl::forward()
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -108,7 +107,7 @@ void BoundedValueImpl::forward()
   notify(any);
 }
 
-void BoundedValueImpl::backward()
+void Berlin::CommandKit::BoundedValueImpl::backward()
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -122,7 +121,7 @@ void BoundedValueImpl::backward()
   notify(any);
 }
 
-void BoundedValueImpl::fastforward()
+void Berlin::CommandKit::BoundedValueImpl::fastforward()
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -136,7 +135,7 @@ void BoundedValueImpl::fastforward()
   notify(any);
 }
 
-void BoundedValueImpl::fastbackward()
+void Berlin::CommandKit::BoundedValueImpl::fastbackward()
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -150,7 +149,7 @@ void BoundedValueImpl::fastbackward()
   notify(any);
 }
 
-void BoundedValueImpl::begin()
+void Berlin::CommandKit::BoundedValueImpl::begin()
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -164,7 +163,7 @@ void BoundedValueImpl::begin()
 }
 
 
-void BoundedValueImpl::end()
+void Berlin::CommandKit::BoundedValueImpl::end()
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -177,7 +176,7 @@ void BoundedValueImpl::end()
   notify(any);
 }
 
-void BoundedValueImpl::value(Coord v)
+void Berlin::CommandKit::BoundedValueImpl::value(Coord v)
 {
   {
     Prague::Guard<Mutex> guard(_mutex);
@@ -191,14 +190,14 @@ void BoundedValueImpl::value(Coord v)
   notify(any);
 }
 
-Coord BoundedValueImpl::value()
+Coord Berlin::CommandKit::BoundedValueImpl::value()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _v;
 }
 
 
-void BoundedValueImpl::adjust(Coord d)
+void Berlin::CommandKit::BoundedValueImpl::adjust(Coord d)
 {
   {
     Prague::Guard<Mutex> guard(_mutex);

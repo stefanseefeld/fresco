@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -28,39 +28,47 @@
 #include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class BoundedRangeImpl : public virtual POA_Fresco::BoundedRange,
-			 public SubjectImpl
+namespace Berlin
 {
- public:
-  BoundedRangeImpl(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
-  virtual ~BoundedRangeImpl();
-  virtual Fresco::BoundedRange::Settings state();
-  virtual void state(const Fresco::BoundedRange::Settings &);
-  virtual Fresco::Coord lower();
-  virtual void lower(Fresco::Coord);
-  virtual Fresco::Coord upper();
-  virtual void upper(Fresco::Coord);
-  virtual Fresco::Coord step();
-  virtual void step(Fresco::Coord);
-  virtual Fresco::Coord page();
-  virtual void page(Fresco::Coord);
-  virtual Fresco::Coord lvalue();
-  virtual void lvalue(Fresco::Coord);
-  virtual Fresco::Coord uvalue();
-  virtual void uvalue(Fresco::Coord);
+  namespace CommandKit
+  {
+    class BoundedRangeImpl : public virtual POA_Fresco::BoundedRange,
+                             public SubjectImpl
+    {
+      public:
+        BoundedRangeImpl(Fresco::Coord, Fresco::Coord, Fresco::Coord,
+                         Fresco::Coord, Fresco::Coord, Fresco::Coord);
+        virtual ~BoundedRangeImpl();
+        virtual Fresco::BoundedRange::Settings state();
+        virtual void state(const Fresco::BoundedRange::Settings &);
+        virtual Fresco::Coord lower();
+        virtual void lower(Fresco::Coord);
+        virtual Fresco::Coord upper();
+        virtual void upper(Fresco::Coord);
+        virtual Fresco::Coord step();
+        virtual void step(Fresco::Coord);
+        virtual Fresco::Coord page();
+        virtual void page(Fresco::Coord);
+        virtual Fresco::Coord lvalue();
+        virtual void lvalue(Fresco::Coord);
+        virtual Fresco::Coord uvalue();
+        virtual void uvalue(Fresco::Coord);
 
-  virtual void forward();
-  virtual void backward();
-  virtual void fastforward();
-  virtual void fastbackward();
-  virtual void begin();
-  virtual void end();
-  virtual void adjust(Fresco::Coord);
-private:  
-  Fresco::BoundedRange::Settings _settings;
-  Fresco::Coord                  _s;
-  Fresco::Coord                  _p;
-  Prague::Mutex                  _mutex;
-};
+        virtual void forward();
+        virtual void backward();
+        virtual void fastforward();
+        virtual void fastbackward();
+        virtual void begin();
+        virtual void end();
+        virtual void adjust(Fresco::Coord);
+      private:
+        Fresco::BoundedRange::Settings _settings;
+        Fresco::Coord                  _s;
+        Fresco::Coord                  _p;
+        Prague::Mutex                  _mutex;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

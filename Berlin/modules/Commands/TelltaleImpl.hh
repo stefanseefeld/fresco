@@ -1,8 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -29,67 +29,78 @@
 #include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class TelltaleImpl : public virtual POA_Fresco::Telltale,
-		     public SubjectImpl
+namespace Berlin
 {
- public:
-  TelltaleImpl(Fresco::TelltaleConstraint_ptr, CORBA::ULong m = 0);
-  virtual ~TelltaleImpl();
-  virtual void set(Fresco::Telltale::Mask);
-  virtual void clear(Fresco::Telltale::Mask);
-  virtual CORBA::Boolean test(Fresco::Telltale::Mask);
-  virtual void modify(Fresco::Telltale::Mask, CORBA::Boolean);
-  CORBA::ULong state() { return _mask;}
+  namespace CommandKit
+  {
+    class TelltaleImpl : public virtual POA_Fresco::Telltale,
+                         public SubjectImpl
+    {
+      public:
+        TelltaleImpl(Fresco::TelltaleConstraint_ptr, CORBA::ULong m = 0);
+        virtual ~TelltaleImpl();
+        virtual void set(Fresco::Telltale::Mask);
+        virtual void clear(Fresco::Telltale::Mask);
+        virtual CORBA::Boolean test(Fresco::Telltale::Mask);
+        virtual void modify(Fresco::Telltale::Mask, CORBA::Boolean);
+        CORBA::ULong state() { return _mask;}
 
-  virtual void constraint(Fresco::TelltaleConstraint_ptr);
-  virtual Fresco::TelltaleConstraint_ptr constraint();
+        virtual void constraint(Fresco::TelltaleConstraint_ptr);
+        virtual Fresco::TelltaleConstraint_ptr constraint();
 
- protected:
-  Prague::Mutex                  _mutex;
-  CORBA::ULong                   _mask;
-  Fresco::TelltaleConstraint_var _constraint;
-};
+      protected:
+        Prague::Mutex                  _mutex;
+        CORBA::ULong                   _mask;
+        Fresco::TelltaleConstraint_var _constraint;
+    };
 
-class TelltaleConstraintImpl : public virtual POA_Fresco::TelltaleConstraint,
-			       public virtual RefCountBaseImpl
-{
-  typedef std::vector<Fresco::Telltale_var> tlist_t;
- public:
-  TelltaleConstraintImpl() {}
-  virtual ~TelltaleConstraintImpl() {}
-  void add(Fresco::Telltale_ptr);
-  void remove(Fresco::Telltale_ptr);
-  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean) = 0;
- protected:
-  Prague::Mutex _mutex;
-  tlist_t       _telltales;
-};
+    class TelltaleConstraintImpl : public virtual POA_Fresco::TelltaleConstraint,
+                                   public virtual RefCountBaseImpl
+    {
+        typedef std::vector<Fresco::Telltale_var> tlist_t;
+      public:
+        TelltaleConstraintImpl() {}
+        virtual ~TelltaleConstraintImpl() {}
+        void add(Fresco::Telltale_ptr);
+        void remove(Fresco::Telltale_ptr);
+        virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
+                               CORBA::Boolean) = 0;
+      protected:
+        Prague::Mutex _mutex;
+        tlist_t       _telltales;
+    };
 
-class ExclusiveChoice : public TelltaleConstraintImpl
-{
-public:
-  ExclusiveChoice(Fresco::Telltale::Mask);
-  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean);  
-private:
-  Fresco::Telltale::Mask _mask;
-};
+    class ExclusiveChoice : public TelltaleConstraintImpl
+    {
+      public:
+        ExclusiveChoice(Fresco::Telltale::Mask);
+        virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
+                               CORBA::Boolean);
+      private:
+        Fresco::Telltale::Mask _mask;
+    };
 
-class SelectionRequired : public TelltaleConstraintImpl
-{
-public:
-  SelectionRequired(Fresco::Telltale::Mask);
-  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean);  
-private:
-  Fresco::Telltale::Mask _mask;
-};
+    class SelectionRequired : public TelltaleConstraintImpl
+    {
+      public:
+        SelectionRequired(Fresco::Telltale::Mask);
+        virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
+                               CORBA::Boolean);
+      private:
+        Fresco::Telltale::Mask _mask;
+    };
 
-class ExclusiveRequired : public TelltaleConstraintImpl
-{
-public:
-  ExclusiveRequired(Fresco::Telltale::Mask);
-  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean);  
-private:
-  Fresco::Telltale::Mask _mask;
-};
+    class ExclusiveRequired : public TelltaleConstraintImpl
+    {
+      public:
+        ExclusiveRequired(Fresco::Telltale::Mask);
+        virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
+                               CORBA::Boolean);
+      private:
+        Fresco::Telltale::Mask _mask;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

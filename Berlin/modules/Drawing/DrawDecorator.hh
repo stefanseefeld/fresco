@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -29,39 +29,47 @@
 
 class DrawingKit;
 
-class DrawStateContainer : public MonoGraphic
+namespace Berlin
 {
-public:
-  DrawStateContainer(Graphic_ptr b) {body(b);}
-  virtual void draw(DrawTraversal_ptr traversal) 
+  namespace DrawingKit
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->saveState();
-    MonoGraphic::traverse(traversal);
-    kit->restoreState();    
-  }  
-};
 
-// this just sets up a rudimentary decorator such that the value is set (in the
-// traversing drawingkit) when it is entered. 
+    class DrawStateContainer : public MonoGraphic
+    {
+      public:
+        DrawStateContainer(Graphic_ptr b) { body(b); }
+        virtual void draw(DrawTraversal_ptr traversal)
+        {
+            DrawingKit_var kit = traversal->kit();
+            kit->saveState();
+            MonoGraphic::traverse(traversal);
+            kit->restoreState();
+        }
+    };
 
-template <class T>
-class DrawDecorator : public MonoGraphic
-{
-  typedef void (DrawingKit::*Method)(T);
-public:
-  DrawDecorator(Method m, T v) : method(m), value(v) {}
-  virtual void draw(DrawTraversal_ptr traversal) 
-  {
-    DrawingKit_var kit = traversal->kit();
-    kit->saveState();
-    (kit->*method)(value);
-    MonoGraphic::traverse(traversal);
-    kit->restoreState();    
-  }
-private:
-  Method method;
-  T value;
-};
+    // this just sets up a rudimentary decorator such that the value is set (in the
+    // traversing drawingkit) when it is entered.
+
+    template <class T>
+    class DrawDecorator : public MonoGraphic
+    {
+        typedef void (DrawingKit::*Method)(T);
+      public:
+        DrawDecorator(Method m, T v) : method(m), value(v) { }
+        virtual void draw(DrawTraversal_ptr traversal)
+        {
+            DrawingKit_var kit = traversal->kit();
+            kit->saveState();
+            (kit->*method)(value);
+            MonoGraphic::traverse(traversal);
+            kit->restoreState();
+        }
+      private:
+        Method method;
+        T value;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -24,13 +24,16 @@
 
 using namespace Fresco;
 
-GGIKitImpl::GGIKitImpl(const std::string &id,
-		       const Fresco::Kit::PropertySeq &p,
-		       ServerContextImpl *c)
-  : KitImpl(id, p, c) {}
-GGIKitImpl::~GGIKitImpl() {}
+GGI::Kit::GGIKitImpl::GGIKitImpl(const std::string &id,
+                                 const Fresco::Kit::PropertySeq &p,
+                                 ServerContextImpl *c) :
+  KitImpl(id, p, c)
+{ }
 
-GGI::Visual_ptr GGIKitImpl::create_visual(Fresco::PixelCoord w, Fresco::PixelCoord h)
+GGI::Kit::GGIKitImpl::~GGIKitImpl() { }
+
+GGI::Visual_ptr GGI::Kit::GGIKitImpl::create_visual(Fresco::PixelCoord w,
+                                                    Fresco::PixelCoord h)
 {
     return create<GGI::Visual>(new VisualImpl(w, h));
 }
@@ -39,6 +42,7 @@ GGI::Visual_ptr GGIKitImpl::create_visual(Fresco::PixelCoord w, Fresco::PixelCoo
 
 extern "C" KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "GGIKitImpl"};
-  return create_prototype<GGIKitImpl>("IDL:GGI/GGIKit:1.0", properties, 2);
-} 
+    static std::string properties[] = {"implementation", "GGIKitImpl"};
+    return create_prototype<GGI::Kit::GGIKitImpl>("IDL:GGI/GGIKit:1.0",
+                                                  properties, 2);
+}

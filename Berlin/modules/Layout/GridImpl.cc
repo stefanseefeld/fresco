@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -68,182 +68,195 @@ static void offset_region(RegionImpl *r, Coord dx, Coord dy)
   r->upper.y += dy;
 }
 
-class LayoutAlignRequest
+namespace Berlin
 {
-public:
-  LayoutAlignRequest();
-  
-  void margin(Coord margin);
-  
-  void accumulate(const Graphic::Requirement &r);
-  void requirement(Graphic::Requirement &r) const;
- 
-protected:
-  Coord natural_lead;
-  Coord min_lead;
-  Coord max_lead;
-  Coord natural_trail;
-  Coord min_trail;
-  Coord max_trail;
-};
- 
-LayoutAlignRequest::LayoutAlignRequest()
-  : natural_lead(0), min_lead(-GraphicImpl::infinity), max_lead(GraphicImpl::infinity),
-    natural_trail(0), min_trail(-GraphicImpl::infinity), max_trail(GraphicImpl::infinity)
-{
-}
- 
-void LayoutAlignRequest::margin(Coord margin)
-{
-  natural_lead += margin;
-  min_lead -= margin;
-  max_lead += margin;
-  natural_trail += margin;
-  min_trail -= margin;
-  max_trail += margin;
-}
- 
-void LayoutAlignRequest::accumulate(const Graphic::Requirement &r)
-{
-  if (r.defined)
+  namespace LayoutKit
+  {
+    class LayoutAlignRequest
     {
-      Coord r_nat = r.natural;
-      Coord r_max = r.maximum;
-      Coord r_min = r.minimum;
-      Coord r_align = r.align;
-      Coord r_inv_align = Coord(1) - r_align;
-      natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
-      max_lead = Math::min(max_lead, Coord(r_max * r_align));
-      min_lead = Math::max(min_lead, Coord(r_min * r_align));
-      natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
-      max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
-      min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
+      public:
+        LayoutAlignRequest();
+
+        void margin(Coord margin);
+
+        void accumulate(const Graphic::Requirement &r);
+        void requirement(Graphic::Requirement &r) const;
+
+      protected:
+        Coord natural_lead;
+        Coord min_lead;
+        Coord max_lead;
+        Coord natural_trail;
+        Coord min_trail;
+        Coord max_trail;
+    };
+
+    LayoutAlignRequest::LayoutAlignRequest() :
+      natural_lead(0),
+      min_lead(-GraphicImpl::infinity),
+      max_lead(GraphicImpl::infinity),
+      natural_trail(0),
+      min_trail(-GraphicImpl::infinity),
+      max_trail(GraphicImpl::infinity)
+    { }
+
+    void LayoutAlignRequest::margin(Coord margin)
+    {
+        natural_lead += margin;
+        min_lead -= margin;
+        max_lead += margin;
+        natural_trail += margin;
+        min_trail -= margin;
+        max_trail += margin;
     }
-}
- 
-void LayoutAlignRequest::requirement(Graphic::Requirement &r) const
-{
-  GraphicImpl::require_lead_trail(r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
-}
- 
-class LayoutTileRequest
-{
-public:
-  LayoutTileRequest();
-  
-  void space(Coord space);
-  void flexible();
- 
-  void accumulate(const Graphic::Requirement &r);
-  void requirement(Graphic::Requirement &r) const;
- 
-  Coord natural;
-  Coord min_size;
-  Coord max_size;
-};
- 
-LayoutTileRequest::LayoutTileRequest() : natural(0), min_size(0), max_size(0) {}
 
-void LayoutTileRequest::space(Coord space)
-{
-  natural += space;
-  max_size += space;
-  min_size += space;
-}
- 
-void LayoutTileRequest::flexible()
-{
-  max_size = GraphicImpl::infinity;
-}
- 
-void LayoutTileRequest::accumulate(const Graphic::Requirement &r)
-{
-  if (r.defined)
+    void LayoutAlignRequest::accumulate(const Graphic::Requirement &r)
     {
-      natural += r.natural;
-      max_size += r.maximum;
-      min_size += r.minimum;
+        if (!r.defined) return;
+
+        Coord r_nat = r.natural;
+        Coord r_max = r.maximum;
+        Coord r_min = r.minimum;
+        Coord r_align = r.align;
+        Coord r_inv_align = Coord(1) - r_align;
+        natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
+        max_lead = Math::min(max_lead, Coord(r_max * r_align));
+        min_lead = Math::max(min_lead, Coord(r_min * r_align));
+        natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
+        max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
+        min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
     }
-}
- 
-void LayoutTileRequest::requirement(Graphic::Requirement &r) const
-{
-  r.defined = true;
-  r.natural = natural;
-  r.maximum = max_size;
-  r.minimum = min_size;
-  r.align = 0.;
-}
 
-class LayoutTileAllocate
-{
-public:
-  LayoutTileAllocate(Axis, Graphic::Requisition &, bool, Region_ptr);
-
-  static Coord compute_length(const Graphic::Requirement &, const Region::Allotment &);
-  static double compute_squeeze(const Graphic::Requirement &, Coord);
-
-  void next_span(const Graphic::Requirement &, GridImpl::Span &);
-
-private:
-  bool first_aligned;
-  bool growing;
-  bool shrinking;
-  Coord f;
-  Coord p;
-  long i;
-};
-
-LayoutTileAllocate::LayoutTileAllocate(Axis axis, Graphic::Requisition &total, bool fa, Region_ptr given)
-{
-  first_aligned = fa;
-  Graphic::Requirement *r;
-  Region::Allotment a;
-  r = GraphicImpl::requirement(total, axis);
-  given->span(axis, a);
-  Coord length = compute_length(*r, a);
-  growing = length > r->natural;
-  shrinking = length < r->natural;
-  f = compute_squeeze(*r, length);
-  p = a.begin + a.align * (a.end - a.begin);
-  i = 0;
-}
-
-Coord LayoutTileAllocate::compute_length(const Graphic::Requirement &r, const Region::Allotment &a)
-{
-  Coord length = a.end - a.begin;
-  Coord a_a = a.align;
-  Coord r_a = r.align;
-  if (r_a == 0) length *= (1 - a_a);
-  else if (r_a == 1) length *= a_a;
-  else length *= Math::min(a_a / r_a, (1 - a_a) / (1 - r_a));
-  return length;
-}
- 
-double LayoutTileAllocate::compute_squeeze(const Graphic::Requirement &r, Coord length)
-{
-  double f;
-  Coord nat = r.natural;
-  if (length > nat && r.maximum > nat) f = (length - nat) / (r.maximum - nat);
-  else if (length < nat && r.minimum < nat) f = (nat - length) / (nat - r.minimum);
-  else f = 0.0;
-  return f;
-}
-
-void LayoutTileAllocate::next_span(const Graphic::Requirement &r, GridImpl::Span &s)
-{
-  if (r.defined)
+    void LayoutAlignRequest::requirement(Graphic::Requirement &r) const
     {
-      Coord cspan = r.natural;
-      if (growing) cspan += f * (r.maximum - r.natural);
-      else if (shrinking) cspan -= f * (r.natural - r.minimum);
-      if (first_aligned && (i == 0)) p -= r.align * cspan;
-      set_span(s, p + cspan * r.align, cspan, r.align);
-      p += cspan;
-   }
-  else set_span(s, p, Coord(0), Alignment(0));
-  ++i;
-}
+        GraphicImpl::require_lead_trail(r,
+                                        natural_lead, max_lead, min_lead,
+                                        natural_trail, max_trail, min_trail);
+    }
+
+    class LayoutTileRequest
+    {
+      public:
+        LayoutTileRequest();
+
+        void space(Coord space);
+        void flexible();
+
+        void accumulate(const Graphic::Requirement &r);
+        void requirement(Graphic::Requirement &r) const;
+
+        Coord natural;
+        Coord min_size;
+        Coord max_size;
+    };
+
+    LayoutTileRequest::LayoutTileRequest() : natural(0), min_size(0), max_size(0) { }
+
+    void LayoutTileRequest::space(Coord space)
+    {
+        natural += space;
+        max_size += space;
+        min_size += space;
+    }
+
+    void LayoutTileRequest::flexible() { max_size = GraphicImpl::infinity; }
+
+    void LayoutTileRequest::accumulate(const Graphic::Requirement &r)
+    {
+        if (!r.defined) return;
+
+        natural += r.natural;
+        max_size += r.maximum;
+        min_size += r.minimum;
+    }
+
+    void LayoutTileRequest::requirement(Graphic::Requirement &r) const
+    {
+        r.defined = true;
+        r.natural = natural;
+        r.maximum = max_size;
+        r.minimum = min_size;
+        r.align = 0.;
+    }
+
+    class LayoutTileAllocate
+    {
+      public:
+        LayoutTileAllocate(Axis, Graphic::Requisition &, bool, Region_ptr);
+
+        static Coord compute_length(const Graphic::Requirement &,
+                                    const Region::Allotment &);
+        static double compute_squeeze(const Graphic::Requirement &, Coord);
+
+        void next_span(const Graphic::Requirement &, GridImpl::Span &);
+
+      private:
+        bool first_aligned;
+        bool growing;
+        bool shrinking;
+        Coord f;
+        Coord p;
+        long i;
+    };
+
+    LayoutTileAllocate::LayoutTileAllocate(Axis axis,
+                                           Graphic::Requisition &total, bool fa,
+                                           Region_ptr given)
+    {
+        first_aligned = fa;
+        Graphic::Requirement *r;
+        Region::Allotment a;
+        r = GraphicImpl::requirement(total, axis);
+        given->span(axis, a);
+        Coord length = compute_length(*r, a);
+        growing = length > r->natural;
+        shrinking = length < r->natural;
+        f = compute_squeeze(*r, length);
+        p = a.begin + a.align * (a.end - a.begin);
+        i = 0;
+    }
+
+    Coord LayoutTileAllocate::compute_length(const Graphic::Requirement &r,
+                                             const Region::Allotment &a)
+    {
+        Coord length = a.end - a.begin;
+        Coord a_a = a.align;
+        Coord r_a = r.align;
+        if (r_a == 0) length *= (1 - a_a);
+        else if (r_a == 1) length *= a_a;
+        else length *= Math::min(a_a / r_a, (1 - a_a) / (1 - r_a));
+        return length;
+    }
+
+    double LayoutTileAllocate::compute_squeeze(const Graphic::Requirement &r,
+                                               Coord length)
+    {
+        double f;
+        Coord nat = r.natural;
+        if (length > nat && r.maximum > nat) f = (length - nat) / (r.maximum - nat);
+        else if (length < nat && r.minimum < nat)
+            f = (nat - length) / (nat - r.minimum);
+        else f = 0.0;
+        return f;
+    }
+
+    void LayoutTileAllocate::next_span(const Graphic::Requirement &r,
+                                       GridImpl::Span &s)
+    {
+        if (r.defined)
+        {
+            Coord cspan = r.natural;
+            if (growing) cspan += f * (r.maximum - r.natural);
+            else if (shrinking) cspan -= f * (r.natural - r.minimum);
+            if (first_aligned && (i == 0)) p -= r.align * cspan;
+            set_span(s, p + cspan * r.align, cspan, r.align);
+            p += cspan;
+        }
+        else set_span(s, p, Coord(0), Alignment(0));
+        ++i;
+    }
+  } // namespace
+} // namespace
 
 GridImpl::GridImpl(const Layout::Grid::Index &upper)
 {
@@ -259,7 +272,7 @@ GridImpl::~GridImpl() {}
 void GridImpl::append_graphic(Graphic_ptr g)
 {
   replace(g, _cursor);
-  
+
   if (++_cursor.col >= _dimensions[xaxis].size())
     {
       long count = _dimensions[yaxis].size();
@@ -292,7 +305,7 @@ void GridImpl::traverse(Traversal_ptr traversal)
   range.upper.col = _dimensions[xaxis].size();
   range.lower.row = 0;
   range.upper.row = _dimensions[yaxis].size();
-  
+
   traverse_range(traversal, range);
 }
 
@@ -323,7 +336,7 @@ Layout::Grid::Index GridImpl::find(Traversal_ptr traversal)
   range.upper.col = _dimensions[xaxis].size();
   range.lower.row = 0;
   range.upper.row = _dimensions[yaxis].size();
-  
+
   return find_range(traversal, range);
 }
 
@@ -342,7 +355,7 @@ void GridImpl::allocate_cell(Region_ptr given, const Layout::Grid::Index &i, Reg
 void GridImpl::request_range(Fresco::Graphic::Requisition &r, const Layout::Grid::Range &a)
 {
   cache_request();
-  
+
   partial_request(xaxis, a.lower.col, a.upper.col, r.x);
   partial_request(yaxis, a.lower.row, a.upper.row, r.y);
 }
@@ -353,7 +366,7 @@ void GridImpl::traverse_range(Traversal_ptr traversal, const Layout::Grid::Range
   if (!CORBA::is_nil(given))
     {
       if (traversal->intersects_allocation())
-	traverse_with_allocation(traversal, given, a);
+    traverse_with_allocation(traversal, given, a);
     }
   else
     traverse_without_allocation(traversal, a);
@@ -442,14 +455,14 @@ void GridImpl::full_request(Axis axis, Axis direction)
     {
       LayoutAlignRequest align;
       for (std::vector<Graphic_var>::iterator j = d.children[i].begin(); j != d.children[i].end(); ++j)
-	if (!CORBA::is_nil(*j))
-	  {
-	    Fresco::Graphic::Requisition r;
-	    GraphicImpl::init_requisition(r);
-	    GraphicImpl::default_requisition(r);
-	    (*j)->request(r);
-	    align.accumulate(axis == xaxis ? r.x : r.y);
-	  }
+    if (!CORBA::is_nil(*j))
+      {
+        Fresco::Graphic::Requisition r;
+        GraphicImpl::init_requisition(r);
+        GraphicImpl::default_requisition(r);
+        (*j)->request(r);
+        align.accumulate(axis == xaxis ? r.x : r.y);
+      }
       Fresco::Graphic::Requirement &r = d.requirements[i];
       align.requirement(r);
       tile.accumulate(r);
@@ -482,16 +495,16 @@ void GridImpl::traverse_with_allocation(Traversal_ptr t, Region_ptr given, const
   for (i.row = range.lower.row; i.row != range.upper.row && t->ok(); i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col && t->ok(); i.col++)
       {
-	Graphic_var child = d.children [i.row][i.col];
-	if (CORBA::is_nil(child)) continue;
-	tx->load_identity();
-	spans_to_region(xspans[i.col], yspans[i.row], region);
-	offset_region(region, dx, dy);
-	region->normalize(Transform_var(tx->_this()));
-	try { t->traverse_child (child, index_to_tag(i), Region_var(region->_this()), Transform_var(tx->_this()));}
-	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
-	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
-	catch (const CORBA::TRANSIENT &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+    Graphic_var child = d.children [i.row][i.col];
+    if (CORBA::is_nil(child)) continue;
+    tx->load_identity();
+    spans_to_region(xspans[i.col], yspans[i.row], region);
+    offset_region(region, dx, dy);
+    region->normalize(Transform_var(tx->_this()));
+    try { t->traverse_child (child, index_to_tag(i), Region_var(region->_this()), Transform_var(tx->_this()));}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
       }
   delete [] xspans;
   delete [] yspans;
@@ -504,12 +517,12 @@ void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::
   for (i.row = range.lower.row; i.row != range.upper.row && t->ok(); i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col && t->ok(); i.col++)
       {
-	Graphic_var child = d.children [i.row][i.col];
-	if (CORBA::is_nil (child)) continue;
-	try { t->traverse_child (child, index_to_tag(i), Region::_nil(), Transform::_nil());}
-	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
-	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
-	catch (const CORBA::TRANSIENT &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+    Graphic_var child = d.children [i.row][i.col];
+    if (CORBA::is_nil (child)) continue;
+    try { t->traverse_child (child, index_to_tag(i), Region::_nil(), Transform::_nil());}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
       }
 }
 

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,9 @@
 using namespace Prague;
 using namespace Fresco;
 
-BoundedRangeImpl::BoundedRangeImpl(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
+Berlin::CommandKit::BoundedRangeImpl::BoundedRangeImpl(Coord l, Coord u,
+                                                       Coord lv, Coord uv,
+                                                       Coord s, Coord p)
   : _s(s), _p(p)
 {
   _settings.lower = l;
@@ -35,29 +37,29 @@ BoundedRangeImpl::BoundedRangeImpl(Coord l, Coord u, Coord lv, Coord uv, Coord s
   _settings.uvalue = uv;
 };
 
-BoundedRangeImpl::~BoundedRangeImpl()
+Berlin::CommandKit::BoundedRangeImpl::~BoundedRangeImpl()
 {
 };
 
-BoundedRange::Settings BoundedRangeImpl::state()
+BoundedRange::Settings Berlin::CommandKit::BoundedRangeImpl::state()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _settings;
 }
 
-void BoundedRangeImpl::state(const Fresco::BoundedRange::Settings &s)
+void Berlin::CommandKit::BoundedRangeImpl::state(const Fresco::BoundedRange::Settings &s)
 {
   Prague::Guard<Mutex> guard(_mutex);
   _settings = s;
 }
 
-Coord BoundedRangeImpl::lower()
+Coord Berlin::CommandKit::BoundedRangeImpl::lower()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _settings.lower;
 }
 
-void BoundedRangeImpl::lower(Coord l)
+void Berlin::CommandKit::BoundedRangeImpl::lower(Coord l)
 {
   CORBA::Any any;
   {
@@ -71,13 +73,13 @@ void BoundedRangeImpl::lower(Coord l)
   notify(any);
 }
 
-Coord BoundedRangeImpl::upper()
+Coord Berlin::CommandKit::BoundedRangeImpl::upper()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _settings.upper;
 }
 
-void BoundedRangeImpl::upper(Coord u)
+void Berlin::CommandKit::BoundedRangeImpl::upper(Coord u)
 {
   CORBA::Any any;
   {
@@ -91,31 +93,31 @@ void BoundedRangeImpl::upper(Coord u)
   notify(any);
 }
 
-Coord BoundedRangeImpl::step()
+Coord Berlin::CommandKit::BoundedRangeImpl::step()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _s;
 }
 
-void BoundedRangeImpl::step(Coord s)
+void Berlin::CommandKit::BoundedRangeImpl::step(Coord s)
 {
   Prague::Guard<Mutex> guard(_mutex);
   _s = s;
 }
 
-Coord BoundedRangeImpl::page()
+Coord Berlin::CommandKit::BoundedRangeImpl::page()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _p;
 }
 
-void BoundedRangeImpl::page(Coord p)
+void Berlin::CommandKit::BoundedRangeImpl::page(Coord p)
 {
   Prague::Guard<Mutex> guard(_mutex);
   _p = p;
 }
 
-void BoundedRangeImpl::forward()
+void Berlin::CommandKit::BoundedRangeImpl::forward()
 {
   CORBA::Any any;
   {
@@ -129,7 +131,7 @@ void BoundedRangeImpl::forward()
   notify(any);
 }
 
-void BoundedRangeImpl::backward()
+void Berlin::CommandKit::BoundedRangeImpl::backward()
 {
   CORBA::Any any;
   {
@@ -143,7 +145,7 @@ void BoundedRangeImpl::backward()
   notify(any);
 }
 
-void BoundedRangeImpl::fastforward()
+void Berlin::CommandKit::BoundedRangeImpl::fastforward()
 {
   CORBA::Any any;
   {
@@ -157,7 +159,7 @@ void BoundedRangeImpl::fastforward()
   notify(any);
 }
 
-void BoundedRangeImpl::fastbackward()
+void Berlin::CommandKit::BoundedRangeImpl::fastbackward()
 {
   CORBA::Any any;
   {
@@ -171,7 +173,7 @@ void BoundedRangeImpl::fastbackward()
   notify(any);
 }
 
-void BoundedRangeImpl::begin()
+void Berlin::CommandKit::BoundedRangeImpl::begin()
 {
   CORBA::Any any;
   {
@@ -185,7 +187,7 @@ void BoundedRangeImpl::begin()
   notify(any);
 }
 
-void BoundedRangeImpl::end()
+void Berlin::CommandKit::BoundedRangeImpl::end()
 {
   CORBA::Any any;
   {
@@ -199,7 +201,7 @@ void BoundedRangeImpl::end()
   notify(any);
 }
 
-void BoundedRangeImpl::lvalue(Coord lv)
+void Berlin::CommandKit::BoundedRangeImpl::lvalue(Coord lv)
 {
   CORBA::Any any;
   {
@@ -212,14 +214,14 @@ void BoundedRangeImpl::lvalue(Coord lv)
   notify(any);
 }
 
-Coord BoundedRangeImpl::lvalue()
+Coord Berlin::CommandKit::BoundedRangeImpl::lvalue()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _settings.lvalue;
 }
 
 
-void BoundedRangeImpl::uvalue(Coord uv)
+void Berlin::CommandKit::BoundedRangeImpl::uvalue(Coord uv)
 {
   CORBA::Any any;
   {
@@ -231,19 +233,20 @@ void BoundedRangeImpl::uvalue(Coord uv)
   notify(any);
 }
 
-Coord BoundedRangeImpl::uvalue()
+Coord Berlin::CommandKit::BoundedRangeImpl::uvalue()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _settings.uvalue;
 }
 
 
-void BoundedRangeImpl::adjust(Coord d)
+void Berlin::CommandKit::BoundedRangeImpl::adjust(Coord d)
 {
   CORBA::Any any;
   {
     Prague::Guard<Mutex> guard(_mutex);
-    Coord t = std::min(std::max(d, _settings.lower - _settings.lvalue), _settings.upper - _settings.uvalue);
+    Coord t = std::min(std::max(d, _settings.lower - _settings.lvalue),
+                       _settings.upper - _settings.uvalue);
     if (t == 0.) return;
     _settings.lvalue += t;
     _settings.uvalue += t;

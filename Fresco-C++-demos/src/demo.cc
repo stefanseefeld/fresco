@@ -1,7 +1,7 @@
  /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -53,61 +53,61 @@ template <typename T> T *create_demo(Application *a)
 
 int main(int argc, char **argv)
 {
-   Prague::GetOpt getopt(argv[0], "C++ fresco demo");
-   getopt.add('h', "help", Prague::GetOpt::novalue, "help message");
-   add_resolving_options_to_getopt(getopt);
-   size_t argo = getopt.parse(argc, argv);
-   argc -= argo;
-   argv += argo;
- 
-   if (getopt.is_set('h'))
+    Prague::GetOpt getopt(argv[0], "C++ fresco demo");
+    getopt.add('h', "help", Prague::GetOpt::novalue, "help message");
+    add_resolving_options_to_getopt(getopt);
+    size_t argo = getopt.parse(argc, argv);
+    argc -= argo;
+    argv += argo;
+
+    if (getopt.is_set('h'))
+    {
+        getopt.usage();
+        exit(0);
+    }
+
+   try
    {
-     getopt.usage();
-     exit(0);
-   }
-
-  try
-  {
-     CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
-     PortableServer::POA_var poa = 
+       CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
+       PortableServer::POA_var poa =
          resolve_init<PortableServer::POA>(orb, "RootPOA");
-     DefaultPOA::default_POA(poa);
-     PortableServer::POAManager_var pman = poa->the_POAManager();
-     pman->activate();
-     
-     Server_var server = resolve_server(getopt, orb);
-     
-     ClientContextImpl *client = new ClientContextImpl("Demo application");
-     ClientContext_var client_ref = client->_this();
+       DefaultPOA::default_POA(poa);
+       PortableServer::POAManager_var pman = poa->the_POAManager();
+       pman->activate();
 
-     ServerContext_var server_context = 
+       Server_var server = resolve_server(getopt, orb);
+
+       ClientContextImpl *client = new ClientContextImpl("Demo application");
+       ClientContext_var client_ref = client->_this();
+
+       ServerContext_var server_context =
          server->create_server_context(client_ref);
-     
-     Application *application = new Application(server_context, client_ref);
-     
-     std::auto_ptr<Demo> layout(create_demo<LayoutDemo>(application));
-     std::auto_ptr<Demo> text(create_demo<TextDemo>(application));
-     std::auto_ptr<Demo> edit(create_demo<EditTextDemo>(application));
-     std::auto_ptr<Demo> raster(create_demo<RasterDemo>(application));
-     std::auto_ptr<Demo> grid(create_demo<GridDemo>(application));
-     std::auto_ptr<Demo> color(create_demo<ColorDemo>(application));
-     std::auto_ptr<Demo> logo(create_demo<LogoDemo>(application));
-     std::auto_ptr<Demo> focus(create_demo<FocusDemo>(application));
-     std::auto_ptr<Demo> viewport(create_demo<ViewportDemo>(application));
-     std::auto_ptr<Demo> document(create_demo<DocDemo>(application));
-     std::auto_ptr<Demo> terminal(create_demo<TermDemo>(application));
-     
-     application->run();
-     delete application;
-     delete client;
-  }
-  catch (const CORBA::COMM_FAILURE &c)
-  {
-     std::cerr << "Could not connect to the display server "
-               << "(CORBA::COMM_FAILURE)." << std::endl;
-  }
-  catch (const std::exception &e)
-  {
-     std::cerr << "Exception: " << e.what() << std::endl;
-  }
+
+       Application *application = new Application(server_context, client_ref);
+
+       std::auto_ptr<Demo> layout(create_demo<LayoutDemo>(application));
+       std::auto_ptr<Demo> text(create_demo<TextDemo>(application));
+       std::auto_ptr<Demo> edit(create_demo<EditTextDemo>(application));
+       std::auto_ptr<Demo> raster(create_demo<RasterDemo>(application));
+       std::auto_ptr<Demo> grid(create_demo<GridDemo>(application));
+       std::auto_ptr<Demo> color(create_demo<ColorDemo>(application));
+       std::auto_ptr<Demo> logo(create_demo<LogoDemo>(application));
+       std::auto_ptr<Demo> focus(create_demo<FocusDemo>(application));
+       std::auto_ptr<Demo> viewport(create_demo<ViewportDemo>(application));
+       std::auto_ptr<Demo> document(create_demo<DocDemo>(application));
+       std::auto_ptr<Demo> terminal(create_demo<TermDemo>(application));
+
+       application->run();
+       delete application;
+       delete client;
+   }
+   catch (const CORBA::COMM_FAILURE &c)
+   {
+       std::cerr << "Could not connect to the display server "
+                 << "(CORBA::COMM_FAILURE)." << std::endl;
+   }
+   catch (const std::exception &e)
+   {
+       std::cerr << "Exception: " << e.what() << std::endl;
+   }
 }

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,11 +27,11 @@
 #include <Berlin/ServantBase.hh>
 
 class CommandImpl : public virtual POA_Fresco::Command,
-		    public virtual ServantBase
+                    public virtual ServantBase
 {
-public:
-  virtual void execute(const CORBA::Any &) = 0;
-  virtual void destroy() { deactivate();}
+  public:
+    virtual void execute(const CORBA::Any &) = 0;
+    virtual void destroy() { deactivate();}
 };
 
 #endif

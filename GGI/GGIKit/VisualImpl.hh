@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -32,31 +32,40 @@ extern "C"
 #include <ggi/ggi-unix.h>
 }
 
-class VisualImpl : public virtual POA_GGI::Visual,
-                   public ControllerImpl
+namespace GGI
 {
-public:
-  VisualImpl(Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual ~VisualImpl();
-  virtual char *name();
-  virtual char *mode();
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void extension(const Fresco::Allocation::Info &info, Fresco::Region_ptr region);
-  virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &);
-  // this overrides ControllerImpl:
-  virtual void move(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-private:
-  virtual void handle_pointer_button(const Fresco::Input::Event &);
-  void forward_event(const ggi_event &);
-  static GGIDrawableFactory *_factory;
-  Fresco::PixelCoord         _width;
-  Fresco::PixelCoord         _height;
-  Fresco::Drawable_var       _drawable;
-  int                        _shm;
-  GGIDrawable               *_ggi;
-  std::string                _mode;
-};
+  namespace GGIKit
+  {
+
+    class VisualImpl : public virtual POA_GGI::Visual,
+                       public ControllerImpl
+    {
+      public:
+        VisualImpl(Fresco::PixelCoord, Fresco::PixelCoord);
+        virtual ~VisualImpl();
+        virtual char *name();
+        virtual char *mode();
+        virtual void request(Fresco::Graphic::Requisition &);
+        virtual void draw(Fresco::DrawTraversal_ptr);
+        virtual void extension(const Fresco::Allocation::Info &info, Fresco::Region_ptr region);
+        virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr,
+                                                 const Fresco::Input::Event &);
+        virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &);
+        // this overrides ControllerImpl:
+        virtual void move(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+      private:
+        virtual void handle_pointer_button(const Fresco::Input::Event &);
+        void forward_event(const ggi_event &);
+        static GGIDrawableFactory *_factory;
+        Fresco::PixelCoord         _width;
+        Fresco::PixelCoord         _height;
+        Fresco::Drawable_var       _drawable;
+        int                        _shm;
+        GGIDrawable               *_ggi;
+        std::string                _mode;
+    };
+
+  } // namepace
+} // namespace
 
 #endif

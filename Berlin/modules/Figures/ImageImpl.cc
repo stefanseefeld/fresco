@@ -31,55 +31,58 @@
 using namespace Prague;
 using namespace Fresco;
 
-ImageImpl::ImageImpl(Raster_ptr r)
-  : raster(RefCount_var<Fresco::Raster>::increment(r))
+Berlin::FigureKit::ImageImpl::ImageImpl(Raster_ptr r) :
+  raster(RefCount_var<Fresco::Raster>::increment(r))
 {
-  Fresco::Raster::Info info = raster->header();
-  width = info.width*10.;
-  height = info.height*10.;
+    Fresco::Raster::Info info = raster->header();
+    width = info.width*10.;
+    height = info.height*10.;
 }
-ImageImpl::~ImageImpl() { Trace trace("ImageImpl::~ImageImpl");}
-void ImageImpl::request(Fresco::Graphic::Requisition &r)
+Berlin::FigureKit::ImageImpl::~ImageImpl()
+{ Trace trace("ImageImpl::~ImageImpl"); }
+void Berlin::FigureKit::ImageImpl::request(Fresco::Graphic::Requisition &r)
 {
-  r.x.defined = true;
-  r.x.natural = r.x.maximum = r.x.minimum = width;
-  r.x.align = 0.;
-  r.y.defined = true;
-  r.y.natural = r.y.maximum = r.y.minimum = height;
-  r.y.align = 0.;
-}
-
-void ImageImpl::draw(DrawTraversal_ptr traversal)
-{
-  if (!traversal->intersects_allocation()) return;
-  DrawingKit_var drawing = traversal->drawing();
-  drawing->draw_image(raster);
+    r.x.defined = true;
+    r.x.natural = r.x.maximum = r.x.minimum = width;
+    r.x.align = 0.;
+    r.y.defined = true;
+    r.y.natural = r.y.maximum = r.y.minimum = height;
+    r.y.align = 0.;
 }
 
-void ImageImpl::update(const CORBA::Any &)
+void Berlin::FigureKit::ImageImpl::draw(DrawTraversal_ptr traversal)
 {
-  need_redraw();
+    if (!traversal->intersects_allocation()) return;
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->draw_image(raster);
 }
 
-void ImageImpl::activate_composite()
+void Berlin::FigureKit::ImageImpl::update(const CORBA::Any &)
 {
-  raster->attach(Observer_var(_this()));
+    need_redraw();
 }
 
-Texture::Texture(Raster_ptr r) : raster(RefCount_var<Fresco::Raster>::increment(r)) {}
-Texture::~Texture() {}
-void Texture::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
-void Texture::draw(DrawTraversal_ptr traversal)
+void Berlin::FigureKit::ImageImpl::activate_composite()
 {
-  DrawingKit_var drawing = traversal->drawing();
-  drawing->save();
-  drawing->texture(raster);
-  drawing->surface_fillstyle(DrawingKit::textured);
-  MonoGraphic::traverse(traversal);
-  drawing->restore();
+    raster->attach(Observer_var(_this()));
 }
 
-void Texture::pick(PickTraversal_ptr traversal)
+Berlin::FigureKit::Texture::Texture(Raster_ptr r) :
+  raster(RefCount_var<Fresco::Raster>::increment(r)) { }
+Berlin::FigureKit::Texture::~Texture() { }
+void Berlin::FigureKit::Texture::traverse(Traversal_ptr traversal)
+{ traversal->visit(Graphic_var(_this())); }
+void Berlin::FigureKit::Texture::draw(DrawTraversal_ptr traversal)
 {
-  MonoGraphic::traverse(traversal);
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->save();
+    drawing->texture(raster);
+    drawing->surface_fillstyle(DrawingKit::textured);
+    MonoGraphic::traverse(traversal);
+    drawing->restore();
+}
+
+void Berlin::FigureKit::Texture::pick(PickTraversal_ptr traversal)
+{
+    MonoGraphic::traverse(traversal);
 }

@@ -32,37 +32,45 @@
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
 
-class ImageImpl : public virtual POA_Fresco::Image,
-		  public virtual ViewImpl,
-		  public GraphicImpl
+namespace Berlin
 {
-public:
-  ImageImpl(Fresco::Raster_ptr);
-  ~ImageImpl();
-  
-  virtual Fresco::Raster_ptr data() { return Fresco::Raster::_duplicate(raster);}
-  virtual void data(Fresco::Raster_ptr r) { raster = r;}
+  namespace FigureKit
+  {
+    class ImageImpl : public virtual POA_Fresco::Image,
+                      public virtual ViewImpl,
+                      public GraphicImpl
+    {
+      public:
+        ImageImpl(Fresco::Raster_ptr);
+        ~ImageImpl();
 
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void draw(Fresco::DrawTraversal_ptr); 
-  virtual void update(const CORBA::Any &);
-protected:
-  virtual void activate_composite();
-private:
-  RefCount_var<Fresco::Raster> raster;
-  Fresco::Coord width, height;
-};
+        virtual Fresco::Raster_ptr data()
+        { return Fresco::Raster::_duplicate(raster); }
+        virtual void data(Fresco::Raster_ptr r) { raster = r; }
 
-class Texture : public MonoGraphic
-{
-public:
-  Texture(Fresco::Raster_ptr);
-  ~Texture();
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void pick(Fresco::PickTraversal_ptr);
-private:
-  RefCount_var<Fresco::Raster> raster;
-};
+        virtual void request(Fresco::Graphic::Requisition &);
+        virtual void draw(Fresco::DrawTraversal_ptr);
+        virtual void update(const CORBA::Any &);
+      protected:
+        virtual void activate_composite();
+      private:
+        RefCount_var<Fresco::Raster> raster;
+        Fresco::Coord width, height;
+    };
+
+    class Texture : public MonoGraphic
+    {
+      public:
+        Texture(Fresco::Raster_ptr);
+        ~Texture();
+        virtual void traverse(Fresco::Traversal_ptr);
+        virtual void draw(Fresco::DrawTraversal_ptr);
+        virtual void pick(Fresco::PickTraversal_ptr);
+      private:
+        RefCount_var<Fresco::Raster> raster;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

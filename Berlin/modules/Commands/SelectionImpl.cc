@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ using namespace Fresco;
  * a little glue class to notify the Selection if the 'toggled'
  * flag in the Telltale changed state.
  */
-class SelectionImpl::Observer : public ObserverImpl
+class Berlin::CommandKit::SelectionImpl::Observer : public ObserverImpl
 {
 public:
   Observer(SelectionImpl *, Telltale_ptr, Tag);
@@ -47,121 +47,125 @@ private:
   Tag t;
 };
 
-bool SelectionImpl::Id_eq::operator()(const SelectionImpl::Observer *o) const { return o->id() == id;}
+bool Berlin::CommandKit::SelectionImpl::Id_eq::operator()(const SelectionImpl::Observer *o) const
+{ return o->id() == id; }
 
-SelectionImpl::Observer::Observer(SelectionImpl *s, Telltale_ptr i, Tag tt)
-  : selection(s),
-    item(RefCount_var<Fresco::Telltale>::increment(i)),
-    cached(item->test(Fresco::Controller::toggled)),
-    t(tt)
+Berlin::CommandKit::SelectionImpl::Observer::Observer(SelectionImpl *s, Telltale_ptr i,
+                                                      Tag tt) :
+  selection(s),
+  item(RefCount_var<Fresco::Telltale>::increment(i)),
+  cached(item->test(Fresco::Controller::toggled)),
+  t(tt)
+{ }
+
+Berlin::CommandKit::SelectionImpl::Observer::~Observer()
 {
+    Trace trace("SelectionImpl::Observer::~Observer");
+    item->detach(Observer_var(_this()));
+    selection->remove_observer(t);
 }
 
-SelectionImpl::Observer::~Observer()
+void Berlin::CommandKit::SelectionImpl::Observer::update(const CORBA::Any &any)
 {
-  Trace trace("SelectionImpl::Observer::~Observer");
-  item->detach(Observer_var(_this()));
-  selection->remove_observer(t);
+    bool toggled = item->test(Fresco::Controller::toggled);
+    if (toggled == cached) return; // not for us...
+    cached = toggled;
+    selection->update(t, toggled);
 }
 
-void SelectionImpl::Observer::update(const CORBA::Any &any)
+Berlin::CommandKit::SelectionImpl::SelectionImpl(Fresco::Selection::Policy p,
+                                                 TelltaleConstraint_ptr c) :
+  policy(p),
+  constraint(RefCount_var<TelltaleConstraint>::increment(c))
 {
-  bool toggled = item->test(Fresco::Controller::toggled);
-  if (toggled == cached) return; // not for us...
-  cached = toggled;
-  selection->update(t, toggled);
+    Trace trace("SelectionImpl::SelectionImpl");
 }
 
-SelectionImpl::SelectionImpl(Fresco::Selection::Policy p, TelltaleConstraint_ptr c)
-  : policy(p), constraint(RefCount_var<TelltaleConstraint>::increment(c))
+Berlin::CommandKit::SelectionImpl::~SelectionImpl()
 {
-  Trace trace("SelectionImpl::SelectionImpl");
+    Trace trace("SelectionImpl::~SelectionImpl");
+    // for (list_t::iterator i = items.begin(); i != items.end(); i++)
+    // try { (*i)->deactivate();}
+    // catch (CORBA::OBJECT_NOT_EXIST &) {}
 }
 
-SelectionImpl::~SelectionImpl()
+Fresco::Selection::Policy Berlin::CommandKit::SelectionImpl::type() { return policy; }
+void Berlin::CommandKit::SelectionImpl::type(Fresco::Selection::Policy p)
 {
-  Trace trace("SelectionImpl::~SelectionImpl");
-//   for (list_t::iterator i = items.begin(); i != items.end(); i++)
-//     try { (*i)->deactivate();}
-//     catch (CORBA::OBJECT_NOT_EXIST &) {}
-}
-
-Fresco::Selection::Policy SelectionImpl::type() { return policy;}
-void SelectionImpl::type(Fresco::Selection::Policy p) {
     Prague::Guard<Mutex> guard(mutex);
     policy = p;
 }
 
-Tag SelectionImpl::add(Telltale_ptr t)
+Tag Berlin::CommandKit::SelectionImpl::add(Telltale_ptr t)
 {
-  Trace trace("SelectionImpl::add");
-  Prague::Guard<Mutex> guard(mutex);
-  Tag id = uniqueId();
-  Observer *observer = new Observer(this, t, id);
-//   activate(observer);
-  t->attach(Observer_var(observer->_this()));
-  if (!CORBA::is_nil(constraint)) constraint->add(t);
-  items.push_back(observer);
-  return id;
+    Trace trace("SelectionImpl::add");
+    Prague::Guard<Mutex> guard(mutex);
+    Tag id = uniqueId();
+    Observer *observer = new Observer(this, t, id);
+    // activate(observer);
+    t->attach(Observer_var(observer->_this()));
+    if (!CORBA::is_nil(constraint)) constraint->add(t);
+    items.push_back(observer);
+    return id;
 }
 
-void SelectionImpl::remove(Tag t)
+void Berlin::CommandKit::SelectionImpl::remove(Tag t)
 {
-  Trace trace("SelectionImpl::remove");
-  Prague::Guard<Mutex> guard(mutex);
-  size_t i = id_to_index(t);
-  if (i < items.size())
+    Trace trace("SelectionImpl::remove");
+    Prague::Guard<Mutex> guard(mutex);
+    size_t i = id_to_index(t);
+    if (i < items.size())
     {
-      //       if (!CORBA::is_nil(constraint)) constraint->remove(t);
-      items[i]->destroy();
-      items.erase(items.begin() + i);
+        // if (!CORBA::is_nil(constraint)) constraint->remove(t);
+        items[i]->destroy();
+        items.erase(items.begin() + i);
     }
 }
 
-Selection::Items *SelectionImpl::toggled()
+Selection::Items * Berlin::CommandKit::SelectionImpl::toggled()
 {
-  Trace trace("SelectionImpl::toggled");
-  Prague::Guard<Mutex> guard(mutex);
-  Fresco::Selection::Items_var ret = new Fresco::Selection::Items;
-  for (list_t::iterator i = items.begin(); i != items.end(); i++)
-    if ((*i)->toggled())
-      {
-	// FIXME: Use push_back() once we finally switch to gcc 3 -- tobias
-	ret->length(ret->length() + 1);
-	ret[ret->length() - 1] = (*i)->id();
-      }
-  return ret._retn();
+    Trace trace("SelectionImpl::toggled");
+    Prague::Guard<Mutex> guard(mutex);
+    Fresco::Selection::Items_var ret = new Fresco::Selection::Items;
+    for (list_t::iterator i = items.begin(); i != items.end(); i++)
+        if ((*i)->toggled())
+        {
+            // FIXME: Use push_back() once we finally switch to gcc 3 -- tobias
+            ret->length(ret->length() + 1);
+            ret[ret->length() - 1] = (*i)->id();
+        }
+    return ret._retn();
 }
 
-void SelectionImpl::update(Tag t, bool toggled)
+void Berlin::CommandKit::SelectionImpl::update(Tag t, bool toggled)
 {
-  Trace trace("SelectionImpl::update");
-  CORBA::Any any;
-  Fresco::Selection::Item item;
-  item.id = t;
-  item.toggled = toggled;
-  any <<= item;
-  notify(any);
+    Trace trace("SelectionImpl::update");
+    CORBA::Any any;
+    Fresco::Selection::Item item;
+    item.id = t;
+    item.toggled = toggled;
+    any <<= item;
+    notify(any);
 }
 
-void SelectionImpl::remove_observer(Tag t)
+void Berlin::CommandKit::SelectionImpl::remove_observer(Tag t)
 {
-  Trace trace("SelectionImpl::remove_observer");
-  Prague::Guard<Mutex> guard(mutex);
-  size_t i = id_to_index(t);
-  if (i < items.size()) items.erase(items.begin() + i);
+    Trace trace("SelectionImpl::remove_observer");
+    Prague::Guard<Mutex> guard(mutex);
+    size_t i = id_to_index(t);
+    if (i < items.size()) items.erase(items.begin() + i);
 }
 
-Tag SelectionImpl::uniqueId()
+Tag Berlin::CommandKit::SelectionImpl::uniqueId()
 {
-  Tag id;
-  for (id = 0;
-       std::find_if(items.begin(), items.end(), Id_eq(id)) != items.end();
-       id++);
-      return id;
+    Tag id;
+    for (id = 0;
+        std::find_if(items.begin(), items.end(), Id_eq(id)) != items.end();
+        id++);
+        return id;
 }
 
-CORBA::Long SelectionImpl::id_to_index(Tag id)
+CORBA::Long Berlin::CommandKit::SelectionImpl::id_to_index(Tag id)
 {
-  return std::find_if(items.begin(), items.end(), Id_eq(id)) - items.begin();
+    return std::find_if(items.begin(), items.end(), Id_eq(id)) - items.begin();
 }
