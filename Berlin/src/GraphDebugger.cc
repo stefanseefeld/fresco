@@ -105,6 +105,7 @@ void Berlin::GraphDebugger::dump_graphic(Fresco::Graphic_ptr g,
     {
 	Fresco::Transform::Matrix m;
 	t->store_matrix(m);
+	out << "\\n";
 	out << "[" << m[0][0] << ", " << m[0][1] << ", "
 	    << m[0][2] << ", "  << m[0][3] << "]\\n";
 	out << "[" << m[1][0] << ", " << m[1][1] << ", "
