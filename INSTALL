@@ -48,6 +48,22 @@ Step into the build directory, and run configure:
 > $berlin-src/configure
 
 this will set up the build tree and check for the available packages.
+Here is a list of the available options:
+
+  --enable-docs          Build the documentation
+  --enable-tracer        Compile with tracer support
+  --with-omniorb-prefix  Prefix for omniORB
+  --with-omniorb-version omniORB version (3 and 4 supported)
+  --with-freetype-prefix Prefix where freetype is installed (optional)
+  --with-console         Specify which Console to use (GGI, SDL, DirectFB)
+  --with-ggi-prefix      Prefix for GGI
+  --with-sdl-prefix      Prefix where SDL is installed (optional)
+  --with-directfb-prefix Prefix for DirectFb (console DirectFB)
+  --with-art-prefix=PFX  Prefix for libArt
+  --with-ggimesa-prefix  Prefix for GGIMesa
+  --with-mesa-prefix     Prefix for Mesa
+  --enable-jprof   	 enable profiling with the jprof tool
+  --enable-lclog   	 enable lifecycle logging
 
 [ Add support for interactive configuration and document the options
   here]
@@ -83,11 +99,16 @@ you have to provide him with a resource file containing the paths:
 
 Voila ! That should run the server.
 
+other options that you may use when invoking the server:
+
+-l --logger [list of groups to log]: log messages (the special group 'lifecycle' requires configuration with --enable-lclog)
+-t --tracer :                        trace method calls (requires configuration with --enable-tracer)
+-p --profiler :                      use jprof profiler (requires configuration with --enable-jprof)
+
 Installing
 ==========
 
-Sorry, the install target isn't finished yet, but we are working on it.
-
+Sorry, the install target isn't finished yet, we are working on it.
 
 Troubleshooting
 ===============
@@ -101,4 +122,5 @@ please be sure that third party libraries are correctly installed before
 you post about a bug. For example, the by far most frequent problem encountered
 is reported by people who forgot to start the name server...
 
-Good luck,	Stefan <stefan@berlin-consortium.org>
+Good luck,
+		Stefan <stefan@berlin-consortium.org>
