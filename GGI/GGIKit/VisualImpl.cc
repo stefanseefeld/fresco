@@ -27,7 +27,6 @@
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/Logger.hh>
-#include <Console/GGI/GGI.hh>
 #include "GGI/VisualImpl.hh"
 #include <sys/ipc.h>
 #include <strstream.h>
@@ -35,10 +34,14 @@
 using namespace Prague;
 using namespace Warsaw;
 
+GGIDrawableFactory *VisualImpl::_factory = 0;
+
 VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
   : ControllerImpl(false), _width(w), _height(h)
 {
   Trace trace("VisualImpl::VisualImpl");
+  Console *console = Console::instance();
+  if (!_factory) _factory = console->get_extension<GGIDrawableFactory>("GGIDrawableFactory");
   Warsaw::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
   /*
    * the drawable plus some memory for the event queue
@@ -46,24 +49,13 @@ VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
   size_t size = w * h * format.size + 64*1024;
   _shm = SHM::allocate(size);
   std::ostrstream oss;
-  oss << "display-memory:-input:shmid:" << _shm << std::ends;
-  const char *name = oss.str();
-  try { _ggi = new GGIDrawable(name, w, h, 3);}
-  catch (...)
-    {
-      cerr << "Error : can't open shm GGIDrawable" << endl;
-      throw;
-    }
-  Logger::log(Logger::drawing) << "open ggi display with name :'" << name << '\'' << endl;
-  _name = name;
-  delete [] name;
+
+  _ggi = _factory->create_drawable(_shm, w, h, 3);
+  _drawable = console->activate_drawable(_ggi);
   ggi_mode mode = _ggi->mode();
   char buffer[256];
   ggiSPrintMode(buffer, &mode);
   _mode = buffer;
-  GGIConsole *console = GGIConsole::instance();
-  console->add_drawable(_ggi);
-  _drawable = console->activate_drawable(_ggi);
 }
 
 VisualImpl::~VisualImpl()

@@ -81,8 +81,10 @@ void LibArtDrawingKit::init()
   
   _agam = art_alphagamma_new (2.5);
   _buffer = console->create_drawable(_drawable->width(), _drawable->height(), 3);
-  _renderer = console->get_extension<Renderer>("Renderer", _buffer);
-  _direct = console->get_extension<DirectBuffer>("DirectBuffer", _buffer);
+  _renderer = console->get_extension<Renderer>("Renderer");
+  _renderer->attach(_buffer);
+  _direct = console->get_extension<DirectBuffer>("DirectBuffer");
+  _direct->attach(_buffer);
   _bbox.x0 = _bbox.y0 = _bbox.x1 = _bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)

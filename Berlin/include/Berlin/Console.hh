@@ -39,23 +39,11 @@ class Console
 {
 public:
   class Drawable;
-  //. Extensions are a means to provide special Drawable APIs
+  //. Extensions are a means to provide special APIs
   //. that are not supported on all Consoles
   class Extension
   {
   public:
-    class Loader
-    {
-    public:
-      virtual ~Loader() {}
-      virtual Extension *load(Drawable *) = 0;
-    };
-    template <typename T>
-    class LoaderT : public Loader
-    {
-    public:
-      virtual Extension *load(Drawable *drawable) { return new T(drawable);}
-    };
     virtual ~Extension(){}
   };
 private:
@@ -105,12 +93,6 @@ public:
   virtual Drawable *create_drawable(Warsaw::PixelCoord, //.< Requested x size.
 				    Warsaw::PixelCoord, //.< Requested y size.
 				    Warsaw::PixelCoord) = 0; //.< Requested color depth.
-  //. Creates a new Drawable of the given size (x, y) and depth. It is accessable
-  //. under the given shm-id.
-  virtual Drawable *create_shm_drawable(int, //.< SHM ID.
-					Warsaw::PixelCoord, //.< Requested x size.
-					Warsaw::PixelCoord, //.< Requested y size.
-					Warsaw::PixelCoord) = 0; //. Requested depth.
 
   //. Activates a given drawable: After activation it can recieve requests via CORBA.
   Warsaw::Drawable_ptr activate_drawable(Drawable *);
@@ -126,9 +108,9 @@ public:
   //. FIXME: Missing documentation!
   virtual void activate_autoplay() = 0;
   template <typename T>
-  T *get_extension(const std::string &id, Drawable *drawable)
+  T *get_extension(const std::string &id)
   {
-    Extension *extension = create_extension(id, drawable);
+    Extension *extension = create_extension(id);
     T *t = dynamic_cast<T *>(extension);
     if (!t)
       {
@@ -142,7 +124,7 @@ protected:
   Console() {}
   virtual ~Console() {}
 private:
-  virtual Extension      *create_extension(const std::string &, Drawable *) = 0;
+  virtual Extension      *create_extension(const std::string &) = 0;
   PortableServer::POA_var _poa;
   static Console         *_console;
   static Reaper           _reaper;
@@ -154,6 +136,11 @@ class Console::Drawable : public virtual POA_Warsaw::Drawable,
 	                  public virtual PortableServer::RefCountServantBase
 {
 public:
+  class Extension : public virtual Console::Extension
+  {
+  public:
+    virtual void attach(Drawable *) = 0;
+  };
   typedef char data_type;
   Drawable() {}
   virtual ~Drawable() {}

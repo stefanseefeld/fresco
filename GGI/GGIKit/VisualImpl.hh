@@ -26,7 +26,11 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/GGIKit.hh>
 #include <Berlin/ControllerImpl.hh>
-#include <Console/GGI/GGI.hh>
+#include <Console/GGIDrawableFactory.hh>
+extern "C"
+{
+#include <ggi/ggi-unix.h>
+}
 
 class VisualImpl : public virtual POA_GGI::Visual,
                    public ControllerImpl
@@ -43,13 +47,14 @@ public:
   virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &);
 private:
   void forward_event(const ggi_event &);
-  Warsaw::PixelCoord   _width;
-  Warsaw::PixelCoord   _height;
-  Warsaw::Drawable_var _drawable;
-  int                  _shm;
-  GGIDrawable         *_ggi;
-  std::string          _name;
-  std::string          _mode;
+  static GGIDrawableFactory *_factory;
+  Warsaw::PixelCoord         _width;
+  Warsaw::PixelCoord         _height;
+  Warsaw::Drawable_var       _drawable;
+  int                        _shm;
+  GGIDrawable               *_ggi;
+  std::string                _name;
+  std::string                _mode;
 };
 
 #endif

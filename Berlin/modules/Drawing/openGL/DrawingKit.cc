@@ -100,7 +100,7 @@ void GLDrawingKit::init()
 {
   Console *console = Console::instance();
   _drawable = console->drawable();
-  _glcontext = console->get_extension<GLContext>("GLContext", _drawable);
+  _glcontext = console->get_extension<GLContext>("GLContext");
 
   _font = new GLUnifont();
   _light = new Light();

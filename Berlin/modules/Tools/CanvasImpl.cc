@@ -34,15 +34,20 @@
 using namespace Prague;
 using namespace Warsaw;
 
+SHMDrawableFactory *CanvasImpl::_factory = 0;
+
 CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
   : _width(w), _height(h)
 {
   Trace trace("CanvasImpl::CanvasImpl");
-  Warsaw::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
+  Console *console = Console::instance();
+  cout << "I'm still here" << endl;
+  if (!_factory) _factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
+  cout << "I'm still here" << endl;
+  Warsaw::Drawable::PixelFormat format = console->drawable()->pixel_format();
   size_t size = w * h * format.size;
   _shm = SHM::allocate(size);
-  Console *console = Console::instance();
-  Console::Drawable *drawable = console->create_shm_drawable(_shm, w, h, 3);
+  Console::Drawable *drawable = _factory->create_drawable(_shm, w, h, 3);
   _drawable = console->activate_drawable(drawable);
 }
 
