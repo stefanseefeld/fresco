@@ -434,10 +434,10 @@ void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
+void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event & e)
 {
   grab(traversal);
-  request_focus(Controller_var(_this()), 0);
+  request_focus(Controller_var(_this()), e[0].dev);
   set(Warsaw::Controller::pressed);
 }
 
