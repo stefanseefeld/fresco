@@ -352,6 +352,12 @@ void PositionalFocus::dispatch(Input::Event &event)
   //   inverse_transform_vertex(position);
   // event[pidx].attr.location(position);
   // std::cout << "distributing positional event at " << position << std::endl;
-  _controllers.back()->
-    handle_positional(PickTraversal_var(_traversal->_this()), event);
+  try
+  {
+      _controllers.back()->
+        handle_positional(PickTraversal_var(_traversal->_this()), event);
+  }
+  catch (const CORBA::OBJECT_NOT_EXIST &) { _controllers.pop_back(); }
+  catch (const CORBA::COMM_FAILURE &) { _controllers.pop_back(); }
+  catch (const CORBA::TRANSIENT &) { _controllers.pop_back(); }
 }
