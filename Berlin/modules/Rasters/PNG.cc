@@ -309,11 +309,16 @@ Raster::ColorSeq *PNG::pixels(unsigned long xlower, unsigned long ylower, unsign
 //   if (rinfo->color_type != rgbalpha) cerr << "wrong color type : " << (int) rinfo->color_type << endl;
 //   if (rinfo->bit_depth != 8) cerr << "wrong depth : " << (int) rinfo->bit_depth << endl;
   unsigned char *buffer = 0;
-  if (rinfo->color_type == palette) row = buffer = new unsigned char[rinfo->width*rinfo->height*4];
+  if (rinfo->color_type != rgbalpha) row = buffer = new unsigned char[rinfo->width*rinfo->height*4];
   for (png_uint_32 y = ylower, i = 0; y != yupper; y++, i++)
     {
-      if (rinfo->color_type == palette) expand(rows[y], rows[y] + rinfo->rowbytes, buffer);
-      else row = rows[y];
+      switch (rinfo->color_type)
+	{
+	case palette: p2rgba(rows[y], rows[y] + rinfo->rowbytes, buffer); break;
+	case gray: g2rgba(rows[y], rows[y] + rinfo->rowbytes, buffer); break;
+	case grayalpha: ga2rgba(rows[y], rows[y] + rinfo->rowbytes, buffer); break;
+	default: row = rows[y];
+	}
       for (png_uint_32 x = xlower, j = 0; x != xupper; x++, j++)
 	{
 	  const unsigned char *pixel = row + 4*x;
@@ -383,7 +388,7 @@ void PNG::write(const string &file, unsigned char *const *rows)
   png_destroy_write_struct(&wpng, &winfo);
 }
 
-void PNG::expand(const unsigned char *begin, const unsigned char *end, unsigned char *to)
+void PNG::p2rgba(const unsigned char *begin, const unsigned char *end, unsigned char *to)
 //. expands palette png into rgba
 {
   if (rinfo->color_type != PNG_COLOR_TYPE_PALETTE) return;
@@ -464,4 +469,55 @@ void PNG::expand(const unsigned char *begin, const unsigned char *end, unsigned 
       *dp-- = rpng->palette[*sp].red;
       sp--;
     }
+}
+
+void PNG::g2rgba(const unsigned char *begin, const unsigned char *end, unsigned char *to)
+{
+  if (rinfo->color_type != gray) return;
+  if (rinfo->bit_depth == 8)
+    for (; begin < end; begin++)
+      {
+	*(to++) = *begin;//red
+	*(to++) = *begin;//green
+	*(to++) = *begin;//blue
+	*(to++) =  0xff; //alpha
+      }
+  else
+    for (; begin < end; begin += 2)// 16 bit
+      {
+	*(to++) = *begin;
+	*(to++) = *(begin + 1);
+	*(to++) = *begin;
+	*(to++) = *(begin + 1);
+	*(to++) = *(begin++);
+	*(to++) = *(begin++);
+	*(to++) =  0xff;
+	*(to++) =  0xff;
+      }
+}
+
+void PNG::ga2rgba(const unsigned char *begin, const unsigned char *end, unsigned char *to)
+//. expands gray alpha png into rgba
+{
+  if (rinfo->color_type != grayalpha) return;
+  if (rinfo->bit_depth == 8)
+    for (; begin != end; begin++)
+      {
+	*(to++) = *begin;  // red
+	*(to++) = *begin;  // green
+	*(to++) = *begin++;// blue
+	*(to++) = *begin;  // alpha
+      }
+  else
+    for (; begin < end; begin++)
+      {
+	*(to++) = *begin;       // red
+	*(to++) = *(begin + 1); // red
+	*(to++) = *begin;       // green
+	*(to++) = *(begin + 1); // green
+	*(to++) = *(begin++);   // blue
+	*(to++) = *(begin++);   // blue
+	*(to++) = *(begin++);   // alpha
+	*(to++) = *begin;       // alpha
+      }
 }
