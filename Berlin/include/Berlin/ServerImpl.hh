@@ -40,8 +40,7 @@ class ServerContextImpl;
 //. people who are connecting.  it might want to do some checking on
 //. the incoming ClientContext's credentials, but at the moment it doesn't.
 class ServerImpl : public virtual POA_Fresco::Server,
-                   public virtual PortableServer::RefCountServantBase,
-		   public DefaultPOA
+                   public virtual PortableServer::RefCountServantBase
 {
   friend class ServerContextImpl;
 
@@ -51,11 +50,12 @@ class ServerImpl : public virtual POA_Fresco::Server,
   typedef std::map<std::string, CORBA::Object_var> smap_t;
 
 public:
-  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
+  PortableServer::POA_ptr _default_POA() { return PortableServer::POA::_duplicate(_poa);}
+
   typedef std::multimap<std::string, Fresco::Kit::PropertySeq_var> PluginList;
 
   //. Create() can be called once only! It creates the one server-object.
-  static ServerImpl *create(const CORBA::PolicyList &);
+  static ServerImpl *create(PortableServer::POA_ptr poa, const CORBA::PolicyList &);
   //. Get a reference to the server in use.
   static ServerImpl *instance();
   
@@ -121,14 +121,15 @@ private:
   //. Destroys a given Servercontext (and with that the client's resources
   //. in this server).
   static void destroy_context(ServerContextImpl *);
-  CORBA::PolicyList  _policies;
-  Prague::Thread     _thread;
-  Prague::Mutex      _mutex;
-  smap_t             _singletons;
-  clist_t            _contexts;
-  pmap_t             _plugins;
-  kmap_t             _kits;
-  static ServerImpl *_server;
+  PortableServer::POA_var _poa;
+  CORBA::PolicyList       _policies;
+  Prague::Thread          _thread;
+  Prague::Mutex           _mutex;
+  smap_t                  _singletons;
+  clist_t                 _contexts;
+  pmap_t                  _plugins;
+  kmap_t                  _kits;
+  static ServerImpl      *_server;
 };
 
 template <class K>

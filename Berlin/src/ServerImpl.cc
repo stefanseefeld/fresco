@@ -33,10 +33,11 @@ using namespace Fresco;
 
 ServerImpl *ServerImpl::_server = 0;;
 
-ServerImpl *ServerImpl::create(const CORBA::PolicyList &policies)
+ServerImpl *ServerImpl::create(PortableServer::POA_ptr poa, const CORBA::PolicyList &policies)
 {
   assert(_server == 0);
   _server = new ServerImpl(policies);
+  _server->_poa = PortableServer::POA::_duplicate(poa);
   return _server;
 }
 
@@ -168,7 +169,7 @@ KitImpl *ServerImpl::create(const char *type,
       {
 	KitImpl *kit = (**i)->clone(properties);
 	kit->_poa = PortableServer::POA::_duplicate(poa);
-	PortableServer::POA_var root = _default_POA();
+	PortableServer::POA_var root = kit->_default_POA();
 	PortableServer::ObjectId *oid = root->activate_object(kit);
 	kit->_remove_ref();
 	delete oid;

@@ -69,7 +69,7 @@ int main(int argc, char **argv)
   if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
 
   CORBA::PolicyList policies;
-  ServerImpl *server = ServerImpl::create(policies);
+  ServerImpl *server = ServerImpl::create(PortableServer::POA::_nil(),policies);
 
   Prague::Path path = RCManager::get_path("modulepath");
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)

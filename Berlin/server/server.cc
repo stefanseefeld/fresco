@@ -150,6 +150,7 @@ int main(int argc, char **argv) /*FOLD00*/
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
+  getopt.add('R', "export-ref", GetOpt::mandatory, "means of exporting server reference");
   getopt.add('l', "logger", GetOpt::optional, "switch logging on");
   getopt.add('t', "tracer", GetOpt::novalue, "switch tracing on");
   getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
@@ -275,8 +276,24 @@ int main(int argc, char **argv) /*FOLD00*/
        // Construct Server
        // ---------------------------------------------------------------
        
-       ServerImpl *server = ServerImpl::create(policies);
-       
+       PortableServer::POA_var insPOA;
+       ServerImpl *server;
+       value = "";
+       getopt.get("export-ref",&value);
+       if (value == "corbaloc")
+	 {
+	   CORBA::Object_var poaref = orb->resolve_initial_references("omniINSPOA");
+	   insPOA = PortableServer::POA::_narrow(poaref);
+	   PortableServer::POAManager_var poam = insPOA->the_POAManager();
+	   poam->activate();
+	   
+	   server = ServerImpl::create(insPOA, policies);
+	 }
+       else
+	 {
+	   server = ServerImpl::create(poa, policies);      
+	 }
+
        Prague::Path path = RCManager::get_path("modulepath");
        for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
 	   server->scan(*i);
@@ -329,20 +346,38 @@ int main(int argc, char **argv) /*FOLD00*/
        server->start();
       
        Logger::log(Logger::layout) << "started server" << std::endl;
-       try
+       value = "";
+       getopt.get("export-ref",&value);
+       if (value == "ior")
 	 {
-	   bind_name(orb, Server_var(server->_this()), "IDL:fresco.org/Fresco/Server:1.0");
-	 } 
-       catch (CORBA::COMM_FAILURE)
-	 {
-	   std::cerr << "CORBA communications failure finding Fresco." << std::endl
-		     << "Are you sure the name service is running?" << std::endl;
-	   return -1;
+	   Server_var serverRef = server->_this();
+	   std::cout << orb->object_to_string(serverRef) << std::endl;
 	 }
-       catch (...)
+       else if (value == "corbaloc")
 	 {
-	   std::cerr << "Unknown exception finding Fresco" << std::endl;
-	   return -1;
+	   PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId("FrescoServer");
+	   insPOA->activate_object_with_id(oid,server);
+	   
+	   // TODO: Look for host name here
+	   std::cout << "corbaloc::localhost/FrescoServer" << std::endl;
+	 }
+       else if (value == "nameserver" || value.empty())
+	 {
+	   try
+	     {
+	       bind_name(orb, Server_var(server->_this()), "IDL:fresco.org/Fresco/Server:1.0");
+	     } 
+	   catch (CORBA::COMM_FAILURE)
+	     {
+	       std::cerr << "CORBA communications failure finding Fresco." << std::endl
+			 << "Are you sure the name service is running?" << std::endl;
+	       return -1;
+	     }
+	   catch (...)
+	     {
+	       std::cerr << "Unknown exception finding Fresco" << std::endl;
+	       return -1;
+	     }
 	 }
        
        Logger::log(Logger::corba) << "listening for clients" << std::endl;
