@@ -1,42 +1,6 @@
 berlin for Debian
 ----------------------
 
-From the website:
-
-Berlin is a windowing system being
-actively developed by members of the free
-software community. Its features include a
-multilingual text rendering system, a set
-of extensible user interface components
-residing in-process with the display server,
-an advanced imaging model with strong support
-for hardware acceleration, and a
-persistent user-preferences database. 
-
-Berlin is designed around 3 major existing
-standards: Unicode, OpenGL, and Corba. It
-is released under the GNU Library General
-Public License, and written entirely by
-volunteers using GNU/Linux, OmniORB, Mesa and
-Egcs -- all free software. 
-
-All code is under the GNU Lesser General Public License:
-
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Library General Public
-# License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Library General Public License for more details.
-#
-# You should have received a copy of the GNU Library General Public
-# License along with this library; if not, write to the
-# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
-# MA 02139, USA.
-
 PLEASE NOTE: This is a pre-alpha release of Berlin. At this point, nobody's
 even taken the time to tie up loose ends in the CVS tree and announce a new
 stable branch. However, this is generally considered a next generation
@@ -80,8 +44,8 @@ before it will work. Before you run the clients, you need to run the server
   Because Berlin's only currently working display engine is written with
 OpenGL using GGI as a target, the display server can be displayed in almost
 any environment; however, it's STRONGLY recommended that you refrain from
-anything but X. Other targets you try at your own risk -- I can tell you
-from experience that you may have to do a hard reboot to get out.
+anything but X. Anything else you do at your own risk -- I can tell you from
+experience that you may have to do a hard reboot to get out.
 
 If you have any questions, feel free to drop me a line.
 
