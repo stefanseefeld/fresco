@@ -6,6 +6,7 @@
   #include &lt;Fresco/DesktopKit.hh&gt;
   #include &lt;Fresco/TextKit.hh&gt;
   #include &lt;Fresco/WidgetKit.hh&gt;
+  #include &lt;Fresco/ToolKit.hh&gt;
   #include &lt;Fresco/resolve.hh&gt;
   #include &lt;Fresco/Unicode.hh&gt;
   #include &lt;Fresco/ClientContextImpl.hh&gt;
