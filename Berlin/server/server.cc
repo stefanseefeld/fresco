@@ -147,7 +147,7 @@ int main(int argc, char **argv)
   getopt.add('t', "tracer", GetOpt::novalue, "switch tracing on");
   getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
-  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
+  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load (mandatory)");
   getopt.add('e', "execute", GetOpt::mandatory, "the command to execute upon startup");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
@@ -202,7 +202,6 @@ int main(int argc, char **argv)
   PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
-
   Logger::log(Logger::corba) << "root POA is activated" << std::endl;
 
   Console::open(argc, argv, poa);
@@ -258,7 +257,16 @@ int main(int argc, char **argv)
   server->start();
 
   Logger::log(Logger::layout) << "started server" << std::endl;
-  bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
+  try {
+    bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
+  } catch (CORBA::COMM_FAILURE) {
+    std::cerr << "CORBA communications failure finding Warsaw." << std::endl
+              << "Are you sure the name service is running?" << std::endl;
+    return -1;
+  } catch (...) {
+    std::cerr << "Unknown exception finding Warsaw" << std::endl;
+    return -1;
+  }
 
   Logger::log(Logger::corba) << "listening for clients" << std::endl;
   // initialize the event distributor and draw thread
