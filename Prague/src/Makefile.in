@@ -73,7 +73,7 @@ SysH		:= logbuf.hh logstream.hh ntree.hh Tracer.hh regex.hh User.hh Process.hh \
 IPCH		:= ipcbuf.hh pipebuf.hh sockbuf.hh sockstream.hh ptybuf.hh mmapbuf.hh convert.hh \
 	  	   Agent.hh Dispatcher.hh Coprocess.hh PipeAgent.hh TTYAgent.hh SocketAgent.hh \
                    Acceptor.hh Connector.hh
-FilterH		:= gzbuf.hh# xdrbuf.cc #bzbuf.cc 
+FilterH		:= gzbuf.hh gzstream.hh# xdrbuf.cc #bzbuf.cc 
 NetworkH	:= protocol.hh echo.hh ftp.hh smtp.hh url.hh
 
 HDR		:= Prague/config.hh
