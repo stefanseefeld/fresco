@@ -27,6 +27,7 @@
 #include <Warsaw/Types.hh>
 #include <Warsaw/Input.hh>
 #include <Warsaw/Drawable.hh>
+#include <Warsaw/Raster.hh>
 #include <Berlin/config.hh>
 #include <stdexcept>
 #include <iosfwd>
@@ -95,7 +96,7 @@ public:
   static Console *instance();
 
   //. Get a pointerobject to use on this Console.
-  virtual Pointer *pointer() = 0;
+  virtual Pointer *pointer(Warsaw::Raster_ptr) = 0;
 
   //. Get the 'root-drawable' used by this Console. That's the chunk of video
   //. memory covering the whole screen.
@@ -229,6 +230,9 @@ class Console::Pointer : public virtual PortableServer::RefCountServantBase
 {
 public:
   virtual ~Pointer() {}
+
+  //. return the raster associated with this pointer
+  virtual Warsaw::Raster_ptr raster() = 0;
   //. Move the pointer to the given Pixelcoordinate.
   virtual void move(Warsaw::Coord, Warsaw::Coord) = 0;
   //. FIXME: Missing documentation!

@@ -32,6 +32,7 @@ module Warsaw
   interface Graphic;
   interface View;
   interface Controller;
+  interface MainController;
   interface Trigger;
   interface Command;
   interface TextBuffer;
@@ -164,14 +165,10 @@ module Warsaw
       //. Returns a basic terminal...
       //. FIXME: How does the terminal stuff work?
       Controller   terminal(in Graphic g, in StreamBuffer b);
-      //. This wraps the given Graphic into a Controller (which basically
-      //. does nothing). It can be used to adapt a Graphic so it can be
-      //. used where a Controller is exspected or for focus navigation.
-      //. FIXME: Is this really what it was meant to do? Or just what I use
-      //.        it for? :-) -- tobias
-      //. FIXME: THere is a group() in the FigureKit too. How about renaming
-      //.        this one here to avoid confusion? -- tobias
-      Controller   group(in Graphic g);
+      //. A group has two purposes: as the root node of a widget
+      //. it routes events / focus, and it allows to set attributes
+      //. that are used for focus management and event handling
+      MainController   group(in Graphic g);
       //. Returns a graphic w pixels wide and h pixels high. It is
       //. supposed to be used for video playback and similar things.
       //. Don't use it if not absolutly necessary! Some DrawingKits

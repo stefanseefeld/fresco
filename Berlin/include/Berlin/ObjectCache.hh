@@ -27,7 +27,14 @@
 #include <map>
 #include <algorithm>
 
-template <class Remote, class Local>
+template <typename Remote, typename Local>
+struct DefaultObjectCacheTrait
+{
+  static Local *create(Remote &r) { return new Local(r);}
+  static Remote remote(Local *l) { return l->remote;}
+};
+
+template <typename Remote, typename Local, typename Trait = DefaultObjectCacheTrait<Remote, Local> >
 class ObjectCache
 {
   typedef std::vector<Local *> bucket_t;
@@ -37,7 +44,7 @@ class ObjectCache
   struct Predicate
   {
     Predicate(Remote r) : remote(r) {}
-    bool operator () (Local *l) const { return remote->_is_equivalent(l->remote);}
+    bool operator () (Local *l) const { return remote->_is_equivalent(Trait::remote(l));}
     Remote remote;
   };
 public:
@@ -59,15 +66,15 @@ private:
  * the size of the cache elemminating the items not used
  * for the longest time
  */
-template <class Remote, class Local>
-inline Local *ObjectCache<Remote, Local>::lookup(Remote r)
+template <typename Remote, typename Local, typename Trait>
+inline Local *ObjectCache<Remote, Local, Trait>::lookup(Remote r)
 {
   hash_t hash = r->_hash(_buckets);
   bucket_t &bucket = _cache[hash];
   bucket_t::iterator i = find_if(bucket.begin(), bucket.end(), Predicate(r));
   if (i == bucket.end())
     {
-      Local *local = new Local(r);
+      Local *local = Trait::create(r);
       bucket.push_back(local);
       return bucket.back();
     }
@@ -82,10 +89,10 @@ inline Local *ObjectCache<Remote, Local>::lookup(Remote r)
  * removing the items which have not been
  * used for the longest period first
  */
-template <class Remote, class Local>
-inline void ObjectCache<Remote, Local>::reduce(int size)
+template <typename Remote, typename Local, typename Trait>
+inline void ObjectCache<Remote, Local, Trait>::reduce(int size)
 {
   //...to be implemented...
 }
 
-#endif /* _ObjectCache_hh */
+#endif

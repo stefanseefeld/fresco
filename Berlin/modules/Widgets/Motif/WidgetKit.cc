@@ -26,6 +26,7 @@
 #include <Warsaw/Server.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/Trigger.hh>
+#include <Warsaw/MainController.hh>
 #include <Warsaw/Command.hh>
 #include <Warsaw/Viewport.hh>
 #include <Warsaw/Selection.hh>

@@ -38,7 +38,7 @@ LIBS		+= -lBerlin
 SRC		:= Beveler.cc Frame.cc Triangle.cc Diamond.cc \
 		   TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
 		   TextInput.cc Terminal.cc CanvasImpl.cc DrawingStateImpl.cc \
-		   ToolKitImpl.cc
+		   MainControllerImpl.cc ToolKitImpl.cc
 
 MODULE		:= ToolKit
 

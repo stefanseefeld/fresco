@@ -19,41 +19,28 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _NonPositionalFocus_hh
-#define _NonPositionalFocus_hh
+#ifndef _MainControllerImpl_hh
+#define _MainControllerImpl_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Controller.hh>
-#include <Warsaw/Region.hh>
 #include <Warsaw/Raster.hh>
-#include <Berlin/ImplVar.hh>
-#include <Prague/Sys/Thread.hh>
-#include <Berlin/FocusImpl.hh>
-#include <vector>
+#include <Warsaw/MainController.hh>
+#include <Berlin/ControllerImpl.hh>
+#include <Berlin/RefCountVar.hh>
 
-class ScreenImpl;
-
-class NonPositionalFocus : public FocusImpl
+class MainControllerImpl : public virtual POA_Warsaw::MainController,
+			   public ControllerImpl
 {
-  typedef std::vector<Warsaw::Controller_var> cstack_t;
  public:
-  NonPositionalFocus(Warsaw::Input::Device, Warsaw::Controller_ptr);
-  virtual ~NonPositionalFocus();
+  MainControllerImpl(bool);
+  virtual ~MainControllerImpl();
+  virtual void cursor(Warsaw::Raster_ptr);
+  virtual Warsaw::Raster_ptr cursor();
 
-  virtual void grab() {}
-  virtual void ungrab() {}
-  virtual void set_cursor(Warsaw::Raster_ptr) {}
-  virtual void add_filter(Warsaw::Input::Filter_ptr);
-
-  virtual bool request(Warsaw::Controller_ptr);
-  virtual void restore(Warsaw::Region_ptr) {}
-  virtual void damage(Warsaw::Region_ptr) {}
-  virtual void dispatch(Warsaw::Input::Event &);
-protected:
-  virtual void activate_composite();
-private:
-  cstack_t      _controllers;
-  Prague::Mutex _mutex;
+  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr f);
+ private:
+  Prague::Mutex      _mutex;
+  Warsaw::Raster_var _cursor;
 };
 
-#endif 
+#endif

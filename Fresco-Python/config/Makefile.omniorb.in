@@ -37,7 +37,7 @@ INT		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Focus.idl Drawable.idl DrawingKit.idl Figure.idl Image.idl \
 		   FigureKit.idl Grid.idl Viewport.idl Stage.idl \
 		   LayoutKit.idl Command.idl CommandKit.idl Subject.idl \
-		   Observer.idl Controller.idl View.idl Telltale.idl \
+		   Observer.idl Controller.idl MainController.idl View.idl Telltale.idl \
 		   BoundedValue.idl BoundedRange.idl TextBuffer.idl \
 		   StreamBuffer.idl Selection.idl Trigger.idl \
 		   Canvas.idl State.idl ToolKit.idl Widget.idl WidgetKit.idl \

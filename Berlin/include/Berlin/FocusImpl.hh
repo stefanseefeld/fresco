@@ -26,20 +26,18 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/Focus.hh>
 #include <Berlin/DefaultPOA.hh>
-#include <stack>
 #include <vector>
+#include <stack>
 
 class FocusImpl : public virtual POA_Warsaw::Focus,
                   public virtual PortableServer::RefCountServantBase,
                   private DefaultPOA
 {
-  typedef std::stack<Warsaw::Input::Filter_var> fstack_t;
-  typedef std::vector<size_t> memento_t;
   friend class EventManager;
 public:
-  FocusImpl(Warsaw::Input::Device dd) : d(dd) {}
+  FocusImpl(Warsaw::Input::Device device) : _device(device) {}
   virtual ~FocusImpl() {}
-  virtual Warsaw::Input::Device device() { return d;}
+  virtual Warsaw::Input::Device device() { return _device;}
 
   virtual bool request(Warsaw::Controller_ptr) = 0;
   virtual void restore(Warsaw::Region_ptr) = 0;
@@ -49,9 +47,7 @@ public:
 protected:
   virtual void activate_composite() {}
 private:
-  const Warsaw::Input::Device d;
-  fstack_t filters;
-  memento_t memento;
+  const Warsaw::Input::Device _device;
 };
 
 #endif

@@ -20,10 +20,11 @@
  * MA 02139, USA.
  */
 
+#include <Warsaw/config.hh>
+#include <Warsaw/Command.hh>
+#include <Warsaw/Desktop.hh>
+#include <Warsaw/MainController.hh>
 #include "PrimitiveDemo.hh"
-#include "Warsaw/config.hh"
-#include "Warsaw/Command.hh"
-#include "Warsaw/Desktop.hh"
 
 using namespace Warsaw;
 
@@ -76,6 +77,7 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   LayoutKit_var layout = application->layout();
   ToolKit_var   tools = application->tool();
   WidgetKit_var widgets = application->widget();
+  ImageKit_var  images = application->image();
   PrimitiveKit_var primitives = application->primitive();
   CommandKit_var commands = application->command();
   
@@ -131,7 +133,7 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var foo = tools->frame(box, 10., spec, true);
-  Controller_var bar = tools->group(foo);
+  MainController_var bar = tools->group(foo);
   application->append(bar, Babylon::String("3D demo"));
 }
 

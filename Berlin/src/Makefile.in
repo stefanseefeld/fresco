@@ -34,6 +34,7 @@ include $(cdir)/Server/local.mk
 
 CXXFLAGS        += $(SO_CXXFLAGS)
 LDFLAGS         += $(SO_LDFLAGS)
+LIBS		+= -lpng
 
 SRC		:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 	  	   RefCountBaseImpl.cc RegionImpl.cc TransformImpl.cc TraversalImpl.cc \

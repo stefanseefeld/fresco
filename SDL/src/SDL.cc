@@ -439,10 +439,10 @@ SDLConsole::~SDLConsole()
   SDL_Quit();
 }
 
-SDLPointer *SDLConsole::pointer()
+SDLPointer *SDLConsole::pointer(Raster_ptr raster)
 {
   Trace trace("SDLConsole::pointer");
-  return new SDLPointer(drawable());
+  return new SDLPointer(drawable(), raster);
 }
 
 SDLDrawable *SDLConsole::drawable()
@@ -603,7 +603,8 @@ Console::Extension * SDLConsole::create_extension(const std::string & id,
 // SDLPointer
 // ---------------------------------------------------------------
 
-SDLPointer::SDLPointer(SDLDrawable *d)
+SDLPointer::SDLPointer(SDLDrawable *d, Raster_ptr raster)
+  : _raster(Raster::_duplicate(raster))
 {
   Trace trace("SDLPointer::SDLPointer()");
 
@@ -640,6 +641,11 @@ SDLPointer::~SDLPointer()
 
   SDL_FreeCursor(_cursor);
   SDL_ShowCursor(0);
+}
+
+Raster_ptr SDLPointer::raster()
+{
+  return Raster::_duplicate(_raster);
 }
 
 bool SDLPointer::intersects(Warsaw::Coord l, Warsaw::Coord r,

@@ -25,13 +25,12 @@
 #include <Prague/Sys/Path.hh>
 #include "Berlin/RCManager.hh"
 #include "Berlin/RasterImpl.hh"
-#include <string>
 
 using namespace Prague;
 using namespace Warsaw;
 
 RasterImpl::RasterImpl() : _rows(0) {}
-RasterImpl::RasterImpl(const char *file) : _rows(0)
+RasterImpl::RasterImpl(const std::string &file) : _rows(0)
 {
   Prague::Path path = RCManager::get_path("rasterpath");
   std::string pngfile = path.lookup_file(file);

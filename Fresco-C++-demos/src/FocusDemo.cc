@@ -23,6 +23,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Subject.hh>
 #include <Warsaw/Widget.hh>
+#include <Warsaw/MainController.hh>
 #include <Berlin/ObserverImpl.hh>
 #include "FocusDemo.hh"
 
@@ -95,7 +96,9 @@ FocusDemo::FocusDemo(Application *a)
   vbox->append_graphic(hbox2);
   Raster_var raster = image->create("marble.png");
   Graphic_var texture = figure->texture(vbox, raster);
-  Controller_var gr = tool->group(texture);
+  MainController_var gr = tool->group(texture);
+  Raster_var pointer = image->create("ur-cursor.png");
+  gr->cursor(pointer);
   gr->append_controller(c1);
   gr->append_controller(c2);
   gr->append_controller(c3);

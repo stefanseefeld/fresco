@@ -28,6 +28,7 @@
 #include <Warsaw/Raster.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/PNG.hh>
+#include <string>
 
 class RasterImpl : public virtual POA_Warsaw::Raster,
 		   public SubjectImpl
@@ -35,7 +36,7 @@ class RasterImpl : public virtual POA_Warsaw::Raster,
 {  	
 public:
   RasterImpl();
-  RasterImpl(const char* file);
+  RasterImpl(const std::string &file);
   virtual ~RasterImpl();
   virtual Warsaw::Raster::Info header();
   virtual void clear();

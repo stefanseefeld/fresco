@@ -25,24 +25,40 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Controller.hh>
 #include <Warsaw/Region.hh>
+#include <Warsaw/Raster.hh>
 #include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/FocusImpl.hh>
 #include <Berlin/Console.hh>
+#include <Berlin/ObjectCache.hh>
 #include <vector>
+#include <stack>
 
 class CachingPickTraversal;
 class ScreenImpl;
+class RasterImpl;
 
 class PositionalFocus : public FocusImpl
 {
   typedef std::vector<Warsaw::Controller_var> cstack_t;
   class Traversal;
+  struct PointerCacheTrait;
+  typedef ObjectCache<Warsaw::Raster_var, Console::Pointer, PointerCacheTrait> PointerCache;
+  struct Resources
+  {
+    enum state { set_pointer = 0x1};
+    Resources() : flags(0) {}
+    unsigned long     flags;
+    Console::Pointer *pointer;
+
+  };
+  typedef std::stack<Resources> rstack_t;
 public:
   PositionalFocus(Warsaw::Input::Device, Warsaw::Graphic_ptr, Warsaw::Region_ptr);
   virtual ~PositionalFocus();
   virtual void grab();
   virtual void ungrab();
+  virtual void set_cursor(Warsaw::Raster_ptr);
   virtual void add_filter(Warsaw::Input::Filter_ptr);
 
   virtual bool request(Warsaw::Controller_ptr);
@@ -53,7 +69,10 @@ protected:
   virtual void activate_composite();
 private:
   Warsaw::Graphic_ptr _root;
+  RasterImpl         *_default_raster;
+  PointerCache       *_pointers;
   Console::Pointer   *_pointer;
+  rstack_t            _resources;
   Traversal          *_traversal_cache[2];
   Traversal          *_traversal;
   cstack_t            _controllers;

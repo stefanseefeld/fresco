@@ -33,6 +33,7 @@
 #include <Warsaw/ImageKit.hh>
 #include <Warsaw/GadgetKit.hh>
 #include <Warsaw/PrimitiveKit.hh>
+#include <Warsaw/MainController.hh>
 #include <Warsaw/Trigger.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Warsaw/Server.hh>

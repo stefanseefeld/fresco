@@ -32,10 +32,11 @@
 #include "Berlin/Console.hh"
 #include "Berlin/Event.hh"
 #include "Berlin/Vertex.hh"
+#include "Berlin/RCManager.hh"
+#include "Berlin/RasterImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
-
 
 //. implement a PickTraversal that keeps a fixed pointer to
 //. a memento cache. As there is always exactly one picked
@@ -58,6 +59,12 @@ private:
   Warsaw::Input::Position _pointer;
   Traversal              *_memento;
   bool                    _picked;
+};
+
+struct PositionalFocus::PointerCacheTrait
+{
+  static Console::Pointer *create(Raster_var raster) { return Console::instance()->pointer(raster);}
+  static Raster_var remote(Console::Pointer *pointer) { return Raster_var(pointer->raster());}
 };
 
 CORBA::Boolean PositionalFocus::Traversal::intersects_region(Region_ptr region)
@@ -94,9 +101,27 @@ void PositionalFocus::Traversal::debug()
 }
 
 PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g, Region_ptr r)
-  : FocusImpl(d), _root(g), _pointer(Console::instance()->pointer()), _traversal(0), _grabbed(false)
+  : FocusImpl(d),
+    _root(g),
+    _default_raster(0),
+    _pointers(new PointerCache(32)),
+//     _pointer(Console::instance()->pointer()),
+    _traversal(0),
+    _grabbed(false)
 {
   Trace trace("PositionalFocus::PositionalFocus");
+  Prague::Path path = RCManager::get_path("rasterpath");
+  std::string name = path.lookup_file("ul-cursor.png");
+  if (name.empty())
+    {
+      std::string msg = "No default cursor found in rasterpath";
+      throw std::runtime_error(msg);
+    }
+  else
+    {
+      _default_raster = new RasterImpl(name);
+      _pointer = _pointers->lookup(Raster_var(_default_raster->_this()));
+    }
   _traversal_cache[0] = new Traversal(_root, r, Transform::_nil(), this);
   _traversal_cache[1] = new Traversal(_root, r, Transform::_nil(), this);
   _traversal_cache[0]->memento(_traversal_cache[1]);
@@ -109,7 +134,6 @@ PositionalFocus::~PositionalFocus()
   Trace trace("PositionalFocus::~PositionalFocus");
   Impl_var<Traversal>::deactivate(_traversal_cache[0]);
   Impl_var<Traversal>::deactivate(_traversal_cache[1]);  
-  delete _pointer;
 }
 
 void PositionalFocus::activate_composite()
@@ -128,6 +152,18 @@ void PositionalFocus::ungrab()
 {
 //   Prague::Guard<Mutex> guard(mutex);
   _grabbed = false;
+}
+
+void PositionalFocus::set_cursor(Raster_ptr r)
+{
+  Resources &prev = _resources.top();
+  if (!prev.flags & Resources::set_pointer)
+    prev.pointer = _pointer;
+  prev.flags |= Resources::set_pointer;
+  _pointer->restore();
+  _pointer = _pointers->lookup(Raster::_duplicate(r));
+  _pointer->save();
+  _pointer->draw();
 }
 
 void PositionalFocus::add_filter(Input::Filter_ptr)
@@ -232,7 +268,19 @@ void PositionalFocus::dispatch(Input::Event &event)
        * ...remove the old controllers in reverse order,...
        */
       for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; ++o)
-	try { (*o)->lose_focus(device());}
+	try
+	  {
+	    (*o)->lose_focus(device());
+	    Resources &prev = _resources.top();
+	    if (prev.flags & Resources::set_pointer)
+	      {
+		_pointer->restore();
+		_pointer = prev.pointer;
+		_pointer->save();
+		_pointer->draw();
+	      }
+	    _resources.pop();
+	  }
 	catch (const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
       _controllers.erase(of, _controllers.end());
@@ -242,6 +290,7 @@ void PositionalFocus::dispatch(Input::Event &event)
       Focus_var __this = _this();
       for (; nf != picked->controllers().end(); ++nf)
 	{
+	  _resources.push(Resources());
 	  (*nf)->receive_focus (__this);
  	  _controllers.push_back(*nf);
 	}

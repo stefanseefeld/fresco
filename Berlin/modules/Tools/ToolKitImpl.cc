@@ -40,6 +40,7 @@
 #include "Tool/Terminal.hh"
 #include "Tool/CanvasImpl.hh"
 #include "Tool/DrawingStateImpl.hh"
+#include "Tool/MainControllerImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -323,10 +324,10 @@ Graphic_ptr ToolKitImpl::dynamic_diamond(Graphic_ptr g, Coord thickness, Telltal
 //   return i->_this();
 // }
 
-Controller_ptr ToolKitImpl::group(Graphic_ptr g)
+MainController_ptr ToolKitImpl::group(Graphic_ptr g)
 {
   Trace trace("ToolKitImpl::group");
-  ControllerImpl *parent = new ControllerImpl(true);
+  MainControllerImpl *parent = new MainControllerImpl(true);
   activate(parent);
   parent->body(g);
   return parent->_this();
