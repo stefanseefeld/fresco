@@ -46,9 +46,9 @@ $(PYTHON_TARGETS):
 	@echo copying $(@F).
 	cp $(patsubst $(build_bindir)%, $(srcdir)%, $@) $@
 
-build-tests:
+build-tests: all
 
-run-tests:
+run-tests: build-tests
 
 clean:
 	@echo removing all copied files

@@ -89,9 +89,9 @@ install-doc: # not yet
 
 uninstall: #not yet
 
-build-tests:  # nothing to do here
+build-tests: all # nothing special to do here
 
-run-tests: # nothing to do here
+run-tests: build-tests # nothing special to do here
 
 clean:	
 	rm -f $(TARGET)
