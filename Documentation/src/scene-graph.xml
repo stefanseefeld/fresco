@@ -1,0 +1,205 @@
+<chapter><title>the scene graph</title>
+  <para>
+    <!-- talk about the scene graph -->A central difference between the
+    berlin server and other display servers you might have encountered is
+    that berlin maintains a detailed, abstract graph of the current scene in
+    its own process memory. This means that, rather than asking client
+    applications to repaint every window whenever any change occurs, a lot
+    of the redrawing machinery is contained within the server. 
+  </para>
+  <sect1><title>graph structure</title>
+    <para>
+      <!-- talk about graph structure --> The scene graph abstractly resembles
+      a tree. That is, there are a number of nodes (called "Graphics"), which
+      are connected together in a transitive parent/child relation. The
+      meaning of this relation is a hybrid of a number of intuitively related
+      concepts.
+    </para>
+  </sect1>
+  <sect1><title>logical containment</title>
+    <para>
+      <!-- talk about logical containment -->The basic idea of the
+      parent/child relation is that it expresses the logical
+      <emphasis>containment</emphasis> of the child witin the parent. This
+      means both that the child only occupies a subset of the space in the
+      scene that the parent occupies, and that the parent is in a way
+      "responsible" for the child. A parent sequences layout and drawing of
+      its children, and may play a "containing" role in memory management,
+      event distribution, etc.
+    </para>
+  </sect1>
+  <sect1><title>transformational containment</title>
+    <para>
+      <!-- talk about transformational containment -->Since the scene graph is actually
+      stored in double-precision floating point values, and since any graphic
+      may be subject to arbitrary linear transformations within the scene, the
+      parent/child relationship between graphics naturally extends to
+      composition of linear transformations. That is, any child is assumed to
+      be subject not only to its own linear transformation, but also the
+      cumulative product of all its parents' transformations. This means, in
+      practise, that if you happen to scale, shear, invert or rotate a window,
+      all of its "contents" will scale, shear, invert or rotate along with
+      it. This behaviour can be overridden in cases where it is
+      undesirable, but it fits with one's physical intuitions so it is
+      included as part of the general semantics of the parent/child relation.
+    </para>
+  </sect1>
+  <sect1><title>sharing</title>
+    <para>
+      <!-- talk about sharing -->There are instances in which it is desirable
+      to share children between multiple parents in the scene graph. This is
+      typically referred to as "flyweighting", and doing so means that the
+      scene graph is actually not stored structurally as a real tree; though
+      it frequently represents a tree and is only flyweighted to improve
+      efficiency. This is somewhat of an "under the hood" issue, but it is
+      central to our design and must be understood at least in passing in
+      order to understand the remaining secion, on the visitation pattern.
+    </para>
+    <sect2><title>efficiency motivation</title>
+      <para>
+	<!-- talk about efficiency motivation -->Storing a large number of
+	small objects can frequently cost too much, in terms of
+	memory. Particularly when given a relatively static object like an icon
+	or a textual glyph. However, we would like not to make special cases
+	since they complicate our code. So in order to improve efficiency,
+	especially in the very important case of text, we store only 1 copy of
+	each object and allow it to appear in multiple logical places in the
+	scene graph.
+      </para>
+    </sect2>
+    <sect2><title>trails</title>
+      <para>
+	<!-- talk about trails -->While each graphic may occur in multiple
+	places, if we enforce the DAG (directed, acyclic graph) structure on our
+	scene, we can maintain a useful fact: that no matter how many paths
+	through the graph there actually are, it remains possible to construct a
+	true tree with exactly the same logical meaning / appearance. That is,
+	if there is a parent P with 1 child C connected along 2 distinct edges
+	to P, we could in principle construct the tree with the same parent P
+	having 2 children C1 and C2, each of which is just an identical copy of
+	C. This process can be repeated anywhere in the scene graph where there
+	are 2 different "trails" leading from the root of the graph to a given
+	child. While we do not explicitly construct this tree, it is easy now to
+	see that we can "imagine" ourselves to be traversing such a "flattened"
+	tree any time we traverse the scene graph, by simply maintaining a stack
+	of which edges was followed from the root of the graph to the current
+	graphic.
+      </para>
+      <para>
+        In fact this is what our traversals do, so the fact of multiple
+	parents for each child is largely hidden from the programmer. The only
+	reason we mention the fact here is to reassure you that the
+	multiple-parent condition is not a serious problem, and to explain why
+        traversals do all the things they do.
+      </para>
+    </sect2>
+    <sect2><title>externalization of state</title>
+      <para>
+	<!-- talk about externalization of state -->In addition to understanding
+	the concept of a trail, it is important to realize that a graphic cannot
+	reliably store a copy of its cumulative transformation or layout
+	information, since it may be laid out at multiple places on the screen,
+	many of which may have different cumulative transformations. Thus is can
+	only store "relative" information about its layout requirements, and
+	have its true state computed on the fly. This is known as
+	"externalizing" its state; in berlin we attempt to externalize as much
+	state from each graphic as possible. Partly this is done to facilitate
+	the memory savings mentionned previously, but it also simplifies the task of
+	maintaining the proper values for layout and cumulative transformation,
+	which are highly dynamic to begin with. Since we compute them on the
+	fly, such values are never "out of sync" with one another.
+      </para>
+    </sect2>
+  </sect1>
+  <sect1><title>traversal</title>
+    <para>
+      <!-- talk about traversal -->The scene graph is subject to a few "bulk"
+      operations, such as delivering events and drawing. These operations are
+      encapsulated in stateful objects, called Traversals.
+    </para>
+    <sect2><title>a generic algorithm</title>
+      <para>
+	<!-- talk about a generic algorithm -->The traversal algorithm is a
+	generic "walk" over the scene graph. It may be either depth first or
+	breadth first at each node, and may apply one of a number of operations
+	to each node. The common feature of traversals is that they compute the
+	externalized state of each node as they visit, so that the node can
+	"read off" its state as it is traversed through.
+      </para>
+    </sect2>
+  </sect1>
+  <sect1><title>altering the screen</title>
+    <para>
+      <!-- talk about altering the screen -->Obviously a static scene graph is
+      not interesting; the point of a windowing system is to allow users to
+      interact with the computer. We will defer discussion of exactly how a
+      user's events are transformed into application changes for the moment,
+      and focus on how changes to the scene graph are propagated to the
+      screen. The basic redrawing facility described here is invoked from
+      within any graphic node by calling
+      <function>this->needredraw()</function>, which calculates the graphic's
+      damaged region and requests redrawing from the draw thread.
+    </para>
+    <sect2><title>allocation</title>
+      <para>
+	<!-- talk about allocation -->A graphic may occur in any number of
+	places in the scene graph, so the first thing a graphic must do when
+	updating its appearance on the screen is to work out exactly
+	<emphasis>where</emphasis> it appears. The answer to this question is
+	not a single position -- rather it is a list of regions, each of which
+	represents a separate position on the screen where the graphic
+	appears. This list is called the <classname>Allocation</classname>s of a
+	graphic, and is of central importance to the redrawing system.
+      </para>
+      <para>
+        Calculating allocations is a recursive call, which "reaches up"
+	each of its parents and their transformations. Each parent will
+	compute the child's allocation by reaching up through each of its
+	parents, etc. Eventually the roots of the graph are reached (yes
+	roots: there can be more than 1 screen watching the same graph) and it
+	will return regions of the screen. Though it sounds like there are
+	many steps, it all happens in process, following pointers, so
+	allocation computing is usually very quick.
+      </para>
+    </sect2>
+    <sect2><title>damage</title>
+      <para>
+        <!-- talk about damage -->In the case of
+	<function>needredraw()</function>, the graphic's allocations are all
+	merged together into a <classname>Region</classname> object which the
+	graphic constructs, called the "damage region". The
+	<classname>Allocation</classname> list contains a reference to a
+	<classname>Screen</classname> object, which the graphic will then insert
+	the damage region into. Doing so queues up a redraw which the drawing
+	thread will dispatch with a draw traversal.
+      </para>
+    </sect2>
+    <sect2><title>draw traversal </title>
+      <para>
+	<!-- talk about draw traversal --><classname>DrawTraversal</classname>s
+	are objects which the drawing thread passes over the scene graph,
+	rendering objects which intersect the damage region. Each draw traversal
+	thus carries a damage region inside it, and tests the intersection of
+	each node as it passes by. If the node passes the intersection test, the
+	node will be traversed and be given access to the traversal's
+	<classname>DrawingKit</classname>, which subsequently can be used to
+	draw to the device in charge of the traversal.
+      </para>
+    </sect2>
+    <sect2><title>dynamic layout</title>
+      <para>
+	<!-- talk about dynamic layout -->The technical details of the drawing
+	kit (lines, paths, paint, textures) are not deeply relevant at this
+	point; we defer discussion of them to a later chapter. However one thing
+	which is important to know is that layout (coordinates, size, alignment)
+	of graphics is, like their position and transformation, calculated
+	dynamically with each traversal. The details of the layout algorithm
+	are somewhat involved, so likewise they will be deferred. It suffices to
+	say that the abstraction of layout is suitable to local constraint-based
+	systems such as box-packing, typesetting concepts such as "springs" and
+	"glue", absolute positioning, and more.
+      </para>
+    </sect2>
+  </sect1>
+</chapter>
+

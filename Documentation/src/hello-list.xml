@@ -1,38 +1,40 @@
-<programlisting>
-#include &lt;Prague/Sys/Thread.hh&gt;
-#include &lt;Warsaw/config.hh&gt;
-#include &lt;Warsaw/Trigger.hh&gt;
-#include &lt;Warsaw/DesktopKit.hh&gt;
-#include &lt;Warsaw/TextKit.hh&gt;
-#include &lt;Warsaw/WidgetKit.hh&gt;
-#include &lt;Warsaw/resolve.hh&gt;
-#include &lt;Warsaw/Unicode.hh&gt;
-#include &lt;Warsaw/ClientContextImpl.hh&gt;
+<appendix><title>the complete listing of the hello world program</title>
+  <programlisting>
+  #include &lt;Prague/Sys/Thread.hh&gt;
+  #include &lt;Warsaw/config.hh&gt;
+  #include &lt;Warsaw/Trigger.hh&gt;
+  #include &lt;Warsaw/DesktopKit.hh&gt;
+  #include &lt;Warsaw/TextKit.hh&gt;
+  #include &lt;Warsaw/WidgetKit.hh&gt;
+  #include &lt;Warsaw/resolve.hh&gt;
+  #include &lt;Warsaw/Unicode.hh&gt;
+  #include &lt;Warsaw/ClientContextImpl.hh&gt;
 
-using namespace Prague;
-using namespace Warsaw;
+  using namespace Prague;
+  using namespace Warsaw;
 
-int main(int argc, char **argv)
-{
-  CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
-  CosNaming::NamingContext_var ncontext = resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
-  Server_var server = resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
+  int main(int argc, char **argv)
+  {
+    CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
+    CosNaming::NamingContext_var ncontext = resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
+    Server_var server = resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
   
-  PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
-  PortableServer::POAManager_var pman = poa-&gt;the_POAManager();
-  pman-&gt;activate();
-  ClientContextImpl *ci = new ClientContextImpl;
-  ClientContext_var client = ci-&gt;_this();
-  ServerContext_var context = server-&gt;create_server_context(client);
+    PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
+    PortableServer::POAManager_var pman = poa-&gt;the_POAManager();
+    pman-&gt;activate();
+    ClientContextImpl *ci = new ClientContextImpl;
+    ClientContext_var client = ci-&gt;_this();
+    ServerContext_var context = server-&gt;create_server_context(client);
 
-  DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
-  TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
-  WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
+    DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
+    TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
+    WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
 
-  Graphic_var label = text-&gt;chunk(Unicode::to_CORBA(Babylon::String("hello world")));
-  Controller_var button = widgets-&gt;button(label, Command::_nil());
-  Window_var window = desktop-&gt;shell(button);
+    Graphic_var label = text-&gt;chunk(Unicode::to_CORBA(Babylon::String("hello world")));
+    Controller_var button = widgets-&gt;button(label, Command::_nil());
+    Window_var window = desktop-&gt;shell(button);
 
-  while (true) Thread::delay(1000);
-};
-</programlisting>
+    while (true) Thread::delay(1000);
+  };
+  </programlisting>
+</appendix>

@@ -26,6 +26,7 @@ top_srcdir	:= @topdir@
 srcdir		:= $(top_srcdir)/doc/Tutorial/Berlin
 cdir		:= ../../config
 
+xslt		:= 4xslt
 dbxsl		:=
 
 SRC		:= hello.xml kits.xml hello-list.xml book.xml #chapter1.xml chapter2.xml chapter3.xml
@@ -43,7 +44,7 @@ vpath %.xml  $(srcdir)
 all:	#$(TARGETS)
 
 book.html:	$(JPG) $(SRC)
-	4xslt $(srcdir)/book.xml $(dbxsl) > $@
+	$(xslt) $(srcdir)/book.xml $(dbxsl) > $@
 
 clean:
 	rm -f book.html figures/*.jpg figures/*.pdf figures/*.eps

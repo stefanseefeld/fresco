@@ -1,0 +1,351 @@
+<chapter><title>The logical control graph - input event handling</title>
+  <para>
+    <!-- talk about events -->Users interact with the scene graph by feeding
+    the display server with events, from a wide variety of physical input
+    devices. Unlike many GUIs, we take an extensible and "low impact"
+    approach to dispatching events to their respective destinations.
+  </para>
+  <sect1><title>input devices and event types</title>
+    <para>
+      <!-- Events from a device
+      are categorized (at the moment) by very simple type tags. we hope in the
+      future modify this to work with an event attribute trading service, such
+      that an application can deal with events strictly in terms of the type
+      of information they convey, rather than the fixed device type which
+      created them. -->
+
+      It is a difficult task to design a user interface which will work not 
+      only with all kind of existing input devices but also with devices even 
+      not yet conceived. For this reason, and because the concrete environment 
+      may be very different for two users, map physical devices and their input 
+      data to logical devices and sets of elementary data. Categorizing input data 
+      in terms of certain attributes (types) like 
+      <table frame="all" pgwide="1">
+        <title>device attributes</title>
+        <tgroup cols="2">
+          <thead>
+             <row>
+               <entry>name</entry>
+               <entry>type</entry>
+             </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>telltale</entry>
+              <entry>Bitset</entry>
+            </row>
+            <row>
+              <entry>key</entry>
+              <entry>Toggle</entry>
+            </row>
+            <row>
+              <entry>button</entry>
+              <entry>Toggle</entry>
+            </row>
+            <row>
+              <entry>positional</entry>
+              <entry>Position</entry>
+            </row>
+            <row>
+              <entry>valuation</entry>
+              <entry>Float</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+    <para>
+      Each logical device now posesses any number of these attributes which are the only
+      means for berlin to describe them. For example mice and keyboards would be described as
+      <table frame="all" pgwide="1">
+        <title>logical devices</title>
+        <tgroup cols="4">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="4" colname="c4"/>
+          <spanspec spanname="keyboard" namest="c1" nameend="c4" align="center"/>
+          <spanspec spanname="mouse" namest="c1" nameend="c4" align="center"/>
+          <thead>
+             <row>
+               <entry>device</entry>
+               <entry>name</entry>
+               <entry>type</entry>
+               <entry>description</entry>
+             </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry spanname="keyboard" valign="bottom">Keyboard</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>key</entry>
+              <entry>Toggle</entry>
+              <entry>the keysym (as unicode ?) </entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>telltale</entry>
+              <entry>Bitset</entry>
+              <entry>set of current modifiers</entry>
+            </row>
+             <row>
+               <entry spanname="mouse" valign="bottom">Mouse</entry>
+             </row>
+            <row>
+              <entry>1</entry>
+              <entry>positional</entry>
+              <entry>Position</entry>
+              <entry>the current location</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>button</entry>
+              <entry>Toggle</entry>
+              <entry>the actuated button</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>telltale</entry>
+              <entry>Bitset</entry>
+              <entry>pressed buttons</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+    <para>
+      Berlin's <classname>EventManager</classname> will use such a description to 
+      create Event types suitable to carry the data associated with each attribute.
+      An Event is therefor nothing but a list of device/attribute pairs where an attribute
+      has a discriminator (type) and a value. 
+      This composition based principle allows devices to be coupled as well. For example, 
+      traditionally mouse events trigger different commands dependant on whether modifier
+      keys are pressed. This can simply be achieved in synthesizing the appropriate events
+      with the following data:
+   
+      <programlisting>
+      Input::Position position = ...;
+      Input::Toggle button = ...;
+      Input::Bitset keymodifiers = ...;
+      Input::Event event;
+      event.length(3);
+      event[0].device = 0;
+      event[0].attr.location(position);
+      event[1].device = 0;
+      event[1].attr.selection(button);
+      event[2].device = 1;
+      event[2].attr.state(keymodifiers);
+      ...
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1><title>controllers, focus and picking</title>
+    <para>
+      <!-- talk about controllers, focus and picking -->In order for events to
+      have any effect on an application, they must be "dispatched" from the
+      event queue they originate in, and be "received" by some appropriate
+      object in the scene graph. Such objects are called
+      <classname>Controllers</classname>.
+    </para>
+    <sect2><title>decorators which consume events</title>
+      <para>
+	<!-- talk about decorators which consume events -->
+	<classname>Controllers</classname> are implemented in terms of invisible
+	"decorator" graphics. They are parents of the graphics which you
+	naturally assume to be receiving the events. So in the case of a button,
+	for instance, the "image" of a beveled rectangle with some label in it
+	is a <emphasis>child</emphasis> of the invisible controller which really
+	receives and processes mouse clicks. The button's bevel merely reflects
+	the state of the controller. This has the advantage that any graphic can
+	become an "active" recipient of events merely by being wrapped in a
+	suitable controller.
+      </para>
+    </sect2>
+    <sect2><title>focus</title>
+      <para>
+	<!-- talk about the concept of focus -->the Controller receiving the
+	event is said to hold the focus for the device the event originated in.
+	There are two fundamentally different ways to change the focus for a given
+	device. Positional events are - unless a device grab is active - dispatched
+	to the top most controller intersecting with the event's position. The
+	determination of this controller is done with a pick traversal.
+	For non positional devices a controller can request the focus explicitly.
+      </para>
+    </sect2>
+    <sect2><title>logical control graph</title>
+      <para>
+	<!-- talk about logical control graph -->If you step back from the scene
+	graph and just concentrate on the controllers, you will see that they
+	form a sort of "subgraph" within the scene. This is referred to as the
+	<emphasis>logical control graph</emphasis>, since it is the set of nodes
+	into which most applications will hook their logic. The necessary methods to
+        construct the control graph are:
+	<programlisting>
+	interface Controller
+	{
+          void append_controller(in Controller c);
+          void prepend_controller(in Controller c);
+          void remove_controller(in Controller c);
+          Iterator first_child_controller();
+          Iterator last_child_controller();
+	};
+	</programlisting>
+        Note that the control graph isn't necessarily isomorph to the scene graph though that's
+        we one would intuitively expect. Since the control graph defines (mostly) the traversal
+        order for the navigation of non positional focus, it is the desired behavior which should
+        ultimately drive the topology if this graph.
+      </para>
+    </sect2>
+    <sect2><title>picking</title>
+      <para>
+	<!-- talk about picking -->For positional events the target controller
+	must be determined - at least if no device grab is active - by comparing
+	the event's position with the graphics screen real estate. This lookup
+	algorithm is called picking and is done by means of a <classname>PickTraversal</classname>
+        which gets passed through the scene graph. As it does this, it maintains a growing and 
+        shrinking stack of information representing the current state of the traversal. This stack 
+        represents a "trail" or "path" to the currently traversed graphic.
+        We need to create a "snapshot" of this trail at the hit graphic. This is done by calling
+	<emphasis>hit</emphasis> on the PickTraversal, resulting in a memento being created.
+        <figure id="scene-figure" float="1">
+          <title>scene</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/scene.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <figure id="scene-graph-figure" float="1">
+          <title>scene graph corresponding to the snapshot in ...</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/scene-graph.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        Imagine the mouse to click on the red polygon. This will result in
+        the <classname>TransformFigure</classname>'s method <emphasis>pick</emphasis>
+        to be called which looks like
+
+        <programlisting>
+        void TransformFigure::pick(PickTraversal_ptr traversal)
+        {
+          if (ext->valid and and traversal->intersects_region(ext))
+            traversal->hit();
+        }
+        </programlisting>
+        The <classname> Traversal</classname>'s trail, in the moment the <emphasis>hit</emphasis> occurs,
+        contains the following entries:
+        <figure id="trail-figure" float="1">
+          <title>trail</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/trail.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        For each position, the trail contains the following information:
+        <table frame="all" pgwide="1">
+          <title>stack information at each position in a traversal</title>
+          <tgroup cols="2">
+            <tbody>
+              <row>
+                <entry>Graphic</entry>
+                <entry>the actual node in the scene graph</entry>
+              </row>
+              <row>
+                <entry>Tag</entry>
+                <entry>an identifier for the edge to the parent</entry>
+              </row>
+              <row>
+                <entry>Region</entry>
+                <entry>allocation, in local coordinates</entry>
+              </row>
+              <row>
+                <entry>Transform</entry>
+                <entry>the transfomration from global to local coordinate system</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+        Since after the traversal is over, the stack will be empty, the <classname>Picktraversal</classname>
+        needs to create a memento of itself, which can be used later on to deliver the event.
+        The controller stack, extracted out of the trail, is
+        <figure id="cstack-figure" float="1">
+          <title>controller/focus stack</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/cstack.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        It is used to update the focus, i.e. to call (in appropriate order) all the controllers'
+        <emphasis>receiveFocus</emphasis> methods. From within this method, the controllers can manipulate
+        global data such as pointer images, context sensitive menus etc. In particular, a Controller may
+        want to install an <classname>Event::Filter</classname> through which the event has to be passed
+        before the top controller (the <classname>Editor</classname> in this case) can handle it.
+        <programlisting>
+        CORBA::Boolean ControllerImpl::receive_focus(Focus_ptr f)
+        {
+          set(Telltale::active);
+          f->set_pointer(myPointer);
+          return true;
+        }
+        </programlisting>
+        Finally, if all filters let the event through, the Editor's handle method will be called. It sees
+        the trail like
+        <figure id="gstack-figure" float="1">
+          <title>trail, the unaccessible graphics are grayed out</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/gstack.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        A special iterator allows it to access the graphics which, inside the editor, were intersecting
+        with the device.
+      </para>
+    </sect2>
+    <sect2><title>navigating non positional devices</title>
+      <para>
+	<!-- talk about focus navigation -->
+        <figure id="control-graph-figure" float="1">
+          <title>control graph</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/control-graph.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+	You can navigate the focus through this control graph via the following
+	methods:
+        <programlisting>
+        interface Controller
+        {
+          boolean request_focus(in Controller c, in Event::Device d);
+          boolean receive_focus(in Focus f);
+          void lose_focus(in Focus f);
+
+          boolean first_focus(in Event::Device d);
+          boolean last_focus(in Event::Device d);
+          boolean next_focus(in Event::Device d);
+          boolean prev_focus(in Event::Device d);
+        };
+        </programlisting>
+      </para>
+    </sect2>
+    <sect2><title>sumary</title>
+      <para>
+	<!-- event dispatching sumary -->
+        <figure id="event-dispatching-figure" float="1">
+          <title>event and focus management</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/events.jpg" align="center" format="JPG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

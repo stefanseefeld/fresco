@@ -110,5 +110,33 @@
         </imageobject>
       </mediaobject>
     </figure>
+  <para> the full sequence of events thus looks like this:</para>
+  <programlisting>
+  template &lt;class T&gt;
+  typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context, const char *name, const Warsaw::Kit::PropertySeq &amp;props)
+  {
+    CORBA::Object_ptr object;
+    try
+      {
+        object = context-&gt;resolve(name, props);
+        typename T::_var_type reference = T::_narrow(object);
+      }
+    catch (...)
+      {
+        /* provide some meaningful error diagnostics */
+      }
+    return reference._retn();
+  }
+  </programlisting>
+  <programlisting>
+  ServerContext_vat context;
+  /*...*/
+  Kit::PropertySeq properties;
+  properties.length(1);
+  properties[0].name = CORBA::string_dup("style");
+  properties[0].value = CORBA::string_dup("Motif");
+  resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0", properties);
+  </programlisting>
+  
   </sect1>
 </chapter>

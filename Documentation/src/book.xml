@@ -3,12 +3,14 @@
 
 <!-- these are chapter-entity declarations -->
 
-<!ENTITY hello         SYSTEM "hello.xml">
-<!ENTITY kits          SYSTEM "kits.xml">
-<!ENTITY chapter1      SYSTEM "chapter1.xml">
-<!ENTITY chapter2      SYSTEM "chapter2.xml">
-<!ENTITY chapter3      SYSTEM "chapter3.xml">
-<!ENTITY appendix1     SYSTEM "hello-list.xml">
+<!ENTITY chapter0   SYSTEM "hello.xml">
+<!ENTITY chapter1   SYSTEM "scene-graph.xml">
+<!ENTITY chapter2   SYSTEM "control-graph.xml">
+<!ENTITY chapter3   SYSTEM "mvc.xml">
+<!ENTITY chapter4   SYSTEM "cda.xml">
+<!ENTITY chapter5   SYSTEM "kits.xml">
+<!ENTITY appendix1  SYSTEM "hello-list.xml">
+<!ENTITY appendix2  SYSTEM "memory.xml">
 
 ]>
 
@@ -37,12 +39,12 @@
     </legalnotice>
   </bookinfo>
 
-&hello;
-&kits;
-<!-- &chapter1; -->
-<!-- &chapter2; -->
-<!-- &chapter3; -->
-<appendix><title>the complete listing of the hello world program</title>
+&chapter0;
+&chapter1;
+&chapter2;
+&chapter3;
+<!-- &chapter4; -->
+&chapter5;
 &appendix1;
-</appendix>
+&appendix2;
 </book>
