@@ -49,7 +49,7 @@ AC_DEFUN([FRESCO_LIBART_CHECK],
    fi
    save_CPPFLAGS="$CPPFLAGS"
    CPPFLAGS="$LIBART_CPPFLAGS $CPPFLAGS"
-   AC_CHECK_HEADER(art_pixbuf.h,,AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h,,no_libart=yes))
+   AC_CHECK_HEADER(art_pixbuf.h, , [AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h, , [no_libart=yes])])
    CPPFLAGS="$save_CPPFLAGS"
    
    dnl Assuming it's okay if the header was found
