@@ -96,7 +96,6 @@ class Connection:
 	# Create an ClientContext
 	if clientContext is None: clientContext = ClientContextImpl()
 	# Create an object reference, and implicitly activate the object
-	print "clientContext is",clientContext
 	self.clientContext = clientContext._this()
 
 	# get a server context
@@ -105,8 +104,8 @@ class Connection:
 	name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
 	object = context.resolve(name)
 	self.server = object._narrow(Warsaw.Server)
-	print "Got server:",self.server
-	print "Client context is:",self.clientContext
+	print "Got Server var =",self.server
+	print "Client Context var =",self.clientContext
 	self.context  = self.server.create_server_context(self.clientContext)
 
 def Label(string):
@@ -147,28 +146,37 @@ class MenuItem:
 	    self.graphic = kits.layout.margin(button, 20.)
 	return self.graphic
 
+    def close_all(self):
+	"Closes this and all parent pulldown menus"
+	menu = self.parent_menu
+	while menu and not isinstance(menu, MenuBar):
+	    kits.desktop.map(menu.get_pulldown(), 0).execute(nullAny)
+	    menu = menu.parent_item
+	    menu = menu and menu.parent_menu
+
+
     def clicked(self, any):
-	# Call callback
-	if self.callback is not None:
-	    print "callback:",self.callback
-	    dir(self.callback)
-	    self.callback(any)
-	any = CORBA.Any(CORBA.TC_null, None)
-	# Show submenu
-	if self.submenu is not None:
-	    sub = self.submenu.get_graphic()
-	    kits.desktop.map(sub, 1).execute(any)
-	# Else close this menu and all parents
-	else:
-	    menu = self.parent_menu
-	    while menu is not None:
-		kits.desktop.map(menu.get_graphic(), 0).execute(nullAny)
-		menu = menu.parent_item
-		if menu is not None:
-		    menu = menu.parent_menu
-		if isinstance(menu, MenuBar):
-		    break # stop while at menubar
-		    
+	try:
+	    # Call callback
+	    if self.callback is not None:
+		print "callback:",self.callback
+		dir(self.callback)
+		self.callback(any)
+	    any = CORBA.Any(CORBA.TC_null, None)
+	    # Show submenu
+	    if self.submenu is not None:
+		sub = self.submenu.get_pulldown()
+		kits.desktop.map(sub, 1).execute(any)
+	    # Else close this menu and all parents
+	    else: self.close_all()
+	except SystemExit:
+	    self.close_all()
+	except:
+	    print "Any error occurred somewhere in clicked()"
+	    import traceback
+	    traceback.print_exc()
+	    self.close_all()
+
 
 class Menu:
     """Encapsulates a vertical menu of MenuItems"""
@@ -176,6 +184,7 @@ class Menu:
 	"Creates menu from sequence of items"
 	self.items = items
 	self.graphic = None
+	self.pulldown = None
 	self.parent_item = None
 	for item in items:
 	    item.parent_menu = self
@@ -190,15 +199,21 @@ class Menu:
 	if self.graphic is None:
 	    # Create menu
 	    box = self._get_box()
-	    fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
-	    frame = kits.tool.frame(box, 20.0, fspec, 1)
+	    fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
+	    frame = kits.tool.frame(box, 10.0, fspec, 1)
 
 	    for item in self.items:
 		box.append_graphic(item.get_graphic())
 	    
 	    group = kits.tool.group(frame)
-	    self.graphic = kits.desktop.transient(group)
+	    self.graphic = group #kits.desktop.pulldown(group)
 	return self.graphic
+
+    def get_pulldown(self):
+	"""Returns a top-level pulldown graphic for this Menu"""
+	if self.pulldown is None:
+	    self.pulldown = kits.desktop.pulldown(self.get_graphic())
+	return self.pulldown
 
 class MenuBar(Menu):
     """Subclasses Menu to provide a HORIZONTAL menu bar"""
@@ -235,8 +250,8 @@ class MenuApp:
 	vbox.append_graphic(menu.get_graphic())
 	vbox.append_graphic(kits.layout.fixed_size(None,3000.,2000.))
 
-	self.window = vbox
-	kits.desktop.map(self.window, 1).execute(nullAny)
+	self.window = kits.desktop.shell(kits.tool.group(vbox))
+	#kits.desktop.map(self.window, 1).execute(nullAny)
 
     def exit(self, any):
 	kits.desktop.map(self.window, 0).execute(nullAny)
@@ -245,9 +260,7 @@ class MenuApp:
 
 def main():
     # Create singletons
-    Connection()
     MenuApp()
-    Kits()
 
     app.run()
 
