@@ -33,16 +33,26 @@
 #include <GL/glut.h>
 
 const unsigned int PARAMS = 1;
+const unsigned int DEGREE = 3;
 const unsigned int CTRLPOINTS = 10;
 
 using namespace Fresco;
-using namespace Berlin::nurbs;
+using Berlin::nurbs;
+
+typedef _CORBA_Unbounded_Sequence<Vertex> Polyline;
+struct Nurbs
+{
+  CORBA::UShort degree;
+  _CORBA_Unbounded_Sequence<Vertex> controls;
+  _CORBA_Unbounded_Sequence_w_FixSizeElement<CORBA::Double, 8, 8> weights;
+  _CORBA_Unbounded_Sequence_w_FixSizeElement<CORBA::Double, 8, 8> knots;
+};
 
 typedef Vertex Vector;
 
-typedef domain<Vertex, PARAMS> Ctrl;
-typedef domain<array<Vertex, PARAMS + 1>, PARAMS> Points;
-typedef domain<double, PARAMS> Weights;
+typedef nurbs::domain<Vertex, PARAMS> Ctrl;
+typedef nurbs::domain<Vertex, PARAMS> Points;
+typedef nurbs::domain<double, PARAMS> Weights;
 
 bool animationFlag = false;          // 'a'
 bool drawingPointsFlag = true;       // 'p'
@@ -50,8 +60,8 @@ bool drawingQuadsFlag = true;        // 'q'
 bool drawingCtrlPointsFlag = true;   // 'c'
 bool drawingDerivativesFlag = false; // 'd'
 
-Ctrl *ctrls;
-Points *points;
+Ctrl *ctrls[4];
+Points *points[4];
 
 void polar_view(GLdouble twist, GLdouble elevation, GLdouble azimuth)
 {
@@ -92,6 +102,7 @@ void idle() { glutPostRedisplay();}
 
 void display()
 {
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if(animationFlag)
   {
@@ -100,64 +111,87 @@ void display()
      glRotatef(1.0, 1.0, 0.0, 0.0);
   }
 
-  if(drawingCtrlPointsFlag)
-  {
-     glColor3f(0.2, 0.8, 0.2);
-     for(size_t i = 0; i < ctrls->length(); ++i)
-     {
-        const Vertex &p = (*ctrls)[i];
-        glPushMatrix();
-        glTranslatef(p.x, p.y, p.z);
-        glutSolidSphere(0.1, 6, 6);
-        glPopMatrix();
-     }
-  }
-  
   if(drawingQuadsFlag)
   {
     glColor3f(0.8, 0.2, 0.2);
-    glBegin(GL_LINE_STRIP);
-    for(size_t i = 0; i < points->size(0); ++i)
+    for(size_t j = 0; j < 4; ++j)
     {
-       glVertex3f((*points)(Points::index[i])[0].x,
-                  (*points)(Points::index[i])[0].y,
-                  (*points)(Points::index[i])[0].z);
+      glBegin(GL_LINE_STRIP);
+      for(size_t i = 0; i < points[j]->size(0); ++i)
+      {
+	glVertex3f((*points[j])(Points::index[i]).x,
+		   (*points[j])(Points::index[i]).y,
+		   (*points[j])(Points::index[i]).z);
+      }
+      glEnd();
     }
-    glEnd();
   }
   
   if(drawingPointsFlag)
   {
     glColor3f(0.8, 0.4, 0.2);
     glBegin(GL_POINTS);
-    for(size_t i = 0; i < points->length(); ++i)
+    for(size_t i = 0; i < points[0]->length(); ++i)
     {
-      glVertex3f((*points)[i][0].x,
-                 (*points)[i][0].y,
-                 (*points)[i][0].z);
+      glVertex3f((*points[0])[i].x,
+                 (*points[0])[i].y,
+                 (*points[0])[i].z);
+    }
+    for(size_t i = 0; i < points[1]->length(); ++i)
+    {
+      glVertex3f((*points[1])[i].x,
+                 (*points[1])[i].y,
+                 (*points[1])[i].z);
+    }
+    for(size_t i = 0; i < points[2]->length(); ++i)
+    {
+      glVertex3f((*points[2])[i].x,
+                 (*points[2])[i].y,
+                 (*points[2])[i].z);
+    }
+    for(size_t i = 0; i < points[3]->length(); ++i)
+    {
+      glVertex3f((*points[3])[i].x,
+                 (*points[3])[i].y,
+                 (*points[3])[i].z);
     }
     glEnd();
   }
 
-  if(drawingDerivativesFlag)
-  {
-    for(size_t i = 0; i < points->length(); ++i)
-    {
-       Vertex p = (*points)[i][0];
-       for(size_t j = 1; j < PARAMS + 1; ++j)
-       {
-         Vector deriv = (*points)[i][j];
-         deriv /= 2 * norm(deriv);
+//   if(drawingDerivativesFlag)
+//   {
+//     for(size_t i = 0; i < points->length(); ++i)
+//     {
+//        Vertex p = (*points)[i][0];
+//        for(size_t j = 1; j < PARAMS + 1; ++j)
+//        {
+//          Vector deriv = (*points)[i][j];
+//          deriv /= 2 * norm(deriv);
 
-         glBegin(GL_LINE_STRIP);
-         glColor3f(0.8, 0.8, 0.8);
-         glVertex3f(p.x, p.y, p.z);
-         glColor3f(0.8, 0.2, 0.2);
-         glVertex3f(p.x + deriv.x, p.y + deriv.y, p.z + deriv.z);
-         glEnd();
-       }
-    }
+//          glBegin(GL_LINE_STRIP);
+//          glColor3f(0.8, 0.8, 0.8);
+//          glVertex3f(p.x, p.y, p.z);
+//          glColor3f(0.8, 0.2, 0.2);
+//          glVertex3f(p.x + deriv.x, p.y + deriv.y, p.z + deriv.z);
+//          glEnd();
+//        }
+//     }
+//   }
+
+  if(drawingCtrlPointsFlag)
+  {
+    glColor3f(0.2, 0.8, 0.2);
+    for (size_t j = 0; j != 4; ++j)
+      for(size_t i = 0; i < (*ctrls[j]).length(); ++i)
+      {
+	const Vertex &p = (*ctrls[j])[i];
+	glPushMatrix();
+	glTranslatef(p.x, p.y, p.z);
+	glutSolidSphere(0.1, 6, 6);
+	glPopMatrix();
+      }
   }
+  
   glutSwapBuffers();
 }
 
@@ -173,7 +207,7 @@ void reshape(GLsizei w, GLsizei h)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(40., static_cast<double>(w)/static_cast<double>(h), 1, 1000);
-  gluLookAt(0, 0, 20, 0, 0, 0, 0, 1, 0);
+  gluLookAt(0, 0, 40, 0, 0, 0, 0, 1, 0);
   glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h)); 
   glMatrixMode(GL_MODELVIEW);
 }
@@ -213,23 +247,184 @@ int startGL(int argc, char** argv)
 }
 
 int main(int argc, char *argv[])
-{  
-  ctrls = new Ctrl(Ctrl::index[CTRLPOINTS]);
-  Weights weights(Weights::index[CTRLPOINTS]);
-  srand(time(0));
-  for(size_t i = 0; i < CTRLPOINTS; ++i)
+{
+  // define first segment
+  Polyline polyline1;
   {
-    (*ctrls)[i] = make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
-                              static_cast<double>(rand() % 500) / 100. -1.,
-                              0.);
-    weights[i] = 1.0;
+    polyline1.length(4);
+    polyline1[0].x = 0.;
+    polyline1[0].y = 0.;
+    polyline1[0].z = 0.;
+    polyline1[1].x = 1.;
+    polyline1[1].y = 1.;
+    polyline1[1].z = 0.;
+    polyline1[2].x = 2.;
+    polyline1[2].y = 0.;
+    polyline1[2].z = 0.;
+    polyline1[3].x = 3.;
+    polyline1[3].y = 2.;
+    polyline1[3].z = 1.;
   }
 
-  array<size_t, PARAMS> degrees(3);
-  array<size_t, PARAMS> steps(4);
+  // define second segment
+  Nurbs nurbs1;
+  {
+    nurbs1.degree = DEGREE;
+    nurbs1.controls.length(CTRLPOINTS);
+    nurbs1.weights.length(CTRLPOINTS);
+    srand(time(0));
+    for(size_t i = 0; i < CTRLPOINTS; ++i)
+    {
+      nurbs1.controls[i] = nurbs::make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
+					      static_cast<double>(rand() % 500) / 100. -1.,
+					      0.);
+      nurbs1.weights[i] = 1.0;
+    }
+    nurbs1.knots.length(CTRLPOINTS + DEGREE + 1);
+    double delta = 1. / (CTRLPOINTS + DEGREE);
+    for (size_t i = 0; i != nurbs1.knots.length(); ++i) nurbs1.knots[i] = i * delta;
+  }
+  // define third segment
+  Polyline polyline2;
+  {
+    polyline2.length(4);
+    polyline2[0].x = 0.;
+    polyline2[0].y = 0.;
+    polyline2[0].z = 0.;
+    polyline2[1].x = 1.;
+    polyline2[1].y = 1.;
+    polyline2[1].z = 0.;
+    polyline2[2].x = 2.;
+    polyline2[2].y = 0.;
+    polyline2[2].z = 0.;
+    polyline2[3].x = 3.;
+    polyline2[3].y = 2.;
+    polyline2[3].z = 1.;
+  }
+  // define forth segment
+  Nurbs nurbs2;
+  {
+    nurbs2.degree = DEGREE;
+    nurbs2.controls.length(CTRLPOINTS);
+    nurbs2.weights.length(CTRLPOINTS);
+    srand(time(0));
+    for(size_t i = 0; i < CTRLPOINTS; ++i)
+    {
+      nurbs2.controls[i] = nurbs::make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
+					      static_cast<double>(rand() % 500) / 100. -1.,
+					      0.);
+      nurbs2.weights[i] = 1.0;
+    }
+    nurbs2.knots.length(CTRLPOINTS + DEGREE + 1);
+    double delta = 1. / (CTRLPOINTS + DEGREE);
+    for (size_t i = 0; i != nurbs2.knots.length(); ++i) nurbs2.knots[i] = i * delta;
+  }
 
-  points = evaluate_with_derivations(*ctrls, weights, degrees, steps);
-  
+  nurbs::array<size_t, PARAMS> steps(4);
+
+  // evaluation...
+  {
+    size_t length = polyline1.length();
+    points[0] = new Points(&length);
+    for (size_t i = 0; i != 4; ++i) (*points[0])[i] = polyline1[i];
+    ctrls[0] = new Ctrl(&length);
+    for (size_t i = 0; i != 4; ++i) (*ctrls[0])[i] = polyline1[i];
+  }
+  {
+    size_t length = nurbs1.controls.length();
+    ctrls[1] = new Ctrl(&length);
+    for (size_t i = 0; i != length; ++i)
+      (*ctrls[1])[i] = nurbs1.controls[i];
+    length = nurbs1.weights.length();
+    nurbs::domain<double, PARAMS> weights(&length);
+    for (size_t i = 0; i != nurbs1.weights.length(); ++i)
+      weights[i] = nurbs1.weights[i];
+    nurbs::array<size_t, PARAMS> degrees(nurbs1.degree);
+    nurbs::array<std::vector<double>, PARAMS> knots;
+    knots[0].resize(nurbs1.knots.length());
+    for (size_t i = 0; i != knots[0].size(); ++i)
+      knots[0][i] = nurbs1.knots[i];
+    
+    // compute the first point of this segment
+    nurbs::array<double, 1> param(knots[0][DEGREE]);
+    Vertex first = nurbs::evaluate_at(*ctrls[1], weights, degrees, knots, param);
+    
+    param[0] = knots[0][knots[0].size() - 1];
+    Vertex last = nurbs::evaluate_at(*ctrls[1], weights, degrees, knots, param);
+    
+    // now translate the curve to superpose the first point of this segment
+    // with the last point of the last segment
+    Vertex delta = (*points[0])[3];
+    delta.x -= first.x, delta.y -= first.y, delta.z -= first.z;
+    for (size_t i = 0; i != length; ++i)
+    {
+      (*ctrls[1])[i].x += delta.x;
+      (*ctrls[1])[i].y += delta.y;
+      (*ctrls[1])[i].z += delta.z;
+    }
+    // evaluate the segment
+    points[1] = nurbs::evaluate(*ctrls[1], weights, degrees, knots, steps);
+  }
+  {
+    size_t length = polyline2.length();
+    points[2] = new Points(&length);
+    for (size_t i = 0; i != 4; ++i) (*points[2])[i] = polyline2[i];
+    ctrls[2] = new Ctrl(&length);
+    for (size_t i = 0; i != 4; ++i) (*ctrls[2])[i] = polyline2[i];
+
+    // now translate the curve to superpose the first point of this segment
+    // with the last point of the last segment
+    Vertex delta = (*points[1])[points[1]->length() - 1];
+    delta.x -= (*points[2])[0].x;
+    delta.y -= (*points[2])[0].y;
+    delta.z -= (*points[2])[0].z;
+    for (size_t i = 0; i != length; ++i)
+    {
+      (*points[2])[i].x += delta.x;
+      (*points[2])[i].y += delta.y;
+      (*points[2])[i].z += delta.z;
+      (*ctrls[2])[i].x += delta.x;
+      (*ctrls[2])[i].y += delta.y;
+      (*ctrls[2])[i].z += delta.z;
+    }
+    
+    {
+      size_t length = nurbs2.controls.length();
+      ctrls[3] = new Ctrl(&length);
+      for (size_t i = 0; i != length; ++i)
+	(*ctrls[3])[i] = nurbs2.controls[i];
+      length = nurbs2.weights.length();
+      nurbs::domain<double, PARAMS> weights(&length);
+      for (size_t i = 0; i != nurbs2.weights.length(); ++i)
+	weights[i] = nurbs2.weights[i];
+      nurbs::array<size_t, PARAMS> degrees(nurbs2.degree);
+      nurbs::array<std::vector<double>, PARAMS> knots;
+      knots[0].resize(nurbs2.knots.length());
+      for (size_t i = 0; i != knots[0].size(); ++i)
+	knots[0][i] = nurbs2.knots[i];
+
+      // compute the first point of this segment
+      nurbs::array<double, 1> param(knots[0][DEGREE]);
+      Vertex first = nurbs::evaluate_at(*ctrls[3], weights, degrees, knots, param);
+
+      param[0] = knots[0][knots[0].size() - 1];
+      Vertex last = nurbs::evaluate_at(*ctrls[3], weights, degrees, knots, param);
+
+      // now translate the curve to superpose the first point of this segment
+      // with the last point of the last segment
+      Vertex delta = (*points[2])[3];
+      delta.x -= first.x, delta.y -= first.y, delta.z -= first.z;
+      for (size_t i = 0; i != length; ++i)
+	{
+	  (*ctrls[3])[i].x += delta.x;
+	  (*ctrls[3])[i].y += delta.y;
+	  (*ctrls[3])[i].z += delta.z;
+	}
+      // evaluate the segment
+      points[3] = nurbs::evaluate(*ctrls[3], weights, degrees, knots, steps);
+    }
+  }
+
   startGL (argc, argv);
   return 0;
 }
