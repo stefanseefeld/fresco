@@ -53,7 +53,8 @@ HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
 	   DrawTraversalImpl.hh PickTraversalImpl.hh ControllerImpl.hh \
 	   DesktopImpl.hh ScreenImpl.hh ScreenManager.hh EventManager.hh \
 	   PositionalFocus.hh NonPositionalFocus.hh FilterImpl.hh \
-	   SubjectImpl.hh KitImpl.hh RCManager.hh config.hh
+	   SubjectImpl.hh KitImpl.hh RCManager.hh DefaultPOA.hh \
+	   config.hh
 CHDR	+= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 SYN	:= $(patsubst %.hh, %.syn, $(HDR) $(CHDR))
