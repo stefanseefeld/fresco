@@ -7,29 +7,43 @@
 using namespace Prague;
 
 TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *c) :
+  HBox(),
   myTextBuffer(TextBuffer::_duplicate(txt)),
   myTextKit(TextKit::_duplicate(tk)),
   myCanonicalDK(DrawingKit::_duplicate(dk)),
   myCompositor(c)
 {
-  Unistring *us = myTextBuffer->value();
-  Unistring single;
-  single.length(1);
-  for (unsigned long i = 0; i < us->length(); i++) {
-    single[0] = (*us)[i];
-    this->append(myTextKit->chunk(single));
-  }
+  // this is not possible at the moment. you need to do the insert
+  // _after_ you attach a view.
+
+//   cerr << "in TextViewer ctor" << endl;
+//   Unistring *us = myTextBuffer->value();
+//   Unistring single;
+//   single.length(1);
+//   cerr << "built scratch string" << endl;
+//   for (unsigned long i = 0; i < us->length(); i++) {
+//     single[0] = (*us)[i];
+//     cerr << "assigned char" << endl;
+//     this->append(Graphic::_duplicate(myTextKit->chunk(single)));
+//     cerr << "appended graphic" << endl;
+//   }
+//   cerr << "appended chunks" << endl;
+}
+
+TextViewer::~TextViewer() 
+{
 }
 
 void TextViewer::update(Subject_ptr s, const CORBA::Any &a) 
 {
-  if (myTextBuffer->_is_equivalent(s)) {
+ if (myTextBuffer->_is_equivalent(s)) {
     TextBuffer::Change *ch;  
     if (a >>= ch) {
       switch (ch->type) {
 
       case TextBuffer::insert:
 	{
+	  MutexGuard guard(childMutex);
 	  Unistring *u = myTextBuffer->getChars(ch->pos, (CORBA::ULong)ch->len);
 	  CORBA::ULong len = u->length();
 	  vector<edge_t> newEdges(len);
@@ -39,13 +53,9 @@ void TextViewer::update(Subject_ptr s, const CORBA::Any &a)
 	    single[0] = (*u)[i];
 	    Graphic_var child = myTextKit->chunk(single);
 	    edge_t edge(Graphic::_duplicate(child), tag());
-	    newEdges.push_back(edge);
+	    children.insert(children.begin()+i, edge);
 	    child->addParent(Graphic_var(_this()), edge.second);
 	  }
-	  {
-	    MutexGuard guard(childMutex);
-	    children.insert(children.begin()+len, newEdges.begin(), newEdges.end());
-	  }	
 	}
 	break;
 
@@ -70,5 +80,4 @@ void TextViewer::update(Subject_ptr s, const CORBA::Any &a)
   }
 }
 
-TextViewer::~TextViewer() {}
 

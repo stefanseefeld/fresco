@@ -21,6 +21,7 @@
  */
 
 #include <Widget/TextBufferImpl.hh>
+#include <iostream>
 
 using namespace Prague;
 
@@ -136,10 +137,15 @@ void TextBufferImpl::insertString(const Unistring &s)
     buffer.insert(u,ch.len);
   }
 
+  cerr << "inserted into buffer " << endl;
+
   ch.type = insert;
   CORBA::Any any;
   any <<= ch;
+  cerr << "notifying " << endl;
   notify(any);
+  cerr << "notified " << endl;
+
 }
 
 void TextBufferImpl::removeBackward(CORBA::Long n)

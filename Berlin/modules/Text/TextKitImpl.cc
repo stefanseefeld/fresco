@@ -23,6 +23,7 @@
 
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
+#include <Warsaw/TextBuffer.hh>           // for TextBuffer type
 #include <Text/TextKitImpl.hh>         // for our own definition
 #include <Text/TextChunk.hh>           // the chunk graphic type
 #include <Text/TextViewer.hh>           // the viewer polygraphic type
@@ -52,6 +53,7 @@ Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
 {
   Impl_var<TextViewer> tv(new TextViewer(buf,this->_this(),canonicalDK,myCompositor));
   myAllocations.push_back(tv.get());
+  buf->attach(tv.get());
   return tv.release()->_this();
 }
 

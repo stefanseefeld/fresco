@@ -49,7 +49,6 @@ class TextViewer : implements(View), public virtual HBox {
     public:
 
     TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);
-    void draw(DrawTraversal_ptr dt);
     void update(Subject_ptr s, const CORBA::Any &a);
     virtual ~TextViewer();
 
