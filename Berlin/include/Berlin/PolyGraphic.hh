@@ -63,11 +63,11 @@ protected:
  */
 inline Warsaw::Tag PolyGraphic::unique_child_id()
 {
-  Warsaw::Tag localId = 0;
-  do
-    if (find_if(_children.begin(), _children.end(), localId_eq(localId)) == _children.end())
+  Warsaw::Tag localId;
+  for (localId = 0;
+       find_if (_children.begin(), _children.end(), localId_eq(localId)) != _children.end();
+       localId++);
       return localId;
-  while(++localId);
 }
 
 inline PolyGraphic::glist_t::iterator PolyGraphic::child_id_to_iterator(Warsaw::Tag localId)
