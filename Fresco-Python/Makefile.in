@@ -50,8 +50,7 @@ install:
 
 install-doc: #do nothing here
 
-uninstall:
-	rm -rf `./setup.py packagedir`
+uninstall: #do nothing here
 
 clean:
 	$(MAKE) action="clean"
