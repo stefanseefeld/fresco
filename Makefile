@@ -21,11 +21,17 @@
 
 SHELL	= /bin/sh
 
-subdirs	= include/Warsaw src test# doc
+subdirs	= include/Warsaw src test
+# doc
 
 .PHONY:	config test
 
-#world:	config all
+world:	config all
+
+config::
+	@cd config; ./configure $$CONFIGURE_OPTS; cd ../src/Prague/config; \
+	./configure $$CONFIGURE_OPTS
+# Added shell env var $$CONFIGURE_OPTS
 
 all:
 	@if [ -f include/Warsaw/config.hh ]; then \
@@ -44,9 +50,6 @@ all:
 	  "\nThen run make again."; \
 	fi
 
-config::
-	@cd config; ./configure; cd ../src/Prague/config; ./configure
-
 clean:
 	/bin/rm -f *~
 	@for dir in ${subdirs}; do \
@@ -60,3 +63,11 @@ distclean:
 	  (cd $$dir && $(MAKE) distclean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
+
+install: all
+	@for dir in ${subdirs}; do \
+	  (cd $$dir && $(MAKE) install); \
+	done
+
+debs:
+	dpkg-buildpackage -rfakeroot -uc -us

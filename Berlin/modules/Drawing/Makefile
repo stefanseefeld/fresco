@@ -42,3 +42,9 @@ distclean: clean
 	  (cd $$dir && $(MAKE) distclean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
+
+install:
+	@for dir in ${subdirs}; do \
+	  (cd $$dir && $(MAKE) install); \
+	done
+

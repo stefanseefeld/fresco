@@ -97,8 +97,12 @@ distclean:	clean
 		rm -f $(TARGET)
 		rm -rf $(opath) $(dpath)
 
+install:
+	install -m644 $(TARGET) $(libdir)
+
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean) 
 -include $(DEP)
 endif 
 endif 
+

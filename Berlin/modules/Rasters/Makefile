@@ -40,3 +40,4 @@ vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Image
 
 include $(cpath)/module.mk
+
