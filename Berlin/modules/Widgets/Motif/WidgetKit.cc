@@ -320,7 +320,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
 Choice_ptr WidgetKit::toggle_choice()
 {
   RefCount_var<Selection> selection = my_commands->group(Selection::exclusive);
-  Choice *choice = new ToggleChoice(selection, my_in_square, my_out_square,
+  Choice *choice = new ToggleChoice(selection, my_in_diamond, my_out_diamond,
 				    my_layout, my_tools);
   activate(choice);
   choice->body(Graphic_var(my_layout->vbox()));
@@ -330,7 +330,7 @@ Choice_ptr WidgetKit::toggle_choice()
 Choice_ptr WidgetKit::checkbox_choice()
 {
   RefCount_var<Selection> selection = my_commands->group(0);
-  Choice *choice = new CheckboxChoice(selection, my_in_diamond, my_out_diamond,
+  Choice *choice = new CheckboxChoice(selection, my_in_square, my_out_square,
 				      my_layout, my_tools);
   activate(choice);
   choice->body(Graphic_var(my_layout->vbox()));
