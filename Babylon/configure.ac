@@ -45,7 +45,7 @@ dnl ------------------------------------------------------------------
 
 FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS -lPrague $Prague_LIBS"
+LIBS="$LIBS $Prague_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -64,8 +64,7 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-AC_CONFIG_FILES([bin/Babylon-config:config/Babylon-config.in], [chmod +x bin/Babylon-config])
-AC_CONFIG_FILES([config/local.mk Makefile src/Makefile modules/Makefile])
+AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile modules/Makefile])
 
 mkdir -p lib
 mkdir -p modules
