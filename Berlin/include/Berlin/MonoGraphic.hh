@@ -35,6 +35,8 @@ public:
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
   virtual void remove(Tag);
+  virtual Iterator_ptr firstChild();
+  virtual Iterator_ptr lastChild();
 
   virtual Transform_ptr transformation();
   virtual void request(Requisition &);

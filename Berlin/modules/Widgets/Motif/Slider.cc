@@ -72,7 +72,7 @@ void Slider::init(Controller_ptr t)
 
 void Slider::update(const CORBA::Any &any)
 {
-  needRedraw();
+//   needRedraw();
   any >>= offset;
   offset -= value->lower();
   offset /= (value->upper() - value->lower());

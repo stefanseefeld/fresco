@@ -25,7 +25,7 @@ top	= ../..
 cpath	= $(top)/config
 
 include $(cpath)/local.mk
--include $(cpath)/Prague/prague.mk
+include $(cpath)/Prague/local.mk
 
 TARGET		= $(lpath)/libPrague.so
 EXPAT		= $(lpath)/libexpat.so
@@ -62,26 +62,12 @@ install:
 .PHONY: clean distclean
 
 clean:	
+		rm -f $(TARGET)
+		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
 		rm -f $(opath)/*.o $(gpath)/*.o $(ppath)/*.o $(dpath)/*.d
 		cd SAX/expat; $(MAKE) clean;
 		cd Examples; $(MAKE) clean;
 		cd Unicode/Blocks; $(MAKE) clean;
 
 distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
-		rm -f config.cache config.log
 		cd Examples; $(MAKE) distclean
-
-$(cpath)/Prague/prague.mk: configure $(cpath)/Prague/prague.mk.in
-	@echo Running ./configure $$CONFIGURE_OPTS...
-	@./configure $$CONFIGURE_OPTS
-
-configure: $(cpath)/Prague/configure.in $(cpath)/Prague/aclocal.m4
-	@echo Running autoconf...
-	@autoconf -l $(cpath)/Prague $(cpath)/Prague/configure.in > configure
-	@chmod a+x configure
-
-$(cpath)/Prague/aclocal.m4: $(cpath)/macros/*.m4
-	@echo Running aclocal...
-	@(cd $(cpath)/Prague && aclocal -I ../macros)

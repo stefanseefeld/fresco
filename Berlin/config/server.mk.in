@@ -19,14 +19,9 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-GGI_INCLUDES	= @GGI_INCLUDES@
-GGI_LIBS	= @GGI_LIBS@
+#
+# specify how the entry point(s) to this package's make
+#
 
-GL_INCLUDES	= @GL_INCLUDES@
-GL_LIBS		= @GL_LIBS@
+subdirs += @BERLIN@ @KITS@ @SERVER@
 
-LIBART_INCLUDES	= @LIBART_INCLUDES@
-LIBART_LIBS	= @LIBART_LIBS@
-
-SERVER_SUBDIRS	= @SERVER_SUBDIRS@
-DRAWING_KITS	= @DRAWING_KITS@

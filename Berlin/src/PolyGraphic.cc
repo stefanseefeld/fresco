@@ -68,6 +68,9 @@ void PolyGraphic::remove(Tag t)
   needResize();
 }
 
+Graphic::Iterator_ptr PolyGraphic::firstChild() { return Iterator::_nil();}
+Graphic::Iterator_ptr PolyGraphic::lastChild() { return Iterator::_nil();}
+
 void PolyGraphic::needResize() { GraphicImpl::needResize();}
 void PolyGraphic::needResize(Tag) { GraphicImpl::needResize();}
 

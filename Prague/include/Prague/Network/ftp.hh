@@ -1,11 +1,9 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * http://www.berlin-consortium.org
- *
- * this file is based on code from the socket++ library
  * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

@@ -1,10 +1,12 @@
 #include <Prague/Network/ftp.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <unistd.h>
 
 using namespace Prague;
 
 int main (int argc, char **argv)
 {
+  Tracer::logging(true);
   if (argc != 4)
     {
       cerr << "Usage : " << argv[0] << " hostname user filename\n";

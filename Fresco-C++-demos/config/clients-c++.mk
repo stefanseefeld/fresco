@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -19,25 +19,8 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
+#
+# specify how the entry point(s) to this package's make
+#
 
-top	= ../../..
-cpath	= $(top)/config
-
-include $(cpath)/local.mk
-include $(cpath)/Server/local.mk
-
-hpath	= $(ipath)/Drawing/libArt
-
-# Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(LIBART_INCLUDES) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(LIBART_LIBS)
-
-SRC	= LibArtDrawingKit.cc LibArtUnifont.cc LibArtRaster.cc
-TARGET	= $(mpath)/libArtDrawing.so
-
-vpath %.d $(dpath)
-vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Drawing/libArt
-
-include $(cpath)/module.mk
+subdirs += clients/C++

@@ -26,6 +26,7 @@ cpath	= $(top)/config
 hpath	= $(top)/include/Drawing/openGL
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(GL_INCLUDES) $(ORBCPPFLAGS)

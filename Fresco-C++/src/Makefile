@@ -25,7 +25,7 @@ top	= ../..
 cpath	= $(top)/config
 
 include $(cpath)/local.mk
--include $(cpath)/Warsaw/warsaw.mk
+include $(cpath)/Warsaw/local.mk
 
 wpath   = $(top)/idl/Warsaw
 rpath	= $(lpath)
@@ -37,7 +37,7 @@ LDFLAGS		+= -shared -rdynamic
 LIBS		+= $(ORBLIBS)
 
 DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl Selection.idl
-STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
+STATINT	= ClientContext.idl Server.idl Kit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl Subject.idl Controller.idl View.idl \
 	  DrawingKit.idl \
@@ -74,25 +74,12 @@ vpath %.idl $(wpath)
 vpath %.h $(ipath)/Warsaw
 vpath %.mk $(cpath)/Warsaw
 
-world:	$(cpath)/Warsaw/warsaw.mk
+world:	$(cpath)/Warsaw/local.mk
 	$(MAKE) $(TARGET)
 
 $(TARGET):	$(OBJ)
 		$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
-
-$(cpath)/Warsaw/warsaw.mk: configure $(cpath)/Warsaw/warsaw.mk.in
-	@echo Running ./configure $$CONFIGURE_OPTS...
-	@./configure $$CONFIGURE_OPTS
-
-configure: $(cpath)/Warsaw/configure.in $(cpath)/Warsaw/aclocal.m4
-	@echo Running autoconf...
-	@autoconf -l $(cpath)/Warsaw $(cpath)/Warsaw/configure.in > configure
-	@chmod a+x configure
-
-$(cpath)/Warsaw/aclocal.m4: $(cpath)/macros/*.m4
-	@echo Running aclocal...
-	@(cd $(cpath)/Warsaw && aclocal -I ../macros)
 
 $(dpath)/%.d:	%.idl
 		@echo making dependencies for $<
@@ -156,9 +143,6 @@ distclean:	clean
 install:
 		install -m755 $(TARGET) $(libdir)
 
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean) 
+ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))
 -include $(DEP)
-endif 
-endif 
-
+endif

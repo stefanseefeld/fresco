@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -19,16 +19,8 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-include Sys/Sys.mk
-include IPC/IPC.mk
-include Filter/Filter.mk
-include Network/Network.mk
-include Unicode/Unicode.mk
-include SAX/SAX.mk
+#
+# specify how the entry point(s) to this package's make
+#
 
-vpath %.hh  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network $(ipath)/Prague/Unicode $(ipath)/Prague/SAX
-
-SRC = $(SYS_SRC) $(IPC_SRC) $(FLT_SRC) $(NTW_SRC) $(UNI_SRC) $(SAX_SRC)
-OBJ = $(SYS_OBJ) $(IPC_OBJ) $(FLT_OBJ) $(NTW_OBJ) $(UNI_OBJ) $(SAX_OBJ)
-GDB = $(SYS_GDB) $(IPC_GDB) $(FLT_GDB) $(NTW_GDB) $(UNI_GDB) $(SAX_GDB)
-DEP = $(SYS_DEP) $(IPC_DEP) $(FLT_DEP) $(NTW_DEP) $(UNI_DEP) $(SAX_DEP)
+subdirs += clients/perl

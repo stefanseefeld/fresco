@@ -27,16 +27,16 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(server.cc)
+AC_INIT(../../src/Berlin/Makefile)
 dnl AC_CONFIG_HEADER($top/include/Berlin/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
 dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=..
-cpath="$top/config"
-spath="$top/src"
+top=.
+cpath=..
+spath=../../src
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
 
@@ -75,7 +75,7 @@ AC_ARG_ENABLE(kits,
 	fi])
 AC_REGISTER_PARAM(enable_kits)
 AC_ARG_ENABLE(drawing,
-	[  --enable-drawing=LIST   Specify which Drawing Kits to build (default: all)], [
+	[  --enable-drawing=LIST   Specify which DrawingKits to build (default: all)], [
 	if test ".$enableval" = .yes ; then
 		enable_drawing_kits=all
 	else
@@ -85,39 +85,29 @@ AC_ARG_ENABLE(drawing,
 		enable_drawing_kits=all
 	fi])
 AC_REGISTER_PARAM(enable_drawing_kits)
-dnl AC_ARG_ENABLE(server,
-dnl 	[  --disable-server        Don't build the server],[
-dnl 	enable_server="$enableval"],[
-dnl 	enable_server=yes])
-dnl AC_REGISTER_PARAM(enable_server)
+AC_ARG_ENABLE(server,
+	[  --disable-server        Don't build the server],[
+	enable_server="$enableval"],[
+	enable_server=yes])
+AC_REGISTER_PARAM(enable_server)
 
 dnl ------------------------------------------------------------------
 dnl For all enable_PACKAGE=yes, check if it is in the source tree
 dnl ------------------------------------------------------------------
-if test ".$enable_berlin" = .yes ; then
-	if test -d $spath/Berlin ; then
-		enable_berlin=yes
-	else
-		enable_berlin=no
-	fi
-fi
+dnl if test ".$enable_berlin" = .yes ; then
+dnl 	if test -d $spath/Berlin ; then
+dnl 		enable_berlin=yes
+dnl 	else
+dnl 		enable_berlin=no
+dnl 	fi
+dnl fi
 
-dnl Enable all Kits present if $enable_kits == all (the default)
-if test ".$enable_kits" = .all ; then
-	enable_kits=
-	for kit in Command Desktop Figure Gadget Image Layout Text Tool Widget
-	do
-		if test -d $spath/$kit ; then
-			enable_kits="$enable_kits $kit"
-		fi
-	done
-	enable_kits=["`echo $enable_kits | sed 's/^ //'`"]
-elif test ".$enable_kits" = .no ; then
-	enable_kits=
-else
-	dnl Handle comma-separated lists, too
-	enable_kits=["`echo $enable_kits | sed 's/[, ]\+/ /g'`"]
-fi
+dnl ------------------------------------------------------------------
+dnl Graphics environment
+dnl ------------------------------------------------------------------
+AC_MSG_PART(Graphics Environment)
+
+BERLIN_GGI_CHECK(mandatory)
 
 if test ".$enable_drawing_kits" = .all ; then
 	enable_drawing_kits="libArt openGL"
@@ -136,25 +126,41 @@ for kit in $enable_drawing_kits ; do
 	fi
 done
 
-dnl ------------------------------------------------------------------
-dnl Graphics environment
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Graphics Environment)
-
-BERLIN_GGI_CHECK(mandatory)
-
-if test ".$enable_openGL" = .yes ; then
-	BERLIN_GGIMESA_CHECK
-	if test ".$ac_cv_lib_GGIMesa" != .yes ; then
-		enable_openGL=no
-	fi
-fi
+tested_drawing_kits="Drawing/FT"
 if test ".$enable_libArt" = .yes ; then
 	BERLIN_LIBART_CHECK
-	if test ".$ac_cv_lib_libArt" != .yes ; then
-		enable_libArt=no
+	if test ".$ac_cv_lib_libArt" = .yes ; then
+		tested_drawing_kits="$tested_drawing_kits Drawing/libArt"
 	fi
 fi
+if test ".$enable_openGL" = .yes ; then
+	BERLIN_GGIMESA_CHECK
+	if test ".$ac_cv_lib_GGIMesa" = .yes ; then
+		tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
+	fi
+fi
+
+dnl ------------------------------------------------------------------
+dnl other kits to build
+dnl ------------------------------------------------------------------
+
+dnl Enable all Kits present if $enable_kits == all (the default)
+if test ".$enable_kits" = .all ; then
+	enable_kits=
+	for kit in Layout Command Tool Image Figure Text Widget Gadget Desktop
+	do
+		if test -d $spath/$kit ; then
+			enable_kits="$enable_kits $kit"
+		fi
+	done
+	enable_kits=["`echo $enable_kits | sed 's/^ //'`"]
+elif test ".$enable_kits" = .no ; then
+	enable_kits=
+else
+	dnl Handle comma-separated lists, too
+	enable_kits=["`echo $enable_kits | sed 's/[, ]\+/ /g'`"]
+fi
+
 
 
 dnl ------------------------------------------------------------------
@@ -162,38 +168,26 @@ dnl Decisions
 dnl ------------------------------------------------------------------
 
 dnl Decide which additional subdirectories are needed
-SERVER_SUBDIRS=
+BERLIN=
 if test ".$enable_berlin" = .yes ; then
-	SERVER_SUBDIRS="$SERVER_SUBDIRS $spath/Berlin"
+	BERLIN="src/Berlin"
 fi
-
-dnl Decide which "normal" Kits to build
-SERVER_SUBDIRS="$SERVER_SUBDIRS `echo $enable_kits | sed -e 's/^ *\| \+/ ..\/src\//g' -e 's/^ \+//'`"
-
-dnl Decide which Drawing Kits to build
-DRAWING_KITS=
-for kit in $enable_drawing_kits ; do
-	varname=enable_$kit
-	if test ".${!varname}" = .yes ; then
-		DRAWING_KITS="$DRAWING_KITS $kit"
-	fi
+AC_SUBST(BERLIN)
+for kit in $tested_drawing_kits $enable_kits
+do
+	KITS="$KITS src/$kit"
 done
-DRAWING_KITS=["`echo $DRAWING_KITS | sed 's/^ \+//'`"]
-AC_SUBST(DRAWING_KITS)
+AC_SUBST(KITS)
 
-if test ! ".$DRAWING_KITS" = . ; then
-	SERVER_SUBDIRS="$SERVER_SUBDIRS $spath/Drawing"
-fi
-
-AC_SUBST(SERVER_SUBDIRS)
+SERVER="server"
+AC_SUBST(SERVER)
 
 dnl ------------------------------------------------------------------
 dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
 AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
-AC_MSG_RESULT([Kits to build:            $enable_kits])
-AC_MSG_RESULT([Drawing Kits to build:    $DRAWING_KITS])
+AC_MSG_RESULT([Kits to build:            $tested_drawing_kits $enable_kits])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
@@ -203,4 +197,4 @@ AC_MSG_PART(Output Substitution)
 AC_MSG_RESULT(Storing configuration in $cpath/Server/config.param...)
 AC_CONFIG_STORE($cpath/Server/config.param)
 
-AC_OUTPUT($cpath/Server/server.mk:$cpath/Server/server.mk.in)
+AC_OUTPUT($cpath/Server/local.mk:$cpath/Server/local.mk.in $cpath/Server/server.mk:$cpath/Server/server.mk.in)

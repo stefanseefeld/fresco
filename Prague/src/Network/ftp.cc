@@ -1,11 +1,9 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * http://www.berlin-consortium.org
- *
- * this file is based on code from the socket++ library
  * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +22,7 @@
  */
 
 #include <Prague/Network/ftp.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <fstream.h>
 #include <unistd.h>
 #include <cstdlib>
@@ -70,7 +69,7 @@ char transmode [][8] = {
 // host if the istream i is set.
 ftp::replycodea ftp::ftpbuf::ftpdata (int portno, istream* i, ostream* o, const char* cmd, const char* arg)
 {
-  cout << "ftpdata" << endl;
+  Trace trace("ftp::ftpbuf::ftpdata");
   sockinetbuf sb (sockbuf::sock_stream, 0);
   sb.bind_until_success (portno);
   useraddr (sb.localaddr ());
@@ -88,7 +87,11 @@ ftp::replycodea ftp::ftpbuf::ftpdata (int portno, istream* i, ostream* o, const 
       // read data from c and put it in o
       char buf [1024];
       int  rdsz;
-      while ((rdsz = c.sys_read (buf, 1024)) != EOF) o->write (buf, rdsz);
+      while ((rdsz = c.sys_read (buf, 1024)) != EOF)
+	{
+	  o->write (buf, rdsz);
+	  cout << rdsz << endl;
+	}
       cout << "done" << endl;
     }
   else if (i)
@@ -112,6 +115,7 @@ ftp::replycodea ftp::ftpbuf::ftpdata (int portno, istream* i, ostream* o, const 
 ftp::replycodea ftp::ftpbuf::get_response ()
      // get all the response that one can get and send all of them to o
 {
+  Trace trace("ftp::ftpbuf::get_response");
   // if o is 0, then we trash data.
   bool  firstline = true;
   while (underflow () != EOF)
@@ -141,6 +145,7 @@ ftp::replycodea ftp::ftpbuf::get_response ()
 
 ftp::replycodea ftp::ftpbuf::send_cmd (const char* cmd, const char* arg)
 {
+  Trace trace("ftp::ftpbuf::send_cmd");
   xsputn (cmd, ::strlen (cmd));
   if (arg)
     {

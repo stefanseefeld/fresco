@@ -29,6 +29,7 @@
 #include <Berlin/DebugGraphic.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/QuadTree.hh>
+#include <Berlin/Math.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Profiler.hh>
 
@@ -121,6 +122,7 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
 {
+  Trace trace("StageImpl::Sequence::insert");
   int layer = handle->l;
   iterator i;
   if (!size() || layer == 0) i = begin();
@@ -132,6 +134,7 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
  
 void StageImpl::Sequence::remove(StageHandleImpl *handle)
 {
+  Trace trace("StageImpl::Sequence::remove");
   int layer = handle->l;
   iterator old = lookup(layer);
   if (old == begin() + cursor)

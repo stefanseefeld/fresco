@@ -27,21 +27,20 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(Makefile)
-AC_CONFIG_HEADER($top/include/config.hh)
+AC_INIT(../../src/Warsaw/Makefile)
+AC_CONFIG_HEADER(../../include/Warsaw/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
 dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=../..
-cpath="$top/config"
-spath="$top/src"
+top=.
+cpath=..
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
 
 AC_HEADLINE(dnl
-Warsaw, The Berlin Component Model, dnl
+Warsaw, The Berlin Protocol, dnl
 Berlin_VERSION, $top/include/version.h, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
 
@@ -52,20 +51,6 @@ AC_CONFIG_LOAD($cpath/Warsaw/config.param)
 
 dnl Required to determine host CPU and OS in BERLIN_OMNIORB2_CHECK
 AC_CANONICAL_SYSTEM
-
-dnl ------------------------------------------------------------------
-dnl Build tools
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Build Tools)
-
-AC_PROG_MAKE_SET
-AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_INSTALL
-
-dnl make sure we get the correct libraries linked in...
-if GXX==yes; then CXX=g++
-fi
 
 dnl ------------------------------------------------------------------
 dnl CORBA environment
@@ -82,4 +67,4 @@ AC_MSG_PART(Output Substitution)
 AC_MSG_RESULT(Storing configuration in $cpath/Warsaw/config.param...)
 AC_CONFIG_STORE($cpath/Warsaw/config.param)
 
-AC_OUTPUT($cpath/Warsaw/warsaw.mk:$cpath/Warsaw/warsaw.mk.in)
+AC_OUTPUT($cpath/Warsaw/local.mk:$cpath/Warsaw/local.mk.in)

@@ -27,8 +27,8 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(../../src/Prague/Sys/DLL.cc)
-AC_CONFIG_HEADER(../../include/Prague/Sys/config.hh)
+AC_INIT(../../clients/python/Makefile)
+dnl AC_CONFIG_HEADER($top/include/Berlin/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
@@ -36,44 +36,37 @@ dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 top=.
 cpath=..
+spath=../../src
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
 
 AC_HEADLINE(dnl
-Prague, The Berlin Utility Library, dnl
+Berlin Clients Python, Berlin python clients, dnl
 Berlin_VERSION, $top/include/version.h, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
 
 dnl Load the global options first, then the local ones. The local options
 dnl will then override the global.
 AC_CONFIG_LOAD($cpath/config.param)
-dnl AC_CONFIG_LOAD($cpath/Prague/config.param)
+AC_CONFIG_LOAD($cpath/Clients-Python/config.param)
 
-dnl #
-dnl # plugin support
-dnl #
-AC_MSG_PART(Dynamic Loading Implementation)
+dnl ------------------------------------------------------------------
+dnl Decisions
+dnl ------------------------------------------------------------------
 
-AC_CHECK_HEADERS(dlfcn.h)
-AC_CHECK_LIB(dl, dlopen)
-AC_CHECK_FUNCS(dlopen dlsym dlclose)
-AC_CHECK_HEADERS(dl.h)
-AC_CHECK_FUNCS(shl_load)
-AC_BEGIN_DECISION([plugin method])
-AC_IFALLYES(header:dlfcn.h func:dlopen func:dlsym func:dlclose, 
-            AC_DECIDE(DLFCN, [use dlopen family of functions for plugins]))
-AC_IFALLYES(header:dl.h func:shl_load, 
-            AC_DECIDE(DLAIX, [use AIX shm_load for plugins]))
-AC_END_DECISION
-if test x$ac_decision = xDLFCN ; then
-	AC_DEFINE(HAVE_DLFCN)
-else
-	AC_DEFINE(HAVE_DLAIX)
-fi
+dnl ------------------------------------------------------------------
+dnl Print a summary of what's going to be built
+dnl ------------------------------------------------------------------
+AC_MSG_PART(Summary)
+dnl AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
+dnl AC_MSG_RESULT([Kits to build:            $tested_drawing_kits $enable_kits])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
-AC_OUTPUT($cpath/Prague/local.mk:$cpath/Prague/local.mk.in)
+AC_MSG_RESULT(Storing configuration in $cpath/Clients-Python/config.param...)
+AC_CONFIG_STORE($cpath/Clients-Python/config.param)
+
+AC_OUTPUT($cpath/Clients-Python/local.mk:$cpath/Clients-Python/local.mk.in)

@@ -67,6 +67,18 @@ void MonoGraphic::remove(Tag t)
   if (!CORBA::is_nil(child)) child->remove(t);
 }
 
+Graphic::Iterator_ptr MonoGraphic::firstChild()
+{
+  MutexGuard guard(childMutex);
+  if (!CORBA::is_nil(child)) return child->firstChild();
+}
+
+Graphic::Iterator_ptr MonoGraphic::lastChild()
+{
+  MutexGuard guard(childMutex);
+  if (!CORBA::is_nil(child)) return child->lastChild();
+}
+
 Transform_ptr MonoGraphic::transformation()
 {
   Graphic_var child = body();

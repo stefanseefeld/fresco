@@ -24,62 +24,59 @@ SHELL	= /bin/sh
 cpath	= ./config
 top	= .
 
--include $(cpath)/local.mk
+subdirs	= config
+#
+# now add package subdirs
+#
+-include $(cpath)/packages.mk
 
-subdirs		= $(BASE_SUBDIRS)
-
-.PHONY:	config test depclean clean distclean install debs
+.PHONY:	config depclean clean distclean install dist
 
 world: all
+	@echo $(subdirs)
 
-all: $(cpath)/local.mk
-	@for dir in ${subdirs}; do \
+all: $(cpath)/packages.mk
+	@for dir in $(subdirs); do \
 		(cd $$dir && $(MAKE)) \
 		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"; \
+
+$(cpath)/packages.mk:
+	cd $(cpath) && $(MAKE)
 
 depclean:
 	find -name '*.d' -exec rm -f \{\} \;
 
 clean:
 	/bin/rm -f *~
-	@for dir in ${subdirs}; do \
+	@for dir in $(subdirs); do \
 	  (cd $$dir && $(MAKE) clean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
 
 distclean:
-	/bin/rm -f config.cache config.log config.status
-	@for dir in ${subdirs}; do \
+	@for dir in $(subdirs); do \
 	  (cd $$dir && $(MAKE) distclean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
 	for dir in modules lib; do \
 	  find $$dir -name '*.so' -exec rm -f \{\} \; ; \
 	done
-	/bin/rm -f $(cpath)/local.mk
 
-install: all
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) install); \
-	done
+dist:	distclean
+	@(cd config && $(MAKE) dist)
+
+#install: all
+#	@for dir in ${subdirs}; do \
+#	  (cd $$dir && $(MAKE) install); \
+#	done
 
 # Someone said there was a way to include these rules only if the person
 # invokes the export target. I don't know how to do that...
-include config/packages.mk
+# include config/packages.mk
 
-debs:
-	dpkg-buildpackage -rfakeroot -uc -us
+#debs:
+#	dpkg-buildpackage -rfakeroot -uc -us
 
-$(cpath)/local.mk: configure $(cpath)/local.mk.in
-	@echo Running ./configure $$CONFIGURE_OPTS...
-	@./configure $$CONFIGURE_OPTS
-
-configure: $(cpath)/configure.in $(cpath)/aclocal.m4
-	@echo Running autoconf...
-	@autoconf -l $(cpath) $(cpath)/configure.in > configure
-	@chmod a+x configure
-
-$(cpath)/aclocal.m4: $(cpath)/macros/*.m4
-	@echo Running aclocal...
-	@(cd $(cpath) && aclocal -I macros)
+config:
+	@(cd config && $(MAKE) config)
