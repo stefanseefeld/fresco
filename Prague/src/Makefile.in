@@ -77,11 +77,7 @@ $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
 
-ifeq (,$(findstring config, $(MAKECMDGOALS)))
 ../bin/Prague-config: $(top_srcdir)/config/Prague-config.in
-else
-../bin/Prague-config: $(top_srcdir)/config/Prague-config.in .FORCE
-endif
 	rm -f $@ $@.tmp
 	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
 	  	-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
@@ -152,11 +148,7 @@ maintainer-clean: distclean
 	rm -f $(top_srcdir)/configure $(top_srcdir)/config/acconfig.hh.in \
 		$(top_srcdir)/config/aclocal.m4
 
-ifeq (,$(findstring depend, $(MAKECMDGOALS)))
 %.d:	%.cc %.hh
-else
-%.d:	%.cc %.hh .FORCE
-endif
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
@@ -171,6 +163,14 @@ DataTypeManager.o:	DataTypeManager.cc
 %.syn:	%.hh
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
+
+ifneq (,$(findstring config, $(MAKECMDGOALS)))
+../bin/Prague-config: .FORCE
+endif
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
 
 ifeq (,$(filter $(MAKECMDGOALS), config depend doc install-doc clean distclean maintainer-clean))
 -include $(DEP)
