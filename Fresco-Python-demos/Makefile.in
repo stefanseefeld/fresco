@@ -36,6 +36,7 @@ $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
+config: #do nothing
 doc: #do nothing here
 
 install:

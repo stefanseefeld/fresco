@@ -79,7 +79,9 @@ $(TARGET):	$(OBJ)
 	chmod +x $@.tmp
 	mv $@.tmp $@
 
-doc:	../share/doc/Berlin/html ../bin/Berlin-config
+config:  ../bin/Berlin-config
+
+doc:	../share/doc/Berlin/html
 
 ../share/doc/Berlin/html:	$(SYN)
 	@echo formatting $(@F)
@@ -147,6 +149,6 @@ maintainer-clean: distclean
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

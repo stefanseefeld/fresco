@@ -47,6 +47,9 @@ else
 all:	$(TARGETS)
 endif
 
+config: #do nothing
+doc: #do nothing
+
 ifeq ($(JPROF),yes)
 ../lib/libjprof.so:	libmalloc.o
 	@echo linking $(@F)
@@ -90,6 +93,8 @@ install:	all
 	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/$$image is up to date"; \
 	  fi; \
 	done
+
+install-doc: #do nothing
 
 uninstall:
 	for target in $TARGETS ; do \

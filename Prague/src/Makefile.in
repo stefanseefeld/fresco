@@ -65,7 +65,7 @@ TARGET		:= ../lib/libPrague.so
 vpath %.hh  $(hdir):$(hdir)/Sys:$(hdir)/IPC:$(hdir)/Filter:$(hdir)/Network
 vpath %.cc  $(srcdir)/Sys:$(srcdir)/IPC:$(srcdir)/Filter:$(srcdir)/Network
 
-.PHONY: all doc install install-doc clean distclean maintainer-clean dist
+.PHONY: all config doc install install-doc clean distclean maintainer-clean dist
 
 all:	$(TARGET) ../bin/Prague-config
 
@@ -82,7 +82,9 @@ $(TARGET):	$(OBJ)
 	chmod +x $@.tmp
 	mv $@.tmp $@
 
-doc:	../share/doc/Prague/html ../bin/Prague-config
+config: ../bin/Prague-config
+
+doc:	config ../share/doc/Prague/html 
 
 ../share/doc/Prague/html:	$(SYN)
 	@echo formatting $(@F)
@@ -156,6 +158,6 @@ DataTypeManager.o:	DataTypeManager.cc
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), doc clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

@@ -109,11 +109,13 @@ objects:	$(OBJ)
 	chmod +x $@.tmp
 	mv $@.tmp $@
 
-doc:	../share/doc/Fresco/html ../bin/Fresco-config
+config:  ../bin/Fresco-config
+
+doc:	../share/doc/Fresco/html
 
 ../share/doc/Fresco/html:	$(SYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
 
 install:	all

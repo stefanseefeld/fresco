@@ -43,7 +43,7 @@ TARGET		:= ../lib/libBabylon.so
 vpath %.hh  $(hdir)
 vpath %.cc  $(srcdir)
 
-.PHONY: doc install install-doc uninstall clean distclean maintainer-clean dist
+.PHONY: config doc install install-doc uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET) ../bin/Babylon-config
 
@@ -59,6 +59,8 @@ $(TARGET):	$(OBJ)
 	  $< > $@.tmp
 	chmod +x $@.tmp
 	mv $@.tmp $@
+
+config: ../bin/Babylon-config
 
 doc:	../share/doc/Babylon/html ../bin/Babylon-config
 
@@ -121,6 +123,6 @@ maintainer-clean: distclean
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Babylon,linker=Babylon $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), doc clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

@@ -28,13 +28,16 @@ subdirs	:= src
 action	:= all
 
 .PHONY: all $(subdirs)
-.PHONY: install uninstall depclean clean distclean maintainer-clean dist clean
+.PHONY: config doc install uninstall depclean clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
 
 $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
+
+config:
+	$(MAKE) action="config"
 
 doc:
 	$(MAKE) action="doc"

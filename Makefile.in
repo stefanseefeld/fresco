@@ -35,7 +35,7 @@ subdirs	:= $(foreach package, $(packages), $(shell test -d $(srcdir)/$(package) 
 action	:= all
 
 .PHONY: all $(subdirs)
-.PHONY: doc install install-doc depclean clean distclean maintainer-clean dist clean
+.PHONY: config doc install install-doc depclean clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
 
@@ -43,13 +43,16 @@ $(subdirs): %: %/Makefile
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
-doc:
+config:
+	$(MAKE) action="config"
+
+doc:	config
 	$(MAKE) action="doc"
 
 install:
 	$(MAKE) action="install"
 
-install-doc:
+install-doc:	config
 	$(MAKE) action="install-doc"
 
 uninstall:

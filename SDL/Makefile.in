@@ -36,8 +36,13 @@ $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
+config: #do nothing
+doc: #do nothing
+
 install:
 	$(MAKE) action="install"
+
+install-doc: #do nothing
 
 uninstall:
 	$(MAKE) action="uninstall"

@@ -51,6 +51,8 @@ $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
+config: #do nothing
+
 doc:
 	$(MAKE) action="doc"
 
