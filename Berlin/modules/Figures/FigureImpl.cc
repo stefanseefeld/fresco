@@ -29,6 +29,7 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Color.hh>
 #include <Berlin/Vertex.hh>
+#include <Berlin/Provider.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Figure/FigureImpl.hh"
 
@@ -51,7 +52,7 @@ void TransformFigure::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("TransformFigure::request");
   Allocation::Info info;
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   extension(info, Region_var(region->_this()));
   if (region->valid)
     {
@@ -74,9 +75,10 @@ void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
   Trace trace("TransformFigure::extension");
   if (_ext->valid)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(_ext->_this())));
+      Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
+      tmp->copy(Region_var(_ext->_this()));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
-      Impl_var<TransformImpl> transformation(new TransformImpl);
+      Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(_tx->_this()));
       tmp->apply_transform(Transform_var(transformation->_this()));
@@ -94,7 +96,7 @@ void TransformFigure::need_redraw()
 {
   Trace trace("TransformFigure::need_redraw");
   Allocation::Info info;
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   extension(info, Region_var(region->_this()));
   need_redraw_region(Region_var(region->_this()));
 }
@@ -145,9 +147,10 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
   Trace trace("FigureImpl::extension");
   if (_path->length() > 0)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(_ext->_this())));
+      Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
+      tmp->copy(Region_var(_ext->_this()));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
-      Impl_var<TransformImpl> transformation(new TransformImpl);
+      Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(_tx->_this()));
       tmp->apply_transform(Transform_var(transformation->_this()));
@@ -179,7 +182,7 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
-      Impl_var<RegionImpl> region(new RegionImpl);
+      Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
       extension(info, Region_var(region->_this()));
       if (traversal->intersects_region(Region_var(region->_this())))
 	{
@@ -208,6 +211,8 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 
 void FigureImpl::pick(PickTraversal_ptr traversal)
 {
+  TransformFigure::pick(traversal);
+  return;
   if (_ext->valid)
     {
       if (traversal->intersects_region(Region_var(_ext->_this())))
