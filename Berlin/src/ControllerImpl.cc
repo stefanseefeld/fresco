@@ -264,18 +264,13 @@ CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, con
 CORBA::Boolean ControllerImpl::handleNonPositional(const Input::Event &event)
 {
   SectionLog section("ControllerImpl::handleNonPositional");
-//   Event::Key *key;
-//   if (any >>= key)
-//     {
-//       switch (key->whatHappened)
-// 	{
-// 	case Event::press: keyPress(key); break;
-// 	case Event::release: keyRelease(key); break;
-// 	default: other(any); break;
-// 	}
-//       return true;
-//     }
-//   else return false;
+  if (event[0].dev != 0 || event[0].attr._d() != Input::key)
+    {
+      cerr << "ControllerImpl::handleNonPositional fatal error : unknown event" << endl;
+      return false;
+    }
+  if (event[0].attr.kselection().actuation != Input::Toggle::press) return false;
+  keyPress(event);
   return true;
 }
 
@@ -309,8 +304,31 @@ void ControllerImpl::doubleClick(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::keyPress(const Input::Event &)
+void ControllerImpl::keyPress(const Input::Event &event)
 {
+  const Input::Toggle &toggle = event[0].attr.kselection();
+//   cout << "ControllerImpl::keyPress : " << toggle.number << ' ' << (char) toggle.number << endl;
+  switch (toggle.number)
+    {
+    case 32: // space
+      {
+	if (test(Telltale::chosen)) clear(Telltale::chosen);
+	else set(Telltale::chosen);
+	break;
+      }
+    case 57396: // left
+      {
+	prevFocus(event[0].dev);
+	break;
+      }
+    case 9: // tab
+    case 57397: // right
+      {
+	nextFocus(event[0].dev);
+	break;
+      }
+    default: break;
+    }
 }
 
 void ControllerImpl::keyRelease(const Input::Event &)

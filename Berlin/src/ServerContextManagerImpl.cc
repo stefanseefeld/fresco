@@ -84,11 +84,7 @@ void ServerContextManagerImpl::ping()
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
     {
       if ((*i)->ping()) tmp.push_back(*i);	    
-      else
-	{
-	  cout << "dispose" << endl;
-	  (*i)->_dispose();
-	}
+      else (*i)->_dispose();
     }
   contexts = tmp;
 };

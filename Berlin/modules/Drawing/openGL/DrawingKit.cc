@@ -240,6 +240,14 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
 
 void GLDrawingKit::drawText(const Unistring &us)
 {
+  /*
+   * the real thing to do would be to use the current trafo and
+   * look up glyphs of appropriate pixel sizes within the current
+   * font.   -stefan
+   */
+  Vertex origin = {0., 0., 0.};
+  tr->transformVertex(origin);
+  unifont.drawText(us, origin);
 }
 
 EXPORT_PLUGIN(GLDrawingKit, interface(DrawingKit))

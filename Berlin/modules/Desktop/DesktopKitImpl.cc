@@ -26,7 +26,11 @@
 #include "Berlin/Plugin.hh"
 
 DesktopKitImpl::DesktopKitImpl() {}
-DesktopKitImpl::~DesktopKitImpl() {}
+DesktopKitImpl::~DesktopKitImpl()
+{
+  for (vector<WindowImpl *>::iterator i = windows.begin(); i != windows.end(); i++)
+    (*i)->_dispose();
+}
 
 void DesktopKitImpl::bind(ServerContext_ptr sc)
 {
