@@ -25,7 +25,7 @@
 #include <Warsaw/Types.hh>
 #include <iostream>
 
-inline ostream &operator << (ostream &os, const CORBA::Exception &exception)
+inline std::ostream &operator << (std::ostream &os, const CORBA::Exception &exception)
 {
   CORBA::Any any;
   any <<= exception;
@@ -36,6 +36,6 @@ inline ostream &operator << (ostream &os, const CORBA::Exception &exception)
   return os;
 }
 
-inline ostream &operator << (ostream &os, CORBA::Exception *exception) { return os << *exception;}
+inline std::ostream &operator << (std::ostream &os, CORBA::Exception *exception) { return os << *exception;}
 
 #endif /* _exception_hh */

@@ -44,14 +44,14 @@ class ServerImpl : public virtual POA_Warsaw::Server,
                    public virtual PortableServer::RefCountServantBase
 {
     friend class ServerContextImpl;
-    typedef vector<ServerContextImpl *> clist_t;
-    typedef multimap<string, Prague::Plugin<KitFactory> *> fmap_t;
-    typedef multimap<string, KitImpl *> kmap_t;
-    typedef map<string, CORBA::Object_var> smap_t;
+    typedef std::vector<ServerContextImpl *> clist_t;
+    typedef std::multimap<std::string, Prague::Plugin<KitFactory> *> fmap_t;
+    typedef std::multimap<std::string, KitImpl *> kmap_t;
+    typedef std::map<std::string, CORBA::Object_var> smap_t;
 public:
     // Singelton pattern: This makes sure that only one ServerImpl is around.
     static ServerImpl *instance();
-    typedef multimap<string, Warsaw::Kit::PropertySeq_var> FactoryList;
+    typedef multimap<std::string, Warsaw::Kit::PropertySeq_var> FactoryList;
     virtual Warsaw::ServerContext_ptr create_server_context(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
     virtual void set_singleton(const char *, CORBA::Object_ptr)
 	throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
@@ -70,7 +70,7 @@ public:
     //. Pings all ServerContexts and destroys them if necessary.
     void ping();
     // This builds the plugin table
-    void scan(const string &);
+    void scan(const std::string &);
     //. Deletes all known Kits.
     void clear();
     FactoryList list();
@@ -101,17 +101,20 @@ typename K::_ptr_type ServerImpl::resolve(const char *type, const Warsaw::Kit::P
     KitImpl *kit = create(type, properties, poa);
     if (!kit) return K::_nil();
     typename K::_var_type reference;
-    try	{
+    try
+      {
 	reference = K::_narrow(Warsaw::Kit_var(kit->_this()));
-    }
-    catch (CORBA::Exception &e)	{
-	cerr << "Cannot narrow reference: " << e << endl;
+      }
+    catch (CORBA::Exception &e)
+      {
+	std::cerr << "Cannot narrow reference: " << e << std::endl;
 	return K::_nil();
-    }
-    if (CORBA::is_nil(reference)) {
-	cerr << "Reference has incorrect type" << endl;
+      }
+    if (CORBA::is_nil(reference))
+      {
+	std::cerr << "Reference has incorrect type" << std::endl;
 	return K::_nil();
-    }
+      }
     _kits.insert(kmap_t::value_type(type, kit));
     return reference._retn();
 }

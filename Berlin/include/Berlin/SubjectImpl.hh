@@ -34,6 +34,7 @@ class SubjectImpl : public virtual POA_Warsaw::Subject,
 		    public virtual RefCountBaseImpl,
                     public virtual IdentifiableImpl
 {
+  typedef std::vector<Warsaw::Observer_var> olist_t;
 public:
   SubjectImpl();
   void attach(Warsaw::Observer_ptr);
@@ -42,10 +43,10 @@ public:
   virtual void notify();
   void block(CORBA::Boolean);  
 private:
-  vector<Warsaw::Observer_var> _observers;
-  CORBA::Boolean               _blocked;
-  Prague::Mutex                _mutex;
-  Prague::Mutex                _observerMutex;
+  olist_t        _observers;
+  CORBA::Boolean _blocked;
+  Prague::Mutex  _mutex;
+  Prague::Mutex  _observerMutex;
 };
 
 #endif 

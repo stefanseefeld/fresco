@@ -39,7 +39,6 @@ class GraphicImpl : public virtual POA_Warsaw::Graphic,
                     public virtual IdentifiableImpl
 {
  protected:
-  class Iterator;
   //. An edge is a reference to a graphic within a composite.
   //. Because a graphic might appear twice within the same composite,
   //. a graphic itself is insufficient to identify its position within
@@ -50,8 +49,8 @@ class GraphicImpl : public virtual POA_Warsaw::Graphic,
     Warsaw::Tag         peerId;
     Warsaw::Tag         localId;
   };
-  typedef vector<Edge> glist_t;
-  struct localId_eq : public unary_function<Edge, bool>
+  typedef std::vector<Edge> glist_t;
+  struct localId_eq : public std::unary_function<Edge, bool>
     {
       localId_eq(Warsaw::Tag t) : id(t) {}
       bool operator()(const Edge &e) const { return e.localId == id; }
@@ -105,8 +104,8 @@ private:
   Prague::Mutex        _mutex;
 };
 
-class GraphicImpl::Iterator : public virtual POA_Warsaw::GraphicIterator,
-		              public virtual ServantBase
+class GraphicIteratorImpl : public virtual POA_Warsaw::GraphicIterator,
+		            public virtual ServantBase
 {
 public:
   virtual void destroy() { deactivate();}

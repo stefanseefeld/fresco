@@ -74,7 +74,7 @@ void ScreenManager::repair()
     u.x *= xres;
     l.y *= yres;
     u.y *= yres;
-    _drawable->flush(l.x, l.y, u.x - l.x, u.y - l.y);
+    _drawable->flush(static_cast<long>(l.x), static_cast<long>(l.y), static_cast<long>(u.x - l.x), static_cast<long>(u.y - l.y));
   }
   _emanager->damage(Region_var(_tmpDamage->_this()));
 }

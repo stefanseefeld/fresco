@@ -31,8 +31,8 @@
 class FocusImpl : public virtual POA_Warsaw::Focus,
                   public virtual PortableServer::RefCountServantBase
 {
-  typedef stack<Warsaw::Input::Filter_var> fstack_t;
-  typedef vector<size_t> memento_t;
+  typedef std::stack<Warsaw::Input::Filter_var> fstack_t;
+  typedef std::vector<size_t> memento_t;
   friend class EventManager;
 public:
   FocusImpl(Warsaw::Input::Device dd) : d(dd) {}

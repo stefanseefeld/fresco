@@ -53,7 +53,7 @@ private:
   Layout::StageHandle_var _handle;
   Impl_var<UnmappedStageHandle> _unmapped;
   Prague::Mutex _mutex;
-  vector<Warsaw::Controller_var> _focus;
+  std::vector<Warsaw::Controller_var> _focus;
 };
 
 #endif

@@ -36,7 +36,7 @@ void Mover::execute(const CORBA::Any &any)
       Vertex p = window->position();
       window->position(p + *delta);
     }
-  else  cerr << "Mover::execute : wrong message type !" << endl;
+  else  std::cerr << "Mover::execute : wrong message type !" << std::endl;
 }
 
 void Resizer::execute(const CORBA::Any &any)
@@ -49,19 +49,19 @@ void Resizer::execute(const CORBA::Any &any)
       window->request(r);
       if (r.x.defined)
 	{
-	  if (delta->x > 0.) s.x = min(s.x + delta->x, r.x.maximum);
-	  else s.x = max(s.x + delta->x, r.x.minimum);
+	  if (delta->x > 0.) s.x = std::min(s.x + delta->x, r.x.maximum);
+	  else s.x = std::max(s.x + delta->x, r.x.minimum);
 	}
       else s.x += delta->x;
       if (r.y.defined)
 	{
-	  if (delta->y > 0.) s.y = min(s.y + delta->y, r.y.maximum);
-	  else s.y = max(s.y + delta->y, r.y.minimum);
+	  if (delta->y > 0.) s.y = std::min(s.y + delta->y, r.y.maximum);
+	  else s.y = std::max(s.y + delta->y, r.y.minimum);
 	}
       else s.y += delta->y;
       window->size(s);
     }
-  else cerr << "Resizer::execute : wrong message type !" << endl;
+  else std::cerr << "Resizer::execute : wrong message type !" << std::endl;
 }
 
 MoveResizer::MoveResizer(Window_ptr window, Desktop_ptr d, Alignment x, Alignment y, CORBA::Short b)
@@ -80,22 +80,22 @@ void MoveResizer::execute(const CORBA::Any &any)
       Vertex p = pos, s = size;
       if (border & Warsaw::Window::left && xalign != 0.)
 	{
-	  s.x = min(r.x.maximum, max(r.x.minimum, size.x - vertex->x/xalign));
+	  s.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x - vertex->x/xalign));
 	  p.x = pos.x - xalign * (s.x - size.x);
 	}
       else if (border & Warsaw::Window::right && xalign != 1.)
 	{
-	  s.x = min(r.x.maximum, max(r.x.minimum, size.x + vertex->x/(1.-xalign)));
+	  s.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x + vertex->x/(1.-xalign)));
 	  p.x = pos.x - xalign * (s.x - size.x);
 	}
       if (border & Warsaw::Window::top && yalign != 0.)
 	{
-	  s.y = min(r.y.maximum, max(r.y.minimum, size.y - vertex->y/yalign));
+	  s.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y - vertex->y/yalign));
 	  p.y = pos.y - yalign * (s.y - size.y);
 	}
       else if (border & Warsaw::Window::bottom && yalign != 1.)
 	{
-	  s.y = min(r.y.maximum, max(r.y.minimum, size.y + vertex->y/(1.-yalign)));
+	  s.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y + vertex->y/(1.-yalign)));
 	  p.y = pos.y - yalign * (s.y - size.y);
 	}
       desktop->begin();
@@ -103,14 +103,14 @@ void MoveResizer::execute(const CORBA::Any &any)
       window->size(s);
       desktop->end();
     }
-  else cerr << "MoveResizer::execute : wrong message type !" << endl;
+  else std::cerr << "MoveResizer::execute : wrong message type !" << std::endl;
 }
 
 void Relayerer::execute(const CORBA::Any &any)
 {
   Layout::Stage::Index i;
   if (any >>= i) window->layer(i);
-  else cerr << "Relayerer::execute : wrong message type !" << endl;
+  else std::cerr << "Relayerer::execute : wrong message type !" << std::endl;
 }
 
 void Mapper::execute(const CORBA::Any &) { window->mapped(true);}

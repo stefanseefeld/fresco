@@ -98,7 +98,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   Vertex length = {(right - left), (bottom - top), 0.};
 
   Coord slope = length.y / length.x / 2;
-  Coord dx = thickness * sqrt(1/(slope * slope) + 1.0);
+  Coord dx = thickness * std::sqrt(1/(slope * slope) + 1.0);
   Coord dy = thickness * (1 + slope);
 
   DrawingKit_var drawing = traversal->drawing();
@@ -154,7 +154,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
   Vertex length = {(right - left), (bottom - top), 0.};
   Coord slope = length.y / length.x / 2;
-  Coord dx = thickness * sqrt(1/(slope * slope) + 1.0);
+  Coord dx = thickness * std::sqrt(1/(slope * slope) + 1.0);
   Coord dy = thickness * (1 + slope);
 
   DrawingKit_var drawing = traversal->drawing();
@@ -210,7 +210,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
   Vertex length = {(right - left), (bottom - top), 0.};
   Coord slope = 2 * length.y / length.x;
-  Coord dy = thickness * sqrt(slope * slope + 1.0);
+  Coord dy = thickness * std::sqrt(slope * slope + 1.0);
   Coord dx = thickness * (1 + 1 / slope);
 
   DrawingKit_var drawing = traversal->drawing();
@@ -266,7 +266,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
   Vertex length = {(right - left), (bottom - top), 0.};
   Coord slope = 2 * length.y / length.x;
-  Coord dy = thickness * sqrt(slope * slope + 1.0);
+  Coord dy = thickness * std::sqrt(slope * slope + 1.0);
   Coord dx = thickness * (1 + 1 / slope);
 
   DrawingKit_var drawing = traversal->drawing();
@@ -321,8 +321,8 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
   Vertex length = {(right - left), (bottom - top), 0.};
-  Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
-  Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
+  Coord dx = thickness * std::sqrt(length.x * length.x / (length.y * length.y) + 1.0);
+  Coord dy = thickness * std::sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   DrawingKit_var drawing = traversal->drawing();
   drawing->save();

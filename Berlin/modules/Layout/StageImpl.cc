@@ -37,11 +37,11 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Layout;
 
-class StageImpl::Sequence : public vector<StageHandleImpl *>
+class StageImpl::Sequence : public std::vector<StageHandleImpl *>
 {
-  typedef vector<StageHandleImpl *> parent_t;
+  typedef std::vector<StageHandleImpl *> parent_t;
 public:
-  Sequence() : cursor(0) {}
+  Sequence() : _cursor(0) {}
   ~Sequence() {}
   
   void insert(StageHandleImpl *);
@@ -50,50 +50,53 @@ public:
   StageHandleImpl *find(Layout::Stage::Index layer) { iterator i = lookup(layer); return i == end() ? 0 : *i;}
   StageHandleImpl *front() { return size() ? parent_t::front() : 0;}
   StageHandleImpl *back() { return size() ? parent_t::back() : 0;}
-  StageHandleImpl *current() { return cursor < size() ? *(begin() + cursor) : 0;}
+  StageHandleImpl *current() { return _cursor < size() ? *(begin() + _cursor) : 0;}
 private:
   iterator lookup(Layout::Stage::Index layer);
-  size_t cursor;
+  size_t _cursor;
 };
  
-class StageImpl::Finder
+namespace
+{
+class Finder
 {
 public:
   virtual ~Finder() {}
   virtual void found(StageHandleImpl *) = 0;
 };
 
-class StageImpl::Quad : public QTNode<Coord, StageHandleImpl *>
+class Quad : public QTNode<Coord, StageHandleImpl *>
 {
   typedef QTNode<Coord, StageHandleImpl *> parent_t;
 public:
   Quad(const Geometry::Rectangle<Coord> &);
-  Quad(const Geometry::Rectangle<Coord> &, StageImpl::Quad *);
-  Quad *node(int i) { return static_cast<StageImpl::Quad *>(parent_t::node(static_cast<index>(i)));}
-  void within(const Geometry::Rectangle<Coord> &, StageImpl::Finder &);
-  void contains(const Geometry::Point<Coord> &, StageImpl::Finder &);
-  void intersects(const Geometry::Rectangle<Coord> &, StageImpl::Finder &);
-  void intersects(const Geometry::Rectangle<Coord> &, const Geometry::Polygon<Coord> &, StageImpl::Finder &);
+  Quad(const Geometry::Rectangle<Coord> &, Quad *);
+  Quad *node(int i) { return static_cast<Quad *>(parent_t::node(static_cast<index>(i)));}
+  void within(const Geometry::Rectangle<Coord> &, Finder &);
+  void contains(const Geometry::Point<Coord> &, Finder &);
+  void intersects(const Geometry::Rectangle<Coord> &, Finder &);
+  void intersects(const Geometry::Rectangle<Coord> &, const Geometry::Polygon<Coord> &, Finder &);
+};
 };
 
 class StageImpl::QuadTree : public ::QuadTree<Coord, StageHandleImpl *>
 {
   typedef ::QuadTree<Coord, StageHandleImpl *> parent_t;
 public:
-  QuadTree() : transaction(0), operations(0) {}
-  StageImpl::Quad *node() { return static_cast<StageImpl::Quad *>(parent_t::node());}
+  QuadTree() : _transaction(0), _operations(0) {}
+  Quad *node() { return static_cast<Quad *>(parent_t::node());}
 
-  void begin(){ transaction++;}
+  void begin(){ _transaction++;}
   void insert(StageHandleImpl *);
   void remove(StageHandleImpl *);
   void end();
   StageHandleImpl *contains(const Geometry::Point<Coord> &);
-  void within(const Geometry::Rectangle<Coord> &r, StageImpl::Finder &f) { if (node()) node()->within(r, f);}
-  void intersects(const Geometry::Rectangle<Coord> &r, StageImpl::Finder &f) { if (node()) node()->intersects(r, f);}
-  void intersects(const Geometry::Polygon<Coord> &, StageImpl::Finder &);
+  void within(const Geometry::Rectangle<Coord> &r, Finder &f) { if (node()) node()->within(r, f);}
+  void intersects(const Geometry::Rectangle<Coord> &r, Finder &f) { if (node()) node()->intersects(r, f);}
+  void intersects(const Geometry::Polygon<Coord> &, Finder &);
 private:
-  unsigned transaction;
-  unsigned operations;
+  unsigned int _transaction;
+  unsigned int _operations;
 };
 
 StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index layer)
@@ -101,7 +104,7 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index l
   Trace trace("StageImpl::Sequence::lookup");
   if (layer == front()->_layer) return begin();
   if (layer == back()->_layer) return end() - 1;
-  if (layer == current()->_layer) return begin() + cursor;
+  if (layer == current()->_layer) return begin() + _cursor;
   /*
    * start searching from the closest item
    */
@@ -110,14 +113,14 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index l
   Layout::Stage::Index cdist = Math::abs(current()->_layer - layer);
   if (fdist < bdist)
     {
-      if (fdist < cdist) cursor = 0;
+      if (fdist < cdist) _cursor = 0;
     }
   else
     {
-      if (bdist < cdist) cursor = size() - 1;
+      if (bdist < cdist) _cursor = size() - 1;
     }
-  cursor += layer - current()->_layer;
-  return begin() + cursor;
+  _cursor += layer - current()->_layer;
+  return begin() + _cursor;
 }
 
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
@@ -137,22 +140,19 @@ void StageImpl::Sequence::remove(StageHandleImpl *handle)
   Trace trace("StageImpl::Sequence::remove");
   Layout::Stage::Index layer = handle->_layer;
   iterator old = lookup(layer);
-  if (old == begin() + cursor)
-    if (current()->_layer <= (front()->_layer / 2)) cursor++;
-    else cursor--;
+  if (old == begin() + _cursor)
+    if (current()->_layer <= (front()->_layer / 2)) _cursor++;
+    else _cursor--;
   for (iterator i = old++; i != end(); i++) (*i)->_layer = layer++;
   parent_t::erase(--old);
 }
 
-StageImpl::Quad::Quad(const Rectangle<Coord> &region) : parent_t(region)
-{
-//   SectionLog section("StageQuad::StageQuad(rectangle)");
-}
+Quad::Quad(const Rectangle<Coord> &region) : parent_t(region) {}
 
 /*
  * one child node is given; the other three are added inside
  */
-StageImpl::Quad::Quad(const Rectangle<Coord> &r, StageImpl::Quad *node)
+Quad::Quad(const Rectangle<Coord> &r, Quad *node)
  : parent_t(r)
 {
 //   SectionLog section("StageQuad::StageQuad(rectangle, StageQuad *)");
@@ -178,19 +178,19 @@ StageImpl::Quad::Quad(const Rectangle<Coord> &r, StageImpl::Quad *node)
 
   quadrants[lefttop] =
     idx == lefttop ? node :
-    new StageImpl::Quad(Rectangle<Coord>(region.l, region.t, region.cx(), region.cy()));
+    new Quad(Rectangle<Coord>(region.l, region.t, region.cx(), region.cy()));
   quadrants[righttop] =
     idx == righttop ? node :
-    new StageImpl::Quad(Rectangle<Coord>(region.cx(), region.t, region.r, region.cy()));
+    new Quad(Rectangle<Coord>(region.cx(), region.t, region.r, region.cy()));
   quadrants[leftbottom] =
     idx == leftbottom ? node :
-    new StageImpl::Quad(Rectangle<Coord>(region.l, region.cy(), region.cx(), region.b));
+    new Quad(Rectangle<Coord>(region.l, region.cy(), region.cx(), region.b));
   quadrants[rightbottom] =
     idx == rightbottom ? node :
-    new StageImpl::Quad(Rectangle<Coord>(region.cx(), region.cy(), region.r, region.b));
+    new Quad(Rectangle<Coord>(region.cx(), region.cy(), region.r, region.b));
 }
 
-void StageImpl::Quad::within(const Rectangle<Coord> &r, StageImpl::Finder &finder)
+void Quad::within(const Rectangle<Coord> &r, Finder &finder)
 {
   index idx = where(region);
   if (idx == fence)
@@ -225,7 +225,7 @@ void StageImpl::Quad::within(const Rectangle<Coord> &r, StageImpl::Finder &finde
   else node(idx)->within(r, finder);
 }
 
-void StageImpl::Quad::contains(const Point<Coord> &point, StageImpl::Finder &finder)
+void Quad::contains(const Point<Coord> &point, Finder &finder)
 {
   for (list::iterator i = items.begin(); i != items.end(); i++)
     if ((*i)->bbox().contains(point))
@@ -240,9 +240,8 @@ void StageImpl::Quad::contains(const Point<Coord> &point, StageImpl::Finder &fin
   if (!leaf()) node(where(point))->contains(point, finder);
 }
 
-void StageImpl::Quad::intersects(const Rectangle<Coord> &r, StageImpl::Finder &finder)
+void Quad::intersects(const Rectangle<Coord> &r, Finder &finder)
 {
-//   cout << "StageImpl::Quad::intersects " << r << endl;
   for (list::iterator i = items.begin(); i != items.end(); i++)
     {
       if ((*i)->bbox().intersects(r))
@@ -254,7 +253,6 @@ void StageImpl::Quad::intersects(const Rectangle<Coord> &r, StageImpl::Finder &f
 	  */
 	  finder.found(*i);
 	}
-//       else cout << "don't intersect for " << (*i)->bbox() << endl;
     }
   index idx = where(r);
   if (idx == fence)
@@ -287,7 +285,7 @@ void StageImpl::Quad::intersects(const Rectangle<Coord> &r, StageImpl::Finder &f
   else node(idx)->intersects(r, finder);
 }
 
-void StageImpl::Quad::intersects(const Rectangle<Coord> &r, const Polygon<Coord> &polygon, StageImpl::Finder &finder)
+void Quad::intersects(const Rectangle<Coord> &r, const Polygon<Coord> &polygon, Finder &finder)
 {
   for (list::iterator i = items.begin(); i != items.end(); i++)
     if (polygon.intersects((*i)->bbox()))
@@ -336,7 +334,7 @@ void StageImpl::Quad::intersects(const Rectangle<Coord> &r, const Polygon<Coord>
 void StageImpl::QuadTree::insert(StageHandleImpl *handle)
 {
   const Rectangle<Coord> &bbox = handle->bbox();
-  if (!node()) quad = new StageImpl::Quad(bbox);
+  if (!node()) quad = new Quad(bbox);
   /*
    * FIXME: currently, this code inserts new nodes as long as the outermost
    *        doesn't completely contain the handle's boundingbox. What if the
@@ -345,7 +343,7 @@ void StageImpl::QuadTree::insert(StageHandleImpl *handle)
    *        system, so may be a limiting depth of the tree would be a solution.
    *                -stefan
    */
-  else while (!bbox.within(node()->extension())) quad = new StageImpl::Quad(bbox, node());
+  else while (!bbox.within(node()->extension())) quad = new Quad(bbox, node());
   node()->insert(handle);
 }
 
@@ -356,14 +354,14 @@ void StageImpl::QuadTree::remove(StageHandleImpl *handle)
 
 void StageImpl::QuadTree::end()
 {
-  transaction--;
-  if (transaction == 0)
+  _transaction--;
+  if (_transaction == 0)
     {
       /*
        * ??? every 32 operations adjust the StageQuad tree -denis
        */
-      operations++;
-      if (operations & 0x1f == 0)
+      _operations++;
+      if (_operations & 0x1f == 0)
 	{
 	  /*
 	   * ??? desire min of 8, max of 32, smallest span of 16 -denis
@@ -373,7 +371,7 @@ void StageImpl::QuadTree::end()
     }
 }
 
-class StageQuadTreeContains : public StageImpl::Finder
+class StageQuadTreeContains : public Finder
 {
 public:
   StageQuadTreeContains(Traversal::order o) : handle(0), order(o) {}
@@ -398,7 +396,7 @@ StageHandleImpl *StageImpl::QuadTree::contains(const Point<Coord> &point)
   return handle;
 }
 
-void StageImpl::QuadTree::intersects(const Polygon<Coord> &polygon, StageImpl::Finder &finder)
+void StageImpl::QuadTree::intersects(const Polygon<Coord> &polygon, Finder &finder)
 {
   if (node())
     {
@@ -408,22 +406,24 @@ void StageImpl::QuadTree::intersects(const Polygon<Coord> &polygon, StageImpl::F
     }
 }
 
-class StageTraversal : public StageImpl::Finder
+class StageTraversal : public Finder
 {
 public:
   StageTraversal(Traversal_ptr t);
   virtual ~StageTraversal();
-  virtual void found(StageHandleImpl *h) { buffer.push_back(h);}
+  virtual void found(StageHandleImpl *h) { _buffer.push_back(h);}
   void execute();
 private:
   void traverse(StageHandleImpl *);
-  Traversal_ptr traversal;
-  vector<StageHandleImpl *> buffer;
+  Traversal_ptr                  _traversal;
+  std::vector<StageHandleImpl *> _buffer;
 };
 
-StageTraversal::StageTraversal(Traversal_ptr t) : traversal(t) {}
+StageTraversal::StageTraversal(Traversal_ptr t) : _traversal(t) {}
 StageTraversal::~StageTraversal() {}
 
+namespace std
+{
 template <>
 struct greater<StageHandleImpl *> : public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
 { bool operator() (StageHandleImpl *a, StageHandleImpl *b) const { return a->_layer > b->_layer;}};
@@ -431,17 +431,17 @@ struct greater<StageHandleImpl *> : public binary_function<StageHandleImpl *, St
 template <>
 struct less<StageHandleImpl *> : public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
 { bool operator() (StageHandleImpl *a, StageHandleImpl *b) const { return a->_layer < b->_layer;}};
+};
 
 void StageTraversal::execute()
 {
-//   Profiler prf("StageTraversal::execute");
-  if (traversal->direction() == Traversal::down)
-    sort(buffer.begin(), buffer.end(), less<StageHandleImpl *>());
+  if (_traversal->direction() == Traversal::down)
+    sort(_buffer.begin(), _buffer.end(), std::less<StageHandleImpl *>());
   else
-    sort(buffer.begin(), buffer.end(), greater<StageHandleImpl *>());
-  for (vector<StageHandleImpl *>::iterator i = buffer.begin(); i != buffer.end() && traversal->ok(); i++)
+    sort(_buffer.begin(), _buffer.end(), std::greater<StageHandleImpl *>());
+  for (std::vector<StageHandleImpl *>::iterator i = _buffer.begin(); i != _buffer.end() && _traversal->ok(); ++i)
     {
-      if (!traversal->ok()) break;
+      if (!_traversal->ok()) break;
       traverse(*i);
     }
 }
@@ -457,7 +457,7 @@ void StageTraversal::traverse(StageHandleImpl *handle)
   Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
   transformation->load_identity();
   transformation->translate(origin);
-  try { traversal->traverse_child (handle->_child, handle->_tag, Region_var(region->_this()), Transform_var(transformation->_this()));}
+  try { _traversal->traverse_child(handle->_child, handle->_tag, Region_var(region->_this()), Transform_var(transformation->_this()));}
   catch (const CORBA::OBJECT_NOT_EXIST &) { handle->_child = Warsaw::Graphic::_nil();}
   catch (const CORBA::COMM_FAILURE &) { handle->_child = Warsaw::Graphic::_nil();}
 }
@@ -526,7 +526,6 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
       a.allocation->copy(Region_var(region->_this()));
       a.transformation->premultiply(Transform_var(transform->_this()));
     }
-//   else cerr << "StageImpl::allocate : child not found ! (tag is " << tag << ')' << endl;
 }
 
 void StageImpl::need_redraw()

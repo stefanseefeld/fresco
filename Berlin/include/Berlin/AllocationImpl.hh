@@ -41,7 +41,7 @@ class AllocationImpl : public virtual POA_Warsaw::Allocation,
     TransformImpl     *transformation;
     Warsaw::Screen_var root;
   };
-  typedef vector<State> list_t;
+  typedef std::vector<State> list_t;
   friend class Provider<AllocationImpl>;
 public:
   AllocationImpl();

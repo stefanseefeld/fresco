@@ -43,15 +43,15 @@
 #include <fstream>
 
 #ifdef RC_PREFIX
-const string prefix = RC_PREFIX;
+const std::string prefix = RC_PREFIX;
 #else
-const string prefix = "";
+const std::string prefix = "";
 #endif
 
 #ifdef VERSION
-const string version = VERSION;
+const std::string version = VERSION;
 #else
-const string version = "unknown";
+const std::string version = "unknown";
 #endif
 
 #ifdef JPROF
@@ -76,12 +76,12 @@ struct Dump : Signal::Notifier
 	case Signal::abort:
 	case Signal::segv:
           {
-            string output = "server.log";
-            ofstream ofs(output.c_str());
+            std::string output = "server.log";
+            std::ofstream ofs(output.c_str());
 	    Logger::dump(ofs);
 	    Tracer::dump(ofs);
-	    cerr << "Something went wrong. '" << output << "' contains a debugging log.\n"
-                 << "Please mail this output to bugs@berlin-consortium.org\n\n";
+	    std::cerr << "Something went wrong. '" << output << "' contains a debugging log.\n"
+		      << "Please mail this output to bugs@berlin-consortium.org\n\n";
             exit(-1);
           }
 	}
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 
   const char *rcfile = getenv("BERLINRC");
   if (rcfile) RCManager::read(Prague::Path::expand_user(rcfile));
-  else RCManager::read(string(User().home()) + "/.berlin");
+  else RCManager::read(std::string(User().home()) + "/.berlin");
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
-  string value;
+  std::string value;
   getopt.get("version", &value);
   if (value == "true") { cout << "version is " << version << endl; return 0;}
   value = "";
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
-  Logger::log(Logger::corba) << "root POA is activated" << endl;
+  Logger::log(Logger::corba) << "root POA is activated" << std::endl;
 
   /*
    * ...and finally construct the server.
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
     server->scan(*i);
 
-  Logger::log(Logger::loader) << "modules are loaded" << endl;
+  Logger::log(Logger::loader) << "modules are loaded" << std::endl;
 
   Console::open(argc, argv, poa);
 
@@ -179,12 +179,12 @@ int main(int argc, char **argv)
   DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:Warsaw/DrawingKit:1.0", props, poa);
   if (CORBA::is_nil(drawing))
     {
-      cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0" << " with attribute "
-	   << props[0].name << '=' << props[0].value << endl;
+      std::cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0" << " with attribute "
+		<< props[0].name << '=' << props[0].value << std::endl;
       return -1;
     }
 
-  Logger::log(Logger::drawing) << "drawing system is built" << endl;
+  Logger::log(Logger::drawing) << "drawing system is built" << std::endl;
 
   // make a Screen graphic to hold this server's scene graph
   ScreenImpl *screen = new ScreenImpl();
@@ -199,34 +199,34 @@ int main(int argc, char **argv)
   screen->body(Desktop_var(desktop->_this()));
   screen->append_controller(Desktop_var(desktop->_this()));
 
-  Logger::log(Logger::layout) << "desktop is created" << endl;
+  Logger::log(Logger::layout) << "desktop is created" << std::endl;
 
   // initialize the client listener
   server->set_singleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
   server->set_singleton("IDL:Warsaw/DrawingKit:1.0", drawing);
   server->start();
 
-  Logger::log(Logger::layout) << "started server" << endl;
+  Logger::log(Logger::layout) << "started server" << std::endl;
   bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
 
-  Logger::log(Logger::corba) << "listening for clients" << endl;
+  Logger::log(Logger::corba) << "listening for clients" << std::endl;
   // initialize the event distributor and draw thread
-  Logger::log(Logger::corba) << "event manager is constructed" << endl;
+  Logger::log(Logger::corba) << "event manager is constructed" << std::endl;
   try
     {
       smanager->run();
     }
   catch (CORBA::SystemException &se)
     {
-      cout << "system exception " << endl;//se.NP_RepositoryId() << endl;
+      std::cout << "system exception " << std::endl;
     }
   catch(omniORB::fatalException &fe)
     {
-      cerr << "fatal exception at " << fe.file() << " " << fe.line() << ":" << fe.errmsg() << endl;
+      std::cerr << "fatal exception at " << fe.file() << " " << fe.line() << ":" << fe.errmsg() << std::endl;
     }
   catch (...)
     {
-      cout << "unknown exception caught" << endl;
+      std::cout << "unknown exception caught" << std::endl;
     };
   orb->destroy();
   return 0;

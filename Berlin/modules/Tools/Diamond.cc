@@ -119,20 +119,20 @@ void BeveledDiamond::draw(DrawTraversal_ptr traversal)
   switch (_style)
     {
     case inset:
-      Beveler::diamond(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, _fill);
       break;
     case outset:
-      Beveler::diamond(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, _fill);
       break;
     case convex:
       Beveler::diamond(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
       l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-      Beveler::diamond(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, _fill);
       break;
     case concav:
       Beveler::diamond(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
       l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-      Beveler::diamond(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, _fill);
       break;
     }
   drawing->restore();

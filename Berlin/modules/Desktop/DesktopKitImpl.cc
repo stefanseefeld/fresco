@@ -256,13 +256,15 @@ Command_ptr DesktopKitImpl::relayer(Warsaw::Window_ptr window)
 
 Command_ptr DesktopKitImpl::map(Warsaw::Window_ptr window, CORBA::Boolean flag)
 {
-  Manipulator *manipulator = flag ? new Mapper(window) : new Unmapper(window);
+  Manipulator *manipulator;
+  if (flag) manipulator = new Mapper(window);
+  else manipulator = new Unmapper(window);
   activate(manipulator);
   return manipulator->_this();
 }
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "DesktopKitImpl"};
+  static std::string properties[] = {"implementation", "DesktopKitImpl"};
   return new KitFactoryImpl<DesktopKitImpl> ("IDL:Warsaw/DesktopKit:1.0", properties, 1);
 }

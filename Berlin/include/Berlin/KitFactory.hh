@@ -34,33 +34,33 @@ class KitFactory
 {
   friend class KitImpl;
 public:
-  KitFactory(const string &, const string *, unsigned short);
-  virtual ~KitFactory() { delete props;}
-  const string &type() const { return id;}
-  Warsaw::Kit::PropertySeq *properties() const { return new Warsaw::Kit::PropertySeq(*props);}  
-  virtual KitImpl *create(const Warsaw::Kit::PropertySeq &p, PortableServer::POA_ptr) = 0;
-  virtual bool supports(const Warsaw::Kit::PropertySeq &p) { return supports(*props, p);}
+  KitFactory(const std::string &, const std::string *, unsigned short);
+  virtual ~KitFactory() { delete _props;}
+  const std::string &type() const { return _id;}
+  Warsaw::Kit::PropertySeq *properties() const { return new Warsaw::Kit::PropertySeq(*_props);}  
+  virtual KitImpl *create(const Warsaw::Kit::PropertySeq &, PortableServer::POA_ptr) = 0;
+  virtual bool supports(const Warsaw::Kit::PropertySeq &p) { return supports(*_props, p);}
   static bool supports(const Warsaw::Kit::PropertySeq &, const Warsaw::Kit::PropertySeq &);
 protected:
-  void increment() { counter++;}
-  void decrement() { counter--;}
+  void increment() { _counter++;}
+  void decrement() { _counter--;}
   static void activate(KitImpl *, PortableServer::POA_ptr);
-  Warsaw::Kit::PropertySeq *props;
+  Warsaw::Kit::PropertySeq *_props;
 private:
-  const string      id;
-  unsigned short    counter;
+  const std::string _id;
+  unsigned short    _counter;
 };
 
 template <class T>
 class KitFactoryImpl : public KitFactory
 {
  public:
-  KitFactoryImpl(const string &type, const string *properties, unsigned short size)
+  KitFactoryImpl(const std::string &type, const std::string *properties, unsigned short size)
     : KitFactory(type, properties, size) {}
   virtual KitImpl *create(const Warsaw::Kit::PropertySeq &, PortableServer::POA_ptr poa)
   {
     Prague::Trace trace("KitFactoryImpl::create");
-    T *t = new T(this, *props);
+    T *t = new T(this, *_props);
     KitFactory::activate(t, poa);
     return t;
   }

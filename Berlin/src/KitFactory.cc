@@ -24,15 +24,15 @@
 
 using namespace Warsaw;
 
-KitFactory::KitFactory(const string &t, const string *p, unsigned short s)
-  : props(0), id(t), counter(0)
+KitFactory::KitFactory(const std::string &t, const std::string *p, unsigned short s)
+  : _props(0), _id(t), _counter(0)
 {
-  props = new Kit::PropertySeq();
-  props->length(s);
+  _props = new Kit::PropertySeq();
+  _props->length(s);
   for (size_t i = 0; i != s; i++)
     {
-      (*props)[i].name = CORBA::string_dup((p++)->c_str());
-      (*props)[i].value = CORBA::string_dup((p++)->c_str());
+      (*_props)[i].name = CORBA::string_dup((p++)->c_str());
+      (*_props)[i].value = CORBA::string_dup((p++)->c_str());
     }
 }
 

@@ -42,7 +42,6 @@ PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &traversal)
   : TraversalImpl(traversal),
     _controllers(traversal._controllers),
     _positions(traversal._positions),
-    _pointer(traversal._pointer),
     _focus(traversal._focus),
     _cursor(traversal._positions.back() - 1)
 {
@@ -57,7 +56,6 @@ PickTraversalImpl &PickTraversalImpl::operator = (const PickTraversalImpl &trave
   TraversalImpl::operator = (traversal);
   _controllers = traversal._controllers;
   _positions = traversal._positions;
-  _pointer = traversal._pointer;
   _focus = traversal._focus;
   // the current graphic after a pick isn't the top most graphic in the trail
   // but the top most controller, as it's the controller which will receive the event...
@@ -107,24 +105,6 @@ void PickTraversalImpl::visit(Warsaw::Graphic_ptr g) { g->pick(__this);}
 Warsaw::Traversal::order PickTraversalImpl::direction() { return Warsaw::Traversal::down;}
 CORBA::Boolean PickTraversalImpl::ok() { return !picked();}
 
-CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
-{
-  const Transform::Matrix &matrix = get_transformation(_cursor)->matrix();
-//   Transform::Matrix matrix;
-//   Transform_var transform = current_transformation();
-//   transform->store_matrix(matrix);
-  Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-  if (d == 0.) return false;
-  Coord x = _pointer.x - matrix[0][3];
-  Coord y = _pointer.y - matrix[1][3];
-  Vertex local;
-  local.x = (matrix[1][1] * x - matrix[0][1] * y)/d;
-  local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
-  Vertex lower, upper;
-  region->bounds(lower, upper);
-  return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
-}
-
 CORBA::Boolean PickTraversalImpl::intersects_allocation()
 {
   Region_var region = current_allocation();
@@ -156,25 +136,4 @@ CORBA::Boolean PickTraversalImpl::backward()
 {
   if (_cursor > _positions.back()) { --_cursor; return true;}
   return false;
-}
-
-void PickTraversalImpl::debug()
-{
-  cout << "PickTraversal::debug : stack size = " << size() << '\n';
-  cout << "Controllers at ";
-  for (size_t i = 0; i != _positions.size(); i++) cout << _positions[i] << ' ';
-  cout << endl;
-  Region_var r = current_allocation();
-  Transform_var t = current_transformation();
-  RegionImpl region(r, t);
-  cout << "current allocation is " << region << endl;
-  cout << "pointer is " << _pointer << endl;
-  Vertex local = _pointer;
-  Transform::Matrix matrix;
-  t->store_matrix(matrix);
-  cout << "current trafo \n" << matrix;
-  t->inverse_transform_vertex(local);
-  region.copy(r);
-  cout << "local CS: current allocation is " << region << endl;
-  cout << "local CS: pointer is " << local << endl;      
 }

@@ -88,7 +88,7 @@ void TelltaleConstraintImpl::add(Telltale_ptr t)
 void TelltaleConstraintImpl::remove(Telltale_ptr t)
 {
   Prague::Guard<Mutex> guard(_mutex);
-  for (vector<Telltale_var>::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+  for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
     if ((*i) == t)
       {
 	_telltales.erase(i);
@@ -104,7 +104,7 @@ void ExclusiveChoice::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA:
 {
   Prague::Guard<Mutex> guard(_mutex);
   if (b)
-    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
       if ((*i)->test(m)) (*i)->modify(m, false);
   t->modify(m, b);
 }
@@ -119,7 +119,7 @@ void SelectionRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORB
   Prague::Guard<Mutex> guard(_mutex);
   size_t selected = 0;
   if (!b)
-    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
       if ((*i)->test(m)) selected++;
   if (b || selected > 1) t->modify(m, b);
 }
@@ -133,14 +133,14 @@ void ExclusiveRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORB
   Prague::Guard<Mutex> guard(_mutex);
   if (b)
     {
-      for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+      for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
 	if ((*i)->test(m)) (*i)->modify(m, false);
       t->modify(m, true);
     }
   else
     {
       size_t selected = 0;
-      for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+      for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
 	if ((*i)->test(m)) selected++;
       if (selected > 1) t->modify(m, false);
     }

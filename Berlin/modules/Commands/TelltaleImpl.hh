@@ -54,7 +54,7 @@ class TelltaleConstraintImpl : public virtual POA_Warsaw::TelltaleConstraint,
 			       public virtual PortableServer::RefCountServantBase,
 			       public virtual RefCountBaseImpl
 {
-  typedef vector<Warsaw::Telltale_var> tlist_t;
+  typedef std::vector<Warsaw::Telltale_var> tlist_t;
  public:
   TelltaleConstraintImpl() {}
   virtual ~TelltaleConstraintImpl() {}

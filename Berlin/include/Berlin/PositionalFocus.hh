@@ -36,7 +36,7 @@ class ScreenImpl;
 
 class PositionalFocus : public FocusImpl
 {
-  typedef vector<Warsaw::Controller_var> cstack_t;
+  typedef std::vector<Warsaw::Controller_var> cstack_t;
   class Traversal;
 public:
   PositionalFocus(Warsaw::Input::Device, Warsaw::Graphic_ptr, Warsaw::Region_ptr);

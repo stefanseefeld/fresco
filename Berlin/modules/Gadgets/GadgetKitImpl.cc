@@ -262,6 +262,6 @@ Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "GadgetKitImpl"};
+  static std::string properties[] = {"implementation", "GadgetKitImpl"};
   return new KitFactoryImpl<GadgetKitImpl>("IDL:Warsaw/GadgetKit:1.0", properties, 1);
 } 

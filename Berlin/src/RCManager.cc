@@ -24,28 +24,28 @@
 
 using namespace Prague;
 
-map<string, Path> RCManager::_paths;
+std::map<std::string, Path> RCManager::_paths;
 
-void RCManager::read(const string &file)
+void RCManager::read(const std::string &file)
 {
-  ifstream ifs(file.c_str());
+  std::ifstream ifs(file.c_str());
   while (ifs)
     {
-      string name;
+      std::string name;
       ifs >> name;
       ifs.ignore(1024, '=');
-      string path;
+      std::string path;
       ifs >> path;
-      _paths.insert(make_pair(name, path));
+      _paths.insert(std::make_pair(name, path));
     }
 }
 
-Path RCManager::get_path(const string &name)
+Path RCManager::get_path(const std::string &name)
 {
   return _paths[name];
 }
 
-void RCManager::add_to_path(const string &name, const string &value)
+void RCManager::add_to_path(const std::string &name, const std::string &value)
 {
   Path &path = _paths[name];
   path.append(value);

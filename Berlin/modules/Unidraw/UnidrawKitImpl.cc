@@ -74,6 +74,6 @@ Warsaw::WidgetKit_ptr UnidrawKitImpl::widgets() { return RefCount_var<Warsaw::Wi
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "UnidrawKitImpl"};
+  static std::string properties[] = {"implementation", "UnidrawKitImpl"};
   return new KitFactoryImpl<UnidrawKitImpl>("IDL:Unidraw/UnidrawKit:1.0", properties, 1);
 } 

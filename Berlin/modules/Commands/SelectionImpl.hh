@@ -28,13 +28,21 @@
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/RefCountVar.hh>
 #include <vector>
+#include <algorithm>
+#include <functional>
 
 class SelectionImpl : public virtual POA_Warsaw::Selection,
 	              public SubjectImpl
 {
   class Observer;
   friend class Observer;
-  typedef vector<Observer *> list_t;
+  typedef std::vector<Observer *> list_t;
+  struct Id_eq : public std::unary_function<Observer *, bool>
+  {
+    Id_eq(Warsaw::Tag t) : id(t) {}
+    bool operator()(const Observer *) const;
+    Warsaw::Tag id;
+  };
  public:
   SelectionImpl(Warsaw::Selection::Policy, Warsaw::TelltaleConstraint_ptr);
   virtual ~SelectionImpl();
@@ -45,9 +53,9 @@ class SelectionImpl : public virtual POA_Warsaw::Selection,
   virtual Warsaw::Selection::Items *toggled();
  private:
   void update(Warsaw::Tag, bool);
-  void removeObserver(Warsaw::Tag);
+  void remove_observer(Warsaw::Tag);
   Warsaw::Tag uniqueId();
-  CORBA::Long idToIndex(Warsaw::Tag);
+  CORBA::Long id_to_index(Warsaw::Tag);
   Prague::Mutex mutex;
   Warsaw::Selection::Policy policy;
   RefCount_var<Warsaw::TelltaleConstraint> constraint;

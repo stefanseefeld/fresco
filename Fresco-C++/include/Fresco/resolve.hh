@@ -36,12 +36,12 @@ typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *name)
     }
   catch (const CORBA::ORB::InvalidName &e)
     {
-      cerr << "Invalid Name : " << name << endl;
+      std::cerr << "Invalid Name : " << name << std::endl;
       throw;
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot get initial reference for " << name << ": " << e << endl;
+      std::cerr << "Cannot get initial reference for " << name << ": " << e << std::endl;
       throw 0;
     }
   assert(!CORBA::is_nil(object));
@@ -53,12 +53,12 @@ typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *name)
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot downcast reference for " << name << ": " << e << endl;
+      std::cerr << "Cannot downcast reference for " << name << ": " << e << std::endl;
       throw 0;
     }
   if (CORBA::is_nil(reference))
     {
-      cerr << "Incorrect type of reference for " << name << endl;
+      std::cerr << "Incorrect type of reference for " << name << std::endl;
       throw 0;
     }
   return reference._retn();
@@ -78,12 +78,12 @@ typename T::_ptr_type resolve_name(CosNaming::NamingContext_ptr context, const C
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot resolve binding: " << e << endl;
+      std::cerr << "Cannot resolve binding: " << e << std::endl;
       throw 0;
     }
   if (CORBA::is_nil(object))
     {
-      cerr << "Nil binding in Naming service" << endl;
+      std::cerr << "Nil binding in Naming service" << std::endl;
       throw 0;
     }
 
@@ -94,12 +94,12 @@ typename T::_ptr_type resolve_name(CosNaming::NamingContext_ptr context, const C
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot narrow reference: " << e << endl;
+      std::cerr << "Cannot narrow reference: " << e << std::endl;
       throw 0;
     }
   if (CORBA::is_nil(reference))
     {
-      cerr << "Reference has incorrect type" << endl;
+      std::cerr << "Reference has incorrect type" << std::endl;
       throw 0;
     }
   return reference._retn();
@@ -135,7 +135,7 @@ typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context, const char 
     }
   catch(const CORBA::Exception &e)
     {
-      cerr << "Cannot resolve reference for " << name << ": " << e << endl;
+      std::cerr << "Cannot resolve reference for " << name << ": " << e << std::endl;
       return T::_nil();
     }
   typename T::_var_type reference;
@@ -145,12 +145,12 @@ typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context, const char 
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot narrow reference: " << e << endl;
+      std::cerr << "Cannot narrow reference: " << e << std::endl;
       throw 0;
     }
   if (CORBA::is_nil(reference))
     {
-      cerr << "Reference has incorrect type" << endl;
+      std::cerr << "Reference has incorrect type" << std::endl;
       throw 0;
     }
   return reference._retn();

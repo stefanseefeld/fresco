@@ -63,13 +63,13 @@ TraversalImpl::TraversalImpl(const TraversalImpl &traversal)
 
 TraversalImpl::~TraversalImpl()
 {
-  clean();
+  clear();
 }
 
 TraversalImpl &TraversalImpl::operator = (const TraversalImpl &traversal)
 {
   Trace trace("TraversalImpl::operator = (const TraversalImpl &)");
-  clean();
+  clear();
   // explicitely copy the stack so we are the owner and can delete it in the destructor
   _stack.resize(traversal._stack.size());
   stack_t::iterator i = _stack.begin();
@@ -150,7 +150,7 @@ void TraversalImpl::update()
     }
 }
 
-void TraversalImpl::clean()
+void TraversalImpl::clear()
 {
   // this assumes we own all items
   for (stack_t::iterator i = _stack.begin(); i != _stack.end(); ++i)

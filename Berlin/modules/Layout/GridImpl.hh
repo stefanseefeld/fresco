@@ -37,21 +37,21 @@ class GridImpl : public virtual POA_Layout::Grid,
     void init(long count, long n)
     {
       children.resize(count);
-      for (vector<vector<Warsaw::Graphic_var> >::iterator i = children.begin(); i != children.end(); i++)
+      for (std::vector<std::vector<Warsaw::Graphic_var> >::iterator i = children.begin(); i != children.end(); ++i)
 	(*i).resize(n);
       requirements.resize(count);
     }
     CORBA::Long size() { return children.size();}
-    vector<vector<Warsaw::Graphic_var> > children;
-    vector<Warsaw::Graphic::Requirement> requirements;
+    std::vector<std::vector<Warsaw::Graphic_var> > children;
+    std::vector<Warsaw::Graphic::Requirement> requirements;
   };
+public:
   struct Span
   {
     Warsaw::Coord lower;
     Warsaw::Coord upper;
     Warsaw::Alignment align;
   };
-public:
   GridImpl(const Layout::Grid::Index &upper);
   ~GridImpl();
 

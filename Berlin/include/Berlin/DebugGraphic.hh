@@ -31,7 +31,7 @@ class DebugGraphic : public MonoGraphic
 {
 public:
   enum Flags {none = 0x0, requests = 0x1, draws = 0x2, picks = 0x4, traversals = 0x7};
-  DebugGraphic(ostream &, const string &, unsigned int f = traversals);
+  DebugGraphic(std::ostream &, const std::string &, unsigned int f = traversals);
   virtual ~DebugGraphic();
 
   virtual void request(Warsaw::Graphic::Requisition &);
@@ -40,10 +40,10 @@ public:
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 private:
-  ostream     &os;
-  string       message;
-  unsigned int flags;
   void         heading(const char *);
+  std::ostream &_os;
+  std::string   _message;
+  unsigned int  _flags;
 };
 
 #endif 

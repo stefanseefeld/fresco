@@ -46,15 +46,52 @@ class PositionalFocus::Traversal : public PickTraversalImpl
 public:
   Traversal(Warsaw::Graphic_ptr g, Warsaw::Region_ptr a, Warsaw::Transform_ptr t, PositionalFocus *f)
     : PickTraversalImpl(g, a, t, f), _memento(0), _picked(false) {}
-  Traversal &operator = (const Traversal &t) { PickTraversalImpl::operator = (t); _picked = false;}
+  Traversal &operator = (const Traversal &t) { PickTraversalImpl::operator = (t); _pointer = t._pointer; _picked = false;}
+  void pointer(const Warsaw::Input::Position &p) { _pointer = p;}
   void memento(Traversal *m) { _memento = m;}
   Traversal *memento() { return picked() ? _memento : 0;}
+  virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr);
   virtual void hit() { *_memento = *this, _picked = true;}
   virtual CORBA::Boolean picked() { return _picked;}
+  void debug();
 private:
-  Traversal *_memento;
-  bool       _picked;
+  Warsaw::Input::Position _pointer;
+  Traversal              *_memento;
+  bool                    _picked;
 };
+
+CORBA::Boolean PositionalFocus::Traversal::intersects_region(Region_ptr region)
+{
+  const Transform::Matrix &matrix = get_transformation(current())->matrix();
+  Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+  if (d == 0.) return false;
+  Coord x = _pointer.x - matrix[0][3];
+  Coord y = _pointer.y - matrix[1][3];
+  Vertex local;
+  local.x = (matrix[1][1] * x - matrix[0][1] * y)/d;
+  local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
+  Vertex lower, upper;
+  region->bounds(lower, upper);
+  return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
+}
+
+void PositionalFocus::Traversal::debug()
+{
+  cout << "PositionalFocus::Traversal::debug : stack size = " << size() << '\n';
+  Region_var r = current_allocation();
+  Transform_var t = current_transformation();
+  RegionImpl region(r, t);
+  cout << "current allocation is " << region << endl;
+  cout << "pointer is " << _pointer << endl;
+  Vertex local = _pointer;
+  Transform::Matrix matrix;
+  t->store_matrix(matrix);
+  cout << "current trafo \n" << matrix;
+  t->inverse_transform_vertex(local);
+  region.copy(r);
+  cout << "local CS: current allocation is " << region << endl;
+  cout << "local CS: pointer is " << local << endl;      
+}
 
 PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g, Region_ptr r)
   : FocusImpl(d), _root(g), _pointer(new Pointer(Console::drawable())), _traversal(0), _grabbed(false)
@@ -132,10 +169,10 @@ void PositionalFocus::damage(Region_ptr region)
   Lease_var<RegionImpl> bbox(Provider<RegionImpl>::provide());
 
   bbox->valid = true;
-  bbox->lower.x = min(l.x, u.x);
-  bbox->lower.y = min(l.y, u.y);
-  bbox->upper.x = max(l.x, u.x);
-  bbox->upper.y = max(l.y, u.y);
+  bbox->lower.x = std::min(l.x, u.x);
+  bbox->lower.y = std::min(l.y, u.y);
+  bbox->upper.x = std::max(l.x, u.x);
+  bbox->upper.y = std::max(l.y, u.y);
   if (bbox->intersects(region)) _traversal->update();
 }
 
@@ -168,10 +205,10 @@ void PositionalFocus::dispatch(Input::Event &event)
    * update the pointer object / image
    */
   _pointer->move(position.x, position.y);
-  _traversal->reset(position);
+  _traversal->pointer(position);
   if (!_grabbed)
     {
-      _traversal->clear();
+      _traversal->reinit();
       _root->traverse(Traversal_var(_traversal->_this()));
       Traversal *picked = _traversal->memento();
       if (!picked)
@@ -183,18 +220,18 @@ void PositionalFocus::dispatch(Input::Event &event)
       /*
        * ...now do the [lose/receive]Focus stuff,...
        */
-      vector<Controller_var>::const_iterator nf = _traversal->controllers().begin();
+      std::vector<Controller_var>::const_iterator nf = _traversal->controllers().begin();
       cstack_t::iterator of = _controllers.begin();
       /*
        * ...skip the unchanged controllers,...
        */
       while (nf != _traversal->controllers().end() &&
 	     of != _controllers.end() &&
-	     (*nf)->is_identical(*of)) nf++, of++;
+	     (*nf)->is_identical(*of)) ++nf, ++of;
       /*
        * ...remove the old controllers in reverse order,...
        */
-      for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
+      for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; ++o)
 	try { (*o)->lose_focus(device());}
 	catch (const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
@@ -203,7 +240,7 @@ void PositionalFocus::dispatch(Input::Event &event)
        * ...add the new controllers,...
        */
       Focus_var __this = _this();
-      for (; nf != picked->controllers().end(); nf++)
+      for (; nf != picked->controllers().end(); ++nf)
 	{
 	  (*nf)->receive_focus (__this);
 	  _controllers.push_back(*nf);

@@ -677,123 +677,40 @@ namespace Babylon {
 	Char() { m_value = Babylon::UC_NULL; }
 	Char(const UCS4 uc)   { m_value = uc; }
 	Char(const Char & uc) { m_value = uc.value(); }
-
+	bool equal(Char UC) const { return m_value == UC.m_value;}
+	bool less(Char UC) const { return m_value < UC.m_value;}
 	// ------------------------------------------------------------
 	// OPERATORS:
 	// ------------------------------------------------------------
-
-	Char & operator = (const Char & uc) {
-	    m_value = uc.m_value;
-	    return *this;
-	} // operator = (Char)
-	
-	Char & operator = (const UCS4 & uc){
-	    m_value = uc;
-	    return *this;
-	} // operator = (UCS4)
-	
-	Char & operator = (const char & c) {
-	    m_value = UCS4(c);
-	    return *this;
-	} // operator = (char)
-	
-	Char & operator = (const int & i) {
-	    m_value = UCS4(i);
-	    return *this;
-	} // operator = (int)
-	
-	Char operator ++ (int) {
-	    Char before(*this); 
-	    m_value++;
-	    return before;
-	} // operator ++ (int)
-	
-	Char operator -- (int) {
-	    Char before(*this);
-	    m_value--;
-	    return before;
-	} // operator -- (int)
-	
-	Char & operator ++ () {
-	    m_value++;
-	    return *this;
-	} // operator ++ ()
-	
-	Char & operator -- () {
-	    m_value--;
-	    return *this;
-	} // operator -- ()
-	
-	Char & operator += (const Char & uc) {
-	    m_value += uc.m_value;
-	    return *this;
-	} // operator +=
-	
-	Char & operator += (const UCS4 & uc) {
-	    m_value += uc;
-	    return *this;
-	} // operator +=
-	
-	Char & operator += (const int & i) {
-	    m_value += UCS4(i);
-	    return *this;
-	} // operator +=
-	
-	Char & operator += (const char & c) {
-	    m_value += UCS4(c);
-	    return *this;
-	} // operator +=
-	
-	Char & operator -= (const Char & uc) {
-	    m_value -= uc.m_value;
-	    return *this;
-	} // operator -=
-	
-	Char & operator -= (const UCS4 & uc) {
-	    m_value -= uc;
-	    return *this;
-	} // operator -=
-	
-	Char & operator -= (const int & i) {
-	    m_value -= UCS4(i);
-	    return *this;
-	} // operator -=
-	
-	Char & operator -= (const char & c) {
-	    m_value -= UCS4(c);
-	    return *this;
-	} // operator -=
-	
-	Char & operator *= (const Char uc) {
-	    m_value *= uc.m_value;
-	    return *this;
-	} // operator *=
-	
-	Char & operator *= (const UCS4 uc) {
-	    m_value *= uc;
-	    return *this;
-	} // operator *=
-	
-	Char & operator *= (const int i) {
-	    m_value *= UCS4(i);
-	    return *this;
-	} // operator *=
-	
-	Char & operator *= (const char c) {
-	    m_value *= UCS4(c);
-	    return *this;
-	} // operator *=
-    
-	// Destructor:
-	// ~Char() // nothing special to do...
-
-	bool equal(const Babylon::Char & UC) const {
-	    return m_value == UC.m_value; 
-	} // equal
-	
-	bool less (const Babylon::Char & UC) const {
-	    return m_value < UC.m_value ;
-	} // less
+        // The relational operators look at the unicode values
+        // ONLY! So semantically identical characters will not be
+        // recognized.
+        bool operator == (Char UC) const { return m_value == UC.m_value;}
+ 	bool operator != (Char UC) const { return m_value != UC.m_value;}
+ 	bool operator < (Char UC) const { return m_value < UC.m_value;}
+ 	bool operator > (Char UC) const { return m_value > UC.m_value;}
+ 	bool operator <= (Char UC) const { return m_value <= UC.m_value;}
+ 	bool operator >= (Char UC) const { return m_value >= UC.m_value;}
+	Char &operator = (Char uc) { m_value = uc.m_value; return *this;}
+	Char &operator = (UCS4 uc) { m_value = uc; return *this;}
+	Char &operator = (char c) { m_value = UCS4(c); return *this;}
+	Char &operator = (int i) { m_value = UCS4(i); return *this;}
+	Char operator ++ (int) { Char before(*this); m_value++; return before;}
+	Char operator -- (int) { Char before(*this); m_value--; return before;}
+	Char &operator ++ () { m_value++; return *this;}
+	Char &operator -- () { m_value--; return *this;}
+	Char &operator += (Char uc) { m_value += uc.m_value; return *this;}
+	Char &operator += (UCS4 uc) { m_value += uc; return *this;}
+	Char &operator += (int i) { m_value += UCS4(i); return *this;}
+	Char &operator += (char c) { m_value += UCS4(c); return *this;}
+	Char &operator -= (Char uc) { m_value -= uc.m_value; return *this;}
+	Char &operator -= (UCS4 uc) { m_value -= uc; return *this;}
+	Char &operator -= (int i) { m_value -= UCS4(i); return *this;}
+	Char &operator -= (char c) { m_value -= UCS4(c); return *this;}
+	Char &operator *= (Char uc) { m_value *= uc.m_value; return *this;}
+	Char &operator *= (UCS4 uc) { m_value *= uc; return *this;}
+	Char &operator *= (int i) { m_value *= UCS4(i); return *this;}
+	Char &operator *= (char c) { m_value *= UCS4(c); return *this;}
 
     private:
 	UCS4 m_value;

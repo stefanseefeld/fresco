@@ -35,17 +35,11 @@ DocDemo::DocDemo(Application *a)
   WidgetKit_var widget = application->widget();
 
   Graphic_var column = layout->vbox();
-  char *berlin_root = getenv("BERLIN_ROOT");
-  if (!berlin_root)
-    {
-      cerr << "Please set environment variabled BERLIN_ROOT first" << endl;
-      exit(-1);
-    }
-  string file = string(berlin_root) + "/README.FIRST";
-  ifstream ifs(file.c_str());
+  std::string file = "/etc/passwd";
+  std::ifstream ifs(file.c_str());
   while (ifs)
     {
-      string buf;
+      std::string buf;
       getline(ifs, buf);
       Graphic_var line;
       if (buf.length())	line = text->chunk(Unicode::to_CORBA(Babylon::String(buf)));

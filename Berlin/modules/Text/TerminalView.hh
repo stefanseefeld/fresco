@@ -33,7 +33,7 @@
 class TerminalView : public virtual ViewImpl,
 		     public Composition
 {
-  typedef vector<Composition *> lines_t;
+  typedef std::vector<Composition *> lines_t;
  public:
   TerminalView(Warsaw::StreamBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *, Compositor *);
   virtual ~TerminalView();
@@ -44,11 +44,11 @@ class TerminalView : public virtual ViewImpl,
   void begin();
   void end();
   Warsaw::StreamBuffer_ptr _stream;
-  Warsaw::TextKit_var _kit;
-  Warsaw::DrawingKit_var _canonicalDK;
-  Compositor *_compositor;
-  lines_t _lines;
-  bool _locked;
+  Warsaw::TextKit_var      _kit;
+  Warsaw::DrawingKit_var   _canonicalDK;
+  Compositor              *_compositor;
+  lines_t                  _lines;
+  bool                     _locked;
 };
 
 #endif

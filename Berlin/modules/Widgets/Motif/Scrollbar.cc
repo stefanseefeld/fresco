@@ -52,7 +52,7 @@ public:
 	if (_parent->_axis == xaxis && delta->x != 0.) _parent->_value->adjust(delta->x);
 	else if (_parent->_axis == yaxis && delta->y != 0.) _parent->_value->adjust(delta->y);
       }
-    else  cerr << "Drag::execute : wrong message type !" << endl;
+    else  std::cerr << "Drag::execute : wrong message type !" << std::endl;
   }
 private:
   Scrollbar *_parent;

@@ -155,7 +155,7 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
   virtual void set_font_attribute(const Warsaw::NVPair &) = 0;
 
 private:
-  stack<DrawState> states;
+  std::stack<DrawState> states;
 };
 
 inline void DrawingKitBase::restore()

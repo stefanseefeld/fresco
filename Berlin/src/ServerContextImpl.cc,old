@@ -35,14 +35,14 @@
 using namespace Prague;
 using namespace Warsaw;
 
-unsigned long ServerContextImpl::counter = 0;
+unsigned long ServerContextImpl::_counter = 0;
 
 // this is the thing which holds all the references to things a client allocates
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
 ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
-    : server(s), cContext(ClientContext::_duplicate(c))
+    : _server(s), _client(ClientContext::_duplicate(c))
 {
   Trace trace("ServerContextImpl::ServerContextImpl");
 //   PortableServer::POA_var root = _default_POA();
@@ -53,30 +53,30 @@ ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
 ServerContextImpl::~ServerContextImpl()
 {
   Trace trace("ServerContextImpl::~ServerContextImpl");
-  for (klist_t::iterator i = kits.begin(); i != kits.end(); ++i)
+  for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
     (*i).second->deactivate();
 }
 
-ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(cContext);}
+ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(_client);}
 
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
-void ServerContextImpl::set_singleton(const char *name, CORBA::Object_ptr singleton) 
+void ServerContextImpl::set_singleton(const char *name, CORBA::Object_ptr singleton)
   throw (SecurityException, SingletonFailureException)
 {
-  server->set_singleton(name, singleton);
+  _server->set_singleton(name, singleton);
 }
 
 void ServerContextImpl::remove_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  server->remove_singleton(name);
+  _server->remove_singleton(name);
 }
 
 CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  return server->get_singleton(name);
+  return _server->get_singleton(name);
 }
 
 // this method should eventually do some kind of checking on the
@@ -89,8 +89,8 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
   /*
    * look for loaded kits first
    */
-  klist_t::iterator k1 = kits.lower_bound(type), k2 = kits.upper_bound(type);
-  for (klist_t::iterator i = k1; i != k2; i++)
+  klist_t::iterator k1 = _kits.lower_bound(type), k2 = _kits.upper_bound(type);
+  for (klist_t::iterator i = k1; i != k2; ++i)
     if ((*i).second->supports(properties))
       {
 	(*i).second->increment();
@@ -100,18 +100,18 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
    * now try the factories
    */
   PortableServer::POA_var root = _default_POA();
-  ostrstream oss;
-  oss << type << '#' << counter++ << ends;
+  std::ostrstream oss;
+  oss << type << '#' << _counter++ << std::ends;
   char *name = oss.str();
   PortableServer::POAManager_var manager = root->the_POAManager();
-  PortableServer::POA_var poa = root->create_POA(name, manager, policies);
+  PortableServer::POA_var poa = root->create_POA(name, manager, _policies);
 //   PortableServer::POA_var poa = PortableServer::POA::_duplicate(root);
   delete [] name;
-  KitImpl *kit = server->create(type, properties, poa);
+  KitImpl *kit = _server->create(type, properties, poa);
   if (!kit) throw CreationFailureException();
   kit->bind(ServerContext_var(_this()));
   kit->increment();
-  kits.insert(klist_t::value_type(type, kit));
+  _kits.insert(klist_t::value_type(type, kit));
   return kit->_this();
 }
 
@@ -121,11 +121,11 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
 bool ServerContextImpl::ping()
 {
   Trace trace("ServerContextImpl::ping");
-  Prague::Guard<Mutex> guard (mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   bool alive = true;
-  if (CORBA::is_nil(cContext)) alive = false;
+  if (CORBA::is_nil(_client)) alive = false;
   else
-    try { cContext->ping();}
+    try { _client->ping();}
     catch (...) { alive = false;}
   return alive;
 }

@@ -36,7 +36,7 @@ void SubjectImpl::attach(Observer_ptr observer)
   _observers.push_back(Warsaw::Observer::_duplicate(observer));
 }
 
-struct Id_eq : public unary_function<Warsaw::Identifiable_ptr, bool>
+struct Id_eq : public std::unary_function<Warsaw::Identifiable_ptr, bool>
 {
   Id_eq(Warsaw::Identifiable_ptr i) : id(i) {}
   bool operator()(const Warsaw::Identifiable_ptr i) const { return id->is_identical(i);}
@@ -69,7 +69,7 @@ void SubjectImpl::notify(const CORBA::Any &change)
   if (!_blocked)
     {
       Prague::Guard<Mutex> guard(_observerMutex);
-      for(vector<Observer_var>::iterator i = _observers.begin(); i != _observers.end(); i++)
+      for(olist_t::iterator i = _observers.begin(); i != _observers.end(); ++i)
 	try { (*i)->update(change);}
         catch (const CORBA::OBJECT_NOT_EXIST &) { *i = Observer::_nil();}
 	catch (const CORBA::COMM_FAILURE &) { *i = Observer::_nil();}

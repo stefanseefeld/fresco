@@ -171,7 +171,7 @@ void InvisibleFrame::draw(DrawTraversal_ptr traversal)
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->drawing();
   DrawingKit::Fillstyle style = drawing->surface_fillstyle();
-  if (style != DrawingKit::outlined && fill) drawing->draw_rectangle(l, u);
+  if (style != DrawingKit::outlined && _fill) drawing->draw_rectangle(l, u);
   else if (_fill)
     {
       drawing->save();

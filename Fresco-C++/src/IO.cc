@@ -27,54 +27,54 @@ using namespace Warsaw;
 
 inline bool equal(Coord a, Coord b, Coord e) { return a - b < e && b - a < e;}
 
-ostream &operator << (ostream &os, const Color &c)
+std::ostream &operator << (std::ostream &os, const Color &c)
 {
   if (c.alpha != 1.) os << '(' << c.red << ',' << c.green << ',' << c.blue << ';' << c.alpha << ')';
   else os << '(' << c.red << ',' << c.green << ',' << c.blue << ')';
   return os;
 }
 
-ostream &operator << (ostream &os, const Graphic::Requirement &r)
+std::ostream &operator << (std::ostream &os, const Graphic::Requirement &r)
 {
   if (!r.defined) os << "undef";
   else
     {
       double tol = 1e-2;
-      os << setiosflags(ios::fixed);
+      os << std::setiosflags(std::ios::fixed);
       if (equal(r.natural, r.minimum, tol))
 	{
 	  if (equal(r.natural, r.maximum, tol))
-	    os << setprecision(2) << r.natural;
+	    os << std::setprecision(2) << r.natural;
 	  else
-	    os << '(' << setprecision(2) << r.natural
-	       << ',' << setprecision(2) << r.maximum << ')';
+	    os << '(' << std::setprecision(2) << r.natural
+	       << ',' << std::setprecision(2) << r.maximum << ')';
 	}
       else if (equal(r.natural, r.maximum, tol))
-	os << '(' << setprecision(2) << r.minimum
-	   << ',' << setprecision(2) << r.natural << ')';
+	os << '(' << std::setprecision(2) << r.minimum
+	   << ',' << std::setprecision(2) << r.natural << ')';
       else
-	os << '(' << setprecision(2) << r.minimum
-	   << ',' << setprecision(2) << r.natural
-	   << ',' << setprecision(2) << r.maximum << ')';
+	os << '(' << std::setprecision(2) << r.minimum
+	   << ',' << std::setprecision(2) << r.natural
+	   << ',' << std::setprecision(2) << r.maximum << ')';
       if (!equal(r.align, 0., tol))
-	os << " @ " << setprecision(1) << r.align;
+	os << " @ " << std::setprecision(1) << r.align;
     }
   return os;
 };
 
-ostream &operator << (ostream &os, const Graphic::Requisition &r)
+std::ostream &operator << (std::ostream &os, const Graphic::Requisition &r)
 {
   return os << r.x << ", " << r.y << ", " << r.z;
 }
 
-ostream &operator << (ostream &os, const Region::Allotment &a)
+std::ostream &operator << (std::ostream &os, const Region::Allotment &a)
 {
-  os << setiosflags(ios::fixed) << setprecision(2) << a.begin << ',' << setprecision(2) << a.end;
-  if (!equal(a.align, 0., 1e-2)) os << " @ " << setprecision(1) << a.align;
+  os << std::setiosflags(std::ios::fixed) << std::setprecision(2) << a.begin << ',' << std::setprecision(2) << a.end;
+  if (!equal(a.align, 0., 1e-2)) os << " @ " << std::setprecision(1) << a.align;
   return os;
 }
 
-ostream &operator << (ostream &os, Region_ptr r)
+std::ostream &operator << (std::ostream &os, Region_ptr r)
 {
   Region::Allotment a;
   os << "X(";
@@ -87,16 +87,16 @@ ostream &operator << (ostream &os, Region_ptr r)
   return os;
 }
 
-ostream &operator << (ostream &os, const Transform::Matrix &m)
+std::ostream &operator << (std::ostream &os, const Transform::Matrix &m)
 {
   os << '[' << m[0][0] << ',' << m[0][1] << ',' << m[0][2] << ',' << m[0][3] << "]\n"
      << '[' << m[1][0] << ',' << m[1][1] << ',' << m[1][2] << ',' << m[1][3] << "]\n"
      << '[' << m[2][0] << ',' << m[2][1] << ',' << m[2][2] << ',' << m[2][3] << "]\n"
-     << '[' << m[3][0] << ',' << m[3][1] << ',' << m[3][2] << ',' << m[3][3] << ']' << endl;
+     << '[' << m[3][0] << ',' << m[3][1] << ',' << m[3][2] << ',' << m[3][3] << "]\n";
   return os;
 };
 
-ostream &operator << (ostream &os, Transform_ptr transform)
+std::ostream &operator << (std::ostream &os, Transform_ptr transform)
 {
   Transform::Matrix matrix;
   transform->store_matrix(matrix);

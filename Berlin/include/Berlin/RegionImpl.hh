@@ -133,6 +133,6 @@ inline void RegionImpl::normalize(Warsaw::Transform_ptr t)
   if (!CORBA::is_nil(t)) t->translate(o);
 }
 
-ostream &operator << (ostream &, const RegionImpl &);
+std::ostream &operator << (std::ostream &, const RegionImpl &);
 
 #endif

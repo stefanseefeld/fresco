@@ -55,7 +55,7 @@ class TraversalImpl : public virtual POA_Warsaw::Traversal,
     Warsaw::Region_ptr       allocation;
     TransformImpl           *transformation;    
   };
-  typedef vector<State> stack_t;
+  typedef std::vector<State> stack_t;
 public:
   TraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr);
   TraversalImpl(const TraversalImpl &);
@@ -83,7 +83,7 @@ protected:
   TransformImpl *get_transformation(size_t i) { return _stack[i].transformation;}
   Warsaw::Graphic_ptr get_graphic(size_t i) { return _stack[i].graphic;}
 private:
-  void clean();
+  void clear();
   stack_t _stack;
 };
 

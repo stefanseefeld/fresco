@@ -28,13 +28,13 @@
 namespace Prague
 {
 
-class logstream : public ostream
+class logstream : public std::ostream
 {
 public:
-  logstream(logbuf *lb) : ios(lb) {}
-  logbuf *rdbuf () { return static_cast<logbuf *> (ios::rdbuf()); }
-  logbuf *operator -> () { return rdbuf(); }
-  void dump(ostream &os) { rdbuf()->dump(os);}
+  logstream(logbuf *lb) : std::ostream(lb) {}
+  logbuf *rdbuf () { return static_cast<logbuf *> (std::ostream::rdbuf());}
+  logbuf *operator -> () { return rdbuf();}
+  void dump(std::ostream &os) { rdbuf()->dump(os);}
 private:
 };
 

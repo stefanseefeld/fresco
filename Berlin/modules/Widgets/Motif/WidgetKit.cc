@@ -325,6 +325,6 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "Motif::WidgetKit", "style", "Motif"};
+  static std::string properties[] = {"implementation", "Motif::WidgetKit", "style", "Motif"};
   return new KitFactoryImpl<Motif::WidgetKit> ("IDL:Warsaw/WidgetKit:1.0", properties, 2);
 }

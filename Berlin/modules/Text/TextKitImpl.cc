@@ -44,10 +44,6 @@
 using namespace Prague;
 using namespace Warsaw;
 
-// Mutex TextKitImpl::_staticMutex;
-// map<Unichar, Graphic_var> TextKitImpl::_charCache;
-// DrawingKit_var TextKitImpl::_canonicalDK;
-
 TextKitImpl::TextKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p),  _strut(0),
     _lineCompositor(new LRCompositor()), 
@@ -102,16 +98,16 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 Graphic_ptr TextKitImpl::glyph(Unichar ch)
 {
   Prague::Guard<Mutex> guard(_mutex);
-  if (_charCache.find(ch) == _charCache.end())
+  if (_cache.find(ch) == _cache.end())
     {
       Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
       _canonicalDK->allocate_char(ch, r);
       TextChunk *chunk = new TextChunk(ch, r);
       activate(chunk);
-      _charCache[ch] = chunk->_this();
+      _cache[ch] = chunk->_this();
     }
-  return Graphic::_duplicate(_charCache[ch]);
+  return Graphic::_duplicate(_cache[ch]);
 }
 
 Graphic_ptr TextKitImpl::strut()
@@ -224,6 +220,6 @@ Graphic_ptr TextKitImpl::font_attribute(Graphic_ptr g, const NVPair &nvp)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
+  static std::string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
   return new KitFactoryImpl<TextKitImpl>("IDL:Warsaw/TextKit:1.0", properties, 2);
 } 

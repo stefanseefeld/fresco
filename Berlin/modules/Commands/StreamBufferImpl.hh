@@ -41,7 +41,7 @@ class StreamBufferImpl : public virtual POA_Warsaw::StreamBuffer,
   virtual void flush();
  private:
   size_t length;
-  vector<CORBA::Octet> buffer;
+  std::vector<CORBA::Octet> buffer;
   Prague::Mutex mutex;
 };
 

@@ -39,7 +39,7 @@ void Terminal::Input::update(const CORBA::Any &)
   /*
    * the sink
    */
-  ostream os(terminal->agent->ibuf());
+  std::ostream os(terminal->agent->ibuf());
   for (char *i = begin; i != end; i++) os.put(*i);
   os.flush();
 }
@@ -48,13 +48,12 @@ void Terminal::Input::update(const CORBA::Any &)
 bool Terminal::Output::notify(Agent::iomask mask)
 {
   Trace trace("Terminal::output::notify");
-//   cout << "Terminal::Output::notify" << endl;
   if (mask != Agent::outready) return false;
   /*
    * the source
    */
-  istream is(terminal->agent->obuf());
-  string line;
+  std::istream is(terminal->agent->obuf());
+  std::string line;
   while (getline(is, line))
     {
       StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);

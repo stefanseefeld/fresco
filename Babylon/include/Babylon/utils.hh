@@ -39,41 +39,7 @@ bool is_graphem_boundary(Babylon::Char, Babylon::Char);
 } // namespace Babylon
 
 // OPERATORS:
-inline ostream & operator << (ostream & out, const Babylon::Char uc) {
-    out << uc.utf8();
-    return out;
-}
-
-inline ostream & operator << (ostream & out, const Babylon::String & us) {
-    out << us.utf8();
-    return out;
-}
-
-// The relational operators look at the unicode values
-// ONLY! So semantically identical characters will not be
-// recognized.
-inline bool operator == (const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return lhs.equal(rhs);
-}
-
-inline bool operator != (const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return ! lhs.equal(rhs);
-}
-
-inline bool operator < (const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return lhs.less(rhs);
-}
-
-inline bool operator >	(const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return !rhs.less(lhs);
-}
-
-inline bool operator <= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return !rhs.less(lhs);
-}
-
-inline bool operator >= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return !lhs.less(rhs);
-}
+inline std::ostream & operator << (std::ostream & out, Babylon::Char uc) { return out << uc.utf8();}
+inline std::ostream & operator << (std::ostream & out, const Babylon::String & us) { return out << us.utf8();}
 
 #endif // _Babylon_utils_hh

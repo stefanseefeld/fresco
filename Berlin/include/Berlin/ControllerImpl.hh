@@ -38,7 +38,7 @@ class ControllerImpl : public virtual POA_Warsaw::Controller,
                        public MonoGraphic,
                        public SubjectImpl
 {
-  typedef vector<RefCount_var<Warsaw::Controller> > clist_t;
+  typedef std::vector<RefCount_var<Warsaw::Controller> > clist_t;
   class Iterator;
   friend class Iterator;
 public:

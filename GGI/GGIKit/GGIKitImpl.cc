@@ -37,6 +37,6 @@ GGI::Visual_ptr GGIKitImpl::create_visual(Warsaw::PixelCoord w, Warsaw::PixelCoo
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "GGIKitImpl"};
+  static std::string properties[] = {"implementation", "GGIKitImpl"};
   return new KitFactoryImpl<GGIKitImpl>("IDL:GGI/GGIKit:1.0", properties, 1);
 } 

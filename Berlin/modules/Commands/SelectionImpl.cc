@@ -24,8 +24,6 @@
 #include <Warsaw/Controller.hh>
 #include <Berlin/ObserverImpl.hh>
 #include "Command/SelectionImpl.hh"
-#include <algorithm>
-#include <functional>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -49,6 +47,8 @@ private:
   Tag t;
 };
 
+bool SelectionImpl::Id_eq::operator()(const SelectionImpl::Observer *o) const { return o->id() == id;}
+
 SelectionImpl::Observer::Observer(SelectionImpl *s, Telltale_ptr i, Tag tt)
   : selection(s),
     item(RefCount_var<Warsaw::Telltale>::increment(i)),
@@ -61,7 +61,7 @@ SelectionImpl::Observer::~Observer()
 {
   Trace trace("SelectionImpl::Observer::~Observer");
   item->detach(Observer_var(_this()));
-  selection->removeObserver(t);
+  selection->remove_observer(t);
 }
 
 void SelectionImpl::Observer::update(const CORBA::Any &any)
@@ -106,7 +106,7 @@ void SelectionImpl::remove(Tag t)
 {
   Trace trace("SelectionImpl::remove");
   Prague::Guard<Mutex> guard(mutex);
-  size_t i = idToIndex(t);
+  size_t i = id_to_index(t);
   if (i < items.size())
     {
       //       if (!CORBA::is_nil(constraint)) constraint->remove(t);
@@ -140,31 +140,24 @@ void SelectionImpl::update(Tag t, bool toggled)
   notify(any);
 }
 
-void SelectionImpl::removeObserver(Tag t)
+void SelectionImpl::remove_observer(Tag t)
 {
-  Trace trace("SelectionImpl::removeObserver");
+  Trace trace("SelectionImpl::remove_observer");
   Prague::Guard<Mutex> guard(mutex);
-  size_t i = idToIndex(t);
+  size_t i = id_to_index(t);
   if (i < items.size()) items.erase(items.begin() + i);
 }
-
-struct Id_eq : public unary_function<SelectionImpl::Observer *, bool>
-{
-  Id_eq(Warsaw::Tag t) : id(t) {}
-  bool operator()(const SelectionImpl::Observer *o) const { return o->id() == id; }
-  Warsaw::Tag id;
-};
 
 Tag SelectionImpl::uniqueId()
 {
   Tag id;
   for (id = 0;
-       find_if(items.begin(), items.end(), ::Id_eq(id)) != items.end();
+       std::find_if(items.begin(), items.end(), Id_eq(id)) != items.end();
        id++);
       return id;
 }
 
-CORBA::Long SelectionImpl::idToIndex(Tag id)
+CORBA::Long SelectionImpl::id_to_index(Tag id)
 {
-  return find_if(items.begin(), items.end(), ::Id_eq(id)) - items.begin();
+  return std::find_if(items.begin(), items.end(), Id_eq(id)) - items.begin();
 }

@@ -40,7 +40,7 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->drawing();
   DrawingKit::Fillstyle style = drawing->surface_fillstyle();
-  if (style != DrawingKit::outlined && fill)
+  if (style != DrawingKit::outlined && _fill)
     {
       Path path;
       path.length(4);
@@ -115,17 +115,17 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
       switch (_direction)
 	{
 	case ToolKit::left:
-	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case ToolKit::right:
 	  break;
-	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
 	case ToolKit::up:
 	  break;
-	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
 	case ToolKit::down:
 	  break;
-	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
 	}
     }
 }
@@ -150,20 +150,20 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
       switch (_style)
 	{
 	case inset:
-	  Beveler::leftArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case outset:
-	  Beveler::leftArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case convex:
 	  Beveler::leftArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::leftArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case concav:
 	  Beveler::leftArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::leftArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	}
       break;
@@ -171,20 +171,20 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
       switch (_style)
 	{
 	case inset:
-	  Beveler::rightArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case outset:
-	  Beveler::rightArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case convex:
 	  Beveler::rightArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::rightArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, _fill);
       break;
 	case concav:
 	  Beveler::rightArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::rightArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	}
       break;
@@ -192,20 +192,20 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
       switch (_style)
 	{
 	case inset:
-	  Beveler::upArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case outset:
-	  Beveler::upArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case convex:
 	  Beveler::upArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::upArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case concav:
 	  Beveler::upArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::upArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	}
       break;
@@ -213,20 +213,20 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
       switch (_style)
 	{
 	case inset:
-	  Beveler::downArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case outset:
-	  Beveler::downArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case convex:
 	  Beveler::downArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::downArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	case concav:
 	  Beveler::downArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
 	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
-	  Beveler::downArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, _fill);
 	  break;
 	}
       break;

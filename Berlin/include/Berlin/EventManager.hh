@@ -35,7 +35,7 @@
 //. for now, device 0 is the keyboard, device 1 the mouse
 class EventManager
 {
-  typedef vector<FocusImpl *> flist_t;
+  typedef std::vector<FocusImpl *> flist_t;
 public:
   EventManager(Warsaw::Controller_ptr, Warsaw::Region_ptr);
   ~EventManager();

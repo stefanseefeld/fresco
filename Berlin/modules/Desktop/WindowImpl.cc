@@ -46,10 +46,10 @@ public:
   virtual Stage::Index layer() { return _layer;}
   virtual void layer(Stage::Index ll) { _layer = ll;}
 private:
-  Stage_var _parent;
-  Graphic_var _child;
-  Vertex _position;
-  Vertex _size;
+  Stage_var    _parent;
+  Graphic_var  _child;
+  Vertex       _position;
+  Vertex       _size;
   Stage::Index _layer;
 };
 
@@ -89,9 +89,9 @@ void WindowImpl::need_resize()
     need_redraw();
   else
     {
-      size.x = min(r.x.maximum, max(r.x.minimum, size.x));
-      size.y = min(r.y.maximum, max(r.y.minimum, size.y));
-      size.z = min(r.z.maximum, max(r.z.minimum, size.z));
+      size.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x));
+      size.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y));
+      size.z = std::min(r.z.maximum, std::max(r.z.minimum, size.z));
       _handle->size(size);
     }
 }

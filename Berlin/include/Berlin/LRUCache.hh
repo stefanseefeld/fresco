@@ -14,13 +14,13 @@
   on the other hand, it's very simple to use.  */
 
 template 
-<class kT, class vT, class factoryT, class cacheT = map<kT,vT> > 
+<class kT, class vT, class factoryT, class cacheT = std::map<kT,vT> > 
 class LRUCache {
 
 private:
   unsigned int max;
   cacheT cache;
-  list<kT> queue;
+  std::list<kT> queue;
   factoryT factory;
 
 public:
@@ -30,20 +30,24 @@ public:
   void get(const kT &k, vT &v) throw () 
   {
     typename cacheT::iterator iter = cache.find(k);
-    if (iter != cache.end()) {
-      v = iter->second;
-      return;
-    } else {
-      v = factory.produce(k);
-      cache.insert(pair<kT,vT>(k,v));
-      queue.push_front(k);
-      if (queue.size() >= max) {
-	kT victim = queue.back();
-	factory.recycle(cache[victim]);
-	cache.erase(victim);
-	queue.pop_back();
+    if (iter != cache.end())
+      {
+	v = iter->second;
+	return;
       }
-    }
+    else
+      {
+	v = factory.produce(k);
+	cache.insert(pair<kT,vT>(k,v));
+	queue.push_front(k);
+	if (queue.size() >= max)
+	  {
+	    kT victim = queue.back();
+	    factory.recycle(cache[victim]);
+	    cache.erase(victim);
+	    queue.pop_back();
+	  }
+      }
   }
 };
 

@@ -34,37 +34,37 @@
 using namespace Prague;
 using namespace Warsaw;
 
-DebugGraphic::DebugGraphic(ostream &oss, const string &msg, unsigned int f) : os(oss), message(msg), flags(f) {}
+DebugGraphic::DebugGraphic(std::ostream &os, const std::string &msg, unsigned int f) : _os(os), _message(msg), _flags(f) {}
 DebugGraphic::~DebugGraphic() {}
 
 void DebugGraphic::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("DebugGraphic::request");
   MonoGraphic::request(r);
-  if (flags & requests)
+  if (_flags & requests)
     {
       heading(" request\t");
-      os << r << '\n';
+      _os << r << '\n';
     }
 }
 
 void DebugGraphic::traverse(Traversal_ptr traversal)
 {
   Trace trace("DebugGraphic::traverse");
-  if (flags & traversals) traversal->visit(Graphic_var(_this()));
+  if (_flags & traversals) traversal->visit(Graphic_var(_this()));
   else MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("DebugGraphic::draw");
-  if (flags & draws)
+  if (_flags & draws)
     {
       heading(" draw\t");
       Region_var r = traversal->current_allocation();
       Transform_var t = traversal->current_transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
-      os << "region: " << endl << Region_var(region->_this()) << endl;
+      _os << "region: " << '\n' << Region_var(region->_this()) << std::endl;
     }
   MonoGraphic::traverse(traversal);
 };
@@ -72,13 +72,13 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
 void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
   Trace trace("DebugGraphic::pick");
-  if (flags & picks)
+  if (_flags & picks)
     {
       heading(" pick\t");
       Region_var r = traversal->current_allocation();
       Transform_var t = traversal->current_transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
-      os << Region_var(region->_this()) << endl;
+      _os << Region_var(region->_this()) << std::endl;
     }
   MonoGraphic::traverse(traversal);
 }
@@ -89,12 +89,12 @@ void DebugGraphic::allocate(Tag tag, const Allocation::Info &info)
   Region_var r = info.allocation;
   Transform_var t = info.transformation;
   Impl_var<RegionImpl> region(new RegionImpl(r, t));
-  os << Region_var(region->_this()) << endl;
+  _os << Region_var(region->_this()) << std::endl;
   MonoGraphic::allocate(tag, info);
 }
 
 void DebugGraphic::heading(const char *s)
 {
   Graphic_var g = body();
-  os << message << " (" << g << ')' << s;
+  _os << _message << " (" << g << ')' << s;
 }

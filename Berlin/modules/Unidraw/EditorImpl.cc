@@ -42,7 +42,7 @@ public:
       {
 	if (item->toggled) _parent->_current = RefCount_var<Tool>::increment(_parent->_tools[item->id]);
       }
-    else  cerr << "wrong message type" << endl;
+    else  std::cerr << "wrong message type" << std::endl;
   }
 private:
   EditorImpl *_parent;

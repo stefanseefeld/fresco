@@ -103,8 +103,8 @@ Pointer::~Pointer()
 void Pointer::move(Coord x, Coord y)
 {
   restore();
-  position[0] = static_cast<PixelCoord>(max(static_cast<PixelCoord>(x/scale[0]), origin[0]));
-  position[1] = static_cast<PixelCoord>(max(static_cast<PixelCoord>(y/scale[1]), origin[1]));
+  position[0] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(x/scale[0]), origin[0]));
+  position[1] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(y/scale[1]), origin[1]));
   save();
   draw();
 };

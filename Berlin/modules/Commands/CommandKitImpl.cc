@@ -40,36 +40,37 @@ using namespace Warsaw;
 class DebugCommand : public CommandImpl
 {
 public:
-  DebugCommand(Command_ptr c, ostream &os, const char *t) : _command(Warsaw::Command::_duplicate(c)), _os(os), _text(t) {}
+  DebugCommand(Command_ptr c, std::ostream &os, const char *t) : _command(Warsaw::Command::_duplicate(c)), _os(os), _text(t) {}
   virtual void execute(const CORBA::Any &any)
   {
-    _os << _text << " : entering execute" << endl; 
+    _os << _text << " : entering execute" << std::endl; 
     _command->execute(any);
-    _os << _text << " : leaving execute" << endl;
+    _os << _text << " : leaving execute" << std::endl;
   }
  private:
-  Command_var _command;
-  ostream    &_os;
-  string      _text;
+  Command_var   _command;
+  std::ostream &_os;
+  std::string   _text;
 };
 
 class LogCommand : public CommandImpl
 {
 public:
-  LogCommand(ostream &os, const char *text) : _os(os), _text(text) {}
-  virtual void execute(const CORBA::Any &) { _os << _text << endl;}
+  LogCommand(std::ostream &os, const char *text) : _os(os), _text(text) {}
+  virtual void execute(const CORBA::Any &) { _os << _text << std::endl;}
  private:
-  ostream &_os;
-  string   _text;
+  std::ostream &_os;
+  std::string   _text;
 };
 
 class MacroCommandImpl : public virtual POA_Warsaw::MacroCommand,
 			 public CommandImpl
 {
+  typedef std::vector<Warsaw::Command_var> clist_t;
 public:
   virtual ~MacroCommandImpl()
   {
-    for (vector<Warsaw::Command_var>::iterator i = _commands.begin(); i != _commands.end(); ++i)
+    for (clist_t::iterator i = _commands.begin(); i != _commands.end(); ++i)
       (*i)->destroy();
   }
   virtual void append(Warsaw::Command_ptr c)
@@ -82,11 +83,11 @@ public:
   }
   virtual void execute(const CORBA::Any &any)
     {
-      for (vector<Warsaw::Command_var>::iterator i = _commands.begin(); i != _commands.end(); ++i)
+      for (clist_t::iterator i = _commands.begin(); i != _commands.end(); ++i)
 	(*i)->execute(any);
     }
  private:
-  vector<Warsaw::Command_var> _commands;
+  clist_t _commands;
 };
 
 CommandKitImpl::CommandKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
@@ -94,14 +95,14 @@ CommandKitImpl::CommandKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
 CommandKitImpl::~CommandKitImpl() {}
 Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
 {
-  DebugCommand *command = new DebugCommand(c, cout, text);
+  DebugCommand *command = new DebugCommand(c, std::cout, text);
   activate(command);
   return command->_this();
 }
 
 Command_ptr CommandKitImpl::log(const char *text)
 {
-  LogCommand *command = new LogCommand(cout, text);
+  LogCommand *command = new LogCommand(std::cout, text);
   activate(command);
   return command->_this();
 }
@@ -199,6 +200,6 @@ StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "CommandKitImpl"};
+  static std::string properties[] = {"implementation", "CommandKitImpl"};
   return new KitFactoryImpl<CommandKitImpl>("IDL:Warsaw/CommandKit:1.0", properties, 1);
 }

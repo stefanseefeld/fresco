@@ -72,7 +72,7 @@ protected:
   {
   protected:
     atom _atom;
-    map<Babylon::String, atom> _atoms;
+    std::map<Babylon::String, atom> _atoms;
   public:
     atom atomize(Babylon::String &);
   };
@@ -82,10 +82,10 @@ protected:
   double _xres, _yres, _xdpi, _ydpi;  
   typedef unsigned int PtSize;
   FT_Matrix _matrix;
-  typedef pair<atom,atom> FamStyle;
-  typedef pair<PtSize,FamStyle> FaceSpec;
-  typedef pair<Warsaw::Unichar,FaceSpec>  GlyphSpec;
-  typedef pair<FT_Matrix, GlyphSpec>  TGlyphSpec;
+  typedef std::pair<atom,atom> FamStyle;
+  typedef std::pair<PtSize,FamStyle> FaceSpec;
+  typedef std::pair<Warsaw::Unichar,FaceSpec>  GlyphSpec;
+  typedef std::pair<FT_Matrix, GlyphSpec>  TGlyphSpec;
 
   class TGlyphSpec_cmp
   {
@@ -138,25 +138,24 @@ protected:
     void recycle(ArtPixBuf *pb) { art_pixbuf_free(pb);};
   };
   
-  atom                  _family;
-  atom                  _style;
-  Babylon::String       _familyStr;
-  Babylon::String       _styleStr;
-  PtSize                _size; 
-  double                _scale;
-  FT_Library            _library;
-  FT_Face               _face;
-  map<FamStyle,FT_Face> _faces;
+  atom                        _family;
+  atom                        _style;
+  Babylon::String             _familyStr;
+  Babylon::String             _styleStr;
+  PtSize                      _size; 
+  double                      _scale;
+  FT_Library                  _library;
+  FT_Face                     _face;
+  std::map<FamStyle, FT_Face> _faces;
 
   // caches!
   LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, 
-    map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > _glyphCache;
+	   std::map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > _glyphCache;
   LRUCache<FaceSpec, Warsaw::DrawingKit::FontMetrics, FaceMetricsFactory> _faceMetricsCache;
-  LRUCache<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics, GlyphMetricsFactory, 
-    map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;   
-
+  LRUCache<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics, GlyphMetricsFactory,
+	   std::map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;
 private:
-  bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Babylon::String &, Babylon::String &);
+  bool chooseFaceInteractively(const std::map<FamStyle, FT_Face> &, const char *, Babylon::String &, Babylon::String &);
 };
 
 #endif

@@ -40,6 +40,7 @@ class Strut;
 class TextKitImpl : public virtual POA_Warsaw::TextKit,
 		    public KitImpl
 {
+  typedef std::map<Warsaw::Unichar, Warsaw::Graphic_var> cache_t;
  public:
   TextKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~TextKitImpl();
@@ -58,18 +59,14 @@ class TextKitImpl : public virtual POA_Warsaw::TextKit,
   Warsaw::Graphic_ptr style(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
   Warsaw::Graphic_ptr font_attribute(Warsaw::Graphic_ptr, const Warsaw::NVPair &);
  private:
-//   static Prague::Mutex _staticMutex;
-//   static map<Warsaw::Unichar, Impl_var<TextChunk *> > _charCache;
-//   static Warsaw::DrawingKit_var _canonicalDK;
-
-  map<Warsaw::Unichar, Warsaw::Graphic_var> _charCache;
+  cache_t                _cache;
   Warsaw::DrawingKit_var _canonicalDK;
 
   Warsaw::LayoutKit_var _layout;
-  Impl_var<Strut> _strut;
-  Prague::Mutex _mutex;
-  Compositor *_lineCompositor;
-  Compositor *_pageCompositor;
+  Impl_var<Strut>       _strut;
+  Prague::Mutex         _mutex;
+  Compositor           *_lineCompositor;
+  Compositor           *_pageCompositor;
 };
 
 #endif

@@ -150,6 +150,6 @@ Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "FigureKitImpl"};
+  static std::string properties[] = {"implementation", "FigureKitImpl"};
   return new KitFactoryImpl<FigureKitImpl> ("IDL:Warsaw/FigureKit:1.0", properties, 1);
 }

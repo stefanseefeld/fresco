@@ -38,8 +38,6 @@ class StageImpl : public virtual POA_Layout::Stage,
 		  public GraphicImpl
 {
   class Sequence;
-  class Finder;
-  class Quad;
   class QuadTree;
  public:
   StageImpl();

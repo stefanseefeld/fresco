@@ -28,7 +28,7 @@ using namespace Prague;
 using namespace Warsaw;
 
 class PolyGraphic::Iterator : public virtual POA_Warsaw::GraphicIterator,
-		              public virtual GraphicImpl::Iterator
+		              public virtual GraphicIteratorImpl
 {
 public:
   Iterator(PolyGraphic *p, Tag c) : _parent(p), _cursor(c) { Trace trace("PolyGraphic::Iterator::Iterator"); _parent->_add_ref();}

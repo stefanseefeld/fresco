@@ -278,14 +278,14 @@ void RegionImpl::outline(Path_out)
 {
 };
 
-ostream &operator << (ostream &os, const RegionImpl &region)
+std::ostream &operator << (std::ostream &os, const RegionImpl &region)
 {
   os << "X(" << region.lower.x << ',' << region.upper.x;
-  if (!Math::equal(region.xalign, 0., 1e-2)) os << " @ " << setprecision(1) << region.xalign;
+  if (!Math::equal(region.xalign, 0., 1e-2)) os << " @ " << std::setprecision(1) << region.xalign;
   os << "), Y(" << region.lower.y << ',' << region.upper.y;
-  if (!Math::equal(region.yalign, 0., 1e-2)) os << " @ " << setprecision(1) << region.yalign;
+  if (!Math::equal(region.yalign, 0., 1e-2)) os << " @ " << std::setprecision(1) << region.yalign;
   os << "), Z(" << region.lower.z << ',' << region.upper.z;
-  if (!Math::equal(region.zalign, 0., 1e-2)) os << " @ " << setprecision(1) << region.zalign;
+  if (!Math::equal(region.zalign, 0., 1e-2)) os << " @ " << std::setprecision(1) << region.zalign;
   os << ')';
   return os;
 }

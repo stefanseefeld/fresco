@@ -107,7 +107,7 @@ private:
 
 class GGIConsole
 {
-  typedef vector<DrawableTie<GGIDrawable> *> dlist_t;
+  typedef std::vector<DrawableTie<GGIDrawable> *> dlist_t;
 public:
   typedef GGIDrawable Drawable;
   GGIConsole(int &, char **, PortableServer::POA_ptr);

@@ -239,129 +239,62 @@ DrawableTie<SDLDrawable> *SDLConsole::reference_to_servant(Warsaw::Drawable_ptr 
 
 static void readEvent(SDL_Event &e)
 {
-//   unsigned int t;
-//   cin >> t;
-//   e.any.type = (char)t;
-//   switch (e.any.type)
-//     {
-//     case evKeyPress:
-//     case evKeyRepeat:
-//       {
-// 	cin >> t;
-// 	e.key.sym = t;
-// 	break;
-//       }
-//     case evPtrRelative:
-//     case evPtrAbsolute:
-//       {
-// 	cin >> e.pmove.x
-// 	    >> e.pmove.y;
-// 	break;
-//       }
-//     case evPtrButtonPress:
-//     case evPtrButtonRelease:
-//       {
-// 	break;
-//       }
-//   }
+  unsigned int t;
+  std::cin >> t;
+  e.type = static_cast<char>(t);
+  switch (e.type)
+    {
+    case SDL_KEYDOWN:
+      {
+ 	std::cin >> t;
+ 	e.key.keysym.sym = static_cast<SDLKey>(t);
+ 	break;
+      }
+    case SDL_MOUSEMOTION:
+      {
+ 	std::cin >> e.motion.x
+		 >> e.motion.y;
+ 	break;
+      }
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      {
+ 	break;
+      }
+    }
 }
 
 static void writeEvent(SDL_Event &e)
 {
-//   cout << ((unsigned int)(e.any.type)) << ' ';
-//   switch (e.any.type)
-//     {
-//     case evKeyPress:
-//     case evKeyRepeat:
-//       {
-// 	cout << ((unsigned int)(e.key.sym));
-// 	break;
-//       }
-//     case evPtrRelative:
-//     case evPtrAbsolute:
-//       {
-// 	cout << e.pmove.x << ' '
-// 	     << e.pmove.y;
-// 	break;
-//       }
-//     case evPtrButtonPress:
-//     case evPtrButtonRelease:
-//       {
-// 	break;
-//       }
-//     }
-//   cout << endl;
+  std::cout << static_cast<unsigned int>(e.type) << ' ';
+  switch (e.type)
+    {
+    case SDL_KEYDOWN:
+       {
+	 std::cout << static_cast<unsigned int>(e.key.keysym.sym);
+	 break;
+       }
+    case SDL_MOUSEMOTION:
+      {
+ 	std::cout << e.motion.x << ' '
+		  << e.motion.y;
+ 	break;
+      }
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      {
+ 	break;
+      }
+    }
+  std::cout << endl;
 }
 
 Input::Event *SDLConsole::next_event()
 {
   Trace trace("SDL::Console::next_event");
-//   SDL_Event event;
-//   ggi_event_mask mask;
-//   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
-
-//   int input = fileno(stdin);
-//   Prague::FdSet rfdset;
-//   int nfds;
-
-//   do
-//     {
-//       rfdset.set (wakeupPipe[0]);
-//       if (autoplay)
-// 	rfdset.set (input);
-//       mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-//       nfds = ggiEventSelect (visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
-//     }
-//   while (nfds < 0 && errno == EINTR);
- 
-//   if (nfds == 0)
-//     {
-//       // no input from the outside world
-//       ggiEventRead(visual, &event, mask); 
-//       if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute)
-// 	{
-// 	  int m = ggiEventsQueued(visual, mask);
-// 	  int n = ggiEventsQueued(visual, move_mask);
-// 	  if (m == n)  // nothing but a bunch of moves queued up
-// 	    {
-// 	      int x=event.pmove.x, y=event.pmove.y;
-// 	      for (int i = 0; i < n; ++i)
-// 		{
-// 		  // consume them all
-// 		  ggiEventRead(visual, &event, move_mask); 	  
-// 		  if (event.any.type == evPtrRelative)
-// 		    {
-// 		      x += event.pmove.x;
-// 		      y += event.pmove.y;
-// 		    }
-// 		}
-// 	      if (event.any.type == evPtrRelative)
-// 		{
-// 		  event.pmove.x = x;
-// 		  event.pmove.y = y;
-// 		}
-// 	    }
-// 	}
-//       if (autoplay) writeEvent(event);
-//       return synthesize(event);
-//     }
-//   else 
-//     {
-//       if (autoplay && rfdset.isset(input))
-// 	{
-// 	  readEvent(event);
-// 	  return synthesize(event);
-// 	}
-//       else
-// 	{
-// 	  if (rfdset.isset(wakeupPipe[0]))
-// 	    {
-// 	      char c; read(wakeupPipe[0], &c, 1);
-// 	      return 0;
-// 	    }
-// 	}
-//     }
-  return 0;
+  SDL_Event event;
+  SDL_WaitEvent(&event);
+  return synthesize(event);
 }
 
 void SDLConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
@@ -369,75 +302,52 @@ void SDLConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
 Input::Event *SDLConsole::synthesize(const SDL_Event &e)
 {
   Input::Event_var event = new Input::Event;
-//   switch (e.any.type)
-//     {
-//     case evKeyPress:
-//       {
-// 	Input::Toggle toggle;
-// 	toggle.actuation = Input::Toggle::press;
-// 	toggle.number = e.key.sym;
-// 	event->length(1);
-// 	event[0].dev = 0;
-// 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
-// 	break;
-//       }
-//     case evKeyRepeat:
-//       {
-// 	Input::Toggle toggle;
-// 	toggle.actuation = Input::Toggle::hold;
-// 	toggle.number = e.key.sym;
-// 	event->length(1);
-// 	event[0].dev = 0;
-// 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
-// 	break;
-//       }
-//     case evPtrRelative:
-//       {
-// 	if (pos[0] + e.pmove.x >= 0 && pos[0] + e.pmove.x < size[0]) pos[0] += e.pmove.x;
-// 	if (pos[1] + e.pmove.y >= 0 && pos[1] + e.pmove.y < size[1]) pos[1] += e.pmove.y;	  
-// 	Input::Position position;
-// 	position.x = pos[0]/res[0];
-// 	position.y = pos[1]/res[1];
-// 	position.z = 0;
-// 	event->length(1);
-// 	event[0].dev = 1;
-// 	event[0].attr.location(position);
-// 	break;
-//       }
-//     case evPtrAbsolute:
-//       {
-// 	pos[0] = e.pmove.x;
-// 	pos[1] = e.pmove.y;
-// 	Input::Position position;
-// 	position.x = pos[0]/res[0];
-// 	position.y = pos[1]/res[1];
-// 	position.z = 0;
-// 	event->length(1);
-// 	event[0].dev = 1;
-// 	event[0].attr.location(position);
-// 	break;
-//       }
-//     case evPtrButtonPress:
-//     case evPtrButtonRelease:
-//       {
-// 	Input::Toggle toggle;
-// 	if (e.any.type == evPtrButtonPress)
-// 	  toggle.actuation = Input::Toggle::press;
-// 	else
-// 	  toggle.actuation = Input::Toggle::release;
-//  	toggle.number = e.pbutton.button;	  
-// 	Input::Position position;
-// 	position.x = pos[0]/res[0];
-// 	position.y = pos[1]/res[1];
-// 	position.z = 0;
-// 	event->length(2);
-// 	event[0].dev = 1;
-// 	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
-// 	event[1].dev = 1;
-// 	event[1].attr.location(position);
-// 	break;
-//       }
-//     }
+  switch (e.type)
+    {
+     case SDL_KEYDOWN:
+       {
+ 	Input::Toggle toggle;
+ 	toggle.actuation = Input::Toggle::press;
+ 	toggle.number = e.key.keysym.sym;
+ 	event->length(1);
+ 	event[0].dev = 0;
+ 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
+ 	break;
+       }
+    case SDL_MOUSEMOTION:
+      {
+	_position[0] = e.motion.x;
+ 	_position[1] = e.motion.y;
+ 	Input::Position position;
+ 	position.x = _position[0]/_resolution[0];
+ 	position.y = _position[1]/_resolution[1];
+ 	position.z = 0;
+ 	event->length(1);
+ 	event[0].dev = 1;
+ 	event[0].attr.location(position);
+ 	break;
+      }
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      {
+ 	Input::Toggle toggle;
+ 	if (e.type == SDL_MOUSEBUTTONDOWN)
+ 	  toggle.actuation = Input::Toggle::press;
+ 	else
+ 	  toggle.actuation = Input::Toggle::release;
+  	toggle.number = e.button.button;	  
+ 	Input::Position position;
+ 	position.x = _position[0]/_resolution[0];
+ 	position.y = _position[1]/_resolution[1];
+ 	position.z = 0;
+ 	event->length(2);
+ 	event[0].dev = 1;
+ 	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
+ 	event[1].dev = 1;
+ 	event[1].attr.location(position);
+ 	break;
+      }
+    }
   return event._retn();
 }
 

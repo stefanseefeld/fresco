@@ -41,15 +41,15 @@
 #include <fstream>
 
 #ifdef RC_PREFIX
-const string prefix = RC_PREFIX;
+const std::string prefix = RC_PREFIX;
 #else
-const string prefix = "";
+const std::string prefix = "";
 #endif
 
 #ifdef VERSION
-const string version = VERSION;
+const std::string version = VERSION;
 #else
-const string version = "unknown";
+const std::string version = "unknown";
 #endif
 
 using namespace Prague;
@@ -63,9 +63,9 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
-  string value;
+  std::string value;
   getopt.get("version", &value);
-  if (value == "true") { cout << "version is " << version << endl; exit(0);}
+  if (value == "true") { std::cout << "version is " << version << std::endl; exit(0);}
   value = "";
   getopt.get("help", &value);
   if (value == "true") { getopt.usage(); exit(0);}
@@ -82,10 +82,10 @@ int main(int argc, char **argv)
   ServerImpl::FactoryList listing = server->list();
   for (ServerImpl::FactoryList::iterator i = listing.begin(); i != listing.end(); ++i)
     {
-      cout << (*i).first << " supports :\n";
+      std::cout << (*i).first << " supports :\n";
       Warsaw::Kit::Property *begin = (*i).second->get_buffer();
       Warsaw::Kit::Property *end = (*i).second->get_buffer() + (*i).second->length();
       for (Warsaw::Kit::Property *p = begin; p != end; ++p)
-	cout << (*p).name << " : " << (*p).value << '\n';
+	std::cout << (*p).name << " : " << (*p).value << '\n';
     }
 }

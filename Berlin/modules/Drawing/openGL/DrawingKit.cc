@@ -306,7 +306,7 @@ void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, Pix
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "GLDrawingKit"};
+  static std::string properties[] = {"implementation", "GLDrawingKit"};
   return new KitFactoryImpl<GLDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
 }
 

@@ -52,6 +52,6 @@ Raster_ptr ImageKitImpl::create(const char *file)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "ImageKitImpl"};
+  static std::string properties[] = {"implementation", "ImageKitImpl"};
   return new KitFactoryImpl<ImageKitImpl> ("IDL:Warsaw/ImageKit:1.0", properties, 1);
 }

@@ -35,7 +35,7 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Layout;
 
-ostream &operator << (ostream &os, const GridImpl::Span &span)
+std::ostream &operator << (std::ostream &os, const GridImpl::Span &span)
 { return os << '(' << span.lower << ',' << span.upper << '@' << span.align << ')';}
 
 static void set_span(GridImpl::Span &s, Coord origin, Coord length, Alignment align)
@@ -397,7 +397,7 @@ Layout::Grid::Index GridImpl::upper()
   return upper;
 }
 
-ostream &operator << (ostream &os, const Layout::Grid::Index &i) { return os << i.col << ' ' << i.row;}
+std::ostream &operator << (std::ostream &os, const Layout::Grid::Index &i) { return os << i.col << ' ' << i.row;}
 
 void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
@@ -437,7 +437,7 @@ void GridImpl::full_request(Axis axis, Axis direction)
   for (int i = 0; i < d.size(); i++)
     {
       LayoutAlignRequest align;
-      for (vector<Graphic_var>::iterator j = d.children[i].begin(); j != d.children[i].end(); j++)
+      for (std::vector<Graphic_var>::iterator j = d.children[i].begin(); j != d.children[i].end(); ++j)
 	if (!CORBA::is_nil(*j))
 	  {
 	    Warsaw::Graphic::Requisition r;

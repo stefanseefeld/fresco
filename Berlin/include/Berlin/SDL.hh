@@ -113,7 +113,7 @@ private:
 class SDLConsole
 {
   typedef SDLDrawable Drawable;
-  typedef vector<DrawableTie<SDLDrawable> *> dlist_t;
+  typedef std::vector<DrawableTie<SDLDrawable> *> dlist_t;
 
 public:
   SDLConsole(int &, char **, PortableServer::POA_ptr);

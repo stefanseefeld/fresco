@@ -40,20 +40,20 @@ private:
     unsigned int size;
     bool used;
   };
-  vector<bucket> buckets;
+  std::vector<bucket> buckets;
 };
 
 template <class T>
 inline Pool<T>::~Pool()
 {
-  for (vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); i++)
+  for (std::vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); ++i)
     delete (*i).data;
 }
 
 template <class T>
 inline T *Pool<T>::allocate(unsigned int size)
 {
-  for (vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); i++)
+  for (std::vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); ++i)
     if (!(*i).used && (*i).size >= size)
       {
 	(*i).used = true;
@@ -71,7 +71,7 @@ inline T *Pool<T>::allocate(unsigned int size)
 template <class T>
 inline void Pool<T>::deallocate(T *d)
 {
-  for (vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); i++)
+  for (std::vector<bucket>::iterator i = buckets.begin(); i != buckets.end(); ++i)
     if ((*i).data == d)
       {
 	(*i).used = false;

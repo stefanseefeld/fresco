@@ -59,7 +59,7 @@ class Application
     Warsaw::BoundedValue_var zoom;
     Warsaw::Command_var settings;
   };
-  typedef vector<Item> list_t;
+  typedef std::vector<Item> list_t;
   class Mapper;
   friend class Mapper;
 public:

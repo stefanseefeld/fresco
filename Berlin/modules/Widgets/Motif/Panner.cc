@@ -51,7 +51,7 @@ public:
 	if (delta->x != 0.) _parent->_xvalue->adjust(delta->x);
 	if (delta->y != 0.) _parent->_yvalue->adjust(delta->y);
       }
-    else  cerr << "Drag::execute : wrong message type !" << endl;
+    else  std::cerr << "Drag::execute : wrong message type !" << std::endl;
   }
 private:
   Panner *_parent;

@@ -28,13 +28,13 @@
 #include <Warsaw/Transform.hh>
 #include <iostream>
 
-inline ostream &operator << (ostream &os, const Warsaw::Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
-ostream &operator << (ostream &, const Warsaw::Color &);
-ostream &operator << (ostream &, const Warsaw::Graphic::Requirement &);
-ostream &operator << (ostream &, const Warsaw::Graphic::Requisition &);
-ostream &operator << (ostream &, const Warsaw::Region::Allotment &);
-ostream &operator << (ostream &, Warsaw::Region_ptr);
-ostream &operator << (ostream &, const Warsaw::Transform::Matrix &);
-ostream &operator << (ostream &, Warsaw::Transform_ptr);
+inline std::ostream &operator << (std::ostream &os, const Warsaw::Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
+std::ostream &operator << (std::ostream &, const Warsaw::Color &);
+std::ostream &operator << (std::ostream &, const Warsaw::Graphic::Requirement &);
+std::ostream &operator << (std::ostream &, const Warsaw::Graphic::Requisition &);
+std::ostream &operator << (std::ostream &, const Warsaw::Region::Allotment &);
+std::ostream &operator << (std::ostream &, Warsaw::Region_ptr);
+std::ostream &operator << (std::ostream &, const Warsaw::Transform::Matrix &);
+std::ostream &operator << (std::ostream &, Warsaw::Transform_ptr);
 
 #endif

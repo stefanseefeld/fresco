@@ -475,7 +475,7 @@ void LibArtDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y,
 {
   CORBA::Double x2 = affine[4] * buffer->resolution(xaxis);
   CORBA::Double y2 = affine[5] * buffer->resolution(yaxis);
-  buffer->blit(d, x, y, w, h, x2 + x, y2 + y);
+  buffer->blit(d, x, y, w, h, static_cast<long>(x2 + x), static_cast<long>(y2 + y));
 }
 
 void LibArtDrawingKit::flush()
@@ -491,6 +491,6 @@ void LibArtDrawingKit::flush()
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "LibArtDrawingKit"};
+  static std::string properties[] = {"implementation", "LibArtDrawingKit"};
   return new KitFactoryImpl<LibArtDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
 }

@@ -34,7 +34,7 @@ class ScreenImpl;
 
 class NonPositionalFocus : public FocusImpl
 {
-  typedef vector<Warsaw::Controller_var> cstack_t;
+  typedef std::vector<Warsaw::Controller_var> cstack_t;
  public:
   NonPositionalFocus(Warsaw::Input::Device, Warsaw::Controller_ptr);
   virtual ~NonPositionalFocus();

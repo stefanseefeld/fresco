@@ -38,7 +38,7 @@ public:
 private:
   static void activate(T *);
   static void deactivate(T *);
-  static stack<T *> pool;
+  static std::stack<T *> pool;
   static Prague::Mutex mutex;
 };
 

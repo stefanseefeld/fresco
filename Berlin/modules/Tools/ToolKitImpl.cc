@@ -396,6 +396,6 @@ Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height)
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "ToolKitImpl"};
+  static std::string properties[] = {"implementation", "ToolKitImpl"};
   return new KitFactoryImpl<ToolKitImpl> ("IDL:Warsaw/ToolKit:1.0", properties, 1);
 }

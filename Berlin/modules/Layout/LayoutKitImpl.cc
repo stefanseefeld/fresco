@@ -476,6 +476,6 @@ Graphic_ptr LayoutKitImpl::tmargin_flexible(Graphic_ptr g, Coord natural, Coord 
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "LayoutKitImpl"};
+  static std::string properties[] = {"implementation", "LayoutKitImpl"};
   return new KitFactoryImpl<LayoutKitImpl> ("IDL:Warsaw/LayoutKit:1.0", properties, 1);
 }

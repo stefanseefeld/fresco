@@ -34,16 +34,16 @@ RasterImpl::RasterImpl() : _rows(0) {}
 RasterImpl::RasterImpl(const char *file) : _rows(0)
 {
   Prague::Path path = RCManager::get_path("rasterpath");
-  string pngfile = path.lookup_file(file);
+  std::string pngfile = path.lookup_file(file);
   if (pngfile.empty())
     {
-      cerr << "RasterImpl Warning : can't find '" << file << "' in current rasterpath" << endl;
+      std::cerr << "RasterImpl Warning : can't find '" << file << "' in current rasterpath" << std::endl;
       pngfile = path.lookup_file("berlin-128.png");
     }
   _rows = _png.read(pngfile);
   if (!_rows)
     {
-      cerr << "RasterImpl fatal error: can't read fallback raster berlin-128.png" << endl;
+      std::cerr << "RasterImpl fatal error: can't read fallback raster berlin-128.png" << std::endl;
       exit(-1);
     }
 }

@@ -54,7 +54,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
    * the old controller holding the focus
    *       -stefan
    */
-  vector<Controller_var> tmp;
+  std::vector<Controller_var> tmp;
   Controller_var p = Controller::_duplicate(c);
   while (!CORBA::is_nil(p))
     {
@@ -62,17 +62,17 @@ bool NonPositionalFocus::request(Controller_ptr c)
       p = p->parent_controller();
     }
   cstack_t::iterator of = _controllers.begin();
-  vector<Controller_var>::iterator nf = tmp.begin();
+  std::vector<Controller_var>::iterator nf = tmp.begin();
   /*
    * ...skip the unchanged controllers,...
    */
   while (nf != tmp.end() &&
 	 of != _controllers.end() &&
-	 (*nf)->is_identical(*of)) nf++, of++;
+	 (*nf)->is_identical(*of)) ++nf, ++of;
   /*
    * ...remove the old controllers in reverse order,...
    */
-  for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
+  for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; ++o)
     try { (*o)->lose_focus(device());}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
@@ -82,7 +82,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
    * ...add the new controllers,...
    */
   Focus_var __this = _this ();
-  for (; nf != tmp.end(); nf++)
+  for (; nf != tmp.end(); ++nf)
     {
       (*nf)->receive_focus (__this);
       _controllers.push_back(Warsaw::Controller::_duplicate(*nf));

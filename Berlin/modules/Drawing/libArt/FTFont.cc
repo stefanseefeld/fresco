@@ -40,7 +40,7 @@
 using namespace Prague;
 using namespace Warsaw;
 
-bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces,
+bool LibArtFTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &faces,
 					   const char *env, 
 					   Babylon::String &fam,
 					   Babylon::String &style)
@@ -48,16 +48,16 @@ bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces,
   int idx = -1;
   if (env[0] == '\0')
     {
-      cout << "list of available fonts :\n";
+      std::cout << "list of available fonts :\n";
       unsigned int i = 0;
-      for (map<FamStyle,FT_Face>::const_iterator j = faces.begin(); j != faces.end(); ++i, ++j)
+      for (std::map<FamStyle,FT_Face>::const_iterator j = faces.begin(); j != faces.end(); ++i, ++j)
 	{
-	  cout << i << ' ' << (*j).second->family_name << ' ' << (*j).second->style_name << endl;
+	  std::cout << i << ' ' << (*j).second->family_name << ' ' << (*j).second->style_name << std::endl;
 	}
-      cout << "please choose a number :"; cin >> idx;
+      std::cout << "please choose a number :"; std::cin >> idx;
     }
   else idx = atoi(env);
-  map<FamStyle,FT_Face>::const_iterator j = faces.begin();
+  std::map<FamStyle,FT_Face>::const_iterator j = faces.begin();
   for (int i = 0; i != idx && j != faces.end(); ++i, ++j);
   if (j == faces.end()) return false;
   fam = Babylon::String((*j).second->family_name);
@@ -86,21 +86,21 @@ LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
 
   if (FT_Init_FreeType(&_library))
     {
-      cerr << "failed to open freetype library" << endl;
+      std::cerr << "failed to open freetype library" << std::endl;
       exit(-1);    
     }
   Prague::Path path = RCManager::get_path("fontpath");
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
     {
       Directory directory(*i, Directory::alpha);
-      Logger::log(Logger::text) << "LibArtFTFont: scanning font dir " << *i << endl;
+      Logger::log(Logger::text) << "LibArtFTFont: scanning font dir " << *i << std::endl;
       for (Directory::iterator j = directory.begin(); j != directory.end(); ++j)
 	{
 	  if ((*j)->name() == "." || (*j)->name() == "..") continue;	  
-	  string file = (*j)->long_name();
+	  std::string file = (*j)->long_name();
 	  if (FT_New_Face(_library, file.c_str(), 0, &_face))
 	    {
-	      Logger::log(Logger::text) << "LibArtFTFont: can't open font " << file << endl;
+	      Logger::log(Logger::text) << "LibArtFTFont: can't open font " << file << std::endl;
 	      continue;
 	    }
 	  _familyStr = Babylon::String(_face->family_name);
@@ -109,11 +109,11 @@ LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
 	  _style = atomize(_styleStr);
 	  Logger::log(Logger::text) << "found FT-readable font "
 				    << _familyStr << " (" << _family << ") " << _styleStr << " (" << _style << ") in "
-				    << *i << endl;
+				    << *i << std::endl;
 	  _faces[FamStyle(_family, _style)] = _face;
 	}
     }
-  Logger::log(Logger::text) << "completed scaning font directories" << endl;
+  Logger::log(Logger::text) << "completed scaning font directories" << std::endl;
   char *env = getenv("BERLIN_FONT_CHOOSER");
   Babylon::String tmpFam, tmpStyle;
   if (env && chooseFaceInteractively(_faces, env, tmpFam, tmpStyle))
@@ -249,7 +249,7 @@ bool LibArtFTFont::transform(double trafo[4])
   
 LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(Babylon::String &u)
 {
-  map<Babylon::String, atom>::iterator i = _atoms.find(u);
+  std::map<Babylon::String, atom>::iterator i = _atoms.find(u);
   if (i == _atoms.end())
     {
       _atoms[u] = ++_atom;

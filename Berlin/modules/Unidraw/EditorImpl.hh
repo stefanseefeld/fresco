@@ -35,7 +35,7 @@
 class EditorImpl : public virtual POA_Unidraw::Editor,
 		   public RefCountBaseImpl
 {
-  typedef map<Warsaw::Tag, RefCount_var<Unidraw::Tool> > tdict_t;
+  typedef std::map<Warsaw::Tag, RefCount_var<Unidraw::Tool> > tdict_t;
   class Observer;
   friend class Observer;
 public:

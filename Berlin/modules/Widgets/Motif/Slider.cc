@@ -55,7 +55,7 @@ public:
 	if (_parent->_axis == xaxis && delta->x != 0.) _parent->_value->adjust(_parent->_scale * delta->x);
 	else if (_parent->_axis == yaxis && delta->y != 0.) _parent->_value->adjust(_parent->_scale * delta->y);
       }
-    else  cerr << "Slider::Drag::execute : wrong message type !" << endl;
+    else  std::cerr << "Slider::Drag::execute : wrong message type !" << std::endl;
   }
 private:
   Slider *_parent;

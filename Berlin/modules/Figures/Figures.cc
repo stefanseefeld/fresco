@@ -125,7 +125,7 @@ void CircleImpl::resize()
 //   add_curve(c.x - r, c.y, c.x - r0, c.y - r, c.x - r, c.y - r0);
 //   add_curve(c.x, c.y + r, c.x - r, c.y + r0, c.x - r0, c.y + r);
 //   add_curve(c.x + r, c.y, c.x + r0, c.y + r, c.x + r, c.y + r0);
-  cerr << "sorry, CircleImpl::resize not implemented" << endl;
+  std::cerr << "sorry, CircleImpl::resize not implemented" << std::endl;
 }
 
 Vertex CircleImpl::center() { return _center;}
@@ -177,7 +177,7 @@ void EllipseImpl::resize()
 //     add_curve(x, y - r2, x - px3, y - py1, x - px4, y - py0);
 //     add_curve(x + px2, y - py2, x + px4, y - py0, x + px3, y - py1);
 //     add_curve(x + r1, y, x + px1, y - py3, x + px0, y - py4);
-  cerr << "sorry, EllipseImpl::resize not implemented" << endl;
+  std::cerr << "sorry, EllipseImpl::resize not implemented" << std::endl;
 }
 
 Vertex EllipseImpl::center() { return _center;}

@@ -110,6 +110,6 @@ void PSDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, Pix
 
 extern "C" KitFactory *load()
 {
-  static string properties[] = {"implementation", "PSDrawingKit"};
+  static std::string properties[] = {"implementation", "PSDrawingKit"};
   return new KitFactoryImpl<PSDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
 }

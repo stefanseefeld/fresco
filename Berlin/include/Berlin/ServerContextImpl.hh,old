@@ -36,7 +36,7 @@ class ServerImpl;
 class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
 			  public virtual PortableServer::RefCountServantBase
 {
-  typedef multimap<string, KitImpl *> klist_t;
+  typedef std::multimap<std::string, KitImpl *> klist_t;
  public:
   ServerContextImpl(ServerImpl *, Warsaw::ClientContext_ptr);
   ~ServerContextImpl();
@@ -51,12 +51,12 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   bool ping();
  private:
-  ServerImpl *server;
-  Warsaw::ClientContext_var cContext;
-  klist_t kits;
-  static unsigned long counter;
-  CORBA::PolicyList policies;
-  Prague::Mutex mutex;
+  static unsigned long      _counter;
+  ServerImpl               *_server;
+  Warsaw::ClientContext_var _client;
+  klist_t                   _kits;
+  CORBA::PolicyList         _policies;
+  Prague::Mutex             _mutex;
 };
 
 #endif

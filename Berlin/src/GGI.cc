@@ -159,7 +159,7 @@ Input::Event *GGIConsole::next_event()
   Prague::Trace trace("GGI::Console::next_event");
   ggi_event event;
   ggi_event_mask mask;
-  ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
+  ggi_event_mask move_mask = ggi_event_mask(emPtrMove | emValuator);
 
   int input = fileno(stdin);
   Prague::FdSet rfdset;
@@ -167,11 +167,11 @@ Input::Event *GGIConsole::next_event()
   int nfds = -1;
   do
     {
-      mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-      rfdset.set (_wakeupPipe [0]);
+      mask = ggi_event_mask(emKeyboard | emPtrMove | emPtrButton | emValuator);
+      rfdset.set (_wakeupPipe[0]);
       if (_autoplay)
 	rfdset.set (input);
-      nfds = ggiEventSelect (_visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+      nfds = ggiEventSelect(_visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
     }
   while (nfds == -1 && errno == EINTR);
 
@@ -179,10 +179,12 @@ Input::Event *GGIConsole::next_event()
     {
       // no input from the outside world
       ggiEventRead(_visual, &event, mask); 
-      if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute)
+      if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute)// ||
+	//	  event.any.type == evValAbsolute)
 	{
 	  int m = ggiEventsQueued(_visual, mask);
 	  int n = ggiEventsQueued(_visual, move_mask);
+	  //	  cout << "events " << m << ' ' << n << endl;
 	  if (m == n)  // nothing but a bunch of moves queued up
 	    {
 	      int x = event.pmove.x, y = event.pmove.y;
@@ -298,6 +300,25 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
 	event[1].attr.location(position);
 	break;
       }
+    case evValAbsolute:
+      {
+	// wacom intuo (quick hack):
+	// stylus uses val numbers 0 and 1 for x/y
+	for (int i = 0; i != e.val.count; ++i)
+	  {
+	    int number = e.val.first + i;
+	    if (number == 0) _position[0] = (e.val.value[i]*800)/20320;
+	    else if (number == 1) _position[1] = (e.val.value[i]*600)/15040;;
+	  }
+	Input::Position position;
+	position.x = _position[0]/_resolution[0];
+	position.y = _position[1]/_resolution[1];
+	position.z = 0;
+	event->length(1);
+	event[0].dev = 1;
+	event[0].attr.location(position);
+	break;
+      }
     }
   return event._retn();
 }
@@ -306,7 +327,7 @@ GGIDrawable::GGIDrawable(const char *display, PixelCoord w, PixelCoord h, PixelC
 {
   if (display) _visual = ggiOpen(display, 0);
   else _visual = ggiOpen(0);
-  if (!_visual) throw exception();
+  if (!_visual) throw std::exception();
 
   long depth = GGI_AUTO;
   switch (d)
@@ -329,11 +350,11 @@ GGIDrawable::GGIDrawable(const char *display, PixelCoord w, PixelCoord h, PixelC
   _mode.frames = 1;
   if (ggiCheckMode(_visual, &_mode) == 0)
     {
-      if (ggiSetMode(_visual, &_mode) != 0) throw exception();
+      if (ggiSetMode(_visual, &_mode) != 0) throw std::exception();
     }
   else
     {
-      if (ggiCheckMode(_visual, &_mode) != 0 || ggiSetMode(_visual, &_mode) != 0) throw exception();
+      if (ggiCheckMode(_visual, &_mode) != 0 || ggiSetMode(_visual, &_mode) != 0) throw std::exception();
     }
   _mode.size = _mode.visible; // awful hack around a ggi bug...
   ggiAddFlags(_visual, GGIFLAG_ASYNC);

@@ -28,11 +28,11 @@
 class RCManager
 {
 public:
-  static void read(const string &);
-  static Prague::Path get_path(const string &);
-  static void add_to_path(const string &, const string &);
+  static void read(const std::string &);
+  static Prague::Path get_path(const std::string &);
+  static void add_to_path(const std::string &, const std::string &);
 private:
-  static map<string, Prague::Path> _paths;
+  static std::map<std::string, Prague::Path> _paths;
 };
 
 #endif

@@ -226,7 +226,7 @@ inline bool Rectangle<T>::intersectsLine(const Line<T> &i) const
 }
 
 template <class T>
-ostream &operator << (ostream &os, const Rectangle<T> &rectangle)
+std::ostream &operator << (std::ostream &os, const Rectangle<T> &rectangle)
 {
   return os << '(' << rectangle.l << ',' << rectangle.t << ',' << rectangle.r << ',' << rectangle.b << ')';
 }
