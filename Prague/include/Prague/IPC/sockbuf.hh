@@ -33,9 +33,12 @@
 namespace Prague
 {
 
-#if defined(__linux__) || defined(__FreeBSD__)  // XXX: ugly!!
+// XXX This #if is ugly! 
+// NOTE: 'macintosh' is untested, but inferred from Darwin/OSX headers
+#if defined(__linux__) || defined(__FreeBSD__)  || \
+    defined(macintosh) || (defined(__APPLE__) && defined(__MACH__))
 #  define MSG_MAXIOVLEN	 16
-#endif // __linux__ or __FreeBSD__
+#endif // __linux__ or __FreeBSD__ or macintosh or __APPLE__/__MACH__
 
 //. socket exception classes
 class sockerr
