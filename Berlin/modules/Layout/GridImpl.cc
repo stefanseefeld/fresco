@@ -106,6 +106,7 @@ void LayoutAlignRequest::accumulate(const Graphic::Requirement &r)
       Coord r_min = r.minimum;
       Coord r_align = r.align;
       Coord r_inv_align = Coord(1) - r_align;
+//       cout << this << " LayoutAlignRequest::accumulate " << r_nat << ' ' << r_max << ' ' << r_min << r_align << endl;
       natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
       max_lead = Math::min(max_lead, Coord(r_max * r_align));
       min_lead = Math::max(min_lead, Coord(r_min * r_align));

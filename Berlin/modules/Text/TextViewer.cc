@@ -42,14 +42,11 @@ void TextViewer::init()
 {
   MutexGuard guard(childMutex);
 //   Trace trace("TextViewer::init");
-  Unistring *u = buffer->value();
-  CORBA::ULong len = u->length();
-  Unistring single;
-  single.length(1);
+  Unistring_var us = buffer->value();
+  CORBA::ULong len = us->length();
   for (unsigned long i = 0; i < len; i++)
     {
-      single[0] = (*u)[i];
-      Graphic_var child = kit->chunk(single);
+      Graphic_var child = kit->ch(us[i]);
       Edge edge;
       edge.parent = Graphic::_duplicate(child);
       edge.id = tag();
@@ -72,14 +69,11 @@ void TextViewer::update(const CORBA::Any &a)
 	  {
 //             Trace trace2("TextViewer::update - insert");
 	    MutexGuard guard(childMutex);
-	    Unistring *u = buffer->getChars(ch->pos, (CORBA::ULong)ch->len);
-	    CORBA::ULong len = u->length();
-	    Unistring single;
-	    single.length(1);
+	    Unistring_var us = buffer->getChars(ch->pos, (CORBA::ULong)ch->len);
+	    CORBA::ULong len = us->length();
 	    for (unsigned long i = 0; i < len; i++)
 	      {
-		single[0] = (*u)[i];
-		Graphic_var child = kit->chunk(single);
+		Graphic_var child = kit->ch(us[i]);
 		Edge edge;
 		edge.parent = Graphic::_duplicate(child);
 		edge.id = tag();
@@ -107,5 +101,6 @@ void TextViewer::update(const CORBA::Any &a)
 	  break;
 	}
     }
-  needRedraw();
+//   needRedraw();
+  needResize();
 }

@@ -61,41 +61,44 @@ void TerminalView::needResize()
 void TerminalView::update(const CORBA::Any &)
 {
   Trace trace("TerminalView::update");  
-  begin();
-  if (!lines.size())
-    {
-      lines.push_back(new Composition(canonicalDK, compositor));
-      lines.back()->_obj_is_ready(_boa());
-      append(Graphic_var(lines.back()->_this()));
-    }
-  StreamBuffer::Data_var data = stream->read();
-  char *begin = (char *)data->get_buffer();
-  char *end   = begin + data->length();
-  for (char *i = begin; i != end; i++)
-    {
-      if (isprint(*i))
-	{
-	  Unicode::Char uc(*i);
-	  Unistring us;
-	  us.length(1);
-	  us[0] = Unicode::toCORBA(uc);
-	  Graphic_var child = kit->chunk(us);
-	  lines.back()->append(child);
-	}
-      else switch(*i)
-	{
-	case '\r':
-	case '\n':
-	  lines.push_back(new Composition(canonicalDK, compositor));
-	  lines.back()->_obj_is_ready(_boa());
-	  lines.back()->append(Graphic_var(kit->strut()));
-	  append(Graphic_var(lines.back()->_this()));
-	  break;
-	case '\b':
-          break;
-        }
-    }
-  this->end();
+  {
+//     MutexGuard guard(childMutex);
+    begin();
+    if (!lines.size())
+      {
+	lines.push_back(new Composition(canonicalDK, compositor));
+	lines.back()->_obj_is_ready(_boa());
+	append(Graphic_var(lines.back()->_this()));
+      }
+    StreamBuffer::Data_var data = stream->read();
+    char *begin = (char *)data->get_buffer();
+    char *end   = begin + data->length();
+    for (char *i = begin; i != end; i++)
+      {
+	if (isprint(*i))
+	  {
+	    Unicode::Char uc(*i);
+	    Unistring us;
+	    us.length(1);
+	    us[0] = Unicode::toCORBA(uc);
+	    Graphic_var child = kit->chunk(us);
+	    lines.back()->append(child);
+	  }
+	else switch(*i)
+	  {
+	  case '\r':
+	  case '\n':
+	    lines.push_back(new Composition(canonicalDK, compositor));
+	    lines.back()->_obj_is_ready(_boa());
+	    lines.back()->append(Graphic_var(kit->strut()));
+	    append(Graphic_var(lines.back()->_this()));
+	    break;
+	  case '\b':
+	    break;
+	  }
+      }
+    this->end();
+  }
   needResize();
   needRedraw();
 }

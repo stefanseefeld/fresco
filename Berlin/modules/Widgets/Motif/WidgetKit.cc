@@ -132,7 +132,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   fixed.minimum = 120.;
   fixed.natural = 120.;
   fixed.maximum = 120.;
-  fixed.align = 0;
+  fixed.align = 0.;
   Graphic::Requisition req;
   if (axis == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
   else               req.x = fixed, req.y = flexible, req.z.defined = false;
@@ -153,7 +153,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    */
   spec.abrightness(0.5);
   Graphic_var inset = tool->frame(slider, 20., spec, false);
-  Controller_var root = tool->group(inset);
+  Controller_var root = tool->group(Graphic_var(layout->alignAxis(inset, axis == xaxis ? yaxis : xaxis, 1.0)));
   /*
    * now wire up the control structure
    */

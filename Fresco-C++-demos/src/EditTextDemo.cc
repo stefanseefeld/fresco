@@ -46,8 +46,9 @@ EditTextDemo::EditTextDemo(Application *a)
   TextBuffer_var buf = command->text();
   Graphic_var txt = text->simpleViewer(buf);
   ToolKit::FrameSpec spec;
-  spec.bbrightness(0.5);
-  Graphic_var frame = tool->frame(Graphic_var(tool->rgb(txt, 0., 0., 0.)), 10., spec, true);
+  spec.abrightness(0.5);
+  Graphic_var frame = tool->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tool->rgb(txt, 0., 0., 0.)), 4000)),
+							     50.)), 20., spec, true);
   buf->insertString(toCORBA(str));
-  application->append(tool->textInput(frame, buf), Unicode::String("editable text demo"));
+  application->append(Controller_var(tool->textInput(frame, buf)), Unicode::String("editable text demo"));
 };

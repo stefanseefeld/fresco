@@ -157,9 +157,9 @@ void LayoutCenter::allocate(long, Graphic::Requisition *requests, Region_ptr, La
   Graphic::Requirement *r = GraphicImpl::requirement(requests[0], axis);
   if (r->defined)
     {
-      Alignment align = r->align;
-      Coord n = Math::min(r->maximum, Math::max(r->minimum, a.end - a.begin));
-      setSpan(result[0], axis, a.begin + a.align * (a.end - a.begin) + (align - a.align) * n, a.end - a.begin, align);
+      Coord length = a.end - a.begin;
+      Coord n = Math::min(r->maximum, Math::max(r->minimum, length));
+      setSpan(result[0], axis, a.begin + a.align * length + (r->align - alignment) * n, length, r->align);
     }
 }
 
