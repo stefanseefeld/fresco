@@ -65,7 +65,7 @@ GGI::Drawable::Drawable(const char *display, PixelCoord w, PixelCoord h, PixelCo
 
   if (ggiDBGetNumBuffers(_visual)==0)
     {
-      std::cerr << "ERROR: GGI Console requires direct-buffer support" << endl;
+      std::cerr << "ERROR: GGI Console requires direct-buffer support" << std::endl;
       throw std::exception();
     }
 }
