@@ -23,7 +23,7 @@ my $ftp_path     = "ftp://ftp.unicode.org/Public/UNIDATA/";
 
 # Get files if necessary from ftp.unicode.org
 foreach my $file ( $Block_File, $UCD_File, $EA_File, $LB_File,
-           $Exclude_File, $Prop_File)
+           $Exclude_File, $Prop_File, $DerivedProp_File)
 {
     system ("if [ ! -f $file ] ; then wget $ftp_path$file ; fi");
 }
