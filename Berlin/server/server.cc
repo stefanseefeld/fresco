@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 
   Logger::log(Logger::loader) << "[1/5] initialized loadable modules" << endl;
 
-  Console::open();
+  Console::open(argc, argv);
 
   Kit::PropertySeq props;
   props.length(1);
