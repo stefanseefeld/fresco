@@ -41,7 +41,7 @@ class Config(Base):
 	    toc_in = [
 		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague/html',
 		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon/html',
-		'@Fresco_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco/html'
+		'@Fresco_CXX_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco/html'
 	    ]
 	
         class Kit(HTML):
