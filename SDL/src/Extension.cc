@@ -273,10 +273,6 @@ void SDL::GLContext::flush() {
     _glDisable_ptr(0x0BC0); // GL_ALPHA_TEST
     _glDisable_ptr(0x0BE2); // GL_BLEND
     _glDisable_ptr(0x0C11); // GL_SCISSOR_TEST
-    // <DEBUG>
-    cerr << "GLContext::flush: width=" << _drawable->width()
-	 << "  height=" << _drawable->height() << endl;
-    // </DEBUG>
     _glCopyPixels_ptr(0, 0, _drawable->width(), _drawable->height(),
 		      0x1800); // GL_COLOR
     _glEnable_ptr(0x0BC0); // GL_ALPHA_TEST
