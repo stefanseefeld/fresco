@@ -24,7 +24,7 @@
 #define _GLDrawingKit_hh
 
 #include <Drawing/DrawingKitBase.hh>
-#include <Drawing/openGL/GLFont.hh>
+#include <Drawing/openGL/FontServer.hh>
 #include <Drawing/openGL/GLRaster.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/KitImpl.hh>
@@ -61,12 +61,12 @@ public:
   virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Raster_ptr texture() { return tx ? Raster::_duplicate(tx->remote) : Raster::_nil();}
 
-  virtual CORBA::ULong fontSize() { return font->size();}
-  virtual CORBA::ULong fontWeight() { return font->weight();}
-  virtual Unistring *fontFamily() { return font->family();}
-  virtual Unistring *fontSubFamily() { return font->subfamily();}
-  virtual Unistring *fontFullName() { return font->fullname();}
-  virtual Unistring *fontStyle() { return font->style();}
+  virtual CORBA::ULong fontSize() { return fontServer.size();}
+  virtual CORBA::ULong fontWeight() { return fontServer.weight();}
+  virtual Unistring *fontFamily() { return new Unistring(fontServer.family());}
+  virtual Unistring *fontSubFamily() { return new Unistring(fontServer.subfamily());}
+  virtual Unistring *fontFullName() { return new Unistring(fontServer.fullname());}
+  virtual Unistring *fontStyle() { return new Unistring(fontServer.style());}
   virtual FontMetrics metrics() { return FontMetrics();}
   virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
 
@@ -112,7 +112,7 @@ public:
   Endstyle       es;
   Fillstyle      fs;
   GLRaster      *tx;
-  GLFont        *font;
+  GL::FontServer fontServer;
   
   ObjectCache<Raster_var, GLTexture> textures;
   ObjectCache<Raster_var, GLImage> images;

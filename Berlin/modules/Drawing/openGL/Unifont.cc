@@ -37,6 +37,10 @@
 #include <fcntl.h>
 
 GLUnifont::GLUnifont()
+  : _family(Unicode::toCORBA(Unicode::String("GNU Unifont"))),
+    _subfamily(),
+    _fullname(),
+    _style(Unicode::toCORBA(Unicode::String("monospace")))
 {
   char *env = getenv("BERLIN_ROOT");
   if (!env)
@@ -51,19 +55,17 @@ GLUnifont::GLUnifont()
 GLUnifont::~GLUnifont() { delete glyphmap ;}
 unsigned long GLUnifont::size() { return 16;}
 unsigned long GLUnifont::weight() { return 100;}
-Unistring *GLUnifont::family() { return new Unistring(Unicode::toCORBA(Unicode::String("GNU Unifont")));}
-Unistring *GLUnifont::subfamily() { return 0;}
-Unistring *GLUnifont::fullname() { return 0;}
-Unistring *GLUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
+const Unistring &GLUnifont::family() { return _family;}
+const Unistring &GLUnifont::subfamily() { return _subfamily;}
+const Unistring &GLUnifont::fullname() { return _fullname;}
+const Unistring &GLUnifont::style() { return _style;}
 
-void GLUnifont::drawText(const Unistring &u, const Vertex &p) 
+void GLUnifont::drawText(const Unistring &u) 
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   // prepare GL to draw
   glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
-//   glRasterPos2i((int)(p.x/10.),(int)(p.y/10. - 16));  // position pen
-//   glRasterPos2d(p.x, p.y);  // position pen
   glRasterPos2d(0., 160.);  // position pen
   
   for (unsigned long idx = 0; idx < u.length(); idx++)

@@ -40,7 +40,7 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
     drawable(GGI::drawable()),
     tx(0),
-    font(new GLUnifont),
+    fontServer(),
     textures(100),
     images(500)
 {
@@ -77,14 +77,10 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
 GLDrawingKit::~GLDrawingKit()
 {
   GGIMesaDestroyContext(context);
-  delete font;
-//   cl->_dispose();
-//   tr->_dispose();
 }
 
 void GLDrawingKit::setTransformation(Transform_ptr t)
 {
-//   tr->copy(t);
   static GLdouble identity[16] = {1., 0., 0., 0.,
 				  0., 1., 0., 0.,
 				  0., 0., 1., 0.,
@@ -105,7 +101,6 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
 
 void GLDrawingKit::setClipping(Region_ptr r)
 {
-//   cl->copy(r);
   cl = Region::_duplicate(r);
   if (CORBA::is_nil(cl)) glScissor(0, 0, drawable->width(), drawable->height());
   else
@@ -256,24 +251,15 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
-void GLDrawingKit::setFontSize(CORBA::ULong) {}
-void GLDrawingKit::setFontWeight(CORBA::ULong) {}
-void GLDrawingKit::setFontFamily(const Unistring&) {}
-void GLDrawingKit::setFontSubFamily(const Unistring&) {}
-void GLDrawingKit::setFontFullName(const Unistring&) {}
-void GLDrawingKit::setFontStyle(const Unistring&) {}
+void GLDrawingKit::setFontSize(CORBA::ULong s) { fontServer.size(s);}
+void GLDrawingKit::setFontWeight(CORBA::ULong w) { fontServer.weight(w);}
+void GLDrawingKit::setFontFamily(const Unistring &f) { fontServer.family(f);}
+void GLDrawingKit::setFontSubFamily(const Unistring &sf) { fontServer.subfamily(sf);}
+void GLDrawingKit::setFontFullName(const Unistring &fn) { fontServer.fullname(fn);}
+void GLDrawingKit::setFontStyle(const Unistring &s) { fontServer.style(s);}
 void GLDrawingKit::setFontAttr(const NVPair & nvp) {}
-
-void GLDrawingKit::allocateText(const Unistring &s, Graphic::Requisition &req) 
-{
-  font->allocateText(s, req);
-}
-
-void GLDrawingKit::drawText(const Unistring &us)
-{
-  Vertex origin;
-  font->drawText(us, origin);
-}
+void GLDrawingKit::allocateText(const Unistring &s, Graphic::Requisition &req) { fontServer.allocateText(s, req);}
+void GLDrawingKit::drawText(const Unistring &us) { fontServer.drawText(us);}
 
 extern "C" KitFactory *load()
 {

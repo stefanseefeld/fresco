@@ -30,14 +30,11 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(GL_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(GL_LIBS)# -lFT #-lttf
+LIBS	= -lPrague -lBerlin $(GL_LIBS) -lFT #-lttf
 
-#GLFont.cc GLUnifont.cc
+#SRC	= GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc
 
-#SRC	= GLRaster.cc GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
-#	  GLDrawingKit.cc
-
-SRC	= GLRaster.cc GLQuadric.cc GLDrawingKit.cc GLUnifont.cc
+SRC	= FontServer.cc GLUnifont.cc GLPixmapFont.cc GLRaster.cc GLQuadric.cc GLDrawingKit.cc
 
 TARGET	= $(mpath)/libGLDrawing.so
 

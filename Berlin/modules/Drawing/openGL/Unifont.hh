@@ -43,18 +43,20 @@ public:
   GLUnifont();
   virtual ~GLUnifont();
   virtual unsigned long size();
-  virtual void size(unsigned long) {}
   virtual unsigned long weight();
-  virtual void weight(unsigned long) {}
-  virtual Unistring *family();
-  virtual Unistring *subfamily();
-  virtual Unistring *fullname();
-  virtual Unistring *style();
+  virtual const Unistring &family();
+  virtual const Unistring &subfamily();
+  virtual const Unistring &fullname();
+  virtual const Unistring &style();
 
-  void drawText(const Unistring &u, const Vertex &v);
-  void allocateText(const Unistring &u, Graphic::Requisition &r);
-protected:
+  void drawText(const Unistring &);
+  void allocateText(const Unistring &, Graphic::Requisition &);
+private:
   MMap *glyphmap;
+  Unistring _family;
+  Unistring _subfamily;
+  Unistring _fullname;
+  Unistring _style;
 };
 
 #endif

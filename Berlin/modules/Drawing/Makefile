@@ -21,7 +21,7 @@
 
 SHELL	= /bin/sh
 
-subdirs = openGL libArt #GGI
+subdirs = FT openGL libArt #GGI
 
 all:
 	@for dir in ${subdirs}; do \
