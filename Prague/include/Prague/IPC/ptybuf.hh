@@ -41,7 +41,7 @@ public:
 protected:
   std::string ptydev;
 private:
-  int pty;
+  int tty;
 };
 
 };

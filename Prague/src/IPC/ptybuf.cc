@@ -47,13 +47,13 @@ using namespace Prague;
 //inline char ctrl(char c) { return c & 0x1f;}
 
 ptybuf::ptybuf()
-: ipcbuf ( std::ios::in | std::ios::out ), pty ( -1 )
+: ipcbuf ( std::ios::in | std::ios::out ), tty ( -1 )
 { }
 
 ptybuf::~ptybuf()
 {
-  if ( pty =! -1 )
-    close ( pty );
+  if ( tty =! -1 )
+    close ( tty );
 }
 
 std::streamsize ptybuf::sys_read(char *buf, std::streamsize len)
@@ -68,19 +68,18 @@ std::streamsize ptybuf::sys_read(char *buf, std::streamsize len)
 
 int ptybuf::openpty ()
 {
-  if ( pty == -1 )
+  if ( tty == -1 )
     setup ();
-  return pty;
+  return fd();
 }
 
 int ptybuf::opentty ()
 {
-  if ( pty == -1 )
+  if ( tty == -1 )
     setup ();
-  if ( pty == -1 )
-    return fd ();
-  else
+  if ( tty == -1 )
     return -1;
+  return tty;
 }
 
 void ptybuf::setup  ()
@@ -101,8 +100,8 @@ void ptybuf::setup  ()
     return;
   }
 
-  fd ( ttyfd );
-  pty = ptyfd;
+  fd ( ptyfd );
+  tty = ttyfd;
   ptydev = ttyname ( ptyfd );
 #else /* HAVE_OPENPTY */
   #ifdef HAVE__GETPTY
@@ -128,8 +127,8 @@ void ptybuf::setup  ()
     return;
   }
 
-  fd ( ttyfd );
-  pty = ptyfd;
+  fd ( ptyfd );
+  tty = ttyfd;
   ptydev = name;
   #else /* HAVE__GETPTY */
     #ifdef HAVE_DEV_PTMX
@@ -174,8 +173,8 @@ void ptybuf::setup  ()
     return;
   }
 
-  fd ( ttyfd );
-  pty = ptyfd;
+  fd ( ptyfd );
+  tty = ttyfd;
   ptydev = ptsname ( ptm );
     #else /* HAVE_DEV_PTMX */
       #ifdef HAVE_DEV_PTS_AND_PTC
@@ -200,8 +199,8 @@ void ptybuf::setup  ()
     return;
   }
 
-  fd ( ttyfd );
-  pty = ptyfd;
+  fd ( ptyfd );
+  tty = ttyfd;
   ptydev = name;
       #else /* HAVE_DEV_PTS_AND_PTC */
   /* BSD-style pty code. */
@@ -242,8 +241,8 @@ void ptybuf::setup  ()
       return;
     }
 
-    fd ( ttyfd );
-    pty = ptyfd;
+    fd ( ptyfd );
+    tty = ttyfd;
     ptydev = buf1;
   }
       #endif /* HAVE_DEV_PTS_AND_PTC */

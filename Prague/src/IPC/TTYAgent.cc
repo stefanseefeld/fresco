@@ -71,7 +71,6 @@ void TTYAgent::start()
             break;
 	  }
 	default:
-	  pty->setup();
  	  _inbuf = _outbuf = pty;
 	  _errbuf = 0;
 	  _inbuf->async(true);
