@@ -22,7 +22,7 @@
 #ifndef _logbuf_hh
 #define _logbuf_hh
 
-#include <streambuf.h>
+#include <streambuf>
 #include <cstring>
 
 namespace Prague

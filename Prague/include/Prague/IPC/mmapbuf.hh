@@ -24,7 +24,7 @@
 
 #include <Prague/Sys/MMap.hh>
 #include <Prague/Sys/FLock.hh>
-#include <streambuf.h>
+#include <streambuf>
 
 namespace Prague
 {

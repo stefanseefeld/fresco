@@ -24,7 +24,7 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Thread.hh>
-#include <streambuf.h>
+#include <streambuf>
 
 namespace Prague
 {
