@@ -285,15 +285,20 @@ void TransformImpl::premultiply(Transform_ptr transform)
     {
       Warsaw::Transform::Matrix m;
       transform->store_matrix(m);
-      for (unsigned short i = 0; i != 3; i++)
+      if (identity ())
+	load_matrix (m);
+      else
 	{
-	  Coord mi0 = mat[i][0], mi1 = mat[i][1], mi2 = mat[i][2], mi3 = mat[i][3];
-	  mat[i][0] = mi0 * m[0][0] + mi1 * m[1][0] + mi2 * m[2][0] + mi3 * m[3][0];
-	  mat[i][1] = mi0 * m[0][1] + mi1 * m[1][1] + mi2 * m[2][1] + mi3 * m[3][1];
-	  mat[i][2] = mi0 * m[0][2] + mi1 * m[1][2] + mi2 * m[2][2] + mi3 * m[3][2];
-	  mat[i][3] = mi0 * m[0][3] + mi1 * m[1][3] + mi2 * m[2][3] + mi3 * m[3][3];
+	  for (unsigned short i = 0; i != 3; i++)
+	    {
+	      Coord mi0 = mat[i][0], mi1 = mat[i][1], mi2 = mat[i][2], mi3 = mat[i][3];
+	      mat[i][0] = mi0 * m[0][0] + mi1 * m[1][0] + mi2 * m[2][0] + mi3 * m[3][0];
+	      mat[i][1] = mi0 * m[0][1] + mi1 * m[1][1] + mi2 * m[2][1] + mi3 * m[3][1];
+	      mat[i][2] = mi0 * m[0][2] + mi1 * m[1][2] + mi2 * m[2][2] + mi3 * m[3][2];
+	      mat[i][3] = mi0 * m[0][3] + mi1 * m[1][3] + mi2 * m[2][3] + mi3 * m[3][3];
+	    }
+	  modified();
 	}
-      modified();
     }
 }    
 
@@ -303,14 +308,19 @@ void TransformImpl::postmultiply(Transform_ptr transform)
     {
       Warsaw::Transform::Matrix m;
       transform->store_matrix(m);
-      for (unsigned short i = 0; i != 4; i++)
+      if (identity ())
+	load_matrix (m);
+      else
 	{
-	  Coord m0i = mat[0][i], m1i = mat[1][i], m2i = mat[2][i];
-	  mat[0][i] = m[0][0] * m0i + m[0][1] * m1i + m[0][2] * m2i;
-	  mat[1][i] = m[1][0] * m0i + m[1][1] * m1i + m[2][1] * m2i;
-	  mat[2][i] = m[2][0] * m0i + m[2][1] * m1i + m[2][2] * m2i;
+	  for (unsigned short i = 0; i != 4; i++)
+	    {
+	      Coord m0i = mat[0][i], m1i = mat[1][i], m2i = mat[2][i];
+	      mat[0][i] = m[0][0] * m0i + m[0][1] * m1i + m[0][2] * m2i;
+	      mat[1][i] = m[1][0] * m0i + m[1][1] * m1i + m[2][1] * m2i;
+	      mat[2][i] = m[2][0] * m0i + m[2][1] * m1i + m[2][2] * m2i;
+	    }
+	  modified();
 	}
-      modified();
     }
 }
 
