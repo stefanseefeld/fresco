@@ -46,8 +46,8 @@ TEX         =
 DVIPS       = 
 
 # Compilation and linking flags.
-CFLAGS	   	= -Wall -I../../../include
-CXXFLAGS   	= -Wall -I../../../../include
+CFLAGS	   	= -Wall -I../../../include -pthread
+CXXFLAGS   	= -Wall -I../../../../include -pthread
 LDFLAGS    	= -L../../../../lib
 OPTFLAGS	= -O3
 SOFLAGS		= -fpic
@@ -62,7 +62,7 @@ gpath		= gdb
 ppath		= prf
 rpath		= $(lpath)
 
-LIBS		= -lWarsaw -lPrague -ldl -lz -lpthread
+LIBS		= -lPrague -ldl -lz -lpthread
 
 ALL        =   Diner Queue ThreadPool
 
@@ -78,6 +78,9 @@ Queue:		Queue.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 ThreadPool:	ThreadPool.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Data:		Data.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:	
