@@ -53,7 +53,11 @@ public:
   operator bool () const { return tv_sec != 0 || tv_usec != 0;}
   operator timespec () const { timespec t; t.tv_sec = tv_sec, t.tv_nsec = tv_usec * 1000; return t;}
   operator double () const { return static_cast<double>(tv_sec) + static_cast<double>(tv_usec)/1000000.;}
-  operator const char *() const { return ctime(&tv_sec);}
+   // FIXME: timeval is defined differently in different systems
+   // on freebsd we can't use ctime(&tv_sec) because tv_sec is 'int32'
+   // while timeval contains 'time_t' members
+   // -stefan
+//   operator const char *() const { return ctime(&tv_sec);}
   static Time currentTime();
   friend std::ostream &operator << (std::ostream &os, const Time &T) { return os << T.tv_sec << " s, " << T.tv_usec << " us";}
 protected:

@@ -135,7 +135,9 @@ public:
 #ifdef AF_NETLINK
     af_netlink          = AF_NETLINK,
 #endif
+#ifdef AF_X25
     af_x25              = AF_X25,
+#endif
 #ifdef AF_AX25
     af_ax25             = AF_AX25,
 #endif
