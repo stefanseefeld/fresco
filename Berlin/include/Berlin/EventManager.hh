@@ -27,7 +27,6 @@
 #include <Warsaw/Controller.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/FocusImpl.hh>
-#include <Berlin/Console.hh>
 #include <Berlin/ImplVar.hh>
 #include <vector>
 
@@ -46,8 +45,7 @@ public:
 private:
   static void activate(FocusImpl *);
   static void deactivate(FocusImpl *);
-  Console::Drawable *_drawable;
-  flist_t            _foci;
+  flist_t _foci;
 };
 
 #endif 

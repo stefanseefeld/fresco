@@ -113,19 +113,19 @@ void MonoGraphic::remove_child_graphic(Tag localId)
   need_resize();
 }
 
-Warsaw::Graphic::Iterator_ptr MonoGraphic::first_child_graphic()
+Warsaw::GraphicIterator_ptr MonoGraphic::first_child_graphic()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return (CORBA::is_nil (_child.peer)
-	  ? Warsaw::Graphic::Iterator::_nil()
+	  ? Warsaw::GraphicIterator::_nil()
 	  : _child.peer->first_child_graphic());
 }
 
-Warsaw::Graphic::Iterator_ptr MonoGraphic::last_child_graphic()
+Warsaw::GraphicIterator_ptr MonoGraphic::last_child_graphic()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return (CORBA::is_nil (_child.peer)
-	  ? Warsaw::Graphic::Iterator::_nil()
+	  ? Warsaw::GraphicIterator::_nil()
 	  : _child.peer->last_child_graphic());
 }
 

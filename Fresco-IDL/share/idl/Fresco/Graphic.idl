@@ -95,7 +95,6 @@ module Warsaw
 	Requirement x, y, z;
 	boolean preserve_aspect;
       };
-      typedef GraphicIterator Iterator;
       /*
        * structural methods
        */
@@ -123,10 +122,10 @@ module Warsaw
       //. Remove a parent for this Graphic.
       //. FIXME: What is this Tag?
       void remove_parent_graphic(in Tag t);
-      //. Get an Iterator pointing to the first child Graphic.
-      Iterator first_child_graphic();
-      //. Get an Iterator pointing to the last child Graphic.
-      Iterator last_child_graphic();
+      //. Return an Iterator pointing to the first child Graphic.
+      GraphicIterator first_child_graphic();
+      //. Return an Iterator pointing to the last child Graphic.
+      GraphicIterator last_child_graphic();
       /*
        * layout related methods
        */

@@ -57,8 +57,8 @@ public:
   virtual void remove_parent_controller();
 
   virtual Warsaw::Controller_ptr parent_controller();
-  virtual Warsaw::Controller::Iterator_ptr first_child_controller();
-  virtual Warsaw::Controller::Iterator_ptr last_child_controller();
+  virtual Warsaw::ControllerIterator_ptr first_child_controller();
+  virtual Warsaw::ControllerIterator_ptr last_child_controller();
 
   virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
   virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr);

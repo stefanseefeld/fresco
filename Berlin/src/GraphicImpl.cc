@@ -327,8 +327,8 @@ void GraphicImpl::remove_parent_graphic(Tag localId)
 /*
  * the following two methods need to be implemented...
  */
-Warsaw::Graphic::Iterator_ptr GraphicImpl::first_child_graphic() { return Warsaw::Graphic::Iterator::_nil();}
-Warsaw::Graphic::Iterator_ptr GraphicImpl::last_child_graphic() { return Warsaw::Graphic::Iterator::_nil();}
+Warsaw::GraphicIterator_ptr GraphicImpl::first_child_graphic() { return Warsaw::GraphicIterator::_nil();}
+Warsaw::GraphicIterator_ptr GraphicImpl::last_child_graphic() { return Warsaw::GraphicIterator::_nil();}
 
 /*
  * these are default implementations of the layout, picking and drawing protocol

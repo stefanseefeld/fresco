@@ -21,16 +21,16 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
+#include <Babylon/Babylon.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Input.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/Focus.hh>
+#include "Berlin/Logger.hh"
 #include "Berlin/ControllerImpl.hh"
 #include "Berlin/Event.hh"
-#include <Prague/Sys/Tracer.hh>
-#include <Babylon/Babylon.hh>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -199,7 +199,7 @@ Controller_ptr ControllerImpl::parent_controller()
   return Warsaw::Controller::_duplicate(_parent);
 }
 
-Warsaw::Controller::Iterator_ptr ControllerImpl::first_child_controller()
+Warsaw::ControllerIterator_ptr ControllerImpl::first_child_controller()
 {
   Trace trace("ControllerImpl::first_child_controller");
   Iterator *iterator = new Iterator(this, 0);
@@ -207,7 +207,7 @@ Warsaw::Controller::Iterator_ptr ControllerImpl::first_child_controller()
   return iterator->_this();
 }
 
-Warsaw::Controller::Iterator_ptr ControllerImpl::last_child_controller()
+Warsaw::ControllerIterator_ptr ControllerImpl::last_child_controller()
 {
   Trace trace("ControllerImpl::last_child_controller");
   Prague::Guard<Mutex> guard(_cmutex);
@@ -219,6 +219,7 @@ Warsaw::Controller::Iterator_ptr ControllerImpl::last_child_controller()
 CORBA::Boolean ControllerImpl::request_focus(Controller_ptr c, Input::Device d)
 {
   Trace trace("ControllerImpl::request_focus");  
+  Logger::log(Logger::focus) << this << " requesting focus for " << d << std::endl;
   Controller_var parent = parent_controller();
   return CORBA::is_nil(parent) ? false : parent->request_focus(c, d);
 }
@@ -226,14 +227,17 @@ CORBA::Boolean ControllerImpl::request_focus(Controller_ptr c, Input::Device d)
 CORBA::Boolean ControllerImpl::receive_focus(Focus_ptr f)
 {
   Trace trace("ControllerImpl::receive_focus");
-  set_focus(f->device());
-  if (f->device() == 0) set(Warsaw::Controller::active);
+  Input::Device d = f->device();
+  Logger::log(Logger::focus) << this << " receiving focus for " << d << std::endl;
+  set_focus(d);
+  if (d == 0) set(Warsaw::Controller::active);
   return true;
 }
 
 void ControllerImpl::lose_focus(Input::Device d)
 {
   Trace trace("ControllerImpl::lose_focus");
+  Logger::log(Logger::focus) << this << " losing focus for " << d << std::endl;
   clear_focus(d);
   if (d == 0) clear(Warsaw::Controller::active);
 }
@@ -284,7 +288,7 @@ CORBA::Boolean ControllerImpl::next_focus(Input::Device d)
   /*
    * first locate the next controller in the control graph...
    */
-  Warsaw::Controller::Iterator_var iterator = parent->first_child_controller();
+  Warsaw::ControllerIterator_var iterator = parent->first_child_controller();
   Warsaw::Controller_var next;
   /*
    * set the iterator to refer to 'this' child...
@@ -315,7 +319,7 @@ CORBA::Boolean ControllerImpl::prev_focus(Input::Device d)
   /*
    * first locate the previous controller in the control graph...
    */
-  Warsaw::Controller::Iterator_var iterator = parent->last_child_controller();
+  Warsaw::ControllerIterator_var iterator = parent->last_child_controller();
   Warsaw::Controller_var prev;
   /*
    * set the iterator to refer to 'this' child...
@@ -360,7 +364,7 @@ CORBA::Boolean ControllerImpl::test(Warsaw::Telltale::Mask m)
 
 void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
-  unsigned long nf = on ? _telltale | m : _telltale & ~m;
+  CORBA::ULong nf = on ? _telltale | m : _telltale & ~m;
   {
     Prague::Guard<Mutex> guard(_mutex);
     if (nf == _telltale) return;

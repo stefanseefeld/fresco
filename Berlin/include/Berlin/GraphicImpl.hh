@@ -70,8 +70,8 @@ class GraphicImpl : public virtual POA_Warsaw::Graphic,
   virtual void remove_child_graphic(Warsaw::Tag);
   virtual Warsaw::Tag add_parent_graphic(Warsaw::Graphic_ptr, Warsaw::Tag);
   virtual void remove_parent_graphic(Warsaw::Tag);
-  virtual Warsaw::Graphic::Iterator_ptr first_child_graphic();
-  virtual Warsaw::Graphic::Iterator_ptr last_child_graphic();
+  virtual Warsaw::GraphicIterator_ptr first_child_graphic();
+  virtual Warsaw::GraphicIterator_ptr last_child_graphic();
 
   virtual Warsaw::Transform_ptr transformation();
   virtual void request(Warsaw::Graphic::Requisition &);

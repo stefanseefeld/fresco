@@ -36,8 +36,8 @@ public:
   virtual void prepend_graphic(Warsaw::Graphic_ptr);
   virtual void remove_graphic(Warsaw::Tag);
   virtual void remove_child_graphic(Warsaw::Tag);
-  virtual Warsaw::Graphic::Iterator_ptr first_child_graphic();
-  virtual Warsaw::Graphic::Iterator_ptr last_child_graphic();
+  virtual Warsaw::GraphicIterator_ptr first_child_graphic();
+  virtual Warsaw::GraphicIterator_ptr last_child_graphic();
 
   virtual Warsaw::Transform_ptr transformation();
   virtual void request(Warsaw::Graphic::Requisition &);

@@ -172,7 +172,7 @@ void PolyGraphic::remove_child_graphic(Tag localId)
   need_resize();
 }
 
-Warsaw::Graphic::Iterator_ptr PolyGraphic::first_child_graphic()
+Warsaw::GraphicIterator_ptr PolyGraphic::first_child_graphic()
 {
   Trace trace("PolyGraphic::first_child_graphic");
   Iterator *iterator = new Iterator(this, 0);
@@ -180,7 +180,7 @@ Warsaw::Graphic::Iterator_ptr PolyGraphic::first_child_graphic()
   return iterator->_this();
 }
 
-Warsaw::Graphic::Iterator_ptr PolyGraphic::last_child_graphic()
+Warsaw::GraphicIterator_ptr PolyGraphic::last_child_graphic()
 {
   Trace trace("PolyGraphic::last_child_graphic");
   Iterator *iterator = new Iterator(this, num_children());

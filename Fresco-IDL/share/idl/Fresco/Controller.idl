@@ -71,8 +71,6 @@ module Warsaw
   //. input handling and focus management.
   interface Controller : Graphic, Telltale
     {
-      typedef ControllerIterator Iterator;
-
       //. FIXME: What do these do?
       const Mask enabled = 0x1;
       const Mask pressed = 0x2;
@@ -95,15 +93,14 @@ module Warsaw
       void set_parent_controller(in Controller c);
       //. Remove this Controller's parent.
       void remove_parent_controller();
-      //. Get this Controller's parent. Returns CORBA::nil if no parent
-      //. Controller is set yet.
+      //. Return this Controller's parent or nil if it doesn't have one
       Controller parent_controller();
-      //. Get an Iterator pointing to the first Controller in this 
+      //. Return an Iterator pointing to the first Controller in this 
       //. Controller's list of children.
-      Iterator first_child_controller();
-      //. Get an Iterator pointing to the last Controller in this 
+      ControllerIterator first_child_controller();
+      //. Return an Iterator pointing to the last Controller in this 
       //. Controller's list of children.
-      Iterator last_child_controller();
+      ControllerIterator last_child_controller();
       //. Ask for input focus for the device with the given id. 
       //. Normally, a controller will call this
       //. operation on its parent. The parent, in turn, may propagate
