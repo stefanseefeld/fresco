@@ -1,4 +1,293 @@
 Source: berlin
+Section: misc
+Priority: optional
+Maintainer: Bastian Blank <waldi@debian.org>
+Build-Depends: debhelper (>> 3.0.0), libart-dev, libfreetype6-dev, libggi2-dev, omniorb-dev, zlib1g-dev, libpng-dev
+Standards-Version: 3.5.2
+
+Package: berlin
+Architecture: any
+Depends: libbabylon (= 0.0.20010818-1), libberlin (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), libprague (= 0.0.20010818-1), berlin-kit-artdrawing (= 0.0.20010818-1), berlin-kit-command (= 0.0.20010818-1), berlin-kit-desktop (= 0.0.20010818-1), berlin-kit-figure (= 0.0.20010818-1), berlin-kit-gadget (= 0.0.20010818-1), berlin-kit-image (= 0.0.20010818-1), berlin-kit-layout (= 0.0.20010818-1), berlin-kit-motif (= 0.0.20010818-1), berlin-kit-primitive (= 0.0.20010818-1), berlin-kit-text (= 0.0.20010818-1), berlin-kit-tool (= 0.0.20010818-1), berlin-kit-unidraw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: The Berlin display server
+ <description>
+
+Package: berlin-doc
+Architecture: all
+Description: Documentation for berlin
+ <description>
+
+Package: berlin-demos
+Depends: berlin (= 0.0.20010818-1)
+Architecture: any
+Description: Demos for the Berlin display server
+ <description>
+
+Package: libbabylon
+Section: libs
+Architecture: any
+Depends: libprague (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: libbabylon-dev
+Section: devel
+Architecture: all
+Depends: libbabylon (= 0.0.20010818-1)
+Description: <description>
+ <description>
+
+Package: libberlin
+Section: libs
+Architecture: any
+Depends: libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: Core library for the Berlin display server
+ <description>
+
+Package: libberlin-dev
+Section: devel
+Architecture: all
+Depends: libberlin (= 0.0.20010818-1)
+Description: Core library for the Berlin display server (development files)
+ <description>
+
+Package: libprague
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: OS wrapper library for the Berlin display server
+ <description>
+
+Package: libprague-dev
+Section: libs
+Architecture: all
+Depends: libprague (= 0.0.20010818-1)
+Description: OS wrapper library for the Berlin display server (development files)
+ <description>
+
+Package: libwarsaw
+Section: libs
+Architecture: any
+Depends: libwarsaw-idl (= 0.0.20010818-1), ${shlibs:Depends}
+Description: Communication library for the Berlin display server
+ <description>
+
+Package: libwarsaw-dev
+Section: devel
+Architecture: all
+Depends: libwarsaw (= 0.0.20010818-1), libberlin-dev (= 0.0.20010818-1)
+Description: Communication library for the Berlin display server (development files)
+ <description>
+
+Package: libwarsaw-idl
+Section: devel
+Architecture: all
+Depends: omniorb
+Description: Communication library for the Berlin display server (CORBA IDL)
+ <description>
+
+Package: berlin-kit-artdrawing
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-artdrawing-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-artdrawing, berlin-kit-drawing-dev
+Description: <description>
+ <description>
+
+Package: berlin-kit-command
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-command-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-command
+Description: <description>
+ <description>
+
+Package: berlin-kit-desktop
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-desktop-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-desktop
+Description: <description>
+ <description>
+
+Package: berlin-kit-drawing-dev
+Section: devel
+Architecture: all
+Description: <description>
+ <description>
+
+Package: berlin-kit-figure
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-figure-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-figure
+Description: <description>
+ <description>
+
+Package: berlin-kit-ggi
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-ggi-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-ggi, berlin-kit-drawing-dev
+Description: <description>
+ <description>
+
+Package: berlin-kit-gadget
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-gadget-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-gadget
+Description: <description>
+ <description>
+
+Package: berlin-kit-image
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-image-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-image
+Description: <description>
+ <description>
+
+Package: berlin-kit-layout
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-layout-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-layout
+Description: <description>
+ <description>
+
+Package: berlin-kit-motif
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-motif-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-motif
+Description: <description>
+ <description>
+
+Package: berlin-kit-psdrawing
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-psdrawing-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-psdrawing, berlin-kit-drawing-dev
+Description: <description>
+ <description>
+
+Package: berlin-kit-primitive
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-primitive-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-primitive
+Description: <description>
+ <description>
+
+Package: berlin-kit-text
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-text-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-text
+Description: <description>
+ <description>
+
+Package: berlin-kit-tool
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-tool-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-tool
+Description: <description>
+ <description>
+
+Package: berlin-kit-unidraw
+Section: libs
+Architecture: any
+Depends: libberlin (= 0.0.20010818-1), libprague (= 0.0.20010818-1), libwarsaw (= 0.0.20010818-1), ${shlibs:Depends}
+Description: <description>
+ <description>
+
+Package: berlin-kit-unidraw-dev
+Section: devel
+Architecture: all
+Depends: berlin-kit-unidraw
+Description: <description>
+ <description>
+
+Source: berlin
 Section: contrib/misc
 Priority: extra
 Maintainer: Aaron Van Couwenberghe <vanco@sonic.net>

@@ -1,4 +1,232 @@
 #!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode. 
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=3
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	-mkdir build
+	( \
+		cd build ; \
+		../configure \
+			--prefix=/usr \
+			--mandir=\$${prefix}/share/man \
+			--infodir=\$${prefix}/share/info \
+			--enable-optimize \
+			--enable-docs \
+	)
+
+	touch configure-stamp
+
+build: configure-stamp build-stamp
+build-stamp:
+	dh_testdir
+	( cd build ; $(MAKE) )
+
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	rm -rf build
+	dh_clean
+
+install: DH_OPTIONS=
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	install -m755 `pwd`/debian/berlin.sh \
+		`pwd`/debian/berlin/usr/bin/berlin
+	install -m755 `pwd`/build/bin/server \
+		`pwd`/debian/berlin/usr/lib/Berlin/bin/
+	install -m755 `pwd`/debian/berlinrc \
+		`pwd`/debian/berlin/usr/lib/Berlin/etc/
+	install -m644 `pwd`/etc/glyph.dat `pwd`/etc/pinyin.db \
+		`pwd`/debian/berlin/usr/lib/Berlin/etc/
+	install -m644 `pwd`/etc/PNG/*.png \
+		`pwd`/debian/berlin/usr/lib/Berlin/etc/PNG/
+	install -m755 `pwd`/build/bin/demo \
+		`pwd`/debian/berlin-demos/usr/lib/Berlin/bin/
+
+	install -m644 `pwd`/build/lib/libBabylon.so \
+		`pwd`/debian/libbabylon/usr/lib/
+	install -m644 `pwd`/build/modules/Babylon/* \
+		`pwd`/debian/libbabylon/usr/lib/Berlin/modules/Babylon/
+	install -m644 `pwd`/build/lib/libBerlin.so \
+		`pwd`/debian/libberlin/usr/lib/
+	install -m644 `pwd`/build/lib/libPrague.so \
+		`pwd`/debian/libprague/usr/lib/
+	install -m644 `pwd`/build/lib/libWarsaw.so \
+		`pwd`/debian/libwarsaw/usr/lib/
+
+	install -m644 `pwd`/build/modules/libArtDrawing.so \
+		`pwd`/debian/berlin-kit-artdrawing/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libCommand.so \
+		`pwd`/debian/berlin-kit-command/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libDesktop.so \
+		`pwd`/debian/berlin-kit-desktop/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libFigure.so \
+		`pwd`/debian/berlin-kit-figure/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libGGI.so \
+		`pwd`/debian/berlin-kit-ggi/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libGadget.so \
+		`pwd`/debian/berlin-kit-gadget/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libImage.so \
+		`pwd`/debian/berlin-kit-image/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libLayout.so \
+		`pwd`/debian/berlin-kit-layout/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libMotif.so \
+		`pwd`/debian/berlin-kit-motif/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libPSDrawing.so \
+		`pwd`/debian/berlin-kit-psdrawing/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libPrimitive.so \
+		`pwd`/debian/berlin-kit-primitive/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libText.so \
+		`pwd`/debian/berlin-kit-text/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libTool.so \
+		`pwd`/debian/berlin-kit-tool/usr/lib/Berlin/modules/
+	install -m644 `pwd`/build/modules/libUnidraw.so \
+		`pwd`/debian/berlin-kit-unidraw/usr/lib/Berlin/modules/
+
+	install -m755 `pwd`/build/bin/Babylon-config \
+		`pwd`/debian/libbabylon-dev/usr/bin/
+	install -m644 `pwd`/debian/Babylon-config.1 \
+		`pwd`/debian/libbabylon-dev/usr/share/man/man1/
+	install -m644 `pwd`/include/Babylon/*.hh \
+		`pwd`/debian/libbabylon-dev/usr/include/Babylon/
+
+	install -m755 `pwd`/build/bin/Berlin-config \
+		`pwd`/debian/libberlin-dev/usr/bin/
+	install -m644 `pwd`/debian/Berlin-config.1 \
+		`pwd`/debian/libberlin-dev/usr/share/man/man1/
+	install -m644 `pwd`/include/Berlin/*.hh \
+		`pwd`/debian/libberlin-dev/usr/include/Berlin/
+
+	install -m755 `pwd`/build/bin/Prague-config \
+		`pwd`/debian/libprague-dev/usr/bin/
+	install -m644 `pwd`/debian/Prague-config.1 \
+		`pwd`/debian/libprague-dev/usr/share/man/man1/
+	install -m644 `pwd`/include/Prague/Filter/*.hh \
+		`pwd`/debian/libprague-dev/usr/include/Prague/Filter/
+	install -m644 `pwd`/include/Prague/IPC/*.hh \
+		`pwd`/debian/libprague-dev/usr/include/Prague/IPC/
+	install -m644 `pwd`/include/Prague/Network/*.hh \
+		`pwd`/debian/libprague-dev/usr/include/Prague/Network/
+	install -m644 `pwd`/include/Prague/SAX/*.hh \
+		`pwd`/debian/libprague-dev/usr/include/Prague/SAX/
+	install -m644 `pwd`/include/Prague/Sys/*.hh \
+		`pwd`/debian/libprague-dev/usr/include/Prague/Sys/
+
+	install -m755 `pwd`/build/bin/Warsaw-config \
+		`pwd`/debian/libwarsaw-dev/usr/bin/
+	install -m644 `pwd`/debian/Warsaw-config.1 \
+		`pwd`/debian/libwarsaw-dev/usr/share/man/man1/
+	install -m644 `pwd`/include/Warsaw/*.hh \
+		`pwd`/debian/libwarsaw-dev/usr/include/Warsaw/
+
+	install -m644 `pwd`/include/Drawing/libArt/*.hh \
+		`pwd`/debian/berlin-kit-artdrawing-dev/usr/include/Berlin/Drawing/libArt/
+	install -m644 `pwd`/include/Command/*.hh \
+		`pwd`/debian/berlin-kit-command-dev/usr/include/Berlin/Command/
+	install -m644 `pwd`/include/Desktop/*.hh \
+		`pwd`/debian/berlin-kit-desktop-dev/usr/include/Berlin/Desktop/
+	install -m644 `pwd`/include/Drawing/*.hh \
+		`pwd`/debian/berlin-kit-drawing-dev/usr/include/Berlin/Drawing/
+	install -m644 `pwd`/include/Figure/*.hh \
+		`pwd`/debian/berlin-kit-figure-dev/usr/include/Berlin/Figure/
+	install -m644 `pwd`/include/Gadget/*.hh \
+		`pwd`/debian/berlin-kit-gadget-dev/usr/include/Berlin/Gadget/
+	install -m644 `pwd`/include/Drawing/GGI/*.hh \
+		`pwd`/debian/berlin-kit-ggi-dev/usr/include/Berlin/Drawing/GGI/
+	install -m644 `pwd`/include/Image/*.hh \
+		`pwd`/debian/berlin-kit-image-dev/usr/include/Berlin/Image/
+	install -m644 `pwd`/include/Layout/*.hh \
+		`pwd`/debian/berlin-kit-layout-dev/usr/include/Berlin/Layout/
+	install -m644 `pwd`/include/Widget/Motif/*.hh \
+		`pwd`/debian/berlin-kit-motif-dev/usr/include/Berlin/Widget/Motif/
+	install -m644 `pwd`/include/Primitive/*.hh \
+		`pwd`/debian/berlin-kit-primitive-dev/usr/include/Berlin/Primitive/
+	install -m644 `pwd`/include/Drawing/PostScript/*.hh \
+		`pwd`/debian/berlin-kit-psdrawing-dev/usr/include/Berlin/Drawing/PostScript
+	install -m644 `pwd`/include/Text/*.hh \
+		`pwd`/debian/berlin-kit-text-dev/usr/include/Berlin/Text/
+	install -m644 `pwd`/include/Tool/*.hh \
+		`pwd`/debian/berlin-kit-tool-dev/usr/include/Berlin/Tool/
+	install -m644 `pwd`/include/Unidraw/*.hh \
+		`pwd`/debian/berlin-kit-unidraw-dev/usr/include/Berlin/Unidraw/
+
+	install -m644 `pwd`/idl/Warsaw/*.idl \
+		`pwd`/debian/libwarsaw-idl/usr/share/idl/Warsaw/
+
+# Build architecture-independent files here.
+# Pass -i to all debhelper commands in this target to reduce clutter.
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+#	dh_installdebconf -i
+	dh_installdocs -i
+#	dh_installexamples -i
+#	dh_installmenu -i
+#	dh_installlogrotate -i
+#	dh_installemacsen -i
+#	dh_installpam -i
+#	dh_installmime -i
+#	dh_installinit -i
+#	dh_installcron -i
+#	dh_installman -i
+#	dh_installinfo -i
+#	dh_undocumented -i
+	dh_installchangelogs  -i
+	dh_link -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+#	dh_perl -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir -a
+	dh_testroot -a
+#	dh_installdebconf -a
+	dh_installdocs -a
+#	dh_installexamples -a
+#	dh_installmenu -a
+#	dh_installlogrotate -a
+#	dh_installemacsen -a
+#	dh_installpam -a
+#	dh_installmime -a
+#	dh_installinit -a
+#	dh_installcron -a
+#	dh_installman -a
+#	dh_installinfo -a
+#	dh_undocumented -a
+	dh_installchangelogs  -a
+	dh_strip -a
+	dh_link -a
+	dh_compress -a
+	dh_fixperms -a
+#	dh_makeshlibs -a
+	dh_installdeb -a
+#	dh_perl -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure
+#!/usr/bin/make -f
 #-*- makefile -*-
 # Made with the aid of dh_make, by Craig Small
 # Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.

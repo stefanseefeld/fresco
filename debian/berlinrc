@@ -1,0 +1,5 @@
+modulepath	= /usr/lib/Berlin/modules
+rasterpath	= /usr/lib/Berlin/etc/PNG
+fontpath	= /usr/lib/X11/fonts/Type1
+unifontpath	= /usr/lib/Berlin/etc
+pinyindbpath	= /usr/lib/Berlin/etc
