@@ -32,12 +32,10 @@
 // winds up being at draw-time.
 
 #include "Warsaw/config.hh"
-#include "Warsaw/Text.hh"
 #include "Berlin/GraphicImpl.hh"
 #include <Warsaw/Unicode.hh>
 
 declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Font)
 
 class TextChunk : public virtual GraphicImpl
 {

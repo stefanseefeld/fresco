@@ -25,7 +25,6 @@
 
 #include <Drawing/DrawingKitBase.hh>
 #include <Berlin/CloneableImpl.hh>
-// #include "Drawing/openGL/GLFont.hh"
 #include "Drawing/openGL/GLUnifont.hh"
 #include <Drawing/openGL/GLRaster.hh>
 #include <Berlin/Thread.hh>
@@ -62,9 +61,14 @@ public:
   virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Raster_ptr texture() { return tx ? Raster::_duplicate(tx->remote) : Raster::_nil();}
 
-  virtual Text::Font_ptr font(); 
-  virtual Text::Font_ptr findFont(const Text::FontDescriptor &fd);
-
+  virtual CORBA::ULong fontSize();
+  virtual CORBA::ULong fontWeight();
+  virtual Unistring* fontFamily();
+  virtual Unistring* fontSubFamily();
+  virtual Unistring* fontFullName();
+  virtual Unistring* fontStyle();
+  virtual FontMetrics metrics();
+  virtual CORBA::Any * getFontAttr(const Unistring & name);
 
   virtual void setTransformation(Transform_ptr);
   virtual void setClipping(Region_ptr);
@@ -75,6 +79,14 @@ public:
   virtual void setSurfaceFillstyle(Fillstyle);
   virtual void setTexture(Raster_ptr);
 
+  virtual void setFontSize(CORBA::ULong);
+  virtual void setFontWeight(CORBA::ULong);
+  virtual void setFontFamily(const Unistring&);
+  virtual void setFontSubFamily(const Unistring&);
+  virtual void setFontFullName(const Unistring&);
+  virtual void setFontStyle(const Unistring&);
+  virtual void setFontAttr(const NVPair & nvp);
+
   virtual Coord resolution(Axis a) { return drawable->resolution(a);}
   virtual void drawPath(const Path &);
 //   virtual void drawPatch(const Patch &);
@@ -82,6 +94,7 @@ public:
   virtual void drawEllipse(const Vertex &, const Vertex &);
   virtual void drawImage(Raster_ptr);
   virtual void drawText(const Unistring &);
+  virtual void allocateText(const Unistring & s, Graphic::Requisition & req);
   virtual void flush() { glFlush();}
 
 //   void clear(Coord, Coord, Coord, Coord);

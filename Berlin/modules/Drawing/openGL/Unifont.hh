@@ -27,7 +27,6 @@
 #include <vector>
 #include "Warsaw/config.hh"
 #include "Warsaw/Types.hh"
-#include "Warsaw/Text.hh"
 #include "Prague/Sys/MMap.hh"
 #include <Warsaw/Unicode.hh>
 
@@ -38,23 +37,15 @@
 // multilingual text, albeit not quite as well as certain (ahem) proprietary
 // text systems
 
-class GLUnifont :
-    implementsscoped(Text,BaseFont) 
+class GLUnifont 
 {
 
  public:
     GLUnifont();
     virtual ~GLUnifont();
     
-    // Text::BaseFont implementation
-    void acceptFontVisitor(Text::FontVisitor_ptr v);
-    CORBA::Boolean canDrawText(const Unistring &u);
     void drawText(const Unistring &u, const Vertex &v);
     void allocateText(const Unistring &u, Graphic::Requisition &r);
-    FeatureValueList *queryFeature(FeatureType ft);
-    void setFeature(FeatureType ft, FeatureValue fv);
-    Text::FontDescriptor *descriptor();  
-
     void setColor(Color c);
 
  protected:

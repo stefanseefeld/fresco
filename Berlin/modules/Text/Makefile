@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath)
 LIBS	= -lPrague -lBerlin 
 
-SRC	= Compositor.cc TextViewer.cc TextKitImpl.cc TextChunk.cc FontChange.cc
+SRC	= Compositor.cc TextViewer.cc TextKitImpl.cc TextChunk.cc 
 
 TARGET	= $(mpath)/libText.so
 

@@ -89,13 +89,6 @@ void GLUnifont::drawText(const Unistring &u, const Vertex &p)
     }
 }
 
-
-void GLUnifont::acceptFontVisitor(Text::FontVisitor_ptr v)
-{
-    v->visitBaseFont(this->_this());
-    CORBA::release(v);
-}
-
 void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
 {    
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
@@ -118,16 +111,3 @@ void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
   r.y.align = 0.;
 }
 
-CORBA::Boolean  GLUnifont::canDrawText(const Unistring &u){
-  return true;
-}
-
-Text::FontDescriptor *GLUnifont::descriptor(){
-  return &myDescriptor;
-}
-
-FeatureValueList *GLUnifont::queryFeature(FeatureType ft) {
-  return new FeatureValueList();
-}
-
-void GLUnifont::setFeature(FeatureType ft, FeatureValue fv) {}

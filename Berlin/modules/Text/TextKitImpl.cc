@@ -21,62 +21,106 @@
 //
 //
 
-#include "Text/TextKitImpl.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Text/TextChunk.hh"
-#include "Text/FontChange.hh"
-#include "Berlin/Plugin.hh"
-#include <Warsaw/Unicode.hh>
-#include <string>
+#include <Warsaw/DrawingKit.hh>        // for the DK to work on
+#include <Warsaw/Unicode.hh>           // for toCORBA and friends
+#include <Text/TextKitImpl.hh>         // for our own definition
+#include <Text/TextChunk.hh>           // the chunk subtype
+#include <Drawing/DrawDecorator.hh>
+#include <Berlin/Plugin.hh>
 
-map<GlyphComp::Key,GlyphComp::Val,GlyphComp> TextKitImpl::glyphCache;
+map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
 Mutex TextKitImpl::staticMutex;
-
 
 TextKitImpl::TextKitImpl() {}
 TextKitImpl::~TextKitImpl() {}
 
-DrawingKit_ptr TextKitImpl::dk() {
-    MutexGuard guard(staticMutex);
-    return canonicalDK;
-}
-
 void TextKitImpl::bind(ServerContext_ptr sc) {
-    canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
+  canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
 }
 
-// we have 1 default font which we're distributing with berlin, the
-// fixed-size GNU unifont.
 
-Text::FontDescriptorSeq* TextKitImpl::fonts() {
-    Text::FontDescriptorSeq *fdsq = new Text::FontDescriptorSeq();
-    fdsq->length(1);
-    (*fdsq)[0].pointsize = 16;
-    (*fdsq)[0].name = Unicode::toCORBA(Unicode::String("GNU Unifont"));
-    return fdsq;
-}
+// chunks are flyweights
 
-Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f)
+Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 {
-  GlyphComp::Key k = GlyphComp::Key(u,f);
-  if (glyphCache.find(k) == glyphCache.end() )
+  MutexGuard guard(staticMutex);
+  Unicode::String str = Unicode::toPrague(u);
+  if (chunkCache.find(str) == chunkCache.end())
     {
       Graphic::Requisition r;
-      f->allocateText(u,r);
-      // cerr << " allocated space tor text: " << r.x.natural << "x"
-      //      << r.y.natural << endl;
-      TextChunk *t = new TextChunk(Unicode::toPrague(u), r);
-      t->_obj_is_ready(_boa());
-      glyphCache[k] = t->_this();
+      canonicalDK->allocateText(u,r);
+      Impl_var<TextChunk> t(new TextChunk(str, r));
+      chunkCache[str] = t;
     }
-  return glyphCache[k];
+  return chunkCache[str]->_this();
 }
 
-// Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style::Spec &s) {
-//     FontChange *fc = new FontChange(fd,s);
-//     fc->_obj_is_ready(_boa());
-//     return fc->_this();
-// }
+///////////////////////
+// decorator factories
+///////////////////////
+  
+Graphic_ptr TextKitImpl::size(Graphic_ptr body, CORBA::ULong ems) 
+{
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<CORBA::ULong> > 
+    decor(new DrawDecorator<CORBA::ULong>(ems,&DrawingKit::fontSize,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::weight(Graphic_ptr body, CORBA::ULong wt) 
+{
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<CORBA::ULong> > 
+    decor(new DrawDecorator<CORBA::ULong>(wt,&DrawingKit::fontWeight,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::family(Graphic_ptr body, const Unistring & fam)
+{
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<const Unistring &> > 
+    decor(new DrawDecorator<const Unistring &>(fam,&DrawingKit::fontFamily,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::subFamily(Graphic_ptr body, const Unistring & fam)
+{
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<const Unistring &> > 
+    decor(new DrawDecorator<const Unistring &>(fam,&DrawingKit::fontSubFamily,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::fullName(Graphic_ptr body, const Unistring & name)
+{
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<const Unistring &> > 
+    decor(new DrawDecorator<const Unistring &>(name,&DrawingKit::fontFullName,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::style(Graphic_ptr body, const Unistring & sty)
+{
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<const Unistring &> > 
+    decor(new DrawDecorator<const Unistring &>(sty,&DrawingKit::fontStyle,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::fontAttr(Graphic_ptr body, const NVPair & nvp) {
+  MutexGuard guard(localMutex);
+  Impl_var<DrawDecorator<const NVPair &> > 
+    decor(new DrawDecorator<const NVPair &>(nvp,&DrawingKit::fontAttr,body));
+  myDecorators.push_back(decor.get());
+  return decor.release()->_this();
+}
+
 
 
 EXPORT_PLUGIN(TextKitImpl, interface(TextKit))

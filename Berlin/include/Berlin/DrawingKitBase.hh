@@ -83,19 +83,14 @@ class DrawingKitBase : lcimplements(DrawingKit)
     T val;
     method m;
   };
-  struct FontState : State
-  {
-    FontState(Text::Font_ptr f) : font(Text::Font::_duplicate(f)) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.installFont(font);
-      dk.continueRestoring();
-    }
-    Text::Font_var font;
-  };
  
   typedef stack<State *> stack_t;
 public:
+
+  virtual void saveState() { states.push(new StateMarker);}
+  virtual void restoreState() { continueRestoring();}
+
+  // drawing business
   virtual void transformation(Transform_ptr);
   virtual Transform_ptr transformation() = 0;
   virtual void clipping(Region_ptr);
@@ -113,16 +108,26 @@ public:
   virtual void texture(Raster_ptr);
   virtual Raster_ptr texture() = 0;
 
-  // this text business is a little screwy, but it stems from some very good reasons
-  // and I am hard pressed at the moment to develop a better approach. at least for
-  // this release I think it has to stay this way -- graydon
-  virtual Text::Font_ptr font() {return myFont;}
-  virtual void setFont(const Text::FontDescriptor &f) { states.push(new FontState(myFont)); myFont = findFont(f);}
-  virtual void installFont(Text::Font_ptr f) {myFont = Text::Font::_duplicate(f);}
-  virtual Text::Font_ptr findFont(const Text::FontDescriptor &fd) = 0;
+  // font business
+  virtual CORBA::ULong fontSize() = 0;
+  virtual void fontSize(CORBA::ULong);
+  virtual CORBA::ULong fontWeight() = 0;
+  virtual void fontWeight(CORBA::ULong);
+  virtual Unistring* fontFamily() = 0;
+  virtual void fontFamily(const Unistring&);
+  virtual Unistring* fontSubFamily() = 0;
+  virtual void fontSubFamily(const Unistring&);
+  virtual Unistring* fontFullName() = 0;
+  virtual void fontFullName(const Unistring&);
+  virtual Unistring* fontStyle() = 0;
+  virtual void fontStyle(const Unistring&);
+  virtual FontMetrics metrics() = 0;
+  virtual void fontAttr(const NVPair & nvp);
+  virtual CORBA::Any * getFontAttr(const Unistring & name) = 0;
 
-  virtual void saveState() { states.push(new StateMarker);}
-  virtual void restoreState() { continueRestoring();}
+  // if you subclass this, you'll need to provide these
+  // mechanisms in addition to the getters above.
+
   virtual void setTransformation(Transform_ptr) = 0;
   virtual void setClipping(Region_ptr) = 0;
   virtual void setForeground(Color) = 0;
@@ -131,8 +136,16 @@ public:
   virtual void setLineEndstyle(Endstyle) = 0;
   virtual void setSurfaceFillstyle(Fillstyle) = 0;
   virtual void setTexture(Raster_ptr) = 0;
+
+  virtual void setFontSize(CORBA::ULong) = 0;
+  virtual void setFontWeight(CORBA::ULong) = 0;
+  virtual void setFontFamily(const Unistring&) = 0;
+  virtual void setFontSubFamily(const Unistring&) = 0;
+  virtual void setFontFullName(const Unistring&) = 0;
+  virtual void setFontStyle(const Unistring&) = 0;
+  virtual void setFontAttr(const NVPair & nvp) = 0;
+
 private:
-  Text::Font_var myFont;
   stack_t states;
 };
 
@@ -183,5 +196,55 @@ inline void DrawingKitBase::texture(Raster_ptr t)
   states.push(new PtrState<Raster>(texture(), &DrawingKitBase::setTexture));
   setTexture(t);
 }
+
+////////
+// text
+////////
+
+inline void DrawingKitBase::fontSize(CORBA::ULong s)
+{
+  states.push(new SimpleState<CORBA::ULong>(fontSize(), &DrawingKitBase::setFontSize));
+  setFontSize(s);
+}
+
+inline void DrawingKitBase::fontWeight(CORBA::ULong w)
+{
+  states.push(new SimpleState<CORBA::ULong>(fontWeight(), &DrawingKitBase::setFontWeight));
+  setFontWeight(w);
+}
+
+inline void DrawingKitBase::fontFamily(const Unistring& f)
+{
+  states.push(new SimpleState<const Unistring &>(fontFamily(), &DrawingKitBase::setFontFamily));
+  setFontFamily(f);
+}
+
+inline void DrawingKitBase::fontSubFamily(const Unistring& f)
+{
+  states.push(new SimpleState<const Unistring &>(fontSubFamily(), &DrawingKitBase::setFontSubFamily));
+  setFontSubFamily(f);
+}
+
+inline void DrawingKitBase::fontFullName(const Unistring& f)
+{
+  states.push(new SimpleState<const Unistring &>(fontFullName(), &DrawingKitBase::setFontFullName));
+  setFontFullName(f);
+}
+
+inline void DrawingKitBase::fontStyle(const Unistring& s)
+{
+  states.push(new SimpleState<const Unistring &>(fontStyle(), &DrawingKitBase::setFontStyle));
+  setFontStyle(s);
+}
+
+inline void DrawingKitBase::fontAttr(const NVPair & nvp)
+{
+  NVPair save;
+  save.name = nvp.name;
+  save.val = getFontAttr(nvp.name);
+  states.push(new SimpleState<const NVPair &>(save, &DrawingKitBase::setFontAttr));
+  setFontAttr(nvp);
+}
+
 
 #endif /* _DrawingKitBase_hh */

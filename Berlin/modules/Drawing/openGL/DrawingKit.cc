@@ -241,6 +241,43 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
+CORBA::ULong GLDrawingKit::fontSize() { return 16; }
+CORBA::ULong GLDrawingKit::fontWeight() { return 100; }
+Unistring* GLDrawingKit::fontFamily() 
+{ 
+  static Unistring name = toCORBA(Unicode::Unistring("GNU Unifont")); 
+  return &name; 
+}
+Unistring* GLDrawingKit::fontSubFamily() { return 0; }
+Unistring* GLDrawingKit::fontFullName() { return 0; }
+Unistring* GLDrawingKit::fontStyle() 
+{
+  static Unistring name = toCORBA(Unicode::Unistring("monospace")); 
+  return &name; 
+}
+FontMetrics GLDrawingKit::metrics() 
+{
+  FontMetrics m;
+  return m;
+}
+CORBA::Any * GLDrawingKit::getFontAttr(const Unistring & name) 
+{
+  return new Any;
+}
+
+void GLDrawingKit::setFontSize(CORBA::ULong) {}
+void GLDrawingKit::setFontWeight(CORBA::ULong) {}
+void GLDrawingKit::setFontFamily(const Unistring&) {}
+void GLDrawingKit::setFontSubFamily(const Unistring&) {}
+void GLDrawingKit::setFontFullName(const Unistring&) {}
+void GLDrawingKit::setFontStyle(const Unistring&) {}
+void GLDrawingKit::setFontAttr(const NVPair & nvp) {}
+
+void GLDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & req) 
+{
+  unifont.allocateText(s,req);
+}
+
 void GLDrawingKit::drawText(const Unistring &us)
 {
   /*

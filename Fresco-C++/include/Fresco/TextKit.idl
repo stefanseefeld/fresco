@@ -25,21 +25,24 @@
 //
 
 #include "Cloneable.idl"
-#include "Text.idl"
+#include "Graphic.idl"
+#include "Types.idl"
 
-// a TextKit serves as a registry for available fonts, as well as
-// a text-encapsulation service, for producing flyweights which
-// will render themselves using the appropriate facility of a drawingKit.
-// textChunk flyweights will produce text, fontChange flyweights will try
-// to set the current font. simple as that.
-
-interface DrawingKit;
+// TextKit produces text chunks (flyweights) as well as decorators which set the
+// current font state as a traversal passes through them.
 
 interface TextKit : Cloneable {
-  readonly attribute Text::FontDescriptorSeq fonts;
-  readonly attribute DrawingKit dk;
-  Graphic chunk(in Unistring u, in Text::Font f);    
-//   Graphic fontChange(in Text::FontDescriptor fd, in Style::Spec sty);    
+    
+  Graphic chunk(in Unistring u);    
+
+  Graphic size(in Graphic body, in unsigned long ems);
+  Graphic weight(in Graphic body, in unsigned long wt);
+  Graphic family(in Graphic body, in Unistring fam);
+  Graphic subFamily(in Graphic body, in Unistring fam);
+  Graphic fullName(in Graphic body, in Unistring name);
+  Graphic style(in Graphic body, in Unistring sty);
+  Graphic fontAttr(in Graphic body, in NVPair nvp);
+
 };
 
 #endif

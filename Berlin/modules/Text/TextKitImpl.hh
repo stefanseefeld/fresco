@@ -23,54 +23,44 @@
 #ifndef _TextKitImpl_hh
 #define _TextKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Text/SeqComp.hh"
-#include "Warsaw/TextKit.hh"
-#include "Warsaw/Text.hh"
-#include "Berlin/CloneableImpl.hh"
-#include "Berlin/Thread.hh"
-#include <map>
+#include <Warsaw/config.hh>
+#include <Warsaw/TextKit.hh>           // for our IDL definition
+#include <Text/TextChunk.hh>           // for our chunks
+#include <Berlin/MonoGraphic.hh>       // for our decorators
+#include <Prague/Unicode/Unistring.hh> // for Unicode::String
+#include <Berlin/CloneableImpl.hh>     // for our parent impl
+#include <Berlin/Thread.hh>            // for the mutex
+#include <Berlin/ImplVar.hh>           // for the impls
+#include <map>                         // for the cache
+#include <vector>                      // for the gc
 
 declare_corba_ptr_type(DrawingKit)
 
-/** this implements a simple text kit which manufactures text chunks and font
- * change markers. the idea is that a font change marker delegates most of the
- * responsibility of actually finding and setting a "current font" to the
- * methods of the current drawingKit, and really only serves as a placeholder
- * with which a buffer or label can say "here the text is supposed to become
- * helvetica 12 pt., whatever implementation of what you can track down would
- * be just peachy"  
- */
+class TextKitImpl : lcimplements(TextKit), 
+		    public virtual CloneableImpl 
+{
 
-struct GlyphComp {
-    typedef pair<Unistring,Text::Font_ptr> Key;
-    typedef Graphic_ptr Val;    
-    
-    inline bool operator()(const Key &a, const Key &b) {
-	Text::FontDescriptor *d1 = a.second->descriptor();
-	Text::FontDescriptor *d2 = b.second->descriptor();
-	return SeqComp(a.first,b.first) || 
-	    SeqComp(d1->name,d2->name) ||
-	    SeqComp(d1->style,d2->style) ||
-	    (d1->pointsize > d2->pointsize);
-    }
-};
+  static Mutex staticMutex;
+  static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
+  static DrawingKit_var canonicalDK;
 
-class TextKitImpl : lcimplements(TextKit), public virtual CloneableImpl {
+  Mutex localMutex;
+  vector<MonoGraphic *> myDecorators;
+  
  public:
+
     TextKitImpl();
     virtual ~TextKitImpl();
     virtual void bind(ServerContext_ptr);
-    Text::FontDescriptorSeq* fonts();
-    DrawingKit_ptr dk();
-    void dk(DrawingKit_ptr);
-    Graphic_ptr  chunk(const Unistring & u, Text::Font_ptr  f);
-//     Graphic_ptr  fontChange(const Text::FontDescriptor & fd, const Style::Spec &s);
-    
- protected:
-    DrawingKit_var canonicalDK;
-    static map<GlyphComp::Key,GlyphComp::Val,GlyphComp> glyphCache;
-    static Mutex staticMutex;
+
+    Graphic_ptr chunk(const Unistring & u);
+    Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
+    Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);
+    Graphic_ptr family(Graphic_ptr body, const Unistring & fam);
+    Graphic_ptr subFamily(Graphic_ptr body, const Unistring & fam);
+    Graphic_ptr fullName(Graphic_ptr body, const Unistring & name);
+    Graphic_ptr style(Graphic_ptr body, const Unistring & sty);
+    Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
 };
 
 
