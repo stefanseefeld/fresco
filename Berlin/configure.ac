@@ -105,7 +105,7 @@ AC_MSG_PART(Graphics Environment)
 BERLIN_CONSOLE_CHECK(mandatory)
 
 if test ".$enable_drawing_kits" = .all ; then
-	enable_drawing_kits="libArt openGL"
+	enable_drawing_kits="libArt openGL PostScript"
 elif test ".$enable_drawing_kits" = .no ; then
 	enable_drawing_kits=
 else
@@ -142,6 +142,9 @@ if test ".$enable_openGL" = .yes ; then
 	if test ".$ac_cv_lib_GGIMesa" = .yes ; then
 		tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
 	fi
+fi
+if test ".$enable_PostScript" = .yes ; then
+	tested_drawing_kits="$tested_drawing_kits Drawing/PostScript"
 fi
 
 dnl ------------------------------------------------------------------

@@ -27,68 +27,89 @@
 #include <strstream>
 #include <iostream>
 
-// using namespace Prague;
+using namespace Prague;
+using namespace Warsaw;
 
-/*
- * this is for now an empty no-op DrawingKit
- * it might be used to measure the performance difference
- * of a DrawTraversal with and without a real DrawingKit
- */
+PSDrawingKit::PSDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(f, p)
+{
+}
 
-PSDrawingKit::PSDrawingKit(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-PSDrawingKit::~PSDrawingKit() {}
+PSDrawingKit::~PSDrawingKit()
+{
+}
 
-void PSDrawingKit::saveState() {}
-void PSDrawingKit::restoreState() {}
+void PSDrawingKit::set_transformation(Transform_ptr t)
+{
+}
 
-void PSDrawingKit::transformation(Transform_ptr) {}
-Transform_ptr PSDrawingKit::transformation() { return Transform::_nil();}
-void PSDrawingKit::clipping(Region_ptr) {}
-Region_ptr PSDrawingKit::clipping() { return Region::_nil();}
-void PSDrawingKit::foreground(const Color &) {}
-Color PSDrawingKit::foreground() { return Color();}
-void PSDrawingKit::lighting(const Color &) {}
-Color PSDrawingKit::lighting() { return Color();}
-void PSDrawingKit::pointSize(Coord) {}
-Coord PSDrawingKit::pointSize() { return 0.;}
-void PSDrawingKit::lineWidth(Coord) {}
-Coord PSDrawingKit::lineWidth() { return 0.;}
-void PSDrawingKit::lineEndstyle(DrawingKit::Endstyle) {}
-DrawingKit::Endstyle PSDrawingKit::lineEndstyle() { return round;}
-void PSDrawingKit::surfaceFillstyle(DrawingKit::Fillstyle) {}
-DrawingKit::Fillstyle PSDrawingKit::surfaceFillstyle() { return solid;}
-void PSDrawingKit::texture(Raster_ptr) {}
-Raster_ptr PSDrawingKit::texture() { return Raster::_nil();}
+void PSDrawingKit::set_clipping(Region_ptr r)
+{
+}
 
-void PSDrawingKit::fontSize(CORBA::ULong) {}
-CORBA::ULong PSDrawingKit::fontSize() { return 0;}
-void PSDrawingKit::fontWeight(CORBA::ULong) {}
-CORBA::ULong PSDrawingKit::fontWeight() { return 0;}
-void PSDrawingKit::fontFamily(const Unistring &) {}
-Unistring *PSDrawingKit::fontFamily() { return new Unistring();}
-void PSDrawingKit::fontSubFamily(const Unistring &) {}
-Unistring *PSDrawingKit::fontSubFamily() { return new Unistring();}
-void PSDrawingKit::fontFullName(const Unistring &) {}
-Unistring *PSDrawingKit::fontFullName() { return new Unistring();}
-void PSDrawingKit::fontStyle(const Unistring &) {}
-Unistring *PSDrawingKit::fontStyle() { return new Unistring();}
-FontMetrics PSDrawingKit::metrics() { return FontMetrics();}
-CORBA::Any *PSDrawingKit::getFontAttr(const Unistring &) { return new CORBA::Any();}
-void PSDrawingKit::fontAttr(const NVPair &) {}
+void PSDrawingKit::set_foreground(const Color &c)
+{
+}
 
-Coord PSDrawingKit::resolution(Axis) { return 1.;}
+void PSDrawingKit::set_lighting(const Color &c)
+{
+}
 
-void PSDrawingKit::drawPath(const Path &) {}
-void PSDrawingKit::drawRect(const Vertex &, const Vertex &) {}
-void PSDrawingKit::drawEllipse(const Vertex &, const Vertex &) {}
-void PSDrawingKit::drawImage(Raster_ptr) {}
-void PSDrawingKit::allocateText(const Unistring &, Graphic::Requisition &) {}
-void PSDrawingKit::drawText(const Unistring &) {}
+void PSDrawingKit::set_point_size(Coord s)
+{
+}
 
-void PSDrawingKit::flush() {}
+void PSDrawingKit::set_line_width(Coord w)
+{
+}
+
+void PSDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style)
+{
+}
+
+void PSDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style)
+{
+}
+
+void PSDrawingKit::set_texture(Raster_ptr t)
+{
+}
+
+void PSDrawingKit::draw_path(const Path &path)
+{
+}
+
+void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
+{
+}
+
+void PSDrawingKit::draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord)
+{
+}
+
+void PSDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
+{
+}
+
+void PSDrawingKit::draw_image(Raster_ptr raster)
+{
+}
+
+void PSDrawingKit::set_font_size(CORBA::ULong s) {}
+void PSDrawingKit::set_font_weight(CORBA::ULong w) {}
+void PSDrawingKit::set_font_family(const Unistring &f) {}
+void PSDrawingKit::set_font_subfamily(const Unistring &sf) {}
+void PSDrawingKit::set_font_fullname(const Unistring &fn) {}
+void PSDrawingKit::set_font_style(const Unistring &s) {}
+void PSDrawingKit::set_font_attribute(const NVPair & nvp) {}
+void PSDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
+void PSDrawingKit::draw_text(const Unistring &us) {}
+void PSDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) {}
+void PSDrawingKit::draw_char(Unichar c) {}
+void PSDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
 
 extern "C" KitFactory *load()
 {
   static string properties[] = {"implementation", "PSDrawingKit"};
-  return new KitFactoryImpl<PSDrawingKit> (interface(DrawingKit), properties, 1);
+  return new KitFactoryImpl<PSDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
 }

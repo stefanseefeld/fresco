@@ -23,6 +23,8 @@
 #ifndef _GLDrawingKit_hh
 #define _GLDrawingKit_hh
 
+#include <Warsaw/config.hh>
+#include <Warsaw/Raster.hh>
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/openGL/GLFont.hh>
 #include <Drawing/openGL/GLRaster.hh>
@@ -32,7 +34,6 @@
 #include <Berlin/Console.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Warsaw/Image.hh>
 
 #if defined(CONSOLE_GGI)
 #  include <GL/ggimesa.h>
