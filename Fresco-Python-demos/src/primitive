@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+# Python Berlin client that implements a client-side Graphic
+# Copyright (c) 2000 by Stephen Davies
+# This file is licensed for use under the GPL.
+#
+# Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
+#
+
+import sys, string, time, math, thread, threading
+from omniORB import CORBA
+
+# Import berlin client lib
+import berlin
+from berlin import Label, Callback, nullAny
+
+# Import the Warsaw stubs
+import Warsaw, Unidraw
+import Warsaw__POA
+
+# Import Warsaw lib
+import pywarsaw
+
+class Primitive (pywarsaw.PyGraphic):
+    "Simple graphic that draws a clock"
+    def __init__(self, w, h, d):
+	pywarsaw.PyGraphic.__init__(self)
+        self.__width = w
+        self.__height = h
+        self.__depth = d
+        nodes = []
+        nodes.append(Warsaw.Vertex(-w/2, -h/2, -d/2))
+        nodes.append(Warsaw.Vertex(w/2, -h/2, -d/2))
+        nodes.append(Warsaw.Vertex(0., -h/2, d/2))
+        nodes.append(Warsaw.Vertex(0., h/2, 0))
+        triangles = []
+        triangles.append(Warsaw.Triangle(0, 1, 3))
+        triangles.append(Warsaw.Triangle(1, 2, 3))
+        triangles.append(Warsaw.Triangle(2, 0, 3))
+        triangles.append(Warsaw.Triangle(0, 2, 1))
+        normals = []
+        normals.append(Warsaw.Vertex(0., .8, .2))
+        normals.append(Warsaw.Vertex(.8, .2, .2))
+        normals.append(Warsaw.Vertex(-.2, .2, .2))
+        normals.append(Warsaw.Vertex(0., -1., 0.))
+        self.__mesh = Warsaw.Mesh(nodes, triangles, normals)
+
+    def request(self): # --> Requisition
+	x = Warsaw.Graphic.Requirement(1, self.__width, self.__width, self.__width, 0.5)
+	y = Warsaw.Graphic.Requirement(1, self.__height, self.__height, self.__height, 0.5)
+	z = Warsaw.Graphic.Requirement(1, self.__depth, self.__depth, self.__depth, 0.5)
+	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	return req
+    def draw(self, drawTraversal):
+	dk = drawTraversal.drawing()
+        dk = dk._narrow(Warsaw.DrawingKit3D)
+        if not dk:
+            print "please run the display server with '-d GLDrawingKit'"
+            return
+	transform = drawTraversal.current_transformation()
+	region = drawTraversal.current_allocation()
+	#dk._set_foreground(Warsaw.Color(0.9, 0.9, 0.9, 1.0))
+	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
+	#dk.draw_rectangle(bounds_lower, bounds_upper)
+	dk.draw_mesh(self.__mesh)
+	dk.restore()
+
+class GraphicApp (berlin.App):
+    def run(self):
+        vbox = kits.layout.vbox()
+	phi = kits.command.bvalue(0., 360., 0., 1., 10.)
+	psi = kits.command.bvalue(0., 360., 0., 1., 10.)
+        hbox = kits.layout.hbox()
+        hbox.append_graphic(kits.layout.hfill())
+        hbox.append_graphic(kits.widget.slider(phi, Warsaw.xaxis))
+        hbox.append_graphic(kits.layout.hfill())
+        vbox.append_graphic(hbox)
+        hbox = kits.layout.hbox()
+        hbox.append_graphic(kits.layout.hfill())
+        hbox.append_graphic(kits.widget.slider(psi, Warsaw.xaxis))
+        hbox.append_graphic(kits.layout.hfill())
+        vbox.append_graphic(hbox)
+
+	primitive = Primitive(3000., 3000., 3000.)._this()
+	zrotator = kits.gadget.rotator(primitive, phi, Warsaw.zaxis)
+	yrotator = kits.gadget.rotator(zrotator, psi, Warsaw.yaxis)
+        group = kits.figure.group()
+        group.append_graphic(yrotator)
+        root = kits.figure.root(group)
+	align = kits.layout.align(group, 0., 0.)
+	strut = kits.layout.fixed_size(align, 3000., 3000.)
+        #spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.inset, 0.5)
+        #vbox.prepend_graphic(kits.tool.frame(align, 10., spec, 1))
+        vbox.prepend_graphic(strut)
+	group = kits.tool.group(vbox)
+	self.window = kits.desktop.shell(group)
+
+	#kits.desktop.shell(kits.tool.group(TickGraphic()._this()))
+
+
+def main():
+    # Create singletons
+    global app, kits, connection
+    connection = berlin.get_connection()
+    kits = berlin.get_kits()
+    app = GraphicApp()
+
+    app.run()
+
+    # Wait for the quit event
+    app.quit.wait()
+
+    # Tell the orb to shutdown (and wait for pending calls to complete)
+    connection.orb.shutdown(1)
+
+if __name__ == '__main__':
+    main()
+
+# vim: ts=8:sts=4:sw=4
