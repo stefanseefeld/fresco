@@ -28,7 +28,7 @@
 namespace Prague
 {
 
-class logbuf : public streambuf
+class logbuf : public std::streambuf
 {
   typedef char char_type;
   typedef int int_type;
@@ -36,10 +36,10 @@ public:
   logbuf(size_t size) : wrapped(false) { char_type *p = new char_type[size]; setp(p, p + size);}
   ~logbuf() { delete [] pbase();}
   void clear() { setp(pbase(), epptr()); wrapped = false;}
-  void dump(ostream &);
+  void dump(std::ostream &);
 
   int_type sputc(char_type c);
-  streamsize xsputn(const char_type *s, streamsize n);
+  std::streamsize xsputn(const char_type *s, std::streamsize n);
 private:
   bool wrapped  : 1;
 };

@@ -48,7 +48,7 @@ private:
   static void expire();
   static void schedule(Timer *);
   static void cancel(Timer *);
-  static vector<Timer *> timers;
+  static std::vector<Timer *> timers;
   static Thread server;
   static Mutex mutex;
   static Condition condition;

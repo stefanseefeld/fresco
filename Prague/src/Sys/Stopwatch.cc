@@ -59,21 +59,21 @@ void Stopwatch::stop()
 
 double Stopwatch::real_time()
 {
-  if (_state == undef) cerr << "Stopwatch::realTime: no starting point set" << endl;
+  if (_state == undef) return 0.;
   else if (_state == running) stop();
   return (double) (_real.end - _real.begin)/_ticks;
 };
 
 double Stopwatch::cpu_time()
 {
-  if (_state == undef) cerr << "Stopwatch::cpuTime: no starting point set" << endl;
+  if (_state == undef) return 0.;
   else if (_state == running) stop();
   return (double) (_cpu.end - _cpu.begin)/_ticks;
 };
 
 double Stopwatch::sys_time()
 {
-  if (_state == undef) cerr << "Stopwatch::sysTime: no starting point set" << endl;
+  if (_state == undef) return 0.;
   else if (_state == running) stop();
   return (double) (_sys.end - _sys.begin)/_ticks;
 };

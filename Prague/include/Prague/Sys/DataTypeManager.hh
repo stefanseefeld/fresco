@@ -37,8 +37,8 @@ class DataTypeManager
   {
     struct Name
     {
-      string::const_iterator parse(string::const_iterator, string::const_iterator);
-      unsigned short match(const string &);
+      std::string::const_iterator parse(std::string::const_iterator, std::string::const_iterator);
+      unsigned short match(const std::string &);
       unsigned short score;
       regex name;
     };
@@ -46,38 +46,38 @@ class DataTypeManager
     {
       struct Part
       {
-	string::const_iterator parse(string::const_iterator, string::const_iterator);
+	std::string::const_iterator parse(std::string::const_iterator, std::string::const_iterator);
 	bool match(const unsigned char *, int);
 	unsigned short offset, length;
- 	vector<unsigned char> data, mask;
+ 	std::vector<unsigned char> data, mask;
       };
-      string::const_iterator parse(string::const_iterator, string::const_iterator);
+      std::string::const_iterator parse(std::string::const_iterator, std::string::const_iterator);
       unsigned short match(const unsigned char *, int);
       unsigned short score;
-      vector<Part> parts;
+      std::vector<Part> parts;
     };
-    bool parse(const string &);
-    unsigned short matchName(const string &);
-    unsigned short matchMagic(const unsigned char *, int);
-    string type;
-    string mime;
-    vector<Name> names;
-    vector<Magic> magics;
+    bool parse(const std::string &);
+    unsigned short match_name(const std::string &);
+    unsigned short match_magic(const unsigned char *, int);
+    std::string type;
+    std::string mime;
+    std::vector<Name> names;
+    std::vector<Magic> magics;
   };
 public:
-  DataTypeManager(const string &file) { merge(file);}
+  DataTypeManager(const std::string &file) { merge(file);}
   ~DataTypeManager() {}
   //. merges in another type repository
-  void merge(const string &);
+  void merge(const std::string &);
   //. return the type, given the head of a file
-  string match(const string &);
+  std::string match(const std::string &);
   //. return the type for a given file
-  string match(const string &, const unsigned char *, unsigned int);
-  string type_to_mime(const string &);
-  string mime_to_type(const string &);
+  std::string match(const std::string &, const unsigned char *, unsigned int);
+  std::string type_to_mime(const std::string &);
+  std::string mime_to_type(const std::string &);
 private:
   static short compare(unsigned short, unsigned short, unsigned short, unsigned short);
-  vector<Type> _types;
+  std::vector<Type> _types;
 };
 
 };

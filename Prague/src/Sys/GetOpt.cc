@@ -28,22 +28,22 @@ using namespace Prague;
 GetOpt::GetOpt(const char *program, const char *use) : p(program), u(use) {}
 GetOpt::~GetOpt() {}
 
-void GetOpt::add(char o, const string &opt, type t, const string &desc)
+void GetOpt::add(char o, const std::string &opt, type t, const std::string &desc)
 {
    table.push_back(cell(o, opt, t, desc));
 }
 
-void GetOpt::get(char o, string *v) const
+void GetOpt::get(char o, std::string *v) const
 {
   table_t::const_iterator i = find(o);
-  if (i == table.end()) cerr << "GetOpt::get unknown option -" << o << endl;
+  if (i == table.end()) std::cerr << "GetOpt::get unknown option -" << o << std::endl;
   else if ((*i).value.length()) *v = (*i).value;
 }
 
-void GetOpt::get(const string &option, string *v) const
+void GetOpt::get(const std::string &option, std::string *v) const
 {
   table_t::const_iterator i = find(option);
-  if (i == table.end()) cerr << "GetOpt::get unknown option --" << option << endl;
+  if (i == table.end()) std::cerr << "GetOpt::get unknown option --" << option << std::endl;
   else if ((*i).value.length()) *v = (*i).value;
 }
 
@@ -75,12 +75,12 @@ size_t GetOpt::getlongopt(int argc, char **argv)
 {
   char *token = *argv + 2;
   while (*token != '\0' && *token != '=') token++;
-  string name (*argv + 2, token - *argv - 2);
+  std::string name (*argv + 2, token - *argv - 2);
   table_t::iterator i = find(name);
   if (i == table.end()) return 0;
   if ((*i).t == novalue) (*i).value = "true";
   else if (*token == '=') (*i).value = token + 1;
-  else if ((*i).t == mandatory) cerr << p << ": option '--" << (*i).option << "' requires a value" << endl;
+  else if ((*i).t == mandatory) std::cerr << p << ": option '--" << (*i).option << "' requires a value" << std::endl;
   return 1;
 }
 
@@ -104,7 +104,7 @@ size_t GetOpt::getopt(int argc, char **argv)
 	}
       else if ((*i).t == mandatory)
 	{
-	  cerr << p << ": option '-" << (*i).o << "' requires a value" << endl;
+	  std::cerr << p << ": option '-" << (*i).o << "' requires a value" << std::endl;
 	  return 1;
 	}
     }
@@ -113,18 +113,18 @@ size_t GetOpt::getopt(int argc, char **argv)
 
 void GetOpt::usage() const
 {
-  cout << "Usage: " << p << " " << u << "\n";
+  std::cout << "Usage: " << p << " " << u << "\n";
   for (table_t::const_iterator i = table.begin(); i != table.end(); i++)
     {
-      cout << '\t';
-      if ((*i).o && (*i).option.length()) cout << '-' << (*i).o << ", --" << (*i).option;
-      else if ((*i).o) cout << '-' << (*i).o << '\t';
-      else if ((*i).option.length()) cout << ", --" << (*i).option;
-      if ((*i).t == mandatory) cout << " <value>";
-      else if ((*i).t == optional) cout << " [value]";
-      cout << " (" << (*i).description << ")\n";
+      std::cout << '\t';
+      if ((*i).o && (*i).option.length()) std::cout << '-' << (*i).o << ", --" << (*i).option;
+      else if ((*i).o) std::cout << '-' << (*i).o << '\t';
+      else if ((*i).option.length()) std::cout << ", --" << (*i).option;
+      if ((*i).t == mandatory) std::cout << " <value>";
+      else if ((*i).t == optional) std::cout << " [value]";
+      std::cout << " (" << (*i).description << ")\n";
     }
-  cout.flush();
+  std::cout.flush();
 }
 
 void GetOpt::exchange (char **a, size_t size, char **b)

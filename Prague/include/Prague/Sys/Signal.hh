@@ -44,8 +44,8 @@ public:
       virtual void notify(int) = 0;
     };
 private:
-  typedef vector<Notifier *> nlist_t;
-  typedef map<int, nlist_t> dict_t;
+  typedef std::vector<Notifier *> nlist_t;
+  typedef std::map<int, nlist_t> dict_t;
 public:
   enum type { hangup = SIGHUP, interrupt = SIGINT, quit = SIGQUIT, illegal = SIGILL,
 	      trap = SIGTRAP, abort = SIGABRT, iotrap = SIGIOT, bus = SIGBUS, fpe = SIGFPE,

@@ -54,17 +54,17 @@ public:
 		  wo = S_IWOTH,
 		  xo = S_IXOTH,
 		  all= ru|wu|xu|rg|wg|xg|ro|wo|xo};
-  File(const string &);
+  File(const std::string &);
   File(const File &);
   virtual ~File();
   File &operator = (const File &);
-  File &operator = (const string &);
+  File &operator = (const std::string &);
   //. return the parent directory
   File parent() const;
   //. return the file's name
-  const string &name() const { return _shortname;}
+  const std::string &name() const { return _shortname;}
   //. return the file's long name
-  const string &long_name() const { return _longname;}
+  const std::string &long_name() const { return _longname;}
   //. check whether the file is of the given type
   bool is(type_t t) const { return (_status.st_mode & S_IFMT) == (mode_t) t;}
   //. return the file's type
@@ -78,36 +78,36 @@ public:
   //. return the file size
   long  size() const { return  _status.st_size;}
   //. return the access time
-  time_t accTime() const { return _status.st_atime;}
+  time_t acc_time() const { return _status.st_atime;}
   //. return the modification time
-  time_t modTime() const { return _status.st_mtime;}
+  time_t mod_time() const { return _status.st_mtime;}
   //. return the change time
-  time_t chTime() const { return _status.st_ctime;}
+  time_t ch_time() const { return _status.st_ctime;}
 
   //. change the access permission
   bool chmod(access_t);
   //. rename the file
-  bool mv(const string &);
+  bool mv(const std::string &);
   //. remove the file
   bool rm();
   //. static method to determine the base name for the given string
-  static string base(const string &);
+  static std::string base(const std::string &);
   //. generate a temporary file name
-  static string tmp() { return ::tmpnam(0);}
+  static std::string tmp() { return ::tmpnam(0);}
 protected:
   struct stat _status;
-  string _longname;
-  string _shortname;
+  std::string _longname;
+  std::string _shortname;
   bool get_status();
   const char *last_error() const;
   int _error;
 private:
 };
 
-inline string File::base(const string &s)
+inline std::string File::base(const std::string &s)
 {
-  string::size_type p = s.find_last_of('/');
-  return p == string::npos ? s : s.substr(p + 1);
+  std::string::size_type p = s.find_last_of('/');
+  return p == std::string::npos ? s : s.substr(p + 1);
 }
 
 inline bool File::get_status()

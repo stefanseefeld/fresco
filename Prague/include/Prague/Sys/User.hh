@@ -28,18 +28,14 @@
 namespace Prague
 {
 
-/* @Class{User}
- *
- * @Description{}
- */
 class User
 {
 public:
   User(int id = -1);
-  User(const string &);
+  User(const std::string &);
   ~User() {}
-  int uid() const { return pwd->pw_uid;}
-  int gid() const { return pwd->pw_gid;}
+  uid_t uid() const { return pwd->pw_uid;}
+  gid_t gid() const { return pwd->pw_gid;}
   const char *name() const { return pwd->pw_name;}
   const char *realName() const { return pwd->pw_gecos;}
   const char *home() const { return pwd->pw_dir;}

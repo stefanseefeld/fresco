@@ -42,15 +42,15 @@ public:
 private:
   struct cell
   {
-    cell(char oo, const string &opt, type tt, const string &des)
+    cell(char oo, const std::string &opt, type tt, const std::string &des)
       : o(oo), option(opt), t(tt), description(des) {}
     char        o;            // option char
-    string      option;       // option name
+    std::string option;       // option name
     type        t;	      // option type
-    string      description;  // a description of option
-    string      value;	      // value of option (string)    
+    std::string description;  // a description of option
+    std::string value;	      // value of option (string)    
   };
-  typedef vector<cell> table_t;	      // option table
+  typedef std::vector<cell> table_t;	      // option table
 public:
   GetOpt(const char *, const char * = 0);
   ~GetOpt();
@@ -62,11 +62,11 @@ public:
   //. parse the given args
   int parse(char *args);
   //. register an option
-  void add(char o, const string &option, type, const string & = "no description available");
+  void add(char o, const std::string &option, type, const std::string & = "no description available");
   //. get a value
-  void get(char o, string *) const;
+  void get(char o, std::string *) const;
   //. get a value
-  void get(const string &option, string *) const;
+  void get(const std::string &option, std::string *) const;
 private:
   table_t table;
   const char *p;	      // program basename
@@ -74,9 +74,9 @@ private:
   order ordering;
   size_t getlongopt(int, char **);
   size_t getopt(int, char **);
-  table_t::iterator find(const string &option)
+  table_t::iterator find(const std::string &option)
     { return find_if(table.begin(), table.end(), comp_string(option));}
-  table_t::const_iterator find(const string &option) const
+  table_t::const_iterator find(const std::string &option) const
     { return find_if(table.begin(), table.end(), comp_string(option));}
   table_t::iterator find(char o)
     { return find_if(table.begin(), table.end(), comp_char(o));}
@@ -85,9 +85,9 @@ private:
   void exchange(char **, size_t, char **);
   struct comp_string
   {
-    comp_string(const string &n) : name(n) {}
+    comp_string(const std::string &n) : name(n) {}
     bool operator () (const cell &c) { return name == c.option;}
-    string name;
+    std::string name;
   };
   struct comp_char
   {

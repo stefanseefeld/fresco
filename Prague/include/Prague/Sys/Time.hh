@@ -55,7 +55,7 @@ public:
   operator double () const { return static_cast<double>(tv_sec) + static_cast<double>(tv_usec)/1000000.;}
   operator const char *() const { return ctime(&tv_sec);}
   static Time currentTime();
-  friend ostream &operator << (ostream &os, const Time &T) { return os << T.tv_sec << " s, " << T.tv_usec << " us";}
+  friend std::ostream &operator << (std::ostream &os, const Time &T) { return os << T.tv_sec << " s, " << T.tv_usec << " us";}
 protected:
   inline void normalize();
 private:

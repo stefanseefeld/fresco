@@ -25,50 +25,51 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <iostream>
 #include <cerrno>
 #include <cstdio>
 
 using namespace Prague;
 
 MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset)
-  : base(MAP_FAILED), length(0)
+  : _base(MAP_FAILED), _length(0)
 {
   struct stat sb;
-  length = l > -1 ? l : fstat(fd, &sb) == -1 ? -1 : sb.st_size;
-  if (l > static_cast<int>(length))
+  _length = l > -1 ? l : fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+  if (l > static_cast<int>(_length))
     {
-      length = l;
-      ftruncate(fd, length);
+      _length = l;
+      ftruncate(fd, _length);
     }
-  else if (l > 0 && l < static_cast<int>(length)) length = l;
-  base = mmap(addr, length, prot, share, fd, offset);
-  if (base == MAP_FAILED) perror("MMap::MMap");
+  else if (l > 0 && l < static_cast<int>(_length)) _length = l;
+  _base = mmap(addr, _length, prot, share, fd, offset);
+  if (_base == MAP_FAILED) perror("MMap::MMap");
 }
 
-MMap::MMap(const string &filename, int l, int prot, int share, void *addr, off_t offset)
-  : base(MAP_FAILED), length(0)
+MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, off_t offset)
+  : _base(MAP_FAILED), _length(0)
 {
   int fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
   if (fd == -1)
     {
-      cerr << "MMap::MMap: unable to open '" << filename << '\'' << endl;
+      std::cerr << "MMap::MMap: unable to open '" << filename << '\'' << std::endl;
       return;
     }
   struct stat sb;
-  length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
-  if (l > static_cast<int>(length))
+  _length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+  if (l > static_cast<int>(_length))
     {
-      length = l;
-      ftruncate(fd, length);
+      _length = l;
+      ftruncate(fd, _length);
     }
-  else if (l > 0 && l < static_cast<int>(length)) length = l;
-  base = mmap(addr, length, prot, share, fd, offset);
-  if (base == MAP_FAILED) perror("MMap::MMap");
+  else if (l > 0 && l < static_cast<int>(_length)) _length = l;
+  _base = mmap(addr, _length, prot, share, fd, offset);
+  if (_base == MAP_FAILED) std::perror("MMap::MMap");
   close(fd);
 }
 
-MMap::~MMap() { if (base != MAP_FAILED) munmap(base, length);}
-void MMap::sync(ssize_t len, bool wait) { msync(base, len < 0 ? length : len, wait ? MS_SYNC : MS_ASYNC);}
+MMap::~MMap() { if (_base != MAP_FAILED) munmap(_base, _length);}
+void MMap::sync(ssize_t len, bool wait) { msync(_base, len < 0 ? _length : len, wait ? MS_SYNC : MS_ASYNC);}
 void MMap::sync(void *addr, size_t len, bool wait) { msync(addr, len, wait ? MS_SYNC : MS_ASYNC);}
-void MMap::protect(ssize_t len, int prot) { mprotect(base, len < 0 ? length : len, prot);}
+void MMap::protect(ssize_t len, int prot) { mprotect(_base, len < 0 ? _length : len, prot);}
 void MMap::protect(void *addr, size_t len, int prot) { mprotect(addr, len, prot);}

@@ -32,10 +32,10 @@ namespace Prague
 
 class Trace;
 
-class Tracer
 //. this class represents a lightweight circular tracing stream
 //. similar to the one in GNU NANA except designed for use in 
 //. a multithreaded C++ environment with section guards.
+class Tracer
 {
   struct Event
   {
@@ -43,60 +43,60 @@ class Tracer
     unsigned long thread;
     const char *type;
     const char *specifics;
-    friend ostream &operator << (ostream &os, const Event &e)
+    friend std::ostream &operator << (std::ostream &os, const Event &e)
     { return os << e.time << ':' << e.thread << '\t' << e.type << ' ' << e.specifics;}
   };
   friend class Trace;
 public:
-  static void resize(size_t s) { Prague::Guard<Mutex> guard(mutex); events.resize(s); if (next >= s) next = 0;}
-  static void logging(bool l) { log = l;}
+  static void resize(size_t s) { Prague::Guard<Mutex> guard(_mutex); _events.resize(s); if (_next >= s) _next = 0;}
+  static void logging(bool l) { _log = l;}
   static void add(const char *n, const char *ty = "")
   {
     {
-      Prague::Guard<Mutex> guard(mutex);
-      if (next == events.size()) return;
-      events[next].time = Time::currentTime() - start;
-      events[next].thread = Thread::self()->id();
-      events[next].type = ty;
-      events[next].specifics = n;
-      if (log)
+      Prague::Guard<Mutex> guard(_mutex);
+      if (_next == _events.size()) return;
+      _events[_next].time = Time::currentTime() - _start;
+      _events[_next].thread = Thread::self()->id();
+      _events[_next].type = ty;
+      _events[_next].specifics = n;
+      if (_log)
 	{
-	  for (unsigned short i = 0; i != *indent; i++) cerr.put(' ');
-	  cerr << events[next] << endl;
+	  for (unsigned short i = 0; i != *_indent; i++) std::cerr.put(' ');
+	  std::cerr << _events[_next] << std::endl;
 	}
-      next++;
-      if (next == events.size()) 
+      _next++;
+      if (_next == _events.size()) 
 	{
-	  next = 0;
-	  wrapped = true;
+	  _next = 0;
+	  _wrapped = true;
 	}
     }
   }
-  static void clear() { next = 0; wrapped = false;}
-  static void dump(ostream &os)
+  static void clear() { _next = 0; _wrapped = false;}
+  static void dump(std::ostream &os)
   {
-    vector<Event>::iterator e;
+    std::vector<Event>::iterator e;
     os << "* Tracer::dump =\n";
-    if (wrapped) for (e = events.begin() + next; e != events.end(); e++) os << *e << '\n';
-    for (e = events.begin(); e != events.begin() + next; e++) os << *e << '\n';
-    os << "* end of Tracer::dump" << endl; 
+    if (_wrapped) for (e = _events.begin() + _next; e != _events.end(); e++) os << *e << '\n';
+    for (e = _events.begin(); e != _events.begin() + _next; e++) os << *e << '\n';
+    os << "* end of Tracer::dump" << std::endl; 
   }
 private:
-  static vector<Event> events;
-  static Time start;
-  static Thread::Data<unsigned short> indent;
-  static Mutex mutex;
-  static unsigned int next;
-  static bool wrapped;
-  static bool log;
+  static std::vector<Event>           _events;
+  static Time                         _start;
+  static Thread::Data<unsigned short> _indent;
+  static Mutex                        _mutex;
+  static unsigned int                 _next;
+  static bool                         _wrapped;
+  static bool                         _log;
 };
 
 #ifdef TRACER
 class Trace
 {
 public:
-  Trace(const char *s) : section(s) { Tracer::add(section, "enter"); ++*Tracer::indent;}
-  ~Trace() { --*Tracer::indent; Tracer::add(section, "leave");}
+  Trace(const char *s) : section(s) { Tracer::add(section, "enter"); ++*Tracer::_indent;}
+  ~Trace() { --*Tracer::_indent; Tracer::add(section, "leave");}
 private:
   const char *section;
 };
@@ -111,4 +111,4 @@ public:
 
 };
 
-#endif /* _Prague_Tracer_hh */
+#endif

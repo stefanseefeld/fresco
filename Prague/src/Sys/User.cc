@@ -31,7 +31,7 @@ User::User(int uid)
   pwd = getpwuid(uid);
 };
 
-User::User(const string &name)
+User::User(const std::string &name)
 {
   pwd = getpwnam(name.c_str());
 };

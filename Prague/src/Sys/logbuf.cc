@@ -39,10 +39,10 @@ logbuf::int_type logbuf::sputc(logbuf::char_type c)
   return static_cast<int_type>(c);
 }
 
-logbuf::int_type logbuf::xsputn(const logbuf::char_type *s, streamsize n)
+std::streamsize logbuf::xsputn(const logbuf::char_type *s, std::streamsize n)
 {
   if (pptr() == epptr()) return EOF;
-  streamsize length = epptr() - pptr();
+  std::streamsize length = epptr() - pptr();
   if (n <= length)
     {
       memcpy (pptr (), s, n * sizeof (char_type));
@@ -63,19 +63,19 @@ logbuf::int_type logbuf::xsputn(const logbuf::char_type *s, streamsize n)
     }
 }
 
-void logbuf::dump(ostream &os)
+void logbuf::dump(std::ostream &os)
 {
   os << "* logbuf::dump =\n";
   if (wrapped)
     for (char_type *i = pptr(); i != epptr(); i++)
       {
 	if (isprint(*i) || isspace(*i)) os.put(*i);
-	else os << hex << *i;
+	else os << std::hex << *i;
       }
   for (char_type *i = pbase(); i != pptr(); i++)
     {
       if (isprint(*i) || isspace(*i)) os.put(*i);
-      else os << hex << *i;
+      else os << std::hex << *i;
     }
-  os << "* end of logbuf::dump" << endl;
+  os << "* end of logbuf::dump" << std::endl;
 }

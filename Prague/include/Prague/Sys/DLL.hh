@@ -34,23 +34,23 @@ public:
   //. create a nil library handle
   DLL() : handle(0) {}
   //. create a library handle for the named library
-  DLL(const string &name, bool now = true) { open(name, now);}
+  DLL(const std::string &name, bool now = true) { open(name, now);}
   ~DLL() { close();}
   //. open the given library
-  void open(const string &, bool = true);
+  void open(const std::string &, bool = true);
   //. close the library
   void close();
   //. resolve the given symbol
-  void *resolve(const string &);
+  void *resolve(const std::string &);
   //. return the library's name
-  const string &name() const { return lib;}
+  const std::string &name() const { return lib;}
   //. return the last error (should we replace that with an exception ?)
-  const string &error() const { return err;}
+  const std::string &error() const { return err;}
   //. return true if the handle is valid
   operator bool () const { return handle;}
 private:
-  string lib;
-  string err;
+  std::string lib;
+  std::string err;
   void *handle;
 };
 

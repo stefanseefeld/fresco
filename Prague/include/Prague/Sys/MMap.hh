@@ -38,18 +38,18 @@ public:
   class Exception
   {
   public:
-    Exception(const string &m) : msg(m) {}
-    const string &what() const { return msg;}
+    Exception(const std::string &m) : _msg(m) {}
+    const std::string &what() const { return _msg;}
   private:
-    string msg;
+    std::string _msg;
   }; 
   MMap(int, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
-  MMap(const string &, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
+  MMap(const std::string &, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
   ~MMap();
   //. return the base address
-  void *addr() const { return base;}
+  void *addr() const { return _base;}
   //. return the size
-  size_t size() const { return length;}
+  size_t size() const { return _length;}
   //. synchronize the memory with the associated file
   void sync(ssize_t = -1, bool = true);
   //. synchronize the memory with the associated file
@@ -60,8 +60,8 @@ public:
   void protect(void *, size_t, int = read|write);
 private:
   MMap(const MMap &);
-  void *base;
-  size_t length;
+  void  *_base;
+  size_t _length;
 };
 
 };

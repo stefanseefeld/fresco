@@ -34,10 +34,10 @@
 namespace Prague
 {
 
-class Mutex// : public pthread_mutex_t
+class Mutex
 {
 public:
-  class Attribute// : public pthread_mutexattr_t
+  class Attribute
   {
   public:
     Attribute() { pthread_mutexattr_init (&impl);}
@@ -72,37 +72,41 @@ private:
 };
 
 template<class T>
-class Lock_Trait {
+class Lock_Trait
+{
 public:
-    void lock(T & t) { t.lock(); }
-    void unlock(T & t) { t.unlock(); }
+  void lock(T & t) { t.lock();}
+  void unlock(T & t) { t.unlock();}
 };
 
 template<>
-class Lock_Trait<Semaphore> {
+class Lock_Trait<Semaphore>
+{
 public:
-    void lock(Semaphore & t) { t.wait(); }
-    void unlock(Semaphore & t) { t.post(); }
+  void lock(Semaphore & t) { t.wait();}
+  void unlock(Semaphore & t) { t.post();}
 };
 
 template<class T>
-class WLock_Trait {
+class WLock_Trait 
+{
 public:
-    void lock(T & t) { t.wlock(); }
-    void unlock(T & t) { t.unlock(); }
+  void lock(T & t) { t.wlock();}
+  void unlock(T & t) { t.unlock();}
 };
 
 // A helperclass
 template <class T, class L_TRAIT = Lock_Trait<T> >
-class Guard {
+class Guard 
+{
 public:
-    Guard(T & t) : vip(t), trait() { trait.lock(vip); }
-    ~Guard() { trait.unlock(vip); }
+  Guard(T & t) : vip(t), trait() { trait.lock(vip);}
+  ~Guard() { trait.unlock(vip);}
 private:
-    Guard(const Guard<T> &);
-    Guard & operator = (const Guard &);
-    T & vip; // Who else get's guarded?
-    L_TRAIT trait;
+  Guard(const Guard<T> &);
+  Guard & operator = (const Guard &);
+  T & vip; // Who else get's guarded?
+  L_TRAIT trait;
 };
 
 //. condition variables are used to commuicate changed conditions between threads.
@@ -129,47 +133,51 @@ private:
 
 #if 0
 
-class RWLock {
+class RWLock
+{
 public:
-    class Attribute {
-    public:
-	Attribute() { pthread_rwlockattr_init (&impl);}
-	~Attribute() { pthread_rwlockattr_destroy(&impl);}
-	pthread_rwlockattr_t impl;
-    };
-    RWLock() { pthread_rwlock_init(&impl, 0);}
-    ~RWLock() { pthread_rwlock_destroy(&impl);}
-    void rlock() { pthread_rwlock_rdlock(&impl);}
-    void wlock() { pthread_rwlock_wrlock(&impl);}
-    void unlock() { pthread_rwlock_unlock(&impl);}
-    bool tryrlock() { return pthread_rwlock_tryrdlock(&impl);}
-    bool trywlock() { return pthread_rwlock_trywrlock(&impl);}
-    pthread_rwlock_t impl;
+  class Attribute 
+  {
+  public:
+    Attribute() { pthread_rwlockattr_init (&impl);}
+    ~Attribute() { pthread_rwlockattr_destroy(&impl);}
+    pthread_rwlockattr_t impl;
+  };
+  RWLock() { pthread_rwlock_init(&impl, 0);}
+  ~RWLock() { pthread_rwlock_destroy(&impl);}
+  void rlock() { pthread_rwlock_rdlock(&impl);}
+  void wlock() { pthread_rwlock_wrlock(&impl);}
+  void unlock() { pthread_rwlock_unlock(&impl);}
+  bool tryrlock() { return pthread_rwlock_tryrdlock(&impl);}
+  bool trywlock() { return pthread_rwlock_trywrlock(&impl);}
+  pthread_rwlock_t impl;
 };
 
 #else
 
-class RWLock {
+class RWLock 
+{
 public:
-    RWLock() {}
-    ~RWLock() {}
-    void rlock() {}
-    void wlock() {}
-    void unlock() {}
-    bool tryrlock() { return false;}
-    bool trywlock() { return false;}
+  RWLock() {}
+  ~RWLock() {}
+  void rlock() {}
+  void wlock() {}
+  void unlock() {}
+  bool tryrlock() { return false;}
+  bool trywlock() { return false;}
 private:
-    Mutex mutex;
-    Semaphore readers;
-    Semaphore writers;
+  Mutex mutex;
+  Semaphore readers;
+  Semaphore writers;
 };
 
 #endif
 
-template <> class Lock_Trait<RWLock> {
+template <> class Lock_Trait<RWLock> 
+{
 public:
-    void lock(RWLock & l) { l.rlock(); }
-    void unlock(RWLock & l) { l.unlock(); }
+  void lock(RWLock & l) { l.rlock();}
+  void unlock(RWLock & l) { l.unlock();}
 };
 
 //. a thread housekeeping class.
@@ -197,10 +205,10 @@ public:
   class Exception
   {
   public:
-    Exception(const string &m) : msg(m) {}
-    const string &what() const { return msg;}
+    Exception(const std::string &m) : _msg(m) {}
+    const std::string &what() const { return _msg;}
   private:
-    string msg;
+    std::string _msg;
   };
   Thread(proc, void *, priority_t = normal);
   ~Thread();

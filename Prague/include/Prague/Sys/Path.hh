@@ -22,6 +22,7 @@
 #ifndef _Prague_Path_hh
 #define _Prague_Path_hh
 
+#include <Prague/Sys/File.hh>
 #include <string>
 #include <vector>
 
@@ -31,21 +32,22 @@ namespace Prague
 //. Path implements the Unix Path functionality, i.e. file lookup.
 class Path
 {
-  typedef vector<string> rep_type;
+  typedef std::vector<std::string> rep_type;
   typedef rep_type::iterator iterator;
+  struct Predicate { bool operator()(const std::string &name) { File file(name); return file.access() & File::ru;}};
 public:
-  struct predicate { virtual bool operator()(const string &name) const = 0;};
   //. construct an empty path
   Path() {}
   //. construct a list of directories, using the given separator to tokenize the string
-  Path(const string &path, char separator = ':');
-  ~Path();
+  Path(const std::string &path, char separator = ':');
+  ~Path() {}
   //. append a directory
-  void append(const string &directory) { _directories.push_back(directory);}
+  void append(const std::string &directory) { _directories.push_back(directory);}
   //. look up a file, using the predicate functor, if non-zero
-  string lookup_file(const string &, predicate * = 0) const;
+//   template <typename Predicate = dummy_predicate>
+  std::string lookup_file(const std::string &) const;
   //. expand a directory, if it is provided as '~joe/foo'
-  static string expand_user(const string &);
+  static std::string expand_user(const std::string &);
   //. return begin iterator
   iterator begin() { return _directories.begin();}
   //. return end iterator
@@ -53,9 +55,22 @@ public:
   //. return the size, i.e. the number of directories contained in the path
   size_t size() { return _directories.size();}
   //. return ith directory
-  const string &operator [] (size_t i) { return _directories[i];}
+  const std::string &operator [] (size_t i) { return _directories[i];}
 private:
   rep_type _directories;
+};
+
+// template <typename Predicate>
+inline std::string Path::lookup_file(const std::string &name) const
+{
+  if (name.empty() || name[0] == '/') return name;
+  Predicate predicate;
+  for (std::vector<std::string>::const_iterator i = _directories.begin(); i != _directories.end(); i++)
+    {
+      std::string result = *i + "/" + name;
+      if (predicate(result)) return result;
+    }
+  return std::string();
 };
 
 };

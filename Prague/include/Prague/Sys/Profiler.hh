@@ -42,7 +42,7 @@ class Profiler
 public:
   struct CheckPoint
   {
-    CheckPoint(const string &s) : name(s), count(0), start(0), stop(0), elapsed(0) {}
+    CheckPoint(const std::string &s) : name(s), count(0), start(0), stop(0), elapsed(0) {}
     CheckPoint(CheckPoint *cp)
       : name(cp->name),
 	count(cp->count),
@@ -52,7 +52,7 @@ public:
     {}
     void indent(ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
     void output(ostream &os, unsigned short ind);
-    string name;
+    std::string name;
     long count;
     clock_t start;
     clock_t stop;
@@ -79,7 +79,7 @@ private:
   };
   friend struct Guard;
 public:
-  Profiler(const string &name)
+  Profiler(const std::string &name)
     {
 #ifdef profile
       Prague::Guard<Mutex> guard(mutex);
@@ -99,15 +99,15 @@ public:
       current = &*++i;
 #endif /* profile */
     }
-  static void dump(ostream &);
+  static void dump(std::ostream &);
 private:
-  static child_iterator lookup(const string &name)
+  static child_iterator lookup(const std::string &name)
     {
       for (child_iterator i = current->child_begin(); i != current->child_end(); i++)
 	if ((*i).value->name == name) return i;
       return current->push_back(new CheckPoint(name));
     }
-  static void dump(ostream &, const item_t &, unsigned short);
+  static void dump(std::ostream &, const item_t &, unsigned short);
   static void clean(const item_t &root)
     {
       for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)

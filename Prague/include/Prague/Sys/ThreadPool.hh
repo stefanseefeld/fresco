@@ -32,34 +32,34 @@ namespace Prague
 template <class Task, class Acceptor, class Handler>
 class ThreadPool
 {
-  typedef vector<Thread *> tlist_t;
+  typedef std::vector<Thread *> tlist_t;
 public:
-  ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) : tasks(t), acceptor(a), threads(s, 0)
+  ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) : _tasks(t), _acceptor(a), _threads(s, 0)
     {
-      for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++)
+      for (tlist_t::iterator i = _threads.begin(); i != _threads.end(); ++i)
 	(*i) = new Thread(run, this);
     }
   ~ThreadPool()
   {
-    for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) delete *i;
+    for (tlist_t::iterator i = _threads.begin(); i != _threads.end(); i++) delete *i;
   }
-  void start() { for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) (*i)->start();}
+  void start() { for (tlist_t::iterator i = _threads.begin(); i != _threads.end(); i++) (*i)->start();}
 private:
   static void *run(void *X)
     {
       ThreadPool *pool = reinterpret_cast<ThreadPool *>(X);
       while (1)
 	{
-	  Task task = pool->tasks.pop();
-	  Handler *handler = pool->acceptor.consume(task);
+	  Task task = pool->_tasks.pop();
+	  Handler *handler = pool->_acceptor.consume(task);
 	  handler->process();
 	  delete handler;
 	  Thread::testcancel();
 	}
     }
-  Thread::Queue<Task> &tasks;
-  Acceptor &acceptor;
-  tlist_t threads;
+  Thread::Queue<Task> &_tasks;
+  Acceptor            &_acceptor;
+  tlist_t              _threads;
 };
 
 };

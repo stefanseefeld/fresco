@@ -30,9 +30,9 @@ namespace Prague
 {
 
 template <class T>
-class Thread::Queue : private priority_queue<T>
+class Thread::Queue : private std::priority_queue<T>
 {
-  typedef priority_queue<T> rep_type;
+  typedef std::priority_queue<T> rep_type;
 public:
   Queue(size_t capacity) : free(capacity) {}
   void push(const T &t)

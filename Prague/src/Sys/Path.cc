@@ -25,38 +25,23 @@
 
 using namespace Prague;
 
-Path::Path(const string &list, char separator)
+Path::Path(const std::string &list, char separator)
 {
   if (list.empty()) return;
-  string::size_type b = 0;
+  std::string::size_type b = 0;
   while (b < list.size())
     {
-      string::size_type e = list.find(separator, b);
-      _directories.push_back(string(list, b, e-b));
-      b = e == string::npos ? string::npos : e + 1;
+      std::string::size_type e = list.find(separator, b);
+      _directories.push_back(std::string(list, b, e-b));
+      b = e == std::string::npos ? std::string::npos : e + 1;
     }
 }
 
-Path::~Path()
-{
-}
-
-string Path::lookup_file(const string &name, Path::predicate *p) const
-{
-  if (name.empty() || name[0] == '/') return name;
-  for (vector<string>::const_iterator i = _directories.begin(); i != _directories.end(); i++)
-    {
-      string result = *i + "/" + name;
-      if (!p || (*p)(result)) return result;
-    }
-  return string ();
-};
-
-string Path::expand_user(const string &path)
+std::string Path::expand_user(const std::string &path)
 {
   if (path.empty() || path[0] != '~') return path;
-  string pfx;
-  string::size_type pos = path.find_first_of('/');
+  std::string pfx;
+  std::string::size_type pos = path.find_first_of('/');
   if (path[1] == '\0' || pos == 1)
     {
       pfx = getenv("HOME");
@@ -64,15 +49,14 @@ string Path::expand_user(const string &path)
     }
   else
     {
-      string name(path,1,(pos==string::npos) ? string::npos : pos-1);
+      std::string name(path,1,(pos==std::string::npos) ? std::string::npos : pos-1);
       User user(name.c_str());
       pfx = user.home();
     }
   if (pfx.empty()) return path;
-  string result = pfx;
-  if (pos == string::npos) return result;
+  std::string result = pfx;
+  if (pos == std::string::npos) return result;
   if (result.empty() || result[result.length()-1] != '/') result += '/';
-  result += string(path).substr(pos+1);
+  result += std::string(path).substr(pos+1);
   return result;
 };
-

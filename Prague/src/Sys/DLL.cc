@@ -20,26 +20,27 @@
  * MA 02139, USA.
  */
 
+#include "Prague/config.hh"
 #include "Prague/Sys/DLL.hh"
-#if 1
+#if defined(HAVE_DLFCN)
 #include <dlfcn.h>
-#else /* _aix_ */
+#elif defined(HAVE_DLAIX)
 #include <dl.h>
 #endif
 
 using namespace Prague;
 
-void DLL::open(const string &name, bool now)
+void DLL::open(const std::string &name, bool now)
 {
   lib = name;
   if (lib != "")
     {
-#if 1
+#if defined(HAVE_DLFCN)
       int flags = now ? RTLD_NOW : RTLD_LAZY;
       flags |= RTLD_GLOBAL;
       handle = dlopen(lib.c_str(), flags);
       if (!handle) err = dlerror();
-#else /* _aix_ */
+#elif defined(HAVE_DLAIX)
       shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
       if (!shl_handle) err = strerror(errno);
       else handle = shl_handle;
@@ -54,21 +55,21 @@ void DLL::open(const string &name, bool now)
 
 void DLL::close()
 {
-#if 1
+#if defined(HAVE_DLFCN)
   if (handle) dlclose(handle);
-#else /* _aix_ */
+#elif defined(HAVE_AIX)
   if (handle) shl_unload (reinterpret_cast<shl_t>(handle));
 #endif
   handle = 0;
 }
 
-void *DLL::resolve(const string &symbol)
+void *DLL::resolve(const std::string &symbol)
 {
   if (!handle) return 0;
-#if 1
+#if defined(HAVE_DLFCN)
   void *tmp = dlsym(handle, symbol.c_str());
   if (!tmp) err = dlerror();
-#else /* _aix_ */
+#elif defined(HAVE_DLAIX)
   void *tmp;
   if (shl_findsym (reinterpret_cast<shl_t *>(&handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || handle == 0 || tmp == 0)
     err = strerror(errno);

@@ -34,7 +34,7 @@ Profiler::table_t *Profiler::table = 0;
 Profiler::item_t  *Profiler::current = 0;
 Mutex              Profiler::mutex;
 
-void Profiler::CheckPoint::output(ostream &os, unsigned short ind)
+void Profiler::CheckPoint::output(std::ostream &os, unsigned short ind)
 {
   if (elapsed > 0.)
     {
@@ -45,29 +45,29 @@ void Profiler::CheckPoint::output(ostream &os, unsigned short ind)
       os.setf( ios::fixed, ios::floatfield);
       os << elapsed/CLOCKS_PER_SEC;
       os  << "  Avg/Iter.: ";
-      os << setprecision(8) << setw(12);
-      os << elapsed/count/CLOCKS_PER_SEC << endl;
+      os << std::setprecision(8) << std::setw(12);
+      os << elapsed/count/CLOCKS_PER_SEC << std::endl;
     }
 }
 
 #if 1
 
-typedef vector<Profiler::CheckPoint> chart;
-struct CP_compare : public binary_function<Profiler::CheckPoint, Profiler::CheckPoint, bool> 
+typedef std::vector<Profiler::CheckPoint> chart;
+struct CP_compare : public std::binary_function<Profiler::CheckPoint, Profiler::CheckPoint, bool> 
 {
   bool operator()(const Profiler::CheckPoint &cp1, const Profiler::CheckPoint &cp2) const
   {
     return cp1.elapsed/cp1.count > cp2.elapsed/cp2.count;
   }
 };
-struct CP_find : public unary_function<Profiler::CheckPoint, bool>
+struct CP_find : public std::unary_function<Profiler::CheckPoint, bool>
 {
-  CP_find(const string &s) : scope(s) {}
+  CP_find(const std::string &s) : scope(s) {}
   bool operator()(const Profiler::CheckPoint &cp) const { return scope == cp.name;}
-  string scope;
+  std::string scope;
 };
 
-void Profiler::dump(ostream &os)
+void Profiler::dump(std::ostream &os)
 {
   Prague::Guard<Mutex> guard(mutex);
   chart scopes;
@@ -93,7 +93,7 @@ void Profiler::dump(ostream &os)
   /*
    * finally, sort the results
    */
-  sort(scopes.begin(), scopes.end(), CP_compare());
+  std::sort(scopes.begin(), scopes.end(), CP_compare());
   /*
    * now dump it to the ostream
    */
@@ -103,7 +103,7 @@ void Profiler::dump(ostream &os)
 
 #else
 
-void Profiler::dump(ostream &os)
+void Profiler::dump(std::ostream &os)
 {
   Prague::Guard<Mutex> guard(mutex);
   dump(os, *current, 0);
@@ -111,7 +111,7 @@ void Profiler::dump(ostream &os)
 
 #endif
 
-void Profiler::dump(ostream &os, const item_t &root, unsigned short ind)
+void Profiler::dump(std::ostream &os, const item_t &root, unsigned short ind)
 {
   for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
     dump(os, *i, ind + 1);

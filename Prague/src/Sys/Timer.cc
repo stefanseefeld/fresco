@@ -24,10 +24,10 @@
 
 using namespace Prague;
 
-vector<Timer *> Timer::timers;
-Thread          Timer::server(&Timer::start, 0);
-Mutex           Timer::mutex;
-Condition       Timer::condition(Timer::mutex);
+std::vector<Timer *> Timer::timers;
+Thread               Timer::server(&Timer::start, 0);
+Mutex                Timer::mutex;
+Condition            Timer::condition(Timer::mutex);
 
 void Timer::start(const Time &t, const Time &i)
 {
@@ -87,7 +87,7 @@ void Timer::schedule(Timer *timer)
 void Timer::cancel(Timer *timer)
 {
   Prague::Guard<Mutex> guard(mutex);
-  vector<Timer *>::iterator i = find(timers.begin(), timers.end(), timer);
+  std::vector<Timer *>::iterator i = find(timers.begin(), timers.end(), timer);
   if (i != timers.end()) timers.erase(i);
   condition.signal();
 }

@@ -34,15 +34,15 @@ namespace Prague
 class Directory : public File
 {
 public:
-  typedef vector<File *>::iterator iterator;
-  typedef vector<File *>::const_iterator const_iterator;
+  typedef std::vector<File *>::iterator iterator;
+  typedef std::vector<File *>::const_iterator const_iterator;
   enum { unsorted = 0x0, dirsfirst = 0x1, size = 0x2, modtime = 0x4, acctime = 0x8, alpha = 0x10};
   enum { unfiltered = 0x0, nohidden = 0x1, 
 	 readable = 0x2, writable = 0x4, executable = 0x8,
 	 dirs = 0x10, nodirs = 0x20};
-  Directory(const string &, int order, int filter = unfiltered);
+  Directory(const std::string &, int order, int filter = unfiltered);
   //. list all files according to <i>filter</i> in the order given by @var{order}
-  Directory(const string &, int order, const string &);
+  Directory(const std::string &, int order, const std::string &);
   //. list all files according to @var{filter} in the order given by @var{order}
   Directory(const Directory &);
   ~Directory();
@@ -59,7 +59,7 @@ public:
   //. return end iterator
   const_iterator end() const { return _children.end();}
 protected:
-  vector<File *> _children;
+  std::vector<File *> _children;
 private:
 };
 

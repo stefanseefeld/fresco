@@ -27,7 +27,7 @@
 
 using namespace Prague;
 
-File::File(const string &n)
+File::File(const std::string &n)
   : _longname (n),
     _shortname(File::base(n)),
     _error(0)
@@ -53,7 +53,7 @@ File &File::operator = (const File &f)
   return *this;
 }
 
-File &File::operator = (const string &n)
+File &File::operator = (const std::string &n)
 {
   _longname = n;
   _shortname = File::base(n);
@@ -75,7 +75,7 @@ bool File::chmod(access_t a)
   return false;
 }
 
-bool File::mv(const string &name)
+bool File::mv(const std::string &name)
 {
   if (rename(_longname.c_str(), name.c_str()) == -1)
     {

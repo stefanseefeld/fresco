@@ -25,10 +25,10 @@
 
 using namespace Prague;
 
-vector<Tracer::Event> Tracer::events(256);
-Time Tracer::start = Time::currentTime();
-Thread::Data<unsigned short> Tracer::indent(0);
-Mutex Tracer::mutex;
-unsigned int Tracer::next = 0;
-bool Tracer::wrapped = false;
-bool Tracer::log = false;
+std::vector<Tracer::Event>   Tracer::_events(256);
+Time                         Tracer::_start = Time::currentTime();
+Thread::Data<unsigned short> Tracer::_indent(0);
+Mutex                        Tracer::_mutex;
+unsigned int                 Tracer::_next = 0;
+bool                         Tracer::_wrapped = false;
+bool                         Tracer::_log = false;
