@@ -36,168 +36,24 @@ using namespace Warsaw;
 namespace Motif
 {
 
-class Choice::State : public virtual POA_Warsaw::Selection,
-	              public SubjectImpl
-{
-  class Observer : public ObserverImpl
-    {
-    public:
-      Observer(State *, Telltale_ptr, Tag);
-      Tag id() const { return t;}
-      bool toggled() { return cached;}
-      void update(const CORBA::Any &);
-    private:
-      State *state;
-      RefCount_var<Warsaw::Telltale> item;
-      bool cached;
-      Tag t;
-    };
-  friend class Observer;
-  typedef vector<Observer *> list_t;
- public:
-  State(Warsaw::Selection::Policy, CommandKit_ptr);
-  ~State();
-  virtual Warsaw::Selection::Policy type() { return policy;}
-  virtual void type(Warsaw::Selection::Policy) {}
-  Tag add(Telltale_ptr);
-  void remove(Tag);
-  Warsaw::Selection::Items *toggled();
- private:
-  void update(Tag, bool);
-  Tag uniqueId();
-  CORBA::Long idToIndex(Tag); 
-  Mutex mutex;
-  Warsaw::Selection::Policy policy;
-  RefCount_var<Warsaw::TelltaleConstraint> constraint;
-  list_t items;
-};
-
-Choice::State::Observer::Observer(State *s, Telltale_ptr i, Tag tt)
-  : state(s), item(RefCount_var<Warsaw::Telltale>::increment(i)), cached(item->test(Warsaw::Controller::toggled)), t(tt)
-{
-}
-
-void Choice::State::Observer::update(const CORBA::Any &any)
-{
-  bool toggled = item->test(Warsaw::Controller::toggled);
-  if (toggled == cached) return; // not for us...
-  cached = toggled;
-  state->update(t, toggled);
-}
-
-Choice::State::State(Warsaw::Selection::Policy p, CommandKit_ptr c)
-  : policy(p)
-{
-  Trace trace("Choice::State::State");
-  if (policy == Warsaw::Selection::exclusive) constraint = c->exclusive(Warsaw::Controller::toggled);
-}
-
-Choice::State::~State()
-{
-  Trace trace("Choice::State::~State");
-  for (list_t::iterator i = items.begin(); i != items.end(); i++)
-    (*i)->deactivate();
-}
-
-Tag Choice::State::add(Telltale_ptr t)
-{
-  Trace trace("Choice::State::add");
-  MutexGuard guard(mutex);
-  Observer *observer = new Observer(this, t, uniqueId());
-  activate(observer);
-  t->attach(Observer_var(observer->_this()));
-  if (!CORBA::is_nil(constraint)) constraint->add(t);
-  items.push_back(observer);
-  return observer->id();
-}
-
-void Choice::State::remove(Tag t)
-{
-  MutexGuard guard(mutex);
-  size_t i = idToIndex(t);
-  if (i < items.size())
-    {
-      //       if (!CORBA::is_nil(constraint)) constraint->remove(t);
-      items[i]->deactivate();
-      items.erase(items.begin() + i);
-    }
-}
-
-Selection::Items *Choice::State::toggled()
-{
-  MutexGuard guard(mutex);
-  Warsaw::Selection::Items_var ret = new Warsaw::Selection::Items;
-  for (list_t::iterator i = items.begin(); i != items.end(); i++)
-    if ((*i)->toggled())
-      {
-	ret->length(ret->length() + 1);
-	ret[ret->length() - 1] = (*i)->id();
-      }
-  return ret._retn();
-}
-
-void Choice::State::update(Tag t, bool toggled)
-{
-  CORBA::Any any;
-  Warsaw::Selection::Item item;
-  item.id = t;
-  item.toggled = toggled;
-  any <<= item;
-  notify(any);
-}
-
-struct Id_eq : public unary_function<Choice::State::Observer *, bool>
-{
-  Id_eq(Warsaw::Tag t) : id(t) {}
-  bool operator()(const Choice::State::Observer *o) const { return o->id() == id; }
-  Warsaw::Tag id;
-};
-
-Tag Choice::State::uniqueId()
-{
-  Tag id = 0;
-  do
-    if (find_if(items.begin(), items.end(), Id_eq(id)) == items.end())
-      return id;
-  while(++id);
-}
-
-CORBA::Long Choice::State::idToIndex(Tag id)
-{
-  return find_if(items.begin(), items.end(), Id_eq(id)) - items.begin();
-}
-
-Choice::Choice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+Choice::Choice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
   : ControllerImpl(false),
-    _state(new State(p, c)),
-    layout(LayoutKit::_duplicate(l)),
-    tools(ToolKit::_duplicate(t)),
-    widgets(WidgetKit::_duplicate(w))
-{
-  Trace trace("Choice::Choice");
-}
+    selection(RefCount_var<Selection>::increment(s)),
+    layout(RefCount_var<LayoutKit>::increment(l)),
+    tools(RefCount_var<ToolKit>::increment(t)),
+    widgets(RefCount_var<WidgetKit>::increment(w))
+{ Trace trace("Choice::Choice");}
   
-Choice::~Choice()
-{
-  Trace trace("Choice::~Choice");
-  _state->deactivate();
-}
+Choice::~Choice() { Trace trace("Choice::~Choice");}
 
 Selection_ptr Choice::state()
 {
   Trace trace("Choice::state");
-  _state->increment();
-  return _state->_this();
+  return RefCount_var<Selection>::increment(selection);
 }
 
-void Choice::activateComposite()
-{
-  ControllerImpl::activateComposite();
-  activate(_state);
-}
-
-ToggleChoice::ToggleChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
-  : ::Motif::Choice(p, c, l, t, w)
+ToggleChoice::ToggleChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+  : ::Motif::Choice(s, l, t, w)
 {}
 
 Tag ToggleChoice::appendItem(Graphic_ptr g)
@@ -206,7 +62,7 @@ Tag ToggleChoice::appendItem(Graphic_ptr g)
   RefCount_var<Warsaw::Controller> toggle =
     widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
 								    60., 60.)));
-  Tag tag = _state->add(toggle);
+  Tag tag = selection->add(toggle);
   appendController(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
   item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
@@ -226,7 +82,7 @@ Tag ToggleChoice::prependItem(Graphic_ptr g)
   RefCount_var<Warsaw::Controller> toggle =
     widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
 								    60., 60.)));
-  Tag tag = _state->add(toggle);
+  Tag tag = selection->add(toggle);
   appendController(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
   item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
@@ -243,20 +99,20 @@ Tag ToggleChoice::prependItem(Graphic_ptr g)
 void ToggleChoice::removeItem(Tag t)
 {
   Trace trace("ToggleChoice::remove");
-  _state->remove(t);
+  selection->remove(t);
   RefCount_var<Warsaw::Graphic> box = body();
   box->remove(t);
 }
 
-CheckboxChoice::CheckboxChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
-  : ::Motif::Choice(p, c, l, t, w)
+CheckboxChoice::CheckboxChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+  : ::Motif::Choice(s, l, t, w)
 {}
 
 Tag CheckboxChoice::appendItem(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::append");
   RefCount_var<Warsaw::Controller> toggle = tools->toggle(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()));
-  Tag tag = _state->add(toggle);
+  Tag tag = selection->add(toggle);
   appendController(toggle);
 
   Warsaw::ToolKit::FrameSpec s1, s2;
@@ -284,7 +140,7 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::prepend");
   RefCount_var<Warsaw::Controller> toggle = tools->toggle(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()));
-  Tag tag = _state->add(toggle);
+  Tag tag = selection->add(toggle);
   appendController(toggle);
 
   ToolKit::FrameSpec s1, s2;
@@ -311,7 +167,7 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
 void CheckboxChoice::removeItem(Tag t)
 {
   Trace trace("CheckboxChoice::remove");
-  _state->remove(t);
+  selection->remove(t);
   RefCount_var<Warsaw::Graphic> box = body();
   box->remove(t);
 }

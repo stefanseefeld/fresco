@@ -43,6 +43,7 @@ class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
   Warsaw::TelltaleConstraint_ptr selectionRequired();
   Warsaw::Telltale_ptr     constrainedTelltale(Warsaw::TelltaleConstraint_ptr);
   Warsaw::Telltale_ptr     normalTelltale();
+  Warsaw::Selection_ptr    group(Warsaw::Selection::Policy);
   Warsaw::BoundedValue_ptr bvalue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   Warsaw::BoundedRange_ptr brange(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   Warsaw::TextBuffer_ptr   text();

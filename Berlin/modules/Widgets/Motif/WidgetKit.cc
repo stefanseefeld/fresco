@@ -263,7 +263,8 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
 
 Choice_ptr WidgetKit::toggleChoice()
 {
-  Choice *choice = new ToggleChoice(Selection::exclusive, command, layout, tool, WidgetKit_var(_this()));
+  RefCount_var<Selection> selection = command->group(Selection::exclusive);
+  Choice *choice = new ToggleChoice(selection, layout, tool, WidgetKit_var(_this()));
   activate(choice);
   choice->body(Graphic_var(layout->vbox()));
   return choice->_this();
@@ -271,7 +272,8 @@ Choice_ptr WidgetKit::toggleChoice()
 
 Choice_ptr WidgetKit::checkboxChoice()
 {
-  Choice *choice = new CheckboxChoice(0, command, layout, tool, WidgetKit_var(_this()));
+  RefCount_var<Selection> selection = command->group(0);
+  Choice *choice = new CheckboxChoice(selection, layout, tool, WidgetKit_var(_this()));
   activate(choice);
   choice->body(Graphic_var(layout->vbox()));
   return choice->_this();

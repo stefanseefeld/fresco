@@ -21,10 +21,13 @@
  * MA 02139, USA.
  */
 
+#include <Warsaw/config.hh>
+#include <Warsaw/Controller.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/CommandImpl.hh>
 #include "Command/CommandKitImpl.hh"
 #include "Command/TelltaleImpl.hh"
+#include "Command/SelectionImpl.hh"
 #include "Command/BoundedValueImpl.hh"
 #include "Command/BoundedRangeImpl.hh"
 #include "Command/TextBufferImpl.hh"
@@ -114,6 +117,15 @@ Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constrai
     activate(telltale);
     constraint->add(Telltale_var(telltale->_this()));
     return telltale->_this();
+}
+
+Selection_ptr CommandKitImpl::group(Selection::Policy policy)
+{
+  TelltaleConstraint_var constraint;
+  if (policy == Warsaw::Selection::exclusive) constraint = exclusive(Warsaw::Controller::toggled);
+  SelectionImpl *selection = new SelectionImpl(policy, constraint);
+  activate(selection);
+  return selection->_this();
 }
 
 BoundedValue_ptr CommandKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)

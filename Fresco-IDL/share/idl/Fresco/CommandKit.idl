@@ -27,6 +27,7 @@
 #include <Warsaw/Kit.idl>
 #include <Warsaw/Command.idl>
 #include <Warsaw/Telltale.idl>
+#include <Warsaw/Selection.idl>
 
 module Warsaw
 {
@@ -49,6 +50,7 @@ module Warsaw
       TelltaleConstraint selectionRequired();
       Telltale     normalTelltale();
       Telltale     constrainedTelltale(in TelltaleConstraint c);
+      Selection    group(in Selection::Policy p);
       BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
       BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
       TextBuffer   text();
