@@ -98,6 +98,7 @@ void WindowImpl::need_resize()
   Trace trace("WindowImpl::need_resize");
   Vertex size = _handle->size();
   Warsaw::Graphic::Requisition r;
+  GraphicImpl::init_requisition(r);
   request(r);
   if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
       r.y.minimum <= size.y && r.y.maximum >= size.y &&
@@ -136,6 +137,7 @@ void WindowImpl::insert(Desktop_ptr desktop)
   Vertex position, size;
   position.x = position.y = 1000., position.z = 0.;
   Warsaw::Graphic::Requisition r;
+  GraphicImpl::init_requisition(r);
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
   _unmapped = new UnmappedStageHandle(desktop,

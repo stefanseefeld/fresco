@@ -444,6 +444,11 @@ void LibArtDrawingKit::draw_char(Unichar c)
   int width;
   int height;
   Graphic::Requisition r;
+  // We need to initialise this manually:
+  r.x.defined = false;
+  r.y.defined = false;
+  r.z.defined = false;
+  r.preserve_aspect = false;
   
   if (c > 127)
     {

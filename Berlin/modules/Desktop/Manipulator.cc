@@ -47,6 +47,12 @@ void Resizer::execute(const CORBA::Any &any)
     {
       Vertex s = window->size();
       Graphic::Requisition r;
+      // We need to initialise manually:-(
+      r.x.defined = false;
+      r.y.defined = false;
+      r.z.defined = false;
+      r.preserve_aspect = false;
+
       window->request(r);
       if (r.x.defined)
 	{
@@ -79,6 +85,12 @@ void MoveResizer::execute(const CORBA::Any &any)
   if (any >>= od)
     {
       Warsaw::Graphic::Requisition r;
+      // We need to initialise manually:-(
+      r.x.defined = false;
+      r.y.defined = false;
+      r.z.defined = false;
+      r.preserve_aspect = false;
+
       window->request(r);
       Vertex pos = window->position();
       Vertex size = window->size();

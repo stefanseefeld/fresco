@@ -146,8 +146,20 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   fixed.maximum = 120.;
   fixed.align = 0.;
   Warsaw::Graphic::Requisition req;
-  if (axis == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
-  else               req.x = fixed, req.y = flexible, req.z.defined = false;
+  if (axis == xaxis)
+    {
+      req.x = flexible;
+      req.y = fixed;
+      req.z.defined = false;
+      req.preserve_aspect = false;
+    }
+  else
+    {
+      req.x = fixed;
+      req.y = flexible;
+      req.z.defined = false;
+      req.preserve_aspect = false;
+    }
   // FIXME: What happens if the axis == zaxis? Throw an exception since it
   //        is a stupid idea to request it? -- tobias
   Slider *slider = new Slider(value, axis, req);
@@ -215,8 +227,20 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   fixed.maximum = 120.;
   fixed.align = 0;
   Warsaw::Graphic::Requisition req;
-  if (a == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
-  else            req.x = fixed, req.y = flexible, req.z.defined = false;
+  if (a == xaxis)
+    {
+      req.x = flexible;
+      req.y = fixed;
+      req.z.defined = false;
+      req.preserve_aspect = false;
+    }
+  else
+    {
+      req.x = fixed;
+      req.y = flexible;
+      req.z.defined = false;
+      req.preserve_aspect = false;
+    }
   // FIXME: Again, what happens with axis==zaxis? -- tobias
   Scrollbar *scrollbar = new Scrollbar(x, a, req);
   activate(scrollbar);

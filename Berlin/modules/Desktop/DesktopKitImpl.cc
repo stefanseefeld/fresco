@@ -72,6 +72,8 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
   Window_var wptr = window->_this();
 
   Graphic::Requisition req;
+  // GraphicImpl::init_requisiton(req) not needed as we init
+  // everything manualy!
   req.preserve_aspect = false;
 
   req.x.defined = true;
@@ -168,6 +170,8 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
   Graphic::Requisition req;
+  // GraphicImpl::init_requisiton(req) not needed as we init
+  // everything manualy!
   req.preserve_aspect = false;
 
   req.x.defined = true;
