@@ -27,8 +27,10 @@
 #include <Fresco/Font.hh>
 #include <Berlin/KitImpl.hh>
 
-namespace Berlin {
-namespace FontKit {
+namespace Berlin
+{
+namespace FontKit
+{
 
 using namespace Fresco;
 
