@@ -260,13 +260,13 @@ namespace Berlin
       virtual Fresco::Raster_ptr raster() = 0;
       //. Move the pointer to the given Pixelcoordinate.
       virtual void move(Fresco::Coord, Fresco::Coord) = 0;
-      //. FIXME: Missing documentation!
+      //. Draw the pointer.
       virtual void draw() = 0;
-      //. FIXME: Missing documentation!
+      //. Save the pointer.
       virtual void save() = 0;
-      //. FIXME: Missing documentation!
+      //. Restore the pointer.
       virtual void restore() = 0;
-      //. FIXME: Missing documentation!
+      //. Return if the pointer intersects with the given coordinates.
       virtual bool intersects(Fresco::Coord, Fresco::Coord,
                   Fresco::Coord, Fresco::Coord) = 0;
   };

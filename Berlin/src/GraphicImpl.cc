@@ -3,7 +3,7 @@
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
  * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

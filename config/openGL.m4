@@ -45,7 +45,7 @@ AC_DEFUN([FRESCO_OPENGL_CHECK],
      save_LDFLAGS="$LDFLAGS"
      LDFLAGS="$GL_LIBS $LDFLAGS"
      AC_CHECK_LIB(GL, glLoadIdentity, :, no_gl=yes)
-     AC_CHECK_LIB(GLU, gluNewTess, :, no_gl=yes)
+     AC_CHECK_LIB(GLU, gluNewTess, :, no_gl=yes, [-lGL])
      LDFLAGS="$save_LDFLAGS"
    fi
    

@@ -250,7 +250,7 @@ module Fresco
       Graphic margin_lrbt(in Graphic g,
 			  in Coord lmargin, in Coord rmargin, in Coord bmargin, in Coord tmargin);
       Graphic margin_flexible(in Graphic g,
-			      in Coord margn, in Coord stretch, in Coord shrink);
+			      in Coord margin, in Coord stretch, in Coord shrink);
       Graphic margin_lrbt_flexible(in Graphic g,
 				   in Coord lmargin, in Coord lstretch, in Coord lshrink,
 				   in Coord rmargin, in Coord rstretch, in Coord rshrink,

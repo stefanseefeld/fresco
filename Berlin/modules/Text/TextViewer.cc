@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@fresco.com> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
  * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
  * Copyright (C) 2000 Nathaniel Smith <njs@fresco.org>
  * http://www.fresco.org

@@ -82,7 +82,7 @@ module Fresco
       //. 
       //. You will need to attach() an observer to the returned graphic to
       //. figure out the state.
-      //. FIXME: This is allways a vbox. We need something like axis for the
+      //. FIXME: This is always a vbox. We need something like axis for the
       //.        scrollbar (and others) don't we? Or can we pass the graphic
       //.        used for layout? -- tobias
       Widget::Choice   toggle_choice();

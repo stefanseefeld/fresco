@@ -78,7 +78,7 @@ namespace Berlin
     Fresco::Graphic::Requisition my_requisition;
     };
 
-    //. top to button compositor -- aligns horicontally, tiles top to
+    //. top to button compositor -- aligns horizontally, tiles top to
     //. bottom for now it ignores the DrawingKit parameter and does no
     //. compensation no line breaking.
     class TBCompositor : public Compositor

@@ -1,8 +1,8 @@
 /* $Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999,2000 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,13 +27,13 @@ namespace SyUnit
   class Framework : public SyUnit::TestCase
   {
     public:
-      // Allways pass this test.
+      // Always pass this test.
       void pass()
       {
       assert_true(true);
       }
 
-      // Allways fail this test.
+      // Always fail this test.
       void fail()
       {
       assert_true(false);

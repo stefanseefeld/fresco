@@ -31,7 +31,7 @@ module Fresco
 {
   //. A BoundedRange describes a 'range within a range'
   //. such as a Viewport (a 'window') manipulated by a
-  //. scrollbar. The 'internal' range will allways stay
+  //. scrollbar. The 'internal' range will always stay
   //. completely contained in the 'external' range.
   interface BoundedRange : Subject
     {
@@ -53,10 +53,10 @@ module Fresco
       attribute Coord step;
       //. The current page size.
       attribute Coord page;
-      //. The current lower bound of the 'internal' range. This is allways
+      //. The current lower bound of the 'internal' range. This is always
       //. in ]lower, uvalue].
       attribute Coord lvalue;
-      //. The current upper bound of the 'internal' range. This is allways
+      //. The current upper bound of the 'internal' range. This is always
       //. in [lvalue, upper[.
       attribute Coord uvalue;
 

@@ -120,7 +120,7 @@ void Berlin::CommandKit::TextBufferImpl::backward()
 
 void Berlin::CommandKit::TextBufferImpl::shift(CORBA::Long d)
 {
-    Prague::Trace trace("TextBufferImpl::size()");
+    Prague::Trace trace("TextBufferImpl::shift(...)");
     Fresco::TextBuffer::Change ch;
     {
         Prague::Guard<Mutex> guard(my_mutex);

@@ -32,7 +32,7 @@ module Fresco
 {
   //. A BoundedValue describes a 'value within a range'
   //. such as a Slider.
-  //. The value will allways stay contained in the range.
+  //. The value will always stay contained in the range.
   interface BoundedValue : Subject
     {
       //. The current lower bound of the range.
@@ -43,7 +43,7 @@ module Fresco
       attribute Coord step;
       //. The current page size.
       attribute Coord page;
-      //. The current value. It will allways be contained in ]lower, upper[.
+      //. The current value. It will always be contained in ]lower, upper[.
       attribute Coord value;
       //. Move the value a step forward.
       void forward();

@@ -58,9 +58,9 @@ namespace
       std::cin >> e.pmove.x >> e.pmove.y;
       break;
       }
-      case evPtrButtonPress:
-      case evPtrButtonRelease:
-      break;
+//    case evPtrButtonPress:
+//    case evPtrButtonRelease:
+//    break;
       }
   }
   
@@ -82,9 +82,9 @@ namespace
       std::cout << e.pmove.x << ' ' << e.pmove.y;
       break;
       }
-      case evPtrButtonPress:
-      case evPtrButtonRelease:
-      break;
+//    case evPtrButtonPress:
+//    case evPtrButtonRelease:
+//    break;
       }
       std::cout << std::endl;
   }
@@ -98,6 +98,7 @@ GGI::Console::Console(int &argc, char **argv,
     GGI::Drawable *drawable = new GGI::Drawable(0, x, y);
     my_visual = drawable->my_visual;
 #ifdef RMDEBUG
+    Trace trace("Console open -- RMDEBUG");
     // make a fullscreen backup visual
     my_backup = ggiOpen("display-memory", 0);
     ggi_mode mode;
@@ -108,7 +109,7 @@ GGI::Console::Console(int &argc, char **argv,
     mode.dpp.x = mode.dpp.y = 1;
     mode.graphtype = GT_24BIT;
     mode.frames = 1;
-    ggiSetMode(_backup, &mode);
+    ggiSetMode(my_backup, &mode);
 #endif
     my_size[0] = drawable->my_mode.visible.x;
     my_size[1] = drawable->my_mode.visible.y;
@@ -196,13 +197,13 @@ void GGI::Console::device_info(std::ostream &os)
 
 Input::Event *GGI::Console::next_event()
 {
-    Prague::Trace trace("GGI::Console::next_event");
+    Trace trace("GGI::Console::next_event");
     ggi_event event;
     ggi_event_mask mask;
     ggi_event_mask move_mask = ggi_event_mask(emPtrMove | emValuator);
 
     int input = fileno(stdin);
-    Prague::FdSet rfdset;
+    FdSet rfdset;
     
     int nfds = -1;
     do
@@ -397,7 +398,7 @@ void GGI::Console::highlight_screen(Coord lx, Coord ly, Coord ux, Coord uy,
     PixelCoord h = static_cast<PixelCoord>(uy * my_resolution[1] - y);
 
     // make a backup
-    ggiCrossBlit(my_visual, x, y, w, h, _backup, x, y);
+    ggiCrossBlit(my_visual, x, y, w, h, my_backup, x, y);
     
     // fill region with red
     ggi_pixel back;

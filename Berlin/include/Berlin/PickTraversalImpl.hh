@@ -93,7 +93,7 @@ namespace Berlin
       Fresco::PickTraversal_var  my_this;
   };
 
-  //. remove one controller level from the top, it might have got out of scope
+  //. remove one controller level from the top, it might have gone out of scope
   inline void PickTraversalImpl::pop_controller()
   {
       Prague::Trace trace("PickTraversal::pop_controller");

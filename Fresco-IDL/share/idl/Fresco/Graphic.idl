@@ -39,7 +39,7 @@ module Fresco
   interface DrawingKit;
   interface Graphic;
   
-  //. A GraphicIterator is a reference to a graphic within an composite graphic
+  //. A GraphicIterator is a reference to a graphic within a composite graphic
   interface GraphicIterator
     {
       //. Return the child graphic to which the iterator currently refers
@@ -112,17 +112,15 @@ module Fresco
       //. alter appearance without affecting structural operations.
       void append_graphic(in Graphic g);
       void prepend_graphic(in Graphic g);
-      //. Remove the child on the edge labled the given Tag.
+      //. Remove the child on the edge labeled the given Tag.
       void remove_graphic(in Tag t);
       //. Called by the child to detach itself from the parent
       //. (which is this graphic).
-      //. FIXME: What is this Tag?
+      //. The Tag is a unique Identifier of the graphic.
       void remove_child_graphic(in Tag t);
       //. Add a parent for this graphic.
-      //. FIXME: What is the given Tag? What is the returned Tag?
       Tag add_parent_graphic(in Graphic g, in Tag t);
       //. Remove a parent for this Graphic.
-      //. FIXME: What is this Tag?
       void remove_parent_graphic(in Tag t);
       //. Return an Iterator pointing to the first child Graphic.
       GraphicIterator first_child_graphic();

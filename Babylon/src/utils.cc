@@ -257,7 +257,7 @@ std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & bas
         // current.length can't become < 0 as max_current >= over_it.start
         result.push_back(current);
 
-        // Insert over_it (we allways need to do this!)
+        // Insert over_it (we always need to do this!)
         result.push_back(*over_it);
 
         // over_it reaches into the next base_it:

@@ -47,7 +47,7 @@ module Fresco
 	  unsigned long pos;  //.< Where did it happen?
 	  long len;           //.< How long was the change? This might be a negative number.
       };
-      
+ 
       //. The length of the TextBuffer.
       readonly attribute unsigned long size;
       //. The contents of the TextBuffer.
@@ -66,8 +66,9 @@ module Fresco
       void forward();
       //. Move the cursor backwards for one character.
       void backward();
-      
-      //. FIXME: What does this do?! -- tobias
+      //. Shift the gap reserved for inserting new characters. When editing
+      //. we reserve a gap to hold new characters so not every insertion of
+      //. a new char forces us to move the following existent characters.
       void shift(in long d);
       //. Insert a character in front of the current position into the
       //. TextBuffer. You can only insert characters below 0xFFFF, you will
@@ -78,7 +79,7 @@ module Fresco
       //. operation is finished.
       //.
       //. The TextChange that will be passed around after the insertion will
-      //. allways have a length of 1, the pos field will be the cursor position
+      //. always have a length of 1, the pos field will be the cursor position
       //. *before* the insertion and the type will be insert.
       void insert_char(in Unichar u);
       //. Insert a string into the Buffer before the current position.
@@ -88,19 +89,19 @@ module Fresco
       //. operation is finished.
       //.
       //. The TextChange that will be passed around after the insertion will
-      //. allways have a positive length, the pos field will be the cursor position
-      //. *before* the insertion and the type will be insert.
+      //. always have a positive length, the pos field will be the cursor
+      //. position *before* the insertion and the type will be insert.
       void insert_string(in Unistring u);
       //. Remove d characters backward. This is relative to the current position.
       //.
       //. The TextChange that will be passed around after the removal will
-      //. allways have a *negative* length, the pos field will be the cursor
+      //. always have a *negative* length, the pos field will be the cursor
       //. position *before* the removal and the type will be remove.
       void remove_backward(in unsigned long d);
       //. Remove d characters forward. This is relative to the current position.
       //.
       //. The TextChange that will be passed around after the removal will
-      //. allways have a *positive* length, the pos field will be the cursor
+      //. always have a *positive* length, the pos field will be the cursor
       //. position *before* the removal and the type will be remove.
       void remove_forward(in unsigned long d);
       //. Clear the buffer. It will be empty afterwards.

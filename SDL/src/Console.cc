@@ -348,7 +348,7 @@ void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
     // in that code cannot influence the highlighting.
     if (is_gl())
     {
-    std::cer << "Region Management Debugging does not work "
+    std::cerr << "Region Management Debugging does not work "
          << "with OpenGL on SDL."
          << std::endl;
     return;
@@ -371,7 +371,7 @@ void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
                      pf->Rmask, pf->Gmask, pf->Bmask, pf->Amask);
   
     // make a backup:
-    SDL_BlitSurface(screen, 0, _backup, 0);
+    SDL_BlitSurface(screen, 0, my_backup, 0);
 
     // fill region:
     SDL_FillRect(screen,
@@ -387,7 +387,7 @@ void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
     select(0, 0, 0, 0, &tv);
     
     // restore old content
-    SDL_BlitSurface(_backup, NULL, screen, NULL);
+    SDL_BlitSurface(my_backup, NULL, screen, NULL);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 #endif  
 }
