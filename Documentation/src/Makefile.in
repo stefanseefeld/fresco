@@ -40,6 +40,8 @@ TARGETS		:= book.html
 
 vpath %.xml  $(srcdir)
 
+dummy:
+
 all:	$(TARGETS)
 
 book.html:	$(JPG) $(SRC)

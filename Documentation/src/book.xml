@@ -3,7 +3,7 @@
 
 <!-- these are chapter-entity declarations -->
 
-<!ENTITY chapter0      SYSTEM "chapter0.xml">
+<!ENTITY hello         SYSTEM "hello.xml">
 <!ENTITY chapter1      SYSTEM "chapter1.xml">
 <!ENTITY chapter2      SYSTEM "chapter2.xml">
 <!ENTITY chapter3      SYSTEM "chapter3.xml">
@@ -35,7 +35,7 @@
     </legalnotice>
   </bookinfo>
 
-<!-- &chapter0; -->
+&hello;
 <!-- &chapter1; -->
 <!-- &chapter2; -->
 <!-- &chapter3; -->
