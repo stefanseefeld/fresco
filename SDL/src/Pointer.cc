@@ -142,7 +142,10 @@ void SDL::nonGLPointer::save()
 
   Fresco::PixelCoord x = _position[0] - _origin[0];
   Fresco::PixelCoord y = _position[1] - _origin[1];
-  _saved_area->blit(*_screen, x, y, _size[0], _size[1], 0, 0);
+  Fresco::PixelCoord size_x, size_y;
+  size_x = (_size[0] + x > _screen->width()) ? _screen->width()-x : _size[0];
+  size_y = (_size[1] + y > _screen->height()) ? _screen->height()-y : _size[1];
+  _saved_area->blit(*_screen, x, y, size_x, size_y, 0, 0);
 }
 
 
@@ -152,9 +155,14 @@ void SDL::nonGLPointer::restore()
 
   Fresco::PixelCoord x = _position[0] - _origin[0];
   Fresco::PixelCoord y = _position[1] - _origin[1];
-  _screen->blit(*_saved_area, 0, 0, _size[0], _size[1], x, y);
+  Fresco::PixelCoord size_x, size_y;
+  size_x = (_size[0] + x > _screen->width()) ? _screen->width()-x : _size[0];
+  size_y = (_size[1] + y > _screen->height()) ? _screen->height()-y : _size[1];
+  _screen->blit(*_saved_area, 0, 0, size_x, size_y, x, y);
   _old_x = x;
   _old_y = y;
+  _old_size_x = size_x;
+  _old_size_y = size_y;
 }
 
 
@@ -164,13 +172,15 @@ void SDL::nonGLPointer::draw()
 
   Fresco::PixelCoord x = _position[0] - _origin[0];
   Fresco::PixelCoord y = _position[1] - _origin[1];
-  _screen->blit(*_cursor, 0, 0, _size[0], _size[1], x, y);
-  
+  Fresco::PixelCoord size_x, size_y;
+  size_x = (_size[0] + x > _screen->width()) ? _screen->width()-x : _size[0];
+  size_y = (_size[1] + y > _screen->height()) ? _screen->height()-y : _size[1];
+  _screen->blit(*_cursor, 0, 0, size_x, size_y, x, y);
   // flush the area we worked on:
   Fresco::PixelCoord x1 = std::min(_old_x, x);
   Fresco::PixelCoord y1 = std::min(_old_y, y);
-  Fresco::PixelCoord x2 = std::max(_old_x + _size[0], x + _size[0]);
-  Fresco::PixelCoord y2 = std::max(_old_y + _size[1], y + _size[1]);
+  Fresco::PixelCoord x2 = std::max(_old_x + _old_size_x, x + size_x);
+  Fresco::PixelCoord y2 = std::max(_old_y + _old_size_y, y + size_y);
   _screen->flush(x1, y1, x2 - x1, y2 - y1);
 }
 

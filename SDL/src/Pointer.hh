@@ -68,6 +68,7 @@ private:
   Fresco::PixelCoord _origin[2];
   Fresco::PixelCoord _position[2];
   Fresco::PixelCoord _old_x, _old_y;
+  Fresco::PixelCoord _old_size_x, _old_size_y;
   Fresco::PixelCoord _x, _y;
   Fresco::Coord      _scale[2];
 };
