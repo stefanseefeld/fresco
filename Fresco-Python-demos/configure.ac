@@ -54,7 +54,7 @@ dnl ------------------------------------------------------------------
 dnl CORBA environment
 dnl ------------------------------------------------------------------
 AC_MSG_PART(CORBA Environment)
-dnl BERLIN_OMNIORBPY_CHECK
+BERLIN_OMNIORBPY_CHECK
 
 dnl ------------------------------------------------------------------
 dnl Decisions

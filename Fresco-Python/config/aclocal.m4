@@ -1647,20 +1647,25 @@ AC_DEFUN([BERLIN_OMNIORBPY_CHECK],[
 	AC_PATH_PROG(OMNIIDL, omniidl, no, $omniorb_path)
 
 	dnl Test whether omniidl knows about the python backend
-	[cat > conftest.idl << EOF
-	[#]line __oline__ "configure
+	AC_CACHE_CHECK([whether omniidl supports Python],
+	berlin_cv_sys_omniidl_py, [
+
+	cat > conftest.idl <<EOF
+dnl	#line __oline__ configure
 	interface foo {};
-	EOF
-	if (eval OMNIIDL -bpython conftest.idl)
-	then
+EOF
+	if $OMNIIDL -bpython conftest.idl; then
 	dnl Don't remove the temporary files here, so they can be examined.
-  	  ifelse([$2], , :, [$2])
+  	  ifelse([$2], , , [$2])
+	  berlin_cv_sys_omniidl_py=yes
 	else
 dnl  	  echo "configure: failed program was:" >&AC_FD_CC
 dnl  	  cat conftest.$ac_ext >&AC_FD_CC
 	  ifelse([$3], , , [  rm -fr conftest*
-	  	$3])dnl
+	  	$3])
+	  berlin_cv_sys_omniidl_py=no
 	fi
-	rm -fr conftest*]
+	rm -fr conftest*
+	rm -fr _GlobalIDL POA__GlobalIDL])
 ])
 
