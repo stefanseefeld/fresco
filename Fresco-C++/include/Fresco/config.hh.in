@@ -11,7 +11,7 @@
 #  define skeletonize(interfacename) _sk_ ## interfacename
 #  define implements(interface) virtual public skeletonize(interface)
 #  define implementsscoped(scope,interface) virtual public applyscope(scope,skeletonize(interface))
-#  define obtain(sc,in,pr) applyscope(in,_narrow(sc->create(interface(in),pr)))
+#  define obtain(sc,in,pr) applyscope(in,_narrow(sc->resolve(interface(in),pr)))
 #  define declare_corba_ptr_type(foo) class foo; \
 	typedef foo* foo ##_ptr; \
 	typedef foo ##_ptr foo ##Ref; \
