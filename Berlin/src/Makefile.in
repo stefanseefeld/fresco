@@ -82,16 +82,16 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-xref:	$(docdir)/sxr/Berlin.xref $(docdir)/sxr/Berlin.syn
+xref:	Berlin.xref Berlin.syn
 
 doc:	$(MANUAL)
 
-$(docdir)/sxr/Berlin.xref:	$(XREF)
+Berlin.xref:	$(XREF)
 	@echo linking xref files together
 	@mkdir -p $(docdir)/sxr
 	@compile-xref -o $@ $^
 
-$(docdir)/sxr/Berlin.syn:	$(SSYN) $(HSYN)
+Berlin.syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
 	@mkdir -p $(docdir)/sxr
 	@$(SYNOPSIS) -o $@ $^

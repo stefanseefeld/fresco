@@ -35,6 +35,7 @@ optional	:= GGI SDL \
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
 subdirs		:= $(mandatory_dirs) $(optional_dirs)
+sxrdirs		:= Prague Babylon Berlin
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
@@ -57,9 +58,7 @@ $(optional_dirs): %: %/Makefile
 depend:
 	$(MAKE) action="depend"
 
-xref:
-	$(MAKE) action="xref"
-
+xref:	data.syn data.xref
 
 doc:
 	$(MAKE) action="doc"
@@ -111,6 +110,17 @@ maintainer-clean:
                config/Prague-config config/synopsis.py \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
                $(top_srcdir)/configure 
+
+data.syn: $(join $(sxrdirs), $(patsubst %, /share/doc/%, $(join $(sxrdirs), $(patsubst %, /sxr/%.syn, $(sxrdirs)))))
+	@echo linking synopsis files together
+	@synopsis -o $@ $^
+
+data.xref: $(join $(sxrdirs), $(patsubst %, /share/doc/%, $(join $(sxrdirs), $(patsubst %, /sxr/%.xref, $(sxrdirs)))))
+	@echo linking xref files together
+	@compile-xref -m -o $@ $^
+
+%/%.syn %/%.xref:
+	@$(MAKE) -C $(@D) xref
 
 # insert inter-directory dependencies here, but only if the required package
 # is present

@@ -59,8 +59,7 @@ $(subdirs):
 depend:
 	$(MAKE) action="depend"
 
-xref:
-	$(MAKE) action="xref"
+xref:	modules.syn modules.xref
 
 doc:
 	$(MAKE) action="doc"
@@ -89,3 +88,14 @@ maintainer-clean:
 	@echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
 	rm -f Makefile
+
+modules.syn: $(join $(subdirs), $(patsubst %, /%.syn, $(subdirs)))
+	@echo linking synopsis files together
+	@$(SYNOPSIS) -o $@ $^
+
+modules.xref: $(join $(subdirs), $(patsubst %, /%.xref, $(subdirs)))
+	@echo linking xref files together
+	@compile-xref -m -o $@ $^
+
+%/Kit.syn %/Kit.xref:
+	@$(MAKE) -C $(@D) xref

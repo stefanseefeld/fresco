@@ -23,6 +23,9 @@ SHELL	:= /bin/sh
 
 srcdir		:= @srcdir@
 top_srcdir	:= @top_srcdir@
+docdir		:= share/doc/Berlin
+
+include config/local.mk
 
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
@@ -53,8 +56,7 @@ depend:
 doc:
 	$(MAKE) action="doc"
 
-xref:
-	$(MAKE) action="xref"
+xref: $(docdir)/Berlin.syn $(docdir)/Berlin.xref
 
 install:
 	$(MAKE) action="install"
@@ -107,3 +109,19 @@ maintainer-clean:
                config/Berlin-config config/synopsis.py \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
                $(top_srcdir)/configure 
+
+$(docdir)/Berlin.syn: src/Berlin.syn modules/modules.syn
+	@echo linking synopsis files together
+	@mkdir -p $(docdir)/sxr
+	@$(SYNOPSIS) -o $@ $^
+
+$(docdir)/Berlin.xref: src/Berlin.xref modules/modules.xref
+	@echo linking xref files together
+	@mkdir -p $(docdir)/sxr
+	@compile-xref -m -o $@ $^
+
+src/Berlin.syn src/Berlin.xref:
+	@make -C src xref
+
+modules/modules.syn modules/Berlin.xref:
+	@make -C modules xref

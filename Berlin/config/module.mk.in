@@ -69,16 +69,16 @@ $(TARGET):	$(DEP) $(OBJ)
 
 depend: $(DEP)
 
-xref:	$(docdir)/sxr/modules/$(MODULE).xref $(docdir)/sxr/modules/$(MODULE).syn
+xref:	Kit.xref Kit.syn
 
 doc:	$(MANUAL)
 
-$(docdir)/sxr/modules/$(MODULE).xref:	$(XREF)
+$(MODULE).xref:	$(XREF)
 	@echo linking xref files together
 	@mkdir -p $(docdir)/sxr/modules
 	@compile-xref -o $@ $^
 
-$(docdir)/sxr/modules/$(MODULE).syn:	$(SSYN) $(HSYN)
+$(MODULE).syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
 	@mkdir -p $(docdir)/sxr/modules
 	@$(SYNOPSIS) -o $@ $^
