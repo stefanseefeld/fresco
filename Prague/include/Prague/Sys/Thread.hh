@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -33,23 +33,25 @@
 namespace Prague
 {
 
-class Mutex : public pthread_mutex_t
+class Mutex// : public pthread_mutex_t
 {
 public:
-  class Attribute : public pthread_mutexattr_t
+  class Attribute// : public pthread_mutexattr_t
   {
   public:
-    Attribute() { pthread_mutexattr_init (this);}
-    ~Attribute() { pthread_mutexattr_destroy(this);}
+    Attribute() { pthread_mutexattr_init (&impl);}
+    ~Attribute() { pthread_mutexattr_destroy(&impl);}
+    pthread_mutexattr_t impl;
   };
-  enum type { fast = PTHREAD_MUTEX_FAST_NP,
-	      recursive = PTHREAD_MUTEX_RECURSIVE_NP};
-  Mutex() { pthread_mutex_init(this, 0);}
-  Mutex(type t);
-  ~Mutex() { pthread_mutex_destroy(this);}
-  void lock() { pthread_mutex_lock(this);}
-  void unlock() { pthread_mutex_unlock(this);}
-  bool trylock() { return pthread_mutex_trylock(this);}
+//  enum type { fast = PTHREAD_MUTEX_FAST_NP,
+//	      recursive = PTHREAD_MUTEX_RECURSIVE_NP};
+  Mutex() { pthread_mutex_init(&impl, 0);}
+//  Mutex(type t);
+  ~Mutex() { pthread_mutex_destroy(&impl);}
+  void lock() { pthread_mutex_lock(&impl);}
+  void unlock() { pthread_mutex_unlock(&impl);}
+  bool trylock() { return pthread_mutex_trylock(&impl);}
+  pthread_mutex_t impl;
 };
 
 class MutexGuard
@@ -63,34 +65,37 @@ private:
   Mutex &mutex;
 };
 
-class Condition : public pthread_cond_t
+class Condition// : public pthread_cond_t
 {
 public:
-  class Attribute : public pthread_condattr_t
+  class Attribute// : public pthread_condattr_t
   {
   public:
-    Attribute() { pthread_condattr_init (this);}
-    ~Attribute() { pthread_condattr_destroy(this);}
+    Attribute() { pthread_condattr_init(&impl);}
+    ~Attribute() { pthread_condattr_destroy(&impl);}
+    pthread_condattr_t impl;
   };
-  Condition(Mutex &m) : mutex(m) { pthread_cond_init(this, 0);}
-  ~Condition() { pthread_cond_destroy(this);}
-  void broadcast() { pthread_cond_broadcast(this);}
-  void signal() { pthread_cond_signal(this);}
-  void wait() { pthread_cond_wait(this, &mutex);}
-  void wait(const Time &t) { timespec ts = t; pthread_cond_timedwait(this, &mutex, &ts);}
+  Condition(Mutex &m) : mutex(m) { pthread_cond_init(&impl, 0);}
+  ~Condition() { pthread_cond_destroy(&impl);}
+  void broadcast() { pthread_cond_broadcast(&impl);}
+  void signal() { pthread_cond_signal(&impl);}
+  void wait() { pthread_cond_wait(&impl, &mutex.impl);}
+  void wait(const Time &t) { timespec ts = t; pthread_cond_timedwait(&impl, &mutex.impl, &ts);}
+  pthread_cond_t impl;
 private:
   Mutex &mutex;
 };
 
-class Semaphore : public sem_t
+class Semaphore// : public sem_t
 {
 public:
-  Semaphore(unsigned int v = 0) { sem_init(this, 0, v);}
-  ~Semaphore() { sem_destroy(this);}
-  void wait() { sem_wait(this);}
-  bool trywait() { return sem_trywait(this);}
-  void post() { sem_post(this);}
-  int value() { int v; sem_getvalue(this, &v); return v;}
+  Semaphore(unsigned int v = 0) { sem_init(&impl, 0, v);}
+  ~Semaphore() { sem_destroy(&impl);}
+  void wait() { sem_wait(&impl);}
+  bool trywait() { return sem_trywait(&impl);}
+  void post() { sem_post(&impl);}
+  int value() { int v; sem_getvalue(&impl, &v); return v;}
+  sem_t impl;
 private:
   Semaphore(const Semaphore &);
   Semaphore &operator = (const Semaphore &);
@@ -109,22 +114,24 @@ private:
 
 #if 0
 
-class RWLock : public pthread_rwlock_t
+class RWLock// : public pthread_rwlock_t
 {
 public:
-  class Attribute : public pthread_rwlockattr_t
+  class Attribute// : public pthread_rwlockattr_t
   {
   public:
-    Attribute() { pthread_rwlockattr_init (this);}
-    ~Attribute() { pthread_rwlockattr_destroy(this);}
+    Attribute() { pthread_rwlockattr_init (&impl);}
+    ~Attribute() { pthread_rwlockattr_destroy(&impl);}
+    pthread_rwlockattr_t impl;
   };
-  RWLock() { pthread_rwlock_init(this, 0);}
-  ~RWLock() { pthread_rwlock_destroy(this);}
-  void rlock() { pthread_rwlock_rdlock(this);}
-  void wlock() { pthread_rwlock_wrlock(this);}
-  void unlock() { pthread_rwlock_unlock(this);}
-  bool tryrlock() { return pthread_rwlock_tryrdlock(this);}
-  bool trywlock() { return pthread_rwlock_trywrlock(this);}
+  RWLock() { pthread_rwlock_init(&impl, 0);}
+  ~RWLock() { pthread_rwlock_destroy(&impl);}
+  void rlock() { pthread_rwlock_rdlock(&impl);}
+  void wlock() { pthread_rwlock_wrlock(&impl);}
+  void unlock() { pthread_rwlock_unlock(&impl);}
+  bool tryrlock() { return pthread_rwlock_tryrdlock(&impl);}
+  bool trywlock() { return pthread_rwlock_trywrlock(&impl);}
+  pthread_rwlock_t impl;
 };
 
 #else
@@ -161,11 +168,12 @@ public:
   template <class T> class Data;
   template <class T> class Queue;
   typedef void *(*proc)(void *);
-  class Attribute : public pthread_attr_t
+  class Attribute// : public pthread_attr_t
   {
   public:
-    Attribute() { pthread_attr_init(this);}
-    ~Attribute() { pthread_attr_destroy(this);}
+    Attribute() { pthread_attr_init(&impl);}
+    ~Attribute() { pthread_attr_destroy(&impl);}
+    pthread_attr_t impl;
   };
   class Exception
   {
