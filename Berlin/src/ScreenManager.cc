@@ -26,6 +26,7 @@
 #include "Berlin/EventManager.hh"
 #include "Prague/Sys/FdSet.hh"
 #include "Prague/Sys/Time.hh"
+#include "Prague/Sys/Profiler.hh"
 #include "Berlin/Logger.hh"
 #include "Warsaw/Warsaw.hh"
 
@@ -46,6 +47,7 @@ void ScreenManager::damage(Region_ptr r)
 
 void ScreenManager::repair()
 {
+  Profiler prf("ScreenManager::repair");
   mutex.lock();
   tmpDamage->copy(Region_var(theDamage->_this()));
   theDamage->clear();
