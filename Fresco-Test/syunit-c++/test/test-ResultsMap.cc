@@ -1,4 +1,4 @@
-#include "TestCase.h"
+#include "TestCase.hh"
 
 #include <sstream>
 
