@@ -39,7 +39,7 @@ private:
   static Mutex mutex;
 };
 
-int random()
+int test_random()
 {
   static Mutex mutex;
   MutexGuard guard(mutex);
@@ -148,17 +148,17 @@ void Philosopher::start()
   int left = seat;
   int right = left == Diner::seats - 1 ? 0 : left + 1;
   if (left % 1) swap(left, right);
-  int count = random() % 10 + 1;
+  int count = test_random() % 10 + 1;
   while (count--)
     {
       chopsticks[left].lock();
       chopsticks[right].lock();
       lostream() << "Philosopher #" << seat << " is eating spaghetti now." << endl;
-      Thread::delay(Time(random() % 2000));
+      Thread::delay(Time(test_random() % 2000));
       chopsticks[left].unlock();
       chopsticks[right].unlock();
       lostream() << "Philosopher #" << seat << " is pondering about life." << endl;
-      Thread::delay(Time(random() % 2000));
+      Thread::delay(Time(test_random() % 2000));
     }
   diner->remove(seat);
 }

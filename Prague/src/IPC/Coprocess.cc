@@ -27,8 +27,10 @@
 
 #include <cstdio>
 #include <cerrno>
-#include <wait.h>
 #include <unistd.h>
+
+#define PRAGUE_INCL_FOR_WAITPID
+#include "Prague/Sys/includes.hh"
 
 using namespace Prague;
 

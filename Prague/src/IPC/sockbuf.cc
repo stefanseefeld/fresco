@@ -30,6 +30,9 @@
 #include <cerrno>
 #include <sys/ioctl.h>
 
+#define PRAGUE_INCL_FOR_STRERROR
+#include "Prague/Sys/includes.hh"
+
 using namespace Prague;
 
 const char *sockerr::errstr () const

@@ -88,7 +88,7 @@ void ptybuf::setup()
   if (!save) save = new backup(fd());
 }
 
-#ifdef __linux__ //_bsd_
+#if defined(__linux__) || defined(__FreeBSD__) // XXX: should use configure
 #include "ptybuf.bsd44.cc"
 #elif defined __svr4__
 #include "ptybuf.svr4.cc"

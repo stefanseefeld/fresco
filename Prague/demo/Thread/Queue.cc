@@ -45,7 +45,7 @@ private:
 
 Mutex lostream::mutex;
 
-int random()
+int test_random()
 {
   static Mutex mutex;
   MutexGuard guard(mutex);
@@ -78,7 +78,7 @@ private:
       while (1)
 	{
 	  worker->read();
-	  Thread::delay(Time(random() % reading));
+	  Thread::delay(Time(test_random() % reading));
 	}
       return 0;
     }
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     {
       messages.push("hi there");
       lostream() << "main writing (" << messages.size() << " messages in queue)" << endl;
-      Thread::delay(Time(random() % writing));
+      Thread::delay(Time(test_random() % writing));
     }
   for (size_t i = 0; i != workers.size(); i++) delete workers[i];
 }

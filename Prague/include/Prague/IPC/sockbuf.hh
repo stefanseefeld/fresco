@@ -32,9 +32,9 @@
 namespace Prague
 {
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)  // XXX: ugly!!
 #  define MSG_MAXIOVLEN	 16
-#endif // __linux__
+#endif // __linux__ or __FreeBSD__
 
 // socket exception classes
 class sockerr
