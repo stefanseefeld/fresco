@@ -31,6 +31,12 @@ that does have the @is_test_class tag.
 """
 test_class_root = ("SyUnit", "TestCase")
 
+"""Methods that should be ignored."""
+ignore_methods = ("set_up", "tear_down")
+
+"""Illegal test names."""
+bad_names = ("all")
+
 test_file_tmpl = """\
 /* This file was automatically generated.  Do not edit! */
 #include <TestCmd.hh>
@@ -109,7 +115,7 @@ class FindTestsVisitor(AST.Visitor):
                                                         file_name,
                                                         `parent_names`)
         if self.base_class in parent_names:
-            print "Ah-hah, gotcha!"
+            #print "Ah-hah, gotcha!"
             self.in_test_class = 1
             self.current_class = ParsedTestClass(class_name, file_name)
             self.classes.append(self.current_class)
@@ -123,10 +129,15 @@ class FindTestsVisitor(AST.Visitor):
     def visitOperation(self, node):
         if not self.in_test_class:
             return
+        if node.realname()[-1] in ignore_methods:
+            return
         method = ParsedTestMethod(node.realname()[-1],
                                   node.realname()[-1],
                                   "Description goes here")
-        self.current_class.add_test_method(method)
+        if method.test_name() in bad_names:
+            print "Error: bad test name %s, ignored." % method.test_name()
+        else:
+            self.current_class.add_test_method(method)
 
     def get_classes(self):
         return self.classes
