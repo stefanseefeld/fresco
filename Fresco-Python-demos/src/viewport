@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+# Python Berlin client that implements a pulldown panner
+# Copyright (c) 2001 by Stefan Seefeld
+# This file is licensed for use under the GPL.
+#
+# Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
+#
+# Note that the menu api implemented here resembles more traditional
+# state-heavy guis, rather than berlin's lightweight graphic model.
+# Disclaimer: This is just an experiment :)
+
+import sys, string, os
+from omniORB import CORBA, PortableServer
+
+# Import Berlin module
+import berlin
+from berlin import Label, Callback, nullAny
+
+# Import the Warsaw stubs
+import Warsaw, Unidraw, Layout
+import Warsaw__POA
+
+# Import Python client lib
+import pywarsaw
+from pywarsaw import Babylon
+
+class Mapper (pywarsaw.PyController):
+    def __init__(self, xrange, yrange):
+        pywarsaw.PyController.__init__(self, 0)
+        self.__xrange = xrange
+        self.__yrange = yrange
+        self._set_body(kits.layout.align(kits.layout.fixed_size(Warsaw.Graphic._nil, 200., 200.), 0., 0.))
+        panner = kits.widget.panner(xrange, yrange)
+        self.__pulldown = kits.desktop.pulldown(panner)
+
+    def press(self, pickTraversal, input_event):
+        position = pywarsaw.get_position(input_event)
+        self.__pulldown._set_position(position)
+	self.__pulldown._set_mapped(1)
+
+    def release(self, pickTraversal, input_event):
+	print "Release"
+
+class ViewportApp (berlin.App):
+    def run(self):
+        berlin.App.__init__(self)
+        kits = berlin.get_kits()
+        pixmap = kits.figure.pixmap(kits.image.create("landscape.png"))
+        viewport = kits.layout.scrollable(pixmap)
+        xscroller = kits.widget.scrollbar(viewport.adjustment(Warsaw.xaxis), Warsaw.xaxis)
+        yscroller = kits.widget.scrollbar(viewport.adjustment(Warsaw.yaxis), Warsaw.yaxis)
+        mapper = Mapper(viewport.adjustment(Warsaw.xaxis), viewport.adjustment(Warsaw.yaxis))._this()
+        hbox1 = kits.layout.hbox()
+        hbox1.append_graphic(viewport)
+        hbox1.append_graphic(yscroller)
+        hbox2 = kits.layout.hbox()
+        hbox2.append_graphic(xscroller)
+        hbox2.append_graphic(mapper)
+        vbox1 = kits.layout.vbox()
+        vbox1.append_graphic(hbox1)
+        vbox1.append_graphic(hbox2)
+
+        spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
+        background = kits.tool.frame(vbox1, 10., spec, 1)
+        group = kits.tool.group(background)
+        self.window = kits.desktop.shell(group)
+
+    def exit(self, any):
+	app.quit.set()
+
+def main():
+    # Create the singletons
+    global app, kits, connection
+    connection = berlin.get_connection()
+    kits = berlin.get_kits()
+
+    app = ViewportApp()
+    app.run()
+    # Wait for the quit event
+    app.quit.wait()
+
+    # Tell the orb to shutdown (and wait for pending calls to complete)
+    connection.orb.shutdown(1)
+
+if __name__ == '__main__':
+    main()
+
+# vim: ts=8:sts=4:sw=4
