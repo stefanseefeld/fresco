@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-IPC_SRC	= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc \
+IPC_SRC	= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
 	  Agent.cc Dispatcher.cc #Coprocess.cc PipeAgent.cc TTYAgent.cc
 
 IPC_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(IPC_SRC))

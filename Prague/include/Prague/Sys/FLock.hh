@@ -33,61 +33,59 @@
 namespace Prague
 {
 
-/* @Class{FLock}
- *
- * @Description{provide locking based on fcntl. Locks can be activated in read and in write mode.}
- */
 class FLock
+ //. provide locking based on fcntl. Locks can be activated in read and in write mode.
 {
 public:
   enum mode {read = F_RDLCK, write = F_WRLCK};
   FLock();
-  FLock(const char *, bool = true);
+  FLock(int);
+  FLock(const string &, bool = true);
   ~FLock();
-  const char *Name() { return name.c_str();}
-  bool trylock(mode m) { return doit(m, false) == 0;}
-  bool lock(mode m) { return doit(m, true) == 0;}
+  const string &name() { return file;}
+  bool trylock(mode m = read) { return doit(m, false) == 0;}
+  bool trylock(off_t offset, off_t length, mode m = read) { return doit(offset, length, m, false) == 0;}
+  bool lock(mode m = read) { return doit(m, true) == 0;}
+  bool lock(off_t offset, off_t length, mode m = read) { return doit(offset, length, m, true) == 0;}
   bool unlock() { return doit(F_UNLCK, false) == 0;}
   pid_t locked(mode m) const;
 private:
   static const char *tmpname() { return ::tmpnam(0);}
-  int doit(int, bool = false);
-  string name;
-  bool remove;
+  int doit(int, bool);
+  int doit(off_t, off_t, int, bool);
+  string file;
+  bool close : 1;
+  bool remove: 1;
   int fd;
 };
 
-/* @Method{FLock::FLock()}
- *
- * Description{create a FLock using a temporary file}
- */
 inline FLock::FLock()
-  : name(tmpname()), remove(true)
+//. create a FLock using a temporary file
+  : file(tmpname()), close(true), remove(true)
 {
-  fd = open(name.c_str(), O_RDWR|O_CREAT, 0600);
+  fd = open(file.c_str(), O_RDWR|O_CREAT, 0600);
   ::write(fd, "l", 1);
 };
 
-/* @Method{FLock::FLock(const char *name, bool create = true)}
- *
- * Description{create a FLock using file @var{name}, create if @var{create} is true}
- */
-inline FLock::FLock(const char *n, bool create)
-  : name(n), remove(false)
+inline FLock::FLock(int f)
+//. create a FLock for a given file
+  : close(false), remove(false), fd(f)
 {
-  if (create) fd = open(name.c_str(), O_RDWR|O_CREAT, 0600);
-  else        fd = open(name.c_str(), O_RDWR, 0600);
+};
+
+inline FLock::FLock(const string &f, bool create)
+//. create a FLock using file @var{name}, create if @var{create} is true
+  : file(f), close(true), remove(false)
+{
+  if (create) fd = open(file.c_str(), create ? O_RDWR|O_CREAT : O_RDWR, 0600);
   if (create) ::write(fd, "l", 1);
 };
 
-/* @Method{FLock::~FLock()}
- *
- * Description{close the associated file, removes it if is a temporary one.}
- */
 inline FLock::~FLock()
+//. Description{close the associated file, removes it if is a temporary one.
 {
-  close(fd);
-  if (remove) ::remove(name.c_str());
+  if (close) ::close(fd);
+  if (remove) ::remove(file.c_str());
 };
 
 /* @Method{bool FLock::lock(FLock::mode m)}
@@ -108,11 +106,18 @@ inline int FLock::doit(int type, bool flag)
   return fcntl(fd, flag ? F_SETLKW : F_SETLK, &lock);
 };
 
-/* @Method{pid_t FLock::locked(FLock::mode m)}
- *
- * Description{return the ID of the process currently holding the lock or 0.}
- */
+inline int FLock::doit(off_t offset, off_t length, int type, bool flag)
+{
+  struct flock lock;
+  lock.l_type  = type;
+  lock.l_len   = length;
+  lock.l_start = offset;
+  lock.l_whence = SEEK_SET;
+  return fcntl(fd, flag ? F_SETLKW : F_SETLK, &lock);
+};
+
 inline pid_t FLock::locked(mode m) const
+//. return the ID of the process currently holding the lock or 0.
 {
   struct flock lock;
   lock.l_type  = m;
