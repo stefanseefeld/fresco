@@ -28,28 +28,34 @@
 #include <Berlin/Allocator.hh>
 #include <Berlin/ImplVar.hh>
 
-class Transformer : public Allocator
-{
- public:
-  Transformer();
-  virtual ~Transformer();
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual Fresco::Transform_ptr transformation();
-  void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
- private:
-  Impl_var<TransformImpl> transform;
-};
+namespace Berlin {
+  namespace FigureKit {
 
-class BodyTransformer : public Transformer
-{
-public:
-  BodyTransformer(Transformer*, unsigned d = 0);
-  BodyTransformer(Fresco::Transform_ptr, unsigned d = 0);
-  virtual void body(Fresco::Graphic_ptr);
-  virtual Fresco::Graphic_ptr body();
-protected:
-  unsigned depth;
-};
+    class Transformer : public Allocator
+    {
+    public:
+	Transformer();
+	virtual ~Transformer();
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual Fresco::Transform_ptr transformation();
+	void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+    private:
+	Impl_var<TransformImpl> transform;
+    };
+
+    class BodyTransformer : public Transformer
+    {
+    public:
+	BodyTransformer(Transformer*, unsigned d = 0);
+	BodyTransformer(Fresco::Transform_ptr, unsigned d = 0);
+	virtual void body(Fresco::Graphic_ptr);
+	virtual Fresco::Graphic_ptr body();
+      protected:
+	unsigned depth;
+    };
+
+  } // namespace
+} // namespace
 
 #endif

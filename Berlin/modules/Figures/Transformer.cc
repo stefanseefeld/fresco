@@ -35,6 +35,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::FigureKit;
+
 Transformer::Transformer() : transform(new TransformImpl) {}
 Transformer::~Transformer() {}
 Transform_ptr Transformer::transformation() { return transform->_this();}
