@@ -98,7 +98,7 @@ void TransformImpl::copy(Transform_ptr transform)
     }
 }
 
-void TransformImpl::loadMatrix(Matrix m)
+void TransformImpl::loadMatrix(const Matrix m)
 {
   mat[0][0] = m[0][0]; mat[0][1] = m[0][1];
   mat[0][2] = m[0][2]; mat[0][3] = m[0][3];

@@ -25,7 +25,7 @@
 using namespace Prague;
 
 vector<Timer *> Timer::timers;
-Thread          Timer::server(Timer::start, 0);
+Thread          Timer::server(&Timer::start, 0);
 Mutex           Timer::mutex;
 Condition       Timer::condition(Timer::mutex);
 bool            Timer::running = false;

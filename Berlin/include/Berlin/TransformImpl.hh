@@ -39,7 +39,7 @@ public:
 
   virtual void copy(Transform_ptr);
   virtual void loadIdentity();
-  virtual void loadMatrix(Matrix);
+  virtual void loadMatrix(const Matrix);
   virtual void storeMatrix(Matrix);
   virtual CORBA::Boolean equal(Transform_ptr);
   virtual CORBA::Boolean Identity();

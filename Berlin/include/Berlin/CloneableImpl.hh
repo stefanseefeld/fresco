@@ -37,7 +37,7 @@ class CloneableImpl : implements(Cloneable), public virtual omniLC::_threadContr
 {
 public: 
   virtual CosLifeCycle::LifeCycleObject_ptr copy(CosLifeCycle::FactoryFinder_ptr, const CosLifeCycle::Criteria &);
-  void move(CosLifeCycle::FactoryFinder_ptr, const CosLifeCycle::Criteria &);
+  void move(CosLifeCycle::FactoryFinder_ptr, CosLifeCycle::Criteria &);
   virtual Cloneable_ptr clone(); // override with caution!
   void reload();
   void remove();

@@ -73,13 +73,13 @@ CosLifeCycle::LifeCycleObject_ptr CloneableImpl::copy(CosLifeCycle::FactoryFinde
 // new copy, and (b) destroys itself once it's made the copy, effectively migrating the object.
 // also, it doesn't actually return anything. It's a "go there" method.
 
-void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr there, const CosLifeCycle::Criteria &the_criteria)
+void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr there, CosLifeCycle::Criteria &the_criteria)
 {
   // do some thread-coordinating magic
   omniLC::ThreadLC zz(this);
 
   // insert the current lifecycle object into the criteria list
-  int i = the_criteria.length();
+  unsigned long int i = the_criteria.length();
   the_criteria.length(i+1); 
   the_criteria[i].name = "NP_omniLifeCycleInfo";
   (::CORBA::Any &)(the_criteria[i].value) <<= this->_get_lifecycle();
