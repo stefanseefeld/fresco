@@ -37,7 +37,7 @@ ClientContextImpl::ClientContextImpl() {
 Unistring *ClientContextImpl::userName() {
   const char *_userName = _ClientUser->Name();
   const unsigned int length = strlen(_userName);
-  Unistring * theString = new Unistring[length];
+  Unistring * theString = new Unistring;
 
   for( unsigned int i = 0; i < length; i++) {
     theString[i] = _userName[i];
