@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,22 +19,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Trigger_idl
-#define _Trigger_idl
+#ifndef _Viewport_idl
+#define _Viewport_idl
 
-#include "Controller.idl"
+#include <Graphic.idl>
+#include <Subject.idl>
 
-interface Command;
+interface BoundedRange;
 
-interface Trigger : Controller
-//. A trigger is a controller that can execute a command when clicked
-//. (pressed and subsequently released with the pointer over
-//. the button's allocated area for example). Triggers manipulate a telltale
-//. that represents the current state of the trigger and
-//. determines the trigger's appearance.
+interface Viewport : Graphic, Observer
 {
-  attribute Command action;
-  //. The trigger will execute its command (if not nil) when clicked.
+  BoundedRange adjustment(in Axis a);
 };
 
-#endif /* _Trigger_idl */
+#endif /* _Viewport_idl */

@@ -22,6 +22,7 @@
 SHELL	= /bin/sh
 
 cpath	= ../../config
+wpath   = ../../idl/Warsaw
 ipath	= ../../include
 lpath	= ../../lib
 dpath	= dep
@@ -30,7 +31,8 @@ rpath	= $(lpath)
 
 include $(cpath)/local.mk
 
-CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I. -I..
+IDLFLAGS+= -I$(wpath)
+CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I$(ipath)/Warsaw -I$(ipath)
 CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
@@ -61,14 +63,16 @@ UTIL	= Warsaw.cc Unicode.cc ClientContextImpl.cc
 
 SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(UTIL)
 
-DYNHDR	= $(patsubst %.idl, %.hh, $(DYNINT))
-STATHDR	= $(patsubst %.idl, %.hh, $(STATINT))
+DYNHDR	= $(patsubst %.idl, $(ipath)/Warsaw/%.hh, $(DYNINT))
+STATHDR	= $(patsubst %.idl, $(ipath)/Warsaw/%.hh, $(STATINT))
 HDR	= $(DYNHDR) $(STATHDR) $(LCHDR)
 
 OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
 TARGET	= $(lpath)/libWarsaw.so
 
 vpath %.d $(dpath)
+vpath %.idl $(wpath)
+vpath %.h $(ipath)/Warsaw
 
 world:	$(TARGET)
 
@@ -82,34 +86,40 @@ $(dpath)/%.d:	%.idl
 # Here there be dragons
 #  (can we remove the $(SHELL) part?  it would help cut down the quoting noise)
 #  note: this passes through both make and the shell; $$ means $ to make, and the \'s are for the shell
-		@$(SHELL) -ec "$(CXX) -x c++ -M $(CPPFLAGS) $(CXXFLAGS) $< \
+		@$(SHELL) -ec "$(CXX) -x c++ -M $(CPPFLAGS) -I$(wpath) $(CXXFLAGS) $< \
 		| perl -e 'undef \$$/; while(<>)\
 		    {\
 	    	      (/^(.*)\\.idl\\.o:((.|\\n)*)/);\
 		      \$$file = \$$1;\
 		      \$$dep = \$$2;\
-		      print \"\$$1\", \"SK.cc \", \$$file, \"DynSK.cc \",\
-			    \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
-		      \$$dep =~ s/\\.idl/\\.hh/g;\
+		      print \"\$$file\", \"SK.cc \", \$$file, \"DynSK.cc \",\
+			    \"$(ipath)\/Warsaw\", \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
+		      \$$dep =~ s#$(wpath)#$(ipath)/Warsaw#g;\
+		      \$$dep =~ s/\.idl/\.hh/g;\
 		      print \"$(opath)\/\", \$$file, \"SK.o $(opath)\/\", \$$file, \"DynSK.o\", \": \", \$$dep ;\
 		    }' > $@"
-$(STATHDR): %.hh:		%.idl
+$(STATHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $<
-$(DYNHDR): %.hh:	%.idl
+		mv $(@F) $(ipath)/Warsaw
+$(DYNHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(STATSRC): %SK.cc:		%.idl
+		mv $(@F) $(ipath)/Warsaw
+$(STATSRC): %SK.cc:		$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $<
-$(DYNSTATSRC): %SK.cc: 	%.idl
+		mv $(basename $(<F)).hh $(ipath)/Warsaw
+$(DYNSTATSRC): %SK.cc: 	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(DYNSRC): %DynSK.cc:	%.idl
+		mv $(basename $(<F)).hh $(ipath)/Warsaw
+$(DYNSRC): %DynSK.cc:	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+		mv $(basename $(<F)).hh $(ipath)/Warsaw
 $(opath)/%.o:	%.cc
 		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:	
 		rm -f $(opath)/*.o $(dpath)/*.d
-		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) $(DYNHDR) $(STATHDR) *~
+		rm -f $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(DYNHDR) $(STATHDR) *~
 
 distclean:	clean
 		rm -f $(TARGET)

@@ -21,13 +21,14 @@
 
 SHELL	= /bin/sh
 
+
 cpath	= ../../../config
+wpath	= ../../../idl/Warsaw
 ipath	= ../../../include
 lpath	= ../../../lib
 dpath	= dep
 opath	= obj
 rpath	= $(lpath)
-wpath   = $(ipath)/Warsaw
 
 #include $(cpath)/local.mk
 IDL	= omniidl

@@ -19,22 +19,30 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_hh
-#define _Warsaw_hh
+#ifndef _Window_idl
+#define _Window_idl
 
-#include <Graphic.hh>
-#include <Region.hh>
-#include <iostream>
+#include <Controller.idl>
 
-/*
- * here I start to put some utilities which are based only on top of
- * Warsaw types, so this stuff should be distributed with the server
- * *and* the client side... -stefan
- */
+interface Command;
 
-ostream &operator << (ostream &, const Graphic::Requirement &);
-ostream &operator << (ostream &, const Graphic::Requisition &);
-ostream &operator << (ostream &, const Region::Allotment &);
-ostream &operator << (ostream &, Region_ptr);
+interface Window : Controller
+//. a Window is a top level controller, i.e. one which
+//. is directly contained in the Desktop. It contains
+//. methods to manipulate its position in the Desktop.
+{
+  const short left = 1;
+  const short right = 2;
+  const short top = 4;
+  const short bottom = 8;
 
-#endif /* _Warsaw_hh */
+  readonly attribute boolean mapped;
+
+  Command move();
+  Command resize();
+  Command moveResize(in Alignment x, in Alignment y, in short b);
+  Command relayer();
+  Command map(in boolean f);
+};
+
+#endif /* _Window_idl */

@@ -575,5 +575,6 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       region.upper.x = Coord(region.lower.x + x_len);
       region.upper.y = Coord(region.lower.y + y_len);
     }
+  cout << "transformed allocation with delta " << delta << endl;
   return delta;
 }

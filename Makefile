@@ -21,7 +21,7 @@
 
 SHELL	= /bin/sh
 
-subdirs	= $(wildcard include/Warsaw src server clients)
+subdirs	= $(wildcard src server clients)
 # doc
 
 .PHONY:	config test depclean clean distclean install debs

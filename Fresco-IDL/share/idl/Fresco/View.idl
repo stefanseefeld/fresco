@@ -1,13 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
- *
- * this code is based on code from Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,28 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Traversal_idl
-#define _Traversal_idl
+#ifndef _View_idl
+#define _View_idl
 
-#include "Types.idl"
+#include "Graphic.idl"
+#include "Subject.idl"
 
-interface Region;
-interface Graphic;
-interface Transform;
-
-interface Traversal
+interface View : Graphic, Observer
 {
-  enum order {up, down};
-  Region allocation();
-  Transform transformation();
-  boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
-  boolean intersectsAllocation();
-  boolean intersectsRegion(in Region r);
-  void traverseChild (in Graphic g, in Tag e, in Region r, in Transform t);
-  void visit(in Graphic g);
-  order direction();
-  boolean ok();
-  void update();
 };
 
-#endif /* _Traversal_idl */
+#endif /* _View_idl */

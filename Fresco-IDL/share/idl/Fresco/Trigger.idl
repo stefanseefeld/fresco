@@ -19,22 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_hh
-#define _Warsaw_hh
+#ifndef _Trigger_idl
+#define _Trigger_idl
 
-#include <Graphic.hh>
-#include <Region.hh>
-#include <iostream>
+#include "Controller.idl"
 
-/*
- * here I start to put some utilities which are based only on top of
- * Warsaw types, so this stuff should be distributed with the server
- * *and* the client side... -stefan
- */
+interface Command;
 
-ostream &operator << (ostream &, const Graphic::Requirement &);
-ostream &operator << (ostream &, const Graphic::Requisition &);
-ostream &operator << (ostream &, const Region::Allotment &);
-ostream &operator << (ostream &, Region_ptr);
+interface Trigger : Controller
+//. A trigger is a controller that can execute a command when clicked
+//. (pressed and subsequently released with the pointer over
+//. the button's allocated area for example). Triggers manipulate a telltale
+//. that represents the current state of the trigger and
+//. determines the trigger's appearance.
+{
+  attribute Command action;
+  //. The trigger will execute its command (if not nil) when clicked.
+};
 
-#endif /* _Warsaw_hh */
+#endif /* _Trigger_idl */

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,17 +19,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Viewport_idl
-#define _Viewport_idl
+#ifndef _PickTraversal_idl
+#define _PickTraversal_idl
 
-#include <Graphic.idl>
-#include <Subject.idl>
+#include "Traversal.idl"
+#include "Input.idl"
 
-interface BoundedRange;
+interface Controller;
 
-interface Viewport : Graphic, Observer
+interface PickTraversal : Traversal
 {
-  BoundedRange adjustment(in Axis a);
+  readonly attribute Input::Device device;
+  void enterController(in Controller c);
+  void leaveController();
+  void hit();
+  boolean picked();
+  void grab();
+  void ungrab();
 };
 
-#endif /* _Viewport_idl */
+#endif /* _PickTraversal_idl */

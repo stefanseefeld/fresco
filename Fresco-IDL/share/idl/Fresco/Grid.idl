@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,21 +19,34 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Focus_idl
-#define _Focus_idl
+#ifndef _Grid_idl
+#define _Grid_idl
 
-#include <Input.idl>
+#include "Graphic.idl"
 
-interface Focus
+interface Traversal;
+
+interface Grid : Graphic
 {
-  readonly attribute Input::Device device;
-  void grab();
-  void ungrab();
-  void addFilter(in Input::Filter f);
-  //. The addFilter operation requests that all input events
-  //. be routed through the filter.
-  //. The filter will be removed automatically when the controller
-  //. loses the focus
+  struct Index
+  {
+    long col;
+    long row;
+  };
+  typedef sequence<Index> IndexSeq;
+  struct Range
+  {
+    Index lower;
+    Index upper;
+  };
+  void replace(in Graphic g, in Grid::Index i);
+  Grid::Index find(in Traversal t);
+  void allocateCell(in Region given, in Grid::Index i, in Region a);
+  void requestRange(out Graphic::Requisition r, in Grid::Range a);
+  void traverseRange(in Traversal t, in Grid::Range a);
+  Grid::Index findRange(in Traversal t, in Grid::Range a);
+  void rangePosition(in Region given, in Grid::Range a, out Vertex pos);
+  Grid::Index upper();
 };
 
-#endif /* _Focus_idl */
+#endif /* _Grid_idl */

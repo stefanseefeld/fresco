@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,30 +19,30 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Window_idl
-#define _Window_idl
+#ifndef _Transform_idl
+#define _Transform_idl
 
-#include <Controller.idl>
+#include "Types.idl"
 
-interface Command;
-
-interface Window : Controller
-//. a Window is a top level controller, i.e. one which
-//. is directly contained in the Desktop. It contains
-//. methods to manipulate its position in the Desktop.
+interface Transform
 {
-  const short left = 1;
-  const short right = 2;
-  const short top = 4;
-  const short bottom = 8;
-
-  readonly attribute boolean mapped;
-
-  Command move();
-  Command resize();
-  Command moveResize(in Alignment x, in Alignment y, in short b);
-  Command relayer();
-  Command map(in boolean f);
+  typedef Coord Matrix[4][4];
+  void copy(in Transform t);
+  void loadIdentity();
+  void loadMatrix(in Matrix m);
+  void storeMatrix(out Matrix m);
+  boolean equal(in Transform t);
+  boolean Identity();
+  boolean Translation();
+  boolean detIsZero();
+  void scale(in Vertex v);
+  void rotate(in double angle, in Axis a);
+  void translate(in Vertex v);
+  void premultiply(in Transform t);
+  void postmultiply(in Transform t);
+  void invert();
+  void transformVertex(inout Vertex v);
+  void inverseTransformVertex(inout Vertex v);
 };
 
-#endif /* _Window_idl */
+#endif /* _Transform_idl */
