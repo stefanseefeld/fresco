@@ -22,21 +22,51 @@
 SHELL		:= /bin/sh
 VERSION		:= @VERSION@
 
-srcdir		:= @topdir@/server
+top_srcdir	:= @topdir@
+srcdir		:= $(top_srcdir)/server
 builddir	:= ..
 cdir		:= $(builddir)/config
-hdir		:= @top_srcdir@/include
+hdir		:= $(top_srcdir)/include
+ldir		:= $(builddir)/lib
 bdir		:= $(builddir)/bin
 
 include $(cdir)/local.mk
 include $(cdir)/Server/local.mk
+
+ifeq ($(JPROF),yes)
+JPROF_SRC	:= bfd.cpp coff.cpp elf.cpp leaky.cpp strset.cpp intcnt.cpp
+JPROF_OBJ	:= $(patsubst %.cpp, %.o, $(JPROF_SRC))
+CPPFLAGS	+= -I$(top_srcdir)/contrib/jprof -DJPROF
+endif
 
 CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
 LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague -lggi
 
 TARGETS		:= $(bdir)/server $(bdir)/kits
 
+ifeq ($(JPROF),yes)
+JPROFTARGETS	:= $(ldir)/libjprof.so $(bdir)/jprof
+LIBS		+= -ljprof
+
+all:	$(JPROFTARGETS) $(TARGETS)
+else
 all:	$(TARGETS)
+endif
+
+ifeq ($(JPROF),yes)
+$(ldir)/libjprof.so:	libmalloc.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -shared -o $@ $^
+
+$(bdir)/jprof:	$(JPROF_OBJ)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $^ -lbfd -liberty -ldl
+
+%.o:	$(top_srcdir)/contrib/jprof/%.cpp
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+
+endif
 
 $(bdir)/server:	server.o
 	@echo linking $(@F)

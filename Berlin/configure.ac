@@ -172,6 +172,12 @@ CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
 LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
 
 dnl ------------------------------------------------------------------
+dnl some helper utils
+dnl ------------------------------------------------------------------
+
+AC_ARG_WITH(jprof, [--with-jprof   enable profiling with the jprof tool],[ jprof="$withval"])
+
+dnl ------------------------------------------------------------------
 dnl Decisions
 dnl ------------------------------------------------------------------
 
@@ -190,12 +196,21 @@ AC_SUBST(KITS)
 SERVER="server"
 AC_SUBST(SERVER)
 
+JPROF=
+if test ".$jprof" != .yes ; then
+	jprof="no"
+else
+	JPROF="yes"
+	AC_SUBST(JPROF)
+fi
+
 dnl ------------------------------------------------------------------
 dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
 AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
-AC_MSG_RESULT([Build Kits:               $tested_drawing_kits $enable_kits])
+AC_MSG_RESULT([Build Kits:              $tested_drawing_kits $enable_kits])
+AC_MSG_RESULT([Add profiling support:    $jprof])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
