@@ -49,7 +49,7 @@ class Config(Base):
 	    toc_in = [
 		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague',
 		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon',
-		'@Fresco_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco',
+		'@Fresco_CXX_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco',
 		top_builddir + '/share/doc/Berlin/html/Berlin.toc|../../Berlin',
 	    ]
 
