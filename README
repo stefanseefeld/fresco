@@ -9,8 +9,7 @@ convenience.
 If you're unpacked the entire source tree, and you meet the prerequisites
 (see below) you should be able to run:
 
-$ make config
-$ make
+$ make CONFIGURE_OPTS='<whatever you want to pass to configure>'
 
 with little difficulty. When (if) the build finishes, you will find
 several test applications in the /clients/C++ directory. You must have
@@ -22,10 +21,10 @@ $ export BERLIN_ROOT=.../Berlin
   (where .../Berlin is the directory containing this file, with subdirectories
   src/, include/, etc.)
 $ export LD_LIBRARY_PATH=$BERLIN_ROOT/lib:$LD_LIBRARY_PATH
-  (this may no longer be necessary... anyone?)
 $ cd server
 $ ./server
-  (a black window should pop up; go to another terminal window)
+  (a black window should pop up; go to another terminal window and set
+   BERLIN_ROOT and LD_LIBRARY_PATH there)
 $ cd clients/C++
 $ ./demo
 
