@@ -23,7 +23,6 @@
 #define _Prague_Thread_hh
 
 #include <Prague/Sys/Time.hh>
-#define __USE_UNIX98
 #include <pthread.h>
 #include <semaphore.h>
 #include <cerrno>
@@ -108,6 +107,8 @@ private:
   Semaphore &semaphore;
 };
 
+#if 0
+
 class RWLock : public pthread_rwlock_t
 {
 public:
@@ -125,6 +126,26 @@ public:
   bool tryrlock() { return pthread_rwlock_tryrdlock(this);}
   bool trywlock() { return pthread_rwlock_trywrlock(this);}
 };
+
+#else
+
+class RWLock
+{
+public:
+  RWLock() {}
+  ~RWLock() {}
+  void rlock() {}
+  void wlock() {}
+  void unlock() {}
+  bool tryrlock() { return false;}
+  bool trywlock() { return false;}
+private:
+  Mutex mutex;
+  Semaphore readers;
+  Semaphore writers;
+};
+
+#endif
 
 class Thread
 {

@@ -251,8 +251,156 @@ void resizeImage(GLenum format,
     Memory::copy(datain, dataout, widthin * bpp);
 }
 
+GLTexture::GLTexture(Raster_var r)
+  : GLRaster(r)
+{
+  Raster::Info info = remote->header();
+  Raster::ColorSeq_var pixels;
+  Raster::Index lower, upper;
+  lower.x = lower.y = 0;
+  upper.x = info.width, upper.y = info.height;
+  remote->storePixels(lower, upper, pixels);
+  width = info.width;
+  height = info.height;
+  vector<unsigned char> data(4*width*height);
+  vector<unsigned char>::iterator pixel = data.begin();
+  for (int y = height - 1; y >= 0; y--)
+    for (int x = 0; x != width; x++)
+      {
+	Color &color = pixels[y * info.width + x];
+	*pixel++ = static_cast<char>(color.red * 256);
+	*pixel++ = static_cast<char>(color.green * 256);
+	*pixel++ = static_cast<char>(color.blue * 256);
+	*pixel++ = static_cast<char>(color.alpha * 256);
+      }
+  texture = bind(GL_RGBA, GL_RGBA, data.begin());
+}
 
-GLuint GLRaster::bind(GLint components, GLenum format, unsigned char *data)
+GLTexture::~GLTexture()
+{
+  glDeleteTextures(1, &texture);  
+}
+
+GLuint GLTexture::bind(GLint components, GLenum format, unsigned char *data)
+{
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  GLint w, h;
+  unsigned char *image, *newimage;
+  GLint neww, newh, level, bpp;
+  int error;
+  GLint unpackrowlength, unpackalignment, unpackskiprows, unpackskippixels;
+  GLint packrowlength, packalignment, packskiprows, packskippixels;
+
+  GLint maxsize;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxsize);
+  logbase2(width, w);
+  if (w > maxsize) w = maxsize;
+  logbase2(height, h);
+  if (h > maxsize) h = maxsize;
+  bpp = bytes_per_pixel(format);
+
+  /* Get current glPixelStore values */
+  glGetIntegerv(GL_UNPACK_ROW_LENGTH, &unpackrowlength);
+  glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackalignment);
+  glGetIntegerv(GL_UNPACK_SKIP_ROWS, &unpackskiprows);
+  glGetIntegerv(GL_UNPACK_SKIP_PIXELS, &unpackskippixels);
+  glGetIntegerv(GL_PACK_ROW_LENGTH, &packrowlength);
+  glGetIntegerv(GL_PACK_ALIGNMENT, &packalignment);
+  glGetIntegerv(GL_PACK_SKIP_ROWS, &packskiprows);
+  glGetIntegerv(GL_PACK_SKIP_PIXELS, &packskippixels);
+
+  /* set pixel packing */
+  glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+  glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+
+  bool done = false;
+
+  if (w != width || h != height)
+    {
+      image = new unsigned char [(w+4) * h * bpp];
+      scaleImage(format, width, height, data, w, h, image);
+    }
+  else image = data;
+
+  level = 0;
+  while (!done)
+    {
+      if (image != data)
+	{
+	  /* set pixel unpacking */
+	  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	  glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+	  glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+	}
+      glTexImage2D(GL_TEXTURE_2D, level, components, w, h, 0, format, GL_UNSIGNED_BYTE, image);
+      if (w==1 && h==1)  break;
+
+      neww = (w < 2) ? 1 : w / 2;
+      newh = (h < 2) ? 1 : h / 2;
+      newimage = new unsigned char [(neww + 4) * newh * bpp];
+      error = scaleImage(format, w, h, image, neww, newh, newimage);
+      if (error) done = true;
+      if (image != data) delete [] image;
+      image = newimage;
+      w = neww;
+      h = newh;
+      level++;
+    }
+  if (image != data) delete [] image;
+
+   /* Restore original glPixelStore state */
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, unpackrowlength);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, unpackalignment);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS, unpackskiprows);
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS, unpackskippixels);
+  glPixelStorei(GL_PACK_ROW_LENGTH, packrowlength);
+  glPixelStorei(GL_PACK_ALIGNMENT, packalignment);
+  glPixelStorei(GL_PACK_SKIP_ROWS, packskiprows);
+  glPixelStorei(GL_PACK_SKIP_PIXELS, packskippixels);
+  return texture;
+}
+
+GLImage::GLImage(Raster_var r)
+  : GLRaster(r)
+{
+  Raster::Info info = remote->header();
+  Raster::ColorSeq_var pixels;
+  Raster::Index lower, upper;
+  lower.x = lower.y = 0;
+  upper.x = info.width, upper.y = info.height;
+  remote->storePixels(lower, upper, pixels);
+  width = info.width;
+  height = info.height;
+  vector<unsigned char> data(4*width*height);
+  vector<unsigned char>::iterator pixel = data.begin();
+  for (int y = height - 1; y >= 0; y--)
+    for (int x = 0; x != width; x++)
+      {
+	Color &color = pixels[y * info.width + x];
+	*pixel++ = static_cast<char>(color.red * 256);
+	*pixel++ = static_cast<char>(color.green * 256);
+	*pixel++ = static_cast<char>(color.blue * 256);
+	*pixel++ = static_cast<char>(color.alpha * 256);
+      }
+  texture = bind(GL_RGBA, GL_RGBA, data.begin());
+}
+
+GLImage::~GLImage()
+{
+  glDeleteTextures(1, &texture);  
+}
+
+GLuint GLImage::bind(GLint components, GLenum format, unsigned char *data)
 {
   GLuint texture;
   glGenTextures(1, &texture);
@@ -342,35 +490,4 @@ GLuint GLRaster::bind(GLint components, GLenum format, unsigned char *data)
   glPixelStorei(GL_PACK_SKIP_ROWS, packskiprows);
   glPixelStorei(GL_PACK_SKIP_PIXELS, packskippixels);
   return texture;
-}
-
-GLRaster::GLRaster(Raster_var r)
-  : remote(r),
-    s(1.), t(1.)
-{
-  Raster::Info info = remote->header();
-  Raster::ColorSeq_var pixels;
-  Raster::Index lower, upper;
-  lower.x = lower.y = 0;
-  upper.x = info.width, upper.y = info.height;
-  remote->storePixels(lower, upper, pixels);
-  width = info.width;
-  height = info.height;
-  vector<unsigned char> data(4*width*height);
-  vector<unsigned char>::iterator pixel = data.begin();
-  for (int y = height - 1; y >= 0; y--)
-    for (int x = 0; x != width; x++)
-      {
-	Color &color = pixels[y * info.width + x];
-	*pixel++ = static_cast<char>(color.red * 256);
-	*pixel++ = static_cast<char>(color.green * 256);
-	*pixel++ = static_cast<char>(color.blue * 256);
-	*pixel++ = static_cast<char>(color.alpha * 256);
-      }
-  texture = bind(GL_RGBA, GL_RGBA, data.begin());
-}
-
-GLRaster::~GLRaster()
-{
-  glDeleteTextures(1, &texture);  
 }

@@ -60,7 +60,7 @@ public:
   virtual void surfaceFillstyle(Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
   virtual Fillstyle surfaceFillstyle() { return fs;}
   virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
-  virtual Raster_ptr texture() { return tx;}
+  virtual Raster_ptr texture() { return tx ? Raster::_duplicate(tx->remote) : Raster::_nil();}
 
   virtual Text::Font_ptr font(); 
   virtual Text::Font_ptr findFont(const Text::FontDescriptor &fd);
@@ -99,9 +99,10 @@ public:
   Coord          lw;
   Endstyle       es;
   Fillstyle      fs;
-  Raster_var     tx;
+  GLRaster      *tx;
   
-  ObjectCache<Raster_var, GLRaster> rasters;
+  ObjectCache<Raster_var, GLTexture> textures;
+  ObjectCache<Raster_var, GLImage> images;
 };
 
 #endif /* _GLDrawingKit_hh */

@@ -228,10 +228,10 @@ int ipcbuf::read(void *buf, int len)
   do
     {
       rval = ::read(fd(), (char *)buf, len);
-      cout << "read " << rval << endl;
+//       cout << "read " << rval << endl;
     }
   while (rval == -1 && errno == EINTR);
-  cout << rval << ' ' << errno << ' ' << '(' << EINTR << ')' << endl;
+//   cout << rval << ' ' << errno << ' ' << '(' << EINTR << ')' << endl;
   if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");
   if (rval == 0) cerr << "ipcbuf::read returned 0" << endl;
   return rval;

@@ -24,10 +24,20 @@
 
 using namespace Prague;
 
+TextBufferImpl::TextBufferImpl() {}
+TextBufferImpl::~TextBufferImpl() {}
+
 CORBA::Long TextBufferImpl::size()
 {
   MutexGuard guard(mutex);
   return buffer.size();
+}
+
+Unistring *TextBufferImpl::value()
+{
+  MutexGuard guard(mutex);
+  Unistring *us = new Unistring(buffer.size(), buffer.size(), const_cast<Unichar *>(buffer.get()), false);
+  return us;
 }
 
 CORBA::Long TextBufferImpl::position()
@@ -80,21 +90,21 @@ void TextBufferImpl::insertString(const Unistring &s)
   notify(any);
 }
 
-void TextBufferImpl::removeLeft(CORBA::Long n)
+void TextBufferImpl::removeBackward(CORBA::Long n)
 {
   {
     MutexGuard guard(mutex);
-    buffer.removeLeft(n);
+    buffer.removeBackward(n);
   }
   CORBA::Any any;
   notify(any);
 }
 
-void TextBufferImpl::removeRight(CORBA::Long n)
+void TextBufferImpl::removeForward(CORBA::Long n)
 {
   {
     MutexGuard guard(mutex);
-    buffer.removeRight(n);
+    buffer.removeForward(n);
   }
   CORBA::Any any;
   notify(any);

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,24 +19,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextBuffer_idl
-#define _TextBuffer_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include "Warsaw/config.hh"
+#include "Warsaw/Input.hh"
+#include "Widget/TextInput.hh"
+#include "Prague/Unicode/Unicode.hh"
+#include "Warsaw/Unicode.hh"
 
-interface TextBuffer : Subject
+void TextInput::keyPress(const Input::Event &event)
 {
-  readonly attribute long size;
-  readonly attribute Unistring value;
-  attribute long position;
-  void forward();
-  void backward();
-  void shift(in long d);
-  void insertChar(in Unichar u);
-  void insertString(in Unistring u);
-  void removeBackward(in long d);
-  void removeForward(in long d);
-};
-
-#endif /* _TextBuffer_idl */
+  const Input::Toggle &toggle = event[0].attr.kselection();
+  Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
+  if (uc.is_printable()) buffer->insertChar(Unicode::toCORBA(uc));
+  else switch (toggle.number)
+    {
+    case 8:     buffer->removeBackward(1); break; // backspace
+    case 57396: buffer->backward(); break;        // left
+    case 57397: buffer->forward(); break;         // right
+    default:    ControllerImpl::keyPress(event); break;
+    };
+}

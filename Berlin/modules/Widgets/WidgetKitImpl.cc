@@ -38,6 +38,7 @@
 #include "Widget/Stepper.hh"
 #include "Widget/Gauge.hh"
 #include "Widget/Slider.hh"
+#include "Widget/TextInput.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
 
@@ -247,6 +248,15 @@ Controller_ptr WidgetKitImpl::stepper(Graphic_ptr g, Command_ptr command)
   stepper->action(command);
   graphics.push_back(stepper);
   return stepper->_this();
+}
+
+Controller_ptr WidgetKitImpl::textInput(Graphic_ptr g, TextBuffer_ptr buffer)
+{
+  TextInput *input = new TextInput(buffer);
+  input->_obj_is_ready(_boa());
+  input->body(g);
+  graphics.push_back(input);
+  return input->_this();
 }
 
 Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)

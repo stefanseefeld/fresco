@@ -46,7 +46,7 @@
  * end() >= gend()
  * 
  */
-template <class T, short gap_size>
+template <class T, short gapsize>
 class GapBuffer : private vector<T>
 {
   typedef vector<T> rep_type;
@@ -56,26 +56,26 @@ class GapBuffer : private vector<T>
   iterator cursor() { return begin() + curs;}
   void newgap()
     {
-      rep_type::insert(gbegin(), gap_size, value_type(0));
-      gapend += gap_size;
+      rep_type::insert(gbegin(), gapsize, value_type(0));
+      gapend += gapsize;
     }
-  void movegap(size_type d)
+  void movegap(int d)
     {
       if (d > 0)
 	{
 	  if (gend() + d > end()) rep_type::insert(end(), size_type(gend() + d - end()), value_type(0));
-	  copy(gend(), gbegin() + d, gbegin());
+	  copy(gend(), gend() + d, gbegin());
 	}
       else
 	copy(rep_type::reverse_iterator(gbegin()), rep_type::reverse_iterator(gbegin() + d), rep_type::reverse_iterator(gend()));
       gapbegin += d, gapend += d;
     }
   size_type gap() { return gapend - gapbegin;}
-  void editing() { if (size_type d = curs - gapbegin != 0) movegap(d);}
-  void compact() { if (size_type d = end() - gend() > 0) movegap(d);}
+  void editing() { size_type d = curs - gapbegin; if (d != 0) movegap(d);}
+  void compact() { size_type d = end() - gend(); if (d > 0) movegap(d);}
 public:
-  GapBuffer() : rep_type(64), curs(0) {}
-  size_type size() { return rep_type::size() - gap();}
+  GapBuffer() : curs(0), gapbegin(0), gapend(0) { cout << end() << ' ' << begin() << endl;}
+  size_type size() { compact(); return gbegin() - begin();}
   void forward()
     {
       if (curs == gapbegin && gend() != end()) curs += gap();
@@ -98,9 +98,9 @@ public:
   void insert(value_type u)
     {
       editing();
+      if (!gap()) newgap();
       *cursor() = u;
       curs++, gapbegin++;
-      if (!gap()) newgap();
     }
   void insert(value_type *u, size_type n)
     {
@@ -108,7 +108,7 @@ public:
       rep_type::insert(cursor(), u, u + n);
       curs += n, gapbegin += n, gapend += n;
     }
-  void removeLeft(size_type n)
+  void removeBackward(size_type n)
     {
       if (curs <= gapbegin)
 	{
@@ -130,7 +130,7 @@ public:
 	  curs -= n;
 	}
     }
-  void removeRight(size_type n)
+  void removeForward(size_type n)
     {
       if (curs >= gapend)
 	{

@@ -62,6 +62,7 @@ interface WidgetKit : Cloneable
   View         pushButtonFrame(in Graphic g, in Color c, in Telltale t);
   Controller   dragger(in Graphic g, in Command c);
   Controller   stepper(in Graphic g, in Command c);
+  Controller   textInput(in Graphic g, in TextBuffer b);
 
   Button       pushButton(in Graphic g, in Color b, in Command c);
   Controller   group(in Graphic g);

@@ -23,7 +23,7 @@
 #define _EventLogger_hh
 
 #include <vector>
-#include "Prague/Sys/Thread.hh"
+#include <Prague/Sys/Thread.hh>
 
 // this class represents a lightweight circular logging stream
 // similar to the one in GNU NANA except designed for use in 

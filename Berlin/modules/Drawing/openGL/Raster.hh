@@ -27,15 +27,28 @@
 #include <Warsaw/Transform.hh>
 #include <vector>
 #include <GL/gl.h>
-class GLRaster
+
+struct GLRaster
 {
-public:
-  GLRaster(Raster_var);
-  ~GLRaster();
+  GLRaster(Raster_var r) : remote(Raster::_duplicate(r)) {}
   Raster_var remote;
   PixelCoord width;
   PixelCoord height;
   GLuint texture;
+};
+
+struct GLTexture : GLRaster
+{
+  GLTexture(Raster_var);
+  ~GLTexture();
+private:
+  GLuint bind(GLint components, GLenum format, unsigned char *data);
+};
+
+struct GLImage : GLRaster
+{
+  GLImage(Raster_var);
+  ~GLImage();
   GLfloat s, t;
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);

@@ -34,7 +34,7 @@
 #include <iostream>
 
 GLDrawingKit::GLDrawingKit()
-  : drawable(GGI::drawable()), tr(new TransformImpl), cl(new RegionImpl), rasters(500)
+  : drawable(GGI::drawable()), tr(new TransformImpl), cl(new RegionImpl), textures(100), images(500), tx(0)
 {
   tr->_obj_is_ready(_boa());
   cl->_obj_is_ready(_boa());
@@ -134,12 +134,8 @@ void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
 
 void GLDrawingKit::setTexture(Raster_ptr t)
 {
-  tx = Raster::_duplicate(t);
-  if (!CORBA::is_nil(tx))
-    {
-      GLRaster *glraster = rasters.lookup(tx);
-      glBindTexture(GL_TEXTURE_2D, glraster->texture);
-    }
+  tx = CORBA::is_nil(t) ? 0 : textures.lookup(t);
+  if (tx) glBindTexture(GL_TEXTURE_2D, tx->texture);
 }
 
 Text::Font_ptr GLDrawingKit::findFont(const Text::FontDescriptor &f)
@@ -160,7 +156,7 @@ Text::Font_ptr GLDrawingKit::font()
 
 void GLDrawingKit::drawPath(const Path &path)
 {
-  if (fs == solid || (fs == textured && CORBA::is_nil(tx)))
+  if (fs == solid)
     {
       glBegin(GL_POLYGON);
       for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
@@ -169,7 +165,7 @@ void GLDrawingKit::drawPath(const Path &path)
   else if (fs == textured)
     {
       cerr << "sorry, implementation for textured polygons not finished..." << endl;
-//       GLRaster *glraster = rasters.lookup(tx);
+//       GLTexture *gltextures = textures.lookup(tx);
       glBegin(GL_POLYGON);
       for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
@@ -185,18 +181,16 @@ void GLDrawingKit::drawPath(const Path &path)
 
 void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
 {
-  if (fs == solid || (fs == textured && CORBA::is_nil(tx)))
-    {
-      glRectf(lower.x, lower.y, upper.x, upper.y);
-    }
+  if (fs == solid) glRectf(lower.x, lower.y, upper.x, upper.y);
   else if (fs == textured)
     {
-      GLRaster *glraster = rasters.lookup(tx);
+      double w = (upper.x - lower.x)/(tx->width * 10.);
+      double h = (upper.y - lower.y)/(tx->height * 10.);
       glBegin(GL_POLYGON);
-      glTexCoord2f(0., 0.);                   glVertex2d(lower.x, lower.y);
-      glTexCoord2f(glraster->s, 0.);          glVertex2d(upper.x, lower.y);
-      glTexCoord2f(glraster->s, glraster->t); glVertex2d(upper.x, upper.y);
-      glTexCoord2f(0., glraster->t);          glVertex2d(lower.x, upper.y);
+      glTexCoord2f(0., 0.); glVertex2d(lower.x, lower.y);
+      glTexCoord2f(w, 0.);  glVertex2d(upper.x, lower.y);
+      glTexCoord2f(w, h);   glVertex2d(upper.x, upper.y);
+      glTexCoord2f(0., h);  glVertex2d(lower.x, upper.y);
       glEnd();
     }
   else
@@ -223,25 +217,28 @@ void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
 
 void GLDrawingKit::drawImage(Raster_ptr raster)
 {
-  GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, glraster->texture);
+  GLImage *glimage = images.lookup(Raster::_duplicate(raster));
+  GLint tbackup = -1;
+  if (fs == textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
+  else glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, glimage->texture);
   glColor4f(1., 1., 1., 1.);
   glBegin(GL_POLYGON);
   Path path;
   path.length(4);
-  Coord width = glraster->width*10.;
-  Coord height = glraster->height*10.;
+  Coord width = glimage->width*10.;
+  Coord height = glimage->height*10.;
   path[0].x = path[0].y = path[0].z = 0.;
   path[1].x = width, path[1].y = path[1].z = 0.;
   path[2].x = width, path[2].y = height, path[2].z = 0.;
   path[3].x = 0, path[3].y = height, path[3].z = 0.;
-  glTexCoord2f(0., 0.); glVertex3f(path[3].x, path[3].y, path[3].z);
-  glTexCoord2f(glraster->s, 0.);          glVertex3f(path[2].x, path[2].y, path[2].z);
-  glTexCoord2f(glraster->s, glraster->t); glVertex3f(path[1].x, path[1].y, path[1].z);
-  glTexCoord2f(0., glraster->t);          glVertex3f(path[0].x, path[0].y, path[0].z);
+  glTexCoord2f(0., 0.);                   glVertex3f(path[3].x, path[3].y, path[3].z);
+  glTexCoord2f(glimage->s, 0.);           glVertex3f(path[2].x, path[2].y, path[2].z);
+  glTexCoord2f(glimage->s, glimage->t);   glVertex3f(path[1].x, path[1].y, path[1].z);
+  glTexCoord2f(0., glimage->t);           glVertex3f(path[0].x, path[0].y, path[0].z);
   glEnd();
-  glDisable(GL_TEXTURE_2D);
+  if (fs != textured) glDisable(GL_TEXTURE_2D);
+  else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
 void GLDrawingKit::drawText(const Unistring &us)
