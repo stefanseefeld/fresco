@@ -173,7 +173,7 @@ void openGL::FTFont::draw_char(Unichar uc)
     return;
   }
 
-  vector<unsigned char> pixels(w*h, 0);
+  std::vector<unsigned char> pixels(w*h, 0);
 
   GLint internal_format;
   GLenum format, type;  
