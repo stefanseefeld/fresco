@@ -42,8 +42,8 @@ SRC		+= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
 SRC		+= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
 SRC		+= protocol.cc echo.cc ftp.cc smtp.cc url.cc
 
-SysH		:= logbuf.hh logstream.hh ntree.hh Tracer.hh regex.hh User.hh \
-		   Process.hh Stopwatch.hh Profiler.hh Time.hh \
+SysH		:= logbuf.hh logstream.hh Tracer.hh regex.hh User.hh \
+		   Process.hh Stopwatch.hh Time.hh \
 	  	   File.hh Directory.hh FLock.hh FdSet.hh Path.hh GetOpt.hh \
 		   DataTypeManager.hh Memory.hh DLL.hh MMap.hh SHM.hh \
                    Thread.hh ThreadData.hh ThreadQueue.hh ThreadPool.hh \
