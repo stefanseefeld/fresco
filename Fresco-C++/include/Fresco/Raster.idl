@@ -30,6 +30,8 @@
  *
  */
 
+#include <Types.idl>
+
 interface Raster
 {
   typedef sequence<octet> Data;
@@ -47,7 +49,9 @@ interface Raster
   Info header();
   void export(out Data d);	// Export raw image data as octets
   void load(in Data d);	// load data into the image
-  void getPixels(out Data d);	// Get image mem block from raster
+  void storePixels(out Data d);	// Get image mem block from raster
+  void loadPixels(in PixelCoord w, in PixelCoord h, in Data d);
+  //. directly define the raster in terms of pixels (rgba quadruplets)
 
 // Eventually, manipulations, etc.
 };

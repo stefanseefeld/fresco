@@ -25,8 +25,38 @@
 #include "Image/RasterImpl.hh"
 #include "Image/PNGDecoder.hh"
 #include "Image/PNGEncoder.hh"
-
+#include "Prague/Sys/Memory.hh"
 #include <fstream>
+
+class RasterImpl::ibuf : public streambuf
+{
+public:
+  ibuf(const Raster::Data &data)
+    {
+      char *begin = (char *)data.NP_data(); // soon to be replaced with get_buffer()  -stefan
+      char *end   = begin + data.length();
+      setg (begin, begin, end);
+    }
+};
+
+class RasterImpl::obuf : public streambuf
+{
+public:
+  unsigned char *data() const
+    {
+      unsigned char *ret = new unsigned char[buf.size()];
+      Prague::Memory::copy(buf.begin(), ret, buf.size());
+      return ret;
+    }
+  streamsize  length() const { return buf.size();}
+  streamsize  xsputn(const char *s, streamsize n)
+    {
+      buf.insert(buf.end(), s, s + n);
+      return n;
+    }
+private:
+  vector<unsigned char> buf;
+};
 
 RasterImpl::RasterImpl()
   : rows(0)
@@ -119,33 +149,57 @@ void RasterImpl::export(Raster::Data *&data)
 	png_destroy_write_struct(&wpng, &winfo);
 }
 
-void RasterImpl::getPixels(Raster::Data *&buffer)
+void RasterImpl::storePixels(Raster::Data *&buffer)
 {
-	/*
-	 * Note:  This differs from 'export' in that it returns
-	 * the actual manipulated block of memory that represents
-	 * the image.
-	 *
-	 * In addition, because of OpenGL's sematics, we need to
-	 * reverse the order of the pixel bytes to get the image
-	 * to come out right-side-up.
-	 */
-	// Make buffer correct size
-	png_uint_32 rowbytes = png_get_rowbytes(rpng, rinfo);
-	png_uint_32 height = png_get_image_height(rpng, rinfo);
+  /*
+   * Note:  This differs from 'export' in that it returns
+   * the actual manipulated block of memory that represents
+   * the image.
+   *
+   * In addition, because of OpenGL's sematics, we need to
+   * reverse the order of the pixel bytes to get the image
+   * to come out right-side-up.
+   */
+  // Make buffer correct size
+  png_uint_32 rowbytes = png_get_rowbytes(rpng, rinfo);
+  png_uint_32 height = png_get_image_height(rpng, rinfo);
+  
+  long long totBytes = rowbytes*height;
+  
+  buffer = new Data;
+  buffer->length(totBytes);
+  
+  for (png_uint_32 i = 0; i != height; i++)
+    Prague::Memory::copy(rows[height - (i + 1)], buffer->NP_data() + i * rowbytes, rowbytes);
+//   for (png_uint_32 i=0; i<height; i++)
+// 	{
+// 		for (png_uint_32 j=0; j<rowbytes; j++)
+// 		{
+// 			(*buffer)[(i*rowbytes)+j]=rows[(height-1)-i][j];
+// 		}
+// 	}
 
-	long long totBytes = rowbytes*height;
-   
-	buffer = new Data;
-	buffer->length(totBytes);
+}
 
-	for (png_uint_32 i=0; i<height; i++)
-	{
-		for (png_uint_32 j=0; j<rowbytes; j++)
-		{
-			(*buffer)[(i*rowbytes)+j]=rows[(height-1)-i][j];
-		}
-	}
+void RasterImpl::loadPixels(PixelCoord width, PixelCoord height, const Raster::Data &data)
+{
+  clear();
+  Raster::Info info;
+  info.width = width;
+  info.height = height;
+  info.depth = 8;
+  info.colortype = PNG_COLOR_TYPE_RGB_ALPHA;
+  info.compression = PNG_COMPRESSION_TYPE_BASE;
+  info.filter = PNG_FILTER_TYPE_BASE;
+  info.interlace = PNG_INTERLACE_NONE;
+  png_set_IHDR(rpng, rinfo, info.width, info.height, info.depth, info.colortype, info.interlace, info.compression, info.filter);
+  rows = new png_bytep[height];
+  png_uint_32 rowbytes = (info.width * 32 + 7) >> 3;
+  for (png_uint_32 i = 0; i != info.height; i++)
+    {
+      rows[i] = new png_byte[rowbytes];
+      Prague::Memory::copy(data.NP_data() + i * rowbytes, rows[i], rowbytes);
+    }
 }
 
 void RasterImpl::write(const char *file)

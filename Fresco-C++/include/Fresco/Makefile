@@ -47,7 +47,7 @@ STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable
 
 INT	= $(DYNINT) $(STATINT)
 DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
-SRC	= $(patsubst %.idl, %SK.cc, $(INT)) $(patsubst %.idl, %DynSK.cc, $(DYNINT))
+SRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT)) $(patsubst %.idl, %SK.cc, $(INT))
 OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
 TARGET	= $(lpath)/libWarsaw.so
 

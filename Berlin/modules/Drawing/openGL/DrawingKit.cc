@@ -98,7 +98,7 @@ void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
   Raster::Info info = raster->header();
   Raster::Data_var pixels;
-  raster->getPixels(pixels);
+  raster->storePixels(pixels);
 
 //   Transform::Matrix matrix;
 //   transform->store(matrix);
@@ -107,7 +107,7 @@ void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
   origin.x = origin.y = origin.z = 0.;
   transform->transformVertex(origin);
   glRasterPos2d(origin.x, origin.y);
-  cout << "GLDrawingKit::image at " << origin.x << ' ' << origin.y << endl;
+  Logger::log(Logger::image) << "GLDrawingKit::image at " << origin.x << ' ' << origin.y << endl;
   glPixelStorei(GL_UNPACK_ROW_LENGTH, info.width);
   // 	glClear(GL_COLOR_BUFFER_BIT);
   glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels->NP_data());

@@ -62,7 +62,7 @@ Pointer::Pointer(ggi_visual_t visual)
     cerr << "Error: nonlinear display buffer" << endl;
   else if (! (dbuf->type & GGI_DB_SIMPLE_PLB))
     cerr << "Error: non-standard display buffer" << endl;
-  depth = dbuf->buffer.plb.pixelformat->size/8;
+  depth = dbuf->buffer.plb.pixelformat->size >> 3;
   stride = dbuf->buffer.plb.stride;
 
   ggi_mode m;
