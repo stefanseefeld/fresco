@@ -125,11 +125,19 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   cumulative->translate(lower);
 #endif
   _drawing->transformation(Transform_var(cumulative->_this()));
-  //   drawable->clipping(region, Transform_var(tx->_this()));
-  push(child, tag, region, cumulative);
-  try { child->traverse(__this);}
-  catch (...) { pop(); throw;}
-  pop(); 
+  // drawable->clipping(region, Transform_var(tx->_this()));
+  push(child, tag, region, cumulative); // Keep ownership of cumulative!
+  try
+    {
+      child->traverse(__this);
+    }
+  catch (...)
+    {
+      // Make sure cumulative does not go out of scope before the pop() ;-)
+      pop();
+      throw;
+    }
+  pop(); // cumulative still in scope...
 };
 
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(__this);}

@@ -93,12 +93,21 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
   *cumulative = *get_transformation(_cursor);
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  push(child, tag, region, cumulative);
+  push(child, tag, region, cumulative); // Keep ownership of cumulative!
   _cursor++;
-  try { child->traverse(__this);}
-  catch (...) { _cursor--; pop(); throw;}
+  try
+    {
+      child->traverse(__this);
+    }
+  catch (...)
+    {
+      // Make sure cumulative does not go out of scope before the pop() ;-)
+      _cursor--;
+      pop();
+      throw;
+    }
   _cursor--;
-  pop(); 
+  pop(); // cumulative still in scope... 
 }
 
 void PickTraversalImpl::visit(Warsaw::Graphic_ptr g) { g->pick(__this);}
