@@ -110,6 +110,7 @@ SDL::Console::Console(int &argc, char **argv) :
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_ShowCursor(SDL_DISABLE);
+  SDL_EnableUNICODE(SDL_ENABLE);
 
   // FIXME: Get some 'real' values!
   _resolution[0] = 0.1;
@@ -213,7 +214,7 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
       {
 	Input::Toggle toggle;
 	toggle.actuation = Input::Toggle::press;
-	toggle.number = e.key.keysym.sym;
+	toggle.number = e.key.keysym.unicode;
 	event->length(1);
 	event[0].dev = 0;
 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
