@@ -125,7 +125,7 @@ void SDLDrawable::draw_box(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::P
 {
   Logger::log(Logger::loader) << "SDLDrawable::draw_box x=" << x << " y= " << y << " w=" << w << " h=" << h << endl;
   for( int i = y; i < y+h; ++i )
-    draw_line( x, i, x+w, i );
+    draw_line( x, i, w, 1 );
 }
 
 

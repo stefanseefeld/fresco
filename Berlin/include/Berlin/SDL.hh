@@ -199,11 +199,12 @@ inline Warsaw::PixelCoord SDLDrawable::row_length() const
 
 inline SDLDrawable::Pixel SDLDrawable::map(const Warsaw::Color &c) const
 {
+  double scale = 0xff;
   return SDL_MapRGBA( _surface->format, 
-		      static_cast<unsigned char>(c.red), 
-		      static_cast<unsigned char>(c.green),
-		      static_cast<unsigned char>(c.blue),
-		      static_cast<unsigned char>(c.alpha)
+		      static_cast<Uint8>(c.red * scale), 
+		      static_cast<Uint8>(c.green * scale),
+		      static_cast<Uint8>(c.blue * scale),
+                      static_cast<Uint8>(c.alpha * scale)
 		    );
 }
 
@@ -229,20 +230,25 @@ inline void SDLDrawable::draw_vline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, 
 
 inline void SDLDrawable::put_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Pixel c)
 {
+  if (x >= _width || y >= _height || x < 0 || y < 0) return;
   if (_need_locking) { SDL_LockSurface(_surface); }
 
+  Uint8 bpp = _surface->format->BytesPerPixel;
   switch( _depth ) {
-  case 1: ((unsigned char *)(_surface->pixels))[ y*_width+x ] = c; break;
-  case 2: ((unsigned short *)(_surface->pixels))[ y*_width+x ] = c; break;
+  case 1: ((Uint8 *)(_surface->pixels))[ y * _surface->pitch + x * bpp ] = c; break;
+  case 2: ((Uint16 *)(_surface->pixels))[ y * _surface->pitch + x * bpp ] = c; break;
   case 3: {
-    unsigned char *pixbuf = (unsigned char *)(_surface->pixels);
-    unsigned char *color = (unsigned char*)&c;
-    pixbuf[ (y*_width+x)*3    ] = color[0]; 
-    pixbuf[ (y*_width+x)*3 +1 ] = color[1]; 
-    pixbuf[ (y*_width+x)*3 +2 ] = color[2]; 
+    Uint8 *pixbuf = (Uint8 *)(_surface->pixels) + y * _surface->pitch + x * bpp;
+    Uint8 color[3];
+    color[0] = (c >> _surface->format->Rshift)&0xFF;
+    color[1] = (c >> _surface->format->Gshift)&0xFF;
+    color[2] = (c >> _surface->format->Bshift)&0xFF;
+    *((pixbuf) + _surface->format->Rshift/8) = color[0];
+    *((pixbuf) + _surface->format->Gshift/8) = color[1];
+    *((pixbuf) + _surface->format->Bshift/8) = color[2];
     break;
   }
-  case 4: ((unsigned int *)(_surface->pixels))[ y*_width+x ] = c; break;
+  case 4: ((Uint32 *)(_surface->pixels))[ y * _surface->pitch + x * bpp ] = c; break;
   }
 
   if (_need_locking) { SDL_UnlockSurface(_surface); }
