@@ -77,8 +77,8 @@ int main(int argc, char **argv)
   Server_var s = resolve_server(argc, argv, orb);
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
-  DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
-  ToolKit_var tool = resolve_kit<ToolKit>(server, "IDL:fresco.org/Fresco/ToolKit:1.0");
+  DesktopKit_var desktop = resolve_kit<DesktopKit>(server);
+  ToolKit_var tool = resolve_kit<ToolKit>(server);
   Canvas_var canvas = tool->create_canvas(256, 256);
 
   Window_var window = desktop->shell(Controller_var(tool->group(canvas)),

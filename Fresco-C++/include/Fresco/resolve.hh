@@ -147,6 +147,7 @@ inline void bind_name(CORBA::ORB_ptr orb,
 
 // -----------------------------------------------------------------------------
 // Wrappers for resolving Fresco kits
+// XXX Should these be in the Fresco namespace?
 // -----------------------------------------------------------------------------
 template <class T>
 typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context, 
@@ -189,6 +190,51 @@ typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context,
     Fresco::Kit::PropertySeq empty;
     empty.length(0);
     return resolve_kit<T>(context, name, empty);
+}
+
+// Simplified wrappers, to avoid writing out the repo-id repeatedly
+
+// need to predeclare core kits
+namespace Fresco
+{
+  class LayoutKit;
+  class ToolKit;
+  class TextKit;
+  class DesktopKit;
+  class CommandKit;
+  class WidgetKit;
+  class RasterKit;
+  class FigureKit;
+  class GadgetKit;
+  class PrimitiveKit;
+};
+
+// Kit traits, pre-specialised for core kits
+template<typename T> struct Kit_traits{};
+template<> struct Kit_traits<Fresco::LayoutKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::ToolKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::TextKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::DesktopKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::CommandKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::WidgetKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::RasterKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::FigureKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::GadgetKit> {static char const id[];};
+template<> struct Kit_traits<Fresco::PrimitiveKit> {static char const id[];};
+
+template <class T>
+typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context, 
+                                  Fresco::Kit::PropertySeq const &props)
+{
+    return resolve_kit<T>(context, Kit_traits<T>::id, props);
+}
+
+template <class T>
+typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context)
+{
+    Fresco::Kit::PropertySeq empty;
+    empty.length(0);
+    return resolve_kit<T>(context, Kit_traits<T>::id, empty);
 }
 
 // -----------------------------------------------------------------------------

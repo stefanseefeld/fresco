@@ -81,11 +81,12 @@ int main(int argc, char **argv)
 
     ServerContext_var server = s->create_server_context(client);
 
-    FigureKit_var figures = resolve_kit<FigureKit>(server, "IDL:fresco.org/Fresco/FigureKit:1.0");
-    ToolKit_var tools = resolve_kit<ToolKit>(server, "IDL:fresco.org/Fresco/ToolKit:1.0");
-    RasterKit_var rasters = resolve_kit<RasterKit>(server, "IDL:fresco.org/Fresco/RasterKit:1.0");
-    UnidrawKit_var unidraw = resolve_kit<UnidrawKit>(server, "IDL:fresco.org/Unidraw/UnidrawKit:1.0");
-    DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
+    FigureKit_var figures = resolve_kit<FigureKit>(server);
+    ToolKit_var tools = resolve_kit<ToolKit>(server);
+    RasterKit_var rasters = resolve_kit<RasterKit>(server);
+    UnidrawKit_var unidraw = resolve_kit<UnidrawKit>(server, 
+                                     "IDL:fresco.org/Unidraw/UnidrawKit:1.0");
+    DesktopKit_var desktop = resolve_kit<DesktopKit>(server);
 
     daVinci::Model::figures(figures);
     daVinci::Model::tools(tools);

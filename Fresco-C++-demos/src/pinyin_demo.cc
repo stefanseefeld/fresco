@@ -183,12 +183,12 @@ int main(int argc, char ** argv)
 
 	// Get Kits:
 
-    Fresco::LayoutKit_var lk = resolve_kit<Fresco::LayoutKit>(server, "IDL:fresco.org/Fresco/LayoutKit:1.0");
-    Fresco::TextKit_var tk = resolve_kit<Fresco::TextKit>(server, "IDL:fresco.org/Fresco/TextKit:1.0");
-    Fresco::ToolKit_var tlk = resolve_kit<Fresco::ToolKit>(server, "IDL:fresco.org/Fresco/ToolKit:1.0");
-    Fresco::DesktopKit_var dk = resolve_kit<Fresco::DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
-    Fresco::CommandKit_var ck = resolve_kit<Fresco::CommandKit>(server, "IDL:fresco.org/Fresco/CommandKit:1.0");
-    Fresco::WidgetKit_var wk = resolve_kit<Fresco::WidgetKit>(server, "IDL:fresco.org/Fresco/WidgetKit:1.0");
+    Fresco::LayoutKit_var lk = resolve_kit<Fresco::LayoutKit>(server);
+    Fresco::TextKit_var tk = resolve_kit<Fresco::TextKit>(server);
+    Fresco::ToolKit_var tlk = resolve_kit<Fresco::ToolKit>(server);
+    Fresco::DesktopKit_var dk = resolve_kit<Fresco::DesktopKit>(server);
+    Fresco::CommandKit_var ck = resolve_kit<Fresco::CommandKit>(server);
+    Fresco::WidgetKit_var wk = resolve_kit<Fresco::WidgetKit>(server);
 
 	// Create the GUI:
 
