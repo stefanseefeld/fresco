@@ -376,6 +376,102 @@ bool sockbuf::keepalive (bool set) const
   return old;
 }
 
+int sockbuf::read (void *buf, int len)
+{
+  if (data->rtmo != -1 && !readready())
+    throw sockerr(ETIMEDOUT);
+  
+  if (data->oobbit && atmark())
+    throw sockoob();
+
+  int rval = 0;
+  if ((rval = ::read (data->fd, (char*) buf, len)) == -1)
+    throw sockerr(errno);
+  return rval;
+}
+
+int sockbuf::recv (void *buf, int len, int msgf)
+{
+  if (data->rtmo != -1 && !readready())
+    throw sockerr(ETIMEDOUT);
+  
+  if (data->oobbit && atmark())
+    throw sockoob();
+
+  int rval = 0;
+  if ((rval = ::recv(data->fd, (char*) buf, len, msgf)) == -1)
+    throw sockerr (errno);
+  return rval;
+}
+
+int sockbuf::recvfrom (sockaddr &sa, void *buf, int len, int msgf)
+{
+  if (data->rtmo != -1 && !readready())
+    throw sockerr(ETIMEDOUT);
+  
+  if (data->oobbit && atmark())
+    throw sockoob();
+
+  int rval = 0;
+  socklen_t sa_len = sa.size ();
+  
+  if ((rval = ::recvfrom(data->fd, (char*) buf, len, msgf, sa.addr(), &sa_len)) == -1)
+    throw sockerr (errno);
+  return rval;
+}
+
+int sockbuf::write(const void *buf, int len)
+// upon error, write throws the number of bytes writen so far instead
+// of sockerr.
+{
+  if (data->stmo != -1 && !writeready())
+    throw sockerr(ETIMEDOUT);
+  int wlen = 0;
+  while(len > 0)
+    {
+      int wval = ::write(data->fd, (char*) buf, len);
+      if (wval == -1) throw wlen;
+      len -= wval;
+      wlen += wval;
+    }
+  return wlen; // == len if every thing is all right
+}
+
+int sockbuf::send(const void *buf, int len, int msgf)
+// upon error, write throws the number of bytes writen so far instead
+// of sockerr.
+{
+  if (data->fd != -1 && !writeready())
+    throw sockerr (ETIMEDOUT);
+  
+  int wlen = 0;
+  while(len > 0)
+    {
+      int wval = ::send (data->fd, (char*) buf, len, msgf);
+      if (wval == -1) throw wlen;
+      len -= wval;
+      wlen += wval;
+    }
+  return wlen;
+}
+
+int sockbuf::sendto(sockaddr &sa, const void *buf, int len, int msgf)
+// upon error, write throws the number of bytes writen so far instead
+// of sockerr.
+{
+  if (data->fd != -1 && !writeready())
+    throw sockerr (ETIMEDOUT);
+  int wlen = 0;
+  while(len > 0)
+    {
+      int wval = ::sendto(data->fd, (char*) buf, len, msgf, sa.addr (), sa.size());
+      if (wval == -1) throw wlen;
+      len -= wval;
+      wlen += wval;
+    }
+  return wlen;
+}
+
 sockunixbuf &sockunixbuf::operator = (const sockunixbuf &su)
 {
   sockbuf::operator = (su);
