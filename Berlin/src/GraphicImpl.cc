@@ -281,7 +281,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
       CORBA::Long end = allocation->size();
       for (CORBA::Long j = begin; j != end; j++)
 	{
-	  Allocation::Info_var info = allocation->get(j);
+	  const Allocation::Info_var info = allocation->get(j);
 	  (*i).first->allocate((*i).second, info);
 	}
       begin = end;
@@ -318,7 +318,7 @@ void GraphicImpl::needRedraw()
   CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i < size; i++)
     {
-      Allocation::Info_var info = allocation->get(i);
+      const Allocation::Info_var info = allocation->get(i);
       region->valid = false;
       extension(info, Region_var(region->_this()));
       if (region->valid) info->root->damage(Region_var(region->_this()));

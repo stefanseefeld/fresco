@@ -543,7 +543,7 @@ void StageImpl::needRedraw()
   tx->_obj_is_ready(_boa());
   for (CORBA::Long i = 0; i < allocation->size(); i++)
     {
-      Allocation::Info_var info = allocation->get(i);
+      const Allocation::Info_var info = allocation->get(i);
       region->valid = false;
       extension(info, Region_var(region->_this()));
       if (region->valid)
@@ -574,7 +574,7 @@ void StageImpl::needRedrawRegion(Region_ptr region)
   tx->_obj_is_ready(_boa());
   for (CORBA::Long i = 0; i < size; i++)
     {
-      Allocation::Info_var info = allocation->get(i);
+      const Allocation::Info_var info = allocation->get(i);
       tmp->copy(region);
       tmp->applyTransform(info->transformation);
       Vertex origin;
