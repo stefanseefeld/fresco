@@ -45,7 +45,7 @@ vpath %.cc  $(srcdir)
 
 .FORCE:
 
-.PHONY: depend config doc install install-doc uninstall clean distclean maintainer-clean dist
+.PHONY: depend doc install install-doc uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET)
 
@@ -53,11 +53,9 @@ $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-config: ../bin/Babylon-config
-
 depend: $(DEP)
 
-doc:	../share/doc/Babylon/html ../bin/Babylon-config
+doc:	../share/doc/Babylon/html
 
 ../share/doc/Babylon/html:	$(SYN)
 	@echo formatting $(@F)
@@ -75,7 +73,6 @@ install:	all
           fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/Babylon-config $(DESTDIR)$(bindir)/Babylon-config.tmp
 	$(INSTALL) -D -m 755 ../config/Babylon-config $(DESTDIR)$(bindir)/Babylon-config
 
 install-doc: doc
@@ -113,14 +110,10 @@ maintainer-clean: distclean
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Babylon,linker=Babylon $(SFLAGS) -o $@ $?
 
-ifneq (,$(findstring config, $(MAKECMDGOALS)))
-../bin/Babylon-config: .FORCE
-endif
-
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
 endif
 
-ifeq (,$(filter $(MAKECMDGOALS), config depend doc install-doc clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), depend doc install-doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

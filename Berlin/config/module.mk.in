@@ -106,6 +106,6 @@ ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
 endif
 
-ifeq (,$(filter $(MAKECMDGOALS), config depend clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), depend clean distclean maintainer-clean))
 -include $(DEP)
 endif

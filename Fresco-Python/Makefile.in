@@ -36,7 +36,6 @@ $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
-config: #do nothing
 depend: #do nothing
 doc: #do nothing here
 

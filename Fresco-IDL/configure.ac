@@ -88,6 +88,7 @@ AC_CONFIG_FILES([config/local.mk config/synopsis.py])
 AC_CONFIG_FILES([config/Fresco-config], [chmod +x config/Fresco-config])
 AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-build-config.in], [chmod +x bin/Fresco-config])
 AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
+AC_CONFIG_LINKS([share/idl:idl])
 
 mkdir -p share
 mkdir -p lib

@@ -145,11 +145,9 @@ TARGET	= $(patsubst %.cc, %.so, $(SRC))
 
 vpath %.cc  $(srcdir)
 
-.PHONY: config doc install uninstall clean distclean maintainer-clean dist
+.PHONY: doc install uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET)
-
-config: #nothing to do
 
 depend: #nothing to do
 

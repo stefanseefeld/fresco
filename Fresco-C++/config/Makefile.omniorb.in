@@ -96,9 +96,6 @@ $(TARGET): $(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-config:
-	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
-
 depend: $(DEP)
 
 doc:	../share/doc/Fresco/html $(HDR)
@@ -195,14 +192,10 @@ $(DYNHDR): %.hh:	%.idl
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wp,-b,$(idir) -Wc,parser=Fresco,linker=Fresco -o $@ $?
 
-ifneq (,$(findstring config, $(MAKECMDGOALS)))
-../bin/Fresco-config: .FORCE
-endif
-
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
 endif
 
-ifeq (,$(filter $(MAKECMDGOALS), config depend doc install-doc clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), depend doc install-doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

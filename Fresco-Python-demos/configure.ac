@@ -45,6 +45,10 @@ dnl AC_MSG_PART(CORBA Environment)
 FRESCO_OMNIORBPY_CHECK
 
 FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
+INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Fresco_CPPFLAGS"
+INSTALL_LIBS="$INSTALL_LIBS $Fresco_LIBS"
+CPPFLAGS="$CPPFLAGS $Fresco_BUILD_CPPFLAGS"
+LIBS="$LIBS $Fresco_BUILD_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

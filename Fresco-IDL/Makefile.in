@@ -28,7 +28,7 @@ subdirs	:= src
 action	:= all
 
 .PHONY: all $(subdirs)
-.PHONY: config depend doc install install-doc dist \
+.PHONY: depend doc install install-doc dist \
         uninstall clean distclean maintainer-clean
 
 all:	$(subdirs)
@@ -36,9 +36,6 @@ all:	$(subdirs)
 $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
-
-config:
-	$(MAKE) action="config"
 
 depend:
 	$(MAKE) action="depend"

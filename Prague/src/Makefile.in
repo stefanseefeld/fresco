@@ -69,7 +69,7 @@ vpath %.cc  $(srcdir)/Sys:$(srcdir)/IPC:$(srcdir)/Filter:$(srcdir)/Network
 
 .FORCE:
 
-.PHONY: all config doc install install-doc clean distclean maintainer-clean dist
+.PHONY: all doc install install-doc clean distclean maintainer-clean dist
 
 all:	$(TARGET)
 
@@ -77,11 +77,9 @@ $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
 
-config: ../bin/Prague-config
-
 depend: $(DEP)
 
-doc:	config ../share/doc/Prague/html 
+doc:	../share/doc/Prague/html 
 
 ../share/doc/Prague/html:	$(SYN)
 	@echo formatting $(@F)
@@ -147,10 +145,6 @@ DataTypeManager.o:	DataTypeManager.cc
 %.syn:	%.hh
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
-
-ifneq (,$(findstring config, $(MAKECMDGOALS)))
-../bin/Prague-config: .FORCE
-endif
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

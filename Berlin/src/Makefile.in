@@ -74,8 +74,6 @@ $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-config:
-
 depend: $(DEP)
 
 doc:	../share/doc/Berlin/html
@@ -105,7 +103,6 @@ install:	all
 	  fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/Berlin-config $(DESTDIR)$(bindir)/Berlin-config.tmp
 	$(INSTALL) -D -m 755 ../config/Berlin-config $(DESTDIR)$(bindir)/Berlin-config
 
 install-doc: doc
@@ -140,10 +137,6 @@ maintainer-clean: distclean
 %.syn:	%.hh
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(hdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
-
-ifneq (,$(findstring config, $(MAKECMDGOALS)))
-../bin/Berlin-config: .FORCE
-endif
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
