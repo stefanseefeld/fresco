@@ -27,6 +27,9 @@
 #include <string>
 #include <assert.h>
 #include <Prague/Sys/GetOpt.hh>
+#ifdef ORB_TAO
+#include "orbsvcs/orbsvcs/CosNamingC.h"
+#endif
 
 template <class T>
 typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *name)
