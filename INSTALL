@@ -27,15 +27,15 @@ Downloading
 There are currently three ways to download berlin. You can check out the
 sources directly from cvs, in which case you find instructions at
 
-http://www.fresco.org/cvs.html
+  http://www.fresco.org/cvs.html
 
 or you can download a nightly snapshot from
 
-ftp://berlin.sourceforge.net/pub/berlin/
+  ftp://berlin.sourceforge.net/pub/berlin/  (currently broken)
 
 or you can get release packages at
 
-http://sourceforge.net/projects/berlin/
+  http://sourceforge.net/projects/berlin/
 
 
 
@@ -49,7 +49,7 @@ scripts and helper files.
 autogen.sh assumes you are using autoconf 2.53. You might experience
 problems with earlier versions.
 
-Decide where to build berlini, our implementation of thr Fresco-interfaces,
+Decide where to build Berlin, our implementation of the Fresco interfaces,
 either inside the source tree (let's refer to this as $berlin-src), or (the
 recomended way), in a separate build directory ($berlin-build).
 Step into the build directory, and run autobuild.sh:
@@ -136,10 +136,10 @@ a sequence of commands liek this:
 > make && make install
 
 Make sure to build Prague, Babylon, Fresco and Berlin first. Afterwards
-any dependencies should be meet, so you can build in arbitrary order
+any dependencies should be met, so you can build in arbitrary order
 from this point on. You will need to build at least Prague, Babylon,
 Fresco and Berlin plus either GGI or SDL and one of the Clients. Of course
-you can just build everything;-)
+you can just build everything ;-)
 
 Make sure to install the packages with make install. Packages depending on
 others will need them to be installed or their configuration will fail.
@@ -152,7 +152,7 @@ You should now find some libraries in $prefix/lib, modules in
 $prefix/module, and binaries in $prefix/bin. If you have choosen a
 non-standard prefix (anything but /usr/local/) you will need to tell
 the loader where to look for the libraries, and, in case you use the
-python environment, tell python where to find the berlin modules:
+python environment, tell python where to find the Berlin modules:
 
 csh style:
 
@@ -190,9 +190,9 @@ some more information to the server. First you need to use a console
 with a GLContext extension. You have two options here, use the SDL
 console built with 3D support or the GGI console with ggimesa support,
 both actived in compile time (Note: installing ggimesa may break you
-hardware accelerated 3D setup, you're warned). Then you need to use a
-3D capable DrawingKit. The default DrawingKit, LibArtDrawingKit has no
-3D support, so you have to tell berlin to use another DrawingKit
+hardware accelerated 3D setup.  You've been warned). Then you need to
+use a 3D capable DrawingKit. The default DrawingKit, LibArtDrawingKit
+has no 3D support, so you have to tell Berlin to use another DrawingKit
 (namely GLDrawingKit).
 
 In short:
@@ -257,7 +257,7 @@ client:
 Contact
 =======
 
-You can get into contact with the developers via IRC (äfresco on
+You can get into contact with the developers via IRC (#fresco on
 irc.openprojects.net) and via mailinglists (see
 http://www.fresco.org/mailinglists.html for details).
 
