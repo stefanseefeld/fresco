@@ -43,7 +43,7 @@ STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
 	  Button.idl \
-	  Metrics.idl Text.idl \
+	  Metrics.idl \
 	  Raster.idl \
 	  Desktop.idl Window.idl 
 LCINT	= LifeCycle.idl Cloneable.idl DrawingKit.idl FigureKit.idl LayoutKit.idl CommandKit.idl \
