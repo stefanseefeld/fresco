@@ -27,22 +27,14 @@
 
 using namespace Prague;
 
-/* @Method{File::File(const string &name)}
- *
- * @Description{}
- */
 File::File(const string &n)
   : longname (n),
-    shortname(BaseName(n)),
+    shortname(File::base(n)),
     error(0)
 {
   getStatus();
 }
 
-/* @Method{File::File(const File &f)}
- *
- * @Description{}
- */
 File::File(const File &f)
   : longname(f.longname),
     shortname(f.shortname),
@@ -51,16 +43,8 @@ File::File(const File &f)
   getStatus();
 }
 
-/* @Method{File::~File()}
- *
- * @Description{}
- */
 File::~File() {}
 
-/* @Method{File &File::operator = (const File &f)}
- *
- * @Description{}
- */
 File &File::operator = (const File &f)
 {
   longname = f.longname;
@@ -69,33 +53,21 @@ File &File::operator = (const File &f)
   return *this;
 }
 
-/* @Method{File &File::operator = (const string &name)}
- *
- * @Description{}
- */
 File &File::operator = (const string &n)
 {
   longname = n;
-  shortname = BaseName(n);
+  shortname = File::base(n);
   getStatus();
   return *this;
 }
 
-/* @Method{File File::Parent() const}
- *
- * @Description{}
- */
-File File::Parent() const
+File File::parent() const
 {
   if (shortname == "/") return *this;
   return File(longname.substr(0, longname.find_last_of('/')));
 }
 
-/* @Method{bool File::chmod(access a)}
- *
- * @Description{}
- */
-bool File::chmod(access a)
+bool File::chmod(access_t a)
 {
   if (::chmod(longname.c_str(), a) == -1) error = errno;
   else if (!getStatus()) return false;
@@ -103,10 +75,6 @@ bool File::chmod(access a)
   return false;
 }
 
-/* @Method{bool File::mv(const string &name)}
- *
- * @Description{}
- */
 bool File::mv(const string &name)
 {
   if (rename(longname.c_str(), name.c_str()) == -1)
@@ -117,15 +85,11 @@ bool File::mv(const string &name)
   else
     {
       longname  = name;
-      shortname = BaseName(name);
+      shortname = File::base(name);
       return true;
     }
 }
 
-/* @Method{bool File::rm()}
- *
- * @Description{}
- */
 bool File::rm()
 {
   if (remove(longname.c_str()) == -1)
@@ -142,9 +106,5 @@ bool File::rm()
     }
 }
 
-/* @Method{const char *File::lastError() const}
- *
- * @Description{}
- */
 const char *File::lastError() const { return sys_errlist[error];}
 

@@ -31,10 +31,6 @@
 
 using namespace Prague;
 
-/* @Method{ipcbuf::ipcbuf(int mode)}
- *
- * @Description{}
- */
 ipcbuf::ipcbuf (int mode)
 {
   data = new control;
@@ -52,20 +48,12 @@ ipcbuf::ipcbuf (int mode)
     }
 }
 
-/* @Method{ipcbuf::ipcbuf(const ipcbuf &ipc)}
- *
- * @Description{}
- */
 ipcbuf::ipcbuf (const ipcbuf &ipc)
   : streambuf(ipc), data(ipc.data)
 {
   data->count++;
 }
 
-/* @Method{ipcbuf::~ipcbuf()}
- *
- * @Description{}
- */
 ipcbuf::~ipcbuf ()
 {
   overflow (EOF); // flush write buffer
@@ -76,10 +64,6 @@ ipcbuf::~ipcbuf ()
   delete data;
 }
 
-/* @Method{ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)}
- *
- * @Description{}
- */
 ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
 {
   if (this != &ipc && data != ipc.data && data->fd != ipc.data->fd)
@@ -94,10 +78,6 @@ ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
   return *this;
 }
 
-/* @Method{bool ipcbuf::readready() const}
- *
- * @Description{}
- */
 bool ipcbuf::readready () const
 {
   FdSet fds;
@@ -107,10 +87,6 @@ bool ipcbuf::readready () const
   return false;
 }
 
-/* @Method{bool ipcbuf::writeready() const}
- *
- * @Description{}
- */
 bool ipcbuf::writeready () const
 {
   FdSet fds;
@@ -120,10 +96,6 @@ bool ipcbuf::writeready () const
   return false;
 }
 
-/* @Method{bool ipcbuf::exceptionpending() const}
- *
- * @Description{}
- */
 bool ipcbuf::exceptionpending () const
 {
   FdSet fds;
@@ -133,10 +105,6 @@ bool ipcbuf::exceptionpending () const
   return false;
 }
 
-/* @Method{void ipcbuf::setnonblocking(bool flag)}
- *
- * @Description{set the buffer to nonblocking mode if @var{flag} is true, to blocking mode otherwise}
- */
 void ipcbuf::setnonblocking (bool flag)
 {
   int flags = fcntl(fd(), F_GETFL);
@@ -145,20 +113,12 @@ void ipcbuf::setnonblocking (bool flag)
   fcntl(fd(), F_SETFL, flags);
 }
 
-/* @Method{bool ipcbuf::nonblocking() const}
- *
- * @Description{return true if the buffer is in nonblocking mode, false otherwise}
- */
 bool ipcbuf::nonblocking () const
 {
   int flags = fcntl(fd(), F_GETFL);
   return flags | O_NONBLOCK;
 }
 
-/* @Method{int ipcbuf::sync()}
- *
- * @Description{}
- */
 int ipcbuf::sync()
 {
   if (pptr () && pbase () < pptr () && pptr () <= epptr ())
@@ -169,20 +129,12 @@ int ipcbuf::sync()
   return 0;
 }
 
-/* @Method{int ipcbuf::showmanyc () const}
- *
- * @Description{return the number of chars in the input sequence}
- */
 int ipcbuf::showmanyc () const
 {
   if (gptr () && gptr () < egptr ()) return egptr () - gptr ();
   return 0;
 }
 
-/* @Method{ipcbuf::int_type ipcbuf::overflow (int c) const}
- *
- * @Description{if pbase () == 0, no write is allowed and thus return EOF. if c == EOF, we sync the output and return 0. if pptr () == epptr (), buffer is full and thus sync the output, insert c into buffer, and return c.}
- */
 ipcbuf::int_type ipcbuf::overflow (int c)
 {
   if (pbase () == 0) return EOF;
@@ -193,10 +145,6 @@ ipcbuf::int_type ipcbuf::overflow (int c)
   return c;
 }
 
-/* @Method{ipcbuf::int_type ipcbuf::underflow ()}
- *
- * @Description{}
- */
 ipcbuf::int_type ipcbuf::underflow ()
 {
   if (gptr () == 0) return EOF; // input stream has been disabled
@@ -212,10 +160,6 @@ ipcbuf::int_type ipcbuf::underflow ()
     }
 }
 
-/* @Method{ipcbuf::int_type ipcbuf::uflow ()}
- *
- * @Description{}
- */
 ipcbuf::int_type ipcbuf::uflow ()
 {
   int_type ret = underflow ();
@@ -224,19 +168,11 @@ ipcbuf::int_type ipcbuf::uflow ()
   return ret;
 }
 
-/* @Method{ipcbuf::int_type ipcbuf::pbackfail (int c)}
- *
- * @Description{}
- */
 ipcbuf::int_type ipcbuf::pbackfail (int c)
 {
   return EOF;
 }
 
-/* @Method{streamsize ipcbuf::xsputn (const ipcbuf::char_type *s, streamsize n)}
- *
- * @Description{}
- */
 streamsize ipcbuf::xsputn (const ipcbuf::char_type *s, streamsize n)
 {
   int wval = epptr () - pptr ();
@@ -252,10 +188,6 @@ streamsize ipcbuf::xsputn (const ipcbuf::char_type *s, streamsize n)
   return wval;
 }
 
-/* @Method{streamsize ipcbuf::xsgetn (ipcbuf::char_type *s, streamsize n)}
- *
- * @Description{}
- */
 streamsize ipcbuf::xsgetn (ipcbuf::char_type *s, streamsize n)
 {
   int rval = showmanyc ();
@@ -271,10 +203,6 @@ streamsize ipcbuf::xsgetn (ipcbuf::char_type *s, streamsize n)
   return rval;
 }
 
-/* @Method{int ipcbuf::write(const void *buf, int len)}
- *
- * @Description{}
- */
 int ipcbuf::write(const void *buf, int len)
 {
 //   if (!writeready ()) return 0;
@@ -290,10 +218,6 @@ int ipcbuf::write(const void *buf, int len)
   return wlen; // == len if every thing is all right
 }
 
-/* @Method{int ipcbuf::read(void *buf, int len)}
- *
- * @Description{}
- */
 int ipcbuf::read (void *buf, int len)
 {
 //   if (!readready ()) return 0;  

@@ -39,59 +39,67 @@ namespace Prague
 class File
 {
 public:
-  enum type { none = 0, 
-	      link = S_IFLNK, 
-	      reg  = S_IFREG, 
-	      dir  = S_IFDIR, 
-	      chr  = S_IFCHR, 
-	      blk  = S_IFBLK, 
-	      fifo = S_IFIFO, 
-	      sock = S_IFSOCK};
-  enum access { ur = S_IRUSR,
-		uw = S_IWUSR,
-		ux = S_IXUSR,
-		gr = S_IRGRP,
-		gw = S_IWGRP,
-		gx = S_IXGRP,
-		or = S_IROTH,
-		ow = S_IWOTH,
-		ox = S_IXOTH,
-		all= ur|uw|ux|gr|gw|gx|or|ow|ox};
+  enum type_t { none = 0, 
+		link = S_IFLNK, 
+		reg  = S_IFREG, 
+		dir  = S_IFDIR, 
+		chr  = S_IFCHR, 
+		blk  = S_IFBLK, 
+		fifo = S_IFIFO, 
+		sock = S_IFSOCK};
+  enum access_t { ur = S_IRUSR,
+		  uw = S_IWUSR,
+		  ux = S_IXUSR,
+		  gr = S_IRGRP,
+		  gw = S_IWGRP,
+		  gx = S_IXGRP,
+		  or = S_IROTH,
+		  ow = S_IWOTH,
+		  ox = S_IXOTH,
+		  all= ur|uw|ux|gr|gw|gx|or|ow|ox};
   File(const string &);
   File(const File &);
   virtual ~File();
   File &operator = (const File &);
   File &operator = (const string &);
-  File Parent() const;
-  const string &Name() const { return shortname;}
-  const string &LongName() const { return longname;}
-  bool is(type t) const { return (status.st_mode & S_IFMT) == (mode_t) t;}
-  long Type() const { return (status.st_mode & S_IFMT);}
-  long Access() const { return (status.st_mode & (ur|uw|ux));}
-  uid_t UID() const { return status.st_uid;}
-  gid_t GID() const { return status.st_gid;}
-  long  Size() const { return  status.st_size;}
-  time_t AccTime() const { return status.st_atime;}
-  time_t ModTime() const { return status.st_mtime;}
-  time_t ChTime() const { return status.st_ctime;}
+  File parent() const;
+  const string &name() const { return shortname;}
+  const string &longName() const { return longname;}
+  bool is(type_t t) const { return (status.st_mode & S_IFMT) == (mode_t) t;}
+  long type() const { return (status.st_mode & S_IFMT);}
+  long access() const { return (status.st_mode & (ur|uw|ux));}
+  uid_t uid() const { return status.st_uid;}
+  gid_t gid() const { return status.st_gid;}
+  long  size() const { return  status.st_size;}
+  time_t accTime() const { return status.st_atime;}
+  time_t modTime() const { return status.st_mtime;}
+  time_t chTime() const { return status.st_ctime;}
 
-  bool chmod(access);
+  bool chmod(access_t);
   bool mv(const string &);
   bool rm();
-  static string BaseName(const string &s)
-    {
-      string::size_type p = s.find_last_of('/');
-      return p == string::npos ? s : s.substr(p + 1);
-    }
+  static string base(const string &);
+  static string tmp() { return ::tmpnam(0);}
 protected:
   struct stat status;
   string longname;
   string shortname;
-  bool getStatus() { if (stat(longname.c_str(), &status) == -1) { status.st_mode = 0; error = errno; return false;} return true;}
+  bool getStatus();
   const char *lastError() const;
   int error;
 private:
 };
+
+inline string File::base(const string &s)
+{
+  string::size_type p = s.find_last_of('/');
+  return p == string::npos ? s : s.substr(p + 1);
+}
+
+inline bool File::getStatus()
+{
+  if (stat(longname.c_str(), &status) == -1) { status.st_mode = 0; error = errno; return false;} return true;
+}
 
 };
 

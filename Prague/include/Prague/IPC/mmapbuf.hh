@@ -30,6 +30,11 @@ namespace Prague
 {
 
 class mmapbuf : public streambuf
+//. a streambuf for memory mapped files.
+//. since in this context buffering doesn't make sense,
+//. the strategy is different: client and server lock
+//. a window for reading and writing respectively and
+//. shift these windows after reading/writing a block of n characters
 {
 public:
   typedef char          char_type;
@@ -38,24 +43,25 @@ public:
   typedef int           int_type;
   typedef ios::seek_dir seekdir;
 
-  mmapbuf(int);
+  mmapbuf(int, int);
+  mmapbuf(const string &, size_t, int);
   ~mmapbuf();
   bool readready() const;
   bool writeready() const;
   bool exceptionpending() const;
-  void setnonblocking (bool);
-  bool nonblocking () const;
-  int write (const void *, int);
-  int read (void *, int);
+  void setnonblocking(bool);
+  bool nonblocking() const;
+//   int write(const void *, int);
+//   int read(void *, int);
 protected:
-  virtual int        sync ();
-  virtual int        showmanyc () const;
-  virtual int_type   overflow (int c = EOF);
-  virtual int_type   underflow ();
-  virtual int_type   uflow ();
-  virtual int_type   pbackfail (int c = EOF);
-  virtual streamsize xsputn (const char *, streamsize);
-  virtual streamsize xsgetn (char *, streamsize);
+  virtual int        sync();
+  virtual int        showmanyc() const;
+  virtual int_type   overflow(int c = EOF);
+  virtual int_type   underflow();
+  virtual int_type   uflow();
+  virtual int_type   pbackfail(int c = EOF);
+  virtual streamsize xsputn(const char *, streamsize);
+  virtual streamsize xsgetn(char *, streamsize);
 private:
   mmapbuf(const mmapbuf &);
   mmapbuf &operator = (const mmapbuf &);

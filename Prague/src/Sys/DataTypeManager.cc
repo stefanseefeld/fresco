@@ -277,7 +277,7 @@ string DataTypeManager::match(const string &file, const unsigned char *data, uns
 string DataTypeManager::match(const string &file)
 {
   ifstream ifs(file.c_str());
-  string name = File::BaseName(file);
+  string name = File::base(file);
   unsigned char data[4096];
   ifs.read(data, 4096);
   return match(name, data, ifs.gcount());

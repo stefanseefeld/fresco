@@ -49,13 +49,17 @@ public:
   virtual ~ipcbuf();
   ipcbuf &operator = (const ipcbuf &);
   bool readready() const;
+  //. return true if read wouldn't block
   bool writeready() const;
+  //. return true if write wouldn't block
   bool exceptionpending() const;
   int write (const void *, int);
   int read (void *, int);
   int fd() const { return data->fd;}
   void setnonblocking(bool flag = true);
+  //. set the buffer to nonblocking mode if <i>flag</i> is true, to blocking mode otherwise
   bool nonblocking() const;
+  //. return true if the buffer is in nonblocking mode, false otherwise
   bool eof() const { return data->eofbit;}
 protected:
   struct control
@@ -71,14 +75,20 @@ protected:
     char_type *pend; // end of output buffer
   };
   control *data;  // counts the # refs to sock
-  virtual int        sync ();
-  virtual int        showmanyc () const;
-  virtual int_type   overflow (int c = EOF);
-  virtual int_type   underflow ();
-  virtual int_type   uflow ();
-  virtual int_type   pbackfail (int c = EOF);
-  virtual streamsize xsputn (const char *, streamsize);
-  virtual streamsize xsgetn (char *, streamsize);
+  virtual int        sync();
+  //. flush the buffer
+  virtual int        showmanyc() const;
+  //. return the number of chars in the input sequence
+  virtual int_type   overflow(int c = EOF);
+  //. if pbase () == 0, no write is allowed and thus return EOF.
+  //. if c == EOF, we sync the output and return 0.
+  //. if pptr () == epptr (), buffer is full and thus sync the output, insert c into buffer, and return c.
+  virtual int_type   underflow();
+  //. ipcbuf::int_type ipcbuf::underflow ()
+  virtual int_type   uflow();
+  virtual int_type   pbackfail(int c = EOF);
+  virtual streamsize xsputn(const char *, streamsize);
+  virtual streamsize xsgetn(char *, streamsize);
 private:
 };
 

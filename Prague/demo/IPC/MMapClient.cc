@@ -19,32 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Process_hh
-#define _Process_hh
 
-#include <cstdio>
-#include <cerrno>
+#include <Prague/Sys/File.hh>
+#include <Prague/IPC/mmapbuf.hh>
 #include <unistd.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 
-namespace Prague
+using namespace Prague;
+
+int main (int argc, char **argv)
 {
-
-class Process
-{
-public:
-  Process() { update();}
-  ~Process() {}
-  double CPU() const { return 0.;}
-  long Memory() const { return usage.ru_idrss;}
-  void update() { if (getrusage(RUSAGE_SELF, &usage) == -1) perror("Process::update:");}
-  static pid_t id() { return getpid();}
-protected:
-private:
-  rusage usage;
-};
-
-};
-
-#endif /* _Process_hh */
+  if (argc != 2)
+    {
+      cerr << "Usage : " << argv[0] << " <filename>\n";
+      exit(-1);
+    }
+  string file = argv[1];
+  streambuf *mbuf = new mmapbuf(file, -1, ios::in);
+  istream is(mbuf);
+  string buf;
+  getline(is, buf);
+  cout << "read : " << buf << endl;
+  delete mbuf;
+}

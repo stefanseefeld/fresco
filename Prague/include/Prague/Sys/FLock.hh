@@ -22,6 +22,7 @@
 #ifndef _FLock_hh
 #define _FLock_hh
 
+#include <Prague/Sys/File.hh>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -50,7 +51,6 @@ public:
   bool unlock() { return doit(F_UNLCK, false) == 0;}
   pid_t locked(mode m) const;
 private:
-  static const char *tmpname() { return ::tmpnam(0);}
   int doit(int, bool);
   int doit(off_t, off_t, int, bool);
   string file;
@@ -61,7 +61,7 @@ private:
 
 inline FLock::FLock()
 //. create a FLock using a temporary file
-  : file(tmpname()), close(true), remove(true)
+  : file(File::tmp()), close(true), remove(true)
 {
   fd = open(file.c_str(), O_RDWR|O_CREAT, 0600);
   ::write(fd, "l", 1);

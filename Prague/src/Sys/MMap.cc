@@ -25,22 +25,38 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <cerrno>
+#include <cstdio>
 
 MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset)
-  : base(MAP_FAILED), length(l)
+  : base(MAP_FAILED), length(0)
 {
   struct stat sb;
-  if (l == -1) length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+  length = l > -1 ? l : fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+  if (l > static_cast<int>(length))
+    {
+      length = l;
+      ftruncate(fd, length);
+    }
+  else if (l > 0 && l < static_cast<int>(length)) length = l;
   base = mmap(addr, length, prot, share, fd, offset);
+  if (base == MAP_FAILED) perror("MMap::MMap");
 }
 
 MMap::MMap(const string &filename, int l, int prot, int share, void *addr, off_t offset)
-  : base(MAP_FAILED), length(l)
+  : base(MAP_FAILED), length(0)
 {
   int fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
   struct stat sb;
-  if (l == -1) length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+  length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+  if (l > static_cast<int>(length))
+    {
+      length = l;
+      ftruncate(fd, length);
+    }
+  else if (l > 0 && l < static_cast<int>(length)) length = l;
   base = mmap(addr, length, prot, share, fd, offset);
+  if (base == MAP_FAILED) perror("MMap::MMap");
   close(fd);
 }
 
