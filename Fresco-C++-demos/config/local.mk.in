@@ -21,6 +21,4 @@
 
 # Global flags
 CPPFLAGS	+= @DEFS@ @CPPFLAGS@
-CXXFLAGS	+= @CXXFLAGS@
-LDFLAGS		+= @LDFLAGS@
 LIBS		+= @LIBS@

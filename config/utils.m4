@@ -315,68 +315,6 @@ AC_MSG_RESULT([$ac_cv_compiler_option_$1])
 ])dnl
 
 dnl ##
-dnl ##  Debugging Support  
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_DEBUGGING
-dnl ##  
-
-AC_DEFUN(AC_CHECK_DEBUGGING,[dnl
-AC_ARG_ENABLE(debug,dnl
-[  --enable-debug          build for debugging (default=no)],
-[dnl
-if test ".$ac_cv_prog_gcc" = ".yes"; then
-    case "$CFLAGS" in
-        *-O* ) ;;
-           * ) CFLAGS="$CFLAGS -O3" ;;
-    esac
-    case "$CFLAGS" in
-        *-g* ) ;;
-           * ) CFLAGS="$CFLAGS -g" ;;
-    esac
-    case "$CFLAGS" in
-        *-pipe* ) ;;
-              * ) AC_COMPILER_OPTION(pipe, -pipe, -pipe, CFLAGS="$CFLAGS -pipe") ;;
-    esac
-    AC_COMPILER_OPTION(ggdb3, -ggdb3, -ggdb3, CFLAGS="$CFLAGS -ggdb3")
-    CFLAGS="$CFLAGS -pedantic"
-    CFLAGS="$CFLAGS -Wall"
-    WMORE="-Wshadow -Wpointer-arith -Wcast-align -Winline"
-    WMORE="$WMORE -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
-    AC_COMPILER_OPTION(wmore, -W<xxx>, $WMORE, CFLAGS="$CFLAGS $WMORE")
-else
-    case "$CFLAGS" in
-        *-g* ) ;;
-           * ) CFLAGS="$CFLAGS -g" ;;
-    esac
-fi
-msg="enabled"
-AC_DEFINE(DEBUG)
-],[
-if test ".$ac_cv_prog_gcc" = ".yes"; then
-case "$CFLAGS" in
-    *-pipe* ) ;;
-          * ) AC_COMPILER_OPTION(pipe, -pipe, -pipe, CFLAGS="$CFLAGS -pipe") ;;
-esac
-fi
-case "$CFLAGS" in
-    *-g* ) CFLAGS=`echo "$CFLAGS" |\
-                   sed -e 's/ -g / /g' -e 's/ -g$//' -e 's/^-g //g' -e 's/^-g$//'` ;;
-esac
-case "$CXXFLAGS" in
-    *-g* ) CXXFLAGS=`echo "$CXXFLAGS" |\
-                     sed -e 's/ -g / /g' -e 's/ -g$//' -e 's/^-g //g' -e 's/^-g$//'` ;;
-esac
-msg=disabled
-])dnl
-AC_MSG_CHECKING(for compilation debug mode)
-AC_MSG_RESULT([$msg])
-if test ".$msg" = .enabled; then
-    enable_shared=no
-fi
-])
-
-dnl ##
 dnl ##  Profiling Support  
 dnl ##
 dnl ##  configure.in:
@@ -449,48 +387,6 @@ if test ".$enable_tests" = .yes; then
     TARGET_ALL="$TARGET_ALL \$(TARGET_TEST)"
 fi
 AC_SUBST(TARGET_ALL)
-])
-
-dnl ##
-dnl ##  Optimization Support  
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_OPTIMIZE
-dnl ##
-
-AC_DEFUN(AC_CHECK_OPTIMIZE,[dnl
-AC_ARG_ENABLE(optimize,dnl
-[  --enable-optimize       build with optimization (default=no)],
-[dnl
-if test ".$ac_cv_prog_gcc" = ".yes"; then
-    case "$CFLAGS" in
-        *-O* ) ;;
-        * ) CFLAGS="$CFLAGS -O3" ;;
-    esac
-    case "$CFLAGS" in
-        *-pipe* ) ;;
-        * ) AC_COMPILER_OPTION(pipe, -pipe, -pipe, CFLAGS="$CFLAGS -pipe") ;;
-    esac
-    OPT_CFLAGS='-funroll-loops -fstrength-reduce -fomit-frame-pointer -ffast-math'
-    AC_COMPILER_OPTION(optimize_std, [-f<xxx> for optimizations], $OPT_CFLAGS, CFLAGS="$CFLAGS $OPT_CFLAGS")
-    case $PLATFORM in
-        i?86*-*-*|?86*-*-* )
-            OPT_CFLAGS='-malign-functions=4 -malign-jumps=4 -malign-loops=4' 
-            AC_COMPILER_OPTION(optimize_x86, [-f<xxx> for Intel x86 CPU], $OPT_CFLAGS, CFLAGS="$CFLAGS $OPT_CFLAGS")
-            ;;
-    esac
-else
-    case "$CFLAGS" in
-        *-O* ) ;;
-           * ) CFLAGS="$CFLAGS -O" ;;
-    esac
-fi
-msg="enabled"
-],[
-msg="disabled"
-])dnl
-AC_MSG_CHECKING(for compilation optimization mode)
-AC_MSG_RESULT([$msg])
 ])
 
 dnl ##

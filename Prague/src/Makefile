@@ -27,6 +27,9 @@ cpath	= $(top)/config
 include $(cpath)/local.mk
 include $(cpath)/Prague/local.mk
 
+CXXFLAGS	+= $(SO_CXXFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
+
 TARGET		= $(lpath)/libPrague.so
 EXPAT		= $(lpath)/libexpat.so
 

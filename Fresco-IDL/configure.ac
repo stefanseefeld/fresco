@@ -49,11 +49,6 @@ AC_SUBST(SH_VERSION)
 
 dnl ------------------------------------------------------------------
 
-dnl TODO: Do this better
-AC_MSG_CHECKING("for C++ optimization flags")
-CXXFLAGS="-O2 -fno-default-inline -fomit-frame-pointer -fnonnull-objects"
-AC_MSG_RESULT($CXXFLAGS)
-
 BERLIN_LIB_ORB
 
 dnl ------------------------------------------------------------------
