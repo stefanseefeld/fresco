@@ -54,6 +54,12 @@ CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 LIBS="$LIBS $Prague_LIBS"
 
 dnl ------------------------------------------------------------------
+dnl check for console 
+dnl (needed for console specific clients such as ggiwrapper)
+dnl ------------------------------------------------------------------
+BERLIN_CONSOLE_CHECK()
+
+dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)

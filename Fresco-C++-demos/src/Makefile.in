@@ -53,8 +53,11 @@ DEMO3D_OBJ	:= $(patsubst %.cc, %.o, $(DEMO3D_SRC))
 PINYIN_SRC	:= pinyin_demo.cc TextConverter.cc
 PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
 
-TARGETS		:= $(bdir)/demo $(bdir)/demo3D $(bdir)/canvas $(bdir)/ggiwrapper $(bdir)/pinyin_demo
+TARGETS		:= $(bdir)/demo $(bdir)/demo3D $(bdir)/pinyin_demo
 
+ifeq (@CON_IMPL@,GGI)
+TARGETS		+= $(bdir)/canvas $(bdir)/ggiwrapper
+endif
 all:	$(TARGETS)
 
 $(bdir)/demo:	$(DEMO_OBJ)
@@ -65,15 +68,17 @@ $(bdir)/demo3D:	$(DEMO3D_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+ifeq (@CON_IMPL@,GGI)
 $(bdir)/canvas:	canvas.o
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-$(bdir)/primitive:	primitive.o
-	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @CON_LIBS@
 
 $(bdir)/ggiwrapper:	ggiwrapper.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @CON_LIBS@
+endif
+
+$(bdir)/primitive:	primitive.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
@@ -98,3 +103,10 @@ maintainer-clean: distclean
 %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+
+ifeq (@CON_IMPL@,GGI)
+canvas.o ggiwrapper.o: %.o:	$(srcdir)/%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) @CON_CPPFLAGS@ $(CXXFLAGS) -c $< -o $@
+endif
