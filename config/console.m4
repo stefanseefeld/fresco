@@ -50,7 +50,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 			fi				
 			;;
                 SDL)
-                        AM_PATH_SDL(1.1.8, [
+                        AM_PATH_SDL_BERLIN(1.1.8, [
 				AC_DECIDE(SDLCONSOLE, [use SDL])
                                 CON_IMPL=SDL
 				AC_DEFINE(CONSOLE_SDL)
