@@ -45,20 +45,10 @@
 // multilingual text, albeit not quite as well as certain (ahem) proprietary
 // text systems
 
-static Unistring UNIFY(const char *c) {
-  Unistring tmp;
-  unsigned int len = strlen(c);
-  tmp.length(len);
-  for (unsigned long i = 0; i < len; i++) {
-      tmp[i] = (Unichar)(c[i]);
-  }
-  return tmp;
-}
-
 GLUnifont::GLUnifont()
 {
     myDescriptor.pointsize = 16;
-    myDescriptor.name = UNIFY("GNU Unifont");
+    myDescriptor.name = Unicode::toCORBA(Unicode::String("GNU Unifont"));
     char *env = getenv("BERLIN_ROOT");
     if (!env)
       {
@@ -135,5 +125,8 @@ Text::FontDescriptor *GLUnifont::descriptor(){
   return &myDescriptor;
 }
 
-FeatureValueList *GLUnifont::queryFeature(FeatureType ft) { return new FeatureValueList(); }
+FeatureValueList *GLUnifont::queryFeature(FeatureType ft) {
+  return new FeatureValueList();
+}
+
 void GLUnifont::setFeature(FeatureType ft, FeatureValue fv) {}

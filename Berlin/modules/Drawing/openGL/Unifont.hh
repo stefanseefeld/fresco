@@ -30,6 +30,7 @@
 #include "Warsaw/Types.hh"
 #include "Warsaw/Text.hh"
 #include "Prague/Sys/MMap.hh"
+#include <Warsaw/Unicode.hh>
 
 // This is a default font, just in case -- a character cell bitmapped unicode
 // font which is generated "on the fly" from the GNU unifont, which we're

@@ -26,6 +26,7 @@
 #include "Text/TextChunk.hh"
 #include "Text/FontChange.hh"
 #include "Berlin/Plugin.hh"
+#include <Warsaw/Unicode.hh>
 #include <string>
 
 map<GlyphComp::Key,GlyphComp::Val,GlyphComp> TextKitImpl::glyphCache;
@@ -44,16 +45,6 @@ void TextKitImpl::bind(ServerContext_ptr sc) {
     canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
 }
 
-static Unistring UNIFY(const string &s) {
-  Unistring tmp;
-
-  tmp.length(s.length());
-  for (unsigned long i = 0; i < s.length(); i++) {
-      tmp[i] = (Unichar)(s[i]);
-  }
-  return tmp;
-}
-
 // we have 1 default font which we're distributing with berlin, the
 // fixed-size GNU unifont.
 
@@ -61,7 +52,7 @@ Text::FontDescriptorSeq* TextKitImpl::fonts() {
     Text::FontDescriptorSeq *fdsq = new Text::FontDescriptorSeq();
     fdsq->length(1);
     (*fdsq)[0].pointsize = 16;
-    (*fdsq)[0].name = UNIFY((string)"GNU Unifont");
+    (*fdsq)[0].name = Unicode::toCORBA(Unicode::String("GNU Unifont"));
     return fdsq;
 }
 
@@ -70,8 +61,9 @@ Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
     if (glyphCache.find(k) == glyphCache.end() ) {
 	Graphic::Requisition r;
 	f->allocateText(u,r);
-	//	cerr << " allocated space tor text: " << r.x.natural << "x" << r.y.natural << endl;
-	TextChunk *t = new TextChunk(u,r);
+	// cerr << " allocated space tor text: " << r.x.natural << "x"
+	//      << r.y.natural << endl;
+	TextChunk *t = new TextChunk(Unicode::toPrague(u), r);
 	t->_obj_is_ready(_boa());
 	glyphCache[k] = t->_this();
     }

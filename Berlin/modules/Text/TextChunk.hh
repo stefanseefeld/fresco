@@ -34,22 +34,23 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Text.hh"
 #include "Berlin/GraphicImpl.hh"
+#include <Warsaw/Unicode.hh>
 
 declare_corba_ptr_type(DrawingKit)
 declare_corba_ptr_type(Font)
 
 class TextChunk : public virtual GraphicImpl {
     public:
-    TextChunk(const Unistring & u, const Requisition & r);	    
+    TextChunk(const Unicode::String & u, const Requisition & r);	    
     virtual void draw(DrawTraversal_ptr dt);
     virtual void request(Graphic::Requisition &);
 
-    void getText(Unistring &u); 
+    void getText(Unicode::String &u); 
     unsigned long getLength();
     
     protected:
     Graphic::Requisition myCanonicalSize;
-    Unistring myText;
+    Unicode::String myText;
 };
 
 

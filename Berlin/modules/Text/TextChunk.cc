@@ -28,7 +28,7 @@
 #include "Warsaw/Transform.hh"
 #include "Berlin/Logger.hh"
 
-TextChunk::TextChunk(const Unistring & u, const Requisition &r) : 
+TextChunk::TextChunk(const Unicode::String & u, const Requisition &r) : 
     myCanonicalSize(r), myText(u)  {
 }
 
@@ -36,12 +36,8 @@ void TextChunk::request(Graphic::Requisition &r) {
     r = myCanonicalSize;
 }
 
-void TextChunk::getText(Unistring &u) {
-    unsigned long len = myText.length();
-    u.length(len);
-    for (unsigned long i = 0; i < len; i++) {
-	u[i] = myText[i];
-    }    
+void TextChunk::getText(Unicode::String &u) {
+  myText = u;
 }
 
 unsigned long TextChunk::getLength() {
@@ -58,5 +54,5 @@ SectionLog section("TextChunk::draw");
     u.x = l.x;
 //     Transform_var transform = dt->transformation();
 //     transform->transformVertex(u);
-    f->drawText(myText, u);
+    f->drawText(Unicode::toCORBA(myText), u);
 }
