@@ -36,19 +36,17 @@ static omni_mutex rootContext_mutex;
 // no point in trying to catch these. If you have no name service,
 // you're sunk.
 static void getRootContext(CORBA::ORB_ptr orb) {
-  try{
-    
+  try {
     if (CORBA::is_nil(rootContext)) {  
       debug::log("Looking up Root Nameservice", debug::name);
-      CORBA::Object_var initServ = orb->resolve_initial_references("NameService");
-      rootContext = CosNaming::NamingContext::_narrow(initServ);    
-      
-      if (CORBA::is_nil(rootContext)) {
-	debug::log("Root name context is nil!", debug::name);
-	throw CORBA::ORB::InvalidName();
-      }
+      CORBA::Object_var initServ;
+      initServ = orb->resolve_initial_references("NameService");
+      rootContext = CosNaming::NamingContext::_narrow(initServ);
     }
-  }  catch(CosNaming::NamingContext::NotFound& ex) {
+  } catch(CORBA::ORB::InvalidName& ex) {
+    debug::log("Service required is invalid [does not exist].", debug::name);
+    throw ex;
+  } catch(CosNaming::NamingContext::NotFound& ex) {
     debug::log("Root Name Context not found.", debug::name);
     throw ex;
   } catch (CORBA::COMM_FAILURE& ex) { 
@@ -57,6 +55,12 @@ static void getRootContext(CORBA::ORB_ptr orb) {
   } catch (...) { 
     debug::log("unknown exception during root name service lookup", debug::name);
     throw CosNaming::NamingContext::NotFound();
+  }
+
+  // can't throw an exception if you are in a try {} block :)
+  if (CORBA::is_nil(rootContext)) {
+    debug::log("Root name context is nil!", debug::name);
+    throw CORBA::ORB::InvalidName();
   }
 }
 
