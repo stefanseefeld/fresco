@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
 #include "Widget/Filler.hh"
 #include "Widget/Indicator.hh"
 #include "Widget/Frame.hh"
-#include "Widget/ButtonImpl.hh"
+#include "Widget/TriggerImpl.hh"
 #include "Widget/Toggle.hh"
 #include "Widget/Dragger.hh"
 #include "Widget/Stepper.hh"
@@ -169,7 +169,7 @@ Graphic_ptr WidgetKitImpl::indicator(Graphic_ptr g, const Color &c, Telltale_ptr
   return i->_this();
 }
 
-View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
+View_ptr WidgetKitImpl::buttonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
   DynamicFrame *frame = new DynamicFrame(10., c, Frame::concav, Frame::convex, Telltale::toggle, true);
   frame->_obj_is_ready(_boa());
@@ -179,27 +179,27 @@ View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_
   return frame->_this();
 }
 
-Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr c)
+Trigger_ptr WidgetKitImpl::button(Graphic_ptr g, const Color &b, Command_ptr c)
 {
-  ButtonImpl *button = new ButtonImpl;
-  button->_obj_is_ready(_boa());
-  button->action(c);
-  graphics.push_back(button);
+  TriggerImpl *trigger = new TriggerImpl();
+  trigger->_obj_is_ready(_boa());
+  trigger->action(c);
+  graphics.push_back(trigger);
 
   DynamicFrame *frame1 = new DynamicFrame(10., b, Frame::black, Frame::flat, Telltale::active, false);
   frame1->_obj_is_ready(_boa());
   graphics.push_back(frame1);
   frame1->body(g);
-  frame1->attach(Controller_var(button->_this()));
+  frame1->attach(Controller_var(trigger->_this()));
 
   DynamicFrame *frame2 = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::toggle, true);
   frame2->_obj_is_ready(_boa());
   graphics.push_back(frame2);
   frame2->body(Graphic_var(frame1->_this()));
-  frame2->attach(Controller_var(button->_this()));
+  frame2->attach(Controller_var(trigger->_this()));
 
-  button->body(Graphic_var(frame2->_this()));
-  return button->_this();
+  trigger->body(Graphic_var(frame2->_this()));
+  return trigger->_this();
 }
 
 Controller_ptr WidgetKitImpl::group(Graphic_ptr g)

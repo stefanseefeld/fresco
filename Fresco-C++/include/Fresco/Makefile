@@ -44,7 +44,7 @@ STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Command.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl StreamBuffer.idl \
-	  Button.idl \
+	  Trigger.idl \
 	  Metrics.idl \
 	  Raster.idl \
 	  Desktop.idl Window.idl  

@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca>
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -94,7 +94,7 @@ public:
       current = &*++i;
 #endif /* profile */
     }
-  static void dump(ostream &os) { MutexGuard guard(mutex); dump(os, *current, 0);}
+  static void dump(ostream &);
 private:
   static child_iterator lookup(const string &name)
     {
@@ -102,12 +102,7 @@ private:
 	if ((*i).value->name == name) return i;
       return current->push_back(new CheckPoint(name));
     }
-  static void dump(ostream &os, const item_t &root, unsigned short ind)
-    {
-      for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
-	dump(os, *i, ind + 1);
-      if (root.value) root.value->output(os, ind);
-    }
+  static void dump(ostream &, const item_t &, unsigned short);
   static void clean(const item_t &root)
     {
       for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)

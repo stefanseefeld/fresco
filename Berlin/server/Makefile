@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -21,26 +21,50 @@
 
 SHELL	= /bin/sh
 
-top	= ../..
+top	= ..
 cpath	= $(top)/config
-hpath	= $(top)/include/Widget
+ipath	= $(top)/include
+lpath	= $(top)/lib
+mpath	= $(top)/modules
+dpath	= dep
+opath	= obj
+gpath	= gdb
+ppath	= prf
+rpath	= $(lpath)
 
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+CXXFLAGS= -pthread -Wall -Dprofile $(OPTFLAGS)
+LDFLAGS	= -L$(lpath)
+LIBS	= -lWarsaw -lBerlin -lPrague
 
-SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
-	  Bevel.cc Frame.cc Filler.cc \
-	  TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc Indicator.cc Gauge.cc Slider.cc Panner.cc Scrollbar.cc\
-	  TextInput.cc WidgetKitImpl.cc
+world:		server
 
-TARGET	= $(mpath)/libWidget.so
+ldlibpath = LD_LIBRARY_PATH=$(lpath)
 
-vpath %.d $(dpath)
-vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Widget
+server:		server.o
+		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
 
-include $(cpath)/module.mk
+install:	world
+		install -m755 server $(bindir)
 
+clean:	
+		rm -f server.o server.d *~ bb.out gmon.out
+
+distclean:	clean
+		rm -f server
+
+server.d:	server.cc
+		@echo making dependencies for $<
+		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
+		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@'
+server.o:	server.cc
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),distclean) 
+-include server.d
+endif 
+endif

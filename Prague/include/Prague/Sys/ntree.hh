@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.ca>
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * this code was originally written by

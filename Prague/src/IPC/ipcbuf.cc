@@ -205,7 +205,6 @@ streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, streamsize n)
 streamsize ipcbuf::sys_write(const char *buf, streamsize len)
 {
 //   if (!writeready ()) return 0;
-  cout << "write "; cout.write(buf, len); cout << endl;
   streamsize wlen = 0;
   while(len > 0)
     {
@@ -226,10 +225,8 @@ streamsize ipcbuf::sys_write(const char *buf, streamsize len)
 streamsize ipcbuf::sys_read(char *buf, streamsize len)
 {
   streamsize rval = -1;
-  cout << "reading" << endl;
   do rval = ::read(fd(), buf, len);
   while (rval == -1 && errno == EINTR);
-  cout << rval << ' ' << errno << endl;
   if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");
   return rval;
 }

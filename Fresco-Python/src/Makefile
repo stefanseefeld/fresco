@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Command.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
-	  Button.idl \
+	  Trigger.idl \
 	  Metrics.idl \
 	  Raster.idl \
 	  Desktop.idl Window.idl 
@@ -80,10 +80,3 @@ distclean:	clean
 
 install:
 		install -m755 $(TARGET) $(libdir)
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean) 
--include $(DEP)
-endif 
-endif 
-

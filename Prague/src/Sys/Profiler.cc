@@ -22,6 +22,10 @@
  */
 
 #include "Prague/Sys/Profiler.hh"
+#include <vector>
+#include <string>
+#include <functional>
+#include <algorithm>
 
 using namespace Prague;
 
@@ -44,4 +48,72 @@ void Profiler::CheckPoint::output(ostream &os, unsigned short ind)
       os << setprecision(8) << setw(12);
       os << elapsed/count/CLOCKS_PER_SEC << endl;
     }
+}
+
+#if 1
+
+typedef vector<Profiler::CheckPoint> chart;
+struct CP_compare : public binary_function<Profiler::CheckPoint, Profiler::CheckPoint, bool> 
+{
+  bool operator()(const Profiler::CheckPoint &cp1, const Profiler::CheckPoint &cp2) const
+  {
+    return cp1.elapsed/cp1.count < cp2.elapsed/cp2.count;
+  }
+};
+struct CP_find : public unary_function<Profiler::CheckPoint, bool>
+{
+  CP_find(const string &s) : scope(s) {}
+  bool operator()(const Profiler::CheckPoint &cp) const { return scope == cp.name;}
+  string scope;
+};
+
+void Profiler::dump(ostream &os)
+{
+  MutexGuard guard(mutex);
+  chart scopes;
+  for (ntree<CheckPoint *>::iterator i = table->begin(); i != table->end(); i++)
+    {
+      /*
+       * get a copy of the checkpoint and subtract all child checkpoints from it
+       */
+      CheckPoint cp = *(*i).value;
+      for (ntree<CheckPoint *>::const_child_iterator j = (*i).child_begin(); j != (*i).child_end(); j++)
+	cp.elapsed -= (*i).value->elapsed;
+      /*
+       * now insert it into the chart
+       */
+      chart::iterator j = find_if(scopes.begin(), scopes.end(), CP_find(cp.name));
+      if (j == scopes.end()) scopes.push_back(cp);
+      else
+	{
+	  (*j).elapsed += cp.elapsed;
+	  (*j).count   += cp.count;
+	}
+    }
+  /*
+   * finally, sort the results
+   */
+  sort(scopes.begin(), scopes.end(), CP_compare());
+  /*
+   * now dump it to the ostream
+   */
+  for (chart::iterator i = scopes.begin(); i != scopes.end(); i++)
+    (*i).output(os, 0);
+}
+
+#else
+
+void Profiler::dump(ostream &os)
+{
+  MutexGuard guard(mutex);
+  dump(os, *current, 0);
+}
+
+#endif
+
+void Profiler::dump(ostream &os, const item_t &root, unsigned short ind)
+{
+  for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
+    dump(os, *i, ind + 1);
+  if (root.value) root.value->output(os, ind);
 }

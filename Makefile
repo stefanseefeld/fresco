@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 
 SHELL	= /bin/sh
 
-subdirs	= include/Warsaw src test $(wildcard clients)
+subdirs	= include/Warsaw src server $(wildcard clients)
 # doc
 
 .PHONY:	config test

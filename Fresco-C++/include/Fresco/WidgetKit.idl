@@ -36,7 +36,7 @@ interface Graphic;
 interface View;
 interface Controller;
 interface Command;
-interface Button;
+interface Trigger;
 
 interface WidgetKit : Cloneable
 //. this kit is a layer on top of the Graphic interface and
@@ -59,12 +59,12 @@ interface WidgetKit : Cloneable
   Graphic      outset(in Graphic g, in Color c, in boolean fill);
   Graphic      filler(in Graphic g, in Color c);
   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
-  View         pushButtonFrame(in Graphic g, in Color c, in Telltale t);
+  View         buttonFrame(in Graphic g, in Color c, in Telltale t);
   Controller   dragger(in Graphic g, in Command c);
   Controller   stepper(in Graphic g, in Command c);
   Controller   textInput(in Graphic g, in TextBuffer b);
 
-  Button       pushButton(in Graphic g, in Color b, in Command c);
+  Trigger      button(in Graphic g, in Color b, in Command c);
   Controller   group(in Graphic g);
   Controller   toggle(in Graphic g, in Color b);
   Graphic      gauge(in Color c, in BoundedValue v);
