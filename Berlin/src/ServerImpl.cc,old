@@ -111,6 +111,14 @@ void ServerImpl::clear()
   factories.erase(factories.begin(), factories.end());
 }
 
+ServerImpl::FactoryList ServerImpl::list()
+{
+  FactoryList fl;
+  for (fmap_t::iterator i = factories.begin(); i != factories.end(); ++i)
+    fl.insert(FactoryList::value_type((*i).first, (*(*i).second)->properties()));
+  return fl;  
+}
+
 void ServerImpl::start()
 {
   thread.start();

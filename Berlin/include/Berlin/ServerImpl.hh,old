@@ -47,6 +47,7 @@ class ServerImpl : implements(Server)
   typedef multimap<string, KitImpl *> kmap_t;
   typedef map<string, CORBA::Object_var> smap_t;
  public:
+  typedef multimap<string, Kit::PropertySeq_var> FactoryList;
   ServerImpl();
   virtual ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
   virtual void setSingleton(const char *, CORBA::Object_ptr)
@@ -62,6 +63,7 @@ class ServerImpl : implements(Server)
   // this builds the plugin table
   void scan(const string &);
   void clear();
+  FactoryList list();
   void start();
  protected:
   KitImpl *create(const char *, const Kit::PropertySeq &);

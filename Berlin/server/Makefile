@@ -44,9 +44,12 @@ LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
 ldlibpath = LD_LIBRARY_PATH=$(lpath)
 
-world:	server
+world:	server kits
 
 server:		server.o
+		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
+
+kits:		kits.o
 		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
 
 install:	world
