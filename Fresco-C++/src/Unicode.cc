@@ -44,12 +44,9 @@ Fresco::Unichar Unicode::to_CORBA(const Babylon::Char c) {
 }
 
 Babylon::String Unicode::to_internal(const Unistring & us) {
-    std::cerr << "to_internal: started." << std::endl;
     Babylon::String res;
-    std::cerr << "to_internal: got res." << std::endl;
     for (size_t i = 0; i < us.length(); ++i)
       res.push_back(Babylon::Char(static_cast<const Babylon::UCS2>(us[i])));
-    std::cerr << "to_internal: res set." << std::endl;
     return res;
 }
 
