@@ -1,4 +1,4 @@
-/*+P
+/*
  * This file is part of OffiX,
  * a C++ API for the X Window System and Unix
  * Copyright (C) 1995-98  Stefan Seefeld
@@ -17,73 +17,73 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
+ */
 static char *rcsid = "$Id$";
 #include "Prague/Sys/Timer.hh"
 
-int Timer::count = 0;
-
-/* @Method{Timer::~Timer()}
- *
- * @Description{}
- */
-Timer::~Timer()
-{
-};
-
-/* @Method{int Timer::start(long msec, bool repeat)}
+/* @Method{void Timer::start(long msec, bool repeat)}
  *
  * @Description{starts the Timer to produce a @code{timeout} in @var{msec} milliseconds
  @var{repeat} indicates whether this should produce timeouts @strong{every} @var{msec} milliseconds}
  */
-int Timer::start(long msec, bool flag)
+void Timer::start(long msec, bool flag)
 {
-  id = ++count;
-  repeat = flag;
-  tint = msec;
-//   AsyncManager *manager = AsyncManager::Instance();
-  tout = Time::currentTime() + Time(msec);
-//   manager->addTimeout(this, tout);
-  return id;
+  {
+    MutexGuard guard(mutex);
+    repeat = flag;
+    tint = msec;
+    tout = Time::currentTime() + Time(msec);
+    run = true;
+  }
+  Thread::start();
 };
 
-/* @Method{int Timer::start(const Time &T)}
+/* @Method{void Timer::start(const Time &T)}
  *
  * @Description{start a Timer (single shot) to produce a timeout at absolute time T}
  */
-int Timer::start(const Time &T)
+void Timer::start(const Time &time)
 {
-  id = ++count;
-  repeat = false;
-//   AsyncManager *manager = AsyncManager::Instance();
-//   manager->addTimeout(this, T);
-  return id;
+  {
+    MutexGuard guard(mutex);
+    repeat = false;
+    run = true;
+  }
+  Thread::start();
 };
 
-/* @Method name{void Timer::stop()}
+/* @Method{void Timer::stop()}
  *
  * @Description{stops the Timer}
  */
 void Timer::stop()
 {
-  id = 0;
-  repeat = false;
+  MutexGuard guard(mutex);
+  run = false;
 };
 
-/* @Method{void Timer::timeout()}
- *
- * @Description{broadcasts a @code{timeout} signal}
- */
-void Timer::timeout()
+void Timer::execute()
 {
-  if (id)
-    {
-      if (repeat)
-	{
-	  tout += Time(tint);
-// 	  AsyncManager *manager = AsyncManager::Instance();
-// 	  manager->addTimeout(this, tout);
-	}
-      if (notifier) notifier->notify();
-    }
-};
+  do
+    if (sleep() && notifier) notifier->notify();
+  while (repeat && running());
+}
+
+bool Timer::running()
+{
+  MutexGuard guard(mutex);
+  return run;
+}
+
+bool Timer::sleep()
+{
+  {
+    MutexGuard guard(mutex);
+    tout += tint;
+  }
+  Thread::delay(tout - Time::currentTime());
+  {
+    MutexGuard guard(mutex);
+    return run;
+  }
+}

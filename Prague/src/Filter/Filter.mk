@@ -1,7 +1,8 @@
-#+P
-# This file is part of OffiX,
-# a C++ API for the X Window System and Unix
-# Copyright (C) 1995-98  Stefan Seefeld
+# $Id$
+#
+# This source file is a part of the Berlin Project.
+# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -17,39 +18,33 @@
 # License along with this library; if not, write to the
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
-#-P
-# $Id$
-#
-#
-#
-#
-#
+
 FLT_SRC	= gzbuf.cc xdrbuf.cc #bzbuf.cc 
 
-FLT_OBJ	= $(patsubst %.cc, $(OPATH)/%.o, $(FLT_SRC))
-FLT_PIC	= $(patsubst %.cc, $(SPATH)/%.o, $(FLT_SRC))
-FLT_GDB	= $(patsubst %.cc, $(GPATH)/%.o, $(FLT_SRC))
-FLT_PRF	= $(patsubst %.cc, $(PPATH)/%.o, $(FLT_SRC))
-FLT_DEP = $(patsubst %.cc, $(DPATH)/%.d, $(FLT_SRC))
+FLT_DEP = $(patsubst %.cc, $(dpath)/%.d, $(FLT_SRC))
+FLT_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(FLT_SRC))
+FLT_GDB	= $(patsubst %.cc, $(gpath)/%.o, $(FLT_SRC))
+FLT_PRF	= $(patsubst %.cc, $(ppath)/%.o, $(FLT_SRC))
 
-vpath %.h  $(IPATH)/OffiX/Filter
-
-$(OPATH)/%.o:	Filter/%.cc
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
-$(GPATH)/%.o:	Filter/%.cc
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
-$(PPATH)/%.o:	Filter/%.cc
-		$(CXX) $(CXXFLAGS) $(PRFFLAGS) -c $< -o $@
-$(SPATH)/%.o:	Filter/%.cc
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-$(DPATH)/%.d:	Filter/%.cc %.h
+$(dpath)/%.d:	Filter/%.cc $(ipath)/Prague/Filter/%.hh
 		@echo making dependencies for $<
-		@$(SHELL) -ec '$(CXX) -M $(CXXFLAGS) $< \
-		| sed "s/$*\\.o[ :]*/$(OPATH)\/$*\\.o $(GPATH)\/$*\\.o $(PPATH)\/$*\\.o $(SPATH)\/$*\\.o $(DPATH)\/$*\\.d : /g" > $@'
+		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
+$(opath)/%.o:	Filter/%.cc
+		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+$(gpath)/%.o:	Filter/%.cc
+		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
+$(ppath)/%.o:	Filter/%.cc
+		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
 
-clean::
-		$(RM) Filter/*~
-		$(RM) $(IPATH)/OffiX/Filter/*~
+clean:		filterclean
+filterclean:
+		rm -f Filter/*~
+		rm -f $(ipath)/Prague/Filter/*~
 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 

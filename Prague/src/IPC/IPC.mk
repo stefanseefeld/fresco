@@ -1,7 +1,8 @@
-#+P
-# This file is part of OffiX,
-# a C++ API for the X Window System and Unix
-# Copyright (C) 1995-98  Stefan Seefeld
+# $Id$
+#
+# This source file is a part of the Berlin Project.
+# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -17,37 +18,34 @@
 # License along with this library; if not, write to the
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
-#-P
-# $Id$
-#
-#
-#
-#
-#
+
 IPC_SRC	= ipcbuf.cc pipebuf.cc socketbuf.cc ptybuf.cc \
 	  Agent.cc Coprocess.cc PipeAgent.cc TTYAgent.cc
 
-IPC_DEP	= $(patsubst %.cc, $(DPATH)/%.d, $(IPC_SRC))
-IPC_OBJ	= $(patsubst %.cc, $(OPATH)/%.o, $(IPC_SRC))
-IPC_PIC	= $(patsubst %.cc, $(SPATH)/%.o, $(IPC_SRC))
-IPC_GDB	= $(patsubst %.cc, $(GPATH)/%.o, $(IPC_SRC))
+IPC_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(IPC_SRC))
+IPC_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(IPC_SRC))
+IPC_GDB	= $(patsubst %.cc, $(gpath)/%.o, $(IPC_SRC))
+IPC_PRF	= $(patsubst %.cc, $(ppath)/%.o, $(IPC_SRC))
 
-vpath %.h  $(IPATH)/OffiX/IPC
+$(dpath)/%.d:	IPC/%.cc $(ipath)/Prague/IPC/%.hh
+		@echo making dependencies for $<
+		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
+$(opath)/%.o:	IPC/%.cc
+		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@ 
+$(gpath)/%.o:	IPC/%.cc
+		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
+$(ppath)/%.o:	IPC/%.cc
+		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
 
-$(DPATH)/%.d:	IPC/%.cc %.h
-	@echo making dependencies for $<
-	@$(SHELL) -ec '$(CXX) -M $(CXXFLAGS) $< \
-	| sed "s/$*\\.o[ :]*/$(OPATH)\/$*\\.o $(GPATH)\/$*\\.o $(PPATH)\/$*\\.o $(SPATH)\/$*\\.o $(DPATH)\/$*\\.d : /g" > $@'
-$(SPATH)/%.o:	IPC/%.cc
-	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@ 
-$(OPATH)/%.o:	IPC/%.cc
-	$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
-$(GPATH)/%.o:	IPC/%.cc
-	$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
-
-clean::
-		$(RM) IPC/*~
-		$(RM) $(IPATH)/OffiX/IPC/*~
+clean:		ipcclean
+ipcclean:
+		rm -f IPC/*~
+		rm -f $(ipath)/Prague/IPC/*~
 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 

@@ -22,7 +22,7 @@ static char *rcsid = "$Id$";
 #include "Prague/Sys/Thread.hh"
 
 Thread::TTable Thread::table;
-Mutex          Thread::mutex;
+Mutex          Thread::globalMutex;
 
 Mutex::Mutex(type t)
 {
@@ -35,26 +35,35 @@ Mutex::Mutex(type t)
 
 void *Thread::start(void *X)
 {
-  mutex.lock();
   pthread_t me = pthread_self();
-  table.push_back(TEntry(me, reinterpret_cast<Thread *>(X)));
-  mutex.unlock();
+  {
+    MutexGuard guard(globalMutex);
+    table.push_back(TEntry(me, reinterpret_cast<Thread *>(X)));
+  }
   reinterpret_cast<Thread *>(X)->execute();
   pthread_exit(0);
-  mutex.lock();
-  for (TTable::iterator i = table.begin(); i != table.end(); i++)
-    if ((*i).first == me)
-      {
-	table.erase(i);
-	break;
-      }
-  mutex.unlock();
+  {
+    MutexGuard guard(globalMutex);
+    for (TTable::iterator i = table.begin(); i != table.end(); i++)
+      if ((*i).first == me)
+	{
+	  table.erase(i);
+	  break;
+	}
+  }
   return 0;
+}
+
+bool Thread::delay(const Time &time)
+{
+// pthread_delay_np(&T);
+  Time t(time);
+  return select(0, 0, 0, 0, &t) == 0;
 }
 
 Thread *Thread::self()
 {
-  MutexLocker ML(mutex);
+  MutexGuard guard(globalMutex);
   pthread_t me = pthread_self();
   for (TTable::iterator i = table.begin(); i != table.end(); i++)
     if ((*i).first == me)

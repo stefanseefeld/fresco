@@ -27,10 +27,6 @@
 #include <vector>
 #include <pair.h>
 
-/* @Class{Mutex}
- *
- * @Description{a very sparse POSIX thread mutex wrapper}
- */
 class Mutex
 {
 public:
@@ -55,23 +51,15 @@ protected:
   pthread_mutex_t mutex;
 };
 
-/* @Class{MutexLocker}
- *
- * @Description{lock a given Mutex over its lifetime}
- */
-class MutexLocker
+class MutexGuard
 {
 public:
-  MutexLocker(Mutex &M) : mutex(M) { mutex.lock();}
-  ~MutexLocker() { mutex.unlock();}
+  MutexGuard(Mutex &m) : mutex(m) { mutex.lock();}
+  ~MutexGuard() { mutex.unlock();}
 private:
   Mutex &mutex;
 };
 
-/* @Class{Condition : public Mutex}
- *
- * @Description{a very sparse POSIX thread condition wrapper}
- */
 class Condition : public Mutex
 {
 public:
@@ -84,12 +72,10 @@ protected:
   pthread_cond_t condition;
 };
 
-/* @Class{Thread}
- *
- * @Description{a very sparse POSIX thread wrapper}
- */
 class Thread
 {
+  typedef pair<pthread_t, Thread *> TEntry;
+  typedef vector<TEntry> TTable;
 public:
   Thread() : running(false) {}
   virtual ~Thread() { cancel(); wait();}
@@ -97,7 +83,7 @@ public:
   void wait() { pthread_join(thread, 0);}
   void cancel() { if (running) pthread_cancel(thread);}
   void exit() { if (running) pthread_exit(0);}
-//   static void delay(const Time &T) { pthread_delay_np(&T);}
+  static bool delay(const Time &);
   static Thread *self();
 protected:
   virtual void execute() = 0;
@@ -105,10 +91,8 @@ private:
   static void *start(void *);
   pthread_t thread;
   bool running;
-  typedef pair<pthread_t, Thread *> TEntry;
-  typedef vector<TEntry> TTable;
   static TTable table;
-  static Mutex mutex;
+  static Mutex globalMutex;
 };
 
 #endif /* _Thread_hh */

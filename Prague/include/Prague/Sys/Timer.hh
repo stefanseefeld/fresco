@@ -1,4 +1,5 @@
-/*+P
+/*$Id$
+ *
  * This file is part of OffiX,
  * a C++ API for the X Window System and Unix
  * Copyright (C) 1995-98  Stefan Seefeld
@@ -17,37 +18,38 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-/*$Id$*/
+ */
 #ifndef _Timer_hh
 #define _Timer_hh
 
 #include <Prague/Sys/Time.hh>
+#include <Prague/Sys/Thread.hh>
 
 /* @Class{Timer}
  *
  * @Description{}
  */
-class Timer
+class Timer : public Thread
 {
 public:
   struct Notifier { virtual ~Notifier(){}; virtual void notify() = 0;};
   Timer(Notifier *n) : notifier(n), repeat(false) {}
-  ~Timer();
-  bool active() const { return id != 0;}
-  int  start(long, bool flag = false);
-  int  start(const Time &);
+  virtual ~Timer() {}
+  void  start(long, bool flag = false);
+  void  start(const Time &);
   void stop();
-  void setInterval(long msec) { tint = msec;}
+//   void setInterval(long msec) { tint = msec;}
 protected:
-  void timeout();
+  virtual void execute(); 
 private:
+  bool running();
+  bool sleep();
   Notifier *notifier;
-  static int count;
-  int id;
   long tint;
   Time tout;
-  bool repeat;
+  bool repeat : 1;
+  bool run :    1;
+  Mutex mutex;
 };
 
 #endif /* _Timer_hh */

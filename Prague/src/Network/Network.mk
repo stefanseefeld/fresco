@@ -1,7 +1,8 @@
-#+P
-# This file is part of OffiX,
-# a C++ API for the X Window System and Unix
-# Copyright (C) 1995-98  Stefan Seefeld
+# $Id$
+#
+# This source file is a part of the Berlin Project.
+# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -17,39 +18,30 @@
 # License along with this library; if not, write to the
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
-#-P
-# $Id$
-#
-#
-#
-#
-#
+
 NET_SRC	= ip.cc ftp.cc smtp.cc #url.cc
 
-NET_OBJ	= $(patsubst %.cc, $(OPATH)/%.o, $(NET_SRC))
-NET_PIC	= $(patsubst %.cc, $(SPATH)/%.o, $(NET_SRC))
-NET_GDB	= $(patsubst %.cc, $(GPATH)/%.o, $(NET_SRC))
-NET_PRF = $(patsubst %.cc, $(PPATH)/%.o, $(NET_SRC))
-NET_DEP	= $(patsubst %.cc, $(DPATH)/%.d, $(NET_SRC))
+NET_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(NET_SRC))
+NET_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(NET_SRC))
+NET_GDB	= $(patsubst %.cc, $(gpath)/%.o, $(NET_SRC))
+NET_PRF = $(patsubst %.cc, $(ppath)/%.o, $(NET_SRC))
 
-vpath %.h  $(IPATH)/OffiX/Network
-
-$(OPATH)/%.o:	Network/%.cc
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
-$(GPATH)/%.o:	Network/%.cc
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
-$(PPATH)/%.o:	Network/%.cc
-		$(CXX) $(CXXFLAGS) $(PRFFLAGS) -c $< -o $@
-$(SPATH)/%.o:	Network/%.cc
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-$(DPATH)/%.d:	Network/%.cc %.h
+$(dpath)/%.d:	Network/%.cc $(ipath)/Prague/Network/%.hh
 		@echo making dependencies for $<
-		@$(SHELL) -ec '$(CXX) -M $(CXXFLAGS) $< \
-		| sed "s/$*\\.o[ :]*/$(OPATH)\/$*\\.o $(GPATH)\/$*\\.o $(PPATH)\/$*\\.o $(SPATH)\/$*\\.o $(DPATH)\/$*\\.d : /g" > $@'
+		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
+$(opath)/%.o:	Network/%.cc
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+$(gpath)/%.o:	Network/%.cc
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
+$(ppath)/%.o:	Network/%.cc
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
 
-clean::
-		$(RM) Network/*~
-		$(RM) $(IPATH)/OffiX/Network/*~
+clean:		networkclean
+networkclean:
+		rm -f Network/*~
+		rm -f $(ipath)/Prague/Network/*~
 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 

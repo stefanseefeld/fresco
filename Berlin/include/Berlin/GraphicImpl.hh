@@ -35,19 +35,7 @@
 
 class GraphicImpl : implements(Graphic), public virtual CloneableImpl
 {
-  /*
-   * since the edges member is only a ref count, comparing is only based on
-   * the parent member. -stefan
-   */
-  struct pinfo
-  {
-    pinfo(Graphic_ptr p, int e = 1) : parent(Graphic::_duplicate(p)), edges(e) {}
-    bool operator == (const pinfo &p) const { return parent == p.parent;}
-    bool operator < (const pinfo &p) const { return parent < p.parent;}
-    Graphic_var parent;
-    mutable int edges;
-  };
-  typedef set<pinfo> plist_t;
+  typedef set<Graphic_var> plist_t;
 public:
   static const Coord infinity = 10e6;
   GraphicImpl();
@@ -85,7 +73,23 @@ public:
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:
   void allocateParents(Allocation_ptr);
-  typedef omni_mutex_lock Guard;
+//   typedef omni_mutex_lock Guard;
+  class Guard
+  {
+  public:
+    Guard(omni_mutex &m) : mutex(m)
+      {
+	cout << "locking Graphic " << this << endl;
+	mutex.lock();
+      }
+    ~Guard()
+      {
+	cout << "unlocking Graphic " << this << endl;
+	mutex.unlock();	
+      }
+  private:
+    omni_mutex &mutex;
+  };
   plist_t parents;
   omni_mutex parentMutex;
 };

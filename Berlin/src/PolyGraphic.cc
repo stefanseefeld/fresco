@@ -26,6 +26,7 @@
  */
 #include "Berlin/PolyGraphic.hh"
 #include <iostream>
+#include <set>
 
 Pool<Graphic::Requisition> PolyGraphic::pool;
 
@@ -33,8 +34,13 @@ PolyGraphic::PolyGraphic() {}
 
 PolyGraphic::~PolyGraphic()
 {
-  Guard guard(childMutex);
-  for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+  set<Graphic_var> unique;
+  {
+    Guard guard(childMutex);
+    for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+      unique.insert(*i);
+  }
+  for (set<Graphic_var>::iterator i = unique.begin(); i != unique.end(); i++)
     (*i)->removeParent(_this());
 }
 
@@ -42,6 +48,7 @@ void PolyGraphic::append(Graphic_ptr child)
 {
   Guard guard(childMutex);
   children.push_back(Graphic::_duplicate(child));
+  child->addParent(_this());
   needResize();
 }
 
@@ -49,6 +56,7 @@ void PolyGraphic::prepend(Graphic_ptr child)
 {
   Guard guard(childMutex);
   children.insert(children.begin(), Graphic::_duplicate(child));
+  child->addParent(_this());
   needResize();
 }
 

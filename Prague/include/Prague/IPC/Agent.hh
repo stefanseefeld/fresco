@@ -1,7 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,11 +18,11 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-/* $Id$ */
+ */
 #ifndef _Agent_hh
 #define _Agent_hh
 
+#include <Prague/Sys/Thread.hh>
 #include <Prague/IPC/ipcbuf.hh>
 #include <sys/types.h>
 
@@ -29,7 +30,7 @@
  *
  * @Description {the interface to the client part of an ipc connection}
  */
-class Agent
+class Agent : public Thread
 {
 public:
   struct Notifier { virtual ~Notifier(){}; virtual void notify(short) = 0;};

@@ -237,14 +237,13 @@ void GraphicImpl::prepend(Graphic_ptr) {}
 void GraphicImpl::addParent(Graphic_ptr parent)
 {
   Guard guard(parentMutex);
-  parents.insert(parents.end(), pinfo(Graphic::_duplicate(parent), 1));
+  parents.insert(Graphic::_duplicate(parent));
 }
 
 void GraphicImpl::removeParent(Graphic_ptr parent)
 {
   Guard guard(parentMutex);
-  plist_t::iterator i = parents.find(pinfo(parent));
-  if (!--(*i).edges) parents.erase(i);
+  parents.erase(parent);
 }
 
 Transform_ptr GraphicImpl::transformation() { return Transform::_nil();}
