@@ -22,6 +22,8 @@
 #ifndef _Plugin_hh
 #define _Plugin_hh
 
+#include <Prague/Sys/DLL.hh>
+
 namespace Prague
 {
 
