@@ -26,6 +26,8 @@
 #include <sys/types.h>
 #include <cstring> // some platforms seem to need this (solaris, bsd)
 
+#undef isset // *sigh* -stefan
+
 namespace Prague
 {
 
