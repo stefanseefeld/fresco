@@ -175,6 +175,7 @@ AC_CONFIG_FILES([etc/berlinrc:config/berlinrc.in])
 AC_CONFIG_FILES([config/Berlin.spec])
 AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-build-config.in], [chmod +x bin/Berlin-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile])
+AC_CONFIG_FILES([test/nurbs/Makefile])
 
 mkdir -p lib
 mkdir -p etc

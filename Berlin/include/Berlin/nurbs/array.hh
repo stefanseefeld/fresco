@@ -27,6 +27,7 @@ namespace Berlin
 namespace nurbs
 {
 
+//. an STL compliant container wrapper for arrays of constant size
 template<class T, std::size_t N>
 class array 
 {

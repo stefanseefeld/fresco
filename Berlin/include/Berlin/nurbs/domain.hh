@@ -31,6 +31,7 @@ namespace Berlin
 namespace nurbs
 {
 
+//. a multidimensional index
 template <size_t D>
 struct index
 {
@@ -46,11 +47,14 @@ struct index
   size_t values[D+1];
 };
 
+//. a domain defines a D-dimensional container of Ts
 template <typename T, size_t D> 
 class domain
 {
 public:
   typedef size_t vector_index;
+  //. Helper object for indexing:
+  //. Example: domain(index[1][2])
   static const nurbs::index<0> index;
   static const size_t dimensions = D;
 

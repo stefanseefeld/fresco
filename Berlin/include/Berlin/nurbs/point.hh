@@ -27,6 +27,8 @@ namespace Berlin
 namespace nurbs
 {
 
+//. a simple D-dimensional point
+//. mostly used to test nurbs routines
 template <typename T, size_t D>
 class point
 {

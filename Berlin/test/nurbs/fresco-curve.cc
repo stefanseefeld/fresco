@@ -24,11 +24,6 @@
 #include <cstdlib>
 #include <time.h>
 
-struct Vertex
-{
-  double x, y, z;
-};
-
 #include <Berlin/nurbs/Vertex.hh>
 #include <Berlin/nurbs/domain.hh>
 #include <Berlin/nurbs/nurbs.hh>
@@ -40,6 +35,7 @@ struct Vertex
 const unsigned int PARAMS = 1;
 const unsigned int CTRLPOINTS = 10;
 
+using namespace Fresco;
 using namespace Berlin::nurbs;
 
 typedef Vertex Vector;

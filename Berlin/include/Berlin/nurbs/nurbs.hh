@@ -33,6 +33,9 @@ namespace Berlin
 namespace nurbs
 {
 
+//. a 'weighted T' is a T with an
+//. associated weighting factor
+//. (used to implement the 'R' in NURBS)
 template <typename T>
 struct Weighted
 {
@@ -40,6 +43,9 @@ struct Weighted
   double denominator;
 };
 
+//. basis function used in nurbs:
+//. i and d are indices, p is the actual parameter,
+//. K is the knot vector
 template <typename K>
 double basis_function(size_t i, size_t d, double p, const K &k)
 {
@@ -72,6 +78,9 @@ double basis_function(size_t i, size_t d, double p, const K &k)
   return 0.;
 }
 
+//. computes derivative of a basis function:
+//. i and d are indices, p is the actual parameter,
+//. K is the knot vector
 template <typename K>
 double basis_function_derivative(size_t i, size_t d, double p, const K &k)
 {
@@ -434,6 +443,8 @@ void eval_with_derivations(const domain<T, P> &ctrls,
   }
 }
 
+//. return a P-dimensional domain of points
+//. assume uniform knots
 template <typename T, size_t P>
 domain<T, P> *evaluate(const domain<T, P> &ctrls,
                        const domain<double, P> &weights,
@@ -451,6 +462,7 @@ domain<T, P> *evaluate(const domain<T, P> &ctrls,
   return eval(ctrls, weights, degrees, knots, steps);
 }
 
+//. return a P-dimensional domain of points
 template <typename T, size_t P>
 domain<T, P> *evaluate(const domain<T, P> &ctrls,
                        const domain<double, P> &weights,
@@ -461,6 +473,9 @@ domain<T, P> *evaluate(const domain<T, P> &ctrls,
   return eval(ctrls, weights, degrees, knots, steps);
 }
 
+//. return a P-dimensional domain of points arrays
+//. each array contains the actual point and the P derivatives
+//. assume uniform knots
 template <typename T, size_t P>
 domain<array<T, P + 1>, P> *
 evaluate_with_derivations(const domain<T, P> &ctrls,
@@ -479,6 +494,8 @@ evaluate_with_derivations(const domain<T, P> &ctrls,
   return eval_with_derivations(ctrls, weights, degrees, knots, steps);
 }
 
+//. return a P-dimensional domain of points arrays
+//. each array contains the actual point and the P derivatives
 template <typename T, size_t P>
 domain<array<T, P + 1>, P> *
 evaluate_with_derivations(const domain<T, P> &ctrls,

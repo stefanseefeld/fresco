@@ -28,10 +28,9 @@ cdir		:= $(top_builddir)/config
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= @CPPFLAGS@
-LDFLAGS		+= -L ../../lib
-LIBS		+= -lPrague @LIBS@
-LIBS	:= -L/usr/X11R6/lib -lglut -lGLU -lGL -lX11 -lm
+CPPFLAGS	+= @GL_CPPFLAGS@
+LDFLAGS	+= -L ../../lib
+LIBS	+= @GL_LIBS@ -lglut
 
 TARGETS	:= circle curve surface volume fresco-curve
 

@@ -22,23 +22,31 @@
 #ifndef _Berlin_nurbs_Vertex_hh
 #define _Berlin_nurbs_Vertex_hh
 
+#include <Fresco/Types.hh>
+
 namespace Berlin
 {
 namespace nurbs
 {
 
-inline Vertex make_vertex(double x, double y, double z)
+inline Fresco::Vertex make_vertex(Fresco::Coord x,
+                                  Fresco::Coord y,
+                                  Fresco::Coord z)
 {
-  Vertex v;
+  Fresco::Vertex v;
   v.x = x;
   v.y = y;
   v.z = z;
   return v;
 }
 
-inline Vertex &assign(Vertex &v, double s) { v.x = v.y = v.z = s; return v;}
+inline Fresco::Vertex &assign(Fresco::Vertex &v, Fresco::Coord s)
+{
+  v.x = v.y = v.z = s;
+  return v;
+}
 
-inline Vertex &operator+=(Vertex &p, const Vertex &q)
+inline Fresco::Vertex &operator+=(Fresco::Vertex &p, const Fresco::Vertex &q)
 {
   p.x += q.x;
   p.y += q.y;
@@ -46,7 +54,7 @@ inline Vertex &operator+=(Vertex &p, const Vertex &q)
   return p;
 }
 
-inline Vertex &operator-=(Vertex &p, const Vertex &q)
+inline Fresco::Vertex &operator-=(Fresco::Vertex &p, const Fresco::Vertex &q)
 {
   p.x -= q.x;
   p.y -= q.y;
@@ -54,7 +62,7 @@ inline Vertex &operator-=(Vertex &p, const Vertex &q)
   return p;
 }
 
-inline Vertex &operator*=(Vertex &v, double s)
+inline Fresco::Vertex &operator*=(Fresco::Vertex &v, Fresco::Coord s)
 {
   v.x *= s;
   v.y *= s;
@@ -62,7 +70,7 @@ inline Vertex &operator*=(Vertex &v, double s)
   return v;
 }
 
-inline Vertex &operator/=(Vertex &v, double s)
+inline Fresco::Vertex &operator/=(Fresco::Vertex &v, Fresco::Coord s)
 {
   v.x /= s;
   v.y /= s;
@@ -70,36 +78,41 @@ inline Vertex &operator/=(Vertex &v, double s)
   return v;
 }
 
-inline Vertex operator+(const Vertex &p, const Vertex &q)
+inline Fresco::Vertex operator+(const Fresco::Vertex &p,
+                                const Fresco::Vertex &q)
 {
-  Vertex result(p);
+  Fresco::Vertex result(p);
   return result += q;
 }
 
-inline Vertex operator-(const Vertex &p, const Vertex &q)
+inline Fresco::Vertex operator-(const Fresco::Vertex &p,
+                                const Fresco::Vertex &q)
 {
-  Vertex result(p);
+  Fresco::Vertex result(p);
   return result -= q;
 }
 
-inline Vertex operator*(const Vertex &p, double scalar)
+inline Fresco::Vertex operator*(const Fresco::Vertex &p,
+                                Fresco::Coord scalar)
 {
-  Vertex result(p);
+  Fresco::Vertex result(p);
   return result *= scalar;
 }
 
-inline Vertex operator/(const Vertex &p, double scalar)
+inline Fresco::Vertex operator/(const Fresco::Vertex &p,
+                                Fresco::Coord scalar)
 {
-  Vertex result(p);
+  Fresco::Vertex result(p);
   return result /= scalar;
 }
 
-inline double scalar(const Vertex &p, const Vertex &q)
+inline Fresco::Coord scalar(const Fresco::Vertex &p,
+                            const Fresco::Vertex &q)
 {
   return p.x * q.x + p.y * q.y + p.z * q.z;
 }
 
-inline double norm(const Vertex &p)
+inline Fresco::Coord norm(const Fresco::Vertex &p)
 {
   return std::sqrt(scalar(p, p));
 }
