@@ -183,7 +183,7 @@ Fresco::GraphicIterator_ptr PolyGraphic::first_child_graphic()
 Fresco::GraphicIterator_ptr PolyGraphic::last_child_graphic()
 {
   Trace trace(this, "PolyGraphic::last_child_graphic");
-  Iterator *iterator = new Iterator(this, num_children());
+  Iterator *iterator = new Iterator(this, num_children()-1);
   activate(iterator);
   return iterator->_this();
 }
