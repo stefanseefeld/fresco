@@ -29,32 +29,29 @@
 
 using namespace Prague;
 
-/* @Method{void DLL::open(const string &name, bool now = true)}
- *
- * @Description{open the library @var{name}}}
- */
 void DLL::open(const string &name, bool now = true)
 {
   lib = name;
-  if (lib != "") {
+  if (lib != "")
+    {
 #if 1
-    handle = dlopen(lib.c_str(), now ? RTLD_NOW : RTLD_LAZY);
-    if (!handle) err = dlerror();
+      int flags = now ? RTLD_NOW : RTLD_LAZY;
+      flags |= RTLD_GLOBAL;
+      handle = dlopen(lib.c_str(), flags);
+      if (!handle) err = dlerror();
 #else /* _aix_ */
-    shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
-    if (!shl_handle) err = strerror(errno);
-    else handle = shl_handle;
+      shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
+      if (!shl_handle) err = strerror(errno);
+      else handle = shl_handle;
 #endif
-  } else {
-    handle = 0;
-    err = "Empty Filename given.";
-  }
+    }
+  else
+    {
+      handle = 0;
+      err = "Empty Filename given.";
+    }
 }
 
-/* @Method{void DLL::close()}
- *
- * @Description{close the library}
- */
 void DLL::close()
 {
 #if 1
@@ -65,10 +62,6 @@ void DLL::close()
   handle = 0;
 }
 
-/* @Method{void *DLL::resolve(const string &symbol)}
- *
- * @Description{return a reference to an object with name @var{symbol}}
- */
 void *DLL::resolve(const string &symbol)
 {
   if (!handle) return 0;

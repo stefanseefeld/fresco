@@ -49,7 +49,6 @@ GLDrawingKit::GLDrawingKit()
       exit(7);
     }
   GGIMesaMakeCurrent(context);
-
   glViewport(0, 0, drawable->width(), drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();

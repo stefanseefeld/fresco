@@ -44,6 +44,7 @@ GGI::Drawable *GGI::drawable()
 GGI::Drawable::Drawable() // throw (exception)
 {
   vis = ggiOpen(0);
+//  vis = ggiOpen("display-memory", 0);
   if (!vis) throw exception();
   mode.visible.x = mode.visible.y = GGI_AUTO;
   mode.virt.x = mode.virt.y = GGI_AUTO;
@@ -78,7 +79,7 @@ bool GGI::Drawable::nextEvent(ggi_event &event)
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   Prague::FdSet rfdset;
   rfdset.set(wakeupPipe[0]);
-  switch (ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0))
+  switch(ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0))
     {
     case 0: ggiEventRead(vis, &event, mask); return true;
     case 1:{ char c; read(wakeupPipe[0], &c, 1); }

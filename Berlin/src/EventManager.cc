@@ -25,6 +25,7 @@
 #include "Berlin/Logger.hh"
 #include "Berlin/NonPositionalFocus.hh"
 #include "Berlin/PositionalFocus.hh"
+#include "Berlin/Logger.hh"
 
 
 EventManager::EventManager(ScreenImpl *s)
@@ -47,8 +48,10 @@ bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
 
 void EventManager::nextEvent()
 {
+  SectionLog section("EventManager::nextEvent");
   ggi_event event;
-  if (!drawable->nextEvent(event)) return; // repair
+  if (!GGI::drawable()->nextEvent(event)) return; // repair
+  cout << "OOO" << endl;
   switch (event.any.type)
     {
     case evKeyPress:
