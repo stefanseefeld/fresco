@@ -27,7 +27,6 @@
 #include <Berlin/MonoGraphic.hh>
 
 class ScreenManager;
-class DamageImpl;
 class RegionImpl;
 class GLDrawingKit;
 
@@ -39,14 +38,17 @@ public:
 
   virtual void allocate(Graphic_ptr, Allocation_ptr);
 
-  Coord width();
-  Coord height();
+  virtual Coord width();
+  virtual Coord height();
+  virtual DrawingKit_ptr kit();
+  virtual void damage(Region_ptr);
+
   ScreenManager *Manager();
   Region_ptr getRegion();
 protected:
+  GLDrawingKit  *drawing;
   ScreenManager *manager;
-  RegionImpl *region;
-  DamageImpl *damage;
+  RegionImpl    *region;
 };
 
 #endif /* _ScreenImpl_hh */

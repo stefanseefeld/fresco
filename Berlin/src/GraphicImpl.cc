@@ -31,7 +31,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
-#include "Warsaw/Damage.hh"
+#include "Warsaw/Screen.hh"
 
 static double tol = 0.05;
 
@@ -232,126 +232,93 @@ GraphicImpl::GraphicImpl() {}
 GraphicImpl::~GraphicImpl() {}
 
 Graphic_ptr GraphicImpl::body() { return Graphic::_nil();}
-void GraphicImpl::body(Graphic_ptr g) { CORBA::release(g);}
-void GraphicImpl::append(Graphic_ptr g) { CORBA::release(g);}
-void GraphicImpl::prepend(Graphic_ptr g) { CORBA::release(g);}
+void GraphicImpl::body(Graphic_ptr) {}
+void GraphicImpl::append(Graphic_ptr) {}
+void GraphicImpl::prepend(Graphic_ptr) {}
 
 void GraphicImpl::addParent(Graphic_ptr parent)
 {
   MutexGuard guard(parentMutex);
-  parents.insert(Graphic_var(parent));
+  parents.insert(Graphic::_duplicate(parent));
 }
 
 void GraphicImpl::removeParent(Graphic_ptr parent)
 {
   MutexGuard guard(parentMutex);
-  parents.erase(Graphic_var(parent));
+  parents.erase(Graphic::_duplicate(parent));
 }
 
 
-// these are default implementations of the layout, picking and drawing protocol
-// which are *intended* to be overridden in children of Graphic, if you want
-// them to actually do anything remotely exciting.
+/*
+ * these are default implementations of the layout, picking and drawing protocol
+ * which are *intended* to be overridden in children of Graphic, if you want
+ * them to actually do anything remotely exciting.
+ */
 
 Transform_ptr GraphicImpl::transformation() { return Transform::_nil();}
 void GraphicImpl::request(Requisition &) {}
 void GraphicImpl::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r);}
 void GraphicImpl::shape(Region_ptr) {}
-void GraphicImpl::traverse(Traversal_ptr t) { t->visit(_this());}
+
+void GraphicImpl::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
 void GraphicImpl::draw(DrawTraversal_ptr) {}
 void GraphicImpl::pick(PickTraversal_ptr) {}
-void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a) { allocateParents(a);}
 
+void GraphicImpl::allocate(Graphic_ptr g, Allocation_ptr a) { allocateParents(a);}
 
-/** this is called by the default implementation of allocate() in
-   Graphics. Allocate() is intended to fill out an "allocation", which is a set
-   of allocation::info objects, each of which describes some place (in device
-   space) where the current graphic is "allocated", i.e. where it appears, is
-   viewable, and (most importantly) is can cause damage to some sub-region of
-   the screen image. Once it retrieves this allocation, the graphic will have a
-   set of regions which it can directly operate on. It will usually defer such
-   operation to a drawTraversal by "damaging" an appropriate subsection of the
-   allocation regions and then waiting for a traversal to call it back with a
-   draw() request.
-
-   Note: since each graphic is a shared object which may appear in multiple
-   places, possibly on multiple devices or within multiple containers,
-   allocate() is not a completely trivial operation. Indeed, it must reach up
-   through each parent recursively finding out where that parent is allocated
-   and cutting its own section out of the parental allocation. */
- 
-void GraphicImpl::allocateParents(Allocation_ptr a)
+/*
+ * this is the method which causes DrawTraversals to get queued up to run over
+ * the scene graph.  It does so by retrieving a list of all the current
+ * graphic's Allocation::infos (places on the screen where the graphic appears)
+ * and then sequentially extending the provided "damaged areas" with the
+ * current graphic's own allocated region. As the damaged regions are extended,
+ * they queue DrawTraversals in the ScreenManager, which will send them down to
+ * redraw this node when an appropriate time comes 
+ */
+void GraphicImpl::needRedraw()
 {
-  MutexGuard guard(parentMutex);
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->allocate(_this(), a);
+  AllocationImpl *allocation = new AllocationImpl;
+  allocation->_obj_is_ready(_boa());
+  allocateParents(Allocation_var(allocation->_this()));
+  RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
+  CORBA::Long size = allocation->size();
+  for (CORBA::Long i = 0; i < size; i++)
+    {
+      Allocation::Info_var info = allocation->get(i);
+      region->valid = false;
+      extension(info, Region_var(region->_this()));
+      if (region->valid) info->root->damage(Region_var(region->_this()));
+    }
+  region->_dispose();
+  allocation->_dispose();
 }
 
-/** this is the method which causes drawTraversals to get queued up to run over
-    the scene graph.  It does so by retrieving a list of all the current
-    graphic's allocation::infos (places on the screen where the graphic appears)
-    and then sequentially extending the provided "damaged areas" with the
-    current graphic's own allocated region. As the damaged regions are extended,
-    they queue drawTraversals in the screenManager, which will send them down to
-    redraw this node when an appropriate time comes */
-
-void GraphicImpl::needRedraw() {
-
-  // construct and then fill in a list of places I appear from all my parents
-  // (recursively) and iterate over this list of appearances
-  AllocationImpl *allMyAppearances = new AllocationImpl;
-  allMyAppearances->_obj_is_ready(_boa());
-  allocateParents(allMyAppearances->_this());
-  for (CORBA::Long i = 0; i < allMyAppearances->size(); i++) {    
-    Allocation::Info *oneAppearance = allMyAppearances->get(i);      
-    
-    // if this appearance even *has* a damagable region (a visible spot on a screen)
-    if (!CORBA::is_nil(oneAppearance->damaged)) {
-      
-      // then extend the damaged region further by unioning *my* allocated space
-      // into it, since I have been damaged (I need redrawing).
-      RegionImpl *regionOfMyAppearance = new RegionImpl;
-      regionOfMyAppearance->_obj_is_ready(_boa());
-      extension(*oneAppearance, regionOfMyAppearance->_this());
-      if (regionOfMyAppearance->valid) {
-	oneAppearance->damaged->extend(regionOfMyAppearance->_this());
-      }      
-      // clean up
-      regionOfMyAppearance->_dispose();
+/* this does almost exactly the same as needRedraw(), only it extends the
+ * parent-supplied damage region by a user-supplied subregion of the current
+ * graphic. It does this by copying and then transforming the user-supplied
+ * region to fit within the transformation of each Allocation::info received
+ * from the parents 
+ */
+void GraphicImpl::needRedrawRegion(Region_ptr region)
+{
+  if (region->defined())
+    {
+      AllocationImpl *allocation = new AllocationImpl;
+      allocation->_obj_is_ready(_boa());
+      allocateParents(Allocation_var(allocation->_this()));
+      RegionImpl *dr = new RegionImpl;
+      dr->_obj_is_ready(_boa());
+      for (CORBA::Long i = 0; i < allocation->size(); i++)
+	{
+	  Allocation::Info_var info = allocation->get(i);
+	  dr->copy(Region::_duplicate(region));
+	  dr->applyTransform(Transform::_duplicate(info->transformation));
+	  info->root->damage(Region_var(dr->_this()));
+	}
+      dr->_dispose();
+      allocation->_dispose();
     }
-  }
-  allMyAppearances->_dispose();
-}
-
-/** this does almost exactly the same as needRedraw(), only it extends the
-    parent-supplied damage region by a user-supplied subregion of the current
-    graphic. It does this by copying and then transforming the user-supplied
-    region to fit within the transformation of each allocation::info received
-    from the parents */
-
-void GraphicImpl::needRedrawRegion(Region_ptr damagedSubregion) {
-  if (damagedSubregion->defined()) {    
-
-    // get a list of my appearances on the screen, as in needRedraw()
-    AllocationImpl *allMyAppearances = new AllocationImpl;
-    allMyAppearances->_obj_is_ready(_boa());
-    allocateParents(allMyAppearances->_this());
-    for (CORBA::Long i = 0; i < allMyAppearances->size(); i++) {
-      Allocation::Info *oneAppearance = allMyAppearances->get(i);
-      if (!CORBA::is_nil(oneAppearance->damaged)) {
-
-	// build new temporrary copy of subregion, transform it to fit in 
-	// allocation, and then extend damage with this transformed temporary
-	RegionImpl *tempSubregion = new RegionImpl;
-	tempSubregion->_obj_is_ready(_boa());
-	tempSubregion->copy(damagedSubregion);
-	tempSubregion->applyTransform(oneAppearance->transformation);
-	oneAppearance->damaged->extend(tempSubregion->_this());
-	tempSubregion->_dispose();
-      }
-    }
-    allMyAppearances->_dispose();
-  }
 }
 
 void GraphicImpl::needResize()
@@ -441,12 +408,12 @@ void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr r)
   if (!CORBA::is_nil(info.allocation))
     {
       if (CORBA::is_nil(info.transformation))
-	r->mergeUnion(Region::_duplicate(info.allocation));
+	r->mergeUnion(info.allocation);
       else
 	{
-	  RegionImpl *tmp = new RegionImpl(Region::_duplicate(info.allocation), Transform::_duplicate(info.transformation));
+	  RegionImpl *tmp = new RegionImpl(info.allocation, info.transformation);
 	  tmp->_obj_is_ready(CORBA::BOA::getBOA());
-	  r->mergeUnion(tmp->_this());
+	  r->mergeUnion(Region_var(tmp->_this()));
 	  tmp->_dispose();
 	}
     }
@@ -582,3 +549,27 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
   return delta;
 }
 
+/*
+ * this is called by the default implementation of allocate() in
+ * Graphics. Allocate() is intended to fill out an "allocation", which is a set
+ * of allocation::info objects, each of which describes some place (in device
+ * space) where the current graphic is "allocated", i.e. where it appears, is
+ * viewable, and (most importantly) is can cause damage to some sub-region of
+ * the screen image. Once it retrieves this allocation, the graphic will have a
+ * set of regions which it can directly operate on. It will usually defer such
+ * operation to a drawTraversal by "damaging" an appropriate subsection of the
+ * allocation regions and then waiting for a traversal to call it back with a
+ * draw() request.
+ *
+ * Note: since each graphic is a shared object which may appear in multiple
+ * places, possibly on multiple devices or within multiple containers,
+ * allocate() is not a completely trivial operation. Indeed, it must reach up
+ * through each parent recursively finding out where that parent is allocated
+ * and cutting its own section out of the parental allocation. 
+ */
+void GraphicImpl::allocateParents(Allocation_ptr allocation)
+{
+  MutexGuard guard(parentMutex);
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i)->allocate(Graphic_var(_this()), allocation);
+}

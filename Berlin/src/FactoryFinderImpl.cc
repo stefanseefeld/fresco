@@ -27,46 +27,44 @@
 // placeholder for the time being until we come up with a better
 // factory naming scheme built on hostnames or something.
 
-CosLifeCycle::Factories * FactoryFinderImpl::find_factories ( const CosLifeCycle::Key & factory_key ) {
-  CosLifeCycle::GenericFactory_var fact = CosLifeCycle::GenericFactory::_narrow((*myFactories)[0]);
-  if ((!CORBA::is_nil(fact)) && (fact->supports(factory_key))) {
-    return myFactories;
-  } else {
-    throw CosLifeCycle::NoFactory();
-  }
+CosLifeCycle::Factories * FactoryFinderImpl::find_factories ( const CosLifeCycle::Key &key)
+{
+  CosLifeCycle::GenericFactory_var fact = CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
+  if ((!CORBA::is_nil(fact)) && (fact->supports(key))) return factories;
+  else throw CosLifeCycle::NoFactory();
 }
 
 
-FactoryFinderImpl::FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr theFactory) {  
-  myFactories = new CosLifeCycle::Factories();  
-  myFactories->length(1);
-  (*myFactories)[0] = theFactory;
+FactoryFinderImpl::FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr factory)
+{
+  factories = new CosLifeCycle::Factories();  
+  factories->length(1);
+  (*factories)[0] = factory;
 }
 
 //These two global variables are for storing the
 //static member data in FactoryFinderImpl...
-Mutex FactoryFinderImpl::_instance_mutex;
-FactoryFinderImpl *FactoryFinderImpl::_instance;
+Mutex FactoryFinderImpl::mutex;
+FactoryFinderImpl *FactoryFinderImpl::instance;
 
 // this takes care of singleton work.
-FactoryFinderImpl *FactoryFinderImpl::getInstance(GenericFactoryImpl *theFactory)
+FactoryFinderImpl *FactoryFinderImpl::Instance(GenericFactoryImpl *factory)
 {
-  MutexGuard guard(_instance_mutex);
-  if (!_instance)
+  MutexGuard guard(mutex);
+  if (!instance)
     {
-      _instance = new FactoryFinderImpl(theFactory->_this());
-      _instance->_obj_is_ready(theFactory->_boa());
+      instance = new FactoryFinderImpl(CosLifeCycle::GenericFactory_var(factory->_this()));
+      instance->_obj_is_ready(factory->_boa());
     } 
-  return _instance;
+  return instance;
 }
 
 // this is the dreaded singleton-which-might-explode method.
-FactoryFinderImpl *FactoryFinderImpl::getInstance() throw (unInitializedGenericFactoryException)
+FactoryFinderImpl *FactoryFinderImpl::Instance() throw (unInitializedGenericFactoryException)
 {
-  MutexGuard guard(_instance_mutex);
-  if (!_instance)
-    throw unInitializedGenericFactoryException();
-  return _instance;
+  MutexGuard guard(mutex);
+  if (!instance) throw unInitializedGenericFactoryException();
+  return instance;
 }
 
 

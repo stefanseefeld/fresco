@@ -87,15 +87,14 @@ Coord TransformImpl::det()
   return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
 }
 
-void TransformImpl::copy(Transform_ptr t)
+void TransformImpl::copy(Transform_ptr transform)
 {
-  if (CORBA::is_nil(t)) init();
+  if (CORBA::is_nil(transform)) init();
   else
     {
       Transform::Matrix m;
-      t->storeMatrix(m);
+      transform->storeMatrix(m);
       loadMatrix(m);
-      CORBA::release(t);
     }
 }
 
@@ -126,9 +125,8 @@ void TransformImpl::storeMatrix(Matrix m)
   m[3][2] = mat[3][2]; m[3][3] = mat[3][3];
 }
 
-CORBA::Boolean TransformImpl::equal(Transform_ptr t)
+CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
 {
-  Transform_var transform = t;
   if (!valid) recompute();
   if (identity) return CORBA::is_nil(transform) || transform->Identity();
   if (CORBA::is_nil(transform) || transform->Identity()) return false;
@@ -210,9 +208,8 @@ void TransformImpl::translate(const Vertex &v)
   modified();
 }
 
-void TransformImpl::premultiply(Transform_ptr t)
+void TransformImpl::premultiply(Transform_ptr transform)
 {
-  Transform_var transform = t;
   if (!CORBA::is_nil(transform) && !transform->Identity())
     {
       Transform::Matrix m;
@@ -234,9 +231,8 @@ void TransformImpl::premultiply(Transform_ptr t)
     }
 }    
 
-void TransformImpl::postmultiply(Transform_ptr t)
+void TransformImpl::postmultiply(Transform_ptr transform)
 {
-  Transform_var transform = t;
   if (!CORBA::is_nil(transform) && !transform->Identity())
     {
       Transform::Matrix m;

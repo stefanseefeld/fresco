@@ -34,46 +34,37 @@
 // copy produces a new clone on the machine found by the FactoryFinder "there", which 
 // in most cases will actually be "here". But anyway, it copies state. That's what's important!
 
-CosLifeCycle::LifeCycleObject_ptr CloneableImpl::copy(CosLifeCycle::FactoryFinder_ptr t, 
+CosLifeCycle::LifeCycleObject_ptr CloneableImpl::copy(CosLifeCycle::FactoryFinder_ptr there,
 						      const CosLifeCycle::Criteria &the_criteria)
 {
-  CosLifeCycle::FactoryFinder_var there = t;
   CosLifeCycle::Key newObjectName;
   newObjectName.length(1);
   newObjectName[0].id   = (const char*) this->NP_IRRepositoryId();; 
   newObjectName[0].kind = (const char*) "Object"; 
   
   CosLifeCycle::Factories *factories = there->find_factories(newObjectName);
-  CosLifeCycle::GenericFactory_var theFactory = 
-    CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
+  CosLifeCycle::GenericFactory_var theFactory =  CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
 
-  if (CORBA::is_nil(theFactory)) {
-    throw CosLifeCycle::NotCopyable();
-  }
-
+  if (CORBA::is_nil(theFactory)) throw CosLifeCycle::NotCopyable();
   CORBA::Object_var newObject = theFactory->create_object(newObjectName, the_criteria);
   
   // do Cloneable-specific things to the new object
   Cloneable_var newClone = Cloneable::_narrow(newObject);
-  if (!CORBA::is_nil(newClone)) {
-
-    // !!!FIXME!!! note: hot-swap is BROKEN at the moment, precisely because of this.
-    // we need to resolve how we're gonna do this.
-    //
-    //     this->copyStateToOther(newClone);
-    //     newClone->mySession(this->mySession());
-
-    return Cloneable::_duplicate(newClone);
-  } else {
-    CosLifeCycle::LifeCycleObject_var newLifeCycle = 
-      CosLifeCycle::LifeCycleObject::_narrow(newObject);
-    if (!CORBA::is_nil(newLifeCycle)) {
-      return CosLifeCycle::LifeCycleObject::_duplicate(newLifeCycle);
-    } else {
-      // well, we tried!
-      throw CosLifeCycle::NotCopyable();
+  if (!CORBA::is_nil(newClone))
+    {
+      // !!!FIXME!!! note: hot-swap is BROKEN at the moment, precisely because of this.
+      // we need to resolve how we're gonna do this.
+      //
+      //     this->copyStateToOther(newClone);
+      //     newClone->mySession(this->mySession());
+      return Cloneable::_duplicate(newClone);
     }
-  }
+  else
+    {
+      CosLifeCycle::LifeCycleObject_var newLifeCycle = CosLifeCycle::LifeCycleObject::_narrow(newObject);
+      if (!CORBA::is_nil(newLifeCycle)) return CosLifeCycle::LifeCycleObject::_duplicate(newLifeCycle);
+      else throw CosLifeCycle::NotCopyable();      // well, we tried!
+    }
   return CosLifeCycle::LifeCycleObject::_nil();
 }
 
@@ -82,9 +73,8 @@ CosLifeCycle::LifeCycleObject_ptr CloneableImpl::copy(CosLifeCycle::FactoryFinde
 // new copy, and (b) destroys itself once it's made the copy, effectively migrating the object.
 // also, it doesn't actually return anything. It's a "go there" method.
 
-void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr t, 
-			  const CosLifeCycle::Criteria & the_criteria ) {
-  CosLifeCycle::FactoryFinder_var there = t;
+void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr there, const CosLifeCycle::Criteria &the_criteria)
+{
   // do some thread-coordinating magic
   omniLC::ThreadLC zz(this);
 
@@ -105,26 +95,28 @@ void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr t,
 
 // clone produces a copy of an object on the same server as we're currently running.
 // it's just a chorthand for an otherwise tedious call.
-Cloneable_ptr CloneableImpl::clone() {
+Cloneable_ptr CloneableImpl::clone()
+{
   CosLifeCycle::Criteria crit;
-//   CORBA::Object_var newObj = this->copy(this->mySession()->myFactoryFinder(), crit);
+  //   CORBA::Object_var newObj = this->copy(this->mySession()->myFactoryFinder(), crit);
   CORBA::Object_var newObj;
-  Cloneable_ptr newClone = Cloneable::_narrow(newObj);
-  return newClone;
+  return Cloneable::_narrow(newObj);
 }
 
 
 // reload is shorthand, again, for in-place hot swapping of an object with a new clone.
 // you use it when you're reloading a plugin from disk. obj->reload();
-void CloneableImpl::reload() {
+void CloneableImpl::reload()
+{
   CosLifeCycle::Criteria crit;
-//   this->move(this->mySession()->myFactoryFinder(), crit);
+  //   this->move(this->mySession()->myFactoryFinder(), crit);
 }
 
 
 // this is the simplest possible "blow self up" method.
-void CloneableImpl::remove (  ) {
-   CORBA::BOA::getBOA()->dispose(this);
+void CloneableImpl::remove ()
+{
+  CORBA::BOA::getBOA()->dispose(this);
 }
 
 // garbage collection to be implemented here.
@@ -148,5 +140,4 @@ void CloneableImpl::forget() {};
 
 // by default, a clone is unmanaged. children of Cloneable
 // are going to have to register their thread- and graphic-ness
-void CloneableImpl::registerWithMyManagers() {
-}
+void CloneableImpl::registerWithMyManagers() {}

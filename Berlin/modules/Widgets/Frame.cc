@@ -33,9 +33,9 @@ Frame::Frame(Coord t, const Color &c, type ty)
 
 Frame::~Frame() {}
 
-void Frame::draw(DrawTraversal_ptr dt)
+void Frame::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = dt->allocation();
+  Region_var allocation = traversal->allocation();
   Vertex u, l;
   allocation->bounds(l, u);
   Color light, dark;
@@ -54,7 +54,7 @@ void Frame::draw(DrawTraversal_ptr dt)
       dark = brightness(color,-1.0);
       break;
     }
-  Bevel::rect(dt, thickness, color, light, dark, l.x, u.x, l.y, u.y);
+  Bevel::rect(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y);
 }
 
 DynamicFrame::DynamicFrame(Coord t, const Color &c, type t1, type t2, Telltale::Flag m)
@@ -64,17 +64,17 @@ DynamicFrame::DynamicFrame(Coord t, const Color &c, type t1, type t2, Telltale::
 
 DynamicFrame::~DynamicFrame()
 {
-  if (!CORBA::is_nil(telltale)) telltale->detach(skeletonize(Observer)::_this());
+  if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
 }
 
 void DynamicFrame::attach(Telltale_ptr subject)
 {
-  if (!CORBA::is_nil(telltale)) telltale->detach(skeletonize(Observer)::_this());
+  if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
   telltale = subject;
-  telltale->attach(skeletonize(Observer)::_this());
+  telltale->attach(_this());
 }
 
-void DynamicFrame::update(Subject_ptr subject)
+void DynamicFrame::update(Subject_ptr)
 {
   bool flag = telltale->test(mask);
   if (flag == on) return;

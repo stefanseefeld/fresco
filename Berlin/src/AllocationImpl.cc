@@ -22,7 +22,7 @@
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Warsaw/Damage.hh"
+#include "Warsaw/Screen.hh"
 
 AllocationImpl::AllocationImpl()
 {
@@ -37,14 +37,14 @@ AllocationImpl::~AllocationImpl()
     }
 }
 
-void AllocationImpl::add(Region_ptr region, Damage_ptr damage)
+void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
   State state;
   state.allocation = new RegionImpl(region, Transform::_nil());
   state.allocation->_obj_is_ready(_boa());
   state.transformation = new TransformImpl;
   state.transformation->_obj_is_ready(_boa());
-  state.damage = damage;
+  state.root = Screen::_duplicate(root);
   list.push_back(state);
 }
 
@@ -55,6 +55,6 @@ Allocation::Info *AllocationImpl::get(CORBA::Long l)
   Allocation::Info *info = new Allocation::Info;
   info->allocation = list[l].allocation->_this();
   info->transformation = list[l].transformation->_this();
-  info->damaged = list[l].damage;
+  info->root = list[l].root;
   return info;
 }

@@ -26,23 +26,10 @@
 #include "Warsaw/Region.hh"
 
 DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Region_ptr r)
-  : TraversalImpl(r), drawingkit(kit), drawable(drawingkit->getDrawable()), clipping(r) {}
+  : TraversalImpl(r), drawingkit(kit), drawable(Drawable::_duplicate(drawingkit->getDrawable())), clipping(r) {}
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
-  : TraversalImpl(t), drawingkit(t.drawingkit), drawable(t.drawable), clipping(drawable->clipping()) {}
+  : TraversalImpl(t), drawingkit(t.drawingkit), drawable(t.drawable), clipping(t.clipping) {}
 DrawTraversalImpl::~DrawTraversalImpl() {}
-
-CORBA::Boolean DrawTraversalImpl::intersects()
-{
-  return clipping->intersects(allocation());
-}
-
-void DrawTraversalImpl::visit(Graphic_ptr g)
-{
-  g->draw(_this());
-  CORBA::release(g);
-}
-
-DrawingKit_ptr DrawTraversalImpl::kit()
-{
-  return DrawingKit::_duplicate(drawingkit);
-}
+CORBA::Boolean DrawTraversalImpl::intersects() { return clipping->intersects(allocation());}
+void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}
+DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawingkit);}

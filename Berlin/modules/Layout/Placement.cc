@@ -61,7 +61,7 @@ void Placement::traverse(Traversal_ptr t)
       TransformImpl *tx = new TransformImpl;
       tx->_obj_is_ready(_boa());
       normalTransform(result, tx);
-      t->traverseChild(body(), result->_this(), tx->_this());
+      t->traverseChild(body(), Region_var(result->_this()), Transform_var(tx->_this()));
       tx->_dispose();
       result->_dispose();
     }
@@ -94,8 +94,8 @@ void Placement::allocateChild(Allocation::Info &a)
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
   normalTransform(region, tx);
-  a.transformation->premultiply(tx->_this());
-  a.allocation->copy(region->_this());
+  a.transformation->premultiply(Transform_var(tx->_this()));
+  a.allocation->copy(Region_var(region->_this()));
   tx->_dispose();
 }
 

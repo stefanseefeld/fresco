@@ -32,70 +32,58 @@
 
 // static singletons mapping
 map<string, CosLifeCycle::LifeCycleObject_var> ServerContextImpl::singletons;
-Mutex ServerContextImpl::singletons_mutex;
-Stage_var ServerContextImpl::ourSceneRoot;
+Mutex ServerContextImpl::singletonsMutex;
+Stage_var ServerContextImpl::stage;
 
-ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, 
-				     ClientContext_ptr theClient, Stage_ptr r)
+ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr ff, ClientContext_ptr c, Stage_ptr s)
+  : ffinder(ff), cContext(ClientContext::_duplicate(c))
 {
-    _ff = theFactoryFinder;
-    _client = theClient;
-    Stage_var stage = r;
-    MutexGuard guard(singletons_mutex);
-    if (CORBA::is_nil(ourSceneRoot)) ourSceneRoot = stage;
+  MutexGuard guard(singletonsMutex);
+  if (CORBA::is_nil(stage)) stage = Stage::_duplicate(s);
 }
 
-Stage_ptr ServerContextImpl::sceneRoot() {
-    MutexGuard guard(singletons_mutex);
-    return Stage::_duplicate(ourSceneRoot);
+Stage_ptr ServerContextImpl::root()
+{
+  MutexGuard guard(singletonsMutex);
+  return Stage::_duplicate(stage);
 }
 
-CosLifeCycle::FactoryFinder_ptr ServerContextImpl::myFactoryFinder() {
-  return CosLifeCycle::FactoryFinder::_duplicate(_ff);
+CosLifeCycle::FactoryFinder_ptr ServerContextImpl::factoryFinder()
+{
+  return CosLifeCycle::FactoryFinder::_duplicate(ffinder);
 }
 
-
-
-ClientContext_ptr ServerContextImpl::myClient() {
-  return ClientContext::_duplicate(_client);
+ClientContext_ptr ServerContextImpl::client()
+{
+  return ClientContext::_duplicate(cContext);
 }
 
 // this will nuke all allocated objects if the client has died, and then tell the caller 
 // (ServerContextManager) who will most likely destroy this ServerContext.
 
-bool ServerContextImpl::verify() {
-  SectionLog section(Logger::layout, "ServerContextImpl::verify");
-  MutexGuard guard (_ServerContext_mutex);
-  bool clientIsStillThere = true;
+bool ServerContextImpl::ping()
+{
+  MutexGuard guard (mutex);
+  bool alive = true;
   try
-    {      
-      SectionLog section(Logger::layout, "try");
-      if (CORBA::is_nil(_client))
-	clientIsStillThere = false;
-      else
-	clientIsStillThere = _client->stillAlive();
+    {
+      if (CORBA::is_nil(cContext)) alive = false;
+      else alive = cContext->ping();
     }
   catch (...)
     {
-      SectionLog section(Logger::layout, "catch");
-      clientIsStillThere = false;
+      alive = false;
     }
-  if (!clientIsStillThere)
+  if (!alive)
     {
-      SectionLog section(Logger::layout, "!clientIsStillThere");
-      typedef vector<CORBA::Object_var>::iterator VI;
-      for(VI i = allocatedObjects.begin(); i != allocatedObjects.end(); i++)
+      for(olist_t::iterator i = objects.begin(); i != objects.end(); i++)
 	{
 	  CosLifeCycle::LifeCycleObject_var p = CosLifeCycle::LifeCycleObject::_narrow(*i);
-	  if (!CORBA::is_nil(p))
-	    {
-	      p->remove();
-	    }
+	  if (!CORBA::is_nil(p)) p->remove();
 	}
     }
-  return clientIsStillThere;
+  return alive;
 }
-    
 
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
@@ -103,62 +91,54 @@ void ServerContextImpl::setSingleton(const char *name, CosLifeCycle::LifeCycleOb
   throw (SecurityException, SingletonFailureException)
 {
   //  this->delSingleton(name);
-  MutexGuard guard (singletons_mutex);
+  MutexGuard guard (singletonsMutex);
   singletons[name] = singleton;
 }
-
 
 void ServerContextImpl::delSingleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  MutexGuard guard (singletons_mutex);
+  MutexGuard guard (singletonsMutex);
   map<string, CosLifeCycle::LifeCycleObject_var>::iterator p = singletons.find(name);
-  if (p != singletons.end()) {
-    p->second->remove();
-    singletons.erase(p);
-  } 
+  if (p != singletons.end())
+    {
+      p->second->remove();
+      singletons.erase(p);
+    }
 }
-
 
 CosLifeCycle::LifeCycleObject_ptr ServerContextImpl::getSingleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  MutexGuard guard (singletons_mutex);
+  MutexGuard guard (singletonsMutex);
   map<string, CosLifeCycle::LifeCycleObject_var>::iterator p = singletons.find(name);
   if (p != singletons.end()) return CosLifeCycle::LifeCycleObject::_duplicate(p->second);
   throw SingletonFailureException();
 }
 
-
 // this method should eventually do some kind of checking on the
 // ClientContext to make sure they are allowed to construct objects on
 // this server.
 
-CORBA::Object_ptr ServerContextImpl::create(const char* interfaceName)    
+CORBA::Object_ptr ServerContextImpl::create(const char *interfaceName)    
   throw (SecurityException, CreationFailureException)
 {
-  MutexGuard guard(_ServerContext_mutex);
-
+  MutexGuard guard(mutex);
   // make the string into a key
-  CosLifeCycle::Key objectKey;
-  objectKey.length(1);
-  objectKey[0].id   =  interfaceName; 
-  objectKey[0].kind = (const char*) "Object"; 
+  CosLifeCycle::Key key;
+  key.length(1);
+  key[0].id   =  interfaceName; 
+  key[0].kind = (const char*) "Object"; 
 
-  CosLifeCycle::Criteria crit;
+  CosLifeCycle::Criteria criteria;
   
-  CosLifeCycle::Factories *factories =  _ff->find_factories(objectKey);
-  CosLifeCycle::GenericFactory_var fact = CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
+  CosLifeCycle::Factories *factories = ffinder->find_factories(key);
+  CosLifeCycle::GenericFactory_var factory = CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
 
-  if (CORBA::is_nil(fact)) {
-    throw CreationFailureException();
-  }
-
-  CORBA::Object_var newObj = fact->create_object(objectKey, crit);
-  
+  if (CORBA::is_nil(factory)) throw CreationFailureException();
+  CORBA::Object_var newObj = factory->create_object(key, criteria);
   // save a reference for future destroying purposes  
-  allocatedObjects.push_back(newObj); 
-
+  objects.push_back(newObj);
   return CORBA::Object::_duplicate(newObj);
 }
 

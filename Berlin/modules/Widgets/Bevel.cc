@@ -20,10 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Widget/Bevel.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/Pencil.hh>
-#include <Berlin/TransformImpl.hh>
+#include "Widget/Bevel.hh"
+#include "Warsaw/Traversal.hh"
+#include "Warsaw/Pencil.hh"
+#include "Berlin/TransformImpl.hh"
+#include "Berlin/Logger.hh"
 
 Bevel::Bevel(Coord t, Alignment x, Alignment y, bool h, bool v)
   : thickness(t), xalign(x), yalign(y), hmargin(h), vmargin(v)
@@ -39,6 +40,7 @@ Bevel::~Bevel()
 
 void Bevel::request(Requisition &requisition)
 {
+  SectionLog section(Logger::layout, "Bevel::request");
   MonoGraphic::request(requisition);
   if (hmargin || vmargin)
     {
@@ -60,10 +62,9 @@ void Bevel::request(Requisition &requisition)
     }
 }
 
-void Bevel::traverse(Traversal_ptr t)
+void Bevel::traverse(Traversal_ptr traversal)
 {
-  Traversal_var traversal = t;
-  traversal->visit(_this());
+  traversal->visit(Graphic_var(_this()));
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
@@ -75,23 +76,17 @@ void Bevel::traverse(Traversal_ptr t)
 	  tx->_obj_is_ready(_boa());
 	  info.transformation = tx->_this();
 	  allocateChild(info);
-	  traversal->traverseChild(Graphic::_duplicate(child),
-				   Region::_duplicate(info.allocation),
-				   Transform::_duplicate(info.transformation));
+	  traversal->traverseChild(child, info.allocation, info.transformation);
 	  tx->_dispose();
 	}
-      else
-	MonoGraphic::traverse(Traversal::_duplicate(traversal));
+      else MonoGraphic::traverse(traversal);
     }
 }
 
-void Bevel::extension(const Allocation::Info &info, Region_ptr r)
+void Bevel::extension(const Allocation::Info &info, Region_ptr region)
 {
-  Region_var region = r;
-  if (!CORBA::is_nil(info.allocation))
-    defaultExtension(info, region);
-  else
-    MonoGraphic::extension(info, Region::_duplicate(region));
+  if (!CORBA::is_nil(info.allocation)) defaultExtension(info, region);
+  else MonoGraphic::extension(info, region);
 }
 
 void Bevel::allocateChild(Allocation::Info &info)
@@ -112,7 +107,7 @@ void Bevel::allocateChild(Allocation::Info &info)
   r->lower.y -= o.y; r->upper.y -= o.y;
   r->lower.z -= o.z; r->upper.z -= o.z;
   info.transformation->translate(o);
-  info.allocation->copy(r->_this());
+  info.allocation->copy(Region_var(r->_this()));
   r->_dispose();
   
   Vertex delta;
@@ -131,7 +126,7 @@ void Bevel::allocateChild(Allocation::Info &info)
   delta.y = a.begin - allocation->lower.y;
   delta.z = 0;
   
-  info.allocation->copy(allocation->_this());
+  info.allocation->copy(Region_var(allocation->_this()));
   info.transformation->translate(delta);
 }
 

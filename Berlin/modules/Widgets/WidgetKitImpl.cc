@@ -57,7 +57,7 @@ TelltaleConstraint_ptr WidgetKitImpl::selectionRequired()
 
 Telltale_ptr WidgetKitImpl::normalTelltale()
 {
-  TelltaleImpl *telltale = new TelltaleImpl(0);
+  TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
   telltale->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
   subjects.push_back(telltale);
   return telltale->_this();

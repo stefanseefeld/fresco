@@ -25,13 +25,13 @@
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/DamageImpl.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 
 #include "Warsaw/Traversal.hh"
 #include <iostream>
 
-ScreenImpl::ScreenImpl(GLDrawingKit *drawing, Coord w, Coord h)
+ScreenImpl::ScreenImpl(GLDrawingKit *d, Coord w, Coord h)
+  : drawing(d)
 {
   manager = new ScreenManager(this, drawing);
   region = new RegionImpl;
@@ -39,14 +39,10 @@ ScreenImpl::ScreenImpl(GLDrawingKit *drawing, Coord w, Coord h)
   region->lower.x = region->lower.y = region->lower.z = 0;
   region->upper.x = w, region->upper.y = h, region->upper.z = 0;
   region->_obj_is_ready(CORBA::BOA::getBOA());
-  damage = new DamageImpl(manager);
-  damage->_obj_is_ready(CORBA::BOA::getBOA());
-  // damage->extend(region->_this());
 }
 
 ScreenImpl::~ScreenImpl()
 {
-  damage->_dispose();
   region->_dispose();
   delete manager;
 }
@@ -56,8 +52,11 @@ void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr a)
   Graphic_var child = g;
   Allocation_var allocation = a;
   if (child != Graphic_var(body())) return;
-  allocation->add(region->_this(), damage->_this());
+  allocation->add(Region_var(region->_this()), Screen_var(_this()));
 }
+
+void ScreenImpl::damage(Region_ptr region) { manager->damage(region);}
+DrawingKit_ptr ScreenImpl::kit() { return drawing->_this();}
 
 ScreenManager *ScreenImpl::Manager() { return manager;}
 Region_ptr ScreenImpl::getRegion() {return region->_this();}

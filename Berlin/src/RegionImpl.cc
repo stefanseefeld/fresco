@@ -48,12 +48,11 @@ RegionImpl::RegionImpl(const RegionImpl &region)
     zalign(region.zalign)
 {}
 
-RegionImpl::RegionImpl(Region_ptr a, Transform_ptr t)
+RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
 {
-  RegionImpl::copy(a);
-  Transform_var transformation = t;
+  RegionImpl::copy(region);
   if (!CORBA::is_nil(transformation) && !transformation->Identity())
-    RegionImpl::applyTransform(Transform::_duplicate(transformation));
+    RegionImpl::applyTransform(transformation);
 }
 
 RegionImpl::~RegionImpl() {}
@@ -93,9 +92,8 @@ CORBA::Boolean RegionImpl::containsPlane(const Vertex &v, Axis a)
   return b;
 }
 
-CORBA::Boolean RegionImpl::intersects(Region_ptr r)
+CORBA::Boolean RegionImpl::intersects(Region_ptr region)
 {
-  Region_var region = r;
   if (valid)
     {
       Vertex l, u;
@@ -105,9 +103,8 @@ CORBA::Boolean RegionImpl::intersects(Region_ptr r)
   return false;
 }
 
-void RegionImpl::copy(Region_ptr r)
+void RegionImpl::copy(Region_ptr region)
 {
-  Region_var region = r;
   if (!CORBA::is_nil(region) && region->defined())
     {
       Region::Allotment x, y, z;
@@ -127,9 +124,8 @@ void RegionImpl::copy(Region_ptr r)
     }
 }
 
-void RegionImpl::mergeIntersect(Region_ptr r)
+void RegionImpl::mergeIntersect(Region_ptr region)
 {
-  Region_var region = r;
   if (region->defined())
     {
       if (valid)
@@ -139,13 +135,12 @@ void RegionImpl::mergeIntersect(Region_ptr r)
 	  mergeMax(lower, l);
 	  mergeMin(upper, u);
         }
-      else copy(Region::_duplicate(region));
+      else copy(region);
     }
 }
 
-void RegionImpl::mergeUnion(Region_ptr r)
+void RegionImpl::mergeUnion(Region_ptr region)
 {
-  Region_var region = r;
   if (region->defined())
     {
       if (valid)
@@ -155,27 +150,25 @@ void RegionImpl::mergeUnion(Region_ptr r)
 	  mergeMin(lower, l);
 	  mergeMax(upper, u);
         }
-      else copy(Region::_duplicate(region));
+      else copy(region);
     }
 }
 
-void RegionImpl::subtract(Region_ptr r)
+void RegionImpl::subtract(Region_ptr region)
 {
   // not implemented
-  CORBA::release(r);
 }
 
-void RegionImpl::applyTransform(Transform_ptr t)
+void RegionImpl::applyTransform(Transform_ptr transformation)
 {
-  Transform_var transform;
   if (valid)
     {
       Vertex o;
 
       origin(o);
-      transform->transformVertex(o);
+      transformation->transformVertex(o);
       Transform::Matrix m;
-      transform->storeMatrix(m);
+      transformation->storeMatrix(m);
 
       Coord w = upper.x - lower.x;
       Coord h = upper.y - lower.y;
@@ -186,7 +179,7 @@ void RegionImpl::applyTransform(Transform_ptr t)
 
       // transform the center
 
-      t->transformVertex(center);
+      transformation->transformVertex(center);
 
       // optimized computation of new width and height
       Coord nw = Coord(Math::abs(w * m[0][0]) + Math::abs(h * m[1][0]));

@@ -59,9 +59,8 @@ public:
   ~GenericFactoryImpl();
   
   // stuff declared in IDL
-  virtual CORBA::Boolean  supports ( const CosLifeCycle::Key & k );
-  virtual CORBA::Object_ptr create_object 
-  ( const CosLifeCycle::Key & k, const CosLifeCycle::Criteria & the_criteria );
+  virtual CORBA::Boolean  supports(const CosLifeCycle::Key &);
+  virtual CORBA::Object_ptr create_object(const CosLifeCycle::Key &, const CosLifeCycle::Criteria &);
   
   // this builds the plugin table
   void scan(const char *);
@@ -70,11 +69,10 @@ protected:
   
   // this is a simple helper function to make it easier to find the
   // LifeCycyleInfo object in criteria
-  omniLifeCycleInfo_ptr extractLifeCycleFromCriteria(const CosLifeCycle::Criteria &criteria);
+  omniLifeCycleInfo_ptr extractLifeCycleFromCriteria(const CosLifeCycle::Criteria &);
   
   // this does the call into the function pointer
-  CloneableImpl *loadPlugin(const CosLifeCycle::Key &k) 
-    throw (noSuchPluginException);
+  CloneableImpl *loadPlugin(const CosLifeCycle::Key &) throw (noSuchPluginException);
   
   // lock the whole thing during a load.
   Mutex mutex;

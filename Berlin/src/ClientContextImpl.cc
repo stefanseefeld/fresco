@@ -32,7 +32,8 @@
 #include <iostream>
 #include <string>
 
-ClientContextImpl::ClientContextImpl() {
+ClientContextImpl::ClientContextImpl()
+{
   user = new Prague::User();
 };  
   
@@ -45,8 +46,4 @@ Unistring *ClientContextImpl::userName()
   return ustring;
 }
 
-CORBA::Boolean ClientContextImpl::stillAlive()
-{
-  SectionLog section(Logger::layout, "ClientContextImpl::stillAlive");
-  return (unsigned char)true;
-}
+CORBA::Boolean ClientContextImpl::ping() { return (unsigned char)true;}

@@ -55,11 +55,6 @@ public:
 private:
   struct _streamlock;
   friend struct _streamlock;
-//   static void write(group g, const T &t)
-//     {
-//       los << t;
-//       if (active[g]) cerr << t;
-//     }
   template <class T>
   static void write(group g, const T &t)
     {
@@ -96,12 +91,12 @@ private:
     _streamlock(group gg) : owner(true), g(gg) { Logger::mutex.lock();}
     _streamlock(const _streamlock &sl) : owner(true), g(sl.g) { sl.owner = false;}
     ~_streamlock() { if (owner) Logger::mutex.unlock();}
-    _streamlock operator << (ostream & (func)(ostream &)) { Logger::write(g, func); return *this;}
-    template <class T>
-    _streamlock operator << (const T &t) { Logger::write(g, t); return *this;}
     mutable bool owner;
     group g;
   };
+  friend _streamlock operator << (const _streamlock &sl, ostream & (func)(ostream &)) { Logger::write(sl.g, func); return sl;}
+  template <class T>
+  friend _streamlock operator << (const _streamlock &sl, const T &t) { Logger::write(sl.g, t); return sl;}
   static bool active[numGroups];
   static const char *groupname[numGroups]; 
   static logbuf buf;

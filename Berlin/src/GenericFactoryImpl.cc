@@ -42,7 +42,8 @@ public:
       char *(*getName)() = (char *(*)()) resolve("getName");
       if (!getName)
 	{
-	  Logger::log(Logger::loader) << "Plugin " << DLL::name() << " failed to load (reason: " << DLL::error() << ')' << endl;
+	  Logger::log(Logger::loader) << "Plugin " << DLL::name()
+				      << " failed to load (reason: " << DLL::error() << ')' << endl;
 	  return;
 	}
       id = getName();
@@ -69,44 +70,39 @@ GenericFactoryImpl::~GenericFactoryImpl() { clear();}
 
 
 CORBA::Object_ptr 
-GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k, 
-				    const CosLifeCycle::Criteria & the_criteria) {  
+GenericFactoryImpl::create_object (const CosLifeCycle::Key &key, const CosLifeCycle::Criteria &criteria)
+{  
   CloneableImpl *newCloneable = 0;
-
   try
     {    
       MutexGuard guard(mutex);
-      newCloneable = loadPlugin(k);  
+      newCloneable = loadPlugin(key);
     }
   catch (noSuchPluginException e)
     {
       throw CosLifeCycle::CannotMeetCriteria();
     }
-
   if (!newCloneable)
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl::create_object loaded NULL pointer in response to "
-				  << ((string)(k[0].id)).c_str() << endl;
+				  << ((string)(key[0].id)).c_str() << endl;
     }
-
-  
   CORBA::Object_var newObjectPtr;
-
   // see if we are doing a lifecycle migration here
-  omniLifeCycleInfo_ptr li = extractLifeCycleFromCriteria(the_criteria);
+  omniLifeCycleInfo_ptr li = extractLifeCycleFromCriteria(criteria);
 
   // no lifeCycleInfo detected
   if (CORBA::is_nil(li))
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl::create_object not doing lifecycle copy for "
-				  << ((string)(k[0].id)).c_str() << endl;    
+				  << ((string)(key[0].id)).c_str() << endl;    
       newCloneable->_obj_is_ready(this->_boa());
       newObjectPtr = newCloneable->CloneableImpl::_this();
     
       if (CORBA::is_nil(newObjectPtr))
 	{
 	  Logger::log(Logger::loader) << "GenericFactoryImpl::create_object returning a nil reference for "
-				      << ((string)(k[0].id)).c_str() << endl;    
+				      << ((string)(key[0].id)).c_str() << endl;    
 	}
 
       // lifeCycleInfo was found!
@@ -114,10 +110,10 @@ GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k,
   else 
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl::create_object doing lifecycle copy for "
-				  << ((string)(k[0].id)).c_str() << endl;    
+				  << ((string)(key[0].id)).c_str() << endl;    
       newCloneable->_set_lifecycle(li);
       newCloneable->_obj_is_ready(this->_boa());
-      newObjectPtr = CORBA::Object::_duplicate(newCloneable);
+      newObjectPtr = newCloneable->_this();
     }
   
   //    newCloneable->registerWithMyManagers();
@@ -130,13 +126,12 @@ GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k,
 // perhaps someone who knows the Any interface a little better can advise me on whether
 // this is the proper way to do it?
 omniLifeCycleInfo_ptr
-GenericFactoryImpl::extractLifeCycleFromCriteria(const CosLifeCycle::Criteria & criteria) {
+GenericFactoryImpl::extractLifeCycleFromCriteria(const CosLifeCycle::Criteria &criteria)
+{
   omniLifeCycleInfo_ptr li = omniLifeCycleInfo::_nil();
-  for(unsigned int i = 0; i < criteria.length(); i++) {
-    if (strcmp(criteria[i].name, "NP_omniLifeCycleInfo") == 0) {
+  for(unsigned int i = 0; i < criteria.length(); i++)
+    if (strcmp(criteria[i].name, "NP_omniLifeCycleInfo") == 0)
       if(criteria[i].value >>= li) break;
-    }
-  }
   return li;
 }
 
@@ -158,13 +153,12 @@ CloneableImpl *GenericFactoryImpl::loadPlugin(const CosLifeCycle::Key &k)
 
 
 // you can call this is you're curious about creation support in the factory.
-CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key & k )
+CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key &key)
 {
-  map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(k);
-
+  map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(key);
   if (p == plugins.end())
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl::supports does not support " << ((string)(k[0].id)).c_str() << endl;    
+      Logger::log(Logger::loader) << "GenericFactoryImpl::supports does not support " << ((string)(key[0].id)).c_str() << endl;
       Logger::log(Logger::loader) << "GenericFactoryImpl::supports interface listing follows: " << endl;
       for(p = plugins.begin(); p != plugins.end(); p++)
 	Logger::log(Logger::loader) << p->first[0].id << endl;

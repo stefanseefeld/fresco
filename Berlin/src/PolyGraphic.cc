@@ -25,6 +25,7 @@
  * MA 02139, USA.
  */
 #include "Berlin/PolyGraphic.hh"
+#include "Berlin/Logger.hh"
 #include <iostream>
 #include <set>
 
@@ -41,34 +42,32 @@ PolyGraphic::~PolyGraphic()
       unique.insert(*i);
   }
   for (set<Graphic_var>::iterator i = unique.begin(); i != unique.end(); i++)
-    (*i)->removeParent(_this());
+    (*i)->removeParent(Graphic_var(_this()));
 }
 
 void PolyGraphic::append(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  children.push_back(Graphic_var(child));
-  child->addParent(_this());
+  children.push_back(Graphic::_duplicate(child));
+  child->addParent(Graphic_var(_this()));
   needResize();
 }
 
 void PolyGraphic::prepend(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  children.insert(children.begin(), Graphic_var(child));
-  child->addParent(_this());
+  children.insert(children.begin(), Graphic::_duplicate(child));
+  child->addParent(Graphic_var(_this()));
   needResize();
 }
 
-void PolyGraphic::allocate(Graphic_ptr g, Allocation_ptr a)
+void PolyGraphic::allocate(Graphic_ptr child, Allocation_ptr allocation)
 {
-  Graphic_var child = g;
-  Allocation_var allocation = a;
-  CORBA::Long start = allocation->size();
-  GraphicImpl::allocate(Graphic::_duplicate(g), Allocation::_duplicate(allocation));
-  CORBA::Long size = allocation->size();
-  long l = findChild(g);
-  for (long i = start; i != size; i++)
+  CORBA::Long begin = allocation->size();
+  GraphicImpl::allocate(child, allocation);
+  CORBA::Long end = allocation->size();
+  long l = findChild(child);
+  for (long i = begin; i != end; i++)
     {
       Allocation::Info_var info = allocation->get(i);
       allocateChild(l, info);
@@ -90,10 +89,9 @@ long PolyGraphic::numChildren()
  * You are free to override it in special purpose containers which expect
  * to get large  -stefan
  */
-long PolyGraphic::findChild(Graphic_ptr g)
+long PolyGraphic::findChild(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  Graphic_var child = Graphic::_duplicate(g);
   long l = 0;
   for (clist_t::iterator i = children.begin(); i != children.end(); i++, l++)
     if (child == *i) return l;
@@ -102,6 +100,7 @@ long PolyGraphic::findChild(Graphic_ptr g)
 
 Graphic::Requisition *PolyGraphic::childrenRequests()
 {
+  SectionLog section(Logger::layout, "PolyGraphic::childrenRequests");
   MutexGuard guard(childMutex);
   Graphic::Requisition *requisitions = pool.allocate(children.size());
   Graphic::Requisition *r = requisitions;

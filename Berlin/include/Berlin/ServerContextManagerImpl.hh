@@ -39,18 +39,14 @@ class ServerContextManagerImpl : implements(ServerContextManager), public virtua
   typedef vector<ServerContextImpl *> clist_t;
 public:  
   ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g);
-  void verify();
+  void ping();
   virtual void run(void* arg);
-
-  // declared in IDL
   ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
-
 protected:
-  FactoryFinderImpl *myFactoryFinder;
+  FactoryFinderImpl *ffinder;
   Mutex myMutex;
   clist_t contexts;
-  Stage_var mySceneRoot;
-
+  Stage_var root;
 };
 
 #endif

@@ -29,6 +29,7 @@
 #include "Layout/Placement.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
+#include "Berlin/Logger.hh"
 #include <iostream>
 
 Box::Box(LayoutManager *l)
@@ -41,6 +42,7 @@ Box::~Box() { delete layout;}
 
 void Box::request(Requisition &r)
 {
+  SectionLog section(Logger::layout, "Box::request");
   if (!requested)
     {
       GraphicImpl::defaultRequisition(requisition);
@@ -57,9 +59,8 @@ void Box::request(Requisition &r)
   r = requisition;
 }
 
-void Box::extension(const Allocation::Info &info, Region_ptr r)
+void Box::extension(const Allocation::Info &info, Region_ptr region)
 {
-  Region_var region = r;
   long n = numChildren();
   if (n > 0)
     {
@@ -74,7 +75,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr r)
       tmp_tx->_obj_is_ready(_boa());
       
       child.transformation = child_tx->_this();
-      child.transformation->copy(Transform::_duplicate(info.transformation));
+      child.transformation->copy(info.transformation);
       RegionImpl **result = childrenAllocations(info.allocation);
 
       for (long i = 0; i < n; i++)
@@ -86,7 +87,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr r)
 	  tmp_tx->loadIdentity();
 	  tmp_tx->translate(v);
 	  child.allocation = result[i]->_this();
-	  child.transformation->premultiply(tmp_tx->_this());
+	  child.transformation->premultiply(Transform_var(tmp_tx->_this()));
 	  children[i]->extension(child, region);
 	  prev_o = o;
 	}
@@ -97,9 +98,8 @@ void Box::extension(const Allocation::Info &info, Region_ptr r)
     }
 }
 
-void Box::traverse(Traversal_ptr t)
+void Box::traverse(Traversal_ptr traversal)
 {
-  Traversal_var traversal = t;
   if (numChildren())
     {
       Region_var given = traversal->allocation();
@@ -123,64 +123,63 @@ void Box::needResize(long)
   needResize();
 }
 
-
-/** this is a method called (but left empty in the superclass) in
-    PolyGraphic::allocate. it is called after a particular child has been
-    located in the child list. It is supposed to "finish off" providing the
-    allocation info for the given child */
-
-void Box::allocateChild(long childNum, Allocation::Info &a)
+/*
+ * this is a method called (but left empty in the superclass) in
+ * PolyGraphic::allocate. it is called after a particular child has been
+ * located in the child list. It is supposed to "finish off" providing the
+ * allocation info for the given child 
+ */
+void Box::allocateChild(long index, Allocation::Info &info)
 {
-  // fetch requested (presumably allocated) child regions
-  RegionImpl **childRegions = childrenAllocations(a.allocation);
-
-  // make new transformation
-  TransformImpl *txForThisChild = new TransformImpl;
-  txForThisChild->_obj_is_ready(_boa());
-
-  // copy transformation and region into allocation
-  Placement::normalTransform(childRegions[childNum], txForThisChild);
-  a.transformation->premultiply(txForThisChild->_this());
-  a.allocation->copy(childRegions[childNum]);
-
-  // clean up
-  for (size_t i = 0; i < children.size(); i++) childRegions[i]->_dispose();
-  delete [] childRegions;
+  /*
+   * fetch requested (presumably allocated) child regions
+   */
+  RegionImpl **result = childrenAllocations(info.allocation);
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
+  /*
+   * copy transformation and region into allocation
+   */
+  Placement::normalTransform(result[index], tx);
+  info.transformation->premultiply(Transform_var(tx->_this()));
+  info.allocation->copy(Region_var(result[index]->_this()));
+  for (size_t i = 0; i < children.size(); i++) result[i]->_dispose();
+  delete [] result;
 }
 
 
-/** this is called from Box::allocateChild to resolve the layout of the box's
-   children by (a) asking the children how big they want to be, then (b)
-   delegating the actual allocation to the current layoutManager. It also caches
-   the children's requests so that the real layout (at draw time) will happen
-   faster. */
-
-RegionImpl **Box::childrenAllocations(Region_ptr a) {
-    long numChildren = children.size();
-    Graphic::Requisition *whatChildrenWant = childrenRequests(); // first defined  in PolyGraphic.cc
+/*
+ * this is called from Box::allocateChild to resolve the layout of the box's
+ * children by (a) asking the children how big they want to be, then (b)
+ * delegating the actual allocation to the current layoutManager. It also caches
+ * the children's requests so that the real layout (at draw time) will happen
+ * faster. 
+ */
+RegionImpl **Box::childrenAllocations(Region_ptr allocation)
+{
+  long children = numChildren();
+  Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
     
-    // cache integrated form of children requisitions
-    if (!requested) {
-	GraphicImpl::initRequisition(requisition);
-	layout->request(numChildren, whatChildrenWant, requisition);
-	requested = true;
+  // cache integrated form of children requisitions
+  if (!requested)
+    {
+      GraphicImpl::initRequisition(requisition);
+      layout->request(children, childrenRequisitions, requisition);
+      requested = true;
     }
-    
-    // build region array for children
-    RegionImpl **regionsForChildren = new RegionImpl *[numChildren];
-    for (long i = 0; i < numChildren; i++) {	
-	regionsForChildren[i] = new RegionImpl;
-	regionsForChildren[i]->_obj_is_ready(_boa());
-	regionsForChildren[i]->valid = true;
+  // build region array for children
+  RegionImpl **childrenRegions = new RegionImpl *[children];
+  for (long i = 0; i < children; i++)
+    {
+      childrenRegions[i] = new RegionImpl;
+      childrenRegions[i]->_obj_is_ready(_boa());
+      childrenRegions[i]->valid = true;
     }
-    
-    // fill in numChildren regions which are reasonable matches for the given requesitions
-    layout->allocate(numChildren, whatChildrenWant, a, regionsForChildren);
-    pool.deallocate(whatChildrenWant);
-    return regionsForChildren;
+  // fill in children regions which are reasonable matches for the given requesitions
+  layout->allocate(children, childrenRequisitions, allocation, childrenRegions);
+  pool.deallocate(childrenRequisitions);
+  return childrenRegions;
 }
-
-
 
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
@@ -210,7 +209,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
        * ok, so we stipulate that Boxes lay out their children 
        * only translating them -stefan */
       tx->translate(o);
-      t->traverseChild(Graphic::_duplicate(children[i]), result[i]->_this(), tx->_this());
+      t->traverseChild(children[i], Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
   for (long i = 0; i < size; i++) result[i]->_dispose();
@@ -223,13 +222,13 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	t->traverseChild(Graphic::_duplicate(*i), Region::_nil(), Transform::_nil());
+	t->traverseChild(*i, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }
   else
     for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	t->traverseChild(Graphic::_duplicate(*i), Region::_nil(), Transform::_nil());
+	t->traverseChild(*i, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }    
 }
@@ -243,7 +242,7 @@ void BoxAlignElements::append(Graphic_ptr g)
   Placement *placement = new Placement(new LayoutCenter(axis, alignment));
   placement->_obj_is_ready(_boa());
   placement->body(g);
-  Box::append(placement->_this());
+  Box::append(Graphic_var(placement->_this()));
 }
 
 void BoxAlignElements::prepend(Graphic_ptr g)
@@ -251,5 +250,5 @@ void BoxAlignElements::prepend(Graphic_ptr g)
   Placement *placement = new Placement(new LayoutCenter(axis, alignment));
   placement->_obj_is_ready(_boa());
   placement->body(g);
-  Box::prepend(placement->_this());
+  Box::prepend(Graphic_var(placement->_this()));
 }

@@ -30,7 +30,7 @@
 #include "Berlin/AllocationImpl.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Warsaw/Damage.hh"
+#include "Warsaw/Screen.hh"
 
 Allocator::Allocator()
 {
@@ -53,28 +53,27 @@ void Allocator::request(Requisition &r)
   r = requisition;
 }
 
-void Allocator::traverse(Traversal_ptr t)
+void Allocator::traverse(Traversal_ptr traversal)
 {
-  Traversal_var traversal = t;
   updateRequisition();
-  Region_var a = traversal->allocation();
-  if (!CORBA::is_nil(a))
-    traversal->traverseChild(body(), Region::_duplicate(a), Transform::_nil());
+  Region_var allocation = traversal->allocation();
+  if (!CORBA::is_nil(allocation))
+    traversal->traverseChild(Graphic_var(body()), allocation, Transform::_nil());
   else
-    traversal->traverseChild(body(), natural->_this(), Transform::_nil());
+    traversal->traverseChild(Graphic_var(body()), Region_var(natural->_this()), Transform_var(Transform::_nil()));
 }
 
 void Allocator::needResize()
 {
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  allocateParents(allocation->_this());
+  allocateParents(Allocation_var(allocation->_this()));
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
-  if (extension->valid) region->copy(extension->_this());
+  if (extension->valid) region->copy(Region_var(extension->_this()));
   requested = false;
   updateRequisition();
-  if (extension->valid) region->mergeUnion(extension->_this());
+  if (extension->valid) region->mergeUnion(Region_var(extension->_this()));
   if (region->valid) needDamage(region, allocation);
   allocation->_dispose();
 }
@@ -82,7 +81,7 @@ void Allocator::needResize()
 void Allocator::allocateChild(Allocation::Info &i)
 {
   updateRequisition();
-  i.allocation->copy(natural->_this());
+  i.allocation->copy(Region_var(natural->_this()));
 }
 
 static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
@@ -122,7 +121,7 @@ void Allocator::updateRequisition()
       requested = r.x.defined && r.y.defined; // && r.z.defined;
       extension->valid = false;
       Allocation::Info info;
-      MonoGraphic::extension(info, extension->_this());
+      MonoGraphic::extension(info, Region_var(extension->_this()));
     }
 }
 
@@ -134,12 +133,9 @@ void Allocator::needDamage(RegionImpl *e, Allocation_ptr a)
   for (long i = 0; i < allocation->size(); i++)
     {
       Allocation::Info_var info = allocation->get(i);
-      if (!CORBA::is_nil(info->damaged))
- 	{
- 	  region->copy(e->_this());
-	  region->applyTransform(Transform::_duplicate(info->transformation));
-  	  info->damaged->extend(region->_this());
- 	}
+      region->copy(Region_var(e->_this()));
+      region->applyTransform(info->transformation);
+      info->root->damage(Region_var(region->_this()));
     }
 }
 
@@ -178,7 +174,7 @@ void TransformAllocator::allocateChild(Allocation::Info &i)
   i.allocation->bounds(lower, upper);
   computeDelta(lower, upper, delta);
   tx->translate(delta);
-  i.transformation->premultiply(tx->_this());
+  i.transformation->premultiply(Transform_var(tx->_this()));
   i.allocation->copy(natural);
   tx->_dispose();
 }
@@ -193,7 +189,7 @@ void TransformAllocator::traverse(Traversal_ptr t)
   traversal->bounds(lower, upper, v);
   computeDelta(lower, upper, v);
   tx->translate(v);
-  traversal->traverseChild(body(), natural->_this(), tx->_this());
+  traversal->traverseChild(Graphic_var(body()), Region_var(natural->_this()), Transform_var(tx->_this()));
   tx->_dispose();
 }
 

@@ -46,30 +46,30 @@ exception CreationFailureException {};
 // GenericFactory running inside the berlin server you're connected
 // to.
 
-interface ServerContext {
-    
-    readonly attribute ClientContext myClient;
-    readonly attribute Stage sceneRoot;
-    readonly attribute ::CosLifeCycle::FactoryFinder myFactoryFinder;
+interface ServerContext
+{    
+  readonly attribute ClientContext client;
+  readonly attribute Stage root;
+  readonly attribute ::CosLifeCycle::FactoryFinder factoryFinder;
 
-    // this is the entry point to generic object creation on a server. 
-    Object create(in string interfaceName) 
-      raises (SecurityException, CreationFailureException);
+  // this is the entry point to generic object creation on a server. 
+  Object create(in string interfaceName) 
+    raises (SecurityException, CreationFailureException);
     
-    // access to singletons (like the fontManager) this way
-    void setSingleton(in string name, in CosLifeCycle::LifeCycleObject singleton) 
-	raises (SecurityException, SingletonFailureException);
+  // access to singletons (like the fontManager) this way
+  void setSingleton(in string name, in CosLifeCycle::LifeCycleObject singleton) 
+    raises (SecurityException, SingletonFailureException);
 
-    void delSingleton(in string name) 
-	raises (SecurityException, SingletonFailureException);
+  void delSingleton(in string name) 
+    raises (SecurityException, SingletonFailureException);
 
-    CosLifeCycle::LifeCycleObject getSingleton(in string name) 
-	raises (SecurityException, SingletonFailureException);
-    
+  CosLifeCycle::LifeCycleObject getSingleton(in string name) 
+    raises (SecurityException, SingletonFailureException);
 };
 
 // this is the "super-context" -- the entry point for all new contexts.
-interface ServerContextManager {
+interface ServerContextManager
+{
   ServerContext newServerContext(in ClientContext C) raises (SecurityException);
 };
 

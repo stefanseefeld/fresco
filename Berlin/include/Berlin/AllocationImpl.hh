@@ -35,13 +35,13 @@ class AllocationImpl : implements(Allocation)
   {
     RegionImpl *allocation;
     TransformImpl *transformation;
-    Damage_var damage;
+    Screen_var root;
   };
   typedef vector<State> list_t;
 public:
   AllocationImpl();
   ~AllocationImpl();
-  void add(Region_ptr, Damage_ptr);
+  void add(Region_ptr, Screen_ptr);
   CORBA::Long size();
   Allocation::Info *get(CORBA::Long);
 private:

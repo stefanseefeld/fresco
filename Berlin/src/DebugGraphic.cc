@@ -49,16 +49,14 @@ void DebugGraphic::request(Requisition &r)
     }
 }
 
-void DebugGraphic::traverse(Traversal_ptr t)
+void DebugGraphic::traverse(Traversal_ptr traversal)
 {
-  Traversal_var traversal = t;
-  if (flags & traversals) traversal->visit(_this());
-  else MonoGraphic::traverse(Traversal::_duplicate(traversal));
+  if (flags & traversals) traversal->visit(Graphic_var(_this()));
+  else MonoGraphic::traverse(traversal);
 }
 
-void DebugGraphic::draw(DrawTraversal_ptr t)
+void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
-  DrawTraversal_var traversal = t;
   if (flags & draws)
     {
       heading(" draw\t");
@@ -66,12 +64,11 @@ void DebugGraphic::draw(DrawTraversal_ptr t)
       printRegion(&region);
       cout << endl;
     }
-  MonoGraphic::traverse(DrawTraversal::_duplicate(traversal));
+  MonoGraphic::traverse(traversal);
 };
 
-void DebugGraphic::pick(PickTraversal_ptr t)
+void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
-  PickTraversal_var traversal = t;
   if (flags & picks)
     {
       heading(" pick\t");
@@ -79,7 +76,7 @@ void DebugGraphic::pick(PickTraversal_ptr t)
       printRegion(&region);
       cout << endl;
     }
-  MonoGraphic::traverse(PickTraversal::_duplicate(traversal));
+  MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::heading(const char *s)

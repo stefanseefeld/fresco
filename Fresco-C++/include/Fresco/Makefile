@@ -38,7 +38,7 @@ LIBS	+= $(ORBLIBS)
 DYNINT	= Message.idl Event.idl Types.idl Style.idl
 STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable.idl \
 	  Drawable.idl Pencil.idl DrawingKit.idl \
-	  Damage.idl Transform.idl Region.idl Traversal.idl Graphic.idl Screen.idl \
+	  Transform.idl Region.idl Allocation.idl Traversal.idl Graphic.idl Screen.idl \
 	  FigureKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  CommandKit.idl \

@@ -24,64 +24,64 @@
 
 CORBA::Long TextBufferImpl::size()
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   return buffer.size();
 }
 
 CORBA::Long TextBufferImpl::position()
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   return buffer.position();
 }
 
 void TextBufferImpl::position(CORBA::Long p)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.position(p);
 }
 
 void TextBufferImpl::forward()
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.forward();
 }
 
 void TextBufferImpl::backward()
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.backward();
 }
 
 void TextBufferImpl::shift(CORBA::Long d)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.shift(d);
 }
 
 void TextBufferImpl::insertChar(Unichar u)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.insert(u);
   notify();
 }
 
 void TextBufferImpl::insertString(const Unistring &s)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
 //   buffer.insert(s);
   notify();
 }
 
 void TextBufferImpl::removeLeft(CORBA::Long n)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.removeLeft(n);
   notify();
 }
 
 void TextBufferImpl::removeRight(CORBA::Long n)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   buffer.removeRight(n);
   notify();
 }

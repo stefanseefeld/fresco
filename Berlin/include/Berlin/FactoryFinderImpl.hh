@@ -37,24 +37,19 @@
 class GenericFactoryImpl;
 class unInitializedGenericFactoryException {};
 
-class FactoryFinderImpl : implementsscoped(CosLifeCycle,FactoryFinder) {
-  
+class FactoryFinderImpl : implementsscoped(CosLifeCycle,FactoryFinder)
+{  
 public:
-
-  static FactoryFinderImpl * getInstance(GenericFactoryImpl * theFactory);
-  static FactoryFinderImpl * getInstance() throw (unInitializedGenericFactoryException);
-
+  static FactoryFinderImpl *Instance(GenericFactoryImpl * theFactory);
+  static FactoryFinderImpl *Instance() throw (unInitializedGenericFactoryException);
   // declared in IDL
-  CosLifeCycle::Factories *find_factories(const CosLifeCycle::Key & factory_key );
-
+  CosLifeCycle::Factories *find_factories(const CosLifeCycle::Key &);
 protected:
-
-  CosLifeCycle::Factories *myFactories;
-  FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr theFactory);
-
+  CosLifeCycle::Factories *factories;
+  FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr);
 private:
-  static FactoryFinderImpl *_instance;
-  static Mutex _instance_mutex;
+  static FactoryFinderImpl *instance;
+  static Mutex mutex;
 
   // never call this! It does not exist! I am hiding it from you!
   FactoryFinderImpl();

@@ -40,7 +40,7 @@ interface ClientContext {
   // when the server tries to call this, and it fails, the server will 
   // most likely destroy your serverContext object, which will
   // decrement all the refcounts on objects you allocated.
-  boolean stillAlive(); 
+  boolean ping(); 
 
   // .. additional security-related topics should show up in here  
 };

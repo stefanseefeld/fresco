@@ -36,7 +36,6 @@ interface Region
   struct Allotment
   {
     Coord begin, end;
-//     Coord origin, span; origin = begin + align*(end-begin)
     Alignment align;
   };
     boolean defined();

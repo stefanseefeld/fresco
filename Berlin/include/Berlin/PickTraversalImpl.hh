@@ -40,11 +40,11 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
     PickTraversalImpl(const PickTraversalImpl &t);
     ~PickTraversalImpl();
     
-    inline void visit(Graphic_ptr g) { g->pick(this->_this()); CORBA::release(g);}
+    inline void visit(Graphic_ptr g) { g->pick(this->_this());}
     inline order direction() { return down;} 
     inline CORBA::Boolean ok() { return true;}
     inline CORBA::Boolean intersects()
-      {  
+      {
 	RegionImpl region(allocation(), transformation());
 	Event::Pointer *pointer;
 	if ((myEvent >>= pointer) && region.contains(pointer->location)) return true;

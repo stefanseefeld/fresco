@@ -26,17 +26,11 @@
  */
 #include "Berlin/Requestor.hh"
 
-Requestor::Requestor(Graphic_ptr g, const Graphic::Requisition &r)
-{
-  body(g);
-  requisition = r;
-}
-
+Requestor::Requestor(const Graphic::Requisition &r) : requisition(r) {}
 Requestor::~Requestor() {}
 
-Requestor::Requestor(Graphic_ptr g, Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
+Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
 {
-  body(g);
   GraphicImpl::defaultRequisition(requisition);
   Graphic::Requirement *rx = GraphicImpl::requirement(requisition, xaxis);
   Graphic::Requirement *ry = GraphicImpl::requirement(requisition, yaxis);

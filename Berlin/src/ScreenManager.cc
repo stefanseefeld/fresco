@@ -83,9 +83,9 @@ void ScreenManager::repair()
   
   for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
-      DrawTraversalImpl *traversal = new DrawTraversalImpl(DrawingKit::_duplicate(drawing), (*i)->_this());
+      DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, Region_var((*i)->_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
-      screen->traverse(traversal->_this());
+      screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
       if (pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y))
 	{
@@ -153,9 +153,9 @@ void ScreenManager::nextEvent()
   }
 
   Logger::log(Logger::picking) << "starting PickTraversal" << endl;
-  PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
+  PickTraversalImpl *traversal = new PickTraversalImpl(a, Region_var(screen->getRegion()));
   traversal->_obj_is_ready(CORBA::BOA::getBOA());
-  screen->traverse(traversal->_this());
+  screen->traverse(Traversal_var(traversal->_this()));
   traversal->_dispose();
 
 }

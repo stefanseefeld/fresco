@@ -32,8 +32,8 @@
 class Requestor : public MonoGraphic
 {
 public:
-  Requestor(Graphic_ptr g, Alignment xalign = .5, Alignment yalign = .5, Coord xspan = 1, Coord yspan = 1);
-  Requestor(Graphic_ptr g, const Graphic::Requisition &r);
+  Requestor(Alignment xalign = .5, Alignment yalign = .5, Coord xspan = 1, Coord yspan = 1);
+  Requestor(const Graphic::Requisition &r);
   ~Requestor();
  
   virtual void request(Requisition &);

@@ -24,8 +24,8 @@
 #include <Berlin/AllocationImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/DebugGraphic.hh>
+#include <Warsaw/Screen.hh>
 #include <Berlin/Logger.hh>
-#include <Warsaw/Damage.hh>
 
 using namespace Geometry;
 
@@ -411,7 +411,7 @@ void StageTraversal::traverse(StageInfoImpl *info)
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(CORBA::BOA::getBOA());
   info->bbox(*region);
-  traversal->traverseChild(Graphic::_duplicate(info->child), region->_this(), Transform::_nil());
+  traversal->traverseChild(Graphic::_duplicate(info->child), Region_var(region->_this()), Transform::_nil());
   region->_dispose();
 }
 
@@ -447,9 +447,8 @@ void StageImpl::request(Requisition &r)
     }
 }
 
-void StageImpl::traverse(Traversal_ptr t)
+void StageImpl::traverse(Traversal_ptr traversal)
 {
-  Traversal_var traversal = t;
   RegionImpl region(traversal->allocation(), Transform::_nil());
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;
@@ -462,9 +461,8 @@ void StageImpl::traverse(Traversal_ptr t)
   st.execute();
 }
 
-void StageImpl::allocate(Graphic_ptr g, Allocation_ptr a)
+void StageImpl::allocate(Graphic_ptr child, Allocation_ptr a)
 {
-  Graphic_var child = g;
   Allocation_var allocation = a;
   StageInfoImpl *sinfo = 0;
   for (StageSequence::iterator i = list.begin(); i != list.end(); i++)
@@ -475,10 +473,10 @@ void StageImpl::allocate(Graphic_ptr g, Allocation_ptr a)
       }
   if (sinfo)
     {
-      CORBA::Long start = allocation->size();
+      CORBA::Long begin = allocation->size();
       allocateParents(Allocation::_duplicate(allocation));
-      CORBA::Long size = allocation->size();
-      for (CORBA::Long i = start; i != size; i++)
+      CORBA::Long end = allocation->size();
+      for (CORBA::Long i = begin; i != end; i++)
 	{
 	  Allocation::Info_var info = allocation->get(i);
 	  allocateChild(sinfo, info);
@@ -491,57 +489,50 @@ void StageImpl::needRedraw()
   SectionLog section(Logger::layout, "StageImpl::needRedraw");
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  allocateParents(allocation->_this());
+  allocateParents(Allocation_var(allocation->_this()));
   for (long i = 0; i < allocation->size(); i++)
     {
       Allocation::Info_var info = allocation->get(i);
-      if (!CORBA::is_nil(info->damaged))
+      RegionImpl *region = new RegionImpl;
+      region->_obj_is_ready(_boa());
+      extension(info, Region_var(region->_this()));
+      if (region->valid)
 	{
-	  RegionImpl *region = new RegionImpl;
-	  region->_obj_is_ready(_boa());
-	  extension(info, region->_this());
-	  if (region->valid)
-	    {
-	      Vertex origin;
-	      info->allocation->origin(origin);
-	      TransformImpl *tx = new TransformImpl;
-	      tx->_obj_is_ready(_boa());
-	      tx->translate(origin);
-	      region->applyTransform(tx->_this());
-	      if (region->valid) info->damaged->extend(region->_this());
-	      tx->_dispose();
-	      region->_dispose();
-	    }
+	  Vertex origin;
+	  info->allocation->origin(origin);
+	  TransformImpl *tx = new TransformImpl;
+	  tx->_obj_is_ready(_boa());
+	  tx->translate(origin);
+	  region->applyTransform(Transform_var(tx->_this()));
+	  if (region->valid) info->root->damage(Region_var(region->_this()));
+	  tx->_dispose();
+	  region->_dispose();
 	}
     }
   allocation->_dispose();
 }
 
-void StageImpl::needRedrawRegion(Region_ptr r)
+void StageImpl::needRedrawRegion(Region_ptr region)
 {
   SectionLog section(Logger::layout, "StageImpl::needRedrawRegion");
-  Region_var region = r;
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  allocateParents(allocation->_this());
+  allocateParents(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
   for (long i = 0; i < size; i++)
     {
       Allocation::Info_var info = allocation->get(i);
-      if (!CORBA::is_nil(info->damaged))
- 	{
- 	  RegionImpl *tmp = new RegionImpl(Region::_duplicate(region), Transform::_duplicate(info->transformation));
-	  tmp->_obj_is_ready(_boa());
-	  Vertex origin;
- 	  info->allocation->origin(origin);
-	  TransformImpl *tx = new TransformImpl;
-	  tx->_obj_is_ready(_boa());
-	  tx->translate(origin);
-	  tmp->applyTransform(tx->_this());
-	  if (tmp->valid) info->damaged->extend(tmp->_this());
-	  tx->_dispose();
-	  tmp->_dispose();
-	}
+      RegionImpl *tmp = new RegionImpl(region, info->transformation);
+      tmp->_obj_is_ready(_boa());
+      Vertex origin;
+      info->allocation->origin(origin);
+      TransformImpl *tx = new TransformImpl;
+      tx->_obj_is_ready(_boa());
+      tx->translate(origin);
+      tmp->applyTransform(Transform_var(tx->_this()));
+      if (tmp->valid) info->root->damage(Region_var(tmp->_this()));
+      tx->_dispose();
+      tmp->_dispose();
     }
   allocation->_dispose();
 }
@@ -579,7 +570,7 @@ void StageImpl::end()
       tree.end();
       if (need_redraw)
 	{
-	  needRedrawRegion(damage_->_this());
+	  needRedrawRegion(Region_var(damage_->_this()));
 	  need_redraw = false;
 	}
       if (need_resize)
@@ -599,8 +590,8 @@ Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Verte
 {
   SectionLog section(Logger::layout, "StageImpl::insert");
   MutexGuard guard(childMutex);
-  StageInfoImpl *info = new StageInfoImpl(g, position, size, layer);
-  info->child->addParent(_this());
+  StageInfoImpl *info = new StageInfoImpl(Graphic::_duplicate(g), position, size, layer);
+  info->child->addParent(Stage_var(_this()));
   tree.insert(info);
   list.insert(info);
   damage(info);
@@ -658,7 +649,7 @@ void StageImpl::allocateChild(StageInfoImpl *i, Allocation::Info &info)
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   i->bbox(*region);
-  info.allocation->copy(region->_this());
+  info.allocation->copy(Region_var(region->_this()));
   region->_dispose();
 }
 
@@ -667,11 +658,11 @@ void StageImpl::damage(StageInfoImpl *info)
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   info->bbox(*region);
-  if (need_redraw) damage_->mergeUnion(region->_this());
+  if (need_redraw) damage_->mergeUnion(Region_var(region->_this()));
   else
     {
       need_redraw = true;
-      damage_->copy(region->_this());
+      damage_->copy(Region_var(region->_this()));
     }
   region->_dispose();
 }

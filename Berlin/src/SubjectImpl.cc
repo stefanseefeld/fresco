@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 #include "Berlin/SubjectImpl.hh"
+#include "Berlin/Logger.hh"
 
 SubjectImpl::SubjectImpl()
 {}
@@ -27,13 +28,13 @@ SubjectImpl::SubjectImpl()
 void SubjectImpl::attach(Observer_ptr o)
 {
   MutexGuard guard(observerMutex);
-  observers.push_back(o);
+  observers.push_back(Observer::_duplicate(o));
 }
 
 void SubjectImpl::detach(Observer_ptr o)
 {
   MutexGuard guard(observerMutex);
-  observers.remove(Observer_var(o));
+  observers.remove(o);
 }
 
 
@@ -49,7 +50,8 @@ void SubjectImpl::notify()
   if (!blocked)
     {
       MutexGuard guard(observerMutex);
+      Subject_var me = _this();
       for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
-	(*i)->update(this->_this());
+	(*i)->update(me);
     }
 }

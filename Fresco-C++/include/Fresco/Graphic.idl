@@ -29,27 +29,14 @@
 
 #include "Types.idl"
 #include "Cloneable.idl"
+#include "Allocation.idl"
 
 interface Traversal;
 interface DrawTraversal;
 interface PickTraversal;
-interface Damage;
 interface Region;
 interface Transform;
 interface DrawingKit;
-
-interface Allocation
-{
-  struct Info
-  {
-    Region allocation;
-    Transform transformation;
-    Damage damaged;
-  };
-  void add(in Region r, in Damage d);
-  long size();
-  Info get(in long l);
-};
 
 interface Graphic : Cloneable
 {
@@ -64,7 +51,6 @@ interface Graphic : Cloneable
     Requirement x, y, z;
     boolean preserve_aspect;
   };
-  typedef sequence<Graphic> GraphicSeq;
   /*
    * structural methods
    */
@@ -73,24 +59,19 @@ interface Graphic : Cloneable
   void prepend(in Graphic g);
   void addParent(in Graphic g);
   void removeParent(in Graphic g);
-
   /*
-   * layout related methods. These take an additional DrawingKit parameter 
-   * in order to allow the Graphic to extract (if it so requires) device-specific
-   * information relevant to its layout, such as device DPI and fonts.
+   * layout related methods
    */
   Transform transformation();
   void request(out Requisition r);
   void extension(in Allocation::Info a, in Region r);
   void shape(in Region r);
-
   /*
    * traversal related
    */
   void traverse(in Traversal t);
   void draw(in DrawTraversal t);
   void pick(in PickTraversal t);
-
   /*
    * update related
    */

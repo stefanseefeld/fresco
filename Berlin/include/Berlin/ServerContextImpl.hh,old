@@ -36,41 +36,34 @@ class GenericFactory_impl;
 // this is an encapsulated "entry point" which a client uses to manufacture
 // new objects, look up singletons, look up the scene root, etc.
 
-class ServerContextImpl : implements(ServerContext) {
-
-public:  
-  ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr client, Stage_ptr root);
-  bool verify();
+class ServerContextImpl : implements(ServerContext)
+{
+  typedef vector<CORBA::Object_var> olist_t;
+ public:  
+  ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr, Stage_ptr);
+  bool ping();
 
   // stuff declared in IDL, that the client will access
-  ClientContext_ptr myClient();
-  CosLifeCycle::FactoryFinder_ptr myFactoryFinder();
-  Stage_ptr sceneRoot();
-  
-  CORBA::Object_ptr create(const char *interfaceName) 
-      throw (SecurityException, CreationFailureException);
-  
+  ClientContext_ptr client();
+  CosLifeCycle::FactoryFinder_ptr factoryFinder();
+  Stage_ptr root();
+  CORBA::Object_ptr create(const char *) throw (SecurityException, CreationFailureException);
   void setSingleton(const char *name, CosLifeCycle::LifeCycleObject_ptr singleton) 
       throw (SecurityException, SingletonFailureException);
-  
   void delSingleton(const char *name) 
-      throw (SecurityException, SingletonFailureException);   
-  
+      throw (SecurityException, SingletonFailureException);
   CosLifeCycle::LifeCycleObject_ptr getSingleton(const char *name) 
       throw (SecurityException, SingletonFailureException);
-  
-
 protected:
-  
-  CosLifeCycle::FactoryFinder_var _ff;
-  ClientContext_var _client;
-  Mutex _ServerContext_mutex;
-  vector<CORBA::Object_var> allocatedObjects;
+  CosLifeCycle::FactoryFinder_var ffinder;
+  ClientContext_var cContext;
+  Mutex mutex;
+  olist_t objects;
   
   // things which all sessions share access to
   static map<string, CosLifeCycle::LifeCycleObject_var> singletons;
-  static Mutex singletons_mutex;
-  static Stage_var ourSceneRoot;
+  static Mutex singletonsMutex;
+  static Stage_var stage;
 };
 
 #endif

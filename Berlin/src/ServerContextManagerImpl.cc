@@ -31,43 +31,41 @@
 #include "Warsaw/Stage.hh"
 
 ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g)
+  : root(Stage::_duplicate(g))
 {
-  myFactoryFinder = FactoryFinderImpl::getInstance(factory);
-  mySceneRoot = g;
+  ffinder = FactoryFinderImpl::Instance(factory);
 }
 
-void ServerContextManagerImpl::run(void* arg)
+void ServerContextManagerImpl::run(void *arg)
 {
   while (true)
     {
       sleep(1);
-      verify();
+      ping();
     }
 }
 
-void ServerContextManagerImpl::verify()
+void ServerContextManagerImpl::ping()
 {
   MutexGuard guard (myMutex);
   clist_t tmp;
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
     {
-      if ((*i)->verify()) tmp.push_back(*i);	    
+      if ((*i)->ping()) tmp.push_back(*i);	    
       else (*i)->_dispose();
     }
-  contexts = tmp;	    
+  contexts = tmp;
 };
 
 // declared in IDL
-ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c) 
+ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c)
 throw (SecurityException)
 {
   MutexGuard guard (myMutex);
-  ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), 
-						  ClientContext::_duplicate(c), 
-						  Stage::_duplicate(mySceneRoot));
+  ServerContextImpl *temp = new ServerContextImpl(CosLifeCycle::FactoryFinder_var(ffinder->_this()), c, root);
   temp->_obj_is_ready(this->_boa());
   contexts.push_back(temp);
   return temp->_this();
 }
-  
+
 

@@ -28,12 +28,13 @@
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/Logger.hh"
 
 MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->removeParent(_this());
+  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()));
 }
 
 Graphic_ptr MonoGraphic::body()
@@ -45,23 +46,21 @@ Graphic_ptr MonoGraphic::body()
 void MonoGraphic::body(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->removeParent(_this());
-  child = c;
-  child->addParent(_this());
+  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()));
+  child = Graphic::_duplicate(c);
+  child->addParent(Graphic_var(_this()));
 }
 
 void MonoGraphic::append(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->append(c);
-  else CORBA::release(c);
 }
 
 void MonoGraphic::prepend(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->prepend(c);
-  else CORBA::release(c);
 }
 
 Transform_ptr MonoGraphic::transformation()
@@ -76,49 +75,43 @@ void MonoGraphic::request(Graphic::Requisition &r)
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
-void MonoGraphic::extension(const Allocation::Info &info, Region_ptr r)
+void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
 {
   Graphic_var child = body();
-  Region_var region = r;
   if (!CORBA::is_nil(child))
     {
       Allocation::Info i;
       RegionImpl *tmpregion = new RegionImpl;
       tmpregion->_obj_is_ready(_boa());
       i.allocation = tmpregion->_this();
-      i.allocation->copy(Region::_duplicate(info.allocation));
+      i.allocation->copy(info.allocation);
       TransformImpl *transform = new TransformImpl;
       transform->_obj_is_ready(_boa());
       i.transformation = transform->_this();
-      i.transformation->copy(Transform::_duplicate(info.transformation));
+      i.transformation->copy(info.transformation);
       allocateChild(i);
-      child->extension(i, Region::_duplicate(region));
+      child->extension(i, region);
       transform->_dispose();
       tmpregion->_dispose();
     }
 }
 
-void MonoGraphic::shape(Region_ptr r)
+void MonoGraphic::shape(Region_ptr region)
 {
   Graphic_var child = body();
-  Region_var region = r;
   if (!CORBA::is_nil(child)) child->shape(region);
 }
 
-void MonoGraphic::traverse(Traversal_ptr t)
+void MonoGraphic::traverse(Traversal_ptr traversal)
 {
   Graphic_var child = body();
-  Traversal_var traversal = t;
-  if (!CORBA::is_nil(child))
-    traversal->traverseChild(Graphic::_duplicate(child), Region::_nil(), Transform::_nil());
+  if (!CORBA::is_nil(child)) traversal->traverseChild(child, Region::_nil(), Transform::_nil());
 }
 
-void MonoGraphic::allocate(Graphic_ptr g, Allocation_ptr a)
+void MonoGraphic::allocate(Graphic_ptr child, Allocation_ptr allocation)
 {
-  Graphic_var child = g;
-  Allocation_var allocation = a;
   if (child != Graphic_var(body())) return;
-  GraphicImpl::allocate(Graphic::_duplicate(child), Allocation::_duplicate(a));
+  GraphicImpl::allocate(child, allocation);
   CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i != size; i++)
     {
