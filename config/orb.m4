@@ -28,6 +28,7 @@ dnl For now, only omniORB is supported.
 
 AC_DEFUN([BERLIN_ORB_CHECK],[
 
+	AC_BEGIN_DECISION([ORB])
 	AC_ARG_WITH(orb,[  --with-orb=NAME         Specify which ORB to use],[dnl
 		ORB="$withval"],[dnl
 		if test ".$ORB" = . ; then
@@ -59,20 +60,23 @@ AC_DEFUN([BERLIN_ORB_CHECK],[
 	
 	case $ORB in
 		omniORB)
+			AC_DECIDE(OMNIORB, [use omniORB])
+
 			IDL="$OMNIIDL"
 dnl			IDLFLAGS="$OMNIIDLFLAGS"
 dnl			DYNIDLFLAGS="$OMNIDYNIDLFLAGS"
-			ORBFLAGS="__OMNIORB__"
+			ORB_IMPL="OMNIORB"
 		;;
 	esac
 
+	AC_END_DECISION
 	AC_SUBST(ORB)
 	if test ".$ORB" != .none ; then
 		AC_SUBST(IDL)
 		AC_SUBST(IDLFLAGS)
 		AC_SUBST(DYNIDLFLAGS)
-		AC_DEFINE_UNQUOTED(ORBFLAGS, $ORBFLAGS)
-		AC_SUBST(ORBFLAGS)
+		AC_DEFINE_UNQUOTED(ORB_IMPL, $ORB_IMPL)
+		AC_SUBST(ORB_IMPL)
 		AC_SUBST(ORBDEFS)
 		AC_SUBST(ORBCPPFLAGS)
 		AC_SUBST(ORBLIBS)

@@ -27,6 +27,7 @@ dnl none is found.
 
 AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 
+	AC_BEGIN_DECISION([Console])
 	AC_ARG_WITH(console,[  --with-console=NAME         Specify which Console to use],[dnl
 		CON_IMPL="$withval"],[dnl
 		if test ".$CON_IMPL" = . ; then
@@ -44,6 +45,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 					CON_IMPL="none"
 				fi
 			else
+				AC_DECIDE(GGICONSOLE, [use GGI])
 				CON_IMPL=GGI
 			fi				
 			;;
@@ -56,6 +58,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                         CON_IMPL="none"
                                 fi
                         else
+				AC_DECIDE(SDLCONSOLE, [use SDL])
                                 CON_IMPL=SDL
                         fi
                         ;;
@@ -69,6 +72,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 			;;
 	esac
 	
+	AC_END_DECISION
 	if test ".$CON_IMPL" != .none ; then
 		AC_DEFINE_UNQUOTED(CONSOLE_IMPL, $CON_IMPL)
 		AC_SUBST(CON_IMPL)
