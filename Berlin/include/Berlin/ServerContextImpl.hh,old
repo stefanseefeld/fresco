@@ -36,16 +36,21 @@ class ServerContextImpl : implements(ServerContext)
 // new objects, look up singletons, look up the scene root, etc.
 {
   typedef vector<CORBA::Object_var> olist_t;
+
  public:  
-  ServerContextImpl(ServerContextManagerImpl *, CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr);
+  ServerContextImpl(ServerContextManagerImpl *,
+                    CosLifeCycle::FactoryFinder_ptr,
+                    ClientContext_ptr);
+
   ClientContext_ptr client();
   CosLifeCycle::FactoryFinder_ptr factoryFinder();
-  CORBA::Object_ptr create(const char *) throw (SecurityException, CreationFailureException);
-  void setSingleton(const char *name, CORBA::Object_ptr singleton) 
+  CORBA::Object_ptr create(const char *)
+    throw (SecurityException, CreationFailureException);
+  void setSingleton(const char *, CORBA::Object_ptr singleton) 
     throw (SecurityException, SingletonFailureException);
-  void delSingleton(const char *name) 
+  void delSingleton(const char *) 
     throw (SecurityException, SingletonFailureException);
-  CORBA::Object_ptr getSingleton(const char *name) 
+  CORBA::Object_ptr getSingleton(const char *) 
     throw (SecurityException, SingletonFailureException);
   bool ping();
  protected:
