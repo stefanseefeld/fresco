@@ -71,7 +71,8 @@ void ScreenManager::repair()
   _mutex.unlock();
 
   // Place here for single-buffered Consoles:
-  // _emanager->restore(Region_var(_tmpDamage->_this()));
+  // The GGI/GL is singlebuffered, so this is what we do for now:-(
+  _emanager->restore(Region_var(_tmpDamage->_this()));
 
   _traversal->damage(Region_var(_tmpDamage->_this()));
   _traversal->init();
@@ -94,7 +95,7 @@ void ScreenManager::repair()
   mid2 = myclock();
   
   // Place here for doublebuffered Consoles:
-  _emanager->restore(Region_var(_tmpDamage->_this()));
+  // _emanager->restore(Region_var(_tmpDamage->_this()));
   _drawing->flush();
 
   end = myclock();
