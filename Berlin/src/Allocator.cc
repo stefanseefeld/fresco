@@ -79,7 +79,7 @@ void Allocator::needResize()
 void Allocator::allocate(Tag, const Allocation::Info &i)
 {
   updateRequisition();
-  i.allocation->copy(Region_var(natural->_this()));
+//  i.allocation->copy(Region_var(natural->_this()));
 }
 
 static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
