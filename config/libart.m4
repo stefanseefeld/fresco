@@ -49,14 +49,8 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 			LIBART_LIBS=-L$art_prefix/lib
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$LIBART_CFLAGS $CPPFLAGS"
-	AC_CHECK_HEADER(art_pixbuf.h,:,
-		AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h,[
-			if test ".$LIBART_CFLAGS" = . ; then
-				LIBART_CFLAGS=-I/usr/include
-			else
-				LIBART_CFLAGS="$LIBART_CFLAGS"
-			fi ],no_libart=yes))
+	CPPFLAGS="$LIBART_CPPFLAGS $CPPFLAGS"
+	AC_CHECK_HEADER(art_pixbuf.h,,AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h,,no_libart=yes))
 	CPPFLAGS="$save_CPPFLAGS"
 
 	dnl Assuming it's okay if the header was found
