@@ -108,7 +108,7 @@ LibArtFTFont::LibArtFTFont(double xres, double yres)
 	  _family = atomize(_familyStr);
 	  _style = atomize(_styleStr);
 	  Logger::log(Logger::text) << "found FT-readable font "
-				    << _familyStr << " (" << _family << ") " << _styleStr << " (" << _style << ") in "
+				    << _face->family_name << " (" << _family << ") " << _face->style_name << " (" << _style << ") in "
 				    << *i << std::endl;
 	  _faces[FamStyle(_family, _style)] = _face;
 	}
