@@ -113,7 +113,7 @@ Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 
 void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 {
-  glColor4d(0, 0, 0, 0);      
+  glColor4d(0, 0, 0, 1.0);      
   glRectf(l, t, r, b);
 }
 

@@ -41,7 +41,7 @@ rpath	= $(lpath)
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin -lGLtt -lttf -lMesaGL -lMesaGLU -ldb2++
+LIBS	= -lPrague -lBerlin -lGLtt -lttf -lGL -lGLU -ldb2++
 
 SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc GLFont.cc GLUnifont.cc
 

@@ -108,8 +108,8 @@ GLDrawable::GLDrawable()
 //    glLightfv( GL_LIGHT0, GL_AMBIENT, white ); 
 //    glEnable(GL_LIGHT0);   
 //    glClear( GL_COLOR_BUFFER_BIT );
-   glShadeModel(GL_FLAT);
-//    glDisable(GL_DEPTH_TEST);
+   glShadeModel(GL_SMOOTH);
+    //glDisable(GL_DEPTH_TEST);
 //    glDisable(GL_ALPHA_TEST);
     glDisable( GL_LIGHTING );  
   //  glEnable( GL_CULL_FACE ); 

@@ -79,20 +79,21 @@ void GLPencil::drawPath(const Path &p) {
   if (p.m.length() == 0) {
     // we're drawing polys
     if (myFillMode == Style::solid) {
-      // filled polys
-      glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
       glBegin(GL_POLYGON);
+      // filled polys
+      glClearColor(0.0,0.0,0.0,0.0);
+      glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
       for (unsigned long i = 0; i < p.p.length(); i++) { 
 	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
       }
       glEnd();
-      
+  
     } else { // for the time being there's only solid and nofill
       
-      // line strips (no final connecting line)      
-      glColor4d(myLineColor[0],myLineColor[1],myLineColor[2],myLineColor[3]);      
       glBegin(GL_LINE_STRIP);
-      
+      // line strips (no final connecting line)      
+      glClearColor(0.0,0.0,0.0,0.0);
+      glColor4d(myLineColor[0],myLineColor[1],myLineColor[2],myLineColor[3]);      
       for (unsigned long i = 0; i < p.p.length(); i++) {
 	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
       }
