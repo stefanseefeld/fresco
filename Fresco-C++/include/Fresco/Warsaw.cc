@@ -28,7 +28,7 @@
  */
 #include "../Berlin/Math.hh"
 
-ostream &operator << (ostream &os, Graphic::Requirement &r)
+ostream &operator << (ostream &os, const Graphic::Requirement &r)
 {
   if (!r.defined) os << "undef";
   else
