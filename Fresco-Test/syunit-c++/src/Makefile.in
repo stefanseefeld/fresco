@@ -55,11 +55,13 @@ vpath %.cc  $(srcdir)
 .PHONY: all doc install install-doc clean distclean maintainer-clean dist
 
 all:	$(TARGET)
-	@echo Copying header files.
+	@$(SHTOOL) echo Copying header files.
+	$(SHTOOL) mkdir -p -f -m 755 $(top_builddir)/include
 	cp $(hdir)/*.hh $(top_builddir)/include
 
 $(TARGET):	$(OBJ)
-	@echo linking $(@F)
+	@$(SHTOOL) echo Linking $(@F)
+	$(SHTOOL) mkdir -p -f -m 755 $(top_builddir)/lib
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
 
 depend: $(DEP)
@@ -69,21 +71,27 @@ xref:	$(docdir)/sxr/Fresco-Test.xref $(docdir)/sxr/Fresco-Test.syn
 doc:	$(MANUAL)
 
 $(docdir)/sxr/Fresco-Test.xref:	$(XREF)
-	@echo linking xref files together
-	mkdir -p $(docdir)/sxr
+	@$(SHTOOL) echo Linking xref files together
+	$(SHTOOL) mkdir -p -f -m 755 $(docdir)/sxr
 	compile-xref -o $@ $^
 
 $(docdir)/sxr/Fresco-Test.syn:	$(SYN)
-	@echo linking synopsis files together
-	mkdir -p $(docdir)/sxr
+	@$(SHTOOL) echo Linking synopsis files together
+	$(SHTOOL) mkdir -p -f -m 755 $(docdir)/sxr
 	$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
-	@echo formatting $(@F)
+	@$(SHTOOL) echo Formatting $(@F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install: all
+	$(SHTOOL) mkdir -p -f -m 755 $(DESTDIR)$(includedir)/Fresco-Test
+	cp $(top_builddir)/include/*.hh $(DESTDIR)$(includedir)/Fresco-Test
+	$(SHTOOL) mkdir -p -f -m 755 $(DESTDIR)$(libdir)
+	cp $(TARGET) $(DESTDIR)$(libdir)
+	$(SHTOOL) mkdir -p -f -m 755 $(DESTDIR)$(bindir)
+	cp $(top_builddir)/config/Fresco-Test-config $(DESTDIR)$(bindir)
 
 install-doc: # not yet
 
@@ -98,25 +106,25 @@ clean:
 	rm -f $(OBJ) $(DEP) $(SYN) $(XREF)
 
 distclean:	clean
-	rm -f Makefile ../include/Prague/acconfig.hh \
-          ../bin/Prague-config
+	rm $(top_srcdir)/bin/Fresco-Test-config \
+           $(top_srcdir)/config/Fresco-Test-config
 
 maintainer-clean: distclean
 
 %.d:	%.cc %.hh
-	@echo generating dependencies for $(<F)
+	@$(SHTOOL) echo Generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 %.o:	%.cc
-	@echo compiling $(@F)
+	@$(SHTOOL) echo Compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 
 %.hh.syn %.hh.xref:	%.hh
-	@echo parsing $(^F)
+	@$(SHTOOL) echo Parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
-	@echo parsing $(^F)
+	@$(SHTOOL) echo Parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))

@@ -40,10 +40,12 @@ PYTHON_TARGETS	:= $(patsubst %, $(build_bindir)/%, $(PYTHON))
 
 all:	$(PYTHON_TARGETS)
 
-install: all # do nothing special
+install: all
+	$(SHTOOL) mkdir -p -f -m 755 $(DESTDIR)$(datadir)/Fresco-Test
+	cp $(PYTHON_TARGETS) $(DESTDIR)$(datadir)/Fresco-Test
 
 $(PYTHON_TARGETS):
-	@echo copying $(@F).
+	@$(SHTOOL) echo Copying $(@F).
 	cp $(patsubst $(build_bindir)%, $(srcdir)%, $@) $@
 
 build-tests: all
@@ -51,7 +53,7 @@ build-tests: all
 run-tests: build-tests
 
 clean:
-	@echo removing all copied files
+	@$(SHTOOL) echo Removing all copied files
 	rm -rf $(PYTHON_TARGETS)
 
 distclean: clean

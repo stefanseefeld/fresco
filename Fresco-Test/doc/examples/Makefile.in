@@ -62,7 +62,7 @@ ifdef FRESCO_TEST_CONFIG
 build-tests: $(TARGETS)
 else
 build-tests:
-	@echo "you need 'Fresco-Test' in order to build the tests"
+	@$(SHTOOL) echo "you need 'Fresco-Test' in order to build the tests"
 endif
 
 ifdef FRESCO_TEST_CONFIG
@@ -70,11 +70,11 @@ run-tests: build-tests $(SCRIPT_SOURCES)
 	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
 else
 run-tests:
-	@echo "you need 'Fresco-Test' in order to build the tests"
+	@$(SHTOOL) echo "You need 'Fresco-Test' in order to build the tests."
 endif
 
 $(TARGETS): $(OBJ)
-	@echo linking $(@F)
+	@$SHTOOL) echo Linking $(@F)
 	$(CXX) `$(FRESCO_TEST_CONFIG) --libs` -o $@ $<
 
 depend: $(DEP)
@@ -96,17 +96,17 @@ distclean:	clean
 maintainer-clean: distclean
 
 $(SYN): $(CXX_TESTS)
-	@echo generating $(@F)
+	@$(SHTOOL) echo Generating $(@F)
 	$(SYNOPSIS) -pCxx -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -I$(top_builddir)/include -o $@ $<
 
 $(HARNESS): $(SYN)
-	@echo generating test harness for $(@F)
+	@$(SHTOOL) echo Generating test harness for $(@F)
 	`$(FRESCO_TEST_CONFIG) --syn2cc` $< $@
 
 $(DEP): $(HARNESS)
-	@echo generating dependencies for $(<F)
+	@$(SHTOOL) echo Generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(CPPFLAGS) -I$(top_builddir)/include $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 $(OBJ): $(HARNESS)
-	@echo compiling $(@F)
+	@$(SHTOOL) echo Compiling $(@F)
 	$(CXX) `$(FRESCO_TEST_CONFIG) --cppflags` `$(FRESCO_TEST_CONFIG) --cxxflags` $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(CPPFLAGS) -I$(top_builddir)/include -c $< -o $@

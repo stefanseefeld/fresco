@@ -5,7 +5,7 @@ exec_prefix=@exec_prefix@
 exec_prefix_set=no
 
 usage="\
-Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cppflags] [--cxxflags] [--libs]"
+Usage: $0 (--prefix[=DIR]|--exec-prefix[=DIR]|--version|--cppflags|--cxxflags|--libs|--syn2cc|--test-runner|--lib-dir|--include-dir)"
 
 if test $# -eq 0; then
       echo "${usage}" 1>&2
@@ -39,25 +39,28 @@ while test $# -gt 0; do
       echo @PACKAGE_VERSION@
       ;;
     --cppflags)
-      echo @INSTALL_CPPFLAGS@ -I@includedir@ |\
+      echo @CPPFLAGS@ -I@includedir@ |\
           sed -e 's/^ *-//; s/ \+-/\n/g' | awk 'a[$0]++==0 { print "-"$0; }' |\
           xargs echo -n
       echo
       ;;
     --cxxflags)
-      echo @CXXFLAGS@
+      echo @CXXFLAGS@ |\
+          sed -e 's/^ *-//; s/ \+-/\n/g' | awk 'a[$0]++==0 { print "-"$0; }' |\
+          grep -v "^-pipe" | grep -v "^-g" | grep -v "^-O" | grep -v "^-f" |\
+          xargs echo -n
       ;;
     --libs)
-      echo -L@libdir@ -lFresco-Test @INSTALL_LIBS@ |\
+      echo -L@libdir@ -lFresco-Test @LIBS@ |\
           sed -e 's/^ *-//; s/ \+-/\n/g' | awk 'a[$0]++==0 { print "-"$0; }' |\
           xargs echo -n
       echo
       ;;
     --test-runner)
-      echo $prefix/bin/run_tests.sh
+      echo $prefix/shared/Fresco-Test/run_tests.sh
       ;;
     --syn2cc)
-      echo $prefix/bin/syn2cc.py
+      echo $prefix/shared/Fresco-Test/syn2cc.py
       ;;
     --include-dir)
       echo $prefix/include

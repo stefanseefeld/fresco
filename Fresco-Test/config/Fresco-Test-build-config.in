@@ -5,7 +5,7 @@ exec_prefix=@abs_top_builddir@
 exec_prefix_set=no
 
 usage="\
-Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cppflags] [--cxxflags] [--libs]"
+Usage: $0 (--prefix[=DIR]|--exec-prefix[=DIR]|--version|--cppflags|--cxxflags|--libs|--syn2cc|--test-runner|--lib-dir|--include-dir)"
 
 if test $# -eq 0; then
       echo "${usage}" 1>&2
@@ -45,7 +45,10 @@ while test $# -gt 0; do
       echo
       ;;
     --cxxflags)
-      echo @CXXFLAGS@
+      echo @CXXFLAGS@ |\
+          sed -e 's/^ *-//; s/ \+-/\n/g' | awk 'a[$0]++==0 { print "-"$0; }' |\
+          grep -v "^-pipe" | grep -v "^-g" | grep -v "^-O" | grep -v "^-f" |\
+          xargs echo -n
       ;;
     --libs)
       echo -L@abs_top_builddir@/lib -lFresco-Test @LIBS@ |\
@@ -60,10 +63,10 @@ while test $# -gt 0; do
       echo $prefix/bin/syn2cc.py
       ;;
     --include-dir)
-      echo $prefix/include
+      echo @abs_top_builddir@/include
       ;;
     --lib-dir)
-      echo $prefix/lib
+      echo @abs_top_builddir@/lib
       ;;
     *)
       echo "${usage}" 1>&2

@@ -43,7 +43,7 @@ all:	$(subdirs)
 #(none currently)
 
 $(subdirs):
-	@echo making $(action) in $@
+	@$(SHTOOL) echo Making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
 build-tests:
@@ -70,24 +70,6 @@ install-doc:
 rpm: dist
 	@(unset CDPATH ; rpm -ta $(distdir).tar.gz)
 
-dist: $(distdir).tar.gz
-
-$(distdir).tar.gz:
-	@echo "generating $@..."
-	-rm -rf $(distdir)
-	cp -pr $(srcdir) $(distdir)
-	-chmod -R a+r $(distdir)
-	cp config/Prague.spec $(distdir)/config/
-	tar czhf $(distdir).tar.gz \
-       --exclude CVS \
-       --exclude .cvsignore \
-       --exclude autom4te.cache \
-       --exclude '*.m4' \
-       --exclude '*.ac' \
-       --exclude '*~' \
-       $(distdir)
-	-rm -rf $(distdir)
-
 uninstall:
 	$(MAKE) action="uninstall"
 
@@ -95,17 +77,17 @@ clean:
 	$(MAKE) action="clean"
 
 distclean:
-	@echo 'This command removes Makefiles and auxiliary files;'
-	@echo 'run configure to regenerate them.'
+	@$(SHTOOL) echo 'This command removes Makefiles and auxiliary files;'
+	@$(SHTOOL) echo 'run configure to regenerate them.'
 	$(MAKE) action="distclean"
 	rm -rf Makefile config/local.mk config.cache config.log config.status \
                config/Prague-config config/synopsis.py \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4
 
 maintainer-clean:
-	@echo 'This command is intended for maintainers to use;'
-	@echo 'it deletes configure and auxiliary files;'
-	@echo 'run autogen.sh to regenerated them.'
+	@$(SHTOOL) echo 'This command is intended for maintainers to use;'
+	@$(SHTOOL) echo 'it deletes configure and auxiliary files;'
+	@$(SHTOOL) echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
 	rm -rf Makefile config/local.mk config.cache config.log config.status \
                config/Prague-config config/synopsis.py \

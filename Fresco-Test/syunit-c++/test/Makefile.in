@@ -71,7 +71,7 @@ run-tests: build-tests $(SCRIPT_SOURCES)
 	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
 
 $(TARGETS): $(OBJ)
-	@echo linking $(@F)
+	@$(SHTOOL) echo Linking $(@F)
 	$(CXX) `$(FRESCO_TEST_CONFIG) --libs` -o $@ $<
 
 depend: $(DEP)
@@ -93,17 +93,17 @@ distclean:	clean
 maintainer-clean: distclean
 
 $(SYN): $(CXX_TESTS)
-	@echo generating $(@F)
+	@$(SHTOOL) echo Generating $(@F)
 	$(SYNOPSIS) -pCxx -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
 
 $(HARNESS): $(SYN)
-	@echo generating test harness for $(@F)
+	@$(SHTOOL) echo Generating test harness for $(@F)
 	`$(FRESCO_TEST_CONFIG) --syn2cc` $< $@
 
 $(DEP): $(HARNESS)
-	@echo generating dependencies for $(<F)
+	@$(SHTOOL) echo Generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 $(OBJ): $(HARNESS)
-	@echo compiling $(@F)
+	@$(SHTOOL) echo Compiling $(@F)
 	$(CXX) `$(FRESCO_TEST_CONFIG) --cppflags` `$(FRESCO_TEST_CONFIG) --cxxflags` -c $< -o $@

@@ -27,18 +27,31 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.53)
 AC_REVISION($Revision$)
 
-AC_INIT(Fresco-Test, M2, devel@fresco.org)
+AC_INIT(Fresco-Test, M2, fresco-devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 
 AC_CANONICAL_HOST
 
 AC_PROG_MAKE_SET
+
+dnl ------------------------------------------------------------------
+dnl Fresco generic
+dnl ------------------------------------------------------------------
+
+AC_MSG_NOTICE([generic Fresco setup])
+
 FRESCO_PROG_CC_CXX
 FRESCO_CHECK_OPTIMIZE
 FRESCO_CHECK_DEBUGGING
 
 FRESCO_FLAG_SO
+
+SYNOPSIS_VERSION="0.6"
+SYNOPSIS_CHECK([$SYNOPSIS_VERSION])
+if test "$SYNOPSIS." = "." ; then
+   AC_MSG_ERROR([You need Synopsis (>= $SYNOPSIS_VERSION).])
+fi
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
@@ -47,15 +60,14 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk])
-AC_CONFIG_FILES([config/Fresco-Test-config], [chmod +x config/Fresco-Test-config])
-AC_CONFIG_FILES([bin/Fresco-Test-config:config/Fresco-Test-build-config.in], [chmod +x bin/Fresco-Test-config])
+AC_CONFIG_FILES([config/Fresco-Test-config], \
+                [chmod +x config/Fresco-Test-config])
+AC_CONFIG_FILES([bin/Fresco-Test-config:config/Fresco-Test-build-config.in], \
+                [chmod +x bin/Fresco-Test-config])
 AC_CONFIG_FILES([Makefile syunit/Makefile])
 AC_CONFIG_FILES([syunit-c++/Makefile syunit-c++/src/Makefile])
 AC_CONFIG_FILES([syunit-c++/test/Makefile])
 AC_CONFIG_FILES([scripts/Makefile])
 
-mkdir -p lib
-mkdir -p include
-mkdir -p bin
-
 AC_OUTPUT
+

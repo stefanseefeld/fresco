@@ -40,10 +40,13 @@ SCRIPT_TARGETS	:= $(patsubst %, $(build_bindir)/%, $(SCRIPTS))
 
 all:	$(SCRIPT_TARGETS)
 
-install: all # do nothing special!
+install: all
+	@$(SHTOOL) echo Installing scripts...
+	$(SHTOOL) mkdir -p -f -m 755 $(DESTDIR)$(datadir)/Fresco-Test
+	cp $(SCRIPT_TARGETS) $(DESTDIR)$(datadir)/Fresco-Test
 
 $(SCRIPT_TARGETS):
-	@echo copying $(@F).
+	@$(SHTOOL) echo Copying $(@F).
 	cp $(patsubst $(build_bindir)%, $(srcdir)%, $@) $@
 
 build-tests: all
@@ -51,7 +54,7 @@ build-tests: all
 run-tests: build-tests
 
 clean:
-	@echo removing all copied files
+	@$(SHTOOL) echo Removing all copied files
 	rm -rf $(SCRIPT_TARGETS)
 
 distclean: clean
