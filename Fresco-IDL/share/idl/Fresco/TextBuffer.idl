@@ -31,27 +31,46 @@ module Warsaw
   interface TextBuffer : Subject
     {
       
+       //. This can change in a TextBuffer:
       enum ChangeType {insert, remove, cursor};
       
       struct Change
       {
-	ChangeType type;
-	unsigned long pos;
-	long len;
+	  ChangeType type;    //.< What happened?
+	  unsigned long pos;  //.< Where did it happen?
+	  long len;           //.< How long was the change? This might be a negative number.
       };
       
+	//. The length of the TextBuffer.
       readonly attribute long size;
+	//. The contents of the TextBuffer.
       readonly attribute Unistring value;
+	//. Position of the Cursor.
       attribute long position;
+	//. Get a substring of the Buffer starting at pos
+	//. and len characters long.
       Unistring get_chars(in unsigned long pos, in unsigned long len);
+	//. Move the cursor forward for one character.
       void forward();
+	//. Move the cursor backwards for one character.
       void backward();
+      
       void shift(in long d);
+	//. Insert a character at the current position.
+	//. Allways use insert_string since this
+	//. might lead to unexspected results when adding characters with
+	//. codevalues bigger then 0xFFFF!
       void insert_char(in Unichar u);
+	//. Inserts a string into the Buffer. It gets inserted at the
+	//. current cursor position.
       void insert_string(in Unistring u);
+	//. Removes d characters backward.
+	//. This is relative to the current cursor position.
       void remove_backward(in long d);
+	//. Removes d characters forward.
+	//. This is relative to the current cursor position.
       void remove_forward(in long d);
-
+	//. Clears the buffer. It will be empty afterwards.
       void clear();
     };
 };
