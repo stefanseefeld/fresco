@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -77,7 +77,7 @@ void Timer::expire()
 
 void Timer::schedule(Timer *timer)
 {
-  if (server.state() != Thread::running) server.start();
+  if (server.state() == Thread::READY) server.start();
   Prague::Guard<Mutex> guard(mutex);
   timers.push_back(timer);
   push_heap(timers.begin(), timers.end(), comp());

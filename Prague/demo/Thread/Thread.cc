@@ -52,27 +52,37 @@ Thread thread0(task0, 0);
 
 int main(int, char **)
 {
-  long l = 42;
-  Thread thread1(task1, &l);
-  Thread thread2(task2, &l);
-  Thread thread3(task3, &l);
-  Thread thread4(task3, &l); // never start...
-  thread0.start();
-  thread1.start();
-  thread2.start();
-  thread3.start();
-  void *r;
-  thread1.join(&r);
-  if (thread1.state() == Thread::canceled) std::cout << "thread 1 canceled" << std::endl;
-  else std::cout << "thread 1 finished, return value is " << *static_cast<long *>(r) << std::endl;
-  thread2.join(&r);
-  if (thread2.state() == Thread::canceled) std::cout << "thread 2 canceled" << std::endl;
-  else std::cout << "thread 2 finished, return value is '" << static_cast<char *>(r) << '\'' << std::endl;
-  std::cout << "cancelling thread 3..." << std::endl; 
-  thread3.cancel();
-  thread3.join(&r);
-  if (thread3.state() == Thread::canceled) std::cout << "thread 3 canceled" << std::endl;
-  else std::cout << "thread 3 finished, return value is '" << static_cast<char *>(r) << '\'' << std::endl;
-//   thread0.join(0);
-  while (true) sleep(1);
+  try
+  {
+    long l = 42;
+    Thread thread1(task1, &l);
+    Thread thread2(task2, &l);
+    Thread thread3(task3, &l);
+    Thread thread4(task3, &l); // never start...
+    thread0.start();
+    thread1.start();
+    thread2.start();
+    thread3.start();
+    void *r;
+    thread1.join(&r);
+    if (r == Thread::CANCELED) std::cout << "thread 1 canceled" << std::endl;
+    else std::cout << "thread 1 finished, return value is " << *static_cast<long *>(r) << std::endl;
+    thread2.join(&r);
+    if (r == Thread::CANCELED) std::cout << "thread 2 canceled" << std::endl;
+    else std::cout << "thread 2 finished, return value is '" << static_cast<char *>(r) << '\'' << std::endl;
+    std::cout << "cancelling thread 3..." << std::endl; 
+    thread3.cancel();
+    thread3.join(&r);
+    if (r == Thread::CANCELED) std::cout << "thread 3 canceled" << std::endl;
+    else std::cout << "thread 3 finished, return value is '" << static_cast<char *>(r) << '\'' << std::endl;
+    thread0.join(0);
+  }
+  catch (const Thread::Exception &e)
+  {
+    std::cerr << "Thread Exception : " << e.what() << std::endl;
+  }
+  catch (const std::exception &e)
+  {
+    std::cerr << "std::exception : " << e.what() << std::endl;
+  }
 }

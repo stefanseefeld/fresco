@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
 
 using namespace Prague;
 
+const void   *Thread::CANCELED = PTHREAD_CANCELED;
 pthread_key_t Thread::self_key;
 pthread_key_t Thread::id_key;
 Mutex         Thread::id_mutex;
@@ -55,73 +56,82 @@ Thread::Guard::Guard()
 
 Thread::Guard::~Guard()
 {
-  Thread::main->_state = canceled;
   delete Thread::main;
 }
 
 Thread::Thread(proc pp, void *a, priority_t prio)
-  : p(pp), arg(a), _priority(prio), _state(ready), detached(false)
+  : my_proc(pp),
+    my_arg(a),
+    my_priority(prio),
+    my_state(READY),
+    my_detached(false)
+{
+}
+
+Thread::Thread(pthread_t pt)
+  : my_proc(0),
+    my_arg(0),
+    my_thread(pt),
+    my_priority(NORMAL),
+    my_state(RUNNING),
+    my_detached(false)
 {
 }
 
 Thread::~Thread()
 {
-  if (this != self())
-    {
-      cancel();
-      if (!detached) join(0);
-    }
+  if (this != self() && state() != READY)
+  {
+    cancel();
+    if (!my_detached) join(0);
+  }
 }
 
 void Thread::start() throw (Exception)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  if ((_state) != ready) throw Exception("thread already running");
-  if (pthread_create(&thread, 0, &start, this) != 0) throw Exception("can't create thread");
-  else _state = running;
+  Prague::Guard<Mutex> guard(my_mutex);
+  if ((my_state) != READY) throw Exception("thread already running");
+  if (pthread_create(&my_thread, 0, &start, this) != 0) throw Exception("can't create thread");
+  else my_state = RUNNING;
 }
 
 void Thread::join(void **status) throw (Exception)
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    if (_state == joined || _state == canceled || _state == ready) return;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (my_state == READY) throw Exception("can't join ready thread");
     if (this == self()) throw Exception("can't join thread 'self'");
-    if (detached) throw Exception("can't join detached thread");
-    _state = joined;
+    if (my_detached) throw Exception("can't join detached thread");
   }
   void *s;
-  pthread_join(thread, &s);
-  if (s == PTHREAD_CANCELED)
-    {
-      Prague::Guard<Mutex> guard(mutex);
-      _state = canceled;
-    }
+  pthread_join(my_thread, &s);
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_state = READY;
   if (status) *status = s;
 }
 
 void Thread::cancel()
 {
-  if (this != self() && state() == running)
-    pthread_cancel(thread);
+  if (this != self() && state() == RUNNING)
+    pthread_cancel(my_thread);
 }
 
 void Thread::detach()
 {
-  mutex.lock();
-  detached = true;
-  mutex.unlock();
-  pthread_detach(thread);
+  my_mutex.lock();
+  my_detached = true;
+  my_mutex.unlock();
+  pthread_detach(my_thread);
 }
 
 void Thread::exit(void *r)
 {
   Thread *me = self();
   if (me)
-    {
-      Prague::Guard<Mutex> guard(me->mutex);  
-      me->_state = terminated;
-    }
+  {
+    Prague::Guard<Mutex> guard(me->my_mutex);  
+    me->my_state = TERMINATED;
+  }
   pthread_exit(r);
 }
 
@@ -132,8 +142,7 @@ void *Thread::start(void *X)
   id_mutex.lock();
   pthread_setspecific(id_key, new unsigned long (counter++));
   id_mutex.unlock();
-  void *ret = thread->p(thread->arg);
-  return ret;
+  return thread->my_proc(thread->my_arg);
 }
 
 bool Thread::delay(const Time &time)

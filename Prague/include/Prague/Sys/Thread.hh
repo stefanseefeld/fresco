@@ -30,6 +30,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <stdexcept>
 
 namespace Prague
 {
@@ -176,32 +177,30 @@ class Thread
   };
   friend struct Guard;
 public:
-  enum priority_t {low, normal, high};
-  enum state_t {ready, running, terminated, canceled, joined};
+  enum priority_t {LOW, NORMAL, HIGH};
+  enum state_t {READY, RUNNING, TERMINATED};
+  static const void *CANCELED;
   template <class T> class Data;
   template <class T> class Queue;
   typedef void *(*proc)(void *);
-  class Attribute// : public pthread_attr_t
+  class Attribute
   {
   public:
     Attribute() { pthread_attr_init(&impl);}
     ~Attribute() { pthread_attr_destroy(&impl);}
     pthread_attr_t impl;
   };
-  class Exception
+  class Exception : public std::logic_error
   {
   public:
-    Exception(const std::string &m) : _msg(m) {}
-    const std::string &what() const { return _msg;}
-  private:
-    std::string _msg;
+    Exception(const std::string &m) : std::logic_error(m) {}
   };
-  Thread(proc, void *, priority_t = normal);
+  Thread(proc, void *, priority_t = NORMAL);
   ~Thread();
   //. return the thread's priority
-  priority_t priority() { Prague::Guard<Mutex> g(mutex); return _priority;}
+  priority_t priority() { Prague::Guard<Mutex> g(my_mutex); return my_priority;}
   //. return the thread's current state
-  state_t state() { Prague::Guard<Mutex> g(mutex); return _state;}
+  state_t state() { Prague::Guard<Mutex> g(my_mutex); return my_state;}
   //. start the thread
   void start() throw (Exception);
   //. wait for the thread to finish returning its return value
@@ -216,26 +215,29 @@ public:
   static bool delay(const Time &);
   //. cancellation point
   static void testcancel() { pthread_testcancel();}
-  //. return a Thread pointer for the calling thread or 0 if it wasn't created by this Thread class
+  //. return a Thread pointer for the calling thread or 0 
+  //. if it wasn't created by this Thread class
   static Thread *self();
   //. return a thread id. This gives a valid number even for third party threads
   static unsigned long id();
 private:
-  Thread(pthread_t pt) : p(0), arg(0), thread(pt), _priority(normal), _state(running), detached(false) {}
+  Thread(pthread_t);
   static void *start(void *);
-  proc p;
-  void *arg;
-  pthread_t thread;
-  priority_t _priority;
-  state_t _state;
-  bool detached;
-  Mutex mutex;
+
   static unsigned long counter;
   static Thread *main;
   static Guard guard;
   static pthread_key_t self_key;
   static pthread_key_t id_key;
   static Mutex         id_mutex;
+
+  proc       my_proc;
+  void      *my_arg;
+  pthread_t  my_thread;
+  priority_t my_priority;
+  state_t    my_state;
+  bool       my_detached;
+  Mutex      my_mutex;
 };
 
 inline Thread *Thread::self()
