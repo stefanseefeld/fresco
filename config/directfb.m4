@@ -1,6 +1,6 @@
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Niklas Elmqvist <elm@3dwm.org>
+dnl Copyright (C) 2000 Tobias Hunger <Tobias@berlin-consortium.org>
 dnl http://www.berlin-consortium.org
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -19,10 +19,9 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_CAVELIB_CHECK(mandatory-flag)
+dnl BERLIN_DIRECTFB_CHECK(mandatory-flag)
 dnl
-dnl Checks if cavelib is found. If it is, $ac_cv_lib_cave is set to "yes".
-dnl We want the OpenGL versions of CAVELib (not the default IrisGL)!
+dnl Checks if directfb is found. If it is, $ac_cv_lib_directfb is set to "yes".
 
 AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
 
@@ -31,7 +30,7 @@ AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
 
 	AC_ARG_WITH(directfb-prefix,
 		[  --with-directfb-prefix=PFX   Prefix for DirectFb (console DirectFB)],[
-		cavelib_prefix="$withval"])
+		directfb_prefix="$withval"])
 
 	dnl Check for directFB includes
 	if test ".$directfb_prefix" != . ; then
@@ -42,7 +41,7 @@ AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
 	AC_CHECK_HEADER(directfb.h,:,no_directfb=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
-	dnl Check for cavelib libs
+	dnl Check for directfb libs
 	if test ".$no_directfb" = . ; then
 
 		if test ".$directfb_prefix" != . ; then

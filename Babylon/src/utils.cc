@@ -638,7 +638,7 @@ get_vis2log(const size_t & start_offset,
     size_t str_length(emb.types.back().start + emb.types.back().length);
 
     for(size_t i = 0; i < str_length; ++i)
-	vis2log_str.push_back(i + start_offset);
+	vis2log_str += i + start_offset;
 
     // FIXME: This is missing:
     // L4. Mirror all characters that are in odd levels and have mirrors

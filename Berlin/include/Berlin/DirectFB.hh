@@ -154,14 +154,15 @@ public:
 private:
     string             m_name;
 
-    DrawableTie<DirectFBDrawable>::PixelFormat
+    DrawableTie<DirectFBDrawable>::PixelFormat 
                        m_format;
-    unsigned int       m_width,
-	               m_height;
 
-    Pixel              m_cur_col;
-    static IDirectFB * s_dfb;
-    IDirectFBSurface * m_surface;
+    int                m_width,
+                       m_height;
+  
+  Pixel                m_cur_col;
+  static IDirectFB *   s_dfb;
+  IDirectFBSurface *   m_surface;
 };
 
 // Change the Buffer to unlock the surface on release:
