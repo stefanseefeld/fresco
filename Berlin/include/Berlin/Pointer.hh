@@ -56,10 +56,10 @@ private:
 inline bool Pointer::intersects(const Coord &l, const Coord &r, const Coord &t, const Coord &b)
 {
   return
-    l/size[0] <= position[0] + size[0] &&
-    r/size[0] >= position[0] &&
-    t/size[1] <= position[1] + size[1] &&
-    b/size[1] >= position[1];
+    l/scale[0] <= position[0] + size[0] &&
+    r/scale[0] >= position[0] &&
+    t/scale[1] <= position[1] + size[1] &&
+    b/scale[1] >= position[1];
 }
 
 #endif /* _Pointer_hh */
