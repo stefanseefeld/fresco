@@ -27,6 +27,7 @@
 #include <Warsaw/Input.hh>
 #include <Warsaw/Drawable.hh>
 #include <Berlin/config.hh>
+#include <iosfwd>
 
 template <typename T>
 class DrawableTie : public virtual POA_Warsaw::Drawable,
@@ -162,6 +163,7 @@ public:
   static Warsaw::Drawable_ptr activate_drawable(DrawableTie<typename T::Drawable> *);
   static DrawableTie<typename T::Drawable> *reference_to_servant(Warsaw::Drawable_ptr);
 
+  static void device_info(std::ostream &);
   static Warsaw::Input::Event *next_event();
   static void wakeup();
   static void activate_autoplay();
@@ -332,6 +334,10 @@ Warsaw::Drawable_ptr ConsoleTie<T>::activate_drawable(DrawableTie<typename T::Dr
 template <typename T>
 inline DrawableTie<typename T::Drawable> *ConsoleTie<T>::reference_to_servant(Warsaw::Drawable_ptr d)
 { return T::reference_to_servant(d);}
+
+template <typename T>
+inline void ConsoleTie<T>::device_info(std::ostream &os)
+{ t->device_info(os);}
 
 template <typename T>
 inline Warsaw::Input::Event *ConsoleTie<T>::next_event()

@@ -295,6 +295,11 @@ static void writeEvent(SDL_Event &e)
   std::cout << endl;
 }
 
+void SDLConsole::device_info(std::ostream &os)
+{
+  os << "sorry, device info isn't available for SDL at this time" << std::endl;
+}
+
 Input::Event *SDLConsole::next_event()
 {
   Trace trace("SDL::Console::next_event");

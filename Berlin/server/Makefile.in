@@ -42,7 +42,7 @@ endif
 CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
 LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @CON_LIBS@
 
-TARGETS		:= $(bdir)/server $(bdir)/kits
+TARGETS		:= $(bdir)/server $(bdir)/kits $(bdir)/devices
 
 ifeq ($(JPROF),yes)
 JPROFTARGETS	:= $(ldir)/libjprof.so $(bdir)/jprof
@@ -73,6 +73,10 @@ $(bdir)/server:	server.o
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 $(bdir)/kits:	kits.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(bdir)/devices:	devices.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

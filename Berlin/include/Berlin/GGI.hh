@@ -119,6 +119,7 @@ public:
   static Warsaw::Drawable_ptr activate_drawable(DrawableTie<GGIDrawable> *);
   static DrawableTie<Drawable> *reference_to_servant(Warsaw::Drawable_ptr);
 
+  void device_info(std::ostream &);
   Warsaw::Input::Event *next_event();
   void wakeup();
   void activate_autoplay() { _autoplay = true;}

@@ -29,6 +29,59 @@ using namespace Warsaw;
 GGIConsole::dlist_t GGIConsole::_drawables;
 PortableServer::POA_var GGIConsole::_poa;
 
+namespace
+{
+void read_event(ggi_event &e)
+{
+  unsigned int t;
+  std::cin >> t;
+  e.any.type = (char)t;
+  switch (e.any.type)
+    {
+    case evKeyPress:
+    case evKeyRepeat:
+      {
+	std::cin >> t;
+	e.key.sym = t;
+	break;
+      }
+    case evPtrRelative:
+    case evPtrAbsolute:
+      {
+	std::cin >> e.pmove.x >> e.pmove.y;
+	break;
+      }
+    case evPtrButtonPress:
+    case evPtrButtonRelease:
+      break;
+    }
+}
+
+void write_event(ggi_event &e)
+{
+  std::cout << ((unsigned int)(e.any.type)) << ' ';
+  switch (e.any.type)
+    {
+    case evKeyPress:
+    case evKeyRepeat:
+      {
+	std::cout << ((unsigned int)(e.key.sym));
+	break;
+      }
+    case evPtrRelative:
+    case evPtrAbsolute:
+      {
+	std::cout << e.pmove.x << ' ' << e.pmove.y;
+	break;
+      }
+    case evPtrButtonPress:
+    case evPtrButtonRelease:
+      break;
+    }
+  std::cout << std::endl;
+}
+};
+
 GGIConsole::GGIConsole(int &argc, char **argv, PortableServer::POA_ptr poa)
   : _autoplay(false)
 {
@@ -98,60 +151,24 @@ DrawableTie<GGIDrawable> *GGIConsole::reference_to_servant(Warsaw::Drawable_ptr 
   return 0;
 }
 
-static void readEvent(ggi_event &e)
+void GGIConsole::device_info(std::ostream &os)
 {
-  unsigned int t;
-  cin >> t;
-  e.any.type = (char)t;
-  switch (e.any.type)
+  unsigned int number = 0;
+  unsigned int origin;
+  gii_cmddata_getdevinfo device;
+  int status = 0;
+  while ((status = giiQueryDeviceInfoByNumber(ggiJoinInputs(_visual, 0), number++, &origin, &device)) == 0)
     {
-    case evKeyPress:
-    case evKeyRepeat:
-      {
-	cin >> t;
-	e.key.sym = t;
-	break;
-      }
-    case evPtrRelative:
-    case evPtrAbsolute:
-      {
-	cin >> e.pmove.x
-	    >> e.pmove.y;
-	break;
-      }
-    case evPtrButtonPress:
-    case evPtrButtonRelease:
-      {
-	break;
-      }
-  }
-}
-
-static void writeEvent(ggi_event &e)
-{
-  cout << ((unsigned int)(e.any.type)) << ' ';
-  switch (e.any.type)
-    {
-    case evKeyPress:
-    case evKeyRepeat:
-      {
-	cout << ((unsigned int)(e.key.sym));
-	break;
-      }
-    case evPtrRelative:
-    case evPtrAbsolute:
-      {
-	cout << e.pmove.x << ' '
-	     << e.pmove.y;
-	break;
-      }
-    case evPtrButtonPress:
-    case evPtrButtonRelease:
-      {
-	break;
-      }
+      os << "device name: '" << device.longname << "\', axes: " << device.num_axes << ", buttons: " << device.num_buttons << "\n";
+      for (int i = 0; i != device.num_axes; ++i)
+	{
+	  gii_cmddata_getvalinfo valuator;
+	  int s = giiQueryValInfo(ggiJoinInputs(_visual, 0), origin, i, &valuator);
+	  if (s == 0)
+	    os << "\t axis: '" << valuator.longname << "\', range: min="
+	       << valuator.range.min << ", max=" << valuator.range.max << ", origin=" << valuator.range.center << std::endl;
+	}
     }
-  cout << endl;
 }
 
 Input::Event *GGIConsole::next_event()
@@ -205,14 +222,14 @@ Input::Event *GGIConsole::next_event()
 		}
 	    }
 	}
-      if (_autoplay) writeEvent(event);
+      if (_autoplay) write_event(event);
       return synthesize(event);
     }
   else if (nfds > 0)
     {
       if (_autoplay && rfdset.isset(input))
 	{
-	  readEvent(event);
+	  read_event(event);
 	  return synthesize(event);
 	}
       else
@@ -232,6 +249,7 @@ void GGIConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
 Input::Event *GGIConsole::synthesize(const ggi_event &e)
 {
   Input::Event_var event = new Input::Event;
+//   cerr << "input from event " << e.any.origin << endl;
   switch (e.any.type)
     {
     case evKeyPress:
