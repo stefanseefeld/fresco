@@ -23,10 +23,11 @@ SHELL		:= /bin/sh
 
 abs_top_srcdir	:= @abs_top_srcdir@
 top_builddir	:= @top_builddir@
-srcdir		:= @srcdir@
+srcdir		:= @abs_srcdir@
 cdir		:= $(top_builddir)/config
 docdir		:= $(top_builddir)/share/doc/Berlin
 
+SHTOOL		:= $(abs_top_srcdir)/config/shtool
 XSLT		:= xsltproc
 
 SRC		:= hello.xml kits.xml hello-list.xml book.xml
@@ -61,8 +62,10 @@ distclean maintainer-clean:
 	rm -f Makefile
 
 figures/%.eps: figures/%.svg
+	$(SHTOOL) mkdir -f -p -m 755 figures
 	convert $< $@
 
 figures/%.png: figures/%.svg
+	$(SHTOOL) mkdir -f -p -m 755 figures
 	convert $< $@
 
