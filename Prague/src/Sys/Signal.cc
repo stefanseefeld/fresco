@@ -38,20 +38,20 @@ namespace Prague
        * the event handler that it is reentrant and async safe
        * - stefan
        */
-      if (signo == Signal::child) Signal::notify(signo);
+      if (signo == Signal::child) Signal::notify(Signal::type(signo));
       else if (!Thread::id())
-      Signal::queue.push(signo);
+      Signal::queue.push(Signal::type(Signal::type(signo)));
   }
 
 } // namespace
 
 using namespace Prague;
 
-Signal::dict_t     Signal::notifiers;
-Thread::Queue<int> Signal::queue(32);
-Thread             Signal::server(&Signal::run, 0);
+Signal::dict_t Signal::notifiers;
+Thread::Queue<Signal::type> Signal::queue(32);
+Thread Signal::server(&Signal::run, 0);
 
-bool Signal::set (int signum, Signal::Notifier *notifier)
+bool Signal::set(type signum, Signal::Notifier *notifier)
 {
     if (server.state() == Thread::READY) server.start();
     if (!notifiers[signum].size())
@@ -70,7 +70,7 @@ bool Signal::set (int signum, Signal::Notifier *notifier)
     return true;
 }
 
-bool Signal::unset (int signum, Signal::Notifier *notifier)
+bool Signal::unset(type signum, Signal::Notifier *notifier)
 {
     nlist_t::iterator i = find (notifiers[signum].begin(), notifiers[signum].end(), notifier);
     if (i != notifiers[signum].end())
@@ -82,89 +82,89 @@ bool Signal::unset (int signum, Signal::Notifier *notifier)
     return false;
 }
 
-void Signal::unset (int signum)
+void Signal::unset(type signum)
 {
     notifiers[signum].erase(notifiers[signum].begin(), notifiers[signum].end());
     struct sigaction sa;
-    if (sigaction (signum, 0, &sa) == -1) return;
-    if (sa.sa_handler == sighnd_type (&sighandler))
+    if (sigaction(int(signum), 0, &sa) == -1) return;
+    if (sa.sa_handler == sighnd_type(&sighandler))
     {
-        sa.sa_handler = sighnd_type (SIG_DFL);
-        if (sigemptyset (&sa.sa_mask) == -1) return;
+        sa.sa_handler = sighnd_type(SIG_DFL);
+        if (sigemptyset(&sa.sa_mask) == -1) return;
         sa.sa_flags = 0;
-        if (sigaction (signum, &sa, 0) == -1) return;
+        if (sigaction(int(signum), &sa, 0) == -1) return;
     }
 }
 
-void Signal::mask (int signum)
+void Signal::mask(type signum)
 {
     sigset_t s;
-    if (sigemptyset (&s) == -1) return;
-    if (sigaddset (&s, signum) == -1) return;
-    if (sigprocmask (SIG_BLOCK, &s, 0) == -1) return;
+    if (sigemptyset(&s) == -1) return;
+    if (sigaddset(&s, int(signum)) == -1) return;
+    if (sigprocmask(SIG_BLOCK, &s, 0) == -1) return;
 }
 
-void Signal::mask (int siga, int sigb)
+void Signal::mask (type siga, type sigb)
 {
     struct sigaction sa;
-    if (sigaction (siga, 0, &sa) == -1) return;
-    if (sa.sa_handler != sighnd_type (&sighandler))
+    if (sigaction(int(siga), 0, &sa) == -1) return;
+    if (sa.sa_handler != sighnd_type(&sighandler))
     {
-        sa.sa_handler = sighnd_type (&sighandler);
-        if (sigemptyset (&sa.sa_mask) == -1) return;
+        sa.sa_handler = sighnd_type(&sighandler);
+        if (sigemptyset(&sa.sa_mask) == -1) return;
         sa.sa_flags = 0;
     }
-    if (sigaddset (&sa.sa_mask, sigb) == -1) return;
-    if (sigaction (siga, &sa, 0) == -1) return;
+    if (sigaddset(&sa.sa_mask, int(sigb)) == -1) return;
+    if (sigaction(int(siga), &sa, 0) == -1) return;
 }
 
-void Signal::unmask (int signum)
+void Signal::unmask(type signum)
 {
     sigset_t s;
-    if (sigemptyset (&s) == -1) return;
-    if (sigaddset (&s, signum) == -1) return;
-    if (sigprocmask (SIG_UNBLOCK, &s, 0) == -1) return;
+    if (sigemptyset(&s) == -1) return;
+    if (sigaddset(&s, int(signum)) == -1) return;
+    if (sigprocmask(SIG_UNBLOCK, &s, 0) == -1) return;
 }
 
-void Signal::unmask (int siga, int sigb)
+void Signal::unmask(type siga, type sigb)
 {
     struct sigaction sa;
-    if (sigaction (siga, 0, &sa) == -1) return;
-    if (sa.sa_handler != sighnd_type (&sighandler))
+    if (sigaction(int(siga), 0, &sa) == -1) return;
+    if (sa.sa_handler != sighnd_type(&sighandler))
     {
-        sa.sa_handler = sighnd_type (&sighandler);
-        if (sigemptyset (&sa.sa_mask) == -1) return;
+        sa.sa_handler = sighnd_type(&sighandler);
+        if (sigemptyset(&sa.sa_mask) == -1) return;
         sa.sa_flags = 0;
     }
-    else { if (sigdelset (&sa.sa_mask, sigb) == -1) return;}
-    if (sigaction (siga, &sa, 0) == -1) return;
+    else { if (sigdelset(&sa.sa_mask, int(sigb)) == -1) return;}
+    if (sigaction(int(siga), &sa, 0) == -1) return;
 }
 
-void Signal::sysresume (int signum, bool set)
+void Signal::sysresume(type signum, bool set)
 {
     struct sigaction sa;
-    if (sigaction (signum, 0, &sa) == -1) return;
-    if (sa.sa_handler != sighnd_type (&sighandler))
+    if (sigaction(int(signum), 0, &sa) == -1) return;
+    if (sa.sa_handler != sighnd_type(&sighandler))
     {
-        sa.sa_handler = sighnd_type (&sighandler);
-        if (sigemptyset (&sa.sa_mask) == -1) return;
+        sa.sa_handler = sighnd_type(&sighandler);
+        if (sigemptyset(&sa.sa_mask) == -1) return;
         sa.sa_flags = 0;
     }
-    if (sigaction (signum, &sa, 0) == -1) return;
+    if (sigaction(int(signum), &sa, 0) == -1) return;
 }
 
-sigset_t Signal::pending ()
+sigset_t Signal::pending()
 {
     sigset_t s;
-    if (sigemptyset (&s) == -1) return s;
-    if (sigpending (&s) == -1) return s;
+    if (sigemptyset(&s) == -1) return s;
+    if (sigpending(&s) == -1) return s;
     return s;
 }
 
-bool Signal::ispending (int signo)
+bool Signal::ispending(type signo)
 {
     sigset_t s = pending();
-    switch (sigismember (&s, signo))
+    switch (sigismember(&s, type(signo)))
     {
       case  1:
         return true;
@@ -177,16 +177,16 @@ bool Signal::ispending (int signo)
     return false;
 }
 
-const char *Signal::name(int signum) { return strsignal(signum); }
+const char *Signal::name(type signum) { return strsignal(int(signum)); }
 
 struct execute
 {
-    execute(int s) : signum(s) { }
+    execute(Signal::type s) : signum(s) { }
     void operator () (Signal::Notifier *notifier) { notifier->notify(signum); }
-    int signum;
+    Signal::type signum;
 };
 
-void Signal::notify(int signum)
+void Signal::notify(type signum)
 {
     nlist_t tmp = notifiers[signum];
     execute e(signum);
@@ -197,7 +197,7 @@ void *Signal::run(void *)
 {
     while (true)
     {
-        int signo = Signal::queue.top();
+        type signo = Signal::queue.top();
         Signal::queue.pop();
         Signal::notify(signo);
         Thread::testcancel();

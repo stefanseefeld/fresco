@@ -161,10 +161,10 @@ bool Coprocess::process(int, iomask m)
 
 void Coprocess::terminate()
 {
-    int sig = 0;
+    Signal::type sig;
     for (long ms = 0; pid(); ms++)
     {
-        sig = 0;
+        sig = Signal::none;
         if (ms == _timeout.terminate) sig = Signal::terminate;
         if (ms == _timeout.hangup)  sig = Signal::hangup;
         if (ms == _timeout.kill) sig = Signal::kill;
@@ -186,7 +186,7 @@ void Coprocess::shutdown(int m)
     if (m & err) delete _errbuf, _errbuf = 0;
 }
 
-void Coprocess::kill(int signum)
+void Coprocess::kill(Signal::type signum)
 {
-    if (_id > 0 && ::kill(_id, signum) < 0) std::perror("Coprocess::kill");
+    if (_id > 0 && ::kill(_id, int(signum)) < 0) std::perror("Coprocess::kill");
 }

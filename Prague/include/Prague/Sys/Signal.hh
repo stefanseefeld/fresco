@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * Copyright (C) 2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -31,64 +32,95 @@
 namespace Prague
 {
 
-  class sigerr{};
-
-  //. a wrapper for the POSIX signal handling functions.
+  //. A wrapper for the POSIX signal handling functions.
   class Signal
   {
     public:
+      //. This class defines the interface all Notifiers will have to use.
+      //. A notifier is a objectified callback function that can get bound to
+      //. a signal.
       class Notifier
       {
         public:
           virtual ~Notifier() { }
           virtual void notify(int) = 0;
       };
-    private:
-      typedef std::vector<Notifier *> nlist_t;
-      typedef std::map<int, nlist_t> dict_t;
-    public:
-      enum type { hangup = SIGHUP, interrupt = SIGINT, quit = SIGQUIT, illegal = SIGILL,
-                  trap = SIGTRAP, abort = SIGABRT, iotrap = SIGIOT, bus = SIGBUS, fpe = SIGFPE,
-                  segv = SIGSEGV,
-                  usr1 = SIGUSR1, usr2 = SIGUSR2, alarm = SIGALRM, terminate = SIGTERM, child = SIGCHLD, io = SIGIO,
-                  pipe = SIGPIPE, kill = SIGKILL};
+
+      //. Types of signals as defined in the single unix specification version 3.
+      //. (see http://www.unix.org/version3/)
+      enum type
+      {
+          none = 0, //.< All is well, move along...
+          abort = SIGABRT, //.< Process abort signal. (default: abort process)
+          alarm = SIGALRM, //.< Alarm clock. (default: terminate process)
+          bus = SIGBUS, //.< Access to an undefined portion of a memory object. (default: abort process)
+          child = SIGCHLD, //.< Child process terminated, stopped, or continued. (default: ignore signal)
+          continue_execution = SIGCONT, //.< Continue executing, if stopped. (default: continue process)
+          floating_point= SIGFPE, //.< Erroneous arithmetic operation. (default: abort process)
+          hangup = SIGHUP, //.< Hangup. (default: terminate process)
+          illegal = SIGILL, //.< Illegal instruction. (default: abort process)
+          interrupt = SIGINT, //.< Terminal interrupt signal. (default: terminate process)
+          kill = SIGKILL, //.< Kill (cannot be caught or ignored). (default: terminate process)
+          pipe = SIGPIPE, //.< Write on a pipe with no one to read it. (default: terminate process)
+          quit = SIGQUIT, //.< Terminal quit signal. (default: abort process)
+          segfault = SIGSEGV, //.< Invalid memory reference. (default: abort process)
+          stop = SIGSTOP, //.< Stop executing (cannot be caught or ignored). (default: stop process)
+          terminate = SIGTERM, //.< Termination signal. (default: terminate process)
+          terminal_stop = SIGTSTP, //.< Terminal stop signal. (default: stop process)
+          background_read = SIGTTIN, //.< Background process attempting read. (default: stop process)
+          background_write = SIGTTOU, //.< Background process attempting write. (default: stop process)
+          user1 = SIGUSR1, //.< User-defined signal 1. (default: terminate process)
+          user2 = SIGUSR2, //.< User-defined signal 2. (default: terminate process)
+          poll = SIGPOLL, //.< Pollable event. (default: terminate process)
+          profiling = SIGPROF, //.< Profiling timer expired. (default: terminate process)
+          system = SIGSYS, //.< Bad system call. (default: abort process)
+          trap = SIGTRAP, //.< Trace/breakpoint trap. (default: abort process)
+          urgent = SIGURG, //.< High bandwidth data is available at a socket. (default: ignore signal)
+          virtual_timer = SIGVTALRM, //.< Virtual timer expired. (default: terminate process)
+          cpu_time = SIGXCPU, //.< CPU time limit exceeded. (default: abort process)
+          fs_size = SIGXFSZ //.< File size limit exceeded. (default: abort process)
+      };
+
       //. add a notifier to be executed whenever the given signal is catched
-      static bool set(int, Notifier *);
+      static bool set(type, Notifier *);
       //. removes a notifier from the list for signum
-      static bool unset(int, Notifier *);
+      static bool unset(type, Notifier *);
       //. remove all notifiers for the signal and reinstall the system's default handler
-      static void unset(int);
+      static void unset(type);
       //. ignore the specified signal
-      static void mask(int);
+      static void mask(type);
       //. block sigb while siga is handled
-      static void mask(int, int);
+      static void mask(type, type);
       //. don't ignore the specified signal any more
-      static void unmask(int);
+      static void unmask(type);
       //. don't ignore the specified signal any more
-      static void unmask(int, int);
+      static void unmask(type, type);
       //. is there a pending signal of type signum (while being blocked)
-      static bool ispending(int signum);
+      static bool ispending(type);
       //. is there any pending signal (while being blocked)
       static sigset_t pending();
-      static void sysresume(int, bool);
+      static void sysresume(type, bool);
       //. returns the signal name of signum if nonzero or of the last signal beeing catched
-      static const char *name(int);
+      static const char *name(type);
 
       //. a Signal Guard, that masks a given signal over its lifetime.
       class Guard
       {
         public:
-          Guard(int s) : signo(s) { mask(signo); }
+          Guard(type s) : signo(s) { mask(signo); }
           ~Guard() { unmask(signo); }
         private:
-          int signo;
+          type signo;
       };
     private:
-      static void notify (int);
+      typedef std::vector<Notifier *> nlist_t;
+      typedef std::map<int, nlist_t> dict_t;
+
+      static void notify(type);
       friend void sighandler (int signo);
       static void *run(void *);
       static dict_t notifiers;
-      static Thread::Queue<int> queue;
+      static Thread::Queue<type> queue;
       static Thread server;
   };
 

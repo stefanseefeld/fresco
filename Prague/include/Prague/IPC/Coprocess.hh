@@ -85,7 +85,7 @@ namespace Prague
       Coprocess(const Coprocess &);
       Coprocess &operator = (const Coprocess &);
       bool terminated;
-      void kill(int);
+      void kill(Signal::type);
       mutable Mutex _mutex;
       struct
       {

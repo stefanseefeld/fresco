@@ -91,7 +91,7 @@ namespace
       {
           switch (signo)
           {
-            case Signal::usr1:
+            case Signal::user1:
               if (debugger)
               {
                   Logger::log(Logger::loader)
@@ -106,7 +106,7 @@ namespace
                     << "command line. Not entering debug mode."
                     << std::endl;
               return;
-            case Signal::usr2:
+            case Signal::user2:
               if (Console::instance())
               {
                   Console::instance()->activate_autoplay();
@@ -116,7 +116,7 @@ namespace
             case Signal::interrupt: break;
             case Signal::hangup: Profiler::dump(std::cerr); break;
             case Signal::abort:
-            case Signal::segv:
+            case Signal::segfault:
               {
                   std::string output = "server.log";
                   std::ofstream ofs(output.c_str());
@@ -187,7 +187,7 @@ namespace
       child->suicide_on_signal(Signal::interrupt);
       child->suicide_on_signal(Signal::quit);
       child->suicide_on_signal(Signal::abort);
-      child->suicide_on_signal(Signal::segv);
+      child->suicide_on_signal(Signal::segfault);
   }
 } // namespace
 
@@ -205,10 +205,10 @@ int main(int argc, char **argv) /*FOLD00*/
 
     Prague::Semaphore sem;
     Dump *dump = new Dump(sem);
-    Signal::set(Signal::usr1, dump);
-    Signal::set(Signal::usr2, dump);
+    Signal::set(Signal::user1, dump);
+    Signal::set(Signal::user2, dump);
     Signal::set(Signal::abort, dump);
-    Signal::set(Signal::segv, dump);
+    Signal::set(Signal::segfault, dump);
     Signal::set(Signal::hangup, dump);
     Signal::set(Signal::interrupt, dump);
 
