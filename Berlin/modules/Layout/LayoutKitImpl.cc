@@ -1,6 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Graydon Hoare <seefelds@magellan.umontreal.ca>
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -53,6 +54,7 @@
 #include "Layout/Box.hh"
 #include "Layout/Deck.hh"
 #include "Layout/GridImpl.hh"
+#include "Layout/StageImpl.hh"
 #include "Layout/Glue.hh"
 #include "Layout/Placement.hh"
 #include "Layout/ShapeOf.hh"
@@ -125,7 +127,8 @@ Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
   vp->init();
   return vp->_this();
 }
-// Stage_ptr LayoutKitImpl::create_stage() { return new StageImpl;}
+
+Stage_ptr LayoutKitImpl::createStage() { return create<StageImpl, Stage_ptr>(new StageImpl, _boa());}
 
 Grid_ptr LayoutKitImpl::fixedGrid(const Grid::Index &upper)
 {

@@ -293,15 +293,9 @@ void GraphicImpl::needRedraw()
 	  RegionImpl *newReg = new RegionImpl;
 	  newReg->_obj_is_ready(_boa());
 	  this->extension(*a, newReg->_this());
-	  if (newReg->valid)
-	    {
-	      // 	      if (!CORBA::is_nil(a.clipping))
-	      // 		r.mergeIntersect(a.clipping);
-	      a->damaged->extend(newReg->_this());
-	    }
+	  if (newReg->valid) a->damaged->extend(newReg->_this());
 	  newReg->_dispose();
 	}
-      //       Region_var(a.allocation)->_dispose();
     }
   collector->_dispose();
 }

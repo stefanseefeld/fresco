@@ -36,6 +36,8 @@ template <class T, class Item>
 class QTNode
 {
 //   using namespace Geometry;
+  class move_down;
+  friend class move_down;
 public:
   enum index
   {
@@ -58,7 +60,7 @@ public:
   const Geometry::Rectangle<T> &bbox() const { return boundingbox;}
   void insert(Item *);
   void remove(Item *);
-  int count() const { return elements;}
+  int  size() const { return elements;}
   void unfold();
   void collaps();
   void adjust(int, int, T, T);
@@ -86,7 +88,7 @@ public:
   ~QuadTree() {}
 
   Geometry::Rectangle<T> bbox() { return node() ? node()->bbox() : Geometry::Rectangle<T>();}
-  int size() { return node() ? node()->size() : 0;}
+  int size() { return quad ? quad->size() : 0;}
   QTNode<T, Item> *node() { return quad;}
 protected:
   QTNode<T, Item> *quad;
@@ -129,13 +131,14 @@ inline void QTNode<T, Item>::adjust(int min, int max, T min_w, T min_h)
 }
 
 template <class T, class Item>
-struct move_down : public unary_function<QTNode<T, Item>::list::iterator, bool>
+class QTNode<T, Item>::move_down : public unary_function<Item *, bool>
 {
+public:
   move_down(QTNode<T, Item> *n) : node(n) {}
-  bool operator()(QTNode<T, Item>::list::iterator i) const
+  bool operator()(Item *i)
     {
-      QTNode<T, Item>::index idx = node->where(*i);
-      if (idx != fence) { node->quadrants[idx]->insert(*i); return true;}
+      QTNode<T, Item>::index idx = node->where(i);
+      if (idx != QTNode<T, Item>::fence) { node->quadrants[idx]->insert(i); return true;}
       else return false;
     };
   QTNode<T, Item> *node;
@@ -146,7 +149,7 @@ inline void QTNode<T, Item>::unfold()
 {
   if (! leaf()) return;
   allocate();
-  list::iterator i = remove_if(items.begin(), items.end(), move_down<T, Item>(this));
+  list::iterator i = remove_if(items.begin(), items.end(), move_down(this));
   items.erase(i, items.end());
 }
 
