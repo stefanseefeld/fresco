@@ -44,11 +44,9 @@ Warsaw::Unichar Unicode::to_CORBA(const Babylon::Char c) {
 }
 
 Babylon::String Unicode::to_internal(const Unistring & us) {
-    cerr << "::to_internal: input: " << us.length() << " chars    ";
     Babylon::String res;
     res.utf16(Babylon::UTF16_string(static_cast<const Babylon::UCS2 *>(us.get_buffer()),
 				    static_cast<size_t>(us.length())));
-    cerr << "res: " << res.length() << " chars" << endl;
     return res;
 }
 
