@@ -29,6 +29,7 @@
 #include "Berlin/Logger.hh"
 #include "Berlin/QuadTree.hh"
 #include "Layout/StageImpl.hh"
+#include "Prague/Sys/Profiler.hh"
 
 using namespace Geometry;
 using namespace Prague;
@@ -660,6 +661,7 @@ void StageImpl::remove(StageHandle_ptr h)
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
   SectionLog section("StageImpl::move");
+  Prague::Profiler prf("StageImpl::move");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 

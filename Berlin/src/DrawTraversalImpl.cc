@@ -30,10 +30,25 @@
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
     drawing(DrawingKit::_duplicate(kit)),
-    clipping(Region::_duplicate(r))
+    clipping(Region::_duplicate(r)),
+    id(new TransformImpl)
 {
+  id->_obj_is_ready(_boa());
+ /*
+  * initialize the different drawing kit attributes
+  */
   drawing->saveState();
   drawing->clipping(clipping);
+  Color black = {0., 0., 0., 1.};
+  drawing->foreground(black);
+  drawing->transformation(Transform_var(id->_this()));
+  drawing->surfaceFillstyle(DrawingKit::solid);
+  Vertex l, u;
+  clipping->bounds(l, u);
+  /*
+   * clear the background of the damaged region...
+   */
+  drawing->drawRect(l, u);
 }
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
@@ -47,6 +62,7 @@ DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
 DrawTraversalImpl::~DrawTraversalImpl()
 {
   drawing->restoreState();
+  id->_dispose();
 }
 
 CORBA::Boolean DrawTraversalImpl::intersectsAllocation()

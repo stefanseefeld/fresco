@@ -28,6 +28,7 @@
 DesktopKitImpl::DesktopKitImpl() {}
 DesktopKitImpl::~DesktopKitImpl()
 {
+//   cout << "DesktopKitImpl::~DesktopKitImpl" << endl;
   for (vector<WindowImpl *>::iterator i = windows.begin(); i != windows.end(); i++)
     (*i)->_dispose();
 }

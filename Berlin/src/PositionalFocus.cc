@@ -65,16 +65,17 @@ bool PositionalFocus::request(Controller_ptr c)
 void PositionalFocus::damage(Region_ptr region)
 {
   SectionLog section("PositionalFocus::damage");
-//       if (ptr)
-// 	{
-// 	  pointer->backup();
-// 	  pointer->draw();
-// 	}
+  Vertex l, u;
+  region->bounds(l, u);
+  if (pointer->intersects(l.x, u.x, l.y, u.y))
+    {
+      pointer->backup();
+      pointer->draw();
+    }
   MutexGuard guard(mutex);
   if (!grabbed || !traversal) return;
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
-  Vertex u, l;
   allocation->bounds(l, u);
   transformation->transformVertex(l);
   transformation->transformVertex(u);

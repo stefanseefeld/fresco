@@ -37,7 +37,7 @@ ServerContextImpl::ServerContextImpl(ServerContextManagerImpl *m, CosLifeCycle::
 
 ServerContextImpl::~ServerContextImpl()
 {
-  cout << "bye bye" << endl;
+//   cout << "bye bye" << endl;
 }
 
 CosLifeCycle::FactoryFinder_ptr ServerContextImpl::factoryFinder()

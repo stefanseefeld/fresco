@@ -61,12 +61,11 @@ void ScreenManager::repair()
   for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
       Logger::log(Logger::drawing) << "repairing region " << **i << endl;
+//       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
  							   Region_var((*i)->_this()),
  							   Transform_var(Transform::_nil()),
  							   drawing);
-//       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
-      drawing->drawRect((*i)->lower, (*i)->upper);
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();

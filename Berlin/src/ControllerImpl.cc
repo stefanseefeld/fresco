@@ -287,6 +287,7 @@ void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
 void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
 {
   grab(traversal);
+  requestFocus(Controller_var(_this()), 0);
   set(Telltale::toggle);
 }
 

@@ -164,6 +164,24 @@ WindowImpl::~WindowImpl()
   unmapper->_dispose();
 }
 
+/*
+ * cache the focus holding controllers so we can restore them when the window
+ * receives focus again...
+ */
+CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Input::Device d)
+{
+  if (unmapped) return false;
+  Controller_var parent = parentController();
+  if (CORBA::is_nil(parent)) return false;
+  if (parent->requestFocus(c, d))
+    {
+      if (focus.size() <= d) focus.resize(d + 1);
+      focus[d] = Controller::_duplicate(c);
+      return true;
+    }
+  else return false;
+}
+
 void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
 {
   SectionLog section("WindowImpl::insert");

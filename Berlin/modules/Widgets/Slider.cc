@@ -27,12 +27,12 @@
 #include "Berlin/TransformImpl.hh"
 #include "Widget/Slider.hh"
 
-BVController::BVController()
+Slider::Slider()
   : ControllerImpl(false),
     current(0)
 {}
 
-void BVController::init(Controller_ptr t)
+void Slider::init(Controller_ptr t)
 {
   thumb = Controller::_duplicate(t);
   if (!CORBA::is_nil(thumb))
@@ -42,7 +42,7 @@ void BVController::init(Controller_ptr t)
     }
 }
 
-void BVController::draw(DrawTraversal_ptr traversal)
+void Slider::draw(DrawTraversal_ptr traversal)
 {
   ControllerImpl::draw(traversal);
   Allocation::Info info;
@@ -56,7 +56,7 @@ void BVController::draw(DrawTraversal_ptr traversal)
   if (traversal->intersectsRegion(info.allocation)) thumb->traverse(traversal);
 }
 
-void BVController::pick(PickTraversal_ptr traversal)
+void Slider::pick(PickTraversal_ptr traversal)
 {
   Allocation::Info info;
   Region_var allocation = traversal->allocation();
@@ -70,27 +70,27 @@ void BVController::pick(PickTraversal_ptr traversal)
   else ControllerImpl::pick(traversal);
 }
 
-void BVController::allocate(Tag tag, const Allocation::Info &info)
+void Slider::allocate(Tag tag, const Allocation::Info &info)
 {
   if (!tag) ControllerImpl::allocate(tag, info);
   else allocateThumb(info);
 }
 
-void BVController::update(Subject_ptr) { needRedraw();}
+void Slider::update(Subject_ptr, const CORBA::Any &) { needRedraw();}
 
-void BVController::press(PickTraversal_ptr traversal, const Input::Event &event)
+void Slider::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   current = stepper(traversal, event);
   current->press(traversal, event);
 }
 
-void BVController::release(PickTraversal_ptr traversal, const Input::Event &event)
+void Slider::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
   current->release(traversal, event);
   current = 0;
 }
 
-class Backward : public BVController::Modifier
+class Backward : public Slider::Modifier
 {
 public:
   Backward(BoundedValue_ptr v) : value(v) {}
@@ -99,7 +99,7 @@ private:
   BoundedValue_var value;
 };
 
-class Forward : public BVController::Modifier
+class Forward : public Slider::Modifier
 {
 public:
   Forward(BoundedValue_ptr v) : value(v) {}
@@ -108,10 +108,10 @@ private:
   BoundedValue_var value;
 };
 
-class CompositeModifier : public BVController::Modifier
+class CompositeModifier : public Slider::Modifier
 {
  public:
-  CompositeModifier(BVController::Modifier *f, BVController::Modifier *s)
+  CompositeModifier(Slider::Modifier *f, Slider::Modifier *s)
     : first(f), second(s) {}
   ~CompositeModifier()
     {
@@ -128,20 +128,22 @@ class CompositeModifier : public BVController::Modifier
       second->execute(any);
     }
  private:
-  BVController::Modifier *first;
-  BVController::Modifier *second;
+  Slider::Modifier *first;
+  Slider::Modifier *second;
 };
 
-Slider::Slider(Axis a)
+Slider1D::Slider1D(Axis a)
   : offset(0),
     axis(a)
 {
 }
 
-void Slider::init(Controller_ptr t, BoundedValue_ptr v)
+void Slider1D::init(Controller_ptr t, BoundedValue_ptr v)
 {
-  BVController::init(t);
+  Slider::init(t);
   value = BoundedValue::_duplicate(v);
+  observer = new Observer(this);
+  value->attach(Observer_var(observer->_this()));
   backward = new Backward(value);
   forward = new Forward(value);
   backwardStepper = new Stepper;
@@ -150,7 +152,7 @@ void Slider::init(Controller_ptr t, BoundedValue_ptr v)
   forwardStepper->action(forward);
 }
 
-void Slider::allocateThumb(const Allocation::Info &info)
+void Slider1D::allocateThumb(const Allocation::Info &info)
 {
   Requisition req;
   thumb->request(req);
@@ -166,11 +168,11 @@ void Slider::allocateThumb(const Allocation::Info &info)
   info.transformation->translate(origin);
 }
 
-Stepper *Slider::stepper(PickTraversal_ptr traversal, const Input::Event &event)
+Stepper *Slider1D::stepper(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
-  Vertex location = event[0].attr.location();
+  Vertex location = event[1].attr.location();
   transformation->inverseTransformVertex(location);
   Impl_var<RegionImpl> region(new RegionImpl(allocation));
   if ((axis == xaxis && location.x < region->lower.x + offset) ||
@@ -179,13 +181,13 @@ Stepper *Slider::stepper(PickTraversal_ptr traversal, const Input::Event &event)
   else return forwardStepper;
 }
 
-XYSlider::XYSlider()
+Slider2D::Slider2D()
 {
 }
 
-void XYSlider::init(Controller_ptr t, BoundedValue_ptr xv, BoundedValue_ptr yv)
+void Slider2D::init(Controller_ptr t, BoundedValue_ptr xv, BoundedValue_ptr yv)
 {
-  BVController::init(t);
+  Slider::init(t);
   Requisition r;
   GraphicImpl::initRequisition(r);
   thumb->request(r);
@@ -195,6 +197,10 @@ void XYSlider::init(Controller_ptr t, BoundedValue_ptr xv, BoundedValue_ptr yv)
 
   xvalue = BoundedValue::_duplicate(xv);
   yvalue = BoundedValue::_duplicate(yv);
+  xobserver = new Observer(this);
+  yobserver = new Observer(this);
+  xvalue->attach(Observer_var(xobserver->_this()));
+  yvalue->attach(Observer_var(yobserver->_this()));
   modifiers[0] = new Backward(xvalue);
   modifiers[1] = new Forward(xvalue);
   modifiers[2] = new Backward(yvalue);
@@ -210,16 +216,16 @@ void XYSlider::init(Controller_ptr t, BoundedValue_ptr xv, BoundedValue_ptr yv)
     }
 }
 
-void XYSlider::allocateThumb(const Allocation::Info &info)
+void Slider2D::allocateThumb(const Allocation::Info &info)
 {
-  cerr << "sorry, XYSlider::allocateThumb not yet implemented" << endl;
+  cerr << "sorry, Slider2D::allocateThumb not yet implemented" << endl;
 }
 
-Stepper *XYSlider::stepper(PickTraversal_ptr traversal, const Input::Event &event)
+Stepper *Slider2D::stepper(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
-  Vertex location = event[0].attr.location();
+  Vertex location = event[1].attr.location();
   transformation->inverseTransformVertex(location);
   Impl_var<RegionImpl> region(new RegionImpl(allocation));
   if (location.x < region->lower.x + xoffset)
