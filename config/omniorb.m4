@@ -62,8 +62,8 @@ AC_DEFUN([BERLIN_LIB_OMNIORB],[
 	AC_REQUIRE([BERLIN_LIB_SOCKET])
 dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 
-dnl	AC_LANG_SAVE
-dnl	AC_LANG_CPLUSPLUS
+	AC_LANG_SAVE
+	AC_LANG_CPLUSPLUS
 
 	AC_ARG_WITH(omniorb-prefix,
 		[  --with-omniorb-prefix  Prefix for omniORB],[
@@ -201,5 +201,5 @@ dnl CPPFLAGS="$save_CPPFLAGS"
 		berlin_cv_lib_omniORB="yes"
 	fi
 
-dnl	AC_LANG_RESTORE
+	AC_LANG_RESTORE
 ])

@@ -43,8 +43,6 @@ Berlin Server, The Berlin Server, dnl
 VERSION)
 
 AC_PROG_MAKE_SET
-AC_PROG_CC_CXX
-AC_LANG_CPLUSPLUS
 
 dnl ------------------------------------------------------------------
 dnl Options controlling what to build
@@ -89,8 +87,7 @@ AC_MSG_PART(Text Rendering)
 dnl Dumb hard-wired check for freetype.  Change this to accept different
 dnl text rendering engines?
 
-AM_PATH_FREETYPE(6:1:0)
-
+AM_PATH_FREETYPE(6.1.0,,[AC_MSG_ERROR([can't compile Server without freetype])])
 dnl ------------------------------------------------------------------
 dnl Graphics environment
 dnl ------------------------------------------------------------------

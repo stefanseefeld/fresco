@@ -46,7 +46,7 @@ AC_ARG_ENABLE(freetypetest, [  --disable-freetypetest       Do not try to compil
   fi
 
   AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
-  min_freetype_version=ifelse([$1], ,6:1:0,$1)
+  min_freetype_version=ifelse([$1], ,6.1.0,$1)
   AC_MSG_CHECKING(for freetype - version >= $min_freetype_version)
   no_freetype=""
   if test "$FREETYPE_CONFIG" = "no" ; then
@@ -55,15 +55,15 @@ AC_ARG_ENABLE(freetypetest, [  --disable-freetypetest       Do not try to compil
     FREETYPE_CFLAGS=`$FREETYPE_CONFIG $freetypeconf_args --cflags`
     FREETYPE_LIBS=`$FREETYPE_CONFIG $freetypeconf_args --libs`
     freetype_major_version=`$FREETYPE_CONFIG $freetype_args --version | \
-           sed 's/\([[0-9]]*\):\([[0-9]]*\):\([[0-9]]*\)/\1/'`
+           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
     freetype_minor_version=`$FREETYPE_CONFIG $freetype_args --version | \
-           sed 's/\([[0-9]]*\):\([[0-9]]*\):\([[0-9]]*\)/\2/'`
+           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
     freetype_micro_version=`$FREETYPE_CONFIG $freetype_config_args --version | \
-           sed 's/\([[0-9]]*\):\([[0-9]]*\):\([[0-9]]*\)/\3/'`
+           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
     if test "x$enable_freetypetest" = "xyes" ; then
-      ac_save_CXXFLAGS="$CXXFLAGS"
+      ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
-      CXXFLAGS="$CXXFLAGS $FREETYPE_CFLAGS"
+      CFLAGS="$CFLAGS $FREETYPE_CFLAGS"
       LIBS="$LIBS $FREETYPE_LIBS"
 dnl
 dnl Now check if the installed freetype is sufficiently new. (Also sanity
@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
 
   /* HP/UX 9 (%@#!) writes to sscanf strings */
   tmp_version = my_strdup("$min_freetype_version");
-  if (sscanf(tmp_version, "%d:%d:%d", &major, &minor, &micro) != 3) {
+  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
      printf("%s, bad version string\n", "$min_freetype_version");
      exit(1);
    }
@@ -128,7 +128,7 @@ int main (int argc, char *argv[])
 }
 
 ],, no_freetype=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CXXFLAGS="$ac_save_CXXFLAGS"
+       CFLAGS="$ac_save_CFLAGS"
        LIBS="$ac_save_LIBS"
      fi
   fi
@@ -147,7 +147,7 @@ int main (int argc, char *argv[])
         :
        else
           echo "*** Could not run freetype test program, checking why..."
-          CXXFLAGS="$CXXFLAGS $FREETYPE_CFLAGS"
+          CFLAGS="$CFLAGS $FREETYPE_CFLAGS"
           LIBS="$LIBS $FREETYPE_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
@@ -166,7 +166,7 @@ int main (int argc, char *argv[])
           echo "*** exact error that occured. This usually means freetype was incorrectly installed"
           echo "*** or that you have moved freetype since it was installed. In the latter case, you"
           echo "*** may want to edit the freetype-config script: $FREETYPE_CONFIG" ])
-          CXXFLAGS="$ac_save_CXXFLAGS"
+          CFLAGS="$ac_save_CFLAGS"
           LIBS="$ac_save_LIBS"
        fi
      fi
@@ -187,8 +187,8 @@ dnl set to "yes".
 
 AC_DEFUN([BERLIN_LIB_FREETYPE],[
 
-	AC_LANG_SAVE
-	AC_LANG_CPLUSPLUS
+dnl	AC_LANG_SAVE
+dnl	AC_LANG_CPLUSPLUS
 
 	AC_ARG_WITH(freetype-prefix,
 		[  --with-freetype-prefix  Prefix for Freetype],[
@@ -265,5 +265,5 @@ int main (int argc, char* argv[])
 	AC_SUBST(FREETYPE_CFLAGS)
 	AC_SUBST(FREETYPE_LIBS)
 
-	AC_LANG_RESTORE
+dnl	AC_LANG_RESTORE
 ])

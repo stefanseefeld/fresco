@@ -33,7 +33,7 @@ include $(cdir)/local.mk
 include $(cdir)/Server/local.mk
 
 # Extra compilation and linking flags.
-CPPFLAGS	+= $(CON_INCLUDES)
+CPPFLAGS	+= $(CON_CFLAGS)
 LIBS		+= $(CON_LIBS)
 
 SRC		:= Console.cc Pointer.cc Logger.cc ServantBase.cc IdentifiableImpl.cc \

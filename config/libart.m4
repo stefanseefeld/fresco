@@ -31,13 +31,13 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 	dnl First, try to pull everything out of libart-config
 	BERLIN_PROG_LIBART_CONFIG
 	if test ".$LIBART_CONFIG" != . ; then
-		LIBART_INCLUDES=`$LIBART_CONFIG --cflags`
+		LIBART_CFLAGS=`$LIBART_CONFIG --cflags`
 		LIBART_LIBS=`$LIBART_CONFIG --libs`
 	else
 		dnl Second, try to pull everything out of gnome-config
 		BERLIN_PROG_GNOME_CONFIG
 		if test ".$GNOME_CONFIG" != . ; then
-			LIBART_INCLUDES=`$GNOME_CONFIG --cflags libart`
+			LIBART_CFLAGS=`$GNOME_CONFIG --cflags libart`
 			LIBART_LIBS=`$GNOME_CONFIG --libs libart`
 		fi
 	fi
@@ -48,24 +48,24 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 
 	dnl Check for header files if above checks failed
 	if test ".$LIBART_LIBS" = . -a ".$art_prefix" != . ; then
-			LIBART_INCLUDES=-I$art_prefix/include
+			LIBART_CFLAGS=-I$art_prefix/include
 			LIBART_LIBS=-L$art_prefix/lib
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$LIBART_INCLUDES $CPPFLAGS"
+	CPPFLAGS="$LIBART_CFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(art_pixbuf.h,:,
 		AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h,[
-			if test ".$LIBART_INCLUDES" = . ; then
-				LIBART_INCLUDES=-I/usr/include
+			if test ".$LIBART_CFLAGS" = . ; then
+				LIBART_CFLAGS=-I/usr/include
 			else
-				LIBART_INCLUDES="$LIBART_INCLUDES"
+				LIBART_CFLAGS="$LIBART_CFLAGS"
 			fi ],no_libart=yes))
 	CPPFLAGS="$save_CPPFLAGS"
 
 	dnl Assuming it's okay if the header was found
 	if test ".$no_libart" != yes ; then
 		ac_cv_lib_libArt=yes
-		AC_SUBST(LIBART_INCLUDES)
+		AC_SUBST(LIBART_CFLAGS)
 		AC_SUBST(LIBART_LIBS)
 	else
 		ifelse($1,mandatory,AC_MSG_ERROR(libArt could not be found!))

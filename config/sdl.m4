@@ -162,7 +162,5 @@ int main (int argc, char *argv[])
      SDL_LIBS=""
      ifelse([$3], , :, [$3])
   fi
-  AC_SUBST(SDL_CFLAGS)
-  AC_SUBST(SDL_LIBS)
   rm -f conf.sdltest
 ])

@@ -34,10 +34,10 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 
 	dnl Check for Mesa includes
 	if test x$mesa_prefix != x ; then
-		GL_INCLUDES=-I$mesa_prefix/include
+		GL_CFLAGS=-I$mesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GL_INCLUDES $CPPFLAGS"
+	CPPFLAGS="$GL_CFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(GL/gl.h,,no_gl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
@@ -67,7 +67,7 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 		GL_LIBS="$GL_LIBS -lGL -lGLU"
 	fi
 
-	AC_SUBST(GL_INCLUDES)
+	AC_SUBST(GL_CFLAGS)
 	AC_SUBST(GL_LIBS)
 
 	AC_LANG_RESTORE

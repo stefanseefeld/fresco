@@ -32,6 +32,7 @@ dnl IDLTIEFLAGS. Those variables are AC_SUBSTed here.
 
 AC_DEFUN([BERLIN_LIB_ORB],[
 
+	AC_MSG_PART(ORB)
 	AC_BEGIN_DECISION([ORB])
 	AC_ARG_WITH(orb,
 		[  --with-orb=NAME         Specify which ORB to use],[dnl

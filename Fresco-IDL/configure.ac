@@ -43,8 +43,6 @@ Warsaw, The Berlin Protocol, dnl
 VERSION)
 
 AC_PROG_MAKE_SET
-AC_PROG_CC_CXX
-AC_LANG_CPLUSPLUS
 
 dnl ------------------------------------------------------------------
 

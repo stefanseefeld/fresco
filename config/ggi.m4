@@ -31,10 +31,10 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 
 	dnl Check for GGI includes
 	if test ".$ggi_prefix" != . ; then
-		CON_INCLUDES="-I$ggi_prefix/include"
+		GGI_CFLAGS="-I$ggi_prefix/include"
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$CON_INCLUDES $CPPFLAGS"
+	CPPFLAGS="$GGI_CFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(ggi/ggi.h,:,no_ggi=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
@@ -42,11 +42,11 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 	if test ".$no_ggi" = . ; then
 
 		if test ".$ggi_prefix" != . ; then
-			CON_LIBS="-L$ggi_prefix/lib"
+			GGI_LIBS="-L$ggi_prefix/lib"
 		fi
 
 		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$CON_LIBS $LDFLAGS"
+		LDFLAGS="$GGI_LIBS $LDFLAGS"
 		AC_CHECK_LIB(ggi, ggiInit, :, no_ggi=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
@@ -58,6 +58,6 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 		ifelse($1,mandatory,AC_MSG_ERROR(GGI library was not found!))
 	else
 		ac_cv_lib_ggi=yes
-		CON_LIBS="$CON_LIBS -lggi"
+		GGI_LIBS="$GGI_LIBS -lggi"
 	fi
 ])

@@ -27,11 +27,14 @@ cdir		:= $(builddir)/config
 include $(cdir)/local.mk
 include $(cdir)/Server/local.mk
 
+GL_CFLAGS	:= @GL_CFLAGS@
+GL_LIBS		:= @GL_LIBS@
+
 srcdir		:= $(top_srcdir)/src/Drawing/openGL
 hdir		:= $(top_srcdir)/include/Drawing/openGL
 
 # Compilation and linking flags.
-CPPFLAGS	+= -I$(hdir) $(GL_INCLUDES)
+CPPFLAGS	+= -I$(hdir) $(GL_CFLAGS)
 LIBS		+= -lBerlin $(GL_LIBS)
 
 SRC		:= GLRaster.cc GLUnifont.cc GLQuadric.cc GLDrawingKit.cc 

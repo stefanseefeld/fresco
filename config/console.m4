@@ -46,6 +46,8 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 				AC_DECIDE(GGICONSOLE, [use GGI])
 				CON_IMPL=GGI
 				AC_DEFINE(CONSOLE_GGI)
+				CON_CFLAGS="$GGI_CFLAGS"
+				CON_LIBS="$GGI_LIBS"
 			fi				
 			;;
                 SDL)
@@ -53,6 +55,8 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 				AC_DECIDE(SDLCONSOLE, [use SDL])
                                 CON_IMPL=SDL
 				AC_DEFINE(CONSOLE_SDL)
+				CON_CFLAGS="$SDL_CFLAGS"
+				CON_LIBS="$SDL_LIBS"
 ], [
                                 if test ".$1" = .mandatory; then
                                         AC_MSG_ERROR(No supported Console environment found!)
@@ -102,7 +106,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 	if test ".$CON_IMPL" != .none ; then
 		AC_DEFINE_UNQUOTED(CONSOLE_IMPL, $CON_IMPL)
 		AC_SUBST(CON_IMPL)
-		AC_SUBST(CON_INCLUDES)
+		AC_SUBST(CON_CFLAGS)
 		AC_SUBST(CON_LIBS)
 	fi
 ])
