@@ -70,7 +70,7 @@ depclean:
 	find -name '*.d' -exec rm -f \{\} \;
 
 #
-# removes everything but config stuff
+# removes everything
 #
 clean distclean cvsclean:
 	$(MAKE) subdirs ACTION="$@"

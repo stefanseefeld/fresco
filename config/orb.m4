@@ -27,8 +27,8 @@ dnl none is found.
 dnl For now, only omniORB is supported, more to come.
 dnl This macro doesn't check anything by itself. It just delegates it to
 dnl secondary macros, which checks if the specific ORB is available and
-dnl sets ORB_LIBS, ORB_CPPFLAGS, IDLCXX, IDLCXXFLAGS and IDLDYNFLAGS.
-dnl Those variables are AC_SUBSTed here.
+dnl sets ORB_LIBS, ORB_CPPFLAGS, IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS and
+dnl IDLTIEFLAGS. Those variables are AC_SUBSTed here.
 
 AC_DEFUN([BERLIN_LIB_ORB],[
 
@@ -73,4 +73,5 @@ AC_DEFUN([BERLIN_LIB_ORB],[
 	AC_SUBST(IDLCXX)
 	AC_SUBST(IDLCXXFLAGS)
 	AC_SUBST(IDLDYNFLAGS)
+	AC_SUBST(IDLTIEFLAGS)
 ])

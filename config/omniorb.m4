@@ -198,6 +198,7 @@ dnl	os_major_version=2
 	dnl Additional output variables
 	IDLCXXFLAGS="-bcxx"
 	IDLDYNFLAGS="-Wba"
+	IDLTIEFLAGS="-Wbtp"
 	
 	AC_LANG_RESTORE
 ])
