@@ -26,7 +26,6 @@
 #include <Fresco/FontKit.hh>
 #include <Fresco/Font.hh>
 #include <Berlin/KitImpl.hh>
-#include <vector>
 
 namespace Berlin {
 namespace FontKit {
@@ -36,24 +35,39 @@ using namespace Fresco;
 class FontKitImpl : public virtual POA_Fresco::FontKit,
                     public KitImpl
 {
- public:
-  FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
-  virtual ~FontKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new FontKitImpl(repo_id(), p);}
+public:
+    FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+    virtual ~FontKitImpl();
+    virtual KitImpl
+    *clone(const Fresco::Kit::PropertySeq &p)
+    {
+        return new FontKitImpl(repo_id(), p);
+    }
 
-  virtual Font_ptr _cxx_default() = 0;
-  virtual Font_ptr filename(const char* file, const Fresco::Unistring& style, Coord size) = 0;
-  virtual Font_ptr provide(const Unistring& family, const Unistring& style, Coord size) = 0;
-  virtual Graphic_ptr set_font(Graphic_ptr g, Font_ptr f) = 0;
-  virtual Graphic_ptr size(Graphic_ptr g, Coord s) = 0;
-  virtual Graphic_ptr style(Graphic_ptr g, const Unistring& s) = 0;
-  virtual Graphic_ptr delta_size(Graphic_ptr g, Coord ds) = 0;
-  virtual Graphic_ptr delta_style(Graphic_ptr g, const Unistring& ds) = 0;
-  virtual FontIterator_ptr first_font() = 0;
-  virtual FontIterator_ptr last_font() = 0;
+    virtual Font_ptr
+    _cxx_default();
+    virtual Font_ptr
+    filename(const char* file, const Fresco::Unistring& style, Coord size);
+    virtual Font_ptr
+    provide(const Unistring& family, const Unistring& style, Coord size);
+    virtual Graphic_ptr
+    set_font(Graphic_ptr g, Font_ptr f);
+    virtual Graphic_ptr
+    size(Graphic_ptr g, Coord s);
+    virtual Graphic_ptr
+    style(Graphic_ptr g, const Unistring& s);
+    virtual Graphic_ptr
+    delta_size(Graphic_ptr g, Coord ds);
+    virtual Graphic_ptr
+    delta_style(Graphic_ptr g, const Unistring& ds);
+
+    virtual FontIterator_ptr
+    first_font();
+    virtual FontIterator_ptr
+    last_font();
 };
 
 } // namespace
 } // namespace
 
-#endif
+#endif // header guard
