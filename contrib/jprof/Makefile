@@ -16,12 +16,15 @@
 # Fri Sep 24 23:44:10 PDT 1999 <mcafee@netscape.com>
 #
 
+MKSHLIB   = g++ -fPIC -shared
+MKPROGRAM = g++
+
 DEPTH		= ../..
 topsrcdir	= ../..
 srcdir		= .
 VPATH		= .
 
-include $(DEPTH)/config/autoconf.mk
+#include $(DEPTH)/config/autoconf.mk
 
 PROGRAM = jprof
 
@@ -44,6 +47,8 @@ LIBMALLOC_CPPSRCS = libmalloc.cpp
 LIBMALLOC_OBJECTS = $(LIBMALLOC_CPPSRCS:.cpp=.o)
 LIBMALLOC = libjprof.so
 
+OBJECTS = $(CPPSRCS:.cpp=.o)
+
 EXPORTS         = \
                 jprof.h \
                 $(NULL)
@@ -56,10 +61,10 @@ EXPORTS         := $(addprefix $(srcdir)/, $(EXPORTS))
 OTHER_LIBRARIES = $(LIBMALLOC)
 TARGETS := $(PROGRAM) $(OTHER_LIBRARIES)
 
-include $(topsrcdir)/config/rules.mk
+#include $(topsrcdir)/config/rules.mk
 
 # Make sure all depends on files that rules.mk doesn't know about.
-all:: $(OTHER_LIBRARIES)
+all:: $(PROGRAM) $(OTHER_LIBRARIES)
 
 # Make sure install depends on files that rules.mk doesn't know about.
 install:: $(OTHER_LIBRARIES)
@@ -72,11 +77,15 @@ clobber::
 	rm -f $(LIBMALLOC)
 
 clean::
-	rm -f $(LIBMALLOC_OBJECTS)
+	rm -f $(LIBMALLOC_OBJECTS) $(OBJECTS)
 
 $(LIBMALLOC): $(LIBMALLOC_OBJECTS)
 	rm -f $@
 	$(MKSHLIB) -o $@ $(LIBMALLOC_OBJECTS)
+
+$(PROGRAM): $(OBJECTS)
+	rm -f $@
+	$(MKPROGRAM) -o $@ $(OBJECTS) $(LIBS)
 
 test:
 	@echo LIBMALLOC = $(LIBMALLOC)
