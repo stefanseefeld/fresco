@@ -35,7 +35,7 @@ CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
 
-DYNINT	= Types.idl Message.idl Event.idl Style.idl
+DYNINT	= Types.idl Message.idl Event.idl
 STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Focus.idl \
