@@ -207,7 +207,7 @@ void PostScript::DrawingKit::set_texture(Raster_ptr t)
 {
 }
 
-void PostScript::DrawingKit::draw_path(const Path &path)
+void PostScript::DrawingKit::draw_path(const Fresco::Path &path)
 {
   _os << "%draw_path" << std::endl;
   _os << "newpath" << std::endl;

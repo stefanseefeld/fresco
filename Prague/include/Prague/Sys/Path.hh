@@ -36,6 +36,7 @@ class Path
   struct Predicate { bool operator()(const std::string &name) { File file(name); return file.access() & File::ru;}};
 public:
   typedef rep_type::iterator iterator;
+  typedef rep_type::const_iterator const_iterator;
   //. construct an empty path
   Path() {}
   //. construct a list of directories, using the given separator to tokenize the string

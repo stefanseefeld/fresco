@@ -36,11 +36,34 @@ Dictionary             *Dictionary::m_dictionary = 0;
 Dictionary::Dict_Guard  Dictionary::m_guard;
 Mutex                   Dictionary::m_singleton_mutex;
 
+namespace Babylon {
 #ifdef RC_MODULEPATH
-const std::string babylon_modulepath=RC_MODULEPATH;
+const std::string default_module_path=RC_MODULEPATH;
 #else
-const std::string babylon_modulepath="/usr/share/Babylon"
+const std::string default_module_path="/usr/share/Babylon"
 #endif
+
+Prague::Path override_module_path("");
+
+void override_path(Prague::Path & p) throw (std::runtime_error)
+{
+    if (p.size())
+    {
+        for (Prague::Path::const_iterator i = p.begin();
+	     i != p.end();
+	     ++i)
+        {
+	    Prague::Directory dir((*i), 0);
+	    if (!dir.is(Prague::File::dir))
+	        throw std::runtime_error("Babylon: \""+ (*i) +
+					 "\" does not exist. I was asked to " +
+					 "look for my modules there.");
+	}
+	override_module_path = p;
+    }
+}
+
+}; // namespace
 
 bool Dictionary::is_defined(const UCS4 uc)
     throw (Block_Error) {
@@ -50,7 +73,6 @@ bool Dictionary::is_defined(const UCS4 uc)
     result = find_char(uc)->is_defined(uc);
     return result;
 }
-
 
 UCS4 Dictionary::uppercase(const UCS4 uc) 
     throw (Block_Error) {
@@ -550,16 +572,18 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 } // Dictionary::find_char
 
 
-void Dictionary::update(const std::string & scanDir) {
+void Dictionary::update(const std::string & scanDir)
+  throw (std::runtime_error, Block_Error)
+{
     Prague::Trace trace("Babylon::Dictionary::update(...)");
 
     Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
     
     Prague::Directory dir(scanDir, 0);
-    if (!dir.is(Prague::File::dir)) std::cerr << "ERROR: \"" << scanDir
-	    	<< "\"  is not a directory. "
-		<< "Cannot scan it for Babylon modules." << std::endl;
+    if (!dir.is(Prague::File::dir))
+      throw std::runtime_error("Babylon: \""+ dir.long_name() +
+	    "\" does not exist. I was looking for my modules there.");
     
     // start scanning the directory:
     for (Prague::Directory::const_iterator dir_it = dir.begin();
@@ -573,16 +597,18 @@ void Dictionary::update(const std::string & scanDir) {
 	Prague::Plugin<Dictionary::Block> * block;
 	try { block =  new Prague::Plugin<Dictionary::Block>(name);}
 	catch(const std::runtime_error &e)
-	  {
+	{
 	    // block can't be loaded, so skip it
 	    continue;
-	  }
+	}
 
 	UCS4 start = (*block)->first_letter();
 	UCS4 end   = (*block)->last_letter();
 
-	if ((*block)->is_undef_block()) {
-	    if(m_undef_block == 0) {
+	if ((*block)->is_undef_block())
+	{
+	    if(m_undef_block == 0)
+	    {
 		m_undef_block = block;
 		// don't delete the block!
 	    } else
@@ -621,7 +647,17 @@ Dictionary::Dictionary() {
 	m_undef_block = 0;
     }
     
-    update(babylon_modulepath);
+    if (override_module_path.size())
+    {
+        for (Prague::Path::const_iterator i = override_module_path.begin();
+	     i != override_module_path.end();
+	     ++i)
+	    update(*i);
+    }
+    else
+    {
+        update(default_module_path);
+    }
 } // Dictionary::Dictionary
 
 

@@ -40,7 +40,12 @@
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Berlin/RCManager.hh>
+
+// to allow to override the default Babylon path:
+#include <Babylon/Dictionary.hh>
+
 #include "ServerImpl.hh"
+
 #include <fstream>
 #include <sstream>
 
@@ -354,7 +359,16 @@ int main(int argc, char **argv) /*FOLD00*/
       
        DefaultPOA::default_POA(poa);
        Logger::log(Logger::corba) << "Default POA set up." << std::endl;
+
+       // ---------------------------------------------------------------
+       // Setup support libraries
+       // ---------------------------------------------------------------
        
+       {
+	   Prague::Path path = RCManager::get_path("babylonpath");
+	   Babylon::override_path(path);
+       }
+
        // ---------------------------------------------------------------
        // Open the Console
        // ---------------------------------------------------------------
@@ -513,7 +527,7 @@ int main(int argc, char **argv) /*FOLD00*/
        Logger::log(Logger::loader) << "Running the ScreenManager now."
 	                           << std::endl;
        smanager->run();
-    }
+  }
   catch (const CORBA::SystemException &e)
   {
       std::cerr << "ERROR: Unexpected CORBA::System exception caught: "

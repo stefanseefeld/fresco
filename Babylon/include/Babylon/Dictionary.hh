@@ -26,11 +26,19 @@
 #include <Babylon/defs.hh>
 #include <Prague/Sys/Plugin.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Prague/Sys/Path.hh>
 #include <Prague/Sys/Directory.hh>
 #include <Prague/Sys/DLL.hh>
 #include <Prague/Filter/gzstream.hh>
 
 namespace Babylon {
+
+    //. Set the default directory path. Use before using the dictionary
+    //. for the first time, or it will be ignored.
+    //. An empty path will be silently ignored. All directories of this
+    //. path must be valid (or a std::runtime_error exception will be thrown),
+    //. but only the very last path will be scanned.
+    void override_path(Prague::Path &) throw (std::runtime_error);
 
     //. Stores character data.
     class Dictionary {
@@ -112,7 +120,8 @@ namespace Babylon {
 	}; // class Block
     
 	//. Scans a directory for modules.
-	void update(const std::string &);
+	void update(const std::string &)
+	  throw (std::runtime_error, Block_Error);
 
 	//. Finds the current dictionary.
 	//. If no dictionary exists it will create one.

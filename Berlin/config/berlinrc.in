@@ -1,4 +1,5 @@
 modulepath	= @prefix@/lib/Fresco
+babylonpath     = @prefix@/lib/Babylon
 rasterpath	= @prefix@/share/Fresco/PNG
 fontpath	= /usr/lib/X11/fonts/Type1
 unifontpath	= @prefix@/share/Fresco

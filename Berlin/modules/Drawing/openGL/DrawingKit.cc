@@ -220,7 +220,7 @@ void openGL::DrawingKit::set_texture(Raster_ptr t)
 //   glRectf(l, t, r, b);
 // }
 
-void openGL::DrawingKit::draw_path(const Path &path)
+void openGL::DrawingKit::draw_path(const Fresco::Path &path)
 {
   if (path.shape != convex)
     {
@@ -306,7 +306,7 @@ void openGL::DrawingKit::draw_image(Raster_ptr raster)
   glBindTexture(GL_TEXTURE_2D, image->texture);
   glColor4f(_lt.red, _lt.green, _lt.blue, color_cache[3]); // use the current lighting
   glBegin(GL_POLYGON);
-  Path path;
+  Fresco::Path path;
   path.nodes.length(4);
   path.shape = convex;
   Coord width = image->width*10.;
