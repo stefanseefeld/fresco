@@ -45,7 +45,7 @@ void Box::request(Requisition &r)
     {
       GraphicImpl::defaultRequisition(requisition);
       GraphicImpl::initRequisition(requisition);
-      long n = children.size();
+      long n = numChildren();
       if (n > 0)
 	{
 	  Graphic::Requisition *r = childrenRequests();
