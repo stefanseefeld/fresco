@@ -39,7 +39,7 @@ struct Fork::Process
   struct Suicide : Signal::Notifier { virtual void notify(int);};
   friend Cleaner;
   
-  static void infanticideReason(pid_t, int);
+  static void infanticide_reason(pid_t, int);
   static Cleaner  cleaner;
   static Reaper   reaper;
   static Suicide  suicide;
@@ -127,10 +127,10 @@ void Fork::Process::reap_child () const
 {
   int status;
   if (pid > 0 && waitpid (pid, &status, 0) == pid && reason)
-    infanticideReason (pid, status);
+    infanticide_reason (pid, status);
 }
 
-void Fork::Process::infanticideReason (pid_t pid, int status)
+void Fork::Process::infanticide_reason (pid_t pid, int status)
 {
   if (pid <= 0) return;
   if (WIFSTOPPED (status))
@@ -157,7 +157,7 @@ void Fork::Process::Reaper::notify(int signo)
 	      cur->pid = -1;
 	      if (prev) prev->next = cur->next;
 	      else children = children->next;
-	      if (cur->reason) infanticideReason (wpid, status);
+	      if (cur->reason) infanticide_reason (wpid, status);
 	      delete cur;
 	      break;
 	    }
@@ -188,8 +188,7 @@ Fork::~Fork () { if (process->pid <= 0) delete process;}
 bool  Fork::child() const { return process->pid == 0;}
 bool  Fork::parent() const { return process->pid > 0;}
 pid_t Fork::pid() const { return process->pid;}
-void  Fork::suicideOnSignal (int signo)
-  // commit suicide at the signal signo
+void  Fork::suicide_on_signal (int signo)
 {
   if (!Signal::set(signo, &Process::suicide))
     perror ("Fork: Cannot commit suicide with the specified signal");

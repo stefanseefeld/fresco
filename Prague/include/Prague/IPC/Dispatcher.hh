@@ -33,6 +33,9 @@
 namespace Prague
 {
 
+//. Dispatcher multiplexes i/o events to registered Agents. Together with
+//. the Agents, it implements the Reactor pattern.
+//. This implementation uses a thread pool for the actual callbacks.
 class Dispatcher
 {
   typedef vector<Agent *> alist_t;
@@ -60,9 +63,12 @@ class Dispatcher
   struct Cleaner { ~Cleaner();};
   friend struct Cleaner;
 public:
+  //. Dispatcher being a singleton, return the instance.
   static Dispatcher *instance();
-  void bind(Agent *, int, Agent::iomask);
-  void release(Agent *, int = -1);
+  //. bind an Agent to events according to the provided filedescriptor fd, and the mask
+  void bind(Agent *, int fd, Agent::iomask mask);
+  //. release an Agent from channel fd, or the whole Agent, if fd is -1
+  void release(Agent *, int fd = -1);
 private:
   Dispatcher();
   virtual ~Dispatcher();
@@ -94,5 +100,4 @@ private:
 
 };
 
-#endif /* _Prague_Dispatcher_hh */
-
+#endif

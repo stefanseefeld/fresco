@@ -23,8 +23,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Fork_hh
-#define _Fork_hh
+#ifndef _Prague_Fork_hh
+#define _Prague_Fork_hh
 
 #include <Prague/Sys/Signal.hh>
 #include <unistd.h>
@@ -33,16 +33,21 @@
 namespace Prague
 {
 
+//. Fork encapsulates the housekeeping associated with the fork() system call
 class Fork
 {
   struct Process;
  public:
   Fork (bool = false, bool = false);
   ~Fork();
+  //. return whether this is the child process
   bool   child() const;
+  //. return whether this is the parent process
   bool   parent() const;
+  //. return the child process id
   pid_t  pid() const;
-  static void suicideOnSignal(int signo = Signal::terminate);
+  //. commit suicide at the signal signo
+  static void suicide_on_signal(int signo = Signal::terminate);
  private:
   Process *process;
   Fork (const Fork &);

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GetOpt_hh
-#define _GetOpt_hh
+#ifndef _Prague_GetOpt_hh
+#define _Prague_GetOpt_hh
 
 #include <iostream>
 #include <vector>
@@ -30,9 +30,13 @@
 namespace Prague
 {
 
+//. GetOpt manages an command line option data base. It deals with short and long options,
+//. and reorders the given option vector such that you can run different GetOpt instances over
+//. the argv vector one after another.
 class GetOpt
 {
 public:
+  //. the option type, i.e. whether an argument is required or not.
   enum type { novalue, optional, mandatory};
   enum order { inorder, require, permute};
 private:
@@ -50,12 +54,19 @@ private:
 public:
   GetOpt(const char *, const char * = 0);
   ~GetOpt();
+  //. print out usage information. This function uses help data provided with each
+  //. registered option, i.e. it is suitable to be used as a help message.
   void usage() const;
-  int parse(int, char **);
-  int parse(char *);
-  void add(char, const string &, type, const string & = "no description available");
-  void get(char, string *) const;
-  void get(const string &, string *) const;
+  //. parse the given argv
+  int parse(int argc, char **argv);
+  //. parse the given args
+  int parse(char *args);
+  //. register an option
+  void add(char o, const string &option, type, const string & = "no description available");
+  //. get a value
+  void get(char o, string *) const;
+  //. get a value
+  void get(const string &option, string *) const;
 private:
   table_t table;
   const char *p;	      // program basename

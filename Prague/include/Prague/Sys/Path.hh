@@ -28,26 +28,34 @@
 namespace Prague
 {
 
+//. Path implements the Unix Path functionality, i.e. file lookup.
 class Path
 {
   typedef vector<string> rep_type;
   typedef rep_type::iterator iterator;
 public:
   struct predicate { virtual bool operator()(const string &name) const = 0;};
-  Path(char c = ':') : paths(0), separator(c) {}
-  Path(const string &, char c = ':');
+  //. construct an empty path
+  Path() : paths(0) {}
+  //. construct a path out of 'path', typically an environment variable; use c as separator
+  Path(const string &path, char c = ':');
   ~Path();
-  void append(const string &path) { paths.push_back(path);}
+  //. append a directory
+  void append(const string &directory) { _directories.push_back(directory);}
+  //. look up a file, using the predicate functor, if non-zero
   string lookup_file(const string &, predicate * = 0) const;
+  //. expand a directory, if it is provided as '~joe/foo'
   static string expand_user(const string &);
-  iterator begin() { return paths.begin();}
-  iterator end() { return paths.end();}
-  size_t size() { return paths.size();}
-  const string &operator [] (size_t i) { return paths[i];}
-protected:
-  rep_type paths;
-  char separator;
+  //. return begin iterator
+  iterator begin() { return _directories.begin();}
+  //. return end iterator
+  iterator end() { return _directories.end();}
+  //. return the size, i.e. the number of directories contained in the path
+  size_t size() { return _directories.size();}
+  //. return ith directory
+  const string &operator [] (size_t i) { return _directories[i];}
 private:
+  rep_type _directories;
 };
 
 };

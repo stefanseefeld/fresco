@@ -32,6 +32,8 @@
 namespace Prague
 {
 
+//. a Coprocess ia an Agent that spawns a child process and takes care for
+//. the associated housekeeping
 class Coprocess : public Agent
 {
   typedef vector<Coprocess *> plist_t;
@@ -53,10 +55,15 @@ public:
   virtual      ~Coprocess();
   virtual void start();
   virtual void stop();
+  //. return the command of the process being run
   const string &command() const { return path;}
+  //. return the process id of the child process
   pid_t         pid() const { MutexGuard guard(mutex); return id;}
+  //. return the state of the child process
   state_t       state() const { MutexGuard guard(mutex); return _state;}
+  //. return the return value of the child process
   int           value() const { MutexGuard guard(mutex); return _value;}
+  //. set timeout values used for the terminate call
   void          timeout(long t, long h, long k) { _timeout.terminate = t, _timeout.hangup = h, _timeout.kill = k;}
   virtual ipcbuf *ibuf() { return inbuf;}
   virtual ipcbuf *obuf() { return outbuf;}
@@ -95,4 +102,4 @@ private:
 
 };
 
-#endif /* _Prague_Coprocess_hh */
+#endif

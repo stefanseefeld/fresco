@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _File_hh
-#define _File_hh
+#ifndef _Prague_File_hh
+#define _Prague_File_hh
 
 #include <string>
 #include <climits>
@@ -32,10 +32,7 @@
 namespace Prague
 {
 
-/* @Class{File}
- *
- * @Description{}
- */
+//. a File encapsulates common file based operations, such as lookup for state information
 class File
 {
 public:
@@ -62,23 +59,40 @@ public:
   virtual ~File();
   File &operator = (const File &);
   File &operator = (const string &);
+  //. return the parent directory
   File parent() const;
+  //. return the file's name
   const string &name() const { return _shortname;}
+  //. return the file's long name
   const string &long_name() const { return _longname;}
+  //. check whether the file is of the given type
   bool is(type_t t) const { return (_status.st_mode & S_IFMT) == (mode_t) t;}
+  //. return the file's type
   long type() const { return (_status.st_mode & S_IFMT);}
+  //. return the file's access permission flag
   long access() const { return (_status.st_mode & (ru|wu|xu));}
+  //. return the file owner
   uid_t uid() const { return _status.st_uid;}
+  //. return the owning group
   gid_t gid() const { return _status.st_gid;}
+  //. return the file size
   long  size() const { return  _status.st_size;}
+  //. return the access time
   time_t accTime() const { return _status.st_atime;}
+  //. return the modification time
   time_t modTime() const { return _status.st_mtime;}
+  //. return the change time
   time_t chTime() const { return _status.st_ctime;}
 
+  //. change the access permission
   bool chmod(access_t);
+  //. rename the file
   bool mv(const string &);
+  //. remove the file
   bool rm();
+  //. static method to determine the base name for the given string
   static string base(const string &);
+  //. generate a temporary file name
   static string tmp() { return ::tmpnam(0);}
 protected:
   struct stat _status;

@@ -29,6 +29,7 @@
 namespace Prague
 {
 
+//. FdSet is a helper class used when selecting available fds for non-blocking i/o
 class FdSet
 {
 public:
@@ -36,9 +37,13 @@ public:
   FdSet(const FdSet &F) : fds(F.fds), m(F.m) {}
   ~FdSet() {}
   FdSet &operator = (const FdSet &F) { fds = F.fds; m = F.m; return *this;}
+  //. add a fd to the set
   void set(int fd) { FD_SET(fd, &fds); if (fd > m) m = fd;}
+  //. return whether the given fd is available for non-blocking i/o
   bool isset(int fd) const { return FD_ISSET(fd, &fds);}
+  //. clear fd from the set
   void clear(int fd) { FD_CLR(fd, &fds); if (fd == m) for (int i = 0; i < fd - 1; i++) if (isset(fd)) m = fd;}
+  //. return max fd
   int max() const { return m;}
   operator fd_set *() { return &fds;}
 protected:

@@ -19,13 +19,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _MMap_hh
-#define _MMap_hh
+#ifndef _Prague_MMap_hh
+#define _Prague_MMap_hh
 
 #include <unistd.h>
 #include <sys/mman.h>
 #include <string>
 
+namespace Prague
+{
+
+//. a convenience wrapper around the mmap family of functions
 class MMap
 {
 public:
@@ -42,11 +46,17 @@ public:
   MMap(int, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
   MMap(const string &, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
   ~MMap();
+  //. return the base address
   void *addr() const { return base;}
+  //. return the size
   size_t size() const { return length;}
+  //. synchronize the memory with the associated file
   void sync(ssize_t = -1, bool = true);
+  //. synchronize the memory with the associated file
   void sync(void *, size_t, bool = true);
+  //. protect the memory
   void protect(ssize_t = -1, int = read|write);
+  //. protect the memory
   void protect(void *, size_t, int = read|write);
 private:
   MMap(const MMap &);
@@ -54,4 +64,6 @@ private:
   size_t length;
 };
 
-#endif /* _MMap_hh */
+};
+
+#endif

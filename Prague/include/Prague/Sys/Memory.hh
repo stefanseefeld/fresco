@@ -19,14 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Memory_hh
-#define _Memory_hh
+#ifndef _Prague_Memory_hh
+#define _Prague_Memory_hh
 
 #include <cstring>
 
 namespace Prague
 {
 
+//. this is a portability wrapper, to hide platform differences,
+//. as well as to hide some nasty casts
 namespace Memory
 {
 template <class T>
@@ -44,4 +46,4 @@ int compare(const T *p, const T *q, unsigned long n) { return memcmp(p, q, size_
 
 };
 
-#endif /* _Memory_hh */
+#endif

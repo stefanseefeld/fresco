@@ -34,8 +34,8 @@
 namespace Prague
 {
 
+//. provide locking based on fcntl. FLocks can be activated in read and in write mode.
 class FLock
- //. provide locking based on fcntl. Locks can be activated in read and in write mode.
 {
 public:
   enum mode {read = F_RDLCK, write = F_WRLCK};

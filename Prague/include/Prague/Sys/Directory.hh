@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Directory_hh
-#define _Directory_hh
+#ifndef _Prague_Directory_hh
+#define _Prague_Directory_hh
 
 #include <string>
 #include <vector>
@@ -30,10 +30,7 @@
 namespace Prague
 {
 
-/* @Class{Directory : public File}
- *
- * @Description{contains a list of all files found in this directory}
- */
+//. Directory contains a list of all files that live in this directory
 class Directory : public File
 {
 public:
@@ -49,11 +46,17 @@ public:
   //. list all files according to @var{filter} in the order given by @var{order}
   Directory(const Directory &);
   ~Directory();
+  //. return file with index i
   File *operator [] (unsigned int i) { return _children[i];}
+  //. return number of files
   unsigned int children() const { return _children.size();}
+  //. return begin iterator
   iterator begin() { return _children.begin();}
+  //. return begin iterator
   const_iterator begin() const { return _children.begin();}
+  //. return end iterator
   iterator end() { return _children.end();}
+  //. return end iterator
   const_iterator end() const { return _children.end();}
 protected:
   vector<File *> _children;

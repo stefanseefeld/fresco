@@ -65,10 +65,11 @@ private:
   Mutex &mutex;
 };
 
-class Condition// : public pthread_cond_t
+//. condition variables are used to commuicate changed conditions between threads.
+class Condition
 {
 public:
-  class Attribute// : public pthread_condattr_t
+  class Attribute
   {
   public:
     Attribute() { pthread_condattr_init(&impl);}
@@ -86,7 +87,8 @@ private:
   Mutex &mutex;
 };
 
-class Semaphore// : public sem_t
+//. semaphores are used to limit the number of concurrent accesses to some resource.
+class Semaphore
 {
 public:
   Semaphore(unsigned int v = 0) { sem_init(&impl, 0, v);}
@@ -101,6 +103,7 @@ private:
   Semaphore &operator = (const Semaphore &);
 };
 
+//. guards a semaphore over its whole lifetime
 class SemaphoreGuard
 {
 public:
@@ -114,10 +117,10 @@ private:
 
 #if 0
 
-class RWLock// : public pthread_rwlock_t
+class RWLock
 {
 public:
-  class Attribute// : public pthread_rwlockattr_t
+  class Attribute
   {
   public:
     Attribute() { pthread_rwlockattr_init (&impl);}
@@ -154,6 +157,7 @@ private:
 
 #endif
 
+//. a thread housekeeping class.
 class Thread
 {
   struct Guard
@@ -185,26 +189,28 @@ public:
   };
   Thread(proc, void *, priority_t = normal);
   ~Thread();
+  //. return the thread's priority
   priority_t priority() { MutexGuard guard(mutex); return _priority;}
+  //. return the thread's current state
   state_t state() { MutexGuard guard(mutex); return _state;}
+  //. start the thread
   void start() throw (Exception);
-  //. run the thread
+  //. wait for the thread to finish returning its return value
   void join(void **) throw (Exception);
-  //. wait for the thread to finish returning it's return value
-  void cancel();
   //. cancel the thread
-  void detach();
+  void cancel();
   //. detach the thread
-  static void exit(void *);
+  void detach();
   //. exit the calling thread with return value r
-  static bool delay(const Time &);
+  static void exit(void *r);
   //. delay execution of the calling thread
-  static void testcancel() { pthread_testcancel();}
+  static bool delay(const Time &);
   //. cancellation point
-  static Thread *self();
+  static void testcancel() { pthread_testcancel();}
   //. return a Thread pointer for the calling thread or 0 if it wasn't created by this Thread class
+  static Thread *self();
+  //. return a thread id. This gives a valid number even for third party threads
   static unsigned long id();
-  //. return a thread id. This is supposed to give a valid number even for third party threads
 private:
   Thread(pthread_t pt) : p(0), arg(0), thread(pt), _priority(normal), _state(running), detached(false) {}
   static void *start(void *);
@@ -245,4 +251,4 @@ inline unsigned long Thread::id()
 
 }
 
-#endif /* _Prague_Thread_hh */
+#endif

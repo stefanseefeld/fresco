@@ -173,13 +173,13 @@ void DataTypeManager::merge(const string &file)
       if (line.empty()) continue;
       if (line.substr(0, 5) == "type:")
 	{
-	  if (type) { types.push_back(*type); delete type;}
+	  if (type) { _types.push_back(*type); delete type;}
 	  type = new Type;
 	}
       if (!type || !type->parse(line))
 	cerr << "DataTypeManager::merge: error in line " << lineno << " of file " << file << endl;
     }
-  if (type) { types.push_back(*type); delete type;}
+  if (type) { _types.push_back(*type); delete type;}
 }
 
 short DataTypeManager::compare(unsigned short name1, unsigned short magic1, unsigned short name2, unsigned short magic2)
@@ -245,17 +245,17 @@ unsigned short DataTypeManager::Type::matchMagic(const unsigned char *data, int 
 
 string DataTypeManager::match(const string &file, const unsigned char *data, unsigned int length)
 {
-  vector<Type>::iterator best = types.end();
+  vector<Type>::iterator best = _types.end();
   unsigned short bestName = 0;
   unsigned short bestMagic = 0;
-  for (vector<Type>::iterator i = types.begin(); i != types.end(); i++)
+  for (vector<Type>::iterator i = _types.begin(); i != _types.end(); i++)
     {
       unsigned short name  = 0;
       unsigned short magic = 0;
       if (file.length()) name = (*i).matchName(file);
       if (data && length) magic = (*i).matchMagic(data, length);
       if (name == 0 && magic == 0) continue;
-      if (best == types.end())
+      if (best == _types.end())
 	{
 	  best = i;
 	  bestName  = name;
@@ -270,7 +270,7 @@ string DataTypeManager::match(const string &file, const unsigned char *data, uns
 	  continue;
 	}
     }
-  if (best == types.end()) return "binary";
+  if (best == _types.end()) return "binary";
   else return (*best).type;
 }
 
@@ -283,16 +283,16 @@ string DataTypeManager::match(const string &file)
   return match(name, data, ifs.gcount());
 }
 
-string DataTypeManager::TypeToMime(const string &type)
+string DataTypeManager::type_to_mime(const string &type)
 {
-  for (vector<Type>::iterator i = types.begin(); i != types.end(); i++)
+  for (vector<Type>::iterator i = _types.begin(); i != _types.end(); i++)
     if ((*i).type == type) return (*i).mime;
   return string();
 }
 
-string DataTypeManager::MimeToType(const string &mime)
+string DataTypeManager::mime_to_type(const string &mime)
 {
-  for (vector<Type>::iterator i = types.begin(); i != types.end(); i++)
+  for (vector<Type>::iterator i = _types.begin(); i != _types.end(); i++)
     if ((*i).mime == mime) return (*i).type;
   return string();
 }

@@ -27,6 +27,8 @@
 namespace Prague
 {
 
+//. Agents are asynchronous i/o event handlers. Together with the Dispatcher
+//. class, they implement the Reactor pattern. 
 class Agent
 {
   friend class Dispatcher;
@@ -38,19 +40,32 @@ public:
   Agent();
   virtual ~Agent();
 
+  //. bind the Agent to the Dispatcher, which increments the ref counter, and
+  //. registers the i/o channels as specified with the iomask.
   virtual void start();
+  //. release the Agent from the Dispatcher, which decrements the ref counter.
   virtual void stop();
+  //. set a new iomask, to be used by the Dispatcher to determine what events
+  //. this agent is interested in.
   void mask(short);
+  //. return the current iomask.
   short mask() const { return _iomask;}
+  //. return the buffer referring to the peer's input - i.e. it is an output buffer.
   virtual ipcbuf *ibuf() = 0;
+  //. return the buffer referring to the peer's output - i.e. it is an input buffer.
   virtual ipcbuf *obuf() = 0;
+  //. return the buffer referring to the peer's error - i.e. it is an input buffer.
   virtual ipcbuf *ebuf() = 0;
-
+  //. increment the ref counter
   void add_ref() { ++_refcount;}
+  //. decrement the ref counter. If the counter becomes zero, the Agent is deleted.
   void remove_ref() { if (!--_refcount) delete this;}
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);
+  //. the actual event handler. It is called with the fd on which the event occured,
+  //. and the iomask telling the kind of event. Overwrite that method in derived classes
+  //. to implement a specific behavior.
   virtual bool process(int, iomask) = 0;
   short _refcount;
   short _iomask;

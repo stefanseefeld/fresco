@@ -26,14 +26,13 @@
 using namespace Prague;
 
 Path::Path(const string &list, char c)
-  : separator(c)
 {
   if (list.empty()) return;
   string::size_type b = 0;
   while (b < list.size())
     {
       string::size_type e = list.find(separator, b);
-      paths.push_back(string(list, b, e-b));
+      _directories.push_back(string(list, b, e-b));
       b = e == string::npos ? string::npos : e + 1;
     }
 }
@@ -45,7 +44,7 @@ Path::~Path()
 string Path::lookup_file(const string &name, Path::predicate *p) const
 {
   if (name.empty() || name[0] == '/') return name;
-  for (vector<string>::const_iterator i = paths.begin(); i != paths.end(); i++)
+  for (vector<string>::const_iterator i = _directories.begin(); i != _directories.end(); i++)
     {
       string result = *i + "/" + name;
       if (!p || (*p)(result)) return result;

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Stopwatch_hh
-#define _Stopwatch_hh
+#ifndef _Prague_Stopwatch_hh
+#define _Prague_Stopwatch_hh
 
 #include <sys/types.h>
 #include <ctime>
@@ -28,30 +28,36 @@
 namespace Prague
 {
 
-/* @Class{Stopwatch}
- *
- * @Description{}
- */
+//. measure the real/cpu/sys time spend between two given moments.
 class Stopwatch
 {
   enum state { undef, stopped, running};
+  struct interval
+  {
+    clock_t begin;
+    clock_t end;
+  };
 public:
   Stopwatch();
   ~Stopwatch(){}
+  //. start the stopwatch
   void start();
+  //. stop the stopwatch
   void stop();
-  double realTime();
-  double cpuTime();
-  double sysTime();
-protected:
+  //. return real elapsed time
+  double real_time();
+  //. return cpu elapsed time
+  double cpu_time();
+  //. return sys elapsed time
+  double sys_time();
 private:
-  clock_t realbegin, realend;
-  clock_t cpubegin, cpuend;
-  clock_t sysbegin, sysend;
-  static clock_t ticks;
-  state s;
+  interval       _real;
+  interval       _cpu;
+  interval       _sys;
+  static clock_t _ticks;
+  state          _state;
 };
 
 };
 
-#endif /* _Stopwatch_hh */
+#endif

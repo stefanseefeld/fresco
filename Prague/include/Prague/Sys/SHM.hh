@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _SHM_hh
-#define _SHM_hh
+#ifndef _Prague_SHM_hh
+#define _Prague_SHM_hh
 
 #include <sys/types.h>
 #include <sys/ipc.h>

@@ -28,76 +28,52 @@
 
 using namespace Prague;
 
-clock_t Stopwatch::ticks = 0;
+clock_t Stopwatch::_ticks = 0;
 
-/* @Method{Stopwatch::Stopwatch()}
- *
- * @Description{}
- */
 Stopwatch::Stopwatch()
   : s(undef)
 {
-  if (!ticks) ticks = CLK_TCK;
+  if (!_ticks) _ticks = CLK_TCK;
   start();
 };
 
-/* @Method{void Stopwatch::start()}
- *
- * @Description{}
- */
 void Stopwatch::start()
 {
   s = running;
   struct tms cpt;
-  realbegin = times(&cpt);
-  cpubegin  = cpt.tms_utime;
-  sysbegin  = cpt.tms_stime;
-  if (realbegin == -1) perror("Stopwatch::start");
+  _real.begin = times(&cpt);
+  _cpu.begin  = cpt.tms_utime;
+  _sys.begin  = cpt.tms_stime;
+  if (_real.begin == -1) perror("Stopwatch::start");
 };
 
-/* @Method{void Stopwatch::stop()}
- *
- * @Description{}
- */
 void Stopwatch::stop()
 {
   s = stopped;
   struct tms cpt;
-  realend = times(&cpt);
-  cpuend  = cpt.tms_utime;
-  sysend  = cpt.tms_stime;
-  if (realend == -1) perror("Stopwatch::stop");
+  _real.end = times(&cpt);
+  _cpu.end  = cpt.tms_utime;
+  _sys.end  = cpt.tms_stime;
+  if (_real.end == -1) perror("Stopwatch::stop");
 };
 
-/* @Method{double Stopwatch::realStopwatch()}
- *
- * @Description{}
- */
-double Stopwatch::realTime()
+double Stopwatch::real_time()
 {
   if (s == undef) cerr << "Stopwatch::realTime: no starting point set" << endl;
   else if (s == running) stop();
-  return (double) (realend - realbegin)/ticks;
+  return (double) (_real.end - _real.begin)/ticks;
 };
 
-/* @Method{double Stopwatch::cpuTime()}
- *
- * @Description{}
- */
-double Stopwatch::cpuTime()
+double Stopwatch::cpu_time()
 {
   if (s == undef) cerr << "Stopwatch::cpuTime: no starting point set" << endl;
   else if (s == running) stop();
-  return (double) (cpuend - cpubegin)/ticks;
+  return (double) (_cpu.end - _cpu.begin)/ticks;
 };
 
-/* @Method{double Stopwatch::sysTime()}
- *
- * @Description{}
- */
-double Stopwatch::sysTime()
+double Stopwatch::sys_time()
 {
   if (s == undef) cerr << "Stopwatch::sysTime: no starting point set" << endl;
   else if (s == running) stop();
-  return (double) (sysend - sysbegin)/ticks;
+  return (double) (_sys.end - _sys.begin)/ticks;
 };

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DataTypeManager_hh
-#define _DataTypeManager_hh
+#ifndef _Prague_DataTypeManager_hh
+#define _Prague_DataTypeManager_hh
 
 #include <vector>
 #include <string>
@@ -29,6 +29,8 @@
 namespace Prague
 {
 
+//. a DataTypeManager maintains a data type repository to determine
+//. the type of a given file, based on either a magic number or the file's extension
 class DataTypeManager
 {
   struct Type
@@ -65,16 +67,19 @@ class DataTypeManager
 public:
   DataTypeManager(const string &file) { merge(file);}
   ~DataTypeManager() {}
+  //. merges in another type repository
   void merge(const string &);
+  //. return the type, given the head of a file
   string match(const string &);
+  //. return the type for a given file
   string match(const string &, const unsigned char *, unsigned int);
-  string TypeToMime(const string &);
-  string MimeToType(const string &);
+  string type_to_mime(const string &);
+  string mime_to_type(const string &);
 private:
   static short compare(unsigned short, unsigned short, unsigned short, unsigned short);
-  vector<Type> types;
+  vector<Type> _types;
 };
 
 };
 
-#endif /* _DataTypeManager_hh */
+#endif

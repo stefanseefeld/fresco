@@ -19,19 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Plugin_hh
-#define _Plugin_hh
+#ifndef _Prague_Plugin_hh
+#define _Prague_Plugin_hh
 
-#include "DLL.hh"
+#include <Prague/DLL.hh>
 
 namespace Prague {
 
+//. a special kind of a smart pointer which implements a plugin behavior.
+//. It assumes a special layout of the library, with a special factory
+//. that manufactures objects of type T.
 template <class T>
 class Plugin : public DLL
-//. a special kind of a smart pointer
-//. which implements a plugin behavior
 {
 public:
+  //. create a Plugin from the fiven file, using a factory with name loader
+  //. to create the actual object
   Plugin(const string &file, const string &loader = "load") : DLL(file)
     {
       typedef T *(* DL) ();
@@ -42,13 +45,12 @@ public:
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   T *get() const { return t;}
-protected:
 private:
   T *t;
 };
 
-} // namespace
+}
 
 #define dload(T) extern "C" T *load() { return new T;}
 
-#endif /* _Plugin_hh */
+#endif

@@ -27,21 +27,22 @@
 namespace Prague
 {
 
-/*
- * a Connector is an Agent that connects to
- * a specified sockaddr asynchronously
- */
+//. a Connector is an Agent that connects to
+//. a specified sockaddr asynchronously
 template <typename Connection, typename Socket>
 class Connector : public SocketAgent
 {
 public:
+  //. create a Connector for the given sockaddr
   Connector(Socket *socket, const typename Socket::address_type &peer)
     : SocketAgent(socket), _peer(peer) {}
   virtual ~Connector() { Trace trace("Connector::~Connector");}
   virtual Socket *ibuf() { return static_cast<Socket *>(SocketAgent::ibuf());}
   virtual Socket *obuf() { return static_cast<Socket *>(SocketAgent::obuf());}
+  //. start with the connection attempt
   virtual void start();
 private:
+  //. if the connection attempt was succesful, create a new Connection for it
   virtual bool process(int, iomask);
   typename Socket::address_type _peer;
 };

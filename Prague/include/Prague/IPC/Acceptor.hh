@@ -27,19 +27,21 @@
 namespace Prague
 {
 
-/*
- * an Acceptor is an Agent who's responsability is solely
- * to accept connection requests asynchronously.
- */
+//. an Acceptor is an Agent who's responsability is solely
+//. to accept connection requests asynchronously.
 template <typename Connection>
 class Acceptor : public SocketAgent
 {
 public:
+  //. create an Acceptor for the given socket
   Acceptor(sockbuf *socket, bool forever = false, size_t queue = 1)
     : SocketAgent(socket), _forever(forever), _queue(queue) {}
   virtual ~Acceptor() { Trace trace("Acceptor::~Acceptor");}
+  //. start listening for connection requests
   virtual void start();
 private:
+  //. accept a connection request, and create a new Connection
+  //. for it.
   virtual bool process(int, iomask);
   bool   _forever;
   size_t _queue;

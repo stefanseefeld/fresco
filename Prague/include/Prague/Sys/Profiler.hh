@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Profiler_hh
-#define _Profiler_hh
+#ifndef _Prague_Profiler_hh
+#define _Prague_Profiler_hh
 
 #include <Prague/Sys/ntree.hh>
 #include <Prague/Sys/Thread.hh>
@@ -34,6 +34,9 @@
 namespace Prague
 {
 
+//. a poor man's profiler. The basic idea is to use a guard object which measures
+//. the elapsed time between constructor and destructor and writes its findings into
+//. a profiler data base (a scope tree).
 class Profiler
 {
 public:
@@ -119,4 +122,4 @@ private:
 
 };
 
-#endif /* _Profiler_hh */
+#endif
