@@ -22,7 +22,7 @@
  */
 #ifndef _sockbuf_hh
 #define _sockbuf_hh
-#include <Prague/Sys/config.hh>
+#include <Prague/config.hh>
 #include <Prague/IPC/ipcbuf.hh>
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -22,6 +22,7 @@
 #ifndef _Warsaw_IO_hh
 #define _Warsaw_IO_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/Transform.hh>

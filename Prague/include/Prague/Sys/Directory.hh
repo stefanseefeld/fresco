@@ -49,17 +49,17 @@ public:
   //. list all files according to @var{filter} in the order given by @var{order}
   Directory(const Directory &);
   ~Directory();
-  File *operator [] (unsigned int i) { return children[i];}
-  unsigned int Children() const { return children.size();}
-  iterator begin() { return children.begin();}
-  const_iterator begin() const { return children.begin();}
-  iterator end() { return children.end();}
-  const_iterator end() const { return children.end();}
+  File *operator [] (unsigned int i) { return _children[i];}
+  unsigned int children() const { return _children.size();}
+  iterator begin() { return _children.begin();}
+  const_iterator begin() const { return _children.begin();}
+  iterator end() { return _children.end();}
+  const_iterator end() const { return _children.end();}
 protected:
-  vector<File *> children;
+  vector<File *> _children;
 private:
 };
 
 };
 
-#endif /* _Directory_hh */
+#endif

@@ -1,0 +1,5 @@
+modulepath	= @builddir@/modules
+rasterpath	= @top_srcdir@/etc/PNG
+fontpath	= /usr/lib/X11/fonts/Type1
+unifontpath	= @top_srcdir@/etc
+unicode		= @builddir@/etc/Unicode/UnicodeBlocks.txt

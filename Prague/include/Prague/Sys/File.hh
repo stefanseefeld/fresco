@@ -63,17 +63,17 @@ public:
   File &operator = (const File &);
   File &operator = (const string &);
   File parent() const;
-  const string &name() const { return shortname;}
-  const string &longName() const { return longname;}
-  bool is(type_t t) const { return (status.st_mode & S_IFMT) == (mode_t) t;}
-  long type() const { return (status.st_mode & S_IFMT);}
-  long access() const { return (status.st_mode & (ru|wu|xu));}
-  uid_t uid() const { return status.st_uid;}
-  gid_t gid() const { return status.st_gid;}
-  long  size() const { return  status.st_size;}
-  time_t accTime() const { return status.st_atime;}
-  time_t modTime() const { return status.st_mtime;}
-  time_t chTime() const { return status.st_ctime;}
+  const string &name() const { return _shortname;}
+  const string &long_name() const { return _longname;}
+  bool is(type_t t) const { return (_status.st_mode & S_IFMT) == (mode_t) t;}
+  long type() const { return (_status.st_mode & S_IFMT);}
+  long access() const { return (_status.st_mode & (ru|wu|xu));}
+  uid_t uid() const { return _status.st_uid;}
+  gid_t gid() const { return _status.st_gid;}
+  long  size() const { return  _status.st_size;}
+  time_t accTime() const { return _status.st_atime;}
+  time_t modTime() const { return _status.st_mtime;}
+  time_t chTime() const { return _status.st_ctime;}
 
   bool chmod(access_t);
   bool mv(const string &);
@@ -81,12 +81,12 @@ public:
   static string base(const string &);
   static string tmp() { return ::tmpnam(0);}
 protected:
-  struct stat status;
-  string longname;
-  string shortname;
-  bool getStatus();
-  const char *lastError() const;
-  int error;
+  struct stat _status;
+  string _longname;
+  string _shortname;
+  bool get_status();
+  const char *last_error() const;
+  int _error;
 private:
 };
 
@@ -96,11 +96,11 @@ inline string File::base(const string &s)
   return p == string::npos ? s : s.substr(p + 1);
 }
 
-inline bool File::getStatus()
+inline bool File::get_status()
 {
-  if (stat(longname.c_str(), &status) == -1) { status.st_mode = 0; error = errno; return false;} return true;
+  if (stat(_longname.c_str(), &_status) == -1) { _status.st_mode = 0; _error = errno; return false;} return true;
 }
 
 };
 
-#endif /* _File_hh */
+#endif

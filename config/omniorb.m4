@@ -1,7 +1,7 @@
 dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+dnl Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -193,9 +193,10 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 			-a ".$berlin_cv_lib_omnithread" = ".no" ; then
 			no_omniorb="yes"
 		fi
+		LIBS="$ORB_LIBS $LIBS"
 	fi
 
-	CPPFLAGS="$save_CPPFLAGS"
+dnl CPPFLAGS="$save_CPPFLAGS"
 
 	if test ".$no_omniorb" = "." ; then
 		berlin_cv_lib_omniORB="yes"

@@ -23,7 +23,7 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Sys/config.hh>
+#include <Prague/config.hh>
 #include <Prague/Sys/Fork.hh>
 #include <sys/wait.h>
 #include <cerrno>

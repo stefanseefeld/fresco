@@ -21,23 +21,38 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Signal.hh>
+#include <Prague/Sys/Profiler.hh>
+#include <Prague/Sys/Timer.hh>
+#include <Prague/Sys/Path.hh>
+#include <Prague/Sys/User.hh>
+#include <Prague/Sys/GetOpt.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/DrawingKit.hh>
+#include <Berlin/RCManager.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
 #include <Berlin/ServerImpl.hh>
 #include <Berlin/Console.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
-#include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Signal.hh>
-#include <Prague/Sys/Profiler.hh>
-#include <Prague/Sys/Timer.hh>
-#include <Prague/Sys/GetOpt.hh>
 #include <fstream>
+
+#ifdef RC_PREFIX
+const string prefix = RC_PREFIX;
+#else
+const string prefix = "";
+#endif
+
+#ifdef VERSION
+const string version = VERSION;
+#else
+const string version = "unknown";
+#endif
 
 #ifdef JPROF
 // probably need to change include path
@@ -83,20 +98,26 @@ int main(int argc, char **argv)
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
+  if (~prefix.empty()) RCManager::read(prefix + "/share/berlin/berlinrc");
+  RCManager::read(string(User().home()) + "/.berlin");
 
   GetOpt getopt(argv[0], "a berlin display server");
-  getopt.add('v', "version", GetOpt::novalue, "version number");
   getopt.add('h', "help", GetOpt::novalue, "help message");
+  getopt.add('v', "version", GetOpt::novalue, "version number");
   getopt.add('l', "logging", GetOpt::novalue, "switch logging on");
   getopt.add('p', "profiling", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
+  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
   getopt.parse(argc - 1, argv + 1);
   string value;
   getopt.get("version", &value);
-  if (value == "true") { cout << "version is " << "0.2" << endl; exit(0);}
+  if (value == "true") { cout << "version is " << version << endl; exit(0);}
   value = "";
   getopt.get("help", &value);
   if (value == "true") { getopt.usage(); exit(0);}
+  value = "";
+  getopt.get("resource", &value);
+  if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
   value = "";  
   getopt.get("logging", &value);
   if (value == "true")
@@ -129,23 +150,18 @@ int main(int argc, char **argv)
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
-  Logger::log(Logger::corba) << "[0/5] root POA is activated" << endl;
+  Logger::log(Logger::corba) << "root POA is activated" << endl;
 
   /*
    * ...and finally construct the server.
    */
   ServerImpl *server = ServerImpl::instance();
 
-  char *pluginDir = getenv("BERLIN_ROOT");
-  if (!pluginDir)
-    {
-      cerr << "Please set environment variable BERLIN_ROOT first" << endl;
-      exit(-1);
-    }
-  string modules = string(pluginDir) + "/modules";
-  server->scan(modules.c_str());
+  Prague::Path path = RCManager::get_path("modulepath");
+  for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+    server->scan(*i);
 
-  Logger::log(Logger::loader) << "[1/5] initialized loadable modules" << endl;
+  Logger::log(Logger::loader) << "modules are loaded" << endl;
 
   Console::open(argc, argv, poa);
 
@@ -164,7 +180,7 @@ int main(int argc, char **argv)
       exit(-1);
     }
 
-  Logger::log(Logger::drawing) << "[2/5] built drawing system" << endl;
+  Logger::log(Logger::drawing) << "drawing system is built" << endl;
 
   // make a Screen graphic to hold this server's scene graph
   ScreenImpl *screen = new ScreenImpl();
@@ -176,14 +192,10 @@ int main(int argc, char **argv)
   LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
   Layout::Stage_var stage = layout->create_stage();
   DesktopImpl *desktop = new DesktopImpl(stage);
-//   ToolKit::FrameSpec spec;
-//   Color color = {0.7, 1.0, 0.7, 1.0};
-//   spec.foreground(color);
-//   screen->body(Graphic_var(tools->frame(Desktop_var(desktop->_this()), 10., spec, true)));
   screen->body(Desktop_var(desktop->_this()));
   screen->append_controller(Desktop_var(desktop->_this()));
 
-  Logger::log(Logger::layout) << "[3/5] created desktop" << endl;
+  Logger::log(Logger::layout) << "desktop is created" << endl;
 
   // initialize the client listener
   server->set_singleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
@@ -193,9 +205,9 @@ int main(int argc, char **argv)
   Logger::log(Logger::layout) << "started server" << endl;
   bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
 
-  Logger::log(Logger::corba) << "[4/5] listening for clients" << endl;
+  Logger::log(Logger::corba) << "listening for clients" << endl;
   // initialize the event distributor and draw thread
-  Logger::log(Logger::corba) << "[5/5] event distributor constructed, about to enter main loop" << endl;
+  Logger::log(Logger::corba) << "event manager is constructed" << endl;
   try
     {
       smanager->run();

@@ -25,14 +25,6 @@
 
 using namespace Prague;
 
-/* @Method{Path::Path(char separator)}
- *
- * @Description{construct an empty Path whose tokens are separated by @var{separator}}
- */
-/* @Method{Path::Path(const string &list, char separator)}
- *
- * @Description{construct a Path from @var{list} whose tokens are separated by @var{separator}}
- */
 Path::Path(const string &list, char c)
   : separator(c)
 {
@@ -46,34 +38,22 @@ Path::Path(const string &list, char c)
     }
 }
 
-/* @Method{Path::~Path()}
- *
- * @Description{}
- */
 Path::~Path()
 {
 }
 
-/* @Method{string Path::lookupFile(const string &name, Path::predicate *p) const}
- *
- * @Description{find file @var{name} and return the absolute path for it. Return 0 if not found.}
- */
-string Path::lookupFile(const string &name, Path::predicate *p) const
+string Path::lookup_file(const string &name, Path::predicate *p) const
 {
   if (name.empty() || name[0] == '/') return name;
   for (vector<string>::const_iterator i = paths.begin(); i != paths.end(); i++)
     {
       string result = *i + "/" + name;
-      if (p && (*p)(result)) return result;
+      if (!p || (*p)(result)) return result;
     }
   return string ();
 };
 
-/* @Method{string Path::expandUser(const string &path)}
- *
- * @Description{return the absolute path if @var{path} starts with @var{'~'}. If this fails, return @var{path} unchanged}
- */
-string Path::expandUser(const string &path)
+string Path::expand_user(const string &path)
 {
   if (path.empty() || path[0] != '~') return path;
   string pfx;

@@ -2,6 +2,7 @@ dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -27,25 +28,19 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT($top/src/Prague/Sys/DLL.cc)
-AC_CONFIG_HEADER($top/include/Prague/Sys/config.hh)
+AC_INIT(subdirs.mk.in)
+AC_VERSION(0, 2, 2, 0, 0)
+AC_SET_PATHS(../..)
+AC_CONFIG_HEADER($builddir/include/Prague/config.hh:config/Prague/config.hh.in)
 
-dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
-dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
-dnl know what our AUX_DIR is...
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=../..
-cpath=..
-AC_CONFIG_AUX_DIR($cpath)
+AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_CONFIG_AUX_DIR(config)
 AC_DIVERT_POP()
 
 AC_HEADLINE(dnl
 Prague, The Berlin Utility Library, dnl
-Berlin_VERSION, $top/include/version.h, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
-
-SH_VERSION='\$Revision\$'
-AC_SUBST(SH_VERSION)
+[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+VERSION)
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -99,8 +94,23 @@ dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
+mkdir -p $builddir/bin
+mkdir -p $builddir/lib
+mkdir -p $builddir/modules/Unicode
+mkdir -p $builddir/config/Prague
+mkdir -p $builddir/include/Prague
+mkdir -p $builddir/src/Prague
+mkdir -p $builddir/src/Prague/Unicode/Blocks
+dnl mkdir -p $builddir/src/Prague/SAX/expat
+
 AC_OUTPUT([
-	$cpath/Prague/local.mk:$cpath/Prague/local.mk.in
-	$cpath/Prague/PragueConf.sh:$cpath/Prague/PragueConf.sh.in
-	$cpath/Prague/PragueConf-u.sh:$cpath/Prague/PragueConf-u.sh.in
+	$builddir/bin/Prague-config:config/package-config.in
+	$builddir/config/Prague/subdirs.mk:config/Prague/subdirs.mk.in
+	$builddir/src/Prague/Makefile:src/Prague/Makefile.in
+	$builddir/src/Prague/Unicode/Blocks/Makefile:src/Prague/Unicode/Blocks/Makefile.in
+dnl $builddir/src/Prague/SAX/expat/Makefile:src/Prague/SAX/expat/Makefile.in
+],[
+	chmod +x $builddir/bin/Prague-config
+],[
+	builddir=$builddir
 ])

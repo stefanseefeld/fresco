@@ -47,6 +47,11 @@ MMap::MMap(const string &filename, int l, int prot, int share, void *addr, off_t
   : base(MAP_FAILED), length(0)
 {
   int fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
+  if (fd == -1)
+    {
+      cerr << "MMap::MMap: unable to open '" << filename << '\'' << endl;
+      return;
+    }
   struct stat sb;
   length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
   if (l > static_cast<int>(length))

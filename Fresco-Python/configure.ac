@@ -2,6 +2,7 @@ dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -27,23 +28,18 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(../../clients/python/Makefile)
-dnl AC_CONFIG_HEADER($top/include/Berlin/config.hh)
+AC_INIT(subdirs.mk.in)
+AC_VERSION(0, 2, 2, 0, 0)
+AC_SET_PATHS(../..)
 
-dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
-dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
-dnl know what our AUX_DIR is...
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=../..
-cpath=..
-spath=$top/src
-AC_CONFIG_AUX_DIR($cpath)
+AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_CONFIG_AUX_DIR(config)
 AC_DIVERT_POP()
 
 AC_HEADLINE(dnl
-Berlin Clients Python, Berlin python clients, dnl
-Berlin_VERSION, $top/include/version.h, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
+Berlin Clients-Python, Berlin python clients, dnl
+[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+VERSION)
 
 dnl ------------------------------------------------------------------
 dnl CORBA environment
@@ -73,4 +69,12 @@ dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
-AC_OUTPUT($cpath/Clients-Python/local.mk:$cpath/Clients-Python/local.mk.in $cpath/Clients-Python/clients-python.mk:$cpath/Clients-Python/clients-python.mk.in)
+mkdir -p $builddir/bin
+mkdir -p $builddir/clients/python/Warsaw
+
+AC_OUTPUT([
+	$builddir/config/Clients-Python/subdirs.mk:config/Clients-Python/subdirs.mk.in
+	$builddir/config/Clients-Python/local.mk:config/Clients-Python/local.mk.in
+	$builddir/clients/python/Makefile:clients/python/Makefile.in
+	$builddir/clients/python/Warsaw/Makefile:config/Clients-Python/Makefile.omniorb.in
+])

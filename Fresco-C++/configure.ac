@@ -2,6 +2,7 @@ dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) Håvard Skinnemoen <skinnemo@itk.ntnu.no>
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -27,37 +28,45 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT($top/src/Warsaw/Makefile)
-AC_CONFIG_HEADER($top/include/Warsaw/config.hh)
+AC_INIT(subdirs.mk.in)
+AC_VERSION(0, 2, 2, 0, 0)
+AC_SET_PATHS(../..)
+AC_CONFIG_HEADER($builddir/include/Warsaw/config.hh:config/Warsaw/config.hh.in)
 
-dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
-dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
-dnl know what our AUX_DIR is...
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=../..
-cpath=..
-AC_CONFIG_AUX_DIR($cpath)
+AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_CONFIG_AUX_DIR(config)
 AC_DIVERT_POP()
 
 AC_HEADLINE(dnl
 Warsaw, The Berlin Protocol, dnl
-Berlin_VERSION, $top/include/version.h, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
-
-SH_VERSION='\$Revision\$'
-AC_SUBST(SH_VERSION)
+[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+VERSION)
 
 dnl ------------------------------------------------------------------
 
 BERLIN_LIB_ORB(mandatory)
+MAKEFILE=
+if test ".$ORB" = .omniORB ; then
+	MAKEFILE="Makefile.omniorb.in"
+fi
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
+mkdir -p $builddir/bin
+mkdir -p $builddir/lib
+mkdir -p $builddir/config/Warsaw
+mkdir -p $builddir/include/Warsaw
+mkdir -p $builddir/src/Warsaw
+
 AC_OUTPUT([
-$cpath/Warsaw/local.mk:$cpath/Warsaw/local.mk.in
-$cpath/Warsaw/WarsawConf.sh:$cpath/Warsaw/WarsawConf.sh.in
-$cpath/Warsaw/WarsawConf-u.sh:$cpath/Warsaw/WarsawConf-u.sh.in
+	$builddir/bin/Warsaw-config:config/package-config.in
+	$builddir/config/Warsaw/subdirs.mk:config/Warsaw/subdirs.mk.in
+	$builddir/src/Warsaw/Makefile:config/Warsaw/$MAKEFILE
+],[
+	chmod +x $builddir/bin/Warsaw-config
+],[
+	builddir=$builddir
 ])

@@ -22,6 +22,8 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Path.hh>
+#include <Berlin/RCManager.hh>
 #include "Image/RasterImpl.hh"
 #include <string>
 
@@ -35,11 +37,11 @@ RasterImpl::RasterImpl(const char *file) : _rows(0)
 
   if (!_rows)
     {
-      string pngfile = getenv("BERLIN_ROOT");
-      pngfile += "/etc/PNG/berlin-128.png";
+      Prague::Path path = RCManager::get_path("rasterpath");
+      string pngfile = path.lookup_file("berlin-128.png");
       if (pngfile.empty())
 	{
-	  cerr << "Please set environment variable BERLIN_ROOT first" << endl;
+	  cerr << "RasterImpl fatal error: can't read fallback raster berlin-128.png" << endl;
 	  exit(-1);
 	}
      _rows = _png.read(pngfile);

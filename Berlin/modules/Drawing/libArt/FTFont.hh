@@ -22,20 +22,20 @@
 #ifndef _LibArtFTFont_hh
 #define _LibArtFTFont_hh
 
+#include <Prague/Sys/MMap.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
 #include <Warsaw/Graphic.hh>
+#include <Warsaw/Unicode.hh>
 #include <Berlin/Console.hh>
 #include <Berlin/LRUCache.hh>
-#include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
 #include <freetype/freetype.h>
-#include <Warsaw/Unicode.hh>
 #include <map>
 
-class LibArtFTFont : public LibArtFont
 //. this is a simple Freetype font, which doesn't support
 //. ligatures or complex layout features
+class LibArtFTFont : public LibArtFont
 {
 public:
   LibArtFTFont(Console::Drawable *drawable);
@@ -61,34 +61,37 @@ public:
   void setup_face(FT_Face &f);
   void setup_size(FT_Face &f);
   bool load_glyph(Warsaw::Unichar c, FT_Face &f);
-  void matrix(FT_Matrix &m) {m = matrix_;}
+  void matrix(FT_Matrix &m) {m = _matrix;}
 
-  double getScale() const { return scale;} 
+  double get_scale() const { return _scale;} 
   
 protected:
 
   typedef unsigned int atom;  
-  class Atomizer {
+  class Atomizer
+  {
   protected:
-    atom currAtom;
-    map<Unicode::String, atom> atomMap;
+    atom _atom;
+    map<Unicode::String, atom> _atoms;
   public:
-    atom atomize(Unicode::String &u);
-  };  
+    atom atomize(Unicode::String &);
+  };
   Atomizer _a;
   atom atomize(Unicode::String &u) {return _a.atomize(u);}
     
-  double xres, yres, xdpi, ydpi;  
+  double _xres, _yres, _xdpi, _ydpi;  
   typedef unsigned int PtSize;
-  FT_Matrix matrix_;
+  FT_Matrix _matrix;
   typedef pair<atom,atom> FamStyle;
   typedef pair<PtSize,FamStyle> FaceSpec;
   typedef pair<Warsaw::Unichar,FaceSpec>  GlyphSpec;
   typedef pair<FT_Matrix, GlyphSpec>  TGlyphSpec;
 
-  class TGlyphSpec_cmp {
+  class TGlyphSpec_cmp
+  {
   public:
-    bool operator ()(const TGlyphSpec &a, const TGlyphSpec &b) {
+    bool operator ()(const TGlyphSpec &a, const TGlyphSpec &b)
+    {
       return 
 	// this is why a generalized product type constructor is better than
 	// ad-hoc memory structure definition. *sigh*
@@ -102,50 +105,55 @@ protected:
     }
   };
 
-  class GlyphMetricsFactory {
+  class GlyphMetricsFactory
+  {
   private:
-    LibArtFTFont *font_;
-    FT_Library *lib_;
+    LibArtFTFont *_font;
+    FT_Library   *_lib;
   public:
-    GlyphMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
-    Warsaw::DrawingKit::GlyphMetrics produce(const TGlyphSpec &cs);
+    GlyphMetricsFactory(LibArtFTFont *f, FT_Library *l) : _font(f), _lib(l) {}
+    Warsaw::DrawingKit::GlyphMetrics produce(const TGlyphSpec &);
     void recycle(Warsaw::DrawingKit::GlyphMetrics) {};
   };
- 
-  class FaceMetricsFactory {
+  
+  class FaceMetricsFactory
+  {
   private:
-    LibArtFTFont *font_;
-    FT_Library *lib_;
+    LibArtFTFont *_font;
+    FT_Library   *_lib;
   public:
-    FaceMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
-    Warsaw::DrawingKit::FontMetrics produce(const FaceSpec &fs);
+    FaceMetricsFactory(LibArtFTFont *f, FT_Library *l) : _font(f), _lib(l) {}
+    Warsaw::DrawingKit::FontMetrics produce(const FaceSpec &);
     void recycle(Warsaw::DrawingKit::FontMetrics) {};
   };
 
-  class GlyphFactory {
+  class GlyphFactory
+  {
   private:
-    LibArtFTFont *font_;
-    FT_Library *lib_;
+    LibArtFTFont *_font;
+    FT_Library   *_lib;
   public:
-    GlyphFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {};
-    ArtPixBuf *produce(const TGlyphSpec &cs);
-    void recycle(ArtPixBuf *pb) {art_pixbuf_free(pb);};
+    GlyphFactory(LibArtFTFont *f, FT_Library *l) : _font(f), _lib(l) {};
+    ArtPixBuf *produce(const TGlyphSpec &);
+    void recycle(ArtPixBuf *pb) { art_pixbuf_free(pb);};
   };
-   
-  atom myFam, myStyle;
-  Unicode::String myFamStr, myStyleStr;
-  PtSize mySize; 
-  double scale;
-  FT_Library myLibrary;
-  FT_Face myFace;
-  map<FamStyle,FT_Face> myFaceMap;
+  
+  atom                  _family;
+  atom                  _style;
+  Unicode::String       _familyStr;
+  Unicode::String       _styleStr;
+  PtSize                _size; 
+  double                _scale;
+  FT_Library            _library;
+  FT_Face               _face;
+  map<FamStyle,FT_Face> _faces;
 
   // caches!
   LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, 
-    map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > myGlyphCache;
-  LRUCache<FaceSpec, Warsaw::DrawingKit::FontMetrics, FaceMetricsFactory> myFaceMetricsCache;
+    map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > _glyphCache;
+  LRUCache<FaceSpec, Warsaw::DrawingKit::FontMetrics, FaceMetricsFactory> _faceMetricsCache;
   LRUCache<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics, GlyphMetricsFactory, 
-    map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > myGlyphMetricsCache;   
+    map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;   
 
 private:
   bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Unicode::String &, Unicode::String &);

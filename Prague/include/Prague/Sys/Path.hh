@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Path_hh
-#define _Path_hh
+#ifndef _Prague_Path_hh
+#define _Prague_Path_hh
 
 #include <string>
 #include <vector>
@@ -28,10 +28,6 @@
 namespace Prague
 {
 
-/* @Class{Path}
- *
- * @Description{represents a search path for easy file look up}
- */
 class Path
 {
   typedef vector<string> rep_type;
@@ -42,8 +38,8 @@ public:
   Path(const string &, char c = ':');
   ~Path();
   void append(const string &path) { paths.push_back(path);}
-  string lookupFile(const string &, predicate * = 0) const;
-  static string expandUser(const string &);
+  string lookup_file(const string &, predicate * = 0) const;
+  static string expand_user(const string &);
   iterator begin() { return paths.begin();}
   iterator end() { return paths.end();}
   size_t size() { return paths.size();}
@@ -56,4 +52,4 @@ private:
 
 };
 
-#endif /* _Path_hh */
+#endif

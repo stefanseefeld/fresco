@@ -1,27 +1,27 @@
-dnl ##
-dnl ##  GNU Pth - The GNU Portable Threads
-dnl ##  Copyright (c) 1999 Ralf S. Engelschall <rse@engelschall.com>
-dnl ##
-dnl ##  This file is part of GNU Pth, a non-preemptive thread scheduling
-dnl ##  library which can be found at http://www.gnu.org/software/pth/.
-dnl ##
-dnl ##  This library is free software; you can redistribute it and/or
-dnl ##  modify it under the terms of the GNU Lesser General Public
-dnl ##  License as published by the Free Software Foundation; either
-dnl ##  version 2.1 of the License, or (at your option) any later version.
-dnl ##
-dnl ##  This library is distributed in the hope that it will be useful,
-dnl ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-dnl ##  Lesser General Public License for more details.
-dnl ##
-dnl ##  You should have received a copy of the GNU Lesser General Public
-dnl ##  License along with this library; if not, write to the Free Software
-dnl ##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-dnl ##  USA, or contact Ralf S. Engelschall <rse@engelschall.com>.
-dnl ##
-dnl ##  aclocal.m4: Pth Autoconf macros
-dnl ##
+dnl $Id$
+dnl
+dnl This source file is a part of the Berlin Project.
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
+dnl http://www.berlin-consortium.org/
+dnl
+dnl part of this code is from Ralph S. Engelschall
+dnl Copyright (c) 1999 Ralf S. Engelschall <rse@engelschall.com>
+dnl
+dnl This library is free software; you can redistribute it and/or
+dnl modify it under the terms of the GNU Library General Public
+dnl License as published by the Free Software Foundation; either
+dnl version 2 of the License, or (at your option) any later version.
+dnl
+dnl This library is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+dnl Library General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU Library General Public
+dnl License along with this library; if not, write to the
+dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+dnl MA 02139, USA.
 
 divert(-1)
 
@@ -109,6 +109,30 @@ AC_SUBST($1)
 ])dnl
 
 dnl ##
+dnl ##  Set paths srcdir and builddir to point to
+dnl ##  the respective top level directories.
+dnl ##  This macro assumes that both trees are identically
+dnl ##  structured, i.e. the given <offset> parameter is
+dnl ##  subtracted from both, `pwd` as well as <srcdir>
+dnl ##
+dnl ##  configure.in:
+dnl ##    AC_SET_PATHS(<offset>)
+dnl ##
+
+AC_DEFUN(AC_SET_PATHS,[
+AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+changequote(, )dnl
+dnl builddir=`pwd | sed -e 's%$1$%%'`
+builddir=`pwd`/$1
+dnl srcdir=`echo $srcdir | sed -e 's%$1$%%'`
+srcdir="${srcdir}/$1"
+topdir="${srcdir}"
+changequote([, ])dnl
+AC_DIVERT_POP()
+AC_SUBST(topdir)
+])dnl
+
+dnl ##
 dnl ##  Support for --enable-subdir (for use with pth.m4)
 dnl ##
 dnl ##  configure.in:
@@ -131,16 +155,14 @@ dnl ##
 dnl ##  Support for Configuration Headers
 dnl ##
 dnl ##  configure.in:
-dnl ##    AC_HEADLINE(<short-name>, <long-name>, 
-dnl ##                <vers-var>, <vers-file>, 
-dnl ##                <copyright>)
+dnl ##    AC_HEADLINE(<short-name>, <long-name>, <copyright>[, <version>])
 dnl ##
 dnl ##
 dnl ##  Modified to look for shtool in ./config too
 dnl ##  Warning: $ac_aux_dir isn't documented.
 
 AC_DEFUN(AC_HEADLINE,[dnl
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
+AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
 #   configuration header
 if test ".`echo dummy [$]@ | grep enable-subdir`" != .; then
     enable_subdir=yes
@@ -169,20 +191,46 @@ changequote([, ])dnl
         TN=''
     fi
 
-    #   find out package version
-    $3_STR="`$ac_shtool version -l c -d long $ac_srcdir/$4`"
-    AC_SUBST($3_STR)
- 
     #   friendly header ;)
-    if test ".$enable_subdir" != .yes; then
-        echo "Configuring ${TB}$1${TN} ($2), Version ${TB}${$3_STR}${TN}"
-        echo "$5"
-    fi
-
-    #   additionally find out hex version
-    $3_HEX="`$ac_shtool version -l c -d hex $ac_srcdir/$4`"
-    AC_SUBST($3_HEX)
+    ifelse([$4], , [
+	echo "Configuring ${TB}$1${TN} ($2)"], [
+	echo "Configuring ${TB}$1${TN} ($2), Version ${TB}${$4}${TN}"
+	])
+    echo "$3"
 fi
+AC_DIVERT_POP()
+])dnl
+
+dnl ##
+dnl ##  Support for Version numbers
+dnl ##
+dnl ##  configure.in:
+dnl ##    AC_VERSION(<major, <minor>, <patch>, <interface>, <binary>)
+dnl ##
+dnl ## Making releases:
+dnl ##
+dnl ##   <interface> += 1;
+dnl ##   <binary> += 1;
+dnl ## if any functions have been added, set <interface> to 0.
+dnl ## if backwards compatibility has been broken,
+dnl ## set <binary> and <interface> to 0.
+dnl ##
+
+AC_DEFUN(AC_VERSION,[
+AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
+MAJOR_VERSION=$1
+MINOR_VERSION=$2
+PATCH_LEVEL=$3
+INTERFACE_AGE=$4
+BINARY_AGE=$5
+VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_LEVEL
+
+AC_SUBST(MAJOR_VERSION)
+AC_SUBST(MINOR_VERSION)
+AC_SUBST(PATCH_LEVEL)
+AC_SUBST(INTERFACE_AGE)
+AC_SUBST(BINARY_AGE)
+AC_SUBST(VERSION)
 AC_DIVERT_POP()
 ])dnl
 
@@ -697,352 +745,6 @@ fi
 ])
 
 dnl ##
-dnl ##  Check for socket/network size type
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_SOCKLENTYPE(<action-with-${ac_type}>)
-dnl ##
-
-dnl #   Background:
-dnl #   this exists because of shortsightedness on the POSIX committee.
-dnl #   BSD systems used "int *" as the parameter to accept(2),
-dnl #   getsockname(2), getpeername(2) et al. Consequently many Unix
-dnl #   flavors took an "int *" for that parameter. The POSIX committee
-dnl #   decided that "int" was just too generic and had to be replaced
-dnl #   with "size_t" almost everywhere. There's no problem with that
-dnl #   when you're passing by value. But when you're passing by
-dnl #   reference (as it is the case for accept(2) and friends) this
-dnl #   creates a gross source incompatibility with existing programs.
-dnl #   On 32-bit architectures it creates only a warning. On 64-bit
-dnl #   architectures it creates broken code -- because "int *" is a
-dnl #   pointer to a 64-bit quantity and "size_t *" is usually a pointer
-dnl #   to a 32-bit quantity. Some Unix flavors adopted "size_t *" for
-dnl #   the sake of POSIX compliance. Others ignored it because it was
-dnl #   such a broken interface. Chaos ensued. POSIX finally woke up
-dnl #   and decided that it was wrong and created a new type socklen_t.
-dnl #   The only useful value for socklen_t is "int", and that's how
-dnl #   everyone who has a clue implements it. It is almost always the
-dnl #   case that this type should be defined to be an "int", unless the
-dnl #   system being compiled for was created in the window of POSIX
-dnl #   madness.
-
-AC_DEFUN(AC_CHECK_SOCKLENTYPE,[dnl
-AC_CHECK_TYPEDEF(socklen_t, sys/socket.h)
-AC_CHECK_ARGTYPE(sys/types.h sys/socket.h, accept, 3, 3, [:])
-AC_MSG_CHECKING(for fallback socklen_t)
-AC_CACHE_VAL(ac_cv_check_socklentype, [
-if test ".$ac_cv_typedef_socklen_t" = .yes; then
-    ac_cv_check_socklentype='socklen_t'
-elif test ".$ac_type" != .; then
-    ac_cv_check_socklentype=`echo "$ac_type" | sed -e 's/[ 	]*\*$//'`
-else
-    ac_cv_check_socklentype='int'
-fi
-])
-AC_MSG_RESULT([$ac_cv_check_socklentype])
-ac_type="$ac_cv_check_socklentype"
-ifelse([$1], , :, [$1])
-])
-
-dnl ##
-dnl ##  Check for filedescriptor number type
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_NFDSTYPE(<action-with-${ac_type}>)
-dnl ##
-
-AC_DEFUN(AC_CHECK_NFDSTYPE,[dnl
-AC_CHECK_TYPEDEF(nfds_t, poll.h)
-AC_CHECK_ARGTYPE(sys/types.h poll.h, poll, 2, 3, [:])
-AC_MSG_CHECKING(for fallback nfds_t)
-AC_CACHE_VAL(ac_cv_check_nfdstype, [
-if test ".$ac_cv_typedef_nfds_t" = .yes; then
-    ac_cv_check_nfdstype='nfds_t'
-elif test ".$ac_type" != .; then
-    ac_cv_check_nfdstype=`echo "$ac_type" | sed -e 's/[ 	]*\*$//'`
-else
-    ac_cv_check_nfdstype='unsigned int'
-fi
-])
-AC_MSG_RESULT([$ac_cv_check_nfdstype])
-ac_type="$ac_cv_check_nfdstype"
-ifelse([$1], , :, [$1])
-])
-
-dnl ##
-dnl ##  Check for direction of stack growth
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_STACKGROWTH(<define>)
-dnl ##  acconfig.h:
-dnl ##    #undef <define>
-dnl ##  source.c:
-dnl ##    #include "config.h"
-dnl ##    #if <define> < 0
-dnl ##        ...stack grow down...
-dnl ##    #else
-dnl ##        ...stack grow up...
-dnl ##    #endif
-dnl ##
-
-AC_DEFUN(AC_CHECK_STACKGROWTH,[dnl
-AC_MSG_CHECKING(for direction of stack growth)
-AC_CACHE_VAL(ac_cv_check_stackgrowth, [
-cross_compile=no
-AC_TRY_RUN(
-changequote(<<, >>)dnl
-<<
-#include <stdio.h>
-#include <stdlib.h>
-static int iterate = 10;
-static int growsdown(int *x)
-{
-    auto int y;
-    y = (x > &y);
-    if (--iterate > 0)
-        y = growsdown(&y);
-    if (y != (x > &y))
-        exit(1);
-    return y;
-}
-int main(int argc, char *argv[])
-{
-    FILE *f;
-    auto int x;
-    if ((f = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(f, "%s\n", growsdown(&x) ? "down" : "up");;
-    fclose(f);
-    exit(0);
-}
->>
-changequote([, ])dnl
-,
-ac_cv_check_stackgrowth=`cat conftestval`,
-ac_cv_check_stackgrowth=down,
-ac_cv_check_stackgrowth=down
-)dnl
-])dnl
-AC_MSG_RESULT([$ac_cv_check_stackgrowth])
-if test ".$ac_cv_check_stackgrowth" = ".down"; then
-    val="-1"
-else
-    val="+1"
-fi
-AC_DEFINE_UNQUOTED($1, $val)
-])
-
-dnl ##
-dnl ##  Check whether and how a POSIX compliant sigsetjmp(3) can be achieved
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_SJLJ(<success-action>, <failure-action>, <type-var>)
-dnl ##
-
-AC_DEFUN(AC_CHECK_SJLJ,[dnl
-AC_MSG_CHECKING(for signal-mask aware setjmp(3)/longjmp(3))
-AC_CACHE_VAL(ac_cv_check_sjlj, [
-AC_IFALLYES(func:setjmp func:longjmp, ac_cv_check_sjlj=sjlje, ac_cv_check_sjlj=none)
-cross_compile=no
-for testtype in ssjlj sjlj usjlj; do
-OCFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -DTEST_${testtype}"
-AC_TRY_RUN(
-changequote(<<, >>)dnl
-<<
-#if defined(TEST_ssjlj)
-#define __JMP_BUF          sigjmp_buf
-#define __SETJMP(buf)      sigsetjmp(buf,1)
-#define __LONGJMP(buf,val) siglongjmp(buf,val)
-#elif defined(TEST_sjlj)
-#define __JMP_BUF          jmp_buf
-#define __SETJMP(buf)      setjmp(buf)
-#define __LONGJMP(buf,val) longjmp(buf,val)
-#elif defined(TEST_usjlj)
-#define __JMP_BUF          jmp_buf
-#define __SETJMP(buf)      _setjmp(buf)
-#define __LONGJMP(buf,val) _longjmp(buf,val)
-#endif
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <unistd.h>
-
-static __JMP_BUF jb;
-
-static void sighandler(int sig)
-{
-    sigset_t sigs;
-    
-    /* get signal mask */
-    sigprocmask(SIG_SETMASK, NULL, &sigs);
-
-    /* make sure USR1 is still blocked */
-    if (!sigismember(&sigs, SIGUSR1))
-        exit(1);
-
-    /* block USR2 for us */
-    sigaddset(&sigs, SIGUSR2);
-    sigprocmask(SIG_SETMASK, &sigs, NULL);
-
-    /* jump back to main */
-    __LONGJMP(jb, 1);
-    exit(1);
-}
-
-int main(int argc, char *argv[]) 
-{
-    FILE *fp;
-    sigset_t sigs;
-    struct sigaction sa;
-    
-    /* the default is that it fails */
-    if ((fp = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(fp, "failed\n");
-    fclose(fp);
-
-    /* block USR1 and unblock USR2 signal */
-    sigprocmask(SIG_SETMASK, NULL, &sigs);
-    sigaddset(&sigs, SIGUSR1);
-    sigdelset(&sigs, SIGUSR2);
-    sigprocmask(SIG_SETMASK, &sigs, NULL);
-
-    /* set jump buffer */
-    if (__SETJMP(jb) == 0) {
-
-        /* install signal handler for USR1 */
-        memset((void *)&sa, 0, sizeof(struct sigaction));
-        sigemptyset(&sa.sa_mask);
-        sa.sa_handler = sighandler;
-        sa.sa_flags = 0;
-        sigaction(SIGUSR1, &sa, NULL);
-
-        /* send USR1 signal (which is still blocked) */
-        kill(getpid(), SIGUSR1);
-        
-        /* unblock USR1 and wait for it */
-        sigprocmask(SIG_SETMASK, NULL, &sigs);
-        sigdelset(&sigs, SIGUSR1);
-        sigsuspend(&sigs);
-        exit(1);
-    }
-
-    /* get signal mask again */
-    sigprocmask(SIG_SETMASK, NULL, &sigs);
-
-    /* make sure USR2 is again unblocked */
-    if (sigismember(&sigs, SIGUSR2))
-        exit(1);
-
-    /* Fine... */
-    if ((fp = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(fp, "ok\n");
-    fclose(fp);
-    exit(0);
-}
->>
-changequote([, ]),
-rc=`cat conftestval`,
-rc=failed,
-rc=failed
-)dnl
-CFLAGS="$OCFLAGS"
-if test ".$rc" = .ok; then
-    ac_cv_check_sjlj=$testtype
-    break
-fi
-done
-case $PLATFORM in
-    *-*-linux* )
-        braindead=no
-        case "x`uname -r`" in
-changequote(, )dnl
-            x2.[23456789]* ) ;;
-changequote([, ])
-            * ) braindead=yes ;;
-        esac
-        case `grep __GLIBC_MINOR /usr/include/features.h | grep '#define' |\
-              awk '{ printf("%s", [$]3 >= 1 ? "yes" : "no"); }'` in
-            yes ) ;;
-            * ) braindead=yes ;;
-        esac
-        case $braindead in
-            yes ) ac_cv_check_sjlj=sjljlx ;;
-            no  ) ac_cv_check_sjlj=ssjlj  ;;
-        esac
-        ;;
-    *-*-isc* )
-        ac_cv_check_sjlj=sjljisc
-        ;;
-esac
-])dnl
-$3="$ac_cv_check_sjlj"
-if test ".$ac_cv_check_sjlj" != .none; then
-    AC_MSG_RESULT([yes: $ac_cv_check_sjlj])
-    ifelse([$1], , :, [$1])
-else
-    AC_MSG_RESULT([no])
-    ifelse([$2], , :, [$2])
-fi
-])dnl
-
-dnl ##
-dnl ##  Check for number of signals (NSIG)
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_NSIG(<define>)
-dnl ##  acconfig.h:
-dnl ##    #undef <define>
-dnl ##  source.c:
-dnl ##    #include "config.h"
-dnl ##    ...<define>...
-
-AC_DEFUN(AC_CHECK_NSIG,[dnl
-AC_MSG_CHECKING(for number of signals)
-cross_compile=no
-AC_TRY_RUN(
-changequote(<<, >>)dnl
-<<
-#include <stdio.h>
-#include <sys/types.h>
-#include <signal.h>
-
-int main(int argc, char *argv[]) 
-{
-    FILE *fp;
-    int nsig;
-
-#if defined(NSIG)
-    nsig = NSIG;
-#elif defined(_NSIG)
-    nsig = _NSIG;
-#else
-    nsig = (sizeof(sigset_t)*8);
-    if (nsig < 32)
-        nsig = 32;
-#endif
-    if ((fp = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(fp, "%d\n", nsig);
-    fclose(fp);
-    exit(0);
-}
->>
-changequote([, ])dnl
-,
-nsig=`cat conftestval`,
-nsig=32,
-nsig=32
-)dnl
-AC_MSG_RESULT([$nsig])
-AC_DEFINE_UNQUOTED($1, $nsig)
-])
-
-dnl ##
 dnl ##  Check for an external/extension library.
 dnl ##  - is aware of <libname>-config style scripts
 dnl ##  - searches under standard paths include, lib, etc.
@@ -1142,292 +844,6 @@ fi
 AC_MSG_RESULT([$with_$2])
 ])dnl
 
-dnl ##
-dnl ##  Check whether SVR4/SUSv2 makecontext(2), swapcontext(2) and 
-dnl ##  friends can be used for user-space context switching
-dnl ##
-dnl ##  configure.in:
-dnl ##     AC_CHECK_MCSC(<success-action>, <failure-action>)
-dnl ##
-
-AC_DEFUN(AC_CHECK_MCSC, [
-AC_MSG_CHECKING(for usable SVR4/SUSv2 makecontext(2)/swapcontext(2))
-AC_CACHE_VAL(ac_cv_check_mcsc, [
-AC_TRY_RUN([
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <ucontext.h>
-
-ucontext_t uc_child;
-ucontext_t uc_main;
-
-void child(void *arg)
-{
-    if (arg != (void *)12345)
-        exit(1);
-    if (swapcontext(&uc_child, &uc_main) != 0)
-        exit(1);
-}
-
-int main(int argc, char *argv[]) 
-{
-    FILE *fp;
-    void *stack;
-    
-    /* the default is that it fails */
-    if ((fp = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(fp, "no\n");
-    fclose(fp);
-
-    /* configure a child user-space context */
-    if ((stack = malloc(64*1024)) == NULL)
-        exit(1);
-    if (getcontext(&uc_child) != 0)
-        exit(1);
-    uc_child.uc_link = NULL;
-    uc_child.uc_stack.ss_sp = (char *)stack+(32*1024);
-    uc_child.uc_stack.ss_size = 32*1024;
-    uc_child.uc_stack.ss_flags = 0;
-    makecontext(&uc_child, child, 2, (void *)12345);
-
-    /* switch into the user context */
-    if (swapcontext(&uc_main, &uc_child) != 0)
-        exit(1);
-
-    /* Fine, child came home */
-    if ((fp = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(fp, "yes\n");
-    fclose(fp);
-
-    /* die successfully */
-    exit(0);
-}
-],
-ac_cv_check_mcsc=`cat conftestval`,
-ac_cv_check_mcsc=no,
-ac_cv_check_mcsc=no
-)dnl
-])dnl
-AC_MSG_RESULT([$ac_cv_check_mcsc])
-if test ".$ac_cv_check_mcsc" = .yes; then
-    ifelse([$1], , :, [$1])
-else
-    ifelse([$2], , :, [$2])
-fi
-])dnl
-
-dnl ##
-dnl ##  Check how stacks have to be setup for the functions
-dnl ##  sigstack(2), sigaltstack(2) and makecontext(2).
-dnl ##
-dnl ##  configure.in:
-dnl ##    AC_CHECK_STACKSETUP(sigstack|sigaltstack|makecontext, <macro-addr>, <macro-size>)
-dnl ##  acconfig.h:
-dnl ##    #undef HAVE_{SIGSTACK|SIGALTSTACK|MAKECONTEXT}
-dnl ##    #undef HAVE_STACK_T
-dnl ##  header.h.in:
-dnl ##    @<macro-addr>@
-dnl ##    @<macro-size>@
-dnl ##  source.c:
-dnl ##    #include "header.h"
-dnl ##    xxx.sp_ss   = <macro-addr>(skaddr, sksize);
-dnl ##    xxx.sp_size = <macro-size>(skaddr, sksize);
-dnl ##
-
-AC_DEFUN(AC_CHECK_STACKSETUP,[dnl
-dnl #   check for consistent usage
-ifelse($1,[sigstack],,[
-ifelse($1,[sigaltstack],,[
-ifelse($1,[makecontext],,[
-errprint(__file__:__line__: [AC_CHECK_STACKSETUP: only sigstack, sigaltstack and makecontext supported
-])])])])
-dnl #   we require the C compiler and the standard headers
-AC_REQUIRE([AC_HEADER_STDC])dnl
-dnl #   we at least require the function to check
-AC_CHECK_FUNCTIONS($1)
-dnl #   sigaltstack on some platforms uses stack_t instead of struct sigaltstack
-ifelse($1, sigaltstack, [
-    AC_ONCE(stacksetup_stack_t, [
-        AC_CHECK_TYPEDEF(stack_t, signal.h)
-    ])
-])
-dnl #   display processing header
-AC_MSG_CHECKING(for stack setup via $1)
-dnl #   but cache the whole results
-AC_CACHE_VAL(ac_cv_stacksetup_$1,[
-if test ".$ac_cv_func_$1" = .no; then
-    dnl #   no need to check anything when function is already missing
-    ac_cv_stacksetup_$1="N.A.:/*N.A.*/,/*N.A.*/"
-else
-    dnl #   setup compile environment
-    OCFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS -DTEST_$1"
-    cross_compile=no
-    dnl #   compile and run the test program
-    AC_TRY_RUN([
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#if defined(TEST_sigstack) || defined(TEST_sigaltstack)
-#include <sys/types.h>
-#include <signal.h>
-#include <unistd.h>
-#endif
-#if defined(TEST_makecontext)
-#include <ucontext.h>
-#endif
-union alltypes {
-    long   l;
-    double d;
-    void  *vp;
-    void (*fp)(void);
-    char  *cp;
-};
-static volatile char *handler_addr = (char *)0xDEAD;
-#if defined(TEST_sigstack) || defined(TEST_sigaltstack)
-static volatile int handler_done = 0;
-void handler(int sig)
-{
-    char garbage[1024];
-    int i;
-    auto int dummy;
-    for (i = 0; i < 1024; i++)
-        garbage[i] = 'X';
-    handler_addr = (char *)&dummy;
-    handler_done = 1;
-    return;
-}
-#endif
-#if defined(TEST_makecontext)
-static ucontext_t uc_handler;
-static ucontext_t uc_main;
-void handler(void)
-{
-    char garbage[1024];
-    int i;
-    auto int dummy;
-    for (i = 0; i < 1024; i++)
-        garbage[i] = 'X';
-    handler_addr = (char *)&dummy;
-    swapcontext(&uc_handler, &uc_main);
-    return;
-}
-#endif
-int main(int argc, char *argv[])
-{
-    FILE *f;
-    char *skaddr;
-    char *skbuf;
-    int sksize;
-    char result[1024];
-    int i;
-    sksize = 32768;
-    skbuf = (char *)malloc(sksize*2+2*sizeof(union alltypes));
-    if (skbuf == NULL)
-        exit(1);
-    for (i = 0; i < sksize*2+2*sizeof(union alltypes); i++)
-        skbuf[i] = 'A';
-    skaddr = skbuf+sizeof(union alltypes);
-#if defined(TEST_sigstack) || defined(TEST_sigaltstack)
-    {
-        struct sigaction sa;
-#if defined(TEST_sigstack)
-        struct sigstack ss;
-#elif defined(TEST_sigaltstack) && defined(HAVE_STACK_T)
-        stack_t ss;
-#else
-        struct sigaltstack ss;
-#endif
-#if defined(TEST_sigstack)
-        ss.ss_sp      = (void *)(skaddr + sksize);
-        ss.ss_onstack = 0;
-        if (sigstack(&ss, NULL) < 0)
-            exit(1);
-#elif defined(TEST_sigaltstack)
-        ss.ss_sp    = (void *)(skaddr + sksize); 
-        ss.ss_size  = sksize;
-        ss.ss_flags = 0;
-        if (sigaltstack(&ss, NULL) < 0)
-            exit(1);
-#endif
-        memset((void *)&sa, 0, sizeof(struct sigaction));
-        sa.sa_handler = handler;
-        sa.sa_flags = SA_ONSTACK;
-        sigemptyset(&sa.sa_mask);
-        sigaction(SIGUSR1, &sa, NULL);
-        kill(getpid(), SIGUSR1);
-        while (!handler_done)
-            /*nop*/;
-    }
-#endif
-#if defined(TEST_makecontext)
-    {
-        if (getcontext(&uc_handler) != 0)
-            exit(1);
-        uc_handler.uc_link = NULL;
-        uc_handler.uc_stack.ss_sp    = (void *)(skaddr + sksize);
-        uc_handler.uc_stack.ss_size  = sksize;
-        uc_handler.uc_stack.ss_flags = 0;
-        makecontext(&uc_handler, handler, 1);
-        swapcontext(&uc_main, &uc_handler);
-    }
-#endif
-    if (handler_addr == (char *)0xDEAD)
-        exit(1);
-    if (handler_addr < skaddr+sksize) {
-        /* stack was placed into lower area */
-        if (*(skaddr+sksize) != 'A')
-             sprintf(result, "(skaddr)+(sksize)-%d,(sksize)-%d",
-                     sizeof(union alltypes), sizeof(union alltypes)); 
-        else
-             strcpy(result, "(skaddr)+(sksize),(sksize)"); 
-    }
-    else {
-        /* stack was placed into higher area */
-        if (*(skaddr+sksize*2) != 'A')
-            sprintf(result, "(skaddr),(sksize)-%d", sizeof(union alltypes));
-        else
-            strcpy(result, "(skaddr),(sksize)");
-    }
-    if ((f = fopen("conftestval", "w")) == NULL)
-        exit(1);
-    fprintf(f, "%s\n", result);
-    fclose(f);
-    exit(0);
-}
-],[
-dnl #   test successully passed
-ac_cv_stacksetup_$1=`cat conftestval`
-ac_cv_stacksetup_$1="ok:$ac_cv_stacksetup_$1"
-],[
-dnl #   test failed
-ac_cv_stacksetup_$1='guessed:(skaddr),(sksize)'
-],[
-dnl #   cross-platform => failed
-ac_cv_stacksetup_$1='guessed:(skaddr),(sksize)'
-])dnl
-dnl #   restore original compile environment
-CFLAGS="$OCFLAGS"
-])dnl
-fi
-dnl #   extract result ingredients of single cached result value
-type=`echo $ac_cv_stacksetup_$1 | sed -e 's;:.*$;;'`
-addr=`echo $ac_cv_stacksetup_$1 | sed -e 's;^.*:;;' -e 's;,.*$;;'`
-size=`echo $ac_cv_stacksetup_$1 | sed -e 's;^.*:;;' -e 's;^.*,;;'`
-dnl #   export result ingredients
-$2="#define $2(skaddr,sksize) ($addr)"
-$3="#define $3(skaddr,sksize) ($size)"
-AC_SUBST($2)dnl
-AC_SUBST($3)dnl
-dnl #   display result indicator
-AC_MSG_RESULT([$type])
-dnl #   display results in detail
-AC_MSG_VERBOSE([$]$2)
-AC_MSG_VERBOSE([$]$3)
-])
 
 dnl See whether we need a declaration for a function.
 dnl AC_NEED_DECLARATION(FUNCTION [, EXTRA-HEADER-FILES])

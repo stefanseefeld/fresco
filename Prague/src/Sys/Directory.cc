@@ -40,33 +40,33 @@ bool compDirsFirst(File *a, File *b)
 Directory::Directory(const string &n, int order, int filter)
   : File(n)
 {
-  while (longname.length() > 2 && longname[longname.length() - 1] == '.' && longname[longname.length() - 2] == '.')
+  while (_longname.length() > 2 && _longname[_longname.length() - 1] == '.' && _longname[_longname.length() - 2] == '.')
     {
-      string::size_type i = longname.rfind('/', longname.length() - 3);
-      longname.erase(i, longname.length());
+      string::size_type i = _longname.rfind('/', _longname.length() - 3);
+      _longname.erase(i, _longname.length());
     }
-  shortname = File::base(longname);
-  if (getStatus() && is(File::dir))
+  _shortname = File::base(_longname);
+  if (get_status() && is(File::dir))
     {
-      DIR *dir = opendir(longname.c_str());
+      DIR *dir = opendir(_longname.c_str());
       for (struct dirent *entry = readdir(dir); entry; entry = readdir(dir))
 	{
-	  string childname = longname + '/' + entry->d_name;
+	  string childname = _longname + '/' + entry->d_name;
 	  if (filter == unfiltered ||
 	      filter == nohidden && entry->d_name[0] != '.' ||
 	      filter == dirs && File(childname).is(File::dir) ||
 	      filter == nodirs && !File(childname).is(File::dir))
-	    children.push_back(new File(childname));
+	    _children.push_back(new File(childname));
 	}
       closedir(dir);
       switch (order)
 	{
-	case dirsfirst: sort(children.begin(), children.end(), compDirsFirst); break;
-	case size:      sort(children.begin(), children.end(), compSize); break;
-	case modtime:   sort(children.begin(), children.end(), compModTime); break;
-	case acctime:   sort(children.begin(), children.end(), compAccTime); break;
+	case dirsfirst: sort(_children.begin(), _children.end(), compDirsFirst); break;
+	case size:      sort(_children.begin(), _children.end(), compSize); break;
+	case modtime:   sort(_children.begin(), _children.end(), compModTime); break;
+	case acctime:   sort(_children.begin(), _children.end(), compAccTime); break;
 	case alpha:
-	default:        sort(children.begin(), children.end(), compAlpha); break;
+	default:        sort(_children.begin(), _children.end(), compAlpha); break;
 	}
     }
 }
@@ -74,33 +74,33 @@ Directory::Directory(const string &n, int order, int filter)
 Directory::Directory(const string &n, int order, const string &pattern)
   : File(n)
 {
-  while (longname.length() > 2 && longname[longname.length() - 1] == '.' && longname[longname.length() - 2] == '.')
+  while (_longname.length() > 2 && _longname[_longname.length() - 1] == '.' && _longname[_longname.length() - 2] == '.')
     {
-      string::size_type i = longname.rfind('/', longname.length() - 3);
-      longname.erase(i, longname.length());
+      string::size_type i = _longname.rfind('/', _longname.length() - 3);
+      _longname.erase(i, _longname.length());
     }
-  shortname = File::base(n);
-  if (getStatus() && is(File::dir))
+  _shortname = File::base(n);
+  if (get_status() && is(File::dir))
     {
       regex filter(pattern);
-      DIR *dir = opendir(longname.c_str());
+      DIR *dir = opendir(_longname.c_str());
       for (struct dirent *entry = readdir(dir); entry; entry = readdir(dir))
 	{
 	  if (filter.search(entry->d_name))
 	    {
-	      string childname = longname + '/' + entry->d_name;
-	      children.push_back(new File(childname));
+	      string childname = _longname + '/' + entry->d_name;
+	      _children.push_back(new File(childname));
 	    }
 	}
       closedir(dir);
       switch (order)
 	{
-	case dirsfirst: sort(children.begin(), children.end(), compDirsFirst); break;
-	case size:      sort(children.begin(), children.end(), compSize); break;
-	case modtime:   sort(children.begin(), children.end(), compModTime); break;
-	case acctime:   sort(children.begin(), children.end(), compAccTime); break;
+	case dirsfirst: sort(_children.begin(), _children.end(), compDirsFirst); break;
+	case size:      sort(_children.begin(), _children.end(), compSize); break;
+	case modtime:   sort(_children.begin(), _children.end(), compModTime); break;
+	case acctime:   sort(_children.begin(), _children.end(), compAccTime); break;
 	case alpha:
-	default:        sort(children.begin(), children.end(), compAlpha); break;
+	default:        sort(_children.begin(), _children.end(), compAlpha); break;
 	}
     }
 }
@@ -108,12 +108,12 @@ Directory::Directory(const string &n, int order, const string &pattern)
 Directory::Directory(const Directory &D)
   : File(D)
 {
-  for (vector<File *>::const_iterator i = D.children.begin(); i != D.children.end(); i++)
-    children.push_back(new File((*i)->name()));
+  for (vector<File *>::const_iterator i = D._children.begin(); i != D._children.end(); i++)
+    _children.push_back(new File((*i)->name()));
 }
 
 Directory::~Directory()
 {
-  for (vector<File *>::iterator i = children.begin(); i != children.end(); i++) delete *i;
+  for (vector<File *>::iterator i = _children.begin(); i != _children.end(); i++) delete *i;
 }
 

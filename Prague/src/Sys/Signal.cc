@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Prague/Sys/config.hh"
+#include "Prague/config.hh"
 #include "Prague/Sys/Signal.hh"
 #include <cstring>
 #include <algorithm>

@@ -20,6 +20,13 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Signal.hh>
+#include <Prague/Sys/Profiler.hh>
+#include <Prague/Sys/Timer.hh>
+#include <Prague/Sys/GetOpt.hh>
+#include <Prague/Sys/Path.hh>
+#include <Prague/Sys/User.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/LayoutKit.hh>
@@ -30,35 +37,45 @@
 #include <Berlin/ServerImpl.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
-#include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Signal.hh>
-#include <Prague/Sys/Profiler.hh>
-#include <Prague/Sys/Timer.hh>
-#include <Prague/Sys/GetOpt.hh>
+#include <Berlin/RCManager.hh>
 #include <fstream>
+
+#ifdef RC_PREFIX
+const string prefix = RC_PREFIX;
+#else
+const string prefix = "";
+#endif
+
+#ifdef VERSION
+const string version = VERSION;
+#else
+const string version = "unknown";
+#endif
 
 using namespace Prague;
 
 int main(int argc, char **argv)
 {
-//  CORBA::ORB_ptr orb = CORBA::ORB_init(argc, argv, "omniORB3");
-
-//   GetOpt getopt(argv[0], "a berlin display server");
-//   getopt.add('h', "help", GetOpt::novalue, "help message");
-//   getopt.parse(argc - 1, argv + 1);
-//   string value;
-//   getopt.get("help", &value);
-//   if (value == "true") { getopt.usage(); exit(0);}
+  GetOpt getopt(argv[0], "a module inspection tool");
+  getopt.add('h', "help", GetOpt::novalue, "help message");
+  getopt.add('v', "version", GetOpt::novalue, "version number");
+  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
+  getopt.parse(argc - 1, argv + 1);
+  string value;
+  getopt.get("version", &value);
+  if (value == "true") { cout << "version is " << version << endl; exit(0);}
+  value = "";
+  getopt.get("help", &value);
+  if (value == "true") { getopt.usage(); exit(0);}
+  value = "";
+  getopt.get("resource", &value);
+  if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
 
   ServerImpl *server = ServerImpl::instance();
-  char *pluginDir = getenv("BERLIN_ROOT");
-  if (!pluginDir)
-    {
-      cerr << "Please set environment variable BERLIN_ROOT first" << endl;
-      exit(-1);
-    }
-  string modules = string(pluginDir) + "/modules";
-  server->scan(modules.c_str());
+
+  Prague::Path path = RCManager::get_path("modulepath");
+  for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+    server->scan(*i);
 
   ServerImpl::FactoryList listing = server->list();
   for (ServerImpl::FactoryList::iterator i = listing.begin(); i != listing.end(); ++i)

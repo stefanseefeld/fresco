@@ -20,8 +20,10 @@
  * MA 02139, USA.
  */
 
-#include "Drawing/libArt/LibArtUnifont.hh"
+#include <Prague/Sys/Path.hh>
 #include <Prague/Sys/MMap.hh>
+#include <Berlin/RCManager.hh>
+#include "Drawing/libArt/LibArtUnifont.hh"
 
 #include <libart_lgpl/art_rgb.h> // for art_rgb_run_alpha
 
@@ -45,21 +47,17 @@
 // multilingual text, albeit not quite as well as certain (ahem) proprietary
 // text systems
 
+using namespace Prague;
 using namespace Warsaw;
 
 LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis))
 {
-    char *env = getenv("BERLIN_ROOT");
-    if (!env)
-      {
-	cerr << "Please set environment variable BERLIN_ROOT first" << endl;
-	exit(-1);
-      }
-    string glyphDB = string(env) + "/etc/glyph.dat";
-    glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
-    myPixBuf = art_pixbuf_new_rgb (slab, 16, 16, 16);  
+  Prague::Path path = RCManager::get_path("unifontpath");
+  string glyphDB = path.lookup_file("glyph.dat");
+  glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
+  myPixBuf = art_pixbuf_new_rgb (slab, 16, 16, 16);  
 }
 
 LibArtUnifont::~LibArtUnifont() { delete glyphmap ; art_pixbuf_free(myPixBuf);}

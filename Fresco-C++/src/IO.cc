@@ -22,13 +22,10 @@
 
 #include "Warsaw/IO.hh"
 #include <iomanip>
-/*
- * sorry, quick hack...
- * we need to set up libraries correctly...
- */
-#include "../Berlin/Math.hh"
 
 using namespace Warsaw;
+
+inline bool equal(Coord a, Coord b, Coord e) { return a - b < e && b - a < e;}
 
 ostream &operator << (ostream &os, const Color &c)
 {
@@ -44,22 +41,22 @@ ostream &operator << (ostream &os, const Graphic::Requirement &r)
     {
       double tol = 1e-2;
       os << setiosflags(ios::fixed);
-      if (Math::equal(r.natural, r.minimum, tol))
+      if (equal(r.natural, r.minimum, tol))
 	{
-	  if (Math::equal(r.natural, r.maximum, tol))
+	  if (equal(r.natural, r.maximum, tol))
 	    os << setprecision(2) << r.natural;
 	  else
 	    os << '(' << setprecision(2) << r.natural
 	       << ',' << setprecision(2) << r.maximum << ')';
 	}
-      else if (Math::equal(r.natural, r.maximum, tol))
+      else if (equal(r.natural, r.maximum, tol))
 	os << '(' << setprecision(2) << r.minimum
 	   << ',' << setprecision(2) << r.natural << ')';
       else
 	os << '(' << setprecision(2) << r.minimum
 	   << ',' << setprecision(2) << r.natural
 	   << ',' << setprecision(2) << r.maximum << ')';
-      if (!Math::equal(r.align, 0., tol))
+      if (!equal(r.align, 0., tol))
 	os << " @ " << setprecision(1) << r.align;
     }
   return os;
@@ -73,7 +70,7 @@ ostream &operator << (ostream &os, const Graphic::Requisition &r)
 ostream &operator << (ostream &os, const Region::Allotment &a)
 {
   os << setiosflags(ios::fixed) << setprecision(2) << a.begin << ',' << setprecision(2) << a.end;
-  if (!Math::equal(a.align, 0., 1e-2)) os << " @ " << setprecision(1) << a.align;
+  if (!equal(a.align, 0., 1e-2)) os << " @ " << setprecision(1) << a.align;
   return os;
 }
 

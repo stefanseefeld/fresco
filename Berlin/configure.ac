@@ -2,6 +2,7 @@ dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -27,23 +28,19 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT($top/src/Berlin/Makefile)
-AC_CONFIG_HEADER($top/include/Berlin/config.hh)
+AC_INIT(subdirs.mk.in)
+AC_VERSION(0, 2, 2, 0, 0)
+AC_SET_PATHS(../..)
+AC_CONFIG_HEADER($builddir/include/Berlin/config.hh:include/Berlin/config.hh.in)
 
-dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
-dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
-dnl know what our AUX_DIR is...
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=../..
-cpath=..
-spath=$top/src
-AC_CONFIG_AUX_DIR($cpath)
+AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_CONFIG_AUX_DIR(config)
 AC_DIVERT_POP()
 
 AC_HEADLINE(dnl
 Berlin Server, The Berlin Server, dnl
-Berlin_VERSION, $top/include/version.h, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
+[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+VERSION)
 
 dnl ------------------------------------------------------------------
 dnl Options controlling what to build
@@ -83,8 +80,12 @@ AC_ARG_ENABLE(server,
 dnl ------------------------------------------------------------------
 dnl Warsaw and Prague
 dnl ------------------------------------------------------------------
-BERLIN_LIB_CORE(Warsaw)
-BERLIN_LIB_CORE(Prague)
+AC_PACKAGE(Warsaw, $VERSION)
+CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
+LIBS="$LIBS $Warsaw_LIBS"
+AC_PACKAGE(Prague, $VERSION)
+CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
+LIBS="$LIBS $Prague_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Text rendering
@@ -113,8 +114,7 @@ else
 fi
 
 for kit in $enable_drawing_kits ; do
-	echo testing $kit...
-	if test -d $spath/Drawing/$kit ; then
+	if test -d $srcdir/src/Drawing/$kit ; then
 		eval enable_$kit=yes
 	else
 		eval enable_$kit=no
@@ -151,13 +151,16 @@ dnl ------------------------------------------------------------------
 dnl Enable all Kits present if $enable_kits == all (the default)
 if test ".$enable_kits" = .all ; then
 	enable_kits=
-	for kit in Layout Command Tool Image Figure Text Widget Gadget Desktop
+	for kit in Layout Command Tool Image Figure Text Widget/Motif Gadget Desktop Unidraw
 	do
-		if test -d $spath/$kit ; then
+		if test -d $srcdir/src/$kit ; then
 			enable_kits="$enable_kits $kit"
 		fi
 	done
 	enable_kits=["`echo $enable_kits | sed 's/^ //'`"]
+	if test ".$CON_IMPL" = .GGI; then
+		enable_kits="$enable_kits GGI"
+	fi
 elif test ".$enable_kits" = .no ; then
 	enable_kits=
 else
@@ -198,4 +201,29 @@ dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
-AC_OUTPUT($cpath/Server/local.mk:$cpath/Server/local.mk.in $cpath/Server/server.mk:$cpath/Server/server.mk.in)
+mkdir -p $builddir/bin
+mkdir -p $builddir/lib
+mkdir -p $builddir/config/Server
+mkdir -p $builddir/include/Berlin
+mkdir -p $builddir/src/Berlin
+kit_output=
+for kit in $KITS ; do
+	mkdir -p $builddir/$kit
+	kit_output="$kit_output $builddir/$kit/Makefile:$kit/Makefile.in"
+done
+
+mkdir -p $builddir/server
+
+AC_OUTPUT([
+	$builddir/bin/Berlin-config:config/package-config.in
+	$builddir/config/Server/subdirs.mk:config/Server/subdirs.mk.in
+	$builddir/config/Server/local.mk:config/Server/local.mk.in
+	$builddir/config/Server/module.mk:config/Server/module.mk.in
+	$builddir/src/Berlin/Makefile:src/Berlin/Makefile.in
+	$builddir/server/Makefile:server/Makefile.in
+	$kit_output
+],[
+	chmod +x $builddir/bin/Berlin-config
+],[
+	builddir=$builddir
+])

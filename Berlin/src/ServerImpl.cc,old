@@ -114,7 +114,7 @@ void ServerImpl::scan(const string &name)
   Logger::log(Logger::loader) << "ServerImpl: scanning plugin dir " << name << endl;
   for (Directory::iterator i = directory.begin(); i != directory.end(); i++)
     {
-      Plugin<KitFactory> *plugin = new Plugin<KitFactory>((*i)->longName());
+      Plugin<KitFactory> *plugin = new Plugin<KitFactory>((*i)->long_name());
       /*
        * if this is not a plugin, skip over it
        */
