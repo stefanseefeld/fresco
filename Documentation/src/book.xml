@@ -7,6 +7,7 @@
 <!ENTITY chapter1      SYSTEM "chapter1.xml">
 <!ENTITY chapter2      SYSTEM "chapter2.xml">
 <!ENTITY chapter3      SYSTEM "chapter3.xml">
+<!ENTITY appendix1     SYSTEM "hello-list.xml">
 
 ]>
 
@@ -39,5 +40,7 @@
 <!-- &chapter1; -->
 <!-- &chapter2; -->
 <!-- &chapter3; -->
-
+<appendix><title>the complete listing of the hello world program</title>
+&appendix1;
+</appendix>
 </book>

@@ -49,7 +49,7 @@ i.e. it is responsible that other parties can talk to the servants that are acti
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
   ClientContextImpl *ci = new ClientContextImpl;
-  ClientContext_var client = ci._this();
+  ClientContext_var client = ci->_this();
   ServerContext_var context = server->create_server_context(client);
 </programlisting>
 </sect1>
@@ -73,7 +73,6 @@ that looks so:</para>
 </programlisting>
 <para>and the same in C++:</para>
 <programlisting>
-  properties = []
   DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
   TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
   WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
@@ -90,7 +89,7 @@ wrap it into a button, and put that button into a window. In python you write:</
 </programlisting>
 <para>and in C++:</para>
 <programlisting>
-  Graphic_var label = text->chunk("hello world");
+  Graphic_var label = text->chunk(Unicode::to_CORBA(Babylon::String("hello world"));
   Controller_var button = widgets->button(label, Command::_nil());
   Window_var window = desktop->shell(button);
 </programlisting>
