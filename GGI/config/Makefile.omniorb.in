@@ -106,13 +106,13 @@ maintainer-clean: distclean
 
 $(GENSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $<)
+	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $(<F))
    # what a hack...
 	sed s%$(idldir)/share/idl/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
 
 $(GENHDR): %.hh:	%.idl
 	@echo generating $(@F)
-	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $<)
+	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $(<F))
    # what a hack...
 	sed s%$(idldir)/share/idl/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
 
