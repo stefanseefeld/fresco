@@ -20,22 +20,25 @@
 # MA 02139, USA.
 
 SHELL	= /bin/sh
-DIST_FILES=Berlin/Makefile Berlin/include/Prague Berlin/src/Prague etc/Unicode lib modules
+
 top	= ../..
 cpath	= $(top)/config
 
-.PHONY: config clean distclean
+define makeconf
+echo Running configure $$CONFIGURE_OPTS...
+configure $$CONFIGURE_OPTS
+endef
+
+.PHONY: config clean distclean dist
 .FORCE:
 
 world:	local.mk
 
 config: .FORCE configure
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
+	@$(makeconf)
 
 local.mk: configure local.mk.in
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
+	@$(makeconf)
 
 configure: configure.in aclocal.m4
 	@echo Running autoconf...
@@ -46,7 +49,7 @@ aclocal.m4: $(cpath)/macros/*.m4
 	@aclocal -I $(cpath)/macros
 
 clean:	
-	rm -f *~ config.log config.status
+	rm -f *~ local.mk config.log config.status
 
 distclean:	clean
 	rm -f configure config.cache config.param

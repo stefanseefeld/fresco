@@ -19,19 +19,21 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
+SHELL	:= /bin/sh
 
-cpath	= ./config
-top	= .
+top	:= .
+cpath	:= ./config
 
-
-# we treat config specially, forcing it single-threaded
-#subdirs	= config
+#
+# define which package subdirs to traverse
+#
 subdirs	=
-#
-# now add package subdirs
-#
 -include $(cpath)/packages.mk
+
+define makeconf
+(cd config && $(MAKE) -j1 $(MAKECMDGOALS)) || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; test -z "$$fail"
+endef
+
 
 .PHONY:	config depclean clean distclean install dist
 
@@ -39,50 +41,46 @@ world: all
 	@echo $(subdirs)
 
 all: $(cpath)/packages.mk
-	@(cd config && $(MAKE) -j1) \
-		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	test -z "$$fail"
+	@$(makeconf)
 	@for dir in $(subdirs); do \
 		(cd $$dir && $(MAKE)) \
 		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"; \
 
 $(cpath)/packages.mk:
-	cd $(cpath) && $(MAKE)
+	@$(makeconf)
 
 depclean:
 	find -name '*.d' -exec rm -f \{\} \;
 
+#
+# removes everything but config stuff
+#
 clean:
-	/bin/rm -f *~
 	@for dir in $(subdirs); do \
 	  (cd $$dir && $(MAKE) clean) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
-
-distclean:
-	@for dir in $(subdirs); do \
-	  (cd $$dir && $(MAKE) distclean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
 	for dir in modules lib; do \
 	  find $$dir -name '*.so' -exec rm -f \{\} \; ; \
 	done
 
+#
+# removes config related data
+#
+distclean:	clean
+	$(makeconf)
+
 dist:	distclean
-	@(cd config && $(MAKE) dist)
+	$(makeconf)
 
 #install: all
 #	@for dir in ${subdirs}; do \
 #	  (cd $$dir && $(MAKE) install); \
 #	done
 
-# Someone said there was a way to include these rules only if the person
-# invokes the export target. I don't know how to do that...
-# include config/packages.mk
-
 #debs:
 #	dpkg-buildpackage -rfakeroot -uc -us
 
 config:
-	@(cd config && $(MAKE) config)
+	$(makeconf)

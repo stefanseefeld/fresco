@@ -24,8 +24,3 @@
 #
 
 subdirs += src/Prague
-
-major	= 0
-minor	= 1
-patch	= 5
-archive	= include/Prague src/Prague

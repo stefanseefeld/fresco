@@ -24,22 +24,23 @@ SHELL	= /bin/sh
 top	= ../..
 cpath	= $(top)/config
 
-.PHONY: config clean distclean
+define makeconf
+echo Running configure $$CONFIGURE_OPTS...
+configure $$CONFIGURE_OPTS
+endef
+
+.PHONY: config clean distclean dist
 .FORCE:
 
 world:	server.mk local.mk
 
 config: .FORCE configure
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
+	@$(makeconf)
 
-server.mk: configure server.mk.in
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
-
-local.mk: configure local.mk.in
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
+server.mk: server.mk.in
+local.mk:  local.mk.in
+server.mk local.mk: configure
+	@$(makeconf)
 
 configure: configure.in aclocal.m4
 	@echo Running autoconf...
@@ -50,7 +51,7 @@ aclocal.m4: $(cpath)/macros/*.m4
 	@aclocal -I $(cpath)/macros
 
 clean:	
-	rm -f *~ config.status config.log
+	rm -f *~ server.mk local.mk config.log config.status
 
 distclean:	clean
 	rm -f configure config.cache config.param
