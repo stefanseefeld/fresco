@@ -41,7 +41,12 @@ action	:= all
 .PHONY: all $(subdirs)
 .PHONY: config doc install install-doc depclean clean distclean maintainer-clean dist clean
 
+ifeq ($(strip $(subdirs)),)
+all:
+		@echo "please use 'make config' to prepare the build tree first"
+else
 all:	$(subdirs)
+endif
 
 $(subdirs): %: %/Makefile
 	@echo making $(action) in $@
