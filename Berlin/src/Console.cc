@@ -33,6 +33,11 @@ GGIConsole *Console::t = 0;
 
 SDLConsole *Console::t = 0;
 
+#  elif CONSOLE_IMPL == CAVELib
+#  include "CAVE.cc"
+
+CAVEConsole *Console::t = 0;
+
 #  else
 #  warning "unknown console type defined"
 #  endif
