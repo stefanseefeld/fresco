@@ -12,26 +12,23 @@
     <para>Berlin's principal paradigm is composition. All complex objects are compositions out of
     small, leightweight building blocks, each from a specific domain, such as 'text', 'layout',
     'figure'. Let's have a look at a simple button widget.</para>
-    <figure id="fig.about-button" float="1">
+    <figure id="fig.about-button">
       <title>A button...</title>
       <mediaobject>
         <imageobject>
           <imagedata fileref="figures/about-button.png" align="center" format="PNG"/>
         </imageobject>
-<!--         <imageobject> -->
-<!--           <imagedata fileref="figures/about-button.pdf" align="center" format="PDF"/> -->
-<!--         </imageobject> -->
       </mediaobject>
     </figure>
-    <figure id="fig.about-button-sg" float="1">
+    <figure id="fig.about-button-sg">
       <title>...and its underlaying scene graph</title>
       <mediaobject>
         <imageobject>
+          <imagedata fileref="figures/about-button-sg.svg" align="center" format="SVG"/>
+        </imageobject>
+        <imageobject>
           <imagedata fileref="figures/about-button-sg.png" align="center" format="PNG"/>
         </imageobject>
-<!--         <imageobject> -->
-<!--           <imagedata fileref="figures/about-button-sg.pdf" align="center" format="PDF"/> -->
-<!--         </imageobject> -->
       </mediaobject>
     </figure>
   <para>As simple as this button looks, it is already an amazing composition of smaller parts coming
@@ -57,15 +54,15 @@
     various styles through the use of exchangable implementations.</para>
     <para>Clients don't instantiate objects by themselfs. Instead, they ask factory objects to create objects 
     for them.</para>
-    <figure id="fig.abstract-factory" float="1">
+    <figure id="fig.abstract-factory">
       <title>the abstract factory pattern</title>
       <mediaobject>
         <imageobject>
+          <imagedata fileref="figures/abstract-factory.svg" align="center" format="SVG"/>
+        </imageobject>
+        <imageobject>
           <imagedata fileref="figures/abstract-factory.png" align="center" format="PNG"/>
         </imageobject>
-<!--         <imageobject> -->
-<!--           <imagedata fileref="figures/abstract-factory.pdf" align="center" format="PDF"/> -->
-<!--         </imageobject> -->
       </mediaobject>
     </figure>
     <para>The exact type of the returned object isn't known, which means that the server has more freedom to choose
@@ -110,16 +107,16 @@
     <para> On the server side, all this is provided by means of the prototype pattern. On startup, one object per type is loaded into a lookup
     table (no worries, kits are almost stateless, so this isn't as expensive as it sounds), such that the lookup can be implemented by means of
     CORBA's own type system (objects have an '_is_a(in string repoId)' method). If an appropriate object was found, it is simply cloned and the
-    new copy is assigned to the client's ServerContext.</para>
-    <figure id="fig.prototype" float="1">
+    new copy is assigned to the client's ServerContext. blablabla</para>
+    <figure id="fig.prototype">
       <title>the prototype pattern</title>
       <mediaobject>
         <imageobject>
+          <imagedata fileref="figures/prototype.svg" align="center" format="SVG"/>
+        </imageobject>
+        <imageobject>
           <imagedata fileref="figures/prototype.png" align="center" format="PNG"/>
         </imageobject>
-<!--         <imageobject> -->
-<!--           <imagedata fileref="figures/prototype.pdf" align="center" format="PDF"/> -->
-<!--         </imageobject> -->
       </mediaobject>
     </figure>
   <para> the full sequence of events thus looks like this:</para>

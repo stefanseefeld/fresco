@@ -10,15 +10,15 @@
       is a separate process, whos address is configured into the CORBA runtime environment of all programs, such
       that you can look it up as an 'initial reference'. The name server returns an 'Interoperable Object Reference'
       (IOR), which the client uses for direct requests.
-      <figure id="fig.resolve" float="1">
+      <figure id="fig.resolve">
         <title>a client contacts the server via the naming service</title>
         <mediaobject>
           <imageobject>
+            <imagedata fileref="figures/resolve.svg" align="center" format="SVG"/>
+          </imageobject>
+          <imageobject>
             <imagedata fileref="figures/resolve.png" align="center" format="PNG"/>
           </imageobject>
-<!--           <imageobject> -->
-<!--             <imagedata fileref="figures/resolve.pdf" align="center" format="PDF"/> -->
-<!--           </imageobject> -->
         </mediaobject>
       </figure>
       Here is the relevant code in python:

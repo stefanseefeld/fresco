@@ -207,26 +207,26 @@
         represents a "trail" or "path" to the currently traversed graphic.
         We need to create a "snapshot" of this trail at the hit graphic. This is done by calling
 	<emphasis>hit</emphasis> on the PickTraversal, resulting in a memento being created.
-        <figure id="scene-figure" float="1">
+        <figure id="scene-figure">
           <title>scene</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/scene.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/scene.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/scene.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
-        <figure id="scene-graph-figure" float="1">
+        <figure id="scene-graph-figure">
           <title>scene graph corresponding to the snapshot in ...</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/scene-graph.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/scene-graph.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/scene-graph.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
         Imagine the mouse to click on the red polygon. This will result in
@@ -242,15 +242,15 @@
         </programlisting>
         The <classname> Traversal</classname>'s trail, in the moment the <emphasis>hit</emphasis> occurs,
         contains the following entries:
-        <figure id="trail-figure" float="1">
+        <figure id="trail-figure">
           <title>trail</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/trail.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/trail.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/trail.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
         For each position, the trail contains the following information:
@@ -280,15 +280,15 @@
         Since after the traversal is over, the stack will be empty, the <classname>Picktraversal</classname>
         needs to create a memento of itself, which can be used later on to deliver the event.
         The controller stack, extracted out of the trail, is
-        <figure id="cstack-figure" float="1">
+        <figure id="cstack-figure">
           <title>controller/focus stack</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/cstack.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/cstack.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/cstack.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
         It is used to update the focus, i.e. to call (in appropriate order) all the controllers'
@@ -306,15 +306,15 @@
         </programlisting>
         Finally, if all filters let the event through, the Editor's handle method will be called. It sees
         the trail like
-        <figure id="gstack-figure" float="1">
+        <figure id="gstack-figure">
           <title>trail, the unaccessible graphics are grayed out</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/gstack.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/gstack.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/gstack.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
         A special iterator allows it to access the graphics which, inside the editor, were intersecting
@@ -324,15 +324,15 @@
     <section><title>navigating non positional devices</title>
       <para>
 	<!-- talk about focus navigation -->
-        <figure id="control-graph-figure" float="1">
+        <figure id="control-graph-figure">
           <title>control graph</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/control-graph.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/control-graph.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/control-graph.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
 	You can navigate the focus through this control graph via the following
@@ -355,15 +355,15 @@
     <section><title>sumary</title>
       <para>
 	<!-- event dispatching sumary -->
-        <figure id="event-dispatching-figure" float="1">
+        <figure id="event-dispatching-figure">
           <title>event and focus management</title>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/events.svg" align="center" format="SVG"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/events.png" align="center" format="PNG"/>
             </imageobject>
-<!--             <imageobject> -->
-<!--               <imagedata fileref="figures/events.pdf" align="center" format="PDF"/> -->
-<!--             </imageobject> -->
           </mediaobject>
         </figure>
       </para>
