@@ -82,10 +82,10 @@ dnl Warsaw and Prague
 dnl ------------------------------------------------------------------
 AC_PACKAGE(Warsaw, $VERSION)
 CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
-LIBS="$LIBS $Warsaw_LIBS"
+LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
 AC_PACKAGE(Prague, $VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS $Prague_LIBS"
+LIBS="$LIBS -lPrague $Prague_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Text rendering

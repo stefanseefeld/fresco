@@ -43,51 +43,21 @@ Babylon, The Berlin Unicode Library, dnl
 VERSION)
 
 dnl ------------------------------------------------------------------
+dnl Prague
+dnl ------------------------------------------------------------------
+AC_PACKAGE(Prague, $VERSION)
+CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
+LIBS="$LIBS -lPrague $Prague_LIBS"
+
+dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
-AC_ARG_ENABLE(tracer,
-        [  --enable-tracer        Compile with tracer support],[
-        AC_DEFINE(TRACER)])
-
 AC_ARG_ENABLE(unicode-blocks,
 	[  --enable-unicode-blocks complete or latin unicode support],[
 	UNICODE_BLOCKS="$enableval"],[
 	UNICODE_BLOCKS=complete])
 
 AC_SUBST(UNICODE_BLOCKS)
-
-AC_MSG_PART(platform specific system utilities)
-AC_CHECK_FUNCS(strsignal)
-AC_NEED_DECLARATION(strsignal)
-AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), AC_MSG_ERROR(update your zlib, please))
-
-BERLIN_LIB_PTHREAD
-
-dnl ------------------------------------------------------------------
-dnl Plugin support
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Dynamic Loading Implementation)
-
-AC_CHECK_HEADERS(dlfcn.h dl.h)
-AC_CHECK_LIB(dl, dlopen)
-AC_CHECK_FUNCS(dlopen dlsym dlclose shl_load)
-AC_BEGIN_DECISION([plugin method])
-AC_IFALLYES(header:dlfcn.h func:dlopen func:dlsym func:dlclose,
-	AC_DECIDE(DLFCN, [use dlopen family of functions for plugins]))
-AC_IFALLYES(header:dl.h func:shl_load,
-	AC_DECIDE(DLAIX, [use AIX shm_load for plugins]))
-AC_END_DECISION
-if test ".$ac_decision" = ".DLFCN" ; then
-	AC_DEFINE(HAVE_DLFCN)
-else
-	AC_DEFINE(HAVE_DLAIX)
-fi
-
-dnl ------------------------------------------------------------------
-dnl IPC support
-dnl ------------------------------------------------------------------
-AC_MSG_PART(IPC Implementation)
-BERLIN_LIB_SOCKET
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
