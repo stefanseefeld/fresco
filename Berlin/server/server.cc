@@ -144,15 +144,6 @@ int main(int argc, char **argv) /*FOLD00*/
   Signal::set(Signal::hangup, dump);
 	
   // ---------------------------------------------------------------
-  // Search for berlinrc
-  // ---------------------------------------------------------------
-	
-  if (~prefix.empty()) RCManager::read(prefix + "/share/berlin/berlinrc");
-  const char *rcfile = getenv("BERLINRC");
-  if (rcfile) RCManager::read(Prague::Path::expand_user(rcfile));
-  else RCManager::read(std::string(User().home()) + "/.berlin");
-	
-  // ---------------------------------------------------------------
   // Parse commandline arguments
   // ---------------------------------------------------------------
   
@@ -173,11 +164,32 @@ int main(int argc, char **argv) /*FOLD00*/
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
   std::string value;
   if (getopt.get("resource", &value))
-    RCManager::read(Prague::Path::expand_user(value));
-  else {
-    getopt.usage();
-    exit(1);
-  }
+    {
+      try { RCManager::read(Prague::Path::expand_user(value));}
+      catch (std::runtime_error &e)
+	{
+	  std::cerr << "error loading \"" << value << "\": "
+		    << e.what() << std::endl;
+	  exit (1);
+	}
+    }
+  else
+    {
+      // Search for berlinrc
+      try { if (!prefix.empty()) RCManager::read(prefix + "/share/berlin/berlinrc");}
+      catch (const std::runtime_error &) {}
+      const char *rcfile = getenv("BERLINRC");
+      try
+	{
+	  if (rcfile) RCManager::read(Prague::Path::expand_user(rcfile));
+	  else RCManager::read(std::string(User().home()) + "/.berlin");
+	}
+      catch (const std::runtime_error &)
+	{
+	  getopt.usage();
+	  exit(1);
+	}
+    }
   value = "";  
   if (getopt.get("logger", &value))
     {
