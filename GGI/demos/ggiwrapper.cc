@@ -50,36 +50,49 @@ int main(int argc, char **argv)
   getopt.add('r', "run", GetOpt::mandatory, "the ggi program to run");
   getopt.add('w', "width", GetOpt::mandatory, "the width of the visual");
   getopt.add('h', "height", GetOpt::mandatory, "the height of the visual");
+  add_resolving_options_to_getopt(getopt);
   getopt.parse(argc - 1, argv + 1);
+
   if (getopt.is_set("help")) { getopt.usage(); exit(0);}
+
   std::string value;
   getopt.get("run", &value);
-  if (value.empty()) { getopt.usage(); exit(0);}
+  if (value.empty()) 
+  { 
+    getopt.usage(); 
+    exit(0);
+  }
   std::string program = value;
+
   value = "";
   getopt.get("width", &value);
   size_t width = 256;
   if (!value.empty()) { std::istringstream iss(value); iss >> width;}
+
   value = "";
   getopt.get("height", &value);
   size_t height = 256;
   if (!value.empty()) { std::istringstream iss(value); iss >> height;}
 
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
-  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-  PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+  PortableServer::POA_var poa
+     = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
   ClientContextImpl *client = new ClientContextImpl("GGI Wrapper");
+  ClientContext_var client_ref = client->_this();
 
-  Server_var s = resolve_server(argc, argv, orb);
-  ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
-
-  DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
-  GGI::GGIKit_var ggi = resolve_kit<GGI::GGIKit>(server, "IDL:GGI/GGIKit:1.0");
+  
+  Server_var s = resolve_server(getopt, orb);
+  ServerContext_var server = s->create_server_context(client_ref);
+  
+  DesktopKit_var desktop
+     = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
+  GGI::GGIKit_var ggi
+     = resolve_kit<GGI::GGIKit>(server, "IDL:GGI/GGIKit:1.0");
   GGI::Visual_var visual = ggi->create_visual(width, height);
-  Window_var window = desktop->shell(visual, ClientContext_var(client->_this()));
+  Window_var window = desktop->shell(visual, client_ref);
 
   /*
    * set up the client side visual part...
