@@ -108,13 +108,14 @@ PolyGraphic::~PolyGraphic()
   Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
     {
-      try
-	{
-	  (*i).peer->remove_parent_graphic((*i).peerId);
-	  (*i).peer->decrement();
-	}
-      catch(const CORBA::OBJECT_NOT_EXIST &) {}
-      catch (const CORBA::COMM_FAILURE &) {}
+      if (!CORBA::is_nil((*i).peer))
+	try
+	  {
+	    (*i).peer->remove_parent_graphic((*i).peerId);
+	    (*i).peer->decrement();
+	  }
+	catch(const CORBA::OBJECT_NOT_EXIST &) {}
+	catch (const CORBA::COMM_FAILURE &) {}
     }
 }
 
