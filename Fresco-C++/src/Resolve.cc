@@ -50,9 +50,9 @@ bool is_valid_reference_transfer_method(std::string transfer_method)
        (transfer_method != "corbaloc") &&
        (transfer_method != "nameserver") )
   {
-    std::cerr << "ERROR: Invalid method for exporting server reference given.\n"
-              << "'" << transfer_method << "' is not one of\n"
-              << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
+    std::cerr << "ERROR: Invalid method for exporting server reference given." 
+              << std::endl << "'" << transfer_method << "' is not one of" 
+              << std::endl << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
     return false;
   }
   return true;
@@ -106,6 +106,21 @@ Fresco::Server_ptr resolve_server(std::string server_id,
                                   std::string ior_file_path,
                                   CORBA::ORB_ptr orb)
 {
+  Fresco::Server_var server;
+
+  std::string stringified_ior("");
+  if (server_id=="" && reference_transfer_method=="" && ior_file_path=="")
+  {
+    // if can find environment variable, load using that
+    stringified_ior = Prague::getenv("FRESCO_DISPLAY");
+  }
+
+  // Set defaults
+  if (server_id=="") server_id = default_server_id();
+  if (reference_transfer_method=="") 
+          reference_transfer_method = default_reference_transfer_method();
+  if (ior_file_path=="") ior_file_path = default_ior_file_path();
+
   // Validate reference_transfer_method
   // NOTE: Should always check this first, to avoid user getting confused
   //       and thinking that some values are valid when they aren't
@@ -114,15 +129,6 @@ Fresco::Server_ptr resolve_server(std::string server_id,
     exit(1);
   }
   
-  // Fix form of ior_file_path (append '/' if necessary)
-  if ((ior_file_path != "stdin") &&
-      (ior_file_path[ior_file_path.length()-1] != '/')) 
-    ior_file_path += '/';
-
-  Fresco::Server_var server;
-
-  // if can find environment variable, load using that
-  std::string const stringified_ior(Prague::getenv("FRESCO_DISPLAY"));
   CORBA::Object_var obj;
   if (stringified_ior!="")
   try
@@ -136,8 +142,9 @@ Fresco::Server_ptr resolve_server(std::string server_id,
   catch (...)
   { 
     std::cerr << std::endl
-              << "WARNING: Server reference from environment-variable\n"
-              << "is invalid. Trying other methods." << std::endl;
+              << "WARNING: Server reference from environment-variable "
+              << "is invalid." << std::endl
+              << "Trying other methods." << std::endl;
   }
 
   // Check through all non-env-var export methods
@@ -156,6 +163,10 @@ Fresco::Server_ptr resolve_server(std::string server_id,
     }
     else
     {
+      // Fix form of ior_file_path (append '/' if necessary)
+      // NOTE: length() should be >0 since if ==0 we set it to the default above
+      if (ior_file_path[ior_file_path.length()-1] != '/') ior_file_path += '/';
+
       std::string full_path(ior_file_path);
       full_path += server_id;
       std::ifstream ifs(full_path.c_str());
@@ -165,14 +176,15 @@ Fresco::Server_ptr resolve_server(std::string server_id,
       }
       else
       {
-        std::cerr << "ERROR: Cannot open '" << full_path << "'\n" 
-                  << "This could signify that the server is not running\n"
-                  << "or that a server is running but with a different\n"
-                  << "-I option parameter. If the latter, use the same\n"
-                  << "option with this client as with the server.\n"
-                  << "This could also signify that a server is running but\n"
-                  << "its address is being published using another method -\n"
-                  << "try the -R option."
+        std::cerr << "ERROR: Cannot open '" << full_path << "'"  << std::endl
+                  << "This could signify that the server is not running "
+                  << "or that a server is running" << std::endl
+                  << "but with a different -I option parameter. If the latter, "
+                  << "use the same option" << std::endl
+                  << "with this client as with the server." << std::endl
+                  << "This could also signify that a server is running but "
+                  << "its address is being" << std::endl
+                  << "published using another method; try the -R option."
                   << std::endl;
         exit(1);
       }
@@ -212,34 +224,36 @@ Fresco::Server_ptr resolve_server(std::string server_id,
     }
     catch (...)
     {
-      std::cerr << "ERROR: Nameservice found, but could not locate server\n"
-                << "in the nameservice. The server location may have been\n"
-                << "published using a different mechanism (see the \n"
-                << "--export-ref option) or the name given to the server\n"
-                << "might have been different from '" << server_id << "'\n"
-                << "(see the --server-id option)"
-                << std::endl;
+      std::cerr << "ERROR: Nameservice found, but could not locate server in "
+                << "the" << std::endl << "nameservice. The server location may "
+                << "have been published using a" << std::endl << "different "
+                << "mechanism (see the --export-ref option) or the name given "
+                << "to" << std::endl << "the server might have been different "
+                << "from '" << server_id << "' (see the " << std::endl
+                << "--server-id option)" << std::endl;
       exit(1);
     }
   }
   else if (reference_transfer_method == "corbaloc")
   {
-    std::cerr << "ERROR: corbaloc method not completed in clients" << std::endl;
+    std::cerr << "ERROR: corbaloc method not yet implemented" << std::endl
+              << "See http://issues.fresco.org/bug57" << std::endl;
     exit(1);
   }
   
   if (!server_can_be_contacted(server))
   { 
     std::cerr << "ERROR: Server reference is valid, "
-              << "but this server cannot be contacted.\n"
-              << "This server may have terminated or is suspended.\n"
+              << "but this server cannot be contacted." << std::endl
+              << "This server may have terminated or is suspended." << std::endl
               << "If this is the case, restart or resume the server and "
-              << "try again.\n"
-              << "Alternatively the most recent valid server reference\n"
-              << "may have been published using a different method, \n"
-              << "in a different place or under another name \n"
-              << "- if this is the case, try using\n"
-              << "different parameters to the -R, -I or -i options."
+              << "try again." << std::endl
+              << "Alternatively the most recent valid server reference "
+              << "may have been published" << std::endl
+              << "using a different method, in a different place or under "
+              << "another name." << std::endl
+              << "If this is the case, try using different paramters to the "
+              << "-R, -I or -i options."
               << std::endl;
     exit(1);
   }
@@ -257,7 +271,7 @@ void set_server_reference_export_method(std::string export_method)
   {
     reference_export_method = export_method;
   }
-  else exit(1);
+  else exit(1); // diagnostic message is produced in 'is_valid_ref...'
 }
 
 // get poa to use for creating server
@@ -283,19 +297,21 @@ void publish_server(Fresco::Server_ptr server,
                     std::string ior_file_path,
                     CORBA::ORB_ptr orb)
 {
+  if (exported_server_id=="") { exported_server_id = default_server_id(); }
+  if (ior_file_path=="") { ior_file_path = default_ior_file_path(); }
+
   // Check through all export methods
   if (reference_export_method == "ior")
   {
     if (ior_file_path == "stdout")
     {
       CORBA::String_var s = orb->object_to_string(server);
-      std::cout << "Export Reference:\n"
+      std::cout << "Export Reference:" << std::endl
                 << exported_server_id << "= " << s << std::endl;
     }
     else
     {
-      if ((ior_file_path != my_default_ior_file_path) &&
-          (ior_file_path[ior_file_path.length()-1] != '/'))
+      if (ior_file_path[ior_file_path.length()-1] != '/')
       {
         ior_file_path += '/';
       }
@@ -363,10 +379,10 @@ void publish_server(Fresco::Server_ptr server,
       {
         std::cerr << std::endl
                   << "ERROR: A server corresponding to '" << full_path
-                  << "' appears to already be running.\n"
+                  << "' appears to already be running." << std::endl
                   << "If you are sure the server has crashed, "
                   << "remove '" << full_path
-                  << "' and run the server again.\n"
+                  << "' and run the server again." << std::endl
                   << "Alternatively specify a different path "
                   << "using the -I option."
                   << std::endl;
@@ -378,9 +394,10 @@ void publish_server(Fresco::Server_ptr server,
       {
         // TODO Include more error checking for the user here
         std::cerr << "ERROR: Could not create directory '"
-                  << ior_file_path << "' to store ior\n"
-                  << "Check the access permissions or try specifying a\n"
-                  << "different directory with the -I option."
+                  << ior_file_path << "' to store ior" << std::endl
+                  << "Check the access permissions or try specifying a "
+                  << "different directory " << std::endl
+                  << "with the -I option."
                   << std::endl;
         exit(1);
       }
@@ -393,11 +410,11 @@ void publish_server(Fresco::Server_ptr server,
       else
       {
         std::cerr << "ERROR: Could not open file '"
-                  << full_path << "' to save ior\n"
-                  << "Check the access permissions for file creation\n"
-                  << "in the '" << ior_file_path << "' directory or "
-                  << "try specifying a\n"
-                  << "different directory with the -I option."
+                  << full_path << "' to save ior" << std::endl
+                  << "Check the access permissions for file creation"
+                  << "in the '" << ior_file_path << "'" << std::endl
+                  << "directory or try specifying a different directory "
+                  << "using --ior-file-path."
                   << std::endl;
         exit(1);
       }
@@ -412,13 +429,13 @@ void publish_server(Fresco::Server_ptr server,
     catch (CORBA::COMM_FAILURE)
     {
       std::cerr << "ERROR: Could not publish server in nameserver; "
-                << "check it is running."
+                << "make certain that the nameservice is is running."
                 << std::endl;
       exit(1);
     }
     catch (...)
     {
-      std::cerr << "ERROR: Unknown exception in publishing reference " 
+      std::cerr << "ERROR: Unknown exception when publishing reference " 
                 << "in nameserver." << std::endl;
       exit(1);
     }
@@ -453,7 +470,7 @@ void parse_getopt_for_resolve_options(Prague::GetOpt const &getopt,
                                       std::string &ior_file_path)
 {
   // Determine server-id to use
-  server_id = my_default_server_id; // default server-id
+  server_id = ""; // default server-id
   if (getopt.is_set("server-id"))
   {
     getopt.get("server-id", &server_id);
@@ -462,27 +479,33 @@ void parse_getopt_for_resolve_options(Prague::GetOpt const &getopt,
   // Determine method of importing server reference
   // Use a variable rather than checking against the value in "export-ref"
   // since this allows a default method, plus ensures that the value is valid
-  reference_transfer_method = my_default_reference_transfer_method;
+  bool allow_I;
+  reference_transfer_method = ""; // signifying default
   if (getopt.is_set("export-ref"))
   {
     getopt.get("export-ref", &reference_transfer_method);
+    if (reference_transfer_method == "ior") allow_I = true;
+    else allow_I = false;
   }
-
-  if (reference_transfer_method == "ior")
+  else
   {
-    ior_file_path = my_default_ior_file_path;
+    if (my_default_reference_transfer_method == "ior") allow_I = true;
+    else allow_I = false;
   }
  
+  if (allow_I) ior_file_path = my_default_ior_file_path;
+  else         ior_file_path = "";
+
   // Determine directory in which ior is saved ("ior" method only)
   if (getopt.is_set("ior-file-path"))
   {
-    if (reference_transfer_method != "ior")
+    if (!allow_I)
     {
-      std::cerr << "WARNING: "
-                << "Path for ior to be published to has been specified\n"
-                << "but method of publishing is not via filesystem.\n"
-                << "This option will be ignored."
-                << std::endl;
+      std::cerr << std::endl
+                << "WARNING: Path for ior to be published has been specified "
+                << "but the" << std::endl << "method of publishing is not the "
+                << "filesystem. The --ior-file-path option" << std::endl
+                << "will be ignored." << std::endl;
     }
     else
     {
