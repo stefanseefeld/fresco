@@ -35,10 +35,15 @@ interface Window : Controller
   const short right = 2;
   const short top = 4;
   const short bottom = 8;
+
+  readonly attribute boolean mapped;
+
   Command move();
   Command resize();
   Command moveResize(in Alignment x, in Alignment y, in short b);
   Command relayer();
+  Command map();
+  Command unmap();
 };
 
 #endif /* _Window_idl */

@@ -31,44 +31,7 @@
 #include "Berlin/Thread.hh"
 #include <list>
 
-class StageImpl;
-
-class StageHandleImpl : implements(StageHandle)
-{
- public:
-  StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
-  virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
-  virtual Vertex position() { MutexGuard guard(mutex); return p;}
-  virtual void position(const Vertex &);
-  virtual Vertex size() { MutexGuard guard(mutex); return s;}
-  virtual void size(const Vertex &);
-  virtual Stage::Index layer() { MutexGuard guard(mutex); return l;}
-  virtual void layer(Stage::Index);
-
-  const Geometry::Rectangle<Coord> &bbox() { return boundingbox;}
-  void bbox(RegionImpl &region)
-    {
-      region.valid   = true;
-      region.lower.x = boundingbox.l;
-      region.upper.x = boundingbox.r;
-      region.xalign  = xalign;
-      region.lower.y = boundingbox.t;
-      region.upper.y = boundingbox.b;
-      region.yalign  = yalign;
-    }
-//  private:
-  void cacheBBox();
-  StageImpl *parent;
-  Graphic_var c;
-  Tag tag;
-  Vertex p;
-  Vertex s;
-  Stage::Index l;
-  Geometry::Rectangle<Coord> boundingbox;
-  Alignment xalign;
-  Alignment yalign;
-  Mutex mutex;
-};
+class StageHandleImpl;
 
 class StageSequence : public list<StageHandleImpl *>
 {
@@ -172,6 +135,44 @@ private:
   bool need_redraw : 1;
   bool need_resize : 1;
   Mutex childMutex;
+};
+
+class StageHandleImpl : implements(StageHandle)
+{
+ public:
+  StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
+  virtual Stage_ptr parent() { return stage->_this();}
+  virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
+  virtual Vertex position() { MutexGuard guard(mutex); return p;}
+  virtual void position(const Vertex &);
+  virtual Vertex size() { MutexGuard guard(mutex); return s;}
+  virtual void size(const Vertex &);
+  virtual Stage::Index layer() { MutexGuard guard(mutex); return l;}
+  virtual void layer(Stage::Index);
+
+  const Geometry::Rectangle<Coord> &bbox() { return boundingbox;}
+  void bbox(RegionImpl &region)
+    {
+      region.valid   = true;
+      region.lower.x = boundingbox.l;
+      region.upper.x = boundingbox.r;
+      region.xalign  = xalign;
+      region.lower.y = boundingbox.t;
+      region.upper.y = boundingbox.b;
+      region.yalign  = yalign;
+    }
+//  private:
+  void cacheBBox();
+  StageImpl *stage;
+  Graphic_var c;
+  Tag tag;
+  Vertex p;
+  Vertex s;
+  Stage::Index l;
+  Geometry::Rectangle<Coord> boundingbox;
+  Alignment xalign;
+  Alignment yalign;
+  Mutex mutex;
 };
 
 #endif

@@ -42,6 +42,7 @@ interface Stage : Graphic
 
 interface StageHandle
 {
+  Stage     parent();
   Graphic   child();
   attribute Vertex position;
   attribute Vertex size;

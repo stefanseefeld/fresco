@@ -24,6 +24,8 @@
 #include "Berlin/Logger.hh"
 #include "Desktop/WindowImpl.hh"
 
+using namespace Prague;
+
 class Mover : public WindowImpl::Manipulator
 {
 public:
@@ -106,8 +108,10 @@ public:
 	      s.y = min(r.y.maximum, max(r.y.minimum, size.y + vertex->y/(1.-yalign)));
 	      p.y = pos.y - yalign * (s.y - size.y);
 	    }
+	  handle->parent()->begin();
 	  handle->position(p);
 	  handle->size(s);
+	  handle->parent()->end();
 	}
       else cerr << "MoveResizer::execute : wrong message type !" << endl;
     }
@@ -132,7 +136,7 @@ public:
 };
 
 WindowImpl::WindowImpl()
-  : ControllerImpl(true), manipulators(3)
+  : ControllerImpl(true), unmapped(0), manipulators(3), mapper(0)
 {
   manipulators[0] = new Mover;
   manipulators[0]->_obj_is_ready(_boa());
@@ -140,15 +144,21 @@ WindowImpl::WindowImpl()
   manipulators[1]->_obj_is_ready(_boa());
   manipulators[2] = new Relayerer;
   manipulators[2]->_obj_is_ready(_boa());
+  mapper = new Mapper(this, true);
+  mapper->_obj_is_ready(_boa());
+  unmapper = new Mapper(this, false);
+  unmapper->_obj_is_ready(_boa());
 }
 
 WindowImpl::~WindowImpl()
 {
   for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
     (*i)->_dispose();
+  mapper->_dispose();
+  unmapper->_dispose();
 }
 
-void WindowImpl::insert(Desktop_ptr desktop)
+void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
 {
   SectionLog section(Logger::desktop, "WindowImpl::insert");
   Vertex position, size;
@@ -156,11 +166,10 @@ void WindowImpl::insert(Desktop_ptr desktop)
   Graphic::Requisition r;
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
-  desktop->begin();
-  handle = desktop->insert(Graphic_var(_this()), position, size, 0);
-  desktop->end();
-  for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
-    (*i)->bind(handle);
+  unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
+  unmapped->_obj_is_ready(_boa());
+  handle = StageHandle_var(unmapped->_this());
+  if (mapped) map(true);
 }
 
 Command_ptr WindowImpl::move() { return manipulators[0]->_this();}
@@ -172,6 +181,8 @@ Command_ptr WindowImpl::moveResize(Alignment x, Alignment y, CORBA::Short b)
   return manipulators.back()->_this();
 }
 Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
+Command_ptr WindowImpl::map() { return mapper->_this();}
+Command_ptr WindowImpl::unmap() { return unmapper->_this();}
 
 void WindowImpl::pick(PickTraversal_ptr traversal)
 {
@@ -179,4 +190,30 @@ void WindowImpl::pick(PickTraversal_ptr traversal)
   traversal->enterController(Controller_var(_this()));
   MonoGraphic::traverse(traversal);
   traversal->leaveController();
+}
+
+void WindowImpl::map(bool flag)
+{
+  MutexGuard guard(mutex);
+  if (flag == !unmapped) return;
+  Stage_var stage = handle->parent();
+  if (unmapped)
+    {
+      stage->begin();
+      StageHandle_var tmp = stage->insert(Graphic_var(_this()), handle->position(), handle->size(), handle->layer()); 
+      stage->end();
+      handle = tmp;
+      for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
+	(*i)->bind(handle);
+      unmapped->_dispose();
+      unmapped = 0;
+    }
+  else
+    {
+      unmapped = new UnmappedStageHandle(handle);
+      unmapped->_obj_is_ready(_boa());
+      stage->begin();
+      stage->remove(handle); 
+      stage->end();
+    }
 }

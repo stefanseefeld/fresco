@@ -26,6 +26,7 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Region.hh"
 #include "Warsaw/Transform.hh"
+#include "Berlin/Logger.hh"
 
 TextChunk::TextChunk(const Unistring & u, const Requisition &r) : 
     myCanonicalSize(r), myText(u)  {
@@ -48,6 +49,7 @@ unsigned long TextChunk::getLength() {
 }
 
 void TextChunk::draw(DrawTraversal_ptr dt) {
+SectionLog section(Logger::drawing, "TextChunk::draw");
     Region_var allocation = dt->allocation();
     DrawingKit_ptr dk = dt->kit();
     Text::Font_var f = dk->currentFont();
