@@ -39,7 +39,19 @@ bool is_graphem_boundary(Babylon::Char, Babylon::Char);
 
 //. This takes a single paragraph for input!
 //. Returns a vector of embedding levels and the max. embedding level used
-Embedding_Levels analyse(const String &, const Babylon::Base_Dir &);
+Embedding_Levels analyse(const Babylon::String::const_iterator, //.< start of input string
+			 const Babylon::String::const_iterator, //.< end of input string
+			 const Babylon::Base_Dir &);
+
+//. This returns the visual ordering of a string.
+//. It takes a single paragraph for input!
+void log2vis(const Babylon::String::const_iterator, //.< start input string
+	     const Babylon::String::const_iterator, //.< end of input string
+	     const Babylon::Base_Dir &,             //.< base direction
+	     std::basic_string<size_t> &,           //.< logical 2 visual reordering string
+	     std::basic_string<size_t> &,           //.< visual 2 logical reordering string
+	     std::basic_string<unsigned char> &,    //.< embedding level string
+	     size_t);                               //.< position of start in the string
     
 } // namespace Babylon
 

@@ -247,16 +247,19 @@ vector<Babylon::Type> override(vector<Babylon::Type> & base,
 }
 
 Embedding_Levels
-Babylon::analyse(const Babylon::String & str,
+Babylon::analyse(const Babylon::String::const_iterator start,
+		 const Babylon::String::const_iterator end,
 		 const Babylon::Base_Dir & pbase_dir) {
     Embedding_Levels emb;
-    if (str.empty()) return emb;
+    if (start == end) return emb;
+
+    size_t str_length(distance(start, end) -  1);
 
     std::vector<Babylon::Type> type_rl;
-    std::vector<Babylon::Bidir_Props> char_type(str.length());
+    std::vector<Babylon::Bidir_Props> char_type(str_length);
     {
 	// Determinate character types
-	transform(str.begin(), str.end(),
+	transform(start, end,
 		  char_type.begin(),
 		  std::mem_fun_ref(& Babylon::Char::direction));
 	
@@ -588,8 +591,8 @@ Babylon::analyse(const Babylon::String & str,
     {
 	vector<Babylon::Type> list;
 	bool state = 1;
-	size_t pos = str.length() - 1;
-	for(int i = str.length() - 1; i >= 0; --i) {
+	size_t pos = str_length - 1;
+	for(int i = str_length - 1; i >= 0; --i) {
 	    Babylon::Bidir_Props k = char_type[i];
 	    if (!state && bidir_is_separator(k)) {
 		state = 1;
@@ -617,6 +620,56 @@ Babylon::analyse(const Babylon::String & str,
     emb.max_level = max_level;
 
     return emb;
+}
+
+void log2vis(const Babylon::String::const_iterator start,
+	     const Babylon::String::const_iterator end,
+	     const Babylon::Base_Dir & pbase_dir,
+	     std::basic_string<size_t> & log2vis_str,
+	     std::basic_string<size_t> & vis2log_str,
+	     std::basic_string<unsigned char> & embed_levels,
+	     size_t start_offset = 0) {
+    // Initialise result-strings:
+    log2vis_str.erase();
+    for(size_t i = 0; i <= std::distance(start, end); ++i)
+	log2vis_str.push_back(i + start_offset);
+    vis2log_str = log2vis_str;
+
+    Babylon::Embedding_Levels emb = analyse(start, end, pbase_dir);
+    
+    embed_levels.erase();
+    for(vector<Babylon::Type>::const_iterator i = emb.types.begin();
+	i != emb.types.end();
+	++i)
+	for(size_t j = 0; j < i->length; ++j)
+	    embed_levels.push_back(i->embed_level);
+
+    // FIXME: This is missing:
+    // L4. Mirror all characters that are in odd levels and have mirrors
+
+    // L2. Reorder
+    for(unsigned char level_idx = emb.max_level;
+	level_idx > 0;
+	--level_idx)
+	for(std::vector<Babylon::Type>::const_iterator j = emb.types.begin();
+	    j != emb.types.end();
+	    ++j) {
+	    if(j->embed_level >= level_idx) {
+		size_t pos = j->start;
+		size_t len = j->length;
+		std::vector<Babylon::Type>::const_iterator k = j + 1;
+		while(k != emb.types.end() && k->embed_level >= level_idx) {
+		    len += k->length;
+		    ++k;
+		}
+		std::reverse(vis2log_str.begin() + pos,
+			     vis2log_str.begin() + pos +len);
+	    }
+	}
+
+    // Convert vis2log_str into log2vis_str:
+    for(size_t i = 0; i < std::distance(start, end) - 1; ++i)
+	log2vis_str[vis2log_str[i] - start_offset] = i + start_offset;
 }
 
 } // namespace Babylon
