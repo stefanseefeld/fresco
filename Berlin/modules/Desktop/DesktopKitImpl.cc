@@ -49,10 +49,11 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
   _desktop->increment();
   Warsaw::Kit::PropertySeq props;
   props.length(0);
-  _layout = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
-  _tool   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
-  _widget = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
-  _text   = resolve_kit<TextKit>(context, "IDL:Warsaw/TextKit:1.0", props);
+  _layout  = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
+  _tool    = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
+  _widget  = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
+  _text    = resolve_kit<TextKit>(context, "IDL:Warsaw/TextKit:1.0", props);
+  _command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
 
   ClientContext_var client = context->client();
   _exit = client->exit();
@@ -192,6 +193,16 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
 
+  req.x.defined = true;
+  req.x.minimum = 200.;
+  req.x.natural = 200.;
+  req.x.maximum = 200.;
+  req.x.align = 0.;
+
+  RefCount_var<Graphic> printgraphic = _layout->glue_requisition(req);
+  Command_var print = _command->print(g);
+  Trigger_var tbprint = _widget->button(printgraphic, print);
+
   req.x.minimum = 200.;
   req.x.natural = 200.;
   req.x.maximum = 200.;
@@ -223,11 +234,14 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   RefCount_var<Graphic> rdragger = _tool->dragger(rframe, rresize);
 
   RefCount_var<Graphic> vbox = _layout->vbox();
+  RefCount_var<Graphic> hbox1 = _layout->hbox();
+  hbox1->append_graphic(tbprint);
+  hbox1->append_graphic(tbdragger);
   RefCount_var<Graphic> hbox = _layout->hbox();
   hbox->append_graphic(ldragger);
   hbox->append_graphic(bdragger);
   hbox->append_graphic(rdragger);
-  vbox->append_graphic(tbdragger);
+  vbox->append_graphic(hbox1);
   vbox->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
   vbox->append_graphic(hbox);
   RefCount_var<Graphic> background = _tool->rgb(vbox, 0.7, 0.7, 0.7);
