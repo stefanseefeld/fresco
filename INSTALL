@@ -259,6 +259,14 @@ client:
 
 > bin/demo -ORBInitRef FrescoServer=IOR:lots-of-numbers
 
+Report a bug
+============
+
+Please visit http://issues.fresco.org/ to report bugs. Please check the
+FAQs listed above before submitting. You do not need to register to file a
+bug report, but if you do you will be keapt up to date with what is going
+on with it via e-mail.
+
 
 Contact
 =======
