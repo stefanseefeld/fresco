@@ -34,7 +34,7 @@ extern "C"
 
 namespace GGI
 {
-  namespace GGIKit
+  namespace Kit
   {
 
     class VisualImpl : public virtual POA_GGI::Visual,
