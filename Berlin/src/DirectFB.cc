@@ -28,36 +28,100 @@
 using namespace Prague;
 using namespace Warsaw;
 
-PortableServer::POA_var DirectFBConsole::m_poa;
-
+PortableServer::POA_var DirectFBConsole::s_poa;
+DirectFBConsole::dlist_t DirectFBConsole::s_drawables;
 
 ////////////////////////////////////////////////////////////////////////////////
 // DirectFBDrawable implementation
 ////////////////////////////////////////////////////////////////////////////////
-DirectFBDrawable::DirectFBDrawable(const char *,
-				   Warsaw::PixelCoord w,
-				   Warsaw::PixelCoord h,
-				   Warsaw::PixelCoord d) {
-    Prague::Trace("DirectFBDrawable::DirectFBDrawable");    
+DirectFBDrawable::DirectFBDrawable(const char * name,
+				   IDirectFB * dfb,
+				   DFBSurfaceDescription & dsc) : m_name(name)
+{
+    Prague::Trace("DirectFBDrawable::DirectFBDrawable");
+    cerr << "DirectFBDrawable::DirectFBDrawable " << name << ": STARTED" << endl;
+    dfb->CreateSurface(dfb, &dsc, &m_surface);
+
+    DFBSurfacePixelFormat pixel_format;
+    m_surface->GetPixelFormat(m_surface, &pixel_format);
+ 
+    switch(pixel_format) {
+    case DSPF_A1:
+        m_format.depth       = 1;    m_format.size        = 1;
+        m_format.red_mask    = 0;    m_format.red_shift   = 0;
+        m_format.green_mask  = 0;    m_format.green_shift = 0;
+        m_format.blue_mask   = 0;    m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 1;    m_format.alpha_shift = 0;
+        break;
+    case DSPF_A8:
+	m_format.depth       = 8;    m_format.size        = 8;
+        m_format.red_mask    = 0;    m_format.red_shift   = 0;
+        m_format.green_mask  = 0;    m_format.green_shift = 0;
+        m_format.blue_mask   = 0;    m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 0xFF; m_format.alpha_shift = 0;
+        break;
+    case DSPF_RGB15:
+        m_format.depth       = 15;   m_format.size        = 16;
+        m_format.red_mask    = 0x1F; m_format.red_shift   = 10;
+        m_format.green_mask  = 0x1F; m_format.green_shift = 5;
+        m_format.blue_mask   = 0x1F; m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 0;    m_format.alpha_shift = 0;
+        break;
+	case DSPF_RGB16:
+        m_format.depth       = 16;   m_format.size        = 16;
+        m_format.red_mask    = 0x1F; m_format.red_shift   = 11;
+        m_format.green_mask  = 0x3F; m_format.green_shift = 5;
+        m_format.blue_mask   = 0x1F; m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 0;    m_format.alpha_shift = 0;
+        break;
+    case DSPF_RGB24:
+        m_format.depth       = 24;   m_format.size        = 24;
+        m_format.red_mask    = 0xFF; m_format.red_shift   = 16;
+        m_format.green_mask  = 0xFF; m_format.green_shift = 8;
+        m_format.blue_mask   = 0xFF; m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 0;    m_format.alpha_shift = 0;
+        break;
+   case DSPF_RGB32:
+        m_format.depth       = 32;   m_format.size        = 24;
+        m_format.red_mask    = 0xFF; m_format.red_shift   = 16;
+        m_format.green_mask  = 0xFF; m_format.green_shift = 8;
+        m_format.blue_mask   = 0xFF; m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 0;    m_format.alpha_shift = 0;
+        break;
+    case DSPF_ARGB:
+        m_format.depth       = 32;   m_format.size        = 32;
+        m_format.red_mask    = 0xFF; m_format.red_shift   = 16;
+        m_format.green_mask  = 0xFF; m_format.green_shift = 8;
+        m_format.blue_mask   = 0xFF; m_format.blue_shift  = 0;
+        m_format.alpha_mask  = 0xFF; m_format.alpha_shift = 24;
+        break;
+    }
+
+    m_surface->GetSize(m_surface, &m_width, &m_height);
 }
 
 DirectFBDrawable::~DirectFBDrawable() {
     Prague::Trace("DirectFBDrawable::~DirectFBDrawable");
+    m_surface->Release(m_surface);
 }
-
-Warsaw::Drawable::PixelFormat DirectFBDrawable::pixel_format() {
-    Prague::Trace("DirectFBDrawable::pixel_format");
-}
-
 
 Warsaw::Drawable::BufferFormat DirectFBDrawable::buffer_format() {
     Prague::Trace("DirectFBDrawable::buffer_format");
+    Warsaw::Drawable::BufferFormat format;
+    format.skip_width = 0;
+    format.width = width();
+    format.skip_height = 0;
+    format.height = height();
+    format.row_length = row_length();
+    return format;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // DirectFBConsole implementation
 ////////////////////////////////////////////////////////////////////////////////
+
+static IDirectFB * s_dfb = 0;
 
 DirectFBConsole::DirectFBConsole(int &argc, char **argv, PortableServer::POA_ptr poa)// throw (exception)
   : m_autoplay(false)
@@ -66,44 +130,75 @@ DirectFBConsole::DirectFBConsole(int &argc, char **argv, PortableServer::POA_ptr
   Trace trace("DirectFBConsole::DirectFBConsole");
 
   DFBSurfaceDescription dsc;
-  DirectFBCreate (&argc, &argv, &m_dfb);
+  DirectFBCreate(&argc, &argv, &s_dfb);
 
-  m_dfb->SetCooperativeLevel(m_dfb, DFSCL_FULLSCREEN);
-  m_dfb->GetInputDevice(m_dfb, DIDID_KEYBOARD, &m_keyboard);
-  m_dfb->GetInputDevice(m_dfb, DIDID_MOUSE, &m_mouse);
-  m_keyboard->CreateInputBuffer(m_keyboard, &m_keyboard_buf);
+  s_dfb->SetCooperativeLevel(s_dfb, DFSCL_FULLSCREEN);
+
+  s_dfb->GetInputDevice(s_dfb, DIDID_MOUSE, &m_mouse);
   m_mouse->CreateInputBuffer(m_mouse, &m_mouse_buf);
 
-  m_poa = PortableServer::POA::_duplicate(poa);
+  dsc.flags = DSDESC_CAPS;
+  dsc.caps  = DSCAPS_PRIMARY;
+
+  Drawable * primary = new DirectFBDrawable("Primary", s_dfb, dsc);
+
+  s_drawables.push_back(new DrawableTie<Drawable>(primary));
+  cerr << "DirectFBConsole::DirectFBConsole: primary surface created." << endl;
+
+  primary->surface()->
+      SetBlittingFlags(primary->surface(), DSBLIT_BLEND_ALPHACHANNEL);
+
+  s_poa = PortableServer::POA::_duplicate(poa);
 }
 
 DirectFBConsole::~DirectFBConsole()
 {
   Trace trace("DirectFBConsole::~DirectFBConsole");
   
-  m_keyboard->Release(m_keyboard);
+  for (dlist_t::iterator i = s_drawables.begin();
+       i != s_drawables.end(); ++i)
+      delete *i;
+
+  m_mouse_buf->Release(m_mouse_buf);
   m_mouse->Release(m_mouse);
-  m_dfb->Release(m_dfb);
+  s_dfb->Release(s_dfb);
 }
 
 DrawableTie<DirectFBDrawable> * DirectFBConsole::drawable()
 {
   Trace trace("DirectFBConsole::drawable");
+  assert(s_drawables.size());
+  return s_drawables.front();
 }
 
 DrawableTie<DirectFBDrawable> * DirectFBConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
 {
+    DFBSurfaceDescription dsc;
+    dsc.bpp = d;
+    dsc.width = w;
+    dsc.height = h;
+
     Prague::Trace("DirectFBConsole::create_drawable new");
+    s_drawables.push_back(new DrawableTie<DirectFBDrawable>(
+			    new DirectFBDrawable("display-memory", s_dfb, dsc))
+			  );
+    return s_drawables.back();
 }
 
 DrawableTie<DirectFBDrawable> *DirectFBConsole::create_drawable(DirectFBDrawable *drawable)
 {
     Prague::Trace("DirectFBConsole::create_drawable copy");
+    s_drawables.push_back(new DrawableTie<DirectFBDrawable>(drawable));
+    return s_drawables.back();
 }
 
 Warsaw::Drawable_ptr DirectFBConsole::activate_drawable(DrawableTie<DirectFBDrawable> *d)
 {
     Prague::Trace("DirectFBConsole::activate_drawable");
+    PortableServer::ObjectId *oid = s_poa->activate_object(d);
+    d->_remove_ref();
+    delete oid;
+    return d->_this();
 }
 
 DrawableTie<DirectFBDrawable> *DirectFBConsole::reference_to_servant(Warsaw::Drawable_ptr drawable)
@@ -111,7 +206,11 @@ DrawableTie<DirectFBDrawable> *DirectFBConsole::reference_to_servant(Warsaw::Dra
   Trace trace("DirectFBConsole::reference_to_servant");
   try
     {
-      PortableServer::Servant servant = m_poa->reference_to_servant(drawable);
+      PortableServer::Servant servant = s_poa->reference_to_servant(drawable);
+      for (dlist_t::iterator i = s_drawables.begin();
+	   i != s_drawables.end();
+	   ++i)
+	  if (*i == servant) return *i;
     }
   catch (const PortableServer::POA::ObjectNotActive &) {}
   catch (const PortableServer::POA::WrongAdapter &) {}
@@ -122,24 +221,29 @@ DrawableTie<DirectFBDrawable> *DirectFBConsole::reference_to_servant(Warsaw::Dra
 static void readEvent(DFBInputEvent &e)
 {
     Prague::Trace("DirectFBConsole::readEvent");
+    cerr << "TRING TO READ EVENT: IGNORED!" << endl;
 }
 
 static void writeEvent(DFBInputEvent &e)
 {
     Prague::Trace("DirectFBConsole::writeEvent");
+    cerr << "TRING TO WRITE EVENT: IGNORED!" << endl;
 }
 
 Input::Event *DirectFBConsole::next_event()
 {
-  Trace trace("DirectFB::Console::next_event");
+    Trace trace("DirectFB::Console::next_event");
+    cerr << "TRING TO WRITE EVENT: IGNORED!" << endl;
 }
 
 void DirectFBConsole::wakeup() {
     Prague::Trace("DirectFBConsole::wakeup");
+    cerr << "WAKEUP: IGNORED!" << endl;  
 }
 
 Input::Event *DirectFBConsole::synthesize(const DFBInputEvent &e)
 {
     Prague::Trace("DirectFBConsole::synthesize");
+    cerr << "SYNTHESIZE EVENT: IGNORED!" << endl;
 }
 
