@@ -42,17 +42,19 @@ class ScreenManager
 public:
   ScreenManager(Warsaw::Graphic_ptr, EventManager *, Warsaw::DrawingKit_ptr);
   ~ScreenManager();
+  //. This method marks the given Region as damaged.
   void damage(Warsaw::Region_ptr);
+  //. This method redraws the damaged regions of the screen.
   void repair();
   //. Main event loop.
   void run();
 private:
-  Warsaw::Graphic_var         _screen;
+  Warsaw::Graphic_var         _screen;    //.< The graphic that is managed.
   EventManager               *_emanager;
-  Warsaw::DrawingKit_var      _drawing;
-  Console::Drawable          *_drawable;
-  Impl_var<RegionImpl>        _theDamage;
-  Impl_var<RegionImpl>        _tmpDamage;
+  Warsaw::DrawingKit_var      _drawing;   //.< The DrawingKit used to update this screen. 
+  Console::Drawable          *_drawable;  //.< A chunk of memory we are drawing into.
+  Impl_var<RegionImpl>        _theDamage; //.< The region that got damaged.
+  Impl_var<RegionImpl>        _tmpDamage; //.< Temporary copy of _theDamage
   Impl_var<DrawTraversalImpl> _traversal;
   Prague::Mutex               _mutex;
 };
