@@ -10,7 +10,7 @@ from berlin import Label, Callback, nullAny
 class DemoApp (berlin.App):
     def run(self):
 	# Create a pixmap
-	pixmap = kits.figure.pixmap(kits.image.create("berlin-128.png"))
+	pixmap = kits.figure.pixmap(kits.image.create_raster("berlin-128.png"))
 	margin = kits.layout.margin_flexible(pixmap, 100., 500., 100.)
 	spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
         demo = kits.tool.frame(margin, 10., spec, 1)
