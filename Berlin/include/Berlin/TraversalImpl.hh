@@ -43,7 +43,7 @@ class TraversalImpl : implements(Traversal)
   };
   typedef vector<State> stack_t;
  public:
-  TraversalImpl(Graphic_ptr, Region_ptr);
+  TraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr);
   TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
   Region_ptr allocation();
@@ -55,11 +55,11 @@ class TraversalImpl : implements(Traversal)
   void visit(Graphic_ptr) = 0;
   order direction() = 0;
   CORBA::Boolean ok() = 0;
-
+ protected:
+//   Graphic_ptr graphic();
   void push(Graphic_ptr, Region_ptr, TransformImpl *);
   void pop();
- protected:
-  Graphic_ptr graphic();
+  size_t size() { return stack.size();}
  private:
   stack_t stack;
 };

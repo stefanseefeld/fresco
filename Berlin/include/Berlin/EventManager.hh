@@ -25,28 +25,21 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Event.hh"
 #include "Warsaw/Controller.hh"
-#include <Berlin/Thread.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/FocusImpl.hh>
-#include <stack>
-
-class PickTraversalImpl;
 
 class EventManager
 {
-  typedef stack<Controller_var> clist_t;
 public:
   EventManager(ScreenImpl *);
   ~EventManager();
   void requestFocus(Controller_ptr);
-  void requestFocus(PickTraversalImpl *, Controller_ptr);
-  void dispatchInput(const Event::Pointer &);
-  void dispatchInput(const Event::Key &);
+  void damage(Region_ptr);
+  void dispatch(const Event::Pointer &);
+  void dispatch(const Event::Key &);
 private:
   ScreenImpl *screen;
-  clist_t requestors;
-  Mutex mutex;
-  FocusImpl *focus;
+  FocusImpl  *focus;
 };
 
 #endif /* _EventManager_hh */

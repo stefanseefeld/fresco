@@ -84,10 +84,11 @@ void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr there, const CosLifeCy
   // the_criteria is const - duplicate and add.
   CosLifeCycle::Criteria our_criteria;
   our_criteria.length(i);
-  for (int j = 0; j < i; j++) {
-    our_criteria[j].name = the_criteria[j].name;
-    our_criteria[j].value = the_criteria[j].value;
-  }
+  for (unsigned long int j = 0; j < i; j++)
+    {
+      our_criteria[j].name = the_criteria[j].name;
+      our_criteria[j].value = the_criteria[j].value;
+    }
 
   our_criteria.length(i+1); 
   our_criteria[i].name = "NP_omniLifeCycleInfo";

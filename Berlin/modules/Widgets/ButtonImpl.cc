@@ -35,6 +35,6 @@ void ButtonImpl::release(PickTraversal_ptr traversal, const Event::Pointer *poin
     {
       Message dummy;
       command->execute(dummy);
-      clear(Telltale::toggle);
     }
+  ControllerImpl::release(traversal, pointer);
 }

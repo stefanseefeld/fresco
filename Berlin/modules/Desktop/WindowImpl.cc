@@ -88,16 +88,10 @@ Command_ptr WindowImpl::reposition() { return manipulators[0]->_this();}
 Command_ptr WindowImpl::resize() { return manipulators[1]->_this();}
 Command_ptr WindowImpl::relayer() { return Command::_nil();}
 
-CORBA::Boolean WindowImpl::handle(PickTraversal_ptr traversal, const CORBA::Any &any)
+void WindowImpl::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section(Logger::picking, "WindowImpl::handle");
-  Graphic_var child = body();
-  if (!CORBA::is_nil(child))
-    {
-      child->traverse(traversal);
-      PickTraversal_var picked = traversal->picked();
-      if (!CORBA::is_nil(picked))
-	return Controller_var(picked->receiver())->handle(picked, any);
-    }
-  return false;
+  traversal->enterController(Controller_var(_this()));
+  MonoGraphic::traverse(traversal);
+  traversal->leaveController();
 }
+

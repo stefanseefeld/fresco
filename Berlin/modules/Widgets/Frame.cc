@@ -50,6 +50,10 @@ void Frame::draw(DrawTraversal_ptr traversal)
       dark = brightness(color,  0.5);
       break;
     case flat:
+      light = color;
+      dark = color;
+      break;
+    case black:
       light = brightness(color,-1.0);
       dark = brightness(color,-1.0);
       break;

@@ -21,14 +21,13 @@
  */
 
 #include "Berlin/EventManager.hh"
-#include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/Logger.hh"
 
 EventManager::EventManager(ScreenImpl *s)
   : screen(s)
 {
-  focus = new FocusImpl;
+  focus = new FocusImpl(screen);
   focus->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
@@ -39,43 +38,20 @@ EventManager::~EventManager()
 
 void EventManager::requestFocus(Controller_ptr c)
 {
-  SectionLog section(Logger::focus, "EventManager::requestFocus(Controller_ptr)");
-  c->receiveFocus(Focus_var(focus->_this()));
+  focus->request(c);
 }
 
-void EventManager::requestFocus(PickTraversalImpl *t, Controller_ptr c)
+void EventManager::damage(Region_ptr r)
 {
-  SectionLog section(Logger::focus, "EventManager::requestFocus(PickTraversalImpl *, Controller_ptr)");
-  c->receiveFocus(Focus_var(focus->_this()));
+  focus->damage(r);
 }
 
-void EventManager::dispatchInput(const Event::Pointer &pointer)
+void EventManager::dispatch(const Event::Pointer &pointer)
 {
-  SectionLog section(Logger::main, "EventManager::dispatchInput(Pointer)");
-  /*
-   * try to find a potential receiver for the event
-   */
-  PickTraversalImpl *traversal = new PickTraversalImpl(Graphic_var(screen->_this()),
-						       Region_var(screen->getRegion()),
-						       pointer, this);
-  traversal->_obj_is_ready(CORBA::BOA::getBOA());
-  screen->traverse(Traversal_var(traversal->_this()));
-  /*
-   * has the traversal been picked ? then handle the event
-   */
-  PickTraversal_var picked = traversal->picked();
-  if (!CORBA::is_nil(picked))
-    {
-      SectionLog section(Logger::main, "picked controller non zero");
-      CORBA::Any any;
-      any <<= pointer;
-      Controller_var(picked->receiver())->handle(picked, any);
-    }
-  traversal->_dispose();
+  focus->dispatch(pointer);
 }
 
-void EventManager::dispatchInput(const Event::Key &)
+void EventManager::dispatch(const Event::Key &)
 {
-  SectionLog section(Logger::main, "EventManager::dispatchInput(Key)");
 }
 

@@ -80,26 +80,6 @@ public:
 
   class ftpbuf : public protocol::protocolbuf
   {
-    // the following are used when this is used as a server
-    char*           usr;
-    char*           password;
-    char*           account;
-    char            cwd [MAXPATHLEN];
-    char            parentdir [MAXPATHLEN];
-    ftp::filestru   fs;
-    ftp::transmode  tm;
-    sockinetaddr    udata; // user will listen at this addr for data conn.
-    int             serverportno;
-    char            replycode [5];
-
-    ostream*           o;
-
-    ftp::replycodea send_cmd (const char* cmd, const char* arg=0);
-    ftp::replycodea ftpdata (int portno, istream* i, ostream* out,
-			     const char* cmd, const char* arg=0);
-
-    ftpbuf (ftpbuf&);
-    ftpbuf& operator = (ftpbuf&);
   public:
     ftpbuf (ostream* out = 0);
 
@@ -140,10 +120,28 @@ public:
     virtual void        serve_clients (int portno = -1);
     virtual const char* rfc_name () const { return "ftp"; }
     virtual const char* rfc_doc  () const { return "rfc959"; }
-  };
+  private:
+    // the following are used when this is used as a server
+    char*           usr;
+    char*           password;
+    char*           account;
+    char            cwd [MAXPATHLEN];
+    char            parentdir [MAXPATHLEN];
+    ftp::filestru   fs;
+    ftp::transmode  tm;
+    sockinetaddr    udata; // user will listen at this addr for data conn.
+    int             serverportno;
+    char            replycode [5];
 
-protected:
-  ftp (): ios (0) {}
+    ostream*           o;
+
+    ftp::replycodea send_cmd (const char* cmd, const char* arg=0);
+    ftp::replycodea ftpdata (int portno, istream* i, ostream* out,
+			     const char* cmd, const char* arg=0);
+
+    ftpbuf (ftpbuf&);
+    ftpbuf& operator = (ftpbuf&);
+  };
 
 public:
   ftp (ostream* out);
@@ -152,6 +150,8 @@ public:
 
   ftpbuf* rdbuf ()       { return static_cast<ftpbuf *> (protocol::rdbuf ()); }
   ftpbuf* operator -> () { return rdbuf (); }
+protected:
+  ftp (): ios (0) {}
 };  
 
 };

@@ -88,6 +88,7 @@ void ScreenManager::repair()
       if (ptr) pointer->restore();
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
 							   Region_var((*i)->_this()),
+							   Transform_var(Transform::_nil()),
 							   DrawingKit_var(drawing->_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
@@ -98,6 +99,7 @@ void ScreenManager::repair()
 	  pointer->backup();
 	  pointer->draw();
 	}
+      emanager->damage(Region_var((*i)->_this()));
       (*i)->_dispose();
     }
 }
@@ -124,7 +126,7 @@ void ScreenManager::nextEvent()
       {      
 	Event::Key key;
 	key.theChar = event.key.sym;
-	emanager->dispatchInput(key);
+	emanager->dispatch(key);
 	break;
       }
     case evPtrAbsolute:
@@ -146,7 +148,7 @@ void ScreenManager::nextEvent()
 	  event.any.type == evPtrAbsolute ? Event::hold :
 	  event.any.type == evPtrButtonPress ? Event::press :
 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-	emanager->dispatchInput(pointer);
+	emanager->dispatch(pointer);
 	break;
       }
     }

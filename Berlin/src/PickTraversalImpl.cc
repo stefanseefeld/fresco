@@ -22,8 +22,35 @@
  */
 #include "Berlin/PickTraversalImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, const Event::Pointer &p, EventManager *em)
-  : TraversalImpl(g, r), pointer(p), manager(em), memento(0) {}
+PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Event::Pointer &p)
+  : TraversalImpl(g, r, t),
+    pointer(p),
+    mem(0)
+{}
+
 PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
-  : TraversalImpl(t), pointer(t.pointer), manager(t.manager), memento(0), controller(t.controller) {}
-PickTraversalImpl::~PickTraversalImpl() { if (memento) memento->_dispose();}
+  : TraversalImpl(t),
+    controllers(t.controllers),
+    positions(t.positions),
+    pointer(t.pointer),
+    mem(0)
+{
+//   SectionLog log(Logger::picking, "PickTraversal::PickTraversal");
+//   debug();
+}
+
+PickTraversalImpl::~PickTraversalImpl()
+{
+  delete mem;
+}
+
+/*
+ * pop all graphics up to the top most controller and set the pointer
+ * so the traversal can be used to start over directly at the top
+ */
+void PickTraversalImpl::reset(const Event::Pointer &p)
+{
+//   SectionLog log(Logger::picking, "PickTraversal::reset");
+  popController();
+  pointer = p;
+}

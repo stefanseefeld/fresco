@@ -27,16 +27,17 @@
 #include "Warsaw/Event.hh"
 #include "Berlin/Logger.hh"
 
-ControllerImpl::ControllerImpl() {}
+ControllerImpl::ControllerImpl() : flags(0L), grabbed(false) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   SectionLog section(Logger::picking, "ControllerImpl::pick");
-  /*
-   * for now take the event if it falls inside our allocation
-   * and we don't have any children
-   */
-  if (traversal->intersectsAllocation())
-    traversal->hit(Controller_var(_this()));
+  if (grabbed || traversal->intersectsAllocation())
+    {
+      traversal->enterController(Controller_var(_this()));
+      MonoGraphic::traverse(traversal);
+      if (!traversal->picked()) traversal->hit();
+      traversal->leaveController();
+    }
 }
 
 Controller_ptr ControllerImpl::parentController() { MutexGuard guard(mutex); return Controller::_duplicate(parent);}
@@ -222,6 +223,7 @@ void ControllerImpl::move(PickTraversal_ptr, const Event::Pointer *)
 
 void ControllerImpl::press(PickTraversal_ptr, const Event::Pointer *)
 {
+//   grab();
   set(Telltale::toggle);
 }
 
@@ -232,6 +234,7 @@ void ControllerImpl::drag(PickTraversal_ptr, const Event::Pointer *)
 void ControllerImpl::release(PickTraversal_ptr, const Event::Pointer *)
 {
   clear(Telltale::toggle);
+//   ungrab();
 }
 
 void ControllerImpl::doubleClick(PickTraversal_ptr, const Event::Pointer *)

@@ -30,7 +30,6 @@
 #include "Warsaw/Transform.hh"
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/EventManager.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Vertex.hh"
 
@@ -40,56 +39,89 @@
 
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
+  typedef vector<Controller_var> cstack_t;
+  typedef vector<size_t> pstack_t;
  public:
-    PickTraversalImpl(Graphic_ptr, Region_ptr, const Event::Pointer &, EventManager *);
-    PickTraversalImpl(const PickTraversalImpl &);
-    ~PickTraversalImpl();
-    
-    void visit(Graphic_ptr g) { g->pick(PickTraversal_var(_this()));}
-    order direction() { return down;}
-    CORBA::Boolean ok() { return !memento;}
-    CORBA::Boolean intersectsAllocation()
-      {
+  PickTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, const Event::Pointer &);
+  //. to be used when starting from root level
+  ~PickTraversalImpl();
+  void reset(const Event::Pointer &);
+  void visit(Graphic_ptr g) { g->pick(PickTraversal_var(_this()));}
+  order direction() { return down;}
+  CORBA::Boolean ok() { return !mem;}
+  CORBA::Boolean intersectsAllocation()
+    {
 #if 1 // transform the pointer's location into the local CS
-	Vertex local = pointer.location;
-	Transform_var transform = transformation();
-	transform->inverseTransformVertex(local);
-	Region_var alloc = allocation();
-	RegionImpl region(alloc, Transform::_nil());
-	if (region.contains(local)) return true;
+      Vertex local = pointer.location;
+      Transform_var transform = transformation();
+      transform->inverseTransformVertex(local);
+      Region_var region = allocation();
+      if (region->contains(local)) return true;
 #else // transform the local CS to global coordinates
-	Region_var r = allocation();
-	Transform_var t = transformation();
-	RegionImpl region(r, t);
-	if (region.contains(pointer.location)) return true;
+      Region_var r = allocation();
+      Transform_var t = transformation();
+      RegionImpl region(r, t);
+      if (region.contains(pointer.location)) return true;
 #endif
-	return false;
-      }
-    CORBA::Boolean intersectsRegion(Region_ptr allocation)
-      {
-	if (allocation->contains(pointer.location)) return true;
-	else return false;
-      }
-    void hit(Controller_ptr c)
-      {
-	Logger::log(Logger::picking) << "hit ?" << endl;
- 	Graphic_var current = graphic();
- 	if (current->_is_equivalent(c))
-	  {
-	    Logger::log(Logger::picking) << "hit !" << endl;
-	    controller = Controller::_duplicate(c);
-	    manager->requestFocus(this, controller);
-	    memento = new PickTraversalImpl(*this);
-	    memento->_obj_is_ready(_boa());
-	  }
-      }
-    PickTraversal_ptr picked() { return memento ? memento->_this() : PickTraversal::_nil();}
-    Controller_ptr receiver() { return Controller::_duplicate(controller);}
+      return false;
+    }
+  CORBA::Boolean intersectsRegion(Region_ptr allocation)
+    {
+      if (allocation->contains(pointer.location)) return true;
+      else return false;
+    }
+  void enterController(Controller_ptr c)
+    {
+//       SectionLog log(Logger::picking, "PickTraversal::enterController");
+      controllers.push_back(Controller::_duplicate(c));
+      positions.push_back(size());
+//       debug();
+    }
+  void leaveController()
+    {
+//       SectionLog log(Logger::picking, "PickTraversal::leaveController");
+      controllers.pop_back();
+      positions.pop_back();
+//       debug();
+    }
+  void hit()
+    {
+//       SectionLog log(Logger::picking, "PickTraversal::hit");
+      delete mem;
+      mem = new PickTraversalImpl(*this);
+    }
+  void popController()
+    {
+//       SectionLog log(Logger::picking, "PickTraversal::popController");
+      if (controllers.size())
+	{
+	  while (size() > positions.back()) pop();
+	  controllers.pop_back();
+	  positions.pop_back();
+	}
+//       debug();
+    }
+  CORBA::Boolean picked() { return mem;}
+  Controller_ptr topController()
+    {
+      return controllers.size() ? Controller::_duplicate(controllers.back()) : Controller::_nil();
+    }
+  const vector<Controller_var> &controllerStack() const { return controllers;}
+  PickTraversalImpl   *memento() { PickTraversalImpl *m = mem; mem = 0; return m;}
+//   void debug()
+//     {
+//       cout << "PickTraversal::debug : stack size = " << size() << '\n';
+//       cout << "Controllers at ";
+//       for (size_t i = 0; i != positions.size(); i++) cout << positions[i] << ' ';
+//       cout << endl;
+//     }
  private:
-    const Event::Pointer pointer;
-    EventManager        *manager;
-    PickTraversalImpl   *memento;
-    Controller_var       controller;
+  PickTraversalImpl(const PickTraversalImpl &);
+  //. to be used to create the memento
+  cstack_t           controllers;
+  pstack_t           positions;
+  Event::Pointer     pointer;
+  PickTraversalImpl *mem;
 };
 
 #endif /* _PickTraversalImpl_hh */

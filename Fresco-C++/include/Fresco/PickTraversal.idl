@@ -28,9 +28,10 @@ interface Controller;
 
 interface PickTraversal : Traversal
 {
-  void hit(in Controller c);
-  PickTraversal picked();
-  Controller receiver();
+  void enterController(in Controller c);
+  void leaveController();
+  void hit();
+  boolean picked();
 };
 
 #endif /* _PickTraversal_idl */

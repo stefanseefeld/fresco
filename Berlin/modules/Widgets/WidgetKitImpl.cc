@@ -172,12 +172,19 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   button->action(c);
   graphics.push_back(button);
 
-  DynamicFrame *frame = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::toggle);
-  frame->_obj_is_ready(_boa());
-  graphics.push_back(frame);
-  frame->body(g);
-  frame->attach(Controller_var(button->_this()));
-  button->body(Graphic_var(frame->_this()));
+  DynamicFrame *frame1 = new DynamicFrame(1, b, Frame::black, Frame::flat, Telltale::active);
+  frame1->_obj_is_ready(_boa());
+  graphics.push_back(frame1);
+  frame1->body(g);
+  frame1->attach(Controller_var(button->_this()));
+
+  DynamicFrame *frame2 = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::toggle);
+  frame2->_obj_is_ready(_boa());
+  graphics.push_back(frame2);
+  frame2->body(Graphic_var(frame1->_this()));
+  frame2->attach(Controller_var(button->_this()));
+
+  button->body(Graphic_var(frame2->_this()));
   return button->_this();
 }
 

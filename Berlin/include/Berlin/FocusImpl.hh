@@ -24,12 +24,29 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Focus.hh>
+#include <Warsaw/Controller.hh>
+#include <Warsaw/Region.hh>
+#include <Berlin/Thread.hh>
+#include <vector>
+
+class PickTraversalImpl;
+class ScreenImpl;
 
 class FocusImpl : implements(Focus)
 {
+  typedef vector<Controller_var> cstack_t;
  public:
-  FocusImpl();
+  FocusImpl(ScreenImpl *);
   virtual ~FocusImpl();
+
+  void request(Controller_ptr);
+  void damage(Region_ptr);
+  void dispatch(const Event::Pointer &);
+ private:
+  ScreenImpl        *screen;
+  PickTraversalImpl *traversal;
+  cstack_t           controllers;
+  Mutex              mutex;
 };
 
 #endif /* _FocusImpl_hh */

@@ -35,7 +35,7 @@ declare_corba_ptr_type(Region)
 class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl
 {
 public:
-  DrawTraversalImpl(Graphic_ptr, Region_ptr, DrawingKit_ptr);
+  DrawTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, DrawingKit_ptr);
   DrawTraversalImpl(const DrawTraversalImpl &);
   ~DrawTraversalImpl();
   CORBA::Boolean intersectsAllocation();

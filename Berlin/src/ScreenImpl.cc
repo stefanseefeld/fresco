@@ -32,7 +32,7 @@
 #include "Warsaw/Traversal.hh"
 #include <iostream>
 
-ScreenImpl::ScreenImpl(GLDrawingKit *d, Coord w, Coord h)
+ScreenImpl::ScreenImpl(GLDrawingKit *d)
   : drawing(d)
 {
   emanager = new EventManager(this);
@@ -40,7 +40,7 @@ ScreenImpl::ScreenImpl(GLDrawingKit *d, Coord w, Coord h)
   region = new RegionImpl;
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
-  region->upper.x = w, region->upper.y = h, region->upper.z = 0;
+  region->upper.x = drawing->width(), region->upper.y = drawing->height(), region->upper.z = 0;
   region->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
@@ -51,7 +51,18 @@ ScreenImpl::~ScreenImpl()
   delete emanager;
 }
 
-void ScreenImpl::traverse(Traversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+void ScreenImpl::pick(PickTraversal_ptr traversal)
+{
+  SectionLog section(Logger::picking, "ScreenImpl::pick");
+  if (traversal->intersectsAllocation())
+    {
+      traversal->enterController(Controller_var(_this()));
+      MonoGraphic::traverse(traversal);
+      if (!traversal->picked()) traversal->hit();
+      traversal->leaveController();
+    }
+  else cout << "no intersection !" << endl;
+}
 
 void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr allocation)
 {
@@ -63,15 +74,6 @@ void ScreenImpl::damage(Region_ptr region) { smanager->damage(region);}
 
 CORBA::Boolean ScreenImpl::handle(PickTraversal_ptr traversal, const CORBA::Any &any)
 {
-  SectionLog section(Logger::picking, "ScreenImpl::handle");
-  Graphic_var child = body();
-  if (!CORBA::is_nil(child))
-    {
-      child->traverse(traversal);
-      PickTraversal_var picked = traversal->picked();
-      if (!CORBA::is_nil(picked))
-	return Controller_var(picked->receiver())->handle(picked, any);
-    }
   return false;
 }
 

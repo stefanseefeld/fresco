@@ -65,17 +65,3 @@ void DesktopImpl::relayer(const Info &info, Stage::Index index)
   stage->relayer(info, index);
 }
 
-CORBA::Boolean DesktopImpl::handle(PickTraversal_ptr traversal, const CORBA::Any &any)
-{
-  SectionLog section(Logger::picking, "DesktopImpl::handle");
-  Graphic_var child = body();
-  if (!CORBA::is_nil(child))
-    {
-      child->traverse(traversal);
-      PickTraversal_var picked = traversal->picked();
-      if (!CORBA::is_nil(picked))
-	return Controller_var(picked->receiver())->handle(picked, any);
-    }
-  return false;
-}
-

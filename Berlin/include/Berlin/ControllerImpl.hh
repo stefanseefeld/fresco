@@ -36,7 +36,6 @@ class ControllerImpl : implements(Controller), implements(Telltale), public Mono
 {
   typedef vector<Controller_var> clist_t;
  public:
-  enum Device { mouse, keyboard};
   ControllerImpl();
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
@@ -71,10 +70,13 @@ class ControllerImpl : implements(Controller), implements(Telltale), public Mono
   virtual void keyPress(PickTraversal_ptr, const Event::Pointer *);
   virtual void keyRelease(PickTraversal_ptr, const Event::Pointer *);
   virtual void other(PickTraversal_ptr, const Event::Pointer *);
+  void grab() { grabbed = true;}
+  void ungrab() { grabbed = false;}
  private:
   Controller_var parent;
   clist_t controllers;
   unsigned long flags;
+  bool grabbed;
   TelltaleConstraint_var myConstraint;
   Mutex mutex;
 };

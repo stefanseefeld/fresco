@@ -49,7 +49,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   Command_ptr resize();
   Command_ptr relayer();
 
-  virtual CORBA::Boolean handle(PickTraversal_ptr, const CORBA::Any &);
+  virtual void pick(PickTraversal_ptr);
  private:
   DesktopImpl *desktop;
   DesktopImpl::Info  info;

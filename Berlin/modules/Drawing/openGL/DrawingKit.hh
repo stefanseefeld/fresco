@@ -55,6 +55,8 @@ public:
   ggi_visual_t getVisual() { return drawable->Visual();}
   void clear(Coord, Coord, Coord, Coord);
   void sync() { glFlush();}
+  Coord width() { return drawable->width();}
+  Coord height() { return drawable->height();}
  private:
   void transformedImage(const GLRaster *, Transform_ptr);
   void scaledImage(const GLRaster *, Transform_ptr);

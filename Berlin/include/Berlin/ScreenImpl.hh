@@ -35,10 +35,10 @@ class GLDrawingKit;
 class ScreenImpl : implements(Screen), public ControllerImpl
 {
 public:
-  ScreenImpl(GLDrawingKit *, Coord, Coord);
+  ScreenImpl(GLDrawingKit *);
   virtual ~ScreenImpl();
 
-  virtual void traverse(Traversal_ptr);
+  virtual void pick(PickTraversal_ptr);
   virtual void allocate(Graphic_ptr, Allocation_ptr);
 
   virtual Coord width();
