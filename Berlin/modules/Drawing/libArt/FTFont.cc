@@ -55,7 +55,7 @@ bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, c
     }
   else idx = atoi(env);
   map<FamStyle,FT_Face>::const_iterator j = faces.begin();
-  for (unsigned int i = 0; i != idx && j != faces.end(); ++i, ++j);
+  for (int i = 0; i != idx && j != faces.end(); ++i, ++j);
   if (j == faces.end()) return false;
   fam = Unicode::String((*j).second->family_name);
   style = Unicode::String((*j).second->style_name);
