@@ -22,6 +22,7 @@
 
 #include "Drawing/openGL/GLUnifont.hh"
 #include <GL/gl.h>
+#include <string>
 #include <string.h>
 #include <iostream>
 #include <stdlib.h>
@@ -46,7 +47,15 @@ GLUnifont::GLUnifont() : rendered(65536)
 {
     myDescriptor.pointsize = 16;
     myDescriptor.name = UNIFY("GNU Unifont");
-    char *glyphdbName = getenv("GLYPH_DB");
+
+    // This is complicated, just to get a filename. Can't we use the ISO
+    // string class in favor of char*?
+    char *etc = getenv("BERLIN_DATA");
+    char *glyphdbName = new char [strlen(etc) + strlen("/glyphs.db") + 1];
+    strcpy(glyphdbName, etc);
+    strcat(glyphdbName, "/glyphs.db");
+    cerr << "glyph db is at " << glyphdbName << endl;
+
     Db::open(glyphdbName, DB_BTREE, DB_RDONLY, 0644, NULL, NULL,&glyphdb);
     myDisplaylistOffset = glGenLists(65536);
 }

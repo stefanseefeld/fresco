@@ -21,6 +21,7 @@
  * MA 02139, USA.
  */
 
+#include <string>
 #include "Berlin/Logger.hh"
 #include "Image/RasterImpl.hh"
 
@@ -28,7 +29,18 @@ RasterImpl::RasterImpl() : rows(0) {}
 RasterImpl::RasterImpl(const char *file) : rows(0)
 {
   rows = png.read(file);
-  if (!rows) rows = png.read("../etc/PNG/berlin-128.png");
+
+  if (!rows) {
+     string pngfile = getenv("BERLIN_DATA");
+     pngfile.append("/PNG/berlin-128.png");
+
+     if (pngfile.empty()) {
+        cerr << "Please run demos with the \'runtest.sh\' script" << endl;
+        exit(-1);
+     }
+     
+     rows = png.read(pngfile);
+  }
 }
 RasterImpl::~RasterImpl() {}
 
