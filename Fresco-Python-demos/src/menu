@@ -67,21 +67,10 @@ class MenuItem (pywarsaw.PyController):
 	self.__orientation = 0
 
 	# Construct the graphics to display this item
-	label = Label(self.label)
-	self.label = kits.layout.hmargin_lr_flexible(label,
-	    20., 0., 0., 20., 1000., 0.)
-	self.button = self.label
-
-	if 0:
-	    fspec_focus = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 1.0)
-	    fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.1)
-	    tri = kits.tool.dynamic_triangle(pywarsaw.PyGraphic()._this(),
-		10., Toggle_hover, fspec_focus, fspec_none,
-		1, Warsaw.ToolKit.right, self._this())
-	    self.button = kits.layout.hbox()
-	    self.button.append_graphic(self.label)
-	    #self.button.append_graphic(kits.layout.hfill())
-	    self.button.append_graphic(tri)
+	self.glabel = Label(self.label)
+	#self.label = kits.layout.hmargin_lr_flexible(label,
+	#    20., 0., 0., 20., 1000., 0.)
+	self.button = self.glabel
 
 	# Construct the dynamic frame that shows when in focus or not
 	fspec_out = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
@@ -101,16 +90,18 @@ class MenuItem (pywarsaw.PyController):
 	"0 means show below, 1 means show right"
 	self.__orientation = orientation
 	if orientation:
-	    return
-	    fspec_focus = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 1.0)
-	    fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.1)
-	    tri = kits.tool.dynamic_triangle(pywarsaw.PyGraphic()._this(),
-		10., Toggle_hover, fspec_focus, fspec_none,
-		1, Warsaw.ToolKit.right, self._this())
-	    self.button = kits.layout.hbox()
-	    self.button.append_graphic(self.label)
-	    #self.button.append_graphic(kits.layout.hfill())
-	    self.button.append_graphic(tri)
+	    self.button = kits.layout.hbox_align_elements(0.)
+	    self.button.append_graphic(self.glabel)
+	    self.button.append_graphic(kits.layout.hfill())
+	    if self.submenu:
+		fspec_focus = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.8)
+		fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.3)
+		tri = kits.tool.dynamic_triangle(None,
+		    10., Toggle_hover, fspec_focus, fspec_none,
+		    1, Warsaw.ToolKit.right, self._this())
+		tri = kits.layout.fixed_size(tri, 140., 140.)
+		tri = kits.layout.margin(tri, 30.)
+		self.button.append_graphic(tri)
 	    self.frame._set_body(self.button)
 
     def get_command(self):
@@ -141,6 +132,8 @@ class MenuItem (pywarsaw.PyController):
 	    # Show submenu
 	    if self.submenu is not None:
 		sub = self.submenu.get_pulldown()
+		self.__parent_menu.assert_submenu(self.submenu)
+		# Move to right place
 		region = traversal.current_allocation()
 		lower, upper = region.bounds()
 		if self.__orientation:to = Warsaw.Vertex(upper.x, lower.y, 0.)
@@ -149,6 +142,7 @@ class MenuItem (pywarsaw.PyController):
 		to = transform.transform_vertex(to)
 		pos = sub._get_position()
 		pos.x = to.x-pos.x; pos.y = to.y-pos.y
+		# Do the move, and map
 		any = CORBA.Any(Warsaw._tc_Vertex, pos)
 		kits.desktop.move(sub).execute(any)
 		kits.desktop.map(sub, 1).execute(nullAny)
@@ -169,6 +163,8 @@ class Menu (pywarsaw.PyController):
 	self.graphic = None
 	self.pulldown = None
 	self.parent_item = None
+	self._current_submenu = None
+	
 	self._init()
     
     def add_item(self, item):
@@ -191,8 +187,14 @@ class Menu (pywarsaw.PyController):
 
 	map(self._add_item, self.items)
 
+    def assert_submenu(self, submenu):
+	"""Hides any submenu currently open and sets the given as open"""
+	if self._current_submenu:
+	    kits.desktop.map(self._current_submenu.get_pulldown(), 0).execute(nullAny)
+	self._current_submenu = submenu
     def cascade_close(self):
 	"""Close this menu and all parents"""
+	self.assert_submenu(None)
 	kits.desktop.map(self.get_pulldown(), 0).execute(nullAny)
 	self.parent_item._get_parent_menu().cascade_close()
     def get_pulldown(self):
@@ -212,14 +214,17 @@ class MenuBar(Menu):
 	"""Returns or creates the controller/graphic for this Menu"""
 	# Create menu
 	self.box = kits.layout.hbox()
-	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
-	frame = kits.tool.frame(self.box, 10.0, fspec, 1)
-	self._set_body(frame)
 
 	self.hspace = kits.layout.hspace(20.)
 	map(self._add_item, self.items)
 	
-	self.box.append_graphic(kits.layout.hfill())
+	spacer_box = kits.layout.hbox()
+	spacer_box.append_graphic(self.box)
+	spacer_box.append_graphic(kits.layout.hfill())
+
+	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
+	frame = kits.tool.frame(spacer_box, 10.0, fspec, 1)
+	self._set_body(frame)
     def cascade_close(self):
 	"""Terminate the cascade traversal"""
 	pass
@@ -264,6 +269,11 @@ class MenuApp (berlin.App):
 		    kit.menu_item('Two', None),
 		    kit.menu_item('Three', None),
 		])),
+		kit.menu_item_sub('Submenu', add(kit.menu(), [
+		    kit.menu_item('One', None),
+		    kit.menu_item('Two', None),
+		    kit.menu_item('Three', None),
+		])),
 		kit.menu_item('Open...', None),
 		kit.menu_item('Close', None),
 		kit.menu_item('Quit', Callback(self.exit)),
@@ -276,7 +286,7 @@ class MenuApp (berlin.App):
 
 	vbox = kits.layout.vbox()
 	vbox.append_graphic(menu._this())
-	vbox.append_graphic(kits.layout.fixed_size(None,640.,480.))
+	vbox.append_graphic(kits.layout.fixed_size(None,6400.,4800.))
 
 	self.window = kits.desktop.shell(kits.tool.group(vbox))
 	pos = self.window._get_position()
