@@ -341,10 +341,39 @@ Raster::ColorSeq *PNG::pixels(unsigned long xlower, unsigned long ylower, unsign
   return colors;
 }
 
-void PNG::pixels(unsigned long xlower, unsigned long ylower, unsigned long xupper, unsigned long yupper,
-		 const Raster::ColorSeq &pixels, unsigned char **rows)
+unsigned char **PNG::pixels(unsigned long xlower, unsigned long ylower,
+                            unsigned long xupper, unsigned long yupper,
+                            const Raster::ColorSeq &pixels)
 {
-  std::cerr << "sorry, PNG::pixels not yet implemented" << std::endl;
+  png_uint_32 width = xupper - xlower;
+  png_uint_32 height = yupper - ylower;
+
+  clear();
+
+  _rinfo->color_type = rgbalpha;
+  _rinfo->bit_depth = 8;
+  _rinfo->width = width;
+  _rinfo->height = height;
+  _rinfo->rowbytes = width*4;
+  //_rinfo->compression_type = 0;
+  //_rinfo->filter =
+  //_rinfo->interlace
+
+  unsigned char **rows = new unsigned char *[height];
+  for (png_uint_32 y = ylower, i = 0; y != yupper; y++, i++)
+  {
+    rows[y] = new unsigned char[_rinfo->rowbytes];
+    for (png_uint_32 x = xlower, j = 0; x != xupper; x++, j++)
+    {
+      Color color = pixels[i*width + j];
+      rows[y][4*x] = static_cast<unsigned char>(color.red * 255);
+      rows[y][4*x+1] = static_cast<unsigned char>(color.green * 255);
+      rows[y][4*x+2] = static_cast<unsigned char>(color.blue * 255);
+      rows[y][4*x+3] = static_cast<unsigned char>(color.alpha * 255);
+    }
+  }
+
+  return rows;
 }
 
 unsigned char **PNG::read(const std::string &file)

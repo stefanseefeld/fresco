@@ -57,8 +57,8 @@ public:
              unsigned char **);
   Fresco::Raster::ColorSeq *pixels(unsigned long, unsigned long, unsigned long, 
                                    unsigned long, unsigned char *const *);
-  void pixels(unsigned long, unsigned long, unsigned long, unsigned long, 
-              const Fresco::Raster::ColorSeq &, unsigned char **);
+  unsigned char **pixels(unsigned long, unsigned long, unsigned long,
+                         unsigned long, const Fresco::Raster::ColorSeq &);
   unsigned char **read(const std::string &);
   void write(const std::string &, unsigned char *const *);
 private:

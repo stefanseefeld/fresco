@@ -103,7 +103,7 @@ void RasterImpl::store_pixels(const Fresco::Raster::Index &lower, const Fresco::
 void RasterImpl::load_pixels(const Fresco::Raster::Index &lower, const Fresco::Raster::Index &upper, const Fresco::Raster::ColorSeq &pixels)
 {
   Trace trace("RasterImpl::load_pixels");
-  _png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, _rows);
+  _rows = _png.pixels(lower.x, lower.y, upper.x, upper.y, pixels);
 }
 
 void RasterImpl::write(const char *file)
