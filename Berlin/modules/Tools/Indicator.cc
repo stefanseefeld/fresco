@@ -19,46 +19,41 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/SubjectImpl.hh"
-#include "Berlin/Logger.hh"
 
-using namespace Prague;
+#include "Tool/Indicator.hh"
+#include "Warsaw/DrawTraversal.hh"
+#include "Warsaw/Subject.hh"
+#include "Berlin/Color.hh"
 
-SubjectImpl::SubjectImpl() : blocked(false) {}
 
-void SubjectImpl::attach(Observer_ptr o)
+Indicator::Indicator(const Color &c) : color(c) {}
+Indicator::~Indicator() {}
+
+void Indicator::attach(Telltale_ptr subject)
 {
-  SectionLog section("SubjectImpl::attach");
-  MutexGuard guard(observerMutex);
-  observers.push_back(Observer::_duplicate(o));
+  if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
+  telltale = Telltale::_duplicate(subject);
+  telltale->attach(_this());
 }
 
-void SubjectImpl::detach(Observer_ptr o)
+void Indicator::update(const CORBA::Any &)
 {
-  SectionLog section("SubjectImpl::detach");
-  MutexGuard guard(observerMutex);
-  observers.remove(o);
+  needRedraw();
 }
 
-
-void SubjectImpl::block(CORBA::Boolean b)
+void Indicator::traverse(Traversal_ptr traversal)
 {
-  MutexGuard guard(myMutex);
-  blocked = b;
+  traversal->visit(Graphic_var(_this()));
+  MonoGraphic::traverse(traversal);
 }
 
-void SubjectImpl::notify() {
-    this->notify(CORBA::Any());
-}
-
-void SubjectImpl::notify(const CORBA::Any &whatChanged)
+void Indicator::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section("SubjectImpl::notify");
-  MutexGuard guard(myMutex);
-  if (!blocked)
-    {
-      MutexGuard guard(observerMutex);
-      for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
-	(*i)->update(whatChanged);
-    }
+  Region_var allocation = traversal->allocation();
+  Vertex u, l;
+  allocation->bounds(l, u);
+  Color background = color;
+  if (!CORBA::is_nil(telltale) && telltale->test(Telltale::active))
+    color = brightness(color, 0.5);
+  cout << "Indicator::draw" << endl;
 }

@@ -30,10 +30,8 @@ RasterDemo::RasterDemo(Application *a)
   FigureKit_var figure = application->figure();
   LayoutKit_var layout = application->layout();
   CommandKit_var command = application->command();
+  ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
-  Color red = {1.0, 0.5, 0.5, 0.5};
-  Color green = {0.5, 1.0, 0.5, 0.5};
-  Color blue = {0.5, 0.5, 1.0, 0.5};
   
   Command_var command1 = command->log("hello World 1");
   Command_var command2 = command->log("hello World 2");
@@ -43,10 +41,10 @@ RasterDemo::RasterDemo(Application *a)
   Image_var  im = figure->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();
-  hbox->append(Graphic_var(widget->button(im, red, command1)));
-  hbox->append(Graphic_var(widget->button(im, green, command2)));
-  hbox->append(Graphic_var(widget->button(im, blue, command3)));
-  Controller_var group = widget->group(hbox);
+  hbox->append(Graphic_var(widget->button(im, command1)));
+  hbox->append(Graphic_var(widget->button(im, command2)));
+  hbox->append(Graphic_var(widget->button(im, command3)));
+  Controller_var group = tool->group(hbox);
 
   application->append(group, Unicode::String("raster demo"));
 };

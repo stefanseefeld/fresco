@@ -30,11 +30,9 @@ TransformDemo::TransformDemo(Application *a)
   ImageKit_var image = application->image();
   CommandKit_var command = application->command();
   LayoutKit_var layout = application->layout();
+  ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
   FigureKit_var figure = application->figure();
-  Color red = {1.0, 0.5, 0.5, 1.0};
-  Color green = {0.5, 1.0, 0.5, 1.0};
-  Color blue = {0.5, 0.5, 1.0, 1.0};
   
   Command_var command1 = command->log("hello World 1");
   Command_var command2 = command->log("hello World 2");
@@ -52,12 +50,12 @@ TransformDemo::TransformDemo(Application *a)
   Image_var  im = figure->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();
-  hbox->append(Graphic_var(widget->button(im, red, command1)));
-  hbox->append(Graphic_var(widget->button(im, green, command2)));
-  hbox->append(Graphic_var(widget->button(im, blue, command3)));
+  hbox->append(Graphic_var(widget->button(im, command1)));
+  hbox->append(Graphic_var(widget->button(im, command2)));
+  hbox->append(Graphic_var(widget->button(im, command3)));
   Graphic_var transformer = figure->projection(hbox);
-  transformer->transformation()->rotate(45., zaxis);
+  Transform_var(transformer->transformation())->rotate(45., zaxis);
   Graphic_var root = layout->halign(transformer, 0.);
-  Controller_var group = widget->group(root);
+  Controller_var group = tool->group(root);
   application->append(group, Unicode::String("transformation demo"));
 };

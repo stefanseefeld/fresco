@@ -35,13 +35,13 @@ TextViewer::~TextViewer()
 {
 }
 
-void TextViewer::update(Subject_ptr s, const CORBA::Any &a) 
+void TextViewer::update(const CORBA::Any &a) 
 {
- if (myTextBuffer->_is_equivalent(s)) {
     TextBuffer::Change *ch;  
-    if (a >>= ch) {
-      switch (ch->type) {
-
+    if (a >>= ch)
+      {
+        switch (ch->type)
+          {
       case TextBuffer::insert:
 	{
 	  MutexGuard guard(childMutex);
@@ -78,7 +78,6 @@ void TextViewer::update(Subject_ptr s, const CORBA::Any &a)
     }
 //     needResize();
     needRedraw();
-  }
 }
 
 

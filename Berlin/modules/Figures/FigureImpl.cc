@@ -193,7 +193,7 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
  	  if (mode & outline)
 	    {
 	      drawing->foreground(fg);
-	      drawing->surfaceFillstyle(DrawingKit::outline);
+	      drawing->surfaceFillstyle(DrawingKit::outlined);
 	      drawing->drawPath(path);
 	    }
 	  drawing->restoreState();

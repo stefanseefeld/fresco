@@ -25,6 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/TextKit.hh>
 #include <Warsaw/LayoutKit.hh>
+#include <Warsaw/ToolKit.hh>
 #include <Warsaw/WidgetKit.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/CommandKit.hh>
@@ -64,6 +65,7 @@ public:
   TextKit_ptr text() { return TextKit::_duplicate(tk);}
   DesktopKit_ptr desktop() { return DesktopKit::_duplicate(dk);}
   LayoutKit_ptr layout() { return LayoutKit::_duplicate(lk);}
+  ToolKit_ptr tool() { return ToolKit::_duplicate(ttk);}
   WidgetKit_ptr widget() { return WidgetKit::_duplicate(wk);}
   FigureKit_ptr figure() { return FigureKit::_duplicate(fk);}
   CommandKit_ptr command() { return CommandKit::_duplicate(ck);}
@@ -77,6 +79,7 @@ private:
   TextKit_var tk;
   DesktopKit_var dk;
   LayoutKit_var lk;
+  ToolKit_var ttk;
   WidgetKit_var wk;
   FigureKit_var fk;
   CommandKit_var ck;

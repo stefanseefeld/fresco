@@ -51,7 +51,7 @@ class Rotator : implements(Observer)
 {
  public:
   Rotator(BoundedValue_ptr, Graphic_ptr, Graphic_ptr, Coord);
-  void update(Subject_ptr, const CORBA::Any &);
+  void update(const CORBA::Any &);
  private:
   BoundedValue_var value;
   Graphic_var child;

@@ -76,7 +76,7 @@ void Slider::allocate(Tag tag, const Allocation::Info &info)
   else allocateThumb(info);
 }
 
-void Slider::update(Subject_ptr, const CORBA::Any &) { needRedraw();}
+void Slider::update(const CORBA::Any &) { needRedraw();}
 
 void Slider::press(PickTraversal_ptr traversal, const Input::Event &event)
 {

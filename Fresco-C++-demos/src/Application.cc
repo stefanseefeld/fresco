@@ -20,12 +20,12 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/resolve.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/resolve.hh>
 #include "Application.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Image.hh"
-#include "Warsaw/Window.hh"
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Image.hh>
+#include <Warsaw/Window.hh>
 
 using namespace Prague;
 
@@ -51,15 +51,16 @@ class ExitCommand : implements(Command)
 Application::Application(Server_ptr server)
   : client(new ClientContextImpl),
     context(server->newServerContext(ClientContext_var(client->_this()))),
-    tk(resolve<TextKit>(context, TextKit_IntfRepoID)),
-    dk(resolve<DesktopKit>(context, DesktopKit_IntfRepoID)),
-    lk(resolve<LayoutKit>(context, LayoutKit_IntfRepoID)),
-    wk(resolve<WidgetKit>(context, WidgetKit_IntfRepoID)),
-    fk(resolve<FigureKit>(context, FigureKit_IntfRepoID)),
-    ck(resolve<CommandKit>(context, CommandKit_IntfRepoID)),
-    ik(resolve<ImageKit>(context, ImageKit_IntfRepoID)),
+    tk(resolve_kit<TextKit>(context, TextKit_IntfRepoID)),
+    dk(resolve_kit<DesktopKit>(context, DesktopKit_IntfRepoID)),
+    lk(resolve_kit<LayoutKit>(context, LayoutKit_IntfRepoID)),
+    ttk(resolve_kit<ToolKit>(context, ToolKit_IntfRepoID)),
+    wk(resolve_kit<WidgetKit>(context, WidgetKit_IntfRepoID)),
+    fk(resolve_kit<FigureKit>(context, FigureKit_IntfRepoID)),
+    ck(resolve_kit<CommandKit>(context, CommandKit_IntfRepoID)),
+    ik(resolve_kit<ImageKit>(context, ImageKit_IntfRepoID)),
     vbox(lk->vbox()),
-    exclusive(wk->exclusive()),
+    exclusive(ttk->exclusive()),
     mapper(new Mapper(examples))
 {
   char *berlin_root = getenv("BERLIN_ROOT");
@@ -83,17 +84,17 @@ Application::Application(Server_ptr server)
 
 void Application::append(Controller_ptr demo, const Unicode::String &name)
 {
-  Controller_var toggle = wk->toggle(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)), background);
+  Controller_var toggle = wk->toggle(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)));
   exclusive->add(toggle);
   Graphic_var hbox = lk->hbox();
-  Trigger_var button = wk->button(done, background, Command_var(Command::_nil()));
+  Trigger_var button = wk->button(done, Command_var(Command::_nil()));
   hbox->append(Graphic_var(lk->hfil()));
   hbox->append(button);
   hbox->append(Graphic_var(lk->hfil()));
   Graphic_var vb = lk->vbox();
   vb->append(demo);
   vb->append(hbox);
-  Controller_var group = wk->group(vb);
+  Controller_var group = ttk->group(vb);
   group->appendController(demo);
   group->appendController(button);
   Window_var window = dk->transient(group);
@@ -105,7 +106,7 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   Graphic_var label = tk->chunk(Unicode::toCORBA(name));
   hbox->append(Graphic_var(lk->align(toggle, 0., 0.)));
   hbox->append(space);
-  hbox->append(label);
+  hbox->append(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
   vbox->append(hbox);
 }
 
@@ -116,19 +117,22 @@ void Application::run()
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
   Graphic_var label1 = lk->margin(glyph1, 20.);
-  Trigger_var run = wk->button(label1, background, Command_var(mapper->_this()));
+  Trigger_var run = wk->button(Graphic_var(ttk->rgb(label1, 0., 0., 0.)), Command_var(mapper->_this()));
   hbox->append(run);
   hbox->append(Graphic_var(lk->vspace(200.)));
   Graphic_var glyph2 = tk->chunk(Unicode::toCORBA(Unicode::String("quit")));
   Graphic_var label2 = lk->margin(glyph2, 20.);
   ExitCommand *cmd = new ExitCommand();
   cmd->_obj_is_ready(CORBA::BOA::getBOA());
-  Trigger_var quit = wk->button(label2, background, Command_var(cmd->_this()));
+  Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
   hbox->append(quit);
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
   vbox->append(hbox);
   Graphic_var margin = lk->margin(vbox, 200.);
-  Controller_var group = wk->group(Graphic_var(wk->outset(margin, background, true)));
+  
+  ToolKit::FrameSpec spec;
+  spec.bbrightness(1.0);
+  Controller_var group = ttk->group(Graphic_var(ttk->frame(margin, 10., spec, true)));
   for (list_t::iterator i = examples.begin(); i != examples.end(); i++)
     group->appendController((*i).toggle);
   group->appendController(run);

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,25 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/ClientContextImpl.hh"
-#include "Berlin/Logger.hh"
-#include <iostream>
-#include <string>
+#ifndef _Filler_hh
+#define _Filler_hh
 
-ClientContextImpl::ClientContextImpl()
-//. This is a handle to a client application that the display server holds. It
-//. provides the display server with enough mechanisms to check to see if the
-//. client is alive and to determine the client's security rights. It is
-//. instantiated within the client address space.
+#include <Berlin/MonoGraphic.hh>
+
+class Filler : public MonoGraphic
 {
-  user = new Prague::User();
-};  
-  
-Unistring *ClientContextImpl::userName()
-{
-  string name = user->name();
-  Unistring *ustring = new Unistring;
-  ustring->length(name.length());
-  for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
-  return ustring;
-}
+public:
+  Filler(const Color &c) : color(c) {}
+  ~Filler() {}
+
+  virtual void request(Requisition &);
+  virtual void traverse(Traversal_ptr);
+  virtual void draw(DrawTraversal_ptr);
+protected:
+  Color color;
+};
+
+#endif /* _Filler_hh */

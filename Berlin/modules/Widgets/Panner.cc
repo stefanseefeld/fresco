@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ void Panner::init(Controller_ptr t)
   appendController(thumb);
 }
 
-void Panner::update(Subject_ptr, const CORBA::Any &)
+void Panner::update(const CORBA::Any &)
 {
   BoundedRange::Settings settings = x->getSettings();
   offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);

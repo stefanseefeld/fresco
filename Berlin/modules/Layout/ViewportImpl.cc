@@ -373,7 +373,7 @@ void ViewportImpl::needResize()
   cacheRequisition();
 }
 
-void ViewportImpl::update(Subject_ptr, const CORBA::Any &)
+void ViewportImpl::update(const CORBA::Any &)
 {
   /*
    * we are only interested in changes concerning the outer range (body)

@@ -19,27 +19,36 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Widget/Toggle.hh"
+#include "Berlin/Logger.hh"
 
-#include "TextDemo.hh"
+using namespace Prague;
 
-TextDemo::TextDemo(Application *a)
-  : Demo(a)
+Toggle::Toggle(bool f) : ControllerImpl(f) {}
+Toggle::~Toggle() {}
+
+void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
-  Unicode::Char chars[] = {
-    0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
-    0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
-    0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
-    0x65e5, 0x672c, 0x8a9e, 0x0020, 0x4e2d, 0x6587, 0x0020, 0xd55c,
-    0xad6d, 0xc5b4
-  };
+  SectionLog section("Toggle::press");
+  ControllerImpl::press(traversal, event);
+  if (test(Telltale::chosen)) clear(Telltale::chosen);
+  else set(Telltale::chosen);
+}
 
-  Unicode::String str(34, chars);
-  Graphic_var txt = text->chunk(Unicode::toCORBA(str));
-  Controller_var group = tool->group(Graphic_var(tool->rgb(txt, 0.7, 0.8, 1.0)));
-  application->append(group, Unicode::String("text demo"));
-};
+void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
+{
+  SectionLog section("Toggle::release");
+  ControllerImpl::release(traversal, event);
+}
+
+void Toggle::keyPress(const Input::Event &event)
+{
+  SectionLog section("Toggle::press");
+  const Input::Toggle &toggle = event[0].attr.kselection();
+  if (toggle.number == 32) // space
+    {
+      if (test(Telltale::chosen)) clear(Telltale::chosen);
+      else set(Telltale::chosen);
+    }
+  else ControllerImpl::keyPress(event);
+}

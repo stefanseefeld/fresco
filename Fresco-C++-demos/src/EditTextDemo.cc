@@ -29,8 +29,10 @@ EditTextDemo::EditTextDemo(Application *a)
 {
   TextKit_var text = application->text();
   LayoutKit_var layout = application->layout();
+  ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
-  Unicode::Char chars[] = {
+  Unicode::Char chars[] =
+  {
     0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
     0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
     0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
@@ -40,10 +42,11 @@ EditTextDemo::EditTextDemo(Application *a)
 
   Unicode::String str(34, chars);
     
-  TextBuffer_var buf = widget->text();
+  TextBuffer_var buf = tool->text();
   Graphic_var txt = text->simpleViewer(buf);
-  Color gray = {0.8, 0.8, 0.8, 1.0};
-  Graphic_var frame = widget->inset(txt, gray, true);
+  ToolKit::FrameSpec spec;
+  spec.bbrightness(0.5);
+  Graphic_var frame = tool->frame(txt, 10., spec, true);
   buf->insertString(toCORBA(str));
-  application->append(widget->textInput(frame, buf), Unicode::String("editable text demo"));
+  application->append(tool->textInput(frame, buf), Unicode::String("editable text demo"));
 };

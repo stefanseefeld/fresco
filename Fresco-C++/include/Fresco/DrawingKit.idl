@@ -34,7 +34,7 @@ interface Raster;
 interface DrawingKit : Kit
 {
   enum Endstyle { butt, cap, round};
-  enum Fillstyle { outline, solid, textured, gradient};
+  enum Fillstyle { outlined, solid, textured, gradient};
 
   void saveState();
   void restoreState();

@@ -24,255 +24,70 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/LayoutKit.hh"
 #include "Warsaw/Server.hh"
+#include "Warsaw/resolve.hh"
 #include "Widget/WidgetKitImpl.hh"
 #include "Widget/TelltaleImpl.hh"
 #include "Widget/BoundedValueImpl.hh"
 #include "Widget/BoundedRangeImpl.hh"
 #include "Widget/TextBufferImpl.hh"
 #include "Widget/StreamBufferImpl.hh"
-#include "Widget/Filler.hh"
-#include "Widget/Indicator.hh"
-#include "Widget/Frame.hh"
-#include "Widget/TriggerImpl.hh"
-#include "Widget/Toggle.hh"
-#include "Widget/Dragger.hh"
-#include "Widget/Stepper.hh"
+
 #include "Widget/Gauge.hh"
 #include "Widget/Slider.hh"
 #include "Widget/Panner.hh"
 #include "Widget/Scrollbar.hh"
 #include "Widget/TextInput.hh"
-#include "Berlin/DebugGraphic.hh"
 
 WidgetKitImpl::WidgetKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 WidgetKitImpl::~WidgetKitImpl() {}
 
-void WidgetKitImpl::bind(ServerContext_ptr sc)
+void WidgetKitImpl::bind(ServerContext_ptr context)
 {
-  KitImpl::bind(sc);
+  KitImpl::bind(context);
   PropertySeq props;
   props.length(0);
-  lk = obtain(sc, LayoutKit, props);
+  layout = resolve_kit<LayoutKit>(context, interface(LayoutKit), props);
+  tool = resolve_kit<ToolKit>(context, interface(ToolKit), props);
 }
 
-TelltaleConstraint_ptr WidgetKitImpl::exclusive()
+Trigger_ptr WidgetKitImpl::button(Graphic_ptr g, Command_ptr c)
 {
-  ExclusiveChoice *constraint = new ExclusiveChoice();
-  constraint->_obj_is_ready(_boa());
-//   subjects.push_back(constraint);
-  return constraint->_this();
+  Trigger_var trigger = tool->button(g, c);
+  ToolKit::FrameSpec s1, s2;
+  s1.abrightness(0.5);
+  s2.bbrightness(0.5);
+  Graphic_var frame = tool->dynamic(g, 10., Telltale::toggle, s1, s2, true, trigger);
+  trigger->body(frame);
+  return trigger._retn();
 }
 
-TelltaleConstraint_ptr WidgetKitImpl::selectionRequired()
+Controller_ptr WidgetKitImpl::toggle(Graphic_ptr g)
 {
-  SelectionRequired *constraint = new SelectionRequired;
-  constraint->_obj_is_ready(_boa());
-//   subjects.push_back(constraint);
-  return constraint->_this();
+  Controller_var toggle = tool->toggle(g);
+  ToolKit::FrameSpec s1, s2;
+  s1.abrightness(0.5);
+  s2.bbrightness(0.5);
+  Graphic_var frame = tool->dynamic(g, 10., Telltale::chosen, s1, s2, true, toggle);
+  toggle->body(frame);
+  return toggle._retn();
 }
 
-Telltale_ptr WidgetKitImpl::normalTelltale()
+Graphic_ptr WidgetKitImpl::gauge(BoundedValue_ptr value)
 {
-  TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
-  telltale->_obj_is_ready(_boa());
-  subjects.push_back(telltale);
-  return telltale->_this();
-}
-
-Telltale_ptr WidgetKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
-{
-    TelltaleImpl *telltale = new TelltaleImpl(constraint);
-    telltale->_obj_is_ready(_boa());
-    subjects.push_back(telltale);
-    constraint->add(telltale->_this());
-    return telltale->_this();
-}
-
-BoundedValue_ptr WidgetKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
-{
-  BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
-  bounded->_obj_is_ready(_boa());
-  subjects.push_back(bounded);
-  return bounded->_this();  
-}
-
-BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
-{
-  BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
-  bounded->_obj_is_ready(_boa());
-  subjects.push_back(bounded);
-  return bounded->_this();  
-}
-
-TextBuffer_ptr WidgetKitImpl::text()
-{
-  TextBufferImpl *buffer = new TextBufferImpl();
-  buffer->_obj_is_ready(_boa());
-  subjects.push_back(buffer);
-  return buffer->_this();  
-}
-
-StreamBuffer_ptr WidgetKitImpl::stream()
-{
-  StreamBufferImpl *buffer = new StreamBufferImpl(80);
-  buffer->_obj_is_ready(_boa());
-  subjects.push_back(buffer);
-  return buffer->_this();  
-}
-
-Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
-{
-  DebugGraphic *debug = new DebugGraphic(s);
-  debug->_obj_is_ready(_boa());
-  graphics.push_back(debug);
-  debug->body(g);
-  return debug->_this();
-};
-
-Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c, CORBA::Boolean fill)
-{
-  Frame *frame = new Frame(10., c, Frame::concav, fill);
-  frame->_obj_is_ready(_boa());
-  graphics.push_back(frame);
-  frame->body(g);
-  return frame->_this();
-}
-
-Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c, CORBA::Boolean fill)
-{
-  Frame *frame = new Frame(10., c, Frame::convex, fill);
-  frame->_obj_is_ready(_boa());
-  graphics.push_back(frame);
-  frame->body(g);
-  return frame->_this();
-}
-
-Graphic_ptr WidgetKitImpl::filler(Graphic_ptr g, const Color &c)
-{
-  Filler *f = new Filler(c);
-  f->_obj_is_ready(_boa());
-  graphics.push_back(f);
-  f->body(g);
-  return f->_this();
-}
-
-Graphic_ptr WidgetKitImpl::indicator(Graphic_ptr g, const Color &c, Telltale_ptr t)
-{
-  Indicator *i = new Indicator(c);
-  i->_obj_is_ready(_boa());
-  i->attach(t);
-  i->body(g);
-  graphics.push_back(i);
-  return i->_this();
-}
-
-View_ptr WidgetKitImpl::buttonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
-{
-  DynamicFrame *frame = new DynamicFrame(10., c, Frame::concav, Frame::convex, Telltale::toggle, true);
-  frame->_obj_is_ready(_boa());
-  graphics.push_back(frame);
-  frame->body(g);
-  frame->attach(t);
-  return frame->_this();
-}
-
-Trigger_ptr WidgetKitImpl::button(Graphic_ptr g, const Color &b, Command_ptr c)
-{
-  TriggerImpl *trigger = new TriggerImpl();
-  trigger->_obj_is_ready(_boa());
-  trigger->action(c);
-  graphics.push_back(trigger);
-
-  DynamicFrame *frame1 = new DynamicFrame(10., b, Frame::black, Frame::flat, Telltale::active, false);
-  frame1->_obj_is_ready(_boa());
-  graphics.push_back(frame1);
-  frame1->body(g);
-  frame1->attach(Controller_var(trigger->_this()));
-
-  DynamicFrame *frame2 = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::toggle, true);
-  frame2->_obj_is_ready(_boa());
-  graphics.push_back(frame2);
-  frame2->body(Graphic_var(frame1->_this()));
-  frame2->attach(Controller_var(trigger->_this()));
-
-  trigger->body(Graphic_var(frame2->_this()));
-  return trigger->_this();
-}
-
-Controller_ptr WidgetKitImpl::group(Graphic_ptr g)
-{
-  ControllerImpl *parent = new ControllerImpl(true);
-  parent->_obj_is_ready(_boa());
-  parent->body(g);
-  graphics.push_back(parent);
-  return parent->_this();
-}
-
-Controller_ptr WidgetKitImpl::toggle(Graphic_ptr g, const Color &b)
-{
-  Toggle *t = new Toggle;
-  t->_obj_is_ready(_boa());
-  graphics.push_back(t);
-  DynamicFrame *frame1 = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::chosen, true);
-  frame1->_obj_is_ready(_boa());
-  graphics.push_back(frame1);
-  frame1->body(g);
-  frame1->attach(Controller_var(t->_this()));
-
-  DynamicFrame *frame2 = new DynamicFrame(10., b, Frame::black, Frame::flat, Telltale::active, false);
-  frame2->_obj_is_ready(_boa());
-  graphics.push_back(frame2);
-  frame2->body(g);
-  frame2->body(Graphic_var(frame1->_this()));
-  frame2->attach(Controller_var(t->_this()));
-
-  t->body(Graphic_var(frame2->_this()));
-  return t->_this();
-}
-
-Controller_ptr WidgetKitImpl::dragger(Graphic_ptr g, Command_ptr command)
-{
-  Dragger *dragger = new Dragger(command);
-  dragger->_obj_is_ready(_boa());
-  dragger->body(g);
-  graphics.push_back(dragger);
-  return dragger->_this();
-}
-
-Controller_ptr WidgetKitImpl::stepper(Graphic_ptr g, Command_ptr command)
-{
-  Stepper *stepper = new Stepper;
-  stepper->_obj_is_ready(_boa());
-  stepper->body(g);
-  stepper->action(command);
-  graphics.push_back(stepper);
-  return stepper->_this();
-}
-
-Controller_ptr WidgetKitImpl::textInput(Graphic_ptr g, TextBuffer_ptr buffer)
-{
-  TextInput *input = new TextInput(buffer);
-  input->_obj_is_ready(_boa());
-  input->body(g);
-  graphics.push_back(input);
-  return input->_this();
-}
-
-Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)
-{
-  Gauge *g = new Gauge(value, color);
+  Color gray = {0.5, 0.5, 0.5, 1.0};
+  Gauge *g = new Gauge(value, gray);
   g->_obj_is_ready(_boa());
   value->attach(g);
   graphics.push_back(g);
 
-  Frame *frame = new Frame(10., color, Frame::concav, false);
-  frame->_obj_is_ready(_boa());
-  graphics.push_back(frame);
-  frame->body(g);
-  return frame->_this();
+  ToolKit::FrameSpec spec;
+  spec.abrightness(0.5);
+
+  Graphic_var frame = tool->frame(Graphic_var(g->_this()), 10., spec, false);
+  return frame._retn();
 }
 
-Controller_ptr WidgetKitImpl::slider(const Color &color, BoundedValue_ptr value)
+Controller_ptr WidgetKitImpl::slider(BoundedValue_ptr value)
 {
   Graphic::Requisition req;
   req.x.defined = true;
@@ -297,22 +112,29 @@ Controller_ptr WidgetKitImpl::slider(const Color &color, BoundedValue_ptr value)
   req.y.natural = 12.;
   req.y.maximum = 12.;
   req.y.align = 0;
-  s->body(Graphic_var(inset(Graphic_var(lk->glueRequisition(req)), color, true)));
+//   s->body(Graphic_var(tool->inset(Graphic_var(layout->glueRequisition(req)), color, true)));
   graphics.push_back(s);
   return s->_this();
 }
 
-Controller_ptr WidgetKitImpl::panner(const Color &bg, BoundedRange_ptr x, BoundedRange_ptr y)
+Controller_ptr WidgetKitImpl::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 {
   Panner *panner = new Panner(x, y);
   panner->_obj_is_ready(_boa());
-  panner->body(Graphic_var(inset(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.)), bg, true)));
-  Controller_var thumb = dragger(Graphic_var(outset(Graphic_var(Graphic::_nil()), bg, true)), Command_var(panner->drag()));
+  ToolKit::FrameSpec spec1;
+  spec1.abrightness(0.5);
+  Graphic_var fixed = layout->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.);
+  Graphic_var inset = tool->frame(fixed, 10., spec1, true);
+  panner->body(inset);
+  ToolKit::FrameSpec spec2;
+  spec1.bbrightness(0.5);
+  Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 10., spec2, true);
+  Controller_var thumb = tool->dragger(outset, Command_var(panner->drag()));
   panner->init(thumb);
   return panner->_this();
 }
 
-Controller_ptr WidgetKitImpl::scrollbar(const Color &bg, BoundedRange_ptr x, Axis a)
+Controller_ptr WidgetKitImpl::scrollbar(BoundedRange_ptr x, Axis a)
 {
   Scrollbar *scrollbar = new Scrollbar(x, a);
   scrollbar->_obj_is_ready(_boa());
@@ -321,7 +143,7 @@ Controller_ptr WidgetKitImpl::scrollbar(const Color &bg, BoundedRange_ptr x, Axi
   flexible.defined = true;
   flexible.minimum = 0.;
   flexible.natural = 0.;
-  flexible.maximum = lk->fil();
+  flexible.maximum = layout->fil();
   flexible.align = 0.;
   fixed.defined = true;
   fixed.minimum = 200.;
@@ -331,8 +153,14 @@ Controller_ptr WidgetKitImpl::scrollbar(const Color &bg, BoundedRange_ptr x, Axi
   Graphic::Requisition req;
   if (a == xaxis) req.x = flexible, req.y = fixed;
   else            req.x = fixed, req.y = flexible;
-  scrollbar->body(Graphic_var(inset(Graphic_var(lk->glueRequisition(req)), bg, true)));
-  Controller_var thumb = dragger(Graphic_var(outset(Graphic_var(Graphic::_nil()), bg, true)), Command_var(scrollbar->drag()));
+  ToolKit::FrameSpec spec1;
+  spec1.abrightness(0.5);
+  Graphic_var inset = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec1, true);
+  scrollbar->body(inset);
+  ToolKit::FrameSpec spec2;
+  spec2.bbrightness(0.5);
+  Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 10., spec2, true);
+  Controller_var thumb = tool->dragger(outset, Command_var(scrollbar->drag()));
   scrollbar->init(thumb);
   return scrollbar->_this();
 }

@@ -19,27 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Toggle_hh
+#define _Toggle_hh
 
-#include "TextDemo.hh"
+#include <Berlin/ControllerImpl.hh>
 
-TextDemo::TextDemo(Application *a)
-  : Demo(a)
+class Toggle : public ControllerImpl
+//. The Toggle class implements a chosable controller
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
-  Unicode::Char chars[] = {
-    0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
-    0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
-    0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
-    0x65e5, 0x672c, 0x8a9e, 0x0020, 0x4e2d, 0x6587, 0x0020, 0xd55c,
-    0xad6d, 0xc5b4
-  };
-
-  Unicode::String str(34, chars);
-  Graphic_var txt = text->chunk(Unicode::toCORBA(str));
-  Controller_var group = tool->group(Graphic_var(tool->rgb(txt, 0.7, 0.8, 1.0)));
-  application->append(group, Unicode::String("text demo"));
+public:
+  Toggle(bool = false);
+  ~Toggle();
+//protected:
+  virtual void press(PickTraversal_ptr, const Input::Event &);
+  virtual void release(PickTraversal_ptr, const Input::Event &);
+  virtual void keyPress(const Input::Event &);
+private:
 };
+
+#endif /* _Toggle_h */

@@ -25,6 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/DesktopKit.hh>
 #include <Warsaw/LayoutKit.hh>
+#include <Warsaw/ToolKit.hh>
 #include <Warsaw/WidgetKit.hh>
 #include <Warsaw/Desktop.hh>
 #include <Berlin/KitImpl.hh>
@@ -44,8 +45,9 @@ class DesktopKitImpl : implements(DesktopKit), public KitImpl
   virtual Window_ptr transient(Controller_ptr);
  private:
   Desktop_var   desktop;
-  LayoutKit_var lk;
-  WidgetKit_var wk;
+  LayoutKit_var layout;
+  ToolKit_var   tool;
+  WidgetKit_var widget;
   vector<WindowImpl *> windows;
 };
 

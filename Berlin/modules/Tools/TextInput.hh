@@ -19,22 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Button_idl
-#define _Button_idl
+#ifndef _TextInput_hh
+#define _TextInput_hh
 
-#include "Controller.idl"
+#include "Warsaw/config.hh"
+#include "Warsaw/TextBuffer.hh"
+#include "Berlin/ControllerImpl.hh"
 
-interface Command;
-
-interface Button : Controller
-//. A button is a controller that can execute a command when clicked
-//. (pressed and subsequently released with the pointer over
-//. the button's allocated area). Buttons manipulate a telltale
-//. that represents the current state of the button and
-//. determines the button's appearance.
+class TextInput : public ControllerImpl
 {
-  attribute Command action;
-  //. The button will execute its command (if not nil) when clicked.
+ public:
+  TextInput(TextBuffer_ptr b) : ControllerImpl(false), buffer(TextBuffer::_duplicate(b)) {}
+  ~TextInput() {}
+// protected:
+  virtual void keyPress(const Input::Event &);
+ private:
+  TextBuffer_var buffer;
 };
 
-#endif /* _Button_idl */
+#endif /* _TextInput_hh */

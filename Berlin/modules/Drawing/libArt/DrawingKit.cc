@@ -130,7 +130,7 @@ void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
 void LibArtDrawingKit::drawPath(const Path &p) 
 {
   int len = p.length();
-  ArtVpath vpath[(fs == outline ? len : len + 1)];
+  ArtVpath vpath[(fs == outlined ? len : len + 1)];
   ArtVpath *tvpath;
   ArtVpath *tsvpath;
   double resScale[6]  = {
@@ -138,7 +138,7 @@ void LibArtDrawingKit::drawPath(const Path &p)
       drawable->resolution(yaxis), 0, 0
       };
 
-  if (fs == outline) {
+  if (fs == outlined) {
     for (int i = 0; i < len; i++) {
       vpath[i].code = (i == 0 ? ART_MOVETO_OPEN 
 		       : (i == len - 1 ? ART_END : ART_LINETO));

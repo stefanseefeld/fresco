@@ -32,10 +32,10 @@ Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Coord d)
     zdegree(d)
 {
   CORBA::Any dummy;
-  update(Subject_var(Subject::_nil()), dummy);
+  update(dummy);
 }
 
-void Rotator::update(Subject_ptr, const CORBA::Any &)
+void Rotator::update(const CORBA::Any &)
 {
   Coord ydegree = value->value();
   Transform_var tx = child->transformation();
@@ -52,13 +52,14 @@ LogoDemo::LogoDemo(Application *a)
     tx3(new TransformImpl)
 {
   LayoutKit_var layout = application->layout();
+  ToolKit_var   tool = application->tool();
   WidgetKit_var widget = application->widget();
   FigureKit_var figure = application->figure();
   CommandKit_var command = application->command();
   
-  bv1 = widget->bvalue(0., 360., 0., 5., 5.);
-  bv2 = widget->bvalue(0., 360., 0., 5., 5.);
-  bv3 = widget->bvalue(0., 360., 0., 5., 5.);
+  bv1 = tool->bvalue(0., 360., 0., 5., 5.);
+  bv2 = tool->bvalue(0., 360., 0., 5., 5.);
+  bv3 = tool->bvalue(0., 360., 0., 5., 5.);
   
   tx1->rotate(10., zaxis);
   tx2->rotate(-10., zaxis);
@@ -75,7 +76,7 @@ LogoDemo::LogoDemo(Application *a)
   Color red = {1.0, 0.5, 0.5, 0.5};
   Color green = {0.5, 1.0, 0.5, 0.5};
   Color blue = {0.5, 0.5, 1.0, 0.5};
-  Color white = {1.0, 1.0, 1.0, 1.0};
+//   Color white = {1.0, 1.0, 1.0, 1.0};
   
   Figures::Path_var triangle1 = figure->polygon(path);
   triangle1->type(Figure::fill);
@@ -109,23 +110,28 @@ LogoDemo::LogoDemo(Application *a)
   box->append(Graphic_var(makeController(bv1, green)));
   box->append(Graphic_var(makeController(bv2, blue)));
   box->append(Graphic_var(makeController(bv3, red)));
-  Graphic_var foo = widget->outset(box, white, true);
-  Controller_var bar = widget->group(foo);
+  ToolKit::FrameSpec spec;
+  spec.bbrightness(0.5);
+  Graphic_var foo = tool->frame(box, 10., spec, true);
+  Controller_var bar = tool->group(foo);
   application->append(bar, Unicode::String("MVC demo"));
 }
 
 Graphic_ptr LogoDemo::makeController(BoundedValue_ptr value, const Color &color)
 {
+  ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
   LayoutKit_var layout = application->layout();
-  Graphic_var gauge = widget->gauge(color, value);
+  Graphic_var gauge = widget->gauge(value);
   Forward *forward = new Forward(value);
   forward->_obj_is_ready(CORBA::BOA::getBOA());
   Backward *backward = new Backward(value);
   backward->_obj_is_ready(CORBA::BOA::getBOA());
   Graphic_var rectangle = layout->fixedSize(Graphic_var(Graphic::_nil()), 200., 200.);
-  Controller_var begin = widget->stepper(Graphic_var(widget->inset(rectangle, color, true)), Command_var(backward->_this()));
-  Controller_var end = widget->stepper(Graphic_var(widget->inset(rectangle, color, true)), Command_var(forward->_this()));
+  ToolKit::FrameSpec spec;
+  spec.abrightness(0.5);
+  Controller_var begin = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(backward->_this()));
+  Controller_var end = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(forward->_this()));
   Graphic_var box = layout->hbox();
   box->append(begin);
   box->append(gauge);

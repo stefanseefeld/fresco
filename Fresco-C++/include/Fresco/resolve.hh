@@ -125,13 +125,11 @@ inline void bind_name(CORBA::ORB_ptr orb, CORBA::Object_ptr object, const char *
 }
 
 template <class T>
-typename T::_ptr_type resolve(ServerContext_ptr context, const char *name)
+typename T::_ptr_type resolve_kit(ServerContext_ptr context, const char *name, const Kit::PropertySeq &props)
 {
   CORBA::Object_ptr object;
   try
     {
-      Kit::PropertySeq props;
-      props.length(0);
       object = context->resolve(name, props);
     }
   catch(const CORBA::Exception &e)
@@ -157,5 +155,12 @@ typename T::_ptr_type resolve(ServerContext_ptr context, const char *name)
   return reference._retn();
 }
 
+template <class T>
+typename T::_ptr_type resolve_kit(ServerContext_ptr context, const char *name)
+{
+  Kit::PropertySeq empty;
+  empty.length(0);
+  return resolve_kit<T>(context, name, empty);
+}
 
 #endif /* _resolve_hh */

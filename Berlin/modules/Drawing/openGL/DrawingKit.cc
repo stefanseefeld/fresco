@@ -27,6 +27,7 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLUnifont.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/Color.hh"
 #include "Warsaw/Warsaw.hh"
 
 #include <strstream>
@@ -40,7 +41,6 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
     textures(100),
     images(500)
 {
-  cout << "!!!!" << endl;
   context = GGIMesaCreateContext();
   if (!context)
     {

@@ -28,6 +28,7 @@ ViewportDemo::ViewportDemo(Application *a)
   : Demo(a)
 {
   LayoutKit_var layout = application->layout();
+  ToolKit_var   tool = application->tool();
   WidgetKit_var widget = application->widget();
   ImageKit_var image = application->image();
   FigureKit_var figure = application->figure();
@@ -35,10 +36,9 @@ ViewportDemo::ViewportDemo(Application *a)
   Raster_var raster = image->create("../etc/PNG/landscape.png");
   Image_var pixmap = figure->pixmap(raster);
   Viewport_var viewport = layout->scrollable(pixmap);
-  Color gray = {0.5, 0.5, 0.5, 1.0};
-  Controller_var panner = widget->panner(gray, viewport->adjustment(xaxis), viewport->adjustment(yaxis));
-  Controller_var xscroller = widget->scrollbar(gray, viewport->adjustment(xaxis), xaxis);
-  Controller_var yscroller = widget->scrollbar(gray, viewport->adjustment(yaxis), yaxis);
+  Controller_var panner = widget->panner(viewport->adjustment(xaxis), viewport->adjustment(yaxis));
+  Controller_var xscroller = widget->scrollbar(viewport->adjustment(xaxis), xaxis);
+  Controller_var yscroller = widget->scrollbar(viewport->adjustment(yaxis), yaxis);
   Graphic_var hbox1 = layout->hbox();
   hbox1->append(viewport);
   hbox1->append(yscroller);
@@ -52,8 +52,10 @@ ViewportDemo::ViewportDemo(Application *a)
   Graphic_var hbox = layout->hbox();
   hbox->append(margin);
   hbox->append(vbox1);
-  Graphic_var background = widget->outset(hbox, gray, true);
-  Controller_var group  = widget->group(background);
+  ToolKit::FrameSpec spec;
+  spec.bbrightness(0.5);
+  Graphic_var background = tool->frame(hbox, 10., spec, true);
+  Controller_var group  = tool->group(background);
   group->appendController(panner);
   group->appendController(xscroller);
   group->appendController(yscroller);

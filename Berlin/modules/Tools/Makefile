@@ -23,7 +23,7 @@ SHELL	= /bin/sh
 
 top	= ../..
 cpath	= $(top)/config
-hpath	= $(top)/include/Widget
+hpath	= $(top)/include/Tool
 
 include $(cpath)/local.mk
 
@@ -32,16 +32,16 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-#SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
-#	  Bevel.cc Frame.cc Filler.cc \
-#	  TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc Indicator.cc Gauge.cc Slider.cc Panner.cc Scrollbar.cc\
-#	  TextInput.cc WidgetKitImpl.cc
-SRC	= Gauge.cc Slider.cc Panner.cc Scrollbar.cc WidgetKitImpl.cc
+# Filler.cc Indicator.cc
+SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
+	  Beveler.cc Frame.cc \
+	  TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
+	  TextInput.cc ToolKitImpl.cc
 
-TARGET	= $(mpath)/libWidget.so
+TARGET	= $(mpath)/libTool.so
 
 vpath %.d $(dpath)
-vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Widget
+vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Tool
 
 include $(cpath)/module.mk
 

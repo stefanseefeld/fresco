@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,28 +19,32 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Subject_idl
-#define _Subject_idl
+#ifndef _Stepper_hh
+#define _Stepper_hh
 
-interface Observer;
+#include <Prague/Sys/Time.hh>
+#include <Prague/Sys/Timer.hh>
+#include <Widget/TriggerImpl.hh>
 
-interface Subject 
-//. Subject defines what it means to be observable.
-//. Observers can be bound to it so calling notify
-//. will call them back
+class Stepper : public TriggerImpl
+//. The Stepper class implements a button with autorepeat.
 {
-  void attach(in Observer o);
-  void detach(in Observer o);
-  void notify(in any a);
-  void block(in boolean b);  
+  class Notifier;
+  friend class Notifier;
+public:
+  Stepper();
+  ~Stepper();
+//protected:
+  virtual void press(PickTraversal_ptr, const Input::Event &);
+  virtual void release(PickTraversal_ptr, const Input::Event &);
+  virtual void step();
+private:
+  void start();
+  void stop();
+  Prague::Time  delay;
+  Prague::Time  delta;
+  Notifier     *notifier;
+  Prague::Timer timer;
 };
 
-interface Observer
-//. Observers observ Subjects.
-//. Observers can be bound to it so calling notify
-//. will call them back
-{
-  void update(in any a);
-};
-
-#endif /* _Subject_idl */
+#endif

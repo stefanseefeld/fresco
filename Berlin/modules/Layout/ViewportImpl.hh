@@ -51,7 +51,7 @@ class ViewportImpl : implements(Viewport), public MonoGraphic
 
   virtual BoundedRange_ptr adjustment(Axis);
 
-  virtual void update(Subject_ptr, const CORBA::Any &);
+  virtual void update(const CORBA::Any &);
 
 protected:
   void allocateChild(Allocation::Info &);

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,21 +19,29 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Drawable_idl
-#define _Drawable_idl
+#ifndef _Indicator_hh
+#define _Indicator_hh
 
-#include <Types.idl>
+#include "Warsaw/config.hh"
+#include "Widget/Bevel.hh"
+#include "Warsaw/View.hh"
+#include "Warsaw/Telltale.hh"
+#include "Berlin/SubjectImpl.hh"
 
-interface Region;
-interface Transform;
+declare_corba_ptr_type(Subject)
 
-interface Drawable
+class Indicator : implements(View), public MonoGraphic
 {
-  Coord dpi(in Axis a);
-  void pushTransform(in Transform t);
-  void popTransform();
-  void pushClipping(in Region r, in Transform t);
-  void popClipping();
+ public:
+  Indicator(const Color &);
+  virtual ~Indicator();
+  void attach(Telltale_ptr);
+  virtual void update(const CORBA::Any &);
+  virtual void traverse(Traversal_ptr);
+  virtual void draw(DrawTraversal_ptr);
+ protected:
+  Color color;
+  Telltale_var telltale;
 };
 
-#endif /* _Drawable_idl */
+#endif /* _Indicator_hh */

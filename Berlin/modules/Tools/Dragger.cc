@@ -19,46 +19,36 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/SubjectImpl.hh"
+
+#include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
+#include "Tool/Dragger.hh"
 
-using namespace Prague;
-
-SubjectImpl::SubjectImpl() : blocked(false) {}
-
-void SubjectImpl::attach(Observer_ptr o)
+Dragger::Dragger(Command_ptr c)
+  : ControllerImpl(false), command(Command::_duplicate(c))
 {
-  SectionLog section("SubjectImpl::attach");
-  MutexGuard guard(observerMutex);
-  observers.push_back(Observer::_duplicate(o));
 }
 
-void SubjectImpl::detach(Observer_ptr o)
+Dragger::~Dragger()
 {
-  SectionLog section("SubjectImpl::detach");
-  MutexGuard guard(observerMutex);
-  observers.remove(o);
 }
 
-
-void SubjectImpl::block(CORBA::Boolean b)
+void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  MutexGuard guard(myMutex);
-  blocked = b;
+  ControllerImpl::press(traversal, event);
+  offset = event[1].attr.location();
 }
 
-void SubjectImpl::notify() {
-    this->notify(CORBA::Any());
+void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
+{
+  Vertex delta = event[0].attr.location() - offset;
+  CORBA::Any any;
+  any <<= delta;
+  command->execute(any);
+  offset += delta;
 }
 
-void SubjectImpl::notify(const CORBA::Any &whatChanged)
+void Dragger::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  SectionLog section("SubjectImpl::notify");
-  MutexGuard guard(myMutex);
-  if (!blocked)
-    {
-      MutexGuard guard(observerMutex);
-      for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
-	(*i)->update(whatChanged);
-    }
+  ControllerImpl::release(traversal, event);
 }

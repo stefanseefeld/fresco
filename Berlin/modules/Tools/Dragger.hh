@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,23 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Pencil_idl
-#define _Pencil_idl
+#ifndef _Dragger_hh
+#define _Dragger_hh
 
-#include <Types.idl>
+#include "Warsaw/config.hh"
+#include "Warsaw/Command.hh"
+#include "Berlin/ControllerImpl.hh"
 
-interface Drawable;
-
-// note: any given pencil was manufactured very specifically with a given
-// set of style parameters. These methods only control its geometry, not it's
-// color/texture/width/pattern etc.
-
-interface Pencil
+class Dragger : public ControllerImpl
 {
-  void drawPath(in Path p);
-  void drawPatch(in Patch p);
-  void drawRect(in Vertex lower, in Vertex upper);
-  void drawEllipse(in Vertex lower, in Vertex upper);
+public:
+  Dragger(Command_ptr);
+  virtual ~Dragger();
+//protected:
+  virtual void press(PickTraversal_ptr, const Input::Event &);
+  virtual void drag(PickTraversal_ptr, const Input::Event &);
+  virtual void release(PickTraversal_ptr, const Input::Event &);
+private:
+  Vertex offset;
+  Command_var command;
 };
 
-#endif /* _Pencil_idl */
+#endif /* _Dragger_hh */

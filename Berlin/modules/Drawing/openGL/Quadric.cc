@@ -80,10 +80,10 @@ void GLQuadric::cylinder(double baseRadius, double topRadius, double height, int
 // 	}
 //       glEnd();
 //     }
-  if (style == DrawingKit::outline)// || DrawStyle == GLU_SILHOUETTE)
+  if (style == DrawingKit::outlined)// || DrawStyle == GLU_SILHOUETTE)
     {
 //       /* Draw rings */
-//       if (style == DrawingKit::outline)
+//       if (style == DrawingKit::outlined)
 // 	{
 // 	  z = 0.0;
 // 	  r = baseRadius;
@@ -201,7 +201,7 @@ void GLQuadric::sphere(double radius, int slices, int stacks)
   /* t goes from -1.0/+1.0 at z = -radius/+radius (linear along longitudes) */
   /* cannot use triangle fan on texturing (s coord. at top/bottom tip varies) */
 
-  if (style != DrawingKit::outline)
+  if (style != DrawingKit::outlined)
     {
       if (style != DrawingKit::textured)
 	{
@@ -275,7 +275,7 @@ void GLQuadric::sphere(double radius, int slices, int stacks)
 	  glEnd();
 	}
     }
-  else if (style == DrawingKit::outline)
+  else if (style == DrawingKit::outlined)
     {
       /* draw stack lines */
       for (int i = 1; i < stacks; i++)
@@ -395,7 +395,7 @@ void GLQuadric::disk(double innerRadius, double outerRadius, int slices, int loo
 	  }
 	break;
       }
-//     case DrawingKit::outline:
+//     case DrawingKit::outlined:
 //       {
 // 	/* draw loops */
 // 	for (int l = 0; l <= loops; l++)
@@ -444,7 +444,7 @@ void GLQuadric::disk(double innerRadius, double outerRadius, int slices, int loo
 // 	glEnd();
 // 	break;
 //       }
-    case DrawingKit::outline:
+    case DrawingKit::outlined:
       {
 	if (innerRadius != 0.0)
 	  {
@@ -537,7 +537,7 @@ void GLQuadric::partialDisk(double innerRadius, double outerRadius, int slices, 
 // 	  angle += delta_angle;
 // 	}
 //     }
-  if (style == DrawingKit::outline)
+  if (style == DrawingKit::outlined)
     {
       double da = deg_to_rad(sweepAngle / slices);
       /* draw outer ring */

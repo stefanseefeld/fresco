@@ -19,28 +19,27 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Subject_idl
-#define _Subject_idl
+#ifndef _TriggerImpl_hh
+#define _TriggerImpl_hh
 
-interface Observer;
+#include "Warsaw/config.hh"
+#include "Warsaw/Trigger.hh"
+#include "Warsaw/Command.hh"
+#include "Berlin/ControllerImpl.hh"
 
-interface Subject 
-//. Subject defines what it means to be observable.
-//. Observers can be bound to it so calling notify
-//. will call them back
+class TriggerImpl : implements(Trigger), public ControllerImpl
 {
-  void attach(in Observer o);
-  void detach(in Observer o);
-  void notify(in any a);
-  void block(in boolean b);  
+ public:
+  TriggerImpl() : ControllerImpl(false) {}
+  ~TriggerImpl() {}
+  void action(Command_ptr c) { command = Command::_duplicate(c);}
+  Command_ptr action() { return Command::_duplicate(command);}
+// protected:
+  virtual void release(PickTraversal_ptr, const Input::Event &);
+  virtual void keyPress(const Input::Event &);
+  void execute(const CORBA::Any &any) { if (!CORBA::is_nil(command)) command->execute(any);}
+ private:
+  Command_var command;
 };
 
-interface Observer
-//. Observers observ Subjects.
-//. Observers can be bound to it so calling notify
-//. will call them back
-{
-  void update(in any a);
-};
-
-#endif /* _Subject_idl */
+#endif /* _TriggerImpl_hh */

@@ -31,34 +31,36 @@ def main():
 
     # get a server context
     context = orb.resolve_initial_references("NameService")
-    name = [CosNaming.NameComponent("IDL:ServerContextManager:1.0", "Object")]
+    name = [CosNaming.NameComponent("IDL:Server:1.0", "Object")]
     manager = context.resolve(name)
     server  = manager.newServerContext(client)
 
     # get some kits
-    object  = server.create("IDL:LayoutKit:1.0")
+#    properties = Kit.PropertySeq();
+    object  = server.resolve("IDL:LayoutKit:1.0", [])
     layout  = object._narrow(_GlobalIDL.LayoutKit)
-    object  = server.create("IDL:WidgetKit:1.0")
+    object  = server.resolve("IDL:ToolKit:1.0", [])
+    tool    = object._narrow(_GlobalIDL.ToolKit)
+    object  = server.resolve("IDL:WidgetKit:1.0", [])
     widget  = object._narrow(_GlobalIDL.WidgetKit)
-    object  = server.create("IDL:DesktopKit:1.0")
+    object  = server.resolve("IDL:DesktopKit:1.0", [])
     desktop = object._narrow(_GlobalIDL.DesktopKit)
-    object  = server.create("IDL:ImageKit:1.0")
+    object  = server.resolve("IDL:ImageKit:1.0", [])
     image   = object._narrow(_GlobalIDL.ImageKit)
-    object  = server.create("IDL:FigureKit:1.0")
+    object  = server.resolve("IDL:FigureKit:1.0", [])
     figure  = object._narrow(_GlobalIDL.FigureKit)
 
     raster = image.create("../etc/PNG/landscape.png")
     pixmap = figure.pixmap(raster)
     viewport = layout.scrollable(pixmap)
-    gray = {0.7, 0.7, 0.7, 1.0}
     xadjustment = viewport.adjustment(_GlobalIDL.xaxis)
     yadjustment = viewport.adjustment(_GlobalIDL.yaxis)
     hbox1  = layout.hbox()
-    hbox2  = layout hbox()
+    hbox2  = layout.hbox()
     hbox1.append(viewport)
-    hbox1.append(widget.scrollbar(gray, yadjustment, _GlobalIDL.yaxis)
-    group  = widget.group(viewport)
-    shell  = desktop.shell(group)
+    hbox1.append(widget.scrollbar(yadjustment, _GlobalIDL.yaxis))
+    group  = tool.group(viewport)
+    shell  = desktop.shell(viewport)
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break

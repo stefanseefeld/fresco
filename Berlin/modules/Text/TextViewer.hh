@@ -49,7 +49,7 @@ class TextViewer : implements(View), public virtual HBox {
     public:
 
     TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);
-    void update(Subject_ptr s, const CORBA::Any &a);
+    void update(const CORBA::Any &);
     virtual ~TextViewer();
 
     protected:

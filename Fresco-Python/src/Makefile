@@ -34,20 +34,19 @@ IDL	= omniidl
 IDLFLAGS= -I$(wpath) -bpython
 
 DYNINT	= Types.idl
-STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
+STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl \
-	  Figure.idl Image.idl \
-	  Grid.idl Viewport.idl Stage.idl \
-	  Command.idl \
+	  DrawingKit.idl \
+	  Figure.idl Image.idl FigureKit.idl \
+	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
+	  Command.idl CommandKit.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
-	  Trigger.idl \
-	  Metrics.idl \
-	  Raster.idl \
-	  Desktop.idl Window.idl 
-LCINT	= LifeCycle.idl Cloneable.idl DrawingKit.idl FigureKit.idl LayoutKit.idl CommandKit.idl \
-	  WidgetKit.idl TextKit.idl ImageKit.idl DesktopKit.idl
+	  Trigger.idl ToolKit.idl WidgetKit.idl \
+	  Metrics.idl TextKit.idl \
+	  Raster.idl ImageKit.idl \
+	  Desktop.idl Window.idl DesktopKit.idl
 
 INT	= $(DYNINT) $(STATINT) $(LCINT)
 

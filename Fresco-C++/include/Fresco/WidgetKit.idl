@@ -45,32 +45,12 @@ interface WidgetKit : Kit
 //. are usually called "widgets" -- they react to events in a
 //. particular way by modifying the subjects they're bound to.
 {
-  TelltaleConstraint exclusive();
-  TelltaleConstraint selectionRequired();
-  Telltale     normalTelltale();
-  Telltale     constrainedTelltale(in TelltaleConstraint c);
-  BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
-  BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
-  TextBuffer   text();
-  StreamBuffer stream();
-  
-  Graphic      debugger(in Graphic g, in string s);
-  Graphic      inset(in Graphic g, in Color c, in boolean fill);
-  Graphic      outset(in Graphic g, in Color c, in boolean fill);
-  Graphic      filler(in Graphic g, in Color c);
-  Graphic      indicator(in Graphic g, in Color c, in Telltale t);
-  View         buttonFrame(in Graphic g, in Color c, in Telltale t);
-  Controller   dragger(in Graphic g, in Command c);
-  Controller   stepper(in Graphic g, in Command c);
-  Controller   textInput(in Graphic g, in TextBuffer b);
-
-  Trigger      button(in Graphic g, in Color b, in Command c);
-  Controller   group(in Graphic g);
-  Controller   toggle(in Graphic g, in Color b);
-  Graphic      gauge(in Color c, in BoundedValue v);
-  Controller   slider(in Color c, in BoundedValue v);
-  Controller   panner(in Color c, in BoundedRange x, in BoundedRange y);
-  Controller   scrollbar(in Color c, in BoundedRange x, in Axis a);
+  Trigger      button(in Graphic g, in Command c);
+  Controller   toggle(in Graphic g);
+  Graphic      gauge(in BoundedValue v);
+  Controller   slider(in BoundedValue v);
+  Controller   panner(in BoundedRange x, in BoundedRange y);
+  Controller   scrollbar(in BoundedRange x, in Axis a);
 };
 
 #endif

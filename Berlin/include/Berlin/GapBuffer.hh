@@ -74,7 +74,7 @@ class GapBuffer : private vector<T>
   void editing() { size_type d = curs - gapbegin; if (d != 0) movegap(d);}
   void compact() { size_type d = end() - gend(); if (d > 0) movegap(d);}
 public:
-  GapBuffer() : curs(0), gapbegin(0), gapend(0) { cout << end() << ' ' << begin() << endl;}
+  GapBuffer() : curs(0), gapbegin(0), gapend(0) {}
   size_type size() { compact(); return gbegin() - begin();}
   void forward()
     {

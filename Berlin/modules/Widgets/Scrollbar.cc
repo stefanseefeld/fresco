@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -62,11 +62,12 @@ void Scrollbar::init(Controller_ptr t)
   appendController(thumb);
 }
 
-void Scrollbar::update(Subject_ptr, const CORBA::Any &)
+void Scrollbar::update(const CORBA::Any &any)
 {
-  BoundedRange::Settings settings = range->getSettings();
-  offset.lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
-  offset.upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
+  BoundedRange::Settings *settings;
+  any >>= settings;
+  offset.lower = (settings->lvalue - settings->lower)/(settings->upper - settings->lower);
+  offset.upper = (settings->uvalue - settings->lower)/(settings->upper - settings->lower);
   needRedraw();
 }
 
