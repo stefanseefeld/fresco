@@ -49,7 +49,7 @@ $(subdirs):
 	$(MAKE) -C $@ $(action)
 
 depclean:
-	find -name '*.d' -exec rm -f \{\} \;
+	find -name '*.d' -exec rm -f '{}' ';'
 
 clean:
 	$(MAKE) inverse action="clean"
