@@ -76,7 +76,7 @@ install:	all
 
 install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
-	cp -r ../share/doc/$(docdir)/html $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
+	cp -r $(abs_top_builddir)/share/doc/Berlin/$(docdir)/html $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
 
 clean:	
 		rm -f $(TARGET)
