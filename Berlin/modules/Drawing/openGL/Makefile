@@ -45,7 +45,8 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(GL_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin $(GL_LIBS) -lGLtt -lttf
 
-SRC	= Pointer.cc GLRaster.cc GLFont.cc GLUnifont.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc
+SRC	= Pointer.cc GLRaster.cc GLFont.cc GLUnifont.cc GLVectorFont.cc GLBitmapFont.cc GLPixmapFont.cc GLPolygonizer.cc \
+	  GLDrawable.cc GLPencil.cc GLDrawingKit.cc
 
 TARGET	= $(lpath)/libDrawing.so
 
