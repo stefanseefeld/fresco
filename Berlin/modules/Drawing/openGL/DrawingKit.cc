@@ -98,7 +98,8 @@ void GLDrawingKit::init()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glShadeModel(GL_SMOOTH);
-  glDisable(GL_LIGHTING);  
+//   glEnable(GL_LIGHTING);
+//   glEnable(GL_LIGHT0);
   glFrontFace(GL_CW);
   glEnable(GL_ALPHA_TEST);
   glEnable(GL_SCISSOR_TEST);
@@ -321,6 +322,34 @@ void GLDrawingKit::draw_char(Unichar c) { _font->draw_char(c);}
 
 void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
 {
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  GLfloat light_position[] = { 5., 5., 10., 0.};
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+  glEnable(GL_COLOR_MATERIAL);
+  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+  bool normals = mesh.normals.length() == mesh.triangles.length();
+  glBegin(GL_TRIANGLES);
+  for (int i = 0; i < mesh.triangles.length(); ++i)
+    {
+      if (normals)
+	{
+	  const Vertex &n = mesh.normals[i];
+	  glNormal3f(n.x, n.y, n.z);
+	}
+      else glEnable(GL_NORMALIZE);
+      const Vertex &a = mesh.nodes[mesh.triangles[i].a];
+      const Vertex &b = mesh.nodes[mesh.triangles[i].b];
+      const Vertex &c = mesh.nodes[mesh.triangles[i].c];
+      glVertex3f(a.x, a.y, a.z);
+      glVertex3f(b.x, b.y, b.z);
+      glVertex3f(c.x, c.y, c.z);
+    }
+  glEnd();
+  glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHT0);
+  glDisable(GL_NORMALIZE);
 }
 
 void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
