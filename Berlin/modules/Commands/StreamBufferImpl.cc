@@ -42,8 +42,8 @@ void StreamBufferImpl::write(const Fresco::StreamBuffer::Data &data)
   bool overflow = false;
   {
     Prague::Guard<Mutex> guard(mutex);
-    unsigned long l = data.length();
-    unsigned long s = buffer.size();
+    CORBA::ULong l = data.length();
+    CORBA::ULong s = buffer.size();
     if (s + l > buffer.capacity()) buffer.reserve(s + l);
     for (unsigned long i = 0; i != l; i++) buffer.push_back(data[i]);
     if (buffer.size() >= length) overflow = true;
