@@ -19,14 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Desktop_idl
-#define _Desktop_idl
+#ifndef _Warsaw_Desktop_idl
+#define _Warsaw_Desktop_idl
 
 #include <Warsaw/Controller.idl>
 #include <Warsaw/Stage.idl>
 
-interface Desktop : Controller, Stage
+module Warsaw
 {
+  interface Desktop : Controller, Stage {};
 };
 
-#endif /* _Desktop_idl */
+#endif

@@ -19,14 +19,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _RefCountBase_idl
-#define _RefCountBase_idl
+#ifndef _Warsaw_RefCountBase_idl
+#define _Warsaw_RefCountBase_idl
 
-interface RefCountBase 
-//. Mixin interface for distributed reference counting
+module Warsaw
 {
-  void increment();
-  void decrement();  
+  interface RefCountBase 
+    //. Mixin interface for distributed reference counting
+    {
+      void increment();
+      void decrement();  
+    };
 };
 
-#endif /* _RefCountBase_idl */
+#endif

@@ -19,41 +19,44 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Traversal_idl
-#define _Traversal_idl
+#ifndef _Warsaw_Traversal_idl
+#define _Warsaw_Traversal_idl
 
-#include "Types.idl"
+#include <Warsaw/Types.idl>
 
-interface Region;
-interface Graphic;
-interface Transform;
-
-//. The Traversal interface defines the mechanism for
-//. visiting a collection of graphics. A traversal is passed
-//. to a graphic's traverse operation and maintains common
-//. information as well as the stack of information associated
-//. with each level of the traversal.
-interface Traversal
+module Warsaw
 {
-  enum order {up, down};
-  //. Return the current allocation region for the current graphic in the traversal
-  Region allocation();
-  //. Return the cumulative transformation matrix for
-  //. the current graphic in the traversal.
-  Transform transformation();
-  boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
-  boolean intersectsAllocation();
-  boolean intersectsRegion(in Region r);
-  //. Continue traversing down to the given child graphic.
-  void traverseChild (in Graphic g, in Tag e, in Region r, in Transform t);
-  //. Call the traversal-specific operation on the current graphic.
-  //. This operation should be called on a leaf graphic
-  //. (or a composite that wants to do more than traverse
-  //. its children) when the traversal operation is other.
-  void visit(in Graphic g);
-  order direction();
-  boolean ok();
-  void update();
+  interface Region;
+  interface Graphic;
+  interface Transform;
+  
+  //. The Traversal interface defines the mechanism for
+  //. visiting a collection of graphics. A traversal is passed
+  //. to a graphic's traverse operation and maintains common
+  //. information as well as the stack of information associated
+  //. with each level of the traversal.
+  interface Traversal
+    {
+      enum order {up, down};
+      //. Return the current allocation region for the current graphic in the traversal
+      Region allocation();
+      //. Return the cumulative transformation matrix for
+      //. the current graphic in the traversal.
+      Transform transformation();
+      boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
+      boolean intersectsAllocation();
+      boolean intersectsRegion(in Region r);
+      //. Continue traversing down to the given child graphic.
+      void traverseChild (in Graphic g, in Tag e, in Region r, in Transform t);
+      //. Call the traversal-specific operation on the current graphic.
+      //. This operation should be called on a leaf graphic
+      //. (or a composite that wants to do more than traverse
+      //. its children) when the traversal operation is other.
+      void visit(in Graphic g);
+      order direction();
+      boolean ok();
+      void update();
+    };
 };
 
-#endif /* _Traversal_idl */
+#endif

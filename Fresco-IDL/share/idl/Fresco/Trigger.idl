@@ -19,22 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Trigger_idl
-#define _Trigger_idl
+#ifndef _Warsaw_Trigger_idl
+#define _Warsaw_Trigger_idl
 
-#include "Controller.idl"
+#include <Warsaw/Controller.idl>
 
-interface Command;
-
-//. A trigger is a controller that can execute a command when clicked
-//. (pressed and subsequently released with the pointer over
-//. the button's allocated area for example). Triggers manipulate a telltale
-//. that represents the current state of the trigger and
-//. determines the trigger's appearance.
-interface Trigger : Controller
+module Warsaw
 {
-  //. The trigger will execute its command (if not nil) when clicked.
-  attribute Command action;
+  interface Command;
+  
+  //. A trigger is a controller that can execute a command when clicked
+  //. (pressed and subsequently released with the pointer over
+  //. the button's allocated area for example). Triggers manipulate a telltale
+  //. that represents the current state of the trigger and
+  //. determines the trigger's appearance.
+  interface Trigger : Controller
+    {
+      //. The trigger will execute its command (if not nil) when clicked.
+      attribute Command action;
+    };
 };
 
-#endif /* _Trigger_idl */
+#endif

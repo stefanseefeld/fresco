@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <seefelds@MAGELLAN.UMontreal.CA>
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,47 +20,55 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Warsaw_Raster_idl
+#define _Warsaw_Raster_idl
 
 #include <Warsaw/Types.idl>
+#include <Warsaw/Subject.idl>
 
-//. A raster is a two-dimensional pixel array
-//. Raster is based on the W3C PNG specs, see
-//. <http://www.w3.org/TR/REC-png> for details
-interface Raster
+module Warsaw
 {
-  struct Info
-    //. the image header (IHDR chunk)
-  {
-    unsigned long  width;       // 4 bytes
-    unsigned long  height;      // 4 bytes
-    unsigned short depth;       // 1 byte
-    unsigned short colortype;   // 1 byte
-    unsigned short compression; // 1 byte
-    unsigned short filter;      // 1 byte
-    unsigned short interlace;   // 1 byte
-  };
-  typedef sequence<octet> Data;
-  struct Index { unsigned long x, y;};
-  typedef sequence<Color> ColorSeq;
-
-  //. access the header information (the PNG IHDR chunk)
-  Info header();
-
-  //. clear the Raster
-  void clear();
-
-  //. these methods are suitable to transfer the Raster.
-  //. the used format follows the PNG specs
-  void loadData(in Data d);
-  void storeData(out Data d);
-
-  //. access and modify individual pixel values
-  void loadPixel(in Index i, in Color c);
-  void storePixel(in Index i, out Color c);
-
-  //. access and modify ranges of pixels.
-  //. the length of the ColorSeq in loadPixels must at least correspond 
-  //. to the given width times the given height
-  void loadPixels(in Index lower, in Index upper, in ColorSeq s);
-  void storePixels(in Index lower, in Index upper, out ColorSeq s);
+  //. A raster is a two-dimensional pixel array
+  //. Raster is based on the W3C PNG specs, see
+  //. <http://www.w3.org/TR/REC-png> for details
+  interface Raster : Subject
+    {
+      struct Info
+	//. the image header (IHDR chunk)
+      {
+	unsigned long  width;       // 4 bytes
+	unsigned long  height;      // 4 bytes
+	unsigned short depth;       // 1 byte
+	unsigned short colortype;   // 1 byte
+	unsigned short compression; // 1 byte
+	unsigned short filter;      // 1 byte
+	unsigned short interlace;   // 1 byte
+      };
+      typedef sequence<octet> Data;
+      struct Index { unsigned long x, y;};
+      typedef sequence<Color> ColorSeq;
+      
+      //. access the header information (the PNG IHDR chunk)
+      Info header();
+      
+      //. clear the Raster
+      void clear();
+      
+      //. these methods are suitable to transfer the Raster.
+      //. the used format follows the PNG specs
+      void loadData(in Data d);
+      void storeData(out Data d);
+      
+      //. access and modify individual pixel values
+      void loadPixel(in Index i, in Color c);
+      void storePixel(in Index i, out Color c);
+      
+      //. access and modify ranges of pixels.
+      //. the length of the ColorSeq in loadPixels must at least correspond 
+      //. to the given width times the given height
+      void loadPixels(in Index lower, in Index upper, in ColorSeq s);
+      void storePixels(in Index lower, in Index upper, out ColorSeq s);
+    };
 };
+
+#endif

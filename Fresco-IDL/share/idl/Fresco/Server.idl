@@ -20,46 +20,44 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Server_idl
-#define _Server_idl
+#ifndef _Warsaw_Server_idl
+#define _Warsaw_Server_idl
 
 #include <Warsaw/Kit.idl>
 
-interface ClientContext;
-
-exception SecurityException {};
-exception SingletonFailureException {};
-exception CreationFailureException {};
-
-//. the ServerContext is an object you pick up from the berlin
-//. server's root ContextManager, and which you use to create all
-//. generic interfaces (kits, plugins, etc).
-interface ServerContext
+module Warsaw
 {
-  //. this is the entry point to generic object creation on a server.
-  Kit resolve(in string type, in Kit::PropertySeq attr)
-    raises (SecurityException, CreationFailureException);
+  interface ClientContext;
 
-  //. access to singletons (like the fontManager) this way
-  void setSingleton(in string name, in Object singleton) 
-    raises (SecurityException, SingletonFailureException);
-
-  void delSingleton(in string name)
-    raises (SecurityException, SingletonFailureException);
-
-  Object getSingleton(in string name) 
-    raises (SecurityException, SingletonFailureException);
-};
-
-interface Server
-//. this is the "super-context" -- the entry point for all new contexts.
-{
-  ServerContext newServerContext(in ClientContext C) raises (SecurityException);
-// #ifdef __OMNIIDL__
-//   boolean _supports(in string t);
-// #else
-//   boolean supports(in string t);
-// #endif
+  exception SecurityException {};
+  exception SingletonFailureException {};
+  exception CreationFailureException {};
+  
+  //. the ServerContext is an object you pick up from the berlin
+  //. server's root ContextManager, and which you use to create all
+  //. generic interfaces (kits, plugins, etc).
+  interface ServerContext
+    {
+      //. this is the entry point to generic object creation on a server.
+      Kit resolve(in string type, in Kit::PropertySeq attr)
+	raises (SecurityException, CreationFailureException);
+      
+      //. access to singletons (like the fontManager) this way
+      void setSingleton(in string name, in Object singleton) 
+	raises (SecurityException, SingletonFailureException);
+      
+      void delSingleton(in string name)
+	raises (SecurityException, SingletonFailureException);
+      
+      Object getSingleton(in string name) 
+	raises (SecurityException, SingletonFailureException);
+    };
+  
+  interface Server
+    //. this is the "super-context" -- the entry point for all new contexts.
+    {
+      ServerContext newServerContext(in ClientContext C) raises (SecurityException);
+    };
 };
 
 #endif

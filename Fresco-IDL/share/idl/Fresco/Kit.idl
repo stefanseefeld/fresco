@@ -19,34 +19,33 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Kit_idl
-#define _Kit_idl
+#ifndef _Warsaw_Kit_idl
+#define _Warsaw_Kit_idl
 
 #include <Warsaw/RefCountBase.idl>
 
-interface ServerContext;
-
-//. ths kit interface is the base type for most of the objects
-//. you will allocate in a berlin server.
-interface Kit : RefCountBase
+module Warsaw
 {
-  struct Property
-  {
-    string name;
-    string value;
-  };
-  typedef sequence<Property> PropertySeq;
+  interface ServerContext;
 
-  //. query for properties
-  readonly attribute PropertySeq properties;
-  boolean _supports(in PropertySeq p);
-  //. initializer method which allows a kit to hook up resources it
-  //. might need from the same context
-  void bind(in ServerContext sc);
-  //. dispose this object. Since Kit's might be shared, this will
-  //. probably result in a ref counter to be decremented so that the
-  //. kit will be deleted only if the counter drops to zero
-  void remove();
+  //. ths kit interface is the base type for most of the objects
+  //. you will allocate in a berlin server.
+  interface Kit : RefCountBase
+    {
+      struct Property
+      {
+	string name;
+	string value;
+      };
+      typedef sequence<Property> PropertySeq;
+      
+      //. query for properties
+      readonly attribute PropertySeq properties;
+      boolean _supports(in PropertySeq p);
+      //. initializer method which allows a kit to hook up resources it
+      //. might need from the same context
+      void bind(in ServerContext sc);
+    };
 };
 
 #endif

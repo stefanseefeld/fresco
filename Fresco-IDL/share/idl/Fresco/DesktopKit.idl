@@ -19,36 +19,39 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DesktopKit_idl
-#define _DesktopKit_idl
+#ifndef _Warsaw_DesktopKit_idl
+#define _Warsaw_DesktopKit_idl
 
 #include <Warsaw/Kit.idl>
 
-interface Controller;
-interface Window;
-interface Desktop;
-
-/*
- * entry point for Moscow :
- * A DesktopKit defines the interface between client and server.
- * All DesktopKit generated Graphics are top level objects, they
- * should be used to wrap client sub graphs into.
- * In this respect a DesktopKit plays the role of X's window manager 
- * concept
- * One day the DesktopKit should allow to define what communication
- * protocols a client understands (via Trading Service ?)
- *
- *   -stefan
- */
-interface DesktopKit : Kit
+module Warsaw
 {
+  interface Controller;
+  interface Window;
+  interface Desktop;
+  
   /*
-   * all names subject to change
+   * entry point for Moscow :
+   * A DesktopKit defines the interface between client and server.
+   * All DesktopKit generated Graphics are top level objects, they
+   * should be used to wrap client sub graphs into.
+   * In this respect a DesktopKit plays the role of X's window manager 
+   * concept
+   * One day the DesktopKit should allow to define what communication
+   * protocols a client understands (via Trading Service ?)
+   *
+   *   -stefan
    */
-  Desktop desk();
-  Window  shell(in Controller g);
-  Window  transient(in Controller g);
-  Window  pulldown(in Controller g);
+  interface DesktopKit : Kit
+    {
+      /*
+       * all names subject to change
+       */
+      Desktop desk();
+      Window  shell(in Controller g);
+      Window  transient(in Controller g);
+      Window  pulldown(in Controller g);
+    };
 };
 
-#endif /* _DesktopKit_idl */
+#endif

@@ -19,23 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PickTraversal_idl
-#define _PickTraversal_idl
+#ifndef _Warsaw_PickTraversal_idl
+#define _Warsaw_PickTraversal_idl
 
 #include <Warsaw/Traversal.idl>
 #include <Warsaw/Input.idl>
 
-interface Controller;
-
-interface PickTraversal : Traversal
+module Warsaw
 {
-  readonly attribute Input::Device device;
-  void enterController(in Controller c);
-  void leaveController();
-  void hit();
-  boolean picked();
-  void grab();
-  void ungrab();
+  interface Controller;
+
+  interface PickTraversal : Traversal
+    {
+      readonly attribute Input::Device device;
+      void enterController(in Controller c);
+      void leaveController();
+      void hit();
+      boolean picked();
+      void grab();
+      void ungrab();
+    };
 };
 
-#endif /* _PickTraversal_idl */
+#endif

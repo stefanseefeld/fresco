@@ -19,14 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _View_idl
-#define _View_idl
+#ifndef _Warsaw_View_idl
+#define _Warsaw_View_idl
 
 #include <Warsaw/Graphic.idl>
 #include <Warsaw/Subject.idl>
 
-interface View : Graphic, Observer
+module Warsaw
 {
+  interface View : Graphic, Observer {};
 };
 
-#endif /* _View_idl */
+#endif

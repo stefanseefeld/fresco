@@ -19,21 +19,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Screen_idl
-#define _Screen_idl
+#ifndef _Warsaw_Screen_idl
+#define _Warsaw_Screen_idl
 
 #include <Warsaw/Types.idl>
 #include <Warsaw/Controller.idl>
 
-interface DrawingKit;
-interface Region;
-
-interface Screen : Controller
+module Warsaw
 {
-  Coord width();
-  Coord height();
-  DrawingKit kit();
-  void damage(in Region r);
+  interface DrawingKit;
+  interface Region;
+
+  interface Screen : Controller
+    {
+      Coord width();
+      Coord height();
+      DrawingKit kit();
+      void damage(in Region r);
+    };
 };
 
-#endif /* _Screen_idl */
+#endif

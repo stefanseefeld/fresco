@@ -19,19 +19,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Choice_idl
-#define _Choice_idl
+#ifndef _Warsaw_Choice_idl
+#define _Warsaw_Choice_idl
 
 #include <Warsaw/Controller.idl>
+#include <Warsaw/Selection.idl>
 
-interface Selection;
-
-interface Choice : Controller
+module Warsaw
 {
-  readonly attribute Selection state;
-  Tag appendItem(in Graphic g);
-  Tag prependItem(in Graphic g);
-  void removeItem(in Tag t);
+  interface Choice : Controller
+    {
+      readonly attribute Selection state;
+      Tag appendItem(in Graphic g);
+      Tag prependItem(in Graphic g);
+      void removeItem(in Tag t);
+    };
 };
 
-#endif /* _Choice_idl */
+#endif

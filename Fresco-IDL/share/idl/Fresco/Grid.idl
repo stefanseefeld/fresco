@@ -19,49 +19,52 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Grid_idl
-#define _Grid_idl
+#ifndef _Warsaw_Grid_idl
+#define _Warsaw_Grid_idl
 
 #include <Warsaw/Graphic.idl>
 
-interface Traversal;
-
-//. A grid tiles its children into columns and rows and aligns
-//. the children within each column and row.
-interface Grid : Graphic
+module Warsaw
 {
-  //. The Index structure identifies a single cell in a grid. A
-  //. nil index is defined to contain the values col = -1, row = -1.
-  struct Index
-  {
-    long col;
-    long row;
-  };
-  typedef sequence<Index> IndexSeq;
-  //. The Range structure defines a sub-range of the glyphs in a grid.
-  struct Range
-  {
-    Index lower;
-    Index upper;
-  };
-  //. Replace the glyph at the row and column position.  It is ok
-  //. to replace a glyph with nil, or to replace a nil with a glyph.
-  void replace(in Graphic g, in Grid::Index i);
-  //. Find the row and column position of the bottom-left most cell
-  //. that intersects the traversal painters visible region bounds.
-  //. If no cell is intersected find the closest edge cell.
-  Grid::Index find(in Traversal t);
-  //. Return the allocation of a cell.
-  void allocateCell(in Region given, in Grid::Index i, in Region a);
-  //. These operations use a sub-range of the glyphs in the grid.
-  void requestRange(out Graphic::Requisition r, in Grid::Range a);
-  void traverseRange(in Traversal t, in Grid::Range a);
-  Grid::Index findRange(in Traversal t, in Grid::Range a);
-  //. Return the lower-left corner of the range within the grid.
-  //. Note that a grid's offset expects the Allocation given to
-  //. childAllocate to be adjusted by the negated rangePosition. 
-  void rangePosition(in Region given, in Grid::Range a, out Vertex pos);
-  Grid::Index upper();
+  interface Traversal;
+  
+  //. A grid tiles its children into columns and rows and aligns
+  //. the children within each column and row.
+  interface Grid : Graphic
+    {
+      //. The Index structure identifies a single cell in a grid. A
+      //. nil index is defined to contain the values col = -1, row = -1.
+      struct Index
+      {
+	long col;
+	long row;
+      };
+      typedef sequence<Index> IndexSeq;
+      //. The Range structure defines a sub-range of the glyphs in a grid.
+      struct Range
+      {
+	Index lower;
+	Index upper;
+      };
+      //. Replace the glyph at the row and column position.  It is ok
+      //. to replace a glyph with nil, or to replace a nil with a glyph.
+      void replace(in Graphic g, in Grid::Index i);
+      //. Find the row and column position of the bottom-left most cell
+      //. that intersects the traversal painters visible region bounds.
+      //. If no cell is intersected find the closest edge cell.
+      Grid::Index find(in Traversal t);
+      //. Return the allocation of a cell.
+      void allocateCell(in Region given, in Grid::Index i, in Region a);
+      //. These operations use a sub-range of the glyphs in the grid.
+      void requestRange(out Graphic::Requisition r, in Grid::Range a);
+      void traverseRange(in Traversal t, in Grid::Range a);
+      Grid::Index findRange(in Traversal t, in Grid::Range a);
+      //. Return the lower-left corner of the range within the grid.
+      //. Note that a grid's offset expects the Allocation given to
+      //. childAllocate to be adjusted by the negated rangePosition. 
+      void rangePosition(in Region given, in Grid::Range a, out Vertex pos);
+      Grid::Index upper();
+    };
 };
 
-#endif /* _Grid_idl */
+#endif

@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,26 +20,29 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _BoundedValue_idl
-#define _BoundedValue_idl
+#ifndef _Warsaw_BoundedValue_idl
+#define _Warsaw_BoundedValue_idl
 
 #include <Warsaw/Subject.idl>
 #include <Warsaw/Types.idl>
 
-interface BoundedValue : Subject
+module Warsaw
 {
-  attribute Coord lower;
-  attribute Coord upper;
-  attribute Coord step;
-  attribute Coord page;
-  attribute Coord value;
-  void forward();
-  void backward();
-  void fastforward();
-  void fastbackward();
-  void begin();
-  void end();
-  void adjust(in Coord d);
+  interface BoundedValue : Subject
+    {
+      attribute Coord lower;
+      attribute Coord upper;
+      attribute Coord step;
+      attribute Coord page;
+      attribute Coord value;
+      void forward();
+      void backward();
+      void fastforward();
+      void fastbackward();
+      void begin();
+      void end();
+      void adjust(in Coord d);
+    };
 };
 
-#endif /* _BoundedValue_idl */
+#endif

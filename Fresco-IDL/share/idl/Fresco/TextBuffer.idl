@@ -19,34 +19,38 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextBuffer_idl
-#define _TextBuffer_idl
+#ifndef _Warsaw_TextBuffer_idl
+#define _Warsaw_TextBuffer_idl
 
 #include <Warsaw/Subject.idl>
 #include <Warsaw/Types.idl>
 
-interface TextBuffer : Subject
+module Warsaw
 {
-
-  enum ChangeType {insert, remove, cursor};
-
-  struct Change {
-    ChangeType type;
-    unsigned long pos;
-    long len;
-  };
-  
-  readonly attribute long size;
-  readonly attribute Unistring value;
-  attribute long position;
-  Unistring getChars(in unsigned long pos, in unsigned long len);
-  void forward();
-  void backward();
-  void shift(in long d);
-  void insertChar(in Unichar u);
-  void insertString(in Unistring u);
-  void removeBackward(in long d);
-  void removeForward(in long d);
+  interface TextBuffer : Subject
+    {
+      
+      enum ChangeType {insert, remove, cursor};
+      
+      struct Change
+      {
+	ChangeType type;
+	unsigned long pos;
+	long len;
+      };
+      
+      readonly attribute long size;
+      readonly attribute Unistring value;
+      attribute long position;
+      Unistring getChars(in unsigned long pos, in unsigned long len);
+      void forward();
+      void backward();
+      void shift(in long d);
+      void insertChar(in Unichar u);
+      void insertString(in Unistring u);
+      void removeBackward(in long d);
+      void removeForward(in long d);
+    };
 };
 
-#endif /* _TextBuffer_idl */
+#endif

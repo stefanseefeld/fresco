@@ -20,66 +20,69 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ToolKit_idl
-#define _ToolKit_idl
+#ifndef _Warsaw_ToolKit_idl
+#define _Warsaw_ToolKit_idl
 
 #include <Warsaw/Types.idl>
 #include <Warsaw/Telltale.idl>
 #include <Warsaw/Kit.idl>
 
-interface Graphic;
-interface View;
-interface Controller;
-interface Trigger;
-interface Command;
-interface TextBuffer;
-interface StreamBuffer;
-
-//. this kit provides common objects for very basic interaction tasks
-//. and Telltale Views such as bevels and indicators
-interface ToolKit : Kit
+module Warsaw
 {
-  enum FrameType { none, inset, outset, convex, concav, colored};
-  enum Direction { left, right, up, down};
-  union FrameSpec switch (FrameType)
-    {
-    case inset:
-    case outset:
-    case convex:
-    case concav:
-      Coord brightness;
-    case colored:
-      Color foreground;
-    };
+  interface Graphic;
+  interface View;
+  interface Controller;
+  interface Trigger;
+  interface Command;
+  interface TextBuffer;
+  interface StreamBuffer;
   
-  Graphic      debugger(in Graphic g, in string s);
-  Graphic      rgb(in Graphic gg, in Coord r, in Coord g, in Coord b);
-  Graphic      alpha(in Graphic g, in Coord a);
-  Graphic      lighting(in Graphic gg, in Coord r, in Coord g, in Coord b);
-
-  Graphic      frame(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
-  Graphic      dynamic(in Graphic g, in Coord thickness,
-		       in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
-		       in boolean fill, in Telltale t);
-  Graphic      framedTriangle(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill, in Direction d);
-  Graphic      dynamicTriangle(in Graphic g, in Coord thickness,
-			       in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
-			       in boolean fill, in Direction d, in Telltale t);
-
-  Graphic      framedDiamond(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
-  Graphic      dynamicDiamond(in Graphic g, in Coord thickness,
-			      in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
-			      in boolean fill, in Telltale t);
-
-//   Graphic      filler(in Graphic g, in Color c);
-//   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
-  Trigger      button(in Graphic g, in Command c);
-  Controller   toggle(in Graphic g);
-  Controller   dragger(in Graphic g, in Command c);
-  Controller   stepper(in Graphic g, in Command c);
-  Controller   textInput(in Graphic g, in TextBuffer b);
-  Controller   terminal(in Graphic g, in StreamBuffer b);
-  Controller   group(in Graphic g);
+  //. this kit provides common objects for very basic interaction tasks
+  //. and Telltale Views such as bevels and indicators
+  interface ToolKit : Kit
+    {
+      enum FrameType { none, inset, outset, convex, concav, colored};
+      enum Direction { left, right, up, down};
+      union FrameSpec switch (FrameType)
+	{
+	case inset:
+	case outset:
+	case convex:
+	case concav:
+	  Coord brightness;
+	case colored:
+	  Color foreground;
+	};
+      
+      Graphic      debugger(in Graphic g, in string s);
+      Graphic      rgb(in Graphic gg, in Coord r, in Coord g, in Coord b);
+      Graphic      alpha(in Graphic g, in Coord a);
+      Graphic      lighting(in Graphic gg, in Coord r, in Coord g, in Coord b);
+      
+      Graphic      frame(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
+      Graphic      dynamic(in Graphic g, in Coord thickness,
+			   in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
+			   in boolean fill, in Telltale t);
+      Graphic      framedTriangle(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill, in Direction d);
+      Graphic      dynamicTriangle(in Graphic g, in Coord thickness,
+				   in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
+				   in boolean fill, in Direction d, in Telltale t);
+      
+      Graphic      framedDiamond(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
+      Graphic      dynamicDiamond(in Graphic g, in Coord thickness,
+				  in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
+				  in boolean fill, in Telltale t);
+      
+      //   Graphic      filler(in Graphic g, in Color c);
+      //   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
+      Trigger      button(in Graphic g, in Command c);
+      Controller   toggle(in Graphic g);
+      Controller   dragger(in Graphic g, in Command c);
+      Controller   stepper(in Graphic g, in Command c);
+      Controller   textInput(in Graphic g, in TextBuffer b);
+      Controller   terminal(in Graphic g, in StreamBuffer b);
+      Controller   group(in Graphic g);
+    };
 };
 
 #endif

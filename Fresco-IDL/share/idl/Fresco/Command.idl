@@ -20,24 +20,27 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Command_idl
-#define _Command_idl
+#ifndef _Warsaw_Command_idl
+#define _Warsaw_Command_idl
 
 #include <Warsaw/RefCountBase.idl>
 
-interface Command;
-
-//. commands are anonymous encapsulated actions. 
-interface Command : RefCountBase
+module Warsaw
 {
-  void execute(in any a);
+  interface Command;
+
+  //. commands are anonymous encapsulated actions. 
+  interface Command : RefCountBase
+    {
+      void execute(in any a);
+    };
+  
+  //. a composite command
+  interface MacroCommand : Command
+    {
+      void append(in Command c);
+      void prepend(in Command c);
+    };
 };
 
-//. a composite command
-interface MacroCommand : Command
-{
-  void append(in Command c);
-  void prepend(in Command c);
-};
-
-#endif /* _Command_idl */
+#endif

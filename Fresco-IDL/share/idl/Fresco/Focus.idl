@@ -19,21 +19,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Focus_idl
-#define _Focus_idl
+#ifndef _Warsaw_Focus_idl
+#define _Warsaw_Focus_idl
 
 #include <Warsaw/Input.idl>
 
-interface Focus
+module Warsaw
 {
-  readonly attribute Input::Device device;
-  void grab();
-  void ungrab();
-  //. The addFilter operation requests that all input events
-  //. be routed through the filter.
-  //. The filter will be removed automatically when the controller
-  //. loses the focus
-  void addFilter(in Input::Filter f);
+  interface Focus
+    {
+      readonly attribute Input::Device device;
+      void grab();
+      void ungrab();
+      //. The addFilter operation requests that all input events
+      //. be routed through the filter.
+      //. The filter will be removed automatically when the controller
+      //. loses the focus
+      void addFilter(in Input::Filter f);
+    };
 };
 
-#endif /* _Focus_idl */
+#endif

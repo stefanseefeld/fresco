@@ -19,35 +19,38 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Selection_idl
-#define _Selection_idl
+#ifndef _Warsaw_Selection_idl
+#define _Warsaw_Selection_idl
 
 #include <Warsaw/Types.idl>
 #include <Warsaw/Subject.idl>
 
-interface Telltale;
-
-interface Selection : Subject
-//. selection is a subject which provides a higher level perspective
-//. at groups of telltales, or more precisely, groups of flags.
+module Warsaw
 {
-  typedef long Policy;
-  const Policy exclusive = 0x1;
-  const Policy required = 0x2;
-  struct Item
-  //. an item is used as the payload in the notify call, i.e. it is
-  //. what observers get in the delivered any
-  {
-    Tag id;
-    boolean toggled;
-  };
-  typedef sequence<Tag> Items;
-  //. a list of toggled items
+  interface Telltale;
 
-  attribute Policy type;
-  Tag add(in Telltale t);
-  void remove(in Tag t);
-  Items toggled();
+  interface Selection : Subject
+    //. selection is a subject which provides a higher level perspective
+    //. at groups of telltales, or more precisely, groups of flags.
+    {
+      typedef long Policy;
+      const Policy exclusive = 0x1;
+      const Policy required = 0x2;
+      struct Item
+	//. an item is used as the payload in the notify call, i.e. it is
+	//. what observers get in the delivered any
+      {
+	Tag id;
+	boolean toggled;
+      };
+      typedef sequence<Tag> Items;
+      //. a list of toggled items
+      
+      attribute Policy type;
+      Tag add(in Telltale t);
+      void remove(in Tag t);
+      Items toggled();
+    };
 };
 
-#endif /* _Selection_idl */
+#endif

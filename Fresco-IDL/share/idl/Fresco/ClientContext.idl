@@ -19,27 +19,30 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ClientContext_idl
-#define _ClientContext_idl
+#ifndef _Warsaw_ClientContext_idl
+#define _Warsaw_ClientContext_idl
 
 #include <Warsaw/Types.idl>
 
-//. a Client Context object is an interface any client connecting to a
-//. berlin server needs to present. It is used in managing the
-//. resources the client allocates and in authenticating the client's
-//. requests. The default security mechanism is obviously rediculously
-//. simplistic but we don't really have any security folks around to
-//. help us with this at the moment. You're welcome to improve on it.
-interface ClientContext
+module Warsaw
 {
-  readonly attribute Unistring userName;
-
-  // when the server tries to call this, and it fails, the server will 
-  // most likely destroy your serverContext object, which will
-  // decrement all the refcounts on objects you allocated.
-  void ping(); 
-
-  // .. additional security-related topics should show up in here  
+  //. a Client Context object is an interface any client connecting to a
+  //. berlin server needs to present. It is used in managing the
+  //. resources the client allocates and in authenticating the client's
+  //. requests. The default security mechanism is obviously rediculously
+  //. simplistic but we don't really have any security folks around to
+  //. help us with this at the moment. You're welcome to improve on it.
+  interface ClientContext
+    {
+      readonly attribute Unistring userName;
+      
+      // when the server tries to call this, and it fails, the server will 
+      // most likely destroy your serverContext object, which will
+      // decrement all the refcounts on objects you allocated.
+      void ping(); 
+      
+      // .. additional security-related topics should show up in here  
+    };
 };
 
 #endif

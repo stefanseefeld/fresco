@@ -19,40 +19,42 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _BoundedRange_idl
-#define _BoundedRange_idl
+#ifndef _Warsaw_BoundedRange_idl
+#define _Warsaw_BoundedRange_idl
 
 #include <Warsaw/Subject.idl>
 #include <Warsaw/Types.idl>
 
-//.a BoundedRange describes a 'range within a range'
-//.such as a viewport (a 'window') manipulated by a
-//.scrollbar
-interface BoundedRange : Subject
+module Warsaw
 {
-  struct Settings
-  {
-    Coord lower;
-    Coord upper;
-    Coord lvalue;
-    Coord uvalue;
-  };
-  Settings getSettings();
-  attribute Coord lower;
-  attribute Coord upper;
-  attribute Coord step;
-  attribute Coord page;
-  attribute Coord lvalue;
-  attribute Coord uvalue;
-
-  void forward();
-  void backward();
-  void fastforward();
-  void fastbackward();
-  void begin();
-  void end();
-  void adjust(in Coord d);
-
+  //.a BoundedRange describes a 'range within a range'
+  //.such as a viewport (a 'window') manipulated by a
+  //.scrollbar
+  interface BoundedRange : Subject
+    {
+      struct Settings
+      {
+	Coord lower;
+	Coord upper;
+	Coord lvalue;
+	Coord uvalue;
+      };
+      Settings getSettings();
+      attribute Coord lower;
+      attribute Coord upper;
+      attribute Coord step;
+      attribute Coord page;
+      attribute Coord lvalue;
+      attribute Coord uvalue;
+      
+      void forward();
+      void backward();
+      void fastforward();
+      void fastbackward();
+      void begin();
+      void end();
+      void adjust(in Coord d);
+    };
 };
 
-#endif /* _BoundedRange_idl */
+#endif

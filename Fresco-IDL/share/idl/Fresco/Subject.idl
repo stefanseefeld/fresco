@@ -19,30 +19,33 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Subject_idl
-#define _Subject_idl
+#ifndef _Warsaw_Subject_idl
+#define _Warsaw_Subject_idl
 
 #include <Warsaw/RefCountBase.idl>
 
-interface Observer;
-
-//. Subject defines what it means to be observable.
-//. Observers can be bound to it so calling notify
-//. will call them back
-interface Subject : RefCountBase
+module Warsaw
 {
-  void attach(in Observer o);
-  void detach(in Observer o);
-  void notify(in any a);
-  void block(in boolean b);  
+  interface Observer;
+
+  //. Subject defines what it means to be observable.
+  //. Observers can be bound to it so calling notify
+  //. will call them back
+  interface Subject : RefCountBase
+    {
+      void attach(in Observer o);
+      void detach(in Observer o);
+      void notify(in any a);
+      void block(in boolean b);  
+    };
+  
+  //. Observers observ Subjects.
+  //. Observers can be bound to it so calling notify
+  //. will call them back
+  interface Observer : RefCountBase
+    {
+      void update(in any a);
+    };
 };
 
-//. Observers observ Subjects.
-//. Observers can be bound to it so calling notify
-//. will call them back
-interface Observer : RefCountBase
-{
-  void update(in any a);
-};
-
-#endif /* _Subject_idl */
+#endif

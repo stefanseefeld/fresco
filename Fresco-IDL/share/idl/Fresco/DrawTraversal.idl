@@ -19,20 +19,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DrawTraversal_idl
-#define _DrawTraversal_idl
+#ifndef _Warsaw_DrawTraversal_idl
+#define _Warsaw_DrawTraversal_idl
 
 #include <Warsaw/Traversal.idl>
 
-interface DrawingKit;
-
-interface DrawTraversal : Traversal
+module Warsaw
 {
-  DrawingKit kit();
-//   void clipPath(in Path p);
-//   void clipRegion(in Region r);
-//   void pushClipping();
-//   void popClipping();
+  interface DrawingKit;
+
+  interface DrawTraversal : Traversal
+    {
+      DrawingKit kit();
+      //   void clipPath(in Path p);
+      //   void clipRegion(in Region r);
+      //   void pushClipping();
+      //   void popClipping();
+    };
 };
 
-#endif /* _DrawTraversal_idl */
+#endif

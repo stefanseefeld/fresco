@@ -20,69 +20,71 @@
  * MA 02139, USA.
  */
 
-#ifndef _Figure_idl
-#define _Figure_idl
+#ifndef _Warsaw_Figure_idl
+#define _Warsaw_Figure_idl
 
 #include <Warsaw/Graphic.idl>
 
-interface Figure : Graphic
+module Warsaw
 {
-  //. The Vertices type defines a sequence of vertex structures
-  //. for figures with an arbitrary number of vertices,
-  //. such as polygons and B-splines.
-  typedef ::Path Vertices;
-  
-  typedef short Mode;
-  const Mode fill = 1;
-  const Mode outline = 2;
+  interface Figure : Graphic
+    {
+      //. The Vertices type defines a sequence of vertex structures
+      //. for figures with an arbitrary number of vertices,
+      //. such as polygons and B-splines.
+      typedef Path Vertices;
+      
+      typedef short Mode;
+      const Mode fill = 1;
+      const Mode outline = 2;
+      
+      //   attribute Style figure_style;
+      //   attribute Mode figure_mode;
+      
+      attribute Mode type;
+      attribute Color foreground;
+      attribute Color background;
+      
+      void resize();
+    };
 
-//   attribute Style figure_style;
-//   attribute Mode figure_mode;
-
-  attribute Mode type;
-  attribute Color foreground;
-  attribute Color background;
-
-  void resize();
-};
-
-module Figures
-{
-  interface Point : Figure
-  {
-    attribute Vertex pt;
-  };
-  
-  interface Line : Figure
-  {
-    attribute Vertex pt1, pt2;
-  };
-
-  interface Rectangle : Figure
-  {
-    attribute Vertex pt1, pt2;
-  };
-
-  interface Circle : Figure
-  {
-    attribute Vertex center;
-    attribute Coord radius;
-  };
-
-  interface Ellipse : Figure
-  {
-    attribute Vertex center;
-    attribute Coord radius1;
-    attribute Coord radius2;
-  };
-
-  interface Path : Figure
-  {
-    Vertices handles();        
-//     attribute boolean closed;
-//     attribute boolean curved;
-  };
-
+  module Figures
+    {
+      interface Point : Figure
+	{
+	  attribute Vertex pt;
+	};
+      
+      interface Line : Figure
+	{
+	  attribute Vertex pt1, pt2;
+	};
+      
+      interface Rectangle : Figure
+	{
+	  attribute Vertex pt1, pt2;
+	};
+      
+      interface Circle : Figure
+	{
+	  attribute Vertex center;
+	  attribute Coord radius;
+	};
+      
+      interface Ellipse : Figure
+	{
+	  attribute Vertex center;
+	  attribute Coord radius1;
+	  attribute Coord radius2;
+	};
+      
+      interface Path : Figure
+	{
+	  Vertices handles();        
+	  //     attribute boolean closed;
+	  //     attribute boolean curved;
+	};
+    };
 };
 
 #endif

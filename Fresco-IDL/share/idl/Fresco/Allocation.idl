@@ -19,36 +19,39 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Allocation_idl
-#define _Allocation_idl
+#ifndef _Warsaw_Allocation_idl
+#define _Warsaw_Allocation_idl
 
-interface Region;
-interface Transform;
-interface Screen;
-
-//. Allocation is used in the process of retreiving
-//. cumulative geometry information for a given graphic.
-//. This information is used to determine what regions to
-//. damage in order to redraw the graphic.
-interface Allocation
+module Warsaw
 {
-  //. Info holds the region and transformation for one
-  //. appearance of the graphic.
-  struct Info
-  {
-    Region allocation;
-    Transform transformation;
-    Screen root;
-  };
-  //. add a new entry. This is typically called by the root
-  //. node of the scene graph (which is a screen). Since we
-  //. want to be able to draw on multiple screens at a time,
-  //. the Screen parameter has to be given
-  void add(in Region r, in Screen s);
-  //. the number of entries in the Allocation list.
-  long size();
-  //. used to access the l'th entry
-  Info get(in long l);
+  interface Region;
+  interface Transform;
+  interface Screen;
+  
+  //. Allocation is used in the process of retreiving
+  //. cumulative geometry information for a given graphic.
+  //. This information is used to determine what regions to
+  //. damage in order to redraw the graphic.
+  interface Allocation
+    {
+      //. Info holds the region and transformation for one
+      //. appearance of the graphic.
+      struct Info
+      {
+	Region allocation;
+	Transform transformation;
+	Screen root;
+      };
+      //. add a new entry. This is typically called by the root
+      //. node of the scene graph (which is a screen). Since we
+      //. want to be able to draw on multiple screens at a time,
+      //. the Screen parameter has to be given
+      void add(in Region r, in Screen s);
+      //. the number of entries in the Allocation list.
+      long size();
+      //. used to access the l'th entry
+      Info get(in long l);
+    };
 };
 
 #endif /* _Allocation_idl */
