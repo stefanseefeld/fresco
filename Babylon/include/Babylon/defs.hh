@@ -25,7 +25,7 @@
 #ifndef _Babylon_Defs_hh
 #define _Babylon_Defs_hh
 
-#ifdef sun
+#if defined(sun) || defined(__FreeBSD__)
 #define u_int16_t uint16_t
 #define u_int32_t uint32_t
 #include <sys/types.h>
