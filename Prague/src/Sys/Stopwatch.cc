@@ -33,7 +33,7 @@ clock_t Stopwatch::_ticks = 0;
 Stopwatch::Stopwatch()
   : _state(undef)
 {
-  if (!_ticks) _ticks = CLK_TCK;
+  if (!_ticks) _ticks = CLOCKS_PER_SEC;
   start();
 };
 
