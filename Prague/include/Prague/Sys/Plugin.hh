@@ -28,6 +28,8 @@ namespace Prague {
 
 template <class T>
 class Plugin : public DLL
+  //. a special kind of a smart pointer
+  //. which implements a plugin behavior
 {
 public:
   Plugin(const string &file, const string &loader = "load") : DLL(file)
@@ -37,7 +39,7 @@ public:
       t = dl ? (T *) dl() : 0;
     }
   ~Plugin() { delete t; }
-  T * operator () () { return t; }
+  T *operator ->() { return t;}
 protected:
 private:
   T *t;
