@@ -30,16 +30,6 @@
 namespace Prague
 {
 
-/* @Class{GetOpt}
- *
- * @Description{replacement for GNU GetOpt, adds handling of long options: proposed interface:
- @itemize @bullet
- @item try complience to standard getopt functions
- @item work as a filter, enabling subsequent option extraction by different GetOpt instances
- @item use '-' for short and '--' for long option styles
- @end itemize
- }
- */
 class GetOpt
 {
 public:
@@ -71,8 +61,8 @@ private:
   const char *p;	      // program basename
   const char *u;	      // usage message
   order ordering;
-  unsigned int getlongopt(int, char **);
-  unsigned int getopt(int, char **);
+  size_t getlongopt(int, char **);
+  size_t getopt(int, char **);
   table_t::iterator find(const string &option)
     { return find_if(table.begin(), table.end(), comp_string(option));}
   table_t::const_iterator find(const string &option) const
@@ -81,7 +71,7 @@ private:
     { return find_if(table.begin(), table.end(), comp_char(o));}
   table_t::const_iterator find(char o) const
     { return find_if(table.begin(), table.end(), comp_char(o));}
-  void exchange(char **, char **, char **);
+  void exchange(char **, size_t, char **);
   struct comp_string
   {
     comp_string(const string &n) : name(n) {}
@@ -98,4 +88,4 @@ private:
 
 };
 
-#endif /* _GetOpt_hh */
+#endif

@@ -110,7 +110,9 @@ int main(int argc, char **argv)
   getopt.add('p', "profiling", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
   getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
-  getopt.parse(argc - 1, argv + 1);
+  size_t argo = getopt.parse(argc, argv);
+  argc -= argo;
+  argv += argo;
   string value;
   getopt.get("version", &value);
   if (value == "true") { cout << "version is " << version << endl; exit(0);}

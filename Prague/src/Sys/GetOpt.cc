@@ -49,42 +49,29 @@ void GetOpt::get(const string &option, string *v) const
 
 int GetOpt::parse(int argc, char **argv)
 {
-  int begin_unknown = 0, end_unknown = 0, optind = 0;
-  while (optind < argc)
+  int unknown = 0;
+  int cursor = 0;
+  while (cursor < argc)
      {
-//        cout << "parsing next argument" << endl;
-//        for (int i = 0; i != argc - optind; i++) cout << argv[i] << ' ';
-//        cout << endl;
-       int consumed = 0;
-       if (argv[0][0] == '-') // option
+       size_t consumed = 0;
+       if (argv[cursor][0] == '-') // option
+	 if (argv[cursor][1] == '-') // long option
+	   if (argv[cursor][2] == '\0') // premature end
+	     return ++cursor;
+	   else consumed = getlongopt(argc - cursor, argv + cursor);
+	 else consumed = getopt(argc - cursor, argv + cursor);
+       if (consumed && cursor)
 	 {
-	   if (argv[0][1] == '-') // long option
-	     {
-	       if (argv[0][2] == '\0') // premature end
-		 {
-		   optind++;
-		   return optind;
-		 }
-	       else consumed = getlongopt(argc - optind, argv);
-	     }
-	   else consumed = getopt(argc - optind, argv);
+	   exchange(argv + cursor, consumed, argv + unknown);
+	   unknown += consumed;
+	   cursor += consumed;
 	 }
-       if (!consumed) argv++, end_unknown++, optind++;
-       else
-	 {
-	   optind += consumed;
-	   if (begin_unknown != end_unknown && end_unknown != optind)
-	     {
-	       exchange(argv + begin_unknown, argv + end_unknown, argv + optind);
-	       begin_unknown = end_unknown, end_unknown = optind;
-	     }
-	   argv += consumed;
-	 }
+       else cursor += 1;
      }
-  return optind;
+  return unknown;
 }
 
-unsigned int GetOpt::getlongopt(int argc, char **argv)
+size_t GetOpt::getlongopt(int argc, char **argv)
 {
   char *token = *argv + 2;
   while (*token != '\0' && *token != '=') token++;
@@ -93,11 +80,11 @@ unsigned int GetOpt::getlongopt(int argc, char **argv)
   if (i == table.end()) return 0;
   if ((*i).t == novalue) (*i).value = "true";
   else if (*token == '=') (*i).value = token + 1;
-  else if ((*i).t == mandatory) cerr << "GetOpt: option '--" << (*i).option << "' requires a value" << endl;
+  else if ((*i).t == mandatory) cerr << p << ": option '--" << (*i).option << "' requires a value" << endl;
   return 1;
 }
 
-unsigned int GetOpt::getopt(int argc, char **argv)
+size_t GetOpt::getopt(int argc, char **argv)
 {
   char *option = *argv + 1;
   table_t::iterator i;
@@ -117,7 +104,7 @@ unsigned int GetOpt::getopt(int argc, char **argv)
 	}
       else if ((*i).t == mandatory)
 	{
-	  cerr << "GetOpt: option '-" << (*i).o << "' requires a value" << endl;
+	  cerr << p << ": option '-" << (*i).o << "' requires a value" << endl;
 	  return 1;
 	}
     }
@@ -140,11 +127,11 @@ void GetOpt::usage() const
   cout.flush();
 }
 
-void GetOpt::exchange (char **a, char **b, char **c)
+void GetOpt::exchange (char **a, size_t size, char **b)
 {
-  char **tmp = new char *[b - a];
-  Memory::copy (a, tmp, (b - a)*sizeof(char **));
-  Memory::copy (b, a, (c - b)*sizeof(char **));
-  Memory::copy (tmp, b, (b - a)*sizeof(char **));
+  char **tmp = new char *[size];
+  Memory::copy (a, tmp, size * sizeof(char **));
+  Memory::copy (b, b + size, (a - b)*sizeof(char **));
+  Memory::copy (tmp, b, size * sizeof(char **));
   delete [] tmp;
 }
