@@ -31,76 +31,6 @@
 
 using namespace Geometry;
 
-StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Stage::Index ll)
-  : parent(pa), c(Graphic::_duplicate(g)), tag(t), p(pp), s(ss), l(ll)
-{
-  c->addParent(Stage_var(parent->_this()), tag);
-  cacheBBox();
-}
-
-void StageHandleImpl::position(const Vertex &pp)
-{
-  parent->begin();
-  parent->move(this, pp);
-  parent->end();
-}
-
-void StageHandleImpl::size(const Vertex &ss)
-{
-  parent->begin();
-  parent->resize(this, ss);
-  parent->end();
-}
-
-void StageHandleImpl::layer(Stage::Index ll)
-{
-  parent->begin();
-  parent->relayer(this, ll);
-  parent->end();
-}
-
-void StageHandleImpl::cacheBBox()
-{
-  SectionLog section(Logger::layout, "StageHandleImpl::cacheBBox");
-  Graphic::Requisition r;
-  GraphicImpl::initRequisition(r);    
-  c->request(r);
-  if (r.x.defined && r.y.defined)
-    {
-      xalign = r.x.align;
-      yalign = r.y.align;
-      if (s.x != 0)
-	{
-	  boundingbox.l = p.x;
-	  boundingbox.r = p.x + s.x;
-	}
-      else
-	{
-	  boundingbox.l = p.x - r.x.natural * r.x.align;
-	  boundingbox.r = p.x + r.x.natural * (1. - r.x.align);
-	}
-      if (s.y != 0)
-	{
-	  boundingbox.t = p.y;
-	  boundingbox.b = p.y + s.y;
-	}
-      else
-	{
-	  boundingbox.t = p.y - r.y.natural * r.y.align;
-	  boundingbox.b = p.y + r.y.natural * (1. - r.y.align);
-	}
-    }
-  else
-    {
-      xalign = 0.;
-      yalign = 0.;
-      boundingbox.l = p.x;
-      boundingbox.r = p.x;
-      boundingbox.t = p.y;
-      boundingbox.b = p.y;
-    }
-}
-
 StageSequence::iterator StageSequence::lookup(Stage::Index layer)
 {
   if (layer == front()->l) return begin();
@@ -716,7 +646,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
   need_resize = true;
   
   handle->boundingbox.r = handle->boundingbox.l + s.x;
-  handle->boundingbox.b = handle->boundingbox.l + s.y;
+  handle->boundingbox.b = handle->boundingbox.t + s.y;
   handle->s = s;
   tree.insert(handle);
 //   dumpQuadTree(tree);
@@ -755,8 +685,6 @@ StageHandleImpl *StageImpl::tag2handle(Tag tag)
   return 0;
 }
 
-
-
 void StageImpl::damage(StageHandleImpl *handle)
 {
   RegionImpl *region = new RegionImpl;
@@ -770,3 +698,74 @@ void StageImpl::damage(StageHandleImpl *handle)
     }
   region->_dispose();
 }
+
+StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Stage::Index ll)
+  : stage(pa), c(Graphic::_duplicate(g)), tag(t), p(pp), s(ss), l(ll)
+{
+  c->addParent(Stage_var(stage->_this()), tag);
+  cacheBBox();
+}
+
+void StageHandleImpl::position(const Vertex &pp)
+{
+  stage->begin();
+  stage->move(this, pp);
+  stage->end();
+}
+
+void StageHandleImpl::size(const Vertex &ss)
+{
+  stage->begin();
+  stage->resize(this, ss);
+  stage->end();
+}
+
+void StageHandleImpl::layer(Stage::Index ll)
+{
+  stage->begin();
+  stage->relayer(this, ll);
+  stage->end();
+}
+
+void StageHandleImpl::cacheBBox()
+{
+  SectionLog section(Logger::layout, "StageHandleImpl::cacheBBox");
+  Graphic::Requisition r;
+  GraphicImpl::initRequisition(r);    
+  c->request(r);
+  if (r.x.defined && r.y.defined)
+    {
+      xalign = r.x.align;
+      yalign = r.y.align;
+      if (s.x != 0)
+	{
+	  boundingbox.l = p.x;
+	  boundingbox.r = p.x + s.x;
+	}
+      else
+	{
+	  boundingbox.l = p.x - r.x.natural * r.x.align;
+	  boundingbox.r = p.x + r.x.natural * (1. - r.x.align);
+	}
+      if (s.y != 0)
+	{
+	  boundingbox.t = p.y;
+	  boundingbox.b = p.y + s.y;
+	}
+      else
+	{
+	  boundingbox.t = p.y - r.y.natural * r.y.align;
+	  boundingbox.b = p.y + r.y.natural * (1. - r.y.align);
+	}
+    }
+  else
+    {
+      xalign = 0.;
+      yalign = 0.;
+      boundingbox.l = p.x;
+      boundingbox.r = p.x;
+      boundingbox.t = p.y;
+      boundingbox.b = p.y;
+    }
+}
+
