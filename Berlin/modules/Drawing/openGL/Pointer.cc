@@ -124,8 +124,8 @@ void Pointer::write()
   unsigned char *bits = mask;
   unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
 
-  for (PixelCoord y = 0; y != size[1]; y++, to += stride - size[0]*4)
-    for (PixelCoord x = 0; x != size[0]*4; x++, from++, bits++, to++)
+  for (PixelCoord y = 0; y != size[1]; y++, to += stride - size[0]*depth)
+    for (PixelCoord x = 0; x != size[0]*depth; x++, from++, bits++, to++)
 	*to = (*from & *bits) | (*to & ~*bits);
 	    
 	    //	    *to = *from & *bits;
