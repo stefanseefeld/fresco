@@ -29,7 +29,7 @@
 using namespace Prague;
 
 FocusImpl::FocusImpl(ScreenImpl *s) : screen(s), traversal(0) {}
-FocusImpl::~FocusImpl() { if (traversal) traversal->_dispose();}
+FocusImpl::~FocusImpl() {}
 
 void FocusImpl::request(Controller_ptr c)
 {
@@ -74,7 +74,6 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
 					Region_var(screen->getRegion()),
 					Transform_var(Transform::_nil()),
 					pointer);
-      traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
     }
   /*
@@ -131,9 +130,7 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
   /*
    * ...and finally dispatch the event
    */
-  traversal->_dispose();
   traversal = picked;
-  traversal->_obj_is_ready(_boa());
   CORBA::Any any;
   any <<= pointer;
   controllers.back()->handle(PickTraversal_var(traversal->_this()), any);

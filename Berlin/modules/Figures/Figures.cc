@@ -204,7 +204,7 @@ void PathImpl::resize()
 {
 //   FigureKit::Vertices& vv = *handles_;
 //   long n = vv.length();
-//   reset();
+  reset();
 //   if (!closed_ && curved_) {
 //         Bspline_move_to(vv[0].x, vv[0].y, vv[0].x, vv[0].y, vv[0].x, vv[0].y);
 //         Bspline_curve_to(vv[0].x, vv[0].y, vv[0].x, vv[0].y, vv[1].x, vv[1].y);
@@ -235,11 +235,10 @@ void PathImpl::resize()
 //             vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
 //         );
 //     } else {
-//         for (ULong i = 0; i < vv.length(); ++i) {
-//             add_point(vv[i].x, vv[i].y);
+  for (CORBA::ULong i = 0; i < handle->length(); ++i) addPoint(handle[i].x, handle[i].y);
 //         }
 //     }
-  cerr << "sorry, PathImpl::resize not implemented" << endl;
+//   cerr << "sorry, PathImpl::resize not implemented" << endl;
 }
 
 PathImpl::~PathImpl () {}

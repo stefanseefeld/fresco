@@ -26,6 +26,7 @@
 #include <Warsaw/Screen.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/ControllerImpl.hh>
+#include <Berlin/ImplVar.hh>
 
 class ScreenManager;
 class EventManager;
@@ -53,7 +54,7 @@ public:
 protected:
   GLDrawingKit  *drawing;
   ScreenManager *smanager;
-  RegionImpl    *region;
+  Impl_var<RegionImpl> region;
   EventManager  *emanager;
 };
 

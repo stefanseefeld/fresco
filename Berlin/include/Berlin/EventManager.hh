@@ -27,6 +27,7 @@
 #include "Warsaw/Controller.hh"
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/FocusImpl.hh>
+#include <Berlin/ImplVar.hh>
 
 class EventManager
 {
@@ -39,7 +40,7 @@ public:
   void dispatch(const Event::Key &);
 private:
   ScreenImpl *screen;
-  FocusImpl  *focus;
+  Impl_var<FocusImpl>  focus;
 };
 
 #endif /* _EventManager_hh */

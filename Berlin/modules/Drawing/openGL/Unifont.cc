@@ -81,7 +81,7 @@ void GLUnifont::drawText(const Unistring &u, const Vertex &p)
     unsigned short tmpchr = (unsigned short)(u[i]);
     if (! rendered[tmpchr]) {
       glNewList(myDisplaylistOffset + tmpchr, GL_COMPILE);
-      cerr << "(" << tmpchr << ") ";
+//       cerr << "(" << tmpchr << ") ";
       key.set_data((void *)(&tmpchr)); // discard const ! 
       if (glyphdb->get(NULL,&key,&glyph,0) == 0) {
 	int height = 16;

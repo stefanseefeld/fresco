@@ -41,12 +41,10 @@ ScreenImpl::ScreenImpl(GLDrawingKit *d)
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
   region->upper.x = drawing->width(), region->upper.y = drawing->height(), region->upper.z = 0;
-  region->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 ScreenImpl::~ScreenImpl()
 {
-  region->_dispose();
   delete smanager;
   delete emanager;
 }

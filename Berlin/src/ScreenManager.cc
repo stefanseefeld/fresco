@@ -85,9 +85,9 @@ void ScreenManager::repair()
       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
-  							   Region_var((*i)->_this()),
- 							   Transform_var(Transform::_nil()),
- 							   DrawingKit_var(drawing->_this()));
+							   Region_var((*i)->_this()),
+							   Transform_var(Transform::_nil()),
+							   DrawingKit_var(drawing->_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();

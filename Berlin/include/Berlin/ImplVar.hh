@@ -32,11 +32,13 @@ public:
   Impl_var(Impl_var &i) : t(i.release()) {}
   Impl_var &operator = (Impl_var &i) { if (&i != this) { if (t) t->_dispose(); t = i.release();} return *this;}
   ~Impl_var() { if (t) t->_dispose();}
+  Impl_var &operator = (T *tt) { if (t) t->_dispose(); t = tt; t->_obj_is_ready(CORBA::BOA::getBOA()); return *this;}
   T *get() const { return t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}
   T *release() { T *tmp = t; t = 0; return tmp;}
+  void reset(T *tt = 0) { if (t) t->_dispose(); t = tt; t->_obj_is_ready(CORBA::BOA::getBOA());}
 private:
   T *t;
 };

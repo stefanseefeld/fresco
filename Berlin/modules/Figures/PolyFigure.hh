@@ -25,6 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Figure.hh>
 #include <Berlin/PolyGraphic.hh>
+#include <Berlin/ImplVar.hh>
 
 class TransformImpl;
 
@@ -58,8 +59,8 @@ public:
 
 protected:
     void updateBbox();
-    TransformImpl *tx;
-    RegionImpl *bbox;
+    Impl_var<TransformImpl> tx;
+    Impl_var<RegionImpl> bbox;
 };
 
 class UPolyFigure : public PolyFigure

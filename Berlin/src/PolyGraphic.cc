@@ -42,19 +42,21 @@ PolyGraphic::~PolyGraphic()
 
 void PolyGraphic::append(Graphic_ptr child)
 {
-  MutexGuard guard(childMutex);
+  childMutex.lock();
   edge_t edge(Graphic::_duplicate(child), tag());
   children.push_back(edge);
   child->addParent(Graphic_var(_this()), edge.second);
+  childMutex.unlock();
   needResize();
 }
 
 void PolyGraphic::prepend(Graphic_ptr child)
 {
-  MutexGuard guard(childMutex);
+  childMutex.lock();
   edge_t edge(Graphic::_duplicate(child), tag());
   children.insert(children.begin(), edge);
   child->addParent(Graphic_var(_this()), edge.second);
+  childMutex.unlock();
   needResize();
 }
 

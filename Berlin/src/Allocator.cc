@@ -36,18 +36,14 @@
 #include "Berlin/Logger.hh"
 
 Allocator::Allocator()
+  : requested(false),
+    natural(new RegionImpl),
+    extension(new RegionImpl)
 {
-  requested = false;
-  natural = new RegionImpl;
-  natural->_obj_is_ready(CORBA::BOA::getBOA());
-  extension = new RegionImpl;
-  extension->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 Allocator::~Allocator()
 { 
-  natural->_dispose();
-  extension->_dispose();
 }
 
 void Allocator::request(Requisition &r)
@@ -175,9 +171,8 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
   i.allocation->copy(natural);
 }
 
-void TransformAllocator::traverse(Traversal_ptr t)
+void TransformAllocator::traverse(Traversal_ptr traversal)
 {
-  Traversal_var traversal = t;
   Impl_var<TransformImpl> tx(new TransformImpl);
   updateRequisition();
   Vertex lower, upper, v;

@@ -27,30 +27,24 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
 #include "Figure/PolyFigure.hh"
+#include "Berlin/Logger.hh"
 
 PolyFigure::PolyFigure()
+  : tx(new TransformImpl),
+    bbox(new RegionImpl)
 {
-  tx = new TransformImpl;
-  tx->_obj_is_ready(CORBA::BOA::getBOA());
-  bbox = new RegionImpl;
-  bbox->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 PolyFigure::PolyFigure(const PolyFigure &pf)
+  : tx(new TransformImpl),
+    bbox(new RegionImpl)
 {
-  tx = new TransformImpl;
-  tx->_obj_is_ready(CORBA::BOA::getBOA());
-  tx->copy(pf.tx);
-  bbox = new RegionImpl;
-  bbox->_obj_is_ready(CORBA::BOA::getBOA());
   bbox->valid = pf.bbox->valid;
   if (bbox->valid) bbox->copy(pf.bbox);
 }
 
 PolyFigure::~PolyFigure()
 {
-  tx->_dispose();
-  bbox->_dispose();
 }
 
 void PolyFigure::updateBbox()
@@ -116,18 +110,26 @@ void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
  */
 void PolyFigure::traverse(Traversal_ptr traversal)
 {
+  SectionLog section(Logger::traversal, "PolyFigure::traverse");
   updateBbox();
   if (bbox->valid)
     {
       Impl_var<RegionImpl> region(new RegionImpl(bbox, tx));
-      if (traversal->intersectsRegion(region))
-	PolyGraphic::traverse(traversal);
+      if (!traversal->intersectsRegion(Region_var(region->_this()))) return;
     }
+  else return;
+  CORBA::Long n = numChildren();
+  for (CORBA::Long i = 0; i != n; i++)
+    {
+      traversal->traverseChild(children[i].first, children[i].second, Region_var(bbox->_this()), Transform_var(tx->_this()));
+      if (!traversal->ok()) break;
+    }
+
 }
 
 Transform_ptr PolyFigure::transformation()
 {
-  return Transform::_duplicate(tx);
+  return tx->_this();
 }
 
 void PolyFigure::needRedraw()
@@ -155,5 +157,5 @@ UPolyFigure::UPolyFigure(const UPolyFigure &up) : PolyFigure(up) {}
  */
 void UPolyFigure::traverse(Traversal_ptr traversal)
 {
-  
+  SectionLog section(Logger::traversal, "UPolyFigure::traverse");  
 }

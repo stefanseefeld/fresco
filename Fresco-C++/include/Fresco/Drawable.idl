@@ -25,11 +25,13 @@
 #include <Types.idl>
 
 interface Region;
+interface Transform;
 
 interface Drawable
 {
   Coord dpi(in Axis a);
-  attribute Region clipping;
+  void pushClipping(in Region r, in Transform t);
+  void popClipping();
 };
 
 #endif /* _Drawable_idl */

@@ -334,6 +334,7 @@ void GraphicImpl::needRedraw()
  */
 void GraphicImpl::needRedrawRegion(Region_ptr region)
 {
+  SectionLog section(Logger::drawing, "GraphicImpl::needRedrawRegion");
   if (region->defined())
     {
       Impl_var<AllocationImpl> allocation(new AllocationImpl);
@@ -342,8 +343,8 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
       for (CORBA::Long i = 0; i < allocation->size(); i++)
 	{
 	  Allocation::Info_var info = allocation->get(i);
-	  dr->copy(Region::_duplicate(region));
-	  dr->applyTransform(Transform::_duplicate(info->transformation));
+	  dr->copy(region);
+	  dr->applyTransform(info->transformation);
 	  info->root->damage(Region_var(dr->_this()));
 	}
     }

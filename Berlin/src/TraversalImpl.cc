@@ -136,8 +136,7 @@ void TraversalImpl::update()
   SectionLog section(Logger::traversal, "TraversalImpl::update");
   if (stack.size() == 1) return;
   stack_t::iterator parent = stack.begin();
-  RegionImpl *allocation = new RegionImpl((*parent).allocation, Transform_var(Transform::_nil()));
-  allocation->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> allocation(new RegionImpl((*parent).allocation, Transform_var(Transform::_nil())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   transformation->copy((*parent).transformation);
   Allocation::Info info;

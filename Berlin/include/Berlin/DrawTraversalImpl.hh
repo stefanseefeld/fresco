@@ -37,13 +37,14 @@ class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImp
 public:
   DrawTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, DrawingKit_ptr);
   DrawTraversalImpl(const DrawTraversalImpl &);
-  ~DrawTraversalImpl();
-  CORBA::Boolean intersectsAllocation();
-  CORBA::Boolean intersectsRegion(Region_ptr);
-  void visit(Graphic_ptr);
-  order direction() { return up;}
-  CORBA::Boolean ok() { return true;}
-  DrawingKit_ptr kit();
+  virtual ~DrawTraversalImpl();
+  virtual CORBA::Boolean intersectsAllocation();
+  virtual CORBA::Boolean intersectsRegion(Region_ptr);
+  virtual void traverseChild(Graphic_ptr, Tag, Region_ptr, Transform_ptr);
+  virtual void visit(Graphic_ptr);
+  virtual order direction() { return up;}
+  virtual CORBA::Boolean ok() { return true;}
+  virtual DrawingKit_ptr kit();
 private:
   DrawingKit_var drawingkit;
   Drawable_var drawable;

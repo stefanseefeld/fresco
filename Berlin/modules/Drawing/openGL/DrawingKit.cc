@@ -37,15 +37,12 @@ extern "C" {
 GLDrawingKit::GLDrawingKit()
   : rasters(500)
 {
-cout << "GLDrawingKit begin" << endl;
   ggiInit();
-cout << "initialized ggi" << endl;
   drawable = new GLDrawable();
-cout << "initialized drawable" << endl;
   drawable->_obj_is_ready(CORBA::BOA::getBOA());
   gnufont = new GLUnifont();
   gnufont->_obj_is_ready(CORBA::BOA::getBOA());
-  Color c = {0.0,0.0,1.0,1.0};
+  Color c = {0.0,0.0,0.0,1.0};
   gnufont->setColor(c);
 }
 

@@ -21,6 +21,7 @@
  */
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Drawable.hh"
 #include "Warsaw/DrawingKit.hh"
@@ -31,16 +32,24 @@ DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr 
     drawingkit(DrawingKit::_duplicate(kit)),
     drawable(drawingkit->getDrawable()),
     clipping(Region::_duplicate(r))
-{}
+{
+  drawable->pushClipping(clipping, Transform_var(Transform::_nil()));
+}
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
   : TraversalImpl(t),
     drawingkit(t.drawingkit),
     drawable(t.drawable),
     clipping(t.clipping)
-{}
+{
+//   drawable->pushClipping(clipping, Transform_var(Transform::_nil()));
+}
 
-DrawTraversalImpl::~DrawTraversalImpl() {}
+DrawTraversalImpl::~DrawTraversalImpl()
+{
+  drawable->popClipping();
+}
+
 CORBA::Boolean DrawTraversalImpl::intersectsAllocation()
 {
   Region_var r = allocation();
@@ -48,6 +57,22 @@ CORBA::Boolean DrawTraversalImpl::intersectsAllocation()
   RegionImpl region(r, t);
   return region.intersects(clipping);
 }
-CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr region) { return clipping->intersects(region);}
+CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
+{
+  Transform_var t = transformation();
+  RegionImpl region(r, t);
+  return region.intersects(clipping);
+}
+
+void DrawTraversalImpl::traverseChild(Graphic_ptr g, Tag t, Region_ptr region, Transform_ptr transform)
+{
+//   Impl_var<TransformImpl> tx(new TransformImpl);
+//   tx->copy(Transform_var(transformation()));
+//   tx->premultiply(transform);
+//   drawable->pushClipping(region, Transform_var(tx->_this()));
+  TraversalImpl::traverseChild(g, t, region, transform);
+//   drawable->popClipping();
+};
+
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}
 DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawingkit);}

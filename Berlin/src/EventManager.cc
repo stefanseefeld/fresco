@@ -25,33 +25,13 @@
 #include "Berlin/Logger.hh"
 
 EventManager::EventManager(ScreenImpl *s)
-  : screen(s)
-{
-  focus = new FocusImpl(screen);
-  focus->_obj_is_ready(CORBA::BOA::getBOA());
-}
+  : screen(s),
+    focus(new FocusImpl(screen))
+{}
 
-EventManager::~EventManager()
-{
-  focus->_dispose();
-}
-
-void EventManager::requestFocus(Controller_ptr c)
-{
-  focus->request(c);
-}
-
-void EventManager::damage(Region_ptr r)
-{
-  focus->damage(r);
-}
-
-void EventManager::dispatch(const Event::Pointer &pointer)
-{
-  focus->dispatch(pointer);
-}
-
-void EventManager::dispatch(const Event::Key &)
-{
-}
+EventManager::~EventManager() {}
+void EventManager::requestFocus(Controller_ptr c) { focus->request(c);}
+void EventManager::damage(Region_ptr r) { focus->damage(r);}
+void EventManager::dispatch(const Event::Pointer &pointer) { focus->dispatch(pointer);}
+void EventManager::dispatch(const Event::Key &) {}
 

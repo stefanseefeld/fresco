@@ -36,21 +36,14 @@
 using namespace Geometry;
 
 TransformFigure::TransformFigure()
+  : tx(new TransformImpl),
+    ext(new RegionImpl)
 {
-  tx    = new TransformImpl;
-  tx->_obj_is_ready(CORBA::BOA::getBOA());
-  ext = new RegionImpl;
-  ext->_obj_is_ready(CORBA::BOA::getBOA());
   fg.red = fg.green = fg.blue = 0., fg.alpha = 1.;
   bg.red = bg.green = bg.blue = 0., bg.alpha = 1.;
 }
 
-TransformFigure::~TransformFigure()
-{
-  ext->_dispose();
-  tx->_dispose();
-}
-
+TransformFigure::~TransformFigure() {}
 Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(tx);}
 void TransformFigure::request(Requisition &r)
 {
@@ -185,7 +178,6 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
-      info.transformation = traversal->transformation();
       Impl_var<RegionImpl> region(new RegionImpl);
       extension(info, region);
       if (traversal->intersectsRegion(region))

@@ -28,39 +28,12 @@ extern "C" {
 
 GLDrawable::GLDrawable()
 {
-  //  int gt = GT_8BIT;
-  //  switch (d)
-  //    {
-  //    case 4:  gt = GT_4BIT;  break;
-  //    case 8:  gt = GT_8BIT;  break;
-  //    case 15: gt = GT_15BIT; break;
-  //    case 16: gt = GT_16BIT; break;
-  //    case 24: gt = GT_24BIT; break;
-  //    case 32: gt = GT_32BIT; break;
-  //    }
-context = GGIMesaCreateContext();
+  context = GGIMesaCreateContext();
   if (!context)
     {
       cerr << "GGIMesaCreateContext() failed" << endl;
       exit(4);
-      // Exit code 4, cannot create a GGIMesa context.
     }
-
-  // New approach.
-  //  visual = ggiOpen("display-X", 0);
-  //  if (!visual) cerr << "ggiOpen(0) failed" << endl;
-  //  if (ggiSetGraphMode(visual, w, h, GGI_AUTO, GGI_AUTO, gt))
-  //    cerr << "can't set graphmode (" << w << ',' << h << ") " << d << " bpp" << endl;
-  //  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
-  //    cerr << "GGIMesaSetVisual() failed" << endl;
-  //  GGIMesaMakeCurrent(context);
-  
-  // let GGIMesa know how big the GGI visual is
-  //  ggi_mode mode;
-  //  if( ggiGetMode( visual, &mode ) ) {
-  //    cerr << "Couldn't set graphics mode!!" << endl;
-  //  }
-
   // Configure the mode struct.
   mode.visible.x = mode.visible.y = GGI_AUTO;
   mode.virt.x = mode.virt.y = GGI_AUTO;
@@ -71,11 +44,11 @@ context = GGIMesaCreateContext();
   // Open the default visual --
   visual = ggiOpen(0);
   if (!visual) { cerr << "ggiOpen(NULL) failed!" << endl; exit(5);} // exit code 5 -- can't acquire a visual
-
+  
   // We've acquired a visual, now let's decide on a mode. See libggi docs
   // on the format of the environment variable GGI_DEFMODE, which we use to
   // get all of our mode preferences.
-
+  
   if(ggiCheckMode(visual, &mode) == 0)
     {
       
@@ -126,11 +99,6 @@ context = GGIMesaCreateContext();
       exit( 7 );
       // exit code 7. Cannot set visual for GGIMesa.
     }
-
-  clip = new RegionImpl;
-  clip->_obj_is_ready(CORBA::BOA::getBOA());
-  
-
   GGIMesaMakeCurrent(context);
   reshape( mode.visible.x, mode.visible.y );
 
@@ -148,6 +116,11 @@ context = GGIMesaCreateContext();
   // glEnable( GL_DEPTH_TEST ); 
    glFrontFace(GL_CW); 
 //   glShadeModel(GL_FLAT);
+   glEnable(GL_CLIP_PLANE0);
+   glEnable(GL_CLIP_PLANE1);
+   glEnable(GL_CLIP_PLANE2);
+   glEnable(GL_CLIP_PLANE3);
+   glEnable(GL_ALPHA_TEST);
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -170,7 +143,12 @@ void GLDrawable::reshape( int width, int height )
 
 GLDrawable::~GLDrawable()
 {
-  clip->_dispose();
+  while (clipping.size())
+    {
+      RegionImpl *c = clipping.top();
+      c->_dispose();
+      clipping.pop();
+    }
   GGIMesaDestroyContext(context);
 }
 
@@ -182,19 +160,45 @@ Coord GLDrawable::dpi(Axis axis)
 Coord GLDrawable::toCoord(PixelCoord p, Axis axis) { return p/dpi(axis);}
 PixelCoord GLDrawable::toPixels(Coord c, Axis axis) { return static_cast<long>(c*dpi(axis));}
 
-void GLDrawable::clipping(Region_ptr r)
+void GLDrawable::pushClipping(Region_ptr region, Transform_ptr transformation)
 {
+  RegionImpl *clip = new RegionImpl(region, transformation);
+  clip->_obj_is_ready(CORBA::BOA::getBOA());
+  if (clipping.size()) clip->mergeIntersect(Region_var(clipping.top()->_this()));
+  clipping.push(clip);
   makeCurrent();
-  clip->copy(r);
-  PixelCoord x, y, w, h;
-  x = toPixels(clip->lower.x, xaxis);
-  y = toPixels(clip->lower.y, yaxis);
-  w = toPixels(clip->upper.x - clip->lower.x, xaxis);
-  h = toPixels(clip->upper.y - clip->lower.y, yaxis);
-  glViewport(x, y, w, h);
+//   PixelCoord x, y, w, h;
+//   x = toPixels(clip->lower.x, xaxis);
+//   y = toPixels(clip->lower.y, yaxis);
+//   w = toPixels(clip->upper.x - clip->lower.x, xaxis);
+//   h = toPixels(clip->upper.y - clip->lower.y, yaxis);
+  double cp0[] = {1., 0., 0., clip->lower.x};
+  double cp1[] = {0., 1., 0., clip->lower.y};
+  double cp2[] = {-1., 0., 0., clip->upper.x};
+  double cp3[] = {0., -1., 0., clip->upper.y};
+  glClipPlane(GL_CLIP_PLANE0, cp0);
+  glClipPlane(GL_CLIP_PLANE1, cp1);
+  glClipPlane(GL_CLIP_PLANE2, cp2);
+  glClipPlane(GL_CLIP_PLANE3, cp3);
 }
 
-Region_ptr GLDrawable::clipping()
+void GLDrawable::popClipping()
 {
-  return clip->_this();
+  if (clipping.size())
+    {
+      RegionImpl *clip = clipping.top();
+      clip->_dispose();
+      clipping.pop();
+      if (!clipping.size()) return;
+      clip = clipping.top();
+      makeCurrent();
+      double cp0[] = {1., 0., 0., clip->lower.x};
+      double cp1[] = {0., 1., 0., clip->lower.y};
+      double cp2[] = {-1., 0., 0., clip->upper.x};
+      double cp3[] = {0., -1., 0., clip->upper.y};
+      glClipPlane(GL_CLIP_PLANE0, cp0);
+      glClipPlane(GL_CLIP_PLANE1, cp1);
+      glClipPlane(GL_CLIP_PLANE2, cp2);
+      glClipPlane(GL_CLIP_PLANE3, cp3);
+    }
 }

@@ -25,6 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Figure.hh>
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/ImplVar.hh>
 
 class TransformImpl;
 class RegionImpl;
@@ -53,8 +54,8 @@ class TransformFigure : implements (Figure), public GraphicImpl
  protected:
   Mode mode;
   Color fg, bg;
-  TransformImpl *tx;
-  RegionImpl *ext;
+  Impl_var<TransformImpl> tx;
+  Impl_var<RegionImpl> ext;
 };
 
 class FigureImpl : public TransformFigure

@@ -28,6 +28,7 @@
 #define _Allocator_hh
 
 #include <Berlin/MonoGraphic.hh>
+#include <Berlin/ImplVar.hh>
 
 class Allocator : public MonoGraphic
 {
@@ -44,8 +45,8 @@ public:
 protected:
   bool requested;
   Graphic::Requisition requisition;
-  RegionImpl *natural;
-  RegionImpl *extension;
+  Impl_var<RegionImpl> natural;
+  Impl_var<RegionImpl> extension;
   
   void updateRequisition();
   void needDamage(RegionImpl *, Allocation_ptr);
