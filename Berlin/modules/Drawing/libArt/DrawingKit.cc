@@ -32,6 +32,7 @@ extern "C"
 
 #include <art_pathcode.h>
 #include <art_pixbuf.h>
+#include <art_affine.h>
 #include <art_rect.h>
 #include <art_vpath.h>
 #include <art_svp.h>
@@ -71,6 +72,11 @@ static inline art_u32 artColor(Color &c) {
 	  ((art_u8)(c.green * 0xff) << 16) + 
 	  ((art_u8)(c.red * 0xff) << 8) + 
 	  ((art_u8)(c.alpha * 0xff)));
+}
+
+static inline void fix_order_of_irect(ArtIRect &ir) {
+  if (ir.x0 > ir.x1) {int tmp = ir.x0; ir.x1 = ir.x0; ir.x0 = tmp;}
+  if (ir.y0 > ir.y1) {int tmp = ir.y0; ir.y0 = ir.y1; ir.y1 = tmp;}
 }
 
 void LibArtDrawingKit::setTransformation(Transform_ptr t)
@@ -133,57 +139,41 @@ void LibArtDrawingKit::drawPath(const Path &p)
   ArtVpath vpath[(fs == outlined ? len : len + 1)];
   ArtVpath *tvpath;
   ArtVpath *tsvpath;
-  double resScale[6]  = {
-    drawable->resolution(xaxis), 0, 0, 
-      drawable->resolution(yaxis), 0, 0
-      };
+  double xres = drawable->resolution(xaxis);
+  double yres = drawable->resolution(yaxis);
+  double resScale[6]  = {xres, 0, 0, yres, 0, 0};
+
+  for (int i = 0; i < len; i++) {
+    vpath[i].code = ART_LINETO;
+    vpath[i].x = p[len-i-1].x; vpath[i].y = p[len-i-1].y;
+  }
 
   if (fs == outlined) {
-    for (int i = 0; i < len; i++) {
-      vpath[i].code = (i == 0 ? ART_MOVETO_OPEN 
-		       : (i == len - 1 ? ART_END : ART_LINETO));
-      vpath[i].x = p[len-i-1].x;
-      vpath[i].y = p[len-i-1].y;
-    }
-
+    vpath[0].code = ART_MOVETO_OPEN;
+    vpath[len-1].code = ART_END;
   } else {
-    for (int i = 0; i < len; i++) {
-      vpath[i].code = (i == 0 ? ART_MOVETO : ART_LINETO);
-      vpath[i].x = p[len-i-1].x;
-      vpath[i].y = p[len-i-1].y;
-    }
     vpath[len] = vpath[0];
+    vpath[0].code = ART_MOVETO;
     vpath[len].code = ART_END;
   }
   
-  ArtDRect locd;
-  ArtIRect loc;
-  ArtDRect clip = {cl->upper.x, cl->upper.y,
-		     cl->lower.x, cl->lower.y};
+  ArtDRect locd; ArtIRect loc;
+  ArtDRect clip = {cl->lower.x * xres, cl->lower.y * yres, 		      
+		     cl->upper.x * xres, cl->upper.y * yres};
   ArtDRect screen = {0,0,drawable->width(), drawable->height()};
 
-  art_drect_affine_transform(&clip,&clip,resScale);
   tvpath = art_vpath_affine_transform(vpath,affine);
   tsvpath = art_vpath_affine_transform(tvpath,resScale);
-
-  // get an svp
   ArtSVP *svp = art_svp_from_vpath (tsvpath); 
 
-  // prepare clip box for drawing
   art_drect_svp (&locd, svp);
   art_drect_intersect(&locd,&locd,&clip);
   art_drect_intersect(&locd,&locd,&screen);
   art_drect_to_irect(&loc, &locd);
   art_irect_union (&bbox,&bbox,&loc);
-
-  // why this might happen, who knows. they might be insane somehow.
-  // it appears to happen in practise sometimes (?)
-  if (loc.x0 > loc.x1) {int tmp = loc.x0; loc.x1 = loc.x0; loc.x0 = tmp;}
-  if (loc.y0 > loc.y1) {int tmp = loc.y0; loc.y0 = loc.y1; loc.y1 = tmp;}
+  fix_order_of_irect(loc);
  
-  art_rgb_svp_alpha (svp,
-  		     loc.x0, loc.y0, 
-  		     loc.x1, loc.y1,
+  art_rgb_svp_alpha (svp, loc.x0, loc.y0, loc.x1, loc.y1,
  		     artColor(fg),
  		     ((art_u8 *)buf->write) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
  		     buf->buffer.plb.stride,
@@ -213,45 +203,40 @@ void LibArtDrawingKit::drawImage(Raster_ptr remote) {
   // of libart's transformation. the goal is to get everything into
   // device space and work with it there.
 
+  double xres = drawable->resolution(xaxis);
+  double yres = drawable->resolution(yaxis);
+
   LibArtRaster *r = rasters.lookup(Raster::_duplicate(remote));
-
-  // these are coords in the target visual
-  double x = affine[4] * drawable->resolution(xaxis);
-  double y = affine[5] * drawable->resolution(xaxis);
+  double dev_affine[6] = {affine[0], affine[1], affine[2], affine[3], 
+			    affine[4] * xres, affine[5] * yres };
+			    
   
-  // this affine is inverted and used to map coords back from the
-  // screen to the pixbuf.
-  double affinePix[6] = {affine[0], affine[1], affine[2], affine[3],0,0}; 
+  // pre-transformation target rectangle, in device space coords
+  ArtDRect slocd = {0,0,(double)(r->pixbuf->width),(double)(r->pixbuf->height)};
+  ArtDRect tslocd; 
+  ArtIRect tsloci; 
 
-  ArtDRect locd = {x,y,(double)(x+r->pixbuf->width),(double)(y+r->pixbuf->height)};
-  
-  ArtIRect loc;
-  ArtDRect screen = {0,0,drawable->width(), drawable->height()};
-  art_drect_intersect(&locd,&locd,&screen);
-  art_drect_to_irect(&loc, &locd);
+  // transform target (in device space)
+  art_drect_affine_transform(&tslocd,&slocd,dev_affine); 
+  art_drect_to_irect(&tsloci, &tslocd); 
+  fix_order_of_irect(tsloci); 
 
-  // why this might happen, who knows. they might be insane somehow.
-  // it appears to happen in practise sometimes (?)
-  if (loc.x0 > loc.x1) {int tmp = loc.x0; loc.x1 = loc.x0; loc.x0 = tmp;}
-  if (loc.y0 > loc.y1) {int tmp = loc.y0; loc.y0 = loc.y1; loc.y1 = tmp;}
+  // extract screen and clip in device space (pixels)
+  ArtIRect screen = {0,0,drawable->width(), drawable->height()}; 
+  ArtDRect clipd = {cl->lower.x * xres, cl->lower.y * yres, 
+		      cl->upper.x * xres, cl->upper.y * yres};
 
-  // extend damage box
-  art_irect_union (&bbox,&bbox,&loc);
+  ArtIRect clip;
+  art_drect_to_irect(&clip, &clipd); 
+  art_irect_intersect(&tsloci,&tsloci,&screen);
+  art_irect_intersect(&tsloci,&tsloci,&clip);
+  art_irect_union (&bbox,&bbox,&tsloci);
 
-  // NOTE: yes, I know this is inconsistent with the calling convention that is
-  // used to put vectors on the screen. I don't know why libart is designed this
-  // way, but after extensive fiddling this appears to be the closest I can get
-  // it to doing "the right thing". you are welcome to experiment yourself..
-
-  art_rgb_pixbuf_affine(
-			((art_u8 *)buf->write) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
-			0, 0, 
-			loc.x1 - loc.x0, loc.y1 - loc.y0,
+  art_rgb_pixbuf_affine((art_u8 *)buf->write + (tsloci.y0 * pb->rowstride) + (tsloci.x0 * 3),			
+			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
 			buf->buffer.plb.stride,
-			r->pixbuf,
-			affinePix,
-			ART_FILTER_NEAREST,
-			agam);  
+			r->pixbuf, dev_affine,
+			ART_FILTER_NEAREST, agam);  
 }
 
 void LibArtDrawingKit::drawText(const Unistring &u) 
