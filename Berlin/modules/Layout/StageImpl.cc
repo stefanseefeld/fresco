@@ -601,7 +601,7 @@ void StageImpl::end()
 Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
   SectionLog section(Logger::layout, "StageImpl::insert");
-  Guard guard(myMutex);
+  MutexGuard guard(childMutex);
   StageInfoImpl *info = new StageInfoImpl(g, position, size, layer);
   info->child->addParent(_this());
   tree.insert(info);
@@ -612,6 +612,7 @@ Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Verte
 
 void StageImpl::erase(const Stage::Info &i)
 {
+  MutexGuard guard(childMutex);
   StageInfoImpl *info = list.find(i.layer);
   if (!info) return;
   tree.remove(info);
@@ -624,6 +625,7 @@ void StageImpl::erase(const Stage::Info &i)
 
 void StageImpl::reposition(const Stage::Info &i, const Vertex &p)
 {
+  MutexGuard guard(childMutex);
   StageInfoImpl *info = list.find(i.layer);
   if (!info) return;
   tree.remove(info);
@@ -646,6 +648,7 @@ void StageImpl::reposition(const Stage::Info &i, const Vertex &p)
 
 void StageImpl::relayer(const Stage::Info &i, Stage::Index l)
 {
+  MutexGuard guard(childMutex);
   StageInfoImpl *info = list.find(i.layer);
   list.remove(info);
   info->layer = l;
