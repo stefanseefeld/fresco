@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * this file is based on code from the socket++ library
@@ -23,10 +23,12 @@
  * MA 02139, USA.
  */
 
+#define _GNU_SOURCE
 #include <Prague/Sys/Fork.hh>
 #include <sys/wait.h>
-#include <errno.h>
+#include <cerrno>
 #include <cstdio>
+#include <cstring> // for strsignal...
 
 using namespace Prague;
 
@@ -132,14 +134,11 @@ void Fork::Process::infanticideReason (pid_t pid, int status)
 {
   if (pid <= 0) return;
   if (WIFSTOPPED (status))
-    cerr << "process " << pid << " gets "
-	 << sys_siglist[WSTOPSIG (status)] << endl;
+    cerr << "process " << pid << " gets " << strsignal(WSTOPSIG (status)) << endl;
   else if (WIFEXITED (status))
-    cerr << "process " << pid << " exited with status "
-	 << WEXITSTATUS (status) << endl;
+    cerr << "process " << pid << " exited with status " << WEXITSTATUS (status) << endl;
   else if (WIFSIGNALED (status))
-    cerr << "process " << pid << " got "
-	 << sys_siglist[WTERMSIG (status)] << endl;
+    cerr << "process " << pid << " got " << strsignal(WTERMSIG (status)) << endl;
 }
 
 void Fork::Process::Reaper::notify(int signo)

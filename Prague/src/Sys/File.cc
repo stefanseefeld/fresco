@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -21,9 +21,9 @@
  */
 
 #include "Prague/Sys/File.hh"
-#include <string.h>
-#include <unistd.h>
+#include <cstring>
 #include <iostream>
+#include <unistd.h>
 
 using namespace Prague;
 
@@ -106,5 +106,5 @@ bool File::rm()
     }
 }
 
-const char *File::lastError() const { return sys_errlist[error];}
+const char *File::lastError() const { return strerror(error);}
 

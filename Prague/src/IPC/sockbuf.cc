@@ -27,11 +27,17 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstdio>
+#include <cstring>
 #include <cerrno>
 #include <sys/ioctl.h>
-
-#define PRAGUE_INCL_FOR_STRERROR
-#include "Prague/Sys/includes.hh"
+/*
+ * Need BSD Socket ioctls
+ * SIOCATMARK, SIOCGPGRP, SIOCSPGRP
+ * this probably should be tested for during config
+ */
+#ifdef __sun__
+#include <sys/sockio.h>
+#endif
 
 using namespace Prague;
 
@@ -441,9 +447,9 @@ int sockbuf::recvfrom (sockaddr &sa, void *buf, int len, int msgf)
     throw sockoob();
 
   int rval = 0;
-  socklen_t sa_len = sa.size ();
+  socklen_t sa_length = sa.size ();
   
-  if ((rval = ::recvfrom(data->fd, (char*) buf, len, msgf, sa.addr(), &sa_len)) == -1)
+  if ((rval = ::recvfrom(data->fd, (char*) buf, len, msgf, sa.addr(), &sa_length)) == -1)
     throw sockerr (errno);
   return rval;
 }
