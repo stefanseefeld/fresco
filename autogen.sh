@@ -6,7 +6,7 @@ conf()
   if test -d $1; then
   (cd $1
    echo "Generating $1/configure..."
-   aclocal --output=config/aclocal.m4 -I ../config/macros
+   aclocal --output=config/aclocal.m4 -I ../config
    autoconf --include=config)
   fi
 }
@@ -16,7 +16,7 @@ conf_with_header()
   if test -d $1; then
     (cd $1
      echo "Generating $1/configure..."
-     aclocal --output=config/aclocal.m4 -I ../config/macros
+     aclocal --output=config/aclocal.m4 -I ../config
      autoconf --include=config
      autoheader -l config)
   fi
