@@ -29,6 +29,7 @@
 #include "Widget/StreamBufferImpl.hh"
 #include "Widget/ControllerImpl.hh"
 #include "Widget/Frame.hh"
+#include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
 
 WidgetKitImpl::WidgetKitImpl()
@@ -144,6 +145,15 @@ Controller_ptr WidgetKitImpl::button(Graphic_ptr g, const Color &c)
   frame->attach(Controller_var(controller->_this()));
   controller->body(Graphic_var(frame->_this()));
   return controller->_this();
+};
+
+Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
+{
+  DebugGraphic *debug = new DebugGraphic(s);
+  debug->_obj_is_ready(_boa());
+  graphics.push_back(debug);
+  debug->body(g);
+  return debug->_this();
 };
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

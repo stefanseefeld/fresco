@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-SRC	= FigureKitImpl.cc Figure.cc SimpleFigures.cc  
+SRC	= FigureKitImpl.cc Figure.cc SimpleFigures.cc ImageImpl.cc
 
 TARGET	= $(mpath)/libFigure.so
 

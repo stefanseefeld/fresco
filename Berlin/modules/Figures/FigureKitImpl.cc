@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -24,7 +25,7 @@
 #include "Figure/FigureKitImpl.hh"
 #include "Berlin/Plugin.hh"
 #include "Figure/SimpleFigures.hh"
-
+#include "Figure/ImageImpl.hh"
 FigureKitImpl::FigureKitImpl() {}
 FigureKitImpl::~FigureKitImpl() {}
 
@@ -55,6 +56,14 @@ Graphic_ptr FigureKitImpl::patch(const Style::Spec &sty, const Patch &p) {
   pf->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
   figures.push_back(pf);
   return pf->_this();
+}
+
+Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
+{
+  ImageImpl *image = new ImageImpl(raster);
+  image->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+//   figures.push_back(image);
+  return image->_this();
 }
 
 EXPORT_PLUGIN(FigureKitImpl, interface(FigureKit))

@@ -21,22 +21,36 @@
  * MA 02139, USA.
  */
 
-#ifndef _Image_idl
-#define _Image_idl
+#include "Warsaw/config.hh"
+#include "Warsaw/DrawTraversal.hh"
+#include "Warsaw/DrawingKit.hh"
+#include "Berlin/Logger.hh"
+#include "Figure/ImageImpl.hh"
 
-#include "Types.idl"
-#include "Cloneable.idl"
-#include "Graphic.idl"
-#include "Raster.idl"
-
-/*
- * Image handles the layout issues pertaining to displaying an Image
- * on-screen.
- */
-
-interface Image : Graphic
+ImageImpl::ImageImpl(Raster_ptr r)
+  : raster(Raster::_duplicate(r))
 {
-  attribute Raster data;
-};
+  Raster::Info info = raster->header();
+  width = info.width;
+  height = info.height;
+}
+ImageImpl::~ImageImpl() {}
 
-#endif /* _Image_idl */
+void ImageImpl::request(Requisition &r)
+{
+  r.x.defined = true;
+  r.x.natural = r.x.maximum = r.x.minimum = width;
+  r.x.align = 0.;
+  r.y.defined = true;
+  r.y.natural = r.y.maximum = r.y.minimum = height;
+  r.y.align = 0.;
+}
+
+void ImageImpl::draw(DrawTraversal_ptr traversal)
+{
+  SectionLog section(Logger::traversal, "Image::draw");
+  DrawingKit_var dk = traversal->kit();
+  Transform_var transform = traversal->transformation();
+  dk->image(raster, transform);
+}
+

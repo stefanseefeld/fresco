@@ -2,12 +2,8 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
- *
- * this code is based on code from Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,6 +40,7 @@ class FigureKitImpl : implements(FigureKit), virtual public CloneableImpl {
     Graphic_ptr ellipse(const Style::Spec &sty);
     Graphic_ptr path(const Style::Spec &sty, const Path &p);
     Graphic_ptr patch(const Style::Spec &sty, const Patch &p);
+    Image_ptr   pixmap(Raster_ptr);
 
  protected:
     vector<Figure *> figures;

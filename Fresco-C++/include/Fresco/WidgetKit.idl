@@ -64,6 +64,7 @@ interface WidgetKit : Cloneable
 //   Graphic viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);
   
     // more widgets in here
+  Graphic debugger(in Graphic g, in string s);
 };
 
 #endif
