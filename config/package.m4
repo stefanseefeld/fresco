@@ -82,6 +82,8 @@ dnl
     else
       $1_CPPFLAGS="`$$1_CONFIG $ac_$1_args --cppflags`"
       $1_LIBS="`$$1_CONFIG $ac_$1_args --libs`"
+      $1_BUILD_CPPFLAGS="`$$1_CONFIG --cppflags`"
+      $1_BUILD_LIBS="`$$1_CONFIG --libs`"
       $1_prefix="`$$1_CONFIG $ac_$1_args --prefix`"
 
       $1_major_version=`$$1_CONFIG $ac_$1_args --version | \
