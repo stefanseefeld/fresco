@@ -190,9 +190,10 @@ void PositionalFocus::dispatch(Input::Event &event)
   /*
    * ...add the new controllers,...
    */
+  Focus_var __this = _this ();
   for (; nf != picked->controllerStack().end(); nf++)
     {
-      (*nf)->receive_focus(Focus_var(_this()));
+      (*nf)->receive_focus (__this);
       controllers.push_back(*nf);
     }
   /*
