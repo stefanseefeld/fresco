@@ -127,7 +127,14 @@ void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
 	{
 	  DrawingKit_var drawing = traversal->drawing();
 	  DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
-	  if (CORBA::is_nil(d3d)) return;
+	  if (CORBA::is_nil(d3d)) {
+	    if (_error == false)
+	      std::cerr << "No DrawingKit3D interface found." << std::endl
+			<< "Consider passing \"-d GLDrawingKit\" to Berlin."
+			<< std::endl;
+	    _error = true;
+	    return;
+	  }
 	  d3d->save();
 	  d3d->draw_mesh(_mesh);
 	  d3d->restore();

@@ -31,6 +31,8 @@
 class TransformImpl;
 class RegionImpl;
 
+static bool _error = false;
+
 class TransformPrimitive : public virtual POA_Primitive::PrimitiveBase,
 			   public GraphicImpl
 {
