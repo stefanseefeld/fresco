@@ -40,6 +40,11 @@ using namespace Fresco;
 using namespace Berlin::nurbs;
 
 typedef _CORBA_Unbounded_Sequence<Vertex> Polyline;
+struct Quadric
+{
+  double a, b; // this should be a real 3x3 matrix, actually
+  double phi1, phi2;
+};
 struct Nurbs
 {
   CORBA::UShort degree;
@@ -60,8 +65,10 @@ bool drawingQuadsFlag = true;        // 'q'
 bool drawingCtrlPointsFlag = true;   // 'c'
 bool drawingDerivativesFlag = false; // 'd'
 
-Ctrl *ctrls[4];
-Points *points[4];
+const short SEGMENTS = 5;
+
+Ctrl *ctrls[SEGMENTS];
+Points *points[SEGMENTS];
 
 void polar_view(GLdouble twist, GLdouble elevation, GLdouble azimuth)
 {
@@ -114,7 +121,7 @@ void display()
   if(drawingQuadsFlag)
   {
     glColor3f(0.8, 0.2, 0.2);
-    for(size_t j = 0; j < 4; ++j)
+    for(size_t j = 0; j < SEGMENTS; ++j)
     {
       glBegin(GL_LINE_STRIP);
       for(size_t i = 0; i < points[j]->size(0); ++i)
@@ -130,32 +137,17 @@ void display()
   if(drawingPointsFlag)
   {
     glColor3f(0.8, 0.4, 0.2);
-    glBegin(GL_POINTS);
-    for(size_t i = 0; i < points[0]->length(); ++i)
+    for (size_t j = 0; j != SEGMENTS; ++j)
     {
-      glVertex3f((*points[0])[i].x,
-                 (*points[0])[i].y,
-                 (*points[0])[i].z);
+      glBegin(GL_POINTS);
+      for(size_t i = 0; i < points[j]->length(); ++i)
+      {
+	glVertex3f((*points[j])[i].x,
+		   (*points[j])[i].y,
+		   (*points[j])[i].z);
+      }
+      glEnd();
     }
-    for(size_t i = 0; i < points[1]->length(); ++i)
-    {
-      glVertex3f((*points[1])[i].x,
-                 (*points[1])[i].y,
-                 (*points[1])[i].z);
-    }
-    for(size_t i = 0; i < points[2]->length(); ++i)
-    {
-      glVertex3f((*points[2])[i].x,
-                 (*points[2])[i].y,
-                 (*points[2])[i].z);
-    }
-    for(size_t i = 0; i < points[3]->length(); ++i)
-    {
-      glVertex3f((*points[3])[i].x,
-                 (*points[3])[i].y,
-                 (*points[3])[i].z);
-    }
-    glEnd();
   }
 
 //   if(drawingDerivativesFlag)
@@ -181,7 +173,7 @@ void display()
   if(drawingCtrlPointsFlag)
   {
     glColor3f(0.2, 0.8, 0.2);
-    for (size_t j = 0; j != 4; ++j)
+    for (size_t j = 0; j != SEGMENTS; ++j)
       for(size_t i = 0; i < (*ctrls[j]).length(); ++i)
       {
 	const Vertex &p = (*ctrls[j])[i];
@@ -301,7 +293,7 @@ int main(int argc, char *argv[])
     polyline2[3].y = 2.;
     polyline2[3].z = 1.;
   }
-  // define forth segment
+  // define fourth segment
   Nurbs nurbs2;
   {
     nurbs2.degree = DEGREE;
@@ -318,6 +310,14 @@ int main(int argc, char *argv[])
     nurbs2.knots.length(CTRLPOINTS + DEGREE + 1);
     double delta = 1. / (CTRLPOINTS + DEGREE);
     for (size_t i = 0; i != nurbs2.knots.length(); ++i) nurbs2.knots[i] = i * delta;
+  }
+  // define third segment
+  Quadric quadric1;
+  {
+    quadric1.a = 5;
+    quadric1.b = 2.;
+    quadric1.phi1 = 0.;
+    quadric1.phi2 = 3.142;
   }
 
   array<size_t, PARAMS> steps(4);
@@ -412,6 +412,29 @@ int main(int argc, char *argv[])
 	}
       // evaluate the segment
       points[3] = evaluate(*ctrls[3], weights, degrees, knots, steps);
+    }
+  }
+  {
+    size_t length = 10;
+    points[4] = new Points(&length);
+    double phi = quadric1.phi1;
+    double dphi = (quadric1.phi2 - quadric1.phi1)/10;
+    for (size_t i = 0; i != 10; ++i, phi += dphi)
+      (*points[4])[i] = make_vertex(quadric1.a * sin(phi),
+				    quadric1.b * cos(phi),
+				    0.);
+    for (size_t i = 0; i != 10; ++i) std::cout << (*points[4])[i].x << ' ' << (*points[4])[i].y << std::endl;
+    ctrls[4] = new Ctrl(&length);
+    for (size_t i = 0; i != 10; ++i) (*ctrls[4])[i] = (*points[4])[0];
+
+    // now translate the curve to superpose the first point of this segment
+    // with the last point of the last segment
+    Vertex delta = (*points[3])[points[3]->length() - 1];
+    delta -= (*points[4])[0];
+    for (size_t i = 0; i != length; ++i)
+    {
+      (*points[4])[i] += delta;
+      (*ctrls[4])[i] += delta;
     }
   }
 
