@@ -45,3 +45,6 @@ print/%.pdf: print/%.tex
 
 clean:	
 	rm -f html/*.html figures/*.jpg figures/*.pdf figures/*.eps print/*.pdf print/*.aux print/*.log
+
+# Dummy distclean target. This needs to be here.
+distclean: clean

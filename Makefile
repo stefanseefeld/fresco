@@ -22,6 +22,7 @@
 SHELL	= /bin/sh
 
 -include config/local.mk
+include config/packages.mk
 
 #subdirs	= $(wildcard src server clients)
 # doc
