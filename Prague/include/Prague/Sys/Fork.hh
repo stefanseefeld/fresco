@@ -23,40 +23,32 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Network/protocol.hh>
-#include <cerrno>
+#ifndef _Fork_hh
+#define _Fork_hh
 
-using namespace Prague;
+#include <Prague/Sys/Signal.hh>
+#include <unistd.h>
+#include <sys/types.h>
 
-const char *protocol::protocolbuf::protocol_name () const
+namespace Prague
 {
-  if (pn == protocol::tcp) return "tcp";
-  if (pn == protocol::udp) return "udp";
-  return 0;
-}
 
-void protocol::protocolbuf::connect ()
+class Fork
 {
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (localhost (), rfc_name (), protocol_name ());
-}
+  struct Process;
+ public:
+  Fork (bool = false, bool = false);
+  ~Fork ();
+  bool   child() const;
+  bool   parent() const;
+  pid_t  pid() const;
+  static void suicideOnSignal(int signo = Signal::terminate);
+ private:
+  Process *process;
+  Fork (const Fork &);
+  Fork &operator = (const Fork &);
+};
 
-void protocol::protocolbuf::connect (unsigned long addr)
-  // addr is in host byte order
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (addr, rfc_name (), protocol_name ());
-}
+};
 
-void protocol::protocolbuf::connect (const char* host)
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, rfc_name (), protocol_name ());
-}
-
-void protocol::protocolbuf::connect (const char* host, int portno)
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, portno);
-}
-
+#endif /* _Fork_hh */

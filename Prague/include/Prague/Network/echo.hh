@@ -23,40 +23,36 @@
  * MA 02139, USA.
  */
 
+#ifndef _echo_hh
+#define _echo_hh
+
 #include <Prague/Network/protocol.hh>
-#include <cerrno>
 
-using namespace Prague;
-
-const char *protocol::protocolbuf::protocol_name () const
+namespace Prague
 {
-  if (pn == protocol::tcp) return "tcp";
-  if (pn == protocol::udp) return "udp";
-  return 0;
-}
 
-void protocol::protocolbuf::connect ()
+class echo: public protocol
 {
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (localhost (), rfc_name (), protocol_name ());
-}
+public:
+  class echobuf: public protocol::protocolbuf
+  {
+  public:
+    echobuf (sockinetbuf &si): protocol::protocolbuf(si) {}
+    echobuf (protocol::p_name pname) : protocol::protocolbuf (pname) {}
+    virtual void        serve_clients (int portno = -1);
+    virtual const char* rfc_name () const { return "echo"; }
+    virtual const char* rfc_doc  () const { return "rfc862"; }
+  };
+protected:
+  echo (): ios(0) {}
+public:
+  echo (protocol::p_name pname) : ios (0) { ios::init (new echobuf (pname));}
+  ~echo () { delete ios::rdbuf (); ios::init (0); }
 
-void protocol::protocolbuf::connect (unsigned long addr)
-  // addr is in host byte order
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (addr, rfc_name (), protocol_name ());
-}
+  echobuf* rdbuf () { return (echobuf*) protocol::rdbuf (); }
+  echobuf* operator -> () { return rdbuf (); }
+};
 
-void protocol::protocolbuf::connect (const char* host)
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, rfc_name (), protocol_name ());
-}
+};
 
-void protocol::protocolbuf::connect (const char* host, int portno)
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, portno);
-}
-
+#endif /* _echo_hh */

@@ -19,12 +19,12 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-NET_SRC	= ip.cc ftp.cc smtp.cc #url.cc
+NTW_SRC	= protocol.cc echo.cc ftp.cc smtp.cc #url.cc
 
-NET_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(NET_SRC))
-NET_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(NET_SRC))
-NET_GDB	= $(patsubst %.cc, $(gpath)/%.o, $(NET_SRC))
-NET_PRF = $(patsubst %.cc, $(ppath)/%.o, $(NET_SRC))
+NTW_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(NTW_SRC))
+NTW_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(NTW_SRC))
+NTW_GDB	= $(patsubst %.cc, $(gpath)/%.o, $(NTW_SRC))
+NTW_PRF = $(patsubst %.cc, $(ppath)/%.o, $(NTW_SRC))
 
 $(dpath)/%.d:	Network/%.cc $(ipath)/Prague/Network/%.hh
 		@echo making dependencies for $<
@@ -45,6 +45,6 @@ networkclean:
 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
--include $(NET_DEP)
+-include $(NTW_DEP)
 endif 
 endif 

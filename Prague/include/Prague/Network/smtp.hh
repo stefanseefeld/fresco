@@ -1,24 +1,40 @@
-// smtp.h -*- C++ -*- socket library
-// Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
-//
-// Permission is granted to use at your own risk and distribute this software
-// in source and  binary forms provided  the above copyright notice and  this
-// paragraph are  preserved on all copies.  This software is provided "as is"
-// with no express or implied warranty.
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * this file is based on code from the socket++ library
+ * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
 
 #ifndef _smtp_hh
 #define _smtp_hh
 
-#include <Prague/Network/ip.hh>
+#include <Prague/Network/protocol.hh>
 
-/* @Class{smtp : public ip}
- *
- * @Description{simple mail transfer protocol class}
- */
-class smtp: public ip
+namespace Prague
+{
+
+class smtp: public protocol
 {
 public:
-  class smtpbuf : public ip::ipbuf
+  class smtpbuf : public protocol::protocolbuf
   {
     ostream*            o; // send all the responses to o
     void                send_cmd (const char* cmd, const char* s = 0, const char* p = 0);
@@ -26,7 +42,7 @@ public:
     smtpbuf (smtpbuf&);
     smtpbuf& operator = (smtpbuf&);
   public:
-    smtpbuf (ostream* out = 0) : ip::ipbuf (ip::tcp), o (out) {}
+    smtpbuf (ostream* out = 0) : protocol::protocolbuf (protocol::tcp), o (out) {}
     void                send_buf (const char* buf, int buflen);
 
     void                helo ();
@@ -59,10 +75,12 @@ public:
 
   int      get_response (char* buf, int len);
 
-  smtpbuf* rdbuf ()       { return static_cast<smtpbuf *> (ip::rdbuf ()); }
+  smtpbuf* rdbuf ()       { return static_cast<smtpbuf *> (protocol::rdbuf ()); }
   smtpbuf* operator -> () { return rdbuf (); }
 };
 
-extern ostream& operator << (ostream& o, smtp& s);
+};
+
+extern ostream& operator << (ostream &o, const Prague::smtp &s);
 
 #endif /* _smtp_hh */

@@ -1,16 +1,35 @@
-// smtp.C -*- C++ -*- socket library
-// Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
-//
-// Permission is granted to use at your own risk and distribute this software
-// in source and  binary forms provided  the above copyright notice and  this
-// paragraph are  preserved on all copies.  This software is provided "as is"
-// with no express or implied warranty.
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * this file is based on code from the socket++ library
+ * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
 
 #include <Prague/Network/smtp.hh>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+
+using namespace Prague;
 
 void smtp::smtpbuf::get_response ()
      // get all the response that one can get and send all of them to o

@@ -21,7 +21,7 @@
 
 SYS_SRC	= logbuf.cc regex.cc Signal.cc User.cc Stopwatch.cc Time.cc \
 	  File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
-	  DLL.cc SHM.cc Thread.cc Timer.cc
+	  DLL.cc SHM.cc Thread.cc Timer.cc Fork.cc
 
 SYS_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(SYS_SRC))
 SYS_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SYS_SRC))

@@ -23,40 +23,46 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Network/protocol.hh>
+#include <Prague/Network/echo.hh>
+#include <Prague/Sys/Fork.hh>
 #include <cerrno>
 
 using namespace Prague;
 
-const char *protocol::protocolbuf::protocol_name () const
+void echo::echobuf::serve_clients (int portno)
 {
-  if (pn == protocol::tcp) return "tcp";
-  if (pn == protocol::udp) return "udp";
-  return 0;
+  if (protocol_name ())
+    {
+      if (portno < 0) sockinetbuf::bind ((unsigned long) INADDR_ANY, "echo", protocol_name ());
+      else if (portno <= 1024)
+	{
+	  sockinetbuf::bind ();
+	  cout << "Host: " << localhost () << '\n' << "Port: " << localport () << endl;
+	}
+      else sockinetbuf::bind((unsigned long) INADDR_ANY, portno);
+      // act as a server now
+      listen(sockbuf::somaxconn);
+      // commit suicide when we receive SIGTERM
+      Fork::suicideOnSignal(Signal::terminate);
+      for (;;)
+	{
+	  sockbuf s = accept();
+	  Fork f (1, 1); // kill my children when I get terminated.
+	  if (f.child())
+	    {
+	      char buf [1024];
+	      int  rcnt;
+	      while ((rcnt = s.read (buf, 1024)) > 0)
+		while (rcnt != 0)
+		  {
+		    int wcnt = s.write (buf, rcnt);
+		    if (wcnt == -1) throw sockerr (errno);
+		    rcnt -= wcnt;
+		  }
+	      sleep (300);
+	      exit (0);
+	    }
+	}
+    }
 }
-
-void protocol::protocolbuf::connect ()
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (localhost (), rfc_name (), protocol_name ());
-}
-
-void protocol::protocolbuf::connect (unsigned long addr)
-  // addr is in host byte order
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (addr, rfc_name (), protocol_name ());
-}
-
-void protocol::protocolbuf::connect (const char* host)
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, rfc_name (), protocol_name ());
-}
-
-void protocol::protocolbuf::connect (const char* host, int portno)
-{
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, portno);
-}
-
+  
