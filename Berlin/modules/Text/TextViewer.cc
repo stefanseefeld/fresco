@@ -3,6 +3,7 @@
 #include "Warsaw/TextBuffer.hh"
 #include "Text/Compositor.hh"
 #include "Prague/Sys/Thread.hh"
+#include <algorithm>
 
 using namespace Prague;
 
@@ -46,14 +47,13 @@ void TextViewer::update(Subject_ptr s, const CORBA::Any &a)
 	  MutexGuard guard(childMutex);
 	  Unistring *u = myTextBuffer->getChars(ch->pos, (CORBA::ULong)ch->len);
 	  CORBA::ULong len = u->length();
-	  vector<edge_t> newEdges(len);
 	  Unistring single;
 	  single.length(1);
 	  for (unsigned long i = 0; i < len; i++) {
 	    single[0] = (*u)[i];
 	    Graphic_var child = myTextKit->chunk(single);
 	    edge_t edge(Graphic::_duplicate(child), tag());
-	    children.insert(children.begin()+i, edge);
+	    children.insert(children.begin() + ch->pos + i, edge);
 	    child->addParent(Graphic_var(_this()), edge.second);
 	  }
 	}
@@ -62,12 +62,12 @@ void TextViewer::update(Subject_ptr s, const CORBA::Any &a)
       case TextBuffer::remove:
 	{
 	  MutexGuard guard(childMutex);
-	  unsigned long fin = children.size()-1;
-	  unsigned long start = (ch->pos > fin ? fin : ch->pos);
-	  unsigned long end = (start + ch->len > fin ? fin : start + ch->len);	    
-	  for (clist_t::iterator i = children.begin()+start; i != children.begin()+end; i++)
+	  unsigned long start = min(ch->pos, static_cast<CORBA::ULong>(children.size()));
+	  unsigned long end = min(ch->pos + ch->len, static_cast<CORBA::ULong>(children.size()));
+	  if (ch->len < 0) swap(start, end);
+	  for (clist_t::iterator i = children.begin() + start; i != children.begin() + end; i++)
 	    (*i).first->removeParent(Graphic_var(_this()), (*i).second);
-	  children.erase(children.begin()+start,children.begin()+end);
+	  children.erase(children.begin() + start, children.begin() + end);
 	}	
 	break;
 	
@@ -76,7 +76,8 @@ void TextViewer::update(Subject_ptr s, const CORBA::Any &a)
 	break;
       }
     }
-    needResize();
+//     needResize();
+    needRedraw();
   }
 }
 
