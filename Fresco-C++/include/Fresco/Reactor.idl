@@ -1,3 +1,6 @@
+#ifndef _Reactor_idl
+#define _Reactor_idl
+
 //
 // $Id$
 //
@@ -20,12 +23,10 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
-#ifndef __REACTOR__
-#define __REACTOR__ 
 
-#include "Cloneable.idl"
-#include "Message.idl"
-#include "Command.idl"
+#include <Cloneable.idl>
+#include <Message.idl>
+#include <Command.idl>
 
 // anything which can accept a message
 interface MessageListener : Cloneable {
@@ -54,19 +55,24 @@ struct ReactorBinding {
 // returned here are usually passed straight into the WidgetKit
 // constructors as strategy-pattern delegates.  the widget will use
 // the provided reactor as its message processor. So even though a
-// widget appears to be a reactor, it's this inner reactor which is
-// doing all the work.
+// widget appears to be a MessageListener, it's this inner reactor
+// which is doing all the work. the ___init(sequence<ReactorBinding>)
+// just pre-initialize the reactor with a particular set of
+// bindings. you don't need to use them if you're going to pass this
+// right into the widgetKit constructors.
 
 interface ReactorKit {
 
     // this usually results in a reactor with its own thread for
     // processing messages, so when you send it a message the call
     // returns in constant time
-    Reactor async(sequence<ReactorBinding>);
+    Reactor async();
+    Reactor asyncInit(sequence<ReactorBinding>);
 
     // whereas this results in a reactor which consumes the calling
     // thread during message receipt
-    Reactor sync(sequence<ReactorBinding>);
+    Reactor sync();
+    Reactor syncInit(sequence<ReactorBinding>);
 
 };
 

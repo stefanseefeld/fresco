@@ -3,7 +3,7 @@ OS_ARCH='Linux'
 
 DIR_CPPFLAGS = -D__x86__ -D__linux__ -D__OSVERSION__=2 -D__OMNIORB2__ -D_MIT_POSIX_THREADS -D_REENTRANT
 DIR_CXXFLAGS = -fgcse -Os -fomit-frame-pointer -fnonnull-objects -pthread 
-DIR_INCLUDES =  -I.  -I/data1/seefelds/omniORB_2.7.0/include
+DIR_INCLUDES =  -I.  
 DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
 LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
 

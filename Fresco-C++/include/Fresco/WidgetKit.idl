@@ -1,10 +1,10 @@
-#ifndef _Subject_idl
-#define _Subject_idl
+#ifndef _WidgetKit_idl
+#define _WidgetKit_idl
 
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -23,19 +23,19 @@
  * MA 02139, USA.
  */
 
-interface Observer;
+#include <Reactor.idl>
+#include <Graphic.idl>
 
-interface Subject
-{
-  void attach(in Observer o);
-  void detach(in Observer o);
-  void notify();
-  void block(in boolean b);  
+interface Widget : MessageListener, Graphic {};
+
+interface WidgetKit {
+
+    Widget button(in Reactor strategy, Telltale subj);
+    Widget slider(in Reactor strategy, BoundedValue subj);
+    Widget viewport(in Reactor strategy, BoundedValue x, BoundedValue y, Graphic child);
+    
+    // more widgets in here
 };
 
-interface Observer
-{
-  void update(in Subject s);
-};
+#endif
 
-#endif /* _Subject_idl */

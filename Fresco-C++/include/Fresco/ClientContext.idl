@@ -1,5 +1,5 @@
-#ifndef __CLIENTCONTEXT__
-#define __CLIENTCONTEXT__ 
+#ifndef _ClientContext_idl
+#define _ClientContext_idl
 
 //
 // $Id$
@@ -25,7 +25,7 @@
 //
 
 
-#include "TextTypes.idl"
+#include <Types.idl>
 
 exception securityException {};
 

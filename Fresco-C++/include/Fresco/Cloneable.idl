@@ -1,5 +1,5 @@
-#ifndef __CLONEABLE__
-#define __CLONEABLE__ 
+#ifndef _Cloneable_idl
+#define _Cloneable_idl
 
 //
 // $Id$
@@ -24,8 +24,8 @@
 //
 //
 
-#include "LifeCycle.idl"
-#include "ClientContext.idl"
+#include <LifeCycle.idl>
+#include <ClientContext.idl>
 
 interface ServerContext;
 
