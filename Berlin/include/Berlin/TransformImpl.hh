@@ -34,6 +34,7 @@ class TransformImpl : public virtual POA_Warsaw::Transform,
 		      public virtual ServantBase
 {
   friend class Provider<TransformImpl>;
+  friend class Initializer<TransformImpl>;
 public:
   TransformImpl();
   TransformImpl(const TransformImpl &);
@@ -92,7 +93,7 @@ private:
 
 template <> struct Initializer<TransformImpl>
 {
-  static void initialize(TransformImpl *) {}
+  static void initialize(TransformImpl *t) { t->init();}
 };
 
 #endif

@@ -43,8 +43,6 @@ TransformPrimitive::TransformPrimitive()
     _tx(new TransformImpl),
     _ext(new RegionImpl)
 {
-  //  _fg.red = _fg.green = _fg.blue = 0., _fg.alpha = 1.;
-  //  _bg.red = _bg.green = _bg.blue = 0., _bg.alpha = 1.;
 }
 
 TransformPrimitive::~TransformPrimitive() {}
@@ -131,22 +129,6 @@ void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
 	  DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
 	  if (CORBA::is_nil(d3d)) return;
 	  d3d->save();
-// 	  Transform_var tmp = d3d->transformation();
-// 	  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-// 	  cumulative->copy(Transform_var(d3d->transformation()));
-// 	  cumulative->premultiply(Transform_var(_tx->_this()));
-// 	  d3d->transformation(Transform_var(cumulative->_this()));
-
-//  	  if (_mode & Figure::fill)
-//  	    {
-// 	      drawing->foreground(_bg);
-// 	      drawing->surface_fillstyle(DrawingKit::solid);
-// 	      drawing->draw_mesh(_mesh);
-// 	    }
-//  	  if (_mode & Figure::outline)
-// 	    {
-// 	      drawing->foreground(_fg);
-// 	      drawing->surface_fillstyle(DrawingKit::outlined);
 	  d3d->draw_mesh(_mesh);
 	  d3d->restore();
 	}
@@ -165,94 +147,6 @@ void PrimitiveImpl::pick(PickTraversal_ptr traversal)
     {
       if (traversal->intersects_region(Region_var(_ext->_this())))
  	{
-// 	  Vertex lower, upper, center;
-// 	  Region_var visible = p->visible();
-// 	  visible->bounds(lower, upper);
-// 	  visible->center(center);
-// 	  bool hit = false;
-
-// 	  // FvD - define the surrounding box of the figure in terms
-// 	  // of display pixels rather than coordinates ... cause if
-// 	  // you scale > 1 you figure your picking rect will grow too
-// 	  TransformImpl::Matrix mat;
-// 	  Transform_var(p->current_matrix())->store_matrix(mat);
-// 	  // FvD I agree, the old code was buggy on rotated figures ... -sigh
-// 	  // so we have to pay the price - sniff (I know, it's still a crapy
-// 	  Coord xspace = 4.0 / (mat[0][0]*mat[0][0] + mat[0][1]*mat[0][1]);
-// 	  Coord yspace = 4.0 / (mat[1][0]*mat[1][0] + mat[1][1]*mat[1][1]);
-// 	  xspace = sqrt(xspace);
-// 	  yspace = sqrt(yspace);
-// 	  BoxObj box(lower.x-xspace, lower.y-yspace, upper.x+xspace, upper.y+yspace);
-// 	  //BoxObj box(lower.x-Coord(2), lower.y-Coord(2), upper.x+Coord(2), upper.y+Coord(2));
-// 	  if (!closed_ && !curved_)
-// 	    {
-// 	      if (mode_ == FigureKit::stroke)
-// 		{
-// 		  MultiLineObj ml(v_);
-// 		  PointObj pt(center.x, center.y);
-// 		  if (ml.intersects(box)) hit = true;
-//                 }
-// 	      else if (mode_ == FigureKit::fill_stroke ||
-// 		       mode_ == FigureKit::fill)
-// 		{
-// 		  FillPolygonObj fp(v_);
-// 		  PointObj pt(center.x, center.y);
-// 		  if (fp.intersects(box)) hit = true;
-// 		}
-//             }
-// 	  else if (closed_ && !curved_)
-// 	    {
-// 	      if (mode_ == FigureKit::stroke)
-// 		{
-// 		  grow_vertices(v_);
-// 		  (*v_)[v_->_length] = (*v_)[0];
-// 		  v_->_length++;
-// 		  MultiLineObj ml(v_);
-// 		  if (ml.intersects(box)) hit = true;
-// 		  v_->_length--;
-//                 }
-// 	      else if (mode_ == FigureKit::fill_stroke ||
-// 		       mode_ == FigureKit::fill)
-// 		{
-// 		  FillPolygonObj fp(v_);
-// 		  PointObj pt(center.x, center.y);
-// 		  if (fp.intersects(box)) hit = true;
-//                 }
-//             }
-// 	  else if (!closed_ && curved_)
-// 	    {
-// 	      if (mode_ == FigureKit::stroke)
-// 		{
-// 		  MultiLineObj ml;
-// 		  ml.spline_to_multiline(*v_);
-// 		  PointObj pt(center.x, center.y);
-// 		  if (ml.intersects(box)) hit = true;
-//                 }
-// 	      else if (mode_ == FigureKit::fill_stroke ||
-// 		       mode_ == FigureKit::fill)
-// 		{
-// 		  FillPolygonObj fp;
-// 		  fp.closed_spline_to_polygon(*v_);
-// 		  if (fp.intersects(box)) hit = true;
-//                 }
-//             }
-// 	  else
-// 	    {
-// 	      if (mode_ == FigureKit::stroke)
-// 		{
-// 		  MultiLineObj ml;
-// 		  ml.closed_spline_to_polygon(*v_);
-// 		  if (ml.intersects(box)) hit = true;
-//                 }
-// 	      else if (mode_ == FigureKit::fill_stroke ||
-// 		       mode_ == FigureKit::fill)
-// 		{
-// 		  FillPolygonObj fp;
-// 		  fp.closed_spline_to_polygon(*v_);
-// 		  if (fp.intersects(box)) hit = true;
-//                 }
-//             }
-// 	  if (hit) t->hit();
  	}
       traversal->hit();
     }
@@ -280,17 +174,11 @@ void PrimitiveImpl::resize()
  	  _ext->lower.z = Math::min(_ext->lower.z, _mesh->nodes[i].z);
  	  _ext->upper.z = Math::max(_ext->upper.z, _mesh->nodes[i].z);
 	}
-      // in case of vertical/horizontal line with nil brush, 
-      // painter->is_visible will be return false, so add 1
-//       if ((ext_.lower_.x == ext_.upper_.x) ||
-//  	  (ext_.lower_.y == ext_.upper_.y)) 
-// 	ext_.upper_.x +=1; ext_.upper_.y +=1;
     }	
 }
 
 void PrimitiveImpl::reset()
 {
-//   _mesh = new Warsaw::Mesh();
   _ext->valid = false;
 }
 
