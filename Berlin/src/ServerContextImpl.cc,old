@@ -28,24 +28,24 @@
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/ClientContextImpl.hh"
 #include "Berlin/Logger.hh"
-#include "Warsaw/Stage.hh"
+#include "Desktop/DesktopKitImpl.hh"
 
 // static singletons mapping
 map<string, CosLifeCycle::LifeCycleObject_var> ServerContextImpl::singletons;
 Mutex ServerContextImpl::singletonsMutex;
-Stage_var ServerContextImpl::stage;
+DesktopKitImpl *ServerContextImpl::kit;
 
-ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr ff, ClientContext_ptr c, Stage_ptr s)
+ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr ff, ClientContext_ptr c, DesktopKitImpl *dk)
   : ffinder(ff), cContext(ClientContext::_duplicate(c))
 {
   MutexGuard guard(singletonsMutex);
-  if (CORBA::is_nil(stage)) stage = Stage::_duplicate(s);
+  if (!kit) kit = dk;
 }
 
-Stage_ptr ServerContextImpl::root()
+DesktopKit_ptr ServerContextImpl::deskKit()
 {
   MutexGuard guard(singletonsMutex);
-  return Stage::_duplicate(stage);
+  return kit->_this();
 }
 
 CosLifeCycle::FactoryFinder_ptr ServerContextImpl::factoryFinder()

@@ -19,46 +19,41 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ScreenManager_hh
-#define _ScreenManager_hh
+#ifndef _WindowImpl_hh
+#define _WindowImpl_hh
 
-#include "Warsaw/config.hh"
-
-extern "C" {
-#include <ggi/ggi.h>
-}
-
-#include "Warsaw/Region.hh"
-#include "Warsaw/Event.hh"
-#include "Berlin/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Window.hh>
+#include <Warsaw/Command.hh>
+#include <Berlin/ControllerImpl.hh>
+#include <Desktop/DesktopImpl.hh>
 #include <vector>
 
-class GLDrawingKit;
-class Pointer;
-class ScreenImpl;
-class EventManager;
-class RegionImpl;
-
-class ScreenManager
+class WindowImpl : implements(Window), public ControllerImpl
 {
-  typedef vector<RegionImpl *> dlist_t;
-public:
-  ScreenManager(ScreenImpl *, EventManager *, GLDrawingKit *);
-  ~ScreenManager();
-  void damage(Region_ptr);
-  void repair();
-  void nextEvent();
-  void run();
-private:
-  long ptrPositionX;
-  long ptrPositionY;
-  ScreenImpl *screen;
-  EventManager *emanager;
-  GLDrawingKit *drawing;
-  Pointer *pointer;
-  ggi_visual_t visual;
-  dlist_t damages;
-  Mutex mutex;
+  class Manipulator : implements(Command)
+    {
+    public:
+      Manipulator(DesktopImpl *d, DesktopImpl::Info &i) : desktop(d), info(i) {}
+      virtual ~Manipulator() {}
+      virtual void execute(const Message &) = 0;
+    protected:
+      DesktopImpl *desktop;
+      DesktopImpl::Info &info;
+    };
+ public:
+  WindowImpl(DesktopImpl *);
+  virtual ~WindowImpl();
+  void insert();
+  Command_ptr reposition();
+  Command_ptr resize();
+  Command_ptr relayer();
+
+  virtual CORBA::Boolean handle(PickTraversal_ptr, const CORBA::Any &);
+ private:
+  DesktopImpl *desktop;
+  DesktopImpl::Info  info;
+  vector<Manipulator *> manipulators;
 };
 
-#endif /* _ScreenManager_hh */
+#endif /* _WindowImpl_hh */

@@ -49,7 +49,7 @@ public:
     main, agent, message, command,
     subject, observer, text, widget,
     image, figure, layout, drawing,
-    picking, geometry};
+    picking, focus, geometry};
 private:
   struct _streamlock;
   friend struct _streamlock;

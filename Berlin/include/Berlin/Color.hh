@@ -22,7 +22,7 @@
 #ifndef _Color_hh
 #define _Color_hh
 
-Color brightness(const Color &c1, double adjust)
+inline Color brightness(const Color &c1, double adjust)
 {
   Color c2;
   if (adjust >= 0)

@@ -19,46 +19,34 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ScreenManager_hh
-#define _ScreenManager_hh
+#ifndef _DesktopKitImpl_hh
+#define _DesktopKitImpl_hh
 
-#include "Warsaw/config.hh"
-
-extern "C" {
-#include <ggi/ggi.h>
-}
-
-#include "Warsaw/Region.hh"
-#include "Warsaw/Event.hh"
-#include "Berlin/Thread.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/DesktopKit.hh>
+#include <Warsaw/LayoutKit.hh>
+#include <Warsaw/WidgetKit.hh>
+#include <Warsaw/Screen.hh>
+#include <Berlin/CloneableImpl.hh>
 #include <vector>
 
-class GLDrawingKit;
-class Pointer;
-class ScreenImpl;
-class EventManager;
-class RegionImpl;
+class WindowImpl;
+class DesktopImpl;
 
-class ScreenManager
+class DesktopKitImpl : implements(DesktopKit), virtual public CloneableImpl
 {
-  typedef vector<RegionImpl *> dlist_t;
-public:
-  ScreenManager(ScreenImpl *, EventManager *, GLDrawingKit *);
-  ~ScreenManager();
-  void damage(Region_ptr);
-  void repair();
-  void nextEvent();
-  void run();
-private:
-  long ptrPositionX;
-  long ptrPositionY;
-  ScreenImpl *screen;
-  EventManager *emanager;
-  GLDrawingKit *drawing;
-  Pointer *pointer;
-  ggi_visual_t visual;
-  dlist_t damages;
-  Mutex mutex;
+ public:
+  DesktopKitImpl(Screen_ptr, LayoutKit_ptr, WidgetKit_ptr);
+  virtual ~DesktopKitImpl();
+  Window_ptr shell(Graphic_ptr);
+  Window_ptr transient(Graphic_ptr);
+ private:
+  Screen_var screen;
+  DesktopImpl *desktop;
+  Stage_var  stage;
+  LayoutKit_var lk;
+  WidgetKit_var wk;
+  vector<WindowImpl *> windows;
 };
 
-#endif /* _ScreenManager_hh */
+#endif /* _DesktopKitImpl_hh */

@@ -27,10 +27,12 @@
 #include "Widget/BoundedRangeImpl.hh"
 #include "Widget/TextBufferImpl.hh"
 #include "Widget/StreamBufferImpl.hh"
-#include "Widget/ControllerImpl.hh"
 #include "Widget/Filler.hh"
+#include "Widget/Indicator.hh"
 #include "Widget/Frame.hh"
 #include "Widget/ButtonImpl.hh"
+#include "Widget/Dragger.hh"
+#include "Widget/Gauge.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
 
@@ -107,9 +109,18 @@ StreamBuffer_ptr WidgetKitImpl::stream()
   return buffer->_this();  
 }
 
+Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
+{
+  DebugGraphic *debug = new DebugGraphic(s);
+  debug->_obj_is_ready(_boa());
+  graphics.push_back(debug);
+  debug->body(g);
+  return debug->_this();
+};
+
 Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
 {
-  Frame *frame = new Frame(2, c, Frame::concav);
+  Frame *frame = new Frame(1, c, Frame::concav);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -118,7 +129,7 @@ Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
 
 Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
 {
-  Frame *frame = new Frame(2, c, Frame::convex);
+  Frame *frame = new Frame(1, c, Frame::convex);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -134,29 +145,25 @@ Graphic_ptr WidgetKitImpl::filler(Graphic_ptr g, const Color &c)
   return f->_this();
 }
 
+Graphic_ptr WidgetKitImpl::indicator(Graphic_ptr g, const Color &c, Telltale_ptr t)
+{
+  Indicator *i = new Indicator(c);
+  i->_obj_is_ready(_boa());
+  i->attach(t);
+  i->body(g);
+  graphics.push_back(i);
+  return i->_this();
+}
+
 View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
-  DynamicFrame *frame = new DynamicFrame(2, c, Frame::concav, Frame::convex, Telltale::toggle);
+  DynamicFrame *frame = new DynamicFrame(1, c, Frame::concav, Frame::convex, Telltale::toggle);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
   frame->attach(t);
   return frame->_this();
 }
-
-// Controller_ptr WidgetKitImpl::button(Graphic_ptr g, const Color &c)
-// {
-//   ControllerImpl *controller = new ControllerImpl;
-//   controller->_obj_is_ready(_boa());
-//   graphics.push_back(controller);
-//   DynamicFrame *frame = new DynamicFrame(2, c, Frame::concav, Frame::convex, Telltale::toggle);
-//   frame->_obj_is_ready(_boa());
-//   graphics.push_back(frame);
-//   frame->body(g);
-//   frame->attach(Controller_var(controller->_this()));
-//   controller->body(Graphic_var(frame->_this()));
-//   return controller->_this();
-// };
 
 Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr c)
 {
@@ -165,7 +172,7 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   button->action(c);
   graphics.push_back(button);
 
-  DynamicFrame *frame = new DynamicFrame(2, b, Frame::concav, Frame::convex, Telltale::toggle);
+  DynamicFrame *frame = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::toggle);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -174,13 +181,27 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   return button->_this();
 }
 
-Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
+Controller_ptr WidgetKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 {
-  DebugGraphic *debug = new DebugGraphic(s);
-  debug->_obj_is_ready(_boa());
-  graphics.push_back(debug);
-  debug->body(g);
-  return debug->_this();
-};
+  Dragger *dragger = new Dragger(command);
+  dragger->_obj_is_ready(_boa());
+  dragger->body(g);
+  graphics.push_back(dragger);
+  return dragger->_this();
+}
+
+Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)
+{
+  Gauge *g = new Gauge(value, color);
+  g->_obj_is_ready(_boa());
+  value->attach(g);
+  graphics.push_back(g);
+
+  Frame *frame = new Frame(1, color, Frame::concav);
+  frame->_obj_is_ready(_boa());
+  graphics.push_back(frame);
+  frame->body(g);
+  return frame->_this();
+}
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

@@ -41,6 +41,11 @@ interface Transformator;
 
 interface FigureKit : Cloneable
 {
+  typedef sequence<Vertex> Vertices;
+  //. The Vertices type defines a sequence of vertex structures
+  //. for figures with an arbitrary number of vertices,
+  //. such as polygons and B-splines.
+
   // these ctors allow you to provide an overriding style specifier for
   // each object. any aspects it cannot determine from its specifier
   // (if you leave them blank, or just provide a null value) it will

@@ -2,7 +2,6 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,34 +19,44 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DrawTraversal_hh
-#define _DrawTraversal_hh
+#ifndef _GLRaster_hh
+#define _GLRaster_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Berlin/TraversalImpl.hh>
+#include <Warsaw/Raster.hh>
 #include <vector>
 
-declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Drawable)
-declare_corba_ptr_type(Region)
-
-class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl
+struct GLRaster
 {
-public:
-  DrawTraversalImpl(Graphic_ptr, Region_ptr, DrawingKit_ptr);
-  DrawTraversalImpl(const DrawTraversalImpl &);
-  ~DrawTraversalImpl();
-  CORBA::Boolean intersectsAllocation();
-  CORBA::Boolean intersectsRegion(Region_ptr);
-  void visit(Graphic_ptr);
-  order direction() { return up;}
-  CORBA::Boolean ok() { return true;}
-  DrawingKit_ptr kit();
-private:
-  DrawingKit_var drawingkit;
-  Drawable_var drawable;
-  Region_var clipping;
+  GLRaster(Raster_var);
+  Raster_var remote;
+  PixelCoord width;
+  PixelCoord height;
+  vector<char> data;
 };
 
-#endif /* _DrawTraversalImpl_hh */
+inline GLRaster::GLRaster(Raster_var r)
+  : remote(r)
+{
+  Raster::Info info = remote->header();
+  Raster::ColorSeq_var pixels;
+  Raster::Index lower, upper;
+  lower.x = lower.y = 0;
+  upper.x = info.width, upper.y = info.height;
+  remote->storePixels(lower, upper, pixels);
+  width = info.width;
+  height = info.height;
+  data.resize(4*width*height);
+  vector<char>::iterator pixel = data.begin();
+  for (int y = height - 1; y >= 0; y--)
+    for (int x = 0; x != width; x++)
+      {
+	Color &color = pixels[y * info.width + x];
+	*pixel++ = static_cast<char>(color.red * 256);
+	*pixel++ = static_cast<char>(color.green * 256);
+	*pixel++ = static_cast<char>(color.blue * 256);
+	*pixel++ = static_cast<char>(color.alpha * 256);
+      }
+}
+
+#endif /* _GLRaster_hh */

@@ -38,7 +38,7 @@ interface Region;
 interface Transform;
 interface DrawingKit;
 
-interface Graphic : Cloneable
+interface Graphic// : Cloneable
 //. The Graphic interface defines the common operations for all objects
 //. within the scene graph. Graphics have a size and an origin for the purposes 
 //. of layout. The Graphic interface provides operations for geometry management,

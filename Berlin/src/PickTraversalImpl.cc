@@ -22,8 +22,8 @@
  */
 #include "Berlin/PickTraversalImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(const Event::Pointer &p, Region_ptr r)
-  : TraversalImpl(r), memento(0), pointer(p) {}
+PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, const Event::Pointer &p, EventManager *em)
+  : TraversalImpl(g, r), pointer(p), manager(em), memento(0) {}
 PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
-  : TraversalImpl(t), memento(0), pointer(t.pointer), controller(t.controller) {}    
+  : TraversalImpl(t), pointer(t.pointer), manager(t.manager), memento(0), controller(t.controller) {}
 PickTraversalImpl::~PickTraversalImpl() { if (memento) memento->_dispose();}

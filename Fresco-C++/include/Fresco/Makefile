@@ -39,14 +39,16 @@ DYNINT	= Types.idl Message.idl Event.idl Style.idl
 STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable.idl \
 	  Drawable.idl Pencil.idl DrawingKit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
+	  Focus.idl \
 	  Image.idl Transformator.idl FigureKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
-	  CommandKit.idl \
+	  Command.idl CommandKit.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
 	  Button.idl WidgetKit.idl \
 	  Metrics.idl Text.idl TextKit.idl \
-	  Raster.idl ImageKit.idl
+	  Raster.idl ImageKit.idl \
+	  Desktop.idl Window.idl DesktopKit.idl
 
 INT	= $(DYNINT) $(STATINT)
 DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
@@ -89,7 +91,7 @@ $(opath)/%.o:	%.cc
 
 clean:	
 		rm -f $(opath)/*.o $(dpath)/*.d
-		rm -f *.cc *.hh
+		rm -f *.cc *.hh *~
 
 distclean:	clean
 		rm -f $(TARGET)

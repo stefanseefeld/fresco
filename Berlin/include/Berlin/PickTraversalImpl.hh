@@ -30,6 +30,7 @@
 #include "Warsaw/Transform.hh"
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/EventManager.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Vertex.hh"
 
@@ -40,7 +41,7 @@
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
  public:
-    PickTraversalImpl(const Event::Pointer &, Region_ptr);
+    PickTraversalImpl(Graphic_ptr, Region_ptr, const Event::Pointer &, EventManager *);
     PickTraversalImpl(const PickTraversalImpl &);
     ~PickTraversalImpl();
     
@@ -57,8 +58,9 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 	RegionImpl region(alloc, Transform::_nil());
 	if (region.contains(local)) return true;
 #else // transform the local CS to global coordinates
-	Region_var alloc = allocation();
-	RegionImpl region(alloc, Transform_var(transformation()));
+	Region_var r = allocation();
+	Transform_var t = transformation();
+	RegionImpl region(r, t);
 	if (region.contains(pointer.location)) return true;
 #endif
 	return false;
@@ -70,10 +72,13 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
       }
     void hit(Controller_ptr c)
       {
+	Logger::log(Logger::picking) << "hit ?" << endl;
  	Graphic_var current = graphic();
  	if (current->_is_equivalent(c))
 	  {
+	    Logger::log(Logger::picking) << "hit !" << endl;
 	    controller = Controller::_duplicate(c);
+	    manager->requestFocus(this, controller);
 	    memento = new PickTraversalImpl(*this);
 	    memento->_obj_is_ready(_boa());
 	  }
@@ -81,9 +86,10 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
     PickTraversal_ptr picked() { return memento ? memento->_this() : PickTraversal::_nil();}
     Controller_ptr receiver() { return Controller::_duplicate(controller);}
  private:
-    PickTraversalImpl *memento;
     const Event::Pointer pointer;
-    Controller_var controller;
+    EventManager        *manager;
+    PickTraversalImpl   *memento;
+    Controller_var       controller;
 };
 
 #endif /* _PickTraversalImpl_hh */

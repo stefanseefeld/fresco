@@ -1,5 +1,3 @@
-#ifndef _TextKitImpl_hh
-#define _TextKitImpl_hh
 //
 // $Id$
 //
@@ -22,6 +20,8 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
+#ifndef _TextKitImpl_hh
+#define _TextKitImpl_hh
 
 #include "Warsaw/config.hh"
 #include "Text/SeqComp.hh"

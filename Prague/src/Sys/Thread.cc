@@ -31,7 +31,7 @@ Mutex::Mutex(type t)
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr);
 //   pthread_mutexattr_setkind_np(&attr, t);
-  pthread_mutex_init(&mutex, &attr);
+  pthread_mutex_init(this, &attr);
   pthread_mutexattr_destroy(&attr);
 }
 

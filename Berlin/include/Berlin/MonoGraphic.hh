@@ -30,7 +30,7 @@
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/Thread.hh>
 
-class MonoGraphic : virtual public GraphicImpl
+class MonoGraphic : public GraphicImpl
 {
 public:
   MonoGraphic();

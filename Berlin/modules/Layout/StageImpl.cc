@@ -31,6 +31,7 @@ using namespace Geometry;
 
 void StageInfoImpl::cacheBBox()
 {
+  SectionLog section(Logger::layout, "StageInfoImpl::cacheBBox");
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
   child->request(r);
@@ -465,6 +466,7 @@ void StageImpl::request(Requisition &r)
       GraphicImpl::require(r.x, w, 0, 0, ax);
       GraphicImpl::require(r.y, h, 0, 0, ay);
     }
+  cout << r.x.natural << ' ' << r.y.natural << endl;
 }
 
 void StageImpl::traverse(Traversal_ptr traversal)
@@ -482,12 +484,11 @@ void StageImpl::traverse(Traversal_ptr traversal)
   st.execute();
 }
 
-void StageImpl::allocate(Graphic_ptr child, Allocation_ptr a)
+void StageImpl::allocate(Graphic_ptr child, Allocation_ptr allocation)
 {
-  Allocation_var allocation = a;
   StageInfoImpl *sinfo = 0;
   for (StageSequence::iterator i = list.begin(); i != list.end(); i++)
-    if ((*i)->child == child)
+    if ((*i)->child->_is_equivalent(child))
       {
 	sinfo = *i;
 	break;
@@ -503,6 +504,7 @@ void StageImpl::allocate(Graphic_ptr child, Allocation_ptr a)
 	  allocateChild(sinfo, info);
 	}
     }
+  else cerr << "StageImpl::allocate : child not found !" << endl;
 }
 
 void StageImpl::needRedraw()

@@ -24,6 +24,22 @@
 
 #include <iostream>
 
+inline Vertex &operator += (Vertex &p, const Vertex &q)
+{
+  p.x += q.x;
+  p.y += q.y;
+  p.z += q.z;
+  return p;
+}
+
+inline Vertex &operator -= (Vertex &p, const Vertex &q)
+{
+  p.x -= q.x;
+  p.y -= q.y;
+  p.z -= q.z;
+  return p;
+}
+
 inline Vertex operator + (const Vertex &p, const Vertex &q)
 {
   Vertex r;

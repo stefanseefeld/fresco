@@ -39,10 +39,12 @@ Coord BoundedValueImpl::lower()
 
 void BoundedValueImpl::lower(Coord ll)
 {
-  MutexGuard guard(mutex);
-  if (ll == l) return;
-  l = ll;
-  if (v < l) v = l;
+  {
+    MutexGuard guard(mutex);
+    if (ll == l) return;
+    l = ll;
+    if (v < l) v = l;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -55,10 +57,12 @@ Coord BoundedValueImpl::upper()
 
 void BoundedValueImpl::upper(Coord uu)
 {
-  MutexGuard guard(mutex);
-  if (uu == u) return;
-  u = uu;
-  if (v > u) v = u;
+  {
+    MutexGuard guard(mutex);
+    if (uu == u) return;
+    u = uu;
+    if (v > u) v = u;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -89,54 +93,64 @@ void BoundedValueImpl::page(Coord pp)
 
 void BoundedValueImpl::forward()
 {
-  MutexGuard guard(mutex);
-  Coord t = v + s;
-  if (t > u) t = u;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = v + s;
+    if (t > u) t = u;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedValueImpl::backward()
 {
-  MutexGuard guard(mutex);
-  Coord t = v - s;
-  if (t < l) t = l;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = v - s;
+    if (t < l) t = l;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedValueImpl::fastforward()
 {
-  MutexGuard guard(mutex);
-  Coord t = v + p;
-  if (t > u) t = u;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = v + p;
+    if (t > u) t = u;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedValueImpl::fastbackward()
 {
-  MutexGuard guard(mutex);
-  Coord t = v - p;
-  if (t < l) t = l;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = v - p;
+    if (t < l) t = l;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedValueImpl::begin()
 {
-  MutexGuard guard(mutex);
-  Coord t = l;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = l;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -144,21 +158,25 @@ void BoundedValueImpl::begin()
 
 void BoundedValueImpl::end()
 {
-  MutexGuard guard(mutex);
-  Coord t = u;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = u;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedValueImpl::value(Coord vv)
 {
-  MutexGuard guard(mutex);
-  if (vv > u) vv = u;
-  else if (vv < l) vv = l;
-  if (vv == v) return;
-  v = vv;
+  {
+    MutexGuard guard(mutex);
+    if (vv > u) vv = u;
+    else if (vv < l) vv = l;
+    if (vv == v) return;
+    v = vv;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -172,12 +190,14 @@ Coord BoundedValueImpl::value()
 
 void BoundedValueImpl::adjust(Coord d)
 {
-  MutexGuard guard(mutex);
-  Coord t = v + d;
-  if (t > u) t = u;
-  else if (t < l) t = l;
-  if (t == v) return;
-  v = t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = v + d;
+    if (t > u) t = u;
+    else if (t < l) t = l;
+    if (t == v) return;
+    v = t;
+  }
   CORBA::Any any;
   notify(any);
 }

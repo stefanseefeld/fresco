@@ -43,7 +43,7 @@ class TraversalImpl : implements(Traversal)
   };
   typedef vector<State> stack_t;
  public:
-  TraversalImpl(Region_ptr);
+  TraversalImpl(Graphic_ptr, Region_ptr);
   TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
   Region_ptr allocation();

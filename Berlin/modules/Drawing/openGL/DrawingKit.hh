@@ -29,7 +29,9 @@
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
 #include "Drawing/openGL/GLFont.hh"
+#include "Drawing/openGL/GLRaster.hh"
 #include "Berlin/Thread.hh"
+#include "Berlin/ObjectCache.hh"
 #include "Warsaw/Image.hh"
 
 #include <string>
@@ -40,14 +42,6 @@ extern "C" {
 
 class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
 {
-  struct GLRaster
-  {
-    typedef vector<char>::iterator iterator;
-    GLRaster(CORBA::ULong w, CORBA::ULong h) : width(w), height(h), data(4*width*height) {}
-    PixelCoord width;
-    PixelCoord height;
-    vector<char> data;
-  };
 public:
   GLDrawingKit();
   ~GLDrawingKit();
@@ -62,11 +56,14 @@ public:
   void clear(Coord, Coord, Coord, Coord);
   void sync() { glFlush();}
  private:
-  void texturedPolygon(const Path &, GLRaster *); 
+  void transformedImage(const GLRaster *, Transform_ptr);
+  void scaledImage(const GLRaster *, Transform_ptr);
+  void translatedImage(const GLRaster *, Transform_ptr);
   Mutex mutex;
   GLFont *font;
   GLDrawable *drawable;
   vector<GLPencil *> pencils;
+  ObjectCache<Raster_var, GLRaster> rasters;
 };
 
 #endif /* _GLDrawingKit_hh */

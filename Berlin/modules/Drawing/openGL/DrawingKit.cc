@@ -26,8 +26,8 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
-#include "Warsaw/Text.hh"
 #include "Drawing/openGL/GLFont.hh"
+#include "Warsaw/Text.hh"
 #include "Berlin/Logger.hh"
 
 extern "C" {
@@ -38,6 +38,7 @@ extern "C" {
 #include <iostream>
 
 GLDrawingKit::GLDrawingKit()
+  : rasters(500)
 {
   ggiInit();
   drawable = new GLDrawable();
@@ -94,59 +95,73 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
   glRectf(l, t, r, b);
 }
 
+/*
+ * FIXME !!!: drawing transformed rasters doesn't work
+ *
+ * - if the transform only translates we can use glDrawPixels as is
+ * - if the transform only scales we can use glDrawPixels with zoom factors
+ * - else we can use glDrawPixels with zoom factors
+ *      -stefan
+ */
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
-  Raster::Info info = raster->header();
-  Raster::ColorSeq_var pixels;
-  Raster::Index lower, upper;
-  lower.x = lower.y = 0;
-  upper.x = info.width, upper.y = info.height;
-  raster->storePixels(lower, upper, pixels);
-
-  /*
-   * transform the ColorSeq to the format internally used by openGL
-   */
-  GLRaster *glraster = new GLRaster(info.width, info.height);
-  GLRaster::iterator pixel = glraster->data.begin();
-  for (int y = info.height - 1; y >= 0; y--)
-    for (int x = 0; x != info.width; x++)
-      {
-	Color &color = pixels[y * info.width + x];
-	*pixel++ = static_cast<char>(color.red * 256);
-	*pixel++ = static_cast<char>(color.green * 256);
-	*pixel++ = static_cast<char>(color.blue * 256);
-	*pixel++ = static_cast<char>(color.alpha * 256);
-      }
-
+  GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
 #if 1
-  Vertex origin;
-  origin.x = origin.y = origin.z = 0.;
-  transform->transformVertex(origin);
-  glRasterPos2d(origin.x, origin.y + info.height);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, info.width);
-  glDrawPixels(glraster->width, glraster->height, GL_RGBA, GL_UNSIGNED_BYTE, glraster->data.begin());
+  translatedImage(glraster, transform);
 #else
+  if (transform->Identity()) translatedImage(glraster, transform);
+  else transformedImage(glraster, transform);
+#endif
+}
+
+/*
+ * openGL requires glTexImageXX to take width and height in the form 2^k
+ * se we extract the exponent here and the residue
+ */
+inline void logbase2(unsigned int n, unsigned int &k, unsigned int &r)
+{
+  unsigned int i = 1;
+  k = 0;
+  while (n >= i)
+    {
+      i <<= 1;
+      k++;
+    }
+  i >>= 1;
+  r = n - i;
+}
+
+void GLDrawingKit::transformedImage(const GLRaster *raster, Transform_ptr transform)
+{
+  glEnable(GL_TEXTURE_2D);
+  glBegin(GL_POLYGON);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, raster->width, raster->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
   Path path;
   path.p.length(5);
   path.p[0].x = path.p[0].y = path.p[0].z = 0.;
-  path.p[1].x = info.width, path.p[1].y = path.p[1].z = 0.;
-  path.p[2].x = info.width, path.p[2].y = info.height, path.p[2].z = 0.;
-  path.p[3].x = 0, path.p[3].y = info.height, path.p[3].z = 0.;
+  path.p[1].x = raster->width, path.p[1].y = path.p[1].z = 0.;
+  path.p[2].x = raster->width, path.p[2].y = raster->height, path.p[2].z = 0.;
+  path.p[3].x = 0, path.p[3].y = raster->height, path.p[3].z = 0.;
   path.p[4].x = path.p[4].y = path.p[4].z = 0.;
   for (unsigned int i = 0; i != 5; i++) transform->transformVertex(path.p[i]);
-  texturedPolygon(path, glraster);
-#endif
-  delete glraster;
-}
-
-void GLDrawingKit::texturedPolygon(const Path &path, GLRaster *raster)
-{
-  glBegin(GL_POLYGON);
-  glEnable(GL_TEXTURE_2D);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, raster->width, raster->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
-  for (unsigned long i = 0; i < path.p.length(); i++)
-    glVertex3f(path.p[i].x, path.p[i].y, path.p[i].z);   
-  glDisable(GL_TEXTURE_2D);
+  glTexCoord3f(0.0f, 1.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
+  glTexCoord3f(1.0f, 1.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
+  glTexCoord3f(1.0f, 0.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
+  glTexCoord3f(0.0f, 0.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
   glEnd();
+  glDisable(GL_TEXTURE_2D);
 }
 
+void GLDrawingKit::scaledImage(const GLRaster *raster, Transform_ptr transform)
+{
+}
+
+void GLDrawingKit::translatedImage(const GLRaster *raster, Transform_ptr transform)
+{
+  Vertex origin;
+  origin.x = origin.y = origin.z = 0.;
+  transform->transformVertex(origin);
+  glRasterPos2d(origin.x, origin.y + raster->height);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, raster->width);
+  glDrawPixels(raster->width, raster->height, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
+}

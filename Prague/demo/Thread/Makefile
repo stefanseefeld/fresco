@@ -62,9 +62,9 @@ gpath		= gdb
 ppath		= prf
 rpath		= $(lpath)
 
-LIBS		= -lPrague -ldl -lz -lpthread
+LIBS		= -lWarsaw -lPrague -ldl -lz -lpthread
 
-ALL        =   Diner ThreadQueue
+ALL        =   Diner Queue ThreadPool
 
 world:		$(ALL)
 
@@ -75,6 +75,9 @@ Diner:		Diner.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 Queue:		Queue.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ThreadPool:	ThreadPool.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:	

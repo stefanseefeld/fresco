@@ -28,10 +28,10 @@
 
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
-#include "Warsaw/Stage.hh"
+#include "Desktop/DesktopKitImpl.hh"
 
-ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g)
-  : root(Stage::_duplicate(g))
+ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, DesktopKitImpl *dk)
+  : kit(dk)
 {
   ffinder = FactoryFinderImpl::Instance(factory);
 }
@@ -47,7 +47,7 @@ void ServerContextManagerImpl::run(void *arg)
 
 void ServerContextManagerImpl::ping()
 {
-  MutexGuard guard (myMutex);
+  MutexGuard guard (mutex);
   clist_t tmp;
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
     {
@@ -57,15 +57,14 @@ void ServerContextManagerImpl::ping()
   contexts = tmp;
 };
 
-// declared in IDL
 ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c)
 throw (SecurityException)
 {
-  MutexGuard guard (myMutex);
-  ServerContextImpl *temp = new ServerContextImpl(CosLifeCycle::FactoryFinder_var(ffinder->_this()), c, root);
-  temp->_obj_is_ready(this->_boa());
-  contexts.push_back(temp);
-  return temp->_this();
+  MutexGuard guard (mutex);
+  ServerContextImpl *sc = new ServerContextImpl(CosLifeCycle::FactoryFinder_var(ffinder->_this()), c, kit);
+  sc->_obj_is_ready(_boa());
+  contexts.push_back(sc);
+  return sc->_this();
 }
 
 

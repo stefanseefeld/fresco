@@ -36,7 +36,7 @@
 declare_corba_ptr_type(Region)
 class RegionImpl;
 
-class GraphicImpl : implements(Graphic), public virtual CloneableImpl
+class GraphicImpl : implements(Graphic)//, public virtual CloneableImpl
 {
   typedef set<Graphic_var> plist_t;
 public:

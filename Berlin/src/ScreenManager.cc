@@ -22,9 +22,9 @@
 
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/DrawTraversalImpl.hh"
-#include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/EventManager.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/Pointer.hh"
 #include "Berlin/Logger.hh"
@@ -32,8 +32,8 @@
 static Mutex ggi_mutex;
 static ggi_event event;
 
-ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
-  : screen(s), drawing(d), visual(drawing->getVisual())
+ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, GLDrawingKit *d)
+  : screen(s), emanager(em), drawing(d), visual(drawing->getVisual())
 {
   pointer = new Pointer(visual);
 }
@@ -46,7 +46,7 @@ ScreenManager::~ScreenManager()
 void ScreenManager::damage(Region_ptr r)
 {
   SectionLog section(Logger::drawing, "ScreenManager::damage");
-  MutexGuard guard(damageMutex);
+  MutexGuard guard(mutex);
   RegionImpl *region = new RegionImpl(r, Transform::_nil());
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);
@@ -73,12 +73,12 @@ void ScreenManager::damage(Region_ptr r)
 void ScreenManager::repair()
 {
   SectionLog section(Logger::drawing, "ScreenManager::repair");
-  damageMutex.lock();
-  DamageList tmp = damages;
+  mutex.lock();
+  dlist_t tmp = damages;
   damages.erase(damages.begin(), damages.end());
-  damageMutex.unlock();
+  mutex.unlock();
   
-  for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
+  for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
       Logger::log(Logger::drawing) << "repairing region "
 				   << '(' << (*i)->lower.x << ',' << (*i)->lower.y
@@ -86,7 +86,9 @@ void ScreenManager::repair()
       bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();
-      DrawTraversalImpl *traversal = new DrawTraversalImpl(DrawingKit_var(drawing->_this()), Region_var((*i)->_this()));
+      DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
+							   Region_var((*i)->_this()),
+							   DrawingKit_var(drawing->_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
@@ -122,7 +124,7 @@ void ScreenManager::nextEvent()
       {      
 	Event::Key key;
 	key.theChar = event.key.sym;
-	dispatchInput(key);
+	emanager->dispatchInput(key);
 	break;
       }
     case evPtrAbsolute:
@@ -144,7 +146,7 @@ void ScreenManager::nextEvent()
 	  event.any.type == evPtrAbsolute ? Event::hold :
 	  event.any.type == evPtrButtonPress ? Event::press :
 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-	dispatchInput(pointer);
+	emanager->dispatchInput(pointer);
 	break;
       }
     }
@@ -154,41 +156,13 @@ void ScreenManager::run()
 {
   while (true)
     {
-      damageMutex.lock();
+      mutex.lock();
       int amountOfDamage = damages.size();
-      damageMutex.unlock();
+      mutex.unlock();
       if (amountOfDamage > 0)
 	{
 	  repair();
 	}
       nextEvent();
     }
-}
-
-void ScreenManager::dispatchInput(const Event::Pointer &pointer)
-{
-  SectionLog section(Logger::main, "ScreenManager::dispatchInput(Pointer)");
-  /*
-   * try to find a potential receiver for the event
-   */
-  PickTraversalImpl *traversal = new PickTraversalImpl(pointer, Region_var(screen->getRegion()));
-  traversal->_obj_is_ready(CORBA::BOA::getBOA());
-  screen->traverse(Traversal_var(traversal->_this()));
-  /*
-   * has the traversal been picked ? then handle the event
-   */
-  PickTraversal_var picked = traversal->picked();
-  if (!CORBA::is_nil(picked))
-    {
-      SectionLog section(Logger::main, "picked controller non zero");
-      CORBA::Any any;
-      any <<= pointer;
-      Controller_var(picked->receiver())->handle(picked, any);
-    }
-  traversal->_dispose();
-}
-
-void ScreenManager::dispatchInput(const Event::Key &)
-{
-  SectionLog section(Logger::main, "ScreenManager::dispatchInput(Key)");
 }

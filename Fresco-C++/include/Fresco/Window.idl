@@ -19,46 +19,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ScreenManager_hh
-#define _ScreenManager_hh
+#ifndef _Window_idl
+#define _Window_idl
 
-#include "Warsaw/config.hh"
+#include <Controller.idl>
 
-extern "C" {
-#include <ggi/ggi.h>
-}
+interface Command;
 
-#include "Warsaw/Region.hh"
-#include "Warsaw/Event.hh"
-#include "Berlin/Thread.hh"
-#include <vector>
-
-class GLDrawingKit;
-class Pointer;
-class ScreenImpl;
-class EventManager;
-class RegionImpl;
-
-class ScreenManager
+interface Window : Controller
+//. a Window is a top level controller, i.e. one which
+//. is directly contained in the Desktop. It contains
+//. methods to manipulate its position in the Desktop.
 {
-  typedef vector<RegionImpl *> dlist_t;
-public:
-  ScreenManager(ScreenImpl *, EventManager *, GLDrawingKit *);
-  ~ScreenManager();
-  void damage(Region_ptr);
-  void repair();
-  void nextEvent();
-  void run();
-private:
-  long ptrPositionX;
-  long ptrPositionY;
-  ScreenImpl *screen;
-  EventManager *emanager;
-  GLDrawingKit *drawing;
-  Pointer *pointer;
-  ggi_visual_t visual;
-  dlist_t damages;
-  Mutex mutex;
+  Command reposition();
+  Command resize();
+  Command relayer();
 };
 
-#endif /* _ScreenManager_hh */
+#endif /* _Window_idl */

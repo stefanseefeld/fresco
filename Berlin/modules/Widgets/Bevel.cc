@@ -64,6 +64,7 @@ void Bevel::request(Requisition &requisition)
 
 void Bevel::traverse(Traversal_ptr traversal)
 {
+  SectionLog section(Logger::traversal, "Bevel::traverse");
   /*
    * cheap and dirty cull test -stefan
    */

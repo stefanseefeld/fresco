@@ -25,6 +25,7 @@
 
 #include "Cloneable.idl"
 #include "Types.idl"
+#include "Telltale.idl"
 
 /** this kit is a layer on top of the Graphic interface and
     CommandKit. It is responsible for creating subjects, and binding
@@ -32,7 +33,6 @@
     are usually called "widgets" -- they react to events in a
     particular way by modifying the subjects they're bound to. */
 
-interface Telltale;
 interface TelltaleConstraint;
 interface BoundedValue;
 interface BoundedRange;
@@ -48,28 +48,23 @@ interface WidgetKit : Cloneable
 {
   TelltaleConstraint exclusive();
   TelltaleConstraint selectionRequired();
-  Telltale normalTelltale();
-  Telltale constrainedTelltale(in TelltaleConstraint c);
+  Telltale     normalTelltale();
+  Telltale     constrainedTelltale(in TelltaleConstraint c);
   BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
   BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
-  TextBuffer text();
+  TextBuffer   text();
   StreamBuffer stream();
   
-  Graphic inset(in Graphic g, in Color c);
-  Graphic outset(in Graphic g, in Color c);
-  Graphic filler(in Graphic g, in Color c);
-  View    pushButtonFrame(in Graphic g, in Color c, in Telltale t);
+  Graphic      debugger(in Graphic g, in string s);
+  Graphic      inset(in Graphic g, in Color c);
+  Graphic      outset(in Graphic g, in Color c);
+  Graphic      filler(in Graphic g, in Color c);
+  Graphic      indicator(in Graphic g, in Color c, in Telltale t);
+  View         pushButtonFrame(in Graphic g, in Color c, in Telltale t);
+  Controller   dragger(in Graphic g, in Command c);
 
-//   Controller _button(in Graphic g, in Color c); // don't worry, just a test...
-
-  Button pushButton(in Graphic g, in Color b, in Command c);
-
-//   Graphic button(in Reactor strategy, in Telltale subj);
-//   Graphic slider(in Reactor strategy, in BoundedValue subj);
-//   Graphic viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);
-  
-    // more widgets in here
-  Graphic debugger(in Graphic g, in string s);
+  Button       pushButton(in Graphic g, in Color b, in Command c);
+  Graphic      gauge(in Color c, in BoundedValue v);
 };
 
 #endif

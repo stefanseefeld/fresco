@@ -29,27 +29,32 @@
 namespace Prague
 {
 
-template <class Task, class Handler>
+template <class Task, class Acceptor, class Handler>
 class ThreadPool
 {
   typedef vector<Thread *> tlist_t;
 public:
-  ThreadPool(size_t s) : tasks(128), threads(s)
+  ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) : tasks(t), acceptor(a), threads(s)
     {
-      for (tlist::iterator i = threads.begin(); i != threads.end(); i++)
+      for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++)
 	(*i) = new Thread(run, this);
     }
-  ~ThreadPool() { for (tlist::iterator i = threads.begin(); i != threads.end(); i++) delete *i;}
+  ~ThreadPool() { for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) delete *i;}
+  void start() { for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) (*i)->start();}
 private:
   static void *run(void *X)
     {
       ThreadPool *pool = reinterpret_cast<ThreadPool *>(X);
       while (1)
 	{
-	  Task task = tasks.pop();
+	  Task task = pool->tasks.pop();
+	  Handler *handler = pool->acceptor.consume(task);
+	  handler->process();
+	  delete handler;
 	}
     }
-  Thread::Queue<Task> tasks;
+  Thread::Queue<Task> &tasks;
+  Acceptor &acceptor;
   tlist_t threads;
 };
 

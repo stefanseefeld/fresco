@@ -114,7 +114,7 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
 void MonoGraphic::allocate(Graphic_ptr child, Allocation_ptr allocation)
 {
   SectionLog section(Logger::layout, "MonoGraphic::allocate");
-  if (child != Graphic_var(body())) return;
+//   if (!Graphic_var(body())->_is_equivalent(child)) return;
   GraphicImpl::allocate(child, allocation);
   CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i != size; i++)

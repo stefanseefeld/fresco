@@ -33,20 +33,23 @@
 namespace Prague
 {
 
-class Mutex
+class Mutex : public pthread_mutex_t
 {
-  friend class Condition;
 public:
+  class Attribute : public pthread_mutexattr_t
+  {
+  public:
+    Attribute() { pthread_mutexattr_init (this);}
+    ~Attribute() { pthread_mutexattr_destroy(this);}
+  };
   enum type { fast = PTHREAD_MUTEX_FAST_NP,
 	      recursive = PTHREAD_MUTEX_RECURSIVE_NP};
-  Mutex() { pthread_mutex_init(&mutex, 0);}
+  Mutex() { pthread_mutex_init(this, 0);}
   Mutex(type t);
-  ~Mutex() { pthread_mutex_destroy(&mutex);}
-  void lock() { pthread_mutex_lock(&mutex);}
-  void unlock() { pthread_mutex_unlock(&mutex);}
-  bool trylock() { return pthread_mutex_trylock(&mutex);}
-private:
-  pthread_mutex_t mutex;
+  ~Mutex() { pthread_mutex_destroy(this);}
+  void lock() { pthread_mutex_lock(this);}
+  void unlock() { pthread_mutex_unlock(this);}
+  bool trylock() { return pthread_mutex_trylock(this);}
 };
 
 class MutexGuard
@@ -60,17 +63,22 @@ private:
   Mutex &mutex;
 };
 
-class Condition
+class Condition : public pthread_cond_t
 {
 public:
-  Condition(Mutex &m) : mutex(m) { pthread_cond_init(&condition, 0);}
-  ~Condition() { pthread_cond_destroy(&condition);}
-  void broadcast() { pthread_cond_broadcast(&condition);}
-  void signal() { pthread_cond_signal(&condition);}
-  void wait() { pthread_cond_wait(&condition, &mutex.mutex);}
-  void wait(const Time &t) { timespec ts = t; pthread_cond_timedwait(&condition, &mutex.mutex, &ts);}
+  class Attribute : public pthread_condattr_t
+  {
+  public:
+    Attribute() { pthread_condattr_init (this);}
+    ~Attribute() { pthread_condattr_destroy(this);}
+  };
+  Condition(Mutex &m) : mutex(m) { pthread_cond_init(this, 0);}
+  ~Condition() { pthread_cond_destroy(this);}
+  void broadcast() { pthread_cond_broadcast(this);}
+  void signal() { pthread_cond_signal(this);}
+  void wait() { pthread_cond_wait(this, &mutex);}
+  void wait(const Time &t) { timespec ts = t; pthread_cond_timedwait(this, &mutex, &ts);}
 private:
-  pthread_cond_t condition;
   Mutex &mutex;
 };
 
@@ -95,19 +103,18 @@ private:
 
 #else
 
-class Semaphore
+class Semaphore : public sem_t
 {
 public:
-  Semaphore(unsigned int v = 0) { sem_init(&semaphore, 0, v);}
-  ~Semaphore() { sem_destroy(&semaphore);}
-  void wait() { sem_wait(&semaphore);}
-  bool trywait() { return sem_trywait(&semaphore);}
-  void post() { sem_post(&semaphore);}
-  int value() { int v; sem_getvalue(&semaphore, &v); return v;}
+  Semaphore(unsigned int v = 0) { sem_init(this, 0, v);}
+  ~Semaphore() { sem_destroy(this);}
+  void wait() { sem_wait(this);}
+  bool trywait() { return sem_trywait(this);}
+  void post() { sem_post(this);}
+  int value() { int v; sem_getvalue(this, &v); return v;}
 private:
   Semaphore(const Semaphore &);
   Semaphore &operator = (const Semaphore &);
-  sem_t semaphore;
 };
 
 #endif
@@ -130,6 +137,12 @@ public:
   template <class T> class Data;
   template <class T> class Queue;
   typedef void *(*proc)(void *);
+  class Attribute : public pthread_attr_t
+  {
+  public:
+    Attribute() { pthread_attr_init(this);}
+    ~Attribute() { pthread_attr_destroy(this);}
+  };
   Thread(proc pp, void *a) : p(pp), arg(a), running(false) {}
   virtual ~Thread() { cancel(); join();}
   void  start() { if (pthread_create(&thread, 0, &start, this) == 0) running = true;}

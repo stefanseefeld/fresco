@@ -27,9 +27,9 @@
 #include "Berlin/Plugin.hh"
 #include <string>
 
-DrawingKit_ptr canonicalDK;
-map<GlyphComp::Key,GlyphComp::Val,GlyphComp> glyphCache;
-Mutex staticMutex;
+DrawingKit_ptr TextKitImpl::canonicalDK;
+map<GlyphComp::Key,GlyphComp::Val,GlyphComp> TextKitImpl::glyphCache;
+Mutex TextKitImpl::staticMutex;
 
 
 TextKitImpl::TextKitImpl() {}
@@ -56,11 +56,11 @@ static Unistring UNIFY(const string &s) {
 }
 
 
-Text::FontDescriptorSeq* fonts() {
+Text::FontDescriptorSeq* TextKitImpl::fonts() {
     Text::FontDescriptorSeq *fdsq = new Text::FontDescriptorSeq();
     fdsq->length(1);
     (*fdsq)[0].pointsize = 14;
-    (*fdsq)[0].name = UNIFY((string)"Arial");;
+    (*fdsq)[0].name = UNIFY((string)"Arial");
     return fdsq;
 }
 

@@ -1,6 +1,3 @@
-#ifndef _TextViewer_hh
-#define _TextViewer_hh
-
 //
 // $Id$
 //
@@ -23,10 +20,12 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
+#ifndef _TextViewer_hh
+#define _TextViewer_hh
 
 #include "Warsaw/config.hh"
 #include "Warsaw/View.hh"
-#include "Widget/GapBuffer.hh"
+#include "Berlin/GapBuffer.hh"
 #include "Berlin/PolyGraphic.hh"
 #include <map>
 

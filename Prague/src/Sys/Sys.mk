@@ -52,8 +52,10 @@ sysclean:
 		rm -f Sys/*~
 		rm -f $(ipath)/Prague/Sys/*~
 
+ifneq ($(MAKECMDGOALS),config)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean) 
 -include $(SYS_DEP)
+endif 
 endif 
 endif 

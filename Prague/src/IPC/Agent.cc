@@ -20,65 +20,14 @@
  * MA 02139, USA.
  */
 #include "Prague/IPC/Agent.hh"
-#include <string>
+#include "Prague/IPC/Dispatcher.hh"
 
 using namespace Prague;
 
-/* @Method{Agent::Agent(Agent::Notifier *n)}
- *
- * @Description{}
- */
-Agent::Agent(Agent::Notifier *n)
-  : notifier(n), mask(panic|strange|died), active(false), bound(false)
-{
-};
-
-/* @Method{Agent::Agent(const Agent &A)}
- *
- * @Description{}
- */
-Agent::Agent(const Agent &A)
-  : notifier(A.notifier), mask(panic|strange|died), active(true), bound(false)
-{
-  notify(started);
-};
-
-/* @Method{Agent::~Agent()}
- *
- * Description{}
- */
 Agent::~Agent()
 {
-  if (bound)
-    {
-//       AsyncManager *manager = AsyncManager::Instance();
-//       manager->release(this);
-    }
+  if (running) Dispatcher::Instance()->release(this);
 };
 
-/* @Method{void Agent::setMask(short mask)}
- *
- * @Description{}
- */
-void Agent::setMask(short m)
-{
-//   AsyncManager *manager = 0;
-  bool b = bound;
-  if (b)
-    {
-//       manager = AsyncManager::Instance();
-//       manager->release(this);
-    }
-  mask = m;
-//   if (b) manager->bind(this);
-};
-
-/* @Method{void Agent::notify(short msg)}
- *
- * @Description{call the specific Notify handler, if the signal passes the filter mask}
- */
-void Agent::notify(short signal)
-{
-  signal &= mask;
-  if (signal && notifier) notifier->notify(signal);
-};
+void Agent::start(Agent::iomask mask) { running = true; Dispatcher::Instance()->bind(this, mask);}
+void Agent::stop() { running = false; Dispatcher::Instance()->release(this);}

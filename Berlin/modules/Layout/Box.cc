@@ -100,6 +100,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 
 void Box::traverse(Traversal_ptr traversal)
 {
+  SectionLog section(Logger::traversal, "Box::traverse");
   if (numChildren())
     {
       Region_var given = traversal->allocation();

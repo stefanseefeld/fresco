@@ -33,11 +33,11 @@
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Region.hh"
 
-TraversalImpl::TraversalImpl(Region_ptr r)
+TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r)
 {
   TransformImpl *transform = new TransformImpl;
   transform->_obj_is_ready(CORBA::BOA::getBOA());
-  push(Graphic::_nil(), r, transform);
+  push(g, r, transform);
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
@@ -117,6 +117,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transfor
 void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)
 {
   SectionLog section(Logger::traversal, "TraversalImpl::push");
+  RegionImpl region(r, t->_this());
   State state;
   state.graphic = Graphic::_duplicate(g);
   state.allocation = Region::_duplicate(r);

@@ -53,20 +53,13 @@ void TelltaleImpl::modify(Telltale::Flag f, CORBA::Boolean on)
 {
   unsigned long fs = 1 << f;
   unsigned long nf = on ? flags | fs : flags & ~fs;
-  bool changed = false;
   {
     MutexGuard guard(mutex);
-    if (nf != flags)
-      {
-	flags = nf;
-	changed = true;
-      }
+    if (nf == flags) return;
+    else flags = nf;
   }
-  if (changed)
-    {
-      CORBA::Any any;
-      notify(any);
-    }
+  CORBA::Any any;
+  notify(any);
 }
 
 void TelltaleImpl::constraint(TelltaleConstraint_ptr c)

@@ -25,17 +25,20 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
 #include <Berlin/MonoGraphic.hh>
+#include <Berlin/ControllerImpl.hh>
 
 class ScreenManager;
+class EventManager;
 class RegionImpl;
 class GLDrawingKit;
 
-class ScreenImpl : implements(Screen), virtual public MonoGraphic
+class ScreenImpl : implements(Screen), public ControllerImpl
 {
 public:
   ScreenImpl(GLDrawingKit *, Coord, Coord);
   virtual ~ScreenImpl();
 
+  virtual void traverse(Traversal_ptr);
   virtual void allocate(Graphic_ptr, Allocation_ptr);
 
   virtual Coord width();
@@ -43,12 +46,15 @@ public:
   virtual DrawingKit_ptr kit();
   virtual void damage(Region_ptr);
 
-  ScreenManager *Manager();
+  virtual CORBA::Boolean handle(PickTraversal_ptr, const CORBA::Any &);
+
+  ScreenManager *manager();
   Region_ptr getRegion();
 protected:
   GLDrawingKit  *drawing;
-  ScreenManager *manager;
+  ScreenManager *smanager;
   RegionImpl    *region;
+  EventManager  *emanager;
 };
 
 #endif /* _ScreenImpl_hh */

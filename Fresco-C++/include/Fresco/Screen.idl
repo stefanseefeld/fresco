@@ -23,12 +23,12 @@
 #define _Screen_idl
 
 #include "Types.idl"
-#include "Graphic.idl"
+#include "Controller.idl"
 
 interface DrawingKit;
 interface Region;
 
-interface Screen : Graphic
+interface Screen : Controller
 {
   Coord width();
   Coord height();

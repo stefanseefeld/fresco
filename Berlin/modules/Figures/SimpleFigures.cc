@@ -31,6 +31,7 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Pencil.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/Vertex.hh"
 #include "Warsaw/FigureKit.hh"
 #include "Warsaw/Transform.hh"
 #include <iostream>
@@ -56,8 +57,6 @@ void RectFig::draw(DrawTraversal_ptr traversal)
   Pencil_var pen = getStyledPencil(dk);
   Path path;
   path.p.length(5);
-//   path.p[0].x = -0.1*width, path.p[0].y = -0.1*height, path.p[0].z = 0;
-//   path.p[2].x = 0.9*width, path.p[2].y = 0.9*height, path.p[2].z = 0;
   path.p[0].x = path.p[0].y = path.p[0].z = 0;
   path.p[2].x = width, path.p[2].y = height, path.p[2].z = 0;
   path.p[1].x = path.p[2].x, path.p[1].y = path.p[0].y, path.p[1].z = 0.;

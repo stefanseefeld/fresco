@@ -20,7 +20,7 @@
 # MA 02139, USA.
 
 IPC_SRC	= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc \
-	  Agent.cc Coprocess.cc PipeAgent.cc TTYAgent.cc
+	  Agent.cc Dispatcher.cc #Coprocess.cc PipeAgent.cc TTYAgent.cc
 
 IPC_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(IPC_SRC))
 IPC_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(IPC_SRC))
@@ -47,8 +47,10 @@ ipcclean:
 		rm -f IPC/*~
 		rm -f $(ipath)/Prague/IPC/*~
 
+ifneq ($(MAKECMDGOALS),config) 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
 -include $(IPC_DEP)
+endif 
 endif 
 endif 

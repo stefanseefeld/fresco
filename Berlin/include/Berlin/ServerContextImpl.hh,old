@@ -30,23 +30,21 @@
 #include <string>
 #include <map>
 
-declare_corba_ptr_type(Stage)
-class GenericFactory_impl;
-
-// this is an encapsulated "entry point" which a client uses to manufacture
-// new objects, look up singletons, look up the scene root, etc.
+class DesktopKitImpl;
 
 class ServerContextImpl : implements(ServerContext)
+// this is an encapsulated "entry point" which a client uses to manufacture
+// new objects, look up singletons, look up the scene root, etc.
 {
   typedef vector<CORBA::Object_var> olist_t;
  public:  
-  ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr, Stage_ptr);
+  ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr, DesktopKitImpl *);
   bool ping();
 
   // stuff declared in IDL, that the client will access
   ClientContext_ptr client();
   CosLifeCycle::FactoryFinder_ptr factoryFinder();
-  Stage_ptr root();
+  DesktopKit_ptr deskKit();
   CORBA::Object_ptr create(const char *) throw (SecurityException, CreationFailureException);
   void setSingleton(const char *name, CosLifeCycle::LifeCycleObject_ptr singleton) 
       throw (SecurityException, SingletonFailureException);
@@ -63,7 +61,7 @@ protected:
   // things which all sessions share access to
   static map<string, CosLifeCycle::LifeCycleObject_var> singletons;
   static Mutex singletonsMutex;
-  static Stage_var stage;
+  static DesktopKitImpl *kit;
 };
 
 #endif

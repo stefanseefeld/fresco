@@ -46,8 +46,10 @@ filterclean:
 		rm -f Filter/*~
 		rm -f $(ipath)/Prague/Filter/*~
 
+ifneq ($(MAKECMDGOALS),config) 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
 -include $(FLT_DEP)
+endif 
 endif 
 endif 

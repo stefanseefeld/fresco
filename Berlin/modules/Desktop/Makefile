@@ -21,22 +21,22 @@
 
 SHELL	= /bin/sh
 
-top     = ../..
-cpath   = $(top)/config
-hpath   = $(top)/include/Berlin
+top	= ../..
+cpath	= $(top)/config
+hpath	= $(top)/include/Desktop
 
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath)
-LIBS	= -lPrague -lBerlin -lWidget
+LIBS	= -lPrague -lBerlin
 
-SRC	= Compositor.cc TextViewer.cc TextKitImpl.cc TextChunk.cc FontChange.cc
+SRC	= WindowImpl.cc DesktopImpl.cc DesktopKitImpl.cc
 
-TARGET	= $(mpath)/libText.so
+TARGET	= $(lpath)/libDesktop.so
 
 vpath %.d $(dpath)
-vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Text
+vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Layout $(ipath)/Desktop
 
-include $(cpath)/module.mk
+include $(cpath)/library.mk

@@ -25,8 +25,8 @@
 
 #include <hashtable.h>
 #include <hash_set.h>
-#include "time.h"
-#include <iostream.h>
+#include <ctime>
+#include <iostream>
 #include <iomanip.h>
 
 namespace Prague
@@ -44,7 +44,7 @@ struct CheckPoint
 	CheckPoint(CheckPoint* cp) : line(cp->line), count(cp->count),
 		start(cp->start), stop(cp->stop), elapsed(cp->elapsed) {}
 
-	Output()
+	void Output()
 	{
 		cout << setw(5) << line << ": " << setw(10) << count;
 		cout << " Times.  Total Time: ";
@@ -66,13 +66,15 @@ struct eqchkpt
 	}
 };
 
-struct hash<Prague::CheckPoint*>
-{
-	size_t operator()(const Prague::CheckPoint* cp) const
-	{
-		return cp->line;
-	}
 };
+
+struct hash<Prague::CheckPoint *>
+{
+  size_t operator()(const Prague::CheckPoint *cp) const { return cp->line;}
+};
+
+namespace Prague
+{
 
 class Profiler
 {
@@ -99,7 +101,7 @@ public:
 	~Profiler()
 	{
 		CheckPoint* current = lookup(&now);
-		if (current == NULL)
+		if (current == 0)
 		{
 			cerr << "Problem!" << endl;
 			exit(1);
@@ -112,7 +114,7 @@ public:
 			cout << "Dumping Profiling Data..." << endl;
 			hash_set<CheckPoint*, hash<Prague::CheckPoint*>,
 				eqchkpt>::const_iterator it = Set->begin();
-			for (int i=0; i<Set->size(); i++)
+			for (size_t i = 0; i < Set->size(); i++)
 			{
 				(*it)->Output();
 				it++;

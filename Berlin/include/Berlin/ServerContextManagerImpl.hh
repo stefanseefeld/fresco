@@ -23,10 +23,6 @@
 #ifndef _ServerContextManagerImpl_hh
 #define _ServerContextManagerImpl_hh
 
-// the ServerContextManager just hands out new ServerContexts to
-// people who are connecting.  it might want to do some checking on
-// the incoming ClientContext's credentials, but at the moment it doesn't.
-
 #include "Warsaw/config.hh"
 #include "Warsaw/ServerContext.hh"
 #include "Warsaw/Graphic.hh"
@@ -34,19 +30,24 @@
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/Thread.hh"
 
+class DesktopKitImpl;
+
 class ServerContextManagerImpl : implements(ServerContextManager), public virtual Thread
+//. the ServerContextManager just hands out new ServerContexts to
+//. people who are connecting.  it might want to do some checking on
+//. the incoming ClientContext's credentials, but at the moment it doesn't.
 {
   typedef vector<ServerContextImpl *> clist_t;
 public:  
-  ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g);
+  ServerContextManagerImpl(GenericFactoryImpl *, DesktopKitImpl *);
   void ping();
-  virtual void run(void* arg);
+  virtual void run(void *);
   ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
 protected:
   FactoryFinderImpl *ffinder;
-  Mutex myMutex;
+  Mutex mutex;
   clist_t contexts;
-  Stage_var root;
+  DesktopKitImpl *kit;
 };
 
 #endif

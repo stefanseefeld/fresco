@@ -29,10 +29,6 @@
 namespace Prague
 {
 
-/* @Class {Coprocess : public Agent}
- *
- * @Description {creates and handles coprocesses}
- */
 class Coprocess : public Agent
 {
   struct Timeout : public Timer::Notifier

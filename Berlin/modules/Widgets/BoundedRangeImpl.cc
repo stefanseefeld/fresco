@@ -39,11 +39,13 @@ Coord BoundedRangeImpl::lower()
 
 void BoundedRangeImpl::lower(Coord ll)
 {
-  MutexGuard guard(mutex);
-  if (ll == l) return;
-  l = ll;
-  if (lv < l) lv = l;
-  if (uv < l) uv = l;
+  {
+    MutexGuard guard(mutex);
+    if (ll == l) return;
+    l = ll;
+    if (lv < l) lv = l;
+    if (uv < l) uv = l;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -56,11 +58,13 @@ Coord BoundedRangeImpl::upper()
 
 void BoundedRangeImpl::upper(Coord uu)
 {
-  MutexGuard guard(mutex);
-  if (uu == u) return;
-  u = uu;
-  if (lv > u) lv = u;
-  if (uv > u) uv = u;
+  {
+    MutexGuard guard(mutex);
+    if (uu == u) return;
+    u = uu;
+    if (lv > u) lv = u;
+    if (uv > u) uv = u;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -91,77 +95,91 @@ void BoundedRangeImpl::page(Coord pp)
 
 void BoundedRangeImpl::forward()
 {
-  MutexGuard guard(mutex);
-  Coord t = uv + s > u ? u - uv : s;
-  if (t <= 0.) return;
-  lv += t;
-  uv += t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = uv + s > u ? u - uv : s;
+    if (t <= 0.) return;
+    lv += t;
+    uv += t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedRangeImpl::backward()
 {
-  MutexGuard guard(mutex);
-  Coord t = lv - s < l ? lv - l : s;
-  if (t <= 0.) return;
-  lv -= t;
-  uv -= t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = lv - s < l ? lv - l : s;
+    if (t <= 0.) return;
+    lv -= t;
+    uv -= t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedRangeImpl::fastforward()
 {
-  MutexGuard guard(mutex);
-  Coord t = uv + p > u ? u - uv : p;
-  if (t <= 0.) return;
-  lv += t;
-  uv += t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = uv + p > u ? u - uv : p;
+    if (t <= 0.) return;
+    lv += t;
+    uv += t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedRangeImpl::fastbackward()
 {
-  MutexGuard guard(mutex);
-  Coord t = lv - p < l ? lv - l : p;
-  if (t <= 0.) return;
-  lv -= t;
-  uv -= t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = lv - p < l ? lv - l : p;
+    if (t <= 0.) return;
+    lv -= t;
+    uv -= t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedRangeImpl::begin()
 {
-  MutexGuard guard(mutex);
-  Coord t = lv - l;
-  if (t == 0.) return;
-  lv -= t;
-  uv -= t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = lv - l;
+    if (t == 0.) return;
+    lv -= t;
+    uv -= t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedRangeImpl::end()
 {
-  MutexGuard guard(mutex);
-  Coord t = u - uv;
-  if (t == 0.) return;
-  lv += t;
-  uv += t;
+  {
+    MutexGuard guard(mutex);
+    Coord t = u - uv;
+    if (t == 0.) return;
+    lv += t;
+    uv += t;
+  }
   CORBA::Any any;
   notify(any);
 }
 
 void BoundedRangeImpl::lvalue(Coord vv)
 {
-  MutexGuard guard(mutex);
-  if (vv > u) vv = u;
-  else if (vv < l) vv = l;
-  if (vv == lv) return;
-  lv = vv;
+  {
+    MutexGuard guard(mutex);
+    if (vv > u) vv = u;
+    else if (vv < l) vv = l;
+    if (vv == lv) return;
+    lv = vv;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -175,11 +193,13 @@ Coord BoundedRangeImpl::lvalue()
 
 void BoundedRangeImpl::uvalue(Coord vv)
 {
-  MutexGuard guard(mutex);
-  if (vv > u) vv = u;
-  else if (vv < l) vv = l;
-  if (vv == uv) return;
-  uv = vv;
+  {
+    MutexGuard guard(mutex);
+    if (vv > u) vv = u;
+    else if (vv < l) vv = l;
+    if (vv == uv) return;
+    uv = vv;
+  }
   CORBA::Any any;
   notify(any);
 }
@@ -193,13 +213,15 @@ Coord BoundedRangeImpl::uvalue()
 
 void BoundedRangeImpl::adjust(Coord d)
 {
-  MutexGuard guard(mutex);
-  Coord t =
-    uv + d > u ? u - uv :
-    lv + d < l ? lv - l : d;
-  if (t == 0.) return;
-  lv += t;
-  uv += t;
+  {
+    MutexGuard guard(mutex);
+    Coord t =
+      uv + d > u ? u - uv :
+      lv + d < l ? lv - l : d;
+    if (t == 0.) return;
+    lv += t;
+    uv += t;
+  }
   CORBA::Any any;
   notify(any);
 }

@@ -58,7 +58,7 @@ void Frame::draw(DrawTraversal_ptr traversal)
 }
 
 DynamicFrame::DynamicFrame(Coord t, const Color &c, type t1, type t2, Telltale::Flag m)
-  : Bevel(t, 0.5, 0.5, true, true), Frame(t, c, t2), type1(t1), type2(t2), mask(m)
+  : Frame(t, c, t2), type1(t1), type2(t2), mask(m)
 {
 }
 

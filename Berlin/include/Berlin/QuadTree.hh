@@ -40,24 +40,17 @@
 template <class T, class I>
 class QTNode
 {
-
-  /* For some reason GCC 2.95 doesn't allow us to forward declare
-   * this... so just define it inline 
-   */
-  class move_down : public unary_function<I *, bool> {
-  public:
+  struct move_down : unary_function<I *, bool>
+  {
     move_down(QTNode<T, I> *n) : node(n) {}
-    bool operator()(I *i) {
-      QTNode<T, I>::index idx = node->where(i);
-      if (idx != QTNode<T, I>::fence) {
-        node->quadrants[idx]->insert(i);
-        return true;
-      } else 
-        return false;
-    };
+    bool operator()(I *i)
+      {
+	QTNode<T, I>::index idx = node->where(i);
+	if (idx != QTNode<T, I>::fence) { node->quadrants[idx]->insert(i); return true;}
+	else return false;
+      };
     QTNode<T, I> *node;
   };
-
   friend class move_down;
 public:
   enum index

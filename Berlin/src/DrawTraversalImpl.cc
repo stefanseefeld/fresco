@@ -20,17 +20,24 @@
  * MA 02139, USA.
  */
 #include "Berlin/DrawTraversalImpl.hh"
+#include "Berlin/RegionImpl.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Drawable.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Region.hh"
 
-DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Region_ptr r)
-  : TraversalImpl(r), drawingkit(kit), drawable(drawingkit->getDrawable()), clipping(r) {}
+DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, DrawingKit_ptr kit)
+  : TraversalImpl(g, r), drawingkit(kit), drawable(drawingkit->getDrawable()), clipping(r) {}
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
   : TraversalImpl(t), drawingkit(t.drawingkit), drawable(t.drawable), clipping(t.clipping) {}
 DrawTraversalImpl::~DrawTraversalImpl() {}
-CORBA::Boolean DrawTraversalImpl::intersectsAllocation() { return clipping->intersects(Region_var(allocation()));}
+CORBA::Boolean DrawTraversalImpl::intersectsAllocation()
+{
+  Region_var r = allocation();
+  Transform_var t = transformation();
+  RegionImpl region(r, t);
+  return region.intersects(clipping);
+}
 CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr region) { return clipping->intersects(region);}
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}
 DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawingkit);}

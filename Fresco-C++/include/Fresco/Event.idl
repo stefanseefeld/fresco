@@ -31,6 +31,8 @@
 
 module Event {
     
+// typedef long Device;
+
     enum ActuationType {press, hold, release};
     
     struct Key {

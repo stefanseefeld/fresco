@@ -43,8 +43,10 @@ networkclean:
 		rm -f Network/*~
 		rm -f $(ipath)/Prague/Network/*~
 
+ifneq ($(MAKECMDGOALS),config) 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
 -include $(NTW_DEP)
+endif 
 endif 
 endif 

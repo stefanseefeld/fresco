@@ -29,6 +29,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Region.hh"
+#include <iostream>
 
 class RegionImpl : implements(Region)
 {
@@ -62,5 +63,11 @@ public:
   static Coord spanAlign(Coord, Coord, Coord);
   static Coord spanOrigin(Coord, Coord, Coord);
 };
+
+inline ostream &operator << (ostream &os, const RegionImpl &region)
+{
+  return os << "[(" << region.lower.x << ',' << region.lower.y << ',' << region.lower.z << ')'
+	    << ",(" << region.upper.x << ',' << region.upper.y << ',' << region.upper.z << ")]";
+}
 
 #endif /* _RegionImpl_hh */

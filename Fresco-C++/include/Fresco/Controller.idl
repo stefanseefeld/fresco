@@ -26,12 +26,37 @@
 #include "Telltale.idl"
 
 interface PickTraversal;
+interface Focus;
 
 interface Controller : Graphic, Telltale
+//. The Controller interface defines the mechanisms for the logical
+//. composition of user interface objects. Controller is a Graphic subtype
+//. and can delegate the presentation and geometry of the
+//. controller to another graphic using Graphic::body.
+//.
+//. A controller implementation should define the pick operation to be
+//. opaque in the sense that the controller should appear as a leaf Graphic
+//. relative to pick calls.  This approach hides the controller's
+//. structure from surrounding objects.
+//.
+//. Unlike graphics, which may be organized with sharing to form
+//. a directed-acyclic graph, controllers must be organized in
+//. a strict hierarchy.  Using a hierarchy simplifies
+//. input handling and focus management.
 {
-  void handle(in PickTraversal t, in any a);
-//   void grab();
-//   void ungrab();
+  Controller parentController();
+  void appendController(in Controller c);
+  void prependController(in Controller c);
+  void insertController(in Controller i, in Controller c);
+  void replaceController(in Controller i, in Controller c);
+  void removeController(in Controller c);
+  void setParentController(in Controller c);
+
+  void requestFocus(in Controller c);//, in Event::Device d);
+  boolean receiveFocus(in Focus f);
+  void loseFocus(in Focus f);
+
+  boolean handle(in PickTraversal t, in any a);
 };
 
 #endif /* _Controller_idl */

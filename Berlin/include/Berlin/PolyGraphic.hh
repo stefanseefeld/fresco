@@ -32,7 +32,7 @@
 #include <Berlin/Pool.hh>
 #include <vector>
 
-class PolyGraphic : virtual public GraphicImpl
+class PolyGraphic : public GraphicImpl
 {
   typedef vector<Graphic_var> clist_t;
 public:
