@@ -1,0 +1,8 @@
+This is the (beginning of) a unit test framework based on qmtest
+(see http://www.codesourcery.com/qmtest/).
+
+Currently the integration with that tool is lacking though and everything
+runs fine without qmtest installed.
+
+To preprocess the C++ test classes you will need to have Synopsis in at
+least version 0.6 installed. You can get it at http://synopsis.fresco.org/.
