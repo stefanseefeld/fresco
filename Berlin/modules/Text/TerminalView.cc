@@ -36,7 +36,8 @@ TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk, DrawingKit_ptr dk
     stream(StreamBuffer::_duplicate(s)),
     kit(TextKit::_duplicate(tk)),
     canonicalDK(DrawingKit::_duplicate(dk)),
-    compositor(l)
+    compositor(l),
+    locked(false)
 {
   Trace trace("TerminalView::TerminalView");
 }
@@ -52,9 +53,15 @@ void TerminalView::request(Requisition &r)
   r.y.align   = 0.;
 }
 
+void TerminalView::needResize()
+{
+  if (!locked) Composition::needResize();
+}
+
 void TerminalView::update(const CORBA::Any &)
 {
   Trace trace("TerminalView::update");  
+  begin();
   if (!lines.size())
     {
       lines.push_back(new Composition(canonicalDK, compositor));
@@ -88,6 +95,17 @@ void TerminalView::update(const CORBA::Any &)
           break;
         }
     }
+  this->end();
   needResize();
   needRedraw();
+}
+
+void TerminalView::begin()
+{
+  locked = true;
+}
+
+void TerminalView::end()
+{
+  locked = false;
 }

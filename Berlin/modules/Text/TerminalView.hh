@@ -36,13 +36,17 @@ class TerminalView : implements(View), public Composition
   TerminalView(StreamBuffer_ptr, TextKit_ptr, DrawingKit_ptr, Compositor *, Compositor *);
   virtual ~TerminalView();
   virtual void request(Requisition &);
+  virtual void needResize();
   virtual void update(const CORBA::Any &);
  protected:
+  void begin();
+  void end();
   StreamBuffer_ptr stream;
   TextKit_var kit;
   DrawingKit_var canonicalDK;
   Compositor *compositor;
   lines_t lines;
+  bool locked;
 };
 
 #endif /* _TerminalView_hh */
