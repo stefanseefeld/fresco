@@ -23,7 +23,6 @@
 #include <iostream>
 
 #include <sys/times.h>
-#include <stdio.h>
 #include <unistd.h>
 
 using namespace Prague;
@@ -33,7 +32,7 @@ clock_t Stopwatch::_ticks = 0;
 Stopwatch::Stopwatch()
   : _state(undef)
 {
-  if (!_ticks) _ticks = CLOCKS_PER_SEC;
+  if (!_ticks) _ticks = sysconf(_SC_CLK_TCK);
   start();
 };
 
