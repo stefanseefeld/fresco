@@ -57,6 +57,7 @@ depend: $(DEP)
 
 xref: #do nothing
 doc: #do nothing
+install-doc: #do nothing
 
 daVinci:	$(OBJ) main.o
 	@echo linking $(@F)
@@ -92,6 +93,6 @@ ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:    .FORCE
 endif
 
-ifeq (,$(filter $(MAKECMDGOALS), depend doc clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), depend doc install-doc clean distclean maintainer-clean))
 -include $(DEP)
 endif
