@@ -57,7 +57,6 @@ ServerContextImpl::~ServerContextImpl()
   Trace trace("ServerContextImpl::~ServerContextImpl");
   for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
     (*i).second->decrement();
-  Babylon::String title = Unicode::to_internal(*_client->application_title());
   Logger::log(Logger::corba) << "ServerContext " << (void *)(this)
 			     << " destructed." << std::endl;
 }
