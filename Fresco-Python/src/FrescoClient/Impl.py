@@ -191,8 +191,6 @@ class PyTransform (Warsaw__POA.Transform):
 	self.__translation = 1
 	self.__xy = 1
 	self.__dirty = 0
-	print "init'ed:"
-	self.dump()
     def recompute(self):
 	self.__translation = (
 	    math.fabs(self[0][0] - 1.) < 1e-4 and \
@@ -216,10 +214,6 @@ class PyTransform (Warsaw__POA.Transform):
 	    math.fabs(self[1][3]) < 1e-4 and \
 	    math.fabs(self[2][3]) < 1e-4
 	self.__dirty = 0
-	print "Computed:"
-	self.dump()
-	print "Trans: %d, XY: %d, Identity: %d"%(
-	    self.__translation, self.__xy, self.__identity)
     def det(self):
 	sum =       self[0][0] * self[1][1] * self[2][2]
 	sum = sum + self[0][1] * self[1][2] * self[2][0]
@@ -231,8 +225,6 @@ class PyTransform (Warsaw__POA.Transform):
     def copy(self, transform):
 	if not transform: self.init()
 	else: self.load_matrix(transform.store_matrix())
-	print "Copied:"
-	self.dump()
     def load_identity(self): self.init()
     def load_matrix(self, matrix):
 	for i in range(3):
