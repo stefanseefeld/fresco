@@ -60,7 +60,7 @@ $(top_builddir)/bin/Plugin2.so:	Plugin2.o
 		@echo linking $(@F)
 		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(top_builddir)/bin/Loader:		$(top_builddir)/Plugin1.so $(top_builddir)/Plugin2.so Loader.o
+$(top_builddir)/bin/Loader:		$(top_builddir)/bin/Plugin1.so $(top_builddir)/bin/Plugin2.so Loader.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ Loader.o $(LIBS)
 
