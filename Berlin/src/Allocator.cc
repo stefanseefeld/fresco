@@ -45,13 +45,15 @@ Allocator::~Allocator()
 
 void Allocator::request(Requisition &r)
 {
-  updateRequisition();
+  Trace trace("Allocator::request");
+  cacheRequisition();
   r = requisition;
 }
 
 void Allocator::traverse(Traversal_ptr traversal)
 {
-  updateRequisition();
+  Trace trace("Allocator::traverse");
+//   updateRequisition();
   Region_var allocation = traversal->allocation();
   if (!CORBA::is_nil(allocation))
     traversal->traverseChild(Graphic_var(body()), 0, allocation, Transform_var(Transform::_nil()));
@@ -61,6 +63,7 @@ void Allocator::traverse(Traversal_ptr traversal)
 
 void Allocator::needResize()
 {
+  Trace trace("Allocator::needResize");
   Lease<AllocationImpl> allocation;
   Providers::alloc.provide(allocation);
   allocation->clear();
@@ -70,7 +73,9 @@ void Allocator::needResize()
   region->clear();
   if (extension->valid) region->copy(Region_var(extension->_this()));
   requested = false;
-  updateRequisition();
+  allocated = false;
+  cacheRequisition();
+  cacheAllocation();
   if (extension->valid) region->mergeUnion(Region_var(extension->_this()));
   if (region->valid) needDamage(region, allocation);
   MonoGraphic::needResize();
@@ -78,7 +83,8 @@ void Allocator::needResize()
 
 void Allocator::allocate(Tag, const Allocation::Info &i)
 {
-  updateRequisition();
+  Trace trace("Allocator::allocate");
+//   updateRequisition();
 //  i.allocation->copy(Region_var(natural->_this()));
 }
 
@@ -107,20 +113,38 @@ static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
     }
 }
 
-void Allocator::updateRequisition()
+void Allocator::cacheRequisition()
 {
-  Trace trace("Allocator::updateRequisition");
+  Trace trace("Allocator::cacheRequisition");
   if (!requested)
     {
       Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
       requisition = r;
+      requested = r.x.defined && r.y.defined && r.z.defined;
+    }
+}
+
+void Allocator::cacheAllocation()
+{
+  Trace trace("Allocator::cacheAllocation");
+  cacheRequisition();
+  if (!allocated)
+    {
       ::naturalAllocation(requisition, *natural);
-      requested = r.x.defined && r.y.defined; // && r.z.defined;
       extension->valid = false;
+      Lease<RegionImpl> tmp;
+      Providers::region.provide(tmp);
+      tmp->clear();
+      Lease<TransformImpl> transform;
+      Providers::trafo.provide(transform);
+      transform->loadIdentity();
       Allocation::Info info;
+      info.allocation = tmp->_this();
+      info.transformation = transform->_this();
       MonoGraphic::extension(info, Region_var(extension->_this()));
+      allocated = true;
     }
 }
 
@@ -147,6 +171,7 @@ TransformAllocator::~TransformAllocator() {}
 
 void TransformAllocator::request(Requisition &r)
 {
+  Trace trace("TransformAllocator::request");
   Allocator::request(r);
   Coord fil = Coord(1000000.0);
   Coord zero = Coord(0.0);
@@ -156,16 +181,17 @@ void TransformAllocator::request(Requisition &r)
   r.y.minimum = zero;
   r.z.maximum = fil;
   r.z.minimum = zero;
-  requisition.x.maximum = fil;
-  requisition.x.minimum = zero;
-  requisition.y.maximum = fil;
-  requisition.y.minimum = zero;
-  requisition.z.maximum = fil;
-  requisition.z.minimum = zero;
+//   requisition.x.maximum = fil;
+//   requisition.x.minimum = zero;
+//   requisition.y.maximum = fil;
+//   requisition.y.minimum = zero;
+//   requisition.z.maximum = fil;
+//   requisition.z.minimum = zero;
 }
 
 void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 {
+  Trace trace("TransformAllocator::allocate");
   Vertex lower, upper, delta;
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);
@@ -180,10 +206,11 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 
 void TransformAllocator::traverse(Traversal_ptr traversal)
 {
+  Trace trace("TransformAllocator::traverse");
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);
   tx->loadIdentity();
-  updateRequisition();
+  cacheAllocation();
   Vertex lower, upper, v;
   traversal->bounds(lower, upper, v);
   computeDelta(lower, upper, v);

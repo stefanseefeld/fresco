@@ -107,20 +107,6 @@ static void computeAllocations(Axis a, Graphic::Requisition &total,
     }
 }
 
-static void compensate(Coord a, Coord &x, Coord &y)
-{
-  if (a > 0.)
-    {
-      if (Math::equal(x, 0., 1.0e-6)) y = a * x;
-      else
-	{
-	  Coord aspect = y/x;
-	  if (aspect > a) y = a * x;
-	  else if (aspect < a) x = y / a;
-	}
-    }
-}
-
 static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
   Trace trace("flexibleTransformRequest");
@@ -147,7 +133,9 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   nat.yalign = req.y.align;
   nat.lower.y = -req.y.align * req.y.natural;
   nat.upper.y = nat.lower.y + req.y.natural;
-  nat.lower.z = nat.upper.z = 0.0;
+  nat.zalign = req.z.align;
+  nat.lower.z = -req.z.align * req.z.natural;
+  nat.upper.z = nat.lower.z + req.z.natural;
   nat.valid = true;
 
   maxi.xalign = req.x.align;
@@ -156,7 +144,9 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   maxi.yalign = req.y.align;
   maxi.lower.y = -req.y.align * req.y.maximum;
   maxi.upper.y = maxi.lower.y + req.y.maximum;
-  maxi.lower.z = maxi.upper.z = 0.0;
+  maxi.zalign = req.z.align;
+  maxi.lower.z = -req.z.align * req.z.maximum;
+  maxi.upper.z = maxi.lower.z + req.z.maximum;
   maxi.valid = true;
 
   mini.xalign = req.x.align;
@@ -165,7 +155,9 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   mini.yalign = req.y.align;
   mini.lower.y = -req.y.align * req.y.minimum;
   mini.upper.y = mini.lower.y + req.y.minimum;
-  mini.lower.z = mini.upper.z = 0.0;
+  mini.zalign = req.z.align;
+  mini.lower.z = -req.z.align * req.z.minimum;
+  mini.upper.z = mini.lower.z + req.z.minimum;
   mini.valid = true;
 
   nat.applyTransform(t);
@@ -190,7 +182,14 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   else
     req.y.align = 0.0;
 
-  req.z.defined = false;
+  req.z.defined = true;
+  req.z.natural = nat.upper.z - nat.lower.z;
+  req.z.maximum = maxi.upper.z - maxi.lower.z;
+  req.z.minimum = mini.upper.z - mini.lower.z;
+  if (!Math::equal(req.z.natural, 0.0, 1.0e-6))
+    req.z.align = -nat.lower.z / req.z.natural;
+  else
+    req.z.align = 0.0;
 }
 
 static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
@@ -219,9 +218,10 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   nat.yalign = req.y.align;
   nat.lower.y = -req.y.align * req.y.natural;
   nat.upper.y = nat.lower.y + req.y.natural;
-  nat.lower.z = nat.upper.z = 0.;
+  nat.zalign = req.z.align;
+  nat.lower.z = -req.z.align * req.z.natural;
+  nat.upper.z = nat.lower.z + req.z.natural;
   nat.valid = true;
-//   cout << "require before transform " << req << ' ' << nat << endl;
   nat.applyTransform(t);
   Coord xlead = -nat.lower.x;
   Coord xtrail = nat.upper.x;
@@ -229,9 +229,12 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   Coord ylead = -nat.lower.y;
   Coord ytrail = nat.upper.y;
 
+  Coord zlead = -nat.lower.z;
+  Coord ztrail = nat.upper.z;
+
   GraphicImpl::requireLeadTrail(req.x, xlead, xlead, xlead, xtrail, xtrail, xtrail);
   GraphicImpl::requireLeadTrail(req.y, ylead, ylead, ylead, ytrail, ytrail, ytrail);
-//   cout << "require after transform " << req << ' ' << nat << endl;
+  GraphicImpl::requireLeadTrail(req.z, zlead, zlead, zlead, ztrail, ztrail, ztrail);
 }
 
 /*****************************************************/
@@ -504,11 +507,27 @@ void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
   if (CORBA::is_nil(tx) || tx->Identity()) return;
   if (Math::equal(req.x.natural, req.x.maximum, tol) &&
       Math::equal(req.y.natural, req.y.maximum, tol) &&
+      Math::equal(req.z.natural, req.z.maximum, tol) &&
       Math::equal(req.x.natural, req.x.minimum, tol) &&
-      Math::equal(req.y.natural, req.y.minimum, tol))
+      Math::equal(req.y.natural, req.y.minimum, tol) &&
+      Math::equal(req.z.natural, req.z.minimum, tol))
     fixedTransformRequest(req, tx);
   else
     flexibleTransformRequest(req, tx);
+}
+
+static void compensate(Coord a, Coord &x, Coord &y)
+{
+  if (a > 0.)
+    {
+      if (Math::equal(x, 0., 1.0e-6)) y = a * x;
+      else
+	{
+	  Coord aspect = y/x;
+	  if (aspect > a) y = a * x;
+	  else if (aspect < a) x = y / a;
+	}
+    }
 }
 
 /*
@@ -527,7 +546,6 @@ void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
 Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &req, Transform_ptr t)
 {
   Trace trace("GraphicImpl::transformAllocation");
-//   cout << "outer region " << region << endl;
   Vertex delta;
   delta.x = delta.y = delta.z = 0.;
   if (!rotated(t))
@@ -546,19 +564,19 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       Vertex center;
       center.x = (region.lower.x + region.upper.x) * 0.5;
       center.y = (region.lower.y + region.upper.y) * 0.5;
-//       cout << "center " << center.x << ' ' << center.y << endl;
+      center.z = (region.lower.z + region.upper.z) * 0.5;
       Transform::Matrix m;
       t->storeMatrix(m);
-//       cout << "matrix\n" << m;
-      Graphic::Requisition r[2], total;
-      GraphicImpl::initRequisition(r[0]);	
-      GraphicImpl::initRequisition(r[1]);	
+      Graphic::Requisition r[3], total;
+      GraphicImpl::initRequisition(r[0]);
+      GraphicImpl::initRequisition(r[1]);
+      GraphicImpl::initRequisition(r[2]);
       GraphicImpl::initRequisition(total);	
    
-      RegionImpl a[2];
-      Coord a0 = -1; Coord a1 = -1;
-      if (!Math::equal(m[0][0], 0.0, tol)) a0 = Math::abs(m[1][0] / m[0][0]);
-      if (!Math::equal(m[0][1], 0.0, tol)) a1 = Math::abs(m[1][1] / m[0][1]);
+      RegionImpl a[3];
+//       Coord a0 = -1; Coord a1 = -1; Coord a2 = -1;
+//       if (!Math::equal(m[0][0], 0.0, tol)) a0 = Math::abs(m[1][0] / m[0][0]);
+//       if (!Math::equal(m[0][1], 0.0, tol)) a1 = Math::abs(m[1][1] / m[0][1]);
 
       r[0].x.natural = Math::abs(req.x.natural*m[0][0]);
       r[0].x.maximum = Math::abs(req.x.maximum*m[0][0]);
@@ -570,6 +588,11 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       r[0].y.minimum = Math::abs(req.x.minimum*m[1][0]);
       r[0].y.align = 0.;
       r[0].y.defined = true;
+      r[0].z.natural = Math::abs(req.x.natural*m[2][0]);
+      r[0].z.maximum = Math::abs(req.x.maximum*m[2][0]);
+      r[0].z.minimum = Math::abs(req.x.minimum*m[2][0]);
+      r[0].z.align = 0.;
+      r[0].z.defined = true;
 
       r[1].x.natural = Math::abs(req.y.natural*m[0][1]);
       r[1].x.maximum = Math::abs(req.y.maximum*m[0][1]);
@@ -581,51 +604,75 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       r[1].y.minimum = Math::abs(req.y.minimum*m[1][1]);
       r[1].y.align = 0.;
       r[1].y.defined = true;
+      r[1].z.natural = Math::abs(req.y.natural*m[2][1]);
+      r[1].z.maximum = Math::abs(req.y.maximum*m[2][1]);
+      r[1].z.minimum = Math::abs(req.y.minimum*m[2][1]);
+      r[1].z.align = 0.;
+      r[1].z.defined = true;
 
-      total.x.natural = r[0].x.natural + r[1].x.natural;
-      total.x.maximum = r[0].x.maximum + r[1].x.maximum;
-      total.x.minimum = r[0].x.minimum + r[1].x.minimum;
+      r[2].x.natural = Math::abs(req.z.natural*m[0][2]);
+      r[2].x.maximum = Math::abs(req.z.maximum*m[0][2]);
+      r[2].x.minimum = Math::abs(req.z.minimum*m[0][2]);
+      r[2].x.align = 0.;
+      r[2].x.defined = true;
+      r[2].y.natural = Math::abs(req.z.natural*m[1][2]);
+      r[2].y.maximum = Math::abs(req.z.maximum*m[1][2]);
+      r[2].y.minimum = Math::abs(req.z.minimum*m[1][2]);
+      r[2].y.align = 0.;
+      r[2].y.defined = true;
+      r[2].z.natural = Math::abs(req.z.natural*m[2][2]);
+      r[2].z.maximum = Math::abs(req.z.maximum*m[2][2]);
+      r[2].z.minimum = Math::abs(req.z.minimum*m[2][2]);
+      r[2].z.align = 0.;
+      r[2].z.defined = true;
+
+      total.x.natural = r[0].x.natural + r[1].x.natural + r[2].x.natural;
+      total.x.maximum = r[0].x.maximum + r[1].x.maximum + r[2].x.natural;
+      total.x.minimum = r[0].x.minimum + r[1].x.minimum + r[2].x.natural;
       total.x.defined = true;
-      total.y.natural = r[0].y.natural + r[1].y.natural;
-      total.y.maximum = r[0].y.maximum + r[1].y.maximum;
-      total.y.minimum = r[0].y.minimum + r[1].y.minimum;
+      total.y.natural = r[0].y.natural + r[1].y.natural + r[2].y.natural;
+      total.y.maximum = r[0].y.maximum + r[1].y.maximum + r[2].y.natural;
+      total.y.minimum = r[0].y.minimum + r[1].y.minimum + r[2].y.natural;
       total.y.defined = true;
+      total.z.natural = r[0].z.natural + r[1].z.natural + r[2].z.natural;
+      total.z.maximum = r[0].z.maximum + r[1].z.maximum + r[2].z.natural;
+      total.z.minimum = r[0].z.minimum + r[1].z.minimum + r[2].z.natural;
+      total.z.defined = true;
 
-      computeAllocations(xaxis, total, 2, r, region, a);
-      computeAllocations(yaxis, total, 2, r, region, a);
+      computeAllocations(xaxis, total, 3, r, region, a);
+      computeAllocations(yaxis, total, 3, r, region, a);
+      computeAllocations(zaxis, total, 3, r, region, a);
       Coord x0 = a[0].upper.x - a[0].lower.x;
       Coord y0 = a[0].upper.y - a[0].lower.y;
+      Coord z0 = a[0].upper.z - a[0].lower.z;
       Coord x1 = a[1].upper.x - a[1].lower.x;
       Coord y1 = a[1].upper.y - a[1].lower.y;
-//       cout << "computeAllocation " << total << ' ' << r[0] << ' ' << r[1] << endl;
-//      cout << "before compensate " << x0 << ' ' << y0 << ' ' << x1 << ' ' << y1 << endl;
-      compensate(a0, x0, y0);
-      compensate(a1, x1, y1);
-//      cout << "after compensate " << x0 << ' ' << y0 << ' ' << x1 << ' ' << y1 << endl;
+      Coord z1 = a[1].upper.z - a[1].lower.z;
+      Coord x2 = a[2].upper.x - a[2].lower.x;
+      Coord y2 = a[2].upper.y - a[2].lower.y;
+      Coord z2 = a[2].upper.z - a[2].lower.z;
+      //compensate(a0, x0, y0);
+      //compensate(a1, x1, y1);
+      //compensate(a2, x2, y2);
 
-      Coord lx = sqrt(x0*x0 + y0*y0)/sqrt(m[0][0]*m[0][0]+m[1][0]*m[1][0]);
-      Coord ly = sqrt(x1*x1 + y1*y1)/sqrt(m[0][1]*m[0][1]+m[1][1]*m[1][1]);
+      Coord lx = sqrt(x0*x0 + y0*y0 + z0*z0)/sqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0] + m[2][0]*m[2][0]);
+      Coord ly = sqrt(x1*x1 + y1*y1 + z1*z1)/sqrt(m[0][1]*m[0][1] + m[1][1]*m[1][1] + m[2][1]*m[2][1]);
+      Coord lz = sqrt(x2*x2 + y2*y2 + z2*z2)/sqrt(m[0][2]*m[0][2] + m[1][2]*m[1][2] + m[2][2]*m[2][2]);
 
       region.xalign = req.x.align;
       region.yalign = req.y.align;
       region.zalign = req.z.align;
-//       cout << "center before "<< center << endl;
       t->inverseTransformVertex(center);
-//       cout << "center after " << center << endl;
 
       delta.x = center.x - lx * 0.5 - region.lower.x;
       delta.y = center.y - ly * 0.5 - region.lower.y;
-//       cout << delta.x << ' ' << center.x << ' ' << lx << ' ' << region.lower.x << endl;
-//      region.lower.x += delta.x;
-//      region.lower.y += delta.y;
-//      region.lower.z += delta.z;
+      delta.z = center.z - lz * 0.5 - region.lower.z;
       region.lower.x = -region.xalign * lx;
       region.lower.y = -region.yalign * ly;
-//       region.lower.z = -region.zalign * lz;
+      region.lower.z = -region.zalign * lz;
       region.upper.x = region.lower.x + lx;
       region.upper.y = region.lower.y + ly;
-//       region.upper.z = region.lower.z + lz;
-//       cout << "delta " << delta << '\n' << "inner region " << region << endl;
+      region.upper.z = region.lower.z + lz;
     }
   return delta;
 }

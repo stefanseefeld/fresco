@@ -42,13 +42,15 @@ public:
 
   virtual void allocate(Tag, const Allocation::Info &);
   virtual void needResize();
-protected:
-  bool requested;
+// private:
+  bool requested : 1;
+  bool allocated : 1;
   Graphic::Requisition requisition;
   Impl_var<RegionImpl> natural;
   Impl_var<RegionImpl> extension;
   
-  void updateRequisition();
+  void cacheRequisition();
+  void cacheAllocation();
   void needDamage(RegionImpl *, Allocation_ptr);
 };
 

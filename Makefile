@@ -38,7 +38,6 @@ endef
 .PHONY:	config depclean clean distclean install dist
 
 world: all
-	@echo $(subdirs)
 
 all: $(cpath)/packages.mk
 	@$(makeconf)

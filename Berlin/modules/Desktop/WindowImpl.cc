@@ -172,12 +172,20 @@ void WindowImpl::needResize()
   Vertex size = handle->size();
   Graphic::Requisition r;
   request(r);
-  if (r.x.minimum <= size.x && r.x.maximum >= size.x && r.y.minimum <= size.y && r.y.maximum >= size.y)
-    needRedraw();
+  cout << r << endl;
+  if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
+      r.y.minimum <= size.y && r.y.maximum >= size.y &&
+      r.z.minimum <= size.z && r.z.maximum >= size.z)
+    {
+      cout << "redraw" << endl;
+      needRedraw();
+    }
   else
     {
+      cout << "resize" << endl;
       size.x = min(r.x.maximum, max(r.x.minimum, size.x));
       size.y = min(r.y.maximum, max(r.y.minimum, size.y));
+      size.z = min(r.z.maximum, max(r.z.minimum, size.z));
       handle->size(size);
     }
 }

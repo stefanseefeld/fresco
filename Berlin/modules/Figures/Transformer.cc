@@ -52,6 +52,7 @@ Transform_ptr Transformer::transformation()
 
 void Transformer::request(Requisition &requisition)
 {
+  Trace trace("Transformer::request");
   Allocator::request(requisition);
 //   cout << "request before trafo " << requisition << endl;
   GraphicImpl::transformRequest(requisition, Transform_var(transform->_this()));
@@ -104,6 +105,7 @@ void Transformer::traverse(Traversal_ptr traversal)
 
 void Transformer::allocate(Tag, const Allocation::Info &info)
 {
+  Trace trace("Transformer::allocate");
   if (!transform->Identity())
     {
       if (!CORBA::is_nil(info.allocation))
