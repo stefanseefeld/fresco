@@ -24,7 +24,7 @@ SHELL	= /bin/sh
 subdirs	= $(wildcard include/Warsaw src server clients)
 # doc
 
-.PHONY:	config test
+.PHONY:	config test depclean clean distclean install debs
 
 world:	all
 
@@ -47,6 +47,9 @@ all:
 	  "\n    cd .."\
 	  "\nThen run make again."; \
 	fi
+
+depclean:
+	find -name '*.d' -exec rm -f \{\} \;
 
 clean:
 	/bin/rm -f *~
