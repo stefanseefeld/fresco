@@ -107,6 +107,7 @@ private:
   Fresco::Color             _background;
   Fresco::Graphic_var       _done;
   Fresco::Graphic_var       _settings;
+  Fresco::Graphic_var       _print;
 };
 
 #endif

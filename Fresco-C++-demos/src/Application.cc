@@ -94,11 +94,19 @@ Application::Application(ServerContext_ptr sc, ClientContext_ptr cc)
   _done = _lk->margin(Graphic_var(_ttk->rgb(glyph, 0., 0., 0.)), 20.);
   glyph = _tk->chunk(Unicode::to_CORBA(Babylon::String("settings")));
   _settings = _lk->margin(Graphic_var(_ttk->rgb(glyph, 0., 0., 0.)), 20.);
+  glyph = _tk->chunk(Unicode::to_CORBA(Babylon::String("print")));
+  _print = _lk->margin(Graphic_var(_ttk->rgb(glyph, 0., 0., 0.)), 20.);
 }
 
 void Application::append(Controller_ptr demo, const Babylon::String &name)
 {
   Item item = make_item(name);
+
+  Graphic_var vb = _lk->vbox();
+
+  ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(ToolKit::outset);
+  Graphic_var decorator = _ttk->frame(vb, 10., spec, true);
 
   Graphic_var hbox = _lk->hbox();
   hbox->append_graphic(Graphic_var(_lk->hfill()));
@@ -107,14 +115,13 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   hbox->append_graphic(Graphic_var(_lk->hspace(200.)));
   Trigger_var button2 = _wk->button(_settings, item.settings);
   hbox->append_graphic(button2);
+  hbox->append_graphic(Graphic_var(_lk->hspace(200.)));
+  Trigger_var button3 = _wk->button(_print, Command_var(_ck->print(_ttk->rgb(_lk->align(decorator, 0., 0.), 0.8, 0.8, 0.8))));
+  hbox->append_graphic(button3);
   hbox->append_graphic(Graphic_var(_lk->hfill()));
-  Graphic_var vb = _lk->vbox();
   vb->append_graphic(demo);
   vb->append_graphic(hbox);
 
-  ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::outset);
-  Graphic_var decorator = _ttk->frame(vb, 10., spec, true);
   decorator = _gk->alpha(decorator, item.alpha);
   decorator = _gk->lighting(decorator, item.red, item.green, item.blue);
   decorator = _gk->rotator(decorator, item.zrotation, zaxis);
@@ -125,6 +132,7 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   group->append_controller(demo);
   group->append_controller(button1);
   group->append_controller(button2);
+  group->append_controller(button3);
   Window_var window = _dk->transient(group);
   button1->action(Command_var(_dk->map(window, false)));
   item.mapper = _dk->map(window, true);
