@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Portions Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Portions Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Portions Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Portions Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,10 +20,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_Types_idl
-#define _Warsaw_Types_idl
+#ifndef _Fresco_Types_idl
+#define _Fresco_Types_idl
 
-module Warsaw
+#pragma prefix "fresco.org"
+
+module Fresco
 {
   //. Tags are used to uniquely identify objects and links between objects.
   //. They are garanteed to be unique to each scope by each function

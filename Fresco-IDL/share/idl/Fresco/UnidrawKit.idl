@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,15 @@
  * MA 02139, USA.
  */
 
-#ifndef _UnidrawKit_idl
-#define _UnidrawKit_idl
+#ifndef _Fresco_UnidrawKit_idl
+#define _Fresco_UnidrawKit_idl
 
-#include <Warsaw/Controller.idl>
-#include <Warsaw/Subject.idl>
-#include <Warsaw/Command.idl>
-#include <Warsaw/Kit.idl>
+#include <Fresco/Controller.idl>
+#include <Fresco/Subject.idl>
+#include <Fresco/Command.idl>
+#include <Fresco/Kit.idl>
+
+#pragma prefix "fresco.org"
 
 //. The UnidrawKit contains functions that allow for an easy
 //. implementation of vector based drawing applications.
@@ -37,11 +39,11 @@
 module Unidraw
 {
   interface View;
-  interface Model : Warsaw::RefCountBase
+  interface Model : Fresco::RefCountBase
     {
       View create_view();
     };
-  interface View : Warsaw::Controller
+  interface View : Fresco::Controller
     {
       // add attributes to indicate selection, highlighting, etc.
       readonly attribute Model subject;
@@ -56,31 +58,31 @@ module Unidraw
     };
 //   interface Manipulator
 //     {
-//       boolean grasp(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-//       boolean manipulate(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-//       void effect(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+//       boolean grasp(in Fresco::PickTraversal t, in Fresco::Input::Event e);
+//       boolean manipulate(in Fresco::PickTraversal t, in Fresco::Input::Event e);
+//       void effect(in Fresco::PickTraversal t, in Fresco::Input::Event e);
 //       void destroy();
 //     };
-  interface Tool : Warsaw::RefCountBase
+  interface Tool : Fresco::RefCountBase
     {
-      boolean grasp(in Warsaw::Controller c, in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-      boolean manipulate(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-      Command effect(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-//       Manipulator create_manipulator(in Warsaw::Controller c, in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+      boolean grasp(in Fresco::Controller c, in Fresco::PickTraversal t, in Fresco::Input::Event e);
+      boolean manipulate(in Fresco::PickTraversal t, in Fresco::Input::Event e);
+      Command effect(in Fresco::PickTraversal t, in Fresco::Input::Event e);
+//       Manipulator create_manipulator(in Fresco::Controller c, in Fresco::PickTraversal t, in Fresco::Input::Event e);
 //       Command interpret_manipulator(in Manipulator m);
     };
-  interface Editor : Warsaw::RefCountBase
+  interface Editor : Fresco::RefCountBase
     {
-      void append_tool(in Tool t, in Warsaw::Graphic g);
+      void append_tool(in Tool t, in Fresco::Graphic g);
       attribute Tool current_tool;
-      Warsaw::Controller create_viewer(in Model m, in Warsaw::Coord width, in Warsaw::Coord height);
-      Warsaw::Controller toolbar();
+      Fresco::Controller create_viewer(in Model m, in Fresco::Coord width, in Fresco::Coord height);
+      Fresco::Controller toolbar();
     };
-  interface UnidrawKit : Warsaw::Kit
+  interface UnidrawKit : Fresco::Kit
     {
       Tool   select_tool();
       Editor create_editor();
-      View   create_view(in Warsaw::Graphic g, in Model m);
+      View   create_view(in Fresco::Graphic g, in Model m);
     };
 };
 

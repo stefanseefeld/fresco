@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,10 +19,10 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Layout_Stage_idl
-#define _Layout_Stage_idl
+#ifndef _Fresco_Stage_idl
+#define _Fresco_Stage_idl
 
-#include <Warsaw/Graphic.idl>
+#include <Fresco/Graphic.idl>
 
 module Layout
 {
@@ -30,13 +30,13 @@ module Layout
   
   //. A stage allows its children to be placed at any position and
   //. layering.
-  interface Stage : Warsaw::Graphic
+  interface Stage : Fresco::Graphic
     {
       //. An index refers to the position of a child graphic in the stack
       //. (the 'layer'). 0 refers to the top-most graphic
       typedef long Index;
       //. Return the bounding box of the stage
-      Warsaw::Region bbox();
+      Fresco::Region bbox();
       //. Return the total number of layers
       long layers();
       //. Return a handle for the object forming layer l. Return
@@ -57,8 +57,8 @@ module Layout
       //. FIXME: Are there any constraints for the layers? Does layer need
       //.        to be <= n+1 where n is the number of layers allready
       //.        in use?
-      StageHandle insert(in Warsaw::Graphic g, in Warsaw::Vertex position,
-			 in Warsaw::Vertex size, in Index layer);
+      StageHandle insert(in Fresco::Graphic g, in Fresco::Vertex position,
+			 in Fresco::Vertex size, in Index layer);
     };
 
   //. An object using this interface is used to store all the informations
@@ -68,14 +68,14 @@ module Layout
       //. Return the stage this handle refers to
       Stage           parent();
       //. Return the graphic this handle refers to
-      Warsaw::Graphic child();
+      Fresco::Graphic child();
       //. Remove the graphic this handle refers to. As a sideeffect,
       //. the handle itself is destroyed
       void            remove();
       //. Return the graphic's position
-      attribute Warsaw::Vertex position;
+      attribute Fresco::Vertex position;
       //. Return the graphic's size
-      attribute Warsaw::Vertex size;
+      attribute Fresco::Vertex size;
       //. Return the graphic's layer
       attribute Stage::Index layer;
     };

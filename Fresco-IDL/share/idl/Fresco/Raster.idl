@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_Raster_idl
-#define _Warsaw_Raster_idl
+#ifndef _Fresco_Raster_idl
+#define _Fresco_Raster_idl
 
-#include <Warsaw/Types.idl>
-#include <Warsaw/Subject.idl>
+#include <Fresco/Types.idl>
+#include <Fresco/Subject.idl>
 
-module Warsaw
+#pragma prefix "fresco.org"
+
+module Fresco
 {
   //. A raster is a two-dimensional pixel array
   //. Raster is based on the W3C PNG specs, see

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,16 +19,18 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Layout_Grid_idl
-#define _Layout_Grid_idl
+#ifndef _Fresco_Grid_idl
+#define _Fresco_Grid_idl
 
-#include <Warsaw/Graphic.idl>
+#include <Fresco/Graphic.idl>
+
+#pragma prefix "fresco.org"
 
 module Layout
 {
   //. A grid tiles its children into columns and rows and aligns
   //. the children within each column and row.
-  interface Grid : Warsaw::Graphic
+  interface Grid : Fresco::Graphic
     {
       //. The Index structure identifies a single cell in a grid. A
       //. nil index is defined to contain the values col = -1, row = -1.
@@ -48,23 +50,23 @@ module Layout
 
       //. Replace the graphic at the row and column position.  It is ok
       //. to replace a graphic with nil, or to replace a nil with a graphic.
-      void replace(in Warsaw::Graphic g, in Grid::Index i);
+      void replace(in Fresco::Graphic g, in Grid::Index i);
       //. Find the row and column position of the bottom-left most cell
       //. that intersects the traversal painters visible region bounds.
       //. If no cell is intersected find the closest edge cell.
-      Index find(in Warsaw::Traversal t);
+      Index find(in Fresco::Traversal t);
       //. Return the allocation of a cell.
       //. FIXME: Return?! Where is anything returned here? -- tobias
-      void allocate_cell(in Warsaw::Region given, in Grid::Index i, in Warsaw::Region a);
+      void allocate_cell(in Fresco::Region given, in Grid::Index i, in Fresco::Region a);
       //. These operations use a sub-range of the glyphs in the grid.
       //. FIXME: ...and do what? -- tobias
-      void request_range(out Warsaw::Graphic::Requisition r, in Range a);
-      void traverse_range(in Warsaw::Traversal t, in Range a);
-      Grid::Index find_range(in Warsaw::Traversal t, in Range a);
+      void request_range(out Fresco::Graphic::Requisition r, in Range a);
+      void traverse_range(in Fresco::Traversal t, in Range a);
+      Grid::Index find_range(in Fresco::Traversal t, in Range a);
       //. Return the lower-left corner of the range within the grid.
       //. Note that a grid's offset expects the Allocation given to
       //. childAllocate to be adjusted by the negated rangePosition. 
-      void range_position(in Warsaw::Region given, in Range a, out Warsaw::Vertex pos);
+      void range_position(in Fresco::Region given, in Range a, out Fresco::Vertex pos);
       //. FIXME: What does this do?
       Index upper();
     };

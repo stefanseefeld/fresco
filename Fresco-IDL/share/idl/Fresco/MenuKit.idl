@@ -2,13 +2,15 @@
 // Note that MenuKit will be integrated into WidgetKit once the prototype
 // stage is complete.
 
-#ifndef _Warsaw_MenuKit_idl
-#define _Warsaw_MenuKit_idl
+#ifndef _Fresco_MenuKit_idl
+#define _Fresco_MenuKit_idl
 
-#include <Warsaw/Controller.idl>
-#include <Warsaw/Command.idl>
+#include <Fresco/Controller.idl>
+#include <Fresco/Command.idl>
 
-module Warsaw {
+#pragma prefix "fresco.org"
+
+module Fresco {
 
     //. Menu kit that implements menubar and popup menus.
     //. FIXME: Add more documentation when this gets integrated into the
@@ -22,9 +24,9 @@ module Warsaw {
 	//. Create a menu item with the given label and callback. The menu
 	//. argument is the top-level menu, and is used to test the 'running'
 	//. state
-	Controller menu_item(in Controller menu, in Graphic label, in Warsaw::Axis axis, in Command callback);
+	Controller menu_item(in Controller menu, in Graphic label, in Fresco::Axis axis, in Command callback);
 	//. Create a menu item with a sub menu
-	Controller submenu_item(in Controller menu, in Graphic label, in Warsaw::Axis axis, in Controller submenu);
+	Controller submenu_item(in Controller menu, in Graphic label, in Fresco::Axis axis, in Controller submenu);
     };
 };
 

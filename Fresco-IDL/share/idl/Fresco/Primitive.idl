@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2000 Niklas Elmqvist <elm@3dwm.org>
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,11 +21,13 @@
  * MA 02139, USA.
  */
 
-#ifndef _Primitive_idl
-#define _Primitive_idl
+#ifndef _Fresco_Primitive_idl
+#define _Fresco_Primitive_idl
 
-#include <Warsaw/Graphic.idl>
-#include <Warsaw/Types.idl>
+#include <Fresco/Graphic.idl>
+#include <Fresco/Types.idl>
+
+#pragma prefix "fresco.org"
 
 //. These interfaces define simple 3-dimensional objects (so called
 //. primitives) that can get put into the scenegraph.
@@ -37,10 +39,10 @@
 module Primitive
 {
   //. This interface is the base of all other primitives defined here.
-  interface PrimitiveBase : Warsaw::Graphic
+  interface PrimitiveBase : Fresco::Graphic
   {
-    //attribute Warsaw::Rasters textures;
-    //attribute Warsaw::MaterialAttr material;
+    //attribute Fresco::Rasters textures;
+    //attribute Fresco::MaterialAttr material;
     //attribute TextureMode texmode;
 
     void resize();
@@ -50,22 +52,22 @@ module Primitive
   interface Sphere : PrimitiveBase
   {
     //. The origin of the sphere.
-    attribute Warsaw::Vertex position;
+    attribute Fresco::Vertex position;
     //. The radius of the sphere.
-    attribute Warsaw::Coord radius;
+    attribute Fresco::Coord radius;
   };
   
   //. This defines a 'rectangular parallelepiped' or Box for short:-)
   interface Box : PrimitiveBase
   {
-    attribute Warsaw::Vertex pt1, pt2;
+    attribute Fresco::Vertex pt1, pt2;
   };
     
   //. This defines a 'terahedron' or (foursided) Pyramid for short:-)
   interface Pyramid : PrimitiveBase
   {
-    attribute Warsaw::Vertex pt1, pt2;
-    attribute Warsaw::Coord height;
+    attribute Fresco::Vertex pt1, pt2;
+    attribute Fresco::Coord height;
   };
     
   //. This defines a Cone.
@@ -73,8 +75,8 @@ module Primitive
   {
     // FIXME: Wouldn't be Coord height instead of Vertex top more
     //        consistent with the definition of Pyramid?
-    attribute Warsaw::Vertex base, top;
-    attribute Warsaw::Coord radius;
+    attribute Fresco::Vertex base, top;
+    attribute Fresco::Coord radius;
   };
     
   /*
@@ -91,7 +93,7 @@ module Primitive
     
   interface Geometry : PrimitiveBase
     {
-      attribute Warsaw::Mesh mesh;
+      attribute Fresco::Mesh mesh;
     };
 
 //   interface PointGeometry : Geometry { };    
@@ -124,18 +126,18 @@ module Primitive
 //     void setTriangle(in long index, in Triangle t);
 //     Triangle getTriangle(in long index);
     
-//     void setTexCoord(in long index, in Warsaw::TexCoord tc);
-//     Warsaw::TexCoord getTexCoord(in long index) raises (OutOfRange);
+//     void setTexCoord(in long index, in Fresco::TexCoord tc);
+//     Fresco::TexCoord getTexCoord(in long index) raises (OutOfRange);
     
-//     void setTexCoords(in long index, in Warsaw::TexCoords tcs);
-//     Warsaw::TexCoords getTexCoords(in long index, in long len)
+//     void setTexCoords(in long index, in Fresco::TexCoords tcs);
+//     Fresco::TexCoords getTexCoords(in long index, in long len)
 //       raises (OutOfRange);
     
-//     void setNormal(in long index, in Warsaw::Vertex n);
-//     Warsaw::Vertex getNormal(in long index);
+//     void setNormal(in long index, in Fresco::Vertex n);
+//     Fresco::Vertex getNormal(in long index);
     
-//     void setNormals(in long index, in Warsaw::Vertices ns);
-//     Warsaw::Vertices getNormals(in long index, in long len) raises (OutOfRange);
+//     void setNormals(in long index, in Fresco::Vertices ns);
+//     Fresco::Vertices getNormals(in long index, in long len) raises (OutOfRange);
 //   };
   
 };

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -45,9 +45,9 @@ public:
   //. Creates a new Drawable of the given size (x, y) and depth. It is accessable
   //. under the given shm-id.
   virtual GGIDrawable *create_drawable(int shmid,
-				       Warsaw::PixelCoord,
-				       Warsaw::PixelCoord,
-				       Warsaw::PixelCoord) = 0;
+				       Fresco::PixelCoord,
+				       Fresco::PixelCoord,
+				       Fresco::PixelCoord) = 0;
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,16 @@
  * MA 02139, USA.
  */
 
-#ifndef _Warsaw_FigureKit_idl
-#define _Warsaw_FigureKit_idl
+#ifndef _Fresco_FigureKit_idl
+#define _Fresco_FigureKit_idl
 
-#include <Warsaw/Types.idl>
-#include <Warsaw/Kit.idl>
-#include <Warsaw/Figure.idl>
+#include <Fresco/Types.idl>
+#include <Fresco/Kit.idl>
+#include <Fresco/Figure.idl>
 
-module Warsaw
+#pragma prefix "fresco.org"
+
+module Fresco
 {
   interface BoundedValue;
   interface Graphic;
@@ -100,13 +102,13 @@ module Warsaw
       //. controls whether the area is filled, stroked, or both.
       //. The style parameter controls which
       //. brush and colors are used for drawing.
-      Figure::Path multiline(in Warsaw::Path p);
+      Figure::Path multiline(in Path p);
       //. Return the polygon defined by the given vertices.
       //. The last and first vertices are automatically connected.
       //. The mode parameter controls whether the area is filled,
       //. stroked, or both.  The style parameter controls which
       //. brush and colors are used for drawing.
-      Figure::Path polygon(in Warsaw::Path p);
+      Figure::Path polygon(in Path p);
       //. Return a figure that draws the raster.
       Image   pixmap(in Raster r);
       //. Return a decorator that sets the texture for the body graphic

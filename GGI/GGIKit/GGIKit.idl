@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,16 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_GGI_idl
-#define _Warsaw_GGI_idl
+#ifndef _Fresco_GGI_idl
+#define _Fresco_GGI_idl
 
-#include <Warsaw/Controller.idl>
-#include <Warsaw/Kit.idl>
+#include <Fresco/Controller.idl>
+#include <Fresco/Kit.idl>
 
 module GGI
 {
   //. A interface to the GGI visual this Kit creates.
-  interface Visual : Warsaw::Controller
+  interface Visual : Fresco::Controller
   {
     readonly attribute string name;
     readonly attribute string mode;
@@ -39,10 +39,10 @@ module GGI
   //. (which is the default at this time) enabled at compile time.
   //.
   //. This Kit can for example be used to run XGGI in a Berlin window.
-  interface GGIKit : Warsaw::Kit
+  interface GGIKit : Fresco::Kit
   {
     //. Creates a GGI visual w pixels wide and h pixels high.
-    Visual create_visual(in Warsaw::PixelCoord w, in Warsaw::PixelCoord h);
+    Visual create_visual(in Fresco::PixelCoord w, in Fresco::PixelCoord h);
   };
 };
 

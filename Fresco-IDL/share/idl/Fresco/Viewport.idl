@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,13 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Layout_Viewport_idl
-#define _Layout_Viewport_idl
+#ifndef _Fresco_Viewport_idl
+#define _Fresco_Viewport_idl
 
-#include <Warsaw/Graphic.idl>
-#include <Warsaw/View.idl>
+#include <Fresco/Graphic.idl>
+#include <Fresco/View.idl>
 
-module Warsaw
+#pragma prefix "fresco.org"
+
+module Fresco
 {
   interface BoundedRange;
 };
@@ -34,11 +36,11 @@ module Layout
 { 
   //. A viewport allows adjustment of the view of a graphic.
   //. FIXME: Explain this better.
-  interface Viewport : Warsaw::View
+  interface Viewport : Fresco::View
     {
       //. adjustment() gets the BoundedRange associated with the
       //. Axis given.
-      Warsaw::BoundedRange adjustment(in Warsaw::Axis a);
+      Fresco::BoundedRange adjustment(in Fresco::Axis a);
     };
 };
 

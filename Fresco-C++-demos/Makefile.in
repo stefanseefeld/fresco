@@ -1,0 +1,63 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+SHELL	:= /bin/sh
+
+subdirs	:= src
+
+# Overridden by the clean-targets, allowing the same subdirs-rule to be used
+# for everything.
+action	:= all
+
+.PHONY: all $(subdirs)
+.PHONY: install uninstall depclean clean distclean maintainer-clean dist clean
+
+all:	$(subdirs)
+
+$(subdirs):
+	@echo making $(action) in $@
+	$(MAKE) -C $@ $(action)
+
+install:
+	$(MAKE) action="install"
+
+uninstall:
+	$(MAKE) action="uninstall"
+
+depclean:
+	find -name '*.d' -exec rm -f '{}' ';'
+
+clean:
+	$(MAKE) action="clean"
+
+distclean:
+	@echo 'This command removes Makefiles and auxiliary files;'
+	@echo 'run configure to regenerate them.'
+	$(MAKE) action="distclean"
+	rm -f Makefile config/local.mk config.cache config.log config.status
+
+maintainer-clean:
+	@echo 'This command is intended for maintainers to use;'
+	@echo 'it deletes configure and auxiliary files;'
+	@echo 'run autogen.sh to regenerated them.'
+	$(MAKE) action="maintainer-clean"
+	rm -f Makefile config/local.mk config.cache config.log config.status \
+		configure config/aclocal.m4

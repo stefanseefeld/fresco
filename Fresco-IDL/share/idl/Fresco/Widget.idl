@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,12 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_Widget_idl
-#define _Warsaw_Widget_idl
+#ifndef _Fresco_Widget_idl
+#define _Fresco_Widget_idl
 
-#include <Warsaw/Controller.idl>
+#include <Fresco/Controller.idl>
 
-module Warsaw
+#pragma prefix "fresco.org"
+
+module Fresco
 {
   interface Graphic;
   interface BoundedValue;
@@ -36,20 +38,20 @@ module Widget
   //. A Choice is a controller that can get used to toggle a set of
   //. flags stored in a Selection.
   //. This Controller is for example used by Widgets like radio buttons.
-  interface Choice : Warsaw::Controller
+  interface Choice : Fresco::Controller
     {
       //. The selection holding the choice's state
-      readonly attribute Warsaw::Selection state;
+      readonly attribute Fresco::Selection state;
       //. Add a graphic (next to a toggle) to the end of this Selection.
       //. A Tag is returned that identifies the new item.
-      Warsaw::Tag append_item(in Warsaw::Graphic g);
+      Fresco::Tag append_item(in Fresco::Graphic g);
       //. Add a graphic (next to a toggle) the the beginning of this
       //. Selection. It returns a Tag that can be used to identify this
       //. new item later.
-      Warsaw::Tag prepend_item(in Warsaw::Graphic g);
+      Fresco::Tag prepend_item(in Fresco::Graphic g);
       //. Remove the an item that is identified by the given Tag from
       //. this Selection.
-      void remove_item(in Warsaw::Tag t);
+      void remove_item(in Fresco::Tag t);
     };
 };
 

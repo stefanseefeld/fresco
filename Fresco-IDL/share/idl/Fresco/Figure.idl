@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,16 +20,20 @@
  * MA 02139, USA.
  */
 
-#ifndef _Warsaw_Figure_idl
-#define _Warsaw_Figure_idl
+#ifndef _Fresco_Figure_idl
+#define _Fresco_Figure_idl
 
-#include <Warsaw/Graphic.idl>
+#pragma prefix "fresco.org"
+
+#include <Fresco/Graphic.idl>
+
+#pragma prefix "fresco.org"
 
 //. These interfaces define simple 2-dimensional objects (so called
 //. figures) that can get put into the scenegraph.
 module Figure
 {
-//   typedef Warsaw::Path Vertices;
+//   typedef Fresco::Path Vertices;
     //. Mode is used to define how Figures get drawn.
     typedef short Mode;
     const Mode fill = 1; //.< The Figure will get drawn and filled with the
@@ -37,7 +41,7 @@ module Figure
     const Mode outline = 2; //.< The Figure will be drawn outlined.
     
     //. This interface is the base for all other Figures.
-    interface FigureBase : Warsaw::Graphic
+    interface FigureBase : Fresco::Graphic
     {
 	// //. The Vertices type defines a sequence of vertex structures
 	// //. for figures with an arbitrary number of vertices,
@@ -49,9 +53,9 @@ module Figure
 	//. The Mode used to draw this Figure.
 	attribute Mode type;
 	//. The foreground color.
-	attribute Warsaw::Color foreground;
+	attribute Fresco::Color foreground;
 	//. The background color.
-	attribute Warsaw::Color background;
+	attribute Fresco::Color background;
 	
 	//. FIXME: What does this do?
 	void resize();
@@ -61,7 +65,7 @@ module Figure
     interface Point : FigureBase
     {
 	//. The position of the Point. The z-Coordinate will be ignored.
-	attribute Warsaw::Vertex pt;
+	attribute Fresco::Vertex pt;
     };
     
     //. A line.
@@ -69,7 +73,7 @@ module Figure
     {
 	//. The positions of the endpoints of the Line.
 	//. The z-Coordinate will be ignored.
-	attribute Warsaw::Vertex pt1, pt2;
+	attribute Fresco::Vertex pt1, pt2;
     };
     
     //. A Rectangle.
@@ -77,7 +81,7 @@ module Figure
     {
 	//. The positions of two opposing corners of the Rectangle.
 	//. The z-Coordinate will be ignored.
-	attribute Warsaw::Vertex pt1, pt2;
+	attribute Fresco::Vertex pt1, pt2;
     };
     
     //. A Circle.
@@ -85,9 +89,9 @@ module Figure
     {
 	//. The center of the Circle.
 	//. The z-Coordinate will be ignored.
-	attribute Warsaw::Vertex center;
+	attribute Fresco::Vertex center;
 	//. The radius of the Circle. 
-	attribute Warsaw::Coord radius;
+	attribute Fresco::Coord radius;
     };
     
     //. An Ellipse.
@@ -95,12 +99,12 @@ module Figure
     {
 	//. The center of the Ellipse.
 	//. The z-Coordinate will be ignored.
-	attribute Warsaw::Vertex center;
+	attribute Fresco::Vertex center;
 	//. The first radius used to draw the Ellipse.
-	attribute Warsaw::Coord radius1;
+	attribute Fresco::Coord radius1;
 	//. The second radius used to draw the Ellipse.
 	//. FIXME: Which one is which?
-	attribute Warsaw::Coord radius2;
+	attribute Fresco::Coord radius2;
     };
     
     //. A Path, a sequence of lines.
@@ -109,7 +113,7 @@ module Figure
 	//. A seqence of points that will be connected by lines (the
 	//. first to the second, the second to the third, ...).
 	//. The z-Cooordinate will be ignored.
-	attribute Warsaw::Path handles;
+	attribute Fresco::Path handles;
 	//. The last point will be connected to the first one if set.
 	readonly attribute boolean closed;
 

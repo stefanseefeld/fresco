@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_BoundedValue_idl
-#define _Warsaw_BoundedValue_idl
+#ifndef _Fresco_BoundedValue_idl
+#define _Fresco_BoundedValue_idl
 
-#include <Warsaw/Subject.idl>
-#include <Warsaw/Types.idl>
+#include <Fresco/Subject.idl>
+#include <Fresco/Types.idl>
 
-module Warsaw
+#pragma prefix "fresco.org"
+
+module Fresco
 {
   //. A BoundedValue describes a 'value within a range'
   //. such as a Slider.
