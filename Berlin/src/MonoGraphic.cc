@@ -116,13 +116,17 @@ void MonoGraphic::remove_child_graphic(Tag localId)
 Warsaw::Graphic::Iterator_ptr MonoGraphic::first_child_graphic()
 {
   MutexGuard guard(_mutex);
-  if (!CORBA::is_nil(_child.peer)) return _child.peer->first_child_graphic();
+  return (CORBA::is_nil (_child.peer)
+	  ? Warsaw::Graphic::Iterator::_nil()
+	  : _child.peer->first_child_graphic());
 }
 
 Warsaw::Graphic::Iterator_ptr MonoGraphic::last_child_graphic()
 {
   MutexGuard guard(_mutex);
-  if (!CORBA::is_nil(_child.peer)) return _child.peer->last_child_graphic();
+  return (CORBA::is_nil (_child.peer)
+	  ? Warsaw::Graphic::Iterator::_nil()
+	  : _child.peer->last_child_graphic());
 }
 
 Transform_ptr MonoGraphic::transformation()
