@@ -20,6 +20,7 @@ dnl These are all the variables we can set. I note them here because
 dnl it will be easier to sort it out later.
 
 dnl These are ORB specific
+ORB_IDL=""
 ORB_CFLAGS=""
 ORB_INCLUDE_PATH=""
 ORB_LIBRARY_PATH=""
@@ -102,6 +103,7 @@ AC_ARG_WITH(omniORB2,
 	fi
 	ORB_LDFLAGS="-lomniORB2 -lomniLC -lomnithread -ltcpwrapGK"
 	ORB_IDL_FLAGS="-l -a"
+	ORB_IDL="omniidl2"
 	_ORB_FOUND="1"
 ])
 
@@ -158,6 +160,7 @@ AC_SUBST(ORB_INCLUDE_PATH)
 AC_SUBST(ORB_LIBRARY_PATH)
 AC_SUBST(ORB_LDFLAGS)
 AC_SUBST(ORB_IDL_FLAGS)
+AC_SUBST(ORB_IDL)
 
 AC_SUBST(DEFINES)
 AC_SUBST(CFLAGS)
