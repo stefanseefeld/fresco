@@ -133,6 +133,9 @@ class FindTestsVisitor(AST.Visitor):
             return
         if node.accessibility() != AST.PUBLIC:
             return
+	# Constructors/Destruktor
+        if not node.returnType():
+            return
         method = ParsedTestMethod(node.realname()[-1],
                                   node.realname()[-1],
                                   "Description goes here")
