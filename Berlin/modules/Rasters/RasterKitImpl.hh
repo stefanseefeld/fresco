@@ -29,9 +29,9 @@
 #ifndef _ImageKitImpl_hh
 #define _ImageKitImpl_hh
 
+#include "Warsaw/config.hh"
 #include "Warsaw/ImageKit.hh"
 #include "Warsaw/Raster.hh"
-#include "Warsaw/config.hh"
 #include "Berlin/CloneableImpl.hh"
 #include <vector>
 
@@ -41,8 +41,8 @@ public:
     ImageKitImpl();
     virtual ~ImageKitImpl();
 
-    virtual Raster_ptr empty();
-	virtual Raster_ptr create(const char* file);
+    Raster_ptr empty();
+	Raster_ptr create(const char* file);
 
 
 protected:

@@ -52,7 +52,7 @@ RasterImpl::~RasterImpl()
 	delete[] data;
 }
 
-void RasterImpl::load(const Data& buffer)
+void RasterImpl::load(const Raster::Data& buffer)
 {
 	/*
 	 * free the old data
@@ -76,7 +76,7 @@ void RasterImpl::load(const Data& buffer)
 	totBytes = decoder.decode(rpng, rinfo, data);
 }
 
-void RasterImpl::export(Data*& buffer)
+void RasterImpl::export(Raster::Data*& buffer)
 {
 	/*
 	 * set up buffer to hold new data
@@ -91,7 +91,7 @@ void RasterImpl::export(Data*& buffer)
 	encoder.encode(rpng, rinfo, data);
 }
 
-void RasterImpl::getData(Data*& buffer)
+void RasterImpl::getData(Raster::Data*& buffer)
 {
 	/*
 	 * Note:  This differs from 'export' in that it returns

@@ -39,7 +39,7 @@
 
 interface ImageKit : Cloneable
 {
-	Raster empty();						// Returns a null raster
+	Raster empty();				// Returns a null raster
 	Raster create(in string file);		// Create from a file
 };
 

@@ -24,8 +24,11 @@
 #include <fstream>
 #include <GL/glut.h>
 #include <ggi/ggi.h>
+#include <png.h>
 #include <GL/ggimesa.h>
-#include "Image/RasterImpl.hh"
+#include "Warsaw/ImageKit.hh"
+#include "Image/ImageKitImpl.hh"
+#include "Warsaw/Raster.hh"
 
 void display(void);
 void reshape(int w, int h);
@@ -45,14 +48,13 @@ int main(int argc, char* argv[])
 	CORBA::BOA_ptr boa = orb->BOA_init(argc, argv, "omniORB2_BOA");
 	boa->impl_is_ready(0,1);
 	
-	
-	ImageKit* kit = new ImageKit();
-	kit->_obj_is_ready(boa);
-	
-	RasterImpl_var rasterfari = kit->open("test.png");
+	ImageKitImpl* kit = new ImageKitImpl();
+		
+	Raster_var rasterfari = kit->create("test.png");
 	width = rasterfari->getWidth();
 	height = rasterfari->getHeight();
-	Data memory;
+
+	Raster::Data memory;
 	rasterfari->getData(memory);
 	mem = memory.NP_data();
 		

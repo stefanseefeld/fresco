@@ -23,8 +23,8 @@
 
 #include "Warsaw/config.hh"
 #include "Image/ImageKitImpl.hh"
-#include "Image/RasterImpl.hh"
 #include "Berlin/Plugin.hh"
+#include "Image/RasterImpl.hh"
 
 ImageKitImpl::ImageKitImpl() {}
 ImageKitImpl::~ImageKitImpl() {}
@@ -32,17 +32,15 @@ ImageKitImpl::~ImageKitImpl() {}
 Raster_ptr ImageKitImpl::empty()
 {
 	Raster* r = new RasterImpl();
-	r->_obj_is_ready(applyscope(skeletonize(ImageKit), _boa()));
 	rasters.push_back(r);
-	return r->_this();
+	return r->_duplicate(r);
 }
 
 Raster_ptr ImageKitImpl::create(const char* file)
 {
 	Raster* r = new RasterImpl(file);
-	r->_obj_is_ready(applyscope(skeletonize(ImageKit), _boa()));
 	rasters.push_back(r);
-	return r->_this();
+	return r->_duplicate(r);
 }
 
 EXPORT_PLUGIN(ImageKitImpl, interface(ImageKit))
