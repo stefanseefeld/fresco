@@ -47,9 +47,10 @@ class ServerImpl : public virtual POA_Warsaw::Server,
   typedef std::vector<Prague::Plugin<KitImpl> *> pmap_t;
   typedef std::vector<KitImpl *> kmap_t;
   typedef std::map<std::string, CORBA::Object_var> smap_t;
-  typedef std::multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
 
 public:
+  typedef std::multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
+
   //. Create() can be called once only! It creates the one server-object.
   static ServerImpl *create(const CORBA::PolicyList &);
   //. Get a reference to the server in use.
