@@ -27,15 +27,15 @@ Downloading
 There are currently three ways to download Fresco. You can check out the
 sources directly from cvs, in which case you find instructions at
 
-  http://www.fresco.org/cvs.html
+  http://download.fresco.org/cvs.html
 
 or you can download a nightly snapshot from
 
-  ftp://berlin.sourceforge.net/pub/berlin/  (currently broken)
+  http://download.fresco.org/snapshots/
 
 or you can get release packages at
 
-  http://sourceforge.net/projects/berlin/
+  http://download.fresco.org/releases.html
 
 
 
@@ -129,8 +129,9 @@ need to instead do
   > ./configure --help=recursive
 to get the full list.)
 
-[ Add support for interactive configuration and document the options
-  here ]
+Because of an autoconf limitation, if you don't want to use SDL, or GGI,
+you have to pass "--disable-sdl" or "--disable-ggi" explicitly; otherwise
+configure will error out.
 
 Afterwards you can install Fresco with 'make install'. You do not need to
 install to run it: You only need to make sure that the libraries are found.
@@ -156,9 +157,6 @@ needs Fresco.
 
 You can specify paths to lookup any of these packages if you have installed
 them elsewhere with --with-<package>-prefix.
-
-Make sure to install the packages with make install. Packages depending on
-others will need them to be installed or their configuration will fail.
 
 
 Testing and First Steps
@@ -190,11 +188,11 @@ able to start it.
 
 and voila! that should start the server.
 
-Of course a berlin server without clients is just a bit more exciting
-than a X server without clients (mainly because the "I built all this
-myself!" factor). To start a client with the server you need to tell it
-its location (starting now the $fresco-build stuff will be assumed)
-using the -e (execute) flag:
+Of course a berlin server without clients is only a little bit more
+exciting than a X server without clients (mainly because of the "I built
+all this myself!" factor). To start a client with the server you need
+to tell it its location (starting now the $fresco-build stuff will be
+assumed) using the -e (execute) flag:
 
 > bin/berlin -e bin/demo
 
@@ -224,9 +222,9 @@ for GGI console.
 (Note: the GGI/Mesa console isn't hardware accelerated, so if you
 have a good video card use the SDL console instead).
 
-If you're brave you can check http://www.fresco.org/contrib.html to find
-"real" applications to run under Fresco (they may be broken, or not, contact
-their authors for more information).
+If you're brave you can check http://www.fresco.org/contributions.html to
+find "real" applications to run under Fresco (they may be broken, or not,
+contact their authors for more information).
 
 Finally here are other options you may use when invoking the server:
 
@@ -289,33 +287,24 @@ http://wiki.fresco.org/index.cgi/FAQ
 
 Please be sure that third party libraries are correctly installed before
 you post about a bug. For example, THE MOST FREQUENT PROBLEM reported
-is a broken omniORB configuration.  You need to have the nameserver
-configured and RUNNING. A good way to test the nameserver is 'nameclt list'.
-This should return no error message and terminate immediantly.
+is a broken omniORB configuration.  This should be less common now that
+"-R ior" is the default, but if you use "-R nameserver", You need to have
+the nameserver configured and RUNNING. A good way to test the nameserver
+is 'nameclt list'.  This should return no error message and terminate
+immediatly.
 
-You can work around a broken nameserver now: Start the server with
--R ior to have it export an Initial CORBA Reference that the client can
-import. This should look like this:
-
-> bin/berlin -R ior
-
-You can then start the demo by telling it to import the initial
-reference from the filesystem:
-
-> bin/demo -R ior
-
-Note that simply running bin/berlin -e bin/demo will work whether your
-nameserver is functioning correctly or not. When loading, the server
-also publishes its initial reference into the environment under
-FRESCO_DISPLAY which the client will try first when searching for the
-server. Because -e program is executed as a child of the server, it
-inherits the environment variable and will not attempt to use the
-nameserver or filesystem.
+Note that simply running bin/berlin -e bin/demo will work regardless of
+which -R option you use.  When loading, the server also publishes its
+initial reference into the environment under FRESCO_DISPLAY which the
+client will try first when searching for the server. Because -e program
+is executed as a child of the server, it inherits the environment variable
+and will not attempt to use the nameserver or filesystem.
 
 If you're running two servers together, one with the id "FrescoServer"
-(as per default) and the other "nested", then to start a client in
-nested from the Terminal Demo in FrescoServer, run "bin/demo -i
-nested" to bypass the server lookup from the environment.
+(as per default) and the other with the id "nested", then to start a
+client in nested from the Terminal Demo in FrescoServer, run 
+   bin/demo -i nested
+to bypass the server lookup from the environment.
 
 Report a bug
 ============
@@ -330,7 +319,7 @@ Contact
 =======
 
 You can get into contact with the developers via IRC (#fresco on
-irc.openprojects.net) and via mailinglists (see
+irc.freenode.net) and via mailinglists (see
 http://www.fresco.org/mailinglists.html for details).
 
 
