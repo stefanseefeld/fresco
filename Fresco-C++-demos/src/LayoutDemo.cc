@@ -42,14 +42,14 @@ LayoutDemo::LayoutDemo(Application *a)
   hbox->append(Graphic_var(tool->rgb(button1, 1.0, 0.5, 0.5)));
   hbox->append(Graphic_var(layout->hglue(100., 500., 0.)));
   Controller_var button2 = widget->button(label2, command2);
-  hbox->append(Graphic_var(tool->rgb(Graphic_var(tool->debugger(button2, "button")), 0.5, 1., 0.5)));
+  hbox->append(Graphic_var(tool->rgb(button2, 0.5, 1., 0.5)));
   hbox->append(Graphic_var(layout->hglue(100., 500., 0.)));
   Controller_var button3 = widget->button(label3, command3);
   hbox->append(Graphic_var(tool->rgb(button3, 0.5, 0.5, 1.)));
-  Graphic_var margin = layout->marginFlexible(tool->debugger(hbox, "hbox"), 100., 500., 100.);
+  Graphic_var margin = layout->marginFlexible(hbox, 100., 500., 100.);
   ToolKit::FrameSpec spec;
   spec.bbrightness(0.5);
-  Graphic_var demo = tool->frame(tool->debugger(margin, "margin"), 10., spec, true);
+  Graphic_var demo = tool->frame(margin, 10., spec, true);
   Controller_var group = tool->group(demo);
   group->appendController(button1);
   group->appendController(button2);
