@@ -78,6 +78,8 @@ AC_ARG_ENABLE(unicode-blocks,
               [AC_SUBST(UNICODE_BLOCKS,"$enableval")],
               [AC_SUBST(UNICODE_BLOCKS,complete)])
 
+FRESCO_ICONV
+
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
