@@ -121,6 +121,12 @@ CORBA::Boolean VisualImpl::handle_non_positional(const Warsaw::Input::Event &eve
    */
   Input::Toggle toggle = event[0].attr.selection();
   ggi_event ggi;
+  // giiEventSend will discard events without this field filled in
+  // I'm not sure if the actual value should depend on the source of the
+  // event, or what (there's ggi.any.source for that, but that's filled in
+  // as being a fake event by EventSend; this seems to be about which of the
+  // input queues are handed the event.
+  ggi.any.target = GII_EV_TARGET_ALL;
   if (toggle.actuation == Input::Toggle::press) ggi.any.type = evKeyPress;
   else if (toggle.actuation == Input::Toggle::hold) ggi.any.type = evKeyRepeat;
   else if (toggle.actuation == Input::Toggle::release) ggi.any.type = evKeyRelease; // not generated actually
@@ -148,5 +154,6 @@ CORBA::Boolean VisualImpl::handle_non_positional(const Warsaw::Input::Event &eve
 void VisualImpl::forward_event(const ggi_event &event)
 {
   Trace trace("VisualImpl::forward_event");
-  giiEventSend(ggiJoinInputs(_ggi->visual(), 0), const_cast<ggi_event *>(&event));
+//  giiEventSend(ggiJoinInputs(_ggi->visual(), 0), const_cast<ggi_event *>(&event));
+  ggiEventSend(_ggi->visual(), const_cast<ggi_event *>(&event));
 }
