@@ -62,9 +62,9 @@ dnl ------------------------------------------------------------------
 
 dnl Decide whether we are ready to build
 PYTHON=
-echo blabla $berlin_cv_lib_omniORBpy
+echo blabla $berlin_cv_sys_omniidl_py
 echo blabla $BUILD_PYTHON
-if test ".$berlin_cv_lib_omniORBpy" = .yes ; then
+if test ".$berlin_cv_sys_omniidl_py" = .yes ; then
 	PYTHON="clients/python"
 fi
 AC_SUBST(PYTHON)

@@ -1667,6 +1667,5 @@ dnl  	  cat conftest.$ac_ext >&AC_FD_CC
 	fi
 	rm -fr conftest*
 	rm -fr _GlobalIDL POA__GlobalIDL])
-AC_DEFINE(BUILD_PYTHON, $berlin_cv_sys_omniidl_py)
 ])
 
