@@ -42,6 +42,10 @@ Warsaw, The Berlin Protocol, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
 VERSION)
 
+AC_PROG_MAKE_SET
+AC_PROG_CC_CXX
+AC_LANG_CPLUSPLUS
+
 dnl ------------------------------------------------------------------
 
 BERLIN_LIB_ORB(mandatory)

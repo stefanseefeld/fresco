@@ -25,9 +25,6 @@ dnl Checks if GGI is found. If it is, $ac_cv_lib_ggi is set to "yes".
 
 AC_DEFUN([BERLIN_GGI_CHECK],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	AC_ARG_WITH(ggi-prefix,
 		[  --with-ggi-prefix=PFX   Prefix for GGI],[
 		ggi_prefix="$withval"])
@@ -63,9 +60,4 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 		ac_cv_lib_ggi=yes
 		CON_LIBS="$CON_LIBS -lggi"
 	fi
-
-dnl	AC_SUBST(CON_INCLUDES)
-dnl	AC_SUBST(CON_LIBS)
-
-	AC_LANG_RESTORE
 ])

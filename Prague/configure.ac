@@ -42,6 +42,8 @@ Prague, The Berlin Utility Library, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
 VERSION)
 
+AC_PROG_MAKE_SET
+AC_PROG_CC_CXX
 AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -50,20 +52,17 @@ AC_ARG_ENABLE(tracer,
         [  --enable-tracer        Compile with tracer support],[
         AC_DEFINE(TRACER)])
 
-AC_ARG_ENABLE(unicode-blocks,
-	[  --enable-unicode-blocks complete or latin unicode support],[
-	UNICODE_BLOCKS="$enableval"],[
-	UNICODE_BLOCKS=complete])
-
-AC_SUBST(UNICODE_BLOCKS)
-
 AC_MSG_PART(platform specific system utilities)
 AC_CHECK_FUNCS(strsignal)
 AC_CHECK_HEADERS(string.h)
 AC_NEED_DECLARATION(strsignal)
 AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), AC_MSG_ERROR(update your zlib, please))
 
-BERLIN_LIB_PTHREAD
+dnl ------------------------------------------------------------------
+dnl Thread support
+dnl ------------------------------------------------------------------
+AC_MSG_PART(Thread Implementation)
+AC_THREAD_CHECK(mandatory)
 
 dnl ------------------------------------------------------------------
 dnl Plugin support

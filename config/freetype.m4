@@ -54,17 +54,16 @@ AC_ARG_ENABLE(freetypetest, [  --disable-freetypetest       Do not try to compil
   else
     FREETYPE_CFLAGS=`$FREETYPE_CONFIG $freetypeconf_args --cflags`
     FREETYPE_LIBS=`$FREETYPE_CONFIG $freetypeconf_args --libs`
-
     freetype_major_version=`$FREETYPE_CONFIG $freetype_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+           sed 's/\([[0-9]]*\):\([[0-9]]*\):\([[0-9]]*\)/\1/'`
     freetype_minor_version=`$FREETYPE_CONFIG $freetype_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+           sed 's/\([[0-9]]*\):\([[0-9]]*\):\([[0-9]]*\)/\2/'`
     freetype_micro_version=`$FREETYPE_CONFIG $freetype_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+           sed 's/\([[0-9]]*\):\([[0-9]]*\):\([[0-9]]*\)/\3/'`
     if test "x$enable_freetypetest" = "xyes" ; then
-      ac_save_CFLAGS="$CFLAGS"
+      ac_save_CXXFLAGS="$CXXFLAGS"
       ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $FREETYPE_CFLAGS"
+      CXXFLAGS="$CXXFLAGS $FREETYPE_CFLAGS"
       LIBS="$LIBS $FREETYPE_LIBS"
 dnl
 dnl Now check if the installed freetype is sufficiently new. (Also sanity
@@ -129,7 +128,7 @@ int main (int argc, char *argv[])
 }
 
 ],, no_freetype=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CFLAGS="$ac_save_CFLAGS"
+       CXXFLAGS="$ac_save_CXXFLAGS"
        LIBS="$ac_save_LIBS"
      fi
   fi
@@ -148,7 +147,7 @@ int main (int argc, char *argv[])
         :
        else
           echo "*** Could not run freetype test program, checking why..."
-          CFLAGS="$CFLAGS $FREETYPE_CFLAGS"
+          CXXFLAGS="$CXXFLAGS $FREETYPE_CFLAGS"
           LIBS="$LIBS $FREETYPE_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
@@ -167,7 +166,7 @@ int main (int argc, char *argv[])
           echo "*** exact error that occured. This usually means freetype was incorrectly installed"
           echo "*** or that you have moved freetype since it was installed. In the latter case, you"
           echo "*** may want to edit the freetype-config script: $FREETYPE_CONFIG" ])
-          CFLAGS="$ac_save_CFLAGS"
+          CXXFLAGS="$ac_save_CXXFLAGS"
           LIBS="$ac_save_LIBS"
        fi
      fi

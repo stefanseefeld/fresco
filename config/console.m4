@@ -24,7 +24,6 @@ dnl BERLIN_CONSOLE_CHECK(mandatory-flag)
 dnl
 dnl Try to find a usable console. If mandatory-flag is "mandatory", abort if
 dnl none is found.
-
 AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 
 	AC_BEGIN_DECISION([Console])
