@@ -22,6 +22,8 @@
 
 #include <Widget/Bevel.hh>
 #include <Warsaw/Traversal.hh>
+#include <Warsaw/Pencil.hh>
+#include <Berlin/TransformImpl.hh>
 
 Bevel::Bevel(Coord t, Alignment x, Alignment y, bool h, bool v)
   : thickness(t), xalign(x), yalign(y), hmargin(h), vmargin(v)
@@ -46,12 +48,14 @@ void Bevel::request(Requisition &requisition)
 	  requisition.x.natural += t;
 	  requisition.x.maximum += t;
 	  requisition.x.minimum += t;
+	  requisition.x.align = ((requisition.x.natural - 2*t)*requisition.x.align + t)/requisition.x.natural;
 	}
       if (vmargin && requisition.y.defined)
 	{
 	  requisition.y.natural += t;
 	  requisition.y.maximum += t;
 	  requisition.y.minimum += t;
+	  requisition.y.align = ((requisition.y.natural - 2*t)*requisition.y.align + t)/requisition.y.natural;
 	}
     }
 }
@@ -65,8 +69,12 @@ void Bevel::traverse(Traversal_ptr traversal)
 	{
 	  Allocation::Info a;
 	  a.allocation = traversal->allocation();
+	  TransformImpl *tx = new TransformImpl;
+	  tx->_obj_is_ready(_boa());
+	  a.transformation = tx->_this();
 	  allocateChild(a);
 	  traversal->traverseChild(body(), a.allocation, a.transformation);
+	  tx->_dispose();
 	}
       else
 	MonoGraphic::traverse(traversal);
@@ -88,7 +96,6 @@ void Bevel::allocateChild(Allocation::Info &info)
   MonoGraphic::request(req);
   allocation->valid = true;
   Region::Allotment a;
-
   /*
    * same as Placement::normalTransform...
    */
@@ -125,53 +132,123 @@ void Bevel::allocateChild(Allocation::Info &info)
 
 void Bevel::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
 {
-  Coord length = a.end - a.begin - 2*margin;
-  Coord offset = margin;
-  if (r.defined)
-    {
-      if (length > r.maximum)
-	{
-	  offset += align * (length - r.maximum);
-	  length = r.maximum;
-	}
-    }
-  // FIXME !!!
-//   Coord origin = offset * (1 - a.align - a.align);
-//   a.begin = origin - a.align * length;
-//   a.end = a.begin + length;
+//   Coord length = a.end - a.begin - 2*margin;
+//   Coord offset = margin;
+//   if (r.defined)
+//     {
+//       if (length > r.maximum)
+// 	{
+// 	  offset += align * (length - r.maximum);
+// 	  length = r.maximum;
+// 	}
+//     }
+  a.align = ((a.end - a.begin)*a.align - margin)/(a.end - a.begin - 2*margin);
+  a.begin += margin;
+  a.end -= margin;
 }
 
-void Bevel::rect(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		 Coord left, Coord bottom, Coord right, Coord top)
+void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+		 Coord left, Coord right, Coord top, Coord bottom)
+{
+  Coord lefti = left + thickness;
+  Coord righti = right - thickness;
+  Coord topi = top + thickness;
+  Coord bottomi = bottom - thickness;
+  DrawingKit_var dk = dt->kit();
+  Transform_var tx = dt->transformation();
+  Style::Spec style;
+  style.length(1);
+  style[0].a = Style::fillcolor;
+  style[0].val <<= medium;
+  Pencil_var pen = dk->getPencil(style);
+  Path path;
+  path.p.length(5);
+  path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
+  path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
+  path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
+  path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
+  path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
+  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+  pen->drawPath(path);
+  /*
+   * light edges
+   */
+  style[0].val <<= light;
+  pen = dk->getPencil(style);
+  /*
+   * left edge
+   */
+  path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
+  path.p[1].x = lefti, path.p[1].y = topi, path.p[1].z = 0.;
+  path.p[2].x = lefti, path.p[2].y = bottomi, path.p[2].z = 0.;
+  path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
+  path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
+  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+  pen->drawPath(path);
+  /*
+   * top edge
+   */
+  path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
+  path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
+  path.p[2].x = righti, path.p[2].y = topi, path.p[2].z = 0.;
+  path.p[3].x = lefti, path.p[3].y = topi, path.p[3].z = 0.;
+  path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
+  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+  pen->drawPath(path);
+  /*
+   * dark edges
+   */
+  style[0].val <<= dark;
+  pen = dk->getPencil(style);
+  /*
+   * right edge
+   */
+  path.p[0].x = right, path.p[0].y = top, path.p[0].z = 0.;
+  path.p[1].x = right, path.p[1].y = bottom, path.p[1].z = 0.;
+  path.p[2].x = righti, path.p[2].y = bottomi, path.p[2].z = 0.;
+  path.p[3].x = righti, path.p[3].y = topi, path.p[3].z = 0.;
+  path.p[4].x = right, path.p[4].y = top, path.p[4].z = 0.;
+  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+  pen->drawPath(path);
+  /*
+   * bottom edge
+   */
+  path.p[0].x = left, path.p[0].y = bottom, path.p[0].z = 0.;
+  path.p[1].x = lefti, path.p[1].y = bottomi, path.p[1].z = 0.;
+  path.p[2].x = righti, path.p[2].y = bottomi, path.p[2].z = 0.;
+  path.p[3].x = right, path.p[3].y = bottom, path.p[3].z = 0.;
+  path.p[4].x = left, path.p[4].y = bottom, path.p[4].z = 0.;
+  
+  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+  pen->drawPath(path);
+}
+
+void Bevel::leftArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+		      Coord left, Coord right, Coord top, Coord bottom)
 {
 }
 
-void Bevel::leftArrow(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		      Coord left, Coord bottom, Coord right, Coord top)
+void Bevel::rightArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+		       Coord left, Coord right, Coord top, Coord bottom)
 {
 }
 
-void Bevel::rightArrow(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		       Coord left, Coord bottom, Coord right, Coord top)
+void Bevel::upArrow(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+		    Coord left, Coord right, Coord top, Coord bottom)
 {
 }
 
-void Bevel::upArrow(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		    Coord left, Coord bottom, Coord right, Coord top)
+void Bevel::downArrow(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+		      Coord left, Coord right, Coord top, Coord bottom)
 {
 }
 
-void Bevel::downArrow(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		      Coord left, Coord bottom, Coord right, Coord top)
+void Bevel::diamond(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+		    Coord left, Coord right, Coord top, Coord bottom)
 {
 }
 
-void Bevel::diamond(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		    Coord left, Coord bottom, Coord right, Coord top)
-{
-}
-
-void Bevel::circle(DrawingKit_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
+void Bevel::circle(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
 		   Coord left, Coord bottom, Coord right, Coord top)
 {
 }

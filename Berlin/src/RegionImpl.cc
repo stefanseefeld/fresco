@@ -34,9 +34,8 @@ RegionImpl::RegionImpl()
   valid = false;
   lower.x = lower.y = zero;
   upper.x = upper.y = zero;
+  lower.z = upper.z = zero;
   xalign = yalign = zalign = zero;
-  lower.z = Coord(-1e6);
-  upper.z = Coord(1e6);
 }
 
 RegionImpl::RegionImpl(const RegionImpl &region)

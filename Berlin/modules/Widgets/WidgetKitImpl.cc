@@ -25,7 +25,7 @@
 #include "Widget/BoundedValueImpl.hh"
 #include "Widget/BoundedRangeImpl.hh"
 #include "Widget/TextBufferImpl.hh"
-#include "Berlin/DebugGraphic.hh"
+#include "Widget/Frame.hh"
 #include "Berlin/Plugin.hh"
 
 WidgetKitImpl::WidgetKitImpl()
@@ -87,6 +87,22 @@ TextBuffer_ptr WidgetKitImpl::text()
   buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
 
   return buffer->_this();  
+}
+
+Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
+{
+  Frame *frame = new Frame(c, Frame::inset, 2);
+  frame->_obj_is_ready(_boa());
+  frame->body(g);
+  return frame->_this();
+}
+
+Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
+{
+  Frame *frame = new Frame(c, Frame::outset, 5);
+  frame->_obj_is_ready(_boa());
+  frame->body(g);
+  return frame->_this();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))
