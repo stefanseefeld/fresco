@@ -90,6 +90,7 @@ void PSDrawingKit::start_traversal(Traversal_ptr traversal)
 void PSDrawingKit::finish_traversal()
 {
   _os << "%%EOF" << std::endl;
+  static_cast<std::filebuf *>(_os.rdbuf())->close();
 }
 
 Warsaw::Unistring *PSDrawingKit::font_family() { return new Unistring(Unicode::to_CORBA(Babylon::String("Times Roman")));}
@@ -247,7 +248,12 @@ void PSDrawingKit::draw_image(Raster_ptr raster)
 
   _os << r->header().width << " " << r->header().height << " "
       << r->header().depth << std::endl;
-  _os << "[ " << matrix[0][0]*resolution(xaxis) << " " << matrix[0][1]*resolution(xaxis) << " " << matrix[1][0]*resolution(yaxis) << " " << matrix[1][1]*resolution(yaxis) << " " << 0-o.x*resolution(xaxis) << " " << 0-o.y*resolution(yaxis) << " ]" << std::endl;
+  _os << "[ " << matrix[0][0]*resolution(xaxis)
+      << " " << matrix[0][1]*resolution(xaxis)
+      << " " << matrix[1][0]*resolution(yaxis)
+      << " " << matrix[1][1]*resolution(yaxis)
+      << " " << 0-o.x*resolution(xaxis) << " "
+      << 0-o.y*resolution(yaxis) << " ]" << std::endl;
   _os << "{<" << std::endl;
   Raster::Index i;
   for (i.y = 0; i.y < r->header().height; i.y++) {
