@@ -889,5 +889,33 @@ else
 fi
 ])dnl
 
+dnl
+dnl BERLIN_CHECK_LIB(variable, library, func_call, include_files)
+dnl
+dnl Checks if library is found by doing func_call. Include include_files
+dnl to avoid compilation errors, and add library to variable if successful.
+dnl variable is also used to specify additional libraries or paths.
+dnl
+dnl This functions is meant to address some of the severe limitations of
+dnl autoconf when it comes to handling C++.
+AC_DEFUN([BERLIN_CHECK_LIB],[
+
+	save_LIBS="$LIBS"
+	LIBS="$LIBS $$1 -l$2"
+	changequote(`, ')
+	includes="patsubst(`$4', `\(\w\|\.\|/\)+', `#include <\&>
+')"
+	changequote([, ])
+	AC_CACHE_CHECK("for -l$2",
+		berlin_cv_lib_$2,
+		AC_TRY_LINK($includes,
+			$3, berlin_cv_lib_$2="yes", berlin_cv_lib_$2="no"))
+
+	LIBS="$save_LIBS"
+	if test ".$berlin_cv_lib_$2" = ".yes" ; then
+		$1="$$1 -l$2"
+	fi
+])
+
 divert
 
