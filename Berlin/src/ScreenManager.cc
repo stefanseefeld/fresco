@@ -25,7 +25,6 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/EventManager.hh"
-#include "Berlin/Pointer.hh"
 #include "Prague/Sys/FdSet.hh"
 #include "Prague/Sys/Time.hh"
 #include "Berlin/Logger.hh"
@@ -63,6 +62,7 @@ void ScreenManager::repair()
       Prague::Profiler prf("ScreenManager::redraw cycle");
       Logger::log(Logger::drawing) << "repairing region " << **i << endl;
 //       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
+      emanager->restore(Region_var((*i)->_this()));
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
  							   Region_var((*i)->_this()),
  							   Transform_var(Transform::_nil()),
@@ -73,6 +73,8 @@ void ScreenManager::repair()
       emanager->damage(Region_var((*i)->_this()));
       (*i)->_dispose();
     }
+  drawing->flush();
+  drawable->flush();
 }
 
 void ScreenManager::run()
@@ -85,11 +87,10 @@ void ScreenManager::run()
       mutex.unlock();
       if (damage > 0)
 	{
-	  repair();
 	  Prague::Time current = Prague::Time::currentTime();
 	  if (current > last + Prague::Time(33))
 	    {
-	      drawable->flush();
+	      repair();
 	      last = current;
 	    }
 	}

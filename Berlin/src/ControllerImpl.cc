@@ -311,12 +311,6 @@ void ControllerImpl::keyPress(const Input::Event &event)
 //   cout << "ControllerImpl::keyPress : " << toggle.number << ' ' << (char) toggle.number << endl;
   switch (toggle.number)
     {
-    case 32: // space
-      {
-	if (test(Telltale::chosen)) clear(Telltale::chosen);
-	else set(Telltale::chosen);
-	break;
-      }
     case 57396: // left
       {
 	prevFocus(event[0].dev);
