@@ -420,8 +420,8 @@ void openGL::DrawingKit::draw_image(Raster_ptr raster)
   Fresco::Path path;
   path.nodes.length(4);
   path.shape = convex;
-  Coord width = image->width/_drawable->resolution(xaxis);
-  Coord height = image->height/_drawable->resolution(yaxis);
+  Coord width = image->width * 10;// /_drawable->resolution(xaxis);
+  Coord height = image->height * 10;// /_drawable->resolution(yaxis);
   path.nodes[0].x = path.nodes[0].y = path.nodes[0].z = 0.;
   path.nodes[1].x = width, path.nodes[1].y = path.nodes[1].z = 0.;
   path.nodes[2].x = width, path.nodes[2].y = height, path.nodes[2].z = 0.;

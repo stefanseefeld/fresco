@@ -435,8 +435,10 @@ public:
     glBindTexture(GL_TEXTURE_2D, *my_tx);
     glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
     glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-    GLfloat sPlane[4] = { drawable->resolution(Fresco::xaxis)/(*my_width), 0.0, 0.0, 0.0 };
-    GLfloat tPlane[4] = { 0.0, -drawable->resolution(Fresco::yaxis)/(*my_height), 0.0, (float)(*my_lesser_height)/(float)(*my_height) };
+    //GLfloat sPlane[4] = { drawable->resolution(Fresco::xaxis)/(*my_width), 0.0, 0.0, 0.0 };
+    //GLfloat tPlane[4] = { 0.0, -drawable->resolution(Fresco::yaxis)/(*my_height), 0.0, (float)(*my_lesser_height)/(float)(*my_height) };
+    GLfloat sPlane[4] = { 0.1/(*my_width), 0.0, 0.0, 0.0 };
+    GLfloat tPlane[4] = { 0.0, -0.1/(*my_height), 0.0, (float)(*my_lesser_height)/(float)(*my_height) };
     glTexGenfv(GL_S, GL_OBJECT_PLANE, sPlane);
     glTexGenfv(GL_T, GL_OBJECT_PLANE, tPlane);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
