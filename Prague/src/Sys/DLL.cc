@@ -36,14 +36,19 @@ using namespace Prague;
 void DLL::open(const string &name, bool now = true)
 {
   lib = name;
+  if (lib != "") {
 #if 1
-  handle = dlopen(lib.c_str(), now ? RTLD_NOW : RTLD_LAZY);
-  if (!handle) err = dlerror();
+    handle = dlopen(lib.c_str(), now ? RTLD_NOW : RTLD_LAZY);
+    if (!handle) err = dlerror();
 #else /* _aix_ */
-  shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
-  if (!shl_handle) err = strerror(errno);
-  else handle = shl_handle;
+    shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
+    if (!shl_handle) err = strerror(errno);
+    else handle = shl_handle;
 #endif
+  } else {
+    handle = 0;
+    err = "Empty Filename given.";
+  }
 }
 
 /* @Method{void DLL::close()}
