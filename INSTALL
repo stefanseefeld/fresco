@@ -225,8 +225,8 @@ for GGI console.
 have a good video card use the SDL console instead).
 
 If you're brave you can check http://www.fresco.org/contrib.html to find
-"real" applications to run under Fresco/Fresco (they may be broken, or not,
-contact their authors for more information).
+"real" applications to run under Fresco (they may be broken, or not, contact
+their authors for more information).
 
 Finally here are other options you may use when invoking the server:
 
@@ -257,10 +257,16 @@ Finally here are other options you may use when invoking the server:
   -I --ior-file-path path :        used in conjunction with '-R ior' to
                                    specify an alternate location for the file
                                    which stores the server address (IOR); the 
-                                   default location is /tmp/fresco/. You can also 
-                                   use '-I stdout' to specify that the server
-                                   should output the address (IOR) to the
-                                   console on which you run the server.
+                                   default location is /tmp/fresco/. You can
+                                   also use '-I stdout' to specify that the
+                                   server should output the address (IOR) to
+                                   the console on which you run the server.
+
+  -i --server-id name :            set the id of the server, for those
+                                   interested in running multiple servers. 
+                                   It is possible to have the same id across
+                                   different export methods, so try to
+                                   avoid confusing yourself.
 
   -e --execute program :           run program in the server
 
@@ -292,12 +298,24 @@ You can work around a broken nameserver now: Start the server with
 import. This should look like this:
 
 > bin/berlin -R ior
-Export Reference: FrescoServer=IOR:lots-of-numbers
 
-You can then start the demo by passing the exported reference to the
-client:
+You can then start the demo by telling it to import the initial
+reference from the filesystem:
 
-> bin/demo -ORBInitRef FrescoServer=IOR:lots-of-numbers
+> bin/demo -R ior
+
+Note that simply running bin/berlin -e bin/demo will work whether your
+nameserver is functioning correctly or not. When loading, the server
+also publishes its initial reference into the environment under
+FRESCO_DISPLAY which the client will try first when searching for the
+server. Because -e program is executed as a child of the server, it
+inherits the environment variable and will not attempt to use the
+nameserver or filesystem.
+
+If you're running two servers together, one with the id "FrescoServer"
+(as per default) and the other "nested", then to start a client in
+nested from the Terminal Demo in FrescoServer, run "bin/demo -i
+nested" to bypass the server lookup from the environment.
 
 Report a bug
 ============
