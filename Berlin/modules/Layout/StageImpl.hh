@@ -50,15 +50,12 @@ class StageImpl : public virtual POA_Layout::Stage,
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
   virtual void need_redraw();
   virtual void need_redraw_region(Warsaw::Region_ptr);
+  //. relayout the children. If the bounding box changes call need_resize on the parent
   virtual void need_resize();
-  //. relayout the children. If the bounding box changes call needResize on the parent
   
   virtual Warsaw::Region_ptr bbox();
   virtual CORBA::Long layers();
   virtual Layout::StageHandle_ptr layer(Layout::Stage::Index);
-  // begin() and end() 'lock' the stage
-  // in that only after the last end() conditions
-  // for needRedraw() & needResize() are done
   virtual void begin();
   virtual void end();
   virtual Layout::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Layout::Stage::Index);
@@ -68,15 +65,14 @@ class StageImpl : public virtual POA_Layout::Stage,
   void resize(StageHandleImpl *, const Warsaw::Vertex &);
   void relayer(StageHandleImpl *, Layout::Stage::Index);
 private:
-  //. Returns a tag that is not yet used by any child of the Stage.
+  //. Return a new unique tag in the scope of this parent
   Warsaw::Tag unique_tag();
-  //. Returns a handle to the child of the Stage that has the given tag.
-  //. It returns 0 is no child has the given tag.
+  //. Return a handle to the child of the Stage that has the given tag.
+  //. It returns 0 if no child has the given tag.
   StageHandleImpl *tag_to_handle(Warsaw::Tag);
-  //. Marks the region occupied by the given StageHandle as damaged.
+  //. Mark the region occupied by the given StageHandle as damaged.
   //. This is done by either merging that region with the one allready
-  //. damaged or by creating a setting the damaged region to the region
-  //. of the given StageHandle.
+  //. damaged or by creating a new onw
   void damage(StageHandleImpl *);
 
   Sequence            *_children;
@@ -106,7 +102,7 @@ class StageHandleImpl : public virtual POA_Layout::StageHandle
   const Geometry::Rectangle<Warsaw::Coord> &bbox();
   void bbox(RegionImpl &);
  private:
-  //. Calculates the BoundingBox of the graphic in this StageHandle and
+  //. Calculate the bounding box of the graphic in this StageHandle and
   //. stores the result in _bbox.
   void cache_bbox();
   //. The stage this StageHandle belongs into.
@@ -121,7 +117,7 @@ class StageHandleImpl : public virtual POA_Layout::StageHandle
   Warsaw::Vertex                     _size;
   //. The layer this StageHandle has.
   Layout::Stage::Index               _layer;
-  //. The boundingbox of the graphic of this StageHandle as calculated
+  //. The bounding box of the graphic of this StageHandle as calculated
   //. by cache_bbox().
   Geometry::Rectangle<Warsaw::Coord> _bbox;
   //. The alignment along the x-axis.
