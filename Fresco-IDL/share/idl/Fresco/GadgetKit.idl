@@ -22,6 +22,7 @@
 #ifndef _GadgetKit_idl
 #define _GadgetKit_idl
 
+#include "Types.idl"
 #include "Kit.idl"
 
 interface BoundedValue;
@@ -39,7 +40,7 @@ interface GadgetKit : Kit
   //. allows to manipulate the translucency of the sub graph
   Graphic lighting(in Graphic body, in BoundedValue r, in BoundedValue g, in BoundedValue b);
   //. allows to manipulate the lighting of the sub graph
-  Graphic rotator(in Graphic g, in BoundedValue v);
+  Graphic rotator(in Graphic g, in BoundedValue v, in Axis a);
   //. allows to rotate the sub graph
   Graphic zoomer(in Graphic g, in BoundedValue v);
   //. allows to zoom the sub graph

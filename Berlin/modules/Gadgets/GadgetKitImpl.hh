@@ -40,7 +40,7 @@ class GadgetKitImpl : implements(GadgetKit), public KitImpl
   virtual Graphic_ptr rgb(Graphic_ptr, BoundedValue_ptr, BoundedValue_ptr, BoundedValue_ptr);
   virtual Graphic_ptr alpha(Graphic_ptr, BoundedValue_ptr);
   virtual Graphic_ptr lighting(Graphic_ptr, BoundedValue_ptr, BoundedValue_ptr, BoundedValue_ptr);
-  virtual Graphic_ptr rotator(Graphic_ptr, BoundedValue_ptr);
+  virtual Graphic_ptr rotator(Graphic_ptr, BoundedValue_ptr, Axis);
   virtual Graphic_ptr zoomer(Graphic_ptr, BoundedValue_ptr);
  private:
   CommandKit_var command;

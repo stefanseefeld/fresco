@@ -155,6 +155,7 @@ class LightingAdjuster : implements(View), public MonoGraphic
 class RotationAdjuster : implements(View), public MonoGraphic
 {
  public:
+  RotationAdjuster(Axis a) : axis(a) {}
   virtual void update(const CORBA::Any &any)
     {
       Graphic_var child = body(); if (CORBA::is_nil(child)) return;
@@ -162,9 +163,11 @@ class RotationAdjuster : implements(View), public MonoGraphic
       Coord phi;
       any >>= phi;
       transformation->loadIdentity();
-      transformation->rotate(phi, zaxis);
+      transformation->rotate(phi, axis);
       needResize();
     }
+ private:
+  Axis axis;
 };
 
 class ZoomAdjuster : implements(View), public MonoGraphic
@@ -226,9 +229,9 @@ Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr body, BoundedValue_ptr r, Bounde
   return adjuster->_this();
 }
 
-Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value)
+Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value, Axis axis)
 {
-  RotationAdjuster *adjuster = new RotationAdjuster();
+  RotationAdjuster *adjuster = new RotationAdjuster(axis);
   adjuster->_obj_is_ready(_boa());
   value->attach(Observer_var(adjuster->_this()));
   Graphic_var transformer = figure->transformer(g);
