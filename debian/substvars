@@ -1,0 +1,1 @@
+shlibs:Depends=freetype2, libc6 (>= 2.1), libggi2 (>> 1:1.99.2.0b2.1), libgii0 (>> 1:0.6), libstdc++2.9-glibc2.1, mesag3+ggi, omniorb, xlib6g (>= 3.3.3.1-1), zlib1g (>= 1:1.1.3)

@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+trap "echo ;\
+      echo 'Received signal.  Aborting configuration of Berlin package.' ;\
+      echo -n 'Cleaning up...' ;\
+      cleanup ;\
+      echo 'done.' ;\
+      echo ;\
+      exit 1" 1 2 3 15
+
+case "$1" in
+  configure) ;;
+  abort-upgrade|abort-remove|abort-deconfigure)
+    cleanup
+    exit 0 ;;
+  *)
+    echo "ERROR: Berlin postinst called with unknown argument \"$1\"."
+    echo "Aborting configuration of Berlin package."
+    exit 1 ;;
+esac
+
+if ! grep -qs ^/usr/Berlin/lib\$ /etc/ld.so.conf; then
+  echo /usr/Berlin/lib >> /etc/ld.so.conf
+fi
+
+ldconfig
+
+exit

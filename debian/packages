@@ -1,0 +1,106 @@
+Source: berlin
+Maintainer: The Berlin Consortium <design@berlin-consortium.org>
+Section: misc
+Priority: optional
+Standards-Version: 2.5.0
+Home-Page: <URL:http://www.berlin-consortium.org/>
+Copyright: LGPL
+Major-Changes:
+Packaged-For: Debian
+Description: The Berlin Windowing System
+Build-Depends:
+Build: sh
+ make config
+ yada fixup libtool
+ make
+ rm -rf debian/hold
+ make install prefix=$(pwd)/debian/hold
+Clean: sh
+ make distclean
+ make clean
+
+Package: berlin
+Architecture: i386
+Section: libs
+Priority: optional
+Depends:  libgii0 omniorb libggi2 mesag3+ggi glutg3+ggi freetype2
+Recommends: berlin-dev
+Description: The Berlin Windowing System development files.
+Shlibs:
+ libBerlin	0
+ libDrawing	0
+ libFigure	0
+ libGLtt	0
+ libLayout	0
+ libPrague	0
+ libText	0
+ libWarsaw	0
+ libWidget	0
+Contains-Libs: yes
+Install: sh
+ for lib in debian/hold/usr/Berlin/lib/*.so*
+ do
+    name=$(basename $lib)
+    yada install -lib $lib 
+ yada install -lib debian/hold/usr/Berlin/lib/
+ yada install -conffile -subdir ggi debian/hold/etc/ggi/*.conf
+ #
+ for lib in debian/hold/usr/lib/*.so.?.?.?
+ do
+   name=$(basename $lib)
+   yada install -lib $lib
+   ln -s $name $ROOT/usr/lib/$(echo $name|sed 's/\.[^.]*\.[^.]*$//')
+ done
+ yada install -lib -unstripped debian/hold/usr/lib/*.la
+ yada install -lib -subdir ggi/default debian/hold/usr/lib/ggi/default/*.so
+ yada install -lib debian/hold/usr/lib/ggi/display/file.so \
+                   debian/hold/usr/lib/ggi/display/mansync.so \
+                   debian/hold/usr/lib/ggi/display/memory.so \
+                   debian/hold/usr/lib/ggi/display/multi.so \
+                   debian/hold/usr/lib/ggi/display/sub.so \
+                   debian/hold/usr/lib/ggi/display/tele.so \
+                   debian/hold/usr/lib/ggi/display/tile.so \
+              -subdir ggi/display
+ #
+ yada install -doc doc/*.txt
+ yada install -doc display/tile/README -as README.tile
+ yada install -doc README -as README.libggi
+ yada install -doc ChangeLog -as changelog
+ yada install -man debian/hold/usr/man/man7/*
+
+
+Package: berlin-dev
+Architecture: i386
+Section: libs
+Priority: optional
+Depends: omniorb-dev libgii0-dev libggi2-dev mesag3+ggi-dev glutg3+ggi-dev
+Recommends: berlin
+Description: The Berlin Windowing System development files.
+Contains-Libs: no
+Install: sh
+ yada install -conffile -subdir ggi debian/hold/etc/ggi/*.conf
+ #
+ for lib in debian/hold/usr/lib/*.so.?.?.?
+ do
+   name=$(basename $lib)
+   yada install -lib $lib
+   ln -s $name $ROOT/usr/lib/$(echo $name|sed 's/\.[^.]*\.[^.]*$//')
+ done
+ yada install -lib -unstripped debian/hold/usr/lib/*.la
+ yada install -lib -subdir ggi/default debian/hold/usr/lib/ggi/default/*.so
+ yada install -lib debian/hold/usr/lib/ggi/display/file.so \
+                   debian/hold/usr/lib/ggi/display/mansync.so \
+                   debian/hold/usr/lib/ggi/display/memory.so \
+                   debian/hold/usr/lib/ggi/display/multi.so \
+                   debian/hold/usr/lib/ggi/display/sub.so \
+                   debian/hold/usr/lib/ggi/display/tele.so \
+                   debian/hold/usr/lib/ggi/display/tile.so \
+              -subdir ggi/display
+ #
+ yada install -doc doc/*.txt
+ yada install -doc display/tile/README -as README.tile
+ yada install -doc README -as README.libggi
+ yada install -doc ChangeLog -as changelog
+ yada install -man debian/hold/usr/man/man7/*
+
+
