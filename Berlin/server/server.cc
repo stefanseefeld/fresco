@@ -159,6 +159,7 @@ int main(int argc, char **argv) /*FOLD00*/
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
   getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load (mandatory)");
   getopt.add('e', "execute", GetOpt::mandatory, "the command to execute upon startup");
+  getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
@@ -246,7 +247,9 @@ int main(int argc, char **argv) /*FOLD00*/
        // Open the Console
        // ---------------------------------------------------------------
       
-       Console::open(argc, argv, poa);
+       value = "";
+       getopt.get("console",&value);
+       Console::open(value, argc, argv, poa);
        
        Logger::log(Logger::console) << "console is initialized" << std::endl;
        

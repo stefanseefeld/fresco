@@ -50,28 +50,20 @@ Console::Reaper::~Reaper()
   delete plugin;
 }
 
-int Console::open(int argc, char **argv, PortableServer::POA_ptr poa)
-throw(std::runtime_error)
+int Console::open(const std::string &console, int argc, char **argv, PortableServer::POA_ptr poa)
+  throw(std::runtime_error)
 {
-  // Parse commandline arguments
-  // --------------------------------
-  
-  GetOpt getopt("Console");
-  getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
-  int argo = getopt.parse(argc, argv);
-  std::string value;
-  getopt.get("console", &value);
-
-  // Get modulepath
-  // --------------------------------
-
   Prague::Path path = RCManager::get_path("modulepath");
-
-  if (!value.empty())
+  
+  if (!console.empty())
     {
       // Console name given: Load exactly the one specified
-      std::string name = path.lookup_file(std::string("Console/") + value + ".so");
-      if (name.empty()) throw std::runtime_error("no console found");
+      std::string name = path.lookup_file(std::string("Console/") + console + ".so");
+      if (name.empty())
+        {
+          std::string msg = "No console named \"" + console + "\" found in modulepath.";
+          throw std::runtime_error(msg);
+        }
       else plugin = new Plugin<Console::Loader>(name);
     }
   else
@@ -90,10 +82,10 @@ throw(std::runtime_error)
 	      continue;
 	    }
       }
-  if (!plugin) throw std::runtime_error("no console found");
-  _console = (*plugin)->load(argo, argv);
+  if (!plugin) throw std::runtime_error("No console found in modulepath.");
+  _console = (*plugin)->load(argc, argv);
   _console->_poa = PortableServer::POA::_duplicate(poa);
-  return argo;
+  return argc;
 }
 
 Console *Console::instance() { return _console;}

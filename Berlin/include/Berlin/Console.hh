@@ -37,11 +37,11 @@
 // class Console
 // ---------------------------------------------------------------
 
-//. This is a abstraction of the underlying graphics libraries Berlin uses.
+//. This is an abstraction of the underlying graphics libraries Berlin uses.
 //. The DrawingKits call the methods of this object.
 class Console
 {
-  //. Deletes this Console in it's Destrcutor.
+  //. Deletes this Console in its Destrcutor.
   struct Reaper
   {
     ~Reaper();
@@ -65,7 +65,7 @@ public:
   //. of the server (argc and argv), checks them for any console-related options and
   //. afterwards passes them on to the graphic's library. Finally you need to pass
   //. the POA to this method.
-  static int open(int argc, char **argv, PortableServer::POA_ptr)
+  static int open(const std::string &, int argc, char **argv, PortableServer::POA_ptr)
     throw(std::runtime_error);
 
   //. Get the active instance of the Console.

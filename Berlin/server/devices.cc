@@ -46,12 +46,24 @@ int main(int argc, char **argv)
   GetOpt getopt(argv[0], "input device info for the berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
+  getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
+  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
   if (getopt.is_set("version")) { std::cout << "version is " << version << std::endl; return 0;}
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
-  Console::open(argc, argv, PortableServer::POA::_nil());
+  std::string value;
+  if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
+
+  value = "";
+  getopt.get("console",&value);
+  try { Console::open(value, argc, argv, PortableServer::POA::_nil());}
+  catch (const std::exception &e)
+    {
+      std::cerr << "Exception: " << e.what() << std::endl;
+      return 1;
+    }
   Console::instance()->device_info(std::cout);
   return 0;
 }
