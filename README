@@ -9,12 +9,27 @@ convenience.
 If you're unpacked the entire source tree, and you meet the prerequisites
 (see below) you should be able to run:
 
-# make config
-# make
+$ make config
+$ make
 
 with little difficulty. When (if) the build finishes, you will find
-several test applications in the /test directory. You must have omniNames
-running for any of these to work. 
+several test applications in the /clients/C++ directory. You must have
+omniNames running for any of these to work. 
+
+To try the server after compiling it, you should do something like:
+
+$ export BERLIN_ROOT=.../Berlin
+  (where .../Berlin is the directory containing this file, with subdirectories
+  src/, include/, etc.)
+$ export LD_LIBRARY_PATH=$BERLIN_ROOT/lib:$LD_LIBRARY_PATH
+  (this may no longer be necessary... anyone?)
+$ cd server
+$ ./server
+  (a black window should pop up; go to another terminal window)
+$ cd clients/C++
+$ ./demo
+
+And you should now be able to play with the spiffy demo.
 
 PREREQUISITES
 ~~~~~~~~~~~~~
@@ -29,6 +44,10 @@ facilities we build & test with are:
  * libggi 2.0 beta 2.1 & devel
  * Mesa 3.1 (targetted at GGI) & devel
  * omniORB 2.8.0
+
+(Python demos additionally require omniORBpy and (of course, python);
+the Perl demo prerequisites are explained in some detail in
+clients/perl/README.)
 
 Please do not hesitate to customize the build process for an
 additional platform and send us patches to this tree. If it builds
