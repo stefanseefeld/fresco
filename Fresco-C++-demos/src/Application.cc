@@ -36,7 +36,6 @@ public:
   PrintCommand(Window_var w, Application *a) : _w(w), _a(a) {}
   virtual void execute(const CORBA::Any &any)
   {
-    std::cerr << "(" << _w->size().x << "," << _w->size().y << ")" << std::endl;
     Command_var(_a->_ck->print(_a->_ttk->rgb(_a->_lk->fixed_size(_a->_lk->align(_w, 0., 0.), _w->size().x, _w->size().y), 0.8, 0.8, 0.8)))->execute(any);
   }
 private:
