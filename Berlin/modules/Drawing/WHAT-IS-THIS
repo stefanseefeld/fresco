@@ -1,4 +1,4 @@
 DrawingKits convert the device-independent graphics used by
 berlin into some device specific form. This directory contains
 the basic interfaces. The specific implementations are stored
-in their specif subdirectories.
+in subdirectories.
