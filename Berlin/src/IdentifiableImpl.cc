@@ -34,7 +34,7 @@ CORBA::Boolean IdentifiableImpl::is_identical(Identifiable_ptr id)
   try
     {
       PortableServer::ServantBase_var s = poa->reference_to_servant(id);
-      if (s == this) return 1;
+      if (s.in() == this) return 1;
     }
   catch (const PortableServer::POA::ObjectNotActive &) {}
   catch (const PortableServer::POA::WrongAdapter &) {}

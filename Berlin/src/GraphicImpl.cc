@@ -360,7 +360,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 	  for (CORBA::Long j = begin; j != end; j++)
 	    {
 	      const Allocation::Info_var info = allocation->get(j);
-	      (*i).peer->allocate((*i).peerId, info);
+	      (*i).peer->allocate((*i).peerId, info.in());
 	    }
 	  begin = end;
 	}
@@ -390,7 +390,7 @@ void GraphicImpl::need_redraw()
     {
       const Allocation::Info_var info = allocation->get(i);
       region->valid = false;
-      extension(info, Region_var(region->_this()));
+      extension(info.in(), Region_var(region->_this()));
       if (region->valid) info->root->damage(Region_var(region->_this()));
     }
 }
