@@ -210,10 +210,14 @@ void TransformImpl::load_matrix(const Warsaw::Transform::Matrix matrix)
 {
   Trace trace("TransformImpl::load_matrix");
   assert(_active);
+#if 0
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
       _matrix[i][j] = matrix[i][j];
   _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0., _matrix[3][3] = 1.;
+#else
+  memcpy(&_matrix[0][0], &matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+#endif
   modified();
 }
 
@@ -223,10 +227,13 @@ void TransformImpl::store_matrix(Warsaw::Transform::Matrix matrix)
 {
   Trace trace("TransformImpl::store_matrix");
   assert(_active);
-  for (short i = 0; i != 3; i++)
-    for (short j = 0; j != 4; j++)
-      matrix[i][j] = _matrix[i][j];
-  matrix[3][0] = matrix[3][1] = matrix[3][2] = 0., matrix[3][3] = 1.;
+#if 0
+   for (short i = 0; i != 3; i++)
+     for (short j = 0; j != 4; j++)
+       matrix[i][j] = _matrix[i][j];
+#else
+  memcpy(&matrix[0][0], &_matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+#endif
 }
 
 CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
@@ -460,3 +467,36 @@ void TransformImpl::inverse_transform_vertex(Vertex &v)
 #endif
 }
 
+void TransformImpl::set_and_premult(TransformImpl* set, Warsaw::Transform_ptr mult)
+{
+  Trace trace("TransformImpl::set_and_premult");
+  // operator =
+  //  load_matrix(transform._matrix);
+  //   assert(_active);
+  //   for (short i = 0; i != 3; i++)
+  //     for (short j = 0; j != 4; j++)
+  //       _matrix[i][j] = matrix[i][j];
+  //   _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0., _matrix[3][3] = 1.;
+  //   modified();
+  memcpy(&_matrix[0][0], &set->_matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+  // if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
+  if (!CORBA::is_nil(mult) && !mult->identity())
+    {
+      Warsaw::Transform::Matrix matrix;
+      mult->store_matrix(matrix);
+      if (set->identity())// load_matrix(matrix);
+	memcpy(&_matrix[0][0], &matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+      else
+	{
+	  for (unsigned short i = 0; i != 3; i++)
+	    {
+	      Coord mi0 = _matrix[i][0], mi1 = _matrix[i][1], mi2 = _matrix[i][2], mi3 = _matrix[i][3];
+	      _matrix[i][0] = mi0 * matrix[0][0] + mi1 * matrix[1][0] + mi2 * matrix[2][0] + mi3 * matrix[3][0];
+	      _matrix[i][1] = mi0 * matrix[0][1] + mi1 * matrix[1][1] + mi2 * matrix[2][1] + mi3 * matrix[3][1];
+	      _matrix[i][2] = mi0 * matrix[0][2] + mi1 * matrix[1][2] + mi2 * matrix[2][2] + mi3 * matrix[3][2];
+	      _matrix[i][3] = mi0 * matrix[0][3] + mi1 * matrix[1][3] + mi2 * matrix[2][3] + mi3 * matrix[3][3];
+	    }
+	}
+    }
+  modified();
+ }

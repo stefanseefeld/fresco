@@ -64,6 +64,7 @@ class ViewportImpl::Adjustment : public virtual POA_Warsaw::BoundedRange,
   virtual void begin();
   virtual void end();
   virtual void adjust(Coord);
+  virtual const char *object_name() { return "ViewportImpl::Adjustment";}
  private:
   Warsaw::BoundedRange::Settings _settings;
   Coord                          _s;

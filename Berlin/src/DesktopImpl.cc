@@ -29,14 +29,14 @@
 #include "Berlin/DesktopImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
-// #include "Berlin/ServerImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Layout;
 
-DesktopImpl::DesktopImpl(Stage_ptr stage)
-  : ControllerImpl(false), _stage(RefCount_var<Layout::Stage>::increment(stage))
+DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb, Stage_ptr stage)
+  : ControllerImpl(false), _stage(RefCount_var<Layout::Stage>::increment(stage)),
+    _orb(CORBA::ORB::_duplicate(orb))
 {
   /*
    * Attention !!: this invokes _this(), which implicitely activates the desktop.
@@ -61,7 +61,7 @@ Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw:
  */
 void DesktopImpl::key_press(const Input::Event &event)
 {
-  Trace trace("DesktopImpl::key_press");
-//   const Input::Toggle &toggle = event[0].attr.selection();
-//   if (toggle.number == Babylon::UC_ESCAPE) ServerImpl::instance()->stop();
+  Trace trace(this, "DesktopImpl::key_press");
+  const Input::Toggle &toggle = event[0].attr.selection();
+  if (toggle.number == Babylon::UC_ESCAPE) _orb->shutdown(false);
 }

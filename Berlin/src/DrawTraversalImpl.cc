@@ -46,10 +46,6 @@ void DrawTraversalImpl::init()
 {
   Trace trace("DrawTraversalImpl::init");
   __this = _this();
-
-  // Save state
-  _drawing->save();
-
   /*
    * initialize the different drawing kit attributes
    */
@@ -60,6 +56,7 @@ void DrawTraversalImpl::init()
   _drawing->lighting(white);
   _drawing->transformation(Transform_var(_id->_this()));
   _drawing->surface_fillstyle(DrawingKit::solid);
+  _drawing->save();
   Vertex l, u;
   _clipping->bounds(l, u);
   /*
@@ -113,8 +110,17 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   Trace trace("DrawTraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(current_allocation());
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
+#if 0
   *cumulative = *get_transformation(size() - 1);
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
+#elif 1
+  cumulative->set_and_premult(get_transformation(size()-1), transform);
+#elif 0
+  Vertex lower, upper;
+  region->bounds(lower, upper);
+  *cumulative = *get_transformation(size()-1);
+  cumulative->translate(lower);
+#endif
   _drawing->transformation(Transform_var(cumulative->_this()));
   //   drawable->clipping(region, Transform_var(tx->_this()));
   push(child, tag, region, cumulative);

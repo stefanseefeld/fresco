@@ -38,15 +38,19 @@ class TextChunk : public virtual GraphicImpl
 {
 public:
   TextChunk(const Warsaw::Unichar ch, const Warsaw::Graphic::Requisition &);
+  virtual ~TextChunk();
+
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void request(Warsaw::Graphic::Requisition &);
   
+  virtual const char *object_name();
   void get_text(Babylon::String &); 
   unsigned long get_length();
 protected:
-  Warsaw::Coord _width, _height;
+  Warsaw::Coord     _width, _height;
   Warsaw::Alignment _xalign, _yalign;
-  Warsaw::Unichar _char;
+  Warsaw::Unichar   _char;
+  const char       *_obj_name;
 };
 
 #endif

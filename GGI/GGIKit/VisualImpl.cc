@@ -45,8 +45,8 @@ VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
    */
   size_t size = w * h * format.size + 64*1024;
   _shm = SHM::allocate(size);
-  ostrstream oss;
-  oss << "display-memory:-input:shmid:" << _shm << ends;
+  std::ostrstream oss;
+  oss << "display-memory:-input:shmid:" << _shm << std::ends;
   const char *name = oss.str();
   try { _ggi = new GGIDrawable(name, w, h, 3);}
   catch (...)

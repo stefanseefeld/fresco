@@ -32,25 +32,29 @@ bool running;
 
 int main(int argc, char **argv)
 {
-  try {
-    CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
-    CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-    PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
-    PortableServer::POAManager_var pman = poa->the_POAManager();
-    pman->activate();
-
-    ClientContextImpl *client = new ClientContextImpl;
-
-    Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
-    ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
-
-    Application *application = new Application(server);
-
-    Demo *primitive = new PrimitiveDemo(application);
-    application->run();
-    delete primitive;
-    delete application;
-  } catch (CORBA::COMM_FAILURE c) {
-    std::cerr << "Could not connect to the berlin server (CORBA::COMM_FAILURE)." << std::endl;
-  }
+  try
+    {
+      CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
+      CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+      PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+      DefaultPOA::default_POA(poa);
+      PortableServer::POAManager_var pman = poa->the_POAManager();
+      pman->activate();
+      
+      ClientContextImpl *client = new ClientContextImpl;
+      
+      Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
+      ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
+      
+      Application *application = new Application(server);
+      
+      Demo *primitive = new PrimitiveDemo(application);
+      application->run();
+      delete primitive;
+      delete application;
+    }
+  catch (const CORBA::COMM_FAILURE &)
+    {
+      std::cerr << "Could not connect to the display server (CORBA::COMM_FAILURE)." << std::endl;
+    }
 }

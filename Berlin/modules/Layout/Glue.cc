@@ -25,13 +25,13 @@ using namespace Warsaw;
 
 Glue::Glue(Axis a, Coord natural, Coord stretch, Coord shrink, Alignment align)
 {
-  GraphicImpl::init_requisition(requisition);
-  Warsaw::Graphic::Requirement *r = GraphicImpl::requirement(requisition, a);
+  GraphicImpl::init_requisition(_requisition);
+  Warsaw::Graphic::Requirement *r = GraphicImpl::requirement(_requisition, a);
   if (r != 0) GraphicImpl::require(*r, natural, stretch, shrink, align);
 }
 
-Glue::Glue(const Warsaw::Graphic::Requisition &r) { requisition = r;}
+Glue::Glue(const Warsaw::Graphic::Requisition &r) { _requisition = r;}
 Glue::~Glue() {}
 
-void Glue::request(Warsaw::Graphic::Requisition &r) { r = requisition;}
+void Glue::request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
 

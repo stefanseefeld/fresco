@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,23 +19,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Glue_hh
-#define _Glue_hh
+#include "Berlin/DefaultPOA.hh"
 
-#include <Berlin/GraphicImpl.hh>
 
-class Glue : public GraphicImpl
+PortableServer::POA_var DefaultPOA::_default_poa;
+
+void DefaultPOA::default_POA(PortableServer::POA_ptr poa)
 {
-public:
-  Glue(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
-  Glue(const Warsaw::Graphic::Requisition &);
-  virtual ~Glue();
+  _default_poa = PortableServer::POA::_duplicate(poa);
+}
 
-  virtual void request(Warsaw::Graphic::Requisition &);
-
-  virtual const char *object_name() { return "Layout/Glue";}
-private:
-  Warsaw::Graphic::Requisition _requisition;
-};
-
-#endif
+PortableServer::POA_ptr DefaultPOA::_default_POA()
+{
+  return PortableServer::POA::_duplicate(_default_poa);
+}

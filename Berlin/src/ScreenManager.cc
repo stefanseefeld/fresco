@@ -29,6 +29,7 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/ScreenManager.hh"
+#include <strstream>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -47,9 +48,20 @@ void ScreenManager::damage(Region_ptr r)
   Console::instance()->wakeup();
 }
 
+inline clock_t myclock()
+{
+  timeval tv;
+  gettimeofday(&tv, 0);
+  return tv.tv_sec * 1000000L + tv.tv_usec;
+}
+
+clock_t traverse_clock;
+
 void ScreenManager::repair()
 {
   Trace trace("ScreenManager::repair");
+  Tracer::reset_clock();
+  clock_t start = traverse_clock = myclock(), mid, mid2, mid3, end;
   //   Profiler prf("ScreenManager::repair");
   _mutex.lock();
   _tmpDamage->copy(Region_var(_theDamage->_this()));
@@ -58,11 +70,13 @@ void ScreenManager::repair()
   _emanager->restore(Region_var(_tmpDamage->_this()));
   _traversal->init();
   _drawable->init();
+  mid = myclock();
   try { _screen->traverse(Traversal_var(_traversal->_this()));}
   catch (const CORBA::OBJECT_NOT_EXIST &) { cerr << "ScreenManager: warning: corrupt scene graph !" << endl;}
   catch (const CORBA::BAD_PARAM &) { cerr << "ScreenManager: caught bad parameter" << endl;}
   _drawable->finish();
   _traversal->finish();
+  mid2 = myclock();
   _drawing->flush();
   {
     //     Profiler prf("Drawable::flush");
@@ -74,9 +88,21 @@ void ScreenManager::repair()
     u.x *= xres;
     l.y *= yres;
     u.y *= yres;
+    mid3 = myclock();
     _drawable->flush(static_cast<long>(l.x), static_cast<long>(l.y), static_cast<long>(u.x - l.x), static_cast<long>(u.y - l.y));
   }
+  end = myclock();
   _emanager->damage(Region_var(_tmpDamage->_this()));
+  {
+    std::ostrstream buf;
+    buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
+    buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
+    buf << (mid3-mid2)/1000. << " ";
+    buf << (end-mid3)/1000. << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
+    Logger::log(Logger::drawing) << buf.str();
+    Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is " << Provider<TransformImpl>::size() << std::endl;
+    Logger::log(Logger::lifecycle) << "Provider<Region> pool size is " << Provider<RegionImpl>::size() << std::endl;
+  }
 }
 
 void ScreenManager::run()

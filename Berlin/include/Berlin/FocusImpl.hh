@@ -25,11 +25,13 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/Focus.hh>
+#include <Berlin/DefaultPOA.hh>
 #include <stack>
 #include <vector>
 
 class FocusImpl : public virtual POA_Warsaw::Focus,
-                  public virtual PortableServer::RefCountServantBase
+                  public virtual PortableServer::RefCountServantBase,
+                  private DefaultPOA
 {
   typedef std::stack<Warsaw::Input::Filter_var> fstack_t;
   typedef std::vector<size_t> memento_t;
@@ -43,6 +45,7 @@ public:
   virtual void restore(Warsaw::Region_ptr) = 0;
   virtual void damage(Warsaw::Region_ptr) = 0;
   virtual void dispatch(Warsaw::Input::Event &) = 0;
+  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
 protected:
   virtual void activate_composite() {}
 private:

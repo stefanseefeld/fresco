@@ -46,14 +46,14 @@ Allocator::~Allocator()
 
 void Allocator::request(Warsaw::Graphic::Requisition &r)
 {
-  Trace trace("Allocator::request");
+  Trace trace(this, "Allocator::request");
   cache_requisition();
   r = _requisition;
 }
 
 void Allocator::traverse(Traversal_ptr traversal)
 {
-  Trace trace("Allocator::traverse");
+  Trace trace(this, "Allocator::traverse");
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   Region_var allocation = traversal->current_allocation();
@@ -70,7 +70,7 @@ void Allocator::traverse(Traversal_ptr traversal)
 
 void Allocator::need_resize()
 {
-  Trace trace("Allocator::need_resize");
+  Trace trace(this, "Allocator::need_resize");
   Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocation->clear();
   allocations(Allocation_var(allocation->_this()));
@@ -88,7 +88,7 @@ void Allocator::need_resize()
 
 void Allocator::allocate(Tag, const Allocation::Info &i)
 {
-  Trace trace("Allocator::allocate");
+  Trace trace(this, "Allocator::allocate");
 //   updateRequisition();
 //  i.allocation->copy(Region_var(natural->_this()));
 }
@@ -120,7 +120,7 @@ void Allocator::natural_allocation(const Warsaw::Graphic::Requisition &r, Region
 
 void Allocator::cache_requisition()
 {
-  Trace trace("Allocator::cache_requisition");
+  Trace trace(this, "Allocator::cache_requisition");
   if (!_requested)
     {
       Warsaw::Graphic::Requisition r;
@@ -133,7 +133,7 @@ void Allocator::cache_requisition()
 
 void Allocator::cache_allocation()
 {
-  Trace trace("Allocator::cache_allocation");
+  Trace trace(this, "Allocator::cache_allocation");
   cache_requisition();
   if (!_allocated)
     {
@@ -173,7 +173,7 @@ TransformAllocator::~TransformAllocator() {}
 
 void TransformAllocator::request(Warsaw::Graphic::Requisition &r)
 {
-  Trace trace("TransformAllocator::request");
+  Trace trace(this, "TransformAllocator::request");
   Allocator::request(r);
   Coord fill = 1000000.;
   Coord zero = 0.;
@@ -193,7 +193,7 @@ void TransformAllocator::request(Warsaw::Graphic::Requisition &r)
 
 void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 {
-  Trace trace("TransformAllocator::allocate");
+  Trace trace(this, "TransformAllocator::allocate");
   Vertex lower, upper, delta;
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
@@ -207,7 +207,7 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 
 void TransformAllocator::traverse(Traversal_ptr traversal)
 {
-  Trace trace("TransformAllocator::traverse");
+  Trace trace(this, "TransformAllocator::traverse");
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());

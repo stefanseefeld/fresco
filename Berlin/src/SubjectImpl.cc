@@ -31,7 +31,7 @@ SubjectImpl::SubjectImpl() : _blocked(false) {}
 
 void SubjectImpl::attach(Observer_ptr observer)
 {
-  Trace trace("SubjectImpl::attach");
+  Trace trace(this, "SubjectImpl::attach");
   Prague::Guard<Mutex> guard(_observerMutex);
   _observers.push_back(Warsaw::Observer::_duplicate(observer));
 }
@@ -45,7 +45,7 @@ struct Id_eq : public std::unary_function<Warsaw::Identifiable_ptr, bool>
 
 void SubjectImpl::detach(Observer_ptr observer)
 {
-  Trace trace("SubjectImpl::detach");
+  Trace trace(this, "SubjectImpl::detach");
   Prague::Guard<Mutex> guard(_observerMutex);
   _observers.erase(find_if(_observers.begin(), _observers.end(), Id_eq(observer)));
 }
@@ -64,7 +64,7 @@ void SubjectImpl::notify()
 
 void SubjectImpl::notify(const CORBA::Any &change)
 {
-  Trace trace("SubjectImpl::notify");
+  Trace trace(this, "SubjectImpl::notify");
   Prague::Guard<Mutex> guard(_mutex);
   if (!_blocked)
     {

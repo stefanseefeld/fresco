@@ -42,9 +42,12 @@ public:
 
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
+  virtual const char *object_name() { return _name;}
+
 private:
-  LayoutManager *layout;
-  Impl_var<RegionImpl> region;
+  LayoutManager       *_layout;
+  Impl_var<RegionImpl> _region;
+  char                *_name;
 };
 
 class LayoutLayer : public MonoGraphic
@@ -53,9 +56,12 @@ public:
   LayoutLayer(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
   virtual ~LayoutLayer();
   virtual void traverse(Warsaw::Traversal_ptr);
+
+  virtual const char* object_name() { return "LayoutLayer";}
+
 private:
-  Warsaw::Graphic_var under;
-  Warsaw::Graphic_var over;
+  Warsaw::Graphic_var _under;
+  Warsaw::Graphic_var _over;
 };
 
 #endif

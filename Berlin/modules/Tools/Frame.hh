@@ -48,7 +48,8 @@ public:
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
-  virtual void draw(Warsaw::DrawTraversal_ptr traversal) { if (_renderer) _renderer->draw(traversal);}
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual const char *object_name() { return "Frame";}
 protected:
   void allocate_span(const Warsaw::Graphic::Requirement &, Warsaw::Region::Allotment &, Warsaw::Coord, Warsaw::Alignment);
   Warsaw::Coord        _thickness;
@@ -64,6 +65,8 @@ class DynamicFrame : public virtual ViewImpl,
   virtual ~DynamicFrame();
   virtual void attach(Warsaw::Telltale_ptr);
   virtual void update(const CORBA::Any &);
+
+  virtual const char *object_name() { return "DynamicFrame";}
  protected:
   RefCount_var<Warsaw::Telltale> _telltale;
   Frame::Renderer               *_renderer1;

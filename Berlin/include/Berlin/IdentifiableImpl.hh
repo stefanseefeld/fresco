@@ -27,10 +27,17 @@
 #include <Berlin/ServantBase.hh>
 
 class IdentifiableImpl : public virtual POA_Warsaw::Identifiable,
-			 public virtual ServantBase
+			 public virtual ServantBase,
+			 public virtual Prague::NamedObject
+
 {
 public:
   CORBA::Boolean is_identical(Warsaw::Identifiable_ptr);
+
+  //. Default implementation of this method from NamedObject. Remove this to
+  //. let the compiler tell you which classes you forgot to fix this in :)
+  virtual const char *object_name() { return 0;}
+
 };
 
 #endif

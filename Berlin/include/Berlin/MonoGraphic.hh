@@ -45,9 +45,11 @@ public:
   virtual void shape(Warsaw::Region_ptr);
 
   virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void need_resize();
 protected:
-  Edge          _child;
-  Prague::Mutex _mutex;
+  Edge                          _child;
+  Prague::Mutex                 _mutex;
+  Warsaw::Graphic::Requisition *_request_cache;
 };
 
 #endif 

@@ -64,6 +64,8 @@ class StageImpl : public virtual POA_Layout::Stage,
   void move(StageHandleImpl *, const Warsaw::Vertex &);
   void resize(StageHandleImpl *, const Warsaw::Vertex &);
   void relayer(StageHandleImpl *, Layout::Stage::Index);
+
+  virtual const char *object_name() { return "Layout/StageImpl";}
 private:
   //. Return a new unique tag in the scope of this parent
   Warsaw::Tag unique_tag();

@@ -39,14 +39,28 @@ public:
   virtual void need_resize(Warsaw::Tag);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
+  virtual const char* object_name() { return _obj_name;}
+
 protected:
   LayoutManager::Allocations  children_allocations(Warsaw::Region_ptr);
   void traverse_with_allocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr);
   void traverse_without_allocation(Warsaw::Traversal_ptr);
+  
+  //. The fixed class name of this object, used for constructing name strings
+  const char *_box_name;
+  //. The changing object name. Note that this is allocated as a buffer and
+  //. strcpy'd into, since it may change over the course of a method but cannot
+  //. be deleted in the scope of a Trace guard object
+  char *_obj_name;
 private:
-  LayoutManager *layout;
-  bool requested;
-  Warsaw::Graphic::Requisition requisition;
+  LayoutManager               *_layout;
+  bool                         _requested;
+  Warsaw::Graphic::Requisition _requisition;
+
+  //. The size of the allocation cache
+  CORBA::Long                  _cache_size;
+  //. A cache of children allocations to speed traversals
+  LayoutManager::Allocations   _cache_allocations;
 };
 
 class BoxAlignElements : public Box

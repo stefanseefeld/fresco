@@ -76,6 +76,9 @@ RegionImpl &RegionImpl::operator = (const RegionImpl &region)
   valid = region.valid;
   lower = region.lower;
   upper = region.upper;
+  xalign = region.xalign;
+  yalign = region.yalign;
+  zalign = region.zalign;
   return *this;
 }
 

@@ -28,7 +28,7 @@ using namespace Warsaw;
 
 CORBA::Boolean IdentifiableImpl::is_identical(Identifiable_ptr id)
 {
-  Trace trace("IdentifiableImpl::is_identical");
+  Trace trace(this, "IdentifiableImpl::is_identical");
   PortableServer::POA_var poa = _poa;
   if (CORBA::is_nil(poa)) poa = _default_POA();
   try

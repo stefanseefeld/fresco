@@ -35,8 +35,6 @@ namespace
   Mutex mutex;
 };
 
-PortableServer::POA_var ServantBase::_default_poa;
-
 ServantBase::ServantBase()
   : _refcount(1), _poa(PortableServer::POA::_nil())
 {
@@ -62,16 +60,6 @@ ServantBase::~ServantBase()
 
 ServantBase &ServantBase::operator = (const ServantBase &) { return *this;}
 
-void ServantBase::_default_POA(PortableServer::POA_ptr poa)
-{
-  _default_poa = PortableServer::POA::_duplicate(poa);
-}
-
-PortableServer::POA_ptr ServantBase::_default_POA()
-{
-  return PortableServer::POA::_duplicate(_default_poa);
-}
-
 void ServantBase::_add_ref()
 {
   Guard<Mutex> guard(mutex);
@@ -80,6 +68,8 @@ void ServantBase::_add_ref()
   Logger::log(Logger::lifecycle) << "ServantBase::_add_ref on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
 #endif
 }
+
+PortableServer::POA_ptr ServantBase::_default_POA() { return DefaultPOA::_default_POA();}
 
 void ServantBase::_remove_ref()
 {

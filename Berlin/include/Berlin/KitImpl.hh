@@ -25,12 +25,14 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Kit.hh>
+#include <Berlin/DefaultPOA.hh>
 
 class ServerImpl;
 class ServantBase;
 
 class KitImpl : public virtual POA_Warsaw::Kit,
-		public virtual PortableServer::RefCountServantBase
+		public virtual PortableServer::RefCountServantBase,
+		private DefaultPOA
 {
   friend class ServerImpl;
 public:
@@ -44,6 +46,7 @@ public:
 
   void activate(::ServantBase *);
   void deactivate(::ServantBase *);
+  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
 
   virtual void increment();
   virtual void decrement();

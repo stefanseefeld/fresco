@@ -41,7 +41,7 @@ ScreenImpl::ScreenImpl()
     _smanager(0),
     _region(new RegionImpl())
 {
-  Trace trace("ScreenImpl::ScreenImpl");
+  Trace trace(this, "ScreenImpl::ScreenImpl");
   Console *console = Console::instance();
   Console::Drawable *drawable = console->drawable();
   _region->valid = true;
@@ -59,7 +59,7 @@ void ScreenImpl::bind_managers(EventManager *e, ScreenManager *s)
 
 void ScreenImpl::pick(PickTraversal_ptr traversal)
 {
-  Trace trace("ScreenImpl::pick");
+  Trace trace(this, "ScreenImpl::pick");
   if (traversal->intersects_allocation())
     {
       traversal->enter_controller(__this);

@@ -35,6 +35,7 @@ class Provider
 public:
   static T *provide();
   static void adopt(T *t);
+  static size_t size() { return pool.size();}
 private:
   static void activate(T *);
   static void deactivate(T *);

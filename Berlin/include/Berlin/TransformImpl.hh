@@ -65,9 +65,11 @@ public:
 	__this = POA_Warsaw::Transform::_this ();
 	_this_valid = true;
       }
-
     return Warsaw::Transform::_duplicate (__this);
   }
+
+  // Allow for quicker traversals (test)
+  void set_and_premult(TransformImpl* set, Warsaw::Transform_ptr mult);
 
 private:
   void init();

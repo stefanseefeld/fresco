@@ -41,44 +41,47 @@ bool running;
 
 int main(int argc, char **argv)
 {
-  try {
-    CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
-    CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-    PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
-    ServantBase::_default_POA(poa);
-    PortableServer::POAManager_var pman = poa->the_POAManager();
-    pman->activate();
+  try
+    {
+      CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
+      CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+      PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+      DefaultPOA::default_POA(poa);
+      PortableServer::POAManager_var pman = poa->the_POAManager();
+      pman->activate();
 
-    ClientContextImpl *client = new ClientContextImpl;
+      ClientContextImpl *client = new ClientContextImpl;
 
-    Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
-    ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
+      Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
+      ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
-    Application *application = new Application(server);
+      Application *application = new Application(server);
 
-    Demo *layout    = new LayoutDemo(application);
-    Demo *text      = new TextDemo(application);
-    Demo *edit      = new EditTextDemo(application);
-    Demo *raster    = new RasterDemo(application);
-    Demo *color     = new ColorDemo(application);
-    Demo *logo      = new LogoDemo(application);
-    Demo *focus     = new FocusDemo(application);
-    Demo *viewport  = new ViewportDemo(application);
-    Demo *document  = new DocDemo(application);
-    Demo *terminal  = new TermDemo(application);
-    application->run();
-    delete terminal;
-    delete document;
-    delete viewport;
-    delete focus;
-    delete logo;
-    delete color;
-    delete raster;
-    delete edit;
-    delete text;
-    delete layout;
-    delete application;
-  } catch (CORBA::COMM_FAILURE c) {
-    std::cerr << "Could not connect to the berlin server (CORBA::COMM_FAILURE)." << std::endl;
-  }
+      Demo *layout    = new LayoutDemo(application);
+      Demo *text      = new TextDemo(application);
+      Demo *edit      = new EditTextDemo(application);
+      Demo *raster    = new RasterDemo(application);
+      Demo *color     = new ColorDemo(application);
+      Demo *logo      = new LogoDemo(application);
+      Demo *focus     = new FocusDemo(application);
+      Demo *viewport  = new ViewportDemo(application);
+      Demo *document  = new DocDemo(application);
+      Demo *terminal  = new TermDemo(application);
+      application->run();
+      delete terminal;
+      delete document;
+      delete viewport;
+      delete focus;
+      delete logo;
+      delete color;
+      delete raster;
+      delete edit;
+      delete text;
+      delete layout;
+      delete application;
+    }
+  catch (const CORBA::COMM_FAILURE &c)
+    {
+      std::cerr << "Could not connect to the display server (CORBA::COMM_FAILURE)." << std::endl;
+    }
 }

@@ -55,6 +55,8 @@ class ViewportImpl : public virtual POA_Layout::Viewport,
 
   virtual void update(const CORBA::Any &);
 
+  virtual const char *object_name() { return "Layout/ViewportImpl";}
+
 private:
   virtual void activate_composite();
   void allocate_child(Warsaw::Allocation::Info &);

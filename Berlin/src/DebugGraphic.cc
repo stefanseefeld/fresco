@@ -39,7 +39,7 @@ DebugGraphic::~DebugGraphic() {}
 
 void DebugGraphic::request(Warsaw::Graphic::Requisition &r)
 {
-  Trace trace("DebugGraphic::request");
+  Trace trace(this, "DebugGraphic::request");
   MonoGraphic::request(r);
   if (_flags & requests)
     {
@@ -50,14 +50,14 @@ void DebugGraphic::request(Warsaw::Graphic::Requisition &r)
 
 void DebugGraphic::traverse(Traversal_ptr traversal)
 {
-  Trace trace("DebugGraphic::traverse");
+  Trace trace(this, "DebugGraphic::traverse");
   if (_flags & traversals) traversal->visit(Graphic_var(_this()));
   else MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
-  Trace trace("DebugGraphic::draw");
+  Trace trace(this, "DebugGraphic::draw");
   if (_flags & draws)
     {
       heading(" draw\t");
@@ -71,7 +71,7 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
 
 void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
-  Trace trace("DebugGraphic::pick");
+  Trace trace(this, "DebugGraphic::pick");
   if (_flags & picks)
     {
       heading(" pick\t");

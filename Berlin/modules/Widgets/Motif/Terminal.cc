@@ -20,8 +20,9 @@
  * MA 02139, USA.
  */
 
-#include "Widget/Motif/Terminal.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <Prague/IPC/ptybuf.hh>
+#include "Widget/Motif/Terminal.hh"
 
 using namespace Prague;
 using namespace Warsaw;

@@ -31,8 +31,13 @@
 using namespace Warsaw;
 
 TextChunk::TextChunk(Unichar u, const Warsaw::Graphic::Requisition &r)
-  : _width(r.x.natural), _height(r.y.natural), _xalign(r.x.align), _yalign(r.y.align), _char(u)
+  : _width(r.x.natural), _height(r.y.natural), _xalign(r.x.align), _yalign(r.y.align), _char(u), _obj_name(0)
 {
+}
+
+TextChunk::~TextChunk()
+{
+  delete _obj_name;
 }
 
 void TextChunk::request(Warsaw::Graphic::Requisition &r)
@@ -43,6 +48,17 @@ void TextChunk::request(Warsaw::Graphic::Requisition &r)
   r.y.defined = true;
   r.y.minimum = r.y.natural = r.y.maximum = _height;
   r.y.align   = _yalign;
+}
+
+const char *TextChunk::object_name()
+{
+  if (_obj_name) return _obj_name;
+  std::ostrstream buf;
+  buf << "Char ";
+  if (_char < 128) buf << (char)_char << std::ends;
+  else buf << _char << std::ends;
+  _obj_name = strdup(buf.str());
+  return _obj_name;
 }
 
 void TextChunk::get_text(Babylon::String &u) 

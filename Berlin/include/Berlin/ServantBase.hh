@@ -25,9 +25,11 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
+#include <Berlin/DefaultPOA.hh>
 #include <cassert>
 
-class ServantBase : virtual public PortableServer::ServantBase
+class ServantBase : virtual public PortableServer::ServantBase,
+		    private DefaultPOA
 {
   friend class KitImpl;
   friend class IdentifiableImpl;
@@ -36,7 +38,6 @@ public:
   ServantBase(const ServantBase &);
   virtual ~ServantBase();
   ServantBase &operator = (const ServantBase &);
-  static void _default_POA(PortableServer::POA_ptr);
   virtual PortableServer::POA_ptr _default_POA();
   virtual void _add_ref();
   virtual void _remove_ref();
@@ -53,7 +54,6 @@ protected:
 private:
   int                            _refcount;
   PortableServer::POA_var        _poa;
-  static PortableServer::POA_var _default_poa;
 };
 
 #endif

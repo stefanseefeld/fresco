@@ -24,28 +24,34 @@
 #include <Berlin/ImplVar.hh>
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
+#include <strstream>
 
 using namespace Warsaw;
+using namespace Prague;
 
 Placement::Placement(LayoutManager *l)
+  : _layout(l),
+    _region(new RegionImpl())
 {
-  layout = l;
-  region = new RegionImpl;
+  std::ostrstream buf;
+  buf << "Placement" << _layout->name() << std::ends;
+  _name = strdup(buf.str());
 }
 
 Placement::~Placement()
 {
-  delete layout;
+  delete _layout;
 }
 
 void Placement::request(Warsaw::Graphic::Requisition::Requisition &r)
 {
   MonoGraphic::request(r);
-  layout->request(0, 0, r);
+  _layout->request(0, 0, r);
 }
 
 void Placement::traverse(Traversal_ptr traversal)
 {
+  Trace trace(this, "Placement::traverse");
   Region_var allocation = traversal->current_allocation();
   if (!CORBA::is_nil(allocation))
     {
@@ -57,7 +63,7 @@ void Placement::traverse(Traversal_ptr traversal)
       Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());
       result->copy(allocation);
       RegionImpl *tmp = static_cast<RegionImpl *>(result);
-      layout->allocate(1, &r, allocation, &tmp);
+      _layout->allocate(1, &r, allocation, &tmp);
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->load_identity();
       result->normalize(Transform_var(tx->_this()));
@@ -70,24 +76,25 @@ void Placement::traverse(Traversal_ptr traversal)
 
 void Placement::allocate(Tag, const Allocation::Info &a)
 {
-  region->copy(a.allocation);
+  Trace trace(this, "Placement::allocate");
+  _region->copy(a.allocation);
   Warsaw::Graphic::Requisition r;
   GraphicImpl::init_requisition(r);
   MonoGraphic::request(r);
-  RegionImpl *cast = region;
-  layout->allocate(1, &r, a.allocation, &cast);
+  RegionImpl *cast = _region;
+  _layout->allocate(1, &r, a.allocation, &cast);
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
-  region->normalize(Transform_var(tx->_this()));
+  _region->normalize(Transform_var(tx->_this()));
   a.transformation->premultiply(Transform_var(tx->_this()));
-  a.allocation->copy(Region_var(region->_this()));
+  a.allocation->copy(Region_var(_region->_this()));
 }
 
 LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under, Graphic_ptr over)
+  : _under(Warsaw::Graphic::_duplicate(under)),
+    _over(Warsaw::Graphic::_duplicate(over))
 {
   body(between);
-  under = Warsaw::Graphic::_duplicate(under);
-  over = Warsaw::Graphic::_duplicate(over);
 }
 
 LayoutLayer::~LayoutLayer()
@@ -96,13 +103,13 @@ LayoutLayer::~LayoutLayer()
 
 void LayoutLayer::traverse(Traversal_ptr t)
 {
-  if (!CORBA::is_nil(under))
-    try { under->traverse (t);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { under = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { under = Warsaw::Graphic::_nil();}
+  if (!CORBA::is_nil(_under))
+    try { _under->traverse(t);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _under = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _under = Warsaw::Graphic::_nil();}
   MonoGraphic::traverse(t);
-  if (!CORBA::is_nil(over))
-    try { over->traverse (t);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { over = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { over = Warsaw::Graphic::_nil();}
+  if (!CORBA::is_nil(_over))
+    try { _over->traverse(t);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _over = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _over = Warsaw::Graphic::_nil();}
 }

@@ -33,7 +33,7 @@ class DesktopImpl : public virtual POA_Warsaw::Desktop,
                     public ControllerImpl
 {
 public:
-  DesktopImpl(Layout::Stage_ptr);
+  DesktopImpl(CORBA::ORB_ptr, Layout::Stage_ptr);
   virtual ~DesktopImpl();
   virtual void body(Warsaw::Graphic_ptr);
   virtual Warsaw::Graphic_ptr body();
@@ -47,6 +47,7 @@ protected:
   virtual void key_press(const Warsaw::Input::Event &); 
 private:
   RefCount_var<Layout::Stage> _stage;
+  CORBA::ORB_var              _orb;
 };
 
 #endif 

@@ -20,17 +20,17 @@
  * MA 02139, USA.
  */
 
-#include "Layout/StageImpl.hh"
-#include <Berlin/Provider.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Profiler.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
+#include <Berlin/Provider.hh>
 #include <Berlin/AllocationImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/DebugGraphic.hh>
 #include <Berlin/QuadTree.hh>
 #include <Berlin/Math.hh>
-#include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Profiler.hh>
+#include "Layout/StageImpl.hh"
 
 using namespace Geometry;
 using namespace Prague;
@@ -487,7 +487,7 @@ void StageImpl::request(Warsaw::Graphic::Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr traversal)
 {
-  Trace trace("StageImpl::traverse");
+  Trace trace(this, "StageImpl::traverse");
   Prague::Guard<Mutex> guard(_mutex);
 //   Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->current_allocation()));
@@ -521,7 +521,7 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
 
 void StageImpl::need_redraw()
 {
-  Trace trace("StageImpl::needRedraw");
+  Trace trace(this, "StageImpl::need_redraw");
   Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocations(Allocation_var(allocation->_this()));
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
@@ -545,7 +545,7 @@ void StageImpl::need_redraw()
 
 void StageImpl::need_redraw_region(Region_ptr region)
 {
-  Trace trace("StageImpl::need_redraw_region");
+  Trace trace(this, "StageImpl::need_redraw_region");
   Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocations(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
@@ -567,7 +567,7 @@ void StageImpl::need_redraw_region(Region_ptr region)
 
 void StageImpl::need_resize()
 {
-  Trace trace("StageImpl::need_resize");
+  Trace trace(this, "StageImpl::need_resize");
   /*
    * FIXME !!!: need to work out how to process this. (which sub region to damage etc...)
    */
@@ -616,7 +616,7 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
-  Trace trace("StageImpl::end");
+  Trace trace(this, "StageImpl::end");
   Prague::Guard<Mutex> guard(_mutex);
   if (!--_nesting)
     {
@@ -641,7 +641,7 @@ void StageImpl::end()
 
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Layout::Stage::Index layer)
 {
-  Trace trace("StageImpl::insert");
+  Trace trace(this, "StageImpl::insert");
   Prague::Guard<Mutex> guard(_mutex);
   StageHandleImpl *handle = new StageHandleImpl(this, g, unique_tag(), position, size, layer);
   _tree->insert(handle);
@@ -653,7 +653,7 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 
 void StageImpl::remove(StageHandle_ptr h)
 {
-  Trace trace("StageImpl::remove");
+  Trace trace(this, "StageImpl::remove");
   Prague::Guard<Mutex> guard(_mutex);
   StageHandleImpl *handle = _children->find(h->layer());
   if (!handle) return;
@@ -668,13 +668,12 @@ void StageImpl::remove(StageHandle_ptr h)
 
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
-  Trace trace("StageImpl::move");
+  Trace trace(this, "StageImpl::move");
 //   Prague::Profiler prf("StageImpl::move");
   Prague::Guard<Mutex> guard(_mutex);
   _tree->remove(handle);
 
   damage(handle);
-  _need_resize = true;
 
   
   Coord dx = p.x - handle->_position.x;
@@ -688,12 +687,12 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 //   dumpQuadTree(*tree);
 
   damage(handle);
-  _need_resize = true;
+  _need_redraw = true;
 }
 
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
-  Trace trace("StageImpl::resize");
+  Trace trace(this, "StageImpl::resize");
   Prague::Guard<Mutex> guard(_mutex);
   _tree->remove(handle);
 
@@ -712,7 +711,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 
 void StageImpl::relayer(StageHandleImpl *handle, Layout::Stage::Index l)
 {
-  Trace trace("StageImpl::relayer");
+  Trace trace(this, "StageImpl::relayer");
   Prague::Guard<Mutex> guard(_mutex);
   _children->remove(handle);
   handle->_layer = l;

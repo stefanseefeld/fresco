@@ -104,7 +104,7 @@ Pool<Warsaw::Graphic::Requisition> PolyGraphic::_pool;
 PolyGraphic::PolyGraphic() {}
 PolyGraphic::~PolyGraphic()
 {
-  Trace trace("PolyGraphic::~PolyGraphic");
+  Trace trace(this, "PolyGraphic::~PolyGraphic");
   Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
     {
@@ -121,7 +121,7 @@ PolyGraphic::~PolyGraphic()
 
 void PolyGraphic::append_graphic(Graphic_ptr child)
 {
-  Trace trace("PolyGraphic::append_graphic");
+  Trace trace(this, "PolyGraphic::append_graphic");
   _mutex.lock();
   Edge edge;
   edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
@@ -134,7 +134,7 @@ void PolyGraphic::append_graphic(Graphic_ptr child)
 
 void PolyGraphic::prepend_graphic(Graphic_ptr child)
 {
-  Trace trace("PolyGraphic::prepend_graphic");
+  Trace trace(this, "PolyGraphic::prepend_graphic");
   _mutex.lock();
   Edge edge;
   edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
@@ -147,7 +147,7 @@ void PolyGraphic::prepend_graphic(Graphic_ptr child)
 
 void PolyGraphic::remove_graphic(Tag localId)
 {
-  Trace trace("PolyGraphic::remove_graphic");
+  Trace trace(this, "PolyGraphic::remove_graphic");
   _mutex.lock();
   glist_t::iterator i = child_id_to_iterator(localId);
   try
@@ -164,7 +164,7 @@ void PolyGraphic::remove_graphic(Tag localId)
 
 void PolyGraphic::remove_child_graphic(Tag localId)
 {
-  Trace trace("PolyGraphic::remove_child_graphic");
+  Trace trace(this, "PolyGraphic::remove_child_graphic");
   _mutex.lock();
   glist_t::iterator i = child_id_to_iterator(localId);
   _children.erase(i);
@@ -174,7 +174,7 @@ void PolyGraphic::remove_child_graphic(Tag localId)
 
 Warsaw::GraphicIterator_ptr PolyGraphic::first_child_graphic()
 {
-  Trace trace("PolyGraphic::first_child_graphic");
+  Trace trace(this, "PolyGraphic::first_child_graphic");
   Iterator *iterator = new Iterator(this, 0);
   activate(iterator);
   return iterator->_this();
@@ -182,7 +182,7 @@ Warsaw::GraphicIterator_ptr PolyGraphic::first_child_graphic()
 
 Warsaw::GraphicIterator_ptr PolyGraphic::last_child_graphic()
 {
-  Trace trace("PolyGraphic::last_child_graphic");
+  Trace trace(this, "PolyGraphic::last_child_graphic");
   Iterator *iterator = new Iterator(this, num_children());
   activate(iterator);
   return iterator->_this();
@@ -199,7 +199,7 @@ CORBA::Long PolyGraphic::num_children()
 
 Warsaw::Graphic::Requisition *PolyGraphic::children_requests()
 {
-  Trace trace("PolyGraphic::children_requests");
+  Trace trace(this, "PolyGraphic::children_requests");
   Prague::Guard<Mutex> guard(_mutex);
   Warsaw::Graphic::Requisition *requisitions = _pool.allocate(_children.size());
   Warsaw::Graphic::Requisition *r = requisitions;

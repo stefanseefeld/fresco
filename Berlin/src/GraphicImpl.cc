@@ -263,7 +263,7 @@ GraphicImpl::GraphicImpl() {}
 GraphicImpl::~GraphicImpl() {}
 void GraphicImpl::deactivate()
 {
-  Trace trace("GraphicImpl::deactivate");
+  Trace trace(this, "GraphicImpl::deactivate");
   Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); ++i)
     {
@@ -294,7 +294,7 @@ Tag GraphicImpl::unique_parent_id()
 
 Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
 {
-  Trace trace("GraphicImpl::add_parent_graphic");
+  Trace trace(this, "GraphicImpl::add_parent_graphic");
   Prague::Guard<Mutex> guard(_mutex);
   /*
    * note: we don't do ref counting on the parents to avoid cyclic dependencies.
@@ -314,7 +314,7 @@ Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
 
 void GraphicImpl::remove_parent_graphic(Tag localId)
 {
-  Trace trace("GraphicImpl::remove_parent_graphic");
+  Trace trace(this, "GraphicImpl::remove_parent_graphic");
   Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); ++i)
     if ((*i).localId == localId)
@@ -380,7 +380,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
  */
 void GraphicImpl::need_redraw()
 {
-  Trace trace("GraphicImpl::needRedraw");
+  Trace trace(this, "GraphicImpl::needRedraw");
   Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocation->clear();
   allocations(Allocation_var(allocation->_this()));
@@ -403,7 +403,7 @@ void GraphicImpl::need_redraw()
  */
 void GraphicImpl::need_redraw_region(Region_ptr region)
 {
-  Trace trace("GraphicImpl::need_redraw_region");
+  Trace trace(this, "GraphicImpl::need_redraw_region");
   if (region->defined())
     {
       Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
@@ -594,7 +594,7 @@ static void compensate(Coord a, Coord &x, Coord &y)
  */
 Vertex GraphicImpl::transform_allocate(RegionImpl &region, const Warsaw::Graphic::Requisition &_req, Transform_ptr t)
 {
-  Trace trace("GraphicImpl::transform_allocation");
+  Trace trace(0, "GraphicImpl::transform_allocation");
   Vertex delta;
   delta.x = delta.y = delta.z = 0.;
 

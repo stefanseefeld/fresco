@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,23 +19,29 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Glue_hh
-#define _Glue_hh
+#ifndef _DefaultPOA_hh
+#define _DefaultPOA_hh
 
-#include <Berlin/GraphicImpl.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
 
-class Glue : public GraphicImpl
+//. A mixin class to use a single global POA as the default POA. This is used
+//. by the "shortcut POA" for omniORB so that all objects (using the class)
+//. use the POA with the shortcut policy.
+class DefaultPOA
 {
 public:
-  Glue(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
-  Glue(const Warsaw::Graphic::Requisition &);
-  virtual ~Glue();
+  //. Set the global poa. This should only be called once, in whatever method
+  //. creates the global poa (eg: the main() function creating the shortcut poa
+  //. for omniORB in server/server.cc)
+  static void default_POA(PortableServer::POA_ptr);
 
-  virtual void request(Warsaw::Graphic::Requisition &);
+  //. Mixin virtual method to return a duplicate ptr to the global poa.
+  virtual PortableServer::POA_ptr _default_POA();
 
-  virtual const char *object_name() { return "Layout/Glue";}
 private:
-  Warsaw::Graphic::Requisition _requisition;
+  //. The global poa
+  static PortableServer::POA_var _default_poa;
 };
 
 #endif

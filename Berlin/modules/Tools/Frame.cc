@@ -57,7 +57,7 @@ void Frame::request(Warsaw::Graphic::Requisition &requisition)
 
 void Frame::traverse(Traversal_ptr traversal)
 {
-  Trace trace("Frame::traverse");
+  Trace trace(this, "Frame::traverse");
   if (!traversal->intersects_allocation()) return;
   traversal->visit(Graphic_var(_this()));
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
@@ -85,6 +85,7 @@ void Frame::extension(const Allocation::Info &info, Region_ptr region)
 
 void Frame::allocate(Tag, const Allocation::Info &info)
 {
+  Trace trace(this, "Frame::allocate");
   Warsaw::Graphic::Requisition req;
   GraphicImpl::init_requisition(req);
   MonoGraphic::request(req);
@@ -116,6 +117,12 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   
   info.allocation->copy(Region_var(_allocation->_this()));
   info.transformation->translate(delta);
+}
+
+void Frame::draw(Warsaw::DrawTraversal_ptr traversal)
+{
+  Trace trace(this, "Frame::draw");
+  if (_renderer) _renderer->draw(traversal);
 }
 
 void Frame::allocate_span(const Warsaw::Graphic::Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
@@ -201,6 +208,7 @@ void Bevel::draw(DrawTraversal_ptr traversal)
   Vertex u, l;
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->drawing();
+  //drawing->transformation(traversal->current_transformation());
   Color color = drawing->foreground();
   Color light = brightness(color, _bright);
   Color dark  = brightness(color,-_bright);

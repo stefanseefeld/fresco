@@ -240,7 +240,7 @@ int main(int argc, char **argv) /*FOLD00*/
 #  endif
 #endif
       
-       ServantBase::_default_POA(poa);
+       DefaultPOA::default_POA(poa);
        
        // ---------------------------------------------------------------
        // Open the Console
@@ -294,7 +294,7 @@ int main(int argc, char **argv) /*FOLD00*/
        props.length(0);
        LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
        Layout::Stage_var stage = layout->create_stage();
-       DesktopImpl *desktop = new DesktopImpl(stage);
+       DesktopImpl *desktop = new DesktopImpl(orb, stage);
        screen->body(Desktop_var(desktop->_this()));
        screen->append_controller(Desktop_var(desktop->_this()));
        
