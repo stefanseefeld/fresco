@@ -28,7 +28,7 @@
 #include <Fresco/IO.hh>
 #include "TextChunk.hh"
 
-#include <strstream>
+#include <sstream>
 
 using namespace Fresco;
 
