@@ -26,7 +26,7 @@
 #include <Drawing/DrawingKitBase.hh>
 #include <Berlin/CloneableImpl.hh>
 // #include "Drawing/openGL/GLFont.hh"
-// #include "Drawing/openGL/GLUnifont.hh"
+#include "Drawing/openGL/GLUnifont.hh"
 #include <Drawing/openGL/GLRaster.hh>
 #include <Berlin/Thread.hh>
 #include <Berlin/ObjectCache.hh>
@@ -54,6 +54,10 @@ public:
   virtual Fillstyle surfaceFillstyle() { return fs;}
   virtual Raster_ptr texture() { return tx;}
 
+  virtual Text::Font_ptr font(); 
+  virtual Text::Font_ptr findFont(const Text::FontDescriptor &fd);
+
+
   virtual void setTransformation(Transform_ptr);
   virtual void setClipping(Region_ptr);
   virtual void setForeground(const Color &);
@@ -76,6 +80,7 @@ public:
 //   Coord width() { return drawable->width();}
 //   Coord height() { return drawable->height();}
  private:
+  GLUnifont unifont;
   GGI::Drawable *drawable;
   GGIMesaContext context;
   Mutex mutex;

@@ -26,7 +26,6 @@
 #include <GL/gl.h>
 #include <vector>
 #include "Warsaw/config.hh"
-#include "Warsaw/Style.hh"
 #include "Warsaw/Types.hh"
 #include "Warsaw/Text.hh"
 #include "Prague/Sys/MMap.hh"

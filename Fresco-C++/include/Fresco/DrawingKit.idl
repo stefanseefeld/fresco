@@ -25,11 +25,11 @@
 
 #include "Types.idl"
 #include "Cloneable.idl"
+#include "Text.idl"
 
 interface Transform;
 interface Region;
 interface Raster;
-interface FontDescriptor;
 
 interface DrawingKit : Cloneable 
 {
@@ -45,7 +45,9 @@ interface DrawingKit : Cloneable
   attribute Endstyle lineEndstyle;
   attribute Fillstyle surfaceFillstyle;
   attribute Raster texture;
-//   attribute FontDescriptor font;
+
+  readonly attribute Text::Font font;
+  void setFont(in Text::FontDescriptor fd);
 
   Coord resolution(in Axis a);
   void drawPath(in Path p);

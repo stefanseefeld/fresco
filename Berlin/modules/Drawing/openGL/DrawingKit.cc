@@ -37,6 +37,8 @@ GLDrawingKit::GLDrawingKit()
 {
   tr->_obj_is_ready(_boa());
   cl->_obj_is_ready(_boa());
+  unifont._obj_is_ready(_boa());
+
   context = GGIMesaCreateContext();
   if (!context)
     {
@@ -95,6 +97,7 @@ void GLDrawingKit::setClipping(Region_ptr r)
 void GLDrawingKit::setForeground(const Color &c)
 {
   fg = c;
+  unifont.setColor(c);
   glColor4d(fg.red, fg.green, fg.blue, fg.alpha);
 }
 
@@ -127,6 +130,16 @@ void GLDrawingKit::setTexture(Raster_ptr t)
   tx = t;
   GLRaster *glraster = rasters.lookup(Raster::_duplicate(t));
   glBindTexture(GL_TEXTURE_2D, glraster->texture);
+}
+
+Text::Font_ptr GLDrawingKit::findFont(const Text::FontDescriptor &f)
+{
+  return unifont._this();
+}
+
+Text::Font_ptr GLDrawingKit::font()
+{
+  return unifont._this();
 }
 
 // void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
@@ -202,7 +215,6 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
 
 void GLDrawingKit::drawText(const Unistring &us)
 {
-
 }
 
 EXPORT_PLUGIN(GLDrawingKit, interface(DrawingKit))

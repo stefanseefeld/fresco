@@ -41,14 +41,38 @@ class DrawingKitBase : lcimplements(DrawingKit)
       delete state;
     }
  private:
+
+  /** we now define a set of mementos which are stored on a state stack inside
+   * the DrawingKit. every time you change something in the kit, it pushes a
+   * state onto the stack. when you call gsave(), it pushes a StateMaker on the
+   * stack. when you call grestore(), it begins restoring from the top of the
+   * stack. the StateMarker will stop restoring, whereas all other mementos will
+   * restore themselves and continue restoration down the memento stack. in this
+   * way, we achieve a simple imperative state system which nonetheless can
+   * follow the scene graph's concepts of nesting as the scene is traversed. */
+
   struct State
   {
     virtual ~State(){}
-    virtual void restore(DrawingKitBase &) const = 0;
-//     void *operator new(size_t);
-//     void operator delete(void *, size_t);
+    virtual void restore(DrawingKitBase &) {};
   };
+
   struct StateMarker : State { void restore(DrawingKitBase &) const {}};
+
+  // 
+  // doesn't this make more sense templatized?
+  //
+  //   template <class PtrType, class CORBAType> 
+  //     struct StateKeeper {
+  //       PtrType val;
+  //     public:
+  //       StateKeeper(PtrType v) : val(CORBAType::_duplicate(v)){}
+  //       void restore(DrawingKitBase &dk) const {
+  // 	dk.set(val);
+  // 	dk.continueRestoring();
+  //       }
+  //     }
+  
   struct TransformationState : State
   {
     TransformationState(Transform_ptr t) : transformation(Transform::_duplicate(t)) {}
@@ -129,6 +153,17 @@ class DrawingKitBase : lcimplements(DrawingKit)
     }
     Raster_var texture;
   };
+  struct FontState : State
+  {
+    FontState(Text::Font_ptr f) : font(Text::Font::_duplicate(f)) {}
+    void restore(DrawingKitBase &dk) const
+    {
+      dk.installFont(font);
+      dk.continueRestoring();
+    }
+    Text::Font_var font;
+  };
+
  
   typedef stack<State *> stack_t;
 public:
@@ -141,6 +176,14 @@ public:
   virtual void surfaceFillstyle(Fillstyle s) { states.push(new SurfaceFillstyleState(s)); setSurfaceFillstyle(s);}
   virtual void texture(Raster_ptr t) { states.push(new TextureState(t)); setTexture(t);}
 
+  // this text business is a little screwy, but it stems from some very good reasons
+  // and I am hard pressed at the moment to develop a better approach. at least for
+  // this release I think it has to stay this way -- graydon
+  virtual Text::Font_ptr font() {return myFont;}
+  virtual void setFont(const Text::FontDescriptor &f) { states.push(new FontState(myFont)); myFont = findFont(f);}
+  virtual void installFont(Text::Font_ptr f) {myFont = Text::Font::_duplicate(f);}
+  virtual Text::Font_ptr findFont(const Text::FontDescriptor &fd) = 0;
+
   virtual void saveState() { states.push(new StateMarker);}
   virtual void restoreState() { continueRestoring();}
 
@@ -152,7 +195,9 @@ public:
   virtual void setLineEndstyle(Endstyle) = 0;
   virtual void setSurfaceFillstyle(Fillstyle) = 0;
   virtual void setTexture(Raster_ptr) = 0;
+
 private:
+  Text::Font_var myFont;
   stack_t states;
 };
 
