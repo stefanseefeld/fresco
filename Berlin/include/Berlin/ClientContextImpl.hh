@@ -26,7 +26,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/ClientContext.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
 #include "Prague/Sys/User.hh"
 
 

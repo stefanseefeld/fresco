@@ -29,9 +29,9 @@
 #include "Warsaw/Message.hh"
 #include "Berlin/CloneableImpl.hh"
 #include "Warsaw/CommandKit.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
+#include "Prague/Sys/ThreadQueue.hh"
 
-#include <queue>
 #include <map>
 #include <vector>
 
@@ -40,7 +40,7 @@
 // is a "match" if the payload in a received message is the same as
 // the binding.
 
-class ReactorImpl : implements(Reactor)//, public virtual CloneableImpl {
+class ReactorImpl : implements(Reactor)
 {  
   typedef vector<Command_var> clist_t;
   typedef map<CORBA::TypeCode_var, clist_t> dictionary_t; 
@@ -51,14 +51,14 @@ public:
   void bind(CORBA::TypeCode_ptr tc, Command_ptr c);
   void unbind(CORBA::TypeCode_ptr tc, Command_ptr c);
   
-protected:
+private:
   // just copies the reactor map. a little helper function
   void copy_react_map_to(Reactor_ptr r);
   bool running;
   
   // the command dispatch table
-  dictionary_t commands; 
-  Mutex mutex;  
+  dictionary_t commands;
+  Prague::Mutex mutex;  
 };
     
 
@@ -82,28 +82,27 @@ class messageCmp {
 // message it'll return in constant, small time, and your thread
 // won't get all tangled up in affairs it's not interested in.
 
-class AsyncReactorImpl : 
-  public virtual Thread,
-  public virtual ReactorImpl {
+class AsyncReactorImpl : public ReactorImpl
+{
   
 public:
   AsyncReactorImpl();
   virtual void accept(const Message &m);
   virtual CORBA::Boolean active();
   virtual void active(CORBA::Boolean);
-  
-  
 protected:
     
   // the incoming message queue
-  priority_queue<Message, vector<Message>, messageCmp> react_queue; 
+//   priority_queue<Message, vector<Message>, messageCmp> react_queue; 
   
   // thread synchronization items
-  Mutex queue_mutex;
-  Condition queue_cond;
   
   // overrides from omnithread
-  virtual void run(void* arg); 
+  static void *run(void *); 
+  Prague::Thread thread;
+  Prague::Thread::Queue<Message> queue;
+  Prague::Mutex mutex;
+  Prague::Condition condition;
 };
 
 #endif

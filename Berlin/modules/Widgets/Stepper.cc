@@ -47,27 +47,28 @@ Stepper::~Stepper()
 
 void Stepper::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
+  SectionLog section(Logger::widget, "Stepper::press");
   ControllerImpl::press(traversal, pointer);
   start();
 }
 
 void Stepper::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
+  SectionLog section(Logger::widget, "Stepper::release");
   stop();
   ControllerImpl::release(traversal, pointer);
 }
 
 void Stepper::step()
 {
+  SectionLog section(Logger::widget, "Stepper::step");
   Message message;
   execute(message);
 }
 
 void Stepper::start()
 {
-  timer.run();
-  Prague::Time t = Prague::Time::currentTime() + delay;
-  timer.start(t, delta);
+  timer.start(Prague::Time::currentTime() + delay, delta);
 }
 
 void Stepper::stop()

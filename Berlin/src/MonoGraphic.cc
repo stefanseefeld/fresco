@@ -30,6 +30,8 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()
 {
@@ -48,7 +50,7 @@ void MonoGraphic::body(Graphic_ptr c)
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()), 0);
   child = Graphic::_duplicate(c);
-  child->addParent(Graphic_var(_this()), 0);
+  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), 0);
 }
 
 void MonoGraphic::append(Graphic_ptr c)

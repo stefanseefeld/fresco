@@ -19,15 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Thread_hh
-#define _Thread_hh
+#ifndef _Prague_Thread_hh
+#define _Prague_Thread_hh
 
 #include <Prague/Sys/Time.hh>
 #include <pthread.h>
-#if 1
 #include <semaphore.h>
-#endif
+#include <cerrno>
 #include <vector>
+#include <string>
 #include <pair.h>
 
 namespace Prague
@@ -82,27 +82,6 @@ private:
   Mutex &mutex;
 };
 
-#if 0
-
-class Semaphore
-{
-public:
-  Semaphore(unsigned int vv) : condition(mutex), v(vv) {}
-  ~Semaphore() {}
-  void wait() { MutexGuard guard(mutex); while (v == 0) condition.wait(); v--;}
-  bool trywait() { MutexGuard guard(mutex); if (v == 0) return false; v--; return true;}
-  void post() { { MutexGuard guard(mutex); v++;} condition.signal();}
-  unsigned int value() { MutexGuard guard(mutex); return v;}
-private:
-  Semaphore(const Semaphore &);
-  Semaphore &operator = (const Semaphore &);
-  Mutex mutex;
-  Condition condition;
-  int v;
-};
-
-#else
-
 class Semaphore : public sem_t
 {
 public:
@@ -117,8 +96,6 @@ private:
   Semaphore &operator = (const Semaphore &);
 };
 
-#endif
-
 class SemaphoreGuard
 {
 public:
@@ -132,8 +109,15 @@ private:
 
 class Thread
 {
-  typedef vector<pair<pthread_t, Thread *> > table;
+  struct Guard
+  {
+    Guard();
+    ~Guard();
+  };
+  friend struct Guard;
 public:
+  enum priority_t {low, normal, high};
+  enum state_t {ready, running, terminated, canceled, joined};
   template <class T> class Data;
   template <class T> class Queue;
   typedef void *(*proc)(void *);
@@ -143,28 +127,74 @@ public:
     Attribute() { pthread_attr_init(this);}
     ~Attribute() { pthread_attr_destroy(this);}
   };
-  Thread(proc pp, void *a) : p(pp), arg(a), running(false) {}
-  virtual ~Thread() { cancel(); join();}
-  void  start() { if (pthread_create(&thread, 0, &start, this) == 0) running = true;}
-  void *join() { void *ret; pthread_join(thread, &ret); return ret;}
-  void  cancel() { if (running) pthread_cancel(thread);}
-  void  exit() { if (running) pthread_exit(0);}
-  void  detach() { pthread_detach(thread);}
+  class Exception
+  {
+  public:
+    Exception(const string &m) : msg(m) {}
+    const string &what() const { return msg;}
+  private:
+    string msg;
+  };
+  Thread(proc, void *, priority_t = normal);
+  virtual ~Thread();
+  priority_t priority() { MutexGuard guard(mutex); return _priority;}
+  state_t state() { MutexGuard guard(mutex); return _state;}
+  void start() throw (Exception);
+  //. run the thread
+  void join(void **) throw (Exception);
+  //. wait for the thread to finish returning it's return value
+  void cancel();
+  //. cancel the thread
+  void detach();
+  //. detach the thread
+  static void exit(void *);
+  //. exit the calling thread with return value r
   static bool delay(const Time &);
-  static Thread *self() { return find(pthread_self());}
+  //. delay execution of the calling thread
+  static void testcancel() { pthread_testcancel();}
+  //. cancellation point
+  static Thread *self();
+  //. return a Thread pointer for the calling thread or 0 if it wasn't created by this Thread class
+  static unsigned long id();
+  //. return a thread id. This is supposed to give a valid number even for third party threads
 private:
+  Thread(pthread_t pt) : p(0), arg(0), thread(pt), _priority(normal), _state(running), detached(false) {}
+  static void *start(void *);
   proc p;
   void *arg;
   pthread_t thread;
-  bool running;
-  static void *start(void *);
-  static void append(pthread_t, Thread *);
-  static void remove(pthread_t);
-  static Thread *find(pthread_t);
-  static table threads;
-  static Mutex mutex;
+  priority_t _priority;
+  state_t _state;
+  bool detached;
+  Mutex mutex;
+  static unsigned long counter;
+  static Thread *main;
+  static Guard guard;
+  static pthread_key_t self_key;
+  static pthread_key_t id_key;
+  static Mutex         id_mutex;
 };
+
+inline Thread *Thread::self()
+{
+  return reinterpret_cast<Thread *>(pthread_getspecific(self_key));
+}
+
+inline unsigned long Thread::id()
+{
+  unsigned long *_id = reinterpret_cast<unsigned long *>(pthread_getspecific(id_key));
+  if (!_id)
+    {
+      MutexGuard guard(id_mutex);
+      if (!_id)
+	{
+	  _id = new unsigned long (counter++);
+	  pthread_setspecific(id_key, _id);
+	}
+    }
+  return *_id;
+}
 
 };
 
-#endif /* _Thread_hh */
+#endif /* _Prague_Thread_hh */

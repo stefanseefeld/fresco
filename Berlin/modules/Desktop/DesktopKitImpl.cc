@@ -50,25 +50,25 @@ Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
   Titlebar *tb = new Titlebar(gray);
   tb->_obj_is_ready(_boa());
   Command_var move = window->move();
-  Graphic_var tbframe = wk->outset(Graphic_var(tb->_this()), gray);
+  Graphic_var tbframe = wk->outset(Graphic_var(tb->_this()), gray, false);
   Graphic_var tbdragger = wk->dragger(tbframe, move);
 
   Corner *left = new Corner(gray);
   left->_obj_is_ready(_boa());
   Command_var lresize = window->moveResize(1.0, 0.0, Window::left|Window::bottom);
-  Graphic_var lframe = wk->outset(Graphic_var(left->_this()), gray);
+  Graphic_var lframe = wk->outset(Graphic_var(left->_this()), gray, false);
   Graphic_var ldragger = wk->dragger(lframe, lresize);
 
   Border *border = new Border(gray);
   border->_obj_is_ready(_boa());
   Command_var bresize = window->moveResize(0.0, 0.0, Window::bottom);
-  Graphic_var bframe = wk->outset(Graphic_var(border->_this()), gray);
+  Graphic_var bframe = wk->outset(Graphic_var(border->_this()), gray, false);
   Graphic_var bdragger = wk->dragger(bframe, bresize);
 
   Corner *right = new Corner(gray);
   right->_obj_is_ready(_boa());
   Command_var rresize = window->moveResize(0.0, 0.0, Window::right|Window::bottom);
-  Graphic_var rframe = wk->outset(Graphic_var(right->_this()), gray);
+  Graphic_var rframe = wk->outset(Graphic_var(right->_this()), gray, false);
   Graphic_var rdragger = wk->dragger(rframe, rresize);
 
   Graphic_var vbox = lk->vbox();

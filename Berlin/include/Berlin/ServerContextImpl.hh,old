@@ -24,7 +24,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/ServerContext.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
 #include <vector>
 #include <string>
 #include <map>
@@ -52,8 +52,8 @@ class ServerContextImpl : implements(ServerContext)
   ServerContextManagerImpl *manager;
   CosLifeCycle::FactoryFinder_var ffinder;
   ClientContext_var cContext;
-  Mutex mutex;
   olist_t objects;
+  Prague::Mutex mutex;
 };
 
 #endif

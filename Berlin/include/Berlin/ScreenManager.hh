@@ -30,7 +30,7 @@ extern "C" {
 
 #include "Warsaw/Region.hh"
 #include "Warsaw/Event.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
 #include <vector>
 
 class GLDrawingKit;
@@ -58,7 +58,7 @@ private:
   Pointer *pointer;
   ggi_visual_t visual;
   dlist_t damages;
-  Mutex mutex;
+  Prague::Mutex mutex;
 };
 
 #endif /* _ScreenManager_hh */

@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-SRC 	= CommandKitImpl.cc ReactorImpl.cc
+SRC 	= CommandKitImpl.cc #ReactorImpl.cc
 
 TARGET	= $(mpath)/libCommand.so
 

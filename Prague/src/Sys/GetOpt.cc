@@ -22,28 +22,11 @@
 
 #include "Prague/Sys/GetOpt.hh"
 #include "Prague/Sys/Memory.hh"
-#include <algorithm>
 
 using namespace Prague;
 
-/* @Method{void GetOpt::GetOpt(const char *program, const char *usage = 0)}
- *
- * @Description{creates an option data base using @var{program} and @var{usage} in help and error messages}
- */
-GetOpt::GetOpt(const char *program, const char *use)
-  : pname(program),
-    usage(use)
-{
-}
-
-/* @Method{GetOpt::~GetOpt()}
- *
- * @Description{}
- */
-GetOpt::~GetOpt()
-{
-  for (iterator i = table.begin(); i != table.end(); i++) delete *i;
-}
+GetOpt::GetOpt(const char *program, const char *use) : p(program), u(use) {}
+GetOpt::~GetOpt() {}
 
 /* @Method{int GetOpt::add(char o, const string &option, type t, const string &description)}
  *
@@ -63,7 +46,7 @@ GetOpt::~GetOpt()
  */
 void GetOpt::add(char o, const string &opt, type t, const string &desc)
 {
-   table.push_back(new cell(o, opt, t, desc));
+   table.push_back(cell(o, opt, t, desc));
 }
 
 /* @Method{void GetOpt::get(char o, string *v) const}
@@ -72,9 +55,9 @@ void GetOpt::add(char o, const string &opt, type t, const string &desc)
  */
 void GetOpt::get(char o, string *v) const
 {
-  const_iterator i = find(o);
+  table_t::const_iterator i = find(o);
   if (i == table.end()) cerr << "GetOpt::get unknown option -" << o << endl;
-  else if ((*i)->value.length()) *v = (*i)->value;
+  else if ((*i).value.length()) *v = (*i).value;
 }
 
 /* @Method{void GetOpt::get(const string &option, string *v) const}
@@ -83,9 +66,9 @@ void GetOpt::get(char o, string *v) const
  */
 void GetOpt::get(const string &option, string *v) const
 {
-  const_iterator i = find(option);
+  table_t::const_iterator i = find(option);
   if (i == table.end()) cerr << "GetOpt::get unknown option --" << option << endl;
-  else if ((*i)->value.length()) *v = (*i)->value;
+  else if ((*i).value.length()) *v = (*i).value;
 }
 
 /* @Method{int GetOpt::parse(int argc, const char **argv)}
@@ -131,35 +114,35 @@ unsigned int GetOpt::getlongopt(int argc, char **argv)
   char *token = *argv + 2;
   while (*token != '\0' && *token != '=') token++;
   string name (*argv + 2, token - *argv - 2);
-  const_iterator i = find(name);
+  table_t::iterator i = find(name);
   if (i == table.end()) return 0;
-  if ((*i)->t == novalue) (*i)->value = "true";
-  else if (*token == '=') (*i)->value = token + 1;
-  else if ((*i)->t == mandatory) cerr << "GetOpt: option '--" << (*i)->option << "' requires a value" << endl;
+  if ((*i).t == novalue) (*i).value = "true";
+  else if (*token == '=') (*i).value = token + 1;
+  else if ((*i).t == mandatory) cerr << "GetOpt: option '--" << (*i).option << "' requires a value" << endl;
   return 1;
 }
 
 unsigned int GetOpt::getopt(int argc, char **argv)
 {
   char *option = *argv + 1;
-  const_iterator i;
+  table_t::iterator i;
   if (option[1] == '\0')
     {
       i = find(*option);
       if (i == table.end()) return 0;
-      else if ((*i)->t == novalue)
+      else if ((*i).t == novalue)
 	{
-	  (*i)->value = "true";
+	  (*i).value = "true";
 	  return 1;
 	}
       else if (argc > 1)
 	{
-	  (*i)->value = argv[1];
+	  (*i).value = argv[1];
 	  return 2;
 	}
-      else if ((*i)->t == mandatory)
+      else if ((*i).t == mandatory)
 	{
-	  cerr << "GetOpt: option '-" << (*i)->o << "' requires a value" << endl;
+	  cerr << "GetOpt: option '-" << (*i).o << "' requires a value" << endl;
 	  return 1;
 	}
     }
@@ -182,48 +165,26 @@ unsigned int GetOpt::getopt(int argc, char **argv)
   return 0;
 }
 
-/* @Method{void GetOpt::Usage() const}
+/* @Method{void GetOpt::usage() const}
  *
  * @Description{ prints the usage information to stdandard output}
  */
-void GetOpt::Usage() const
+void GetOpt::usage() const
 {
-  cout << "Usage: " << pname << " " << usage << "\n";
-  for (const_iterator i = table.begin(); i != table.end(); i++)
+  cout << "Usage: " << p << " " << u << "\n";
+  for (table_t::const_iterator i = table.begin(); i != table.end(); i++)
     {
       cout << '\t';
-      if ((*i)->o && (*i)->option.length()) cout << '-' << (*i)->o << ", --" << (*i)->option;
-      else if ((*i)->o) cout << '-' << (*i)->o << '\t';
-      else if ((*i)->option.length()) cout << ", --" << (*i)->option;
-      if ((*i)->t == mandatory) cout << " <$val>";
-      else if ((*i)->t == optional) cout << " [$val]";
-      cout << " (" << (*i)->description << ")\n";
+      if ((*i).o && (*i).option.length()) cout << '-' << (*i).o << ", --" << (*i).option;
+      else if ((*i).o) cout << '-' << (*i).o << '\t';
+      else if ((*i).option.length()) cout << ", --" << (*i).option;
+      if ((*i).t == mandatory) cout << " <$val>";
+      else if ((*i).t == optional) cout << " [$val]";
+      cout << " (" << (*i).description << ")\n";
     }
   cout.flush();
 }
 
-/* @Method{GetOpt::const_iterator GetOpt::find(const string &option) const}
- * 
- * @Description{}
- */
-vector<GetOpt::cell *>::const_iterator GetOpt::find(const string &option) const
-{
-  return find_if(table.begin(), table.end(), comp_string(option));
-}
-
-/* @Method{GetOpt::const_iterator GetOpt::find(char option) const}
- * 
- * @Description{}
- */
-vector<GetOpt::cell *>::const_iterator GetOpt::find(char option) const
-{
-  return find_if(table.begin(), table.end(), comp_char(option));
-}
-
-/* @Method{void GetOpt::exchange (char **a, char **b, char **c)}
- *
- * @Dexcription{exchange memory block [@var{a},@var{b}] with block [@var{b},@var{c}]}
- */
 void GetOpt::exchange (char **a, char **b, char **c)
 {
   char **tmp = new char *[b - a];

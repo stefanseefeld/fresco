@@ -146,7 +146,7 @@ void Bevel::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margi
 }
 
 void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, const Color &light, const Color &dark,
-		 Coord left, Coord right, Coord top, Coord bottom)
+		 Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Coord lefti = left + thickness;
   Coord righti = right - thickness;
@@ -157,17 +157,21 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   Style::Spec style;
   style.length(1);
   style[0].a = Style::fillcolor;
-  style[0].val <<= medium;
-  Pencil_var pen = dk->getPencil(style);
+  Pencil_var pen;
   Path path;
   path.p.length(5);
-//   path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
-//   path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
-//   path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
-//   path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
-//   path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-//   for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
-//   pen->drawPath(path);
+  if (fill)
+    {
+      style[0].val <<= medium;
+      pen = dk->getPencil(style);
+      path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
+      path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
+      path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
+      path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
+      path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
+      for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+      pen->drawPath(path);
+    }
   /*
    * light edges
    */
@@ -222,31 +226,31 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
 }
 
 void Bevel::leftArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		      Coord left, Coord right, Coord top, Coord bottom)
+		      Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
 }
 
 void Bevel::rightArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		       Coord left, Coord right, Coord top, Coord bottom)
+		       Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
 }
 
 void Bevel::upArrow(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		    Coord left, Coord right, Coord top, Coord bottom)
+		    Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
 }
 
 void Bevel::downArrow(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		      Coord left, Coord right, Coord top, Coord bottom)
+		      Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
 }
 
 void Bevel::diamond(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		    Coord left, Coord right, Coord top, Coord bottom)
+		    Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
 }
 
 void Bevel::circle(DrawTraversal_ptr, Coord thickness, const Color &light, const Color &medium, const Color &dark,
-		   Coord left, Coord bottom, Coord right, Coord top)
+		   Coord left, Coord bottom, Coord right, Coord top, bool fill)
 {
 }

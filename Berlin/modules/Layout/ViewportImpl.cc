@@ -27,6 +27,8 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Math.hh"
 
+using namespace Prague;
+
 static const double epsilon = 10e-6;
 
 class ViewportImpl::Adjustment : implements(BoundedRange), virtual public SubjectImpl

@@ -24,7 +24,7 @@
 
 #include <Warsaw/config.hh>
 
-#ifdef __OMNIORB2__
+#if 0 //def __OMNIORB2__
 #include <omnithread.h>
 
 typedef omni_mutex Mutex;
@@ -32,22 +32,25 @@ typedef omni_condition Condition;
 typedef omni_semaphore Semaphore;
 typedef omni_thread Thread;
 
-#else
-#include <Prague/Sys/Thread.hh>
-
-typedef Prague::Mutex Mutex;
-typedef Prague::Condition Condition;
-typedef Prague::Semaphore Semaphore;
-typedef Prague::Thread Thread;
-#endif
-
 class MutexGuard
 {
 public:
   MutexGuard(Mutex &m) : mutex(m) { mutex.lock();}
   ~MutexGuard() { mutex.unlock();}
 private:
-  Mutex &mutex;
+  Mutex mutex;
 };
+
+#else
+#include <Prague/Sys/Thread.hh>
+
+#if 1
+typedef Prague::Mutex Mutex;
+typedef Prague::Condition Condition;
+typedef Prague::Semaphore Semaphore;
+typedef Prague::Thread Thread;
+typedef Prague::MutexGuard MutexGuard;
+#endif
+#endif
 
 #endif /* _Thread_hh */

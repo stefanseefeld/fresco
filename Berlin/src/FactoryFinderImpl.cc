@@ -27,6 +27,8 @@
 // placeholder for the time being until we come up with a better
 // factory naming scheme built on hostnames or something.
 
+using namespace Prague;
+
 CosLifeCycle::Factories * FactoryFinderImpl::find_factories ( const CosLifeCycle::Key &key)
 {
   CosLifeCycle::GenericFactory_var fact = CosLifeCycle::GenericFactory::_narrow((*factories)[0]);

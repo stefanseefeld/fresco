@@ -51,6 +51,7 @@ private:
 	  Handler *handler = pool->acceptor.consume(task);
 	  handler->process();
 	  delete handler;
+	  Thread::testcancel();
 	}
     }
   Thread::Queue<Task> &tasks;

@@ -39,7 +39,7 @@ struct SignalNotifier : Signal::Notifier
 {
   virtual void notify(int signum)
   {
-    cerr << Signal::Name(signum) << endl;
+    cerr << Signal::name(signum) << endl;
     exit(1);
   }
 };

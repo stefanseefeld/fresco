@@ -29,6 +29,7 @@ namespace Prague
 
 class Agent
 {
+  friend class Dispatcher;
 public:
   enum iomask {outready = 0x01, inready = 0x02, errready = 0x04,
 	       outexc = 0x10, inexc = 0x20, errexc = 0x40,
@@ -36,16 +37,9 @@ public:
 	       asyncio = 0xff};
   Agent() {}
   virtual ~Agent();
-  virtual ipcbuf *ibuf() = 0;
-  virtual ipcbuf *obuf() = 0;
-  virtual ipcbuf *ebuf() = 0;
 
   virtual void start(iomask);
   virtual void stop();
-
-  virtual int ifd() const = 0;
-  virtual int ofd() const = 0;
-  virtual int efd() const = 0;
 
   virtual void processInput() = 0;
   virtual void processOutput() = 0;
@@ -53,6 +47,14 @@ public:
   virtual void processInputException() = 0;
   virtual void processOutputException() = 0;
   virtual void processErrorException() = 0;
+protected:
+  virtual ipcbuf *ibuf() = 0;
+  virtual ipcbuf *obuf() = 0;
+  virtual ipcbuf *ebuf() = 0;
+
+  virtual int ifd() const = 0;
+  virtual int ofd() const = 0;
+  virtual int efd() const = 0;
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);

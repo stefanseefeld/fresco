@@ -30,7 +30,7 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Graphic.hh"
 #include "Berlin/CloneableImpl.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
 #include <vector>
 #include <algorithm>
 
@@ -80,7 +80,7 @@ class GraphicImpl : implements(Graphic)
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:
   plist_t parents;
-  Mutex parentMutex;
+  Prague::Mutex parentMutex;
 };
 
 #endif /* _GraphicImpl_hh */

@@ -21,7 +21,7 @@
  */
 
 #include <Command/CommandKitImpl.hh>
-#include <Command/ReactorImpl.hh>
+// #include <Command/ReactorImpl.hh>
 #include <Command/CommandImpl.hh>
 #include "Berlin/Plugin.hh"
 
@@ -30,18 +30,20 @@ CommandKitImpl::~CommandKitImpl() {}
 
 Reactor_ptr CommandKitImpl::asyncReactor(const ReactorBindingList &)
 {
-  AsyncReactorImpl *r = new AsyncReactorImpl();
-  r->active(true);
-  r->_obj_is_ready(_boa());
-  return r->_this();
+//   AsyncReactorImpl *r = new AsyncReactorImpl();
+//   r->active(true);
+//   r->_obj_is_ready(_boa());
+//   return r->_this();
+  return Reactor::_nil();
 }
 
 Reactor_ptr CommandKitImpl::syncReactor(const ReactorBindingList &)
 {
-  ReactorImpl *r = new ReactorImpl();
-  r->active(true);
-  r->_obj_is_ready(_boa());
-  return r->_this();
+//   ReactorImpl *r = new ReactorImpl();
+//   r->active(true);
+//   r->_obj_is_ready(_boa());
+//   return r->_this();
+  return Reactor::_nil();
 }
 
 Command_ptr CommandKitImpl::sendMessage(const Message &m, MessageListener_ptr recipient)

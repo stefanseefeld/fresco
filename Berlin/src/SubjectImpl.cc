@@ -22,6 +22,8 @@
 #include "Berlin/SubjectImpl.hh"
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 SubjectImpl::SubjectImpl() : blocked(false) {}
 
 void SubjectImpl::attach(Observer_ptr o)

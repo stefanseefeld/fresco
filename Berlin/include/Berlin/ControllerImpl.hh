@@ -29,7 +29,7 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/MonoGraphic.hh>
-#include <Berlin/Thread.hh>
+#include <Prague/Sys/Thread.hh>
 #include <vector>
 
 class ControllerImpl : implements(Controller), public MonoGraphic, public SubjectImpl
@@ -79,7 +79,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   bool grabbed;
   bool transparent;
   TelltaleConstraint_var myConstraint;
-  Mutex mutex;
+  Prague::Mutex mutex;
 };
 
 #endif /* _ControllerImpl_hh */

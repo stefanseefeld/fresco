@@ -23,57 +23,116 @@
 
 using namespace Prague;
 
-Thread::table Thread::threads;
-Mutex         Thread::mutex;
+pthread_key_t Thread::self_key;
+pthread_key_t Thread::id_key;
+Mutex         Thread::id_mutex;
+unsigned long Thread::counter = 0;
+Thread       *Thread::main = 0;
+Thread::Guard Thread::guard;
+
+void id_deallocator(void *id) { delete reinterpret_cast<unsigned long *>(id);}
 
 Mutex::Mutex(type t)
 {
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr);
-//   pthread_mutexattr_setkind_np(&attr, t);
   pthread_mutex_init(this, &attr);
   pthread_mutexattr_destroy(&attr);
+}
+
+Thread::Guard::Guard()
+{
+  pthread_key_create(&Thread::self_key, 0);
+  pthread_key_create(&Thread::id_key, id_deallocator);
+  pthread_t pt = pthread_self();
+  Thread::main = new Thread(pt);
+  pthread_setspecific(Thread::self_key, Thread::main);
+  pthread_setspecific(Thread::id_key, new unsigned long (counter++));
+}
+
+Thread::Guard::~Guard()
+{
+  Thread::main->_state = canceled;
+  delete Thread::main;
+}
+
+Thread::Thread(proc pp, void *a, priority_t prio = normal)
+  : p(pp), arg(a), _priority(prio), _state(ready), detached(false)
+{
+}
+
+Thread::~Thread()
+{
+  if (this != self())
+    {
+      cancel();
+      join(0);
+    }
+}
+
+void Thread::start() throw (Exception)
+{
+  MutexGuard guard(mutex);
+  if ((_state) != ready) throw Exception("thread already running");
+  if (pthread_create(&thread, 0, &start, this) != 0) throw Exception("can't create thread");
+  else _state = running;
+}
+
+void Thread::join(void **status) throw (Exception)
+{
+  {
+    MutexGuard guard(mutex);
+    if (_state == joined || _state == canceled || _state == ready) return;
+    if (this == self()) throw Exception("can't join thread 'self'");
+    if (detached) throw Exception("can't join detached thread");
+    _state = joined;
+  }
+  void *s;
+  pthread_join(thread, &s);
+  if (s == PTHREAD_CANCELED)
+    {
+      MutexGuard guard(mutex);
+      _state = canceled;
+    }
+  if (status) *status = s;
+}
+
+void Thread::cancel()
+{
+  if (this != self() && state() == running)
+    pthread_cancel(thread);
+}
+
+void Thread::detach()
+{
+  mutex.lock();
+  detached = true;
+  mutex.unlock();
+  pthread_detach(thread);
+}
+
+void Thread::exit(void *r)
+{
+  Thread *me = self();
+  if (me)
+    {
+      MutexGuard guard(me->mutex);  
+      me->_state = terminated;
+    }
+  pthread_exit(r);
 }
 
 void *Thread::start(void *X)
 {
   Thread *thread = reinterpret_cast<Thread *>(X);
-  append(pthread_self(), thread);
+  pthread_setspecific(self_key, thread);
+  pthread_setspecific(id_key, new unsigned long (counter++));
   void *ret = thread->p(thread->arg);
-  pthread_exit(0);
-  remove(pthread_self());
   return ret;
 }
 
 bool Thread::delay(const Time &time)
 {
-// pthread_delay_np(&T);
   Time t(time);
   return select(0, 0, 0, 0, &t) == 0;
-}
-
-void Thread::append(pthread_t tid, Thread *thread)
-{
-  MutexGuard guard(mutex);
-  threads.push_back(pair<pthread_t, Thread *>(tid, thread));
-}
-
-void Thread::remove(pthread_t tid)
-{
-  MutexGuard guard(mutex);
-  for (table::iterator i = threads.begin(); i != threads.end(); i++)
-    if ((*i).first == tid)
-      {
-	threads.erase(i);
-	break;
-      }
-}
-
-Thread *Thread::find(pthread_t tid)
-{
-  MutexGuard guard(mutex);
-  for (table::iterator i = threads.begin(); i != threads.end(); i++)
-    if ((*i).first == tid)
-      return (*i).second;
-  return 0;
 }

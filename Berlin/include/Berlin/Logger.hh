@@ -30,10 +30,10 @@
 #define _Logger_hh
 
 #include "Warsaw/config.hh"
-#include "Berlin/Thread.hh"
 #include "Prague/Sys/logstream.hh"
 #include "Prague/Sys/EventLogger.hh"
 #include "Prague/Sys/Time.hh"
+#include "Prague/Sys/Thread.hh"
 #include "Prague/Sys/Profiler.hh"
 
 // this is a rewrite of our debugging class to use some NANA features.  the idea
@@ -67,7 +67,7 @@ public:
   static void setall() { for (int i = 0; i < numGroups; i++) active[i] = true;}
   static void note(const char *c)
     {
-      MutexGuard guard(mutex);
+      Prague::MutexGuard guard(mutex);
       events.add(c, Prague::Time::currentTime() - start);
     }
   static _streamlock log(group g)
@@ -76,7 +76,7 @@ public:
       write(g, '[');
       write(g, static_cast<double>(Prague::Time::currentTime() - start));
       write(g, ':');
-      write(g, Thread::self()->id());
+      write(g, Prague::Thread::id());
       write(g, ':');
       write(g, groupname[g]);
       write(g, "]\t");
@@ -103,7 +103,7 @@ private:
   static Prague::logstream los;
   static Prague::EventLogger events;    
   static Prague::Time start;
-  static Mutex mutex;
+  static Prague::Mutex mutex;
 };
 
 class SectionLog

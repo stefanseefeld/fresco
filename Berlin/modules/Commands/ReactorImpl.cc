@@ -30,6 +30,8 @@
 #include <strstream>
 #include <algorithm>
 
+using namespace Prague;
+
 // this lets you toggle the run state of the Reactor.
 void ReactorImpl::active(CORBA::Boolean r)
 {
@@ -91,7 +93,7 @@ void ReactorImpl::accept(const Message &m)
 void AsyncReactorImpl::active(CORBA::Boolean r)
 {
   // we have to lock on something.. might as well use this
-  queue_mutex.lock();
+  mutex.lock();
   if (r)
     {
       if (running);      // do nothing, already running
@@ -106,40 +108,40 @@ void AsyncReactorImpl::active(CORBA::Boolean r)
       if (running) running = false;
       else;     // do nothing, already stopped
     }
-  queue_mutex.unlock();
-  queue_cond.signal();
+  mutex.unlock();
+  condition.signal();
 }
 
 CORBA::Boolean AsyncReactorImpl::active()
 {
-  MutexGuard guard(queue_mutex);
+  MutexGuard guard(mutex);
   return running;
 }
 
 // this just slots a message into the queue and wakes up the local thread.
 void AsyncReactorImpl::accept(const Message &m)
 {
-  queue_mutex.lock();
+  mutex.lock();
   Logger::log(Logger::message) << "received message of type " << m.payload.type()->id() << endl;
-  react_queue.push(m);
-  queue_mutex.unlock();
-  queue_cond.signal();
+  queue.push(m);
+  mutex.unlock();
+  condition.signal();
 }
 
 
-void AsyncReactorImpl::run(void *arg)
+static void *AsyncReactorImpl::run(void *)
 {
   while(true)
     { // thread lives in here.        
       Logger::log(Logger::message) << "sleeping on message queue" << endl;
-      queue_cond.wait(); // this unlocks the queue atomically while it sleeps
-      while(!react_queue.empty() && running)
+      condition.wait(); // this unlocks the queue atomically while it sleeps
+      while(!queue.empty() && running)
 	{ // when it wakes up, the queue is re-locked
-	  const Message m = react_queue.top();
+	  const Message m = queue.top();
 	  CORBA::TypeCode_var ty = m.payload.type();
 	  Logger::log(Logger::message) << "processing a new message of type " << ty->id() << endl; 
-	  react_queue.pop();
-	  queue_mutex.unlock();
+	  queue.pop();
+	  mutex.unlock();
 	  this->ReactorImpl::accept(m);
 	}
     }

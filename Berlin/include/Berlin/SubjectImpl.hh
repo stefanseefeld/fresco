@@ -24,7 +24,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Subject.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
 #include <list>
 
 class SubjectImpl : implements(Subject)
@@ -39,8 +39,8 @@ public:
 protected:
   list<Observer_var> observers;
   CORBA::Boolean blocked;
-  Mutex observerMutex;
-  Mutex myMutex;
+  Prague::Mutex observerMutex;
+  Prague::Mutex myMutex;
 };
 
 #endif /* _SubjectImpl_hh */

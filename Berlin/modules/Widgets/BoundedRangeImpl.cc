@@ -22,6 +22,8 @@
 
 #include "Widget/BoundedRangeImpl.hh"
 
+using namespace Prague;
+
 BoundedRangeImpl::BoundedRangeImpl(Coord ll, Coord uu, Coord lvv, Coord uvv, Coord ss, Coord pp)
   : l(l), u(uu), lv(lvv), uv(uvv), s(ss), p(pp)
 {

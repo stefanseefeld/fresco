@@ -28,7 +28,6 @@ vector<Timer *> Timer::timers;
 Thread          Timer::server(&Timer::start, 0);
 Mutex           Timer::mutex;
 Condition       Timer::condition(Timer::mutex);
-bool            Timer::running = false;
 
 void Timer::start(const Time &t, const Time &i)
 {
@@ -37,36 +36,15 @@ void Timer::start(const Time &t, const Time &i)
   Timer::schedule(this);
 };
 
-/* @Method{void Timer::stop()}
- *
- * @Description{stops the Timer}
- */
 void Timer::stop()
 {
   Timer::cancel(this);
 };
 
-void Timer::run()
-{
-  MutexGuard guard(mutex);
-  if (running == true) return;
-  running = true;
-  server.start();
-}
-
-void Timer::cancel()
-{
-  {
-    MutexGuard guard(mutex);
-    running = false;
-  }
-  server.join();
-}
-
 void *Timer::start(void *)
 {
   MutexGuard guard(mutex);
-  while (running)
+  while (true)
     {
       if (!timers.size()) condition.wait();
       else
@@ -99,6 +77,7 @@ void Timer::expire()
 
 void Timer::schedule(Timer *timer)
 {
+  if (server.state() != Thread::running) server.start();
   MutexGuard guard(mutex);
   timers.push_back(timer);
   push_heap(timers.begin(), timers.end(), comp());

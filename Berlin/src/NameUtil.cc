@@ -28,6 +28,9 @@
 #include "Warsaw/config.hh"
 #include "Berlin/NameUtil.hh"
 #include "Berlin/Logger.hh"
+#include "Prague/Sys/Thread.hh"
+
+using namespace Prague;
 
 static CosNaming::NamingContext_var rootContext;
 static Mutex rootContext_mutex;

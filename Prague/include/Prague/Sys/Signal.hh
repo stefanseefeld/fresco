@@ -22,6 +22,8 @@
 #ifndef _Signal_hh
 #define _Signal_hh
 
+#include <Prague/Sys/Thread.hh>
+#include <Prague/Sys/ThreadQueue.hh>
 #include <signal.h>
 #include <vector>
 #include <map>
@@ -31,12 +33,12 @@ namespace Prague
 
 class sigerr {};
 
-/* @Class{Signal}
- *
- * @Description{a wrapper for the (POSIX) signal handling functions}
- */
 class Signal 
+  //. a wrapper for the (POSIX) signal handling functions}
 {
+  class Notifier;
+  typedef vector<Notifier *> nlist_t;
+  typedef map<int, nlist_t> dict_t;
 public:
   class Notifier
     {
@@ -50,17 +52,25 @@ public:
 	      usr1 = SIGUSR1, usr2 = SIGUSR2, alarm = SIGALRM, terminate = SIGTERM, child = SIGCLD, io = SIGIO,
 	      pipe = SIGPIPE, kill = SIGKILL};
   static bool set (int, Notifier *);
+  //. add a notifier to be executed whenever the given signal is catched
   static bool unset (int, Notifier *);
+  //. removes a notifier from the list for signum
   static void unset (int);
+  //. remove all notifiers for the signal and reinstall the system's default handler
   static void mask (int);
+  //. ignore the specified signal
   static void mask (int, int);
+  //. block sigb while siga is handled
   static void unmask (int);
+  //. don't ignore the specified signal any more
   static void unmask (int, int);
   static bool ispending (int);
+  //. is there a pending signal of type @var{signum} (while being blocked)
   static sigset_t pending ();
+  //. is there any pending signal (while being blocked)
   static void sysresume (int, bool);
-  static void notify (int);
-  static char *Name(int);
+  static char *name(int);
+  //. returns the signal name of signum if nonzero or of the last signal beeing catched
 
   class Guard
   {
@@ -71,10 +81,12 @@ public:
     int signo;
   };
 private:
+  static void notify (int);
   friend void sighandler (int signo);
-  typedef vector<Notifier *> NotifierList;
-  typedef map<int, NotifierList *> Dictionary;
-  static Dictionary notifiers;
+  static void *run(void *);
+  static dict_t notifiers;
+  static Thread::Queue<int> queue;
+  static Thread server;
 };
 
 };

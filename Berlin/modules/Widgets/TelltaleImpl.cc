@@ -22,6 +22,8 @@
 #include "Widget/TelltaleImpl.hh"
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long f)
   : flags(f), myConstraint(c)
 {}

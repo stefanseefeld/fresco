@@ -23,8 +23,8 @@
 #define _FactoryFinderImpl_hh
 
 #include "Warsaw/config.hh"
-#include "Berlin/Thread.hh"
 #include "Warsaw/LifeCycle.hh"
+#include "Prague/Sys/Thread.hh"
 
 class GenericFactoryImpl;
 class unInitializedGenericFactoryException {};
@@ -46,7 +46,7 @@ protected:
   FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr);
 private:
   static FactoryFinderImpl *instance;
-  static Mutex mutex;
+  static Prague::Mutex mutex;
 
   // never call this! It does not exist! I am hiding it from you!
   FactoryFinderImpl();

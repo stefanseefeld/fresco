@@ -19,13 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-
 #ifndef _GetOpt_hh
 #define _GetOpt_hh
 
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 namespace Prague
 {
@@ -45,14 +45,6 @@ class GetOpt
 public:
   enum type { novalue, optional, mandatory};
   enum order { inorder, require, permute};
-  GetOpt(const char *, const char * = 0);
-  ~GetOpt();
-  void Usage() const;
-  int parse(int, char **);
-  int parse(char *);
-  void add(char, const string &, type, const string & = "no description available");
-  void get(char, string *) const;
-  void get(const string &, string *) const;
 private:
   struct cell
   {
@@ -64,27 +56,42 @@ private:
     string      description;  // a description of option
     string      value;	      // value of option (string)    
   };
-  vector<cell *> table;	      // option table
-  typedef vector<cell *>::iterator iterator;
-  typedef vector<cell *>::const_iterator const_iterator;
-  const char *pname;	      // program basename
-  const char *usage;	      // usage message
+  typedef vector<cell> table_t;	      // option table
+public:
+  GetOpt(const char *, const char * = 0);
+  ~GetOpt();
+  void usage() const;
+  int parse(int, char **);
+  int parse(char *);
+  void add(char, const string &, type, const string & = "no description available");
+  void get(char, string *) const;
+  void get(const string &, string *) const;
+private:
+  table_t table;
+  const char *p;	      // program basename
+  const char *u;	      // usage message
   order ordering;
   unsigned int getlongopt(int, char **);
   unsigned int getopt(int, char **);
-  const_iterator find(const string &) const;
-  const_iterator find(char) const;
+  table_t::iterator find(const string &option)
+    { return find_if(table.begin(), table.end(), comp_string(option));}
+  table_t::const_iterator find(const string &option) const
+    { return find_if(table.begin(), table.end(), comp_string(option));}
+  table_t::iterator find(char o)
+    { return find_if(table.begin(), table.end(), comp_char(o));}
+  table_t::const_iterator find(char o) const
+    { return find_if(table.begin(), table.end(), comp_char(o));}
   void exchange(char **, char **, char **);
   struct comp_string
   {
     comp_string(const string &n) : name(n) {}
-    bool operator () (cell *c) { return name == c->option;}
-    const string name;
+    bool operator () (const cell &c) { return name == c.option;}
+    string name;
   };
   struct comp_char
   {
     comp_char(char n) : name(n) {}
-    bool operator () (cell *c) { return name == c->o;}
+    bool operator () (const cell &c) { return name == c.o;}
     char name;
   };
 };

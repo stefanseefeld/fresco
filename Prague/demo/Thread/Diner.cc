@@ -66,7 +66,7 @@ public:
 	MutexGuard guard(mutex);
 	running = false;
       }
-      server.join();
+      server.join(0);
     }
   bool active() { return running;}
   void remove(int i);

@@ -22,6 +22,8 @@
 
 #include <Widget/TextBufferImpl.hh>
 
+using namespace Prague;
+
 CORBA::Long TextBufferImpl::size()
 {
   MutexGuard guard(mutex);

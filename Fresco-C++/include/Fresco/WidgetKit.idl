@@ -55,8 +55,8 @@ interface WidgetKit : Cloneable
   StreamBuffer stream();
   
   Graphic      debugger(in Graphic g, in string s);
-  Graphic      inset(in Graphic g, in Color c);
-  Graphic      outset(in Graphic g, in Color c);
+  Graphic      inset(in Graphic g, in Color c, in boolean fill);
+  Graphic      outset(in Graphic g, in Color c, in boolean fill);
   Graphic      filler(in Graphic g, in Color c);
   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
   View         pushButtonFrame(in Graphic g, in Color c, in Telltale t);

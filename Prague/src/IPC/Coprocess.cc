@@ -31,9 +31,7 @@
 
 using namespace Prague;
 
-extern "C" char *strsignal(int);
-char *sigName(int signo) { return strsignal(signo);}
-char *statusName(int status)
+string statusName(int status)
 {
   if (WIFEXITED(status))
     {
@@ -41,38 +39,26 @@ char *statusName(int status)
       sprintf(buffer, "Exit %d", (int)WEXITSTATUS(status));
       return buffer;
     }
-  else if (WIFSIGNALED(status)) return sigName(WTERMSIG(status));
-  else if (WIFSTOPPED(status)) return sigName(WSTOPSIG(status));
+  else if (WIFSIGNALED(status)) return Signal::name(WTERMSIG(status));
+  else if (WIFSTOPPED(status)) return Signal::name(WSTOPSIG(status));
   return "Unknown state change";
 }
 
-/* @Method{Coprocess::Coprocess(Agent::Notifier *n, const char *command)}
- *
- * @Description{create an Coprocess which will run @var{command} as a subprocess}
- */
-Coprocess::Coprocess(Agent::Notifier *n, const string &cmd)
-  : Agent(n), pid(0), path(cmd), inbuf(0), outbuf(0), errbuf(0),
+Coprocess::Coprocess(const string &cmd)
+  : id(0), path(cmd), stat(0), inbuf(0), outbuf(0), errbuf(0),
     beingTerminated(false), termTout(10), hupTout(5), killTout(15),
     timer(0), tnotifier(this)
 {
 };
 
-/* @Method{Coprocess::Coprocess(const Coprocess &A)}
- *
- * @Description{}
- */
 Coprocess::Coprocess(const Coprocess &A)
-  : Agent(A), pid(A.pid), path(A.path), inbuf(0), outbuf(0), errbuf(0),
+  : Agent(A), id(A.id), stat(0), path(A.path), inbuf(0), outbuf(0), errbuf(0),
     beingTerminated(false), timermode(0),
     termTout(A.termTout), hupTout(A.hupTout), killTout(A.killTout),
     timer(0), tnotifier(this)
 {
 };
 
-/* @Method{Coprocess::~Coprocess()}
- *
- * Description{}
- */
 Coprocess::~Coprocess()
 {
   terminate();
@@ -94,7 +80,7 @@ void Coprocess::timeout()
   switch (timermode)
     {
     case 1:
-      if (WIFEXITED(status) || WIFSIGNALED(status)) abort();
+      if (WIFEXITED(stat) || WIFSIGNALED(stat)) abort();
       break;
     case 2:
       timermode = 3;
@@ -114,17 +100,10 @@ void Coprocess::timeout()
     }
 }
 
-/* @Method{void Coprocess::NewStatus(int s)}
- *
- * @Description{}
- */
 void Coprocess::NewStatus(int s)
 {
-#ifdef GDB
-  cout << "Coprocess::NewStatus" << endl;
-#endif
   status = s;
-  notify(Agent::newstatus);
+//   notify(Agent::newstatus);
   /*
    * if we run in asyncronous mode, update our status with some delay
    */
@@ -137,9 +116,6 @@ void Coprocess::NewStatus(int s)
  */
 void Coprocess::terminate(bool flag)
 {
-#ifdef GDB
-  cout << "Coprocess::terminate " << flag << endl;
-#endif
   /*
    * We're exiting: call only the default handlers
    */
@@ -162,9 +138,6 @@ void Coprocess::terminate(bool flag)
       abort();
       notify(died);
     }
-#ifdef GDB
-  cout << "leaving Coprocess::terminate" << endl;
-#endif
 }
 
 /* @Method{void Coprocess::abort()}
@@ -173,9 +146,6 @@ void Coprocess::terminate(bool flag)
  */
 void Coprocess::abort()
 {
-#ifdef GDB
-  cout << "Coprocess::abort" << endl;
-#endif
   /*
    * close pipes
    * we deliberately ignore any error messages here
@@ -188,9 +158,6 @@ void Coprocess::abort()
   shutdown(in|out|err);
   if (!beingTerminated) if (active) active = false, notify(stopped); // declare agent as "not running"
   if (status >= 0) notify(died), status = -1;
-#ifdef GDB
-  cout << "leaving Coprocess::abort" << endl;
-#endif
 }
 
 /* @Method{void Coprocess::wait()}
@@ -199,9 +166,6 @@ void Coprocess::abort()
  */
 void Coprocess::wait()
 {
-#ifdef GDB
-  cout << "Coprocess::wait" << endl;
-#endif
   while (running())
     {
       int s;
@@ -209,13 +173,10 @@ void Coprocess::wait()
       if (ret > 0)
 	{
 	  //	  assert(ret == pid);
-	  status = s;
-	  if (WIFEXITED(status) || WIFSIGNALED(status))	abort();
+	  stat = s;
+	  if (WIFEXITED(stat) || WIFSIGNALED(stat)) abort();
 	}
     }
-#ifdef GDB
-  cout << "leaving Coprocess::wait" << endl;
-#endif
 }
 
 /* @Method{bool Coprocess::pending()}
@@ -224,17 +185,7 @@ void Coprocess::wait()
  */
 bool Coprocess::pending()
 {
-  return (outbuf && outbuf->eof()) || (errbuf && errbuf->eof());
-}
-
-/* @Method{Coprocess::dispatchpending()}
- *
- * @Description{dispatch eof status, if given}
- */
-void Coprocess::dispatchpending()
-{
-  if (outbuf && outbuf->eof()) notify(outputeof);
-  if (errbuf && errbuf->eof()) notify(erroreof);
+  return (outbuf && outbuf->in_avail()) || (errbuf && errbuf->in_avail());
 }
 
 /* @Method{bool Coprocess::running()}
@@ -243,9 +194,6 @@ void Coprocess::dispatchpending()
  */
 bool Coprocess::running()
 {
-#ifdef GDB
-  cout << "Coprocess::running" << endl;
-#endif
   if (active && pid >= 0)
     {
       /*
@@ -265,8 +213,8 @@ bool Coprocess::running()
 	     * Coprocess stopped or terminated
 	     */
 	    //	    assert(r == pid);
-	    status = s;
-	    if (WIFEXITED(status) || WIFSIGNALED(status)) abort();
+	    stat = s;
+	    if (WIFEXITED(stat) || WIFSIGNALED(stat)) abort();
 	  }
 	else if (r < 0)
 	  {
@@ -274,10 +222,7 @@ bool Coprocess::running()
 	    else SystemError("wait failed", false);
 	  }
     }
-#ifdef GDB
-    cout << "leave Coprocess::running" << endl;
-#endif
-    return active;
+  return active;
 }
 
 /* @Method{void Coprocess::waittoterminate()}
@@ -286,9 +231,6 @@ bool Coprocess::running()
  */
 void Coprocess::waitToTerminate()
 {
-#ifdef GDB
-  cout << "Coprocess::waitToTerminate" << endl;
-#endif
   int sig = 0;
   for (int seconds = 0; running(); seconds++)
     {
@@ -304,9 +246,6 @@ void Coprocess::waitToTerminate()
       string msg = string("Coprocess wouldn't die (") + strsignal(sig) + ")";
       Error(msg.c_str(), true);
     }
-#ifdef GDB
-  cout << "leaving Coprocess::waitToTerminate" << endl;
-#endif
 }
 
 /* @Method{void Coprocess::shutdown(short m)}
@@ -315,9 +254,6 @@ void Coprocess::waitToTerminate()
  */
 void Coprocess::shutdown(short m)
 {
-#ifdef GDB
-  cout << "Coprocess::shutdown" << endl;
-#endif
   if (m & inready)
     {
       delete inbuf;
@@ -336,9 +272,6 @@ void Coprocess::shutdown(short m)
       errbuf = 0;
       mask &= !(errready|errexc);
     }
-#ifdef GDB
-  cout << "leaving Coprocess::shutdown" << endl;
-#endif
 }
 
 /* @Method{Coprocess::outputEOF()}
@@ -367,9 +300,6 @@ void Coprocess::errorEOF()
  */
 void Coprocess::kill(int sig)
 {
-#ifdef GDB
-  cout << "Coprocess::kill" << endl;
-#endif
   if (running() && pid >= 0)
     if (::kill(pid, sig) < 0) SystemError("Could not kill", true);
 }

@@ -26,7 +26,7 @@
 #include <Warsaw/Focus.hh>
 #include <Warsaw/Controller.hh>
 #include <Warsaw/Region.hh>
-#include <Berlin/Thread.hh>
+#include <Prague/Sys/Thread.hh>
 #include <vector>
 
 class PickTraversalImpl;
@@ -46,7 +46,7 @@ class FocusImpl : implements(Focus)
   ScreenImpl        *screen;
   PickTraversalImpl *traversal;
   cstack_t           controllers;
-  Mutex              mutex;
+  Prague::Mutex      mutex;
 };
 
 #endif /* _FocusImpl_hh */

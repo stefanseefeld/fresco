@@ -22,6 +22,8 @@
 
 #include <Widget/StreamBufferImpl.hh>
 
+using namespace Prague;
+
 CORBA::Long StreamBufferImpl::size()
 {
   MutexGuard guard(mutex);

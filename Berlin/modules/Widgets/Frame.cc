@@ -27,8 +27,8 @@
 #include "Berlin/Logger.hh"
 
 
-Frame::Frame(Coord t, const Color &c, type ty)
-  : Bevel(t, 0.5, 0.5, true, true), color(c), mode(ty)
+Frame::Frame(Coord t, const Color &c, type ty, bool f)
+  : Bevel(t, 0.5, 0.5, true, true), color(c), mode(ty), fill(f)
 {
 }
 
@@ -59,11 +59,11 @@ void Frame::draw(DrawTraversal_ptr traversal)
       dark = brightness(color,-1.0);
       break;
     }
-  Bevel::rect(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y);
+  Bevel::rect(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
 }
 
-DynamicFrame::DynamicFrame(Coord t, const Color &c, type t1, type t2, Telltale::Flag m)
-  : Frame(t, c, t2), type1(t1), type2(t2), mask(m)
+DynamicFrame::DynamicFrame(Coord t, const Color &c, type t1, type t2, Telltale::Flag m, bool f)
+  : Frame(t, c, t2, f), type1(t1), type2(t2), mask(m)
 {
 }
 

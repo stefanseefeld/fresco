@@ -28,7 +28,6 @@
 #define _MonoGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
-#include <Berlin/Thread.hh>
 
 class MonoGraphic : public GraphicImpl
 {
@@ -49,7 +48,7 @@ public:
   virtual void traverse(Traversal_ptr);
 protected:
   Graphic_var child;
-  Mutex childMutex;
+  Prague::Mutex childMutex;
 };
 
 #endif /* _MonoGraphic_hh */

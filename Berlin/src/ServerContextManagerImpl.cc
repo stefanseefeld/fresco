@@ -28,14 +28,18 @@
 
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
+#include <unistd.h>
+
+using namespace Prague;
 
 ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory)
+  : thread(&ServerContextManagerImpl::run, this)
 {
   ffinder = FactoryFinderImpl::Instance(factory);
 }
 
 ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c)
-throw (SecurityException)
+  throw (SecurityException)
 {
   MutexGuard guard (mutex);
   ServerContextImpl *sc = new ServerContextImpl(this, CosLifeCycle::FactoryFinder_var(ffinder->_this()), c);
@@ -73,13 +77,9 @@ CORBA::Object_ptr ServerContextManagerImpl::getSingleton(const char *name)
   throw SingletonFailureException();
 }
 
-void ServerContextManagerImpl::run(void *arg)
+void ServerContextManagerImpl::start()
 {
-  while (true)
-    {
-      sleep(1);
-      ping();
-    }
+  thread.start();
 }
 
 void ServerContextManagerImpl::ping()
@@ -93,3 +93,15 @@ void ServerContextManagerImpl::ping()
     }
   contexts = tmp;
 };
+
+void *ServerContextManagerImpl::run(void *X)
+{
+  ServerContextManagerImpl *manager = reinterpret_cast<ServerContextManagerImpl *>(X);
+  while (true)
+    {
+      sleep(1);
+      manager->ping();
+    }
+  return 0;
+}
+

@@ -27,9 +27,9 @@
 #include "Warsaw/Graphic.hh"
 #include "Berlin/FactoryFinderImpl.hh"
 #include "Berlin/GenericFactoryImpl.hh"
-#include "Berlin/Thread.hh"
+#include "Prague/Sys/Thread.hh"
 
-class ServerContextManagerImpl : implements(ServerContextManager), public virtual Thread
+class ServerContextManagerImpl : implements(ServerContextManager)
 //. the ServerContextManager just hands out new ServerContexts to
 //. people who are connecting.  it might want to do some checking on
 //. the incoming ClientContext's credentials, but at the moment it doesn't.
@@ -45,12 +45,14 @@ public:
   CORBA::Object_ptr getSingleton(const char *) 
     throw (SecurityException, SingletonFailureException);
   void ping();
-  virtual void run(void *);
+  void start();
 protected:
+  static void *run(void *);
   FactoryFinderImpl *ffinder;
   map<string, CORBA::Object_var> singletons;
-  Mutex mutex;
   clist_t contexts;
+  Prague::Thread thread;
+  Prague::Mutex mutex;
 };
 
 #endif

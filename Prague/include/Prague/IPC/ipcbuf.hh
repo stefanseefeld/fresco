@@ -27,11 +27,15 @@
 namespace Prague
 {
 
-/* @Class{ipcbuf : public streambuf}
- *
- * @Description{ipcbuf is a streambuffer for inter process communication, i.e. pipes, sockets, ptys. The low level reading/writing is based on file descriptors. The difference between an ipcbuf and a normal filebuf is the meaning of EOF: in the context of IPC an EOF means that the connection is closed. This case is not handled by the stream but by the corresponding Agent. If the ipcbuf is in nonblocking mode, it returns eof if the underlying read/write causes an EAGAIN error (operation would block). If a real EOF is encountered, a flag is set so the corresponding agent may terminate the process (or reestablish the connection...)}
- */
 class ipcbuf : public streambuf
+  //. ipcbuf is a streambuffer for inter process communication, i.e. pipes, sockets, ptys. 
+  //. The low level reading/writing is based on file descriptors. The difference between an 
+  //. ipcbuf and a normal filebuf is the meaning of EOF: in the context of IPC an EOF means 
+  //. that the connection is closed. This case is not handled by the stream but by the 
+  //. corresponding Agent. 
+  //. If the ipcbuf is in nonblocking mode, it returns eof if the underlying read/write 
+  //. causes an EAGAIN error (operation would block). If a real EOF is encountered, a flag 
+  //. is set so the corresponding agent may terminate the process (or reestablish the connection...)}
 {
 public:
   typedef char          char_type;

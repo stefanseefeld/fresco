@@ -27,6 +27,8 @@
 #include "Warsaw/Event.hh"
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 ControllerImpl::ControllerImpl(bool t) : flags(0L), grabbed(false), transparent(t) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {

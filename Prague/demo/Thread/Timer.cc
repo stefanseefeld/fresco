@@ -53,29 +53,31 @@ private:
 class Exit : public Signal::Notifier
 {
 public:
+  Exit(Timer *t1, Timer *t2) : timer1(t1), timer2(t2), count(0) {}
   virtual void notify(int)
     {
-      Timer::cancel();
-      cout << "\033[0m";
+      switch (++count)
+	{
+	case 1: timer1->stop(); break;
+	case 2: timer2->stop(); timer1->start(Time::currentTime(), 1000); break;
+	case 3: timer2->start(Time::currentTime(), 1000); break;
+	case 4: cout << "\033[0m" << flush; exit(0);
+	};
     }
+private:
+  Timer *timer1, *timer2;
+  int count;
 };
 
 int main (int argc, char **argv)
 {
-  Exit *exit = new Exit;
-  Signal::set(Signal::interrupt, exit);
   Singer *bass = new Singer(text1, "\033[31m");
   Singer *soprano = new Singer(text2, "\033[32m");
   Timer *timer1 = new Timer(bass);
   Timer *timer2 = new Timer(soprano);
-  /*
-   * start the Timer queue
-   */
-  Timer::run();
-  /*
-   * execute the action repeatedly every 1000 milliseconds
-   */
+  Exit *exit = new Exit(timer1, timer2);
+  Signal::set(Signal::interrupt, exit);
   timer1->start(Time::currentTime(), 1000);
   timer2->start(Time::currentTime(), 1000);
-  while (Timer::active()) sleep(1);
+  while (true) sleep(1);
 }

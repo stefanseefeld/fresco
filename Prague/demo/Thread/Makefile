@@ -64,12 +64,18 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   Diner Queue ThreadPool
+ALL        =   Thread Signal Timer Diner Queue ThreadPool
 
 world:		$(ALL)
 
 %.o:		%.cc
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
+
+bug:		bug.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Thread:		Thread.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 Diner:		Diner.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
@@ -81,6 +87,12 @@ ThreadPool:	ThreadPool.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 Data:		Data.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Signal:		Signal.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Timer:		Timer.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:	

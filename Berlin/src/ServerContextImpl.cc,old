@@ -25,6 +25,8 @@
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 // this is the thing which holds all the references to things a client allocates
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.

@@ -28,7 +28,7 @@
 #include <Berlin/CloneableImpl.hh>
 #include <Berlin/ServerContextImpl.hh>
 #include <Berlin/ClientContextImpl.hh>
-#include <Berlin/Thread.hh>
+#include <Prague/Sys/Thread.hh>
 #include <string>
 #include <map>
 
@@ -73,8 +73,8 @@ protected:
   CloneableImpl *loadPlugin(const CosLifeCycle::Key &) throw (noSuchPluginException);
   
   // lock the whole thing during a load.
-  Mutex mutex;
   plist_t plugins;
+  Prague::Mutex mutex;
 };
 
 #endif

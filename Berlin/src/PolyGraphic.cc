@@ -28,6 +28,8 @@
 #include "Berlin/Logger.hh"
 #include <iostream>
 
+using namespace Prague;
+
 Pool<Graphic::Requisition> PolyGraphic::pool;
 
 PolyGraphic::PolyGraphic() {}
@@ -100,4 +102,16 @@ Graphic::Requisition *PolyGraphic::childrenRequests()
       ++r;
     }
   return requisitions;
+}
+
+void PolyGraphic::deallocateRequisitions(Graphic::Requisition *r)
+{
+  MutexGuard guard(childMutex);
+  pool.deallocate(r);
+}
+
+void PolyGraphic::childExtension(size_t i, const Allocation::Info &info, Region_ptr region)
+{
+  MutexGuard guard(childMutex);
+  children[i].first->extension(info, region);
 }

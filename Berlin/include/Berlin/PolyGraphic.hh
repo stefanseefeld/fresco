@@ -28,7 +28,6 @@
 #define _PolyGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
-#include <Berlin/Thread.hh>
 #include <Berlin/Pool.hh>
 #include <vector>
 
@@ -49,9 +48,12 @@ protected:
   Tag tag();
   CORBA::Long index(Tag); 
   Graphic::Requisition *childrenRequests();
+  void deallocateRequisitions(Graphic::Requisition *);
+  void childExtension(size_t, const Allocation::Info &, Region_ptr);
+// private:
   static Pool<Requisition> pool;
   clist_t children;
-  Mutex childMutex;
+  Prague::Mutex childMutex;
 };
 
 #endif /* _PolyGraphic_hh */

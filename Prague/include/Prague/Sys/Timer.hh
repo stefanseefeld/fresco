@@ -40,9 +40,6 @@ public:
   virtual ~Timer() {}
   void  start(const Time &, const Time & = Time::zero);
   void stop();
-  static void run();
-  static void cancel();
-  static bool active() { return running;}
 private:
   Notifier *notifier;
   Time timeout;
@@ -55,7 +52,6 @@ private:
   static Thread server;
   static Mutex mutex;
   static Condition condition;
-  static bool running;
 };
 
 };

@@ -52,7 +52,7 @@ void Box::request(Requisition &r)
 	{
 	  Graphic::Requisition *r = childrenRequests();
 	  layout->request(n, r, requisition);
-	  pool.deallocate(r);
+	  deallocateRequisitions(r);
 	}
       requested = true;
     }
@@ -88,7 +88,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 	  tmp_tx->translate(v);
 	  child.allocation = result[i]->_this();
 	  child.transformation->premultiply(Transform_var(tmp_tx->_this()));
-	  children[i].first->extension(child, region);
+	  childExtension(i, child, region);
 	  prev_o = o;
 	}
       child_tx->_dispose();
@@ -151,7 +151,8 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
   Placement::normalTransform(result[idx], tx);
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
-  for (size_t i = 0; i < children.size(); i++) result[i]->_dispose();
+  CORBA::Long children = numChildren();
+  for (CORBA::Long i = 0; i < children; i++) result[i]->_dispose();
   delete [] result;
 }
 
@@ -185,7 +186,7 @@ RegionImpl **Box::childrenAllocations(Region_ptr allocation)
     }
   // fill in children regions which are reasonable matches for the given requesitions
   layout->allocate(children, childrenRequisitions, allocation, childrenRegions);
-  pool.deallocate(childrenRequisitions);
+  deallocateRequisitions(childrenRequisitions);
   return childrenRegions;
 }
 

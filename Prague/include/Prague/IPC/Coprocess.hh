@@ -31,19 +31,22 @@ namespace Prague
 
 class Coprocess : public Agent
 {
-  struct Timeout : public Timer::Notifier
-  {
-    Timeout(Coprocess *a) : agent(a) {}
-    virtual void notify() { agent->timeout();}
-    Coprocess *agent;
-  };
-  friend class Timeout;
+//   struct Timeout : public Timer::Notifier
+//   {
+//     Timeout(Coprocess *a) : agent(a) {}
+//     virtual void notify() { agent->timeout();}
+//     Coprocess *agent;
+//   };
+//   friend class Timeout;
 public:
-  Coprocess(Notifier *, const string &);
+  Coprocess(const string &);
   Coprocess(const Coprocess &);
-  virtual        ~Coprocess();
-  virtual pid_t   PID() const { return pid;}
-  const string   &command() const { return path;} 
+  virtual       ~Coprocess();
+  virtual pid_t  pid() const { return id;}
+  const string  &command() const { return path;} 
+  int            status() const	{ return stat;}
+
+protected:
   virtual ipcbuf *ibuf() { return inbuf;}
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
@@ -51,24 +54,23 @@ public:
   virtual int     OFD() const { return outbuf ? outbuf->fd() : -1;}
   virtual int     EFD() const { return errbuf ? errbuf->fd() : -1;}
 
-  int          &terminateTimeOut()	 { return termTout; }
-  int          &hangupTimeOut()	         { return hupTout; }
-  int          &killTimeOut()		 { return killTout; }
-  int           terminateTimeOut() const { return termTout; }
-  int           hangupTimeOut()	const    { return hupTout; }
-  int           killTimeOut()	const	 { return killTout; }
-  int           Status() const	         { return status; }
+//   int          &terminateTimeOut()	 { return termTout; }
+//   int          &hangupTimeOut()	         { return hupTout; }
+//   int          &killTimeOut()		 { return killTout; }
+//   int           terminateTimeOut() const { return termTout; }
+//   int           hangupTimeOut()	const    { return hupTout; }
+//   int           killTimeOut()	const	 { return killTout; }
 
   virtual void  terminate(bool flag = false);
   virtual void  abort();
   virtual void  wait();
   virtual bool  pending();
-  virtual void  dispatchpending();
 protected:
   virtual void  NewStatus(int);
   void          initTimer() { if (!timer) timer = new Timer(&tnotifier);}
-  pid_t         pid;
+  pid_t         id;
   const string  path;
+  int           stat;
   ipcbuf       *inbuf;
   ipcbuf       *outbuf;
   ipcbuf       *errbuf;

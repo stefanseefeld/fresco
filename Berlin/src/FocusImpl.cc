@@ -26,6 +26,8 @@
 #include "Berlin/Logger.hh"
 #include "Prague/Sys/Profiler.hh"
 
+using namespace Prague;
+
 FocusImpl::FocusImpl(ScreenImpl *s) : screen(s), traversal(0) {}
 FocusImpl::~FocusImpl() { if (traversal) traversal->_dispose();}
 

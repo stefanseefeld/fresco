@@ -35,6 +35,8 @@
 #include "Berlin/Math.hh"
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 static double tol = 0.05;
 
 static bool rotated (Transform_ptr t)

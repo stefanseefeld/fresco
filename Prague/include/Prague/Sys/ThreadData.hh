@@ -37,93 +37,76 @@ template <class T>
 class Thread::Data
 {
 public:
-//   class Exception : public LibThreadsException
-//   {
-//   public:
-//     Exception(LibThreadsException::ThreadExceptionType i, char *name) 
-//       : LibThreadsException(i,name) {}
-//   };
+  class TooMuchTSDs : public Exception { public: TooMuchTSDs() : Exception("too much TSDs defined") {}};
+  class InvalidKey : public Exception { public: InvalidKey() : Exception("illegal key") {}};
 
-//   /// This exception is risen when no more keys can be created.
-//   class TooMuchTSDsException : public Exception {
-//   public:
-//    TooMuchTSDsException() : Exception(TOO_MUCH_TSDS, "Too much TSDs defined") {}
-//   };
-
-//   /// This exception is very unlikely to be raised. However it is thrown if a NULL TSD is accessed.
-//   class InvalidKeyException : public Exception {
-//   public:
-//     InvalidKeyException() : Exception(INVALID_KEY, "Illegal key") {}
-//   };
-
-public:
-  Data(T v)// throw (TooMuchTSDsException, InvalidKeyException)
+  Data(T v) throw (TooMuchTSDs, InvalidKey)
     {
-      if(pthread_key_create(&key, destructor));// throw TooMuchTSDsException();
-      if(pthread_setspecific(key, new T(value)));// throw InvalidKeyException();
+      if(pthread_key_create(&key, destructor)) throw TooMuchTSDs();
+      if(pthread_setspecific(key, new T(value))) throw InvalidKey();
     }
-  Data()// throw (TooMuchTSDsException, InvalidKeyException)
+  Data() throw (TooMuchTSDs, InvalidKey)
     {
-      if(pthread_key_create(&key, destructor));// throw TooMuchTSDsException();
-      if(pthread_setspecific(key, new T));// throw InvalidKeyException();
+      if(pthread_key_create(&key, destructor)) throw TooMuchTSDs();
+      if(pthread_setspecific(key, new T)) throw InvalidKey();
     }
   ~Data()
     {
       delete reinterpret_cast<T *>(pthread_getspecific(key));
       pthread_key_delete(key);
     }
-  const T &var(void) const// throw (InvalidKeyException)
+  const T &var(void) const throw (InvalidKey)
     {
       T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if (data) return *data;
-//       else throw InvalidKeyException();
+      else throw InvalidKey();
     }
-  T &var(void) throw (InvalidKeyException)
+  T &var(void) throw (InvalidKey)
     {
       T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if(data) return *data;
-//       else throw InvalidKeyException();
+      else throw InvalidKey();
     }
 
-  Data<T> &operator = (const T &t)// throw (InvalidKeyException)
+  Data<T> &operator = (const T &t) throw (InvalidKey)
     {
       T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if(data) *data = t;
-      else if(pthread_setspecific(key, new T(t)));// throw InvalidKeyException ();
+      else if(pthread_setspecific(key, new T(t))) throw InvalidKey();
       return *this;
     }
-  Data<T> &operator = (T t) throw (InvalidKeyException)
+  Data<T> &operator = (T t) throw (InvalidKey)
     {
       T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if (data) *data = t;
-      else if(pthread_setspecific(key, new T(t)));// throw InvalidKeyException ();
+      else if(pthread_setspecific(key, new T(t))) throw InvalidKey();
       return *this;
     }
-  Data<T> &operator = (const Data<T> &t)// throw (InvalidKeyException)
+  Data<T> &operator = (const Data<T> &t) throw (InvalidKey)
     {
       T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if(data) *data = *t;
-      else if(pthread_setspecific(key, new T(*t)));// throw InvalidKeyException ();
+      else if(pthread_setspecific(key, new T(*t))) throw InvalidKey();
       return *this;
     }
-  const T *operator->() const// throw (InvalidKeyException)
+  const T *operator->() const throw (InvalidKey)
     {
-      T *data = reinterpet_cast<T *>(pthread_getspecific(key));
+      T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if(data) return data;
-//       else throw InvalidKeyException();
+      else throw InvalidKey();
     }
-  T *operator->()// throw (InvalidKeyException)
+  T *operator->() throw (InvalidKey)
     {
-      T *data = reinterpet_cast<T *>(pthread_getspecific(key));
+      T *data = reinterpret_cast<T *>(pthread_getspecific(key));
       if(data) return data;
-//       else throw InvalidKeyException();
+      else throw InvalidKey();
     }
   const T &operator *() const { return var();}
         T &operator *()       { return var();}
 protected:
   pthread_key_t key;
 private:
-  static void destructor(void *data) { delete data;}
+  static void destructor(void *data) { delete reinterpret_cast<T *>(data);}
   Data(const Data<T> &); 
 };
 

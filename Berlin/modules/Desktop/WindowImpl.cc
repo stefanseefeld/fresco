@@ -88,7 +88,7 @@ public:
 	  Vertex p = pos, s = size;
 	  if (border & Window::left && xalign != 0.)
 	    {
-	      s.x = min(r.x.maximum, max(r.x.minimum, size.x + vertex->x/xalign));
+	      s.x = min(r.x.maximum, max(r.x.minimum, size.x - vertex->x/xalign));
 	      p.x = pos.x - xalign * (s.x - size.x);
 	    }
 	  else if (border & Window::right && xalign != 1.)
@@ -98,7 +98,7 @@ public:
 	    }
 	  if (border & Window::top && yalign != 0.)
 	    {
-	      s.y = min(r.y.maximum, max(r.y.minimum, size.y + vertex->y/yalign));
+	      s.y = min(r.y.maximum, max(r.y.minimum, size.y - vertex->y/yalign));
 	      p.y = pos.y - yalign * (s.y - size.y);
 	    }
 	  else if (border & Window::bottom && yalign != 1.)

@@ -119,18 +119,18 @@ Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
   return debug->_this();
 };
 
-Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
+Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c, CORBA::Boolean fill)
 {
-  Frame *frame = new Frame(1, c, Frame::concav);
+  Frame *frame = new Frame(1, c, Frame::concav, fill);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
   return frame->_this();
 }
 
-Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
+Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c, CORBA::Boolean fill)
 {
-  Frame *frame = new Frame(1, c, Frame::convex);
+  Frame *frame = new Frame(1, c, Frame::convex, fill);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -158,7 +158,7 @@ Graphic_ptr WidgetKitImpl::indicator(Graphic_ptr g, const Color &c, Telltale_ptr
 
 View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
-  DynamicFrame *frame = new DynamicFrame(1, c, Frame::concav, Frame::convex, Telltale::toggle);
+  DynamicFrame *frame = new DynamicFrame(1, c, Frame::concav, Frame::convex, Telltale::toggle, true);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -173,13 +173,13 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   button->action(c);
   graphics.push_back(button);
 
-  DynamicFrame *frame1 = new DynamicFrame(1, b, Frame::black, Frame::flat, Telltale::active);
+  DynamicFrame *frame1 = new DynamicFrame(1, b, Frame::black, Frame::flat, Telltale::active, false);
   frame1->_obj_is_ready(_boa());
   graphics.push_back(frame1);
   frame1->body(g);
   frame1->attach(Controller_var(button->_this()));
 
-  DynamicFrame *frame2 = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::toggle);
+  DynamicFrame *frame2 = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::toggle, true);
   frame2->_obj_is_ready(_boa());
   graphics.push_back(frame2);
   frame2->body(Graphic_var(frame1->_this()));
@@ -215,7 +215,7 @@ Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)
   value->attach(g);
   graphics.push_back(g);
 
-  Frame *frame = new Frame(1, color, Frame::concav);
+  Frame *frame = new Frame(1, color, Frame::concav, false);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
