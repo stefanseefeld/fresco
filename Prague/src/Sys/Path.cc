@@ -81,13 +81,13 @@ string Path::expandUser(const string &path)
   if (path[1] == '\0' || pos == 1)
     {
       pfx = getenv("HOME");
-      if (pfx.empty()) pfx = User().Home();
+      if (pfx.empty()) pfx = User().home();
     }
   else
     {
       string name(path,1,(pos==string::npos) ? string::npos : pos-1);
       User user(name.c_str());
-      pfx = user.Home();
+      pfx = user.home();
     }
   if (pfx.empty()) return path;
   string result = pfx;

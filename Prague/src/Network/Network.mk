@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-NTW_SRC	= protocol.cc echo.cc ftp.cc smtp.cc #url.cc
+NTW_SRC	= protocol.cc echo.cc ftp.cc smtp.cc url.cc
 
 NTW_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(NTW_SRC))
 NTW_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(NTW_SRC))

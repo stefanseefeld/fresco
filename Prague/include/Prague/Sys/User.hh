@@ -38,11 +38,11 @@ public:
   User(int id = -1);
   User(const string &);
   ~User() {}
-  int Uid() const { return pwd->pw_uid;}
-  int Gid() const { return pwd->pw_gid;}
-  const char *Name() const { return pwd->pw_name;}
-  const char *RealName() const { return pwd->pw_gecos;}
-  const char *Home() const { return pwd->pw_dir;}
+  int uid() const { return pwd->pw_uid;}
+  int gid() const { return pwd->pw_gid;}
+  const char *name() const { return pwd->pw_name;}
+  const char *realName() const { return pwd->pw_gecos;}
+  const char *home() const { return pwd->pw_dir;}
 protected:
   passwd *pwd;
 private:

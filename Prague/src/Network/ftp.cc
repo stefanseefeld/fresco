@@ -70,21 +70,26 @@ char transmode [][8] = {
 // host if the istream i is set.
 ftp::replycodea ftp::ftpbuf::ftpdata (int portno, istream* i, ostream* o, const char* cmd, const char* arg)
 {
+  cout << "ftpdata" << endl;
   sockinetbuf sb (sockbuf::sock_stream, 0);
   sb.bind_until_success (portno);
   useraddr (sb.localaddr ());
   
   sb.listen (1);
 
+  cout << "I'm here" << endl;
   if (send_cmd (cmd, arg) >= ftp::rca_error) return ftp::rca_error;
+  cout << "...and still here" << endl;
   
   if (o)
     {
       sockbuf c = sb.accept ();
+      cout << "...and still here" << endl;
       // read data from c and put it in o
       char buf [1024];
       int  rdsz;
       while ((rdsz = c.sys_read (buf, 1024)) != EOF) o->write (buf, rdsz);
+      cout << "done" << endl;
     }
   else if (i)
     {
@@ -119,10 +124,7 @@ ftp::replycodea ftp::ftpbuf::get_response ()
       // zap upto <CRLF>
       int i = 0;
       for (i = 2; i <= n; i++, p++)
-	if (*p == '\r' && *(p+1) == '\n')
-	  {
-	    break;
-	  }
+	if (*p == '\r' && *(p+1) == '\n') break;
       if (o) o->write (q, i);
       gbump (i);
       if (firstline)
