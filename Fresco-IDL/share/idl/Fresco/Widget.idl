@@ -36,16 +36,16 @@ module Widget
   //. A Choice.
   interface Choice : Warsaw::Controller
     {
-      //. Returns the Selection that stores the State of the Choice.
+      //. The selection holding the choice's state
       readonly attribute Warsaw::Selection state;
-      //. Adds a graphic (next to a toggle) to the end of this Selection.
+      //. Add a graphic (next to a toggle) to the end of this Selection.
       //. A Tag is returned that identifies the new item.
       Warsaw::Tag append_item(in Warsaw::Graphic g);
-      //. Adds a graphic (next to a toggle) the the beginning of this
+      //. Add a graphic (next to a toggle) the the beginning of this
       //. Selection. It returns a Tag that can be used to identify this
       //. new item later.
       Warsaw::Tag prepend_item(in Warsaw::Graphic g);
-      //. Removes the an item that is identified by the given Tag from
+      //. Remove the an item that is identified by the given Tag from
       //. this Selection.
       void remove_item(in Warsaw::Tag t);
     };

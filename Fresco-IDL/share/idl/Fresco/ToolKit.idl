@@ -39,7 +39,7 @@ module Warsaw
   interface DrawingState;
   interface Canvas;
   
-  //. this kit provides common objects for very basic interaction tasks
+  //. A Toolkit provides common objects for very basic interaction tasks
   //. and Telltale Views such as bevels and indicators
   interface ToolKit : Kit
     {

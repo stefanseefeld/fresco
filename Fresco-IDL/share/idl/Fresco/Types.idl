@@ -95,14 +95,14 @@ module Warsaw
   //. This is a RGBA-Color. All values may be between 0.0 and 1.0.
   //. red = 1.0, green = 1.0, blue = 1.0 is white. A alpha value of 0.0
   //. makes an object invisible.
-  // FIXME: Shouldn't we use something hardware independent? -- tobias
   struct Color
   {
     double red, green, blue;
     double alpha;
   };
 
-  //. FIXME: What's this?
+  //. Triangles are used by Meshes to draw 3D surfaces.
+  //. They refer to indexes within a Vertex sequence
   struct Triangle
   {
     long a, b, c;

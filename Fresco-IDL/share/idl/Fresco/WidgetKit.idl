@@ -49,7 +49,7 @@ module Widget
 
 module Warsaw
 {
-  //. This kit is a layer on top of the Graphic interface and
+  //. A WidgetKit is a layer on top of the Graphic interface and
   //. CommandKit. It uses the basic commands from the CommandKit and
   //. adds nice(r) graphics to the objects from there.
   //. The WidgetKit is responsible for creating subjects, and binding
@@ -58,25 +58,20 @@ module Warsaw
   //. particular way by modifying the subjects they're bound to.
   interface WidgetKit : Kit
     {
-      //. Returns a Button labeled with the given Graphic g which executes
+      //. Return a Button labeled with the given Graphic g which executes
       //. Command c when clicked (actually it reacts to button releases).
       Trigger          button(in Graphic g, in Command c);
       //. This is a simple controller encoding an on/off state. It gets
       //. toggled between these states by clicking on it.
       Controller       toggle(in Graphic g);
-      //. This gets you an object that observes the given bounded value v.
-      //. It draws a bar that gets updated to reflect the value v. (It
-      //. can be used as a progress bar for example).
+      //. Create a gauge widget. A gauge presents a BoundedValue v.
       Graphic          gauge(in BoundedValue v);
-      //. Gets an thumb on a bar that can be dragged along the given
-      //. Axis a. This thumb manipulates the BoundedValue v.
+      //. Create a slider widget that manipulates the given BoundedValue.
       Controller       slider(in BoundedValue v, in Axis a);
       //. A panner is a two-dimensional slider: It manipulates the two given
       //. bounded ranges x and y at once.
       Controller       panner(in BoundedRange x, in BoundedRange y);
-      //. This is what you propably have at the side of your terminal window.
-      //. It adjusts the given bounded range x to the position of the thumb
-      //. and gets drawn along the given axis a.
+      //. Create a scrollbar, manipulating a BoundedRange.
       Controller       scrollbar(in BoundedRange x, in Axis a);
       //. This is a radio button (group). You need to append_graphic() your
       //. selections: Each appended graphic will show up with a small button

@@ -33,7 +33,8 @@ module Warsaw
   //. at groups of Telltales, or more precisely, groups of flags.
   interface Selection : Subject
     {
-      //. FIXME: What is this used for?
+      //. A policy names a predefined constraint on the telltale group
+      //. this selection refers to
       typedef long Policy;
 
       const Policy exclusive = 0x1;
@@ -51,12 +52,12 @@ module Warsaw
       
       //. This is the Policy for this Selection.
       attribute Policy type;
-      //. Adds a given Telltale to the Selection and returns a unique Tag
+      //. Add a given Telltale to the Selection and returns a unique Tag
       //. that can be used to identify it again later.
       Tag add(in Telltale t);
-      //. Removes a Telltale identified by the given Tag from this Selection.
+      //. Remove a Telltale identified by the given Tag from this Selection.
       void remove(in Tag t);
-      //. Returns a sequence that contains the Tags that identify all set
+      //. Return a sequence that contains the Tags that identify all set
       //. Telltales.
       Items toggled();
     };
