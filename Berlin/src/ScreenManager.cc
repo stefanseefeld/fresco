@@ -56,7 +56,8 @@ void ScreenManager::repair()
   emanager->restore(Region_var(tmpDamage->_this()));
   traversal->init();
   drawable->init();
-  screen->traverse(Traversal_var(traversal->_this()));
+  try { screen->traverse(Traversal_var(traversal->_this()));}
+  catch (CORBA::OBJECT_NOT_EXIST &) { cerr << "ScreenManager: warning: corrupt scene graph !" << endl;}
   drawable->finish();
   traversal->finish();
   drawing->flush();

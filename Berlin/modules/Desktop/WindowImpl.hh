@@ -100,6 +100,7 @@ class UnmappedStageHandle : public virtual POA_Warsaw::StageHandle,
     s(handle->size()),
     l(handle->layer())
     {}
+  virtual ~UnmappedStageHandle() { Prague::Trace trace("UnmappedStageHandle::~UnmappedStageHandle");}
   virtual Warsaw::Stage_ptr parent() { return Warsaw::Stage::_duplicate(stage);}
   virtual Warsaw::Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
   virtual void remove() {}

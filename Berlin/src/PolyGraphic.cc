@@ -57,10 +57,7 @@ PolyGraphic::~PolyGraphic()
 	  (*i).peer->removeParent((*i).peerId);
 	  (*i).peer->decrement();
 	}
-      catch(CORBA::OBJECT_NOT_EXIST &)
-	{
-	  cerr << "unable to release child graphic !" << endl;
-	}
+      catch(CORBA::OBJECT_NOT_EXIST &) {}
     }
 }
 
@@ -95,8 +92,12 @@ void PolyGraphic::remove(Tag localId)
   Trace trace("PolyGraphic::remove");
   childMutex.lock();
   glist_t::iterator i = childIdToIterator(localId);
-  (*i).peer->removeParent((*i).peerId);
-  (*i).peer->decrement();
+  try
+    {
+      (*i).peer->removeParent((*i).peerId);
+      (*i).peer->decrement();
+    }
+  catch(CORBA::OBJECT_NOT_EXIST &) {}
   children.erase(i);
   childMutex.unlock();
   needResize();
@@ -133,7 +134,9 @@ Warsaw::Graphic::Requisition *PolyGraphic::childrenRequests()
   for (glist_t::iterator i = children.begin(); i != children.end(); i++)
     {
       GraphicImpl::initRequisition(*r);
-      if (!CORBA::is_nil((*i).peer)) (*i).peer->request(*r);
+      if (!CORBA::is_nil((*i).peer))
+	try { (*i).peer->request(*r);}
+	catch (CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
       ++r;
     }
   return requisitions;
@@ -149,5 +152,7 @@ void PolyGraphic::childExtension(size_t i, const Warsaw::Allocation::Info &info,
 {
   MutexGuard guard(childMutex);
   Graphic_var child = children[i].peer;
-  if (!CORBA::is_nil(child)) child->extension(info, region);
+  if (!CORBA::is_nil(child))
+    try { child->extension(info, region);}
+    catch (CORBA::OBJECT_NOT_EXIST &) { children[i].peer = Warsaw::Graphic::_nil();}
 }

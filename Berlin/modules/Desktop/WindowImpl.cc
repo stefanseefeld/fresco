@@ -31,6 +31,7 @@ using namespace Warsaw;
 class Mover : public WindowImpl::Manipulator
 {
 public:
+  virtual ~Mover() { Trace trace("Mover::~Mover");}
   virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
@@ -47,6 +48,7 @@ public:
 class Resizer : public WindowImpl::Manipulator
 {
 public:
+  virtual ~Resizer() { Trace trace("Resizer::~Resizer");}
   virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
@@ -78,6 +80,7 @@ class MoveResizer : public WindowImpl::Manipulator
 {
 public:
   MoveResizer(Alignment x, Alignment y, CORBA::Short b) : xalign(x), yalign(y), border(b) {}
+  virtual ~MoveResizer() { Trace trace("MoveResizer::~MoveResizer");}
   virtual void execute(const CORBA::Any &any)
     {
       Trace trace("MoveResizer::execute");
@@ -126,6 +129,7 @@ private:
 class Relayerer : public WindowImpl::Manipulator
 {
 public:
+  virtual ~Relayerer() { Trace trace("Relayerer::~Relayerer");}
   virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
@@ -158,6 +162,7 @@ WindowImpl::WindowImpl()
 WindowImpl::~WindowImpl()
 {
   Trace trace("WindowImpl::~WindowImpl");
+  unmap();
   MutexGuard guard(mutex);
   /*
    * FIXME !!:

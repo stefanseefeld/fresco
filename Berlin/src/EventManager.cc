@@ -70,7 +70,8 @@ void EventManager::nextEvent()
   /*
    * the first item determines which focus to send this event to
    */
-  if (event->length()) focus[event[0].dev]->dispatch(event);
+  try { if (event->length()) focus[event[0].dev]->dispatch(event);}
+  catch (CORBA::OBJECT_NOT_EXIST &) { cerr << "EventManager: warning: corrupt scene graph !" << endl;}
 }
 
 void EventManager::restore(Region_ptr r)

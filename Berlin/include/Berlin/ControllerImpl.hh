@@ -22,6 +22,7 @@
 #ifndef _ControllerImpl_hh
 #define _ControllerImpl_hh
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Controller.hh>
 #include <Warsaw/Input.hh>
@@ -38,6 +39,7 @@ class ControllerImpl : public virtual POA_Warsaw::Controller,
 {
  public:
   ControllerImpl(bool);
+  ~ControllerImpl() { Prague::Trace trace("ControllerImpl::~ControllerImpl");}
   virtual void traverse(Warsaw::Traversal_ptr traversal) { traversal->visit(Warsaw::Graphic_var(_this()));}
   virtual void draw(Warsaw::DrawTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
   virtual void pick(Warsaw::PickTraversal_ptr);

@@ -265,14 +265,9 @@ GraphicImpl::~GraphicImpl()
   MutexGuard guard(parentMutex);
   for (glist_t::iterator i = parents.begin(); i != parents.end(); ++i)
     {
-      try
-	{
-	  (*i).peer->removeChild((*i).peerId);
-	}
-      catch(CORBA::OBJECT_NOT_EXIST &)
-	{
-	  cerr << "unable to detach from parent !" << endl;
-	}
+      if (!CORBA::is_nil((*i).peer)) 
+	try { (*i).peer->removeChild((*i).peerId);}
+	catch(CORBA::OBJECT_NOT_EXIST &) {}
     }
   parents.clear();
 }
@@ -355,25 +350,20 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
   CORBA::Long begin = allocation->size();
   for (glist_t::iterator i = parents.begin(); i != parents.end(); i++)
     {
-      (*i).peer->allocations(allocation);      
-      CORBA::Long end = allocation->size();
-      for (CORBA::Long j = begin; j != end; j++)
+      if (CORBA::is_nil((*i).peer)) continue;
+      try
 	{
-	  const Allocation::Info_var info = allocation->get(j);
-	  (*i).peer->allocate((*i).peerId, info);
+	  (*i).peer->allocations(allocation);      
+	  CORBA::Long end = allocation->size();
+	  for (CORBA::Long j = begin; j != end; j++)
+	    {
+	      const Allocation::Info_var info = allocation->get(j);
+	      (*i).peer->allocate((*i).peerId, info);
+	    }
+	  begin = end;
 	}
-      begin = end;
+      catch (CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
     }
-#if 0
-  for (CORBA::Long i = 0; i != allocation->size(); i++)
-    {
-      Allocation::Info_var info = allocation->get(i);
-      Region_var r = info->allocation;
-      Transform_var t = info->transformation;
-      RegionImpl region(r, t);
-      Logger::log(Logger::drawing) << "allocation at " << region << endl;
-    }
-#endif
 }
 
 /*
@@ -431,7 +421,8 @@ void GraphicImpl::needResize()
 {
   MutexGuard guard(parentMutex);
   for (glist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).peer->needResize();
+    try {(*i).peer->needResize();}
+    catch (CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
 }
 
 void GraphicImpl::initRequisition(Warsaw::Graphic::Requisition &r)

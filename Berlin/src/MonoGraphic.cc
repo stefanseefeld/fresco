@@ -42,15 +42,13 @@ MonoGraphic::~MonoGraphic()
 	  child.peer->decrement();
 	  child.peer->removeParent(child.peerId);
 	}
-      catch(CORBA::OBJECT_NOT_EXIST &)
-	{
-	  cerr << "unable to release body graphic !" << endl;
-	}
+      catch(CORBA::OBJECT_NOT_EXIST &) {}
     }
 }
 
 Graphic_ptr MonoGraphic::body()
 {
+  Trace trace("MonoGraphic::body");
   MutexGuard guard(childMutex);
   return Warsaw::Graphic::_duplicate(child.peer);
 }
@@ -60,34 +58,49 @@ void MonoGraphic::body(Graphic_ptr c)
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child.peer))
     {
-      child.peer->removeParent(child.peerId);
-      child.peer->decrement();
+      try
+	{
+	  child.peer->removeParent(child.peerId);
+	  child.peer->decrement();
+	}
+      catch(CORBA::OBJECT_NOT_EXIST &) {}
     }
   child.peer = Warsaw::Graphic::_duplicate(c);
   if (!CORBA::is_nil(child.peer))
     {
-      child.peerId = child.peer->addParent(Graphic_var(_this()), 0);
-      child.peer->increment();
+      try
+	{
+	  child.peerId = child.peer->addParent(Graphic_var(_this()), 0);
+	  child.peer->increment();
+	}
+      catch(CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
     }
+//   needResize();
 }
 
 void MonoGraphic::append(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer)) child.peer->append(c);
+  if (!CORBA::is_nil(child.peer))
+    try { child.peer->append(c);}
+    catch (CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::prepend(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer)) child.peer->prepend(c);
+  if (!CORBA::is_nil(child.peer))
+    try { child.peer->prepend(c);}
+    catch (CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::remove(Tag localId)
 {
   Trace trace("MonoGraphic::remove");
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer)) child.peer->remove(localId);
+  if (!CORBA::is_nil(child.peer))
+    try { child.peer->remove(localId);}
+    catch (CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::removeChild(Tag localId)
