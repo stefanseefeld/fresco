@@ -66,6 +66,7 @@ void PrimitiveDemo::Rotator::update(const CORBA::Any &)
   Transform_var tx = child->transformation();
   tx->load_identity();
   tx->rotate(ydegree, axis);
+  cout << "parent needs redraw..." << endl;
   parent->need_redraw();
 }
 
@@ -110,8 +111,11 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   Primitive::Geometry_var triangle = primitives->geometry(mesh);
   Graphic_var transformer1 = primitives->transformer(Graphic_var(tools->rgb(triangle, 0.6, 0.6, 1.0)));
   Graphic_var transformer2 = primitives->transformer(Graphic_var(transformer1));
+  Color white = {1., 1., 1., 1.};
+  Vertex direction = {5., 5., 10.};
+  Graphic_var light = primitives->directional_light(transformer2, white, 1., direction);
   
-  Graphic_var root = primitives->root(transformer2);
+  Graphic_var root = primitives->root(light);
 
   rotator1 = new Rotator(phi, transformer1, root, zaxis);
   phi->attach(Observer_var(rotator1->_this()));
