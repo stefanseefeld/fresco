@@ -21,6 +21,7 @@
  */
 
 #include "ColorDemo.hh"
+#include <Berlin/Color.hh>
 
 ColorDemo::ColorDemo(Application *a)
   : Demo(a)
@@ -46,9 +47,9 @@ ColorDemo::ColorDemo(Application *a)
   green->attach(Observer_var(adapter[1]->_this()));
   blue->attach(Observer_var(adapter[2]->_this()));
 
-  hue = command->bvalue(0., 360., 0., 5., 5.);
-  saturation = command->bvalue(0., 360., 0., 5., 5.);
-  value = command->bvalue(0., 360., 0., 5., 5.);
+  hue = command->bvalue(0., 360., 0., 10., 50.);
+  saturation = command->bvalue(0., 1., 0., 0.1, 0.1);
+  value = command->bvalue(0., 1., 0., 0.1, 0.1);
   
   hue->attach(Observer_var(adapter[3]->_this()));
   saturation->attach(Observer_var(adapter[4]->_this()));
@@ -112,8 +113,25 @@ void ColorDemo::adjust(Tag tag)
 {
   if (tag < 3) // set hsv sliders
     {
+      Color color;
+      color.red = red->value();
+      color.green = green->value();
+      color.blue = blue->value();
+      Coord h, s, v;
+      RGBtoHSV(color, h, s, v);
+      hue->value(h);
+      saturation->value(s);
+      value->value(v);
     }
   else // set rgb sliders
     {
+      Color color;
+      Coord h = hue->value();
+      Coord s = saturation->value();
+      Coord v = value->value();
+      HSVtoRGB(h, s, v, color);
+      red->value(color.red);
+      green->value(color.green);
+      blue->value(color.blue);
     }
 }
