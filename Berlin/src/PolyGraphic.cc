@@ -26,6 +26,8 @@
  */
 #include "Berlin/PolyGraphic.hh"
 
+Pool<Graphic::Requisition> PolyGraphic::pool;
+
 PolyGraphic::PolyGraphic() {}
 
 PolyGraphic::~PolyGraphic()
@@ -78,11 +80,10 @@ PolyGraphicOffset *PolyGraphic::newOffset(long index, Graphic_ptr child)
   return offset;
 }
 
-Graphic::Requisition *PolyGraphic::childrenRequests(Graphic::Requisition *req, long n)
+Graphic::Requisition *PolyGraphic::childrenRequests()
 {
-  long count = children.size();
-  Graphic::Requisition *child_reqs = (count <= n ? req : new Graphic::Requisition[count]);
-  Graphic::Requisition *r = child_reqs;
+  Graphic::Requisition *requisitions = pool.allocate(children.size());
+    Graphic::Requisition *r = requisitions;
   for (PolyGraphicOffsetList::iterator i = children.begin(); i != children.end(); i++)
     {
       Graphic_ptr g = (*i)->child;
@@ -91,7 +92,7 @@ Graphic::Requisition *PolyGraphic::childrenRequests(Graphic::Requisition *req, l
       if (!CORBA::is_nil(g)) g->request(*r);
       ++r;
     }
-  return child_reqs;
+  return requisitions;
 }
 
 // void PolyGraphic::visit_trail(long, GraphicTraversal_ptr) { }

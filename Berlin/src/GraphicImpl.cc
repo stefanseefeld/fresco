@@ -286,17 +286,20 @@ void GraphicImpl::needRedraw()
   for (ulong i = 0; i < alist.length(); i++)
     {
       Graphic::AllocationInfo &a = alist[i];
-//       if (!CORBA::is_nil(a.damaged))
-// 	{
-// 	  RegionImpl r;
-// 	  extension(a, &r);
-// 	  if (r.defined)
-// 	    {
+      if (!CORBA::is_nil(a.damaged))
+ 	{
+ 	  RegionImpl r;
+	  r._obj_is_ready(_boa());
+ 	  extension(a, r._this());
+ 	  if (r.valid)
+ 	    {
 // 	      if (!CORBA::is_nil(a.clipping))
 // 		r.mergeIntersect(a.clipping);
-// 	      a.damaged->extend(&r);
-// 	    }
-// 	}
+ 	      a.damaged->extend(&r);
+ 	    }
+	  r._dispose();
+ 	}
+//       Region_var(a.allocation)->_dispose();
     }
 }
 

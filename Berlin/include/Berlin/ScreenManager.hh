@@ -19,37 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Graphic.hh"
-#include "Berlin/PickTraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
+#ifndef _ScreenManager_hh
+#define _ScreenManager_hh
 
-PickTraversalImpl::PickTraversalImpl(const Vertex &v, Region_ptr r)
-  : TraversalImpl(r), point(v)
-{
-}
+#include <Berlin/ScreenImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <vector>
 
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
-  : TraversalImpl(t), point(t.point)
+class ScreenManager
 {
-}
+public:
+  ScreenManager(ScreenImpl *);
+  ~ScreenManager();
+  void damage(Region_ptr);
+  void repair();
+  void run();
+private:
+  ScreenImpl *screen;
+  typedef vector<RegionImpl *> DamageList;
+  DamageList damages;
+};
 
-PickTraversalImpl::~PickTraversalImpl()
-{
-}
-
-CORBA::Boolean PickTraversalImpl::ok()
-{
-  return true;
-}
-
-CORBA::Boolean PickTraversalImpl::intersects()
-{
-  RegionImpl region(stack.back().allocation, transformation());
-  return region.contains(point);
-}
-
-void PickTraversalImpl::visit(Graphic_ptr g)
-{
-  PickTraversal_ptr pt = this->_this();
-  g->pick(pt);
-}
+#endif /* _ScreenManager_hh */

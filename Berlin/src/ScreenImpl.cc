@@ -19,37 +19,37 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Graphic.hh"
-#include "Berlin/PickTraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(const Vertex &v, Region_ptr r)
-  : TraversalImpl(r), point(v)
+#include "Berlin/ScreenImpl.hh"
+#include "Berlin/ScreenManager.hh"
+#include "Berlin/TransformImpl.hh"
+
+ScreenImpl::ScreenImpl(Coord ww, Coord hh)
+  : w(ww), h(hh)
 {
+  manager = new ScreenManager(this);
+  damage = new DamageImpl(manager);
+  RegionImpl *region = new RegionImpl;
+  region->valid = true;
+  region->lower.x = region->lower.y = 0;
+  region->upper.x = width();
+  region->upper.y = height();
+  region->_obj_is_ready(_boa());
+  damage->extend(region->_this());
+  region->_dispose();
 }
 
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
-  : TraversalImpl(t), point(t.point)
+void ScreenImpl::allocations(AllocationInfoSeq &allocations)
 {
+  unsigned long i = allocations.length();
+  /*
+   * insert new AllocationInfo and initialize it appropriately
+   */
+  AllocationInfo &info = allocations[i];
+  info.allocation = new RegionImpl;
+  info.transformation = new TransformImpl;
+  info.damaged    = Damage::_duplicate(damage);
 }
 
-PickTraversalImpl::~PickTraversalImpl()
-{
-}
-
-CORBA::Boolean PickTraversalImpl::ok()
-{
-  return true;
-}
-
-CORBA::Boolean PickTraversalImpl::intersects()
-{
-  RegionImpl region(stack.back().allocation, transformation());
-  return region.contains(point);
-}
-
-void PickTraversalImpl::visit(Graphic_ptr g)
-{
-  PickTraversal_ptr pt = this->_this();
-  g->pick(pt);
-}
+Coord ScreenImpl::width() { return w;}
+Coord ScreenImpl::height() { return h;}

@@ -3,9 +3,9 @@ DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused
 DIR_INCLUDES =  -I../../include -I../../include/Warsaw -I/data1/seefelds/omniORB_2.7.0/include
 DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
 LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
-SRC	=	RegionImpl.cc TransformImpl.cc TraversalImpl.cc GraphicImpl.cc \
-		MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
-		DrawTraversalImpl.cc PickTraversalImpl.cc \
+SRC	=	RegionImpl.cc TransformImpl.cc TraversalImpl.cc DamageImpl.cc GraphicImpl.cc \
+		ScreenImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
+		DrawTraversalImpl.cc PickTraversalImpl.cc ScreenManager.cc \
 		SubjectImpl.cc
 OBJ	=	$(patsubst %.cc, %.o, $(SRC))
 

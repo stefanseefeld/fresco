@@ -35,7 +35,7 @@ TraversalImpl::TraversalImpl(Region_ptr r)
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
-  : stack(20)
+//   : stack(20)
 {
   for (Stack::const_iterator i = t.stack.begin(); i != t.stack.end(); i++)
     {
@@ -58,7 +58,7 @@ TraversalImpl::~TraversalImpl()
       State &state = *i;
       CORBA::release(state.graphic);
       CORBA::release(state.offset);
-//       CORBA::release(state.allocation);
+      CORBA::release(state.allocation);
       CORBA::release(state.transformation);
     }
 }
@@ -94,6 +94,8 @@ CORBA::Boolean visible()
 
 void TraversalImpl::traverseChild(GraphicOffset_ptr o, Region_ptr allocation, Transform_ptr transformation)
 {
+  if (CORBA::is_nil(allocation))
+    allocation = this->allocation();
   TransformImpl *cumulative = new TransformImpl;
   cumulative->_obj_is_ready(_boa());
   cumulative->copy(stack.back().transformation);
@@ -115,6 +117,8 @@ void TraversalImpl::push(Graphic_ptr g, GraphicOffset_ptr o, Region_ptr r, Trans
   state.allocation = Region::_duplicate(r);
   state.transformation = Transform::_duplicate(t);
   stack.push_back(state);
+  Vertex lower, upper;
+  stack.back().allocation->bounds(lower, upper);
 }
 
 void TraversalImpl::pop()

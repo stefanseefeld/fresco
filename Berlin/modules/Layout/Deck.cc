@@ -38,13 +38,12 @@ void Deck::request(Requisition &r)
       long n = children.size();
       if (n > 0)
 	{
-	  Graphic::Requisition req[10];
-	  Graphic::Requisition* r = childrenRequests(req, 10);
+	  Graphic::Requisition* r = childrenRequests();
 	  LayoutAlign x(xaxis);
 	  x.request(n, r, requisition);
 	  LayoutAlign y(yaxis);
 	  y.request(n, r, requisition);
-	  if (r != req) delete [] r;
+	  pool.deallocate(r);
 	}
       requested = true;
     }

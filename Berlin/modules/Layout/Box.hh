@@ -50,7 +50,6 @@ public:
   virtual void needResize(long);
 
 private:
-  static const int static_size;
   LayoutManager *layout;
   bool requested;
   Graphic::Requisition requisition;

@@ -29,6 +29,7 @@
 
 #include <Types.idl>
 #include <Region.idl>
+#include <Damage.idl>
 
 interface GraphicOffset;
 interface Traversal;
@@ -52,6 +53,7 @@ interface Graphic
   {
     Region allocation;
     Transform transformation;
+    Damage damaged;
   };
   typedef sequence<AllocationInfo> AllocationInfoSeq;
   typedef sequence<GraphicOffset> OffsetSeq;

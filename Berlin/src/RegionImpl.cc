@@ -94,9 +94,6 @@ CORBA::Boolean RegionImpl::intersects(Region_ptr r)
 	   u.y >= lower.y && l.y <= upper.y
 	   //u.z >= lower.z && l.z <= upper.z
 	   );
-      cout << l.x << ' ' << l.y << ' ' << u.x << ' ' << u.y << ' '
-	   << lower.x << ' ' << lower.y << ' ' << upper.x << ' ' << upper.y << ' '
-	   << b << endl;
     }
   return b;
 }

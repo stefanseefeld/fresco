@@ -19,37 +19,40 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Graphic.hh"
+
+#include "Berlin/ScreenManager.hh"
+#include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(const Vertex &v, Region_ptr r)
-  : TraversalImpl(r), point(v)
+ScreenManager::ScreenManager(ScreenImpl *s)
+  : screen(s)
 {
 }
 
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
-  : TraversalImpl(t), point(t.point)
+ScreenManager::~ScreenManager()
 {
 }
 
-PickTraversalImpl::~PickTraversalImpl()
+void ScreenManager::damage(Region_ptr r)
 {
+  RegionImpl *region = new RegionImpl;
+//   region->_obj_is_ready(_boa());
+  region->copy(r);
+  damages.push_back(region);
 }
 
-CORBA::Boolean PickTraversalImpl::ok()
+void ScreenManager::repair()
 {
-  return true;
+  for (DamageList::iterator i = damages.begin(); i != damages.end(); i++)
+    {
+      DrawTraversalImpl *traversal;//(*i);
+      screen->traverse(traversal);
+      delete *i;
+    }
+  damages.erase(damages.begin(), damages.end());
 }
 
-CORBA::Boolean PickTraversalImpl::intersects()
+void ScreenManager::run()
 {
-  RegionImpl region(stack.back().allocation, transformation());
-  return region.contains(point);
-}
-
-void PickTraversalImpl::visit(Graphic_ptr g)
-{
-  PickTraversal_ptr pt = this->_this();
-  g->pick(pt);
+  
 }

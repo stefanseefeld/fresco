@@ -28,6 +28,7 @@
 #define _PolyGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/Pool.hh>
 #include <vector>
 
 class PolyGraphicOffset;
@@ -48,7 +49,7 @@ public:
   virtual GraphicOffset_ptr firstOffset();
   virtual GraphicOffset_ptr lastOffset();
   virtual PolyGraphicOffset *newOffset(long, Graphic_ptr);
-  Graphic::Requisition* childrenRequests(Graphic::Requisition *, long);
+  Graphic::Requisition *childrenRequests();
   virtual void allocateChild(long index, Graphic::AllocationInfo& a);
 //   virtual void damages(DamageInfoSeq &);
   virtual void needResize();
@@ -56,6 +57,7 @@ public:
 //   virtual bool restore_trail(Traversal_ptr);
 // protected:
   PolyGraphicOffsetList children;
+  static Pool<Requisition> pool;
 };
 
 class PolyGraphicOffset : public virtual _sk_GraphicOffset

@@ -30,8 +30,6 @@
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
 
-const int Box::static_size = 10;
-
 Box::Box(LayoutManager *l)
 {
   layout = l;
@@ -57,10 +55,9 @@ void Box::request(Requisition &r)
       long n = children.size();
       if (n > 0)
 	{
-	  Graphic::Requisition req[static_size];
-	  Graphic::Requisition *r = childrenRequests(req, static_size);
+	  Graphic::Requisition *r = childrenRequests();
 	  layout->request(n, r, requisition);
-	  if (r != req) delete [] r;
+	  pool.deallocate(r);
 	}
       requested = true;
     }
@@ -124,17 +121,10 @@ void Box::traverse(Traversal_ptr t)
     }
 }
 
-//
-// Both traverse and allocateChild could be made more efficient
-// by avoiding memory allocation using a fixed size array of regions
-// when the number of children is below a reasonable amount.
-//
-
 RegionImpl **Box::childrenAllocations(Region_ptr a)
 {
   long n = children.size();
-  Graphic::Requisition req[static_size];
-  Graphic::Requisition *r = childrenRequests(req, static_size);
+  Graphic::Requisition *r = childrenRequests();
   if (!requested)
     {
       GraphicImpl::initRequisition(requisition);
@@ -145,11 +135,12 @@ RegionImpl **Box::childrenAllocations(Region_ptr a)
   for (long i = 0; i < n; i++)
     {
       RegionImpl *region = new RegionImpl;
+      region->_obj_is_ready(_boa());
       region->valid = true;
       result[i] = region;
     }
   layout->allocate(n, r, a, result);
-  if (r != req) delete [] r;
+  pool.deallocate(r);
   return result;
 }
 
@@ -157,8 +148,8 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
 {
   RegionImpl **result = childrenAllocations(a);
   long begin, end, incr;
-  TransformImpl tx;
-  tx._obj_is_ready(_boa());
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
   if (t->direction() == Traversal::up)
     {
       begin = 0;
@@ -175,15 +166,17 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
     {
       Vertex o;
       Placement::normalOrigin(result[i], o);
-      result[i]->_obj_is_ready(_boa());
-      tx.loadIdentity();
-      tx.translate(o);
-      t->traverseChild(children[i]->_this(), result[i]->_this(), tx._this());
+      tx->loadIdentity();
+      tx->translate(o);
+      t->traverseChild(children[i]->_this(), result[i]->_this(), tx->_this());
       if (!t->ok()) break;
     }
   long n = children.size();
   for (long i = 0; i < n; i++) CORBA::release(result[i]);
+  for (long i = 0; i < n; i++) result[i]->_dispose();
   delete [] result;
+  CORBA::release(tx);
+  tx->_dispose();
 }
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)

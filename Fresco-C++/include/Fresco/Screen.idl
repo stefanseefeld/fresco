@@ -23,9 +23,12 @@
 #define _Screen_idl
 
 #include <Types.idl>
+#include <Graphic.idl>
 
-interface Screen
+interface Screen : Graphic
 {
+  Coord width();
+  Coord height();
 };
 
 #endif /* _Screen_idl */
