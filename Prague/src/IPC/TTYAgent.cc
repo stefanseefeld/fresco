@@ -37,7 +37,7 @@ TTYAgent::~TTYAgent()
     shutdown(in|out|err);
 }
 
-void TTYAgent::start()
+void TTYAgent::start() throw(std::runtime_error)
 {
     Trace trace("TTYAgent::start");
     if (pid() >= 0)

@@ -22,6 +22,7 @@
 #ifndef _Prague_Agent_hh
 #define _Prague_Agent_hh
 
+#include <stdexcept>
 #include <Prague/IPC/ipcbuf.hh>
 
 namespace Prague
@@ -42,7 +43,7 @@ namespace Prague
 
       //. bind the Agent to the Dispatcher, which increments the ref counter, and
       //. registers the i/o channels as specified with the iomask.
-      virtual void start();
+      virtual void start() throw(std::runtime_error);
       //. release the Agent from the Dispatcher, which decrements the ref counter.
       virtual void stop();
       bool running() const { return _running; }

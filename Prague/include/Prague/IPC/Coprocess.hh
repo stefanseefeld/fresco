@@ -53,7 +53,7 @@ namespace Prague
       enum state_t {ready, running, exited, signaled};
       Coprocess(const std::string &, IONotifier *, EOFNotifier * = 0);
       virtual ~Coprocess();
-      virtual void start();
+      virtual void start() throw(std::runtime_error);
       virtual void stop();
       //. return the command of the process being run
       const std::string &command() const { return _path;}

@@ -24,6 +24,7 @@
 
 #include <Prague/IPC/ipcbuf.hh>
 #include <string>
+#include <stdexcept>
 
 namespace Prague
 {
@@ -33,15 +34,15 @@ namespace Prague
     public:
       ptybuf();
       virtual ~ptybuf();
-      virtual std::streamsize sys_read(char *, std::streamsize);
-      const std::string &name() const { return ptydev;}
-      int openpty();
-      int opentty();
-      void setup();
-    protected:
-      std::string ptydev;
+      virtual std::streamsize sys_read(char *, std::streamsize)
+          throw(std::runtime_error);
+      const std::string &name() const { return my_ptydev; }
+      int openpty() throw(std::runtime_error);
+      int opentty() throw(std::runtime_error);
+      void setup() throw(std::runtime_error);
     private:
-      int tty;
+      std::string my_ptydev;
+      int my_tty;
   };
 
 } // namespace

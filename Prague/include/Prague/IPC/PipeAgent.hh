@@ -34,7 +34,7 @@ namespace Prague
       PipeAgent(const std::string &, IONotifier *, EOFNotifier * = 0);
       virtual ~PipeAgent();
       //. spawns a child process after creating a pipe, then redirects i/o to it
-      virtual void start();
+      virtual void start() throw(std::runtime_error);
     private:
       PipeAgent(const PipeAgent &);
       PipeAgent &operator = (const PipeAgent &);

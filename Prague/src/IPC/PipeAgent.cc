@@ -33,7 +33,7 @@ PipeAgent::PipeAgent(const std::string &cmd, IONotifier *io, EOFNotifier *eof) :
 
 PipeAgent::~PipeAgent() { shutdown(in|out|err); }
 
-void PipeAgent::start()
+void PipeAgent::start() throw(std::runtime_error)
 {
     if (_id >= 0)
     {

@@ -27,7 +27,7 @@ using namespace Prague;
 Agent::Agent() : _refcount(1), _iomask(none), _running(false) { }
 Agent::~Agent() { }
 
-void Agent::start()
+void Agent::start()  throw(std::runtime_error)
 {
     _running = true;
     if (_iomask & in && ibuf()) Dispatcher::instance()->bind(this, ibuf()->fd(), in);

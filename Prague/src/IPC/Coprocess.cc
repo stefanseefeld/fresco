@@ -106,7 +106,7 @@ Coprocess::~Coprocess()
     terminate();
 }
 
-void Coprocess::start()
+void Coprocess::start() throw(std::runtime_error)
 {
     Prague::Guard<Mutex> guard(_mutex);
     processes.push_back(this);

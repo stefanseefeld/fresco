@@ -34,7 +34,7 @@ namespace Prague
       TTYAgent(const std::string &cmd, IONotifier *, EOFNotifier * = 0);
       virtual ~TTYAgent();
       //. spawns a child process after creating a tty/pty pair, then redirects i/o to it
-      virtual void  start();
+      virtual void  start() throw(std::runtime_error);
       //. since the tty preformats the coprocess' output, it needs to
       //. know the geometry for the text to fit in
       void set_window_size(unsigned short, unsigned short);
