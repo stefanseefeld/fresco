@@ -89,3 +89,8 @@ void RasterImpl::export(Data*& buffer)
 	PNGEncoder encoder(&rbuf);
 	encoder.encode(rpng, rinfo, data);
 }
+
+void RasterImpl::draw(DrawTraversal_ptr traversal)
+{
+	DrawingKit_var dk = traversal->kit();
+}

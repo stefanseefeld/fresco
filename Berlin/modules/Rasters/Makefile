@@ -1,15 +1,42 @@
-TOPDIR=../..
-OS_ARCH='Linux'
-DIR_CPPFLAGS = 
-DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused -fno-rtti
-DIR_INCLUDES = 
-DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
-CXXSRCS := ImageKitImpl.cc RasterImpl.cc   
-SO_TARGET := libImage.so
-SO_MAJOR_libImage.so := 0
-SO_MINOR_libImage.so := 0
-SO_PATCH_libImage.so := 1
-SO_OBJS_libImage.so := $(CXXSRCS:.cc=.o)
+# $Id$
+#
+# This source file is a part of the Berlin Project.
+# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# http://www.berlin-consortium.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
 
-include $(TOPDIR)/config/rules.mk
+SHELL	= /bin/sh
 
+top     = ../..
+cpath   = $(top)/config
+hpath   = $(top)/include/Berlin
+
+include $(cpath)/local.mk
+
+# Compilation and linking flags.
+CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
+LDFLAGS	= -shared -rdynamic -L$(lpath)
+LIBS	= -lPrague -lBerlin $(ORBLIBS)
+
+SRC	= ImageKitImpl.cc RasterImpl.cc
+
+TARGET	= $(lpath)/libImageKit.so
+
+vpath %.d $(dpath)
+vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Image
+ 
+include $(cpath)/plugin.mk

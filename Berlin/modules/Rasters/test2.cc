@@ -34,16 +34,26 @@ png_bytep mem;    // Raw region for the image
 png_uint_32 width, height;
 ggi_visual_t vis;
 
-void warning(png_structp, png_const_charp msg) { cerr << "warning : " << msg << endl;}
-void error(png_structp, png_const_charp msg) { cerr << "error : " << msg << endl;}
-
 int main(int argc, char* argv[])
 {
-	RasterImpl rasterfari("test.png");
-	width = rasterfari.getWidth();
-	height = rasterfari.getHeight();
+	cout << "Hi.  I'm a really, really lame tester for the Raster stuff." << endl;
+	cout << "Please don't be fooled into thinking that I am actually doing any Berlin stuff at the moment." << endl;
+	cout << "But watch me do my one trick...." << endl;
+
+	cout << "Setting up the ORB" << endl;
+	CORBA::ORB_ptr orb = CORBA::ORB_init(argc, argv, "omniORB2");
+	CORBA::BOA_ptr boa = orb->BOA_init(argc, argv, "omniORB2_BOA");
+	boa->impl_is_ready(0,1);
 	
-    GGIMesaContext ctx;
+	
+	ImageKit* kit = new ImageKit();
+	kit->_obj_is_ready(boa);
+	
+	Raster_ptr rasterfari = kit->open("test.png");
+
+	cout << "Well, we have the raster, but I can't do anything with it" << endl;
+
+	GGIMesaContext ctx;
     glutInit(&argc, argv);
     glutCreateWindow("PNG Test");
 
