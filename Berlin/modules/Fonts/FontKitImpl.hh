@@ -25,15 +25,21 @@
 #include <Fresco/config.hh>
 #include <Fresco/FontKit.hh>
 #include <Fresco/Font.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Kit.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Unicode.hh>
 #include <Berlin/KitImpl.hh>
+#include <Berlin/Logger.hh>
+#include <Berlin/RCManager.hh>
+#include <Prague/Sys/Directory.hh>
+#include <Prague/Sys/Path.hh>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace Berlin
-{
-namespace FontKit
-{
+namespace Berlin {
+namespace FontKit {
 
 using namespace Fresco;
 
@@ -41,28 +47,46 @@ class FontKitImpl : public virtual POA_Fresco::FontKit,
                     public KitImpl
 {
 public:
-    FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
-    virtual ~FontKitImpl();
-    virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p)
-    {
-        return new FontKitImpl(repo_id(), p);
-    }
 
-    virtual Font_ptr _cxx_default();
-    virtual Font_ptr filename(const char* file, const Fresco::Unistring& style,
-                              Coord size);
-    virtual Font_ptr provide(const Unistring& family, const Unistring& style,
-                             Coord size);
-    virtual Graphic_ptr set_font(Graphic_ptr g, Font_ptr f);
-    virtual Graphic_ptr size(Graphic_ptr g, Coord s);
-    virtual Graphic_ptr style(Graphic_ptr g, const Unistring& s);
-    virtual Graphic_ptr delta_size(Graphic_ptr g, Coord ds);
-    virtual Graphic_ptr delta_style(Graphic_ptr g, const Unistring& ds);
+  class FontIterator : public virtual POA_Fresco::FontIterator
+  {
+  public:
+    FontIterator::FontIterator(FontKitImpl *);
+    virtual Font_ptr child() const;
+    virtual void next();
+    void prev();
+    void destroy();
 
-    virtual FontIterator_ptr first_font();
-    virtual FontIterator_ptr last_font();
+    void begin();
+    void end();
+    void scan(Prague::Path);
+  };
+
+
+  FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  virtual ~FontKitImpl();
+  KitImpl *clone(const Fresco::Kit::PropertySeq &p)
+  {
+    return new FontKitImpl(repo_id(), p);
+  }
+
+  virtual Fresco::Font_ptr _cxx_default();
+  virtual Fresco::Font_ptr filename(const char* file, const Fresco::Unistring& style,
+			            Fresco::Coord size);
+  virtual Fresco::Font_ptr provide(const Fresco::Unistring& family, const Fresco::Unistring& style,
+                           const Fresco::Coord size);
+  virtual Fresco::Graphic_ptr set_font(Fresco::Graphic_ptr g, const Fresco::Font_ptr f);
+  virtual Fresco::Graphic_ptr size(Fresco::Graphic_ptr g, const Fresco::Coord s);
+  virtual Fresco::Graphic_ptr style(Fresco::Graphic_ptr g, const Fresco::Unistring& s);
+  virtual Fresco::Graphic_ptr delta_size(Fresco::Graphic_ptr g, const Fresco::Coord ds);
+  virtual Fresco::Graphic_ptr delta_style(Fresco::Graphic_ptr g, const Fresco::Unistring& ds);
+
+  virtual FT_Library *FontKitImpl::get_ftlibrary();
+
+  virtual Fresco::FontIterator_ptr first_font();
+  virtual Fresco::FontIterator_ptr last_font();
 private:
-    FT_Library my_library;
+  FT_Library my_library;
 };
 
 } // namespace

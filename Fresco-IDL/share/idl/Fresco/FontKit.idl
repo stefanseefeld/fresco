@@ -43,6 +43,7 @@ module Fresco
 
   interface FontKit : Kit
     {
+      //. supply the One True Font.
       Font _default();
       //. inform the FontKit of a new Font
       Font filename(in string file, in Unistring style, in Coord size);

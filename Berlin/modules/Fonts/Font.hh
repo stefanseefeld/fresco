@@ -19,41 +19,53 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Font_hh
-#define _Font_hh
+#ifndef _FontKit_Font_hh
+#define _FontKit_Font_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Font.hh>
-#include "Berlin/RefCountBaseImpl.hh"
-#include "Berlin/IdentifiableImpl.hh"
+#include <Fresco/Unicode.hh>
+#include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/IdentifiableImpl.hh>
+#include "Glyph.hh"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_TRUETYPE_TABLES_H
+
+namespace Berlin
+{
+namespace FontKit
+{
 
 class Font : public virtual POA_Fresco::Font,
              public virtual RefCountBaseImpl,
              public virtual IdentifiableImpl
 {
 public:
-    Font(const char *filename, int size, int xdpi, int ydpi,
-         FT_Library library);
-    virtual ~Font();
+  Font(const char *filename, int size, FT_Library library);
+  virtual ~Font();
 
-    virtual Glyph_ptr glyph_char(Unichar c);
-    virtual CORBA::Boolean has_char(Unichar c);
-    virtual CORBA::Boolean can_display(Unichar begin, Unichar end);
-    virtual Unistring* encoding();
-    virtual Unistring* font_family();
-    virtual void font_metrics(FontMetrics& fm);
-    virtual Unistring* font_style();
-    virtual Unistring* fullname();
-    virtual Coord height();
-    virtual Vertex kerning(Unichar first, Unichar second);
-    virtual CORBA::Float angle();
-    virtual CORBA::Float caret_offset();
+  virtual Fresco::Glyph_ptr glyph_char(Fresco::Unichar c, short unsigned int xdpi, short unsigned int ydpi);
+  virtual CORBA::Boolean has_char(Fresco::Unichar c);
+  virtual CORBA::Boolean can_display(Fresco::Unichar begin,
+                                     Fresco::Unichar end);
+  virtual Fresco::Unistring* encoding();
+  virtual Fresco::Unistring* font_family();
+  virtual void font_metrics(Fresco::FontMetrics& fm);
+  virtual Fresco::Unistring* font_style();
+  virtual Fresco::Unistring* fullname();
+  virtual Fresco::Coord height();
+  virtual Fresco::Vertex kerning(Fresco::Unichar first, Fresco::Unichar second);
+  virtual CORBA::Float angle();
+  virtual CORBA::Float caret_offset();
 private:
-    FT_Face my_face;
-    int my_size, my_xdpi, my_ydpi;
+  FT_Library my_ftlib;
+  FT_Face my_face;
+  Fresco::Coord my_size;
 };
+
+} // namespace
+} // namespace
 
 #endif // header guard

@@ -19,31 +19,37 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Glyph_hh
-#define _Glyph_hh
+#ifndef _FontKit_Glyph_hh
+#define _FontKit_Glyph_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Font.hh>
 #include <Fresco/Transform.hh>
+#include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/IdentifiableImpl.hh>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include FT_TRUETYPE_TABLES_H
 
-class Raster;
+class Fresco::Raster;
 
-
-class Glyph : public virtual POA_Fresco::Glyph,
-              public virtual RefCountBaseImpl,
-              public virtual IdentifiableImpl
+class GlyphImpl : public virtual POA_Fresco::Glyph,
+                  public virtual RefCountBaseImpl,
+                  public virtual IdentifiableImpl
 {
 public:
-    Raster_ptr bitmap();
-    FontShape *decompose();
-    void char_info(GlyphMetrics *gm);
-    void transformation(Fresco::Transform_var);
+  GlyphImpl(FT_Face face, FT_ULong char_index);
+  virtual ~GlyphImpl();
+
+  virtual Fresco::Raster_ptr bitmap();
+  virtual Fresco::FontShape *decompose();
+  virtual void char_info(Fresco::GlyphMetrics &gm);
+  virtual void transformation(Fresco::Transform_ptr);
 private:
-    FT_Face my_face;
-    FT_Matrix my_tr;
+  FT_Face my_face;
+  FT_Matrix my_tr;
 };
 
 #endif // header guard

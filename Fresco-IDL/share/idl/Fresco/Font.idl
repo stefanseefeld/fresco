@@ -41,7 +41,7 @@ module Fresco
                       // for horizontally reading fonts, or
                       // horizontally to the center line of vertical
                       // fonts.
-      Coord underline_offset, underline_width;
+      Coord underline_offset, underline_thickness;
     };
 
   enum SegmentType { move, line, conic, cubic };
@@ -69,7 +69,7 @@ module Fresco
       Coord italic_correction;
     };
 
-  interface Glyph
+  interface Glyph : RefCountBase, Identifiable
     {
       Raster bitmap();
       FontShape decompose();
@@ -79,7 +79,7 @@ module Fresco
 
   interface Font : RefCountBase, Identifiable
     {
-      Glyph glyph_char(in Unichar c);
+      Glyph glyph_char(in Unichar c, in unsigned short xdpi, in unsigned short ydpi);
       // need glyph_something for composite characters.
       // also need to support multiple master fonts. Hm.
 

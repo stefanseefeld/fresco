@@ -24,82 +24,83 @@
 
 namespace Berlin
 {
-namespace Font
+namespace FontKit
 {
 
-Font::Font(const char *filename, int size, int xdpi, int ydpi,
-           FT_Library library)
-  : my_ftlib(library), my_size(size), my_xdpi(xdpi), my_ydpi(ydpi)
+Font::Font(const char *filename, int size, FT_Library library)
+  : my_ftlib(library), my_size(size)
 {
-  FT_New_Face(my_ftlib, filename.c_str(), 0, &my_face);
-  FT_Set_Char_Size(my_face, 0, my_size*64, xdpi, ydpi);
+  FT_New_Face(my_ftlib, filename, 0, &my_face);
+  FT_Set_Char_Size(my_face, 0, my_size*64, 0, 0);
 }
 
 Font::~Font() {}
 
-Glyph_ptr Font::glyph_char(Unichar c)
+Fresco::Glyph_ptr Font::glyph_char(Fresco::Unichar c, short unsigned int xdpi, short unsigned int ydpi)
 {
-  return new Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc));
+  FT_Set_Char_Size(my_face, 0, my_size*64, xdpi, ydpi);
+  GlyphImpl *glyph = new GlyphImpl(my_face, c);
+  return Fresco::Glyph_var(glyph->_this());
 }
 
-bool Font::has_char(Unichar c)
+CORBA::Boolean Font::has_char(Fresco::Unichar c)
+{
+  return FT_Get_Char_Index(my_face, c);
+}
+
+CORBA::Boolean Font::can_display(Fresco::Unichar begin, Fresco::Unichar end)
 {
   return true;
 }
 
-bool Font::can_display(Unichar begin, Unichar end)
+Fresco::Unistring *Font::encoding()
 {
-  return true;
+  return new Fresco::Unistring(Unicode::to_CORBA(Babylon::String("encoding NYI")));
 }
 
-Unistring Font::encoding()
+Fresco::Unistring *Font::font_family()
 {
-  //
+  return new Fresco::Unistring(Unicode::to_CORBA(Babylon::String(my_face->family_name)));
 }
 
-Unistring Font::font_family()
+Fresco::Unistring *Font::font_style()
 {
-  return new Unistring(Unicode::to_CORBA(Babylon::String(my_face->family_name)));
+  return new Fresco::Unistring(Unicode::to_CORBA(Babylon::String(my_face->style_name)));
 }
 
-Unistring Font::font_style()
+Fresco::Unistring *Font::fullname()
 {
-  return new Unistring(Unicode::to_CORBA(Babylon::String(my_face->style_name)));
+  return new Fresco::Unistring(Unicode::to_CORBA(Babylon::String("Fullname NYI")));
 }
 
-Unistring Font::fullname()
-{
-    // ??
-}
-
-void Font::font_metrics(FontMetrics &fm)
+void Font::font_metrics(Fresco::FontMetrics &fm)
 {
   fm.ascent = my_face->ascender;
   fm.descent = my_face->descender;
   fm.baseline = my_face->height;
   fm.underline_offset = my_face->underline_position;
-  fm.underline_thickness = my_face->underline_width;
+  fm.underline_thickness = my_face->underline_thickness;
 }
 
-Coord height() const
+Fresco::Coord Font::height()
 {
   return my_size;
 }
 
-float angle()
+CORBA::Float Font::angle()
 {
   float angle = 0.;
 
   void *htable = FT_Get_Sfnt_Table(my_face, ft_sfnt_hhea);
   if (htable) {
-    TT_HoriHeader *header = *htable;
+    TT_HoriHeader *header = (TT_HoriHeader*)htable;
     if (header->caret_Slope_Run != 0)
       angle = header->caret_Slope_Rise / header->caret_Slope_Run;
   }
 
   void *vtable = FT_Get_Sfnt_Table(my_face, ft_sfnt_vhea);
   if (vtable) {
-    TT_VertHeader *header = *vtable;
+    TT_VertHeader *header = (TT_VertHeader*)vtable;
     if (header->caret_Slope_Run != 0)
       angle = header->caret_Slope_Rise / header->caret_Slope_Run;
   }
@@ -107,20 +108,20 @@ float angle()
   return angle;
 }
 
-float caret_offset()
+CORBA::Float Font::caret_offset()
 {
   float offset = 0.;
 
   void *htable = FT_Get_Sfnt_Table(my_face, ft_sfnt_hhea);
   if (htable) {
-    TT_HoriHeader *header = *htable;
+    TT_HoriHeader *header = (TT_HoriHeader*)htable;
     if (header->caret_Offset != 0)
       offset = header->caret_Offset;
   }
 
   void *vtable = FT_Get_Sfnt_Table(my_face, ft_sfnt_vhea);
   if (vtable) {
-    TT_VertHeader *header = *vtable;
+    TT_VertHeader *header = (TT_VertHeader*)vtable;
     if (header->caret_Slope_Run != 0)
       offset = header->caret_Offset;
   }
