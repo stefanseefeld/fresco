@@ -103,7 +103,7 @@ public:
 class Overlay : public Box
 {
 public:
-  Overlay() : Box(new LayoutSuperpose(new LayoutAlign(Warsaw::xaxis, true), new LayoutAlign(Warsaw::yaxis, true))) {}
+  Overlay() : Box(new LayoutSuperpose(new LayoutAlign(Warsaw::xaxis), new LayoutAlign(Warsaw::yaxis))) {}
 };
 
 #endif
