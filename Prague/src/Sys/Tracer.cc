@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,30 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _logbuf_hh
-#define _logbuf_hh
 
-#include <streambuf.h>
+#include "Prague/Sys/Tracer.hh"
+#include "Prague/Sys/Time.hh"
 
-namespace Prague
-{
+using namespace Prague;
 
-class logbuf : public streambuf
-{
-  typedef char char_type;
-  typedef int int_type;
-public:
-  logbuf(size_t size) : wrapped(false) { char_type *p = new char_type[size]; setp(p, p + size);}
-  ~logbuf() { delete [] pbase();}
-  void clear() { setp(pbase(), epptr()); wrapped = false;}
-  void dump(ostream &);
-
-  int_type sputc(char_type c);
-  int_type xsputn(const char_type *s, streamsize n);
-private:
-  bool wrapped  : 1;
-};
-
-};
-
-#endif /* _logbuf_hh */
+vector<Tracer::Event> Tracer::events(256);
+Time Tracer::start = Time::currentTime();
+Thread::Data<unsigned short> Tracer::indent(0);
+Mutex Tracer::mutex;
+unsigned int Tracer::next = 0;
+bool Tracer::wrapped = false;
+bool Tracer::log = false;

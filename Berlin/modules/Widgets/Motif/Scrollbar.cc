@@ -21,8 +21,7 @@
  */
 
 #include "Widget/Motif/Scrollbar.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/Logger.hh"
+#include <Berlin/RegionImpl.hh>
 
 using namespace Motif;
 
@@ -82,7 +81,6 @@ void Scrollbar::draw(DrawTraversal_ptr traversal)
 
 void Scrollbar::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("Scrollbar::pick");
   if (grabbed(traversal->device()) || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));

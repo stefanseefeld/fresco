@@ -22,17 +22,18 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Berlin/Logger.hh"
 #include "Image/ImageKitImpl.hh"
 #include "Image/RasterImpl.hh"
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 ImageKitImpl::ImageKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 ImageKitImpl::~ImageKitImpl() {}
 
 Raster_ptr ImageKitImpl::empty()
 {
-  SectionLog section("ImageKitImpl::empty");
+  Trace trace("ImageKitImpl::empty");
   RasterImpl *raster = new RasterImpl();
   raster->_obj_is_ready(_boa());
   rasters.push_back(raster);
@@ -41,7 +42,7 @@ Raster_ptr ImageKitImpl::empty()
 
 Raster_ptr ImageKitImpl::create(const char *file)
 {
-  SectionLog section("ImageKitImpl::create");
+  Trace trace("ImageKitImpl::create");
   RasterImpl *raster = new RasterImpl(file);
   raster->_obj_is_ready(_boa());
   rasters.push_back(raster);

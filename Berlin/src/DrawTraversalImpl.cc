@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,12 +22,14 @@
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Warsaw/Graphic.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Region.hh"
-#include "Berlin/Logger.hh"
 #include "Berlin/GGI.hh"
-#include "Warsaw/Warsaw.hh"
+#include <Warsaw/Graphic.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Region.hh>
+#include <Warsaw/Warsaw.hh>
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
@@ -90,7 +92,7 @@ CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
 
 void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-  SectionLog section("DrawTraversalImpl::traverseChild");
+  Trace trace("DrawTraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(transformation())));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);

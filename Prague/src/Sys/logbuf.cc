@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ logbuf::int_type logbuf::sputc(logbuf::char_type c)
   if (pptr() == epptr()) return EOF;
   *pptr() = c;
   pbump(1);
-  if(wrapflag && pptr() == epptr())
+  if(pptr() == epptr())
     {
       setp(pbase(), epptr());
       wrapped = true;
@@ -46,7 +46,7 @@ logbuf::int_type logbuf::xsputn(const logbuf::char_type *s, streamsize n)
   if (n <= length)
     {
       memcpy (pptr (), s, n * sizeof (char_type));
-      if (length == n && wrapflag)
+      if (length == n)
 	{
 	  setp(pbase(), epptr());
 	  wrapped = true;
@@ -57,15 +57,10 @@ logbuf::int_type logbuf::xsputn(const logbuf::char_type *s, streamsize n)
   else
     {
       memcpy (pptr (), s, length * sizeof (char_type));
-      if (wrapflag)
-	{
-	  setp(pbase(), epptr());
-	  wrapped = true;
-	  return length + xsputn(s + length, n - length);
-	}
-      else return EOF;
+      setp(pbase(), epptr());
+      wrapped = true;
+      return length + xsputn(s + length, n - length);
     }
-//   return length;
 }
 
 void logbuf::dump(ostream &os)
@@ -82,5 +77,5 @@ void logbuf::dump(ostream &os)
       if (isprint(*i) || isspace(*i)) os.put(*i);
       else os << hex << *i;
     }
-  os << "* end of logbuf::dump\n";
+  os << "* end of logbuf::dump" << endl;
 }

@@ -1,13 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,11 +22,13 @@
 #include "Layout/Box.hh"
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Warsaw/Traversal.hh"
-#include "Berlin/Logger.hh"
-#include "Berlin/ImplVar.hh"
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include <Warsaw/Traversal.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <iostream>
+
+using namespace Prague;
 
 Box::Box(LayoutManager *l)
 {
@@ -43,7 +40,7 @@ Box::~Box() { delete layout;}
 
 void Box::request(Requisition &r)
 {
-  SectionLog section("Box::request");
+  Trace trace("Box::request");
   if (!requested)
     {
       GraphicImpl::defaultRequisition(requisition);
@@ -62,7 +59,7 @@ void Box::request(Requisition &r)
 
 void Box::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section("Box::extension");  
+  Trace trace("Box::extension");  
   long n = numChildren();
   if (n > 0)
     {
@@ -95,7 +92,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 
 void Box::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("Box::traverse");
+  Trace trace("Box::traverse");
   if (numChildren())
     {
       Region_var given = traversal->allocation();
@@ -160,7 +157,7 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
  */
 RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 {
-  SectionLog section("Box::childrenAllocations");
+  Trace trace("Box::childrenAllocations");
   CORBA::Long children = numChildren();
   Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
     
@@ -187,7 +184,7 @@ RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
-  SectionLog section("Box::traverseWithAllocation");
+  Trace trace("Box::traverseWithAllocation");
   RegionImpl **result = childrenAllocations(r);
   CORBA::Long size = numChildren();
   CORBA::Long begin, end, incr;
@@ -224,7 +221,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)
 {
-  SectionLog section("Box::traverseWithoutAllocation");
+  Trace trace("Box::traverseWithoutAllocation");
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {

@@ -20,14 +20,16 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
 #include "Figure/PolyFigure.hh"
-#include "Berlin/Logger.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
+#include <Warsaw/PickTraversal.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 PolyFigure::PolyFigure()
   : tx(new TransformImpl),
@@ -110,7 +112,7 @@ void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
  */
 void PolyFigure::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("PolyFigure::traverse");
+  Trace trace("PolyFigure::traverse");
   updateBbox();
   if (bbox->valid)
     {
@@ -157,5 +159,5 @@ UPolyFigure::UPolyFigure(const UPolyFigure &up) : PolyFigure(up) {}
  */
 void UPolyFigure::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("UPolyFigure::traverse");  
+  Trace trace("UPolyFigure::traverse");  
 }

@@ -20,16 +20,18 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Subject.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Berlin/Color.hh"
 #include "Tool/Frame.hh"
 #include "Tool/Beveler.hh"
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Subject.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/Color.hh>
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 Frame::Frame(Coord t, Frame::Renderer *r)
   : thickness(t), renderer(r)
@@ -63,7 +65,7 @@ void Frame::request(Requisition &requisition)
 
 void Frame::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("Frame::traverse");
+  Trace trace("Frame::traverse");
   if (!traversal->intersectsAllocation()) return;
   traversal->visit(Graphic_var(_this()));
   Graphic_var child = body();
@@ -153,7 +155,7 @@ void DynamicFrame::attach(Telltale_ptr subject)
 
 void DynamicFrame::update(const CORBA::Any &)
 {
-  SectionLog section("DynamicFrame::update");
+  Trace trace("DynamicFrame::update");
   bool flag = telltale->test(mask);
   if (flag == on) return;
   on = flag;

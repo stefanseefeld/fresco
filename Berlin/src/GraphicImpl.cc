@@ -29,7 +29,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -119,7 +119,7 @@ static void compensate (double a, double &x, double &y)
 
 static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
-  SectionLog section("flexibleTransformRequest");
+  Trace trace("flexibleTransformRequest");
   if (t->Identity()) return;
   if (t->Translation())
     {
@@ -189,7 +189,7 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 
 static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
-  SectionLog section("fixedTransformRequest");
+  Trace trace("fixedTransformRequest");
   if (t->Identity()) return;
   if (t->Translation())
     {
@@ -306,7 +306,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
  */
 void GraphicImpl::needRedraw()
 {
-  SectionLog section("GraphicImpl::needRedraw");
+  Trace trace("GraphicImpl::needRedraw");
   Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   Impl_var<RegionImpl> region(new RegionImpl);
@@ -328,7 +328,7 @@ void GraphicImpl::needRedraw()
  */
 void GraphicImpl::needRedrawRegion(Region_ptr region)
 {
-  SectionLog section("GraphicImpl::needRedrawRegion");
+  Trace trace("GraphicImpl::needRedrawRegion");
   if (region->defined())
     {
       Impl_var<AllocationImpl> allocation(new AllocationImpl);
@@ -483,7 +483,7 @@ void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
 
 Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &req, Transform_ptr t)
 {
-  SectionLog section("GraphicImpl::transformAllocation");
+  Trace trace("GraphicImpl::transformAllocation");
   Vertex delta;
   delta.x = Coord(0); delta.y = Coord(0); delta.z = Coord(0);
   if (!rotated(t))

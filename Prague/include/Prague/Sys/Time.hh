@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Time_hh
-#define _Time_hh
+#ifndef _Prague_Time_hh
+#define _Prague_Time_hh
 
 #include <sys/time.h>
 #include <ctime>
@@ -29,10 +29,6 @@
 namespace Prague
 {
 
-/* @Class{Time : public timeval}
- *
- * @Description{}
- */
 class Time : public timeval
 {
 public:
@@ -65,10 +61,6 @@ protected:
 private:
 };
 
-/* @Method{void Time::normalize()}
- *
- * @Description{}
- */
 inline void Time::normalize()
 {
   while (tv_usec >=  1000000) tv_usec -= 1000000, tv_sec++;
@@ -81,4 +73,4 @@ inline void Time::normalize()
 
 };
 
-#endif /* _Time_hh */
+#endif /* _Prague_Time_hh */

@@ -24,7 +24,7 @@
 #include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -75,14 +75,14 @@ Transform_ptr MonoGraphic::transformation()
 
 void MonoGraphic::request(Graphic::Requisition &r)
 {
-  SectionLog section("MonoGraphic::request");
+  Trace trace("MonoGraphic::request");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
 void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section("MonoGraphic::extension");
+  Trace trace("MonoGraphic::extension");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
@@ -106,7 +106,7 @@ void MonoGraphic::shape(Region_ptr region)
 
 void MonoGraphic::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("MonoGraphic::traverse");
+  Trace trace("MonoGraphic::traverse");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     traversal->traverseChild(child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));

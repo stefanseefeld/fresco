@@ -19,15 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/config.hh"
-#include "Warsaw/Transform.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/TransformImpl.hh"
 #include "Widget/Motif/Slider.hh"
-#include "Berlin/Logger.hh"
-#include "Warsaw/Warsaw.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Transform.hh>
+#include <Warsaw/PickTraversal.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Warsaw/Warsaw.hh>
 
 using namespace Motif;
 
@@ -83,7 +82,6 @@ void Slider::draw(DrawTraversal_ptr traversal)
 
 void Slider::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("Slider::pick");
   if (grabbed(traversal->device()) || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));

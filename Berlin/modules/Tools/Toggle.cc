@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 #include "Tool/Toggle.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -29,7 +29,7 @@ Toggle::~Toggle() {}
 
 void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  SectionLog section("Toggle::press");
+  Trace trace("Toggle::press");
   ControllerImpl::press(traversal, event);
   if (test(Controller::toggled)) clear(Controller::toggled);
   else set(Controller::toggled);
@@ -37,13 +37,13 @@ void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 
 void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  SectionLog section("Toggle::release");
+  Trace trace("Toggle::release");
   ControllerImpl::release(traversal, event);
 }
 
 void Toggle::keyPress(const Input::Event &event)
 {
-  SectionLog section("Toggle::press");
+  Trace trace("Toggle::press");
   const Input::Toggle &toggle = event[0].attr.kselection();
   if (toggle.number == 32) // space
     {

@@ -26,7 +26,9 @@
 #include "Desktop/DesktopKitImpl.hh"
 #include "Desktop/WindowImpl.hh"
 #include "Desktop/Pulldown.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 DesktopKitImpl::DesktopKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 DesktopKitImpl::~DesktopKitImpl()
@@ -56,7 +58,7 @@ Desktop_ptr DesktopKitImpl::desk()
 
 Window_ptr DesktopKitImpl::shell(Controller_ptr g)
 {
-  SectionLog section("DesktopKitImpl::shell");
+  Trace trace("DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
 
@@ -131,7 +133,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
 
 Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 {
-  SectionLog section("DesktopKitImpl::transient");
+  Trace trace("DesktopKitImpl::transient");
   WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
   ToolKit::FrameSpec spec;
@@ -206,7 +208,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 
 Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 {
-  SectionLog section("DesktopKitImpl::pulldown");
+  Trace trace("DesktopKitImpl::pulldown");
   Pulldown *menu = new Pulldown;
   menu->_obj_is_ready(_boa());
   ToolKit::FrameSpec out;

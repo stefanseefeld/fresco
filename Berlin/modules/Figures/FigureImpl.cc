@@ -30,10 +30,11 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Color.hh>
 #include <Berlin/Vertex.hh>
-#include <Berlin/Logger.hh>
-#include <Figure/FigureImpl.hh>
+#include <Prague/Sys/Tracer.hh>
+#include "Figure/FigureImpl.hh"
 
 using namespace Geometry;
+using namespace Prague;
 
 TransformFigure::TransformFigure()
   : mode(outline),
@@ -48,7 +49,7 @@ TransformFigure::~TransformFigure() {}
 Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(tx);}
 void TransformFigure::request(Requisition &r)
 {
-  SectionLog section("TransformFigure::request");
+  Trace trace("TransformFigure::request");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
@@ -70,7 +71,7 @@ void TransformFigure::request(Requisition &r)
 
 void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section("TransformFigure::extension");
+  Trace trace("TransformFigure::extension");
   if (ext->valid)
     {
       Impl_var<RegionImpl> tmp(new RegionImpl(ext));
@@ -91,7 +92,7 @@ void TransformFigure::pick(PickTraversal_ptr traversal)
 
 void TransformFigure::needRedraw()
 {
-  SectionLog section("TransformFigure::needRedraw");
+  Trace trace("TransformFigure::needRedraw");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
@@ -141,7 +142,7 @@ void FigureImpl::addPoint(Coord x, Coord y)
 
 void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section("FigureImpl::extension");
+  Trace trace("FigureImpl::extension");
   if (path->length() > 0)
     {
       Impl_var<RegionImpl> tmp(new RegionImpl(ext));
@@ -173,7 +174,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 
 void FigureImpl::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section("FigureImpl::draw");
+  Trace trace("FigureImpl::draw");
   if (path->length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -31,8 +31,8 @@
 #include <Warsaw/Focus.hh>
 #include <Berlin/TraversalImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Berlin/Logger.hh>
 #include <Berlin/Vertex.hh>
+#include <Prague/Sys/Tracer.hh>
 
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
@@ -74,7 +74,7 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 inline void PickTraversalImpl::popController()
 //. remove one controller level from the top, it might have got out of scope
 {
-  SectionLog log("PickTraversal::popController");
+  Prague::Trace trace("PickTraversal::popController");
   if (controllers.size())
     {
       while (size() > positions.back()) pop();
@@ -92,7 +92,7 @@ inline void PickTraversalImpl::reset(const Input::Position &p)
 //. pop all graphics up to the top most controller and set the pointer
 //. so the traversal can be used to start over directly at the top
 {
-  SectionLog log("PickTraversal::reset");
+  Prague::Trace trace("PickTraversal::reset");
   popController();
   pointer = p;
 }

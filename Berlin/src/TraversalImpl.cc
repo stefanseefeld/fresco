@@ -1,14 +1,9 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,10 +24,12 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Warsaw/Allocation.hh"
-#include "Warsaw/Graphic.hh"
-#include "Warsaw/Region.hh"
+#include <Warsaw/Allocation.hh>
+#include <Warsaw/Graphic.hh>
+#include <Warsaw/Region.hh>
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 {
@@ -88,7 +85,7 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
 
 void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-  SectionLog section("TraversalImpl::traverseChild");
+  Trace trace("TraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(transformation())));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
@@ -99,7 +96,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region,
 
 void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 {
-  SectionLog section("TraversalImpl::push");
+  Trace trace("TraversalImpl::push");
   State state;
   state.graphic = Graphic::_duplicate(g);
   state.tag = tag;
@@ -110,7 +107,7 @@ void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 
 void TraversalImpl::pop()
 {
-  SectionLog section("TraversalImpl::pop");
+  Trace trace("TraversalImpl::pop");
   State &state = *stack.rbegin();
   state.transformation->_dispose();
   stack.erase(stack.end() - 1);
@@ -118,7 +115,7 @@ void TraversalImpl::pop()
 
 void TraversalImpl::update()
 {
-  SectionLog section("TraversalImpl::update");
+  Trace trace("TraversalImpl::update");
   if (stack.size() == 1) return;
   stack_t::iterator parent = stack.begin();
   Impl_var<RegionImpl> allocation(new RegionImpl((*parent).allocation));

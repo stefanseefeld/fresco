@@ -1,13 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,17 +26,19 @@
 #include "Warsaw/PickTraversal.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Warsaw/Warsaw.hh"
+#include <Warsaw/Warsaw.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <iostream>
 #include <iomanip>
+
+using namespace Prague;
 
 DebugGraphic::DebugGraphic(const string &msg, unsigned int f) : message(msg), flags(f) {}
 DebugGraphic::~DebugGraphic() {}
 
 void DebugGraphic::request(Requisition &r)
 {
-  SectionLog section("DebugGraphic::request");
+  Trace trace("DebugGraphic::request");
   MonoGraphic::request(r);
   if (flags & requests)
     {
@@ -52,14 +49,14 @@ void DebugGraphic::request(Requisition &r)
 
 void DebugGraphic::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("DebugGraphic::traverse");
+  Trace trace("DebugGraphic::traverse");
   if (flags & traversals) traversal->visit(Graphic_var(_this()));
   else MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section("DebugGraphic::draw");
+  Trace trace("DebugGraphic::draw");
   if (flags & draws)
     {
       heading(" draw\t");
@@ -73,7 +70,7 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
 
 void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("DebugGraphic::pick");
+  Trace trace("DebugGraphic::pick");
   if (flags & picks)
     {
       heading(" pick\t");

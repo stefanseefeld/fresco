@@ -26,16 +26,16 @@
 #include "Warsaw/Region.hh"
 #include "Warsaw/PickTraversal.hh"
 #include "Warsaw/Focus.hh"
-#include "Berlin/Logger.hh"
 #include "Berlin/Event.hh"
-#include "Prague/Unicode/Unicode.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Unicode/Unicode.hh>
 
 using namespace Prague;
 
 ControllerImpl::ControllerImpl(bool t) : telltale(0), focus(0), grabs(0), transparent(t) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("ControllerImpl::pick");
+  Trace trace("ControllerImpl::pick");
   if (grabbed(traversal->device()) || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));
@@ -140,13 +140,13 @@ void ControllerImpl::setLastController(Controller_ptr c)
 
 CORBA::Boolean ControllerImpl::requestFocus(Controller_ptr c, Input::Device d)
 {
-  SectionLog section("ControllerImpl::requestFocus");  
+  Trace trace("ControllerImpl::requestFocus");  
   return CORBA::is_nil(parent) ? false : parent->requestFocus(c, d);
 }
 
 CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 {
-  SectionLog section("ControllerImpl::receiveFocus");  
+  Trace trace("ControllerImpl::receiveFocus");  
   setFocus(f->device());
   if (f->device() == 0) set(Controller::active);
   return true;
@@ -154,7 +154,7 @@ CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 
 void ControllerImpl::loseFocus(Input::Device d)
 {
-  SectionLog section("ControllerImpl::loseFocus");
+  Trace trace("ControllerImpl::loseFocus");
   clearFocus(d);
   if (d == 0) clear(Controller::active);
 }
@@ -199,14 +199,14 @@ CORBA::Boolean ControllerImpl::prevFocus(Input::Device d)
 
 void ControllerImpl::set(Telltale::Mask m)
 {
-  SectionLog section("ControllerImpl::set");
+  Trace trace("ControllerImpl::set");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
 void ControllerImpl::clear(Telltale::Mask m)
 {
-  SectionLog section("ControllerImpl::clear");
+  Trace trace("ControllerImpl::clear");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
@@ -244,7 +244,7 @@ TelltaleConstraint_ptr ControllerImpl::constraint()
 
 CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  SectionLog section("ControllerImpl::handlePositional");
+  Trace trace("ControllerImpl::handlePositional");
   Input::Position position;
   if (!Input::getPosition(event, position))
     {
@@ -268,7 +268,7 @@ CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, con
 
 CORBA::Boolean ControllerImpl::handleNonPositional(const Input::Event &event)
 {
-  SectionLog section("ControllerImpl::handleNonPositional");
+  Trace trace("ControllerImpl::handleNonPositional");
   if (event[0].dev != 0 || event[0].attr._d() != Input::key)
     {
       cerr << "ControllerImpl::handleNonPositional fatal error : unknown event" << endl;
@@ -312,7 +312,7 @@ void ControllerImpl::doubleClick(PickTraversal_ptr, const Input::Event &)
 
 void ControllerImpl::keyPress(const Input::Event &event)
 {
-  SectionLog section("ControllerImpl::keyPress");
+  Trace trace("ControllerImpl::keyPress");
   const Input::Toggle &toggle = event[0].attr.kselection();
 //   cout << "ControllerImpl::keyPress : " << toggle.number << ' ' << (char) toggle.number << endl;
   switch (toggle.number)

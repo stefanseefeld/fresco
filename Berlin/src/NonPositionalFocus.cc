@@ -25,8 +25,8 @@
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Prague/Sys/Profiler.hh"
+#include <Prague/Sys/Profiler.hh>
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -85,7 +85,7 @@ void NonPositionalFocus::dispatch(const Input::Event &event)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("NonPositionalFocus::dispatch");
-  SectionLog section("NonPositionalFocus::dispatch");
+  Trace trace("NonPositionalFocus::dispatch");
   if (controllers.size())
     controllers.back()->handleNonPositional(event);
 }

@@ -1,14 +1,9 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,7 +28,9 @@
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 Allocator::Allocator()
   : requested(false),
@@ -107,7 +104,7 @@ static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
 
 void Allocator::updateRequisition()
 {
-  SectionLog section("Allocator::updateRequisition");
+  Trace trace("Allocator::updateRequisition");
   if (!requested)
     {
       Graphic::Requisition r;

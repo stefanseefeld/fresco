@@ -19,9 +19,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/Vertex.hh"
-#include "Berlin/Logger.hh"
 #include "Tool/Stepper.hh"
+#include <Berlin/Vertex.hh>
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -47,21 +47,21 @@ Stepper::~Stepper()
 
 void Stepper::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  SectionLog section("Stepper::press");
+  Trace trace("Stepper::press");
   ControllerImpl::press(traversal, event);
   start();
 }
 
 void Stepper::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  SectionLog section("Stepper::release");
+  Trace trace("Stepper::release");
   stop();
   ControllerImpl::release(traversal, event);
 }
 
 void Stepper::step()
 {
-  SectionLog section("Stepper::step");
+  Trace trace("Stepper::step");
   CORBA::Any any;
   execute(any);
 }

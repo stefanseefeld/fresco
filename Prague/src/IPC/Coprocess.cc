@@ -21,6 +21,7 @@
  */
 #include "Prague/IPC/Coprocess.hh"
 #include "Prague/Sys/Signal.hh"
+#include "Prague/Sys/Tracer.hh"
 
 #include <fstream>
 
@@ -44,6 +45,7 @@ static bool init = false;
 
 void Coprocess::Reaper::notify(int)
 {
+  Trace trace("Coprocess::Reaper::notify");
   MutexGuard guard(singletonMutex);
   for (plist_t::iterator i = processes.begin(); i != processes.end(); i++)
     {
@@ -102,13 +104,13 @@ void Coprocess::stop()
 
 bool Coprocess::processIO(int, iomask_t m)
 {
+  Trace trace("Coprocess::processIO");
   MutexGuard guard(mutex);
   /*
    * let the client process the IO
    */
   bool flag = ioNotifier ? ioNotifier->notify(m) : false;
   flag &= (id != 0);
-  if (!id) cout << "process died" << endl;
   /*
    * see whether the channel is still open
    */
@@ -143,7 +145,6 @@ bool Coprocess::processIO(int, iomask_t m)
       break;
     default: break;
     }
-  cout << "returning " << flag << endl;
   return flag;
 }
 

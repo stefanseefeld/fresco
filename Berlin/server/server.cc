@@ -31,6 +31,7 @@
 #include <Berlin/ServerImpl.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Timer.hh>
@@ -51,7 +52,13 @@ struct Dump : Signal::Notifier
 	{
 	case Signal::hangup: Profiler::dump(cerr); break;
 	case Signal::abort:
-	case Signal::segv: Logger::dump(cerr); exit(-1);
+	case Signal::segv:
+	  cerr << "Something went wrong. Here's a debugging log. \n"
+	       << "Please mail this output to bugs@berlin-consortium.org :\n\n";
+	  Logger::dump(cerr);
+	  cerr << "\n\nDetailed Trace:\n";
+	  Tracer::dump(cerr);
+	  exit(-1);
 	}
     }
 };
@@ -93,6 +100,7 @@ int main(int argc, char **argv)
       Logger::set(Logger::drawing);
       Logger::set(Logger::traversal);
       Logger::set(Logger::widget);
+      Tracer::logging(true);
     }
 
 #ifdef JPROF

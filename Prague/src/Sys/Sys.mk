@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SYS_SRC	= logbuf.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
+SYS_SRC	= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
 	  File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  DLL.cc MMap.cc SHM.cc Thread.cc Timer.cc Signal.cc Fork.cc
 

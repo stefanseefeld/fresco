@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 #include "Command/TelltaleImpl.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -33,14 +33,14 @@ TelltaleImpl::~TelltaleImpl()
 
 void TelltaleImpl::set(Telltale::Mask m)
 {
-  SectionLog section("TelltaleImpl::set");
+  Trace trace("TelltaleImpl::set");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
 void TelltaleImpl::clear(Telltale::Mask m)
 {
-  SectionLog section("TelltaleImpl::clear");
+  Trace trace("TelltaleImpl::clear");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }

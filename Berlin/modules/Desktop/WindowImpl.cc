@@ -20,9 +20,9 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/Vertex.hh"
-#include "Berlin/Logger.hh"
 #include "Desktop/WindowImpl.hh"
+#include <Berlin/Vertex.hh>
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -78,7 +78,7 @@ public:
   MoveResizer(Alignment x, Alignment y, CORBA::Short b) : xalign(x), yalign(y), border(b) {}
   virtual void execute(const CORBA::Any &any)
     {
-      SectionLog section("MoveResizer::execute");
+      Trace trace("MoveResizer::execute");
       if (CORBA::is_nil(handle)) return;
       Vertex *vertex;
       if (any >>= vertex)
@@ -184,7 +184,7 @@ CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Input::Device d)
 
 void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
 {
-  SectionLog section("WindowImpl::insert");
+  Trace trace("WindowImpl::insert");
   Vertex position, size;
   position.x = position.y = 1000., position.z = 0.;
   Graphic::Requisition r;

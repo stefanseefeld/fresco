@@ -21,6 +21,9 @@
  * MA 02139, USA.
  */
 #include "Berlin/PickTraversalImpl.hh"
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Input::Position &p, Focus_ptr f)
   : TraversalImpl(g, r, t),
@@ -37,7 +40,7 @@ PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
     focus(t.focus),
     mem(0)
 {
-  SectionLog log("PickTraversal::PickTraversal");
+  Trace trace("PickTraversal::PickTraversal");
 }
 
 PickTraversalImpl::~PickTraversalImpl()
@@ -70,21 +73,21 @@ CORBA::Boolean PickTraversalImpl::intersectsAllocation()
 
 void PickTraversalImpl::enterController(Controller_ptr c)
 {
-  SectionLog log("PickTraversal::enterController");
+  Trace trace("PickTraversal::enterController");
   controllers.push_back(Controller::_duplicate(c));
   positions.push_back(size());
 }
 
 void PickTraversalImpl::leaveController()
 {
-  SectionLog log("PickTraversal::leaveController");
+  Trace trace("PickTraversal::leaveController");
   controllers.pop_back();
   positions.pop_back();
 }
 
 void PickTraversalImpl::hit()
 {
-  SectionLog log("PickTraversal::hit");
+  Trace trace("PickTraversal::hit");
   delete mem;
   mem = new PickTraversalImpl(*this);
 }

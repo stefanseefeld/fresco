@@ -25,11 +25,11 @@
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Prague/Sys/Profiler.hh"
 #include "Berlin/GGI.hh"
 #include "Berlin/Event.hh"
 #include "Berlin/Vertex.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Profiler.hh>
 
 using namespace Prague;
 
@@ -72,7 +72,7 @@ void PositionalFocus::restore(Region_ptr region)
 
 void PositionalFocus::damage(Region_ptr region)
 {
-  SectionLog section("PositionalFocus::damage");
+  Trace trace("PositionalFocus::damage");
   Vertex l, u;
   region->bounds(l, u);
   if (pointer->intersects(l.x, u.x, l.y, u.y))
@@ -114,7 +114,7 @@ void PositionalFocus::dispatch(const Input::Event &event)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("PositionalFocus::dispatch");
-  SectionLog section("PositionalFocus::dispatch");
+  Trace trace("PositionalFocus::dispatch");
   Input::Position position;
   if (!Input::getPosition(event, position))
     {

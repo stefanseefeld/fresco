@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Selection.hh"
 #include "Widget/Motif/Choice.hh"
-#include "Prague/Sys/Thread.hh"
-#include "Berlin/SubjectImpl.hh"
-#include "Berlin/Logger.hh"
+#include <Warsaw/Selection.hh>
+#include <Prague/Sys/Thread.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 
@@ -184,7 +184,7 @@ ToggleChoice::ToggleChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr 
 
 Tag ToggleChoice::appendItem(Graphic_ptr g)
 {
-  SectionLog section("ToggleChoice::append");
+  Trace trace("ToggleChoice::append");
   Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)));
   Tag tag = _state->add(toggle);
   appendController(toggle);
@@ -202,7 +202,7 @@ Tag ToggleChoice::appendItem(Graphic_ptr g)
 
 Tag ToggleChoice::prependItem(Graphic_ptr g)
 {
-  SectionLog section("ToggleChoice::prepend");
+  Trace trace("ToggleChoice::prepend");
   Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 60., 60.)));
   Tag tag = _state->add(toggle);
   appendController(toggle);
@@ -220,7 +220,7 @@ Tag ToggleChoice::prependItem(Graphic_ptr g)
 
 void ToggleChoice::removeItem(Tag t)
 {
-  SectionLog section("ToggleChoice::remove");
+  Trace trace("ToggleChoice::remove");
   _state->remove(t);
   Graphic_var box = body();
   box->remove(t);
@@ -232,7 +232,7 @@ CheckboxChoice::CheckboxChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_
 
 Tag CheckboxChoice::appendItem(Graphic_ptr g)
 {
-  SectionLog section("CheckboxChoice::append");
+  Trace trace("CheckboxChoice::append");
   Controller_var toggle = tools->toggle(Graphic_var(Graphic::_nil()));
   Tag tag = _state->add(toggle);
   appendController(toggle);
@@ -258,7 +258,7 @@ Tag CheckboxChoice::appendItem(Graphic_ptr g)
 
 Tag CheckboxChoice::prependItem(Graphic_ptr g)
 {
-  SectionLog section("CheckboxChoice::prepend");
+  Trace trace("CheckboxChoice::prepend");
   Controller_var toggle = tools->toggle(Graphic_var(Graphic::_nil()));
   Tag tag = _state->add(toggle);
   appendController(toggle);
@@ -284,7 +284,7 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
 
 void CheckboxChoice::removeItem(Tag t)
 {
-  SectionLog section("CheckboxChoice::remove");
+  Trace trace("CheckboxChoice::remove");
   _state->remove(t);
   Graphic_var box = body();
   box->remove(t);

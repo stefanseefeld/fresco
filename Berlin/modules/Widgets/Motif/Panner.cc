@@ -21,10 +21,11 @@
  */
 
 #include "Widget/Motif/Panner.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/Logger.hh"
+#include <Berlin/RegionImpl.hh>
+#include <Prague/Sys/Tracer.hh>
 
 using namespace Motif;
+using namespace Prague;
 
 class Panner::Dragger : implements(Command)
 {
@@ -87,7 +88,7 @@ void Panner::draw(DrawTraversal_ptr traversal)
 
 void Panner::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("Panner::pick");
+  Trace trace("Panner::pick");
   if (grabbed(traversal->device()) || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));

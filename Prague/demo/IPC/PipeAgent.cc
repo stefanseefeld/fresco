@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Tracer.hh>
 #include <Prague/IPC/PipeAgent.hh>
 #include <string>
 
@@ -52,6 +53,7 @@ public:
 
 int main (int argc, char **argv)
 {
+  Tracer::logging(true);
   Output *out = new Output;
   ConnectionClosed *eof = new ConnectionClosed;
   agent = new PipeAgent("./echo", out, eof);
@@ -61,7 +63,8 @@ int main (int argc, char **argv)
       ostream os(agent->ibuf());
       string line;
       cout << "input :";
-      getline(cin, line);
+      do getline(cin, line);
+      while (!cin && errno == EINTR);
       os << line << endl;
       Thread::delay(500);
     }

@@ -26,12 +26,13 @@
 #include "Berlin/EventManager.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/Logger.hh"
-#include "Warsaw/DrawingKit.hh"
 #include "Berlin/GGI.hh"
-
-#include "Warsaw/Traversal.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Traversal.hh>
 #include <iostream>
+
+using namespace Prague;
 
 ScreenImpl::ScreenImpl(DrawingKit_ptr d)
   : ControllerImpl(false), drawing(d)
@@ -54,7 +55,7 @@ ScreenImpl::~ScreenImpl()
 
 void ScreenImpl::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("ScreenImpl::pick");
+  Trace trace("ScreenImpl::pick");
   if (traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));

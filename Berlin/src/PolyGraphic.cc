@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 #include "Berlin/PolyGraphic.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
 #include <iostream>
 
 using namespace Prague;
@@ -97,7 +97,7 @@ CORBA::Long PolyGraphic::index(Tag tag)
 
 Graphic::Requisition *PolyGraphic::childrenRequests()
 {
-  SectionLog section("PolyGraphic::childrenRequests");
+  Trace trace("PolyGraphic::childrenRequests");
   MutexGuard guard(childMutex);
   Graphic::Requisition *requisitions = pool.allocate(children.size());
   Graphic::Requisition *r = requisitions;

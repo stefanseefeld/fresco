@@ -21,6 +21,7 @@
  */
 
 #include "Prague/Sys/Signal.hh"
+#include "Prague/Sys/Tracer.hh"
 #include "Prague/IPC/Dispatcher.hh"
 #include <queue>
 #include <algorithm>
@@ -83,6 +84,7 @@ Dispatcher::~Dispatcher()
 
 void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
 {
+  Trace trace("Dispatcher::bind");
   if (server.state() != Thread::running)
     {
       pipe(wakeup);
@@ -138,12 +140,12 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
 
 void Dispatcher::release(Agent *agent, int fd)
 {
+  Trace trace("Dispatcher::release");
   /*
    * release file descriptors
    */
-  cout << "Dispatcher::release" << endl;
   MutexGuard guard(mutex);
-  cout << " 2 Dispatcher::release" << endl;
+  cout << "still there" << endl;
   for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
     if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
       {
@@ -238,6 +240,7 @@ void Dispatcher::activate(const task &t)
 
 void Dispatcher::wait()
 {
+  Trace trace("Dispatcher::wait");
   FdSet tmprfds = rfds;
   FdSet tmpwfds = wfds;
   FdSet tmpxfds = xfds;

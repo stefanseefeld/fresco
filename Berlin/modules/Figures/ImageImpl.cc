@@ -25,7 +25,6 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/PickTraversal.hh"
 #include "Warsaw/DrawingKit.hh"
-#include "Berlin/Logger.hh"
 #include "Figure/ImageImpl.hh"
 
 ImageImpl::ImageImpl(Raster_ptr r)
@@ -49,7 +48,6 @@ void ImageImpl::request(Requisition &r)
 
 void ImageImpl::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section("Image::draw");
   if (!traversal->intersectsAllocation()) return;
   DrawingKit_var dk = traversal->kit();
   dk->drawImage(raster);

@@ -23,13 +23,15 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Input.hh"
 #include "Tool/TextInput.hh"
-#include "Prague/Unicode/Unicode.hh"
-#include "Warsaw/Unicode.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Unicode/Unicode.hh>
+#include <Warsaw/Unicode.hh>
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 void TextInput::keyPress(const Input::Event &event)
 {
-  SectionLog section("TextInput::keyPress");
+  Trace trace("TextInput::keyPress");
   const Input::Toggle &toggle = event[0].attr.kselection();
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
   if (uc.is_printable()) buffer->insertChar(Unicode::toCORBA(uc));

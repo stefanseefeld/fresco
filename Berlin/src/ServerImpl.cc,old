@@ -23,6 +23,7 @@
 #include "Berlin/ServerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
 #include "Berlin/Logger.hh"
+#include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Directory.hh>
 
 using namespace Prague;

@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -21,9 +21,11 @@
  * MA 02139, USA.
  */
 
-#include <string>
-#include "Berlin/Logger.hh"
 #include "Image/RasterImpl.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <string>
+
+using namespace Prague;
 
 RasterImpl::RasterImpl() : rows(0) {}
 RasterImpl::RasterImpl(const char *file) : rows(0)
@@ -60,14 +62,14 @@ Raster::Info RasterImpl::header()
 
 void RasterImpl::loadData(const Raster::Data &data)
 {
-  SectionLog section("RasterImpl::loadData");
+  Trace trace("RasterImpl::loadData");
   clear();
   rows = png.demarshal(data);
 }
 
 void RasterImpl::storeData(Raster::Data *&data)
 {
-  SectionLog section("RasterImpl::storeData");
+  Trace trace("RasterImpl::storeData");
   delete data;
   data = 0;
   data = png.marshal(rows);
@@ -75,13 +77,13 @@ void RasterImpl::storeData(Raster::Data *&data)
 
 void RasterImpl::storePixel(const Index &index, Color &color)
 {
-  SectionLog section("RasterImpl::storePixel");
+  Trace trace("RasterImpl::storePixel");
   color = png.pixel(index.x, index.y, rows);
 }
 
 void RasterImpl::loadPixel(const Index &index, const Color &color)
 {
-  SectionLog section("RasterImpl::loadPixel");
+  Trace trace("RasterImpl::loadPixel");
   png.pixel(index.x, index.y, color, rows);
 }
 

@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -21,9 +21,10 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/Logger.hh"
 #include "Image/PNG.hh"
-#include "Prague/Sys/Memory.hh"
+#include <Berlin/Logger.hh>
+#include <Prague/Sys/Memory.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <iostream>
 #include <fstream>
 #include <streambuf.h>
@@ -104,7 +105,7 @@ inline PNG::Encoder::Encoder(streambuf *sb, png_structp p, png_infop i, png_info
 
 inline void PNG::Encoder::encode(unsigned char *const *rows)
 {
-  SectionLog section("Encoder::encode");
+  Trace trace("Encoder::encode");
   png_write_info(png, info);
   png_write_image(png, const_cast<unsigned char **>(rows));
   png_write_end(png, end);
@@ -151,7 +152,7 @@ inline PNG::Decoder::Decoder(streambuf *sbuf, png_structp p, png_infop i, png_in
 inline unsigned char **PNG::Decoder::decode()
 
 {
-  SectionLog section("PNGDecoder::decode");
+  Trace trace("PNGDecoder::decode");
   if (!valid)
     {
       cerr << "PNG::Decoder::decode : invalid raster !" << endl;

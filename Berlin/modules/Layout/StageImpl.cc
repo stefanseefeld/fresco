@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,16 +20,16 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Screen.hh"
-#include "Berlin/AllocationImpl.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/DebugGraphic.hh"
-#include "Berlin/ImplVar.hh"
-#include "Berlin/Logger.hh"
-#include "Berlin/QuadTree.hh"
 #include "Layout/StageImpl.hh"
-#include "Prague/Sys/Profiler.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Screen.hh>
+#include <Berlin/AllocationImpl.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/DebugGraphic.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/QuadTree.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Profiler.hh>
 
 using namespace Geometry;
 using namespace Prague;
@@ -487,7 +487,7 @@ void StageImpl::request(Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr traversal)
 {
-  SectionLog section("StageImpl::traverse");
+  Trace trace("StageImpl::traverse");
   Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->allocation()));
   Geometry::Rectangle<Coord> rectangle;
@@ -520,7 +520,7 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
 
 void StageImpl::needRedraw()
 {
-  SectionLog section("StageImpl::needRedraw");
+  Trace trace("StageImpl::needRedraw");
   Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   Impl_var<RegionImpl> region(new RegionImpl);
@@ -544,7 +544,7 @@ void StageImpl::needRedraw()
 
 void StageImpl::needRedrawRegion(Region_ptr region)
 {
-  SectionLog section("StageImpl::needRedrawRegion");
+  Trace trace("StageImpl::needRedrawRegion");
   Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
@@ -566,7 +566,7 @@ void StageImpl::needRedrawRegion(Region_ptr region)
 
 void StageImpl::needResize()
 {
-  SectionLog section("StageImpl::needResize");
+  Trace trace("StageImpl::needResize");
   /*
    * FIXME !!!: need to work out how to process this. (which sub region to damage etc...)
    */
@@ -609,7 +609,7 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
-  SectionLog section("StageImpl::end");
+  Trace trace("StageImpl::end");
   MutexGuard guard(childMutex);
   if (!--nesting)
     {
@@ -634,7 +634,7 @@ void StageImpl::end()
 
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
-  SectionLog section("StageImpl::insert");
+  Trace trace("StageImpl::insert");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = new StageHandleImpl(this, g, tag(), position, size, layer);
   handle->_obj_is_ready(_boa());
@@ -647,7 +647,7 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 
 void StageImpl::remove(StageHandle_ptr h)
 {
-  SectionLog section("StageImpl::remove");
+  Trace trace("StageImpl::remove");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = children->find(h->layer());
   if (!handle) return;
@@ -662,7 +662,7 @@ void StageImpl::remove(StageHandle_ptr h)
 
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
-  SectionLog section("StageImpl::move");
+  Trace trace("StageImpl::move");
   Prague::Profiler prf("StageImpl::move");
   MutexGuard guard(childMutex);
   tree->remove(handle);
@@ -686,7 +686,7 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
-  SectionLog section("StageImpl::resize");
+  Trace trace("StageImpl::resize");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 
@@ -705,7 +705,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 
 void StageImpl::relayer(StageHandleImpl *handle, Stage::Index l)
 {
-  SectionLog section("StageImpl::relayer");
+  Trace trace("StageImpl::relayer");
   MutexGuard guard(childMutex);
   children->remove(handle);
   handle->l = l;
@@ -783,7 +783,7 @@ void StageHandleImpl::layer(Stage::Index ll)
 
 void StageHandleImpl::cacheBBox()
 {
-  SectionLog section("StageHandleImpl::cacheBBox");
+  Trace trace("StageHandleImpl::cacheBBox");
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
   c->request(r);

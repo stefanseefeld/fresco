@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,12 +22,12 @@
 
 #include "Berlin/EventManager.hh"
 #include "Berlin/ScreenImpl.hh"
-#include "Berlin/Logger.hh"
 #include "Berlin/NonPositionalFocus.hh"
 #include "Berlin/PositionalFocus.hh"
-#include "Berlin/Logger.hh"
 #include "Berlin/Vertex.hh"
+#include <Prague/Sys/Tracer.hh>
 
+using namespace Prague;
 
 EventManager::EventManager(ScreenImpl *s)
   : screen(s), drawable(GGI::drawable())
@@ -51,7 +51,7 @@ bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
 
 void EventManager::nextEvent()
 {
-  SectionLog section("EventManager::nextEvent");
+  Trace trace("EventManager::nextEvent");
   ggi_event e;
   if (!drawable->nextEvent(e)) return; // repair
   Input::Event event;
