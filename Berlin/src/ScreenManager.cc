@@ -57,10 +57,10 @@ void ScreenManager::damage(Region_ptr r)
   MutexGuard guard(mutex);
   RegionImpl *region = new RegionImpl(r, Transform_var(Transform::_nil()));
 
-  region->upper.x += 0.5;
-  region->upper.y += 0.5;
-  region->lower.x -= 0.5;
-  region->lower.y -= 0.5;
+//   region->upper.x += 0.5;
+//   region->upper.y += 0.5;
+//   region->lower.x -= 0.5;
+//   region->lower.y -= 0.5;
 
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);
@@ -85,8 +85,8 @@ void ScreenManager::repair()
   
   for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
-//       Logger::log(Logger::drawing) << "repairing region " << **i << endl;
-//       cout << "repairing region " << **i << endl;
+      // Logger::log(Logger::drawing) << "repairing region " << **i << endl;
+      // cout << "repairing region " << **i << endl;
       bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();
@@ -135,10 +135,18 @@ void ScreenManager::nextEvent()
 	emanager->dispatch(key);
 	break;
       }
+    case evPtrRelative:
     case evPtrAbsolute:
       {
-	ptrPositionX = event.pmove.x;
-	ptrPositionY = event.pmove.y;
+	if (event.any.type == evPtrRelative) {
+	  if (ptrPositionX + event.pmove.x >= 0 &&
+	      ptrPositionX + event.pmove.x < screen->width()) ptrPositionX += event.pmove.x;
+	  if (ptrPositionY + event.pmove.y >= 0 &&
+	      ptrPositionY + event.pmove.y < screen->height()) ptrPositionY += event.pmove.y;	  
+	} else {
+	  ptrPositionX = event.pmove.x;
+	  ptrPositionY = event.pmove.y;
+	}
 	// absence of break statement here is intentional
       }
     case evPtrButtonPress:
@@ -155,6 +163,7 @@ void ScreenManager::nextEvent()
 
 	ptrEvent.buttonNumber = event.pbutton.button;	  
 	ptrEvent.whatHappened = 
+	  event.any.type == evPtrRelative ? Event::hold :
 	  event.any.type == evPtrAbsolute ? Event::hold :
 	  event.any.type == evPtrButtonPress ? Event::press :
 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
