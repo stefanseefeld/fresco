@@ -29,8 +29,8 @@ cdir		:= $(builddir)/config
 include $(cdir)/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS	+= $(filter-out -I/usr/include, @LIBART_CPPFLAGS@ @FREETYPE_CPPFLAGS@)
-LIBS		+= @LIBART_LIBS@ @FREETYPE_LIBS@
+EXTRA_CPPFLAGS	+= $(filter-out -I/usr/include, @LIBART_CPPFLAGS@ @FREETYPE_CPPFLAGS@)
+EXTRA_LIBS	+= @LIBART_LIBS@ @FREETYPE_LIBS@
 
 SRC		:= Unifont.cc FTFont.cc Raster.cc DrawingKit.cc 
 

@@ -45,6 +45,8 @@ CPPFLAGS	:= -I../include -I$(top_srcdir)/include @CPPFLAGS@
 DEPFLAGS	:= @DEPFLAGS@
 CXXFLAGS	:= @CXXFLAGS@
 LIBS		:= @LIBS@
+EXTRA_LIBS      :=
+EXTRA_CPPFLAGS  :=
 
 HAVE_LIBART	:= @HAVE_LIBART@
 HAVE_GL		:= @HAVE_GL@

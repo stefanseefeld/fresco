@@ -37,7 +37,8 @@
 #
 
 # Compilation and linking flags.
-LIBS	:= -L$(builddir)/lib -lBerlin
+LIBS	:= -L$(builddir)/lib -lBerlin $(EXTRA_LIBS)
+CPPFLAGS+= $(EXTRA_CPPFLAGS)
 
 .PHONY: all install uninstall clean distclean maintainer-clean
 
