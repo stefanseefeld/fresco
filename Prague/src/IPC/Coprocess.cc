@@ -74,17 +74,17 @@ void Coprocess::Reaper::notify(int)
 
 Coprocess::Coprocess(const string &cmd, IONotifier *n, EOFNotifier *e)
   : path(cmd), ioNotifier(n), eofNotifier(e), id(0), _state(ready), inbuf(0), outbuf(0), errbuf(0)
-//     beingTerminated(false), termTout(10), hupTout(5), killTout(15),
-//     tout(this)//, timer(&tout)
 {
   if (!init) Signal::set(Signal::child, &reaper);
   init = true;
+  _timeout.hangup    = 5;
+  _timeout.terminate = 10;
+  _timeout.kill      = 15;
 };
 
 Coprocess::~Coprocess()
 {
-  kill(9);
-//   terminate();
+  terminate();
 };
 
 void Coprocess::start()
@@ -143,148 +143,21 @@ bool Coprocess::processIO(int, iomask_t m)
   return flag;
 }
 
-void Coprocess::timeout()
+void Coprocess::terminate()
 {
-// /*
-//  * delayed status update
-//  * 2 : terminate timeout
-//  * 3 : hangup timeout
-//  * 4 : kill timeout
-//  */
-//   switch (timermode)
-//     {
-//     case 1: if (WIFEXITED(stat) || WIFSIGNALED(stat)) abort(); break;
-//     case 2:
-//       timermode = 3;
-//       kill(Signal::terminate);
-//       timer->start((hupTout-termTout)*1000);
-//       break;
-//     case 3:
-//       timermode = 4;
-//       kill(Signal::hangup);
-//       timer->start((killTout-hupTout)*1000);
-//       break;
-//     case 4:
-//       timermode = 0;
-//       kill(Signal::kill);
-//       break;
-//     default: break;
-//     }
+  int sig = 0;
+  for (long ms = 0; pid(); ms++)
+    {
+      sig = 0;
+      if (ms == _timeout.terminate) sig = Signal::terminate;
+      if (ms == _timeout.hangup)  sig = Signal::hangup;
+      if (ms == _timeout.kill) sig = Signal::kill;
+      if (sig)	     kill(sig);
+      Thread::delay(1);
+    }
+  Thread::delay(10);
+  if (pid()) cerr << "Coprocess " << pid() << " wouldn't die (" << Signal::name(sig) << ')' << endl;
 }
-
-void Coprocess::terminate(bool flag)
-{
-//   /*
-//    * We're exiting: call only the default handlers
-//    */
-//   if (flag) mask = panic|died;
-//   if (!running()) return;
-//   beingTerminated = true;
-//   if (flag) Coprocess::abort();
-//   else abort();
-//   beingTerminated = false;
-//   if (!bound || (pid >= 0 && flag)) waitToTerminate();
-//   if (active) active = false, notify(stopped);
-//   if (bound && pid > 0)
-//     {
-//       /*
-//        * Kill asynchronously.  We don't want to wait until the
-//        * process dies, so we just send out some signals and pretend
-//        * the process has terminated gracefully.
-//        */
-//       if (termTout) timermode = 2, timer->start(termTout*1000);
-//       abort();
-//       notify(died);
-//     }
-}
-
-// void Coprocess::abort()
-// {
-//   /*
-//    * close pipes
-//    * we deliberately ignore any error messages here
-//    */
-//   if (bound)
-//     {
-// //       AsyncManager *manager = AsyncManager::Instance();
-// //       manager->release(this);
-//     }
-//   shutdown(in|out|err);
-//   if (!beingTerminated) if (active) active = false, notify(stopped); // declare agent as "not running"
-//   if (status >= 0) notify(died), status = -1;
-// }
-
-// void Coprocess::wait()
-// {
-//   while (running())
-//     {
-//       int s;
-//       pid_t ret = waitpid(pid, &s, 0);
-//       if (ret > 0)
-// 	{
-// 	  //	  assert(ret == pid);
-// 	  stat = s;
-// 	  if (WIFEXITED(stat) || WIFSIGNALED(stat)) abort();
-// 	}
-//     }
-// }
-
-// bool Coprocess::pending()
-// {
-//   return (outbuf && outbuf->in_avail()) || (errbuf && errbuf->in_avail());
-// }
-
-// bool Coprocess::running()
-// {
-//   if (active && pid >= 0)
-//     {
-//       /*
-//        * Ignore interrupts for a while
-//        */
-//       Signal::Guard _g1(Signal::interrupt);
-//       Signal::Guard _g2(Signal::quit);
-//       Signal::Guard _g3(Signal::hangup);
-//       /*
-//        * Query current process state
-//        */
-// 	int s;
-// 	pid_t r = waitpid(PID(), &s, WNOHANG);
-// 	if (r > 0)
-// 	  {
-// 	    /*
-// 	     * Coprocess stopped or terminated
-// 	     */
-// 	    //	    assert(r == pid);
-// 	    stat = s;
-// 	    if (WIFEXITED(stat) || WIFSIGNALED(stat)) abort();
-// 	  }
-// 	else if (r < 0)
-// 	  {
-// 	    if (errno == ECHILD) abort();	// No such child: agent is not running
-// 	    else SystemError("wait failed", false);
-// 	  }
-//     }
-//   return active;
-// }
-
-// void Coprocess::waitToTerminate()
-// {
-//   int sig = 0;
-//   for (int seconds = 0; running(); seconds++)
-//     {
-//       sig = 0;
-//       if (seconds == termTout) sig = SIGTERM;
-//       if (seconds == hupTout)  sig = SIGHUP;
-//       if (seconds == killTout) sig = SIGKILL;
-//       if (sig)	     kill(sig);
-//       if (running()) sleep(1);
-//     }
-//   if (sig)
-//     {
-//       string msg = string("Coprocess wouldn't die (") + strsignal(sig) + ")";
-//       Error(msg.c_str(), true);
-//     }
-// }
 
 void Coprocess::shutdown(short m)
 {
@@ -306,18 +179,6 @@ void Coprocess::shutdown(short m)
       errbuf = 0;
     }
 }
-
-// void Coprocess::outputEOF()
-// {
-//   running();
-//   shutdown(out);
-// }
-
-// void Coprocess::errorEOF()
-// {
-//   running();
-//   shutdown(err);
-// }
 
 void Coprocess::kill(int signum)
 {

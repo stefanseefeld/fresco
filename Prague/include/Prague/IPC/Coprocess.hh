@@ -35,16 +35,8 @@ namespace Prague
 class Coprocess : public Agent
 {
   typedef vector<Coprocess *> plist_t;
-//   class Timeout;
   struct Reaper : Signal::Notifier { virtual void notify(int);};
   friend struct Reaper;
-//   struct Timeout : Timer::Notifier
-//   {
-//     Timeout(Coprocess *p) : process(p) {}
-//     virtual void notify() { process->timeout();}
-//     Coprocess *process;
-//   };
-//   friend class Timeout;
 public:
   struct IONotifier
   {
@@ -65,28 +57,15 @@ public:
   pid_t         pid() const { MutexGuard guard(mutex); return id;}
   state_t       state() const { MutexGuard guard(mutex); return _state;}
   int           value() const { MutexGuard guard(mutex); return _value;}
+  void          timeout(long t, long h, long k) { _timeout.terminate = t, _timeout.hangup = h, _timeout.kill = k;}
   virtual ipcbuf *ibuf() { return inbuf;}
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
 protected:
   virtual bool processIO(int, iomask_t);
-//   int          &terminateTimeOut()	 { return termTout; }
-//   int          &hangupTimeOut()	         { return hupTout; }
-//   int          &killTimeOut()		 { return killTout; }
-//   int           terminateTimeOut() const { return termTout; }
-//   int           hangupTimeOut()	const    { return hupTout; }
-//   int           killTimeOut()	const	 { return killTout; }
-
-  void  terminate(bool flag = false);
+  void  terminate();
   void  shutdown(short);  
-//   virtual void  abort();
-//   virtual void  wait();
-//   virtual bool  pending();
-
-  
 protected:
-//   virtual void  NewStatus(int);
-//   void          initTimer() { if (!timer) timer = new Timer(&tnotifier);}
   string       path;
   IONotifier  *ioNotifier;
   EOFNotifier *eofNotifier;
@@ -96,33 +75,21 @@ protected:
   ipcbuf      *inbuf;
   ipcbuf      *outbuf;
   ipcbuf      *errbuf;
-//   bool running();
-//   void Error(const string &msg, bool flag)         {};//{ Notify(Signal::panic, msg); if (flag) running();}
-//   void Warning(const string &msg, bool flag)       {};//{ Notify(Signal::strange, msg); if (flag) running();}
-//   void SystemError(const string &msg, bool flag)   {};//{ Notify(Signal::panic, msg + ": " + strerror(errno)); if (flag) running();}
-//   void SystemWarning(const string &msg, bool flag) {};//{ Notify(Signal::strange, msg + ": " + strerror(errno)); if (flag) running();}
 private:
   Coprocess(const Coprocess &);
   Coprocess &operator = (const Coprocess &);
-//   void  DefaultHandler(const char *);
-  void  timeout();
-//   bool  beingTerminated : 1;
-//   int   timermode       : 3;
-//   int   termTout; 	// terminate TimeOut (in s)
-//   int   hupTout;    	// hangup TimeOut (in s)
-//   int   killTout;      	// kill TimeOut (in s)
-//   void  waitToTerminate();
-//   virtual void  outputEOF();
-//   virtual void  errorEOF();
-  
   void kill(int);
-private:
   mutable Mutex  mutex;
+  struct
+  {
+    long hangup;
+    long terminate;
+    long kill;
+  } _timeout;
+  
   static plist_t processes;
   static Reaper  reaper;
   static Mutex   singletonMutex;
-//   Timeout tout;
-//   Timer timer;
 };
 
 };
