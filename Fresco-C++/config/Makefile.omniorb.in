@@ -95,6 +95,8 @@ $(TARGET): $(OBJ)
 
 depend: $(DEP)
 
+xref: $(HDR)
+
 doc: $(HDR)
 
 install:	all
