@@ -40,9 +40,7 @@ TARGETS		:= book.html
 
 vpath %.xml  $(srcdir)
 
-dummy:
-
-all:	$(TARGETS)
+all:	#$(TARGETS)
 
 book.html:	$(JPG) $(SRC)
 	4xslt $(srcdir)/book.xml $(dbxsl) > $@
