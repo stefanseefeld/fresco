@@ -121,13 +121,20 @@ void FontKitImpl::FontIterator::scan(Prague::Path path)
 }
 
 FontKitImpl::FontKitImpl(const std::string &id,
-                         const Fresco::Kit::PropertySeq &p)
-    : KitImpl(id, p)
+                         const Fresco::Kit::PropertySeq &p,
+                         ServerContextImpl *c)
+  : KitImpl(id, p, c)
 {
   FT_Init_FreeType(&my_library);
 }
 
 FontKitImpl::~FontKitImpl() {}
+
+KitImpl *FontKitImpl::clone(const Fresco::Kit::PropertySeq &p,
+                            ServerContextImpl *c)
+{
+  return new FontKitImpl(repo_id(), p, c);
+}
 
 Font_ptr FontKitImpl::_cxx_default()
 {
@@ -205,7 +212,7 @@ FontIterator_ptr FontKitImpl::last_font()
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "FontKitImpl"};
-  return create_kit<Berlin::FontKit::FontKitImpl> ("IDL:fresco.org/Fresco/FontKit:1.0", properties, 2);
+  return create_prototype<Berlin::FontKit::FontKitImpl> ("IDL:fresco.org/Fresco/FontKit:1.0", properties, 2);
 }
 
 } // namespace

@@ -55,6 +55,7 @@ public:
   public:
     FontIterator(FontKitImpl *);
     virtual ~FontIterator();
+
     virtual Font_ptr child();
     virtual void next();
     virtual void prev();
@@ -69,12 +70,12 @@ public:
     std::vector<std::string>::iterator faces_iterator;
   };
 
-  FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  FontKitImpl(const std::string &,
+              const Fresco::Kit::PropertySeq &,
+              ServerContextImpl *);
   virtual ~FontKitImpl();
-  KitImpl *clone(const Fresco::Kit::PropertySeq &p)
-  {
-    return new FontKitImpl(repo_id(), p);
-  }
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &,
+                         ServerContextImpl *);
 
   virtual Fresco::Font_ptr _cxx_default();
   virtual Fresco::Font_ptr filename(const char* file, const Fresco::Unistring& style,

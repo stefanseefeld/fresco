@@ -37,7 +37,7 @@
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Berlin/RCManager.hh>
-#include "ServerImpl.hh"
+#include <Berlin/ServerImpl.hh>
 #include <fstream>
 
 #ifdef RC_PREFIX
