@@ -78,16 +78,6 @@ AC_ARG_ENABLE(server,
 	enable_server=yes])
 
 dnl ------------------------------------------------------------------
-dnl Warsaw and Prague
-dnl ------------------------------------------------------------------
-AC_PACKAGE(Warsaw, $VERSION)
-CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
-LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
-AC_PACKAGE(Prague, $VERSION)
-CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS -lPrague $Prague_LIBS"
-
-dnl ------------------------------------------------------------------
 dnl Text rendering
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Text Rendering)
@@ -171,7 +161,15 @@ else
 	enable_kits=["`echo $enable_kits | sed 's/[, ]\+/ /g'`"]
 fi
 
-
+dnl ------------------------------------------------------------------
+dnl Warsaw and Prague
+dnl ------------------------------------------------------------------
+AC_PACKAGE(Warsaw, $VERSION)
+CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
+LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
+AC_PACKAGE(Prague, $VERSION)
+CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
+LIBS="$LIBS -lPrague $Prague_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Decisions
