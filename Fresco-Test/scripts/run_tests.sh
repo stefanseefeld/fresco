@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This script runs all tests given on the commandline and returns an
-# exitcode of 0 if all tests passed or 1 if or more tests failed.
+# exitcode of 0 if all tests passed or 1 if one or more tests failed.
 #
 # It is meant as a quick and dirty way to run our tests from a Makefile
 # without needing to register all tests with qmtest manually.
@@ -12,8 +12,8 @@ function run_test()
 {
     TESTPROG="$1"
     for TEST in `$TESTPROG list` ; do
-        if ! $TESTPROG run $TEST | grep -q 'Result: PASS'; then
-            echo "Test $TEST in $TESTPROG did not pass!"
+        if ! $TESTPROG run $TEST | egrep -q '^Result:[[:space:]]+PASS'; then
+            echo "Test $TEST in $TESTPROG FAILED!"
             ALL_PASSED=0;
 	else
 	    echo "Test $TEST in $TESTPROG passed."
@@ -21,7 +21,7 @@ function run_test()
     done
 }
 
-for CURRENT in $* ; do
+for CURRENT in "$@"; do
     run_test "$CURRENT"
 done
 
