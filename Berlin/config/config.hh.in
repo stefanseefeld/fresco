@@ -4,4 +4,7 @@
 /* Define if you want reference count logging support */
 #undef LCLOG
 
+/* Define if you want region management debugging support */
+#undef RMDEBUG
+
 #endif /* _Berlin_config_hh */

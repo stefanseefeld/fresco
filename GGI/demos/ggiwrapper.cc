@@ -85,8 +85,10 @@ int main(int argc, char **argv)
    */
   ggiInit();
   CORBA::String_var name = visual->name();
+  cout << "visual name " << name << endl;
   setenv("GGI_DISPLAY", name, 1);
   CORBA::String_var mode = visual->mode();
+  cout << "visual mode " << mode << endl;
   setenv("GGI_DEFMODE", mode, 1);
   switch (fork())
     {

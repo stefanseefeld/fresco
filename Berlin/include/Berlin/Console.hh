@@ -107,6 +107,10 @@ public:
   virtual void wakeup() = 0;
   //. FIXME: Missing documentation!
   virtual void activate_autoplay() = 0;
+  //. highlight the specified region to aid debugging
+  virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
+				Warsaw::Coord, Warsaw::Coord) = 0;
+
   template <typename T>
   T *get_extension(const std::string &id)
   {

@@ -43,6 +43,9 @@ ScreenManager::~ScreenManager() {}
 void ScreenManager::damage(Region_ptr r)
 {
   Trace trace("ScreenManager::damage");
+  Vertex l, u;
+  r->bounds(l, u);
+  Console::instance()->highlight_screen(l.x, l.y, u.x, u.y);
   Prague::Guard<Mutex> guard(_mutex);
   _theDamage->merge_union(r);
   Console::instance()->wakeup();

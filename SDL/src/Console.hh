@@ -77,6 +77,8 @@ public:
   virtual void device_info(std::ostream &);
   virtual Warsaw::Input::Event *next_event();
   virtual void activate_autoplay();
+  virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
+				Warsaw::Coord, Warsaw::Coord) {}
   virtual void wakeup();
 
   void add_drawable(SDL::Drawable *);

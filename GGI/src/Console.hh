@@ -49,14 +49,16 @@ public:
   virtual ~Console();
   virtual Pointer *pointer(Warsaw::Raster_ptr);
   virtual Drawable *drawable();
-  virtual Drawable *create_drawable(Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
+  virtual Drawable *create_drawable(Warsaw::PixelCoord, Warsaw::PixelCoord,
+				    Warsaw::PixelCoord);
   Drawable *reference_to_servant(Warsaw::Drawable_ptr);
 
   virtual void device_info(std::ostream &);
   virtual Warsaw::Input::Event *next_event();
   virtual void wakeup();
   virtual void activate_autoplay() { _autoplay = true;}
-
+  virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
+				Warsaw::Coord, Warsaw::Coord);
   void add_drawable(Drawable *);
 private:
   virtual Console::Extension *create_extension(const std::string &);
@@ -65,6 +67,9 @@ private:
    * to be used for event notification
    */
   ggi_visual_t  _visual;
+#ifdef RMDEBUG
+  ggi_visual_t  _backup;
+#endif
   /*
    * to be used for pointing devices
    */

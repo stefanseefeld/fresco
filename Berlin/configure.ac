@@ -173,6 +173,8 @@ AC_ARG_ENABLE(jprof, [--enable-jprof   enable profiling with the jprof tool],[ j
 
 AC_ARG_ENABLE(lclog, [--enable-lclog   enable lifecycle logging],[ lclog="yes"])
 
+AC_ARG_ENABLE(rmdebug, [--enable-rmdebug   enable region management debugging (i.e. blinking regions)],[ rmdebug="yes"])
+
 dnl ------------------------------------------------------------------
 dnl Decisions
 dnl ------------------------------------------------------------------
@@ -219,15 +221,24 @@ else
 	AC_DEFINE(LCLOG)
 fi
 
+RMDEBUG=
+if test ".$rmdebug" != .yes ; then
+	rmdebug="no"
+else
+	RMDEBUG="yes"
+	AC_DEFINE(RMDEBUG)
+fi
+
 dnl ------------------------------------------------------------------
 dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
-AC_MSG_RESULT([Build libBerlin:           $enable_berlin])
-AC_MSG_RESULT([Build Consoles:           $tested_consoles])
-AC_MSG_RESULT([Build Kits:               $tested_drawing_kits $enable_kits])
-AC_MSG_RESULT([Add profiling support:     $jprof])
-AC_MSG_RESULT([Add lifecycle log support: $lclog])
+AC_MSG_RESULT([Build libBerlin:                         $enable_berlin])
+AC_MSG_RESULT([Build Consoles:                         $tested_consoles])
+AC_MSG_RESULT([Build Kits:                             $tested_drawing_kits $enable_kits])
+AC_MSG_RESULT([Add profiling support:                   $jprof])
+AC_MSG_RESULT([Add lifecycle log support:               $lclog])
+AC_MSG_RESULT([Add region management debugging support: $rmdebug])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

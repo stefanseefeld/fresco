@@ -91,6 +91,19 @@ GGI::Console::Console(int &argc, char **argv)
   ggiInit();
   GGI::Drawable *drawable = new GGI::Drawable(0);
   _visual = drawable->_visual;
+#ifdef RMDEBUG
+   // make a fullscreen backup visual
+   _backup = ggiOpen("display-memory", 0);
+   ggi_mode mode;
+   mode.visible.x = mode.virt.x = drawable->width();
+   mode.visible.y = mode.virt.y = drawable->height();
+   mode.size.x = GGI_AUTO;
+   mode.size.y = GGI_AUTO;
+   mode.dpp.x = mode.dpp.y = 1;
+   mode.graphtype = GT_24BIT;
+   mode.frames = 1;
+   ggiSetMode(_backup, &mode);
+#endif
   _size[0] = drawable->_mode.visible.x;
   _size[1] = drawable->_mode.visible.y;
   _position[0] = 0;
@@ -331,9 +344,39 @@ Input::Event *GGI::Console::synthesize(const ggi_event &e)
   return event._retn();
 }
 
+void GGI::Console::highlight_screen(Coord lx, Coord ly,
+				    Coord ux, Coord uy)
+{
+#ifdef RMDEBUG
+   // compute the device space coordinates
+   PixelCoord x = static_cast<PixelCoord>(lx * _resolution[0]);
+   PixelCoord y = static_cast<PixelCoord>(ly * _resolution[1]);
+   PixelCoord w = static_cast<PixelCoord>(ux * _resolution[0] - x);
+   PixelCoord h = static_cast<PixelCoord>(uy * _resolution[1] - y);
+
+   // make a backup
+   ggiCrossBlit(_visual, x, y, w, h, _backup, x, y);
+
+   // fill region with red
+   ggi_pixel back;
+   ggiGetGCForeground(_visual, &back);
+   ggi_color hi = {0xffff, 0, 0, 0xffff};
+   ggiSetGCForeground(_visual, ggiMapColor(_visual, &hi));
+   ggiDrawBox(_visual, x, y, w, h);
+   ggiFlushRegion(_visual, x, y, w, h);
+   ggiSetGCForeground(_visual, back);
+   
+   // wait a bit
+   timeval tv = {0, 100000};
+   select(0, 0, 0, 0, &tv);
+
+   // restore old content
+   ggiCrossBlit(_backup, x, y, w, h, _visual, x, y);
+#endif  
+}
+
 Console::Extension *GGI::Console::create_extension(const std::string &id)
 {
-  cout << "create extension " << id << endl;
   if (id == "DirectBuffer") return new DirectBuffer();
   if (id == "Renderer") return new Renderer();
   if (id == "SHMDrawableFactory") return new SHMDrawableFactory();
