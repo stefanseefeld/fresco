@@ -1,5 +1,11 @@
 1999-03-09  graydon@pobox.com  <graydon@pobox.com>
 
+	* Text.idl: Modified text to use new typenames, graphic
+	requisitions, etc.
+
+	* Makefile: cleaned up makefile, conformed it to berlin build
+	process
+
 	* Types.idl: added Text Types to standard types
 
 1999-03-08  graydon@pobox.com  <graydon@pobox.com>

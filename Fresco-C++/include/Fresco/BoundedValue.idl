@@ -24,6 +24,7 @@
  */
 
 #include <Subject.idl>
+#include <Types.idl>
 
 interface BoundedValue : Subject
 {

@@ -27,7 +27,7 @@
 
 #include <Types.idl>
 
-exception securityException {};
+exception SecurityException {};
 
 // a Client Context object is an interface any client connecting to a
 // berlin server needs to present. It is used in managing the

@@ -24,6 +24,9 @@
  * MA 02139, USA.
  */
 
+// !!!FIXME!!! this should become long long when it works
+typedef unsigned long Time; 
+
 typedef unsigned long Tag;
 typedef double Coord;
 typedef long PixelCoord;
@@ -62,9 +65,6 @@ struct Patch
   long meshStride, controlStride;
 };
 
-typedef unsigned short unichar;
-typedef sequence<unichar> unistring;
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 //this section defines the base types you use if you are processing
@@ -85,7 +85,7 @@ typedef unsigned short Unichar;
 // in a right-to-left writing system, they always go in this order
 // when considered as characters. Only when transformed to glyphs do
 // they get special layout properties like screen direction.
-typedef sequence<unichar> Unistring;
+typedef sequence<Unichar> Unistring;
 
 // this is an opaque index which, when associated with a given font
 // resource, points into a table of glyphs. Since each font resource
@@ -118,6 +118,6 @@ typedef unsigned long FeatureValue;
 // features. You do this by running down all the features you want,
 // and reading off a list of feature values the font will let you set
 // the feature to. this is the return type of such a feature query.
-typedef sequence<featureValue> FeatureValueList;
+typedef sequence<FeatureValue> FeatureValueList;
 
 #endif /* _Types_idl */

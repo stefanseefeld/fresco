@@ -1,3 +1,6 @@
+#ifndef _Graphic_idl
+#define _Graphic_idl
+
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -24,8 +27,6 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Graphic_idl
-#define _Graphic_idl
 
 #include <Types.idl>
 #include <Region.idl>
@@ -58,6 +59,8 @@ interface Graphic
   };
 //   typedef sequence<AllocationInfo> AllocationInfoSeq;
   typedef sequence<GraphicOffset> OffsetSeq;
+  typedef sequence<Graphic> GraphicSeq;
+  
   Graphic cloneGraphic();
   attribute Graphic body;
   void append(in Graphic g);

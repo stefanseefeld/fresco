@@ -34,7 +34,7 @@ interface Command;
 // it does, they execute it anonymously by calling execute().
 
 interface Command : Cloneable {	
-    void execute(in message args);
+    void execute(in Message args);
 };
 
 #endif

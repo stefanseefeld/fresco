@@ -1,65 +1,47 @@
-TOPDIR=../../berlin-tree
+# This source file is a part of the Berlin Project.
+# Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+# http:#www.berlin-consortium.org
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public License
+# as published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+
+TOPDIR=../..
 OS_ARCH='Linux'
 
-DIR_CPPFLAGS = -D__x86__ -D__linux__ -D__OSVERSION__=2 -D__OMNIORB2__ -D_MIT_POSIX_THREADS -D_REENTRANT
-DIR_CXXFLAGS = -fgcse -Os -fomit-frame-pointer -fnonnull-objects -pthread 
-DIR_INCLUDES =  -I.  
-DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
-LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
+DIR_CPPFLAGS := -D_MIT_POSIX_THREADS -D_REENTRANT -D__OSVERSION__=2 -D__OMNIORB2__
+DIR_CXXFLAGS := -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread -O3 -Os
+DIR_INCLUDES :=  -I.  
+DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
+		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 
 
-ALL_IDL	=	Types.idl LifeCycle.idl Naming.idl Cloneable.idl \
-		Transform.idl Region.idl Damage.idl Graphic.idl Traversal.idl Grid.idl Screen.idl \
-		LayoutKit.idl Subject.idl Telltale.idl \
-		Drawable.idl Pencil.idl DrawingKit.idl DrawTraversal.idl
+ALL_SUBTARGETS := 	BoundedValue.idl   Damage.idl	   LayoutKit.idl  Pencil.idl   Telltale.idl \
+			ClientContext.idl  Drawable.idl    LifeCycle.idl  Reactor.idl  Transform.idl \
+			Cloneable.idl	   DrawingKit.idl  Message.idl	  Region.idl   Traversal.idl \
+			Graphic.idl	   Metrics.idl	  Screen.idl   Types.idl	Text.idl \
+			Command.idl	   Grid.idl	   Naming.idl	  Subject.idl  WidgetKit.idl 
 
-IDL	=	Types.idl LifeCycle.idl Cloneable.idl \
-		Transform.idl Region.idl Damage.idl GTC.idl \
-		Grid.idl Screen.idl LayoutKit.idl Subject.idl Telltale.idl
+IDLSRCS := Naming.idl $(ALL_SUBTARGETS) 
+SO_TARGET := libwarsaw.so 
+SO_MAJOR_libwarsaw.so := 0
+SO_MINOR_libwarsaw.so := 0
+SO_PATCH_libwarsaw.so := 1
 
-SRC	=	$(patsubst %.idl, %SK.cc, $(IDL))
-DSRC	=	$(patsubst %.idl, %DynSK.cc, $(IDL))
-SKL	=	$(patsubst %SK.cc, %SK.o, $(SRC))
-DSKL	=	$(patsubst %DynSK.cc, %DynSK.o, $(DSRC))
+CXXSRCS := $(ALL_SUBTARGETS:.idl=SK.cc) 
+CXXSRCS += $(ALL_SUBTARGETS:.idl=DynSK.cc)
+SO_OBJS_libwarsaw.so := $(CXXSRCS:.cc=.o) 
 
-ALL_HDR	=	$(patsubst %.idl, %.hh, $(ALL_IDL))
-
-ALL_SUBTARGETS = $(CORE_IDLS)
-
-%SK.cc:	%.idl
-	omniidl2 -l -a $<
-
-%.hh:	%.idl
-	omniidl2 -l -a $<
-
-%SK.o:	%SK.cc
-	$(CXX) $(DIR_CPPFLAGS) $(DIR_CXXFLAGS) $(DIR_INCLUDES) -c $? -o $@
-
-libWarsaw.so:	headers $(SKL)
-	$(CXX) -shared $(DIR_LDFLAGS) $(SKL) -o $@ $(LIBS)
-#	cp $@ $(LPATH)
-
-libWarsawDyn.so:	headers $(DSKL)
-	$(CXX) -shared $(DIR_LDFLAGS) $(DSKL) -o $@ $(LIBS)
-#	cp $@ $(LPATH)
-
-GTC.idl:	Graphic.idl Traversal.idl DrawingKit.idl Drawable.idl Pencil.idl
-		cat Graphic.idl > GTC.idl
-		cat Traversal.idl >> GTC.idl
-		cat DrawingKit.idl >> GTC.idl
-		cat Drawable.idl >> GTC.idl
-		cat Pencil.idl >> GTC.idl
-
-#DK.idl:		DrawTraversal.idl
-#		cat DrawingKit.idl > DK.idl
-#		cat Drawable.idl >> DK.idl
-#		cat Pencil.idl >> DK.idl
-#		cat DrawTraversal.idl >> DK.idl
+include $(TOPDIR)/config/rules.mk
 
 
-headers:	$(ALL_HDR)
-
-clean:
-	rm -f $(ALL_HDR) $(SKL) $(DSKL) $(SRC) $(DSRC) DK* GTC* *~
-
-distclean:	clean
-	rm -f libWarsaw.so

@@ -24,8 +24,8 @@
 //
 //
 
-// !!!FIXME!!! this should become long long when it works
-typedef unsigned long Time; 
+#include <Types.idl>
+
 interface MessageListener;
 
 // a message is a prioritized payload. gets passed around between

@@ -25,14 +25,16 @@
 
 #include <Reactor.idl>
 #include <Graphic.idl>
+#include <Telltale.idl>
+#include <BoundedValue.idl>
 
 interface Widget : MessageListener, Graphic {};
 
 interface WidgetKit {
 
-    Widget button(in Reactor strategy, Telltale subj);
-    Widget slider(in Reactor strategy, BoundedValue subj);
-    Widget viewport(in Reactor strategy, BoundedValue x, BoundedValue y, Graphic child);
+    Widget button(in Reactor strategy, in Telltale subj);
+    Widget slider(in Reactor strategy, in BoundedValue subj);
+    Widget viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);
     
     // more widgets in here
 };
