@@ -38,6 +38,7 @@ public:
   virtual char *mode();
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void extension(const Warsaw::Allocation::Info &info, Warsaw::Region_ptr region);
   virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &);
 private:

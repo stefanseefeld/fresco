@@ -100,7 +100,13 @@ void VisualImpl::draw(DrawTraversal_ptr traversal)
   drawing->copy_drawable(_drawable, 0, 0, _width, _height);
 }
 
-CORBA::Boolean VisualImpl::handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &)
+void VisualImpl::extension(const Allocation::Info &info, Region_ptr region)
+{
+  Trace trace("VisualImpl::extension");
+  GraphicImpl::extension(info, region);
+}
+
+CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr, const Warsaw::Input::Event &)
 {
   Trace trace("VisualImpl::handle_positional");
 }
