@@ -50,6 +50,12 @@ AC_ARG_ENABLE(prague,
         if test ".$enable_prague" = . ; then
                 enable_prague=yes
         fi])
+AC_ARG_ENABLE(babylon,
+	[ --disable-babylon	   Don't build libBabylon],[
+	enable_babylon="$enableval"],[
+	if test ".$enable_babylon" = . ; then
+		enable_babylon=yes
+	fi])
 AC_ARG_ENABLE(warsaw,
 	[  --disable-warsaw        Don't build libWarsaw],[
 	enable_warsaw="$enableval"],[
@@ -91,6 +97,13 @@ if test ".$enable_prague" = .yes ; then
         else
                 enable_prague=no
         fi
+fi
+if test ".$enable_babylon" = .yes ; then
+	if test -d $srcdir/src/Babylon ; then
+		enable_babylon=yes
+	else
+		enable_babylon=no
+	fi
 fi
 if test ".$enable_warsaw" = .yes ; then
 	if test -d $srcdir/src/Warsaw ; then
@@ -170,6 +183,11 @@ if test ".$enable_prague" = .yes;
 		mkdir -p config/Prague
 		ac_subdirs="$ac_subdirs config/Prague"
 	fi
+if test ".$enable_babylon" = .yes;
+	then
+		mkdir -p config/Babylon
+		ac_subdirs="$ac_subdirs config/Babylon"
+	fi
 if test ".$enable_warsaw" = .yes ;
 	then
 		mkdir -p config/Warsaw
@@ -208,6 +226,7 @@ dnl Print a summary of what's going to be configured
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
 AC_MSG_RESULT([Configure Prague:          $enable_prague])
+AC_MSG_RESULT([Configure Babylon:         $enable_babylon])
 AC_MSG_RESULT([Configure Warsaw:          $enable_warsaw])
 AC_MSG_RESULT([Configure Server:          $enable_server])
 AC_MSG_RESULT([Configure Clients:         $enable_clients])

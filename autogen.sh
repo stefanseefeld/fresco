@@ -2,7 +2,7 @@
 #
 
 #by default, run autoconf in each package
-packages="Prague Warsaw Server Clients-C++ Clients-Python Clients-Java Clients-Perl Docs"
+packages="Prague Babylon Warsaw Server Clients-C++ Clients-Python Clients-Java Clients-Perl Docs"
 
 # Touch the timestamps on all the files since CVS messes them up
 #directory=`dirname $0`

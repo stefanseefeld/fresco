@@ -25,7 +25,7 @@ top_srcdir	:= @topdir@
 cdir		:= ./config
 
 # take all packages we know about...
-all		:= Prague Warsaw Server Clients-C++ Clients-Python Clients-Perl Docs
+all		:= Prague Babylon Warsaw Server Clients-C++ Clients-Python Clients-Perl Docs
 # ...and extract the ones which are present...
 packages	:= $(foreach package, $(all), $(shell test -f config/$(package)/subdirs.mk && echo '$(package)'))
 # ...and generate a list of all subdirs to run make in
