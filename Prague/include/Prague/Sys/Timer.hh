@@ -51,7 +51,6 @@ private:
   Notifier *notifier;
   Time timeout;
   Time interval;
-  long timer;
   static void *start(void *);
   static void expire();
   static void schedule(Timer *);

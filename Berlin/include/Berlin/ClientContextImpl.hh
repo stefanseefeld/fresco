@@ -40,8 +40,7 @@ public:
   CORBA::Boolean stillAlive(); 
 
 protected:
-  Prague::User * _ClientUser;
-  Mutex _ClientContext_mutex;
+  Prague::User user;
 };
 
 #endif

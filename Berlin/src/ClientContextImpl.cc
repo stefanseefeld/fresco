@@ -28,23 +28,17 @@
 
 #include "Berlin/ClientContextImpl.hh"
 #include <iostream>
+#include <string>
 
-ClientContextImpl::ClientContextImpl() {
-  MutexGuard guard(_ClientContext_mutex);
-  _ClientUser = new Prague::User(-1);
-};  
+ClientContextImpl::ClientContextImpl() {};  
   
-Unistring *ClientContextImpl::userName() {
-  const char *_userName = _ClientUser->Name();
-  const unsigned int length = strlen(_userName);
-  Unistring * theString = new Unistring;
-
-  for( unsigned int i = 0; i < length; i++) {
-    theString[i] = _userName[i];
-  }
-
-  return theString;
+Unistring *ClientContextImpl::userName()
+{
+  string name = user.Name();
+  Unistring *ustring = new Unistring;
+  ustring->length(name.length());
+  for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
+  return ustring;
 }
-
 
 CORBA::Boolean ClientContextImpl::stillAlive() {return (unsigned char)true;}
