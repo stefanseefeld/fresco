@@ -25,6 +25,9 @@
 interface Observer;
 
 interface Subject 
+//. Subject defines what it means to be observable.
+//. Observers can be bound to it so calling notify
+//. will call them back
 {
   void attach(in Observer o);
   void detach(in Observer o);
@@ -33,6 +36,9 @@ interface Subject
 };
 
 interface Observer
+//. Observers observ Subjects.
+//. Observers can be bound to it so calling notify
+//. will call them back
 {
   void update(in Subject s, in any a);
 };

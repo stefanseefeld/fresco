@@ -23,7 +23,7 @@
 
 #include "Text/TextChunk.hh"
 #include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
 
 TextChunk::TextChunk(const Unistring & u, const Requisition &r) : 
     myCanonicalSize(r), myText(u)  {

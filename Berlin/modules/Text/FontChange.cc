@@ -23,7 +23,7 @@
 
 #include "Text/FontChange.hh"
 #include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
 #include <iostream>
 
 FontChange::FontChange(const Text::FontDescriptor & f, const Style::Spec &sty) :
