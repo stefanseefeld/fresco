@@ -31,13 +31,14 @@ TextChunk::TextChunk(const Unistring & u) : myText(u){
 }
 
 void TextChunk::request(Requisition &r) {
-  r.x.defined = false;
-  r.y.defined = false;
+    myIdealDrawingKit->allocateText(myText, r);
 }
 
 void TextChunk::draw(DrawTraversal_ptr dt) {
   cerr << "in TextChunk::Draw()" << endl;
   DrawingKit_ptr dk = dt->kit();
   Text::Font_var f = dk->currentFont();
-  f->drawText(myText);
+  Vertex l, u, o;
+  dt->bounds(l, u, o);
+  f->drawText(myText, o);
 }

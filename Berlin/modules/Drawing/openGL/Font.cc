@@ -55,7 +55,11 @@ void GLFont::acceptFontVisitor(Text::FontVisitor_ptr v){
 }
 
 void GLFont::allocateText(const Unistring &u, Graphic::Requisition &r){
-  // copy metrics into requisition here!
+    string txt = ASCIIFY(u);
+    r.x.natural = font->getWidth(txt.c_str());
+    r.x.defined = true;
+    r.y.natural = font->getHeight();
+    r.y.natural = true;
 }
 
 CORBA::Boolean  GLFont::canDrawText(const Unistring &u){

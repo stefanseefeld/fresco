@@ -25,15 +25,6 @@ top     = ../..
 cpath   = $(top)/config
 hpath   = $(top)/include/Berlin
 
-#cpath	= ../../config
-#ipath	= ../../include
-#lpath	= ../../lib
-dpath	= dep
-opath	= obj
-gpath	= gdb
-ppath	= prf
-rpath	= $(lpath)
-
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
@@ -43,33 +34,9 @@ LIBS	= -lPrague -lBerlin $(ORBLIBS)
 
 SRC	= TextKitImpl.cc TextChunk.cc FontChange.cc
 
-DEP	= $(patsubst %.cc, $(dpath)/%.d, $(SRC))
-OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
-GDB	= $(patsubst %.cc, $(gpath)/%.o, $(SRC))
-PRF	= $(patsubst %.cc, $(ppath)/%.o, $(SRC))
-
 TARGET	= $(lpath)/libText.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Text
-
-world:	$(TARGET)
-
-$(TARGET):	$(OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-
-clean:	
-		rm -f $(opath)/*.o $(gpath)/*.o $(ppath)/*.o $(dpath)/*.d
-		rm -f *~ $(ipath)/Text/*~
-
-distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean) 
--include $(DEP)
-endif 
-endif 
  
 include $(cpath)/plugin.mk

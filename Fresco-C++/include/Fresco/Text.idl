@@ -69,7 +69,7 @@ module Text {
     void acceptFontVisitor(in FontVisitor v);
     void getDescriptor(inout FontDescriptor desc);
     boolean canDrawText(in Unistring u);      
-    void allocateText(in Unistring u, out Graphic::Requisition req);
+    void allocateText(in Unistring u, inout Graphic::Requisition req);
     void drawText(in Unistring u, in Vertex v);
   };
   
