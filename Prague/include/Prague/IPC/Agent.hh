@@ -33,7 +33,7 @@ namespace Prague
  *
  * @Description {the interface to the client part of an ipc connection}
  */
-class Agent : public Thread
+class Agent// : public Thread
 {
 public:
   struct Notifier { virtual ~Notifier(){}; virtual void notify(short) = 0;};

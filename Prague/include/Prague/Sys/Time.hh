@@ -36,8 +36,10 @@ namespace Prague
 class Time : public timeval
 {
 public:
+  static const Time zero;
   Time() { tv_sec = tv_usec = 0;}
   Time(const timeval &t) : timeval(t) { normalize();}
+  Time(const timespec &t) { tv_sec = t.tv_sec, tv_usec = t.tv_nsec/1000; normalize();}
   Time(long l) { tv_sec = l/1000, tv_usec = (l - tv_sec*1000)*1000;}
   Time(int, int, int, int, int, int, int);
   Time(int, int, int, int);
@@ -53,6 +55,7 @@ public:
   Time  operator +  (const Time &T) const { Time t = *this; t += T; return t;}
   Time  operator -  (const Time &T) const { Time t = *this; t -= T; return t;}
   operator bool () const { return tv_sec != 0 || tv_usec != 0;}
+  operator timespec () const { timespec t; t.tv_sec = tv_sec, t.tv_nsec = tv_usec * 1000; return t;}
   operator const char *() const { return ctime(&tv_sec);}
   static Time currentTime();
   friend ostream &operator << (ostream &os, const Time &T) { return os << T.tv_sec << " s, " << T.tv_usec << " us";}

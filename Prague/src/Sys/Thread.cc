@@ -23,8 +23,8 @@
 
 using namespace Prague;
 
-Thread::TTable Thread::table;
-Mutex          Thread::globalMutex;
+Thread::table Thread::threads;
+Mutex         Thread::mutex;
 
 Mutex::Mutex(type t)
 {
@@ -37,23 +37,12 @@ Mutex::Mutex(type t)
 
 void *Thread::start(void *X)
 {
-  pthread_t me = pthread_self();
-  {
-    MutexGuard guard(globalMutex);
-    table.push_back(TEntry(me, reinterpret_cast<Thread *>(X)));
-  }
-  reinterpret_cast<Thread *>(X)->execute();
+  Thread *thread = reinterpret_cast<Thread *>(X);
+  append(pthread_self(), thread);
+  void *status = thread->p(thread->arg);
   pthread_exit(0);
-  {
-    MutexGuard guard(globalMutex);
-    for (TTable::iterator i = table.begin(); i != table.end(); i++)
-      if ((*i).first == me)
-	{
-	  table.erase(i);
-	  break;
-	}
-  }
-  return 0;
+  remove(pthread_self());
+  return status;
 }
 
 bool Thread::delay(const Time &time)
@@ -63,12 +52,28 @@ bool Thread::delay(const Time &time)
   return select(0, 0, 0, 0, &t) == 0;
 }
 
-Thread *Thread::self()
+void Thread::append(pthread_t tid, Thread *thread)
 {
-  MutexGuard guard(globalMutex);
-  pthread_t me = pthread_self();
-  for (TTable::iterator i = table.begin(); i != table.end(); i++)
-    if ((*i).first == me)
+  MutexGuard guard(mutex);
+  threads.push_back(pair<pthread_t, Thread *>(tid, thread));
+}
+
+void Thread::remove(pthread_t tid)
+{
+  MutexGuard guard(mutex);
+  for (table::iterator i = threads.begin(); i != threads.end(); i++)
+    if ((*i).first == tid)
+      {
+	threads.erase(i);
+	break;
+      }
+}
+
+Thread *Thread::find(pthread_t tid)
+{
+  MutexGuard guard(mutex);
+  for (table::iterator i = threads.begin(); i != threads.end(); i++)
+    if ((*i).first == tid)
       return (*i).second;
   return 0;
 }

@@ -23,6 +23,8 @@
 
 using namespace Prague;
 
+const Time Time::zero(0);
+
 /* @Method{Time::Time(int hour, int minute, int second, int millisecond)}
  *
  * @Description{}

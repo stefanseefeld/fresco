@@ -24,6 +24,7 @@
 
 #include <Prague/Sys/Time.hh>
 #include <Prague/Sys/Thread.hh>
+#include <vector>
 
 namespace Prague
 {
@@ -32,27 +33,34 @@ namespace Prague
  *
  * @Description{}
  */
-class Timer : public Thread
+class Timer
 {
+  struct comp;
+  friend class comp;
+  struct comp { bool operator () (const Timer *t1, const Timer *t2) { return t1->timeout > t2->timeout;}};
 public:
   struct Notifier { virtual ~Notifier(){}; virtual void notify() = 0;};
-  Timer(Notifier *n) : notifier(n), repeat(false) {}
+  Timer(Notifier *n) : notifier(n) {}
   virtual ~Timer() {}
-  void  start(long, bool flag = false);
-  void  start(const Time &);
+  void  start(const Time &, const Time & = Time::zero);
   void stop();
-//   void setInterval(long msec) { tint = msec;}
-protected:
-  virtual void execute(); 
+  static void run();
+  static void cancel();
+  static bool active() { return running;}
 private:
-  bool running();
-  bool sleep();
   Notifier *notifier;
-  long tint;
-  Time tout;
-  bool repeat : 1;
-  bool run :    1;
-  Mutex mutex;
+  Time timeout;
+  Time interval;
+  long timer;
+  static void *start(void *);
+  static void expire();
+  static void schedule(Timer *);
+  static void cancel(Timer *);
+  static vector<Timer *> timers;
+  static Thread server;
+  static Mutex mutex;
+  static Condition condition;
+  static bool running;
 };
 
 };

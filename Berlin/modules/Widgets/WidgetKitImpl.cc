@@ -108,10 +108,10 @@ Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
 Graphic_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
 //   DynamicFrame *frame = new DynamicFrame(2, c, Frame::convex, Frame::concav, Telltale::toggle);
-//   frame->_obj_is_ready(_boa());
+//   frame->Frame::_obj_is_ready(_boa());
 //   frame->body(g);
 //   frame->attach(t);
-//   return frame->_this();
+//   return frame->Frame::_this();
   return Graphic::_nil();
 }
 

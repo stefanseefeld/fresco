@@ -455,36 +455,30 @@ GridImpl::Span *GridImpl::fullAllocate(Axis axis, Region_ptr given)
 
 void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const Grid::Range &range)
 {
-//   Span *x_spans = fullAllocate(xaxis, given);
-//   Span *y_spans = fullAllocate(yaxis, given);
-//   Coord dx = x_spans[0].lower - x_spans[range.lower.col].lower;
-//   Coord dy = y_spans[0].lower - y_spans[range.lower.row].lower;
-//   TransformImpl tx;
-//   Painter_var p = t->current_painter();
-//   GridDimension& d = dimensions[static_cast<int>(yaxis)];
-//   for (long i = range.lower.row; i < range.upper.row; ++i)
-//     {
-//       for (GridOffset *o = d.offsets[i]; o; o = o->next(xaxis))
-// 	{
-// 	  if ((range.lower.col <= o->index.col) &&
-// 	      (o->index.col < range.upper.col)
-// 	      )
-// 	    {
-// 	      p->push_matrix();
-// 	      RegionImpl* r = new RegionImpl;
-// 	      spans_to_region(x_spans[o->index_.col], y_spans[o->index_.row], r);
-// 	      offset_region(r, dx, dy);
-// 	      tx.load_identity();
-// 	      Placement::normal_transform(r, &tx);
-// 	      p->premultiply(&tx);
-// 	      t->traverse_child(o, r);
-// 	      CORBA::release(r);
-// 	      p->pop_matrix();
-//             }
-//         }
-//     }
-//   delete [] x_spans;
-//   delete [] y_spans;
+  Span *xspans = fullAllocate(xaxis, given);
+  Span *yspans = fullAllocate(yaxis, given);
+  Coord dx = xspans[0].lower - xspans[range.lower.col].lower;
+  Coord dy = yspans[0].lower - yspans[range.lower.row].lower;
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
+  RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
+  GridDimension &d = dimensions[yaxis];
+  for (long y = range.lower.row; y < range.upper.row; y++)
+    {
+       for (long x = range.lower.col; x != range.upper.col; x++)
+	 {
+	   tx->loadIdentity();
+	   spansToRegion(xspans[x], yspans[y], region);
+	   offsetRegion(region, dx, dy);
+	   Placement::normalTransform(region, tx);
+	   t->traverseChild(d.children[y][x], region->_this(), tx->_this());
+         }
+    }
+  region->_dispose();
+  tx->_dispose();
+  delete [] xspans;
+  delete [] yspans;
 }
 
 void GridImpl::traverseWithoutAllocation(Traversal_ptr t, const Grid::Range &range)

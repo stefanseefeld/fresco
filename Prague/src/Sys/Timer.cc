@@ -20,38 +20,21 @@
  * MA 02139, USA.
  */
 #include "Prague/Sys/Timer.hh"
+#include <algorithm>
 
 using namespace Prague;
 
-/* @Method{void Timer::start(long msec, bool repeat)}
- *
- * @Description{starts the Timer to produce a @code{timeout} in @var{msec} milliseconds
- @var{repeat} indicates whether this should produce timeouts @strong{every} @var{msec} milliseconds}
- */
-void Timer::start(long msec, bool flag)
-{
-  {
-    MutexGuard guard(mutex);
-    repeat = flag;
-    tint = msec;
-    tout = Time::currentTime() + Time(msec);
-    run = true;
-  }
-  Thread::start();
-};
+vector<Timer *> Timer::timers;
+Thread          Timer::server(Timer::start, 0);
+Mutex           Timer::mutex;
+Condition       Timer::condition(Timer::mutex);
+bool            Timer::running = false;
 
-/* @Method{void Timer::start(const Time &T)}
- *
- * @Description{start a Timer (single shot) to produce a timeout at absolute time T}
- */
-void Timer::start(const Time &time)
+void Timer::start(const Time &t, const Time &i)
 {
-  {
-    MutexGuard guard(mutex);
-    repeat = false;
-    run = true;
-  }
-  Thread::start();
+  timeout = t;
+  interval = i;
+  Timer::schedule(this);
 };
 
 /* @Method{void Timer::stop()}
@@ -60,32 +43,70 @@ void Timer::start(const Time &time)
  */
 void Timer::stop()
 {
-  MutexGuard guard(mutex);
-  run = false;
+  Timer::cancel(this);
 };
 
-void Timer::execute()
-{
-  do
-    if (sleep() && notifier) notifier->notify();
-  while (repeat && running());
-}
-
-bool Timer::running()
+void Timer::run()
 {
   MutexGuard guard(mutex);
-  return run;
+  running = true;
+  server.start();
 }
 
-bool Timer::sleep()
+void Timer::cancel()
 {
   {
     MutexGuard guard(mutex);
-    tout += tint;
+    running = false;
   }
-  Thread::delay(tout - Time::currentTime());
-  {
-    MutexGuard guard(mutex);
-    return run;
-  }
+  server.join();
+}
+
+void *Timer::start(void *)
+{
+  MutexGuard guard(mutex);
+  while (running)
+    {
+      if (!timers.size()) condition.wait();
+      else
+        {
+          Time time = timers.front()->timeout;
+          condition.wait(time);
+        }
+      expire();
+    }
+  return 0;
+}
+
+void Timer::expire()
+{
+  Time now = Time::currentTime();
+  while (timers.size() && timers.front()->timeout <= now)
+    {
+      Timer *timer = timers.front();
+      timer->notifier->notify();
+      if (timer->interval != Time::zero)
+	{
+          do timer->timeout += timer->interval;
+          while (timer->timeout <= now);
+	  timers.erase(timers.begin());
+	  timers.push_back(timer);
+	  push_heap(timers.begin(), timers.end(), comp());
+	}
+    }
+}
+
+void Timer::schedule(Timer *timer)
+{
+  MutexGuard guard(mutex);
+  timers.push_back(timer);
+  push_heap(timers.begin(), timers.end(), comp());
+  condition.signal();
+}
+
+void Timer::cancel(Timer *timer)
+{
+  MutexGuard guard(mutex);
+  timers.erase(find(timers.begin(), timers.end(), timer));
+  condition.signal();
 }

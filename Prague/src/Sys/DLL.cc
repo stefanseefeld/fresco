@@ -21,28 +21,44 @@
  */
 
 #include "Prague/Sys/DLL.hh"
+#if 1
+#include <dlfcn.h>
+#else /* _aix_ */
+#include <dl.h>
+#endif
 
 using namespace Prague;
 
-/* @Method{DLL::DLL(const string &name)}
+/* @Method{void DLL::open(const string &name, bool now = true)}
  *
- * @Description{opens the library @var{name}}}
+ * @Description{open the library @var{name}}}
  */
-DLL::DLL(const string &name)
+void DLL::open(const string &name, bool now = true)
 {
   lib = name;
-  handle = dlopen(lib.c_str(), now);
+#if 1
+  handle = dlopen(lib.c_str(), now ? RTLD_NOW : RTLD_LAZY);
   if (!handle) err = dlerror();
-};
+#else /* _aix_ */
+  shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
+  if (!shl_handle) err = strerror(errno);
+  else handle = shl_handle;
+#endif
+}
 
-/* @Method{DLL::~DLL()}
+/* @Method{void DLL::close()}
  *
- * @Description{close the library}}
+ * @Description{close the library}
  */
-DLL::~DLL()
+void DLL::close()
 {
+#if 1
   if (handle) dlclose(handle);
-};
+#else /* _aix_ */
+  if (handle) shl_unload (reinterpret_cast<shl_t>(handle));
+#endif
+  handle = 0;
+}
 
 /* @Method{void *DLL::resolve(const string &symbol)}
  *
@@ -51,7 +67,13 @@ DLL::~DLL()
 void *DLL::resolve(const string &symbol)
 {
   if (!handle) return 0;
+#if 1
   void *tmp = dlsym(handle, symbol.c_str());
   if (!tmp) err = dlerror();
+#else /* _aix_ */
+  void *tmp;
+  if (shl_findsym (reinterpret_cast<shl_t *>(&handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || handle == 0 || tmp == 0)
+    err = strerror(errno);
+#endif
   return tmp;
 };

@@ -22,7 +22,6 @@
 #ifndef _DLL_hh
 #define _DLL_hh
 
-#include <dlfcn.h>
 #include <string>
 
 namespace Prague
@@ -35,9 +34,11 @@ namespace Prague
 class DLL
 {
 public:
-  enum {lazy = RTLD_LAZY, now = RTLD_NOW};
-  DLL(const string &);
-  ~DLL();
+  DLL() : handle(0) {}
+  DLL(const string &name, bool now = true) { open(name, now);}
+  ~DLL() { close();}
+  void open(const string &, bool = true);
+  void close();
   void *resolve(const string &);
   const string &name() const { return lib;}
   const string &error() const { return err;}

@@ -65,7 +65,7 @@ public:
   void broadcast() { pthread_cond_broadcast(&condition);}
   void signal() { pthread_cond_signal(&condition);}
   void wait() { pthread_cond_wait(&condition, &mutex.mutex);}
-//   void timedwait() { pthread_cond_wait(&condition, &mutex.mutex);}
+  void wait(const Time &t) { timespec ts = t; pthread_cond_timedwait(&condition, &mutex.mutex, &ts);}
 private:
   pthread_cond_t condition;
   Mutex &mutex;
@@ -100,25 +100,28 @@ private:
 
 class Thread
 {
-  typedef pair<pthread_t, Thread *> TEntry;
-  typedef vector<TEntry> TTable;
+  typedef vector<pair<pthread_t, Thread *> > table;
 public:
-  Thread() : running(false) {}
-  virtual ~Thread() { cancel(); wait();}
+  typedef void *(*proc)(void *);
+  Thread(proc pp, void *a) : p(pp), arg(a), running(false) {}
+  virtual ~Thread() { cancel(); join();}
   void start() { if (pthread_create(&thread, 0, &start, this) == 0) running = true;}
-  void wait() { pthread_join(thread, 0);}
+  void join() { pthread_join(thread, 0);}
   void cancel() { if (running) pthread_cancel(thread);}
   void exit() { if (running) pthread_exit(0);}
   static bool delay(const Time &);
-  static Thread *self();
-protected:
-  virtual void execute() = 0;
+  static Thread *self() { return find(pthread_self());}
 private:
-  static void *start(void *);
+  proc p;
+  void *arg;
   pthread_t thread;
   bool running;
-  static TTable table;
-  static Mutex globalMutex;
+  static void *start(void *);
+  static void append(pthread_t, Thread *);
+  static void remove(pthread_t);
+  static Thread *find(pthread_t);
+  static table threads;
+  static Mutex mutex;
 };
 
 };

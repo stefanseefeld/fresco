@@ -3,7 +3,7 @@
 # if anyone would like to make it a little more portable
 # please feel free
 
-STYLESHEETS = /usr/lib/dsssl/stylesheets/docbook
+STYLESHEETS = /usr/lib/sgml/stylesheets/docbook
 HTML_SHEET = $(STYLESHEETS)/html/docbook.dsl
 PRINT_SHEET = $(STYLESHEETS)/print/docbook.dsl
 DOCBOOK_VARS = -V %use-id-as-filename% 
