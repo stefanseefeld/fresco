@@ -186,6 +186,7 @@ int main(int argc, char **argv)
   /*
    * ...then start the ORB...
    */
+  omniORB::maxTcpConnectionPerServer = 10;
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
   PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();
