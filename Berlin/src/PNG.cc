@@ -305,13 +305,24 @@ Color PNG::pixel(unsigned long x, unsigned long y, unsigned char *const *rows)
     }
   else
     {
-      if (_rinfo->color_type != rgbalpha) std::cerr << "wrong color type : " << (int) _rinfo->color_type << std::endl;
-      if (_rinfo->bit_depth != 8) std::cerr << "wrong depth : " << (int) _rinfo->bit_depth << std::endl;
-      const unsigned char *pixel = rows[y] + 4*x;
+      unsigned char *pixel = 0;
+      unsigned char *buffer = 0;
+      if (_rinfo->color_type != rgbalpha) pixel = buffer = new unsigned char[4];
+
+      switch (_rinfo->color_type)
+	{
+	case palette: palette_to_rgbalpha(rows[y] + x, rows[y] + x+1, buffer); break;
+	case gray: gray_to_rgbalpha(rows[y] + x, rows[y] + x+1, buffer); break;
+	case grayalpha: grayalpha_to_rgbalpha(rows[y] + 2*x, rows[y] + 2*(x+1), buffer); break;
+	case rgb: rgb_to_rgbalpha(rows[y] + 3*x, rows[y] + 3*(x+1), buffer); break;
+	default: pixel = rows[y] + 4*x;
+	}
+
       color.red = static_cast<double>(*pixel) / 255;
       color.green = static_cast<double>(*(pixel + 1)) / 255;
       color.blue = static_cast<double>(*(pixel + 2)) / 255;
       color.alpha = static_cast<double>(*(pixel + 3)) / 255;
+      delete [] buffer;
     }
   return color;
 }
