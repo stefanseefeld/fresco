@@ -34,6 +34,9 @@ module Warsaw
   interface Drawable;
   interface DrawingKit3D;
   
+  //. This kit provides a basic interface to renderers which can be used to
+  //. render the scene graph. It is state based, i.e. you can push new attributes
+  //. onto it and restore loder attributes later.
   interface DrawingKit : Kit
     {
       //.all values are in 1/64th of a pixel

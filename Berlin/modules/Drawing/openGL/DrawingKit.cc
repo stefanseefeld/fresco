@@ -37,11 +37,37 @@
 using namespace Prague;
 using namespace Warsaw;
 
+GLDrawingKit::Light::Light()
+  : _max(-1), _number(-1)
+{
+  glGetIntegerv(GL_MAX_LIGHTS, &_max);
+}
+
+int GLDrawingKit::Light::push()
+{
+  ++_number;
+  if (_number >= _max) return -1;
+  glEnable(static_cast<GLenum>(GL_LIGHT0 + _number));
+  return GL_LIGHT0 + _number;
+}
+
+int GLDrawingKit::Light::top() const
+{
+  return GL_LIGHT0 + _number;
+}
+
+void GLDrawingKit::Light::pop()
+{
+  if (_number < _max) glDisable(static_cast<GLenum>(GL_LIGHT0 + _number));
+  --_number;
+}
+
 GLDrawingKit::GLDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p),
     _drawable(0),
     _tx(0),
     _font(0),
+    _light(0),
     _textures(100),
     _images(500)
 {
@@ -58,6 +84,7 @@ void GLDrawingKit::save()
 {
   DrawingKitBase::save();
   _states.push(DrawState());
+  _states.top().lights = _light->top();
 }
 
 void GLDrawingKit::restore()
@@ -65,8 +92,7 @@ void GLDrawingKit::restore()
   DrawingKitBase::restore();
   if (_states.empty()) return; // no state to restore
   DrawState &prev = _states.top();
-//   if(prev.flags & (1 << DrawState::st_lighting)) set_lighting(prev.lighting);
-//   if(prev.flags & (1 << DrawState::st_lights)) set_lights(prev.lights);
+  while (_light->top() > prev.lights) _light->pop();
   _states.pop();
 }
 
@@ -103,7 +129,7 @@ void GLDrawingKit::init()
 #else
 #  error "GLDrawingKit cannot be used with this console."
 #endif
-  
+  _light = new Light();
   glViewport(0, 0, _drawable->width(), _drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
@@ -115,7 +141,6 @@ void GLDrawingKit::init()
 
   glShadeModel(GL_SMOOTH);
 //   glEnable(GL_LIGHTING);
-//   glEnable(GL_LIGHT0);
   glFrontFace(GL_CW);
   glEnable(GL_ALPHA_TEST);
   glEnable(GL_SCISSOR_TEST);
@@ -332,12 +357,102 @@ void GLDrawingKit::set_font_fullname(const Unistring &fn) {}
 void GLDrawingKit::set_font_style(const Unistring &s) {}
 void GLDrawingKit::set_font_attribute(const NVPair & nvp) {}
 
-// vpod GLDrawingKit::set_lighting(bool flag)
-// {
-//   if (flag) glEnable(GL_LIGHTING);
-//   else glDisable(GL_LIGHTING);
-// }
+void GLDrawingKit::directional_light(const Color &color,
+				     CORBA::Float intensity,
+				     const Vertex &direction)
+{
+  int id = _light->push();
+  if (id < GL_LIGHT0) return;
 
+  // RGBA intensities of source are the product of the color and
+  // intensity, with 1.0 alpha
+  GLfloat black[] = {0., 0., 0., 1.};
+  GLfloat light[] = {color.red * intensity, color.green * intensity, color.blue * intensity, 1.};
+  glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
+  glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
+  glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
+
+  // "Position" is the direction vector negated with a 0.0 w
+  // component. Yet another GL peccadillo.
+  GLfloat dir[] = {-direction.x, -direction.y, -direction.z, 0.};
+  glLightfv(static_cast<GLenum>(id), GL_POSITION, dir);
+
+  // Make sure no spotlight stuff is on
+  glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, 0.0);
+  glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, 180.0);
+
+  // Attenuation does not matter for directional sources.
+}
+
+void GLDrawingKit::point_light(const Warsaw::Color &color,
+			       CORBA::Float intensity,
+			       const Warsaw::Vertex &position)
+{
+  int id = _light->push();
+  if (id < GL_LIGHT0) return;
+
+  // RGBA intensities of source are the product of the color and
+  // intensity, with 1.0 alpha
+  GLfloat black[] = {0., 0., 0., 1.};
+  GLfloat light[] = {color.red * intensity, color.green * intensity, color.blue * intensity, 1.};
+  glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
+  glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
+  glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
+
+  // Set position
+  GLfloat dir[] = {position.x, position.y, position.z, 1.0};
+  glLightfv(static_cast<GLenum>(id), GL_POSITION, dir);
+
+  // Make sure no spotlight stuff is on
+  glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, 0.0);
+  glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, 180.0);
+
+  // Attenuation is accessed from the state
+  //   const SbVec3f &atten = SoLightAttenuationElement::get(action->getState());
+  //   glLightf(static_cast<GLenum>(id), GL_CONSTANT_ATTENUATION,  atten[2]);
+  //   glLightf(static_cast<GLenum>(id), GL_LINEAR_ATTENUATION,    atten[1]);
+  //   glLightf(static_cast<GLenum>(id), GL_QUADRATIC_ATTENUATION, atten[0]);
+}
+
+void GLDrawingKit::spot_light(const Color &color,
+			      CORBA::Float intensity,
+			      const Vertex &position,
+			      const Vertex &direction,
+			      CORBA::Float dropoffrate,
+			      CORBA::Float cutoffangle)
+{
+  int id = _light->push();
+  if (id < GL_LIGHT0) return;
+
+  // RGBA intensities of source are the product of the color and
+  // intensity, with 1.0 alpha
+  GLfloat black[] = {0., 0., 0., 1.};
+  GLfloat light[] = {color.red * intensity, color.green * intensity, color.blue * intensity, 1.};
+  glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
+  glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
+  glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
+
+  // Set position
+  GLfloat pos[] = {position.x, position.y, position.z, 1.0};
+  glLightfv(static_cast<GLenum>(id), GL_POSITION, pos);
+
+  // Set up spotlight stuff. Note that the GL angle must be specified
+  // in degrees, though the field is in radians
+  GLfloat dir[] = {direction.x, direction.y, direction.z, 1.0};
+  glLightfv(static_cast<GLenum>(id), GL_SPOT_DIRECTION, dir);
+
+  if (dropoffrate <= 0.0)
+    glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, .01);
+  else 
+    glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT,  dropoffrate * 128.0);
+  glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, cutoffangle*(180.0/M_PI));
+
+  // Attenuation is accessed from the state
+  //   const SbVec3f &atten = SoLightAttenuationElement::get(action->getState());
+  //   glLightf(static_cast<GLenum>(id), GL_CONSTANT_ATTENUATION,  atten[2]);
+  //   glLightf(static_cast<GLenum>(id), GL_LINEAR_ATTENUATION,    atten[1]);
+  //   glLightf(static_cast<GLenum>(id), GL_QUADRATIC_ATTENUATION, atten[0]);
+}
 
 void GLDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
 void GLDrawingKit::draw_text(const Unistring &us) {}

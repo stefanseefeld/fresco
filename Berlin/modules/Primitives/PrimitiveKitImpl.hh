@@ -40,6 +40,11 @@ public:
   Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
   Primitive::Geometry_ptr geometry(const Warsaw::Mesh &);
   Warsaw::Graphic_ptr transformer(Warsaw::Graphic_ptr);
+
+  Warsaw::Graphic_ptr directional_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);
+  Warsaw::Graphic_ptr point_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);
+  Warsaw::Graphic_ptr spot_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &, const Warsaw::Vertex &,
+				 CORBA::Float, CORBA::Float);
 };
 
 #endif

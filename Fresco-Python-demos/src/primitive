@@ -35,19 +35,23 @@ class Rotator(Warsaw__POA.Observer):
         self.__parent.need_redraw()
 
 
-X = .525731112119133606 
-Z = .850650808352039932
+#X = .525731112119133606 
+#Z = .850650808352039932
+#
+#nodes = [(-X, 0.0, Z), (X, 0.0, Z), (-X, 0.0, -Z), (X, 0.0, -Z),    
+#         (0.0, Z, X), (0.0, Z, -X), (0.0, -Z, X), (0.0, -Z, -X),    
+#         (Z, X, 0.0), (-Z, X, 0.0), (Z, -X, 0.0), (-Z, -X, 0.0)]
+#
+#triangles = [(0,4,1), (0,9,4), (9,5,4), (4,5,8), (4,8,1),    
+#             (8,10,1), (8,3,10), (5,3,8), (5,2,3), (2,7,3),    
+#             (7,10,3), (7,6,10), (7,11,6), (11,0,6), (0,1,6), 
+#             (6,1,10), (9,0,11), (9,11,2), (9,2,5), (7,2,11)]
+#
+#normals = nodes[:]
 
-nodes = [(-X, 0.0, Z), (X, 0.0, Z), (-X, 0.0, -Z), (X, 0.0, -Z),    
-         (0.0, Z, X), (0.0, Z, -X), (0.0, -Z, X), (0.0, -Z, -X),    
-         (Z, X, 0.0), (-Z, X, 0.0), (Z, -X, 0.0), (-Z, -X, 0.0)]
-
-triangles = [(0,4,1), (0,9,4), (9,5,4), (4,5,8), (4,8,1),    
-             (8,10,1), (8,3,10), (5,3,8), (5,2,3), (2,7,3),    
-             (7,10,3), (7,6,10), (7,11,6), (11,0,6), (0,1,6), 
-             (6,1,10), (9,0,11), (9,11,2), (9,2,5), (7,2,11)]
-
-normals = nodes[:]
+nodes = [(-1, -1, -1), (1, -1, -1), (0, -1, 1), (0, 1, 0)]
+triangles = [(0, 1, 3), (1, 2, 3), (2, 0, 3), (0, 2, 1)]
+normals = [(0., .8, .2), (.8, .2, .2), (-.2, .2, .2), (0., -1., 0.)]
 
 def generate_mesh(w, h, d):
     scale = lambda x, w=w, h=h, d=d: Warsaw.Vertex(x[0] * w, x[1] * h, x[2] * d)
@@ -112,7 +116,13 @@ class GraphicApp (berlin.App):
         phi.attach(Rotator(phi, transformer, root, Warsaw.zaxis)._this())
         transformer = kits.primitive.transformer(transformer)
         psi.attach(Rotator(psi, transformer, root, Warsaw.yaxis)._this())
-        root._set_body(transformer)
+        green = Warsaw.Color(0., 1., 0., 1.)
+        direction = Warsaw.Vertex(1., 0., 0.)
+        light1 = kits.primitive.directional_light(transformer, green, 1., direction)
+        orange = Warsaw.Color(0.8, 1., 0., 1.)
+        direction = Warsaw.Vertex(0., 1., 0.)
+        light2 = kits.primitive.directional_light(light1, green, 1., direction)
+        root._set_body(light2)
         vbox.prepend_graphic(kits.layout.align(root, 0., 0.))
         spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.inset, 0.5)
         frame = kits.tool.frame(vbox, 10., spec, 1)

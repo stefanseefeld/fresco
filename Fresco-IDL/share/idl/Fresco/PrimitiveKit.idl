@@ -43,6 +43,12 @@ module Warsaw
       Primitive::Geometry geometry(in Mesh m);
       //. apply a fixed transformation to the body graphic
       Graphic transformer(in Graphic g);
+      //. create a directional light source
+      Graphic directional_light(in Graphic g, in Color c, in float i, in Vertex d);
+      //. create a point light source
+      Graphic point_light(in Graphic g, in Color c, in float i, in Vertex l);
+      //. create a spot light source
+      Graphic spot_light(in Graphic g, in Color c, in float i, in Vertex l, in Vertex d, in float r, in float a);
     };
 };
 

@@ -26,6 +26,7 @@
 // #include "Primitive/PolyPrimitive.hh"
 #include "Primitive/Primitives.hh"
 #include "Primitive/Transformer.hh"
+#include "Primitive/Light.hh"
 
 using namespace Warsaw;
 
@@ -61,6 +62,32 @@ Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
   activate(transformer);
   transformer->body(g);
   return transformer->_this();
+}
+
+Graphic_ptr PrimitiveKitImpl::directional_light(Warsaw::Graphic_ptr g, const Warsaw::Color &c, CORBA::Float i, const Warsaw::Vertex &d)
+{
+  Light *light = new DirectionalLight(c, i, d);
+  activate(light);
+  light->body(g);
+  return light->_this();
+}
+
+Graphic_ptr PrimitiveKitImpl::point_light(Warsaw::Graphic_ptr g, const Warsaw::Color &c, CORBA::Float i, const Warsaw::Vertex &p)
+{
+  Light *light = new PointLight(c, i, p);
+  activate(light);
+  light->body(g);
+  return light->_this();
+}
+
+Graphic_ptr PrimitiveKitImpl::spot_light(Warsaw::Graphic_ptr g, const Warsaw::Color &c, CORBA::Float i,
+					 const Warsaw::Vertex &p, const Warsaw::Vertex &d,
+					 CORBA::Float r, CORBA::Float a)
+{
+  Light *light = new SpotLight(c, i, p, d, r, a);
+  activate(light);
+  light->body(g);
+  return light->_this();
 }
 
 extern "C" KitImpl *load()

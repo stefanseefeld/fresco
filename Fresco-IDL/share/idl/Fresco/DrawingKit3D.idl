@@ -42,6 +42,9 @@ module Warsaw
     float shininess;
   };
 
+  //. this kit is more elaborate than the DrawingKit it derives from. It
+  //. supports support for drawing 3D primitives, as well as other widgets
+  //. usually found in 3D renderers, such as light, material, etc.
   interface DrawingKit3D : DrawingKit
   {
     enum TextureMode { TextureOff, Texture1D, Texture2D, Texture3D};
@@ -49,8 +52,9 @@ module Warsaw
     attribute MaterialAttr material;
     attribute Rasters textures;
     attribute TextureMode tex_mode;
-//     attribute bool lighting;
-//     void add_light();
+    void directional_light(in Color c, in float i, in Vertex d);
+    void point_light(in Color c, in float i, in Vertex l);
+    void spot_light(in Color c, in float i, in Vertex l, in Vertex d, in float r, in float a);
     attribute FoggingMode fog_mode;
     
     void draw_mesh(in Mesh m);    

@@ -46,17 +46,27 @@
 
 #include <string>
 #include <vector>
+#include <bitset>
 
 class GLDrawingKit : public virtual POA_Warsaw::DrawingKit3D,
 		     public DrawingKitBase, public KitImpl
 {
+  class Light
+  {
+  public:
+    Light();
+    int push();
+    int top() const;
+    void pop();
+  private:
+    int _max;
+    int _number;
+  };
   struct DrawState
   {
-    enum { st_lighting, st_lights};
-    DrawState() : flags(0) {}
-//     bitset<st_last> flags;
-    unsigned long flags;
-    bool lighting;
+    enum { st_lights, st_last};
+    DrawState() {}
+    std::bitset<st_last> flags;
     size_t lights;
   };
 public:
@@ -103,8 +113,9 @@ public:
   virtual Warsaw::Rasters *textures() { return new Warsaw::Rasters();}
   virtual void tex_mode(Warsaw::DrawingKit3D::TextureMode) {}
   virtual Warsaw::DrawingKit3D::TextureMode tex_mode() { return Warsaw::DrawingKit3D::TextureOff;}
-//   virtual void lighting(CORBA::Boolean) {}
-//   virtual CORBA::Boolean lighting();
+  virtual void directional_light(const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);
+  virtual void point_light(const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);
+  virtual void spot_light(const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &, const Warsaw::Vertex &, CORBA::Float, CORBA::Float);
   virtual void fog_mode(Warsaw::DrawingKit3D::FoggingMode) {}
   virtual Warsaw::DrawingKit3D::FoggingMode fog_mode() { return Warsaw::DrawingKit3D::FogOff;}
 
@@ -168,7 +179,7 @@ public:
   Warsaw::DrawingKit::Fillstyle              _fs;
   GLRaster                                  *_tx;
   GLFont                                    *_font;
-  
+  Light                                     *_light;
   ObjectCache<Warsaw::Raster_var, GLTexture> _textures;
   ObjectCache<Warsaw::Raster_var, GLImage>   _images;
 };
