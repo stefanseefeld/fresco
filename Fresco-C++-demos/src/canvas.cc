@@ -111,7 +111,7 @@ int main(int argc, char **argv)
   setenv("GGI_DEFMODE", buffer, 1);
   switch (fork())
     {
-    case -1: std::cerr << "can't fork !" << std::ndl; exit(-1); break;
+    case -1: std::cerr << "can't fork !" << std::endl; exit(-1); break;
     case 0:
       execlp("/bin/sh","/bin/sh","-c", program.c_str(), 0);
       exit(127);
