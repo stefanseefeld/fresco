@@ -60,6 +60,11 @@ endif
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Berlin/Console $(top_srcdir)/include/Console/GGI
 
+
+
 ifneq (,$(findstring $(action), GGI GGIGL))
 include $(cdir)/Server/module.mk
+else
+clean:
+	@echo "Noting to clean up."
 endif
