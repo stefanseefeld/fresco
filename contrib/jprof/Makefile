@@ -40,6 +40,7 @@ CPPSRCS = \
 LIBS = \
 	-lbfd \
 	-liberty \
+	-ldl \
 	$(NULL)
 
 # Stuff to build the library used to wrap malloc
