@@ -21,7 +21,7 @@
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idir		:= @idldir@/share/idl
+idir		:= @Fresco_IDL_prefix@/share/idl
 cdir		:= @top_builddir@/config
 
 include $(cdir)/local.mk

@@ -40,8 +40,8 @@ dnl AC_MSG_PART(CORBA Environment)
 FRESCO_OMNIORBPY_CHECK
 
 FRESCO_IDL_PATH
-idldir="$FRESCO_IDL_PREFIX"
-AC_SUBST(idldir)
+
+AC_SUBST(Fresco_IDL_prefix)
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
