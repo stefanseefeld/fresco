@@ -49,6 +49,10 @@ namespace SyUnit
                     const std::string msg = "assert_equals failed")
           { if (! (s == t) ) fail(msg); }
       
+      // Should modify this to use a real floating point comparision -- see,
+      // e.g.,
+      // http://www.boost.org/libs/test/doc/floating_point_comparison.htm ,
+      // and its references.
       void
       assert_equals_delta(double x, double y, double epsilon,
                           const std::string msg =
@@ -82,7 +86,10 @@ namespace SyUnit
       
       void
       assert_equals(double, double, const std::string = "");
-      
+
+      // FIXME: implement this
+//      void
+//      checkpoint(const std::string msg);
   };
   
   class InterfaceTestCase : public TestCase {};
