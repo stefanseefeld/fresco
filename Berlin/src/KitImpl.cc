@@ -48,6 +48,7 @@ Warsaw::Kit::PropertySeq *KitImpl::properties()
 
 CORBA::Boolean KitImpl::supports(const Warsaw::Kit::PropertySeq &p)
 {
+  Trace trace("KitImpl::supports");
   return KitFactory::supports(props, p);
 }
 

@@ -95,7 +95,8 @@ public:
   /*
    * if you really must ask...
    */
-  ggi_visual_t visual() { return _visual;}
+  ggi_visual_t visual() const { return _visual;}
+  ggi_mode     mode() const { return _mode;}
   const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (_visual, i);}
   void init() { }
   void finish() { }

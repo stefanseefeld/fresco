@@ -118,14 +118,9 @@ bool ServerContextImpl::ping()
   Trace trace("ServerContextImpl::ping");
   MutexGuard guard (mutex);
   bool alive = true;
-  try
-    {
-      if (CORBA::is_nil(cContext)) alive = false;
-      else cContext->ping();
-    }
-  catch (...)
-    {
-      alive = false;
-    }
+  if (CORBA::is_nil(cContext)) alive = false;
+  else
+    try { cContext->ping();}
+    catch (...) { alive = false;}
   return alive;
 }

@@ -19,28 +19,24 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-top		= ../..
-cpath		= $(top)/config
+top	= ../..
+cpath	= $(top)/config
+hpath	= $(top)/include/GGI
 
 include $(cpath)/local.mk
-include $(cpath)/Clients-C++/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CXXFLAGS	+= -Wall $(OPTFLAGS)
-LIBS		+= -lBerlin -lPrague
+LIBS		+= -lBerlin
 
-TARGETS		= demo canvas ggiwrapper # trafo -- doesn't work here. Anyone?
-demo_SRC	= \
-		  Application.cc LayoutDemo.cc TextDemo.cc \
-		  EditTextDemo.cc RasterDemo.cc TransformDemo.cc \
-		  ColorDemo.cc LogoDemo.cc FocusDemo.cc \
-		  ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
-canvas_SRC	= canvas.cc
+SRC		= VisualImpl.cc GGIKitImpl.cc
 
-ggiwrapper_SRC	= ggiwrapper.cc
-
-trafo_SRC	= trafo.cc
+MODULE		= GGI
 
 all: world
 
-include $(cpath)/binary.mk
+vpath %.d $(dpath)
+vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/GGI
+
+include $(cpath)/module.mk
+
