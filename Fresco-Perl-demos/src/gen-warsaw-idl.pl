@@ -117,8 +117,8 @@ foreach $file (@order) {
   open(IN, "<$file");
   while (<IN>) {
     if (! /^#include/) {
-# MICO needed this
-#      s/\b(fixed|supports)\b/$1DELETETHIS/;
+# MICO needs this; so will omniidl
+      s/\b(fixed|supports)\b/_$1/;
       s#^(.*omniLifeCycleInfo.*)$#// $1#;
       s#^(.*Patch.*)$#// $1#;
       if (/module[^{]*$/) {   # they didn't put the { on the same line as the module declaration.  Hrmph.

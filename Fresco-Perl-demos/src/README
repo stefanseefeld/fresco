@@ -6,7 +6,8 @@ Requirements:
      in a separate thread.  On debian potato, just
        apt-get install perl-5.005-thread
      and you should be fine.
-  2) perl modules:
+  2) perl modules (read the bottom of this document before installing these,
+     or you'll just have to do it over again):
     2a) COPE
         This is the CORBA library that we use; see
           http://www.lunatech.com/research/corba/cope/
@@ -16,8 +17,15 @@ Requirements:
         major tweaking.
         COPE itself requires an interface repository to work; the standard
         one is included in ORBacus and called irserv, or there's a contrib
-        program in the COPE tree to let you use MICO's interface repository
-        instead.  I used ORBacus's, but MICO's will probably work as well.
+        program in the COPE tree (COPE/compat/MICO/*) to let you use MICO's
+        interface repository instead.
+        (on debian, I just did:
+           cd compat/MICO
+           apt-get install mico-2.3.0-dev
+           g++ -o irior.cc -o irior -lmico-2.3.0 -ldl
+           cp irserv irior ~/bin
+         ~/bin is where store misc little programs like this, but you can
+         put the programs anywhere in your path.)
     2b) Unicode::Map8, Unicode::String
         We need these for text support in Berlin.  Get them from your
         favorite CPAN mirror.
