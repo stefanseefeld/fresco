@@ -54,9 +54,9 @@ void ScreenManager::repair()
   emanager->restore(Region_var(tmpDamage->_this()));
   traversal->init();
   screen->traverse(Traversal_var(traversal->_this()));
-  emanager->damage(Region_var(tmpDamage->_this()));
   drawing->flush();
   drawable->flush();
+  emanager->damage(Region_var(tmpDamage->_this()));
 }
 
 void ScreenManager::run()

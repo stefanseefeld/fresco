@@ -25,6 +25,7 @@
 
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/libArt/LibArtFont.hh>
+#include <Drawing/libArt/LibArtRaster.hh>
 #include <Berlin/CloneableImpl.hh>
 #include <Berlin/Thread.hh>
 #include <Berlin/ObjectCache.hh>
@@ -119,8 +120,7 @@ public:
   LibArtFont   *font;
   ArtAlphaGamma *agam;
 
-//   ObjectCache<Raster_var, LibArtTexture> textures;
-//   ObjectCache<Raster_var, LibArtImage> images;
+  ObjectCache<Raster_var, LibArtRaster> rasters;
 };
 
 #endif /* _LibArtDrawingKit_hh */
