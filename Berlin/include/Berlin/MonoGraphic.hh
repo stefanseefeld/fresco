@@ -60,7 +60,7 @@ protected:
   MonoGraphicOffset *offset;
 };
 
-class MonoGraphicOffset : public virtual _sk_GraphicOffset
+class MonoGraphicOffset : implements(GraphicOffset)
 {
   friend class MonoGraphic;
 public:
@@ -82,7 +82,6 @@ public:
 protected:
   MonoGraphic *parent;
   Graphic_ptr child;
-//   Tag remove_tag;
 };
 
 #endif /* _MonoGraphic_hh */

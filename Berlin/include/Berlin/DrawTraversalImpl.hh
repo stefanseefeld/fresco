@@ -31,14 +31,14 @@
 class DrawTraversalImpl : implements(DrawTraversal), public TraversalImpl
 {
 public:
-  DrawTraversalImpl(DrawingKit_ptr, Drawable_ptr, Region_ptr);
+  DrawTraversalImpl(DrawingKit_ptr, Region_ptr);
   DrawTraversalImpl(const DrawTraversalImpl &);
   ~DrawTraversalImpl();
   CORBA::Boolean intersects();
   void visit(Graphic_ptr);
   order direction() { return up;}
   CORBA::Boolean ok() { return true;}
-  DrawingKit_ptr drawingKit();
+  DrawingKit_ptr kit();
 protected: // private: ??
   DrawingKit_var drawingkit;
   Drawable_var drawable;

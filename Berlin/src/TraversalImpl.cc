@@ -117,13 +117,11 @@ void TraversalImpl::push(Graphic_ptr g, GraphicOffset_ptr o, Region_ptr r, Trans
   state.allocation = Region::_duplicate(r);
   state.transformation = Transform::_duplicate(t);
   stack.push_back(state);
-  Vertex lower, upper;
-  stack.back().allocation->bounds(lower, upper);
 }
 
 void TraversalImpl::pop()
 {
-  State &state = *stack.rend();
+  State &state = *stack.rbegin();
   CORBA::release(state.graphic);
   CORBA::release(state.offset);
   CORBA::release(state.allocation);

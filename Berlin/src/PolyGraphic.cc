@@ -49,15 +49,14 @@ void PolyGraphic::append(Graphic_ptr g)
 {
   PolyGraphicOffset *offset = newOffset(children.size(), g);
   children.push_back(offset);
-//   modified();
+  needResize();
 }
 
 void PolyGraphic::prepend(Graphic_ptr g)
 {
-//   fixup(0, +1);
   PolyGraphicOffset *offset = newOffset(0, g);
   children.insert(children.begin(), offset);
-//   modified();
+  needResize();
 }
 
 GraphicOffset_ptr PolyGraphic::firstOffset()
@@ -74,6 +73,7 @@ GraphicOffset_ptr PolyGraphic::lastOffset()
 
 PolyGraphicOffset *PolyGraphic::newOffset(long index, Graphic_ptr child)
 {
+  updateOffsets(index, 1);
   PolyGraphicOffset *offset = new PolyGraphicOffset(this, index, child);
   offset->_obj_is_ready(_boa());
   child->addParent(offset->_this());
@@ -102,15 +102,15 @@ void PolyGraphic::allocateChild(long, Graphic::AllocationInfo &) { }
 void PolyGraphic::needResize() { GraphicImpl::needResize();}
 void PolyGraphic::needResize(long) { GraphicImpl::needResize();}
 
-// void PolyGraphic::fixup(long start, long delta)
-// {
-//   long n = children.size();
-//   for (long i = start; i < n; i++)
-//     {
-//       PolyGraphicOffset *p = children[i];
-//       p->index += delta;
-//     }
-// }
+void PolyGraphic::updateOffsets(long start, long delta)
+{
+  long n = children.size();
+  for (long i = start; i < n; i++)
+    {
+      PolyGraphicOffset *p = children[i];
+      p->index += delta;
+    }
+}
 
 // void PolyGraphic::change(long) { modified(); }
 
@@ -121,10 +121,10 @@ void PolyGraphic::needResize(long) { GraphicImpl::needResize();}
 
 // void PolyGraphic::modified() { notify_observers();}
 
-PolyGraphicOffset::PolyGraphicOffset(PolyGraphic *p, long index, Graphic_ptr c)
+PolyGraphicOffset::PolyGraphicOffset(PolyGraphic *p, long i, Graphic_ptr c)
 {
   parent = p;
-  index  = index;
+  index  = i;
   child  = Graphic::_duplicate(c);
 }
 
@@ -151,7 +151,6 @@ GraphicOffset_ptr PolyGraphicOffset::offset(long index)
 GraphicOffset_ptr PolyGraphicOffset::next() { return offset(index + 1);}
 GraphicOffset_ptr PolyGraphicOffset::previous() { return offset(index - 1);}
 
-#if 1
 void PolyGraphicOffset::allocations(Collector_ptr c)
 {
   long start = c->size();
@@ -159,25 +158,12 @@ void PolyGraphicOffset::allocations(Collector_ptr c)
   for (long i = start; i < c->size(); i++)
     parent->allocateChild(index, *c->get(i));
 }
-#else
-void PolyGraphicOffset::allocations(Collector_ptr c)
-{
-  c.push();
-  parent->allocations(c);
-  for (c->begin(); c->next(); 
-  parent->allocateChild(index, c);
-//   c.allocateChild(parent, index);
-  c.pop();
-}
-#endif
 
 void PolyGraphicOffset::insert(Graphic_ptr g)
 {
   PolyGraphicOffset *p = parent->newOffset(index, g);
   parent->children.insert(parent->children.begin() + index, p);
-//   parent->fixup(index + 1, +1);
-//   parent->modified();
-  parent->needResize(index);
+  parent->needResize();
 }
 
 void PolyGraphicOffset::replace(Graphic_ptr g)
@@ -197,8 +183,8 @@ void PolyGraphicOffset::remove()
   PolyGraphicOffsetList &list = parent->children;
   if (index < static_cast<long>(list.size()))
     {
-//       list.remove(index);
-//       parent->fixup(index, -1);
+      list.erase(list.begin() + index);
+      parent->updateOffsets(index, -1);
 //       parent->modified();
       child->removeParent(_this());
       CORBA::release(child);

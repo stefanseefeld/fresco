@@ -50,17 +50,18 @@ public:
   virtual GraphicOffset_ptr lastOffset();
   virtual PolyGraphicOffset *newOffset(long, Graphic_ptr);
   Graphic::Requisition *childrenRequests();
-  virtual void allocateChild(long index, Graphic::AllocationInfo &a);
+  virtual void allocateChild(long, Graphic::AllocationInfo &);
 //   virtual void damages(DamageInfoSeq &);
   virtual void needResize();
   virtual void needResize(long);
 //   virtual bool restore_trail(Traversal_ptr);
 // protected:
+  void updateOffsets(long, long);
   PolyGraphicOffsetList children;
   static Pool<Requisition> pool;
 };
 
-class PolyGraphicOffset : public virtual _sk_GraphicOffset
+class PolyGraphicOffset : implements(GraphicOffset)
 {
 //   friend class PolyGraphic;
 public:
@@ -84,7 +85,6 @@ public:
   PolyGraphic *parent;
   long index;
   Graphic_ptr child;
-  Tag remove_tag;
 };
 
 #endif /* _PolyGraphic_hh */

@@ -32,6 +32,7 @@ void GLPencil::thickness(Coord) {}
 
 void GLPencil::drawLine(const Vertex &v1, const Vertex &v2)
 {
+  drawable->makeCurrent();
   glBegin(GL_LINES);
   glVertex3d(v1.x, v1.y, v1.z);
   glVertex3d(v2.x, v2.y, v2.z);
@@ -40,10 +41,11 @@ void GLPencil::drawLine(const Vertex &v1, const Vertex &v2)
 
 void GLPencil::drawPath(const Path &path)
 {
+  drawable->makeCurrent();
   glBegin(GL_LINE_STRIP);
-  for (unsigned int i = 0; i != path.length(); i++)
+  for (unsigned int i = 0; i != path.p.length(); i++)
     {
-      const Vertex &v = path[i];
+      const Vertex &v = path.p[i];
       glVertex3d(v.x, v.y, v.z);
     }
   glEnd();
@@ -51,10 +53,13 @@ void GLPencil::drawPath(const Path &path)
 
 void GLPencil::fillPath(const Path &path)
 {
+  GLfloat color[4] = { 1., 0.5, 0.5, 1.};
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color);
+  drawable->makeCurrent();
   glBegin(GL_POLYGON);
-  for (unsigned int i = 0; i != path.length(); i++)
+  for (unsigned int i = 0; i != path.p.length(); i++)
     {
-      const Vertex &v = path[i];
+      const Vertex &v = path.p[i];
       glVertex3d(v.x, v.y, v.z);
     }
   glEnd();

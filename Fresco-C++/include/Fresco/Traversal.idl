@@ -33,7 +33,7 @@
 interface Graphic;
 interface GraphicOffset;
 // interface Widget;
-// interface Pencil;
+interface DrawingKit;
 interface Transform;
 
 interface Traversal
@@ -52,7 +52,7 @@ interface Traversal
 
 interface DrawTraversal : Traversal
 {
-//   attribute DrawingKit;
+  DrawingKit kit();
 //   void clipPath(in Path p);
 //   void clipRegion(in Region r);
 //   void pushClipping();

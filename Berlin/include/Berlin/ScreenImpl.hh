@@ -35,6 +35,7 @@ class ScreenImpl : implements(Screen), public PolyGraphic
 public:
   ScreenImpl(Coord, Coord);
   virtual void allocations(Collector_ptr);
+  virtual void allocateChild(long, Graphic::AllocationInfo &);
   Coord width();
   Coord height();
   ScreenManager *Manager() { return manager;}

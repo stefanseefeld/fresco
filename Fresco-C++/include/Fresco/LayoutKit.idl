@@ -285,7 +285,7 @@ interface LayoutKit
     //. rmargin, rstretch, rshrink, 0, 0, 0, 0, 0, 0)."
 
     Graphic vmargin(in Graphic g, in Coord both);
-    Graphic vmargin_bt(in Graphic g, in Coord bmargin, in Coord tmargin);
+    Graphic vmarginBT(in Graphic g, in Coord bmargin, in Coord tmargin);
     Graphic vmarginBTFlexible(in Graphic g,
 			      in Coord bmargin, in Coord bstretch, in Coord bshrink,
 			      in Coord tmargin, in Coord tstretch, in Coord tshrink);
@@ -320,7 +320,7 @@ interface LayoutKit
     //. equivalent to "vmargin(g, natural, stretch, shrink, 0, 0, 0)."
 
     Graphic tmargin(in Graphic g, in Coord nat);
-    Graphic tmargin_flexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
+    Graphic tmarginFlexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
     //. These operations return a graphic with a top margin.
     //. The tmargin operation is equivalent to
     //. "vmargin(g, 0, natural)." The tmargin_flexible operation is

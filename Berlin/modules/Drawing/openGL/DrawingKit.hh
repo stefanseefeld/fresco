@@ -25,15 +25,21 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Drawing/openGL/GLDrawable.hh>
+#include <Drawing/openGL/GLPencil.hh>
+#include <string>
+#include <vector>
 
 class GLDrawingKit : implements(DrawingKit)
 {
 public:
-  GLDrawingKit();
+  GLDrawingKit(const string &);
+  ~GLDrawingKit();
   Drawable_ptr getDrawable();
   Pencil_ptr solidPen();
+//   void releasePen(Pencil_ptr);
 private:
   GLDrawable *drawable;
+  vector<GLPencil *> pens;
 };
 
 #endif /* _GLDrawingKit_hh */

@@ -23,11 +23,11 @@
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Drawable.hh"
 
-DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Drawable_ptr d, Region_ptr r)
+DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Region_ptr r)
   : TraversalImpl(r)
 {
   drawingkit = DrawingKit::_duplicate(kit);
-  drawable = Drawable::_duplicate(d);
+  drawable = Drawable::_duplicate(drawingkit->getDrawable());
   clipping = Region::_duplicate(drawable->clipping());
 }
 
@@ -55,4 +55,9 @@ void DrawTraversalImpl::visit(Graphic_ptr g)
 {
   DrawTraversal_ptr dt = this->_this();
   g->draw(dt);
+}
+
+DrawingKit_ptr DrawTraversalImpl::kit()
+{
+  return DrawingKit::_duplicate(drawingkit);
 }

@@ -23,9 +23,26 @@
 #include "Berlin/RegionImpl.hh"
 #include <iostream>
 
-GLDrawable::GLDrawable()
+GLDrawable::GLDrawable(unsigned int w, unsigned int h, unsigned int d)
 {
+  int gt = GT_8BIT;
+  switch (d)
+    {
+    case 4:  gt = GT_4BIT;  break;
+    case 8:  gt = GT_8BIT;  break;
+    case 15: gt = GT_15BIT; break;
+    case 16: gt = GT_16BIT; break;
+    case 24: gt = GT_24BIT; break;
+    case 32: gt = GT_32BIT; break;
+    }
   context = GGIMesaCreateContext();
+  if (!context) cerr << "GGIMesaCreateContext() failed" << endl;
+  visual = ggiOpen("display-X", 0);
+  if (!visual) cerr << "ggiOpen(0) failed" << endl;
+  if (ggiSetGraphMode(visual, w, h, GGI_AUTO, GGI_AUTO, gt))
+    cerr << "can't set graphmode (" << w << ',' << h << ") " << d << " bpp" << endl;
+  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
+    cerr << "GGIMesaSetVisual() failed" << endl;
   clip = new RegionImpl;
   clip->_obj_is_ready(_boa());
 }

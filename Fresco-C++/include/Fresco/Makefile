@@ -10,10 +10,10 @@ LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
 
 ALL_IDL	=	Types.idl Transform.idl Region.idl Damage.idl Graphic.idl Traversal.idl Grid.idl Screen.idl \
 		LayoutKit.idl Subject.idl \
-		Drawable.idl Pencil.idl DrawingKit.idl
+		Drawable.idl Pencil.idl DrawingKit.idl DrawTraversal.idl
 
 IDL	=	Types.idl Transform.idl Region.idl Damage.idl GTC.idl \
-		DK.idl Grid.idl Screen.idl LayoutKit.idl Subject.idl
+		Grid.idl Screen.idl LayoutKit.idl Subject.idl
 
 SRC	=	$(patsubst %.idl, %SK.cc, $(IDL))
 DSRC	=	$(patsubst %.idl, %DynSK.cc, $(IDL))
@@ -35,20 +35,24 @@ ALL_SUBTARGETS = $(CORE_IDLS)
 
 libWarsaw.so:	headers $(SKL)
 	$(CXX) -shared $(DIR_LDFLAGS) $(SKL) -o $@ $(LIBS)
-	cp $@ $(LPATH)
+#	cp $@ $(LPATH)
 
-libDWarsaw.so:	headers $(DSKL)
+libWarsawDyn.so:	headers $(DSKL)
 	$(CXX) -shared $(DIR_LDFLAGS) $(DSKL) -o $@ $(LIBS)
-	cp $@ $(LPATH)
+#	cp $@ $(LPATH)
 
-GTC.idl:	Graphic.idl Traversal.idl 
+GTC.idl:	Graphic.idl Traversal.idl DrawingKit.idl Drawable.idl Pencil.idl
 		cat Graphic.idl > GTC.idl
 		cat Traversal.idl >> GTC.idl
+		cat DrawingKit.idl >> GTC.idl
+		cat Drawable.idl >> GTC.idl
+		cat Pencil.idl >> GTC.idl
 
-DK.idl:		DrawingKit.idl Drawable.idl Pencil.idl
-		cat DrawingKit.idl > DK.idl
-		cat Drawable.idl >> DK.idl
-		cat Pencil.idl >> DK.idl
+#DK.idl:		DrawTraversal.idl
+#		cat DrawingKit.idl > DK.idl
+#		cat Drawable.idl >> DK.idl
+#		cat Pencil.idl >> DK.idl
+#		cat DrawTraversal.idl >> DK.idl
 
 
 headers:	$(ALL_HDR)

@@ -100,6 +100,7 @@ void DebugGraphic::printRequirement(Graphic::Requirement &r)
   else
     {
       double tol = 1e-2;
+      cout << setiosflags(ios::fixed);
       if (Math::equal(r.natural, r.minimum, tol))
 	{
 	  if (Math::equal(r.natural, r.maximum, tol))
@@ -137,6 +138,6 @@ void DebugGraphic::printRegion(Region_ptr r)
 
 void DebugGraphic::printAllotment(const Region::Allotment &a)
 {
-  cout << setprecision(2) << a.begin << ',' << setprecision(2) << a.end;
+  cout << setiosflags(ios::fixed) << setprecision(2) << a.begin << ',' << setprecision(2) << a.end;
   if (!Math::equal(a.align, 0., 1e-2)) cout << " @ " << setprecision(1) << a.align;
 }

@@ -23,11 +23,26 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
+#include <strstream>
 
-GLDrawingKit::GLDrawingKit()
+GLDrawingKit::GLDrawingKit(const string &name)
 {
-  drawable = new GLDrawable;
+  ggiInit();
+  /*
+   * name should be composed as "widthxheightxdepth"
+   */
+  istrstream iss(name.c_str());
+  unsigned int width, height, depth;
+  char buf;
+  iss >> width >> buf >> height >> buf >> depth;
+  drawable = new GLDrawable(width, height, depth);
   drawable->_obj_is_ready(_boa());
+}
+
+GLDrawingKit::~GLDrawingKit()
+{
+  drawable->_dispose();
+  ggiExit();
 }
 
 Drawable_ptr GLDrawingKit::getDrawable()
@@ -39,5 +54,6 @@ Pencil_ptr GLDrawingKit::solidPen()
 {
   GLPencil *pencil = new GLPencil(drawable);
   pencil->_obj_is_ready(_boa());
+  pens.push_back(pencil);
   return pencil->_this();
 }

@@ -42,5 +42,23 @@ void ScreenImpl::allocations(Collector_ptr collector)
   collector->add(region->_this(), damage->_this());
 }
 
+void ScreenImpl::allocateChild(long i, Graphic::AllocationInfo &a)
+{
+  long n = children.size();
+  Graphic::Requisition *r = childrenRequests();
+  Graphic::Requisition &requisition = r[i];
+  RegionImpl *region = new RegionImpl;
+  region->valid = true;
+  region->lower.x = region->lower.y = 0;
+  region->upper.x = requisition.x.natural;
+  region->xalign = requisition.x.align;
+  region->upper.y = requisition.y.natural;
+  region->yalign = requisition.y.align;
+  region->_obj_is_ready(_boa());
+  a.allocation->copy(region->_this());
+  region->_dispose();
+  pool.deallocate(r);
+}
+
 Coord ScreenImpl::width() { return region->upper.x;}
 Coord ScreenImpl::height() { return region->upper.y;}

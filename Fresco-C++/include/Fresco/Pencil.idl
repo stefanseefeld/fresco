@@ -28,7 +28,6 @@ interface Drawable;
 
 interface Pencil
 {
-  typedef sequence<Vertex> Path;
   typedef sequence<char> Dash;
   typedef sequence<long> Pattern;
 //   attribute Color rgba;
