@@ -22,12 +22,12 @@
 //
 
 #include "Text/TextKitImpl.hh"
+#include "Warsaw/DrawingKit.hh"
 #include "Text/TextChunk.hh"
 #include "Text/FontChange.hh"
 #include "Berlin/Plugin.hh"
 #include <string>
 
-DrawingKit_ptr TextKitImpl::canonicalDK;
 map<GlyphComp::Key,GlyphComp::Val,GlyphComp> TextKitImpl::glyphCache;
 Mutex TextKitImpl::staticMutex;
 
@@ -35,14 +35,13 @@ Mutex TextKitImpl::staticMutex;
 TextKitImpl::TextKitImpl() {}
 TextKitImpl::~TextKitImpl() {}
 
-void TextKitImpl::dk(DrawingKit_ptr dk) {
-    MutexGuard guard(staticMutex);
-    canonicalDK = dk;
-}
-
 DrawingKit_ptr TextKitImpl::dk() {
     MutexGuard guard(staticMutex);
     return canonicalDK;
+}
+
+void TextKitImpl::bind(ServerContext_ptr sc) {
+    canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
 }
 
 static Unistring UNIFY(const string &s) {
@@ -55,12 +54,14 @@ static Unistring UNIFY(const string &s) {
   return tmp;
 }
 
+// we have 1 default font which we're distributing with berlin, the
+// fixed-size GNU unifont.
 
 Text::FontDescriptorSeq* TextKitImpl::fonts() {
     Text::FontDescriptorSeq *fdsq = new Text::FontDescriptorSeq();
     fdsq->length(1);
-    (*fdsq)[0].pointsize = 14;
-    (*fdsq)[0].name = UNIFY((string)"Arial");
+    (*fdsq)[0].pointsize = 16;
+    (*fdsq)[0].name = UNIFY((string)"GNU Unifont");
     return fdsq;
 }
 
@@ -69,6 +70,7 @@ Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
     if (glyphCache.find(k) == glyphCache.end() ) {
 	Graphic::Requisition r;
 	f->allocateText(u,r);
+	cerr << " allocated space tor text: " << r.x.natural << "x" << r.y.natural << endl;
 	TextChunk *t = new TextChunk(u,r);
 	t->_obj_is_ready(_boa());
 	glyphCache[k] = t->_this();
@@ -83,4 +85,4 @@ Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style:
 }
 
 
-EXPORT_PLUGIN(TextKitImpl, interface(TextKit))
+// EXPORT_PLUGIN(TextKitImpl, interface(TextKit))

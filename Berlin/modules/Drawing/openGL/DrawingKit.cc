@@ -24,9 +24,6 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Transform.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
-#include "Drawing/openGL/GLDrawable.hh"
-#include "Drawing/openGL/GLPencil.hh"
-#include "Drawing/openGL/GLFont.hh"
 #include "Warsaw/Text.hh"
 #include "Berlin/Logger.hh"
 
@@ -43,11 +40,16 @@ GLDrawingKit::GLDrawingKit()
   ggiInit();
   drawable = new GLDrawable();
   drawable->_obj_is_ready(CORBA::BOA::getBOA());
+  gnufont = new GLUnifont();
+  gnufont->_obj_is_ready(CORBA::BOA::getBOA());
+  Color c = {0.0,0.0,1.0,1.0};
+  gnufont->setColor(c);
 }
 
 GLDrawingKit::~GLDrawingKit()
 {
   drawable->_dispose();
+  gnufont->_dispose();
   ggiExit();
 }
 
@@ -55,23 +57,42 @@ void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &st
   throw (Text::NoSuchFontException)
 {
   MutexGuard guard(mutex);
+
+  // make sure the gnufont tracks color changes
+  for (unsigned long i = 0; i < sty.length(); i++) {    
+      Color *tmp;
+      if (sty[i].a == Style::fillcolor) {
+	  sty[i].val >>= tmp;
+	  gnufont->setColor(*tmp);
+      }
+  }
+  
   try
-    { 
-/*      GLFont *newfont = new GLFont(fd,sty); 
-      newfont->_obj_is_ready(_boa());
-      if (font) font->_dispose();
-      font = newfont;*/
-    }
+      { 
+	  //
+	  // at this time, there is _no_ way to add new fonts to the runtime.
+	  // it uses GNU Unifont, and nothing else.
+	  //
+	  // it will eventually look like this, once we get the GLFont truetype &
+	  // T1 registry alive.
+	  //
+	  
+	  /*      GLFont *newfont = new GLFont(fd,sty); 
+		  newfont->_obj_is_ready(_boa());
+		  if (font) font->_dispose();
+		  font = newfont;*/
+      }
   catch (Text::NoSuchFontException &ex)
-    {
-      throw ex;
-    }
+      {
+	  throw ex;
+      }
 }
 
 Text::Font_ptr GLDrawingKit::currentFont()
 {
   MutexGuard guard(mutex);
-  return font->_this();
+  if (font) return font->_this();
+  else return gnufont->_this();
 }
 
 Drawable_ptr GLDrawingKit::getDrawable()

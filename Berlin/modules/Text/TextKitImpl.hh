@@ -33,13 +33,13 @@
 
 declare_corba_ptr_type(DrawingKit)
 
-
 /** this implements a simple text kit which manufactures text chunks and font
  * change markers. the idea is that a font change marker delegates most of the
  * responsibility of actually finding and setting a "current font" to the
  * methods of the current drawingKit, and really only serves as a placeholder
  * with which a buffer or label can say "here the text is supposed to become
- * helvetica 12 pt."  
+ * helvetica 12 pt., whatever implementation of what you can track down would
+ * be just peachy"  
  */
 
 struct GlyphComp {
@@ -60,7 +60,7 @@ class TextKitImpl : lcimplements(TextKit), public virtual CloneableImpl {
  public:
     TextKitImpl();
     virtual ~TextKitImpl();
-
+    virtual void bind(ServerContext_ptr);
     Text::FontDescriptorSeq* fonts();
     DrawingKit_ptr dk();
     void dk(DrawingKit_ptr);
@@ -68,7 +68,7 @@ class TextKitImpl : lcimplements(TextKit), public virtual CloneableImpl {
     Graphic_ptr  fontChange(const Text::FontDescriptor & fd, const Style::Spec &s);
     
  protected:
-    static DrawingKit_ptr canonicalDK;
+    DrawingKit_var canonicalDK;
     static map<GlyphComp::Key,GlyphComp::Val,GlyphComp> glyphCache;
     static Mutex staticMutex;
 };

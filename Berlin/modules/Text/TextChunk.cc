@@ -24,6 +24,8 @@
 #include "Text/TextChunk.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/DrawTraversal.hh"
+#include "Warsaw/Region.hh"
+#include "Warsaw/Transform.hh"
 
 TextChunk::TextChunk(const Unistring & u, const Requisition &r) : 
     myCanonicalSize(r), myText(u)  {
@@ -46,9 +48,13 @@ unsigned long TextChunk::getLength() {
 }
 
 void TextChunk::draw(DrawTraversal_ptr dt) {
+    Region_var allocation = dt->allocation();
     DrawingKit_ptr dk = dt->kit();
     Text::Font_var f = dk->currentFont();
-    Vertex l, u, o;
-    dt->bounds(l, u, o);
-    f->drawText(myText, o);
+    Vertex l,u;
+    allocation->bounds(l,u);
+    u.x = l.x;
+    Transform_var transform = dt->transformation();
+    transform->transformVertex(u);
+    f->drawText(myText, u);
 }

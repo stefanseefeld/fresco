@@ -24,7 +24,6 @@
 #include "Berlin/ClientContextImpl.hh"
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/Logger.hh"
-#include "Desktop/DesktopKitImpl.hh"
 
 // this is the thing which holds all the references to things a client allocates
 // (for garbage collection), does security checks for new allocation, and

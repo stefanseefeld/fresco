@@ -29,6 +29,7 @@
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
 #include "Drawing/openGL/GLFont.hh"
+#include "Drawing/openGL/GLUnifont.hh"
 #include "Drawing/openGL/GLRaster.hh"
 #include "Berlin/Thread.hh"
 #include "Berlin/ObjectCache.hh"
@@ -63,6 +64,7 @@ public:
   void translatedImage(const GLRaster *, Transform_ptr);
   Mutex mutex;
   GLFont *font;
+  GLUnifont *gnufont;
   GLDrawable *drawable;
   vector<GLPencil *> pencils;
   ObjectCache<Raster_var, GLRaster> rasters;

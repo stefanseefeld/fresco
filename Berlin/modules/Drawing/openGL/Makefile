@@ -41,9 +41,9 @@ rpath	= $(lpath)
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin -lGLtt -lttf -lMesaGL -lMesaGLU
+LIBS	= -lPrague -lBerlin -lGLtt -lttf -lMesaGL -lMesaGLU -ldb2++
 
-SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc GLFont.cc 
+SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc GLFont.cc GLUnifont.cc
 
 TARGET	= $(lpath)/libDrawing.so
 
