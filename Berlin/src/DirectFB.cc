@@ -147,7 +147,8 @@ DirectFBConsole::DirectFBConsole(int &argc, char **argv, PortableServer::POA_ptr
   Drawable * primary = new DirectFBDrawable("Primary", s_dfb, dsc);
 
   s_drawables.push_back(new DrawableTie<Drawable>(primary));
-  std::cerr << "DirectFBConsole::DirectFBConsole: primary surface created." << endl;
+  Logger::log(Logger::loader)
+      << "DirectFBConsole::DirectFBConsole: primary surface created." << endl;
 
   IDirectFBSurface * surface = primary->surface();
 
