@@ -28,6 +28,7 @@
 #include <Prague/IPC/Agent.hh>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 namespace Prague
 {
@@ -70,7 +71,7 @@ namespace Prague
       virtual ipcbuf *ebuf() { return _errbuf; }
     protected:
       virtual bool process(int, iomask);
-      void terminate();
+      void terminate() throw(std::runtime_error);
       void shutdown(int);
       std::string  _path;
       IONotifier  *_ioNotifier;
@@ -85,7 +86,7 @@ namespace Prague
       Coprocess(const Coprocess &);
       Coprocess &operator = (const Coprocess &);
       bool terminated;
-      void kill(Signal::type);
+      void kill(Signal::type) throw(std::runtime_error);
       mutable Mutex _mutex;
       struct
       {

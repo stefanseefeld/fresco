@@ -186,8 +186,9 @@ Fork::~Fork () { if (process->pid <= 0) delete process; }
 bool  Fork::child() const { return process->pid == 0; }
 bool  Fork::parent() const { return process->pid > 0; }
 pid_t Fork::pid() const { return process->pid; }
-void  Fork::suicide_on_signal (Signal::type signo)
+void  Fork::suicide_on_signal (Signal::type signo) throw(std::runtime_error)
 {
     if (!Signal::set(signo, &Process::suicide))
-        std::perror ("Fork: Cannot commit suicide with the specified signal");
+        throw std::runtime_error(std::string("Fork: Cannot commit suicide with the specified signal: ") +
+                                 strerror(errno));
 }

@@ -24,6 +24,7 @@
 
 #include <sys/types.h>
 #include <ctime>
+#include <stdexcept>
 
 namespace Prague
 {
@@ -41,9 +42,9 @@ namespace Prague
       Stopwatch();
       ~Stopwatch(){}
       //. start the stopwatch
-      void start();
+      void start() throw(std::runtime_error);
       //. stop the stopwatch
-      void stop();
+      void stop() throw(std::runtime_error);
       //. return real elapsed time
       double real_time();
       //. return cpu elapsed time

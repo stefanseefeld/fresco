@@ -24,6 +24,7 @@
 
 #include <ios>
 #include <streambuf>
+#include <stdexcept>
 
 namespace Prague
 {
@@ -54,9 +55,11 @@ namespace Prague
       bool writeready() const;
       bool exceptionpending() const;
       //. try to read n bytes into buf, return the number of bytes actually read
-      virtual std::streamsize sys_read(char *buf, std::streamsize n);
+      virtual std::streamsize sys_read(char *buf, std::streamsize n)
+          throw(std::runtime_error);
       //. try to write n bytes from buf, return the number of bytes actually written
-      virtual std::streamsize sys_write(const char *buf, std::streamsize n);
+      virtual std::streamsize sys_write(const char *buf, std::streamsize n)
+          throw(std::runtime_error);
       // virtual int write (const void *, int);
       // virtual int read (void *, int);
       //. return the file descriptor for that buffer

@@ -47,7 +47,8 @@ namespace Prague
       //. return the child process id
       pid_t pid() const;
       //. commit suicide at the signal signo
-      static void suicide_on_signal(Signal::type signo = Signal::terminate);
+      static void suicide_on_signal(Signal::type signo = Signal::terminate)
+          throw(std::runtime_error);
     private:
       Process *process;
       Fork (const Fork &);

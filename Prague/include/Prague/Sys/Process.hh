@@ -24,6 +24,7 @@
 
 #include <cstdio>
 #include <cerrno>
+#include <stdexcept>
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -39,9 +40,10 @@ namespace Prague
       ~Process() { }
       double cpu() const { return 0.; }
       long memory() const { return _usage.ru_idrss; }
-      void update()
+      void update() throw(std::runtime_error)
       {
-          if (getrusage(RUSAGE_SELF, &_usage) == -1) perror("Process::update:");
+          if (getrusage(RUSAGE_SELF, &_usage) == -1)
+              throw std::runtime_error("Process::update: " + strerror(errno));
       }
       //. return the process' id
       static pid_t id() { return getpid(); }

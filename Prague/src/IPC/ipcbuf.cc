@@ -191,6 +191,7 @@ std::streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, std::streamsize n)
 }
 
 std::streamsize ipcbuf::sys_write(const char *buf, std::streamsize len)
+    throw(std::runtime_error)
 {
     // if (!writeready ()) return 0;
     std::streamsize wlen = 0;
@@ -202,7 +203,9 @@ std::streamsize ipcbuf::sys_write(const char *buf, std::streamsize len)
         while (wval == -1 && errno == EINTR);
         if (wval == -1)
         {
-            if (errno != EAGAIN) perror("ipcbuf::write");
+            if (errno != EAGAIN)
+                throw std::runtime_error(std::string("ipcbuf::write failed: ") +
+                                         strerror(errno));
             return EOF;
         }
         len -= wval;
@@ -212,11 +215,14 @@ std::streamsize ipcbuf::sys_write(const char *buf, std::streamsize len)
 }
 
 std::streamsize ipcbuf::sys_read(char *buf, std::streamsize len)
+    throw(std::runtime_error)
 {
     std::streamsize rval = -1;
     do
         rval = ::read(fd(), buf, len);
     while (rval == -1 && errno == EINTR);
-    if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");
+    if (rval == -1 && errno != EAGAIN)
+        throw std::runtime_error(std::string("ipcbuf::read failed: ") +
+                                 strerror(errno));
     return rval;
 }

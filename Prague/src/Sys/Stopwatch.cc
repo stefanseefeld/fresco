@@ -24,6 +24,8 @@
 
 #include <sys/times.h>
 #include <unistd.h>
+#include <cerrno>
+#include <string>
 
 using namespace Prague;
 
@@ -35,24 +37,28 @@ Stopwatch::Stopwatch() : _state(undef)
     start();
 }
 
-void Stopwatch::start()
+void Stopwatch::start() throw(std::runtime_error)
 {
     _state = running;
     struct tms cpt;
     _real.begin = times(&cpt);
     _cpu.begin  = cpt.tms_utime;
     _sys.begin  = cpt.tms_stime;
-    if (_real.begin == -1) perror("Stopwatch::start");
+    if (_real.begin == -1)
+        throw std::runtime_error(std::string("Failed to start the Stopwatch: ") +
+                                 strerror(errno));
 }
 
-void Stopwatch::stop()
+void Stopwatch::stop() throw(std::runtime_error)
 {
     _state = stopped;
     struct tms cpt;
     _real.end = times(&cpt);
     _cpu.end  = cpt.tms_utime;
     _sys.end  = cpt.tms_stime;
-    if (_real.end == -1) perror("Stopwatch::stop");
+    if (_real.end == -1)
+        throw std::runtime_error(std::string("Failed to stop the Stopwatch: ") +
+                                 strerror(errno));
 }
 
 double Stopwatch::real_time()

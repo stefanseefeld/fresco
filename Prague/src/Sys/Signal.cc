@@ -22,6 +22,7 @@
 #include "Prague/config.hh"
 #include "Prague/Sys/Signal.hh"
 #include <cstring>
+#include <string>
 #include <algorithm>
 #include <cstdio>
 
@@ -161,7 +162,7 @@ sigset_t Signal::pending()
     return s;
 }
 
-bool Signal::ispending(type signo)
+bool Signal::ispending(type signo) throw(std::runtime_error)
 {
     sigset_t s = pending();
     switch (sigismember(&s, type(signo)))
@@ -169,7 +170,8 @@ bool Signal::ispending(type signo)
       case  1:
         return true;
       case -1:
-        perror("Signal::ispending: ");
+        throw std::runtime_error(std::string("Signal::ispending failed: ") +
+                                 strerror(errno));
       case  0:
       default:
         return false;

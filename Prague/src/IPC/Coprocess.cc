@@ -19,12 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Prague/config.hh"
-#include "Prague/IPC/Coprocess.hh"
-#include "Prague/Sys/Signal.hh"
-#include "Prague/Sys/Tracer.hh"
+#include <Prague/config.hh>
+#include <Prague/IPC/Coprocess.hh>
+#include <Prague/Sys/Signal.hh>
+#include <Prague/Sys/Tracer.hh>
 
 #include <fstream>
+#include <sstream>
+#include <cerrno>
 
 #include <cstdio>
 #include <cerrno>
@@ -159,7 +161,7 @@ bool Coprocess::process(int, iomask m)
     return flag;
 }
 
-void Coprocess::terminate()
+void Coprocess::terminate() throw(std::runtime_error)
 {
     Signal::type sig;
     for (long ms = 0; pid(); ms++)
@@ -172,8 +174,12 @@ void Coprocess::terminate()
         Thread::delay(1);
     }
     Thread::delay(10);
-    if (pid()) std::cerr << "Coprocess " << pid() << " wouldn't die ("
-                         << Signal::name(sig) << ')' << std::endl;
+    if (pid())
+    {
+        std::stringstream os("Coprocess ");
+        os << pid() << " wouldn't die (" << Signal::name(sig) << ')' << std::endl;
+        throw std::runtime_error(os.str());
+    }
 }
 
 void Coprocess::shutdown(int m)
@@ -186,7 +192,9 @@ void Coprocess::shutdown(int m)
     if (m & err) delete _errbuf, _errbuf = 0;
 }
 
-void Coprocess::kill(Signal::type signum)
+void Coprocess::kill(Signal::type signum) throw(std::runtime_error)
 {
-    if (_id > 0 && ::kill(_id, int(signum)) < 0) std::perror("Coprocess::kill");
+    if (_id > 0 && ::kill(_id, int(signum)) < 0)
+        throw std::runtime_error(std::string("Coprocess::kill failed: ") +
+                                 strerror(errno));
 }

@@ -61,7 +61,8 @@ void PipeAgent::start() throw(std::runtime_error)
             argv[2] = _path.c_str();
             argv[3] = 0;
             execvp ("/bin/sh", (char**) argv);
-            std::perror("/bin/sh");
+            // Should not get here: report what went wrong and exit.
+            std::perror("Could not start /bin/sh: ");
             _exit(EXIT_FAILURE);
             break;
           default:

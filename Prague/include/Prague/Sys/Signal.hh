@@ -96,7 +96,7 @@ namespace Prague
       //. don't ignore the specified signal any more
       static void unmask(type, type);
       //. is there a pending signal of type signum (while being blocked)
-      static bool ispending(type);
+      static bool ispending(type) throw(std::runtime_error);
       //. is there any pending signal (while being blocked)
       static sigset_t pending();
       static void sysresume(type, bool);
