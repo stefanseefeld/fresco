@@ -62,7 +62,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                 CON_IMPL=SDL
                         fi
                         ;;
-                CAVE)
+                CAVELib)
                         BERLIN_CAVELIB_CHECK
                         if test ".$ac_cv_lib_cave" != .yes; then
                                 if test ".$1" = .mandatory; then
@@ -71,8 +71,8 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                         CON_IMPL="none"
                                 fi
                         else
-				AC_DECIDE(CAVECONSOLE, [use CAVElib])
-                                CON_IMPL=CAVE
+				AC_DECIDE(CAVECONSOLE, [use CAVELib])
+                                CON_IMPL=CAVELib
                         fi
                         ;;
 		*)

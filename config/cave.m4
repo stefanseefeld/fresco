@@ -30,7 +30,7 @@ AC_DEFUN([BERLIN_CAVELIB_CHECK],[
 	AC_LANG_C
 
 	AC_ARG_WITH(cavelib-prefix,
-		[  --with-cavelib-prefix=PFX   Prefix for cavelib (console CAVE)],[
+		[  --with-cavelib-prefix=PFX   Prefix for cavelib (console CAVELib)],[
 		cavelib_prefix="$withval"])
 
 	dnl Check for cavelib includes
@@ -46,7 +46,7 @@ AC_DEFUN([BERLIN_CAVELIB_CHECK],[
 	if test ".$no_cavelib" = . ; then
 
 		if test ".$cavelib_prefix" != . ; then
-			CON_LIBS="-L$cavelib_prefix/lib32"
+			CON_LIBS="-L$cavelib_prefix/lib"
 		fi
 
 		save_LDFLAGS="$LDFLAGS"
