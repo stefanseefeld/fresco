@@ -193,14 +193,41 @@ void ServerImpl::destroy_context(ServerContextImpl *context)
 {
   Trace trace("ServerImpl::destroy_context");
   PortableServer::POA_var poa = context->_default_POA();
-  PortableServer::ObjectId *oid = poa->servant_to_id(context);
-  try { poa->deactivate_object(*oid);}
+  PortableServer::ObjectId * oid = poa->servant_to_id(context);
+  try { poa->deactivate_object(*oid); }
   /*
    * should this output go to Logger::log(Logger::corba) ?
    * -stefan
    */
-  catch (const CORBA::OBJECT_NOT_EXIST &) { std::cerr << "caught CORBA::OBJECT_NOT_EXIST while cleaning up ServerContext" << std::endl;}
-  catch (const CORBA::COMM_FAILURE &) { std::cerr << "caught CORBA::COMM_FAILURE while cleaning up ServerContext" << std::endl;}
-  catch(...) { std::cerr << "caught unknown exception while cleaning up ServerContext" << std::endl;}
+  catch (const CORBA::OBJECT_NOT_EXIST &)
+  {
+      std::cerr << "Caught CORBA::OBJECT_NOT_EXIST while cleaning up "
+		<< "a ServerContext" << std::endl;
+  }
+  catch (const CORBA::COMM_FAILURE &)
+  {
+      std::cerr << "Caught CORBA::COMM_FAILURE while cleaning up "
+		<< "a ServerContext" << std::endl;
+  }
+  catch (const PortableServer::POA::ObjectNotActive &)
+  {
+      std::cerr << "Caught POA::ObjectNotActive while cleaning up "
+		<< "a ServerContext" << std::endl;
+  }
+  catch (const PortableServer::POA::WrongPolicy &)
+  {
+      std::cerr << "Caught POA::WrongPolicy while cleaning up "
+		<< "a ServerContext" << std::endl;
+  }
+  catch(const std::exception & e)
+  {
+      std::cerr << "Caught a std::exeception while cleaning up "
+		<< "a ServerContext (" << e.what() << ")" << std::endl;
+  }
+  catch(...)
+  {
+      std::cerr << "Caught unknown exception while cleaning up "
+		<< "a ServerContext" << std::endl;
+  }
   delete oid;
 }

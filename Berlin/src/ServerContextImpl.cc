@@ -28,6 +28,7 @@
 #include <Fresco/ClientContext.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/KitImpl.hh>
+#include <Fresco/Unicode.hh>
 #include "ServerContextImpl.hh"
 #include "ServerImpl.hh"
 #include <sstream>
@@ -45,6 +46,10 @@ ServerContextImpl::ServerContextImpl(ServerImpl *s, const CORBA::PolicyList &pol
     : _server(s), _policies(policies), _client(ClientContext::_duplicate(c))
 {
   Trace trace("ServerContextImpl::ServerContextImpl");
+  Babylon::String title = Unicode::to_internal(*_client->application_title());
+  Logger::log(Logger::corba) << "ServerContext for application \""
+			     << title.utf8() << "\" created."
+			     << std::endl;
 }
 
 ServerContextImpl::~ServerContextImpl()
@@ -52,6 +57,10 @@ ServerContextImpl::~ServerContextImpl()
   Trace trace("ServerContextImpl::~ServerContextImpl");
   for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
     (*i).second->decrement();
+  Babylon::String title = Unicode::to_internal(*_client->application_title());
+  Logger::log(Logger::corba) << "ServerContext for application \""
+			     << title.utf8() << "\" destructed."
+			     << std::endl;
 }
 
 ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(_client);}
