@@ -53,5 +53,12 @@ ScreenImpl::~ScreenImpl()
   delete manager;
 }
 
+void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr a)
+{
+  Graphic_var tmp = Graphic::_duplicate(g);
+  if (tmp != body()) return;
+  a->add(region->_this(), damage->_this());
+}
+
 Coord ScreenImpl::width() { return region->upper.x;}
 Coord ScreenImpl::height() { return region->upper.y;}

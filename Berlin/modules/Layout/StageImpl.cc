@@ -23,6 +23,7 @@
 #include <Layout/StageImpl.hh>
 #include <Berlin/AllocationImpl.hh>
 #include <Berlin/TransformImpl.hh>
+#include <Berlin/DebugGraphic.hh>
 
 using namespace Geometry;
 
@@ -50,13 +51,13 @@ void StageInfoImpl::cacheBBox()
 	}
       if (size.y != 0)
 	{
-	  boundingbox.b = position.y;
-	  boundingbox.t = position.y + size.y;
+	  boundingbox.t = position.y;
+	  boundingbox.b = position.y + size.y;
 	}
       else
 	{
-	  boundingbox.b = position.y - r.y.natural * r.y.align;
-	  boundingbox.t = position.y + r.y.natural * (1. - r.y.align);
+	  boundingbox.t = position.y - r.y.natural * r.y.align;
+	  boundingbox.b = position.y + r.y.natural * (1. - r.y.align);
 	}
     }
   else
@@ -455,7 +456,7 @@ void StageImpl::traverse(Traversal_ptr t)
   rectangle.t = region.lower.y;
   rectangle.r = region.upper.x;
   rectangle.b = region.upper.y;
-
+//   dumpQuadTree(tree);
   StageTraversal st(t);
   tree.intersects(rectangle, st);
   st.execute();
@@ -594,8 +595,6 @@ Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Verte
   tree.insert(info);
   list.insert(info);
   damage(info);
-  need_resize = true;
-  needResize(); // ??? -stefan
   return *info;
 }
 

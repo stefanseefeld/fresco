@@ -55,8 +55,7 @@ protected:
 class TransformAllocator : public Allocator
 {
 public:
-  TransformAllocator(Alignment x_parent, Alignment y_parent, Alignment z_parent,
-		     Alignment x_child, Alignment y_child, Alignment z_child);
+  TransformAllocator(Alignment, Alignment, Alignment, Alignment, Alignment, Alignment);
   ~TransformAllocator();
 
   virtual void request(Requisition &);
@@ -64,10 +63,10 @@ public:
 
 protected:
   virtual void allocateChild(Allocation::Info &);
-  Alignment x_parent, y_parent, z_parent;
-  Alignment x_child, y_child, z_child;
+  Alignment xparent, yparent, zparent;
+  Alignment xchild, ychild, zchild;
 
-  void computeDelta(const Vertex &lower, const Vertex &upper, Vertex &delta);
+  void computeDelta(const Vertex &, const Vertex &, Vertex &);
 };
 
 #endif /* _Allocator_hh */

@@ -27,6 +27,8 @@
 #include "Berlin/RegionImpl.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/Pointer.hh"
+#include "Berlin/Debug.hh"
+#include <strstream>
 
 
 static Mutex ggi_mutex;
@@ -50,11 +52,12 @@ void ScreenManager::damage(Region_ptr r)
     region->_obj_is_ready(CORBA::BOA::getBOA());
     region->copy(r);
     damages.push_back(region);
-    //#ifdef DEBUG
-    cout << "ScreenManager::damage region "
-     	 << '(' << region->lower.x << ',' << region->lower.y << "),("
-     	 << region->upper.x << ',' << region->upper.y << ')' << endl;
-    //#endif
+    ostrstream oss;
+    oss << "ScreenManager::damage region (" << region->lower.x << ',' << region->lower.y << "),("
+	<< region->upper.x << ',' << region->upper.y << ')' << ends;
+    char *log = oss.str();
+    debug::log(log, debug::gwt);
+    delete log;
 
     // this injects a damage notice into the event queue, waking up
     // the sleeping event thread.
@@ -83,6 +86,11 @@ void ScreenManager::repair()
     glClearColor(0,0,0,0);
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
+    ostrstream oss;
+    oss << "ScreenManager::repair" << ends;
+    char *log = oss.str();
+    debug::log(log, debug::gwt);
+    delete log;
     for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
 	{
 	    DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, (*i)->_this());

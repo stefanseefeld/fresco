@@ -70,7 +70,7 @@ public:
   void collaps();
   void adjust(int, int, T, T);
 protected:
-  bool leaf() { return quadrants[0] == 0;}
+  bool leaf() const { return quadrants[0] == 0;}
   void allocate();
   void free() { if (!leaf()) for (int i = 0; i < 4; i++) { delete quadrants[i]; quadrants[i] = 0;}}
   index where(const Geometry::Point<T> &p)
@@ -83,6 +83,13 @@ protected:
   int          elements;
   list         items;
   QTNode<T, I> *quadrants[4];
+  friend void dumpQuadNode(const QTNode<T,I> &node, short ind)
+    {
+      for (short i = 0; i != ind; i++) cout.put(' ');
+      cout << "Node : " << node.elements << ' ' << " elements, "
+	   << node.boundingbox.l << ' ' << node.boundingbox.r << ' ' << node.boundingbox.t << ' ' << node.boundingbox.b << endl;
+      if (!node.leaf()) for (short i = 0; i != 4; i++) dumpQuadNode(*node.quadrants[i], ind + 2);
+    }
 };
 
 template <class T, class I>
@@ -97,10 +104,11 @@ public:
   QTNode<T, I> *node() { return quad;}
 protected:
   QTNode<T, I> *quad;
+  friend void dumpQuadTree(const QuadTree<T,I> &tree) { if (tree.quad) dumpQuadNode(*tree.quad, 0);}
 };
 
 template <class T, class I>
-void QTNode<T, I>::allocate()
+inline void QTNode<T, I>::allocate()
 {
   using namespace Geometry;
   if (leaf())

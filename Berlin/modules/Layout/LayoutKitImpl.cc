@@ -72,7 +72,7 @@ P create(I *i, LayoutKitImpl *kit)
 LayoutKitImpl::LayoutKitImpl() { fil_ = GraphicImpl::infinity;}
 LayoutKitImpl::~LayoutKitImpl()
 {
-//   for (vector<Graphic *>::iterator i = graphics.begin(); i != graphics.end(); i++) (*i)->_dispose();
+  for (vector<GraphicImpl *>::iterator i = graphics.begin(); i != graphics.end(); i++) (*i)->_dispose();
 }
 void LayoutKitImpl::fil(Coord c) { fil_ = c;}
 Coord LayoutKitImpl::fil() { return fil_;}

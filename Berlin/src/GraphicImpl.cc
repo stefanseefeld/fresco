@@ -251,9 +251,9 @@ void GraphicImpl::request(Requisition &) {}
 void GraphicImpl::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r);}
 void GraphicImpl::shape(Region_ptr) {}
 
-void GraphicImpl::traverse(Traversal_ptr t) { t->visit(this);}
+void GraphicImpl::traverse(Traversal_ptr t) { t->visit(_this());}
 void GraphicImpl::draw(DrawTraversal_ptr) {}
-void GraphicImpl::pick(PickTraversal_ptr) { cerr << "PickTraversal passing : " << this->_hash(10000) << endl;  }
+void GraphicImpl::pick(PickTraversal_ptr) { endl;}
 
 void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a) { allocateParents(a);}
 void GraphicImpl::needRedraw()

@@ -42,8 +42,8 @@ MAKEINFO    = makeinfo
 RANLIB      = ranlib
 TEXI2DVI    = texi2dvi
 TEXI2HTML   = texi2html
-TEX         = latex
-DVIPS       = dvips
+TEX         = 
+DVIPS       = 
 
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../include

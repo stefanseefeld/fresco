@@ -25,6 +25,7 @@
 #include "Widget/BoundedValueImpl.hh"
 #include "Widget/BoundedRangeImpl.hh"
 #include "Widget/TextBufferImpl.hh"
+#include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
 
 WidgetKitImpl::WidgetKitImpl()
@@ -87,6 +88,5 @@ TextBuffer_ptr WidgetKitImpl::text()
 
   return buffer->_this();  
 }
-
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

@@ -101,9 +101,9 @@ void Box::extension(const Allocation::Info &a, Region_ptr r)
 
 void Box::traverse(Traversal_ptr t)
 {
-  if (children.size())
+  if (numChildren())
     {
-      Region_var given = t->allocation();
+      Region_var given = Region::_duplicate(t->allocation());
       if (!CORBA::is_nil(given))
  	{ if (t->intersects()) traverseWithAllocation(t, given);}
       else traverseWithoutAllocation(t);
@@ -158,18 +158,19 @@ RegionImpl **Box::childrenAllocations(Region_ptr a)
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
 {
   RegionImpl **result = childrenAllocations(a);
+  long size = numChildren();
   long begin, end, incr;
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
   if (t->direction() == Traversal::up)
     {
       begin = 0;
-      end = children.size();
+      end = size;
       incr = 1;
     }
   else
     {
-      begin = children.size() - 1;
+      begin = size - 1;
       end = -1;
       incr = -1;
     }
@@ -186,8 +187,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
       t->traverseChild(children[i], result[i]->_this(), tx->_this());
       if (!t->ok()) break;
     }
-  long n = children.size();
-  for (long i = 0; i < n; i++) result[i]->_dispose();
+  for (long i = 0; i < size; i++) result[i]->_dispose();
   delete [] result;
   tx->_dispose();
 }

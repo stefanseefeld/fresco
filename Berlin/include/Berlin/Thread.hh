@@ -50,14 +50,18 @@ public:
     {
       ostrstream msg;
       msg << "locking Mutex " << &mutex << ends;
-      debug::log(msg.str(), debug::thread);
+      char *log = msg.str();
+      debug::log(log, debug::thread);
+      delete log;
       mutex.lock();
     }
   ~MutexGuard()
     {
       ostrstream msg;
       msg << "unlocking Mutex " << &mutex << ends;
-      debug::log(msg.str(), debug::thread);
+      char *log = msg.str();
+      debug::log(log, debug::thread);
+      delete log;
       mutex.unlock();	
     }
 private:

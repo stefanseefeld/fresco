@@ -52,12 +52,12 @@ void Allocator::request(Requisition &r)
 
 void Allocator::traverse(Traversal_ptr t)
 {
-//   updateRequisition();
-//   Region_var a = t->allocation();
-//   if (!CORBA::is_nil(a))
-//     t->traverseChild(offset, a);
-//   else
-//     t->traverseChild(offset, nat);
+  updateRequisition();
+  Region_var a = t->allocation();
+  if (!CORBA::is_nil(a))
+    t->traverseChild(body(), a, Transform::_nil());
+  else
+    t->traverseChild(body(), nat, Transform::_nil());
 }
 
 void Allocator::needResize()
@@ -138,16 +138,9 @@ void Allocator::needDamage(RegionImpl *ext, Allocation_ptr allocation)
     }
 }
 
-TransformAllocator::TransformAllocator(Alignment xp, Alignment yp, Alignment zp,
-				       Alignment xc, Alignment yc, Alignment zc)
-{
-  x_parent = xp;
-  y_parent = yp;
-  z_parent = zp;
-  x_child = xc;
-  y_child = yc;
-  z_child = zc;
-}
+TransformAllocator::TransformAllocator(Alignment xp, Alignment yp, Alignment zp, Alignment xc, Alignment yc, Alignment zc)
+  : xparent(xp), yparent(yp), zparent(zp), xchild(xc), ychild(yc), zchild(zc)
+{}
 
 TransformAllocator::~TransformAllocator() {}
 
@@ -201,12 +194,12 @@ void TransformAllocator::traverse(Traversal_ptr t)
 void TransformAllocator::computeDelta(const Vertex &lower, const Vertex &upper, Vertex &delta)
 {
   delta.x = (lower.x - nat->lower.x +
-	     x_parent * (upper.x - lower.x) -
-	     x_child * (nat->upper.x - nat->lower.x));
+	     xparent * (upper.x - lower.x) -
+	     xchild * (nat->upper.x - nat->lower.x));
   delta.y = (lower.y - nat->lower.y +
-	     y_parent * (upper.y - lower.y) -
-	     y_child * (nat->upper.y - nat->lower.y));
+	     yparent * (upper.y - lower.y) -
+	     ychild * (nat->upper.y - nat->lower.y));
   delta.z = (lower.z - nat->lower.z +
-	     z_parent * (upper.z - lower.z) -
-	     z_child * (nat->upper.z - nat->lower.z));
+	     zparent * (upper.z - lower.z) -
+	     zchild * (nat->upper.z - nat->lower.z));
 }

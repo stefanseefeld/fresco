@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -85,6 +83,7 @@ void GLPencil::drawPath(const Path &p) {
       glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
       glBegin(GL_POLYGON);
       for (unsigned long i = 0; i < p.p.length(); i++) { 
+	cout << "next vertex is " << p.p[i].x << ' ' << p.p[i].y << ' ' << p.p[i].z << endl;
 	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
       }
       glEnd();

@@ -32,6 +32,8 @@
 #include "Berlin/CloneableImpl.hh"
 #include <vector>
 
+class GraphicImpl;
+
 class LayoutKitImpl : implements(LayoutKit), virtual public CloneableImpl
 {
 public:
@@ -116,7 +118,7 @@ public:
 protected:
   Coord fil_;
  public:
-  vector<Graphic *> graphics;
+  vector<GraphicImpl *> graphics;
 };
 
 #endif /* _LayoutKitImpl_hh */

@@ -56,7 +56,7 @@ vpath %.d $(dpath)
 world:	$(TARGET)
 
 $(TARGET):	$(OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lstdc++
+		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
 
 $(dpath)/%.d:	%.idl

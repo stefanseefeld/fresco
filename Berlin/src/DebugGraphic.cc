@@ -50,8 +50,7 @@ void DebugGraphic::request(Requisition &r)
 
 void DebugGraphic::traverse(Traversal_ptr t)
 {
-  if (flags & traversals)
-    t->visit(this);
+  if (flags & traversals) t->visit(_this());
   else MonoGraphic::traverse(t);
 }
 
@@ -60,7 +59,7 @@ void DebugGraphic::draw(DrawTraversal_ptr t)
   if (flags & draws)
     {
       heading(" draw\t");
-      RegionImpl region(Region_var(t->allocation()), t->transformation());
+      RegionImpl region(t->allocation(), t->transformation());
       printRegion(&region);
       cout << endl;
     }
@@ -81,8 +80,8 @@ void DebugGraphic::pick(PickTraversal_ptr t)
 
 void DebugGraphic::heading(const char *s)
 {
-  Graphic_var g = body();
-  cout << message << " (" << Graphic_ptr(g) << ')' << s;
+  Graphic_ptr g = body();
+  cout << message << " (" << g << ')' << s;
 }
 
 void DebugGraphic::printRequirement(Graphic::Requirement &r)

@@ -19,34 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ScreenImpl_hh
-#define _ScreenImpl_hh
 
+#include <Widget/Filler.hh>
 #include <Warsaw/config.hh>
-#include <Warsaw/Screen.hh>
-#include <Berlin/MonoGraphic.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Pencil.hh>
+#include <Warsaw/Traversal.hh>
 
-class ScreenManager;
-class DamageImpl;
-class RegionImpl;
-class GLDrawingKit;
-
-class ScreenImpl : implements(Screen), virtual public MonoGraphic
+void Filler::request(Requisition &requisition)
 {
-public:
-  ScreenImpl(GLDrawingKit *, Coord, Coord);
-  virtual ~ScreenImpl();
+  GraphicImpl::require(requisition.x, 0, infinity, 0, 0);
+  GraphicImpl::require(requisition.y, 0, infinity, 0, 0);
+}
 
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
-
-  Coord width();
-  Coord height();
-  ScreenManager *Manager() { return manager;}
-  Region_ptr getRegion() {return region->_this();}
-protected:
-  ScreenManager *manager;
-  RegionImpl *region;
-  DamageImpl *damage;
-};
-
-#endif /* _ScreenImpl_hh */
+void Filler::draw(DrawTraversal_ptr traversal)
+{
+  DrawingKit_var dk = traversal->kit();
+  Pencil_var pen;// = dk->getPencil();
+  Vertex lower, upper, origin;
+  traversal->bounds(lower, upper, origin);
+  Path path;
+  path.p.length(4);
+  pen->drawPath(path);
+}

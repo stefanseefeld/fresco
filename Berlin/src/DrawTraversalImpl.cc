@@ -28,7 +28,7 @@ DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Region_ptr r)
 {
   drawingkit = DrawingKit::_duplicate(kit);
   drawable = Drawable::_duplicate(drawingkit->getDrawable());
-  clipping = Region::_duplicate(drawable->clipping());
+  clipping = Region::_duplicate(r);
 }
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
@@ -41,9 +41,6 @@ DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
 
 DrawTraversalImpl::~DrawTraversalImpl()
 {
-  CORBA::release(clipping);
-  CORBA::release(drawable);
-  CORBA::release(drawingkit);
 }
 
 CORBA::Boolean DrawTraversalImpl::intersects()
@@ -53,7 +50,7 @@ CORBA::Boolean DrawTraversalImpl::intersects()
 
 void DrawTraversalImpl::visit(Graphic_ptr g)
 {
-    g->draw(this->_this());
+  g->draw(_this());
 }
 
 DrawingKit_ptr DrawTraversalImpl::kit()

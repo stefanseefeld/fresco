@@ -99,10 +99,8 @@ CORBA::Boolean RegionImpl::intersects(Region_ptr r)
     {
       Vertex l, u;
       r->bounds(l, u);
-      b = (u.x >= lower.x && l.x <= upper.x &&
-	   u.y >= lower.y && l.y <= upper.y
-	   //u.z >= lower.z && l.z <= upper.z
-	   );
+      b  = (lower.x <= u.x && upper.x >= u.x) || (lower.x <= l.x && upper.x >= l.x) || ((lower.x <= l.x) == (upper.x >= u.x));
+      b &= (lower.y <= u.y && upper.y >= u.y) || (lower.y <= l.y && upper.y >= l.y) || ((lower.y <= l.y) == (upper.y >= u.y));
     }
   return b;
 }

@@ -19,34 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ScreenImpl_hh
-#define _ScreenImpl_hh
+#ifndef _Color_hh
+#define _Color_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Screen.hh>
-#include <Berlin/MonoGraphic.hh>
-
-class ScreenManager;
-class DamageImpl;
-class RegionImpl;
-class GLDrawingKit;
-
-class ScreenImpl : implements(Screen), virtual public MonoGraphic
+Color brightness(const Color &c1, double adjust)
 {
-public:
-  ScreenImpl(GLDrawingKit *, Coord, Coord);
-  virtual ~ScreenImpl();
-
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
-
-  Coord width();
-  Coord height();
-  ScreenManager *Manager() { return manager;}
-  Region_ptr getRegion() {return region->_this();}
-protected:
-  ScreenManager *manager;
-  RegionImpl *region;
-  DamageImpl *damage;
+  Color c2;
+  if (adjust >= 0)
+    {
+      c2.red   = c1.red + (1 - c1.red) * adjust;
+      c2.green = c1.green + (1 - c1.green) * adjust;
+      c2.blue  = c1.blue + (1 - c1.blue) * adjust;
+    }
+  else
+    {
+      c2.red   = c1.red * (1 + adjust);
+      c2.green = c1.green * (1 + adjust);
+      c2.blue  = c1.blue * (1 + adjust);
+    }
+  return c2;
 };
 
-#endif /* _ScreenImpl_hh */
+#endif /* _Color_hh */
