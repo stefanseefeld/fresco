@@ -47,7 +47,7 @@ IDL		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 SRC	 	:= $(patsubst %.idl, %_idl.py, $(IDL)) 
 CMP		:= $(patsubst %.py, %.pyc, $(SRC))
 
-PACKAGES	:= Fresco Figure GGI Layout Primitive Unidraw Widget
+PACKAGES	:= Fresco Figure Layout Primitive Unidraw Widget
 PACKAGES	:= $(PACKAGES) $(PACKAGES:%=%__POA)
 PACKAGES	:= $(PACKAGES) Fresco/Input Fresco__POA/Input
 
