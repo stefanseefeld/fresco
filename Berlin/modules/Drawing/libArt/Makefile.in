@@ -31,7 +31,7 @@ srcdir		:= $(top_srcdir)/src/Drawing/libArt
 hdir		:= $(top_srcdir)/include/Drawing/libArt
 
 # Compilation and linking flags.
-CPPFLAGS	+= -I$(hdir) $(LIBART_INCLUDES) $(FREETYPE_INCLUDES)
+CPPFLAGS	+= -I$(hdir) $(LIBART_INCLUDES) $(FREETYPE_CFLAGS)
 LIBS		+= -lBerlin $(LIBART_LIBS) $(FREETYPE_LIBS)
 
 SRC		:= LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc LibArtDrawingKit.cc 
