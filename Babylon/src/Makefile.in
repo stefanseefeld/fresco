@@ -90,13 +90,10 @@ clean:
 	rm -f *.o *.d *.syn
 
 distclean:	clean
-	rm -f Makefile $(hdir)/Babylon/acconfig.hh \
-		$(cdir)/config.log $(cdir)/config.status \
+	rm -f Makefile ../include/Babylon/acconfig.hh \
 		../bin/Babylon-config
 
 maintainer-clean: distclean
-	rm -f $(top_srcdir)/configure $(top_srcdir)/config/acconfig.hh.in \
-		$(top_srcdir)/config/aclocal.m4
 
 %.d:	%.cc %.hh
 	@echo generating dependencies for $(<F)

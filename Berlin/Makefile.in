@@ -21,7 +21,9 @@
 
 SHELL	:= /bin/sh
 
-subdirs:= src server modules
+top_srcdir	:= @top_srcdir@
+
+subdirs	:= src server modules
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
@@ -59,12 +61,17 @@ distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
 	@echo 'run configure to regenerate them.'
 	$(MAKE) action="distclean"
-	rm -f Makefile config/local.mk config.cache config.log config.status
+	rm -rf Makefile config/local.mk config.cache config.log config.status \
+               config/Berlin-config config/synopsis.py \
+               $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4
+
 
 maintainer-clean:
 	@echo 'This command is intended for maintainers to use;'
 	@echo 'it deletes configure and auxiliary files;'
 	@echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
-	rm -f Makefile config/local.mk config.cache config.log config.status \
-		configure config/aclocal.m4
+	rm -rf Makefile config/local.mk config.cache config.log config.status \
+               config/Berlin-config config/synopsis.py \
+               $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
+               $(top_srcdir)/configure 

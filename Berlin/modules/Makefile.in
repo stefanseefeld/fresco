@@ -73,12 +73,11 @@ distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
 	@echo 'run configure to regenerate them.'
 	$(MAKE) action="distclean"
-	rm -f Makefile config/local.mk config.cache config.log config.status
+	rm -f Makefile
 
 maintainer-clean:
 	@echo 'This command is intended for maintainers to use;'
 	@echo 'it deletes configure and auxiliary files;'
 	@echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
-	rm -f Makefile config/local.mk config.cache config.log config.status \
-		configure config/aclocal.m4
+	rm -f Makefile

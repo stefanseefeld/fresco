@@ -117,14 +117,10 @@ clean:
 	rm -f *.o *.d
 
 distclean:	clean
-	rm -f Makefile $(hdir)/acconfig.hh \
-	  $(cdir)/Server/local.mk $(cdir)/Server/module.mk \
-	  $(cdir)/Server/config.log $(cdir)/Server/config.status \
-	  $(bdir)/Berlin-config
+	rm -f Makefile ../include/Berlin/acconfig.hh \
+              ../bin/Berlin-config
 
 maintainer-clean: distclean
-	rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/acconfig.hh.in \
-	  $(top_srcdir)/config/Server/aclocal.m4
 
 %.d:	%.cc %.hh
 	@echo generating dependencies for $(<F)
@@ -142,6 +138,6 @@ ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
 endif
 
-ifeq (,$(filter $(MAKECMDGOALS), config depend doc clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), depend doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

@@ -57,16 +57,7 @@ Step into the build directory, and run the toplevel configure script:
 > cd $fresco-build
 > $fresco-src/configure
 
-this will just generate a single Makefile, which, however, is equipped
-with all the knowledge to do the rest of the work.
-
-call 'make config' to configure and build all the available sub-projects:
-
-> make config
-
-You may want to provide some arguments to the various configure
-scripts. You can do that with 'make config configure_args="--enable-foo"'.
-Here is a list of the available options:
+You may want to provide some arguments, here is a list of the available options:
 
   --prefix               Set the prefix into which Fresco will get installed.
                          [defaults to /usr/local and can be overridden later
@@ -184,10 +175,10 @@ bash-like style:
 Of course $prefix is the --prefix option (it defaults to /usr/local)
 you gave to configure when building.
 
-The berlin server is in $prefix/bin/server, and now you should be
+The berlin server is in $prefix/bin, and now you should be
 able to start it.
 
-> $prefix/bin/server
+> $prefix/bin/berlin
 
 and voila! that should start the server.
 
@@ -197,7 +188,7 @@ myself!" factor). To start a client with the server you need to tell it
 its location (starting now the $fresco-build stuff will be assumed)
 using the -e (execute) flag:
 
-> bin/server -e bin/demo
+> bin/berlin -e bin/demo
 
 The demo program is a set of small applications showing some fresco
 possibilities (new demos are welcome!).
@@ -214,11 +205,11 @@ has no 3D support, so you have to tell Fresco to use another DrawingKit
 
 In short:
 
-> bin/server -e bin/demo3D -c SDL -d GLDrawingKit
+> bin/berlin -e bin/demo3D -c SDL -d GLDrawingKit
 
 for SDL console or
 
-> bin/server -e bin/demo3D -c GGI -d GLDrawingKit
+> bin/berlin -e bin/demo3D -c GGI -d GLDrawingKit
 
 for GGI console.
 
@@ -279,7 +270,7 @@ You can work around a broken nameserver now: Start the server with
 -R ior to have it export an Initial CORBA Reference that the client can
 import. This should look like this:
 
-> bin/server -R ior
+> bin/berlin -R ior
 Export Reference: FrescoServer=IOR:lots-of-numbers
 
 You can then start the demo by passing the exported reference to the
@@ -307,4 +298,4 @@ http://www.fresco.org/mailinglists.html for details).
 
 Good luck!
 
-The Fresco Developers.
+The Fresco Team
