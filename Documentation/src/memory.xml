@@ -57,15 +57,16 @@
         <programlistingco>
           <areaspec>
             <area id="constructor" coords="2"/>
-            <area id="activation" coords="4"/>
-            <area id="decrement" coords="5"/>
-            <area id="deactivation" coords="9"/>
+            <area id="activation" coords="5"/>
+            <area id="decrement" coords="6"/>
+            <area id="deactivation" coords="10"/>
           </areaspec>
           <programlisting>
           {
             MyServant *servant = new MyServant();
             PortableServer::POA_var poa = ...;
-            PortableServer::ObjectId_var oid = poa->activate_object(servant);
+            PortableServer::ObjectId_var oid =
+                poa->activate_object(servant);
             servant->_remove_ref();
 
             // do some work here
@@ -103,7 +104,8 @@
           {
             RegionImpl *region = new RegionImpl;
             PortableServer::POA_var poa = ...;
-            PortableServer::ObjectId_var oid = poa->activate_object(region);
+            PortableServer::ObjectId_var oid =
+                poa->activate_object(region);
             // do some work here
 
             poa->deactivate_object(oid);
