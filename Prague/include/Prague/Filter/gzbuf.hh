@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,46 +28,31 @@
 namespace Prague
 {
 
-class gzbuf : public std::streambuf
-{
-public:
-  gzbuf();
-  virtual ~gzbuf();
-  gzbuf *open(const char *, int);
-  gzbuf *attach(int, int);
-  gzbuf *close();
-  int setcompressionlevel(short);
-  int setcompressionstrategy(short);
-  int is_open() const {return _file != 0;}
-  virtual std::streampos seekoff(std::streamoff, std::ios::seekdir, int);
-  virtual int sync();
-protected:
-  virtual int underflow();
-  virtual int overflow(int = EOF);
-private:
-  int flushbuf();
-  int fillbuf();
-  gzFile _file;
-  int    _mode;
-  bool   _owner;
-  char  *_buf;
-};
+  class gzbuf : public std::streambuf
+  {
+    public:
+      gzbuf();
+      virtual ~gzbuf();
+      gzbuf *open(const char *, int);
+      gzbuf *attach(int, int);
+      gzbuf *close();
+      int setcompressionlevel(short);
+      int setcompressionstrategy(short);
+      int is_open() const {return _file != 0;}
+      virtual std::streampos seekoff(std::streamoff, std::ios::seekdir, int);
+      virtual int sync();
+    protected:
+      virtual int underflow();
+      virtual int overflow(int = EOF);
+    private:
+      int flushbuf();
+      int fillbuf();
+      gzFile _file;
+      int    _mode;
+      bool   _owner;
+      char  *_buf;
+  };
 
-};
+} // namespace
 
 #endif /* _gzbuf_h */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

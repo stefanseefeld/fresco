@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,56 +35,56 @@
 
 using namespace Prague;
 
-MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset) throw(std::runtime_error)
-  : _base(MAP_FAILED), _length(0)
+MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset) throw(std::runtime_error) :
+  _base(MAP_FAILED),
+  _length(0)
 {
-  struct stat sb;
-  _length = l > -1 ? l : fstat(fd, &sb) == -1 ? -1 : sb.st_size;
-  if (l > static_cast<int>(_length))
+    struct stat sb;
+    _length = l > -1 ? l : fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+    if (l > static_cast<int>(_length))
     {
-      _length = l;
-      ftruncate(fd, _length);
+        _length = l;
+        ftruncate(fd, _length);
     }
-  else if (l > 0 && l < static_cast<int>(_length)) _length = l;
-  _base = mmap(addr, _length, prot, share, fd, offset);
-  if (_base == MAP_FAILED) throw std::runtime_error(strerror(errno));
+    else if (l > 0 && l < static_cast<int>(_length)) _length = l;
+    _base = mmap(addr, _length, prot, share, fd, offset);
+    if (_base == MAP_FAILED) throw std::runtime_error(strerror(errno));
 }
 
-MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, off_t offset) throw(std::runtime_error)
-  : _base(MAP_FAILED), _length(0)
+MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, off_t offset) throw(std::runtime_error) :
+  _base(MAP_FAILED),
+  _length(0)
 {
-  int fd = -1;
-  if (prot == read)
-    fd = open(filename.c_str(), O_RDONLY); 
-  else
-    fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
+    int fd = -1;
+    if (prot == read) fd = open(filename.c_str(), O_RDONLY);
+    else fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
 
-  if (fd == -1)
-  {
-      std::string message = "Failed to map \"" + filename + "\": " +
-	                    strerror(errno);
-      throw std::runtime_error(message);
-  }
-  struct stat sb;
-  _length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
-  if (l > static_cast<int>(_length))
+    if (fd == -1)
     {
-      _length = l;
-      ftruncate(fd, _length);
+          std::string message = "Failed to map \"" + filename + "\": " +
+                                strerror(errno);
+          throw std::runtime_error(message);
     }
-  else if (l > 0 && l < static_cast<int>(_length)) _length = l;
-  _base = mmap(addr, _length, prot, share, fd, offset);
-  if (_base == MAP_FAILED)
-  {
-      std::string message = "Failed to map \"" + filename + "\": " +
-	                    strerror(errno);
-      throw std::runtime_error(message);
-  }
-  close(fd);
+    struct stat sb;
+    _length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
+    if (l > static_cast<int>(_length))
+    {
+        _length = l;
+        ftruncate(fd, _length);
+    }
+    else if (l > 0 && l < static_cast<int>(_length)) _length = l;
+    _base = mmap(addr, _length, prot, share, fd, offset);
+    if (_base == MAP_FAILED)
+    {
+        std::string message = "Failed to map \"" + filename + "\": " +
+                              strerror(errno);
+        throw std::runtime_error(message);
+    }
+    close(fd);
 }
 
-MMap::~MMap() { if (_base != MAP_FAILED) munmap(_base, _length);}
-void MMap::sync(ssize_t len, bool wait) { msync(_base, len < 0 ? _length : len, wait ? MS_SYNC : MS_ASYNC);}
-void MMap::sync(void *addr, size_t len, bool wait) { msync(addr, len, wait ? MS_SYNC : MS_ASYNC);}
-void MMap::protect(ssize_t len, int prot) { mprotect(_base, len < 0 ? _length : len, prot);}
-void MMap::protect(void *addr, size_t len, int prot) { mprotect(addr, len, prot);}
+MMap::~MMap() { if (_base != MAP_FAILED) munmap(_base, _length); }
+void MMap::sync(ssize_t len, bool wait) { msync(_base, len < 0 ? _length : len, wait ? MS_SYNC : MS_ASYNC); }
+void MMap::sync(void *addr, size_t len, bool wait) { msync(addr, len, wait ? MS_SYNC : MS_ASYNC); }
+void MMap::protect(ssize_t len, int prot) { mprotect(_base, len < 0 ? _length : len, prot); }
+void MMap::protect(void *addr, size_t len, int prot) { mprotect(addr, len, prot); }

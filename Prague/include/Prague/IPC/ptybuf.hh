@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,22 +28,22 @@
 namespace Prague
 {
 
-class ptybuf : public ipcbuf
-{
-public:
-  ptybuf();
-  virtual ~ptybuf();
-  virtual std::streamsize sys_read(char *, std::streamsize);
-  const std::string &name() const { return ptydev;}
-  int openpty();
-  int opentty();
-  void setup();
-protected:
-  std::string ptydev;
-private:
-  int tty;
-};
+  class ptybuf : public ipcbuf
+  {
+    public:
+      ptybuf();
+      virtual ~ptybuf();
+      virtual std::streamsize sys_read(char *, std::streamsize);
+      const std::string &name() const { return ptydev;}
+      int openpty();
+      int opentty();
+      void setup();
+    protected:
+      std::string ptydev;
+    private:
+      int tty;
+  };
 
-};
+} // namespace
 
 #endif

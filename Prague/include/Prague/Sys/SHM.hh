@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,17 +28,17 @@
 namespace Prague
 {
 
-struct SHM
-{
-  static int   allocate(key_t, size_t, int = IPC_CREAT | 0666);
-  static int   allocate(size_t, int = IPC_CREAT | 0666);
-  static void  deallocate(int);
-  static void *attach(int);
-  static void  detach(void *);
-  int id;
-  unsigned int count;
-};
+  struct SHM
+  {
+      static int   allocate(key_t, size_t, int = IPC_CREAT | 0666);
+      static int   allocate(size_t, int = IPC_CREAT | 0666);
+      static void  deallocate(int);
+      static void *attach(int);
+      static void  detach(void *);
+      int id;
+      unsigned int count;
+  };
 
-};
+} // namespace
 
 #endif /* _SHM_hh */

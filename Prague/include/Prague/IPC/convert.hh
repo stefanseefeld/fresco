@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,24 +27,24 @@
 namespace Prague
 {
 
-//. convert t from network to host byte order
-template <class T> T net_to_host(const T &t);
-//. convert t from host to network byte order
-template <class T> T host_to_net(const T &t);
+  //. convert t from network to host byte order
+  template <class T> T net_to_host(const T &t);
+  //. convert t from host to network byte order
+  template <class T> T host_to_net(const T &t);
 
-int host_to_net<int>(const int &t) { return htonl(t);}
-int net_to_host<int>(const int &t) { return ntohl(t);}
-long host_to_net<long>(const long &t) { return htonl(t);}
-long net_to_host<long>(const long &t) { return ntohl(t);}
-short host_to_net<short>(const short &t) { return htons(t);}
-short net_to_host<short>(const short &t) { return ntohs(t);}
-unsigned int host_to_net<unsigned int>(const unsigned int &t) { return htonl(t);}
-unsigned int net_to_host<unsigned int>(const unsigned int &t) { return ntohl(t);}
-unsigned long host_to_net<unsigned long>(const unsigned long &t) { return htonl(t);}
-unsigned long net_to_host<unsigned long>(const unsigned long &t) { return ntohl(t);}
-unsigned short host_to_net<unsigned short>(const unsigned short &t) { return htons(t);}
-unsigned short net_to_host<unsigned short>(const unsigned short &t) { return ntohs(t);}
+  int host_to_net<int>(const int &t) { return htonl(t); }
+  int net_to_host<int>(const int &t) { return ntohl(t); }
+  long host_to_net<long>(const long &t) { return htonl(t); }
+  long net_to_host<long>(const long &t) { return ntohl(t); }
+  short host_to_net<short>(const short &t) { return htons(t); }
+  short net_to_host<short>(const short &t) { return ntohs(t); }
+  unsigned int host_to_net<unsigned int>(const unsigned int &t) { return htonl(t); }
+  unsigned int net_to_host<unsigned int>(const unsigned int &t) { return ntohl(t); }
+  unsigned long host_to_net<unsigned long>(const unsigned long &t) { return htonl(t); }
+  unsigned long net_to_host<unsigned long>(const unsigned long &t) { return ntohl(t); }
+  unsigned short host_to_net<unsigned short>(const unsigned short &t) { return htons(t); }
+  unsigned short net_to_host<unsigned short>(const unsigned short &t) { return ntohs(t); }
 
-};
+} // namespace
 
 #endif

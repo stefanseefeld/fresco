@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -18,50 +18,49 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-/* $Id$ */
+ */
 #ifndef _cbuf_hh
 #define _cbuf_hh
 
 #include <streambuf>
 
-/* @Class {cbuf : public streambuf}
- *
- * @Description {suppress comments from input}
- */
+//. @Class {cbuf : public streambuf}
+//.
+//. @Description {suppress comments from input}
 class cbuf: public std::streambuf
 {
-public:
-  cbuf(std::streambuf *sb, char c = '#') : my_sbuf(sb), my_comment(c), my_newline(true) {}
-protected:
-  int sync() { return my_sbuf->sync();}
-  inline int uflow();
-  int sungetc() { return my_sbuf->sungetc();}
-private:
-  cbuf(cbuf const &);
-  void operator= (cbuf const &);
-  std::streambuf *my_sbuf;
-  const char      my_comment;
-  bool            my_newline;
+  public:
+    cbuf(std::streambuf *sb, char c = '#') : my_sbuf(sb), my_comment(c), my_newline(true) { }
+  protected:
+    int sync() { return my_sbuf->sync(); }
+    inline int uflow();
+    int sungetc() { return my_sbuf->sungetc(); }
+  private:
+    cbuf(cbuf const &);
+    void operator= (cbuf const &);
+    std::streambuf *my_sbuf;
+    const char      my_comment;
+    bool            my_newline;
 };
 
 inline int cbuf::uflow()
 {
-  int c = my_sbuf->sbumpc();
-  if (c == '\n') my_newline = true;
-  else if (c == my_comment)
+    int c = my_sbuf->sbumpc();
+    if (c == '\n') my_newline = true;
+    else if (c == my_comment)
     {
-      do // for all lines starting with <comment>
-	{
-	  do c = my_sbuf->sbumpc();
-	  while (c != EOF && c != '\n'); // for all letters of the line
-	  if (my_newline && c == '\n') c = my_sbuf->sbumpc();
-	}
-      while (c == my_comment);
-      if (c == '\n') my_newline = true;
+        do // for all lines starting with <comment>
+        {
+            do
+                c = my_sbuf->sbumpc();
+            while (c != EOF && c != '\n'); // for all letters of the line
+            if (my_newline && c == '\n') c = my_sbuf->sbumpc();
+        }
+        while (c == my_comment);
+        if (c == '\n') my_newline = true;
     }
-  else my_newline = false;
-  return c;
+    else my_newline = false;
+    return c;
 }
 
 #endif

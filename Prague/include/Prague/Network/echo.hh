@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,27 +29,36 @@
 namespace Prague
 {
 
-class echo: public protocol
-{
-public:
-  class echobuf: public protocol::protocolbuf
+  class echo: public protocol
   {
-  public:
-//     echobuf (sockinetbuf &si): protocol::protocolbuf(si) {}
-    echobuf (protocol::p_name pname) : protocol::protocolbuf (pname) {}
-    virtual void        serve_clients(int portno = -1);
-    virtual const char *rfc_name() const { return "echo";}
-    virtual const char *rfc_doc() const { return "rfc862";}
+    public:
+      class echobuf: public protocol::protocolbuf
+      {
+        public:
+          // echobuf (sockinetbuf &si) :
+          //   protocol::protocolbuf(si)
+          // { }
+          echobuf (protocol::p_name pname) :
+            protocol::protocolbuf (pname)
+          { }
+          virtual void serve_clients(int portno = -1);
+          virtual const char *rfc_name() const { return "echo";}
+          virtual const char *rfc_doc() const { return "rfc862";}
+      };
+    // protected:
+      // echo (): ios(0) { }
+    public:
+      echo(protocol::p_name pname) :
+        protocol(new echobuf(pname))
+      { }
+      ~echo() { delete protocol::rdbuf(); }
+      echobuf *rdbuf()
+      {
+          return static_cast<echobuf *>(protocol::rdbuf());
+      }
+      echobuf *operator ->() { return rdbuf(); }
   };
-// protected:
-//   echo (): ios(0) {}
-public:
-  echo(protocol::p_name pname) : protocol(new echobuf(pname)) {}
-  ~echo() { delete protocol::rdbuf();}
-  echobuf *rdbuf() { return static_cast<echobuf *>(protocol::rdbuf());}
-  echobuf *operator ->() { return rdbuf();}
-};
 
-};
+} // namespace
 
 #endif

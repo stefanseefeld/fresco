@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,50 +29,49 @@ using namespace Prague;
 
 clock_t Stopwatch::_ticks = 0;
 
-Stopwatch::Stopwatch()
-  : _state(undef)
+Stopwatch::Stopwatch() : _state(undef)
 {
-  if (!_ticks) _ticks = sysconf(_SC_CLK_TCK);
-  start();
-};
+    if (!_ticks) _ticks = sysconf(_SC_CLK_TCK); // FIXME: This is not the POSIX way! -tobias
+    start();
+}
 
 void Stopwatch::start()
 {
-  _state = running;
-  struct tms cpt;
-  _real.begin = times(&cpt);
-  _cpu.begin  = cpt.tms_utime;
-  _sys.begin  = cpt.tms_stime;
-  if (_real.begin == -1) perror("Stopwatch::start");
-};
+    _state = running;
+    struct tms cpt;
+    _real.begin = times(&cpt);
+    _cpu.begin  = cpt.tms_utime;
+    _sys.begin  = cpt.tms_stime;
+    if (_real.begin == -1) perror("Stopwatch::start");
+}
 
 void Stopwatch::stop()
 {
-  _state = stopped;
-  struct tms cpt;
-  _real.end = times(&cpt);
-  _cpu.end  = cpt.tms_utime;
-  _sys.end  = cpt.tms_stime;
-  if (_real.end == -1) perror("Stopwatch::stop");
-};
+    _state = stopped;
+    struct tms cpt;
+    _real.end = times(&cpt);
+    _cpu.end  = cpt.tms_utime;
+    _sys.end  = cpt.tms_stime;
+    if (_real.end == -1) perror("Stopwatch::stop");
+}
 
 double Stopwatch::real_time()
 {
-  if (_state == undef) return 0.;
-  else if (_state == running) stop();
-  return (double) (_real.end - _real.begin)/_ticks;
-};
+    if (_state == undef) return 0.;
+    else if (_state == running) stop();
+    return (double) (_real.end - _real.begin)/_ticks;
+}
 
 double Stopwatch::cpu_time()
 {
-  if (_state == undef) return 0.;
-  else if (_state == running) stop();
-  return (double) (_cpu.end - _cpu.begin)/_ticks;
-};
+    if (_state == undef) return 0.;
+    else if (_state == running) stop();
+    return (double) (_cpu.end - _cpu.begin)/_ticks;
+}
 
 double Stopwatch::sys_time()
 {
-  if (_state == undef) return 0.;
-  else if (_state == running) stop();
-  return (double) (_sys.end - _sys.begin)/_ticks;
-};
+    if (_state == undef) return 0.;
+    else if (_state == running) stop();
+    return (double) (_sys.end - _sys.begin)/_ticks;
+}

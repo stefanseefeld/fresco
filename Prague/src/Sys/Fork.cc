@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * this file is based on code from the socket++ library
  * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
@@ -34,26 +34,26 @@ using namespace Prague;
 
 struct Fork::Process
 {
-  struct Cleaner { ~Cleaner ();};
-  struct Reaper : Signal::Notifier { virtual void notify(int);};
-  struct Suicide : Signal::Notifier { virtual void notify(int);};
-  friend struct Cleaner;
-  
-  static void infanticide_reason(pid_t, int);
-  static Cleaner  cleaner;
-  static Reaper   reaper;
-  static Suicide  suicide;
-  static Process *children;
-  pid_t           pid;
-  const bool      killflag : 1;
-  const bool      reason : 1;
-  Process        *next;
-  
-  Process(bool, bool);
-  ~Process();
-  
-  void           kill() const;
-  void           reap_child () const;
+    struct Cleaner { ~Cleaner (); };
+    struct Reaper : Signal::Notifier { virtual void notify(int); };
+    struct Suicide : Signal::Notifier { virtual void notify(int); };
+    friend struct Cleaner;
+
+    static void infanticide_reason(pid_t, int);
+    static Cleaner  cleaner;
+    static Reaper   reaper;
+    static Suicide  suicide;
+    static Process *children;
+    pid_t           pid;
+    const bool      killflag : 1;
+    const bool      reason : 1;
+    Process        *next;
+
+    Process(bool, bool);
+    ~Process();
+
+    void           kill() const;
+    void           reap_child () const;
 };
 
 Fork::Process *Fork::Process::children = 0;
@@ -65,131 +65,129 @@ Fork::Process::Cleaner::~Cleaner()
   // First, kill all children whose kill_child flag is set.
   // Second, wait for other children to die.
 {
-  for (Process *p = Fork::Process::children; p; p = p->next)
-    if (p->killflag) delete p;
-  while (Fork::Process::children && wait (0) > 0);
+    for (Process *p = Fork::Process::children; p; p = p->next)
+        if (p->killflag) delete p;
+    while (Fork::Process::children && wait (0) > 0) ;
 }
 
-Fork::Process::Process (bool k, bool r)
-  : killflag(k), reason(r), next(0)
+Fork::Process::Process (bool k, bool r) : killflag(k), reason(r), next(0)
 {
-  if (children == 0) Signal::set(Signal::child, &reaper);
-  pid = fork();
-  if (pid > 0)
+    if (children == 0) Signal::set(Signal::child, &reaper);
+    pid = fork();
+    if (pid > 0)
     {
-      next = children;
-      children = this;
+        next = children;
+        children = this;
     }
-  else if (pid == 0)
+    else if (pid == 0)
     {
-      Process *p = children;
-      while (p)
-	{
-	  Process *n = p->next;
-	  p->pid = 0;
-	  delete p;
-	  p = n;
-	}
-      children = 0;
-      if (killflag) Signal::set(Signal::kill, &suicide);
+        Process *p = children;
+        while (p)
+        {
+            Process *n = p->next;
+            p->pid = 0;
+            delete p;
+            p = n;
+        }
+        children = 0;
+        if (killflag) Signal::set(Signal::kill, &suicide);
     }
 }
 
 Fork::Process::~Process()
 {
-  if (pid > 0)
+    if (pid > 0)
     {
-      if (killflag) ::kill (pid, Signal::terminate);
-      reap_child();
-      if (children == this) children = children->next;
-      else
-	{
-	  for (Process *p = children; p; p = p->next)
-	    if (p->next == this)
-	      {
-		p->next = next;
-		break;
-	      }
-	}
+        if (killflag) ::kill (pid, Signal::terminate);
+        reap_child();
+        if (children == this) children = children->next;
+        else
+        {
+            for (Process *p = children; p; p = p->next)
+                if (p->next == this)
+                {
+                    p->next = next;
+                    break;
+                }
+        }
     }
 }
 
 void Fork::Process::kill() const
 {
-  if (pid > 0)
+    if (pid > 0)
     {
-      ::kill(pid, Signal::kill);
-      reap_child();
+        ::kill(pid, Signal::kill);
+        reap_child();
     }
 }
 
 void Fork::Process::reap_child () const
 {
-  int status;
-  if (pid > 0 && waitpid (pid, &status, 0) == pid && reason)
-    infanticide_reason (pid, status);
+    int status;
+    if (pid > 0 && waitpid (pid, &status, 0) == pid && reason)
+        infanticide_reason (pid, status);
 }
 
 void Fork::Process::infanticide_reason (pid_t pid, int status)
 {
-  if (pid <= 0) return;
-  if (WIFSTOPPED (status))
-    std::cerr << "process " << pid << " gets " << strsignal(WSTOPSIG (status)) << std::endl;
-  else if (WIFEXITED (status))
-    std::cerr << "process " << pid << " exited with status " << WEXITSTATUS (status) << std::endl;
-  else if (WIFSIGNALED (status))
-    std::cerr << "process " << pid << " got " << strsignal(WTERMSIG (status)) << std::endl;
+    if (pid <= 0) return;
+    if (WIFSTOPPED (status))
+        std::cerr << "process " << pid << " gets " << strsignal(WSTOPSIG (status)) << std::endl;
+    else if (WIFEXITED (status))
+        std::cerr << "process " << pid << " exited with status " << WEXITSTATUS (status) << std::endl;
+    else if (WIFSIGNALED (status))
+        std::cerr << "process " << pid << " got " << strsignal(WTERMSIG (status)) << std::endl;
 }
 
 void Fork::Process::Reaper::notify(int signo)
 {
-  if (signo != SIGCHLD) return;
-  int status;
-  pid_t wpid;
-  if ((wpid = waitpid (-1, &status, WNOHANG)) > 0)
+    if (signo != SIGCHLD) return;
+    int status;
+    pid_t wpid;
+    if ((wpid = waitpid (-1, &status, WNOHANG)) > 0)
     {
-      Process *prev = 0;
-      Process *cur  = children;
-      while (cur)
-	{
-	  if (cur->pid == wpid)
-	    {
-	      cur->pid = -1;
-	      if (prev) prev->next = cur->next;
-	      else children = children->next;
-	      if (cur->reason) infanticide_reason (wpid, status);
-	      delete cur;
-	      break;
-	    }
-	  prev = cur;
-	  cur  = cur->next;
-	}
+        Process *prev = 0;
+        Process *cur  = children;
+        while (cur)
+        {
+            if (cur->pid == wpid)
+            {
+                cur->pid = -1;
+                if (prev) prev->next = cur->next;
+                else children = children->next;
+                if (cur->reason) infanticide_reason (wpid, status);
+                delete cur;
+                break;
+            }
+            prev = cur;
+            cur  = cur->next;
+        }
     }
 }
 
 void Fork::Process::Suicide::notify (int)
 {
-  // if this process has any children we kill them.
-  Process *p = children;
-  while (p)
+    // if this process has any children we kill them.
+    Process *p = children;
+    while (p)
     {
-      Process *next = p->next;
-      if (!p->killflag) // otherwise Process::~Process will take care
-	::kill(p->pid, Signal::kill);
-      delete p; // Process::~Process will call reap_child ().
-      p = next;
+        Process *next = p->next;
+        if (!p->killflag) // otherwise Process::~Process will take care
+        ::kill(p->pid, Signal::kill);
+        delete p; // Process::~Process will call reap_child ().
+        p = next;
     }
-  exit (0x0f); 
+    exit (0x0f);
 }
 
-Fork::Fork (bool kill, bool reason)
-  : process (new Process (kill, reason)) {}
-Fork::~Fork () { if (process->pid <= 0) delete process;}
-bool  Fork::child() const { return process->pid == 0;}
-bool  Fork::parent() const { return process->pid > 0;}
-pid_t Fork::pid() const { return process->pid;}
+Fork::Fork (bool kill, bool reason) : process (new Process (kill, reason)) { }
+Fork::~Fork () { if (process->pid <= 0) delete process; }
+bool  Fork::child() const { return process->pid == 0; }
+bool  Fork::parent() const { return process->pid > 0; }
+pid_t Fork::pid() const { return process->pid; }
 void  Fork::suicide_on_signal (int signo)
 {
-  if (!Signal::set(signo, &Process::suicide))
-    std::perror ("Fork: Cannot commit suicide with the specified signal");
+    if (!Signal::set(signo, &Process::suicide))
+        std::perror ("Fork: Cannot commit suicide with the specified signal");
 }

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * this code is based on binio from Dietmar Kuehl:
@@ -34,8 +34,8 @@
 namespace Prague
 {
 
-extern void xdrbuf_create(XDR *xdrs, std::streambuf *sb, xdr_op op);
-extern void xdrbuf_reseat(XDR *xdrs, std::streambuf *sb);
+  extern void xdrbuf_create(XDR *xdrs, std::streambuf *sb, xdr_op op);
+  extern void xdrbuf_reseat(XDR *xdrs, std::streambuf *sb);
 
 };
 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,31 +27,32 @@
 namespace Prague
 {
 
-//. a special kind of a smart pointer which implements a plugin behavior.
-//. It assumes a special layout of the library, with a special factory
-//. that manufactures objects of type T.
-template <class T>
-class Plugin : public DLL
-{
-public:
-  //. create a Plugin from the given file, using a factory with name loader
-  //. to create the actual object
-  Plugin(const std::string &file, const std::string &loader = "load") throw(std::runtime_error, std::logic_error)
-    : DLL(file)
+  //. a special kind of a smart pointer which implements a plugin behavior.
+  //. It assumes a special layout of the library, with a special factory
+  //. that manufactures objects of type T.
+  template <class T>
+  class Plugin : public DLL
   {
-    typedef T *(* DL) ();
-    DL dl = (DL) resolve(loader);
-    _t = dl ? (T *) dl() : 0;
-  }
-  ~Plugin() { delete _t;}
-  T &operator *() const { return *_t;}
-  T *operator->() const { return  _t;}
-  T *get() const { return _t;}
-private:
-  T *_t;
-};
+    public:
+      //. create a Plugin from the given file, using a factory with name loader
+      //. to create the actual object
+      Plugin(const std::string &file, const std::string &loader = "load")
+        throw(std::runtime_error, std::logic_error) :
+        DLL(file)
+      {
+          typedef T *(* DL) ();
+          DL dl = (DL) resolve(loader);
+          _t = dl ? (T *) dl() : 0;
+      }
+      ~Plugin() { delete _t; }
+      T &operator *() const { return *_t; }
+      T *operator->() const { return  _t; }
+      T *get() const { return _t; }
+    private:
+      T *_t;
+  };
 
-}
+} // namespace
 
 #define dload(T) extern "C" T *load() { return new T;}
 

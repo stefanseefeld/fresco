@@ -1,9 +1,7 @@
-/* -*- mode: c++; c-file-style: "fresco" -*-
- *
- * $Id$
+/* $Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,34 +25,35 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <cstring> // some platforms seem to need this (solaris, bsd)
+#include <cassert>
 
 #undef isset // *sigh* -stefan
 
 namespace Prague
 {
 
-//. FdSet is a helper class used when selecting available fds for non-blocking i/o
-class FdSet
-{
-public:
-  FdSet() : m(-1) { FD_ZERO(&fds);}
-  FdSet(const FdSet &F) : fds(F.fds), m(F.m) {}
-  ~FdSet() {}
-  FdSet &operator = (const FdSet &F) { fds = F.fds; m = F.m; return *this;}
-  //. add a fd to the set
-  void set(int fd) { FD_SET(fd, &fds); if (fd > m) m = fd;}
-  //. return whether the given fd is available for non-blocking i/o
-  bool isset(int fd) const { return FD_ISSET(fd, &fds);}
-  //. clear fd from the set
-  void clear(int fd) { FD_CLR(fd, &fds); if (fd == m) for (int i = 0; i < fd - 1; i++) if (isset(fd)) m = fd;}
-  //. return max fd
-  int max() const { return m;}
-  operator fd_set *() { return &fds;}
-protected:
-  fd_set fds;
-  int m;
-};
+  //. FdSet is a helper class used when selecting available fds for non-blocking i/o
+  class FdSet
+  {
+    public:
+      FdSet() : my_m(-1) { FD_ZERO(&my_fds); }
+      FdSet(const FdSet &F) : my_fds(F.my_fds), my_m(F.my_m) { }
+      ~FdSet() { }
+      FdSet &operator = (const FdSet &F) { my_fds = F.my_fds; my_m = F.my_m; return *this; }
+      //. Add a fd to the set
+      void set(int fd) { FD_SET(fd, &my_fds); if (fd > my_m) my_m = fd; }
+      //. return whether the given fd is available for non-blocking i/o
+      bool isset(int fd) const { return FD_ISSET(fd, &my_fds); }
+      //. clear fd from the set
+      void clear(int fd) { FD_CLR(fd, &my_fds); if (fd == my_m) for (int i = 0; i < fd - 1; i++) if (isset(fd)) my_m = fd; }
+      //. return max fd
+      int max() const { return my_m; }
+      operator fd_set *() { return &my_fds; }
+    protected:
+      fd_set my_fds;
+      int my_m;
+  };
 
-};
+} // namespace
 
 #endif

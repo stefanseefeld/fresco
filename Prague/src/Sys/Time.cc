@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,43 +25,40 @@ using namespace Prague;
 
 const Time Time::zero(0);
 
-/* @Method{Time::Time(int hour, int minute, int second, int millisecond)}
- *
- * @Description{}
- */
+//. @Method{Time::Time(int hour, int minute, int second, int millisecond)}
+//.
+//. @Description{}
 Time::Time(int h, int m, int s, int ms)
 {
-  tm r;
-  r.tm_hour = h;
-  r.tm_min  = m;
-  r.tm_sec  = s;
-  tv_sec = mktime(&r), tv_usec = 1000*ms;
+    tm r;
+    r.tm_hour = h;
+    r.tm_min  = m;
+    r.tm_sec  = s;
+    tv_sec = mktime(&r), tv_usec = 1000*ms;
 }
 
-/* @Method{Time::Time(int year, int month, int day, int hour, int minute, int second, int millisecond)}
- *
- * @Description{}
- */
+//. @Method{Time::Time(int year, int month, int day, int hour, int minute, int second, int millisecond)}
+//.
+//. @Description{}
 Time::Time(int y, int mo, int d, int h, int m, int s, int ms)
 {
-  tm r;
-  r.tm_year = y - 1900;
-  r.tm_mon  = mo;
-  r.tm_mday = d;
-  r.tm_hour = h;
-  r.tm_min  = m;
-  r.tm_sec  = s;
-  r.tm_isdst= 1;
-  tv_sec = mktime(&r), tv_usec = 1000*ms;
+    tm r;
+    r.tm_year = y - 1900;
+    r.tm_mon  = mo;
+    r.tm_mday = d;
+    r.tm_hour = h;
+    r.tm_min  = m;
+    r.tm_sec  = s;
+    r.tm_isdst= 1;
+    tv_sec = mktime(&r), tv_usec = 1000*ms;
 }
 
-/* @Method{Time Time::currentTime()}
- *
- * @Description{returns the current time}
- */
+//. @Method{Time Time::currentTime()}
+//.
+//. @Description{returns the current time}
 Time Time::currentTime()
 {
-  struct timeval current;
-  gettimeofday(&current, 0);
-  return Time (current);
-};
+    struct timeval current;
+    gettimeofday(&current, 0);
+    return Time (current);
+}

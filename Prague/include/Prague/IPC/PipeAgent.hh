@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,19 +27,19 @@
 namespace Prague
 {
 
-//. a PipeAgent uses a pipe to communicate with the coprocess
-class PipeAgent : public Coprocess
-{
-public:
-  PipeAgent(const std::string &, IONotifier *, EOFNotifier * = 0);
-  virtual      ~PipeAgent();
-  //. spawns a child process after creating a pipe, then redirects i/o to it
-  virtual void  start();
-private:
-  PipeAgent(const PipeAgent &);
-  PipeAgent &operator = (const PipeAgent &);
-};
+  //. A PipeAgent uses a pipe to communicate with the coprocess
+  class PipeAgent : public Coprocess
+  {
+    public:
+      PipeAgent(const std::string &, IONotifier *, EOFNotifier * = 0);
+      virtual ~PipeAgent();
+      //. spawns a child process after creating a pipe, then redirects i/o to it
+      virtual void start();
+    private:
+      PipeAgent(const PipeAgent &);
+      PipeAgent &operator = (const PipeAgent &);
+  };
 
-};
+} // namespace
 
 #endif

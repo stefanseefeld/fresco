@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,22 +28,22 @@
 namespace Prague
 {
 
-//. DLL represents a dynamic library
-class DLL
-{
-public:
-  //. create a library handle for the named library
-  DLL(const std::string &name, bool now = true) throw(std::runtime_error, std::logic_error);
-  ~DLL() throw();
-  //. resolve the given symbol
-  void *resolve(const std::string &) throw(std::runtime_error);
-  //. return the library's name
-  const std::string &name() const throw() { return my_name;}
-private:
-  std::string my_name;
-  void       *my_handle;
-};
+  //. DLL represents a dynamic library
+  class DLL
+  {
+    public:
+      //. create a library handle for the named library
+      DLL(const std::string &name, bool now = true) throw(std::runtime_error, std::logic_error);
+      ~DLL() throw();
+      //. resolve the given symbol
+      void *resolve(const std::string &) throw(std::runtime_error);
+      //. return the library's name
+      const std::string &name() const throw() { return my_name; }
+    private:
+      std::string my_name;
+      void       *my_handle;
+  };
 
-}
+} // namespace
 
 #endif

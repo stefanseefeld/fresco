@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -31,63 +31,62 @@ Condition            Timer::condition(Timer::mutex);
 
 void Timer::start(const Time &t, const Time &i)
 {
-  timeout = t;
-  interval = i;
-  Timer::schedule(this);
-};
+    timeout = t;
+    interval = i;
+    Timer::schedule(this);
+}
 
 void Timer::stop()
-{
-  Timer::cancel(this);
-};
+{ Timer::cancel(this); }
 
 void *Timer::start(void *)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  while (true)
+    Prague::Guard<Mutex> guard(mutex);
+    while (true)
     {
-      if (!timers.size()) condition.wait();
-      else
+        if (!timers.size()) condition.wait();
+        else
         {
-          Time time = timers.front()->timeout;
-          condition.wait(time);
+            Time time = timers.front()->timeout;
+            condition.wait(time);
         }
-      expire();
+        expire();
     }
-  return 0;
+    return 0;
 }
 
 void Timer::expire()
 {
-  Time now = Time::currentTime();
-  while (timers.size() && timers.front()->timeout <= now)
+    Time now = Time::currentTime();
+    while (timers.size() && timers.front()->timeout <= now)
     {
-      Timer *timer = timers.front();
-      timer->notifier->notify();
-      if (timer->interval != Time::zero)
-	{
-          do timer->timeout += timer->interval;
-          while (timer->timeout <= now);
-	  timers.erase(timers.begin());
-	  timers.push_back(timer);
-	  push_heap(timers.begin(), timers.end(), comp());
-	}
+        Timer *timer = timers.front();
+        timer->notifier->notify();
+        if (timer->interval != Time::zero)
+        {
+            do
+                timer->timeout += timer->interval;
+            while (timer->timeout <= now);
+            timers.erase(timers.begin());
+            timers.push_back(timer);
+            push_heap(timers.begin(), timers.end(), comp());
+        }
     }
 }
 
 void Timer::schedule(Timer *timer)
 {
-  if (server.state() == Thread::READY) server.start();
-  Prague::Guard<Mutex> guard(mutex);
-  timers.push_back(timer);
-  push_heap(timers.begin(), timers.end(), comp());
-  condition.signal();
+    if (server.state() == Thread::READY) server.start();
+    Prague::Guard<Mutex> guard(mutex);
+    timers.push_back(timer);
+    push_heap(timers.begin(), timers.end(), comp());
+    condition.signal();
 }
 
 void Timer::cancel(Timer *timer)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  std::vector<Timer *>::iterator i = find(timers.begin(), timers.end(), timer);
-  if (i != timers.end()) timers.erase(i);
-  condition.signal();
+    Prague::Guard<Mutex> guard(mutex);
+    std::vector<Timer *>::iterator i = find(timers.begin(), timers.end(), timer);
+    if (i != timers.end()) timers.erase(i);
+    condition.signal();
 }

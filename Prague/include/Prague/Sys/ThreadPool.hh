@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,42 +33,43 @@ namespace Prague
   class ThreadPool
   {
       typedef std::vector<Thread *> tlist_t;
-  public:
+    public:
       ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) :
-	  _tasks(t), _acceptor(a), _threads(s, 0)
+        _tasks(t), _acceptor(a), _threads(s, 0)
       {
-	  for (tlist_t::iterator i = _threads.begin();
-	       i != _threads.end();
-	       ++i)
-	      (*i) = new Thread(run, this);
+          for (tlist_t::iterator i = _threads.begin();
+               i != _threads.end();
+               ++i)
+              (*i) = new Thread(run, this);
       }
       ~ThreadPool()
       {
-	  for (tlist_t::iterator i = _threads.begin();
-	       i != _threads.end();
-	       i++) delete *i;
+          for (tlist_t::iterator i = _threads.begin();
+               i != _threads.end();
+               ++i)
+              delete *i;
       }
       void start()
       {
-	  for (tlist_t::iterator i = _threads.begin();
-	       i != _threads.end();
-	       i++)
-	      (*i)->start();
+          for (tlist_t::iterator i = _threads.begin();
+               i != _threads.end();
+               ++i)
+              (*i)->start();
       }
-  private:
+    private:
       static void *run(void *X)
       {
-	  ThreadPool *_this = reinterpret_cast<ThreadPool *>(X);
-	  while (1)
-	  {
-	      Task task = _this->_tasks.top();
-	      _this->_tasks.pop();
-	      Handler *handler = _this->_acceptor.consume(task);
-	      handler->process();
-	      delete handler;
-	      Thread::testcancel();
-	  }
-	  return 0;
+          ThreadPool *_this = reinterpret_cast<ThreadPool *>(X);
+          while (1)
+          {
+              Task task = _this->_tasks.top();
+              _this->_tasks.pop();
+              Handler *handler = _this->_acceptor.consume(task);
+              handler->process();
+              delete handler;
+              Thread::testcancel();
+          }
+          return 0;
       }
 
       Thread::Queue<Task> &_tasks;
@@ -76,6 +77,6 @@ namespace Prague
       tlist_t              _threads;
   };
 
-};
+} // namespace
 
 #endif /* _ThreadPool_hh */

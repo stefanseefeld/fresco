@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,41 +29,46 @@
 namespace Prague
 {
 
-class protocol: public iosockstream
-{
-public:
-  enum p_name
+  class protocol: public iosockstream
   {
-    nil = 0,
-    tcp = sockbuf::sock_stream,
-    udp = sockbuf::sock_dgram
+    public:
+      enum p_name
+      {
+          nil = 0,
+          tcp = sockbuf::sock_stream,
+          udp = sockbuf::sock_dgram
+      };
+
+      class protocolbuf: public sockinetbuf
+      {
+        public:
+          // protocolbuf(sockinetbuf &si):
+          //   sockinetbuf (si),
+          //   pn(protocol::nil)
+          // { }
+          protocolbuf(protocol::p_name pname) :
+            sockinetbuf((sockbuf::type) pname, 0),
+            pn(pname)
+          { }
+
+          void bind() { serve_clients(); }
+          void connect();
+          void connect(unsigned long addr);
+          void connect(const std::string &);
+          void connect(const std::string &, int);
+
+          const char *protocol_name() const;
+          virtual void serve_clients(int portno = -1) = 0;
+          virtual const char *rfc_name() const = 0;
+          virtual const char *rfc_doc() const = 0;
+        private:
+          protocol::p_name pn;
+          void bind (sockinetaddr &sa) { sockinetbuf::bind(sa); }
+          void connect (sockinetaddr &sa) { sockinetbuf::connect(sa); }
+      };
+      protocol (sockbuf *sbuf) : iosockstream(sbuf) { }
   };
 
-  class protocolbuf: public sockinetbuf
-  {
-  public:
-//     protocolbuf(sockinetbuf &si): sockinetbuf (si), pn (protocol::nil) {}
-    protocolbuf(protocol::p_name pname)
-      : sockinetbuf((sockbuf::type) pname, 0), pn (pname) {}
-
-    void                bind() { serve_clients();}
-    void                connect();
-    void                connect(unsigned long addr);
-    void                connect(const std::string &);
-    void                connect(const std::string &, int);
-
-    const char         *protocol_name() const;
-    virtual void        serve_clients(int portno = -1) = 0;
-    virtual const char *rfc_name() const = 0;
-    virtual const char *rfc_doc() const = 0;
-  private:
-    protocol::p_name pn;
-    void bind (sockinetaddr &sa) { sockinetbuf::bind(sa);}
-    void connect (sockinetaddr &sa) { sockinetbuf::connect(sa);}
-  };
-  protocol (sockbuf *sbuf) : iosockstream(sbuf) {}
-};
-
-};
+} // namespace
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,22 +31,24 @@
 namespace Prague
 {
 
-//. provide process information
-class Process
-{
-public:
-  Process() { update();}
-  ~Process() {}
-  double cpu() const { return 0.;}
-  long memory() const { return _usage.ru_idrss;}
-  void update() { if (getrusage(RUSAGE_SELF, &_usage) == -1) perror("Process::update:");}
-  //. return the process' id
-  static pid_t id() { return getpid();}
-protected:
-private:
-  rusage _usage;
-};
+  //. provide process information
+  class Process
+  {
+    public:
+      Process() { update(); }
+      ~Process() { }
+      double cpu() const { return 0.; }
+      long memory() const { return _usage.ru_idrss; }
+      void update()
+      {
+          if (getrusage(RUSAGE_SELF, &_usage) == -1) perror("Process::update:");
+      }
+      //. return the process' id
+      static pid_t id() { return getpid(); }
+    private:
+      rusage _usage;
+  };
 
-};
+} // namespace
 
 #endif

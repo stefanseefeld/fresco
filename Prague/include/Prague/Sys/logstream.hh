@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,16 +28,16 @@
 namespace Prague
 {
 
-class logstream : public std::ostream
-{
-public:
-  logstream(logbuf *lb) : std::ostream(lb) {}
-  logbuf *rdbuf () { return static_cast<logbuf *> (std::ostream::rdbuf());}
-  logbuf *operator -> () { return rdbuf();}
-  void dump(std::ostream &os) { rdbuf()->dump(os);}
-private:
-};
+  class logstream : public std::ostream
+  {
+    public:
+      logstream(logbuf *lb) : std::ostream(lb) { }
+      logbuf *rdbuf () { return static_cast<logbuf *> (std::ostream::rdbuf()); }
+      logbuf *operator -> () { return rdbuf(); }
+      void dump(std::ostream &os) { rdbuf()->dump(os); }
+    private:
+  };
 
-};
+} // namespace
 
 #endif /* _logstream_hh */

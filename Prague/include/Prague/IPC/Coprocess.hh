@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,74 +32,73 @@
 namespace Prague
 {
 
-//. a Coprocess ia an Agent that spawns a child process and takes care for
-//. the associated housekeeping
-class Coprocess : public Agent
-{
-  typedef std::vector<Coprocess *> plist_t;
-  struct Reaper : Signal::Notifier { virtual void notify(int);};
-  friend struct Reaper;
-public:
-  struct IONotifier
+  //. a Coprocess ia an Agent that spawns a child process and takes care for
+  //. the associated housekeeping
+  class Coprocess : public Agent
   {
-    virtual ~IONotifier(){}
-    virtual bool notify(iomask) = 0;
-  };
-  struct EOFNotifier
-  {
-    virtual ~EOFNotifier(){}
-    virtual void notify(iomask) = 0;
-  };
-  enum state_t {ready, running, exited, signaled};
-  Coprocess(const std::string &, IONotifier *, EOFNotifier * = 0);
-  virtual      ~Coprocess();
-  virtual void start();
-  virtual void stop();
-  //. return the command of the process being run
-  const std::string &command() const { return _path;}
-  //. return the process id of the child process
-  pid_t         pid() const { Prague::Guard<Mutex> guard(_mutex); return _id;}
-  //. return the state of the child process
-  state_t       state() const { Prague::Guard<Mutex> guard(_mutex); return _state;}
-  //. return the return value of the child process
-  int           value() const { Prague::Guard<Mutex> guard(_mutex); return _value;}
-  //. set timeout values used for the terminate call
-  void          timeout(long t, long h, long k) { _timeout.terminate = t, _timeout.hangup = h, _timeout.kill = k;}
-  virtual ipcbuf *ibuf() { return _inbuf;}
-  virtual ipcbuf *obuf() { return _outbuf;}
-  virtual ipcbuf *ebuf() { return _errbuf;}
-protected:
-  virtual bool process(int, iomask);
-  void  terminate();
-  void  shutdown(int);
-protected:
-  std::string  _path;
-  IONotifier  *_ioNotifier;
-  EOFNotifier *_eofNotifier;
-  pid_t        _id;
-  state_t      _state;
-  int          _value;
-  ipcbuf      *_inbuf;
-  ipcbuf      *_outbuf;
-  ipcbuf      *_errbuf;
-private:
-  Coprocess(const Coprocess &);
-  Coprocess &operator = (const Coprocess &);
-  bool terminated;
-  void kill(int);
-  mutable Mutex _mutex;
-  struct
-  {
-    long hangup;
-    long terminate;
-    long kill;
-  } _timeout;
-  
-  static plist_t processes;
-  static Reaper  reaper;
-  static Mutex   singletonMutex;
-};
+      typedef std::vector<Coprocess *> plist_t;
+      struct Reaper : Signal::Notifier { virtual void notify(int);};
+      friend struct Reaper;
+    public:
+      struct IONotifier
+      {
+          virtual ~IONotifier(){}
+          virtual bool notify(iomask) = 0;
+      };
+      struct EOFNotifier
+      {
+          virtual ~EOFNotifier() { }
+          virtual void notify(iomask) = 0;
+      };
+      enum state_t {ready, running, exited, signaled};
+      Coprocess(const std::string &, IONotifier *, EOFNotifier * = 0);
+      virtual ~Coprocess();
+      virtual void start();
+      virtual void stop();
+      //. return the command of the process being run
+      const std::string &command() const { return _path;}
+      //. return the process id of the child process
+      pid_t pid() const { Prague::Guard<Mutex> guard(_mutex); return _id; }
+      //. return the state of the child process
+      state_t state() const { Prague::Guard<Mutex> guard(_mutex); return _state; }
+      //. return the return value of the child process
+      int value() const { Prague::Guard<Mutex> guard(_mutex); return _value; }
+      //. set timeout values used for the terminate call
+      void timeout(long t, long h, long k) { _timeout.terminate = t, _timeout.hangup = h, _timeout.kill = k; }
+      virtual ipcbuf *ibuf() { return _inbuf; }
+      virtual ipcbuf *obuf() { return _outbuf; }
+      virtual ipcbuf *ebuf() { return _errbuf; }
+    protected:
+      virtual bool process(int, iomask);
+      void terminate();
+      void shutdown(int);
+      std::string  _path;
+      IONotifier  *_ioNotifier;
+      EOFNotifier *_eofNotifier;
+      pid_t        _id;
+      state_t      _state;
+      int          _value;
+      ipcbuf      *_inbuf;
+      ipcbuf      *_outbuf;
+      ipcbuf      *_errbuf;
+    private:
+      Coprocess(const Coprocess &);
+      Coprocess &operator = (const Coprocess &);
+      bool terminated;
+      void kill(int);
+      mutable Mutex _mutex;
+      struct
+      {
+          long hangup;
+          long terminate;
+          long kill;
+      } _timeout;
 
-};
+      static plist_t processes;
+      static Reaper  reaper;
+      static Mutex   singletonMutex;
+  };
+
+} // namespace
 
 #endif

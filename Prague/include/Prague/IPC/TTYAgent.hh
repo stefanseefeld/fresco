@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,23 +27,23 @@
 namespace Prague
 {
 
-//. a Coprocess that uses a tty/pty pair for communication
-class TTYAgent : public Coprocess
-{
-public:
-  TTYAgent(const std::string &cmd, IONotifier *, EOFNotifier * = 0);
-  virtual ~TTYAgent();
-  //. spawns a child process after creating a tty/pty pair, then redirects i/o to it
-  virtual void  start();
-  //. since the tty preformats the coprocess' output, it needs to
-  //. know the geometry for the text to fit in
-  void set_window_size(unsigned short, unsigned short);
-private:
-  TTYAgent(const TTYAgent &);
-  TTYAgent &operator = (const TTYAgent &);
-  bool _running;
-};
+  //. a Coprocess that uses a tty/pty pair for communication
+  class TTYAgent : public Coprocess
+  {
+    public:
+      TTYAgent(const std::string &cmd, IONotifier *, EOFNotifier * = 0);
+      virtual ~TTYAgent();
+      //. spawns a child process after creating a tty/pty pair, then redirects i/o to it
+      virtual void  start();
+      //. since the tty preformats the coprocess' output, it needs to
+      //. know the geometry for the text to fit in
+      void set_window_size(unsigned short, unsigned short);
+    private:
+      TTYAgent(const TTYAgent &);
+      TTYAgent &operator = (const TTYAgent &);
+      bool _running;
+  };
 
-};
+} // namespace
 
 #endif /* _Prague_TTYAgent_hh */

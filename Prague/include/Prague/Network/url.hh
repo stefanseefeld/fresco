@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,38 +27,38 @@
 namespace Prague
 {
 
-class url
-{
-public:
-  url(const std::string &);
-  url(const url &, const std::string &);
-//   operator const std::string &() const;
-  const std::string &scheme() const { return s;}
-  const std::string &user() const { return u;}
-  const std::string &password() const { return pw;}
-  const std::string &hostname() const { return h;}
-  const std::string &path() const { return p;}
-  void setPath(const char *pp) { p = pp;}
-  const std::string &fragment() const { return f;}
-  const std::string &query() const { return q;}
-  void setQuery(const std::string &qq) { q = qq;}
-  const std::string &parameters() const { return pa;}
-  int port() const { return po;}
-  static void encode(std::string &);
-  static void decode(std::string &);
-private:
-  void parse(const std::string &);
-  std::string s;
-  std::string u;
-  std::string pw;
-  std::string h;
-  std::string p;
-  std::string f;
-  std::string q;
-  std::string pa;
-  int         po;
-};
+  class url
+  {
+    public:
+      url(const std::string &);
+      url(const url &, const std::string &);
+      // operator const std::string &() const;
+      const std::string &scheme() const { return s; }
+      const std::string &user() const { return u; }
+      const std::string &password() const { return pw; }
+      const std::string &hostname() const { return h; }
+      const std::string &path() const { return p; }
+      void setPath(const char *pp) { p = pp; }
+      const std::string &fragment() const { return f; }
+      const std::string &query() const { return q; }
+      void setQuery(const std::string &qq) { q = qq; }
+      const std::string &parameters() const { return pa; }
+      int port() const { return po; }
+      static void encode(std::string &);
+      static void decode(std::string &);
+    private:
+      void parse(const std::string &);
+      std::string s;
+      std::string u;
+      std::string pw;
+      std::string h;
+      std::string p;
+      std::string f;
+      std::string q;
+      std::string pa;
+      int         po;
+  };
 
-};
+} // namespace
 
 #endif /* _url_hh */

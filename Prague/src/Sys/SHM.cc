@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,8 +28,8 @@
 
 using namespace Prague;
 
-int   SHM::allocate(key_t key, size_t bytes, int flags) { return shmget(key, bytes, flags);}
-int   SHM::allocate(size_t bytes, int flags) { return shmget(IPC_PRIVATE, bytes, flags);}
-void  SHM::deallocate(int id) { shmctl(id, IPC_RMID, 0);}
-void *SHM::attach(int id) { return shmat(id, 0, SHM_RND);}
-void  SHM::detach(void *p) { shmdt(reinterpret_cast<char *> (p));}
+int   SHM::allocate(key_t key, size_t bytes, int flags) { return shmget(key, bytes, flags); }
+int   SHM::allocate(size_t bytes, int flags) { return shmget(IPC_PRIVATE, bytes, flags); }
+void  SHM::deallocate(int id) { shmctl(id, IPC_RMID, 0); }
+void *SHM::attach(int id) { return shmat(id, 0, SHM_RND); }
+void  SHM::detach(void *p) { shmdt(reinterpret_cast<char *> (p)); }

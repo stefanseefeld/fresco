@@ -1,7 +1,7 @@
-/*
+/* $Id:
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org> 
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 #include <string>
 #include <stdlib.h>
 
-namespace Prague {
-
+namespace Prague
+{
   //. Set the environment variable name to a value.
   //. (returns whether it was successful or not)
   bool putenv(const std::string &, const std::string &);
@@ -35,6 +35,6 @@ namespace Prague {
   //. get the value of the environment variable name.
   std::string getenv(const std::string &);
 
-};
+} // namespace
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,25 +28,25 @@
 namespace Prague
 {
 
-//. a SocketAgent is a socket based Agent. It is conceptually lightweight,
-//. such that it can be used to generate a pipeline, i.e. similar to the
-//. State pattern, SocketAgents can implement a specific strategy in the
-//. process method, and then create new SocketAgents for the given socket
-//. to get a 'state transition' effect. Since Agents are reference counted,
-//. the Dispatcher will take care of deleting them.
-class SocketAgent : public Agent
-{
-public:
-  SocketAgent(sockbuf *);
-  virtual         ~SocketAgent();
-  virtual sockbuf *ibuf() { return _socket;}
-  virtual sockbuf *obuf() { return _socket;}
-  virtual sockbuf *ebuf() { return 0;}
-  sockbuf *release_buf();
-private:
-  sockbuf *_socket;
-};
+  //. a SocketAgent is a socket based Agent. It is conceptually lightweight,
+  //. such that it can be used to generate a pipeline, i.e. similar to the
+  //. State pattern, SocketAgents can implement a specific strategy in the
+  //. process method, and then create new SocketAgents for the given socket
+  //. to get a 'state transition' effect. Since Agents are reference counted,
+  //. the Dispatcher will take care of deleting them.
+  class SocketAgent : public Agent
+  {
+    public:
+      SocketAgent(sockbuf *);
+      virtual ~SocketAgent();
+      virtual sockbuf *ibuf() { return _socket; }
+      virtual sockbuf *obuf() { return _socket; }
+      virtual sockbuf *ebuf() { return 0; }
+      sockbuf *release_buf();
+    private:
+      sockbuf *_socket;
+  };
 
-};
+} // namespace
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,23 +27,32 @@
 namespace Prague
 {
 
-//. this is a portability wrapper, to hide platform differences,
-//. as well as to hide some nasty casts
-namespace Memory
-{
-template <class T>
-T *copy(const T *from, T *to, unsigned long n) { return n > 0 ? reinterpret_cast<T *>(memmove(to, from, size_t(n))) : to;}
-template <class T>
-T *move(const T *from, T *to, unsigned long n) { return n > 0 ? reinterpret_cast<T *>(memmove(to, from, size_t(n))) : to;}
-template <class T>
-T *set(T *b, unsigned long n, T c) { return reinterpret_cast<T *>(memset(b, c, size_t(n)));}
-template <class T>
-T *zero(T *m, unsigned long l) { return reinterpret_cast<T *>(memset(m, 0, size_t(l)));}
-template <class T>
-int compare(const T *p, const T *q, unsigned long n) { return memcmp(p, q, size_t(n));}
+  //. this is a portability wrapper, to hide platform differences,
+  //. as well as to hide some nasty casts
+  namespace Memory
+  {
+      template <class T>
+      T *copy(const T *from, T *to, unsigned long n)
+      { return n > 0 ? reinterpret_cast<T *>(memmove(to, from, size_t(n))) : to; }
 
-};
+      template <class T>
+      T *move(const T *from, T *to, unsigned long n)
+      { return n > 0 ? reinterpret_cast<T *>(memmove(to, from, size_t(n))) : to; }
 
-};
+      template <class T>
+      T *set(T *b, unsigned long n, T c)
+      { return reinterpret_cast<T *>(memset(b, c, size_t(n))); }
+
+      template <class T>
+      T *zero(T *m, unsigned long l)
+      { return reinterpret_cast<T *>(memset(m, 0, size_t(l))); }
+
+      template <class T>
+      int compare(const T *p, const T *q, unsigned long n)
+      { return memcmp(p, q, size_t(n)); }
+
+  } // namespace
+
+} // namespace
 
 #endif

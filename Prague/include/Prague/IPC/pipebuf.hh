@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,17 +26,17 @@
 namespace Prague
 {
 
-//.a ipcbuf based on a pipe}
-class pipebuf : public ipcbuf
-{
-public:
-  pipebuf(int flag) : ipcbuf(flag), fl(flag) {}
-  //. construct a pipebuf for reading, if @code{mode == ios::in}, writing otherwise
-  int open();
-protected:
-  int fl;
-};
+  //.a ipcbuf based on a pipe}
+  class pipebuf : public ipcbuf
+  {
+    public:
+      pipebuf(int flag) : ipcbuf(flag), fl(flag) { }
+      //. construct a pipebuf for reading, if @code{mode == ios::in}, writing otherwise
+      int open();
+    protected:
+      int fl;
+  };
 
-};
+} // namespace
 
 #endif /* _pipebuf_hh */

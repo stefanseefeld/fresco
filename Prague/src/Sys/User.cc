@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,11 +27,8 @@ using namespace Prague;
 
 User::User(int uid)
 {
-  if (uid == -1) uid = getuid();
-  pwd = getpwuid(uid);
-};
+    if (uid == -1) uid = getuid();
+    pwd = getpwuid(uid);
+}
 
-User::User(const std::string &name)
-{
-  pwd = getpwnam(name.c_str());
-};
+User::User(const std::string &name) { pwd = getpwnam(name.c_str()); }
