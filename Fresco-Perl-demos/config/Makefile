@@ -27,15 +27,15 @@ cpath	= $(top)/config
 .PHONY: config clean distclean
 .FORCE:
 
-world:	server.mk local.mk
+world:	clients-perl.mk local.mk
 
 config: .FORCE configure
 	@echo Running configure $$CONFIGURE_OPTS...
 	@configure $$CONFIGURE_OPTS
 
-server.mk: configure server.mk.in
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
+#clients-perl.mk: configure clients-perl.mk.in
+#	@echo Running configure $$CONFIGURE_OPTS...
+#	@configure $$CONFIGURE_OPTS
 
 local.mk: configure local.mk.in
 	@echo Running configure $$CONFIGURE_OPTS...

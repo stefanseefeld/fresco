@@ -27,15 +27,15 @@ cpath	= $(top)/config
 .PHONY: config clean distclean
 .FORCE:
 
-world:	server.mk local.mk
+world:	clients-python.mk local.mk
 
 config: .FORCE configure
 	@echo Running configure $$CONFIGURE_OPTS...
 	@configure $$CONFIGURE_OPTS
 
-server.mk: configure server.mk.in
-	@echo Running configure $$CONFIGURE_OPTS...
-	@configure $$CONFIGURE_OPTS
+#clients-python.mk: configure clients-python.mk.in
+#	@echo Running configure $$CONFIGURE_OPTS...
+#	@configure $$CONFIGURE_OPTS
 
 local.mk: configure local.mk.in
 	@echo Running configure $$CONFIGURE_OPTS...
