@@ -104,11 +104,7 @@ public:
         dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    surface = SDL_SetVideoMode(my_width, my_height, 0,
-                               SDL_HWSURFACE | SDL_HWPALETTE |
-                               SDL_OPENGL |
-                               SDL_DOUBLEBUF |
-                               SDL_HWACCEL);
+    surface = SDL_SetVideoMode(my_width, my_height, 0, SDL_OPENGL);
     SDL_WM_SetCaption("Berlin on SDL (OpenGL)", NULL);
 
     int bits;
