@@ -49,7 +49,7 @@ AC_DEFUN([BERLIN_LIBART_CHECK],[
 	AC_CHECK_HEADER(art_pixbuf.h,:,
 		AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h,[
 			if test ".$LIBART_INCLUDES" = . ; then
-				LIBART_INCLUDES=/usr/include/libart_lgpl
+				LIBART_INCLUDES=-I/usr/include/libart_lgpl
 			else
 				LIBART_INCLUDES="$LIBART_INCLUDES/libart_lgpl"
 			fi ],no_libart=yes))
