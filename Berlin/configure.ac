@@ -50,6 +50,9 @@ AC_MSG_NOTICE([Text Rendering])
 
 FRESCO_FREETYPE_CHECK(9.2.3,,[AC_MSG_ERROR([can't compile Server without freetype])])
 
+dnl Search for fonts
+BERLIN_FONTS
+
 AC_ARG_WITH(png-prefix,
   AC_HELP_STRING([--with-png-prefix=PFX], [Prefix where PNG library is installed (optional)]),
   [png_prefix="$withval"; png_path="$PATH:$withval/bin"],

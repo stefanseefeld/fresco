@@ -1,6 +1,6 @@
 modulepath	= @prefix@/lib/Berlin
 babylonpath     = @prefix@/lib/Babylon
 rasterpath	= @prefix@/share/Berlin/PNG
-fontpath	= /usr/lib/X11/fonts/Type1
+fontpath	= @BERLIN_FONTPATH@
 unifontpath	= @prefix@/share/Berlin
 pinyindbpath	= @prefix@/share/Berlin
