@@ -64,7 +64,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   Datatype Plugin Loader
+ALL        =   Loader
 
 world:		$(ALL)
 
