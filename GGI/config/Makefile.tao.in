@@ -1,0 +1,136 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+SHELL		:= /bin/sh
+
+top_srcdir	:= @top_srcdir@
+srcdir		:= @srcdir@
+idldir		:= @Fresco_IDL_prefix@/share/idl
+abs_builddir	:= @abs_builddir@
+cdir		:= @top_builddir@/config
+h1dir		:= @FRESCO_CXX_prefix@/include
+h2dir		:= @top_builddir@/include
+
+ORB		:= @ORB@
+IDLCXX		:= @IDLCXX@
+SHORTCUT	:= @SHORTCUT@
+
+include $(cdir)/local.mk
+
+CPPFLAGS	+= -I$(h1dir)
+CXXFLAGS	+= $(SO_CXXFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
+
+IDLCXXFLAGS	:= -I$(idldir) -Ge 0 -Sc -Sa -St -cs C.cc -ss S.cc 
+
+IDL	:= GGIKit.idl
+GENHDR	:= GGIKit.hh
+GENSRC	:= GGIKitS.cc GGIKitC.cc
+SRC	:= $(GENSRC) VisualImpl.cc GGIKitImpl.cc
+KITSRC	:= GGIKitS.cc VisualImpl.cc GGIKitImpl.cc
+DEP	:= $(patsubst %, %.d, $(IDL) $(SRC))
+KITOBJ	:= $(patsubst %.cc, %.o, $(KITSRC))
+OBJ	:= $(KITOBJ) GGIKitC.cc
+
+GGIKIT	:= ../lib/Fresco/GGIKit.so 
+LIBGGI	:= ../lib/libBerlin-GGI.so
+TARGETS	:= $(GGIKIT) $(LIBGGI)
+
+vpath %.idl $(srcdir)
+vpath %.hh $(h2dir)/Fresco
+vpath %.cc $(srcdir)
+
+.FORCE:
+
+.PHONY: all install uninstall clean distclean maintainer-clean
+
+all:	$(TARGETS)
+
+$(GGIKIT):	$(DEP) $(KITOBJ)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(KITOBJ) $(LIBS)
+
+$(LIBGGI):	$(DEP) GGIKitC.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ GGIKitC.o $(LIBS)
+
+depend:		$(DEP)
+
+install:	all
+	$(INSTALL) -m 755 $(GGIKIT) $(DESTDIR)$(libdir)/Fresco/
+	$(INSTALL) -m 755 $(LIBGGI) $(DESTDIR)$(libdir)/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
+	if ! cmp -s $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh 2>/dev/null; then \
+          echo "$(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh"; \
+          $(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh; \
+          else \
+          echo "$(DESTDIR)$(includedir)/Fresco/GGIKit.hh is up to date"; \
+        fi
+
+uninstall:
+		rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
+		rm -f $(DESTDIR)$(includedir)/Fresco/GGIKit.hh
+
+clean:	
+		rm -f $(TARGET)
+		rm -f $(GENSRC) $(GENHDR) $(OBJ) $(DEP)
+
+distclean:	clean
+		rm -f Makefile
+
+maintainer-clean: distclean
+
+%.idl.d:	%.idl
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir) $< \
+	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
+
+%S.cc %C.cc:	%.idl
+	@echo generating $(@F)
+	$(IDLCXX) $(IDLCXXFLAGS) $<
+	mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
+	sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F).hh
+
+$(GENHDR): %.hh:	%.idl
+	@echo generating $(@F)
+	$(IDLCXX) $(IDLCXXFLAGS) $<
+	mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
+	sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F).hh
+
+%.cc.d:	%.cc $(GENHDR)
+	@echo generating dependencies for $<
+	$(SHELL) -ec '$(CXX) -I$(h2dir) -I$(h2dir)/Fresco $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+%.o:	%.cc
+	@echo compiling $(@F)
+	$(CXX) -I$(h2dir) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+GGIKitS.o:	GGIKitS.cc
+	@echo compiling $(@F)
+	$(CXX) -include $(h2dir)/Fresco/acconfig.hh -I$(h2dir)/Fresco $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), depend clean distclean maintainer-clean))
+-include $(DEP)
+endif
