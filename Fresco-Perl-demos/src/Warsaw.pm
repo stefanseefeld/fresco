@@ -87,13 +87,24 @@ sub uni2asc($) {
 
 ## Utility stuff for Command's
 
+sub unthunk($) {
+    my ($command) = @_;
+    use COPE::CORBA::Any;
+    return $command->execute(CORBA::Any->new());
+}
+
 # use like, my $c = command { print "Command called!\n" };
-# $c->execute($any) will lead to subref($c, $any)
+# $c->execute($any) will lead to subref($any)
 # 
 sub command(&) {
     my ($closure) = @_;
+
+    my $wrap = sub {  # eliminate the $env variable, leaving only $any
+	shift;
+	$closure->(@_);
+    };
     
-    return PerlCommand->new($closure);
+    return PerlCommand->new($wrap);
 }
 
 sub commandClass(&) {
@@ -111,15 +122,18 @@ use Command_impl;
 
 @ISA = qw(Command_impl);
 
-sub new($$) {
-    my ($closure, $hash) = @_;
-    
-    return SUPER::new(closure => $closure, env => $hash});
+sub new($$;$) {
+    my ($proto, $closure, $hash) = @_;
+    my $class = ref($proto) || $proto;
+    my $self = $class->SUPER::new(closure => $closure, env => $hash);
+    return $self;
+#    return SUPER::new($self, closure => $closure, env => $hash);
 }
 
-sub execute($$) {
+sub execute($;$) {
     my ($self, $any) = @_;
 
+    print "PerlCommand->execute()\n";
     if (!defined($self->{closure})) {
 	die "Called execute() on a PerlCommand without a subref";
     }
@@ -129,4 +143,5 @@ sub execute($$) {
 
     $self->{closure}->($self->{env}, $any);
 }
+
 1;
