@@ -23,43 +23,72 @@
 #define _EventLogger_hh
 
 #include <vector>
+#include "Prague/Sys/Thread.hh"
+
+// this class represents a lightweight circular logging stream
+// similar to the one in GNU NANA except designed for use in 
+// a multithreaded C++ environment with section guards.
 
 namespace Prague
 {
 
+  struct LoggedEvent {
+    double time;
+    unsigned long thread;
+    const char *type;
+    const char *specifics;
+  };
+
 class EventLogger
 {
 public:
-  EventLogger(size_t s) : events(s), times(s), next(0), wrapflag(true), wrapped(false) {}
+  EventLogger(size_t s) : events(s), next(0), wrapflag(true), wrapped(false) {}
   ~EventLogger() {}
   void wrap(bool flag) { wrapflag = flag;}
+
+  void add(const char *ty, const char *n, double t) {
+    MutexGuard guard(myMutex);
+    if (next == events.size()) return;
+    LoggedEvent e;
+    e.time = t;
+    e.thread = Thread::self()->id();
+    e.type = ty;
+    e.specifics = n;
+    events[next] = e;
+    next++;
+    if (next == events.size() && wrapflag) 
+      {
+	next = 0;
+	wrapped = true;
+      }
+  }
+
   void add(const char *n, double t)
     {
-      if (next == events.size()) return;
-      events[next] = n;
-      times[next] = t;
-      next++;
-      if (next == events.size() && wrapflag)
-	{
-	  next = 0;
-	  wrapped = true;
-	}
+      add("", n, t);
     }
+
   void clear() { next = 0; wrapped = false;}
   void dump(ostream &os)
     {
-      vector<const char *>::iterator event;
-      vector<double>::iterator time;
+      vector<LoggedEvent>::iterator event;
       os << "EventLogger::dump =\n";
-      if (wrapped)
-	for (event = events.begin() + next, time = times.begin() + next; event != events.end(); event++, time++)
-	  os << *time << '\t' << *event << '\n';
-      for (event = events.begin(), time = times.begin(); event != events.begin() + next; event++, time++)
-	os << *time << '\t' << *event << '\n';
+      if (wrapped) {
+	for (event = events.begin() + next; event != events.end(); event++) {
+	  os << event->time << ':' << event->thread << '\t' << event->type << ' ' << event->specifics << endl;
+	}
+	for (event = events.begin(); event != events.begin() + next; event++) {
+	  os << event->time << ':' << event->thread << '\t' << event->type << ' ' << event->specifics << endl;
+	}
+      }
     }
 private:
-  vector<const char *> events;
-  vector<double> times;
+  vector<LoggedEvent> events;
+
+//   vector<const char *> events;
+//   vector<double> times;
+
+  Mutex myMutex;
   unsigned int next;
   bool wrapflag : 1;
   bool wrapped  : 1;

@@ -56,8 +56,15 @@ void ScreenManager::damage(Region_ptr r)
   SectionLog section(Logger::drawing, "ScreenManager::damage");
   MutexGuard guard(mutex);
   RegionImpl *region = new RegionImpl(r, Transform_var(Transform::_nil()));
+
+  region->upper.x += 0.5;
+  region->upper.y += 0.5;
+  region->lower.x -= 0.5;
+  region->lower.y -= 0.5;
+
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);
+  
   Logger::log(Logger::drawing) << "ScreenManager::damage region " << *region << endl;
 
   // this injects a byte into a "wakeup" pipe, which terminates the select()

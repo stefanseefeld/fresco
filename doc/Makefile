@@ -12,7 +12,7 @@ JADE_HTML_FLAGS = -V %use-id-as-filename% -ihtml -D ../ -d $(STYLESHEET)\#html $
 JADE_TEX_FLAGS = -d $(STYLESHEET)\#print $(JADE_FLAGS) -t tex
 BOOK_FILES = $(wildcard src/*.sgm)
 
-all: html/berlin-man.html print/berlin-man.pdf
+all: html/berlin-tut.html print/berlin-tut.pdf
 
 html/%.html: src/%.sgm $(BOOK_FILES)
 	cd html; jade $(JADE_HTML_FLAGS) $<; cd ../;

@@ -473,23 +473,67 @@ different parts of the server will see it.
 </sect1>
 <sect1><title>modification</title>
 <para>
-	<!-- talk about modification -->
+	<!-- talk about modification -->Obviously a static scene graph is not
+	interesting; the point of a windowing system is to allow users to
+	interact with the computer. Berlin's approach to changing the scene
+	graph is based on the MVC (model, view, controller) paradigm, wherein
+	client applications do not directly receive input events, or alter the
+	scene graph.  Rather, special decorators positioned in the graph accept
+	events and launch prearranged callbacks into client applications, which
+	can then alter particular abstract data models as they see fit. The
+	objects in the scene graph observe the data models, are informed of the
+	change, and then <emphasis>alter themselves</emphasis> to present the
+	new view of what has changed to the user. This model has proven very
+	flexible and maintainable in the real world. We now discuss several
+	technical aspects to the scene modification process.
+
 </para><sect2><title>damage (needredraw())</title>
 <para>
-	<!-- talk about damage (needredraw()) -->
+	<!-- talk about damage (needredraw()) -->When some graphic needs
+	redrawing, it informs the redrawing thread by marking the section of the
+	screen it occupies as being "damaged". The drawing thread will
+	eventually come and perform appropriate actions to "repair" the damaged
+	region. In order to mark damaged region(s), the graphic calls
+	<function>this->needredraw()</function>.
+
 </para><sect3><title>allocation</title>
 <para>
-	<!-- talk about allocation -->
-</para></sect3>
+	<!-- talk about allocation --><function>needredraw()</function> begins
+	by constructing a region object, which will represent the region of the
+	screen which is to be damaged. Region is an abstract interface, and can
+	be implemented in detailed terms like polygons or splines, or in simple
+	terms like bounding boxes. Since graphics have their layout information
+	"externalized" to facilitate sharing and dynamic re-layout,
+	<function>needredraw()</function> must first compute the graphic's
+	various "appearances", which we refer to as "allocations", in the scene
+	graph. It does so by "reaching up" through each of its parents. Each
+	parent will compute the child's allocation by recursively reaching up
+	through each of its parents, etc. Eventually the roots of the graph are
+	reached (yes roots: there can be more than 1 screen watching the same
+	graph) and it will return regions of the screen. Though it sounds like
+	there are many steps, it all happens in process, following pointers, so
+	allocation computing is usually very quick. For each allocation, the
+	damage-region object is extended by the allocation region, effectively
+	unioning the regions. </para></sect3> 
+
 <sect3><title>damage vector</title>
 <para>
-	<!-- talk about damage vector -->
-</para></sect3>
+	<!-- talk about damage vector -->Once the graphic has calculated its
+	damage region, it inserts the region into a vector of regions stored in
+	the root node of the graph. Inserting the region in this vector will
+	wake up the drawing thread. From there, the thread which called
+	<function>needredraw()</function> returns to whatever else it was
+	doing. The drawing thread will sequence the redrawing from then on.
+	</para></sect3>
 </sect2>
+
 <sect2><title>traversal</title>
 <para>
-	<!-- talk about traversal -->
-</para><sect3><title>a generic algorithm</title>
+	<!-- talk about traversal -->The scene graph is subject to a few "bulk" operations, such as
+delivering events and drawing, which follow a 
+</para>
+
+<sect3><title>a generic algorithm</title>
 <para>
 	<!-- talk about a generic algorithm -->
 </para></sect3>

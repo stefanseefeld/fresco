@@ -60,9 +60,13 @@ public:
   static void setall() { for (int i = 0; i < numGroups; i++) active[i] = true;}
   static void note(const char *c)
     {
-      Prague::MutexGuard guard(mutex);
       events.add(c, Prague::Time::currentTime() - start);
     }
+  static void note(const char *t, const char *c)
+    {
+      events.add(t, c, Prague::Time::currentTime() - start);
+    }
+
   static streamlock log(group g)
     {
       streamlock slock(g);
@@ -104,8 +108,11 @@ private:
 class SectionLog
 {
 public:
-  SectionLog(Logger::group g, const char *s) : group(g), section(s) { Logger::log(g) << "enter " << section << endl;}
-  ~SectionLog() { Logger::log(group) << "leave " << section << endl;}
+  SectionLog(Logger::group g, const char *s) : group(g), section(s) { 
+    Logger::note("enter", section);
+  }
+
+  ~SectionLog() { Logger::note("leave", section);}
 private:
   Logger::group group;
   const char *section;
