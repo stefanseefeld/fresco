@@ -1,8 +1,8 @@
-Welcome to the Berlin windowing system
+Welcome to the Fresco windowing system
 
-The current release is 0.2.2, which means it is not even into the stage
+The current release is 0.3, which means it is not even into the stage
 where the most adventuresome users will gain any productivity from
-it. It's a *developer's* release. If you want to help develop berlin,
+it. It's a *developer's* release. If you want to help develop fresco,
 you can work off this release with some modicum of confidence and
 convenience. Please read the INSTALL file for further instructions about
 how to build the system.
@@ -15,10 +15,10 @@ us know. This whole process relies on you communicating your
 experiences back to the people who wrote it.
 
 Questions / comments are best directed towards the mailing list:
-   berlin-design@lists.sourceforge.net
+   devel@fresco.org
 
 Archives of the mailing list & FAQ are on our web site: 
-  http://www.berlin-consortium.org
+  http://www.fresco.org
 
 Hope you enjoy it
 -graydon <graydon@pobox.com>

@@ -147,7 +147,7 @@ maintainer-clean: distclean
 
 %.syn:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(hdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
 ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
 -include $(DEP)

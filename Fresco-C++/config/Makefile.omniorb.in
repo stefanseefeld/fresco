@@ -23,7 +23,7 @@ SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idir		:= @top_builddir@/share/idl
+idir		:= @top_srcdir@/idl
 abs_builddir	:= @abs_builddir@
 cdir		:= @top_builddir@/config
 h1dir		:= $(top_srcdir)/include/Fresco
@@ -85,12 +85,11 @@ vpath %.cc $(srcdir)
 
 .NOTPARALLEL:
 
-all: $(TARGET) ../bin/Fresco-config
+all: $(TARGET)
 
 # this split enforces that all idl code is translated
 # before the first source is compiled
-$(TARGET):
-	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
+$(TARGET): config
 	@$(MAKE) sources
 	@$(MAKE) objects
 	@echo linking $(@F)
@@ -110,8 +109,9 @@ objects:	$(OBJ)
 	mv $@.tmp $@
 
 config:  ../bin/Fresco-config
+	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
 
-doc:	../share/doc/Fresco/html
+doc:	../share/doc/Fresco/html sources
 
 ../share/doc/Fresco/html:	$(SYN)
 	@echo formatting $(@F)
@@ -202,7 +202,7 @@ $(DYNHDR): %.hh:	%.idl
 
 %.syn:	%.idl
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -o $@ $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wp,-b,$(idir) -Wc,parser=Fresco,linker=Fresco -o $@ $?
 
 ifeq ($(MAKECMDGOALS), sources)
 -include $(patsubst %, %.d, $(notdir $(INT)))

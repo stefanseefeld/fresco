@@ -15,11 +15,6 @@ class Config(Base):
 	    preprocessor = 'gcc'
 	    extract_tails = 1
 	    include_path = [top_builddir + '/include', top_srcdir + '/include']
-	    basename = top_srcdir + '/include/'
-	
-        class KitCXX(CXX):
-            "Extends CXX parser with an extra ../ in the include path"
-            include_path = [top_builddir + '/include', top_srcdir + '/include']
 	
         modules = {'Berlin' : CXX}
 

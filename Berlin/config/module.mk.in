@@ -36,6 +36,8 @@
 #
 #
 
+docdir	:= $(patsubst $(top_srcdir)/%,%, $(srcdir))
+
 # Compilation and linking flags.
 CXXFLAGS+= $(SO_CXXFLAGS)
 LDFLAGS += $(SO_LDFLAGS)
@@ -46,8 +48,8 @@ CPPFLAGS+= $(EXTRA_CPPFLAGS)
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
-HDR	?= $(wildcard $(srcdir)/*.hh)
-SYN	:= $(patsubst $(srcdir)/%.hh, %.syn, $(HDR))
+HDR	?= $(patsubst $(srcdir)/%, %, $(wildcard $(srcdir)/*.hh))
+SYN	:= $(patsubst %.hh, %.syn, $(HDR))
 
 TARGET	:= $(MODULE).so
 
@@ -61,9 +63,9 @@ $(TARGET):	$(DEP) $(OBJ)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
 
-doc:	$(abs_top_builddir)/share/doc/Berlin-$(MODULE)/html
+doc:	$(abs_top_builddir)/share/doc/Berlin/$(docdir)/html
 
-$(abs_top_builddir)/share/doc/Berlin-$(MODULE)/html:	$(SYN)
+$(abs_top_builddir)/share/doc/Berlin/$(docdir)/html:	$(SYN)
 	@echo formatting $(@F)
 	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,formatter=KitHTML -o $@ $(SYN)
 	touch $@
@@ -73,8 +75,8 @@ install:	all
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/Berlin-$(MODULE)/doc
-	cp -r ../share/doc/Berlin-$(MODULE)/html $(DESTDIR)$(datadir)/doc/Berlin-$(MODULE)
+	mkdir -p $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
+	cp -r ../share/doc/$(docdir)/html $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
 
 clean:	
 		rm -f $(TARGET)
@@ -95,7 +97,7 @@ maintainer-clean: distclean
 
 %.syn:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c $(cdir)/synopsis.py -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(srcdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)
