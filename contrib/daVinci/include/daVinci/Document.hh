@@ -34,8 +34,8 @@ namespace daVinci
 class Document : public virtual POA_Unidraw::Model,
 		 public virtual RefCountBase
 {
-  typedef vector<Model *> mlist_t;
-  typedef vector<Fresco::Graphic_var> vlist_t;
+  typedef std::vector<Model *> mlist_t;
+  typedef std::vector<Fresco::Graphic_var> vlist_t;
 public:
   // make it a singleton for now...
   static Document *instance();

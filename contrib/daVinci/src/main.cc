@@ -39,9 +39,9 @@
 #include <string>
 
 #ifdef VERSION
-const string version = VERSION;
+const std::string version = VERSION;
 #else
-const string version = "unknown";
+const std::string version = "unknown";
 #endif
 
 using namespace Prague;
@@ -59,9 +59,9 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
-  string value;
+  std::string value;
   getopt.get("version", &value);
-  if (value == "true") { cout << "version is " << version << endl; exit(0);}
+  if (value == "true") { std::cout << "version is " << version << std::endl; return 0;}
   value = "";
   getopt.get("help", &value);
   if (value == "true") { getopt.usage(); return 0;}
