@@ -31,7 +31,14 @@ BoundedValueImpl::~BoundedValueImpl()
 {
 };
 
-Coord BoundedValueImpl::lower() { return l;}
+Coord BoundedValueImpl::lower()
+{
+  myMutex.lock();
+  Coord tmp = l;
+  myMutex.unlock();
+  return tmp;
+}
+
 void BoundedValueImpl::lower(Coord ll)
 {
   myMutex.lock();
