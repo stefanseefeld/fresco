@@ -92,7 +92,7 @@ install:	all
 	chmod +x $(DESTDIR)$(bindir)/Babylon-config.tmp
 	mv $(DESTDIR)$(bindir)/Babylon-config.tmp $(DESTDIR)$(bindir)/Babylon-config
 
-install-doc: install
+install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/doc/Babylon
 	cp -r ../share/doc/Babylon/html $(DESTDIR)$(datadir)/doc/Babylon
 
