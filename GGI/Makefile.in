@@ -27,8 +27,6 @@ top_srcdir	:= @top_srcdir@
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
 subdirs	:= src GGIKit demos
-# insert inter-directory dependencies below
-demos: GGIKit
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
@@ -99,3 +97,7 @@ maintainer-clean:
 	rm -rf Makefile config/local.mk config.cache config.log config.status \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
                $(top_srcdir)/configure
+
+# insert inter-directory dependencies below
+demos: GGIKit
+
