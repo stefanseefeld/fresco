@@ -41,6 +41,8 @@
 #include <Berlin/DesktopImpl.hh>
 #include <Berlin/RCManager.hh>
 #include <Berlin/ServerImpl.hh>
+#include <Berlin/GraphicDictionary.hh>
+#include <Berlin/GraphDebugger.hh>
 
 // to allow to override the default Babylon path:
 #include <Babylon/Dictionary.hh>
@@ -74,6 +76,11 @@ const std::string version = "unknown";
 using namespace Prague;
 using namespace Fresco;
 
+namespace
+{
+  Berlin::GraphDebugger * debugger;
+}
+
 struct Dump : Signal::Notifier 
 {
   private:
@@ -87,6 +94,21 @@ struct Dump : Signal::Notifier
   {
       switch (signo)
       {
+	case Signal::usr1:
+            if (debugger)
+            {
+                Logger::log(Logger::loader)
+                    << "Starting scenegraph debugger." << std::endl;
+                debugger->debug();
+		Logger::log(Logger::loader)
+                    << "Scenegraph debugger run finished." << std::endl;
+            }
+            else
+                Logger::log(Logger::loader)
+                    << "Debugger not activated on "
+                    << "command line. Not entering debug mode."
+                    << std::endl;
+            return;
         case Signal::usr2: 
           if (Console::instance())
           {
@@ -174,12 +196,16 @@ void exec_child(Fork*& child, std::string& value) /*fold00*/
 // ---------------------------------------------------------------
 int main(int argc, char **argv) /*FOLD00*/
 {
+  bool use_debugger = 0; // turn on scenegraph debugger?
+  debugger = 0;
+
   // ---------------------------------------------------------------
   // Setup signalhandling
   // ---------------------------------------------------------------
   
   Prague::Semaphore sem;
   Dump *dump = new Dump(sem);
+  Signal::set(Signal::usr1, dump);
   Signal::set(Signal::usr2, dump);
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
@@ -196,6 +222,8 @@ int main(int argc, char **argv) /*FOLD00*/
   getopt.add('v', "version", GetOpt::novalue, "version number");
   getopt.add('l', "logger", GetOpt::optional, "switch logging on");
   getopt.add('t', "tracer", GetOpt::novalue, "switch tracing on");
+  getopt.add('D', "debug", GetOpt::novalue,
+             "switch on the SceneGraph Debugger.");
   getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
   getopt.add('r', "resource", GetOpt::mandatory,
@@ -223,6 +251,8 @@ int main(int argc, char **argv) /*FOLD00*/
     std::cout << "version is " << version << std::endl; 
     return 0;
   }
+  
+  if (getopt.is_set("debug")) use_debugger = 1;
 
   std::string value;
 
@@ -516,6 +546,13 @@ int main(int argc, char **argv) /*FOLD00*/
       new ScreenManager(Graphic_var(screen->_this()), 
 			emanager, drawing);
     screen->bind_managers(emanager, smanager);
+
+    // make sure to setup the debugger before registering graphics!
+    if (use_debugger) debugger = new Berlin::GraphDebugger(screen->_this());
+
+    Berlin::GraphicDictionary::instance()->add(screen->_this(), screen,
+					       "Server/Screen");
+
     Logger::log(Logger::loader) << "Screen is set up and managers are "
 				<< "bound to it." << std::endl;
     

@@ -30,6 +30,7 @@
 #include <Berlin/DebugGraphic.hh>
 #include <Berlin/QuadTree.hh>
 #include <Berlin/Math.hh>
+#include <Berlin/RefCountVar.hh>
 #include "StageImpl.hh"
 
 #include <list>
@@ -511,6 +512,42 @@ void StageTraversal::traverse(StageHandleImpl *handle)
     }
 }
 
+
+class StageImpl::Iterator : public virtual POA_Fresco::GraphicIterator,
+		            public virtual GraphicIteratorImpl
+{
+public:
+    Iterator(StageImpl *p, Tag c) :
+	my_parent(p),
+	my_cursor(c)
+    {
+      my_parent->_add_ref();
+    }
+    virtual ~Iterator() { my_parent->_remove_ref();}
+
+    virtual Fresco::Graphic_ptr child()
+    {
+	Prague::Guard<Mutex> guard(my_parent->_mutex);
+	if (my_cursor >= my_parent->_children->size())
+	    return Fresco::Graphic::_nil();
+	return RefCount_var<Fresco::Graphic>::increment(
+	    my_parent->_children->find(my_cursor)->child());
+    }
+    virtual void next() { my_cursor++;}
+    virtual void prev() { my_cursor--;}
+    virtual void insert(Graphic_ptr child)
+    { }
+    virtual void replace(Graphic_ptr child)
+    { }
+
+    virtual void remove()
+    { }
+private:
+    StageImpl * my_parent;
+    CORBA::ULong my_cursor;
+};
+
+
 StageImpl::StageImpl()
   : _children(new Sequence),
     _tree(new QuadTree),
@@ -526,6 +563,21 @@ StageImpl::~StageImpl()
 {
   delete _tree;
   delete _children;
+}
+
+Fresco::GraphicIterator_ptr StageImpl::first_child_graphic()
+{
+  Iterator *iterator = new Iterator(this, 0);
+  activate(iterator);
+  return iterator->_this();
+}
+
+Fresco::GraphicIterator_ptr StageImpl::last_child_graphic()
+{
+  Iterator *iterator =
+      new Iterator(this, _children->size() ? _children->size() - 1 : 0);
+  activate(iterator);
+  return iterator->_this();  
 }
 
 void StageImpl::request(Fresco::Graphic::Requisition &r)

@@ -227,7 +227,8 @@ Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr gg,
 			       BoundedValue_ptr b)
 {
   Graphic_var adjuster =
-      create_and_set_body<Graphic>(new RGBAdjuster(r, g, b), gg);
+      create_and_set_body<Graphic>(new RGBAdjuster(r, g, b), gg,
+				   "FadgetKit/rgb");
   r->attach(Observer_ptr(Graphic_ptr(adjuster)));
   g->attach(Observer_ptr(Graphic_ptr(adjuster)));
   b->attach(Observer_ptr(Graphic_ptr(adjuster)));
@@ -237,7 +238,8 @@ Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr gg,
 Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
 {
   Graphic_var adjuster =
-      create_and_set_body<Graphic>(new AlphaAdjuster(value), g);
+      create_and_set_body<Graphic>(new AlphaAdjuster(value), g,
+				   "GadgetKit/alpha");
   value->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }
@@ -248,7 +250,8 @@ Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr gg,
 				    BoundedValue_ptr b)
 {
   Graphic_var adjuster =
-      create_and_set_body<Graphic>(new LightingAdjuster(r, g, b), gg);
+      create_and_set_body<Graphic>(new LightingAdjuster(r, g, b), gg,
+				   "GadgetKit/lighting");
   r->attach(Observer_ptr(Graphic_ptr(adjuster)));
   g->attach(Observer_ptr(Graphic_ptr(adjuster)));
   b->attach(Observer_ptr(Graphic_ptr(adjuster)));
@@ -262,7 +265,8 @@ Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g,
 {
   Graphic_var transformer = _figure->transformer(g);
   Graphic_var adjuster =
-      create_and_set_body<Graphic>(new RotationAdjuster(axis), transformer);
+      create_and_set_body<Graphic>(new RotationAdjuster(axis), transformer,
+				   "GadgetKit/rotator");
   value->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }
@@ -271,7 +275,8 @@ Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 {
   Graphic_var transformer = _figure->transformer(g);
   Graphic_var adjuster =
-      create_and_set_body<Graphic>(new ZoomAdjuster(), transformer);
+      create_and_set_body<Graphic>(new ZoomAdjuster(), transformer,
+				   "GadgetKit/zoomer");
   value->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }

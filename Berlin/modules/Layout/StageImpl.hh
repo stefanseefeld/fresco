@@ -39,11 +39,17 @@ class StageHandleImpl;
 class StageImpl : public virtual POA_Layout::Stage,
 		  public GraphicImpl
 {
+  class Iterator;
+  friend class Iterator;
+
   class Sequence;
   class QuadTree;
  public:
   StageImpl();
   ~StageImpl();
+
+  Fresco::GraphicIterator_ptr first_child_graphic();
+  Fresco::GraphicIterator_ptr last_child_graphic();
 
   virtual void request(Fresco::Graphic::Requisition &);
 

@@ -34,15 +34,16 @@ CXXFLAGS+= $(SO_CXXFLAGS)
 LDFLAGS	+= $(SO_LDFLAGS)
 LIBS	+= -lpng
 
-SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
-	   RefCountBaseImpl.cc RegionImpl.cc TransformImpl.cc TraversalImpl.cc \
-	   AllocationImpl.cc GraphicImpl.cc MonoGraphic.cc \
-	   PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
-	   DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
-	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
-	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
-	   PNG.cc RasterImpl.cc \
-	   KitImpl.cc RCManager.cc ServerContextImpl.cc ServerImpl.cc
+SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc \
+	   IdentifiableImpl.cc RefCountBaseImpl.cc RegionImpl.cc \
+	   TransformImpl.cc TraversalImpl.cc AllocationImpl.cc \
+	   GraphicImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc \
+	   Requestor.cc DebugGraphic.cc DrawTraversalImpl.cc \
+	   PickTraversalImpl.cc ControllerImpl.cc DesktopImpl.cc \
+	   ScreenImpl.cc ScreenManager.cc EventManager.cc PositionalFocus.cc \
+	   NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc PNG.cc \
+	   RasterImpl.cc KitImpl.cc RCManager.cc ServerContextImpl.cc \
+	   ServerImpl.cc GraphDebugger.cc GraphicDictionary.cc
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
@@ -57,7 +58,7 @@ HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
 	   ScreenManager.hh EventManager.hh PositionalFocus.hh \
 	   NonPositionalFocus.hh FilterImpl.hh SubjectImpl.hh KitImpl.hh \
 	   RCManager.hh DefaultPOA.hh ObserverImpl.hh config.hh \
-           ServerContextImpl.hh ServerImpl.hh
+           ServerContextImpl.hh ServerImpl.hh GraphDebugger.hh Dictionary.hh
 
 CHDR	:= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))

@@ -71,7 +71,8 @@ Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 
 Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr m)
 {
-  return create_and_set_body<Unidraw::View>(new UViewImpl(m), g);
+  return create_and_set_body<Unidraw::View>(new UViewImpl(m), g,
+					    "UnidrawKit/create_view");
 }
 
 Fresco::FigureKit_ptr UnidrawKitImpl::figures()

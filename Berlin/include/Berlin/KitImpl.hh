@@ -27,6 +27,10 @@
 #include <Fresco/Kit.hh>
 #include <Fresco/Graphic.hh>
 #include <Berlin/DefaultPOA.hh>
+#include <Berlin/GraphicImpl.hh>
+#include <Berlin/GraphicDictionary.hh>
+
+#include <string>
 
 class ServerImpl;
 class ServerContextImpl;
@@ -38,11 +42,16 @@ class KitImpl : public virtual POA_Fresco::Kit,
 {
   friend class ServerImpl;
 public:
-  KitImpl(const std::string &, const Fresco::Kit::PropertySeq &, ServerContextImpl *);
+  KitImpl(const std::string &,
+	  const Fresco::Kit::PropertySeq &, ServerContextImpl *);
   ~KitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &, ServerContextImpl *) = 0;
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &,
+			 ServerContextImpl *) = 0;
   const std::string &repo_id() const { return my_repo_id;}
-  virtual Fresco::Kit::PropertySeq *properties() { return new Fresco::Kit::PropertySeq(*my_props);}
+  virtual Fresco::Kit::PropertySeq *properties()
+  {
+      return new Fresco::Kit::PropertySeq(*my_props);
+  }
   virtual void bind(Fresco::ServerContext_ptr) {}
   virtual CORBA::Boolean supports(const Fresco::Kit::PropertySeq &);
 
@@ -54,22 +63,39 @@ public:
   virtual void decrement();
 
 protected:
+
   template <typename I, typename Im>
   typename I::_ptr_type create(Im *impl)
   {
-    activate(impl);
-    return impl->_this();
-  }
-  
+      return private_create<I>(impl);
+  } 
+
   template <typename I, typename Im>
-  typename I::_ptr_type create_and_set_body(Im *impl, Fresco::Graphic_ptr g)
-  {           
-    activate(impl);
-    impl->body(g);
-    return impl->_this();
+  typename I::_ptr_type create(Im * impl, std::string n)
+  {
+      typename I::_ptr_type var = private_create<I>(impl);
+      Berlin::GraphicDictionary::instance()->add(var, impl, n);
+      return var;
+  }
+
+  template <typename I, typename Im>
+  typename I::_ptr_type create_and_set_body(Im *impl,
+					    Fresco::Graphic_ptr g,
+					    std::string n)
+  {
+      typename I::_ptr_type var = create<I>(impl, n);
+      var->body(g);
+      return var;
   }
 
 private:
+  template <typename I, typename Im>
+  typename I::_ptr_type private_create(Im *impl)
+  {
+      activate(impl);
+      return impl->_this();
+  }
+
   void activate(PortableServer::POA_ptr);
   void deactivate();
   PortableServer::POA_var         my_poa;
@@ -79,8 +105,14 @@ private:
   ServerContextImpl              *my_context;
 };
 
+// no implementation: If Graphics are given, then we need a string!
+template <>
+Fresco::Graphic_ptr
+KitImpl::create<Fresco::Graphic, GraphicImpl>(GraphicImpl * impl);
+
 template <typename T>
-inline T *create_prototype(const std::string &repo, std::string props[], size_t n)
+inline T *create_prototype(const std::string &repo, std::string props[],
+			   size_t n)
 {
   Fresco::Kit::PropertySeq properties;
   properties.length(n/2);

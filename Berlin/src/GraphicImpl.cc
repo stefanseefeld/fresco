@@ -24,12 +24,13 @@
 #include <Fresco/Traversal.hh>
 #include <Fresco/Screen.hh>
 #include <Fresco/IO.hh>
-#include "Berlin/Provider.hh"
-#include "Berlin/GraphicImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/AllocationImpl.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/Math.hh"
+#include <Berlin/Provider.hh>
+#include <Berlin/GraphicImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/AllocationImpl.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/Math.hh>
+#include <Berlin/GraphicDictionary.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Stopwatch.hh>
 #include <algorithm>
@@ -263,6 +264,7 @@ static void fixed_transform_request(Graphic::Requisition &req, Transform_ptr t)
 
 GraphicImpl::GraphicImpl() {}
 GraphicImpl::~GraphicImpl() {}
+
 void GraphicImpl::deactivate()
 {
   Trace trace(this, "GraphicImpl::deactivate");
@@ -277,6 +279,7 @@ void GraphicImpl::deactivate()
     }
   my_parents.clear();
   ServantBase::deactivate(this);
+  Berlin::GraphicDictionary::instance()->remove(this);
 }
 
 Graphic_ptr GraphicImpl::body() { return Fresco::Graphic::_nil();}

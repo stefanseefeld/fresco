@@ -44,12 +44,13 @@ Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr g)
     return create_and_set_body<Graphic>(
 	new Root(Alignment(0.5), Alignment(0.5),
 		 Alignment(0.5), Alignment(0.5),
-		 Alignment(0.5), Alignment(0.5)), g);
+		 Alignment(0.5), Alignment(0.5)), g, "PrimitiveKit/root");
 }
 
 Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Fresco::Mesh &mesh)
 {
-  return create<Primitive::Geometry>(new GeometryImpl(mesh));
+  return create<Primitive::Geometry>(new GeometryImpl(mesh),
+				     "PrimitiveKit/geometry");
 }
 
 Graphic_ptr PrimitiveKitImpl::cube()
@@ -107,7 +108,8 @@ Graphic_ptr PrimitiveKitImpl::cube()
 
 Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {
-  return create_and_set_body<Graphic>(new Transformer, g);
+  return create_and_set_body<Graphic>(new Transformer, g,
+				      "PrimitiveKit/transformer");
 }
 
 Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
@@ -115,7 +117,8 @@ Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
 						CORBA::Float i,
 						const Fresco::Vertex &d)
 {
-  return create_and_set_body<Graphic>(new DirectionalLight(c, i, d), g);
+  return create_and_set_body<Graphic>(new DirectionalLight(c, i, d), g,
+				      "PrimitiveKit/directional_light");
 }
 
 Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
@@ -123,7 +126,8 @@ Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
 					  CORBA::Float i,
 					  const Fresco::Vertex &p)
 {
-  return create_and_set_body<Graphic>(new PointLight(c, i, p), g);
+  return create_and_set_body<Graphic>(new PointLight(c, i, p), g,
+				      "PrmitiveKit/point_light");
 }
 
 Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
@@ -134,7 +138,8 @@ Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
 					 CORBA::Float r,
 					 CORBA::Float a)
 {
-  return create_and_set_body<Graphic>(new SpotLight(c, i, p, d, r, a), g);
+  return create_and_set_body<Graphic>(new SpotLight(c, i, p, d, r, a), g,
+				      "PrimitiveKit/spot_light");
 }
 
 
