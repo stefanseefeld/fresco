@@ -141,6 +141,7 @@ done
 
 AC_CONFIG_FILES([config/local.mk config/module.mk config/synopsis.py])
 AC_CONFIG_FILES([config/Berlin-config], [chmod +x config/Berlin-config])
+AC_CONFIG_FILES([etc/berlinrc:config/berlinrc.in])
 AC_CONFIG_FILES([config/Berlin.spec])
 AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-build-config.in], [chmod +x bin/Berlin-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile])

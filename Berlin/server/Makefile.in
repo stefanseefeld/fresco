@@ -45,9 +45,9 @@ ifeq ($(JPROF),yes)
 JPROFTARGETS	:= ../lib/libjprof.so ../bin/jprof
 LIBS		+= -ljprof
 
-all:	$(JPROFTARGETS) $(TARGETS)  ../etc/berlinrc
+all:	$(JPROFTARGETS) $(TARGETS)
 else
-all:	$(TARGETS) ../etc/berlinrc
+all:	$(TARGETS)
 endif
 
 config: #do nothing
@@ -81,11 +81,6 @@ endif
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../etc/berlinrc: $(top_srcdir)/config/berlinrc.in
-	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
-	   $^ > $@
-	chmod 644 $@
-
 install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
@@ -102,9 +97,6 @@ install:	all
 	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/$$image is up to date"; \
 	  fi; \
 	done
-	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
-	  $(top_srcdir)/config/berlinrc.in > $(DESTDIR)/$(sysconfdir)/berlinrc
-	chmod 644 $(DESTDIR)/$(sysconfdir)/berlinrc
 
 install-doc: #do nothing
 

@@ -1,4 +1,4 @@
-Summary: interfaces and C++ runtime library for Fresco
+Summary: a GGI console for the fresco display server
 Name: @PACKAGE_NAME@
 Version: @PACKAGE_VERSION@
 Release: 1
@@ -9,21 +9,10 @@ BuildRoot: /var/tmp/%{name}-buildroot
 URL: http://fresco.org/
 Prefix: %{_prefix}
 Docdir: %{_docdir}
-Requires: Prague = %{version}
-Requires: Babylon = %{version}
+Requires: Berlin = %{version}
 
 %description
-interfaces and C++ runtime library for Fresco
-
-%package devel
-Summary: Libraries, includes, etc. to develop applications with Fresco
-Group: Development/Libraries
-Requires: Fresco = %{version}
-Requires: Prague-devel = %{version}
-Requires: Babylon-devel = %{version}
-
-%description devel
-all you need to develop applications with the Fresco library
+a GGI console for the fresco display server
 
 %prep
 %setup -q
@@ -60,13 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 
-%{prefix}/lib/lib*.so
-%{prefix}/share/*
-
-%files devel
-%defattr(-, root, root)
-
-%{prefix}/include/*
-%{prefix}/bin/Fresco-config
+%{prefix}/lib/*
+%{prefix}/bin/*
 
 %changelog

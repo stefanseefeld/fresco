@@ -25,11 +25,11 @@ dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
 
-AC_PREREQ(2.12)
+AC_PREREQ(2.53)
 AC_REVISION($Revision$)
 
-AC_INIT(GGI, 0.3.0, devel@fresco.org)
-AC_CONFIG_SRCDIR(../LICENSE)
+AC_INIT(Berlin-GGI, M3, devel@fresco.org)
+AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 
 dnl AC_HEADLINE(dnl
@@ -91,6 +91,7 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES(config/local.mk)
+AC_CONFIG_FILES([config/GGI.spec])
 AC_CONFIG_FILES([Makefile src/Makefile GGIKit/Makefile clients/Makefile])
 
 mkdir -p lib/Fresco/Console
