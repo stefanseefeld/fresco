@@ -20,15 +20,13 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/resolve.hh"
-#include "Warsaw/Server.hh"
+#include "Warsaw/Warsaw.hh"
 #include "Application.hh"
 #include "LayoutDemo.hh"
 #include "TextDemo.hh"
 #include "EditTextDemo.hh"
 #include "RasterDemo.hh"
-#include "TransformDemo.hh"
+// #include "TransformDemo.hh"
 #include "LogoDemo.hh"
 #include "FocusDemo.hh"
 #include "ViewportDemo.hh"
@@ -41,18 +39,13 @@ bool running;
 
 int main(int argc, char **argv)
 {
-  CORBA::ORB_ptr orb = CORBA::ORB_init(argc,argv,"omniORB2");
-  CORBA::BOA_ptr boa = orb->BOA_init(argc,argv,"omniORB2_BOA");
-  boa->impl_is_ready(0,1);
-
-  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-  Server_var server = resolve_name<Server>(context, interface(Server));
-  Application *application = new Application(server);
+  Warsaw *warsaw = new Warsaw(argc, argv);
+  Application *application = new Application(warsaw);
   LayoutDemo *layout = new LayoutDemo(application);
   TextDemo *text = new TextDemo(application);
   EditTextDemo *etext = new EditTextDemo(application);
   RasterDemo *raster = new RasterDemo(application);
-  TransformDemo *transform = new TransformDemo(application);
+//   TransformDemo *transform = new TransformDemo(application);
   LogoDemo *logo = new LogoDemo(application);
   FocusDemo *focus = new FocusDemo(application);
   ViewportDemo *viewport = new ViewportDemo(application);
@@ -64,10 +57,11 @@ int main(int argc, char **argv)
   delete viewport;
   delete focus;
   delete logo;
-  delete transform;
+//   delete transform;
   delete raster;
   delete etext;
   delete text;
   delete layout;
   delete application;
+  delete warsaw;
 }

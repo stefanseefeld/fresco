@@ -78,10 +78,7 @@ public:
   virtual Grid::Index upper();
 
  private:
-  Tag  index2tag(Grid::Index index)
-    {
-      return index.col << 16 + index.row;
-    }
+  Tag index2tag(const Grid::Index &index) { return (index.col << 16) + index.row;}
   Grid::Index tag2index(Tag tag)
     {
       Grid::Index index;

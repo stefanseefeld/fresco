@@ -37,8 +37,11 @@ class GadgetKitImpl : implements(GadgetKit), public KitImpl
   GadgetKitImpl(KitFactory *, const PropertySeq &);
   virtual ~GadgetKitImpl();
   virtual void bind(ServerContext_ptr);
+  virtual Graphic_ptr rgb(Graphic_ptr, BoundedValue_ptr, BoundedValue_ptr, BoundedValue_ptr);
   virtual Graphic_ptr alpha(Graphic_ptr, BoundedValue_ptr);
-  virtual Graphic_ptr transformer(Graphic_ptr, BoundedValue_ptr);
+  virtual Graphic_ptr lighting(Graphic_ptr, BoundedValue_ptr, BoundedValue_ptr, BoundedValue_ptr);
+  virtual Graphic_ptr rotator(Graphic_ptr, BoundedValue_ptr);
+  virtual Graphic_ptr zoomer(Graphic_ptr, BoundedValue_ptr);
  private:
   CommandKit_var command;
   FigureKit_var figure;

@@ -46,21 +46,18 @@ class ExitCommand : implements(Command)
   void execute(const CORBA::Any &) { exit(0);}
 };
 
-Application::Application(Server_ptr server)
-  : client(new ClientContextImpl),
-    context(server->newServerContext(ClientContext_var(client->_this()))),
-    tk(resolve_kit<TextKit>(context, TextKit_IntfRepoID)),
-    dk(resolve_kit<DesktopKit>(context, DesktopKit_IntfRepoID)),
-    lk(resolve_kit<LayoutKit>(context, LayoutKit_IntfRepoID)),
-    ttk(resolve_kit<ToolKit>(context, ToolKit_IntfRepoID)),
-    wk(resolve_kit<WidgetKit>(context, WidgetKit_IntfRepoID)),
-    fk(resolve_kit<FigureKit>(context, FigureKit_IntfRepoID)),
-    ck(resolve_kit<CommandKit>(context, CommandKit_IntfRepoID)),
-    ik(resolve_kit<ImageKit>(context, ImageKit_IntfRepoID)),
-    gk(resolve_kit<GadgetKit>(context, GadgetKit_IntfRepoID)),
+Application::Application(Warsaw *warsaw)
+  : tk(warsaw->resolve<TextKit>(interface(TextKit))),
+    dk(warsaw->resolve<DesktopKit>(interface(DesktopKit))),
+    lk(warsaw->resolve<LayoutKit>(interface(LayoutKit))),
+    ttk(warsaw->resolve<ToolKit>(interface(ToolKit))),
+    wk(warsaw->resolve<WidgetKit>(interface(WidgetKit))),
+    fk(warsaw->resolve<FigureKit>(interface(FigureKit))),
+    ck(warsaw->resolve<CommandKit>(interface(CommandKit))),
+    ik(warsaw->resolve<ImageKit>(interface(ImageKit))),
+    gk(warsaw->resolve<GadgetKit>(interface(GadgetKit))),
     vbox(lk->vbox()),
     choice(wk->toggleChoice()),
-    alpha(ck->bvalue(0., 1., 1., 0.1, 0.1)),
     mapper(new Mapper(demos, Selection_var(choice->state())))
 {
   char *berlin_root = getenv("BERLIN_ROOT");
@@ -79,32 +76,44 @@ Application::Application(Server_ptr server)
   hbox->append(Graphic_var(lk->hfil()));
   vbox->append(hbox);
 
-  Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("close")));
-  done = lk->margin(Graphic_var(ttk->rgb(glyph1, 0., 0., 0.)), 20.);
+  Graphic_var glyph = tk->chunk(Unicode::toCORBA(Unicode::String("close")));
+  done = lk->margin(Graphic_var(ttk->rgb(glyph, 0., 0., 0.)), 20.);
+  glyph = tk->chunk(Unicode::toCORBA(Unicode::String("settings")));
+  settings = lk->margin(Graphic_var(ttk->rgb(glyph, 0., 0., 0.)), 20.);
 }
 
 void Application::append(Controller_ptr demo, const Unicode::String &name)
 {
+  Item item = makeItem(name);
+
   Graphic_var hbox = lk->hbox();
-  Trigger_var button = wk->button(done, Command_var(Command::_nil()));
   hbox->append(Graphic_var(lk->hfil()));
-  hbox->append(button);
+  Trigger_var button1 = wk->button(done, Command_var(Command::_nil()));
+  hbox->append(button1);
+  hbox->append(Graphic_var(lk->hspace(200.)));
+  Trigger_var button2 = wk->button(settings, item.settings);
+  hbox->append(button2);
   hbox->append(Graphic_var(lk->hfil()));
   Graphic_var vb = lk->vbox();
   vb->append(demo);
   vb->append(hbox);
+
   ToolKit::FrameSpec spec;
   spec.bbrightness(0.5);
-  Controller_var group = ttk->group(Graphic_var(gk->alpha(Graphic_var(ttk->frame(vb, 20., spec, true)), alpha)));
-  group->appendController(demo);
-  group->appendController(button);
-  Window_var window = dk->transient(group);
-  Command_var unmap = window->map(false);
-  button->action(unmap);
+  Graphic_var decorator = ttk->frame(vb, 20., spec, true);
+  decorator = gk->alpha(decorator, item.alpha);
+  decorator = gk->lighting(decorator, item.red, item.green, item.blue);
+  decorator = Graphic_var(lk->align(gk->rotator(Graphic_var(lk->align(decorator, 0.5, 0.5)), item.rotation), 0., 0.));
+  decorator = gk->zoomer(decorator, item.zoom);
 
-  Graphic_var label = tk->chunk(Unicode::toCORBA(name));
-  Tag tag = choice->appendItem(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
-  demos.push_back(Item(tag, Command_var(window->map(true))));
+  Controller_var group = ttk->group(decorator);
+  group->appendController(demo);
+  group->appendController(button1);
+  group->appendController(button2);
+  Window_var window = dk->transient(group);
+  button1->action(Command_var(window->map(false)));
+  item.mapper = window->map(true);
+  demos.push_back(item);
 }
 
 void Application::run()
@@ -123,21 +132,15 @@ void Application::run()
   cmd->_obj_is_ready(CORBA::BOA::getBOA());
   Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
 
-  Graphic_var hbox = lk->hbox();
-  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
-  hbox->append(Graphic_var(wk->slider(alpha, xaxis)));
-  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
-  vbox->append(Graphic_var(lk->hspace(200.)));
-  vbox->append(hbox);
   vbox->append(Graphic_var(lk->vspace(200.)));
 
-  hbox = lk->hbox();
+  Graphic_var hbox = lk->hbox();
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
   hbox->append(run);
   hbox->append(Graphic_var(lk->hspace(200.)));
   hbox->append(quit);
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
-  vbox->append(Graphic_var(lk->margin(hbox, 200.)));
+  vbox->append(hbox);
   Graphic_var margin = lk->margin(vbox, 200.);
   
   spec.bbrightness(1.0);
@@ -147,4 +150,87 @@ void Application::run()
   group->appendController(quit);
   Window_var window = dk->shell(group);
   while (true) Thread::delay(Prague::Time(1000));
+}
+
+Application::Item Application::makeItem(const Unicode::String &name)
+{
+  Item item;
+
+  /*
+   * insert an item into the choice
+   */
+  Graphic_var label = tk->chunk(Unicode::toCORBA(name));
+  item.id = choice->appendItem(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
+  /*
+   * create the control elements
+   */
+  item.alpha = ck->bvalue(0., 1., 1., 0.1, 0.1);
+  item.red = ck->bvalue(0., 1., 1., 0.1, 0.1);
+  item.blue = ck->bvalue(0., 1., 1., 0.1, 0.1);
+  item.green = ck->bvalue(0., 1., 1., 0.1, 0.1);
+  item.rotation = ck->bvalue(0., 360., 0., 5., 5.);
+  item.zoom = ck->bvalue(-1., 1., 0., 0.1, 0.1);
+
+  /*
+   * create the settings window
+   */
+  Grid::Index index;
+  index.col = 2, index.row = 6;
+  Grid_var grid = lk->fixedGrid(index);
+  index.row = 0;
+  index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("alpha")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(wk->slider(item.alpha, xaxis)), index);
+
+  index.row = 1;
+  index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("red")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(wk->slider(item.red, xaxis)), index);
+
+  index.row = 2;
+  index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("green")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(wk->slider(item.green, xaxis)), index);
+
+  index.row = 3;
+  index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("blue")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(wk->slider(item.blue, xaxis)), index);
+
+  index.row = 4;
+  index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("rotation")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(wk->slider(item.rotation, xaxis)), index);
+
+  index.row = 5;
+  index.col = 0;
+  grid->replace(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("zoom")))), 0., 0., 0.)), index);
+  index.col = 1;
+  grid->replace(Graphic_var(wk->slider(item.zoom, xaxis)), index);
+
+  Graphic_var hbox = lk->hbox();
+  hbox->append(Graphic_var(lk->hfil()));
+  Graphic_var glyph = tk->chunk(Unicode::toCORBA(Unicode::String("done")));
+  Graphic_var dlabel = lk->margin(glyph, 20.);
+  Trigger_var done = wk->button(Graphic_var(ttk->rgb(dlabel, 0., 0., 0.)), Command::_nil());
+  hbox->append(done);
+  hbox->append(Graphic_var(lk->hfil()));
+
+  Graphic_var vbox = lk->vbox();
+  vbox->append(Graphic_var(lk->vspace(200.)));
+  vbox->append(grid);
+  vbox->append(Graphic_var(lk->vspace(200.)));
+  vbox->append(hbox);
+  ToolKit::FrameSpec outset;
+  outset.bbrightness(0.5);
+  Controller_var root = ttk->group(Graphic_var(ttk->frame(Graphic_var(lk->margin(vbox, 100.)), 20., outset, true)));
+  Window_var window = dk->transient(root);
+  item.settings = window->map(true);
+  done->action(Command_var(window->map(false)));
+  return item;
 }

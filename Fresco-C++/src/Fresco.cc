@@ -20,63 +20,22 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw.hh"
-#include <iomanip>
-/*
- * sorry, quick hack...
- * we need to set up libraries correctly...
- */
-#include "../Berlin/Math.hh"
+#include "Warsaw/Warsaw.hh"
+#include "Warsaw/Server.hh"
 
-ostream &operator << (ostream &os, const Graphic::Requirement &r)
+Warsaw::Warsaw(int argc, char **argv)
+  : orb(CORBA::ORB_init(argc,argv,"omniORB2")),
+    boa(orb->BOA_init(argc,argv,"omniORB2_BOA")),
+    client(new ClientContextImpl)
 {
-  if (!r.defined) os << "undef";
-  else
-    {
-      double tol = 1e-2;
-      os << setiosflags(ios::fixed);
-      if (Math::equal(r.natural, r.minimum, tol))
-	{
-	  if (Math::equal(r.natural, r.maximum, tol))
-	    os << setprecision(2) << r.natural;
-	  else
-	    os << '(' << setprecision(2) << r.natural
-	       << ',' << setprecision(2) << r.maximum << ')';
-	}
-      else if (Math::equal(r.natural, r.maximum, tol))
-	os << '(' << setprecision(2) << r.minimum
-	   << ',' << setprecision(2) << r.natural << ')';
-      else
-	os << '(' << setprecision(2) << r.minimum
-	   << ',' << setprecision(2) << r.natural
-	   << ',' << setprecision(2) << r.maximum << ')';
-      if (!Math::equal(r.align, 0., tol))
-	os << " @ " << setprecision(1) << r.align;
-    }
-  return os;
-};
-
-ostream &operator << (ostream &os, const Graphic::Requisition &r)
-{
-  return os << r.x << ", " << r.y << ", " << r.z;
+  boa->impl_is_ready(0,1);
+  client->_obj_is_ready(boa);
+  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+  Server_var s = resolve_name<Server>(context, interface(Server));
+  server = s->newServerContext(ClientContext_var(client->_this()));
 }
 
-ostream &operator << (ostream &os, const Region::Allotment &a)
+Warsaw::~Warsaw()
 {
-  os << setiosflags(ios::fixed) << setprecision(2) << a.begin << ',' << setprecision(2) << a.end;
-  if (!Math::equal(a.align, 0., 1e-2)) cout << " @ " << setprecision(1) << a.align;
-  return os;
-}
-
-ostream &operator << (ostream &os, Region_ptr r)
-{
-  Region::Allotment a;
-  os << "X(";
-  r->span(xaxis, a);
-  os << a << "), Y(";
-  r->span(yaxis, a);
-  os << a << "), Z(";
-  r->span(zaxis, a);
-  os << a << ')';
-  return os;
+  client->_dispose();
 }

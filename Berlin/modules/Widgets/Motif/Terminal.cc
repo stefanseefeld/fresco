@@ -67,7 +67,7 @@ Terminal::Terminal(CommandKit_ptr command)
     _input(new Input(this)),
     _output(new Output(this)),
     agent(new TTYAgent("sh", _output, 0)),
-    ibuf(StreamBuffer::_duplicate(command->stream(1))),
+    ibuf(StreamBuffer::_duplicate(command->stream(1024))),
     obuf(StreamBuffer::_duplicate(command->stream(1024)))
 {
   Trace trace("Terminal::Terminal");

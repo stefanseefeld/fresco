@@ -27,6 +27,7 @@
 #include <Warsaw/Allocation.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
+#include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -97,6 +98,8 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region,
 void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 {
   Trace trace("TraversalImpl::push");
+//   cout << "TraversalImpl::push " << stack.size() << endl;
+//   cout << t->matrix();
   State state;
   state.graphic = Graphic::_duplicate(g);
   state.tag = tag;

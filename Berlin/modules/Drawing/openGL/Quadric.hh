@@ -22,6 +22,7 @@
 #ifndef _GLQuadric_hh
 #define _GLQuadric_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
 
 class GLQuadric

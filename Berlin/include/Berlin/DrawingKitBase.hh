@@ -29,17 +29,20 @@
 #include <Warsaw/Region.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Raster.hh>
-#include <bitset>
+/*
+ * bitset is buggy. Sorry, try again later...
+ */
+// #include <bitset>
 #include <stack>
 
 class DrawingKitBase : implements(DrawingKit)
 {
-
- private:
-  typedef enum {
-    st_trafo = 0, 
+  enum gstate
+  {
+    st_trafo, 
     st_clip,
-    st_fg_color, 
+    st_fg_color,
+    st_lt_color, 
     st_point_size, 
     st_line_width,
     st_line_end_style, 
@@ -51,15 +54,19 @@ class DrawingKitBase : implements(DrawingKit)
     st_font_subfamily,
     st_font_fullname,
     st_font_style, 
-    st_font_attr = 14
-  } gstate;  
+    st_font_attr,
+    st_last
+  };
 
-  static const gstate last_state = st_font_attr;
-  typedef struct {
-    bitset<15> flags;
+  struct DrawState
+  {
+    DrawState() : flags(0) {}
+//     bitset<st_last> flags;
+    unsigned long flags;
     Transform_var saved_trafo;
     Region_var saved_clip;
     Color saved_fg_color;
+    Color saved_lt_color;
     Coord saved_point_size;
     Coord saved_line_width;
     Endstyle saved_line_end_style;
@@ -73,96 +80,55 @@ class DrawingKitBase : implements(DrawingKit)
     Unistring_var saved_font_style;
     // something here...
     // for holding NVPair saved_font_attr;
-  } DrawState;
-
-  stack<DrawState> myStates;
-
+  };
  public:
-  virtual void saveState() { DrawState st; myStates.push(st);}
-  virtual void restoreState() {
-
-    if (myStates.empty()) return; // no state to restore
-    
-    DrawState &prev = myStates.top();
-
-    if(prev.flags[st_trafo])
-      setTransformation(prev.saved_trafo);
-    
-    if(prev.flags[st_clip])
-      setClipping(prev.saved_clip);
-    
-    if(prev.flags[st_fg_color])
-      setForeground(prev.saved_fg_color);
-    
-    if(prev.flags[st_point_size])
-      setPointSize(prev.saved_point_size);
-    
-    if(prev.flags[st_line_width])
-      setLineWidth(prev.saved_line_width);
-    
-    if(prev.flags[st_line_end_style])
-      setLineEndstyle(prev.saved_line_end_style);
-    
-    if(prev.flags[st_surface_fill_style])
-      setSurfaceFillstyle(prev.saved_surface_fill_style);
-    
-    if(prev.flags[st_texture])
-      setTexture(prev.saved_texture);
-    
-    if(prev.flags[st_font_size])
-      setFontSize(prev.saved_font_size);
-    
-    if(prev.flags[st_font_weight])
-      setFontWeight(prev.saved_font_weight);
-    
-    if(prev.flags[st_font_family])
-      setFontFamily(prev.saved_font_family);
-    
-    if(prev.flags[st_font_subfamily])
-      setFontSubFamily(prev.saved_font_subfamily);
-    
-    if(prev.flags[st_font_fullname])
-      setFontFullName(prev.saved_font_fullname);
-    
-    if(prev.flags[st_font_style])
-      setFontStyle(prev.saved_font_style);
-    
-    //    if(prev.flags[st_font_attr]) {
-    //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
-    // 	     setFontAttr(prev.saved_font_attr[i]);
-    //    }
-
-    myStates.pop();
-  }
-
+  virtual void saveState() { DrawState st; states.push(st);}
+  virtual void restoreState();
   //######################################################
   //############### subclass signatures ##################
   //######################################################
 
-
   virtual Transform_ptr transformation() = 0;
+  virtual void transformation(Transform_ptr);
   virtual Region_ptr clipping() = 0;
+  virtual void clipping(Region_ptr);
   virtual Color foreground() = 0;
+  virtual void foreground(const Color &);
+  virtual Color lighting() = 0;
+  virtual void lighting(const Color &);
   virtual Coord pointSize() = 0;
+  virtual void pointSize(Coord);
   virtual Coord lineWidth() = 0;
+  virtual void lineWidth(Coord);
   virtual Endstyle lineEndstyle() = 0;
+  virtual void lineEndstyle(Endstyle);
   virtual Fillstyle surfaceFillstyle() = 0;
+  virtual void surfaceFillstyle(Fillstyle);
   virtual Raster_ptr texture() = 0;
-
-  virtual void flush() = 0;
+  virtual void texture(Raster_ptr);
 
   virtual CORBA::ULong fontSize() = 0;
+  virtual void fontSize(CORBA::ULong);
   virtual CORBA::ULong fontWeight() = 0;
-  virtual Unistring* fontFamily() = 0;
-  virtual Unistring* fontSubFamily() = 0;
-  virtual Unistring* fontFullName() = 0;
-  virtual Unistring* fontStyle() = 0;
+  virtual void fontWeight(CORBA::ULong);
+  virtual Unistring *fontFamily() = 0;
+  virtual void fontFamily(const Unistring &);
+  virtual Unistring *fontSubFamily() = 0;
+  virtual void fontSubFamily(const Unistring &);
+  virtual Unistring *fontFullName() = 0;
+  virtual void fontFullName(const Unistring &);
+  virtual Unistring *fontStyle() = 0;
+  virtual void fontStyle(const Unistring &);
   virtual FontMetrics metrics() = 0;
-  virtual CORBA::Any * getFontAttr(const Unistring & name) = 0;
+  virtual CORBA::Any *getFontAttr(const Unistring & name) = 0;
+  virtual void fontAttr(const NVPair &nvp);
+
+  virtual void flush() = 0;
 
   virtual void setTransformation(Transform_ptr) = 0;
   virtual void setClipping(Region_ptr) = 0;
   virtual void setForeground(const Color &) = 0;
+  virtual void setLighting(const Color &) = 0;
   virtual void setPointSize(Coord) = 0;
   virtual void setLineWidth(Coord) = 0;
   virtual void setLineEndstyle(Endstyle) = 0;
@@ -177,115 +143,149 @@ class DrawingKitBase : implements(DrawingKit)
   virtual void setFontStyle(const Unistring&) = 0;
   virtual void setFontAttr(const NVPair & nvp) = 0;
 
-  //########################################################
-  //############### public setter methods ##################
-  //########################################################
+private:
+  stack<DrawState> states;
+};
 
-  // sorry, I hate macros as much as the next guy,
-  // but in this case, templates are simply not cutting it.
+inline void DrawingKitBase::restoreState()
+{
+  if (states.empty()) return; // no state to restore
+  DrawState &prev = states.top();
+  if(prev.flags & (1 << st_trafo))              setTransformation(prev.saved_trafo);
+  if(prev.flags & (1 << st_clip))               setClipping(prev.saved_clip);
+  if(prev.flags & (1 << st_fg_color))           setForeground(prev.saved_fg_color);
+  if(prev.flags & (1 << st_lt_color))           setLighting(prev.saved_lt_color);
+  if(prev.flags & (1 << st_point_size))         setPointSize(prev.saved_point_size);
+  if(prev.flags & (1 << st_line_width))         setLineWidth(prev.saved_line_width);
+  if(prev.flags & (1 << st_line_end_style))     setLineEndstyle(prev.saved_line_end_style);
+  if(prev.flags & (1 << st_surface_fill_style)) setSurfaceFillstyle(prev.saved_surface_fill_style);
+  if(prev.flags & (1 << st_texture))            setTexture(prev.saved_texture);
+  if(prev.flags & (1 << st_font_size))          setFontSize(prev.saved_font_size);
+  if(prev.flags & (1 << st_font_weight))        setFontWeight(prev.saved_font_weight);
+  if(prev.flags & (1 << st_font_family))        setFontFamily(prev.saved_font_family);
+  if(prev.flags & (1 << st_font_subfamily))     setFontSubFamily(prev.saved_font_subfamily);
+  if(prev.flags & (1 << st_font_fullname))      setFontFullName(prev.saved_font_fullname);
+  if(prev.flags & (1 << st_font_style))         setFontStyle(prev.saved_font_style);
+    //    if(prev.flags[st_font_attr]) {
+    //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
+    // 	     setFontAttr(prev.saved_font_attr[i]);
+    //    }
+  states.pop();
+}
+
+//########################################################
+//############### public setter methods ##################
+//########################################################
+
+// sorry, I hate macros as much as the next guy,
+// but in this case, templates are simply not cutting it.
 
 #define REMEMBER(state,ty,val) \
- if (!(myStates.empty() || myStates.top().flags[st_## state])) { \
-  DrawState &st = myStates.top(); \
+ if (!(states.empty() || states.top().flags & (1 << st_## state)))\
+{ \
+  DrawState &st = states.top(); \
   ty tmp(val); \
   st.saved_## state = tmp; \
-  st.flags[st_## state] = true; \
- }
+  st.flags |= (1 << st_## state); \
+}
 
-  
-  inline void transformation(Transform_ptr t)
-    {
-      REMEMBER(trafo,Transform_var,transformation());
-      setTransformation(t);
-    }
+inline void DrawingKitBase::transformation(Transform_ptr t)
+{
+  REMEMBER(trafo,Transform_var,transformation());
+  setTransformation(t);
+}
 
-  inline void clipping(Region_ptr c)
-    {
-      REMEMBER(clip,Region_var,clipping());
-      setClipping(c);
-    }
+inline void DrawingKitBase::clipping(Region_ptr c)
+{
+  REMEMBER(clip,Region_var,clipping());
+  setClipping(c);
+}
 
-  inline void foreground(const Color &c)
-    {
-      REMEMBER(fg_color,Color,foreground())
-      setForeground(c);
-    }
+inline void DrawingKitBase::foreground(const Color &c)
+{
+  REMEMBER(fg_color,Color,foreground())
+  setForeground(c);
+}
 
-  inline void pointSize(Coord s)
-    {
-      REMEMBER(point_size,Coord,pointSize());
-      setPointSize(s);
-    }
+inline void DrawingKitBase::lighting(const Color &c)
+{
+  REMEMBER(lt_color,Color,lighting())
+  setLighting(c);
+}
 
-  inline void lineWidth(Coord w)
-    {
-      REMEMBER(line_width,Coord,lineWidth());
-      setLineWidth(w);
-    }
+inline void DrawingKitBase::pointSize(Coord s)
+{
+  REMEMBER(point_size,Coord,pointSize());
+  setPointSize(s);
+}
 
-  inline void lineEndstyle(Endstyle s)
-    {
-      REMEMBER(line_end_style,Endstyle,lineEndstyle())
-      setLineEndstyle(s);
-    }
+inline void DrawingKitBase::lineWidth(Coord w)
+{
+  REMEMBER(line_width,Coord,lineWidth());
+  setLineWidth(w);
+}
 
-  inline void surfaceFillstyle(Fillstyle s)
-    {
-      REMEMBER(surface_fill_style,Fillstyle,surfaceFillstyle());
-      setSurfaceFillstyle(s);
-    }
+inline void DrawingKitBase::lineEndstyle(Endstyle s)
+{
+  REMEMBER(line_end_style,Endstyle,lineEndstyle());
+  setLineEndstyle(s);
+}
 
-  inline void texture(Raster_ptr t)
-    {
-      REMEMBER(texture,Raster_var,texture());
-      setTexture(t);
-    }
+inline void DrawingKitBase::surfaceFillstyle(Fillstyle s)
+{
+  REMEMBER(surface_fill_style,Fillstyle,surfaceFillstyle());
+  setSurfaceFillstyle(s);
+}
+
+inline void DrawingKitBase::texture(Raster_ptr t)
+{
+  REMEMBER(texture,Raster_var,texture());
+  setTexture(t);
+}
 
   ////////
   // text
   ////////
 
-  inline void fontSize(CORBA::ULong s)
-    {
-      REMEMBER(font_size,CORBA::ULong,fontSize());
-      setFontSize(s);
-    }
+inline void DrawingKitBase::fontSize(CORBA::ULong s)
+{
+  REMEMBER(font_size,CORBA::ULong,fontSize());
+  setFontSize(s);
+}
 
-  inline void fontWeight(CORBA::ULong w)
-    {
-      REMEMBER(font_weight,CORBA::ULong,fontWeight());
-      setFontWeight(w);
-    }
+inline void DrawingKitBase::fontWeight(CORBA::ULong w)
+{
+  REMEMBER(font_weight,CORBA::ULong,fontWeight());
+  setFontWeight(w);
+}
 
-  inline void fontFamily(const Unistring &f)
-    {
-      REMEMBER(font_family,Unistring_var,fontFamily());
-      setFontFamily(f);
-    }
+inline void DrawingKitBase::fontFamily(const Unistring &f)
+{
+  REMEMBER(font_family,Unistring_var,fontFamily());
+  setFontFamily(f);
+}
 
-  inline void fontSubFamily(const Unistring &f)
-    {
-      REMEMBER(font_subfamily,Unistring_var,fontSubFamily());
-      setFontSubFamily(f);
-    }
+inline void DrawingKitBase::fontSubFamily(const Unistring &f)
+{
+  REMEMBER(font_subfamily,Unistring_var,fontSubFamily());
+  setFontSubFamily(f);
+}
 
-  inline void fontFullName(const Unistring &f)
-    {
-      REMEMBER(font_fullname,Unistring_var,fontFullName());
-      setFontFullName(f);
-    }
+inline void DrawingKitBase::fontFullName(const Unistring &f)
+{
+  REMEMBER(font_fullname,Unistring_var,fontFullName());
+  setFontFullName(f);
+}
 
-  inline void fontStyle(const Unistring &s)
-    {
-      REMEMBER(font_style,Unistring_var,fontStyle());
-      setFontStyle(s);
-    }
+inline void DrawingKitBase::fontStyle(const Unistring &s)
+{
+  REMEMBER(font_style,Unistring_var,fontStyle());
+  setFontStyle(s);
+}
 
-  inline void fontAttr(const NVPair &nvp)
-    {
-      // !FIXME! fill this in.. it's not _too_ hard
-    }
+inline void DrawingKitBase::fontAttr(const NVPair &nvp)
+{
+  // !FIXME! fill this in.. it's not _too_ hard
+}
 
-};
-  
 #endif

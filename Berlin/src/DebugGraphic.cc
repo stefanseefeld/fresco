@@ -26,7 +26,7 @@
 #include "Warsaw/PickTraversal.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
-#include <Warsaw/Warsaw.hh>
+#include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <iostream>
 #include <iomanip>

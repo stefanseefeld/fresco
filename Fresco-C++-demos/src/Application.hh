@@ -22,7 +22,7 @@
 #ifndef _Application_hh
 #define _Application_hh
 
-#include <Warsaw/config.hh>
+#include <Warsaw/Warsaw.hh>
 #include <Warsaw/TextKit.hh>
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
@@ -49,9 +49,15 @@ class Application
 {
   struct Item
   {
-    Item(Tag t, Command_ptr c) : id(t), mapper(Command::_duplicate(c)) {}
     Tag id;
     Command_var mapper;
+    BoundedValue_var alpha;
+    BoundedValue_var red;
+    BoundedValue_var blue;
+    BoundedValue_var green;
+    BoundedValue_var rotation;
+    BoundedValue_var zoom;
+    Command_var settings;
   };
   typedef vector<Item> list_t;
   class Mapper : implements(Command)
@@ -65,7 +71,7 @@ class Application
   };
   friend class Mapper;
 public:
-  Application(Server_ptr);
+  Application(Warsaw *);
   TextKit_ptr text() { return TextKit::_duplicate(tk);}
   DesktopKit_ptr desktop() { return DesktopKit::_duplicate(dk);}
   LayoutKit_ptr layout() { return LayoutKit::_duplicate(lk);}
@@ -78,9 +84,8 @@ public:
   void append(Controller_ptr, const Unicode::String &);
   void run();
 protected:
+  Item makeItem(const Unicode::String &);
 private:
-  Impl_var<ClientContextImpl> client;
-  ServerContext_var context;
   TextKit_var tk;
   DesktopKit_var dk;
   LayoutKit_var lk;
@@ -92,11 +97,11 @@ private:
   GadgetKit_var gk;
   Graphic_var vbox;
   Choice_var  choice;
-  BoundedValue_var alpha;
   list_t demos;
   Impl_var<Mapper> mapper;
   Color background;
   Graphic_var done;
+  Graphic_var settings;
 };
 
 #endif /* _Application_hh */

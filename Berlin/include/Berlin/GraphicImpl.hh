@@ -47,6 +47,8 @@ class GraphicImpl : implements(Graphic)
   virtual void remove(Tag);
   virtual void addParent(Graphic_ptr, Tag);
   virtual void removeParent(Graphic_ptr, Tag);
+  virtual Iterator_ptr firstChild();
+  virtual Iterator_ptr lastChild();
 
   virtual Transform_ptr transformation();
   virtual void request(Requisition &);

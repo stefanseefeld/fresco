@@ -158,6 +158,7 @@ WindowImpl::WindowImpl()
 
 WindowImpl::~WindowImpl()
 {
+  cout << "WindowImpl::~WindowImpl" << endl;
   for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
     (*i)->_dispose();
   mapper->_dispose();

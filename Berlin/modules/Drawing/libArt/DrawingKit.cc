@@ -101,6 +101,11 @@ void LibArtDrawingKit::setForeground(const Color &c)
   fg = c;
 }
 
+void LibArtDrawingKit::setLighting(const Color &c)
+{
+  lt = c;
+}
+
 void LibArtDrawingKit::setPointSize(Coord s)
 {
   ps = s;

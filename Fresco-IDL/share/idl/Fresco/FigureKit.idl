@@ -108,7 +108,7 @@ interface FigureKit : Kit
   Image   pixmap(in Raster r);
   Graphic texture(in Graphic g, in Raster r);
   //. Return a figure that draws the raster.
-  Graphic projection(in Graphic g);
+  Graphic transformer(in Graphic g);
 };
 
 #endif

@@ -1,13 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,9 +21,6 @@
  */
 #include "Berlin/Requestor.hh"
 
-Requestor::Requestor(const Graphic::Requisition &r) : requisition(r) {}
-Requestor::~Requestor() {}
-
 Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
 {
   GraphicImpl::defaultRequisition(requisition);
@@ -36,8 +28,9 @@ Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspa
   Graphic::Requirement *ry = GraphicImpl::requirement(requisition, yaxis);
   rx->align = xalign;
   ry->align = yalign;
-  rx->natural = xspan;
-  ry->natural = yspan; 
+  rx->natural = rx->maximum = rx->minimum = xspan;
+  ry->natural = ry->maximum = ry->minimum = yspan; 
 }
-
+Requestor::Requestor(const Graphic::Requisition &r) : requisition(r) {}
+Requestor::~Requestor() {}
 void Requestor::request(Requisition &r) { r = requisition;}

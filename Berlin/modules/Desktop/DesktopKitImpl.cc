@@ -34,7 +34,10 @@ DesktopKitImpl::DesktopKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f,
 DesktopKitImpl::~DesktopKitImpl()
 {
   for (vector<WindowImpl *>::iterator i = windows.begin(); i != windows.end(); i++)
-    (*i)->_dispose();
+    {
+      (*i)->unmap();
+      (*i)->_dispose();
+    }
 }
 
 void DesktopKitImpl::bind(ServerContext_ptr context)

@@ -4,11 +4,6 @@
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -33,6 +28,10 @@
 #include "Berlin/ImplVar.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
+#include "Warsaw/IO.hh"
+
+ostream &operator << (ostream &os, const GridImpl::Span &span)
+{ return os << '(' << span.lower << ',' << span.upper << '@' << span.align << ')';}
 
 static void setSpan(GridImpl::Span &s, Coord origin, Coord length, Alignment align)
 {
@@ -234,7 +233,7 @@ void LayoutTileAllocate::nextSpan(const Graphic::Requirement &r, GridImpl::Span 
       if (first_aligned && (i == 0)) p -= r.align * cspan;
       setSpan(s, p + cspan * r.align, cspan, r.align);
       p += cspan;
-    }
+   }
   else setSpan(s, p, Coord(0), Alignment(0));
   ++i;
 }

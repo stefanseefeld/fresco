@@ -21,6 +21,7 @@
  */
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
+#include <iomanip>
 
 RegionImpl::RegionImpl()
 {
@@ -158,6 +159,10 @@ void RegionImpl::subtract(Region_ptr region)
   // not implemented
 }
 
+/*
+ * note: the new region is the bounding box of the transformed
+ *       old region
+ */
 void RegionImpl::applyTransform(Transform_ptr transformation)
 {
   if (valid)
@@ -169,29 +174,35 @@ void RegionImpl::applyTransform(Transform_ptr transformation)
       Transform::Matrix m;
       transformation->storeMatrix(m);
 
-      Coord w = upper.x - lower.x;
-      Coord h = upper.y - lower.y;
+      Coord lx = upper.x - lower.x;
+      Coord ly = upper.y - lower.y;
+      Coord lz = upper.z - lower.z;
 
       Vertex center;
-      center.x = Coord((upper.x + lower.x) * 0.5);
-      center.y = Coord((upper.y + lower.y) * 0.5);
+      center.x = (upper.x + lower.x) * 0.5;
+      center.y = (upper.y + lower.y) * 0.5;
+      center.z = (upper.z + lower.z) * 0.5;
 
       // transform the center
 
       transformation->transformVertex(center);
 
       // optimized computation of new width and height
-      Coord nw = Coord(Math::abs(w * m[0][0]) + Math::abs(h * m[1][0]));
-      Coord nh = Coord(Math::abs(w * m[0][1]) + Math::abs(h * m[1][1]));
+      Coord nlx = Math::abs(lx * m[0][0]) + Math::abs(ly * m[0][1]) + Math::abs(lz * m[0][2]);
+      Coord nly = Math::abs(lx * m[1][0]) + Math::abs(ly * m[1][1]) + Math::abs(lz * m[1][2]);
+      Coord nlz = Math::abs(lx * m[2][0]) + Math::abs(ly * m[2][1]) + Math::abs(lz * m[2][2]);
 
       // form the new box
-      lower.x = Coord(center.x - nw * 0.5);
-      upper.x = Coord(center.x + nw * 0.5);
-      lower.y = Coord(center.y - nh * 0.5);
-      upper.y = Coord(center.y + nh * 0.5);
+      lower.x = center.x - nlx * 0.5;
+      upper.x = center.x + nlx * 0.5;
+      lower.y = center.y - nly * 0.5;
+      upper.y = center.y + nly * 0.5;
+      lower.z = center.z - nlz * 0.5;
+      upper.z = center.z + nlz * 0.5;
 
-      if (!Math::equal(nw, Coord(0), 1e-4)) xalign = (o.x - lower.x) / nw;
-      if (!Math::equal(nh, Coord(0), 1e-4)) yalign = (o.y - lower.y) / nh;
+      if (!Math::equal(nlx, 0., 1e-4)) xalign = (o.x - lower.x) / nlx;
+      if (!Math::equal(nly, 0., 1e-4)) yalign = (o.y - lower.y) / nly;
+      if (!Math::equal(nlz, 0., 1e-4)) zalign = (o.z - lower.z) / nlz;
     }
 }
 
@@ -240,3 +251,15 @@ void RegionImpl::span(Axis a, Region::Allotment &s)
 void RegionImpl::outline(Path *&p)
 {
 };
+
+ostream &operator << (ostream &os, const RegionImpl &region)
+{
+  os << "X(" << region.lower.x << ',' << region.upper.x;
+  if (!Math::equal(region.xalign, 0., 1e-2)) os << " @ " << setprecision(1) << region.xalign;
+  os << "), Y(" << region.lower.y << ',' << region.upper.y;
+  if (!Math::equal(region.yalign, 0., 1e-2)) os << " @ " << setprecision(1) << region.yalign;
+  os << "), Z(" << region.lower.z << ',' << region.upper.z;
+  if (!Math::equal(region.zalign, 0., 1e-2)) os << " @ " << setprecision(1) << region.zalign;
+  os << ')';
+  return os;
+}

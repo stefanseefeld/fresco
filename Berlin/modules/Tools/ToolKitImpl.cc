@@ -57,6 +57,26 @@ private:
   Coord red, green, blue;
 };
 
+class LightingDecorator : public MonoGraphic
+{
+public:
+  LightingDecorator(Coord r, Coord g, Coord b) : red(r), green(g), blue(b) {}
+  virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+  virtual void draw(DrawTraversal_ptr traversal)
+  {
+    DrawingKit_var kit = traversal->kit();
+    kit->saveState();
+    Color color = kit->lighting();
+    color.red *= red, color.green *= green, color.blue *= blue;
+    kit->lighting(color);
+    MonoGraphic::traverse(traversal);
+    kit->restoreState();    
+  }
+  virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+private:
+  Coord red, green, blue;
+};
+
 class AlphaDecorator : public MonoGraphic
 {
 public:
@@ -104,6 +124,15 @@ Graphic_ptr ToolKitImpl::alpha(Graphic_ptr g, Coord a)
   decorator->_obj_is_ready(_boa());
   graphics.push_back(decorator);
   decorator->body(g);
+  return decorator->_this();
+};
+
+Graphic_ptr ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
+{
+  LightingDecorator *decorator = new LightingDecorator(r, g, b);
+  decorator->_obj_is_ready(_boa());
+  graphics.push_back(decorator);
+  decorator->body(gg);
   return decorator->_this();
 };
 

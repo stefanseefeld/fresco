@@ -54,7 +54,7 @@ class FigureKitImpl : implements(FigureKit), public KitImpl
   
   Image_ptr   pixmap(Raster_ptr);
   Graphic_ptr texture(Graphic_ptr, Raster_ptr);
-  Graphic_ptr projection(Graphic_ptr);
+  Graphic_ptr transformer(Graphic_ptr);
  protected:
   vector<Figure *> figures;
 };

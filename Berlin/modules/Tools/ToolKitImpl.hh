@@ -38,6 +38,7 @@ class ToolKitImpl : implements(ToolKit), public KitImpl
   Graphic_ptr      debugger(Graphic_ptr, const char *);
   Graphic_ptr      rgb(Graphic_ptr, Coord, Coord, Coord);
   Graphic_ptr      alpha(Graphic_ptr, Coord);
+  Graphic_ptr      lighting(Graphic_ptr, Coord, Coord, Coord);
 
   Graphic_ptr      frame(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean);
   Graphic_ptr      dynamic(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);

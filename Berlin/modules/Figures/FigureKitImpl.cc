@@ -142,7 +142,7 @@ Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
   return t->_this();
 }
 
-Graphic_ptr FigureKitImpl::projection(Graphic_ptr g)
+Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 {
   Transformer *transformer = new Transformer;
   transformer->_obj_is_ready(_boa());

@@ -28,7 +28,7 @@
 #include "Prague/Sys/Time.hh"
 #include "Prague/Sys/Profiler.hh"
 #include "Berlin/Logger.hh"
-#include "Warsaw/Warsaw.hh"
+#include "Warsaw/IO.hh"
 
 using namespace Prague;
 

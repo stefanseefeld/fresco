@@ -58,6 +58,7 @@ interface ToolKit : Kit
   Graphic      debugger(in Graphic g, in string s);
   Graphic      rgb(in Graphic gg, in Coord r, in Coord g, in Coord b);
   Graphic      alpha(in Graphic g, in Coord a);
+  Graphic      lighting(in Graphic gg, in Coord r, in Coord g, in Coord b);
 
   Graphic      frame(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
   Graphic      dynamic(in Graphic g, in Coord thickness,

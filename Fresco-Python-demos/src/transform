@@ -53,16 +53,21 @@ def main():
     object  = context.resolve("IDL:GadgetKit:1.0", properties)
     gadget  = object._narrow(Warsaw.GadgetKit)
 
-    pixmap = figure.pixmap(image.create("../etc/PNG/png.png"))
-    hbox   = layout.hbox();
-    hbox.append(widget.button(pixmap, Warsaw.Command._nil))
-    hbox.append(widget.button(pixmap, Warsaw.Command._nil))
-    hbox.append(widget.button(pixmap, Warsaw.Command._nil))
-    adjustable = command.bvalue(0., 360., 360., 10., 10.)
-    vbox = layout.vbox()
-    vbox.append(widget.slider(adjustable, Warsaw.xaxis))
-    vbox.append(tool.debugger(gadget.transformer(tool.debugger(hbox, "inner"), adjustable), "outer"))
-    shell = desktop.shell(tool.group(vbox))
+    vbox   = layout.vbox();
+    adjustable1 = command.bvalue(-1., 1., 0.1, 0.1, 0.1)
+    adjustable2 = command.bvalue(0., 360., 0., 10., 10.)
+    vbox.append(layout.align(widget.slider(adjustable1, Warsaw.xaxis), 0.0, 0.0))
+    vbox.append(layout.align(widget.slider(adjustable2, Warsaw.xaxis), 0.0, 0.0))
+    hbox = layout.hbox()
+    rectangle = figure.rectangle(0., 0., 1000., 1000.)
+    rectangle._set_type(Warsaw.Figure.fill)
+    rectangle._set_foreground(Warsaw.Color(1., 1., 1., 0.9))
+    rectangle._set_background(Warsaw.Color(1., 0.5, 0.5, 0.9))
+    hbox.append(widget.button(rectangle, Warsaw.Command._nil))
+    hbox.append(layout.align(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable1), 0., 0.))
+    hbox.append(widget.button(rectangle, Warsaw.Command._nil))
+    vbox.append(layout.align(gadget.rotator(layout.align(hbox, 0.5, 0.5), adjustable2), 0., 0.))
+    shell = desktop.shell(tool.group(layout.flexible(vbox, 2000., 2000.)))
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break

@@ -57,7 +57,7 @@ Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
     redirect(new Observer(this)),
     _drag(new Dragger(v, a)),
     value(BoundedValue::_duplicate(v)),
-    offset(v->value()/(v->upper() - v->lower())),
+    offset((v->value() - v->lower())/(v->upper() - v->lower())),
     axis(a)
 {
   v->attach(Observer_var(redirect->_this()));
@@ -74,6 +74,7 @@ void Slider::update(const CORBA::Any &any)
 {
   needRedraw();
   any >>= offset;
+  offset -= value->lower();
   offset /= (value->upper() - value->lower());
   needRedraw();
 }
@@ -98,22 +99,20 @@ void Slider::pick(PickTraversal_ptr traversal)
 void Slider::allocate(Tag, const Allocation::Info &info)
 {
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
-  Coord length;
   if (axis == xaxis)
     {
-      length = allocation->upper.x - allocation->lower.x - 200.;
+      Coord length = allocation->upper.x - allocation->lower.x - 200.;
       allocation->lower.x = offset * length;
       allocation->upper.x = offset * length + 200.;
     }
   else
     {
-      length = allocation->upper.y - allocation->lower.y - 200.;
+      Coord length = allocation->upper.y - allocation->lower.y - 200.;
       allocation->lower.y = offset * length;
       allocation->upper.y = offset * length + 200.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
-  _drag->setScale((value->upper() - value->lower())/length);
 }
 
 Command_ptr Slider::drag() { return _drag->_this();}
@@ -124,19 +123,21 @@ void Slider::traverseThumb(Traversal_ptr traversal)
   if (CORBA::is_nil(child)) return;
   Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
+  Coord length;
   if (axis == xaxis)
     {
-      Coord length = allocation->upper.x - allocation->lower.x - 200.;
+      length = allocation->upper.x - allocation->lower.x - 200.;
       allocation->lower.x = offset * length;
       allocation->upper.x = offset * length + 200.;
     }
   else if (axis == yaxis)
     {
-      Coord length = allocation->upper.y - allocation->lower.y - 200.;
+      length = allocation->upper.y - allocation->lower.y - 200.;
       allocation->lower.y = offset * length;
       allocation->upper.y = offset * length + 200.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
   traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
+  _drag->setScale((value->upper() - value->lower())/length);
 }

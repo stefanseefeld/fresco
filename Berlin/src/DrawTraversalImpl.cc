@@ -26,7 +26,7 @@
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Region.hh>
-#include <Warsaw/Warsaw.hh>
+#include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -48,6 +48,8 @@ void DrawTraversalImpl::init()
   drawing->clipping(clipping);
   Color black = {0., 0., 0., 1.};
   drawing->foreground(black);
+  Color white = {1., 1., 1., 1.};
+  drawing->lighting(white);
   drawing->transformation(Transform_var(id->_this()));
   drawing->surfaceFillstyle(DrawingKit::solid);
   Vertex l, u;

@@ -28,10 +28,70 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/resolve.hh>
 #include <Berlin/MonoGraphic.hh>
+#include <cmath>
+
+// class AlphaAdjuster : implements(View), public MonoGraphic
+// {
+//  public:
+//   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+//   virtual void draw(DrawTraversal_ptr traversal)
+//   {
+//     DrawingKit_var kit = traversal->kit();
+//     kit->saveState();
+//     Color color = kit->foreground();
+//     color.alpha *= alpha;
+//     kit->foreground(color);
+//     MonoGraphic::traverse(traversal);
+//     kit->restoreState();    
+//   }
+//   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+
+//   virtual void update(const CORBA::Any &any) { any >>= alpha; needRedraw();}
+//  private:
+//   Coord alpha;
+// };
+
+class RGBAdjuster : implements(View), public MonoGraphic
+{
+ public:
+  RGBAdjuster(BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
+    : red(BoundedValue::_duplicate(r)),
+    green(BoundedValue::_duplicate(g)),
+    blue(BoundedValue::_duplicate(b))
+    {
+      color.red = red->value();
+      color.green = green->value();
+      color.blue = blue->value();
+    } 
+  virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+  virtual void draw(DrawTraversal_ptr traversal)
+  {
+    DrawingKit_var kit = traversal->kit();
+    kit->saveState();
+    Color tmp = kit->foreground();
+    color.alpha = tmp.alpha;
+    kit->foreground(color);
+    MonoGraphic::traverse(traversal);
+    kit->restoreState();    
+  }
+  virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+
+  virtual void update(const CORBA::Any &)
+    {
+      color.red = red->value();
+      color.green = green->value();
+      color.blue = blue->value();
+      needRedraw();
+    }
+ private:
+  BoundedValue_var red, green, blue;
+  Color color;
+};
 
 class AlphaAdjuster : implements(View), public MonoGraphic
 {
  public:
+  AlphaAdjuster(BoundedValue_ptr v) : alpha(v->value()) {}
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
@@ -50,7 +110,49 @@ class AlphaAdjuster : implements(View), public MonoGraphic
   Coord alpha;
 };
 
-class TransformAdjuster : implements(View), public MonoGraphic
+class LightingAdjuster : implements(View), public MonoGraphic
+{
+ public:
+  LightingAdjuster(BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
+    : red(BoundedValue::_duplicate(r)),
+    green(BoundedValue::_duplicate(g)),
+    blue(BoundedValue::_duplicate(b))
+    {
+      color.red = red->value();
+      color.green = green->value();
+      color.blue = blue->value();
+    } 
+  virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+  virtual void draw(DrawTraversal_ptr traversal)
+  {
+    DrawingKit_var kit = traversal->kit();
+    kit->saveState();
+    Color tmp = kit->lighting();
+    /*
+     * how is the light attribute concatenated, subtractive, additive ? -stefan
+     */
+    tmp.red *= color.red;
+    tmp.green *= color.green;
+    tmp.blue *= color.blue;
+    kit->lighting(tmp);
+    MonoGraphic::traverse(traversal);
+    kit->restoreState();    
+  }
+  virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+
+  virtual void update(const CORBA::Any &)
+    {
+      color.red = red->value();
+      color.green = green->value();
+      color.blue = blue->value();
+      needRedraw();
+    }
+ private:
+  BoundedValue_var red, green, blue;
+  Color color;
+};
+
+class RotationAdjuster : implements(View), public MonoGraphic
 {
  public:
   virtual void update(const CORBA::Any &any)
@@ -61,6 +163,23 @@ class TransformAdjuster : implements(View), public MonoGraphic
       any >>= phi;
       transformation->loadIdentity();
       transformation->rotate(phi, zaxis);
+      needResize();
+    }
+};
+
+class ZoomAdjuster : implements(View), public MonoGraphic
+{
+ public:
+  virtual void update(const CORBA::Any &any)
+    {
+      Graphic_var child = body(); if (CORBA::is_nil(child)) return;
+      Transform_var transformation = child->transformation(); if (CORBA::is_nil(transformation)) return;
+      Coord scale;
+      any >>= scale;
+      Vertex s;
+      s.x = s.y = s.z = exp(scale);
+      transformation->loadIdentity();
+      transformation->scale(s);
       needResize();
     }
 };
@@ -76,21 +195,53 @@ void GadgetKitImpl::bind(ServerContext_ptr context)
   figure = resolve_kit<FigureKit>(context, interface(FigureKit), props);
 }
 
+Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
+{
+  RGBAdjuster *adjuster = new RGBAdjuster(r, g, b);
+  adjuster->_obj_is_ready(_boa());
+  r->attach(Observer_var(adjuster->_this()));
+  g->attach(Observer_var(adjuster->_this()));
+  b->attach(Observer_var(adjuster->_this()));
+  adjuster->body(body);
+  return adjuster->_this();
+}
+
 Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
 {
-  AlphaAdjuster *adjuster = new AlphaAdjuster;
+  AlphaAdjuster *adjuster = new AlphaAdjuster(value);
   adjuster->_obj_is_ready(_boa());
   value->attach(Observer_var(adjuster->_this()));
   adjuster->body(g);
   return adjuster->_this();
 }
 
-Graphic_ptr GadgetKitImpl::transformer(Graphic_ptr g, BoundedValue_ptr value)
+Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
 {
-  TransformAdjuster *adjuster = new TransformAdjuster;
+  LightingAdjuster *adjuster = new LightingAdjuster(r, g, b);
+  adjuster->_obj_is_ready(_boa());
+  r->attach(Observer_var(adjuster->_this()));
+  g->attach(Observer_var(adjuster->_this()));
+  b->attach(Observer_var(adjuster->_this()));
+  adjuster->body(body);
+  return adjuster->_this();
+}
+
+Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value)
+{
+  RotationAdjuster *adjuster = new RotationAdjuster();
   adjuster->_obj_is_ready(_boa());
   value->attach(Observer_var(adjuster->_this()));
-  Graphic_var transformer = figure->projection(g);
+  Graphic_var transformer = figure->transformer(g);
+  adjuster->body(transformer);
+  return adjuster->_this();
+}
+
+Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
+{
+  ZoomAdjuster *adjuster = new ZoomAdjuster();
+  adjuster->_obj_is_ready(_boa());
+  value->attach(Observer_var(adjuster->_this()));
+  Graphic_var transformer = figure->transformer(g);
   adjuster->body(transformer);
   return adjuster->_this();
 }

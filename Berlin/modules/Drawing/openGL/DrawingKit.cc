@@ -23,6 +23,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Transform.hh"
+#include "Warsaw/IO.hh"
 #include "Drawing/openGL/GLQuadric.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLUnifont.hh"
@@ -95,6 +96,7 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
 			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
 			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
 			       matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
+//       cout << "setTransformation " << matrix;
       glLoadMatrixd(glmatrix);
     }
 }
@@ -112,17 +114,26 @@ void GLDrawingKit::setClipping(Region_ptr r)
       PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*drawable->resolution(xaxis) + 0.5);
       PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*drawable->resolution(yaxis) + 0.5);
       glScissor(x, y, w, h);
-//       glColor4d(1., 0., 0., 1.);
-//       glRectf(0, 0, 10000., 10000.);
-//       glFlush();
-//       GGI::drawable()->flush();
+#if 0 // uncomment this if you want to debug the repairing of regions
+      glColor4d(1., 0., 0., 1.);
+      glRectf(0, 0, 10000., 10000.);
+      glFlush();
+      GGI::drawable()->flush();
+      sleep(1);
+#endif
     }
 }
 
 void GLDrawingKit::setForeground(const Color &c)
 {
   fg = c;
-  glColor4d(fg.red, fg.green, fg.blue, fg.alpha);
+  glColor4d(lt.red * fg.red, lt.green * fg.green, lt.blue * fg.blue, fg.alpha);
+}
+
+void GLDrawingKit::setLighting(const Color &c)
+{
+  lt = c;
+  glColor4d(lt.red * fg.red, lt.green * fg.green, lt.blue * fg.blue, fg.alpha);
 }
 
 void GLDrawingKit::setPointSize(Coord s)
@@ -235,7 +246,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   GLfloat color_cache[4];
   glGetFloatv(GL_CURRENT_COLOR, color_cache);
   glBindTexture(GL_TEXTURE_2D, glimage->texture);
-  glColor4f(1., 1., 1., color_cache[3]);
+  glColor4f(lt.red, lt.green, lt.blue, color_cache[3]); // use the current lighting
   glBegin(GL_POLYGON);
   Path path;
   path.length(4);

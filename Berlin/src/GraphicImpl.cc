@@ -20,9 +20,10 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/config.hh"
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/Screen.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
+#include <Warsaw/Screen.hh>
+#include <Warsaw/IO.hh>
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/AllocationImpl.hh"
@@ -33,7 +34,7 @@
 
 using namespace Prague;
 
-static double tol = 0.05;
+static double tol = 0.005;
 
 static bool rotated (Transform_ptr t)
 {
@@ -66,17 +67,18 @@ static void setSpan(RegionImpl &r, Axis a, Coord origin, Coord length)
 
 static double computeSqueeze(const Graphic::Requirement &r, Coord length)
 {
-  double f;
-  Coord nat = r.natural;
-  if (length > nat && r.maximum > nat)
-    f = (length - nat) / (r.maximum - nat);
-  else if (length < nat && r.minimum < nat)
-    f = (nat - length) / (nat - r.minimum);
+  if (length > r.natural && r.maximum > r.natural)
+    return (length - r.natural) / (r.maximum - r.natural);
+  else if (length < r.natural && r.minimum < r.natural)
+    return (r.natural - length) / (r.natural - r.minimum);
   else
-    f = 0;
-  return f;
+    return 0.;
 }
 
+/*
+ * compare a requisition (total) with a given allocation (given) and then distribute it
+ * to the individual children (result) based on the individual requisitions (requests)
+ */
 static void computeAllocations(Axis a, Graphic::Requisition &total,
 			       CORBA::ULong n, Graphic::Requisition *requests, Region &given,
 			       RegionImpl* result)
@@ -103,14 +105,14 @@ static void computeAllocations(Axis a, Graphic::Requisition &total,
     }
 }
 
-static void compensate (double a, double &x, double &y)
+static void compensate(Coord a, Coord &x, Coord &y)
 {
-  if (a > 0.0)
+  if (a > 0.)
     {
-      if (Math::equal(x, 0.0, 1.0e-6)) y = a * x;
+      if (Math::equal(x, 0., 1.0e-6)) y = a * x;
       else
 	{
-	  double aspect = y/x;
+	  Coord aspect = y/x;
 	  if (aspect > a) y = a * x;
 	  else if (aspect < a) x = y / a;
 	}
@@ -129,9 +131,9 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
       Coord ty = mat[1][3];
       Coord tz = mat[2][3];
 
-      req.x.align = -(-req.x.align * req.x.natural + tx) / req.x.natural;
-      req.y.align = -(-req.y.align * req.y.natural + ty) / req.y.natural;
-      req.z.align = -(-req.z.align * req.z.natural + tz) / req.z.natural;
+      req.x.align = (req.x.align * req.x.natural - tx) / req.x.natural;
+      req.y.align = (req.y.align * req.y.natural - ty) / req.y.natural;
+      req.z.align = (req.z.align * req.z.natural - tz) / req.z.natural;
       return;
     }
   
@@ -215,9 +217,11 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   nat.yalign = req.y.align;
   nat.lower.y = -req.y.align * req.y.natural;
   nat.upper.y = nat.lower.y + req.y.natural;
-  nat.lower.z = nat.upper.z = Coord(0);
+  nat.lower.z = nat.upper.z = 0.;
   nat.valid = true;
+//   cout << "require before transform " << nat << endl;
   nat.applyTransform(t);
+//   cout << "require after transform " << nat << endl;
   Coord xlead = -nat.lower.x;
   Coord xtrail = nat.upper.x;
 
@@ -258,6 +262,12 @@ void GraphicImpl::removeParent(Graphic_ptr parent, Tag tag)
 	break;
       }
 }
+
+/*
+ * the following two methods need to be implemented...
+ */
+Graphic::Iterator_ptr GraphicImpl::firstChild() { return Iterator::_nil();}
+Graphic::Iterator_ptr GraphicImpl::lastChild() { return Iterator::_nil();}
 
 /*
  * these are default implementations of the layout, picking and drawing protocol
@@ -488,9 +498,23 @@ void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
     flexibleTransformRequest(req, tx);
 }
 
+/*
+ * the point here is to take <region> as a given allocation and produce an allocation for the child
+ * given a requisition and a transformation.
+ *
+ *   +-----x-+
+ *   | Rp / \|
+ *   |   /  /|
+ *   |  /Rc/ |
+ *   | /  /  |
+ *   |/  /   |
+ *   |\ /    |
+ *   +-x-----+
+ */
 Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &req, Transform_ptr t)
 {
   Trace trace("GraphicImpl::transformAllocation");
+//   cout << "outer region " << region << endl;
   Vertex delta;
   delta.x = delta.y = delta.z = 0.;
   if (!rotated(t))
@@ -506,31 +530,42 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
   else
     {
       Vertex center;
-      double x_len, y_len;
       center.x = (region.lower.x + region.upper.x) * 0.5;
       center.y = (region.lower.y + region.upper.y) * 0.5;
 
       Transform::Matrix m;
       t->storeMatrix(m);
-
+//       cout << "matrix\n" << m;
       Graphic::Requisition r[2], total;
       GraphicImpl::initRequisition(r[0]);	
       GraphicImpl::initRequisition(r[1]);	
       GraphicImpl::initRequisition(total);	
    
       RegionImpl a[2];
-      double a0 = -1; double a1 = -1;
-      if (!Math::equal(m[0][0], 0.0, tol)) a0 = Math::abs(m[0][1] / m[0][0]);
-      if (!Math::equal(m[1][0], 0.0, tol)) a1 = Math::abs(m[1][1] / m[1][0]);
+      Coord a0 = -1; Coord a1 = -1;
+      if (!Math::equal(m[0][0], 0.0, tol)) a0 = Math::abs(m[1][0] / m[0][0]);
+      if (!Math::equal(m[0][1], 0.0, tol)) a1 = Math::abs(m[1][1] / m[0][1]);
 
-      r[0].x.natural = r[0].x.maximum = r[0].x.minimum = Math::abs(req.x.natural*m[0][0]);
+      r[0].x.natural = Math::abs(req.x.natural*m[0][0]);
+      r[0].x.maximum = Math::abs(req.x.maximum*m[0][0]);
+      r[0].x.minimum = Math::abs(req.x.minimum*m[0][0]);
+      r[0].x.align = 0.;
       r[0].x.defined = true;
-      r[0].y.natural = r[0].y.maximum = r[0].y.minimum = Math::abs(req.x.natural*m[0][1]);
+      r[0].y.natural = Math::abs(req.x.natural*m[1][0]);
+      r[0].y.maximum = Math::abs(req.x.maximum*m[1][0]);
+      r[0].y.minimum = Math::abs(req.x.minimum*m[1][0]);
+      r[0].y.align = 0.;
       r[0].y.defined = true;
 
-      r[1].x.natural = r[1].x.maximum = r[1].x.minimum = Math::abs(req.y.natural*m[1][0]);
+      r[1].x.natural = Math::abs(req.y.natural*m[0][1]);
+      r[1].x.maximum = Math::abs(req.y.maximum*m[0][1]);
+      r[1].x.minimum = Math::abs(req.y.minimum*m[0][1]);
+      r[1].x.align = 0.;
       r[1].x.defined = true;
-      r[1].y.natural = r[1].y.maximum = r[1].y.minimum = Math::abs(req.y.natural*m[1][1]);
+      r[1].y.natural = Math::abs(req.y.natural*m[1][1]);
+      r[1].y.maximum = Math::abs(req.y.maximum*m[1][1]);
+      r[1].y.minimum = Math::abs(req.y.minimum*m[1][1]);
+      r[1].y.align = 0.;
       r[1].y.defined = true;
 
       total.x.natural = r[0].x.natural + r[1].x.natural;
@@ -544,29 +579,32 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
 
       computeAllocations(xaxis, total, 2, r, region, a);
       computeAllocations(yaxis, total, 2, r, region, a);
-
-      double x0, y0, x1, y1;
-      x0 = a[0].upper.x - a[0].lower.x;
-      y0 = a[0].upper.y - a[0].lower.y;
-      x1 = a[1].upper.x - a[1].lower.x;
-      y1 = a[1].upper.y - a[1].lower.y;
+      Coord x0 = a[0].upper.x - a[0].lower.x;
+      Coord y0 = a[0].upper.y - a[0].lower.y;
+      Coord x1 = a[1].upper.x - a[1].lower.x;
+      Coord y1 = a[1].upper.y - a[1].lower.y;
+//       cout << "computeAllocation " << total << ' ' << r[0] << ' ' << r[1] << endl;
+//      cout << "before compensate " << x0 << ' ' << y0 << ' ' << x1 << ' ' << y1 << endl;
       compensate(a0, x0, y0);
       compensate(a1, x1, y1);
+//      cout << "after compensate " << x0 << ' ' << y0 << ' ' << x1 << ' ' << y1 << endl;
 
-      x_len = sqrt(x0*x0 + y0*y0)/sqrt(m[0][0]*m[0][0]+m[0][1]*m[0][1]);
-      y_len = sqrt(x1*x1 + y1*y1)/sqrt(m[1][0]*m[1][0]+m[1][1]*m[1][1]);
-
+      Coord lx = sqrt(x0*x0 + y0*y0)/sqrt(m[0][0]*m[0][0]+m[1][0]*m[1][0]);
+      Coord ly = sqrt(x1*x1 + y1*y1)/sqrt(m[0][1]*m[0][1]+m[1][1]*m[1][1]);
       region.xalign = req.x.align;
       region.yalign = req.y.align;
       region.zalign = req.z.align;
-
       t->inverseTransformVertex(center);
-      delta.x = Coord(center.x - x_len*0.5 - region.lower.x);
-      delta.y = Coord(center.y - y_len*0.5 - region.lower.y);
-
-      region.upper.x = Coord(region.lower.x + x_len);
-      region.upper.y = Coord(region.lower.y + y_len);
+//       cout << center << endl;
+      delta.x = center.x - lx * 0.5 - region.lower.x;
+      delta.y = center.y - ly * 0.5 - region.lower.y;
+//       cout << delta.x << ' ' << center.x << ' ' << lx << ' ' << region.lower.x << endl;
+//      region.lower.x += delta.x;
+//      region.lower.y += delta.y;
+//      region.lower.z += delta.z;
+      region.upper.x = region.lower.x + lx;
+      region.upper.y = region.lower.y + ly;
+//       cout << "delta " << delta << '\n' << "inner region " << region << endl;
     }
-//   cout << "transformed allocation with delta " << delta << endl;
   return delta;
 }

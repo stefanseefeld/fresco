@@ -48,8 +48,11 @@ public:
   virtual Transform_ptr transformation() { return Transform::_duplicate(tr);}
   virtual void clipping(Region_ptr r) { DrawingKitBase::clipping(r);}
   virtual Region_ptr clipping() { return Region::_duplicate(cl);}
+//   using DrawingKitBase::foreground;
   virtual void foreground(const Color &c) { DrawingKitBase::foreground(c);}
   virtual Color foreground() { return fg;}
+  virtual void lighting(const Color &c) { DrawingKitBase::lighting(c);}
+  virtual Color lighting() { return lt;}
   virtual void pointSize(Coord c) { DrawingKitBase::pointSize(c);}
   virtual Coord pointSize() { return ps;}
   virtual void lineWidth(Coord c) { DrawingKitBase::lineWidth(c);}
@@ -73,6 +76,7 @@ public:
   virtual void setTransformation(Transform_ptr);
   virtual void setClipping(Region_ptr);
   virtual void setForeground(const Color &);
+  virtual void setLighting(const Color &);
   virtual void setPointSize(Coord);
   virtual void setLineWidth(Coord);
   virtual void setLineEndstyle(Endstyle);
@@ -107,6 +111,7 @@ public:
   Transform_var  tr;
   Region_var     cl;
   Color          fg;
+  Color          lt;
   Coord          ps;
   Coord          lw;
   Endstyle       es;

@@ -45,7 +45,7 @@ TransformDemo::TransformDemo(Application *a)
   hbox->append(Graphic_var(widget->button(im, command1)));
   hbox->append(Graphic_var(widget->button(im, command2)));
   hbox->append(Graphic_var(widget->button(im, command3)));
-  Graphic_var transformer = figure->projection(hbox);
+  Graphic_var transformer = figure->transformer(hbox);
   Transform_var(transformer->transformation())->rotate(45., zaxis);
   Graphic_var root = layout->halign(transformer, 0.);
   Controller_var group = tool->group(root);

@@ -23,9 +23,15 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/Traversal.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/IO.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include "Figure/Transformer.hh"
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 Transformer::Transformer()
 {
@@ -47,10 +53,12 @@ void Transformer::request(Requisition &requisition)
 {
   Allocator::request(requisition);
   GraphicImpl::transformRequest(requisition, Transform_var(transform->_this()));
+//  cout << "Transformer::request " << requisition << endl;
 }
 
 void Transformer::traverse(Traversal_ptr traversal)
 {
+  Trace trace("Transformer::traverse");
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   if (!transform->Identity())
@@ -63,9 +71,21 @@ void Transformer::traverse(Traversal_ptr traversal)
 	  
       Allocator::request(r);
       Impl_var<TransformImpl> tx(new TransformImpl);
-      tx->copy(Transform_var(transform->_this()));
+//      cout << "parent region " << rr << endl;
       Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(tx->_this()));
+      rr->normalize(Transform_var(tx->_this()));
+//       tx->copy(Transform_var(transform->_this()));
+      tx->postmultiply(Transform_var(transform->_this()));
+//      cout << "child region " << rr << endl;
+//      cout << "delta " << delta << endl;
       tx->translate(delta);
+//       rr->normalize(delta);
+//      cout << "transformer matrix\n" << tx->matrix();
+      Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(traversal->transformation())));
+//      cout << "old accumulated matrix\n" << cumulative->matrix();
+      cumulative->premultiply(Transform_var(tx->_this()));
+//      cout << "accumulated matrix\n" << cumulative->matrix();
+//      rr->normalize(Transform_var(tx->_this()));
       traversal->traverseChild(child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));
     }
   else Allocator::traverse(traversal);
@@ -82,9 +102,13 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
 	  GraphicImpl::initRequisition(r);
 	  Allocator::request(r);
 	  Impl_var<TransformImpl> tx(new TransformImpl);
-	  tx->copy(Transform_var(transform->_this()));
 	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(tx->_this()));
-	  tx->translate(delta);
+	  rr->normalize(Transform_var(tx->_this()));
+// 	  tx->copy(Transform_var(transform->_this()));
+	  tx->postmultiply(Transform_var(transform->_this()));
+ 	  tx->translate(delta);
+//  	  rr->normalize(delta);
+// 	  rr->normalize(Transform_var(tx->_this()));
 	  info.transformation->premultiply(tx);
 	  info.allocation->copy(rr);
         }

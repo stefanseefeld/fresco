@@ -43,6 +43,7 @@ interface DrawingKit : Kit
   attribute Transform transformation;
   attribute Region clipping;
   attribute Color foreground;
+  attribute Color lighting;
   attribute Coord pointSize;
   attribute Coord lineWidth;
   attribute Endstyle lineEndstyle;

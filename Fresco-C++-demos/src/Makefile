@@ -74,6 +74,9 @@ $(opath)/%.o:	%.cc
 		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
+trafo:		trafo.o
+		g++ -L../../lib -o trafo trafo.o -lBerlin -lWarsaw
+
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean) 
 -include $(DEP)

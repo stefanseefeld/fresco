@@ -31,6 +31,15 @@ interface PickTraversal;
 interface Region;
 interface Transform;
 interface DrawingKit;
+interface Graphic;
+
+interface GraphicIterator
+{
+  Graphic child();
+  void next();
+  void prev();
+  void dispose();
+};
 
 interface Graphic
 //. The Graphic interface defines the common operations for all objects
@@ -73,6 +82,7 @@ interface Graphic
     Graphic parent;
     Tag id;
   };
+  typedef GraphicIterator Iterator;
   /*
    * structural methods
    */
@@ -92,6 +102,8 @@ interface Graphic
   void addParent(in Graphic g, in Tag t);
   void removeParent(in Graphic g, in Tag t);
   //. Add or remove a parent for this graphic.
+  Iterator firstChild();
+  Iterator lastChild();
   /*
    * layout related methods
    */

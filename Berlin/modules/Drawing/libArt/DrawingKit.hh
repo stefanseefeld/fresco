@@ -54,6 +54,8 @@ public:
   virtual Region_ptr clipping() { return cl->_this();}
   virtual void foreground(const Color &c) { DrawingKitBase::foreground(c);}
   virtual Color foreground() { return fg;}
+  virtual void lighting(const Color &c) { DrawingKitBase::lighting(c);}
+  virtual Color lighting() { return lt;}
   virtual void pointSize(Coord c) { DrawingKitBase::pointSize(c);}
   virtual Coord pointSize() { return ps;}
   virtual void lineWidth(Coord c) { DrawingKitBase::lineWidth(c);}
@@ -78,6 +80,7 @@ public:
   virtual void setTransformation(Transform_ptr);
   virtual void setClipping(Region_ptr);
   virtual void setForeground(const Color&);
+  virtual void setLighting(const Color&);
   virtual void setPointSize(Coord);
   virtual void setLineWidth(Coord);
   virtual void setLineEndstyle(Endstyle);
@@ -113,6 +116,7 @@ public:
   Impl_var<TransformImpl> tr;
   Impl_var<RegionImpl> cl;
   Color          fg;
+  Color          lt;
   Coord          ps;
   Coord          lw;
   Endstyle       es;

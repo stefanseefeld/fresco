@@ -125,8 +125,8 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
   if (!size() || layer == 0) i = begin();
   else if (front()->l < layer) i = end();
   else i = lookup(layer);
-  parent_t::insert(i++, handle);
-  for (i++; i != end(); i++) (*i)->l = layer++;
+  for (iterator j = i; j != end(); j++) (*j)->l = ++layer;
+  parent_t::insert(i, handle);
 }
  
 void StageImpl::Sequence::remove(StageHandleImpl *handle)
