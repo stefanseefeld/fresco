@@ -24,6 +24,18 @@
 #include <Prague/config.hh>
 #include <iostream>
 
+#ifndef HAVE_SETENV
+#ifdef HAVE_PUTENV
+#include <map>
+
+namespace Prague {
+  namespace Environment {
+    std::map<std::string, char *> my_vars;
+  };
+};
+#endif
+#endif
+
 bool Prague::putenv(const std::string & name, const std::string & value)
 {
 #ifdef HAVE_SETENV
@@ -34,7 +46,11 @@ bool Prague::putenv(const std::string & name, const std::string & value)
   env_var[name.length()] = '=';
   strncpy((env_var + name.length() + 1), value.c_str(), value.length());
   env_var[name.length() + value.length() + 1] = '\0'; // make sure there's a \0
-  return ::putenv(env_var);
+  if (::putenv(env_var) == 0)
+  {
+      Environment::my_vars[name] = env_var;
+      return true;
+  }
 #else
   std::cerr << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
@@ -47,15 +63,15 @@ bool Prague::putenv(const std::string & name)
 #ifdef HAVE_UNSETENV
   return unsetenv(name.c_str());
 #elif HAVE_PUTENV
-  char * value = ::getenv(name.c_str());
-  if (value != 0)
-  {
-      char * env_var = new char[name.length() + 1];
-      strncpy(env_var, name.c_str(), name.length());
-      env_var[name.length()] = '\0'; // make sure there's a \0
+  char * env_var = new char[name.length() + 1];
+  strncpy(env_var, name.c_str(), name.length());
+  env_var[name.length()] = '\0'; // make sure there's a \0
+  if (::putenv(env_var) == 0) {
+      if (Environment::my_vars[name] != 0)
+	  delete[] Environment::my_vars[name];
+      Environment::my_vars.erase(name); // it was either there or
+                                        // just got created.
       
-      ::putenv(env_var);
-      delete[] value;
       return true;
   }
 #else
