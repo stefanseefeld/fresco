@@ -84,6 +84,7 @@ SDLDrawable::~SDLDrawable()
 void SDLDrawable::draw_line(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h)
 {
   //  Logger::log(Logger::loader) << "SDLDrawable::draw_line x=" << x << " y= " << y << " w=" << w << " h=" << h << endl;
+
   register int distance; 
   int xerr=0, yerr=0;
   int delta_x, delta_y; 
@@ -123,9 +124,14 @@ void SDLDrawable::draw_line(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::
 
 void SDLDrawable::draw_box(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h)
 {
-  Logger::log(Logger::loader) << "SDLDrawable::draw_box x=" << x << " y= " << y << " w=" << w << " h=" << h << endl;
-  for( int i = y; i < y+h; ++i )
-    draw_line( x, i, w, 1 );
+  //Logger::log(Logger::loader) << "SDLDrawable::draw_box x=" << x << " y= " << y << " w=" << w << " h=" << h << endl;
+
+  SDL_Rect r; r.x = x; r.y = y; r.w = w; r.h = h;
+
+  if (r.x < 0) { r.w += r.x; r.x = 0; }
+  if (r.y < 0) { r.h += r.y; r.y = 0; }
+  
+  SDL_FillRect(_surface, &r, _color);
 }
 
 
@@ -177,8 +183,8 @@ SDLConsole::SDLConsole(int &argc, char **argv, PortableServer::POA_ptr poa)// th
   _size[1] = _surface->h;
   _position[0] = 0;
   _position[1] = 0;
-  _resolution[0] = 0.1 * _surface->w / 320;
-  _resolution[1] = 0.1 * _surface->h / 240;
+  _resolution[0] = drawable->resolution(Warsaw::xaxis);
+  _resolution[1] = drawable->resolution(Warsaw::yaxis);
 
   _drawables.push_back(new DrawableTie<Drawable>(drawable));
   _poa = PortableServer::POA::_duplicate(poa);

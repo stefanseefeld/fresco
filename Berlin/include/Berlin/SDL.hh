@@ -176,13 +176,10 @@ inline Warsaw::PixelCoord SDLDrawable::vheight() const {
 
 inline Warsaw::Coord SDLDrawable::resolution(Warsaw::Axis a) const
 {
-  /*
-   * mode.size is in mm
-   * our base unit is 0.1 mm...
-   */
-  return a == Warsaw::xaxis ?
-    0.1 * _width / 320:
-    0.1 * _height / 240;
+  return 0.1; // hack, see below
+  //  return a == Warsaw::xaxis ?
+  //    0.1 * 1.0:
+  //    0.1 * 1.0; // FIXME: get some physical size in there.
 }
 
 inline Warsaw::Coord SDLDrawable::dpi(Warsaw::Axis a) const
@@ -220,12 +217,14 @@ inline void SDLDrawable::draw_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y)
 
 inline void SDLDrawable::draw_hline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w)
 {
-  draw_line(x,y,w,0);
+  //  draw_line(x,y,w,0);
+  for (int i = 0; i < w; i++) put_pixel(x + i, y, _color);
 }
 
 inline void SDLDrawable::draw_vline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord h)
 {
-  draw_line(x,y,0,h);
+  //  draw_line(x,y,0,h);
+  for (int i = 0; i < h; i++) put_pixel(x, y + h, _color);
 }
 
 inline void SDLDrawable::put_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Pixel c)
@@ -279,6 +278,8 @@ inline void SDLDrawable::blit(Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
   r1.w = w; r1.h = h;
   r2.x = x2; r2.y = y2;
   r2.w = w; r2.h = h;
+  if (r1.x < 0) { r1.w += r1.x; r1.x = 0; } if (r2.x < 0) { r2.w += r2.x; r2.x = 0; }
+  if (r1.y < 0) { r1.h += r1.y; r1.y = 0; } if (r2.y < 0) { r2.h += r2.y; r2.y = 0; }
   SDL_BlitSurface(_surface, &r1, _surface, &r2);
 }
 
@@ -292,6 +293,8 @@ inline void SDLDrawable::blit(const SDLDrawable &src, Warsaw::PixelCoord x1, War
   r1.w = w; r1.h = h;
   r2.x = x2; r2.y = y2;
   r2.w = w; r2.h = h;
+  if (r1.x < 0) { r1.w += r1.x; r1.x = 0; } if (r2.x < 0) { r2.w += r2.x; r2.x = 0; }
+  if (r1.y < 0) { r1.h += r1.y; r1.y = 0; } if (r2.y < 0) { r2.h += r2.y; r2.y = 0; }
   SDL_BlitSurface(src._surface, &r1, _surface, &r2);
 }
 
@@ -315,6 +318,8 @@ inline void SDLDrawable::flush()
 inline void SDLDrawable::flush(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h)
 {
   Prague::Trace("SDLDrawable::flush 2");
+  if (x < 0) { w += x; x = 0; }
+  if (y < 0) { h += y; y = 0; }
   SDL_UpdateRect( _surface, x, y, w, h );
 }
 
