@@ -22,14 +22,14 @@
 #ifndef _Plugin_hh
 #define _Plugin_hh
 
-#include <Prague/Sys/DLL.hh>
+#include "DLL.hh"
 
 namespace Prague {
 
 template <class T>
 class Plugin : public DLL
-  //. a special kind of a smart pointer
-  //. which implements a plugin behavior
+//. a special kind of a smart pointer
+//. which implements a plugin behavior
 {
 public:
   Plugin(const string &file, const string &loader = "load") : DLL(file)
@@ -47,8 +47,8 @@ private:
   T *t;
 };
 
-#define dload(T) extern "C" T *load() { return new T;}
+}; // namespace
 
-};
+#define dload(T) extern "C" T *load() { return new T;}
 
 #endif /* _Plugin_hh */
