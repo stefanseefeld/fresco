@@ -52,10 +52,10 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 	if ((myEvent >>= pointer) && region.contains(pointer->location)) return true;
 	else return false;
       }
-    inline CORBA::Any *event() {return &myEvent;}
+    CORBA::Any *event() {return new CORBA::Any(myEvent);}
 
  private:
-    CORBA::Any myEvent;
+    const CORBA::Any myEvent;
 };
 
 #endif /* _PickTraversalImpl_hh */
