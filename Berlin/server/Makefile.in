@@ -78,7 +78,8 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Berlin
-	$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(datadir)/Berlin/config
+	$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m 644 $(top_srcdir)/share/glyph.dat $(DESTDIR)$(datadir)/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG $(DESTDIR)$(datadir)/Fresco
 	@for image in $(patsubst $(top_srcdir)/share/PNG/%, %, $(wildcard $(top_srcdir)/share/PNG/*.png)); do \

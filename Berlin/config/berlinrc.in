@@ -1,5 +1,5 @@
-modulepath	= @prefix@lib/Fresco
-rasterpath	= @prefix@share/Fresco/PNG
+modulepath	= @prefix@/lib/Fresco
+rasterpath	= @prefix@/share/Fresco/PNG
 fontpath	= /usr/lib/X11/fonts/Type1
-unifontpath	= @prefix@share/Fresco
-pinyindbpath	= @prefix@share/Fresco
+unifontpath	= @prefix@/share/Fresco
+pinyindbpath	= @prefix@/share/Fresco
