@@ -13,7 +13,11 @@
 
 #ifndef HAVE_STRSIGNAL
 #include <signal.h>
+#  if defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
+inline const char *strsignal(int signo) { return sys_siglist[signo];}
+#  else
 inline const char *strsignal(int signo) { return _sys_siglist[signo];}
+#  endif
 #elif NEED_DECLARATION_strsignal
 extern "C" const char *strsignal(int);
 #endif
