@@ -23,7 +23,7 @@
 #define _gzstream_h
 
 #include <iostream.h>
-#include <OffiX/Filter/gzbuf.h>
+#include <Prague/Filter/gzbuf.hh>
 
 namespace Prague
 {
