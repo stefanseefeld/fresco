@@ -23,6 +23,7 @@
 #include "Figure/PolyFigure.hh"
 #include <Warsaw/config.hh>
 #include <Warsaw/Traversal.hh>
+#include <Warsaw/IO.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
@@ -32,17 +33,17 @@ using namespace Prague;
 using namespace Warsaw;
 
 PolyFigure::PolyFigure()
-  : tx(new TransformImpl),
-    bbox(new RegionImpl)
+  : _tx(new TransformImpl),
+    _bbox(new RegionImpl)
 {
 }
 
 PolyFigure::PolyFigure(const PolyFigure &pf)
-  : tx(new TransformImpl),
-    bbox(new RegionImpl)
+  : _tx(new TransformImpl),
+    _bbox(new RegionImpl)
 {
-  bbox->valid = pf.bbox->valid;
-  if (bbox->valid) bbox->copy(Region_var(pf.bbox->_this()));
+  _bbox->valid = pf._bbox->valid;
+  if (_bbox->valid) _bbox->copy(Region_var(pf._bbox->_this()));
 }
 
 PolyFigure::~PolyFigure()
@@ -51,14 +52,14 @@ PolyFigure::~PolyFigure()
 
 void PolyFigure::update_bbox()
 {
-  if (!bbox->valid)
+  if (!_bbox->valid)
     {
       CORBA::ULong n = num_children();
       if (n > 0)
 	{
 	  Allocation::Info info;
 	  for (CORBA::ULong i = 0; i < n; i++)
-	    _children[i].peer->extension(info, Region_var(bbox->_this()));
+	    _children[i].peer->extension(info, Region_var(_bbox->_this()));
 	}
     }
 }
@@ -67,7 +68,7 @@ void PolyFigure::allocate(Tag, const Allocation::Info &info)
 {
   // undefine the allocation...how ? -Stefan
 //   info.allocation->;
-  info.transformation->premultiply(Transform_var(tx->_this()));
+  info.transformation->premultiply(Transform_var(_tx->_this()));
 }
 
 void PolyFigure::request(Warsaw::Graphic::Requisition &r)
@@ -75,10 +76,10 @@ void PolyFigure::request(Warsaw::Graphic::Requisition &r)
   GraphicImpl::init_requisition(r);
   Impl_var<RegionImpl> region(new RegionImpl);
   update_bbox();
-  if (bbox->valid)
+  if (_bbox->valid)
     {
-      region->copy(Region_var(bbox->_this()));
-      region->apply_transform(Transform_var(tx->_this()));
+      region->copy(Region_var(_bbox->_this()));
+      region->apply_transform(Transform_var(_tx->_this()));
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
       Coord y_lead = -region->lower.y, y_trail = region->upper.y;
       GraphicImpl::require_lead_trail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
@@ -94,12 +95,12 @@ void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
   Impl_var<RegionImpl> tmp(new RegionImpl);
   update_bbox();
-  if (bbox->valid)
+  if (_bbox->valid)
     {
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
-      transformation->premultiply(Transform_var(tx->_this()));
-      tmp->copy(Region_var(bbox->_this()));
+      transformation->premultiply(Transform_var(_tx->_this()));
+      tmp->copy(Region_var(_bbox->_this()));
       tmp->apply_transform(Transform_var(transformation->_this()));
       region->merge_union(Region_var(tmp->_this()));
     }
@@ -114,16 +115,16 @@ void PolyFigure::traverse(Traversal_ptr traversal)
 {
   Trace trace("PolyFigure::traverse");
   update_bbox();
-  if (bbox->valid)
+  if (_bbox->valid)
     {
-      Impl_var<RegionImpl> region(new RegionImpl(Region_var(bbox->_this()), Transform_var(tx->_this())));
+      Impl_var<RegionImpl> region(new RegionImpl(Region_var(_bbox->_this()), Transform_var(_tx->_this())));
       if (!traversal->intersects_region(Region_var(region->_this()))) return;
     }
   else return;
   CORBA::Long n = num_children();
   for (CORBA::Long i = 0; i != n; i++)
     {
-      traversal->traverse_child(_children[i].peer, _children[i].localId, Region_var(bbox->_this()), Transform_var(tx->_this()));
+      traversal->traverse_child(_children[i].peer, _children[i].localId, Region_var(_bbox->_this()), Transform_var(_tx->_this()));
       if (!traversal->ok()) break;
     }
 
@@ -131,7 +132,7 @@ void PolyFigure::traverse(Traversal_ptr traversal)
 
 Transform_ptr PolyFigure::transformation()
 {
-  return tx->_this();
+  return _tx->_this();
 }
 
 void PolyFigure::need_redraw()
@@ -147,7 +148,7 @@ void PolyFigure::need_redraw()
 
 void PolyFigure::need_resize()
 {
-  bbox->valid = false;
+  _bbox->valid = false;
   PolyGraphic::need_resize();
 }
 

@@ -29,8 +29,8 @@ PointImpl::PointImpl() { add_point(0., 0.);}
 PointImpl::PointImpl (const Vertex &v) { add_point(v.x, v.y);}
 PointImpl::PointImpl (const PointImpl &f) { copy(f);}
 PointImpl::~PointImpl() {}
-Vertex PointImpl::pt() { return path[0];}
-void PointImpl::pt(const Vertex &v) { path[0] = v; resize();}
+Vertex PointImpl::pt() { return _path[0];}
+void PointImpl::pt(const Vertex &v) { _path[0] = v; resize();}
 
 LineImpl::LineImpl()
 {
@@ -46,10 +46,10 @@ LineImpl::LineImpl (const Vertex &v1, const Vertex &v2)
 
 LineImpl::LineImpl (const LineImpl &line) { copy(line);}
 LineImpl::~LineImpl() {}
-Vertex LineImpl::pt1() { return path[0];}
-void LineImpl::pt1(const Vertex &v) { path[0] = v; resize();}
-Vertex LineImpl::pt2() { return path[1];}
-void LineImpl::pt2(const Vertex &v) { path[1] = v; resize();}
+Vertex LineImpl::pt1() { return _path[0];}
+void LineImpl::pt1(const Vertex &v) { _path[0] = v; resize();}
+Vertex LineImpl::pt2() { return _path[1];}
+void LineImpl::pt2(const Vertex &v) { _path[1] = v; resize();}
 
 RectangleImpl::RectangleImpl()
 {
@@ -70,27 +70,27 @@ RectangleImpl::RectangleImpl(const Vertex &v1, const Vertex &v2)
 
 RectangleImpl::RectangleImpl (const RectangleImpl &rectangle) { copy(rectangle);}
 RectangleImpl::~RectangleImpl() {}
-Vertex RectangleImpl::pt1() { return path[0];}
+Vertex RectangleImpl::pt1() { return _path[0];}
 void RectangleImpl::pt1(const Vertex &v1)
 {
   Vertex v2 =  pt2();
-  path[0] = v1;
-  path[1].x = v1.x;
-  path[1].y = v2.y;
-  path[3].x = v2.x;
-  path[3].y = v1.y;
+  _path[0] = v1;
+  _path[1].x = v1.x;
+  _path[1].y = v2.y;
+  _path[3].x = v2.x;
+  _path[3].y = v1.y;
   resize();
 }
 
-Vertex RectangleImpl::pt2() { return path[2];}
+Vertex RectangleImpl::pt2() { return _path[2];}
 void RectangleImpl::pt2(const Vertex &v2)
 {
   Vertex v1 =  pt1();
-  path[2] = v2;
-  path[1].x = v1.x;
-  path[1].y = v2.y;
-  path[3].x = v2.x;
-  path[3].y = v1.y;
+  _path[2] = v2;
+  _path[1].x = v1.x;
+  _path[1].y = v2.y;
+  _path[3].x = v2.x;
+  _path[3].y = v1.y;
   resize();
 }
 
@@ -99,7 +99,7 @@ static const float magic = 0.5522847498307934f; // 4/3 * (sqrt(2) - 1)
 CircleImpl::CircleImpl() {}
 
 CircleImpl::CircleImpl (const Vertex &c, Coord r)
-  : center_(c), radius_(r)
+  : _center(c), _radius(r)
 {
   resize();
 }
@@ -107,16 +107,16 @@ CircleImpl::CircleImpl (const Vertex &c, Coord r)
 CircleImpl::CircleImpl(const CircleImpl &circle)
 {
   copy(circle);
-  center_ = circle.center_;
-  radius_ = circle.radius_;
+  _center = circle._center;
+  _radius = circle._radius;
 }
 
 CircleImpl::~CircleImpl() {}
 
 void CircleImpl::resize()
 {
-  Vertex &c = center_;
-  Coord &r = radius_;
+  Vertex &c = _center;
+  Coord &r = _radius;
 
 //   float r0 = magic * r;
   reset();
@@ -128,10 +128,10 @@ void CircleImpl::resize()
   cerr << "sorry, CircleImpl::resize not implemented" << endl;
 }
 
-Vertex CircleImpl::center() { return center_;}
-void CircleImpl::center(const Vertex &c) { center_ = c; resize();}
-Coord CircleImpl::radius() { return radius_;}
-void CircleImpl::radius(Coord r) { radius_ = r; resize();}
+Vertex CircleImpl::center() { return _center;}
+void CircleImpl::center(const Vertex &c) { _center = c; resize();}
+Coord CircleImpl::radius() { return _radius;}
+void CircleImpl::radius(Coord r) { _radius = r; resize();}
 
 static const float p0 = 1.00000000f;
 static const float p1 = 0.89657547f;   // cos 30 * sqrt(1 + tan 15 * tan 15)
@@ -141,13 +141,13 @@ static const float p4 = 0.26794919f;   // tan 15
 
 EllipseImpl::EllipseImpl() {}
 EllipseImpl::EllipseImpl(const Vertex &c, Coord r1, Coord r2)
-  : center_(c), radius1_(r1), radius2_(r2)
+  : _center(c), _radius1(r1), _radius2(r2)
 {
   resize();
 }
 
 EllipseImpl::EllipseImpl(const EllipseImpl &ellipse)
-  : center_(ellipse.center_), radius1_(ellipse.radius1_), radius2_(ellipse.radius2_)
+  : _center(ellipse._center), _radius1(ellipse._radius1), _radius2(ellipse._radius2)
 {
   copy(ellipse);
 }
@@ -156,10 +156,10 @@ EllipseImpl::~EllipseImpl() {}
 
 void EllipseImpl::resize()
 {
-  Coord &r1 = radius1_;
-  Coord &r2 = radius2_;
-  Coord &x = center_.x;
-  Coord &y = center_.y;
+  Coord &r1 = _radius1;
+  Coord &r2 = _radius2;
+  Coord &x = _center.x;
+  Coord &y = _center.y;
 
 //   float px0 = p0 * r1, py0 = p0 * r2;
 //   float px1 = p1 * r1, py1 = p1 * r2;
@@ -180,24 +180,24 @@ void EllipseImpl::resize()
   cerr << "sorry, EllipseImpl::resize not implemented" << endl;
 }
 
-Vertex EllipseImpl::center() { return center_;}
-void EllipseImpl::center(const Vertex &c) { center_ = c; resize();}
-Coord EllipseImpl::radius1() { return radius1_;}
-void EllipseImpl::radius1(Coord r) { radius1_ = r; resize();}
-Coord EllipseImpl::radius2() { return radius2_;}
-void EllipseImpl::radius2(Coord r) { radius2_ = r; resize();}
+Vertex EllipseImpl::center() { return _center;}
+void EllipseImpl::center(const Vertex &c) { _center = c; resize();}
+Coord EllipseImpl::radius1() { return _radius1;}
+void EllipseImpl::radius1(Coord r) { _radius1 = r; resize();}
+Coord EllipseImpl::radius2() { return _radius2;}
+void EllipseImpl::radius2(Coord r) { _radius2 = r; resize();}
 
-PathImpl::PathImpl() { FigureImpl::handle = new Figure::Vertices;}
+PathImpl::PathImpl() { FigureImpl::_handle = new Figure::Vertices;}
 PathImpl::PathImpl (const Figure::Vertices &v)
 {
-  handle = new Figure::Vertices(v);
+  _handle = new Figure::Vertices(v);
   resize();
 }
 
 PathImpl::PathImpl(const PathImpl &path)
 {
   copy(path);
-  handle = new Figure::Vertices(path.handle);
+  _handle = new Figure::Vertices(path._handle);
 }
 
 void PathImpl::resize()
@@ -235,7 +235,7 @@ void PathImpl::resize()
 //             vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
 //         );
 //     } else {
-  for (CORBA::ULong i = 0; i < handle->length(); ++i) add_point(handle[i].x, handle[i].y);
+  for (CORBA::ULong i = 0; i < _handle->length(); ++i) add_point(_handle[i].x, _handle[i].y);
 //         }
 //     }
 //   cerr << "sorry, PathImpl::resize not implemented" << endl;
@@ -243,4 +243,4 @@ void PathImpl::resize()
 
 PathImpl::~PathImpl () {}
 
-Figure::Vertices *PathImpl::handles() { Figure::Vertices *ret = new Figure::Vertices(handle); return ret;}
+Figure::Vertices *PathImpl::handles() { Figure::Vertices *ret = new Figure::Vertices(_handle); return ret;}

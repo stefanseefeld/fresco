@@ -37,8 +37,8 @@ class ScreenImpl;
 class PositionalFocus : public FocusImpl
 {
   typedef vector<Warsaw::Controller_var> cstack_t;
- public:
-  PositionalFocus(Warsaw::Input::Device, ScreenImpl *);
+public:
+  PositionalFocus(Warsaw::Input::Device, Warsaw::Graphic_ptr, Warsaw::Region_ptr);
   virtual ~PositionalFocus();
   virtual void grab();
   virtual void ungrab();
@@ -48,13 +48,16 @@ class PositionalFocus : public FocusImpl
   virtual void restore(Warsaw::Region_ptr);
   virtual void damage(Warsaw::Region_ptr);
   virtual void dispatch(Warsaw::Input::Event &);
- private:
-  ScreenImpl        *screen;
-  Pointer           *pointer;
-  PickTraversalImpl *traversal;
-  cstack_t           controllers;
-  bool               grabbed;
-  Prague::Mutex      mutex;
+protected:
+  virtual void activate_composite();
+private:
+  Warsaw::Graphic_ptr _root;
+  Pointer            *_pointer;
+  PickTraversalImpl  *_traversal_cache[2];
+  PickTraversalImpl  *_traversal;
+  cstack_t            _controllers;
+  bool                _grabbed;
+  Prague::Mutex       _mutex;
 };
 
 #endif 

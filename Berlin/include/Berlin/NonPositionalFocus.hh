@@ -36,7 +36,7 @@ class NonPositionalFocus : public FocusImpl
 {
   typedef vector<Warsaw::Controller_var> cstack_t;
  public:
-  NonPositionalFocus(Warsaw::Input::Device, ScreenImpl *);
+  NonPositionalFocus(Warsaw::Input::Device);
   virtual ~NonPositionalFocus();
 
   virtual void grab() {}
@@ -48,9 +48,8 @@ class NonPositionalFocus : public FocusImpl
   virtual void damage(Warsaw::Region_ptr) {}
   virtual void dispatch(Warsaw::Input::Event &);
  private:
-  ScreenImpl        *screen;
-  cstack_t           controllers;
-  Prague::Mutex      mutex;
+  cstack_t      _controllers;
+  Prague::Mutex _mutex;
 };
 
 #endif 

@@ -42,21 +42,21 @@ class TransformFigure : public virtual POA_Figure::FigureBase,
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void need_redraw();
   
-  Figure::Mode type() { return mode;}
-  void type(Figure::Mode m) { mode = m; need_redraw();}
-  Warsaw::Color foreground() { return fg;}
-  void foreground(const Warsaw::Color &f) { fg = f; need_redraw();}
-  Warsaw::Color background() { return bg;}
-  void background(const Warsaw::Color &b) { bg = b; need_redraw();}
+  Figure::Mode type() { return _mode;}
+  void type(Figure::Mode m) { _mode = m; need_redraw();}
+  Warsaw::Color foreground() { return _fg;}
+  void foreground(const Warsaw::Color &f) { _fg = f; need_redraw();}
+  Warsaw::Color background() { return _bg;}
+  void background(const Warsaw::Color &b) { _bg = b; need_redraw();}
 
   virtual void resize();
 
   void copy(const TransformFigure &);
  protected:
-  Figure::Mode mode;
-  Warsaw::Color fg, bg;
-  Impl_var<TransformImpl> tx;
-  Impl_var<RegionImpl> ext;
+  Figure::Mode            _mode;
+  Warsaw::Color           _fg, _bg;
+  Impl_var<TransformImpl> _tx;
+  Impl_var<RegionImpl>    _ext;
 };
 
 class FigureImpl : public TransformFigure
@@ -75,8 +75,8 @@ public:
 
   void copy(const FigureImpl &);
 protected:
-  Figure::Vertices_var path;
-  Figure::Vertices_var handle;
+  Figure::Vertices_var _path;
+  Figure::Vertices_var _handle;
 };
 
 #endif

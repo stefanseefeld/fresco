@@ -23,7 +23,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include "Unidraw/UnidrawKitImpl.hh"
-#include "Unidraw/Editor.hh"
+#include "Unidraw/EditorImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -41,9 +41,9 @@ void UnidrawKitImpl::bind(ServerContext_ptr context)
   _figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
 }
 
-Controller_ptr UnidrawKitImpl::editor(Coord width, Coord height)
+Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 {
-  Editor *editor = new Editor(width, height, _figure);
+  EditorImpl *editor = new EditorImpl(_figure);
   activate(editor);
   return editor->_this();
 }

@@ -167,7 +167,10 @@ int main(int argc, char **argv)
   Logger::log(Logger::drawing) << "[2/5] built drawing system" << endl;
 
   // make a Screen graphic to hold this server's scene graph
-  ScreenImpl *screen = new ScreenImpl(drawing);
+  ScreenImpl *screen = new ScreenImpl();
+  EventManager *emanager = new EventManager(Graphic_var(screen->_this()), screen->allocation());
+  ScreenManager *smanager = new ScreenManager(Graphic_var(screen->_this()), emanager, drawing);
+  screen->bind_managers(emanager, smanager);
   props.length(0);
   ToolKit_var tools = server->resolve<ToolKit>("IDL:Warsaw/ToolKit:1.0", props, poa);
   LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
@@ -192,7 +195,6 @@ int main(int argc, char **argv)
 
   Logger::log(Logger::corba) << "[4/5] listening for clients" << endl;
   // initialize the event distributor and draw thread
-  ScreenManager *smanager = screen->manager();
   Logger::log(Logger::corba) << "[5/5] event distributor constructed, about to enter main loop" << endl;
   try
     {

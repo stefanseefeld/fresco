@@ -99,7 +99,7 @@ ostream &operator << (ostream &os, const Transform::Matrix &m)
   return os;
 };
 
-ostream &operator << (ostream &os, Transform_ptr &transform)
+ostream &operator << (ostream &os, Transform_ptr transform)
 {
   Transform::Matrix matrix;
   transform->store_matrix(matrix);

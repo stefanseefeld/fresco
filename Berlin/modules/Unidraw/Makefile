@@ -29,7 +29,7 @@ include $(cpath)/Server/local.mk
 # Compilation and linking flags.
 LIBS		+= -lBerlin
 
-SRC		= Editor.cc UnidrawKitImpl.cc
+SRC		= View.cc EditorImpl.cc UnidrawKitImpl.cc
 
 MODULE		= Unidraw
 

@@ -260,6 +260,10 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
   }
 }
 
+void LibArtDrawingKit::draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord)
+{
+}
+
 void LibArtDrawingKit::draw_ellipse(const Vertex &, const Vertex &) {}
 
 void LibArtDrawingKit::draw_image(Raster_ptr remote) {

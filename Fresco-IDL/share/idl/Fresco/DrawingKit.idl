@@ -56,6 +56,8 @@ module Warsaw
 	long vertBearingY;  /* top side bearing in vertical layouts  */
 	long vertAdvance;   /* advance height for vertical layout    */
       };
+      //.matrix to derive arbitrary quadrics from circle segments
+      typedef Coord Quadric[3][3];
       
       enum Endstyle { butt, cap, round};
       enum Fillstyle { outlined, solid, textured, gradient};
@@ -93,6 +95,7 @@ module Warsaw
       void draw_path(in Path p);
       //   void drawPatch(in Patch p);
       void draw_rectangle(in Vertex lower, in Vertex upper);
+      void draw_quadric(in Quadric q, in Coord begin, in Coord end);
       void draw_ellipse(in Vertex lower, in Vertex upper);
       void draw_image(in Raster r);
       

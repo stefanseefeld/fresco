@@ -34,7 +34,6 @@ module Warsaw
     {
       Coord width();
       Coord height();
-      DrawingKit kit();
       void damage(in Region r);
     };
 };

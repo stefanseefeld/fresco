@@ -23,37 +23,37 @@
 #ifndef _ScreenManager_hh
 #define _ScreenManager_hh
 
+#include <Prague/Sys/Thread.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Region.hh>
+#include <Warsaw/Graphic.hh>
 #include <Warsaw/Input.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ImplVar.hh>
-#include <Prague/Sys/Thread.hh>
 #include <Berlin/Console.hh>
 #include <Berlin/EventManager.hh>
 #include <Berlin/DrawTraversalImpl.hh>
 #include <vector>
 
-class ScreenImpl;
 class RegionImpl;
 
 class ScreenManager
 {
 public:
-  ScreenManager(ScreenImpl *, EventManager *, Warsaw::DrawingKit_ptr);
+  ScreenManager(Warsaw::Graphic_ptr, EventManager *, Warsaw::DrawingKit_ptr);
   ~ScreenManager();
   void damage(Warsaw::Region_ptr);
   void repair();
   void run();
 private:
-  ScreenImpl                 *screen;
-  EventManager               *emanager;
-  Warsaw::DrawingKit_var      drawing;
-  Console::Drawable          *drawable;
-  Impl_var<RegionImpl>        theDamage;
-  Impl_var<RegionImpl>        tmpDamage;
-  Impl_var<DrawTraversalImpl> traversal;
-  Prague::Mutex mutex;
+  Warsaw::Graphic_var         _screen;
+  EventManager               *_emanager;
+  Warsaw::DrawingKit_var      _drawing;
+  Console::Drawable          *_drawable;
+  Impl_var<RegionImpl>        _theDamage;
+  Impl_var<RegionImpl>        _tmpDamage;
+  Impl_var<DrawTraversalImpl> _traversal;
+  Prague::Mutex               _mutex;
 };
 
 #endif

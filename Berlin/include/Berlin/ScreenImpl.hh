@@ -36,8 +36,9 @@ class ScreenImpl : public virtual POA_Warsaw::Screen,
                    public ControllerImpl
 {
 public:
-  ScreenImpl(Warsaw::DrawingKit_ptr);
+  ScreenImpl();
   virtual ~ScreenImpl();
+  void bind_managers(EventManager *, ScreenManager *);
 
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocations(Warsaw::Allocation_ptr);
@@ -45,7 +46,6 @@ public:
 
   virtual Warsaw::Coord width();
   virtual Warsaw::Coord height();
-  virtual Warsaw::DrawingKit_ptr kit();
   virtual void damage(Warsaw::Region_ptr);
 
   virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
@@ -54,13 +54,12 @@ public:
   virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
   virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &) { return false;}
 
-  ScreenManager *manager();
-  Warsaw::Region_ptr get_region();
+  Warsaw::Region_ptr allocation();
 protected:
-  Warsaw::DrawingKit_var  drawing;
-  ScreenManager *smanager;
-  Impl_var<RegionImpl> region;
-  EventManager  *emanager;
+  Warsaw::Screen_ptr    __this;
+  EventManager          *_emanager;
+  ScreenManager         *_smanager;
+  Impl_var<RegionImpl>   _region;
 };
 
 #endif 

@@ -30,7 +30,10 @@
 
 module Unidraw
 {
-  interface Component : Warsaw::Subject {};
+  interface Component : Warsaw::Subject
+    {
+      Warsaw::Graphic create_view();
+    };
   interface Command : Warsaw::Command
     {
       // memento protocol...
@@ -48,15 +51,14 @@ module Unidraw
       Manipulator create_manipulator(in Warsaw::Input::Event e);
       Command     interpret_manipulator(in Manipulator m);
     };
-//   interface Editor
-//     {
-//       Tool current_tool();
-//       Controller create_View();
-//     };
-  
+  interface Editor : Warsaw::RefCountBase
+    {
+      attribute Tool current_tool;
+      Warsaw::Controller create_view(in Warsaw::Coord width, in Warsaw::Coord height);
+    };
   interface UnidrawKit : Warsaw::Kit
     {
-      Warsaw::Controller editor(in Warsaw::Coord width, in Warsaw::Coord height);
+      Editor create_editor();
     };
 };
 

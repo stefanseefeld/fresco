@@ -36,7 +36,7 @@ public:
   UnidrawKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~UnidrawKitImpl();
   virtual void bind(Warsaw::ServerContext_ptr);
-  virtual Warsaw::Controller_ptr editor(Warsaw::Coord, Warsaw::Coord);
+  virtual Unidraw::Editor_ptr create_editor();
 private:
   RefCount_var<Warsaw::FigureKit> _figure;
 };

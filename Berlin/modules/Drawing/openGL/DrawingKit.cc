@@ -247,6 +247,10 @@ void GLDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
     }
 }
 
+void GLDrawingKit::draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord)
+{
+}
+
 void GLDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 {
   glPushMatrix();

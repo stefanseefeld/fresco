@@ -33,7 +33,8 @@ class FocusImpl : public virtual POA_Warsaw::Focus,
 {
   typedef stack<Warsaw::Input::Filter_var> fstack_t;
   typedef vector<size_t> memento_t;
- public:
+  friend class EventManager;
+public:
   FocusImpl(Warsaw::Input::Device dd) : d(dd) {}
   virtual ~FocusImpl() {}
   virtual Warsaw::Input::Device device() { return d;}
@@ -42,7 +43,9 @@ class FocusImpl : public virtual POA_Warsaw::Focus,
   virtual void restore(Warsaw::Region_ptr) = 0;
   virtual void damage(Warsaw::Region_ptr) = 0;
   virtual void dispatch(Warsaw::Input::Event &) = 0;
- private:
+protected:
+  virtual void activate_composite() {}
+private:
   const Warsaw::Input::Device d;
   fstack_t filters;
   memento_t memento;

@@ -30,7 +30,7 @@
 using namespace Prague;
 using namespace Warsaw;
 
-NonPositionalFocus::NonPositionalFocus(Input::Device d, ScreenImpl *s) : FocusImpl(d), screen(s) {}
+NonPositionalFocus::NonPositionalFocus(Input::Device d) : FocusImpl(d) {}
 NonPositionalFocus::~NonPositionalFocus() {}
 
 void NonPositionalFocus::add_filter(Input::Filter_ptr)
@@ -57,20 +57,20 @@ bool NonPositionalFocus::request(Controller_ptr c)
       tmp.insert(tmp.begin(), p);
       p = p->parent_controller();
     }
-  cstack_t::iterator of = controllers.begin();
+  cstack_t::iterator of = _controllers.begin();
   vector<Controller_var>::iterator nf = tmp.begin();
   /*
    * ...skip the unchanged controllers,...
    */
   while (nf != tmp.end() &&
-	 of != controllers.end() &&
+	 of != _controllers.end() &&
 	 (*nf)->is_identical(*of)) nf++, of++;
   /*
    * ...remove the old controllers in reverse order,...
    */
-  for (cstack_t::reverse_iterator o = controllers.rbegin(); o.base() != of; o++)
+  for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
     (*o)->lose_focus(device());
-  controllers.erase(of, controllers.end());
+  _controllers.erase(of, _controllers.end());
   /*
    * ...add the new controllers,...
    */
@@ -78,7 +78,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
   for (; nf != tmp.end(); nf++)
     {
       (*nf)->receive_focus (__this);
-      controllers.push_back(*nf);
+      _controllers.push_back(*nf);
     }
   return true;
 }
@@ -86,7 +86,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
 void NonPositionalFocus::dispatch(Input::Event &event)
 {
   Trace trace("NonPositionalFocus::dispatch");
-  MutexGuard guard(mutex);
-  if (controllers.size())
-    controllers.back()->handle_non_positional(event);
+  MutexGuard guard(_mutex);
+  if (_controllers.size())
+    _controllers.back()->handle_non_positional(event);
 }

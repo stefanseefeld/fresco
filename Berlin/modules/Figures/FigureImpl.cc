@@ -37,16 +37,16 @@ using namespace Prague;
 using namespace Warsaw;
 
 TransformFigure::TransformFigure()
-  : mode(Figure::outline),
-    tx(new TransformImpl),
-    ext(new RegionImpl)
+  : _mode(Figure::outline),
+    _tx(new TransformImpl),
+    _ext(new RegionImpl)
 {
-  fg.red = fg.green = fg.blue = 0., fg.alpha = 1.;
-  bg.red = bg.green = bg.blue = 0., bg.alpha = 1.;
+  _fg.red = _fg.green = _fg.blue = 0., _fg.alpha = 1.;
+  _bg.red = _bg.green = _bg.blue = 0., _bg.alpha = 1.;
 }
 
 TransformFigure::~TransformFigure() {}
-Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(Transform_var(tx->_this()));}
+Transform_ptr TransformFigure::transformation() { return _tx->_this();}
 void TransformFigure::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("TransformFigure::request");
@@ -72,13 +72,13 @@ void TransformFigure::request(Warsaw::Graphic::Requisition &r)
 void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
   Trace trace("TransformFigure::extension");
-  if (ext->valid)
+  if (_ext->valid)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(ext->_this())));
+      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(_ext->_this())));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
-      transformation->premultiply(Transform_var(tx->_this()));
+      transformation->premultiply(Transform_var(_tx->_this()));
       tmp->apply_transform(Transform_var(transformation->_this()));
       region->merge_union(Region_var(tmp->_this()));
     }
@@ -86,7 +86,7 @@ void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
 
 void TransformFigure::pick(PickTraversal_ptr traversal)
 {
-  if (ext->valid && traversal->intersects_region(Region_var(ext->_this())))
+  if (_ext->valid && traversal->intersects_region(Region_var(_ext->_this())))
     traversal->hit();
 }
 
@@ -102,56 +102,56 @@ void TransformFigure::need_redraw()
 void TransformFigure::resize() {}
 void TransformFigure::copy(const TransformFigure &tf)
 {
-  mode = tf.mode;
-  fg = tf.fg;
-  bg = tf.bg;
-  tx->copy(Transform_var(tf.tx->_this()));
-  if (tf.ext->valid) ext->copy(Region_var(tf.ext->_this()));
+  _mode = tf._mode;
+  _fg = tf._fg;
+  _bg = tf._bg;
+  _tx->copy(Transform_var(tf._tx->_this()));
+  if (tf._ext->valid) _ext->copy(Region_var(tf._ext->_this()));
 }
 
-FigureImpl::FigureImpl() { path = new Figure::Vertices();}
+FigureImpl::FigureImpl() { _path = new Figure::Vertices();}
 FigureImpl::~FigureImpl() {}
 
 void FigureImpl::add_point(Coord x, Coord y)
 {
-  if (path->length() == 0)
+  if (_path->length() == 0)
     {
-      ext->lower.x = x;
-      ext->upper.x = x;
-      ext->lower.y = y;
-      ext->upper.y = y;
-      ext->lower.z = Coord(0);
-      ext->upper.z = Coord(0);
-      ext->valid = true;
+      _ext->lower.x = x;
+      _ext->upper.x = x;
+      _ext->lower.y = y;
+      _ext->upper.y = y;
+      _ext->lower.z = Coord(0);
+      _ext->upper.z = Coord(0);
+      _ext->valid = true;
     }
   else
     {
-      ext->lower.x = Math::min(ext->lower.x, x);
-      ext->upper.x = Math::max(ext->upper.x, x);
-      ext->lower.y = Math::min(ext->lower.y, y);
-      ext->upper.y = Math::max(ext->upper.y, y);
+      _ext->lower.x = Math::min(_ext->lower.x, x);
+      _ext->upper.x = Math::max(_ext->upper.x, x);
+      _ext->lower.y = Math::min(_ext->lower.y, y);
+      _ext->upper.y = Math::max(_ext->upper.y, y);
     }
   Vertex v;
   v.x = x;
   v.y = y;
   v.z = 0.;
-  CORBA::ULong n = path->length();
-  path->length(n + 1);
-  path[n] = v;
+  CORBA::ULong n = _path->length();
+  _path->length(n + 1);
+  _path[n] = v;
 }
 
 void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
   Trace trace("FigureImpl::extension");
-  if (path->length() > 0)
+  if (_path->length() > 0)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(ext->_this())));
+      Impl_var<RegionImpl> tmp(new RegionImpl(Region_var(_ext->_this())));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
-      transformation->premultiply(Transform_var(tx->_this()));
+      transformation->premultiply(Transform_var(_tx->_this()));
       tmp->apply_transform(Transform_var(transformation->_this()));
-      if (mode & Figure::outline)
+      if (_mode & Figure::outline)
 	{
 // 	  Coord w = 1.;
 // 	  if (is_not_nil(style_))
@@ -175,7 +175,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 void FigureImpl::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("FigureImpl::draw");
-  if (path->length() > 0)
+  if (_path->length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
@@ -185,17 +185,17 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 	{
 	  DrawingKit_var drawing = traversal->drawing();
 	  drawing->save();
- 	  if (mode & Figure::fill)
+ 	  if (_mode & Figure::fill)
  	    {
-	      drawing->foreground(bg);
+	      drawing->foreground(_bg);
 	      drawing->surface_fillstyle(DrawingKit::solid);
-	      drawing->draw_path(path);
+	      drawing->draw_path(_path);
 	    }
- 	  if (mode & Figure::outline)
+ 	  if (_mode & Figure::outline)
 	    {
-	      drawing->foreground(fg);
+	      drawing->foreground(_fg);
 	      drawing->surface_fillstyle(DrawingKit::outlined);
-	      drawing->draw_path(path);
+	      drawing->draw_path(_path);
 	    }
 	  drawing->restore();
 	}
@@ -208,10 +208,10 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 
 void FigureImpl::pick(PickTraversal_ptr traversal)
 {
-//   if (ext->defined)
-//     {
-//       if (traversal->intersectsRegion(ext))
-// 	{
+  if (_ext->valid)
+    {
+      if (traversal->intersects_region(Region_var(_ext->_this())))
+ 	{
 // 	  Vertex lower, upper, center;
 // 	  Region_var visible = p->visible();
 // 	  visible->bounds(lower, upper);
@@ -300,8 +300,9 @@ void FigureImpl::pick(PickTraversal_ptr traversal)
 //                 }
 //             }
 // 	  if (hit) t->hit();
-// 	}
-//     }
+ 	}
+      traversal->hit();
+    }
 }
 
 /*
@@ -310,19 +311,19 @@ void FigureImpl::pick(PickTraversal_ptr traversal)
 
 void FigureImpl::resize()
 {
-  ext->valid = false;
-  if (path->length() > 0)
+  _ext->valid = false;
+  if (_path->length() > 0)
     {
-      ext->valid = true;
-      ext->lower = path[0];
-      ext->upper = path[0];
-      CORBA::ULong n = path->length();
+      _ext->valid = true;
+      _ext->lower = _path[0];
+      _ext->upper = _path[0];
+      CORBA::ULong n = _path->length();
       for (CORBA::ULong i = 1; i < n; i++)
 	{
-	  ext->lower.x = Math::min(ext->lower.x, path[i].x);
-	  ext->upper.x = Math::max(ext->upper.x, path[i].x);
-	  ext->lower.y = Math::min(ext->lower.y, path[i].y);
-	  ext->upper.y = Math::max(ext->upper.y, path[i].y);
+	  _ext->lower.x = Math::min(_ext->lower.x, _path[i].x);
+	  _ext->upper.x = Math::max(_ext->upper.x, _path[i].x);
+	  _ext->lower.y = Math::min(_ext->lower.y, _path[i].y);
+	  _ext->upper.y = Math::max(_ext->upper.y, _path[i].y);
         }
 //       // in case of vertical/horizontal line with nil brush, 
 //       // painter->is_visible will be return false, so add 1
@@ -334,12 +335,12 @@ void FigureImpl::resize()
 
 void FigureImpl::reset()
 {
-  path = new Figure::Vertices();
-  ext->valid = false;
+  _path = new Figure::Vertices();
+  _ext->valid = false;
 }
 
 void FigureImpl::copy(const FigureImpl &f)
 {
   TransformFigure::copy(f);
-  path = new Figure::Vertices(f.path);
+  _path = new Figure::Vertices(f._path);
 }

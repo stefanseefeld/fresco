@@ -102,6 +102,7 @@ public:
   virtual void draw_path(const Warsaw::Path &);
 //   virtual void drawPatch(const Warsaw::Patch &);
   virtual void draw_rectangle(const Warsaw::Vertex &, const Warsaw::Vertex &);
+  virtual void draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord);
   virtual void draw_ellipse(const Warsaw::Vertex &, const Warsaw::Vertex &);
   virtual void draw_image(Warsaw::Raster_ptr);
   virtual void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &);

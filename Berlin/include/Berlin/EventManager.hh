@@ -31,22 +31,23 @@
 #include <Berlin/ImplVar.hh>
 #include <vector>
 
-class EventManager
-//. synthetize events according to a global device and event descriptor map
+//. synthesize events according to a global device and event descriptor map
 //. for now, device 0 is the keyboard, device 1 the mouse
+class EventManager
 {
   typedef vector<FocusImpl *> flist_t;
 public:
-  EventManager(ScreenImpl *);
+  EventManager(Warsaw::Graphic_ptr, Warsaw::Region_ptr);
   ~EventManager();
   bool request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
   void next_event();
   void restore(Warsaw::Region_ptr);
   void damage(Warsaw::Region_ptr);
 private:
-  ScreenImpl *screen;
-  Console::Drawable *drawable;
-  flist_t focus;
+  static void activate(FocusImpl *);
+  static void deactivate(FocusImpl *);
+  Console::Drawable *_drawable;
+  flist_t            _foci;
 };
 
 #endif 

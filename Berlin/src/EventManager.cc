@@ -30,35 +30,46 @@
 using namespace Prague;
 using namespace Warsaw;
 
-inline void deactivate(PortableServer::Servant servant)
+inline void EventManager::activate(FocusImpl *focus)
 {
-  Prague::Trace trace("deactivate");
-  PortableServer::POA_var poa = servant->_default_POA();
-  PortableServer::ObjectId *oid = poa->servant_to_id(servant);
+  Prague::Trace trace("EventManager::activate");
+  PortableServer::POA_var poa = focus->_default_POA();
+  PortableServer::ObjectId *oid = poa->activate_object(focus);
+  focus->_remove_ref();
+  delete oid;
+  focus->activate_composite();
+}
+
+inline void EventManager::deactivate(FocusImpl *focus)
+{
+  Prague::Trace trace("EventManager::deactivate");
+  PortableServer::POA_var poa = focus->_default_POA();
+  PortableServer::ObjectId *oid = poa->servant_to_id(focus);
   poa->deactivate_object(*oid);
   delete oid;
 }
 
-EventManager::EventManager(ScreenImpl *s)
-  : screen(s)
+EventManager::EventManager(Graphic_ptr root, Region_ptr allocation)
 {
   Trace trace("EventManager::EventManager");
-  drawable = Console::drawable();
-  Impl_var<FocusImpl> f(new NonPositionalFocus(0, screen));
-  focus.push_back(f._retn()); // keyboard
-  f = new PositionalFocus(1, screen);
-  focus.push_back(f._retn());    // mouse
+  _drawable = Console::drawable();
+  FocusImpl *keyboard = new NonPositionalFocus(0);
+  FocusImpl *mouse = new PositionalFocus(1, root, allocation);
+  activate(keyboard);
+  activate(mouse);
+  _foci.push_back(keyboard);
+  _foci.push_back(mouse);
 }
 
 EventManager::~EventManager()
 {
-  for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) deactivate(*i);
+  for (flist_t::iterator i = _foci.begin(); i != _foci.end(); i++) deactivate(*i);
 }
 
 bool EventManager::request_focus(Controller_ptr c, Input::Device d)
 {
   Trace trace("EventManager::request_focus");
-  if (d < focus.size()) return focus[d]->request(c);
+  if (d < _foci.size()) return _foci[d]->request(c);
   return false;
 }
 
@@ -71,17 +82,17 @@ void EventManager::next_event()
   /*
    * the first item determines which focus to send this event to
    */
-  try { if (event->length()) focus[event[0].dev]->dispatch(event);}
+  try { if (event->length()) _foci[event[0].dev]->dispatch(event);}
   catch (CORBA::OBJECT_NOT_EXIST &) { cerr << "EventManager: warning: corrupt scene graph !" << endl;}
 }
 
 void EventManager::restore(Region_ptr r)
 {
-  for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) (*i)->restore(r);
+  for (flist_t::iterator i = _foci.begin(); i != _foci.end(); i++) (*i)->restore(r);
 }
 
 void EventManager::damage(Region_ptr r)
 {
-  for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) (*i)->damage(r);
+  for (flist_t::iterator i = _foci.begin(); i != _foci.end(); i++) (*i)->damage(r);
 }
 

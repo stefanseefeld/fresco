@@ -60,8 +60,8 @@ public:
 
 protected:
     void update_bbox();
-    Impl_var<TransformImpl> tx;
-    Impl_var<RegionImpl> bbox;
+    Impl_var<TransformImpl> _tx;
+    Impl_var<RegionImpl>    _bbox;
 };
 
 class UPolyFigure : public PolyFigure

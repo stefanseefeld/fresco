@@ -78,8 +78,8 @@ public:
   virtual Warsaw::Coord radius();
   virtual void radius(Warsaw::Coord);
 protected:
-  Warsaw::Vertex center_;
-  Warsaw::Coord radius_;
+  Warsaw::Vertex _center;
+  Warsaw::Coord  _radius;
 };
 
 class EllipseImpl : public virtual POA_Figure::Ellipse,
@@ -98,8 +98,9 @@ public:
   virtual Warsaw::Coord radius2();
   virtual void radius2(Warsaw::Coord);
 protected:
-  Warsaw::Vertex center_;
-  Warsaw::Coord radius1_, radius2_;
+  Warsaw::Vertex _center;
+  Warsaw::Coord  _radius1;
+  Warsaw::Coord  _radius2;
 };
 
 class PathImpl : public virtual POA_Figure::Path,

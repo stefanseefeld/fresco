@@ -49,7 +49,6 @@ protected:
   typedef vector<State> stack_t;
 public:
   TraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr);
-  TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
   virtual Warsaw::Region_ptr current_allocation();
   virtual Warsaw::Transform_ptr current_transformation();
@@ -63,6 +62,7 @@ public:
   virtual CORBA::Boolean ok() = 0;
   virtual void update();
 protected:
+  void copy(const TraversalImpl *);
   void push(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, TransformImpl *);
   void pop();
   size_t size() const { return _stack.size();}  

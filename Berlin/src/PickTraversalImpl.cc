@@ -20,38 +20,32 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/PickTraversalImpl.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/IO.hh>
+#include "Berlin/PickTraversalImpl.hh"
+#include "Berlin/PositionalFocus.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 
-PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Input::Position &p, Focus_ptr f)
+PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, PositionalFocus *f)
   : TraversalImpl(g, r, t),
-    _pointer(p),
-    _focus(Focus::_duplicate(f)),
-    _mem(0),
+    _focus(f),
+    _memento(0),
+    _picked(false),
     _cursor(0)
 {
   Trace trace("PickTraversalImpl::PickTraversalImpl");
-  __this = _this();
+  __this = POA_Warsaw::PickTraversal::_this();
 }
 
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
-  : TraversalImpl(t),
-    _controllers(t._controllers),
-    _positions(t._positions),
-    _pointer(t._pointer),
-    _focus(t._focus),
-    _mem(0),
-    _cursor(t._cursor)
+PickTraversalImpl::~PickTraversalImpl() {}
+
+PickTraversal_ptr PickTraversalImpl::_this()
 {
-  Trace trace("PickTraversal::PickTraversal");
-  __this = _this();
+  return Warsaw::PickTraversal::_duplicate(__this);
 }
-
-PickTraversalImpl::~PickTraversalImpl() { delete _mem;}
 
 Region_ptr PickTraversalImpl::current_allocation()
 {
@@ -88,7 +82,7 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
 
 void PickTraversalImpl::visit(Warsaw::Graphic_ptr g) { g->pick(__this);}
 Warsaw::Traversal::order PickTraversalImpl::direction() { return Warsaw::Traversal::down;}
-CORBA::Boolean PickTraversalImpl::ok() { return !_mem;}
+CORBA::Boolean PickTraversalImpl::ok() { return !_picked;}
 
 CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
 {
@@ -104,7 +98,6 @@ CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
   local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
   Vertex lower, upper;
   region->bounds(lower, upper);
-//   cout << "intersection test : " << pointer << ' ' << local << endl;
   return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
 }
 
@@ -132,11 +125,11 @@ void PickTraversalImpl::leave_controller()
 void PickTraversalImpl::hit()
 {
   Trace trace("PickTraversal::hit");
-  delete _mem;
-  _mem = new PickTraversalImpl(*this);
+  _memento->copy(this);
+  _picked = true;
 }
 
-CORBA::Boolean PickTraversalImpl::picked() { return _mem;}
+CORBA::Boolean PickTraversalImpl::picked() { return _picked;}
 void PickTraversalImpl::grab() { _focus->grab();}
 void PickTraversalImpl::ungrab() { _focus->ungrab();}
 CORBA::Boolean PickTraversalImpl::forward()
@@ -149,6 +142,18 @@ CORBA::Boolean PickTraversalImpl::backward()
 {
   if (_cursor > _positions.back()) { --_cursor; return true;}
   return false;
+}
+
+void PickTraversalImpl::copy(const PickTraversalImpl *traversal)
+{
+  TraversalImpl::copy(traversal);
+  _controllers = traversal->_controllers;
+  _positions = traversal->_positions;
+  _pointer = traversal->_pointer;
+//   _focus = traversal->_focus;
+//   _memento = traversal;
+  _cursor = traversal->_positions.back() - 1; // the 'current' graphic is the picked controller
+  
 }
 
 void PickTraversalImpl::debug()
