@@ -41,13 +41,13 @@ namespace Babylon {
      * _Char must be a 16bit wide integer. Anything else is
      * not conformant to the unicode standard.
      */
-    typedef char _UCS1;
-    typedef unsigned short _UCS2;
-    typedef unsigned long _UCS4;
-    typedef basic_string<_UCS1> UTF7String;
-    typedef basic_string<_UCS1> UTF8String;
-    typedef basic_string<_UCS2> UTF16String;
-    typedef basic_string<_UCS4> _UTF32String;
+    typedef char UCS1;
+    typedef unsigned short UCS2;
+    typedef unsigned long UCS4;
+    typedef basic_string<UCS1> UTF7String;
+    typedef basic_string<UCS1> UTF8String;
+    typedef basic_string<UCS2> UTF16String;
+    typedef basic_string<UCS4> UTF32String;
 
     // These classes are defined in Unichar.hh and Unistring.hh
     class Char;
@@ -344,7 +344,7 @@ namespace Babylon {
 	TRANS_INVALID_UTF16_STRING,
 	TRANS_INVALID_UCS4_CHAR,
 	TRANS_CAN_NOT_ENCODE_CHAR,
-	TRANS_CAN_NOT_AUTOTRANSLATE // could not figure out which translation to use.
+	TRANS_CAN_NOT_AUTOTRANSCODE // could not figure out which translation to use.
     };
     typedef enum trans_error_enum TransError;
     
@@ -361,10 +361,10 @@ namespace Babylon {
     
     class UndefinedProperty {
     public:
-	_UCS4 errorUC;
+	UCS4 errorUC;
 	unichar_props_enum errorProp;
 	
-	UndefinedProperty(const _UCS4 uc,
+	UndefinedProperty(const UCS4 uc,
 			  const CharProps prop) {
 	    errorUC = uc;
 	    errorProp = prop;
@@ -382,12 +382,12 @@ namespace Babylon {
 
     class BlockError {
     public:
-	_UCS4 blockStart;
-	_UCS4 blockEnd;
+	UCS4 blockStart;
+	UCS4 blockEnd;
 	string errorMessage;
 	
-	BlockError(const _UCS4 startUC,
-		   const _UCS4 endUC,
+	BlockError(const UCS4 startUC,
+		   const UCS4 endUC,
 		   const string em) {
 	    blockStart = startUC;
 	    blockEnd = endUC;

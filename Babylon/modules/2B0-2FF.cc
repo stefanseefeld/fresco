@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 15 Nov 2000 23:22:38 +0100.
+ * ftp.unicode.org on Tue, 21 Nov 2000 21:10:46 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -28,107 +28,107 @@
 
 namespace Babylon {
  
-  class Spacing_Modifier_Letters : public Babylon::Dictionary::Block {
+  class Spacing_Modifier_Letters2B0 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Spacing_Modifier_Letters() {
-      my_first_letter = 0x02B0;
-      my_last_letter  = 0x02FF;
+    Spacing_Modifier_Letters2B0() {
+      my_first_letter = 0x2B0;
+      my_last_letter  = 0x2FF;
       // my_version="3.0.1" // Not yet supported!
 
     }
 
 
-    ~Spacing_Modifier_Letters() {
+    ~Spacing_Modifier_Letters2B0() {
     }
 
-    _UCS4 firstLetter() {
+    UCS4 firstLetter() {
       return my_first_letter;
     }
  
-    _UCS4 lastLetter() {
+    UCS4 lastLetter() {
       return my_last_letter;
     }
  
     // query functions:
 
-    string blockname(const _UCS4 _uc) const {
+    string blockname(const UCS4 & _uc) const {
       return "Spacing Modifier Letters";
     }
 
-    bool isDefined(const _UCS4 _uc) const {
+    bool isDefined(const UCS4 & _uc) const {
       return (isdefined[_uc - my_first_letter]);
     }
 
-    _UCS4 uppercase(const _UCS4 _uc) const {
+    UCS4 uppercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 lowercase(const _UCS4 _uc) const {
+    UCS4 lowercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 titlecase(const _UCS4 _uc) const {
+    UCS4 titlecase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    int decDigitValue(const _UCS4 _uc) const {
+    int decDigitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DEC_DIGIT_VALUE);
     }
 
-    int digitValue(const _UCS4 _uc) const {
+    int digitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DIGIT_VALUE);
     }
 
-    float numericValue(const _UCS4 _uc) const {
+    float numericValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);
     }
 
-    Gen_Cat category(const _UCS4 _uc) const {
+    Gen_Cat category(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Gen_Cat(Spacing_Modifier_Letters::cat[_uc - my_first_letter]);
+      return Babylon::Gen_Cat(Spacing_Modifier_Letters2B0::cat[_uc - my_first_letter]);
     }
 
-    Can_Comb_Class combClass(const _UCS4 _uc) const {
+    Can_Comb_Class combClass(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Can_Comb_Class(0);
     }
 
-    Bidir_Props bidirProps(const _UCS4 _uc) const {
+    Bidir_Props bidirProps(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Bidir_Props(Spacing_Modifier_Letters::bidir[_uc - my_first_letter]);
+      return Babylon::Bidir_Props(Spacing_Modifier_Letters2B0::bidir[_uc - my_first_letter]);
     }
 
-    Char_Decomp decompType(const _UCS4 _uc) const {
+    Char_Decomp decompType(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Char_Decomp(Spacing_Modifier_Letters::decomp[_uc - my_first_letter]);
+      return Babylon::Char_Decomp(Spacing_Modifier_Letters2B0::decomp[_uc - my_first_letter]);
     }
 
-    _UTF32String decompose(const _UCS4 _uc) const {
+    UTF32String decompose(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      Babylon::_UTF32String us;
+      Babylon::UTF32String us;
       us.resize(2);
-      us[0] = Spacing_Modifier_Letters::decompStr[_uc - my_first_letter][0];
-      us[1] = Spacing_Modifier_Letters::decompStr[_uc - my_first_letter][1];
+      us[0] = Spacing_Modifier_Letters2B0::decompStr[_uc - my_first_letter][0];
+      us[1] = Spacing_Modifier_Letters2B0::decompStr[_uc - my_first_letter][1];
       if (us[1] == 0x0000) {
         us.resize(1);
       }
@@ -136,141 +136,141 @@ namespace Babylon {
       return us;
     }
 
-    bool mustMirror(const _UCS4 _uc) const {
+    bool mustMirror(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return 0;
     }
 
-    Line_Break linebreak(const _UCS4 _uc) const {
+    Line_Break linebreak(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Line_Break(Spacing_Modifier_Letters::lb[_uc - my_first_letter]);
+      return Babylon::Line_Break(Spacing_Modifier_Letters2B0::lb[_uc - my_first_letter]);
     }
 
-    EA_Width EAWidth(const _UCS4 _uc) const {
+    EA_Width EAWidth(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::EA_Width(Spacing_Modifier_Letters::ea[_uc - my_first_letter]);
+      return Babylon::EA_Width(Spacing_Modifier_Letters2B0::ea[_uc - my_first_letter]);
     }
 
-    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {
+    UCS4 compose (const UCS4 & starter, const UCS4 & last) {
       return 0;
     }
 
-    bool is_Zero_width(const _UCS4 _uc) const {
+    bool is_Zero_width(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_White_space(const _UCS4 _uc) const {
+    bool is_White_space(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_break(const _UCS4 _uc) const {
+    bool is_Non_break(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Control(const _UCS4 _uc) const {
+    bool is_Bidi_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Join_Control(const _UCS4 _uc) const {
+    bool is_Join_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Format_Control(const _UCS4 _uc) const {
+    bool is_Format_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Dash(const _UCS4 _uc) const {
+    bool is_Dash(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hyphen(const _UCS4 _uc) const {
+    bool is_Hyphen(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Quotation_Mark(const _UCS4 _uc) const {
+    bool is_Quotation_Mark(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Terminal_Punctuation(const _UCS4 _uc) const {
+    bool is_Terminal_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Math(const _UCS4 _uc) const {
+    bool is_Math(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const _UCS4 _uc) const {
+    bool is_Paired_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Left_of_Pair(const _UCS4 _uc) const {
+    bool is_Left_of_Pair(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Combining(const _UCS4 _uc) const {
+    bool is_Combining(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_spacing(const _UCS4 _uc) const {
+    bool is_Non_spacing(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hex_Digit(const _UCS4 _uc) const {
+    bool is_Hex_Digit(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const _UCS4 _uc) const {
-      return Spacing_Modifier_Letters::Alphabetic[_uc - my_first_letter];
+    bool is_Alphabetic(const UCS4 & _uc) const {
+      return Spacing_Modifier_Letters2B0::Alphabetic[_uc - my_first_letter];
     }
 
-    bool is_Diacritic(const _UCS4 _uc) const {
-      return Spacing_Modifier_Letters::Diacritic[_uc - my_first_letter];
+    bool is_Diacritic(const UCS4 & _uc) const {
+      return Spacing_Modifier_Letters2B0::Diacritic[_uc - my_first_letter];
     }
 
-    bool is_Extender(const _UCS4 _uc) const {
-      return Spacing_Modifier_Letters::Extender[_uc - my_first_letter];
+    bool is_Extender(const UCS4 & _uc) const {
+      return Spacing_Modifier_Letters2B0::Extender[_uc - my_first_letter];
     }
 
-    bool is_Identifier_Part(const _UCS4 _uc) const {
-      return Spacing_Modifier_Letters::Identifier_Part[_uc - my_first_letter];
+    bool is_Identifier_Part(const UCS4 & _uc) const {
+      return Spacing_Modifier_Letters2B0::Identifier_Part[_uc - my_first_letter];
     }
 
-    bool is_Ignorable_Control(const _UCS4 _uc) const {
+    bool is_Ignorable_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Embedding_or_Override(const _UCS4 _uc) const {
+    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Uppercase(const _UCS4 _uc) const {
+    bool is_Uppercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Lowercase(const _UCS4 _uc) const {
-      return Spacing_Modifier_Letters::Lowercase[_uc - my_first_letter];
+    bool is_Lowercase(const UCS4 & _uc) const {
+      return Spacing_Modifier_Letters2B0::Lowercase[_uc - my_first_letter];
     }
 
-    bool is_Space(const _UCS4 _uc) const {
+    bool is_Space(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zs);
     }
 
-    bool is_ISO_Control(const _UCS4 _uc) const {
+    bool is_ISO_Control(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Cc);
     }
 
-    bool is_Punctuation(const _UCS4 _uc) const {
+    bool is_Punctuation(const UCS4 & _uc) const {
       return (isDefined(_uc) && (category(_uc) == CAT_Pc ||
                                  category(_uc) == CAT_Pd ||
                                  category(_uc) == CAT_Ps ||
@@ -281,34 +281,34 @@ namespace Babylon {
              );
     }
 
-    bool is_Line_Separator(const _UCS4 _uc) const {
+    bool is_Line_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zl);
     }
 
-    bool is_Paragraph_Separator(const _UCS4 _uc) const {
+    bool is_Paragraph_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zp);
     }
 
-    bool is_Currency_Symbol(const _UCS4 _uc) const {
+    bool is_Currency_Symbol(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Sc);
     }
 
-    bool is_Titlecase(const _UCS4 _uc) const {
+    bool is_Titlecase(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Lt);
     }
 
 
   private:
     // functions
-    Spacing_Modifier_Letters(const Spacing_Modifier_Letters &) {}
+    Spacing_Modifier_Letters2B0(const Spacing_Modifier_Letters2B0 &) {}
  
-    Babylon::_UCS4 my_first_letter;
-    Babylon::_UCS4 my_last_letter;
+    Babylon::UCS4 my_first_letter;
+    Babylon::UCS4 my_last_letter;
     static const bool isdefined[80];
     static const unsigned char cat[80];
     static const unsigned char bidir[80];
     static const unsigned char decomp[80];
-    static const _UCS2 decompStr[80][2];
+    static const UCS2 decompStr[80][2];
     static const unsigned char lb[80];
     static const unsigned char ea[80];
     static const bool Alphabetic[80];
@@ -317,9 +317,9 @@ namespace Babylon {
     static const bool Identifier_Part[80];
     static const bool Lowercase[80];
 
-  }; // class Spacing_Modifier_Letters
+  }; // class Spacing_Modifier_Letters2B0
 
-  const bool Spacing_Modifier_Letters::isdefined[] = {
+  const bool Spacing_Modifier_Letters2B0::isdefined[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
@@ -332,7 +332,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char Spacing_Modifier_Letters::cat[] = {
+  const unsigned char Spacing_Modifier_Letters2B0::cat[] = {
     CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, 
     CAT_Lm, CAT_Sk, CAT_Sk, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, 
     CAT_Lm, CAT_Lm, CAT_Sk, CAT_Sk, CAT_Sk, CAT_Sk, CAT_Sk, CAT_Sk, 
@@ -345,7 +345,7 @@ namespace Babylon {
     CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm
   };
 
-  const unsigned char Spacing_Modifier_Letters::bidir[] = {
+  const unsigned char Spacing_Modifier_Letters2B0::bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
@@ -358,7 +358,7 @@ namespace Babylon {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L
   };
 
-  const unsigned char Spacing_Modifier_Letters::decomp[] = {
+  const unsigned char Spacing_Modifier_Letters2B0::decomp[] = {
     DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, 
     DECOMP_SUPER, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
@@ -371,7 +371,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const _UCS2 Spacing_Modifier_Letters::decompStr[][2] = {
+  const UCS2 Spacing_Modifier_Letters2B0::decompStr[][2] = {
     { 0x0068, 0x0000 }, { 0x0266, 0x0000 }, { 0x006A, 0x0000 }, { 0x0072, 0x0000 }, 
     { 0x0279, 0x0000 }, { 0x027B, 0x0000 }, { 0x0281, 0x0000 }, { 0x0077, 0x0000 }, 
     { 0x0079, 0x0000 }, { 0x02B9, 0x0000 }, { 0x02BA, 0x0000 }, { 0x02BB, 0x0000 }, 
@@ -394,7 +394,7 @@ namespace Babylon {
     { 0x02FC, 0x0000 }, { 0x02FD, 0x0000 }, { 0x02FE, 0x0000 }, { 0x02FF, 0x0000 }
   };
 
-  const unsigned char Spacing_Modifier_Letters::lb[] = {
+  const unsigned char Spacing_Modifier_Letters2B0::lb[] = {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AI, 
@@ -407,7 +407,7 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
-  const unsigned char Spacing_Modifier_Letters::ea[] = {
+  const unsigned char Spacing_Modifier_Letters2B0::ea[] = {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, 
@@ -420,7 +420,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bool Spacing_Modifier_Letters::Alphabetic[] = {
+    const bool Spacing_Modifier_Letters2B0::Alphabetic[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 0, 0, 1, 1, 1, 1, 1, 
         1, 1, 0, 0, 0, 0, 0, 0, 
@@ -433,7 +433,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool Spacing_Modifier_Letters::Diacritic[] = {
+    const bool Spacing_Modifier_Letters2B0::Diacritic[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
@@ -446,7 +446,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool Spacing_Modifier_Letters::Extender[] = {
+    const bool Spacing_Modifier_Letters2B0::Extender[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -459,7 +459,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool Spacing_Modifier_Letters::Identifier_Part[] = {
+    const bool Spacing_Modifier_Letters2B0::Identifier_Part[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 0, 0, 1, 1, 1, 1, 1, 
         1, 1, 0, 0, 0, 0, 0, 0, 
@@ -472,7 +472,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool Spacing_Modifier_Letters::Lowercase[] = {
+    const bool Spacing_Modifier_Letters2B0::Lowercase[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 0, 0, 0, 0, 0, 0, 0, 
         1, 1, 0, 0, 0, 0, 0, 0, 
@@ -487,4 +487,4 @@ namespace Babylon {
 
 }; // namespace Babylon
  
-dload(Babylon::Spacing_Modifier_Letters);
+dload(Babylon::Spacing_Modifier_Letters2B0);

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 15 Nov 2000 23:22:27 +0100.
+ * ftp.unicode.org on Tue, 21 Nov 2000 21:10:38 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -29,14 +29,14 @@
 
 namespace Babylon {
  
-  class Latin_ExtendedA : public Babylon::Dictionary::Block {
+  class Latin_ExtendedA100 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Latin_ExtendedA() {
-      my_first_letter = 0x0100;
-      my_last_letter  = 0x017F;
+    Latin_ExtendedA100() {
+      my_first_letter = 0x100;
+      my_last_letter  = 0x17F;
       // my_version="3.0.1" // Not yet supported!
       composeMap[0x01020300] = 0x1EB0;
       composeMap[0x01020301] = 0x1EAE;
@@ -67,94 +67,94 @@ namespace Babylon {
     }
 
 
-    ~Latin_ExtendedA() {
+    ~Latin_ExtendedA100() {
     }
 
-    _UCS4 firstLetter() {
+    UCS4 firstLetter() {
       return my_first_letter;
     }
  
-    _UCS4 lastLetter() {
+    UCS4 lastLetter() {
       return my_last_letter;
     }
  
     // query functions:
 
-    string blockname(const _UCS4 _uc) const {
+    string blockname(const UCS4 & _uc) const {
       return "Latin Extended-A";
     }
 
-    bool isDefined(const _UCS4 _uc) const {
+    bool isDefined(const UCS4 & _uc) const {
       return 1;
     }
 
-    _UCS4 uppercase(const _UCS4 _uc) const {
+    UCS4 uppercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Latin_ExtendedA::upper[_uc - my_first_letter];
+      return Latin_ExtendedA100::upper[_uc - my_first_letter];
     }
 
-    _UCS4 lowercase(const _UCS4 _uc) const {
+    UCS4 lowercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Latin_ExtendedA::lower[_uc - my_first_letter];
+      return Latin_ExtendedA100::lower[_uc - my_first_letter];
     }
 
-    _UCS4 titlecase(const _UCS4 _uc) const {
+    UCS4 titlecase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Latin_ExtendedA::title[_uc - my_first_letter];
+      return Latin_ExtendedA100::title[_uc - my_first_letter];
     }
 
-    int decDigitValue(const _UCS4 _uc) const {
+    int decDigitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DEC_DIGIT_VALUE);
     }
 
-    int digitValue(const _UCS4 _uc) const {
+    int digitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DIGIT_VALUE);
     }
 
-    float numericValue(const _UCS4 _uc) const {
+    float numericValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);
     }
 
-    Gen_Cat category(const _UCS4 _uc) const {
+    Gen_Cat category(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Gen_Cat(Latin_ExtendedA::cat[_uc - my_first_letter]);
+      return Babylon::Gen_Cat(Latin_ExtendedA100::cat[_uc - my_first_letter]);
     }
 
-    Can_Comb_Class combClass(const _UCS4 _uc) const {
+    Can_Comb_Class combClass(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Can_Comb_Class(0);
     }
 
-    Bidir_Props bidirProps(const _UCS4 _uc) const {
+    Bidir_Props bidirProps(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
-    Char_Decomp decompType(const _UCS4 _uc) const {
+    Char_Decomp decompType(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Char_Decomp(Latin_ExtendedA::decomp[_uc - my_first_letter]);
+      return Babylon::Char_Decomp(Latin_ExtendedA100::decomp[_uc - my_first_letter]);
     }
 
-    _UTF32String decompose(const _UCS4 _uc) const {
+    UTF32String decompose(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      Babylon::_UTF32String us;
+      Babylon::UTF32String us;
       us.resize(2);
-      us[0] = Latin_ExtendedA::decompStr[_uc - my_first_letter][0];
-      us[1] = Latin_ExtendedA::decompStr[_uc - my_first_letter][1];
+      us[0] = Latin_ExtendedA100::decompStr[_uc - my_first_letter][0];
+      us[1] = Latin_ExtendedA100::decompStr[_uc - my_first_letter][1];
       if (us[1] == 0x0000) {
         us.resize(1);
       }
@@ -162,141 +162,141 @@ namespace Babylon {
       return us;
     }
 
-    bool mustMirror(const _UCS4 _uc) const {
+    bool mustMirror(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return 0;
     }
 
-    Line_Break linebreak(const _UCS4 _uc) const {
+    Line_Break linebreak(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Line_Break(Latin_ExtendedA::lb[_uc - my_first_letter]);
+      return Babylon::Line_Break(Latin_ExtendedA100::lb[_uc - my_first_letter]);
     }
 
-    EA_Width EAWidth(const _UCS4 _uc) const {
+    EA_Width EAWidth(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::EA_Width(Latin_ExtendedA::ea[_uc - my_first_letter]);
+      return Babylon::EA_Width(Latin_ExtendedA100::ea[_uc - my_first_letter]);
     }
 
-    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {
+    UCS4 compose (const UCS4 & starter, const UCS4 & last) {
       return composeMap[starter << 16 | last];
     }
 
-    bool is_Zero_width(const _UCS4 _uc) const {
+    bool is_Zero_width(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_White_space(const _UCS4 _uc) const {
+    bool is_White_space(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_break(const _UCS4 _uc) const {
+    bool is_Non_break(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Control(const _UCS4 _uc) const {
+    bool is_Bidi_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Join_Control(const _UCS4 _uc) const {
+    bool is_Join_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Format_Control(const _UCS4 _uc) const {
+    bool is_Format_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Dash(const _UCS4 _uc) const {
+    bool is_Dash(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hyphen(const _UCS4 _uc) const {
+    bool is_Hyphen(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Quotation_Mark(const _UCS4 _uc) const {
+    bool is_Quotation_Mark(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Terminal_Punctuation(const _UCS4 _uc) const {
+    bool is_Terminal_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Math(const _UCS4 _uc) const {
+    bool is_Math(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const _UCS4 _uc) const {
+    bool is_Paired_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Left_of_Pair(const _UCS4 _uc) const {
+    bool is_Left_of_Pair(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Combining(const _UCS4 _uc) const {
+    bool is_Combining(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_spacing(const _UCS4 _uc) const {
+    bool is_Non_spacing(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hex_Digit(const _UCS4 _uc) const {
+    bool is_Hex_Digit(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const _UCS4 _uc) const {
+    bool is_Alphabetic(const UCS4 & _uc) const {
       return 1;
     }
 
-    bool is_Diacritic(const _UCS4 _uc) const {
+    bool is_Diacritic(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Extender(const _UCS4 _uc) const {
+    bool is_Extender(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const _UCS4 _uc) const {
+    bool is_Identifier_Part(const UCS4 & _uc) const {
       return 1;
     }
 
-    bool is_Ignorable_Control(const _UCS4 _uc) const {
+    bool is_Ignorable_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Embedding_or_Override(const _UCS4 _uc) const {
+    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Uppercase(const _UCS4 _uc) const {
-      return Latin_ExtendedA::Uppercase[_uc - my_first_letter];
+    bool is_Uppercase(const UCS4 & _uc) const {
+      return Latin_ExtendedA100::Uppercase[_uc - my_first_letter];
     }
 
-    bool is_Lowercase(const _UCS4 _uc) const {
-      return Latin_ExtendedA::Lowercase[_uc - my_first_letter];
+    bool is_Lowercase(const UCS4 & _uc) const {
+      return Latin_ExtendedA100::Lowercase[_uc - my_first_letter];
     }
 
-    bool is_Space(const _UCS4 _uc) const {
+    bool is_Space(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zs);
     }
 
-    bool is_ISO_Control(const _UCS4 _uc) const {
+    bool is_ISO_Control(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Cc);
     }
 
-    bool is_Punctuation(const _UCS4 _uc) const {
+    bool is_Punctuation(const UCS4 & _uc) const {
       return (isDefined(_uc) && (category(_uc) == CAT_Pc ||
                                  category(_uc) == CAT_Pd ||
                                  category(_uc) == CAT_Ps ||
@@ -307,44 +307,44 @@ namespace Babylon {
              );
     }
 
-    bool is_Line_Separator(const _UCS4 _uc) const {
+    bool is_Line_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zl);
     }
 
-    bool is_Paragraph_Separator(const _UCS4 _uc) const {
+    bool is_Paragraph_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zp);
     }
 
-    bool is_Currency_Symbol(const _UCS4 _uc) const {
+    bool is_Currency_Symbol(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Sc);
     }
 
-    bool is_Titlecase(const _UCS4 _uc) const {
+    bool is_Titlecase(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Lt);
     }
 
 
   private:
     // functions
-    Latin_ExtendedA(const Latin_ExtendedA &) {}
+    Latin_ExtendedA100(const Latin_ExtendedA100 &) {}
  
-    Babylon::_UCS4 my_first_letter;
-    Babylon::_UCS4 my_last_letter;
-    static const _UCS4 upper[128];
-    static const _UCS4 lower[128];
-    static const _UCS4 title[128];
+    Babylon::UCS4 my_first_letter;
+    Babylon::UCS4 my_last_letter;
+    static const UCS4 upper[128];
+    static const UCS4 lower[128];
+    static const UCS4 title[128];
     static const unsigned char cat[128];
     static const unsigned char decomp[128];
-    static const _UCS2 decompStr[128][2];
+    static const UCS2 decompStr[128][2];
     static const unsigned char lb[128];
     static const unsigned char ea[128];
-    map<_UCS4, _UCS4> composeMap;
+    map<UCS4, UCS4> composeMap;
     static const bool Uppercase[128];
     static const bool Lowercase[128];
 
-  }; // class Latin_ExtendedA
+  }; // class Latin_ExtendedA100
 
-  const _UCS4 Latin_ExtendedA::upper[] = {
+  const UCS4 Latin_ExtendedA100::upper[] = {
     0x0100, 0x0100, 0x0102, 0x0102, 0x0104, 0x0104, 0x0106, 0x0106, 
     0x0108, 0x0108, 0x010A, 0x010A, 0x010C, 0x010C, 0x010E, 0x010E, 
     0x0110, 0x0110, 0x0112, 0x0112, 0x0114, 0x0114, 0x0116, 0x0116, 
@@ -363,7 +363,7 @@ namespace Babylon {
     0x0178, 0x0179, 0x0179, 0x017B, 0x017B, 0x017D, 0x017D, 0x0053
   };
 
-  const _UCS4 Latin_ExtendedA::lower[] = {
+  const UCS4 Latin_ExtendedA100::lower[] = {
     0x0101, 0x0101, 0x0103, 0x0103, 0x0105, 0x0105, 0x0107, 0x0107, 
     0x0109, 0x0109, 0x010B, 0x010B, 0x010D, 0x010D, 0x010F, 0x010F, 
     0x0111, 0x0111, 0x0113, 0x0113, 0x0115, 0x0115, 0x0117, 0x0117, 
@@ -382,7 +382,7 @@ namespace Babylon {
     0x00FF, 0x017A, 0x017A, 0x017C, 0x017C, 0x017E, 0x017E, 0x017F
   };
 
-  const _UCS4 Latin_ExtendedA::title[] = {
+  const UCS4 Latin_ExtendedA100::title[] = {
     0x0100, 0x0100, 0x0102, 0x0102, 0x0104, 0x0104, 0x0106, 0x0106, 
     0x0108, 0x0108, 0x010A, 0x010A, 0x010C, 0x010C, 0x010E, 0x010E, 
     0x0110, 0x0110, 0x0112, 0x0112, 0x0114, 0x0114, 0x0116, 0x0116, 
@@ -401,7 +401,7 @@ namespace Babylon {
     0x0178, 0x0179, 0x0179, 0x017B, 0x017B, 0x017D, 0x017D, 0x0053
   };
 
-  const unsigned char Latin_ExtendedA::cat[] = {
+  const unsigned char Latin_ExtendedA100::cat[] = {
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
@@ -420,7 +420,7 @@ namespace Babylon {
     CAT_Lu, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Ll
   };
 
-  const unsigned char Latin_ExtendedA::decomp[] = {
+  const unsigned char Latin_ExtendedA100::decomp[] = {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
@@ -439,7 +439,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT
   };
 
-  const _UCS2 Latin_ExtendedA::decompStr[][2] = {
+  const UCS2 Latin_ExtendedA100::decompStr[][2] = {
     { 0x0041, 0x0304 }, { 0x0061, 0x0304 }, { 0x0041, 0x0306 }, { 0x0061, 0x0306 }, 
     { 0x0041, 0x0328 }, { 0x0061, 0x0328 }, { 0x0043, 0x0301 }, { 0x0063, 0x0301 }, 
     { 0x0043, 0x0302 }, { 0x0063, 0x0302 }, { 0x0043, 0x0307 }, { 0x0063, 0x0307 }, 
@@ -474,7 +474,7 @@ namespace Babylon {
     { 0x007A, 0x0307 }, { 0x005A, 0x030C }, { 0x007A, 0x030C }, { 0x0073, 0x0000 }
   };
 
-  const unsigned char Latin_ExtendedA::lb[] = {
+  const unsigned char Latin_ExtendedA100::lb[] = {
     LB_AL, LB_AI, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AI, LB_AL, LB_AI, LB_AL, LB_AL, LB_AL, LB_AL, 
@@ -493,7 +493,7 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
-  const unsigned char Latin_ExtendedA::ea[] = {
+  const unsigned char Latin_ExtendedA100::ea[] = {
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
@@ -512,7 +512,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bool Latin_ExtendedA::Uppercase[] = {
+    const bool Latin_ExtendedA100::Uppercase[] = {
         1, 0, 1, 0, 1, 0, 1, 0, 
         1, 0, 1, 0, 1, 0, 1, 0, 
         1, 0, 1, 0, 1, 0, 1, 0, 
@@ -531,7 +531,7 @@ namespace Babylon {
         1, 1, 0, 1, 0, 1, 0, 0
     };
 
-    const bool Latin_ExtendedA::Lowercase[] = {
+    const bool Latin_ExtendedA100::Lowercase[] = {
         0, 1, 0, 1, 0, 1, 0, 1, 
         0, 1, 0, 1, 0, 1, 0, 1, 
         0, 1, 0, 1, 0, 1, 0, 1, 
@@ -552,4 +552,4 @@ namespace Babylon {
 
 }; // namespace Babylon
  
-dload(Babylon::Latin_ExtendedA);
+dload(Babylon::Latin_ExtendedA100);

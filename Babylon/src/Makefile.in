@@ -46,7 +46,7 @@ CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 LIBS		+= @LIBS@
 
-BABYLON		:= String.cc Char.cc Dictionary.cc utils.cc
+BABYLON		:= String.cc Char.cc Dictionary.cc # utils.cc
 
 SRC		:= $(patsubst %, %, $(BABYLON))
 

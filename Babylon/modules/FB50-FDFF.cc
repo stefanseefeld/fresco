@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 15 Nov 2000 23:44:24 +0100.
+ * ftp.unicode.org on Tue, 21 Nov 2000 21:29:24 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -28,12 +28,12 @@
 
 namespace Babylon {
  
-  class Arabic_Presentation_FormsA : public Babylon::Dictionary::Block {
+  class Arabic_Presentation_FormsAFB50 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Arabic_Presentation_FormsA() {
+    Arabic_Presentation_FormsAFB50() {
       my_first_letter = 0xFB50;
       my_last_letter  = 0xFDFF;
       // my_version="3.0.1" // Not yet supported!
@@ -41,94 +41,94 @@ namespace Babylon {
     }
 
 
-    ~Arabic_Presentation_FormsA() {
+    ~Arabic_Presentation_FormsAFB50() {
     }
 
-    _UCS4 firstLetter() {
+    UCS4 firstLetter() {
       return my_first_letter;
     }
  
-    _UCS4 lastLetter() {
+    UCS4 lastLetter() {
       return my_last_letter;
     }
  
     // query functions:
 
-    string blockname(const _UCS4 _uc) const {
+    string blockname(const UCS4 & _uc) const {
       return "Arabic Presentation Forms-A";
     }
 
-    bool isDefined(const _UCS4 _uc) const {
+    bool isDefined(const UCS4 & _uc) const {
       return (isdefined[_uc - my_first_letter]);
     }
 
-    _UCS4 uppercase(const _UCS4 _uc) const {
+    UCS4 uppercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 lowercase(const _UCS4 _uc) const {
+    UCS4 lowercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 titlecase(const _UCS4 _uc) const {
+    UCS4 titlecase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    int decDigitValue(const _UCS4 _uc) const {
+    int decDigitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DEC_DIGIT_VALUE);
     }
 
-    int digitValue(const _UCS4 _uc) const {
+    int digitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DIGIT_VALUE);
     }
 
-    float numericValue(const _UCS4 _uc) const {
+    float numericValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);
     }
 
-    Gen_Cat category(const _UCS4 _uc) const {
+    Gen_Cat category(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Gen_Cat(Arabic_Presentation_FormsA::cat[_uc - my_first_letter]);
+      return Babylon::Gen_Cat(Arabic_Presentation_FormsAFB50::cat[_uc - my_first_letter]);
     }
 
-    Can_Comb_Class combClass(const _UCS4 _uc) const {
+    Can_Comb_Class combClass(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Can_Comb_Class(0);
     }
 
-    Bidir_Props bidirProps(const _UCS4 _uc) const {
+    Bidir_Props bidirProps(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Bidir_Props(Arabic_Presentation_FormsA::bidir[_uc - my_first_letter]);
+      return Babylon::Bidir_Props(Arabic_Presentation_FormsAFB50::bidir[_uc - my_first_letter]);
     }
 
-    Char_Decomp decompType(const _UCS4 _uc) const {
+    Char_Decomp decompType(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Char_Decomp(Arabic_Presentation_FormsA::decomp[_uc - my_first_letter]);
+      return Babylon::Char_Decomp(Arabic_Presentation_FormsAFB50::decomp[_uc - my_first_letter]);
     }
 
-    _UTF32String decompose(const _UCS4 _uc) const {
+    UTF32String decompose(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      Babylon::_UTF32String us;
+      Babylon::UTF32String us;
       us.resize(2);
-      us[0] = Arabic_Presentation_FormsA::decompStr[_uc - my_first_letter][0];
-      us[1] = Arabic_Presentation_FormsA::decompStr[_uc - my_first_letter][1];
+      us[0] = Arabic_Presentation_FormsAFB50::decompStr[_uc - my_first_letter][0];
+      us[1] = Arabic_Presentation_FormsAFB50::decompStr[_uc - my_first_letter][1];
 
       switch (_uc) {
 
@@ -861,141 +861,141 @@ namespace Babylon {
       return us;
     }
 
-    bool mustMirror(const _UCS4 _uc) const {
+    bool mustMirror(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return 0;
     }
 
-    Line_Break linebreak(const _UCS4 _uc) const {
+    Line_Break linebreak(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Line_Break(Arabic_Presentation_FormsA::lb[_uc - my_first_letter]);
+      return Babylon::Line_Break(Arabic_Presentation_FormsAFB50::lb[_uc - my_first_letter]);
     }
 
-    EA_Width EAWidth(const _UCS4 _uc) const {
+    EA_Width EAWidth(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {
+    UCS4 compose (const UCS4 & starter, const UCS4 & last) {
       return 0;
     }
 
-    bool is_Zero_width(const _UCS4 _uc) const {
+    bool is_Zero_width(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_White_space(const _UCS4 _uc) const {
+    bool is_White_space(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_break(const _UCS4 _uc) const {
+    bool is_Non_break(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Control(const _UCS4 _uc) const {
+    bool is_Bidi_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Join_Control(const _UCS4 _uc) const {
+    bool is_Join_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Format_Control(const _UCS4 _uc) const {
+    bool is_Format_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Dash(const _UCS4 _uc) const {
+    bool is_Dash(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hyphen(const _UCS4 _uc) const {
+    bool is_Hyphen(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Quotation_Mark(const _UCS4 _uc) const {
+    bool is_Quotation_Mark(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Terminal_Punctuation(const _UCS4 _uc) const {
+    bool is_Terminal_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Math(const _UCS4 _uc) const {
+    bool is_Math(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const _UCS4 _uc) const {
-      return Arabic_Presentation_FormsA::Paired_Punctuation[_uc - my_first_letter];
+    bool is_Paired_Punctuation(const UCS4 & _uc) const {
+      return Arabic_Presentation_FormsAFB50::Paired_Punctuation[_uc - my_first_letter];
     }
 
-    bool is_Left_of_Pair(const _UCS4 _uc) const {
-      return Arabic_Presentation_FormsA::Left_of_Pair[_uc - my_first_letter];
+    bool is_Left_of_Pair(const UCS4 & _uc) const {
+      return Arabic_Presentation_FormsAFB50::Left_of_Pair[_uc - my_first_letter];
     }
 
-    bool is_Combining(const _UCS4 _uc) const {
+    bool is_Combining(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_spacing(const _UCS4 _uc) const {
+    bool is_Non_spacing(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hex_Digit(const _UCS4 _uc) const {
+    bool is_Hex_Digit(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const _UCS4 _uc) const {
-      return Arabic_Presentation_FormsA::Alphabetic[_uc - my_first_letter];
+    bool is_Alphabetic(const UCS4 & _uc) const {
+      return Arabic_Presentation_FormsAFB50::Alphabetic[_uc - my_first_letter];
     }
 
-    bool is_Diacritic(const _UCS4 _uc) const {
+    bool is_Diacritic(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Extender(const _UCS4 _uc) const {
+    bool is_Extender(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const _UCS4 _uc) const {
-      return Arabic_Presentation_FormsA::Identifier_Part[_uc - my_first_letter];
+    bool is_Identifier_Part(const UCS4 & _uc) const {
+      return Arabic_Presentation_FormsAFB50::Identifier_Part[_uc - my_first_letter];
     }
 
-    bool is_Ignorable_Control(const _UCS4 _uc) const {
+    bool is_Ignorable_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const _UCS4 _uc) const {
-      return Arabic_Presentation_FormsA::Bidi_Arabic_Right_to_Left[_uc - my_first_letter];
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) const {
+      return Arabic_Presentation_FormsAFB50::Bidi_Arabic_Right_to_Left[_uc - my_first_letter];
     }
 
-    bool is_Bidi_Embedding_or_Override(const _UCS4 _uc) const {
+    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Uppercase(const _UCS4 _uc) const {
+    bool is_Uppercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Lowercase(const _UCS4 _uc) const {
+    bool is_Lowercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Space(const _UCS4 _uc) const {
+    bool is_Space(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zs);
     }
 
-    bool is_ISO_Control(const _UCS4 _uc) const {
+    bool is_ISO_Control(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Cc);
     }
 
-    bool is_Punctuation(const _UCS4 _uc) const {
+    bool is_Punctuation(const UCS4 & _uc) const {
       return (isDefined(_uc) && (category(_uc) == CAT_Pc ||
                                  category(_uc) == CAT_Pd ||
                                  category(_uc) == CAT_Ps ||
@@ -1006,34 +1006,34 @@ namespace Babylon {
              );
     }
 
-    bool is_Line_Separator(const _UCS4 _uc) const {
+    bool is_Line_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zl);
     }
 
-    bool is_Paragraph_Separator(const _UCS4 _uc) const {
+    bool is_Paragraph_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zp);
     }
 
-    bool is_Currency_Symbol(const _UCS4 _uc) const {
+    bool is_Currency_Symbol(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Sc);
     }
 
-    bool is_Titlecase(const _UCS4 _uc) const {
+    bool is_Titlecase(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Lt);
     }
 
 
   private:
     // functions
-    Arabic_Presentation_FormsA(const Arabic_Presentation_FormsA &) {}
+    Arabic_Presentation_FormsAFB50(const Arabic_Presentation_FormsAFB50 &) {}
  
-    Babylon::_UCS4 my_first_letter;
-    Babylon::_UCS4 my_last_letter;
+    Babylon::UCS4 my_first_letter;
+    Babylon::UCS4 my_last_letter;
     static const bool isdefined[688];
     static const unsigned char cat[688];
     static const unsigned char bidir[688];
     static const unsigned char decomp[688];
-    static const _UCS2 decompStr[688][2];
+    static const UCS2 decompStr[688][2];
     static const unsigned char lb[688];
     static const bool Paired_Punctuation[688];
     static const bool Left_of_Pair[688];
@@ -1041,9 +1041,9 @@ namespace Babylon {
     static const bool Identifier_Part[688];
     static const bool Bidi_Arabic_Right_to_Left[688];
 
-  }; // class Arabic_Presentation_FormsA
+  }; // class Arabic_Presentation_FormsAFB50
 
-  const bool Arabic_Presentation_FormsA::isdefined[] = {
+  const bool Arabic_Presentation_FormsAFB50::isdefined[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
@@ -1132,7 +1132,7 @@ namespace Babylon {
     1, 1, 1, 1, 0, 0, 0, 0
   };
 
-  const unsigned char Arabic_Presentation_FormsA::cat[] = {
+  const unsigned char Arabic_Presentation_FormsAFB50::cat[] = {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -1221,7 +1221,7 @@ namespace Babylon {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo
   };
 
-  const unsigned char Arabic_Presentation_FormsA::bidir[] = {
+  const unsigned char Arabic_Presentation_FormsAFB50::bidir[] = {
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
@@ -1310,7 +1310,7 @@ namespace Babylon {
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL
   };
 
-  const unsigned char Arabic_Presentation_FormsA::decomp[] = {
+  const unsigned char Arabic_Presentation_FormsAFB50::decomp[] = {
     DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, 
     DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, 
     DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, 
@@ -1399,7 +1399,7 @@ namespace Babylon {
     DECOMP_ISOLATED, DECOMP_ISOLATED, DECOMP_ISOLATED, DECOMP_ISOLATED, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const _UCS2 Arabic_Presentation_FormsA::decompStr[][2] = {
+  const UCS2 Arabic_Presentation_FormsAFB50::decompStr[][2] = {
     { 0x0671, 0x0000 }, { 0x0671, 0x0000 }, { 0x067B, 0x0000 }, { 0x067B, 0x0000 }, 
     { 0x067B, 0x0000 }, { 0x067B, 0x0000 }, { 0x067E, 0x0000 }, { 0x067E, 0x0000 }, 
     { 0x067E, 0x0000 }, { 0x067E, 0x0000 }, { 0x0680, 0x0000 }, { 0x0680, 0x0000 }, 
@@ -1574,7 +1574,7 @@ namespace Babylon {
     { 0xFDFC, 0x0000 }, { 0xFDFD, 0x0000 }, { 0xFDFE, 0x0000 }, { 0xFDFF, 0x0000 }
   };
 
-  const unsigned char Arabic_Presentation_FormsA::lb[] = {
+  const unsigned char Arabic_Presentation_FormsAFB50::lb[] = {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
@@ -1663,7 +1663,7 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
-    const bool Arabic_Presentation_FormsA::Paired_Punctuation[] = {
+    const bool Arabic_Presentation_FormsAFB50::Paired_Punctuation[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -1752,7 +1752,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool Arabic_Presentation_FormsA::Left_of_Pair[] = {
+    const bool Arabic_Presentation_FormsAFB50::Left_of_Pair[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -1841,7 +1841,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool Arabic_Presentation_FormsA::Alphabetic[] = {
+    const bool Arabic_Presentation_FormsAFB50::Alphabetic[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
@@ -1930,7 +1930,7 @@ namespace Babylon {
         1, 1, 1, 1, 0, 0, 0, 0
     };
 
-    const bool Arabic_Presentation_FormsA::Identifier_Part[] = {
+    const bool Arabic_Presentation_FormsAFB50::Identifier_Part[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
@@ -2019,7 +2019,7 @@ namespace Babylon {
         1, 1, 1, 1, 0, 0, 0, 0
     };
 
-    const bool Arabic_Presentation_FormsA::Bidi_Arabic_Right_to_Left[] = {
+    const bool Arabic_Presentation_FormsAFB50::Bidi_Arabic_Right_to_Left[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
@@ -2110,4 +2110,4 @@ namespace Babylon {
 
 }; // namespace Babylon
  
-dload(Babylon::Arabic_Presentation_FormsA);
+dload(Babylon::Arabic_Presentation_FormsAFB50);

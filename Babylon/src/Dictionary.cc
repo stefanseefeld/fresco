@@ -38,7 +38,7 @@ Dictionary       *Dictionary::dictionary = 0;
 Dictionary::Guard Dictionary::guard;
 Mutex             Dictionary::singletonMutex;
 
-bool Dictionary::isDefined(const _UCS4 & _uc) throw (BlockError) {
+bool Dictionary::isDefined(const UCS4 & _uc) throw (BlockError) {
     bool tmp = 0;
     rwLock.rlock();
     try {
@@ -53,9 +53,9 @@ bool Dictionary::isDefined(const _UCS4 & _uc) throw (BlockError) {
     return tmp;
 }
 
-_UCS4 Dictionary::uppercase(const _UCS4 & _uc)
+UCS4 Dictionary::uppercase(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
-    _UCS4 result;
+    UCS4 result;
     rwLock.rlock();
     try {
 	result=findChar(_uc)->uppercase(_uc);
@@ -70,9 +70,9 @@ _UCS4 Dictionary::uppercase(const _UCS4 & _uc)
     return result;
 }
 
-_UCS4 Dictionary::lowercase(const _UCS4 & _uc)
+UCS4 Dictionary::lowercase(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
-    _UCS4 result;
+    UCS4 result;
     rwLock.rlock();
     try {
 	result=findChar(_uc)->lowercase(_uc);
@@ -87,9 +87,9 @@ _UCS4 Dictionary::lowercase(const _UCS4 & _uc)
     return result;
 }
 
-_UCS4 Dictionary::titlecase(const _UCS4 & _uc)
+UCS4 Dictionary::titlecase(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
-    _UCS4 result;
+    UCS4 result;
     rwLock.rlock();
     try {
 	result=findChar(_uc)->titlecase(_uc);
@@ -104,7 +104,7 @@ _UCS4 Dictionary::titlecase(const _UCS4 & _uc)
     return result;
 }
 
-float Dictionary::numericValue(const _UCS4 & _uc)
+float Dictionary::numericValue(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     float result;
     rwLock.rlock();
@@ -121,7 +121,7 @@ float Dictionary::numericValue(const _UCS4 & _uc)
     return result;
 }
 
-int Dictionary::decDigitValue(const _UCS4 & _uc)
+int Dictionary::decDigitValue(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     int result;
     rwLock.rlock();
@@ -138,7 +138,7 @@ int Dictionary::decDigitValue(const _UCS4 & _uc)
     return result;
 }
     
-int Dictionary::digitValue(const _UCS4 & _uc)
+int Dictionary::digitValue(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     int result;
     rwLock.rlock();
@@ -155,7 +155,7 @@ int Dictionary::digitValue(const _UCS4 & _uc)
     return result;
 } 
 
-string Dictionary::blockname(const _UCS4 & _uc)
+string Dictionary::blockname(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     string result;
     rwLock.rlock();
@@ -172,7 +172,7 @@ string Dictionary::blockname(const _UCS4 & _uc)
     return result;
 }
     
-Gen_Cat Dictionary::category(const _UCS4 & _uc)
+Gen_Cat Dictionary::category(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     Gen_Cat result;
     rwLock.rlock();
@@ -189,7 +189,7 @@ Gen_Cat Dictionary::category(const _UCS4 & _uc)
     return result;
 }
 
-Can_Comb_Class Dictionary::combClass(const _UCS4 & _uc)
+Can_Comb_Class Dictionary::combClass(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     Can_Comb_Class result;
     rwLock.rlock();
@@ -206,7 +206,7 @@ Can_Comb_Class Dictionary::combClass(const _UCS4 & _uc)
     return result;
 }
     
-Bidir_Props Dictionary::bidirProps(const _UCS4 & _uc)
+Bidir_Props Dictionary::bidirProps(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     Bidir_Props result;
     rwLock.rlock();
@@ -223,7 +223,7 @@ Bidir_Props Dictionary::bidirProps(const _UCS4 & _uc)
     return result;
 }
     
-Char_Decomp Dictionary::decompType(const _UCS4 & _uc) 
+Char_Decomp Dictionary::decompType(const UCS4 & _uc) 
     throw (UndefinedProperty, BlockError) {
     Char_Decomp result;
     rwLock.rlock();
@@ -240,9 +240,9 @@ Char_Decomp Dictionary::decompType(const _UCS4 & _uc)
     return result;
 }
 
-_UTF32String Dictionary::decompose(const _UCS4 & _uc)
+UTF32String Dictionary::decompose(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
-    _UTF32String result;
+    UTF32String result;
     rwLock.rlock();
     try {
 	result=findChar(_uc)->decompose(_uc);
@@ -257,9 +257,9 @@ _UTF32String Dictionary::decompose(const _UCS4 & _uc)
     return result;
 }
 
-_UCS4 Dictionary::compose(const _UCS4 & starter, const _UCS4 & last)
+UCS4 Dictionary::compose(const UCS4 & starter, const UCS4 & last)
     throw (UndefinedProperty, BlockError) {
-    _UCS4 result;
+    UCS4 result;
     rwLock.rlock();
     try {
 	result=findChar(starter)->compose(starter, last);
@@ -274,7 +274,7 @@ _UCS4 Dictionary::compose(const _UCS4 & starter, const _UCS4 & last)
     return result;
 }
     
-bool Dictionary::mustMirror(const _UCS4 & _uc)
+bool Dictionary::mustMirror(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     bool result;
     rwLock.rlock();
@@ -291,7 +291,7 @@ bool Dictionary::mustMirror(const _UCS4 & _uc)
     return result;
 }
 
-EA_Width Dictionary::EAWidth(const _UCS4 & _uc)
+EA_Width Dictionary::EAWidth(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     EA_Width result;
     rwLock.rlock();
@@ -308,7 +308,7 @@ EA_Width Dictionary::EAWidth(const _UCS4 & _uc)
     return result;
 }
 
-Line_Break Dictionary::linebreak(const _UCS4 & _uc)
+Line_Break Dictionary::linebreak(const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
     Line_Break result;
     rwLock.rlock();
@@ -336,10 +336,10 @@ Dictionary * Dictionary::instance() {
 } // instance
 
 
-_UTF32String Dictionary::recursiveDecompose(const bool & compat, const _UCS4 & _uc)
+UTF32String Dictionary::recursiveDecompose(const bool & compat, const UCS4 & _uc)
     throw (UndefinedProperty, BlockError) {
-    _UTF32String decomp;
-    _UTF32String result;
+    UTF32String decomp;
+    UTF32String result;
     
     rwLock.rlock();
     try {
@@ -350,7 +350,7 @@ _UTF32String Dictionary::recursiveDecompose(const bool & compat, const _UCS4 & _
 	
 	decomp = decompose(_uc);
 	if(decomp[0] != _uc && !(compat && decompType(_uc) == DECOMP_COMPAT))
-	    for (_UTF32String::const_iterator i = decomp.begin();
+	    for (UTF32String::const_iterator i = decomp.begin();
 		 i != decomp.end();
 		 i++)
 		result += recursiveDecompose(compat, *i);
@@ -368,7 +368,7 @@ _UTF32String Dictionary::recursiveDecompose(const bool & compat, const _UCS4 & _
     return result;
 }
 
-Dictionary::Block * Dictionary::findChar(const _UCS4 & UC)
+Dictionary::Block * Dictionary::findChar(const UCS4 & UC)
     throw (UndefinedProperty, BlockError) {
 
     rwLock.rlock();
@@ -439,8 +439,8 @@ void Dictionary::update(const string & scanDir)
 	if (*block == 0)
 	    continue;
 	
-	_UCS4 start = (*block)->firstLetter();
-	_UCS4 end   = (*block)->lastLetter();
+	UCS4 start = (*block)->firstLetter();
+	UCS4 end   = (*block)->lastLetter();
 	
 	Data current;
 	current.start = start;

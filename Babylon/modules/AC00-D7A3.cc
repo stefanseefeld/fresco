@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 15 Nov 2000 23:39:05 +0100.
+ * ftp.unicode.org on Tue, 21 Nov 2000 21:20:06 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -28,12 +28,12 @@
 
 namespace Babylon {
  
-  class Hangul_Syllables : public Babylon::Dictionary::Block {
+  class Hangul_SyllablesAC00 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Hangul_Syllables() {
+    Hangul_SyllablesAC00() {
       my_first_letter = 0xAC00;
       my_last_letter  = 0xD7A3;
       // my_version="3.0.1" // Not yet supported!
@@ -41,94 +41,94 @@ namespace Babylon {
     }
 
 
-    ~Hangul_Syllables() {
+    ~Hangul_SyllablesAC00() {
     }
 
-    _UCS4 firstLetter() {
+    UCS4 firstLetter() {
       return my_first_letter;
     }
  
-    _UCS4 lastLetter() {
+    UCS4 lastLetter() {
       return my_last_letter;
     }
  
     // query functions:
 
-    string blockname(const _UCS4 _uc) const {
+    string blockname(const UCS4 & _uc) const {
       return "Hangul Syllables";
     }
 
-    bool isDefined(const _UCS4 _uc) const {
+    bool isDefined(const UCS4 & _uc) const {
       return 1;
     }
 
-    _UCS4 uppercase(const _UCS4 _uc) const {
+    UCS4 uppercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 lowercase(const _UCS4 _uc) const {
+    UCS4 lowercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 titlecase(const _UCS4 _uc) const {
+    UCS4 titlecase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    int decDigitValue(const _UCS4 _uc) const {
+    int decDigitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DEC_DIGIT_VALUE);
     }
 
-    int digitValue(const _UCS4 _uc) const {
+    int digitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DIGIT_VALUE);
     }
 
-    float numericValue(const _UCS4 _uc) const {
+    float numericValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);
     }
 
-    Gen_Cat category(const _UCS4 _uc) const {
+    Gen_Cat category(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Gen_Cat(CAT_Lo);
     }
 
-    Can_Comb_Class combClass(const _UCS4 _uc) const {
+    Can_Comb_Class combClass(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Can_Comb_Class(0);
     }
 
-    Bidir_Props bidirProps(const _UCS4 _uc) const {
+    Bidir_Props bidirProps(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
-    Char_Decomp decompType(const _UCS4 _uc) const {
+    Char_Decomp decompType(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
     }
 
-    _UTF32String decompose(const _UCS4 _uc) const {
+    UTF32String decompose(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      const _UCS4 sBase = 0xAC00;
-      const _UCS4 lBase = 0x1100;
-      const _UCS4 vBase = 0x1161;
-      const _UCS4 tBase = 0x11A7;
+      const UCS4 sBase = 0xAC00;
+      const UCS4 lBase = 0x1100;
+      const UCS4 vBase = 0x1161;
+      const UCS4 tBase = 0x11A7;
 
       const int lCount = 19;
       const int vCount = 21;
@@ -139,14 +139,14 @@ namespace Babylon {
       int sIndex = _uc - sBase;
 
       if (sIndex < 0 || sIndex >= sCount) {
-        _UTF32String _us; _us.resize(1); _us[0]=_uc;
+        UTF32String _us; _us.resize(1); _us[0]=_uc;
         return _us;
 
       }
-      _UTF32String res;
-      _UCS4 l = lBase + sIndex / nCount;
-      _UCS4 v = vBase + (sIndex % nCount) / tCount;
-      _UCS4 t = tBase + sIndex % tCount;
+      UTF32String res;
+      UCS4 l = lBase + sIndex / nCount;
+      UCS4 v = vBase + (sIndex % nCount) / tCount;
+      UCS4 t = tBase + sIndex % tCount;
 
       res += l; res += v;
       if (t != tBase) res += t;
@@ -154,29 +154,29 @@ namespace Babylon {
       return res;
     }
 
-    bool mustMirror(const _UCS4 _uc) const {
+    bool mustMirror(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return 0;
     }
 
-    Line_Break linebreak(const _UCS4 _uc) const {
+    Line_Break linebreak(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Line_Break(LB_ID);
     }
 
-    EA_Width EAWidth(const _UCS4 _uc) const {
+    EA_Width EAWidth(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::EA_Width(EA_WIDTH_W);
     }
 
-    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {
-      const _UCS4 sBase = 0xAC00;
-      const _UCS4 lBase = 0x1100;
-      const _UCS4 vBase = 0x1161;
-      const _UCS4 tBase = 0x11A7;
+    UCS4 compose (const UCS4 & starter, const UCS4 & last) {
+      const UCS4 sBase = 0xAC00;
+      const UCS4 lBase = 0x1100;
+      const UCS4 vBase = 0x1161;
+      const UCS4 tBase = 0x11A7;
 
       const int lCount = 19;
       const int vCount = 21;
@@ -184,14 +184,14 @@ namespace Babylon {
       const int nCount = vCount * tCount;
       const int sCount = lCount * nCount;
 
-      _UCS4 result = 0;
+      UCS4 result = 0;
       // check if the characters are L and V
       int lIndex = starter - vBase;
       if ( 0 <= lIndex && lIndex < lCount ) {
         int vIndex = last - vBase;
         if ( 0 <= vIndex && vIndex < vCount ) {
           // make syllable form LV
-          result = _UCS4(sBase + (lIndex * vCount + vIndex) * tCount);
+          result = UCS4(sBase + (lIndex * vCount + vIndex) * tCount);
         }
       }
 
@@ -206,119 +206,119 @@ namespace Babylon {
       return result;
     }
 
-    bool is_Zero_width(const _UCS4 _uc) const {
+    bool is_Zero_width(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_White_space(const _UCS4 _uc) const {
+    bool is_White_space(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_break(const _UCS4 _uc) const {
+    bool is_Non_break(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Control(const _UCS4 _uc) const {
+    bool is_Bidi_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Join_Control(const _UCS4 _uc) const {
+    bool is_Join_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Format_Control(const _UCS4 _uc) const {
+    bool is_Format_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Dash(const _UCS4 _uc) const {
+    bool is_Dash(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hyphen(const _UCS4 _uc) const {
+    bool is_Hyphen(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Quotation_Mark(const _UCS4 _uc) const {
+    bool is_Quotation_Mark(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Terminal_Punctuation(const _UCS4 _uc) const {
+    bool is_Terminal_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Math(const _UCS4 _uc) const {
+    bool is_Math(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const _UCS4 _uc) const {
+    bool is_Paired_Punctuation(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Left_of_Pair(const _UCS4 _uc) const {
+    bool is_Left_of_Pair(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Combining(const _UCS4 _uc) const {
+    bool is_Combining(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_spacing(const _UCS4 _uc) const {
+    bool is_Non_spacing(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hex_Digit(const _UCS4 _uc) const {
+    bool is_Hex_Digit(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const _UCS4 _uc) const {
+    bool is_Alphabetic(const UCS4 & _uc) const {
       return 1;
     }
 
-    bool is_Diacritic(const _UCS4 _uc) const {
+    bool is_Diacritic(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Extender(const _UCS4 _uc) const {
+    bool is_Extender(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const _UCS4 _uc) const {
+    bool is_Identifier_Part(const UCS4 & _uc) const {
       return 1;
     }
 
-    bool is_Ignorable_Control(const _UCS4 _uc) const {
+    bool is_Ignorable_Control(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Embedding_or_Override(const _UCS4 _uc) const {
+    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Uppercase(const _UCS4 _uc) const {
+    bool is_Uppercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Lowercase(const _UCS4 _uc) const {
+    bool is_Lowercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Space(const _UCS4 _uc) const {
+    bool is_Space(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zs);
     }
 
-    bool is_ISO_Control(const _UCS4 _uc) const {
+    bool is_ISO_Control(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Cc);
     }
 
-    bool is_Punctuation(const _UCS4 _uc) const {
+    bool is_Punctuation(const UCS4 & _uc) const {
       return (isDefined(_uc) && (category(_uc) == CAT_Pc ||
                                  category(_uc) == CAT_Pd ||
                                  category(_uc) == CAT_Ps ||
@@ -329,32 +329,32 @@ namespace Babylon {
              );
     }
 
-    bool is_Line_Separator(const _UCS4 _uc) const {
+    bool is_Line_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zl);
     }
 
-    bool is_Paragraph_Separator(const _UCS4 _uc) const {
+    bool is_Paragraph_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zp);
     }
 
-    bool is_Currency_Symbol(const _UCS4 _uc) const {
+    bool is_Currency_Symbol(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Sc);
     }
 
-    bool is_Titlecase(const _UCS4 _uc) const {
+    bool is_Titlecase(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Lt);
     }
 
 
   private:
     // functions
-    Hangul_Syllables(const Hangul_Syllables &) {}
+    Hangul_SyllablesAC00(const Hangul_SyllablesAC00 &) {}
  
-    Babylon::_UCS4 my_first_letter;
-    Babylon::_UCS4 my_last_letter;
+    Babylon::UCS4 my_first_letter;
+    Babylon::UCS4 my_last_letter;
 
-  }; // class Hangul_Syllables
+  }; // class Hangul_SyllablesAC00
 
 }; // namespace Babylon
  
-dload(Babylon::Hangul_Syllables);
+dload(Babylon::Hangul_SyllablesAC00);

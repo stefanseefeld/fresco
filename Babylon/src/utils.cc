@@ -29,50 +29,51 @@ bool Babylon::isGraphemBoundary(Babylon::Char & a, Babylon::Char & b) {
     return 0;
 } // isGraphemBoundary(...)
 
-template<class SEQUENCE>
-SEQUENCE translate(Babylon::String & bs) {
-    SEQUENCE res;
-    res.resize(1);
-    if (sizeof(res[0]) == 1) {
-	// Use UTF8:
-	Babylon::UTF8String & tmp = bs.utf8();
-	res.resize(tmp.length());
-	copy(tmp.begin(), tmp.end(), res.get_buffer());
-    } else if (sizeof(res[0]) == 2) {
-	// Use UTF16:
-	Babylon::UTF16String & tmp2 = bs.utf16();
-	res.resize(tmp.length());
-	copy(tmp.begin(), tmp.end(), res.get_buffer());
-    } else if (sizeof(res[0]) == 4) {
-	// Use UTF32:
-	res.resize(bs.length());
-	copy(bs.begin(), bs.end(), res.get_buffer());
-    } else {
-	throw TransError(TRANS_CAN_NOT_AUTOTRANSLATE);
-    }
-    return res;
-}
-
-template<class SEQUENCE>
-Babylon::String translate(SEQUENCE & s) {
-    Babylon::String bs;
-    if (sizeof(s[0]) == 1) {
-	Babylon::UTF8String tmp1;
+template<class SEQ>
+String decode(const SEQ & s) {
+    String bs;
+    size = sizeof(s[0]);
+    if (size == 1) {
+	Babylon::UTF8String tmp;
 	tmp.resize(s.length());
 	copy(s.get_buffer(), s.get_buffer() + s.length(), tmp.begin());
 	bs.utf8(tmp);
-    } else if (sizeof(s[0]) == 2) {
-	Babylon::UTF16String tmp2;
+    } else if (size == 2) {
+	Babylon::UTF16String tmp;
 	tmp.resize(s.length());
 	copy(s.get_buffer(), s.get_buffer() + s.length(), tmp.begin());
 	bs.utf16(tmp);
-    } else if (sizeof(s[0]) == 4) {
+    } else if (size == 4) {
 	bs.resize(s.length());
 	copy(s.get_buffer(), s.get_buffer() + s.length(), bs.begin());
     } else {
 	throw TransError(TRANS_CAN_NOT_AUTOTRANSLATE);
     }
     return bs;
+}
+
+template<class SEQ>
+SEQ encode(const String &) {
+    SEQ s;
+    int size = sizeof(s);
+    if (size == 1) {
+	// Use UTF8:
+	UTF8String tmp = bs.utf8();
+	s.length(tmp.length());
+	copy(tmp.begin(), tmp.end(), s.get_buffer());
+    } else if (size == 2) {
+	// Use UTF16:
+	UTF16String tmp = bs.utf16();
+	s.length(tmp.length());
+	copy(tmp.begin(), tmp.end(), s.get_buffer());
+    } else if (size == 4) {
+	// Use UTF32:
+	s.length(bs.length());
+	UTF32String tmp = bs.utf32();
+	copy(tmp.begin(), tmp.end(), s.get_buffer());
+    } else
+	throw TransError(TRANS_CAN_NOT_AUTOTRANSCODE);
+    return targetBegin;
 }
 
 } // namespace Babylon

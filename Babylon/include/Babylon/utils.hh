@@ -34,11 +34,11 @@ namespace Babylon {
 
 bool isGraphemBoundary(Babylon::Char &, Babylon::Char &);
 
-template<class SEQUENCE>
-SEQUENCE translate(Babylon::String & bs);
+template<class SEQ>
+String decode(const SEQ &);
 
-template<class SEQUENCE>
-Babylon::String translate(SEQUENCE & s);
+template<class SEQ>
+SEQ encode(const String &);
 
 } // namespace Babylon
 

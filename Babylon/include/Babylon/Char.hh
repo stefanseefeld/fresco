@@ -39,7 +39,7 @@ class Char {
 public:
     
     // QUERIES:
-    _UCS4 myValue() const { return my_unicode; }
+    UCS4 myValue() const { return my_unicode; }
     //. returns the Unicode value of this Unicode character.
     
     Char uppercase() const throw (UndefinedProperty, BlockError);
@@ -190,8 +190,8 @@ public:
 	if (c < 0) throw TransError(TRANS_NO_ASCII);
 	my_unicode = c;
     }
-    Char(const _UCS4 & _uc) { my_unicode = _uc; }
-    Char(const int & i) { my_unicode = _UCS4(i); };
+    Char(const UCS4 & _uc) { my_unicode = _uc; }
+    Char(const int & i) { my_unicode = UCS4(i); };
     
     Char(const Char & UC) { my_unicode = UC.myValue(); }
     
@@ -201,18 +201,18 @@ public:
 	return *this;
     } // operator = (Char)
     
-    Char & operator = (const _UCS4 & _UC){
-	my_unicode = _UC;
+    Char & operator = (const UCS4 & UC){
+	my_unicode = UC;
 	return *this;
-    } // operator = (_UCS4)
+    } // operator = (UCS4)
     
     Char & operator = (const char & C) {
-	my_unicode = _UCS4(C);
+	my_unicode = UCS4(C);
 	return *this;
     } // operator = (char)
     
     Char & operator = (const int & I) {
-	my_unicode = _UCS4(I);
+	my_unicode = UCS4(I);
 	return *this;
     } // operator = (int)
     
@@ -243,18 +243,18 @@ public:
 	return *this;
     } // operator +=
     
-    Char & operator += (_UCS4 & _UC) {
-	my_unicode += _UC;
+    Char & operator += (UCS4 & UC) {
+	my_unicode += UC;
 	return *this;
     } // operator +=
     
     Char & operator += (int & I) {
-	my_unicode += _UCS4(I);
+	my_unicode += UCS4(I);
 	return *this;
     } // operator +=
     
     Char & operator += (char & C) {
-	my_unicode += _UCS4(C);
+	my_unicode += UCS4(C);
 	return *this;
     } // operator +=
     
@@ -263,18 +263,18 @@ public:
 	return *this;
     } // operator -=
     
-    Char & operator -= (_UCS4 & _UC) {
-	my_unicode -= _UC;
+    Char & operator -= (UCS4 & UC) {
+	my_unicode -= UC;
 	return *this;
     } // operator -=
     
     Char & operator -= (int & I) {
-	my_unicode -= _UCS4(I);
+	my_unicode -= UCS4(I);
 	return *this;
     } // operator -=
     
     Char & operator -= (char & C) {
-	my_unicode -= _UCS4(C);
+	my_unicode -= UCS4(C);
 	return *this;
     } // operator -=
     
@@ -283,18 +283,18 @@ public:
 	return *this;
     } // operator *=
     
-    Char & operator *= (_UCS4 & _UC) {
-	my_unicode *= _UC;
+    Char & operator *= (UCS4 & UC) {
+	my_unicode *= UC;
 	return *this;
     } // operator *=
     
     Char & operator *= (int & I) {
-	my_unicode *= _UCS4(I);
+	my_unicode *= UCS4(I);
 	return *this;
     } // operator *=
     
     Char & operator *= (char & C) {
-	my_unicode *= _UCS4(C);
+	my_unicode *= UCS4(C);
 	return *this;
     } // operator *=
     
@@ -312,7 +312,7 @@ public:
     // Destructor:
     // ~Char() // nothing special to do...
 private:
-    _UCS4 my_unicode;
+    UCS4 my_unicode;
 }; // class Char
     
 } // namespace Babylon

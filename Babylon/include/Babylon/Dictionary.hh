@@ -43,146 +43,146 @@ private:
     void unlock() { rwLock.unlock(); };
     
     // Query functions:
-    bool isDefined(const _UCS4 & _uc) throw (BlockError);    
-    _UCS4 uppercase(const _UCS4 & _uc)
+    bool isDefined(const UCS4 & _uc) throw (BlockError);    
+    UCS4 uppercase(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
-    _UCS4 lowercase(const _UCS4 & _uc)
+    UCS4 lowercase(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
-    _UCS4 titlecase(const _UCS4 & _uc)
-	throw (UndefinedProperty, BlockError);
-    
-    float numericValue(const _UCS4 & _uc)
-	throw (UndefinedProperty, BlockError);
-    int decDigitValue(const _UCS4 & _uc)
-	throw (UndefinedProperty, BlockError);
-    int digitValue(const _UCS4 & _uc)
+    UCS4 titlecase(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
     
-    string blockname(const _UCS4 & _uc)
+    float numericValue(const UCS4 & _uc)
+	throw (UndefinedProperty, BlockError);
+    int decDigitValue(const UCS4 & _uc)
+	throw (UndefinedProperty, BlockError);
+    int digitValue(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
     
-    Gen_Cat category(const _UCS4 & _uc)
-	throw (UndefinedProperty, BlockError);
-    Can_Comb_Class combClass(const _UCS4 & _uc)
-	throw (UndefinedProperty, BlockError);
-    Bidir_Props bidirProps(const _UCS4 & _uc)
-	throw (UndefinedProperty, BlockError);
-    Char_Decomp decompType(const _UCS4 & _uc) 
-	throw (UndefinedProperty, BlockError);
-    _UTF32String decompose(const _UCS4 & _uc)
+    string blockname(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
     
-    _UTF32String recursiveDecompose(const bool & compat, const _UCS4 & _uc)
+    Gen_Cat category(const UCS4 & _uc)
+	throw (UndefinedProperty, BlockError);
+    Can_Comb_Class combClass(const UCS4 & _uc)
+	throw (UndefinedProperty, BlockError);
+    Bidir_Props bidirProps(const UCS4 & _uc)
+	throw (UndefinedProperty, BlockError);
+    Char_Decomp decompType(const UCS4 & _uc) 
+	throw (UndefinedProperty, BlockError);
+    UTF32String decompose(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
     
-    _UCS4 compose(const _UCS4 & starter, const _UCS4 & last)
+    UTF32String recursiveDecompose(const bool & compat, const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
     
-    bool mustMirror(const _UCS4 & _uc)
+    UCS4 compose(const UCS4 & starter, const UCS4 & last)
 	throw (UndefinedProperty, BlockError);
     
-    EA_Width EAWidth(const _UCS4 & _uc)
+    bool mustMirror(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
-    Line_Break linebreak(const _UCS4 & _uc)
+    
+    EA_Width EAWidth(const UCS4 & _uc)
+	throw (UndefinedProperty, BlockError);
+    Line_Break linebreak(const UCS4 & _uc)
 	throw (UndefinedProperty, BlockError);
 
-    bool is_Zero_width(const _UCS4 & _uc) {
+    bool is_Zero_width(const UCS4 & _uc) {
 	return findChar(_uc)->is_Zero_width(_uc);
     }
-    bool is_White_space(const _UCS4 & _uc) {
+    bool is_White_space(const UCS4 & _uc) {
 	return findChar(_uc)->is_White_space(_uc);
     }
-    bool is_Non_break(const _UCS4 & _uc) {
+    bool is_Non_break(const UCS4 & _uc) {
 	return findChar(_uc)->is_Non_break(_uc);
     }
-    bool is_Bidi_Control(const _UCS4 & _uc) {
+    bool is_Bidi_Control(const UCS4 & _uc) {
 	return findChar(_uc)->is_Bidi_Control(_uc);
     }
-    bool is_Join_Control(const _UCS4 & _uc) {
+    bool is_Join_Control(const UCS4 & _uc) {
 	return findChar(_uc)->is_Join_Control(_uc);
     }
-    bool is_Format_Control(const _UCS4 & _uc) {
+    bool is_Format_Control(const UCS4 & _uc) {
 	return findChar(_uc)->is_Format_Control(_uc);
     }
-    bool is_Dash(const _UCS4 & _uc) {
+    bool is_Dash(const UCS4 & _uc) {
 	return findChar(_uc)->is_Dash(_uc);
     }
-    bool is_Hyphen(const _UCS4 & _uc) {
+    bool is_Hyphen(const UCS4 & _uc) {
 	return findChar(_uc)->is_Hyphen(_uc);
     }
-    bool is_Quotation_Mark(const _UCS4 & _uc) {
+    bool is_Quotation_Mark(const UCS4 & _uc) {
 	return findChar(_uc)->is_Quotation_Mark(_uc);
     }
-    bool is_Terminal_Punctuation(const _UCS4 & _uc) {
+    bool is_Terminal_Punctuation(const UCS4 & _uc) {
 	return findChar(_uc)->is_Terminal_Punctuation(_uc);
     }
-    bool is_Math(const _UCS4 & _uc) {
+    bool is_Math(const UCS4 & _uc) {
 	return findChar(_uc)->is_Math(_uc);
     }
-    bool is_Paired_Punctuation(const _UCS4 & _uc) {
+    bool is_Paired_Punctuation(const UCS4 & _uc) {
 	return findChar(_uc)->is_Paired_Punctuation(_uc);
     }
-    bool is_Left_of_Pair(const _UCS4 & _uc) {
+    bool is_Left_of_Pair(const UCS4 & _uc) {
 	return findChar(_uc)->is_Left_of_Pair(_uc);
     }
-    bool is_Combining(const _UCS4 & _uc) {
+    bool is_Combining(const UCS4 & _uc) {
 	return findChar(_uc)->is_Combining(_uc);
     }
-    bool is_Non_spacing(const _UCS4 & _uc) {
+    bool is_Non_spacing(const UCS4 & _uc) {
 	return findChar(_uc)->is_Non_spacing(_uc);
     }
-    bool is_Hex_Digit(const _UCS4 & _uc) {
+    bool is_Hex_Digit(const UCS4 & _uc) {
 	return findChar(_uc)->is_Hex_Digit(_uc);
     }
-    bool is_Alphabetic(const _UCS4 & _uc) {
+    bool is_Alphabetic(const UCS4 & _uc) {
 	return findChar(_uc)->is_Alphabetic(_uc);
     }
-    bool is_Diacritic(const _UCS4 & _uc) {
+    bool is_Diacritic(const UCS4 & _uc) {
 	return findChar(_uc)->is_Diacritic(_uc);
     }
-    bool is_Extender(const _UCS4 & _uc) {
+    bool is_Extender(const UCS4 & _uc) {
 	return findChar(_uc)->is_Extender(_uc);
     }
-    bool is_Identifier_Part(const _UCS4 & _uc) {
+    bool is_Identifier_Part(const UCS4 & _uc) {
 	return findChar(_uc)->is_Identifier_Part(_uc);
     }
-    bool is_Ignorable_Control(const _UCS4 & _uc) {
+    bool is_Ignorable_Control(const UCS4 & _uc) {
 	return findChar(_uc)->is_Ignorable_Control(_uc);
     }
-    bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 & _uc) {
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) {
 	return findChar(_uc)->is_Bidi_Hebrew_Right_to_Left(_uc);
     }
-    bool is_Bidi_Arabic_Right_to_Left(const _UCS4 & _uc) {
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) {
 	return findChar(_uc)->is_Bidi_Arabic_Right_to_Left(_uc);
     }
-    bool is_Bidi_Embedding_or_Override(const _UCS4 & _uc) {
+    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) {
 	return findChar(_uc)->is_Bidi_Embedding_or_Override(_uc);
     }
-    bool is_Uppercase(const _UCS4 & _uc) {
+    bool is_Uppercase(const UCS4 & _uc) {
 	return findChar(_uc)->is_Uppercase(_uc);
     }
-    bool is_Lowercase(const _UCS4 & _uc) {
+    bool is_Lowercase(const UCS4 & _uc) {
 	return findChar(_uc)->is_Lowercase(_uc);
     }
-    bool is_Space(const _UCS4 & _uc) {
+    bool is_Space(const UCS4 & _uc) {
 	return findChar(_uc)->is_Space(_uc);
     }
-    bool is_ISO_Control(const _UCS4 & _uc) {
+    bool is_ISO_Control(const UCS4 & _uc) {
 	return findChar(_uc)->is_ISO_Control(_uc);
     }
-    bool is_Punctuation(const _UCS4 & _uc) {
+    bool is_Punctuation(const UCS4 & _uc) {
 	return findChar(_uc)->is_Punctuation(_uc);
     }
-    bool is_Line_Separator(const _UCS4 & _uc) {
+    bool is_Line_Separator(const UCS4 & _uc) {
 	return findChar(_uc)->is_Line_Separator(_uc);
     }
-    bool is_Paragraph_Separator(const _UCS4 & _uc) {
+    bool is_Paragraph_Separator(const UCS4 & _uc) {
 	return findChar(_uc)->is_Paragraph_Separator(_uc);
     }
-    bool is_Currency_Symbol(const _UCS4 & _uc) {
+    bool is_Currency_Symbol(const UCS4 & _uc) {
 	return findChar(_uc)->is_Currency_Symbol(_uc);
     }
-    bool is_Titlecase(const _UCS4 & _uc) {
+    bool is_Titlecase(const UCS4 & _uc) {
 	return findChar(_uc)->is_Titlecase(_uc);
     }
     
@@ -196,91 +196,91 @@ private:
 	virtual void clean();
 	
 	// Query Functions:
-	virtual bool isDefined(const _UCS4 &) const
+	virtual bool isDefined(const UCS4 &) const
 	    throw (BlockError) = 0;
-	virtual _UCS4 uppercase(const _UCS4 &) const
+	virtual UCS4 uppercase(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual _UCS4 lowercase(const _UCS4 &) const
+	virtual UCS4 lowercase(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual _UCS4 titlecase(const _UCS4 &) const
+	virtual UCS4 titlecase(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual float numericValue(const _UCS4 &) const
+	virtual float numericValue(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual int decDigitValue(const _UCS4 &) const
+	virtual int decDigitValue(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual int digitValue(const _UCS4 &) const 
+	virtual int digitValue(const UCS4 &) const 
 	    throw (UndefinedProperty) = 0;
-	virtual string blockname(const _UCS4 &) const
+	virtual string blockname(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual Gen_Cat category(const _UCS4 &) const
+	virtual Gen_Cat category(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual Can_Comb_Class combClass(const _UCS4 &) const
+	virtual Can_Comb_Class combClass(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual Bidir_Props bidirProps(const _UCS4 &) const
+	virtual Bidir_Props bidirProps(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual Char_Decomp decompType(const _UCS4 &) const
+	virtual Char_Decomp decompType(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual _UTF32String decompose(const _UCS4 &) const
+	virtual UTF32String decompose(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual _UCS4 compose(const _UCS4 &, const _UCS4 &)
+	virtual UCS4 compose(const UCS4 &, const UCS4 &)
 	    throw (UndefinedProperty) = 0;
-	virtual bool mustMirror(const _UCS4 &) const
+	virtual bool mustMirror(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual EA_Width EAWidth(const _UCS4 &) const
+	virtual EA_Width EAWidth(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual Line_Break linebreak(const _UCS4 &) const
+	virtual Line_Break linebreak(const UCS4 &) const
 	    throw (UndefinedProperty) = 0;
-	virtual bool is_Zero_width(const _UCS4 &) const = 0;
-	virtual bool is_White_space(const _UCS4 &) const = 0;
-	virtual bool is_Non_break(const _UCS4 &) const = 0;
-	virtual bool is_Bidi_Control(const _UCS4 &) const = 0;
-	virtual bool is_Join_Control(const _UCS4 &) const = 0;
-	virtual bool is_Format_Control(const _UCS4 &) const = 0;
-	virtual bool is_Dash(const _UCS4 &) const = 0;
-	virtual bool is_Hyphen(const _UCS4 &) const = 0;
-	virtual bool is_Quotation_Mark(const _UCS4 &) const = 0;
-	virtual bool is_Terminal_Punctuation(const _UCS4 &) const = 0;
-	virtual bool is_Math(const _UCS4 &) const = 0;
-	virtual bool is_Paired_Punctuation(const _UCS4 &) const = 0;
-	virtual bool is_Left_of_Pair(const _UCS4 &) const = 0;
-	virtual bool is_Combining(const _UCS4 &) const = 0;
-	virtual bool is_Non_spacing(const _UCS4 &) const = 0;
-	virtual bool is_Hex_Digit(const _UCS4 &) const = 0;
-	virtual bool is_Alphabetic(const _UCS4 &) const = 0;
-	virtual bool is_Diacritic(const _UCS4 &) const = 0;
-	virtual bool is_Extender(const _UCS4 &) const = 0;
-	virtual bool is_Identifier_Part(const _UCS4 &) const = 0;
-	virtual bool is_Ignorable_Control(const _UCS4 &) const = 0;
-	virtual bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 &) const = 0;
-	virtual bool is_Bidi_Arabic_Right_to_Left(const _UCS4 &) const = 0;
-	virtual bool is_Bidi_Embedding_or_Override(const _UCS4 &) const = 0;
-	virtual bool is_Uppercase(const _UCS4 &) const = 0;
-	virtual bool is_Lowercase(const _UCS4 &) const = 0;
-	virtual bool is_Space(const _UCS4 &) const = 0;
-	virtual bool is_ISO_Control(const _UCS4 &) const = 0;
-	virtual bool is_Punctuation(const _UCS4 &) const = 0;
-	virtual bool is_Line_Separator(const _UCS4 &) const = 0;
-	virtual bool is_Paragraph_Separator(const _UCS4 &) const = 0;
-	virtual bool is_Currency_Symbol(const _UCS4 &) const = 0;
-	virtual bool is_Titlecase(const _UCS4 &) const = 0;
+	virtual bool is_Zero_width(const UCS4 &) const = 0;
+	virtual bool is_White_space(const UCS4 &) const = 0;
+	virtual bool is_Non_break(const UCS4 &) const = 0;
+	virtual bool is_Bidi_Control(const UCS4 &) const = 0;
+	virtual bool is_Join_Control(const UCS4 &) const = 0;
+	virtual bool is_Format_Control(const UCS4 &) const = 0;
+	virtual bool is_Dash(const UCS4 &) const = 0;
+	virtual bool is_Hyphen(const UCS4 &) const = 0;
+	virtual bool is_Quotation_Mark(const UCS4 &) const = 0;
+	virtual bool is_Terminal_Punctuation(const UCS4 &) const = 0;
+	virtual bool is_Math(const UCS4 &) const = 0;
+	virtual bool is_Paired_Punctuation(const UCS4 &) const = 0;
+	virtual bool is_Left_of_Pair(const UCS4 &) const = 0;
+	virtual bool is_Combining(const UCS4 &) const = 0;
+	virtual bool is_Non_spacing(const UCS4 &) const = 0;
+	virtual bool is_Hex_Digit(const UCS4 &) const = 0;
+	virtual bool is_Alphabetic(const UCS4 &) const = 0;
+	virtual bool is_Diacritic(const UCS4 &) const = 0;
+	virtual bool is_Extender(const UCS4 &) const = 0;
+	virtual bool is_Identifier_Part(const UCS4 &) const = 0;
+	virtual bool is_Ignorable_Control(const UCS4 &) const = 0;
+	virtual bool is_Bidi_Hebrew_Right_to_Left(const UCS4 &) const = 0;
+	virtual bool is_Bidi_Arabic_Right_to_Left(const UCS4 &) const = 0;
+	virtual bool is_Bidi_Embedding_or_Override(const UCS4 &) const = 0;
+	virtual bool is_Uppercase(const UCS4 &) const = 0;
+	virtual bool is_Lowercase(const UCS4 &) const = 0;
+	virtual bool is_Space(const UCS4 &) const = 0;
+	virtual bool is_ISO_Control(const UCS4 &) const = 0;
+	virtual bool is_Punctuation(const UCS4 &) const = 0;
+	virtual bool is_Line_Separator(const UCS4 &) const = 0;
+	virtual bool is_Paragraph_Separator(const UCS4 &) const = 0;
+	virtual bool is_Currency_Symbol(const UCS4 &) const = 0;
+	virtual bool is_Titlecase(const UCS4 &) const = 0;
 
-	virtual _UCS4 firstLetter() = 0;
-	virtual _UCS4 lastLetter() = 0;
+	virtual UCS4 firstLetter() = 0;
+	virtual UCS4 lastLetter() = 0;
     protected:
 	
     private:
     }; // class Block
     
     struct Data {
-	_UCS4 start;
-	_UCS4 end;
+	UCS4 start;
+	UCS4 end;
 	string file;
 	int operator < (const Data & data) const {return start < data.start;}
 	bool canRemove;
 	Prague::Plugin<Dictionary::Block> * block;
     }; // struct Data
     
-    Block * findChar(const _UCS4 &)
+    Block * findChar(const UCS4 &)
 	throw (UndefinedProperty, BlockError);
     
     Dictionary();
@@ -294,7 +294,7 @@ private:
     
     vector<Data> data;
     
-    _UTF32String my_version;
+    UTF32String my_version;
     
     Prague::RWLock rwLock;
     

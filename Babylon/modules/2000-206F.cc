@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 15 Nov 2000 23:26:24 +0100.
+ * ftp.unicode.org on Tue, 21 Nov 2000 21:12:26 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -28,12 +28,12 @@
 
 namespace Babylon {
  
-  class General_Punctuation : public Babylon::Dictionary::Block {
+  class General_Punctuation2000 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    General_Punctuation() {
+    General_Punctuation2000() {
       my_first_letter = 0x2000;
       my_last_letter  = 0x206F;
       // my_version="3.0.1" // Not yet supported!
@@ -41,94 +41,94 @@ namespace Babylon {
     }
 
 
-    ~General_Punctuation() {
+    ~General_Punctuation2000() {
     }
 
-    _UCS4 firstLetter() {
+    UCS4 firstLetter() {
       return my_first_letter;
     }
  
-    _UCS4 lastLetter() {
+    UCS4 lastLetter() {
       return my_last_letter;
     }
  
     // query functions:
 
-    string blockname(const _UCS4 _uc) const {
+    string blockname(const UCS4 & _uc) const {
       return "General Punctuation";
     }
 
-    bool isDefined(const _UCS4 _uc) const {
+    bool isDefined(const UCS4 & _uc) const {
       return (isdefined[_uc - my_first_letter]);
     }
 
-    _UCS4 uppercase(const _UCS4 _uc) const {
+    UCS4 uppercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 lowercase(const _UCS4 _uc) const {
+    UCS4 lowercase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    _UCS4 titlecase(const _UCS4 _uc) const {
+    UCS4 titlecase(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return _uc;
     }
 
-    int decDigitValue(const _UCS4 _uc) const {
+    int decDigitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DEC_DIGIT_VALUE);
     }
 
-    int digitValue(const _UCS4 _uc) const {
+    int digitValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_DIGIT_VALUE);
     }
 
-    float numericValue(const _UCS4 _uc) const {
+    float numericValue(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);
     }
 
-    Gen_Cat category(const _UCS4 _uc) const {
+    Gen_Cat category(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Gen_Cat(General_Punctuation::cat[_uc - my_first_letter]);
+      return Babylon::Gen_Cat(General_Punctuation2000::cat[_uc - my_first_letter]);
     }
 
-    Can_Comb_Class combClass(const _UCS4 _uc) const {
+    Can_Comb_Class combClass(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
       return Babylon::Can_Comb_Class(0);
     }
 
-    Bidir_Props bidirProps(const _UCS4 _uc) const {
+    Bidir_Props bidirProps(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Bidir_Props(General_Punctuation::bidir[_uc - my_first_letter]);
+      return Babylon::Bidir_Props(General_Punctuation2000::bidir[_uc - my_first_letter]);
     }
 
-    Char_Decomp decompType(const _UCS4 _uc) const {
+    Char_Decomp decompType(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Char_Decomp(General_Punctuation::decomp[_uc - my_first_letter]);
+      return Babylon::Char_Decomp(General_Punctuation2000::decomp[_uc - my_first_letter]);
     }
 
-    _UTF32String decompose(const _UCS4 _uc) const {
+    UTF32String decompose(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      Babylon::_UTF32String us;
+      Babylon::UTF32String us;
       us.resize(2);
-      us[0] = General_Punctuation::decompStr[_uc - my_first_letter][0];
-      us[1] = General_Punctuation::decompStr[_uc - my_first_letter][1];
+      us[0] = General_Punctuation2000::decompStr[_uc - my_first_letter][0];
+      us[1] = General_Punctuation2000::decompStr[_uc - my_first_letter][1];
 
       switch (_uc) {
 
@@ -154,141 +154,141 @@ namespace Babylon {
       return us;
     }
 
-    bool mustMirror(const _UCS4 _uc) const {
+    bool mustMirror(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return General_Punctuation::mirror[_uc - my_first_letter];
+      return General_Punctuation2000::mirror[_uc - my_first_letter];
     }
 
-    Line_Break linebreak(const _UCS4 _uc) const {
+    Line_Break linebreak(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Line_Break(General_Punctuation::lb[_uc - my_first_letter]);
+      return Babylon::Line_Break(General_Punctuation2000::lb[_uc - my_first_letter]);
     }
 
-    EA_Width EAWidth(const _UCS4 _uc) const {
+    EA_Width EAWidth(const UCS4 & _uc) const {
       if (!isDefined(_uc))
         throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::EA_Width(General_Punctuation::ea[_uc - my_first_letter]);
+      return Babylon::EA_Width(General_Punctuation2000::ea[_uc - my_first_letter]);
     }
 
-    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {
+    UCS4 compose (const UCS4 & starter, const UCS4 & last) {
       return 0;
     }
 
-    bool is_Zero_width(const _UCS4 _uc) const {
-      return General_Punctuation::Zero_width[_uc - my_first_letter];
+    bool is_Zero_width(const UCS4 & _uc) const {
+      return General_Punctuation2000::Zero_width[_uc - my_first_letter];
     }
 
-    bool is_White_space(const _UCS4 _uc) const {
-      return General_Punctuation::White_space[_uc - my_first_letter];
+    bool is_White_space(const UCS4 & _uc) const {
+      return General_Punctuation2000::White_space[_uc - my_first_letter];
     }
 
-    bool is_Non_break(const _UCS4 _uc) const {
-      return General_Punctuation::Non_break[_uc - my_first_letter];
+    bool is_Non_break(const UCS4 & _uc) const {
+      return General_Punctuation2000::Non_break[_uc - my_first_letter];
     }
 
-    bool is_Bidi_Control(const _UCS4 _uc) const {
-      return General_Punctuation::Bidi_Control[_uc - my_first_letter];
+    bool is_Bidi_Control(const UCS4 & _uc) const {
+      return General_Punctuation2000::Bidi_Control[_uc - my_first_letter];
     }
 
-    bool is_Join_Control(const _UCS4 _uc) const {
-      return General_Punctuation::Join_Control[_uc - my_first_letter];
+    bool is_Join_Control(const UCS4 & _uc) const {
+      return General_Punctuation2000::Join_Control[_uc - my_first_letter];
     }
 
-    bool is_Format_Control(const _UCS4 _uc) const {
-      return General_Punctuation::Format_Control[_uc - my_first_letter];
+    bool is_Format_Control(const UCS4 & _uc) const {
+      return General_Punctuation2000::Format_Control[_uc - my_first_letter];
     }
 
-    bool is_Dash(const _UCS4 _uc) const {
-      return General_Punctuation::Dash[_uc - my_first_letter];
+    bool is_Dash(const UCS4 & _uc) const {
+      return General_Punctuation2000::Dash[_uc - my_first_letter];
     }
 
-    bool is_Hyphen(const _UCS4 _uc) const {
-      return General_Punctuation::Hyphen[_uc - my_first_letter];
+    bool is_Hyphen(const UCS4 & _uc) const {
+      return General_Punctuation2000::Hyphen[_uc - my_first_letter];
     }
 
-    bool is_Quotation_Mark(const _UCS4 _uc) const {
-      return General_Punctuation::Quotation_Mark[_uc - my_first_letter];
+    bool is_Quotation_Mark(const UCS4 & _uc) const {
+      return General_Punctuation2000::Quotation_Mark[_uc - my_first_letter];
     }
 
-    bool is_Terminal_Punctuation(const _UCS4 _uc) const {
-      return General_Punctuation::Terminal_Punctuation[_uc - my_first_letter];
+    bool is_Terminal_Punctuation(const UCS4 & _uc) const {
+      return General_Punctuation2000::Terminal_Punctuation[_uc - my_first_letter];
     }
 
-    bool is_Math(const _UCS4 _uc) const {
-      return General_Punctuation::Math[_uc - my_first_letter];
+    bool is_Math(const UCS4 & _uc) const {
+      return General_Punctuation2000::Math[_uc - my_first_letter];
     }
 
-    bool is_Paired_Punctuation(const _UCS4 _uc) const {
-      return General_Punctuation::Paired_Punctuation[_uc - my_first_letter];
+    bool is_Paired_Punctuation(const UCS4 & _uc) const {
+      return General_Punctuation2000::Paired_Punctuation[_uc - my_first_letter];
     }
 
-    bool is_Left_of_Pair(const _UCS4 _uc) const {
-      return General_Punctuation::Left_of_Pair[_uc - my_first_letter];
+    bool is_Left_of_Pair(const UCS4 & _uc) const {
+      return General_Punctuation2000::Left_of_Pair[_uc - my_first_letter];
     }
 
-    bool is_Combining(const _UCS4 _uc) const {
+    bool is_Combining(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Non_spacing(const _UCS4 _uc) const {
+    bool is_Non_spacing(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Hex_Digit(const _UCS4 _uc) const {
+    bool is_Hex_Digit(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const _UCS4 _uc) const {
+    bool is_Alphabetic(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Diacritic(const _UCS4 _uc) const {
+    bool is_Diacritic(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Extender(const _UCS4 _uc) const {
+    bool is_Extender(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const _UCS4 _uc) const {
-      return General_Punctuation::Identifier_Part[_uc - my_first_letter];
+    bool is_Identifier_Part(const UCS4 & _uc) const {
+      return General_Punctuation2000::Identifier_Part[_uc - my_first_letter];
     }
 
-    bool is_Ignorable_Control(const _UCS4 _uc) const {
-      return General_Punctuation::Ignorable_Control[_uc - my_first_letter];
+    bool is_Ignorable_Control(const UCS4 & _uc) const {
+      return General_Punctuation2000::Ignorable_Control[_uc - my_first_letter];
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const _UCS4 _uc) const {
-      return General_Punctuation::Bidi_Hebrew_Right_to_Left[_uc - my_first_letter];
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) const {
+      return General_Punctuation2000::Bidi_Hebrew_Right_to_Left[_uc - my_first_letter];
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const _UCS4 _uc) const {
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Bidi_Embedding_or_Override(const _UCS4 _uc) const {
-      return General_Punctuation::Bidi_Embedding_or_Override[_uc - my_first_letter];
+    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) const {
+      return General_Punctuation2000::Bidi_Embedding_or_Override[_uc - my_first_letter];
     }
 
-    bool is_Uppercase(const _UCS4 _uc) const {
+    bool is_Uppercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Lowercase(const _UCS4 _uc) const {
+    bool is_Lowercase(const UCS4 & _uc) const {
       return 0;
     }
 
-    bool is_Space(const _UCS4 _uc) const {
+    bool is_Space(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zs);
     }
 
-    bool is_ISO_Control(const _UCS4 _uc) const {
+    bool is_ISO_Control(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Cc);
     }
 
-    bool is_Punctuation(const _UCS4 _uc) const {
+    bool is_Punctuation(const UCS4 & _uc) const {
       return (isDefined(_uc) && (category(_uc) == CAT_Pc ||
                                  category(_uc) == CAT_Pd ||
                                  category(_uc) == CAT_Ps ||
@@ -299,34 +299,34 @@ namespace Babylon {
              );
     }
 
-    bool is_Line_Separator(const _UCS4 _uc) const {
+    bool is_Line_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zl);
     }
 
-    bool is_Paragraph_Separator(const _UCS4 _uc) const {
+    bool is_Paragraph_Separator(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Zp);
     }
 
-    bool is_Currency_Symbol(const _UCS4 _uc) const {
+    bool is_Currency_Symbol(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Sc);
     }
 
-    bool is_Titlecase(const _UCS4 _uc) const {
+    bool is_Titlecase(const UCS4 & _uc) const {
       return (isDefined(_uc) && category(_uc) == CAT_Lt);
     }
 
 
   private:
     // functions
-    General_Punctuation(const General_Punctuation &) {}
+    General_Punctuation2000(const General_Punctuation2000 &) {}
  
-    Babylon::_UCS4 my_first_letter;
-    Babylon::_UCS4 my_last_letter;
+    Babylon::UCS4 my_first_letter;
+    Babylon::UCS4 my_last_letter;
     static const bool isdefined[112];
     static const unsigned char cat[112];
     static const unsigned char bidir[112];
     static const unsigned char decomp[112];
-    static const _UCS2 decompStr[112][2];
+    static const UCS2 decompStr[112][2];
     static const bool mirror[112];
     static const unsigned char lb[112];
     static const unsigned char ea[112];
@@ -348,9 +348,9 @@ namespace Babylon {
     static const bool Bidi_Hebrew_Right_to_Left[112];
     static const bool Bidi_Embedding_or_Override[112];
 
-  }; // class General_Punctuation
+  }; // class General_Punctuation2000
 
-  const bool General_Punctuation::isdefined[] = {
+  const bool General_Punctuation2000::isdefined[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
@@ -367,7 +367,7 @@ namespace Babylon {
     0, 0, 1, 1, 1, 1, 1, 1
   };
 
-  const unsigned char General_Punctuation::cat[] = {
+  const unsigned char General_Punctuation2000::cat[] = {
     CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
     CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, 
     CAT_Pd, CAT_Pd, CAT_Pd, CAT_Pd, CAT_Pd, CAT_Pd, CAT_Po, CAT_Po, 
@@ -384,7 +384,7 @@ namespace Babylon {
     CAT_Zs, CAT_Zs, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf
   };
 
-  const unsigned char General_Punctuation::bidir[] = {
+  const unsigned char General_Punctuation2000::bidir[] = {
     BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, 
     BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_L, BIDIR_R, 
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
@@ -401,7 +401,7 @@ namespace Babylon {
     BIDIR_WS, BIDIR_WS, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN
   };
 
-  const unsigned char General_Punctuation::decomp[] = {
+  const unsigned char General_Punctuation2000::decomp[] = {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NOBREAK, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
     DECOMP_NO_DECOMP, DECOMP_NOBREAK, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT, 
@@ -418,7 +418,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const _UCS2 General_Punctuation::decompStr[][2] = {
+  const UCS2 General_Punctuation2000::decompStr[][2] = {
     { 0x2002, 0x0000 }, { 0x2003, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, 
     { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, 
     { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x200B, 0x0000 }, 
@@ -449,7 +449,7 @@ namespace Babylon {
     { 0x206C, 0x0000 }, { 0x206D, 0x0000 }, { 0x206E, 0x0000 }, { 0x206F, 0x0000 }
   };
 
-  const bool General_Punctuation::mirror[] = {
+  const bool General_Punctuation2000::mirror[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 
@@ -466,7 +466,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char General_Punctuation::lb[] = {
+  const unsigned char General_Punctuation2000::lb[] = {
     LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_GL, 
     LB_BA, LB_BA, LB_BA, LB_ZW, LB_CM, LB_CM, LB_CM, LB_CM, 
     LB_BA, LB_GL, LB_BA, LB_BA, LB_B2, LB_AL, LB_AI, LB_AL, 
@@ -483,7 +483,7 @@ namespace Babylon {
     LB_BA, LB_BA, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
-  const unsigned char General_Punctuation::ea[] = {
+  const unsigned char General_Punctuation2000::ea[] = {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, 
@@ -500,7 +500,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bool General_Punctuation::Zero_width[] = {
+    const bool General_Punctuation2000::Zero_width[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 1, 1, 1, 1, 1, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -517,7 +517,7 @@ namespace Babylon {
         0, 0, 1, 1, 1, 1, 1, 1
     };
 
-    const bool General_Punctuation::White_space[] = {
+    const bool General_Punctuation2000::White_space[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -534,7 +534,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Non_break[] = {
+    const bool General_Punctuation2000::Non_break[] = {
         0, 0, 0, 0, 0, 0, 0, 1, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 1, 0, 0, 0, 0, 0, 0, 
@@ -551,7 +551,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Bidi_Control[] = {
+    const bool General_Punctuation2000::Bidi_Control[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 1, 1, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -568,7 +568,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Join_Control[] = {
+    const bool General_Punctuation2000::Join_Control[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 1, 1, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -585,7 +585,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Format_Control[] = {
+    const bool General_Punctuation2000::Format_Control[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -602,7 +602,7 @@ namespace Babylon {
         0, 0, 1, 1, 1, 1, 1, 1
     };
 
-    const bool General_Punctuation::Dash[] = {
+    const bool General_Punctuation2000::Dash[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         1, 1, 1, 1, 1, 1, 0, 0, 
@@ -619,7 +619,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Hyphen[] = {
+    const bool General_Punctuation2000::Hyphen[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         1, 1, 0, 0, 0, 0, 0, 0, 
@@ -636,7 +636,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Quotation_Mark[] = {
+    const bool General_Punctuation2000::Quotation_Mark[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -653,7 +653,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Terminal_Punctuation[] = {
+    const bool General_Punctuation2000::Terminal_Punctuation[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -670,7 +670,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Math[] = {
+    const bool General_Punctuation2000::Math[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 1, 0, 
@@ -687,7 +687,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Paired_Punctuation[] = {
+    const bool General_Punctuation2000::Paired_Punctuation[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -704,7 +704,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Left_of_Pair[] = {
+    const bool General_Punctuation2000::Left_of_Pair[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -721,7 +721,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Identifier_Part[] = {
+    const bool General_Punctuation2000::Identifier_Part[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -738,7 +738,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Ignorable_Control[] = {
+    const bool General_Punctuation2000::Ignorable_Control[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 1, 1, 1, 1, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -755,7 +755,7 @@ namespace Babylon {
         0, 0, 1, 1, 1, 1, 1, 1
     };
 
-    const bool General_Punctuation::Bidi_Hebrew_Right_to_Left[] = {
+    const bool General_Punctuation2000::Bidi_Hebrew_Right_to_Left[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 1, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -772,7 +772,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    const bool General_Punctuation::Bidi_Embedding_or_Override[] = {
+    const bool General_Punctuation2000::Bidi_Embedding_or_Override[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -791,4 +791,4 @@ namespace Babylon {
 
 }; // namespace Babylon
  
-dload(Babylon::General_Punctuation);
+dload(Babylon::General_Punctuation2000);

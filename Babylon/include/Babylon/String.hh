@@ -37,24 +37,28 @@ namespace Babylon {
 class String : public basic_string<Babylon::Char> {
 public:
     // CONSTRUCTORS:
-    
     /// Creates a string of the length 0.
     String();
+
     /// Creates a string of the length 1 containing 
-    String(const Babylon::Char &, const Norm norm = NORM_NONE);
-    String(const Babylon::_UCS4 &, const Norm norm = NORM_NONE);
+    String(const Babylon::Char, const Norm norm = NORM_NONE);
+    String(const Babylon::UCS4, const Norm norm = NORM_NONE);
+
+    // Creates a string out of other types of strings
+    String(const String &);
+    String(const char * s, const Norm norm = NORM_NONE) { utf8(s); overrideNorm(norm); }
+    String(const UTF32String &, const Norm norm = NORM_NONE);
+    String(unsigned long len, Babylon::Char * data ) { this->assign(data, len); }
+
+    // Transformators:
     void utf8(const UTF8String &, const Norm norm = NORM_NONE) throw (TransError);
-    void utf8(const char * s, const Norm norm = NORM_NONE) throw (TransError) {
-	utf8(UTF8String(s), norm);
-    }
+    void utf8(const char * s, const Norm norm = NORM_NONE)
+	throw (TransError) { utf8(UTF8String(s), norm); }
     void utf16(const UTF16String &, const Norm norm = NORM_NONE) throw (TransError);
-    UTF8String utf8() const;
-    UTF16String utf16() const;
-    String(const Babylon::String&);
-    String(const Babylon::_UTF32String&, const Norm norm = NORM_NONE);
-    String(unsigned long len, Babylon::Char * data ) {
-	this->assign(data, len);
-    }
+    void utf32(const UTF32String &, const Norm norm = NORM_NONE);
+    UTF8String  utf8() const throw (TransError);
+    UTF16String utf16() const throw(TransError);
+    UTF32String utf32() const;
     
     // normalizes a String.
     void normalize(const Norm);
