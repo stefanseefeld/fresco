@@ -19,6 +19,9 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
+# Which Unicode modules to build
+UNICODE_MODULES	= @UNICODE_MODULES@
+
 #
 # Set flags, paths and libraries specific to the Prague package
 #

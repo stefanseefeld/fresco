@@ -54,6 +54,13 @@ AC_ARG_ENABLE(tracer,
         [  --enable-tracer        Compile with tracer support],[
         AC_DEFINE(TRACER)])
 
+AC_ARG_ENABLE(unicode-blocks,
+	[  --enable-unicode-blocks complete or latin unicode support],[
+	UNICODE_BLOCKS="$enableval"],[
+	UNICODE_BLOCKS=complete])
+
+AC_SUBST(UNICODE_BLOCKS)
+
 AC_MSG_PART(platform specific system utilities)
 AC_CHECK_FUNCS(strsignal)
 AC_NEED_DECLARATION(strsignal)
