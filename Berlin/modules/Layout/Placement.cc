@@ -25,6 +25,7 @@
  * MA 02139, USA.
  */
 #include "Berlin/TraversalImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
 
@@ -47,40 +48,26 @@ void Placement::request(Requisition &r)
   layout->request(0, 0, r);
 }
 
-void Placement::traverse(Traversal_ptr t)
+void Placement::traverse(Traversal_ptr traversal)
 {
-  Region_var allocation = Region::_duplicate(t->allocation());
+  /*
+   * cheap and dirty cull test -stefan
+   */
+//   if (!traversal->intersectsAllocation()) return;
+  Region_var allocation = Region::_duplicate(traversal->allocation());
   if (!CORBA::is_nil(allocation))
     {
-      RegionImpl *result = new RegionImpl(allocation, Transform::_nil());
-      result->_obj_is_ready(_boa());
+      Impl_var<RegionImpl> result(new RegionImpl(allocation, Transform_var(Transform::_nil())));
       Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
-      layout->allocate(1, &r, allocation, &result);
-      TransformImpl *tx = new TransformImpl;
-      tx->_obj_is_ready(_boa());
-      normalTransform(result, tx);
-      t->traverseChild(body(), 0, Region_var(result->_this()), Transform_var(tx->_this()));
-      tx->_dispose();
-      result->_dispose();
+      RegionImpl *tmp = result.get();
+      layout->allocate(1, &r, allocation, &tmp);
+      Impl_var<TransformImpl> tx(new TransformImpl);
+      result->normalize(tx);
+      traversal->traverseChild(Graphic_var(body()), 0, Region_var(result->_this()), Transform_var(tx->_this()));
     }
-  else MonoGraphic::traverse(t);
-}
-
-void Placement::normalOrigin(RegionImpl *r, Vertex &o)
-{
-  r->origin(o);
-  r->lower.x -= o.x; r->upper.x -= o.x;
-  r->lower.y -= o.y; r->upper.y -= o.y;
-  r->lower.z -= o.z; r->upper.z -= o.z;
-}
-
-void Placement::normalTransform(RegionImpl *r, TransformImpl *tx)
-{
-  Vertex o;
-  normalOrigin(r, o);
-  tx->translate(o);
+  else MonoGraphic::traverse(traversal);
 }
 
 void Placement::allocate(Tag, const Allocation::Info &a)
@@ -91,12 +78,10 @@ void Placement::allocate(Tag, const Allocation::Info &a)
   MonoGraphic::request(r);
   layout->allocate(1, &r, a.allocation, &region);
 
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
-  normalTransform(region, tx);
+  Impl_var<TransformImpl> tx(new TransformImpl);
+  region->normalize(tx);
   a.transformation->premultiply(Transform_var(tx->_this()));
   a.allocation->copy(Region_var(region->_this()));
-  tx->_dispose();
 }
 
 LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under, Graphic_ptr over)

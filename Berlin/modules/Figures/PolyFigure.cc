@@ -25,6 +25,7 @@
 #include "Warsaw/PickTraversal.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Figure/PolyFigure.hh"
 
 PolyFigure::PolyFigure()
@@ -76,8 +77,7 @@ void PolyFigure::allocate(Tag, const Allocation::Info &info)
 void PolyFigure::request(Requisition &r)
 {
   GraphicImpl::initRequisition(r);
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   updateBbox();
   if (bbox->valid)
     {
@@ -88,7 +88,6 @@ void PolyFigure::request(Requisition &r)
       GraphicImpl::requireLeadTrail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
       GraphicImpl::requireLeadTrail(r.y, y_lead, y_lead, y_lead, y_trail, y_trail, y_trail);
     }
-  region->_dispose();
 }
 
 // If given transform is nil, PolyFigure::extension considers this a flag
@@ -97,21 +96,17 @@ void PolyFigure::request(Requisition &r)
     
 void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
-  RegionImpl *tmp = new RegionImpl;
-  tmp->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> tmp(new RegionImpl);
   updateBbox();
   if (bbox->valid)
     {
-      TransformImpl *transformation = new TransformImpl;
-      transformation->_obj_is_ready(_boa());
+      Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(tx);
       tmp->copy(bbox);
       tmp->applyTransform(transformation);
       region->mergeUnion(tmp);
-      transformation->_dispose();
     }
-  tmp->_dispose();
 }
 
 /*
@@ -124,11 +119,9 @@ void PolyFigure::traverse(Traversal_ptr traversal)
   updateBbox();
   if (bbox->valid)
     {
-      RegionImpl *region = new RegionImpl(bbox, tx);
-      region->_obj_is_ready(_boa());
+      Impl_var<RegionImpl> region(new RegionImpl(bbox, tx));
       if (traversal->intersectsRegion(region))
 	PolyGraphic::traverse(traversal);
-      region->_dispose();
     }
 }
 

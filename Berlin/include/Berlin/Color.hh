@@ -22,6 +22,10 @@
 #ifndef _Color_hh
 #define _Color_hh
 
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
+#include <iostream>
+
 inline Color brightness(const Color &c1, double adjust)
 {
   Color c2;
@@ -39,5 +43,45 @@ inline Color brightness(const Color &c1, double adjust)
     }
   return c2;
 };
+
+inline void CMYtoRGB(Coord cyan, Coord magenta, Coord yellow, Color &color)
+{
+  color.red = 1. - cyan;
+  color.green = 1. - magenta;
+  color.blue = 1. - yellow;
+}
+
+inline void HSVtoRGB(Coord hue, Coord saturation, Coord value, Color &color)
+{
+//   unsigned short i, f;
+//   unsigned short p, q, t;
+//   unsigned short r = 0, g = 0, b = 0;
+//   s = (s * 0xff) / 100;
+//   v = (v * 0xff) / 100;
+//   if (h == 360) h = 0;
+//   if (s == 0) { h = 0; r = g = b = v;}
+//   i = h / 60;
+//   f = h % 60;
+//   p = v * (0xff - s) / 0xff;
+//   q = v * (0xff - s * f / 60) / 0xff;
+//   t = v * (0xff - s * (60 - f) / 60) / 0xff;
+//   switch (i) 
+//     {
+//     case 0: r = v, g = t, b = p; break;
+//     case 1: r = q, g = v, b = p; break;
+//     case 2: r = p, g = v, b = t; break;
+//     case 3: r = p, g = q, b = v; break;
+//     case 4: r = t, g = p, b = v; break;
+//     case 5: r = v, g = p, b = q; break;
+//     }
+//   setRGB(r, g, b);
+}
+
+inline ostream &operator << (ostream &os, const Color &c)
+{
+  if (c.alpha != 1.) os << '(' << c.red << ',' << c.green << ',' << c.blue << ';' << c.alpha << ')';
+  else os << '(' << c.red << ',' << c.green << ',' << c.blue << ')';
+  return os;
+}
 
 #endif /* _Color_hh */

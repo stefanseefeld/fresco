@@ -28,6 +28,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
 
 using namespace Prague;
@@ -85,18 +86,14 @@ void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
   if (!CORBA::is_nil(child))
     {
       Allocation::Info i;
-      RegionImpl *tmpregion = new RegionImpl;
-      tmpregion->_obj_is_ready(_boa());
-      i.allocation = tmpregion->_this();
+      Impl_var<RegionImpl> tmp(new RegionImpl);
+      i.allocation = tmp->_this();
       i.allocation->copy(info.allocation);
-      TransformImpl *transform = new TransformImpl;
-      transform->_obj_is_ready(_boa());
+      Impl_var<TransformImpl> transform(new TransformImpl);
       i.transformation = transform->_this();
       i.transformation->copy(info.transformation);
       allocate(0, i);
       child->extension(i, region);
-      transform->_dispose();
-      tmpregion->_dispose();
     }
 }
 

@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -30,6 +30,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/ImplVar.hh"
 #include <iostream>
 
 Box::Box(LayoutManager *l)
@@ -65,14 +66,11 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
   if (n > 0)
     {
       Allocation::Info child;
-      Vertex prev_o, o, v;
-      prev_o.x = prev_o.y = prev_o.z = 0;
+      Vertex origin, previous, delta;
+      previous.x = previous.y = previous.z = 0;
 
-      TransformImpl *child_tx = new TransformImpl;
-      child_tx->_obj_is_ready(_boa());
-
-      TransformImpl *tmp_tx = new TransformImpl;
-      tmp_tx->_obj_is_ready(_boa());
+      Impl_var<TransformImpl> child_tx(new TransformImpl);
+      Impl_var<TransformImpl> tmp_tx(new TransformImpl);
       
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
@@ -80,19 +78,15 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 
       for (long i = 0; i < n; i++)
 	{
-	  Placement::normalOrigin(result[i], o);
-	  v.x = o.x - prev_o.x;
-	  v.y = o.y - prev_o.y;
-	  v.z = o.z - prev_o.z;
-	  tmp_tx->loadIdentity();
-	  tmp_tx->translate(v);
+	  result[i]->normalize(origin);
+	  delta = origin - previous;
+// 	  tmp_tx->loadIdentity();
+	  tmp_tx->translate(delta);
 	  child.allocation = result[i]->_this();
 	  child.transformation->premultiply(Transform_var(tmp_tx->_this()));
 	  childExtension(i, child, region);
-	  prev_o = o;
+	  previous = origin;
 	}
-      child_tx->_dispose();
-      tmp_tx->_dispose();
       for (long i = 0; i < n; i++) result[i]->_dispose();
       delete [] result;
     }
@@ -142,13 +136,12 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
    * fetch requested (presumably allocated) child regions
    */
   RegionImpl **result = childrenAllocations(info.allocation);
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
+  Impl_var<TransformImpl> tx(new TransformImpl);
   /*
    * copy transformation and region into allocation
    */
   CORBA::Long idx = index(tag);
-  Placement::normalTransform(result[idx], tx);
+  result[idx]->normalize(tx);
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
   CORBA::Long children = numChildren();
@@ -195,8 +188,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
   RegionImpl **result = childrenAllocations(r);
   CORBA::Long size = numChildren();
   CORBA::Long begin, end, incr;
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
+  Impl_var<TransformImpl> tx(new TransformImpl);
   if (t->direction() == Traversal::up)
     {
       begin = 0;
@@ -211,20 +203,19 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
     }
   for (CORBA::Long i = begin; i != end; i += incr)
     {
-      Vertex o;
-      Placement::normalOrigin(result[i], o);
+      Vertex origin;
+      result[i]->normalize(origin);
       tx->loadIdentity();
       /*
        * ok, so we stipulate that Boxes lay out their children 
        * only translating them -stefan
        */
-      tx->translate(o);
+      tx->translate(origin);
       t->traverseChild(children[i].first, children[i].second, Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
   for (long i = 0; i < size; i++) result[i]->_dispose();
   delete [] result;
-  tx->_dispose();
 }
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)
@@ -232,13 +223,13 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	t->traverseChild((*i).first, (*i).second, Region::_nil(), Transform::_nil());
+	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
   else
     for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	t->traverseChild((*i).first, (*i).second, Region::_nil(), Transform::_nil());
+	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }    
 }

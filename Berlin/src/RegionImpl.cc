@@ -26,7 +26,6 @@
  */
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Berlin/Math.hh"
 #include "Berlin/Logger.hh"
 
 RegionImpl::RegionImpl()
@@ -197,14 +196,6 @@ void RegionImpl::applyTransform(Transform_ptr transformation)
     }
 }
 
-Coord RegionImpl::spanAlign(Coord lower, Coord upper, Coord origin)
-{
-  Coord s;
-  if (Math::equal(lower, upper, 1e-4)) s = Coord(0.0);
-  else s = Coord((origin - lower) / (upper - lower));
-  return s;
-}
-
 void RegionImpl::bounds(Vertex &l, Vertex &u)
 {
   l = lower;
@@ -223,14 +214,6 @@ void RegionImpl::origin(Vertex &v)
   v.x = spanOrigin(lower.x, upper.x, xalign);
   v.y = spanOrigin(lower.y, upper.y, yalign);
   v.z = spanOrigin(lower.z, upper.z, zalign);
-}
-
-Coord RegionImpl::spanOrigin(Coord lower, Coord upper, Coord align)
-{
-  Coord orig;
-  if (Math::equal(lower, upper, 1e-4)) orig = Coord(0.0);
-  else orig = lower + align * (upper - lower);
-  return orig;
 }
 
 void RegionImpl::span(Axis a, Region::Allotment &s)
@@ -253,20 +236,6 @@ void RegionImpl::span(Axis a, Region::Allotment &s)
       s.align = zalign;
       break;
     }
-}
-
-void RegionImpl::mergeMin(Vertex &v0, const Vertex &v)
-{
-  v0.x = Math::min(v0.x, v.x);
-  v0.y = Math::min(v0.y, v.y);
-  v0.z = Math::min(v0.z, v.z);
-}
-
-void RegionImpl::mergeMax(Vertex &v0, const Vertex &v)
-{
-  v0.x = Math::max(v0.x, v.x);
-  v0.y = Math::max(v0.y, v.y);
-  v0.z = Math::max(v0.z, v.z);
 }
 
 void RegionImpl::outline(Path *&p)

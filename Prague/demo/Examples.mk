@@ -1,9 +1,6 @@
-world:	Timer DataType Unicode
+world:	DataType Unicode
 
 Lock:		Lock.o
-		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
-
-Timer:		Timer.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
 DataType:	DataType.o

@@ -24,6 +24,7 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Pencil.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
 
 Bevel::Bevel(Coord t, Alignment x, Alignment y, bool h, bool v)
@@ -76,16 +77,13 @@ void Bevel::traverse(Traversal_ptr traversal)
       if (hmargin || vmargin)
 	{
 	  Allocation::Info info;
-	  RegionImpl *allocation = new RegionImpl(Region_var(traversal->allocation()), Transform::_nil());
-	  allocation->_obj_is_ready(_boa());
-	  info.allocation = Region_var(allocation->_this());
-	  TransformImpl *tx = new TransformImpl;
-	  tx->_obj_is_ready(_boa());
+	  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation()),
+							 Transform_var(Transform::_nil())));
+	  info.allocation = allocation->_this();
+	  Impl_var<TransformImpl> tx(new TransformImpl);
 	  info.transformation = tx->_this();
 	  allocate(0, info);
 	  traversal->traverseChild(child, 0, info.allocation, info.transformation);
-	  tx->_dispose();
-	  allocation->_dispose();
 	}
       else MonoGraphic::traverse(traversal);
     }
@@ -108,15 +106,13 @@ void Bevel::allocate(Tag, const Allocation::Info &info)
    * same as Placement::normalTransform...
    */
   Vertex o;
-  RegionImpl *r = new RegionImpl(info.allocation, Transform::_nil());
-  r->_obj_is_ready(_boa());
-  r->origin(o);
-  r->lower.x -= o.x; r->upper.x -= o.x;
-  r->lower.y -= o.y; r->upper.y -= o.y;
-  r->lower.z -= o.z; r->upper.z -= o.z;
+  Impl_var<RegionImpl> region(new RegionImpl(info.allocation, Transform_var(Transform::_nil())));
+  region->origin(o);
+  region->lower.x -= o.x; region->upper.x -= o.x;
+  region->lower.y -= o.y; region->upper.y -= o.y;
+  region->lower.z -= o.z; region->upper.z -= o.z;
   info.transformation->translate(o);
-  info.allocation->copy(Region_var(r->_this()));
-  r->_dispose();
+  info.allocation->copy(Region_var(region->_this()));
   
   Vertex delta;
   info.allocation->span(xaxis, a);

@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -28,9 +28,9 @@
 #include "Warsaw/config.hh"
 #include "Layout/GridImpl.hh"
 #include "Layout/LayoutManager.hh"
-#include "Layout/Placement.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
 
@@ -320,8 +320,7 @@ void GridImpl::allocateCell(Region_ptr given, const Grid::Index &i, Region_ptr a
 {
   Span *xspans = fullAllocate(xaxis, given);
   Span *yspans = fullAllocate(yaxis, given);
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   spansToRegion(xspans[i.col], yspans[i.row], region);
   a->copy(Region_var(region->_this()));
   delete [] xspans;
@@ -392,15 +391,12 @@ Grid::Index GridImpl::upper()
 
 void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
+  Impl_var<TransformImpl> tx(new TransformImpl);
   allocateCell(info.allocation, tag2index(tag), info.allocation);
-  RegionImpl *region = new RegionImpl(info.allocation, Transform::_nil());
-  Placement::normalTransform(region, tx);
+  Impl_var<RegionImpl> region(new RegionImpl(info.allocation, Transform_var(Transform::_nil())));
+  region->normalize(tx);
   info.allocation->copy(Region_var(region->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
-  region->_dispose();
-  tx->_dispose();
 }
 
 void GridImpl::cacheRequest()
@@ -462,10 +458,8 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
   Span *yspans = fullAllocate(yaxis, given);
   Coord dx = xspans[0].lower - xspans[range.lower.col].lower;
   Coord dy = yspans[0].lower - yspans[range.lower.row].lower;
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<TransformImpl> tx(new TransformImpl);
+  Impl_var<RegionImpl> region(new RegionImpl);
   GridDimension &d = dimensions[yaxis];
   Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
@@ -474,11 +468,9 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
 	tx->loadIdentity();
 	spansToRegion(xspans[i.col], yspans[i.row], region);
 	offsetRegion(region, dx, dy);
-	Placement::normalTransform(region, tx);
+	region->normalize(tx);
 	t->traverseChild(d.children[i.row][i.col], index2tag(i), Region_var(region->_this()), Transform_var(tx->_this()));
       }
-  region->_dispose();
-  tx->_dispose();
   delete [] xspans;
   delete [] yspans;
 }

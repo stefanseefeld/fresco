@@ -28,6 +28,8 @@
 #include <Berlin/Geometry.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/Color.hh>
 #include <Figure/FigureImpl.hh>
 
 using namespace Geometry;
@@ -50,8 +52,7 @@ Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(t
 void TransformFigure::request(Requisition &r)
 {
   Allocation::Info info;
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
   needRedrawRegion(region);
   if (region->valid)
@@ -68,24 +69,19 @@ void TransformFigure::request(Requisition &r)
       r.y.defined = false;
       r.z.defined = false;
     }
-  region->_dispose();
 }
 
 void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
   if (ext->valid)
     {
-      RegionImpl *tmp = new RegionImpl(ext, Transform_var(Transform::_nil()));
-      tmp->_obj_is_ready(_boa());
+      Impl_var<RegionImpl> tmp(new RegionImpl(ext, Transform_var(Transform::_nil())));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
-      TransformImpl *transformation = new TransformImpl;
-      transformation->_obj_is_ready(_boa());
+      Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(tx);
       tmp->applyTransform(transformation);
       region->mergeUnion(tmp);
-      transformation->_dispose();
-      tmp->_dispose();
     }
 }
 
@@ -98,11 +94,9 @@ void TransformFigure::pick(PickTraversal_ptr traversal)
 void TransformFigure::needRedraw()
 {
   Allocation::Info info;
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
   needRedrawRegion(region);
-  region->_dispose();
 }
 
 void TransformFigure::resize() {}
@@ -151,11 +145,9 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
   if (path->length() > 0)
     {
-      RegionImpl *tmp = new RegionImpl(ext, Transform_var(Transform::_nil()));
+      Impl_var<RegionImpl> tmp(new RegionImpl(ext, Transform_var(Transform::_nil())));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
-      tmp->_obj_is_ready(_boa());
-      TransformImpl *transformation = new TransformImpl;
-      transformation->_obj_is_ready(_boa());
+      Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(tx);
       tmp->applyTransform(transformation);
@@ -186,27 +178,38 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
-      RegionImpl *region = new RegionImpl;
-      region->_obj_is_ready(_boa());
+      Impl_var<RegionImpl> region(new RegionImpl);
       extension(info, region);
       if (traversal->intersectsRegion(region))
 	{
 	  ::Path p;
-	  p.p = path;
-	  CORBA::ULong n = p.p.length();
+	  CORBA::ULong n = path->length();
+	  p.p.length(n);
+	  for (CORBA::ULong i = 0; i != n; i++) p.p[i] = path[i];
 	  Transform_var transformation = traversal->transformation();
 	  for (CORBA::ULong i = 0; i != n; i++) transformation->transformVertex(p.p[i]);
 	  Style::Spec style;
-	  if (mode == stroke | fill) style.length(2);
-	  else style.length(1);
-	  CORBA::ULong i = 0;
-	  if (mode |= stroke) style[i].a = Style::linecolor, style[i].val <<= fg, i++;
-	  if (mode |= fill) style[i].a = Style::fillcolor, style[i].val <<= bg;
+	  if (mode == stroke | fill)
+	    {
+	      style.length(2);
+	      style[0].a = Style::linecolor, style[0].val <<= fg;
+	      style[1].a = Style::fillcolor, style[1].val <<= bg; 
+	    }
+	  else if (mode == stroke)
+	    {
+	      style.length(1);
+	      style[0].a = Style::linecolor, style[0].val <<= fg;
+	    }
+	  else
+	    {
+	      style.length(1);
+	      style[0].a = Style::fillcolor, style[0].val <<= fg; 
+	    }
 	  DrawingKit_var drawing = traversal->kit();
 	  Pencil_var pencil = drawing->getPencil(style);
 	  pencil->drawPath(p);
+	  cout << "draw figure (" << n << " points) in color " << fg << endl;
 	}
-      region->_dispose();
     }
 }
 

@@ -33,6 +33,7 @@
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
 
 using namespace Prague;
@@ -312,11 +313,9 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 void GraphicImpl::needRedraw()
 {
   SectionLog section(Logger::drawing, "GraphicImpl::needRedraw");
-  AllocationImpl *allocation = new AllocationImpl;
-  allocation->_obj_is_ready(_boa());
+  Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i < size; i++)
     {
@@ -325,8 +324,6 @@ void GraphicImpl::needRedraw()
       extension(info, Region_var(region->_this()));
       if (region->valid) info->root->damage(Region_var(region->_this()));
     }
-  region->_dispose();
-  allocation->_dispose();
 }
 
 /* this does almost exactly the same as needRedraw(), only it extends the
@@ -339,11 +336,9 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
 {
   if (region->defined())
     {
-      AllocationImpl *allocation = new AllocationImpl;
-      allocation->_obj_is_ready(_boa());
+      Impl_var<AllocationImpl> allocation(new AllocationImpl);
       allocations(Allocation_var(allocation->_this()));
-      RegionImpl *dr = new RegionImpl;
-      dr->_obj_is_ready(_boa());
+      Impl_var<RegionImpl> dr(new RegionImpl);
       for (CORBA::Long i = 0; i < allocation->size(); i++)
 	{
 	  Allocation::Info_var info = allocation->get(i);
@@ -351,8 +346,6 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
 	  dr->applyTransform(Transform::_duplicate(info->transformation));
 	  info->root->damage(Region_var(dr->_this()));
 	}
-      dr->_dispose();
-      allocation->_dispose();
     }
 }
 
@@ -438,18 +431,16 @@ Graphic::Requirement *GraphicImpl::requirement(Graphic::Requisition &r, Axis a)
   return req;
 }
 
-void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr r)
+void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr region)
 {
   if (!CORBA::is_nil(info.allocation))
     {
       if (CORBA::is_nil(info.transformation))
-	r->mergeUnion(info.allocation);
+	region->mergeUnion(info.allocation);
       else
 	{
-	  RegionImpl *tmp = new RegionImpl(info.allocation, info.transformation);
-	  tmp->_obj_is_ready(CORBA::BOA::getBOA());
-	  r->mergeUnion(Region_var(tmp->_this()));
-	  tmp->_dispose();
+	  Impl_var<RegionImpl> tmp(new RegionImpl(info.allocation, info.transformation));
+	  region->mergeUnion(Region_var(tmp->_this()));
 	}
     }
 }

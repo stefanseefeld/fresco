@@ -40,6 +40,7 @@ Graphic_ptr FigureKitImpl::root(Graphic_ptr child)
 {
   GraphicImpl *g = new TransformAllocator(Alignment(0.5), Alignment(0.5), Alignment(0.5), 
 					  Alignment(0.5), Alignment(0.5), Alignment(0.5));
+  g->_obj_is_ready(_boa());
   g->body(child);
   return g->_this();
 }
@@ -53,12 +54,14 @@ Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
 Graphic_ptr FigureKitImpl::group()
 {
   PolyFigure *pf = new PolyFigure;
+  pf->_obj_is_ready(_boa());
   return pf->_this();
 }
 
 Graphic_ptr FigureKitImpl::ugroup()
 {
   UPolyFigure *pf = new UPolyFigure;
+  pf->_obj_is_ready(_boa());
   return pf->_this();
 }
 

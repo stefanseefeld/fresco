@@ -46,8 +46,6 @@ public:
 
   virtual void allocate(Tag, const Allocation::Info &);
 
-  static void normalOrigin(RegionImpl *, Vertex &);
-  static void normalTransform(RegionImpl *, TransformImpl *);
 private:
   LayoutManager *layout;
   RegionImpl *region;

@@ -19,36 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Plugin_hh
-#define _Plugin_hh
-
-#include <Prague/Sys/DLL.hh>
-
-namespace Prague {
+#ifndef _Impl_var_hh
+#define _Impl_var_hh
 
 template <class T>
-class Plugin : public DLL
-  //. a special kind of a smart pointer
-  //. which implements a plugin behavior
+class Impl_var
+//. a special kind of a smart pointer
+//. which hides the BOA/POA details
 {
 public:
-  Plugin(const string &file, const string &loader = "load") : DLL(file)
-    {
-      typedef T *(* DL) ();
-      DL dl = (DL) resolve(loader);
-      t = dl ? (T *) dl() : 0;
-    }
-  ~Plugin() { delete t;}
+  explicit Impl_var(T *tt = 0) : t(tt) { if (t) t->_obj_is_ready(CORBA::BOA::getBOA());}
+  Impl_var(Impl_var &i) : t(i.release()) {}
+  Impl_var &operator = (Impl_var &i) { if (&i != this) { if (t) t->_dispose(); t = i.release();} return *this;}
+  ~Impl_var() { if (t) t->_dispose();}
+  T *get() const { return t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
-  operator T *() { return t; }
-protected:
+  operator T *() const { return  t;}
+  T *release() { T *tmp = t; t = 0; return tmp;}
 private:
   T *t;
 };
 
-#define dload(T) extern "C" T *load() { return new T;}
-
-};
-
-#endif /* _Plugin_hh */
+#endif

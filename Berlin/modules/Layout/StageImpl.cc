@@ -25,9 +25,9 @@
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/DebugGraphic.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
 #include "Layout/StageImpl.hh"
-#include "Layout/Placement.hh"
 
 using namespace Geometry;
 
@@ -377,11 +377,9 @@ void StageTraversal::execute()
 
 void StageTraversal::traverse(StageHandleImpl *handle)
 {
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(CORBA::BOA::getBOA());
+  Impl_var<RegionImpl> region(new RegionImpl);
   handle->bbox(*region);
   traversal->traverseChild(handle->c, handle->tag, Region_var(region->_this()), Transform_var(Transform::_nil()));
-  region->_dispose();
 }
 
 StageImpl::StageImpl()
@@ -436,18 +434,14 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
   StageHandleImpl *handle = tag2handle(tag);
   if (handle)
     {
-      RegionImpl *region = new RegionImpl;
-      region->_obj_is_ready(_boa());
-      TransformImpl *transform = new TransformImpl;
-      transform->_obj_is_ready(_boa());
+      Impl_var<RegionImpl> region(new RegionImpl);
+      Impl_var<TransformImpl> transform(new TransformImpl);
       Vertex origin;
       handle->bbox(*region);
-      Placement::normalOrigin(region, origin);
+      region->normalize(origin);
       transform->translate(handle->p);
       a.allocation->copy(Region_var(region->_this()));
       a.transformation->premultiply(Transform_var(transform->_this()));
-      region->_dispose();
-      transform->_dispose();
     }
   else cerr << "StageImpl::allocate : child not found !" << endl;
 }
@@ -455,13 +449,10 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
 void StageImpl::needRedraw()
 {
   SectionLog section(Logger::layout, "StageImpl::needRedraw");
-  AllocationImpl *allocation = new AllocationImpl;
-  allocation->_obj_is_ready(_boa());
+  Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
+  Impl_var<TransformImpl> tx(new TransformImpl);
   for (CORBA::Long i = 0; i < allocation->size(); i++)
     {
       const Allocation::Info_var info = allocation->get(i);
@@ -477,22 +468,16 @@ void StageImpl::needRedraw()
 	  if (region->valid) info->root->damage(Region_var(region->_this()));
 	}
     }
-  tx->_dispose();
-  region->_dispose();
-  allocation->_dispose();
 }
 
 void StageImpl::needRedrawRegion(Region_ptr region)
 {
   SectionLog section(Logger::layout, "StageImpl::needRedrawRegion");
-  AllocationImpl *allocation = new AllocationImpl;
-  allocation->_obj_is_ready(_boa());
+  Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
-  RegionImpl *tmp = new RegionImpl;
-  tmp->_obj_is_ready(_boa());
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> tmp(new RegionImpl);
+  Impl_var<TransformImpl> tx(new TransformImpl);
   for (CORBA::Long i = 0; i < size; i++)
     {
       const Allocation::Info_var info = allocation->get(i);
@@ -505,9 +490,6 @@ void StageImpl::needRedrawRegion(Region_ptr region)
       tmp->applyTransform(Transform_var(tx->_this()));
       if (tmp->valid) info->root->damage(Region_var(tmp->_this()));
     }
-  tx->_dispose();
-  tmp->_dispose();
-  allocation->_dispose();
 }
 
 void StageImpl::needResize()
@@ -678,8 +660,7 @@ StageHandleImpl *StageImpl::tag2handle(Tag tag)
 
 void StageImpl::damage(StageHandleImpl *handle)
 {
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   handle->bbox(*region);
   if (need_redraw) damage_->mergeUnion(Region_var(region->_this()));
   else
@@ -687,7 +668,6 @@ void StageImpl::damage(StageHandleImpl *handle)
       need_redraw = true;
       damage_->copy(Region_var(region->_this()));
     }
-  region->_dispose();
 }
 
 StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Stage::Index ll)
