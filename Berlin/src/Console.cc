@@ -89,7 +89,7 @@ void Console::list_available(std::ostream & o)
                                        end = my_available_consoles.end();
        iter != end; ++iter)
   {
-    o << iter->first << " (" << iter->second << ")" << endl;
+    o << iter->first << " (" << iter->second << ")" << std::endl;
   }
 }
 

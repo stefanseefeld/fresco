@@ -81,7 +81,7 @@ public:
   };
 
   //. List available consoles (modules)
-  static void list_available(ostream &);
+  static void list_available(std::ostream &);
 
   //. Check whether a particular console (module) is avilable
   static bool is_available(std::string const &console);
