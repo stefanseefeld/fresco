@@ -47,7 +47,7 @@ dnl General flags
 dnl ------------------------------------------------------------------
 
 AC_ARG_ENABLE(complete-deps,
-              AC_HELP_STRING([--disable-complete-deps].[Use a faster, but less correct, dependency generator]),
+              AC_HELP_STRING([--disable-complete-deps],[Use a faster, but less correct, dependency generator]),
               [complete_deps_enabled="$enableval"],
               [complete_deps_enabled=yes])
 
