@@ -4,6 +4,12 @@
 
 using namespace Prague;
 
+struct Guard
+{
+  Guard() { cout << "Guard::Guard" << endl;}
+  ~Guard() { cout << "Guard::~Guard" << endl;}
+};
+
 void *task0(void *a)
 {
   cout << "task 0 sleeping 5 sec..." << endl;
@@ -32,6 +38,7 @@ void *task2(void *)
 void *task3(void *)
 {
   cout << "task 3 sleeping forever..." << endl;
+  Guard guard;
   while (true)
     {
       sleep(1);

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Dispatcher_hh
-#define _Dispatcher_hh
+#ifndef _Prague_Dispatcher_hh
+#define _Prague_Dispatcher_hh
 
 #include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/FdSet.hh>
@@ -28,6 +28,7 @@
 #include <Prague/IPC/Agent.hh>
 #include <vector>
 #include <map>
+#include <unistd.h>
 
 namespace Prague
 {
@@ -43,35 +44,32 @@ class Dispatcher
     int fd;
     Agent *agent;
     Agent::iomask_t mask;
+    mutable Mutex mutex;
   };
-  typedef vector<task> tlist_t;
-  typedef map<int, task> dictionary_t;
-
+  typedef map<int, task *> repository_t;
   struct Handler
   //. Handler is responsible for calling a specific method
   //. (determined by the mask) on the agent
   {
     Handler(const task &tt) : t(tt) {}
     void process() { dispatcher->process(t);}
-    task t;
+    const task &t;
   };
   friend struct Handler;
-  struct Acceptor
-  {
-    Handler *consume(const task &t) const { return new Handler(t);}
-  };
+  struct Acceptor { Handler *consume(const task *t) const { return new Handler(*t);}};
   struct Cleaner { ~Cleaner();};
   friend struct Cleaner;
 public:
   static Dispatcher *instance();
-  void bind(int, Agent *, Agent::iomask_t);
-  void release(int);
-  void release(Agent *);
-  void wait();
-// private:
+  void bind(Agent *, int, Agent::iomask_t);
+  void release(Agent *, int = -1);
+private:
   Dispatcher();
   virtual ~Dispatcher();
-  static void *dispatch(void *);
+  void wait();
+  void notify() { char *c = "c"; write(wakeup[1], c, 1);}
+  static void *run(void *);
+  void dispatch(task *);
   void process(const task &);
   void deactivate(const task &);
   void activate(const task &);
@@ -84,17 +82,17 @@ public:
   FdSet         wfds;
   FdSet         xfds;
   alist_t       agents;
-  dictionary_t  rchannel;
-  dictionary_t  wchannel;
-  dictionary_t  xchannel;
+  repository_t  rchannel;
+  repository_t  wchannel;
+  repository_t  xchannel;
   int           wakeup[2];
-  Thread::Queue<task> tasks;
+  Thread::Queue<task *> tasks;
   Acceptor      acceptor;
-  ThreadPool<task, Acceptor, Handler> workers;
+  ThreadPool<task *, Acceptor, Handler> workers;
   Thread        server;
 };
 
 };
 
-#endif /* _Dispatcher_hh */
+#endif /* _Prague_Dispatcher_hh */
 

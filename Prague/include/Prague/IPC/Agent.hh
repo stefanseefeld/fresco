@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Agent_hh
-#define _Agent_hh
+#ifndef _Prague_Agent_hh
+#define _Prague_Agent_hh
 
 #include <Prague/IPC/ipcbuf.hh>
 #include <Prague/Sys/Thread.hh>
@@ -46,28 +46,14 @@ public:
   virtual ipcbuf *ibuf() = 0;
   virtual ipcbuf *obuf() = 0;
   virtual ipcbuf *ebuf() = 0;
-protected:
-  virtual bool processIO(int, iomask_t) = 0;
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);
-  // For dispatcher use (Ilya)
-  int task_count;
-  Prague::Mutex task_mutex;
-  Prague::Condition *destruct_ok;
-  bool new_task() {
-	  MutexGuard guard(task_mutex);
-	  if (destruct_ok)
-		  return false; /* Agent is being destroyed */
-	  task_count ++;
-	  return true;
-  }
-  void task_finished();
-
+  virtual bool processIO(int, iomask_t) = 0;
   short iomask;
   bool  running : 1;
 };
 
 };
 
-#endif /* _Agent_hh */
+#endif /* _Prague_Agent_hh */

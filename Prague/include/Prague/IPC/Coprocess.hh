@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Coprocess_hh
-#define _Coprocess_hh
+#ifndef _Prague_Coprocess_hh
+#define _Prague_Coprocess_hh
 
 #include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/Timer.hh>
@@ -95,4 +95,4 @@ private:
 
 };
 
-#endif /* _Coprocess_hh */
+#endif /* _Prague_Coprocess_hh */

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,6 @@
 #include <algorithm>
 #include <ctime>
 #include <cerrno>
-#include <unistd.h>
 #include <sys/types.h>
 
 using namespace Prague;
@@ -63,7 +62,7 @@ Dispatcher::Dispatcher()
   : notifier(new SignalNotifier),
     tasks(64),
     workers(tasks, acceptor, 4),
-    server(&Dispatcher::dispatch, this)
+    server(&Dispatcher::run, this)
 {
   Signal::mask(Signal::pipe);
   Signal::set(Signal::hangup, notifier);
@@ -82,7 +81,7 @@ Dispatcher::~Dispatcher()
 {
 }
 
-void Dispatcher::bind(int fd, Agent *agent, Agent::iomask_t mask)
+void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
 {
   if (server.state() != Thread::running)
     {
@@ -90,7 +89,6 @@ void Dispatcher::bind(int fd, Agent *agent, Agent::iomask_t mask)
       rfds.set(wakeup[0]);
       server.start();
     }
-//   Signal::Guard sguard(Signal::child);
   MutexGuard guard(mutex);
   if (find(agents.begin(), agents.end(), agent) == agents.end())
     agents.push_back(agent);
@@ -99,13 +97,13 @@ void Dispatcher::bind(int fd, Agent *agent, Agent::iomask_t mask)
       if (mask & Agent::inready)
 	{
 	  wfds.set(fd);
-	  if (wchannel.find(fd) == wchannel.end()) wchannel[fd] = task(fd, agent, Agent::inready);
+	  if (wchannel.find(fd) == wchannel.end()) wchannel[fd] = new task(fd, agent, Agent::inready);
 	  else cerr << "Dispatcher::bind() : Error : file descriptor already in use" << endl;
 	}
       if (mask & Agent::inexc)
 	{
 	  xfds.set(fd);
-	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = task(fd, agent, Agent::inexc);
+	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = new task(fd, agent, Agent::inexc);
 	}
     }
   if (mask & Agent::out)
@@ -113,13 +111,13 @@ void Dispatcher::bind(int fd, Agent *agent, Agent::iomask_t mask)
       if (mask & Agent::outready)
 	{
 	  rfds.set(fd);
-	  if (rchannel.find(fd) == rchannel.end()) rchannel[fd] = task(fd, agent, Agent::outready);
+	  if (rchannel.find(fd) == rchannel.end()) rchannel[fd] = new task(fd, agent, Agent::outready);
 	  else cerr << "Dispatcher::bind() : Error : file descriptor already in use" << endl;
 	}
       if (mask & Agent::outexc)
 	{
 	  xfds.set(fd);
-	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = task(fd, agent, Agent::outexc);
+	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = new task(fd, agent, Agent::outexc);
 	}
     }
   if (mask & Agent::err)
@@ -127,53 +125,67 @@ void Dispatcher::bind(int fd, Agent *agent, Agent::iomask_t mask)
       if (mask & Agent::errready)
 	{
 	  rfds.set(fd);
-	  if (rchannel.find(fd) == rchannel.end()) rchannel[fd] = task(fd, agent, Agent::errready);
+	  if (rchannel.find(fd) == rchannel.end()) rchannel[fd] = new task(fd, agent, Agent::errready);
 	  else cerr << "Dispatcher::bind() : Error : file descriptor already in use" << endl;
 	}
       if (mask & Agent::errexc)
 	{
 	  xfds.set(fd);
-	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = task(fd, agent, Agent::errexc);
+	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = new task(fd, agent, Agent::errexc);
 	}
     }
 }
 
-void Dispatcher::release(int fd)
+void Dispatcher::release(Agent *agent, int fd)
 {
+  /*
+   * release file descriptors
+   */
+  cout << "Dispatcher::release" << endl;
   MutexGuard guard(mutex);
-  dictionary_t::iterator c;
-  if ((c = rchannel.find(fd)) != rchannel.end())
-    {
-      rchannel.erase(c);
-      rfds.clear(fd);
-    }
-  if ((c = wchannel.find(fd)) != wchannel.end())
-    {
-      wchannel.erase(c);
-      wfds.clear(fd);
-    }
-  if ((c = xchannel.find(fd)) != xchannel.end())
-    {
-      xchannel.erase(c);
-      xfds.clear(fd);
-    }
-}
+  cout << " 2 Dispatcher::release" << endl;
+  for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
+    if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
+      {
+	(*i).second->mutex.lock();
+	deactivate(*(*i).second);
+	(*i).second->mutex.unlock();
+	delete (*i).second;
+	rchannel.erase(i);
+      }
+  for (repository_t::iterator i = wchannel.begin(); i != wchannel.end(); i++)
+    if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
+      {
+	(*i).second->mutex.lock();
+	deactivate(*(*i).second);
+	(*i).second->mutex.unlock();
+	delete (*i).second;
+	wchannel.erase(i);
+      }
+  for (repository_t::iterator i = xchannel.begin(); i != xchannel.end(); i++)
+    if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
+      {
+	(*i).second->mutex.lock();
+	deactivate(*(*i).second);
+	(*i).second->mutex.unlock();
+	delete (*i).second;
+	xchannel.erase(i);
+      }
+  /*
+   * release Agent if no more file descriptors left
+   */
+  for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
+    if ((*i).second->agent == agent) return;
+  for (repository_t::iterator i = wchannel.begin(); i != wchannel.end(); i++)
+    if ((*i).second->agent == agent) return;
+  for (repository_t::iterator i = xchannel.begin(); i != xchannel.end(); i++)
+    if ((*i).second->agent == agent) return;
 
-void Dispatcher::release(Agent *agent)
-{
-//   Signal::Guard guard(Signal::child);
-  MutexGuard guard(mutex);
-  for (dictionary_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
-    if ((*i).second.agent == agent) rchannel.erase(i);
-  for (dictionary_t::iterator i = wchannel.begin(); i != wchannel.end(); i++)
-    if ((*i).second.agent == agent) wchannel.erase(i);
-  for (dictionary_t::iterator i = xchannel.begin(); i != xchannel.end(); i++)
-    if ((*i).second.agent == agent) xchannel.erase(i);
   alist_t::iterator i = find(agents.begin(), agents.end(), agent);
   if (i != agents.end()) agents.erase(i);
 }
 
-void *Dispatcher::dispatch(void *X)
+void *Dispatcher::run(void *X)
 {
   Dispatcher *dispatcher = reinterpret_cast<Dispatcher *>(X);
   dispatcher->workers.start();
@@ -182,10 +194,17 @@ void *Dispatcher::dispatch(void *X)
   return 0;
 };
 
+void Dispatcher::dispatch(task *t)
+{
+  t->mutex.lock();
+  deactivate(*t);
+  tasks.push(t);
+}
+
 void Dispatcher::process(const task &t)
 {
   if (t.agent->processIO(t.fd, t.mask)) activate(t);
-  t.agent->task_finished();
+  t.mutex.unlock();
 }
 
 void Dispatcher::deactivate(const task &t)
@@ -214,8 +233,7 @@ void Dispatcher::activate(const task &t)
     case Agent::errexc: xfds.set(t.fd); break;
     default: break;
     }
-  char *c = "c";
-  write(wakeup[1], c, 1);
+  notify();
 }
 
 void Dispatcher::wait()
@@ -232,34 +250,20 @@ void Dispatcher::wait()
     }
   else if (nsel > 0 && fdsize)
     {
-      tlist_t t;
-      for (dictionary_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
+      MutexGuard guard(mutex);
+      for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
 	if (tmprfds.isset((*i).first))
-	  {
-	    t.push_back((*i).second);
-	    deactivate((*i).second);
-	  }
-      for (dictionary_t::iterator i = wchannel.begin(); i != wchannel.end(); i++)
+	  dispatch((*i).second);
+      for (repository_t::iterator i = wchannel.begin(); i != wchannel.end(); i++)
 	if (tmpwfds.isset((*i).first))
-	  {
-	    t.push_back((*i).second);
-	    deactivate((*i).second);
-	  }
-      for (dictionary_t::iterator i = xchannel.begin(); i != xchannel.end(); i++)
+	  dispatch((*i).second);
+      for (repository_t::iterator i = xchannel.begin(); i != xchannel.end(); i++)
 	if (tmpxfds.isset((*i).first))
-	  {
-	    t.push_back((*i).second);
-	    deactivate((*i).second);
-	  }
+	  dispatch((*i).second);
       if (tmprfds.isset(wakeup[0]))
 	{
 	  char c[1];
 	  read(wakeup[0],c,1);
 	}
-      for (tlist_t::const_iterator i = t.begin(); i != t.end(); i++)
-      {
-	if ((*i).agent->new_task())
-		tasks.push(*i);
-      }
     }
 }

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -44,7 +44,6 @@ static bool init = false;
 
 void Coprocess::Reaper::notify(int)
 {
-  sleep(1);
   MutexGuard guard(singletonMutex);
   for (plist_t::iterator i = processes.begin(); i != processes.end(); i++)
     {
@@ -103,10 +102,13 @@ void Coprocess::stop()
 
 bool Coprocess::processIO(int, iomask_t m)
 {
+  MutexGuard guard(mutex);
   /*
    * let the client process the IO
    */
   bool flag = ioNotifier ? ioNotifier->notify(m) : false;
+  flag &= (id != 0);
+  if (!id) cout << "process died" << endl;
   /*
    * see whether the channel is still open
    */
@@ -141,6 +143,7 @@ bool Coprocess::processIO(int, iomask_t m)
       break;
     default: break;
     }
+  cout << "returning " << flag << endl;
   return flag;
 }
 
@@ -162,21 +165,25 @@ void Coprocess::terminate()
 
 void Coprocess::shutdown(short m)
 {
+  cout << "shutdown " << m << endl;
   short om = mask();
   m &= om;
   mask(om & ~m );
   if (m & in)
     {
+      cout << "deleting inbuf" << endl;
       delete inbuf;
       inbuf = 0;
     }
   if (m & out)
     {
+      cout << "deleting outbuf" << endl;
       delete outbuf;
       outbuf = 0;
     }
   if (m & err)
     {
+      cout << "deleting errbuf" << endl;
       delete errbuf;
       errbuf = 0;
     }
