@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Choice.hh>
+#include <Warsaw/Selection.hh>
 #include <Warsaw/CommandKit.hh>
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
@@ -36,41 +37,16 @@ namespace Motif
 
 class Choice : implements(Choice), public ControllerImpl
 {
-  class Observer;
-  friend class Observer;
-  class Observer : implements(Observer)
-    {
-    public:
-      Observer(Choice *, Controller_ptr, Tag);
-      Tag tag() const { return t;}
-      void update(const CORBA::Any &);
-    private:
-      Choice *choice;
-      Controller_var item;
-      bool cached;
-      Tag t;
-    };
-  typedef vector<Tag> slist_t;
-  typedef vector<Observer *> olist_t;
+  class State;
  public:
-  Choice(Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
+  Choice(Selection::Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
   virtual ~Choice();
-  virtual Policy type() { return policy;}
-  virtual CORBA::Long selection();
-  virtual SelectionSeq *selections();
+  virtual Selection_ptr state();
+  virtual Tag appendItem(Graphic_ptr) = 0;
+  virtual Tag prependItem(Graphic_ptr) = 0;
+  void removeItem(Tag) = 0;
  protected:
-  void appendController(Controller_ptr);
-  void prependController(Controller_ptr);
-  void update(Tag, bool);
-  Tag tag();
-  CORBA::Long index(Tag); 
-//  private:
-  Policy policy;
-  slist_t _selections;
-  olist_t observers;
-//  protected:
-  TelltaleConstraint_var constraint;
-  CommandKit_var command;
+  State *_state;
   LayoutKit_var layout;
   ToolKit_var   tools;
   WidgetKit_var widgets;
@@ -79,19 +55,19 @@ class Choice : implements(Choice), public ControllerImpl
 class ToggleChoice : public Choice
 {
  public:
-  ToggleChoice(Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
-  virtual void append(Graphic_ptr);
-  virtual void prepend(Graphic_ptr);
-  virtual void remove(Tag);
+  ToggleChoice(Selection::Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
+  virtual Tag appendItem(Graphic_ptr);
+  virtual Tag prependItem(Graphic_ptr);
+  void removeItem(Tag);
 };
 
 class CheckboxChoice : public Choice
 {
  public:
-  CheckboxChoice(Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
-  virtual void append(Graphic_ptr);
-  virtual void prepend(Graphic_ptr);
-  virtual void remove(Tag);
+  CheckboxChoice(Selection::Policy, CommandKit_ptr, LayoutKit_ptr, ToolKit_ptr, WidgetKit_ptr);
+  virtual Tag appendItem(Graphic_ptr);
+  virtual Tag prependItem(Graphic_ptr);
+  void removeItem(Tag);
 };
 
 };

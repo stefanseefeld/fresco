@@ -31,12 +31,13 @@ using namespace Prague;
 
 void Application::Mapper::execute(const CORBA::Any &)
 {
-  Choice::SelectionSeq *sel = choice->selections();
-  if (!sel->length()) return;
-  CORBA::Long s = (*sel)[sel->length() - 1];
-  delete sel;
+  Selection::Items *items = selection->toggled();
+  if (!items->length()) return;
+  Tag t = (*items)[items->length() - 1];
+  delete items;
   CORBA::Any any;
-  demos[s]->execute(any);
+  for (Application::list_t::iterator i = demos.begin(); i != demos.end(); i++)
+    if (t == (*i).id) (*i).mapper->execute(any);
 }
 
 class ExitCommand : implements(Command) 
@@ -58,7 +59,7 @@ Application::Application(Server_ptr server)
     ik(resolve_kit<ImageKit>(context, ImageKit_IntfRepoID)),
     vbox(lk->vbox()),
     choice(wk->toggleChoice()),
-    mapper(new Mapper(demos, choice))
+    mapper(new Mapper(demos, Selection_var(choice->state())))
 {
   char *berlin_root = getenv("BERLIN_ROOT");
   // This should be changed to throwing a InitException or something - Jonas
@@ -99,9 +100,9 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   Command_var unmap = window->map(false);
   button->action(unmap);
 
-  demos.push_back(window->map(true));
   Graphic_var label = tk->chunk(Unicode::toCORBA(name));
-  choice->append(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
+  Tag tag = choice->appendItem(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
+  demos.push_back(Item(tag, Command_var(window->map(true))));
 }
 
 void Application::run()
@@ -110,21 +111,22 @@ void Application::run()
   ToolKit::FrameSpec spec;
   spec.dbrightness(0.5);
   vbox->append(Graphic_var(ttk->frame(choice, 20., spec, false)));
-  Graphic_var hbox = lk->hbox();
-  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
   Graphic_var label1 = lk->margin(glyph1, 20.);
   Trigger_var run = wk->button(Graphic_var(ttk->rgb(label1, 0., 0., 0.)), Command_var(mapper->_this()));
-  hbox->append(run);
-  hbox->append(Graphic_var(lk->vspace(200.)));
   Graphic_var glyph2 = tk->chunk(Unicode::toCORBA(Unicode::String("quit")));
   Graphic_var label2 = lk->margin(glyph2, 20.);
   ExitCommand *cmd = new ExitCommand();
   cmd->_obj_is_ready(CORBA::BOA::getBOA());
   Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
+
+  Graphic_var hbox = lk->hbox();
+  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
+  hbox->append(run);
+  hbox->append(Graphic_var(lk->hspace(200.)));
   hbox->append(quit);
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
-  vbox->append(hbox);
+  vbox->append(Graphic_var(lk->margin(hbox, 200.)));
   Graphic_var margin = lk->margin(vbox, 200.);
   
   spec.bbrightness(1.0);

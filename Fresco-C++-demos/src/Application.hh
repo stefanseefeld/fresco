@@ -37,6 +37,7 @@
 #include <Warsaw/ClientContextImpl.hh>
 #include <Prague/Sys/Signal.hh>
 #include <Warsaw/Unicode.hh>
+#include <Warsaw/Selection.hh>
 #include <Warsaw/Choice.hh>
 #include <unistd.h>
 #include <iostream>
@@ -44,15 +45,21 @@
 
 class Application
 {
-  typedef vector<Command_var> demolist_t;
+  struct Item
+  {
+    Item(Tag t, Command_ptr c) : id(t), mapper(Command::_duplicate(c)) {}
+    Tag id;
+    Command_var mapper;
+  };
+  typedef vector<Item> list_t;
   class Mapper : implements(Command)
   {
   public:
-    Mapper(Application::demolist_t &d, Choice_ptr c) : demos(d), choice(Choice::_duplicate(c)) {}
+    Mapper(Application::list_t &d, Selection_ptr s) : demos(d), selection(Selection::_duplicate(s)) {}
     virtual void execute(const CORBA::Any &);
   private:
-    Application::demolist_t &demos;
-    Choice_var choice;
+    Application::list_t &demos;
+    Selection_var selection;
   };
   friend class Mapper;
 public:
@@ -70,7 +77,7 @@ public:
 protected:
 private:
   Impl_var<ClientContextImpl> client;
-  ServerContext_var  context;
+  ServerContext_var context;
   TextKit_var tk;
   DesktopKit_var dk;
   LayoutKit_var lk;
@@ -81,7 +88,7 @@ private:
   ImageKit_var ik;
   Graphic_var vbox;
   Choice_var  choice;
-  demolist_t demos;
+  list_t demos;
   Impl_var<Mapper> mapper;
   Color background;
   Graphic_var done;

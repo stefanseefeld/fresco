@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -30,8 +30,8 @@ class FocusDemo::Observer : implements(Observer)
  public:
   virtual void update(const CORBA::Any &any)
     {
-      Choice::SelectionSeq *selections;
-      if (any >>= selections)
+      Selection::Item *item;
+      if (any >>= item)
 	cout << "new selection" << endl;
     }
 };
@@ -54,16 +54,16 @@ FocusDemo::FocusDemo(Application *a)
   /*
    * first group
    */
-  Controller_var c1 = widget->toggleChoice();
+  Choice_var c1 = widget->toggleChoice();
   for (size_t i = 0; i != 5; i++)
-    c1->append(Graphic_var(Graphic::_nil()));
+    c1->appendItem(Graphic_var(Graphic::_nil()));
   c1->attach(Observer_var(observer->_this()));
   /*
    * second group
    */
-  Controller_var c2 = widget->toggleChoice();
+  Choice_var c2 = widget->toggleChoice();
   for (size_t i = 0; i != 5; i++)
-    c2->append(Graphic_var(Graphic::_nil()));
+    c2->appendItem(Graphic_var(Graphic::_nil()));
   c2->attach(Observer_var(observer->_this()));
   hbox1->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c1, 100.)),
 								   20., concav, true)), 100.)));
@@ -73,16 +73,16 @@ FocusDemo::FocusDemo(Application *a)
   /*
    * third group
    */
-  Controller_var c3 = widget->toggleChoice();
+  Choice_var c3 = widget->toggleChoice();
   for (size_t i = 0; i != 5; i++)
-    c3->append(Graphic_var(Graphic::_nil()));
+    c3->appendItem(Graphic_var(Graphic::_nil()));
   c3->attach(Observer_var(observer->_this()));
   /*
    * fourth group
    */
-  Controller_var c4 = widget->toggleChoice();
+  Choice_var c4 = widget->toggleChoice();
   for (size_t i = 0; i != 5; i++)
-    c4->append(Graphic_var(Graphic::_nil()));
+    c4->appendItem(Graphic_var(Graphic::_nil()));
   c4->attach(Observer_var(observer->_this()));
   hbox2->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c3, 100.)),
 								   20., concav, true)), 100.)));

@@ -105,11 +105,23 @@ LogoDemo::LogoDemo(Application *a)
   group->append(transformator2);
   group->append(transformator3);
   
+  Graphic_var hbox1 = layout->hbox();
+  hbox1->append(Graphic_var(layout->hfil()));
+  hbox1->append(Graphic_var(widget->slider(bv1, xaxis)));
+  hbox1->append(Graphic_var(layout->hfil()));
+  Graphic_var hbox2 = layout->hbox();
+  hbox2->append(Graphic_var(layout->hfil()));
+  hbox2->append(Graphic_var(widget->slider(bv2, xaxis)));
+  hbox2->append(Graphic_var(layout->hfil()));
+  Graphic_var hbox3 = layout->hbox();
+  hbox3->append(Graphic_var(layout->hfil()));
+  hbox3->append(Graphic_var(widget->slider(bv3, xaxis)));
+  hbox3->append(Graphic_var(layout->hfil()));
   Graphic_var box = layout->vbox();
   box->append(Graphic_var(layout->align(group, 0., 0.)));
-  box->append(Graphic_var(widget->slider(bv1, xaxis)));
-  box->append(Graphic_var(widget->slider(bv2, xaxis)));
-  box->append(Graphic_var(widget->slider(bv3, xaxis)));
+  box->append(hbox1);
+  box->append(hbox2);
+  box->append(hbox3);
   ToolKit::FrameSpec spec;
   spec.bbrightness(0.5);
   Graphic_var foo = tool->frame(box, 10., spec, true);

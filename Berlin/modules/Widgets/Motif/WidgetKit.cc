@@ -27,6 +27,7 @@
 #include "Warsaw/resolve.hh"
 #include "Warsaw/Trigger.hh"
 #include "Warsaw/Command.hh"
+#include "Warsaw/Selection.hh"
 #include "Widget/Motif/WidgetKit.hh"
 #include "Widget/Motif/Gauge.hh"
 #include "Widget/Motif/Slider.hh"
@@ -130,8 +131,8 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   fixed.maximum = 120.;
   fixed.align = 0;
   Graphic::Requisition req;
-  if (axis == xaxis) req.x = flexible, req.y = fixed;
-  else               req.x = fixed, req.y = flexible;
+  if (axis == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
+  else               req.x = fixed, req.y = flexible, req.z.defined = false;
   Slider *slider = new Slider(value, axis, req);
   slider->_obj_is_ready(_boa());
   /*
@@ -148,7 +149,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    * now put it into an inset
    */
   spec.abrightness(0.5);
-  Graphic_var inset = tool->frame(box, 20., spec, false);
+  Graphic_var inset = tool->frame(slider, 20., spec, false);
   Controller_var root = tool->group(inset);
   /*
    * now wire up the control structure
@@ -192,8 +193,8 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   fixed.maximum = 120.;
   fixed.align = 0;
   Graphic::Requisition req;
-  if (a == xaxis) req.x = flexible, req.y = fixed;
-  else            req.x = fixed, req.y = flexible;
+  if (a == xaxis) req.x = flexible, req.y = fixed, req.z.defined = false;
+  else            req.x = fixed, req.y = flexible, req.z.defined = false;
   Scrollbar *scrollbar = new Scrollbar(x, a, req);
   scrollbar->_obj_is_ready(_boa());
   /*
@@ -248,7 +249,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
 
 Choice_ptr WidgetKit::toggleChoice()
 {
-  Choice *choice = new ToggleChoice(Choice::exclusive, command, layout, tool, WidgetKit_var(_this()));
+  Choice *choice = new ToggleChoice(Selection::exclusive, command, layout, tool, WidgetKit_var(_this()));
   choice->_obj_is_ready(_boa());
   choice->body(Graphic_var(layout->vbox()));
   graphics.push_back(choice);
@@ -257,7 +258,7 @@ Choice_ptr WidgetKit::toggleChoice()
 
 Choice_ptr WidgetKit::checkboxChoice()
 {
-  Choice *choice = new CheckboxChoice(Choice::exclusive, command, layout, tool, WidgetKit_var(_this()));
+  Choice *choice = new CheckboxChoice(0, command, layout, tool, WidgetKit_var(_this()));
   choice->_obj_is_ready(_boa());
   choice->body(Graphic_var(layout->vbox()));
   graphics.push_back(choice);

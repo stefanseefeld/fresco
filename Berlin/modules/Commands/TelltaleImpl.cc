@@ -102,9 +102,10 @@ ExclusiveChoice::ExclusiveChoice(Telltale::Mask m)
 void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Mask m, CORBA::Boolean b)
 {
   MutexGuard guard(mutex);
-  for (tlist_t::iterator i = telltales.begin(); i != telltales.end(); i++)
-    if ((*i)->test(m)) (*i)->modify(m, false);
-  t->modify(m, true);
+  if (b)
+    for (tlist_t::iterator i = telltales.begin(); i != telltales.end(); i++)
+      if ((*i)->test(m)) (*i)->modify(m, false);
+  t->modify(m, b);
 }
 
 SelectionRequired::SelectionRequired()

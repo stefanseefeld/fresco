@@ -38,16 +38,16 @@ class Scrollbar : public ControllerImpl
     Coord lower;
     Coord upper;
   }; 
-  class SObserver : implements(Observer)
+  class Observer : implements(Observer)
   {
   public:
-    SObserver(Scrollbar *s) : scrollbar(s) {}
+    Observer(Scrollbar *s) : scrollbar(s) {}
     void update(const CORBA::Any &any) { scrollbar->update(any);}
   private:
     Scrollbar *scrollbar;
   };
-  friend class SObserver;
-  class Modifier : implements(Command) {};
+  friend class Observer;
+  class Dragger;
 public:
   Scrollbar(BoundedRange_ptr, Axis, const Requisition &);
   void init(Controller_ptr);
@@ -56,12 +56,12 @@ public:
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
   virtual void allocate(Tag, const Allocation::Info &);
-  Command_ptr drag() { return _drag->_this();}
+  Command_ptr drag();
 private:
   void traverseThumb(Traversal_ptr);
   Requisition requisition;
-  Impl_var<SObserver> redirect;
-  Impl_var<Modifier> _drag;
+  Impl_var<Observer> redirect;
+  Impl_var<Dragger> _drag;
   BoundedRange_var range;
   Offset offset;
   Axis axis;

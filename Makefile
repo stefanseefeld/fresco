@@ -21,7 +21,7 @@
 
 SHELL	= /bin/sh
 
-subdirs	= include/Warsaw src server $(wildcard clients)
+subdirs	= $(wildcard include/Warsaw src server clients)
 # doc
 
 .PHONY:	config test

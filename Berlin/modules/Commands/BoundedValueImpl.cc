@@ -103,6 +103,7 @@ void BoundedValueImpl::forward()
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -116,6 +117,7 @@ void BoundedValueImpl::backward()
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -129,6 +131,7 @@ void BoundedValueImpl::fastforward()
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -142,6 +145,7 @@ void BoundedValueImpl::fastbackward()
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -154,6 +158,7 @@ void BoundedValueImpl::begin()
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -167,6 +172,7 @@ void BoundedValueImpl::end()
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -180,6 +186,7 @@ void BoundedValueImpl::value(Coord vv)
     v = vv;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }
 
@@ -201,5 +208,6 @@ void BoundedValueImpl::adjust(Coord d)
     v = t;
   }
   CORBA::Any any;
+  any <<= v;
   notify(any);
 }

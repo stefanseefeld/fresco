@@ -19,198 +19,259 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Warsaw/Selection.hh"
 #include "Widget/Motif/Choice.hh"
+#include "Prague/Sys/Thread.hh"
+#include "Berlin/SubjectImpl.hh"
 #include "Berlin/Logger.hh"
+
+using namespace Prague;
 
 namespace Motif
 {
 
-Choice::Observer::Observer(Choice *c, Controller_ptr i, Tag tt)
-  : choice(c), item(Controller::_duplicate(i)), cached(item->test(Controller::toggled)), t(tt)
+  class Choice::State : implements(Selection), public SubjectImpl
+{
+  class Observer;
+  friend class Observer;
+  class Observer : implements(Observer)
+    {
+    public:
+      Observer(State *, Telltale_ptr, Tag);
+      Tag tag() const { return t;}
+      bool toggled() { return cached;}
+      void update(const CORBA::Any &);
+    private:
+      State *state;
+      Telltale_var item;
+      bool cached;
+      Tag t;
+    };
+  typedef vector<Observer *> list_t;
+ public:
+  State(Policy, CommandKit_ptr);
+  ~State();
+  virtual Policy type() { return policy;}
+  virtual void type(Policy) {}
+  Tag add(Telltale_ptr);
+  void remove(Tag);
+  Items *toggled();
+ private:
+  void update(Tag, bool);
+  Tag tag();
+  CORBA::Long index(Tag); 
+  Mutex mutex;
+  Policy policy;
+  TelltaleConstraint_var constraint;
+  list_t items;
+};
+
+Choice::State::Observer::Observer(State *s, Telltale_ptr i, Tag tt)
+  : state(s), item(Telltale::_duplicate(i)), cached(item->test(Controller::toggled)), t(tt)
 {
 }
 
-void Choice::Observer::update(const CORBA::Any &any)
+void Choice::State::Observer::update(const CORBA::Any &any)
 {
   bool toggled = item->test(Controller::toggled);
   if (toggled == cached) return; // not for us...
-  choice->update(t, toggled);
+  cached = toggled;
+  state->update(t, toggled);
 }
 
-Choice::Choice(Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
-  : ControllerImpl(false),
-    policy(p),
-    command(CommandKit::_duplicate(c)),
-    layout(LayoutKit::_duplicate(l)),
-    tools(ToolKit::_duplicate(t)),
-    widgets(WidgetKit::_duplicate(w))
+Choice::State::State(Policy p, CommandKit_ptr c)
+  : policy(p)
 {
-  if (policy == exclusive) constraint = command->exclusive(Controller::toggled);
+  if (policy == exclusive) constraint = c->exclusive(Controller::toggled);
 }
-  
-Choice::~Choice()
+Choice::State::~State()
 {
-  for (olist_t::iterator i = observers.begin(); i != observers.end(); i++)
+  for (list_t::iterator i = items.begin(); i != items.end(); i++)
     (*i)->_dispose();
 }
 
-CORBA::Long Choice::selection()
+Tag Choice::State::add(Telltale_ptr t)
 {
-  return _selections.size() ? index(_selections.back()) : -1;
+  MutexGuard guard(mutex);
+  Observer *observer = new Observer(this, t, tag());
+  observer->_obj_is_ready(CORBA::BOA::getBOA());
+  t->attach(Observer_var(observer->_this()));
+  if (!CORBA::is_nil(constraint)) constraint->add(t);
+  items.push_back(observer);
+  return observer->tag();
 }
 
-Choice::SelectionSeq *Choice::selections()
+void Choice::State::remove(Tag t)
 {
-  SelectionSeq *sel = new SelectionSeq;
-  sel->length(_selections.size());
-  for (size_t i = 0; i != sel->length(); i++)
-    (*sel)[i] = index(_selections[i]);
-  return sel;
-}
-
-void Choice::appendController(Controller_ptr c)
-{
-  ControllerImpl::appendController(c);
-  Observer *observer = new Observer(this, c, tag());
-  observer->_obj_is_ready(_boa());
-  c->attach(Observer_var(observer->_this()));
-  observers.push_back(observer);
-}
-
-void Choice::prependController(Controller_ptr c)
-{
-  ControllerImpl::prependController(c);
-  Observer *observer = new Observer(this, c, tag());
-  observer->_obj_is_ready(_boa());
-  c->attach(Observer_var(observer->_this()));
-  observers.push_back(observer);
-}
-
-void Choice::update(Tag t, bool toggled)
-{
-  if (toggled) _selections.push_back(t);
-  else
+  MutexGuard guard(mutex);
+  size_t i = index(t);
+  if (i < items.size())
     {
-      size_t idx = index(t);
-      for (slist_t::iterator i = _selections.begin(); i != _selections.end(); i++)
-	{
-	  if ((*i) == idx) _selections.erase(i);
-	  break;
-	}
+//       if (!CORBA::is_nil(constraint)) constraint->remove(t);
+      delete items[i];
+      items.erase(items.begin() + i);
     }
-  CORBA::Any sel;
-  sel <<= selections();
-  notify(sel);
 }
 
-Tag Choice::tag()
+Selection::Items *Choice::State::toggled()
+{
+  MutexGuard guard(mutex);
+  Items *ret = new Items;
+  for (list_t::iterator i = items.begin(); i != items.end(); i++)
+    if ((*i)->toggled())
+      {
+	ret->length(ret->length() + 1);
+	(*ret)[ret->length() - 1] = (*i)->tag();
+      }
+  return ret;
+}
+
+void Choice::State::update(Tag t, bool toggled)
+{
+  CORBA::Any any;
+  Item item;
+  item.id = t;
+  item.toggled = toggled;
+  any <<= item;
+  notify(any);
+}
+
+Tag Choice::State::tag()
 {
   Tag t = 0;
   do
     {
-      olist_t::iterator i;
-      for (i = observers.begin(); i != observers.end(); i++)
+      list_t::iterator i;
+      for (i = items.begin(); i != items.end(); i++)
 	if ((*i)->tag() == t) break;
-      if (i == observers.end()) return t;
+      if (i == items.end()) return t;
     }
   while (++t);
   return 0;
 }
 
-CORBA::Long Choice::index(Tag tag)
+CORBA::Long Choice::State::index(Tag tag)
 {
   size_t i = 0;
-  for (; i != observers.size(); i++)
-    if (observers[i]->tag() == tag) break;
+  for (; i != items.size(); i++)
+    if (items[i]->tag() == tag) break;
   return i;
 }
 
-ToggleChoice::ToggleChoice(Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+Choice::Choice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+  : ControllerImpl(false),
+    _state(new State(p, c)),
+    layout(LayoutKit::_duplicate(l)),
+    tools(ToolKit::_duplicate(t)),
+    widgets(WidgetKit::_duplicate(w))
+{
+  _state->_obj_is_ready(CORBA::BOA::getBOA());
+}
+  
+Choice::~Choice()
+{
+  _state->_dispose();
+}
+
+Selection_ptr Choice::state()
+{
+  return _state->_this();
+}
+
+ToggleChoice::ToggleChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
   : Choice(p, c, l, t, w)
 {}
 
-void ToggleChoice::append(Graphic_ptr g)
+Tag ToggleChoice::appendItem(Graphic_ptr g)
 {
   SectionLog section("ToggleChoice::append");
   Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)));
-  if (!CORBA::is_nil(constraint)) constraint->add(toggle);
+  Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 100.)));
+  item->append(Graphic_var(layout->margin(toggle, 50.)));
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
   box->append(item);
+  return tag;
 }
 
-void ToggleChoice::prepend(Graphic_ptr g)
+Tag ToggleChoice::prependItem(Graphic_ptr g)
 {
   SectionLog section("ToggleChoice::prepend");
   Controller_var toggle = widgets->toggle(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)));
-  if (!CORBA::is_nil(constraint)) constraint->add(toggle);
+  Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 100.)));
+  item->append(Graphic_var(layout->margin(toggle, 50.)));
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
   box->prepend(item);
+  return tag;
 }
 
-void ToggleChoice::remove(Tag t)
+void ToggleChoice::removeItem(Tag t)
 {
   SectionLog section("ToggleChoice::remove");
+  _state->remove(t);
   Graphic_var box = body();
   box->remove(t);
 }
 
-CheckboxChoice::CheckboxChoice(Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+CheckboxChoice::CheckboxChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
   : Choice(p, c, l, t, w)
 {}
 
-void CheckboxChoice::append(Graphic_ptr g)
+Tag CheckboxChoice::appendItem(Graphic_ptr g)
 {
   SectionLog section("CheckboxChoice::append");
   Controller_var toggle = tools->toggle(Graphic_var(Graphic::_nil()));
+  Tag tag = _state->add(toggle);
+  appendController(toggle);
+
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
   Graphic_var frame = tools->dynamicDiamond(g, 20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
-  if (!CORBA::is_nil(constraint)) constraint->add(toggle);
-  appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 100.)));
+  item->append(Graphic_var(layout->margin(toggle, 50.)));
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
   box->append(item);
+  return tag;
 }
 
-void CheckboxChoice::prepend(Graphic_ptr g)
+Tag CheckboxChoice::prependItem(Graphic_ptr g)
 {
   SectionLog section("CheckboxChoice::prepend");
   Controller_var toggle = tools->toggle(Graphic_var(Graphic::_nil()));
+  Tag tag = _state->add(toggle);
+  appendController(toggle);
+
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
   Graphic_var frame = tools->dynamicDiamond(g, 20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
-  if (!CORBA::is_nil(constraint)) constraint->add(toggle);
-  appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 100.)));
+  item->append(Graphic_var(layout->margin(toggle, 50.)));
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();
   box->prepend(item);
+  return tag;
 }
 
-void CheckboxChoice::remove(Tag t)
+void CheckboxChoice::removeItem(Tag t)
 {
   SectionLog section("CheckboxChoice::remove");
+  _state->remove(t);
   Graphic_var box = body();
   box->remove(t);
 }

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,13 +27,14 @@
 #include "Berlin/TransformImpl.hh"
 #include "Widget/Motif/Slider.hh"
 #include "Berlin/Logger.hh"
+#include "Warsaw/Warsaw.hh"
 
 using namespace Motif;
 
-class SDrag : public Slider::Modifier
+class Slider::Dragger : implements(Command)
 {
 public:
-  SDrag(BoundedValue_ptr v, Axis a) : value(BoundedValue::_duplicate(v)), axis(a) {}
+  Dragger(BoundedValue_ptr v, Axis a) : value(BoundedValue::_duplicate(v)), axis(a) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -52,9 +53,9 @@ private:
 Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
   : ControllerImpl(false),
     requisition(r),
-    redirect(new SObserver(this)),
-    _drag(new SDrag(v, a)),
-    range(BoundedValue::_duplicate(v)),
+    redirect(new Observer(this)),
+    _drag(new Dragger(v, a)),
+    value(BoundedValue::_duplicate(v)),
     offset(v->value()),
     axis(a)
 {
@@ -71,6 +72,7 @@ void Slider::init(Controller_ptr t)
 void Slider::update(const CORBA::Any &any)
 {
   any >>= offset;
+  offset /= (value->upper() - value->lower());
   needRedraw();
 }
 
@@ -97,21 +99,21 @@ void Slider::allocate(Tag, const Allocation::Info &info)
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
   if (axis == xaxis)
     {
-      Coord lower = allocation->lower.x;
-      Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*offset;
-      allocation->upper.x = lower + scale*offset + 1000.;
+      Coord length = allocation->upper.x - allocation->lower.x - 200.;
+      allocation->lower.x = offset * length;
+      allocation->upper.x = offset * length + 200.;
     }
   else
     {
-      Coord lower = allocation->lower.y;
-      Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*offset;
-      allocation->upper.y = lower + scale*offset + 1000.;
+      Coord length = allocation->upper.y - allocation->lower.y - 200.;
+      allocation->lower.y = offset * length;
+      allocation->upper.y = offset * length + 200.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
 }
+
+Command_ptr Slider::drag() { return _drag->_this();}
 
 void Slider::traverseThumb(Traversal_ptr traversal)
 {
@@ -121,18 +123,15 @@ void Slider::traverseThumb(Traversal_ptr traversal)
   Impl_var<TransformImpl> transformation(new TransformImpl);
   if (axis == xaxis)
     {
-      Coord lower = allocation->lower.x;
-      Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*offset;
-      allocation->upper.x = lower + scale*offset + 1000.;
-      allocation->lower.z = allocation->upper.z = 0.;
+      Coord length = allocation->upper.x - allocation->lower.x - 200.;
+      allocation->lower.x = offset * length;
+      allocation->upper.x = offset * length + 200.;
     }
   else if (axis == yaxis)
     {
-      Coord lower = allocation->lower.y;
-      Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*offset;
-      allocation->upper.y = lower + scale*offset + 1000.;
+      Coord length = allocation->upper.y - allocation->lower.y - 200.;
+      allocation->lower.y = offset * length;
+      allocation->upper.y = offset * length + 200.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));

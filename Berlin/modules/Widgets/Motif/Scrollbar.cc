@@ -26,10 +26,10 @@
 
 using namespace Motif;
 
-class SDrag : public Scrollbar::Modifier
+class Scrollbar::Dragger : implements(Command)
 {
 public:
-  SDrag(BoundedRange_ptr v, Axis a) : value(BoundedRange::_duplicate(v)), axis(a) {}
+  Dragger(BoundedRange_ptr v, Axis a) : value(BoundedRange::_duplicate(v)), axis(a) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -48,8 +48,8 @@ private:
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Requisition &r)
   : ControllerImpl(false),
     requisition(r),
-    redirect(new SObserver(this)),
-    _drag(new SDrag(v, a)),
+    redirect(new Observer(this)),
+    _drag(new Dragger(v, a)),
     range(BoundedRange::_duplicate(v)),
     axis(a)
 {
@@ -113,6 +113,8 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
 }
+
+Command_ptr Scrollbar::drag() { return _drag->_this();}
 
 void Scrollbar::traverseThumb(Traversal_ptr traversal)
 {

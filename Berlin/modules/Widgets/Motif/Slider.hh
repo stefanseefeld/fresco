@@ -33,16 +33,16 @@ namespace Motif
 
 class Slider : public ControllerImpl
 {
-  class SObserver : implements(Observer)
+  class Observer : implements(Observer)
   {
   public:
-    SObserver(Slider *s) : slider(s) {}
+    Observer(Slider *s) : slider(s) {}
     void update(const CORBA::Any &any) { slider->update(any);}
   private:
     Slider *slider;
   };
-  friend class SObserver;
-  class Modifier : implements(Command) {};
+  friend class Observer;
+  class Dragger;
 public:
   Slider(BoundedValue_ptr, Axis, const Requisition &);
   void init(Controller_ptr);
@@ -51,13 +51,13 @@ public:
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
   virtual void allocate(Tag, const Allocation::Info &);
-  Command_ptr drag() { return _drag->_this();}
+  Command_ptr drag();
 private:
   void traverseThumb(Traversal_ptr);
   Requisition requisition;
-  Impl_var<SObserver> redirect;
-  Impl_var<Modifier> _drag;
-  BoundedValue_var range;
+  Impl_var<Observer> redirect;
+  Impl_var<Dragger> _drag;
+  BoundedValue_var value;
   Coord offset;
   Axis axis;
 };
