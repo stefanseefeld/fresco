@@ -88,6 +88,10 @@ dnl Dumb hard-wired check for freetype.  Change this to accept different
 dnl text rendering engines?
 
 AM_PATH_FREETYPE(6.1.0,,[AC_MSG_ERROR([can't compile Server without freetype])])
+
+AC_CHECK_HEADERS(png.h)
+AC_CHECK_LIB(png, png_read_info,,[AC_MSG_ERROR([can't compile libBerlin without libpng])])
+
 dnl ------------------------------------------------------------------
 dnl Graphics environment
 dnl ------------------------------------------------------------------
