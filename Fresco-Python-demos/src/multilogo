@@ -3,8 +3,8 @@
 import sys, time
 import string
 
-# Import the Warsaw stubs
-import Warsaw
+# Import the Fresco stubs
+import Fresco
 
 # Import berlin client lib
 import berlin
@@ -12,8 +12,8 @@ from berlin import Label, Callback, nullAny
 
 class DemoApp (berlin.App):
     def mk_frame(self, color):
-	spec = Warsaw.ToolKit.FrameSpec(
-	    Warsaw.ToolKit.colored, apply(Warsaw.Color, color))
+	spec = Fresco.ToolKit.FrameSpec(
+	    Fresco.ToolKit.colored, apply(Fresco.Color, color))
 	return kits.tool.frame(self.pixmap, 50, spec, 1)
     def run(self):
 	# Create a pixmap
@@ -52,15 +52,15 @@ class DemoApp (berlin.App):
 
 	else: # The simple way to do it :)
 	    pixmap = self.pixmap
-	    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 0.5, 0.5, 1.))
+	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(1., 0.5, 0.5, 1.))
 	    frame1 = tool.frame(pixmap, 50, spec, 1)
-	    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(0.5, 1., 0.5, 1.))
+	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(0.5, 1., 0.5, 1.))
 	    frame2 = tool.frame(pixmap, 50, spec, 1)
-	    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(0.5, 0.5, 1., 1.))
+	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(0.5, 0.5, 1., 1.))
 	    frame3 = tool.frame(pixmap, 50, spec, 1)
-	    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 1., 0.5, 1.))
+	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(1., 1., 0.5, 1.))
 	    frame4 = tool.frame(pixmap, 50, spec, 1)
-	    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 0.5, 1., 1.))
+	    spec   = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.colored, Fresco.Color(1., 0.5, 1., 1.))
 	    frame5 = tool.frame(pixmap, 50, spec, 1)
 	    box    = layout.hbox()
 	    box.append_graphic(frame1)

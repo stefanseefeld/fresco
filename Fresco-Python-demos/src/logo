@@ -4,7 +4,7 @@ import sys, time
 import string
 
 # Import berlin client lib
-import berlin, Warsaw
+import berlin, Fresco
 from berlin import Label, Callback, nullAny
 
 class DemoApp (berlin.App):
@@ -12,7 +12,7 @@ class DemoApp (berlin.App):
 	# Create a pixmap
 	pixmap = kits.figure.pixmap(kits.image.create("berlin-128.png"))
 	margin = kits.layout.margin_flexible(pixmap, 100., 500., 100.)
-	spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
+	spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
         demo = kits.tool.frame(margin, 10., spec, 1)
 	group = kits.tool.group(kits.tool.debugger(demo, "debug"))
     	shell = kits.desktop.shell(group, connection.clientContext)

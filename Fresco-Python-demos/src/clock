@@ -13,20 +13,20 @@ from omniORB import CORBA
 import berlin
 from berlin import Label, Callback, nullAny
 
-# Import the Warsaw stubs
-import Warsaw, Unidraw
-import Warsaw__POA
+# Import the Fresco stubs
+import Fresco, Unidraw
+import Fresco__POA
 
-# Import Warsaw lib
+# Import Fresco lib
 import pywarsaw
 
 class TickGraphic (pywarsaw.PyGraphic):
     "Simple graphic that draws a 'tick'"
     def request(self): # --> void
-	x = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
-	y = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
-	z = Warsaw.Graphic.Requirement(1, 0., 0., 0., 0.)
-	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	x = Fresco.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	y = Fresco.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	z = Fresco.Graphic.Requirement(1, 0., 0., 0., 0.)
+	req = Fresco.Graphic.Requisition(x, y, z, 0)
 	return req
     def draw(self, drawTraversal):
 	dk = drawTraversal.drawing()
@@ -37,16 +37,16 @@ class TickGraphic (pywarsaw.PyGraphic):
 	dk.save()
 	dk._set_transformation(transform)
 	# Draw background
-	dk._set_foreground(Warsaw.Color(0.9, 0.9, 0.9, 1.0))
-	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
+	dk._set_foreground(Fresco.Color(0.9, 0.9, 0.9, 1.0))
+	dk._set_surface_fillstyle(Fresco.DrawingKit.solid)
 	dk.draw_rectangle(bounds_lower, bounds_upper)
 	# Draw tick
 	bounds_delta = (bounds_upper.x - bounds_lower.x,
 	    bounds_upper.y - bounds_lower.y)
 	def scale(point, low=bounds_lower, delta = bounds_delta):
-	    return Warsaw.Vertex(point[0] * delta[0] + low.x, point[1] * delta[1] + low.y, low.z)
+	    return Fresco.Vertex(point[0] * delta[0] + low.x, point[1] * delta[1] + low.y, low.z)
 	path.nodes = map(scale, [(.2,.6),(.4,.7),(.9,.1),(.4,.8),(.2,.6)])
-	dk._set_foreground(Warsaw.Color(0.2, 0.9, 0.9, 1.0))
+	dk._set_foreground(Fresco.Color(0.2, 0.9, 0.9, 1.0))
 	dk.draw_path(path)
 	dk.restore()
 
@@ -66,10 +66,10 @@ class ClockGraphic (pywarsaw.PyGraphic):
 	    self.need_redraw()
 	    self._lock.release()
     def request(self): # --> Requisition
-	x = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
-	y = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
-	z = Warsaw.Graphic.Requirement(1, 0., 0., 0., 0.)
-	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	x = Fresco.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	y = Fresco.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	z = Fresco.Graphic.Requirement(1, 0., 0., 0., 0.)
+	req = Fresco.Graphic.Requisition(x, y, z, 0)
 	return req
     def rotate(self, angle, path):
 	"Rotates all elements in the path by angle radians"
@@ -89,23 +89,23 @@ class ClockGraphic (pywarsaw.PyGraphic):
 	bounds_lower, bounds_upper = region.bounds()
 	bounds_delta = (bounds_upper.x - bounds_lower.x,
 	    bounds_upper.y - bounds_lower.y)
-	bounds_middle = Warsaw.Vertex((bounds_upper.x + bounds_lower.x)/2,
+	bounds_middle = Fresco.Vertex((bounds_upper.x + bounds_lower.x)/2,
 	    (bounds_upper.y + bounds_lower.y)/2, 0)
 	bounds_halfdelta = (bounds_delta[0]/2, bounds_delta[1]/2)
 	dk.save()
 	dk._set_transformation(transform)
 	def scale(point, mid=bounds_middle, delta = bounds_halfdelta):
 	    "Scales a normalised vector [-1:1] to the whole graphic"
-	    return Warsaw.Vertex(point[0] * delta[0] + mid.x, point[1] * delta[1] + mid.y, mid.z)
+	    return Fresco.Vertex(point[0] * delta[0] + mid.x, point[1] * delta[1] + mid.y, mid.z)
 	# Draw background first
-	dk._set_foreground(Warsaw.Color(0.9, 0.9, 0.9, 1.0))
-	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
+	dk._set_foreground(Fresco.Color(0.9, 0.9, 0.9, 1.0))
+	dk._set_surface_fillstyle(Fresco.DrawingKit.solid)
 	dk.draw_rectangle(bounds_lower, bounds_upper)
 	# Draw hour-ticks
-	path = Warsaw.Path
-        path.shape = Warsaw.convex
+	path = Fresco.Path
+        path.shape = Fresco.convex
         vertices = [(-.05,-.8),(.05,-.8),(.05,-.7),(-.05,-.7),(-.05,-.8)]
-	dk._set_foreground(Warsaw.Color(0.2, 0.3, 0.5, 1.0))
+	dk._set_foreground(Fresco.Color(0.2, 0.3, 0.5, 1.0))
 	circle = math.pi*2
 	for i in range(12):
             path.nodes = map(scale, rotate(i*circle/12, vertices))

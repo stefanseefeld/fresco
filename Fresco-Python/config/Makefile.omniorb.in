@@ -43,7 +43,8 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   StreamBuffer.idl Selection.idl Trigger.idl \
 		   Canvas.idl ToolKit.idl Widget.idl  WidgetKit.idl GadgetKit.idl \
 		   TextKit.idl Raster.idl ImageKit.idl Desktop.idl \
-		   Window.idl DesktopKit.idl GGIKit.idl UnidrawKit.idl
+		   Window.idl DesktopKit.idl GGIKit.idl UnidrawKit.idl \
+		   PrimitiveKit.idl Primitive.idl MenuKit.idl
 
 INT		:= $(DYNINT) $(STATINT) $(LCINT)
 
@@ -54,13 +55,26 @@ STATSRC		:= $(patsubst %.idl, %_idl.py, $(STATINT))
 SRC		:= $(DYNSRC) $(DYNSTATSRC) $(STATSRC)
 CMP		:= $(patsubst %.py, %.pyc, $(SRC))
 
+PACKAGES	:= Fresco Figure GGI Layout Primitive Unidraw Widget
+PACKAGES	:= $(PACKAGES) $(PACKAGES:%=%__POA)
+PACKAGES	:= $(PACKAGES) Fresco/Input Fresco__POA/Input
+
+PACKAGE_DST	:= $(PACKAGES:%=$(DESTDIR)$(libdir)/python/%/__init__.py)
+
 TARGET		:= $(SRC)
 
 all:	$(TARGET)
 
-install:	all
+install_files:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/python
 	$(INSTALL) -m 644 $(TARGET) $(DESTDIR)$(libdir)/python
+
+$(DESTDIR)$(libdir)/python/%/__init__.py: %/__init__.py
+	$(INSTALL) -D -m 755 $< $@
+
+install_packages: all $(PACKAGE_DST)
+
+install:	install_files install_packages
 
 clean:	
 	rm -rf $(SRC) $(CMP) Input Figure Fresco Layout *__POA *~

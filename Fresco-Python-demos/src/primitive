@@ -13,14 +13,14 @@ from omniORB import CORBA
 import berlin
 from berlin import Label, Callback, nullAny
 
-# Import the Warsaw stubs
-import Warsaw, Unidraw
-import Warsaw__POA
+# Import the Fresco stubs
+import Fresco, Unidraw
+import Fresco__POA
 
-# Import Warsaw lib
+# Import Fresco lib
 import pywarsaw
 
-class Rotator(Warsaw__POA.Observer):
+class Rotator(Fresco__POA.Observer):
     def __init__(self, value, child, parent, axis):
         self.__value = value
         self.__child = child
@@ -54,10 +54,10 @@ triangles = [(0, 1, 3), (1, 2, 3), (2, 0, 3), (0, 2, 1)]
 normals = [(0., .8, .2), (.8, .2, .2), (-.2, .2, .2), (0., -1., 0.)]
 
 def generate_mesh(w, h, d):
-    scale = lambda x, w=w, h=h, d=d: Warsaw.Vertex(x[0] * w, x[1] * h, x[2] * d)
-    triangulate = lambda x: Warsaw.Triangle(x[0], x[1], x[2])
-    normalize = lambda x: Warsaw.Vertex(x[0], x[1], x[2])
-    return Warsaw.Mesh(map(scale, nodes), map(triangulate, triangles), map(normalize, normals))
+    scale = lambda x, w=w, h=h, d=d: Fresco.Vertex(x[0] * w, x[1] * h, x[2] * d)
+    triangulate = lambda x: Fresco.Triangle(x[0], x[1], x[2])
+    normalize = lambda x: Fresco.Vertex(x[0], x[1], x[2])
+    return Fresco.Mesh(map(scale, nodes), map(triangulate, triangles), map(normalize, normals))
 
 
 class Primitive (pywarsaw.PyGraphic):
@@ -70,23 +70,23 @@ class Primitive (pywarsaw.PyGraphic):
         self.__mesh = generate_mesh(w, h, d)
         
     def request(self): # --> Requisition
-	x = Warsaw.Graphic.Requirement(1, self.__width, self.__width, self.__width, 0.5)
-	y = Warsaw.Graphic.Requirement(1, self.__height, self.__height, self.__height, 0.5)
-	z = Warsaw.Graphic.Requirement(1, self.__depth, self.__depth, self.__depth, 0.5)
-	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	x = Fresco.Graphic.Requirement(1, self.__width, self.__width, self.__width, 0.5)
+	y = Fresco.Graphic.Requirement(1, self.__height, self.__height, self.__height, 0.5)
+	z = Fresco.Graphic.Requirement(1, self.__depth, self.__depth, self.__depth, 0.5)
+	req = Fresco.Graphic.Requisition(x, y, z, 0)
         print "requisition is", req
 	return req
     def draw(self, drawTraversal):
 	dk = drawTraversal.drawing()
-        dk = dk._narrow(Warsaw.DrawingKit3D)
+        dk = dk._narrow(Fresco.DrawingKit3D)
         if not dk:
             print "please run the display server with '-d GLDrawingKit'"
             return
 	transform = drawTraversal.current_transformation()
 	region = drawTraversal.current_allocation()
         dk.save()
-	dk._set_foreground(Warsaw.Color(0.6, 0.6, 1.0, 1.0))
-	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
+	dk._set_foreground(Fresco.Color(0.6, 0.6, 1.0, 1.0))
+	dk._set_surface_fillstyle(Fresco.DrawingKit.solid)
 	#dk.draw_rectangle(bounds_lower, bounds_upper)
 	dk.draw_mesh(self.__mesh)
 	dk.restore()
@@ -98,36 +98,36 @@ class GraphicApp (berlin.App):
 	psi = kits.command.bvalue(0., 360., 0., 1., 10.)
         hbox = kits.layout.hbox()
         hbox.append_graphic(kits.layout.hfill())
-        hbox.append_graphic(kits.widget.slider(phi, Warsaw.xaxis))
+        hbox.append_graphic(kits.widget.slider(phi, Fresco.xaxis))
         hbox.append_graphic(kits.layout.hfill())
         vbox.append_graphic(hbox)
         hbox = kits.layout.hbox()
         hbox.append_graphic(kits.layout.hfill())
-        hbox.append_graphic(kits.widget.slider(psi, Warsaw.xaxis))
+        hbox.append_graphic(kits.widget.slider(psi, Fresco.xaxis))
         hbox.append_graphic(kits.layout.hfill())
         vbox.append_graphic(hbox)
 
 	#primitive = Primitive(3000., 3000., 3000.)._this()
         primitive = kits.primitive.geometry(generate_mesh(300., 300., 300.))
         primitive = kits.tool.rgb(primitive, 0.6, 0.6, 1.0)
-        root = kits.primitive.root(Warsaw.Graphic._nil)
+        root = kits.primitive.root(Fresco.Graphic._nil)
         # heh, try to figure out what the next few lines do :)
         transformer = kits.primitive.transformer(primitive)
-        phi.attach(Rotator(phi, transformer, root, Warsaw.zaxis)._this())
+        phi.attach(Rotator(phi, transformer, root, Fresco.zaxis)._this())
         transformer = kits.primitive.transformer(transformer)
-        psi.attach(Rotator(psi, transformer, root, Warsaw.yaxis)._this())
-        green = Warsaw.Color(0., 1., 0., 1.)
-        direction = Warsaw.Vertex(1., 0., 0.)
+        psi.attach(Rotator(psi, transformer, root, Fresco.yaxis)._this())
+        green = Fresco.Color(0., 1., 0., 1.)
+        direction = Fresco.Vertex(1., 0., 0.)
         light1 = kits.primitive.directional_light(transformer, green, 1., direction)
-        orange = Warsaw.Color(0.8, 1., 0., 1.)
-        direction = Warsaw.Vertex(0., 1., 0.)
+        orange = Fresco.Color(0.8, 1., 0., 1.)
+        direction = Fresco.Vertex(0., 1., 0.)
         light2 = kits.primitive.directional_light(light1, green, 1., direction)
-        violet = Warsaw.Color(1., 0., 1., 1.)
-        direction = Warsaw.Vertex(0., 0., 1.)
+        violet = Fresco.Color(1., 0., 1., 1.)
+        direction = Fresco.Vertex(0., 0., 1.)
         light3 = kits.primitive.directional_light(light2, violet, 1., direction)
         root._set_body(light3)
         vbox.prepend_graphic(kits.layout.align(root, 0., 0.))
-        spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.inset, 0.5)
+        spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.inset, 0.5)
         frame = kits.tool.frame(vbox, 10., spec, 1)
 	group = kits.tool.group(frame)
 	self.window = kits.desktop.shell(group, connection.clientContext)

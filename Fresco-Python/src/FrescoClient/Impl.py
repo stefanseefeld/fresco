@@ -1,23 +1,24 @@
-# Python Warsaw library
+# Python Fresco library
 # Copyright (c) 2000 by Stephen Davies
 # This file is licensed for use under the GPL
 #
 # Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
 #
 """
-This module contains Python implementations of various Warsaw interfaces. This
+This module contains Python implementations of various Fresco interfaces. This
 allows you to implement, for example, Graphics or Controllers and embed them
 in the remove display. Of course, its really slow, but also really useful for
 prototyping purposes!
 """
-import math, string
+import math, string, traceback
 
 # Import CORBA module
+import omniORB
 from omniORB import CORBA, PortableServer
 
-# Import the Warsaw stubs
-import Warsaw, Unidraw
-import Warsaw__POA
+# Import the Fresco stubs
+import Fresco
+import Fresco__POA
 
 true, false = 1, 0
 
@@ -40,13 +41,18 @@ def max(a,b):
 # ---------------
 # -- Python base classes
 
-class PyIdentifiable (Warsaw__POA.Identifiable):
+class PyIdentifiable (Fresco__POA.Identifiable):
     def is_identical(self, other):
-	me_id = PortableServer._rootPOA.servant_to_id(self)
-	other_id = PortableServer._rootPOA.reference_to_id(other)
-	return me_id == other_id
+	try:
+	    me_id = self._default_POA().servant_to_id(self)
+	    other_id = self._default_POA().reference_to_id(other)
+	    return me_id == other_id
+	except:
+	    print "An error occurred in PyIdentifiable.is_identical():"
+	    traceback.print_exc()
+	    return 0
 
-class PyRefCountBase (Warsaw__POA.RefCountBase):
+class PyRefCountBase (Fresco__POA.RefCountBase):
     def __init__(self):
 	self.__refcount = 0
     def increment(self):
@@ -64,18 +70,18 @@ class PyServantBase:
 	pass
 
 def dump_region(region):
-    xspan = region.span(Warsaw.xaxis)
-    yspan = region.span(Warsaw.yaxis)
+    xspan = region.span(Fresco.xaxis)
+    yspan = region.span(Fresco.yaxis)
     print "Region: X=[%.1f,%.1f]@%.1f Y=[%.1f,%.1f]@%.1f"%(
 	xspan.begin, xspan.end, xspan.align,
 	yspan.begin, yspan.end, yspan.align
     )
 
-class PyRegion (Warsaw__POA.Region):
+class PyRegion (Fresco__POA.Region):
     def __init__(self):
-	self.__lower = Warsaw.Vertex(0, 0, 0)
-	self.__upper = Warsaw.Vertex(0, 0, 0)
-	self.__align = Warsaw.Vertex(0, 0, 0) # align isnt a vertex but...
+	self.__lower = Fresco.Vertex(0, 0, 0)
+	self.__upper = Fresco.Vertex(0, 0, 0)
+	self.__align = Fresco.Vertex(0, 0, 0) # align isnt a vertex but...
 	self.__valid = 0
     def defined(self): # --> boolean
 	return self.__valid
@@ -86,13 +92,13 @@ class PyRegion (Warsaw__POA.Region):
 	    v.z >= self.__lower.z and v.z <= self.__upper.z
     def contains_plane(self, v, axis): # --> boolean
 	if not self.__valid: return 0
-	if axis == Warsaw.xaxis:
+	if axis == Fresco.xaxis:
 	    return  v.y >= self.__lower.y and v.y <= self.__upper.y and \
 		    v.z >= self.__lower.z and v.z <= self.__upper.z
-	if axis == Warsaw.yaxis:
+	if axis == Fresco.yaxis:
 	    return  v.x >= self.__lower.x and v.x <= self.__upper.x and \
 		    v.z >= self.__lower.z and v.z <= self.__upper.z
-	if axis == Warsaw.zaxis:
+	if axis == Fresco.zaxis:
 	    return  v.x >= self.__lower.x and v.x <= self.__upper.x and \
 		    v.y >= self.__lower.y and v.y <= self.__upper.y
 	return 0
@@ -104,9 +110,9 @@ class PyRegion (Warsaw__POA.Region):
 	    self.__lower.z <= u.z and self.__upper.z >= l.z
     def copy(self, region): # region is a corba var
 	if not region.defined(): return
-	allot_x = region.span(Warsaw.xaxis)
-	allot_y = region.span(Warsaw.yaxis)
-	allot_z = region.span(Warsaw.zaxis)
+	allot_x = region.span(Fresco.xaxis)
+	allot_y = region.span(Fresco.yaxis)
+	allot_z = region.span(Fresco.zaxis)
 	self.__valid = 1
 	self.__lower.x = allot_x.begin
 	self.__lower.y = allot_y.begin
@@ -156,22 +162,22 @@ class PyRegion (Warsaw__POA.Region):
     def bounds(self): # --> (Vertex, Vertex)
 	return self.__lower, self.__upper
     def center(self): # --> Vertex
-	return Warsaw.Vertex(
+	return Fresco.Vertex(
 	    (self.__upper.x + self.__lower.x) * .5,
 	    (self.__upper.y + self.__lower.y) * .5,
 	    (self.__upper.z + self.__lower.z) * .5)
     def origin(self): # --> Vertex
-	return Warsaw.Vertex(
+	return Fresco.Vertex(
 	    self.span_origin(self.__lower.x, self.__upper.x, self.__align.x),
 	    self.span_origin(self.__lower.y, self.__upper.y, self.__align.y),
 	    self.span_origin(self.__lower.z, self.__upper.z, self.__align.z))
     def span(self, axis): # --> Region.Allotment
-	Allotment = Warsaw.Region.Allotment
-	if axis == Warsaw.xaxis:
+	Allotment = Fresco.Region.Allotment
+	if axis == Fresco.xaxis:
 	    return Allotment(self.__lower.x, self.__upper.x, self.__align.x)
-	if axis == Warsaw.yaxis:
+	if axis == Fresco.yaxis:
 	    return Allotment(self.__lower.y, self.__upper.y, self.__align.y)
-	if axis == Warsaw.zaxis:
+	if axis == Fresco.zaxis:
 	    return Allotment(self.__lower.z, self.__upper.z, self.__align.z)
     def outline(self): # --> Path
 	pass # NYI
@@ -197,7 +203,7 @@ def dump_transform(transform):
 	if j == 1: print "M =",
 	else: print "   ",
 	print "[ %s ]"%string.join(map(str, m[j]))
-class PyTransform (Warsaw__POA.Transform):
+class PyTransform (Fresco__POA.Transform):
     """Transform impl.
             [ r00 r01 r02 tx]
         M = [ r10 r11 r12 ty]
@@ -306,8 +312,8 @@ class PyTransform (Warsaw__POA.Transform):
 	s = math.sin(r_angle)
 	mi, mj = [0.]*4, [0.]*4
 	i, j = 0, 1
-	if axis == Warsaw.xaxis: i = 2
-	elif axis == Warsaw.yaxis: j = 2
+	if axis == Fresco.xaxis: i = 2
+	elif axis == Fresco.yaxis: j = 2
 	for y in range(4):
 	    mi[y], mj[i] = self[i][y], self[j][y]
 	for y in range(4):
@@ -369,11 +375,11 @@ class PyTransform (Warsaw__POA.Transform):
 	nx = self[0][0] * tx + self[0][1] * ty + self[0][2] * tz + self[0][3]
 	ny = self[1][0] * tx + self[1][1] * ty + self[1][2] * tz + self[1][3]
 	nz = self[2][0] * tx + self[2][1] * ty + self[2][2] * tz + self[2][3]
-	return Warsaw.Vertex(nx, ny, nz)
+	return Fresco.Vertex(nx, ny, nz)
     def inverse_transform_vertex(self, vertex): # --> Vertex
 	d = self.det()
-	if math.fabs(d) < 1e-4: return Warsaw.Vertex(0,0,0)
-	tmp = Warsaw.Vertex(vertex.x, vertex.y, vertex.z)
+	if math.fabs(d) < 1e-4: return Fresco.Vertex(0,0,0)
+	tmp = Fresco.Vertex(vertex.x, vertex.y, vertex.z)
 	tmp.x = tmp.x - self[0][3]
 	tmp.y = tmp.y - self[1][3]
 	tmp.z = tmp.z - self[2][3]
@@ -386,9 +392,9 @@ class PyTransform (Warsaw__POA.Transform):
 	nz = ((self[1][0] * self[2][1] - self[1][1] * self[2][0]) -
 	     (self[0][0] * self[2][1] - self[0][1] * self[2][0]) +
 	     (self[0][0] * self[1][1] - self[0][1] * self[1][0])) / d
-	return Warsaw.Vertex(nx, ny, nz)
+	return Fresco.Vertex(nx, ny, nz)
 
-class PyAllocation (Warsaw__POA.Allocation):
+class PyAllocation (Fresco__POA.Allocation):
     def __init__(self):
 	self.__list = []
     def add(self, region, screen):
@@ -396,14 +402,14 @@ class PyAllocation (Warsaw__POA.Allocation):
 	alloc.copy(region)
 	xform = PyTransform()
 	xform.load_identity()
-	info = Warsaw.Allocation.Info(alloc._this(), xform._this(), screen)
+	info = Fresco.Allocation.Info(alloc._this(), xform._this(), screen)
 	self.__list.append(info)
     def size(self):
 	return len(self.__list)
     def get(self, index):
 	return self.__list[index]
 
-class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
+class PySubject (Fresco__POA.Identifiable, Fresco__POA.RefCountBase):
     def __init__(self):
 	PyRefCountBase.__init__(self)
 	self.__blocked = 0
@@ -436,12 +442,12 @@ class Edge:
 	self.peerId = peerId
 	self.localId = localId
 
-class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
+class PyGraphic (Fresco__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def __init__(self):
 	PyRefCountBase.__init__(self)
 	self.__parents = []
 
-    class Iterator (Warsaw__POA.GraphicIterator, PyServantBase):
+    class Iterator (Fresco__POA.GraphicIterator, PyServantBase):
 	def destroy(self): self.deactivate()
 
     # Attribute 'body'
@@ -477,10 +483,10 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	pass
 
     def request(self): # --> void
-	x = Warsaw.Graphic.Requirement(1, 200., 300., 100., 0.)
-	y = Warsaw.Graphic.Requirement(1, 200., 300., 100., 0.)
-	z = Warsaw.Graphic.Requirement(1, 0., 0., 0., 0.)
-	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	x = Fresco.Graphic.Requirement(1, 200., 300., 100., 0.)
+	y = Fresco.Graphic.Requirement(1, 200., 300., 100., 0.)
+	z = Fresco.Graphic.Requirement(1, 0., 0., 0., 0.)
+	req = Fresco.Graphic.Requisition(x, y, z, 0)
 	return req
 	
     def extension(self, alloc_info, region): # --> void
@@ -574,7 +580,7 @@ class PyMonoGraphic (PyGraphic):
 	my_region.copy(info.allocation)
 	my_trans = PyTransform()
 	my_trans.copy(info.transformation)
-	my_info = Warsaw.Allocation.Info(my_region._this(), my_trans._this(), None)
+	my_info = Fresco.Allocation.Info(my_region._this(), my_trans._this(), None)
 	self.allocate(0, my_info) # Template method to modify as per the concrete Graphic type (eg layout decorators etc)
 	self.__child.peer.extension(my_info, region)
 	#pv = lambda v: '(x:%f, y:%f, z:%f)'%(v.x,v.y,v.z)
@@ -587,8 +593,8 @@ class PyMonoGraphic (PyGraphic):
 	    
 
 
-class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
-    "Python impl of Warsaw::Controller interface"
+class PyController (Fresco__POA.Controller, PyMonoGraphic, PySubject):
+    "Python impl of Fresco::Controller interface"
     def __init__(self, transparent):
 	PyMonoGraphic.__init__(self)
 	PySubject.__init__(self)
@@ -600,7 +606,7 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	self._children = []
 	self.__transparent = transparent
 
-    class Iterator (Warsaw__POA.ControllerIterator, PyGraphic.Iterator):
+    class Iterator (Fresco__POA.ControllerIterator, PyGraphic.Iterator):
 	def __init__(self, con, tag):
 	    self.__parent = con
 	    self.__cursor = tag
@@ -713,11 +719,11 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	return self.__parent.request_focus(controller, input_device)
     def receive_focus(self, focus): # --> boolean
 	self.set_focus(focus._get_device())
-	if (focus._get_device() == 0): self.set(Warsaw.Controller.active)
+	if (focus._get_device() == 0): self.set(Fresco.Controller.active)
 	return true
     def lose_focus(self, input_device): # --> void
 	self.clear_focus(input_device)
-	if (input_device == 0): self.clear(Warsaw.Controller.active)
+	if (input_device == 0): self.clear(Fresco.Controller.active)
     def first_focus(self, input_device): # --> boolean
 	# Ask children first
 	for child in self._children:
@@ -779,14 +785,14 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	    position = get_position(input_event)
 	except TypeError:
 	    return 0 # Fatal error, but we silently ignore
-	if input_event[0].attr._d == Warsaw.Input.button:
+	if input_event[0].attr._d == Fresco.Input.button:
 	    toggle = input_event[0].attr.selection
-	    if toggle.actuation == Warsaw.Input.Toggle.press:
+	    if toggle.actuation == Fresco.Input.Toggle.press:
 		self.press(pickTraversal, input_event)
-	    elif toggle.actuation == Warsaw.Input.Toggle.release:
+	    elif toggle.actuation == Fresco.Input.Toggle.release:
 		self.release(pickTraversal, input_event)
-	elif input_event[0].attr._d == Warsaw.Input.positional:
-	    if self.test(Warsaw.Controller.pressed):
+	elif input_event[0].attr._d == Fresco.Input.positional:
+	    if self.test(Fresco.Controller.pressed):
 		self.drag(pickTraversal, input_event)
 	    else:
 		self.move(pickTraversal, input_event)
@@ -794,10 +800,10 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	    self.other(input_event)
 	return 1 #Handled
     def handle_non_positional(self, input_event): # --> boolean
-	if input_event[0].dev != 0 or input_event[0].attr._d != Warsaw.Input.key:
+	if input_event[0].dev != 0 or input_event[0].attr._d != Fresco.Input.key:
 	    # fatal, silent ignore
 	    return 0
-	if input_event[0].attr.selection.actuation != Warsaw.Input.Toggle.press:
+	if input_event[0].attr.selection.actuation != Fresco.Input.Toggle.press:
 	    return 0
 	self.key_press(input_event)
 	return 1 # Handled
@@ -809,11 +815,11 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
     def press(self, pickTraversal, input_event):
 	self.grab(pickTraversal)
 	self.request_focus(self._this(), 0)
-	self.set(Warsaw.Controller.pressed)
+	self.set(Fresco.Controller.pressed)
     def drag(self, pickTraversal, input_event):
 	pass
     def release(self, pickTraversal, input_event):
-	self.clear(Warsaw.Controller.pressed)
+	self.clear(Fresco.Controller.pressed)
 	self.ungrab(pickTraversal)
     def double_click(self, pickTraversal, input_event):
 	pass
@@ -848,7 +854,7 @@ def get_position(event): # --> Position
     device = event[0].dev
     for i in range(len(event)):
 	if event[i].dev != device: raise TypeError, "No positionals found"
-	if event[i].attr._d == Warsaw.Input.positional:
+	if event[i].attr._d == Fresco.Input.positional:
 	    return event[i].attr.location
     raise TypeError, "No positionals found"
 

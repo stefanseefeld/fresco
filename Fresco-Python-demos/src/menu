@@ -16,15 +16,15 @@ from omniORB import CORBA, PortableServer
 import berlin
 from berlin import Label, Callback, nullAny
 
-# Import the Warsaw stubs
-import Warsaw, Unidraw, Layout
-import Warsaw__POA
+# Import the Fresco stubs
+import Fresco, Layout
+import Fresco__POA
 
 # Import Python client lib
 import pywarsaw
 from pywarsaw import Babylon
 
-class MenuKitImpl (Warsaw__POA.MenuKit):
+class MenuKitImpl (Fresco__POA.MenuKit):
     """Pretend kit that builds menu objects"""
     def menu_bar(self):
 	"""Returns a menubar object"""
@@ -62,7 +62,7 @@ class MenuItem (pywarsaw.PyController):
 	    self.append_controller(self.sub_pulldown)
 	self.callback_command = None
 	self.__parent_menu = None
-	self.__orientation = (orient == Warsaw.yaxis)
+	self.__orientation = (orient == Fresco.yaxis)
 
 	# Construct the graphics to display this item
 	self.glabel = self.label #Label(self.label)
@@ -71,10 +71,10 @@ class MenuItem (pywarsaw.PyController):
 	self.button = self.glabel
 
 	# Construct the dynamic frame that shows when in focus or not
-	fspec_out = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
-	fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 1.0)
+	fspec_out = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
+	fspec_none = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.none, 1.0)
 	self.frame = kits.tool.dynamic(self.button, 10.,
-	    Warsaw.Controller.active, fspec_out, fspec_none, 
+	    Fresco.Controller.active, fspec_out, fspec_none, 
 	    0, self._this())
 	self._set_body(self.frame)
 
@@ -87,18 +87,18 @@ class MenuItem (pywarsaw.PyController):
 	    self.button.append_graphic(self.glabel)
 	    self.button.append_graphic(kits.layout.hfill())
 	    if self.submenu:
-		fspec_focus = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.8)
-		fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.3)
+		fspec_focus = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.8)
+		fspec_none = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.3)
 		tri = kits.tool.dynamic_triangle(None,
-		    10., Warsaw.Controller.active, fspec_focus, fspec_none,
-		    1, Warsaw.ToolKit.right, self._this())
+		    10., Fresco.Controller.active, fspec_focus, fspec_none,
+		    1, Fresco.ToolKit.right, self._this())
 		tri = kits.layout.fixed_size(tri, 140., 140.)
 		tri = kits.layout.margin(tri, 30.)
 		self.button.append_graphic(tri)
 	    self.frame._set_body(self.button)
 
     def first_focus(self, input_device): # --> boolean
-	if 1 and self.submenu and self.root.test(Warsaw.Controller.running):
+	if 1 and self.submenu and self.root.test(Fresco.Controller.running):
 	    if self.parent_controller().is_identical(self.root):
 		# Open submenu instead
 		self._show_submenu(input_device)
@@ -108,7 +108,7 @@ class MenuItem (pywarsaw.PyController):
 	if not parent: return false
 	return parent.request_focus(self._this(), input_device)
     def last_focus(self, input_device): # --> boolean
-	if 1 and self.submenu and self.root.test(Warsaw.Controller.running):
+	if 1 and self.submenu and self.root.test(Fresco.Controller.running):
 	    if self.parent_controller().is_identical(self.root):
 		# Open submenu instead
 		self._show_submenu(input_device)
@@ -144,7 +144,7 @@ class MenuItem (pywarsaw.PyController):
 	    elif key == Babylon.KEY_CURSOR_RIGHT:
 		self.circular_next_focus(device)
 	    elif key == Babylon.KEY_CURSOR_DOWN and self.submenu:
-		self.root.set(Warsaw.Controller.running)
+		self.root.set(Fresco.Controller.running)
 		self._show_submenu(device)
 	else: # Vertical menuitem
 	    if key == Babylon.KEY_CURSOR_UP:
@@ -244,8 +244,8 @@ class MenuItem (pywarsaw.PyController):
 	sub = self.sub_pulldown
 	# Move to right place
 	lower, upper = region.bounds()
-	if self.__orientation:to = Warsaw.Vertex(upper.x, lower.y, 0.)
-	else: to = Warsaw.Vertex(lower.x, upper.y, 0.)
+	if self.__orientation:to = Fresco.Vertex(upper.x, lower.y, 0.)
+	else: to = Fresco.Vertex(lower.x, upper.y, 0.)
 	sub._set_position(to)
 
 class Menu (pywarsaw.PyController):
@@ -281,7 +281,7 @@ class Menu (pywarsaw.PyController):
 	# Create menu
 	self.box = kits.layout.vbox()
 	self._set_body(self.box)
-	#fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
+	#fspec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.2)
 	#frame = kits.tool.frame(box, 10.0, fspec, 1)
 
 	map(self._add_item, self.items)
@@ -304,7 +304,7 @@ class MenuBar(Menu):
 	spacer_box.append_graphic(self.box)
 	spacer_box.append_graphic(kits.layout.hfill())
 
-	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
+	fspec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.2)
 	frame = kits.tool.frame(spacer_box, 10.0, fspec, 1)
 	
 	self._set_body(frame)
@@ -319,7 +319,7 @@ class About:
 	    self.vbox.append_graphic(Label(line))
 	self.button = kits.widget.button(Label("Okay"), self._get_hide_cmd())
 	self.vbox.append_graphic(self.button)
-	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 0)
+	fspec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.none, 0)
 	self.frame = kits.tool.frame(self.vbox, 0.0, fspec, 1)
 	self.group = kits.tool.group(kits.tool.rgb(self.frame, 0.8, 0.8, 0.8))
 	self.window = kits.desktop.transient(self.group)
@@ -327,7 +327,7 @@ class About:
 	self._mapper_hide = kits.desktop.map(self.window, 0)
 
     def _get_hide_cmd(self):
-	class HideCommand (Warsaw__POA.Command):
+	class HideCommand (Fresco__POA.Command):
 	    def __init__(self, about): self.about = about
 	    def execute(self, any): self.about._mapper_hide.execute(any)
 	return HideCommand(self)._this()
@@ -335,7 +335,7 @@ class About:
     def cb_show(self, any):
 	self._mapper_show.execute(any)
 
-class RunApp(Warsaw__POA.Command):
+class RunApp(Fresco__POA.Command):
     """Small wrapper command which calls a python function with a single
     argument which is the Any."""
     def __init__(self, command, *args):
@@ -356,7 +356,7 @@ class MenuApp (berlin.App):
 	    return menu
 	kit = MenuKitImpl()._this()
 	
-	H, V = Warsaw.xaxis, Warsaw.yaxis
+	H, V = Fresco.xaxis, Fresco.yaxis
 	menu = kit.menu_bar()
 	add(menu, [
 	    kit.submenu_item(menu, Label('Test'), H, add(kit.menu_popup(), [
@@ -402,7 +402,7 @@ class MenuApp (berlin.App):
 	group = kits.tool.group(vbox)
 	group.append_controller(menu)
 	self.window = kits.desktop.shell(group, connection.clientContext)
-	self.window._set_position(Warsaw.Vertex(0, -210, 0))
+	self.window._set_position(Fresco.Vertex(0, -210, 0))
 
 	if 0:
 	    # Given menu kb focus

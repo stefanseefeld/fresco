@@ -4,14 +4,14 @@ import sys, time
 import string
 import curses
 
-# Import Warsaw Stubs
-import Warsaw
-import Warsaw__POA
+# Import Fresco Stubs
+import Fresco
+import Fresco__POA
 
 # Import berlin client lib
 import berlin
 
-class TextBufferObserver (Warsaw__POA.Observer):
+class TextBufferObserver (Fresco__POA.Observer):
     "A simple Observer for a textbuffer."
     def __init__(self, buffer, window, name):
         self._buffer = buffer
@@ -27,7 +27,7 @@ class TextBufferObserver (Warsaw__POA.Observer):
         self._window.refresh()
         sys.stderr.write("INITIALISING\n")
         sys.stderr.write(self._name + ":\n")
-        sys.stderr.write(self._name + ": " +"^\n\n");
+        sys.stderr.write(self._name + ": " +"^\n\n")
         self._buffer.attach(self._this())
     
     def update(self, any):
@@ -40,11 +40,11 @@ class TextBufferObserver (Warsaw__POA.Observer):
 
         any_out = ""
         change = any.value()
-        if change.type == Warsaw.TextBuffer.insert:
+        if change.type == Fresco.TextBuffer.insert:
             any_out += "insert  "
-        elif change.type == Warsaw.TextBuffer.remove:
+        elif change.type == Fresco.TextBuffer.remove:
             any_out += "remove  "
-        elif change.type == Warsaw.TextBuffer.cursor:
+        elif change.type == Fresco.TextBuffer.cursor:
             any_out += "cursor  "
         else:
             any_out += "ERROR   "

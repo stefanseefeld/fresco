@@ -3,8 +3,8 @@
 import sys, time
 import string
 
-# Import Warsaw generated stuff
-import Warsaw
+# Import Fresco generated stuff
+import Fresco
 
 # Import berlin client lib
 import berlin
@@ -15,12 +15,12 @@ class DemoApp (berlin.App):
 	terminal   = kits.widget.terminal()
 	scrollable = kits.widget.scrollable(kits.tool.rgb(terminal, 0., 0., 0.))
 	scrollable.append_controller(terminal)
-	outset     = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
+	outset     = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
 	size_fixer = kits.layout.fixed_size(scrollable, 4000., 3000.)
 	frame      = kits.tool.frame(size_fixer, 20., outset, 1)
 	group      = kits.tool.group(frame)
 	group.append_controller(scrollable)
-	shell      = kits.desktop.shell(group)
+	shell      = kits.desktop.shell(group, connection.clientContext)
     
 
 def main():

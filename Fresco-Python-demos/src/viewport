@@ -16,9 +16,9 @@ from omniORB import CORBA, PortableServer
 import berlin
 from berlin import Label, Callback, nullAny
 
-# Import the Warsaw stubs
-import Warsaw, Unidraw, Layout
-import Warsaw__POA
+# Import the Fresco stubs
+import Fresco, Unidraw, Layout
+import Fresco__POA
 
 # Import Python client lib
 import pywarsaw
@@ -29,7 +29,7 @@ class Mapper (pywarsaw.PyController):
         pywarsaw.PyController.__init__(self, 0)
         self.__xrange = xrange
         self.__yrange = yrange
-        self._set_body(kits.layout.align(kits.layout.fixed_size(Warsaw.Graphic._nil, 200., 200.), 0., 0.))
+        self._set_body(kits.layout.align(kits.layout.fixed_size(Fresco.Graphic._nil, 200., 200.), 0., 0.))
         panner = kits.widget.panner(xrange, yrange)
         self.__pulldown = kits.desktop.pulldown(panner)
 
@@ -47,9 +47,9 @@ class ViewportApp (berlin.App):
         kits = berlin.get_kits()
         pixmap = kits.figure.pixmap(kits.image.create("landscape.png"))
         viewport = kits.layout.scrollable(pixmap)
-        xscroller = kits.widget.scrollbar(viewport.adjustment(Warsaw.xaxis), Warsaw.xaxis)
-        yscroller = kits.widget.scrollbar(viewport.adjustment(Warsaw.yaxis), Warsaw.yaxis)
-        mapper = Mapper(viewport.adjustment(Warsaw.xaxis), viewport.adjustment(Warsaw.yaxis))._this()
+        xscroller = kits.widget.scrollbar(viewport.adjustment(Fresco.xaxis), Fresco.xaxis)
+        yscroller = kits.widget.scrollbar(viewport.adjustment(Fresco.yaxis), Fresco.yaxis)
+        mapper = Mapper(viewport.adjustment(Fresco.xaxis), viewport.adjustment(Fresco.yaxis))._this()
         hbox1 = kits.layout.hbox()
         hbox1.append_graphic(viewport)
         hbox1.append_graphic(yscroller)
@@ -60,7 +60,7 @@ class ViewportApp (berlin.App):
         vbox1.append_graphic(hbox1)
         vbox1.append_graphic(hbox2)
 
-        spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
+        spec = Fresco.ToolKit.FrameSpec(Fresco.ToolKit.outset, 0.5)
         background = kits.tool.frame(vbox1, 10., spec, 1)
         group = kits.tool.group(background)
         self.window = kits.desktop.shell(group, connection.clientContext)
