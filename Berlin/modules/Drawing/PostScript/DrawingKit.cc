@@ -39,11 +39,9 @@ using namespace Prague;
 using namespace Warsaw;
 
 PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(id, p)
+  : KitImpl(id, p),
+    _os(new std::filebuf())
 {
-//   _os.rdbuf(cout.rdbuf());
-  std::filebuf *fbuf = new std::filebuf();
-  _os.rdbuf(fbuf);
   _os.precision(5);
 }
 

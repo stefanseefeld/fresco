@@ -32,6 +32,7 @@ module Warsaw
   interface Region;
   interface Raster;
   interface Drawable;
+  interface Traversal;
   interface DrawingKit3D;
   
   //. This Kit provides a basic interface to renderers which can be used to
@@ -163,7 +164,7 @@ module Warsaw
       void copy_drawable(in Drawable d, in PixelCoord x, in PixelCoord y, in PixelCoord w, in PixelCoord h);
       //. Initialize DrawingKit for a rendering pass. Called before
       //. each pass.
-      void start_traversal();
+      void start_traversal(in Traversal t);
       
       //. Finish the rendering pass. Called after each pass.
       void finish_traversal();

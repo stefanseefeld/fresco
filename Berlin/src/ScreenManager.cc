@@ -76,7 +76,7 @@ void ScreenManager::repair()
 
   _traversal->damage(Region_var(_tmpDamage->_this()));
   _traversal->init();
-  _drawing->start_traversal();
+  _drawing->start_traversal(Traversal_var(_traversal->_this()));
   mid = myclock();
   try
     {

@@ -149,7 +149,7 @@ public:
 
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
 
-  virtual void start_traversal() { }
+  virtual void start_traversal(Warsaw::Traversal_ptr) { }
   virtual void finish_traversal() { }
 
   virtual void flush() { _glcontext->flush(); }
