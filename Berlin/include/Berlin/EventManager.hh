@@ -37,7 +37,7 @@ class EventManager
 {
   typedef vector<FocusImpl *> flist_t;
 public:
-  EventManager(Warsaw::Graphic_ptr, Warsaw::Region_ptr);
+  EventManager(Warsaw::Controller_ptr, Warsaw::Region_ptr);
   ~EventManager();
   bool request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
   void next_event();

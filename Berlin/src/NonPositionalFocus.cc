@@ -30,9 +30,13 @@
 using namespace Prague;
 using namespace Warsaw;
 
-NonPositionalFocus::NonPositionalFocus(Input::Device d) : FocusImpl(d) {}
+NonPositionalFocus::NonPositionalFocus(Input::Device d, Controller_ptr root)
+  : FocusImpl(d)
+{
+  _controllers.push_back(Warsaw::Controller::_duplicate(root));
+}
 NonPositionalFocus::~NonPositionalFocus() {}
-
+void NonPositionalFocus::activate_composite() { _controllers.back()->receive_focus(Focus_var(_this()));}
 void NonPositionalFocus::add_filter(Input::Filter_ptr)
 {
   // not implemented
@@ -81,7 +85,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
   for (; nf != tmp.end(); nf++)
     {
       (*nf)->receive_focus (__this);
-      _controllers.push_back(*nf);
+      _controllers.push_back(Warsaw::Controller::_duplicate(*nf));
     }
   return true;
 }
@@ -96,7 +100,7 @@ void NonPositionalFocus::dispatch(Input::Event &event)
   Trace trace("NonPositionalFocus::dispatch");
   CORBA::Boolean done = false;
   MutexGuard guard(_mutex);
-  for (size_t i = _controllers.size() - 1; i >= 0 && !done; --i)
+  for (int i = _controllers.size() - 1; i >= 0 && !done; --i)
     {
       try { done = _controllers [i]->handle_non_positional(event);}
       catch (const CORBA::OBJECT_NOT_EXIST &) { _controllers.resize (i);}

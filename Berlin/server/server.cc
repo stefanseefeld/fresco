@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 
   // make a Screen graphic to hold this server's scene graph
   ScreenImpl *screen = new ScreenImpl();
-  EventManager *emanager = new EventManager(Graphic_var(screen->_this()), screen->allocation());
+  EventManager *emanager = new EventManager(Controller_var(screen->_this()), screen->allocation());
   ScreenManager *smanager = new ScreenManager(Graphic_var(screen->_this()), emanager, drawing);
   screen->bind_managers(emanager, smanager);
   props.length(0);

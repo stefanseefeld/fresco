@@ -49,11 +49,11 @@ inline void EventManager::deactivate(FocusImpl *focus)
   delete oid;
 }
 
-EventManager::EventManager(Graphic_ptr root, Region_ptr allocation)
+EventManager::EventManager(Controller_ptr root, Region_ptr allocation)
 {
   Trace trace("EventManager::EventManager");
   _drawable = Console::drawable();
-  FocusImpl *keyboard = new NonPositionalFocus(0);
+  FocusImpl *keyboard = new NonPositionalFocus(0, root);
   FocusImpl *mouse = new PositionalFocus(1, root, allocation);
   activate(keyboard);
   activate(mouse);
