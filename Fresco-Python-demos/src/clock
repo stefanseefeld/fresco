@@ -6,7 +6,7 @@
 # Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
 #
 
-import sys, string
+import sys, string, time, math, thread
 from omniORB import CORBA
 
 # Import the Warsaw stubs
@@ -144,21 +144,54 @@ class About:
     def cb_show(self, any):
 	self._mapper_show.execute(any)
 
-class TestGraphic (Warsaw__POA.Graphic):
-    def __init__(self):
-	self.__parents = []
+# ---------------
+# -- Python base classes
 
-    # -------- RefCountBase
-    def increment(self): pass #print "TestGraphic.increment()"
-    def decrement(self): print "TestGraphic.decrement()"
 
-    # -------- Identifiable
-
+class PyIdentifiable (Warsaw__POA.Identifiable):
     def is_identical(self, other):
 	print "TestGraphic.is_identical(%s)"%other
 	return 0
 
-    # -------- Graphic
+class PyRefCountBase (Warsaw__POA.RefCountBase):
+    def __init__(self):
+	self.__refcount = 0
+    def increment(self):
+	#print "TestGraphic.increment()"
+	self.__refcount = self.__refcount + 1
+    def decrement(self):
+	print "PyRefCountBase.decrement()"
+	self.__refcount = self.__refcount - 1
+	if self.__refcount < 1:
+	    print "PyRefCountBase.decrement(): RefCount reached",self.__refcount
+
+class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
+    def __init__(self):
+	PyRefCountBase.__init__(self)
+	self.__blocked = 0
+	self.__observers = []
+    def attach(self, observer):
+	self.__observers.append(observer)
+    def detach(self, observer):
+	obs = self.__observers
+	for i in range(len(obs)):
+	    while len(obs) > i and observer.is_identical(obs[i]):
+		del obs[i]
+    def block(self, blocked):
+	self.__blocked = blocked
+    def notify(self, any):
+	if self.__blocked: return
+	for observer in self.__observers:
+	    try:
+		observer.update(any)
+	    except:
+		print "PySubject.notify(): Error occurred during update."
+		raise
+
+class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
+    def __init__(self):
+	PyRefCountBase.__init__(self)
+	self.__parents = []
 
     # Attribute 'body'
     def _get_body(self): return None
@@ -175,38 +208,37 @@ class TestGraphic (Warsaw__POA.Graphic):
 	pass
 
     def add_parent_graphic(self, graphic, parent_tag): # --> Tag
-	print "TestGraphic.add_parent_graphic(graphic: %s, tag: %s)"%(graphic, parent_tag),
+	print "PyGraphic.add_parent_graphic(graphic: %s, tag: %s)"%(graphic, parent_tag),
 	mytag = len(self.__parents)
 	self.__parents.append( (graphic, parent_tag, mytag) )
 	print "-->",mytag
 	return mytag
     def remove_parent_graphic(self, parent_tag): # --> void
-	print "TestGraphic.remove_parent_graphic(tag: %s)"%parent_tag
+	print "PyGraphic.remove_parent_graphic(tag: %s)"%parent_tag
 	for i in range(len(self.__parents)):
 	    if self.__parents[i][1] == parent_tag:
 		del self.__parents[i]
 		return
 
     def first_child_graphic(self): # --> Iterator
-	print "TestGraphic.first_child_graphic()"
 	pass
     def last_child_graphic(self): # --> Iterator
-	print "TestGraphic.last_child_graphic()"
 	pass
 
     def transformation(self): # --> Transform
 	pass
 
     def request(self): # --> void
-	x = Warsaw.Graphic.Requirement(1, 2000., 3000., 1000., 0.)
-	y = Warsaw.Graphic.Requirement(1, 2000., 3000., 1000., 0.)
-	z = Warsaw.Graphic.Requirement(1, 10., 10., 10., 0.)
+	x = Warsaw.Graphic.Requirement(1, 200., 300., 100., 0.)
+	y = Warsaw.Graphic.Requirement(1, 200., 300., 100., 0.)
+	z = Warsaw.Graphic.Requirement(1, 0., 0., 0., 0.)
 	req = Warsaw.Graphic.Requisition(x, y, z, 0)
 	return req
 	
     def extension(self, alloc_info, region): # --> void
 	#Allocation::Info a, Region r
 	region.merge_union(alloc_info.allocation)
+	# TODO: should use alloc_info.transformation
     def shape(self, Region): # --> void
 	pass
 
@@ -214,6 +246,32 @@ class TestGraphic (Warsaw__POA.Graphic):
 	traversal.visit(self._this())
 
     def draw(self, drawTraversal): # --> void
+	pass
+
+    def pick(self, pickTraversal): # --> void
+	pass
+
+    def allocate(self, tag, alloc_info): # --> void
+	pass
+    def allocations(self, alloc): # --> void
+	pass
+    def need_redraw(self): # --> void
+	for parent, ptag, mytag in self.__parents:
+	    parent.need_redraw()
+    def need_redraw_region(self, Region): # --> void
+	pass
+    def need_resize(self): # --> void
+	pass
+
+class TickGraphic (PyGraphic):
+    "Simple graphic that draws a 'tick'"
+    def request(self): # --> void
+	x = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	y = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	z = Warsaw.Graphic.Requirement(1, 0., 0., 0., 0.)
+	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	return req
+    def draw(self, drawTraversal):
 	dk = drawTraversal.drawing()
 	#print "dk is: ", dk
 	transform = drawTraversal.current_transformation()
@@ -233,19 +291,69 @@ class TestGraphic (Warsaw__POA.Graphic):
 	dk.draw_path(path)
 	dk.restore()
 
-    def pick(self, pickTraversal): # --> void
-	pass
 
-    def allocate(self, tag, alloc_info): # --> void
-	pass
-    def allocations(self, alloc): # --> void
-	pass
-    def need_redraw(self): # --> void
-	pass
-    def need_redraw_region(self, Region): # --> void
-	pass
-    def need_resize(self): # --> void
-	pass
+class ClockGraphic (PyGraphic):
+    "Simple graphic that draws a clock"
+    def __init__(self):
+	PyGraphic.__init__(self)
+	thread.start_new_thread(self._run_update_thread, ())
+    def _run_update_thread(self):
+	# FIXME: calibrate
+	while 1:
+	    time.sleep(1)
+	    self.need_redraw()
+    def request(self): # --> void
+	x = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	y = Warsaw.Graphic.Requirement(1, 2000., 3000., 100., 0.)
+	z = Warsaw.Graphic.Requirement(1, 0., 0., 0., 0.)
+	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+	return req
+    def draw(self, drawTraversal):
+	dk = drawTraversal.drawing()
+	#print "dk is: ", dk
+	transform = drawTraversal.current_transformation()
+	region = drawTraversal.current_allocation()
+	bounds_lower, bounds_upper = region.bounds()
+	bounds_delta = (bounds_upper.x - bounds_lower.x,
+	    bounds_upper.y - bounds_lower.y)
+	bounds_middle = Warsaw.Vertex((bounds_upper.x + bounds_lower.x)/2,
+	    (bounds_upper.y + bounds_lower.y)/2, 0)
+	bounds_halfdelta = (bounds_delta[0]/2, bounds_delta[1]/2)
+	dk.save()
+	dk._set_transformation(transform)
+	def scale(point, low=bounds_middle, delta = bounds_halfdelta):
+	    return Warsaw.Vertex(point[0] * delta[0] + low.x, point[1] * delta[1] + low.y, low.z)
+	def rotate(angle, path):
+	    m = (( math.cos(angle),-math.sin(angle)),
+		 ( math.sin(angle), math.cos(angle)))
+	    ret = []
+	    for x,y in path:
+		ret.append( (x*m[0][0]+y*m[0][1], x*m[1][0]+y*m[1][1]) )
+	    return ret
+	# Draw background first
+	dk._set_foreground(Warsaw.Color(0.9, 0.9, 0.9, 1.0))
+	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
+	dk.draw_rectangle(bounds_lower, bounds_upper)
+	# Draw hour-ticks
+	path = [(-.05,-.8),(.05,-.8),(.05,-.7),(-.05,-.7),(-.05,-.8)]
+	dk._set_foreground(Warsaw.Color(0.2, 0.3, 0.5, 1.0))
+	circle = math.pi*2
+	for i in range(12):
+	    dk.draw_path(map(scale, rotate(i*circle/12, path)))
+	# Get time
+	times = time.localtime(time.time())
+	hours, mins, secs = times[3], times[4], times[5]
+	# Hours
+	path = [(-.03,.03),(0,-.6),(.03,.03),(-.03,.03)]
+	dk.draw_path(map(scale, rotate(hours*circle/12, path)))
+	# Minutes
+	path = [(-.02,.02),(0,-.8),(.02,.02),(-.02,.02)]
+	dk.draw_path(map(scale, rotate(mins*circle/60, path)))
+	# Hours
+	path = [(-.01,.01),(0,-.95),(.01,.01),(-.01,.01)]
+	dk.draw_path(map(scale, rotate(secs*circle/60, path)))
+	dk.restore()
+
 class GraphicApp:
     def __init__(self):
 	global app
@@ -255,7 +363,7 @@ class GraphicApp:
 
     def run(self):
 
-	graphic = TestGraphic()._this()
+	graphic = ClockGraphic()._this()
 
 	self.window = kits.desktop.shell(kits.tool.group(graphic))
 
