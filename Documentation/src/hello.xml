@@ -54,7 +54,7 @@
       poa = orb.resolve_initial_references("RootPOA")
       poaManager = poa._get_the_POAManager()
       poaManager.activate()
-      ci = ClientContextImpl()
+      ci = ClientContextImpl(map(lambda x:ord(x), "hello world applet"))
       client = ci._this()
       context  = server.create_server_context(client)
     </programlisting>
@@ -63,7 +63,7 @@
       PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
-      ClientContextImpl *ci = new ClientContextImpl("hello world applet");
+      ClientContextImpl *ci = new ClientContextImpl(Unicode::to_CORBA(Babylon::String("hello world applet")));
       ClientContext_var client = ci->_this();
       ServerContext_var context = server->create_server_context(client);
     </programlisting>
@@ -106,7 +106,7 @@
       wrap it into a button, and put that button into a window. In python you write:
     </para>
     <programlisting>
-      label = text.chunk("hello world")
+      label = text.chunk(map(lambda x:ord(x), "hello world"))
       black = tools.rgb(label, 0., 0., 0.)
       button = widgets.button(black, Command._nil)
       window = desktop.shell(button)
