@@ -26,7 +26,7 @@
 
 module Warsaw
 {
-  //. The Drawable is a abstraction of the underlying hardware. It
+  //. The Drawable is an abstraction of the underlying hardware. It
   //. is basically a chunk of video memory.
   interface Drawable
     {

@@ -51,7 +51,7 @@ module Warsaw
       void fastforward();
       //. Move the value a page backward.
       void fastbackward();
-      //. Move the value to the begining of the range (value=lower).
+      //. Move the value to the beginning of the range (value=lower).
       void begin();
       //. Move the value to the end of the range (value=upper).
       void end();

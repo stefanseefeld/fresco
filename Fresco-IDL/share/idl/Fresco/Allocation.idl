@@ -28,7 +28,7 @@ module Warsaw
   interface Transform;
   interface Screen;
   
-  //. Allocation is used in the process of retreiving
+  //. Allocation is used in the process of retrieving
   //. cumulative geometry information for a given Graphic.
   //. This information is used to determine what Regions to
   //. damage in order to redraw the Graphic.
@@ -54,4 +54,4 @@ module Warsaw
     };
 };
 
-#endif /* _Allocation_idl */
+#endif

@@ -24,6 +24,7 @@
 #define _Warsaw_TextBuffer_idl
 
 #include <Warsaw/Subject.idl>
+#include <Warsaw/Observer.idl>
 #include <Warsaw/Types.idl>
 
 module Warsaw
@@ -36,6 +37,9 @@ module Warsaw
       
       //. These are the changes that can happen to a TextBuffer:
       enum ChangeType {insert, remove, cursor};
+
+      //. The possible orders in which the String in the TextBuffer can be.
+      enum StringOrder {memory_order, visual_order};
       
       //. This structure is passed to observers whenever the
       //. TextBuffer changed.
@@ -44,6 +48,7 @@ module Warsaw
 	  ChangeType type;    //.< What happened?
 	  unsigned long pos;  //.< Where did it happen?
 	  long len;           //.< How long was the change? This might be a negative number.
+	  boolean visual;     //.< Did this change happen to the string in memory or visual order?
       };
       
       //. The length of the TextBuffer.
@@ -72,13 +77,28 @@ module Warsaw
       void insert_string(in Unistring u);
       //. Remove d characters backward.
       //. This is relative to the current cursor position.
-      void remove_backward(in long d);
+      void remove_backward(in unsigned long d);
       //. Remove d characters forward.
       //. This is relative to the current cursor position.
-      void remove_forward(in long d);
+      void remove_forward(in unsigned long d);
       //. Clear the buffer. It will be empty afterwards.
       void clear();
+
+      //. The order in which the String in this TextBuffer is stored.
+      readonly attribute StringOrder order;
+
+      //. Get the accociated TextBuffer that contains the String stored
+      //. in here in memory order. This operation returns a reference to
+      //. this TextBuffer if it stores the string in memory order.
+      TextBuffer get_memory_buffer();
+      
+      //. Get the accociated TextBuffer that contains the String stored
+      //. in here in visual order. This operation returns a reference to
+      //. this TextBuffer if it stores the string in visual order.
+      TextBuffer get_visual_buffer(); 
     };
+
+    interface VisualTextBuffer : TextBuffer, Subject, Observer { };
 };
 
 #endif

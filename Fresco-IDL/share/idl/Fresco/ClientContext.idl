@@ -29,14 +29,17 @@ module Warsaw
   interface Command;
 
   //. A ClientContext object is an interface any client connecting to a
-  //. Berlin server needs to present. It is used in managing the
+  //. Berlin server needs to present/implement. It is used in managing the
   //. resources the client allocates and in authenticating the client's
   //. requests. The default security mechanism is obviously rediculously
   //. simplistic: Each connection request will be accepted for now.
   interface ClientContext
     {
-      //. The name of the user that started the client.
+      //. The name of the user that started the client. This is the
+      //. login name of the user, not his real name.
       readonly attribute Unistring user_name;
+      // FIXME: We need to provide more attributes like UID/GID, real name, ...
+
       //. The command called when the server wants the client to quit
       //. (for example in response to the user clicking on the close button
       //. in a windows titlebar).

@@ -28,6 +28,8 @@
 module Warsaw
 {
   // FIXME: How do I use bold in the comments for the reference manual?
+  // FIXME: Why do we make it available through CORBA as it is not
+  //        location transparent.
   //. The Canvas is an object that allows *location intransparent*
   //. access to a chunk of video memory. It is intended for use in Kits
   //. only. Do not use it in applications.
@@ -42,9 +44,10 @@ module Warsaw
       readonly attribute PixelFormat pixel_format;
       //. The encoding of the pixels in the Canvas.
       readonly attribute BufferFormat buffer_format;
-      //. Lock the Canvas.
+      //. Lock the Canvas to make sure you have exclusive access to
+      //. this Canvas.
       void lock();
-      //. Unlock the Canvas.
+      //. Unlock the Canvas to allow others access again.
       void unlock();
     };
 };

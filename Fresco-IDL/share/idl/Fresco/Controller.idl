@@ -32,7 +32,7 @@ module Warsaw
   interface Focus;
   interface Controller;
   
-  //. A ControllerIterator is a reference to a controller within an composite controller
+  //. A ControllerIterator is a reference to a controller within a composite controller
   interface ControllerIterator
     {
       //. Return the child controller to which the iterator currently refers
@@ -85,7 +85,7 @@ module Warsaw
       //. list of children.
       void append_controller(in Controller c);
       //. This operation modifies the controller hierarchy
-      //. adding a child at the begining of this controller's
+      //. adding a child at the beginning of this controller's
       //. list of children.
       void prepend_controller(in Controller c);
       //. Removes the given Controller from this controller's
@@ -98,10 +98,10 @@ module Warsaw
       //. Get this Controller's parent. Returns CORBA::nil if no parent
       //. Controller is set yet.
       Controller parent_controller();
-      //. Get an Itarator pointing to the first Controller in this 
+      //. Get an Iterator pointing to the first Controller in this 
       //. Controller's list of children.
       Iterator first_child_controller();
-      //. Get an Itarator pointing to the last Controller in this 
+      //. Get an Iterator pointing to the last Controller in this 
       //. Controller's list of children.
       Iterator last_child_controller();
       //. Ask for input focus for the device with the given id. 
@@ -117,7 +117,7 @@ module Warsaw
       //. it should perform the appropriate operations
       //. on the focus object, such as installing key translations.
       boolean receive_focus(in Focus f);
-      //. Notify a controller that it is losing input focus for the
+      //. Notify a controller that it is loosing input focus for the
       //. given device id.
       void lose_focus(in Input::Device d);
       //. These operations ask that this controller "move" the input
@@ -132,11 +132,11 @@ module Warsaw
       boolean next_focus(in Input::Device d);
       boolean prev_focus(in Input::Device d);
       //. Used for event dispatching. If this Controller holds the focus
-      //. for a given device, it will reveice events associated with it.
+      //. for a given device, it will receive events associated with it.
       //. This operator handels positional events.
       boolean handle_positional(in PickTraversal t, in Input::Event e);
       //. Used for event dispatching. If this Controller holds the focus
-      //. for a given device, it will reveice events associated with it.
+      //. for a given device, it will receive events associated with it.
       //. This operator handels non-positional events.
       boolean handle_non_positional(in Input::Event e);
     };

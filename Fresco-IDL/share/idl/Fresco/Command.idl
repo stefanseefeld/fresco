@@ -35,8 +35,8 @@ module Warsaw
       void destroy();
     };
   
-  //. A composite Command. You can add other Command to this and those
-  //. will get executed in order whenever the MacroCommand gets executed.
+  //. A composite Command. You can add other Commands to this and those
+  //. will get executed in that order whenever the MacroCommand gets executed.
   interface MacroCommand : Command
     {
       //. Add a Command to the end of the list of Commands of this

@@ -97,7 +97,7 @@ module Warsaw
       Graphic vbox_first_aligned();
       
       //. These operations return an hbox and vbox that automatically
-      //. align thier children according to the given alignment. 
+      //. align their children according to the given alignment. 
       Graphic hbox_align_elements(in Alignment align);
       Graphic vbox_align_elements(in Alignment align);
       

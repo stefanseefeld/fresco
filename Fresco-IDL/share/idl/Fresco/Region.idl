@@ -28,8 +28,8 @@ module Warsaw
 {
   interface Transform;
 
-  //. A region is an area or volume within an object's coordinate
-  //. space.  A region may be described by a surface, curve, path,
+  //. A Region is an area or volume within an object's coordinate
+  //. space.  A Region may be described by a surface, curve, path,
   //. or other geometric means.  Regions define an origin as a point
   //. of reference (the origin is not required to be contained
   //. inside the region).  A region implementation may choose
@@ -82,16 +82,16 @@ module Warsaw
       //. the intersection of itself and the given Region.
       //. The origin of the Region is unchanged.
       void subtract(in Region r);
-      //. Set this Region to be the region that Results from
+      //. Set this Region to be the Region that results from
       //. the given transformation applied to the original Region.
       //. Because a region may be implemented using bounding boxes,
       //. transformations are not necessarily invertible.  That is,
       //. transforming a Region first by a matrix and then by
       //. the inverse of the matrix may yield a larger (but not smaller)
-      //. Region that the original.
+      //. Region than the original.
       void apply_transform(in Transform t);
-      //. Return two vertixes that contain the lower and upper coordinate
-      //. values, respectivly.
+      //. Return two vertices that contain the lower and upper coordinate
+      //. values, respectively.
       void bounds(out Vertex lower, out Vertex upper);
       //. Return the center of this Region.
       void center(out Vertex c);

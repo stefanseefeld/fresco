@@ -30,7 +30,7 @@ module Warsaw
   //. A BoundedRange describes a 'range within a range'
   //. such as a Viewport (a 'window') manipulated by a
   //. scrollbar. The 'internal' range will allways stay
-  //. completly contained in the 'external' range.
+  //. completely contained in the 'external' range.
   interface BoundedRange : Subject
     {
       //. Stores the state of the BoundedRange.
@@ -66,7 +66,7 @@ module Warsaw
       void fastforward();
       //. Move the 'internal' range a page backward.
       void fastbackward();
-      //. Move the 'internal' range to the begining of the 'external' range
+      //. Move the 'internal' range to the beginning of the 'external' range
       //. (lvalue = lower). The size of the range (uvalue - lvalue) will
       //. stay unchanged.
       void begin();

@@ -48,14 +48,14 @@ module Warsaw
       //. into the given Command. The given text will be dumped again
       //. after the given Command returns. 
       Command debugger(in Command c, in string s);
-      //. This Command just dumps the given text whenever this Command
-      //. gets executed.
+      //. This Command just dumps the given text to stdout whenever this Command
+      //. gets executed. 
       Command log(in string t);
-      //. Get a MacroCommand.
+      //. Create a MacroCommand.
       MacroCommand composite();
 
       //. This constraint will make sure that a maximum of one of the
-      //. Telltales will be set.
+      //. Telltales will be match the given Mask.
       TelltaleConstraint exclusive(in Telltale::Mask m);
       //. This constraint will make sure that at least one of the
       //. Telltales will be set.
@@ -66,7 +66,7 @@ module Warsaw
       Telltale     normal_telltale();
       //. Get a Telltale with the given constraint set.
       Telltale     constrained_telltale(in TelltaleConstraint c);
-      //. Gets a Selection that enforces the given Policy.
+      //. Get a Selection that enforces the given Policy.
       Selection    group(in Selection::Policy p);
       //. Get a BoundedValue with a lower bound of l, a upper boundary of u,
       //. a value of v, a step size of s and a pagesize of p.
@@ -75,9 +75,9 @@ module Warsaw
       //. a inner range with the bounds of lv and uv, a step size of s and
       //. a pagesize of p.
       BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
-      //. Gets a TextBuffer.
+      //. Get a TextBuffer.
       TextBuffer   text();
-      //. Gets a StreamBuffer.
+      //. Get a StreamBuffer.
       StreamBuffer stream(in long buffer);
     };
 };
