@@ -56,41 +56,53 @@ ToggleChoice::ToggleChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, Widg
   : ::Motif::Choice(s, l, t, w)
 {}
 
-Tag ToggleChoice::append_item(Graphic_ptr g)
+RefCount_var<Fresco::Graphic> ToggleChoice::create_item(Graphic_ptr g, Tag& t)
 {
-  Trace trace("ToggleChoice::append_item");
-  RefCount_var<Fresco::Controller> toggle =
-    widgets->toggle(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)));
-  Tag tag = selection->add(toggle);
-  append_controller(toggle);
-  RefCount_var<Fresco::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
-  Graphic_var box = body();
+  Trace trace("ToggleChoice::create_item");
+
+  // Define initial hbox, which is nested inside a toggle-box (no bevel!)
+  RefCount_var<Fresco::Graphic> box = layout->hbox();
+  RefCount_var<Fresco::Controller> toggle_box = tools->toggle(box);
+  t = selection->add(toggle_box);
+  append_controller(toggle_box);
+
+  // 'toggle': simply a graphic with bevel dependent upon toggle_box
+  RefCount_var<Fresco::Graphic> toggle =
+          layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.);
+  Fresco::ToolKit::FrameSpec s1, s2;
+  s1.brightness(0.5); s1._d(Fresco::ToolKit::inset);
+  s2.brightness(0.5); s2._d(Fresco::ToolKit::outset);
+  Graphic_var frame = tools->dynamic(toggle, 20., Fresco::Controller::toggled, 
+                                     s1, s2, true, toggle_box);
+
+  // now add the toggle button into the button box, along with g
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(frame, 50.)), 0.5)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(100.)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(50.)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->hfill()));
+
+  // Add the 'active item' border
   Fresco::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
+  return RefCount_var<Fresco::Graphic>(tools->dynamic(toggle_box, 20., 
+                 Fresco::Controller::active, colored, none, false, toggle_box));
+}
+
+Tag ToggleChoice::append_item(Graphic_ptr g)
+{
+  Trace trace("ToggleChoice::append_item");
+  Tag tag;
+  body()->append_graphic(create_item(g,tag));
   return tag;
 }
 
 Tag ToggleChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("ToggleChoice::prepend_item");
-  RefCount_var<Fresco::Controller> toggle =
-    widgets->toggle(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)));
-  Tag tag = selection->add(toggle);
-  append_controller(toggle);
-  RefCount_var<Fresco::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
-  Graphic_var box = body();
-  Fresco::ToolKit::FrameSpec none, colored;
-  Color black = {0., 0., 0., 1.};
-  colored.foreground(black);
-  box->prepend_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
+  Tag tag;
+  body()->prepend_graphic(create_item(g,tag));
   return tag;
 }
 
@@ -106,57 +118,53 @@ CheckboxChoice::CheckboxChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, 
   : ::Motif::Choice(s, l, t, w)
 {}
 
-Tag CheckboxChoice::append_item(Graphic_ptr g)
+RefCount_var<Fresco::Graphic> CheckboxChoice::create_item(Graphic_ptr g, Tag& t)
 {
-  Trace trace("CheckboxChoice::append_item");
-  RefCount_var<Fresco::Controller> toggle = tools->toggle(Fresco::Graphic::_nil());
-  Tag tag = selection->add(toggle);
-  append_controller(toggle);
+  Trace trace("CheckboxChoice::create_item");
 
+  // Define initial hbox, which is nested inside a toggle-box (no bevel!)
+  RefCount_var<Fresco::Graphic> box = layout->hbox();
+  RefCount_var<Fresco::Controller> toggle_box = tools->toggle(box);
+  t = selection->add(toggle_box);
+  append_controller(toggle_box);
+
+  // 'toggle': simply a graphic with bevel dependent upon toggle_box state
+  RefCount_var<Fresco::Graphic> toggle =
+          layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.);
   Fresco::ToolKit::FrameSpec s1, s2;
-  s1.brightness(0.5); s1._d(ToolKit::outset);
-  s2.brightness(0.5); s2._d(ToolKit::inset);
+  s1.brightness(0.5); s1._d(Fresco::ToolKit::outset);
+  s2.brightness(0.5); s2._d(Fresco::ToolKit::inset);
   RefCount_var<Fresco::Graphic> frame =
-    tools->dynamic_diamond(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)),
-			   20., Fresco::Controller::toggled, s1, s2, true, toggle);
-  toggle->body(frame);
+    tools->dynamic_diamond(toggle, 20., Fresco::Controller::toggled, 
+                           s1, s2, true, toggle_box);
+  
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(frame, 50.)), 0.5)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(100.)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(50.)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(layout->hfill()));
 
-  RefCount_var<Fresco::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
-  Graphic_var box = body();
+  // Add the 'active item' border
   Fresco::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
+  return RefCount_var<Fresco::Graphic>(tools->dynamic(toggle_box, 20., 
+                Fresco::Controller::active, colored, none, false, toggle_box));
+}
+
+Tag CheckboxChoice::append_item(Graphic_ptr g)
+{
+  Trace trace("CheckboxChoice::append_item");
+  Tag tag;
+  body()->append_graphic(create_item(g,tag));
   return tag;
 }
 
 Tag CheckboxChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::prepend_item");
-  RefCount_var<Fresco::Controller> toggle = tools->toggle(Fresco::Graphic::_nil());
-  Tag tag = selection->add(toggle);
-  append_controller(toggle);
-
-  ToolKit::FrameSpec s1, s2;
-  s1.brightness(0.5); s1._d(ToolKit::outset);
-  s2.brightness(0.5); s2._d(ToolKit::inset);
-  RefCount_var<Fresco::Graphic> frame =
-    tools->dynamic_diamond(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)),
-			   20., Fresco::Controller::toggled, s1, s2, true, toggle);
-  toggle->body(frame);
-  
-  RefCount_var<Fresco::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
-  Graphic_var box = body();
-  Fresco::ToolKit::FrameSpec none, colored;
-  Color black = {0., 0., 0., 1.};
-  colored.foreground(black);
-  box->prepend_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
+  Tag tag;
+  body()->prepend_graphic(create_item(g,tag));
   return tag;
 }
 

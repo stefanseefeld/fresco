@@ -60,6 +60,8 @@ class ToggleChoice : public Choice
   virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
   virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
   void remove_item(Fresco::Tag);
+ private:
+  RefCount_var<Fresco::Graphic> create_item(Fresco::Graphic_ptr, Fresco::Tag &);
 };
 
 class CheckboxChoice : public Choice
@@ -69,6 +71,8 @@ class CheckboxChoice : public Choice
   virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
   virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
   void remove_item(Fresco::Tag);
+ private:
+  RefCount_var<Fresco::Graphic> create_item(Fresco::Graphic_ptr, Fresco::Tag &);
 };
 
 class ToolChoice : public Choice
