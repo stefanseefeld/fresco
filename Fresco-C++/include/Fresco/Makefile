@@ -26,7 +26,7 @@ DIR_INCLUDES :=  -I.
 DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
 		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 
 
-STATIC_INTERFACES := 	BoundedValue.idl   Damage.idl	LayoutKit.idl	Pencil.idl \
+STATIC_INTERFACES := 	BoundedValue.idl BoundedRange.idl   Damage.idl	LayoutKit.idl	Pencil.idl \
 			ClientContext.idl  	Drawable.idl	LifeCycle.idl	Transform.idl \
 			Cloneable.idl	DrawingKit.idl	FigureKit.idl	Region.idl \
 			Graphic.idl	Metrics.idl	Screen.idl \
