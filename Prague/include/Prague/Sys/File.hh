@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -47,16 +47,16 @@ public:
 		blk  = S_IFBLK, 
 		fifo = S_IFIFO, 
 		sock = S_IFSOCK};
-  enum access_t { ur = S_IRUSR,
-		  uw = S_IWUSR,
-		  ux = S_IXUSR,
-		  gr = S_IRGRP,
-		  gw = S_IWGRP,
-		  gx = S_IXGRP,
-		  or = S_IROTH,
-		  ow = S_IWOTH,
-		  ox = S_IXOTH,
-		  all= ur|uw|ux|gr|gw|gx|or|ow|ox};
+  enum access_t { ru = S_IRUSR,
+		  wu = S_IWUSR,
+		  xu = S_IXUSR,
+		  rg = S_IRGRP,
+		  wg = S_IWGRP,
+		  xg = S_IXGRP,
+		  ro = S_IROTH,
+		  wo = S_IWOTH,
+		  xo = S_IXOTH,
+		  all= ru|wu|xu|rg|wg|xg|ro|wo|xo};
   File(const string &);
   File(const File &);
   virtual ~File();
@@ -67,7 +67,7 @@ public:
   const string &longName() const { return longname;}
   bool is(type_t t) const { return (status.st_mode & S_IFMT) == (mode_t) t;}
   long type() const { return (status.st_mode & S_IFMT);}
-  long access() const { return (status.st_mode & (ur|uw|ux));}
+  long access() const { return (status.st_mode & (ru|wu|xu));}
   uid_t uid() const { return status.st_uid;}
   gid_t gid() const { return status.st_gid;}
   long  size() const { return  status.st_size;}
