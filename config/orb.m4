@@ -69,9 +69,11 @@ AC_DEFUN([BERLIN_LIB_ORB],[
 	case $ORB in
 		omniORB)
 			AC_DECIDE(OMNIORB, [use omniORB])
+			AC_DEFINE(ORB_omniORB)
 			;;
 		TAO)
 			AC_DECIDE(TAO, [use TAO])
+			AC_DEFINE(ORB_TAO)
 			;;
 		none)
 			AC_DECIDE(NONE, [none found])

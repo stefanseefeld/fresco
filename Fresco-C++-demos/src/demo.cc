@@ -45,6 +45,7 @@ int main(int argc, char **argv)
     CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
     CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
     PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+    ServantBase::_default_POA(poa);
     PortableServer::POAManager_var pman = poa->the_POAManager();
     pman->activate();
 

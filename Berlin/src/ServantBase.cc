@@ -35,6 +35,8 @@ namespace
   Mutex mutex;
 };
 
+PortableServer::POA_var ServantBase::_default_poa;
+
 ServantBase::ServantBase()
   : _refcount(1), _poa(PortableServer::POA::_nil())
 {
@@ -60,9 +62,14 @@ ServantBase::~ServantBase()
 
 ServantBase &ServantBase::operator = (const ServantBase &) { return *this;}
 
-void ServantBase::deactivate()
+void ServantBase::_default_POA(PortableServer::POA_ptr poa)
 {
-  ServantBase::deactivate(this);
+  _default_poa = PortableServer::POA::_duplicate(poa);
+}
+
+PortableServer::POA_ptr ServantBase::_default_POA()
+{
+  return PortableServer::POA::_duplicate(_default_poa);
 }
 
 void ServantBase::_add_ref()
@@ -92,6 +99,11 @@ void ServantBase::_remove_ref()
 #endif
       delete this;
     }
+}
+
+void ServantBase::deactivate()
+{
+  ServantBase::deactivate(this);
 }
 
 void ServantBase::deactivate(ServantBase *servant)

@@ -197,13 +197,29 @@ int main(int argc, char **argv)
   /*
    * ...then start the ORB...
    */
-  omniORB::maxTcpConnectionPerServer = 10;
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
   PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
   Logger::log(Logger::corba) << "root POA is activated" << std::endl;
 
+#ifdef COLOCATION_OPTIMIZATION
+#  if defined(ORB_omniORB)
+  {
+    CORBA::PolicyList policies;
+    policies.length(2);
+    policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
+    CORBA::Any value;
+    value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
+    policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
+    poa = poa->create_POA("shortcut", pman, policies); 
+  }
+#  elif defined(ORB_TAO)
+
+#  endif
+#endif
+
+  ServantBase::_default_POA(poa);
   Console::open(argc, argv, poa);
 
   Logger::log(Logger::console) << "console is initialized" << std::endl;

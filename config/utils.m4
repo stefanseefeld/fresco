@@ -901,7 +901,7 @@ dnl autoconf when it comes to handling C++.
 AC_DEFUN([BERLIN_CHECK_LIB],[
 
 	save_LIBS="$LIBS"
-	LIBS="$LIBS $$1 -l$2"
+	LIBS="$LIBS -l$2 $$1"
 	changequote(`, ')
 	includes="patsubst(`$4', `\(\w\|\.\|/\)+', `#include <\&>
 ')"

@@ -86,7 +86,7 @@ all: $(TARGET)
 
 # this split enforces that all idl code is translated
 # before the first source is compiled
-$(TARGET): $(SRC) $(OBJ)
+$(TARGET):
 	@$(MAKE) sources
 	@$(MAKE) objects
 	@echo linking $(@F)
