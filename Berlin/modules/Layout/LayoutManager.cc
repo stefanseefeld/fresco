@@ -67,27 +67,30 @@ void LayoutAlign::request(long n, Graphic::Requisition *requests, Graphic::Requi
   Graphic::Requirement *r, *rr = GraphicImpl::requirement(result, axis);
   rr->defined = false;
 
-  Coord natural_lead, natural_trail;
-  Coord min_lead, max_lead, min_trail, max_trail;
-  
-  natural_lead = natural_trail = min_lead = max_lead = min_trail = max_trail = 0;
+  Coord natural_lead = -GraphicImpl::infinity;
+  Coord natural_trail = -GraphicImpl::infinity;
+  Coord min_lead = -GraphicImpl::infinity;  
+  Coord max_lead = GraphicImpl::infinity;  
+  Coord min_trail = -GraphicImpl::infinity;  
+  Coord max_trail = GraphicImpl::infinity;
 
   for (int i = 0; i < n; i++)
     {
       r = GraphicImpl::requirement(requests[i], axis);
       if (r->defined)
 	{
-	  Coord r_nat = r->natural;
-	  Coord r_max = r->maximum;
-	  Coord r_min = r->minimum;
-	  Coord r_align = r->align;
-	  Coord r_inv_align = Coord(1) - r_align;
-	  natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
-	  max_lead = Math::max(max_lead, Coord(r_max * r_align));
-	  min_lead = Math::max(min_lead, Coord(r_min * r_align));
-	  natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
-	  max_trail = Math::max(max_trail, Coord(r_max * r_inv_align));
-	  min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
+	  //. maximum of the natural child lengths becomes natural length
+	  natural_lead = Math::max(natural_lead, r->natural * r->align);
+	  //. smallest children's maximum length becomes maximum length
+	  max_lead = Math::min(max_lead, r->maximum * r->align);
+	  //. largest children's minimum length becomes minimum length
+	  min_lead = Math::max(min_lead, r->minimum * r->align);
+	  //. maximum of the natural child lengths becomes natural length
+	  natural_trail = Math::max(natural_trail, r->natural * (1. - r->align));
+	  //. smallest children's maximum length becomes maximum length
+	  max_trail = Math::min(max_trail, r->maximum * (1. - r->align));
+	  //. largest children's minimum length becomes minimum length
+	  min_trail = Math::max(min_trail, r->minimum * (1. - r->align));
 	  rr->defined = true;
 	}
     }

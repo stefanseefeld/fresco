@@ -31,6 +31,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Stopwatch.hh>
 #include <algorithm>
 #include <functional>
 

@@ -50,9 +50,9 @@ public:
   virtual CORBA::Boolean mapped();
   virtual void mapped(CORBA::Boolean);
 private:
-  Layout::StageHandle_var _handle;
-  Impl_var<UnmappedStageHandle> _unmapped;
-  Prague::Mutex _mutex;
+  Layout::StageHandle_var             _handle;
+  Impl_var<UnmappedStageHandle>       _unmapped;
+  Prague::Mutex                       _mutex;
   std::vector<Warsaw::Controller_var> _focus;
 };
 

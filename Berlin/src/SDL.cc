@@ -69,7 +69,7 @@ SDLDrawable::SDLDrawable(const char *display, PixelCoord w, PixelCoord h, PixelC
   } else {
     _surface = SDL_CreateRGBSurface( SDL_SRCCOLORKEY | SDL_SRCALPHA, w, h, bpp, _redMask, _greenMask, _blueMask, _alphaMask );
   }
-  if (!_surface) throw exception();
+  if (!_surface) throw std::exception();
   
   _depth = bpp ? d : _surface->format->BytesPerPixel;
   _need_locking = SDL_MUSTLOCK(_surface);

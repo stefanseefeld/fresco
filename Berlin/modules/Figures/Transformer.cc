@@ -49,7 +49,10 @@ void Transformer::request(Warsaw::Graphic::Requisition &requisition)
 void Transformer::traverse(Traversal_ptr traversal)
 {
   Trace trace("Transformer::traverse");
-  if (transform->identity()) Allocator::traverse(traversal);
+  if (transform->identity())
+    {
+      Allocator::traverse(traversal);
+    }
   else
     {
       Warsaw::Graphic::Requisition r;
@@ -58,7 +61,7 @@ void Transformer::traverse(Traversal_ptr traversal)
       Graphic_var child = body();
       if (CORBA::is_nil(child))	return;
       Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
-      rr->copy(traversal->current_allocation());
+      rr->copy(Region_var(traversal->current_allocation()));
       Vertex delta = GraphicImpl::transform_allocate(*rr, r, Transform_var(transform->_this()));
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->copy(Transform_var(transform->_this()));

@@ -20,10 +20,10 @@
  * MA 02139, USA.
  */
 
-#include "Desktop/Manipulator.hh"
-#include <Berlin/Vertex.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Berlin/Vertex.hh>
 #include <Warsaw/IO.hh>
+#include "Desktop/Manipulator.hh"
 
 using namespace Prague;
 using namespace Warsaw;

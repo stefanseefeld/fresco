@@ -243,7 +243,7 @@ void PositionalFocus::dispatch(Input::Event &event)
       for (; nf != picked->controllers().end(); ++nf)
 	{
 	  (*nf)->receive_focus (__this);
-	  _controllers.push_back(*nf);
+ 	  _controllers.push_back(*nf);
 	}
     }
   /*

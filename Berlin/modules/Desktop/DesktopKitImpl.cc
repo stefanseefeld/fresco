@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/resolve.hh>
@@ -30,7 +31,6 @@
 #include "Desktop/WindowImpl.hh"
 #include "Desktop/Pulldown.hh"
 #include "Desktop/Manipulator.hh"
-#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 using namespace Warsaw;
