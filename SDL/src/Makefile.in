@@ -34,7 +34,7 @@ hdir		:= $(top_srcdir)/include/Console/SDL
 CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @SDL_CPPFLAGS@)
 LIBS		+= -lBerlin @SDL_LIBS@
 
-SRC		:= SDL.cc
+SRC		:= Console.cc Drawable.cc Extension.cc Pointer.cc
 
 MODULE		:= Console/SDL
 
