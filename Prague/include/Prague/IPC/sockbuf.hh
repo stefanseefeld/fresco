@@ -197,7 +197,6 @@ public:
 
   sockbuf(int s) : ipcbuf(std::ios::in|std::ios::out) { fd(s);}
   sockbuf(int, type, int);
-//   sockbuf(const sockbuf &sb) : ipcbuf(sb) {}
   virtual           ~sockbuf() {}
   //. listen for connection requests. Allow up to num requests to be accumulated in the queue
   void               listen(int num = somaxconn);
@@ -239,8 +238,11 @@ public:
   socklinger         linger() const;
   socklinger         linger(socklinger) const;
   socklinger         linger(int onoff, int tm) const { return linger(socklinger(onoff, tm));}
-  bool               atmark() const;  
+  //. return true, if the read pointer for socket points to an out of band data
+  bool               atmark() const;
+  //. return the process group id that would receive SIGIO and SIGURG signals
   int                pgrp() const;
+  //. set the process group id that would receive SIGIO and SIGURG signals. return the old pgrp
   int                pgrp(int) const;
   void               closeonexec(bool set = true) const;
   long               nread() const;
@@ -255,9 +257,7 @@ class sockunixbuf : public sockbuf
 public:
   typedef sockunixaddr address_type;
   sockunixbuf(int s) : sockbuf(s) {}
-//   sockunixbuf(const sockunixbuf &su) : sockbuf(su) {}
   sockunixbuf(sockbuf::type ty, int proto = 0) : sockbuf(af_unix, ty, proto) {}
-//   sockunixbuf &operator = (const sockunixbuf &);
   ~sockunixbuf() {}
   sockunixaddr addr() const;
   void bind(const sockunixaddr &);
@@ -272,9 +272,7 @@ class sockinetbuf : public sockbuf
 public:
   typedef sockinetaddr address_type;
   sockinetbuf (int s) : sockbuf(s) {}
-//   sockinetbuf (const sockinetbuf &si): sockbuf (si) {}
   sockinetbuf (sockbuf::type ty, int proto = 0) : sockbuf(af_inet4, ty, proto) {}
-//   sockinetbuf &operator = (const sockinetbuf &);
   ~sockinetbuf () {}
   sockinetaddr localaddr() const;
   sockinetaddr peeraddr() const;

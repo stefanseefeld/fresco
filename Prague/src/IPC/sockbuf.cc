@@ -297,8 +297,6 @@ sockbuf::socklinger sockbuf::linger(sockbuf::socklinger opt) const
 }
 
 bool sockbuf::atmark() const
-  // return true, if the read pointer for socket points to an
-  // out of band data
 {
   int arg;
   if (::ioctl(fd(), SIOCATMARK, &arg) == -1) throw sockerr(errno);
@@ -306,8 +304,6 @@ bool sockbuf::atmark() const
 }
 
 int sockbuf::pgrp() const
-// return the process group id that would receive SIGIO and SIGURG
-// signals
 {
   int arg;
   if (::ioctl(fd(), SIOCGPGRP, &arg) == -1) throw sockerr(errno);
@@ -315,8 +311,6 @@ int sockbuf::pgrp() const
 }
 
 int sockbuf::pgrp(int new_pgrp) const
-// set the process group id that would receive SIGIO and SIGURG signals.
-// return the old pgrp
 {
   int old = pgrp();
   if (::ioctl(fd(), SIOCSPGRP, &new_pgrp) == -1) throw sockerr(errno);
@@ -485,12 +479,6 @@ int sockbuf::sendto(sockaddr &sa, const void *buf, int len, int msgf)
   return wlen;
 }
 
-// sockunixbuf &sockunixbuf::operator = (const sockunixbuf &su)
-// {
-//   sockbuf::operator = (su);
-//   return *this;
-// }
-
 sockunixaddr sockunixbuf::addr() const
 {
   sockunixaddr sa;
@@ -523,12 +511,6 @@ void sockunixbuf::connect(const sockunixaddr &sa)
 {
   if (::connect(fd(), sa.addr(), sa.size()) == -1) throw sockerr(errno);
 }
-
-// sockinetbuf &sockinetbuf::operator = (const sockinetbuf &si)
-// {
-//   sockbuf::operator = (si);
-//   return *this;
-// }
 
 sockinetaddr sockinetbuf::localaddr() const
 {

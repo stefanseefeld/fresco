@@ -35,62 +35,29 @@
 using namespace Prague;
 
 ipcbuf::ipcbuf(int mode)
-  : data(new control)
+  : _fd(-1), _stmo(-1), _rtmo(-1), _oobbit(false), _eofbit(false)
 {
   Trace trace("ipcbuf::ipcbuf");
   if (mode & std::ios::in)
     {
       char_type *gbuf = new char_type [BUFSIZ];
-      setg (gbuf, gbuf + BUFSIZ, gbuf + BUFSIZ);
-      data->gend = gbuf + BUFSIZ;
+      setg(gbuf, gbuf + BUFSIZ, gbuf + BUFSIZ);
     }
   if (mode & std::ios::out)
     {
       char_type *pbuf = new char_type [BUFSIZ];
-      setp (pbuf, pbuf + BUFSIZ);
-      data->pend = pbuf + BUFSIZ;
+      setp(pbuf, pbuf + BUFSIZ);
     }
 }
-
-// ipcbuf::ipcbuf(const ipcbuf &ipc)
-//   : data(ipc.data)
-// {
-//   Trace trace("ipcbuf::ipcbuf");
-//   Prague::Guard<Mutex> guard(data->mutex);
-//   setg(ipc.gbuf, gbuf + BUFSIZ, gbuf + BUFSIZ);
-//   setp(pbuf, pbuf + BUFSIZ);
-//   data->count++;
-// }
 
 ipcbuf::~ipcbuf()
 {
   Trace trace("ipcbuf::~ipcbuf");
   overflow(EOF); // flush write buffer
-  {
-    Prague::Guard<Mutex> guard(data->mutex);
-    if (--data->count) return;
-  }
   delete [] pbase();
   delete [] eback();
   if (fd() != -1 && close(fd()) == -1) perror("ipcbuf::~ipcbuf");
-  delete data;
 }
-
-// ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
-// {
-//   Trace trace("ipcbuf::operator =");
-//   if (this != &ipc && data != ipc.data && data->fd != ipc.data->fd)
-//     {
-//       std::streambuf::operator = (ipc);
-//       this->ipcbuf::~ipcbuf();
-//       // the streambuf::operator = (const streambuf&) is assumed
-//       // to have handled pbase () and gbase () correctly.
-//       data  = ipc.data;
-//       Prague::Guard<Mutex> guard(data->mutex);
-//       data->count++;
-//     }
-//   return *this;
-// }
 
 bool ipcbuf::readready() const
 {
@@ -138,7 +105,7 @@ int ipcbuf::sync()
   if (pptr() && pbase() < pptr() && pptr() <= epptr())
     {
       sys_write(pbase(), pptr() - pbase());
-      setp(pbase(), (char *) data->pend);
+      setp(pbase(), pbase() + BUFSIZ);
     }
   return 0;
 }
@@ -163,10 +130,10 @@ ipcbuf::int_type ipcbuf::underflow()
 {
   if (gptr() == 0) return EOF; // input stream has been disabled
   if (gptr() < egptr()) return *gptr();
-  ssize_t rlen = sys_read(eback(), data->gend - eback());
+  ssize_t rlen = sys_read(eback(), BUFSIZ);
   switch (rlen)
     {
-    case 0: data->eofbit = true;
+    case 0: _eofbit = true;
     case EOF: return EOF; break;
     default: setg(eback(), eback(), eback() + rlen); return *gptr(); break;
     }

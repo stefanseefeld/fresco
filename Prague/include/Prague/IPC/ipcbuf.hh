@@ -45,27 +45,10 @@ public:
   typedef std::streamoff    off_type;
   typedef int               int_type;
   typedef std::ios::seekdir seekdir;
-private:
-  struct control
-  {
-    control() : fd(-1), count(1), stmo(-1), rtmo(-1), oobbit(false), eofbit(false), gend(0), pend(0) {}
-    ~control() { Trace trace("ipcbuf::control::~control");}
-    Mutex mutex;
-    int	fd;
-    int	count;
-    int stmo;        // -1==block, 0==poll, >0 == waiting time in secs
-    int rtmo;        // -1==block, 0==poll, >0 == waiting time in secs
-    bool oobbit : 1; // check for out-of-band byte while reading
-    bool eofbit : 1; // connection closed
-    char_type *gend; // end of input buffer
-    char_type *pend; // end of output buffer
-  };
 public:
   //. create a new ipcbuf for the given file descriptor
   ipcbuf(int);
-//   ipcbuf(const ipcbuf &);
   virtual ~ipcbuf();
-//   ipcbuf &operator = (const ipcbuf &);
   //. return true if read wouldn't block
   bool readready() const;
   //. return true if write wouldn't block
@@ -78,17 +61,17 @@ public:
 //   virtual int write (const void *, int);
 //   virtual int read (void *, int);
   //. return the file descriptor for that buffer
-  int  fd() const { return data->fd;}
+  int  fd() const { return _fd;}
   //. set the file descriptor
-  void fd(int f) const { data->fd = f;}
-  bool oob() const { return data->oobbit;}
-  bool oob(bool f) { data->oobbit = f;}
+  void fd(int f) { _fd = f;}
+  bool oob() const { return _oobbit;}
+  bool oob(bool f) { _oobbit = f;}
   //. set the buffer to nonblocking mode if flag is true, to blocking mode otherwise
   void async(bool flag);
   //. return true if the buffer is in nonblocking mode, false otherwise
   bool async() const;
   //. did we encounter EOF ?
-  bool eof() const { return data->eofbit;}
+  bool eof() const { return _eofbit;}
 // protected:
   //. flush the buffer
   virtual int        sync();
@@ -104,7 +87,11 @@ public:
   virtual std::streamsize xsputn(const char *, std::streamsize);
   virtual std::streamsize xsgetn(char *, std::streamsize);
 private:
-  control *data;  // counts the # refs to sock
+  int	_fd;
+  int   _stmo;        // -1==block, 0==poll, >0 == waiting time in secs
+  int   _rtmo;        // -1==block, 0==poll, >0 == waiting time in secs
+  bool  _oobbit : 1; // check for out-of-band byte while reading
+  bool  _eofbit : 1; // connection closed
 };
 
 };

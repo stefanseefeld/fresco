@@ -15,7 +15,7 @@ public:
   {
     Trace trace("Connection::Connection");
   }
-  ~Connection() { Trace trace("Connection::~Connection"); running = false;}
+  ~Connection() { Trace trace("Connection::~Connection"); ::running = false;}
 private:
   virtual bool process(int, iomask)
   {
