@@ -19,6 +19,10 @@ You might want to try those packages first. There are even some debian
 packages of Fresco, you might want to try those instead of building
 it yourself.
 
+YOU WILL NEED G++ VERSION 3.2 OR LATER to build Fresco. G++ 2.95.x will
+not suffice. We are using ANSI C++ which is not supported well enough
+on old GCC compilers.
+
 
 
 Downloading
