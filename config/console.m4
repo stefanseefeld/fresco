@@ -62,7 +62,19 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                 CON_IMPL=SDL
                         fi
                         ;;
-
+                CAVE)
+                        BERLIN_CAVELIB_CHECK
+                        if test ".$ac_cv_lib_cave" != .yes; then
+                                if test ".$1" = .mandatory; then
+                                        AC_MSG_ERROR(No supported Console environment found!)
+                                else
+                                        CON_IMPL="none"
+                                fi
+                        else
+				AC_DECIDE(CAVECONSOLE, [use CAVElib])
+                                CON_IMPL=CAVE
+                        fi
+                        ;;
 		*)
 			if test ".$1" = .mandatory; then
 				AC_MSG_ERROR($CON_IMPL is not supported!)
