@@ -22,7 +22,7 @@
  */
 
 #include <Warsaw/config.hh>
-#include "Image/PNG.hh"
+#include <Berlin/PNG.hh>
 #include <Berlin/Logger.hh>
 #include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/Tracer.hh>
