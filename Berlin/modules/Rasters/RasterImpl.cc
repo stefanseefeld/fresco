@@ -144,14 +144,14 @@ void RasterImpl::storeData(Raster::Data *&data)
   /*
    * set up buffer to hold new data
    */
-    obuf buffer;
-    PNGEncoder encoder(&buffer, wpng, winfo, rend);
-    encoder.encode(rows);
-    delete data;
-    data = 0;
-    data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
-		    reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
-    png_destroy_write_struct(&wpng, &winfo);
+  obuf buffer;
+  PNGEncoder encoder(&buffer, wpng, winfo, rend);
+  encoder.encode(rows);
+  delete data;
+  data = 0;
+  data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
+		  reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
+  png_destroy_write_struct(&wpng, &winfo);
 }
 
 void RasterImpl::storePixel(const Index &index, Color &color)

@@ -23,45 +23,104 @@
 
 #include "Warsaw/config.hh"
 #include "Figure/FigureKitImpl.hh"
-#include "Berlin/Plugin.hh"
-#include "Figure/SimpleFigures.hh"
+#include "Berlin/Allocator.hh"
+#include "Figure/FigureImpl.hh"
+#include "Figure/PolyFigure.hh"
+#include "Figure/Figures.hh"
 #include "Figure/ImageImpl.hh"
 #include "Figure/TransformatorImpl.hh"
+#include "Berlin/Plugin.hh"
 
+using namespace Figures;
 
 FigureKitImpl::FigureKitImpl() {}
 FigureKitImpl::~FigureKitImpl() {}
 
-Graphic_ptr FigureKitImpl::rectangle(Coord w, Coord h, const Style::Spec &sty)
+Graphic_ptr FigureKitImpl::root(Graphic_ptr child)
 {
-  RectFig *r = new RectFig(w, h, sty);
-  r->_obj_is_ready(_boa());
-  figures.push_back(r);
-  return r->_this();
+  GraphicImpl *g = new TransformAllocator(Alignment(0.5), Alignment(0.5), Alignment(0.5), 
+					  Alignment(0.5), Alignment(0.5), Alignment(0.5));
+  g->body(child);
+  return g->_this();
 }
 
-Graphic_ptr FigureKitImpl::ellipse(const Style::Spec &sty)
+Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
 {
-  EllipseFig *e = new EllipseFig(sty);
+  /* unimplemented */
+  return Graphic::_duplicate(g);
+}
+
+Graphic_ptr FigureKitImpl::group()
+{
+  PolyFigure *pf = new PolyFigure;
+  return pf->_this();
+}
+
+Graphic_ptr FigureKitImpl::ugroup()
+{
+  UPolyFigure *pf = new UPolyFigure;
+  return pf->_this();
+}
+
+Point_ptr FigureKitImpl::point(Coord x, Coord y)
+{
+  Vertex v;
+  v.x = x, v.y = y;
+  PointImpl *pt = new PointImpl(v);
+  pt->_obj_is_ready(_boa());
+  return pt->_this();
+}
+
+Line_ptr FigureKitImpl::line(Coord x0, Coord y0, Coord x1, Coord y1)
+{
+  Vertex v1, v2;
+  v1.x = x0, v1.y = y0;
+  v2.x = x1, v2.y = y1;
+  LineImpl *l = new LineImpl(v1, v2);
+  l->_obj_is_ready(_boa());
+  return l->_this();
+}
+
+Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t, Coord r, Coord b)
+{
+  Vertex lower, upper;
+  lower.x = l, lower.y = t;
+  upper.x = r, upper.y = b;
+  RectangleImpl *rect = new RectangleImpl(lower, upper);
+  rect->_obj_is_ready(_boa());
+  return rect->_this();
+}
+
+Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
+{
+  Vertex center;
+  center.x = x, center.y = y;
+  CircleImpl *c = new CircleImpl(center, r);
+  c->_obj_is_ready(_boa());
+  return c->_this();
+}
+
+Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
+{
+  Vertex center;
+  center.x = x, center.y = y;
+  EllipseImpl *e = new EllipseImpl(center, r1, r2);
   e->_obj_is_ready(_boa());
-  figures.push_back(e);
   return e->_this();
 }
 
-Graphic_ptr FigureKitImpl::path(const Style::Spec &sty, const Path &p)
+Path_ptr FigureKitImpl::multiline(const Figure::Vertices &v)
 {
-  PathFig *pf = new PathFig(sty,p);
-  pf->_obj_is_ready(_boa());
-  figures.push_back(pf);
-  return pf->_this();
+  PathImpl *p = new PathImpl(v);
+  p->_obj_is_ready(_boa());
+  return p->_this();
 }
 
-Graphic_ptr FigureKitImpl::patch(const Style::Spec &sty, const Patch &p)
+Path_ptr FigureKitImpl::polygon(const Figure::Vertices &v)
 {
-  PatchFig *pf = new PatchFig(sty,p);
-  pf->_obj_is_ready(_boa());
-  figures.push_back(pf);
-  return pf->_this();
+  PathImpl *p = new PathImpl(v);
+  p->_obj_is_ready(_boa());
+  return p->_this();
 }
 
 Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)

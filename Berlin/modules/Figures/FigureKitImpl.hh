@@ -36,10 +36,21 @@ class FigureKitImpl : lcimplements(FigureKit), virtual public CloneableImpl {
     FigureKitImpl();
     virtual ~FigureKitImpl();
 
-    Graphic_ptr rectangle(Coord, Coord, const Style::Spec &);
-    Graphic_ptr ellipse(const Style::Spec &sty);
-    Graphic_ptr path(const Style::Spec &sty, const Path &p);
-    Graphic_ptr patch(const Style::Spec &sty, const Patch &p);
+    Graphic_ptr root(Graphic_ptr);
+    Graphic_ptr fitter(Graphic_ptr);
+    Graphic_ptr group();
+    Graphic_ptr ugroup();
+
+    Figures::Point_ptr point(Coord, Coord);
+    Figures::Line_ptr line(Coord, Coord, Coord, Coord);
+    Figures::Rectangle_ptr rectangle(Coord, Coord, Coord, Coord);
+    Figures::Circle_ptr circle(Coord, Coord, Coord);
+    Figures::Ellipse_ptr ellipse(Coord, Coord, Coord, Coord);
+    //   Figures::Path_ptr openBspline(const Figure::Vertices &);
+    //   Figures::Path_ptr closedBspline(const Figure::Vertices &);
+    Figures::Path_ptr multiline(const Figure::Vertices &);
+    Figures::Path_ptr polygon(const Figure::Vertices &);
+
     Image_ptr   pixmap(Raster_ptr);
     Transformator_ptr projection(Graphic_ptr);
  protected:

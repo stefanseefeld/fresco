@@ -29,6 +29,10 @@
 interface Figure : Graphic
 {
   typedef sequence<Vertex> Vertices;
+  //. The Vertices type defines a sequence of vertex structures
+  //. for figures with an arbitrary number of vertices,
+  //. such as polygons and B-splines.
+  
   typedef short Mode;
   const Mode fill = 1;
   const Mode stroke = 2;
@@ -36,6 +40,7 @@ interface Figure : Graphic
 //   attribute Style figure_style;
 //   attribute Mode figure_mode;
 
+  attribute Mode type;
   attribute Color foreground;
   attribute Color background;
 
@@ -44,12 +49,6 @@ interface Figure : Graphic
 
 module Figures
 {
-
-  typedef sequence<Vertex> Vertices;
-  //. The Vertices type defines a sequence of vertex structures
-  //. for figures with an arbitrary number of vertices,
-  //. such as polygons and B-splines.
-  
   interface Point : Figure
   {
     attribute Vertex pt;
