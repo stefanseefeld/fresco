@@ -25,7 +25,9 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/RCManager.hh>
 #include "Console/GGI/Console.hh"
-#include <strstream.h>
+#include "Console/GGI/Drawable.hh"
+#include "Console/GGI/Extension.hh"
+#include "Console/GGI/Pointer.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -83,11 +85,11 @@ void write_event(ggi_event &e)
 }
 };
 
-GGIConsole::GGIConsole(int &argc, char **argv)
+GGI::Console::Console(int &argc, char **argv)
   : _autoplay(false)
 {
   ggiInit();
-  GGIDrawable *drawable = new GGIDrawable(0);
+  GGI::Drawable *drawable = new GGI::Drawable(0);
   _visual = drawable->_visual;
   _size[0] = drawable->_mode.visible.x;
   _size[1] = drawable->_mode.visible.y;
@@ -100,7 +102,7 @@ GGIConsole::GGIConsole(int &argc, char **argv)
   pipe(_wakeupPipe);
 }
 
-GGIConsole::~GGIConsole()
+GGI::Console::~Console()
 {
   for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); i++) delete *i;
   close(_wakeupPipe[0]);
@@ -108,53 +110,33 @@ GGIConsole::~GGIConsole()
   ggiExit();
 }
 
-GGIPointer *GGIConsole::pointer(Raster_ptr raster)
+Console::Pointer *GGI::Console::pointer(Raster_ptr raster)
 {
-  Trace trace("GGIConsole::pointer");
-  return new GGIPointer(drawable(), raster);
+  return new GGI::Pointer(dynamic_cast<GGI::Drawable *>(drawable()), raster);
 }
 
-GGIDrawable *GGIConsole::drawable()
+Console::Drawable *GGI::Console::drawable()
 {
-  Trace trace("GGIConsole::drawable");
   assert(_drawables.size());
   return _drawables.front();
 }
 
-GGIDrawable *GGIConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
+Console::Drawable *GGI::Console::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
 {
-  _drawables.push_back(new GGIDrawable("display-memory", w, h, d));
+  _drawables.push_back(new GGI::Drawable("display-memory", w, h, d));
   return _drawables.back();
 }
 
-GGIDrawable *GGIConsole::create_shm_drawable(int id, PixelCoord w, PixelCoord h, PixelCoord d)
+Console::Drawable *GGI::Console::reference_to_servant(Drawable_ptr drawable)
 {
-  std::ostrstream oss;
-  oss << "display-memory:-input:shmid:" << id << std::ends;
-  const char *name = oss.str();
-  GGIDrawable *drawable;
-  try { drawable = new GGIDrawable(name, w, h, d);}
-  catch (...)
-    {
-      Logger::log(Logger::console) << "Error : can't open shm GGIDrawable" << std::endl;
-      throw;
-    }
-  _drawables.push_back(drawable);
-  Logger::log(Logger::console) << "open ggi display with name :'" << name << '\'' << std::endl;
-  delete [] name;
-  return _drawables.back();
-}
-
-GGIDrawable *GGIConsole::reference_to_servant(Drawable_ptr drawable)
-{
-  Trace trace("GGIConsole::reference_to_servant");
+  Trace trace("GGI::Console::reference_to_servant");
   PortableServer::Servant servant = Console::reference_to_servant(drawable);
   for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); ++i)
     if (*i == servant) return *i;
   return 0;
 }
 
-void GGIConsole::device_info(std::ostream &os)
+void GGI::Console::device_info(std::ostream &os)
 {
   unsigned int number = 0;
   unsigned int origin;
@@ -174,7 +156,7 @@ void GGIConsole::device_info(std::ostream &os)
     }
 }
 
-Input::Event *GGIConsole::next_event()
+Input::Event *GGI::Console::next_event()
 {
   Prague::Trace trace("GGI::Console::next_event");
   ggi_event event;
@@ -247,14 +229,14 @@ Input::Event *GGIConsole::next_event()
   return 0;
 }
 
-void GGIConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
+void GGI::Console::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
 
-void GGIConsole::add_drawable(GGIDrawable *drawable)
+void GGI::Console::add_drawable(Console::Drawable *drawable)
 {
   _drawables.push_back(drawable);
 }
 
-Input::Event *GGIConsole::synthesize(const ggi_event &e)
+Input::Event *GGI::Console::synthesize(const ggi_event &e)
 {
   Input::Event_var event = new Input::Event;
 //   cerr << "input from event " << e.any.origin << endl;
@@ -349,95 +331,28 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
   return event._retn();
 }
 
-Console::Extension *GGIConsole::create_extension(const std::string &id, Drawable *drawable)
+Console::Extension *GGI::Console::create_extension(const std::string &id)
 {
-  if (id == "DirectBuffer") return new GGIDirectBuffer(static_cast<GGIDrawable *>(drawable));
-  if (id == "Renderer") return new GGIRenderer(static_cast<GGIDrawable *>(drawable));
+  cout << "create extension " << id << endl;
+  if (id == "DirectBuffer") return new DirectBuffer();
+  if (id == "Renderer") return new Renderer();
+  if (id == "SHMDrawableFactory") return new SHMDrawableFactory();
+  if (id == "GGIDrawableFactory") return new GGIDrawableFactory();
   if (id == "GLContext")
     {
       Prague::Path path = RCManager::get_path("modulepath");
       std::string name = path.lookup_file("Console/GGIGL.so");
-      Plugin<Extension::Loader> *plugin = 0;
+      Plugin<Extension> *plugin = 0;
       if (name.empty())
         {
           std::string msg = "GLContext extension for GGI console not found in modulepath.";
           throw std::runtime_error(msg);
         }
-      else plugin = new Plugin<Extension::Loader>(name);
+      else plugin = new Plugin<Extension>(name);
       _modules.push_back(plugin);
-      return (*plugin)->load(drawable);
+      return plugin->get();
     }
   return 0;
 }
 
-GGIDrawable::GGIDrawable(const char *display, PixelCoord w, PixelCoord h, PixelCoord d) // throw (exception)
-{
-  if (display) _visual = ggiOpen(display, 0);
-  else _visual = ggiOpen(0);
-  if (!_visual) throw std::exception();
-
-  long depth = GGI_AUTO;
-  switch (d)
-    {
-    case 0: depth = GGI_AUTO; break;
-    case 1: depth = GT_8BIT; break;
-    case 2: depth = GT_16BIT; break;
-    case 3: depth = GT_24BIT; break;
-    case 4: depth = GT_32BIT; break;
-    default:
-      std::cerr << "GGIDrawable: Warning: " << d << " bytes per pixel not supported" << std::endl;
-      break;
-    };
-  _mode.visible.x = _mode.virt.x = w ? w : GGI_AUTO;
-  _mode.visible.y = _mode.virt.y = h ? h : GGI_AUTO;
-  _mode.size.x = GGI_AUTO;
-  _mode.size.y = GGI_AUTO;
-  _mode.dpp.x = _mode.dpp.y = 1;
-  _mode.graphtype = depth;
-  _mode.frames = 1;
-  if (ggiCheckMode(_visual, &_mode) == 0)
-    {
-      if (ggiSetMode(_visual, &_mode) != 0) throw std::exception();
-    }
-  else
-    {
-      if (ggiCheckMode(_visual, &_mode) != 0 || ggiSetMode(_visual, &_mode) != 0) throw std::exception();
-    }
-  _mode.size = _mode.visible; // awful hack around a ggi bug...
-  ggiAddFlags(_visual, GGIFLAG_ASYNC);
-}
-
-GGIDrawable::~GGIDrawable()
-{
-  ggiClose(_visual);
-}
-
-Warsaw::Drawable::PixelFormat GGIDrawable::pixel_format()
-{
-  Warsaw::Drawable::PixelFormat format;
-  const ggi_pixelformat *pf = ggiGetPixelFormat(_visual);
-  format.depth       = pf->depth;
-  format.size        = pf->size;
-  format.red_mask    = pf->red_mask;
-  format.red_shift   = pf->red_shift;
-  format.green_mask  = pf->green_mask;
-  format.green_shift = pf->green_shift;
-  format.blue_mask   = pf->blue_mask;
-  format.blue_shift  = pf->blue_shift;
-  format.alpha_mask  = pf->alpha_mask;
-  format.alpha_shift = pf->alpha_shift;
-  return format;
-}
-
-Warsaw::Drawable::BufferFormat GGIDrawable::buffer_format()
-{
-  Warsaw::Drawable::BufferFormat format;
-  format.skip_width = 0;
-  format.width = width();
-  format.skip_height = 0;
-  format.height = height();
-  format.row_length = row_length();
-  return format;
-}
-
-extern "C" Console::LoaderT<GGIConsole> *load() { return new Console::LoaderT<GGIConsole>();}
+extern "C" ::Console::LoaderT<GGI::Console> *load() { return new Console::LoaderT<GGI::Console>();}

@@ -22,13 +22,17 @@
 #include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Console/GGI/Console.hh"
+#include "Console/GGI/Extension.hh"
+#include "Console/GGI/Drawable.hh"
+#include "Console/GGI/Pointer.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 
-GGIPointer::GGIPointer(GGIDrawable *d, Raster_ptr raster)
-  : _screen(d), _dbuffer(new GGIDirectBuffer(d)), _raster(Raster::_duplicate(raster))
+GGI::Pointer::Pointer(GGI::Drawable *drawable, Raster_ptr raster)
+  : _screen(drawable), _dbuffer(new GGI::DirectBuffer()), _raster(Raster::_duplicate(raster))
 {
+  _dbuffer->attach(_screen);
   Raster::Info info = raster->header();
   Raster::ColorSeq_var pixels;
   Raster::Index lower, upper;
@@ -42,7 +46,7 @@ GGIPointer::GGIPointer(GGIDrawable *d, Raster_ptr raster)
   _scale[0] = 1/_screen->resolution(xaxis);
   _scale[1] = 1/_screen->resolution(yaxis);
   
-  Drawable::PixelFormat format = _screen->pixel_format();
+  Warsaw::Drawable::PixelFormat format = _screen->pixel_format();
 
   Pixel trans = 0;
   Pixel red = (static_cast<Pixel>(1. * (~0L)) >> format.red_shift) & format.red_mask;
@@ -79,19 +83,19 @@ GGIPointer::GGIPointer(GGIDrawable *d, Raster_ptr raster)
   draw();
 }
 
-GGIPointer::~GGIPointer()
+GGI::Pointer::~Pointer()
 {
   delete _dbuffer;
   delete [] _image;
   delete [] _cache;
 }
 
-Raster_ptr GGIPointer::raster()
+Raster_ptr GGI::Pointer::raster()
 {
   return Raster::_duplicate(_raster);
 }
 
-bool GGIPointer::intersects(Coord l, Coord r, Coord t, Coord b)
+bool GGI::Pointer::intersects(Coord l, Coord r, Coord t, Coord b)
 {
   return
     l/_scale[0] <= _position[0] + _size[0] &&
@@ -100,7 +104,7 @@ bool GGIPointer::intersects(Coord l, Coord r, Coord t, Coord b)
     b/_scale[1] >= _position[1];
 }
 
-void GGIPointer::move(Coord x, Coord y)
+void GGI::Pointer::move(Coord x, Coord y)
 {
   restore();
   _position[0] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(x/_scale[0]), _origin[0]));
@@ -109,9 +113,8 @@ void GGIPointer::move(Coord x, Coord y)
   draw();
 };
 
-void GGIPointer::save()
+void GGI::Pointer::save()
 {
-  Trace trace("Pointer::save");
   PixelCoord x = _position[0] - _origin[0];
   PixelCoord y = _position[1] - _origin[1];
   PixelCoord w = _size[0];
@@ -126,9 +129,8 @@ void GGIPointer::save()
     Memory::copy(from, to, d * w);
 }
 
-void GGIPointer::restore()
+void GGI::Pointer::restore()
 {
-  Trace trace("Pointer::restore");
   PixelCoord x = _position[0] - _origin[0];
   PixelCoord y = _position[1] - _origin[1];
   PixelCoord w = _size[0];
@@ -146,9 +148,8 @@ void GGIPointer::restore()
   _screen->flush(x, y, w, h);
 }
 
-void GGIPointer::draw()
+void GGI::Pointer::draw()
 {
-  Trace trace("GGIPointer::draw");
   PixelCoord x = _position[0] - _origin[0];
   PixelCoord y = _position[1] - _origin[1];
   PixelCoord w = _size[0];

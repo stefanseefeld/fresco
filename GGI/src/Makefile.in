@@ -44,7 +44,7 @@ endif
 endif
 
 ifeq ($(action), GGI)
-SRC		:= Console.cc Pointer.cc
+SRC		:= Drawable.cc Extension.cc Pointer.cc Console.cc
 
 MODULE		:= Console/GGI
 endif

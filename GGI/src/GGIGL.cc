@@ -19,8 +19,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Berlin/Console.hh>
 #include "Console/GLContext.hh"
-#include "Console/GGI/GGI.hh"
+#include "Console/GGI/Drawable.hh"
 #include <GL/ggimesa.h>
 
 using namespace Prague;
@@ -29,8 +30,8 @@ using namespace Warsaw;
 class GGIGLContext : virtual public GLContext
 {
 public:
-  GGIGLContext(Console::Drawable *drawable)
-    : _drawable(static_cast<GGIDrawable *>(drawable)),
+  GGIGLContext()
+    : _drawable(dynamic_cast<GGI::Drawable *>(Console::instance()->drawable())),
       _context(GGIMesaCreateContext())
   {
     if (GGIMesaSetVisual(_context, _drawable->visual(), GL_TRUE, GL_FALSE))
@@ -47,8 +48,8 @@ public:
     _drawable->flush();
   }
 private:
-  GGIDrawable   *_drawable;
+  GGI::Drawable   *_drawable;
   GGIMesaContext _context;  
 };
 
-extern "C" Console::Extension::LoaderT<GGIGLContext> *load() { return new Console::Extension::LoaderT<GGIGLContext>();}
+extern "C" Console::Extension *load() { return new GGIGLContext();}
