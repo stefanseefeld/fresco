@@ -36,17 +36,22 @@
 //.    const Geometry::Rectangle<T> &I::bbox() returning the bounding box
 //.    suitable for use in the quadtree
 template <class T, class I>
-class QTNode {
+class QTNode
+{
   //. This structure is used to determine wether items can get pushed
   //. into subnodes.
-  struct move_down : std::unary_function<I, bool> {
+  struct move_down : std::unary_function<I, bool>
+  {
     move_down(QTNode<T, I> *n) : node(n) {}
-    bool operator()(I i) {
+    bool operator()(I i)
+    {
       QTNode<T, I>::index idx = node->where(i);
-      if (idx != QTNode<T, I>::fence) {
-	node->quadrants[idx]->insert(i);
-	return true;
-      } else return false;
+      if (idx != QTNode<T, I>::fence)
+	{
+	  node->quadrants[idx]->insert(i);
+	  return true;
+	}
+      else return false;
     };
     QTNode<T, I> *node;
   };
@@ -71,8 +76,8 @@ public:
   typedef std::vector<I> list;
 
   //. Creates an empty QTNode for the region r.
-  QTNode(const Geometry::Rectangle<T> &r) : region(r), elements(0) {
-      quadrants[0] = quadrants[1] = quadrants[2] = quadrants[3] = 0;}
+  QTNode(const Geometry::Rectangle<T> &r) : region(r), elements(0)
+  { quadrants[0] = quadrants[1] = quadrants[2] = quadrants[3] = 0;}
   //. Returns a subnode for the quadrant i.
   QTNode<T, I> *node(index i) { return quadrants[i];}
   //. Deletes this QTNode and frees the memory used.
@@ -109,11 +114,16 @@ protected:
   //. Creates the quadrants if they were not allocated before.
   void allocate();
   //. Frees the memory of this node and the subnodes.
-  void free() { if (!leaf()) for (int i = 0; i < 4; i++) {
-      delete quadrants[i]; quadrants[i] = 0;} }
+  void free()
+  {
+    if (!leaf()) for (int i = 0; i < 4; i++)
+      delete quadrants[i]; quadrants[i] = 0;
+  }
   //. Returns the index the point p belongs into.
-  index where(const Geometry::Point<T> &p) {
-      return index((p.x <= region.cx() ? left : right) | (p.y <= region.cy() ? bottom : top));}
+  index where(const Geometry::Point<T> &p)
+  {
+    return index((p.x <= region.cx() ? left : right) | (p.y <= region.cy() ? bottom : top));
+  }
   //. Returns the quadrant the given rectangle is in. Returns 'fence' if the
   //. if the rectangle intersects more then one quadrant.
   index where(const Geometry::Rectangle<T> &);
@@ -134,7 +144,8 @@ protected:
   QTNode<T, I> *quadrants[4];
 
   //. Dumps the data for this node and its subnotes if there are any.
-  friend void dumpQuadNode(const QTNode<T,I> &node, short ind) {
+  friend void dumpQuadNode(const QTNode<T,I> &node, short ind)
+  {
     for (short i = 0; i != ind; i++) std::cout.put(' ');
     std::cout << "Node : " << node.elements
 	      << '(' << node.items.size()
@@ -152,16 +163,18 @@ protected:
 };
 
 template <class T, class I>
-class QuadTree {
+class QuadTree
+{
 public:
   //. Creates an empty QuadTree.
   QuadTree() : _quad(0) {}
-  //. Deletes the whole QuadTree. What a surprise;-)
   ~QuadTree() {}
 
   //. Returns the bounding box of all items in the QuadTree.
-  Geometry::Rectangle<T> bbox() {
-      return node() ? node()->bbox() : Geometry::Rectangle<T>();}
+  Geometry::Rectangle<T> bbox()
+  {
+    return node() ? node()->bbox() : Geometry::Rectangle<T>();
+  }
   //. Returns the number of items in this QuadTree.
   int size() { return _quad ? _quad->size() : 0;}
   //. Returns the rootnode of the QuadTree.
@@ -170,14 +183,17 @@ protected:
   QTNode<T, I> *_quad;
 
   //. Dumps the data for this QuadTree.
-  friend void dumpQuadTree(const QuadTree<T,I> &tree) {
-      if (tree._quad) dumpQuadNode(*tree._quad, 0);}
+  friend void dumpQuadTree(const QuadTree<T,I> &tree)
+  {
+    if (tree._quad) dumpQuadNode(*tree._quad, 0);
+  }
 };
 
 // inline functions only below this line.
 
 template <class T, class I>
-inline void QTNode<T, I>::allocate() {
+inline void QTNode<T, I>::allocate()
+{
   using namespace Geometry;
   if (leaf()) {
     quadrants[lefttop] = new QTNode<T, I>(Rectangle<T>(region.l, region.t, region.cx(), region.cy()));
@@ -214,12 +230,13 @@ template <class T, class I>
 inline void QTNode<T, I>::collaps()
 {
   if (leaf()) return;
-  for (int i = 0; i < 4; i++) {
-    QTNode<T, I> *node = quadrants[i];
-    node->collaps();
-    list childItems = node->items;
-    items.insert(items.end(), childItems.begin(), childItems.end());
-  }
+  for (int i = 0; i < 4; i++)
+    {
+      QTNode<T, I> *node = quadrants[i];
+      node->collaps();
+      list childItems = node->items;
+      items.insert(items.end(), childItems.begin(), childItems.end());
+    }
   free();
 }
 
@@ -227,15 +244,16 @@ template <class T, class I>
 inline QTNode<T, I>::index QTNode<T, I>::where(const Geometry::Rectangle<T> &r)
 {
   int idx = fence;
-  if (!leaf()) {
-    const T x = region.cx();
-    const T y = region.cy();
-    /*
-     * is r inside one of the quarters ?
-     */
-    if ((r.r <= x) == (r.l < x) && (r.b <= y) == (r.t < y))
-      idx = (r.r <= x ? left : right) | (r.b <= y ? top : bottom);
-  }
+  if (!leaf())
+    {
+      const T x = region.cx();
+      const T y = region.cy();
+      /*
+       * is r inside one of the quarters ?
+       */
+      if ((r.r <= x) == (r.l < x) && (r.b <= y) == (r.t < y))
+	idx = (r.r <= x ? left : right) | (r.b <= y ? top : bottom);
+    }
   return static_cast<index>(idx);
 }
 
@@ -246,7 +264,7 @@ inline void QTNode<T, I>::insert(I i)
   if (idx == fence) items.push_back(i);
   else quadrants[idx]->insert(i);
   elements++;
-
+  
   const Geometry::Rectangle<T> &bb = i->bbox();
   if (elements > 1) boundingbox.merge(bb);
   else boundingbox = bb;
