@@ -46,7 +46,7 @@ public:
   {
     Trace trace("ControllerImpl::Iterator::child");
     Prague::Guard<Mutex> guard(_parent->_cmutex);
-    if (_cursor > _parent->_children.size()) return Warsaw::Controller::_nil();
+    if (_cursor >= _parent->_children.size()) return Warsaw::Controller::_nil();
     return Warsaw::Controller::_duplicate(_parent->_children[_cursor]);
   }
   virtual void next() { _cursor++;}
