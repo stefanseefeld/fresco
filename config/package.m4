@@ -42,15 +42,15 @@ dnl
   dnl part of the distribution, so we use the flags determined
   dnl by <package>-config
   dnl
-  AC_PATH_PROG($1_BUILD_CONFIG, $1-config, no, ../$1/bin)
-  AC_PATH_PROG($1_CONFIG, $1-config, no, ../$1/config)
+  AC_PATH_PROG($1_LOCAL_BUILD_CONFIG, $1-config, no, ../$1/bin)
+  AC_PATH_PROG($1_LOCAL_CONFIG, $1-config, no, ../$1/config)
   no_$1=""
-  if test "$$1_BUILD_CONFIG" != "no" ; then
-    $1_CPPFLAGS="`$$1_CONFIG --cppflags`"
-    $1_LIBS="`$$1_CONFIG --libs`"
-    $1_BUILD_CPPFLAGS="`$$1_BUILD_CONFIG --cppflags`"
-    $1_BUILD_LIBS="`$$1_BUILD_CONFIG --libs`"
-    $1_prefix="`$$1_BUILD_CONFIG $ac_$1_args --prefix`"
+  if test "$$1_LOCAL_BUILD_CONFIG" != "no" ; then
+    $1_CPPFLAGS="`$$1_LOCAL_CONFIG --cppflags`"
+    $1_LIBS="`$$1_LOCAL_CONFIG --libs`"
+    $1_BUILD_CPPFLAGS="`$$1_LOCAL_BUILD_CONFIG --cppflags`"
+    $1_BUILD_LIBS="`$$1_LOCAL_BUILD_CONFIG --libs`"
+    $1_prefix="`$$1_LOCAL_BUILD_CONFIG $ac_$1_args --prefix`"
   else
     AC_ARG_WITH($1-prefix, AC_HELP_STRING([--with-$1-prefix],
                                           [Prefix where $1 is installed]),
