@@ -46,7 +46,7 @@ CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 LIBS		+= @LIBS@
 
-BABYLON		:= String.cc Char.cc Dictionary.cc # utils.cc
+BABYLON		:= String.cc Char.cc Dictionary.cc utils.cc
 
 SRC		:= $(patsubst %, %, $(BABYLON))
 
@@ -64,7 +64,7 @@ all:	$(TARGET)
 
 $(TARGET):	$(OBJ)
 		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
+		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 install:
 		$(INSTALL) -m755 $(TARGET) $(libdir)
