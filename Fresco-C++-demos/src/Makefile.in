@@ -50,7 +50,7 @@ PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
 
 DEP		:= $(DEMO_DEP) $(DEMO3D_DEP) $(PINYIN_DEP)
 
-TARGETS		:= demo demo3D pinyin_demo
+TARGETS		:= fresco-demo fresco-demo3D fresco-pinyin-demo
 
 vpath %.cc $(srcdir)
 vpath %.hh $(srcdir)
@@ -59,23 +59,19 @@ vpath %.hh $(srcdir)
 
 all:	$(patsubst %, ../bin/%, $(TARGETS))
 
-../bin/demo:	$(DEMO_OBJ)
+../bin/fresco-demo:	$(DEMO_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../bin/demo3D:	$(DEMO3D_OBJ)
+../bin/fresco-demo3D:	$(DEMO3D_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../bin/canvas:	canvas.o
+../bin/fresco-canvas:	canvas.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS) @GGI_LIBS@
 
-../bin/primitive:	primitive.o
-	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-../bin/pinyin_demo:	$(PINYIN_OBJ)
+../bin/fresco-pinyin-demo:	$(PINYIN_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(PINYIN_OBJ) $(LIBS)
 
