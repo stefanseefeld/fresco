@@ -45,7 +45,7 @@ public:
 private:
     
     static void *start(void *p) {
-	glutMainLoop();
+	glutMainLoop(); return 0;
     }
     
     static void render();
@@ -67,36 +67,44 @@ Thread GLUTHandler::_glutThread(GLUTHandler::start, 0);
 int GLUTHandler::button_state[3];
 GLUTConsole *GLUTHandler::_console = 0;
 DrawableTie<GLUTDrawable> *GLUTConsole::_drawable = 0;
+Mutex GLUTDrawable::_glutMutex;
 
 // -- Code Segment
 
 void GLUTHandler::init(GLUTConsole *console, int &argc, char **argv, const char *name, int w, int h)
-{
+{		     
     _console = console;
+    
+    // Initialize button state
+    for (int i = 0; i < numbuttons; i++) button_state[i] = GLUT_UP;
+    
+    // Set up GLUT
+    {
+	//MutexGuard glut_guard(GLUTDrawable::_glutMutex);
 
-    // Initialize the GLUT library
-    glutInit(&argc, argv);
+	// Initialize the GLUT library
+	glutInit(&argc, argv);
+	
+	// Initialize display mode and the window
+	//glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+	glutInitWindowSize(w, h);
+	
+	// Okay, create the window
+	glutCreateWindow(name);
+	
+	// Specify the display callback functions
+	glutDisplayFunc(render);
+	glutReshapeFunc(reshape);
+	
+	// Install input handlers
+	glutKeyboardFunc(keyboard);
+	glutSpecialFunc(special);
+	glutMouseFunc(mouse);
+	glutMotionFunc(mouseMotion);
+	glutPassiveMotionFunc(mouseMotion);
+    }
     
-    // Initialize display mode and the window
-    //glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-    glutInitWindowSize(w, h);
-    
-    // Okay, create the window
-    glutCreateWindow(name);
-    
-    // Specify the display callback functions
-    glutDisplayFunc(render);
-    glutReshapeFunc(reshape);
-    
-    // Install input handlers
-    glutKeyboardFunc(keyboard);
-    glutSpecialFunc(special);
-    glutMotionFunc(mouseMotion);
-    glutPassiveMotionFunc(mouseMotion);
-
-    for (int i = 0; i < numbuttons; i++) button_state[i];
-
     // Start the GLUT thread
     _glutThread.start();
 }
@@ -107,19 +115,21 @@ void GLUTHandler::render()
     
     // Clear the canvas
     //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
+    
     // Render the Berlin scene graph!
     _console->drawable()->impl().render();
-
+    
     // Need to flip, we're double-buffered!
-    glutSwapBuffers();
+    {
+	//MutexGuard glut_guard(GLUTDrawable::_glutMutex);
+	glutSwapBuffers();
+    }
     cerr << "GLUTHandler::render() -- done" << endl;
 }
 
 void GLUTHandler::reshape(int width, int height)
 {
     _console->drawable()->impl().reshape(width, height);
-    glutPostRedisplay();
 }
 
 void GLUTHandler::keyboard(unsigned char key, int x, int y)
@@ -136,8 +146,6 @@ void GLUTHandler::keyboard(unsigned char key, int x, int y)
     
     // Add the event to the queue
     _console->_eventQueue.push(event._retn());
-
-    glutPostRedisplay();
 }
 
 void GLUTHandler::special(int key, int x, int y)
@@ -168,12 +176,15 @@ void GLUTHandler::mouse(int button, int state, int x, int y)
 	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
 	event[1].dev = 1;
 	event[1].attr.location(position);
-
+	
 	// Add the event to the queue and update state info
 	_console->_eventQueue.push(event._retn());
 	button_state[button] = state;
+
+	cerr << "button " << button
+	     << " in pos (" 
+	     << position.x << ", " << position.y << ")" << endl;
     }
-    glutPostRedisplay();
 }
 
 void GLUTHandler::mouseMotion(int x, int y)
@@ -191,8 +202,6 @@ void GLUTHandler::mouseMotion(int x, int y)
     event[0].attr.location(position);    
     
     _console->_eventQueue.push(event._retn());
-
-    glutPostRedisplay();
 }
 
 
@@ -208,6 +217,15 @@ GLUTDrawable::~GLUTDrawable()
 {
     MutexGuard guard(_mutex);
     glDeleteLists(_displist, 1);
+    _displist = 0;
+}
+
+Coord GLUTDrawable::resolution(Axis a) const
+{
+    // Return the resolution as dots/pixels per tenth of a millimeter    
+    return a == xaxis 
+	? screenx / (50.0 * screendimx) 
+	: screeny / (50.0 * screendimy);
 }
 
 void GLUTDrawable::init()
@@ -216,7 +234,10 @@ void GLUTDrawable::init()
     _mutex.lock();
     if (_displist == 0) {
 	_displist = glGenLists(1);
-	if (_displist == 0) throw 0;
+	if (_displist == 0) {
+	    _mutex.unlock();
+	    throw 0;
+	}
     }
     cerr << "Locking and rendering in display list " << _displist << endl; 
     glNewList(_displist, GL_COMPILE);
@@ -224,17 +245,23 @@ void GLUTDrawable::init()
 
 void GLUTDrawable::finish()
 {
-    // End display list definition and tell GLUT to redraw
+    // End display list definition
     glEndList();
     _mutex.unlock();
     cerr << "Display list finished and unlocked." << endl;
-    glutPostRedisplay();
+
+    // Tell GLUT we have something new to render
+    {
+	//MutexGuard glut_guard(GLUTDrawable::_glutMutex);
+	glutPostRedisplay();
+    }
 }
 
 void GLUTDrawable::render()
 {
-    // Get access to display list and call it
     MutexGuard guard(_mutex);
+
+    // Call display list 
     if (_displist != 0) {
 	glCallList(_displist);
 	cerr << "Rendered display list " << _displist << endl;
@@ -244,10 +271,9 @@ void GLUTDrawable::render()
 void GLUTDrawable::reshape(int width, int height)
 {
     _width = width; _height = height;
-
-    float _fov = 60.0f; 
-    float _near = 1.0f;
-    float _far = 1000.0f;
+    cerr << "Reshape to dimensions (" << width << "x" << height 
+	 << ") [ " << _width / resolution(xaxis) << "x"
+	 << _height / resolution(yaxis) <<"]" << endl;
 
     // Reset the viewport
     glViewport(0, 0, (GLsizei) _width, (GLsizei) _height);
@@ -255,10 +281,10 @@ void GLUTDrawable::reshape(int width, int height)
     // Set up a new projection mode
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    //gluPerspective(_fov, (GLfloat) _width / (GLfloat) _height, _near, _far);
     glOrtho(0, _width / resolution(xaxis), _height / resolution(yaxis),
 	    0, -1000.0, 1000.0); 
     glTranslatef(0.375, 0.375, 0.);
+    glMatrixMode(GL_MODELVIEW);
 }
 
 DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixelFormat()
@@ -267,10 +293,6 @@ DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixelFormat()
     DrawableTie<GLUTDrawable>::PixelFormat pft = {
 	32, 32, 0xff000000, 24, 0x00ff0000, 16, 0x0000ff00, 8, 0x000000ff, 0
     };
-    /*    DrawableTie<GLUTDrawable>::PixelFormat pft = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-	};
-    */
     return pft;
 }
 
@@ -311,3 +333,5 @@ void GLUTConsole::wakeup()
     // correct behavior.
     _eventQueue.push(0);
 }
+
+

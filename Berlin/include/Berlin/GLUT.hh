@@ -57,6 +57,7 @@ class GLUTDrawable {
 private:
     
     friend class GLUTConsole;
+    friend class GLUTHandler;
     friend class DrawableTie<GLUTDrawable>;
   
 public:
@@ -141,6 +142,9 @@ private:
     /// Access mutex (to control access to display lists)
     Mutex _mutex;
 
+    /// GLUT mutex (GLUT does not seem to be reentrant)
+    static Mutex _glutMutex;
+
 };
 
 
@@ -164,30 +168,32 @@ public:
     void activate_autoplay() { _autoplay = true; }
     
 private:
-
+    
     bool _autoplay;
-
+    
     /// Capacity of event queue
     static const int eventQueueCapacity = 100;
-
+    
     /// Drawable vector
     //static vector<DrawableTie<Drawable> *> _drawables;
     static DrawableTie<Drawable> *_drawable;
 
     /// Event producer-consumer queue (for polling threads)
     Thread::Queue<Input::Event *> _eventQueue;
-    
+        
 };
 
 
 // -- Inline functions
 
+/*
 inline Coord GLUTDrawable::resolution(Axis a) const
 {
     // Return the resolution as dots/pixels per tenth of a millimeter    
     return a == xaxis 
-	? 0.1 * screenx / screendimx 
-	: 0.1 * screeny / screendimy;
+	? screenx / (50.0 * screendimx) 
+	: screeny / (50.0 * screendimy);
 }
+*/
 
 #endif /* GLUT.hh */
