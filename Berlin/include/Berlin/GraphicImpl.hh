@@ -84,6 +84,7 @@ public:
   static void transformRequest(Graphic::Requisition &, Transform_ptr);
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:
+  void allocateParents(Allocation_ptr);
   typedef omni_mutex_lock Guard;
   plist_t parents;
   omni_mutex parentMutex;

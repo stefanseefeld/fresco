@@ -256,13 +256,7 @@ void GraphicImpl::traverse(Traversal_ptr t) { t->visit(this);}
 void GraphicImpl::draw(DrawTraversal_ptr) {}
 void GraphicImpl::pick(PickTraversal_ptr) {}
 
-void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a)
-{
-  Guard guard(parentMutex);
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).parent->allocate(_this(), a);
-}
-
+void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a) { allocateParents(a);}
 void GraphicImpl::needRedraw()
 {
   AllocationImpl *allocation = new AllocationImpl;
@@ -539,3 +533,9 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
   return delta;
 }
 
+void GraphicImpl::allocateParents(Allocation_ptr a)
+{
+  Guard guard(parentMutex);
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i).parent->allocate(_this(), a);
+}

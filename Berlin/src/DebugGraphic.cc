@@ -30,13 +30,7 @@
 #include <iostream>
 #include <iomanip>
 
-DebugGraphic::DebugGraphic(Graphic_ptr g, const char *msg, unsigned int f)
-{
-  body(g);
-  message = msg;
-  flags = f;
-}
-
+DebugGraphic::DebugGraphic(const string &msg, unsigned int f) : message(msg), flags(f) {}
 DebugGraphic::~DebugGraphic() {}
 
 void DebugGraphic::request(Requisition &r)

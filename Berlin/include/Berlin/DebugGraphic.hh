@@ -33,7 +33,7 @@ class DebugGraphic : public MonoGraphic
 {
 public:
   enum Flags {none = 0x0, requests = 0x1, draws = 0x2, picks = 0x4, traversals = 0x7};
-  DebugGraphic(Graphic_ptr, const char *, unsigned int f = traversals);
+  DebugGraphic(const string &, unsigned int f = traversals);
   virtual ~DebugGraphic();
 
   virtual void request(Requisition &);
@@ -45,7 +45,7 @@ public:
   static void  printRegion(Region_ptr);
   static void  printAllotment(const Region::Allotment &);
 private:
-  const char * message;
+  string       message;
   unsigned int flags;
   void         heading(const char *);
 };

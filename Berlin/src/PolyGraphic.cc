@@ -41,14 +41,14 @@ PolyGraphic::~PolyGraphic()
 void PolyGraphic::append(Graphic_ptr child)
 {
   Guard guard(childMutex);
-  children.push_back(Graphic_var(child));
+  children.push_back(Graphic::_duplicate(child));
   needResize();
 }
 
 void PolyGraphic::prepend(Graphic_ptr child)
 {
   Guard guard(childMutex);
-  children.insert(children.begin(), Graphic_var(child));
+  children.insert(children.begin(), Graphic::_duplicate(child));
   needResize();
 }
 
