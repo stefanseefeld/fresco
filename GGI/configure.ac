@@ -43,7 +43,7 @@ dnl ------------------------------------------------------------------
 
 AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
 
-FRESCO_LIB_ORB(mandatory)
+FRESCO_ORB
 MAKEFILE=
 if test ".$ORB" = .omniORB ; then
   MAKEFILE="Makefile.omniorb.in"
