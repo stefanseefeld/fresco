@@ -75,11 +75,13 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.x.maximum = _layout->fill();
   req.x.align = 0.;
   req.y.defined = true;
-  req.y.minimum = 200.;
-  req.y.natural = 200.;
-  req.y.maximum = 200.;
+  req.y.minimum = 180.;
+  req.y.natural = 180.;
+  req.y.maximum = 180.;
   req.y.align = 0;
-  Trigger_var exit = _widget->button(RefCount_var<Warsaw::Graphic>(_layout->fixed_size(Warsaw::Graphic::_nil(), 200., 200.)), _exit);
+  //Trigger_var exit = _widget->button(RefCount_var<Warsaw::Graphic>(_layout->fixed_size(Warsaw::Graphic::_nil(), 200., 200.)), _exit);
+  Trigger_var exit = _widget->button(Warsaw::Graphic::_nil(), _exit);
+  RefCount_var<Graphic> tbexit = _layout->fixed_size(exit, 200, 200);
   Command_var mover = move(wptr);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
@@ -87,7 +89,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
   Graphic_var top = _layout->hbox();
   top->append_graphic(tbdragger);
-  top->append_graphic(exit);
+  top->append_graphic(tbexit);
   req.x.minimum = 200.;
   req.x.natural = 200.;
   req.x.maximum = 200.;
