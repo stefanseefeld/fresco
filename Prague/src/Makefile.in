@@ -94,9 +94,9 @@ $(TARGET):	$(OBJ)
 	chmod +x $@.tmp
 	mv $@.tmp $@
 
-doc:	../share/Prague/doc/html ../bin/Prague-config
+doc:	../share/doc/Prague/html ../bin/Prague-config
 
-../share/Prague/doc/html:	$(SYN)
+../share/doc/Prague/html:	$(SYN)
 	@echo formatting $(@F)
 	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
@@ -126,10 +126,10 @@ install:	all
         $(top_srcdir)/config/Prague-config.in > $(DESTDIR)$(bindir)/Prague-config.tmp
 	chmod +x $(DESTDIR)$(bindir)/Prague-config.tmp
 	mv $(DESTDIR)$(bindir)/Prague-config.tmp $(DESTDIR)$(bindir)/Prague-config
-	@if test -d ../share/Prague/doc/html; then \
-	  mkdir -p $(DESTDIR)$(datadir)/Prague/doc; \
-	  cp -r ../share/Prague/doc/html $(DESTDIR)$(datadir)/Prague/doc; \
-	fi;
+
+install-doc: doc
+	mkdir -p $(DESTDIR)$(datadir)/Prague/doc
+	cp -r ../share/doc/Prague/html $(DESTDIR)$(datadir)/doc/Prague
 
 uninstall:
 	rm -fr $(DESTDIR)$(datadir)/Babylon/doc
