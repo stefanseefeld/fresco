@@ -27,6 +27,8 @@
 #include "Berlin/EventManager.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/Pointer.hh"
+#include "Prague/Sys/FdSet.hh"
+#include "Prague/Sys/Time.hh"
 #include "Berlin/Logger.hh"
 
 extern "C" {
@@ -102,11 +104,9 @@ void ScreenManager::repair()
 void ScreenManager::nextEvent()
 {
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-
-  fd_set rfds;
-  FD_ZERO(&rfds);
-  FD_SET(wakeupPipe[0], &rfds);
-  switch (ggiEventSelect(visual, &mask, (wakeupPipe[0] +1), &rfds, NULL, NULL, NULL)) {
+  Prague::FdSet rfdset;
+  rfdset.set(wakeupPipe[0]);
+  switch (ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0)) {
   case 0:
     ggiEventRead(visual, &event, mask);		     
     break;
@@ -157,26 +157,22 @@ void ScreenManager::nextEvent()
 
 void ScreenManager::run()
 {
-  struct timeval lastPost, currentTime;
-  lastPost.tv_sec = 0;
-  lastPost.tv_usec = 0;
+  Prague::Time last;
   while (true)
     {
       mutex.lock();
-      int amountOfDamage = damages.size();
+      size_t damage = damages.size();
       mutex.unlock();
-      if (amountOfDamage > 0)
+      if (damage > 0)
 	{
 	  repair();
-	  gettimeofday(&currentTime,NULL);
-	  long a = (lastPost.tv_sec * 1000000) + lastPost.tv_usec;
-	  long b = (currentTime.tv_sec * 1000000) + currentTime.tv_usec;
-	  
-	  if (b - a > 33333) {
-	    drawing->sync();
-	    ggiFlush(visual);
-	    lastPost = currentTime;
-	  }
+	  Prague::Time current = Prague::Time::currentTime();
+	  if (current > last + Prague::Time(33))
+	    {
+	      drawing->sync();
+	      ggiFlush(visual);
+	      last = current;
+	    }
 	}
       nextEvent();
     }

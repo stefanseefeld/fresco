@@ -70,9 +70,10 @@ Tag PolyGraphic::tag()
   Tag t = 0;
   do
     {
-      for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+      clist_t::iterator i;
+      for (i = children.begin(); i != children.end(); i++)
 	if ((*i).second == t) break;
-      return t;
+      if (i == children.end()) return t;
     }
   while (++t);
   return 0;
