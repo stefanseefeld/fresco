@@ -87,6 +87,16 @@ Fresco::Coord Font::height()
   return my_size;
 }
 
+Fresco::Vertex Font::kerning(Fresco::Unichar first, Fresco::Unichar second)
+{
+  // XXX this is BIDI-incorrect, of course...
+  FT_Vector kern;
+  FT_Get_Kerning(my_face, first, second, FT_KERNING_DEFAULT, &kern);
+  Fresco::Vertex v;
+  v.x = kern.x / 0x10000;
+  v.y = kern.y / 0x10000;
+}
+
 CORBA::Float Font::angle()
 {
   float angle = 0.;

@@ -35,6 +35,11 @@
 
 class Fresco::Raster;
 
+namespace Berlin
+{
+namespace FontKit
+{
+
 class GlyphImpl : public virtual POA_Fresco::Glyph,
                   public virtual RefCountBaseImpl,
                   public virtual IdentifiableImpl
@@ -51,5 +56,8 @@ private:
   FT_Face my_face;
   FT_Matrix my_tr;
 };
+
+} // namespace
+} // namespace
 
 #endif // header guard

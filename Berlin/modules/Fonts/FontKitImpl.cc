@@ -202,3 +202,9 @@ FontIterator_ptr FontKitImpl::first_font()
 FontIterator_ptr FontKitImpl::last_font()
 {
 }
+
+extern "C" KitImpl *load()
+{
+  static std::string properties[] = {"implementation", "FontKitImpl"};
+  return create_kit<Berlin::FontKit::FontKitImpl> ("IDL:fresco.org/Fresco/FontKit:1.0", properties, 2);
+}

@@ -24,6 +24,11 @@
 #include <Berlin/RasterImpl.hh>
 #include "Glyph.hh"
 
+namespace Berlin
+{
+namespace FontKit
+{
+
 GlyphImpl::GlyphImpl(FT_Face face, FT_ULong char_index)
   : my_face(face)
 {
@@ -33,6 +38,8 @@ GlyphImpl::GlyphImpl(FT_Face face, FT_ULong char_index)
   my_tr.yy = 0x10000;
   FT_Load_Glyph(my_face, char_index, FT_LOAD_DEFAULT);
 }
+
+GlyphImpl::~GlyphImpl() {}
 
 Fresco::Raster_ptr GlyphImpl::bitmap()
 {
@@ -152,3 +159,6 @@ void GlyphImpl::transformation(Fresco::Transform_ptr tr)
   my_tr.yx = (e2.x-o.x)*0x10000;
   my_tr.yy = (e2.y-o.y)*0x10000;
 }
+
+} // namespace
+} // namespace
