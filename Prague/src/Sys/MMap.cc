@@ -35,7 +35,7 @@
 
 using namespace Prague;
 
-MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset)
+MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset) throw(std::runtime_error)
   : _base(MAP_FAILED), _length(0)
 {
   struct stat sb;
@@ -47,18 +47,19 @@ MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset)
     }
   else if (l > 0 && l < static_cast<int>(_length)) _length = l;
   _base = mmap(addr, _length, prot, share, fd, offset);
-  if (_base == MAP_FAILED) perror("MMap::MMap");
+  if (_base == MAP_FAILED) throw std::runtime_error(strerror(errno));
 }
 
-MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, off_t offset)
+MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, off_t offset) throw(std::runtime_error)
   : _base(MAP_FAILED), _length(0)
 {
-  int fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
-  if (fd == -1)
-    {
-      std::cerr << "MMap::MMap: unable to open '" << filename << '\'' << std::endl;
-      return;
-    }
+  int fd = -1;
+  if (prot == read)
+    fd = open(filename.c_str(), O_RDONLY); 
+  else
+    fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
+
+  if (fd == -1) throw runtime_error(strerror(errno));
   struct stat sb;
   _length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
   if (l > static_cast<int>(_length))
@@ -68,7 +69,7 @@ MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, 
     }
   else if (l > 0 && l < static_cast<int>(_length)) _length = l;
   _base = mmap(addr, _length, prot, share, fd, offset);
-  if (_base == MAP_FAILED) std::perror("MMap::MMap");
+  if (_base == MAP_FAILED) throw std::runtime_error(strerror(errno));
   close(fd);
 }
 

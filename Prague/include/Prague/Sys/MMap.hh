@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <string>
+#include <stdexcept>
 
 namespace Prague
 {
@@ -35,16 +36,8 @@ class MMap
 public:
   enum protection_t { none = PROT_NONE, read = PROT_READ, write = PROT_WRITE, exec = PROT_EXEC};
   enum map_t { fixed = MAP_FIXED, shared = MAP_SHARED, priv = MAP_PRIVATE};
-  class Exception
-  {
-  public:
-    Exception(const std::string &m) : _msg(m) {}
-    const std::string &what() const { return _msg;}
-  private:
-    std::string _msg;
-  }; 
-  MMap(int, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
-  MMap(const std::string &, int = -1, int = read|write, int = priv, void * = 0, off_t = 0);
+  MMap(int, int = -1, int = read|write, int = priv, void * = 0, off_t = 0) throw(std::runtime_error);
+  MMap(const std::string &, int = -1, int = read|write, int = priv, void * = 0, off_t = 0) throw(std::runtime_error);
   ~MMap();
   //. return the base address
   void *addr() const { return _base;}
