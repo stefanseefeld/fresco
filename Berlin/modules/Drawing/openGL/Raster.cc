@@ -261,8 +261,8 @@ GLTexture::GLTexture(Raster_var r)
   remote->store_pixels(lower, upper, pixels);
   width = info.width;
   height = info.height;
-  vector<unsigned char> data(4*width*height);
-  vector<unsigned char>::iterator pixel = data.begin();
+  std::vector<unsigned char> data(4*width*height);
+  std::vector<unsigned char>::iterator pixel = data.begin();
   for (int y = height - 1; y >= 0; y--)
     for (int x = 0; x != width; x++)
       {
@@ -272,7 +272,7 @@ GLTexture::GLTexture(Raster_var r)
 	*pixel++ = static_cast<char>(color.blue * 256);
 	*pixel++ = static_cast<char>(color.alpha * 256);
       }
-  texture = bind(GL_RGBA, GL_RGBA, data.begin());
+  texture = bind(GL_RGBA, GL_RGBA, &*data.begin());
 }
 
 GLTexture::~GLTexture()
@@ -380,8 +380,8 @@ GLImage::GLImage(Raster_var r)
   remote->store_pixels(lower, upper, pixels);
   width = info.width;
   height = info.height;
-  vector<unsigned char> data(4*width*height);
-  vector<unsigned char>::iterator pixel = data.begin();
+  std::vector<unsigned char> data(4*width*height);
+  std::vector<unsigned char>::iterator pixel = data.begin();
   for (int y = height - 1; y >= 0; y--)
     for (int x = 0; x != width; x++)
       {
@@ -391,7 +391,7 @@ GLImage::GLImage(Raster_var r)
 	*pixel++ = static_cast<char>(color.blue * 256);
 	*pixel++ = static_cast<char>(color.alpha * 256);
       }
-  texture = bind(GL_RGBA, GL_RGBA, data.begin());
+  texture = bind(GL_RGBA, GL_RGBA, &*data.begin());
 }
 
 GLImage::~GLImage()

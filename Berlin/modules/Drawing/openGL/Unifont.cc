@@ -48,7 +48,7 @@ GLUnifont::GLUnifont()
     _style(Unicode::to_CORBA(Babylon::String("monospace")))
 {
   Prague::Path path = RCManager::get_path("unifontpath");
-  string glyphDB = path.lookup_file("glyph.dat");
+  std::string glyphDB = path.lookup_file("glyph.dat");
   glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
 }
 

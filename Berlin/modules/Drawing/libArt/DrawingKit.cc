@@ -223,7 +223,7 @@ void LibArtDrawingKit::draw_path(const Path &p)
   art_irect_intersect(&loc, &loc ,&_clip);
   art_irect_union(&_bbox, &_bbox, &loc);
   fix_order_of_irect(loc);
-  auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
+  std::auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
   ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
 					     _drawable->width(),
 					     _drawable->height(),
@@ -325,7 +325,7 @@ void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
 
   art_irect_intersect(&rect, &rect, &_clip);
   if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
-  auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
+  std::auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
   ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
 					     _drawable->width(),
 					     _drawable->height(),
@@ -415,7 +415,7 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   art_irect_union (&_bbox, &_bbox, &tsloci);
   
   // paint
-  auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
+  std::auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
   ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
 					     _drawable->width(),
 					     _drawable->height(),

@@ -27,6 +27,7 @@
 #include "Drawing/openGL/GLQuadric.hh"
 #include "GL/gl.h"
 #include <cmath>
+#include <cstdlib>
 
 using namespace Warsaw;
 
@@ -471,7 +472,7 @@ void GLQuadric::disk(double innerRadius, double outerRadius, int slices, int loo
 	break;
       }
     default:
-      abort();
+      std::abort();
     }
 }
 

@@ -273,7 +273,7 @@ void GLDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
   glScaled(upper.x - lower.x, upper.y - lower.y, upper.z - lower.z);
   glTranslated(lower.x, lower.y, lower.z);
   GLQuadric quadric(_fs, GLQuadric::out);
-  quadric.disk(0., 1., 360., 100.);
+  quadric.disk(0., 1., 360, 100);
   glPopMatrix();
 }
 
