@@ -25,6 +25,7 @@ prefix		:= @prefix@
 srcdir		:= @srcdir@
 top_srcdir	:= @top_srcdir@
 datadir		:= @datadir@
+docdir		:= share/doc/Fresco-IDL
 
 intdir		:= $(top_srcdir)/share/idl
 
@@ -38,7 +39,7 @@ SYN		:= $(patsubst $(intdir)/Fresco/%.idl, %.syn, $(INT))
 SYN		:= $(patsubst %.idl, %.syn, $(notdir $(INT)))
 XREF		:= $(patsubst %.idl, %.xref, $(notdir $(INT)))
 
-MANUAL		:= share/doc/Fresco-IDL/html
+MANUAL		:= $(docdir)/html
 
 vpath %.idl $(intdir)/Fresco
 
@@ -50,14 +51,15 @@ all:
 
 depend:
 
-xref:	lib/Fresco-IDL.xref lib/Fresco-IDL.syn
+xref:	$(docdir)/sxr/Fresco-IDL.syn
 
 doc:	$(MANUAL)
 
-lib/Fresco-IDL.xref:	$(XREF)
-	compile-xref -o $@ $^
+# synopsis currently doesn't support xref generation from IDL
+#lib/Fresco-IDL.xref:	$(XREF)
+#	compile-xref -o $@ $^
 
-lib/Fresco-IDL.syn:	$(SSYN) $(SYN)
+$(docdir)/sxr/Fresco-IDL.syn:	$(SSYN) $(SYN)
 	@echo linking synopsis files together
 	@$(SYNOPSIS) -o $@ $^
 

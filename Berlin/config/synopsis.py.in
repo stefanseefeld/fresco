@@ -16,7 +16,7 @@ class Config(Base):
 	    extract_tails = 1
 	    include_path = [top_builddir + '/include', abs_top_srcdir + '/include']
 	    basename = abs_top_srcdir
-	    syntax_prefix = 'sxr_data/'
+	    syntax_prefix = top_builddir + '/share/doc/Berlin/sxr/sxr_data/'
 	
 	modules = {'Fresco' : CXX}
 

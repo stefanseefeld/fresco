@@ -22,11 +22,13 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
 srcdir		:= @srcdir@
-cdir		:= @top_builddir@/config
+cdir		:= $(top_builddir)/config
 hdir		:= $(top_srcdir)/include/Prague
+docdir		:= $(top_builddir)/share/doc/Prague
 
-include ../config/local.mk
+include $(cdir)/local.mk
 
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
@@ -62,11 +64,12 @@ DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 HSYN		:= $(patsubst %, %.syn, $(notdir $(HDR)))
 SSYN		:= $(patsubst %, %.syn, $(SRC))
+SYN		:= $(HSYN) $(SSYN)
 XREF		:= $(patsubst %, %.xref, $(notdir $(HDR)))
 XREF		+= $(patsubst %, %.xref, $(SRC))
 
-TARGET		:= ../lib/libPrague.so
-MANUAL		:= ../share/doc/Prague/html
+TARGET		:= $(top_builddir)/lib/libPrague.so
+MANUAL		:= $(docdir)/html
 
 vpath %.hh  $(hdir):$(hdir)/Sys:$(hdir)/IPC:$(hdir)/Filter:$(hdir)/Network
 vpath %.cc  $(srcdir)/Sys:$(srcdir)/IPC:$(srcdir)/Filter:$(srcdir)/Network
@@ -83,15 +86,18 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-xref:	../lib/Prague.xref ../lib/Prague.syn
+xref:	$(docdir)/sxr/Prague.xref $(docdir)/sxr/Prague.syn
 
 doc:	$(MANUAL)
 
-../lib/Prague.xref:	$(XREF)
-	compile-xref -o $@ $^
+$(docdir)/sxr/Prague.xref:	$(XREF)
+	@echo linking xref files together
+	@mkdir -p $(docdir)/sxr
+	@compile-xref -o $@ $^
 
-../lib/Prague.syn:	$(SSYN) $(HSYN)
+$(docdir)/sxr/Prague.syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
+	@mkdir -p $(docdir)/sxr
 	@$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
@@ -146,19 +152,19 @@ maintainer-clean: distclean
 
 %.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 
 DataTypeManager.o:	DataTypeManager.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
 
 %.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.hh.syn $?
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.cc.syn $?
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

@@ -57,6 +57,10 @@ $(optional_dirs): %: %/Makefile
 depend:
 	$(MAKE) action="depend"
 
+xref:
+	$(MAKE) action="xref"
+
+
 doc:
 	$(MAKE) action="doc"
 

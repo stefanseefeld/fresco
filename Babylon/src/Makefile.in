@@ -22,9 +22,11 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
 srcdir		:= @srcdir@
-cdir		:= @top_builddir@/config
+cdir		:= $(top_builddir)/config
 hdir		:= $(top_srcdir)/include/Babylon
+docdir		:= $(top_builddir)/share/doc/Babylon
 
 include $(cdir)/local.mk
 
@@ -39,11 +41,12 @@ DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 HSYN		:= $(patsubst %, %.syn, $(HDR))
 SSYN		:= $(patsubst %, %.syn, $(SRC))
+SYN		:= $(HSYN) $(SSYN)
 XREF		:= $(patsubst %, %.xref, $(HDR))
 XREF		+= $(patsubst %, %.xref, $(SRC))
 
-TARGET		:= ../lib/libBabylon.so
-MANUAL		:= ../share/doc/Babylon/html
+TARGET		:= $(top_builddir)/lib/libBabylon.so
+MANUAL		:= $(docdir)/html
 
 vpath %.hh  $(hdir)
 vpath %.cc  $(srcdir)
@@ -60,20 +63,23 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-xref:	../lib/Babylon.xref ../lib/Babylon.syn
+xref:	$(docdir)/sxr/Babylon.xref $(docdir)/sxr/Babylon.syn
 
 doc:	$(MANUAL)
 
-../lib/Babylon.xref:	$(XREF)
-	compile-xref -o $@ $^
+$(docdir)/sxr/Babylon.xref:	$(XREF)
+	@echo linking xref files together
+	@mkdir -p $(docdir)/sxr
+	@compile-xref -o $@ $^
 
-../lib/Babylon.syn:	$(SSYN) $(HSYN)
+$(docdir)/sxr/Babylon.syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
+	@mkdir -p $(docdir)/sxr
 	@$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -115,15 +121,15 @@ maintainer-clean: distclean
 
 %.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
