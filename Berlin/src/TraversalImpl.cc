@@ -82,6 +82,7 @@ TraversalImpl &TraversalImpl::operator = (const TraversalImpl &traversal)
       (*i).transformation = Provider<TransformImpl>::provide();
       *(*i).transformation = *(*j).transformation;
     };
+  return *this;
 }
 
 Region_ptr TraversalImpl::current_allocation()

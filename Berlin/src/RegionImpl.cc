@@ -76,6 +76,7 @@ RegionImpl &RegionImpl::operator = (const RegionImpl &region)
   valid = region.valid;
   lower = region.lower;
   upper = region.upper;
+  return *this;
 }
 
 CORBA::Boolean RegionImpl::defined() { return valid;}

@@ -134,6 +134,7 @@ TransformImpl &TransformImpl::operator = (const TransformImpl &transform)
 {
   Trace trace("TransformImpl::operator =");
   load_matrix(transform._matrix);
+  return *this;
 }
 
 void TransformImpl::init()
