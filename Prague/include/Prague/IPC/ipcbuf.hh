@@ -36,7 +36,7 @@ namespace Prague
 //. corresponding Agent. 
 //. If the ipcbuf is in nonblocking mode, it returns eof if the underlying read/write 
 //. causes an EAGAIN error (operation would block). If a real EOF is encountered, a flag 
-//. is set so the corresponding agent may terminate the process (or reestablish the connection...)}
+//. is set so the corresponding agent may terminate the process (or reestablish the connection...)
 class ipcbuf : public std::streambuf
 {
 public:
