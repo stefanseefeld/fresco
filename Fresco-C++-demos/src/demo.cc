@@ -95,7 +95,7 @@ int main(int argc, char **argv)
      std::auto_ptr<Demo> focus(create_demo<FocusDemo>(application));
      std::auto_ptr<Demo> viewport(create_demo<ViewportDemo>(application));
      std::auto_ptr<Demo> document(create_demo<DocDemo>(application));
-     // std::auto_ptr<Demo> terminal(create_demo<TermDemo>(application));
+     std::auto_ptr<Demo> terminal(create_demo<TermDemo>(application));
      
      application->run();
      delete application;
