@@ -125,6 +125,10 @@ AC_SUBST(INSTALL_CPPFLAGS)
 AC_SUBST(INSTALL_LIBS)
 AC_SUBST(Fresco_IDL_prefix)
 
+dnl this test is needed so we catch colocation-optimization
+dnl flags that need to make their way into the acconfig.hh file
+FRESCO_ORB
+
 dnl ------------------------------------------------------------------
 dnl some helper utils
 dnl ------------------------------------------------------------------
