@@ -658,7 +658,7 @@ LDFLAGS=""
 INCLUDE_PATH=""
 LIBRARY_PATH=""
 RTTI_FLAGS=""
-OPT_FLAGS=""
+OPT_FLAGS="-O"
 DEBUG_FLAGS=""
 DEBUG="0"
 
@@ -1313,6 +1313,8 @@ else
 fi
 
 
+_ORB_FOUND="0"
+
 # Check whether --with-omniORB2 or --without-omniORB2 was given.
 if test "${with_omniORB2+set}" = set; then
   withval="$with_omniORB2"
@@ -1335,7 +1337,14 @@ if test "${with_omniORB2+set}" = set; then
 	fi
 	ORB_LDFLAGS="-lomniORB2 -lomniLC -lomnithread -ltcpwrapGK"
 	ORB_IDL_FLAGS="-l -a"
+	_ORB_FOUND="1"
 
+fi
+
+
+
+if test "$_ORB_FOUND" = "0"; then
+	{ echo "configure: error: Unable to find ORB - specify one" 1>&2; exit 1; }
 fi
 
 
@@ -1360,7 +1369,7 @@ fi
 # Check whether --enable-debug or --disable-debug was given.
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
-  DEBUG=1
+  DEBUG="1"
    DEBUG_FLAGS="-g"
    OPT_FLAGS=""
   

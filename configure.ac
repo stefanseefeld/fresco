@@ -40,7 +40,7 @@ LDFLAGS=""
 INCLUDE_PATH=""
 LIBRARY_PATH=""
 RTTI_FLAGS=""
-OPT_FLAGS=""
+OPT_FLAGS="-O"
 DEBUG_FLAGS=""
 DEBUG="0"
 
@@ -77,6 +77,9 @@ AC_CHECK_LIB(pthread, pthread_attr_init,
 	DEFINES="-D_REENTRANT=1 $DEFINES"],
         [AC_MSG_ERROR("Unable to find POSIX threads")])
 
+dnl Sooner or later we are going to support multiple ORBs.. 
+_ORB_FOUND="0"
+
 dnl OmniORB2 has no standard install path (sigh)
 AC_ARG_WITH(omniORB2,
 [  --with-omniORB2=PREFIX  Use libomniORB2 in PREFIX],
@@ -99,7 +102,15 @@ AC_ARG_WITH(omniORB2,
 	fi
 	ORB_LDFLAGS="-lomniORB2 -lomniLC -lomnithread -ltcpwrapGK"
 	ORB_IDL_FLAGS="-l -a"
+	_ORB_FOUND="1"
 ])
+
+dnl Checks for other ORBs would go here...
+
+if test "$_ORB_FOUND" = "0"; then
+	AC_MSG_ERROR([Unable to find ORB - specify one])
+fi
+
 
 dnl ======================================================================
 dnl Check for headers
@@ -126,7 +137,7 @@ fi
 
 AC_ARG_ENABLE(debug,
 [  --enable-debug          Enable debugging build],
-  [DEBUG=1
+  [DEBUG="1"
    DEBUG_FLAGS="-g"
    OPT_FLAGS=""
   ]
