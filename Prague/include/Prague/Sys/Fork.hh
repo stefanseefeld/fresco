@@ -26,6 +26,7 @@
 #ifndef _Fork_hh
 #define _Fork_hh
 
+#include <Prague/Sys/config.hh>
 #include <Prague/Sys/Signal.hh>
 #include <unistd.h>
 #include <sys/types.h>

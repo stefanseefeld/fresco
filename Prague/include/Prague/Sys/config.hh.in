@@ -43,7 +43,8 @@ typedef int socklen_t;
 #undef HAVE_STRSIGNAL
 
 #ifndef HAVE_STRSIGNAL
-#define strsignal(signo) (sys_siglist[(signo)])
+#include <signal.h>
+inline const char *strsignal(int signo) { return _sys_siglist[signo];}
 #endif
 
 /* Define if you want tracer support */
