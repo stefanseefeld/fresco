@@ -33,7 +33,11 @@ class WindowImpl::UnmappedStageHandle : public virtual POA_Layout::StageHandle,
 		                        public virtual ServantBase
 {
 public:
-  UnmappedStageHandle(Stage_ptr, Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
+  UnmappedStageHandle(Stage_ptr,
+		      Graphic_ptr,
+		      const Vertex &,
+		      const Vertex &,
+		      Stage::Index);
   UnmappedStageHandle(StageHandle_ptr);
   virtual ~UnmappedStageHandle();
   virtual Stage_ptr parent() { return Stage::_duplicate(_parent);}
@@ -45,6 +49,7 @@ public:
   virtual void size(const Vertex &ss) { _size = ss;}
   virtual Stage::Index layer() { return _layer;}
   virtual void layer(Stage::Index ll) { _layer = ll;}
+
 private:
   Stage_var    _parent;
   Graphic_var  _child;
@@ -53,17 +58,28 @@ private:
   Stage::Index _layer;
 };
 
-WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par, Graphic_ptr cc,
-						     const Vertex &pp, const Vertex &ss, Stage::Index ll)
-  : _parent(Stage::_duplicate(par)), _child(Warsaw::Graphic::_duplicate(cc)), _position(pp), _size(ss), _layer(ll) {}
-WindowImpl::UnmappedStageHandle::UnmappedStageHandle(StageHandle_ptr handle)
-  : _parent(handle->parent()),
-    _child(handle->child()),
-    _position(handle->position()),
-    _size(handle->size()),
-    _layer(handle->layer())
-{}
-WindowImpl::UnmappedStageHandle::~UnmappedStageHandle() { Trace trace("UnmappedStageHandle::~UnmappedStageHandle");}
+WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par,
+						     Graphic_ptr cc,
+						     const Vertex &pp,
+						     const Vertex &ss,
+						     Stage::Index ll) :
+  _parent(Stage::_duplicate(par)),
+  _child(Warsaw::Graphic::_duplicate(cc)),
+  _position(pp),
+  _size(ss),
+  _layer(ll) { }
+
+WindowImpl::UnmappedStageHandle::UnmappedStageHandle(StageHandle_ptr handle) :
+  _parent(handle->parent()),
+  _child(handle->child()),
+  _position(handle->position()),
+  _size(handle->size()),
+  _layer(handle->layer()) { }
+
+WindowImpl::UnmappedStageHandle::~UnmappedStageHandle()
+{
+  Trace trace("UnmappedStageHandle::~UnmappedStageHandle");
+}
 
 WindowImpl::WindowImpl()
   : ControllerImpl(false)
@@ -122,7 +138,11 @@ void WindowImpl::insert(Desktop_ptr desktop)
   Warsaw::Graphic::Requisition r;
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
-  _unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
+  _unmapped = new UnmappedStageHandle(desktop,
+				      Graphic_var(_this()),
+				      position,
+				      size,
+				      0);
   _handle = _unmapped->_this();
 }
 
@@ -175,23 +195,22 @@ void WindowImpl::mapped(CORBA::Boolean flag)
 {
   Trace trace("WindowImpl::mapped");
   if (flag)
-    /*
-     * map
-     */
+    // map
     {
       Prague::Guard<Mutex> guard(_mutex);
       if (!_unmapped) return;
       Stage_var stage = _handle->parent();
-      stage->begin();
-      StageHandle_var tmp = stage->insert(Graphic_var(_this()), _handle->position(), _handle->size(), _handle->layer()); 
-      stage->end();
+      stage->lock();
+      StageHandle_var tmp = stage->insert(Graphic_var(_this()),
+					  _handle->position(),
+					  _handle->size(),
+					  _handle->layer()); 
+      stage->unlock();
       _handle = tmp;
       _unmapped = 0;
     }
   else
-    /*
-     * unmap
-     */
+    // unmap
     {
       Prague::Guard<Mutex> guard(_mutex);
       if (_unmapped) return;

@@ -34,24 +34,42 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Layout;
 
-DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb, Stage_ptr stage)
-  : ControllerImpl(false), _stage(RefCount_var<Layout::Stage>::increment(stage)),
-    _orb(CORBA::ORB::_duplicate(orb))
+DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb,
+			 Stage_ptr stage) :
+  ControllerImpl(false),
+  _stage(RefCount_var<Layout::Stage>::increment(stage)),
+  _orb(CORBA::ORB::_duplicate(orb))
 {
-  /*
-   * Attention !!: this invokes _this(), which implicitely activates the desktop.
-   */
+  // Attention !!: this invokes _this(), which implicitely activates the desktop.
   ControllerImpl::body(_stage);
 }
-DesktopImpl::~DesktopImpl() {}
-void DesktopImpl::body(Warsaw::Graphic_ptr) {}
-Warsaw::Graphic_ptr DesktopImpl::body() { return CORBA::is_nil(_stage) ? Layout::Stage::_nil() : Layout::Stage::_duplicate(_stage);}
+
+DesktopImpl::~DesktopImpl() { }
+
+void DesktopImpl::body(Warsaw::Graphic_ptr) { }
+
+Warsaw::Graphic_ptr DesktopImpl::body()
+{
+  return CORBA::is_nil(_stage) ?
+    Layout::Stage::_nil() : Layout::Stage::_duplicate(_stage);
+}
+
 Warsaw::Region_ptr DesktopImpl::bbox() { return _stage->bbox();}
+
 CORBA::Long DesktopImpl::layers() { return _stage->layers();}
-Layout::StageHandle_ptr DesktopImpl::layer(Layout::Stage::Index l) { return _stage->layer(l);}
-void DesktopImpl::begin() { _stage->begin();}
-void DesktopImpl::end() { _stage->end();}
-Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw::Vertex &p, const Warsaw::Vertex &s, Layout::Stage::Index l)
+
+Layout::StageHandle_ptr DesktopImpl::layer(Layout::Stage::Index l)
+{
+  return _stage->layer(l);
+}
+
+void DesktopImpl::lock() { _stage->lock();}
+void DesktopImpl::unlock() { _stage->unlock();}
+
+Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g,
+					    const Warsaw::Vertex &p,
+					    const Warsaw::Vertex &s,
+					    Layout::Stage::Index l)
 {
   return _stage->insert(g, p, s, l);
 }

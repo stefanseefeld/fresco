@@ -134,10 +134,10 @@ void MoveResizer::execute(const CORBA::Any &any)
 	    p.y = pos.y - yalign * (s.y - size.y);
 	  }
 	}
-      desktop->begin();
+      desktop->lock();
       window->position(p);
       window->size(s);
-      desktop->end();
+      desktop->unlock();
     }
   else std::cerr << "MoveResizer::execute : wrong message type !" << std::endl;
 }

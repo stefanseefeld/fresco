@@ -40,9 +40,13 @@ public:
   virtual Warsaw::Region_ptr bbox();
   virtual CORBA::Long layers();
   virtual Layout::StageHandle_ptr layer(Layout::Stage::Index);
-  virtual void begin();
-  virtual void end();
-  virtual Layout::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Layout::Stage::Index);
+  virtual void lock();
+  virtual void unlock();
+  virtual Layout::StageHandle_ptr insert(Warsaw::Graphic_ptr,
+					 const Warsaw::Vertex &,
+					 const Warsaw::Vertex &,
+					 Layout::Stage::Index);
+
 protected:
   virtual void key_press(const Warsaw::Input::Event &); 
 private:
