@@ -120,11 +120,13 @@ void GGI::Pointer::save()
   PixelCoord r = _screen->row_length();
   PixelCoord s = _screen->vwidth() * _screen->vheight();
   PixelCoord d = _screen->pixel_format().size >> 3;
-  DirectBuffer::Guard buffer = _dbuffer->read_buffer();
-  data_type *from = buffer.get() + y*r + x*d;
+  const ggi_directbuffer *dbuf = _screen->buffer(0);
+  ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_READ);
+  data_type *from = static_cast<char*>(dbuf->read) + y*r +x*d;
   data_type *to = _cache;
   for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
     Memory::copy(from, to, d * w);
+  ggiResourceRelease(dbuf->resource);
 }
 
 void GGI::Pointer::restore()
@@ -137,13 +139,15 @@ void GGI::Pointer::restore()
   PixelCoord s = _screen->vwidth() * _screen->vheight();
   PixelCoord d = _screen->pixel_format().size >> 3;
   data_type *from = _cache;
-  DirectBuffer::Guard buffer = _dbuffer->write_buffer();
-  data_type *to = buffer.get() + y*r + x*d;
+  const ggi_directbuffer *dbuf = _screen->buffer(0);
+  ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_WRITE);
+  data_type *to = static_cast<char*>(dbuf->write) + y*r + x*d;
   for (PixelCoord o = 0;
        o != h && (y + o) * r / d + x + w < s;
        o++, from += d * w, to += r)
     Memory::copy(from, to, d * w);
   _screen->flush(x, y, w, h);
+  ggiResourceRelease(dbuf->resource);
 }
 
 void GGI::Pointer::draw()
@@ -157,11 +161,13 @@ void GGI::Pointer::draw()
   PixelCoord d = _screen->pixel_format().size >> 3;
   data_type *from = _image;
   data_type *bits = _mask;
-  DirectBuffer::Guard buffer = _dbuffer->write_buffer();
-  data_type *to = buffer.get() + y * r + x * d;
+  const ggi_directbuffer *dbuf = _screen->buffer(0);
+  ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_WRITE);
+  data_type *to = static_cast<char*>(dbuf->write) + y*r + x*d;
   for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
     for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
       *to = (*from & *bits) | (*to & ~*bits);
   _screen->flush(x, y, w, h);
+  ggiResourceRelease(dbuf->resource);
 }
 
