@@ -65,7 +65,6 @@ VisualImpl::~VisualImpl()
 
 char *VisualImpl::name()
 {
-  std::cout << _ggi->name() << std::endl;
   return CORBA::string_dup(_ggi->name().c_str());
 }
 
@@ -128,7 +127,6 @@ CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr traversal, const 
 CORBA::Boolean VisualImpl::handle_non_positional(const Fresco::Input::Event &event)
 {
   Trace trace("VisualImpl::handle_non_positional");
-  std::cout << "VisualImpl::handle_non_positional" << std::endl;
   /*
    * FIXME !: we assume a lot about the (berlin) event layout here. Make that more flexible...
    */
@@ -170,6 +168,7 @@ CORBA::Boolean VisualImpl::handle_non_positional(const Fresco::Input::Event &eve
    * given that this is the only information we conserve in the berlin key event...
    */
   forward_event(ggi);
+  return true;
 }
 
 void VisualImpl::move(Fresco::PickTraversal_ptr traversal,
