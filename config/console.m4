@@ -47,6 +47,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 			else
 				AC_DECIDE(GGICONSOLE, [use GGI])
 				CON_IMPL=GGI
+				AC_DEFINE(CONSOLE_GGI)
 			fi				
 			;;
                 SDL)
@@ -60,6 +61,7 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                         else
 				AC_DECIDE(SDLCONSOLE, [use SDL])
                                 CON_IMPL=SDL
+				AC_DEFINE(CONSOLE_SDL)
                         fi
                         ;;
                 CAVELib)
@@ -72,7 +74,22 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
                                 fi
                         else
 				AC_DECIDE(CAVECONSOLE, [use CAVELib])
-                                CON_IMPL=CAVELib
+                                CON_IMPL=CAVELIB
+				AC_DEFINE(CONSOLE_CAVELIB)
+                        fi
+                        ;;
+                GLUT)
+                        BERLIN_GLUT_CHECK
+                        if test ".$ac_cv_lib_glut" != .yes; then
+                                if test ".$1" = .mandatory; then
+                                        AC_MSG_ERROR(No supported Console environment found!)
+                                else
+                                        CON_IMPL="none"
+                                fi
+                        else
+				AC_DECIDE(GLUTCONSOLE, [use GLUT])
+                                CON_IMPL=GLUT
+				AC_DEFINE(CONSOLE_GLUT)
                         fi
                         ;;
 		*)

@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _CAVE_hh
-#define _CAVE_hh
+#ifndef _GLUT_hh
+#define _GLUT_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
@@ -30,46 +30,49 @@
 #include <Prague/Sys/ThreadQueue.hh>
 #include <vector>
 
+// @@@ FIXME! Need a better way for this (can't hardcode it!)
+// Screen resolution (in pixels)
+const Coord screenx = 1024;
+const Coord screeny = 786;
+
+// Screen dimensions (physical size in millimeters)
+const Coord screendimx = 360.0f;
+const Coord screendimy = 270.0f;
+
+
 using namespace Prague;
 
-// Cavelib OpenGL bindings
-extern "C" {
-#include <cave_ogl.h>
-}
-
 // -- Forward Declarations
-class CAVEConsole;
+class GLUTConsole;
+class GLUTHandler;
 
 // -- Class Declarations
 
 /**
- * Cavelib drawable implementation (used as a tie implementation).  A
- * large part of the cavelib drawable has been left out since it is
- * not needed (and indeed, not supported) by the OpenGL CAVELib.  The
- * CAVEConsole/CAVEDrawable will be used by the GLDrawingKit
- * exclusively, so this is not an issue.
+ * GLUT drawable implementation. This drawable will be used by the
+ * GLDrawingKit only.
  **/
-class CAVEDrawable {
+class GLUTDrawable {
 
 private:
     
-    friend class CAVEConsole;
-    friend class DrawableTie<CAVEDrawable>;
+    friend class GLUTConsole;
+    friend class DrawableTie<GLUTDrawable>;
   
 public:
     typedef long Pixel;
-    DrawableTie<CAVEDrawable>::PixelFormat pixelFormat() { }
+    DrawableTie<GLUTDrawable>::PixelFormat pixelFormat() { }
     
     PixelCoord width() const { return _width; }
     PixelCoord height() const { return _height; }
     PixelCoord vwidth() const { return _width;}
     PixelCoord vheight() const { return _height;}
-    Coord resolution(Axis a) const { return _resolution; }
+    Coord resolution(Axis a) const;
     Coord dpi(Axis a) const { return resolution(a) * 254.0; }
     PixelCoord rowlength() { }
     Pixel map(const Color &) { }
-    void *readBuffer() { }
-    void *writeBuffer() { }
+    void *readBuffer() { return 0; }
+    void *writeBuffer() { return 0; }
     
     /*
      * Read one or more pixels from framebuffer
@@ -98,41 +101,63 @@ public:
     /*
      * Fast blits
      */
-    void blit(PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord) { }
-    void blit(const GGIDrawable &, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord) { }
+    void blit(PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord);
+    void blit(const GLUTDrawable &, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord);
     
     void flush() { }
     void flush(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
+
+    void init();
+    void finish();
     
+    /**
+     * Render the "cached" scene (i.e. the display lists comprising
+     * the scene). This is a slight breach of abstraction, but it is
+     * by far the easiest solution.
+     **/
+    void render();
+
+    
+    /**
+     * GLUT window may be reshaped by the user.
+     **/
+    void reshape(int width, int height);
+			
 private:
     
     // Constructor and destructor
-    CAVEDrawable();
-    ~CAVEDrawable();
+    GLUTDrawable();
+    ~GLUTDrawable();
     
-    // Display width (set once from a rendering process)
+    /// Display width
     int _width;
     
-    // Display height (set once from a rendering process)
+    /// Display height
     int _height;
-  
-    // Resolution 
-    float _resolution;
+
+    /// Main display list
+    unsigned int _displist;
+    
+    /// Access mutex (to control access to display lists)
+    Mutex _mutex;
+
 };
 
 
 /**
- * Cavelib console implementation (also a tie implementation).
+ * GLUT console implementation.
  **/
-class CAVEConsole {
-  
+class GLUTConsole {
+
+    friend class GLUTHandler;
+    
 public:
     
-    typedef CAVEDrawable Drawable;
-    CAVEConsole();
-    ~CAVEConsole();
+    typedef GLUTDrawable Drawable;
+    GLUTConsole();
+    ~GLUTConsole();
     static DrawableTie<Drawable> *drawable() { return _drawable; }
-    static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord);
+    static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord) { return 0; }
     
     Input::Event *nextEvent();
     void wakeup();
@@ -141,13 +166,28 @@ public:
 private:
 
     bool _autoplay;
-    
-    /// Single CAVE drawable instance
-    DrawableTie<Drawable> *_drawable;
+
+    /// Capacity of event queue
+    static const int eventQueueCapacity = 100;
+
+    /// Drawable vector
+    //static vector<DrawableTie<Drawable> *> _drawables;
+    static DrawableTie<Drawable> *_drawable;
 
     /// Event producer-consumer queue (for polling threads)
     Thread::Queue<Input::Event *> _eventQueue;
-
+    
 };
 
-#endif /* CAVE.hh */
+
+// -- Inline functions
+
+inline Coord GLUTDrawable::resolution(Axis a) const
+{
+    // Return the resolution as dots/pixels per tenth of a millimeter    
+    return a == xaxis 
+	? 0.1 * screenx / screendimx 
+	: 0.1 * screeny / screendimy;
+}
+
+#endif /* GLUT.hh */

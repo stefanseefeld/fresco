@@ -21,7 +21,6 @@
  */
 
 #include "Berlin/Console.hh"
-#include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/ThreadQueue.hh>
@@ -42,7 +41,7 @@ typedef int CAVEButtonData[CAVENumButtons];
  **/
 class EventListener {
     
-    EventListener(ThreadQueue<Input::Event> &queue) 
+    EventListener(ThreadQueue<Input::Event> *queue) 
 	: _listener(proc, this), _queue(queue) { }
     ~EventListener() { cancel(); }
     void run() { _listener.start(); }
@@ -68,22 +67,21 @@ private:
     Thread _listener;
 
     // Event queue
-    ThreadQueue<Input::Event *> &_queue;
+    ThreadQueue<Input::Event *> *_queue;
     
 };
 
 CAVEConsole::CAVEConsole()
-    : autoplay(false)
+    : _autoplay(false)
 {
     cerr << "Initializing CAVELib console " <<
 	 << "(CAVELib version " << CAVEVersion << " with "
 	 << CAVENumPipes() << " rendering pipes." << endl;
-    _drawable = new CAVEDrawable(0);
+    _drawable = new CAVEDrawable;
 
     // @@@ Set up callbacks
-
-    // Compute the conversion constant
-    _caveToBerlinUnitFactor =
+    
+    // @@@ Create event listening thread
 }
 
 CAVEConsole::~CAVEConsole()
@@ -96,7 +94,7 @@ DrawableTie<Drawable> *CAVEConsole::drawable()
     return 0;
 }
 
-DrawableTie<Drawable> *CAVEConsole::newDrawable(PixelCoord, PixelCoord, PixelCoord)
+DrawableTie<CAVEDrawable> *CAVEConsole::newDrawable(PixelCoord w, PixelCoord h, PixelCoord d)
 {
     return 0;
 }
@@ -172,7 +170,7 @@ void EventListener::start()
 	    event[1].attr.location(ori);
 
 	    // Add the event to the thread queue (producer-consumer)
-	    _queue.push(event._retn());
+	    _queue->push(event._retn());
 	}
 	
 	// Check changes in buttons
@@ -200,7 +198,7 @@ void EventListener::start()
 		event[2].attr.location(ori);
 		
 		// Add the event to the thread queue (producer-consumer)
-		_queue.push(event._retn());
+		_queue->push(event._retn());
 	    }
 	}
 

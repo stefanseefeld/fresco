@@ -22,25 +22,26 @@
 
 #include "Berlin/Console.hh"
 
-#ifdef CONSOLE_IMPL
-#  if CONSOLE_IMPL == GGI
+#if defined(CONSOLE_GGI)
 #  include "GGI.cc"
 
 GGIConsole *Console::t = 0;
 
-#  elif CONSOLE_IMPL == SDL
+#elif defined(CONSOLE_SDL)
 #  include "SDL.cc"
 
 SDLConsole *Console::t = 0;
 
-#  elif CONSOLE_IMPL == CAVELib
+#elif defined(CONSOLE_CAVELIB)
 #  include "CAVE.cc"
 
 CAVEConsole *Console::t = 0;
 
-#  else
-#  warning "unknown console type defined"
-#  endif
+#elif defined(CONSOLE_GLUT)
+#  include "GLUT.cc"
+
+GLUTConsole *Console::t = 0;
+
 #else
 #  warning "no console type defined"
 #endif

@@ -79,6 +79,8 @@ public:
 
   void flush();
   void flush(PixelCoord, PixelCoord, PixelCoord, PixelCoord);
+  void init() { }
+  void finish() { }
 private:
   SDLDrawable(const char *);
   ~SDLDrawable();

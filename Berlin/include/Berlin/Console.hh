@@ -91,6 +91,16 @@ public:
   void flush() { t->flush();}
   void flush(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { t->flush(x, y, w, h);}
 
+  /**
+   * Init and finish hooks called by the server when the scene is
+   * about to be drawn, and when it has been drawn, respectively. This
+   * is a suitable place to add calls for building display lists, for
+   * example (this is what is done in the GLUTConsole and
+   * CAVEConsole).
+   **/
+  void init() { t->init(); }
+  void finish() { t->finish(); }
+    
   T &impl() { return *t;}
 private:
   DrawableTie(const DrawableTie &);
@@ -119,25 +129,26 @@ private:
   static Reaper reaper;
 };
 
-#ifdef CONSOLE_IMPL
-#  if CONSOLE_IMPL == GGI
+#if defined(CONSOLE_GGI)
 #  include <Berlin/GGI.hh>
 
 typedef ConsoleTie<GGIConsole> Console;
 
-#  elif CONSOLE_IMPL == SDL
+#elif defined(CONSOLE_SDL)
 #  include <Berlin/SDL.hh>
 
 typedef ConsoleTie<SDLConsole> Console;
 
-#  elif CONSOLE_IMPL == CAVELib
+#elif defined(CONSOLE_CAVELIB)
 #  include <Berlin/CAVE.hh>
 
 typedef ConsoleTie<CAVEConsole> Console;
 
-#  else
-#  warning "unknown console type defined"
-#  endif
+#elif defined(CONSOLE_GLUT)
+#  include <Berlin/GLUT.hh>
+
+typedef ConsoleTie<GLUTConsole> Console;
+
 #else
 #  warning "no console type defined"
 #endif

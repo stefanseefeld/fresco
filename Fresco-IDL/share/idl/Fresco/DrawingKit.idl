@@ -97,6 +97,14 @@ interface DrawingKit : Kit
   void drawChar(in Unichar c);
   void allocateChar(in Unichar c, inout Graphic::Requisition req);
 
+  //. Initialize drawing kit for a rendering pass. Called before
+  //. each pass.
+  void init();
+
+  //. Finish the rendering pass. Called after each pass.
+  void finish();
+  
+  //. Flush the drawing kit.
   void flush();
 };
 

@@ -54,7 +54,9 @@ void ScreenManager::repair()
   mutex.unlock();
   emanager->restore(Region_var(tmpDamage->_this()));
   traversal->init();
+  drawable->init();
   screen->traverse(Traversal_var(traversal->_this()));
+  drawable->finish();
   traversal->finish();
   drawing->flush();
   {

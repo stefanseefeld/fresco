@@ -149,6 +149,12 @@ for kit in $enable_drawing_kits ; do
 	fi
 done
 
+# We can't use libArt if we're on the GLUT console
+# (need a better way to do this later!)
+if test ".$CON_IMPL" = .GLUT; then
+	enable_libArt=no
+fi
+
 tested_drawing_kits=
 if test ".$enable_libArt" = .yes ; then
 	BERLIN_LIBART_CHECK

@@ -44,6 +44,8 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
     textures(100),
     images(500)
 {
+    
+#if defined(CONSOLE_GGI)
   context = GGIMesaCreateContext();
   if (!context)
     {
@@ -60,6 +62,15 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
       exit(7);
     }
   GGIMesaMakeCurrent(context);
+  
+#elif defined(CONSOLE_GLUT)
+  
+  // Do GLUT-specific stuff
+  
+#else
+#  error "GLDrawingKit cannot be used with this console."
+#endif
+  
   glViewport(0, 0, drawable->width(), drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
@@ -76,12 +87,15 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 }
 
 GLDrawingKit::~GLDrawingKit()
 {
   delete font;
+#if defined(CONSOLE_GGI)
   GGIMesaDestroyContext(context);
+#endif
 }
 
 void GLDrawingKit::setTransformation(Transform_ptr t)

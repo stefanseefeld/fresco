@@ -125,6 +125,8 @@ class DrawingKitBase : public virtual POA_DrawingKit
   virtual CORBA::Any *getFontAttr(const Unistring & name) = 0;
   virtual void fontAttr(const NVPair &nvp);
 
+  virtual void init() { }
+  virtual void finish() { }
   virtual void flush() = 0;
 
   virtual void setTransformation(Transform_ptr) = 0;

@@ -34,10 +34,11 @@
 #include <Berlin/RegionImpl.hh>
 #include <Warsaw/Image.hh>
 
-#if defined(CONSOLE_IMPL) && CONSOLE_IMPL == GGI
+#if defined(CONSOLE_GGI)
 #  include <GL/ggimesa.h>
+#elif defined(CONSOLE_GLUT)
 #else
-#  error "GLDrawingKit needs GGI to compile"
+#  error "GLDrawingKit needs a OpenGL-enabled console to compile"
 #endif
 
 #include <string>
@@ -123,7 +124,9 @@ public:
 //   Coord height() { return drawable->height();}
  private:
   Console::Drawable *drawable;
+#if defined(CONSOLE_GGI)
   GGIMesaContext context;
+#endif
   Prague::Mutex  mutex;
   Transform_var  tr;
   Region_var     cl;

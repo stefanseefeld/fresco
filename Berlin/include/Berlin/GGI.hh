@@ -84,6 +84,8 @@ public:
    */
   ggi_visual_t visual() { return vis;}
   const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (vis, i);}
+  void init() { }
+  void finish() { }
 private:
   GGIDrawable(const char *);
   ~GGIDrawable();
