@@ -98,8 +98,18 @@ Application::Application(ServerContext_ptr sc, ClientContext_ptr cc)
   Raster_var raster = _ik->create("fresco.png");
   Image_var  image = _fk->pixmap(raster);
   Graphic_var hbox = _lk->hbox();
-  hbox->append_graphic(image);
+  Graphic_var vbox = _lk->vbox();
+  Graphic_var use1 = _tk->chunk(Unicode::to_CORBA(Babylon::String("Select a")));
+  Graphic_var use2 = _tk->chunk(Unicode::to_CORBA(Babylon::String("demo:")));
+  vbox->append_graphic(Graphic_var(_lk->vfill()));
+  vbox->append_graphic(use1);
+  vbox->append_graphic(use2);
+  vbox->append_graphic(Graphic_var(_lk->vfill()));
+  Graphic_var black_usage = _ttk->rgb(vbox, 0., 0., 0.);
   hbox->append_graphic(Graphic_var(_lk->hfill()));
+  hbox->append_graphic(black_usage);
+  hbox->append_graphic(Graphic_var(_lk->hfill()));
+  hbox->append_graphic(image);
   _vbox->append_graphic(hbox);
 
   Graphic_var glyph = _tk->chunk(Unicode::to_CORBA(Babylon::String("close")));
@@ -155,28 +165,35 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
 
 void Application::run()
 {
-
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::concav);
   _vbox->append_graphic(Graphic_var(_ttk->frame(_choice, 20., spec, false)));
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
+
+  // run button
   Graphic_var glyph1 = _tk->chunk(Unicode::to_CORBA(Babylon::String("run")));
   Graphic_var label1 = _lk->margin(glyph1, 20.);
-  Trigger_var run = _wk->button(Graphic_var(_ttk->rgb(label1, 0., 0., 0.)), Command_var(_mapper->_this()));
+  Graphic_var label1f = _lk->hmargin_lr_flexible(label1,
+                                                0,100000,0,
+                                                0,100000,0);
+  Trigger_var run = _wk->button(Graphic_var(_ttk->rgb(label1f, 0., 0., 0.)), 
+                                Command_var(_mapper->_this()));
+
+  // quit button
   Graphic_var glyph2 = _tk->chunk(Unicode::to_CORBA(Babylon::String("quit")));
   Graphic_var label2 = _lk->margin(glyph2, 20.);
   ExitCommand *cmd = new ExitCommand();
-  Trigger_var quit = _wk->button(Graphic_var(_ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
-
-  _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
+  Graphic_var label2f = _lk->hmargin_lr_flexible(label2,
+                                                0,100000,0,
+                                                0,100000,0);
+  Trigger_var quit = _wk->button(Graphic_var(_ttk->rgb(label2f, 0., 0., 0.)), 
+                                 Command_var(cmd->_this()));
 
   Graphic_var hbox = _lk->hbox();
-  hbox->append_graphic(Graphic_var(_lk->hglue(200., 0., 10000.)));
   hbox->append_graphic(run);
   hbox->append_graphic(Graphic_var(_lk->hspace(200.)));
   hbox->append_graphic(quit);
-  hbox->append_graphic(Graphic_var(_lk->hglue(200., 0., 10000.)));
   _vbox->append_graphic(hbox);
   Graphic_var margin = _lk->margin(_vbox, 200.);
   

@@ -41,6 +41,6 @@ TextDemo::TextDemo(Application *a)
 
   Babylon::String str(34, chars);
   Graphic_var txt = text->chunk(Unicode::to_CORBA(str));
-  Controller_var group = tools->group(Graphic_var(tools->rgb(txt, 0.2, 0.3, 0.5)));
-  application->append(group, Babylon::String("text demo"));
+  Controller_var group = tools->group(Graphic_var(tools->rgb(txt, 0.7, 0.8, 1.0)));
+  application->append(group, Babylon::String("text"));
 };

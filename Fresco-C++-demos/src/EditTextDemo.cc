@@ -53,5 +53,5 @@ EditTextDemo::EditTextDemo(Application *a)
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var frame = tools->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tools->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
   buf->insert_string(Unicode::to_CORBA(str));
-  application->append(Controller_var(tools->text_input(frame, vis_buf)), Babylon::String("editable text demo"));
+  application->append(Controller_var(tools->text_input(frame, vis_buf)), Babylon::String("editable text"));
 };

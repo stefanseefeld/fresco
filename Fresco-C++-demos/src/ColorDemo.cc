@@ -107,7 +107,7 @@ ColorDemo::ColorDemo(Application *a)
   vbox->append_graphic(hbox28);
   hbox->append_graphic(vbox);
   Controller_var root = tools->group(Graphic_var(layout->margin(hbox, 100.)));
-  application->append(root, Babylon::String("Color demo"));
+  application->append(root, Babylon::String("Color"));
 }
 
 void ColorDemo::adjust(Tag tag)

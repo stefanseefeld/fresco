@@ -49,5 +49,5 @@ DocDemo::DocDemo(Application *a)
   Controller_var page = widgets->scrollable(Graphic_var(tools->rgb(column, 0., 0., .0)));
   Controller_var root = tools->group(Graphic_var(layout->fixed_size(page, 3000., 2000.)));
   root->append_controller(page);
-  application->append(root, Babylon::String("multiline text demo"));
+  application->append(root, Babylon::String("multiline text"));
 };

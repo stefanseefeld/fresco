@@ -40,5 +40,5 @@ TermDemo::TermDemo(Application *a)
   scrollable->append_controller(terminal);
   Controller_var group = tools->group(Graphic_var(layout->fixed_size(scrollable, 4000., 3000.)));
   group->append_controller(scrollable);
-  application->append(group, Babylon::String("terminal demo"));
+  application->append(group, Babylon::String("terminal"));
 };

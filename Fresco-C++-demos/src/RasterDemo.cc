@@ -48,5 +48,5 @@ RasterDemo::RasterDemo(Application *a)
   hbox->append_graphic(Graphic_var(widgets->button(im, command3)));
   Controller_var group = tools->group(hbox);
 
-  application->append(group, Babylon::String("raster demo"));
+  application->append(group, Babylon::String("raster"));
 };

@@ -56,5 +56,5 @@ LayoutDemo::LayoutDemo(Application *a)
   group->append_controller(button1);
   group->append_controller(button2);
   group->append_controller(button3);
-  application->append(group, Babylon::String("layout demo"));
+  application->append(group, Babylon::String("layout"));
 };
