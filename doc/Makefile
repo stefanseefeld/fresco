@@ -1,24 +1,30 @@
-# this is a graydon's-home-machine-specific
-# makefile for building the HTML and PDF berlin books
-# if anyone would like to make it a little more portable
-# please feel free
+#
+# This builds the berlin documentation in HTML and optionally PDF
+# it uses files found _within_ the berlin tree to save you the hassle
+# of installing all the supporting machinery yourself. You will need
+# jade installed, however, as it's a little big to be distributing
+# in our archive.
+#
 
-STYLESHEETS = /usr/lib/sgml/stylesheets
-HTML_SHEET = $(STYLESHEETS)/dbtohtml.dsl
-PRINT_SHEET = $(STYLESHEETS)/print/docbook.dsl
-DOCBOOK_VARS = -V %use-id-as-filename% 
-BOOK_FILES = berlin-man.sgm berlin-intro.sgm berlin-prog-text.sgm \
-		berlin-prog-opengl.sgm berlin-prog-thread.sgm \
-		berlin-prog-corba.sgm berlin-prog.sgm berlin-user.sgm
-BOOK_ROOT = berlin-man.sgm
+STYLESHEET = stylesheets/berlin.dsl
+JADE_FLAGS = -c sgml.catalog
+JADE_HTML_FLAGS = -V %use-id-as-filename% -ihtml -D ../ -d $(STYLESHEET)\#html $(JADE_FLAGS) -t sgml
+JADE_TEX_FLAGS = -d $(STYLESHEET)\#print $(JADE_FLAGS) -t tex
+BOOK_FILES = $(wildcard src/*.sgm)
 
-all: html/HTML.manifest print/berlin-man.tex
+all: html/berlin-man.html print/berlin-man.pdf
 
+html/%.html: src/%.sgm $(BOOK_FILES)
+	cd html; jade $(JADE_HTML_FLAGS) $<; cd ../;
 
-html/HTML.manifest: $(BOOK_FILES)
-	cd html; jade $(DOCBOOK_VARS) -d $(HTML_SHEET) -t sgml ../$(BOOK_ROOT); cd ..;
+print/%.tex: src/%.sgm $(BOOK_FILES)
+	jade $(JADE_TEX_FLAGS) -o $@ $< 
 
-print/berlin-man.tex: $(BOOK_FILES)
-	jade -d $(PRINT_SHEET) -t tex -o print/berlin-man.tex $(BOOK_ROOT);\
-	cd print; jadetex berlin-man.tex; \
-	dvips -o berlin-man.ps berlin-man.dvi; ps2pdf berlin-man.ps; cd ..;
+print/%.dvi: print/%.tex
+	cd print; jadetex berlin-man.tex; cd ..;
+
+print/%.ps: print/%.dvi
+	cd print; dvips -o berlin-man.ps berlin-man.dvi; cd ..;
+
+print/%.pdf: print/%.ps
+	cd print; ps2pdf berlin-man.ps; cd ..;
