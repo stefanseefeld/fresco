@@ -28,7 +28,7 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.53)
 AC_REVISION($Revision$)
 
-AC_INIT(Fresco, M1, devel@fresco.org)
+AC_INIT(Fresco-C++, M1, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
@@ -76,6 +76,10 @@ LIBS="$LIBS $Babylon_BUILD_LIBS"
 AC_SUBST(INSTALL_CPPFLAGS)
 AC_SUBST(INSTALL_LIBS)
 
+FRESCO_IDL_PATH
+idldir="$FRESCO_IDL_PREFIX"
+AC_SUBST(idldir)
+
 FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
@@ -89,9 +93,7 @@ AC_CONFIG_FILES([config/Fresco-config], [chmod +x config/Fresco-config])
 AC_CONFIG_FILES([config/Fresco.spec])
 AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-build-config.in], [chmod +x bin/Fresco-config])
 AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
-AC_CONFIG_LINKS([share/idl:idl])
 
-mkdir -p share
 mkdir -p lib
 mkdir -p bin
 

@@ -23,7 +23,7 @@ SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idir		:= @top_srcdir@/idl
+idldir		:= @idldir@
 abs_builddir	:= @abs_builddir@
 cdir		:= @top_builddir@/config
 h1dir		:= $(top_srcdir)/include/Fresco
@@ -31,14 +31,11 @@ h2dir		:= @top_builddir@/include
 
 include $(cdir)/local.mk
 
-IDLCXX		:= @IDLCXX@
-SHORTCUT	:= @SHORTCUT@
-
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
 CPPFLAGS	+= -include $(h2dir)/Fresco/acconfig.hh
 CXXFLAGS	+= $(SO_CXXFLAGS)
-LDFLAGS		+= $(SO_LDFLAGS)
+LDFLAGS	+= $(SO_LDFLAGS)
 
 # Extra compilation and linking flags.
 IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(abs_builddir) -I.
@@ -82,7 +79,7 @@ OBJ			:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
 TARGET		:= ../lib/libFresco.so
 
-vpath %.idl $(idir)/Fresco
+vpath %.idl $(idldir)/share/idl/Fresco
 vpath %.hh $(h1dir):$(h2dir)/Fresco
 vpath %.cc $(srcdir)
 
@@ -98,17 +95,10 @@ $(TARGET): $(OBJ)
 
 depend: $(DEP)
 
-doc:	../share/doc/Fresco/html $(HDR)
-
-../share/doc/Fresco/html:	$(SYN)
-	@echo formatting $(@F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
-	touch $@
+doc:
 
 install:	all
 	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
-	$(INSTALL) -m 644 $(patsubst %, $(top_srcdir)/idl/Fresco/%, $(INT)) $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
 	for header in acconfig.hh $(GENHDR) ; do \
 	  if ! cmp -s $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header 2>/dev/null; then \
@@ -129,15 +119,11 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -D -m 755 ../config/Fresco-config $(DESTDIR)$(bindir)/Fresco-config
 
-install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco
-	cp -r ../share/doc/Fresco/html $(DESTDIR)$(datadir)/doc/Fresco
+install-doc:
 
 uninstall:
-	rm -fr $(DESTDIR)$(datadir)/doc/Fresco
 	rm -f $(DESTDIR)$(bindir)/Fresco-config
 	rm -rf $(DESTDIR)$(includedir)/Fresco
-	rm -rf $(DESTDIR)$(datadir)/idl/Fresco
 	rm -f $(DESTDIR)$(libdir)/libFresco.so
 
 clean:	
@@ -153,27 +139,27 @@ maintainer-clean: distclean
 
 %.idl.d:	%.idl
 	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idir) $< \
+	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir)/share/idl $< \
 	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
 $(STATSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
+	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(DYNSTATSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
+	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(DYNSRC): %DynSK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
+	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(STATHDR): %.hh:	%.idl
 	@echo generating $(@F)
-	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
+	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(DYNHDR): %.hh:	%.idl
 	@echo generating $(@F)
-	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
+	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 
 %.cc.d:	%.cc $(GENHDR)
@@ -184,10 +170,6 @@ $(DYNHDR): %.hh:	%.idl
 %.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
-
-%.syn:	%.idl
-	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wp,-b,$(idir) -Wc,parser=Fresco,linker=Fresco -o $@ $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

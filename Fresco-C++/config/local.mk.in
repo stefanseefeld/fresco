@@ -39,21 +39,14 @@ mandir		:= @mandir@
 abs_top_builddir:= @abs_top_builddir@
 abs_top_srcdir	:= @abs_top_srcdir@
 
+idldir      := @idldir@
+
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
-INSTALL		:= @INSTALL@
-EDIT		:= sed -e 's,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),g' \
-	               -e 's,@CXXFLAGS\@,@CXXFLAGS@,g' \
-		       -e 's,@LIBS\@,@LIBS@,g'
-
-# CORBA specific variables
+INSTALL	:= @INSTALL@
 ORB		:= @ORB@
-ORB_CPPFLAGS	:= @ORB_CPPFLAGS@
-ORB_LIBS	:= @ORB_LIBS@
-IDLCXX		:= @IDLCXX@
-IDLCXXFLAGS	:= @IDLCXXFLAGS@
-IDLDYNFLAGS	:= @IDLDYNFLAGS@
-IDLTIEFLAGS	:= @IDLTIEFLAGS@
+IDLCXX	:= @IDLCXX@
+SHORTCUT	:= @SHORTCUT@
 
 # Other variables
 CPPFLAGS	:= -I../include -I$(top_srcdir)/include @CPPFLAGS@
