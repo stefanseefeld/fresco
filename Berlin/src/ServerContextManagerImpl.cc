@@ -62,7 +62,9 @@ ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c
 throw (SecurityException)
 {
   MutexGuard guard (myMutex);
-  ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, Stage::_duplicate(mySceneRoot));
+  ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), 
+						  ClientContext::_duplicate(c), 
+						  Stage::_duplicate(mySceneRoot));
   temp->_obj_is_ready(this->_boa());
   contexts.push_back(temp);
   return temp->_this();
