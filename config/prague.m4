@@ -27,15 +27,18 @@ AC_DEFUN(PRAGUE_SOCKET_CHECK,[
 cv_inet_sockets=no
 cv_unix_sockets=no
 cv_lib_socket="c"
+cv_have_inet_aton=no
 SOCKET_LIBS=""
 AC_CHECK_HEADERS(sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h)
 AC_CHECK_HEADERS(arpa/inet.h, cv_inet_sockets=yes)
 AC_CHECK_HEADERS(sys/un.h, cv_unix_sockets=yes)
 AC_CHECK_TYPEDEF(socklen_t, sys/socket.h)
-AC_CHECK_LIB(socket, socket, [cv_lib_socket="socket" LIBS="$LIBS -lsocket" SOCKET_LIBS="-lsocket"])
-if test $cv_inet_sockets = yes ; then
-	AC_DEFINE(HAVE_INET_SOCKETS, 1, [Define if you have inet sockets])
-	AC_CHECK_LIB($cv_lib_socket, inet_aton,[AC_DEFINE(HAVE_INET_ATON)])
+AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket" AC_DEFINE(HAVE_INET_SOCKETS, 1,[Define if you have inet sockets.])])
+AC_CHECK_LIB(socket, inet_aton,[cv_have_inet_aton=yes])
+AC_CHECK_LIB(resolv, inet_aton,[LIBS="$LIBS -lresolv" cv_have_inet_aton=yes])
+
+if test $cv_have_inet_aton = yes ; then
+	AC_DEFINE(HAVE_INET_ATON, 1, [Define if you have the inet_aton function.])
 fi
 
 if test $cv_unix_sockets = yes ; then
