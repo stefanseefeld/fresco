@@ -24,7 +24,10 @@ SHELL	= /bin/sh
 cpath	= ./config
 top	= .
 
-subdirs	= config
+
+# we treat config specially, forcing it single-threaded
+#subdirs	= config
+subdirs	=
 #
 # now add package subdirs
 #
@@ -36,6 +39,9 @@ world: all
 	@echo $(subdirs)
 
 all: $(cpath)/packages.mk
+	@(cd config && $(MAKE) -j1) \
+		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
+	test -z "$$fail"
 	@for dir in $(subdirs); do \
 		(cd $$dir && $(MAKE)) \
 		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
