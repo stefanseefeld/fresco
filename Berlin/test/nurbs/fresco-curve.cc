@@ -37,7 +37,7 @@ const unsigned int DEGREE = 3;
 const unsigned int CTRLPOINTS = 10;
 
 using namespace Fresco;
-using Berlin::nurbs;
+using namespace Berlin::nurbs;
 
 typedef _CORBA_Unbounded_Sequence<Vertex> Polyline;
 struct Nurbs
@@ -50,9 +50,9 @@ struct Nurbs
 
 typedef Vertex Vector;
 
-typedef nurbs::domain<Vertex, PARAMS> Ctrl;
-typedef nurbs::domain<Vertex, PARAMS> Points;
-typedef nurbs::domain<double, PARAMS> Weights;
+typedef domain<Vertex, PARAMS> Ctrl;
+typedef domain<Vertex, PARAMS> Points;
+typedef domain<double, PARAMS> Weights;
 
 bool animationFlag = false;          // 'a'
 bool drawingPointsFlag = true;       // 'p'
@@ -275,9 +275,9 @@ int main(int argc, char *argv[])
     srand(time(0));
     for(size_t i = 0; i < CTRLPOINTS; ++i)
     {
-      nurbs1.controls[i] = nurbs::make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
-					      static_cast<double>(rand() % 500) / 100. -1.,
-					      0.);
+      nurbs1.controls[i] = make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
+				       static_cast<double>(rand() % 500) / 100. -1.,
+				       0.);
       nurbs1.weights[i] = 1.0;
     }
     nurbs1.knots.length(CTRLPOINTS + DEGREE + 1);
@@ -310,9 +310,9 @@ int main(int argc, char *argv[])
     srand(time(0));
     for(size_t i = 0; i < CTRLPOINTS; ++i)
     {
-      nurbs2.controls[i] = nurbs::make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
-					      static_cast<double>(rand() % 500) / 100. -1.,
-					      0.);
+      nurbs2.controls[i] = make_vertex(static_cast<double>(i) - (CTRLPOINTS - 1)/2.,
+				       static_cast<double>(rand() % 500) / 100. -1.,
+				       0.);
       nurbs2.weights[i] = 1.0;
     }
     nurbs2.knots.length(CTRLPOINTS + DEGREE + 1);
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
     for (size_t i = 0; i != nurbs2.knots.length(); ++i) nurbs2.knots[i] = i * delta;
   }
 
-  nurbs::array<size_t, PARAMS> steps(4);
+  array<size_t, PARAMS> steps(4);
 
   // evaluation...
   {
@@ -336,34 +336,30 @@ int main(int argc, char *argv[])
     for (size_t i = 0; i != length; ++i)
       (*ctrls[1])[i] = nurbs1.controls[i];
     length = nurbs1.weights.length();
-    nurbs::domain<double, PARAMS> weights(&length);
+    domain<double, PARAMS> weights(&length);
     for (size_t i = 0; i != nurbs1.weights.length(); ++i)
       weights[i] = nurbs1.weights[i];
-    nurbs::array<size_t, PARAMS> degrees(nurbs1.degree);
-    nurbs::array<std::vector<double>, PARAMS> knots;
+    array<size_t, PARAMS> degrees(nurbs1.degree);
+    array<std::vector<double>, PARAMS> knots;
     knots[0].resize(nurbs1.knots.length());
     for (size_t i = 0; i != knots[0].size(); ++i)
       knots[0][i] = nurbs1.knots[i];
     
     // compute the first point of this segment
-    nurbs::array<double, 1> param(knots[0][DEGREE]);
-    Vertex first = nurbs::evaluate_at(*ctrls[1], weights, degrees, knots, param);
+    array<double, 1> param(knots[0][DEGREE]);
+    Vertex first = evaluate_at(*ctrls[1], weights, degrees, knots, param);
     
     param[0] = knots[0][knots[0].size() - 1];
-    Vertex last = nurbs::evaluate_at(*ctrls[1], weights, degrees, knots, param);
+    Vertex last = evaluate_at(*ctrls[1], weights, degrees, knots, param);
     
     // now translate the curve to superpose the first point of this segment
     // with the last point of the last segment
     Vertex delta = (*points[0])[3];
-    delta.x -= first.x, delta.y -= first.y, delta.z -= first.z;
+    delta -= first;
     for (size_t i = 0; i != length; ++i)
-    {
-      (*ctrls[1])[i].x += delta.x;
-      (*ctrls[1])[i].y += delta.y;
-      (*ctrls[1])[i].z += delta.z;
-    }
+      (*ctrls[1])[i] += delta;
     // evaluate the segment
-    points[1] = nurbs::evaluate(*ctrls[1], weights, degrees, knots, steps);
+    points[1] = evaluate(*ctrls[1], weights, degrees, knots, steps);
   }
   {
     size_t length = polyline2.length();
@@ -375,17 +371,11 @@ int main(int argc, char *argv[])
     // now translate the curve to superpose the first point of this segment
     // with the last point of the last segment
     Vertex delta = (*points[1])[points[1]->length() - 1];
-    delta.x -= (*points[2])[0].x;
-    delta.y -= (*points[2])[0].y;
-    delta.z -= (*points[2])[0].z;
+    delta -= (*points[2])[0];
     for (size_t i = 0; i != length; ++i)
     {
-      (*points[2])[i].x += delta.x;
-      (*points[2])[i].y += delta.y;
-      (*points[2])[i].z += delta.z;
-      (*ctrls[2])[i].x += delta.x;
-      (*ctrls[2])[i].y += delta.y;
-      (*ctrls[2])[i].z += delta.z;
+      (*points[2])[i] += delta;
+      (*ctrls[2])[i] += delta;
     }
     
     {
@@ -394,21 +384,21 @@ int main(int argc, char *argv[])
       for (size_t i = 0; i != length; ++i)
 	(*ctrls[3])[i] = nurbs2.controls[i];
       length = nurbs2.weights.length();
-      nurbs::domain<double, PARAMS> weights(&length);
+      domain<double, PARAMS> weights(&length);
       for (size_t i = 0; i != nurbs2.weights.length(); ++i)
 	weights[i] = nurbs2.weights[i];
-      nurbs::array<size_t, PARAMS> degrees(nurbs2.degree);
-      nurbs::array<std::vector<double>, PARAMS> knots;
+      array<size_t, PARAMS> degrees(nurbs2.degree);
+      array<std::vector<double>, PARAMS> knots;
       knots[0].resize(nurbs2.knots.length());
       for (size_t i = 0; i != knots[0].size(); ++i)
 	knots[0][i] = nurbs2.knots[i];
 
       // compute the first point of this segment
-      nurbs::array<double, 1> param(knots[0][DEGREE]);
-      Vertex first = nurbs::evaluate_at(*ctrls[3], weights, degrees, knots, param);
+      array<double, 1> param(knots[0][DEGREE]);
+      Vertex first = evaluate_at(*ctrls[3], weights, degrees, knots, param);
 
       param[0] = knots[0][knots[0].size() - 1];
-      Vertex last = nurbs::evaluate_at(*ctrls[3], weights, degrees, knots, param);
+      Vertex last = evaluate_at(*ctrls[3], weights, degrees, knots, param);
 
       // now translate the curve to superpose the first point of this segment
       // with the last point of the last segment
@@ -421,7 +411,7 @@ int main(int argc, char *argv[])
 	  (*ctrls[3])[i].z += delta.z;
 	}
       // evaluate the segment
-      points[3] = nurbs::evaluate(*ctrls[3], weights, degrees, knots, steps);
+      points[3] = evaluate(*ctrls[3], weights, degrees, knots, steps);
     }
   }
 
