@@ -1,9 +1,14 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <seefelds@MAGELLAN.UMontreal.CA>
+ * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
+ *
+ * this code is based on code from Fresco.
+ * Copyright (c) 1987-91 Stanford University
+ * Copyright (c) 1991-94 Silicon Graphics, Inc.
+ * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,26 +26,27 @@
  * MA 02139, USA.
  */
 
-#ifndef _ImageKit_idl
-#define _ImageKit_idl
+#ifndef _ImageKitImpl_hh
+#define _ImageKitImpl_hh
 
-#include "Types.idl"
-#include "Cloneable.idl"
-#include "Raster.idl"
+#include "Warsaw/ImageKit.hh"
+#include "Warsaw/Raster.hh"
+#include "Warsaw/config.hh"
+#include "Berlin/CloneableImpl.hh"
+#include <vector>
 
-/*
- * Raster holds the detailed image data corresponding to a picture
- * or texture mapping on the screen (or in memory).
- *
- * It is generally contained within an Image object, which handles
- * all of the nasty details related to layout and so forth.
- *
- */
-
-interface ImageKit : Cloneable
+class ImageKitImpl : implements(ImageKit), virtual public CloneableImpl
 {
-	Raster empty();						// Returns a null raster
-	Raster create(in string file);		// Create from a file
+public:
+    ImageKitImpl();
+    virtual ~ImageKitImpl();
+
+    Raster_ptr empty();
+	Raster_ptr create(char* file);
+
+
+protected:
+    vector<Raster*> rasters;
 };
 
-#endif /* _ImageKit_idl */
+#endif

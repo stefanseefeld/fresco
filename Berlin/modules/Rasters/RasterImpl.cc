@@ -49,6 +49,7 @@ RasterImpl::~RasterImpl()
 {
 	// delete data;
 	png_destroy_read_struct(&rpng, &rinfo, 0);
+	delete[] data;
 }
 
 void RasterImpl::load(const Data& buffer)
@@ -56,36 +57,35 @@ void RasterImpl::load(const Data& buffer)
 	/*
 	 * free the old data
 	 */
-	delete data;
+	delete[] data;
 	data = NULL;
 	
 	/*
 	 * create streambuf and associate it with the sequence
 	 */
-	streambuf sbuf;
+	rasterbuf rbuf;
 	unsigned long length = buffer.length();
-	sbuf.setg ((char*)(buffer.NP_data()), (char*)(buffer[length]),
+	rbuf.setg ((char*)(buffer.NP_data()), (char*)(buffer[length]),
 			   (char*)(buffer[length]));
 
 	/*
 	 * read it in
 	 */
-	PNGDecoder decoder(&sbuf);
+ 	PNGDecoder decoder(&rbuf);
 	data = decoder.decode(rpng, rinfo);
 }
 
-void RasterImpl::store(Data *&buffer)
+void RasterImpl::export(Data*& buffer)
 {
-  /*
-   * set up buffer to hold new data
-   */
-  //   buffer.length(...);
-  streambuf sbuf;
-  unsigned long length = buffer->length();
-  sbuf.setp((char*)(buffer->NP_data()), (char*)(buffer+length));
-  /*
-   * create temporary write structures here...
-   */
-  PNGEncoder encoder(&sbuf);
-  encoder.encode(rpng, rinfo, data);
+	/*
+	 * set up buffer to hold new data
+	 */
+	rasterbuf rbuf;
+	unsigned long length = buffer->length();
+	rbuf.setp((char*)(buffer->NP_data()), (char*)(buffer+length));	
+	/*
+	 * create temporary write structures here...
+	 */
+	PNGEncoder encoder(&rbuf);
+	encoder.encode(rpng, rinfo, data);
 }

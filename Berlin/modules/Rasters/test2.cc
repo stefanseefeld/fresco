@@ -22,11 +22,10 @@
 
 #include <iostream>
 #include <fstream>
-#include <png.h>
 #include <GL/glut.h>
 #include <ggi/ggi.h>
 #include <GL/ggimesa.h>
-#include "Image/PNGDecoder.hh"
+#include "Image/RasterImpl.hh"
 
 void display(void);
 void reshape(int w, int h);
@@ -40,32 +39,9 @@ void error(png_structp, png_const_charp msg) { cerr << "error : " << msg << endl
 
 int main(int argc, char* argv[])
 {
-    /*
-     * create decoder
-     */
-    ifstream inFile("test.png");
-    PNGDecoder aBuf(inFile.rdbuf());
-    cout << "Buffer is loaded" << endl;
-     
-    /*
-     * create raster
-     */
-    png_structp aPNG = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, error, warning);
-    png_infop aINFO = png_create_info_struct(aPNG);
-
-	aBuf.getInfo(aPNG, aINFO);
-	
-	mem = aBuf.decode(aPNG, aINFO);
-    cout << "The image is loaded " << endl;
-
-	height = png_get_image_height(aPNG, aINFO);
-	width = png_get_image_width(aPNG, aINFO);
-		
-    /*
-     * Display the image
-     */
-    // First, initialize GGI
-	cout << "# = " << argc << " and " << *argv << endl;
+	RasterImpl rasterfari("test.png");
+	width = rasterfari.getWidth();
+	height = rasterfari.getHeight();
 	
     GGIMesaContext ctx;
     glutInit(&argc, argv);
