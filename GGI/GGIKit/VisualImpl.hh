@@ -53,7 +53,6 @@ private:
   Warsaw::Drawable_var       _drawable;
   int                        _shm;
   GGIDrawable               *_ggi;
-  std::string                _name;
   std::string                _mode;
 };
 

@@ -80,14 +80,16 @@ public:
 		    Warsaw::PixelCoord, Warsaw::PixelCoord,
 		    Warsaw::PixelCoord, Warsaw::PixelCoord);
 
-  virtual ggi_mode        mode() const { return _mode;}
-  virtual ggi_visual_t    visual() const { return _visual;}
+  virtual const std::string &name() const { return _name;}
+  virtual ggi_mode           mode() const { return _mode;}
+  virtual ggi_visual_t       visual() const { return _visual;}
   /*
    * if you really must ask...
    */
   const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (_visual, i);}
   ggi_pixel               map(const Warsaw::Color &) const;
 private:
+  std::string   _name;
   ggi_visual_t  _visual;
   ggi_mode      _mode;
 };

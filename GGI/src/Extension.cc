@@ -74,10 +74,10 @@ DirectBuffer::Guard GGI::DirectBuffer::write_buffer()
   return guard;
 }
 
-::Console::Drawable *SHMDrawableFactory::create_drawable(int shmid,
-							 Warsaw::PixelCoord w,
-							 Warsaw::PixelCoord h,
-							 Warsaw::PixelCoord d)
+::Console::Drawable *GGI::SHMDrawableFactory::create_drawable(int shmid,
+							      Warsaw::PixelCoord w,
+							      Warsaw::PixelCoord h,
+							      Warsaw::PixelCoord d)
 {
   std::ostrstream oss;
   oss << "display-memory:shmid:" << shmid << std::ends;
@@ -96,10 +96,10 @@ DirectBuffer::Guard GGI::DirectBuffer::write_buffer()
   return drawable;
 }
 
-::GGIDrawable *GGIDrawableFactory::create_drawable(int shmid,
-						   Warsaw::PixelCoord w,
-						   Warsaw::PixelCoord h,
-						   Warsaw::PixelCoord d)
+::GGIDrawable *GGI::GGIDrawableFactory::create_drawable(int shmid,
+							Warsaw::PixelCoord w,
+							Warsaw::PixelCoord h,
+							Warsaw::PixelCoord d)
 {
   std::ostrstream oss;
   oss << "display-memory:-input:shmid:" << shmid << std::ends;

@@ -66,7 +66,8 @@ VisualImpl::~VisualImpl()
 
 char *VisualImpl::name()
 {
-  return CORBA::string_dup(_name.c_str());
+  cout << _ggi->name() << endl;
+  return CORBA::string_dup(_ggi->name().c_str());
 }
 
 char *VisualImpl::mode()

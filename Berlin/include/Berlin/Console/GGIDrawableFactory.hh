@@ -25,6 +25,7 @@
 
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
+#include <string>
 extern "C"
 {
 #include <ggi/ggi-unix.h>
@@ -33,8 +34,9 @@ extern "C"
 class GGIDrawable : public virtual ::Console::Drawable
 {
 public:
-  virtual ggi_mode     mode() const = 0;
-  virtual ggi_visual_t visual() const = 0;
+  virtual const std::string &name() const = 0;
+  virtual ggi_mode           mode() const = 0;
+  virtual ggi_visual_t       visual() const = 0;
 };
 
 class GGIDrawableFactory : virtual public Console::Extension

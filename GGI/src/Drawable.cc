@@ -27,6 +27,7 @@ using namespace Prague;
 using namespace Warsaw;
 
 GGI::Drawable::Drawable(const char *display, PixelCoord w, PixelCoord h, PixelCoord d) // throw (exception)
+  : _name(display ? display : "")
 {
   if (display) _visual = ggiOpen(display, 0);
   else _visual = ggiOpen(0);
