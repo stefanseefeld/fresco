@@ -21,6 +21,7 @@
  */
 #include "Berlin/GGI.hh"
 #include "Prague/Sys/FdSet.hh"
+#include "Prague/Sys/Tracer.hh"
 
 vector<GGI::Drawable *> GGI::drawables;
 
@@ -131,6 +132,7 @@ static void writeEvent(ggi_event &e) {
 
 bool GGI::Drawable::nextEvent(ggi_event &event)
 {
+//   Prague::Trace trace("GGI::Drawable::nextEvent");
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
 
@@ -155,12 +157,7 @@ bool GGI::Drawable::nextEvent(ggi_event &event)
 		{
 		  // consume them all
 		  ggiEventRead(vis, &event, move_mask); 	  
-		  if (event.any.type == evPtrAbsolute)
-		    {
-		      x = event.pmove.x;
-		      y = event.pmove.y;
-		    }
-		  else
+		  if (event.any.type == evPtrRelative)
 		    {
 		      x += event.pmove.x;
 		      y += event.pmove.y;
@@ -168,7 +165,6 @@ bool GGI::Drawable::nextEvent(ggi_event &event)
 		}
 	      if (event.any.type == evPtrRelative)
 		{
-		  // 	event.any.type = evPtrAbsolute;
 		  event.pmove.x = x;
 		  event.pmove.y = y;
 		}

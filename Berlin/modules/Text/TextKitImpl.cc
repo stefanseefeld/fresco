@@ -79,15 +79,15 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 {
   MutexGuard guard(staticMutex);
   unsigned long len = u.length();
-  if (len == 1) {
-    return this->ch(u[0]);
-  } else {
-    Graphic_var hbox = layout->hbox();
-    for (unsigned int i = 0; i < len; ++i) {
-      hbox->append(this->ch(u[i]));
+  if (len == 1) return ch(u[0]);
+  else 
+    {
+      Graphic_var hbox = layout->hbox();
+      hbox->append(Graphic_var(strut()));
+      for (unsigned int i = 0; i < len; ++i)
+	hbox->append(this->ch(u[i]));
+      return hbox._retn();
     }
-    return hbox._retn();
-  }
 }
 
 Graphic_ptr TextKitImpl::ch(Unichar ch) {
@@ -104,7 +104,7 @@ Graphic_ptr TextKitImpl::strut()
 {
   MutexGuard guard(localMutex);
   if (! _strut) {
-    Unistring us = Unicode::toCORBA(Unicode::String("M"));
+    Unistring us = Unicode::toCORBA(Unicode::String("Mg"));
     Graphic::Requisition r;
     canonicalDK->allocateText(us, r);
     _strut = new Strut (r);

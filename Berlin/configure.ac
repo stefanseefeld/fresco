@@ -126,7 +126,7 @@ for kit in $enable_drawing_kits ; do
 	fi
 done
 
-tested_drawing_kits="Drawing/FT"
+tested_drawing_kits=
 if test ".$enable_libArt" = .yes ; then
 	BERLIN_LIBART_CHECK
 	if test ".$ac_cv_lib_libArt" = .yes ; then

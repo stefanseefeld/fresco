@@ -30,7 +30,7 @@
 using namespace Prague;
 
 EventManager::EventManager(ScreenImpl *s)
-  : screen(s), drawable(GGI::drawable())
+  : ptrPositionX(0), ptrPositionY(0), screen(s), drawable(GGI::drawable())
 {
   focus.push_back(new NonPositionalFocus(0, screen)); // keyboard
   focus.push_back(new PositionalFocus(1, screen));    // mouse
@@ -51,7 +51,7 @@ bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
 
 void EventManager::nextEvent()
 {
-  //  Trace trace("EventManager::nextEvent");
+//   Trace trace("EventManager::nextEvent");
   ggi_event e;
   if (!drawable->nextEvent(e)) return; // repair
   Input::Event event;

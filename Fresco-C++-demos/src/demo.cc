@@ -45,7 +45,6 @@ int main(int argc, char **argv)
   TextDemo *text = new TextDemo(application);
   EditTextDemo *etext = new EditTextDemo(application);
   RasterDemo *raster = new RasterDemo(application);
-//   TransformDemo *transform = new TransformDemo(application);
   LogoDemo *logo = new LogoDemo(application);
   FocusDemo *focus = new FocusDemo(application);
   ViewportDemo *viewport = new ViewportDemo(application);
@@ -57,7 +56,6 @@ int main(int argc, char **argv)
   delete viewport;
   delete focus;
   delete logo;
-//   delete transform;
   delete raster;
   delete etext;
   delete text;

@@ -49,7 +49,7 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   virtual void bind(ServerContext_ptr);
 
   Graphic_ptr chunk(const Unistring & u);
-  Graphic_ptr ch(const Unichar c);
+  Graphic_ptr ch(Unichar c);
   Graphic_ptr strut();
   Graphic_ptr simpleViewer(TextBuffer_ptr);  
   Graphic_ptr terminal(StreamBuffer_ptr);

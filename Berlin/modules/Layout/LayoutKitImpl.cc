@@ -438,11 +438,11 @@ Graphic_ptr LayoutKitImpl::marginLRBT(Graphic_ptr g, Coord lmargin, Coord rmargi
 
 Graphic_ptr LayoutKitImpl::marginLRBTFlexible(Graphic_ptr g, Coord lmargin, Coord lstretch, Coord lshrink,
 					      Coord rmargin, Coord rstretch, Coord rshrink,
-					      Coord bmargin, Coord bstretch, Coord bshrink,
-					      Coord tmargin, Coord tstretch, Coord tshrink)
+					      Coord tmargin, Coord tstretch, Coord tshrink,
+					      Coord bmargin, Coord bstretch, Coord bshrink)
 {
   Placement *placement = new Placement(new LayoutMargin(lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
-							bmargin, bstretch, bshrink, tmargin, tstretch, tshrink));
+							tmargin, tstretch, tshrink, bmargin, bstretch, bshrink));
   placement->_obj_is_ready(_boa());
   placement->body(g);
   graphics.push_back(placement);
@@ -468,15 +468,15 @@ Graphic_ptr LayoutKitImpl::hmarginLRFlexible(Graphic_ptr g, Coord lmargin, Coord
 
 Graphic_ptr LayoutKitImpl::vmargin(Graphic_ptr g, Coord both) { return marginLRBT(g, 0., 0., both, both);}
 
-Graphic_ptr LayoutKitImpl::vmarginBT(Graphic_ptr g, Coord bmargin, Coord tmargin)
+Graphic_ptr LayoutKitImpl::vmarginBT(Graphic_ptr g, Coord tmargin, Coord bmargin)
 {
-  return marginLRBT(g, 0., 0., bmargin, tmargin);
+  return marginLRBT(g, 0., 0., tmargin, bmargin);
 }
 
-Graphic_ptr LayoutKitImpl::vmarginBTFlexible(Graphic_ptr g, Coord bmargin, Coord bstretch, Coord bshrink,
-					     Coord tmargin, Coord tstretch, Coord tshrink)
+Graphic_ptr LayoutKitImpl::vmarginBTFlexible(Graphic_ptr g, Coord tmargin, Coord tstretch, Coord tshrink,
+					     Coord bmargin, Coord bstretch, Coord bshrink)
 {
-  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., bmargin, bstretch, bshrink, tmargin, tstretch, tshrink);
+  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., tmargin, tstretch, tshrink, bmargin, bstretch, bshrink);
 }
 
 Graphic_ptr LayoutKitImpl::lmargin(Graphic_ptr g, Coord natural)
@@ -501,7 +501,7 @@ Graphic_ptr LayoutKitImpl::rmarginFlexible(Graphic_ptr g, Coord natural, Coord s
 
 Graphic_ptr LayoutKitImpl::bmargin(Graphic_ptr g, Coord natural)
 {
-  return marginLRBT(g, 0., 0., natural, 0.);
+  return marginLRBT(g, 0., 0., 0., natural);
 }
 
 Graphic_ptr LayoutKitImpl::bmarginFlexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
@@ -511,12 +511,12 @@ Graphic_ptr LayoutKitImpl::bmarginFlexible(Graphic_ptr g, Coord natural, Coord s
 
 Graphic_ptr LayoutKitImpl::tmargin(Graphic_ptr g, Coord natural)
 {
-  return marginLRBT(g, 0., 0., 0., natural);
+  return marginLRBT(g, 0., 0., natural, 0.);
 }
 
 Graphic_ptr LayoutKitImpl::tmarginFlexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
 {
-  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., 0., 0., 0., natural, stretch, shrink);
+  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., natural, stretch, shrink, 0., 0., 0.);
 }
 
 extern "C" KitFactory *load()

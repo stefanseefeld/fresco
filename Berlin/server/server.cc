@@ -110,6 +110,7 @@ int main(int argc, char **argv)
       Logger::set(Logger::drawing);
       Logger::set(Logger::traversal);
       Logger::set(Logger::widget);
+      Logger::set(Logger::text);
       Tracer::logging(true);
     }
 
