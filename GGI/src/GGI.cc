@@ -23,6 +23,7 @@
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Console/GGI/GGI.hh"
+#include <strstream.h>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -121,6 +122,24 @@ GGIDrawable *GGIConsole::drawable()
 GGIDrawable *GGIConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
 {
   _drawables.push_back(new GGIDrawable("display-memory", w, h, d));
+  return _drawables.back();
+}
+
+GGIDrawable *GGIConsole::create_shm_drawable(int id, PixelCoord w, PixelCoord h, PixelCoord d)
+{
+  std::ostrstream oss;
+  oss << "display-memory:-input:shmid:" << id << std::ends;
+  const char *name = oss.str();
+  GGIDrawable *drawable;
+  try { drawable = new GGIDrawable(name, w, h, d);}
+  catch (...)
+    {
+      Logger::log(Logger::console) << "Error : can't open shm GGIDrawable" << std::endl;
+      throw;
+    }
+  _drawables.push_back(drawable);
+  Logger::log(Logger::console) << "open ggi display with name :'" << name << '\'' << std::endl;
+  delete [] name;
   return _drawables.back();
 }
 

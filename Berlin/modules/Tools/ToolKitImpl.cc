@@ -388,12 +388,16 @@ Controller_ptr ToolKitImpl::terminal(Graphic_ptr g, StreamBuffer_ptr buffer)
   return input->_this();
 }
 
-Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height)
+Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height) throw (SecurityException, CreationFailureException)
 {
   Trace trace("ToolKitImpl::create_canvas");
-  CanvasImpl *canvas = new CanvasImpl(width, height);
-  activate(canvas);
-  return canvas->_this();
+  try
+    {
+      CanvasImpl *canvas = new CanvasImpl(width, height);
+      activate(canvas);
+      return canvas->_this();
+    }
+  catch (const std::runtime_error &e) { throw CreationFailureException();}
 }
 
 extern "C" KitImpl *load()

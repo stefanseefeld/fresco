@@ -173,11 +173,11 @@ module Warsaw
       //.        this one here to avoid confusion? -- tobias
       Controller   group(in Graphic g);
       //. Returns a graphic w pixels wide and h pixels high. It is
-      //. supposed to be used for video playback and simular things.
+      //. supposed to be used for video playback and similar things.
       //. Don't use it if not absolutly necessary! Some DrawingKits
       //. will not be able to rotate a Convas and the Canvas definitly
       //. breaks device independence!
-      Canvas       create_canvas(in PixelCoord w, in PixelCoord h);
+      Canvas       create_canvas(in PixelCoord w, in PixelCoord h) raises(SecurityException, CreationFailureException);
     };
 };
 

@@ -51,6 +51,7 @@ public:
   virtual Pointer *pointer() = 0;
   virtual Drawable *drawable() = 0;
   virtual Drawable *create_drawable(Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord) = 0;
+  virtual Drawable *create_shm_drawable(int, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord) = 0;
 
   Warsaw::Drawable_ptr activate_drawable(Drawable *);
   PortableServer::Servant reference_to_servant(Warsaw::Drawable_ptr);

@@ -134,6 +134,11 @@ SDLDrawable *SDLConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord 
   return _drawables.back();
 }
 
+SDLDrawable *SDLConsole::create_shm_drawable(int id, PixelCoord w, PixelCoord h, PixelCoord d)
+{
+  throw std::runtime_error("SDL shm drawables not yet supported");
+}
+
 SDLDrawable *SDLConsole::reference_to_servant(Warsaw::Drawable_ptr drawable)
 {
   Trace trace("SDLConsole::reference_to_servant");
