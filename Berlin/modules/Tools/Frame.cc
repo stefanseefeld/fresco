@@ -114,6 +114,8 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   _allocation->yalign = a.align;
   delta.y = a.begin - _allocation->lower.y;
   delta.z = 0;
+
+  _allocation->lower.z = _allocation->upper.z = _allocation->zalign = 0.;
   
   info.allocation->copy(Region_var(_allocation->_this()));
   info.transformation->translate(delta);
