@@ -211,7 +211,7 @@
           <title>scene</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/scene.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/scene.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -219,7 +219,7 @@
           <title>scene graph corresponding to the snapshot in ...</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/scene-graph.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/scene-graph.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -240,7 +240,7 @@
           <title>trail</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/trail.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/trail.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -275,7 +275,7 @@
           <title>controller/focus stack</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/cstack.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/cstack.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -298,7 +298,7 @@
           <title>trail, the unaccessible graphics are grayed out</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/gstack.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/gstack.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -313,7 +313,7 @@
           <title>control graph</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/control-graph.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/control-graph.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -341,7 +341,7 @@
           <title>event and focus management</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/events.jpg" align="center" format="JPG"/>
+              <imagedata fileref="figures/events.png" align="center" format="PNG"/>
             </imageobject>
           </mediaobject>
         </figure>

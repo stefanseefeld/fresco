@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000, 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000, 2001 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -20,60 +20,49 @@
 # MA 02139, USA.
 
 SHELL		:= /bin/sh
-VERSION		:= @VERSION@
 
-top_srcdir	:= @topdir@
-builddir	:= ../../..
-cdir		:= $(builddir)/config
-srcdir		:= $(top_srcdir)/doc/Tutorial/Berlin
-ddir		:= $(builddir)/doc/Tutorial/html
+abs_top_srcdir	:= @abs_top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+docdir		:= $(top_builddir)/share/doc/Berlin
 
-xslt		:= @XSLT@
-fop		:= @FOP@
-dbxsl		:= @DBXSL@
+XSLT		:= xsltproc
 
 SRC		:= hello.xml kits.xml hello-list.xml book.xml
-FIG		:= $(wildcard $(srcdir)/figures/*.dia)
-EPS		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.eps, $(FIG))
-JPG		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.jpg, $(FIG))
+SVG		:= $(wildcard $(srcdir)/figures/*.svg)
+EPS		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.eps, $(SVG))
+PNG		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.png, $(SVG))
 
 .PHONY: all
 .PHONY: depclean clean distclean maintainer-clean dist clean
 
-html		:= book.html # change that as soon as chunking is more widespreadly available
-fo		:= book.fo
-ps		:= book.ps
-pdf		:= book.pdf
-
-TARGETS		:= $(html) #$(ps) $(pdf)
+TARGETS		:= html
 
 vpath %.xml  $(srcdir)
+vpath %.svg  $(srcdir)
 
 all:	$(TARGETS)
 
-$(html):	$(JPG) $(SRC)
-#	(cd ../html/Berlin && $(xslt) $(srcdir)/book.xml $(dbxsl) > book.html)
-	$(xslt) $(srcdir)/book.xml $(dbxsl)/html/docbook.xsl > book.html
+# assume chunked output
+html:	$(PNG)
+ifeq ($(xsl),)
+	@echo "please use \"$(MAKE) xsl=<stylesheet>\""
+else
+	$(XSLT) $(xsl) $(srcdir)/book.xml
+endif
 
-$(ps):	$(html)
-#	$(xslt) $(srcdir)/book.xml $(dbxsl)/fo/docbook.xsl > book.fo
-	html2ps -o $@ $<
-
-$(fo): $(SRC)
-	$(xslt) --define="fop.extensions=1" $(srcdir)/book.xml $(dbxsl)/html/docbook.xsl > book.html
-
-$(pdf):	$(fo)
-	$(FOP) -fo $< -pdf $@
+install: html
 
 clean:
-	rm -fr $(TARGETS) figures/*.jpg figures/*.pdf figures/*.eps
+	rm -fr *.html figures/*.png figures/*.eps
 
 distclean maintainer-clean:
 	rm -f Makefile
 
-figures/%.eps: $(srcdir)/figures/%.dia
-	dia --nosplash --export=$@ $< 
+figures/%.eps: figures/%.svg
+	convert $< $@
 
-figures/%.jpg: figures/%.eps
-	mogrify -format jpg -geometry 55%x55% $<
+figures/%.png: figures/%.svg
+	convert $< $@
 

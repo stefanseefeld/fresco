@@ -12,7 +12,7 @@
     <para>Berlin's principal paradigm is composition. All complex objects are compositions out of
     small, leightweight building blocks, each from a specific domain, such as 'text', 'layout',
     'figure'. Let's have a look at a simple button widget.</para>
-    <figure id="fig:about-button" float="1">
+    <figure id="fig.about-button" float="1">
       <title>A button...</title>
       <mediaobject>
         <imageobject>
@@ -20,7 +20,7 @@
         </imageobject>
       </mediaobject>
     </figure>
-    <figure id="fig:about-button-sg" float="1">
+    <figure id="fig.about-button-sg" float="1">
       <title>...and its underlaying scene graph</title>
       <mediaobject>
         <imageobject>
@@ -51,7 +51,7 @@
     various styles through the use of exchangable implementations.</para>
     <para>Clients don't instantiate objects by themselfs. Instead, they ask factory objects to create objects 
     for them.</para>
-    <figure id="fig:abstract-factory" float="1">
+    <figure id="fig.abstract-factory" float="1">
       <title>the abstract factory pattern</title>
       <mediaobject>
         <imageobject>
@@ -102,7 +102,7 @@
     table (no worries, kits are almost stateless, so this isn't as expensive as it sounds), such that the lookup can be implemented by means of
     CORBA's own type system (objects have an '_is_a(in string repoId)' method). If an appropriate object was found, it is simply cloned and the
     new copy is assigned to the client's ServerContext.</para>
-    <figure id="fig:prototype" float="1">
+    <figure id="fig.prototype" float="1">
       <title>the prototype pattern</title>
       <mediaobject>
         <imageobject>

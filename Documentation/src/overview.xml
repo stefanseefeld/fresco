@@ -13,15 +13,23 @@
     </para>
     <section>
       <title>Region management with the Scene Graph</title>
+      <para>
+      </para>
     </section>
     <section>
       <title>Focus and Event management with the Control Graph</title>
+      <para>
+      </para>
     </section>
     <section>
       <title>Connecting the application logic with the UI using MVC</title>
+      <para>
+      </para>
     </section>
     <section>
       <title>Compound Applications serving documents: CDA</title>
+      <para>
+      </para>
     </section>
   </section>
 </chapter>

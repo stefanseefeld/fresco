@@ -87,6 +87,9 @@ fi
 if test -d $srcdir/Fresco-Python-demos -a ".$config_python_demos" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-Python-demos)
 fi
+if test -d $srcdir/Documentation; then
+  AC_CONFIG_SUBDIRS(Documentation)
+fi
 if test -d $srcdir/contrib/daVinci; then
   AC_CONFIG_SUBDIRS(contrib/daVinci)
 fi

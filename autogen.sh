@@ -36,5 +36,6 @@ conf Fresco-Java
 conf Fresco-Perl
 conf Fresco-C++-demos
 conf Fresco-Python-demos
+conf Documentation
 conf_with_header contrib/daVinci
 
