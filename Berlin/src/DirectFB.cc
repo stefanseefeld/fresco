@@ -150,7 +150,6 @@ DirectFBConsole::DirectFBConsole(int &argc,
  	Logger::log(Logger::drawing) << "DirectFBInit failed (" << ret << ")" << endl;
  	exit(-1);
     }
-    cerr << "Finished initializing DirectFB." << endl;
 
     ret = DirectFBCreate(&s_dfb);
     if(ret) {
@@ -338,13 +337,50 @@ void DirectFBConsole::wakeup() {
 Input::Event *DirectFBConsole::synthesize(const DFBInputEvent &e) {
     Prague::Trace("DirectFBConsole::synthesize(...)");
     Input::Event_var event = new Input::Event;
+    Input::Position position;
 
     switch (e.flags) {
     case DIEF_AXISABS:
-	std::cerr << "DirectFBConsole::synthesize: AXISABS"; 
+	switch(e.axis) {
+	case DIAI_X:
+	    m_position[0] = e.axisabs;
+	    break;
+	case DIAI_Y:
+	    m_position[1] = e.axisabs;
+	    break;
+	case DIAI_Z:
+	    return event._retn();
+	default:
+	    return event._retn();
+	}
+	position.x = m_position[0] / m_resolution[0];
+	position.y = m_position[1] / m_resolution[1];
+	event->length(1);
+	event[0].dev = 1;
+	event[0].attr.location(position);
 	break;
     case DIEF_AXISREL:
-	std::cerr << "DirectFBConsole::synthesize: AXISREL"; 
+	switch(e.axis) {
+	case DIAI_X:
+	    if (m_position[0] + e.axisrel >= 0 &&
+		m_position[0] + e.axisrel <= m_size[0])
+		m_position[0] += e.axisrel;
+	    break;
+	case DIAI_Y:
+	    if (m_position[1] + e.axisrel >= 0 &&
+		m_position[1] + e.axisrel <= m_size[1])
+		m_position[1] += e.axisrel;
+	    break;
+	case DIAI_Z:
+	    return event._retn();
+	default:
+	    return event._retn();
+	}
+	position.x = m_position[0] / m_resolution[0];
+	position.y = m_position[1] / m_resolution[1];
+	event->length(1);
+	event[0].dev = 1;
+	event[0].attr.location(position);
 	break;
     case DIEF_BUTTON:
 	Input::Toggle toggle;
@@ -353,7 +389,6 @@ Input::Event *DirectFBConsole::synthesize(const DFBInputEvent &e) {
 	else
 	    toggle.actuation = Input::Toggle::release;
 	toggle.number = e.button - DIBI_FIRST;
-	Input::Position position;
 	position.x = m_position[0]/m_resolution[0];
 	position.y = m_position[1]/m_resolution[1];
 	position.z = 0;
