@@ -64,8 +64,7 @@ void Stepper::release(PickTraversal_ptr traversal, const Input::Event &event)
 void Stepper::step()
 {
   Trace trace("Stepper::step");
-  CORBA::Any any;
-  execute(any);
+  execute();
 }
 
 void Stepper::start()

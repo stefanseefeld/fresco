@@ -37,10 +37,13 @@ class TriggerImpl : public virtual POA_Fresco::Trigger,
   ~TriggerImpl();
   void action(Fresco::Command_ptr);
   Fresco::Command_ptr action();
+  void payload(const CORBA::Any &);
+  CORBA::Any *payload();
   virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
   virtual void key_press(const Fresco::Input::Event &);
-  void execute(const CORBA::Any &);
+  void execute();
  private:
+  CORBA::Any_var      _data;
   Prague::Mutex       _mutex;
   Fresco::Command_var _command;
 };

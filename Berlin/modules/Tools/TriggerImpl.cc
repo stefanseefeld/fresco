@@ -29,7 +29,8 @@
 using namespace Prague;
 using namespace Fresco;
 
-TriggerImpl::TriggerImpl() : ControllerImpl(false) {}
+TriggerImpl::TriggerImpl() : ControllerImpl(false), _data(new CORBA::Any) {
+}
 TriggerImpl::~TriggerImpl()
 {
   Trace trace("Trigger::~Trigger");
@@ -55,6 +56,18 @@ Command_ptr TriggerImpl::action()
   return Command::_duplicate(_command);
 }
 
+void TriggerImpl::payload(const CORBA::Any &a)
+{
+  Trace trace("TriggerImpl::payload");
+  _data = new CORBA::Any(a);
+}
+
+CORBA::Any *TriggerImpl::payload()
+{
+  CORBA::Any_var any(_data);
+  return any._retn();
+}
+
 void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
   /*
@@ -63,8 +76,7 @@ void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event
    */
   if (inside(traversal) && test(Fresco::Controller::pressed))
     {
-      CORBA::Any dummy;
-      try { execute(dummy);}
+      try { execute();}
       catch (...) {}
     }
   ControllerImpl::release(traversal, event);
@@ -78,20 +90,19 @@ void TriggerImpl::key_press(const Input::Event &event)
       set(Fresco::Controller::pressed);
       if (test(Fresco::Controller::pressed))
 	{
-	  CORBA::Any dummy;
-	  execute(dummy);
+	  execute();
 	  clear(Fresco::Controller::pressed);
 	}
     }
   else ControllerImpl::key_press(event);
 }
 
-void TriggerImpl::execute(const CORBA::Any &any)
+void TriggerImpl::execute()
 {
   Trace trace("TriggerImpl::execute");
   Prague::Guard<Mutex> guard(_mutex);
   if (!CORBA::is_nil(_command))
-    try { _command->execute(any);}
+    try { _command->execute(_data);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _command = Fresco::Command::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _command = Fresco::Command::_nil();}
 }
