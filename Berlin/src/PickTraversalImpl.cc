@@ -45,27 +45,27 @@ PickTraversalImpl::~PickTraversalImpl()
   delete mem;
 }
 
-CORBA::Boolean PickTraversalImpl::intersectsAllocation()
+CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr region)
 {
-#if 1 // transform the pointer's location into the local CS
-  Vertex local = pointer.location;
+  Transform::Matrix matrix;
   Transform_var transform = transformation();
-  transform->inverseTransformVertex(local);
-  Region_var region = allocation();
-  if (region->contains(local)) return true;
-#else // transform the local CS to global coordinates
-  Region_var r = allocation();
-  Transform_var t = transformation();
-  RegionImpl region(r, t);
-  if (region.contains(pointer.location)) return true;
-#endif
-  return false;
+  transform->storeMatrix(matrix);
+  Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+  if (d == 0.) return false;
+  Coord x = pointer.location.x - matrix[0][3];
+  Coord y = pointer.location.y - matrix[1][3];
+  Vertex local;
+  local.x = (matrix[1][1] * x - matrix[0][1] * y)/d;
+  local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
+  Vertex lower, upper;
+  region->bounds(lower, upper);
+  return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
 }
 
-CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr allocation)
+CORBA::Boolean PickTraversalImpl::intersectsAllocation()
 {
-  if (allocation->contains(pointer.location)) return true;
-  else return false;
+  Region_var region = allocation();
+  return intersectsRegion(region);
 }
 
 void PickTraversalImpl::enterController(Controller_ptr c)
