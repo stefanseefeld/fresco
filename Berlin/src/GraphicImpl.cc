@@ -284,11 +284,11 @@ void GraphicImpl::remove_child_graphic(Tag) {}
 
 Tag GraphicImpl::unique_parent_id()
 {
-  Tag t = 0;
-  do
-    if (find_if(_parents.begin(), _parents.end(), localId_eq(t)) == _parents.end())
+  Tag t;
+  for (t = 0;
+       find_if (_parents.begin(), _parents.end(), localId_eq(t)) != _parents.end();
+       t++);
       return t;
-  while(++t);
 }
 
 Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
