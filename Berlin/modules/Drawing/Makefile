@@ -21,7 +21,7 @@
 
 SHELL	= /bin/sh
 
-subdirs	= FT openGL
+subdirs	= openGL
 
 all:
 	@for dir in ${subdirs}; do \

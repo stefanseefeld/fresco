@@ -19,11 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-# This is a mess. sorry dudes, it had to be done for the install target.
-# --Aaron
-
 SHELL	= /bin/sh
-subdirs = gltt
 
 top	= ../../..
 cpath	= $(top)/config
@@ -34,12 +30,14 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(GL_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(GL_LIBS) -lFT #-lttf
+LIBS	= -lPrague -lBerlin $(GL_LIBS)# -lFT #-lttf
 
 #GLFont.cc GLUnifont.cc
 
-SRC	= GLRaster.cc GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
-	  GLDrawingKit.cc
+#SRC	= GLRaster.cc GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
+#	  GLDrawingKit.cc
+
+SRC	= GLRaster.cc GLDrawingKit.cc
 
 TARGET	= $(mpath)/libGLDrawing.so
 

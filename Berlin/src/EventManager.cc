@@ -33,11 +33,13 @@ EventManager::EventManager(ScreenImpl *s)
 {
   focus.push_back(new NonPositionalFocus(0, screen)); // keyboard
   focus.push_back(new PositionalFocus(1, screen));    // mouse
+  focus[0]->_obj_is_ready(CORBA::BOA::getBOA());
+  focus[1]->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 EventManager::~EventManager()
 {
-  for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) delete *i;
+  for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) (*i)->_dispose();
 }
 
 bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
@@ -49,70 +51,80 @@ bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
 void EventManager::nextEvent()
 {
   SectionLog section("EventManager::nextEvent");
-  ggi_event event;
-  if (!GGI::drawable()->nextEvent(event)) return; // repair
-  switch (event.any.type)
+  ggi_event e;
+  if (!GGI::drawable()->nextEvent(e)) return; // repair
+  Input::Event event;
+  switch (e.any.type)
     {
     case evKeyPress:
       {
 	Input::Toggle toggle;
 	toggle.actuation = Input::Toggle::press;
-	toggle.number = event.key.sym;
-	Input::Event event; event.length(1);
+	toggle.number = e.key.sym;
+	event.length(1);
 	event[0].dev = 0;
 	event[0].attr.kselection(toggle);
-
-	focus[0]->dispatch(event);
 	break;
       }
     case evKeyRepeat:
       {
 	Input::Toggle toggle;
 	toggle.actuation = Input::Toggle::hold;
-	toggle.number = event.key.sym;
-	Input::Event event; event.length(1);
+	toggle.number = e.key.sym;
+	event.length(1);
 	event[0].dev = 0;
 	event[0].attr.kselection(toggle);
-
-	focus[0]->dispatch(event);
 	break;
       }
     case evPtrRelative:
     case evPtrAbsolute:
       {
-	if (event.any.type == evPtrRelative)
+	if (e.any.type == evPtrRelative)
 	  {
-	    if (ptrPositionX + event.pmove.x >= 0 &&
-		ptrPositionX + event.pmove.x < screen->width()) ptrPositionX += event.pmove.x;
-	    if (ptrPositionY + event.pmove.y >= 0 &&
-		ptrPositionY + event.pmove.y < screen->height()) ptrPositionY += event.pmove.y;	  
+	    if (ptrPositionX + e.pmove.x >= 0 &&
+		ptrPositionX + e.pmove.x < screen->width()) ptrPositionX += e.pmove.x;
+	    if (ptrPositionY + e.pmove.y >= 0 &&
+		ptrPositionY + e.pmove.y < screen->height()) ptrPositionY += e.pmove.y;	  
 	  }
 	else
 	  {
-	    ptrPositionX = event.pmove.x;
-	    ptrPositionY = event.pmove.y;
+	    ptrPositionX = e.pmove.x;
+	    ptrPositionY = e.pmove.y;
 	  }
-	// absence of break statement here is intentional
-	
+	Input::Position position;
+	position.x = ptrPositionX;
+	position.y = ptrPositionY;
+	position.z = 0; // time being we're using non-3d mice.
+	event.length(1);
+	event[0].dev = 1;
+	event[0].attr.location(position);
+	break;
       }
     case evPtrButtonPress:
     case evPtrButtonRelease:
       {
-// 	Event::Pointer ptrEvent;	  
-// 	ptrEvent.location.x = ptrPositionX;
-// 	ptrEvent.location.y = ptrPositionY;	  
-// 	ptrEvent.location.z = 0; // time being we're using non-3d mice.
-	
-// 	ptrEvent.buttonNumber = event.pbutton.button;	  
-// 	ptrEvent.whatHappened = 
-// 	  event.any.type == evPtrRelative ? Event::hold :
-// 	  event.any.type == evPtrAbsolute ? Event::hold :
-// 	  event.any.type == evPtrButtonPress ? Event::press :
-// 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-// 	pfocus->dispatch(ptrEvent);
+	Input::Position position;
+	position.x = ptrPositionX;
+	position.y = ptrPositionY;
+	position.z = 0; // time being we're using non-3d mice.
+	Input::Toggle toggle;
+	if (e.any.type == evPtrButtonPress)
+	  toggle.actuation = Input::Toggle::press;
+	else
+	  toggle.actuation = Input::Toggle::release;
+ 	toggle.number = e.pbutton.button;	  
+	event.length(2);
+	event[0].dev = 1;
+	event[0].attr.location(position);	
+	event[1].dev = 1;
+	event[1].attr.kselection(toggle);
 	break;
       }
     }
+  /*
+   * the first item determines which focus to send this event to
+   */
+  if (event.length()) focus[event[0].dev]->dispatch(event);
 }
 
 void EventManager::damage(Region_ptr r)
