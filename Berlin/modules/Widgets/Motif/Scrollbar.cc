@@ -20,8 +20,11 @@
  * MA 02139, USA.
  */
 
-#include "Widget/Scrollbar.hh"
+#include "Widget/Motif/Scrollbar.hh"
+#include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
+
+using namespace Motif;
 
 class SDrag : public Scrollbar::Modifier
 {

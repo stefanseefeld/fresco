@@ -25,7 +25,9 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Widget/Slider.hh"
+#include "Widget/Motif/Slider.hh"
+
+using namespace Motif;
 
 Slider::Slider()
   : ControllerImpl(false),
@@ -80,7 +82,7 @@ void Slider::update(const CORBA::Any &) { needRedraw();}
 
 void Slider::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  current = stepper(traversal, event);
+  current = tool->stepper(traversal, event);
   current->press(traversal, event);
 }
 

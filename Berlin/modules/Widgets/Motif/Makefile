@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -21,30 +21,24 @@
 
 SHELL	= /bin/sh
 
-subdirs = Motif
+top	= ../../..
+cpath	= $(top)/config
+hpath	= $(top)/include/Widget/Motif
 
-all:
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE)) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+include $(cpath)/local.mk
 
-clean:
-	/bin/rm -f *~
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) clean) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+# Compilation and linking flags.
+CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
+LDFLAGS	= -shared -rdynamic -L$(lpath)
+LIBS	= -lPrague -lBerlin
 
-distclean: clean
-	/bin/rm -f $(cpath)/config.cache $(cpath)/config.log
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) distclean) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+#Slider.cc 
+SRC	= Gauge.cc Panner.cc Scrollbar.cc WidgetKit.cc
 
-install:
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) install); \
-	done
+TARGET	= $(mpath)/libMotif.so
+
+vpath %.d $(dpath)
+vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Widget/Motif
+
+include $(cpath)/module.mk
 

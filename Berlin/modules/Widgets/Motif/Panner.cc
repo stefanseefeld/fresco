@@ -20,8 +20,11 @@
  * MA 02139, USA.
  */
 
-#include "Widget/Panner.hh"
+#include "Widget/Motif/Panner.hh"
+#include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
+
+using namespace Motif;
 
 class PDrag : public Panner::Modifier
 {

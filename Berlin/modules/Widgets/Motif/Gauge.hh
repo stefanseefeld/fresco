@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,36 +19,31 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Motif_Gauge_hh
+#define _Motif_Gauge_hh
 
-#include "Berlin/Vertex.hh"
-#include "Berlin/Logger.hh"
-#include "Widget/Dragger.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/View.hh>
+#include <Warsaw/BoundedValue.hh>
+#include <Berlin/GraphicImpl.hh>
 
-Dragger::Dragger(Command_ptr c)
-  : ControllerImpl(false), command(Command::_duplicate(c))
+namespace Motif
 {
-}
 
-Dragger::~Dragger()
+class Gauge : implements(View), public GraphicImpl
 {
-}
+ public:
+  Gauge(BoundedValue_ptr v, const Color &c) : value(BoundedValue::_duplicate(v)), color(c), width(2000.), height(200.) {}
+  ~Gauge() {}
+  virtual void request(Requisition &);
+  virtual void draw(DrawTraversal_ptr);
+  virtual void update(const CORBA::Any &);
+private:
+  BoundedValue_var value;
+  Color color;
+  Coord width, height;
+};
 
-void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
-{
-  ControllerImpl::press(traversal, event);
-  offset = event[1].attr.location();
-}
+};
 
-void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
-{
-  Vertex delta = event[0].attr.location() - offset;
-  CORBA::Any any;
-  any <<= delta;
-  command->execute(any);
-  offset += delta;
-}
-
-void Dragger::release(PickTraversal_ptr traversal, const Input::Event &event)
-{
-  ControllerImpl::release(traversal, event);
-}
+#endif /* _Motif_Gauge_hh */
