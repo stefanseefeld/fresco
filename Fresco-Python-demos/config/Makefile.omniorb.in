@@ -24,7 +24,7 @@ VERSION		:= @VERSION@
 
 builddir	:= ../..
 cdir		:= $(builddir)/config
-idir		:= @top_srcdir@/idl
+idir		:= @topdir@/idl
 
 include $(cdir)/local.mk
 
