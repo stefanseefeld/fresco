@@ -143,6 +143,8 @@ module Fresco
       
       //   Graphic      filler(in Graphic g, in Color c);
       //   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
+      //. display one of two child nodes depending on the state of a telltale
+      Graphic create_switch(in Graphic g1, in Graphic g2, in Telltale::Mask mask, in Telltale t);
       //. The button makes a given graphic react on clicks (mouse
       //. button gets pressed and released over the given Graphic) and executes
       //. the given command whenever that happens.

@@ -29,6 +29,7 @@
 #include "ToolKitImpl.hh"
 // #include "Filler.hh"
 // #include "Indicator.hh"
+#include "Switch.hh"
 #include "Frame.hh"
 #include "Triangle.hh"
 #include "Diamond.hh"
@@ -323,6 +324,16 @@ Graphic_ptr ToolKitImpl::dynamic_diamond(Graphic_ptr g, Coord thickness, Telltal
 //   graphics.push_back(i);
 //   return i->_this();
 // }
+
+Graphic_ptr ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_ptr g2, Telltale::Mask mask, Telltale_ptr telltale)
+{
+  Trace trace("ToolKitImpl::create_switch");
+  Switch *s = new Switch(mask);
+  activate(s);
+  s->attach(telltale);
+  s->init(g1, g2);
+  return s->_this();
+}
 
 MainController_ptr ToolKitImpl::group(Graphic_ptr g)
 {

@@ -57,6 +57,7 @@ class ToolKitImpl : public virtual POA_Fresco::ToolKit,
 				           const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::Telltale_ptr);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
+  Fresco::Graphic_ptr      create_switch(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Telltale::Mask, Fresco::Telltale_ptr);
   Fresco::Trigger_ptr      button(Fresco::Graphic_ptr, Fresco::Command_ptr);
   Fresco::Controller_ptr   dragger(Fresco::Graphic_ptr, Fresco::Command_ptr);
   Fresco::Controller_ptr   stepper(Fresco::Graphic_ptr, Fresco::Command_ptr);

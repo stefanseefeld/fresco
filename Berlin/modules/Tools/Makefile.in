@@ -29,7 +29,7 @@ cdir		:= $(top_builddir)/config
 include $(cdir)/local.mk
 
 SRC		:= Beveler.cc Frame.cc Triangle.cc Diamond.cc \
-		   TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
+		   TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc Switch.cc \
 		   TextInput.cc Terminal.cc CanvasImpl.cc DrawingStateImpl.cc \
 		   MainControllerImpl.cc ToolKitImpl.cc
 
