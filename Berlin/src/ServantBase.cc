@@ -36,7 +36,7 @@ namespace
 };
 
 ServantBase::ServantBase()
-  : _refcount(1), _poa(PortableServer::POA::_nil())
+  : _refcount(1), _poa(_default_POA())
 {
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "ServantBase::ServantBase: " << this << " constructed" << std::endl;
@@ -44,7 +44,7 @@ ServantBase::ServantBase()
 }
 
 ServantBase::ServantBase(const ServantBase &)
-  : _refcount(1), _poa(PortableServer::POA::_nil())
+  : _refcount(1), _poa(_default_POA())
 {
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "ServantBase::ServantBase: " << this << " constructed" << std::endl;
@@ -111,6 +111,9 @@ void ServantBase::deactivate(ServantBase *servant)
 void ServantBase::activate(ServantBase *servant)
 {
   Trace trace("ServantBase::activate");
+  if (CORBA::is_nil(_poa))
+    cout << "no poa for " << servant << " ( inside " << typeid(*this).name() << ")" << std::endl;
+
   assert(!CORBA::is_nil(_poa));
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "activating " << servant << " (" << typeid(*this).name() << ")" << std::endl;
