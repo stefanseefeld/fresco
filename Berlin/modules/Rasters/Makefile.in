@@ -32,7 +32,7 @@ hdir		:= $(top_srcdir)/include/Image
 
 # Compilation and linking flags.
 CPPFLAGS	+= -I$(hdir)
-LIBS		+= -lBerlin -lpng
+LIBS		+= -lBerlin #-lpng
 
 SRC		:= ImageKitImpl.cc #ImageImpl.cc
 

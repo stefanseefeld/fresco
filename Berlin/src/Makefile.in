@@ -48,6 +48,8 @@ SRC		:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 
+LIBS		+= -lpng
+
 TARGET		:= $(ldir)/libBerlin.so
 
 vpath %.hh  $(hdir)/Warsaw $(hdir)/Berlin
