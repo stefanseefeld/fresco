@@ -85,6 +85,9 @@ $(TARGET):	$(OBJ)
 $(dpath)/%.d:	%.idl
 		@echo making dependencies for $<
 		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+# Here there be dragons
+#  (can we remove the $(SHELL) part?  it would help cut down the quoting noise)
+#  note: this passes through both make and the shell; $$ means $ to make, and the \'s are for the shell
 		@$(SHELL) -ec "$(CXX) -x c++ -M $(CPPFLAGS) $(CXXFLAGS) $< \
 		| perl -e 'undef \$$/; while(<>)\
 		    {\
@@ -93,9 +96,8 @@ $(dpath)/%.d:	%.idl
 		      \$$dep = \$$2;\
 		      print \"\$$1\", \"SK.cc \", \$$file, \"DynSK.cc \",\
 			    \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
-		      \$$file .= \"SK\";\
 		      \$$dep =~ s/\\.idl/\\.hh/g;\
-		      print \"$(opath)\/\", \$$file, \".o\", \": \", \$$file, \".cc\", \$$dep ;\
+		      print \"$(opath)\/\", \$$file, \"SK.o $(opath)\/\", \$$file, \"DynSK.o\", \": \", \$$dep ;\
 		    }' > $@"
 $(STATHDR): %.hh:		%.idl
 		$(IDL) $(IDLFLAGS) $<
