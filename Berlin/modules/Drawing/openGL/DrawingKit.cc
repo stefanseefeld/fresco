@@ -142,6 +142,7 @@ void GLDrawingKit::init()
   glShadeModel(GL_SMOOTH);
 //   glEnable(GL_LIGHTING);
   glFrontFace(GL_CW);
+  glDisable(GL_DITHER);
   glEnable(GL_ALPHA_TEST);
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_BLEND);
@@ -487,6 +488,8 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
   glEnd();
   glDisable(GL_LIGHTING);
   glDisable(GL_LIGHT0);
+  glDisable(GL_COLOR_MATERIAL);
+  glDisable(GL_CULL_FACE);
 }
 
 void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}

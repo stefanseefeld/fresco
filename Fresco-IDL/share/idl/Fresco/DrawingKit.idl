@@ -126,6 +126,8 @@ module Warsaw
       //. Return the resolution for the given Axis.
       Coord resolution(in Axis a);
       //. Draws a given Path.
+      //. FIXME: Which restrictions need to apply for pathes/polygones?
+      //.        Direction? Convex? Simple? 
       void draw_path(in Path p);
       //   void drawPatch(in Patch p);
       //. Draws a rectangle. You need to provide the coordinates of the
