@@ -28,7 +28,7 @@
 #include <vector>
 
 class GGIKitImpl : public virtual POA_GGI::GGIKit,
-		   public KitImpl
+                   public KitImpl
 {
  public:
   GGIKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);

@@ -37,6 +37,8 @@ endef
 
 include $(cdir)/local.mk
 
+CPPFLAGS	+= -I../include
+
 TARGET	:= ../bin/ggiwrapper
 
 vpath %.hh $(srcdir)

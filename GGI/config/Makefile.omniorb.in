@@ -118,11 +118,11 @@ $(GENHDR): %.hh:	%.idl
 
 %.cc.d:	%.cc $(GENHDR)
 	@echo generating dependencies for $<
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+	$(SHELL) -ec '$(CXX) -I$(h2dir) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 %.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) -I$(h2dir) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
 GGIKitSK.o:	GGIKitSK.cc
 	@echo compiling $(@F)
