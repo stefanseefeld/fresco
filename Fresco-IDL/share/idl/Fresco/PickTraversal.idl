@@ -38,6 +38,8 @@ module Warsaw
       boolean picked();
       void grab();
       void ungrab();
+      boolean forward();
+      boolean backward();
     };
 };
 

@@ -47,7 +47,7 @@ TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
 {
   Trace trace("TraversalImpl::TraversalImpl copy ctor");
-  for (stack_t::const_iterator i = t.stack.begin(); i != t.stack.end(); i++)
+  for (stack_t::const_iterator i = t._stack.begin(); i != t._stack.end(); i++)
     {
       State state;
       state.graphic = Graphic::_duplicate((*i).graphic);
@@ -55,7 +55,7 @@ TraversalImpl::TraversalImpl(const TraversalImpl &t)
       state.allocation = Region::_duplicate((*i).allocation);
       state.transformation = Provider<TransformImpl>::provide();
       state.transformation->copy(Transform_var((*i).transformation->_this()));
-      stack.push_back(state);
+      _stack.push_back(state);
     }
 }
 
@@ -63,23 +63,29 @@ TraversalImpl::~TraversalImpl()
 {
 }
 
-Region_ptr TraversalImpl::allocation()
+Region_ptr TraversalImpl::current_allocation()
 {
-  Trace trace("TraversalImpl::allocation");
-  return Region::_duplicate(stack.back().allocation);
+  Trace trace("TraversalImpl::current_allocation");
+  return Region::_duplicate(_stack.back().allocation);
 }
 
-Transform_ptr TraversalImpl::transformation() 
+Transform_ptr TraversalImpl::current_transformation() 
 {
-  Trace trace("TraversalImpl::transformation");
-  return stack.back().transformation->_this();
+  Trace trace("TraversalImpl::current_transformation");
+  return _stack.back().transformation->_this();
+}
+
+Graphic_ptr TraversalImpl::current_graphic()
+{
+  Trace trace("TraversalImpl::current_graphic");
+  return Graphic::_duplicate(_stack.back().graphic);
 }
 
 CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin) 
 {
   Trace trace("TraversalImpl::bounds");
   bool b = false;
-  State &state = stack.back();
+  State &state = _stack.back();
   Region_ptr r = state.allocation;
   if (!CORBA::is_nil(r))
     {
@@ -90,19 +96,6 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-void TraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
-{
-  Trace trace("TraversalImpl::traverse_child");
-  if (CORBA::is_nil(region)) region = Region_var(allocation());
-  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-  cumulative->copy(Transform_var(transformation()));
-  if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  push(child, tag, region, cumulative._retn());
-  try { child->traverse(Traversal_var(_this()));}
-  catch (...) { pop(); throw;}
-  pop(); 
-}
-
 void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)
 {
   Trace trace("TraversalImpl::push");
@@ -111,21 +104,21 @@ void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)
   state.id = id;
   state.allocation = Region::_duplicate(r);
   state.transformation = t;
-  stack.push_back(state);
+  _stack.push_back(state);
 }
 
 void TraversalImpl::pop()
 {
   Trace trace("TraversalImpl::pop");
-  Provider<TransformImpl>::adopt((stack.end() - 1)->transformation);
-  stack.erase(stack.end() - 1);
+  Provider<TransformImpl>::adopt((_stack.end() - 1)->transformation);
+  _stack.erase(_stack.end() - 1);
 }
 
 void TraversalImpl::update()
 {
   Trace trace("TraversalImpl::update");
-  if (stack.size() == 1) return;
-  stack_t::iterator parent = stack.begin();
+  if (_stack.size() == 1) return;
+  stack_t::iterator parent = _stack.begin();
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy((*parent).allocation);
   Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
@@ -133,7 +126,7 @@ void TraversalImpl::update()
   Allocation::Info info;
   info.allocation = allocation->_this();
   info.transformation = transformation->_this();
-  for (stack_t::iterator child = parent + 1; child != stack.end(); parent++, child++)
+  for (stack_t::iterator child = parent + 1; child != _stack.end(); parent++, child++)
     {
       (*parent).graphic->allocate((*child).id, info);
       (*child).allocation->copy(info.allocation);

@@ -384,9 +384,9 @@ CORBA::Boolean ControllerImpl::handle_positional(PickTraversal_ptr traversal, co
 {
   Trace trace("ControllerImpl::handle_positional");
   Input::Position position;
-  if (Input::getPosition(event, position) == -1)
+  if (Input::get_position(event, position) == -1)
     {
-      cerr << "ControllerImpl::handlePositional fatal error : non positional event" << endl;
+      cerr << "ControllerImpl::handle_positional fatal error : non positional event" << endl;
       return false;
     }
   if (event[0].attr._d() == Input::button)

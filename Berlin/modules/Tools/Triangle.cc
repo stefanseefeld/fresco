@@ -35,16 +35,16 @@ using namespace Warsaw;
 
 void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex l, u;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   DrawingKit::Fillstyle style = drawing->surface_fillstyle();
   if (style != DrawingKit::outlined && fill)
     {
       Path path;
       path.length(4);
-      switch (direction)
+      switch (_direction)
 	{
 	case ToolKit::left:
 	  path[0].x = l.x, path[0].y = (l.y + u.y)/2, path[0].z = 0;
@@ -73,13 +73,13 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 	}
       drawing->draw_path(path);
     }
-  else if (fill)
+  else if (_fill)
     {
       drawing->save();
       drawing->surface_fillstyle(DrawingKit::solid);
       Path path;
       path.length(4);
-      switch (direction)
+      switch (_direction)
 	{
 	case ToolKit::left:
 	  path[0].x = l.x, path[0].y = (l.y + u.y)/2, path[0].z = 0;
@@ -112,121 +112,121 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
   else
     {
       Color color = drawing->foreground();
-      switch (direction)
+      switch (_direction)
 	{
 	case ToolKit::left:
-	  Beveler::leftArrow(traversal, thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case ToolKit::right:
 	  break;
-	  Beveler::leftArrow(traversal, thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
 	case ToolKit::up:
 	  break;
-	  Beveler::leftArrow(traversal, thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
 	case ToolKit::down:
 	  break;
-	  Beveler::leftArrow(traversal, thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, fill);
 	}
     }
 }
 
 void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex u, l;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   Color color = drawing->foreground();
-  Color light = brightness(color,-bright);
-  Color dark  = brightness(color, bright);
+  Color light = brightness(color,-_bright);
+  Color dark  = brightness(color, _bright);
 
   drawing->save();
   if (drawing->surface_fillstyle() == DrawingKit::outlined)
     drawing->surface_fillstyle(DrawingKit::solid);
 
-  switch (direction)
+  switch (_direction)
     {
     case ToolKit::left:
-      switch (style)
+      switch (_style)
 	{
 	case inset:
-	  Beveler::leftArrow(traversal, thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case outset:
-	  Beveler::leftArrow(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case convex:
-	  Beveler::leftArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::leftArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::leftArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case concav:
-	  Beveler::leftArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::leftArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::leftArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::leftArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	}
       break;
     case ToolKit::right:
-      switch (style)
+      switch (_style)
 	{
 	case inset:
-	  Beveler::rightArrow(traversal, thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case outset:
-	  Beveler::rightArrow(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case convex:
-	  Beveler::rightArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::rightArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::rightArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
       break;
 	case concav:
-	  Beveler::rightArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::rightArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::rightArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::rightArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	}
       break;
     case ToolKit::up:
-      switch (style)
+      switch (_style)
 	{
 	case inset:
-	  Beveler::upArrow(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case outset:
-	  Beveler::upArrow(traversal, thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case convex:
-	  Beveler::upArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::upArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::upArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case concav:
-	  Beveler::upArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::upArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::upArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::upArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	}
       break;
     case ToolKit::down:
-      switch (style)
+      switch (_style)
 	{
 	case inset:
-	  Beveler::downArrow(traversal, thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case outset:
-	  Beveler::downArrow(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case convex:
-	  Beveler::downArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::downArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::downArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
 	  break;
 	case concav:
-	  Beveler::downArrow(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
-	  l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-	  Beveler::downArrow(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+	  Beveler::downArrow(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
+	  l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+	  Beveler::downArrow(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
 	  break;
 	}
       break;
@@ -236,30 +236,30 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 
 void ColoredTriangle::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex l, u;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   DrawingKit::Fillstyle style = drawing->surface_fillstyle();
   drawing->save();
   Color tmp = drawing->foreground();
-  tmp.red = color.red;
-  tmp.green = color.green;
-  tmp.blue = color.blue;
+  tmp.red = _color.red;
+  tmp.green = _color.green;
+  tmp.blue = _color.blue;
   drawing->foreground(tmp);
   if (style == DrawingKit::outlined) drawing->surface_fillstyle(DrawingKit::solid);
-  if (fill) drawing->draw_rectangle(l, u);
+  if (_fill) drawing->draw_rectangle(l, u);
   else
     {
       Vertex ltmp = l, utmp = u;
-      utmp.y = ltmp.y + thickness;
+      utmp.y = ltmp.y + _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
-      utmp.y = u.y - thickness;
+      ltmp.x = utmp.x - _thickness, ltmp.y = utmp.y;
+      utmp.y = u.y - _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.x = l.x, utmp.x = l.x + thickness;
+      ltmp.x = l.x, utmp.x = l.x + _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.y = u.y - thickness;
+      ltmp.y = u.y - _thickness;
       utmp = u;
       drawing->draw_rectangle(ltmp, utmp);
     }

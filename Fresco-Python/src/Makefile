@@ -44,7 +44,7 @@ STATINT		= RefCountBase.idl Identifiable.idl ClientContext.idl \
 		  StreamBuffer.idl Selection.idl Trigger.idl \
 		  Canvas.idl ToolKit.idl Choice.idl  WidgetKit.idl GadgetKit.idl \
 		  TextKit.idl Raster.idl ImageKit.idl Desktop.idl \
-		  Window.idl DesktopKit.idl
+		  Window.idl DesktopKit.idl GGIKit.idl UnidrawKit.idl
 
 INT		= $(DYNINT) $(STATINT) $(LCINT)
 

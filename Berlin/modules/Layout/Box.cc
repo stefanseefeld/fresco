@@ -99,7 +99,7 @@ void Box::traverse(Traversal_ptr traversal)
   Trace trace("Box::traverse");
   if (num_children())
     {
-      Region_var given = traversal->allocation();
+      Region_var given = traversal->current_allocation();
       if (!CORBA::is_nil(given))
  	{
 	  /*

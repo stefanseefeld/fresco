@@ -55,7 +55,7 @@ void Allocator::traverse(Traversal_ptr traversal)
 {
   Trace trace("Allocator::traverse");
 //   updateRequisition();
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   if (!CORBA::is_nil(allocation))
     traversal->traverse_child(Graphic_var(body()), 0, allocation, Transform::_nil());
   else

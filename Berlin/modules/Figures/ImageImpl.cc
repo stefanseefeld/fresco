@@ -52,7 +52,7 @@ void ImageImpl::request(Warsaw::Graphic::Requisition &r)
 void ImageImpl::draw(DrawTraversal_ptr traversal)
 {
   if (!traversal->intersects_allocation()) return;
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->draw_image(raster);
 }
 
@@ -73,7 +73,7 @@ void Texture::draw(DrawTraversal_ptr traversal)
 {
   Graphic_var g = body();
   if (CORBA::is_nil(g)) return;
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   drawing->texture(raster);
   drawing->surface_fillstyle(DrawingKit::textured);

@@ -30,7 +30,7 @@ module Warsaw
 
   interface DrawTraversal : Traversal
     {
-      DrawingKit kit();
+      DrawingKit drawing();
       //   void clipPath(in Path p);
       //   void clipRegion(in Region r);
       //   void pushClipping();

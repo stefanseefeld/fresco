@@ -42,7 +42,7 @@ void Gauge::request(Warsaw::Graphic::Requisition &requisition)
 
 void Gauge::draw(DrawTraversal_ptr traversal)
 {
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   Coord l = value->lower();
   Coord u = value->upper();

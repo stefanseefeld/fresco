@@ -50,13 +50,13 @@ public:
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->save();
-    Color color = kit->foreground();
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->save();
+    Color color = drawing->foreground();
     color.red = red, color.green = green, color.blue = blue;
-    kit->foreground(color);
+    drawing->foreground(color);
     MonoGraphic::traverse(traversal);
-    kit->restore();    
+    drawing->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 private:
@@ -70,13 +70,13 @@ public:
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->save();
-    Color color = kit->lighting();
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->save();
+    Color color = drawing->lighting();
     color.red *= red, color.green *= green, color.blue *= blue;
-    kit->lighting(color);
+    drawing->lighting(color);
     MonoGraphic::traverse(traversal);
-    kit->restore();    
+    drawing->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 private:
@@ -90,13 +90,13 @@ public:
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal) 
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->save();
-    Color color = kit->foreground();
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->save();
+    Color color = drawing->foreground();
     color.alpha *= alpha;
-    kit->foreground(color);
+    drawing->foreground(color);
     MonoGraphic::traverse(traversal);
-    kit->restore();    
+    drawing->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 private:

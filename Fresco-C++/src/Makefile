@@ -47,7 +47,7 @@ STATINT		= \
 	WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 	Image.idl FigureKit.idl Command.idl CommandKit.idl Metrics.idl \
 	TextKit.idl Desktop.idl Window.idl DesktopKit.idl Types3D.idl \
-	DrawingKit3D.idl Primitive.idl GGIKit.idl
+	DrawingKit3D.idl Primitive.idl GGIKit.idl UnidrawKit.idl
 
 INT		= $(DYNINT) $(STATINT)
 

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -34,85 +34,89 @@ using namespace Warsaw;
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
-    drawing(DrawingKit::_duplicate(kit)),
-    clipping(Region::_duplicate(r)),
-    id(new TransformImpl)
+    _drawing(DrawingKit::_duplicate(kit)),
+    _clipping(Region::_duplicate(r)),
+    _id(new TransformImpl)
 {
+  Trace trace("DrawTraversalImpl::DrawTraversalImpl");
 }
 
 void DrawTraversalImpl::init()
 {
+  __this = _this();
   /*
    * initialize the different drawing kit attributes
    */
-  drawing->save();
-  drawing->clipping(clipping);
+  _drawing->save();
+  _drawing->clipping(_clipping);
   Color fg = {0., 0., 0., 1.};
-  drawing->foreground(fg);
+  _drawing->foreground(fg);
   Color white = {1., 1., 1., 1.};
-  drawing->lighting(white);
-  drawing->transformation(Transform_var(id->_this()));
-  drawing->surface_fillstyle(DrawingKit::solid);
+  _drawing->lighting(white);
+  _drawing->transformation(Transform_var(_id->_this()));
+  _drawing->surface_fillstyle(DrawingKit::solid);
   Vertex l, u;
-  clipping->bounds(l, u);
+  _clipping->bounds(l, u);
   /*
    * clear the background of the damaged region...
    */
-  drawing->draw_rectangle(l, u);
+  _drawing->draw_rectangle(l, u);
 #if 0
-  drawing->flush();
+  _drawing->flush();
   Console::drawable()->flush();
   sleep(1);
 #endif
 }
 
-void DrawTraversalImpl::finish() { drawing->restore();}
+void DrawTraversalImpl::finish() { _drawing->restore();}
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
   : TraversalImpl(t),
-    drawing(t.drawing),
-    clipping(t.clipping)
+    _drawing(t._drawing),
+    _clipping(t._clipping)
 {
 //   drawing->clipping(clipping);
 }
 
 DrawTraversalImpl::~DrawTraversalImpl()
 {
-  drawing->restore();
+  _drawing->restore();
 //  id->_dispose();
 }
 
 CORBA::Boolean DrawTraversalImpl::intersects_allocation()
 {
-  Region_var r = allocation();
-  Transform_var t = transformation();
+  Region_var r = current_allocation();
+  Transform_var t = current_transformation();
   RegionImpl region(r, t);
-  return region.intersects(clipping);
+  return region.intersects(_clipping);
 }
 
 CORBA::Boolean DrawTraversalImpl::intersects_region(Region_ptr r)
 {
-  Transform_var t = transformation();
+  Transform_var t = current_transformation();
   RegionImpl region(r, t);
 //   RegionImpl cl(clipping);
 //   cout << "DrawTraversalImpl::intersectsRegion " << region << ' ' << clipping << endl;
-  return region.intersects(clipping);
+  return region.intersects(_clipping);
 }
 
 void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
   Trace trace("DrawTraversalImpl::traverse_child");
-  if (CORBA::is_nil(region)) region = Region_var(allocation());
+  if (CORBA::is_nil(region)) region = Region_var(current_allocation());
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-  cumulative->copy(Transform_var(transformation()));
+  cumulative->copy(Transform_var(current_transformation()));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  drawing->transformation(Transform_var(cumulative->_this()));
+  _drawing->transformation(Transform_var(cumulative->_this()));
   //   drawable->clipping(region, Transform_var(tx->_this()));
   push(child, tag, region, cumulative._retn());
-  try { child->traverse(Traversal_var(_this()));}
+  try { child->traverse(__this);}
   catch (...) { pop(); throw;}
   pop(); 
 };
 
-void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}
-DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawing);}
+void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(__this);}
+Warsaw::Traversal::order DrawTraversalImpl::direction() { return Warsaw::Traversal::up;}
+CORBA::Boolean DrawTraversalImpl::ok() { return true;}
+DrawingKit_ptr DrawTraversalImpl::drawing() { return DrawingKit::_duplicate(_drawing);}

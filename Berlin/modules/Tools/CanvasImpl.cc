@@ -111,6 +111,6 @@ void CanvasImpl::request(Warsaw::Graphic::Requisition &requisition)
 void CanvasImpl::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("CanvasImpl::draw");
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->copy_drawable(_drawable, 0, 0, _width, _height);
 }

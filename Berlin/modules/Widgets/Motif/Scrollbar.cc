@@ -140,7 +140,7 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-  allocation->copy(Region_var(traversal->allocation()));
+  allocation->copy(Region_var(traversal->current_allocation()));
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
   if (_axis == xaxis)

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -29,36 +29,76 @@ using namespace Warsaw;
 
 PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Input::Position &p, Focus_ptr f)
   : TraversalImpl(g, r, t),
-    pointer(p),
-    focus(Focus::_duplicate(f)),
-    mem(0)
-{}
+    _pointer(p),
+    _focus(Focus::_duplicate(f)),
+    _mem(0),
+    _cursor(0)
+{
+  Trace trace("PickTraversalImpl::PickTraversalImpl");
+  __this = _this();
+}
 
 PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
   : TraversalImpl(t),
-    controllers(t.controllers),
-    positions(t.positions),
-    pointer(t.pointer),
-    focus(t.focus),
-    mem(0)
+    _controllers(t._controllers),
+    _positions(t._positions),
+    _pointer(t._pointer),
+    _focus(t._focus),
+    _mem(0),
+    _cursor(t._cursor)
 {
   Trace trace("PickTraversal::PickTraversal");
+  __this = _this();
 }
 
-PickTraversalImpl::~PickTraversalImpl()
+PickTraversalImpl::~PickTraversalImpl() { delete _mem;}
+
+Region_ptr PickTraversalImpl::current_allocation()
 {
-  delete mem;
+  Trace trace("PickTraversalImpl::current_allocation");
+  return Region::_duplicate(current().allocation);
 }
+
+Transform_ptr PickTraversalImpl::current_transformation() 
+{
+  Trace trace("PickTraversalImpl::current_transformation");
+  return current().transformation->_this();
+}
+
+Graphic_ptr PickTraversalImpl::current_graphic()
+{
+  Trace trace("PickTraversalImpl::current_graphic");
+  return Graphic::_duplicate(current().graphic);
+}
+
+void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
+{
+  Trace trace("PickTraversalImpl::traverse_child");
+  if (CORBA::is_nil(region)) region = Region_var(current_allocation());
+  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
+  cumulative->copy(Transform_var(current_transformation()));
+  if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
+  push(child, tag, region, cumulative._retn());
+  _cursor++;
+  try { child->traverse(__this);}
+  catch (...) { pop(); throw;}
+  _cursor--;
+  pop(); 
+}
+
+void PickTraversalImpl::visit(Warsaw::Graphic_ptr g) { g->pick(__this);}
+Warsaw::Traversal::order PickTraversalImpl::direction() { return Warsaw::Traversal::down;}
+CORBA::Boolean PickTraversalImpl::ok() { return !_mem;}
 
 CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
 {
   Transform::Matrix matrix;
-  Transform_var transform = transformation();
+  Transform_var transform = current_transformation();
   transform->store_matrix(matrix);
   Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
   if (d == 0.) return false;
-  Coord x = pointer.x - matrix[0][3];
-  Coord y = pointer.y - matrix[1][3];
+  Coord x = _pointer.x - matrix[0][3];
+  Coord y = _pointer.y - matrix[1][3];
   Vertex local;
   local.x = (matrix[1][1] * x - matrix[0][1] * y)/d;
   local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
@@ -70,43 +110,59 @@ CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
 
 CORBA::Boolean PickTraversalImpl::intersects_allocation()
 {
-  Region_var region = allocation();
+  Region_var region = current_allocation();
   return intersects_region(region);
 }
 
+Warsaw::Input::Device PickTraversalImpl::device() { return _focus->device();}
 void PickTraversalImpl::enter_controller(Controller_ptr c)
 {
   Trace trace("PickTraversal::enter_controller");
-  controllers.push_back(Controller::_duplicate(c));
-  positions.push_back(size());
+  _controllers.push_back(Controller::_duplicate(c));
+  _positions.push_back(size());
 }
 
 void PickTraversalImpl::leave_controller()
 {
   Trace trace("PickTraversal::leave_controller");
-  controllers.pop_back();
-  positions.pop_back();
+  _controllers.pop_back();
+  _positions.pop_back();
 }
 
 void PickTraversalImpl::hit()
 {
   Trace trace("PickTraversal::hit");
-  delete mem;
-  mem = new PickTraversalImpl(*this);
+  delete _mem;
+  _mem = new PickTraversalImpl(*this);
+}
+
+CORBA::Boolean PickTraversalImpl::picked() { return _mem;}
+void PickTraversalImpl::grab() { _focus->grab();}
+void PickTraversalImpl::ungrab() { _focus->ungrab();}
+CORBA::Boolean PickTraversalImpl::forward()
+{
+  if (_cursor + 1 < size()) { ++_cursor; return true;}
+  return false;
+}
+
+CORBA::Boolean PickTraversalImpl::backward()
+{
+  if (_cursor > _positions.back()) { --_cursor; return true;}
+  return false;
 }
 
 void PickTraversalImpl::debug()
 {
   cout << "PickTraversal::debug : stack size = " << size() << '\n';
   cout << "Controllers at ";
-  for (size_t i = 0; i != positions.size(); i++) cout << positions[i] << ' ';
+  for (size_t i = 0; i != _positions.size(); i++) cout << _positions[i] << ' ';
   cout << endl;
-  Region_var r = allocation();
-  Transform_var t = transformation();
+  Region_var r = current_allocation();
+  Transform_var t = current_transformation();
   RegionImpl region(r, t);
   cout << "current allocation is " << region << endl;
-  cout << "pointer is " << pointer << endl;
-  Vertex local = pointer;
+  cout << "pointer is " << _pointer << endl;
+  Vertex local = _pointer;
   Transform::Matrix matrix;
   t->store_matrix(matrix);
   cout << "current trafo \n" << matrix;

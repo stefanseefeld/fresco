@@ -35,12 +35,12 @@
 using namespace Prague;
 using namespace Warsaw;
 
-Frame::Frame(Coord t, Frame::Renderer *r) : thickness(t), allocation(new RegionImpl), renderer(r) {}
+Frame::Frame(Coord t, Frame::Renderer *r) : _thickness(t), _allocation(new RegionImpl), _renderer(r) {}
 Frame::~Frame() { Trace trace("Frame::~Frame");}
 void Frame::request(Warsaw::Graphic::Requisition &requisition)
 {
   MonoGraphic::request(requisition);
-  Coord t = thickness + thickness;
+  Coord t = _thickness + _thickness;
   if (requisition.x.defined)
     {
       requisition.x.natural += t;
@@ -64,7 +64,7 @@ void Frame::traverse(Traversal_ptr traversal)
   if (!CORBA::is_nil(child))
     {
       Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-      allocation->copy(Region_var(traversal->allocation()));
+      allocation->copy(Region_var(traversal->current_allocation()));
 
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->load_identity();
@@ -88,7 +88,7 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   Warsaw::Graphic::Requisition req;
   GraphicImpl::init_requisition(req);
   MonoGraphic::request(req);
-  allocation->valid = true;
+  _allocation->valid = true;
   Region::Allotment a;
   Vertex o;
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
@@ -100,21 +100,21 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   
   Vertex delta;
   info.allocation->span(xaxis, a);
-  allocate_span(req.x, a, thickness, 0.);
-  allocation->lower.x = -(a.end - a.begin) * a.align;
-  allocation->upper.x = allocation->lower.x + (a.end - a.begin);
-  allocation->xalign = a.align;
-  delta.x = a.begin - allocation->lower.x;
+  allocate_span(req.x, a, _thickness, 0.);
+  _allocation->lower.x = -(a.end - a.begin) * a.align;
+  _allocation->upper.x = _allocation->lower.x + (a.end - a.begin);
+  _allocation->xalign = a.align;
+  delta.x = a.begin - _allocation->lower.x;
 
   info.allocation->span(yaxis, a);
-  allocate_span(req.y, a, thickness, 0.);
-  allocation->lower.y = -(a.end - a.begin) * a.align;
-  allocation->upper.y = allocation->lower.y + (a.end - a.begin);
-  allocation->yalign = a.align;
-  delta.y = a.begin - allocation->lower.y;
+  allocate_span(req.y, a, _thickness, 0.);
+  _allocation->lower.y = -(a.end - a.begin) * a.align;
+  _allocation->upper.y = _allocation->lower.y + (a.end - a.begin);
+  _allocation->yalign = a.align;
+  delta.y = a.begin - _allocation->lower.y;
   delta.z = 0;
   
-  info.allocation->copy(Region_var(allocation->_this()));
+  info.allocation->copy(Region_var(_allocation->_this()));
   info.transformation->translate(delta);
 }
 
@@ -125,7 +125,7 @@ void Frame::allocate_span(const Warsaw::Graphic::Requirement &r, Region::Allotme
 }
 
 DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame::Renderer *r2)
-  : Frame(t, r2), renderer1(r1), renderer2(r2), on(true), mask(m)
+  : Frame(t, r2), _renderer1(r1), _renderer2(r2), _on(true), _mask(m)
 {
   Trace trace("DynamicFrame::DynamicFrame");
 }
@@ -133,46 +133,46 @@ DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame
 DynamicFrame::~DynamicFrame()
 {
   Trace trace("DynamicFrame::~DynamicFrame");
-  delete renderer1;
-  delete renderer2;
+  delete _renderer1;
+  delete _renderer2;
 }
 
 void DynamicFrame::attach(Telltale_ptr subject)
 {
   Trace trace("DynamicFrame::attach");
-  if (!CORBA::is_nil(telltale)) telltale->detach(Observer_var(_this()));
+  if (!CORBA::is_nil(_telltale)) _telltale->detach(Observer_var(_this()));
   if (!CORBA::is_nil(subject))
     {
-      telltale = RefCount_var<Telltale>::increment(subject);
-      telltale->attach(Observer_var(_this()));
-      bool flag = telltale->test(mask);
-      if (flag == on) return;
-      on = flag;
-      renderer = on ? renderer1 : renderer2;
+      _telltale = RefCount_var<Telltale>::increment(subject);
+      _telltale->attach(Observer_var(_this()));
+      bool flag = _telltale->test(_mask);
+      if (flag == _on) return;
+      _on = flag;
+      _renderer = _on ? _renderer1 : _renderer2;
       need_redraw();
     }
-  else telltale = Telltale::_nil();
+  else _telltale = Telltale::_nil();
 }
 
 void DynamicFrame::update(const CORBA::Any &)
 {
   Trace trace("DynamicFrame::update");
-  bool flag = telltale->test(mask);
-  if (flag == on) return;
-  on = flag;
-  renderer = on ? renderer1 : renderer2;
+  bool flag = _telltale->test(_mask);
+  if (flag == _on) return;
+  _on = flag;
+  _renderer = _on ? _renderer1 : _renderer2;
   need_redraw();
 }
 
 void InvisibleFrame::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex l, u;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   DrawingKit::Fillstyle style = drawing->surface_fillstyle();
   if (style != DrawingKit::outlined && fill) drawing->draw_rectangle(l, u);
-  else if (fill)
+  else if (_fill)
     {
       drawing->save();
       drawing->surface_fillstyle(DrawingKit::solid);
@@ -182,14 +182,14 @@ void InvisibleFrame::draw(DrawTraversal_ptr traversal)
   else
     {
       Vertex ltmp = l, utmp = u;
-      utmp.y = ltmp.y + thickness;
+      utmp.y = ltmp.y + _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
-      utmp.y = u.y - thickness;
+      ltmp.x = utmp.x - _thickness, ltmp.y = utmp.y;
+      utmp.y = u.y - _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.x = l.x, utmp.x = l.x + thickness;
+      ltmp.x = l.x, utmp.x = l.x + _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.y = u.y - thickness;
+      ltmp.y = u.y - _thickness;
       utmp = u;
       drawing->draw_rectangle(ltmp, utmp);
     }
@@ -197,60 +197,60 @@ void InvisibleFrame::draw(DrawTraversal_ptr traversal)
 
 void Bevel::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex u, l;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   Color color = drawing->foreground();
-  Color light = brightness(color, bright);
-  Color dark  = brightness(color,-bright);
-  switch (style)
+  Color light = brightness(color, _bright);
+  Color dark  = brightness(color,-_bright);
+  switch (_style)
     {
     case inset:
-      Beveler::rect(traversal, thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+      Beveler::rect(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, _fill);
       break;
     case outset:
-      Beveler::rect(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+      Beveler::rect(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, _fill);
       break;
     case convex:
-      Beveler::rect(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
-      l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-      Beveler::rect(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+      Beveler::rect(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
+      l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+      Beveler::rect(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, _fill);
       break;
     case concav:
-      Beveler::rect(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
-      l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-      Beveler::rect(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+      Beveler::rect(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
+      l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+      Beveler::rect(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, _fill);
       break;
     }
 }
 
 void ColoredFrame::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex l, u;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   DrawingKit::Fillstyle style = drawing->surface_fillstyle();
   drawing->save();
   Color tmp = drawing->foreground();
-  tmp.red = color.red;
-  tmp.green = color.green;
-  tmp.blue = color.blue;
+  tmp.red = _color.red;
+  tmp.green = _color.green;
+  tmp.blue = _color.blue;
   drawing->foreground(tmp);
   if (style == DrawingKit::outlined) drawing->surface_fillstyle(DrawingKit::solid);
-  if (fill) drawing->draw_rectangle(l, u);
+  if (_fill) drawing->draw_rectangle(l, u);
   else
     {
       Vertex ltmp = l, utmp = u;
-      utmp.y = ltmp.y + thickness;
+      utmp.y = ltmp.y + _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
-      utmp.y = u.y - thickness;
+      ltmp.x = utmp.x - _thickness, ltmp.y = utmp.y;
+      utmp.y = u.y - _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.x = l.x, utmp.x = l.x + thickness;
+      ltmp.x = l.x, utmp.x = l.x + _thickness;
       drawing->draw_rectangle(ltmp, utmp);
-      ltmp.y = u.y - thickness;
+      ltmp.y = u.y - _thickness;
       utmp = u;
       drawing->draw_rectangle(ltmp, utmp);
     }

@@ -137,7 +137,7 @@ void Panner::traverse_thumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
+  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->current_allocation())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;

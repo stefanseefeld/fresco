@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -40,15 +40,16 @@ public:
   virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr);
   virtual void traverse_child(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
   virtual void visit(Warsaw::Graphic_ptr);
-  virtual Warsaw::Traversal::order direction() { return Warsaw::Traversal::up;}
-  virtual CORBA::Boolean ok() { return true;}
-  virtual Warsaw::DrawingKit_ptr kit();
+  virtual Warsaw::Traversal::order direction();
+  virtual CORBA::Boolean ok();
+  virtual Warsaw::DrawingKit_ptr drawing();
   void init();
   void finish();
 private:
-  Warsaw::DrawingKit_var drawing;
-  Warsaw::Region_var clipping;
-  Impl_var<TransformImpl> id;
+  Warsaw::DrawingKit_var     _drawing;
+  Warsaw::Region_var         _clipping;
+  Impl_var<TransformImpl>    _id;
+  Warsaw::DrawTraversal_var __this;
 };
 
 #endif 

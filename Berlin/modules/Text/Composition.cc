@@ -103,7 +103,7 @@ void Composition::traverse(Traversal_ptr traversal)
   Trace trace("Composition::traverse");
   if (num_children())
     {
-      Region_var given = traversal->allocation();
+      Region_var given = traversal->current_allocation();
       /*
        * this cull test is not accurate, it assumes that the children
        * don't draw outside the box' allocation.

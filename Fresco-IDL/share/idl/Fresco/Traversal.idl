@@ -39,10 +39,11 @@ module Warsaw
     {
       enum order {up, down};
       //. Return the current allocation region for the current graphic in the traversal
-      Region allocation();
+      Region current_allocation();
       //. Return the cumulative transformation matrix for
       //. the current graphic in the traversal.
-      Transform transformation();
+      Transform current_transformation();
+      Graphic current_graphic();
       boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
       boolean intersects_allocation();
       boolean intersects_region(in Region r);

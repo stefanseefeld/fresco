@@ -38,23 +38,23 @@ template <class T>
 class Impl_var
 {
 public:
-  explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate();}
+  explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate(t);}
   Impl_var(Impl_var<T> &i) : t(i._retn()) {}
-  ~Impl_var() { if (t) deactivate();}
-  Impl_var<T> &operator = (Impl_var<T> &i) { if (&i != this) { if (t) deactivate(); t = i._retn();} return *this;}
-  Impl_var<T> &operator = (T *tt) { if (t) deactivate(); t = tt; if (t) activate(); return *this;}
+  ~Impl_var() { if (t) deactivate(t);}
+  Impl_var<T> &operator = (Impl_var<T> &i) { if (&i != this) { if (t) deactivate(t); t = i._retn();} return *this;}
+  Impl_var<T> &operator = (T *tt) { if (t) deactivate(t); t = tt; if (t) activate(t); return *this;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}
   T *_retn() { T *tmp = t; t = 0; return tmp;}
+  static void activate(T *);
+  static void deactivate(T *);
 private:
-  void activate();
-  void deactivate();
   T *t;
 };
 
 template <class T>
-inline void Impl_var<T>::activate()
+inline void Impl_var<T>::activate(T *t)
 {
   Prague::Trace trace("Impl_var::activate");
   PortableServer::POA_var poa = t->_default_POA();
@@ -64,7 +64,7 @@ inline void Impl_var<T>::activate()
 }
 
 template <class T>
-inline void Impl_var<T>::deactivate()
+inline void Impl_var<T>::deactivate(T *t)
 {
   Prague::Trace trace("Impl_var::deactivate");
   PortableServer::POA_var poa = t->_default_POA();

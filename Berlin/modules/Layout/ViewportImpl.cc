@@ -322,7 +322,7 @@ void ViewportImpl::traverse(Traversal_ptr traversal)
       /*
        * first update the cached allocation and the adjustments
        */
-      Region_var allocation = traversal->allocation();
+      Region_var allocation = traversal->current_allocation();
       cache_allocation(allocation);
       traversal->visit(Graphic_var(_this()));
     }
@@ -334,17 +334,17 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
    * now simply traverse the child with it's desired allocation
    * and a suitable offset
    */
-  Region_var allocation = traversal->allocation();
-  Transform_var transformation = traversal->transformation();
+  Region_var allocation = traversal->current_allocation();
+  Transform_var transformation = traversal->current_transformation();
 
   Lease_var<RegionImpl> clipping(Provider<RegionImpl>::provide());
   clipping->copy(allocation);
   if (!CORBA::is_nil(transformation) && !transformation->identity())
     clipping->apply_transform(transformation);
 
-  DrawingKit_var dk = traversal->kit();
-  dk->save();
-  dk->clipping(Region_var(clipping->_this()));
+  DrawingKit_var drawing = traversal->drawing();
+  drawing->save();
+  drawing->clipping(Region_var(clipping->_this()));
 
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
@@ -356,7 +356,7 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
 
   region->normalize(Transform_var(transform->_this()));
   traversal->traverse_child(_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
-  dk->restore();
+  drawing->restore();
 }
 
 void ViewportImpl::pick(PickTraversal_ptr traversal)
@@ -365,7 +365,7 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
    * now simply traverse the child with it's desired allocation
    * and a suitable offset
    */
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
   body_allocation(allocation, b);

@@ -54,7 +54,7 @@ void Transformer::traverse(Traversal_ptr traversal)
   if (!transform->identity())
     {
       Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
-      rr->copy(traversal->allocation());
+      rr->copy(traversal->current_allocation());
 	  
       Warsaw::Graphic::Requisition r;
       GraphicImpl::init_requisition(r);

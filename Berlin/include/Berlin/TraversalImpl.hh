@@ -38,6 +38,7 @@ class TransformImpl;
 class TraversalImpl : public virtual POA_Warsaw::Traversal,
                       public virtual ServantBase
 {
+protected:
   struct State
   {
     Warsaw::Graphic_var graphic;
@@ -46,26 +47,28 @@ class TraversalImpl : public virtual POA_Warsaw::Traversal,
     TransformImpl      *transformation;    
   };
   typedef vector<State> stack_t;
- public:
+public:
   TraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr);
   TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
-  virtual Warsaw::Region_ptr allocation();
-  virtual Warsaw::Transform_ptr transformation();
+  virtual Warsaw::Region_ptr current_allocation();
+  virtual Warsaw::Transform_ptr current_transformation();
+  virtual Warsaw::Graphic_ptr current_graphic();
   virtual CORBA::Boolean bounds(Warsaw::Vertex &, Warsaw::Vertex &, Warsaw::Vertex &);
   virtual CORBA::Boolean intersects_allocation() = 0;
   virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr) = 0;
-  virtual void traverse_child(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
+  virtual void traverse_child(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr) = 0;
   virtual void visit(Warsaw::Graphic_ptr) = 0;
   virtual Warsaw::Traversal::order direction() = 0;
   virtual CORBA::Boolean ok() = 0;
   virtual void update();
- protected:
+protected:
   void push(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, TransformImpl *);
   void pop();
-  size_t size() { return stack.size();}  
- private:
-  stack_t stack;
+  size_t size() const { return _stack.size();}  
+  const State &get(size_t i) const { return _stack[i];}
+private:
+  stack_t _stack;
 };
 
 #endif

@@ -96,7 +96,7 @@ void VisualImpl::request(Warsaw::Graphic::Requisition &requisition)
 void VisualImpl::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("VisualImpl::draw");
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->copy_drawable(_drawable, 0, 0, _width, _height);
 }
 
@@ -106,14 +106,16 @@ void VisualImpl::extension(const Allocation::Info &info, Region_ptr region)
   GraphicImpl::extension(info, region);
 }
 
-CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr, const Warsaw::Input::Event &)
+CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
   Trace trace("VisualImpl::handle_positional");
+  ControllerImpl::handle_positional(traversal, event);
 }
 
 CORBA::Boolean VisualImpl::handle_non_positional(const Warsaw::Input::Event &event)
 {
   Trace trace("VisualImpl::handle_non_positional");
+  cout << "VisualImpl::handle_non_positional" << endl;
   /*
    * FIXME !: we assume a lot about the (berlin) event layout here. Make that more flexible...
    */

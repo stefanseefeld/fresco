@@ -35,10 +35,10 @@ using namespace Warsaw;
 
 void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex u, l;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
 
   drawing->save();
   if (drawing->surface_fillstyle() == DrawingKit::outlined)
@@ -46,12 +46,12 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
 
   Vertex center = {(u.x + l.x)/2, (u.y + l.y)/2, 0.};
   Vertex length = {(u.x - l.x), (u.y - l.y), 0.};
-  Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
-  Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
+  Coord dx = _thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
+  Coord dy = _thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   Path path;
   path.length(5);
-  if (fill)
+  if (_fill)
     {
       path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
       path[1].x = l.x, path[1].y = center.y, path[1].z = 0;
@@ -104,35 +104,35 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
 
 void BeveledDiamond::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex u, l;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   Color color = drawing->foreground();
-  Color light = brightness(color,-bright);
-  Color dark  = brightness(color, bright);
+  Color light = brightness(color,-_bright);
+  Color dark  = brightness(color, _bright);
 
   drawing->save();
   if (drawing->surface_fillstyle() == DrawingKit::outlined)
     drawing->surface_fillstyle(DrawingKit::solid);
 
-  switch (style)
+  switch (_style)
     {
     case inset:
-      Beveler::diamond(traversal, thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness, color, dark, light, l.x, u.x, l.y, u.y, fill);
       break;
     case outset:
-      Beveler::diamond(traversal, thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness, color, light, dark, l.x, u.x, l.y, u.y, fill);
       break;
     case convex:
-      Beveler::diamond(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
-      l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-      Beveler::diamond(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, false);
+      l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+      Beveler::diamond(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, fill);
       break;
     case concav:
-      Beveler::diamond(traversal, thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
-      l.x += thickness/2, u.x -= thickness/2, l.y += thickness/2, u.y -= thickness/2;
-      Beveler::diamond(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
+      Beveler::diamond(traversal, _thickness/2, color, dark, light, l.x, u.x, l.y, u.y, false);
+      l.x += _thickness/2, u.x -= _thickness/2, l.y += _thickness/2, u.y -= _thickness/2;
+      Beveler::diamond(traversal, _thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
       break;
     }
   drawing->restore();
@@ -140,28 +140,28 @@ void BeveledDiamond::draw(DrawTraversal_ptr traversal)
 
 void ColoredDiamond::draw(DrawTraversal_ptr traversal)
 {
-  Region_var allocation = traversal->allocation();
+  Region_var allocation = traversal->current_allocation();
   Vertex u, l;
   allocation->bounds(l, u);
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
 
   drawing->save();
   if (drawing->surface_fillstyle() == DrawingKit::outlined)
     drawing->surface_fillstyle(DrawingKit::solid);
   Color tmp = drawing->foreground();
-  tmp.red = color.red;
-  tmp.green = color.green;
-  tmp.blue = color.blue;
+  tmp.red = _color.red;
+  tmp.green = _color.green;
+  tmp.blue = _color.blue;
   drawing->foreground(tmp);
 
   Vertex center = {(u.x + l.x)/2, (u.y + l.y)/2, 0.};
   Vertex length = {(u.x - l.x), (u.y - l.y), 0.};
-  Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
-  Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
+  Coord dx = _thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
+  Coord dy = _thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   Path path;
   path.length(5);
-  if (fill)
+  if (_fill)
     {
       path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
       path[1].x = l.x, path[1].y = center.y, path[1].z = 0;

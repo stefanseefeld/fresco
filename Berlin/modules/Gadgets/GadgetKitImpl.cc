@@ -72,7 +72,7 @@ class RGBAdjuster : public virtual ViewImpl,
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var drawing = traversal->kit();
+    DrawingKit_var drawing = traversal->drawing();
     drawing->save();
     Color tmp = drawing->foreground();
     color.alpha = tmp.alpha;
@@ -102,7 +102,7 @@ class AlphaAdjuster : public virtual ViewImpl,
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var drawing = traversal->kit();
+    DrawingKit_var drawing = traversal->drawing();
     drawing->save();
     Color color = drawing->foreground();
     color.alpha *= alpha;
@@ -133,7 +133,7 @@ class LightingAdjuster : public virtual ViewImpl,
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var drawing = traversal->kit();
+    DrawingKit_var drawing = traversal->drawing();
     drawing->save();
     Color tmp = drawing->lighting();
     /*

@@ -48,6 +48,7 @@ void ScreenManager::damage(Region_ptr r)
 
 void ScreenManager::repair()
 {
+  Trace trace("ScreenManager::repair");
   //   Profiler prf("ScreenManager::repair");
   mutex.lock();
   tmpDamage->copy(Region_var(theDamage->_this()));
@@ -84,7 +85,6 @@ void ScreenManager::run()
 				    Region_var(tmpDamage->_this()),
 				    Transform::_nil(),
 				    drawing);
-  
   Prague::Time last;
   while (true)
     {

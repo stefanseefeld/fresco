@@ -61,8 +61,8 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
   if (flags & draws)
     {
       heading(" draw\t");
-      Region_var r = traversal->allocation();
-      Transform_var t = traversal->transformation();
+      Region_var r = traversal->current_allocation();
+      Transform_var t = traversal->current_transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
       os << "region: " << endl << Region_var(region->_this()) << endl;
     }
@@ -75,8 +75,8 @@ void DebugGraphic::pick(PickTraversal_ptr traversal)
   if (flags & picks)
     {
       heading(" pick\t");
-      Region_var r = traversal->allocation();
-      Transform_var t = traversal->transformation();
+      Region_var r = traversal->current_allocation();
+      Transform_var t = traversal->current_transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
       os << Region_var(region->_this()) << endl;
     }

@@ -19,7 +19,6 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Widget/Motif/Slider.hh"
 #include <Warsaw/config.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/PickTraversal.hh>
@@ -28,6 +27,7 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
+#include "Widget/Motif/Slider.hh"
 
 using namespace Warsaw;
 using namespace Motif;
@@ -139,7 +139,7 @@ void Slider::traverse_thumb(Traversal_ptr traversal)
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-  allocation->copy(Region_var(traversal->allocation()));
+  allocation->copy(Region_var(traversal->current_allocation()));
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
   Coord length;

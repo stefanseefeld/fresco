@@ -40,6 +40,7 @@ void NonPositionalFocus::add_filter(Input::Filter_ptr)
 
 bool NonPositionalFocus::request(Controller_ptr c)
 {
+  Trace trace("NonPositionalFocus::request");
   /*
    * brute force method:
    * construct stack of parent controllers and then

@@ -27,7 +27,7 @@ namespace Warsaw
 namespace Input
 {
 
-inline int getPosition(const Event &event, Input::Position &position)
+inline int get_position(const Event &event, Input::Position &position)
 {
   Input::Device device = event[0].dev;
   for (size_t i = 0; i != event.length(); i++)

@@ -85,8 +85,8 @@ void PositionalFocus::damage(Region_ptr region)
     }
   MutexGuard guard(mutex);
   if (!grabbed || !traversal) return;
-  Region_var allocation = traversal->allocation();
-  Transform_var transformation = traversal->transformation();
+  Region_var allocation = traversal->current_allocation();
+  Transform_var transformation = traversal->current_transformation();
   allocation->bounds(l, u);
   transformation->transform_vertex(l);
   transformation->transform_vertex(u);
@@ -121,7 +121,7 @@ void PositionalFocus::dispatch(Input::Event &event)
   Prague::Profiler prf("PositionalFocus::dispatch");
   Trace trace("PositionalFocus::dispatch");
   Input::Position position;
-  int pidx = Input::getPosition(event, position);
+  int pidx = Input::get_position(event, position);
   if (pidx == -1)
     {
       cerr << "PositionalFocus::dispatch error : non positional event" << endl;
@@ -141,7 +141,6 @@ void PositionalFocus::dispatch(Input::Event &event)
 					Region_var(screen->get_region()),
 					Transform::_nil(),
 					position, Focus_var(_this()));
-//      traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
     }
   /*
@@ -160,7 +159,6 @@ void PositionalFocus::dispatch(Input::Event &event)
 	}
     }
   PickTraversalImpl *picked = traversal->memento();
-//  traversal->_dispose();
   traversal = picked;
   if (!traversal)
     {

@@ -52,7 +52,7 @@ void Placement::traverse(Traversal_ptr traversal)
    * cheap and dirty cull test -stefan
    */
 //   if (!traversal->intersectsAllocation()) return;
-  Region_var allocation = Region::_duplicate(traversal->allocation());
+  Region_var allocation = Region::_duplicate(traversal->current_allocation());
   if (!CORBA::is_nil(allocation))
     {
       Lease_var<RegionImpl> result(Provider<RegionImpl>::provide());

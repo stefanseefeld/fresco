@@ -496,7 +496,7 @@ void StageImpl::traverse(Traversal_ptr traversal)
   Trace trace("StageImpl::traverse");
   MutexGuard guard(_mutex);
 //   Profiler prf("StageImpl::traverse");
-  RegionImpl region(Region_var(traversal->allocation()));
+  RegionImpl region(Region_var(traversal->current_allocation()));
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;
   rectangle.t = region.lower.y;

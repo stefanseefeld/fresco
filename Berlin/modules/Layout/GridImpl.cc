@@ -345,7 +345,7 @@ void GridImpl::request_range(Warsaw::Graphic::Requisition &r, const Layout::Grid
 
 void GridImpl::traverse_range(Traversal_ptr traversal, const Layout::Grid::Range &a)
 {
-  Region_var given = traversal->allocation();
+  Region_var given = traversal->current_allocation();
   if (!CORBA::is_nil(given))
     {
       if (traversal->intersects_allocation())
@@ -357,7 +357,7 @@ void GridImpl::traverse_range(Traversal_ptr traversal, const Layout::Grid::Range
 
 Layout::Grid::Index GridImpl::find_range(Traversal_ptr traversal, const Layout::Grid::Range &a)
 {
-  Region_var given = traversal->allocation();
+  Region_var given = traversal->current_allocation();
   Span *xspans = full_allocate(xaxis, given);
   Span *yspans = full_allocate(yaxis, given);
   Vertex lower;//, upper;

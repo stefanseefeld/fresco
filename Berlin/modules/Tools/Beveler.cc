@@ -40,7 +40,7 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   Coord righti = right - thickness;
   Coord topi = top + thickness;
   Coord bottomi = bottom - thickness;
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   Path path;
   path.length(7);
@@ -101,7 +101,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   Coord dx = thickness * sqrt(1/(slope * slope) + 1.0);
   Coord dy = thickness * (1 + slope);
 
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   
   Path path;
@@ -157,7 +157,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   Coord dx = thickness * sqrt(1/(slope * slope) + 1.0);
   Coord dy = thickness * (1 + slope);
 
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
 
   Path path;
@@ -213,7 +213,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   Coord dy = thickness * sqrt(slope * slope + 1.0);
   Coord dx = thickness * (1 + 1 / slope);
 
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
 
   Path path;
@@ -269,7 +269,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   Coord dy = thickness * sqrt(slope * slope + 1.0);
   Coord dx = thickness * (1 + 1 / slope);
 
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
 
   Path path;
@@ -324,7 +324,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   Coord dx = thickness * sqrt(length.x * length.x / (length.y * length.y) + 1.0);
   Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
-  DrawingKit_var drawing = traversal->kit();
+  DrawingKit_var drawing = traversal->drawing();
   drawing->save();
 
   Path path;
