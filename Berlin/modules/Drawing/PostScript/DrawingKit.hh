@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Raster.hh>
+#include <Warsaw/Unicode.hh>
 #include <Berlin/KitImpl.hh>
 #include <Drawing/DrawingKitBase.hh>
 #include <string>
@@ -35,37 +36,32 @@ class PSDrawingKit : public DrawingKitBase, public KitImpl
 public:
   PSDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~PSDrawingKit();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new PSDrawingKit(repo_id(), p);}
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &);
+  virtual void init();
+  virtual void finish();
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
-  virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(tr);}
+  virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}
   virtual void clipping(Warsaw::Region_ptr r) { DrawingKitBase::clipping(r);}
-  virtual Warsaw::Region_ptr clipping() { return Warsaw::Region::_duplicate(cl);}
+  virtual Warsaw::Region_ptr clipping() { return Warsaw::Region::_duplicate(_cl);}
 //   using DrawingKitBase::foreground;
-  virtual void foreground(const Warsaw::Color &c) { DrawingKitBase::foreground(c);}
-  virtual Warsaw::Color foreground() { return fg;}
-  virtual void lighting(const Warsaw::Color &c) { DrawingKitBase::lighting(c);}
-  virtual Warsaw::Color lighting() { return lt;}
-  virtual void point_size(Warsaw::Coord c) { DrawingKitBase::point_size(c);}
-  virtual Warsaw::Coord point_size() { return ps;}
-  virtual void line_width(Warsaw::Coord c) { DrawingKitBase::line_width(c);}
-  virtual Warsaw::Coord line_width() { return lw;}
-  virtual void line_endstyle(Warsaw::DrawingKit::Endstyle e) { DrawingKitBase::line_endstyle(e);}
-  virtual Warsaw::DrawingKit::Endstyle line_endstyle() { return es;}
-  virtual void surface_fillstyle(Warsaw::DrawingKit::Fillstyle f) { DrawingKitBase::surface_fillstyle(f);}
-  virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() { return fs;}
-  virtual void texture(Warsaw::Raster_ptr r) { DrawingKitBase::texture(r);}
+  virtual Warsaw::Color foreground() { return _fg;}
+  virtual Warsaw::Color lighting() { return _lt;}
+  virtual Warsaw::Coord point_size() { return _ps;}
+  virtual Warsaw::Coord line_width() { return _lw;}
+  virtual Warsaw::DrawingKit::Endstyle line_endstyle() { return _es;}
+  virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() { return _fs;}
   virtual Warsaw::Raster_ptr texture() { return Warsaw::Raster::_nil();}
 
-  virtual CORBA::ULong font_size() { return 0;}
-  virtual CORBA::ULong font_weight() { return 0;}
-  virtual Warsaw::Unistring *font_family() { return 0;}
-  virtual Warsaw::Unistring *font_subfamily() { return 0;}
-  virtual Warsaw::Unistring *font_fullname() { return 0;}
-  virtual Warsaw::Unistring *font_style() { return 0;}
-  virtual Warsaw::DrawingKit::FontMetrics font_metrics() { return Warsaw::DrawingKit::FontMetrics();}
-  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar) { return Warsaw::DrawingKit::GlyphMetrics();}
-  virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring &) { return new CORBA::Any();}
+  virtual CORBA::ULong font_size() { return 20;}
+  virtual CORBA::ULong font_weight() { return 1;}
+  virtual Warsaw::Unistring *font_family();
+  virtual Warsaw::Unistring *font_subfamily();
+  virtual Warsaw::Unistring *font_fullname();
+  virtual Warsaw::Unistring *font_style();
+  virtual Warsaw::DrawingKit::FontMetrics font_metrics();
+  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar);
+  virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring &);
 
   virtual void set_transformation(Warsaw::Transform_ptr);
   virtual void set_clipping(Warsaw::Region_ptr);
@@ -85,7 +81,7 @@ public:
   virtual void set_font_style(const Warsaw::Unistring &);
   virtual void set_font_attribute(const Warsaw::NVPair &);
 
-  virtual Warsaw::Coord resolution(Warsaw::Axis) { return 0;}
+  virtual Warsaw::Coord resolution(Warsaw::Axis) { return 0.283464566929;}
   virtual void draw_path(const Warsaw::Path &);
 //   virtual void drawPatch(const Warsaw::Patch &);
   virtual void draw_rectangle(const Warsaw::Vertex &, const Warsaw::Vertex &);
@@ -99,15 +95,16 @@ public:
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
   virtual void flush() {}
 private:
-  Prague::Mutex  mutex;
-  Warsaw::Transform_var  tr;
-  Warsaw::Region_var     cl;
-  Warsaw::Color          fg;
-  Warsaw::Color          lt;
-  Warsaw::Coord          ps;
-  Warsaw::Coord          lw;
-  Warsaw::DrawingKit::Endstyle       es;
-  Warsaw::DrawingKit::Fillstyle      fs;
+  Prague::Mutex                 _mutex;
+  Warsaw::Transform_var         _tr;
+  Warsaw::Region_var            _cl;
+  Warsaw::Color                 _fg;
+  Warsaw::Color                 _lt;
+  Warsaw::Coord                 _ps;
+  Warsaw::Coord                 _lw;
+  Warsaw::DrawingKit::Endstyle  _es;
+  Warsaw::DrawingKit::Fillstyle _fs;
+  ostream                       _os;
 };
 
 #endif
