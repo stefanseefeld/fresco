@@ -22,10 +22,11 @@
 top_srcdir	:= @top_srcdir@
 srcdir		:= $(top_srcdir)/src
 cdir		:= ../config
-datadir		:= @datadir@
-idir		:= $(datadir)/idl
 
 include $(cdir)/local.mk
+
+datadir		:= @datadir@
+idir		:= $(datadir)/idl
 
 IDLPY		:= omniidl
 IDLPYFLAGS	:= -I$(idir) -nf -bpython# -Wbglobal=Warsaw
@@ -77,6 +78,6 @@ distclean:	clean
 
 cvsclean:	distclean
 
-install:
+install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/python
 	$(INSTALL) -m 644 $(TARGET) $(DESTDIR)$(libdir)/python

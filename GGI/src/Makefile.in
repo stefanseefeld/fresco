@@ -50,7 +50,7 @@ $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-install:
+install:	all
 		$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/Console
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/Console
 

@@ -37,7 +37,7 @@ DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 SYN		:= $(patsubst Prague/%.hh, %.syn, $(HDR))
 
-TARGET		:= ../lib/libBabylon.so
+TARGET		:= libBabylon.so
 
 vpath %.hh  $(hdir)/Babylon
 
@@ -50,6 +50,7 @@ $(TARGET):	$(OBJ)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 install:	all
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Babylon
 	@for header in $(HDR); do \
@@ -60,6 +61,7 @@ install:	all
 	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
           fi; \
 	done
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 ../bin/Babylon-config $(DESTDIR)$(bindir)
 
 uninstall:

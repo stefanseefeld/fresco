@@ -59,6 +59,7 @@ $(TARGET):	$(OBJ)
 	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 install:	all
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin/Console
@@ -68,6 +69,7 @@ install:	all
 	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
 	  else :; fi; \
 	done
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 ../bin/Berlin-config $(DESTDIR)$(bindir)
 
 uninstall:

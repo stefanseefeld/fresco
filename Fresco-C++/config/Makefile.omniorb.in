@@ -97,6 +97,7 @@ sources:	$(SRC)
 objects:	$(OBJ)
 
 install:	all
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -m 644 $(patsubst %, ../idl/Fresco/%, $(INT)) $(DESTDIR)$(datadir)/idl/Fresco
@@ -109,6 +110,7 @@ install:	all
 	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
           fi; \
 	done
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 ../bin/Fresco-config $(DESTDIR)$(bindir)
 
 uninstall:

@@ -30,4 +30,6 @@ AC_REVISION($Revision$)
 AC_INIT(Berlin, 0.3.0, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
 
+AC_CONFIG_FILES([Makefile])
+
 AC_OUTPUT

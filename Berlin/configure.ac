@@ -135,7 +135,7 @@ for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Images
   AC_CONFIG_FILES([modules/$kit/Makefile])
 done
 
-AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-config.in],[chmod +x ../bin/Berlin-config])
+AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-config.in],[chmod +x bin/Berlin-config])
 AC_CONFIG_FILES([config/local.mk config/module.mk])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile etc/berlinrc:config/berlinrc.in])
 

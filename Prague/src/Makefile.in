@@ -87,6 +87,7 @@ doc:	$(SYN)
 	touch $@
 
 install:	all
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Sys
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/IPC
@@ -100,6 +101,7 @@ install:	all
 	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
 	  fi; \
 	done
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 ../bin/Prague-config $(DESTDIR)$(bindir)
 
 uninstall:

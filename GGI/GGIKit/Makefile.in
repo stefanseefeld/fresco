@@ -43,7 +43,7 @@ $(TARGET):	$(DEP) $(OBJ)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
 
-install:
+install:	all
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
 
 uninstall:

@@ -55,7 +55,8 @@ $(TARGET):	$(DEP) $(OBJ)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
 
-install:
+install:	all
+		$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
 
 clean:	
