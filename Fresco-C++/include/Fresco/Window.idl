@@ -42,8 +42,7 @@ interface Window : Controller
   Command resize();
   Command moveResize(in Alignment x, in Alignment y, in short b);
   Command relayer();
-  Command map();
-  Command unmap();
+  Command map(in boolean f);
 };
 
 #endif /* _Window_idl */

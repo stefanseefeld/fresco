@@ -40,7 +40,7 @@ STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Drawable.idl Pencil.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Focus.idl \
-	  Image.idl Transformator.idl \
+	  Figure.idl Image.idl Transformator.idl \
 	  Grid.idl Viewport.idl Stage.idl \
 	  Command.idl \
 	  Subject.idl Controller.idl View.idl \

@@ -47,7 +47,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   {
   public:
     Mapper(WindowImpl *w, bool f) : window(w), flag(f) {}
-    virtual void execute(const Message &) { window->map(flag);}
+    virtual void execute(const Message &);
   private:
     WindowImpl *window;
     bool flag;
@@ -62,10 +62,10 @@ class WindowImpl : implements(Window), public ControllerImpl
   Command_ptr resize();
   Command_ptr moveResize(Alignment, Alignment, CORBA::Short);
   Command_ptr relayer();
-  Command_ptr map();
-  Command_ptr unmap();
+  Command_ptr map(CORBA::Boolean);
   virtual void pick(PickTraversal_ptr);
-  void map(bool);
+  void map();
+  void unmap();
  private:
   StageHandle_var handle;
   UnmappedStageHandle *unmapped;

@@ -135,6 +135,12 @@ public:
     }
 };
 
+void WindowImpl::Mapper::execute(const Message &)
+{
+  if (flag) window->map();
+  else window->unmap();
+}
+
 WindowImpl::WindowImpl()
   : ControllerImpl(true), unmapped(0), manipulators(3), mapper(0)
 {
@@ -169,7 +175,7 @@ void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
   unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
   unmapped->_obj_is_ready(_boa());
   handle = StageHandle_var(unmapped->_this());
-  if (mapped) map(true);
+  if (mapped) map();
 }
 
 Command_ptr WindowImpl::move() { return manipulators[0]->_this();}
@@ -181,8 +187,10 @@ Command_ptr WindowImpl::moveResize(Alignment x, Alignment y, CORBA::Short b)
   return manipulators.back()->_this();
 }
 Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
-Command_ptr WindowImpl::map() { return mapper->_this();}
-Command_ptr WindowImpl::unmap() { return unmapper->_this();}
+Command_ptr WindowImpl::map(CORBA::Boolean f)
+{
+  return f ? mapper->_this() : unmapper->_this();
+}
 
 void WindowImpl::pick(PickTraversal_ptr traversal)
 {
@@ -192,28 +200,29 @@ void WindowImpl::pick(PickTraversal_ptr traversal)
   traversal->leaveController();
 }
 
-void WindowImpl::map(bool flag)
+void WindowImpl::map()
 {
   MutexGuard guard(mutex);
-  if (flag == !unmapped) return;
+  if (!unmapped) return;
   Stage_var stage = handle->parent();
-  if (unmapped)
-    {
-      stage->begin();
-      StageHandle_var tmp = stage->insert(Graphic_var(_this()), handle->position(), handle->size(), handle->layer()); 
-      stage->end();
-      handle = tmp;
-      for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
-	(*i)->bind(handle);
-      unmapped->_dispose();
-      unmapped = 0;
-    }
-  else
-    {
-      unmapped = new UnmappedStageHandle(handle);
-      unmapped->_obj_is_ready(_boa());
-      stage->begin();
-      stage->remove(handle); 
-      stage->end();
-    }
+  stage->begin();
+  StageHandle_var tmp = stage->insert(Graphic_var(_this()), handle->position(), handle->size(), handle->layer()); 
+  stage->end();
+  handle = tmp;
+  for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
+    (*i)->bind(handle);
+  unmapped->_dispose();
+  unmapped = 0;
+}
+
+void WindowImpl::unmap()
+{
+  MutexGuard guard(mutex);
+  if (unmapped) return;
+  unmapped = new UnmappedStageHandle(handle);
+  unmapped->_obj_is_ready(_boa());
+  Stage_var stage = handle->parent();
+  stage->begin();
+  stage->remove(handle); 
+  stage->end();
 }

@@ -70,22 +70,13 @@ void StageSequence::insert(StageHandleImpl *handle)
  
 void StageSequence::remove(StageHandleImpl *handle)
 {
-  if (handle == *cursor)
+  int layer = handle->l;
+  iterator old = lookup(layer);
+  if (old == cursor)
     if ((*cursor)->l <= (front()->l / 2)) cursor++;
     else cursor--;
-//   int layer = info->layer;
-//   if (item == front()) list::erase(--end());
-//   if (item == back()) list::erase(begin());
-//   int layer = item->layer_;
-//   StageOffsetImpl *next = item->next();
-//   item->unlink();
-//   while (next)
-//     {
-//       next->layer_ = layer++;
-//       next = next->next();
-//     }
-//   invariants();
-  cout << "StageSequence::remove Warning : not implemented !" << endl;
+  for (iterator i = old++; i != end(); i++) (*i)->l = layer++;
+  parent_t::erase(old);
 }
 
 StageQuad::StageQuad(const Rectangle<Coord> &region) : parent_t(region)
@@ -377,9 +368,9 @@ struct less<StageHandleImpl *> : public binary_function<StageHandleImpl *, Stage
 void StageTraversal::execute()
 {
   if (traversal->direction() == Traversal::down)
-    sort(buffer.begin(), buffer.end(), greater<StageHandleImpl *>());
-  else
     sort(buffer.begin(), buffer.end(), less<StageHandleImpl *>());
+  else
+    sort(buffer.begin(), buffer.end(), greater<StageHandleImpl *>());
   for (vector<StageHandleImpl *>::iterator i = buffer.begin(); i != buffer.end() && traversal->ok(); i++)
     traverse(*i);
 }
