@@ -10,15 +10,25 @@ int main(int, char **)
 {
   char cwd[128];
   getcwd(cwd, 128);
-  std::string plugin1 = std::string(cwd) + "/Plugin1.so";
-  std::string plugin2 = std::string(cwd) + "/Plugin2.so";
   for (int i = 0; i != 5; i++)
     {
-      Plugin<Action> action1(plugin1);
-      Plugin<Action> action2(plugin2);
-      if (action1) action1->execute();
-      else std::cerr << action1.error() << std::endl;
-      if (action2) action2->execute();
-      else std::cerr << action2.error() << std::endl;
+      try
+        {
+          Plugin<Action> action(std::string(cwd) + "/Plugin1.so");
+          action->execute();
+        }
+      catch(const std::runtime_error &e)
+        {
+          std::cerr << e.what() << std::endl;
+        }
+      try
+        {
+          Plugin<Action> action(std::string(cwd) + "/Plugin2.so");
+          action->execute();
+        }
+      catch(const std::runtime_error &e)
+        {
+          std::cerr << e.what() << std::endl;
+        }
     }
 }
