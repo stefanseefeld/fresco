@@ -70,11 +70,11 @@ Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
     return glyphCache[k];
 }
 
-Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style::Spec &s) {
-    FontChange *fc = new FontChange(fd,s);
-    fc->_obj_is_ready(_boa());
-    return fc->_this();
-}
+// Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style::Spec &s) {
+//     FontChange *fc = new FontChange(fd,s);
+//     fc->_obj_is_ready(_boa());
+//     return fc->_this();
+// }
 
 
 EXPORT_PLUGIN(TextKitImpl, interface(TextKit))

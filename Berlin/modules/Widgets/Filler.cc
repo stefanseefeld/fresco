@@ -24,7 +24,6 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Pencil.hh>
 #include <Warsaw/DrawTraversal.hh>
 
 void Filler::request(Requisition &requisition)
@@ -47,22 +46,12 @@ void Filler::traverse(Traversal_ptr traversal)
 void Filler::draw(DrawTraversal_ptr traversal)
 {
   DrawingKit_var dk = traversal->kit();
-  Style::Spec style;
-  style.length(1);
-  style[0].a = Style::fillcolor;
-  style[0].val <<= color;
-  Pencil_var pen = dk->getPencil(style);
+//   Style::Spec style;
+//   style.length(1);
+//   style[0].a = Style::fillcolor;
+//   style[0].val <<= color;
   Vertex lower, upper, origin;
   traversal->bounds(lower, upper, origin);
-  Path path;
-  path.p.length(5);
-  path.p[0].x = lower.x, path.p[0].y = lower.y, path.p[0].z = 0.;
-  path.p[1].x = upper.x, path.p[1].y = lower.y, path.p[1].z = 0.;
-  path.p[2].x = upper.x, path.p[2].y = upper.y, path.p[2].z = 0.;
-  path.p[3].x = lower.x, path.p[3].y = upper.y, path.p[3].z = 0.;
-  path.p[4].x = lower.x, path.p[4].y = lower.y, path.p[4].z = 0.;
-  Transform_var transform = traversal->transformation();
-  for (unsigned int i = 0; i != 5; i++) transform->transformVertex(path.p[i]);
-  pen->drawPath(path);
+  dk->drawRect(lower, upper);
   MonoGraphic::traverse(traversal);
 }

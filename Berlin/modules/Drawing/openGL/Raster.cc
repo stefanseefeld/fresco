@@ -39,7 +39,7 @@ bool scaleImage(GLenum format,
 		size_t widthin, size_t heightin, const unsigned char *datain,
 		size_t widthout, size_t heightout, unsigned char *dataout)
 {
-  GLint components;
+  unsigned short components;
   /* Determine number of components per pixel */
   switch (format)
     {
@@ -396,15 +396,15 @@ void GLRaster::draw()
   glColor4f(1., 1., 1., 1.);
   glBegin(GL_POLYGON);
   Path path;
-  path.p.length(4);
-  path.p[0].x = path.p[0].y = path.p[0].z = 0.;
-  path.p[1].x = width, path.p[1].y = path.p[1].z = 0.;
-  path.p[2].x = width, path.p[2].y = height, path.p[2].z = 0.;
-  path.p[3].x = 0, path.p[3].y = height, path.p[3].z = 0.;
-  glTexCoord2f(0., 0.); glVertex3f(path.p[3].x, path.p[3].y, path.p[3].z);
-  glTexCoord2f(s, 0.);  glVertex3f(path.p[2].x, path.p[2].y, path.p[2].z);
-  glTexCoord2f(s, t);   glVertex3f(path.p[1].x, path.p[1].y, path.p[1].z);
-  glTexCoord2f(0., t);  glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
+  path.length(4);
+  path[0].x = path[0].y = path[0].z = 0.;
+  path[1].x = width, path[1].y = path[1].z = 0.;
+  path[2].x = width, path[2].y = height, path[2].z = 0.;
+  path[3].x = 0, path[3].y = height, path[3].z = 0.;
+  glTexCoord2f(0., 0.); glVertex3f(path[3].x, path[3].y, path[3].z);
+  glTexCoord2f(s, 0.);  glVertex3f(path[2].x, path[2].y, path[2].z);
+  glTexCoord2f(s, t);   glVertex3f(path[1].x, path[1].y, path[1].z);
+  glTexCoord2f(0., t);  glVertex3f(path[0].x, path[0].y, path[0].z);
   glEnd();
   glDisable(GL_TEXTURE_2D);
 }

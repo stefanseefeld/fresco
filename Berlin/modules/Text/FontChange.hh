@@ -26,17 +26,16 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Text.hh"
 #include "Berlin/GraphicImpl.hh"
-#include "Warsaw/Style.hh"
 
 class FontChange : public virtual GraphicImpl {
 public:
-  FontChange(const Text::FontDescriptor & f, const Style::Spec &sty);	    
+//   FontChange(const Text::FontDescriptor & f, const Style::Spec &sty);	    
   virtual void draw(DrawTraversal_ptr dt);
   virtual void request(Requisition &);
 
 protected:
   const Text::FontDescriptor myFontDescriptor;
-  const Style::Spec myStyle;
+//   const Style::Spec myStyle;
 };
 
 

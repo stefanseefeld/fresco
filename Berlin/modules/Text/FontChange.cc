@@ -26,9 +26,9 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Berlin/Logger.hh"
 
-FontChange::FontChange(const Text::FontDescriptor & f, const Style::Spec &sty) :
-  myFontDescriptor(f), myStyle(sty) {
-}
+// FontChange::FontChange(const Text::FontDescriptor & f, const Style::Spec &sty) :
+//   myFontDescriptor(f), myStyle(sty) {
+// }
 
 void FontChange::request(Requisition &r) {
   r.x.defined = false;
@@ -39,9 +39,9 @@ void FontChange::request(Requisition &r) {
 void FontChange::draw(DrawTraversal_ptr dt) {
     SectionLog section("FontChange::Draw");
     DrawingKit_ptr dk = dt->kit();
-    try {
-	dk->setFont(myFontDescriptor, myStyle);
-    } catch (Text::NoSuchFontException &nsfe) {
-	//	Logger::log(Logger::text) << "Unable to load font \"" << myFontDescriptor.name << "\"";
-    }
+//     try {
+// 	dk->setFont(myFontDescriptor, myStyle);
+//     } catch (Text::NoSuchFontException &nsfe) {
+// 	//	Logger::log(Logger::text) << "Unable to load font \"" << myFontDescriptor.name << "\"";
+//     }
 }

@@ -53,6 +53,17 @@ public:
   PixelCoord height() const { return mode.visible.y;}
   PixelCoord vwidth() const { return mode.virt.x;}
   PixelCoord vheight() const { return mode.virt.y;}
+  Coord resolution(Axis a) const
+    {
+      /*
+       * mode.size is in mm
+       * our base unit is 0.1 mm...
+       */
+      return a == xaxis ?
+	0.1 * mode.visible.x / mode.size.x :
+	0.1 * mode.visible.y / mode.size.y;
+    }
+  Coord dpi(Axis a) const { return resolution(a) * 254.0;}
   const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (visual, i);}
 private:
   Drawable();

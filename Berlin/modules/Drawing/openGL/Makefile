@@ -38,7 +38,7 @@ LIBS	= -lPrague -lBerlin $(GL_LIBS) -lFT #-lttf
 
 #GLFont.cc GLUnifont.cc
 
-SRC	= GLRaster.cc GLPolygonizer.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
+SRC	= GLRaster.cc GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
 	  GLDrawingKit.cc
 
 TARGET	= $(mpath)/libGLDrawing.so

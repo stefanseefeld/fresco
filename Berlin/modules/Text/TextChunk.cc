@@ -48,11 +48,11 @@ void TextChunk::draw(DrawTraversal_ptr dt) {
 SectionLog section("TextChunk::draw");
     Region_var allocation = dt->allocation();
     DrawingKit_ptr dk = dt->kit();
-    Text::Font_var f = dk->currentFont();
+//     Text::Font_var f = dk->currentFont();
     Vertex l,u;
     allocation->bounds(l,u);
     u.x = l.x;
 //     Transform_var transform = dt->transformation();
 //     transform->transformVertex(u);
-    f->drawText(Unicode::toCORBA(myText), u);
+//     f->drawText(Unicode::toCORBA(myText), u);
 }

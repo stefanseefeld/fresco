@@ -52,13 +52,12 @@ GLDrawingKit::GLDrawingKit()
   glViewport(0, 0, drawable->width(), drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
-  glOrtho(0, drawable->width(), drawable->height(), 0, -1000.0, 1000.0); 
+  glOrtho(0, drawable->width()/drawable->resolution(xaxis), drawable->height()/drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
   glTranslatef(0.375,0.375,0.);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//   reshape(mode.visible.x, mode.visible.y);
   glShadeModel(GL_SMOOTH);
   glDisable(GL_LIGHTING);  
   glFrontFace(GL_CW);

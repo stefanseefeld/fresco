@@ -65,7 +65,7 @@ class TextKitImpl : lcimplements(TextKit), public virtual CloneableImpl {
     DrawingKit_ptr dk();
     void dk(DrawingKit_ptr);
     Graphic_ptr  chunk(const Unistring & u, Text::Font_ptr  f);
-    Graphic_ptr  fontChange(const Text::FontDescriptor & fd, const Style::Spec &s);
+//     Graphic_ptr  fontChange(const Text::FontDescriptor & fd, const Style::Spec &s);
     
  protected:
     DrawingKit_var canonicalDK;
