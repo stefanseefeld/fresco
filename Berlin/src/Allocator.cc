@@ -127,7 +127,7 @@ void Allocator::cache_requisition()
       GraphicImpl::init_requisition(r);
       MonoGraphic::request(r);
       _requisition = r;
-      _requested = r.x.defined && r.y.defined && r.z.defined;
+      _requested = true;//r.x.defined && r.y.defined && r.z.defined;
     }
 }
 
