@@ -1689,7 +1689,7 @@ AC_DEFUN([BERLIN_ORB_CHECK],[
 
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org
 dnl
 dnl This library is free software; you can redistribute it and/or

@@ -51,6 +51,12 @@ AC_CONFIG_LOAD($cpath/config.param)
 AC_CONFIG_LOAD($cpath/Clients-Python/config.param)
 
 dnl ------------------------------------------------------------------
+dnl CORBA environment
+dnl ------------------------------------------------------------------
+AC_MSG_PART(CORBA Environment)
+dnl BERLIN_OMNIORBPY_CHECK
+
+dnl ------------------------------------------------------------------
 dnl Decisions
 dnl ------------------------------------------------------------------
 
