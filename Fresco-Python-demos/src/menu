@@ -268,11 +268,11 @@ class RunApp(Warsaw__POA.Command):
     argument which is the Any."""
     def __init__(self, command, *args):
 	self.command = command
-	self.args = args
+	self.args = (command,)+args
     def execute(self, any):
 	print "Running",self.command, self.args
 	if os.fork() == 0:
-	    os.execv(self.command, self.args)
+	    os.execvp(self.command, self.args)
 	    print "Failed"
 
 class MenuApp (berlin.App):
@@ -300,8 +300,8 @@ class MenuApp (berlin.App):
 	    ])),
 	    kit.menu_item_sub('Clients', add(kit.menu(), [
 		kit.menu_item_sub('C++', add(kit.menu(), [
-		    kit.menu_item('demo', RunApp('../../build/bin/demo')),
-		    kit.menu_item('canvas', RunApp('../../build/bin/canvas','','-r','ggi-dots')),
+		    kit.menu_item('demo', RunApp('demo')),
+		    kit.menu_item('canvas', RunApp('canvas','-r','ggi-dots')),
 		])),
 		kit.menu_item_sub('Python', add(kit.menu(), [
 		    kit.menu_item('demo', RunApp('demo.py')),
