@@ -145,8 +145,9 @@ Input::Event *GGIConsole::next_event()
   Prague::FdSet rfdset;
   rfdset.set(wakeupPipe[0]);
   if (autoplay) rfdset.set(input);
-  int nfds = ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
- 
+  int nfds = -1;
+  do nfds = ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+  while (wval == -1 && errno == EINTR);
   if (nfds == 0)
     {
       // no input from the outside world
