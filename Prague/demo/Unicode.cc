@@ -5,19 +5,19 @@
 using namespace Unicode;
 
 int main (int argc, char **argv) {
-  Unicode::Unichar A;
+  Unicode::Char A;
   bool runOverZero = 1;
 
   cout.setf(ios::uppercase);
   
-  for (A = NULL_UNICODE; A > _Unichar(0x0000) || runOverZero; A++) {
+  for (A = NULL_UNICODE; A > _Char(0x0000) || runOverZero; A++) {
     runOverZero = 0;
     try {
-      A.GenericCategory(); // breaks the loop for undefined chars
+      A.category(); // breaks the loop for undefined chars
       // code value
       cout << hex << setfill('0') << setw(4) << A.myUnicode()<< ";";
       // Gen_Cat
-      switch(A.GenericCategory()) {
+      switch(A.category()) {
       case CAT_Lu: cout << "Lu;"; break;
       case CAT_Ll: cout << "Ll;"; break;
       case CAT_Lt: cout << "Lt;"; break;
@@ -51,9 +51,9 @@ int main (int argc, char **argv) {
       default:     cout << "UNDEFINED;";
       }
       // comp_class
-      cout << A.CanCombClass() << ";";
+      cout << A.combClass() << ";";
       // Bidir_Props
-      switch(A.Direction()) {
+      switch(A.direction()) {
       case BIDIR_L:   cout << "L;"; break;
       case BIDIR_LRE: cout << "LRE;"; break;
       case BIDIR_LRO: cout << "LRO;"; break;
@@ -76,7 +76,7 @@ int main (int argc, char **argv) {
       default:        cout << "UNDEFINED;";
       }
       // Char_Decomp_Type
-      switch(A.DecompType()) {
+      switch(A.decompType()) {
       case DECOMP_NO_DECOMP: cout << ";"; break;
       case DECOMP_FONT:      cout << "<font>;"; break;
       case DECOMP_NOBREAK:   cout << "<noBreak>;"; break;
@@ -98,42 +98,42 @@ int main (int argc, char **argv) {
       }
       // Dec_Digit_Value
       try {
-	cout << A.DecimalDigitValue() << ";";
+	cout << A.decDigitValue() << ";";
       }
       catch(Unicode::UndefinedProperty &Except) {
 	cout << ";";
       }
       // Digit_Value
       try {
-	cout << A.DigitValue() << ";";
+	cout << A.digitValue() << ";";
       }
       catch(Unicode::UndefinedProperty &Except) {
 	cout << ";";
       }    
       // Numeric_Value
       try {
-	cout << A.NumericValue() << ";";
+	cout << A.numericValue() << ";";
       }
       catch(Unicode::UndefinedProperty &Except) {
 	cout << ";";
       }
       // Is_Mirrored
-      if (A.MustMirror()) cout << "Y;";
+      if (A.mustMirror()) cout << "Y;";
       else cout << "N;";
       // Uppercase
-      if ((A.UppercaseEquivalent()).myUnicode() != A.myUnicode())
+      if ((A.uppercase()).myUnicode() != A.myUnicode())
 	cout << hex << setfill('0') << setw(4)
-	     << (A.UppercaseEquivalent()).myUnicode();
+	     << (A.uppercase()).myUnicode();
       cout << ";";
       // Lowercase
-      if ((A.LowercaseEquivalent()).myUnicode() != A.myUnicode())
+      if ((A.lowercase()).myUnicode() != A.myUnicode())
 	cout << hex << setfill('0') << setw(4)
-	     << (A.LowercaseEquivalent()).myUnicode();
+	     << (A.lowercase()).myUnicode();
       cout << ";";
       // Titlecase
-      if ((A.TitlecaseEquivalent()).myUnicode() != A.myUnicode())
+      if ((A.titlecase()).myUnicode() != A.myUnicode())
 	cout << hex << setfill('0') << setw(4)
-	     << (A.TitlecaseEquivalent()).myUnicode();
+	     << (A.titlecase()).myUnicode();
       cout << ";";
       // EA_Width
       switch(A.EAWidth()) {
@@ -146,7 +146,7 @@ int main (int argc, char **argv) {
       default:          cout << "UNDEFINED;";
       }
       // Line_Break
-      switch(A.LineBreak()) {
+      switch(A.linebreak()) {
       case LB_BK: cout << "LB_BK"; break;
       case LB_CR: cout << "LB_CR"; break;
       case LB_LF: cout << "LB_LF"; break;
