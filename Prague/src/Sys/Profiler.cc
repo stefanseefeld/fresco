@@ -20,10 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Sys/Profiler.hh>
+#include "Prague/Sys/Profiler.hh"
 
 using namespace Prague;
 
 Profiler::Guard    Profiler::guard;
 Profiler::table_t *Profiler::table = 0;
 Profiler::item_t  *Profiler::current = 0;
+Mutex              Profiler::mutex;

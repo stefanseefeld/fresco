@@ -89,6 +89,7 @@ public:
   Profiler(const string &name)
     {
 #ifdef profile
+      MutexGuard guard(mutex);
       child_iterator i = lookup(name);
       current = &*i;
       current->value->count++;
@@ -98,13 +99,14 @@ public:
   ~Profiler()
     {
 #ifdef profile
+      MutexGuard guard(mutex);
       current->value->stop = clock();
       current->value->elapsed += (current->value->stop - current->value->start);
       up_iterator i = current->up_begin();
       current = &*++i;
 #endif /* profile */
     }
-  static void dump(ostream &os) { dump(os, *current, 0);}
+  static void dump(ostream &os) { MutexGuard guard(mutex); dump(os, *current, 0);}
 private:
   static child_iterator lookup(const string &name)
     {
@@ -127,6 +129,7 @@ private:
   static Guard    guard;
   static table_t *table;
   static item_t  *current;
+  static Mutex    mutex;
 };
 
 };
