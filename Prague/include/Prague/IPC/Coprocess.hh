@@ -22,38 +22,48 @@
 #ifndef _Coprocess_hh
 #define _Coprocess_hh
 
+#include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/Timer.hh>
+#include <Prague/Sys/Thread.hh>
 #include <Prague/IPC/Agent.hh>
 #include <string>
+#include <vector>
 
 namespace Prague
 {
 
 class Coprocess : public Agent
 {
-//   struct Timeout : public Timer::Notifier
-//   {
-//     Timeout(Coprocess *a) : agent(a) {}
-//     virtual void notify() { agent->timeout();}
-//     Coprocess *agent;
-//   };
-//   friend class Timeout;
+  typedef vector<Coprocess *> plist_t;
+  class Timeout;
+  struct Cleaner : Signal::Notifier { Cleaner(); virtual void notify(int);};
+  friend struct Cleaner;
+  struct Timeout : Timer::Notifier
+  {
+    Timeout(Coprocess *p) : process(p) {}
+    virtual void notify() { process->timeout();}
+    Coprocess *process;
+  };
+  friend class Timeout;
 public:
-  Coprocess(const string &);
-  Coprocess(const Coprocess &);
-  virtual       ~Coprocess();
-  virtual pid_t  pid() const { return id;}
-  const string  &command() const { return path;} 
-  int            status() const	{ return stat;}
-
+  class Notifier
+  {
+  public:
+    virtual ~Notifier(){}
+    virtual void notify(int) = 0;
+  };
+  enum state_t {ready, running, exited, signaled};
+  Coprocess(const string &, Notifier * = 0, Notifier * = 0, Notifier * = 0);
+  virtual      ~Coprocess();
+  virtual void start();
+  virtual void stop();
+  const string &command() const { return path;}
+  pid_t         pid() const { MutexGuard guard(mutex); return id;}
+  state_t       state() const { MutexGuard guard(mutex); return _state;}
 protected:
   virtual ipcbuf *ibuf() { return inbuf;}
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
-  virtual int     IFD() const { return inbuf ? inbuf->fd() : -1;}
-  virtual int     OFD() const { return outbuf ? outbuf->fd() : -1;}
-  virtual int     EFD() const { return errbuf ? errbuf->fd() : -1;}
-
 //   int          &terminateTimeOut()	 { return termTout; }
 //   int          &hangupTimeOut()	         { return hupTout; }
 //   int          &killTimeOut()		 { return killTout; }
@@ -62,40 +72,50 @@ protected:
 //   int           killTimeOut()	const	 { return killTout; }
 
   virtual void  terminate(bool flag = false);
-  virtual void  abort();
-  virtual void  wait();
-  virtual bool  pending();
+//   virtual void  abort();
+//   virtual void  wait();
+//   virtual bool  pending();
+
+  
 protected:
-  virtual void  NewStatus(int);
-  void          initTimer() { if (!timer) timer = new Timer(&tnotifier);}
-  pid_t         id;
+//   virtual void  NewStatus(int);
+//   void          initTimer() { if (!timer) timer = new Timer(&tnotifier);}
   const string  path;
-  int           stat;
+  pid_t         id;
+  state_t       _state;
   ipcbuf       *inbuf;
   ipcbuf       *outbuf;
   ipcbuf       *errbuf;
-  bool running();
-  void Error(const string &msg, bool flag)         {};//{ Notify(Signal::panic, msg); if (flag) running();}
-  void Warning(const string &msg, bool flag)       {};//{ Notify(Signal::strange, msg); if (flag) running();}
-  void SystemError(const string &msg, bool flag)   {};//{ Notify(Signal::panic, msg + ": " + strerror(errno)); if (flag) running();}
-  void SystemWarning(const string &msg, bool flag) {};//{ Notify(Signal::strange, msg + ": " + strerror(errno)); if (flag) running();}
+//   bool running();
+//   void Error(const string &msg, bool flag)         {};//{ Notify(Signal::panic, msg); if (flag) running();}
+//   void Warning(const string &msg, bool flag)       {};//{ Notify(Signal::strange, msg); if (flag) running();}
+//   void SystemError(const string &msg, bool flag)   {};//{ Notify(Signal::panic, msg + ": " + strerror(errno)); if (flag) running();}
+//   void SystemWarning(const string &msg, bool flag) {};//{ Notify(Signal::strange, msg + ": " + strerror(errno)); if (flag) running();}
 private:
+  Coprocess(const Coprocess &);
+  Coprocess &operator = (const Coprocess &);
 //   void  DefaultHandler(const char *);
   void  timeout();
-  bool  beingTerminated : 1;
-  int   timermode       : 3;
-  int   termTout; 	// terminate TimeOut (in s)
-  int   hupTout;    	// hangup TimeOut (in s)
-  int   killTout;      	// kill TimeOut (in s)
-  void  waitToTerminate();
+//   bool  beingTerminated : 1;
+//   int   timermode       : 3;
+//   int   termTout; 	// terminate TimeOut (in s)
+//   int   hupTout;    	// hangup TimeOut (in s)
+//   int   killTout;      	// kill TimeOut (in s)
+//   void  waitToTerminate();
   void  shutdown(short);  
-  virtual void  outputEOF();
-  virtual void  errorEOF();
+//   virtual void  outputEOF();
+//   virtual void  errorEOF();
   
   void kill(int);
 private:
-  Timer *timer;
-  Timeout tnotifier;
+  static plist_t processes;
+  static Cleaner *cleaner;
+  Timeout tout;
+  Timer timer;
+  mutable Mutex mutex;
+  Notifier *exitNotifier;
+  Notifier *signalNotifier;
+  Notifier *stopNotifier;
 };
 
 };

@@ -31,15 +31,17 @@ class Agent
 {
   friend class Dispatcher;
 public:
-  enum iomask {outready = 0x01, inready = 0x02, errready = 0x04,
-	       outexc = 0x10, inexc = 0x20, errexc = 0x40,
-	       out = 0x11, in = 0x22, err = 0x44,
-	       asyncio = 0xff};
+  enum iomask_t {none = 0x00, outready = 0x01, inready = 0x02, errready = 0x04,
+		 outexc = 0x10, inexc = 0x20, errexc = 0x40,
+		 out = 0x11, in = 0x22, err = 0x44,
+		 asyncio = 0xff};
   Agent() {}
   virtual ~Agent();
 
-  virtual void start(iomask);
+  virtual void start();
   virtual void stop();
+  void mask(short);
+  short mask() { return iomask;}
 
   virtual void processInput() = 0;
   virtual void processOutput() = 0;
@@ -51,13 +53,10 @@ protected:
   virtual ipcbuf *ibuf() = 0;
   virtual ipcbuf *obuf() = 0;
   virtual ipcbuf *ebuf() = 0;
-
-  virtual int ifd() const = 0;
-  virtual int ofd() const = 0;
-  virtual int efd() const = 0;
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);
+  short iomask;
   bool  running : 1;
 };
 

@@ -25,10 +25,6 @@
 namespace Prague
 {
 
-/* @Class{Action<Argument>}
- *
- * @Description{}
- */
 template <class T>
 class Action
 {

@@ -35,16 +35,18 @@ namespace Prague
 class Dispatcher
 {
   typedef vector<Agent *> alist_t;
-  typedef pair<Agent *, Agent::iomask> task;
+  typedef pair<Agent *, Agent::iomask_t> task;
   typedef vector<task> tlist_t;
   typedef map<int, Agent *> dictionary_t;
 
   struct Handler
+  //. Handler is responsible for calling a specific method
+  //. (determined by the mask) on the agent
   {
-    Handler(Agent *a, Agent::iomask m) : agent(a), mask(m) {}
+    Handler(Agent *a, Agent::iomask_t m) : agent(a), mask(m) {}
     void process();
     Agent *agent;
-    Agent::iomask mask;
+    Agent::iomask_t mask;
   };
   struct Acceptor
   {
@@ -53,18 +55,18 @@ class Dispatcher
   struct Cleaner { ~Cleaner();};
   friend struct Cleaner;
 public:
-  static Dispatcher *Instance();
-  void start();
-  void stop();
-  void bind(Agent *, Agent::iomask);
+  static Dispatcher *instance();
+  void bind(int, Agent *, Agent::iomask_t);
+  void release(int);
   void release(Agent *);
   void wait();
 private:
   Dispatcher();
   virtual ~Dispatcher();
-  void dispatch(const tlist_t &);
-  static Dispatcher *instance;
+  static void *dispatch(void *);
+  static Dispatcher *dispatcher;
   static Cleaner cleaner;
+  static Mutex  singletonMutex;
   Signal::Notifier *notifier;
   Mutex         mutex;
   FdSet         rfds;
@@ -74,10 +76,10 @@ private:
   dictionary_t  rchannel;
   dictionary_t  wchannel;
   dictionary_t  echannel;
-  bool          running;
   Thread::Queue<task> tasks;
   Acceptor      acceptor;
   ThreadPool<task, Acceptor, Handler> workers;
+  Thread        server;
 };
 
 };

@@ -59,6 +59,7 @@ CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr region)
   local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
   Vertex lower, upper;
   region->bounds(lower, upper);
+//   cout << "PickTraversalImpl::intersectsRegion " << local << endl;
   return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
 }
 

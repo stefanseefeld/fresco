@@ -24,31 +24,29 @@
 
 #include <Prague/IPC/Coprocess.hh>
 
-#include <cstdio>
-#include <signal.h>
-#include <wait.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
-#include <cerrno>
-
 namespace Prague
 {
 
 char *sigName(int);
 char *statusName(int);
 
-/* @Class {PipeAgent : public Coprocess}
- *
- * @Description {creates and handles coprocesses via pipes}
- */
 class PipeAgent : public Coprocess
 {
 public:
-  PipeAgent(Notifier *n, const string &cmd) : Coprocess(n, cmd) {}
-  PipeAgent(const PipeAgent &PA) : Coprocess(PA) {}
-  virtual        ~PipeAgent() {}
+  PipeAgent(const string &, Notifier * = 0, Notifier * = 0, Notifier * = 0);
+  virtual        ~PipeAgent();
   virtual void  start();
+
+  virtual void processInput();
+  virtual void processOutput();
+  virtual void processError();
+  virtual void processInputException();
+  virtual void processOutputException();
+  virtual void processErrorException();
+private:
+  PipeAgent(const PipeAgent &);
+  PipeAgent &operator = (const PipeAgent &);
+  Mutex mutex;
 };
 
 };

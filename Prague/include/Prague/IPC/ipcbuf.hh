@@ -61,20 +61,7 @@ public:
   bool nonblocking() const;
   //. return true if the buffer is in nonblocking mode, false otherwise
   bool eof() const { return data->eofbit;}
-protected:
-  struct control
-  {
-    control() : fd(-1), count(1), stmo (-1), rtmo (-1), oobbit(false), eofbit(false), gend (0), pend (0) {}
-    int	fd;
-    int	count;
-    int stmo;        // -1==block, 0==poll, >0 == waiting time in secs
-    int rtmo;        // -1==block, 0==poll, >0 == waiting time in secs
-    bool oobbit : 1; // check for out-of-band byte while reading
-    bool eofbit : 1; // connection closed
-    char_type *gend; // end of input buffer
-    char_type *pend; // end of output buffer
-  };
-  control *data;  // counts the # refs to sock
+// protected:
   virtual int        sync();
   //. flush the buffer
   virtual int        showmanyc() const;
@@ -89,7 +76,20 @@ protected:
   virtual int_type   pbackfail(int c = EOF);
   virtual streamsize xsputn(const char *, streamsize);
   virtual streamsize xsgetn(char *, streamsize);
-private:
+protected:
+  struct control
+  {
+    control() : fd(-1), count(1), stmo (-1), rtmo (-1), oobbit(false), eofbit(false), gend (0), pend (0) {}
+    int	fd;
+    int	count;
+    int stmo;        // -1==block, 0==poll, >0 == waiting time in secs
+    int rtmo;        // -1==block, 0==poll, >0 == waiting time in secs
+    bool oobbit : 1; // check for out-of-band byte while reading
+    bool eofbit : 1; // connection closed
+    char_type *gend; // end of input buffer
+    char_type *pend; // end of output buffer
+  };
+  control *data;  // counts the # refs to sock
 };
 
 };
