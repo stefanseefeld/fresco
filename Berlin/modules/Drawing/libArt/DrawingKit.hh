@@ -119,7 +119,6 @@ public:
 
   Console::Drawable *_drawable;
   Console::Drawable *_buffer;
-  ArtPixBuf         *_pb;
   ArtIRect           _bbox;
 //   const ggi_directbuffer * buf;
   double             _xres, _yres;

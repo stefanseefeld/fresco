@@ -33,9 +33,6 @@ extern "C"
 }
 
 class GGIConsole;
-class GGIDrawable;
-
-typedef Buffer_var_decl<GGIDrawable> Buffer_var;
 
 class GGIDrawable
 {
@@ -43,6 +40,7 @@ class GGIDrawable
   friend class DrawableTie<GGIDrawable>;
 public:
   typedef ggi_pixel Pixel;
+
   GGIDrawable(const char *, Warsaw::PixelCoord = 0, Warsaw::PixelCoord = 0, Warsaw::PixelCoord = 0);
   ~GGIDrawable();
   Warsaw::Drawable::PixelFormat pixel_format();
@@ -55,8 +53,8 @@ public:
   Warsaw::Coord dpi(Warsaw::Axis a) const;
   Warsaw::PixelCoord row_length() const;
   Pixel map(const Warsaw::Color &) const;
-  Buffer_var read_buffer() const;
-  Buffer_var write_buffer() const;
+  DrawableTie<GGIDrawable>::Buffer * read_buffer() const;
+  DrawableTie<GGIDrawable>::Buffer * write_buffer() const;
   /*
    * read one or more pixels from framebuffer
    */
@@ -173,18 +171,33 @@ inline GGIDrawable::Pixel GGIDrawable::map(const Warsaw::Color &c) const
   c2.a = static_cast<uint16>(c.alpha * scale);
   return ggiMapColor(_visual, &c2);
 }
-inline Buffer_var GGIDrawable::read_buffer() const
-{ return Buffer_var(this,
-		    static_cast<Buffer_var::data_type *>
-		    (ggiDBGetBuffer (_visual, 0)->read));}
-inline Buffer_var GGIDrawable::write_buffer() const
-{ return Buffer_var(this,
-		    static_cast<Buffer_var::data_type *>
-		    (ggiDBGetBuffer (_visual, 0)->write));}
-inline void GGIDrawable::read_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Pixel &p) const
+
+inline DrawableTie<GGIDrawable>::Buffer * GGIDrawable::read_buffer() const {
+    DrawableTie<GGIDrawable>::Buffer * res =
+	new DrawableTie<GGIDrawable>::Buffer(this, 
+					     static_cast<DrawableTie<GGIDrawable>::Buffer::data_type *>
+					     (ggiDBGetBuffer (_visual, 0)->read));
+    return res;
+}
+
+inline DrawableTie<GGIDrawable>::Buffer * GGIDrawable::write_buffer() const {
+    DrawableTie<GGIDrawable>::Buffer * res =
+	new DrawableTie<GGIDrawable>::Buffer(this,
+					     static_cast<DrawableTie<GGIDrawable>::Buffer::data_type *>
+					     (ggiDBGetBuffer (_visual, 0)->write));
+    return res;
+}
+
+inline void GGIDrawable::read_pixel(Warsaw::PixelCoord x,
+				    Warsaw::PixelCoord y,
+				    Pixel &p) const
 { ggiGetPixel(_visual, x, y, &p);}
-inline void GGIDrawable::read_pixels(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h, void *p) const
-{
+
+inline void GGIDrawable::read_pixels(Warsaw::PixelCoord x,
+				     Warsaw::PixelCoord y,
+				     Warsaw::PixelCoord w,
+				     Warsaw::PixelCoord h,
+				     void *p) const {
   ggiGetBox(_visual, x, y, w, h, p);
 }
 
@@ -220,7 +233,6 @@ inline void GGIDrawable::blit(const GGIDrawable &d,
 			      Warsaw::PixelCoord w, Warsaw::PixelCoord h,
 			      Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
 {
-    cerr << "GGIDrawable::blit(GGIDrawable)" << endl;
     ggiCrossBlit(d._visual, x1, y1, w, h, _visual, x2, y2);
 }
 inline void GGIDrawable::blit(Warsaw::Drawable_ptr d,

@@ -38,8 +38,6 @@ extern "C"
 class DirectFBConsole;
 class DirectFBDrawable;
 
-typedef Buffer_var_decl<DirectFBDrawable> Buffer_var;
-
 //////////////////////////////////////////////////////////////////////////////
 // DirectFBDrawable declaration
 //////////////////////////////////////////////////////////////////////////////
@@ -68,8 +66,8 @@ public:
     Warsaw::Coord dpi(Warsaw::Axis a) const;
     Warsaw::PixelCoord row_length() const;
     Pixel map(const Warsaw::Color &) const;
-    Buffer_var read_buffer() const;
-    Buffer_var write_buffer() const;
+    DrawableTie<DirectFBDrawable>::Buffer * read_buffer() const;
+    DrawableTie<DirectFBDrawable>::Buffer * write_buffer() const;
     /*
      * read one or more pixels from framebuffer
      */
@@ -166,16 +164,12 @@ private:
     IDirectFBSurface * m_surface;
 };
 
-template <>
-class Buffer_var_traits<DirectFBDrawable> {
-public:
-    typedef unsigned char buffer_data;
-
-    inline void release_buffer(DirectFBDrawable * draw) {
-	IDirectFBSurface * surface = draw->surface();
-	surface->Unlock(surface);
-    }
-};
+// Change the Buffer to unlock the surface on release:
+template<>
+void DrawableTie<DirectFBDrawable>::Buffer_decl<DirectFBDrawable>::release_buffer() {
+    IDirectFBSurface * surface = m_drawable->surface();
+    surface->Unlock(surface);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // DirectFBConsole declaration
@@ -228,20 +222,20 @@ private:
 //////////////////////////////////////////////////////////////////////////////
 // DirectFBDrawable inlines
 //////////////////////////////////////////////////////////////////////////////
-inline Buffer_var DirectFBDrawable::read_buffer() const {
+inline DrawableTie<DirectFBDrawable>::Buffer * DirectFBDrawable::read_buffer() const {
     Prague::Trace("DirectFBDrawable::read_buffer()");
     int pitch;
     void * src;
     m_surface->Lock(m_surface, DSLF_READ, &src, &pitch);
-    return Buffer_var(this, static_cast<Buffer_var::data_type *>(src));
+    return (new DrawableTie<DirectFBDrawable>::Buffer(this, static_cast<DrawableTie<DirectFBDrawable>::Buffer::data_type *>(src)));
 }
 
-inline Buffer_var DirectFBDrawable::write_buffer() const { 
+inline DrawableTie<DirectFBDrawable>::Buffer * DirectFBDrawable::write_buffer() const { 
     Prague::Trace("DirectFBDrawable::write_buffer()");
     int pitch;
     void * src;
     m_surface->Lock(m_surface, DSLF_WRITE, &src, &pitch);
-    return Buffer_var(this, static_cast<Buffer_var::data_type *>(src));
+    return (new DrawableTie<DirectFBDrawable>::Buffer(this, static_cast<DrawableTie<DirectFBDrawable>::Buffer::data_type *>(src)));
 }
 
 inline Warsaw::PixelCoord DirectFBDrawable::width() const { 

@@ -35,9 +35,6 @@ extern "C"
 }
 
 class SDLConsole;
-class SDLDrawable;
-
-typedef Buffer_var_decl<SDLDrawable> Buffer_var;
 
 ////////////////////////////////////////////////////////////////////////////////
 // SDLDrawable declaration
@@ -63,8 +60,8 @@ public:
   Warsaw::Coord dpi(Warsaw::Axis a) const;
   Warsaw::PixelCoord row_length() const;
   Pixel map(const Warsaw::Color &) const;
-  Buffer_var read_buffer() const;
-  Buffer_var write_buffer() const;
+  DrawableTie<SDLDrawable>::Buffer * read_buffer() const;
+  DrawableTie<SDLDrawable>::Buffer * write_buffer() const;
   /*
    * read one or more pixels from framebuffer
    */
@@ -149,16 +146,16 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 // SDLDrawable inlines
 ////////////////////////////////////////////////////////////////////////////////
-inline Buffer_var SDLDrawable::read_buffer() const
+inline DrawableTie<SDLDrawable>::Buffer * SDLDrawable::read_buffer() const
 { 
   Prague::Trace("SDLDrawable::read_buffer");
-  return Buffer_var(this, static_cast<unsigned char *>(_surface->pixels));
+  return (new DrawableTie<SDLDrawable>::Buffer(this, static_cast<unsigned char *>(_surface->pixels)));
 }
 
-inline Buffer_var SDLDrawable::write_buffer() const
+inline DrawableTie<SDLDrawable>::Buffer * SDLDrawable::write_buffer() const
 { 
   Prague::Trace("SDLDrawable::write_buffer");
-  return Buffer_var(this, static_cast<unsigned char *>(_surface->pixels));
+  return (new DrawableTie<SDLDrawable>::Buffer(this, static_cast<unsigned char *>(_surface->pixels)));
 }
 
 inline Warsaw::PixelCoord SDLDrawable::width() const { 

@@ -42,6 +42,8 @@
 #include <libart_lgpl/art_rgb_svp.h>
 #include <libart_lgpl/art_rgb_pixbuf_affine.h>
 
+#include <memory>
+
 using namespace Warsaw;
 
 LibArtDrawingKit::~LibArtDrawingKit() {}
@@ -79,7 +81,6 @@ void LibArtDrawingKit::init()
   
   _agam = art_alphagamma_new (2.5);
   _buffer = Console::create_drawable(_drawable->width(), _drawable->height(), 3);
-  _pb = art_pixbuf_new_const_rgb ((art_u8 *)(_buffer->write_buffer().get()), _drawable->width(), _drawable->height(), _buffer->row_length());
   _bbox.x0 = _bbox.y0 = _bbox.x1 = _bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)
@@ -221,9 +222,16 @@ void LibArtDrawingKit::draw_path(const Path &p)
   art_drect_to_irect(&loc, &locd);
   art_irect_intersect(&loc, &loc ,&_clip);
   art_irect_union(&_bbox, &_bbox, &loc);
-  fix_order_of_irect(loc); 
+  fix_order_of_irect(loc);
+  auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
+  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
+					     _drawable->width(),
+					     _drawable->height(),
+					     _buffer->row_length());
   art_rgb_svp_alpha(svp, loc.x0, loc.y0, loc.x1, loc.y1, _art_fg,
-		    ((art_u8 *)(_buffer->write_buffer().get())) + (loc.y0 * _pb->rowstride) + (loc.x0 * 3), 
+		    (art_u8 *)(pb_buf->data()) +
+		     (loc.y0 * pb->rowstride) +
+		     (loc.x0 * 3), 
 		    _buffer->row_length(), _agam);
   art_svp_free(svp);
   art_svp_free(svp1);
@@ -317,7 +325,12 @@ void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
 
   art_irect_intersect(&rect, &rect, &_clip);
   if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
-  art_u8 *dst = _pb->pixels + rect.y0 * _pb->rowstride + rect.x0 * 3;
+  auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
+  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
+					     _drawable->width(),
+					     _drawable->height(),
+					     _buffer->row_length());
+  art_u8 *dst = pb->pixels + rect.y0 * pb->rowstride + rect.x0 * 3;
   art_u8 *src = pixbuf->pixels + dy * pixbuf->rowstride + dx;
   int width = (rect.x1 - rect.x0);
   int height = (rect.y1 - rect.y0);  
@@ -327,7 +340,7 @@ void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
   art_u8 *btab = _alphabank[(art_u8)((_art_fg >> 8) & 0xff)];
 
   int t;
-  int dst_skip = _pb->rowstride - width * 3;
+  int dst_skip = pb->rowstride - width * 3;
   int src_skip = pixbuf->rowstride - width;
   art_u8 *ptab;
 
@@ -402,8 +415,13 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   art_irect_union (&_bbox, &_bbox, &tsloci);
   
   // paint
-  art_rgb_pixbuf_affine((art_u8 *)(_buffer->write_buffer().get()) + 
-			(tsloci.y0 * _pb->rowstride) + 
+  auto_ptr<Console::Drawable::Buffer> pb_buf(_buffer->write_buffer());
+  ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf->data()),
+					     _drawable->width(),
+					     _drawable->height(),
+					     _buffer->row_length());
+  art_rgb_pixbuf_affine((art_u8 *)(pb_buf->data()) + 
+			(tsloci.y0 * pb->rowstride) + 
 			(tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
 			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
 			_buffer->row_length(),

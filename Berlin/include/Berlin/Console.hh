@@ -28,82 +28,59 @@
 #include <Warsaw/Drawable.hh>
 #include <Berlin/config.hh>
 
-template <class T>
-class Buffer_var_traits {
-public:
-    typedef unsigned char buffer_data;
-
-    void release_buffer(T * draw) {}
-};
-
-template <class DRAW_T, class TRAIT_T = Buffer_var_traits<DRAW_T> >
-class Buffer_var_decl {
-public:
-    typedef typename TRAIT_T::buffer_data data_type;
-    Buffer_var_decl(const DRAW_T * d, const data_type * p = 0) :
-	m_drawable(const_cast<DRAW_T *>(d)),
-	m_data(const_cast<data_type *>(p)),
-	m_trait() { }
-
-    ~Buffer_var_decl() { m_trait.release_buffer(m_drawable); }
-    
-    Buffer_var_decl & operator=(Buffer_var_decl & a) {
-	if (& a != this) {
-	    m_data = a.release();
-	    m_drawable = a.get_drawable();
-	}
-	return *this;
-    }
-
-    template <class T1>
-    Buffer_var_decl & operator=(Buffer_var_decl<T1> & a) {
-	if (a.get() != this->get()) {
-	    m_data = a.release();
-	    m_drawable = a.get_drawable();
-	}
-	return *this;
-    }
-
-    data_type & operator*() const {
-	return *m_data;
-    }
-    
-    data_type * operator->() const {
-	return m_data;
-    }
-
-    data_type * get() const {
-	return m_data;
-    }
-
-    data_type * release() {
-	void * tmp = m_data;
-	m_data = 0;
-	return tmp;
-    }
-
-    template <class T>
-    void reset(T * draw, void * d = 0) {
-	m_data = d;
-	m_drawable = draw;
-    }
-
-    DRAW_T * get_drawable() {
-	return m_drawable;
-    }
-
-private:
-    DRAW_T    * m_drawable;
-    data_type * m_data;
-    TRAIT_T     m_trait;
-};
-
 template <typename T>
 class DrawableTie : public virtual POA_Warsaw::Drawable,
 		    public virtual PortableServer::RefCountServantBase
 {
 public:
+  template <class DRAW_T = T>
+  class Buffer_decl {
+  public:
+      // You may need to change these two to fit your drawable:
+      typedef unsigned char data_type;
+      void release_buffer() {}
+
+      Buffer_decl(const DRAW_T * draw, const data_type * data)
+	  : m_drawable(const_cast<DRAW_T *>(draw)),
+	    m_data(const_cast<data_type *>(data)) {
+      }
+
+      ~Buffer_decl() {
+	  release_buffer();
+      }
+
+      Buffer_decl & operator = (Buffer_decl & a) {
+	  if (&a != this) {
+	      m_data = a.release();
+	      m_drawable = a.drawable();
+	  }
+	  return *this;
+      }
+
+      data_type * release() {
+	  data_type * res(m_data);
+	  m_data = 0;
+	  return res;
+      }
+
+      DRAW_T * drawable() const {
+	  return m_drawable;
+      }
+
+      data_type * data() const {
+	  return m_data;
+      }
+      
+  private:
+      Buffer_decl(Buffer_decl & a) {} // no copying!
+
+      DRAW_T    * m_drawable;
+      data_type * m_data;
+  };
+
   typedef typename T::Pixel Pixel;
+  typedef Buffer_decl<T> Buffer;
+
   typedef Warsaw::Drawable::PixelFormat PixelFormat;
   typedef Warsaw::Drawable::BufferFormat BufferFormat;
   DrawableTie(T *);
@@ -118,8 +95,8 @@ public:
   Warsaw::Coord dpi(Warsaw::Axis) const;
   Warsaw::PixelCoord row_length() const;
   Pixel map(const Warsaw::Color &) const;
-  Buffer_var_decl<T> read_buffer() const;
-  Buffer_var_decl<T> write_buffer() const;
+  Buffer * read_buffer() const;
+  Buffer * write_buffer() const;
   /*
    * read one or more pixels from framebuffer
    */
@@ -238,15 +215,15 @@ inline Warsaw::PixelCoord DrawableTie<T>::row_length() const
 { return t->row_length();}
 
 template <typename T>
-inline DrawableTie<T>::Pixel DrawableTie<T>::map(const Warsaw::Color &c) const
+inline typename T::Pixel DrawableTie<T>::map(const Warsaw::Color &c) const
 { return t->map(c);}
 
 template <typename T>
-inline Buffer_var_decl<T> DrawableTie<T>::read_buffer() const
+inline DrawableTie<T>::Buffer * DrawableTie<T>::read_buffer() const
 { return t->read_buffer();}
 
 template <typename T>
-inline Buffer_var_decl<T> DrawableTie<T>::write_buffer() const
+inline DrawableTie<T>::Buffer * DrawableTie<T>::write_buffer() const
 { return t->write_buffer();}
 
 template <typename T>

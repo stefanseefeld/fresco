@@ -87,9 +87,6 @@ using namespace Prague;
 // -- Forward Declarations
 class GLUTConsole;
 class GLUTHandler;
-class GLUTDrawable;
-
-typedef Buffer_var_decl<GLUTDrawable> Buffer_var;
 
 // -- Class Declarations
 
@@ -117,8 +114,8 @@ public:
     Coord dpi(Axis a) const { return resolution(a) * 254.0; }
     PixelCoord row_length() { return 0; }
     Pixel map(const Color &) { return 0; }
-    Buffer_var read_buffer() { return Buffer_var(this, 0); }
-    Buffer_var write_buffer() { return Buffer_var(this, 0); }
+    DrawableTie<GLUTDrawable>::Buffer * read_buffer() { return (new DrawableTie<GLUTDrawable>::Buffer(this, 0)); }
+    DrawableTie<GLUTDrawable>::Buffer * write_buffer() { return (new DrawableTie<GLUTDrawable>::Buffer(this, 0)); }
   
     /*
      * Read one or more pixels from framebuffer
