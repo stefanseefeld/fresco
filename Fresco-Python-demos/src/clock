@@ -45,7 +45,7 @@ class TickGraphic (pywarsaw.PyGraphic):
 	    bounds_upper.y - bounds_lower.y)
 	def scale(point, low=bounds_lower, delta = bounds_delta):
 	    return Warsaw.Vertex(point[0] * delta[0] + low.x, point[1] * delta[1] + low.y, low.z)
-	path = map(scale, [(.2,.6),(.4,.7),(.9,.1),(.4,.8),(.2,.6)])
+	path.nodes = map(scale, [(.2,.6),(.4,.7),(.9,.1),(.4,.8),(.2,.6)])
 	dk._set_foreground(Warsaw.Color(0.2, 0.9, 0.9, 1.0))
 	dk.draw_path(path)
 	dk.restore()
@@ -102,23 +102,29 @@ class ClockGraphic (pywarsaw.PyGraphic):
 	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
 	dk.draw_rectangle(bounds_lower, bounds_upper)
 	# Draw hour-ticks
-	path = [(-.05,-.8),(.05,-.8),(.05,-.7),(-.05,-.7),(-.05,-.8)]
+	path = Warsaw.Path
+        path.shape = Warsaw.convex
+        vertices = [(-.05,-.8),(.05,-.8),(.05,-.7),(-.05,-.7),(-.05,-.8)]
 	dk._set_foreground(Warsaw.Color(0.2, 0.3, 0.5, 1.0))
 	circle = math.pi*2
 	for i in range(12):
-	    dk.draw_path(map(scale, rotate(i*circle/12, path)))
+            path.nodes = map(scale, rotate(i*circle/12, vertices))
+	    dk.draw_path(path)
 	# Get time
 	times = time.localtime(time.time())
 	hours, mins, secs = times[3], times[4], times[5]
 	# Hours
-	path = [(-.03,.03),(0,-.6),(.03,.03),(-.03,.03)]
-	dk.draw_path(map(scale, rotate(hours*circle/12, path)))
+        vertices =  [(-.03,.03),(0,-.6),(.03,.03),(-.03,.03)]
+	path.nodes = map(scale, rotate(hours*circle/12, vertices))
+	dk.draw_path(path)
 	# Minutes
-	path = [(-.02,.02),(0,-.8),(.02,.02),(-.02,.02)]
-	dk.draw_path(map(scale, rotate(mins*circle/60, path)))
+	vertices = [(-.02,.02),(0,-.8),(.02,.02),(-.02,.02)]
+	path.nodes = map(scale, rotate(mins*circle/60, vertices))
+	dk.draw_path(path)
 	# Seconds
-	path = [(-.01,.01),(0,-.95),(.01,.01),(-.01,.01)]
-	dk.draw_path(map(scale, rotate(secs*circle/60, path)))
+	vertices = [(-.01,.01),(0,-.95),(.01,.01),(-.01,.01)]
+        path.nodes = map(scale, rotate(secs*circle/60, vertices))
+	dk.draw_path(path)
 	dk.restore()
 
 class ClockController (pywarsaw.PyController):
@@ -183,7 +189,7 @@ class GraphicApp (berlin.App):
 	clock = ClockController()._this()
 	clock_group = kits.tool.group(clock)
 	clock_group.append_controller(clock)
-	self.window = kits.desktop.shell(clock_group)
+	self.window = kits.desktop.shell(clock_group, connection.clientContext)
 
 	#kits.desktop.shell(kits.tool.group(TickGraphic()._this()))
 

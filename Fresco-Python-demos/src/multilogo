@@ -35,7 +35,7 @@ class DemoApp (berlin.App):
 	    map(box.append_graphic, frames)
 	    # We can only shell a controller, so wrap the hbox in a group
 	    group = kits.tool.group(box)
-	    shell = kits.desktop.shell(group)
+	    shell = kits.desktop.shell(group, connection.clientContext)
 	    # Get an iterator that points at the first graphic (frame)
 	    # Note the iterator is a reference to a server-side object
 	    iterator = box.first_child_graphic()

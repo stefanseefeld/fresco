@@ -130,7 +130,7 @@ class GraphicApp (berlin.App):
         spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.inset, 0.5)
         frame = kits.tool.frame(vbox, 10., spec, 1)
 	group = kits.tool.group(frame)
-	self.window = kits.desktop.shell(group)
+	self.window = kits.desktop.shell(group, connection.clientContext)
 
 	#kits.desktop.shell(kits.tool.group(TickGraphic()._this()))
 

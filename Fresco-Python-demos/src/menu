@@ -401,7 +401,7 @@ class MenuApp (berlin.App):
 
 	group = kits.tool.group(vbox)
 	group.append_controller(menu)
-	self.window = kits.desktop.shell(group)
+	self.window = kits.desktop.shell(group, connection.clientContext)
 	self.window._set_position(Warsaw.Vertex(0, -210, 0))
 
 	if 0:

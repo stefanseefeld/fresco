@@ -63,7 +63,7 @@ class ViewportApp (berlin.App):
         spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
         background = kits.tool.frame(vbox1, 10., spec, 1)
         group = kits.tool.group(background)
-        self.window = kits.desktop.shell(group)
+        self.window = kits.desktop.shell(group, connection.clientContext)
 
     def exit(self, any):
 	app.quit.set()
