@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,53 +21,54 @@
 
 SHELL		:= /bin/sh
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Prague/Examples/IPC
-builddir	:= ../../../..
-cdir		:= $(builddir)/config
-hdir		:= $(top_srcdir)/include
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+docdir		:= $(top_builddir)/share/doc/Prague
 
 include $(cdir)/local.mk
 
-bdir		:= $(builddir)/src/Prague/Examples/bin
-
 CPPFLAGS	+= @CPPFLAGS@
-LDFLAGS		+=
+LDFLAGS		+= -L ../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:= $(patsubst %, $(bdir)/%, MMapServer MMapClient Echo PipeAgent TTYAgent Acceptor Connector)
+TARGETS		:= $(patsubst %, $(top_builddir)/bin/%, MMapServer MMapClient Echo PipeAgent TTYAgent Acceptor Connector)
+
+vpath %.hh  $(srcdir)
+vpath %.cc  $(srcdir)
 
 all:		$(TARGETS)
 
-%.o:		$(srcdir)/%.cc
+%.o:	%.cc
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(bdir)/MMapServer:	MMapServer.o
+$(top_builddir)/bin/MMapServer:	MMapServer.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/MMapClient:	MMapClient.o
+$(top_builddir)/bin/MMapClient:	MMapClient.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Echo:		Echo.o
+$(top_builddir)/bin/Echo:		Echo.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/PipeAgent:	$(bdir)/Echo PipeAgent.o
+$(top_builddir)/bin/PipeAgent:	$(top_builddir)/bin/Echo PipeAgent.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ PipeAgent.o $(LIBS)
 
-$(bdir)/TTYAgent:	TTYAgent.o
+$(top_builddir)/bin/TTYAgent:	TTYAgent.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Acceptor:	Acceptor.o
+$(top_builddir)/bin/Acceptor:	Acceptor.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Connector:	Connector.o
+$(top_builddir)/bin/Connector:	Connector.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

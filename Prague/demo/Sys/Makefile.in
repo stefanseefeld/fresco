@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org>
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,53 +21,54 @@
 
 SHELL		:= /bin/sh
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Prague/Examples/Sys
-builddir	:= ../../../..
-cdir		:= $(builddir)/config
-hdir		:= $(top_srcdir)/include
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+docdir		:= $(top_builddir)/share/doc/Prague
 
 include $(cdir)/local.mk
 
-bdir		:= $(builddir)/src/Prague/Examples/bin
-
 CPPFLAGS	+= @CPPFLAGS@
-LDFLAGS		+= -L../../../../lib
+LDFLAGS		+= -L ../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:= $(patsubst %, $(bdir)/%, DataType Plugin1.so Plugin2.so Loader GetOpt)
+TARGETS		:= $(patsubst %, $(top_builddir)/bin/%, DataType Plugin1.so Plugin2.so Loader GetOpt)
+
+vpath %.hh  $(srcdir)
+vpath %.cc  $(srcdir)
 
 all:		$(TARGETS)
 
-%.o:		$(srcdir)/%.cc
+%.o:	%.cc
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-DataType.o:	$(srcdir)/DataType.cc
+DataType.o:	DataType.cc
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -ftemplate-depth-23 -c $< -o $@
 
-$(bdir)/DataType:	DataType.o
+$(top_builddir)/bin/DataType:	DataType.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Plugin1.so:	Plugin1.o
+$(top_builddir)/bin/Plugin1.so:	Plugin1.o
 		@echo linking $(@F)
 		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Plugin2.so:	Plugin2.o
+$(top_builddir)/bin/Plugin2.so:	Plugin2.o
 		@echo linking $(@F)
 		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Loader:		$(bdir)/Plugin1.so $(bdir)/Plugin2.so Loader.o
+$(top_builddir)/bin/Loader:		$(bdir)/Plugin1.so $(bdir)/Plugin2.so Loader.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ Loader.o $(LIBS)
 
-$(bdir)/GetOpt:		GetOpt.o
+$(top_builddir)/bin/GetOpt:		GetOpt.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ GetOpt.o $(LIBS)
 
-clean:	
+clean:
 		rm -f core *.o *~
 
 distclean:	clean

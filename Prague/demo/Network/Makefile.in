@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,49 +21,50 @@
 
 SHELL		:= /bin/sh
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Prague/Examples/Network
-builddir	:= ../../../..
-cdir		:= $(builddir)/config
-hdir		:= $(top_srcdir)/include
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+docdir		:= $(top_builddir)/share/doc/Prague
 
 include $(cdir)/local.mk
 
-bdir		:= $(builddir)/src/Prague/Examples/bin
-
 CPPFLAGS	+= @CPPFLAGS@
-LDFLAGS		+= -L../../../../lib
+LDFLAGS		+= -L ../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:=   $(patsubst %, $(bdir)/%, Url Ftp Smtp Whois Echo EchoServer)
+TARGETS		:=   $(patsubst %, $(top_builddir)/bin/%, Url Ftp Smtp Whois Echo EchoServer)
+
+vpath %.hh  $(srcdir)
+vpath %.cc  $(srcdir)
 
 all:		$(TARGETS)
 
-%.o:		$(srcdir)/%.cc
+%.o:	%.cc
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(bdir)/Url:	Url.o
+$(top_builddir)/bin/Url:	Url.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Ftp:	Ftp.o
+$(top_builddir)/bin/Ftp:	Ftp.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Smtp:	Smtp.o
+$(top_builddir)/bin/Smtp:	Smtp.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Whois:	Whois.o
+$(top_builddir)/bin/Whois:	Whois.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Echo:	Echo.o
+$(top_builddir)/bin/Echo:	Echo.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/EchoServer:	EchoServer.o
+$(top_builddir)/bin/EchoServer:	EchoServer.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

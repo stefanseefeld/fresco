@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,53 +21,54 @@
 
 SHELL		:= /bin/sh
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Prague/Examples/Thread
-builddir	:= ../../../..
-cdir		:= $(builddir)/config
-hdir		:= $(top_srcdir)/include
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+docdir		:= $(top_builddir)/share/doc/Prague
 
 include $(cdir)/local.mk
 
-bdir		:= $(builddir)/src/Prague/Examples/bin
-
 CPPFLAGS	+= @CPPFLAGS@
-LDFLAGS		+= -L../../../../lib
+LDFLAGS		+= -L ../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:=   $(patsubst %, $(bdir)/%, Thread Signal Timer Diner Queue ThreadPool)
+TARGETS		:=   $(patsubst %, $(top_builddir)/bin/%, Thread Signal Timer Diner Queue ThreadPool)
+
+vpath %.hh  $(srcdir)
+vpath %.cc  $(srcdir)
 
 all:		$(TARGETS)
 
-%.o:		$(srcdir)/%.cc
+%.o:	%.cc
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
 
-$(bdir)/Thread:	Thread.o
+$(top_builddir)/bin/Thread:	Thread.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Diner:	Diner.o
+$(top_builddir)/bin/Diner:	Diner.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Queue:	Queue.o
+$(top_builddir)/bin/Queue:	Queue.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/ThreadPool:	ThreadPool.o
+$(top_builddir)/bin/ThreadPool:	ThreadPool.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Data:	Data.o
+$(top_builddir)/bin/Data:	Data.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Signal:	Signal.o
+$(top_builddir)/bin/Signal:	Signal.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/Timer:	Timer.o
+$(top_builddir)/bin/Timer:	Timer.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
