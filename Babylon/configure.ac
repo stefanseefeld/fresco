@@ -32,7 +32,6 @@ AC_REVISION($Revision$)
 AC_INIT(subdirs.mk.in)
 AC_VERSION(0, 2, 2, 0, 0)
 AC_SET_PATHS(../..)
-AC_CONFIG_HEADER($builddir/include/Babylon/config.hh:config/Babylon/config.hh.in)
 
 AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
 AC_CONFIG_AUX_DIR(config)
