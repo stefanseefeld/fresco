@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
     FigureKit_var figures = resolve_kit<FigureKit>(server, "IDL:fresco.org/Fresco/FigureKit:1.0");
     ToolKit_var tools = resolve_kit<ToolKit>(server, "IDL:fresco.org/Fresco/ToolKit:1.0");
-    RasterKit_var raster = resolve_kit<RasterKit>(server, "IDL:fresco.org/Fresco/RasterKit:1.0");
+    RasterKit_var rasters = resolve_kit<RasterKit>(server, "IDL:fresco.org/Fresco/RasterKit:1.0");
     UnidrawKit_var unidraw = resolve_kit<UnidrawKit>(server, "IDL:fresco.org/Unidraw/UnidrawKit:1.0");
     DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
 
@@ -95,10 +95,10 @@ int main(int argc, char **argv)
     daVinci::Tool *polygon = new CreateTool<PolygonCreator>();
     Unidraw::Tool_var select = unidraw->select_tool();
     Editor_var editor = unidraw->create_editor();
-    Raster_var slabel = raster->create_raster("daVinci/select.png");
-    Raster_var rlabel = raster->create_raster("daVinci/rectangle.png");
-    //   Raster_var clabel = raster->create("daVinci/circle.png");
-    Raster_var tlabel = raster->create_raster("daVinci/triangle.png");
+    Raster_var slabel = rasters->create_raster("daVinci/select.png");
+    Raster_var rlabel = rasters->create_raster("daVinci/rectangle.png");
+    //   Raster_var clabel = rasters->create("daVinci/circle.png");
+    Raster_var tlabel = rasters->create_raster("daVinci/triangle.png");
     Image_var simage = figures->pixmap(slabel);
     Image_var rimage = figures->pixmap(rlabel);
     //   Image_var cimage = figures->pixmap(clabel);
