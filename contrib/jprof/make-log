@@ -1,0 +1,29 @@
+c++ -o bfd.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/bfd.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC bfd.cpp
+Creating .deps
+c++ -o coff.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/coff.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC coff.cpp
+c++ -o elf.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/elf.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC elf.cpp
+c++ -o leaky.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/leaky.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC leaky.cpp
+c++ -o strset.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/strset.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC strset.cpp
+c++ -o intcnt.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/intcnt.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC intcnt.cpp
+c++ -o libmalloc.o -c -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g -DMOZILLA_CLIENT -include ../../config-defs.h -Wp,-MD,.deps/libmalloc.pp -DOSTYPE=\"Linux2.2\" -DOJI  -I../../dist/include -I../../include  -I../../dist/include -I../../dist/include -I../../dist/include -I/usr/X11R6/include   -fPIC libmalloc.cpp
+intcnt.cpp: In method `int IntCount::countAdd(int, int = 1)':
+intcnt.cpp:54: warning: declaration of `i' shadows previous local
+leaky.cpp: In method `void leaky::generateReportHTML(FILE *, int *, int)':
+leaky.cpp:381: warning: comparison between signed and unsigned
+leaky.cpp:401: warning: comparison between signed and unsigned
+leaky.cpp:420: warning: declaration of `mx' shadows previous local
+leaky.cpp:420: warning: declaration of `h' shadows previous local
+leaky.cpp:422: warning: declaration of `i' shadows previous local
+leaky.cpp:422: warning: comparison between signed and unsigned
+leaky.cpp:437: warning: declaration of `i' shadows previous local
+leaky.cpp:438: warning: comparison between signed and unsigned
+leaky.cpp: In method `void leaky::analyze()':
+leaky.cpp:483: warning: comparison between signed and unsigned
+c++ -o jprof -fno-rtti -fno-exceptions -Wall -Wconversion -Wpointer-arith -Wbad-function-cast -Wcast-align -Woverloaded-virtual -Wsynth -Wshadow -pedantic -Wno-long-long -pthread -g     bfd.o coff.o elf.o leaky.o strset.o intcnt.o   -Wall -W -Wno-unused -Wshadow -Wpointer-arith -Wcast-align -pedantic -Wno-long-long -pthread -g -L../../dist/bin -L../../dist/lib -lbfd -liberty  -lnsl -lutil -lresolv -ldl -lm   
+../../config/nsinstall -R -m 444 jprof.h ../../dist/include
+rm -f libjprof.so
+c++ -shared -Wl,-h -Wl,libjprof.so -o libjprof.so libmalloc.o
+true jprof
+../../config/nsinstall -R -m 555 jprof ../../dist/bin
+../../config/nsinstall -R -m 555 libjprof.so ../../dist/lib
+../../config/nsinstall -R -m 555 libjprof.so ../../dist/bin
