@@ -95,7 +95,11 @@ namespace Berlin
       }
       void backward()
       {
-      if (my_cursor == my_gapend) my_cursor -= gap();
+      if (my_cursor == my_gapend)
+	      if (gap())
+		      my_cursor -= gap();
+	      else
+		      my_cursor--;
       else if (cursor() > begin()) my_cursor--;
       }
       void shift(size_type d)
