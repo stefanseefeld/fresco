@@ -83,7 +83,8 @@ void EventManager::next_event()
    * the first item determines which focus to send this event to
    */
   try { if (event->length()) _foci[event[0].dev]->dispatch(event);}
-  catch (CORBA::OBJECT_NOT_EXIST &) { cerr << "EventManager: warning: corrupt scene graph !" << endl;}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { cerr << "EventManager: warning: corrupt scene graph !" << endl;}
+  catch (const CORBA::BAD_PARAM &) { cerr << "EventManager: caught bad parameter" << endl;}
 }
 
 void EventManager::restore(Region_ptr r)

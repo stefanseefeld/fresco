@@ -59,7 +59,8 @@ void ScreenManager::repair()
   _traversal->init();
   _drawable->init();
   try { _screen->traverse(Traversal_var(_traversal->_this()));}
-  catch (CORBA::OBJECT_NOT_EXIST &) { cerr << "ScreenManager: warning: corrupt scene graph !" << endl;}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { cerr << "ScreenManager: warning: corrupt scene graph !" << endl;}
+  catch (const CORBA::BAD_PARAM &) { cerr << "ScreenManager: caught bad parameter" << endl;}
   _drawable->finish();
   _traversal->finish();
   _drawing->flush();
