@@ -82,13 +82,13 @@ dnl ------------------------------------------------------------------
 
 FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS -lPrague $Prague_LIBS"
+LIBS="$LIBS $Prague_LIBS"
 FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$LIBS -lBabylon $Babylon_LIBS"
+LIBS="$LIBS $Babylon_LIBS"
 FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
-LIBS="$LIBS -lFresco $Fresco_LIBS"
+LIBS="$LIBS $Fresco_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl some helper utils
