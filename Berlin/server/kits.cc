@@ -20,25 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Signal.hh>
-#include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Timer.hh>
 #include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Path.hh>
-#include <Prague/Sys/User.hh>
-#include <Fresco/config.hh>
-#include <Fresco/resolve.hh>
-#include <Fresco/LayoutKit.hh>
-#include <Fresco/WidgetKit.hh>
-#include <Fresco/DrawingKit.hh>
-#include <Berlin/ScreenImpl.hh>
-#include <Berlin/ScreenManager.hh>
-#include <Berlin/Logger.hh>
-#include <Berlin/DesktopImpl.hh>
-#include <Berlin/RCManager.hh>
 #include <Berlin/ServerImpl.hh>
-#include <fstream>
+#include <Berlin/RCManager.hh>
 
 #ifdef RC_PREFIX
 const std::string prefix = RC_PREFIX;
@@ -56,32 +42,45 @@ using namespace Prague;
 
 int main(int argc, char **argv)
 {
-  GetOpt getopt(argv[0], "a module inspection tool");
-  getopt.add('h', "help", GetOpt::novalue, "help message");
-  getopt.add('v', "version", GetOpt::novalue, "version number");
-  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
-  size_t argo = getopt.parse(argc, argv);
-  argc -= argo;
-  argv += argo;
-  if (getopt.is_set("version")) { std::cout << "version is " << version << std::endl; exit(0);}
-  if (getopt.is_set("help")) { getopt.usage(); exit(0);}
-
-  RCManager::setup(getopt);
-
-  CORBA::PolicyList policies;
-  ServerImpl *server = ServerImpl::create(PortableServer::POA::_nil(),policies);
-
-  Prague::Path path = RCManager::get_path("modulepath");
-  for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
-    server->scan(*i);
-
-  ServerImpl::PluginList listing = server->list();
-  for (ServerImpl::PluginList::iterator i = listing.begin(); i != listing.end(); ++i)
+    GetOpt getopt(argv[0], "a module inspection tool");
+    getopt.add('h', "help", GetOpt::novalue, "help message");
+    getopt.add('v', "version", GetOpt::novalue, "version number");
+    getopt.add('r', "resource", GetOpt::mandatory,
+	       "the resource file to load");
+    size_t argo = getopt.parse(argc, argv);
+    argc -= argo;
+    argv += argo;
+    if (getopt.is_set("version"))
     {
-      std::cout << (*i).first << " supports :\n";
-      Fresco::Kit::Property *begin = (*i).second->get_buffer();
-      Fresco::Kit::Property *end = (*i).second->get_buffer() + (*i).second->length();
-      for (Fresco::Kit::Property *p = begin; p != end; ++p)
-	std::cout << (*p).name << " : " << (*p).value << '\n';
+	std::cout << "version is " << version << std::endl;
+	exit(0);
+    }
+    if (getopt.is_set("help"))
+    {
+	getopt.usage();
+	exit(0);
+    }
+    
+    RCManager::setup(getopt);
+    
+    CORBA::PolicyList policies;
+    ServerImpl *server =
+	ServerImpl::create(PortableServer::POA::_nil(),policies);
+
+    Prague::Path path = RCManager::get_path("modulepath");
+    for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+	server->scan(*i);
+
+    ServerImpl::PluginList listing = server->list();
+    for (ServerImpl::PluginList::iterator i = listing.begin();
+	 i != listing.end();
+	 ++i)
+    {
+	std::cout << (*i).first << " supports :\n";
+	Fresco::Kit::Property *begin = (*i).second->get_buffer();
+	Fresco::Kit::Property *end =
+	    (*i).second->get_buffer() + (*i).second->length();
+	for (Fresco::Kit::Property *p = begin; p != end; ++p)
+	    std::cout << "  " << (*p).name << " : " << (*p).value << '\n';
     }
 }
