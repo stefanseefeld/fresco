@@ -46,14 +46,15 @@ struct CheckPoint
   void indent(ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
   void output(ostream &os, unsigned short ind)
     {
-      indent(os, ind); os << name << ": " << setw(10) << count;
-      indent(os, ind); os << " Times.  Total Time: ";
-      indent(os, ind); os << setprecision(8) << setw(12);
-      indent(os, ind); os.setf( ios::fixed, ios::floatfield);
-      indent(os, ind); os << elapsed/CLOCKS_PER_SEC;
-      indent(os, ind); os  << "  Avg/Iter.: ";
-      indent(os, ind); os << setprecision(8) << setw(12);
-      indent(os, ind); os << elapsed/count/CLOCKS_PER_SEC << endl;
+      indent(os, ind);
+      os << name << ": " << setw(10) << count;
+      os << " Times.  Total Time: ";
+      os << setprecision(8) << setw(12);
+      os.setf( ios::fixed, ios::floatfield);
+      os << elapsed/CLOCKS_PER_SEC;
+      os  << "  Avg/Iter.: ";
+      os << setprecision(8) << setw(12);
+      os << elapsed/count/CLOCKS_PER_SEC << endl;
     }
   string name;
   long count;
@@ -93,9 +94,11 @@ public:
 	{
 	  dump(*current, 0);
 	  clean(*current);
+	  delete table;
 	}
     }
   static void setOutput(ostream &o) { os = &o;}
+  static void dump() { dump(*current, 0);}
 private:
   static child_iterator lookup(const string &name)
     {
@@ -109,7 +112,6 @@ private:
 	dump(*i, ind + 1);
       if (ind) root.value->output(*os, ind); // don't output the root
     }
-  void dump() { dump(*current, 0);}
   static void clean(const item_t &root)
     {
       for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
