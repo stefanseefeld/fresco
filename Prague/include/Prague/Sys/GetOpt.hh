@@ -41,12 +41,18 @@ public:
   enum type { novalue, optional, mandatory};
   enum order { inorder, require, permute};
 
-  class NoSuchOption : std::exception
+  class NoSuchOption : public std::exception
   {
   public:
-    NoSuchOption() throw() {}
+    NoSuchOption() throw()
+      : my_option("(unknown)") {}
+    NoSuchOption(const char o) throw()
+      : my_option(std::string("-") + o) {}
+    NoSuchOption(const std::string option) throw()
+      : my_option(std::string("--") + option) {}
     virtual ~NoSuchOption() throw() {}
-    virtual const char* what() const throw() { return "no such option";}
+    virtual const char* what() const throw() { return (std::string("no such option ") + my_option).c_str();}
+    const std::string my_option;
   };
 private:
   struct cell

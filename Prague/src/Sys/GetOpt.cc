@@ -36,14 +36,14 @@ void GetOpt::add(char o, const std::string &opt, type t, const std::string &desc
 bool GetOpt::is_set(char o) const throw (NoSuchOption)
 {
   table_t::const_iterator i = find(o);
-  if (i == table.end()) throw NoSuchOption();
+  if (i == table.end()) throw NoSuchOption(o);
   return (*i).set;
 }
 
 bool GetOpt::is_set(const std::string &option) const throw (NoSuchOption)
 {
   table_t::const_iterator i = find(option);
-  if (i == table.end()) throw NoSuchOption();
+  if (i == table.end()) throw NoSuchOption(option);
   return (*i).set;
 }
 
