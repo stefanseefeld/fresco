@@ -36,6 +36,7 @@
 #include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Timer.hh>
 #include <Prague/Sys/GetOpt.hh>
+#include <fstream>
 
 #ifdef JPROF
 // probably need to change include path
@@ -53,12 +54,16 @@ struct Dump : Signal::Notifier
 	case Signal::hangup: Profiler::dump(cerr); break;
 	case Signal::abort:
 	case Signal::segv:
-	  cerr << "Something went wrong. Here's a debugging log. \n"
-	       << "Please mail this output to bugs@berlin-consortium.org :\n\n";
-	  Logger::dump(cerr);
-	  cerr << "\n\nDetailed Trace:\n";
-	  Tracer::dump(cerr);
-	  exit(-1);
+          {
+            string output = "server.log";
+            ofstream ofs(output.c_str());
+	    Logger::dump(ofs);
+	    ofs << "\n\nDetailed Trace:\n";
+	    Tracer::dump(ofs);
+	    cerr << "Something went wrong. " << output << " contains a debugging log.\n"
+                 << "Please mail this output to bugs@berlin-consortium.org :\n\n";
+            exit(-1);
+          }
 	}
     }
 };
