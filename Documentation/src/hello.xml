@@ -117,7 +117,8 @@
     </programlisting>
     <para>and in C++:</para>
     <programlisting>
-      Graphic_var label = text->chunk(Unicode::to_CORBA(Babylon::String("hello world"));
+      Graphic_var label = 
+          text->chunk(Unicode::to_CORBA(Babylon::String("hello world"));
       Graphic_var black = tools->rgb(label, 0., 0., 0.);
       Controller_var button = widgets->button(black, Command::_nil());
       Window_var window = desktop->shell(button, client);
