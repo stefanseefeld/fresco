@@ -24,9 +24,9 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
-AC_PREREQ(2.52)
+AC_PREREQ(2.53)
 AC_REVISION($Revision$)
-AC_INIT(Prague, M3, devel@fresco.org)
+AC_INIT(Prague, M1, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)

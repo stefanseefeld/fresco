@@ -25,10 +25,10 @@ dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
 
-AC_PREREQ(2.12)
+AC_PREREQ(2.53)
 AC_REVISION($Revision$)
 
-AC_INIT(Berlin, M3, devel@fresco.org)
+AC_INIT(Berlin, M1, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_HEADER(include/Berlin/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)

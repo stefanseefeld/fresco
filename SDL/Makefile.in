@@ -21,7 +21,10 @@
 
 SHELL	:= /bin/sh
 
+srcdir		:= @srcdir@
 top_srcdir	:= @top_srcdir@
+
+distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
 subdirs	:= src
 # insert inter-directory dependencies below
@@ -53,6 +56,26 @@ install:
 	$(MAKE) action="install"
 
 install-doc: #do nothing
+
+rpm: dist
+	@(unset CDPATH ; rpm -ta $(distdir).tar.gz)
+
+dist: $(distdir).tar.gz
+
+$(distdir).tar.gz:
+	@echo "generating $@..."
+	-rm -rf $(distdir)
+	cp -pr $(srcdir) $(distdir)
+	-chmod -R a+r $(distdir)
+	tar czhf $(distdir).tar.gz \
+       --exclude CVS \
+       --exclude .cvsignore \
+       --exclude autom4te.cache \
+       --exclude '*.m4' \
+       --exclude '*.ac' \
+       --exclude '*~' \
+       $(distdir) config/SDL.spec
+	-rm -rf $(distdir)
 
 uninstall:
 	$(MAKE) action="uninstall"

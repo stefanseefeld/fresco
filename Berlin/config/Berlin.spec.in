@@ -63,6 +63,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{prefix}/lib/lib*.so
 %{prefix}/lib/Fresco/*
+%{prefix}/bin/*
 %{prefix}/share/*
 %{prefix}/etc/*
 
