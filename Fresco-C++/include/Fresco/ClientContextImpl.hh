@@ -35,16 +35,16 @@
 //. instantiated within the client address space.
 class ClientContextImpl : public virtual POA_Fresco::ClientContext
 {
-public:
-  ClientContextImpl(const char *);
+  public:
+    ClientContextImpl(Babylon::String const &);
 
-  Fresco::Unistring *user_name();
-  Fresco::Unistring *application_title();
-  Fresco::Command_ptr exit();
-  void ping() {}
-protected:
-  Babylon::String _title;
-  Prague::User   *_user;
+    Fresco::Unistring *user_name();
+    Fresco::Unistring *application_title();
+    Fresco::Command_ptr exit();
+    void ping() {}
+  protected:
+    Babylon::String _title;
+    Prague::User   *_user;
 };
 
 #endif

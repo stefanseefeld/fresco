@@ -43,33 +43,32 @@ namespace
   };
 };
 
-ClientContextImpl::ClientContextImpl(const char *title)
-  : _title(title),
-    _user(new Prague::User())
-{};  
+ClientContextImpl::ClientContextImpl(Babylon::String const & title)
+    : _title(title),
+      _user(new Prague::User())
+{}  
   
 Unistring *ClientContextImpl::user_name()
 {
-  std::string name = _user->name();
-  Unistring *ustring = new Unistring;
-  ustring->length(name.length());
-  for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
-  return ustring;
+    std::string name = _user->name();
+    Unistring *ustring = new Unistring;
+    ustring->length(name.length());
+    for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
+    return ustring;
 }
 
 Unistring *ClientContextImpl::application_title()
 {
-  Unistring *ustring = new Unistring;
-  *ustring = Unicode::to_CORBA(Babylon::String(_title));
-  return ustring;
+    Unistring *ustring = new Unistring;
+    *ustring = Unicode::to_CORBA(_title);
+    return ustring;
 }
 
 Command_ptr ClientContextImpl::exit()
 {
-  ExitCommand *command = new ExitCommand();
-  PortableServer::POA_var poa = _default_POA();
-  PortableServer::ObjectId *oid = poa->activate_object(command);
-  command->_remove_ref();
-  delete oid;
-  return command->_this();
+    ExitCommand *command = new ExitCommand();
+    PortableServer::POA_var poa = _default_POA();
+    PortableServer::ObjectId_var oid = poa->activate_object(command);
+    command->_remove_ref();
+    return command->_this();
 }
