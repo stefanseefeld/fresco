@@ -50,7 +50,7 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
   Coord dy = _thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   Path path;
-  path.shape = convex;
+  path.shape = complex;
   path.nodes.length(5);
   if (_fill)
     {
@@ -161,7 +161,7 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
   Coord dy = _thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   Path path;
-  path.shape = convex;
+  path.shape = complex;
   path.nodes.length(5);
   if (_fill)
     {

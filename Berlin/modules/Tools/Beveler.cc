@@ -348,7 +348,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   drawing->save();
 
   Path path;
-  path.shape = convex;
+  path.shape = complex;
   path.nodes.length(5);
   if (fill)
     {
