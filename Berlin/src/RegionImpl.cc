@@ -33,6 +33,7 @@ RegionImpl::RegionImpl()
   upper.x = upper.y = zero;
   lower.z = upper.z = zero;
   xalign = yalign = zalign = zero;
+  _this_valid = false;
 }
 
 RegionImpl::RegionImpl(const RegionImpl &region)
@@ -41,15 +42,18 @@ RegionImpl::RegionImpl(const RegionImpl &region)
     upper(region.upper),
     xalign(region.xalign),
     yalign(region.yalign),
-    zalign(region.zalign)
+    zalign(region.zalign),
+    _this_valid(false)
 {}
 
 RegionImpl::RegionImpl(Region_ptr region)
+  : _this_valid (false)
 {
   RegionImpl::copy(region);
 }
 
 RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
+  : _this_valid (false)
 {
   RegionImpl::copy(region);
   if (!CORBA::is_nil(transformation) && !transformation->identity())
