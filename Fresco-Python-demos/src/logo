@@ -7,14 +7,13 @@ import string
 from omniORB import CORBA
 
 # Import the Warsaw stubs
-import _GlobalIDL
-import POA__GlobalIDL
+import Warsaw
+import POA_Warsaw
 import CosNaming
 # Define an implementation of the ClientContext interface
-class ClientContextImpl (POA__GlobalIDL.ClientContext):
-    def userName(self):
-        return "joe"
-    def ping(): return
+class ClientContextImpl (POA_Warsaw.ClientContext):
+    def userName(self): return "joe"
+    def ping(self): return
 
 def main():
     # Initialise the ORB
@@ -32,35 +31,35 @@ def main():
     # get a server context
     context = orb.resolve_initial_references("NameService")
     name = [CosNaming.NameComponent("IDL:Server:1.0", "Object")]
-    manager = context.resolve(name)
-    server  = manager.newServerContext(client)
+    server = context.resolve(name)
+    context  = server.newServerContext(client)
 
     # get some kits
-#    properties = Kit.PropertySeq();
-    object  = server.resolve("IDL:LayoutKit:1.0", [])
-    layout  = object._narrow(_GlobalIDL.LayoutKit)
-    object  = server.resolve("IDL:ToolKit:1.0", [])
-    tool    = object._narrow(_GlobalIDL.ToolKit)
-    object  = server.resolve("IDL:WidgetKit:1.0", [])
-    widget  = object._narrow(_GlobalIDL.WidgetKit)
-    object  = server.resolve("IDL:DesktopKit:1.0", [])
-    desktop = object._narrow(_GlobalIDL.DesktopKit)
-    object  = server.resolve("IDL:ImageKit:1.0", [])
-    image   = object._narrow(_GlobalIDL.ImageKit)
-    object  = server.resolve("IDL:FigureKit:1.0", [])
-    figure  = object._narrow(_GlobalIDL.FigureKit)
+    properties = []
+    object  = context.resolve("IDL:LayoutKit:1.0", properties)
+    layout  = object._narrow(Warsaw.LayoutKit)
+    object  = context.resolve("IDL:ToolKit:1.0", properties)
+    tool    = object._narrow(Warsaw.ToolKit)
+    object  = context.resolve("IDL:WidgetKit:1.0", properties)
+    widget  = object._narrow(Warsaw.WidgetKit)
+    object  = context.resolve("IDL:DesktopKit:1.0", properties)
+    desktop = object._narrow(Warsaw.DesktopKit)
+    object  = context.resolve("IDL:ImageKit:1.0", properties)
+    image   = object._narrow(Warsaw.ImageKit)
+    object  = context.resolve("IDL:FigureKit:1.0", properties)
+    figure  = object._narrow(Warsaw.FigureKit)
 
     raster = image.create("../etc/PNG/landscape.png")
     pixmap = figure.pixmap(raster)
     viewport = layout.scrollable(pixmap)
-    xadjustment = viewport.adjustment(_GlobalIDL.xaxis)
-    yadjustment = viewport.adjustment(_GlobalIDL.yaxis)
+    xadjustment = viewport.adjustment(Warsaw.xaxis)
+    yadjustment = viewport.adjustment(Warsaw.yaxis)
     hbox1  = layout.hbox()
     hbox2  = layout.hbox()
     hbox1.append(viewport)
-    hbox1.append(widget.scrollbar(yadjustment, _GlobalIDL.yaxis))
-    group  = tool.group(viewport)
-    shell  = desktop.shell(viewport)
+    hbox1.append(widget.scrollbar(yadjustment, Warsaw.yaxis))
+    group  = tool.group(hbox1)
+    shell  = desktop.shell(group)
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break

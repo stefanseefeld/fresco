@@ -31,7 +31,7 @@ wpath   = $(ipath)/Warsaw
 
 #include $(cpath)/local.mk
 IDL	= omniidl
-IDLFLAGS= -I$(wpath) -bpython
+IDLFLAGS= -I$(wpath) -bpython -Wbglobal=Warsaw
 
 DYNINT	= Types.idl
 STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
@@ -53,9 +53,9 @@ INT	= $(DYNINT) $(STATINT) $(LCINT)
 #DYNSRC	= $(patsubst %.idl, %DynSK.py, $(DYNINT))
 DYNSTATSRC = $(patsubst %.idl, %_idl.py, $(DYNINT)) 
 STATSRC	= $(patsubst %.idl, %_idl.py, $(STATINT))
-LCSRC	= $(patsubst %.idl, %_idl.py, $(LCINT))
 
-SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(LCSRC)
+SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC)
+CMP	= $(patsubst %.py, %.pyc, $(SRC))
 
 vpath %.d $(dpath)
 
@@ -67,11 +67,9 @@ $(DYNSTATSRC): %_idl.py: 	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 $(DYNSRC): %DynSK.py:	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(LCSRC): %_idl.py:	$(wpath)/%.idl
-		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
 
 clean:	
-		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) *~
+		rm -rf $(SRC) $(CMP) CosNaming Input Figures POA_* Warsaw *~
 
 distclean:	clean
 		rm -f $(TARGET)
