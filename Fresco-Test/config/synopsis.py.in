@@ -1,0 +1,40 @@
+from Synopsis.Config import Base
+
+top_srcdir = '@top_srcdir@'
+top_builddir = '@top_builddir@'
+
+class Config(Base):
+
+    class Parser(Base.Parser):
+
+	class CXX(Base.Parser.CXX):
+	    "Parser for C++ headers, extends C++ parser"
+	    main_file = 1
+	    preprocessor = 'gcc'
+	    extract_tails = 1
+	    include_path = ['../include', top_srcdir + '/include']
+	    basename = top_srcdir
+	    syntax_prefix = top_builddir + '/share/doc/Prague/sxr/sxr_data/'
+	
+	modules = {'Fresco' : CXX}
+
+    class Linker (Base.Linker):
+
+	class Fresco(Base.Linker.Linker):
+	    "Fresco style linker - override the comment stuff"
+	    comment_processors = ['ssd', 'prev', 'group']
+	
+	modules = {'Fresco' : Fresco}
+
+    class Formatter(Base.Formatter):
+
+	class HTML(Base.Formatter.HTML):
+	    "Set some local options common to all manuals"
+	    stylesheet = 'manual.css'
+	    stylesheet_file = top_srcdir + '/config/manual.css'
+	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
+	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
+	    toc_out = '../share/doc/Prague/html/Prague.toc'
+	
+	modules = {'HTML' : HTML}
+

@@ -1,5 +1,5 @@
 #ifndef _SYUNIT_RESULTSMAP_H
-#define _SYUNIT_TEST_RESULTSMAP_H
+#define _SYUNIT_RESULTSMAP_H
 
 #include <string>
 #include <list>

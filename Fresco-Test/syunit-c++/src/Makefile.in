@@ -1,0 +1,122 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2003 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+SHELL		:= /bin/sh
+
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+hdir		:= $(top_srcdir)/syunit-c++/include
+docdir		:= $(top_builddir)/share/doc/Fresco-Test
+
+include $(cdir)/local.mk
+
+CXXFLAGS	+= $(SO_CXXFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
+
+SRC		:= Breakpoint.cc ResultsMap.cc TestCase.cc TestCaseWrapper.cc TestCmd.cc
+
+HDR		:= Breakpoint.hh ResultsMap.hh TestCase.hh TestCaseWrapper.hh TestCmd.hh
+DEP		:= $(patsubst %.cc, %.d, $(SRC))
+OBJ		:= $(patsubst %.cc, %.o, $(SRC))
+HSYN		:= $(patsubst %, %.syn, $(notdir $(HDR)))
+SSYN		:= $(patsubst %, %.syn, $(SRC))
+SYN		:= $(HSYN) $(SSYN)
+XREF		:= $(patsubst %, %.xref, $(notdir $(HDR)))
+XREF		+= $(patsubst %, %.xref, $(SRC))
+
+TARGET		:= $(top_builddir)/lib/libFresco-Test.so
+MANUAL		:= $(docdir)/html
+
+vpath %.hh  $(hdir)
+vpath %.cc  $(srcdir)
+
+.FORCE:
+
+.PHONY: all doc install install-doc clean distclean maintainer-clean dist
+
+all:	$(TARGET)
+
+$(TARGET):	$(OBJ)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
+
+depend: $(DEP)
+
+xref:	$(docdir)/sxr/Fresco-Test.xref $(docdir)/sxr/Fresco-Test.syn
+
+doc:	$(MANUAL)
+
+$(docdir)/sxr/Fresco-Test.xref:	$(XREF)
+	@echo linking xref files together
+	@mkdir -p $(docdir)/sxr
+	@compile-xref -o $@ $^
+
+$(docdir)/sxr/Fresco-Test.syn:	$(SYN)
+	@echo linking synopsis files together
+	@mkdir -p $(docdir)/sxr
+	@$(SYNOPSIS) -o $@ $^
+
+$(MANUAL):	$(HSYN)
+	@echo formatting $(@F)
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
+	touch $@
+
+install:	# not yet
+
+install-doc: # not yet
+
+uninstall: #not yet
+
+clean:	
+	rm -f $(TARGET)
+	rm -f $(OBJ) $(DEP) $(SYN) $(XREF)
+
+distclean:	clean
+	rm -f Makefile ../include/Prague/acconfig.hh \
+          ../bin/Prague-config
+
+maintainer-clean: distclean
+
+%.d:	%.cc %.hh
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+%.o:	%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+
+%.hh.syn %.hh.xref:	%.hh
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.hh.syn $?
+
+%.cc.syn %.cc.xref:	%.cc
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.cc.syn $?
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), depend doc install-doc clean distclean maintainer-clean))
+-include $(DEP)
+endif

@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "TestCaseWrapper.h"
+#include "TestCaseWrapper.hh"
 
 namespace SyUnit
 {

@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "ResultsMap.h"
-#include "TestCase.h"
-#include "Breakpoint.h"
+#include "ResultsMap.hh"
+#include "TestCase.hh"
+#include "Breakpoint.hh"
 
 namespace SyUnit
 {
@@ -24,7 +24,7 @@ public:
 
 template <typename TC>
 class TestCaseWrapperImpl
-  : public Fresco_Test::TestCaseWrapper
+  : public SyUnit::TestCaseWrapper
 {
 public:
   typedef void (TC::* method_type)();

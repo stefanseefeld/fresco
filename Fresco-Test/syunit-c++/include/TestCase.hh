@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "ResultsMap.h"
+#include "ResultsMap.hh"
 
 namespace SyUnit 
 {
