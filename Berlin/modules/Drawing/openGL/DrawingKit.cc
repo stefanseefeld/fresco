@@ -183,6 +183,20 @@ void GLDrawingKit::translatedImage(const GLRaster *raster, Transform_ptr transfo
   Vertex origin;
   origin.x = origin.y = origin.z = 0.;
   transform->transformVertex(origin);
+  {
+    glBegin(GL_POLYGON);
+    glClearColor(0.0,0.0,0.0,0.0);
+    glColor4d(1.0, 0.0, 0.0, 1.0);      
+    glVertex3f(origin.x, origin.y, 0.0);
+    glVertex3f(origin.x + raster->width, origin.y, 0.0);
+    glVertex3f(origin.x + raster->width, origin.y + raster->height, 0.0);
+    glVertex3f(origin.x, origin.y + raster->height, 0.0);
+    glVertex3f(origin.x, origin.y, 0.0);
+    glEnd();
+    sync();
+    char c;
+    cout << "enter any character to continue :"; cin >> c;
+  }
   glRasterPos2d(origin.x, origin.y + raster->height);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, raster->width);
   //  cout << "current clip planes :" << endl;
@@ -197,7 +211,7 @@ void GLDrawingKit::translatedImage(const GLRaster *raster, Transform_ptr transfo
   //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
   //  cout << "glDrawPixels at " << origin << endl;
   glDrawPixels(raster->width, raster->height, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
-  //  sync();
-  //  char c;
-  //  cout << "enter any character to continue :"; cin >> c;
+  sync();
+  char c;
+  cout << "enter any character to continue :"; cin >> c;
 }

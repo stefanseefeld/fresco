@@ -135,7 +135,7 @@ void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
     r.x.align = 0.;
     r.y.natural = r.y.minimum = r.y.maximum = height;
     r.y.defined = true;
-    r.y.align = 0.;
+    r.y.align = 1.;
 }
 
 CORBA::Boolean  GLUnifont::canDrawText(const Unistring &u){
