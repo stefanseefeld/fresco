@@ -490,5 +490,5 @@ Graphic_ptr LayoutKitImpl::tmargin_flexible(Graphic_ptr g, Coord natural, Coord 
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LayoutKitImpl"};
-  return create_kit<LayoutKitImpl> ("IDL:Fresco/LayoutKit:1.0", properties, 2);
+  return create_kit<LayoutKitImpl> ("IDL:fresco.org/Fresco/LayoutKit:1.0", properties, 2);
 }

@@ -47,7 +47,7 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
 {
   Trace trace("DesktopKitImpl::bind");
   KitImpl::bind(context);
-  CORBA::Object_var object = context->get_singleton("IDL:Fresco/Desktop:1.0");
+  CORBA::Object_var object = context->get_singleton("IDL:fresco.org/Fresco/Desktop:1.0");
   _desktop = Desktop::_narrow(object);
   _desktop->increment();
   Fresco::Kit::PropertySeq props;

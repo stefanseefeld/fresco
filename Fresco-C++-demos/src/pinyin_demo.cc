@@ -151,7 +151,7 @@ int main(int argc, char ** argv) {
 
 	// This is what really happens:
 	Fresco::LayoutKit_var lk =
-	    server.get_kit<Fresco::LayoutKit>("IDL:Fresco/LayoutKit:1.0");
+	    server.get_kit<Fresco::LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
 
 	// Here is some Macro-Magic for the same:
 	REGISTER_KIT(server, tk, TextKit, 1.0);

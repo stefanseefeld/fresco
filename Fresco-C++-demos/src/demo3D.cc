@@ -45,7 +45,7 @@ int main(int argc, char **argv)
       
       ClientContextImpl *client = new ClientContextImpl("Demo3D");
       
-      Server_var s = resolve_name<Server>(context, "IDL:Fresco/Server:1.0");
+      Server_var s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
       ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
       
       Application *application = new Application(server, ClientContext_var(client->_this()));

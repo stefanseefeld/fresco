@@ -72,10 +72,10 @@ int main(int argc, char **argv)
 
   ClientContextImpl *client = new ClientContextImpl("GGI Wrapper");
 
-  Server_var s = resolve_name<Server>(context, "IDL:Fresco/Server:1.0");
+  Server_var s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
-  DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:Fresco/DesktopKit:1.0");
+  DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
   GGI::GGIKit_var ggi = resolve_kit<GGI::GGIKit>(server, "IDL:GGI/GGIKit:1.0");
   GGI::Visual_var visual = ggi->create_visual(width, height);
   Window_var window = desktop->shell(visual, ClientContext_var(client->_this()));

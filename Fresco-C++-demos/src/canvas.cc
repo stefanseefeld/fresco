@@ -22,14 +22,14 @@
 
 #include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Thread.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/Server.hh>
-#include <Warsaw/ClientContextImpl.hh>
-#include <Warsaw/DesktopKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/Canvas.hh>
-#include <Warsaw/MainController.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/ClientContextImpl.hh>
+#include <Fresco/DesktopKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/Canvas.hh>
+#include <Fresco/MainController.hh>
 #include <unistd.h>
 #include <iostream>
 #include <strstream>
@@ -42,7 +42,7 @@ extern "C"
 }
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 int main(int argc, char **argv)
 {
@@ -74,11 +74,11 @@ int main(int argc, char **argv)
 
   ClientContextImpl *client = new ClientContextImpl("Canvas");
 
-  Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
+  Server_var s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
-  DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:Warsaw/DesktopKit:1.0");
-  ToolKit_var tool = resolve_kit<ToolKit>(server, "IDL:Warsaw/ToolKit:1.0");
+  DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
+  ToolKit_var tool = resolve_kit<ToolKit>(server, "IDL:fresco.org/Fresco/ToolKit:1.0");
   Canvas_var canvas = tool->create_canvas(256, 256);
 
   Window_var window = desktop->shell(Controller_var(tool->group(canvas)),
@@ -94,8 +94,8 @@ int main(int argc, char **argv)
   setenv("GGI_DISPLAY", name, 1);
   delete [] name;
 
-  Warsaw::Canvas::BufferFormat bformat = canvas->buffer_format();
-  Warsaw::Canvas::PixelFormat pformat = canvas->pixel_format();
+  Fresco::Canvas::BufferFormat bformat = canvas->buffer_format();
+  Fresco::Canvas::PixelFormat pformat = canvas->pixel_format();
   ggi_mode mode;
   mode.frames = 1;
   mode.visible.x = mode.virt.x = bformat.width;

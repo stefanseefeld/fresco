@@ -53,5 +53,5 @@ Raster_ptr ImageKitImpl::create(const char *file)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ImageKitImpl"};
-  return create_kit<ImageKitImpl> ("IDL:Fresco/ImageKit:1.0", properties, 2);
+  return create_kit<ImageKitImpl> ("IDL:fresco.org/Fresco/ImageKit:1.0", properties, 2);
 }

@@ -50,7 +50,7 @@ public:
 	
 	// Berlin initialization
 	client = new ClientContextImpl(appname);
-	server = resolve_name<Fresco::Server>(name, "IDL:Fresco/Server:1.0");
+	server = resolve_name<Fresco::Server>(name, "IDL:fresco.org/Fresco/Server:1.0");
 	server_context =
 	    server->create_server_context(Fresco::ClientContext_var(client->_this()));
     }
@@ -89,6 +89,6 @@ private:
     Fresco::ServerContext_var server_context;
 };
 
-#define REGISTER_KIT(server,name,kit,version) Fresco::##kit##_var name = server##.get_kit<Fresco::##kit>("IDL:Fresco/" #kit ":" #version)
+#define REGISTER_KIT(server,name,kit,version) Fresco::##kit##_var name = server##.get_kit<Fresco::##kit>("IDL:fresco.org/Fresco/" #kit ":" #version)
 
 #endif // Client_hh

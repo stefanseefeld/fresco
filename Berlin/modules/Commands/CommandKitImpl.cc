@@ -81,7 +81,7 @@ public:
     props.length(1);
     props[0].name = CORBA::string_dup("implementation");
     props[0].value = CORBA::string_dup("PSDrawingKit");
-    RefCount_var<DrawingKit> print = resolve_kit<DrawingKit>(_server, "IDL:Fresco/DrawingKit:1.0", props);
+    RefCount_var<DrawingKit> print = resolve_kit<DrawingKit>(_server, "IDL:fresco.org/Fresco/DrawingKit:1.0", props);
     Fresco::Graphic::Requisition r;
     GraphicImpl::init_requisition(r);
     _graphic->request(r);
@@ -264,5 +264,5 @@ StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "CommandKitImpl"};
-  return create_kit<CommandKitImpl>("IDL:Fresco/CommandKit:1.0", properties, 2);
+  return create_kit<CommandKitImpl>("IDL:fresco.org/Fresco/CommandKit:1.0", properties, 2);
 }

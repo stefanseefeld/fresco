@@ -63,8 +63,8 @@ void TextKitImpl::bind(ServerContext_ptr sc)
   KitImpl::bind(sc);
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  _canonicalDK = DrawingKit::_narrow(sc->get_singleton("IDL:Fresco/DrawingKit:1.0"));
-  _layout = resolve_kit<LayoutKit>(sc, "IDL:Fresco/LayoutKit:1.0", props);
+  _canonicalDK = DrawingKit::_narrow(sc->get_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0"));
+  _layout = resolve_kit<LayoutKit>(sc, "IDL:fresco.org/Fresco/LayoutKit:1.0", props);
 }
 
 // chunks are flyweights
