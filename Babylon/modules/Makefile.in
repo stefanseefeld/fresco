@@ -153,6 +153,8 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Babylon
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Babylon
 
+install-doc: #nothing to do
+
 uninstall:
 	rm -fr $(DESTDIR)$(libdir)/Babylon
 
