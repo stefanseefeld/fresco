@@ -61,7 +61,6 @@ all:	$(TARGET)
 $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
-		strip --strip-unneeded $@
 
 doc:	$(abs_top_builddir)/share/doc/Berlin/$(docdir)/html
 

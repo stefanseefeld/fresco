@@ -175,4 +175,4 @@ maintainer-clean: distclean
 
 %.so:	%.o
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $< $(LIBS) && strip --strip-unneeded $@
+	$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
