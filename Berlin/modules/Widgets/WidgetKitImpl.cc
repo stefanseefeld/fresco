@@ -28,6 +28,7 @@
 #include "Widget/TextBufferImpl.hh"
 #include "Widget/StreamBufferImpl.hh"
 #include "Widget/ControllerImpl.hh"
+#include "Widget/Filler.hh"
 #include "Widget/Frame.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
@@ -121,6 +122,15 @@ Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
   graphics.push_back(frame);
   frame->body(g);
   return frame->_this();
+}
+
+Graphic_ptr WidgetKitImpl::filler(Graphic_ptr g, const Color &c)
+{
+  Filler *f = new Filler(c);
+  f->_obj_is_ready(_boa());
+  graphics.push_back(f);
+  f->body(g);
+  return f->_this();
 }
 
 View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)

@@ -55,6 +55,7 @@ interface WidgetKit : Cloneable
   
   Graphic inset(in Graphic g, in Color c);
   Graphic outset(in Graphic g, in Color c);
+  Graphic filler(in Graphic g, in Color c);
   View    pushButtonFrame(in Graphic g, in Color c, in Telltale t);
 
   Controller button(in Graphic g, in Color c); // don't worry, just a test...

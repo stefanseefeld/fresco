@@ -1,7 +1,6 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
@@ -20,31 +19,18 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Transformator_idl
+#define _Transformator_idl
 
-#ifndef _FigureKitImpl_hh
-#define _FigureKitImpl_hh
+#include "Graphic.idl"
 
-#include "Warsaw/FigureKit.hh"
-#include "Warsaw/config.hh"
-#include "Berlin/CloneableImpl.hh"
-#include <vector>
-
-class Figure;
-
-class FigureKitImpl : implements(FigureKit), virtual public CloneableImpl {
- public:
-    FigureKitImpl();
-    virtual ~FigureKitImpl();
-
-    Graphic_ptr rectangle(Coord, Coord, const Style::Spec &);
-    Graphic_ptr ellipse(const Style::Spec &sty);
-    Graphic_ptr path(const Style::Spec &sty, const Path &p);
-    Graphic_ptr patch(const Style::Spec &sty, const Patch &p);
-    Image_ptr   pixmap(Raster_ptr);
-    Transformator_ptr projection(Graphic_ptr);
- protected:
-    vector<Figure *> figures;
+/*
+ * test only...  -stefan
+ */
+interface Transformator : Graphic
+{
+  void scale(in Vertex v);
+  void rotate(in double angle, in Axis a);
 };
 
-
-#endif
+#endif /* _View_idl */

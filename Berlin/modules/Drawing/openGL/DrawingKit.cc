@@ -97,18 +97,31 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
   Raster::Info info = raster->header();
-  Raster::Data_var pixels;
-  raster->storePixels(pixels);
-
-//   Transform::Matrix matrix;
-//   transform->store(matrix);
+  Raster::ColorSeq_var pixels;
+  Raster::Index lower, upper;
+  lower.x = lower.y = 0;
+  upper.x = info.width, upper.y = info.height;
+  raster->storePixels(lower, upper, pixels);
 
   Vertex origin;
   origin.x = origin.y = origin.z = 0.;
   transform->transformVertex(origin);
-  glRasterPos2d(origin.x, origin.y);
-  Logger::log(Logger::image) << "GLDrawingKit::image at " << origin.x << ' ' << origin.y << endl;
+  glRasterPos2d(origin.x, origin.y + info.height);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, info.width);
-  // 	glClear(GL_COLOR_BUFFER_BIT);
-  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels->NP_data());
+
+  /*
+   * transform the ColorSeq to the format internally used by openGL
+   */
+  vector<char> data(4*pixels->length());
+  vector<char>::iterator pixel = data.begin();
+  for (int y = info.height - 1; y >= 0; y--)
+    for (int x = 0; x != info.width; x++)
+      {
+	Color &color = pixels[y * info.width + x];
+	*pixel++ = static_cast<char>(color.red * 256);
+	*pixel++ = static_cast<char>(color.green * 256);
+	*pixel++ = static_cast<char>(color.blue * 256);
+	*pixel++ = static_cast<char>(color.alpha * 256);
+      }
+  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, data.begin());
 }

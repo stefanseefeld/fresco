@@ -61,145 +61,198 @@ private:
 RasterImpl::RasterImpl()
   : rows(0)
 {
-	rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-	rinfo = png_create_info_struct(rpng);
-	rend = png_create_info_struct(rpng);
+  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  rinfo = png_create_info_struct(rpng);
+  rend = png_create_info_struct(rpng);
 }
 
 RasterImpl::RasterImpl(const char *file)
+  : rows(0)
 {
-	rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-	rinfo = png_create_info_struct(rpng);
-	rend = png_create_info_struct(rpng);
-	ifstream ifs(file);
-	if (!ifs) cerr << "RasterImpl : file " << file << " unreadable" << endl;
-	else
+  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  rinfo = png_create_info_struct(rpng);
+  rend = png_create_info_struct(rpng);
+  ifstream ifs(file);
+  if (!ifs) cerr << "RasterImpl : file " << file << " unreadable" << endl;
+  else
     {
-		PNGDecoder decoder(ifs.rdbuf(), rpng, rinfo, rend);
-		rows = decoder.decode();
+      PNGDecoder decoder(ifs.rdbuf(), rpng, rinfo, rend);
+      rows = decoder.decode();
     }
 }
 
 RasterImpl::~RasterImpl()
 {
-	clear();
-	png_destroy_read_struct(&rpng, &rinfo, &rend);
+  clear();
+  png_destroy_read_struct(&rpng, &rinfo, &rend);
+}
+
+void RasterImpl::clear()
+{
+  if (!rpng || !rinfo) return;
+  png_uint_32 height = png_get_image_height(rpng, rinfo);
+  for (png_uint_32 i = 0; i < height; i++) delete [] rows;
+  delete [] rows;
+  rows = 0;
+
+  png_destroy_read_struct(&rpng, &rinfo, &rend);
+  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  rinfo = png_create_info_struct(rpng);
+  rend = png_create_info_struct(rpng);  
 }
 
 Raster::Info RasterImpl::header()
 {
-	png_uint_32 w, h;
-	int d, c, i, z, f;
-	png_get_IHDR(rpng, rinfo, &w, &h, &d, &c, &i, &z, &f);
-	Info info;
-	info.width = w;
-	info.height = h;
-	info.depth = d;
-	info.colortype = c;
-	info.compression = z;
-	info.filter = f;
-	info.interlace = i;
-	return info;
+  png_uint_32 w, h;
+  int d, c, i, z, f;
+  png_get_IHDR(rpng, rinfo, &w, &h, &d, &c, &i, &z, &f);
+  Info info;
+  info.width = w;
+  info.height = h;
+  info.depth = d;
+  info.colortype = c;
+  info.compression = z;
+  info.filter = f;
+  info.interlace = i;
+  return info;
 }
 
-void RasterImpl::load(const Raster::Data& data)
+void RasterImpl::loadData(const Raster::Data& data)
 {
-	SectionLog section(Logger::image, "RasterImpl::load");
-	clear();
-	ibuf buffer(data);
-	PNGDecoder decoder(&buffer, rpng, rinfo, rend);
-	rows = decoder.decode();
+  SectionLog section(Logger::image, "RasterImpl::load");
+  clear();
+  ibuf buffer(data);
+  PNGDecoder decoder(&buffer, rpng, rinfo, rend);
+  rows = decoder.decode();
 }
 
-void RasterImpl::export(Raster::Data *&data)
+void RasterImpl::storeData(Raster::Data *&data)
 {
-	SectionLog section(Logger::image, "RasterImpl::export");
-	/*
-	 * create temporary write structures here...
-	 */
-	png_structp wpng = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-	png_infop winfo = png_create_info_struct(wpng);
-	png_uint_32 width, height;
-	int  depth, color, interlace, compression, filter;
-
-	/*
-	 * transfer the IHDR chunk
-	 */
-	png_get_IHDR(rpng, rinfo, &width, &height, &depth, &color, &interlace, &compression, &filter);
-	png_set_IHDR(wpng, winfo, width, height, depth, color, interlace, compression, filter);
-	// Set the "end" data  -- these are comments and similar
-	// text for the file.
-	//*wend = *rend;
-    
-	/*
-	 * set up buffer to hold new data
-	 */
-	obuf buffer;
-	PNGEncoder encoder(&buffer, wpng, winfo, rend);
-	encoder.encode(rows);
-	delete data;
-	data = 0;
-  
-	data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
-		  reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
-
-	cout << "export magic :" << endl;
-	for (unsigned int i = 0; i != 8; i++) cout << (int) (*data)[i] << ' ';
-	cout << endl;
-	png_destroy_write_struct(&wpng, &winfo);
+  SectionLog section(Logger::image, "RasterImpl::export");
+  /*
+   * create temporary write structures here...
+   */
+  png_structp wpng = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  png_infop winfo = png_create_info_struct(wpng);
+  png_uint_32 width, height;
+  int  depth, color, interlace, compression, filter;
+  /*
+   * transfer the IHDR chunk
+   */
+  png_get_IHDR(rpng, rinfo, &width, &height, &depth, &color, &interlace, &compression, &filter);
+  png_set_IHDR(wpng, winfo, width, height, depth, color, interlace, compression, filter);
+  /*
+   * set up buffer to hold new data
+   */
+    obuf buffer;
+    PNGEncoder encoder(&buffer, wpng, winfo, rend);
+    encoder.encode(rows);
+    delete data;
+    data = 0;
+    data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
+		    reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
+    png_destroy_write_struct(&wpng, &winfo);
 }
 
-void RasterImpl::storePixels(Raster::Data *&buffer)
+void RasterImpl::storePixel(const Index &index, Color &color)
+{
+  png_uint_32 width = png_get_image_width(rpng, rinfo);
+  png_uint_32 height = png_get_image_height(rpng, rinfo);
+  if (index.x >= width || index.y >= height)
+    {
+      cerr << "RasterImpl::storePixel: illegal index !" << endl;
+      return;
+    }
+  else
+    {
+      png_bytep pixel = rows[index.y] + 4*index.x;
+      color.red = static_cast<double>(*pixel) / 256;
+      color.green = static_cast<double>(*(pixel + 1)) / 256;
+      color.blue = static_cast<double>(*(pixel + 2)) / 256;
+      color.alpha = static_cast<double>(*(pixel + 3)) / 256;
+    }
+}
+
+void RasterImpl::loadPixel(const Index &index, const Color &color)
+{
+  png_uint_32 width = png_get_image_width(rpng, rinfo);
+  png_uint_32 height = png_get_image_height(rpng, rinfo);
+  if (index.x >= width || index.y >= height)
+    {
+      cerr << "RasterImpl::loadPixel: illegal index !" << endl;
+      return;
+    }
+  else
+    {
+      png_bytep pixel = rows[index.y] + 4*index.x;
+      *pixel++ = static_cast<png_byte>(color.red * 256);
+      *pixel++ = static_cast<png_byte>(color.green * 256);
+      *pixel++ = static_cast<png_byte>(color.blue * 256);
+      *pixel = static_cast<png_byte>(color.alpha * 256);
+    }
+}
+
+void RasterImpl::loadPixels(const Index &lower, const Index &upper, const Raster::ColorSeq &pixels)
+{
+  cerr << "sorry, RasterImpl::loadPixels not yet implemented" << endl;
+//   clear();
+//   Raster::Info info;
+//   info.width = width;
+//   info.height = height;
+//   info.depth = 8;
+//   info.colortype = PNG_COLOR_TYPE_RGB_ALPHA;
+//   info.compression = PNG_COMPRESSION_TYPE_BASE;
+//   info.filter = PNG_FILTER_TYPE_BASE;
+//   info.interlace = PNG_INTERLACE_NONE;
+//   png_set_IHDR(rpng, rinfo, info.width, info.height, info.depth, info.colortype, info.interlace, info.compression, info.filter);
+//   rows = new png_bytep[height];
+//   png_uint_32 rowbytes = (info.width * 32 + 7) >> 3;
+//   for (png_uint_32 i = 0; i != info.height; i++)
+//     {
+//       rows[i] = new png_byte[rowbytes];
+//       Prague::Memory::copy(data.NP_data() + i * rowbytes, rows[i], rowbytes);
+//     }
+}
+
+void RasterImpl::storePixels(const Index &lower, const Index &upper, Raster::ColorSeq *&pixels)
 {
   /*
-   * Note:  This differs from 'export' in that it returns
-   * the actual manipulated block of memory that represents
-   * the image.
-   *
-   * In addition, because of OpenGL's sematics, we need to
-   * reverse the order of the pixel bytes to get the image
-   * to come out right-side-up.
+   * test index ranges
    */
-  // Make buffer correct size
-  png_uint_32 rowbytes = png_get_rowbytes(rpng, rinfo);
+  png_uint_32 width = png_get_image_width(rpng, rinfo);
   png_uint_32 height = png_get_image_height(rpng, rinfo);
-  
-  long long totBytes = rowbytes*height;
-  
-  buffer = new Data;
-  buffer->length(totBytes);
-  
-  for (png_uint_32 i = 0; i != height; i++)
-    Prague::Memory::copy(rows[height - (i + 1)], buffer->NP_data() + i * rowbytes, rowbytes);
-//   for (png_uint_32 i=0; i<height; i++)
-// 	{
-// 		for (png_uint_32 j=0; j<rowbytes; j++)
-// 		{
-// 			(*buffer)[(i*rowbytes)+j]=rows[(height-1)-i][j];
-// 		}
-// 	}
-
-}
-
-void RasterImpl::loadPixels(PixelCoord width, PixelCoord height, const Raster::Data &data)
-{
-  clear();
-  Raster::Info info;
-  info.width = width;
-  info.height = height;
-  info.depth = 8;
-  info.colortype = PNG_COLOR_TYPE_RGB_ALPHA;
-  info.compression = PNG_COMPRESSION_TYPE_BASE;
-  info.filter = PNG_FILTER_TYPE_BASE;
-  info.interlace = PNG_INTERLACE_NONE;
-  png_set_IHDR(rpng, rinfo, info.width, info.height, info.depth, info.colortype, info.interlace, info.compression, info.filter);
-  rows = new png_bytep[height];
-  png_uint_32 rowbytes = (info.width * 32 + 7) >> 3;
-  for (png_uint_32 i = 0; i != info.height; i++)
+  if (upper.x < lower.x || upper.y < lower.y ||
+      upper.x > width || upper.y > height ||
+      lower.x > width || lower.y > height)
     {
-      rows[i] = new png_byte[rowbytes];
-      Prague::Memory::copy(data.NP_data() + i * rowbytes, rows[i], rowbytes);
+      cerr << "RasterImpl::storePixels: illegal indexes !" << endl;
+      cerr << lower.x << ' ' << lower.y << ' ' << upper.x << ' ' << upper.y << ' ' << width << ' ' << height << endl;
+      return;
     }
+  
+  width = upper.x - lower.x;
+  height = upper.y - lower.y;
+  
+  pixels = new ColorSeq;
+  pixels->length(width*height);
+  
+  /*
+   * FIXME !!!: the following code makes strong assumptions about the
+   * internal format of the raster (4 channels, 1 byte each).
+   * Generalize this to make sure it works for every possible format
+   * (using the information from rpng and rinfo)
+   *             -stefan
+   */
+  for (png_uint_32 y = lower.y, i = 0; y != upper.y; y++, i++)
+    for (png_uint_32 x = lower.x, j = 0; x != upper.x; x++, j++)
+      {
+	png_bytep pixel = rows[y] + 4*x;
+	Color &color = (*pixels)[i*width + j];
+	color.red = static_cast<double>(*pixel) / 256;
+	color.green = static_cast<double>(*(pixel + 1)) / 256;
+	color.blue = static_cast<double>(*(pixel + 2)) / 256;
+	color.alpha = static_cast<double>(*(pixel + 3)) / 256;
+      }
 }
 
 void RasterImpl::write(const char *file)
@@ -224,18 +277,3 @@ void RasterImpl::write(const char *file)
   encoder.encode(rows);
   png_destroy_write_struct(&wpng, &winfo);
 }
-
-void RasterImpl::clear()
-{
-  if (!rpng || !rinfo) return;
-  png_uint_32 height = png_get_image_height(rpng, rinfo);
-  for (png_uint_32 i = 0; i < height; i++) delete [] rows;
-  delete [] rows;
-  rows = 0;
-
-  png_destroy_read_struct(&rpng, &rinfo, &rend);
-  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-  rinfo = png_create_info_struct(rpng);
-  rend = png_create_info_struct(rpng);  
-}
-

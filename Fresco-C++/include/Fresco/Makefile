@@ -39,7 +39,7 @@ DYNINT	= Types.idl Message.idl Event.idl Style.idl
 STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable.idl \
 	  Drawable.idl Pencil.idl DrawingKit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
-	  FigureKit.idl \
+	  Transformator.idl FigureKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  CommandKit.idl \
 	  Subject.idl Controller.idl Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl View.idl WidgetKit.idl \

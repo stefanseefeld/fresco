@@ -22,24 +22,47 @@
 
 #include <Widget/Filler.hh>
 #include <Warsaw/config.hh>
+#include <Warsaw/Transform.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Pencil.hh>
 #include <Warsaw/DrawTraversal.hh>
 
 void Filler::request(Requisition &requisition)
 {
-  GraphicImpl::require(requisition.x, 0, infinity, 0, 0);
-  GraphicImpl::require(requisition.y, 0, infinity, 0, 0);
+  Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
+  child->request(requisition);
+//   GraphicImpl::require(requisition.x, 0, infinity, 0, 0);
+//   GraphicImpl::require(requisition.y, 0, infinity, 0, 0);
 }
 
-void Filler::draw(DrawTraversal_ptr t)
+void Filler::traverse(Traversal_ptr traversal)
 {
-  DrawTraversal_var traversal = t;
+  traversal->visit(Graphic_var(_this()));
+  Graphic_var child = body();
+  if (!CORBA::is_nil(child))
+    MonoGraphic::traverse(traversal);
+}
+
+void Filler::draw(DrawTraversal_ptr traversal)
+{
   DrawingKit_var dk = traversal->kit();
-  Pencil_var pen;// = dk->getPencil();
+  Style::Spec style;
+  style.length(1);
+  style[0].a = Style::fillcolor;
+  style[0].val <<= color;
+  Pencil_var pen = dk->getPencil(style);
   Vertex lower, upper, origin;
   traversal->bounds(lower, upper, origin);
   Path path;
-  path.p.length(4);
+  path.p.length(5);
+  path.p[0].x = lower.x, path.p[0].y = lower.y, path.p[0].z = 0.;
+  path.p[1].x = upper.x, path.p[1].y = lower.y, path.p[1].z = 0.;
+  path.p[2].x = upper.x, path.p[2].y = upper.y, path.p[2].z = 0.;
+  path.p[3].x = lower.x, path.p[3].y = upper.y, path.p[3].z = 0.;
+  path.p[4].x = lower.x, path.p[4].y = lower.y, path.p[4].z = 0.;
+  Transform_var transform = traversal->transformation();
+  for (unsigned int i = 0; i != 5; i++) transform->transformVertex(path.p[i]);
   pen->drawPath(path);
+  MonoGraphic::traverse(traversal);
 }

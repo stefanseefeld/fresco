@@ -450,7 +450,7 @@ void GraphicImpl::naturalAllocation (Graphic_ptr g, RegionImpl &nat)
 
 void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
 {
-  if (CORBA::is_nil(tx) || tx->Identity()) { return;}
+  if (CORBA::is_nil(tx) || tx->Identity()) return;
   if (Math::equal(req.x.natural, req.x.maximum, tol) &&
       Math::equal(req.y.natural, req.y.maximum, tol) &&
       Math::equal(req.x.natural, req.x.minimum, tol) &&

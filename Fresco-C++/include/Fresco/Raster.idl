@@ -33,9 +33,12 @@
 #include <Types.idl>
 
 interface Raster
+//. A raster is a two-dimensional pixel array
+//. Raster is based on the W3C PNG specs, see
+//. <http://www.w3.org/TR/REC-png> for details
 {
-  typedef sequence<octet> Data;
   struct Info
+    //. the image header (IHDR chunk)
   {
     unsigned long  width;       // 4 bytes
     unsigned long  height;      // 4 bytes
@@ -45,13 +48,28 @@ interface Raster
     unsigned short filter;      // 1 byte
     unsigned short interlace;   // 1 byte
   };
+  typedef sequence<octet> Data;
+  struct Index { unsigned long x, y;};
+  typedef sequence<Color> ColorSeq;
 
   Info header();
-  void export(out Data d);	// Export raw image data as octets
-  void load(in Data d);	// load data into the image
-  void storePixels(out Data d);	// Get image mem block from raster
-  void loadPixels(in PixelCoord w, in PixelCoord h, in Data d);
-  //. directly define the raster in terms of pixels (rgba quadruplets)
+  //. access the header information (the PNG IHDR chunk)
 
-// Eventually, manipulations, etc.
+  void clear();
+  //. clear the Raster
+
+  void loadData(in Data d);
+  void storeData(out Data d);
+  //. these methods are suitable to transfer the Raster.
+  //. the used format follows the PNG specs
+
+  void loadPixel(in Index i, in Color c);
+  void storePixel(in Index i, out Color c);
+  //. access and modify individual pixel values
+
+  void loadPixels(in Index lower, in Index upper, in ColorSeq s);
+  void storePixels(in Index lower, in Index upper, out ColorSeq s);
+  //. access and modify ranges of pixels.
+  //. the length of the ColorSeq in loadPixels must at least correspond 
+  //. to the given width times the given height
 };

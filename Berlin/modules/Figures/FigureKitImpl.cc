@@ -26,6 +26,9 @@
 #include "Berlin/Plugin.hh"
 #include "Figure/SimpleFigures.hh"
 #include "Figure/ImageImpl.hh"
+#include "Figure/TransformatorImpl.hh"
+
+
 FigureKitImpl::FigureKitImpl() {}
 FigureKitImpl::~FigureKitImpl() {}
 
@@ -64,6 +67,15 @@ Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
   image->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
 //   figures.push_back(image);
   return image->_this();
+}
+
+Transformator_ptr FigureKitImpl::projection(Graphic_ptr g)
+{
+  TransformatorImpl *transformator = new TransformatorImpl;
+  transformator->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+//   figures.push_back(image);
+  transformator->body(g);
+  return transformator->_this();
 }
 
 EXPORT_PLUGIN(FigureKitImpl, interface(FigureKit))
