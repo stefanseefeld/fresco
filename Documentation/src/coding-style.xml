@@ -362,22 +362,21 @@
     same line.
 </para>
 <para>
-    If you have an initializer list, put the ':' after the closing ')'
-    of the parameter section and start a new line.  If the
-    initializers all fit on a single line, put them on a single line;
-    otherwise put each on a separate line.  [[FIXME: rewrite this
-    rule, and break it into multiple sub-rules]]
-    So:
+    If you have an initializer list, put the ':' on the line after the
+    closing ')' of the parameter section.  If the initializers all fit
+    on this new line, put them on it; otherwise, put each on a separate
+    line.  [[FIXME: rewrite this rule, and break it into multiple
+    sub-rules]]  So:
     <programlisting>
      class Foo
      {
          // Correct:
-         Foo() :
-             my_bar(0), my_baz(0)
+         Foo()
+             : my_bar(0), my_baz(0)
              {}
-         Foo(int super_special_long_named_variable) :
-             my_bar(0),
-             my_baz(new baz_type(super_special_long_named_variable))
+         Foo(int super_special_long_named_variable)
+             : my_bar(0),
+               my_baz(new baz_type(super_special_long_named_variable))
              {}
          int
          bar() { return my_bar; };
@@ -536,11 +535,14 @@
          foo_t *const p;
     </programlisting>
 </para>
-<para>
-   Justification: General cleanness, plus it can allow extra
-    optimizations.
-</para>
 </listitem>
+</itemizedlist>
+</para>
+<para>
+   Justification: General cleanness (it's always good to clearly
+    specify your intent, especially in ways that help the compiler
+    catch mistakes), plus it can allow extra optimizations.
+</para>
       <listitem>
 <para>
   Never, ever, use old-style casts.  Always use static_cast&lt;&gt;,
@@ -552,9 +554,6 @@
    Justifications: Myriad.
     </para>
 </listitem>
-    </itemizedlist>
-    </para>
-      </listitem>
     </itemizedlist>
 </para>
   </section>
