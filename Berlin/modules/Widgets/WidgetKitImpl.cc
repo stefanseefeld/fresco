@@ -38,6 +38,7 @@
 #include "Widget/Stepper.hh"
 #include "Widget/Gauge.hh"
 #include "Widget/Slider.hh"
+#include "Widget/Panner.hh"
 #include "Widget/TextInput.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
@@ -303,9 +304,14 @@ Controller_ptr WidgetKitImpl::slider(const Color &color, BoundedValue_ptr value)
   return s->_this();
 }
 
-Controller_ptr WidgetKitImpl::panner(const Color &, BoundedRange_ptr, BoundedRange_ptr)
+Controller_ptr WidgetKitImpl::panner(const Color &bg, BoundedRange_ptr x, BoundedRange_ptr y)
 {
-  return Controller::_nil();
+  Panner *panner = new Panner(x, y);
+  panner->_obj_is_ready(_boa());
+  panner->body(Graphic_var(inset(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 200., 200.)), bg, true)));
+  Controller_var thumb = dragger(Graphic_var(Graphic::_nil()), Command_var(panner->drag()));
+  panner->init(thumb);
+  return panner->_this();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

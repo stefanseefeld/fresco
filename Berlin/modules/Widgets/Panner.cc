@@ -51,6 +51,7 @@ void Panner::init(Controller_ptr t)
 {
   thumb = t;
   t->addParent(Graphic_var(_this()), 1);
+  appendController(thumb);
 }
 
 void Panner::update(Subject_ptr, const CORBA::Any &)
