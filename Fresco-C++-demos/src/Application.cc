@@ -20,6 +20,8 @@
  * MA 02139, USA.
  */
 
+#define DELTA 0.5
+
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/DrawingKit.hh>
@@ -113,8 +115,8 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   vb->append_graphic(hbox);
 
   ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::outset);
-  Graphic_var decorator = _ttk->frame(vb, 20., spec, true);
+  spec.brightness(DELTA); spec._d(ToolKit::outset);
+  Graphic_var decorator = _ttk->frame(vb, 10., spec, true);
   decorator = _gk->alpha(decorator, item.alpha);
   decorator = _gk->lighting(decorator, item.red, item.green, item.blue);
   decorator = _gk->rotator(decorator, item.zrotation, zaxis);
@@ -136,8 +138,8 @@ void Application::run()
 
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::concav);
-  _vbox->append_graphic(Graphic_var(_ttk->frame(_choice, 40., spec, false)));
+  spec.brightness(DELTA); spec._d(ToolKit::concav);
+  _vbox->append_graphic(Graphic_var(_ttk->frame(_choice, 20., spec, false)));
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   Graphic_var glyph1 = _tk->chunk(Unicode::to_CORBA(Babylon::String("run")));
   Graphic_var label1 = _lk->margin(glyph1, 20.);
@@ -263,8 +265,8 @@ Application::Item Application::make_item(const Babylon::String &name)
   vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   vbox->append_graphic(hbox);
   ToolKit::FrameSpec outset;
-  outset.brightness(0.5); outset._d(ToolKit::outset);
-  Controller_var root = _ttk->group(Graphic_var(_ttk->frame(Graphic_var(_lk->margin(vbox, 100.)), 20., outset, true)));
+  outset.brightness(DELTA); outset._d(ToolKit::outset);
+  Controller_var root = _ttk->group(Graphic_var(_ttk->frame(Graphic_var(_lk->margin(vbox, 100.)), 10., outset, true)));
   Window_var window = _dk->transient(root);
   item.settings = _dk->map(window, true);
   done->action(Command_var(_dk->map(window, false)));

@@ -27,6 +27,7 @@
 #include <Warsaw/Window.hh>
 #include <Warsaw/Desktop.hh>
 #include <Berlin/CommandImpl.hh>
+#include <Berlin/RefCountVar.hh>
 
 class Manipulator : public CommandImpl
 {
@@ -82,6 +83,17 @@ class Unmapper : public Manipulator
 public:
   Unmapper(Warsaw::Window_ptr window) : Manipulator(window) {}
   virtual void execute(const CORBA::Any &);
+};
+
+class Shader : public Manipulator
+{
+public:
+  Shader(Warsaw::Window_ptr window, Warsaw::Graphic_var to_shade);
+  virtual void execute(const CORBA::Any &);
+private:
+  CORBA::Boolean is_shaded;
+  Warsaw::Graphic_var to_shade;
+  Warsaw::Graphic_var swap;
 };
 
 #endif

@@ -26,6 +26,9 @@
 #include <Warsaw/ClientContext.hh>
 #include <Warsaw/Trigger.hh>
 #include <Warsaw/resolve.hh>
+#include <Warsaw/FigureKit.hh>
+#include <Warsaw/Transform.hh>
+#include <Warsaw/Unicode.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/CommandImpl.hh>
 #include <Berlin/RefCountVar.hh>
@@ -54,9 +57,71 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
   _widget  = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
   _text    = resolve_kit<TextKit>(context, "IDL:Warsaw/TextKit:1.0", props);
   _command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
+  _image   = resolve_kit<ImageKit>(context, "IDL:Warsaw/ImageKit:1.0", props);
+  _figure  = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
 
   ClientContext_var client = context->client();
   _exit = client->exit();
+
+  // Make a nice logo.
+  
+  Warsaw::FigureKit_var figures  = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
+  Coord a = 4200.;
+  Vertex offset;
+  offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
+  Warsaw::Path path;
+  path.shape = convex;
+  path.nodes.length(3);
+  path.nodes[0].x = a/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;
+  path.nodes[1].x = a + offset.x, path.nodes[1].y = 0.866*a + offset.y, path.nodes[1].z = offset.z;
+  path.nodes[2].x = offset.x, path.nodes[2].y = 0.866*a + offset.y, path.nodes[2].z = offset.z;
+  
+  Figure::Path_var triangle = figures->polygon(path);
+  Graphic_var transformer1 = figures->transformer(Graphic_var(_tool->rgb(Graphic_var(_tool->alpha(triangle, 0.8)), 1., 0.5, 0.5)));
+  Graphic_var transformer2 = figures->transformer(Graphic_var(_tool->rgb(Graphic_var(_tool->alpha(triangle, 0.8)), 0.5, 1., 0.5)));
+  Graphic_var transformer3 = figures->transformer(Graphic_var(_tool->rgb(Graphic_var(_tool->alpha(triangle, 0.8)), 0.5, 0.5, 1.)));
+
+  transformer1->transformation()->load_identity();
+  transformer2->transformation()->load_identity();
+  transformer3->transformation()->load_identity();
+  transformer1->transformation()->rotate(-10.,zaxis);
+  transformer2->transformation()->rotate(10.,zaxis);
+  transformer3->transformation()->rotate(20.,zaxis);
+  Vertex d;
+  d.x = -660;
+  d.y = 0;
+  transformer2->transformation()->translate(d);
+  d.x = -850;
+  d.y = -200;
+  transformer3->transformation()->translate(d);
+
+  Graphic_var group = figures->group();
+  group->append_graphic(transformer3);
+  group->append_graphic(transformer2);
+  group->append_graphic(transformer1);
+
+  Graphic_var label = _tool->rgb(Graphic_var(_text->chunk(Unicode::to_CORBA(Babylon::String("Welcome to Fresco!")))), 1.0,1.0,1.0);
+
+  Graphic_var hbox = _layout->hbox();
+  hbox->append_graphic(Graphic_var(_layout->hfill()));
+  hbox->append_graphic(label);
+  hbox->append_graphic(Graphic_var(_layout->hfill()));
+  Graphic_var box = _layout->vbox();
+  box->append_graphic(Graphic_var(_layout->align(group, 0., 0.)));
+  box->append_graphic(hbox);
+
+  // insert it into the desktop
+  Vertex position, size;
+  position.x = 300; position.y = -500; position.z = 0.;
+  Warsaw::Graphic::Requisition r;
+  GraphicImpl::init_requisition(r);
+  box->request(r);
+  size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
+
+  _desktop->insert(box,
+                   position,
+                   size,
+                   _desktop->layers());
 }
 
 Desktop_ptr DesktopKitImpl::desk()
@@ -71,6 +136,10 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
   WindowImpl *window = new WindowImpl;
   activate(window);
   Window_var wptr = window->_this();
+
+  RefCount_var<Graphic> vbox = _layout->vbox();
+  RefCount_var<Graphic> hbox = _layout->hbox();
+  Graphic_var down = _layout->vbox();
 
   Graphic::Requisition req;
   // GraphicImpl::init_requisiton(req) not needed as we init
@@ -91,8 +160,19 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
 
   req.z.defined = false;
 
-  RefCount_var<Graphic> exitgraphic = _layout->glue_requisition(req);
-  Trigger_var tbexit = _widget->button(exitgraphic, _exit);
+  Raster_var raster = _image->create("exit.png");
+  Image_var exitgraphic = _figure->pixmap(raster);
+  Trigger_var exitbutton = _widget->button(exitgraphic, _exit);
+  raster = _image->create("shade.png");
+  Image_var shadergraphic = _figure->pixmap(raster);
+  Command_var shade = shader(wptr, down);
+  Trigger_var shaderbutton = _widget->button(shadergraphic, shade);
+
+  RefCount_var<Graphic> tbbuttons = _layout->hbox();
+  // Take out the shader for now, as it doesn't work yet.
+  //  tbbuttons->append_graphic(shaderbutton);
+  tbbuttons->append_graphic(RefCount_var<Graphic>(_layout->hspace(20.)));
+  tbbuttons->append_graphic(exitbutton);
 
   Command_var mover = move(wptr);
   ToolKit::FrameSpec spec;
@@ -102,16 +182,15 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
   RefCount_var<Graphic> titletext = _text->chunk(*title);
   delete title;
 
-  RefCount_var<Graphic> titlebox = _layout->hbox();
+  RefCount_var<Graphic> titlebox = _layout->hbox_align_elements(0.);
+  titlebox->append_graphic(RefCount_var<Graphic>(_layout->hfill()));
   titlebox->append_graphic(RefCount_var<Graphic>(_tool->rgb(titletext, 0., 0., 0.)));
   titlebox->append_graphic(RefCount_var<Graphic>(_layout->hfill()));
+  titlebox->append_graphic(RefCount_var<Graphic>(_layout->margin(tbbuttons, 20.)));
   RefCount_var<Graphic> tbframe = _tool->frame(titlebox, 20., spec, true);
 
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
-  Graphic_var top = _layout->hbox_align_elements(0);
 
-  top->append_graphic(tbdragger);
-  top->append_graphic(tbexit);
   req.y.minimum = 40.;
   req.y.natural = 40.;
   req.y.maximum = 40.;
@@ -139,15 +218,16 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
   RefCount_var<Graphic> rframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> rdragger = _tool->dragger(rframe, rresize);
 
-  RefCount_var<Graphic> vbox = _layout->vbox();
-  RefCount_var<Graphic> hbox = _layout->hbox();
   hbox->append_graphic(ldragger);
   hbox->append_graphic(bdragger);
   hbox->append_graphic(rdragger);
-  vbox->append_graphic(top);
-  vbox->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
-  vbox->append_graphic(hbox);
-  RefCount_var<Graphic> background = _tool->rgb(vbox, 0.7, 0.7, 0.7);
+  vbox->append_graphic(tbdragger);
+
+  down->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
+  down->append_graphic(hbox);
+  vbox->append_graphic(down);
+  //RefCount_var<Graphic> background = _tool->rgb(vbox, 0.827, 0.827, 0.866);
+  RefCount_var<Graphic> background = _tool->rgb(vbox, 0.8, 0.8, 0.8);
   wptr->body(background);
   /*
    * FIXME: we need to take care to include the window control elements 
@@ -200,7 +280,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.x.align = 0.;
 
   RefCount_var<Graphic> printgraphic = _layout->glue_requisition(req);
-  Command_var print = _command->print(_tool->rgb(_layout->align(g, 0., 0.), 0.7, 0.7, 0.7));
+  Command_var print = _command->print(_tool->rgb(_layout->align(g, 0., 0.), 0.8, 0.8, 0.8));
   Trigger_var tbprint = _widget->button(printgraphic, print);
 
   req.x.minimum = 200.;
@@ -234,6 +314,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   RefCount_var<Graphic> rdragger = _tool->dragger(rframe, rresize);
 
   RefCount_var<Graphic> vbox = _layout->vbox();
+  RefCount_var<Graphic> background = _tool->rgb(vbox, 0.8, 0.8, 0.8);
   RefCount_var<Graphic> hbox1 = _layout->hbox();
   hbox1->append_graphic(tbprint);
   hbox1->append_graphic(tbdragger);
@@ -244,7 +325,6 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   vbox->append_graphic(hbox1);
   vbox->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
   vbox->append_graphic(hbox);
-  RefCount_var<Graphic> background = _tool->rgb(vbox, 0.7, 0.7, 0.7);
   wptr->body(background);
   /*
    * FIXME: we need to take care to include the window control elements 
@@ -267,7 +347,7 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
   RefCount_var<Graphic> outset = _tool->frame(g, 20., spec, true);
-  RefCount_var<Graphic> background = _tool->rgb(outset, 0.7, 0.7, 0.7);
+  RefCount_var<Graphic> background = _tool->rgb(outset, 0.8, 0.8, 0.8);
   wptr->body(background);
   wptr->append_controller(g);
   menu->insert(_desktop);
@@ -308,6 +388,21 @@ Command_ptr DesktopKitImpl::map(Warsaw::Window_ptr window, CORBA::Boolean flag)
   Manipulator *manipulator;
   if (flag) manipulator = new Mapper(window);
   else manipulator = new Unmapper(window);
+  activate(manipulator);
+  return manipulator->_this();
+}
+
+Command_ptr DesktopKitImpl::shader(Warsaw::Window_ptr window, Warsaw::Graphic_var to_shade)
+{
+  Manipulator *manipulator;
+  if (CORBA::is_nil(to_shade)) {
+    cout << "1" << endl;
+  } else {
+    if (CORBA::is_nil(to_shade->body())) {
+      cout << "2" << endl;
+    }
+  }
+  manipulator = new Shader(window, to_shade);
   activate(manipulator);
   return manipulator->_this();
 }

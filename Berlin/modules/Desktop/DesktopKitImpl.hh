@@ -29,6 +29,9 @@
 #include <Warsaw/WidgetKit.hh>
 #include <Warsaw/TextKit.hh>
 #include <Warsaw/CommandKit.hh>
+#include <Warsaw/ImageKit.hh>
+#include <Warsaw/Image.hh>
+#include <Warsaw/FigureKit.hh>
 #include <Warsaw/Desktop.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
@@ -54,6 +57,7 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   virtual Warsaw::Command_ptr move_resize(Warsaw::Window_ptr, Warsaw::Alignment, Warsaw::Alignment, CORBA::Short);
   virtual Warsaw::Command_ptr relayer(Warsaw::Window_ptr);
   virtual Warsaw::Command_ptr map(Warsaw::Window_ptr, CORBA::Boolean);
+  virtual Warsaw::Command_ptr shader(Warsaw::Window_ptr, Warsaw::Graphic_var);
  private:
   RefCount_var<Warsaw::Desktop>    _desktop;
   RefCount_var<Warsaw::LayoutKit>  _layout;
@@ -61,6 +65,8 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   RefCount_var<Warsaw::WidgetKit>  _widget;
   RefCount_var<Warsaw::TextKit>    _text;
   RefCount_var<Warsaw::CommandKit> _command;
+  RefCount_var<Warsaw::ImageKit>   _image;
+  RefCount_var<Warsaw::FigureKit>  _figure;
   Warsaw::Command_var              _exit;
 };
 

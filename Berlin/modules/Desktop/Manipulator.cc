@@ -164,3 +164,25 @@ void Relayerer::execute(const CORBA::Any &any)
 void Mapper::execute(const CORBA::Any &) { window->mapped(true);}
 void Unmapper::execute(const CORBA::Any &) { window->mapped(false);}
 
+Shader::Shader(Window_ptr window, Graphic_var _shade)
+  : Manipulator(window), is_shaded(false), swap(Warsaw::Graphic::_nil()),
+  to_shade(_shade) {}
+
+void Shader::execute(const CORBA::Any &any) {
+  if (CORBA::is_nil(swap)) {
+    cout << "case a" << endl;
+    if (CORBA::is_nil(to_shade)) {
+      cout << "X" << endl;
+    } else {
+      if (CORBA::is_nil(to_shade->body())) {
+	cout << "Y" << endl;
+      }
+    }
+    swap->body(to_shade->body());
+    //to_shade->body(Warsaw::Graphic::_nil());
+  } else {
+    cout << "case b" << endl;
+    //to_shade->body(swap);
+    swap->body(Warsaw::Graphic::_nil());
+  }
+}

@@ -135,7 +135,7 @@ void WindowImpl::insert(Desktop_ptr desktop)
 {
   Trace trace("WindowImpl::insert");
   Vertex position, size;
-  position.x = position.y = 1000., position.z = 0.;
+  position.x = position.y = 100., position.z = 0.;
   Warsaw::Graphic::Requisition r;
   GraphicImpl::init_requisition(r);
   request(r);
