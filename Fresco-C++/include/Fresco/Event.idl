@@ -30,7 +30,7 @@ module Event
 //. the event module defines the payloads for messages which describe user
 //. actions, like pointer actions or typing. 
 {
-  // typedef long Device;
+  typedef long Device;
   
   enum ActuationType {press, hold, release};
   struct Key

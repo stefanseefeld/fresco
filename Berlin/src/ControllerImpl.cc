@@ -113,15 +113,12 @@ void ControllerImpl::setParentController(Controller_ptr c)
   parent = Controller::_duplicate(c);
 }
 
-void ControllerImpl::requestFocus(Controller_ptr c)
+void ControllerImpl::requestFocus(Controller_ptr c, Event::Device d)
 {
   SectionLog section("ControllerImpl::requestFocus");  
   Controller_var parent = parentController();
   if (CORBA::is_nil(parent)) return;
-  if (!c->_is_equivalent(Controller_var(_this())) &&
-      !test(Telltale::active))
-    parent->requestFocus(Controller_var(_this()));
-  parent->requestFocus(c);
+  parent->requestFocus(c, d);
 }
 
 CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)

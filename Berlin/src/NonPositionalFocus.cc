@@ -52,7 +52,46 @@ void NonPositionalFocus::addFilter(Event::Filter_ptr)
 
 void NonPositionalFocus::request(Controller_ptr c)
 {
-  // not granted !
+  /*
+   * brute force method:
+   * construct stack of parent controllers and then
+   * call lose/receiveFocus as appropriate...
+   *
+   * a refinement will test in the neighborhood of
+   * the old controller holding the focus
+   *       -stefan
+   */
+  vector<Controller_var> tmp;
+  Controller_var p = Controller::_duplicate(c);
+  while (!CORBA::is_nil(p))
+    {
+      tmp.insert(tmp.begin(), p);
+      p = p->parentController();
+    }
+  cstack_t::iterator of = controllers.begin();
+  vector<Controller_var>::iterator nf = tmp.begin();
+  /*
+   * ...skip the unchanged controllers,...
+   */
+  while (nf != tmp.end() &&
+	 of != controllers.end() &&
+	 (*nf)->_is_equivalent(*of)) nf++, of++;
+  /*
+   * ...remove the old controllers in reverse order,...
+   */
+  for (cstack_t::reverse_iterator o = controllers.rbegin(); o.base() != of; o++)
+    {
+      (*o)->loseFocus(Focus_var(_this()));
+    }
+  controllers.erase(of, controllers.end());
+  /*
+   * ...add the new controllers,...
+   */
+  for (; nf != tmp.end(); nf++)
+    {
+      (*nf)->receiveFocus(Focus_var(_this()));
+      controllers.push_back(*nf);
+    }
 }
 
 void NonPositionalFocus::dispatch(const Event::Key &key)

@@ -39,6 +39,7 @@ class NonPositionalFocus : implements(Focus)
   NonPositionalFocus(ScreenImpl *);
   virtual ~NonPositionalFocus();
 
+  virtual Event::Device device() { return 0;}
   virtual void grab();
   virtual void ungrab();
   virtual void addFilter(Event::Filter_ptr);

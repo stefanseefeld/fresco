@@ -48,7 +48,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void replaceController(Controller_ptr, Controller_ptr);
   virtual void removeController(Controller_ptr);
   virtual void setParentController(Controller_ptr);
-  virtual void requestFocus(Controller_ptr);//, in Event::Device d);
+  virtual void requestFocus(Controller_ptr, Event::Device);
   virtual CORBA::Boolean receiveFocus(Focus_ptr);
   virtual void loseFocus(Focus_ptr);
   virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const CORBA::Any &);

@@ -41,6 +41,7 @@ class PositionalFocus : implements(Focus)
   PositionalFocus(ScreenImpl *);
   virtual ~PositionalFocus();
 
+  virtual Event::Device device() { return 1;}
   virtual void grab();
   virtual void ungrab();
   virtual void addFilter(Event::Filter_ptr);

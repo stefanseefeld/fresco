@@ -24,6 +24,7 @@
 
 #include "Graphic.idl"
 #include "Telltale.idl"
+#include "Event.idl"
 
 interface PickTraversal;
 interface Focus;
@@ -52,7 +53,7 @@ interface Controller : Graphic, Telltale
   void removeController(in Controller c);
   void setParentController(in Controller c);
 
-  void requestFocus(in Controller c);//, in Event::Device d);
+  void requestFocus(in Controller c, in Event::Device d);
   boolean receiveFocus(in Focus f);
   void loseFocus(in Focus f);
 
