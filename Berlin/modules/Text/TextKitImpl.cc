@@ -89,8 +89,12 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
     {
       Graphic_var hbox = _layout->hbox();
       hbox->append_graphic(Graphic_var(strut()));
-      for (unsigned int i = 0; i < len; ++i)
-	hbox->append_graphic(Graphic_var(glyph(u[i])));
+      Babylon::String tmp(Unicode::to_internal(u));
+      // for (unsigned int i = 0; i < len; ++i)
+      for(Babylon::vis_iterator i(tmp.begin(), tmp.end());
+	  i != tmp.end();
+	  ++i)
+	hbox->append_graphic(Graphic_var(glyph(Unicode::to_CORBA(*i))));
       return hbox._retn();
     }
 }
