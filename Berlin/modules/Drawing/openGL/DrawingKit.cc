@@ -121,7 +121,6 @@ void GLDrawingKit::init()
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 }
 
 GLDrawingKit::~GLDrawingKit()
@@ -445,7 +444,9 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
 //   GLfloat light_position[] = { 5., 5., 10., 0.};
 //   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
   glEnable(GL_COLOR_MATERIAL);
-  glEnable(GL_CULL_FACE);
+  //glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
 
   bool normals = mesh.normals.length() == mesh.triangles.length();
   glBegin(GL_TRIANGLES);
@@ -462,16 +463,14 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
       glVertex3f(a.x, a.y, a.z);
       glVertex3f(b.x, b.y, b.z);
       glVertex3f(c.x, c.y, c.z);
-      cout << "triangle :" << endl;
-      cout << '(' << a.x << ',' << a.y << ',' << a.z << ')' << endl;
-      cout << '(' << b.x << ',' << b.y << ',' << b.z << ')' << endl;
-      cout << '(' << c.x << ',' << c.y << ',' << c.z << ')' << endl;
     }
   glEnd();
   glDisable(GL_LIGHTING);
   glDisable(GL_LIGHT0);
   glDisable(GL_COLOR_MATERIAL);
-  glDisable(GL_CULL_FACE);
+  glDisable(GL_DEPTH_TEST);
+  glClear(GL_DEPTH_BUFFER_BIT);
+  //glDisable(GL_CULL_FACE);
 }
 
 void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}

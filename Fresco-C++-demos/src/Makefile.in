@@ -50,7 +50,7 @@ DEMO_SRC	:= Application.cc LayoutDemo.cc TextDemo.cc \
 		   ColorDemo.cc LogoDemo.cc FocusDemo.cc \
 		   ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
 DEMO_OBJ	:= $(patsubst %.cc, %.o, $(DEMO_SRC))
-DEMO3D_SRC	:= Application.cc PrimitiveDemo.cc demo3D.cc
+DEMO3D_SRC	:= Application.cc PrimitiveDemo.cc CubeDemo.cc demo3D.cc
 DEMO3D_OBJ	:= $(patsubst %.cc, %.o, $(DEMO3D_SRC))
 PINYIN_SRC	:= pinyin_demo.cc TextConverter.cc
 PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))

@@ -24,7 +24,7 @@
 #include <Warsaw/Command.hh>
 #include <Warsaw/Desktop.hh>
 #include <Warsaw/MainController.hh>
-#include "PrimitiveDemo.hh"
+#include "CubeDemo.hh"
 
 using namespace Warsaw;
 
@@ -50,7 +50,7 @@ class Backward : public Application::CommandImpl
 
 };
 
-PrimitiveDemo::Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Axis a)
+CubeDemo::Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Axis a)
   : value(BoundedValue::_duplicate(v)),
     child(Graphic::_duplicate(c)),
     parent(Graphic::_duplicate(p)),
@@ -60,17 +60,16 @@ PrimitiveDemo::Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p
   update(dummy);
 }
 
-void PrimitiveDemo::Rotator::update(const CORBA::Any &)
+void CubeDemo::Rotator::update(const CORBA::Any &)
 {
   Coord ydegree = value->value();
   Transform_var tx = child->transformation();
   tx->load_identity();
   tx->rotate(ydegree, axis);
-  cout << "parent needs redraw..." << endl;
   parent->need_redraw();
 }
 
-PrimitiveDemo::PrimitiveDemo(Application *a)
+CubeDemo::CubeDemo(Application *a)
   : Demo(a),
     tx1(new TransformImpl),
     tx2(new TransformImpl)
@@ -84,32 +83,9 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   
   phi = commands->bvalue(0., 360., 0., 5., 5.);
   psi = commands->bvalue(0., 360., 0., 5., 5.);
-  
-  Coord a = 2000.;
-  Vertex offset;
-  offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Warsaw::Mesh mesh;
-  mesh.nodes.length(4);
-  Coord w = 3000.;
-  Coord h = 3000.;
-  Coord d = 3000.;
-  mesh.nodes[0].x = -w/2, mesh.nodes[0].y = -h/2, mesh.nodes[0].z = -d/2;
-  mesh.nodes[1].x =  w/2, mesh.nodes[1].y = -h/2, mesh.nodes[1].z = -d/2;
-  mesh.nodes[2].x =  0, mesh.nodes[2].y = -h/2, mesh.nodes[2].z =  d/2;
-  mesh.nodes[3].x =  0, mesh.nodes[3].y =  h/2, mesh.nodes[3].z = 0;
-  mesh.triangles.length(4);
-  mesh.triangles[0].a = 0, mesh.triangles[0].b = 1, mesh.triangles[0].c = 3;
-  mesh.triangles[1].a = 1, mesh.triangles[1].b = 2, mesh.triangles[1].c = 3;
-  mesh.triangles[2].a = 2, mesh.triangles[2].b = 0, mesh.triangles[2].c = 3;
-  mesh.triangles[3].a = 0, mesh.triangles[3].b = 2, mesh.triangles[3].c = 1;
-  mesh.normals.length(4);
-  mesh.normals[0].x = 0., mesh.normals[0].y = .8, mesh.normals[0].z = .2;
-  mesh.normals[1].x = .8, mesh.normals[1].y = .2, mesh.normals[1].z = .2;
-  mesh.normals[2].x = -.2, mesh.normals[2].y = .2, mesh.normals[2].z = .2;
-  mesh.normals[3].x = 0., mesh.normals[3].y = -1., mesh.normals[3].z = 0.;
-  
-  Graphic_var geometry = primitives->geometry(mesh);
-  Graphic_var transformer1 = primitives->transformer(Graphic_var(tools->rgb(geometry, 0.6, 0.6, 1.0)));
+    
+  Graphic_var cube = primitives->cube();
+  Graphic_var transformer1 = primitives->transformer(Graphic_var(tools->rgb(cube, 0.6, 0.6, 1.0)));
   Graphic_var transformer2 = primitives->transformer(Graphic_var(transformer1));
   Color white = {1., 1., 1., 1.};
   Vertex direction = {5., 5., 10.};
@@ -141,7 +117,7 @@ PrimitiveDemo::PrimitiveDemo(Application *a)
   application->append(bar, Babylon::String("Geometry"));
 }
 
-Graphic_ptr PrimitiveDemo::make_controller(BoundedValue_ptr value, const Color &color)
+Graphic_ptr CubeDemo::make_controller(BoundedValue_ptr value, const Color &color)
 {
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();

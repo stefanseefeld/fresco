@@ -39,6 +39,9 @@ public:
 
   Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
   Primitive::Geometry_ptr geometry(const Warsaw::Mesh &);
+  Warsaw::Graphic_ptr cube();
+  //Warsaw::Graphic_ptr sphere();
+  //Warsaw::Graphic_ptr tetrahedron();
   Warsaw::Graphic_ptr transformer(Warsaw::Graphic_ptr);
 
   Warsaw::Graphic_ptr directional_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);

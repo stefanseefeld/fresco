@@ -49,12 +49,58 @@ Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Warsaw::Mesh &mesh)
   return geometry->_this();
 }
 
-// Primitive::Box_ptr PrimitiveKitImpl::cube(const Vertex &lower, const Vertex &upper)
-// {
-//   BoxImpl *box = new BoxImpl(lower, upper);
-//   activate(box);
-//   return box->_this();
-// }
+Graphic_ptr PrimitiveKitImpl::cube()
+{
+  Warsaw::Mesh mesh;
+  mesh.nodes.length(8);
+  mesh.nodes[0].x = -500; mesh.nodes[0].y = -500; mesh.nodes[0].z = -500;
+  mesh.nodes[1].x = -500; mesh.nodes[1].y = -500; mesh.nodes[1].z =  500;
+  mesh.nodes[2].x = -500; mesh.nodes[2].y =  500; mesh.nodes[2].z =  500;
+
+  mesh.nodes[3].x = -500; mesh.nodes[3].y =  500; mesh.nodes[3].z = -500;
+  mesh.nodes[4].x =  500; mesh.nodes[4].y =  500; mesh.nodes[4].z =  500;
+  mesh.nodes[5].x =  500; mesh.nodes[5].y = -500; mesh.nodes[5].z =  500;
+
+  mesh.nodes[6].x =  500; mesh.nodes[6].y = -500; mesh.nodes[6].z = -500;
+  mesh.nodes[7].x =  500; mesh.nodes[7].y =  500; mesh.nodes[7].z = -500;
+
+  mesh.triangles.length(12);
+  /* x=0 side */
+  mesh.triangles[0].a = 0; mesh.triangles[0].b = 2; mesh.triangles[0].c = 3;
+  mesh.triangles[1].a = 0; mesh.triangles[1].b = 1; mesh.triangles[1].c = 2;
+  /* y=0 side */
+  mesh.triangles[2].a = 0; mesh.triangles[2].b = 5; mesh.triangles[2].c = 1;
+  mesh.triangles[3].a = 0; mesh.triangles[3].b = 6; mesh.triangles[3].c = 5;
+  /* z=0 side */
+  mesh.triangles[4].a = 0; mesh.triangles[4].b = 3; mesh.triangles[4].c = 7;
+  mesh.triangles[5].a = 0; mesh.triangles[5].b = 7; mesh.triangles[5].c = 6;
+  /* x=1 side */
+  mesh.triangles[6].a = 4; mesh.triangles[6].b = 5; mesh.triangles[6].c = 6;
+  mesh.triangles[7].a = 4; mesh.triangles[7].b = 6; mesh.triangles[7].c = 7;
+  /* y=1 side */
+  mesh.triangles[8].a = 4; mesh.triangles[8].b = 7; mesh.triangles[8].c = 3;
+  mesh.triangles[9].a = 4; mesh.triangles[9].b = 3; mesh.triangles[9].c = 2;
+  /* z=1 side */
+  mesh.triangles[10].a = 4; mesh.triangles[10].b = 1; mesh.triangles[10].c = 5;
+  mesh.triangles[11].a = 4; mesh.triangles[11].b = 2; mesh.triangles[11].c = 1;
+
+  mesh.normals.length(12);
+  mesh.normals[0].x = -1.; mesh.normals[0].y =  0.; mesh.normals[0].z =  0.;
+  mesh.normals[1].x = -1.; mesh.normals[1].y =  0.; mesh.normals[1].z =  0.;
+  mesh.normals[2].x =  0.; mesh.normals[2].y = -1.; mesh.normals[2].z =  0.;
+  mesh.normals[3].x =  0.; mesh.normals[3].y = -1.; mesh.normals[3].z =  0.;
+  mesh.normals[4].x =  0.; mesh.normals[4].y =  0.; mesh.normals[4].z = -1.;
+  mesh.normals[5].x =  0.; mesh.normals[5].y =  0.; mesh.normals[5].z = -1.;
+  mesh.normals[6].x =  1.; mesh.normals[6].y =  0.; mesh.normals[6].z =  0.;
+  mesh.normals[7].x =  1.; mesh.normals[7].y =  0.; mesh.normals[7].z =  0.;
+  mesh.normals[8].x =  0.; mesh.normals[8].y =  1.; mesh.normals[8].z =  0.;
+  mesh.normals[9].x =  0.; mesh.normals[9].y =  1.; mesh.normals[9].z =  0.;
+  mesh.normals[10].x =  0.; mesh.normals[10].y =  0.; mesh.normals[10].z =  1.;
+  mesh.normals[11].x =  0.; mesh.normals[11].y =  0.; mesh.normals[11].z =  1.;
+
+  return this->geometry(mesh);
+}
+
 
 Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {

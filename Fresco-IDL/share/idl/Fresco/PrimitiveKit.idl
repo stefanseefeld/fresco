@@ -42,6 +42,10 @@ module Warsaw
       Graphic root(in Graphic g);
       //. FIXME: What does this do?
       Primitive::Geometry geometry(in Mesh m);
+      //. Create a cube of one cubic unit and centered at the origin.
+      Graphic cube();
+      // Graphic sphere();
+      // Graphic tetrahedron();
       //. Apply a fixed transformation to the given Graphic.
       Graphic transformer(in Graphic g);
       //. Create a directional light source.

@@ -24,6 +24,8 @@
 #include <Warsaw/resolve.hh>
 #include "Application.hh"
 #include "PrimitiveDemo.hh"
+#include "CubeDemo.hh"
+
 
 using namespace Prague;
 using namespace Warsaw;
@@ -49,7 +51,9 @@ int main(int argc, char **argv)
       Application *application = new Application(server, ClientContext_var(client->_this()));
 
       Demo *primitive = new PrimitiveDemo(application);
+      Demo *cube = new CubeDemo(application);
       application->run();
+      delete cube;
       delete primitive;
       delete application;
     }
