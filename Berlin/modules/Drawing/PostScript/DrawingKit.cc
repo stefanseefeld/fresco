@@ -87,15 +87,23 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   _tr_adjust->transform_vertex(lower);
   _tr_adjust->transform_vertex(upper);
 
-  Vertex translate; translate.y = lower.y - upper.y; translate.x = 0; translate.z = 0;
+  Vertex translate; translate.y = lower.y - upper.y + 35.; translate.x = 35.;
+  translate.z = 0;
   _tr_adjust->translate(translate);
 
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
+  _os.precision(0);
   _os << "%%BoundingBox: "
-      << region.lower.x*resolution(xaxis)*xfactor << ' '
-      << region.lower.y*resolution(yaxis)*yfactor << ' '
-      << (region.upper.x - region.lower.x)*resolution(xaxis)*xfactor << ' '
-      << (region.upper.y - region.lower.y)*resolution(yaxis)*yfactor << std::endl;
+      << floor(region.lower.x*resolution(xaxis)*xfactor + 35.) << ' '
+      << floor(region.lower.y*resolution(yaxis)*yfactor + 35.) << ' '
+      << ceil((region.upper.x - region.lower.x)*resolution(xaxis)*xfactor + 35.) << ' '
+      << ceil((region.upper.y - region.lower.y)*resolution(yaxis)*yfactor + 35.) << std::endl;
+  _os.precision(5);
+  _os << "%%HiResBoundingBox: "
+      << region.lower.x*resolution(xaxis)*xfactor + 35. << ' '
+      << region.lower.y*resolution(yaxis)*yfactor + 35. << ' '
+      << (region.upper.x - region.lower.x)*resolution(xaxis)*xfactor + 35. << ' '
+      << (region.upper.y - region.lower.y)*resolution(yaxis)*yfactor + 35. << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Fresco" << std::endl;
   _os << "/Times-Roman findfont 112 scalefont setfont" << std::endl;

@@ -29,7 +29,6 @@
 #include <Berlin/KitImpl.hh>
 #include "Berlin/DrawingKitBase.hh"
 #include <string>
-#include <vector>
 #include <iostream>
 
 namespace PostScript
