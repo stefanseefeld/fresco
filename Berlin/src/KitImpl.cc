@@ -47,8 +47,9 @@ KitImpl::KitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
 KitImpl::~KitImpl()
 {
   Trace trace("KitImpl::~KitImpl");  
-  Logger::log(Logger::lifecycle) << "destroying POA " << _poa << std::endl;
+  Logger::log(Logger::lifecycle) << "destroying POA... " << _poa << std::endl;
   _poa->destroy(true, true);
+  Logger::log(Logger::lifecycle) << "destroying POA done " << _poa << std::endl;
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "KitImpl::~KitImpl: " << this << " destructed" << std::endl;
 #endif
@@ -128,10 +129,11 @@ void KitImpl::decrement()
 void KitImpl::deactivate()
 {
   Trace trace("KitImpl::deactivate()");
-  PortableServer::ObjectId *oid = _poa->servant_to_id(this);
+  PortableServer::POA_var poa = _default_POA();
+  PortableServer::ObjectId *oid = poa->servant_to_id(this);
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "deactivating " << this << std::endl;
 #endif
-  _poa->deactivate_object(*oid);
+  poa->deactivate_object(*oid);
   delete oid;
 }
