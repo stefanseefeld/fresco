@@ -32,6 +32,7 @@ module Warsaw
 {
   //. Image handles the layout issues pertaining to displaying an Image
   //. on-screen.
+  // FIXME: Do we need this? It is just a Raster... -- tobias
   interface Image : View
     {
       //. The actual ImageData.
