@@ -54,9 +54,12 @@ class BoundedValueImpl : public virtual POA_Warsaw::BoundedValue,
   virtual void end();
   virtual void adjust(Warsaw::Coord);
 private:
-  Warsaw::Coord l, u, v;
-  Warsaw::Coord s, p;
-  Prague::Mutex mutex;
+  Warsaw::Coord _l;
+  Warsaw::Coord _u;
+  Warsaw::Coord _v;
+  Warsaw::Coord _s;
+  Warsaw::Coord _p;
+  Prague::Mutex _mutex;
 };
 
 #endif

@@ -25,8 +25,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
-BoundedValueImpl::BoundedValueImpl(Coord ll, Coord uu, Coord vv, Coord ss, Coord pp)
-  : l(ll), u(uu), v(vv), s(ss), p(pp)
+BoundedValueImpl::BoundedValueImpl(Coord l, Coord u, Coord v, Coord s, Coord p)
+  : _l(l), _u(u), _v(v), _s(s), _p(p)
 {
 };
 
@@ -36,17 +36,17 @@ BoundedValueImpl::~BoundedValueImpl()
 
 Coord BoundedValueImpl::lower()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return l;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _l;
 }
 
-void BoundedValueImpl::lower(Coord ll)
+void BoundedValueImpl::lower(Coord l)
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    if (ll == l) return;
-    l = ll;
-    if (v < l) v = l;
+    Prague::Guard<Mutex> guard(_mutex);
+    if (l == _l) return;
+    _l = l;
+    if (_v < _l) _v = _l;
   }
   CORBA::Any any;
   notify(any);
@@ -54,17 +54,17 @@ void BoundedValueImpl::lower(Coord ll)
 
 Coord BoundedValueImpl::upper()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return u;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _u;
 }
 
-void BoundedValueImpl::upper(Coord uu)
+void BoundedValueImpl::upper(Coord u)
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    if (uu == u) return;
-    u = uu;
-    if (v > u) v = u;
+    Prague::Guard<Mutex> guard(_mutex);
+    if (u == _u) return;
+    _u = u;
+    if (_v > _u) _v = _u;
   }
   CORBA::Any any;
   notify(any);
@@ -72,94 +72,94 @@ void BoundedValueImpl::upper(Coord uu)
 
 Coord BoundedValueImpl::step()
 { 
-  Prague::Guard<Mutex> guard(mutex);
-  return s;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _s;
 }
 
-void BoundedValueImpl::step(Coord ss)
+void BoundedValueImpl::step(Coord s)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  s = ss;
+  Prague::Guard<Mutex> guard(_mutex);
+  _s = s;
 }
 
 Coord BoundedValueImpl::page()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return p;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _p;
 }
 
-void BoundedValueImpl::page(Coord pp)
+void BoundedValueImpl::page(Coord p)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  p = pp;
+  Prague::Guard<Mutex> guard(_mutex);
+  _p = p;
 }
 
 void BoundedValueImpl::forward()
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = v + s;
-    if (t > u) t = u;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _v + _s;
+    if (t > _u) t = _u;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
 void BoundedValueImpl::backward()
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = v - s;
-    if (t < l) t = l;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _v - _s;
+    if (t < _l) t = _l;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
 void BoundedValueImpl::fastforward()
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = v + p;
-    if (t > u) t = u;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _v + _p;
+    if (t > _u) t = _u;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
 void BoundedValueImpl::fastbackward()
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = v - p;
-    if (t < l) t = l;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _v - _p;
+    if (t < _l) t = _l;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
 void BoundedValueImpl::begin()
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = l;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _l;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
@@ -167,48 +167,48 @@ void BoundedValueImpl::begin()
 void BoundedValueImpl::end()
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = u;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _u;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
-void BoundedValueImpl::value(Coord vv)
+void BoundedValueImpl::value(Coord v)
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    if (vv > u) vv = u;
-    else if (vv < l) vv = l;
-    if (vv == v) return;
-    v = vv;
+    Prague::Guard<Mutex> guard(_mutex);
+    if (v > _u) v = _u;
+    else if (v < _l) v = _l;
+    if (v == _v) return;
+    _v = v;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }
 
 Coord BoundedValueImpl::value()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return v;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _v;
 }
 
 
 void BoundedValueImpl::adjust(Coord d)
 {
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = v + d;
-    if (t > u) t = u;
-    else if (t < l) t = l;
-    if (t == v) return;
-    v = t;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _v + d;
+    if (t > _u) t = _u;
+    else if (t < _l) t = _l;
+    if (t == _v) return;
+    _v = t;
   }
   CORBA::Any any;
-  any <<= v;
+  any <<= _v;
   notify(any);
 }

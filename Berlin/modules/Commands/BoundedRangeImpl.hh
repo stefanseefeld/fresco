@@ -57,9 +57,10 @@ class BoundedRangeImpl : public virtual POA_Warsaw::BoundedRange,
   virtual void end();
   virtual void adjust(Warsaw::Coord);
 private:  
-  Warsaw::BoundedRange::Settings settings;
-  Warsaw::Coord s, p;
-  Prague::Mutex mutex;
+  Warsaw::BoundedRange::Settings _settings;
+  Warsaw::Coord                  _s;
+  Warsaw::Coord                  _p;
+  Prague::Mutex                  _mutex;
 };
 
 #endif

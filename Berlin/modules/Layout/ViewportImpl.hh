@@ -55,7 +55,7 @@ class ViewportImpl : public virtual POA_Layout::Viewport,
 
   virtual void update(const CORBA::Any &);
 
-protected:
+private:
   virtual void activate_composite();
   void allocate_child(Warsaw::Allocation::Info &);
   void cache_requisition();
@@ -63,11 +63,11 @@ protected:
   void body_allocation(Warsaw::Region_ptr, RegionImpl *);
   void scroll_transform(Warsaw::Transform_ptr);
 
-  Warsaw::BoundedRange::Settings settings[2];
-  RefCount_var<Warsaw::BoundedRange> xadjustment;
-  RefCount_var<Warsaw::BoundedRange> yadjustment;
-  bool        requested;
-  Warsaw::Graphic::Requisition requisition;
+  Warsaw::BoundedRange::Settings     _settings[2];
+  RefCount_var<Warsaw::BoundedRange> _xadjustment;
+  RefCount_var<Warsaw::BoundedRange> _yadjustment;
+  bool                               _requested;
+  Warsaw::Graphic::Requisition       _requisition;
 };
 
 #endif

@@ -63,16 +63,17 @@ class ViewportImpl::Adjustment : public virtual POA_Warsaw::BoundedRange,
   virtual void begin();
   virtual void end();
   virtual void adjust(Coord);
- protected:
-  Warsaw::BoundedRange::Settings settings;
-  Coord s, p;
-  Mutex mutex;
+ private:
+  Warsaw::BoundedRange::Settings _settings;
+  Coord                          _s;
+  Coord                          _p;
+  Mutex                          _mutex;
 };                                
 
 ViewportImpl::Adjustment::Adjustment()
-  : s(10.), p(10.)
+  : _s(10.), _p(10.)
 {
-  settings.lower = settings.upper = settings.lvalue = settings.uvalue = 0.;
+  _settings.lower = _settings.upper = _settings.lvalue = _settings.uvalue = 0.;
 }
 
 ViewportImpl::Adjustment::~Adjustment()
@@ -81,90 +82,90 @@ ViewportImpl::Adjustment::~Adjustment()
 
 Warsaw::BoundedRange::Settings ViewportImpl::Adjustment::state()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return settings;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _settings;
 }
 
 void ViewportImpl::Adjustment::state(const Warsaw::BoundedRange::Settings &s)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  settings = s;
+  Prague::Guard<Mutex> guard(_mutex);
+  _settings = s;
 }
 
 Coord ViewportImpl::Adjustment::lower()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return settings.lower;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _settings.lower;
 }
 
 void ViewportImpl::Adjustment::lower(Coord l)
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    if (l == settings.lower) return;
-    settings.lower = l;
-    settings.lvalue = std::max(settings.lvalue, settings.lower);
-    settings.uvalue = std::max(settings.uvalue, settings.lower);
-    any <<= settings;
+    Prague::Guard<Mutex> guard(_mutex);
+    if (l == _settings.lower) return;
+    _settings.lower = l;
+    _settings.lvalue = std::max(_settings.lvalue, _settings.lower);
+    _settings.uvalue = std::max(_settings.uvalue, _settings.lower);
+    any <<= _settings;
   }
   notify(any);
 }
 
 Coord ViewportImpl::Adjustment::upper()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return settings.upper;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _settings.upper;
 }
 
 void ViewportImpl::Adjustment::upper(Coord u)
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    if (settings.upper == u) return;
-    settings.upper = u;
-    settings.lvalue = std::min(settings.lvalue, settings.upper);
-    settings.uvalue = std::min(settings.uvalue, settings.upper);
-    any <<= settings;
+    Prague::Guard<Mutex> guard(_mutex);
+    if (_settings.upper == u) return;
+    _settings.upper = u;
+    _settings.lvalue = std::min(_settings.lvalue, _settings.upper);
+    _settings.uvalue = std::min(_settings.uvalue, _settings.upper);
+    any <<= _settings;
   }
   notify(any);
 }
 
 Coord ViewportImpl::Adjustment::step()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return s;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _s;
 }
 
-void ViewportImpl::Adjustment::step(Coord ss)
+void ViewportImpl::Adjustment::step(Coord s)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  s = ss;
+  Prague::Guard<Mutex> guard(_mutex);
+  _s = s;
 }
 
 Coord ViewportImpl::Adjustment::page()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return p;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _p;
 }
 
-void ViewportImpl::Adjustment::page(Coord pp)
+void ViewportImpl::Adjustment::page(Coord p)
 {
-  Prague::Guard<Mutex> guard(mutex);
-  p = pp;
+  Prague::Guard<Mutex> guard(_mutex);
+  _p = p;
 }
 
 void ViewportImpl::Adjustment::forward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = std::min(s, settings.upper - settings.uvalue);
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = std::min(_s, _settings.upper - _settings.uvalue);
     if (t <= 0.) return;
-    settings.lvalue += t;
-    settings.uvalue += t;
-    any <<= settings;
+    _settings.lvalue += t;
+    _settings.uvalue += t;
+    any <<= _settings;
   }
   notify(any);
 }
@@ -173,12 +174,12 @@ void ViewportImpl::Adjustment::backward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = std::min(s, settings.lvalue - settings.lower);
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = std::min(_s, _settings.lvalue - _settings.lower);
     if (t <= 0.) return;
-    settings.lvalue -= t;
-    settings.uvalue -= t;
-    any <<= settings;
+    _settings.lvalue -= t;
+    _settings.uvalue -= t;
+    any <<= _settings;
   }
   notify(any);
 }
@@ -187,12 +188,12 @@ void ViewportImpl::Adjustment::fastforward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = std::min(p, settings.upper - settings.uvalue);
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = std::min(_p, _settings.upper - _settings.uvalue);
     if (t <= 0.) return;
-    settings.lvalue += t;
-    settings.uvalue += t;
-    any <<= settings;
+    _settings.lvalue += t;
+    _settings.uvalue += t;
+    any <<= _settings;
   }
   notify(any);
 }
@@ -201,12 +202,12 @@ void ViewportImpl::Adjustment::fastbackward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = std::min(p, settings.lvalue - settings.lower);
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = std::min(_p, _settings.lvalue - _settings.lower);
     if (t <= 0.) return;
-    settings.lvalue -= t;
-    settings.uvalue -= t;
-    any <<= settings;
+    _settings.lvalue -= t;
+    _settings.uvalue -= t;
+    any <<= _settings;
   }
   notify(any);
 }
@@ -215,12 +216,12 @@ void ViewportImpl::Adjustment::begin()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = settings.lvalue - settings.lower;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _settings.lvalue - _settings.lower;
     if (t == 0.) return;
-    settings.lvalue -= t;
-    settings.uvalue -= t;
-    any <<= settings;
+    _settings.lvalue -= t;
+    _settings.uvalue -= t;
+    any <<= _settings;
   }
   notify(any);
 }
@@ -229,12 +230,12 @@ void ViewportImpl::Adjustment::end()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = settings.upper - settings.uvalue;
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = _settings.upper - _settings.uvalue;
     if (t == 0.) return;
-    settings.lvalue += t;
-    settings.uvalue += t;
-    any <<= settings;
+    _settings.lvalue += t;
+    _settings.uvalue += t;
+    any <<= _settings;
   }
   notify(any);
 }
@@ -243,19 +244,19 @@ void ViewportImpl::Adjustment::lvalue(Coord lv)
 {
   CORBA::Any any;
   {
-    lv = std::min(std::max(settings.lower, lv), settings.upper);
-    Prague::Guard<Mutex> guard(mutex);
-    if (lv == settings.lvalue) return;
-    settings.lvalue = lv;
-    any <<= settings;
+    lv = std::min(std::max(_settings.lower, lv), _settings.upper);
+    Prague::Guard<Mutex> guard(_mutex);
+    if (lv == _settings.lvalue) return;
+    _settings.lvalue = lv;
+    any <<= _settings;
   }
   notify(any);
 }
 
 Coord ViewportImpl::Adjustment::lvalue()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return settings.lvalue;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _settings.lvalue;
 }
 
 
@@ -263,19 +264,19 @@ void ViewportImpl::Adjustment::uvalue(Coord uv)
 {
   CORBA::Any any;
   {
-    uv = std::min(std::max(settings.lower, uv), settings.upper);
-    Prague::Guard<Mutex> guard(mutex);
-    if (settings.uvalue == uv) return;
-    settings.uvalue = uv;
-    any <<= settings;
+    uv = std::min(std::max(_settings.lower, uv), _settings.upper);
+    Prague::Guard<Mutex> guard(_mutex);
+    if (_settings.uvalue == uv) return;
+    _settings.uvalue = uv;
+    any <<= _settings;
   }
   notify(any);
 }
 
 Coord ViewportImpl::Adjustment::uvalue()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return settings.uvalue;
+  Prague::Guard<Mutex> guard(_mutex);
+  return _settings.uvalue;
 }
 
 
@@ -283,17 +284,17 @@ void ViewportImpl::Adjustment::adjust(Coord d)
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(mutex);
-    Coord t = std::min(std::max(d, settings.lower - settings.lvalue), settings.upper - settings.uvalue);
+    Prague::Guard<Mutex> guard(_mutex);
+    Coord t = std::min(std::max(d, _settings.lower - _settings.lvalue), _settings.upper - _settings.uvalue);
     if (t == 0.) return;
-    settings.lvalue += t;
-    settings.uvalue += t;
-    any <<= settings;
+    _settings.lvalue += t;
+    _settings.uvalue += t;
+    any <<= _settings;
   }
   notify(any);
 }
 
-ViewportImpl::ViewportImpl() : requested(false) {}
+ViewportImpl::ViewportImpl() : _requested(false) {}
 ViewportImpl::~ViewportImpl() {}
 
 void ViewportImpl::body(Graphic_ptr g)
@@ -308,10 +309,10 @@ Transform_ptr ViewportImpl::transformation() { return Transform::_nil();}
 void ViewportImpl::request(Warsaw::Graphic::Requisition &r)
 {
   cache_requisition();
-  GraphicImpl::require(r.x, requisition.x.natural, 0., requisition.x.natural, requisition.x.align);
-  GraphicImpl::require(r.y, requisition.y.natural, 0., requisition.y.natural, requisition.y.align);
-  if(requisition.z.defined)
-    GraphicImpl::require(r.z, requisition.z.natural, 0., requisition.z.natural, requisition.z.align);
+  GraphicImpl::require(r.x, _requisition.x.natural, 0., _requisition.x.natural, _requisition.x.align);
+  GraphicImpl::require(r.y, _requisition.y.natural, 0., _requisition.y.natural, _requisition.y.align);
+  if(_requisition.z.defined)
+    GraphicImpl::require(r.z, _requisition.z.natural, 0., _requisition.z.natural, _requisition.z.align);
 }
 
 void ViewportImpl::traverse(Traversal_ptr traversal)
@@ -387,7 +388,7 @@ void ViewportImpl::need_resize()
   /*
    * set adjustment's outer range according to the body size
    */
-  requested = false;
+  _requested = false;
   cache_requisition();
   need_redraw();
 }
@@ -398,15 +399,15 @@ void ViewportImpl::update(const CORBA::Any &)
    * we are only interested in changes concerning the outer range (body)
    * or the offset
    */
-  Warsaw::BoundedRange::Settings x = xadjustment->state();
-  Warsaw::BoundedRange::Settings y = yadjustment->state();
-  bool damage = (x.lower != settings[xaxis].lower || y.lower != settings[yaxis].lower ||
-		 x.upper != settings[xaxis].upper || y.upper != settings[yaxis].upper ||
-		 x.lvalue != settings[xaxis].lvalue || y.lvalue != settings[yaxis].lvalue);
-  settings[xaxis].lvalue = x.lvalue;
-  settings[xaxis].uvalue = x.uvalue;
-  settings[yaxis].lvalue = y.lvalue;
-  settings[yaxis].uvalue = y.uvalue;
+  Warsaw::BoundedRange::Settings x = _xadjustment->state();
+  Warsaw::BoundedRange::Settings y = _yadjustment->state();
+  bool damage = (x.lower != _settings[xaxis].lower || y.lower != _settings[yaxis].lower ||
+		 x.upper != _settings[xaxis].upper || y.upper != _settings[yaxis].upper ||
+		 x.lvalue != _settings[xaxis].lvalue || y.lvalue != _settings[yaxis].lvalue);
+  _settings[xaxis].lvalue = x.lvalue;
+  _settings[xaxis].uvalue = x.uvalue;
+  _settings[yaxis].lvalue = y.lvalue;
+  _settings[yaxis].uvalue = y.uvalue;
   if (damage) need_redraw();
 }
 
@@ -414,12 +415,12 @@ void ViewportImpl::activate_composite()
 {
   Adjustment *adjustment = new Adjustment;
   activate(adjustment);
-  xadjustment = RefCount_var<BoundedRange>::increment(adjustment->_this(), false);
-  xadjustment->attach(Observer_var(_this()));
+  _xadjustment = RefCount_var<BoundedRange>::increment(adjustment->_this(), false);
+  _xadjustment->attach(Observer_var(_this()));
   adjustment = new Adjustment;
   activate(adjustment);
-  yadjustment = RefCount_var<BoundedRange>::increment(adjustment->_this(), false);
-  yadjustment->attach(Observer_var(_this()));
+  _yadjustment = RefCount_var<BoundedRange>::increment(adjustment->_this(), false);
+  _yadjustment->attach(Observer_var(_this()));
 }
 
 void ViewportImpl::allocate_child(Allocation::Info &info)
@@ -434,32 +435,32 @@ void ViewportImpl::allocate_child(Allocation::Info &info)
 
 BoundedRange_ptr ViewportImpl::adjustment(Axis a)
 {
-  return a == xaxis ? RefCount_var<BoundedRange>::increment(xadjustment) : RefCount_var<BoundedRange>::increment(yadjustment);
+  return a == xaxis ? RefCount_var<BoundedRange>::increment(_xadjustment) : RefCount_var<BoundedRange>::increment(_yadjustment);
 }
 
 void ViewportImpl::cache_requisition()
 //. retrieves requisition from body and updates adjustments
 {
-  if (!requested)
+  if (!_requested)
     {
-      requested = true;
-      MonoGraphic::request(requisition);
-      Warsaw::Graphic::Requirement &rx = requisition.x;
-      Warsaw::Graphic::Requirement &ry = requisition.y;
+      _requested = true;
+      MonoGraphic::request(_requisition);
+      Warsaw::Graphic::Requirement &rx = _requisition.x;
+      Warsaw::Graphic::Requirement &ry = _requisition.y;
 
-      settings[xaxis].lvalue = settings[xaxis].lower = rx.defined ? - rx.natural * rx.align : 0.;
-      settings[xaxis].uvalue = settings[xaxis].upper = rx.defined ? settings[xaxis].lvalue + rx.natural : 0.;
+      _settings[xaxis].lvalue = _settings[xaxis].lower = rx.defined ? - rx.natural * rx.align : 0.;
+      _settings[xaxis].uvalue = _settings[xaxis].upper = rx.defined ? _settings[xaxis].lvalue + rx.natural : 0.;
       if (rx.defined)
 	{
-	  xadjustment->lower(settings[xaxis].lower);
-	  xadjustment->upper(settings[xaxis].upper);
+	  _xadjustment->lower(_settings[xaxis].lower);
+	  _xadjustment->upper(_settings[xaxis].upper);
 	}
-      settings[yaxis].lvalue = settings[yaxis].lower = ry.defined ? - ry.natural * ry.align : 0.;
-      settings[yaxis].uvalue = settings[yaxis].upper = ry.defined ? settings[yaxis].lvalue + ry.natural : 0.;
+      _settings[yaxis].lvalue = _settings[yaxis].lower = ry.defined ? - ry.natural * ry.align : 0.;
+      _settings[yaxis].uvalue = _settings[yaxis].upper = ry.defined ? _settings[yaxis].lvalue + ry.natural : 0.;
       if (ry.defined)
 	{
-	  yadjustment->lower(settings[yaxis].lower);
-	  yadjustment->upper(settings[yaxis].upper);
+	  _yadjustment->lower(_settings[yaxis].lower);
+	  _yadjustment->upper(_settings[yaxis].upper);
 	}
     }
 }
@@ -472,15 +473,15 @@ void ViewportImpl::cache_allocation(Region_ptr allocation)
       allocation->span(xaxis, xa);
       allocation->span(yaxis, ya);
 
-      if (! Math::equal(xa.end - xa.begin, settings[xaxis].uvalue - settings[xaxis].lvalue, epsilon))
+      if (! Math::equal(xa.end - xa.begin, _settings[xaxis].uvalue - _settings[xaxis].lvalue, epsilon))
  	{
- 	  settings[xaxis].uvalue = settings[xaxis].lvalue + xa.end - xa.begin;
- 	  xadjustment->uvalue(settings[xaxis].uvalue);
+ 	  _settings[xaxis].uvalue = _settings[xaxis].lvalue + xa.end - xa.begin;
+ 	  _xadjustment->uvalue(_settings[xaxis].uvalue);
 	}
-      if (! Math::equal(ya.end - ya.begin, settings[yaxis].uvalue - settings[yaxis].lvalue, epsilon))
+      if (! Math::equal(ya.end - ya.begin, _settings[yaxis].uvalue - _settings[yaxis].lvalue, epsilon))
  	{
- 	  settings[yaxis].uvalue = ya.end - ya.begin;
- 	  yadjustment->uvalue(settings[yaxis].uvalue);
+ 	  _settings[yaxis].uvalue = ya.end - ya.begin;
+ 	  _yadjustment->uvalue(_settings[yaxis].uvalue);
 	}
     }
 }
@@ -491,11 +492,11 @@ void ViewportImpl::body_allocation(Region_ptr, RegionImpl *ca)
    * FIXME!! : this implementation ignores completely the body alignment...
    */
   ca->valid = true;
-  ca->lower.x = -(settings[xaxis].lvalue - settings[xaxis].lower);
-  ca->lower.y = -(settings[yaxis].lvalue - settings[yaxis].lower);
+  ca->lower.x = -(_settings[xaxis].lvalue - _settings[xaxis].lower);
+  ca->lower.y = -(_settings[yaxis].lvalue - _settings[yaxis].lower);
   ca->lower.z = 0.;
-  ca->upper.x = -(settings[xaxis].lvalue - settings[xaxis].upper);
-  ca->upper.y = -(settings[yaxis].lvalue - settings[yaxis].upper);
+  ca->upper.x = -(_settings[xaxis].lvalue - _settings[xaxis].upper);
+  ca->upper.y = -(_settings[yaxis].lvalue - _settings[yaxis].upper);
   ca->upper.z = 0.;
   ca->xalign = ca->yalign = ca->yalign = 0.;
 }
@@ -503,8 +504,8 @@ void ViewportImpl::body_allocation(Region_ptr, RegionImpl *ca)
 void ViewportImpl::scroll_transform(Transform_ptr tx)
 {
   Vertex v;
-  v.x = settings[xaxis].lvalue - settings[xaxis].lower;
-  v.y = settings[yaxis].lvalue - settings[yaxis].lower;
+  v.x = _settings[xaxis].lvalue - _settings[xaxis].lower;
+  v.y = _settings[yaxis].lvalue - _settings[yaxis].lower;
   v.z = 0.;
   tx->translate(v);
 }
