@@ -45,13 +45,21 @@ public:
   GLDrawingKit();
   ~GLDrawingKit();
 
+  virtual void transformation(Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Transform_ptr transformation() { return tr->_this();}
+  virtual void clipping(Region_ptr r) { DrawingKitBase::clipping(r);}
   virtual Region_ptr clipping() { return cl->_this();}
+  virtual void foreground(const Color &c) { DrawingKitBase::foreground(c);}
   virtual Color foreground() { return fg;}
+  virtual void pointSize(Coord c) { DrawingKitBase::pointSize(c);}
   virtual Coord pointSize() { return ps;}
+  virtual void lineWidth(Coord c) { DrawingKitBase::lineWidth(c);}
   virtual Coord lineWidth() { return lw;}
+  virtual void lineEndstyle(Endstyle e) { DrawingKitBase::lineEndstyle(e);}
   virtual Endstyle lineEndstyle() { return es;}
+  virtual void surfaceFillstyle(Fillstyle f) { DrawingKitBase::surfaceFillstyle(f);}
   virtual Fillstyle surfaceFillstyle() { return fs;}
+  virtual void texture(Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Raster_ptr texture() { return tx;}
 
   virtual Text::Font_ptr font(); 
