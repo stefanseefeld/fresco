@@ -63,15 +63,11 @@ daVinci:	$(OBJ) main.o
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 install: all
-	$(INSTALL) -m755 $(TARGET) $(bindir)
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG/daVinci
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(bindir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/Berlin/PNG/daVinci
 	@for image in $(patsubst $(top_srcdir)/share/PNG/daVinci/%, %, $(wildcard $(top_srcdir)/share/PNG/daVinci/*.png)); do \
-	  if ! cmp -s $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image"; \
-	    $(INSTALL) -m 644 $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image; \
-	  else \
-	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image is up to date"; \
-	  fi; \
+	  $(SHTOOL) install -C -m 644 $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Berlin/PNG/daVinci; \
 	done
 
 clean:	

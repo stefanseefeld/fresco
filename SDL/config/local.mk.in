@@ -36,12 +36,13 @@ infodir		:= @infodir@
 mandir		:= @mandir@
 
 CXX		:= @CXX@
-INSTALL		:= @INSTALL@
+SYNOPSIS	:= synopsis
+SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@
 SO_LDFLAGS	:= @SO_LDFLAGS@
 
-CPPFLAGS	:= -I../include -I$(top_srcdir)/include @CPPFLAGS@ @SDL_CPPFLAGS@
+CPPFLAGS	:= -I../include -I$(top_srcdir)/include @CPPFLAGS@
 DEPFLAGS	:= -M
 CXXFLAGS	:= @CXXFLAGS@
-LIBS		:= @LIBS@ @SDL_LIBS@
+LIBS		:= @LIBS@

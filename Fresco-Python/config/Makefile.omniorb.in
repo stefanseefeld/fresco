@@ -58,11 +58,12 @@ TARGET		:= $(SRC)
 all:	$(TARGET)
 
 install_files:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/python
-	$(INSTALL) -m 644 $(TARGET) $(DESTDIR)$(libdir)/python
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/python
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/python
 
 $(DESTDIR)$(libdir)/python/%/__init__.py: %/__init__.py
-	$(INSTALL) -D -m 755 $< $@
+	$(SHTOOL) mkdir -f -p -m 755 $(@D)
+	$(SHTOOL) install -C -m 755 $< $(@D)
 
 install_packages: all $(PACKAGE_DST)
 

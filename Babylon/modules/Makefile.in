@@ -155,8 +155,8 @@ xref: #nothing to do
 doc: #nothing to do
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Babylon
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Babylon
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Babylon
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/Babylon
 
 install-doc: #nothing to do
 

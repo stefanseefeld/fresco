@@ -36,4 +36,4 @@ oldincludedir	:= @oldincludedir@
 infodir		:= @infodir@
 mandir		:= @mandir@
 
-INSTALL		:= @INSTALL@
+SHTOOL		:= @top_srcdir@/config/shtool

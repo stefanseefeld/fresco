@@ -36,10 +36,9 @@ AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 AC_CANONICAL_SYSTEM
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 AC_PROG_CXX
 AC_PROG_CXXCPP
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl ORB

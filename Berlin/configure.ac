@@ -36,8 +36,7 @@ AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_SYSTEM
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl General flags

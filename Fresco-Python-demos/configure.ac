@@ -30,8 +30,6 @@ AC_REVISION($Revision$)
 AC_INIT(Berlin, M3, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
 
-AC_PROG_INSTALL
-
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------

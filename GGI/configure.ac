@@ -36,8 +36,7 @@ AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 AC_CANONICAL_SYSTEM
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl ORB
@@ -70,6 +69,8 @@ AC_MSG_NOTICE([Graphics Environment])
 FRESCO_GGI_CHECK
 if test ".$HAVE_GGI" = .1 ; then
   FRESCO_GGIMESA_CHECK
+  CPPFLAGS="$CPPFLAGS $GGI_CPPFLAGS"
+  LIBS="$GGI_LIBS $LIBS"
 else
   AC_MSG_ERROR([this package needs GGI to compile and run])
 fi
@@ -96,7 +97,7 @@ AC_CONFIG_FILES([config/GGI.spec])
 AC_CONFIG_FILES([Makefile src/Makefile demos/Makefile])
 AC_CONFIG_FILES([GGIKit/Makefile:config/$MAKEFILE])
 
-mkdir -p lib/Fresco/Console
+mkdir -p lib/Berlin/Console
 mkdir -p bin
 
 AC_OUTPUT

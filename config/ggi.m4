@@ -58,7 +58,5 @@ AC_DEFUN([FRESCO_GGI_CHECK],
    else
      GGI_LIBS="$GGI_LIBS -lggi"
      AC_SUBST(HAVE_GGI, 1)
-     AC_SUBST(GGI_CPPFLAGS)
-     AC_SUBST(GGI_LIBS)
    fi
   ])

@@ -32,7 +32,7 @@ intdir		:= $(top_srcdir)/share/idl
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
 SYNOPSIS	:= synopsis
-INSTALL		:= @INSTALL@
+SHTOOL		:= $(top_srcdir)/config/shtool
 
 INT		:= $(wildcard $(intdir)/Fresco/*.idl)
 SYN		:= $(patsubst $(intdir)/Fresco/%.idl, %.syn, $(INT))
@@ -69,11 +69,11 @@ $(MANUAL):	$(SYN)
 	touch $@
 
 install:
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
-	$(INSTALL) -m 644 $(INT) $(DESTDIR)$(datadir)/idl/Fresco
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/idl/Fresco
+	$(SHTOOL) install -C -m 644 $(INT) $(DESTDIR)$(datadir)/idl/Fresco
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco-IDL
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Fresco-IDL
 	cp -a share/doc/Fresco-IDL/html $(DESTDIR)$(datadir)/doc/Fresco-IDL
 
 rpm: dist

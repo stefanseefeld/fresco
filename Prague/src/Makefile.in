@@ -113,12 +113,12 @@ install:	all
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/IPC
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Filter
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Network
-	$(SHTOOL) install -C -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh
+	$(SHTOOL) install -C -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague
 	for header in $(HDR); do \
-	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header; \
+	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague; \
 	done
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
-	$(SHTOOL) install -C -m 755 ../config/Prague-config $(DESTDIR)$(bindir)/Prague-config
+	$(SHTOOL) install -C -m 755 ../config/Prague-config $(DESTDIR)$(bindir)
 
 install-doc: doc
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Prague
@@ -137,7 +137,7 @@ clean:
 
 distclean:	clean
 	rm -f Makefile ../include/Prague/acconfig.hh \
-              ../bin/Prague-config
+          ../bin/Prague-config
 #	cd Examples; $(MAKE) distclean
 
 maintainer-clean: distclean

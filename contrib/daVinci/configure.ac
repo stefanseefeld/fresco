@@ -34,7 +34,6 @@ AC_CONFIG_HEADER(include/daVinci/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 AC_LANG(C++)
 
 dnl ------------------------------------------------------------------

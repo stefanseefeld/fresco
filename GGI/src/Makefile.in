@@ -35,42 +35,42 @@ SRC	:= Drawable.cc Extension.cc Pointer.cc Console.cc
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-TARGET	:= ../lib/Fresco/Console/GGI.so
+TARGET	:= ../lib/Berlin/Console/GGI.so
 
 vpath %.cc $(srcdir)
 
 ifeq ($(HAVE_GGIMESA), 1)
-TARGET	+= ../lib/Fresco/Console/GGIGL.so
+TARGET	+= ../lib/Berlin/Console/GGIGL.so
 endif
-../lib/Fresco/Console/GGIGL.so: GGIGL.o
+../lib/Berlin/Console/GGIGL.so: GGIGL.o
 
 .FORCE:
 
 all:	$(TARGET)
 
-../lib/Fresco/Console/GGI.so:	$(OBJ)
-		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $^ $(LIBS)
+../lib/Berlin/Console/GGI.so:	$(OBJ)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $^ $(LIBS)
 
-../lib/Fresco/Console/GGIGL.so:	GGIGL.o
-		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $^ $(LIBS)
+../lib/Berlin/Console/GGIGL.so:	GGIGL.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $^ $(LIBS)
 
 depend:		$(DEP)
 
 install:	all
-		$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/Console
-		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/Console
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Berlin/Console
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/Berlin/Console
 
 uninstall:
-		rm -f $(DESTDIR)$(libdir)/Fresco/Console/$(TARGET)
+	rm -f $(DESTDIR)$(libdir)/Fresco/Console/$(TARGET)
 
 clean:	
-		rm -f $(TARGET)
-		rm -f *.o *.d
+	rm -f $(TARGET)
+	rm -f *.o *.d
 
 distclean:	clean
-		rm -f Makefile
+	rm -f Makefile
 
 maintainer-clean: distclean
 

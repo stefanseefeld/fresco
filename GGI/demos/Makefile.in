@@ -53,8 +53,8 @@ all:	$(TARGET)
 depend:	
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(bindir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(bindir)
 
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/$(TARGET)

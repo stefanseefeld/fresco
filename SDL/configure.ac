@@ -38,8 +38,7 @@ dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>
 dnl VERSION)
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -54,7 +53,10 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Graphics Environment])
 
 FRESCO_SDL_CHECK
-if test ".$HAVE_SDL" != .1 ; then
+if test ".$HAVE_SDL" = .1 ; then
+  CPPFLAGS="$CPPFLAGS $SDL_CPPFLAGS"
+  LIBS="$SDL_LIBS $LIBS"
+else
   AC_MSG_ERROR([this package needs SDL to compile and run])
 fi
 
@@ -78,6 +80,6 @@ AC_CONFIG_FILES(config/local.mk)
 AC_CONFIG_FILES([config/SDL.spec])
 AC_CONFIG_FILES([Makefile src/Makefile])
 
-mkdir -p lib/Fresco/Console
+mkdir -p lib/Berlin/Console
 
 AC_OUTPUT

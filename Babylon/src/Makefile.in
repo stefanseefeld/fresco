@@ -83,20 +83,17 @@ $(MANUAL):	$(HSYN)
 	touch $@
 
 install:	all
-	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
-	@for header in $(HDR); do \
-	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon/$$header"; \
-            $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon/$$header; \
-	  else \
-	    echo "$(DESTDIR)$(includedir)/Babylon/$$header is up to date"; \
-          fi; \
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Babylon
+	for header in $(HDR); do \
+	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon; \
 	done
-	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -D -m 755 ../config/Babylon-config $(DESTDIR)$(bindir)/Babylon-config
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../config/Babylon-config $(DESTDIR)$(bindir)
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/doc/Babylon
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Prague
 	cp -r ../share/doc/Babylon/html $(DESTDIR)$(datadir)/doc/Babylon
 
 uninstall:
@@ -111,7 +108,7 @@ clean:
 
 distclean:	clean
 	rm -f Makefile ../include/Babylon/acconfig.hh \
-		../bin/Babylon-config
+          ../bin/Babylon-config
 
 maintainer-clean: distclean
 

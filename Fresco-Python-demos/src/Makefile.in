@@ -31,7 +31,7 @@ all:
 
 install:	all
 	@for target in $(TARGETS); do \
-	  $(INSTALL) -m 755 $$target $(DESTDIR)$(bindir)/$$target; \
+	  $(SHTOOL) install -C -m 755 $$target $(DESTDIR)$(bindir); \
 	done
 
 uninstall:

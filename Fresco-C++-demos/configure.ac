@@ -37,8 +37,7 @@ dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>
 dnl VERSION)
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl General flags

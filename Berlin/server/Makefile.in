@@ -40,7 +40,7 @@ LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 SRC		:= ServerImpl.cc ServerContextImpl.cc server.cc kits.cc devices.cc
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 
-TARGETS		:= ../bin/berlin ../bin/kits ../bin/devices
+TARGETS		:= ../bin/berlin ../bin/berlin-kits ../bin/berlin-devices
 
 vpath %.hh $(srcdir)
 vpath %.cc $(srcdir)
@@ -80,30 +80,27 @@ endif
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../bin/kits:	ServerImpl.o ServerContextImpl.o kits.o
+../bin/berlin-kits:	ServerImpl.o ServerContextImpl.o kits.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../bin/devices:	devices.o
+../bin/berlin-devices:	devices.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
-	$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
-	$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco
-	$(INSTALL) -m 644 $(top_srcdir)/share/glyph.dat $(DESTDIR)$(datadir)/Fresco
-	$(INSTALL) -m 644 $(top_srcdir)/share/unifont.bdf $(DESTDIR)$(datadir)/Fresco
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG $(DESTDIR)$(datadir)/Fresco
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../bin/berlin $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../bin/berlin-kits $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../bin/berlin-devices $(DESTDIR)$(bindir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(sysconfdir)
+	$(SHTOOL) install -C -m 755 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/Berlin
+	$(SHTOOL) install -C -m 644 $(top_srcdir)/share/glyph.dat $(DESTDIR)$(datadir)/Berlin
+	$(SHTOOL) install -C -m 644 $(top_srcdir)/share/unifont.bdf $(DESTDIR)$(datadir)/Berlin
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/Berlin/PNG
 	@for image in $(patsubst $(top_srcdir)/share/PNG/%, %, $(wildcard $(top_srcdir)/share/PNG/*.png)); do \
-	  if ! cmp -s $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image"; \
-	    $(INSTALL) -m 644 $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image; \
-	  else \
-	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/$$image is up to date"; \
-	  fi; \
+	  $(SHTOOL) install -C -m 644 $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Berlin/PNG; \
 	done
 
 install-doc: #do nothing

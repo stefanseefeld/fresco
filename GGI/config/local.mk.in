@@ -39,12 +39,13 @@ abs_top_builddir:= @abs_top_builddir@
 abs_top_srcdir	:= @abs_top_srcdir@
 
 CXX		:= @CXX@
-INSTALL		:= @INSTALL@
+SYNOPSIS	:= synopsis
+SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@
 SO_LDFLAGS	:= @SO_LDFLAGS@
 
-CPPFLAGS	:= @CPPFLAGS@ @GGI_CPPFLAGS@
+CPPFLAGS	:= @CPPFLAGS@
 DEPFLAGS	:= -M
 CXXFLAGS	:= @CXXFLAGS@
-LIBS		:= @LIBS@ @GGI_LIBS@
+LIBS		:= @LIBS@

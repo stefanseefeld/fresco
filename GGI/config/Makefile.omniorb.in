@@ -51,7 +51,7 @@ SRC	:= $(GENSRC) VisualImpl.cc GGIKitImpl.cc
 DEP	:= $(patsubst %, %.d, $(IDL) $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-GGIKIT	:= ../lib/Fresco/GGIKit.so 
+GGIKIT	:= ../lib/Berlin/GGIKit.so 
 LIBGGI	:= ../lib/libBerlin-GGI.so
 TARGETS	:= $(GGIKIT) $(LIBGGI)
 
@@ -76,26 +76,22 @@ $(LIBGGI):	$(DEP) GGIKitSK.o
 depend:		$(DEP)
 
 install:	all
-	$(INSTALL) -m 755 $(GGIKIT) $(DESTDIR)$(libdir)/Fresco/
-	$(INSTALL) -m 755 $(LIBGGI) $(DESTDIR)$(libdir)/
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
-	if ! cmp -s $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh 2>/dev/null; then \
-          echo "$(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh"; \
-          $(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh; \
-          else \
-          echo "$(DESTDIR)$(includedir)/Fresco/GGIKit.hh is up to date"; \
-        fi
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Berlin
+	$(SHTOOL) install -C -m 755 $(GGIKIT) $(DESTDIR)$(libdir)/Berlin
+	$(SHTOOL) install -C -m 755 $(LIBGGI) $(DESTDIR)$(libdir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Fresco
+	$(SHTOOL) install -C -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco; \
 
 uninstall:
-		rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
-		rm -f $(DESTDIR)$(includedir)/Fresco/GGIKit.hh
+	rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
+	rm -f $(DESTDIR)$(includedir)/Fresco/GGIKit.hh
 
 clean:	
-		rm -f $(TARGET)
-		rm -f $(GENSRC) $(GENHDR) $(OBJ) $(DEP)
+	rm -f $(TARGET)
+	rm -f $(GENSRC) $(GENHDR) $(OBJ) $(DEP)
 
 distclean:	clean
-		rm -f Makefile
+	rm -f Makefile
 
 maintainer-clean: distclean
 

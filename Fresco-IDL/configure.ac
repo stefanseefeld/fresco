@@ -33,7 +33,6 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

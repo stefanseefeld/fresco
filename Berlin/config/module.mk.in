@@ -89,11 +89,11 @@ $(MANUAL):	$(HSYN)
 	@touch $@
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Berlin
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/Berlin
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
 	cp -r $(abs_top_builddir)/share/doc/Berlin/$(docdir)/html $(DESTDIR)$(datadir)/doc/Berlin/$(docdir)
 
 clean:	

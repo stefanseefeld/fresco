@@ -36,7 +36,7 @@ infodir		:= @infodir@
 mandir		:= @mandir@
 
 CXX		:= @CXX@
-INSTALL		:= @INSTALL@
+SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@
 SO_LDFLAGS	:= @SO_LDFLAGS@

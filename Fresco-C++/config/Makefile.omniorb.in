@@ -100,26 +100,17 @@ xref: $(HDR)
 doc: $(HDR)
 
 install:	all
-	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Fresco
 	for header in acconfig.hh $(GENHDR) ; do \
-	  if ! cmp -s $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header"; \
-	    $(INSTALL) -m 644 $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header; \
-	  else \
-	    echo "$(DESTDIR)$(includedir)/Fresco/$$header is up to date"; \
-          fi; \
+	  $(SHTOOL) install -C -m 644 $(h2dir)/Fresco/$$header $(DESTDIR)$(includedir)/Fresco/$$header; \
 	done
 	for header in config.hh $(UTILHDR); do \
-	  if ! cmp -s $(h1dir)/$$header $(DESTDIR)$(includedir)/Fresco/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/Fresco/$$header"; \
-	    $(INSTALL) -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/Fresco/$$header; \
-	  else \
-	    echo "$(DESTDIR)$(includedir)/Fresco/$$header is up to date"; \
-          fi; \
+	  $(SHTOOL) install -C -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/Fresco/$$header; \
 	done
-	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -D -m 755 ../config/Fresco-C++-config $(DESTDIR)$(bindir)/Fresco-C++-config
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../config/Fresco-C++-config $(DESTDIR)$(bindir)/Fresco-C++-config
 
 install-doc: doc
 

@@ -166,6 +166,4 @@ int main (int argc, char *argv[])
      SDL_LIBS=""
   fi
   rm -f conf.sdltest
-  AC_SUBST(SDL_CPPFLAGS)
-  AC_SUBST(SDL_LIBS)
 ])

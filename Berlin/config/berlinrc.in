@@ -1,6 +1,6 @@
-modulepath	= @prefix@/lib/Fresco
+modulepath	= @prefix@/lib/Berlin
 babylonpath     = @prefix@/lib/Babylon
-rasterpath	= @prefix@/share/Fresco/PNG
+rasterpath	= @prefix@/share/Berlin/PNG
 fontpath	= /usr/lib/X11/fonts/Type1
-unifontpath	= @prefix@/share/Fresco
-pinyindbpath	= @prefix@/share/Fresco
+unifontpath	= @prefix@/share/Berlin
+pinyindbpath	= @prefix@/share/Berlin

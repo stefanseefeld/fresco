@@ -102,29 +102,19 @@ $(MANUAL):	$(HSYN)
 	@touch $@
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin
-	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin/Console
-	@if ! cmp -s ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh 2>/dev/null; then \
-	  echo "$(INSTALL) -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh"; \
-	  $(INSTALL) -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh; \
-	else \
-          echo "$(DESTDIR)$(includedir)/Berlin/$$header is up to date"; \
-        fi
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)
+	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Berlin
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Berlin/Console
+	$(SHTOOL) install -C -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin
 	for header in $(HDR) $(addprefix Console/, $(CHDR)); do \
-	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Berlin/$$header"; \
-	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Berlin/$$header; \
-	  else \
-	    echo "$(DESTDIR)$(includedir)/Berlin/$$header is up to date"; \
-	  fi; \
+	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Berlin/$$header; \
 	done
-	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -D -m 755 ../config/Berlin-config $(DESTDIR)$(bindir)/Berlin-config
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
+	$(SHTOOL) install -C -m 755 ../config/Berlin-config $(DESTDIR)$(bindir)/Berlin-config
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/Berlin/doc
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/doc/Berlin
 	cp -r ../share/doc/Berlin/html $(DESTDIR)$(datadir)/doc/Berlin
 
 uninstall:

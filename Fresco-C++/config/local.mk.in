@@ -41,7 +41,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
-INSTALL		:= @INSTALL@
+SHTOOL		:= @top_srcdir@/config/shtool
 ORB		:= @ORB@
 IDLCXX		:= @IDLCXX@
 SHORTCUT	:= @SHORTCUT@

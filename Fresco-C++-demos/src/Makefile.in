@@ -79,10 +79,10 @@ depend: $(DEP)
 
 install:	all
 	@for target in $(TARGETS); do \
-	  $(INSTALL) -m 755 ../bin/$$target $(DESTDIR)$(bindir)/$$target; \
+	  $(SHTOOL) install -C -m 755 ../bin/$$target $(DESTDIR)$(bindir); \
 	done
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco
-	$(INSTALL) -m 644 $(top_srcdir)/share/pinyin.db $(DESTDIR)$(datadir)/Fresco
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/Berlin
+	$(SHTOOL) install -C -m 644 $(top_srcdir)/share/pinyin.db $(DESTDIR)$(datadir)/Berlin
 
 uninstall:
 	for target in $(TARGETS) ; do
