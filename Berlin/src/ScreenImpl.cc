@@ -27,12 +27,13 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
-#include "Drawing/openGL/GLDrawingKit.hh"
+#include "Warsaw/DrawingKit.hh"
+#include "Berlin/GGI.hh"
 
 #include "Warsaw/Traversal.hh"
 #include <iostream>
 
-ScreenImpl::ScreenImpl(GLDrawingKit *d)
+ScreenImpl::ScreenImpl(DrawingKit_ptr d)
   : ControllerImpl(false), drawing(d)
 {
   emanager = new EventManager(this);
@@ -40,7 +41,7 @@ ScreenImpl::ScreenImpl(GLDrawingKit *d)
   region = new RegionImpl;
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
-  region->upper.x = drawing->width(), region->upper.y = drawing->height(), region->upper.z = 0;
+  region->upper.x = GGI::drawable()->width(), region->upper.y = GGI::drawable()->height(), region->upper.z = 0;
 }
 
 ScreenImpl::~ScreenImpl()
@@ -74,7 +75,7 @@ CORBA::Boolean ScreenImpl::handle(PickTraversal_ptr traversal, const CORBA::Any 
   return false;
 }
 
-DrawingKit_ptr ScreenImpl::kit() { return drawing->_this();}
+DrawingKit_ptr ScreenImpl::kit() { return DrawingKit::_duplicate(drawing);}
 
 ScreenManager *ScreenImpl::manager() { return smanager;}
 Region_ptr ScreenImpl::getRegion() {return region->_this();}

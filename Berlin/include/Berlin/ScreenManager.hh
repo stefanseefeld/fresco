@@ -23,17 +23,13 @@
 #define _ScreenManager_hh
 
 #include "Warsaw/config.hh"
-
-extern "C" {
-#include <ggi/ggi.h>
-}
-
 #include "Warsaw/Region.hh"
 #include "Warsaw/Event.hh"
+#include "Warsaw/DrawingKit.hh"
 #include "Prague/Sys/Thread.hh"
+#include "Berlin/GGI.hh"
 #include <vector>
 
-class GLDrawingKit;
 class Pointer;
 class ScreenImpl;
 class EventManager;
@@ -43,7 +39,7 @@ class ScreenManager
 {
   typedef vector<RegionImpl *> dlist_t;
 public:
-  ScreenManager(ScreenImpl *, EventManager *, GLDrawingKit *);
+  ScreenManager(ScreenImpl *, EventManager *, DrawingKit_ptr);
   ~ScreenManager();
   void damage(Region_ptr);
   void repair();
@@ -54,9 +50,9 @@ private:
   long ptrPositionY;
   ScreenImpl *screen;
   EventManager *emanager;
-  GLDrawingKit *drawing;
+  DrawingKit_var drawing;
   Pointer *pointer;
-  ggi_visual_t visual;
+  GGI::Drawable *drawable;
   dlist_t damages;
   Prague::Mutex mutex;
 };

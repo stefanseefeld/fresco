@@ -22,7 +22,6 @@
 
 #include "Widget/Bevel.hh"
 #include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/Pencil.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/ImplVar.hh"
 #include "Berlin/Color.hh"
@@ -146,70 +145,65 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   Coord topi = top + thickness;
   Coord bottomi = bottom - thickness;
   DrawingKit_var dk = dt->kit();
-  Transform_var tx = dt->transformation();
-  Style::Spec style;
-  style.length(1);
-  style[0].a = Style::fillcolor;
-  Pencil_var pen;
+  dk->saveState();
+  dk->surfaceFillstyle(DrawingKit::solid);
   Path path;
-  path.p.length(5);
+  path.length(5);
   if (fill)
     {
-      style[0].val <<= medium;
-      pen = dk->getPencil(style);
-      path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
-      path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
-      path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
-      path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
-      path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-      pen->drawPath(path);
+      dk->foreground(medium);
+      path[0].x = left, path[0].y = top, path[0].z = 0.;
+      path[1].x = right, path[1].y = top, path[1].z = 0.;
+      path[2].x = right, path[2].y = bottom, path[2].z = 0.;
+      path[3].x = left, path[3].y = bottom, path[3].z = 0.;
+      path[4].x = left, path[4].y = top, path[4].z = 0.;
+      dk->drawPath(path);
     }
   /*
    * light edges
    */
-  style[0].val <<= light;
-  pen = dk->getPencil(style);
+  dk->foreground(light);
   /*
    * left edge
    */
-  path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
-  path.p[1].x = lefti, path.p[1].y = topi, path.p[1].z = 0.;
-  path.p[2].x = lefti, path.p[2].y = bottomi, path.p[2].z = 0.;
-  path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
-  path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-  pen->drawPath(path);
+  path[0].x = left, path[0].y = top, path[0].z = 0.;
+  path[1].x = lefti, path[1].y = topi, path[1].z = 0.;
+  path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
+  path[3].x = left, path[3].y = bottom, path[3].z = 0.;
+  path[4].x = left, path[4].y = top, path[4].z = 0.;
+  dk->drawPath(path);
   /*
    * top edge
    */
-  path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
-  path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
-  path.p[2].x = righti, path.p[2].y = topi, path.p[2].z = 0.;
-  path.p[3].x = lefti, path.p[3].y = topi, path.p[3].z = 0.;
-  path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-  pen->drawPath(path);
+  path[0].x = left, path[0].y = top, path[0].z = 0.;
+  path[1].x = right, path[1].y = top, path[1].z = 0.;
+  path[2].x = righti, path[2].y = topi, path[2].z = 0.;
+  path[3].x = lefti, path[3].y = topi, path[3].z = 0.;
+  path[4].x = left, path[4].y = top, path[4].z = 0.;
+  dk->drawPath(path);
   /*
    * dark edges
    */
-  style[0].val <<= dark;
-  pen = dk->getPencil(style);
+  dk->foreground(dark);
   /*
    * right edge
    */
-  path.p[0].x = right, path.p[0].y = top, path.p[0].z = 0.;
-  path.p[1].x = right, path.p[1].y = bottom, path.p[1].z = 0.;
-  path.p[2].x = righti, path.p[2].y = bottomi, path.p[2].z = 0.;
-  path.p[3].x = righti, path.p[3].y = topi, path.p[3].z = 0.;
-  path.p[4].x = right, path.p[4].y = top, path.p[4].z = 0.;
-  pen->drawPath(path);
+  path[0].x = right, path[0].y = top, path[0].z = 0.;
+  path[1].x = right, path[1].y = bottom, path[1].z = 0.;
+  path[2].x = righti, path[2].y = bottomi, path[2].z = 0.;
+  path[3].x = righti, path[3].y = topi, path[3].z = 0.;
+  path[4].x = right, path[4].y = top, path[4].z = 0.;
+  dk->drawPath(path);
   /*
    * bottom edge
    */
-  path.p[0].x = left, path.p[0].y = bottom, path.p[0].z = 0.;
-  path.p[1].x = lefti, path.p[1].y = bottomi, path.p[1].z = 0.;
-  path.p[2].x = righti, path.p[2].y = bottomi, path.p[2].z = 0.;
-  path.p[3].x = right, path.p[3].y = bottom, path.p[3].z = 0.;
-  path.p[4].x = left, path.p[4].y = bottom, path.p[4].z = 0.;
-  pen->drawPath(path);
+  path[0].x = left, path[0].y = bottom, path[0].z = 0.;
+  path[1].x = lefti, path[1].y = bottomi, path[1].z = 0.;
+  path[2].x = righti, path[2].y = bottomi, path[2].z = 0.;
+  path[3].x = right, path[3].y = bottom, path[3].z = 0.;
+  path[4].x = left, path[4].y = bottom, path[4].z = 0.;
+  dk->drawPath(path);
+  dk->restoreState();
 }
 
 void Bevel::leftArrow(DrawTraversal_ptr dt, Coord thickness, const Color &light, const Color &medium, const Color &dark,

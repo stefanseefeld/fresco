@@ -24,7 +24,6 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Pencil.hh>
 #include <Berlin/Geometry.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
@@ -182,30 +181,28 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       extension(info, region);
       if (traversal->intersectsRegion(region))
 	{
-	  Style::Spec style;
-	  if (mode == (stroke | fill))
-	    {
-	      style.length(2);
-	      style[0].a = Style::linecolor, style[0].val <<= fg;
-	      style[1].a = Style::fillcolor, style[1].val <<= bg; 
-	    }
-	  else if (mode == stroke)
-	    {
-	      style.length(1);
-	      style[0].a = Style::linecolor, style[0].val <<= fg;
-	    }
-	  else
-	    {
-	      style.length(1);
-	      style[0].a = Style::fillcolor, style[0].val <<= fg; 
-	    }
-	  DrawingKit_var drawing = traversal->kit();
-	  Pencil_var pencil = drawing->getPencil(style);
-	  ::Path p;
-	  CORBA::ULong n = path->length();
-	  p.p.length(n);
-	  for (CORBA::ULong i = 0; i != n; i++) p.p[i] = path[i];
-	  pencil->drawPath(p);
+// 	  Style::Spec style;
+// 	  if (mode == (stroke | fill))
+// 	    {
+// 	      style.length(2);
+// 	      style[0].a = Style::linecolor, style[0].val <<= fg;
+// 	      style[1].a = Style::fillcolor, style[1].val <<= bg; 
+// 	    }
+// 	  else if (mode == stroke)
+// 	    {
+// 	      style.length(1);
+// 	      style[0].a = Style::linecolor, style[0].val <<= fg;
+// 	    }
+// 	  else
+// 	    {
+// 	      style.length(1);
+// 	      style[0].a = Style::fillcolor, style[0].val <<= fg; 
+// 	    }
+	  DrawingKit_var dk = traversal->kit();
+	  dk->saveState();
+// 	  Pencil_var pencil = drawing->getPencil(style);
+	  dk->drawPath(path);
+	  dk->restoreState();
 	}
     }
 }

@@ -25,25 +25,20 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/EventManager.hh"
-#include "Drawing/openGL/GLDrawingKit.hh"
-#include "Drawing/openGL/Pointer.hh"
+#include "Berlin/Pointer.hh"
 #include "Prague/Sys/FdSet.hh"
 #include "Prague/Sys/Time.hh"
 #include "Berlin/Logger.hh"
 
-extern "C" {
-#include <ggi/ggi-unix.h>
-}
+// static Mutex ggi_mutex;
+// static ggi_event event;
 
-static Mutex ggi_mutex;
-static ggi_event event;
-static int wakeupPipe[2];
+using namespace Prague;
 
-ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, GLDrawingKit *d)
-  : screen(s), emanager(em), drawing(d), visual(drawing->getVisual())
+ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, DrawingKit_ptr d)
+  : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(GGI::drawable())
 {
-  pointer = new Pointer(visual);
-  pipe(wakeupPipe);
+  pointer = new Pointer(drawable);
 }
 
 ScreenManager::~ScreenManager()
@@ -56,24 +51,10 @@ void ScreenManager::damage(Region_ptr r)
   SectionLog section("ScreenManager::damage");
   MutexGuard guard(mutex);
   RegionImpl *region = new RegionImpl(r);
-
-//   region->upper.x += 0.5;
-//   region->upper.y += 0.5;
-//   region->lower.x -= 0.5;
-//   region->lower.y -= 0.5;
-
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);
-  
   Logger::log(Logger::drawing) << "ScreenManager::damage region " << *region << endl;
-//   cout << "ScreenManager::damage region " << *region << endl;
-
-  // this injects a byte into a "wakeup" pipe, which terminates the select()
-  // that the sleeping event-processor thread is in.
-
-  char c = 'z';
-  write(wakeupPipe[1],&c,1);
-
+  drawable->wakeup();
 }
 
 void ScreenManager::repair()
@@ -91,10 +72,10 @@ void ScreenManager::repair()
       bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
       if (ptr) pointer->restore();
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
-							   Region_var((*i)->_this()),
-							   Transform_var(Transform::_nil()),
-							   DrawingKit_var(drawing->_this()));
-      drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
+ 							   Region_var((*i)->_this()),
+ 							   Transform_var(Transform::_nil()),
+ 							   drawing);
+//       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
@@ -110,22 +91,8 @@ void ScreenManager::repair()
 
 void ScreenManager::nextEvent()
 {
-  ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-  Prague::FdSet rfdset;
-  rfdset.set(wakeupPipe[0]);
-  switch (ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0)) {
-  case 0:
-    ggiEventRead(visual, &event, mask);		     
-    break;
-  case -1:
-    return;
-  case 1:
-    char c;
-    read(wakeupPipe[0],&c,1);
-    return;
-  }
-
-  // we can process this, it's a legitimate event.
+  ggi_event event;
+  if (!drawable->nextEvent(event)) return; // repair
   switch (event.any.type)
     {
     case evKeyPress:
@@ -160,7 +127,7 @@ void ScreenManager::nextEvent()
 
 	// update the pointer object / image
 	pointer->move(ptrPositionX, ptrPositionY);
-	ggiFlush(visual);
+	ggiFlush(drawable);
 
 	ptrEvent.buttonNumber = event.pbutton.button;	  
 	ptrEvent.whatHappened = 
@@ -188,8 +155,8 @@ void ScreenManager::run()
 	  Prague::Time current = Prague::Time::currentTime();
 	  if (current > last + Prague::Time(33))
 	    {
-	      drawing->sync();
-	      ggiFlush(visual);
+// 	      drawing->sync();
+	      drawable->flush();
 	      //	      GGIMesaSwapBuffers();
 	      last = current;
 	    }

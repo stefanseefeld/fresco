@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS) $(GGI_INCLUDES)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague $(GGI_LIBS) #$(ORBLIBS)
 
-SRC 	= GGI.cc Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
+SRC 	= GGI.cc Pointer.cc Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \
 	  MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \

@@ -22,7 +22,10 @@
 #ifndef _GGI_hh
 #define _GGI_hh
 
-#include <exception>
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
+// #include <exception>
+#include <vector>
 extern "C"
 {
 #include <ggi/ggi-unix.h>
@@ -31,11 +34,29 @@ extern "C"
 class GGI
 {
 public:
-  GGI() throw (exception);
+  class Drawable;
+  GGI();
   ~GGI();
+  static Drawable *drawable();//be prepared for multiple drawables (multi head, offscreen memory etc.)
+private:
+  static vector<Drawable *> drawables;
+};
+
+class GGI::Drawable
+{
+  friend class GGI;
+public:
   bool nextEvent(ggi_event &event); // to be encapsulated further...
   void wakeup();
+  void flush() { ggiFlush(visual);}
+  PixelCoord width() const { return mode.visible.x;}
+  PixelCoord height() const { return mode.visible.y;}
+  PixelCoord vwidth() const { return mode.virt.x;}
+  PixelCoord vheight() const { return mode.virt.y;}
+  const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (visual, i);}
 private:
+  Drawable();
+  ~Drawable();
   ggi_visual_t visual;
   ggi_mode     mode;
   int          wakeupPipe[2];

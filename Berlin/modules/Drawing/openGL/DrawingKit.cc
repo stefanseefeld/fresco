@@ -24,102 +24,184 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Transform.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
-#include "Warsaw/Text.hh"
+// #include "Warsaw/Text.hh"
 #include "Berlin/Logger.hh"
-
-extern "C" {
-#include "ggi/ggi.h"
-}
 
 #include <GL/glu.h>
 #include <strstream>
 #include <iostream>
 
 GLDrawingKit::GLDrawingKit()
-  : rasters(500)
+  : drawable(GGI::drawable()), tr(new TransformImpl), cl(new RegionImpl), rasters(500)
 {
-  ggiInit();
-  drawable = new GLDrawable();
-  drawable->_obj_is_ready(CORBA::BOA::getBOA());
-  gnufont = new GLUnifont();
-  gnufont->_obj_is_ready(CORBA::BOA::getBOA());
-  Color c = {0.0,0.0,0.0,1.0};
-  gnufont->setColor(c);
+  tr->_obj_is_ready(_boa());
+  cl->_obj_is_ready(_boa());
+  context = GGIMesaCreateContext();
+  if (!context)
+    {
+      cerr << "GGIMesaCreateContext() failed" << endl;
+      exit(4);
+    }
+  if (GGIMesaSetVisual(context, drawable, GL_TRUE, GL_FALSE))
+    {
+      cerr << "GGIMesaSetVisual() failed" << endl;
+      exit(7);
+    }
+  GGIMesaMakeCurrent(context);
+
+  glViewport(0, 0, drawable->width(), drawable->height());
+  glMatrixMode(GL_PROJECTION); 
+  glLoadIdentity();
+  glOrtho(0, drawable->width(), drawable->height(), 0, -1000.0, 1000.0); 
+  glTranslatef(0.375,0.375,0.);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//   reshape(mode.visible.x, mode.visible.y);
+  glShadeModel(GL_SMOOTH);
+  glDisable(GL_LIGHTING);  
+  glFrontFace(GL_CW);
+  glEnable(GL_ALPHA_TEST);
+  glEnable(GL_SCISSOR_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 GLDrawingKit::~GLDrawingKit()
 {
-  drawable->_dispose();
-  gnufont->_dispose();
-  ggiExit();
+  GGIMesaDestroyContext(context);
+  cl->_dispose();
+  tr->_dispose();
 }
 
-void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &sty) 
-  throw (Text::NoSuchFontException)
+void GLDrawingKit::setTransformation(Transform_ptr t)
 {
-  MutexGuard guard(mutex);
+  tr->copy(t);
+  Transform::Matrix &matrix = tr->matrix();
+  GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
+			   matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
+			   matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
+			   matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
+  glLoadMatrixd(glmatrix);
+}
 
-  // make sure the gnufont tracks color changes
-  for (unsigned long i = 0; i < sty.length(); i++)
-    {    
-      Color *tmp;
-      if (sty[i].a == Style::fillcolor)
-	{
-	  sty[i].val >>= tmp;
-	  gnufont->setColor(*tmp);
-	}
-    }
-  try
-    { 
-      //
-      // at this time, there is _no_ way to add new fonts to the runtime.
-      // it uses GNU Unifont, and nothing else.
-      //
-      // it will eventually look like this, once we get the GLFont truetype &
-      // T1 registry alive.
-      //
-      
-      /*      GLFont *newfont = new GLFont(fd,sty); 
-	      newfont->_obj_is_ready(_boa());
-	      if (font) font->_dispose();
-	      font = newfont;*/
-    }
-  catch (Text::NoSuchFontException &ex)
+void GLDrawingKit::setClipping(Region_ptr r)
+{
+  cl->copy(r);
+  //...
+}
+
+void GLDrawingKit::setForeground(const Color &c)
+{
+  fg = c;
+  glColor4d(fg.red, fg.green, fg.blue, fg.alpha);
+}
+
+void GLDrawingKit::setPointSize(Coord s)
+{
+  ps = s;
+  // FIXME !: glPointSize uses pixel units !
+  glPointSize(ps);
+}
+
+void GLDrawingKit::setLineWidth(Coord w)
+{
+  lw = w;
+  // FIXME !: glLineWidth uses pixel units !
+  glLineWidth(lw);
+}
+
+void GLDrawingKit::setLineEndstyle(DrawingKit::Endstyle style)
+{
+  es = style;
+}
+
+void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
+{
+  fs = style;
+}
+
+void GLDrawingKit::setTexture(Raster_ptr t)
+{
+  tx = t;
+  GLRaster *glraster = rasters.lookup(Raster::_duplicate(t));
+  glBindTexture(GL_TEXTURE_2D, glraster->texture);
+}
+
+// void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
+// {
+//   glColor4d(0., 0., 0., 1.);
+//   glRectf(l, t, r, b);
+// }
+
+void GLDrawingKit::drawPath(const Path &path)
+{
+//   myDrawable->makeCurrent();
+  if (fs == solid || (fs == textured && CORBA::is_nil(tx)))
     {
-      throw ex;
+      glBegin(GL_POLYGON);
+      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      glEnd();
+    }
+  else if (fs == textured)
+    {
+      cerr << "sorry, implementation for textured polygons not finished..." << endl;
+//       GLRaster *glraster = rasters.lookup(tx);
+      glBegin(GL_POLYGON);
+      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      glEnd();
+    }
+  else
+    {
+      glBegin(GL_LINE_STRIP);
+      // line strips (no final connecting line)      
+      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      glEnd();
     }
 }
 
-Text::Font_ptr GLDrawingKit::currentFont()
+void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
 {
-  MutexGuard guard(mutex);
-  if (font) return font->_this();
-  else return gnufont->_this();
+//   myDrawable->makeCurrent();
+  if (fs == solid || (fs == textured && CORBA::is_nil(tx)))
+    {
+      glRectf(lower.x, lower.y, upper.x, upper.y);
+    }
+  else if (fs == textured)
+    {
+      GLRaster *glraster = rasters.lookup(tx);
+      glBegin(GL_POLYGON);
+      glTexCoord2f(0., 0.);                   glVertex2d(lower.x, lower.y);
+      glTexCoord2f(glraster->s, 0.);          glVertex2d(upper.x, lower.y);
+      glTexCoord2f(glraster->s, glraster->t); glVertex2d(upper.x, upper.y);
+      glTexCoord2f(0., glraster->t);          glVertex2d(lower.x, upper.y);
+      glEnd();
+    }
+  else
+    {
+      glBegin(GL_LINE_LOOP);
+      glVertex2d(lower.x, lower.y);
+      glVertex2d(upper.x, lower.y);
+      glVertex2d(upper.x, upper.y);
+      glVertex2d(lower.x, upper.y);
+      glEnd();
+    }
 }
 
-Drawable_ptr GLDrawingKit::getDrawable()
+void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
 {
-  MutexGuard guard(mutex);
-  return drawable->_this();
+  // !!!FIXME!!! quadrics code here
 }
 
-Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
-{
-  MutexGuard guard(mutex);
-  GLPencil *pencil = new GLPencil(sty, drawable);
-  pencil->_obj_is_ready(_boa());
-  pencils.push_back(pencil);
-  return pencil->_this();
-}
 
-void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
-{
-  glColor4d(0., 0., 0., 1.);
-  glRectf(l, t, r, b);
-}
-
-void GLDrawingKit::image(Raster_ptr raster)
+void GLDrawingKit::drawImage(Raster_ptr raster)
 {
   GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
   glraster->draw();
+}
+
+void GLDrawingKit::drawText(const Unistring &us)
+{
+
 }

@@ -37,7 +37,6 @@ LIBS	+= $(ORBLIBS)
 
 DYNINT	= Types.idl Message.idl Event.idl Style.idl
 STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
-	  Drawable.idl Pencil.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Focus.idl \
 	  Figure.idl Image.idl Transformator.idl \

@@ -23,47 +23,70 @@
 #ifndef _GLDrawingKit_hh
 #define _GLDrawingKit_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Berlin/CloneableImpl.hh"
-#include "Drawing/openGL/GLDrawable.hh"
-#include "Drawing/openGL/GLPencil.hh"
-#include "Drawing/openGL/GLFont.hh"
-#include "Drawing/openGL/GLUnifont.hh"
-#include "Drawing/openGL/GLRaster.hh"
-#include "Berlin/Thread.hh"
-#include "Berlin/ObjectCache.hh"
-#include "Warsaw/Image.hh"
+#include <Drawing/DrawingKitBase.hh>
+#include <Berlin/CloneableImpl.hh>
+// #include "Drawing/openGL/GLFont.hh"
+// #include "Drawing/openGL/GLUnifont.hh"
+#include <Drawing/openGL/GLRaster.hh>
+#include <Berlin/Thread.hh>
+#include <Berlin/ObjectCache.hh>
+#include <Berlin/GGI.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Warsaw/Image.hh>
+#include <GL/ggimesa.h>
 
 #include <string>
 #include <vector>
-extern "C" {
-#include <ggi/ggi.h>
-}
 
-class GLDrawingKit : lcimplements(DrawingKit), virtual public CloneableImpl
+class GLDrawingKit : public DrawingKitBase, public CloneableImpl
 {
 public:
   GLDrawingKit();
   ~GLDrawingKit();
-  Drawable_ptr getDrawable();
 
-  void image(Raster_ptr);
-  void setFont(const Text::FontDescriptor &, const Style::Spec &) throw (Text::NoSuchFontException);
-  Text::Font_ptr currentFont();
-  Pencil_ptr getPencil(const Style::Spec &);
-      
-  ggi_visual_t getVisual() { return drawable->Visual();}
-  void clear(Coord, Coord, Coord, Coord);
-  void sync() { glFlush();}
-  Coord width() { return drawable->width();}
-  Coord height() { return drawable->height();}
+  virtual Transform_ptr transformation() { return tr->_this();}
+  virtual Region_ptr clipping() { return cl->_this();}
+  virtual Color foreground() { return fg;}
+  virtual Coord pointSize() { return ps;}
+  virtual Coord lineWidth() { return lw;}
+  virtual Endstyle lineEndstyle() { return es;}
+  virtual Fillstyle surfaceFillstyle() { return fs;}
+  virtual Raster_ptr texture() { return tx;}
+
+  virtual void setTransformation(Transform_ptr);
+  virtual void setClipping(Region_ptr);
+  virtual void setForeground(const Color &);
+  virtual void setPointSize(Coord);
+  virtual void setLineWidth(Coord);
+  virtual void setLineEndstyle(Endstyle);
+  virtual void setSurfaceFillstyle(Fillstyle);
+  virtual void setTexture(Raster_ptr);
+
+  virtual void drawPath(const Path &);
+//   virtual void drawPatch(const Patch &);
+  virtual void drawRect(const Vertex &, const Vertex &);
+  virtual void drawEllipse(const Vertex &, const Vertex &);
+  virtual void drawImage(Raster_ptr);
+  virtual void drawText(const Unistring &);
+  virtual void flash() { glFlush();}
+
+//   void clear(Coord, Coord, Coord, Coord);
+//   Coord width() { return drawable->width();}
+//   Coord height() { return drawable->height();}
  private:
+  GGI::Drawable *drawable;
+  GGIMesaContext context;
   Mutex mutex;
-  GLFont *font;
-  GLUnifont *gnufont;
-  GLDrawable *drawable;
-  vector<GLPencil *> pencils;
+  TransformImpl *tr;
+  RegionImpl    *cl;
+  Color          fg;
+  Coord          ps;
+  Coord          lw;
+  Endstyle       es;
+  Fillstyle      fs;
+  Raster_var     tx;
+  
   ObjectCache<Raster_var, GLRaster> rasters;
 };
 

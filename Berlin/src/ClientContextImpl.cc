@@ -41,5 +41,3 @@ Unistring *ClientContextImpl::userName()
   for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
   return ustring;
 }
-
-CORBA::Boolean ClientContextImpl::ping() { return (unsigned char)true;}

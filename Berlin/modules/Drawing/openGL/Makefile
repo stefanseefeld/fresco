@@ -29,84 +29,21 @@ top	= ../../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Drawing/openGL
 
-ipath	= $(top)/include
-lpath	= $(top)/lib
-mpath   = $(top)/modules
-dpath	= dep
-opath	= obj
-gpath	= gdb
-ppath	= prf
-rpath	= $(lpath)
-
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(GL_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(GL_LIBS) -lGLtt -lttf
+LIBS	= -lPrague -lBerlin $(GL_LIBS) -lFT #-lttf
 
-SRC	= Pointer.cc GLRaster.cc GLFont.cc GLUnifont.cc \
-	  GLPolygonizer.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
-	  GLDrawable.cc GLPencil.cc GLDrawingKit.cc
+#GLFont.cc GLUnifont.cc
 
-TARGET	= $(lpath)/libDrawing.so
+SRC	= GLRaster.cc GLPolygonizer.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc GLPixmapFont.cc \
+	  GLDrawingKit.cc
+
+TARGET	= $(mpath)/libGLDrawing.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Drawing/openGL
 
-DEP	= $(patsubst %.cc, $(dpath)/%.d, $(SRC))
-OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
-GDB	= $(patsubst %.cc, $(gpath)/%.o, $(SRC))
-PRF	= $(patsubst %.cc, $(ppath)/%.o, $(SRC))
-
-all: subs $(TARGET)
-
-subs:
-	for i in ${subdirs}; do \
-	  make -C $$i; \
-	done
-
-$(TARGET):	$(OBJ)
-		$(CXX) $(LDFLAGS) -Wl,-rpath $(rpath) -o $@ $(OBJ) $(LIBS)
-		strip --strip-unneeded $@
-
-$(dpath)/%.d:	%.cc $(hpath)/%.hh
-		@echo making dependencies for $<
-		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
-		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
-$(opath)/%.o:	%.cc
-		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOFLAGS) -c $< -o $@
-$(gpath)/%.o:	%.cc
-		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
-$(ppath)/%.o:	%.cc
-		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
-
-clean:	
-		rm -f $(opath)/*.o $(gpath)/*.o $(ppath)/*.o $(dpath)/*.d
-		rm -f *~ $(hpath)/*~
-		for i in ${subdirs}; do \
-		  make -C $$i clean; \
-		done
-
-distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
-		for i in ${subdirs}; do \
-		  make -C $$i distclean; \
-		done
-
-install:
-		for i in ${subdirs}; do \
-		  $(MAKE) -C $$i install; \
-		done
-		install -m644 $(TARGET) $(libdir)
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean) 
--include $(DEP)
-endif 
-endif
+include $(cpath)/module.mk

@@ -44,25 +44,26 @@ struct Color
   double alpha;
 };
 
-typedef sequence<Vertex> ControlPoints;
-typedef sequence<double> EvalMesh;
+// typedef sequence<Vertex> ControlPoints;
+// typedef sequence<double> EvalMesh;
 
-struct Path
-{
-  ControlPoints p;
-  EvalMesh m; // might be 0-length, in which case path is lines
-};
+typedef sequence<Vertex> Path;
+// struct Path
+// {
+//   ControlPoints p;
+//   EvalMesh m; // might be 0-length, in which case path is lines
+// };
 
-struct Patch
-{
-  ControlPoints p;
-  EvalMesh m; // might be 0-length, in which case patch is quads
+// struct Patch
+// {
+//   ControlPoints p;
+//   EvalMesh m; // might be 0-length, in which case patch is quads
   
-  // the strides define the width of a row, since the above sequences
-  // are flattened 2-dimeesional arrays.
+//   // the strides define the width of a row, since the above sequences
+//   // are flattened 2-dimeesional arrays.
   
-  long meshStride, controlStride;
-};
+//   long meshStride, controlStride;
+// };
 
 
 ////////////////////////////////////////////////////////////////////////////////////

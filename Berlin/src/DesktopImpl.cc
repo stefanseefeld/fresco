@@ -26,7 +26,6 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Transform.hh"
-#include "Warsaw/Pencil.hh"
 #include "Warsaw/Region.hh"
 
 DesktopImpl::DesktopImpl() : ControllerImpl(false) {}

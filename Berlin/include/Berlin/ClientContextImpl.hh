@@ -41,7 +41,7 @@ public:
   ClientContextImpl();
   
   Unistring *userName();
-  CORBA::Boolean ping();
+  void ping() {}
 protected:
   Prague::User *user;
 };

@@ -25,24 +25,35 @@
 
 #include "Types.idl"
 #include "Cloneable.idl"
-#include "Style.idl"
-#include "Text.idl"
 
-interface Drawable;
-interface Pencil;
-interface Raster;
 interface Transform;
+interface Region;
+interface Raster;
+interface FontDescriptor;
 
 interface DrawingKit : Cloneable 
 {
-  void image(in Raster r);
-  void setFont(in Text::FontDescriptor fd, in Style::Spec sty) 
-    raises (Text::NoSuchFontException);
-  readonly attribute Text::Font currentFont;
+  enum Endstyle { butt, cap, round};
+  enum Fillstyle { outline, solid, textured, gradient};
+  void saveState();
+  void restoreState();
+  attribute Transform transformation;
+  attribute Region clipping;
+  attribute Color foreground;
+  attribute Coord pointSize;
+  attribute Coord lineWidth;
+  attribute Endstyle lineEndstyle;
+  attribute Fillstyle surfaceFillstyle;
+  attribute Raster texture;
+//   attribute FontDescriptor font;
 
-  Drawable getDrawable();
-  Pencil getPencil(in Style::Spec sty);
-  
+  void drawPath(in Path p);
+//   void drawPatch(in Patch p);
+  void drawRect(in Vertex lower, in Vertex upper);
+  void drawEllipse(in Vertex lower, in Vertex upper);
+  void drawImage(in Raster r);
+  void drawText(in Unistring s);
+  void flush();
 };
 
 #endif /* _DrawingKit_idl */

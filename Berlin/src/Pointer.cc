@@ -21,11 +21,7 @@
  * MA 02139, USA.
  */
 #include "Prague/Sys/Memory.hh"
-#include "Drawing/openGL/Pointer.hh"
-extern "C"
-{
-#include "ggi/ggi.h"
-}
+#include "Berlin/Pointer.hh"
 #include <iostream>
 #include <algorithm>
 
@@ -51,13 +47,13 @@ static unsigned char pointerImg[256] =
   0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0 };
 
   
-Pointer::Pointer(ggi_visual_t visual)
+Pointer::Pointer(GGI::Drawable *drawable)
 {
   origin[0] = origin[1] = 0;
   position[0] = position[1] = 8;
   size[0] = size[1] = 16;
 
-  if (!(dbuf = ggiDBGetBuffer (visual, 0)) )
+  if (!(dbuf = drawable->buffer (0)))
     cerr << "Error getting display buffer" << endl;
   else if (dbuf->layout != blPixelLinearBuffer)
     cerr << "Error: nonlinear display buffer" << endl;
@@ -65,10 +61,7 @@ Pointer::Pointer(ggi_visual_t visual)
     cerr << "Error: non-standard display buffer" << endl;
   depth = dbuf->buffer.plb.pixelformat->size >> 3;
   stride = dbuf->buffer.plb.stride;
-
-  ggi_mode m;
-  ggiGetMode(visual, &m);
-  maxCoord = m.virt.x * m.virt.y;
+  maxCoord = drawable->vwidth() * drawable->vheight();
 
   /*
    * create the pointer image
@@ -76,18 +69,18 @@ Pointer::Pointer(ggi_visual_t visual)
   image = new unsigned char[size[0]*size[1]*depth];
   for (unsigned short y = 0; y != size[1]; y++)
     for (unsigned short x = 0; x != size[0]; x++)
-	for (unsigned short d = 0; d != depth; d++)
-	    image[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] * 127;
+      for (unsigned short d = 0; d != depth; d++)
+	image[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] * 127;
   
   /*
    * create the pointer mask
    */
   mask = new unsigned char[size[0]*size[1]*depth];
   for (unsigned short y = 0; y != size[1]; y++)
-      for (unsigned short x = 0; x != size[0]; x++)
-	  for (unsigned short d = 0; d != depth; d++)
-	      mask[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] > 0 ? ~0 : 0;
-
+    for (unsigned short x = 0; x != size[0]; x++)
+      for (unsigned short d = 0; d != depth; d++)
+	mask[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] > 0 ? ~0 : 0;
+  
   cache = new unsigned char[size[0]*size[1]*depth];
   backup();
 }

@@ -103,7 +103,7 @@ bool ServerContextImpl::ping()
   try
     {
       if (CORBA::is_nil(cContext)) alive = false;
-      else alive = cContext->ping();
+      else cContext->ping();
     }
   catch (...)
     {

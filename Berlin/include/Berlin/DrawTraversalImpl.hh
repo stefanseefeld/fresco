@@ -46,8 +46,8 @@ public:
   virtual CORBA::Boolean ok() { return true;}
   virtual DrawingKit_ptr kit();
 private:
-  DrawingKit_var drawingkit;
-  Drawable_var drawable;
+  DrawingKit_var drawing;
+//   Drawable_var drawable;
   Region_var clipping;
 };
 

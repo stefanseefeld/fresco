@@ -22,9 +22,27 @@
 #include "Berlin/GGI.hh"
 #include "Prague/Sys/FdSet.hh"
 
-GGI::GGI() throw (exception)
+vector<GGI::Drawable *> GGI::drawables;
+
+GGI::GGI()// throw (exception)
 {
   ggiInit();
+}
+
+GGI::~GGI()
+{
+  for (vector<Drawable *>::iterator i = drawables.begin(); i != drawables.end(); i++) delete *i;
+  ggiExit();
+}
+
+GGI::Drawable *GGI::drawable()
+{
+  if (!drawables.size()) drawables.push_back(new Drawable);
+  return drawables.front();
+}
+
+GGI::Drawable::Drawable() // throw (exception)
+{
   visual = ggiOpen(0);
   if (!visual) throw exception();
   mode.visible.x = mode.visible.y = GGI_AUTO;
@@ -48,13 +66,14 @@ GGI::GGI() throw (exception)
   pipe(wakeupPipe);
 }
 
-GGI::~GGI()
+GGI::Drawable::~Drawable()
 {
+  close(wakeupPipe[0]);
+  close(wakeupPipe[1]);
   ggiClose(visual);
-  ggiExit();
 }
 
-bool GGI::nextEvent(ggi_event &event)
+bool GGI::Drawable::nextEvent(ggi_event &event)
 {
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   Prague::FdSet rfdset;
@@ -68,4 +87,6 @@ bool GGI::nextEvent(ggi_event &event)
   return false;
 }
 
-void GGI::wakeup() { char c = 'z'; write(wakeupPipe[1],&c,1);}
+void GGI::Drawable::wakeup() { char c = 'z'; write(wakeupPipe[1],&c,1);}
+
+GGI ggi;

@@ -29,25 +29,24 @@
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
-    drawingkit(DrawingKit::_duplicate(kit)),
-    drawable(drawingkit->getDrawable()),
+    drawing(DrawingKit::_duplicate(kit)),
     clipping(Region::_duplicate(r))
 {
-  drawable->pushClipping(clipping, Transform_var(Transform::_nil()));
+  drawing->saveState();
+  drawing->clipping(clipping);
 }
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
   : TraversalImpl(t),
-    drawingkit(t.drawingkit),
-    drawable(t.drawable),
+    drawing(t.drawing),
     clipping(t.clipping)
 {
-//   drawable->pushClipping(clipping, Transform_var(Transform::_nil()));
+//   drawing->clipping(clipping);
 }
 
 DrawTraversalImpl::~DrawTraversalImpl()
 {
-  drawable->popClipping();
+  drawing->restoreState();
 }
 
 CORBA::Boolean DrawTraversalImpl::intersectsAllocation()
@@ -72,11 +71,12 @@ void DrawTraversalImpl::traverseChild(Graphic_ptr g, Tag t, Region_ptr region, T
 //   tx->copy(Transform_var(transformation()));
 //   tx->premultiply(transform);
 //   drawable->pushClipping(region, Transform_var(tx->_this()));
-  drawable->pushTransform(transform);
+  drawing->saveState();
+//   drawing->pushTransform(transform);
   TraversalImpl::traverseChild(g, t, region, transform);
-  drawable->popTransform();
+  drawing->restoreState();
 //   drawable->popClipping();
 };
 
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}
-DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawingkit);}
+DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawing);}

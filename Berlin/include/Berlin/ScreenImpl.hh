@@ -36,7 +36,7 @@ class GLDrawingKit;
 class ScreenImpl : implements(Screen), public ControllerImpl
 {
 public:
-  ScreenImpl(GLDrawingKit *);
+  ScreenImpl(DrawingKit_ptr);
   virtual ~ScreenImpl();
 
   virtual void pick(PickTraversal_ptr);
@@ -52,7 +52,7 @@ public:
   ScreenManager *manager();
   Region_ptr getRegion();
 protected:
-  GLDrawingKit  *drawing;
+  DrawingKit_var  drawing;
   ScreenManager *smanager;
   Impl_var<RegionImpl> region;
   EventManager  *emanager;
