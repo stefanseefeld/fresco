@@ -25,8 +25,7 @@
 
 // CONSTRUCTORS:
 Babylon::String::String() {
-    resize(1);
-    (*this)[0] = Babylon::UC_NULL;
+    resize(0);
     m_current_norm = NORM_NONE;
 }
 
