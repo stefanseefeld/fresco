@@ -28,12 +28,14 @@ CommandKitImpl::~CommandKitImpl() {}
 
 Reactor_ptr CommandKitImpl::asyncReactor() {
   AsyncReactorImpl *r = new AsyncReactorImpl();
+  r->active(true);
   r->_obj_is_ready(_boa());
   return r->_this();
 }
 
 Reactor_ptr CommandKitImpl::syncReactor() {
   ReactorImpl *r = new ReactorImpl();
+  r->active(true);
   r->_obj_is_ready(_boa());
   return r->_this();
 }
