@@ -187,7 +187,7 @@ dnl	os_major_version=2
 		save_LDFLAGS="$LDFLAGS"
 		save_CPPFLAGS="$CPPFLAGS"
 		LDFLAGS="$omniorb_libs $LDFLAGS"
-		CPPFLAGS="$omniorb_defs $omniorb2_includes $CPPFLAGS"
+		CPPFLAGS="$omniorb_defs $omniorb_includes $CPPFLAGS"
 		
 		dnl Check if everything works
 		AC_TRY_RUN([
