@@ -78,8 +78,9 @@ void SDL::Pointer::move(Fresco::Coord x, Fresco::Coord y)
 // class SDL::nonGLPointer (implementation)
 // ---------------------------------------------------------------
 
-SDL::nonGLPointer::nonGLPointer(Drawable * drawable, Fresco::Raster_ptr raster) :
-  _screen(dynamic_cast<SDL::Drawable *>(drawable))
+SDL::nonGLPointer::nonGLPointer(Drawable * drawable, Fresco::Raster_ptr raster,
+                                void *)
+  : _screen(dynamic_cast<SDL::Drawable *>(drawable))
 {
   Prague::Trace trace("SDL::nonGLPointer::nonGLPointer(...)");
 

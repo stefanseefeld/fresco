@@ -30,31 +30,60 @@
 // ---------------------------------------------------------------
 // class SDL::GLExposeHandler (implementation)
 // ---------------------------------------------------------------
+class SDL::GLExposeHandler::Callback : public virtual GLContext::Callback {
+public:
+  void operator()() {
+    ::Console::Drawable * drawable =
+        dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
+
+    //glDisable(GL_ALPHA_TEST);
+    glDisable(GL_BLEND);
+    glDisable(GL_SCISSOR_TEST);
+    
+    glReadBuffer(GL_BACK);
+    glDrawBuffer(GL_FRONT);
+    glRasterPos2i(0, 0);
+
+    glCopyPixels(0, 0, drawable->width(), drawable->height(), GL_COLOR);
+    glFlush();
+
+    //glEnable(GL_ALPHA_TEST);
+    glEnable(GL_BLEND);
+    glEnable(GL_SCISSOR_TEST);
+
+    glDrawBuffer(GL_BACK);
+    delete this;
+  }
+};
+
 void SDL::GLExposeHandler::refresh_screen()
 {
   Prague::Trace trace("SDL::GLExposeHandler::refresh_screen()");
 
-  ::Console::Drawable * drawable =
-    dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
-
-  glDisable(GL_ALPHA_TEST);
-  glDisable(GL_BLEND);
-  glDisable(GL_SCISSOR_TEST);
-
-  glReadBuffer(GL_BACK);
-  glDrawBuffer(GL_FRONT);
-  glRasterPos2i(0, 0);
-
-  glCopyPixels(0, 0, drawable->width(), drawable->height(), GL_COLOR);
-  glFlush();
-
-  glEnable(GL_ALPHA_TEST);
-  glEnable(GL_BLEND);
-  glEnable(GL_SCISSOR_TEST);
-
-  glDrawBuffer(GL_BACK);
-  
+  _glcontext->add_to_queue(new Callback());
   _glcontext->flush();
+}
+
+
+
+
+
+// ---------------------------------------------------------------
+// Listener thread implementation.
+// ---------------------------------------------------------------
+
+void *listen(void *q)
+{
+  Prague::Thread::Queue<GLContext::Callback *> *queue =
+    static_cast<Prague::Thread::Queue<GLContext::Callback *> *>(q);
+  while(1) {
+    GLContext::Callback *_cb = queue->top();
+    queue->pop();
+    (*_cb)();
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR)
+      std::cerr << "GL ERROR: " << error << std::endl;
+  }
 }
 
 
@@ -65,9 +94,78 @@ void SDL::GLExposeHandler::refresh_screen()
 // class SDL::GLContext (implementation)
 // ---------------------------------------------------------------
 
+class SDL::GLContext::Initialize : public virtual GLContext::Callback {
+  friend class SDL::GLContext;
+public:
+  Initialize::Initialize(Fresco::PixelCoord w, Fresco::PixelCoord h)
+  : my_width(w), my_height(h), complete(false) {}
+  void operator()() {
+    ::Console::Drawable * drawable =
+        dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    surface = SDL_SetVideoMode(my_width, my_height, 0,
+                               SDL_HWSURFACE | SDL_HWPALETTE |
+                               SDL_OPENGL |
+                               SDL_DOUBLEBUF |
+                               SDL_HWACCEL);
+    SDL_WM_SetCaption("Berlin on SDL (OpenGL)", NULL);
+
+    int bits;
+    glGetIntegerv(GL_DEPTH_BITS, &bits);
+    switch (bits) 
+      {
+      case  0: depth = 0; break;
+      case  8: depth = 1; break;
+      case 16: depth = 2; break;
+      case 24: depth = 3; break;
+      case 32: depth = 4; break;
+      default:
+        depth = 0;
+      }
+    glDrawBuffer(GL_BACK);
+
+    // XXX decouple SDLGL and GLDrawingKit.
+    glViewport(0, 0, my_width, my_height);
+    glMatrixMode(GL_PROJECTION); 
+    glLoadIdentity();
+    glOrtho(0, my_width/drawable->resolution(Fresco::xaxis),
+	    my_height/drawable->resolution(Fresco::yaxis), 0, -5000.0, 5000.0); 
+    //glTranslatef(0.375, 0.375, 0.);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glShadeModel(GL_SMOOTH);
+    //glFrontFace(GL_CW);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_DITHER);
+    glEnable(GL_ALPHA_TEST);
+    glEnable(GL_SCISSOR_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    complete = true;
+  }
+private:
+  bool complete;
+  Fresco::PixelCoord my_width, my_height;
+  SDL_Surface *surface;
+  int depth;
+};
+
+void SDL::GLContext::add_to_queue(::GLContext::Callback *_cb) {
+  queue->push(_cb);
+}
+
 SDL::GLContext::GLContext()
 {
   Prague::Trace trace("SDL::GLContext::GLContext()");
+
+  queue = new Prague::Thread::Queue<GLContext::Callback *>(2147000);
+
+  gl_thread = new Prague::Thread(listen, queue);
+  gl_thread->start();
 
   _drawable =
     dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
@@ -76,48 +174,28 @@ SDL::GLContext::GLContext()
   Fresco::PixelCoord h(_drawable->height());
   
   Logger::log(Logger::loader) << "setting video mode GL " << " w="
-			      << w << " h= " << h << std::endl;
+                              << w << " h= " << h << std::endl;
   
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_Surface * surface = SDL_SetVideoMode(w, h, 0,
-					   SDL_HWSURFACE | SDL_HWPALETTE |
-					   SDL_OPENGL |
-					   SDL_DOUBLEBUF |
-					   SDL_HWACCEL);
-  SDL_WM_SetCaption("Berlin on SDL (OpenGL)", NULL);
-  SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &_isDoubleBuffered);
-  if (!_isDoubleBuffered) {
-    std::cout << "SDL_Error: " << SDL_GetError() << std::endl;
-    throw;
-  }
-  
+  Initialize *init = new Initialize(w, h);
+  // XXX instead, the listener thread should do this in its own initialization.
+  add_to_queue(init);
+  while (!init->complete) { Prague::Thread::delay(Prague::Time(1000));}
+
   // HACK: Replace the 'real' drawable with its OpenGL-replacement.
-  _drawable->_surface = surface;
+  _drawable->_surface = init->surface;
+  _drawable->_depth = init->depth;
   _drawable->_width = w;
   _drawable->_height = h;
-  
-  int bits;
-  glGetIntegerv(GL_DEPTH_BITS, &bits);
-  switch (bits) 
-    {
-    case  0: _drawable->_depth = 0; break;
-    case  8: _drawable->_depth = 1; break;
-    case 16: _drawable->_depth = 2; break;
-    case 24: _drawable->_depth = 3; break;
-    case 32: _drawable->_depth = 4; break;
-    default:
-      _drawable->_depth = 0;
-    }
-
-  glDrawBuffer(GL_BACK);
 
   // setup PointerManager:
   dynamic_cast<SDL::Console *>(::Console::instance())->
-    set_PointerManager(new SDL::PointerManagerT<GLPointer>);
+    set_PointerManager(new SDL::PointerManagerT<GLPointer>(this));
 
   // setup ExposeHandler:
   dynamic_cast<SDL::Console *>(::Console::instance())->
     set_ExposeHandler(new SDL::GLExposeHandler(this));
+
+  delete init;
 }
 
 
@@ -127,14 +205,15 @@ SDL::GLContext::~GLContext()
 }
 
 
-void SDL::GLContext::flush() {
-  Prague::Trace trace("SDL::GLContext::flush()");
-  
-  if (_isDoubleBuffered) {
-    glFlush();
+class SDL::GLContext::Flush : public virtual GLContext::Callback {
+  friend class GLContext;
+public:
+  Flush::Flush(Fresco::PixelCoord width, Fresco::PixelCoord height)
+    : my_width(width), my_height(height) {}
+  void operator()() {
     SDL_GL_SwapBuffers();
 
-    glDisable(GL_ALPHA_TEST);
+    //glDisable(GL_ALPHA_TEST);
     glDisable(GL_BLEND);
     glDisable(GL_SCISSOR_TEST);
 
@@ -142,14 +221,21 @@ void SDL::GLContext::flush() {
     glDrawBuffer(GL_BACK);
     glRasterPos2i(0, 0);
 
-    glCopyPixels(0, 0, _drawable->width(), _drawable->height(), GL_COLOR);
+    glCopyPixels(0, 0, my_width, my_height, GL_COLOR);
 
-    glEnable(GL_ALPHA_TEST);
+    //glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glEnable(GL_SCISSOR_TEST);
-  } else {
-    // FIXME: TODO
+    delete this;
   }
+private:
+  Fresco::PixelCoord my_width, my_height;
+};
+
+void SDL::GLContext::flush() {
+  Prague::Trace trace("SDL::GLContext::flush()");
+  
+  add_to_queue(new Flush(_drawable->width(), _drawable->height()));
 }
 
 
@@ -160,7 +246,10 @@ void SDL::GLContext::flush() {
 // class SDL::GLPointer (implementation)
 // ---------------------------------------------------------------
 
-SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster)
+SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster,
+                          GLContext *glcontext)
+  : my_raster(Fresco::Raster::_duplicate(raster)),
+    my_glcontext(glcontext)
 {
   Prague::Trace trace("SDL::GLPointer::GLPointer(...)");
 
@@ -169,9 +258,6 @@ SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster)
 
   // get screensizes:
   _max_y_size = drawable->height();
-
-  // copy over the Raster:
-  _raster = Fresco::Raster::_duplicate(raster);
 
   // Disable SDL default mousecursor
   SDL_ShowCursor(0);
@@ -189,8 +275,8 @@ SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster)
   _scale[0] = 1.0/drawable->resolution(Fresco::xaxis);
   _scale[1] = 1.0/drawable->resolution(Fresco::yaxis);
 
-  _cursor = new Uint8[_size[0] * _size[1] * 4]; // RGBA
-  _saved_area = new Uint8[_size[0] * _size[1] * 3]; //RGB
+  my_cursor = std::vector<unsigned char> (_size[0] * _size[1] * 4); // RGBA
+  my_saved_area = std::vector<unsigned char> (_size[0] * _size[1] * 3); // RGB
 
   unsigned pos = 0;
   Fresco::Color c;
@@ -198,14 +284,14 @@ SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster)
   for (unsigned short y = 0; y != _size[1]; ++y)
     for (unsigned short x = 0; x != _size[0]; ++x)
       {
-	c = (*(pixels->get_buffer() + y * info.width + x));
+        c = (*(pixels->get_buffer() + y * info.width + x));
 
-	pos = (((_size[1] - 1 - y) * _size[0] + x) << 2);
+        pos = (((_size[1] - 1 - y) * _size[0] + x) << 2);
 
-	_cursor[pos + 0] = Uint8(c.red   * 0xFF);
-	_cursor[pos + 1] = Uint8(c.green * 0xFF);
-	_cursor[pos + 2] = Uint8(c.blue  * 0xFF);
-	_cursor[pos + 3] = Uint8(c.alpha * 0xFF);
+        my_cursor[pos + 0] = static_cast<unsigned char>(c.red   * 0xFF);
+        my_cursor[pos + 1] = static_cast<unsigned char>(c.green * 0xFF);
+        my_cursor[pos + 2] = static_cast<unsigned char>(c.blue  * 0xFF);
+        my_cursor[pos + 3] = static_cast<unsigned char>(c.alpha * 0xFF);
       }
 
   // set position
@@ -216,10 +302,35 @@ SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster)
 SDL::GLPointer::~GLPointer()
 {
   restore();
-  delete[] _cursor;
-  delete[] _saved_area;
 }
 
+class SDL::GLPointer::Save : public virtual GLContext::Callback {
+  friend class SDL::GLPointer;
+public:
+  Save::Save(Fresco::PixelCoord x, Fresco::PixelCoord y,
+             Fresco::PixelCoord width, Fresco::PixelCoord height,
+	     Fresco::PixelCoord xscale, Fresco::PixelCoord yscale,
+             std::vector<unsigned char> &buffer)
+    : my_x(x), my_y(y), my_width(width), my_height(height),
+      my_xscale(xscale), my_yscale(yscale),
+      my_buffer(buffer) {}
+  void operator()() {
+    // XXX pixelstore, transfer and map could be corrupted.
+    GLint buffer;
+    glGetIntegerv(GL_READ_BUFFER, &buffer);
+    glReadBuffer(GL_FRONT);
+    //glReadPixels(my_x * my_xscale, my_y * my_yscale, my_width, my_height,
+    glReadPixels(my_x, my_y, my_width, my_height,
+                 GL_RGB, GL_UNSIGNED_BYTE, &my_buffer[0]);
+    glReadBuffer(buffer);
+    delete this;
+  }
+private:
+  Fresco::PixelCoord my_x, my_y;
+  Fresco::PixelCoord my_width, my_height;
+  Fresco::PixelCoord my_xscale, my_yscale;
+  std::vector<unsigned char> &my_buffer;
+};
 
 void SDL::GLPointer::save()
 {
@@ -232,20 +343,47 @@ void SDL::GLPointer::save()
     offset = y - _max_y_size + 1;
     y = _max_y_size-1;
   }
-  glDisable(GL_BLEND);
-  glDisable(GL_ALPHA);
-  glDisable(GL_SCISSOR_TEST);
 
-  glReadBuffer(GL_FRONT);
-  glReadPixels(x, y,
-	       _size[0], _size[1]-offset,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       _saved_area);
-  glEnable(GL_BLEND);
-  glEnable(GL_ALPHA);
-  glEnable(GL_SCISSOR_TEST);
+  my_glcontext->add_to_queue(new Save(x, y, _size[0], _size[1]-offset,
+				      _scale[0], _scale[1],
+                                      my_saved_area));
 }
 
+class SDL::GLPointer::Restore : public virtual GLContext::Callback {
+  friend class SDL::GLPointer;
+public:
+  Restore::Restore(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                   Fresco::PixelCoord width, Fresco::PixelCoord height,
+                   Fresco::PixelCoord xscale, Fresco::PixelCoord yscale,
+                   unsigned char *buffer)
+    : my_x(x), my_y(y), my_width(width), my_height(height),
+      my_xscale(xscale), my_yscale(yscale),
+      my_buffer(buffer) {}
+  void operator()() {
+    GLint buffer;
+    glGetIntegerv(GL_DRAW_BUFFER, &buffer);
+    glDisable(GL_BLEND);
+    //glDisable(GL_ALPHA_TEST);
+    glDisable(GL_SCISSOR_TEST);
+
+    glDrawBuffer(GL_FRONT);
+    glRasterPos2i((int)(my_x * my_xscale), (int)(my_y * my_yscale));
+    //glRasterPos2i((int)(my_x * 10), (int)(my_y * 10));
+    glDrawPixels(my_width, my_height, GL_RGB, GL_UNSIGNED_BYTE,
+                 my_buffer);
+    glDrawBuffer(buffer);
+
+    glEnable(GL_BLEND);
+    //glEnable(GL_ALPHA_TEST);
+    glEnable(GL_SCISSOR_TEST);
+    delete this;
+  }
+private:
+  Fresco::PixelCoord my_x, my_y;
+  Fresco::PixelCoord my_width, my_height;
+  Fresco::PixelCoord my_xscale, my_yscale;
+  unsigned char *my_buffer;
+};
 
 void SDL::GLPointer::restore()
 {
@@ -255,23 +393,46 @@ void SDL::GLPointer::restore()
   Fresco::PixelCoord y = _position[1] + _size[1] - _origin[1];
   int offset = 0;
   if (y >= _max_y_size) {
-    offset = y - _max_y_size + 1;
-    y = _max_y_size-1;
+    offset = y - _max_y_size;
+    y = _max_y_size;
   }
-  glDisable(GL_BLEND);
-  glDisable(GL_ALPHA);
-  glDisable(GL_SCISSOR_TEST);
-
-  glRasterPos2i((int)(x * _scale[0]), (int)(y * _scale[1]));
-  glDrawBuffer(GL_FRONT);
-  glDrawPixels(_size[0], _size[1]-offset, GL_RGB, GL_UNSIGNED_BYTE, _saved_area); 
-
-  glEnable(GL_BLEND);
-  glEnable(GL_ALPHA);
-  glEnable(GL_SCISSOR_TEST);
-  glDrawBuffer(GL_BACK);
+  my_glcontext->add_to_queue(new Restore(x, y, _size[0], _size[1]-offset,
+                                         _scale[0], _scale[1],
+                                         &my_saved_area[offset*3*_size[0]]));
 }
 
+class SDL::GLPointer::Draw : public virtual GLContext::Callback {
+  friend class SDL::GLPointer;
+public:
+  Draw::Draw(Fresco::PixelCoord x, Fresco::PixelCoord y,
+             Fresco::PixelCoord width, Fresco::PixelCoord height,
+             Fresco::PixelCoord xscale, Fresco::PixelCoord yscale,
+             unsigned char *cursor)
+    : my_x(x), my_y(y), my_width(width), my_height(height),
+      my_xscale(xscale), my_yscale(yscale),
+      my_cursor(cursor) {}
+  void operator()() {
+    GLint buffer;
+    glGetIntegerv(GL_DRAW_BUFFER, &buffer);
+    glDisable(GL_SCISSOR_TEST);
+
+    glDrawBuffer(GL_FRONT);
+    glRasterPos2i((int)(my_x * my_xscale), (int)(my_y * my_yscale));
+    //glWindowPos2iARB(my_x, my_y);
+    glDrawPixels(my_width, my_height, GL_RGBA, GL_UNSIGNED_BYTE,
+                 my_cursor);
+    glDrawBuffer(buffer);
+    
+    glEnable(GL_SCISSOR_TEST);
+    glFlush();
+    delete this;
+  }
+private:
+  Fresco::PixelCoord my_x, my_y;
+  Fresco::PixelCoord my_width, my_height;
+  Fresco::PixelCoord my_xscale, my_yscale;
+  unsigned char *my_cursor;
+};
 
 void SDL::GLPointer::draw()
 {
@@ -284,15 +445,10 @@ void SDL::GLPointer::draw()
     offset = y - _max_y_size + 1;
     y = _max_y_size-1;
   }
-  glDisable(GL_SCISSOR_TEST);
 
-  glDrawBuffer(GL_FRONT);
-  glRasterPos2i((int)(x * _scale[0]), (int)(y * _scale[1]));
-  glDrawPixels(_size[0], _size[1]-offset, GL_RGBA, GL_UNSIGNED_BYTE, _cursor+(offset*_size[0]*4));
-
-  glEnable(GL_SCISSOR_TEST);
-  glFlush();
-  glDrawBuffer(GL_BACK);
+  my_glcontext->add_to_queue(new Draw(x, y, _size[0], _size[1]-offset,
+				      _scale[0], _scale[1],
+				      &my_cursor[offset*_size[0]*4]));
 }
 
 

@@ -111,7 +111,7 @@ SDL::Console::Console(int &argc, char **argv,
 #endif
   _autoplay(false),
   _is_gl(false),
-  _pointer_mgr(new PointerManagerT<nonGLPointer>),
+  _pointer_mgr(new PointerManagerT<nonGLPointer>(0)),
   _expose(0)
 {
   _size[0] = x;

@@ -23,6 +23,8 @@
 #ifndef _SDLGL_hh
 #define _SDLGL_hh
 
+#include <Prague/Sys/Thread.hh>
+#include <Prague/Sys/ThreadQueue.hh>
 #include <Berlin/Console/GLContext.hh>
 #include "Pointer.hh"
 
@@ -49,6 +51,7 @@ public:
 
   void refresh_screen();
 private:
+  class Callback;
   GLContext * _glcontext;
 };
 
@@ -60,15 +63,22 @@ private:
 // class GLContext
 // ---------------------------------------------------------------
 
-class GLContext : public ::GLContext
+class GLContext : public virtual ::GLContext
 {
 public:
   GLContext();
   virtual ~GLContext();
 
+  void add_to_queue(::GLContext::Callback *);
   void flush();
 
 private:
+  Prague::Thread *gl_thread;
+  Prague::Thread::Queue<GLContext::Callback *> *queue;
+
+  class Initialize;
+  class Flush;
+
   SDL::Drawable     *_drawable;
   int                _isDoubleBuffered;
 };
@@ -84,7 +94,7 @@ private:
 class GLPointer : public SDL::Pointer
 {
 public:
-  GLPointer(Drawable *, Fresco::Raster_ptr);
+  GLPointer(Drawable *, Fresco::Raster_ptr, GLContext *glcontext);
   ~GLPointer();
 
   void draw();
@@ -92,10 +102,16 @@ public:
   void restore();
 
 private:
+  GLContext *my_glcontext;
   Fresco::PixelCoord _max_y_size;
+  Fresco::Raster_ptr my_raster;
 
-  Uint8  * _cursor;
-  Uint8  * _saved_area;
+  class Save;
+  class Restore;
+  class Draw;
+
+  std::vector<unsigned char> my_cursor;
+  std::vector<unsigned char> my_saved_area;
 };
 
 }; // namespace SDL

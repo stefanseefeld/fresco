@@ -48,6 +48,8 @@ namespace SDL
 class Drawable;
 class Pointer;
 
+class GLContext;
+
 // ---------------------------------------------------------------
 // class SDL::PointerManager declaration
 // ---------------------------------------------------------------
@@ -68,11 +70,15 @@ template<typename PointerT>
 class PointerManagerT : public PointerManager
 {
 public:
+  PointerManagerT::PointerManagerT(GLContext *glcontext)
+    : my_glcontext(glcontext) {}
   SDL::Pointer * create_pointer(Fresco::Raster_ptr raster) {
     return new PointerT(dynamic_cast
-			<SDL::Drawable *>(::Console::instance()->drawable()),
-			raster);
+                        <SDL::Drawable *>(::Console::instance()->drawable()),
+                        raster, my_glcontext);
   }
+private:
+  GLContext *my_glcontext;
 };
 
 

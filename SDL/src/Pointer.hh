@@ -78,7 +78,7 @@ private:
 class nonGLPointer : public SDL::Pointer
 {
 public:
-  nonGLPointer(Drawable *, Fresco::Raster_ptr);
+  nonGLPointer(Drawable *, Fresco::Raster_ptr, void *);
   ~nonGLPointer();
 
   void draw();

@@ -168,7 +168,7 @@ inline Fresco::PixelCoord SDL::Drawable::row_length() const {
   return _width * _depth; // return bytes-per-row
 }
 
-void SDL::Drawable::flush() { SDL_UpdateRect( _surface, 0, 0, _width, _height);}
+void SDL::Drawable::flush() { SDL_UpdateRect( _surface, 0, 0, 0, 0);}
 
 
 void SDL::Drawable::flush(Fresco::PixelCoord x, Fresco::PixelCoord y,
@@ -176,6 +176,8 @@ void SDL::Drawable::flush(Fresco::PixelCoord x, Fresco::PixelCoord y,
 {
   if (x < 0) { w += x; x = 0;}
   if (y < 0) { h += y; y = 0;}
+  if (w > _width) { w = _width;}
+  if (h > _height) { h = _height;}
   SDL_UpdateRect(_surface, x, y, w, h);
 }
 
