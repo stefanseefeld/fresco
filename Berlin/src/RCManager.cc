@@ -37,7 +37,7 @@ const std::string sysconfdir = "";
 // ----------------------------------------------------------------------
 static std::map<std::string, Prague::Path> my_paths;
 
-namespace RCManager_internals
+namespace
 {
   void read_file(const std::string &file)
   {
@@ -81,7 +81,7 @@ void Berlin::RCManager::setup(Prague::GetOpt const &getopt)
         try
         {
             value = Prague::Path::expand_user(value);
-            RCManager_internals::read_file(value);
+            read_file(value);
             Logger::log(Logger::loader) << "Resourcefile \""
                                         << value << "\" read."
                                         << std::endl;
@@ -102,7 +102,7 @@ void Berlin::RCManager::setup(Prague::GetOpt const &getopt)
         bool is_configured = 0;
         try
         {
-            RCManager_internals::read_file(value);
+            read_file(value);
             is_configured = 1;
             Logger::log(Logger::loader) << "Resourcefile \""
                                         << value << "\" read."
@@ -126,7 +126,7 @@ void Berlin::RCManager::setup(Prague::GetOpt const &getopt)
         {
             if (!is_configured) 
             {
-                RCManager_internals::read_file(value);
+                read_file(value);
                 Logger::log(Logger::loader) << "Resourcefile \""
                                             << value << "\" read."
                                             << std::endl;
