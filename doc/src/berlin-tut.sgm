@@ -241,7 +241,7 @@
 
 
 </sect1>
-<sect1><title>events</title>
+<sect1><title>The logical control graph - input event handling</title>
 <para>
 	<!-- talk about events -->Users interact with the scene graph by feeding
 	the display server with events, from a wide variety of physical input
@@ -254,8 +254,7 @@
 	are categorized (at the moment) by very simple type tags. we hope in the
 	future modify this to work with an event attribute trading service, such
 	that an application can deal with events strictly in terms of the type
-	of information th
-ey convey, rather than the fixed device type which
+	of information they convey, rather than the fixed device type which
 	created them. -->
 
 	It is a difficult task to design a user interface which will work not 
