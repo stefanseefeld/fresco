@@ -37,7 +37,7 @@ public:
   {
     Trace trace("PolyGraphic::Iterator::child");
     Prague::Guard<Mutex> guard(_parent->_mutex);
-    if (_cursor >= _parent->_children.size()) return Fresco::Graphic::_nil();
+    if (_cursor > _parent->_children.size()) return Fresco::Graphic::_nil();
     return RefCount_var<Fresco::Graphic>::increment(_parent->_children[_cursor].peer);
   }
   virtual void next() { _cursor++;}
@@ -80,7 +80,7 @@ public:
     Trace trace("PolyGraphic::Iterator::remove");
     {
       Prague::Guard<Mutex> guard(_parent->_mutex);
-      if (_cursor >= _parent->_children.size()) return;
+      if (_cursor > _parent->_children.size()) return;
 
       GraphicImpl::glist_t::iterator i = _parent->_children.begin() + _cursor;
       try
