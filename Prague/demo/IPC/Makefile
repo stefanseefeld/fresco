@@ -64,12 +64,12 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   MMapServer MMapClient PipeAgent
+ALL        =   MMapServer MMapClient echo PipeAgent TTYAgent
 
 world:		$(ALL)
 
 %.o:		%.cc
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
 
 MMapServer:	MMapServer.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
@@ -77,8 +77,14 @@ MMapServer:	MMapServer.o
 MMapClient:	MMapClient.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-PipeAgent:	PipeAgent.o
-		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+echo:		echo.o
+		$(CXX) $(LDFLAGS) -o $@ $^
+
+PipeAgent:	echo PipeAgent.o
+		$(CXX) $(LDFLAGS) -ggdb -o $@ PipeAgent.o $(LIBS)
+
+TTYAgent:	TTYAgent.o
+		$(CXX) $(LDFLAGS) -ggdb -o $@ $^ $(LIBS)
 
 clean:	
 		$(RM) *.o *~

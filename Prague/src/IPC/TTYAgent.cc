@@ -26,37 +26,27 @@
 
 using namespace Prague;
 
-/* @Method{void TTYAgent::setWindowSize(unsigned short columns, unsigned short rows)}
- *
- * @Description{}
- */
-void TTYAgent::setWindowSize(unsigned short columns, unsigned short rows)
-{
-#if defined(HAVE_IOCTL)
-  struct winsize ws;
-  ws.ws_col = columns;
-  ws.ws_row = rows;
-  ws.ws_xpixel = ws.ws_ypixel = 0;
-  if (ioctl (master, TIOCSWINSZ, &ws) != 0);
-#endif
-};
+TTYAgent::TTYAgent(const string &cmd, IONotifier *io, EOFNotifier *eof)
+  : Coprocess(cmd, io, eof)
+{}
 
-/* @Method{void TTYAgent::start()}
- *
- * @Description{start child process if we're not listening to stdin}
- */
+TTYAgent::~TTYAgent()
+{
+  shutdown(in|out|err);
+}
+
 void TTYAgent::start()
 {
-  if (pid >= 0)
+  if (id >= 0)
     {
       terminate();
       ptybuf *pty  = new ptybuf;
       int fd = pty->openpty();
-      switch(pid = fork())
+      switch(id = fork())
 	{
 	case -1:
-	  pid = 0;
-	  SystemError("cannot fork", true);
+	  id = 0;
+// 	  SystemError("cannot fork", true);
 	  return;
 	case  0:
 	  {
@@ -81,10 +71,27 @@ void TTYAgent::start()
 	  pty->setup();
  	  inbuf = outbuf = pty;
 	  errbuf = 0;
-	  if (isbound()) inbuf->setnonblocking();
+	  inbuf->setnonblocking();
  	  break;
 	}
     }
-  if (bound) initTimer();
-  setactive();
+//   if (bound) initTimer();
+//   setactive();
+};
+
+void TTYAgent::notifyStateChange(int value)
+{
+  if (state() == exited) cerr << "process exited with value " << value << endl;
+  else if (state() == signaled) cerr << "process killed with signal " << value << endl;
+}
+
+void TTYAgent::setWindowSize(unsigned short columns, unsigned short rows)
+{
+#if defined(HAVE_IOCTL)
+  struct winsize ws;
+  ws.ws_col = columns;
+  ws.ws_row = rows;
+  ws.ws_xpixel = ws.ws_ypixel = 0;
+  if (ioctl (master, TIOCSWINSZ, &ws) != 0);
+#endif
 };

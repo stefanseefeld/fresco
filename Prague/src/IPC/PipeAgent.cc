@@ -27,12 +27,14 @@
 
 using namespace Prague;
 
-PipeAgent::PipeAgent(const string &cmd, Notifier *e, Notifier *si, Notifier *st)
-  : Coprocess(cmd, e, si, st)
+PipeAgent::PipeAgent(const string &cmd, IONotifier *io, EOFNotifier *eof)
+  : Coprocess(cmd, io, eof)
 {}
 
 PipeAgent::~PipeAgent()
-{}
+{
+  shutdown(in|out|err);
+}
 
 void PipeAgent::start()
 {
@@ -69,45 +71,19 @@ void PipeAgent::start()
  	  inbuf = pin; close(fin);
  	  outbuf = pout; close(fout);
  	  errbuf = perr; close(ferr);
-// 	  if (bound)
-// 	    {
 	  inbuf->setnonblocking();
 	  outbuf->setnonblocking();
 	  errbuf->setnonblocking();
-// 	    }
  	  break;
 	}
     }
   mask(in|out|err);
+  mask(out);
   Coprocess::start();
 };
 
-void PipeAgent::processInput()
+void PipeAgent::notifyStateChange(int value)
 {
-}
-
-void PipeAgent::processOutput()
-{
-  MutexGuard guard(mutex);
-  istream is(obuf());
-  char c;
-  cout << "PipeAgent::processOutput : '";
-  while (is.get(c)) cout.put(c);
-  cout << '\'' << endl;
-}
-
-void PipeAgent::processError()
-{
-}
-
-void PipeAgent::processInputException()
-{
-}
-
-void PipeAgent::processOutputException()
-{
-}
-
-void PipeAgent::processErrorException()
-{
+  if (state() == exited) cerr << "process exited with value " << value << endl;
+  else if (state() == signaled) cerr << "process killed with signal " << value << endl;
 }

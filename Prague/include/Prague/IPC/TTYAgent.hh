@@ -27,18 +27,17 @@
 namespace Prague
 {
 
-/* @Class{TTYAgent : public Coprocess}
- *
- * @Description{uses a pty for connections}
- */
 class TTYAgent : public Coprocess
 {
 public:
-  TTYAgent(Notifier *n, const string &cmd) : Coprocess(n, cmd) {}
-  TTYAgent(const TTYAgent &TA) : Coprocess(TA) {}
-  virtual ~TTYAgent() {}
-  void setWindowSize(unsigned short, unsigned short);
+  TTYAgent(const string &cmd, IONotifier *, EOFNotifier * = 0);
+  virtual ~TTYAgent();
   virtual void  start();
+  virtual void notifyStateChange(int);
+  void setWindowSize(unsigned short, unsigned short);
+private:
+  TTYAgent(const TTYAgent &);
+  TTYAgent &operator = (const TTYAgent &);
 };
 
 };

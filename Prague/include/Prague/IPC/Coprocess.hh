@@ -35,35 +35,41 @@ namespace Prague
 class Coprocess : public Agent
 {
   typedef vector<Coprocess *> plist_t;
-  class Timeout;
-  struct Cleaner : Signal::Notifier { Cleaner(); virtual void notify(int);};
-  friend struct Cleaner;
-  struct Timeout : Timer::Notifier
-  {
-    Timeout(Coprocess *p) : process(p) {}
-    virtual void notify() { process->timeout();}
-    Coprocess *process;
-  };
-  friend class Timeout;
+//   class Timeout;
+  struct Reaper : Signal::Notifier { virtual void notify(int);};
+  friend struct Reaper;
+//   struct Timeout : Timer::Notifier
+//   {
+//     Timeout(Coprocess *p) : process(p) {}
+//     virtual void notify() { process->timeout();}
+//     Coprocess *process;
+//   };
+//   friend class Timeout;
 public:
-  class Notifier
+  struct IONotifier
   {
-  public:
-    virtual ~Notifier(){}
-    virtual void notify(int) = 0;
+    virtual ~IONotifier(){}
+    virtual bool notify(iomask_t) = 0;
+  };
+  struct EOFNotifier
+  {
+    virtual ~EOFNotifier(){}
+    virtual void notify(iomask_t) = 0;
   };
   enum state_t {ready, running, exited, signaled};
-  Coprocess(const string &, Notifier * = 0, Notifier * = 0, Notifier * = 0);
+  Coprocess(const string &, IONotifier *, EOFNotifier * = 0);
   virtual      ~Coprocess();
   virtual void start();
   virtual void stop();
   const string &command() const { return path;}
   pid_t         pid() const { MutexGuard guard(mutex); return id;}
   state_t       state() const { MutexGuard guard(mutex); return _state;}
-protected:
   virtual ipcbuf *ibuf() { return inbuf;}
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
+protected:
+  virtual bool processIO(int, iomask_t);
+  virtual void notifyStateChange(int) = 0;
 //   int          &terminateTimeOut()	 { return termTout; }
 //   int          &hangupTimeOut()	         { return hupTout; }
 //   int          &killTimeOut()		 { return killTout; }
@@ -71,7 +77,8 @@ protected:
 //   int           hangupTimeOut()	const    { return hupTout; }
 //   int           killTimeOut()	const	 { return killTout; }
 
-  virtual void  terminate(bool flag = false);
+  void  terminate(bool flag = false);
+  void  shutdown(short);  
 //   virtual void  abort();
 //   virtual void  wait();
 //   virtual bool  pending();
@@ -80,12 +87,14 @@ protected:
 protected:
 //   virtual void  NewStatus(int);
 //   void          initTimer() { if (!timer) timer = new Timer(&tnotifier);}
-  const string  path;
-  pid_t         id;
-  state_t       _state;
-  ipcbuf       *inbuf;
-  ipcbuf       *outbuf;
-  ipcbuf       *errbuf;
+  string       path;
+  IONotifier  *ioNotifier;
+  EOFNotifier *eofNotifier;
+  pid_t        id;
+  state_t      _state;
+  ipcbuf      *inbuf;
+  ipcbuf      *outbuf;
+  ipcbuf      *errbuf;
 //   bool running();
 //   void Error(const string &msg, bool flag)         {};//{ Notify(Signal::panic, msg); if (flag) running();}
 //   void Warning(const string &msg, bool flag)       {};//{ Notify(Signal::strange, msg); if (flag) running();}
@@ -102,20 +111,16 @@ private:
 //   int   hupTout;    	// hangup TimeOut (in s)
 //   int   killTout;      	// kill TimeOut (in s)
 //   void  waitToTerminate();
-  void  shutdown(short);  
 //   virtual void  outputEOF();
 //   virtual void  errorEOF();
   
   void kill(int);
 private:
   static plist_t processes;
-  static Cleaner *cleaner;
-  Timeout tout;
-  Timer timer;
-  mutable Mutex mutex;
-  Notifier *exitNotifier;
-  Notifier *signalNotifier;
-  Notifier *stopNotifier;
+  static Reaper  reaper;
+  static Mutex   mutex;
+//   Timeout tout;
+//   Timer timer;
 };
 
 };

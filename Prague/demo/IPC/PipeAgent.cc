@@ -19,31 +19,61 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-
 #include <Prague/IPC/PipeAgent.hh>
-#include <unistd.h>
+#include <string>
 
 using namespace Prague;
 
-struct Notifier : Coprocess::Notifier
+Agent *agent;
+
+class Output : public Coprocess::IONotifier
 {
-  Notifier(const char *pre) : prefix(pre) {}
-  virtual void notify(int i) { cout << prefix << ' ' << i << endl;}
-  const char *prefix;
+public:
+  virtual bool notify(Agent::iomask_t mask)
+  {
+    if (mask != Agent::outready) return false;
+#if 0
+    istream is(agent->obuf());
+    char c;
+    cout << "output : '";
+    while (is.get(c)) cout.put(c);
+    cout << '\'' << endl;
+#else
+    int c;
+    cout << "output : '";
+    while ((c = agent->obuf()->uflow()) != EOF) cout.put(c);
+    cout << '\'' << endl;
+#endif
+    return true;
+  }
+};
+
+class ConnectionClosed : public Coprocess::EOFNotifier
+{
+public:
+  virtual void notify(Agent::iomask_t mask)
+  {
+    if (mask == Agent::outready)
+      cout << "output : connection closed";
+  }
 };
 
 int main (int argc, char **argv)
 {
-  if (argc != 2)
+  Output *out = new Output;
+  ConnectionClosed *eof = new ConnectionClosed;
+  agent = new PipeAgent("./echo", out, eof);
+  agent->start();
+  ostream os(agent->ibuf());
+  while (cin)
     {
-      cerr << "Usage : " << argv[0] << " <cmd>\n";
-      exit(-1);
+      Thread::delay(500);
+      string line;
+      cout << "input :";
+      getline(cin, line);
+      os << line << endl;
     }
-  Notifier *exit = new Notifier("exit");
-  Notifier *signal = new Notifier("signal");
-  Notifier *stop = new Notifier("stop");
-  PipeAgent *pipe = new PipeAgent(argv[1], exit, signal, stop);
-  pipe->start();
-  sleep(3);
-//   Thread::delay(5000);
+  delete agent;
+  delete eof;
+  delete out;
 }

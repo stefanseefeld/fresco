@@ -136,7 +136,7 @@ public:
     string msg;
   };
   Thread(proc, void *, priority_t = normal);
-  virtual ~Thread();
+  ~Thread();
   priority_t priority() { MutexGuard guard(mutex); return _priority;}
   state_t state() { MutexGuard guard(mutex); return _state;}
   void start() throw (Exception);

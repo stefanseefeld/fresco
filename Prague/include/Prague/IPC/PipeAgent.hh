@@ -33,16 +33,10 @@ char *statusName(int);
 class PipeAgent : public Coprocess
 {
 public:
-  PipeAgent(const string &, Notifier * = 0, Notifier * = 0, Notifier * = 0);
-  virtual        ~PipeAgent();
+  PipeAgent(const string &, IONotifier *, EOFNotifier * = 0);
+  virtual      ~PipeAgent();
   virtual void  start();
-
-  virtual void processInput();
-  virtual void processOutput();
-  virtual void processError();
-  virtual void processInputException();
-  virtual void processOutputException();
-  virtual void processErrorException();
+  virtual void notifyStateChange(int);
 private:
   PipeAgent(const PipeAgent &);
   PipeAgent &operator = (const PipeAgent &);

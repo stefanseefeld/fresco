@@ -35,22 +35,30 @@ namespace Prague
 class Dispatcher
 {
   typedef vector<Agent *> alist_t;
-  typedef pair<Agent *, Agent::iomask_t> task;
+  struct task
+  {
+    task() : fd(-1), agent(0), mask(Agent::none) {}
+    task(int ffd, Agent *a, Agent::iomask_t m) : fd(ffd), agent(a), mask(m) {}
+    bool operator < (const task &t) const { return fd < t.fd;}
+    int fd;
+    Agent *agent;
+    Agent::iomask_t mask;
+  };
   typedef vector<task> tlist_t;
-  typedef map<int, Agent *> dictionary_t;
+  typedef map<int, task> dictionary_t;
 
   struct Handler
   //. Handler is responsible for calling a specific method
   //. (determined by the mask) on the agent
   {
-    Handler(Agent *a, Agent::iomask_t m) : agent(a), mask(m) {}
-    void process();
-    Agent *agent;
-    Agent::iomask_t mask;
+    Handler(const task &tt) : t(tt) {}
+    void process() { dispatcher->process(t);};
+    task t;
   };
+  friend struct Handler;
   struct Acceptor
   {
-    Handler *consume(const task &t) const { return new Handler(t.first, t.second);}
+    Handler *consume(const task &t) const { return new Handler(t);}
   };
   struct Cleaner { ~Cleaner();};
   friend struct Cleaner;
@@ -60,13 +68,16 @@ public:
   void release(int);
   void release(Agent *);
   void wait();
-private:
+// private:
   Dispatcher();
   virtual ~Dispatcher();
   static void *dispatch(void *);
+  void process(const task &);
+  void deactivate(const task &);
+  void activate(const task &);
   static Dispatcher *dispatcher;
-  static Cleaner cleaner;
   static Mutex  singletonMutex;
+  static Cleaner cleaner;
   Signal::Notifier *notifier;
   Mutex         mutex;
   FdSet         rfds;
@@ -75,7 +86,8 @@ private:
   alist_t       agents;
   dictionary_t  rchannel;
   dictionary_t  wchannel;
-  dictionary_t  echannel;
+  dictionary_t  xchannel;
+  int           wakeup[2];
   Thread::Queue<task> tasks;
   Acceptor      acceptor;
   ThreadPool<task, Acceptor, Handler> workers;

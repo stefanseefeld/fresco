@@ -32,56 +32,65 @@
 using namespace Prague;
 
 Coprocess::plist_t  Coprocess::processes;
-Coprocess::Cleaner *Coprocess::cleaner = 0;
+Coprocess::Reaper   Coprocess::reaper;
+Mutex               Coprocess::mutex;
+/*
+ * we can't set the Signal::child handler within the Reapers constructor 
+ * since Signals are possibly not initialized
+ * do it in the first Coprocess' constructor instead
+ * - stefan
+ */
+static bool init = false;
 
-Coprocess::Cleaner::Cleaner()
+void Coprocess::Reaper::notify(int)
 {
-  Signal::set(Signal::child, this);
-}
-
-void Coprocess::Cleaner::notify(int signum)
-{
+  sleep(1);
+  MutexGuard guard(mutex);
   for (plist_t::iterator i = processes.begin(); i != processes.end(); i++)
     {
-      pid_t id = (*i)->pid();
       int status;
-      if (id > 0 && waitpid(id, &status, WNOHANG | WUNTRACED) == id)
+      pid_t id = (*i)->pid();
+      if (id > 0 && waitpid(id, &status, 0) == id)
 	{
 	  if (WIFEXITED(status))
 	    {
 	      (*i)->_state = exited;
-	      if ((*i)->exitNotifier) (*i)->exitNotifier->notify(WEXITSTATUS(status));
+	      (*i)->notifyStateChange(WEXITSTATUS(status));
 	    }
 	  else if (WIFSIGNALED(status))
 	    {
 	      (*i)->_state = signaled;
-	      if ((*i)->signalNotifier) (*i)->signalNotifier->notify(WTERMSIG(status));
+	      (*i)->notifyStateChange(WTERMSIG(status));
 	    }
 	  else if (WIFSTOPPED(status))
 	    {
-	      if ((*i)->stopNotifier) (*i)->stopNotifier->notify(WSTOPSIG(status));
+	      (*i)->notifyStateChange(WSTOPSIG(status));
 	    }
+	  processes.erase(i);
+	  break;
 	}
     }
 }
 
-Coprocess::Coprocess(const string &cmd, Notifier *e, Notifier *si, Notifier *st)
-  : path(cmd), id(0), _state(ready), inbuf(0), outbuf(0), errbuf(0),
+Coprocess::Coprocess(const string &cmd, IONotifier *n, EOFNotifier *e)
+  : path(cmd), ioNotifier(n), eofNotifier(e), id(0), _state(ready), inbuf(0), outbuf(0), errbuf(0)
 //     beingTerminated(false), termTout(10), hupTout(5), killTout(15),
-    tout(this), timer(&tout),
-    exitNotifier(e), signalNotifier(si), stopNotifier(st)
+//     tout(this)//, timer(&tout)
 {
-  if (!cleaner) cleaner = new Cleaner;
+  if (!init) Signal::set(Signal::child, &reaper);
+  init = true;
 };
 
 Coprocess::~Coprocess()
 {
+  kill(9);
 //   terminate();
 };
 
 void Coprocess::start()
 {
   MutexGuard guard(mutex);
+  processes.push_back(this);
   _state = running;
   Agent::start();
 }
@@ -89,6 +98,49 @@ void Coprocess::start()
 void Coprocess::stop()
 {
   Agent::stop();
+}
+
+bool Coprocess::processIO(int, iomask_t m)
+{
+  /*
+   * let the client process the IO
+   */
+  bool flag = ioNotifier ? ioNotifier->notify(m) : false;
+  /*
+   * see whether the channel is still open
+   */
+  switch (m)
+    {
+    case Agent::inready:
+    case Agent::inexc:
+      if (ibuf()->eof())
+	{
+	  shutdown(in);
+	  if (eofNotifier) eofNotifier->notify(Agent::in);
+	  flag = false;
+	}
+      break;
+    case Agent::outready:
+    case Agent::outexc:
+      if (obuf()->eof()) 
+	{
+	  shutdown(out);
+	  if (eofNotifier) eofNotifier->notify(Agent::out);
+	  flag = false;
+	}
+      break;
+    case Agent::errready: 
+    case Agent::errexc:
+      if (ebuf()->eof())
+	{
+	  shutdown(err);
+	  if (eofNotifier) eofNotifier->notify(Agent::err);
+	  flag = false;
+	}
+      break;
+    default: break;
+    }
+  return flag;
 }
 
 void Coprocess::timeout()
@@ -248,17 +300,17 @@ void Coprocess::shutdown(short m)
 {
   m = mask() | ~m;
   mask(m);
-  if (m ^ inready)
+  if (m ^ in)
     {
       delete inbuf;
       inbuf = 0;
     }
-  else if (m ^ outready)
+  else if (m ^ out)
     {
       delete outbuf;
       outbuf = 0;
     }
-  else if (m ^ errready)
+  else if (m ^ err)
     {
       delete errbuf;
       errbuf = 0;
@@ -277,8 +329,7 @@ void Coprocess::shutdown(short m)
 //   shutdown(err);
 // }
 
-// void Coprocess::kill(int sig)
-// {
-//   if (running() && pid >= 0)
-//     if (::kill(pid, sig) < 0) SystemError("Could not kill", true);
-// }
+void Coprocess::kill(int signum)
+{
+  if (id > 0 && ::kill(id, signum) < 0) perror("Coprocess::kill");
+}

@@ -47,20 +47,12 @@ public:
   gid_t gid;
 };
 
-/* @Method{ptybuf::ptybuf()}
- *
- * @Description{}
- */
 ptybuf::ptybuf()
   : ipcbuf(ios::in|ios::out), save(0)
 {
   ptydev[0] = ttydev[0] = '\0';
 }
 
-/* @Method{ptybuf::~ptybuf()}
- *
- * @Description{restore backup data}
- */
 ptybuf::~ptybuf()
 {
 //   fclose(ptystream);
@@ -77,24 +69,12 @@ ptybuf::~ptybuf()
   delete save;
 }
 
-/* @Method{void ptybuf::setup()}
- *
- * @Description{prepare the stream}
- */
 void ptybuf::setup()
 {
 //   ptystream = fdopen(fd(), "r+");
   if (!save) save = new backup(fd());
 }
 
-/* @Method{int ptybuf::open_master()}
- *
- * @Description{open the master side of the pty}
- */
-/* @Method{int ptybuf::open_slave(int fd, const char *ptydev)}
- *
- * @Description{open the slave side of the pty. Since this is done from outside the class (after the fork), this is a static method}
- */
 #ifdef __linux__ //_bsd_
 #include "ptybuf.bsd44.cc"
 #elif defined __sgi__ //_svr4_

@@ -34,12 +34,15 @@ class ThreadPool
 {
   typedef vector<Thread *> tlist_t;
 public:
-  ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) : tasks(t), acceptor(a), threads(s)
+  ThreadPool(Thread::Queue<Task> &t, Acceptor &a, size_t s) : tasks(t), acceptor(a), threads(s, 0)
     {
       for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++)
 	(*i) = new Thread(run, this);
     }
-  ~ThreadPool() { for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) delete *i;}
+  ~ThreadPool()
+  {
+    for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) delete *i;
+  }
   void start() { for (tlist_t::iterator i = threads.begin(); i != threads.end(); i++) (*i)->start();}
 private:
   static void *run(void *X)

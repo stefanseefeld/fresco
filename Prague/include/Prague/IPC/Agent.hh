@@ -35,24 +35,18 @@ public:
 		 outexc = 0x10, inexc = 0x20, errexc = 0x40,
 		 out = 0x11, in = 0x22, err = 0x44,
 		 asyncio = 0xff};
-  Agent() {}
+  Agent();
   virtual ~Agent();
 
   virtual void start();
   virtual void stop();
   void mask(short);
-  short mask() { return iomask;}
-
-  virtual void processInput() = 0;
-  virtual void processOutput() = 0;
-  virtual void processError() = 0;
-  virtual void processInputException() = 0;
-  virtual void processOutputException() = 0;
-  virtual void processErrorException() = 0;
-protected:
+  short mask() const { return iomask;}
   virtual ipcbuf *ibuf() = 0;
   virtual ipcbuf *obuf() = 0;
   virtual ipcbuf *ebuf() = 0;
+protected:
+  virtual bool processIO(int, iomask_t) = 0;
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);

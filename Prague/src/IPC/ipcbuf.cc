@@ -33,8 +33,8 @@
 using namespace Prague;
 
 ipcbuf::ipcbuf(int mode)
+  : data(new control)
 {
-  data = new control;
   if (mode & ios::in)
     {
       char_type *gbuf = new char_type [BUFSIZ];
@@ -149,18 +149,14 @@ ipcbuf::int_type ipcbuf::overflow(int c)
 ipcbuf::int_type ipcbuf::underflow()
 {
   if (gptr() == 0) return EOF; // input stream has been disabled
-  size_t delta = egptr() - gptr();
-  if (delta > 0) Memory::move(gptr(), eback(), delta);
-  ssize_t rlen = read(eback() + delta, data->gend - eback() - delta);
+  if (gptr() < egptr()) return *gptr();
+  ssize_t rlen = read(eback(), data->gend - eback());
   switch (rlen)
     {
-    case EOF: if (!delta) return EOF; break;
-    case 0: data->eofbit = true; break;
-    default: delta += rlen; break;
+    case 0: data->eofbit = true;
+    case EOF: return EOF; break;
+    default: setg(eback(), eback(), eback() + rlen); return *gptr(); break;
     }
-  if (!delta) return EOF;
-  setg(eback(), eback(), eback() + delta);
-  return (unsigned char) *gptr();
 }
 
 ipcbuf::int_type ipcbuf::uflow()

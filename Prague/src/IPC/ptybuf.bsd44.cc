@@ -49,8 +49,8 @@ int ptybuf::openpty()
 	  data->fd = open(ptydev.c_str(), O_RDWR);
           if (data->fd >= 0)
 	    {
-	      ptydev[8] = ttydev[8];
-	      ptydev[9] = ttydev[9];
+	      ttydev[8] = ptydev[8];
+	      ttydev[9] = ptydev[9];
 	      if (access(ttydev.c_str(), R_OK | W_OK) == 0) return data->fd;
 	    }
 	  else if (errno == ENOENT) return -1;

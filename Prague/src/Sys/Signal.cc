@@ -28,7 +28,16 @@ namespace Prague
 typedef void (*sighnd_type) (...);
 void sighandler (int signo)
 {
-  if (!Thread::id())
+  /*
+   * due to the non conformance of LinuxThreads with
+   * POSIX 1003.1c we can't let the signal server thread
+   * handle the SIGCHLD signal. 'wait()' would fail.
+   * Instead, we have to handle it directly, trusting
+   * the event handler that it is reentrant and async safe
+   * - stefan
+   */
+  if (signo == Signal::child) Signal::notify(signo);
+  else if (!Thread::id())
     Signal::queue.push(signo);
 }
 
