@@ -71,24 +71,38 @@ if test -d $srcdir/Berlin; then
 fi
 if test -d $srcdir/GGI -a ".$config_ggi" = ".yes"; then
   AC_CONFIG_SUBDIRS(GGI)
+else
+  test -d GGI && rm -f GGI/Makefile
 fi
 if test -d $srcdir/SDL -a ".$config_sdl" = ".yes"; then
   AC_CONFIG_SUBDIRS(SDL)
+else
+  test -d SDL && rm -rf SDL/Makefile
 fi
 if test -d $srcdir/Fresco-Python -a ".$config_python_runtime" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-Python)
+else
+  test -d Fresco-Python && rm -f Fresco-Python/Makefile
 fi
 if test -d $srcdir/Fresco-Java -a ".$config_java_runtime" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-Java)
+else
+  test -d Fresco-Java && rm -f Fresco-Java/Makefile
 fi
 if test -d $srcdir/Fresco-Perl -a ".$config_perl_runtime" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-Perl)
+else
+  test -d Fresco-Perl && rm -f Fresco-Perl/Makefile
 fi
 if test -d $srcdir/Fresco-C++-demos -a ".$config_cxx_demos" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-C++-demos)
+else
+  test -d Fresco-C++-demos && rm -f Fresco-C++-demos/Makefile
 fi
 if test -d $srcdir/Fresco-Python-demos -a ".$config_python_demos" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-Python-demos)
+else
+  test -d Fresco-Python-demos && rm -f Fresco-Python-demos/Makefile
 fi
 if test -d $srcdir/Documentation; then
   AC_CONFIG_SUBDIRS(Documentation)
