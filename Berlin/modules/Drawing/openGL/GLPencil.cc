@@ -110,21 +110,23 @@ void GLPencil::drawPatch(const Patch &) {
 }
 
 void GLPencil::drawRect(const Vertex &lower, const Vertex &upper) {
-  myDrawable->makeCurrent();
-  glLineWidth(myThickness);
-
-  if (myFillMode == Style::solid) {
-    glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
-    glRectf(lower.x,lower.y,upper.x,upper.y);
-  } else {
-    glColor4d(myLineColor[0],myLineColor[1],myLineColor[2],myLineColor[3]);      
-    glBegin(GL_LINE_LOOP);
-    glVertex3d(lower.x,lower.y,0);
-    glVertex3d(upper.x,lower.y,0);
-    glVertex3d(upper.x,upper.y,0);
-    glVertex3d(lower.x,upper.y,0);
-    glEnd();
-  }      
+    myDrawable->makeCurrent();
+    glLineWidth(myThickness);
+    
+    if (myFillMode == Style::solid) {
+	glClearColor(0.0,0.0,0.0,0.0);
+	glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
+	glRectf(lower.x,lower.y,upper.x,upper.y);
+    } else {
+	glClearColor(0.0,0.0,0.0,0.0);
+	glColor4d(myLineColor[0],myLineColor[1],myLineColor[2],myLineColor[3]);      
+	glBegin(GL_LINE_LOOP);
+	glVertex3d(lower.x,lower.y,0);
+	glVertex3d(upper.x,lower.y,0);
+	glVertex3d(upper.x,upper.y,0);
+	glVertex3d(lower.x,upper.y,0);
+	glEnd();
+    }      
 }
 
 void GLPencil::drawEllipse(const Vertex &lower, const Vertex &upper) {
