@@ -62,8 +62,8 @@ AC_DEFUN([BERLIN_LIB_OMNIORB],[
 	AC_REQUIRE([BERLIN_LIB_SOCKET])
 dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 
-	AC_LANG_SAVE
-	AC_LANG_CPLUSPLUS
+dnl	AC_LANG_SAVE
+dnl	AC_LANG_CPLUSPLUS
 
 	AC_ARG_WITH(omniorb-prefix,
 		[  --with-omniorb-prefix  Prefix for omniORB],[
@@ -178,8 +178,8 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 
 	dnl Check for omniORB libraries
 	if test ".$no_omniorb" = "." ; then
-		BERLIN_CHECK_LIB(ORB_LIBS, omnithread, [omni_mutex my_mutex],
-			omnithread.h)
+dnl		BERLIN_CHECK_LIB(ORB_LIBS, omnithread, [omni_mutex my_mutex],
+dnl			omnithread.h)
 		dnl Hard to check the GateKeeper lib because of circular
 		dnl dependency between it and libomniORB3
 		ORB_LIBS="$ORB_LIBS -ltcpwrapGK"
@@ -201,5 +201,5 @@ dnl CPPFLAGS="$save_CPPFLAGS"
 		berlin_cv_lib_omniORB="yes"
 	fi
 
-	AC_LANG_RESTORE
+dnl	AC_LANG_RESTORE
 ])
