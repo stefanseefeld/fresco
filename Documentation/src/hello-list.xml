@@ -15,14 +15,16 @@
 
   int main(int argc, char **argv)
   {
-    CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
-    CosNaming::NamingContext_var ncontext = resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
+    CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
+    CosNaming::NamingContext_var ncontext =
+        resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
     Server_var server = resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
   
     PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
     PortableServer::POAManager_var pman = poa-&gt;the_POAManager();
     pman-&gt;activate();
-    ClientContextImpl *ci = new ClientContextImpl(Unicode::to_CORBA(Babylon::String("hello world applet")));
+    ClientContextImpl *ci =
+        new ClientContextImpl(Unicode::to_CORBA(Babylon::String("hello world applet")));
     ClientContext_var client = ci-&gt;_this();
     ServerContext_var context = server-&gt;create_server_context(client);
 

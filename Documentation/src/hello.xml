@@ -30,9 +30,11 @@
     </programlisting>
     <para>and the same in C++:</para>
     <programlisting>
-      CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
-      CosNaming::NamingContext_var ncontext = resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
-      Server_var server = resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
+      CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
+      CosNaming::NamingContext_var ncontext =
+          resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
+      Server_var server =
+          resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
     </programlisting>
     <para>
       One of the most frequent errors is a misconfigured naming service, i.e. the ORB is unable to
@@ -60,10 +62,12 @@
     </programlisting>
     <para>and the same in C++:</para>
     <programlisting>
-      PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
+      PortableServer::POA_var poa =
+          resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
-      ClientContextImpl *ci = new ClientContextImpl(Unicode::to_CORBA(Babylon::String("hello world applet")));
+      ClientContextImpl *ci =
+          new ClientContextImpl(Unicode::to_CORBA(Babylon::String("hello world applet")));
       ClientContext_var client = ci->_this();
       ServerContext_var context = server->create_server_context(client);
     </programlisting>
