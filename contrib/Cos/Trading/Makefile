@@ -51,7 +51,7 @@ $(TARGET):	$(OBJ)
 
 $(dpath)/%.d:	%.cc %.hh
 		@echo making dependencies for $<
-		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
 		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 parser.cc:	parser.yy
@@ -59,13 +59,13 @@ parser.cc:	parser.yy
 scan.cc:	scan.ll
 		$(FLEX) scan.ll
 $(opath)/%.o:	%.cc
-		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOFLAGS) -c $< -o $@
 $(gpath)/%.o:	%.cc
-		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
+		-@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
 $(ppath)/%.o:	%.cc
-		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
+		-@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
 
 clean:	

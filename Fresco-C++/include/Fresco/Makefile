@@ -78,7 +78,7 @@ $(TARGET):	$(OBJ)
 
 $(dpath)/%.d:	%.idl
 		@echo making dependencies for $<
-		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
 # Here there be dragons
 #  (can we remove the $(SHELL) part?  it would help cut down the quoting noise)
 #  note: this passes through both make and the shell; $$ means $ to make, and the \'s are for the shell
@@ -104,7 +104,7 @@ $(DYNSTATSRC): %SK.cc: 	%.idl
 $(DYNSRC): %DynSK.cc:	%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 $(opath)/%.o:	%.cc
-		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:	
