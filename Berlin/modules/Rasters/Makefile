@@ -28,7 +28,7 @@ hpath   = $(top)/include/Image
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
+CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin -lpng
 

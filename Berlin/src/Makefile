@@ -28,9 +28,9 @@ hpath	= $(top)/include/Berlin
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
+CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS) $(GGI_INCLUDES)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lggi #$(ORBLIBS)
+LIBS	= -lPrague $(GGI_LIBS) #$(ORBLIBS)
 
 SRC 	= Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \

@@ -1,11 +1,6 @@
 #ifndef _config_hh
 #define _config_hh
 
-#ifdef __i386__
-#  define __x86__
-#  define __OSVERSION__ 2
-#endif
-
 /* define whether we are using omniORB2 */
 #define __OMNIORB2__
  
