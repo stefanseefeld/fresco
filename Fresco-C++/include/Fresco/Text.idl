@@ -25,7 +25,6 @@
 //
 
 #include <Types.idl>
-#include <WidgetKit.idl>
 #include <Graphic.idl>
 #include <Metrics.idl>
 
@@ -201,16 +200,6 @@ module Text {
 
     interface GlyphCache {
 	Graphic::GraphicSeq getGlyphs(in Chunk c);
-    };
-    
-    
-    // this is an el-cheapo text editing widget
-    
-    interface Editor : Widget {
-	attribute unsigned long point;
-	attribute unsigned long mark;
-	void insert(in Unistring str);
-	Unistring kill();
     };
 };
 

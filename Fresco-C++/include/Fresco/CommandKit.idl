@@ -74,7 +74,6 @@ interface CommandKit : Cloneable {
     Command sendMessage(in Message msgToSend, in MessageListener recipient);
     Command forwardMessage(in MessageListener recipient);
     Command forwardByGeometry(in MessageListener recipient, in Graphic geom);
-    Command insertText(in Text::Editor Buffer);
     Command executeAfterCompleteClick(in Command otherCmd, 
 				      in Graphic regionToWatch, 
 				      in unsigned long buttonNumber);

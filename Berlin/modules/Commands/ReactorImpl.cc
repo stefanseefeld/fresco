@@ -22,7 +22,7 @@
 //
 
 // Reactors are basically 2 different kinds of typesafe dispatch
-// tables async ones have their own thread and message queue, sync
+// tables: async ones have their own thread and message queue, sync
 // ones do not.
 
 #include "Command/ReactorImpl.hh"
@@ -58,12 +58,12 @@ CORBA::Boolean ReactorImpl::active() {
 
 
 
-void ReactorImpl::accept(const message &m) {
+void ReactorImpl::accept(const Message &m) {
   
   if (amRunning) {
     // store a method-local command vector to avoid deadlocking if a command
     // tries to modify react_map. this happens more than you'd think.
-    vector<command_var> commands_to_execute;
+    vector<Command_var> commands_to_execute;
     
     // select the commands which match this message
     map_mutex.lock();            
@@ -71,13 +71,13 @@ void ReactorImpl::accept(const message &m) {
     map_mutex.unlock();      
     
     // execute each command, unbinding on exception
-    typedef vector<command_var>::iterator CI; 
+    typedef vector<Command_var>::iterator CI; 
     for(CI i = commands_to_execute.begin(); i != commands_to_execute.end(); i++) {
       try {
-	debug::log("running command for type " + (string)(m.payload.type()->id()), debug::reactor);
+// 	debug::log("running command for type " + (string)(m.payload.type()->id()), debug::reactor);
 	(*i)->execute(m);
       } catch (...) {
-	debug::log("command failed, unbinding for " + (string)(m.payload.type()->id()), debug::reactor);
+// 	debug::log("command failed, unbinding for " + (string)(m.payload.type()->id()), debug::reactor);
 	this->unbind(m.payload.type(), *i);
       }
     }
@@ -104,7 +104,7 @@ void AsyncReactorImpl::active(CORBA::Boolean r) {
     }
   }
   queue_mutex.unlock();
-  queue_mutex.signal();
+  queue_cond.signal();
 }
 
 CORBA::Boolean AsyncReactorImpl::active() {
@@ -115,7 +115,7 @@ CORBA::Boolean AsyncReactorImpl::active() {
 }
 
 // this just slots a message into the queue and wakes up the local thread.
-void AsyncReactorImpl::accept(const message &m) {
+void AsyncReactorImpl::accept(const Message &m) {
     queue_mutex.lock();
     identifyAndLog("received message of type" + (string)(m.payload.type()->id()));
     react_queue.push(m);
@@ -131,7 +131,7 @@ void AsyncReactorImpl::run(void *arg) {
     queue_cond.wait(); // this unlocks the queue atomically while it sleeps
     while(!react_queue.empty() && amRunning) { // when it wakes up, the queue is re-locked
       
-      const message m = react_queue.top();
+      const Message m = react_queue.top();
       CORBA::TypeCode_var ty = m.payload.type();
       identifyAndLog("processing a new message of type " + (string)(ty->id())); 
       react_queue.pop();      
@@ -146,14 +146,14 @@ void AsyncReactorImpl::run(void *arg) {
 void AsyncReactorImpl::identifyAndLog(const char *c) {
     ostrstream ost;
     ost << "[asyncReactor " << this->id() << "] " << c;
-    debug::log(ost.str(), debug::reactor);
+//     debug::log(ost.str(), debug::reactor);
 }
 
 // this is just a log-message helper
 void AsyncReactorImpl::identifyAndLog(string &s) {
     ostrstream ost;
     ost << "[asyncReactor " << this->id() << "] " << s;
-    debug::log(ost.str(), debug::reactor);
+//     debug::log(ost.str(), debug::reactor);
 }
 
 
@@ -166,15 +166,15 @@ AsyncReactorImpl::AsyncReactorImpl() : queue_mutex(), queue_cond(&queue_mutex) {
 // bind will not duplicate bindings. specifically, for 1 typecode
 // and 1 command reference, a binding can be made at most once.
 
-void ReactorImpl::bind(CORBA::TypeCode_ptr ty, command_ptr c) {  
+void ReactorImpl::bind(CORBA::TypeCode_ptr ty, Command_ptr c) {  
   map_mutex.lock();
-  debug::log("binding new command to type " + (string)(ty->id()), debug::reactor);
+//   debug::log("binding new command to type " + (string)(ty->id()), debug::reactor);
   CORBA::TypeCode_var newTy = ty;
-  command_var com = c;
-  vector<command_var>::iterator i = find(react_map[newTy].begin(), 
+  Command_var com = c;
+  vector<Command_var>::iterator i = find(react_map[newTy].begin(), 
 					 react_map[ty].end(), com); 
   if (i != react_map[ty].end()) {
-    react_map[newTy].push_back(command::_duplicate(com));
+    react_map[newTy].push_back(Command::_duplicate(com));
   }
   map_mutex.unlock();
 }
@@ -184,13 +184,13 @@ void ReactorImpl::bind(CORBA::TypeCode_ptr ty, command_ptr c) {
 // and a command_ptr in this reactor. it happens automatically
 // when the command goes null and/or throws an exception
 
-void ReactorImpl::unbind(CORBA::TypeCode_ptr ty, command_ptr c){
+void ReactorImpl::unbind(CORBA::TypeCode_ptr ty, Command_ptr c){
   map_mutex.lock();
-  command_var cmd = c;
-  debug::log("unbinding command from type " + (string)(ty->id()), debug::reactor);
+  Command_var cmd = c;
+//   debug::log("unbinding command from type " + (string)(ty->id()), debug::reactor);
   std::remove(react_map[ty].begin(), react_map[ty].end(), cmd);
   // remove the vector altogether if it's empty. 
-  typedef map< CORBA::TypeCode_var, vector<command_var> >::iterator MI;      
+  typedef map< CORBA::TypeCode_var, vector<Command_var> >::iterator MI;      
   MI i = react_map.find(ty);
   if (i->second.begin() == i->second.end()) {
     react_map.erase(i);
@@ -199,13 +199,13 @@ void ReactorImpl::unbind(CORBA::TypeCode_ptr ty, command_ptr c){
 }  
 
 
-void ReactorImpl::copy_react_map_to(reactor_ptr r) {
+void ReactorImpl::copy_react_map_to(Reactor_ptr r) {
   map_mutex.lock();
-  typedef map< CORBA::TypeCode_var, vector<command_var> >::iterator MI;      
-  typedef vector<command_var>::iterator VI;
+  typedef map< CORBA::TypeCode_var, vector<Command_var> >::iterator MI;      
+  typedef vector<Command_var>::iterator VI;
   for(MI i = react_map.begin(); i != react_map.end(); i++) {
     for(VI j = i->second.begin(); j != i->second.end(); j++) { 
-      r->bind(CORBA::TypeCode::_duplicate(i->first), command::_duplicate(*j));  
+      r->bind(CORBA::TypeCode::_duplicate(i->first), Command::_duplicate(*j));  
     }
   }
   map_mutex.unlock();

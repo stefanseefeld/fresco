@@ -24,42 +24,43 @@
 #ifndef _ServerContextImpl_hh
 #define _ServerContextImpl_hh
 
-#include "Warsaw/Cloneable.hh"
-#include "Warsaw/ClientContext.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Cloneable.hh>
+#include <Warsaw/ClientContext.hh>
 #include <vector>
 #include <string>
 #include <map>
 
 class GenericFactory_impl;
 
-class ServerContextImpl : public virtual _lc_sk_ServerContext {
+class ServerContextImpl : implements(ServerContext) {
 
 public:  
   ServerContextImpl(CosLifeCycle::FactoryFinder_ptr, ClientContext_ptr client);
   bool verify();
 
   // stuff declared in IDL, that the client will access
-  ClientContext_ptr session_impl::myClient();
+  ClientContext_ptr myClient();
   CosLifeCycle::FactoryFinder_ptr myFactoryFinder();
 
   CORBA::Object_ptr create(const char *interfaceName) 
-    throw (securityException, creationFailureException);
+    throw (SecurityException, CreationFailureException);
   
   void setSingleton(const char *name, CosLifeCycle::LifeCycleObject_ptr singleton) 
-    throw (securityException, singletonFailureException);
+    throw (SecurityException, SingletonFailureException);
   
   void delSingleton(const char *name) 
-    throw (securityException, singletonFailureException);   
+    throw (SecurityException, SingletonFailureException);   
   
   CosLifeCycle::LifeCycleObject_ptr getSingleton(const char *name) 
-    throw (securityException, singletonFailureException);
+    throw (SecurityException, SingletonFailureException);
   
 
 protected:
   
   CosLifeCycle::FactoryFinder_var _ff;
   ClientContext_var _client;
-  omni_mutex _session_mutex;
+  omni_mutex _ServerContext_mutex;
   vector<CORBA::Object_var> allocatedObjects;
   
   // things which all sessions share access to

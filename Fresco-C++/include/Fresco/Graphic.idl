@@ -31,6 +31,7 @@
 #include <Types.idl>
 #include <Region.idl>
 #include <Damage.idl>
+#include <Cloneable.idl>
 
 interface GraphicOffset;
 interface Traversal;
@@ -38,7 +39,7 @@ interface DrawTraversal;
 interface PickTraversal;
 interface Collector;
 
-interface Graphic
+interface Graphic : Cloneable
 {
   struct Requirement
   {
@@ -88,7 +89,7 @@ interface Graphic
 //   boolean restore_trail(in Traversal t);
 };
 
-interface GraphicOffset
+interface GraphicOffset : Cloneable
 {
   Graphic Parent();
   Graphic Child();
@@ -96,7 +97,6 @@ interface GraphicOffset
   void replace(in Graphic g);
   GraphicOffset next();
   GraphicOffset previous();
-  void remove();
   
   void needResize();
   void traverse(in Traversal t);

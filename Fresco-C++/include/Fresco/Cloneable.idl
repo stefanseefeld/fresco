@@ -27,6 +27,7 @@
 #include <LifeCycle.idl>
 #include <ClientContext.idl>
 
+
 interface ServerContext;
 
 // ths cloneable interface is the base type for most of the objects
@@ -58,11 +59,7 @@ interface Cloneable : ::CosLifeCycle::LifeCycleObject {
     // transparently redirected via lifecycle service to the new
     // object.
     void reload();
-        
-    // copyStateToOther is overridden by subclasses. It is used in
-    // lifecycle code which migrates objects from one place to
-    // another, hot-swapping, etc.
-    void copyStateToOther(in Cloneable c);
+
 };
 
 exception SingletonFailureException {};
@@ -103,6 +100,11 @@ interface ServerContext {
     CosLifeCycle::LifeCycleObject getSingleton(in string name) 
 	raises (SecurityException, SingletonFailureException);
     
+};
+
+// this is the "super-context" -- the entry point for all new contexts.
+interface ServerContextManager {
+  ServerContext newServerContext(in ClientContext C) raises (SecurityException);
 };
 
 

@@ -20,37 +20,38 @@
  * MA 02139, USA.
  */
 
-#include "Command/CommandKitImpl.hh"
+#include <Command/CommandKitImpl.hh>
+#include <Command/ReactorImpl.hh>
 
-CommandKit::CommandKit() {}
-CommandKit::~CommandKit() {}
+CommandKitImpl::CommandKitImpl() {}
+CommandKitImpl::~CommandKitImpl() {}
 
-Reactor_ptr CommandKit::asyncReactor() {
+Reactor_ptr CommandKitImpl::asyncReactor() {
   AsyncReactorImpl *r = new AsyncReactorImpl();
   r->_obj_is_ready(_boa());
   return r->_this();
 }
 
-Reactor_ptr CommandKit::syncReactor() {
+Reactor_ptr CommandKitImpl::syncReactor() {
   ReactorImpl *r = new ReactorImpl();
   r->_obj_is_ready(_boa());
   return r->_this();
 }
 
-Command_ptr sendMessage(Message &m, MessageListener_ptr recipient) {
-  SendMessageImpl *c = new SendMessageImpl(m,recipient);
-  c->_obj_is_ready(_boa());
-  return c->_this();
-}
+// Command_ptr CommandKitImpl::sendMessage(Message &m, MessageListener_ptr recipient) {
+//   SendMessageImpl *c = new SendMessageImpl(m,recipient);
+//   c->_obj_is_ready(_boa());
+//   return c->_this();
+// }
 
-Command_ptr forwardMessage(MessageListener_ptr recipient) {
-  ForwardMessageImpl *c = new ForwardMessageImpl(m,recipient);
-  c->_obj_is_ready(_boa());
-  return c->_this();
-}
+// Command_ptr CommandKitImpl::forwardMessage(MessageListener_ptr recipient) {
+//   ForwardMessageImpl *c = new ForwardMessageImpl(m,recipient);
+//   c->_obj_is_ready(_boa());
+//   return c->_this();
+// }
 
-Command_ptr forwardByGeometry(MessageListener_ptr recipient, Graphic_ptr geom) {
-  ForwardByGeometryImpl *c = new ForwardByGeometryImpl(recipient, geom);
-  c->_obj_is_ready(_boa());
-  return c->_this();
-}
+// Command_ptr CommandKitImpl::forwardByGeometry(MessageListener_ptr recipient, Graphic_ptr geom) {
+//   ForwardByGeometryImpl *c = new ForwardByGeometryImpl(recipient, geom);
+//   c->_obj_is_ready(_boa());
+//   return c->_this();
+// }

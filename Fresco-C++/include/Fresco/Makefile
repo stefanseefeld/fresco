@@ -27,11 +27,11 @@ DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
 		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 
 
 ALL_SUBTARGETS := 	BoundedValue.idl   Damage.idl	   LayoutKit.idl  Pencil.idl   Telltale.idl \
-			ClientContext.idl  Drawable.idl    LifeCycle.idl  Reactor.idl  Transform.idl \
+			ClientContext.idl  Drawable.idl    LifeCycle.idl  Transform.idl \
 			Cloneable.idl	   DrawingKit.idl  Message.idl	  Region.idl   Traversal.idl \
 			Graphic.idl	   Metrics.idl	  Screen.idl   Types.idl	Text.idl \
 			CommandKit.idl	   Grid.idl	   Naming.idl	  Subject.idl  WidgetKit.idl  \
-			Event.idl
+			Event.idl		
 
 IDLSRCS := Naming.idl $(ALL_SUBTARGETS) 
 SO_TARGET := libwarsaw.so 

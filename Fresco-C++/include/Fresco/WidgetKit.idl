@@ -23,7 +23,7 @@
  * MA 02139, USA.
  */
 
-#include <Reactor.idl>
+#include <CommandKit.idl>
 #include <Graphic.idl>
 #include <Telltale.idl>
 #include <BoundedValue.idl>

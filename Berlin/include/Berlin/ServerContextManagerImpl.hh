@@ -21,24 +21,32 @@
 //
 //
 
-#ifndef _ClientContextImpl_hh
-#define _ClientContextImpl_hh
+#ifndef _ServerContextManagerImpl_hh
+#define _ServerContextManagerImpl_hh
+
+// the ServerContextManager just hands out new sessions to people who are
+// connecting.  it might want to do some checking on the incoming
+// principal's credentials, but at the moment it doesn't.
 
 #include <Warsaw/config.hh>
-#include <Warsaw/ClientContext.hh>
 #include <Warsaw/Cloneable.hh>
+#include <Berlin/FactoryFinderImpl.hh>
+#include <Berlin/GenericFactoryImpl.hh>
 
-class ClientContextImpl : public virtual _lc_sk_ClientContext {
+class ServerContextManagerImpl : implements(ServerContextManager) {
 
-public:
-  ClientContextImpl();
-  ClientContextImpl(const char *name);
-  
-  Unistring *userName();
-  CORBA::Boolean stillAlive(); 
+public:  
+  ServerContextManagerImpl(GenericFactoryImpl *factory);
+  bool verify();
+
+  // declared in IDL
+  ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
 
 protected:
-  Unistring _userName;
+  FactoryFinderImpl *_ff;
+  omni_mutex _ServerContextManager_mutex;
+  vector<ServerContext_var> allocatedServerContexts;
+
 };
 
 #endif

@@ -1,13 +1,13 @@
 DIR_CPPFLAGS = #-D__x86__ -D__linux__ -D__OSVERSION__=2 -D__OMNIORB2__ -D_MIT_POSIX_THREADS -D_REENTRANT
 DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused
-DIR_INCLUDES =  -I../../include -I../../include/Warsaw -I/data1/seefelds/omniORB_2.7.0/include
+DIR_INCLUDES =  -I../../include -I../../include/Warsaw 
 DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
 LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
-SRC	=	debug.cc GenericFactoryImpl.cc FactoryFinderImpl.cc AuthenticatorImpl.cc ClientContextImpl.cc CloneableImpl.cc \
+SRC	=	Debug.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 		RegionImpl.cc TransformImpl.cc TraversalImpl.cc DamageImpl.cc CollectorImpl.cc GraphicImpl.cc \
 		ScreenImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 		DrawTraversalImpl.cc PickTraversalImpl.cc ScreenManager.cc \
-		SubjectImpl.cc
+		SubjectImpl.cc ServerContextImpl.cc ClientContextImpl.cc ServerContextManagerImpl.cc
 OBJ	=	$(patsubst %.cc, %.o, $(SRC))
 
 libBerlin.so:	$(OBJ)

@@ -39,8 +39,8 @@ class CloneableImpl : public virtual _lc_sk_Cloneable,
 		       public virtual omniLC::_threadControl
 {
 public: 
-  CosLifeCycle::LifeCycleObject_ptr copy ( CosLifeCycle::FactoryFinder_ptr  there, 
-					   const CosLifeCycle::Criteria & the_criteria );
+  virtual CosLifeCycle::LifeCycleObject_ptr copy ( CosLifeCycle::FactoryFinder_ptr  there, 
+						   const CosLifeCycle::Criteria & the_criteria );
   void move ( CosLifeCycle::FactoryFinder_ptr  there, 
 	      const CosLifeCycle::Criteria & the_criteria );
   virtual Cloneable_ptr clone(); // override with caution!
@@ -48,9 +48,6 @@ public:
   void remove();
   void reference();
   void forget();
-
-  // every child has to implement this, in order to make the copy operator work.
-  virtual void copyStateToOther(cloneable_ptr p) = 0;
 
   // this is not exposed thru corba, but is called after the object is
   // all hooked up with lifecycle to register it with the appropriate

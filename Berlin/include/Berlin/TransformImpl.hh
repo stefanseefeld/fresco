@@ -57,10 +57,10 @@ public:
   Transform::Matrix &matrix() { return mat;}
 protected:
   Transform::Matrix mat;
-  bool valid          : 1;
-  bool identity       : 1;
-  bool translate_only : 1;
-  bool xy             : 1;
+  bool valid;
+  bool identity;
+  bool translate_only;
+  bool xy;
 
   void init();
   void modified() { valid = false;}

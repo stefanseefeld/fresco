@@ -21,24 +21,19 @@
 //
 //
 
-#ifndef _ClientContextImpl_hh
-#define _ClientContextImpl_hh
+#include <Berlin/Debug.hh>
 
-#include <Warsaw/config.hh>
-#include <Warsaw/ClientContext.hh>
-#include <Warsaw/Cloneable.hh>
-
-class ClientContextImpl : public virtual _lc_sk_ClientContext {
-
-public:
-  ClientContextImpl();
-  ClientContextImpl(const char *name);
+vector<bool> debug::activeDebugGroups;
+omni_mutex debug::cerrMutex;
   
-  Unistring *userName();
-  CORBA::Boolean stillAlive(); 
+void debug::log(string msg, debugGroup g) {
+  cerrMutex.lock();
+  if (activeDebugGroups[g]) cerr << msg << endl;
+  cerrMutex.unlock();
+}
 
-protected:
-  Unistring _userName;
-};
-
-#endif
+void debug::set(debugGroup g) { activeDebugGroups[g] = true; }
+void debug::clear(debugGroup g) { activeDebugGroups[g] = false; }
+void debug::setall() {
+  activeDebugGroups = vector<bool>(12, true);
+}

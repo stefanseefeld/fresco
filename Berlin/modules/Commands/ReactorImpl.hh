@@ -26,7 +26,8 @@
 
 class CloneableImpl;
 
-#include "Warsaw/Command.hh"
+#include "Warsaw/CommandKit.hh"
+#include "Warsaw/Message.hh"
 #include "Berlin/CloneableImpl.hh"
 
 #include <omnithread.h>
@@ -41,22 +42,23 @@ class CloneableImpl;
 // the binding.
 
 class ReactorImpl : 
-  public virtual _lc_sk_Reactor {
+  public virtual _lc_sk_Reactor,
+  public virtual CloneableImpl {
   
 public: 
-  virtual void accept(const message &m);
+  virtual void accept(const Message &m);
   virtual CORBA::Boolean active();
   virtual void active(CORBA::Boolean);
-  void bind(CORBA::TypeCode_ptr tc, command_ptr c);
-  void unbind(CORBA::TypeCode_ptr tc, command_ptr c);
+  void bind(CORBA::TypeCode_ptr tc, Command_ptr c);
+  void unbind(CORBA::TypeCode_ptr tc, Command_ptr c);
   
 protected:
   // just copies the reactor map. a little helper function
-  void copy_react_map_to(reactor_ptr r);
-  boolean amIRunning = true;
+  void copy_react_map_to(Reactor_ptr r);
+  bool amRunning;
   
   // the command dispatch table
-  map< CORBA::TypeCode_var, vector<command_var> > react_map; 
+  map< CORBA::TypeCode_var, vector<Command_var> > react_map; 
   omni_mutex map_mutex;  
 };
     
@@ -68,7 +70,7 @@ protected:
 
 class messageCmp {
     public:
-    inline bool operator()(const message &a, const message &b) const {
+    inline bool operator()(const Message &a, const Message &b) const {
 	return (a.timeOfCreation > b.timeOfCreation) &&
 	    (a.priority > b.priority);
     }
@@ -82,13 +84,12 @@ class messageCmp {
 // won't get all tangled up in affairs it's not interested in.
 
 class AsyncReactorImpl : 
-  public virtual _lc_sk_AsyncReactor, 
   public virtual omni_thread,
   public virtual ReactorImpl {
   
 public:
   AsyncReactorImpl();
-  virtual void accept(const message &m);
+  virtual void accept(const Message &m);
   virtual CORBA::Boolean active();
   virtual void active(CORBA::Boolean);
   
@@ -100,7 +101,7 @@ protected:
   void identifyAndLog(string &s);
   
   // the incoming message queue
-  priority_queue<message, vector<message>, messageCmp> react_queue; 
+  priority_queue<Message, vector<Message>, messageCmp> react_queue; 
   
   // thread synchronization items
   omni_mutex queue_mutex;

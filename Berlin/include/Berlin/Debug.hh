@@ -21,24 +21,34 @@
 //
 //
 
-#ifndef _ClientContextImpl_hh
-#define _ClientContextImpl_hh
+// this file encapsulates a debugging facility
+// you can use to log messages to (in logical groups)
+// it's a singleton, and it's synchronized, which are both 
+// reasonably important :)
 
-#include <Warsaw/config.hh>
-#include <Warsaw/ClientContext.hh>
-#include <Warsaw/Cloneable.hh>
+#include <vector>
+#include <string>
+#include "omnithread.h"
 
-class ClientContextImpl : public virtual _lc_sk_ClientContext {
+#ifndef __DEBUG__
+#define __DEBUG__
+
+class debug {
 
 public:
-  ClientContextImpl();
-  ClientContextImpl(const char *name);
+  enum debugGroup { corba, loader, ggi, gwt, name,
+		       gfh, main, widget, mmap,  
+		     message, reactor, thread };
   
-  Unistring *userName();
-  CORBA::Boolean stillAlive(); 
+  static void log(string msg, debugGroup g);
+  static void set(debugGroup g);
+  static void clear(debugGroup g);
+  static void setall();
 
-protected:
-  Unistring _userName;
+private:
+  static vector<bool> activeDebugGroups;
+  static omni_mutex cerrMutex;
 };
+
 
 #endif

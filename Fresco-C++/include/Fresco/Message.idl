@@ -25,6 +25,7 @@
 //
 
 #include <Types.idl>
+#include <Cloneable.idl>
 
 // a message is a prioritized payload. gets passed around between
 // various objects.  there is an additional headers field for embedding

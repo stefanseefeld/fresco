@@ -61,7 +61,7 @@ public:
   static Pool<Requisition> pool;
 };
 
-class PolyGraphicOffset : implements(GraphicOffset)
+class PolyGraphicOffset : implements(GraphicOffset), virtual public CloneableImpl
 {
 //   friend class PolyGraphic;
 public:

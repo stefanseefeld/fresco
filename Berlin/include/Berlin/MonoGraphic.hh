@@ -34,7 +34,7 @@ class MonoGraphicOffset;
 
 typedef vector<MonoGraphicOffset *> MonoGraphicOffsetList;
 
-class MonoGraphic : public GraphicImpl
+class MonoGraphic : virtual public GraphicImpl
 {
 public:
   MonoGraphic();
@@ -60,7 +60,7 @@ protected:
   MonoGraphicOffset *offset;
 };
 
-class MonoGraphicOffset : implements(GraphicOffset)
+class MonoGraphicOffset : implements(GraphicOffset), virtual public CloneableImpl
 {
   friend class MonoGraphic;
 public:

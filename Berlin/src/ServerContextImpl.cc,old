@@ -1,0 +1,155 @@
+//
+// $Id$
+//
+// This source file is a part of the Berlin Project.
+// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// http://www.berlin-consortium.org
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public License
+// as published by the Free Software Foundation; either version 2 of
+// the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+//
+//
+
+// this is the thing which holds all the references to things a client allocates
+// (for garbage collection), does security checks for new allocation, and
+// occasionally pings the client to make sure it's still there.
+
+#include <Berlin/GenericFactoryImpl.hh>
+#include <Berlin/ClientContextImpl.hh>
+#include <Berlin/Debug.hh>
+
+// static singletons mapping
+map<string, CosLifeCycle::LifeCycleObject_var> ServerContextImpl::singletons;
+omni_mutex ServerContextImpl::singletons_mutex;
+
+ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, ClientContext_ptr theClient) {
+  _ff = theFactoryFinder;
+  _client = theClient;
+}
+
+CosLifeCycle::FactoryFinder_ptr ServerContextImpl::myFactoryFinder() {
+  return CosLifeCycle::FactoryFinder::_duplicate(_ff);
+}
+
+
+
+ClientContext_ptr ServerContextImpl::myClient() {
+  return ClientContext::_duplicate(_client);
+}
+
+// this will nuke all allocated objects if the client has died, and then tell the caller 
+// (ServerContextManager) who will most likely destroy this ServerContext.
+
+bool ServerContextImpl::verify() {
+  _ServerContext_mutex.lock();
+  bool clientIsStillThere = true;
+  try {
+    clientIsStillThere = _client->stillAlive();
+  } catch (...) {
+    clientIsStillThere = false;
+  }
+  if (!clientIsStillThere) {
+    typedef vector<CORBA::Object_var>::iterator VI;
+    for(VI i = allocatedObjects.begin(); i != allocatedObjects.end(); i++) {
+      CosLifeCycle::LifeCycleObject_ptr p = CosLifeCycle::LifeCycleObject::_narrow(*i);
+      if (!CORBA::is_nil(p)) {
+	p->remove();
+      }
+    }
+  }
+  _ServerContext_mutex.unlock();
+  return clientIsStillThere;
+}
+    
+
+// will fill the rest of these in as needs arise. They should do something reasonably obvious.
+
+void ServerContextImpl::setSingleton(const char *name, CosLifeCycle::LifeCycleObject_ptr singleton) 
+  throw (SecurityException, SingletonFailureException){
+  //  this->delSingleton(name);
+  singletons_mutex.lock();
+  singletons[name] = singleton;
+  singletons_mutex.unlock();
+}
+
+
+void ServerContextImpl::delSingleton(const char *name) 
+  throw (SecurityException, SingletonFailureException){
+  singletons_mutex.lock();  
+  map<string, CosLifeCycle::LifeCycleObject_var>::iterator p = singletons.find(name);
+  if (p != singletons.end()) {
+    p->second->remove();
+    singletons.erase(p);
+  } 
+  singletons_mutex.unlock();  
+}
+
+
+CosLifeCycle::LifeCycleObject_ptr ServerContextImpl::getSingleton(const char *name) 
+  throw (SecurityException, SingletonFailureException){
+  singletons_mutex.lock();
+  CosLifeCycle::LifeCycleObject_ptr tmp;
+  map<string, CosLifeCycle::LifeCycleObject_var>::iterator p = singletons.find(name);
+  if (p != singletons.end()) {
+    tmp = p->second;
+  } else {
+    singletons_mutex.unlock();  
+    throw SingletonFailureException();
+  }
+  singletons_mutex.unlock();  
+  return tmp;
+}
+
+
+// this method should eventually do some kind of checking on the
+// ClientContext to make sure they are allowed to construct objects on
+// this server.
+
+CORBA::Object_ptr ServerContextImpl::create(const char* interfaceName)    
+  throw (SecurityException, CreationFailureException)
+{
+  _ServerContext_mutex.lock();
+
+  // make the string into a key
+  CosLifeCycle::Key objectKey;
+  objectKey.length(1);
+  objectKey[0].id   =  interfaceName; 
+  objectKey[0].kind = (const char*) "Object"; 
+
+  CosLifeCycle::Criteria crit;
+  
+  CosLifeCycle::Factories *factories =  _ff->find_factories(objectKey);
+  CosLifeCycle::GenericFactory_var fact = CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
+
+  if (CORBA::is_nil(fact)) {
+    throw CreationFailureException();
+  }
+
+  CORBA::Object_ptr newObj = fact->create_object(objectKey, crit);
+  
+  // try assigning ourselves to the new cloneable, as its ServerContext
+  Cloneable_var newClone = Cloneable::_narrow(newObj);
+  if (!CORBA::is_nil(newClone)) {
+//!!!FIXME!!!     newClone->myServerContext(this->_this());
+  }
+
+  // save a reference for future destroying purposes  
+  allocatedObjects.push_back(CORBA::Object::_duplicate(newObj)); 
+
+  _ServerContext_mutex.unlock();
+  return CORBA::Object::_duplicate(newObj);
+}
+
+
+

@@ -29,6 +29,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
+#include <Berlin/CloneableImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <vector>
 
@@ -42,7 +43,7 @@ struct OffsetTag
 typedef vector<GraphicOffset *> GraphicOffsetList;
 typedef vector<OffsetTag *> OffsetTagList;
 
-class GraphicImpl : implements(Graphic)
+class GraphicImpl : implements(Graphic), public virtual CloneableImpl
 {
 public:
   static const Coord infinity = 10e6;
