@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -35,14 +35,15 @@
 using namespace Prague;
 using namespace Warsaw;
 
+unsigned long ServerContextImpl::counter = 0;
+
 // this is the thing which holds all the references to things a client allocates
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
 ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
-  : server(s), cContext(ClientContext::_duplicate(c)), counter(0) 
-{
-  Trace trace("ServerContextImpl::ServerContextImpl");
+    : server(s), cContext(ClientContext::_duplicate(c)) {
+    Trace trace("ServerContextImpl::ServerContextImpl");
 }
 
 ServerContextImpl::~ServerContextImpl()
