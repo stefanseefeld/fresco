@@ -24,8 +24,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _RegionImpl_h
-#define _RegionImpl_h
+#ifndef _RegionImpl_hh
+#define _RegionImpl_hh
 
 #include <Warsaw/Region.hh>
 
@@ -61,4 +61,4 @@ public:
   static Coord spanOrigin(Coord, Coord, Coord);
 };
 
-#endif
+#endif /* _RegionImpl_hh */

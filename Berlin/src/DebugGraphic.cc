@@ -132,7 +132,7 @@ void DebugGraphic::printRegion(Region_ptr r)
   cout << "), Z(";
   r->span(zaxis, a);
   printAllotment(a);
-  cout << ')' << endl;
+  cout << ')';
 }
 
 void DebugGraphic::printAllotment(const Region::Allotment &a)

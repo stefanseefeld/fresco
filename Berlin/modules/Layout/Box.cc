@@ -156,10 +156,7 @@ RegionImpl **Box::childrenAllocations(Region_ptr a)
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
 {
   RegionImpl **result = childrenAllocations(a);
-  Vertex prev_o;
-  prev_o.x = Coord(0); prev_o.y = Coord(0); prev_o.z = Coord(0);
   long begin, end, incr;
-  Vertex o, v;
   TransformImpl tx;
   tx._obj_is_ready(_boa());
   if (t->direction() == Traversal::up)
@@ -176,16 +173,13 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
     }
   for (long i = begin; i != end; i += incr)
     {
+      Vertex o;
       Placement::normalOrigin(result[i], o);
       result[i]->_obj_is_ready(_boa());
-      v.x = o.x - prev_o.x;
-      v.y = o.y - prev_o.y;
-      v.z = o.z - prev_o.z;
       tx.loadIdentity();
-      tx.translate(v);
+      tx.translate(o);
       t->traverseChild(children[i]->_this(), result[i]->_this(), tx._this());
       if (!t->ok()) break;
-      prev_o = o;
     }
   long n = children.size();
   for (long i = 0; i < n; i++) CORBA::release(result[i]);

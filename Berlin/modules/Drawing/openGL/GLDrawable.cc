@@ -21,6 +21,7 @@
  */
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Berlin/RegionImpl.hh"
+#include <iostream>
 
 GLDrawable::GLDrawable()
 {
@@ -37,8 +38,13 @@ GLDrawable::~GLDrawable()
   GGIMesaDestroyContext(context);
 }
 
-Coord GLDrawable::toCoord(PixelCoord, Axis) { return 1./72.;}
-PixelCoord GLDrawable::toPixels(Coord, Axis) { return 72;}
+Coord GLDrawable::dpi(Axis axis)
+{
+  return 72.;
+}
+
+Coord GLDrawable::toCoord(PixelCoord p, Axis axis) { return p/dpi(axis);}
+PixelCoord GLDrawable::toPixels(Coord c, Axis axis) { return static_cast<long>(c*dpi(axis));}
 
 void GLDrawable::clipping(Region_ptr r)
 {
@@ -54,9 +60,11 @@ void GLDrawable::clipping(Region_ptr r)
 Region_ptr GLDrawable::clipping()
 {
   RegionImpl *r = new RegionImpl;
+  r->_obj_is_ready(_boa());
+  r->valid = true;
   r->lower.x = toCoord(clip.x, xaxis);
   r->lower.y = toCoord(clip.y, yaxis);
   r->upper.x = toCoord(clip.x + clip.w, xaxis);
   r->upper.y = toCoord(clip.y + clip.h, yaxis);
-  return r;
+  return r->_this();
 }

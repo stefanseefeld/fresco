@@ -88,12 +88,15 @@ CORBA::Boolean RegionImpl::intersects(Region_ptr r)
   bool b = false;
   if (valid)
     {
-      Vertex lower, upper;
-      r->bounds(lower, upper);
-      b = (upper.x >= lower.x && lower.x <= upper.x &&
-	   upper.y >= lower.y && lower.y <= upper.y
-	   //upper.z >= lower.z && lower.z <= upper.z
+      Vertex l, u;
+      r->bounds(l, u);
+      b = (u.x >= lower.x && l.x <= upper.x &&
+	   u.y >= lower.y && l.y <= upper.y
+	   //u.z >= lower.z && l.z <= upper.z
 	   );
+      cout << l.x << ' ' << l.y << ' ' << u.x << ' ' << u.y << ' '
+	   << lower.x << ' ' << lower.y << ' ' << upper.x << ' ' << upper.y << ' '
+	   << b << endl;
     }
   return b;
 }
@@ -126,10 +129,10 @@ void RegionImpl::mergeIntersect(Region_ptr r)
     {
       if (valid)
 	{
-	  Vertex lower, upper;
-	  r->bounds(lower, upper);
-	  mergeMax(lower, lower);
-	  mergeMin(upper, upper);
+	  Vertex l, u;
+	  r->bounds(l, u);
+	  mergeMax(lower, l);
+	  mergeMin(upper, u);
         }
       else copy(r);
 //       notify();
@@ -142,10 +145,10 @@ void RegionImpl::mergeUnion(Region_ptr r)
     {
       if (valid)
 	{
-	  Vertex lower, upper;
-	  r->bounds(lower, upper);
-	  mergeMin(lower, lower);
-	  mergeMax(upper, upper);
+	  Vertex l, u;
+	  r->bounds(l, u);
+	  mergeMin(lower, l);
+	  mergeMax(upper, u);
         }
       else copy(r);
 //       notify();
@@ -204,19 +207,19 @@ Coord RegionImpl::spanAlign(Coord lower, Coord upper, Coord origin)
   return s;
 }
 
-void RegionImpl::bounds(Vertex &lower, Vertex &upper)
+void RegionImpl::bounds(Vertex &l, Vertex &u)
 {
 //   fresco_assert(valid);
-  lower = lower;
-  upper = upper;
+  l = lower;
+  u = upper;
 }
 
 void RegionImpl::center(Vertex &c)
 {
 //   fresco_assert(valid);
-  c.x = (lower.x + upper.x)*0.5f;
-  c.y = (lower.y + upper.y)*0.5f;
-  c.z = 0.0f;
+  c.x = (lower.x + upper.x) * 0.5;
+  c.y = (lower.y + upper.y) * 0.5;
+  c.z = 0.0;
 }
 
 void RegionImpl::origin(Vertex &v)

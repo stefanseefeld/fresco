@@ -28,6 +28,7 @@ interface Region;
 
 interface Drawable
 {
+  Coord dpi(in Axis a);
   attribute Region clipping;
 };
 

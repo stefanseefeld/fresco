@@ -28,7 +28,11 @@
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 
-MonoGraphic::MonoGraphic() : offset(new MonoGraphicOffset(this)) {}
+MonoGraphic::MonoGraphic()
+  : offset(new MonoGraphicOffset(this))
+{
+  offset->_obj_is_ready(_boa());
+}
 
 MonoGraphic::~MonoGraphic()
 {
@@ -42,7 +46,10 @@ MonoGraphic::~MonoGraphic()
   CORBA::release(offset);
 }
 
-Graphic_ptr MonoGraphic::body() { return Graphic::_duplicate(offset->child);}
+Graphic_ptr MonoGraphic::body()
+{
+  return Graphic::_duplicate(offset->child);
+}
 
 void MonoGraphic::body(Graphic_ptr g)
 {

@@ -115,7 +115,6 @@ void TraversalImpl::push(Graphic_ptr g, GraphicOffset_ptr o, Region_ptr r, Trans
   state.allocation = Region::_duplicate(r);
   state.transformation = Transform::_duplicate(t);
   stack.push_back(state);
-  cout << "TraversalImpl::push: stack is " << stack.size() << endl;
 }
 
 void TraversalImpl::pop()
@@ -126,7 +125,6 @@ void TraversalImpl::pop()
   CORBA::release(state.allocation);
   CORBA::release(state.transformation);
   stack.erase(stack.end());
-  cout << "TraversalImpl::pop: stack is " << stack.size() << endl;
 }
 
 // TraversalImpl::State *TraversalImpl::top() { return stack.size() ? *stack.begin() : 0;}

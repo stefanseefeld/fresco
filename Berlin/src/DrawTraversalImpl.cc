@@ -28,7 +28,7 @@ DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Drawable_ptr d, Region_
 {
   drawingkit = DrawingKit::_duplicate(kit);
   drawable = Drawable::_duplicate(d);
-  clipping = Region::_duplicate(r);
+  clipping = Region::_duplicate(drawable->clipping());
 }
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
