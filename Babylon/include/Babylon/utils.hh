@@ -28,18 +28,52 @@
 #ifndef _Babylon_utils_hh
 #define _Babylon_utils_hh
 
-#include <Babylon/Babylon.hh>
+#include <Babylon/defs.hh>
+#include <Babylon/Char.hh>
+#include <Babylon/String.hh>
 
 namespace Babylon {
 
-bool isGraphemBoundary(Babylon::Char &, Babylon::Char &);
-
-template<class SEQ>
-String decode(const SEQ &);
-
-template<class SEQ>
-SEQ encode(const String &);
+bool is_graphem_boundary(Babylon::Char, Babylon::Char);
 
 } // namespace Babylon
+
+// OPERATORS:
+inline ostream & operator << (ostream & out, const Babylon::Char uc) {
+    out << uc.utf8();
+    return out;
+}
+
+inline ostream & operator << (ostream & out, const Babylon::String & us) {
+    out << us.utf8();
+    return out;
+}
+
+// The relational operators look at the unicode values
+// ONLY! So semantically identical characters will not be
+// recognized.
+bool operator == (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return lhs.equal(rhs);
+}
+
+bool operator != (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return ! lhs.equal(rhs);
+}
+
+bool operator < (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return lhs.less(rhs);
+}
+
+bool operator >	(const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return !rhs.less(lhs);
+}
+
+bool operator <= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return !rhs.less(rhs);
+}
+
+bool operator >= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return !lhs.less(rhs);
+}
 
 #endif // _Babylon_utils_hh

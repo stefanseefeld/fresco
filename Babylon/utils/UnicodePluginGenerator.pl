@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w -IUnicodePluginGenerator
 use Carp;
-use Defined; 
+use Defined;
 use Category;
 use CombClass;
 use Bidir;
@@ -79,7 +79,7 @@ foreach $block (@blocks) {
   my $output = ">".$Prefix.$block->filename();
   open (PLUGIN, $output) or
     die "Can't open $output for output!\n";
-  
+
   $date = `date --rfc`; chop $date;
 
   # ########################################################################
@@ -114,7 +114,7 @@ foreach $block (@blocks) {
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 ", $block->filename(), $date;
- 
+
   print PLUGIN $DEF->include($block->start(), $block->end());
   print PLUGIN $UPPER->include($block->start(), $block->end());
   print PLUGIN $LOWER->include($block->start(), $block->end());
@@ -135,7 +135,7 @@ foreach $block (@blocks) {
 
   printf PLUGIN "
 namespace Babylon {
- 
+
   class %s : public Babylon::Dictionary::Block {
   public:
     void clean () {
@@ -144,9 +144,9 @@ namespace Babylon {
 
   printf PLUGIN "
     %s() {
-      my_first_letter = %s;
-      my_last_letter  = %s;
-      // my_version=\"3.0.1\" // Not yet supported!
+      _first_letter = %s;
+      _last_letter  = %s;
+      // _version=\"3.0.1\" // Not yet supported!
 ", $block->classname(), $block->start_string(), $block->end_string();
 
   print PLUGIN $DEF->init($block->start(), $block->end());
@@ -176,31 +176,34 @@ namespace Babylon {
     ~%s() {
     }
 ", $block->classname();
-  
+
   # ########################################################################
   # print functions...
   # ########################################################################
 
   print PLUGIN "
-    _UCS4 firstLetter() {
-      return my_first_letter;
+    UCS4 firstLetter() {
+      return _first_letter;
     }
- 
-    _UCS4 lastLetter() {
-      return my_last_letter;
+
+    UCS4 lastLetter() {
+      return _last_letter;
     }
- 
+
+    bool is_undef_block() const {
+      return 0;
+    }
+
     // query functions:
 ";
 
   printf PLUGIN "
-    string blockname(const _UCS4 _uc) const {
+    string blockname(const UCS4 uc) const {
       return \"%s\";
     }
 
 ", $block->name();
-  
-  
+
   print PLUGIN $DEF->function($block->start(), $block->end(),
 			      $block->classname());
   print PLUGIN $UPPER->function($block->start(), $block->end(),
@@ -235,7 +238,7 @@ namespace Babylon {
 			       $block->classname());
   print PLUGIN $PROPS->function($block->start(), $block->end(),
 				$block->classname());
- 
+
   # ########################################################################
   # print variable defs...
   # ########################################################################
@@ -244,9 +247,9 @@ namespace Babylon {
   private:
     // functions
     %s(const %s &) {}
- 
-    Babylon\:\:_UCS4 my_first_letter;
-    Babylon\:\:_UCS4 my_last_letter;
+
+    Babylon\:\:UCS4 _first_letter;
+    Babylon\:\:UCS4 _last_letter;
 ", $block->classname(), $block->classname();
 
   print PLUGIN $DEF->var_def($block->start(), $block->end());
@@ -305,10 +308,10 @@ namespace Babylon {
   # print footer...
   # ########################################################################
   printf PLUGIN "}; // namespace Babylon
- 
+
 dload(Babylon::%s);
 ", $block->classname();
- 
+
   # close output file
   close PLUGIN;
 } # foreach $block

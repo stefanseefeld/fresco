@@ -25,7 +25,6 @@
 #ifndef _Babylon_Defs_hh
 #define _Babylon_Defs_hh
 
-#include <Prague/Sys/Thread.hh>
 #include <string>
 
 namespace Babylon {
@@ -41,15 +40,15 @@ namespace Babylon {
      * _Char must be a 16bit wide integer. Anything else is
      * not conformant to the unicode standard.
      */
-    typedef char UCS1;
-    typedef unsigned short UCS2;
-    typedef unsigned long UCS4;
-    typedef basic_string<UCS1> UTF7String;
-    typedef basic_string<UCS1> UTF8String;
-    typedef basic_string<UCS2> UTF16String;
-    typedef basic_string<UCS4> UTF32String;
+    typedef char UCS1; // has to be char
+    typedef u_int16_t UCS2;
+    typedef u_int32_t UCS4;
+    typedef u_int64_t UCS8;
+    typedef basic_string<UCS1> UTF8_string;
+    typedef basic_string<UCS2> UTF16_string;
+    typedef basic_string<UCS4> UTF32_string;
 
-    // These classes are defined in Unichar.hh and Unistring.hh
+    // These classes are defined in Char.hh and String.hh
     class Char;
     class String; 
     
@@ -133,7 +132,9 @@ namespace Babylon {
 	CC_ABOVE_RIGHT=232,
 	CC_DOUBLE_BELOW=233,
 	CC_DOUBLE_ABOVE=234,
-	CC_BELOW_SUBSCRIPT=240 // Below (iota subscript) 
+	CC_BELOW_SUBSCRIPT=240, // Below (iota subscript) 
+	// Implementation dependent:
+	CC_MAX
     }; // enum can_comb_class_enum
     typedef enum can_comb_class_enum Can_Comb_Class;
     
@@ -234,7 +235,7 @@ namespace Babylon {
 	PROP_LINE_BREAKING,   // Line Breaking Property
 	PROP_MAX
     }; // enum unichar_props_enum
-    typedef enum unichar_props_enum CharProps;
+    typedef enum unichar_props_enum Char_Props;
     
     // IMPLEMENTATION DEPENDANT:
     enum control_character_enum {
@@ -279,7 +280,7 @@ namespace Babylon {
 	UC_END_OF_SELECTED_AREA        = 0x0087,
 	UC_CHARACTER_TABULATION_SET    = 0x0088,
 	UC_CHARACTER_TABULATION_WITH_JUSTIFICATION
-	                               = 0x0089,
+	= 0x0089,
 	UC_LINE_TABULATION_SET         = 0x008A,
 	UC_PARTIAL_LINE_DOWN           = 0x008B,
 	UC_PARTIAL_LINE_UP             = 0x008C,
@@ -325,7 +326,7 @@ namespace Babylon {
 	KEY_F11                     = 0xE10B,
 	KEY_F12                     = 0xE10C
     }; // control_character_enum
-    typedef enum control_character_enum ControlChar;
+    typedef enum control_character_enum Control_Char;
     
     enum norm_enum {
 	NORM_D    = 0,
@@ -346,54 +347,45 @@ namespace Babylon {
 	TRANS_CAN_NOT_ENCODE_CHAR,
 	TRANS_CAN_NOT_AUTOTRANSCODE // could not figure out which translation to use.
     };
-    typedef enum trans_error_enum TransError;
+    typedef enum trans_error_enum Trans_Error;
+
+    // Classes to throw around as exceptions:
     
-    class FileError {
-    public:
-	string ErrorFilename;
-	string ErrorMessage;
-	
-	FileError(const string filename, const string message) {
-	    ErrorFilename = filename;
-	    ErrorMessage  = message;
-	}
-    };
-    
-    class UndefinedProperty {
+    class Undefined_Property {
     public:
 	UCS4 errorUC;
-	unichar_props_enum errorProp;
+	Char_Props errorProp;
 	
-	UndefinedProperty(const UCS4 uc,
-			  const CharProps prop) {
+	Undefined_Property(const UCS4 uc,
+			   const Char_Props prop) {
 	    errorUC = uc;
 	    errorProp = prop;
 	}
-    }; // class UndefinedProperty
+    }; // class Undefined_Property
     
-    class TransferError {
+    class Transfer_Error {
     public:
-	TransError error;
+	Trans_Error error;
 	
-	TransferError(const TransError transError) {
+	Transfer_Error(const Trans_Error transError) {
 	    error   = transError;
 	}
-    };
+    }; // Transfer_Error
 
-    class BlockError {
+    class Block_Error {
     public:
-	UCS4 blockStart;
-	UCS4 blockEnd;
-	string errorMessage;
+	UCS4 block_start;
+	UCS4 block_end;
+	string error_message;
 	
-	BlockError(const UCS4 startUC,
-		   const UCS4 endUC,
-		   const string em) {
-	    blockStart = startUC;
-	    blockEnd = endUC;
-	    errorMessage = em;
+	Block_Error(const UCS4 startUC,
+		    const UCS4 endUC,
+		    const string em) {
+	    block_start = startUC;
+	    block_end = endUC;
+	    error_message = em;
 	}
-    }; // class BlockError
+    }; // class Block_Error
     
 } // namespace Babylon;
 

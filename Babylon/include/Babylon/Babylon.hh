@@ -25,5 +25,6 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Char.hh>
 #include <Babylon/String.hh>
+#include <Babylon/utils.hh>
 
 #endif // _Babylon_hh

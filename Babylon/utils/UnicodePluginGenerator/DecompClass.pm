@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file);
@@ -19,7 +18,7 @@ sub new {
 
     my $decomp = $list[5];  
     my $dType = "";
-    my $tmp = "";  
+    my $tmp = "";
     if ($decomp =~ /^<(\w+)>$/) {
       $tmp = $1;
       $tmp =~ tr/a-z/A-Z/;
@@ -87,7 +86,6 @@ sub function {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -102,12 +100,12 @@ sub function {
     }
   }
 
-  my $tmp = "    Char_Decomp decompType(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    Char_Decomp decomp_type(const UCS4 uc) const {\n";
+  $tmp   .= "      if (!is_defined(uc))\n";
+  $tmp   .= "        return DECOMP_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon::Char_Decomp($bl_name\:\:decomp\[_uc - my_first_letter\]);\n";
+    $tmp .= "      return Babylon::Char_Decomp($bl_name\:\:_decomp\[uc - _first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -127,7 +125,6 @@ sub var_def {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -143,7 +140,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const unsigned char decomp\[$bl_length\];\n";
+    return "    static const unsigned char _decomp\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -160,7 +157,6 @@ sub var {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -176,7 +172,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const unsigned char $bl_name\:\:decomp\[\] = {";
+    my $tmp = "  const unsigned char $bl_name\:\:_decomp\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";
@@ -191,7 +187,6 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
     return $tmp;
   } else {
     return "";

@@ -5,14 +5,12 @@
 #include <Warsaw/Types.hh>
 
 int main (int argc, char * argv) {
-    Unistring us;
     Babylon::String bs("TEST-STRING");
+    Warsaw::Unistring us;
 
-    cout << bs << endl;
+    us = Babylon::encode<Warsaw::Unistring>(bs);
 
-    us = translate(bs);
-
-    Babylon::String bs2 = translate(us);
-    
-    cout << bs2 << endl;
+    for (unsigned int i = 0; i < us.length(); i++)
+	cout << char(us[i]);
+    cout << endl;
 }

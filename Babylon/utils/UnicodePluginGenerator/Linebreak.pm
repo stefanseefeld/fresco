@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file) or die "Can't open ".$ucd_file.".\n";
@@ -73,7 +72,6 @@ sub function {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -87,12 +85,12 @@ sub function {
     }
   }
 
-  my $tmp = "    Line_Break linebreak(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    Line_Break linebreak(const UCS4 uc) const {\n";
+  $tmp   .= "      if (!is_defined(uc))\n";
+  $tmp   .= "        return LB_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon::Line_Break($bl_name\:\:lb\[_uc - my_first_letter\]);\n";
+    $tmp .= "      return Babylon::Line_Break($bl_name\:\:_lb\[uc - _first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -113,7 +111,6 @@ sub var_def {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -128,7 +125,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const unsigned char lb\[$bl_length\];\n";
+    return "    static const unsigned char _lb\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -146,7 +143,6 @@ sub var {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -161,7 +157,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const unsigned char $bl_name\:\:lb\[\] = {";
+    my $tmp = "  const unsigned char $bl_name\:\:_lb\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";

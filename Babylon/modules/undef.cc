@@ -1,11 +1,11 @@
-/*$Id: 100000-10FFFD.cc
+/*$Id: undef.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Thu,  7 Dec 2000 00:01:23 +0100.
+ * ftp.unicode.org on Tue, 28 Nov 2000 00:57:32 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -28,20 +28,19 @@
 
 namespace Babylon {
 
-  class Plane_16_Private_Use_Area100000 : public Babylon::Dictionary::Block {
+  class undef0 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Plane_16_Private_Use_Area100000() {
-      _first_letter = 0x100000;
-      _last_letter  = 0x10FFFD;
+    undef0() {
+      _first_letter = 0x0;
+      _last_letter  = 0xFFFFFFFF;
       // _version="3.0.1" // Not yet supported!
-
     }
 
 
-    ~Plane_16_Private_Use_Area100000() {
+    ~undef0() {
     }
 
     UCS4 firstLetter() {
@@ -53,17 +52,17 @@ namespace Babylon {
     }
 
     bool is_undef_block() const {
-      return 0;
+      return 1;
     }
 
     // query functions:
 
     string blockname(const UCS4 uc) const {
-      return "Plane 16 Private Use Area";
+      return "undefined";
     }
 
     bool is_defined(const UCS4 uc) const {
-      return 1;
+      return 0;
     }
 
     UCS4 uppercase(const UCS4 uc) const {
@@ -71,7 +70,7 @@ namespace Babylon {
     }
 
     bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
+      return 0;
     }
 
     UCS4 lowercase(const UCS4 uc) const {
@@ -79,7 +78,7 @@ namespace Babylon {
     }
 
     bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
+      return 0;
     }
 
     UCS4 titlecase(const UCS4 uc) const {
@@ -87,7 +86,7 @@ namespace Babylon {
     }
 
     bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
+      return 0;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -115,27 +114,19 @@ namespace Babylon {
     }
 
     Gen_Cat category(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CAT_MAX;
-      return Babylon::Gen_Cat(CAT_Co);
+      return CAT_MAX;
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return CC_MAX;
-      return Babylon::Can_Comb_Class(0);
+      return CC_MAX;
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return BIDIR_MAX;
-      return Babylon::Bidir_Props(BIDIR_L);
+      return BIDIR_MAX;
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
+      return DECOMP_MAX;
     }
 
     UTF32_string decompose(const UCS4 uc) const {
@@ -149,15 +140,11 @@ namespace Babylon {
     }
 
     Line_Break linebreak(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return LB_MAX;
-      return Babylon::Line_Break();
+      return LB_MAX;
     }
 
     EA_Width EA_width(const UCS4 uc) const {
-      if (!is_defined(uc))
-        return EA_WIDTH_MAX;
-      return Babylon::EA_Width();
+      return EA_WIDTH_MAX;
     }
 
     UCS4 compose (const UCS4 starter, const UCS4 last) {
@@ -265,7 +252,7 @@ namespace Babylon {
     }
 
     bool is_Private_Use(const UCS4 uc) const {
-      return 1;
+      return 0;
     }
 
     bool is_Not_a_Character(const UCS4 uc) const {
@@ -285,125 +272,114 @@ namespace Babylon {
     }
 
     bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
+      return 0;
     }
 
     bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
+      return 0;
     }
 
     bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
+      return 0;
     }
 
     bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
+      return 0;
     }
 
     bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
+      return 0;
     }
 
     bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
+      return 0;
     }
 
     bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
+      return 0;
     }
 
     bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
+      return 0;
     }
 
     bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
+      return 0;
     }
 
     bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
+      return 0;
     }
 
     bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
+      return 0;
     }
 
     bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
+      return 0;
     }
 
     bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
+      return 0;
     }
 
     bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
+      return 0;
     }
 
     bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
+      return 0;
     }
 
     bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
+      return 0;
     }
 
     bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
+      return 0;
     }
 
     bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
+      return 0;
     }
 
     bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
+      return 0;
     }
 
     bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
+      return 0;
     }
 
     bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
+      return 0;
     }
 
     bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
+      return 0;
     }
 
     bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
+      return 0;
     }
 
     bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
+      return 0;
     }
 
     bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
+      return 1;
     }
 
 
   private:
     // functions
-    Plane_16_Private_Use_Area100000(const Plane_16_Private_Use_Area100000 &) {}
+    undef0(const undef0 &) {}
 
     Babylon::UCS4 _first_letter;
     Babylon::UCS4 _last_letter;
-
-  }; // class Plane_16_Private_Use_Area100000
+  }; // class undef0
 
 }; // namespace Babylon
 
-dload(Babylon::Plane_16_Private_Use_Area100000);
+dload(Babylon::undef0);

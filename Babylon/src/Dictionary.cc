@@ -21,402 +21,826 @@
  */
 
 #include <Babylon/Dictionary.hh>
-#include <Prague/Sys/Directory.hh>
-#include <Prague/Sys/DLL.hh>
-#include <Prague/Filter/gzstream.hh>
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
 
 using namespace Prague;
 using namespace Babylon;
 
 // static variables:
-Dictionary       *Dictionary::dictionary = 0;
-Dictionary::Guard Dictionary::guard;
-Mutex             Dictionary::singletonMutex;
+Dictionary       *Dictionary::m_dictionary = 0;
+Dictionary::Guard Dictionary::m_guard;
+Mutex             Dictionary::m_singleton_mutex;
 
-bool Dictionary::isDefined(const UCS4 & _uc) throw (BlockError) {
-    bool tmp = 0;
-    rwLock.rlock();
-    try {
-	tmp=findChar(_uc)->isDefined(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {}
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock();
-	throw Except;
-    }
-    rwLock.unlock();
-    return tmp;
-}
-
-UCS4 Dictionary::uppercase(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
-    UCS4 result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->uppercase(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+bool Dictionary::is_defined(const UCS4 uc)
+    throw (Block_Error) {
+    bool result = 0;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_defined(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-UCS4 Dictionary::lowercase(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+UCS4 Dictionary::uppercase(const UCS4 uc) 
+    throw (Block_Error) {
     UCS4 result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->lowercase(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(uc)->uppercase(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-UCS4 Dictionary::titlecase(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+UCS4 Dictionary::lowercase(const UCS4 uc) 
+    throw (Block_Error) {
     UCS4 result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->titlecase(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(uc)->lowercase(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-float Dictionary::numericValue(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+UCS4 Dictionary::titlecase(const UCS4 uc) 
+    throw (Block_Error) {
+    UCS4 result;
+    m_rw_lock.rlock();
+    result=find_char(uc)->titlecase(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+float Dictionary::numeric_value(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     float result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->numericValue(_uc);
+    m_rw_lock.rlock();
+    if (!find_char(uc)->is_Numeric(uc)) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_NUMERIC_VALUE);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }	
-    rwLock.unlock();
+    result=find_char(uc)->numeric_value(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-int Dictionary::decDigitValue(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+int Dictionary::dec_digit_value(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     int result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->decDigitValue(_uc);
+    m_rw_lock.rlock();
+    if (!find_char(uc)->is_Decimal_Digit(uc)) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_DEC_DIGIT_VALUE);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    } 
-    rwLock.unlock();
+    result=find_char(uc)->dec_digit_value(uc);
+    m_rw_lock.unlock();
     return result;
 }
     
-int Dictionary::digitValue(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+int Dictionary::digit_value(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     int result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->digitValue(_uc);
+    m_rw_lock.rlock();
+    if (!(find_char(uc)->is_Digit(uc))) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_DIGIT_VALUE);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    result=find_char(uc)->digit_value(uc);
+    m_rw_lock.unlock();
     return result;
 } 
 
-string Dictionary::blockname(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+string Dictionary::blockname(const UCS4 uc) 
+    throw (Block_Error) {
     string result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->blockname(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    } 
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(uc)->blockname(uc);
+    m_rw_lock.unlock();
     return result;
 }
     
-Gen_Cat Dictionary::category(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+Gen_Cat Dictionary::category(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     Gen_Cat result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->category(_uc);
+    m_rw_lock.rlock();
+    result=find_char(uc)->category(uc);
+    if (result == CAT_MAX) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.unlock();
     return result;
 }
 
-Can_Comb_Class Dictionary::combClass(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+Can_Comb_Class Dictionary::comb_class(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     Can_Comb_Class result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->combClass(_uc);
+    m_rw_lock.rlock();
+    result=find_char(uc)->comb_class(uc);
+    if (result == CC_MAX) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.unlock();
     return result;
 }
     
-Bidir_Props Dictionary::bidirProps(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+Bidir_Props Dictionary::bidir_props(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     Bidir_Props result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->bidirProps(_uc);
+    m_rw_lock.rlock();
+    result=find_char(uc)->bidir_props(uc);
+    if (result == BIDIR_MAX) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.unlock();
     return result;
 }
     
-Char_Decomp Dictionary::decompType(const UCS4 & _uc) 
-    throw (UndefinedProperty, BlockError) {
+Char_Decomp Dictionary::decomp_type(const UCS4 uc) 
+    throw (Undefined_Property, Block_Error) {
     Char_Decomp result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->decompType(_uc);
+    m_rw_lock.rlock();
+    result=find_char(uc)->decomp_type(uc);
+    if (result == DECOMP_MAX) {
+	m_rw_lock.unlock();
+	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }	
-    rwLock.unlock();
+    m_rw_lock.unlock();
     return result;
 }
 
-UTF32String Dictionary::decompose(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
-    UTF32String result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->decompose(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+UTF32_string Dictionary::decompose(const UCS4 uc) 
+    throw (Block_Error) {
+    UTF32_string result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->decompose(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-UCS4 Dictionary::compose(const UCS4 & starter, const UCS4 & last)
-    throw (UndefinedProperty, BlockError) {
+UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last) 
+    throw (Block_Error) {
     UCS4 result;
-    rwLock.rlock();
-    try {
-	result=findChar(starter)->compose(starter, last);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(starter)->compose(starter, last);
+    m_rw_lock.unlock();
     return result;
 }
     
-bool Dictionary::mustMirror(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+bool Dictionary::must_mirror(const UCS4 uc) 
+    throw (Block_Error) {
     bool result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->mustMirror(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(uc)->must_mirror(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-EA_Width Dictionary::EAWidth(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+EA_Width Dictionary::EA_width(const UCS4 uc) 
+    throw (Block_Error) {
     EA_Width result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->EAWidth(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	    rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(uc)->EA_width(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
-Line_Break Dictionary::linebreak(const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
+Line_Break Dictionary::linebreak(const UCS4 uc) 
+    throw (Block_Error) {
     Line_Break result;
-    rwLock.rlock();
-    try {
-	result=findChar(_uc)->linebreak(_uc);
-    }
-    catch (Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    catch (Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    rwLock.unlock();
+    m_rw_lock.rlock();
+    result=find_char(uc)->linebreak(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+
+bool Dictionary::is_Zero_width(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Zero_width(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_White_space(const UCS4 uc) 
+    throw (Block_Error)  {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_White_space(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Non_break(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Non_break(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Control(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Control(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Join_Control(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Join_Control(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Format_Control(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Format_Control(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Dash(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Dash(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Hyphen(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Hyphen(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Quotation_Mark(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Quotation_Mark(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Terminal_Punctuation(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Terminal_Punctuation(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Math(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Math(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Paired_Punctuation(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Paired_Punctuation(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Left_of_Pair(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Left_of_Pair(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Combining(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Combining(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Non_spacing(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Non_spacing(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Hex_Digit(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Hex_Digit(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Alphabetic(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Alphabetic(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Diacritic(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Diacritic(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Extender(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Extender(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Identifier_Part(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Identifier_Part(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Ignorable_Control(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Ignorable_Control(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Hebrew_Right_to_Left(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Arabic_Right_to_Left(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Arabic_Right_to_Left(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Embedding_or_Override(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Embedding_or_Override(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Uppercase(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Uppercase(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Lowercase(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Lowercase(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Space(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Space(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_ISO_Control(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_ISO_Control(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Punctuation(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Punctuation(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Line_Separator(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Line_Separator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Paragraph_Separator(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Paragraph_Separator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Currency_Symbol(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Currency_Symbol(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Titlecase(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Titlecase(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Composite(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Composite(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Decimal_Digit(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Decimal_Digit(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Numeric(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Numeric(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Digit(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Digit(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Ideographic(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Ideographic(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Left_to_Right(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Left_to_Right(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_European_Digit(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_European_Digit(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Eur_Num_Separator(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Eur_Num_Separator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Eur_Num_Terminator(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Eur_Num_Terminator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Arabic_Digit(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Arabic_Digit(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Common_Separator(const UCS4 uc) 
+    throw (Block_Error)  {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Common_Separator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Block_Separator(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Block_Separator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Segment_Separator(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Segment_Separator(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Whitespace(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Whitespace(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Non_spacing_Mark(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Non_spacing_Mark(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Boundary_Neutral(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Boundary_Neutral(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_PDF(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_PDF(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_LRE(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_LRE(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_RLE(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_RLE(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_LRO(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_LRO(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_RLO(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_RLO(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Bidi_Other_Neutral(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Bidi_Other_Neutral(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Private_Use(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Private_Use(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Not_a_Character(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Not_a_Character(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Unassigned_Code_Value(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Unassigned_Code_Value(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Private_Use_High_Surrogate(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Private_Use_High_Surrogate(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_Low_Surrogate(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Low_Surrogate(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+bool Dictionary::is_High_Surrogate(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_High_Surrogate(uc);
+    m_rw_lock.unlock();
     return result;
 }
 
 Dictionary * Dictionary::instance() {
     // Create Dictionary just once
     {
-	MutexGuard guard(singletonMutex);
-	if (!dictionary) dictionary = new Dictionary;
+	MutexGuard guard(m_singleton_mutex);
+	if (!m_dictionary) m_dictionary = new Dictionary;
     }
     
-    return dictionary;
+    return m_dictionary;
 } // instance
 
 
-UTF32String Dictionary::recursiveDecompose(const bool & compat, const UCS4 & _uc)
-    throw (UndefinedProperty, BlockError) {
-    UTF32String decomp;
-    UTF32String result;
+UTF32_string Dictionary::recursive_decompose(const bool compat, const UCS4 uc)
+    throw (Block_Error) {
+    UTF32_string decomp;
+    UTF32_string result;
     
-    rwLock.rlock();
+    m_rw_lock.rlock();
     try {
-	if (findChar(_uc)->decompType(_uc) == DECOMP_COMPAT && !compat) {
-	    decomp.resize(1); decomp[0] = _uc;
+	if (find_char(uc)->decomp_type(uc) == DECOMP_COMPAT && !compat) {
+	    decomp.resize(1); decomp[0] = uc;
 	    return decomp;
 	}
 	
-	decomp = decompose(_uc);
-	if(decomp[0] != _uc && !(compat && decompType(_uc) == DECOMP_COMPAT))
-	    for (UTF32String::const_iterator i = decomp.begin();
+	decomp = decompose(uc);
+	if(decomp[0] != uc && !(compat && decomp_type(uc) == DECOMP_COMPAT))
+	    for (UTF32_string::const_iterator i = decomp.begin();
 		 i != decomp.end();
 		 i++)
-		result += recursiveDecompose(compat, *i);
+		result += recursive_decompose(compat, *i);
 	else
 	    result = decomp;
     }
-    catch (const Babylon::UndefinedProperty & Except) {
-	rwLock.unlock(); throw Except;
+    catch (const Babylon::Block_Error & Except) {
+	m_rw_lock.unlock(); throw Except;
     }
-    catch (const Babylon::BlockError & Except) {
-	rwLock.unlock(); throw Except;
-    }
-    
-    rwLock.unlock();
+    m_rw_lock.unlock();
     return result;
 }
 
-Dictionary::Block * Dictionary::findChar(const UCS4 & UC)
-    throw (UndefinedProperty, BlockError) {
+Dictionary::Block * Dictionary::find_char(const UCS4 uc)
+    throw (Block_Error) {
+    // Gets only called after the dictionary is rlocked!
 
-    rwLock.rlock();
-    
     // Binary search version:
-    unsigned short i = 0;
+    size_t i = 0;
     
     // ASCII happens so often that this speeds things up a bit
-    if (UC > data[i].end) {
+    if (uc > m_data[i].m_end) {
 	// binary search for non-ASCII characters
 	size_t start = 1; // 0 was allready checked
-	size_t end = data.size(); 
+	size_t end = m_data.size(); 
 	i = (start + end) / 2;
 	while (i > start && i < end) {
-	    if (UC < data[i].start) end = i;
-	    else if (UC > data[i].end) start = i;
+	    if (uc < m_data[i].m_start) end = i;
+	    else if (uc > m_data[i].m_end) start = i;
 	    else break; // we found it...
 	    i = (start + end) / 2;
 	}
     }
     
-    Data *p = &data[i];
-    if ( !(UC >= p->start && UC <= p->end)) { // UC belongs to no block
-	rwLock.unlock();
-	throw UndefinedProperty(UC, Babylon::PROP_CHARACTER);
+    Data *p = &m_data[i];
+    if (uc < p->m_start || uc > p->m_end) { // uc belongs to no block
+	return m_undef_block->get();
     }
     
-    if (p->block == 0) { // need to dynamically load the relevant script
-	if (p->file == "") { // Block is unsupported
-	    rwLock.unlock();
-	    throw BlockError(p->start, p->end, "Block is not supported.");
-	}
-
-	p->block = new Prague::Plugin<Dictionary::Block>(p->file);
-	if(*(p->block) == 0) { // Failed to load the plugin for this block
-	    rwLock.unlock();
-	    throw BlockError(p->start, p->end, p->block->error());
+    if (p->m_block == 0) { // need to dynamically load the relevant script
+	p->m_block = new Prague::Plugin<Dictionary::Block>(p->m_file);
+	if(p->m_block == 0 || *(p->m_block) == 0) {
+	    // Failed to load the plugin for this block
+	    m_rw_lock.unlock(); // unlock for calling function...
+	    throw Block_Error(p->m_start, p->m_end, p->m_block->error());
 	}
     }
     
-    rwLock.unlock();
-    return p->block->get();
-} // Dictionary::findChar
+    return p->m_block->get();
+} // Dictionary::find_char
 
 
-void Dictionary::update(const string & scanDir)
-    throw (FileError) {
-    rwLock.wlock();
+void Dictionary::update(const string & scanDir) {
+    m_rw_lock.wlock();
     clean();
     
     Prague::Directory dir(scanDir, 0);
@@ -441,48 +865,69 @@ void Dictionary::update(const string & scanDir)
 	
 	UCS4 start = (*block)->firstLetter();
 	UCS4 end   = (*block)->lastLetter();
-	
-	Data current;
-	current.start = start;
-	current.end = end;
-	current.file = name;
-	current.canRemove = 0;
-	current.block = 0;
-	
-	data.push_back(current);
+
+	if ((*block)->is_undef_block()) {
+	    if(m_undef_block == 0) {
+		m_undef_block = block;
+		// don't delete the block!
+	    }
+	} else {
+	    Data current;
+	    current.m_start = start;
+	    current.m_end = end;
+	    current.m_file = name;
+	    current.m_can_remove = 0;
+	    current.m_block = 0;
+
+	    m_data.push_back(current);
+	    delete block;
+	}
     }      
     
-    sort(data.begin(), data.end());
+    sort(m_data.begin(), m_data.end());
+
+    // Sanity tests:
+    if (m_undef_block == 0) {
+	throw Block_Error(0, 0xFFFFFFFF, "No undef-block defined.");
+    }
+
+    if (m_data.size() == 0) {
+	throw Block_Error(0, 0xFFFFFFFF, "No block defined.");
+    }
     
-    rwLock.unlock();
+    m_rw_lock.unlock();
 } // update_dictionary
 
-Dictionary::Dictionary() : data(0) {
-    my_version.resize(1);
-    my_version[0] = UC_NULL;
+Dictionary::Dictionary() : m_data(0) {
+    m_version.resize(1);
+    m_version[0] = UC_NULL;
+    m_undef_block = 0;
+
     char *env = getenv("BABYLON_PATH");
     if (!env) {
 	cerr << "Please set environment variable BABYLON_PATH first" << endl;
 	exit(-1);
     }
-    plugindir = env;
-    update(plugindir);
+    
+    update(string(env));
 } // Dictionary::Dictionary
 
 
 Dictionary::~Dictionary() {
-    rwLock.wlock();
+    m_rw_lock.wlock();
     clean();
-    rwLock.unlock();
+    m_rw_lock.unlock();
 } // Dictionary::~Dictionary()
 
 void Dictionary::clean() {
     // gets only called in writelocked functions!
-    for (size_t i = 0; i < data.size(); i++)
-	if (data[i].block)
-	    delete data[i].block;
+    for (vector<Data>::const_iterator i = m_data.begin();
+	 i != m_data.end();
+	 ++i)
+	if (i->m_block)
+	    delete i->m_block;
     
-    data.clear();
+    m_data.clear();
 };
 
 Dictionary::Block::Block() {}

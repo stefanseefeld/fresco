@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file);
@@ -73,7 +72,6 @@ sub function {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	$self->{_ATTENTION_NEEDED} = 1;
@@ -83,12 +81,12 @@ sub function {
     }
   }
 
-  my $tmp = "    float numericValue(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    float numeric_value(const UCS4 uc) const {\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      switch(_uc) {\n";
+    $tmp .= "      if (!is_defined(uc))\n";
+    $tmp .= "        return 0;\n";
+    $tmp .= "      switch(uc) {\n";
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if($self->data($i) ne "undef") {
         $tmp .= sprintf "      case 0x%04X:\n        return %f;\n", 
@@ -97,14 +95,32 @@ sub function {
       }
     }
     $tmp .= "      default:\n";
-    $tmp .= "        throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);\n";
-    $tmp .= "      }\n    }\n\n";
-    return $tmp;
+    $tmp .= "        return 0;\n";
+    $tmp .= "      }\n";
   } else {
-    $tmp .= "      throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);\n";
-    $tmp .= "    }\n\n";
-    return $tmp;
+    $tmp .= "      return 0;\n";
   }
+  $tmp   .= "    }\n\n";
+
+  $tmp   .= "    bool is_Numeric(const UCS4 uc) const {\n";
+   if ($self->{_ATTENTION_NEEDED} == 1) {
+    $tmp .= "      switch(uc) {\n";
+    for (my $i = $bl_start; $i <= $bl_end; $i++) {
+      if($self->data($i) ne "undef") {
+        $tmp .= sprintf "      case 0x%04X:\n",
+	                $i;
+      }
+    }
+    $tmp .= "        return 1;\n";
+    $tmp .= "      default:\n";
+    $tmp .= "        return 0;\n";
+    $tmp .= "      }\n";
+  } else {
+    $tmp .= "      return 0;\n";
+  }
+  $tmp   .= "    }\n\n";
+
+  return $tmp;
 }
 
 sub var_def {

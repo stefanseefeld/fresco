@@ -3,7 +3,7 @@ use strict;
 
 sub new {
   my $self = {};
-  
+
   $self->{_START} = hex($_[1]);
   $self->{_END}   = hex($_[2]);
   $self->{_NAME}  = $_[3];
@@ -20,7 +20,7 @@ sub start {
 
 sub start_string {
   my $self = shift;
-  return sprintf "0x%04X", $self->{_START};
+  return sprintf "0x%X", $self->{_START};
 }
 
 sub end {
@@ -30,7 +30,7 @@ sub end {
 
 sub end_string {
   my $self = shift;
-  return sprintf "0x%04X", $self->{_END};
+  return sprintf "0x%X", $self->{_END};
 }
 
 sub name {
@@ -50,7 +50,7 @@ sub classname {
   my $self = shift;
 
   my $tmp = join '', split /-/, join '_', split / /, $self->{_NAME};
-
+  $tmp = sprintf "%s%X", $tmp, $self->{_START};
   return $tmp;
 }
 

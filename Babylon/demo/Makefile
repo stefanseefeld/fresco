@@ -47,15 +47,15 @@ DVIPS       =
 
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../../../NORM/include -pthread
-CXXFLAGS   	= -Wall -D__x86__ -I../../../include -pthread
-LDFLAGS    	= -L../../../../NORM/lib
+CXXFLAGS   	= -Wall -D__x86__ -I../../../../NORM/include -I../../../include -pthread
+LDFLAGS    	= -L../../../../NORM/lib -lPrague -lBabylon
 OPTFLAGS	= -O3
 SOFLAGS		= -fpic
 GDBFLAGS	= -ggdb -DGDB
 PROFILEFLAGS	= -pg -Winline 
 
-ipath		= ../../../../include
-lpath		= ../../../../lib
+ipath		= ../../../../NORM/include
+lpath		= ../../../../NORM/lib
 dpath		= dep
 opath		= obj
 gpath		= gdb
@@ -64,12 +64,12 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -lBabylon -ldl -lpthread
 
-ALL             = translate Unistring Unicode Uni_perf
+ALL             = Unistring Unicode Uni_perf
 
 world:		$(ALL)
 
 %.o:		%.cc
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -I../../../include -c $< -o $@
 
 Unistring:	Unistring.o
 		$(CXX) $(LDFLAGS) -ltcpwrapGK -lomniORB3 -o $@ $^ $(LIBS)

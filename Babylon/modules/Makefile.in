@@ -49,7 +49,8 @@ LIBS		+= @LIBS@
 UNICODE_BLOCKS	= @UNICODE_BLOCKS@
 
 # General section
-SRC	= 0-7F.cc \
+SRC	= undef.cc \
+	  0-7F.cc \
 	  80-FF.cc \
 	  100-17F.cc \
 	  180-24F.cc

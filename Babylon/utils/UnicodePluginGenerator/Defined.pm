@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file);
@@ -67,12 +66,11 @@ sub function {
   my $bl_start = $_[0];
   my $bl_end   = $_[1];
 
-  my $tmp = "    bool isDefined(const _UCS4 _uc) const {\n";
+  my $tmp = "    bool is_defined(const UCS4 uc) const {\n";
 
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) == 0) {
 	$self->{_ATTENTION_NEEDED} = 1;
@@ -83,7 +81,7 @@ sub function {
   }
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return (isdefined\[_uc - my_first_letter\]);\n";
+    $tmp .= "      return (_is_defined\[uc - _first_letter\]);\n";
   } else {
     $tmp .= "      return 1;\n";
   }
@@ -100,7 +98,6 @@ sub var_def {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) == 0) {
 	$self->{_ATTENTION_NEEDED} = 1;
@@ -112,7 +109,7 @@ sub var_def {
 
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const bool isdefined\[$bl_length\];\n";
+    return "    static const bool _is_defined\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -128,7 +125,6 @@ sub var {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-   
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) == 0) {
 	$self->{_ATTENTION_NEEDED} = 1;
@@ -139,7 +135,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const bool $bl_name\:\:isdefined\[\] = {";
+    my $tmp = "  const bool $bl_name\:\:_is_defined\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";
@@ -150,7 +146,6 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
     return $tmp;
   } else {
     return "";

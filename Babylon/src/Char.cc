@@ -23,200 +23,171 @@
 #include <Babylon/String.hh>
 #include <Babylon/Char.hh>
 
-// QUERIES:
+// Conversion:
+Babylon::UTF8_string Babylon::Char::utf8() const throw (Trans_Error) {
+    unsigned int chars_needed;
+    
+    UCS4 c = m_value;
+    UTF8_string res;
 
-Babylon::Char Babylon::Char::uppercase() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->uppercase(my_unicode);
-} // uppercase
+    if      (c <= 0x0000007F) chars_needed = 0;
+    else if (c <= 0x000007FF) chars_needed = 1;
+    else if (c <= 0x0000FFFF) chars_needed = 2;
+    else if (c <= 0x001FFFFF) chars_needed = 3;
+    else if (c <= 0x03FFFFFF) chars_needed = 4;
+    else if (c <= 0x7FFFFFFF) chars_needed = 5;
+    else throw Trans_Error(TRANS_INVALID_UCS4_CHAR);
+    
+    for(int i = chars_needed; i >= 0; i--) {
+	if (i == 0) {
+	    UCS1 t = 0;
+	    if (chars_needed != 0)
+		t = 0xFE << (6 - chars_needed);
+	    t = t | c;
+	    res += UCS1(t);
+	} else {
+	    UCS4 t = c & 0x3F; // t = 00xxxxxx;
+	    t = t | 0x80;      // t = 10xxxxxx;
+	    res += UCS1(t);
+	    c = c >> 5;
+	}
+    }
+    return res;
+}
 
-Babylon::Char Babylon::Char::lowercase() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->lowercase(my_unicode);
-} // lowercase
+Babylon::UTF16_string Babylon::Char::utf16() const throw (Trans_Error) {
+    UTF16_string res;
+    UCS4 c = m_value;
+    if (c > 0x0010FFFF)
+	throw Trans_Error(TRANS_CAN_NOT_ENCODE_CHAR);
+    if (c < 0x00010000)
+	res += UCS2(c);
+    else {
+	c -= 0x00010000;
+	UCS2 h = 0xD800;
+	UCS2 l = 0xDC00;
+	res += (h | (c & 0x3FF));
+	res += (l | (c >> 10));
+    }
 
-Babylon::Char Babylon::Char::titlecase() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->titlecase(my_unicode);
-} // titlecase
+    return res;
+}
 
-float Babylon::Char::numericValue() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->numericValue(my_unicode);
-} // numericValue
+Babylon::UTF32_string Babylon::Char::utf32() const throw (Trans_Error) {
+    UTF32_string res(m_value, Babylon::NORM_NONE);
+    return res;
+}
 
-int Babylon::Char::digitValue() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->digitValue(my_unicode);
-} // digitValue
+Babylon::UTF8_string::const_iterator
+Babylon::Char::utf8(const Babylon::UTF8_string & s,
+		    Babylon::UTF8_string::const_iterator it)
+    throw (Trans_Error) {
+    char first_byte_mask[] = {0x7F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
+    
+    UCS4 h = 0;
 
-int Babylon::Char::decDigitValue() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->decDigitValue(my_unicode);
-} // declDigitValue
+    READ_UTF8_CHAR:
+    unsigned int chars_needed;
+    
+    if      ((*it & 0x80) == 0) chars_needed = 0; // *s_it == 0xxx xxxx
+    else if ((*it & 0x40) == 0)                   // *s_it == 10xx xxxx, should only
+	                                            // happen after a character
+	                                            // starting with 11xx xxxx
+	throw Trans_Error(TRANS_INVALID_UTF8_STRING);
+    else if ((*it & 0x20) == 0) chars_needed = 1; // *s_it == 110x xxxx
+    else if ((*it & 0x10) == 0) chars_needed = 2; // *s_it == 1110 xxxx
+    else if ((*it & 0x08) == 0) chars_needed = 3; // *s_it == 1111 0xxx
+    else if ((*it & 0x04) == 0) chars_needed = 4; // *s_it == 1111 10xx
+    else if ((*it & 0x02) == 0) chars_needed = 5; // *s_it == 1111 110x
+    else throw Trans_Error(TRANS_INVALID_UTF8_CHAR); // *s_it == 1111 111x,
+                                                    // should not happen in
+                                                    // a sequence of UTF8-Characters
+    
+    UCS4 c = 0;
+    for (int i = chars_needed; i >= 0; --i) {
+	if (i == 0) {
+	    c = *it & first_byte_mask[chars_needed];
+	} else {
+	    c << 5;
+	    c = c | (*it & 0x3F);
+	    
+	    ++it;
+	    if ((it == s.end()) || (*it & 0x80) == 0 || (*it & 0x40) != 0 )
+		// either we are at the end of the UTF8-sequence or the current
+		// character is not 10xx xxxx.
+		throw Trans_Error(TRANS_INVALID_UTF8_STRING);
+	}
+    }
+    
+    if (c >= 0xD800 && c <= 0xDBFF) {
+	// c is a high surrogate
+	if (h != 0)
+	    throw Trans_Error(TRANS_INVALID_UTF8_STRING);
+	h = c;
+	++it; // read the next character (wich should be a low surrogate)
+	goto READ_UTF8_CHAR;
+    }
+    
+    if (c >= 0xDC00 && c <= 0xDFFFF) {
+	if (h == 0)
+	    throw Trans_Error(TRANS_INVALID_UTF8_STRING);
+	c = (((h & 0x3FF) << 10) | (c & 0x3FF)) + 0x10000;
+    }
+    
+    m_value = UCS4(c);
 
-string Babylon::Char::blockname() const
-    throw (BlockError) {
-    return Babylon::Dictionary::instance()->blockname(my_unicode);
-} // blockname
+    ++it; // advance one past the last octet read.
 
-Babylon::Gen_Cat Babylon::Char::category() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->category(my_unicode);
-} // category
+    return it;
+}
 
-Babylon::Bidir_Props Babylon::Char::direction() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->bidirProps(my_unicode);
-} // direction
+Babylon::UTF16_string::const_iterator
+Babylon::Char::utf16(const Babylon::UTF16_string & s,
+		     Babylon::UTF16_string::const_iterator it)
+    throw (Trans_Error) {
+    UCS4 c = *it;
+    if (c >= 0xD800 && c <= 0xDFFF) {
+	// we found part of a surrogate pair...
+	if (c >= 0xDC00)
+	    // it was a low surrogate...
+	    throw Trans_Error(TRANS_INVALID_UTF16_STRING);
+	++it;
+	if (it == s.end() || *it <= 0xDC00 || *it > 0xDFFF)
+	    // didn't find a corresponding low surrogate...
+	    throw Trans_Error(TRANS_INVALID_UTF16_STRING);
+	c = (((c & 0x3FF) << 10) | (*it & 0x3FFF)) + 0x10000;
+    }
+    m_value = c;
+    ++it;
+    return it;
+}
 
-Babylon::Can_Comb_Class Babylon::Char::combClass() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->combClass(my_unicode);
-} // CombClass
-
-Babylon::Char_Decomp Babylon::Char::decompType() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->decompType(my_unicode);
-} // decompType
-
-Babylon::String Babylon::Char::decompose() const
-    throw (UndefinedProperty, BlockError) {
-    return String(Babylon::Dictionary::instance()->
-		  decompose(my_unicode));
-} // decompose
-
-bool Babylon::Char::mustMirror() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->mustMirror(my_unicode);
-} // MustMirror
-
-Babylon::EA_Width Babylon::Char::EAWidth() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->EAWidth(my_unicode);
-} // EAWidth
-
-Babylon::Line_Break Babylon::Char::linebreak() const
-    throw (UndefinedProperty, BlockError) {
-    return Babylon::Dictionary::instance()->linebreak(my_unicode);
-} // LineBreak
-
-// TESTS:
-
-bool Babylon::Char::is_lowercase() const
-    throw (UndefinedProperty, BlockError) {
-    return (this->category() == Babylon::CAT_Ll);
-} // is_lowercase
-
-bool Babylon::Char::is_uppercase() const
-    throw (UndefinedProperty, BlockError) {
-    return (this->category() == Babylon::CAT_Lu);
-} // is_uppercase
-
-bool Babylon::Char::is_titlecase() const
-    throw (UndefinedProperty, BlockError) {
-    return (this->category() == Babylon::CAT_Lt);
-} // is_titlecase
-
-bool Babylon::Char::is_digit() const
-    throw (UndefinedProperty, BlockError) {
-    return (this->category() == Babylon::CAT_Nd);
-} // is_digit
-
-bool Babylon::Char::is_defined() const
-    throw (BlockError) {
-    return Babylon::Dictionary::instance()->isDefined(my_unicode);
-} // is_defined
-
-bool Babylon::Char::is_alpha() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return ( (tmp >= Babylon::CAT_Lu &&
-	      tmp <= Babylon::CAT_Lt) ||
-	     tmp == Babylon::CAT_Lm  ||
-	     tmp == Babylon::CAT_Lo );
-} // is_alpha
-
-bool Babylon::Char::is_space() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return (tmp >= Babylon::CAT_Zs &&
-	    tmp <= Babylon::CAT_Zp);
-} // is_space
-
-bool Babylon::Char::is_control() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return (tmp == Babylon::CAT_Cc ||
-	    tmp == Babylon::CAT_Cf ||
-	    tmp == Babylon::CAT_Zl ||
-	    tmp == Babylon::CAT_Zp);
-} // is_control
-
-bool Babylon::Char::is_printable() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return ( ! (tmp >= Babylon::CAT_Cc &&
-		tmp <= Babylon::CAT_Cn) );
-} // is_print
-
-bool Babylon::Char::is_ascii() const
-    throw (UndefinedProperty, BlockError) {
-    return ( my_unicode < 128 );
-} // is_ascii
-
-bool Babylon::Char::is_mark() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return ( tmp >= Babylon::CAT_Mn &&
-	     tmp <= Babylon::CAT_Me );
-} // is_mark
-
-bool Babylon::Char::is_base() const
-    throw (UndefinedProperty, BlockError) {
-    return ( this->is_alpha() || this->is_number() || this->is_mark() );
-} // is_base
-
-bool Babylon::Char::is_punctuation() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return ( tmp >= Babylon::CAT_Pc &&
-	     tmp <= Babylon::CAT_Po );
-} // is_punctuation
-
-bool Babylon::Char::is_number() const
-    throw (UndefinedProperty, BlockError) {
-    Gen_Cat tmp = this->category();
-    return ( tmp >= Babylon::CAT_Nd &&
-	     tmp <= Babylon::CAT_Nl );
-} // is_number
+Babylon::UTF32_string::const_iterator
+Babylon::Char::utf32(const Babylon::UTF32_string & s,
+		     Babylon::UTF32_string::const_iterator it)
+    throw (Trans_Error) {
+    m_value = *it;
+    ++it;
+    return it;
+}
 
 // TRANSFORMATIONS:
 void Babylon::Char::to_lower()
-    throw (UndefinedProperty, BlockError) {
+    throw (Block_Error) {
     *this = this->lowercase();
 } // to_lowercase
 
 void Babylon::Char::to_upper()
-    throw (UndefinedProperty, BlockError) {
+    throw (Block_Error) {
     *this = this->uppercase();
 } // to_uppercase
 
 void Babylon::Char::to_title()
-    throw (UndefinedProperty, BlockError) {
+    throw (Block_Error) {
     *this = this->titlecase();
 } // to_titlecase
 
-// UTILITIES
-ostream & Babylon::Char::_write(ostream & out) const {
-    if (my_unicode <= 0x007F)
-	out << char(my_unicode);
-    else {
-	ios::fmtflags outflags = out.setf(ios::uppercase);
-	out << "U+"
-	    << hex << setfill('0') << setw(4)
-	    << my_unicode;
-	out.setf(outflags);
-    }
-    return out;
-} // _write
+Babylon::String Babylon::Char::decompose() const
+    throw (Undefined_Property, Block_Error) {
+    return String(Dictionary::instance()->decompose(m_value));
+} // decompose

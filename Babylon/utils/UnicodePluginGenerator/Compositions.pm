@@ -3,7 +3,7 @@ use strict;
 
 sub new {
   my $self = {};
-  
+
   my $ucd_file = $_[1];
   my $excl_file= $_[2];
 
@@ -18,12 +18,12 @@ sub new {
     if ($info eq "") { next; }
 
     $info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
- 
+
     next if ($info eq "");
- 
+
     push @excl, $info;
   }
- 
+
   close(EXCL);
 
   open(UCD, $ucd_file);
@@ -40,7 +40,7 @@ sub new {
     my $decomp = $list[5];
     my $dType = "";
     my $tmp = "";
- 
+
     if ($decomp =~ /^<(\w+)>$/) {
       $tmp = "";
     } elsif ($decomp =~ /^<(\w+)> ([A-F0-9 ]*)$/) {
@@ -48,7 +48,7 @@ sub new {
     } else {
       $tmp = $decomp;
     }
- 
+
     if (($tmp =~ tr/ / /) == 1) {
       if (!(grep {$_ eq $list[0]} @excl)) {
 	$tmp =~ s/ //;
@@ -93,7 +93,7 @@ sub data {
 
 sub include {
   my $self = shift;
-  
+
   my $bl_start = $_[0];
   my $bl_end   = $_[1];
 
@@ -110,7 +110,7 @@ sub include {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
+
     if ($#blockkeys > 0) {
       $self->{_ATTENTION_NEEDED} = 1;
     } else {
@@ -127,7 +127,6 @@ sub include {
 
 sub init {
   my $self = shift;
-  
   my $bl_start = $_[0];
   my $bl_end   = $_[1];
 
@@ -144,52 +143,50 @@ sub init {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
+
     if ($#blockkeys > 0) {
       $self->{_ATTENTION_NEEDED} = 1;
     } else {
       $self->{_ATTENTION_NEEDED} = 0;
     }
   }
-  
+
   if ($self->{_ATTENTION_NEEDED} == 1) {
     my $tmp = "";
     foreach my $i (@blockkeys) {
-      $tmp .= sprintf "      composeMap\[0x%08X\] = 0x%s;\n",
+      $tmp .= sprintf "      _composeMap\[0x%08X\] = 0x%s;\n",
       $i, $self->data($i);
     }
     return $tmp;
   }
-  
   return "";
 }
 
 sub function {
   my $self = shift;
-  
   my $bl_start = $_[0];
   my $bl_end   = $_[1];
 
   if((sprintf "%04X", $bl_start) eq "AC00") { # hangul
-    my $tmp = "    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {\n";
-    $tmp .= "      const _UCS4 sBase = 0xAC00;\n";
-    $tmp .= "      const _UCS4 lBase = 0x1100;\n";
-    $tmp .= "      const _UCS4 vBase = 0x1161;\n";
-    $tmp .= "      const _UCS4 tBase = 0x11A7;\n\n";
+    my $tmp = "    UCS4 compose (const UCS4 starter, const UCS4 last) {\n";
+    $tmp .= "      const UCS4 sBase = 0xAC00;\n";
+    $tmp .= "      const UCS4 lBase = 0x1100;\n";
+    $tmp .= "      const UCS4 vBase = 0x1161;\n";
+    $tmp .= "      const UCS4 tBase = 0x11A7;\n\n";
     $tmp .= "      const int lCount = 19;\n";
     $tmp .= "      const int vCount = 21;\n";
     $tmp .= "      const int tCount = 28;\n";
     $tmp .= "      const int nCount = vCount * tCount;\n";
     $tmp .= "      const int sCount = lCount * nCount;\n\n";
 
-    $tmp .= "      _UCS4 result = 0;\n";
+    $tmp .= "      UCS4 result = 0;\n";
     $tmp .= "      // check if the characters are L and V\n";
     $tmp .= "      int lIndex = starter - vBase;\n";
     $tmp .= "      if ( 0 <= lIndex && lIndex < lCount ) {\n";
     $tmp .= "        int vIndex = last - vBase;\n";
     $tmp .= "        if ( 0 <= vIndex && vIndex < vCount ) {\n";
     $tmp .= "          // make syllable form LV\n";
-    $tmp .= "          result = _UCS4(sBase + (lIndex * vCount + vIndex) * tCount);\n";
+    $tmp .= "          result = UCS4(sBase + (lIndex * vCount + vIndex) * tCount);\n";
     $tmp .= "        }\n";
     $tmp .= "      }\n\n";
     $tmp .= "      // check if the characters are LV and T\n";
@@ -204,7 +201,7 @@ sub function {
 
     return $tmp;
   }
-  
+
   my @blockkeys = sort grep {$_ ne "_ATTENTION_NEEDED" and
 			     $_ ne "_BL_START" and
 			     $_ ne "_BL_END" and
@@ -223,25 +220,23 @@ sub function {
     }
   }
 
-  my $tmp = "    _UCS4 compose (const _UCS4 starter, const _UCS4 last) {\n";
+  my $tmp = "    UCS4 compose (const UCS4 starter, const UCS4 last) {\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return composeMap[starter << 16 | last];\n";
+    $tmp .= "      return _composeMap[starter << 16 | last];\n";
   } else {
     $tmp .= "      return 0;\n";
   }
-  
   $tmp   .= "    }\n\n";
-
   return $tmp;
 }
 
 sub var_def {
   my $self = shift;
-  
+
   my $bl_start = $_[0];
   my $bl_end   = $_[1];
-  
+
   if((sprintf "%04X", $bl_start) eq "AC00") { # hangul
     return "";
   }
@@ -264,7 +259,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    return "    map<_UCS4, _UCS4> composeMap;\n";
+    return "    map<UCS4, UCS4> _composeMap;\n";
   }
 
   return "";

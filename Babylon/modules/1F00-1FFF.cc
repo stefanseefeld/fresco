@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Tue, 21 Nov 2000 21:12:22 +0100.
+ * ftp.unicode.org on Wed,  6 Dec 2000 23:24:57 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -28,149 +28,149 @@
 #include <map>
 
 namespace Babylon {
- 
+
   class Greek_Extended1F00 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
     Greek_Extended1F00() {
-      my_first_letter = 0x1F00;
-      my_last_letter  = 0x1FFF;
-      // my_version="3.0.1" // Not yet supported!
-      composeMap[0x1F000300] = 0x1F02;
-      composeMap[0x1F000301] = 0x1F04;
-      composeMap[0x1F000342] = 0x1F06;
-      composeMap[0x1F000345] = 0x1F80;
-      composeMap[0x1F010300] = 0x1F03;
-      composeMap[0x1F010301] = 0x1F05;
-      composeMap[0x1F010342] = 0x1F07;
-      composeMap[0x1F010345] = 0x1F81;
-      composeMap[0x1F020345] = 0x1F82;
-      composeMap[0x1F030345] = 0x1F83;
-      composeMap[0x1F040345] = 0x1F84;
-      composeMap[0x1F050345] = 0x1F85;
-      composeMap[0x1F060345] = 0x1F86;
-      composeMap[0x1F070345] = 0x1F87;
-      composeMap[0x1F080300] = 0x1F0A;
-      composeMap[0x1F080301] = 0x1F0C;
-      composeMap[0x1F080342] = 0x1F0E;
-      composeMap[0x1F080345] = 0x1F88;
-      composeMap[0x1F090300] = 0x1F0B;
-      composeMap[0x1F090301] = 0x1F0D;
-      composeMap[0x1F090342] = 0x1F0F;
-      composeMap[0x1F090345] = 0x1F89;
-      composeMap[0x1F0A0345] = 0x1F8A;
-      composeMap[0x1F0B0345] = 0x1F8B;
-      composeMap[0x1F0C0345] = 0x1F8C;
-      composeMap[0x1F0D0345] = 0x1F8D;
-      composeMap[0x1F0E0345] = 0x1F8E;
-      composeMap[0x1F0F0345] = 0x1F8F;
-      composeMap[0x1F100300] = 0x1F12;
-      composeMap[0x1F100301] = 0x1F14;
-      composeMap[0x1F110300] = 0x1F13;
-      composeMap[0x1F110301] = 0x1F15;
-      composeMap[0x1F180300] = 0x1F1A;
-      composeMap[0x1F180301] = 0x1F1C;
-      composeMap[0x1F190300] = 0x1F1B;
-      composeMap[0x1F190301] = 0x1F1D;
-      composeMap[0x1F200300] = 0x1F22;
-      composeMap[0x1F200301] = 0x1F24;
-      composeMap[0x1F200342] = 0x1F26;
-      composeMap[0x1F200345] = 0x1F90;
-      composeMap[0x1F210300] = 0x1F23;
-      composeMap[0x1F210301] = 0x1F25;
-      composeMap[0x1F210342] = 0x1F27;
-      composeMap[0x1F210345] = 0x1F91;
-      composeMap[0x1F220345] = 0x1F92;
-      composeMap[0x1F230345] = 0x1F93;
-      composeMap[0x1F240345] = 0x1F94;
-      composeMap[0x1F250345] = 0x1F95;
-      composeMap[0x1F260345] = 0x1F96;
-      composeMap[0x1F270345] = 0x1F97;
-      composeMap[0x1F280300] = 0x1F2A;
-      composeMap[0x1F280301] = 0x1F2C;
-      composeMap[0x1F280342] = 0x1F2E;
-      composeMap[0x1F280345] = 0x1F98;
-      composeMap[0x1F290300] = 0x1F2B;
-      composeMap[0x1F290301] = 0x1F2D;
-      composeMap[0x1F290342] = 0x1F2F;
-      composeMap[0x1F290345] = 0x1F99;
-      composeMap[0x1F2A0345] = 0x1F9A;
-      composeMap[0x1F2B0345] = 0x1F9B;
-      composeMap[0x1F2C0345] = 0x1F9C;
-      composeMap[0x1F2D0345] = 0x1F9D;
-      composeMap[0x1F2E0345] = 0x1F9E;
-      composeMap[0x1F2F0345] = 0x1F9F;
-      composeMap[0x1F300300] = 0x1F32;
-      composeMap[0x1F300301] = 0x1F34;
-      composeMap[0x1F300342] = 0x1F36;
-      composeMap[0x1F310300] = 0x1F33;
-      composeMap[0x1F310301] = 0x1F35;
-      composeMap[0x1F310342] = 0x1F37;
-      composeMap[0x1F380300] = 0x1F3A;
-      composeMap[0x1F380301] = 0x1F3C;
-      composeMap[0x1F380342] = 0x1F3E;
-      composeMap[0x1F390300] = 0x1F3B;
-      composeMap[0x1F390301] = 0x1F3D;
-      composeMap[0x1F390342] = 0x1F3F;
-      composeMap[0x1F400300] = 0x1F42;
-      composeMap[0x1F400301] = 0x1F44;
-      composeMap[0x1F410300] = 0x1F43;
-      composeMap[0x1F410301] = 0x1F45;
-      composeMap[0x1F480300] = 0x1F4A;
-      composeMap[0x1F480301] = 0x1F4C;
-      composeMap[0x1F490300] = 0x1F4B;
-      composeMap[0x1F490301] = 0x1F4D;
-      composeMap[0x1F500300] = 0x1F52;
-      composeMap[0x1F500301] = 0x1F54;
-      composeMap[0x1F500342] = 0x1F56;
-      composeMap[0x1F510300] = 0x1F53;
-      composeMap[0x1F510301] = 0x1F55;
-      composeMap[0x1F510342] = 0x1F57;
-      composeMap[0x1F590300] = 0x1F5B;
-      composeMap[0x1F590301] = 0x1F5D;
-      composeMap[0x1F590342] = 0x1F5F;
-      composeMap[0x1F600300] = 0x1F62;
-      composeMap[0x1F600301] = 0x1F64;
-      composeMap[0x1F600342] = 0x1F66;
-      composeMap[0x1F600345] = 0x1FA0;
-      composeMap[0x1F610300] = 0x1F63;
-      composeMap[0x1F610301] = 0x1F65;
-      composeMap[0x1F610342] = 0x1F67;
-      composeMap[0x1F610345] = 0x1FA1;
-      composeMap[0x1F620345] = 0x1FA2;
-      composeMap[0x1F630345] = 0x1FA3;
-      composeMap[0x1F640345] = 0x1FA4;
-      composeMap[0x1F650345] = 0x1FA5;
-      composeMap[0x1F660345] = 0x1FA6;
-      composeMap[0x1F670345] = 0x1FA7;
-      composeMap[0x1F680300] = 0x1F6A;
-      composeMap[0x1F680301] = 0x1F6C;
-      composeMap[0x1F680342] = 0x1F6E;
-      composeMap[0x1F680345] = 0x1FA8;
-      composeMap[0x1F690300] = 0x1F6B;
-      composeMap[0x1F690301] = 0x1F6D;
-      composeMap[0x1F690342] = 0x1F6F;
-      composeMap[0x1F690345] = 0x1FA9;
-      composeMap[0x1F6A0345] = 0x1FAA;
-      composeMap[0x1F6B0345] = 0x1FAB;
-      composeMap[0x1F6C0345] = 0x1FAC;
-      composeMap[0x1F6D0345] = 0x1FAD;
-      composeMap[0x1F6E0345] = 0x1FAE;
-      composeMap[0x1F6F0345] = 0x1FAF;
-      composeMap[0x1F700345] = 0x1FB2;
-      composeMap[0x1F740345] = 0x1FC2;
-      composeMap[0x1F7C0345] = 0x1FF2;
-      composeMap[0x1FB60345] = 0x1FB7;
-      composeMap[0x1FBF0300] = 0x1FCD;
-      composeMap[0x1FBF0301] = 0x1FCE;
-      composeMap[0x1FBF0342] = 0x1FCF;
-      composeMap[0x1FC60345] = 0x1FC7;
-      composeMap[0x1FF60345] = 0x1FF7;
-      composeMap[0x1FFE0300] = 0x1FDD;
-      composeMap[0x1FFE0301] = 0x1FDE;
-      composeMap[0x1FFE0342] = 0x1FDF;
+      _first_letter = 0x1F00;
+      _last_letter  = 0x1FFF;
+      // _version="3.0.1" // Not yet supported!
+      _composeMap[0x1F000300] = 0x1F02;
+      _composeMap[0x1F000301] = 0x1F04;
+      _composeMap[0x1F000342] = 0x1F06;
+      _composeMap[0x1F000345] = 0x1F80;
+      _composeMap[0x1F010300] = 0x1F03;
+      _composeMap[0x1F010301] = 0x1F05;
+      _composeMap[0x1F010342] = 0x1F07;
+      _composeMap[0x1F010345] = 0x1F81;
+      _composeMap[0x1F020345] = 0x1F82;
+      _composeMap[0x1F030345] = 0x1F83;
+      _composeMap[0x1F040345] = 0x1F84;
+      _composeMap[0x1F050345] = 0x1F85;
+      _composeMap[0x1F060345] = 0x1F86;
+      _composeMap[0x1F070345] = 0x1F87;
+      _composeMap[0x1F080300] = 0x1F0A;
+      _composeMap[0x1F080301] = 0x1F0C;
+      _composeMap[0x1F080342] = 0x1F0E;
+      _composeMap[0x1F080345] = 0x1F88;
+      _composeMap[0x1F090300] = 0x1F0B;
+      _composeMap[0x1F090301] = 0x1F0D;
+      _composeMap[0x1F090342] = 0x1F0F;
+      _composeMap[0x1F090345] = 0x1F89;
+      _composeMap[0x1F0A0345] = 0x1F8A;
+      _composeMap[0x1F0B0345] = 0x1F8B;
+      _composeMap[0x1F0C0345] = 0x1F8C;
+      _composeMap[0x1F0D0345] = 0x1F8D;
+      _composeMap[0x1F0E0345] = 0x1F8E;
+      _composeMap[0x1F0F0345] = 0x1F8F;
+      _composeMap[0x1F100300] = 0x1F12;
+      _composeMap[0x1F100301] = 0x1F14;
+      _composeMap[0x1F110300] = 0x1F13;
+      _composeMap[0x1F110301] = 0x1F15;
+      _composeMap[0x1F180300] = 0x1F1A;
+      _composeMap[0x1F180301] = 0x1F1C;
+      _composeMap[0x1F190300] = 0x1F1B;
+      _composeMap[0x1F190301] = 0x1F1D;
+      _composeMap[0x1F200300] = 0x1F22;
+      _composeMap[0x1F200301] = 0x1F24;
+      _composeMap[0x1F200342] = 0x1F26;
+      _composeMap[0x1F200345] = 0x1F90;
+      _composeMap[0x1F210300] = 0x1F23;
+      _composeMap[0x1F210301] = 0x1F25;
+      _composeMap[0x1F210342] = 0x1F27;
+      _composeMap[0x1F210345] = 0x1F91;
+      _composeMap[0x1F220345] = 0x1F92;
+      _composeMap[0x1F230345] = 0x1F93;
+      _composeMap[0x1F240345] = 0x1F94;
+      _composeMap[0x1F250345] = 0x1F95;
+      _composeMap[0x1F260345] = 0x1F96;
+      _composeMap[0x1F270345] = 0x1F97;
+      _composeMap[0x1F280300] = 0x1F2A;
+      _composeMap[0x1F280301] = 0x1F2C;
+      _composeMap[0x1F280342] = 0x1F2E;
+      _composeMap[0x1F280345] = 0x1F98;
+      _composeMap[0x1F290300] = 0x1F2B;
+      _composeMap[0x1F290301] = 0x1F2D;
+      _composeMap[0x1F290342] = 0x1F2F;
+      _composeMap[0x1F290345] = 0x1F99;
+      _composeMap[0x1F2A0345] = 0x1F9A;
+      _composeMap[0x1F2B0345] = 0x1F9B;
+      _composeMap[0x1F2C0345] = 0x1F9C;
+      _composeMap[0x1F2D0345] = 0x1F9D;
+      _composeMap[0x1F2E0345] = 0x1F9E;
+      _composeMap[0x1F2F0345] = 0x1F9F;
+      _composeMap[0x1F300300] = 0x1F32;
+      _composeMap[0x1F300301] = 0x1F34;
+      _composeMap[0x1F300342] = 0x1F36;
+      _composeMap[0x1F310300] = 0x1F33;
+      _composeMap[0x1F310301] = 0x1F35;
+      _composeMap[0x1F310342] = 0x1F37;
+      _composeMap[0x1F380300] = 0x1F3A;
+      _composeMap[0x1F380301] = 0x1F3C;
+      _composeMap[0x1F380342] = 0x1F3E;
+      _composeMap[0x1F390300] = 0x1F3B;
+      _composeMap[0x1F390301] = 0x1F3D;
+      _composeMap[0x1F390342] = 0x1F3F;
+      _composeMap[0x1F400300] = 0x1F42;
+      _composeMap[0x1F400301] = 0x1F44;
+      _composeMap[0x1F410300] = 0x1F43;
+      _composeMap[0x1F410301] = 0x1F45;
+      _composeMap[0x1F480300] = 0x1F4A;
+      _composeMap[0x1F480301] = 0x1F4C;
+      _composeMap[0x1F490300] = 0x1F4B;
+      _composeMap[0x1F490301] = 0x1F4D;
+      _composeMap[0x1F500300] = 0x1F52;
+      _composeMap[0x1F500301] = 0x1F54;
+      _composeMap[0x1F500342] = 0x1F56;
+      _composeMap[0x1F510300] = 0x1F53;
+      _composeMap[0x1F510301] = 0x1F55;
+      _composeMap[0x1F510342] = 0x1F57;
+      _composeMap[0x1F590300] = 0x1F5B;
+      _composeMap[0x1F590301] = 0x1F5D;
+      _composeMap[0x1F590342] = 0x1F5F;
+      _composeMap[0x1F600300] = 0x1F62;
+      _composeMap[0x1F600301] = 0x1F64;
+      _composeMap[0x1F600342] = 0x1F66;
+      _composeMap[0x1F600345] = 0x1FA0;
+      _composeMap[0x1F610300] = 0x1F63;
+      _composeMap[0x1F610301] = 0x1F65;
+      _composeMap[0x1F610342] = 0x1F67;
+      _composeMap[0x1F610345] = 0x1FA1;
+      _composeMap[0x1F620345] = 0x1FA2;
+      _composeMap[0x1F630345] = 0x1FA3;
+      _composeMap[0x1F640345] = 0x1FA4;
+      _composeMap[0x1F650345] = 0x1FA5;
+      _composeMap[0x1F660345] = 0x1FA6;
+      _composeMap[0x1F670345] = 0x1FA7;
+      _composeMap[0x1F680300] = 0x1F6A;
+      _composeMap[0x1F680301] = 0x1F6C;
+      _composeMap[0x1F680342] = 0x1F6E;
+      _composeMap[0x1F680345] = 0x1FA8;
+      _composeMap[0x1F690300] = 0x1F6B;
+      _composeMap[0x1F690301] = 0x1F6D;
+      _composeMap[0x1F690342] = 0x1F6F;
+      _composeMap[0x1F690345] = 0x1FA9;
+      _composeMap[0x1F6A0345] = 0x1FAA;
+      _composeMap[0x1F6B0345] = 0x1FAB;
+      _composeMap[0x1F6C0345] = 0x1FAC;
+      _composeMap[0x1F6D0345] = 0x1FAD;
+      _composeMap[0x1F6E0345] = 0x1FAE;
+      _composeMap[0x1F6F0345] = 0x1FAF;
+      _composeMap[0x1F700345] = 0x1FB2;
+      _composeMap[0x1F740345] = 0x1FC2;
+      _composeMap[0x1F7C0345] = 0x1FF2;
+      _composeMap[0x1FB60345] = 0x1FB7;
+      _composeMap[0x1FBF0300] = 0x1FCD;
+      _composeMap[0x1FBF0301] = 0x1FCE;
+      _composeMap[0x1FBF0342] = 0x1FCF;
+      _composeMap[0x1FC60345] = 0x1FC7;
+      _composeMap[0x1FF60345] = 0x1FF7;
+      _composeMap[0x1FFE0300] = 0x1FDD;
+      _composeMap[0x1FFE0301] = 0x1FDE;
+      _composeMap[0x1FFE0342] = 0x1FDF;
 
     }
 
@@ -179,90 +179,104 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return my_first_letter;
+      return _first_letter;
     }
- 
+
     UCS4 lastLetter() {
-      return my_last_letter;
+      return _last_letter;
     }
- 
+
+    bool is_undef_block() const {
+      return 0;
+    }
+
     // query functions:
 
-    string blockname(const UCS4 & _uc) const {
+    string blockname(const UCS4 uc) const {
       return "Greek Extended";
     }
 
-    bool isDefined(const UCS4 & _uc) const {
-      return (isdefined[_uc - my_first_letter]);
+    bool is_defined(const UCS4 uc) const {
+      return (_is_defined[uc - _first_letter]);
     }
 
-    UCS4 uppercase(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Greek_Extended1F00::upper[_uc - my_first_letter];
+    UCS4 uppercase(const UCS4 uc) const {
+      return Greek_Extended1F00::_upper[uc - _first_letter];
     }
 
-    UCS4 lowercase(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Greek_Extended1F00::lower[_uc - my_first_letter];
+    bool is_Uppercase(const UCS4 uc) const {
+      return category(uc) == CAT_Lu;
     }
 
-    UCS4 titlecase(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Greek_Extended1F00::title[_uc - my_first_letter];
+    UCS4 lowercase(const UCS4 uc) const {
+      return Greek_Extended1F00::_lower[uc - _first_letter];
     }
 
-    int decDigitValue(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      throw UndefinedProperty(_uc, PROP_DEC_DIGIT_VALUE);
+    bool is_Lowercase(const UCS4 uc) const {
+      return category(uc) == CAT_Ll;
     }
 
-    int digitValue(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      throw UndefinedProperty(_uc, PROP_DIGIT_VALUE);
+    UCS4 titlecase(const UCS4 uc) const {
+      return Greek_Extended1F00::_title[uc - _first_letter];
     }
 
-    float numericValue(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      throw UndefinedProperty(_uc, PROP_NUMERIC_VALUE);
+    bool is_Titlecase(const UCS4 uc) const {
+      return category(uc) == CAT_Lt;
     }
 
-    Gen_Cat category(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Gen_Cat(Greek_Extended1F00::cat[_uc - my_first_letter]);
+    int dec_digit_value(const UCS4 uc) const {
+      return 0;
     }
 
-    Can_Comb_Class combClass(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
+    bool is_Decimal_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
+    int digit_value(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
+    float numeric_value(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Numeric(const UCS4 uc) const {
+      return 0;
+    }
+
+    Gen_Cat category(const UCS4 uc) const {
+      if (!is_defined(uc))
+        return CAT_MAX;
+      return Babylon::Gen_Cat(Greek_Extended1F00::_cat[uc - _first_letter]);
+    }
+
+    Can_Comb_Class comb_class(const UCS4 uc) const {
+      if (!is_defined(uc))
+        return CC_MAX;
       return Babylon::Can_Comb_Class(0);
     }
 
-    Bidir_Props bidirProps(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Bidir_Props(Greek_Extended1F00::bidir[_uc - my_first_letter]);
+    Bidir_Props bidir_props(const UCS4 uc) const {
+      if (!is_defined(uc))
+        return BIDIR_MAX;
+      return Babylon::Bidir_Props(Greek_Extended1F00::_bidir[uc - _first_letter]);
     }
 
-    Char_Decomp decompType(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      return Babylon::Char_Decomp(Greek_Extended1F00::decomp[_uc - my_first_letter]);
+    Char_Decomp decomp_type(const UCS4 uc) const {
+      if (!is_defined(uc))
+        return DECOMP_MAX;
+      return Babylon::Char_Decomp(Greek_Extended1F00::_decomp[uc - _first_letter]);
     }
 
-    UTF32String decompose(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
-      Babylon::UTF32String us;
+    UTF32_string decompose(const UCS4 uc) const {
+      Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = Greek_Extended1F00::decompStr[_uc - my_first_letter][0];
-      us[1] = Greek_Extended1F00::decompStr[_uc - my_first_letter][1];
+      us[0] = Greek_Extended1F00::_decompStr[uc - _first_letter][0];
+      us[1] = Greek_Extended1F00::_decompStr[uc - _first_letter][1];
       if (us[1] == 0x0000) {
         us.resize(1);
       }
@@ -270,192 +284,280 @@ namespace Babylon {
       return us;
     }
 
-    bool mustMirror(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
+    bool must_mirror(const UCS4 uc) const {
       return 0;
     }
 
-    Line_Break linebreak(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
+    Line_Break linebreak(const UCS4 uc) const {
+      if (!is_defined(uc))
+        return LB_MAX;
       return Babylon::Line_Break(LB_AL);
     }
 
-    EA_Width EAWidth(const UCS4 & _uc) const {
-      if (!isDefined(_uc))
-        throw UndefinedProperty(_uc, PROP_CHARACTER);
+    EA_Width EA_width(const UCS4 uc) const {
+      if (!is_defined(uc))
+        return EA_WIDTH_MAX;
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    UCS4 compose (const UCS4 & starter, const UCS4 & last) {
-      return composeMap[starter << 16 | last];
+    UCS4 compose (const UCS4 starter, const UCS4 last) {
+      return _composeMap[starter << 16 | last];
     }
 
-    bool is_Zero_width(const UCS4 & _uc) const {
+    bool is_Zero_width(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_White_space(const UCS4 & _uc) const {
+    bool is_White_space(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 & _uc) const {
+    bool is_Non_break(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Control(const UCS4 & _uc) const {
+    bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Join_Control(const UCS4 & _uc) const {
+    bool is_Join_Control(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 & _uc) const {
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Dash(const UCS4 & _uc) const {
+    bool is_Dash(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Hyphen(const UCS4 & _uc) const {
+    bool is_Hyphen(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Quotation_Mark(const UCS4 & _uc) const {
+    bool is_Quotation_Mark(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Terminal_Punctuation(const UCS4 & _uc) const {
+    bool is_Terminal_Punctuation(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Math(const UCS4 & _uc) const {
+    bool is_Math(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 & _uc) const {
+    bool is_Paired_Punctuation(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Left_of_Pair(const UCS4 & _uc) const {
+    bool is_Left_of_Pair(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Combining(const UCS4 & _uc) const {
+    bool is_Combining(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Non_spacing(const UCS4 & _uc) const {
+    bool is_Non_spacing(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Hex_Digit(const UCS4 & _uc) const {
+    bool is_Composite(const UCS4 uc) const {
+      return Greek_Extended1F00::_Composite[uc - _first_letter];
+    }
+
+    bool is_Hex_Digit(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 & _uc) const {
-      return Greek_Extended1F00::Alphabetic[_uc - my_first_letter];
+    bool is_Alphabetic(const UCS4 uc) const {
+      return Greek_Extended1F00::_Alphabetic[uc - _first_letter];
     }
 
-    bool is_Diacritic(const UCS4 & _uc) const {
-      return Greek_Extended1F00::Diacritic[_uc - my_first_letter];
+    bool is_Diacritic(const UCS4 uc) const {
+      return Greek_Extended1F00::_Diacritic[uc - _first_letter];
     }
 
-    bool is_Extender(const UCS4 & _uc) const {
+    bool is_Extender(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 & _uc) const {
-      return Greek_Extended1F00::Identifier_Part[_uc - my_first_letter];
+    bool is_Identifier_Part(const UCS4 uc) const {
+      return Greek_Extended1F00::_Identifier_Part[uc - _first_letter];
     }
 
-    bool is_Ignorable_Control(const UCS4 & _uc) const {
+    bool is_Ignorable_Control(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 & _uc) const {
+    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 & _uc) const {
+    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Embedding_or_Override(const UCS4 & _uc) const {
+    bool is_Ideographic(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Uppercase(const UCS4 & _uc) const {
-      return Greek_Extended1F00::Uppercase[_uc - my_first_letter];
+    bool is_Private_Use(const UCS4 uc) const {
+      return 0;
     }
 
-    bool is_Lowercase(const UCS4 & _uc) const {
-      return Greek_Extended1F00::Lowercase[_uc - my_first_letter];
+    bool is_Not_a_Character(const UCS4 uc) const {
+      return ((uc & 0xFFFE) == 0xFFFE);
     }
 
-    bool is_Space(const UCS4 & _uc) const {
-      return (isDefined(_uc) && category(_uc) == CAT_Zs);
+    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
+      return 0;
     }
 
-    bool is_ISO_Control(const UCS4 & _uc) const {
-      return (isDefined(_uc) && category(_uc) == CAT_Cc);
+    bool is_Low_Surrogate(const UCS4 uc) const {
+      return 0;
     }
 
-    bool is_Punctuation(const UCS4 & _uc) const {
-      return (isDefined(_uc) && (category(_uc) == CAT_Pc ||
-                                 category(_uc) == CAT_Pd ||
-                                 category(_uc) == CAT_Ps ||
-                                 category(_uc) == CAT_Pe ||
-                                 category(_uc) == CAT_Pi ||
-                                 category(_uc) == CAT_Pf ||
-                                 category(_uc) == CAT_Po)
+    bool is_High_Surrogate(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Space(const UCS4 uc) const {
+      return (is_defined(uc) && category(uc) == CAT_Zs);
+    }
+
+    bool is_ISO_Control(const UCS4 uc) const {
+      return (is_defined(uc) && category(uc) == CAT_Cc);
+    }
+
+    bool is_Punctuation(const UCS4 uc) const {
+      return (is_defined(uc) && (category(uc) == CAT_Pc ||
+                                 category(uc) == CAT_Pd ||
+                                 category(uc) == CAT_Ps ||
+                                 category(uc) == CAT_Pe ||
+                                 category(uc) == CAT_Pi ||
+                                 category(uc) == CAT_Pf ||
+                                 category(uc) == CAT_Po)
              );
     }
 
-    bool is_Line_Separator(const UCS4 & _uc) const {
-      return (isDefined(_uc) && category(_uc) == CAT_Zl);
+    bool is_Line_Separator(const UCS4 uc) const {
+      return (is_defined(uc) && category(uc) == CAT_Zl);
     }
 
-    bool is_Paragraph_Separator(const UCS4 & _uc) const {
-      return (isDefined(_uc) && category(_uc) == CAT_Zp);
+    bool is_Paragraph_Separator(const UCS4 uc) const {
+      return (is_defined(uc) && category(uc) == CAT_Zp);
     }
 
-    bool is_Currency_Symbol(const UCS4 & _uc) const {
-      return (isDefined(_uc) && category(_uc) == CAT_Sc);
+    bool is_Currency_Symbol(const UCS4 uc) const {
+      return (is_defined(uc) && category(uc) == CAT_Sc);
     }
 
-    bool is_Titlecase(const UCS4 & _uc) const {
-      return (isDefined(_uc) && category(_uc) == CAT_Lt);
+    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_L;
+    }
+
+    bool is_Bidi_European_Digit(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_EN;
+    }
+
+    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_ES;
+    }
+
+    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_ET;
+    }
+
+    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_AN;
+    }
+
+    bool is_Bidi_Common_Separator(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_CS;
+    }
+
+    bool is_Bidi_Block_Separator(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_B;
+    }
+
+    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_S;
+    }
+
+    bool is_Bidi_Whitespace(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_WS;
+    }
+
+    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_NSM;
+    }
+
+    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_BN;
+    }
+
+    bool is_Bidi_PDF(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_PDF;
+    }
+
+    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_LRE ||
+             bidir_props(uc) == BIDIR_RLE ||
+             bidir_props(uc) == BIDIR_LRO ||
+             bidir_props(uc) == BIDIR_RLO;
+    }
+
+    bool is_Bidi_LRE(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_LRE;
+    }
+
+    bool is_Bidi_RLE(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_RLE;
+    }
+
+    bool is_Bidi_LRO(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_LRO;
+    }
+
+    bool is_Bidi_RLO(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_RLO;
+    }
+
+    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
+      return bidir_props(uc) == BIDIR_ON;
+    }
+
+    bool is_Unassigned_Code_Value(const UCS4 uc) const {
+      return !is_defined(uc) && !is_Not_a_Character(uc);
     }
 
 
   private:
     // functions
     Greek_Extended1F00(const Greek_Extended1F00 &) {}
- 
-    Babylon::UCS4 my_first_letter;
-    Babylon::UCS4 my_last_letter;
-    static const bool isdefined[256];
-    static const UCS4 upper[256];
-    static const UCS4 lower[256];
-    static const UCS4 title[256];
-    static const unsigned char cat[256];
-    static const unsigned char bidir[256];
-    static const unsigned char decomp[256];
-    static const UCS2 decompStr[256][2];
-    map<UCS4, UCS4> composeMap;
-    static const bool Alphabetic[256];
-    static const bool Diacritic[256];
-    static const bool Identifier_Part[256];
-    static const bool Uppercase[256];
-    static const bool Lowercase[256];
+
+    Babylon::UCS4 _first_letter;
+    Babylon::UCS4 _last_letter;
+    static const bool _is_defined[256];
+    static const UCS4 _upper[256];
+    static const UCS4 _lower[256];
+    static const UCS4 _title[256];
+    static const unsigned char _cat[256];
+    static const unsigned char _bidir[256];
+    static const unsigned char _decomp[256];
+    static const UCS2 _decompStr[256][2];
+    map<UCS4, UCS4> _composeMap;
+    static const bool _Composite[256];
+    static const bool _Alphabetic[256];
+    static const bool _Diacritic[256];
+    static const bool _Identifier_Part[256];
 
   }; // class Greek_Extended1F00
 
-  const bool Greek_Extended1F00::isdefined[] = {
+  const bool Greek_Extended1F00::_is_defined[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 0, 0, 
@@ -490,7 +592,7 @@ namespace Babylon {
     1, 1, 1, 1, 1, 1, 1, 0
   };
 
-  const UCS4 Greek_Extended1F00::upper[] = {
+  const UCS4 Greek_Extended1F00::_upper[] = {
     0x1F08, 0x1F09, 0x1F0A, 0x1F0B, 0x1F0C, 0x1F0D, 0x1F0E, 0x1F0F, 
     0x1F08, 0x1F09, 0x1F0A, 0x1F0B, 0x1F0C, 0x1F0D, 0x1F0E, 0x1F0F, 
     0x1F18, 0x1F19, 0x1F1A, 0x1F1B, 0x1F1C, 0x1F1D, 0x1F16, 0x1F17, 
@@ -525,7 +627,7 @@ namespace Babylon {
     0x1FF8, 0x1FF9, 0x1FFA, 0x1FFB, 0x1FFC, 0x1FFD, 0x1FFE, 0x1FFF
   };
 
-  const UCS4 Greek_Extended1F00::lower[] = {
+  const UCS4 Greek_Extended1F00::_lower[] = {
     0x1F00, 0x1F01, 0x1F02, 0x1F03, 0x1F04, 0x1F05, 0x1F06, 0x1F07, 
     0x1F00, 0x1F01, 0x1F02, 0x1F03, 0x1F04, 0x1F05, 0x1F06, 0x1F07, 
     0x1F10, 0x1F11, 0x1F12, 0x1F13, 0x1F14, 0x1F15, 0x1F16, 0x1F17, 
@@ -560,7 +662,7 @@ namespace Babylon {
     0x1F78, 0x1F79, 0x1F7C, 0x1F7D, 0x1FF3, 0x1FFD, 0x1FFE, 0x1FFF
   };
 
-  const UCS4 Greek_Extended1F00::title[] = {
+  const UCS4 Greek_Extended1F00::_title[] = {
     0x1F08, 0x1F09, 0x1F0A, 0x1F0B, 0x1F0C, 0x1F0D, 0x1F0E, 0x1F0F, 
     0x1F08, 0x1F09, 0x1F0A, 0x1F0B, 0x1F0C, 0x1F0D, 0x1F0E, 0x1F0F, 
     0x1F18, 0x1F19, 0x1F1A, 0x1F1B, 0x1F1C, 0x1F1D, 0x1F16, 0x1F17, 
@@ -595,7 +697,7 @@ namespace Babylon {
     0x1FF8, 0x1FF9, 0x1FFA, 0x1FFB, 0x1FFC, 0x1FFD, 0x1FFE, 0x1FFF
   };
 
-  const unsigned char Greek_Extended1F00::cat[] = {
+  const unsigned char Greek_Extended1F00::_cat[] = {
     CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 
     CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, 
     CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 
@@ -630,7 +732,7 @@ namespace Babylon {
     CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lt, CAT_Sk, CAT_Sk, CAT_Ll
   };
 
-  const unsigned char Greek_Extended1F00::bidir[] = {
+  const unsigned char Greek_Extended1F00::_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
@@ -665,7 +767,7 @@ namespace Babylon {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_L
   };
 
-  const unsigned char Greek_Extended1F00::decomp[] = {
+  const unsigned char Greek_Extended1F00::_decomp[] = {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
@@ -700,7 +802,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Greek_Extended1F00::decompStr[][2] = {
+  const UCS2 Greek_Extended1F00::_decompStr[][2] = {
     { 0x03B1, 0x0313 }, { 0x03B1, 0x0314 }, { 0x1F00, 0x0300 }, { 0x1F01, 0x0300 }, 
     { 0x1F00, 0x0301 }, { 0x1F01, 0x0301 }, { 0x1F00, 0x0342 }, { 0x1F01, 0x0342 }, 
     { 0x0391, 0x0313 }, { 0x0391, 0x0314 }, { 0x1F08, 0x0300 }, { 0x1F09, 0x0300 }, 
@@ -767,7 +869,42 @@ namespace Babylon {
     { 0x03A9, 0x0345 }, { 0x00B4, 0x0000 }, { 0x0020, 0x0314 }, { 0x1FFF, 0x0000 }
   };
 
-    const bool Greek_Extended1F00::Alphabetic[] = {
+    const bool Greek_Extended1F00::_Composite[] = {
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 0, 0, 
+        1, 1, 1, 1, 1, 1, 0, 0, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 0, 0, 
+        1, 1, 1, 1, 1, 1, 0, 0, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        0, 1, 0, 1, 0, 1, 0, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 0, 0, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 0, 1, 1, 
+        1, 1, 1, 1, 1, 0, 0, 0, 
+        0, 1, 1, 1, 1, 0, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 0, 0, 1, 1, 
+        1, 1, 1, 1, 0, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 1, 1, 0, 
+        0, 0, 1, 1, 1, 0, 1, 1, 
+        1, 1, 1, 1, 1, 0, 0, 0
+    };
+
+    const bool Greek_Extended1F00::_Alphabetic[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 0, 0, 
@@ -802,7 +939,7 @@ namespace Babylon {
         1, 1, 1, 1, 1, 0, 0, 0
     };
 
-    const bool Greek_Extended1F00::Diacritic[] = {
+    const bool Greek_Extended1F00::_Diacritic[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 
@@ -837,7 +974,7 @@ namespace Babylon {
         0, 0, 0, 0, 0, 1, 1, 0
     };
 
-    const bool Greek_Extended1F00::Identifier_Part[] = {
+    const bool Greek_Extended1F00::_Identifier_Part[] = {
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 0, 0, 
@@ -872,76 +1009,6 @@ namespace Babylon {
         1, 1, 1, 1, 1, 0, 0, 0
     };
 
-    const bool Greek_Extended1F00::Uppercase[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 0, 1, 0, 1, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 0, 0, 0, 0
-    };
-
-    const bool Greek_Extended1F00::Lowercase[] = {
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 0, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
 }; // namespace Babylon
- 
+
 dload(Babylon::Greek_Extended1F00);

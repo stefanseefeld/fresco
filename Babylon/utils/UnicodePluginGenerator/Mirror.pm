@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file);
@@ -76,7 +75,6 @@ sub function {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -91,12 +89,10 @@ sub function {
     }
   }
 
-  my $tmp = "    bool mustMirror(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    bool must_mirror(const UCS4 uc) const {\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return $bl_name\:\:mirror\[_uc - my_first_letter\];\n";
+    $tmp .= "      return $bl_name\:\:_mirror\[uc - _first_letter\];\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -115,7 +111,6 @@ sub var_def {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -131,7 +126,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const bool mirror\[$bl_length\];\n";
+    return "    static const bool _mirror\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -148,7 +143,6 @@ sub var {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -164,7 +158,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const bool $bl_name\:\:mirror\[\] = {";
+    my $tmp = "  const bool $bl_name\:\:_mirror\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";

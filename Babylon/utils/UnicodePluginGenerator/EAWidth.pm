@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file) or die "Can't open ".$ucd_file.".\n";
@@ -73,7 +72,6 @@ sub function {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
-    
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -88,12 +86,12 @@ sub function {
     }
   }
 
-  my $tmp = "    EA_Width EAWidth(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    EA_Width EA_width(const UCS4 uc) const {\n";
+  $tmp   .= "      if (!is_defined(uc))\n";
+  $tmp   .= "        return EA_WIDTH_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon::EA_Width($bl_name\:\:ea\[_uc - my_first_letter\]);\n";
+    $tmp .= "      return Babylon::EA_Width($bl_name\:\:_ea\[uc - _first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -130,7 +128,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const unsigned char ea\[$bl_length\];\n";
+    return "    static const unsigned char _ea\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -164,7 +162,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const unsigned char $bl_name\:\:ea\[\] = {";
+    my $tmp = "  const unsigned char $bl_name\:\:_ea\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";
@@ -179,7 +177,6 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
     return $tmp;
   } else {
     return "";

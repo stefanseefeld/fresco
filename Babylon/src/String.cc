@@ -20,168 +20,38 @@
  * MA 02139, USA.
  */
 
+#include <Babylon/Char.hh>
 #include <Babylon/String.hh>
 
 // CONSTRUCTORS:
 Babylon::String::String() {
-    resize(0);
-    currentNorm = NORM_NONE;
+    resize(1);
+    (*this)[0] = Babylon::UC_NULL;
+    m_current_norm = NORM_NONE;
 }
 
 Babylon::String::String(const Char uc, Norm norm = NORM_NONE) {
     resize(1);
     (*this)[0] = uc;
-    currentNorm = norm;
+    m_current_norm = norm;
 }
 
-Babylon::String::String(const UCS4 _uc, Norm norm = NORM_NONE) {
+Babylon::String::String(const UCS4 uc, Norm norm = NORM_NONE) {
     resize(1);
-    (*this)[0] = _uc;
-    currentNorm = norm;
+    (*this)[0] = uc;
+    m_current_norm = norm;
 }
 
-void Babylon::String::utf8(const UTF8String & s, Norm norm = NORM_NONE)
-    throw (TransError) {
-    currentNorm = norm;
-    clear();
-    string::const_iterator s_it = s.begin();
-    char first_byte_mask[] = {0x7F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
-    this->erase();
-    
-    while (s_it != s.end()) {
-	unsigned int chars_needed;
-	
-	if      ((*s_it & 0x80) == 0) chars_needed = 0; // *s_it == 0xxx xxxx
-	else if ((*s_it & 0x40) == 0)                   // *s_it == 10xx xxxx, should only happen after
-	                                                // a character starting with 11xx xxxx
-	    throw TransError(TRANS_INVALID_UTF8_STRING);
-	else if ((*s_it & 0x20) == 0) chars_needed = 1; // *s_it == 110x xxxx
-	else if ((*s_it & 0x10) == 0) chars_needed = 2; // *s_it == 1110 xxxx
-	else if ((*s_it & 0x08) == 0) chars_needed = 3; // *s_it == 1111 0xxx
-	else if ((*s_it & 0x04) == 0) chars_needed = 4; // *s_it == 1111 10xx
-	else if ((*s_it & 0x02) == 0) chars_needed = 5; // *s_it == 1111 110x
-	else throw TransError(TRANS_INVALID_UTF8_CHAR); // *s_it == 1111 111x, should not happen in
-	// a sequence of UTF8-Characters
-	
-	UCS4 c = 0;
-	for (int i = chars_needed; i >= 0; --i) {
-	    if (i == 0) {
-		c = *s_it & first_byte_mask[chars_needed];
-	    } else {
-		c << 5;
-		c = c | (*s_it & 0x3F);
-		
-		++s_it;
-		if ((s_it == s.end()) || (*s_it & 0x80) == 0 || (*s_it & 0x40) != 0 )
-		    // either we are at the end of the UTF8-sequence or the current
-		    // character does not is not 10xx xxxx.
-		    throw TransError(TRANS_INVALID_UTF8_STRING);
-	    }
-	}
-	
-	if (c > 0xFFFF) { // It's a surrogate pair:
-	    *this += UCS4((c - 0x10000) / 0x400 + 0xD800);
-	    *this += UCS4((c - 0x10000) % 0x400 + 0xDC00);
-	} else // It's a normal character
-	    *this += UCS4(c);
-	
-	++s_it;
-    } // while
-    currentNorm = norm;
+Babylon::String::String(const UTF8_string & s, const Norm norm = NORM_NONE) {
+    utf8(s, norm);
 }
 
-Babylon::UTF8String Babylon::String::utf8() const throw (TransError) {
-    Babylon::UTF8String res;
-    res.resize(0);
-    for(String::const_iterator it = this->begin();
-	it != this->end();
-	++it) {
-	unsigned int chars_needed;
-
-	if      (*it <= 0x0000007F) chars_needed = 0;
-	else if (*it <= 0x000007FF) chars_needed = 1;
-	else if (*it <= 0x0000FFFF) chars_needed = 2;
-	else if (*it <= 0x001FFFFF) chars_needed = 3;
-	else if (*it <= 0x03FFFFFF) chars_needed = 4;
-	else if (*it <= 0x7FFFFFFF) chars_needed = 5;
-	else throw TransError(TRANS_INVALID_UCS4_CHAR);
-
-	for(int i = chars_needed; i >= 0; i--) {
-	    UCS4 c = it->myValue();
-	    if (i == 0) {
-		UCS1 t = 0;
-		if (chars_needed != 0)
-		    t = 0xFE << (6 - chars_needed);
-		t = t | c;
-		res += UCS1(t);
-	    } else {
-		UCS4 t = c & 0x3F; // t = 00xxxxxx;
-		t = t | 0x80;       // t = 10xxxxxx;
-		res += UCS1(t);
-		c = c >> 5;
-	    }
-	}
-    }
-    return res;
+Babylon::String::String(const char * s, const Norm norm = NORM_NONE) {
+    utf8(s, norm);
 }
 
-void Babylon::String::utf16(const UTF16String & in , const Norm norm = NORM_NONE)
-    throw (TransError) {
-    currentNorm = norm;
-    
-    clear();
-
-    for(UTF16String::const_iterator it = in.begin();
-	it != in.end();
-	++it) {
-	if (*it < 0x0000D800 || *it > 0x0000DFFF) *this += Babylon::UCS4(*it);
-	else {
-	    if (*it >= 0x0000DC00) throw TransError(TRANS_INVALID_UTF16_STRING);
-	    UCS2 h = *it;
-	    UCS4 c = (h & 0x3FF) << 10;
-	    it++;
-	    if (it == in.end()) throw TransError(TRANS_INVALID_UTF16_STRING);
-	    c = c | (h & 0x3FF);
-	    c += 0X00010000;
-	    *this += Babylon::UCS4(c);
-	}
-    }
-}
-
-Babylon::UTF16String Babylon::String::utf16() const throw (TransError) {
-    Babylon::UTF16String res;
-    res.resize(0);
-    for(String::const_iterator it = this->begin();
-	it != this->end();
-	++it) {
-	Babylon::UCS4 c = it->myValue();
-	if (c > 0x0010FFFF)
-	    throw TransError(TRANS_CAN_NOT_ENCODE_CHAR);
-	if (c < 0x00010000)
-	    res += UCS2(c);
-	else {
-	    c -= 0x00010000;
-	    UCS2 h = 0xD800;
-	    UCS2 l = 0xDC00;
-	    res += (h | (c & 0x3FF));
-	    res += (l | (c >> 10));
-	}
-    }
-    return res;
-}
-
-void Babylon::String::utf32(const UTF32String & s, const Norm norm = NORM_NONE) {
-    this->resize(s.length());
-    for (unsigned int i = 0; i < s.length(); i++)
-	(*this)[i] = s[i];
-}
-
-Babylon::UTF32String Babylon::String::utf32() const {
-    UTF32String res;
-    res.resize(this->length());
-    for(unsigned int i = 0; i < this->length(); i++)
-	res[i] = (*this)[i].myValue();
-    return res;
+Babylon::String::String(size_t len, Char * data, const Norm norm = NORM_NONE) {
+    this->assign(data, len);
 }
 
 Babylon::String::String(const String & us) {
@@ -194,45 +64,122 @@ Babylon::String::String(const String & us) {
 	*this_it = *us_it;
 	++this_it; ++us_it;
     }
-    currentNorm = us.norm();
+    m_current_norm = us.norm();
 }
 
-Babylon::String::String(const UTF32String & _us, Norm norm = NORM_NONE) {
-    resize(_us.length());
+Babylon::String::String(const UTF32_string & us, Norm norm = NORM_NONE) {
+    resize(us.length());
     
-    Babylon::UTF32String::const_iterator _us_it = _us.begin();
+    Babylon::UTF32_string::const_iterator us_it = us.begin();
     Babylon::String::iterator this_it = this->begin();
     
-    while (_us_it != _us.end() && this_it != this->end()) {
-	*this_it = *_us_it;
-	++this_it; ++_us_it;
+    while (us_it != us.end() && this_it != this->end()) {
+	*this_it = *us_it;
+	++this_it; ++us_it;
     }
-    currentNorm = norm;
+    m_current_norm = norm;
+}
+
+
+// DESTRUCTORS
+
+Babylon::String::~String() {}
+
+void Babylon::String::utf8(const UTF8_string & s, Norm norm = NORM_NONE)
+    throw (Trans_Error) {
+    m_current_norm = norm;
+    erase();
+    
+    UTF8_string::const_iterator it = s.begin();
+    while(it != s.end()) {
+	Char t;
+	it = t.utf8(s, it);
+	*this += t;
+    }
+}
+
+Babylon::UTF8_string Babylon::String::utf8() const throw (Trans_Error) {
+    Babylon::UTF8_string res;
+    res.reserve(this->length());
+    for(String::const_iterator it = this->begin();
+	it != this->end();
+	++it)
+	res += it->utf8();
+    return res;
+}
+
+void Babylon::String::utf16(const UTF16_string & in , const Norm norm = NORM_NONE)
+    throw (Trans_Error) {
+    m_current_norm = norm;
+    erase();
+
+    UTF16_string::const_iterator it = in.begin();
+    while(it != in.end()) {
+	Char t;
+	it = t.utf16(in, it);
+	*this += t;
+    }
+}
+
+Babylon::UTF16_string Babylon::String::utf16() const throw (Trans_Error) {
+    UTF16_string res;
+    res.reserve(this->length());
+    for(String::const_iterator it = this->begin();
+	it != this->end();
+	++it)
+	res += it->utf16();
+    return res;
+}
+
+void Babylon::String::utf32(const UTF32_string & s, const Norm norm = NORM_NONE) {
+    this->reserve(s.length());
+    m_current_norm = norm;
+    UTF32_string::const_iterator it = s.begin();
+    while(it != s.end()) {
+	Char t;
+	it = t.utf32(s, it);
+	*this += t; 
+    }
+}
+
+Babylon::UTF32_string Babylon::String::utf32() const {
+    UTF32_string res;
+    res.reserve(this->length());
+    for(String::const_iterator it = this->begin();
+	it != this->end();
+	++it)
+	res += it->utf32();
+    return res;
+}
+
+void Babylon::String::swap(String & that) {
+    std::swap(*this, that);
+    std::swap(m_current_norm, that.m_current_norm);
 }
 
 void Babylon::String::normalize(const Norm norm) {
     String result;
-    if (length() > 0 && norm < NORM_NONE && norm != currentNorm) {
+    if (length() > 0 && norm < NORM_NONE && norm != m_current_norm) {
 	Dictionary * dict = Dictionary::instance();
 	
 	// do I need to decompose?
-	if (currentNorm!=NORM_D || (norm!=NORM_KC && currentNorm!=NORM_NONE)) {
+	if (m_current_norm!=NORM_D || (norm!=NORM_KC && m_current_norm!=NORM_NONE)) {
 	    bool compat = (norm & 2); // compatibility bit
 	    for(String::const_iterator i = this->begin();
 		i != this->end(); ++i) {
-		String tmp = dict->recursiveDecompose(compat, i->myValue());
+		String tmp = dict->recursive_decompose(compat, i->value());
 		
 		for(String::const_iterator j = tmp.begin();
 		    j != tmp.end(); ++j) {
-		    Can_Comb_Class cClass = dict->findChar(j->myValue())->
-			combClass(j->myValue());
+		    Can_Comb_Class c_class = dict->find_char(j->value())->
+			comb_class(j->value());
 		    String::iterator k = result.end();
-		    if (cClass == 0)
+		    if (c_class == 0)
 			result += *j;
 		    else {
 			for (; k >= result.begin(); k--)
-			    if (dict->findChar((k-1)->myValue())->
-				combClass((k-1)->myValue()) <= cClass) break;
+			    if (dict->find_char((k-1)->value())->
+				comb_class((k-1)->value()) <= c_class) break;
 			result.insert(k, *j);
 		    }
 		}
@@ -240,39 +187,39 @@ void Babylon::String::normalize(const Norm norm) {
 	}      
 	
 	// do I need to compose?
-	if (currentNorm != NORM_C && (norm & 1)) {
+	if (m_current_norm != NORM_C && (norm & 1)) {
 	    // decomposition skipped?
 	    if (result.length() == 0) result = *this;
 	    
 	    String::iterator starter = result.begin();
-	    String::iterator compPos = starter + 1;
-	    Can_Comb_Class lastClass = dict->findChar(starter->myValue())->
-		combClass(starter->myValue());
-	    if (lastClass != 0)
-		lastClass = Can_Comb_Class(256); // fix for irregular comb sequence
+	    String::iterator comp_pos = starter + 1;
+	    Can_Comb_Class last_class = dict->find_char(starter->value())->
+		comb_class(starter->value());
+	    if (last_class != 0)
+		last_class = Can_Comb_Class(256); // fix for irregular comb sequence
 	    
 	    for(String::iterator ch = starter + 1;
 		ch != result.end(); ++ch) {
-		Can_Comb_Class chClass = dict->findChar(ch->myValue())->
-		    combClass(ch->myValue());
-		UCS4 composite = dict->findChar(starter->myValue())->
-		    compose(starter->myValue(), ch->myValue());
+		Can_Comb_Class ch_class = dict->find_char(ch->value())->
+		    comb_class(ch->value());
+		UCS4 composite = dict->find_char(starter->value())->
+		    compose(starter->value(), ch->value());
 		
-		if(composite != 0 && (lastClass < chClass || lastClass == 0))
+		if(composite != 0 && (last_class < ch_class || last_class == 0))
 		    *starter = composite;
 		else {
-		    if(chClass == 0)
-			starter = compPos;
-		    lastClass=chClass;
-		    *compPos = *ch;
-		    compPos++;
+		    if(ch_class == 0)
+			starter = comp_pos;
+		    last_class=ch_class;
+		    *comp_pos = *ch;
+		    comp_pos++;
 		}
 	    }
-	    result.resize(compPos - result.begin());
+	    result.resize(comp_pos - result.begin());
 	} // compose
     }
     if(result.length() != 0) {
-	result.overrideNorm(norm);
+	m_current_norm = norm;
 	*this = result;
     }
 }
@@ -283,58 +230,7 @@ Babylon::String Babylon::String::norm(Babylon::Norm norm) const {
     return tmp;
 }
 
-size_t Babylon::String::glyphs() const {
-    size_t glyphs = 0;
-    
-    for (Babylon::String::const_iterator i = this->begin();
-	 i != this->end();
-	 ++i)
-	if(i->combClass() == CC_SPACING) ++glyphs;
-    
-    return glyphs; 
+void Babylon::String::erase() {
+    m_current_norm = Babylon::NORM_NONE;
+    basic_string<Char>::erase();
 }
-
-Babylon::String Babylon::String::getGlyph(Babylon::String::const_iterator iter) const {
-    String result;
-    
-    while (iter != this->end()) {
-	result += *iter;
-	++iter;
-	if (iter->combClass() == Babylon::CC_SPACING) break;
-    }
-    
-    return result;
-}
-
-void Babylon::String::nextGlyph(Babylon::String::const_iterator & iter) const {
-    ++iter; // advance past the first character...
-    
-    while (iter != this->end() && iter->combClass() != Babylon::CC_SPACING)
-	++iter;
-}
-
-Babylon::String Babylon::String::getParagraph(Babylon::String::const_iterator iter) {
-    String result;
-    
-    while (iter != this->end()) {
-	result += *iter;
-	if (iter->category() == Babylon::CAT_Zp) break;
-	++iter;
-    }
-    
-    return result;
-}
-
-void Babylon::String::nextParagraph(Babylon::String::const_iterator & iter) const {
-    while (iter != this->end() && iter->category() != Babylon::CAT_Zp)
-	++iter;
-    if (iter != this->end()) ++iter;
-}
-
-ostream & Babylon::String::_write(ostream & out) const {
-    for (Babylon::String::const_iterator i = this->begin();
-	 i != this->end(); ++i) {
-	i->_write(out);
-    }
-    return out;
-} // _write

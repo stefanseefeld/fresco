@@ -3,7 +3,7 @@ use strict;
 
 sub new {
   my $self = {};
-  
+
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file);
@@ -72,7 +72,7 @@ sub function {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
+
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -86,12 +86,12 @@ sub function {
     }
   }
 
-  my $tmp = "    Can_Comb_Class combClass(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    Can_Comb_Class comb_class(const UCS4 uc) const {\n";
+  $tmp   .= "      if (!is_defined(uc))\n";
+  $tmp   .= "        return CC_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Can_Comb_Class($bl_name\:\:combCl\[_uc - my_first_letter\]);\n";
+    $tmp .= "      return Can_Comb_Class($bl_name\:\:_comb_cl\[uc - _first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -111,7 +111,7 @@ sub var_def {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
+
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -126,7 +126,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const unsigned char combCl\[$bl_length\];\n";
+    return "    static const unsigned char _comb_cl\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -143,7 +143,7 @@ sub var {
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
-    
+
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
 	if ($self->{_ELEM} eq "") {
@@ -158,7 +158,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const unsigned char $bl_name\:\:combCl\[\] = {";
+    my $tmp = "  const unsigned char $bl_name\:\:_comb_cl\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";
@@ -173,7 +173,7 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
+
     return $tmp;
   } else {
     return "";

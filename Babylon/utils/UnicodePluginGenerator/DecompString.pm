@@ -3,7 +3,6 @@ use strict;
 
 sub new {
   my $self = {};
-  
   my $ucd_file = $_[1];
 
   open(UCD, $ucd_file);
@@ -20,7 +19,6 @@ sub new {
     my $decomp = $list[5];
     my $dType = "";
     my $tmp = "";
- 
     if ($decomp =~ /^<(\w+)>$/) {
       $tmp = "";
     } elsif ($decomp =~ /^<(\w+)> ([A-F0-9 ]*)$/) {
@@ -92,36 +90,33 @@ sub function {
   my $bl_end   = $_[1];
   my $bl_name  = $_[2];
 
-  my $tmp = "    _UTF32String decompose(const _UCS4 _uc) const {\n";
-  $tmp   .= "      if (!isDefined(_uc))\n";
-  $tmp   .= "        throw UndefinedProperty(_uc, PROP_CHARACTER);\n";
+  my $tmp = "    UTF32_string decompose(const UCS4 uc) const {\n";
 
   if((sprintf "%04X", $bl_start) eq "AC00") { # hangul
-    $tmp .= "      const _UCS4 sBase = 0xAC00;\n";
-    $tmp .= "      const _UCS4 lBase = 0x1100;\n";
-    $tmp .= "      const _UCS4 vBase = 0x1161;\n";
-    $tmp .= "      const _UCS4 tBase = 0x11A7;\n\n";
+    $tmp .= "      const UCS4 sBase = 0xAC00;\n";
+    $tmp .= "      const UCS4 lBase = 0x1100;\n";
+    $tmp .= "      const UCS4 vBase = 0x1161;\n";
+    $tmp .= "      const UCS4 tBase = 0x11A7;\n\n";
     $tmp .= "      const int lCount = 19;\n";
     $tmp .= "      const int vCount = 21;\n";
     $tmp .= "      const int tCount = 28;\n";
     $tmp .= "      const int nCount = vCount * tCount;\n";
     $tmp .= "      const int sCount = lCount * nCount;\n\n";
-    $tmp .= "      int sIndex = _uc - sBase;\n\n";
+    $tmp .= "      int sIndex = uc - sBase;\n\n";
     $tmp .= "      if (sIndex < 0 || sIndex >= sCount) {\n";
-    $tmp .= "        _UTF32String _us; _us.resize(1); _us[0]=_uc;\n";
-    $tmp .= "        return _us;\n\n";
+    $tmp .= "        UTF32_string us; us.resize(1); us[0]=uc;\n";
+    $tmp .= "        return us;\n\n";
     $tmp .= "      }\n";
-    $tmp .= "      _UTF32String res;\n";
-    $tmp .= "      _UCS4 l = lBase + sIndex / nCount;\n";
-    $tmp .= "      _UCS4 v = vBase + (sIndex % nCount) / tCount;\n";
-    $tmp .= "      _UCS4 t = tBase + sIndex % tCount;\n\n";
+    $tmp .= "      UTF32_string res;\n";
+    $tmp .= "      UCS4 l = lBase + sIndex / nCount;\n";
+    $tmp .= "      UCS4 v = vBase + (sIndex % nCount) / tCount;\n";
+    $tmp .= "      UCS4 t = tBase + sIndex % tCount;\n\n";
     $tmp .= "      res += l; res += v;\n";
     $tmp .= "      if (t != tBase) res += t;\n\n";
     $tmp .= "      return res;\n";
     $tmp .= "    }\n\n";
     return $tmp;
   }
-  
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
@@ -142,13 +137,12 @@ sub function {
   }
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      Babylon::_UTF32String us;\n";
+    $tmp .= "      Babylon::UTF32_string us;\n";
     $tmp .= "      us.resize(2);\n";
-    $tmp .= "      us\[0\] = $bl_name\:\:decompStr\[_uc - my_first_letter\]\[0\];\n";
-    $tmp .= "      us\[1\] = $bl_name\:\:decompStr\[_uc - my_first_letter\]\[1\];\n";
- 
+    $tmp .= "      us\[0\] = $bl_name\:\:_decompStr\[uc - _first_letter\]\[0\];\n";
+    $tmp .= "      us\[1\] = $bl_name\:\:_decompStr\[uc - _first_letter\]\[1\];\n";
     if ($self->{_EXPANSION_NEEDED} == 1) {
-      $tmp .= "\n      switch (_uc) {\n";
+      $tmp .= "\n      switch (uc) {\n";
 
       for (my $i = $bl_start; $i <= $bl_end; $i++) {
 	my @tmpstr = split / /, $self->data($i);
@@ -169,12 +163,11 @@ sub function {
     $tmp .= "      }\n\n";
     $tmp .= "      return us;\n";
   } else {
-    $tmp .= "      _UTF32String _us;\n";
-    $tmp .= "      _us.resize(1); _us[0]=_uc;\n";
-    $tmp .= "      return _us;\n";
+    $tmp .= "      UTF32_string us;\n";
+    $tmp .= "      us.resize(1); us[0]=uc;\n";
+    $tmp .= "      return us;\n";
   }
   $tmp .= "    }\n\n";
-  
   return $tmp;
 }
 
@@ -189,7 +182,6 @@ sub var_def {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
-    
     $self->{_ATTENTION_NEEDED} = 0;
     $self->{_EXPANSION_NEEDED} = 0;
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
@@ -205,7 +197,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const _UCS2 decompStr\[$bl_length\][2];\n";
+    return "    static const UCS2 _decompStr\[$bl_length\][2];\n";
   } else {
     return "";
   }
@@ -222,7 +214,6 @@ sub var {
     $self->{_BL_START} = $bl_start;
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
-    
     $self->{_ATTENTION_NEEDED} = 0;
     $self->{_EXPANSION_NEEDED} = 0;
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
@@ -238,7 +229,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const _UCS2 $bl_name\:\:decompStr\[\]\[2\] = {";
+    my $tmp = "  const UCS2 $bl_name\:\:_decompStr\[\]\[2\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       my $data = $self->data($i);
       if (($i - $bl_start) % 4 == 0) {
@@ -257,7 +248,6 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
     return $tmp;
   } else {
     return "";
