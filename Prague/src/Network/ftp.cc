@@ -23,7 +23,7 @@
 
 #include <Prague/Network/ftp.hh>
 #include <Prague/Sys/Tracer.hh>
-#include <fstream.h>
+#include <fstream>
 #include <unistd.h>
 #include <cstdlib>
 #include <cstdio>
@@ -93,7 +93,7 @@ ftp::replycodea ftp::ftpbuf::ftpdata(int portno, std::istream *i, std::ostream *
       // read data from i and send it to c
       char buf[1024];
       int  rdsz;
-      streambuf *rb = i->rdbuf();
+      std::streambuf *rb = i->rdbuf();
       while ((rdsz = rb->sgetn(buf, 1024)) > 0)
 	{
 	  int wrsz = c->sys_write(buf, rdsz);
@@ -243,14 +243,14 @@ ftp::replycodea ftp::ftpbuf::putfile(const char *lpath, const char *rpath)
 {
   if (rpath == 0) rpath = lpath;
   if (lpath == 0) return ftp::rca_error;
-  ifstream f(lpath);
+  std::ifstream f(lpath);
   return ftpdata(10000, &f, 0, "STOR", rpath);
 }
 
 ftp::replycodea ftp::ftpbuf::putfile(const char *lpath)
 {
   if (lpath == 0) return ftp::rca_error;
-  ifstream f(lpath);
+  std::ifstream f(lpath);
   return ftpdata(10000, &f, 0, "STOU", lpath);
 }
   
@@ -258,7 +258,7 @@ ftp::replycodea ftp::ftpbuf::append(const char *lpath, const char *rpath)
 {
   if (lpath == 0) return ftp::rca_error;
   if (rpath == 0) rpath = lpath;
-  ifstream f(lpath);
+  std::ifstream f(lpath);
   return ftpdata(10000, &f, 0, "APPE", 0);
 }
 

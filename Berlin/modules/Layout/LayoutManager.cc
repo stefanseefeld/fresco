@@ -25,7 +25,7 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Math.hh>
 #include "LayoutManager.hh"
-#include <strstream>
+#include <sstream>
 
 using namespace Fresco;
 
@@ -311,16 +311,16 @@ void LayoutNatural::allocate(long, Graphic::Requisition *, Region_ptr, LayoutMan
 LayoutSuperpose::LayoutSuperpose(LayoutManager *f, LayoutManager *s) : _first(f), _second(s), _third(0)
 {
   char* fn = f->name(), *sn = s->name();
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << fn << "/" << sn << std::ends;
-  _name = strdup(buf.str());
+  _name = strdup(buf.str().c_str());
 }
 LayoutSuperpose::LayoutSuperpose(LayoutManager *f, LayoutManager *s, LayoutManager *t) : _first(f), _second(s), _third(t)
 {
   char* fn = f->name(), *sn = s->name(), *tn = t->name();
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << fn << "/" << sn << "/" << tn << std::ends;
-  _name = strdup(buf.str());
+  _name = strdup(buf.str().c_str());
 }
 LayoutSuperpose::~LayoutSuperpose()
 {
@@ -352,9 +352,9 @@ void LayoutSuperpose::allocate(long n, Graphic::Requisition *requests, Region_pt
 
 LayoutTile::LayoutTile(Axis a) : _axis(a)
 {
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << "Tile" << name_axis(a) << std::ends;
-  _name = strdup(buf.str());
+  _name = strdup(buf.str().c_str());
 }
 LayoutTile::~LayoutTile() {}
 LayoutManager *LayoutTile::clone() { return new LayoutTile(_axis);}

@@ -28,8 +28,8 @@
 #include "Box.hh"
 #include "LayoutManager.hh"
 #include "Placement.hh"
+#include <sstream>
 #include <iostream>
-#include <strstream>
 
 using namespace Prague;
 using namespace Fresco;
@@ -42,9 +42,9 @@ Box::Box(LayoutManager *l)
   _obj_name = new char[256];
   
   _box_name = "Box";
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << _box_name << " " << _layout->name() << std::ends;
-  strcpy(_obj_name, buf.str());
+  strcpy(_obj_name, buf.str().c_str());
 }
 
 Box::~Box()
@@ -161,9 +161,9 @@ void Box::need_resize()
       _cache_allocations = 0;
     }
   {
-    std::ostrstream buf;
+    std::ostringstream buf;
     buf << _box_name << " " << _layout->name() << " with " << num_children() << " children" << std::ends;
-    strcpy(_obj_name, buf.str());
+    strcpy(_obj_name, buf.str().c_str());
   }
   PolyGraphic::need_resize();
 }
@@ -331,9 +331,9 @@ BoxAlignElements::BoxAlignElements(LayoutManager *layout, Axis a, Alignment alig
   : Box(layout), axis(a), alignment(align)
 {
   _box_name = "BoxAlignElements";
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << _box_name << " " << layout->name() << std::ends;
-  strcpy(_obj_name, buf.str());
+  strcpy(_obj_name, buf.str().c_str());
 }
 
 BoxAlignElements::~BoxAlignElements() {}

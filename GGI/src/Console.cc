@@ -359,9 +359,9 @@ Input::Event *GGI::Console::synthesize(const ggi_event &e)
 
 void GGI::Console::highlight_screen(Coord lx, Coord ly,
 				    Coord ux, Coord uy,
-				    double red = 1.0,
-				    double green = 0.0,
-				    double blue = 0.0)
+				    double red,
+				    double green,
+				    double blue)
 {
 #ifdef RMDEBUG
    // compute the device space coordinates

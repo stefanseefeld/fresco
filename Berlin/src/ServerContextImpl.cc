@@ -30,7 +30,7 @@
 #include <Berlin/KitImpl.hh>
 #include "ServerContextImpl.hh"
 #include "ServerImpl.hh"
-#include <strstream>
+#include <sstream>
 
 using namespace Prague;
 using namespace Fresco;
@@ -98,13 +98,13 @@ Kit_ptr ServerContextImpl::resolve(const char *type,
    * now try the factories
    */
   PortableServer::POA_var root = _default_POA();
-  std::ostrstream oss;
+  std::ostringstream oss;
   oss << '#' << _counter++ << std::ends;
-  char *name = oss.str();
   PortableServer::POAManager_var manager = root->the_POAManager();
-  PortableServer::POA_var poa = root->create_POA(name, manager, _policies);
-  Logger::log(Logger::lifecycle) << "created new POA for kit of type " << type << " (id is " << name << ')' << std::endl;
-  delete [] name;
+  PortableServer::POA_var poa =
+    root->create_POA(oss.str().c_str(), manager, _policies);
+  Logger::log(Logger::lifecycle) << "created new POA for kit of type "
+	  << type << " (id is " << oss.str() << ')' << std::endl;
   KitImpl *kit = _server->create(type, properties, poa);
   if (!kit) throw CreationFailureException();
   kit->bind(ServerContext_var(_this()));

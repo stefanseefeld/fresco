@@ -21,7 +21,7 @@
  */
 #include "Extension.hh"
 #include "Drawable.hh"
-#include <strstream.h>
+#include <sstream>
 extern "C"
 {
 #include <ggi/ggi-unix.h>
@@ -79,18 +79,16 @@ DirectBuffer::Guard GGI::DirectBuffer::write_buffer()
 							      Fresco::PixelCoord h,
 							      Fresco::PixelCoord d)
 {
-  std::ostrstream oss;
+  std::ostringstream oss;
   oss << "display-memory:shmid:" << shmid << std::ends;
-  const char *name = oss.str();
   GGI::Drawable *drawable;
-  try { drawable = new GGI::Drawable(name, w, h, d);}
+  try { drawable = new GGI::Drawable(oss.str().c_str(), w, h, d);}
   catch (...)
     {
       Logger::log(Logger::console) << "Error : can't open shm GGI::Drawable" << std::endl;
       throw;
     }
-  Logger::log(Logger::console) << "open ggi display with name :'" << name << '\'' << std::endl;
-  delete [] name;
+  Logger::log(Logger::console) << "open ggi display with name :'" << oss.str() << '\'' << std::endl;
   
   static_cast<GGI::Console *>(Console::instance())->add_drawable(drawable);
   return drawable;
@@ -101,18 +99,16 @@ DirectBuffer::Guard GGI::DirectBuffer::write_buffer()
 							Fresco::PixelCoord h,
 							Fresco::PixelCoord d)
 {
-  std::ostrstream oss;
+  std::ostringstream oss;
   oss << "display-memory:-input:shmid:" << shmid << std::ends;
-  const char *name = oss.str();
   GGI::Drawable *drawable;
-  try { drawable = new GGI::Drawable(name, w, h, d);}
+  try { drawable = new GGI::Drawable(oss.str().c_str(), w, h, d);}
   catch (...)
     {
       Logger::log(Logger::console) << "Error : can't open shm GGI::Drawable" << std::endl;
       throw;
     }
-  Logger::log(Logger::console) << "open ggi display with name :'" << name << '\'' << std::endl;
-  delete [] name;
+  Logger::log(Logger::console) << "open ggi display with name :'" << oss.str() << '\'' << std::endl;
   
   static_cast<GGI::Console *>(Console::instance())->add_drawable(drawable);
   return drawable;

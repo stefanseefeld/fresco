@@ -170,18 +170,18 @@ Shader::Shader(Window_ptr window, Graphic_var _shade)
 
 void Shader::execute(const CORBA::Any &any) {
   if (CORBA::is_nil(swap)) {
-    cout << "case a" << endl;
+    std::cout << "case a" << std::endl;
     if (CORBA::is_nil(to_shade)) {
-      cout << "X" << endl;
+      std::cout << "X" << std::endl;
     } else {
       if (CORBA::is_nil(to_shade->body())) {
-	cout << "Y" << endl;
+	std::cout << "Y" << std::endl;
       }
     }
     swap->body(to_shade->body());
     //to_shade->body(Fresco::Graphic::_nil());
   } else {
-    cout << "case b" << endl;
+    std::cout << "case b" << std::endl;
     //to_shade->body(swap);
     swap->body(Fresco::Graphic::_nil());
   }

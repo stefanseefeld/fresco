@@ -55,11 +55,11 @@ void TextChunk::request(Fresco::Graphic::Requisition &r)
 const char *TextChunk::object_name()
 {
   if (_obj_name) return _obj_name;
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << "Char ";
   if (_char < 128) buf << (char)_char << std::ends;
   else buf << _char << std::ends;
-  _obj_name = strdup(buf.str());
+  _obj_name = strdup(buf.str().c_str());
   return _obj_name;
 }
 

@@ -24,7 +24,7 @@
 #include <Berlin/ImplVar.hh>
 #include "Placement.hh"
 #include "LayoutManager.hh"
-#include <strstream>
+#include <sstream>
 
 using namespace Fresco;
 using namespace Prague;
@@ -33,9 +33,9 @@ Placement::Placement(LayoutManager *l)
   : _layout(l),
     _region(new RegionImpl())
 {
-  std::ostrstream buf;
+  std::ostringstream buf;
   buf << "Placement" << _layout->name() << std::ends;
-  _name = strdup(buf.str());
+  _name = strdup(buf.str().c_str());
 }
 
 Placement::~Placement()

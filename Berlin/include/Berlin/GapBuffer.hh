@@ -52,31 +52,34 @@ class GapBuffer : private std::vector<T>
   typedef std::vector<T> rep_type;
   typedef typename rep_type::value_type value_type;
   typedef typename rep_type::iterator iterator;
+  typedef unsigned int size_type;
   iterator gbegin() { return begin() + _gapbegin;}
   iterator gend() { return begin() + _gapend;}
   iterator cursor() { return begin() + _cursor;}
   void newgap()
-    {
-      rep_type::insert(gbegin(), gapsize, value_type(0));
-      _gapend += gapsize;
-    }
+  {
+    rep_type::insert(gbegin(), gapsize, value_type(0));
+    _gapend += gapsize;
+  }
   void movegap(int d)
-    {
-      if (d > 0)
-	{
-	  if (gend() + d > end()) rep_type::insert(end(), size_type(gend() + d - end()), value_type(0));
-	  copy(gend(), gend() + d, gbegin());
-	}
-      else
-	copy(rep_type::reverse_iterator(gbegin()), rep_type::reverse_iterator(gbegin() + d), rep_type::reverse_iterator(gend()));
-      _gapbegin += d, _gapend += d;
-    }
-  size_type gap() { return _gapend - _gapbegin;}
-  void editing() { size_type d = _cursor - _gapbegin; if (d != 0) movegap(d);}
-  void compact() { size_type d = end() - gend(); if (d > 0) movegap(d);}
+  {
+    if (d > 0)
+      {
+	if (gend() + d > end()) rep_type::insert(end(), size_type(gend() + d - end()), value_type(0));
+	copy(gend(), gend() + d, gbegin());
+      }
+    else
+      copy(rep_type::reverse_iterator(gbegin()),
+	   rep_type::reverse_iterator(gbegin() + d),
+	   rep_type::reverse_iterator(gend()));
+    _gapbegin += d, _gapend += d;
+  }
+  size_type gap() { return _gapend - _gapbegin; }
+  void editing() { size_type d = _cursor - _gapbegin; if (d != 0) movegap(d); }
+  void compact() { size_type d = end() - gend(); if (d > 0) movegap(d); }
 public:
   GapBuffer() : _cursor(0), _gapbegin(0), _gapend(0) {}
-  size_type size() { compact(); return gbegin() - begin();}
+  size_type size() { compact(); return gbegin() - begin(); }
   void forward()
     {
       if (_cursor == _gapbegin && gend() != end()) _cursor += gap();

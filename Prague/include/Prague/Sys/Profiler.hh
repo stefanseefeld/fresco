@@ -29,7 +29,7 @@
 #include <ctime>
 #include <iostream>
 #include <string>
-#include <iomanip.h>
+#include <iomanip>
 
 namespace Prague
 {
@@ -50,8 +50,8 @@ public:
 	stop(cp->stop),
 	elapsed(cp->elapsed)
     {}
-    void indent(ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
-    void output(ostream &os, unsigned short ind);
+    void indent(std::ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
+    void output(std::ostream &os, unsigned short ind);
     std::string name;
     long count;
     clock_t start;

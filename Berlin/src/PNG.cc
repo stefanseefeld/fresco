@@ -92,7 +92,7 @@ private:
   static void flush(png_structp);
   static void warning(png_structp, png_const_charp);
   static void error(png_structp, png_const_charp);
-  streambuf  *_output;
+  std::streambuf  *_output;
   png_structp _png;
   png_infop   _info; 
   png_infop   _end;
@@ -140,7 +140,7 @@ inline void PNG::Encoder::error(png_structp, png_const_charp msg)
   Logger::log(Logger::corba) << "PNG::Encoder::error : " << msg << std::endl;
 }
 
-inline PNG::Decoder::Decoder(streambuf *sbuf, png_structp p, png_infop i, png_infop e)
+inline PNG::Decoder::Decoder(std::streambuf *sbuf, png_structp p, png_infop i, png_infop e)
   : _input(sbuf), _valid(false), _png(p), _info(i), _end(e)
 {
   png_byte header[magic];
@@ -286,7 +286,9 @@ void PNG::pixel(unsigned long x, unsigned long y, const Color &color, unsigned c
   else
     {
       if (_rinfo->color_type != rgbalpha) std::cerr << "wrong color type : " << static_cast<int>(_rinfo->color_type) << std::endl;
-      if (_rinfo->bit_depth != 8) std::cerr << "wrong depth : " << static_cast<int>(_rinfo->bit_depth) << endl;
+      if (_rinfo->bit_depth != 8)
+	std::cerr << "wrong depth : " << static_cast<int>(_rinfo->bit_depth)
+		  << std::endl;
       unsigned char *pixel = rows[y] + 4*x;
       *pixel++ = static_cast<png_byte>(color.red * 255);
       *pixel++ = static_cast<png_byte>(color.green * 255);
@@ -350,7 +352,7 @@ unsigned char **PNG::read(const std::string &file)
 {
   unsigned char **rows = 0;
   std::ifstream ifs(file.c_str());
-  if (!ifs) cerr << "PNG : file " << file << " unreadable" << std::endl;
+  if (!ifs) std::cerr << "PNG : file " << file << " unreadable" << std::endl;
   else
     {
       Decoder decoder(ifs.rdbuf(), _rpng, _rinfo, _rend);

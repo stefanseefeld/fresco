@@ -126,13 +126,12 @@ void libArt::DrawingKit::set_transformation(Transform_ptr t)
       _affine[4] = matrix[0][3];
       _affine[5] = matrix[1][3];
     }
-  _scaled_affine = _affine;
-  _scaled_affine[0] *= _xres;
-  _scaled_affine[1] *= _xres;
-  _scaled_affine[2] *= _yres;
-  _scaled_affine[3] *= _yres;
-  _scaled_affine[4] *= _xres;
-  _scaled_affine[5] *= _yres;
+  _scaled_affine[0] = _affine[0] * _xres;
+  _scaled_affine[1] = _affine[1] * _xres;
+  _scaled_affine[2] = _affine[2] * _yres;
+  _scaled_affine[3] = _affine[3] * _yres;
+  _scaled_affine[4] = _affine[4] * _xres;
+  _scaled_affine[5] = _affine[5] * _yres;
 }
 
 void libArt::DrawingKit::set_clipping(Region_ptr r)

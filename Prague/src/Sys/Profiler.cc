@@ -39,10 +39,10 @@ void Profiler::CheckPoint::output(std::ostream &os, unsigned short ind)
   if (elapsed > 0.)
     {
       indent(os, ind);
-      os << name << ": " << setw(10) << count;
+      os << name << ": " << std::setw(10) << count;
       os << " Times.  Total Time: ";
-      os << setprecision(8) << setw(12);
-      os.setf( ios::fixed, ios::floatfield);
+      os << std::setprecision(8) << std::setw(12);
+      os.setf( std::ios::fixed, std::ios::floatfield);
       os << elapsed/CLOCKS_PER_SEC;
       os  << "  Avg/Iter.: ";
       os << std::setprecision(8) << std::setw(12);

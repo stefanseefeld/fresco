@@ -33,7 +33,7 @@
 void SDL::GLExposeHandler::refresh_screen()
 {
   Prague::Trace trace("SDL::GLExposeHandler::refresh_screen()");
-  
+
   /*
   ::Console::Drawable * drawable = ::Console::instance()->drawable();
 
@@ -55,8 +55,9 @@ void SDL::GLExposeHandler::refresh_screen()
   glEnable(GL_SCISSOR_TEST);
 
   glDrawBuffer(GL_BACK);
-  */
+  
   _glcontext->flush();
+  */
 }
 
 

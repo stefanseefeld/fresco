@@ -41,7 +41,12 @@ SDL::Drawable::Drawable(const char *display,
 
   _width = w;
   _height = h;
-  Logger::log(Logger::loader) << "setting video mode d =" << display
+
+  std::string displaystring;
+  if (display == 0) displaystring = "(NULL)";
+  else displaystring = display;
+  
+  Logger::log(Logger::loader) << "setting video mode d=" << displaystring
                               << " w=" << w << " h=" << h << " bpp=" << bpp
                               << std::endl;
   if (display == NULL) {

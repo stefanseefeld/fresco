@@ -30,7 +30,7 @@
 #include <Fresco/GGIKit.hh>
 #include <unistd.h>
 #include <iostream>
-#include <strstream>
+#include <sstream>
 #include <vector>
 #include <cstdlib>
 
@@ -58,11 +58,11 @@ int main(int argc, char **argv)
   value = "";
   getopt.get("width", &value);
   size_t width = 256;
-  if (!value.empty()) { std::istrstream iss(value.c_str()); iss >> width;}
+  if (!value.empty()) { std::istringstream iss(value); iss >> width;}
   value = "";
   getopt.get("height", &value);
   size_t height = 256;
-  if (!value.empty()) { std::istrstream iss(value.c_str()); iss >> height;}
+  if (!value.empty()) { std::istringstream iss(value); iss >> height;}
 
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
   CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
@@ -85,10 +85,10 @@ int main(int argc, char **argv)
    */
   ggiInit();
   CORBA::String_var name = visual->name();
-  cout << "visual name " << name << endl;
+  std::cout << "visual name " << name << std::endl;
   setenv("GGI_DISPLAY", name, 1);
   CORBA::String_var mode = visual->mode();
-  cout << "visual mode " << mode << endl;
+  std::cout << "visual mode " << mode << std::endl;
   setenv("GGI_DEFMODE", mode, 1);
   switch (fork())
     {

@@ -110,7 +110,7 @@ private:
   Fresco::Coord                 _lw;
   Fresco::DrawingKit::Endstyle  _es;
   Fresco::DrawingKit::Fillstyle _fs;
-  ostream                       _os;
+  std::ostream                  _os;
 };
 }
 

@@ -31,7 +31,7 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Console.hh>
 #include "DrawingKit.hh"
-#include <strstream>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 

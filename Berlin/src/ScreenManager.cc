@@ -23,13 +23,13 @@
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Time.hh>
 #include <Prague/Sys/Profiler.hh>
-#include <Fresco/config.hh>
+/* #include <Fresco/config.hh> */
 #include <Fresco/IO.hh>
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/ScreenManager.hh"
-#include <strstream>
+#include <sstream>
 
 using namespace Prague;
 using namespace Fresco;
@@ -101,7 +101,7 @@ void ScreenManager::repair()
   end = myclock();
   _emanager->damage(Region_var(_tmpDamage->_this()));
   {
-    std::ostrstream buf;
+    std::ostringstream buf;
     buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
     buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
     buf << (end-mid2)/1000. << " ";

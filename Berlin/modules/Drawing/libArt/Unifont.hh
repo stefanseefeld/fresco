@@ -41,7 +41,7 @@ namespace libArt
 class Unifont : public Font
 {
 public:
-  Unifont(double, double);
+  Unifont(double, double) throw(std::runtime_error);
   virtual ~Unifont();
   virtual CORBA::ULong size();
   virtual void size(CORBA::ULong) {}

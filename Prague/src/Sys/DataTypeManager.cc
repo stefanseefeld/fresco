@@ -24,7 +24,7 @@
 #include "Prague/Sys/Memory.hh"
 #include <iostream>
 #include <fstream>
-#include <strstream>
+#include <sstream>
 #include <algorithm>
 #include <cstdio>
 
@@ -80,7 +80,7 @@ std::vector<unsigned char> getbytes(std::istream &is, unsigned short n)
 
 std::string::const_iterator DataTypeManager::Type::Name::parse(std::string::const_iterator begin, std::string::const_iterator end)
 {
-  std::istrstream iss(&*begin, end - begin);
+  std::istringstream iss(std::string(begin, end));
   iss >> score;
   iss.ignore(end - begin, '\'');
   std::string tmp;
@@ -91,7 +91,7 @@ std::string::const_iterator DataTypeManager::Type::Name::parse(std::string::cons
 
 std::string::const_iterator DataTypeManager::Type::Magic::Part::parse(std::string::const_iterator begin, std::string::const_iterator end)
 {
-  std::istrstream iss(&*begin, end - begin);
+  std::istringstream iss(std::string(begin, end));
   iss >> offset;
   iss.ignore(end - begin, '[');
   iss >> length;
@@ -117,7 +117,7 @@ std::string::const_iterator DataTypeManager::Type::Magic::parse(std::string::con
 {
   std::string::const_iterator i = begin;
   while (isspace(*i)) i++;
-  std::istrstream iss(&*i, end - i);
+  std::istringstream iss(std::string(i, end));
   iss >> score;
   while (!isspace(*i)) i++;
   while (1)
@@ -135,12 +135,12 @@ bool DataTypeManager::Type::parse(const std::string &line)
 {
   if (line.substr(0, 5) == "type:")
     {
-      std::istrstream iss(&*line.begin() + 5, line.length() - 5);
+      std::istringstream iss(line.substr(6));
       iss >> type;
     }
   else if (line.substr(0, 5) == "mime:")
     {
-      std::istrstream iss(&*line.begin() + 5, line.length() - 5);
+      std::istringstream iss(line.substr(6));
       iss >> mime;
     }
   else if (line.substr(0, 5) == "name:")

@@ -28,7 +28,7 @@
 #include <Fresco/Server.hh>
 #include <Berlin/DefaultPOA.hh>
 #include <Berlin/KitImpl.hh>
-#include <multimap.h>
+#include <map>
 
 class ServerImpl;
 

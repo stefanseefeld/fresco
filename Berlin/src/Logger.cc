@@ -36,7 +36,7 @@ logstream    Logger::los(&buf);
 Time         Logger::start = Time::currentTime();
 Mutex        Logger::mutex;
 
-void Logger::dump(ostream &os)
+void Logger::dump(std::ostream &os)
 {
   los.dump(os);
   os << "\n\nDetailed Trace:\n";

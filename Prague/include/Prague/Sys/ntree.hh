@@ -101,7 +101,7 @@ public:
   typedef _ntree_node_child_iterator<T> child_iterator;
   typedef _const_ntree_node_child_iterator<T> const_child_iterator;
   typedef _ntree_node<T> self;
-  typedef std::list<self *>::size_type size_type;
+  typedef typename std::list<self *>::size_type size_type;
 
   T value;
   
@@ -253,7 +253,7 @@ public:
   friend bool operator == <>(self, _ntree_node_iterator<T>);
   friend bool operator < <> (self, self);
 private:
-  typedef std::list<node *>::iterator iter_t;
+  typedef typename std::list<node *>::iterator iter_t;
   iter_t it;
   _ntree_node_child_iterator(const iter_t& i);
   friend class _ntree_node<T>;
@@ -282,7 +282,7 @@ public:
   friend bool operator == <>(self, _const_ntree_node_iterator<T>);
   friend bool operator < <>(self, self);
 private:
-  typedef std::list<node *>::const_iterator iter_t;
+  typedef typename std::list<node *>::const_iterator iter_t;
   iter_t it;
   _const_ntree_node_child_iterator(const iter_t& i);
   friend class _ntree_node<T>;
@@ -560,7 +560,7 @@ inline void _ntree_node<T>::erase_child(child_iterator p)
 }
 
 template <class T>
-inline _ntree_node<T>::size_type _ntree_node<T>::num_children() const { return children.size();}
+inline typename _ntree_node<T>::size_type _ntree_node<T>::num_children() const { return children.size();}
 
 template <class T>
 inline _ntree_node_child_iterator<T> _ntree_node<T>::insert(child_iterator p, const ntree<T>& t)
@@ -701,7 +701,7 @@ template <class T>
 inline _ntree_node_iterator<T> &_ntree_node_iterator<T>::operator++()
 { 
   assert(ptr);
-  node::child_iterator ci = ptr->child_begin();
+  typename node::child_iterator ci = ptr->child_begin();
   if (ci != ptr->child_end()) // child found
     {
       ptr = &(*ci);
@@ -764,7 +764,7 @@ template <class T>
 inline _const_ntree_node_iterator<T> &_const_ntree_node_iterator<T>::operator++()
 { 
   assert(ptr);
-  node::const_child_iterator ci = ptr->child_begin();
+  typename node::const_child_iterator ci = ptr->child_begin();
   if (ci != ptr->child_end()) // child found
     {
       ptr = &(*ci);
@@ -829,7 +829,7 @@ _ntree_node<T> *_ntree_node<T>::copy(const self * p, self * par)
 {
   if (!p) return 0;
   self * res = new self(p->value, par);
-  std::list<self *>::const_iterator i, iend = p->children.end();
+  typename std::list<self *>::const_iterator i, iend = p->children.end();
   for (i = p->children.begin(); i != iend; ++i)
     res->children.push_back(copy(*i, res));
   return res;

@@ -90,7 +90,7 @@ namespace
 	  break;
 	}
       }
-    std::cout << endl;
+    std::cout << std::endl;
   }
 }; // namespace
 
@@ -112,7 +112,7 @@ SDL::Console::Console(int &argc, char **argv) :
   _expose(0)
 {
   Prague::Trace trace("SDL::Console::Console");
-  Logger::log(Logger::loader) << "trying to open SDL console" << endl;
+  Logger::log(Logger::loader) << "trying to open SDL console" << std::endl;
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_ShowCursor(SDL_DISABLE);
@@ -341,9 +341,9 @@ Console::Extension * SDL::Console::create_extension(const std::string & id)
 
 void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
 				    Fresco::Coord ux, Fresco::Coord uy,
-				    double red = 1.0,
-				    double green = 0.0,
-				    double blue = 0.0)
+				    double red,
+				    double green,
+				    double blue)
 {
 #ifdef RMDEBUG
   // I try to stay 'below' the Drable whereever possible so that bugs in that

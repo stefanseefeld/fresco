@@ -50,12 +50,14 @@
 using namespace Prague;
 using namespace Fresco;
 
-libArt::Unifont::Unifont(double xres, double yres)
+libArt::Unifont::Unifont(double xres, double yres) throw(std::runtime_error)
   : _xres(xres),
     _yres(yres)
 {
   Prague::Path path = RCManager::get_path("unifontpath");
   std::string glyphDB = path.lookup_file("glyph.dat");
+  if (glyphDB.empty())
+      throw std::runtime_error("Could not find glyph.dat");
   _glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
   _buffer = art_pixbuf_new_rgb (_slab, 16, 16, 16);  
 }

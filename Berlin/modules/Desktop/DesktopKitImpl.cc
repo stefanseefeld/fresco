@@ -336,10 +336,10 @@ Command_ptr DesktopKitImpl::shader(Fresco::Window_ptr window, Fresco::Graphic_va
 {
   Manipulator *manipulator;
   if (CORBA::is_nil(to_shade)) {
-    cout << "1" << endl;
+    std::cout << "1" << std::endl;
   } else {
     if (CORBA::is_nil(to_shade->body())) {
-      cout << "2" << endl;
+      std::cout << "2" << std::endl;
     }
   }
   manipulator = new Shader(window, to_shade);

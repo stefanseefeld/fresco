@@ -69,7 +69,7 @@ public:
       write(g, "]\t");
       return slock;
     } 
-  static void dump(ostream &);
+  static void dump(std::ostream &);
 protected:
 private:
   struct streamlock
@@ -81,7 +81,7 @@ private:
     group g;
     Prague::Profiler prf;
   };
-  friend const streamlock &operator << (const streamlock &sl, ostream & (func)(ostream &))
+  friend const streamlock &operator << (const streamlock &sl, std::ostream & (func)(std::ostream &))
     { Logger::write(sl.g, func); return sl;}
   template <class T>
   friend const streamlock &operator << (const streamlock &sl, const T &t) { Logger::write(sl.g, t); return sl;}

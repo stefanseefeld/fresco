@@ -155,7 +155,7 @@ protected:
 	      << '(' << node.items.size()
 	      << ") elements, extension : "
 	      << node.region << std::endl;
-    for (list::const_iterator i = node.items.begin();
+    for (typename list::const_iterator i = node.items.begin();
 	 i != node.items.end();
 	 i++)
       std::cout << (*i)->boundingbox << ';';
@@ -226,7 +226,8 @@ inline void QTNode<T, I>::unfold()
 {
   if (! leaf()) return;
   allocate();
-  list::iterator i = remove_if(items.begin(), items.end(), move_down(this));
+  typename list::iterator i =
+    remove_if(items.begin(), items.end(), move_down(this));
   items.erase(i, items.end());
 }
 
@@ -245,7 +246,8 @@ inline void QTNode<T, I>::collaps()
 }
 
 template <class T, class I>
-inline QTNode<T, I>::index QTNode<T, I>::where(const Geometry::Rectangle<T> &r)
+inline typename QTNode<T, I>::index
+QTNode<T, I>::where(const Geometry::Rectangle<T> &r)
 {
   int idx = fence;
   if (!leaf())
@@ -280,7 +282,7 @@ inline void QTNode<T, I>::remove(I i)
   index idx = where(i);
   if (idx == fence)
     {
-      for (list::iterator j = items.begin(); j != items.end(); j++)
+      for (typename list::iterator j = items.begin(); j != items.end(); j++)
 	if (*j == i)
 	  {
 	    items.erase(j);
@@ -294,7 +296,7 @@ inline void QTNode<T, I>::remove(I i)
     {
       boundingbox.clear();
       bool first = true;
-      for (list::iterator j = items.begin(); j != items.end(); j++)
+      for (typename list::iterator j = items.begin(); j != items.end(); j++)
 	{
 	  if (first) { boundingbox = (*j)->bbox(); first = false;}
 	  else boundingbox.merge((*j)->bbox());

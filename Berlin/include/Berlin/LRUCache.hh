@@ -38,7 +38,7 @@ public:
     else
       {
 	v = factory.produce(k);
-	cache.insert(pair<kT,vT>(k,v));
+	cache.insert(std::pair<kT,vT>(k,v));
 	queue.push_front(k);
 	if (queue.size() >= max)
 	  {

@@ -59,7 +59,12 @@ MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, 
   else
     fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
 
-  if (fd == -1) throw std::runtime_error(strerror(errno));
+  if (fd == -1)
+  {
+      std::string message = "Failed to map \"" + filename + "\": " +
+	                    strerror(errno);
+      throw std::runtime_error(message);
+  }
   struct stat sb;
   _length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
   if (l > static_cast<int>(_length))
@@ -69,7 +74,12 @@ MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, 
     }
   else if (l > 0 && l < static_cast<int>(_length)) _length = l;
   _base = mmap(addr, _length, prot, share, fd, offset);
-  if (_base == MAP_FAILED) throw std::runtime_error(strerror(errno));
+  if (_base == MAP_FAILED)
+  {
+      std::string message = "Failed to map \"" + filename + "\": " +
+	                    strerror(errno);
+      throw std::runtime_error(message);
+  }
   close(fd);
 }
 

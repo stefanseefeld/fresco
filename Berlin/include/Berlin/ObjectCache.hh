@@ -71,7 +71,8 @@ inline Local *ObjectCache<Remote, Local, Trait>::lookup(Remote r)
 {
   hash_t hash = r->_hash(_buckets);
   bucket_t &bucket = _cache[hash];
-  bucket_t::iterator i = find_if(bucket.begin(), bucket.end(), Predicate(r));
+  typename bucket_t::iterator i =
+    find_if(bucket.begin(), bucket.end(), Predicate(r));
   if (i == bucket.end())
     {
       Local *local = Trait::create(r);

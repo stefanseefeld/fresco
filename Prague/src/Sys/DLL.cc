@@ -39,10 +39,18 @@ DLL::DLL(const std::string &name, bool now) throw(std::runtime_error, std::logic
       int flags = now ? RTLD_NOW : RTLD_LAZY;
       flags |= RTLD_GLOBAL;
       _handle = dlopen(_name.c_str(), flags);
-      if (!_handle) throw std::runtime_error(dlerror());
+      if (!_handle)
+      {
+	  std::string message = "Failed to load " + _name + ": " + dlerror();
+          throw std::runtime_error(message);
+      }
 #elif defined(HAVE_DLAIX)
       shl_t shl_handle = shl_load (_name.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
-      if (!shl_handle) throw std::runtime_error(strerror(errno));
+      if (!shl_handle)
+      {
+	  std::string message = "Failed to load " + _name + ": " + strerror(errno);
+	  throw std::runtime_error(message);
+      }
       else _handle = shl_handle;
 #endif
     }
@@ -62,11 +70,22 @@ void *DLL::resolve(const std::string &symbol) throw(std::runtime_error)
 {
 #if defined(HAVE_DLFCN)
   void *tmp = dlsym(_handle, symbol.c_str());
-  if (!tmp) throw std::runtime_error(dlerror());
+  if (!tmp)
+  {
+      std::string message = "Failed to resolve \"" + symbol +
+	                    "\" in loaded file \"" + _name +
+			    "\": " + dlerror();
+      throw std::runtime_error(message);
+  }
 #elif defined(HAVE_DLAIX)
   void *tmp;
   if (shl_findsym(reinterpret_cast<shl_t *>(&_handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || _handle == 0 || tmp == 0)
-    throw std::runtime_error(strerror(errno));
+  {
+    istd:string message = "Failed to resolve \"" + symbol +
+		          "\" in loaded file \"" + _name +
+			  "\": " + strerror(errno);
+    throw std::runtime_error(message);
+  }
 #endif
   return tmp;
 };

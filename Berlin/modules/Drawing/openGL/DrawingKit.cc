@@ -30,7 +30,6 @@
 #include "Quadric.hh"
 #include "DrawingKit.hh"
 #include "Unifont.hh"
-#include <strstream>
 #include <iostream>
 
 using namespace Prague;

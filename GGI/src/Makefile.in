@@ -42,7 +42,6 @@ TARGET	+= ../lib/Fresco/Console/GGIGL.so
 endif
 ../lib/Fresco/Console/GGIGL.so: GGIGL.o
 
-
 all:	$(TARGET)
 
 $(TARGET):	$(DEP) $(OBJ)

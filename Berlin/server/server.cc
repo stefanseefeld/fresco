@@ -42,7 +42,7 @@
 #include <Berlin/RCManager.hh>
 #include "ServerImpl.hh"
 #include <fstream>
-#include <strstream>
+#include <sstream>
 
 #ifdef RC_PREFIX
 const std::string prefix = RC_PREFIX;
@@ -74,7 +74,7 @@ struct Dump : Signal::Notifier
 	  Console::instance()->activate_autoplay(); 
 	  Console::instance()->wakeup();
 	  return;
-	case Signal::hangup: Profiler::dump(cerr); break;
+	case Signal::hangup: Profiler::dump(std::cerr); break;
 	case Signal::abort:
 	case Signal::segv:
           {
@@ -103,27 +103,36 @@ void exec_child(Fork*& child, std::string& value) /*fold00*/
   // Fork to create child process to execute client in
   child = new Fork(true, true);
   if (child->child())
-    {
+  {
       std::vector<char*> args;
       // Split 'value' into command and arguments for execvp
       int start = 0, index = 0;
       value.push_back('\0');
       while ( (index = value.find(' ', index)) != std::string::npos)
-	{
+      {
 	  value[index] = '\0';
 	  args.push_back(&*value.begin() + start);
 	  start = index + 1;
-	}
+      }
       args.push_back(&*value.begin() + start);
       args.push_back(0);
-      
+
+      // FIXME: Where should we log this to?
+      std::ostringstream oss;
+      oss << "Starting client \"" << args[0];
+      for (std::vector<char *>::const_iterator i = args.begin();
+           i != args.end();
+	   ++i) oss << " " << *i;
+      oss << std::endl;
+      Logger::log(Logger::loader) << oss.str();
+
       // Execute command
       execvp(args[0], &*args.begin());
       
       // Should not get here
-      perror("client execvp");
-      exit(1);
-    }
+      std::cerr << "ERROR: Client could not get started." << std::endl;
+      exit(100);
+  }
   // Attempt to kill client on these signals
   child->suicide_on_signal(Signal::interrupt);
   child->suicide_on_signal(Signal::quit);
@@ -136,13 +145,13 @@ int main(int argc, char **argv) /*FOLD00*/
   // ---------------------------------------------------------------
   // Setup signalhandling
   // ---------------------------------------------------------------
-	
+  
   Dump *dump = new Dump;
   Signal::set(Signal::usr2, dump);
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
-	
+  
   // ---------------------------------------------------------------
   // Parse commandline arguments
   // ---------------------------------------------------------------
@@ -150,78 +159,149 @@ int main(int argc, char **argv) /*FOLD00*/
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
-  getopt.add('R', "export-ref", GetOpt::mandatory, "means of exporting server reference");
+  getopt.add('R', "export-ref",
+	     GetOpt::mandatory, "means of exporting server reference");
   getopt.add('l', "logger", GetOpt::optional, "switch logging on");
   getopt.add('t', "tracer", GetOpt::novalue, "switch tracing on");
   getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
-  getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load (mandatory)");
-  getopt.add('e', "execute", GetOpt::mandatory, "the command to execute upon startup");
+  getopt.add('r', "resource", GetOpt::mandatory,
+	     "the resource file to load (mandatory)");
+  getopt.add('e', "execute", GetOpt::mandatory,
+	     "the command to execute upon startup");
   getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
-  if (getopt.is_set("version")) { cout << "version is " << version << endl; return 0;}
+  
+  if (getopt.is_set("version")) { std::cout << "version is " << version
+					    << std::endl; return 0;}
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
+  
   std::string value;
-  if (getopt.get("resource", &value))
-    {
-      try { RCManager::read(Prague::Path::expand_user(value));}
-      catch (std::runtime_error &e)
-	{
-	  std::cerr << "error loading \"" << value << "\": "
-		    << e.what() << std::endl;
-	  exit (1);
-	}
-    }
-  else
-    {
-      // Search for berlinrc
-      try { if (!prefix.empty()) RCManager::read(prefix + "/share/berlin/berlinrc");}
-      catch (const std::runtime_error &) {}
-      const char *rcfile = getenv("BERLINRC");
-      try
-	{
-	  if (rcfile) RCManager::read(Prague::Path::expand_user(rcfile));
-	  else RCManager::read(std::string(User().home()) + "/.berlin");
-	}
-      catch (const std::runtime_error &)
-	{
-	  getopt.usage();
-	  exit(1);
-	}
-    }
-  value = "";  
   if (getopt.get("logger", &value))
-    {
+  {
       if (!value.empty())
-	{
-	  std::istrstream iss(value.c_str());
-	  std::string token;
-	  while (iss >> token)
-	    {
+      {
+	  std::istringstream iss(value);
+	  std::ostringstream oss;
+          std::string token;
+          while (iss >> token)
+	  {
 	      if (token == "corba") Logger::set(Logger::corba);
-	      else if (token == "lifecycle") Logger::set(Logger::lifecycle);
-	      else if (token == "focus") Logger::set(Logger::focus);
-	      else if (token == "image") Logger::set(Logger::image);
-	      else if (token == "loader") Logger::set(Logger::loader);
-	      else if (token == "console") Logger::set(Logger::console);
-	      else if (token == "subject") Logger::set(Logger::subject);
-	      else if (token == "layout") Logger::set(Logger::layout);
-	      else if (token == "picking") Logger::set(Logger::picking);
-	      else if (token == "drawing") Logger::set(Logger::drawing);
-	      else if (token == "traversal") Logger::set(Logger::traversal);
-	      else if (token == "widget") Logger::set(Logger::widget);
-	      else if (token == "text") Logger::set(Logger::text);
-	      else if (token == "desktop") Logger::set(Logger::desktop);
-	    }
-	}
-      else Logger::setall();
-    }
-  if (getopt.is_set("tracer")) Tracer::logging(true);
+              else if (token == "lifecycle") Logger::set(Logger::lifecycle);
+              else if (token == "focus") Logger::set(Logger::focus);
+              else if (token == "image") Logger::set(Logger::image);
+              else if (token == "loader") Logger::set(Logger::loader);
+              else if (token == "console") Logger::set(Logger::console);
+              else if (token == "subject") Logger::set(Logger::subject);
+              else if (token == "layout") Logger::set(Logger::layout);
+              else if (token == "picking") Logger::set(Logger::picking);
+              else if (token == "drawing") Logger::set(Logger::drawing);
+              else if (token == "traversal") Logger::set(Logger::traversal);
+              else if (token == "widget") Logger::set(Logger::widget);
+              else if (token == "text") Logger::set(Logger::text);
+              else if (token == "desktop") Logger::set(Logger::desktop);
+	      else token == "";
+
+	      if (!token.empty()) oss << token << " ";
+          }
+	  Logger::log(Logger::loader) << "Logging of types \""
+		                      << oss.str() << "\" activated."
+				      << std::endl;
+      }
+      else
+      {
+          Logger::setall();
+	  Logger::log(Logger::loader) << "Logging of all types activated."
+				      << std::endl;
+      }
+  }
+  value = "";
+  
+  // Find our resorce file:
+  if (getopt.get("resource", &value))
+  {
+      // Load resorcefile given on the commandline:
+      try
+      {
+	  value = Prague::Path::expand_user(value);
+          RCManager::read(value);
+	  Logger::log(Logger::loader) << "Resourcefile \""
+	                              << value << "\" read."
+	                              << std::endl;
+      }
+      catch (const std::runtime_error &e)
+      {
+	  std::cerr << "ERROR: Resourcefile \"" << value
+		    << "\" given on the commandline failed to load: "
+                    << e.what() << std::endl;
+          exit (1);
+      }
+  }
+  else
+  {
+      // Search for berlinrc in default places:
+      if (prefix.empty()) value = "/usr";
+      else value = prefix;
+      value += "/share/Berlin/config";
+
+      bool is_configured = 0;
+      try
+      {
+          RCManager::read(value);
+	  is_configured = 1;
+	  Logger::log(Logger::loader) << "Resourcefile \""
+	                              << value << "\" read."
+	                              << std::endl;
+
+      }
+      catch (const std::runtime_error &e)
+      {
+          std::cerr << "Warning: Default resourcefile \"" << value
+	            << "\" failed to load: "
+	            << e.what() << std::endl;
+      }
+
+      // FIXME: merge additional configuration:
+      if(getenv("BERLINRC")) value = std::string(getenv("BERLINRC"));
+      else value ="";
+
+      if (value.empty())
+          value = std::string(User().home()) + "/.berlin";
+
+      try
+      {
+          if (!is_configured) 
+          {
+              RCManager::read(value);
+	      Logger::log(Logger::loader) << "Resourcefile \""
+	                                  << value << "\" read."
+	                                  << std::endl;
+          }
+      }
+      catch (const std::runtime_error &e)
+      {
+          std::cerr << "ERROR: System resourcefile is missing and "
+       	            << "user's resourcefile \"" << value
+	            << "\" failed to load too: "
+	            << e.what() << std::endl;
+	  exit(1);
+      }
+  }
+  
+  if (getopt.is_set("tracer"))
+  {
+      Tracer::logging(true);
+      Logger::log(Logger::loader) << "Tracing enabled." << std::endl;
+  }
 
 #ifdef JPROF
-  if (getopt.is_set("profiler")) setupProfilingStuff();
+  if (getopt.is_set("profiler"))
+  {
+      setupProfilingStuff();
+      Logger::log(Logger::loader) << "Profiling anabled." << std::endl;
+  }
 #endif
 
   Fork *child = 0;
@@ -232,43 +312,52 @@ int main(int argc, char **argv) /*FOLD00*/
 	
   CORBA::ORB_var orb;
   try
-    {
-       orb = CORBA::ORB_init(argc, argv);
-       PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
-       PortableServer::POAManager_var pman = poa->the_POAManager();
-       pman->activate();
-       Logger::log(Logger::corba) << "root POA is activated" << std::endl;
+  {
+      orb = CORBA::ORB_init(argc, argv);
+      PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+      PortableServer::POAManager_var pman = poa->the_POAManager();
+      pman->activate();
+      Logger::log(Logger::corba) << "root POA is activated" << std::endl;
        
-       CORBA::PolicyList policies;
+      CORBA::PolicyList policies;
 #ifdef COLOCATION_OPTIMIZATION
 #  if defined(ORB_omniORB)
-       {
-	 // create a POA for global objects derived from ServantBase
-	 policies.length(2);
-	 policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
-	 CORBA::Any value;
-	 value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
-	 policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
-	 poa = poa->create_POA("shortcut", pman, policies);
+      {
+          // create a POA for global objects derived from ServantBase
+	  policies.length(2);
+	  policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
+	  CORBA::Any value;
+	  value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
+	  policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
+	  poa = poa->create_POA("shortcut", pman, policies);
 	 
-	 // create a policy list to be used by kit specific POAs
-	 policies.length(1);
-	 policies[0] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
+	  // create a policy list to be used by kit specific POAs
+	  policies.length(1);
+	  policies[0] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
        }
 #  elif defined(ORB_TAO)
        // fillin TAO-specific initialisation here...
 #  endif
+      Logger::log(Logger::corba) << "Clolocation optimization activated."
+	                         << std::endl;
 #endif
       
        DefaultPOA::default_POA(poa);
+       Logger::log(Logger::corba) << "Default POA set up." << std::endl;
        
        // ---------------------------------------------------------------
        // Open the Console
        // ---------------------------------------------------------------
       
        value = "";
-       getopt.get("console",&value);
-       Console::open(value, argc, argv, poa);
+       getopt.get("console", &value);
+       try { Console::open(value, argc, argv, poa); }
+       catch (const std::runtime_error &e)
+       {
+           std::cerr << "ERROR: Failed to open the Console \"" << value
+		     << "\": " << e.what() << std::endl;
+	   exit(2);
+       }
        
        Logger::log(Logger::console) << "console is initialized" << std::endl;
        
@@ -281,18 +370,21 @@ int main(int argc, char **argv) /*FOLD00*/
        value = "";
        getopt.get("export-ref",&value);
        if (value == "corbaloc")
-	 {
+       {
 	   CORBA::Object_var poaref = orb->resolve_initial_references("omniINSPOA");
 	   insPOA = PortableServer::POA::_narrow(poaref);
 	   PortableServer::POAManager_var poam = insPOA->the_POAManager();
 	   poam->activate();
 	   
 	   server = ServerImpl::create(insPOA, policies);
-	 }
+	   Logger::log(Logger::loader) << "corbaloc setup." << std::endl;
+       }
        else
-	 {
+       {
 	   server = ServerImpl::create(poa, policies);      
-	 }
+	   Logger::log(Logger::loader) << "no corbaloc. Setup skipped."
+		                       << std::endl;
+       }
 
        Prague::Path path = RCManager::get_path("modulepath");
        for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
@@ -310,13 +402,19 @@ int main(int argc, char **argv) /*FOLD00*/
        getopt.get("drawing", &value);
        if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
        else props[0].value = CORBA::string_dup("LibArtDrawingKit");
-       DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0", props, poa);
+       DrawingKit_var drawing =
+	   server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
+			               props,
+				       poa);
+
        if (CORBA::is_nil(drawing))
-	 {
-	   std::cerr << "unable to open " << "IDL:fresco.org/Fresco/DrawingKit:1.0"
-		     << " with attribute " << props[0].name << '=' << props[0].value << std::endl;
-	   return -1;
-	 }
+       {
+	   std::cerr << "ERROR: Unable to open "
+		     << "IDL:fresco.org/Fresco/DrawingKit:1.0"
+		     << " with attribute "
+		     << props[0].name << '=' << props[0].value << std::endl;
+	   exit(3);
+       }
        
        Logger::log(Logger::drawing) << "drawing system is built" << std::endl;
       
@@ -349,35 +447,43 @@ int main(int argc, char **argv) /*FOLD00*/
        value = "";
        getopt.get("export-ref",&value);
        if (value == "ior")
-	 {
+       {
 	   Server_var serverRef = server->_this();
 	   std::cout << orb->object_to_string(serverRef) << std::endl;
-	 }
+	   Logger::log(Logger::loader) << "IOR exported." << std::endl;
+       }
        else if (value == "corbaloc")
-	 {
+       {
 	   PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId("FrescoServer");
 	   insPOA->activate_object_with_id(oid,server);
 	   
 	   // TODO: Look for host name here
 	   std::cout << "corbaloc::localhost/FrescoServer" << std::endl;
-	 }
+	   Logger::log(Logger::loader) << "corbaloc exported." << std::endl;
+       }
        else if (value == "nameserver" || value.empty())
-	 {
+       {
 	   try
-	     {
-	       bind_name(orb, Server_var(server->_this()), "IDL:fresco.org/Fresco/Server:1.0");
-	     } 
+	   {
+	       bind_name(orb,
+			 Server_var(server->_this()),
+			 "IDL:fresco.org/Fresco/Server:1.0");
+	       Logger::log(Logger::loader) << "Nameservice entry created."
+		                           << std::endl;
+	   } 
 	   catch (CORBA::COMM_FAILURE)
-	     {
-	       std::cerr << "CORBA communications failure finding Fresco." << std::endl
-			 << "Are you sure the name service is running?" << std::endl;
-	       return -1;
-	     }
+	   {
+	       std::cerr << "ERROR: CORBA communications failure finding "
+		         << " Fresco. "
+			 << "Are you sure the name service is running?"
+			 << std::endl;
+	       exit(4);
+	   }
 	   catch (...)
-	     {
+	   {
 	       std::cerr << "Unknown exception finding Fresco" << std::endl;
-	       return -1;
-	     }
+	       exit(5);
+	   }
 	 }
        
        Logger::log(Logger::corba) << "listening for clients" << std::endl;
@@ -390,33 +496,40 @@ int main(int argc, char **argv) /*FOLD00*/
 	   Logger::log(Logger::loader) << "client started." << std::endl;
        }
 
+       Logger::log(Logger::loader) << "Running the ScreenManager now."
+	                           << std::endl;
        smanager->run();
     }
   catch (const CORBA::SystemException &e)
-    {
-      std::cout << "system exception " << e << std::endl;
-    }
+  {
+      std::cerr << "ERROR: Unexpected CORBA::System exception caught: "
+	        << e << std::endl;
+  }
 #ifdef ORB_omniORB
   catch(const omniORB::fatalException &fe)
-    {
-      std::cerr << "fatal exception at " << fe.file() << " " << fe.line() << ":"
+  {
+      std::cerr << "ERROR: OmniORB fatal exception caught at "
+	        << fe.file() << " " << fe.line() << ":"
 		<< fe.errmsg() << std::endl;
-    }
+  }
 #endif
   catch (const CORBA::Exception &e)
-    {
-      std::cout << " exception " << e << std::endl;
-    }
+  {
+      std::cerr << "ERROR: Unexpected CORBA::Exception caught: "
+	        << e << std::endl;
+  }
   catch (const std::exception &e)
-    {
-      std::cerr << "exception: " << e.what() << std::endl;
-    }
+  {
+      std::cerr << "ERROR: Unexpected std::exception: "
+	        << e.what() << std::endl;
+  }
   catch (...)
-    {
-      std::cout << "unknown exception caught" << std::endl;
-    };
+  {
+      std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
+  };
 
   delete child;
   if (!CORBA::is_nil(orb)) orb->destroy();
   return 0;
 }
+

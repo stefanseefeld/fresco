@@ -29,7 +29,7 @@
 #include <cstdio>
 #include <string>
 #include <iostream>
-#include <fstream.h>
+#include <fstream>
 
 namespace Prague
 {

@@ -120,7 +120,7 @@ CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr traversal, const 
   else
     {
       std::cerr << "VisualImpl::handle_positional: "
-                << "Ignoring positional event" << endl;
+                << "Ignoring positional event" << std::endl;
     }
   return true;
 }
@@ -184,7 +184,7 @@ void VisualImpl::move(Fresco::PickTraversal_ptr traversal,
   Input::Position position;
   if (-1 == get_position(event, position)) {
     std::cerr << "VisualImpl::move error: non-positional event!"
-	      << endl;
+	      << std::endl;
     return;
   }
   Transform_var trafo = traversal->current_transformation();
@@ -230,7 +230,7 @@ void VisualImpl::handle_pointer_button(const Input::Event &event)
   else {
     std::cerr << "VisualImpl::handle_pointer_button: "
 	      << "unknown toggle -- neither press nor release!"
-	      << endl;
+	      << std::endl;
     return;
   }
   ggi.pbutton.button = toggle.number;

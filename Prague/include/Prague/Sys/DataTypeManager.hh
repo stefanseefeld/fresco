@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include <Prague/Sys/regex.hh>
 
 namespace Prague
