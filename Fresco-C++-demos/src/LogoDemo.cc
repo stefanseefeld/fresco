@@ -49,7 +49,8 @@ class Backward : public Application::CommandImpl
 
 };
 
-LogoDemo::Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Coord d)
+LogoDemo::Rotator::Rotator(BoundedValue_ptr v,
+			   Graphic_ptr c, Graphic_ptr p, Coord d)
   : value(BoundedValue::_duplicate(v)),
     child(Graphic::_duplicate(c)),
     parent(Graphic::_duplicate(p)),
@@ -66,7 +67,7 @@ void LogoDemo::Rotator::update(const CORBA::Any &)
   tx->load_identity();
   tx->rotate(ydegree, yaxis);
   tx->rotate(zdegree, zaxis);
-  parent->need_redraw();
+  parent->need_resize();
 }
 
 LogoDemo::LogoDemo(Application *a)
@@ -82,33 +83,43 @@ LogoDemo::LogoDemo(Application *a)
   bv2 = commands->bvalue(0., 360., 0., 5., 5.);
   bv3 = commands->bvalue(0., 360., 0., 5., 5.);
   
-  Coord c = 2000.;
-  Vertex offset;
-  offset.x = -c/2., offset.y = -3./2.*c, offset.z = 0.;
+  Coord c = 1000.;
   Fresco::Path path;
   path.shape = convex;
   path.nodes.length(3);
-  path.nodes[0].x = c/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;
-  path.nodes[1].x = c + offset.x, path.nodes[1].y = 0.866*c + offset.y, path.nodes[1].z = offset.z;
-  path.nodes[2].x = offset.x, path.nodes[2].y = 0.866*c + offset.y, path.nodes[2].z = offset.z;
+  
+  path.nodes[0].x =  0.0      , path.nodes[0].y = -1.0 * c,
+      path.nodes[0].z = 0.0;
+  path.nodes[1].x =  0.866 * c, path.nodes[1].y =  0.5 * c,
+      path.nodes[1].z = 0.0;
+  path.nodes[2].x = -0.866 * c, path.nodes[2].y =  0.5 * c,
+      path.nodes[2].z = 0.0;
   
   Figure::Path_var triangle = figures->polygon(path);
   Graphic_var transformer1 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 1., 0.5, 0.5)));
   Graphic_var transformer2 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 0.5, 1., 0.5)));
   Graphic_var transformer3 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 0.5, 0.5, 1.)));
   
-  Graphic_var group = figures->group();
+  Graphic_var group = layout->hbox();
   
-  rotator1 = new Rotator(bv1, transformer1, group, -10.);
+  Graphic_var fix1 = layout->fixed_size(layout->align(transformer1, 0.5, 0.5), 2.0 * c, 2.0 * c);
+  Graphic_var fix2 = layout->fixed_size(layout->align(transformer2, 0.5, 0.5), 2.0 * c, 2.0 * c);
+  Graphic_var fix3 = layout->fixed_size(layout->align(transformer3, 0.5, 0.5), 2.0 * c, 2.0 * c);
+
+  Graphic_var glue = layout->hspace(-1.2 * c);
+
+  rotator1 = new Rotator(bv1, transformer1, fix1, -10.0);
   bv1->attach(Observer_var(rotator1->_this()));
-  rotator2 = new Rotator(bv2, transformer2, group, 10.);
+  rotator2 = new Rotator(bv2, transformer2, fix2,  10.0);
   bv2->attach(Observer_var(rotator2->_this()));
-  rotator3 = new Rotator(bv3, transformer3, group, 20.);
+  rotator3 = new Rotator(bv3, transformer3, fix3,  20.0);
   bv3->attach(Observer_var(rotator3->_this()));
   
-  group->append_graphic(transformer1);
-  group->append_graphic(transformer2);
-  group->append_graphic(transformer3);
+  group->append_graphic(fix1);
+  group->append_graphic(glue);
+  group->append_graphic(fix2);
+  group->append_graphic(glue);
+  group->append_graphic(fix3);
   
   Graphic_var hbox1 = layout->hbox();
   hbox1->append_graphic(Graphic_var(layout->hfill()));

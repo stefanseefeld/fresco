@@ -35,7 +35,8 @@ class LogoDemo : public Demo
   class Rotator : public ObserverImpl
   {
   public:
-    Rotator(Fresco::BoundedValue_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Coord);
+    Rotator(Fresco::BoundedValue_ptr,
+	    Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Coord);
     void update(const CORBA::Any &);
   private:
     Fresco::BoundedValue_var value;
