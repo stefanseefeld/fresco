@@ -126,7 +126,7 @@ dnl builddir=`pwd | sed -e 's%$1$%%'`
 builddir=`pwd`/$1
 dnl srcdir=`echo $srcdir | sed -e 's%$1$%%'`
 srcdir="${srcdir}/$1"
-topdir="${srcdir}"
+topdir=`cd ${srcdir} && pwd`
 changequote([, ])dnl
 AC_DIVERT_POP()
 AC_SUBST(topdir)
