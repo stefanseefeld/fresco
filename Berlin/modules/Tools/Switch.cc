@@ -77,7 +77,6 @@ void Switch::update(const CORBA::Any &)
   bool flag = my_telltale->test(my_mask);
   if (flag == my_on) return;
   my_on = flag;
-  need_resize(); // FIXME race condition, see bug256.
   set(my_alternate, body());
   need_resize();
 }
