@@ -1,3 +1,4 @@
+
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -68,8 +69,6 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis)),
   mySize(14),
-  myLeft(0),
-  myTop(0),
   scale(1),
   myGlyphCache(GlyphFactory(this,&myLibrary),256),
   myFaceMetricsCache(FaceMetricsFactory(this,&myLibrary),64),
@@ -300,8 +299,6 @@ LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::TGlyphSpec &gs)
   int height = bglyph->bitmap.rows;
   int width = bglyph->bitmap.width;
   int pitch = bglyph->bitmap.pitch;
-
-  font_->setOffset(bglyph->left, bglyph->top);
 
   art_u8 *pixels = new art_u8[width * height]; 
 
