@@ -33,6 +33,7 @@ AC_DEFUN([FRESCO_OPENGL_CHECK],
    save_CPPFLAGS="$CPPFLAGS"
    CPPFLAGS="$GL_CPPFLAGS $CPPFLAGS"
    AC_CHECK_HEADER(GL/gl.h,,no_gl=yes)
+   AC_CHECK_HEADER(GL/glu.h,,no_gl=yes)
    CPPFLAGS="$save_CPPFLAGS"
    
    dnl Check for opengl libs
@@ -44,6 +45,7 @@ AC_DEFUN([FRESCO_OPENGL_CHECK],
      save_LDFLAGS="$LDFLAGS"
      LDFLAGS="$GL_LIBS $LDFLAGS"
      AC_CHECK_LIB(GL, glLoadIdentity, :, no_gl=yes)
+     AC_CHECK_LIB(GLU, gluNewTess, :, no_gl=yes)
      LDFLAGS="$save_LDFLAGS"
    fi
    
