@@ -243,7 +243,11 @@ void ColoredFrame::draw(DrawTraversal_ptr traversal)
   DrawingKit_var drawing = traversal->kit();
   DrawingKit::Fillstyle style = drawing->surfaceFillstyle();
   drawing->saveState();
-  drawing->foreground(color);
+  Color tmp = drawing->foreground();
+  tmp.red = color.red;
+  tmp.green = color.green;
+  tmp.blue = color.blue;
+  drawing->foreground(tmp);
   if (style == DrawingKit::outlined) drawing->surfaceFillstyle(DrawingKit::solid);
   if (fill) drawing->drawRect(l, u);
   else

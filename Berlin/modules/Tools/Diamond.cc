@@ -147,7 +147,11 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
   drawing->saveState();
   if (drawing->surfaceFillstyle() == DrawingKit::outlined)
     drawing->surfaceFillstyle(DrawingKit::solid);
-  drawing->foreground(color);
+  Color tmp = drawing->foreground();
+  tmp.red = color.red;
+  tmp.green = color.green;
+  tmp.blue = color.blue;
+  drawing->foreground(tmp);
 
   Vertex center = {(u.x + l.x)/2, (u.y + l.y)/2, 0.};
   Vertex length = {(u.x - l.x), (u.y - l.y), 0.};
