@@ -132,6 +132,7 @@ namespace daVinci
     {
       Fresco::FigureKit_var figures = Model::figures();
       Fresco::Path empty;
+      empty.shape = Fresco::convex;
 //       vertices.length(0);
       return new VertexManipulator(c, figures->polygon(empty));
     }

@@ -97,7 +97,7 @@ void DragManipulator::effect(PickTraversal_ptr traversal, const Input::Event &ev
 VertexManipulator::VertexManipulator(Fresco::Controller_ptr controller, Figure::Path_ptr figure)
   : Manipulator(controller), _figure(Figure::Path::_duplicate(figure)), _path(new Fresco::Path())
 {
-   _path->shape = convex;
+   _path->shape = Fresco::convex;
 }
 VertexManipulator::~VertexManipulator() {}
 CORBA::Boolean VertexManipulator::grasp(PickTraversal_ptr traversal, const Input::Event &event)
