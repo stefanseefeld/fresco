@@ -42,8 +42,13 @@ RasterImpl::RasterImpl(const std::string &file) : _rows(0)
   _rows = _png.read(pngfile);
   if (!_rows)
     {
-      std::cerr << "RasterImpl fatal error: can't read " << pngfile << std::endl;
-      exit(-1);
+      std::cerr << "RasterImpl error: can't read " << pngfile << std::endl;
+      pngfile = path.lookup_file("berlin-128.png");
+      _rows = _png.read(pngfile);
+      if (!_rows) {
+	std::cerr << "RasterImpl fatal error: can't read " << pngfile << std::endl;
+	exit(-1);
+      }
     }
 }
 RasterImpl::~RasterImpl() { Trace trace("RasterImpl::~RasterImpl");}
