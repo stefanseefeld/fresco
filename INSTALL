@@ -39,33 +39,30 @@ http://sourceforge.net/projects/berlin/
 
 
 
-Configuration
-=============
-
-FIXME: THIS IS OUTDATED! You need to either run autobuild.sh or step into
-each subdirectory and configure, make, make install them separetly. Check
-autobuild.sh for the sequence in which the Packages have to be build.
-Yes, the sequence is important!
-
-
+Configuration and Building
+===========================
 
 In case you use the cvs version, you have to step into the toplevel
-directory ('Berlin'), and call ./autogen.sh, to generate configure
+directory ('Fresco'), and call ./autogen.sh, to generate configure
 scripts and helper files.
 
-We have seen problems with autoconf 2.50 and later. For now you must
-use autoconf 2.13 to build berlin.
+autogen.sh assumes you are using autoconf 2.53. You might experience
+problems with earlier versions.
 
-Decide where to build berlin, either inside the source tree (let's
-refer to this as $berlin-src), or (the recomended way), in a separate 
-build directory ($berlin-build).
-Step into the build directory, and run configure:
+Decide where to build berlini, our implementation of thr Fresco-interfaces,
+either inside the source tree (let's refer to this as $berlin-src), or (the
+recomended way), in a separate build directory ($berlin-build).
+Step into the build directory, and run autobuild.sh:
 
 > cd $berlin-build
-> $berlin-src/configure
+> $berlin-src/autobuild.sh
 
 this will set up the build tree and check for the available packages.
 Here is a list of the available options:
+
+  --prefix               Set the prefix into which Berlin will get installed.
+
+  --sysconfdir           Set the directory for Berlin's configuration file(s).
 
   --enable-docs          Build the documentation
                          You will need synopsis (http://www.synopsis.org/)
@@ -77,18 +74,23 @@ Here is a list of the available options:
                          if you want to debug the server or report
                          bugs.
 
+  --with-orb		 Select the CORBA ORB used by Berlin. This can be
+  			 either omniORB or TAO for now.
+
   --with-omniorb-prefix  Prefix for omniORB
                          Only needed if omniORB is not found automatically.
 
   --with-omniorb-version omniORB version (3 and 4 supported)
                          Only needed if your ORB version is not autodetected.
 
+  --with-colocation-optimization Make Berlin use colocation optimization if
+                         this is supported by the ORB you selected.
+
+  --enable-optimization  Make the compiler use optimization. This might
+                         mess up debugging etc.
+
   --with-freetype-prefix Prefix where freetype is installed (optional)
                          Only needed if freetype is not found automatically.
-
-  --with-console         Specify which Console to use (GGI, SDL, DirectFB)
-                         By default all consoles supported by your
-                         environment are build.
 
   --with-ggi-prefix      Prefix for GGI
                          This is only needed if you want the GGI console and
@@ -125,51 +127,50 @@ Here is a list of the available options:
 [ Add support for interactive configuration and document the options
   here]
 
+Instead of using autobuild.sh you can manually build everything with
+a sequence of commands liek this:
 
+> mkdir $(package)
+> cd $(package)
+> $(berlin-src)/$(package)/configure --with-some-options
+> make && make install
 
-Building
-========
+Make sure to build Prague, Babylon, Fresco and Berlin first. Afterwards
+any dependencies should be meet, so you can build in arbitrary order
+from this point on. You will need to build at least Prague, Babylon,
+Fresco and Berlin plus either GGI or SDL and one of the Clients. Of course
+you can just build everything;-)
 
-FIXME: THIS IS OUTDATED!
-
-Run make. As make produces a lot of noise, you may want to suppress
-that, i.e. run make 'silently'. It still prints out what it is doing,
-so you can keep track of things:
-
-> make -s
-
-Please note that running multiple instances of make at once (-j) will
-cause problems.
-
+Make sure to install the packages with make install. Packages depending on
+others will need them to be installed or their configuration will fail.
 
 
 Testing and First Steps
 =======================
 
-FIXME: THIS IS OUTDATED!
-
-You should now find some libraries in $berlin-build/lib, modules in
-$berlin-build/module, and binaries in $berlin-build/bin. If you want
-to run berlin at this place, you have to tell the loader where to look
-for the libraries, and, in case you use the python environment, tell
-python where to find the berlin modules:
+You should now find some libraries in $prefix/lib, modules in
+$prefix/module, and binaries in $prefix/bin. If you have choosen a
+non-standard prefix (anything but /usr/local/) you will need to tell
+the loader where to look for the libraries, and, in case you use the
+python environment, tell python where to find the berlin modules:
 
 csh style:
 
-> setenv LD_LIBRARY_PATH $berlin-build/lib:$LD_LIBRARY_PATH
-> setenv PYTHONPATH $berlin-build/lib/python:$PYTHONPATH
+> setenv LD_LIBRARY_PATH $prefix/lib:$LD_LIBRARY_PATH
+> setenv PYTHONPATH $prefix/lib/python:$PYTHONPATH
 
 bash-like style:
 
-> export LD_LIBRARY_PATH=$berlin-build/lib:$LD_LIBRARY_PATH
-> export PYTHONPATH=$berlin-build/lib/python:$PYTHONPATH
+> export LD_LIBRARY_PATH=$prefix/lib:$LD_LIBRARY_PATH
+> export PYTHONPATH=$prefix/lib/python:$PYTHONPATH
 
-The berlin server is in $berlin-build/bin/server, and now you should be
-able to start it. The only mandatory parameter is the location of the
-config file, which contains the (temporary) paths of the resources
-needed by berlin (fonts, modules, rasters, ...):
+Of course $prefix is the --prefix option (it defaults to /usr/local)
+you gave to configure when building.
 
-> $berlin-build/bin/server -r $berlin-build/config/berlinrc
+The berlin server is in $prefix/bin/server, and now you should be
+able to start it.
+
+> $prefix/bin/server
 
 and voila! that should start the server.
 
@@ -179,7 +180,7 @@ myself!" factor). To start a client with the server you need to tell it
 its location (starting now the $berlin-build stuff will be assumed)
 using the -e (execute) flag:
 
-> bin/server -r config/berlinrc -e bin/demo
+> bin/server -e bin/demo
 
 The demo program is a set of small applications showing some berlin
 possibilities (new demos are welcome!).
@@ -196,11 +197,11 @@ hardware accelerated 3D setup, you're warned). Then you need to use a
 
 In short:
 
-> bin/server -r config/berlinrc -e bin/demo3D -c SDL -d GLDrawingKit
+> bin/server -e bin/demo3D -c SDL -d GLDrawingKit
 
 for SDL console or
 
-> bin/server -r config/berlinrc -e bin/demo3D -c GGI -d GLDrawingKit
+> bin/server -e bin/demo3D -c GGI -d GLDrawingKit
 
 for GGI console.
 
@@ -214,21 +215,15 @@ contact their authors for more information).
 Finally here they are other options you may use when invoking the server:
 
   -l --logger [list of groups to log]: log messages (the special group
-                                       'lifecycle' requires configuration
-                                       with --enable-lclog)
+                                   'lifecycle' requires configuration
+                                   with --enable-lclog)
 
-  -t --tracer :                        trace method calls (requires configuration
-                                       with --enable-tracer)
+  -t --tracer :                    trace method calls (requires configuration
+                                   with --enable-tracer)
 
-  -p --profiler :                      use jprof profiler (requires configuration
-                                       with --enable-jprof)
+  -p --profiler :                  use jprof profiler (requires configuration
+                                   with --enable-jprof)
 
-
-
-Installing
-==========
-
-FIXME: make install works, elaborate a bit.
 
 
 Troubleshooting
@@ -240,10 +235,34 @@ Please consult the FAQ at
 http://wiki.fresco.org/index.cgi/ProblemsWithRunningBerlin
 http://wiki.fresco.org/index.cgi/FAQ
 
-please be sure that third party libraries are correctly installed before
+Please be sure that third party libraries are correctly installed before
 you post about a bug. For example, THE MOST FREQUENT PROBLEM reported
 is a broken omniORB configuration.  You need to have the nameserver
 configured and RUNNING. A good way to test the nameserver is 'nameclt list'.
 This should return no error message and terminate immediantly.
 
+You can work around a broken nameserver now: Start the server with
+-R ior to have it export an Initial CORBA Reference that the client can
+import. This should look like this:
+
+> bin/server -R ior
+Export Reference: FrescoServer=IOR:lots-of-numbers
+
+You can then start the demo by passing the exported reference to the
+client:
+
+> bin/demo -ORBinitRef FrescoServer=IOR:lots-of-numbers
+
+
+Contact
+=======
+
+You can get into contact with the developers via IRC (äfresco on
+irc.openprojects.net) and via mailinglists (see
+http://www.fresco.org/mailinglists.html for details).
+
+
+
 Good luck!
+
+The Fresco Developers.
