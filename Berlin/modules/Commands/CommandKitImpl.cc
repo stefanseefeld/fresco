@@ -112,7 +112,7 @@ Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constrai
 {
     TelltaleImpl *telltale = new TelltaleImpl(constraint);
     activate(telltale);
-    constraint->add(telltale->_this());
+    constraint->add(Telltale_var(telltale->_this()));
     return telltale->_this();
 }
 
@@ -120,14 +120,14 @@ BoundedValue_ptr CommandKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coor
 {
   BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
   activate(bounded);
-  return bounded->_this();  
+  return bounded->_this();
 }
 
 BoundedRange_ptr CommandKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
 {
   BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
   activate(bounded);
-  return bounded->_this();  
+  return bounded->_this();
 }
 
 TextBuffer_ptr CommandKitImpl::text()

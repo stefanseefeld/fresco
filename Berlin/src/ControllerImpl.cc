@@ -48,6 +48,7 @@ void ControllerImpl::pick(PickTraversal_ptr traversal)
 
 void ControllerImpl::appendController(Controller_ptr c)
 {
+  Trace trace("ControllerImpl::appendController");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
   Controller_ptr nc = Warsaw::Controller::_duplicate(c);
@@ -58,6 +59,7 @@ void ControllerImpl::appendController(Controller_ptr c)
 
 void ControllerImpl::prependController(Controller_ptr c)
 {
+  Trace trace("ControllerImpl::prependController");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
   Controller_ptr nc = Warsaw::Controller::_duplicate(c);
@@ -68,6 +70,7 @@ void ControllerImpl::prependController(Controller_ptr c)
 
 void ControllerImpl::insertController(Controller_ptr c)
 {
+  Trace trace("ControllerImpl::insertController");
   if (CORBA::is_nil(c)) return;
   Controller_ptr nc = Warsaw::Controller::_duplicate(c);
   nc->setControllerLinks(parent, prev, Controller_var(_this()));
@@ -78,6 +81,7 @@ void ControllerImpl::insertController(Controller_ptr c)
 
 void ControllerImpl::replaceController(Controller_ptr c)
 {
+  Trace trace("ControllerImpl::replaceController");
   if (CORBA::is_nil(c)) removeController();
   else
     {
@@ -92,6 +96,7 @@ void ControllerImpl::replaceController(Controller_ptr c)
 
 void ControllerImpl::removeController()
 {
+  Trace trace("ControllerImpl::removeController");
   if (CORBA::is_nil(parent)) return;
   if (CORBA::is_nil(prev)) parent->setFirstController(next);
   else prev->setControllerLinks(Controller_var(Warsaw::Controller::_nil()), Controller_var(prev->prevController()), next);
@@ -104,6 +109,7 @@ void ControllerImpl::removeController()
 
 void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Controller_ptr ne)
 {
+  Trace trace("ControllerImpl::setControllerLinks");
   if (!CORBA::is_nil(pa))
     {
       parent = Warsaw::Controller::_duplicate(pa);
@@ -129,12 +135,14 @@ void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Co
 
 void ControllerImpl::setFirstController(Controller_ptr c)
 {
+  Trace trace("ControllerImpl::setFirstController");
   first = Warsaw::Controller::_duplicate(c);
   if (CORBA::is_nil(c)) last = Warsaw::Controller::_nil();
 }
 
 void ControllerImpl::setLastController(Controller_ptr c)
 {
+  Trace trace("ControllerImpl::setLastController");
   last = c;
   if (CORBA::is_nil(c)) first = Warsaw::Controller::_nil();
 }

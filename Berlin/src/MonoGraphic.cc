@@ -50,7 +50,7 @@ Graphic_ptr MonoGraphic::body()
 {
   Trace trace("MonoGraphic::body");
   MutexGuard guard(childMutex);
-  return Warsaw::Graphic::_duplicate(child.peer);
+  return RefCount_var<Warsaw::Graphic>::increment(child.peer);
 }
 
 void MonoGraphic::body(Graphic_ptr c)
@@ -106,8 +106,11 @@ void MonoGraphic::remove(Tag localId)
 void MonoGraphic::removeChild(Tag localId)
 {
   Trace trace("MonoGraphic::removeChild");
-  MutexGuard guard(childMutex);
-  if (localId == 0) child.peer = Warsaw::Graphic::_nil();
+  {
+    MutexGuard guard(childMutex);
+    if (localId == 0) child.peer = Warsaw::Graphic::_nil();
+  }
+  needResize();
 }
 
 Warsaw::Graphic::Iterator_ptr MonoGraphic::firstChild()

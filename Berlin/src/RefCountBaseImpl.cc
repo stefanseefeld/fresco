@@ -41,6 +41,6 @@ void RefCountBaseImpl::decrement()
 {
   Trace trace("RefCountBaseImpl::decrement");
   MutexGuard guard(mutex);
-//   if (!--refcount) deactivate();
+  if (!--refcount) deactivate();
 }
 

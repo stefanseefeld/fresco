@@ -37,7 +37,8 @@ SRC 	= Console.cc Pointer.cc Logger.cc RefCountBaseImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc Provider.cc \
 	  GraphicImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \
-	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc \
+	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
+	  PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc \
 	  SubjectImpl.cc KitImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc
 
 TARGET	= $(lpath)/libBerlin.so

@@ -39,11 +39,7 @@ namespace Motif
 class Choice::State : public virtual POA_Warsaw::Selection,
 	              public SubjectImpl
 {
-  class Observer;
-  friend class Observer;
-  class Observer : public virtual POA_Warsaw::Observer,
-                   public virtual PortableServer::RefCountServantBase,
-                   public virtual RefCountBaseImpl
+  class Observer : public ObserverImpl
     {
     public:
       Observer(State *, Telltale_ptr, Tag);
@@ -56,6 +52,7 @@ class Choice::State : public virtual POA_Warsaw::Selection,
       bool cached;
       Tag t;
     };
+  friend class Observer;
   typedef vector<Observer *> list_t;
  public:
   State(Warsaw::Selection::Policy, CommandKit_ptr);
@@ -205,26 +202,30 @@ ToggleChoice::ToggleChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr 
 
 Tag ToggleChoice::appendItem(Graphic_ptr g)
 {
-  Trace trace("ToggleChoice::append");
-  Warsaw::Controller_var toggle = widgets->toggle(Warsaw::Graphic_var(layout->fixedSize(Warsaw::Graphic_var(Warsaw::Graphic::_nil()), 60., 60.)));
+  Trace trace("ToggleChoice::appendItem");
+  RefCount_var<Warsaw::Controller> toggle =
+    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+								    60., 60.)));
   Tag tag = _state->add(toggle);
   appendController(toggle);
-  Warsaw::Graphic_var item = layout->hbox();
-  item->append(Warsaw::Graphic_var(layout->valign(Warsaw::Graphic_var(layout->margin(toggle, 50.)), 0.5)));
-  item->append(Warsaw::Graphic_var(layout->hspace(200.)));
-  item->append(Warsaw::Graphic_var(layout->valign(g, 0.5)));
-  Warsaw::Graphic_var box = body();
+  RefCount_var<Warsaw::Graphic> item = layout->hbox();
+  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
+  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  RefCount_var<Warsaw::Graphic> box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append(Warsaw::Graphic_var(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->append(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
 Tag ToggleChoice::prependItem(Graphic_ptr g)
 {
-  Trace trace("ToggleChoice::prepend");
-  RefCount_var<Warsaw::Controller> toggle = widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()), 60., 60.)));
+  Trace trace("ToggleChoice::prependItem");
+  RefCount_var<Warsaw::Controller> toggle =
+    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+								    60., 60.)));
   Tag tag = _state->add(toggle);
   appendController(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
@@ -261,8 +262,10 @@ Tag CheckboxChoice::appendItem(Graphic_ptr g)
   Warsaw::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
-  RefCount_var<Warsaw::Graphic> frame = tools->dynamicDiamond(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()), 60., 60.)),
-						      20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  RefCount_var<Warsaw::Graphic> frame =
+    tools->dynamicDiamond(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+									  60., 60.)),
+			  20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
@@ -287,10 +290,12 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
   ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
-  RefCount_var<Warsaw::Graphic> frame = tools->dynamicDiamond(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()), 60., 60.)),
-							      20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  RefCount_var<Warsaw::Graphic> frame =
+    tools->dynamicDiamond(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+									  60., 60.)),
+			  20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
-
+  
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
   item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
   item->append(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));

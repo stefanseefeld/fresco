@@ -53,7 +53,7 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
 
 Desktop_ptr DesktopKitImpl::desk()
 {
-  return Warsaw::Desktop::_duplicate(desktop);
+  return RefCount_var<Warsaw::Desktop>::increment(desktop);
 }
 
 
@@ -77,8 +77,8 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   Command_var mover = move(wptr);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
-  Graphic_var tbframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var tbdragger = tool->dragger(tbframe, mover);
+  RefCount_var<Graphic> tbframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> tbdragger = tool->dragger(tbframe, mover);
 
   req.x.minimum = 200.;
   req.x.natural = 200.;
@@ -87,8 +87,8 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var lresize = moveResize(wptr, 1.0, 0.0, Window::left|Window::bottom);
-  Graphic_var lframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var ldragger = tool->dragger(lframe, lresize);
+  RefCount_var<Graphic> lframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> ldragger = tool->dragger(lframe, lresize);
 
   req.x.minimum = 0.;
   req.x.natural = 0.;
@@ -97,8 +97,8 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var bresize = moveResize(wptr, 0.0, 0.0, Window::bottom);
-  Graphic_var bframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var bdragger = tool->dragger(bframe, bresize);
+  RefCount_var<Graphic> bframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> bdragger = tool->dragger(bframe, bresize);
 
   req.x.minimum = 200.;
   req.x.natural = 200.;
@@ -107,18 +107,18 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var rresize = moveResize(wptr, 0.0, 0.0, Window::right|Window::bottom);
-  Graphic_var rframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var rdragger = tool->dragger(rframe, rresize);
+  RefCount_var<Graphic> rframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> rdragger = tool->dragger(rframe, rresize);
 
-  Graphic_var vbox = layout->vbox();
-  Graphic_var hbox = layout->hbox();
+  RefCount_var<Graphic> vbox = layout->vbox();
+  RefCount_var<Graphic> hbox = layout->hbox();
   hbox->append(ldragger);
   hbox->append(bdragger);
   hbox->append(rdragger);
   vbox->append(tbdragger);
-  vbox->append(Graphic_var(layout->align(g, 0., 0.)));
+  vbox->append(RefCount_var<Graphic>(layout->align(g, 0., 0.)));
   vbox->append(hbox);
-  Graphic_var background = tool->rgb(vbox, 0.7, 0.7, 0.7);
+  RefCount_var<Graphic> background = tool->rgb(vbox, 0.7, 0.7, 0.7);
   wptr->body(background);
   /*
    * FIXME: we need to take care to include the window control elements 
@@ -152,8 +152,8 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.maximum = 200.;
   req.y.align = 0;
   Command_var mover = move(wptr);
-  Graphic_var tbframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var tbdragger = tool->dragger(tbframe, mover);
+  RefCount_var<Graphic> tbframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> tbdragger = tool->dragger(tbframe, mover);
 
   req.x.minimum = 200.;
   req.x.natural = 200.;
@@ -162,8 +162,8 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var lresize = moveResize(wptr, 1.0, 0.0, Window::left|Window::bottom);
-  Graphic_var lframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var ldragger = tool->dragger(lframe, lresize);
+  RefCount_var<Graphic> lframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> ldragger = tool->dragger(lframe, lresize);
 
   req.x.minimum = 0.;
   req.x.natural = 0.;
@@ -172,8 +172,8 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var bresize = moveResize(wptr, 0.0, 0.0, Window::bottom);
-  Graphic_var bframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var bdragger = tool->dragger(bframe, bresize);
+  RefCount_var<Graphic> bframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> bdragger = tool->dragger(bframe, bresize);
 
   req.x.minimum = 200.;
   req.x.natural = 200.;
@@ -182,18 +182,18 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.y.natural = 40.;
   req.y.maximum = 40.;
   Command_var rresize = moveResize(wptr, 0.0, 0.0, Window::right|Window::bottom);
-  Graphic_var rframe = tool->frame(Graphic_var(layout->glueRequisition(req)), 10., spec, true);
-  Graphic_var rdragger = tool->dragger(rframe, rresize);
+  RefCount_var<Graphic> rframe = tool->frame(RefCount_var<Graphic>(layout->glueRequisition(req)), 10., spec, true);
+  RefCount_var<Graphic> rdragger = tool->dragger(rframe, rresize);
 
-  Graphic_var vbox = layout->vbox();
-  Graphic_var hbox = layout->hbox();
+  RefCount_var<Graphic> vbox = layout->vbox();
+  RefCount_var<Graphic> hbox = layout->hbox();
   hbox->append(ldragger);
   hbox->append(bdragger);
   hbox->append(rdragger);
   vbox->append(tbdragger);
-  vbox->append(Graphic_var(layout->align(g, 0., 0.)));
+  vbox->append(RefCount_var<Graphic>(layout->align(g, 0., 0.)));
   vbox->append(hbox);
-  Graphic_var background = tool->rgb(vbox, 0.7, 0.7, 0.7);
+  RefCount_var<Graphic> background = tool->rgb(vbox, 0.7, 0.7, 0.7);
   wptr->body(background);
   /*
    * FIXME: we need to take care to include the window control elements 
@@ -215,7 +215,7 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
-  Graphic_var outset = tool->frame(g, 20., spec, true);
+  RefCount_var<Graphic> outset = tool->frame(g, 20., spec, true);
   wptr->body(outset);
   wptr->appendController(g);
   menu->insert(desktop, false);

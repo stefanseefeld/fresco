@@ -50,8 +50,8 @@ DrawingKit_var TextKitImpl::canonicalDK;
 
 TextKitImpl::TextKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p),  _strut(0),
-  lineCompositor(new LRCompositor()), 
-  pageCompositor(new TBCompositor())
+    lineCompositor(new LRCompositor()), 
+    pageCompositor(new TBCompositor())
 {
   Trace trace("TextKitImpl::TextKitImpl");
 }
