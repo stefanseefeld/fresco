@@ -128,14 +128,24 @@ public:
   {
     af_unix	        = AF_UNIX,
     af_inet4	        = AF_INET,
+#ifdef AF_INET6
     af_inet6	        = AF_INET6,
+#endif
     af_ipx	        = AF_IPX,
+#ifdef AF_NETLINK
     af_netlink          = AF_NETLINK,
+#endif
     af_x25              = AF_X25,
+#ifdef AF_AX25
     af_ax25             = AF_AX25,
+#endif
+#ifdef AF_ATMPVC
     af_atmpvc           = AF_ATMPVC,
-    af_appletalk        = AF_APPLETALK,
-    af_packet           = AF_PACKET
+#endif
+#ifdef AF_PACKET
+    af_packet           = AF_PACKET,
+#endif
+    af_appletalk        = AF_APPLETALK
   };
   enum type
   {
