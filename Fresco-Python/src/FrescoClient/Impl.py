@@ -10,7 +10,7 @@ allows you to implement, for example, Graphics or Controllers and embed them
 in the remove display. Of course, its really slow, but also really useful for
 prototyping purposes!
 """
-import math
+import math, string
 
 # Import the Warsaw stubs
 import Warsaw, Unidraw
@@ -173,8 +173,13 @@ class PyTransform (Warsaw__POA.Transform):
 	self.__identity =  1
 	self.__translation = 1 
 	self.__xy = 1
-	self.__matrix = [[0.]*4]*4
+	self.__matrix = map(list, [[0.]*4]*4)
 	self.init()
+    def dump(self):
+	for j in range(4):
+	    if j == 1: print "M =",
+	    else: print "   ",
+	    print "[ %s ]"%string.join(map(str, self[j]))
     def __getitem__(self, ix): return self.__matrix[ix]
     def init(self):
 	for x in range(4):
@@ -186,29 +191,35 @@ class PyTransform (Warsaw__POA.Transform):
 	self.__translation = 1
 	self.__xy = 1
 	self.__dirty = 0
+	print "init'ed:"
+	self.dump()
     def recompute(self):
 	self.__translation = (
-	    math.abs(self[0][0] - 1.) < 1e4 and \
-	    math.abs(self[1][1] - 1.) < 1e4 and \
-	    math.abs(self[2][2] - 1.) < 1e4 and \
-	    math.abs(self[0][1]) < 1e4 and \
-	    math.abs(self[1][0]) < 1e4 and \
-	    math.abs(self[0][2]) < 1e4 and \
-	    math.abs(self[2][0]) < 1e4 and \
-	    math.abs(self[1][2]) < 1e4 and \
-	    math.abs(self[2][1]) < 1e4)
+	    math.fabs(self[0][0] - 1.) < 1e-4 and \
+	    math.fabs(self[1][1] - 1.) < 1e-4 and \
+	    math.fabs(self[2][2] - 1.) < 1e-4 and \
+	    math.fabs(self[0][1]) < 1e-4 and \
+	    math.fabs(self[1][0]) < 1e-4 and \
+	    math.fabs(self[0][2]) < 1e-4 and \
+	    math.fabs(self[2][0]) < 1e-4 and \
+	    math.fabs(self[1][2]) < 1e-4 and \
+	    math.fabs(self[2][1]) < 1e-4)
 	self.__xy = (self.__translation or (
-	    math.abs(self[2][2] - 1.) < 1e4 and \
-	    math.abs(self[0][2]) < 1e4 and \
-	    math.abs(self[2][0]) < 1e4 and \
-	    math.abs(self[1][2]) < 1e4 and \
-	    math.abs(self[2][1]) < 1e4)) and \
-	    math.abs(self[2][3]) < 1e4
+	    math.fabs(self[2][2] - 1.) < 1e-4 and \
+	    math.fabs(self[0][2]) < 1e-4 and \
+	    math.fabs(self[2][0]) < 1e-4 and \
+	    math.fabs(self[1][2]) < 1e-4 and \
+	    math.fabs(self[2][1]) < 1e-4)) and \
+	    math.fabs(self[2][3]) < 1e-4
 	self.__identity = self.__translation and \
-	    math.abs(self[0][3]) < 1e4 and \
-	    math.abs(self[1][3]) < 1e4 and \
-	    math.abs(self[2][3]) < 1e4
+	    math.fabs(self[0][3]) < 1e-4 and \
+	    math.fabs(self[1][3]) < 1e-4 and \
+	    math.fabs(self[2][3]) < 1e-4
 	self.__dirty = 0
+	print "Computed:"
+	self.dump()
+	print "Trans: %d, XY: %d, Identity: %d"%(
+	    self.__translation, self.__xy, self.__identity)
     def det(self):
 	sum =       self[0][0] * self[1][1] * self[2][2]
 	sum = sum + self[0][1] * self[1][2] * self[2][0]
@@ -219,15 +230,17 @@ class PyTransform (Warsaw__POA.Transform):
 	return sum
     def copy(self, transform):
 	if not transform: self.init()
-	else: self.load_matrix(transform.store_matrix(self.__matrix))
+	else: self.load_matrix(transform.store_matrix())
+	print "Copied:"
+	self.dump()
     def load_identity(self): self.init()
     def load_matrix(self, matrix):
-	for x in range(3):
-	    for y in range(4):
+	for i in range(3):
+	    for j in range(4):
 		self[i][j] = matrix[i][j]
 	self[3][0] = self[3][1] = self[3][2] = 0.
 	self[3][3] = 1.
-	self.modified()
+	self.__dirty = 1
     def store_matrix(self): # --> Matrix
 	return map(list, self.__matrix)
     def equal(self, transform): # --> bool
@@ -247,7 +260,7 @@ class PyTransform (Warsaw__POA.Transform):
 	return self.__translation
     def det_is_zero(self): # --> bool
 	if self.__dirty: self.recompute()
-	return math.abs(self.det()) < 1e4
+	return math.fabs(self.det()) < 1e-4
     def scale(self, vertex):
 	self[0][0] = self[0][0] * vertex.x
 	self[0][1] = self[0][1] * vertex.x
@@ -258,7 +271,7 @@ class PyTransform (Warsaw__POA.Transform):
 	self[2][0] = self[2][0] * vertex.z
 	self[2][1] = self[2][1] * vertex.z
 	self[2][2] = self[2][2] * vertex.z
-	self.modified()
+	self.__dirty = 1
     def rotate(self, angle, axis):
 	r_angle = ange * math.pi / 180
 	c = math.cos(r_angle)
@@ -272,12 +285,12 @@ class PyTransform (Warsaw__POA.Transform):
 	for y in range(4):
 	    self[i][y] = c * mi[y] - s * mj[y]
 	    self[j][y] = s * mi[y] + c * mj[y]
-	self.modified()
+	self.__dirty = 1
     def translate(self, vertex):
 	self[0][3] = self[0][3] + vertex.x
 	self[1][3] = self[1][3] + vertex.y
 	self[2][3] = self[2][3] + vertex.z
-	self.modified()
+	self.__dirty = 1
     def premultiple(self, transform):
 	if not transform or transform.identity(): return
 	m = transform.store_matrix()
@@ -288,7 +301,7 @@ class PyTransform (Warsaw__POA.Transform):
 	    mi = list(self[i])
 	    for j in range(4):
 		self[i][j] = mi[0]*m[0][j] + mi[1]*m[1][j] + mi[2]*m[2][j] + mi[3]*m[3][j]
-	self.modified()
+	self.__dirty = 1
     def postmultiple(self, transform):
 	if not transform or transform.identity(): return
 	m = transform.store_matrix()
@@ -299,7 +312,7 @@ class PyTransform (Warsaw__POA.Transform):
 	    mj = (self[0][j], self[1][j], self[2][j])
 	    for i in range(3):
 		self[i][j] = mj[0]*m[i][0] + mj[1]*m[i][1] + mj[2]*m[i][2]
-	self.modified()
+	self.__dirty = 1
     def invert(self):
 	if self.__dirty: self.recompute()
 	if self.__translation:
@@ -309,7 +322,7 @@ class PyTransform (Warsaw__POA.Transform):
 	    self.modifed()
 	    return
 	d = self.det()
-	if math.abs(d) < 1e4: return
+	if math.fabs(d) < 1e-4: return
 	m = map(list, self.__matrix[0:3]) + [0., 0., 0., 1.]
 	self[0][0] =  (m[1][1] * m[2][2] - m[1][2] * m[2][1]) / d
 	self[0][1] = -(m[0][1] * m[2][2] - m[0][2] * m[2][1]) / d
@@ -323,7 +336,7 @@ class PyTransform (Warsaw__POA.Transform):
 	self[0][3] = - (m[0][3] * self[0][0] + m[1][3] * self[0][1] + m[2][3] * self[0][2])
 	self[1][3] = - (m[0][3] * self[1][0] + m[1][3] * self[1][1] + m[2][3] * self[1][2])
 	self[2][3] = - (m[0][3] * self[2][0] + m[1][3] * self[2][1] + m[2][3] * self[2][2])
-	self.modified()
+	self.__dirty = 1
     def transform_vertex(self, vertex): # --> Vertex
 	tx, ty, tz = vertex.x, vertex.y, vertex.z
 	nx = self[0][0] * tx + self[0][1] * ty + self[0][2] * tz + self[0][3]
@@ -332,7 +345,7 @@ class PyTransform (Warsaw__POA.Transform):
 	return Warsaw.Vertex(nx, ny, nz)
     def inverse_transform_vertex(self, vertex): # --> Vertex
 	d = self.det()
-	if math.abs(d) < 1e4: return Warsaw.Vertex(0,0,0)
+	if math.fabs(d) < 1e-4: return Warsaw.Vertex(0,0,0)
 	tmp = Warsaw.Vertex(vertex.x, vertex.y, vertex.z)
 	tmp.x = tmp.x - self[0][3];
 	tmp.y = tmp.y - self[1][3];
@@ -434,6 +447,8 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	    tmp.copy(alloc_info.allocation)
 	    if not alloc_info.transformation.identity():
 		tmp.apply_transform(alloc_info.transformation)
+	    else:
+		print "transformation was identity"
 	    region.merge_union(tmp._this())
 	else:
 	    region.merge_union(alloc_info.allocation)
@@ -464,7 +479,8 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 class PyMonoGraphic (PyGraphic):
     "Python analogue of MonoGraphic"
     def __init__(self):
-	self.__child = Warsaw.Edge()
+	PyGraphic.__init__(self)
+	self.__child = Edge()
     def _get_body(self):
 	self.__child.peer.increment()
 	return self.__child.peer
@@ -510,19 +526,21 @@ class PyMonoGraphic (PyGraphic):
 	my_info = Warsaw.Allocation.Info(my_region._this(), my_trans._this(), None)
 	self.allocate(0, my_info) # Template method to modify as per the concrete Graphic type (eg layout decorators etc)
 	self.__child.peer.extension(my_info, region)
+	pv = lambda v: '(x:%f, y:%f, z:%f)'%(v.x,v.y,v.z)
     def shape(self, region):
 	if self.__child.peer: self.__child.peer.shape(region)
     def traverse(self, traversal):
 	if not self.__child.peer: return
-	traveral.traverse_child(self.__child.peer, 0, None, None)
+	traversal.traverse_child(self.__child.peer, 0, None, None)
 	    
 
 
-class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
+class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
     "Python impl of Warsaw::Controller interface"
     def __init__(self):
-	PyGraphic.__init__(self)
+	PyMonoGraphic.__init__(self)
 	PySubject.__init__(self)
+	self.__parent = None
 	self.__telltale = 0
 	self.__constraint = None
 	self.__grabs = 0
@@ -565,17 +583,17 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	return self.__constraint
     def _set_constraint(self, constraint):
 	self.__constraint = constraint
-    def set(mask): # --> void
+    def set(self, mask): # --> void
 	if self.__constraint:
 	    self.__constraint.trymodify(self._this(), mask, 1)
 	self.modify(mask, 1)
-    def clear(mask): # --> void
+    def clear(self, mask): # --> void
 	if self.__constraint:
 	    self.__constraint.trymodify(self._this(), mask, 0)
 	self.modify(mask, 0)
-    def test(mask): # --> bool
+    def test(self, mask): # --> bool
 	return (self.__telltale & mask) == mask
-    def modify(mask, set): # --> void
+    def modify(self, mask, set): # --> void
 	if set: flags = self.__telltale | mask
 	else: flags = self.__telltale & ~mask
 	if flags == self.__telltale: return
@@ -584,7 +602,7 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	self.notify(any)
 
     # ---- Graphic interface
-    def pick(traversal):
+    def pick(self, traversal):
 	if not traversal.intersects_allocation(): return
 	traversal.enter_controller(self._this())
 	PyMonoGraphic.traverse(self, traversal)
@@ -593,44 +611,44 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	traversal.leave_controller()
 
     # ---- Controller interface
-    def append_controller(controller): # --> void
+    def append_controller(self, controller): # --> void
 	controller.increment()
 	self._children.append(controller)
 	controller.set_parent_controller(self._this())
-    def prepend_controller(controller): # --> void
+    def prepend_controller(self, controller): # --> void
 	controller.increment()
 	self._children.insert(0, controller)
 	controller.set_parent_controller(self._this())
-    def remove_controller(controller): # --> void
+    def remove_controller(self, controller): # --> void
 	for i in range(len(self._children)):
 	    if self._children[i].is_identical(controller):
 		controller.remove_parent_controller()
 		del self._children[i]
 		return
-    def set_parent_controller(controller): # --> void
+    def set_parent_controller(self, controller): # --> void
 	self.__parent = controller
-    def remove_parent_controller(): # --> void
+    def remove_parent_controller(self): # --> void
 	self.__parent = None
-    def parent_controller(): # --> Controller
+    def parent_controller(self): # --> Controller
 	return self.__parent
-    def first_child_controller(): # --> Iterator
+    def first_child_controller(self): # --> Iterator
 	iter = PyController.Iterator(self, 0)
 	activate(iter)
 	return iter._this()
-    def last_child_controller(): # --> Iterator
+    def last_child_controller(self): # --> Iterator
 	iter = PyController.Iterator(this, len(self._children) - 1)
 	activate(iter)
 	return iter._this()
-    def request_focus(controller, input_device): # --> boolean
+    def request_focus(self, controller, input_device): # --> boolean
 	return self.__parent and self.__parent.request_focus(controller, input_device)
-    def receive_focus(focus): # --> boolean
+    def receive_focus(self, focus): # --> boolean
 	self.set_focus(focus.device())
 	if (focus.device() == 0): self.set(Warsaw.Controller.active)
 	return 1
-    def lose_focus(input_device): # --> void
+    def lose_focus(self, input_device): # --> void
 	self.clear_focus(input_device)
 	if (input_device == 0): self.clear(Warsaw.Controller.active)
-    def first_focus(input_device): # --> boolean
+    def first_focus(self, input_device): # --> boolean
 	# Ask children first
 	for child in self._children:
 	    if child.first_focus(input_device):
@@ -638,7 +656,7 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	# Request ourself
 	parent = self.parent_controller()
 	return parent and parent.request_focus(self._this(), input_device)
-    def last_focus(input_device): # --> boolean
+    def last_focus(self, input_device): # --> boolean
 	# Ask children first
 	children = list(self._children)
 	children.reverse()
@@ -648,7 +666,7 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	# Request ourself
 	parent = self.parent_controller()
 	return parent and parent.request_focus(self._this(), input_device)
-    def next_focus(input_device): # --> boolean
+    def next_focus(self, input_device): # --> boolean
 	parent = self.parent_controller()
 	if not parent: return false
 	# First locate the next controller in control graph
@@ -666,7 +684,7 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	if next: return next.first_focus(input_device)
 	# Or pass up to parent if I was the last in the list
 	return parent.next_focus(input_device)
-    def prev_focus(input_device): # --> boolean
+    def prev_focus(self, input_device): # --> boolean
 	parent = self.parent_controller()
 	if not parent: return false
 	# First locate the next controller in control graph
@@ -684,7 +702,7 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	if prev: return prev.last_focus(input_device)
 	# Or pass up to parent if I was the last in the list
 	return parent.prev_focus(input_device)
-    def handle_positional(pickTraversal, input_event): # --> boolean
+    def handle_positional(self, pickTraversal, input_event): # --> boolean
 	try:
 	    position = get_position(input_event)
 	except TypeError:
@@ -703,7 +721,7 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	else:
 	    self.other(input_event)
 	return 1 #Handled
-    def handle_non_positional(input_event): # --> boolean
+    def handle_non_positional(self, input_event): # --> boolean
 	if event[0].dev != 0 or event[0].attr._d() != Warsaw.Input.key:
 	    # fatal, silent ignore
 	    return 0
