@@ -28,7 +28,6 @@
 #include <Fresco/ToolKit.hh>
 #include <Fresco/WidgetKit.hh>
 #include <Fresco/TextKit.hh>
-#include <Fresco/CommandKit.hh>
 #include <Fresco/ImageKit.hh>
 #include <Fresco/Image.hh>
 #include <Fresco/FigureKit.hh>
@@ -65,7 +64,6 @@ class DesktopKitImpl : public virtual POA_Fresco::DesktopKit,
   RefCount_var<Fresco::ToolKit>    _tool;
   RefCount_var<Fresco::WidgetKit>  _widget;
   RefCount_var<Fresco::TextKit>    _text;
-  RefCount_var<Fresco::CommandKit> _command;
   RefCount_var<Fresco::ImageKit>   _image;
   RefCount_var<Fresco::FigureKit>  _figure;
   Fresco::Command_var              _exit;

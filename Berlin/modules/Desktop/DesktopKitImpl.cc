@@ -56,7 +56,6 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
   _tool    = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
   _widget  = resolve_kit<WidgetKit>(context, "IDL:fresco.org/Fresco/WidgetKit:1.0", props);
   _text    = resolve_kit<TextKit>(context, "IDL:fresco.org/Fresco/TextKit:1.0", props);
-  _command = resolve_kit<CommandKit>(context, "IDL:fresco.org/Fresco/CommandKit:1.0", props);
   _image   = resolve_kit<ImageKit>(context, "IDL:fresco.org/Fresco/ImageKit:1.0", props);
   _figure  = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
 
@@ -213,16 +212,6 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
 
-  req.x.defined = true;
-  req.x.minimum = 200.;
-  req.x.natural = 200.;
-  req.x.maximum = 200.;
-  req.x.align = 0.;
-
-  RefCount_var<Graphic> printgraphic = _layout->glue_requisition(req);
-  Command_var print = _command->print(_tool->rgb(_layout->align(g, 0., 0.), 0.8, 0.8, 0.8));
-  Trigger_var tbprint = _widget->button(printgraphic, print);
-
   req.x.minimum = 200.;
   req.x.natural = 200.;
   req.x.maximum = 200.;
@@ -255,14 +244,11 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 
   RefCount_var<Graphic> vbox = _layout->vbox();
   RefCount_var<Graphic> background = _tool->rgb(vbox, 0.8, 0.8, 0.8);
-  RefCount_var<Graphic> hbox1 = _layout->hbox();
-  hbox1->append_graphic(tbprint);
-  hbox1->append_graphic(tbdragger);
   RefCount_var<Graphic> hbox = _layout->hbox();
   hbox->append_graphic(ldragger);
   hbox->append_graphic(bdragger);
   hbox->append_graphic(rdragger);
-  vbox->append_graphic(hbox1);
+  vbox->append_graphic(tbdragger);
   vbox->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
   vbox->append_graphic(hbox);
   wptr->body(background);
