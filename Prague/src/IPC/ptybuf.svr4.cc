@@ -50,7 +50,7 @@ int ptybuf::openpty()
       return -4;
     }
   ptydev = ptr;	/* return name of slave */
-  data->fd = fdm;
+  fd(fdm);
   return fdm;	     	/* return fd of master */
 }
 
