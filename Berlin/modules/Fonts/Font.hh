@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FontKit_Font_hh
-#define _FontKit_Font_hh
+#ifndef _Fonts_Font_hh
+#define _Fonts_Font_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Font.hh>
@@ -46,7 +46,7 @@ public:
   Font(const char *filename, int size, FT_Library library);
   virtual ~Font();
 
-  virtual Fresco::Glyph_ptr glyph_char(Fresco::Unichar c, short unsigned int xdpi, short unsigned int ydpi);
+  virtual Fresco::Glyph_ptr glyph_char(Fresco::Unichar c);
   virtual CORBA::Boolean has_char(Fresco::Unichar c);
   virtual CORBA::Boolean can_display(Fresco::Unichar begin,
                                      Fresco::Unichar end);

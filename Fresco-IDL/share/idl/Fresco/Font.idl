@@ -71,7 +71,7 @@ module Fresco
 
   interface Glyph : RefCountBase, Identifiable
     {
-      Raster bitmap();
+      Raster bitmap(in unsigned short xdpi, in unsigned short ydpi);
       FontShape decompose();
       void char_info(out GlyphMetrics gm);
       void transformation(in Transform t);
@@ -79,7 +79,7 @@ module Fresco
 
   interface Font : RefCountBase, Identifiable
     {
-      Glyph glyph_char(in Unichar c, in unsigned short xdpi, in unsigned short ydpi);
+      Glyph glyph_char(in Unichar c);
       // need glyph_something for composite characters.
       // also need to support multiple master fonts. Hm.
 

@@ -30,17 +30,17 @@ namespace FontKit
 Font::Font(const char *filename, int size, FT_Library library)
   : my_ftlib(library), my_size(size)
 {
-  FT_New_Face(my_ftlib, filename, 0, &my_face);
+  if (FT_New_Face(my_ftlib, filename, 0, &my_face) != 0)
+    { throw Fresco::CreationFailureException(); }
   FT_Set_Char_Size(my_face, 0, my_size*64, 0, 0);
 }
 
 Font::~Font() {}
 
-Fresco::Glyph_ptr Font::glyph_char(Fresco::Unichar c, short unsigned int xdpi, short unsigned int ydpi)
+Fresco::Glyph_ptr Font::glyph_char(Fresco::Unichar c)
 {
-  FT_Set_Char_Size(my_face, 0, my_size*64, xdpi, ydpi);
-  GlyphImpl *glyph = new GlyphImpl(my_face, c);
-  return Fresco::Glyph_var(glyph->_this());
+  GlyphImpl *glyph = new GlyphImpl(my_face, my_size, c);
+  return glyph->_this();
 }
 
 CORBA::Boolean Font::has_char(Fresco::Unichar c)
@@ -95,6 +95,7 @@ Fresco::Vertex Font::kerning(Fresco::Unichar first, Fresco::Unichar second)
   Fresco::Vertex v;
   v.x = kern.x / 0x10000;
   v.y = kern.y / 0x10000;
+  return v;
 }
 
 CORBA::Float Font::angle()

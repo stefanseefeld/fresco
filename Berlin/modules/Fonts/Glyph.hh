@@ -19,12 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FontKit_Glyph_hh
-#define _FontKit_Glyph_hh
+#ifndef _Fonts_Glyph_hh
+#define _Fonts_Glyph_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Font.hh>
 #include <Fresco/Transform.hh>
+#include <Fresco/Unicode.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 #include <Berlin/IdentifiableImpl.hh>
 
@@ -45,16 +46,19 @@ class GlyphImpl : public virtual POA_Fresco::Glyph,
                   public virtual IdentifiableImpl
 {
 public:
-  GlyphImpl(FT_Face face, FT_ULong char_index);
+  GlyphImpl(FT_Face face, Fresco::Coord size, FT_ULong char_index);
   virtual ~GlyphImpl();
 
-  virtual Fresco::Raster_ptr bitmap();
+  virtual Fresco::Raster_ptr bitmap(short unsigned int xdpi,
+                                    short unsigned int ydpi);
   virtual Fresco::FontShape *decompose();
   virtual void char_info(Fresco::GlyphMetrics &gm);
   virtual void transformation(Fresco::Transform_ptr);
 private:
   FT_Face my_face;
   FT_Matrix my_tr;
+  Fresco::Coord my_size;
+  Fresco::Unichar my_uc;
 };
 
 } // namespace

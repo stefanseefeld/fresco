@@ -29,32 +29,35 @@ namespace Berlin
 namespace FontKit
 {
 
-GlyphImpl::GlyphImpl(FT_Face face, FT_ULong char_index)
-  : my_face(face)
+GlyphImpl::GlyphImpl(FT_Face face, Fresco::Coord size, FT_ULong char_index)
+  : my_face(face), my_size(size), my_uc(char_index)
 {
   my_tr.xx = 0x10000;
   my_tr.xy = 0x00000;
   my_tr.yx = 0x00000;
   my_tr.yy = 0x10000;
-  FT_Load_Glyph(my_face, char_index, FT_LOAD_DEFAULT);
 }
 
 GlyphImpl::~GlyphImpl() {}
 
-Fresco::Raster_ptr GlyphImpl::bitmap()
+Fresco::Raster_ptr GlyphImpl::bitmap(short unsigned int xdpi, short unsigned int ydpi)
 {
   RasterImpl *raster = new RasterImpl();
   activate(raster);
 
+  if (FT_Set_Char_Size(my_face, 0, my_size*64, xdpi, ydpi) != 0)
+    std::cerr << "set char size failed." << std::endl;
   FT_Set_Transform(my_face, &my_tr, 0);
 
-  FT_Vector origin;
-  origin.x = 0;
-  origin.y = 0;
+  if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
+		    FT_LOAD_DEFAULT) != 0)
+      std::cerr << "load glyph failed." << std::endl;
 
   FT_Glyph glyph;
-  FT_Get_Glyph(my_face->glyph, &glyph);
-  FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, &origin, 1);
+  if (FT_Get_Glyph(my_face->glyph, &glyph) != 0)
+    std::cerr << "get glyph failed." << std::endl;
+  if (FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, 0, 1) != 0)
+    std::cerr << "glyph to bitmap failed." << std::endl;
   FT_BitmapGlyph glyph_bitmap = (FT_BitmapGlyph)glyph;
 
   unsigned char *buffer = glyph_bitmap->bitmap.buffer;
@@ -62,29 +65,31 @@ Fresco::Raster_ptr GlyphImpl::bitmap()
   int height = glyph_bitmap->bitmap.rows;
 
   Fresco::Raster::ColorSeq pixels;
+  pixels.length(width*height);
 
   switch (glyph_bitmap->bitmap.pixel_mode)
     {
     case FT_PIXEL_MODE_NONE:
       // should never happen
-      std::cout << "WTF;FT_PIXEL_MODE_NONE" << std::endl;
+      std::cout << "FontKit confused: FT_PIXEL_MODE_NONE?" << std::endl;
       break;
     case FT_PIXEL_MODE_MONO: // MSB 1 bpp
       for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++) {
           Fresco::Color c;
-          c.red = (buffer[i*(width/8)+(j/8)] &
-                             (0x80 >> j%8)) ? 0xFFFFFF00 : 0;
-          c.green = c.red; c.blue = c.red;
+          c.red = 1.; c.green = 1.; c.blue = 1.;
+          c.alpha = (buffer[i*(width/8)+(j/8)] & (0x80 >> j%8)) ? 1. : 0.;
+          pixels[i*width+j] = c;
         }
       break;
     case FT_PIXEL_MODE_GRAY: // 8 bpp count of grey levels in num_bytes
       for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++) {
           Fresco::Color c;
-          c.red = buffer[i*width+j];
-          c.green = c.red; c.blue = c.red;
-	}
+          c.red = 1.; c.green = 1.; c.blue = 1.;
+          c.alpha = buffer[i*width+j] / 255.;
+          pixels[i*width+j] = c;
+        }
       break;
     case FT_PIXEL_MODE_GRAY2: // 2bpp (no known fonts)
       std::cout << "FontKit NYI: FT_PIXEL_MODE_GRAY2" << std::endl;
@@ -99,23 +104,27 @@ Fresco::Raster_ptr GlyphImpl::bitmap()
       std::cout << "FontKit NYI: FT_PIXEL_MODE_LCD_V" << std::endl;
       break;
     default:
-      std::cout << "FontKit unknown type : "
+      std::cout << "FontKit unknown type: "
                 << glyph_bitmap->bitmap.pixel_mode << std::endl;
       break;
     }
-  FT_Set_Transform(my_face, 0, 0);
   FT_Done_Glyph(glyph);
+  FT_Set_Transform(my_face, 0, 0);
 
   Fresco::Raster::Index lower; lower.x = 0; lower.y = 0;
   Fresco::Raster::Index upper; upper.x = width; upper.y = height;
   raster->load_pixels(lower, upper, pixels);
 
-  return Fresco::Raster_ptr(raster);
+  return raster->_this();
 }
 
 Fresco::FontShape *GlyphImpl::decompose()
 {
+  FT_Set_Char_Size(my_face, 0, my_size*64, 0, 0);
   FT_Set_Transform(my_face, &my_tr, 0);
+  if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
+		    FT_LOAD_DEFAULT & FT_LOAD_IGNORE_TRANSFORM) != 0)
+      std::cerr << "load glyph failed." << std::endl;
   Fresco::FontShape *f = new Fresco::FontShape(); f->length(0);
   // use FT_Outline_Decompose
   FT_Set_Transform(my_face, 0, 0);
@@ -126,6 +135,7 @@ Fresco::FontShape *GlyphImpl::decompose()
 void GlyphImpl::char_info(Fresco::GlyphMetrics &gm)
 {
   double scale = 1.;
+  // this isn't safe enough. We need to keep our own copy of the glyph.
   gm.size.x = static_cast<CORBA::Long>(my_face->glyph->metrics.width / scale);
   gm.size.y = static_cast<CORBA::Long>(my_face->glyph->metrics.height / scale);
   gm.hori_bearing.x = static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingX / scale);

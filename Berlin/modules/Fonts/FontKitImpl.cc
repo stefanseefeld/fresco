@@ -22,6 +22,7 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Fresco/config.hh>
+#include <Fresco/PickTraversal.hh>
 #include <Fresco/DrawTraversal.hh>
 #include <Berlin/MonoGraphic.hh>
 #include "FontKitImpl.hh"
@@ -31,28 +32,29 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Berlin::FontKit;
 
+namespace Berlin
+{
+namespace FontKit
+{
+
 class FontDecorator : public MonoGraphic
 {
 public:
   FontDecorator(Font_ptr f) : my_font(f) {}
-#if 0
   virtual void traverse(Traversal_ptr traversal)
   {
     traversal->visit(Graphic_var(_this()));
   }
-#endif
   virtual void draw(DrawTraversal_ptr traversal)
   {
     DrawingKit_var drawing = traversal->drawing();
     // and do... NOTHING! yet.
     MonoGraphic::traverse(traversal);
   }
-#if 0
   virtual void pick(PickTraversal_ptr traversal)
   {
     MonoGraphic::traverse(traversal);
   }
-#endif
 private:
   Font_ptr my_font;
 };
@@ -61,99 +63,90 @@ class FontSizeDecorator : public MonoGraphic
 {
 public:
   FontSizeDecorator(Coord s) : my_size(s) {}
-#if 0
   virtual void traverse(Traversal_ptr traversal)
   {
     traversal->visit(Graphic_var(_this()));
   }
-#endif
   virtual void draw(DrawTraversal_ptr traversal)
   {
     DrawingKit_var drawing = traversal->drawing();
     // and do... NOTHING! yet.
     MonoGraphic::traverse(traversal);
   }
-#if 0
   virtual void pick(PickTraversal_ptr traversal)
   {
     MonoGraphic::traverse(traversal);
   }
-#endif
 private:
   Coord my_size;
 };
 
-class FontIterator : public virtual POA_Fresco::FontIterator
+FontKitImpl::FontIterator::FontIterator(FontKitImpl *fk)
+  : my_fk(fk)
 {
-public:
-  FontIterator::FontIterator(FontKitImpl *fk)
-    : my_fk(fk)
-  {
-    Prague::Path path = RCManager::get_path("fontpath");
-    scan(path);
-  }
-  Font_ptr child() const
-  {
-    return my_fk->_cxx_default();
-  }
-  void next() { faces_iterator++;}
-  void prev() { faces_iterator--;}
-  void destroy() { delete this;}//deactivate();}
+  Prague::Path path = RCManager::get_path("fontpath");
+  scan(path);
+}
 
-  void begin() { faces_iterator = faces.begin();}
-  void end() { faces_iterator = faces.end();}
-  void scan(Prague::Path path)
-  {
-    FT_Face my_face;
-    for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+FontKitImpl::FontIterator::~FontIterator() {}
+
+Font_ptr FontKitImpl::FontIterator::child()
+{
+  return my_fk->_cxx_default();
+}
+void FontKitImpl::FontIterator::next() { faces_iterator++;}
+void FontKitImpl::FontIterator::prev() { faces_iterator--;}
+void FontKitImpl::FontIterator::destroy() { delete this;}//deactivate();}
+
+void FontKitImpl::FontIterator::begin() { faces_iterator = faces.begin();}
+void FontKitImpl::FontIterator::end() { faces_iterator = faces.end();}
+void FontKitImpl::FontIterator::scan(Prague::Path path)
+{
+  FT_Face my_face;
+  for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
     {
       Directory directory(*i, Directory::alpha);
       for (Prague::Directory::iterator j = directory.begin(); j != directory.end(); ++j)
-      {
-        if ((*j)->name()[0] == '.') continue;
-        std::string file = (*j)->long_name();
-        if (FT_New_Face(*(my_fk->get_ftlibrary()), file.c_str(), 0, &my_face))
-        {
-          Logger::log(Logger::text) << "FontKit: file " << file << " is not a font." << std::endl;
-          continue;
-        }
-        faces.push_back(file);
-      }
+	{
+	  if ((*j)->name()[0] == '.') continue;
+	  std::string file = (*j)->long_name();
+	  if (FT_New_Face(*(my_fk->get_ftlibrary()), file.c_str(), 0, &my_face))
+	    {
+	      Logger::log(Logger::text) << "FontKit: file " << file << " is not a font." << std::endl;
+	      continue;
+	    }
+	  faces.push_back(file);
+	}
     }
-  }
-private:
-  FontKitImpl *my_fk;
-  std::vector<std::string> faces;
-  std::vector<std::string>::iterator faces_iterator;
-};
+}
 
 FontKitImpl::FontKitImpl(const std::string &id,
                          const Fresco::Kit::PropertySeq &p)
     : KitImpl(id, p)
 {
   FT_Init_FreeType(&my_library);
-  FT_Face face;
 }
 
 FontKitImpl::~FontKitImpl() {}
 
 Font_ptr FontKitImpl::_cxx_default()
 {
-  return Font_ptr(new Font("/usr/share/fonts/truetype/commercial/arialuni.ttf", 12, my_library));
+  Font *f = new Font("/usr/share/fonts/truetype/commercial/arialuni.ttf", 12, my_library);
+  return f->_this();
 }
 
 Font_ptr FontKitImpl::filename(const char *fn, const Fresco::Unistring &style,
                                const Fresco::Coord size)
 {
-  return Font_ptr(new Font(fn, size, my_library));
+  Font *f = new Font(fn, size, my_library);
+  return f->_this();
 }
 
 Font_ptr FontKitImpl::provide(const Fresco::Unistring &family,
                               const Fresco::Unistring &style,
                               const Fresco::Coord size)
 {
-  return _cxx_default();
-  //return Font_ptr::_nil();
+  return _cxx_default(); // XXX
 }
 
 Fresco::Graphic_ptr FontKitImpl::set_font(Fresco::Graphic_ptr g, Font_ptr f)
@@ -197,10 +190,16 @@ FT_Library *FontKitImpl::get_ftlibrary()
 
 FontIterator_ptr FontKitImpl::first_font()
 {
+  FontIterator *fi = new FontIterator(this);
+  fi->begin();
+  return fi->_this();
 }
 
 FontIterator_ptr FontKitImpl::last_font()
 {
+  FontIterator *fi = new FontIterator(this);
+  fi->end();
+  return fi->_this();
 }
 
 extern "C" KitImpl *load()
@@ -208,3 +207,6 @@ extern "C" KitImpl *load()
   static std::string properties[] = {"implementation", "FontKitImpl"};
   return create_kit<Berlin::FontKit::FontKitImpl> ("IDL:fresco.org/Fresco/FontKit:1.0", properties, 2);
 }
+
+} // namespace
+} // namespace

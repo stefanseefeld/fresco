@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FontKitImpl_hh
-#define _FontKitImpl_hh
+#ifndef _Fonts_FontKitImpl_hh
+#define _Fonts_FontKitImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/FontKit.hh>
@@ -38,8 +38,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace Berlin {
-namespace FontKit {
+namespace Berlin
+{
+namespace FontKit
+{
 
 using namespace Fresco;
 
@@ -51,17 +53,21 @@ public:
   class FontIterator : public virtual POA_Fresco::FontIterator
   {
   public:
-    FontIterator::FontIterator(FontKitImpl *);
-    virtual Font_ptr child() const;
+    FontIterator(FontKitImpl *);
+    virtual ~FontIterator();
+    virtual Font_ptr child();
     virtual void next();
-    void prev();
-    void destroy();
+    virtual void prev();
+    virtual void destroy();
 
-    void begin();
-    void end();
-    void scan(Prague::Path);
+    virtual void begin();
+    virtual void end();
+    virtual void scan(Prague::Path);
+  private:
+    FontKitImpl *my_fk;
+    std::vector<std::string> faces;
+    std::vector<std::string>::iterator faces_iterator;
   };
-
 
   FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~FontKitImpl();
