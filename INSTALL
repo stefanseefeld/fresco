@@ -121,6 +121,14 @@ You may want to provide some arguments, here is a list of the available options:
   --enable-lclog   	 enable lifecycle logging
                          Another debugging option. [disabled by default]
 
+For a more up to date list of arguments, try running 
+  > $fresco-src/configure --help=recursive
+(Depending on the version of autoconf used to generate configure, you might
+need to instead do
+  > cd $fresco-src
+  > ./configure --help=recursive
+to get the full list.)
+
 [ Add support for interactive configuration and document the options
   here ]
 
