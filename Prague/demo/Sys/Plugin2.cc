@@ -1,10 +1,10 @@
-#include <Prague/Sys/Plugin.hh>
 #include <iostream>
 #include "Action.hh"
 
 class Greeting2 : public Action
 {
+public:
   virtual void execute() { std::cout << "Hi There !" << std::endl;}
 };
 
-dload(Greeting2)
+extern "C" Action *load() { return new Greeting2();}
