@@ -21,6 +21,7 @@
  */
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/Providers.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Screen.hh"
 
@@ -32,23 +33,36 @@ AllocationImpl::~AllocationImpl()
 {
   for (list_t::iterator i = list.begin(); i != list.end(); i++)
     {
-      (*i).allocation->_dispose();
-      (*i).transformation->_dispose();
+      Providers::region.adopt((*i).allocation);
+      Providers::trafo.adopt((*i).transformation);
     }
 }
 
 void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
   State state;
-  state.allocation = new RegionImpl(region);
-  state.allocation->_obj_is_ready(_boa());
-  state.transformation = new TransformImpl;
-  state.transformation->_obj_is_ready(_boa());
+  Lease<RegionImpl> reg;
+  Providers::region.provide(reg);
+  reg->copy(region);
+  state.allocation = reg.release();
+  Lease<TransformImpl> trafo;
+  Providers::trafo.provide(trafo);
+  trafo->loadIdentity();
+  state.transformation = trafo.release();
   state.root = Screen::_duplicate(root);
   list.push_back(state);
 }
 
 CORBA::Long AllocationImpl::size() { return list.size();}
+
+void AllocationImpl::clear() { 
+  for (list_t::iterator i = list.begin(); i != list.end(); i++)
+    {
+      Providers::region.adopt((*i).allocation);
+      Providers::trafo.adopt((*i).transformation);
+    }  
+  list.clear();
+}
 
 Allocation::Info *AllocationImpl::get(CORBA::Long l)
 {

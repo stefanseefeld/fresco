@@ -21,7 +21,7 @@
  */
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include "Berlin/GGI.hh"
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/DrawingKit.hh>
@@ -94,13 +94,15 @@ CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
 
 void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-  Trace trace("DrawTraversalImpl::traverseChild");
+  //  Trace trace("DrawTraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
-  Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(transformation())));
+  Lease<TransformImpl> cumulative;
+  Providers::trafo.provide(cumulative);
+  cumulative->copy(transformation());
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   drawing->saveState();
   drawing->transformation(Transform_var(cumulative->_this()));
-//   drawable->clipping(region, Transform_var(tx->_this()));
+  //   drawable->clipping(region, Transform_var(tx->_this()));
   push(child, tag, region, cumulative.release());
   child->traverse(Traversal_var(_this()));
   drawing->restoreState();

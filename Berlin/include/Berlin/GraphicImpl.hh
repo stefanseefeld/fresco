@@ -30,6 +30,7 @@
 
 declare_corba_ptr_type(Region)
 class RegionImpl;
+class AllocationImpl;
 
 class GraphicImpl : implements(Graphic)
 {

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 graydon hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,34 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _AllocationImpl_hh
-#define _AllocationImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
-#include <vector>
+
+#ifndef _Providers_hh
+#define _Providers_hh
+
+#include "Berlin/Lease.hh"
 
 class RegionImpl;
+class AllocationImpl;
 class TransformImpl;
 
-class AllocationImpl : implements(Allocation)
-{
-  struct State
-  {
-    RegionImpl *allocation;
-    TransformImpl *transformation;
-    Screen_var root;
-  };
-  typedef vector<State> list_t;
+class Providers {
 public:
-  AllocationImpl();
-  ~AllocationImpl();
-  void add(Region_ptr, Screen_ptr);
-  CORBA::Long size();
-  Allocation::Info *get(CORBA::Long);
-  void clear();
-private:
-  list_t list;
+  static Lease<RegionImpl>::Provider region;
+  static Lease<AllocationImpl>::Provider alloc;
+  static Lease<TransformImpl>::Provider trafo;  
 };
 
-#endif /* _AllocationImpl_hh */
+#endif

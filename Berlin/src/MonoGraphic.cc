@@ -23,7 +23,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -75,19 +75,23 @@ Transform_ptr MonoGraphic::transformation()
 
 void MonoGraphic::request(Graphic::Requisition &r)
 {
-  Trace trace("MonoGraphic::request");
+  //  Trace trace("MonoGraphic::request");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
 void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
 {
-  Trace trace("MonoGraphic::extension");
+  //  Trace trace("MonoGraphic::extension");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl);
-      Impl_var<TransformImpl> transform(new TransformImpl);
+      Lease<RegionImpl> tmp;
+      Providers::region.provide(tmp);
+      tmp->clear();
+      Lease<TransformImpl> transform;
+      Providers::trafo.provide(transform);
+      transform->loadIdentity();
       Allocation::Info i;
       i.allocation = tmp->_this();
       i.allocation->copy(info.allocation);

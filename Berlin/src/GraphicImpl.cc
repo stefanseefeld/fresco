@@ -24,12 +24,14 @@
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/Screen.hh>
 #include <Warsaw/IO.hh>
+#include "Berlin/Providers.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/Lease.hh"
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -323,10 +325,13 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
  */
 void GraphicImpl::needRedraw()
 {
-  Trace trace("GraphicImpl::needRedraw");
-  Impl_var<AllocationImpl> allocation(new AllocationImpl);
+  // Trace trace("GraphicImpl::needRedraw");
+  Lease<AllocationImpl> allocation;
+  Providers::alloc.provide(allocation);
+  allocation->clear();
   allocations(Allocation_var(allocation->_this()));
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
   CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i < size; i++)
     {
@@ -348,9 +353,12 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
   Trace trace("GraphicImpl::needRedrawRegion");
   if (region->defined())
     {
-      Impl_var<AllocationImpl> allocation(new AllocationImpl);
+      Lease<AllocationImpl> allocation;
+      Providers::alloc.provide(allocation);
+      allocation->clear();
       allocations(Allocation_var(allocation->_this()));
-      Impl_var<RegionImpl> dr(new RegionImpl);
+      Lease<RegionImpl> dr;
+      Providers::region.provide(dr);
       for (CORBA::Long i = 0; i < allocation->size(); i++)
 	{
 	  Allocation::Info_var info = allocation->get(i);
@@ -451,7 +459,12 @@ void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr reg
 	region->mergeUnion(info.allocation);
       else
 	{
-	  Impl_var<RegionImpl> tmp(new RegionImpl(info.allocation, info.transformation));
+	  Lease<RegionImpl> tmp;
+	  Providers::region.provide(tmp);
+	  tmp->clear();
+	  tmp->copy(info.allocation);
+	  if (!CORBA::is_nil(info.transformation) && !info.transformation->Identity())
+	    tmp->applyTransform(info.transformation);	  
 	  region->mergeUnion(Region_var(tmp->_this()));
 	}
     }
@@ -519,7 +532,8 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
   delta.x = delta.y = delta.z = 0.;
   if (!rotated(t))
     {
-      Impl_var<TransformImpl> tx(new TransformImpl);
+      Lease<TransformImpl> tx;
+      Providers::trafo.provide(tx);
       tx->copy(t);
       tx->invert();
       region.applyTransform(tx);

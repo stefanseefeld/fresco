@@ -28,10 +28,16 @@
 #ifndef _TraversalImpl_hh
 #define _TraversalImpl_hh
 
+class RegionImpl;
+class TransformImpl;
+
 #include "Warsaw/config.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/TransformImpl.hh"
+#include <Warsaw/Graphic.hh>
+#include <Warsaw/Region.hh>
 #include <vector>
+
 
 class TraversalImpl : implements(Traversal)
 {
@@ -60,7 +66,7 @@ class TraversalImpl : implements(Traversal)
  protected:
   void push(Graphic_ptr, Tag, Region_ptr, TransformImpl *);
   void pop();
-  size_t size() { return stack.size();}
+  size_t size() { return stack.size();}  
  private:
   stack_t stack;
 };

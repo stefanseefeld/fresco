@@ -27,7 +27,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -61,9 +61,13 @@ void Allocator::traverse(Traversal_ptr traversal)
 
 void Allocator::needResize()
 {
-  Impl_var<AllocationImpl> allocation(new AllocationImpl);
+  Lease<AllocationImpl> allocation;
+  Providers::alloc.provide(allocation);
+  allocation->clear();
   allocations(Allocation_var(allocation->_this()));
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
+  region->clear();
   if (extension->valid) region->copy(Region_var(extension->_this()));
   requested = false;
   updateRequisition();
@@ -122,7 +126,10 @@ void Allocator::updateRequisition()
 
 void Allocator::needDamage(RegionImpl *e, Allocation_ptr allocation)
 {
-  Impl_var<RegionImpl> region(new RegionImpl);
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
+  region->clear();
+
   for (long i = 0; i < allocation->size(); i++)
     {
       Allocation::Info_var info = allocation->get(i);
@@ -160,7 +167,9 @@ void TransformAllocator::request(Requisition &r)
 void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 {
   Vertex lower, upper, delta;
-  Impl_var<TransformImpl> tx(new TransformImpl);
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);
+  tx->loadIdentity();
   Allocator::allocate(t, i);
   i.allocation->bounds(lower, upper);
   computeDelta(lower, upper, delta);
@@ -171,7 +180,9 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 
 void TransformAllocator::traverse(Traversal_ptr traversal)
 {
-  Impl_var<TransformImpl> tx(new TransformImpl);
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);
+  tx->loadIdentity();
   updateRequisition();
   Vertex lower, upper, v;
   traversal->bounds(lower, upper, v);

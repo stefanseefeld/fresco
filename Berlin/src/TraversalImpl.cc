@@ -24,6 +24,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include <Warsaw/Allocation.hh>
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/Region.hh>
@@ -34,44 +35,48 @@ using namespace Prague;
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 {
-  Impl_var<TransformImpl> transform(new TransformImpl);
+  Lease<TransformImpl> transform;
+  Providers::trafo.provide(transform);  
   transform->copy(t);
   push(g, 0, r, transform.release());
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
 {
+  //Trace trace("TraversalImpl::TraversalImpl copy ctor");
   for (stack_t::const_iterator i = t.stack.begin(); i != t.stack.end(); i++)
     {
       State state;
       state.graphic = Graphic::_duplicate((*i).graphic);
       state.tag = (*i).tag;
       state.allocation = Region::_duplicate((*i).allocation);
-      Impl_var<TransformImpl> transform(new TransformImpl);
-      transform->copy((*i).transformation);
-      state.transformation = transform.release();
+      Lease<TransformImpl> tmp;
+      Providers::trafo.provide(tmp);
+      state.transformation = tmp.release();
+      state.transformation->copy((*i).transformation);
       stack.push_back(state);
     }
 }
 
 TraversalImpl::~TraversalImpl()
 {
-  for (stack_t::const_iterator i = stack.begin(); i != stack.end(); i++)
-    (*i).transformation->_dispose();
 }
 
 Region_ptr TraversalImpl::allocation()
 {
+  //Trace trace("TraversalImpl::allocation");
   return Region::_duplicate(stack.back().allocation);
 }
 
 Transform_ptr TraversalImpl::transformation() 
 {
+  //Trace trace("TraversalImpl::transformation");
   return stack.back().transformation->_this();
 }
 
 CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin) 
 {
+  //Trace trace("TraversalImpl::bounds");
   bool b = false;
   State &state = stack.back();
   Region_ptr r = state.allocation;
@@ -84,11 +89,14 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
+void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, 
+				  Region_ptr region, Transform_ptr transform)
 {
-  Trace trace("TraversalImpl::traverseChild");
+  //Trace trace("TraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
-  Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(transformation())));
+  Lease<TransformImpl> cumulative;
+  Providers::trafo.provide(cumulative);  
+  cumulative->copy(transformation());
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   push(child, tag, region, cumulative.release());
   child->traverse(Traversal_var(_this()));
@@ -97,9 +105,9 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region,
 
 void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 {
-  Trace trace("TraversalImpl::push");
-//   cout << "TraversalImpl::push " << stack.size() << endl;
-//   cout << t->matrix();
+  //Trace trace("TraversalImpl::push");
+  //   cout << "TraversalImpl::push " << stack.size() << endl;
+  //   cout << t->matrix();
   State state;
   state.graphic = Graphic::_duplicate(g);
   state.tag = tag;
@@ -110,19 +118,21 @@ void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 
 void TraversalImpl::pop()
 {
-  Trace trace("TraversalImpl::pop");
-  State &state = *stack.rbegin();
-  state.transformation->_dispose();
+  //Trace trace("TraversalImpl::pop");
+  if (!stack.empty()) Providers::trafo.adopt((stack.end() - 1)->transformation);
   stack.erase(stack.end() - 1);
 }
 
 void TraversalImpl::update()
 {
-  Trace trace("TraversalImpl::update");
+  //Trace trace("TraversalImpl::update");
   if (stack.size() == 1) return;
   stack_t::iterator parent = stack.begin();
-  Impl_var<RegionImpl> allocation(new RegionImpl((*parent).allocation));
-  Impl_var<TransformImpl> transformation(new TransformImpl);
+  Lease<RegionImpl> allocation;
+  Providers::region.provide(allocation);  
+  allocation->copy((*parent).allocation);
+  Lease<TransformImpl> transformation;
+  Providers::trafo.provide(transformation);  
   transformation->copy((*parent).transformation);
   Allocation::Info info;
   info.allocation = allocation->_this();
