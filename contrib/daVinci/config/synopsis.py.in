@@ -1,0 +1,58 @@
+from Synopsis.Config import Base
+
+top_srcdir = '@top_srcdir@'
+abs_top_srcdir = '@abs_top_srcdir@'
+top_builddir = '@top_builddir@'
+abs_top_builddir = '@abs_top_builddir@'
+
+class Config(Base):
+
+    class Parser(Base.Parser):
+
+	class CXX(Base.Parser.CXX):
+	    "Parser for C++ headers, extends C++ parser"
+	    main_file = 1
+	    preprocessor = 'gcc'
+	    extract_tails = 1
+	    include_path = [top_builddir + '/include', abs_top_srcdir + '/include']
+	    basename = abs_top_srcdir
+	    syntax_prefix = 'sxr_data/'
+	
+	modules = {'Fresco' : CXX}
+
+    class Linker (Base.Linker):
+
+	class Fresco(Base.Linker.Linker):
+	    "Fresco style linker - override the comment stuff"
+	    comment_processors = ['ssd', 'prev', 'group']
+	    mappers = ['C++toIDL']
+
+	modules = {'Fresco' : Fresco}
+
+    class Formatter(Base.Formatter):
+
+	class HTML(Base.Formatter.HTML):
+	    "Set some local options common to all manuals"
+	    stylesheet = 'manual.css'
+	    stylesheet_file = abs_top_srcdir + '/config/manual.css'
+	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
+	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
+	
+        class Berlin(HTML):
+	    toc_out = top_builddir + '/share/doc/Berlin/html/Berlin.toc'
+	    toc_in = [
+		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague/html',
+		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon/html',
+		'@Fresco_IDL_prefix@/share/doc/Fresco-IDL/html/Fresco-IDL.toc|../../Fresco-IDL/html'
+	    ]
+	
+        class Kit(HTML):
+	    "HTML formatter for all kits"
+	    toc_in = [
+		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague',
+		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon',
+		'@Fresco_IDL_prefix@/share/doc/Fresco-IDL/html/Fresco-IDL.toc|../../Fresco-IDL',
+		abs_top_builddir + '/share/doc/Berlin/html/Berlin.toc|../../Berlin',
+	    ]
+
+	modules = {'HTML' : Berlin, 'KitHTML' : Kit}
