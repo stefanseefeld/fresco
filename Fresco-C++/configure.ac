@@ -49,7 +49,7 @@ AC_SUBST(SH_VERSION)
 
 dnl ------------------------------------------------------------------
 
-BERLIN_LIB_ORB
+BERLIN_LIB_ORB(mandatory)
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

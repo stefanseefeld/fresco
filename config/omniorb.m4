@@ -1,3 +1,4 @@
+dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
@@ -46,11 +47,10 @@ AC_DEFUN([BERLIN_CHECK_LIB],[
 	fi
 ])
 
-dnl
-dnl BERLIN_LIB_OMNIORB
-dnl
-dnl Checks if omniORB is found. If it is, $berlin_cv_lib_omniORB is
-dnl set to "yes". Also make the necessary AC_SUBSTs and DEFINEs.
+dnl dnl BERLIN_LIB_OMNIORB dnl dnl Checks if omniORB is found. If it
+dnl is, $berlin_cv_lib_omniORB is set to "yes". Also, the
+dnl variables IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS, IDLTIEFLAGS, ORB_LIBS
+dnl and ORB_CPPFLAGS are set, and necessary definitions are added.
 
 AC_DEFUN([BERLIN_LIB_OMNIORB],[
 
@@ -70,8 +70,7 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 		[  --with-omniorb-prefix  Prefix for omniORB],[
 		omniorb_prefix="$withval"])
 
-	dnl Check for omniidl. Should we check in
-	dnl $omniorb_prefix/bin/<arch>, too?
+	dnl Check for omniidl.
 	if test ".$omniorb_prefix" != "." ; then
 		omniorb_path="$omniorb_prefix/bin:$PATH"
 		ORB_LIBS="-L$omniorb_prefix/lib"
@@ -80,13 +79,20 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 		omniorb_path="$PATH"
 	fi
 	AC_PATH_PROG(IDLCXX, omniidl, no, $omniorb_path)
+	if test ".$IDLCXX" = ".no" ; then
+		no_omniorb="yes"
+	fi
 
-	dnl Get system information we pass in CPPFLAGS
-	dnl This is according to "The omniORB2 version 2.8.0 User's Guide"
-	dnl TODO: Check if everything is correct.
-	dnl I don't have access to anything other that x86/linux, so this is
-	dnl based on looking at config.guess
-	case $host_cpu in
+	save_CPPFLAGS="$CPPFLAGS"
+	if test ".$no_omniorb" = "." ; then
+		dnl Get system information we pass in CPPFLAGS
+		dnl This is according to
+		dnl "The omniORB2 version 2.8.0 User's Guide"
+		dnl TODO: Check if everything is correct.
+		dnl I don't have access to anything other that
+		dnl x86/linux, so this is based on looking at
+		dnl config.guess
+		case $host_cpu in
 		sparc)
 			AC_DEFINE(__sparc__)
 			;;
@@ -119,9 +125,9 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 			AC_MSG_WARN(Please check the omniORB documentation to see if your CPU type is supported,)
 			AC_MSG_WARN(and update config/Warsaw/macros/omniorb.m4)
 			;;
-	esac
+		esac
 
-	case $host_os in
+		case $host_os in
 		linux*)
 			AC_DEFINE(__linux__)
 			;;
@@ -160,17 +166,16 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 			AC_MSG_WARN(Please check the omniORB documentation to see if you OS is supported,)
 			AC_MSG_WARN(and update macros/omniorb.m4.)
 			;;
-	esac
+		esac
 
-	dnl Don't know if this is portable...
-	os_major_version=[`uname -r | cut -d '.' -f 1`]
-dnl	os_major_version=2
-	AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version)
+		dnl Don't know if this is portable...
+		os_major_version=[`uname -r | cut -d '.' -f 1`]
+		AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version)
 
-	dnl Check for omniORB includes
-	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"
-	AC_CHECK_HEADER(omniORB3/CORBA.h,,no_omniorb=yes)
+		dnl Check for omniORB includes
+		CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"
+		AC_CHECK_HEADER(omniORB3/CORBA.h,,no_omniorb=yes)
+	fi
 
 	dnl Check for omniORB libraries
 	if test ".$no_omniorb" = "." ; then
@@ -183,22 +188,23 @@ dnl	os_major_version=2
 			omniORB3/CORBA.h)
 		BERLIN_CHECK_LIB(ORB_LIBS, omniORB3, [CORBA::ORB_var orb],
 			omniORB3/CORBA.h)
+		if test ".$berlin_cv_lib_omniORB3" = ".no" \
+			-a ".$berlin_cv_lib_omniDynamic3" = ".no" \
+			-a ".$berlin_cv_lib_omnithread" = ".no" ; then
+			no_omniorb="yes"
+		fi
 	fi
 
 	CPPFLAGS="$save_CPPFLAGS"
 
-	if test ".$berlin_cv_lib_omniORB3" = ".yes" \
-		-a ".$berlin_cv_lib_omniDynamic3" = ".yes" \
-		-a ".$berlin_cv_lib_omnithread" = ".yes" ; then
+	if test ".$no_omniorb" = "." ; then
 		berlin_cv_lib_omniORB="yes"
-	else
-		ifelse($1,,:,AC_MSG_ERROR([omniORB3 was not found!]))
+
+		dnl Additional output variables
+		IDLCXXFLAGS="-bcxx"
+		IDLDYNFLAGS="-Wba"
+		IDLTIEFLAGS="-Wbtp"
 	fi
 
-	dnl Additional output variables
-	IDLCXXFLAGS="-bcxx"
-	IDLDYNFLAGS="-Wba"
-	IDLTIEFLAGS="-Wbtp"
-	
 	AC_LANG_RESTORE
 ])
