@@ -162,6 +162,23 @@ int main(int argc, char ** argv) {
 
 	// Create the GUI:
 
+	// Create Textlabels:
+
+	// A rather complex command:
+	// - Create a Babylon::String containing "PinYin Input Applet"
+	// - Change that string into something CORBA understands
+	// - Create a text chunk containing said string
+	// - Make it black using the ToolKit's rgb decorator.
+	Warsaw::Graphic_var title = tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("PinYin Input Applet")))), 0.0, 0.0, 0.0);
+
+	// create additional labels:
+	Warsaw::Graphic_var chinese_label =
+	    tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Possible Matches:")))), 0.0, 0.0, 0.0);
+	Warsaw::Graphic_var input_label =
+	    tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Input:")))), 0.0, 0.0, 0.0);
+	Warsaw::Graphic_var output_label =
+	    tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Chinese Text:")))), 0.0, 0.0, 0.0);
+
 	// We'll need three buffers to hold our text:
 	Warsaw::TextBuffer_var input_buf = ck->text();
 	Warsaw::TextBuffer_var chinese_buf = ck->text();
@@ -176,13 +193,19 @@ int main(int argc, char ** argv) {
 	Warsaw::ToolKit::FrameSpec frame;
 	frame.brightness(0.5); frame._d(Warsaw::ToolKit::inset);
 
-	// I want the buffers to be displayed one above the other,
-	// so I ask the server for a vBox
-	Warsaw::Graphic_var vbox = lk->vbox();
-	// and now the magic happens:
-	vbox->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(chinese_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+	// Add text in front of the views:
+	// We use a hbox which will layout it's children one after another.
+	Warsaw::Graphic_var input_line = lk->hbox();
+
+	// The first thing to add is the label
+	input_line->append_graphic(input_label);
+	// Now we add glue: a strechable, invisible graphic
+	input_line->append_graphic(Warsaw::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
+	// Then the viewer created earlier. We add some decorations while we are
+	// at it anyway. Looks awfully complex, but is rather easy:-)
+	input_line->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(input_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
 	// This line does a lot of things:
-	// - It adds a decorator to 'chinese_view' which makes it display it's
+	// - It adds a decorator to 'input_view' which makes it display it's
 	//   contents in black (0.0, 0.0, 0.0). White would be (1.0, 1.0, 1.0).
 	//   To do this it asks the ToolKit for an rgb-Graphic which wraps the
 	//   simple_viewer.
@@ -193,12 +216,31 @@ int main(int argc, char ** argv) {
 	// - Finally the frame we constructed earlier is used by the
 	//   frame-graphic (obtained from the ToolKit) to wrap everything
 	//   in a nive beleveled frame.
-	// - This is added to the vBox which will lay out it's children one
-	//   above the other.
 
-	// Now do the same for the others:
-	vbox->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(input_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));	
-	vbox->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(output_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+	// The same again for the other viewers:
+	Warsaw::Graphic_var output_line = lk->hbox();
+	output_line->append_graphic(output_label);
+	output_line->append_graphic(Warsaw::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
+	output_line->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(output_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+	Warsaw::Graphic_var chinese_line = lk->hbox();
+
+	chinese_line->append_graphic(chinese_label);
+	chinese_line->append_graphic(Warsaw::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
+	chinese_line->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(chinese_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+
+	// This was the hard part!
+	// Now we only need to arrange our graphics one above the other:
+
+	// I ask the LayoutKit for a vbox
+	Warsaw::Graphic_var vbox = lk->vbox();
+
+	// Add the title created earlier ...
+	vbox->append_graphic(Warsaw::Graphic_var(lk->margin_lrbt_flexible(title, 0., 1e10, 0., 0., 1e10, 0., 50., 0., 0., 50., 0., 0.)));
+
+	// ... and then the lines.
+	vbox->append_graphic(chinese_line);	
+	vbox->append_graphic(input_line);	
+	vbox->append_graphic(output_line);
 
 	// 'vbox' contains the complete graphics of our little application now!
 	// It will even display whatever is in the buffers as '*_view' each
@@ -217,8 +259,11 @@ int main(int argc, char ** argv) {
 	// This controller accepts keyboard-events and updates a TextBuffer.
 	// It does not draw anything! That's done by the observers of
 	// 'input_buf' (which are 'observer' and 'input_view' in this applet).
+	Warsaw::ToolKit::FrameSpec spec;
+	spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
+	Warsaw::Graphic_var body = tlk->frame(vbox, 20., spec, true);
 	Warsaw::Window_var window =
-	    dk->shell(tlk->text_input(vbox, input_buf));
+	    dk->shell(tlk->text_input(body, input_buf));
 
 	// Don't quit but idle around a bit so the server has the chance
 	// to do its work:-)
