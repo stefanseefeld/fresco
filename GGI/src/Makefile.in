@@ -37,12 +37,11 @@ OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
 TARGET	:= ../lib/Fresco/Console/GGI.so
 
-#ifeq ($(HAVE_GGIMESA), 1)
+ifeq ($(HAVE_GGIMESA), 1)
 TARGET	+= ../lib/Fresco/Console/GGIGL.so
-
+endif
 ../lib/Fresco/Console/GGIGL.so: GGIGL.o
 
-#endif
 
 all:	$(TARGET)
 
