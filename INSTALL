@@ -147,13 +147,13 @@ csh style:
 
 > setenv LD_LIBRARY_PATH $berlin-build/lib:$LD_LIBRARY_PATH
 > setenv BABYLON_PATH $berlin-build/modules/Babylon
-> setenv PYTHON_PATH $berlin-build/lib/python:$PYTHON_PATH
+> setenv PYTHONPATH $berlin-build/lib/python:$PYTHONPATH
 
 bash-like style:
 
 > export LD_LIBRARY_PATH=$berlin-build/lib:$LD_LIBRARY_PATH
 > export BABYLON_PATH=$berlin-build/modules/Babylon
-> export PYTHON_PATH=$berlin-build/lib/python:$PYTHON_PATH
+> export PYTHONPATH=$berlin-build/lib/python:$PYTHONPATH
 
 The berlin server is in $berlin-build/bin/server, and now you should be
 able to start it. The only mandatory parameter is the location of the
