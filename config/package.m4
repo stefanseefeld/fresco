@@ -198,7 +198,7 @@ AC_DEFUN(FRESCO_IDL_PATH,
   AC_MSG_CHECKING([for Fresco IDL prefix])
 
   if test ".$Fresco_IDL_prefix" = .; then
-    for dir in ${srcdir}/../Fresco-IDL /usr; do
+    for dir in ../Fresco-IDL /usr; do
       if test -r $dir/share/idl/Fresco/Types.idl; then
         Fresco_IDL_prefix=`cd $dir && pwd`
         break

@@ -44,5 +44,6 @@ AC_MSG_NOTICE([Output Substitution])
 AC_CONFIG_FILES([config/synopsis.py])
 AC_CONFIG_FILES([config/Fresco-IDL.spec])
 AC_CONFIG_FILES([Makefile])
+AC_LINK_FILES(share/idl, share/idl)
 
 AC_OUTPUT
