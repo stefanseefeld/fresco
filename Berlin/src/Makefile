@@ -33,7 +33,7 @@ CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS) $(CON_INCLUDES)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague $(CON_LIBS) #$(ORBLIBS)
 
-SRC 	= Console.cc Pointer.cc Logger.cc RefCountBaseImpl.cc \
+SRC 	= Console.cc Pointer.cc Logger.cc ServantBase.cc IdentifiableImpl.cc RefCountBaseImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc Provider.cc \
 	  GraphicImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \

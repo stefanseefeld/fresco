@@ -85,7 +85,6 @@ Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
 {
   ViewportImpl *vp = new ViewportImpl;
   activate(vp);
-  vp->attachAdjustments();
   vp->body(g);
   return vp->_this();
 }

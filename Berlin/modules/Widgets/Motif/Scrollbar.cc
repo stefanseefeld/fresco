@@ -50,7 +50,7 @@ private:
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
   : ControllerImpl(false),
     requisition(r),
-    redirect(new Observer(this)),
+    translate(new Observer(this)),
     _drag(new Dragger(v, a)),
     range(RefCount_var<BoundedRange>::increment(v)),
     axis(a)
@@ -58,7 +58,7 @@ Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisit
   BoundedRange::Settings settings = v->getSettings();
   offset.lower = settings.lvalue/(settings.upper - settings.lower);
   offset.upper = settings.uvalue/(settings.upper - settings.lower);
-  v->attach(Observer_var(redirect->_this()));
+  v->attach(Observer_var(translate->_this()));
 }
 
 void Scrollbar::init(Controller_ptr t)

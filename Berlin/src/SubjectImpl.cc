@@ -21,6 +21,8 @@
  */
 #include "Berlin/SubjectImpl.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <algorithm>
+#include <functional>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -34,17 +36,24 @@ void SubjectImpl::attach(Observer_ptr o)
   observers.push_back(Warsaw::Observer::_duplicate(o));
 }
 
+struct Id_eq : public unary_function<Warsaw::Identifiable_ptr, bool>
+{
+  Id_eq(Warsaw::Identifiable_ptr i) : id(i) {}
+  bool operator()(const Warsaw::Identifiable_ptr i) const { return id->is_identical(i);}
+  Warsaw::Identifiable_ptr id;
+};
+
 void SubjectImpl::detach(Observer_ptr o)
 {
   Trace trace("SubjectImpl::detach");
   MutexGuard guard(observerMutex);
-  observers.remove(o);
+  observers.erase(find_if(observers.begin(), observers.end(), Id_eq(o)));
 }
 
 
 void SubjectImpl::block(CORBA::Boolean b)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   blocked = b;
 }
 
@@ -53,14 +62,14 @@ void SubjectImpl::notify()
   this->notify(CORBA::Any());
 }
 
-void SubjectImpl::notify(const CORBA::Any &whatChanged)
+void SubjectImpl::notify(const CORBA::Any &change)
 {
   Trace trace("SubjectImpl::notify");
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   if (!blocked)
     {
       MutexGuard guard(observerMutex);
-      for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
-	(*i)->update(whatChanged);
+      for(vector<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
+	(*i)->update(change);
     }
 }

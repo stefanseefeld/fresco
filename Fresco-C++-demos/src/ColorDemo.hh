@@ -24,7 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/BoundedValue.hh>
-#include <Berlin/SubjectImpl.hh>
+#include <Berlin/ObserverImpl.hh>
 #include "Demo.hh"
 
 class ColorDemo : public Demo

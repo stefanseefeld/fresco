@@ -136,16 +136,16 @@ DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame
 DynamicFrame::~DynamicFrame()
 {
   Trace trace("DynamicFrame::~DynamicFrame");
-  if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
+  if (!CORBA::is_nil(telltale)) telltale->detach(Observer_var(_this()));
   delete renderer1;
   delete renderer2;
 }
 
 void DynamicFrame::attach(Telltale_ptr subject)
 {
-  if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
-  telltale = Telltale::_duplicate(subject);
-  telltale->attach(View_var(_this()));
+  if (!CORBA::is_nil(telltale)) telltale->detach(Observer_var(_this()));
+  telltale = RefCount_var<Telltale>::increment(subject);
+  telltale->attach(Observer_var(_this()));
   bool flag = telltale->test(mask);
   if (flag == on) return;
   on = flag;

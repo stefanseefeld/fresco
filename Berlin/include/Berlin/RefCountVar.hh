@@ -35,12 +35,14 @@ class RefCount_var
 public:
   RefCount_var(T_ptr tt = 0) : t(tt) {}
   RefCount_var(const RefCount_var<T> &o) : t(o.t) { if (!CORBA::is_nil(t)) t->increment();}
-  ~RefCount_var() { if (!CORBA::is_nil(t)) t->decrement();}
+  ~RefCount_var() { if (!CORBA::is_nil(t)) try {t->decrement();} catch (const CORBA::OBJECT_NOT_EXIST &) {} }
   RefCount_var<T> &operator = (const RefCount_var<T> &o)
     {
       if (&o != this)
         {
-          if (!CORBA::is_nil(t)) t->decrement();
+          if (!CORBA::is_nil(t))
+	    try {t->decrement();}
+	    catch (const CORBA::OBJECT_NOT_EXIST &) {}
           t = o.t;
 	  if (!CORBA::is_nil(t)) t->increase();
         }
@@ -48,7 +50,9 @@ public:
     }
   RefCount_var<T> &operator = (T_ptr tt)
     {
-      if (!CORBA::is_nil(t)) t->decrement();
+      if (!CORBA::is_nil(t))
+	try { t->decrement();}
+	catch (const CORBA::OBJECT_NOT_EXIST &) {}
       t = tt;
       return *this;
     }

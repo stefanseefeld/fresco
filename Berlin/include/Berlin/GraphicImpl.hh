@@ -29,27 +29,33 @@
 #include <algorithm>
 #include <functional>
 #include "Berlin/RefCountBaseImpl.hh"
+#include "Berlin/IdentifiableImpl.hh"
 
 class RegionImpl;
 class AllocationImpl;
 
 class GraphicImpl : public virtual POA_Warsaw::Graphic,
-                    public virtual PortableServer::RefCountServantBase,
-                    public virtual RefCountBaseImpl
+                    public virtual RefCountBaseImpl,
+                    public virtual IdentifiableImpl
 {
  protected:
-  struct localId_eq : public unary_function<Warsaw::Graphic::Edge, bool>
-    {
-      localId_eq(Warsaw::Tag t) : id(t) {}
-      bool operator()(const Warsaw::Graphic::Edge &e) const { return e.localId == id; }
-      Warsaw::Tag id;
-    };
-  typedef Warsaw::Graphic::Edge Edge;
+  struct Edge
+  {
+    Warsaw::Graphic_var peer;
+    Warsaw::Tag         peerId;
+    Warsaw::Tag         localId;
+  };
   typedef Warsaw::Graphic::Iterator Iterator;
   typedef Warsaw::Graphic::Iterator_ptr Iterator_ptr;
   typedef Warsaw::Graphic::Requirement Requirement;
   typedef Warsaw::Graphic::Requisition Requisition;
-  typedef vector<Warsaw::Graphic::Edge> glist_t;
+  typedef vector<Edge> glist_t;
+  struct localId_eq : public unary_function<Warsaw::Graphic::Edge, bool>
+    {
+      localId_eq(Warsaw::Tag t) : id(t) {}
+      bool operator()(const Edge &e) const { return e.localId == id; }
+      Warsaw::Tag id;
+    };
  public:
   static const Warsaw::Coord infinity = 10e6;
   GraphicImpl();

@@ -38,9 +38,9 @@ LDFLAGS		+= -shared -rdynamic
 LIBS		+= $(ORBLIBS)
 
 DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl Selection.idl
-STATINT	= RefCountBase.idl ClientContext.idl Server.idl Kit.idl \
+STATINT	= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl Kit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
-	  Input.idl Focus.idl Subject.idl Controller.idl View.idl \
+	  Input.idl Focus.idl Subject.idl Observer.idl Controller.idl View.idl \
 	  DrawingKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  Telltale.idl StreamBuffer.idl Trigger.idl ToolKit.idl \

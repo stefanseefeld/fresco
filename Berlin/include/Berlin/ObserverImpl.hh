@@ -1,9 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 2000 Nathaniel Smith <njs@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -21,27 +19,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextViewer_hh
-#define _TextViewer_hh
+#ifndef _ObserverImpl_hh
+#define _ObserverImpl_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/View.hh>
-#include <Warsaw/TextKit.hh>
-#include <Berlin/ViewImpl.hh>
-#include "Text/Composition.hh"
-#include <map>
+#include <Warsaw/Observer.hh>
+#include <Warsaw/Subject.hh>
+#include <Berlin/ServantBase.hh>
+#include <Berlin/IdentifiableImpl.hh>
 
-class TextViewer : public virtual ViewImpl,
-		   public Composition
+class ObserverImpl : public virtual POA_Warsaw::Observer,
+		     public virtual ServantBase,
+		     public virtual IdentifiableImpl
 {
- public:
-  TextViewer(Warsaw::TextBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *);
-  virtual ~TextViewer();
-  virtual void update(const CORBA::Any &);
- protected:
-  virtual void activateComposite();
-  Warsaw::TextKit_var kit;
-  Warsaw::TextBuffer_var buffer;
+public:
+  virtual void destroy() { deactivate();}
 };
 
-#endif
+#endif 

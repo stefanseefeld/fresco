@@ -25,11 +25,14 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Viewport.hh>
 #include <Warsaw/BoundedRange.hh>
+#include <Berlin/ViewImpl.hh>
 #include <Berlin/MonoGraphic.hh>
+#include <Berlin/RefCountVar.hh>
 
 class RegionImpl;
 
 class ViewportImpl : public virtual POA_Warsaw::Viewport,
+		     public virtual ViewImpl,
 		     public MonoGraphic
 {
   class Adjustment;
@@ -54,6 +57,7 @@ class ViewportImpl : public virtual POA_Warsaw::Viewport,
   virtual void update(const CORBA::Any &);
 
 protected:
+  virtual void activateComposite();
   void allocateChild(Warsaw::Allocation::Info &);
   void cacheRequisition();
   void cacheAllocation(Warsaw::Region_ptr);
@@ -61,8 +65,8 @@ protected:
   void scrollTransform(Warsaw::Transform_ptr);
 
   Warsaw::BoundedRange::Settings settings[2];
-  Adjustment *xadjustment;
-  Adjustment *yadjustment;
+  RefCount_var<Warsaw::BoundedRange> xadjustment;
+  RefCount_var<Warsaw::BoundedRange> yadjustment;
   bool        requested;
   Warsaw::Graphic::Requisition requisition;
 };

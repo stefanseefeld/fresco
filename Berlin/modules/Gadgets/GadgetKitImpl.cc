@@ -28,6 +28,7 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/resolve.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ViewImpl.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
 #include <cmath>
@@ -55,7 +56,7 @@ using namespace Warsaw;
 //   Coord alpha;
 // };
 
-class RGBAdjuster : public virtual POA_Warsaw::View,
+class RGBAdjuster : public virtual ViewImpl,
 		    public MonoGraphic
 {
  public:
@@ -93,7 +94,7 @@ class RGBAdjuster : public virtual POA_Warsaw::View,
   Color color;
 };
 
-class AlphaAdjuster : public virtual POA_Warsaw::View,
+class AlphaAdjuster : public virtual ViewImpl,
 		      public MonoGraphic
 {
  public:
@@ -116,7 +117,7 @@ class AlphaAdjuster : public virtual POA_Warsaw::View,
   Coord alpha;
 };
 
-class LightingAdjuster : public virtual POA_Warsaw::View,
+class LightingAdjuster : public virtual ViewImpl,
 			 public MonoGraphic
 {
  public:
@@ -159,7 +160,7 @@ class LightingAdjuster : public virtual POA_Warsaw::View,
   Color color;
 };
 
-class RotationAdjuster : public virtual POA_Warsaw::View,
+class RotationAdjuster : public virtual ViewImpl,
 			 public MonoGraphic
 {
  public:
@@ -178,7 +179,7 @@ class RotationAdjuster : public virtual POA_Warsaw::View,
   Axis axis;
 };
 
-class ZoomAdjuster : public virtual POA_Warsaw::View,
+class ZoomAdjuster : public virtual ViewImpl,
 		     public MonoGraphic
 {
  public:

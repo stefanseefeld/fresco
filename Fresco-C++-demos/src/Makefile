@@ -53,6 +53,9 @@ ldlibpath = LD_LIBRARY_PATH=$(lpath)
 demo:		$(OBJ)
 		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
+menu:		$(opath)/Application.o $(opath)/menu.o
+		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
 install:	world
 		for i in $(TARGET); do \
 		  install -m755 $$i $(bindir); \

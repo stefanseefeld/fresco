@@ -285,24 +285,8 @@ void ViewportImpl::Adjustment::adjust(Coord d)
   notify(any);
 }
 
-ViewportImpl::ViewportImpl()
-  : requested(false)
-{
-  xadjustment = new Adjustment;
-  yadjustment = new Adjustment;
-}
-
-ViewportImpl::~ViewportImpl()
-{
-//  xadjustment->_dispose();
-//  yadjustment->_dispose();
-}
-
-void ViewportImpl::attachAdjustments()
-{
-  xadjustment->attach(Observer_var(_this()));
-  yadjustment->attach(Observer_var(_this()));
-}
+ViewportImpl::ViewportImpl() : requested(false) {}
+ViewportImpl::~ViewportImpl() {}
 
 void ViewportImpl::body(Graphic_ptr g)
 {
@@ -414,6 +398,18 @@ void ViewportImpl::update(const CORBA::Any &)
   if (damage) needRedraw();
 }
 
+void ViewportImpl::activateComposite()
+{
+  Adjustment *adjustment = new Adjustment;
+  activate(adjustment);
+  xadjustment = RefCount_var<BoundedRange>::increment(adjustment->_this(), false);
+  xadjustment->attach(Observer_var(_this()));
+  adjustment = new Adjustment;
+  activate(adjustment);
+  yadjustment = RefCount_var<BoundedRange>::increment(adjustment->_this(), false);
+  yadjustment->attach(Observer_var(_this()));
+}
+
 void ViewportImpl::allocateChild(Allocation::Info &info)
 {
   scrollTransform(info.transformation);
@@ -426,7 +422,7 @@ void ViewportImpl::allocateChild(Allocation::Info &info)
 
 BoundedRange_ptr ViewportImpl::adjustment(Axis a)
 {
-  return a == xaxis ? xadjustment->_this() : yadjustment->_this();
+  return a == xaxis ? RefCount_var<BoundedRange>::increment(xadjustment) : RefCount_var<BoundedRange>::increment(yadjustment);
 }
 
 void ViewportImpl::cacheRequisition()

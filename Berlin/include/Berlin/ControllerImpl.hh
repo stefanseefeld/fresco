@@ -39,7 +39,7 @@ class ControllerImpl : public virtual POA_Warsaw::Controller,
 {
  public:
   ControllerImpl(bool);
-  ~ControllerImpl() { Prague::Trace trace("ControllerImpl::~ControllerImpl");}
+  ~ControllerImpl();
   virtual void traverse(Warsaw::Traversal_ptr traversal) { traversal->visit(Warsaw::Graphic_var(_this()));}
   virtual void draw(Warsaw::DrawTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
   virtual void pick(Warsaw::PickTraversal_ptr);

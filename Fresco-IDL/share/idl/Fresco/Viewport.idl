@@ -23,14 +23,14 @@
 #define _Warsaw_Viewport_idl
 
 #include <Warsaw/Graphic.idl>
-#include <Warsaw/Subject.idl>
+#include <Warsaw/View.idl>
 
 module Warsaw
 {
   interface BoundedRange;
   
   //. A viewport allows adjustment of the view of a graphic.
-  interface Viewport : Graphic, Observer
+  interface Viewport : View
     {
       BoundedRange adjustment(in Axis a);
     };

@@ -26,7 +26,7 @@
 #include <Warsaw/Command.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Berlin/TransformImpl.hh>
-#include <Berlin/SubjectImpl.hh>
+#include <Berlin/ObserverImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include "Demo.hh"
 

@@ -25,26 +25,26 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
-#include <Berlin/KitImpl.hh>
 #include <cassert>
 
 class ServantBase : public virtual PortableServer::RefCountServantBase
 {
   friend class KitImpl;
+  friend class IdentifiableImpl;
 public:
-  ServantBase(): kit(0) {}
+  ServantBase() : poa(PortableServer::POA::_nil()) {}
   ~ServantBase() {}
-  void deactivate() { assert(kit); kit->deactivate(this);}
+  void deactivate();
 protected:
   //.in case this object serves as a factory,
   //.this method allows to activate the manufactored objects
   //.with the same POA this object is registered with
-  void activate(ServantBase *servant) { assert(kit); kit->activate(servant);}
+  void activate(ServantBase *);
   //.if the servant is a composite, it needs to implement this method
   //.to activate the child servants
   virtual void activateComposite() {}
 private:
-  KitImpl *kit;
+  PortableServer::POA_var poa;
 };
 
 #endif

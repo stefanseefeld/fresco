@@ -51,7 +51,8 @@ private:
 
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   : ControllerImpl(false),
-    redirect(new Observer(this)),
+    translateX(new Observer(this)),
+    translateY(new Observer(this)),
     _drag(new Dragger(xx, yy)),
     x(RefCount_var<BoundedRange>::increment(xx)),
     y(RefCount_var<BoundedRange>::increment(yy))
@@ -62,8 +63,8 @@ Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   settings = y->getSettings();
   offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
   offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
-  x->attach(Observer_var(redirect->_this()));
-  y->attach(Observer_var(redirect->_this()));
+  x->attach(Observer_var(translateX->_this()));
+  y->attach(Observer_var(translateY->_this()));
 }
 
 void Panner::init(Controller_ptr t)

@@ -61,6 +61,11 @@ void ImageImpl::update(const CORBA::Any &)
   needRedraw();
 }
 
+void ImageImpl::activateComposite()
+{
+  raster->attach(Observer_var(_this()));
+}
+
 Texture::Texture(Raster_ptr r) : raster(RefCount_var<Warsaw::Raster>::increment(r)) {}
 Texture::~Texture() {}
 void Texture::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}

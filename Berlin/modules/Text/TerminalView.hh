@@ -25,11 +25,12 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/View.hh>
 #include <Warsaw/TextKit.hh>
+#include <Berlin/ViewImpl.hh>
 #include "Text/Composition.hh"
 #include <map>
 #include <vector>
 
-class TerminalView : public virtual POA_Warsaw::View,
+class TerminalView : public virtual ViewImpl,
 		     public Composition
 {
   typedef vector<Composition *> lines_t;

@@ -24,13 +24,15 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Subject.hh>
+#include <Warsaw/Observer.hh>
 #include <Prague/Sys/Thread.hh>
-#include <list>
 #include "Berlin/RefCountBaseImpl.hh"
+#include "Berlin/IdentifiableImpl.hh"
+#include <vector>
 
 class SubjectImpl : public virtual POA_Warsaw::Subject,
-		    public virtual PortableServer::RefCountServantBase,
-		    public virtual RefCountBaseImpl
+		    public virtual RefCountBaseImpl,
+                    public virtual IdentifiableImpl
 {
 public:
   SubjectImpl();
@@ -40,16 +42,10 @@ public:
   virtual void notify();
   void block(CORBA::Boolean);  
 private:
-  list<Warsaw::Observer_var> observers;
+  vector<Warsaw::Observer_var> observers;
   CORBA::Boolean blocked;
+  Prague::Mutex mutex;
   Prague::Mutex observerMutex;
-  Prague::Mutex myMutex;
-};
-
-class ObserverImpl : public virtual POA_Warsaw::Observer,
-		     public virtual PortableServer::RefCountServantBase,
-		     public virtual RefCountBaseImpl
-{
 };
 
 #endif 

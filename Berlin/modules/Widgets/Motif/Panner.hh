@@ -26,6 +26,7 @@
 #include <Warsaw/Command.hh>
 #include <Warsaw/BoundedRange.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ObserverImpl.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
@@ -59,7 +60,8 @@ public:
   Warsaw::Command_ptr drag();
 private:
   void traverseThumb(Warsaw::Traversal_ptr);
-  Impl_var<Observer> redirect;
+  Impl_var<Observer> translateX;
+  Impl_var<Observer> translateY;
   Impl_var<Dragger> _drag;
   RefCount_var<Warsaw::BoundedRange> x;
   RefCount_var<Warsaw::BoundedRange> y;

@@ -19,18 +19,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Tracer.hh>
 #include "Desktop/Pulldown.hh"
 
-void Pulldown::loseFocus(Warsaw::Input::Device)
+using namespace Prague;
+using namespace Warsaw;
+
+void Pulldown::loseFocus(Input::Device)
 {
+  Trace trace("Pulldown::loseFocus");
   mapped(false);
 }
 
 void Pulldown::mapped(CORBA::Boolean flag)
 {
+  Trace trace("Pulldown::mapped");
   /*
    * make sure we get focus before we are mapped
    */
-  if (!flag || requestFocus(Warsaw::Controller_var(_this()), 1))
+//   if (!flag || requestFocus(Controller_var(_this()), 1))
     WindowImpl::mapped(flag);
 }

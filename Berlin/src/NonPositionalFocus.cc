@@ -63,7 +63,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
    */
   while (nf != tmp.end() &&
 	 of != controllers.end() &&
-	 (*nf)->_is_equivalent(*of)) nf++, of++;
+	 (*nf)->is_identical(*of)) nf++, of++;
   /*
    * ...remove the old controllers in reverse order,...
    */

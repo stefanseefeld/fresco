@@ -29,7 +29,7 @@ using namespace Warsaw;
 static Mutex mutex;
 
 RefCountBaseImpl::RefCountBaseImpl() : refcount(1) {}
-RefCountBaseImpl::~RefCountBaseImpl() {}
+RefCountBaseImpl::~RefCountBaseImpl() { Trace trace("RefCountBaseImpl::~RefCountBaseImpl");}
 void RefCountBaseImpl::increment()
 {
   Trace trace("RefCountBaseImpl::increment");

@@ -209,6 +209,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 {
   Trace trace("DesktopKitImpl::pulldown");
+  cout << "pulldown" << endl;
   Pulldown *menu = new Pulldown();
   activate(menu);
   Window_var wptr = menu->_this();

@@ -25,6 +25,7 @@
 #include <Warsaw/Types.idl>
 #include <Warsaw/Allocation.idl>
 #include <Warsaw/RefCountBase.idl>
+#include <Warsaw/Identifiable.idl>
 
 module Warsaw
 {
@@ -48,7 +49,7 @@ module Warsaw
   //. within the scene graph. Graphics have a size and an origin for the purposes 
   //. of layout. The Graphic interface provides operations for geometry management,
   //. drawing, picking, and a directed-acyclic structure (not strictly hierarchical).
-  interface Graphic : RefCountBase
+  interface Graphic : RefCountBase, Identifiable
     {
       //. If the defined flag is true, a requirement specifies
       //. a natural size, maximum size, minimum size, and

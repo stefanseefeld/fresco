@@ -21,5 +21,5 @@
 
 major	= 0
 minor	= 2
-patch	= 0
+patch	= 1
 archive	= lib config/Warsaw idl/Warsaw include/Warsaw src/Warsaw

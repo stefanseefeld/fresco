@@ -25,13 +25,14 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/View.hh>
 #include <Warsaw/BoundedValue.hh>
+#include <Berlin/ViewImpl.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
 namespace Motif
 {
 
-class Gauge : public virtual POA_Warsaw::View,
+class Gauge : public virtual ViewImpl,
 	      public GraphicImpl
 {
  public:

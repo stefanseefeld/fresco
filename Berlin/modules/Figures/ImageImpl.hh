@@ -28,10 +28,12 @@
 #include <Warsaw/Image.hh>
 #include <Warsaw/Raster.hh>
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/ViewImpl.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
 
 class ImageImpl : public virtual POA_Warsaw::Image,
+		  public virtual ViewImpl,
 		  public GraphicImpl
 {
 public:
@@ -44,6 +46,8 @@ public:
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void draw(Warsaw::DrawTraversal_ptr); 
   virtual void update(const CORBA::Any &);
+protected:
+  virtual void activateComposite();
 private:
   RefCount_var<Warsaw::Raster> raster;
   Warsaw::Coord width, height;

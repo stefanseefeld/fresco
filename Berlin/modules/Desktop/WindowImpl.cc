@@ -173,7 +173,7 @@ CORBA::Boolean WindowImpl::mapped()
 
 void WindowImpl::mapped(CORBA::Boolean flag)
 {
-  Trace trace("WindowImpl::map");
+  Trace trace("WindowImpl::mapped");
   if (flag)
     /*
      * map

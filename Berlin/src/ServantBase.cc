@@ -23,3 +23,26 @@
 #include "Berlin/ServantBase.hh"
 #include "Berlin/KitImpl.hh"
 
+using namespace Prague;
+using namespace Warsaw;
+
+void ServantBase::deactivate()
+{
+  Trace trace("ServantBase::deactivate");
+  assert(!CORBA::is_nil(poa));
+  PortableServer::ObjectId *oid = poa->servant_to_id(this);
+  poa->deactivate_object(*oid);
+  delete oid;
+};
+
+void ServantBase::activate(ServantBase *servant)
+{
+  Trace trace("ServantBase::activate");
+  assert(!CORBA::is_nil(poa));
+  PortableServer::ObjectId *oid = poa->activate_object(servant);
+  servant->poa = PortableServer::POA::_duplicate(poa);
+  servant->_remove_ref();
+  delete oid;
+  servant->activateComposite();
+};
+

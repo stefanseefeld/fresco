@@ -1,9 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 2000 Nathaniel Smith <njs@berlin-consortium.org>
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -21,27 +19,18 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextViewer_hh
-#define _TextViewer_hh
+#ifndef _IdentifiableImpl_hh
+#define _IdentifiableImpl_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/View.hh>
-#include <Warsaw/TextKit.hh>
-#include <Berlin/ViewImpl.hh>
-#include "Text/Composition.hh"
-#include <map>
+#include <Warsaw/Identifiable.hh>
+#include <Berlin/ServantBase.hh>
 
-class TextViewer : public virtual ViewImpl,
-		   public Composition
+class IdentifiableImpl : public virtual POA_Warsaw::Identifiable,
+			 public virtual ServantBase
 {
- public:
-  TextViewer(Warsaw::TextBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *);
-  virtual ~TextViewer();
-  virtual void update(const CORBA::Any &);
- protected:
-  virtual void activateComposite();
-  Warsaw::TextKit_var kit;
-  Warsaw::TextBuffer_var buffer;
+public:
+  CORBA::Boolean is_identical(Warsaw::Identifiable_ptr);
 };
 
 #endif

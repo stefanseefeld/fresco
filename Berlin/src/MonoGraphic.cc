@@ -30,20 +30,18 @@
 using namespace Prague;
 using namespace Warsaw;
 
-MonoGraphic::MonoGraphic() {}
+MonoGraphic::MonoGraphic() { child.peer = Warsaw::Graphic::_nil();}
 MonoGraphic::~MonoGraphic()
 {
   Trace trace("MonoGraphic::~MonoGraphic");
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child.peer))
-    {
-      try
-	{
-	  child.peer->decrement();
-	  child.peer->removeParent(child.peerId);
-	}
-      catch(CORBA::OBJECT_NOT_EXIST &) {}
-    }
+    try
+      {
+	child.peer->decrement();
+	child.peer->removeParent(child.peerId);
+      }
+    catch(const CORBA::OBJECT_NOT_EXIST &) {}
 }
 
 Graphic_ptr MonoGraphic::body()
@@ -57,25 +55,21 @@ void MonoGraphic::body(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child.peer))
-    {
-      try
-	{
-	  child.peer->removeParent(child.peerId);
-	  child.peer->decrement();
-	}
-      catch(CORBA::OBJECT_NOT_EXIST &) {}
-    }
+    try
+      {
+	child.peer->removeParent(child.peerId);
+	child.peer->decrement();
+      }
+    catch(const CORBA::OBJECT_NOT_EXIST &) {}
   child.peer = Warsaw::Graphic::_duplicate(c);
   if (!CORBA::is_nil(child.peer))
-    {
-      try
-	{
-	  child.peerId = child.peer->addParent(Graphic_var(_this()), 0);
-	  child.peer->increment();
-	}
-      catch(CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
-    }
-//   needResize();
+    try
+      {
+	child.peerId = child.peer->addParent(Graphic_var(_this()), 0);
+	child.peer->increment();
+      }
+    catch(const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+  //   needResize();
 }
 
 void MonoGraphic::append(Graphic_ptr c)
@@ -83,7 +77,7 @@ void MonoGraphic::append(Graphic_ptr c)
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child.peer))
     try { child.peer->append(c);}
-    catch (CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::prepend(Graphic_ptr c)
@@ -91,7 +85,7 @@ void MonoGraphic::prepend(Graphic_ptr c)
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child.peer))
     try { child.peer->prepend(c);}
-    catch (CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::remove(Tag localId)
@@ -100,7 +94,7 @@ void MonoGraphic::remove(Tag localId)
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child.peer))
     try { child.peer->remove(localId);}
-    catch (CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::removeChild(Tag localId)

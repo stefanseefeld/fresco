@@ -22,6 +22,7 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Controller.hh>
+#include <Berlin/ObserverImpl.hh>
 #include "Command/SelectionImpl.hh"
 #include <algorithm>
 #include <functional>
@@ -37,6 +38,7 @@ class SelectionImpl::Observer : public ObserverImpl
 {
 public:
   Observer(SelectionImpl *, Telltale_ptr, Tag);
+  ~Observer();
   Tag id() const { return t;}
   bool toggled() { return cached;}
   void update(const CORBA::Any &);
@@ -53,6 +55,13 @@ SelectionImpl::Observer::Observer(SelectionImpl *s, Telltale_ptr i, Tag tt)
     cached(item->test(Warsaw::Controller::toggled)),
     t(tt)
 {
+}
+
+SelectionImpl::Observer::~Observer()
+{
+  Trace trace("SelectionImpl::Observer::~Observer");
+  item->detach(Observer_var(_this()));
+  selection->removeObserver(t);
 }
 
 void SelectionImpl::Observer::update(const CORBA::Any &any)
@@ -72,8 +81,9 @@ SelectionImpl::SelectionImpl(Warsaw::Selection::Policy p, TelltaleConstraint_ptr
 SelectionImpl::~SelectionImpl()
 {
   Trace trace("SelectionImpl::~SelectionImpl");
-  for (list_t::iterator i = items.begin(); i != items.end(); i++)
-    (*i)->deactivate();
+//   for (list_t::iterator i = items.begin(); i != items.end(); i++)
+//     try { (*i)->deactivate();}
+//     catch (CORBA::OBJECT_NOT_EXIST &) {}
 }
 
 Warsaw::Selection::Policy SelectionImpl::type() { return policy;}
@@ -83,12 +93,13 @@ Tag SelectionImpl::add(Telltale_ptr t)
 {
   Trace trace("SelectionImpl::add");
   MutexGuard guard(mutex);
-  Observer *observer = new Observer(this, t, uniqueId());
-  activate(observer);
+  Tag id = uniqueId();
+  Observer *observer = new Observer(this, t, id);
+//   activate(observer);
   t->attach(Observer_var(observer->_this()));
   if (!CORBA::is_nil(constraint)) constraint->add(t);
   items.push_back(observer);
-  return observer->id();
+  return id;
 }
 
 void SelectionImpl::remove(Tag t)
@@ -99,7 +110,7 @@ void SelectionImpl::remove(Tag t)
   if (i < items.size())
     {
       //       if (!CORBA::is_nil(constraint)) constraint->remove(t);
-      items[i]->deactivate();
+      items[i]->destroy();
       items.erase(items.begin() + i);
     }
 }
@@ -129,6 +140,14 @@ void SelectionImpl::update(Tag t, bool toggled)
   notify(any);
 }
 
+void SelectionImpl::removeObserver(Tag t)
+{
+  Trace trace("SelectionImpl::removeObserver");
+  MutexGuard guard(mutex);
+  size_t i = idToIndex(t);
+  if (i < items.size()) items.erase(items.begin() + i);
+}
+
 struct Id_eq : public unary_function<SelectionImpl::Observer *, bool>
 {
   Id_eq(Warsaw::Tag t) : id(t) {}
@@ -140,12 +159,12 @@ Tag SelectionImpl::uniqueId()
 {
   Tag id = 0;
   do
-    if (find_if(items.begin(), items.end(), Id_eq(id)) == items.end())
+    if (find_if(items.begin(), items.end(), ::Id_eq(id)) == items.end())
       return id;
   while(++id);
 }
 
 CORBA::Long SelectionImpl::idToIndex(Tag id)
 {
-  return find_if(items.begin(), items.end(), Id_eq(id)) - items.begin();
+  return find_if(items.begin(), items.end(), ::Id_eq(id)) - items.begin();
 }

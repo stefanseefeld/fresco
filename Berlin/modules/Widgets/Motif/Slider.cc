@@ -56,13 +56,13 @@ private:
 Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
   : ControllerImpl(false),
     requisition(r),
-    redirect(new Observer(this)),
+    translate(new Observer(this)),
     _drag(new Dragger(v, a)),
     value(RefCount_var<BoundedValue>::increment(v)),
     offset((v->value() - v->lower())/(v->upper() - v->lower())),
     axis(a)
 {
-  v->attach(Observer_var(redirect->_this()));
+  v->attach(Observer_var(translate->_this()));
 }
 
 void Slider::init(Controller_ptr t)

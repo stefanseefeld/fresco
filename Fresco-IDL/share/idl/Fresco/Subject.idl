@@ -22,7 +22,9 @@
 #ifndef _Warsaw_Subject_idl
 #define _Warsaw_Subject_idl
 
+#include <Warsaw/Types.idl>
 #include <Warsaw/RefCountBase.idl>
+#include <Warsaw/Identifiable.idl>
 
 module Warsaw
 {
@@ -31,20 +33,12 @@ module Warsaw
   //. Subject defines what it means to be observable.
   //. Observers can be bound to it so calling notify
   //. will call them back
-  interface Subject : RefCountBase
+  interface Subject : RefCountBase, Identifiable
     {
       void attach(in Observer o);
       void detach(in Observer o);
       void notify(in any a);
       void block(in boolean b);  
-    };
-  
-  //. Observers observ Subjects.
-  //. Observers can be bound to it so calling notify
-  //. will call them back
-  interface Observer : RefCountBase
-    {
-      void update(in any a);
     };
 };
 

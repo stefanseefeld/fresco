@@ -21,7 +21,7 @@
 
 major	= 0
 minor	= 2
-patch	= 0
+patch	= 1
 kits	= Command Desktop Drawing Figure Gadget Image Layout Text Tool Widget
 archive	= LICENSE.Berlin LICENSE.Fresco lib modules etc/PNG etc/glyph.dat \
           config/Server include/Berlin src/Berlin \

@@ -54,8 +54,8 @@ CORBA::Boolean KitImpl::supports(const Warsaw::Kit::PropertySeq &p)
 void KitImpl::activate(::ServantBase *servant)
 {
   Trace trace("KitImpl::activate(PortableServer::Servant)");
-  servant->kit = this;
   PortableServer::ObjectId *oid = poa->activate_object(servant);
+  servant->poa = PortableServer::POA::_duplicate(poa);
   servant->_remove_ref();
   delete oid;
   servant->activateComposite();

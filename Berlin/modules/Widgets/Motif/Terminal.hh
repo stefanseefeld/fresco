@@ -26,6 +26,7 @@
 #include <Warsaw/CommandKit.hh>
 #include <Warsaw/StreamBuffer.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ObserverImpl.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 #include <Prague/IPC/TTYAgent.hh>

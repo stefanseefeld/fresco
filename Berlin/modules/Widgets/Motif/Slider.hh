@@ -26,6 +26,7 @@
 #include <Warsaw/Command.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/ObserverImpl.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
@@ -57,7 +58,7 @@ public:
 private:
   void traverseThumb(Warsaw::Traversal_ptr);
   Warsaw::Graphic::Requisition requisition;
-  Impl_var<Observer> redirect;
+  Impl_var<Observer> translate;
   Impl_var<Dragger> _drag;
   RefCount_var<Warsaw::BoundedValue> value;
   Warsaw::Coord offset;

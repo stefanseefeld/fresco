@@ -267,7 +267,7 @@ GraphicImpl::~GraphicImpl()
     {
       if (!CORBA::is_nil((*i).peer)) 
 	try { (*i).peer->removeChild((*i).peerId);}
-	catch(CORBA::OBJECT_NOT_EXIST &) {}
+	catch(const CORBA::OBJECT_NOT_EXIST &) {}
     }
   parents.clear();
 }
@@ -362,7 +362,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 	    }
 	  begin = end;
 	}
-      catch (CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
     }
 }
 
@@ -422,7 +422,7 @@ void GraphicImpl::needResize()
   MutexGuard guard(parentMutex);
   for (glist_t::iterator i = parents.begin(); i != parents.end(); i++)
     try {(*i).peer->needResize();}
-    catch (CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
 }
 
 void GraphicImpl::initRequisition(Warsaw::Graphic::Requisition &r)

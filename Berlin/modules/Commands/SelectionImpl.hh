@@ -45,6 +45,7 @@ class SelectionImpl : public virtual POA_Warsaw::Selection,
   virtual Warsaw::Selection::Items *toggled();
  private:
   void update(Warsaw::Tag, bool);
+  void removeObserver(Warsaw::Tag);
   Warsaw::Tag uniqueId();
   CORBA::Long idToIndex(Warsaw::Tag);
   Prague::Mutex mutex;

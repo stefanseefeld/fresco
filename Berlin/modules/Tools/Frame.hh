@@ -23,11 +23,12 @@
 #define _Frame_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/View.hh>
 #include <Warsaw/Telltale.hh>
 #include <Warsaw/Region.hh>
-#include "Berlin/ImplVar.hh"
+#include "Berlin/ViewImpl.hh"
 #include "Berlin/MonoGraphic.hh"
+#include "Berlin/ImplVar.hh"
+#include "Berlin/RefCountVar.hh"
 
 class Frame : public MonoGraphic
 {
@@ -55,7 +56,7 @@ protected:
   Renderer            *renderer;
 };
 
-class DynamicFrame : public virtual POA_Warsaw::View,
+class DynamicFrame : public virtual ViewImpl,
 		     public Frame
 {
  public:
@@ -64,7 +65,7 @@ class DynamicFrame : public virtual POA_Warsaw::View,
   virtual void attach(Warsaw::Telltale_ptr);
   virtual void update(const CORBA::Any &);
  protected:
-  Warsaw::Telltale_var telltale;
+  RefCount_var<Warsaw::Telltale> telltale;
   Frame::Renderer *renderer1, *renderer2;
   bool on;
   Warsaw::Telltale::Mask mask;

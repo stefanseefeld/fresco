@@ -34,6 +34,8 @@ using namespace Prague;
 using namespace Warsaw;
 
 ControllerImpl::ControllerImpl(bool t) : telltale(0), focus(0), grabs(0), transparent(t) {}
+ControllerImpl::~ControllerImpl() { Trace trace("ControllerImpl::~ControllerImpl");}
+
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   Trace trace("ControllerImpl::pick");
@@ -119,7 +121,7 @@ void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Co
 	  pr->setControllerLinks(Controller_var(Warsaw::Controller::_nil()),
 				 Controller_var(pr->prevController()), Controller_var(_this()));
 	}
-      next = ne;
+      next = Warsaw::Controller::_duplicate(ne);
       if (!CORBA::is_nil(ne))
 	{
 	  ne->setControllerLinks(Controller_var(Warsaw::Controller::_nil()),
@@ -128,8 +130,8 @@ void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Co
     }
   else
     {
-      prev = pr;
-      next = ne;
+      prev = Warsaw::Controller::_duplicate(pr);
+      next = Warsaw::Controller::_duplicate(ne);
     }
 }
 
@@ -242,7 +244,7 @@ void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 void ControllerImpl::constraint(TelltaleConstraint_ptr c)
 {
   MutexGuard guard(mutex);
-  myConstraint = c;
+  myConstraint = TelltaleConstraint::_duplicate(c);
 }
 
 TelltaleConstraint_ptr ControllerImpl::constraint()
