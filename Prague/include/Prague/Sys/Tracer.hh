@@ -48,7 +48,12 @@ class Tracer
   friend std::ostream &Prague::operator << (std::ostream &os, const Event &e);
   friend class Trace;
 public:
-  static void resize(size_t s) { Prague::Guard<Mutex> guard(_mutex); _events.resize(s); if (_next >= s) _next = 0;}
+  static void resize(size_t s)
+  {
+    Prague::Guard<Mutex> guard(_mutex);
+    _events.resize(s);
+    if (_next >= s) _next = 0;
+  }
   static void logging(bool l) { _log = l;}
   static double add(const char *, const char *, const char *, double start = -1);
   static void clear() { _next = 0; _wrapped = false;}

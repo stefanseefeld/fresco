@@ -122,6 +122,9 @@ fi
 
 if test ".$enable_openGL" = .yes ; then
 	BERLIN_LIB_MESA
+	if test ".$ac_cv_lib_Mesa" = .yes ; then
+		tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
+	fi
 fi
 
 if test ".$enable_PostScript" = .yes ; then

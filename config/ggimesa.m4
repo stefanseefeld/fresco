@@ -35,22 +35,22 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
 	CPPFLAGS="$GGIMESA_CPPFLAGS $CPPFLAGS"
-	AC_CHECK_HEADER(GL/ggimesa.h,,no_gl=yes)
+	AC_CHECK_HEADER(GL/ggimesa.h,,no_ggigl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
 	dnl Check for GGIMesa libs
-	if test x$no_gl = x ; then
+	if test x$no_ggigl = x ; then
 
 		if test x$ggimesa_prefix != x ; then
 			GGIMESA_LIBS=-L$ggimesa_prefix/lib -lgii
 		fi
 		save_LDFLAGS="$LDFLAGS"
 		LDFLAGS="$GGIMESA_LIBS $LDFLAGS"
-		AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_gl=yes)
+		AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_ggigl=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
 
-	if test x$no_gl != x ; then
+	if test x$no_ggigl != x ; then
 
 		ac_cv_lib_GGIMesa=no		
 		AC_MSG_WARN(GGI OpenGL library was not found!)
