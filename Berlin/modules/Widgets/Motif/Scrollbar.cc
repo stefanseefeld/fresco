@@ -91,10 +91,10 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
   allocation->normalize(info.transformation);
 }
 
-void Scrollbar::adjust(const Vertex &delta)
+void Scrollbar::adjust(const OriginatedDelta &od)
 {
-  if (_axis == xaxis && delta.x != 0.) _value->adjust(delta.x);
-  else if (_axis == yaxis && delta.y != 0.) _value->adjust(delta.y);
+  if (_axis == xaxis && od.delta.x != 0.) _value->adjust(od.delta.x);
+  else if (_axis == yaxis && od.delta.y != 0.) _value->adjust(od.delta.y);
 }
 
 void Scrollbar::update(const CORBA::Any &any)

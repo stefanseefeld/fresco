@@ -35,8 +35,8 @@ public:
   ~Adjust() { _adjustable->_remove_ref();}
   virtual void execute(const CORBA::Any &any)
   {
-    Vertex *delta;
-    if (any >>= delta) _adjustable->adjust(*delta);
+    OriginatedDelta *od;
+    if (any >>= od) _adjustable->adjust(*od);
     else  std::cerr << "Adjustable::Adjust::execute : wrong message type !" << std::endl;
   }
 private:

@@ -42,7 +42,7 @@ public:
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
 protected:
   virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Warsaw::Vertex &);
+  virtual void adjust(const Warsaw::OriginatedDelta &);
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
   Warsaw::Graphic::Requisition _requisition;

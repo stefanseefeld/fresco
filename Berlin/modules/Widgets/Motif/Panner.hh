@@ -45,7 +45,7 @@ public:
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 protected:
   virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Warsaw::Vertex &);
+  virtual void adjust(const Warsaw::OriginatedDelta &);
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
   RefCount_var<Warsaw::BoundedRange> _xvalue;

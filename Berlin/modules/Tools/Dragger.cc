@@ -50,8 +50,12 @@ void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Vertex delta = event[0].attr.location() - offset;
+  OriginatedDelta od;
+  od.delta = delta;
+  od.origin = offset;
+
   CORBA::Any any;
-  any <<= delta;
+  any <<= od;
   if (!CORBA::is_nil(command))
     try { command->execute(any);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { command = Warsaw::Command::_nil();}

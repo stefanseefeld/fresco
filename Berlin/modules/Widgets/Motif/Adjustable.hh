@@ -50,7 +50,7 @@ public:
   Warsaw::Command_ptr create_adjust_cmd();
 protected:
   virtual void update(const CORBA::Any &any) = 0;
-  virtual void adjust(const Warsaw::Vertex &) = 0;
+  virtual void adjust(const Warsaw::OriginatedDelta &) = 0;
   Warsaw::Observer_ptr observer();
 private:
   Impl_var<Observer> _translate;

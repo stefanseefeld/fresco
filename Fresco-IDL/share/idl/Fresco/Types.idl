@@ -65,6 +65,14 @@ module Warsaw
     Coord x, y, z;
   };
   typedef sequence<Vertex> Vertices;
+
+  //. An OriginatedDelta is used (e.g. by Dragger) to specify an
+  //. origin and a delta (i.e. displacement) relative to that origin.
+  struct OriginatedDelta
+  {
+    Vertex origin;
+    Vertex delta;
+  };
   
   //. Texture coordinates (used by all texture mapping modes)
   struct TexCoord

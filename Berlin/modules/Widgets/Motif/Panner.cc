@@ -84,10 +84,10 @@ void Panner::allocate(Tag, const Allocation::Info &info)
   allocation->normalize(info.transformation);
 }
 
-void Panner::adjust(const Vertex &delta)
+void Panner::adjust(const OriginatedDelta &od)
 {
-  if (delta.x != 0.) _xvalue->adjust(delta.x);
-  if (delta.y != 0.) _yvalue->adjust(delta.y);
+  if (od.delta.x != 0.) _xvalue->adjust(od.delta.x);
+  if (od.delta.y != 0.) _yvalue->adjust(od.delta.y);
 }
 
 void Panner::update(const CORBA::Any &)

@@ -87,10 +87,10 @@ void Slider::allocate(Tag, const Allocation::Info &info)
 
 void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::default_extension(a, r);}
 
-void Slider::adjust(const Vertex &delta)
+void Slider::adjust(const OriginatedDelta &od)
 {
-  if (_axis == xaxis && delta.x != 0.) _value->adjust(_scale * delta.x);
-  else if (_axis == yaxis && delta.y != 0.) _value->adjust(_scale * delta.y);
+  if (_axis == xaxis && od.delta.x != 0.) _value->adjust(_scale * od.delta.x);
+  else if (_axis == yaxis && od.delta.y != 0.) _value->adjust(_scale * od.delta.y);
 }
 
 void Slider::update(const CORBA::Any &any)
