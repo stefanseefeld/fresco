@@ -26,11 +26,12 @@ extern "C"
 #include "ggi/ggi.h"
 }
 #include <iostream>
+#include <algorithm>
 
 Pointer::Pointer(ggi_visual_t visual)
 {
-  origin[0] = origin[1] = 0;
-  position[0] = position[1] = 0;
+  origin[0] = origin[1] = 8;
+  position[0] = position[1] = 8;
   size[0] = size[1] = 16;
 
   if (!(dbuf = ggiDBGetBuffer (visual, 0)) )
@@ -41,11 +42,24 @@ Pointer::Pointer(ggi_visual_t visual)
     cerr << "Error: non-standard display buffer" << endl;
   depth = dbuf->buffer.plb.pixelformat->size/8;
   stride = dbuf->buffer.plb.stride;
+  /*
+   * create the image, just a colored square
+   */
   image = new unsigned char[size[0]*size[1]*depth];
   for (unsigned short y = 0; y != size[1]; y++)
     for (unsigned short x = 0; x != size[0]; x++)
       for (unsigned short d = 0; d != depth; d++)
 	image[y*depth*size[0] + depth*x + d] = y*depth*size[0] + depth*x + d;
+  /*
+   * create the mask, a circle
+   */
+  mask = new unsigned char[size[0]*size[1]*depth];
+  for (unsigned short y = 0; y != size[1]; y++)
+    for (unsigned short x = 0; x != size[0]; x++)
+      for (unsigned short d = 0; d != depth; d++)
+	mask[y*depth*size[0] + depth*x + d] =
+	  (y - size[1]/2)*(y - size[1]/2) + (x - size[0]/2)*(x - size[0]/2) > size[0]*size[0]/4 ?
+	  0 : ~0;
   backup = new unsigned char[size[0]*size[1]*depth];
   save();
 }
@@ -53,14 +67,15 @@ Pointer::Pointer(ggi_visual_t visual)
 Pointer::~Pointer()
 {
   delete [] image;
+  delete [] mask;
   delete [] backup;
 }
 
 void Pointer::move(PixelCoord x, PixelCoord y)
 {
   restore();
-  position[0] = x;
-  position[1] = y;
+  position[0] = max(x, origin[0]);
+  position[1] = max(y, origin[1]);
   save();
   write();
 };
@@ -84,7 +99,9 @@ void Pointer::restore()
 void Pointer::write()
 {
   unsigned char *from = image;
+  unsigned char *bits = mask;
   unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
-  for (PixelCoord y = 0; y != size[1]; y++, from += depth*size[0], to += stride)
-    Memory::copy(from, to, depth*size[0]);
+  for (PixelCoord y = 0; y != size[1]; y++, to += stride - 2*size[0])
+    for (PixelCoord x = 0; x != 2*size[0]; x++, from++, bits++, to++)
+      *to = *from & *bits;
 }
