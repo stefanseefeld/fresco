@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SYS_SRC	= logbuf.cc regex.cc Signal.cc User.cc Stopwatch.cc Time.cc \
+SYS_SRC	= logbuf.cc regex.cc Signal.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
 	  File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  DLL.cc SHM.cc Thread.cc Timer.cc Fork.cc
 
