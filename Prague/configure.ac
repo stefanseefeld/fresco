@@ -49,7 +49,7 @@ dnl General flags
 dnl ------------------------------------------------------------------
 
 AC_ARG_ENABLE(tracer,
-              AC_HELP_STRING([--enable-tracer],[Comiple with tracer support]),
+              AC_HELP_STRING([--enable-tracer],[Compile with tracer support]),
               [AC_DEFINE(TRACER, 1, [Define if you want tracer support.])])
 
 AC_MSG_NOTICE([platform specific system utilities])
