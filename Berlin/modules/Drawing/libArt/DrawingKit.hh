@@ -107,6 +107,7 @@ public:
   virtual void draw_text(const Warsaw::Unistring &);
   virtual void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
   virtual void draw_char(Warsaw::Unichar);
+  virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
   virtual void flush();
 
  private:

@@ -61,8 +61,8 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq
   screen.y1 = drawable->height();
   
   agam = art_alphagamma_new (2.5);
-  buffer = Console::newDrawable(drawable->width(), drawable->height(), 3);
-  pb = art_pixbuf_new_const_rgb ((art_u8 *)buffer->writeBuffer(), drawable->width(), drawable->height(), buffer->rowlength());
+  buffer = Console::create_drawable(drawable->width(), drawable->height(), 3);
+  pb = art_pixbuf_new_const_rgb ((art_u8 *)buffer->write_buffer(), drawable->width(), drawable->height(), buffer->row_length());
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)
@@ -198,8 +198,8 @@ void LibArtDrawingKit::draw_path(const Path &p)
   fix_order_of_irect(loc); 
   art_rgb_svp_alpha (svp, loc.x0, loc.y0, loc.x1, loc.y1,
  		     art_fg,
- 		     ((art_u8 *)buffer->writeBuffer()) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
- 		     buffer->rowlength(),
+ 		     ((art_u8 *)buffer->write_buffer()) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
+ 		     buffer->row_length(),
  		     agam);
   art_svp_free(svp);
   art_svp_free(svp1);
@@ -226,15 +226,15 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
     int width = (rect.x1 - rect.x0);
     int height = (rect.y1 - rect.y0);
     if ((height * width) < 1) return;
-    buffer->setColor(con_fg);
+    buffer->set_color(con_fg);
     if (fs == Warsaw::DrawingKit::solid)
-      buffer->drawBox(rect.x0, rect.y0, width, height);
+      buffer->draw_box(rect.x0, rect.y0, width, height);
     else
       {
-	buffer->drawHLine(rect.x0, rect.y0, width);
-	buffer->drawHLine(rect.x0, rect.y1, width);
-	buffer->drawVLine(rect.x0, rect.y0, height);
-	buffer->drawVLine(rect.x1, rect.y0, height);
+	buffer->draw_hline(rect.x0, rect.y0, width);
+	buffer->draw_hline(rect.x0, rect.y1, width);
+	buffer->draw_vline(rect.x0, rect.y0, height);
+	buffer->draw_vline(rect.x1, rect.y0, height);
       }
     art_irect_union (&bbox,&bbox,&rect);
     return;
@@ -364,11 +364,11 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf) {
   art_irect_union (&bbox,&bbox,&tsloci);
 	  	 
   // paint
-  art_rgb_pixbuf_affine((art_u8 *)buffer->writeBuffer() + 
+  art_rgb_pixbuf_affine((art_u8 *)buffer->write_buffer() + 
 			(tsloci.y0 * pb->rowstride) + 
 			(tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
 			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
-			buffer->rowlength(),
+			buffer->row_length(),
 			pixbuf, dev_affine,
 			ART_FILTER_NEAREST, agam);  
 
@@ -450,17 +450,23 @@ void LibArtDrawingKit::draw_char(Unichar c)
   affine[5] = y0;
 }
 
-void LibArtDrawingKit::allocate_char(Unichar c, Graphic::Requisition & req) {
-  if (c > 127) {
-    unifont->allocateChar(c,req);
-  } else {
-    font->allocateChar(c,req);
-  }
+void LibArtDrawingKit::allocate_char(Unichar c, Graphic::Requisition & req)
+{
+  if (c > 127) unifont->allocateChar(c,req);
+  else font->allocateChar(c,req);
 }
 
 
-void LibArtDrawingKit::allocate_text(const Unistring & s, Graphic::Requisition & req) {
-//   font->allocate(s,req);
+void LibArtDrawingKit::allocate_text(const Unistring & s, Graphic::Requisition & req)
+{
+  //   font->allocate(s,req);
+}
+
+void LibArtDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
+{
+  CORBA::Double x2 = affine[4] * buffer->resolution(xaxis);
+  CORBA::Double y2 = affine[5] * buffer->resolution(yaxis);
+  buffer->blit(d, x, y, w, h, x2 + x, y2 + y);
 }
 
 void LibArtDrawingKit::flush()

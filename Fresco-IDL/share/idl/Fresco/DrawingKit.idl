@@ -31,6 +31,7 @@ module Warsaw
   interface Transform;
   interface Region;
   interface Raster;
+  interface Drawable;
   interface DrawingKit3D;
   
   interface DrawingKit : Kit
@@ -100,6 +101,7 @@ module Warsaw
       void draw_char(in Unichar c);
       void allocate_char(in Unichar c, inout Graphic::Requisition req);
       
+      void copy_drawable(in Drawable d, in PixelCoord x, in PixelCoord y, in PixelCoord w, in PixelCoord h);
       //. Initialize drawing kit for a rendering pass. Called before
       //. each pass.
       void init();

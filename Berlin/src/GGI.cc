@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,63 +19,83 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/Console.hh"
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
+#include "Berlin/Console.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 
-vector<DrawableTie<GGIDrawable> *> GGIConsole::drawables;
+GGIConsole::dlist_t GGIConsole::_drawables;
+PortableServer::POA_var GGIConsole::_poa;
 
-GGIConsole::GGIConsole(int &argc, char **argv)// throw (exception)
-  : autoplay(false)
+GGIConsole::GGIConsole(int &argc, char **argv, PortableServer::POA_ptr poa)
+  : _autoplay(false)
 {
   ggiInit();
   GGIDrawable *drawable = new GGIDrawable(0);
-  visual = drawable->vis;
-  size[0] = drawable->mode.visible.x;
-  size[1] = drawable->mode.visible.y;
-  pos[0] = 0;
-  pos[1] = 0;
-  res[0] = 0.1 * drawable->mode.visible.x / drawable->mode.size.x;
-  res[1] = 0.1 * drawable->mode.visible.y / drawable->mode.size.y;
+  _visual = drawable->_visual;
+  _size[0] = drawable->_mode.visible.x;
+  _size[1] = drawable->_mode.visible.y;
+  _position[0] = 0;
+  _position[1] = 0;
+  _resolution[0] = 0.1 * drawable->_mode.visible.x / drawable->_mode.size.x;
+  _resolution[1] = 0.1 * drawable->_mode.visible.y / drawable->_mode.size.y;
 
-  drawables.push_back(new DrawableTie<Drawable>(drawable));
-  pipe(wakeupPipe);
+  _drawables.push_back(new DrawableTie<Drawable>(drawable));
+  _poa = PortableServer::POA::_duplicate(poa);
+  pipe(_wakeupPipe);
 }
 
 GGIConsole::~GGIConsole()
 {
-  for (vector<DrawableTie<GGIDrawable> *>::iterator i = drawables.begin(); i != drawables.end(); i++) delete *i;
-  close(wakeupPipe[0]);
-  close(wakeupPipe[1]);
+  for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); i++) delete *i;
+  close(_wakeupPipe[0]);
+  close(_wakeupPipe[1]);
   ggiExit();
 }
 
 DrawableTie<GGIDrawable> *GGIConsole::drawable()
 {
   Trace trace("GGIConsole::drawable");
-//   if (!drawables.size()) drawables.push_back(new DrawableTie<Drawable>(new GGIDrawable(0)));
-  return drawables.front();
+  assert(_drawables.size());
+  return _drawables.front();
 }
 
-DrawableTie<GGIDrawable> *GGIConsole::newDrawable(PixelCoord w, PixelCoord h, PixelCoord d)
+DrawableTie<GGIDrawable> *GGIConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
 {
-  GGIDrawable *drawable = new GGIDrawable("display-memory");
-  long depth = GGI_AUTO;
-  switch (d)
+  _drawables.push_back(new DrawableTie<GGIDrawable>(new GGIDrawable("display-memory", w, h, d)));
+  return _drawables.back();
+}
+
+DrawableTie<GGIDrawable> *GGIConsole::create_drawable(GGIDrawable *drawable)
+{
+  _drawables.push_back(new DrawableTie<GGIDrawable>(drawable));
+  return _drawables.back();
+}
+
+Warsaw::Drawable_ptr GGIConsole::activate_drawable(DrawableTie<GGIDrawable> *d)
+{
+  Trace trace("GGIConsole::activate_drawable");
+  PortableServer::ObjectId *oid = _poa->activate_object(d);
+  d->_remove_ref();
+  delete oid;
+  return d->_this();
+}
+
+DrawableTie<GGIDrawable> *GGIConsole::reference_to_servant(Warsaw::Drawable_ptr drawable)
+{
+  Trace trace("GGIConsole::reference_to_servant");
+  try
     {
-    case 1: depth = GT_8BIT; break;
-    case 2: depth = GT_16BIT; break;
-    case 3: depth = GT_24BIT; break;
-    case 4: depth = GT_32BIT; break;
-    default:
-      cerr << "GGIConsole: Warning: " << d << " bytes per pixel not supported" << endl;
-      break;
-    };
-  ggiSetGraphMode(drawable->vis, w, h, w, h, depth);
-  return new DrawableTie<GGIDrawable>(drawable);
+      PortableServer::Servant servant = _poa->reference_to_servant(drawable);
+      for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); ++i)
+	if (*i == servant) return *i;
+    }
+  catch (const PortableServer::POA::ObjectNotActive &) {}
+  catch (const PortableServer::POA::WrongAdapter &) {}
+  catch (const CORBA::OBJECT_NOT_EXIST &) {}
+  return 0;
 }
 
 static void readEvent(ggi_event &e)
@@ -151,18 +171,18 @@ Input::Event *GGIConsole::next_event()
   if (nfds == 0)
     {
       // no input from the outside world
-      ggiEventRead(visual, &event, mask); 
+      ggiEventRead(_visual, &event, mask); 
       if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute)
 	{
-	  int m = ggiEventsQueued(visual, mask);
-	  int n = ggiEventsQueued(visual, move_mask);
+	  int m = ggiEventsQueued(_visual, mask);
+	  int n = ggiEventsQueued(_visual, move_mask);
 	  if (m == n)  // nothing but a bunch of moves queued up
 	    {
 	      int x = event.pmove.x, y = event.pmove.y;
 	      for (int i = 0; i < n; ++i)
 		{
 		  // consume them all
-		  ggiEventRead(visual, &event, move_mask); 	  
+		  ggiEventRead(_visual, &event, move_mask); 	  
 		  if (event.any.type == evPtrRelative)
 		    {
 		      x += event.pmove.x;
@@ -176,21 +196,21 @@ Input::Event *GGIConsole::next_event()
 		}
 	    }
 	}
-      if (autoplay) writeEvent(event);
+      if (_autoplay) writeEvent(event);
       return synthesize(event);
     }
-  else 
+  else if (nfds > 0)
     {
-      if (autoplay && rfdset.isset(input))
+      if (_autoplay && rfdset.isset(input))
 	{
 	  readEvent(event);
 	  return synthesize(event);
 	}
       else
 	{
-	  if (rfdset.isset(wakeupPipe[0]))
+	  if (rfdset.isset(_wakeupPipe[0]))
 	    {
-	      char c; read(wakeupPipe[0], &c, 1);
+	      char c; read(_wakeupPipe[0], &c, 1);
 	      return 0;
 	    }
 	}
@@ -198,7 +218,7 @@ Input::Event *GGIConsole::next_event()
   return 0;
 }
 
-void GGIConsole::wakeup() { char c = 'z'; write(wakeupPipe[1],&c,1);}
+void GGIConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
 
 Input::Event *GGIConsole::synthesize(const ggi_event &e)
 {
@@ -227,11 +247,11 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
       }
     case evPtrRelative:
       {
-	if (pos[0] + e.pmove.x >= 0 && pos[0] + e.pmove.x < size[0]) pos[0] += e.pmove.x;
-	if (pos[1] + e.pmove.y >= 0 && pos[1] + e.pmove.y < size[1]) pos[1] += e.pmove.y;	  
+	if (_position[0] + e.pmove.x >= 0 && _position[0] + e.pmove.x < _size[0]) _position[0] += e.pmove.x;
+	if (_position[1] + e.pmove.y >= 0 && _position[1] + e.pmove.y < _size[1]) _position[1] += e.pmove.y;	  
 	Input::Position position;
-	position.x = pos[0]/res[0];
-	position.y = pos[1]/res[1];
+	position.x = _position[0]/_resolution[0];
+	position.y = _position[1]/_resolution[1];
 	position.z = 0;
 	event->length(1);
 	event[0].dev = 1;
@@ -240,11 +260,11 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
       }
     case evPtrAbsolute:
       {
-	pos[0] = e.pmove.x;
-	pos[1] = e.pmove.y;
+	_position[0] = e.pmove.x;
+	_position[1] = e.pmove.y;
 	Input::Position position;
-	position.x = pos[0]/res[0];
-	position.y = pos[1]/res[1];
+	position.x = _position[0]/_resolution[0];
+	position.y = _position[1]/_resolution[1];
 	position.z = 0;
 	event->length(1);
 	event[0].dev = 1;
@@ -261,8 +281,8 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
 	  toggle.actuation = Input::Toggle::release;
  	toggle.number = e.pbutton.button;	  
 	Input::Position position;
-	position.x = pos[0]/res[0];
-	position.y = pos[1]/res[1];
+	position.x = _position[0]/_resolution[0];
+	position.y = _position[1]/_resolution[1];
 	position.z = 0;
 	event->length(2);
 	event[0].dev = 1;
@@ -275,41 +295,52 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
   return event._retn();
 }
 
-GGIDrawable::GGIDrawable(const char *display) // throw (exception)
+GGIDrawable::GGIDrawable(const char *display, PixelCoord w, PixelCoord h, PixelCoord d) // throw (exception)
 {
-  if (display) vis = ggiOpen(display, 0);
-  else vis = ggiOpen(0);
-  if (!vis) throw exception();
-  mode.visible.x = mode.visible.y = GGI_AUTO;
-  mode.virt.x = mode.virt.y = GGI_AUTO;
-  mode.size.x = GGI_AUTO;
-  mode.size.y = GGI_AUTO;
-  mode.dpp.x = mode.dpp.y = 1;
-  mode.graphtype = GT_AUTO;
-  mode.frames = 1;
-  if (ggiCheckMode(vis, &mode) == 0)
+  if (display) _visual = ggiOpen(display, 0);
+  else _visual = ggiOpen(0);
+  if (!_visual) throw exception();
+
+  long depth = GGI_AUTO;
+  switch (d)
     {
-      // Cannot set visual, even though GGI says it's ok???
-      if (ggiSetMode(vis, &mode) != 0) throw exception();
+    case 0: depth = GGI_AUTO; break;
+    case 1: depth = GT_8BIT; break;
+    case 2: depth = GT_16BIT; break;
+    case 3: depth = GT_24BIT; break;
+    case 4: depth = GT_32BIT; break;
+    default:
+      cerr << "GGIDrawable: Warning: " << d << " bytes per pixel not supported" << endl;
+      break;
+    };
+  _mode.visible.x = _mode.virt.x = w ? w : GGI_AUTO;
+  _mode.visible.y = _mode.virt.y = h ? h : GGI_AUTO;
+  _mode.size.x = GGI_AUTO;
+  _mode.size.y = GGI_AUTO;
+  _mode.dpp.x = _mode.dpp.y = 1;
+  _mode.graphtype = depth;
+  _mode.frames = 1;
+  if (ggiCheckMode(_visual, &_mode) == 0)
+    {
+      if (ggiSetMode(_visual, &_mode) != 0) throw exception();
     }
   else
     {
-      // Hmm. internal GGI problem. The mode GGI gave us still won't work.
-      if (ggiCheckMode(vis, &mode) != 0 || ggiSetMode(vis, &mode) != 0) throw exception();
+      if (ggiCheckMode(_visual, &_mode) != 0 || ggiSetMode(_visual, &_mode) != 0) throw exception();
     }
-  mode.size = mode.visible; // awful hack around a ggi bug...
-  ggiAddFlags(vis, GGIFLAG_ASYNC);
+  _mode.size = _mode.visible; // awful hack around a ggi bug...
+  ggiAddFlags(_visual, GGIFLAG_ASYNC);
 }
 
 GGIDrawable::~GGIDrawable()
 {
-  ggiClose(vis);
+  ggiClose(_visual);
 }
 
-DrawableTie<GGIDrawable>::PixelFormat GGIDrawable::pixelFormat()
+Warsaw::Drawable::PixelFormat GGIDrawable::pixel_format()
 {
-  DrawableTie<GGIDrawable>::PixelFormat format;
-  const ggi_pixelformat *pf = ggiGetPixelFormat(vis);
+  Warsaw::Drawable::PixelFormat format;
+  const ggi_pixelformat *pf = ggiGetPixelFormat(_visual);
   format.depth       = pf->depth;
   format.size        = pf->size;
   format.red_mask    = pf->red_mask;
@@ -320,5 +351,16 @@ DrawableTie<GGIDrawable>::PixelFormat GGIDrawable::pixelFormat()
   format.blue_shift  = pf->blue_shift;
   format.alpha_mask  = pf->alpha_mask;
   format.alpha_shift = pf->alpha_shift;
+  return format;
+}
+
+Warsaw::Drawable::BufferFormat GGIDrawable::buffer_format()
+{
+  Warsaw::Drawable::BufferFormat format;
+  format.skip_width = 0;
+  format.width = width();
+  format.skip_height = 0;
+  format.height = height();
+  format.row_length = row_length();
   return format;
 }

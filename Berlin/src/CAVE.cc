@@ -59,7 +59,12 @@ CAVEConsole::~CAVEConsole()
     delete _drawable;
 }
 
-DrawableTie<CAVEDrawable> *CAVEConsole::newDrawable(PixelCoord w, PixelCoord h, PixelCoord d)
+DrawableTie<CAVEDrawable> *CAVEConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
+{
+    return 0;
+}
+
+DrawableTie<CAVEDrawable> *CAVEConsole::create_drawable(Drawable *)
 {
     return 0;
 }
@@ -94,7 +99,7 @@ CAVEDrawable::~CAVEDrawable()
     // empty
 }
 
-DrawableTie<CAVEDrawable>::PixelFormat CAVEDrawable::pixelFormat()
+DrawableTie<CAVEDrawable>::PixelFormat CAVEDrawable::pixel_format()
 {
     // Load dummy values (@@@ How do we fill in this correctly?)
     DrawableTie<CAVEDrawable>::PixelFormat pft = {

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 
   Logger::log(Logger::loader) << "[1/5] initialized loadable modules" << endl;
 
-  Console::open(argc, argv);
+  Console::open(argc, argv, poa);
 
   Kit::PropertySeq props;
   props.length(1);

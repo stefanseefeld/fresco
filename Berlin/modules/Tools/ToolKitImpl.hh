@@ -61,6 +61,7 @@ class ToolKitImpl : public virtual POA_Warsaw::ToolKit,
   Warsaw::Controller_ptr   terminal(Warsaw::Graphic_ptr, Warsaw::StreamBuffer_ptr);
   Warsaw::Controller_ptr   group(Warsaw::Graphic_ptr);
   Warsaw::Controller_ptr   toggle(Warsaw::Graphic_ptr);
+  Warsaw::Canvas_ptr       create_canvas(Warsaw::PixelCoord, Warsaw::PixelCoord);
 };
 
 #endif

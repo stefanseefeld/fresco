@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,17 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Warsaw_Canvas_idl
+#define _Warsaw_Canvas_idl
 
-#include "Prague/Sys/SHM.hh"
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <iostream>
-#include <cerrno>
+#include <Warsaw/Drawable.idl>
+#include <Warsaw/Graphic.idl>
 
-using namespace Prague;
+module Warsaw
+{
+  interface Canvas : Graphic
+    {
+      typedef Drawable::PixelFormat PixelFormat;
+      typedef Drawable::BufferFormat BufferFormat;
 
-int   SHM::allocate(key_t key, size_t bytes, int flags) { return shmget(key, bytes, flags);}
-int   SHM::allocate(size_t bytes, int flags) { return shmget(IPC_PRIVATE, bytes, flags);}
-void  SHM::deallocate(int id) { shmctl(id, IPC_RMID, 0);}
-void *SHM::attach(int id) { return shmat(id, 0, SHM_RND);}
-void  SHM::detach(void *p) { shmdt(reinterpret_cast<char *> (p));}
+      readonly attribute long shm_id;
+      readonly attribute PixelFormat pixel_format;
+      readonly attribute BufferFormat buffer_format;
+      void lock();
+      void unlock();
+    };
+};
+
+#endif

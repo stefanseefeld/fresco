@@ -36,6 +36,7 @@ module Warsaw
   interface Command;
   interface TextBuffer;
   interface StreamBuffer;
+  interface Canvas;
   
   //. this kit provides common objects for very basic interaction tasks
   //. and Telltale Views such as bevels and indicators
@@ -82,6 +83,7 @@ module Warsaw
       Controller   text_input(in Graphic g, in TextBuffer b);
       Controller   terminal(in Graphic g, in StreamBuffer b);
       Controller   group(in Graphic g);
+      Canvas       create_canvas(in PixelCoord w, in PixelCoord h);
     };
 };
 

@@ -58,7 +58,7 @@ Pointer::Pointer(Console::Drawable *d)
   scale[0] = 1/screen->resolution(xaxis);
   scale[1] = 1/screen->resolution(yaxis);
   
-  Console::Drawable::PixelFormat format = screen->pixelFormat();
+  Console::Drawable::PixelFormat format = screen->pixel_format();
 
   Console::Drawable::Pixel trans = 0;
   Console::Drawable::Pixel red = (static_cast<Console::Drawable::Pixel>(1. * (~0L)) >> format.red_shift) & format.red_mask;
@@ -116,10 +116,10 @@ void Pointer::save()
   PixelCoord y = position[1] - origin[1];
   PixelCoord w = size[0];
   PixelCoord h = size[1];
-  PixelCoord r = screen->rowlength();
+  PixelCoord r = screen->row_length();
   PixelCoord s = screen->vwidth() * screen->vheight();
-  PixelCoord d = screen->pixelFormat().size >> 3;
-  unsigned char *from = static_cast<unsigned char *>(screen->readBuffer()) + y * r + x * d;
+  PixelCoord d = screen->pixel_format().size >> 3;
+  unsigned char *from = static_cast<unsigned char *>(screen->read_buffer()) + y * r + x * d;
   unsigned char *to = cache;
   for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
     Memory::copy(from, to, d * w);
@@ -132,11 +132,11 @@ void Pointer::restore()
   PixelCoord y = position[1] - origin[1];
   PixelCoord w = size[0];
   PixelCoord h = size[1];
-  PixelCoord r = screen->rowlength();
+  PixelCoord r = screen->row_length();
   PixelCoord s = screen->vwidth() * screen->vheight();
-  PixelCoord d = screen->pixelFormat().size >> 3;
+  PixelCoord d = screen->pixel_format().size >> 3;
   unsigned char *from = cache;
-  unsigned char *to = static_cast<unsigned char *>(screen->writeBuffer()) + y * r + x * d;
+  unsigned char *to = static_cast<unsigned char *>(screen->write_buffer()) + y * r + x * d;
   for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += d * w, to += r)
     Memory::copy(from, to, d * w);
 }
@@ -148,12 +148,12 @@ void Pointer::draw()
   PixelCoord y = position[1] - origin[1];
   PixelCoord w = size[0];
   PixelCoord h = size[1];
-  PixelCoord r = screen->rowlength();
+  PixelCoord r = screen->row_length();
   PixelCoord s = screen->vwidth() * screen->vheight();
-  PixelCoord d = screen->pixelFormat().size >> 3;
+  PixelCoord d = screen->pixel_format().size >> 3;
   unsigned char *from = image;
   unsigned char *bits = mask;
-  unsigned char *to = static_cast<unsigned char *>(screen->writeBuffer()) + y * r + x * d; 
+  unsigned char *to = static_cast<unsigned char *>(screen->write_buffer()) + y * r + x * d; 
   for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
     for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
       *to = (*from & *bits) | (*to & ~*bits);

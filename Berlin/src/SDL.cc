@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,14 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/Console.hh"
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
+#include "Berlin/Console.hh"
 
-vector<DrawableTie<SDLDrawable> *> SDLConsole::drawables;
+vector<DrawableTie<SDLDrawable> *> SDLConsole::_drawables;
 
 SDLConsole::SDLConsole()// throw (exception)
-  : autoplay(false)
+  : _autoplay(false)
 {
   SDL_Init(SDL_INIT_VIDEO);
   SDLDrawable *drawable = new SDLDrawable(0);
@@ -56,7 +56,7 @@ DrawableTie<SDLDrawable> *SDLConsole::drawable()
   return drawables.front();
 }
 
-DrawableTie<SDLDrawable> *SDLConsole::newDrawable(PixelCoord w, PixelCoord h, PixelCoord d)
+DrawableTie<SDLDrawable> *SDLConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
 {
   SDLDrawable *drawable = new SDLDrawable("display-memory");
   long depth = GGI_AUTO;

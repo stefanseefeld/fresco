@@ -29,12 +29,14 @@ include $(cpath)/Clients-C++/local.mk
 CXXFLAGS	+= -Wall $(OPTFLAGS)
 LIBS		+= -lBerlin -lPrague
 
-TARGETS		= demo # trafo -- doesn't work here. Anyone?
+TARGETS		= demo canvas # trafo -- doesn't work here. Anyone?
 demo_SRC	= \
 		  Application.cc LayoutDemo.cc TextDemo.cc \
 		  EditTextDemo.cc RasterDemo.cc TransformDemo.cc \
 		  ColorDemo.cc LogoDemo.cc FocusDemo.cc \
 		  ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
+canvas_SRC	= canvas.cc
+
 trafo_SRC	= trafo.cc
 
 all: world

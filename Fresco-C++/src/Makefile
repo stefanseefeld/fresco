@@ -42,8 +42,8 @@ STATINT		= \
 	Kit.idl Transform.idl Region.idl Allocation.idl Traversal.idl \
 	PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	Input.idl Focus.idl Subject.idl Observer.idl Controller.idl View.idl \
-	DrawingKit.idl Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
-	Telltale.idl StreamBuffer.idl Trigger.idl ToolKit.idl Choice.idl \
+	Drawable.idl DrawingKit.idl Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
+	Telltale.idl StreamBuffer.idl Trigger.idl Canvas.idl ToolKit.idl Choice.idl \
 	WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 	Image.idl FigureKit.idl Command.idl CommandKit.idl Metrics.idl \
 	TextKit.idl Desktop.idl Window.idl DesktopKit.idl Types3D.idl \

@@ -102,7 +102,7 @@ private:
   
 public:
     typedef long Pixel;
-    DrawableTie<GLUTDrawable>::PixelFormat pixelFormat();
+    DrawableTie<GLUTDrawable>::PixelFormat pixel_format();
   
     PixelCoord width() const { return _width; }
     PixelCoord height() const { return _height; }
@@ -110,34 +110,34 @@ public:
     PixelCoord vheight() const { return _height;}
     Coord resolution(Axis a) const;
     Coord dpi(Axis a) const { return resolution(a) * 254.0; }
-    PixelCoord rowlength() { return 0; }
+    PixelCoord row_length() { return 0; }
     Pixel map(const Color &) { return 0; }
-    void *readBuffer() { return 0; }
-    void *writeBuffer() { return 0; }
+    void *read_buffer() { return 0; }
+    void *write_buffer() { return 0; }
   
     /*
      * Read one or more pixels from framebuffer
      */
-    void readPixel(PixelCoord x, PixelCoord y, Pixel &p) { }
-    void readPixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *) { }
+    void read_pixel(PixelCoord x, PixelCoord y, Pixel &p) { }
+    void read_pixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *) { }
   
     /*
      * Draw primitives with the current color (Pixel)
      */
-    void setColor(Pixel p) { } 
-    void drawPixel(PixelCoord x, PixelCoord y) { }
-    void drawHLine(PixelCoord x, PixelCoord y, PixelCoord w) { }
-    void drawVLine(PixelCoord x, PixelCoord y, PixelCoord h) { }
-    void drawLine(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
-    void drawBox(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
+    void set_color(Pixel p) { } 
+    void draw_pixel(PixelCoord x, PixelCoord y) { }
+    void draw_hline(PixelCoord x, PixelCoord y, PixelCoord w) { }
+    void draw_vline(PixelCoord x, PixelCoord y, PixelCoord h) { }
+    void draw_line(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
+    void draw_box(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
   
     /*
      * Draw primitives with the given color (Pixel). 
      */
-    void putPixel(PixelCoord x, PixelCoord y, Pixel p) { }
-    void putHLine(PixelCoord x, PixelCoord y, PixelCoord w, void *p) { }
-    void putVLine(PixelCoord x, PixelCoord y, PixelCoord h, void *p) { }
-    void drawPixels(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h, void *p) { }
+    void put_pixel(PixelCoord x, PixelCoord y, Pixel p) { }
+    void put_hline(PixelCoord x, PixelCoord y, PixelCoord w, void *p) { }
+    void put_vline(PixelCoord x, PixelCoord y, PixelCoord h, void *p) { }
+    void draw_pixels(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h, void *p) { }
   
     /*
      * Fast blits
@@ -200,7 +200,8 @@ public:
     GLUTConsole(int &argc, char **argv);
     ~GLUTConsole();
     static DrawableTie<Drawable> *drawable() { return _drawable; }
-    static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord) { return 0; }
+    static DrawableTie<Drawable> *create_drawable(PixelCoord, PixelCoord, PixelCoord) { return 0; }
+    static DrawableTie<Drawable> *create_drawable(Drawable *) { return 0; }
     
     Input::Event *next_event();
     void wakeup();

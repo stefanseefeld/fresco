@@ -298,6 +298,7 @@ void GLDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) 
 void GLDrawingKit::draw_text(const Unistring &us) {}
 void GLDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { font->allocateChar(c, req);}
 void GLDrawingKit::draw_char(Unichar c) { font->drawChar(c);}
+void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
 
 extern "C" KitFactory *load()
 {

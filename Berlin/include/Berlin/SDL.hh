@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -39,38 +39,38 @@ class SDLDrawable
   friend class DrawableTie<SDLDrawable>;
 public:
   typedef long Pixel;
-  DrawableTie<SDLDrawable>::PixelFormat pixelFormat();
+  DrawableTie<SDLDrawable>::PixelFormat pixel_format();
   PixelCoord width() const;
   PixelCoord height() const;
   PixelCoord vwidth() const;
   PixelCoord vheight() const;
   Coord resolution(Axis a) const;
   Coord dpi(Axis a) const;
-  PixelCoord rowlength() const;
+  PixelCoord row_length() const;
   Pixel map(const Color &);
-  void *readBuffer() const;
-  void *writeBuffer() const;
+  void *read_buffer() const;
+  void *write_buffer() const;
   /*
    * read one or more pixels from framebuffer
    */
-  void readPixel(PixelCoord, PixelCoord, Pixel &);
-  void readPixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *);
+  void read_pixel(PixelCoord, PixelCoord, Pixel &);
+  void read_pixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *);
   /*
    * draw primitives with the current color (Pixel)
    */
-  void setColor(Pixel);
-  void drawPixel(PixelCoord, PixelCoord);
-  void drawHLine(PixelCoord, PixelCoord, PixelCoord);
-  void drawVLine(PixelCoord, PixelCoord, PixelCoord);
-  void drawLine(PixelCoord, PixelCoord, PixelCoord, PixelCoord);
-  void drawBox(PixelCoord, PixelCoord, PixelCoord, PixelCoord);
+  void set_color(Pixel);
+  void draw_pixel(PixelCoord, PixelCoord);
+  void draw_hline(PixelCoord, PixelCoord, PixelCoord);
+  void draw_vline(PixelCoord, PixelCoord, PixelCoord);
+  void draw_line(PixelCoord, PixelCoord, PixelCoord, PixelCoord);
+  void draw_box(PixelCoord, PixelCoord, PixelCoord, PixelCoord);
   /*
    * draw primitives with the given color (Pixel)
    */
-  void putPixel(PixelCoord, PixelCoord, Pixel);
-  void putHLine(PixelCoord, PixelCoord, PixelCoord, void *);
-  void putVLine(PixelCoord, PixelCoord, PixelCoord, void *);
-  void drawPixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *);
+  void put_pixel(PixelCoord, PixelCoord, Pixel);
+  void put_hline(PixelCoord, PixelCoord, PixelCoord, void *);
+  void put_vline(PixelCoord, PixelCoord, PixelCoord, void *);
+  void draw_pixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *);
   /*
    * fast blits
    */
@@ -84,8 +84,10 @@ public:
 private:
   SDLDrawable(const char *);
   ~SDLDrawable();
-  SDL_Surface surface;
-  int         w, h, d;
+  SDL_Surface _surface;
+  int         _width;
+  int         _height;
+  int         _depth;
 };
 
 class SDLConsole
@@ -95,12 +97,13 @@ public:
   SDLConsole(int &argc, char **argv);
   ~SDLConsole();
   static DrawableTie<Drawable> *drawable();
-  static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord);
+  static DrawableTie<Drawable> *create_drawable(PixelCoord, PixelCoord, PixelCoord);
+  static DrawableTie<Drawable> *create_drawable(Drawable *);
 
-  Input::Event *nextEvent();
+  Input::Event *next_event();
   void wakeup();
   void activate_autoplay();
 private:
 };
 
-#endif /* _SDL_hh */
+#endif

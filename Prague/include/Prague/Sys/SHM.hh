@@ -23,17 +23,15 @@
 #define _SHM_hh
 
 #include <sys/types.h>
+#include <sys/ipc.h>
 
 namespace Prague
 {
 
-/* @Class{SHM}
- *
- * @Description{SHM is the interface to Unix shared memory}
- */
 struct SHM
 {
-  static int   allocate(size_t);
+  static int   allocate(key_t, size_t, int = IPC_CREAT | 0666);
+  static int   allocate(size_t, int = IPC_CREAT | 0666);
   static void  deallocate(int);
   static void *attach(int);
   static void  detach(void *);

@@ -38,6 +38,7 @@
 #include "Tool/TextInput.hh"
 #include "Tool/Terminal.hh"
 #include "Berlin/DebugGraphic.hh"
+#include "Tool/CanvasImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -373,6 +374,14 @@ Controller_ptr ToolKitImpl::terminal(Graphic_ptr g, StreamBuffer_ptr buffer)
   activate(input);
   input->body(g);
   return input->_this();
+}
+
+Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height)
+{
+  Trace trace("ToolKitImpl::create_canvas");
+  CanvasImpl *canvas = new CanvasImpl(width, height);
+  activate(canvas);
+  return canvas->_this();
 }
 
 extern "C" KitFactory *load()
