@@ -47,6 +47,18 @@ while test $# -gt 0; do
     --libs)
       echo -L@abs_top_builddir@/lib -lFresco-Test @LIBS@
       ;;
+    --test-runner)
+      echo $prefix/bin/run_tests.sh
+      ;;
+    --syn2cc)
+      echo $prefix/bin/syn2cc.py
+      ;;
+    --include-dir)
+      echo $prefix/include
+      ;;
+    --lib-dir)
+      echo $prefix/lib
+      ;;
     *)
       echo "${usage}" 1>&2
       exit 1

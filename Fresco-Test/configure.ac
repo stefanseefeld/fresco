@@ -51,6 +51,7 @@ AC_CONFIG_FILES([bin/Fresco-Test-config:config/Fresco-Test-build-config.in], [ch
 AC_CONFIG_FILES([Makefile syunit/Makefile])
 AC_CONFIG_FILES([syunit-c++/Makefile syunit-c++/src/Makefile])
 AC_CONFIG_FILES([syunit-c++/test/Makefile])
+AC_CONFIG_FILES([scripts/Makefile])
 
 mkdir -p lib
 mkdir -p include

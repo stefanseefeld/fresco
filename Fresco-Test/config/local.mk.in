@@ -41,7 +41,6 @@ abs_top_srcdir	:= @abs_top_srcdir@
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
 TEST_CONFIG     := @abs_top_builddir@/bin/Fresco-Test-config
-SYN2CC		:= `$(TEST_CONFIG) --prefix`/bin/syn2cc.py
 SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@

@@ -32,15 +32,20 @@ include $(cdir)/local.mk
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-TESTS		:= framework.cc
+# All tests ending in .cc will be build, the rest will be run on
+# "make run-tests".
+TESTS		:= framework.cc script.sh
 
+CXX_TESTS	:= $(filter %.cc, $(TESTS))
 HDR		:= 
-SYN		:= $(patsubst %.cc, %.syn, $(TESTS))
+SYN		:= $(patsubst %.cc, %.syn, $(CXX_TESTS))
 HARNESS		:= $(patsubst %.syn, %-harness.cxx, $(SYN))
 DEP		:= $(patsubst %.cxx, %.d, $(HARNESS))
 OBJ		:= $(patsubst %.cxx, %.o, $(HARNESS))
 
-TARGETS		:= $(patsubst %.cc, %, $(TESTS))
+TARGETS		:= $(patsubst %.cc, ./%, $(CXX_TESTS))
+SCRIPTS		:= $(filter-out %.cc, $(TESTS))
+SCRIPT_SOURCES	:= $(patsubst %, $(srcdir)/%, $(SCRIPTS))
 MANUAL		:= $(docdir)/html
 
 vpath %.hh  $(hdir)
@@ -54,8 +59,8 @@ all:
 
 build-tests: $(TARGETS)
 
-run-tests:
-	@echo Running tests...
+run-tests: build-tests $(SCRIPT_SOURCES)
+	LD_LIBRARY_PATH=`$(TEST_CONFIG) --lib-dir`:$(LD_LIBRARY_PATH) `$(TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_SOURCES)
 
 $(TARGETS): $(OBJ)
 	@echo linking $(@F)
@@ -79,13 +84,13 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-$(SYN): $(TESTS)
+$(SYN): $(CXX_TESTS)
 	@echo generating $(@F)
-	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(TEST_CONFIG) --prefix`/include -o $@ $<
+	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(TEST_CONFIG) --include-dir` -o $@ $<
 
 $(HARNESS): $(SYN)
 	@echo generating test harness for $(@F)
-	$(SYN2CC) $< $@
+	`$(TEST_CONFIG) --syn2cc` $< $@
 
 $(DEP): $(HARNESS)
 	@echo generating dependencies for $(<F)
