@@ -41,6 +41,14 @@ AC_PROG_MAKE_SET
 AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
+dnl Test framework
+dnl ------------------------------------------------------------------
+
+FRESCO_PACKAGE([Fresco-Test], [Fresco_Test], [$PACKAGE_VERSION], [..])
+TEST_CONFIG="$Fresco-Test-prefix/bin/Fresco-Test-config"
+AC_SUBST(TEST_CONFIG)
+
+dnl ------------------------------------------------------------------
 dnl Prague
 dnl ------------------------------------------------------------------
 
@@ -75,6 +83,7 @@ AC_CONFIG_FILES([config/Babylon.spec])
 AC_CONFIG_FILES([config/Babylon-config], [chmod +x config/Babylon-config])
 AC_CONFIG_FILES([bin/Babylon-config:config/Babylon-build-config.in], [chmod +x bin/Babylon-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile])
+AC_CONFIG_FILES([test/Makefile])
 
 mkdir -p lib
 mkdir -p modules
