@@ -10,6 +10,6 @@
 TOPDIR := $(shell if [ "$$PWD" != "" ]; then echo $$PWD; else pwd; fi)
 export TOPDIR
 
-SUBDIRS = src
+SUBDIRS = include src test
 
 include $(TOPDIR)/config/rules.mk
