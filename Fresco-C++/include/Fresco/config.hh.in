@@ -24,8 +24,10 @@
 #undef ORBFLAGS
 #undef UsePthread
 #undef _REENTRANT
+#undef _THREAD_SAFE
 #undef __OSVERSION__
 #undef __linux__
+#undef __freebsd__
 /* add more here */
 #undef __x86__
 /* add more here */

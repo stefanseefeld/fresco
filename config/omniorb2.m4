@@ -136,6 +136,13 @@ AC_DEFUN([BERLIN_OMNIORB2_CHECK],[
 			omniorb2_defs="$omniorb2_defs -D__uw7__"
 			AC_DEFINE(__uw7__)
 			;;
+		freebsd*)
+			omniorb2_defs="$omniorb2_defs -D__freebsd__"
+			omniorb2_defs="$omniorb2_defs -D_REENTRANT -D_THREAD_SAFE"
+			AC_DEFINE(__freebsd__)
+			AC_DEFINE(_REENTRANT)
+			AC_DEFINE(_THREAD_SAFE)
+			;;
 		*)
 			AC_MSG_WARN(Unknown OS $host_os.)
 			AC_MSG_WARN(Please check the omniORB documentation to see if you OS is supported,)
@@ -169,6 +176,9 @@ dnl	os_major_version=2
 		case $host_os in
 			solaris2.6)
 				omniorb2_libs="$omniorb2_libs -lomniDynamic2 -lpthread -lposix4 -lsocket -lnsl"
+				;;
+			freebsd*)
+				omniorb2_libs="$omniorb2_libs -lomniDynamic2 -pthread"
 				;;
 		esac
 
