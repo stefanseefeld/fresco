@@ -1,0 +1,94 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2003 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+# This assumes that there is a Fresco-Test-config file in @top_srcdir@/bin!
+
+SHELL		:= /bin/sh
+
+top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
+srcdir		:= @srcdir@
+cdir		:= $(top_builddir)/config
+hdir		:= $(top_srcdir)/syunit-c++/include
+docdir		:= $(top_builddir)/share/doc/Fresco-Test
+
+include $(cdir)/local.mk
+
+CXXFLAGS	+= $(SO_CXXFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
+
+TESTS		:= test-ResultsMap.cc
+
+HDR		:= 
+SYN		:= $(patsubst %.cc, %.syn, $(TESTS))
+HARNESS		:= $(patsubst %.syn, %-harness.cxx, $(SYN))
+DEP		:= $(patsubst %.cxx, %.d, $(HARNESS))
+OBJ		:= $(patsubst %.cxx, %.o, $(HARNESS))
+
+TARGETS		:= $(patsubst %.cc, %, $(TESTS))
+MANUAL		:= $(docdir)/html
+
+vpath %.hh  $(hdir)
+vpath %.cc  $(srcdir)
+
+.FORCE:
+
+.PHONY: all doc install install-doc clean distclean maintainer-clean dist
+
+all:	$(TARGETS)
+
+$(TARGETS): $(OBJ)
+	@echo linking $(@F)
+	$(CXX) `$(TEST_CONFIG) --libs` -o $@ $<
+
+depend: $(DEP)
+
+doc:	# not yet
+
+install: # not yet
+
+install-doc: # not yet
+
+uninstall: #not yet
+
+clean:	
+	rm -f $(TARGETS)
+	rm -f $(OBJ) $(DEP) $(SYN) $(HARNESS)
+
+distclean:	clean
+
+maintainer-clean: distclean
+
+$(SYN): $(TESTS)
+	@echo generating $(@F)
+	$(SYNOPSIS) -pC++ -I$(hdir) -o $@ $<
+
+$(HARNESS): $(SYN)
+	@echo generating test harness for $(@F)
+	$(SYN2CC) $< $@
+
+$(DEP): $(HARNESS)
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+$(OBJ): $(HARNESS)
+	@echo compiling $(@F)
+	$(CXX) `$(TEST_CONFIG) --cppflags` `$(TEST_CONFIG) --cxxflags` -c $< -o $@
