@@ -52,7 +52,7 @@ $(TARGET):	$(OBJ)
 $(dpath)/%.d:	%.cc %.hh
 		@echo making dependencies for $<
 		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
+		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 parser.cc:	parser.yy
 		$(YACC) parser.yy

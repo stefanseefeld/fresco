@@ -68,7 +68,7 @@ distclean:	clean
 $(dpath)/%.d:	%.cc %.hh
 		@echo making dependencies for $<
 		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
+		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	%.cc
 		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
