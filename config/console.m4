@@ -50,18 +50,17 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 			fi				
 			;;
                 SDL)
-                        BERLIN_SDL_CHECK
-                        if test ".$ac_cv_lib_sdl" != .yes; then
+                        AM_PATH_SDL(1.1.8, [
+				AC_DECIDE(SDLCONSOLE, [use SDL])
+                                CON_IMPL=SDL
+				AC_DEFINE(CONSOLE_SDL)
+], [
                                 if test ".$1" = .mandatory; then
                                         AC_MSG_ERROR(No supported Console environment found!)
                                 else
                                         CON_IMPL="none"
                                 fi
-                        else
-				AC_DECIDE(SDLCONSOLE, [use SDL])
-                                CON_IMPL=SDL
-				AC_DEFINE(CONSOLE_SDL)
-                        fi
+])
                         ;;
                 CAVELib)
                         BERLIN_CAVELIB_CHECK
