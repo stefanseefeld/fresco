@@ -52,7 +52,8 @@ public:
   virtual Unistring *fullname();
   virtual Unistring *style();
 
-  void segments(const Unistring u, vector< pair<double,ArtPixBuf *> > &segs);
+  void segments(const Unistring u, vector<segment> &segs);
+  void rasterize(const Unistring u, ArtPixBuf *pixbuf);
   void allocateText(const Unistring &u, Graphic::Requisition &r);
 protected:
   
@@ -81,14 +82,14 @@ protected:
   void setup_size(FT_Face &f);
   bool load_glyph(Unichar c, FT_Face &f);
     
-  double xdpi, ydpi;  
+  double xres, yres, xdpi, ydpi;  
   typedef pair<atom,atom> FamStyle;
   typedef unsigned int PtSize;
   typedef pair<PtSize,FamStyle> FaceSpec;
   typedef pair<Unichar,FaceSpec> CacheSpec;
-  typedef map<CacheSpec,ArtPixBuf *>::iterator CacheIter;
+  typedef map<CacheSpec,segment>::iterator CacheIter;
   
-  map<CacheSpec,ArtPixBuf *> myCache;
+  map<CacheSpec,segment> myCache;
   map<FamStyle,FT_Face> myFaceMap;
 
   atom myFam, myStyle;

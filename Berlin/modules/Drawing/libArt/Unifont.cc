@@ -66,7 +66,7 @@ Unistring *LibArtUnifont::fullname() { return 0;}
 Unistring *LibArtUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
 
 void LibArtUnifont::segments(const Unistring u, 
-			     vector< pair<double,ArtPixBuf *> > &segs) {
+			     vector<segment> &segs) {
   unsigned int len = u.length();
   segs.reserve(len);
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
@@ -90,7 +90,7 @@ void LibArtUnifont::segments(const Unistring u,
 						 width * pixwidth);
       cache.insert(pair<Unichar,ArtPixBuf *>(ch,buf));
     }
-    segs.push_back(pair<double,ArtPixBuf *>(width,cache[ch]));
+    segs.push_back(segment(step(width,0),cache[ch]));		   
   }    
 }
 

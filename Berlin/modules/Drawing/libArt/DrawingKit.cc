@@ -356,15 +356,35 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
 
 void LibArtDrawingKit::drawText(const Unistring &u) 
 {
-  typedef vector< pair<double, ArtPixBuf *> >::iterator seg_iter;
-  vector< pair<double, ArtPixBuf *> > segs;
+  /*
+  Graphic::Requisition req;
+  font->allocateText(u,req);
+  int pix = 4;
+  int width = (int)(req.x.natural * xres);
+  int height = (int)(req.y.natural * yres) + 10;
+  int size =  width * height * pix;
+  art_u8 tmp[size];
+  memset(tmp,0,size);
+  ArtPixBuf *pixbuf = art_pixbuf_new_const_rgba (tmp, width, height, width * pix);
+  font->rasterize(u,pixbuf);
+  this->rasterizePixbuf(pixbuf);
+  art_pixbuf_free(pixbuf);
+  */    
+  typedef vector<LibArtFont::segment>::iterator seg_iter;
+  vector<LibArtFont::segment> segs;
   font->segments(u,segs);
   for(seg_iter i = segs.begin(); i != segs.end(); i++) {
+    double x = affine[4];
+    double y = affine[5];
+    affine[4] -= (i->first.second * affine[2]) / yres;
+    affine[5] -= (i->first.second * affine[3]) / yres;        
     rasterizePixbuf(i->second);
+    affine[4] = x;
+    affine[5] = y;
     // !!!FIXME!!! this does only unidirectional text
-    affine[4] += (i->first * affine[0]) / xres;
-    affine[5] += (i->first * affine[1]) / xres;    
-  }
+    affine[4] += (i->first.first * affine[0]) / xres;
+    affine[5] += (i->first.first * affine[1]) / xres;    
+    }
 }
 
 void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & req) {

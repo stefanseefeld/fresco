@@ -50,7 +50,7 @@ public:
   virtual Unistring *fullname();
   virtual Unistring *style();
 
-  void segments(const Unistring u, vector< pair<double,ArtPixBuf *> > &segs);
+  void segments(const Unistring u, vector<segment> &segs);
   void allocateText(const Unistring &u, Graphic::Requisition &r);
 protected:
   void glyph2pixels(const Unichar ch, unsigned char *pix);

@@ -30,13 +30,16 @@
 #define FLOOR(x)  ((x) & -64)
 #define CEIL(x)   (((x)+63) & -64)
 #define TRUNC(x)  ((x) >> 6)
-#define MAX(X,Y) (X<Y?X:Y)
+#define MAX(X,Y) (X>Y?X:Y)
+#define MIN(X,Y) (X<Y?X:Y)
 
 using namespace Prague;
 
 LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   xdpi(drawable->dpi(xaxis)),
   ydpi(drawable->dpi(yaxis)),
+  xres(drawable->resolution(xaxis)),
+  yres(drawable->resolution(yaxis)),
   mySize(18)
 {
   if (FT_Init_FreeType( &myLibrary )) {
@@ -136,10 +139,8 @@ Unistring *LibArtFTFont::style() {
 }
 
 void LibArtFTFont::setup_face(FT_Face &f) {
-  //cerr << "setting up face" << endl;
   FamStyle spec(myFam,myStyle);
   if (myFaceMap.find(spec) != myFaceMap.end()) {
-    // found cached face
     f = myFaceMap[spec];
   } else {
     f = myFace;
@@ -172,18 +173,13 @@ bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
   return true;
 }
   
-static bool render_glyph(ArtPixBuf **pb, 
-			 FT_GlyphSlot &glyph,
-			 FT_Library &library) {
-
-  //cerr << "rendering glyph" << endl;
-
-#define MAX_BUFFER  300000
-  static char   bit_buffer[ MAX_BUFFER ];
-  
+static inline bool render_segment(LibArtFont::segment &seg, 
+				  FT_GlyphSlot &glyph,
+				  FT_Library &library) {
+    
   // first, render the glyph into an intermediate buffer
   FT_Bitmap  bit;
-  
+
   int pixwidth = 4;
   int left  = FLOOR( glyph->metrics.horiBearingX );
   int right = CEIL( glyph->metrics.horiBearingX + glyph->metrics.width );
@@ -192,31 +188,30 @@ static bool render_glyph(ArtPixBuf **pb,
   int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
   int height = TRUNC( top - bottom );
   
-  if ( glyph->format != 
-       ft_glyph_format_outline ) return false;
+  if ( glyph->format != ft_glyph_format_outline ) return false;
+       
   int pitch  = (width+3) & -4;
   int size   = pitch*height;             
-  if (size > MAX_BUFFER) return false;
+  char   bit_buffer[size];
   bit.width      = width;
   bit.rows       = height;
   bit.pitch      = pitch;
   bit.pixel_mode = ft_pixel_mode_grays;
   bit.buffer     = bit_buffer;      
-  FT_Outline_Translate
-    (&glyph->outline, -left, -bottom );
-  memset( bit_buffer, 0, size );      
-  if (FT_Outline_Get_Bitmap
-      ( library, &glyph->outline, &bit)) return false;
 
+  FT_Outline_Translate(&glyph->outline, -left, -bottom );    
+  memset( bit_buffer, 0, size );      
+  if (FT_Outline_Get_Bitmap( library, &glyph->outline, &bit)) return false;
+
+  seg.first = LibArtFont::step(glyph->metrics.horiAdvance / 64,
+			       (glyph->metrics.horiBearingY) / 64);
+      
   // now build a pixbuf
   unsigned char *pixels = 
     new unsigned char[size * pixwidth];
   memset(pixels,0,size * pixwidth);
-  *pb = art_pixbuf_new_const_rgba
-    (pixels, 
-     width, 
-     height, 
-     width * pixwidth);  
+  seg.second = art_pixbuf_new_const_rgba
+    (pixels, width, height, width * pixwidth);
   
   // copy alpha values
   for (int row = 0; row < height; ++row) 
@@ -226,38 +221,29 @@ static bool render_glyph(ArtPixBuf **pb,
   return true;
 }
 
-
-
 void LibArtFTFont::segments
 (const Unistring u,
- vector< pair<double,ArtPixBuf *> > &segs) {
+ vector<segment> &segs) {
   
   FT_Face newface;
   setup_face(newface);
   setup_size(newface);
 
   unsigned int len = u.length();
-  //cerr << "rasterizing " << len << " glyphs " << endl;
   FaceSpec fspec(mySize,FamStyle(myFam,myStyle));
   
   for (unsigned int i = 0; i < len; ++i) {
     Unichar c = u[i];
     CacheSpec cspec(c,fspec);
     CacheIter ci = myCache.find(cspec);
+    segment seg;
     if (ci == myCache.end()) {
-      //cerr << "loading glyph " << c << endl;
       if (!load_glyph(c,newface)) continue;
-      //cerr << "loaded " << c << " OK " << endl;
-      ArtPixBuf *pb;
-      //cerr << "rendering glyph " << c << endl;
-      if (!render_glyph(&pb,newface->glyph,myLibrary)) continue;      
-      //cerr << "rendered " << c << " OK " << endl;
-      myCache.insert(pair<CacheSpec,ArtPixBuf *>(cspec,pb));
-    } else {
-      //cerr << "cache hit on " << c << myFamStr << " " << myStyleStr << endl;
-    }
-    ArtPixBuf *pb = myCache[cspec];
-    segs.push_back(pair<double,ArtPixBuf *>(pb->width,pb));
+      if (!render_segment(seg,newface->glyph,myLibrary)) continue;      
+      myCache.insert(pair<CacheSpec,segment>(cspec,seg));
+    } 
+    seg = myCache[cspec];
+    segs.push_back(seg);
   }
 }
     
@@ -267,37 +253,99 @@ void LibArtFTFont::allocateText
  Graphic::Requisition &r)
 {    
   int width = 0;
-  int height = 0;
+  int top = 0;
+  int bottom = 0;
   FT_Face newface;
-  FT_GlyphSlot glyph = newface->glyph;
   setup_face(newface);
   setup_size(newface);
-  
+  FT_GlyphSlot glyph = newface->glyph;
   unsigned int len = u.length();
-  //cerr << "measuring " << len << " unichars" << endl;
-  FaceSpec fspec(mySize,FamStyle(myFam,myStyle));
   
   for (unsigned int i = 0; i < len; ++i) {
-    CacheSpec cspec(u[i],fspec);
-    CacheIter ci = myCache.find(cspec);
     if (!load_glyph(u[i],newface)) continue;       
-    //cerr << i << endl;
-    int left  = FLOOR(glyph->metrics.horiBearingX );
-    int right = CEIL(glyph->metrics.horiBearingX + glyph->metrics.width );
-    width += TRUNC(right - left);
-    int top    = CEIL(glyph->metrics.horiBearingY );
-    int bottom = FLOOR(glyph->metrics.horiBearingY - glyph->metrics.height );    
-    height = MAX(height,TRUNC( top - bottom ));
-    height = 2;
-    //    //cerr << "glyph left " << left << " right " << right << " width " << width << " top " << top << " bottom " << bottom << " height " << height << endl;    
+    if ( glyph->format != ft_glyph_format_outline ) continue;
+    width += (glyph->metrics.horiAdvance / 64);    
+    top = MAX(top,CEIL(glyph->metrics.horiBearingY ));
+    bottom = MIN(bottom, FLOOR(glyph->metrics.horiBearingY - glyph->metrics.height ));    
   }
-  r.x.natural = r.x.minimum = r.x.maximum = len*24*10.;
+  int height = MAX(height,TRUNC( top - bottom ));
+  r.x.natural = r.x.minimum = r.x.maximum = (width / xres);
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = 24*10.;
+  r.y.natural = r.y.minimum = r.y.maximum = (height / yres);
   r.y.defined = true;
-  r.y.align = 0.;
-  //cerr << "allocated " << r.x.minimum << "x" << r.y.minimum << endl;
+  r.y.align = 1.;
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static inline void setup_bitmap(FT_Bitmap &bit, FT_GlyphSlot &glyph, unsigned char *bitmap, int height, int width, int stride) {
+    bit.pixel_mode = ft_pixel_mode_grays;
+    bit.buffer     = bitmap;
+    int left  = FLOOR( glyph->metrics.horiBearingX );
+    bit.width = width; 
+    bit.pitch  = width;
+    int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
+    bit.rows = height; 
+    FT_Outline_Translate(&glyph->outline, -left, -bottom );    
+}
+
+void LibArtFTFont::rasterize 
+(const Unistring u,
+ ArtPixBuf *pixbuf) {
+
+  FT_Face newface;
+  FT_GlyphSlot glyph;
+  FT_Bitmap  bit;        
+
+  setup_face(newface);
+  setup_size(newface);
+
+  int size = pixbuf->height * pixbuf->width;      
+  unsigned char tmp[size];
+  unsigned int len = u.length();
+  unsigned char *pen = tmp;
+  memset( tmp, 0, size );      
+
+  //  cerr << "rasterizing  " << size << " pixels (" << pixbuf->width << "x" << pixbuf->height << "): ";;
+
+  // phase 1: rasterize string into temporary greymap
+  for (unsigned int i = 0; i < len; ++i) {
+    Unichar c = u[i];
+    //cerr << c << " ";
+    glyph = newface->glyph;
+    load_glyph(c,newface);
+    setup_bitmap(bit,glyph,pen,pixbuf->height, pixbuf->width, pixbuf->rowstride);
+    if ( glyph->format != ft_glyph_format_outline ) continue;
+    if (FT_Outline_Get_Bitmap( myLibrary, &glyph->outline, &bit)) continue;
+    pen += (glyph->metrics.horiAdvance / 64);
+    //cerr << (glyph->metrics.horiAdvance / 64) << ", ";
+  }
+  //  cerr << endl;
+  
+  int pix = ((pixbuf->n_channels * pixbuf->bits_per_sample + 7) >> 3); 
+  int row = (pixbuf->width) * pix;
+  int skip = (pixbuf->rowstride - row);
+  unsigned char *reader = tmp, *writer = pixbuf->pixels;
+  for (int i = 0; i < pixbuf->height; ++i, writer += skip)
+    for (int j = 0; j < pixbuf->width; ++j) {
+      //cerr << (int)(*reader);
+      *(writer + pix - 1) = *reader++;
+      writer += pix;
+    } 
+  //cerr << endl;
+}
