@@ -63,7 +63,7 @@
       PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
-      ClientContextImpl *ci = new ClientContextImpl;
+      ClientContextImpl *ci = new ClientContextImpl("hello world applet");
       ClientContext_var client = ci->_this();
       ServerContext_var context = server->create_server_context(client);
     </programlisting>
@@ -75,9 +75,10 @@
       in the display server process for you. These resources are generally 'Kits', which are abstract
       factories for various purposes. Most Kits create Graphic nodes that you can insert into the
       scene graph. We allocate here a DesktopKit, which is responsible for top level windows, a TextKit,
-      responsible for Text related objects such as simple text labels, or complex text flow objects, and
-      a WidgetKit, that generates all the common widgets such as buttons, scrollbars, or choices. In python
-      that looks so:
+      responsible for Text related objects such as simple text labels, or complex text flow objects, a
+      a WidgetKit, that generates all the common widgets such as buttons, scrollbars, or choices, and a
+      ToolKit, which generates all those little helpers such as color setters that don't fit anywhere else.
+      In python that looks so:
     </para>
     <programlisting>
       properties = []
@@ -86,13 +87,16 @@
       object  = context.resolve("IDL:Warsaw/TextKit:1.0", properties)
       text    = object._narrow(Warsaw.TextKit)
       object  = context.resolve("IDL:Warsaw/WidgetKit:1.0", properties)
-      widget  = object._narrow(Warsaw.WidgetKit)
+      widgets = object._narrow(Warsaw.WidgetKit)
+      object  = context.resolve("IDL:Warsaw/ToolKit:1.0", properties)
+      tools   = object._narrow(Warsaw.ToolKit)
     </programlisting>
     <para>and the same in C++:</para>
     <programlisting>
       DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
       TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
       WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
+      ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:Warsaw/ToolKit:1.0");
     </programlisting>
   </sect1>
   <sect1>
@@ -103,12 +107,14 @@
     </para>
     <programlisting>
       label = text.chunk("hello world")
-      button = widgets.button(label, Command._nil)
+      black = tools.rgb(label, 0., 0., 0.)
+      button = widgets.button(black, Command._nil)
       window = desktop.shell(button)
     </programlisting>
     <para>and in C++:</para>
     <programlisting>
       Graphic_var label = text->chunk(Unicode::to_CORBA(Babylon::String("hello world"));
+      Graphic_var black = tools->rgb(label, 0., 0., 0.);
       Controller_var button = widgets->button(label, Command::_nil());
       Window_var window = desktop->shell(button);
     </programlisting>
