@@ -43,8 +43,9 @@ class Config(Base):
 	    toc_out = 'sxrPrague.toc'
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    default_toc = 'XRefPages'
-	    start_dir = top_srcdir
 	    base_dir = top_srcdir
+	    start_dir = top_srcdir
+	    exclude_globs = ['CVS']
 	    class XRefPages:
             	xref_file = 'Prague.xref'
 	    class FilePages (Base.Formatter.HTML.FilePages):
