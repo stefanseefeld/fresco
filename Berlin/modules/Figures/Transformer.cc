@@ -78,26 +78,10 @@ void Transformer::traverse(Traversal_ptr traversal)
       Lease<TransformImpl> tx;
       Providers::trafo.provide(tx);
       tx->loadIdentity();
-//       cout << "parent region " << rr << endl;
+//       cout << "allocation before trafo " << *rr << endl;
       Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
-//       Vertex origin;
-//       rr->normalize(origin);
-//       tx->translate(origin);
-//       cout << "origin " << origin << endl;
-//       rr->normalize(Transform_var(tx->_this()));
+//       cout << "allocation after trafo " << *rr << endl;
       tx->copy(Transform_var(transform->_this()));
-//       cout << tx->matrix();
-//       tx->postmultiply(Transform_var(transform->_this()));
-//       cout << "child region " << rr << endl;
-//       cout << "delta " << delta << endl;
-//       tx->translate(delta);
-//       rr->normalize(delta);
-//      cout << "transformer matrix\n" << tx->matrix();
-//       Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(traversal->transformation())));
-//      cout << "old accumulated matrix\n" << cumulative->matrix();
-//       cumulative->premultiply(Transform_var(tx->_this()));
-//      cout << "accumulated matrix\n" << cumulative->matrix();
-//      rr->normalize(Transform_var(tx->_this()));
       traversal->traverseChild(child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));
     }
   else Allocator::traverse(traversal);
@@ -120,12 +104,7 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
 	  Providers::trafo.provide(tx);
 	  tx->loadIdentity();
 	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
-// 	  rr->normalize(Transform_var(tx->_this()));
  	  tx->copy(Transform_var(transform->_this()));
-// 	  tx->postmultiply(Transform_var(transform->_this()));
-//   	  tx->translate(delta);
-//  	  rr->normalize(delta);
-// 	  rr->normalize(Transform_var(tx->_this()));
 	  info.transformation->premultiply(tx);
 	  info.allocation->copy(rr);
         }

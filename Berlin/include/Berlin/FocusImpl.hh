@@ -40,7 +40,7 @@ class FocusImpl : implements(Focus)
   virtual bool request(Controller_ptr) = 0;
   virtual void restore(Region_ptr) = 0;
   virtual void damage(Region_ptr) = 0;
-  virtual void dispatch(const Input::Event &) = 0;
+  virtual void dispatch(Input::Event &) = 0;
  private:
   const Input::Device d;
   fstack_t filters;

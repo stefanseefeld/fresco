@@ -81,7 +81,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
   return true;
 }
 
-void NonPositionalFocus::dispatch(const Input::Event &event)
+void NonPositionalFocus::dispatch(Input::Event &event)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("NonPositionalFocus::dispatch");

@@ -25,17 +25,17 @@
 namespace Input
 {
 
-inline bool getPosition(const Event &event, Input::Position &position)
+inline int getPosition(const Event &event, Input::Position &position)
 {
   Input::Device device = event[0].dev;
   for (size_t i = 0; i != event.length(); i++)
-    if (event[i].dev != device) return false;
+    if (event[i].dev != device) return -1;
     else if (event[i].attr._d() == Input::positional)
       {
 	position = event[i].attr.location();
-	return true;
+	return i;
       }
-  return false;
+  return -1;
 }
 
 };

@@ -114,13 +114,14 @@ void PositionalFocus::damage(Region_ptr region)
  * it means that the controller should lose
  * focus, so we start over at the parent controller...
  */
-void PositionalFocus::dispatch(const Input::Event &event)
+void PositionalFocus::dispatch(Input::Event &event)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("PositionalFocus::dispatch");
   Trace trace("PositionalFocus::dispatch");
   Input::Position position;
-  if (!Input::getPosition(event, position))
+  int pidx = Input::getPosition(event, position);
+  if (pidx == -1)
     {
       cerr << "PositionalFocus::dispatch error : non positional event" << endl;
       return;
@@ -197,6 +198,8 @@ void PositionalFocus::dispatch(const Input::Event &event)
    * ...and finally dispatch the event
    */
 //   traversal->debug();
+//   Transform_var(traversal->transformation())->inverseTransformVertex(position);
+//   event[pidx].attr.location(position);
   controllers.back()->handlePositional(PickTraversal_var(traversal->_this()), event);
   if (!grabbed)
     {

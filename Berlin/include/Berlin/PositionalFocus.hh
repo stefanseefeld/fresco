@@ -47,7 +47,7 @@ class PositionalFocus : public FocusImpl
   virtual bool request(Controller_ptr);
   virtual void restore(Region_ptr);
   virtual void damage(Region_ptr);
-  virtual void dispatch(const Input::Event &);
+  virtual void dispatch(Input::Event &);
  private:
   ScreenImpl        *screen;
   Pointer           *pointer;

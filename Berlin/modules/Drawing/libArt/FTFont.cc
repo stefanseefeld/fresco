@@ -116,7 +116,6 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       fontdirlist.close();
       Logger::log(Logger::text) << "completed scaning font directories" << endl;
       char *env = getenv("BERLIN_FONT_CHOOSER");
-      cout << env << endl;
       Unicode::String tmpFam, tmpStyle;
       if (env && chooseFaceInteractively(myFaceMap, env, tmpFam, tmpStyle))
 	{

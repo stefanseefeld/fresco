@@ -125,6 +125,13 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
       return;
     }
   
+  if (!req.z.defined)
+    {
+      req.z.natural = req.z.maximum = req.z.minimum = 0.;
+      req.z.align = 0;
+      req.z.defined = true;
+    }
+
   RegionImpl nat, maxi, mini;
 
   nat.xalign = req.x.align;
@@ -160,9 +167,11 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   mini.upper.z = mini.lower.z + req.z.minimum;
   mini.valid = true;
 
+//   cout << "allocation before transform :\n\t" << nat << "\n\t" << mini << "\n\t" << maxi << endl;
   nat.applyTransform(t);
   maxi.applyTransform(t);
   mini.applyTransform(t);
+//   cout << "allocation after transform :\n\t" << nat << "\n\t" << mini << "\n\t" << maxi << endl;
 
   req.x.defined = true;
   req.x.natural = nat.upper.x - nat.lower.x;
@@ -210,6 +219,13 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
       return;
     }
 
+  if (!req.z.defined)
+    {
+      req.z.natural = req.z.maximum = req.z.minimum = 0.;
+      req.z.align = 0;
+      req.z.defined = true;
+    }
+
   RegionImpl nat;
 
   nat.xalign = req.x.align;
@@ -222,7 +238,9 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   nat.lower.z = -req.z.align * req.z.natural;
   nat.upper.z = nat.lower.z + req.z.natural;
   nat.valid = true;
+//   cout << "allocation before transform :" << nat << endl;
   nat.applyTransform(t);
+//   cout << "allocation after transform :" << nat << endl;
   Coord xlead = -nat.lower.x;
   Coord xtrail = nat.upper.x;
 
@@ -543,11 +561,20 @@ static void compensate(Coord a, Coord &x, Coord &y)
  *   |\ /    |
  *   +-x-----+
  */
-Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &req, Transform_ptr t)
+Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &_req, Transform_ptr t)
 {
   Trace trace("GraphicImpl::transformAllocation");
   Vertex delta;
   delta.x = delta.y = delta.z = 0.;
+
+  Requisition req = _req;
+  if (!req.z.defined)
+    {
+      req.z.natural = req.z.maximum = req.z.minimum = 0.;
+      req.z.align = region.zalign;
+      req.z.defined = true;
+    }
+
   if (!rotated(t))
     {
       Lease<TransformImpl> tx;

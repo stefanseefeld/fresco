@@ -62,7 +62,8 @@ LayoutManager *LayoutAlign::clone() { return new LayoutAlign(axis, relaxed);}
 
 void LayoutAlign::request(long n, Graphic::Requisition *requests, Graphic::Requisition &result)
 {
-  Graphic::Requirement *r;
+  Graphic::Requirement *r, *rr = GraphicImpl::requirement(result, axis);
+  rr->defined = false;
   Coord natural_lead = Coord(0);
   Coord natural_trail = Coord(0);
   Coord min_lead, max_lead, min_trail, max_trail;
@@ -89,6 +90,7 @@ void LayoutAlign::request(long n, Graphic::Requisition *requests, Graphic::Requi
 	      natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
 	      max_trail = Math::min(max_trail, Coord(r_max * r_inv_align));
 	      min_trail = Math::max(min_trail, Coord(r_min * r_inv_align));
+	      rr->defined = true;
 	    }
 	}
     }
@@ -114,11 +116,12 @@ void LayoutAlign::request(long n, Graphic::Requisition *requests, Graphic::Requi
 	      natural_trail = Math::max(natural_trail, Coord(r_nat * r_inv_align));
 	      max_trail = Math::max(max_trail, Coord(r_max * r_inv_align));
 	      min_trail = Math::min(min_trail, Coord(r_min * r_inv_align));
+	      rr->defined = true;
 	    }
 	}
     }
-  r = GraphicImpl::requirement(result, axis);
-  GraphicImpl::requireLeadTrail(*r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
+  if (rr->defined)
+    GraphicImpl::requireLeadTrail(*rr, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
 }
 
 void LayoutAlign::allocate(long n, Graphic::Requisition *requests, Region_ptr given, LayoutManager::Allocations result)

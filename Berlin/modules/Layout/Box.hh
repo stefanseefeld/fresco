@@ -66,13 +66,13 @@ private:
 class HBox : public Box
 {
 public:
-  HBox() : Box(new LayoutSuperpose(new LayoutTile(xaxis), new LayoutAlign(yaxis))) {}
+  HBox() : Box(new LayoutSuperpose(new LayoutTile(xaxis), new LayoutAlign(yaxis), new LayoutAlign(zaxis))) {}
 };
 
 class VBox : public Box
 {
 public:
-  VBox() : Box(new LayoutSuperpose(new LayoutTile(yaxis), new LayoutAlign(xaxis))) {}
+  VBox() : Box(new LayoutSuperpose(new LayoutTile(yaxis), new LayoutAlign(xaxis), new LayoutAlign(zaxis))) {}
 };
 
 class HBoxFirstAligned : public Box
