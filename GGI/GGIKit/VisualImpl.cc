@@ -34,9 +34,9 @@
 using namespace Prague;
 using namespace Fresco;
 
-GGIDrawableFactory * GGI::Kit::VisualImpl::_factory = 0;
+GGIDrawableFactory * GGIKit::VisualImpl::_factory = 0;
 
-GGI::Kit::VisualImpl::VisualImpl(PixelCoord w, PixelCoord h) :
+GGIKit::VisualImpl::VisualImpl(PixelCoord w, PixelCoord h) :
   ControllerImpl(false),
   _width(w),
   _height(h)
@@ -59,23 +59,23 @@ GGI::Kit::VisualImpl::VisualImpl(PixelCoord w, PixelCoord h) :
     _mode = buffer;
 }
 
-GGI::Kit::VisualImpl::~VisualImpl()
+GGIKit::VisualImpl::~VisualImpl()
 {
     Trace trace("VisualImpl::~VisualImpl");
     SHM::deallocate(_shm);
 }
 
-char * GGI::Kit::VisualImpl::name()
+char * GGIKit::VisualImpl::name()
 {
     return CORBA::string_dup(_ggi->name().c_str());
 }
 
-char * GGI::Kit::VisualImpl::mode()
+char * GGIKit::VisualImpl::mode()
 {
     return CORBA::string_dup(_mode.c_str());
 }
 
-void GGI::Kit::VisualImpl::request(Fresco::Graphic::Requisition &requisition)
+void GGIKit::VisualImpl::request(Fresco::Graphic::Requisition &requisition)
 {
     Trace trace("VisualImpl::request");
     requisition.x.defined = true;
@@ -89,21 +89,21 @@ void GGI::Kit::VisualImpl::request(Fresco::Graphic::Requisition &requisition)
     requisition.z.defined = false;
 }
 
-void GGI::Kit::VisualImpl::draw(DrawTraversal_ptr traversal)
+void GGIKit::VisualImpl::draw(DrawTraversal_ptr traversal)
 {
     Trace trace("VisualImpl::draw");
     DrawingKit_var drawing = traversal->drawing();
     drawing->copy_drawable(_drawable, 0, 0, _width, _height);
 }
 
-void GGI::Kit::VisualImpl::extension(const Allocation::Info &info, Region_ptr region)
+void GGIKit::VisualImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
     Trace trace("VisualImpl::extension");
     GraphicImpl::extension(info, region);
 }
 
-CORBA::Boolean GGI::Kit::VisualImpl::handle_positional(PickTraversal_ptr traversal,
-                                                       const Fresco::Input::Event &event)
+CORBA::Boolean GGIKit::VisualImpl::handle_positional(PickTraversal_ptr traversal,
+                                                     const Fresco::Input::Event &event)
 {
     Trace trace("VisualImpl::handle_positional");
 
@@ -121,7 +121,7 @@ CORBA::Boolean GGI::Kit::VisualImpl::handle_positional(PickTraversal_ptr travers
     return true;
 }
 
-CORBA::Boolean GGI::Kit::VisualImpl::handle_non_positional(const Fresco::Input::Event &event)
+CORBA::Boolean GGIKit::VisualImpl::handle_non_positional(const Fresco::Input::Event &event)
 {
     Trace trace("VisualImpl::handle_non_positional");
     /*
@@ -168,8 +168,8 @@ CORBA::Boolean GGI::Kit::VisualImpl::handle_non_positional(const Fresco::Input::
     return true;
 }
 
-void GGI::Kit::VisualImpl::move(Fresco::PickTraversal_ptr traversal,
-                                const Input::Event &event)
+void GGIKit::VisualImpl::move(Fresco::PickTraversal_ptr traversal,
+                              const Input::Event &event)
 {
     Trace trace("VisualImpl::move");
 
@@ -201,7 +201,7 @@ void GGI::Kit::VisualImpl::move(Fresco::PickTraversal_ptr traversal,
     forward_event(ggi);
 }
 
-void GGI::Kit::VisualImpl::handle_pointer_button(const Input::Event &event)
+void GGIKit::VisualImpl::handle_pointer_button(const Input::Event &event)
 {
     Trace trace("VisualImpl::handle_pointer_button");
 
@@ -236,7 +236,7 @@ void GGI::Kit::VisualImpl::handle_pointer_button(const Input::Event &event)
     forward_event(ggi);
 }
 
-void GGI::Kit::VisualImpl::forward_event(const ggi_event &event)
+void GGIKit::VisualImpl::forward_event(const ggi_event &event)
 {
     Trace trace("VisualImpl::forward_event");
     // giiEventSend(ggiJoinInputs(_ggi->visual(), 0), const_cast<ggi_event *>(&event));

@@ -27,28 +27,25 @@
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
-namespace GGI
+namespace GGIKit
 {
-  namespace Kit
+
+  class GGIKitImpl : public virtual POA_GGI::GGIKit,
+                     public KitImpl
   {
+    public:
+      GGIKitImpl(const std::string &,
+                 const Fresco::Kit::PropertySeq &,
+                 ServerContextImpl *);
+      virtual ~GGIKitImpl();
+      virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+                             ServerContextImpl *c)
+      {
+          return new GGIKitImpl(repo_id(), p, c);
+      }
+      virtual GGI::Visual_ptr create_visual(Fresco::PixelCoord, Fresco::PixelCoord);
+  };
 
-    class GGIKitImpl : public virtual POA_GGI::GGIKit,
-                       public KitImpl
-    {
-      public:
-        GGIKitImpl(const std::string &,
-                   const Fresco::Kit::PropertySeq &,
-                   ServerContextImpl *);
-        virtual ~GGIKitImpl();
-        virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p,
-                               ServerContextImpl *c)
-        {
-            return new GGIKitImpl(repo_id(), p, c);
-        }
-        virtual GGI::Visual_ptr create_visual(Fresco::PixelCoord, Fresco::PixelCoord);
-    };
-
-  } // namespace
 } // namespace
 
 #endif

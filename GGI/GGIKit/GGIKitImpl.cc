@@ -24,18 +24,18 @@
 
 using namespace Fresco;
 
-GGI::Kit::GGIKitImpl::GGIKitImpl(const std::string &id,
-                                 const Fresco::Kit::PropertySeq &p,
-                                 ServerContextImpl *c) :
+GGIKit::GGIKitImpl::GGIKitImpl(const std::string &id,
+                               const Fresco::Kit::PropertySeq &p,
+                               ServerContextImpl *c) :
   KitImpl(id, p, c)
 { }
 
-GGI::Kit::GGIKitImpl::~GGIKitImpl() { }
+GGIKit::GGIKitImpl::~GGIKitImpl() { }
 
-GGI::Visual_ptr GGI::Kit::GGIKitImpl::create_visual(Fresco::PixelCoord w,
-                                                    Fresco::PixelCoord h)
+GGI::Visual_ptr GGIKit::GGIKitImpl::create_visual(Fresco::PixelCoord w,
+                                                  Fresco::PixelCoord h)
 {
-    return create<GGI::Visual>(new GGI::Kit::VisualImpl(w, h));
+    return create<GGI::Visual>(new VisualImpl(w, h));
 }
 
 
@@ -43,6 +43,6 @@ GGI::Visual_ptr GGI::Kit::GGIKitImpl::create_visual(Fresco::PixelCoord w,
 extern "C" KitImpl *load()
 {
     static std::string properties[] = {"implementation", "GGIKitImpl"};
-    return create_prototype<GGI::Kit::GGIKitImpl>("IDL:GGI/GGIKit:1.0",
-                                                  properties, 2);
+    return create_prototype<GGIKit::GGIKitImpl>("IDL:GGI/GGIKit:1.0",
+                                                properties, 2);
 }
