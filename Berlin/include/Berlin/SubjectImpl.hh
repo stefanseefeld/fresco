@@ -26,8 +26,9 @@
 #include <Warsaw/Subject.hh>
 #include <Prague/Sys/Thread.hh>
 #include <list>
+#include "Berlin/RefCountBaseImpl.hh"
 
-class SubjectImpl : public virtual POA_Subject, public virtual PortableServer::RefCountServantBase
+class SubjectImpl : public virtual POA_Subject, public virtual PortableServer::RefCountServantBase, public RefCountBaseImpl
 {
 public:
   SubjectImpl();

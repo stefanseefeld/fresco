@@ -22,12 +22,14 @@
 #ifndef _Subject_idl
 #define _Subject_idl
 
+#include <Warsaw/RefCountBase.idl>
+
 interface Observer;
 
 //. Subject defines what it means to be observable.
 //. Observers can be bound to it so calling notify
 //. will call them back
-interface Subject 
+interface Subject : RefCountBase
 {
   void attach(in Observer o);
   void detach(in Observer o);
@@ -38,7 +40,7 @@ interface Subject
 //. Observers observ Subjects.
 //. Observers can be bound to it so calling notify
 //. will call them back
-interface Observer
+interface Observer : RefCountBase
 {
   void update(in any a);
 };

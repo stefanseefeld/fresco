@@ -1,7 +1,7 @@
 #ifndef _Warsaw_config_hh
 #define _Warsaw_config_hh
 
-#undef ORBFLAGS
+#undef ORB_IMPL
 #undef UsePthread
 #undef _REENTRANT
 #undef _THREAD_SAFE

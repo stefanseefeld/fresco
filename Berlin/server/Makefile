@@ -56,10 +56,10 @@ install:	world
 		install -m755 server $(bindir)
 
 clean:	
-		rm -f server.o server.d *~ bb.out gmon.out
+		rm -f server.o server.d kits.o *~ bb.out gmon.out
 
 distclean:	clean
-		/bin/rm -f server
+		/bin/rm -f server kits
 
 server.d:	server.cc
 		@echo making dependencies for $<

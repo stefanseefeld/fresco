@@ -27,11 +27,12 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 #include <algorithm>
+#include "Berlin/RefCountBaseImpl.hh"
 
 class RegionImpl;
 class AllocationImpl;
 
-class GraphicImpl :  public virtual POA_Graphic, public virtual PortableServer::RefCountServantBase
+class GraphicImpl :  public virtual POA_Graphic, public virtual PortableServer::RefCountServantBase, public RefCountBaseImpl
 {
  protected:
   typedef Graphic::Edge Edge;
