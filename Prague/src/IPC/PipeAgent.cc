@@ -21,16 +21,22 @@
  */
 #include "Prague/IPC/PipeAgent.hh"
 #include "Prague/IPC/pipebuf.hh"
+#include <cerrno>
+#include <cstdio>
+#include <unistd.h>
 
 using namespace Prague;
 
-/* @Method{void PipeAgent::start()}
- *
- * @Description{start child process if we're not listening to stdin}
- */
+PipeAgent::PipeAgent(const string &cmd, Notifier *e, Notifier *si, Notifier *st)
+  : Coprocess(cmd, e, si, st)
+{}
+
+PipeAgent::~PipeAgent()
+{}
+
 void PipeAgent::start()
 {
-  if (pid >= 0)
+  if (id >= 0)
     {
       terminate();
       pipebuf *pin  = new pipebuf(ios::out); // the stdin for the child is an output stream for the parent...
@@ -39,12 +45,12 @@ void PipeAgent::start()
       int fin = pin->open();
       int fout = pout->open();
       int ferr = perr->open();
-      if (fin == -1 || fout == -1 || ferr == -1) { Error("communication setup failed", true); return;}
-      switch(pid = fork())
+//       if (fin == -1 || fout == -1 || ferr == -1) { Error("communication setup failed", true); return;}
+      switch(id = fork())
 	{
 	case -1:
-	  pid = 0;
-	  SystemError("cannot fork", true);
+	  id = 0;
+// 	  SystemError("cannot fork", true);
 	  return;
 	case  0:
 	  dup2(fin, fileno(stdin)); close(fin);
@@ -63,15 +69,45 @@ void PipeAgent::start()
  	  inbuf = pin; close(fin);
  	  outbuf = pout; close(fout);
  	  errbuf = perr; close(ferr);
-	  if (bound)
-	    {
-	      inbuf->setnonblocking();
-	      outbuf->setnonblocking();
-	      errbuf->setnonblocking();
-	    }
+// 	  if (bound)
+// 	    {
+	  inbuf->setnonblocking();
+	  outbuf->setnonblocking();
+	  errbuf->setnonblocking();
+// 	    }
  	  break;
 	}
     }
-  if (bound) initTimer();
-  setactive();
+  mask(in|out|err);
+  Coprocess::start();
 };
+
+void PipeAgent::processInput()
+{
+}
+
+void PipeAgent::processOutput()
+{
+  MutexGuard guard(mutex);
+  istream is(obuf());
+  char c;
+  cout << "PipeAgent::processOutput : '";
+  while (is.get(c)) cout.put(c);
+  cout << '\'' << endl;
+}
+
+void PipeAgent::processError()
+{
+}
+
+void PipeAgent::processInputException()
+{
+}
+
+void PipeAgent::processOutputException()
+{
+}
+
+void PipeAgent::processErrorException()
+{
+}

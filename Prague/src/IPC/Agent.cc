@@ -26,8 +26,38 @@ using namespace Prague;
 
 Agent::~Agent()
 {
-  if (running) Dispatcher::Instance()->release(this);
+  if (running) Dispatcher::instance()->release(this);
 };
 
-void Agent::start(Agent::iomask mask) { running = true; Dispatcher::Instance()->bind(this, mask);}
-void Agent::stop() { running = false; Dispatcher::Instance()->release(this);}
+void Agent::start()
+{
+  running = true;
+  if (iomask & in && ibuf()) Dispatcher::instance()->bind(ibuf()->fd(), this, in);
+  if (iomask & out && obuf()) Dispatcher::instance()->bind(obuf()->fd(), this, out);
+  if (iomask & err && ebuf()) Dispatcher::instance()->bind(ebuf()->fd(), this, err);
+}
+
+void Agent::mask(short m)
+{
+  if (iomask == m) return;
+  if (running)
+    {
+      if ((iomask ^ m) & in)
+	if (iomask & in) Dispatcher::instance()->release(ibuf()->fd());
+	else  Dispatcher::instance()->bind(ibuf()->fd(), this, in);
+      if ((iomask ^ m) & out)
+	if (iomask & out) Dispatcher::instance()->release(obuf()->fd());
+	else  Dispatcher::instance()->bind(obuf()->fd(), this, out);
+      if ((iomask ^ m) & err)
+	if (iomask & err) Dispatcher::instance()->release(ebuf()->fd());
+	else  Dispatcher::instance()->bind(ebuf()->fd(), this, err);
+    }
+  iomask = m;
+}
+
+void Agent::stop()
+{
+  mask(none);
+  Dispatcher::instance()->release(this);
+  running = false;
+}

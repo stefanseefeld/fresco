@@ -22,6 +22,7 @@
 #include "Prague/IPC/ipcbuf.hh"
 #include "Prague/Sys/FdSet.hh"
 #include "Prague/Sys/Time.hh"
+#include "Prague/Sys/Memory.hh"
 #include <sys/time.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -31,7 +32,7 @@
 
 using namespace Prague;
 
-ipcbuf::ipcbuf (int mode)
+ipcbuf::ipcbuf(int mode)
 {
   data = new control;
   if (mode & ios::in)
@@ -48,13 +49,13 @@ ipcbuf::ipcbuf (int mode)
     }
 }
 
-ipcbuf::ipcbuf (const ipcbuf &ipc)
+ipcbuf::ipcbuf(const ipcbuf &ipc)
   : streambuf(ipc), data(ipc.data)
 {
   data->count++;
 }
 
-ipcbuf::~ipcbuf ()
+ipcbuf::~ipcbuf()
 {
   overflow (EOF); // flush write buffer
   if (--data->count) return;
@@ -78,7 +79,7 @@ ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
   return *this;
 }
 
-bool ipcbuf::readready () const
+bool ipcbuf::readready() const
 {
   FdSet fds;
   fds.set(fd());
@@ -87,7 +88,7 @@ bool ipcbuf::readready () const
   return false;
 }
 
-bool ipcbuf::writeready () const
+bool ipcbuf::writeready() const
 {
   FdSet fds;
   fds.set(fd());
@@ -96,7 +97,7 @@ bool ipcbuf::writeready () const
   return false;
 }
 
-bool ipcbuf::exceptionpending () const
+bool ipcbuf::exceptionpending() const
 {
   FdSet fds;
   fds.set(fd());
@@ -105,7 +106,7 @@ bool ipcbuf::exceptionpending () const
   return false;
 }
 
-void ipcbuf::setnonblocking (bool flag)
+void ipcbuf::setnonblocking(bool flag)
 {
   int flags = fcntl(fd(), F_GETFL);
   if (flag) flags |= O_NONBLOCK;
@@ -113,7 +114,7 @@ void ipcbuf::setnonblocking (bool flag)
   fcntl(fd(), F_SETFL, flags);
 }
 
-bool ipcbuf::nonblocking () const
+bool ipcbuf::nonblocking() const
 {
   int flags = fcntl(fd(), F_GETFL);
   return flags | O_NONBLOCK;
@@ -121,85 +122,87 @@ bool ipcbuf::nonblocking () const
 
 int ipcbuf::sync()
 {
-  if (pptr () && pbase () < pptr () && pptr () <= epptr ())
+  if (pptr() && pbase() < pptr() && pptr() <= epptr())
     {
-      write (pbase (), pptr () - pbase ());
-      setp (pbase (), (char *) data->pend);
+      write(pbase(), pptr() - pbase());
+      setp(pbase(), (char *) data->pend);
     }
   return 0;
 }
 
-int ipcbuf::showmanyc () const
+int ipcbuf::showmanyc() const
 {
-  if (gptr () && gptr () < egptr ()) return egptr () - gptr ();
+  if (gptr() && gptr() < egptr()) return egptr() - gptr();
   return 0;
 }
 
-ipcbuf::int_type ipcbuf::overflow (int c)
+ipcbuf::int_type ipcbuf::overflow(int c)
 {
-  if (pbase () == 0) return EOF;
+  if (pbase() == 0) return EOF;
   if (c == EOF) return sync();
-  if (pptr () == epptr ()) sync ();
-  *pptr () = (char_type) c;
-  pbump (1);
+  if (pptr() == epptr()) sync();
+  *pptr() = (char_type) c;
+  pbump(1);
   return c;
 }
 
-ipcbuf::int_type ipcbuf::underflow ()
+ipcbuf::int_type ipcbuf::underflow()
 {
-  if (gptr () == 0) return EOF; // input stream has been disabled
-  if (gptr () < egptr ()) return (unsigned char) *gptr (); // EOF is a -ve number; make it unsigned to be diff from EOF
-  int rlen = read (eback (), data->gend - eback ());
+  if (gptr() == 0) return EOF; // input stream has been disabled
+  size_t delta = egptr() - gptr();
+  if (delta > 0) Memory::move(gptr(), eback(), delta);
+  ssize_t rlen = read(eback() + delta, data->gend - eback() - delta);
   switch (rlen)
     {
-    case 0: data->eofbit = true;
-    case EOF: return EOF;
-    default:
-      setg (eback (), eback (), eback () + rlen);
-      return (unsigned char) *gptr ();
+    case EOF: if (!delta) return EOF; break;
+    case 0: data->eofbit = true; break;
+    default: delta += rlen; break;
     }
+  if (!delta) return EOF;
+  setg(eback(), eback(), eback() + delta);
+  return (unsigned char) *gptr();
 }
 
-ipcbuf::int_type ipcbuf::uflow ()
+ipcbuf::int_type ipcbuf::uflow()
 {
-  int_type ret = underflow ();
+  int_type ret = underflow();
   if (ret == EOF) return EOF;
   gbump(1);
   return ret;
 }
 
-ipcbuf::int_type ipcbuf::pbackfail (int c)
+ipcbuf::int_type ipcbuf::pbackfail(int c)
 {
   return EOF;
 }
 
-streamsize ipcbuf::xsputn (const ipcbuf::char_type *s, streamsize n)
+streamsize ipcbuf::xsputn(const ipcbuf::char_type *s, streamsize n)
 {
-  int wval = epptr () - pptr ();
+  int wval = epptr() - pptr();
   if (n <= wval)
     {
-      memcpy (pptr (), s, n * sizeof (char_type));
-      pbump (n);
+      Memory::copy(s, pptr(), n * sizeof(char_type));
+      pbump(n);
       return n;
     }
-  memcpy (pptr (), s, wval * sizeof (char_type));
-  pbump (wval);
-  if (overflow() != EOF) return wval + xsputn (s + wval, n - wval);
+  Memory::copy(s, pptr(), wval * sizeof(char_type));
+  pbump(wval);
+  if (overflow() != EOF) return wval + xsputn(s + wval, n - wval);
   return wval;
 }
 
-streamsize ipcbuf::xsgetn (ipcbuf::char_type *s, streamsize n)
+streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, streamsize n)
 {
   int rval = showmanyc ();
   if (rval >= n)
     {
-      memcpy (s, gptr (), n * sizeof (char_type));
-      gbump (n);
+      Memory::copy(gptr(), s, n * sizeof(char_type));
+      gbump(n);
       return n;
     }
-  memcpy (s, gptr (), rval * sizeof (char_type));
-  gbump (rval);
-  if (underflow () != EOF) return rval + xsgetn (s + rval, n - rval);
+  Memory::copy(gptr(), s, rval * sizeof(char_type));
+  gbump(rval);
+  if (underflow() != EOF) return rval + xsgetn(s + rval, n - rval);
   return rval;
 }
 
@@ -209,7 +212,7 @@ int ipcbuf::write(const void *buf, int len)
   int wlen = 0;
   while(len > 0)
     {
-      int wval = ::write (fd(), (char*) buf, len);
+      int wval = ::write(fd(), (char*) buf, len);
       if (wval == -1 && errno == EAGAIN) return EOF;
       else if (wval == -1) perror("ipcbuf::write");
       len -= wval;
@@ -218,10 +221,10 @@ int ipcbuf::write(const void *buf, int len)
   return wlen; // == len if every thing is all right
 }
 
-int ipcbuf::read (void *buf, int len)
+int ipcbuf::read(void *buf, int len)
 {
 //   if (!readready ()) return 0;  
-  int rval = ::read (fd(), (char *)buf, len);
+  int rval = ::read(fd(), (char *)buf, len);
   if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");
   return rval;
 }

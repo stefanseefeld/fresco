@@ -64,7 +64,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   MMapServer MMapClient
+ALL        =   MMapServer MMapClient PipeAgent
 
 world:		$(ALL)
 
@@ -75,6 +75,9 @@ MMapServer:	MMapServer.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 MMapClient:	MMapClient.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+PipeAgent:	PipeAgent.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:	

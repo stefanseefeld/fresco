@@ -20,7 +20,7 @@
 # MA 02139, USA.
 
 IPC_SRC	= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
-	  Agent.cc Dispatcher.cc #Coprocess.cc PipeAgent.cc TTYAgent.cc
+	  Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc #TTYAgent.cc
 
 IPC_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(IPC_SRC))
 IPC_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(IPC_SRC))
@@ -34,7 +34,7 @@ $(dpath)/%.d:	IPC/%.cc $(ipath)/Prague/IPC/%.hh
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	IPC/%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@ 
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) $(SOFLAGS) -c $< -o $@ 
 $(gpath)/%.o:	IPC/%.cc
 		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
 		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
