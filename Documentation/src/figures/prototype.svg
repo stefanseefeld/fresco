@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN"
+"http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd">
+<svg width="4.333333333333333in" height="2.6354166666666665in" viewBox="40 125 416 253">
+	<rect x="60" y="170" width="164" height="66" 
+		style="fill:#ffcc99; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="99" y="183" 
+		style="font-family:Verdana; font-weight:bold; font-size:10; fill:#000000">ServerContext</text>
+	<line x1="60" y1="193" x2="224" y2="193" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="63" y="203" 
+		style="font-family:Verdana; font-size:10; fill:#000000">-my_kits</text>
+	<line x1="60" y1="216" x2="224" y2="216" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="63" y="226" 
+		style="font-family:Verdana; font-size:10; fill:#000000">+resolve( type, properties )</text>
+	<polygon points="313,296 310,303 316,303 " 
+		style="fill:none; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="313" y1="302" x2="313" y2="315" 
+		style="fill:none; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="218" y1="315" x2="354" y2="315" 
+		style="fill:none; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<rect x="310" y="330" width="125" height="43" 
+		style="fill:#ffcc99; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="332" y="343" 
+		style="font-family:Verdana; font-weight:bold; font-size:10; fill:#000000">OpenLookKit</text>
+	<line x1="310" y1="353" x2="435" y2="353" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="313" y="363" 
+		style="font-family:Verdana; font-size:10; fill:#000000">+style = &quot;OpenLook&quot;</text>
+	<polygon points="356,233 353,240 359,240 " 
+		style="fill:none; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="356" y1="239" x2="356" y2="249" 
+		style="fill:none; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="313" y1="249" x2="413" y2="249" 
+		style="fill:none; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<rect x="190" y="330" width="95" height="43" 
+		style="fill:#ffcc99; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="213" y="343" 
+		style="font-family:Verdana; font-weight:bold; font-size:10; fill:#000000">MotifKit</text>
+	<line x1="190" y1="353" x2="285" y2="353" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="193" y="363" 
+		style="font-family:Verdana; font-size:10; fill:#000000">+style = &quot;Motif&quot;</text>
+	<rect x="280" y="270" width="67" height="26" 
+		style="fill:#ffcc99; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="283" y="283" 
+		style="font-family:Verdana; font-weight:bold; font-size:10; fill:#000000">WidgetKit</text>
+	<rect x="380" y="270" width="66" height="26" 
+		style="fill:#ffcc99; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="384" y="283" 
+		style="font-family:Verdana; font-weight:bold; font-size:10; fill:#000000">LayoutKit</text>
+	<rect x="330" y="190" width="52" height="43" 
+		style="fill:#ffcc99; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="348" y="203" 
+		style="font-family:Verdana; font-weight:bold; font-size:10; fill:#000000">Kit</text>
+	<line x1="330" y1="213" x2="382" y2="213" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="333" y="223" 
+		style="font-family:Verdana; font-size:10; fill:#000000">+clone()</text>
+	<polygon points="224,205 229,207 236,205 229,203 " 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="236" y1="205" x2="330" y2="205" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="250" y="200" 
+		style="font-family:Verdana; font-size:10; fill:#000000">prototype</text>
+	<polygon points="310,194 322,197 310,201 " 
+		style="fill:#000000; stroke:#000000; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="413" y1="249" x2="413" y2="270" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="313" y1="249" x2="313" y2="270" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="354" y1="315" x2="354" y2="330" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="218" y1="315" x2="218" y2="330" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+</svg>

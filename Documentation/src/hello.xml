@@ -16,6 +16,9 @@
           <imageobject>
             <imagedata fileref="figures/resolve.png" align="center" format="PNG"/>
           </imageobject>
+          <imageobject>
+            <imagedata fileref="figures/resolve.pdf" align="center" format="PDF"/>
+          </imageobject>
         </mediaobject>
       </figure>
       Here is the relevant code in python:

@@ -16,7 +16,10 @@
       <title>A button...</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/about-button.jpg" align="center" format="JPG"/>
+          <imagedata fileref="figures/about-button.png" align="center" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="figures/about-button.pdf" align="center" format="PDF"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -24,7 +27,10 @@
       <title>...and its underlaying scene graph</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/about-button-sg.jpg" align="center" format="JPG"/>
+          <imagedata fileref="figures/about-button-sg.png" align="center" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="figures/about-button-sg.pdf" align="center" format="PDF"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -55,7 +61,10 @@
       <title>the abstract factory pattern</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/abstract-factory.jpg" align="center" format="JPG"/>
+          <imagedata fileref="figures/abstract-factory.png" align="center" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="figures/abstract-factory.pdf" align="center" format="PDF"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -106,7 +115,10 @@
       <title>the prototype pattern</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/prototype.jpg" align="center" format="JPG"/>
+          <imagedata fileref="figures/prototype.png" align="center" format="PNG"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="figures/prototype.pdf" align="center" format="PDF"/>
         </imageobject>
       </mediaobject>
     </figure>

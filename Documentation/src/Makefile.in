@@ -32,8 +32,10 @@ XSLT		:= xsltproc
 
 SRC		:= hello.xml kits.xml hello-list.xml book.xml
 SVG		:= $(wildcard $(srcdir)/figures/*.svg)
-EPS		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.eps, $(SVG))
-PNG		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.png, $(SVG))
+PDF		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.pdf, $(SVG)) \
+                   figures/about-button.pdf
+PNG		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.png, $(SVG)) \
+                   figures/about-button.png
 
 .PHONY: all
 .PHONY: depclean clean distclean maintainer-clean dist clean
@@ -41,7 +43,7 @@ PNG		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.png, $(SVG))
 TARGETS		:= html
 
 vpath %.xml  $(srcdir)
-vpath %.svg  $(srcdir)
+vpath %.svg  $(srcdir)/figures
 
 all:	$(TARGETS)
 
@@ -53,19 +55,35 @@ else
 	$(XSLT) $(xsl) $(srcdir)/book.xml
 endif
 
+pdf:	$(PDF)
+ifeq ($(xsl),)
+	@echo "please use \"$(MAKE) xsl=<stylesheet>\""
+else
+	$(XSLT) $(xsl) $(srcdir)/book.xml
+endif
+
 install: html
 
 clean:
-	rm -fr *.html figures/*.png figures/*.eps
+	rm -fr *.html figures/*.png figures/*.pdf
 
 distclean maintainer-clean:
 	rm -f Makefile
 
-figures/%.eps: figures/%.svg
+figures/%.pdf: figures/%.svg
+	@echo "generating $@"
+	$(SHTOOL) mkdir -f -p -m 755 figures
+	skconvert $< $@
+
+figures/%.pdf: figures/%.png
+	@echo "generating $@"
 	$(SHTOOL) mkdir -f -p -m 755 figures
 	convert $< $@
 
 figures/%.png: figures/%.svg
+	@echo "generating $@"
 	$(SHTOOL) mkdir -f -p -m 755 figures
 	convert $< $@
 
+figures/about-button.png: $(srcdir)/figures/about-button.png
+	cp $< $@
