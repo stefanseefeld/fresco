@@ -59,9 +59,9 @@ public:
   virtual void activate_autoplay() { _autoplay = true;}
   virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
 				Warsaw::Coord, Warsaw::Coord,
-				float red = 1.0,
-				float green = 0.0,
-				float blue = 0.0);
+				double red = 1.0,
+				double green = 0.0,
+				double blue = 0.0);
   void add_drawable(Drawable *);
 private:
   virtual Console::Extension *create_extension(const std::string &);

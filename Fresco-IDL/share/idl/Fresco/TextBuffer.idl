@@ -24,7 +24,6 @@
 #define _Warsaw_TextBuffer_idl
 
 #include <Warsaw/Subject.idl>
-#include <Warsaw/Observer.idl>
 #include <Warsaw/Types.idl>
 
 module Warsaw

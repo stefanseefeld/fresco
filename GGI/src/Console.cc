@@ -347,9 +347,9 @@ Input::Event *GGI::Console::synthesize(const ggi_event &e)
 
 void GGI::Console::highlight_screen(Coord lx, Coord ly,
 				    Coord ux, Coord uy,
-				    float red = 1.0,
-				    float green = 0.0,
-				    float blue = 0.0)
+				    double red = 1.0,
+				    double green = 0.0,
+				    double blue = 0.0)
 {
 #ifdef RMDEBUG
    // compute the device space coordinates
@@ -364,7 +364,10 @@ void GGI::Console::highlight_screen(Coord lx, Coord ly,
    // fill region with red
    ggi_pixel back;
    ggiGetGCForeground(_visual, &back);
-   ggi_color hi = {0xffff * red, 0xffff * green, 0xffff * blue, 0xffff};
+   ggi_color hi = {static_cast<unsigned>(0xffff * red),
+		   static_cast<unsigned>(0xffff * green),
+		   static_cast<unsigned>(0xffff * blue),
+		   0xffff};
    ggiSetGCForeground(_visual, ggiMapColor(_visual, &hi));
    ggiDrawBox(_visual, x, y, w, h);
    ggiFlushRegion(_visual, x, y, w, h);

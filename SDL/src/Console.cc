@@ -329,9 +329,9 @@ Console::Extension * SDL::Console::create_extension(const std::string & id)
 
 void SDL::Console::highlight_screen(Warsaw::Coord lx, Warsaw::Coord ly,
 				    Warsaw::Coord ux, Warsaw::Coord uy,
-				    float red = 1.0,
-				    float green = 0.0,
-				    float blue = 0.0)
+				    double red = 1.0,
+				    double green = 0.0,
+				    double blue = 0.0)
 {
 #ifdef RMDEBUG
   // I try to stay 'below' the Drable whereever possible so that bugs in that
@@ -366,9 +366,9 @@ void SDL::Console::highlight_screen(Warsaw::Coord lx, Warsaw::Coord ly,
   SDL_FillRect(screen,
 	       &fill,
 	       SDL_MapRGB(pf,
-			  Uint8(0xFF * red),
-			  Uint8(0xFF * green),
-			  Uint8(0xFF * blue)));
+			  static_cast<Uint8>(0xFF * red),
+			  static_cast<Uint8>(0xFF * green),
+			  static_cast<Uint8>(0xFF * blue)));
   SDL_UpdateRect(screen, fill.x, fill.y, fill.w, fill.h);
 
   // wait a bit
