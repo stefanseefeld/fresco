@@ -43,13 +43,13 @@ DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 SYN		:= $(patsubst Babylon/%.hh, %.syn, $(HDR))
 
-TARGET		:= libBabylon.so
+TARGET		:= ../lib/libBabylon.so
 
 vpath %.hh  $(hdir)/Babylon
 
 .PHONY: install uninstall clean distclean maintainer-clean dist
 
-all:	$(TARGET)
+all:	$(TARGET) ../bin/Babylon-config
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)
