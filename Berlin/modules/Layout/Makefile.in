@@ -25,13 +25,13 @@ builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
+include $(cdir)/Server/local.mk
 
 srcdir		:= $(top_srcdir)/src/Layout
 hdir		:= $(top_srcdir)/include/Layout
 
-include $(cdir)/Server/local.mk
-
 # Compilation and linking flags.
+CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
 SRC		:= LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc \

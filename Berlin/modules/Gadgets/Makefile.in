@@ -25,20 +25,18 @@ builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
+include $(cdir)/Server/local.mk
 
 srcdir		:= $(top_srcdir)/src/Gadget
 hdir		:= $(top_srcdir)/include/Gadget
 
-include $(cdir)/Server/local.mk
-
 # Compilation and linking flags.
+CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
 SRC		:= GadgetKitImpl.cc
 
 MODULE		:= Gadget
-
-all: world
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Gadget
 

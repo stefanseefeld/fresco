@@ -25,13 +25,13 @@ builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
+include $(cdir)/Server/local.mk
 
 srcdir		:= $(top_srcdir)/src/Figure
 hdir		:= $(top_srcdir)/include/Figure
 
-include $(cdir)/Server/local.mk
-
 # Compilation and linking flags.
+CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
 SRC		:= FigureImpl.cc PolyFigure.cc Figures.cc ImageImpl.cc \

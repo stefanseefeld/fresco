@@ -25,13 +25,13 @@ builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
+include $(cdir)/Server/local.mk
 
 srcdir		:= $(top_srcdir)/src/Image
 hdir		:= $(top_srcdir)/include/Image
 
-include $(cdir)/Server/local.mk
-
 # Compilation and linking flags.
+CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin -lpng
 
 SRC		:= PNG.cc RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc

@@ -47,7 +47,7 @@ OBJ	= $(patsubst %.cc, %.o, $(SRC))
 
 TARGET	= $(mdir)/lib$(MODULE).so
 
-world:	$(TARGET)
+all:	$(TARGET)
 
 $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)

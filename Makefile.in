@@ -35,16 +35,17 @@ invdirs 	:=$(shell for dir in $(subdirs); do list="$$dir $$list"; done; echo "$$
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
-action	:=
+action	:= all
 
 .PHONY: world $(subdirs) inverse
 .PHONY: depclean clean distclean maintainer-clean dist clean
 
-world:	$(subdirs)
+all:	$(subdirs)
 
 inverse:	$(invdirs)
 
 $(subdirs):
+	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
 depclean:

@@ -19,10 +19,13 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
+# Where the different parts of the source tree are located
+top_srcdir	:= @topdir@
+
 # Global flags
 VERSION		:= @VERSION@
 
-CPPFLAGS	+= -I$(hdir) @CPPFLAGS@
+CPPFLAGS	+= @CPPFLAGS@
 LIBS		+= @LIBS@
 
 # Flags used by different kits

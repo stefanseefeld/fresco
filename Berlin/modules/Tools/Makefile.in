@@ -25,13 +25,13 @@ builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
+include $(cdir)/Server/local.mk
 
 srcdir		:= $(top_srcdir)/src/Tool
 hdir		:= $(top_srcdir)/include/Tool
 
-include $(cdir)/Server/local.mk
-
 # Compilation and linking flags.
+CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
 # Filler.cc Indicator.cc

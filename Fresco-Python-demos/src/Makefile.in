@@ -29,25 +29,26 @@ cdir		:= $(builddir)/config
 hdir		:= $(top_srcdir)/include
 bdir		:= $(builddir)/bin
 
-action		:=
+action		:= all
 
 .PHONY: clean distclean maintainer-clean
 
 all: warsaw
 
 warsaw:
-	$(MAKE) -C Warsaw
+	@echo making $(action) in $@
+	$(MAKE) -C Warsaw $(action)
 
 install:
-	$(MAKE) -C Warsaw install
+	$(MAKE) -C Warsaw action=install
 
 clean:
-	$(MAKE) -C Warsaw clean
+	$(MAKE) -C Warsaw action=clean
 
 distclean:
 	rm -f Makefile $(cdir)/Clients-Python/subdirs.mk \
 		$(cdir)/Clients-Python/config.log $(cdir)/Clients-Python/config.status
-	$(MAKE) -C Warsaw distclean
+	$(MAKE) -C Warsaw action=distclean
 
 maintainer-clean:	distclean
 	rm -f $(top_srcdir)/config/Clients-Python/configure $(top_srcdir)/config/Clients-Python/aclocal.m4

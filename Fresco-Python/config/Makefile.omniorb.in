@@ -63,5 +63,6 @@ distclean:	clean
 maintainer-clean:	distclean
 
 %_idl.py:	$(idir)/Warsaw/%.idl
+	@echo generating $(@F)
 	$(IDLPY) $(IDLPYFLAGS) $<
 
