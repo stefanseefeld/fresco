@@ -27,7 +27,7 @@ dnl ------------------------------------------------------------------
 
 AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-AC_INIT(Berlin, M3, devel@fresco.org)
+AC_INIT(Berlin, M1, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
 
 dnl ------------------------------------------------------------------
@@ -41,12 +41,22 @@ FRESCO_IDL_PATH
 
 AC_SUBST(Fresco_IDL_prefix)
 
+AC_PATH_PROGS([python_program], [python python1.6 python2.1 python2.2])
+if test ".$python_program" == "." ; then
+  AC_MSG_ERROR([can't install Python bindings without interpreter])
+fi
+
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 
 dnl AC_MSG_PART(Output Substitution)
 
-AC_CONFIG_FILES([config/local.mk Makefile Fresco/Makefile:config/Makefile.omniorb.in])
+AC_CONFIG_FILES([setup.py], [chmod +x setup.py])
+AC_CONFIG_FILES([config/local.mk])
+AC_CONFIG_FILES([Makefile Fresco/Makefile:config/Makefile.omniorb.in])
+if test "$srcdir" != .; then
+  AC_CONFIG_LINKS([Fresco/__init__.py:Fresco/__init__.py])
+fi
 
 AC_OUTPUT

@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+from distutils.core import setup
+
+setup(name="Fresco",
+      version="@PACKAGE_VERSION@",
+      description="Fresco Python bindings",
+      url="http://www.fresco.org",
+      packages=["Fresco"])

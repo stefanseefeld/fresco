@@ -51,23 +51,9 @@ PACKAGES	:= Fresco Figure Layout Primitive Unidraw Widget
 PACKAGES	:= $(PACKAGES) $(PACKAGES:%=%__POA)
 PACKAGES	:= $(PACKAGES) Fresco/Input Fresco__POA/Input
 
-PACKAGE_DST	:= $(PACKAGES:%=$(DESTDIR)$(libdir)/python/%/__init__.py)
-
 TARGET		:= $(SRC)
 
 all:	$(TARGET)
-
-install_files:	all
-	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/python
-	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/python
-
-$(DESTDIR)$(libdir)/python/%/__init__.py: %/__init__.py
-	$(SHTOOL) mkdir -f -p -m 755 $(@D)
-	$(SHTOOL) install -C -m 755 $< $(@D)
-
-install_packages: all $(PACKAGE_DST)
-
-install:	install_files install_packages
 
 clean:	
 	rm -rf $(SRC) $(CMP) Input Figure Fresco Layout *__POA *~
@@ -80,4 +66,7 @@ cvsclean:	distclean
 $(SRC): %_idl.py:		$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	$(IDLPY) $(IDLPYFLAGS) $<
+	mv -f $(@F) $(@F).old
+	cat $(@F).old | sed -e "s,@Fresco_IDL_prefix@,$(prefix)," > $(@F)
+	rm -f $(@F).old
 
