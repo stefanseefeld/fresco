@@ -78,8 +78,8 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   //        the problems seems to be in the coordinate system used,
   //        not PS...
   //        -stefan
-  double xfactor = resolution(xaxis);
-  double yfactor = resolution(yaxis);
+  double xfactor = 1.;//resolution(xaxis);
+  double yfactor = 1.;//resolution(yaxis);
 
   static Transform::Matrix m =
     {{xfactor*xfactor, 0., 0., 0.},
@@ -117,7 +117,7 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
       << (region.upper.y - region.lower.y)*resolution(yaxis)*yfactor + 35. << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Fresco" << std::endl;
-  _os << "/Times-Roman findfont 112 scalefont setfont" << std::endl;
+  _os << "/Times-Roman findfont 14 scalefont setfont" << std::endl;
   _os << "0 0 0 setrgbcolor" << std::endl;
   _os << std::endl;
 }
