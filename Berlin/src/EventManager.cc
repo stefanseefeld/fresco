@@ -75,15 +75,24 @@ bool EventManager::request_focus(Controller_ptr c, Input::Device d)
 void EventManager::next_event()
 {
   Trace trace("EventManager::next_event");
-  Input::Event *e = Console::instance()->next_event();
+  Input::Event *e = Console::instance()->next_event(); // take ownership!
   if (!e) return; // repair
-  Input::Event_var event(e);
+  Input::Event_var event(e); // event owns memory now and will free it.
   /*
    * the first item determines which focus to send this event to
    */
-  try { if (event->length()) _foci[event[0].dev]->dispatch(event);}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { cerr << "EventManager: warning: corrupt scene graph !" << endl;}
-  catch (const CORBA::BAD_PARAM &) { cerr << "EventManager: caught bad parameter" << endl;}
+  try
+    {
+      if (event->length()) _foci[event[0].dev]->dispatch(event);
+    }
+  catch (const CORBA::OBJECT_NOT_EXIST &)
+    {
+      std::cerr << "EventManager: warning: corrupt scene graph!" << std::endl;
+    }
+  catch (const CORBA::BAD_PARAM &)
+    {
+      std::cerr << "EventManager: caught bad parameter." << std::endl;
+    }
 }
 
 void EventManager::restore(Region_ptr r)
