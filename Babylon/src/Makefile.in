@@ -65,9 +65,9 @@ $(TARGET):	$(OBJ)
 	chmod +x $@.tmp
 	mv $@.tmp $@
 
-doc:	../share/Babylon/doc/html ../bin/Babylon-config
+doc:	../share/doc/Babylon/html ../bin/Babylon-config
 
-../share/Babylon/doc/html:	$(SYN)
+../share/doc/Babylon/html:	$(SYN)
 	@echo formatting $(@F)
 	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
@@ -91,10 +91,10 @@ install:	all
         $(top_srcdir)/config/Babylon-config.in > $(DESTDIR)$(bindir)/Babylon-config.tmp
 	chmod +x $(DESTDIR)$(bindir)/Babylon-config.tmp
 	mv $(DESTDIR)$(bindir)/Babylon-config.tmp $(DESTDIR)$(bindir)/Babylon-config
-	@if test -d ../share/Babylon/doc/html; then \
-	  mkdir -p $(DESTDIR)$(datadir)/Babylon/doc; \
-	  cp -r ../share/Babylon/doc/html $(DESTDIR)$(datadir)/Babylon/doc; \
-	fi;
+
+install-doc: install
+	mkdir -p $(DESTDIR)$(datadir)/doc/Babylon
+	cp -r ../share/doc/Babylon/html $(DESTDIR)$(datadir)/doc/Babylon
 
 uninstall:
 	rm -fr $(DESTDIR)$(datadir)/Babylon/doc

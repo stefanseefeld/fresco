@@ -68,5 +68,6 @@ AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile module
 
 mkdir -p lib
 mkdir -p modules
+mkdir -p bin
 
 AC_OUTPUT
