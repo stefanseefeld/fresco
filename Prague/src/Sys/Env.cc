@@ -22,18 +22,20 @@
 
 #include <Prague/Sys/Env.hh>
 #include <Prague/config.hh>
+#include <iosfwd>
 
 bool Prague::putenv(const std::string & name, const std::string & value)
 {
 #ifdef HAVE_SETENV
-  return setenv(name.c_str(), value.c_str(), 1)==0;
+  return setenv(name.c_str(), value.c_str(), 1) == 0;
 #elif HAVE_PUTENV
   std::string env_var(name);
   env_var += "=" + value;
-  return putenv(env_var.c_str());
-#endif
+  return ::putenv(env_var.c_str());
+#else
   std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
+#endif
 }
 
 bool Prague::putenv(const std::string & name)
@@ -41,10 +43,11 @@ bool Prague::putenv(const std::string & name)
 #ifdef HAVE_UNSETENV
   return unsetenv(name.c_str());
 #elif HAVE_PUTENV
-  return putenv(name.c_str());
-#endif
+  return ::putenv(name.c_str());
+#else
   std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
+#endif
 }
 
 std::string Prague::getenv(const std::string & name)
