@@ -22,7 +22,7 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/clients
+srcdir		:= @srcdir@
 cdir		:= ../config
 
 define makedep
