@@ -79,7 +79,7 @@ $(TARGETS): $(OBJ)
 	@echo linking $(@F)
 	$(CXX) `$(FRESCO_TEST_CONFIG) --libs` -o $@ $<
 
-$(SCRIPTS):
+$(SCRIPTS): $(SCRIPT_SOURCES)
 	@echo Running sed on scripts...
 	for THIS_SCRIPT in $(SCRIPTS) ; do \
 	    cat $(srcdir)/$$THIS_SCRIPT | \
