@@ -165,6 +165,12 @@ class PyRegion (Warsaw__POA.Region):
 	v0.y = math.max(v0.y, v.y)
 	v0.z = math.max(v0.z, v.z)
 
+def dump_transform(transform):
+    m = transform.store_matrix()
+    for j in range(4):
+	if j == 1: print "M =",
+	else: print "   ",
+	print "[ %s ]"%string.join(map(str, m[j]))
 class PyTransform (Warsaw__POA.Transform):
     """Transform impl.
             [ r00 r01 r02 tx]
@@ -412,6 +418,7 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def add_parent_graphic(self, graphic, parent_tag): # --> Tag
 	mytag = len(self.__parents)
 	self.__parents.append( Edge(graphic, parent_tag, mytag) )
+	print self.__class__.__name__, "added parent"
 	return mytag
     def remove_parent_graphic(self, parent_tag): # --> void
 	for i in range(len(self.__parents)):
@@ -445,6 +452,8 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	    region.merge_union(tmp._this())
 	else:
 	    region.merge_union(alloc_info.allocation)
+	#pv = lambda v: '(x:%f, y:%f, z:%f)'%(v.x,v.y,v.z)
+	#print "extension:",map(pv, region.bounds())
     def shape(self, Region): # --> void
 	pass
 
@@ -460,7 +469,14 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def allocate(self, tag, alloc_info): # --> void
 	pass
     def allocations(self, alloc): # --> void
-	pass
+	begin = alloc.size()
+	for edge in self.__parents:
+	    edge.peer.allocations(alloc)
+	    end = alloc.size()
+	    for j in range(begin, end):
+		info = alloc.get(j)
+		edge.peer.allocate(edge.peerId, info)
+	    begin = end
     def need_redraw(self): # --> void
 	for edge in self.__parents:
 	    edge.peer.need_redraw()
@@ -519,7 +535,8 @@ class PyMonoGraphic (PyGraphic):
 	my_info = Warsaw.Allocation.Info(my_region._this(), my_trans._this(), None)
 	self.allocate(0, my_info) # Template method to modify as per the concrete Graphic type (eg layout decorators etc)
 	self.__child.peer.extension(my_info, region)
-	pv = lambda v: '(x:%f, y:%f, z:%f)'%(v.x,v.y,v.z)
+	#pv = lambda v: '(x:%f, y:%f, z:%f)'%(v.x,v.y,v.z)
+	#print "extension:",map(pv, region.bounds())
     def shape(self, region):
 	if self.__child.peer: self.__child.peer.shape(region)
     def traverse(self, traversal):
