@@ -22,13 +22,17 @@
 SHELL	:= /bin/sh
 
 srcdir	:= @srcdir@
-builddir:= @abs_builddir@
+builddir	:= @abs_builddir@
 
 distdir	:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-packages:= Prague Babylon Fresco Berlin GGI SDL \
+packages	:= Prague Babylon Fresco Berlin GGI SDL \
            Clients-C++ Clients-Python Clients-Java Clients-Perl
+ifeq ($(action), config)
 subdirs	:= $(foreach package, $(packages), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
+else
+subdirs	:= $(foreach package, $(packages), $(shell test -d $(package) && echo '$(package)'))
+endif
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
@@ -41,7 +45,7 @@ all:	$(subdirs)
 
 $(subdirs): %: %/Makefile
 	@echo making $(action) in $@
-	$(MAKE) -C $@ $(action)
+	-$(MAKE) -C $@ $(action)
 
 config:
 	$(MAKE) action="config"
@@ -89,7 +93,7 @@ maintainer-clean:
 %/Makefile: $(srcdir)/%/Makefile.in
 	@echo configuring package $(@D) with $(configure_args)
 	mkdir -p $(@D)
-	(cd $(@D); ../$(srcdir)/$(@D)/configure $(configure_args))
+	-(cd $(@D); ../$(srcdir)/$(@D)/configure $(configure_args))
 
 ifneq ($(findstring Prague, $(subdirs)),)
 Prague	:= --with-Prague-prefix=$(builddir)/Prague
