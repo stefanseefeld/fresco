@@ -436,6 +436,9 @@ void ViewportImpl::allocate_child(Allocation::Info &info)
 
 BoundedRange_ptr ViewportImpl::adjustment(Axis a)
 {
+  // FIXME: What about the zaxis? I know... it is not really useful
+  //        but it is allowed for input and should not just return
+  //        the value for the yaxis. -- tobias
   return a == xaxis ? RefCount_var<BoundedRange>::increment(_xadjustment) : RefCount_var<BoundedRange>::increment(_yadjustment);
 }
 

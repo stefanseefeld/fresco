@@ -28,6 +28,12 @@
 #include <Warsaw/Command.idl>
 #include <Warsaw/Kit.idl>
 
+//. The UnidrawKit contains functions that allow for an easy
+//. implementation of vector based drawing applications.
+//. FIXME: I won't document this right now as this is subject to change
+//.        without notice and not really used anywhere except for
+//.        Stefan's application. Stefan, please tell me when this is
+//.        intended for public use...
 module Unidraw
 {
   interface View;

@@ -35,10 +35,12 @@ module Warsaw
       //. A Telltale can have at most 32 bits. Mask is used to address them.
       typedef unsigned long Mask;
 
+      // Used to set and readout the TelltaleConstraint Object used by this
+      // Telltale.
       attribute TelltaleConstraint constraint;
-      //. Turn on the given flag.
+      //. Turns on the given flag.
       void set(in Mask m);
-      //. Turn off the given flag.
+      //. Turns off the given flag.
       void clear(in Mask m);
       //. Return true if given flag is currently on.
       boolean test(in Mask m);

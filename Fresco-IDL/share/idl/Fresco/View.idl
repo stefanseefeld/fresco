@@ -27,6 +27,10 @@
 
 module Warsaw
 {
+  //. A view is an object that observes another one: It will get
+  //. notified whenever the observed object gets changed. The view
+  //. then updates itself to reflect the new state of the observed
+  //. Object.
   interface View : Graphic, Observer {};
 };
 

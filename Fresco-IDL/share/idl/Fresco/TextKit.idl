@@ -33,19 +33,27 @@ module Warsaw
   interface TextBuffer;
   interface StreamBuffer;
   
-  //. TextKit produces text chunks (flyweights) as well as decorators which set the
-  //. current font state as a traversal passes through them.
+  //. TextKit produces text chunks (flyweights) as well as decorators which
+  //. set the current font state as a traversal passes through them.
+  //. WARNING: These interfaces will change!
   interface TextKit : Kit
     {
-      Graphic chunk(in Unistring u);    
+      //. Returns a graphic containing a unicode string.
+      Graphic chunk(in Unistring u);
+      //. Returns a graphic object containing a single unicode character.
       Graphic glyph(in Unichar u);    
       //. Placeholder for an empty line. It inserts enough vertical space so
       //. that the lineheight will not grow when inserting characters in the
       //. font currently set.
       Graphic strut();
+      //. Returns a simple text viewer object. You need to attach() it to
+      //. a TextBuffer to make it display something.
       Graphic simple_viewer(in TextBuffer buf);
+      //. Returns a Terminal Widget.
       Graphic terminal(in StreamBuffer buf);
       
+      //. These functions are used to set font attributes. All
+      //. of them are defunct right now!
       Graphic size(in Graphic body, in unsigned long ems);
       Graphic weight(in Graphic body, in unsigned long wt);
       Graphic family(in Graphic body, in Unistring fam);

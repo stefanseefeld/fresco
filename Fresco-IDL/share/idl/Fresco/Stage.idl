@@ -43,19 +43,28 @@ module Layout
       //. nil if the layer is out of range
       StageHandle layer(in Index l);
       
-      //. begin and end behave like a recursive lock, in that only after
+      //. begin() and end() behave like a recursive lock, in that only after
       //. the last end is called pending need_redraw and need_resize
-      //. requests will be executed. In particular, a typical implementation may
-      //. merge all need_redraw requests into one with the new damaged region
-      //. being the union of the individually requested regions
+      //. requests will be executed. In particular, a typical implementation
+      //. may merge all need_redraw requests into one with the new damaged
+      //. region being the union of the individually requested regions
       void begin();
       //. See begin()
       void end();
-      //. Insert a graphic into the stage at a given layer with the given position
-      //. and the given size. All higher layers are increased ('pushed back').
+      //. FIXME: Are there any constraints for the layers? Does layer need
+      //.        to be <= n+1 where n is the number of StageHandles allready
+      //.        in use?
+
+      //. Insert a graphic into the stage at a given layer with the given
+      //. position and the given size. All higher layers are increased
+      //. ('pushed back').
+      //. FIXME: Are there any constraints for the layers? Does layer need
+      //.        to be <= n+1 where n is the number of StageHandles allready
+      //.        in use?
       StageHandle insert(in Warsaw::Graphic g, in Warsaw::Vertex position, in Warsaw::Vertex size, in Index layer);
     };
-  
+
+  //. FIXME: Describe this.
   interface StageHandle
     {
       //. Return the stage this handle refers to

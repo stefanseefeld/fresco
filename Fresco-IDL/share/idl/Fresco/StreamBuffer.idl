@@ -27,13 +27,35 @@
 
 module Warsaw
 {
+  //. The StreamBuffer is used to interact with Streams. As the
+  //. name implies the Stream is buffered.
+  //. Warning: Only add one observer to this Object: Only the first can read
+  //. the StreamBuffer, all others will only find it empty!
   interface StreamBuffer : Subject
     {
+      //. The Data that gets passed is a sequence of octets.
+      //. So it won't be modified by the ORB. You have to make
+      //. sure that it is in a format that the reciever expects
+      //. yourself!
       typedef sequence<octet> Data;
+
+      //. Returns the length of the StreamBuffer. It is the
+      //. number of octets that can be written to the StreamBuffer before
+      //. it overflows.
       readonly attribute long size;
+      //. Returns the number of octets that were written to the StreamBuffer
+      //. and not read back out yet.
+      //. FIXME: This function name is very confusing! Or did I get it all
+      //.        wrong?
       readonly attribute long available;
+      //. Returns all octets in the buffer and empties it afterwards.
+      //. A maximum of size() octets get returned.
       Data read();
+      //. Appends the given Data to this StreamBuffer.
+      //. All observers get notified if the Buffer overflows. No Data is
+      //. lost, even in case of an StremBuffer overflow.
       void write(in Data d);
+      //. Asks the Observers to read data from this Buffer.
       void flush();
     };
 };

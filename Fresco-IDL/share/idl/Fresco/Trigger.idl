@@ -28,14 +28,14 @@ module Warsaw
 {
   interface Command;
   
-  //. A trigger is a controller that can execute a command when clicked
+  //. A Trigger is a controller that can execute a Command when clicked
   //. (pressed and subsequently released with the pointer over
   //. the button's allocated area for example). Triggers manipulate a telltale
-  //. that represents the current state of the trigger and
-  //. determines the trigger's appearance.
+  //. that represents the current state of the Trigger and
+  //. determines the Trigger's appearance.
   interface Trigger : Controller
     {
-      //. The trigger will execute its command (if not nil) when clicked.
+      //. The Trigger will execute its Command (if not nil) when clicked.
       attribute Command action;
     };
 };

@@ -39,12 +39,20 @@ module Warsaw
   interface DrawingState;
   interface Canvas;
   
-  //. A Toolkit provides common objects for very basic interaction tasks
-  //. and Telltale Views such as bevels and indicators
+  //. This Kit provides common objects for very basic interaction tasks
+  //. and Telltale Views such as bevels and indicators.
+  //.
+  //. If you want Widgets you are wrong here: Only the parts used to
+  //. build widgets are generated here. Please look into the WidgetKit for
+  //. informations on how to access complete widgets.
   interface ToolKit : Kit
     {
+      //. A enumeration of possible frame types.
       enum FrameType { none, inset, outset, convex, concav, colored};
+      //. FIXME: What is this used for?
       enum Direction { left, right, up, down};
+
+      //. This union is used to specify the look of a frame.
       union FrameSpec switch (FrameType)
 	{
 	case inset:
@@ -56,39 +64,111 @@ module Warsaw
 	  Color foreground;
 	};
       
+      //. A debugger is a decorator that dumps debugging informations
+      //. to stdout. It will tell you about traversals hitting it, changes
+      //. to its allocation and more.
       Graphic      debugger(in Graphic g, in string s);
+      //. FIXME: What does this do?
       DrawingState decorator(in Graphic gg);
+      //. Returns a decorator around the given graphic which
+      //. sets the default color to the values given in r,g and b.
+      //. The r,g and b value are exspected to be in between 0.0 and 1.0.
+      //. (0.0, 0.0, 0.0) is black, (1.0, 1.0, 1.0) is white.
       Graphic      rgb(in Graphic gg, in Coord r, in Coord g, in Coord b);
+      //. Sets the default alpha value for the given graphic to
+      //. the alpha value given in a. a is exspected to be in the range
+      //. between 0.0 and 1.0. A value of 0.0 indicates that the graphic
+      //. will be invisible, 1.0 will result in a untransparent graphic.
       Graphic      alpha(in Graphic g, in Coord a);
+      //. Sets the color of the light shining onto the given graphic.
+      //. The r, g and b values are interpreted in the same way as those
+      //. in the decorator returned by rgb().
       Graphic      lighting(in Graphic gg, in Coord r, in Coord g, in Coord b);
-      
+      //. This decorates a given graphic by drawing a rectangular frame
+      //. around it.
+      //. The frame will have the given thickness and FrameSpec and will be
+      //. filled with the current default color if 'filled' is set to true.
       Graphic      frame(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
-      Graphic      dynamic(in Graphic g, in Coord thickness,
-			   in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
-			   in boolean fill, in Telltale t);
-      Graphic      framed_triangle(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill, in Direction d);
-      Graphic      dynamic_triangle(in Graphic g, in Coord thickness,
-				    in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
-				    in boolean fill, in Direction d, in Telltale t);
-      
+      //. Same as frame(), but switches between using one of the two
+      //. given FrameSpecs to draw according to the value of the flag
+      //. given by mask and Telltale.
+      Graphic      dynamic(in Graphic g,
+			   in Coord thickness,
+			   in Telltale::Mask mask,
+			   in FrameSpec s1,
+			   in FrameSpec s2,
+			   in boolean fill,
+			   in Telltale t);
+      //. This decorates a given graphic by drawing a triangular frame
+      //. around it.
+      //. The frame will have the given thickness and framespec and will be
+      //. filled with the current default color if filled is set to true.
+      Graphic      framed_triangle(in Graphic g,
+				   in Coord thickness,
+				   in FrameSpec spec,
+				   in boolean fill,
+				   in Direction d);
+      //. Same as framed_triangle(), but switches between using one of the two
+      //. given FrameSpecs to draw according to the value of the flag
+      //. given by mask and Telltale.
+      Graphic      dynamic_triangle(in Graphic g,
+				    in Coord thickness,
+				    in Telltale::Mask mask,
+				    in FrameSpec s1,
+				    in FrameSpec s2,
+				    in boolean fill,
+				    in Direction d,
+				    in Telltale t);
+      //. This decorates a given graphic by drawing a diamond-shaped frame
+      //. around it.
+      //. The frame will have the given thickness and framespec and will be
+      //. filled with the current default color if filled is set to true. 
       Graphic      framed_diamond(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
+      //. Same as framed_diamond(), but switches between using one of the two
+      //. given FrameSpecs to draw according to the value of the flag
+      //. given by mask and Telltale.
       Graphic      dynamic_diamond(in Graphic g, in Coord thickness,
 				   in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
 				   in boolean fill, in Telltale t);
       
       //   Graphic      filler(in Graphic g, in Color c);
       //   Graphic      indicator(in Graphic g, in Color c, in Telltale t);
-      //. The button makes a given graphic react on clicks and execute
-      //. the given command whenever that happens.
+      //. The button makes a given graphic react on clicks (mouse
+      //. button gets pressed and released over the given Graphic) and executes
+      //. the given command whenever that happens. It does not draw any frames
+      //. around the given graphic! If you need that: use the WidgetKit's
+      //. button.
       Trigger      button(in Graphic g, in Command c);
       //. This is a basic object encoding an on/off state. It is toggled
       //. by clicking on the given graphic g. 
       Controller   toggle(in Graphic g);
+      //. This returns a controller which is sensitive to mousedrag events.
+      //. It is decorates the given Graphic and executes the given
+      //. Command whenever a drag occures.
+      //. It is used for example for the thumb on a scrollbar.
+      //. FIXME: This explaination is even weaker then the others:-(
       Controller   dragger(in Graphic g, in Command c);
+      //. Same as button(), but the given Command gets executed repeatedly
+      //. for as long as the button is pressed.
       Controller   stepper(in Graphic g, in Command c);
+      //. This turns the given Graphic into an input-area for the
+      //. given TextBuffer. It reacts to keystroke events and inserts
+      //. them into the TextBuffer. text_input() does not display the buffer!
+      //. To create a simple editable TextField you will need to use the
+      //. text_input() as a decorator for the TextKit's simple_viewer().
       Controller   text_input(in Graphic g, in TextBuffer b);
+      //. Returns a simple terminal...
+      //. FIXME: How does the terminal stuff work?
       Controller   terminal(in Graphic g, in StreamBuffer b);
+      //. This wraps the given Graphic into a Controller (which basically
+      //. does nothing). It can be used to adapt a Graphic so it can be
+      //. used where a Controller is exspected or for focus navigation.
       Controller   group(in Graphic g);
+      //. Returns a graphic w pixels wide and h pixels high. It is
+      //. supposed to be used for video playback and simular things.
+      //. Don't use it if not absolutly necessary! Some DrawingKits
+      //. will not be able to rotate a Convas and the Canvas breaks
+      //. device independence!
       Canvas       create_canvas(in PixelCoord w, in PixelCoord h);
     };
 };

@@ -35,6 +35,8 @@ module Layout
   //. A viewport allows adjustment of the view of a graphic.
   interface Viewport : Warsaw::View
     {
+	//. adjustment() gets the BoundedRange associated with the
+	//. Axis given.
       Warsaw::BoundedRange adjustment(in Warsaw::Axis a);
     };
 };

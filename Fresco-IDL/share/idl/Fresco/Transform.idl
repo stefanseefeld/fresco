@@ -58,12 +58,12 @@ module Warsaw
       boolean identity();
       boolean translation();
       boolean det_is_zero();
-      void scale(in Vertex v);
-      void rotate(in double angle, in Axis a);
       //. Modify the matrix to perform coordinate scaling,
       //. rotation, and translation.  The rotation angle
       //. is given in degrees.  A 2-dimensional implementation
       //. only implements rotate about the z-axis.
+      void scale(in Vertex v);
+      void rotate(in double angle, in Axis a);
       void translate(in Vertex v);
       //. These operations set the matrix to be the result of
       //. multiplying the matrix and the given transform.

@@ -30,31 +30,39 @@ module Warsaw
 {
   interface ClientContext;
 
-  //. the ServerContext is an object you pick up from the berlin
+  //. The ServerContext is an object you pick up from the berlin
   //. server's root ContextManager, and which you use to create all
   //. generic interfaces (kits, plugins, etc).
   interface ServerContext
     {
-      //. the ClientContext that is associated with this
+      //. The ClientContext that is associated with this
       readonly attribute ClientContext client;
-      //. this is the entry point to generic object creation on a server.
+      //. This is the entry point to generic object creation on a server.
       Kit resolve(in string type, in Kit::PropertySeq attr)
 	raises (SecurityException, CreationFailureException);
       
       //. access to singletons (like the fontManager) this way
+      //. FIXME: What exactly does it do? Does it add a singleton to
+      //.        This ServerContext only? Does it add it to all of them?
       void set_singleton(in string name, in Object singleton) 
 	raises (SecurityException, SingletonFailureException);
-      
+      //. FIXME: see set_singleton()
       void remove_singleton(in string name)
 	raises (SecurityException, SingletonFailureException);
-      
+      //. Gets the Singleton that is associated to the given name.
       Object get_singleton(in string name) 
 	raises (SecurityException, SingletonFailureException);
     };
-  
+
+  //. This is the interface of the only Object that can be looked up in
+  //. the CORBA nameservice: This is what a client sees.
   interface Server
-    //. this is the "super-context" -- the entry point for all new contexts.
     {
+      //. create_server_context() is the method used by a Berlin client to
+      //. connect to the Berlin server.
+      //. The server examines the given ClientContext and if it has
+      //. sufficient permissions the server will return a ServerContext which
+      //. can then be used to access the server's resources.
       ServerContext create_server_context(in ClientContext C) raises (SecurityException);
     };
 };

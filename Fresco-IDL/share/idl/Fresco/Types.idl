@@ -25,6 +25,9 @@
 
 module Warsaw
 {
+  //. Tags are used to uniquely identify objects and links between objects.
+  //. They are garanteed to be unique to each scope by each function
+  //. generationg Tags.
   typedef unsigned long Tag;
   //. User interface objects specify positions and sizes in terms
   //. of coordinates.  The Coord type represents a position or distance
@@ -64,7 +67,10 @@ module Warsaw
   {
     Coord x, y, z;
   };
+  //. Vertices are a sequence of 3-dimensional points.
   typedef sequence<Vertex> Vertices;
+  //. A Path is a sequence of 3-dimensional points. It is exactly the same
+  //. as the Vertices type and introduced as a confinience only.
   typedef Vertices Path;
 
   //. An OriginatedDelta is used (e.g. by Dragger) to specify an
@@ -107,9 +113,9 @@ module Warsaw
   {
     long a, b, c;
   };
-
   typedef sequence<Triangle> TriangleSeq;
 
+  //. FIXME: And this.
   struct Mesh
   {
     Vertices nodes;
