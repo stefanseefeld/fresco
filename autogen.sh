@@ -12,7 +12,7 @@ for package in $packages;
 	 if test -f config/acconfig.h; then
 	    autoheader -l config configure.ac > config/config.hh.in
 	 fi;
-	 autoconf -l config
+	 autoconf --include config
          chmod a+x configure)
     fi
     done
