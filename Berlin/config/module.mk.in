@@ -38,20 +38,18 @@
 
 VERSION		:= @VERSION@
 
-rpath	= $(ldir)
-
 .PHONY: all install clean distclean maintainer-clean
 
 DEP	= $(patsubst %.cc, %.d, $(SRC))
 OBJ	= $(patsubst %.cc, %.o, $(SRC))
 
-TARGET	= $(mdir)/lib$(MODULE).so
+TARGET	= $(mdir)/$(MODULE).so
 
 all:	$(TARGET)
 
 $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -Wl,-rpath $(rpath) -o $@ $(OBJ) $(LIBS)
+		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 #		strip --strip-unneeded $@
 
 install:
