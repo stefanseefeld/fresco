@@ -39,13 +39,15 @@ while test $# -gt 0; do
       echo @PACKAGE_VERSION@
       ;;
     --cppflags)
-      echo @CPPFLAGS@ -I@includedir@
+      echo @CPPFLAGS@ -I@includedir@ |\
+          sed -e "s/ /\n/g" | sort -u | xargs echo -n
       ;;
     --cxxflags)
       echo @CXXFLAGS@
       ;;
     --libs)
-      echo -L@libdir@ -lPrague @LIBS@
+      echo -L@libdir@ -lPrague @LIBS@  |\
+          sed -e "s/ /\n/g" | sort -u | xargs echo -n
       ;;
     *)
       echo "${usage}" 1>&2

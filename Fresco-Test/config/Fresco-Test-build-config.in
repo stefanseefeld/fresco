@@ -39,13 +39,15 @@ while test $# -gt 0; do
       echo @PACKAGE_VERSION@
       ;;
     --cppflags)
-      echo @CPPFLAGS@ -I@abs_top_builddir@/include
+      echo @CPPFLAGS@ -I@abs_top_builddir@/include |\
+          sed -e "s/ /\n/g" | sort -u | xargs echo -n
       ;;
     --cxxflags)
       echo @CXXFLAGS@
       ;;
     --libs)
-      echo -L@abs_top_builddir@/lib -lFresco-Test @LIBS@
+      echo -L@abs_top_builddir@/lib -lFresco-Test @LIBS@ |\
+          sed -e "s/ /\n/g" | sort -u | xargs echo -n
       ;;
     --test-runner)
       echo $prefix/bin/run_tests.sh
