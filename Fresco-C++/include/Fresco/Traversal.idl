@@ -31,7 +31,6 @@
 #include <Region.idl>
 
 interface Graphic;
-interface GraphicOffset;
 interface DrawingKit;
 interface Transform;
 
@@ -42,8 +41,7 @@ interface Traversal
   Transform transformation();
   boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
   boolean intersects();
-//   Traversal trail();
-  void traverseChild (in GraphicOffset o, in Region r, in Transform t);
+  void traverseChild (in Graphic g, in Region r, in Transform t);
   void visit(in Graphic g);
   order direction();
   boolean ok();

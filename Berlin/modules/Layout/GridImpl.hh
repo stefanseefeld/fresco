@@ -34,47 +34,18 @@
 
 class GridImpl;
 
-class GridOffset : implements(GraphicOffset), public virtual CloneableImpl
+struct GridDimension
 {
-public:
-  GridOffset(GridImpl *parent, Graphic_ptr child, Grid::Index index);
-  ~GridOffset();
-
-  Graphic::Requirement requirement(Axis axis);
-  GridOffset *&next(Axis axis) { return next_[static_cast<int>(axis)]; }
-
-  virtual Graphic_ptr Parent();
-  virtual Graphic_ptr Child();
-  virtual GraphicOffset_ptr next();
-  virtual GraphicOffset_ptr previous();
-  virtual void allocations(Collector_ptr);
-  virtual void insert(Graphic_ptr);
-  virtual void replace(Graphic_ptr);
-  virtual void remove();
-  virtual void needResize();
-  virtual void traverse(Traversal_ptr);
-  virtual void visit_trail(Traversal_ptr);
-  virtual void allocateChild(Graphic::AllocationInfo &);
-  
-  Grid::Index index;
-  
-private:
-  GridImpl *parent;
-  Graphic_var child;
-  GridOffset *next_[2];
-};
-
-class GridDimension
-{
-public:
-  GridDimension();
-  ~GridDimension();
-  
-  void initialize(long count);
-
-  long count;
-  GridOffset **offsets;
-  Graphic::Requirement *requirements;
+  void init(long count, long n)
+    {
+      children.resize(count);
+      for (vector<vector<Graphic_var> >::iterator i = children.begin(); i != children.end(); i++)
+	(*i).resize(n);
+      requirements.resize(count);
+    }
+  CORBA::Long size() { return children.size();}
+  vector<vector<Graphic_var> > children;
+  vector<Graphic::Requirement> requirements;
 };
 
 class GridImpl : implements(Grid), public GraphicImpl
@@ -89,10 +60,11 @@ public:
   GridImpl(const Index &upper);
   ~GridImpl();
 
-  virtual void request(Requisition &);
-  virtual void traverse(Traversal_ptr);
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
+
+  virtual void request(Requisition &);
+  virtual void traverse(Traversal_ptr);
   virtual void needResize();
 
   virtual void replace(Graphic_ptr, const Grid::Index &i);
@@ -104,9 +76,10 @@ public:
   virtual void rangePosition(Region_ptr, const Grid::Range &, Vertex &);
   virtual Grid::Index upper();
 
-  void allocateChild(Graphic::AllocationInfo &, Grid::Index);
+ protected:
+  void allocateChild(Grid::Index, Allocation::Info &);
     
-private:
+ private:
   void cacheRequest();
   void partialRequest(Axis axis, long lower, long, Graphic::Requirement &);
   void fullRequest(Axis, Axis);
@@ -122,36 +95,6 @@ private:
   Requisition requisition;
 };
 
-class SubGridImpl;
-
-class SubGridOffset : implements(GraphicOffset), public virtual CloneableImpl
-{
-public:
-  SubGridOffset(SubGridImpl *, Grid_ptr, const Grid::Range &);
-  ~SubGridOffset();
-
-  virtual Graphic_ptr Parent();
-  virtual Graphic_ptr Child();
-  virtual GraphicOffset_ptr next();
-  virtual GraphicOffset_ptr previous();
-  virtual void allocations(Collector_ptr);
-  virtual void insert(Graphic_ptr);
-  virtual void replace(Graphic_ptr);
-  virtual void remove();
-  virtual void needResize();
-  virtual void traverse(Traversal_ptr);
-  virtual void visit_trail(Traversal_ptr);
-  virtual void allocateChild(Graphic::AllocationInfo &);
-
-  void request(Graphic::Requisition &);
-
-protected:
-  SubGridImpl *parent;
-  Grid_var child;
-  Tag remove_tag;
-  Grid::Range range;
-};
-
 class SubGridImpl : public GraphicImpl
 {
 public:
@@ -161,7 +104,8 @@ public:
   virtual void request(Requisition &);
   virtual void traverse(Traversal_ptr);
 private:
-  SubGridOffset *offset;
+  Grid_var child;
+  Grid::Range range;
 };
 
 #endif /* _GridImpl_hh */

@@ -35,14 +35,17 @@ class ScreenImpl : implements(Screen), virtual public PolyGraphic
 {
 public:
   ScreenImpl(GLDrawingKit *, Coord, Coord);
-  virtual void allocations(Collector_ptr);
-  virtual void allocateChild(long, Graphic::AllocationInfo &);
+  virtual ~ScreenImpl();
+  
+  virtual void traverse(Traversal_ptr t);
+  virtual void allocate(Graphic_ptr, Allocation_ptr);
+
   Coord width();
   Coord height();
   ScreenManager *Manager() { return manager;}
   Region_ptr getRegion() {return region->_this();}
-  virtual void traverse(Traversal_ptr t);
 protected:
+  virtual void allocateChild(long, Allocation::Info &);
   ScreenManager *manager;
   RegionImpl *region;
   DamageImpl *damage;

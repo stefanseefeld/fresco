@@ -26,8 +26,9 @@
  */
 #include "Layout/Deck.hh"
 #include "Layout/LayoutManager.hh"
+#include "Warsaw/Traversal.hh"
 
-Deck::Deck() { requested = false;}
+Deck::Deck() : requested(false) {}
 Deck::~Deck() {}
 
 void Deck::request(Requisition &r)
@@ -38,7 +39,7 @@ void Deck::request(Requisition &r)
       long n = children.size();
       if (n > 0)
 	{
-	  Graphic::Requisition* r = childrenRequests();
+	  Graphic::Requisition *r = childrenRequests();
 	  LayoutAlign x(xaxis);
 	  x.request(n, r, requisition);
 	  LayoutAlign y(yaxis);
@@ -50,37 +51,12 @@ void Deck::request(Requisition &r)
   r = requisition;
 }
 
-void Deck::extension(const AllocationInfo &a, Region_ptr r)
+void Deck::extension(const Allocation::Info &a, Region_ptr r)
 {
-  long n = children.size();
-  if (n) children[n - 1]->child->extension(a, r);
+  if (size_t n = children.size()) children[n - 1]->extension(a, r);
 }
 
 void Deck::traverse(Traversal_ptr t)
 {
-  long n = children.size();
-//   if (n > 0) t->traverseChild(children[n - 1], Region_var(t->allocation()));
+  if (size_t n = children.size()) t->traverseChild(children[n - 1], Region::_nil(), Transform::_nil());
 }
-
-PolyGraphicOffset *Deck::newOffset(long index, Graphic_ptr child)
-{
-  return new DeckOffset(this, index, child);
-}
-
-// void Deck::modified()
-// {
-//   requested = false;
-//   need_redraw();
-// }
-
-DeckOffset::DeckOffset(PolyGraphic *parent, long index, Graphic_ptr child)
-  : PolyGraphicOffset(parent, index, child)
-{}
-
-DeckOffset::~DeckOffset() {}
-
-void DeckOffset::allocations(Collector_ptr c)
-{
-  if (index == static_cast<long>(parent->children.size()) - 1) PolyGraphicOffset::allocations(c);
-}
-

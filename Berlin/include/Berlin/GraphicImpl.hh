@@ -31,64 +31,62 @@
 #include <Warsaw/Graphic.hh>
 #include <Berlin/CloneableImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <vector>
-
-struct OffsetTag
-{
-  OffsetTag(GraphicOffset_ptr);
-  GraphicOffset_ptr offset;
-  Tag tag;
-};
-
-typedef vector<GraphicOffset *> GraphicOffsetList;
-typedef vector<OffsetTag *> OffsetTagList;
+#include <set>
 
 class GraphicImpl : implements(Graphic), public virtual CloneableImpl
 {
+  /*
+   * since the edges member is only a ref count, comparing is only based on
+   * the parent member. -stefan
+   */
+  struct pinfo
+  {
+    pinfo(Graphic_ptr p, int e = 1) : parent(Graphic::_duplicate(p)), edges(e) {}
+    bool operator == (const pinfo &p) const { return parent == p.parent;}
+    bool operator < (const pinfo &p) const { return parent < p.parent;}
+    Graphic_var parent;
+    mutable int edges;
+  };
+  typedef set<pinfo> plist_t;
 public:
   static const Coord infinity = 10e6;
   GraphicImpl();
   virtual ~GraphicImpl();
 
-  virtual Graphic_ptr cloneGraphic();
-//   virtual StyleContext_ptr style();
-//   virtual void style(StyleContext_ptr _p);
-  virtual Transform_ptr transformation();
-  virtual void request(Requisition &);
-  virtual void extension(const AllocationInfo &, Region_ptr);
-  virtual void shape(Region_ptr);
-  virtual void traverse(Traversal_ptr);
-  virtual void draw(DrawTraversal_ptr);
-  virtual void pick(PickTraversal_ptr);
   virtual Graphic_ptr body();
   virtual void body(Graphic_ptr);
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
-  virtual void addParent(GraphicOffset_ptr);
-  virtual void removeParent(GraphicOffset_ptr);
-  virtual GraphicOffset_ptr firstOffset();
-  virtual GraphicOffset_ptr lastOffset();
-  virtual void parentOffsets(OffsetSeq &);
-  virtual void allocations(Collector_ptr);
-//   virtual void damages(DamageInfoSeq &);
+  virtual void addParent(Graphic_ptr);
+  virtual void removeParent(Graphic_ptr);
+
+  virtual Transform_ptr transformation();
+  virtual void request(Requisition &);
+  virtual void extension(const Allocation::Info &, Region_ptr);
+  virtual void shape(Region_ptr);
+
+  virtual void traverse(Traversal_ptr);
+  virtual void draw(DrawTraversal_ptr);
+  virtual void pick(PickTraversal_ptr);
+
+  virtual void allocate(Graphic_ptr, Allocation_ptr);
   virtual void needRedraw();
   virtual void needRedrawRegion(Region_ptr);
   virtual void needResize();
-  virtual void update(Subject_ptr p) {}
-//   virtual bool restore_trail(Traversal_ptr);
+
   static void initRequisition(Graphic::Requisition &);
   static void defaultRequisition(Graphic::Requisition &);
   static void require(Graphic::Requirement &, Coord, Coord, Coord, Coord);
   static void requireLeadTrail(Graphic::Requirement &, Coord, Coord, Coord, Coord, Coord, Coord);
   static Graphic::Requirement *requirement(Graphic::Requisition &, Axis);
-  static void defaultExtension(const Graphic::AllocationInfo &, Region_ptr);
-  static void getParentOffsets(Graphic::OffsetSeq &, const GraphicOffsetList &);
-  static Region_ptr naturalAllocation(Graphic_ptr);
+  static void defaultExtension(const Allocation::Info &, Region_ptr);
+  static RegionImpl naturalAllocation(Graphic_ptr);
   static void transformRequest(Graphic::Requisition &, Transform_ptr);
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:
-//   OffsetTagList parents;
-  GraphicOffsetList parents;
+  typedef omni_mutex_lock Guard;
+  plist_t parents;
+  omni_mutex parentMutex;
 };
 
 #endif /* _GraphicImpl_hh */

@@ -26,36 +26,30 @@ SubjectImpl::SubjectImpl()
 
 void SubjectImpl::attach(Observer_ptr o)
 {
-    observerMutex.lock();
-    observers.push_back(Observer::_duplicate(o));
-    observerMutex.unlock();
+  Guard guard(observerMutex);
+  observers.push_back(Observer::_duplicate(o));
 }
 
 void SubjectImpl::detach(Observer_ptr o)
 {
-  observerMutex.lock();
+  Guard guard(observerMutex);
   observers.remove(o);
-  observerMutex.unlock();
 }
 
 
 void SubjectImpl::block(CORBA::Boolean b)
 {
-  autoMutex.lock();
+  Guard guard(autoMutex);
   blocked = b;
-  autoMutex.unlock();
 }
 
 void SubjectImpl::notify()
 {
-  autoMutex.lock();
+  Guard guard(autoMutex);
   if (!blocked)
     {
-      observerMutex.lock();
+      Guard guard(observerMutex);
       for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
 	(*i)->update(this->_this());
-      observerMutex.unlock();
     }
-  autoMutex.unlock();
 }
-    

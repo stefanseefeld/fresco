@@ -26,6 +26,7 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Warsaw/Traversal.hh"
 #include <iostream>
 
 ScreenImpl::ScreenImpl(GLDrawingKit *drawing, Coord w, Coord h)
@@ -41,24 +42,34 @@ ScreenImpl::ScreenImpl(GLDrawingKit *drawing, Coord w, Coord h)
   // damage->extend(region->_this());
 }
 
-void ScreenImpl::allocations(Collector_ptr collector)
+ScreenImpl::~ScreenImpl()
 {
-  collector->add(region->_this(), damage->_this());
+  damage->_dispose();
+  region->_dispose();
+  delete manager;
 }
 
-void ScreenImpl::allocateChild(long i, Graphic::AllocationInfo &a)
+void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr allocation)
 {
-  long n = children.size();
+  allocation->add(region->_this(), damage->_this());
+  long l = findChild(g);
+  long last = allocation->size() - 1;
+  allocateChild(l, *allocation->get(last));
+}
+
+void ScreenImpl::allocateChild(long i, Allocation::Info &a)
+{
+  long n = numChildren();
   Graphic::Requisition *r = childrenRequests();
   Graphic::Requisition &requisition = r[i];
   RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
   region->valid = true;
   region->lower.x = region->lower.y = 0;
   region->upper.x = requisition.x.natural;
   region->xalign = requisition.x.align;
   region->upper.y = requisition.y.natural;
   region->yalign = requisition.y.align;
-  region->_obj_is_ready(_boa());
   a.allocation->copy(region->_this());
   region->_dispose();
   pool.deallocate(r);
@@ -67,10 +78,25 @@ void ScreenImpl::allocateChild(long i, Graphic::AllocationInfo &a)
 Coord ScreenImpl::width() { return region->upper.x;}
 Coord ScreenImpl::height() { return region->upper.y;}
 
-void ScreenImpl::traverse(Traversal_ptr t) {
-    GraphicOffset_var edgeToChild = firstOffset();
-    while(!CORBA::is_nil(edgeToChild)) {
-	edgeToChild->traverse(t);
-	edgeToChild = edgeToChild->next();
+/*
+ * this is a hack !!
+ * Screen should be a Stage or be a MonoGraphic who's body is a Stage.   -stefan
+ */
+void ScreenImpl::traverse(Traversal_ptr t)
+{
+  long n = numChildren();
+  Graphic::Requisition *r = childrenRequests();
+  RegionImpl *result = new RegionImpl;
+  result->_obj_is_ready(_boa());
+  result->valid = true;
+  result->lower.x = result->lower.y = result->lower.z = 0.;
+  for (long i = 0; i < n; i++)
+    {
+      result->upper.x = r[i].x.natural;
+      result->upper.y = r[i].y.natural;
+      result->upper.z = r[i].z.natural;
+      t->traverseChild(children[i], result->_this(), Transform::_nil());
     }
+  result->_dispose();
+  pool.deallocate(r);
 }

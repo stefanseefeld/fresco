@@ -46,18 +46,25 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
     inline void visit(Graphic_ptr g) { g->pick(this->_this()); }
     inline order direction() { return down;} 
     inline CORBA::Boolean ok() { return true;}
-    inline CORBA::Boolean intersects() {  
-	RegionImpl region(stack.back().allocation, transformation());
-	 Event::Pointer ptrEv;
-	if (myEvent >>= &ptrEv) 
-	    return region.contains(ptrEv.location);
-	else 
+    inline CORBA::Boolean intersects()
+      {  
+	RegionImpl region(allocation(), transformation());
+// 	Event::Pointer ptrEv;
+	Event::Pointer *pointer;
+	bool flag = false;
+	if ((myEvent >>= pointer) && region.contains(pointer->location))
+	  {
+	    delete pointer;
 	    return true;
-    }
+	  }
+// 	  return region.contains(ptrEv.location);
+	else return false;
+// 	  return true;
+      }
     inline CORBA::Any *event() {return &myEvent;}
 
  private:
-    const CORBA::Any myEvent;
+    CORBA::Any myEvent;
 };
 
 #endif /* _PickTraversalImpl_hh */

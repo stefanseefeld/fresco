@@ -32,53 +32,51 @@
 #include "Warsaw/Graphic.hh"
 
 TraversalImpl::TraversalImpl(Region_ptr r)
-//   : stack(20)
 {
-  push(0, 0, r, 0);
+  TransformImpl *transform = new TransformImpl;
+  transform->_obj_is_ready(CORBA::BOA::getBOA());
+  push(Graphic_var(Graphic::_nil()), Region_var(r), transform);
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
-//   : stack(20)
 {
-  for (Stack::const_iterator i = t.stack.begin(); i != t.stack.end(); i++)
+  for (stack_t::const_iterator i = t.stack.begin(); i != t.stack.end(); i++)
     {
-      const State &state = *i;
-      State s;
-      s.graphic = Graphic::_duplicate(state.graphic);
-      s.offset = GraphicOffset::_duplicate(state.offset);
-      if (CORBA::is_nil(s.graphic) && !CORBA::is_nil(s.offset))
- 	s.graphic = s.offset->Child();
-      s.allocation = Region::_duplicate(state.allocation);
-      s.transformation = Transform::_duplicate(state.transformation);
-      stack.push_back(s);
+      State state;
+      state.graphic = (*i).graphic;
+      state.allocation = (*i).allocation;
+      TransformImpl *transform = new TransformImpl;
+      transform->_obj_is_ready(CORBA::BOA::getBOA());
+      transform->copy((*i).transformation);
+      state.transformation = transform;
+      stack.push_back(state);
     }
 }
 
 TraversalImpl::~TraversalImpl()
 {
-  for (Stack::iterator i = stack.begin(); i != stack.end(); i++)
-    {
-      State &state = *i;
-      CORBA::release(state.graphic);
-      CORBA::release(state.offset);
-      CORBA::release(state.allocation);
-      CORBA::release(state.transformation);
-    }
+  for (stack_t::const_iterator i = stack.begin(); i != stack.end(); i++)
+    (*i).transformation->_dispose();
 }
 
-Region_ptr TraversalImpl::allocation() 
+Region_ptr TraversalImpl::allocation()
 {
-  return stack.back().allocation;
+  Guard guard(stackMutex);
+  Region_var region = stack.back().allocation;
+  return region;
 }
 
 Transform_ptr TraversalImpl::transformation() 
 {
-  return stack.back().transformation;
+  Guard guard(stackMutex);
+  Transform_var transform = stack.back().transformation;
+  return transform;
 }
 
 CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin) 
 {
   bool b = false;
+  Guard guard(stackMutex);
   State &state = stack.back();
   Region_ptr r = state.allocation;
   if (!CORBA::is_nil(r))
@@ -90,35 +88,24 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-// CORBA::Boolean visible() 
-// {
-//   return true;
-// }
-
-void TraversalImpl::traverseChild(GraphicOffset_ptr o, Region_ptr allocation, Transform_ptr transformation)
+void TraversalImpl::traverseChild(Graphic_ptr g, Region_ptr a, Transform_ptr t)
 {
-  if (CORBA::is_nil(allocation))
-    allocation = this->allocation();
+  if (CORBA::is_nil(a)) a = allocation();
   TransformImpl *cumulative = new TransformImpl;
   cumulative->_obj_is_ready(_boa());
-  cumulative->copy(stack.back().transformation);
-  cumulative->premultiply(transformation);
-  push(o->Child(), o, allocation, cumulative->_this());
-  o->traverse(this);
+  cumulative->copy(stack.back().transformation->_this());
+  if (!CORBA::is_nil(t)) cumulative->premultiply(t);
+  push(g, a, cumulative);
+  g->traverse(this);
   pop();
 }
 
-void TraversalImpl::visit(Graphic_ptr) {}
-
-// Traversal_ptr TraversalImpl::trail() { return new TraversalImpl(*this);}
-
-void TraversalImpl::push(Graphic_ptr g, GraphicOffset_ptr o, Region_ptr r, Transform_ptr t)
+void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)
 {
   State state;
   state.graphic = Graphic::_duplicate(g);
-  state.offset = GraphicOffset::_duplicate(o);
   state.allocation = Region::_duplicate(r);
-  state.transformation = Transform::_duplicate(t);
+  state.transformation = t;
   stack.push_back(state);
 }
 
@@ -126,10 +113,7 @@ void TraversalImpl::pop()
 {
   State &state = *stack.rbegin();
   CORBA::release(state.graphic);
-  CORBA::release(state.offset);
   CORBA::release(state.allocation);
-  CORBA::release(state.transformation);
-  stack.erase(stack.end());
+  state.transformation->_dispose();
+  stack.erase(stack.end() - 1);
 }
-
-// TraversalImpl::State *TraversalImpl::top() { return stack.size() ? *stack.begin() : 0;}

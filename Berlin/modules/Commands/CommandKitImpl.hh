@@ -23,11 +23,12 @@
  * MA 02139, USA.
  */
 
+#include <Warsaw/config.hh>
 #include <Warsaw/CommandKit.hh>
 #include <Berlin/CloneableImpl.hh>
 
-class CommandKitImpl : virtual public CloneableImpl,
-		       virtual public CommandKit {
+class CommandKitImpl : virtual public CommandKit, virtual public CloneableImpl
+{
 public:
   
   CommandKitImpl();

@@ -35,6 +35,7 @@ public:
   Backdrop();
   ~Backdrop();
   virtual void request(Requisition &);
+
   virtual void traverse(Traversal_ptr);
   virtual void draw(DrawTraversal_ptr);
 };

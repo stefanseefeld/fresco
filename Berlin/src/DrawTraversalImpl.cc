@@ -48,7 +48,7 @@ DrawTraversalImpl::~DrawTraversalImpl()
 
 CORBA::Boolean DrawTraversalImpl::intersects()
 {
-  return clipping->intersects(stack.back().allocation);
+  return clipping->intersects(allocation());
 }
 
 void DrawTraversalImpl::visit(Graphic_ptr g)

@@ -28,5 +28,5 @@
 #include "Warsaw/Event.hh"
 
 PickTraversalImpl::PickTraversalImpl(const CORBA::Any &e, Region_ptr r) : TraversalImpl(r), myEvent(e) {}
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t) : TraversalImpl(t), myEvent(*(t.event())) {}    
+PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t) : TraversalImpl(t), myEvent(t.myEvent) {}    
 PickTraversalImpl::~PickTraversalImpl() {}

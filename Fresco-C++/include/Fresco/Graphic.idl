@@ -1,6 +1,3 @@
-#ifndef _Graphic_idl
-#define _Graphic_idl
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -27,20 +24,32 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Graphic_idl
+#define _Graphic_idl
 
 #include <Types.idl>
 #include <Region.idl>
 #include <Damage.idl>
 #include <Cloneable.idl>
-#include <Subject.idl>
 
-interface GraphicOffset;
 interface Traversal;
 interface DrawTraversal;
 interface PickTraversal;
-interface Collector;
 
-interface Graphic : Cloneable, Observer
+interface Allocation
+{
+  struct Info
+  {
+    Region allocation;
+    Transform transformation;
+    Damage damaged;
+  };
+  void add(in Region r, in Damage d);
+  long size();
+  Info get(in long l);
+};
+
+interface Graphic : Cloneable
 {
   struct Requirement
   {
@@ -53,62 +62,38 @@ interface Graphic : Cloneable, Observer
     Requirement x, y, z;
     boolean preserve_aspect;
   };
-  struct AllocationInfo
-  {
-    Region allocation;
-    Transform transformation;
-    Damage damaged;
-  };
-//   typedef sequence<AllocationInfo> AllocationInfoSeq;
-  typedef sequence<GraphicOffset> OffsetSeq;
   typedef sequence<Graphic> GraphicSeq;
-  
-  Graphic cloneGraphic();
+  /*
+   * structural methods
+   */
   attribute Graphic body;
   void append(in Graphic g);
   void prepend(in Graphic g);
-  void addParent(in GraphicOffset g);
-  void removeParent(in GraphicOffset g);
-  GraphicOffset firstOffset();
-  GraphicOffset lastOffset();
-  void parentOffsets(inout OffsetSeq o);
+  void addParent(in Graphic g);
+  void removeParent(in Graphic g);
 
+  /*
+   * layout related methods
+   */
   Transform transformation();
   void request(out Requisition r);
-  void extension(in AllocationInfo a, in Region r);
+  void extension(in Allocation::Info a, in Region r);
   void shape(in Region r);
 
+  /*
+   * traversal related
+   */
   void traverse(in Traversal t);
   void draw(in DrawTraversal t);
   void pick(in PickTraversal t);
 
-  void allocations(in Collector d);
-//   void damages(inout DamageInfoSeq d);
+  /*
+   * update related
+   */
+  void allocate(in Graphic g, in Allocation a);
   void needRedraw();
   void needRedrawRegion(in Region r);
   void needResize();
-//   boolean restore_trail(in Traversal t);
-};
-
-interface GraphicOffset : Cloneable
-{
-  Graphic Parent();
-  Graphic Child();
-  void insert(in Graphic g);
-  void replace(in Graphic g);
-  GraphicOffset next();
-  GraphicOffset previous();
-  
-  void needResize();
-  void traverse(in Traversal t);
-  void allocations(in Collector c);
-};
-
-interface Collector
-{
-  void add(in Region r, in Damage d);
-  long size();
-  Graphic::AllocationInfo get(in long l);
 };
 
 #endif /* _Graphic_idl */

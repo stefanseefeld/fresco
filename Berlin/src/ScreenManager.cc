@@ -45,9 +45,9 @@ void ScreenManager::damage(Region_ptr r)
     region->copy(r);
     damages.push_back(region);
     //#ifdef DEBUG
-    //     cout << "ScreenManager::damage region "
-    // 	 << '(' << region->lower.x << ',' << region->lower.y << "),("
-    // 	 << region->upper.x << ',' << region->upper.y << ')' << endl;
+    cout << "ScreenManager::damage region "
+     	 << '(' << region->lower.x << ',' << region->lower.y << "),("
+     	 << region->upper.x << ',' << region->upper.y << ')' << endl;
     //#endif
     damageMutex.unlock();
 

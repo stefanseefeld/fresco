@@ -36,19 +36,18 @@ public:
   Box(LayoutManager *);
   virtual ~Box();
 
-  virtual Graphic_ptr cloneGraphic();
   virtual void request(Requisition &);
-  virtual void extension(const AllocationInfo &, Region_ptr);
-  virtual void traverse(Traversal_ptr);
+  virtual void extension(const Allocation::Info &, Region_ptr);
 
-  RegionImpl **childrenAllocations(Region_ptr);
-  void traverseWithAllocation(Traversal_ptr, Region_ptr);
-  void traverseWithoutAllocation(Traversal_ptr);
-  void allocateChild(long, Graphic::AllocationInfo &);
-  void modified();
+  virtual void traverse(Traversal_ptr);
   virtual void needResize();
   virtual void needResize(long);
 
+protected:
+  void allocateChild(long, Allocation::Info &);
+  RegionImpl **childrenAllocations(Region_ptr);
+  void traverseWithAllocation(Traversal_ptr, Region_ptr);
+  void traverseWithoutAllocation(Traversal_ptr);
 private:
   LayoutManager *layout;
   bool requested;

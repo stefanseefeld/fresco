@@ -30,9 +30,6 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
-#include "Berlin/Memory.hh"
-
-// Span
 
 static void setSpan(GridImpl::Span &s, Coord origin, Coord length, Alignment align)
 {
@@ -166,7 +163,7 @@ void LayoutTileRequest::requirement(Graphic::Requirement &r) const
   r.natural = natural;
   r.maximum = max_size;
   r.minimum = min_size;
-  r.align = Alignment(0);
+  r.align = 0.;
 }
 
 class LayoutTileAllocate
@@ -241,26 +238,34 @@ void LayoutTileAllocate::nextSpan(const Graphic::Requirement &r, GridImpl::Span 
 
 GridImpl::GridImpl(const Grid::Index &upper)
 {
-  dimensions[xaxis].initialize(upper.col);
-  dimensions[yaxis].initialize(upper.row);
-  
+  dimensions[xaxis].init(upper.col, upper.row);
+  dimensions[yaxis].init(upper.row, upper.col);
   cursor.col = cursor.row = 0;
-  
   requested = false;
   GridImpl::initRequisition(requisition);
 }
 
-GridImpl::~GridImpl()
+GridImpl::~GridImpl() {}
+
+void GridImpl::append(Graphic_ptr g)
 {
-  GridDimension &d = dimensions[int(yaxis)];
-  for (long i = 0; i < d.count; ++i)
+  replace(g, cursor);
+  
+  if (++cursor.col >= dimensions[xaxis].size())
     {
-      GridOffset* next;
-      for (GridOffset *o = d.offsets[i]; o; o = next)
-	{
-	  next = o->next(xaxis);
-	  CORBA::release(o);
-	}
+      long count = dimensions[yaxis].size();
+      cursor.row = (cursor.row + 1) % count;
+      cursor.col = 0;
+    }
+}
+
+void GridImpl::prepend(Graphic_ptr g)
+{
+  if (--cursor.col < 0)
+    {
+      long count = dimensions[yaxis].size();
+      cursor.row = (cursor.row - 1 + count) % count;
+      cursor.col = dimensions[xaxis].size() - 1;
     }
 }
 
@@ -274,33 +279,11 @@ void GridImpl::traverse(Traversal_ptr t)
 {
   Grid::Range range;
   range.lower.col = 0;
-  range.upper.col = dimensions[static_cast<int>(xaxis)].count;
+  range.upper.col = dimensions[xaxis].size();
   range.lower.row = 0;
-  range.upper.row = dimensions[static_cast<int>(yaxis)].count;
+  range.upper.row = dimensions[yaxis].size();
   
   traverseRange(t, range);
-}
-
-void GridImpl::append(Graphic_ptr g)
-{
-  replace(g, cursor);
-  
-  if (++cursor.col >= dimensions[static_cast<int>(xaxis)].count)
-    {
-      long count = dimensions[static_cast<int>(yaxis)].count;
-      cursor.row = (cursor.row + 1) % count;
-      cursor.col = 0;
-  }
-}
-
-void GridImpl::prepend(Graphic_ptr g)
-{
-  if (--cursor.col < 0)
-    {
-      long count = dimensions[static_cast<int>(yaxis)].count;
-      cursor.row = (cursor.row - 1 + count) % count;
-      cursor.col = dimensions[static_cast<int>(xaxis)].count - 1;
-    }
 }
 
 void GridImpl::needResize()
@@ -311,62 +294,33 @@ void GridImpl::needResize()
 
 void GridImpl::replace(Graphic_ptr g, const Grid::Index &i)
 {
-//   fresco_assert((0 <= i.col) && (i.col < dimensions_[int(xaxis)].count_));
-//   fresco_assert((0 <= i.row) && (i.row < dimensions_[int(yaxis)].count_));
-
-  GridOffset *offset = g ? new GridOffset(this, g, i) : 0;
-
-  GridOffset **o;
-  o = &dimensions[static_cast<int>(xaxis)].offsets[i.col];
-  for (; *o && ((*o)->index.row < i.row); o = &(*o)->next(yaxis))
-    {
-    }
-  GridOffset *r = *o && ((*o)->index.row == i.row) ? *o : 0;
-  if (offset != 0)
-    {
-      if (r != 0) offset->next(yaxis) = r->next(yaxis);
-      else	  offset->next(yaxis) = *o;
-    }
-  *o = offset;
-
-  o = &dimensions[static_cast<int>(yaxis)].offsets[i.row];
-  for (; *o && ((*o)->index.col < i.col); o = &(*o)->next(xaxis))
-    {
-    }
-  if (offset != 0)
-    {
-      if (r != 0)
-	{
-// 	  fresco_assert(r == *o);
-	  offset->next(xaxis) = r->next(xaxis);
-        }
-      else offset->next(xaxis) = *o;
-    }
-  *o = offset;
-
-  CORBA::release(r);
+  Graphic_var old = dimensions[xaxis].children[i.col][i.row];
+  if (!CORBA::is_nil(old)) old->removeParent(_this());
+  dimensions[xaxis].children[i.col][i.row] = Graphic::_duplicate(g);
+  dimensions[yaxis].children[i.row][i.col] = Graphic::_duplicate(g);
 }
 
 Grid::Index GridImpl::find(Traversal_ptr t)
 {
   Grid::Range range;
   range.lower.col = 0;
-  range.upper.col = dimensions[static_cast<int>(xaxis)].count;
+  range.upper.col = dimensions[xaxis].size();
   range.lower.row = 0;
-  range.upper.row = dimensions[static_cast<int>(yaxis)].count;
+  range.upper.row = dimensions[yaxis].size();
   
   return findRange(t, range);
 }
 
 void GridImpl::allocateCell(Region_ptr given, const Grid::Index &i, Region_ptr a)
 {
-  Span *x_spans = fullAllocate(xaxis, given);
-  Span *y_spans = fullAllocate(yaxis, given);
-  RegionImpl r;
-  spansToRegion(x_spans[i.col], y_spans[i.row], &r);
-  a->copy(&r);
-  delete [] x_spans;
-  delete [] y_spans;
+  Span *xspans = fullAllocate(xaxis, given);
+  Span *yspans = fullAllocate(yaxis, given);
+  RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
+  spansToRegion(xspans[i.col], yspans[i.row], region);
+  a->copy(region->_this());
+  delete [] xspans;
+  delete [] yspans;
 }
 
 void GridImpl::requestRange(Graphic::Requisition &r, const Grid::Range &a)
@@ -392,8 +346,8 @@ void GridImpl::traverseRange(Traversal_ptr t, const Grid::Range &a)
 Grid::Index GridImpl::findRange(Traversal_ptr t, const Grid::Range &a)
 {
   Region_var given = t->allocation();
-  Span *x_spans = fullAllocate(xaxis, given);
-  Span *y_spans = fullAllocate(yaxis, given);
+  Span *xspans = fullAllocate(xaxis, given);
+  Span *yspans = fullAllocate(yaxis, given);
 //   Painter_var p = t->current_painter();
 //   Region_var e = p->visible();
   Vertex lower, upper;
@@ -402,57 +356,53 @@ Grid::Index GridImpl::findRange(Traversal_ptr t, const Grid::Range &a)
   Coord y = lower.y;
   // If the point is outside the range find the outermost cell.
   long c, r;
-  for (c = a.lower.col; c < (a.upper.col - 1); ++c)
-    if (x <= x_spans[c].upper) break;
-  for (r = a.lower.row; r < (a.upper.row - 1); ++r)
-    if (y <= y_spans[r].upper) break;
+  for (c = a.lower.col; c < (a.upper.col - 1); c++)
+    if (x <= xspans[c].upper) break;
+  for (r = a.lower.row; r < (a.upper.row - 1); r++)
+    if (y <= yspans[r].upper) break;
   Grid::Index index;
   index.col = c;
   index.row = r;
-  delete [] x_spans;
-  delete [] y_spans;
+  delete [] xspans;
+  delete [] yspans;
   return index;
 }
 
 void GridImpl::rangePosition(Region_ptr given, const Grid::Range &a, Vertex &pos)
 {
-  Span *x_spans = fullAllocate(xaxis, given);
-  Span *y_spans = fullAllocate(yaxis, given);
-  pos.x = x_spans[0].lower - x_spans[a.lower.col].lower;
-  pos.y = y_spans[0].lower - y_spans[a.lower.row].lower;
-  pos.z = Coord(0);
-  delete [] x_spans;
-  delete [] y_spans;
+  Span *xspans = fullAllocate(xaxis, given);
+  Span *yspans = fullAllocate(yaxis, given);
+  pos.x = xspans[0].lower - xspans[a.lower.col].lower;
+  pos.y = yspans[0].lower - yspans[a.lower.row].lower;
+  pos.z = 0.;
+  delete [] xspans;
+  delete [] yspans;
 }
 
 Grid::Index GridImpl::upper()
 {
   Grid::Index upper;
-  upper.col = dimensions[static_cast<int>(xaxis)].count;
-  upper.row = dimensions[static_cast<int>(yaxis)].count;
+  upper.col = dimensions[xaxis].size();
+  upper.row = dimensions[yaxis].size();
   return upper;
 }
 
-/* Child_allocate doesn't consider range. Thus if this grid is a child
- * of a glyph traversing a range, then we expect that glyph's
- * offset will define child_allocate to adjust for the range position.
- */
-
-void GridImpl::allocateChild(Graphic::AllocationInfo &a, Grid::Index index)
+void GridImpl::allocateChild(Grid::Index index, Allocation::Info &a)
 {
-  TransformImpl tx;
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
   allocateCell(a.allocation, index, a.allocation);
-  RegionImpl r(a.allocation, 0);
-  Placement::normalTransform(&r, &tx);
-  a.allocation->copy(&r);
-  if (CORBA::is_nil(a.transformation))
-    a.transformation = new TransformImpl;
-  a.transformation->premultiply(&tx);
+  RegionImpl *region = new RegionImpl(a.allocation, Transform::_nil());
+  Placement::normalTransform(region, tx);
+  a.allocation->copy(region->_this());
+  a.transformation->premultiply(tx->_this());
+  region->_dispose();
+  tx->_dispose();
 }
 
 void GridImpl::cacheRequest()
 {
-  if (! requested)
+  if (!requested)
     {
       fullRequest(xaxis, yaxis);
       fullRequest(yaxis, xaxis);
@@ -462,22 +412,29 @@ void GridImpl::cacheRequest()
 
 void GridImpl::partialRequest(Axis axis, long begin, long end, Graphic::Requirement &r)
 {
-  GridDimension &d = dimensions[static_cast<int>(axis)];
+  GridDimension &d = dimensions[axis];
   LayoutTileRequest tile;
-  for (long i = begin; i < end; ++i)
+  for (long i = begin; i < end; i++)
     tile.accumulate(d.requirements[i]);
   tile.requirement(r);
 }
 
 void GridImpl::fullRequest(Axis axis, Axis direction)
 {
-  GridDimension &d = dimensions[static_cast<int>(axis)];
+  GridDimension &d = dimensions[axis];
   LayoutTileRequest tile;
-  for (int i = 0; i < d.count; ++i)
+  for (int i = 0; i < d.size(); i++)
     {
       LayoutAlignRequest align;
-      for (GridOffset *o = d.offsets[i]; o; o = o->next(direction))
-	align.accumulate(o->requirement(axis));
+      for (vector<Graphic_var>::iterator j = d.children[i].begin(); j != d.children[i].end(); j++)
+	if (!CORBA::is_nil(*j))
+	  {
+	    Graphic::Requisition r;
+	    GraphicImpl::initRequisition(r);
+	    GraphicImpl::defaultRequisition(r);
+	    (*j)->request(r);
+	    align.accumulate(axis == xaxis ? r.x : r.y);
+	  }
       Graphic::Requirement &r = d.requirements[i];
       align.requirement(r);
       tile.accumulate(r);
@@ -488,10 +445,10 @@ void GridImpl::fullRequest(Axis axis, Axis direction)
 
 GridImpl::Span *GridImpl::fullAllocate(Axis axis, Region_ptr given)
 {
-  GridDimension &d = dimensions[static_cast<int>(axis)];
-  Span *spans = new Span[d.count];
+  GridDimension &d = dimensions[axis];
+  Span *spans = new Span[d.size()];
   LayoutTileAllocate allocate(axis, requisition, false, given);
-  for (int i = 0; i < d.count; ++i)
+  for (int i = 0; i < d.size(); i++)
     allocate.nextSpan(d.requirements[i], spans[i]);
   return spans;
 }
@@ -532,133 +489,20 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
 
 void GridImpl::traverseWithoutAllocation(Traversal_ptr t, const Grid::Range &range)
 {
-  GridDimension& d = dimensions[static_cast<int>(yaxis)];
-  for (long i = range.lower.row; i < range.upper.row; ++i) {
-    for (GridOffset *o = d.offsets[i]; o; o = o->next(xaxis))
-      {
-	if ((range.lower.col <= o->index.col) &&
-	    (o->index.col < range.upper.col))
-	  t->traverseChild(o, 0, 0);
-    }
-  }
+  GridDimension &d = dimensions[yaxis];
+  for (long i = range.lower.row; i != range.upper.row; i++)
+    for (long j = range.lower.col; j != range.upper.col; j++)
+      t->traverseChild(d.children[i][j], Region::_nil(), Transform::_nil());
 }
 
-GridOffset::GridOffset(GridImpl *parent, Graphic_ptr child, Grid::Index index)
-{
-  parent = parent;
-  child = Graphic::_duplicate(child);
-  index = index;
-  child->addParent(_this());
-}
+SubGridImpl::SubGridImpl(Grid_ptr grid, const Grid::Range &r)
+ : child(Grid::_duplicate(grid)), range(r) {}
 
-GridOffset::~GridOffset() { child->removeParent(_this());}
- 
-Graphic::Requirement GridOffset::requirement(Axis axis)
-{
-  Graphic::Requisition r;
-  GraphicImpl::initRequisition(r);
-  GraphicImpl::defaultRequisition(r);
-  child->request(r);
-  return (axis==xaxis) ? r.x : r.y;
-}
- 
-Graphic_ptr GridOffset::Parent() { return Grid::_duplicate(parent);}
-Graphic_ptr GridOffset::Child() { return Graphic::_duplicate(child);}
-GraphicOffset_ptr GridOffset::next() { return 0;}
-GraphicOffset_ptr GridOffset::previous() { return 0;}
-
-void GridOffset::allocations(Collector_ptr c)
-{
-  long start = c->size();
-  parent->allocations(c);
-  for (long i = start; i < c->size(); i++)
-    parent->allocateChild(*c->get(i), index);
-}
-
-void GridOffset::insert(Graphic_ptr) {}
-void GridOffset::replace(Graphic_ptr) {}
-void GridOffset::remove() {}
-void GridOffset::needResize() { parent->needResize();}
-void GridOffset::traverse(Traversal_ptr t) { child->traverse(t);}
-void GridOffset::visit_trail(Traversal_ptr) {}
-void GridOffset::allocateChild(Graphic::AllocationInfo &a) { parent->allocateChild(a, index);}
-
-GridDimension::GridDimension() : count(0), offsets(0), requirements(0) {}
-GridDimension::~GridDimension()
-{
-  delete [] offsets;
-  delete [] requirements;
-}
-
-void GridDimension::initialize(long count)
-{
-  count = count;
-  offsets = new GridOffset *[count];
-  Memory::zero(offsets, sizeof(GridOffset *) *count);
-  requirements = new Graphic::Requirement[count];
-}
-
-SubGridImpl::SubGridImpl(Grid_ptr grid, const Grid::Range &range)
-{
-  offset = new SubGridOffset(this, grid, range); 
-}
-
-SubGridImpl::~SubGridImpl()
-{
-  CORBA::release(offset);
-}
-
-void SubGridImpl::request(Requisition &r) { offset->request(r);}
+SubGridImpl::~SubGridImpl() {}
+void SubGridImpl::request(Requisition &r) { child->requestRange(r, range);}
 
 void SubGridImpl::traverse(Traversal_ptr t)
 {
-  t->traverseChild(offset, t->allocation(), 0);
-}
- 
-SubGridOffset::SubGridOffset(SubGridImpl *parent, Grid_ptr child, const Grid::Range &r)
-  : range(r)
-{
-  parent = parent;
-  child = Grid::_duplicate(child);
-  child->addParent(_this());
+  t->traverseChild(child, Region::_nil(), Transform::_nil());
 }
 
-SubGridOffset::~SubGridOffset() { child->removeParent(_this());}
-Graphic_ptr SubGridOffset::Parent() { return SubGridImpl::_duplicate(parent);}
-Graphic_ptr SubGridOffset::Child() { return Grid::_duplicate(child);}
-GraphicOffset_ptr SubGridOffset::next() { return 0;}
-GraphicOffset_ptr SubGridOffset::previous() { return 0;}
-
-void SubGridOffset::allocations(Collector_ptr c)
-{
-  long start = c->size();
-  parent->allocations(c);
-  for (long i = start; i < c->size(); i++)
-    allocateChild(*c->get(i));
-}
-
-void SubGridOffset::insert(Graphic_ptr) {}
-void SubGridOffset::replace(Graphic_ptr) {}
-void SubGridOffset::remove() {}
-void SubGridOffset::needResize() { parent->needResize();}
-void SubGridOffset::traverse(Traversal_ptr t) { child->traverseRange(t, range);}
-void SubGridOffset::visit_trail(Traversal_ptr) {}
-
-void SubGridOffset::allocateChild(Graphic::AllocationInfo &a)
-{
-  TransformImpl tx;
-  RegionImpl r(a.allocation, 0);
-  Placement::normalTransform(&r, &tx);
-  Vertex v;
-  child->rangePosition(a.allocation, range, v);
-  tx.translate(v);
-  a.allocation->copy(&r);
-  if (CORBA::is_nil(a.transformation))
-    a.transformation = new TransformImpl;
-  a.transformation->premultiply(&tx);
-}
-
-void SubGridOffset::request(Graphic::Requisition &r)
-{
-  child->requestRange(r, range);
-}

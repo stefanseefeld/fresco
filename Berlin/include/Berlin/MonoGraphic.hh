@@ -28,11 +28,6 @@
 #define _MonoGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
-#include <vector>
-
-class MonoGraphicOffset;
-
-typedef vector<MonoGraphicOffset *> MonoGraphicOffsetList;
 
 class MonoGraphic : virtual public GraphicImpl
 {
@@ -40,48 +35,24 @@ public:
   MonoGraphic();
   virtual ~MonoGraphic();
 
-//   virtual StyleContext_ptr style();
-//   virtual void style(StyleContext_ptr _p);
-  virtual Transform_ptr transformation();
-  virtual void request(Requisition &);
-  virtual void extension(const AllocationInfo &, Region_ptr);
-  virtual void shape(Region_ptr);
-  virtual void traverse(Traversal_ptr);
   virtual Graphic_ptr body();
   virtual void body(Graphic_ptr);
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
-  virtual GraphicOffset_ptr firstOffset();
-  virtual GraphicOffset_ptr lastOffset();
-  virtual void allocateChild(Graphic::AllocationInfo &a);
-//   virtual void damages(DamageInfoSeq &);
-//   virtual bool restore_trail(Traversal_ptr);
-protected:
-  MonoGraphicOffset *offset;
-};
 
-class MonoGraphicOffset : implements(GraphicOffset), virtual public CloneableImpl
-{
-  friend class MonoGraphic;
-public:
-  MonoGraphicOffset(MonoGraphic * = 0);
-  virtual ~MonoGraphicOffset();
+  virtual Transform_ptr transformation();
+  virtual void request(Requisition &);
+  virtual void extension(const Allocation::Info &, Region_ptr);
+  virtual void shape(Region_ptr);
 
-  virtual Graphic_ptr Parent();
-  virtual Graphic_ptr Child();
-  virtual void allocations(Collector_ptr);
-  virtual void insert(Graphic_ptr);
-  virtual void replace(Graphic_ptr);
-  virtual GraphicOffset_ptr next();
-  virtual GraphicOffset_ptr previous();
-  virtual void remove();
-  virtual void needResize();
   virtual void traverse(Traversal_ptr);
-//   virtual void visit_trail(Traversal_ptr);
-  virtual void allocateChild(Graphic::AllocationInfo &);
+
+  virtual void allocate(Graphic_ptr, Allocation_ptr);
 protected:
-  MonoGraphic *parent;
-  Graphic_ptr child;
+  virtual void allocateChild(Allocation::Info &);
+  typedef omni_mutex_lock Guard;
+  Graphic_var child;
+  omni_mutex childMutex;
 };
 
 #endif /* _MonoGraphic_hh */

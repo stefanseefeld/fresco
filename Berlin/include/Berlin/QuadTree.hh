@@ -35,7 +35,6 @@
 template <class T, class Item>
 class QTNode
 {
-//   using namespace Geometry;
   class move_down;
   friend class move_down;
 public:
@@ -210,15 +209,14 @@ inline void QTNode<T, Item>::remove(Item *item)
   else quadrants[idx]->remove(item);
   elements--;
 
-  if (bbox.touches(item->bbox(), epsilon))
+  if (boundingbox.touches(item->bbox(), epsilon))
     {
-      bbox.clear();
+      boundingbox.clear();
       bool first = true;
-      int size = items_.count();
       for (list::iterator i = items.begin(); i != items.end(); i++)
 	{
-	  if (first) { bbox = (*i)->bbox(); first = false;}
-	  else bbox.merge((*i)->bbox());
+	  if (first) { boundingbox = (*i)->bbox(); first = false;}
+	  else boundingbox.merge((*i)->bbox());
 	}
       if (!leaf())
 	{
@@ -227,8 +225,8 @@ inline void QTNode<T, Item>::remove(Item *item)
 	      QTNode<T, Item> *node = quadrants[i];
 	      if (node->elements > 0)
 		{
-		  if (first) { bbox = node->bbox(); first = 0;}
-		  else bbox.merge(node->bbox());
+		  if (first) { boundingbox = node->bbox(); first = 0;}
+		  else boundingbox.merge(node->bbox());
 		}
 	    }
 	}

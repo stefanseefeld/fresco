@@ -45,23 +45,11 @@ interface Grid : Graphic
   };
   void replace(in Graphic g, in Grid::Index i);
   Grid::Index find(in Traversal t);
-  //. Find the row and column position of the bottom-left most cell
-  //. that intersects the traversal painters visible region bounds.
-  //. If no cell is intersected find the closest edge cell.
-
   void allocateCell(in Region given, in Grid::Index i, in Region a);
   void requestRange(out Graphic::Requisition r, in Grid::Range a);
   void traverseRange(in Traversal t, in Grid::Range a);
   Grid::Index findRange(in Traversal t, in Grid::Range a);
-  //. These operations use a sub-range of the glyphs in the grid.
-
-  //- range_position
   void rangePosition(in Region given, in Grid::Range a, out Vertex pos);
-  //. Return the lower-left corner of the range within the grid.
-  //. Note that a grid's offset expects the Allocation given to
-  //. child_allocate to be adjusted by the negated range_position. 
-  
-  //- upper
   Grid::Index upper();
 };
 

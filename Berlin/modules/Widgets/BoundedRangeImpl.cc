@@ -33,190 +33,162 @@ BoundedRangeImpl::~BoundedRangeImpl()
 
 Coord BoundedRangeImpl::lower()
 {
-  myMutex.lock();
-  Coord tmp = l;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return l;
 }
 
 void BoundedRangeImpl::lower(Coord ll)
 {
-    myMutex.lock();
-    if (ll == l) { myMutex.unlock(); return;}
-    l = ll;
-    if (lv < l) lv = l;
-    if (uv < l) uv = l;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  if (ll == l) return;
+  l = ll;
+  if (lv < l) lv = l;
+  if (uv < l) uv = l;
+  notify();
 }
 
 Coord BoundedRangeImpl::upper()
 {
-  myMutex.lock();
-  Coord tmp = u;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return u;
 }
 
 void BoundedRangeImpl::upper(Coord uu)
 {
-    myMutex.lock();
-    if (uu == u) {myMutex.unlock(); return;}
-    u = uu;
-    if (lv > u) lv = u;
-    if (uv > u) uv = u;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  if (uu == u) return;
+  u = uu;
+  if (lv > u) lv = u;
+  if (uv > u) uv = u;
+  notify();
 }
 
 Coord BoundedRangeImpl::step()
 {
-  myMutex.lock();
-  Coord tmp = s;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return s;
 }
 
 void BoundedRangeImpl::step(Coord ss)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   s = ss;
-  myMutex.unlock();
 }
 
 Coord BoundedRangeImpl::page()
 {
-  myMutex.lock();
-  Coord tmp = p;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return p;
 }
 
 void BoundedRangeImpl::page(Coord pp)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   p = pp;
-  myMutex.unlock();
 }
 
 void BoundedRangeImpl::forward()
 {
-    myMutex.lock();
-    Coord t = uv + s > u ? u - uv : s;
-    if (t <= 0.) { myMutex.unlock(); return;}
-    lv += t;
-    uv += t;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  Coord t = uv + s > u ? u - uv : s;
+  if (t <= 0.) return;
+  lv += t;
+  uv += t;
+  notify();
 }
 
 void BoundedRangeImpl::backward()
 {
-    myMutex.lock();
-    Coord t = lv - s < l ? lv - l : s;
-    if (t <= 0.) { myMutex.unlock(); return;}
-    lv -= t;
-    uv -= t;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  Coord t = lv - s < l ? lv - l : s;
+  if (t <= 0.) return;
+  lv -= t;
+  uv -= t;
+  notify();
 }
 
 void BoundedRangeImpl::fastforward()
 {
-    myMutex.lock();
-    Coord t = uv + p > u ? u - uv : p;
-    if (t <= 0.) { myMutex.unlock(); return;}
-    lv += t;
-    uv += t;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  Coord t = uv + p > u ? u - uv : p;
+  if (t <= 0.) return;
+  lv += t;
+  uv += t;
+  notify();
 }
 
 void BoundedRangeImpl::fastbackward()
 {
-    myMutex.lock();
-    Coord t = lv - p < l ? lv - l : p;
-    if (t <= 0.) { myMutex.unlock(); return;}
-    lv -= t;
-    uv -= t;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  Coord t = lv - p < l ? lv - l : p;
+  if (t <= 0.) return;
+  lv -= t;
+  uv -= t;
+  notify();
 }
 
 void BoundedRangeImpl::begin()
 {
-    myMutex.lock();
-    Coord t = lv - l;
-    if (t == 0.) { myMutex.unlock(); return;}
-    lv -= t;
-    uv -= t;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  Coord t = lv - l;
+  if (t == 0.) return;
+  lv -= t;
+  uv -= t;
+  notify();
 }
 
 void BoundedRangeImpl::end()
 {
-    myMutex.lock();
-    Coord t = u - uv;
-    if (t == 0.) { myMutex.unlock(); return;}
-    lv += t;
-    uv += t;
-    myMutex.unlock();
-    notify();
+  Guard guard(myMutex);
+  Coord t = u - uv;
+  if (t == 0.) return;
+  lv += t;
+  uv += t;
+  notify();
 }
 
 void BoundedRangeImpl::lvalue(Coord vv)
 {
-    myMutex.lock();
-    if (vv > u) vv = u;
-    else if (vv < l) vv = l;
-    if (vv == lv) { myMutex.unlock(); return;}
-    lv = vv;
-    myMutex.unlock();
-
-    notify();
+  Guard guard(myMutex);
+  if (vv > u) vv = u;
+  else if (vv < l) vv = l;
+  if (vv == lv) return;
+  lv = vv;
+  notify();
 }
 
 Coord BoundedRangeImpl::lvalue()
 {
-    myMutex.lock();
-    Coord tmp = lv;
-    myMutex.unlock();
-    return tmp;
+  Guard guard(myMutex);
+  return lv;
 }
 
 
 void BoundedRangeImpl::uvalue(Coord vv)
 {
-    myMutex.lock();
-    if (vv > u) vv = u;
-    else if (vv < l) vv = l;
-    if (vv == uv) {myMutex.unlock(); return;}
-    uv = vv;
-    myMutex.unlock();
-
-    notify();
+  Guard guard(myMutex);
+  if (vv > u) vv = u;
+  else if (vv < l) vv = l;
+  if (vv == uv) return;
+  uv = vv;
+  notify();
 }
 
 Coord BoundedRangeImpl::uvalue()
 {
-    myMutex.lock();
-    Coord tmp = uv;
-    myMutex.unlock();
-    return tmp;
+  Guard guard(myMutex);
+  return uv;
 }
 
 
 void BoundedRangeImpl::adjust(Coord d)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t =
     uv + d > u ? u - uv :
     lv + d < l ? lv - l : d;
-  if (t == 0.) { myMutex.unlock(); return;}
+  if (t == 0.) return;
   lv += t;
   uv += t;
-  myMutex.unlock();
   notify();
 }
-

@@ -32,13 +32,14 @@ Placement::Placement(Graphic_ptr g, LayoutManager *l)
 {
   body(g);
   layout = l;
-  result = new RegionImpl;
+  region = new RegionImpl;
+  region->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 Placement::~Placement()
 {
+  region->_dispose();
   delete layout;
-  CORBA::release(result);
 }
 
 void Placement::request(Requisition &r)
@@ -47,39 +48,21 @@ void Placement::request(Requisition &r)
   layout->request(0, 0, r);
 }
 
-void Placement::allocateChild(Graphic::AllocationInfo &a)
-{
-  Region_ptr given = a.allocation;
-  result->copy(given);
-  Graphic::Requisition r;
-  GraphicImpl::initRequisition(r);
-  MonoGraphic::request(r);
-  layout->allocate(1, &r, given, &result);
-
-  TransformImpl tx;
-  normalTransform(result, &tx);
-  if (CORBA::is_nil(a.transformation))
-    a.transformation = new TransformImpl;
-  a.transformation->premultiply(&tx);
-  given->copy(result);
-}
-
 void Placement::traverse(Traversal_ptr t)
 {
-  Region_var given = t->allocation();
-  if (!CORBA::is_nil(given))
+  Region_var allocation = Region::_duplicate(t->allocation());
+  if (!CORBA::is_nil(allocation))
     {
-      RegionImpl *result = new RegionImpl;
+      RegionImpl *result = new RegionImpl(allocation, Transform::_nil());
       result->_obj_is_ready(_boa());
-      result->copy(given);
       Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
-      layout->allocate(1, &r, given, &result);
+      layout->allocate(1, &r, allocation, &result);
       TransformImpl *tx = new TransformImpl;
       tx->_obj_is_ready(_boa());
       normalTransform(result, tx);
-      t->traverseChild(offset, result->_this(), tx->_this());
+      t->traverseChild(body(), result->_this(), tx->_this());
       tx->_dispose();
       result->_dispose();
     }
@@ -101,6 +84,22 @@ void Placement::normalTransform(RegionImpl *r, TransformImpl *tx)
   tx->translate(o);
 }
 
+void Placement::allocateChild(Allocation::Info &a)
+{
+  region->copy(a.allocation);
+  Graphic::Requisition r;
+  GraphicImpl::initRequisition(r);
+  MonoGraphic::request(r);
+  layout->allocate(1, &r, a.allocation, &region);
+
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
+  normalTransform(region, tx);
+  a.transformation->premultiply(tx->_this());
+  a.allocation->copy(region->_this());
+  tx->_dispose();
+}
+
 LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under, Graphic_ptr over)
 {
   body(between);
@@ -110,8 +109,6 @@ LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under, Graphic_ptr ove
 
 LayoutLayer::~LayoutLayer()
 {
-  CORBA::release(under);
-  CORBA::release(over);
 }
 
 void LayoutLayer::traverse(Traversal_ptr t)

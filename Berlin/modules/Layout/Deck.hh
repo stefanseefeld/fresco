@@ -32,28 +32,17 @@
 class Deck : public PolyGraphic
 {
 public:
-  class Offset;
   Deck();
-  ~Deck();
+  virtual ~Deck();
 
   virtual void request(Requisition &);
-  virtual void extension(const AllocationInfo &, Region_ptr);
+  virtual void extension(const Allocation::Info &, Region_ptr);
+
   virtual void traverse(Traversal_ptr);
 
-  PolyGraphicOffset *newOffset(long index, Graphic_ptr child);
-  void modified();
 protected:
   bool requested;
   Graphic::Requisition requisition;
-};
-
-class DeckOffset : public PolyGraphicOffset
-{
-public:
-  DeckOffset(PolyGraphic *parent, long index, Graphic_ptr child);
-  ~DeckOffset();
-
-  virtual void allocations(Collector_ptr);
 };
 
 #endif /* _Deck_hh */

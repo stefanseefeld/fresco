@@ -35,6 +35,6 @@ Glue::Glue(Axis a, Coord natural, Coord stretch, Coord shrink, Alignment align)
 
 Glue::Glue(const Graphic::Requisition &r) { requisition = r;}
 Glue::~Glue() {}
-Graphic_ptr Glue::cloneGraphic () { return new Glue(requisition);}
+
 void Glue::request(Requisition &r) { r = requisition;}
 

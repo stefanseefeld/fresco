@@ -27,23 +27,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TraversalImpl_h
-#define _TraversalImpl_h
+#ifndef _TraversalImpl_hh
+#define _TraversalImpl_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Traversal.hh>
+#include <Berlin/TransformImpl.hh>
 #include <vector>
 
 class TraversalImpl : implements(Traversal)
 {
   struct State
   {
-    Graphic_ptr graphic;
-    GraphicOffset_ptr offset;
-    Region_ptr allocation;
-    Transform_ptr transformation;    
+    Graphic_var graphic;
+    Region_var allocation;
+    TransformImpl *transformation;    
   };
-public:
+  typedef vector<State> stack_t;
+ public:
   TraversalImpl(Region_ptr);
   TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
@@ -51,16 +52,17 @@ public:
   Transform_ptr transformation();
   CORBA::Boolean bounds(Vertex &, Vertex &, Vertex &);
   CORBA::Boolean intersects() = 0;
-//   Traversal_ptr trail();
-  void push(Graphic_ptr, GraphicOffset_ptr, Region_ptr, Transform_ptr);
-  void pop();
-  void traverseChild(GraphicOffset_ptr, Region_ptr, Transform_ptr);
-  void visit(Graphic_ptr);
+  void traverseChild(Graphic_ptr, Region_ptr, Transform_ptr);
+  void visit(Graphic_ptr) = 0;
   order direction() = 0;
   CORBA::Boolean ok() = 0;
-protected: // private: ??
-  typedef vector<State> Stack;
-  Stack stack;
+
+  void push(Graphic_ptr, Region_ptr, TransformImpl *);
+  void pop();
+ private:
+  stack_t stack;
+  omni_mutex stackMutex;
+  typedef omni_mutex_lock Guard;
 };
 
 #endif /* _TraversalImpl_h */

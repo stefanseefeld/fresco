@@ -39,14 +39,17 @@ class Placement : public MonoGraphic
 public:
   Placement(Graphic_ptr, LayoutManager *);
   virtual ~Placement();
+
   virtual void request(Requisition &);
+
   virtual void traverse(Traversal_ptr);
-  void allocateChild(Graphic::AllocationInfo &);
+
   static void normalOrigin(RegionImpl *, Vertex &);
   static void normalTransform(RegionImpl *, TransformImpl *);
 private:
+  virtual void allocateChild(Allocation::Info &);
   LayoutManager *layout;
-  RegionImpl *result;
+  RegionImpl *region;
 };
 
 class LayoutLayer : public MonoGraphic
@@ -56,8 +59,8 @@ public:
   virtual ~LayoutLayer();
   virtual void traverse(Traversal_ptr);
 private:
-  Graphic_ptr under;
-  Graphic_ptr over;
+  Graphic_var under;
+  Graphic_var over;
 };
 
 #endif /* _Placement_hh */

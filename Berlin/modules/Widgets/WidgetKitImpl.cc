@@ -24,6 +24,7 @@
 #include "Widget/TelltaleImpl.hh"
 #include "Widget/BoundedValueImpl.hh"
 #include "Widget/BoundedRangeImpl.hh"
+#include "Widget/TextBufferImpl.hh"
 #include "Berlin/Plugin.hh"
 
 WidgetKitImpl::WidgetKitImpl()
@@ -77,6 +78,14 @@ BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coo
   bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
 
   return bounded->_this();  
+}
+
+TextBuffer_ptr WidgetKitImpl::text()
+{
+  TextBufferImpl *buffer = new TextBufferImpl();
+  buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+
+  return buffer->_this();  
 }
 
 

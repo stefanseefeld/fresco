@@ -23,10 +23,11 @@
 #define _Viewport_idl
 
 #include <Graphic.idl>
+#include <Subject.idl>
 
 interface BoundedRange;
 
-interface Viewport : Graphic
+interface Viewport : Graphic, Observer
 {
   BoundedRange adjustment(in Axis a);
 };

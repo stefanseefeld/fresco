@@ -26,39 +26,28 @@
  */
 #include "Berlin/Allocator.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Berlin/CollectorImpl.hh"
+#include "Berlin/AllocationImpl.hh"
+#include "Warsaw/Traversal.hh"
 
 Allocator::Allocator()
 {
   requested = false;
   nat = new RegionImpl;
+  nat->_obj_is_ready(CORBA::BOA::getBOA());
   ext = new RegionImpl;
+  ext->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 Allocator::~Allocator()
 { 
-  CORBA::release(nat);
-  CORBA::release(ext);
+  nat->_dispose();
+  ext->_dispose();
 }
 
 void Allocator::request(Requisition &r)
 {
   updateRequisition();
   r = req;
-}
-
-void Allocator::allocations(Collector_ptr c)
-{
-  updateRequisition();
-  MonoGraphic::allocations(c);
-}
-
-void Allocator::allocateChild(Graphic::AllocationInfo &i)
-{
-  updateRequisition();
-  if (CORBA::is_nil(i.allocation))
-    i.allocation = new RegionImpl;
-  i.allocation->copy(nat);
 }
 
 void Allocator::traverse(Traversal_ptr t)
@@ -73,17 +62,24 @@ void Allocator::traverse(Traversal_ptr t)
 
 void Allocator::needResize()
 {
-  CollectorImpl *collector = new CollectorImpl;
-  collector->_obj_is_ready(_boa());
-  allocations(collector->_this());
-  RegionImpl region;
-  if (ext->valid) region.copy(ext);
+  AllocationImpl *allocation = new AllocationImpl;
+  allocation->_obj_is_ready(_boa());
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i).parent->allocate(_this(), allocation->_this());
+  RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
+  if (ext->valid) region->copy(ext);
   requested = false;
   updateRequisition();
-  if (ext->valid) region.mergeUnion(ext);
-  if (region.valid) needDamage(&region, collector);
-  collector->_dispose();
-  MonoGraphic::needResize();
+  if (ext->valid) region->mergeUnion(ext);
+  if (region->valid) needDamage(region, allocation);
+  allocation->_dispose();
+}
+
+void Allocator::allocateChild(Allocation::Info &i)
+{
+  updateRequisition();
+  i.allocation->copy(nat);
 }
 
 static void naturalAllocation(Graphic::Requisition &r, RegionImpl &nat)
@@ -120,28 +116,26 @@ void Allocator::updateRequisition()
       MonoGraphic::request(r);
       req = r;
       ::naturalAllocation(req, *nat);
-      // FIXME: make sure every thing defines .z otherwise we'll have
-      // to update things far too often ...
-      requested = (r.x.defined && r.y.defined); // && r.z.defined;
+      requested = r.x.defined && r.y.defined; // && r.z.defined;
       ext->valid = false;
-      Graphic::AllocationInfo a;
+      Allocation::Info a;
       MonoGraphic::extension(a, ext);
     }
 }
 
-void Allocator::needDamage(RegionImpl *ext, Collector_ptr c)
+void Allocator::needDamage(RegionImpl *ext, Allocation_ptr allocation)
 {
-  RegionImpl r;
+  RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
   double dot = 1.;
-  for (long i = 0; i < c->size(); i++)
+  for (long i = 0; i < allocation->size(); i++)
     {
-      const Graphic::AllocationInfo *info = c->get(i);
-      if (!CORBA::is_nil(info->damaged) && CORBA::is_nil(info->allocation))
+      Allocation::Info *info = allocation->get(i);
+      if (!CORBA::is_nil(info->damaged))
  	{
- 	  r.copy(ext);
- 	  if (!CORBA::is_nil(info->transformation))
- 	    r.applyTransform(info->transformation);
-  	  info->damaged->extend(&r);
+ 	  region->copy(ext);
+	  region->applyTransform(info->transformation);
+  	  info->damaged->extend(region->_this());
  	}
     }
 }
@@ -178,34 +172,32 @@ void TransformAllocator::request(Requisition &r)
   req.z.minimum = zero;
 }
 
-void TransformAllocator::allocateChild(Graphic::AllocationInfo &i)
+void TransformAllocator::allocateChild(Allocation::Info &i)
 {
   Vertex lower, upper, delta;
-  TransformImpl tx;
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
 
   Allocator::allocateChild(i);
-  if (CORBA::is_nil(i.transformation))
-    i.transformation = new TransformImpl;
   i.allocation->bounds(lower, upper);
   computeDelta(lower, upper, delta);
-  tx.translate(delta);
-  i.transformation->premultiply(&tx);
+  tx->translate(delta);
+  i.transformation->premultiply(tx->_this());
   i.allocation->copy(nat);
+  tx->_dispose();
 }
 
 void TransformAllocator::traverse(Traversal_ptr t)
 {
-//   TransformImpl tx;
-//   updateRequisition();
-//   Painter_var p = t->current_painter();
-//   Vertex lower, upper, v;
-//   t->bounds(lower, upper, v);
-//   computeDelta(lower, upper, v);
-//   tx.translate(v);
-//   p->pushMatrix();
-//   p->premultiply(&tx);
-//   t->traverseChild(offset_, nat_);
-//   p->pop_matrix();
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
+  updateRequisition();
+  Vertex lower, upper, v;
+  t->bounds(lower, upper, v);
+  computeDelta(lower, upper, v);
+  tx->translate(v);
+  t->traverseChild(body(), nat->_this(), tx->_this());
+  tx->_dispose();
 }
 
 void TransformAllocator::computeDelta(const Vertex &lower, const Vertex &upper, Vertex &delta)

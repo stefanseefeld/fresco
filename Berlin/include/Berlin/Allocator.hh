@@ -36,19 +36,20 @@ public:
   virtual ~Allocator();
 
   virtual void request(Requisition &);
-  virtual void allocations(Collector_ptr);
-  void allocateChild(Graphic::AllocationInfo &);
+
   virtual void traverse(Traversal_ptr);
+
   virtual void needResize();
 
 protected:
+  virtual void allocateChild(Allocation::Info &);
   bool requested;
   Graphic::Requisition req;
   RegionImpl *nat;
   RegionImpl *ext;
   
   void updateRequisition();
-  void needDamage(RegionImpl *, Collector_ptr);
+  void needDamage(RegionImpl *, Allocation_ptr);
 };
 
 class TransformAllocator : public Allocator
@@ -61,8 +62,8 @@ public:
   virtual void request(Requisition &);
   virtual void traverse(Traversal_ptr);
 
-  void allocateChild(Graphic::AllocationInfo &);
 protected:
+  virtual void allocateChild(Allocation::Info &);
   Alignment x_parent, y_parent, z_parent;
   Alignment x_child, y_child, z_child;
 

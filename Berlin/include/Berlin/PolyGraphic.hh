@@ -31,60 +31,28 @@
 #include <Berlin/Pool.hh>
 #include <vector>
 
-class PolyGraphicOffset;
-
-typedef vector<PolyGraphicOffset *> PolyGraphicOffsetList;
-
 class PolyGraphic : virtual public GraphicImpl
 {
-  friend class PolyGraphicOffset;
+  typedef vector<Graphic_var> clist_t;
 public:
   PolyGraphic();
   virtual ~PolyGraphic();
 
-//   virtual StyleContext_ptr style();
-//   virtual void style(StyleContext_ptr _p);
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
-  virtual GraphicOffset_ptr firstOffset();
-  virtual GraphicOffset_ptr lastOffset();
-  virtual PolyGraphicOffset *newOffset(long, Graphic_ptr);
-  Graphic::Requisition *childrenRequests();
-  virtual void allocateChild(long, Graphic::AllocationInfo &);
-//   virtual void damages(DamageInfoSeq &);
+
+  virtual void allocate(Graphic_ptr, Allocation_ptr);
   virtual void needResize();
   virtual void needResize(long);
-//   virtual bool restore_trail(Traversal_ptr);
-// protected:
-  void updateOffsets(long, long);
-  PolyGraphicOffsetList children;
+protected:
+  long numChildren();
+  long findChild(Graphic_ptr);
+  Graphic::Requisition *childrenRequests();
+  virtual void allocateChild(long, Allocation::Info &);
+  typedef omni_mutex_lock Guard;
   static Pool<Requisition> pool;
-};
-
-class PolyGraphicOffset : implements(GraphicOffset), virtual public CloneableImpl
-{
-//   friend class PolyGraphic;
-public:
-  PolyGraphicOffset(PolyGraphic *, long, Graphic_ptr);
-  virtual ~PolyGraphicOffset();
-
-  virtual Graphic_ptr Parent();
-  virtual Graphic_ptr Child();
-  virtual void allocations(Collector_ptr);
-  virtual void insert(Graphic_ptr);
-  virtual void replace(Graphic_ptr);
-  virtual GraphicOffset_ptr next();
-  virtual GraphicOffset_ptr previous();
-  virtual void remove();
-  virtual void needResize();
-  virtual void traverse(Traversal_ptr);
-//   virtual void visit_trail(Traversal_ptr);
-  virtual void allocateChild(Graphic::AllocationInfo &);
-// protected:
-  GraphicOffset_ptr offset(long);
-  PolyGraphic *parent;
-  long index;
-  Graphic_var child;
+  clist_t children;
+  omni_mutex childMutex;
 };
 
 #endif /* _PolyGraphic_hh */

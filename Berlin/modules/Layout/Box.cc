@@ -39,14 +39,6 @@ Box::Box(LayoutManager *l)
 
 Box::~Box() { delete layout;}
 
-Graphic_ptr Box::cloneGraphic()
-{
-  Box *box = new Box(layout->clone());
-  box->_obj_is_ready(_boa());
-  return box->_this();
-//   return new Box(layout->clone());
-}
-
 void Box::request(Requisition &r)
 {
   if (!requested)
@@ -65,25 +57,23 @@ void Box::request(Requisition &r)
   r = requisition;
 }
 
-void Box::extension(const AllocationInfo &a, Region_ptr r)
+void Box::extension(const Allocation::Info &a, Region_ptr r)
 {
   long n = children.size();
   if (n > 0)
     {
-      Graphic::AllocationInfo child;
+      Allocation::Info child;
       Vertex prev_o, o, v;
-      prev_o.x = Coord(0); prev_o.y = Coord(0); prev_o.z = Coord(0);
-      TransformImpl *child_tx, *tmp_tx;
+      prev_o.x = prev_o.y = prev_o.z = 0;
 
-      child_tx = new TransformImpl();
+      TransformImpl *child_tx = new TransformImpl;
       child_tx->_obj_is_ready(_boa());
 
-      tmp_tx = new TransformImpl();
+      TransformImpl *tmp_tx = new TransformImpl;
       tmp_tx->_obj_is_ready(_boa());
       
       child.transformation = child_tx->_this();
       child.transformation->copy(a.transformation);
-      //       child.damaged = a.damaged;
       RegionImpl **result = childrenAllocations(a.allocation);
 
       for (long i = 0; i < n; i++)
@@ -92,35 +82,22 @@ void Box::extension(const AllocationInfo &a, Region_ptr r)
 	  v.x = o.x - prev_o.x;
 	  v.y = o.y - prev_o.y;
 	  v.z = o.z - prev_o.z;
-	  tmp_tx->_this()->loadIdentity();
-	  tmp_tx->_this()->translate(v);
+	  tmp_tx->loadIdentity();
+	  tmp_tx->translate(v);
 	  child.allocation = Region::_duplicate(result[i]->_this());
-	  //child.allocation._ptr = result[i];
 	  child.transformation->premultiply(tmp_tx->_this());
 	  cerr << "extending Box by Child" << endl;
-	  children[i]->child->extension(child, r);
+	  children[i]->extension(child, r);
 	  cerr << "extended Box by Child" << endl;
 	  prev_o = o;
 	  CORBA::release(child.allocation);
-	  CORBA::release(child.transformation);
 	}
-      CORBA::release(child_tx);
-      CORBA::release(tmp_tx);
-
-//       child.damaged = 0;
-//       CORBA::ULong n = CORBA::ULong(children_.count());
-      for (long i = 0; i < n; i++) CORBA::release(result[i]->_this());
+      child_tx->_dispose();
+      tmp_tx->_dispose();
+      for (long i = 0; i < n; i++) result[i]->_dispose();
       delete [] result;
     }
 }
-
-//
-// The cull test below (allocation_is_visible) is not quite ideal.
-// If the box contains something that draws outside the box's allocation,
-// then the box might not redraw correctly.  However, the alternative,
-// using extensions, can be pretty expensive.  In practice, using
-// allocations works in every case we have seen.
-//
 
 void Box::traverse(Traversal_ptr t)
 {
@@ -128,13 +105,32 @@ void Box::traverse(Traversal_ptr t)
     {
       Region_var given = t->allocation();
       if (!CORBA::is_nil(given))
- 	{
-  	  if (t->intersects()) traverseWithAllocation(t, given);
- 	}
-      else {
-	traverseWithoutAllocation(t);
-      }
+ 	{ if (t->intersects()) traverseWithAllocation(t, given);}
+      else traverseWithoutAllocation(t);
     }
+}
+
+void Box::needResize()
+{
+  requested = false;
+  PolyGraphic::needResize();
+}
+
+void Box::needResize(long)
+{
+  needResize();
+}
+
+void Box::allocateChild(long index, Allocation::Info &a)
+{
+  RegionImpl **result = childrenAllocations(a.allocation);
+  TransformImpl *tx = new TransformImpl;
+  tx->_obj_is_ready(_boa());
+  Placement::normalTransform(result[index], tx);
+  a.transformation->premultiply(tx->_this());
+  a.allocation->copy(result[index]);
+  for (size_t i = 0; i < children.size(); i++) result[i]->_dispose();
+  delete [] result;
 }
 
 RegionImpl **Box::childrenAllocations(Region_ptr a)
@@ -150,10 +146,9 @@ RegionImpl **Box::childrenAllocations(Region_ptr a)
   RegionImpl **result = new RegionImpl *[n];
   for (long i = 0; i < n; i++)
     {
-      RegionImpl *region = new RegionImpl;
-      region->_obj_is_ready(_boa());
-      region->valid = true;
-      result[i] = region;
+      result[i] = new RegionImpl;
+      result[i]->_obj_is_ready(_boa());
+      result[i]->valid = true;
     }
   layout->allocate(n, r, a, result);
   pool.deallocate(r);
@@ -183,69 +178,36 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
       Vertex o;
       Placement::normalOrigin(result[i], o);
       tx->loadIdentity();
+      /*
+       * ok, so we stipulate that Boxes lay out their children 
+       * only translating them  -stefan
+       */
       tx->translate(o);
-      t->traverseChild(children[i]->_this(), result[i]->_this(), tx->_this());
+      t->traverseChild(children[i], result[i]->_this(), tx->_this());
       if (!t->ok()) break;
     }
   long n = children.size();
-  //for (long i = 0; i < n; i++) CORBA::release(result[i]);
   for (long i = 0; i < n; i++) result[i]->_dispose();
   delete [] result;
-  //CORBA::release(tx);
   tx->_dispose();
 }
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)
 {
   if (t->direction() == Traversal::up)
-    for (PolyGraphicOffsetList::iterator i = children.begin(); i != children.end(); i++)
+    for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	t->traverseChild((*i)->_this(), 0, 0);
+	t->traverseChild(*i, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }
   else
-    for (PolyGraphicOffsetList::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
+    for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	t->traverseChild((*i)->_this(), 0, 0);
+	t->traverseChild(*i, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }    
 }
 
-void Box::allocateChild(long index, Graphic::AllocationInfo &a)
-{
-  Region_ptr given = a.allocation;
-  RegionImpl **result = childrenAllocations(given);
-  TransformImpl tx;
-  Placement::normalTransform(result[index], &tx);
-  if (CORBA::is_nil(a.transformation))
-    {
-      TransformImpl *transform = new TransformImpl;
-      transform->_obj_is_ready(_boa());
-      a.transformation = transform->_this();
-//       a.transformation = new TransformImpl;
-    }
-  a.transformation->premultiply(&tx);
-  given->copy(result[index]);
-  long n = children.size();
-  for (long i = 0; i < n; i++) CORBA::release(result[i]);
-  delete [] result;
-}
-
-void Box::needResize()
-{
-  requested = false;
-  PolyGraphic::needResize();
-}
-
-void Box::needResize(long)
-{
-  needResize();
-}
-
-void Box::modified() { requested = false;}
-
-// class BoxAlignElements
- 
 BoxAlignElements::BoxAlignElements(LayoutManager *layout, Axis a, Alignment align)
   : Box(layout), axis(a), alignment(align) {}
 BoxAlignElements::~BoxAlignElements() {}

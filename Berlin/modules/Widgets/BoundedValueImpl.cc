@@ -33,163 +33,141 @@ BoundedValueImpl::~BoundedValueImpl()
 
 Coord BoundedValueImpl::lower()
 {
-  myMutex.lock();
-  Coord tmp = l;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return l;
 }
 
 void BoundedValueImpl::lower(Coord ll)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   if (ll == l) { myMutex.unlock(); return;}
   l = ll;
   if (v < l) v = l;
-  myMutex.unlock();
   notify();
 }
 
 Coord BoundedValueImpl::upper()
 {
-  myMutex.lock();
-  Coord tmp = u;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return u;
 }
 
 void BoundedValueImpl::upper(Coord uu)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   if (uu == u) {myMutex.unlock(); return;}
   u = uu;
   if (v > u) v = u;
-  myMutex.unlock();
   notify();
 }
 
 Coord BoundedValueImpl::step()
 { 
-  myMutex.lock();
-  Coord tmp = s;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return s;
 }
 
 void BoundedValueImpl::step(Coord ss)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   s = ss;
-  myMutex.unlock();
 }
 
 Coord BoundedValueImpl::page()
 {
-  myMutex.lock();
-  Coord tmp = p;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return p;
 }
 
 void BoundedValueImpl::page(Coord pp)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   p = pp;
-  myMutex.unlock();
 }
 
 void BoundedValueImpl::forward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = v + s;
   if (t > u) t = u;
-  if (t == v) {myMutex.unlock(); return;}
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }
 
 void BoundedValueImpl::backward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = v - s;
   if (t < l) t = l;
-  if (t == v) {myMutex.unlock(); return;}
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }
 
 void BoundedValueImpl::fastforward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = v + p;
   if (t > u) t = u;
-  if (t == v) {myMutex.unlock(); return;}
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }
 
 void BoundedValueImpl::fastbackward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = v - p;
   if (t < l) t = l;
-  if (t == v) {myMutex.unlock(); return;}
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }
 
 void BoundedValueImpl::begin()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = l;
-  if (t == v) {myMutex.unlock(); return; }
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }
 
 
 void BoundedValueImpl::end()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = u;
-  if (t == v) {myMutex.unlock(); return; }
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }
 
 void BoundedValueImpl::value(Coord vv)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
-  if (vv == v) {myMutex.unlock(); return;}
+  if (vv == v) return;
   v = vv;
-  myMutex.unlock();
   notify();
 }
 
 Coord BoundedValueImpl::value()
 {
-  myMutex.lock();
-  Coord tmp = v;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return v;
 }
 
 
 void BoundedValueImpl::adjust(Coord d)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = v + d;
   if (t > u) t = u;
   else if (t < l) t = l;
-  if (t == v) {myMutex.unlock(); return;}
+  if (t == v) return;
   v = t;
-  myMutex.unlock();
   notify();
 }

@@ -28,176 +28,97 @@
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
 
-MonoGraphic::MonoGraphic()
-  : offset(new MonoGraphicOffset(this))
-{
-  offset->_obj_is_ready(_boa());
-}
-
+MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()
 {
-  if (!CORBA::is_nil(offset->child))
-    {
-      offset->child->removeParent(offset);
-      CORBA::release(offset->child);
-      offset->child = 0;
-    }
-  offset->parent = 0;
-  CORBA::release(offset);
+  Guard guard(childMutex);
+  if (!CORBA::is_nil(child)) child->removeParent(_this());
 }
 
 Graphic_ptr MonoGraphic::body()
 {
-  return Graphic::_duplicate(offset->child);
+  Guard guard(childMutex);
+  return child;
 }
 
-void MonoGraphic::body(Graphic_ptr g)
+void MonoGraphic::body(Graphic_ptr c)
 {
-  Graphic_ptr child = offset->child;
-  if (!CORBA::is_nil(child))
-    {
-      child->removeParent(offset);
-      CORBA::release(child);
-    }
-  offset->child = Graphic::_duplicate(g);
-  g->addParent(offset);
-//   offset->remove_tag = !CORBA::is_nil(g) ? g->addParent(offset) : 0;
+  Guard guard(childMutex);
+  if (!CORBA::is_nil(child)) child->removeParent(_this());
+  child = Graphic::_duplicate(c);
+  child->addParent(_this());
 }
 
-void MonoGraphic::append(Graphic_ptr g)
+void MonoGraphic::append(Graphic_ptr c)
 {
-  Graphic_ptr child = offset->child;
-  if (!CORBA::is_nil(child)) child->append(g);
+  Guard guard(childMutex);
+  if (!CORBA::is_nil(child)) child->append(c);
 }
 
-void MonoGraphic::prepend(Graphic_ptr g)
+void MonoGraphic::prepend(Graphic_ptr c)
 {
-  Graphic_ptr child = offset->child;
-  if (!CORBA::is_nil(child)) child->prepend(g);
-}
-
-GraphicOffset_ptr MonoGraphic::firstOffset()
-{
-  Graphic_ptr child = offset->child;
-  return CORBA::is_nil(child) ? 0 : child->firstOffset();
-}
-
-GraphicOffset_ptr MonoGraphic::lastOffset()
-{
-  Graphic_ptr child = offset->child;
-  return CORBA::is_nil(child) ? 0 : child->lastOffset();
+  Guard guard(childMutex);
+  if (!CORBA::is_nil(child)) child->prepend(c);
 }
 
 Transform_ptr MonoGraphic::transformation()
 {
-  Graphic_ptr child = offset->child;
+  Graphic_ptr child = body();
   return CORBA::is_nil(child) ? 0 : child->transformation();
-}
-
-void MonoGraphic::traverse(Traversal_ptr t)
-{
-  if (!CORBA::is_nil(offset->child))
-    t->traverseChild(offset, t->allocation(), 0);
 }
 
 void MonoGraphic::request(Graphic::Requisition &r)
 {
-  Graphic_ptr child = offset->child;
+  Graphic_ptr child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
-void MonoGraphic::extension(const AllocationInfo &a, Region_ptr r)
+void MonoGraphic::extension(const Allocation::Info &a, Region_ptr r)
 {
-  Graphic_ptr child = offset->child;
+  Graphic_ptr child = body();
   if (!CORBA::is_nil(child))
     {
-      Graphic::AllocationInfo i;
-      if (!CORBA::is_nil(a.allocation))
-	{
-	  i.allocation = new RegionImpl;
-	  i.allocation->copy(a.allocation);
-	}
-      if (!CORBA::is_nil(a.transformation))
-	{
-	  i.transformation = new TransformImpl;
-	  i.transformation->copy(a.transformation);
-	}
+      Allocation::Info i;
+      RegionImpl *region = new RegionImpl;
+      region->_obj_is_ready(_boa());
+      i.allocation = region->_this();
+      i.allocation->copy(a.allocation);
+      TransformImpl *transform = new TransformImpl;
+      transform->_obj_is_ready(_boa());
+      i.transformation = transform;
+      i.transformation->copy(a.transformation);
       allocateChild(i);
       child->extension(i, r);
+      transform->_dispose();
+      region->_dispose();
     }
 }
 
 void MonoGraphic::shape(Region_ptr r)
 {
-  Graphic_ptr child = offset->child;
+  Graphic_ptr child = body();
   if (!CORBA::is_nil(child)) child->shape(r);
 }
 
-// void MonoGraphic::visit_trail(Long, GraphicTraversal_ptr) { }
-void MonoGraphic::allocateChild(Graphic::AllocationInfo &) { }
-
-// void MonoGraphic::modified() { notify_observers();}
-
-MonoGraphicOffset::MonoGraphicOffset(MonoGraphic *g)
+void MonoGraphic::traverse(Traversal_ptr t)
 {
-  parent = g;
-  child  = 0;
-}
-
-MonoGraphicOffset::~MonoGraphicOffset()
-{
+  Graphic_ptr child = body();
   if (!CORBA::is_nil(child))
-    {
-      child->removeParent(_this());
-      CORBA::release(child);
-    }
+    t->traverseChild(child, Region::_nil(), Transform::_nil());
 }
 
-Graphic_ptr MonoGraphicOffset::Parent() { return Graphic::_duplicate(parent);}
-Graphic_ptr MonoGraphicOffset::Child() { return Graphic::_duplicate(child);}
-GraphicOffset_ptr MonoGraphicOffset::next() { return 0;}
-GraphicOffset_ptr MonoGraphicOffset::previous() { return 0;}
-
-void MonoGraphicOffset::allocations(Collector_ptr c)
+void MonoGraphic::allocate(Graphic_ptr g, Allocation_ptr a)
 {
-  if (parent)
-    {
-      long start = c->size();
-      parent->allocations(c);
-      for (long i = start; i < c->size(); i++)
-	parent->allocateChild(*c->get(i));
-    }
+  /*
+   * tmp isn't really used here, it's just a test that it refers
+   * to the child -stefan
+   */
+  Graphic_var tmp = Graphic::_duplicate(g);
+  if (tmp != body()) return;
+  GraphicImpl::allocate(tmp, a);
+  CORBA::Long size = a->size();
+  for (CORBA::Long i = 0; i != size; i++)
+    allocateChild(*a->get(i));
 }
 
-void MonoGraphicOffset::insert(Graphic_ptr g) { replace(g);}
-
-void MonoGraphicOffset::replace(Graphic_ptr g)
-{
-  if (!CORBA::is_nil(child))
-    {
-      child->removeParent(_this());
-      CORBA::release(child);
-      child = 0;
-    }
-  if (!CORBA::is_nil(g))
-    {
-      child = Graphic::_duplicate(g);
-      child->addParent(_this());
-    }
-}
-
-void MonoGraphicOffset::remove()
-{
-  if (!CORBA::is_nil(child))
-    {
-      child->removeParent(_this());
-      CORBA::release(child);
-      child = 0;
-      parent = 0;
-    }
-}
-
-void MonoGraphicOffset::needResize() { if (parent) parent->needResize();}
-void MonoGraphicOffset::traverse(Traversal_ptr t) { if (parent) child->traverse(t);}
-// void MonoGraphicOffset::visit_trail(GraphicTraversal_ptr t) { if (parent) parent->visit_trail(t);}
-void MonoGraphicOffset::allocateChild(Graphic::AllocationInfo &a) { if (parent) parent->allocateChild(a);}
+void MonoGraphic::allocateChild(Allocation::Info &) {}

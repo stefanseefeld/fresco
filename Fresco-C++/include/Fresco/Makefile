@@ -31,7 +31,7 @@ STATIC_INTERFACES := 	BoundedValue.idl BoundedRange.idl   Damage.idl	LayoutKit.i
 			Cloneable.idl	DrawingKit.idl	FigureKit.idl	Region.idl \
 			Graphic.idl	Metrics.idl	Screen.idl \
 			CommandKit.idl	Grid.idl Viewport.idl Stage.idl	Naming.idl	Subject.idl \
-			Telltale.idl	Traversal.idl	Text.idl		WidgetKit.idl
+			Telltale.idl TextBuffer.idl	Traversal.idl	Text.idl		WidgetKit.idl
 
 DYNAMIC_INTERFACES := Message.idl Event.idl Types.idl Style.idl
 

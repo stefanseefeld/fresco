@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _CollectorImpl_hh
-#define _CollectorImpl_hh
+#ifndef _AllocationImpl_hh
+#define _AllocationImpl_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
@@ -29,24 +29,24 @@
 class RegionImpl;
 class TransformImpl;
 
-class CollectorImpl : implements(Collector)
+class AllocationImpl : implements(Allocation)
 {
-public:
-  CollectorImpl();
-  ~CollectorImpl();
-  void add(Region_ptr, Damage_ptr);
-  CORBA::Long size();
-  Graphic::AllocationInfo *get(CORBA::Long);
-private:
   struct State
   {
     RegionImpl *allocation;
     TransformImpl *transformation;
-    Damage_ptr damage;
+    Damage_var damage;
   };
-  vector<State> allocations;
-  Graphic::AllocationInfo info;
-//   stack<long> active;
+  typedef vector<State> list_t;
+public:
+  AllocationImpl();
+  ~AllocationImpl();
+  void add(Region_ptr, Damage_ptr);
+  CORBA::Long size();
+  Allocation::Info *get(CORBA::Long);
+private:
+  list_t list;
+  Allocation::Info info;
 };
 
-#endif /* _CollectorImpl_hh */
+#endif /* _AllocationImpl_hh */

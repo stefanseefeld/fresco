@@ -39,6 +39,15 @@ RegionImpl::RegionImpl()
   upper.z = Coord(1e6);
 }
 
+RegionImpl::RegionImpl(const RegionImpl &region)
+  : valid(region.valid),
+    lower(region.lower),
+    upper(region.upper),
+    xalign(region.xalign),
+    yalign(region.yalign),
+    zalign(region.zalign)
+{}
+
 RegionImpl::RegionImpl(Region_ptr a, Transform_ptr t)
 {
   RegionImpl::copy(a);

@@ -35,7 +35,6 @@ public:
   Glue(Axis, Coord, Coord, Coord, Alignment);
   Glue(const Graphic::Requisition &);
   virtual ~Glue();
-  virtual Graphic_ptr cloneGraphic();
 
   virtual void request(Graphic::Requisition &);
 private:

@@ -26,7 +26,7 @@
  */
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/CollectorImpl.hh"
+#include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
@@ -224,115 +224,97 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 				y_nat_trail, y_nat_trail, y_nat_trail);
 }
 
-GraphicImpl::GraphicImpl() {}
+/*****************************************************/
 
+GraphicImpl::GraphicImpl() {}
 GraphicImpl::~GraphicImpl() {}
 
-Graphic_ptr GraphicImpl::cloneGraphic() { return 0;}
-
-// StyleContext_ptr GraphicImpl::style() { return nil;}
-
-// void GraphicImpl::style(StyleContext_ptr) {}
-
-Transform_ptr GraphicImpl::transformation() { return 0;}
-void GraphicImpl::request(Requisition &) {}
-void GraphicImpl::extension(const AllocationInfo &a, Region_ptr r) {defaultExtension(a, r);}
-void GraphicImpl::shape(Region_ptr) {}
-void GraphicImpl::traverse(Traversal_ptr t) { t->visit(this);}
-void GraphicImpl::draw(DrawTraversal_ptr) {}
-void GraphicImpl::pick(PickTraversal_ptr) {}
-Graphic_ptr GraphicImpl::body() { return 0;}
+Graphic_ptr GraphicImpl::body() { return Graphic::_nil();}
 void GraphicImpl::body(Graphic_ptr) {}
 void GraphicImpl::append(Graphic_ptr) {}
 void GraphicImpl::prepend(Graphic_ptr) {}
 
-void GraphicImpl::addParent(GraphicOffset_ptr offset) { parents.push_back(offset);}
-
-void GraphicImpl::removeParent(GraphicOffset_ptr offset)
+void GraphicImpl::addParent(Graphic_ptr parent)
 {
-  GraphicOffset_var o = offset;
-  for (GraphicOffsetList::iterator i = parents.begin(); i != parents.end(); i++)
-    {
-      if (o == *i)
-	{
-	  parents.erase(i);
-	  break;
-	}
-    }
+  Guard guard(parentMutex);
+  parents.insert(parents.end(), pinfo(Graphic::_duplicate(parent), 1));
 }
 
-GraphicOffset_ptr GraphicImpl::firstOffset() { return 0;}
-GraphicOffset_ptr GraphicImpl::lastOffset() { return 0;}
-void GraphicImpl::parentOffsets(OffsetSeq &os) { getParentOffsets(os, parents);}
-
-void GraphicImpl::allocations(Collector_ptr c)
+void GraphicImpl::removeParent(Graphic_ptr parent)
 {
-  for (GraphicOffsetList::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->allocations(c);
+  Guard guard(parentMutex);
+  plist_t::iterator i = parents.find(pinfo(parent));
+  if (!--(*i).edges) parents.erase(i);
 }
 
-// void GraphicImpl::damages(DamageInfoSeq &d)
-// {
-//   for (OffsetTagList::iterator i = parents.begin(); i != parents.end(); i++)
-//     {
-//       Graphic_var g = (*i)->offset->parent();
-//       if (!CORBA::is_nil(g)) g->damages(d);
-//     }
-// }
+Transform_ptr GraphicImpl::transformation() { return Transform::_nil();}
+void GraphicImpl::request(Requisition &) {}
+void GraphicImpl::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r);}
+void GraphicImpl::shape(Region_ptr) {}
+
+void GraphicImpl::traverse(Traversal_ptr t) { t->visit(this);}
+void GraphicImpl::draw(DrawTraversal_ptr) {}
+void GraphicImpl::pick(PickTraversal_ptr) {}
+
+void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a)
+{
+  Guard guard(parentMutex);
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i).parent->allocate(_this(), a);
+}
 
 void GraphicImpl::needRedraw()
 {
-  CollectorImpl *collector = new CollectorImpl;
-  collector->_obj_is_ready(_boa());
-  allocations(collector->_this());
-  for (long i = 0; i < collector->size(); i++)
+  AllocationImpl *allocation = new AllocationImpl;
+  allocation->_obj_is_ready(_boa());
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i).parent->allocate(_this(), allocation->_this());
+  for (CORBA::Long i = 0; i < allocation->size(); i++)
     {
-      Graphic::AllocationInfo * const a = collector->get(i);
+      Allocation::Info *a = allocation->get(i);
       if (!CORBA::is_nil(a->damaged))
 	{
-	  RegionImpl *newReg = new RegionImpl;
-	  newReg->_obj_is_ready(_boa());
-	  this->extension(*a, newReg->_this());
-	  if (newReg->valid) a->damaged->extend(newReg->_this());
-	  newReg->_dispose();
+	  RegionImpl *region = new RegionImpl;
+	  region->_obj_is_ready(_boa());
+	  extension(*a, region->_this());
+	  if (region->valid) a->damaged->extend(region->_this());
+	  region->_dispose();
 	}
     }
-  collector->_dispose();
+  allocation->_dispose();
 }
 
 void GraphicImpl::needRedrawRegion(Region_ptr r)
 {
   if (r->defined())
     {
-      CollectorImpl *collector = new CollectorImpl;
-      collector->_obj_is_ready(_boa());
-      allocations(collector->_this());
+      AllocationImpl *allocation = new AllocationImpl;
+      allocation->_obj_is_ready(_boa());
+      for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+	(*i).parent->allocate(_this(), allocation->_this());
       RegionImpl *dr = new RegionImpl;
       dr->_obj_is_ready(_boa());
-      for (long i = 0; i < collector->size(); i++)
+      for (CORBA::Long i = 0; i < allocation->size(); i++)
 	{
-	  Graphic::AllocationInfo *a = collector->get(i);
+	  Allocation::Info *a = allocation->get(i);
  	  if (!CORBA::is_nil(a->damaged))
  	    {
  	      dr->copy(r);
  	      dr->applyTransform(a->transformation);
-// 	      if (!CORBA::is_nil(a.clipping))
-// 		dr.mergeIntersect(a.clipping);
  	      a->damaged->extend(dr->_this());
  	    }
 	}
       dr->_dispose();
-      collector->_dispose();
+      allocation->_dispose();
     }
 }
 
 void GraphicImpl::needResize()
 {
-  for (GraphicOffsetList::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->needResize();
+  Guard guard(parentMutex);
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    (*i).parent->needResize();
 }
-
-// CORBA::Boolean GraphicImpl::restore_trail(Traversal_ptr) { return false;}
 
 void GraphicImpl::initRequisition(Graphic::Requisition &r)
 {
@@ -409,65 +391,51 @@ Graphic::Requirement *GraphicImpl::requirement(Graphic::Requisition &r, Axis a)
   return req;
 }
 
-void GraphicImpl::defaultExtension (const Graphic::AllocationInfo &a, Region_ptr r)
+void GraphicImpl::defaultExtension (const Allocation::Info &a, Region_ptr r)
 {
-  if (!CORBA::is_nil(a.allocation)) {
-      if (CORBA::is_nil(a.transformation)) {
-	  r->mergeUnion(a.allocation);
-      }  else {
-	RegionImpl * tmp = new RegionImpl(a.allocation, a.transformation);
-	tmp->_obj_is_ready(CORBA::BOA::getBOA());
-	r->mergeUnion(tmp->_this());
-	tmp->_dispose();
-      }
-  }
-  cerr << "returning from GraphicImpl::defaultExtension();" << endl;
+  if (!CORBA::is_nil(a.allocation))
+    {
+      if (CORBA::is_nil(a.transformation))
+	r->mergeUnion(a.allocation);
+      else
+	{
+	  RegionImpl *tmp = new RegionImpl(a.allocation, a.transformation);
+	  tmp->_obj_is_ready(CORBA::BOA::getBOA());
+	  r->mergeUnion(tmp->_this());
+	  tmp->_dispose();
+	}
+    }
 }
 
-void GraphicImpl::getParentOffsets(Graphic::OffsetSeq &offsets, const GraphicOffsetList &parents)
-{
-  ulong p = static_cast<ulong>(parents.size());
-//   if (p > offsets.maximum())
-//     {
-//       GraphicOffset_ptr *go = GraphicOffsetSeq::allocbuf(p);
-//       go[0] = 0;
-//       offsets.load(p, 0, go, true);
-//     }
-  offsets.length(p);
-  for (ulong i = 0; i < p; i++)
-    offsets[i] = GraphicOffset::_duplicate(parents[i]);
-}
-
-Region_ptr GraphicImpl::naturalAllocation (Graphic_ptr g)
+RegionImpl GraphicImpl::naturalAllocation (Graphic_ptr g)
 {
   Requisition r;
   GraphicImpl::initRequisition(r);
-  RegionImpl *nat = new RegionImpl;
+  RegionImpl nat;
 
   g->request(r);
   if (r.x.defined)
     {
-      nat->xalign = r.x.align;
-      nat->lower.x = -r.x.align * r.x.natural;
-      nat->upper.x = nat->lower.x + r.x.natural;
-      nat->valid = true;
+      nat.xalign = r.x.align;
+      nat.lower.x = -r.x.align * r.x.natural;
+      nat.upper.x = nat.lower.x + r.x.natural;
+      nat.valid = true;
     }
   if (r.y.defined)
     {
-      nat->yalign = r.y.align;
-      nat->lower.y = -r.y.align * r.y.natural;
-      nat->upper.y = nat->lower.y + r.y.natural;
-      nat->valid = true;
+      nat.yalign = r.y.align;
+      nat.lower.y = -r.y.align * r.y.natural;
+      nat.upper.y = nat.lower.y + r.y.natural;
+      nat.valid = true;
     }
   if (r.z.defined)
     {
-      nat->lower.z = -r.z.align * r.z.natural;
-      nat->upper.z = nat->lower.z + r.z.natural;
-      nat->zalign = r.z.align;
-      nat->valid = true;
+      nat.lower.z = -r.z.align * r.z.natural;
+      nat.upper.z = nat.lower.z + r.z.natural;
+      nat.zalign = r.z.align;
+      nat.valid = true;
     }
-  nat->_obj_is_ready(CORBA::BOA::getBOA());
-  return nat->_this();
+  return nat;
 }
 
 void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)

@@ -34,6 +34,7 @@ class RegionImpl : implements(Region)
 {
 public:
   RegionImpl();
+  RegionImpl(const RegionImpl &);
   RegionImpl(Region_ptr, Transform_ptr);
   virtual ~RegionImpl();
 

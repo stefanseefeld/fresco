@@ -54,7 +54,7 @@
 #include "Layout/Box.hh"
 #include "Layout/Deck.hh"
 #include "Layout/GridImpl.hh"
-#include "Layout/StageImpl.hh"
+// #include "Layout/StageImpl.hh"
 #include "Layout/Glue.hh"
 #include "Layout/Placement.hh"
 #include "Layout/ShapeOf.hh"
@@ -128,7 +128,11 @@ Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
   return vp->_this();
 }
 
-Stage_ptr LayoutKitImpl::createStage() { return create<StageImpl, Stage_ptr>(new StageImpl, _boa());}
+Stage_ptr LayoutKitImpl::createStage()
+{
+  return 0;
+//   return create<StageImpl, Stage_ptr>(new StageImpl, _boa());
+}
 
 Grid_ptr LayoutKitImpl::fixedGrid(const Grid::Index &upper)
 {

@@ -33,170 +33,71 @@ PolyGraphic::PolyGraphic() {}
 
 PolyGraphic::~PolyGraphic()
 {
-  for (PolyGraphicOffsetList::iterator i = children.begin(); i != children.end(); i++)
-    {
-      if (!CORBA::is_nil((*i)->child))
-	{
-	  (*i)->child->removeParent(*i);
-	  CORBA::release((*i)->child);
-	  (*i)->child = Graphic::_nil();
-        }
-      (*i)->parent = 0;
-      CORBA::release(*i);
-    }
+  Guard guard(childMutex);
+  for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+    (*i)->removeParent(_this());
 }
 
-void PolyGraphic::append(Graphic_ptr g)
+void PolyGraphic::append(Graphic_ptr child)
 {
-  PolyGraphicOffset *offset = newOffset(children.size(), g);
-  children.push_back(offset);
+  Guard guard(childMutex);
+  children.push_back(Graphic_var(child));
   needResize();
 }
 
-void PolyGraphic::prepend(Graphic_ptr g)
+void PolyGraphic::prepend(Graphic_ptr child)
 {
-  PolyGraphicOffset *offset = newOffset(0, g);
-  children.insert(children.begin(), offset);
+  Guard guard(childMutex);
+  children.insert(children.begin(), Graphic_var(child));
   needResize();
 }
 
-GraphicOffset_ptr PolyGraphic::firstOffset()
+void PolyGraphic::allocate(Graphic_ptr g, Allocation_ptr allocation)
 {
-  long n = children.size();
-  return n > 0 ? GraphicOffset::_duplicate(children[0]) : GraphicOffset::_nil();
+  long start = allocation->size();
+  GraphicImpl::allocate(g, allocation);
+  long l = findChild(g);
+  for (long i = start; i != allocation->size(); i++)
+    allocateChild(l, *allocation->get(i));
 }
 
-GraphicOffset_ptr PolyGraphic::lastOffset()
+void PolyGraphic::needResize() { GraphicImpl::needResize();}
+void PolyGraphic::needResize(long) { GraphicImpl::needResize();}
+
+long PolyGraphic::numChildren()
 {
-  long n = children.size();
-  return n > 0 ? GraphicOffset::_duplicate(children[n-1]) : GraphicOffset::_nil();
+  Guard guard(childMutex);
+  return children.size();
 }
 
-PolyGraphicOffset *PolyGraphic::newOffset(long index, Graphic_ptr child)
+/*
+ * uses a simple linear search since most containers
+ * will want to contain only a few (<5) children.
+ * You are free to override it in special purpose containers which expect
+ * to get large  -stefan
+ */
+long PolyGraphic::findChild(Graphic_ptr g)
 {
-  updateOffsets(index, 1);
-  PolyGraphicOffset *offset = new PolyGraphicOffset(this, index, child);
-  offset->_obj_is_ready(_boa());
-  child->addParent(offset->_this());
-  return offset;
+  Guard guard(childMutex);
+  Graphic_var tmp = Graphic::_duplicate(g);
+  long l = 0;
+  for (clist_t::iterator i = children.begin(); i != children.end(); i++, l++)
+    if (tmp == *i) break;
+  return l;
 }
 
 Graphic::Requisition *PolyGraphic::childrenRequests()
 {
+  Guard guard(childMutex);
   Graphic::Requisition *requisitions = pool.allocate(children.size());
-    Graphic::Requisition *r = requisitions;
-  for (PolyGraphicOffsetList::iterator i = children.begin(); i != children.end(); i++)
+  Graphic::Requisition *r = requisitions;
+  for (clist_t::iterator i = children.begin(); i != children.end(); i++)
     {
-      Graphic_ptr g = (*i)->child;
-//       fresco_assert(this != g);
       GraphicImpl::initRequisition(*r);
-      if (!CORBA::is_nil(g)) g->request(*r);
+      if (!CORBA::is_nil(*i)) (*i)->request(*r);
       ++r;
     }
   return requisitions;
 }
 
-// void PolyGraphic::visit_trail(long, GraphicTraversal_ptr) { }
-
-void PolyGraphic::allocateChild(long, Graphic::AllocationInfo &) { }
-
-void PolyGraphic::needResize() { GraphicImpl::needResize();}
-void PolyGraphic::needResize(long) { GraphicImpl::needResize();}
-
-void PolyGraphic::updateOffsets(long start, long delta)
-{
-  long n = children.size();
-  for (long i = start; i < n; i++)
-    {
-      PolyGraphicOffset *p = children[i];
-      p->index += delta;
-    }
-}
-
-// void PolyGraphic::change(long) { modified(); }
-
-//
-// Default behavior when modified is to notify any observers
-// of this parent.
-//
-
-// void PolyGraphic::modified() { notify_observers();}
-
-PolyGraphicOffset::PolyGraphicOffset(PolyGraphic *p, long i, Graphic_ptr c)
-{
-  parent = p;
-  index  = i;
-  child  = c;
-}
-
-PolyGraphicOffset::~PolyGraphicOffset()
-{
-  if (!CORBA::is_nil(child))
-    {
-      child->removeParent(_this());
-      CORBA::release(child);
-    }
-}
-
-Graphic_ptr PolyGraphicOffset::Parent() { return Graphic::_duplicate(parent);}
-Graphic_ptr PolyGraphicOffset::Child() { return Graphic::_duplicate(child);}
-
-GraphicOffset_ptr PolyGraphicOffset::offset(long index)
-{
-  GraphicOffset_ptr g = GraphicOffset::_nil();
-  if (index >= 0 && index < static_cast<long>(parent->children.size())) 
-    g = GraphicOffset::_duplicate(parent->children[index]);
-  return g;
-}
-
-GraphicOffset_ptr PolyGraphicOffset::next() { return offset(index + 1);}
-GraphicOffset_ptr PolyGraphicOffset::previous() { return offset(index - 1);}
-
-void PolyGraphicOffset::allocations(Collector_ptr c)
-{
-  long start = c->size();
-  parent->allocations(c);
-  for (long i = start; i < c->size(); i++) {    
-    parent->allocateChild(index, *c->get(i));
-  }
-}
-
-void PolyGraphicOffset::insert(Graphic_ptr g)
-{
-  PolyGraphicOffset *p = parent->newOffset(index, g);
-  parent->children.insert(parent->children.begin() + index, p);
-  parent->needResize();
-}
-
-void PolyGraphicOffset::replace(Graphic_ptr g)
-{
-  if (index < static_cast<long>(parent->children.size()))
-    {
-      child->removeParent(_this());
-      CORBA::release(child);
-      child = Graphic::_duplicate(g);
-      child->addParent(_this());
-      needResize();
-    }
-}
-
-void PolyGraphicOffset::remove()
-{
-  PolyGraphicOffsetList &list = parent->children;
-  if (index < static_cast<long>(list.size()))
-    {
-      list.erase(list.begin() + index);
-      parent->updateOffsets(index, -1);
-//       parent->modified();
-      child->removeParent(_this());
-      CORBA::release(child);
-      child = Graphic::_nil();
-      CORBA::release(this);
-    }
-}
-
-void PolyGraphicOffset::needResize() { parent->needResize(index);}
-
-void PolyGraphicOffset::traverse(Traversal_ptr t) { Child()->traverse(t);}
-// void PolyGraphicOffset::visit_trail(Traversal_ptr t) { parent->visit_trail(index, t);}
-void PolyGraphicOffset::allocateChild(Graphic::AllocationInfo &a) { parent->allocateChild(index, a);}
+void PolyGraphic::allocateChild(long, Allocation::Info &) {}

@@ -36,19 +36,25 @@ class ViewportImpl : implements(Viewport), implements(Observer), public MonoGrap
   ViewportImpl(Graphic_ptr);
   ~ViewportImpl();
   void init();
+
   virtual Transform_ptr transformation();
   virtual void request(Requisition &);
+
   virtual void traverse(Traversal_ptr);
+
   virtual void needResize();
 
-  void childAllocate(AllocationInfo &);
   virtual BoundedRange_ptr adjustment(Axis);
+
+  virtual void update(Subject_ptr);
+
   void scrollTo(Axis, Coord);
   Coord lower(Axis);
   Coord length(Axis);
   Coord offset(Axis);
   Coord visible(Axis);
 protected:
+  void allocateChild(Allocation::Info &);
   void cacheRequisition();
   void checkAllocation(Region_ptr);
   RegionImpl *bodyAllocation(Region_ptr);

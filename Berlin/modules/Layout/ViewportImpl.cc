@@ -54,6 +54,7 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
   virtual void adjust(Coord);
   void scrollTo(Coord);
  protected:
+  typedef omni_mutex_lock Guard;
   Coord l, u, lv, uv;
   Coord s, p;
   omni_mutex myMutex;
@@ -61,180 +62,161 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
 
 Coord ViewportImpl::Adjustment::lower()
 {
+  Guard guard(myMutex);
   return l;
 }
 
 void ViewportImpl::Adjustment::lower(Coord ll)
 {
-  myMutex.lock();
-  if (ll == l) { myMutex.unlock(); return;}
+  Guard guard(myMutex);
+  if (ll == l) return;
   l = ll;
   if (lv < l) lv = l;
   if (uv < l) uv = l;
-  myMutex.unlock();
   notify();
 }
 
 Coord ViewportImpl::Adjustment::upper()
 {
+  Guard guard(myMutex);
   return u;
 }
 
 void ViewportImpl::Adjustment::upper(Coord uu)
 {
-  myMutex.lock();
-  if (uu == u) {myMutex.unlock(); return;}
+  Guard guard(myMutex);
+  if (uu == u) return;
   u = uu;
   if (lv > u) lv = u;
   if (uv > u) uv = u;
-  myMutex.unlock();
   notify();
 }
 
 Coord ViewportImpl::Adjustment::step()
 {
-  myMutex.lock();
-  Coord tmp = s;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return s;
 }
 
 void ViewportImpl::Adjustment::step(Coord ss)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   s = ss;
-  myMutex.unlock();
 }
 
 Coord ViewportImpl::Adjustment::page()
 {
-  myMutex.lock();
-  Coord tmp = p;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return p;
 }
 
 void ViewportImpl::Adjustment::page(Coord pp)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   p = pp;
-  myMutex.unlock();
 }
 
 void ViewportImpl::Adjustment::forward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = uv + s > u ? u - uv : s;
-  if (t <= 0.) { myMutex.unlock(); return;}
+  if (t <= 0.) return;
   lv += t;
   uv += t;
-  myMutex.unlock();
   notify();
 }
 
 void ViewportImpl::Adjustment::backward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = lv - s < l ? lv - l : s;
-  if (t <= 0.) { myMutex.unlock(); return;}
+  if (t <= 0.) return;
   lv -= t;
   uv -= t;
-  myMutex.unlock();
   notify();
 }
 
 void ViewportImpl::Adjustment::fastforward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = uv + p > u ? u - uv : p;
-  if (t <= 0.) { myMutex.unlock(); return;}
+  if (t <= 0.) return;
   lv += t;
   uv += t;
-  myMutex.unlock();
   notify();
 }
 
 void ViewportImpl::Adjustment::fastbackward()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = lv - p < l ? lv - l : p;
-  if (t <= 0.) { myMutex.unlock(); return;}
+  if (t <= 0.) return;
   lv -= t;
   uv -= t;
-  myMutex.unlock();
   notify();
 }
 
 void ViewportImpl::Adjustment::begin()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = lv - l;
-  if (t == 0.) { myMutex.unlock(); return;}
+  if (t == 0.) return;
   lv -= t;
   uv -= t;
-  myMutex.unlock();
   notify();
 }
 
 void ViewportImpl::Adjustment::end()
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t = u - uv;
-  if (t == 0.) { myMutex.unlock(); return;}
+  if (t == 0.) return;
   lv += t;
   uv += t;
-  myMutex.unlock();
   notify();
 }
 
 void ViewportImpl::Adjustment::lvalue(Coord vv)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
-  if (vv == lv) { myMutex.unlock(); return;}
+  if (vv == lv) return;
   lv = vv;
-  myMutex.unlock();
   notify();
 }
 
 Coord ViewportImpl::Adjustment::lvalue()
 {
-  myMutex.lock();
-  Coord tmp = lv;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return lv;
 }
 
 void ViewportImpl::Adjustment::uvalue(Coord vv)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
-  if (vv == uv) { myMutex.unlock(); return;}
+  if (vv == uv) return;
   uv = vv;
-  myMutex.unlock();
   notify();
 }
 
 Coord ViewportImpl::Adjustment::uvalue()
 {
-  myMutex.lock();
-  Coord tmp = uv;
-  myMutex.unlock();
-  return tmp;
+  Guard guard(myMutex);
+  return uv;
 }
 
 void ViewportImpl::Adjustment::adjust(Coord d)
 {
-  myMutex.lock();
+  Guard guard(myMutex);
   Coord t =
     uv + d > u ? u - uv :
     lv + d < l ? lv - l : d;
-  if (t == 0.) { myMutex.unlock(); return;}
+  if (t == 0.) return;
   lv += t;
   uv += t;
-  myMutex.unlock();
   notify();
 }
 
@@ -342,41 +324,29 @@ void ViewportImpl::needResize()
   MonoGraphic::needResize();
 }
 
-void ViewportImpl::childAllocate(AllocationInfo &info)
+void ViewportImpl::update(Subject_ptr subject)
 {
-//   if (CORBA::is_nil(info.transformation))
+}
+
+void ViewportImpl::allocateChild(Allocation::Info &info)
+{
+//   if (!CORBA::is_nil(info.clipping))
 //     {
-//       info.transformation = new TransformImpl;
-//     }
-//   if (CORBA::is_nil(info.allocation))
-//     {
-//       info.allocation = new RegionImpl;
-//     }
-//   if (CORBA::is_nil(info.clipping))
-//     {
-//       info.clipping = new RegionImpl;
-//       info.clipping->copy(info.allocation);
-//       if (!CORBA::is_nil(info.transformation))
-// 	{
-// 	  info.clipping->applyTransform(info.transformation);
-// 	}
-//     }
-//   else
-//     {
-//       RegionImpl r;  
-//       r.copy(info.allocation);
-//       if (!CORBA::is_nil(info.transformation))
-// 	r.apply_transform(info.transformation);
-//       info.clipping->merge_intersect(&r);
+//       RegionImpl *region = new RegionImpl(info.allocation, info.transformation);  
+//       region->_obj_is_ready(_boa());
+//       info.clipping->mergeIntersect(region->_this());
+//       region->_dispose();
 //     }
 
-//   scroll_transform(info.transformation);
-//   info.allocation->copy(Region_var(bodyAllocation(info.allocation)));
+  scrollTransform(info.transformation);
+  RegionImpl *region = bodyAllocation(info.allocation);
+  info.allocation->copy(region->_this());
+  region->_dispose();
 }
 
 BoundedRange_ptr ViewportImpl::adjustment(Axis a)
 {
-  return BoundedRange::_duplicate(a == xaxis ? xadjustment : yadjustment);
+  return a == xaxis ? xadjustment->_this() : yadjustment->_this();
 }
 
 void ViewportImpl::scrollTo(Axis a, Coord lower)
@@ -467,6 +437,7 @@ RegionImpl *ViewportImpl::bodyAllocation(Region_ptr a)
   if (!CORBA::is_nil(a))
     {
       RegionImpl *ca = new RegionImpl(a, 0);
+      ca->_obj_is_ready(_boa());
       Region::Allotment xa, ya;
       a->span(xaxis, xa);
       a->span(yaxis, ya);

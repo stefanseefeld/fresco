@@ -37,6 +37,7 @@ interface Telltale;
 interface TelltaleConstraint;
 interface BoundedValue;
 interface BoundedRange;
+interface TextBuffer;
 
 interface WidgetKit : Cloneable {
 
@@ -46,6 +47,7 @@ interface WidgetKit : Cloneable {
   Telltale constrainedTelltale(in TelltaleConstraint c);
   BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
   BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
+  TextBuffer text();
   
 //   Graphic button(in Reactor strategy, in Telltale subj);
 //   Graphic slider(in Reactor strategy, in BoundedValue subj);
