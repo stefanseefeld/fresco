@@ -32,7 +32,7 @@ ImageKitImpl::~ImageKitImpl() {}
 Raster_ptr ImageKitImpl::empty()
 {
 	Raster* r = new RasterImpl();
-	//r->_obj_is_ready(_boa());
+//	r->_obj_is_ready(_boa());
 	rasters.push_back(r);
 	return r->_duplicate(r);
 }

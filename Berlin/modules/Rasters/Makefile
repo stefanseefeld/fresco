@@ -23,7 +23,7 @@ SHELL	= /bin/sh
 
 top     = ../..
 cpath   = $(top)/config
-hpath   = $(top)/include/Berlin
+hpath   = $(top)/include/Image
 
 include $(cpath)/local.mk
 
@@ -32,9 +32,9 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin $(ORBLIBS)
 
-SRC	= ImageKitImpl.cc RasterImpl.cc
+SRC	= ImageKitImpl.cc RasterImpl.cc ImageImpl.cc
 
-TARGET	= $(lpath)/libImageKit.so
+TARGET	= $(lpath)/libImage.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Image
