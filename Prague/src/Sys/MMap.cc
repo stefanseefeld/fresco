@@ -21,7 +21,7 @@
  */
 
 #ifdef sun
-#define _POSIX_C_SOURCE 19960520L
+#define _XPG4_2
 #endif
 
 #include "Prague/Sys/MMap.hh"
