@@ -101,6 +101,9 @@ namespace
 // ---------------------------------------------------------------
 
 SDL::Console::Console(int &argc, char **argv) :
+#ifdef RMDEBUG
+  _backup(0),
+#endif
   _autoplay(false),
   _is_gl(false),
   _pointer_mgr(new PointerManagerT<nonGLPointer>)
@@ -311,6 +314,62 @@ Console::Extension * SDL::Console::create_extension(const std::string & id)
   if (id == "DirectBuffer")
     return new SDL::DirectBuffer();
   return 0;
+}
+
+
+
+void SDL::Console::highlight_screen(Warsaw::Coord lx, Warsaw::Coord ly,
+				    Warsaw::Coord ux, Warsaw::Coord uy,
+				    float red = 1.0,
+				    float green = 0.0,
+				    float blue = 0.0)
+{
+#ifdef RMDEBUG
+  // I try to stay 'below' the Drable whereever possible so that bugs in that
+  // code cannot influence the highlighting.
+
+  if (is_gl()) {
+    std::cerr << "Region Management Debugging does not work eith OpenGL on SDL."
+	      << std::endl;
+    return;
+  }
+
+   // compute the device space coordinates
+  SDL_Rect fill;
+  fill.x = static_cast<PixelCoord>(lx * _resolution[0]);
+  fill.y = static_cast<PixelCoord>(ly * _resolution[1]);
+  fill.w = static_cast<PixelCoord>(ux * _resolution[0] - fill.x);
+  fill.h = static_cast<PixelCoord>(uy * _resolution[1] - fill.y);
+
+  SDL::Drawable * d = static_cast<SDL::Drawable *>(drawable());
+  SDL_Surface * screen = d->surface();
+  SDL_PixelFormat * pf = screen->format;
+  
+  if (!_backup)
+    _backup = SDL_CreateRGBSurface(SDL_HWSURFACE,
+				   d->width(), d->height(), pf->BitsPerPixel,
+				   pf->Rmask, pf->Gmask, pf->Bmask, pf->Amask);
+  
+  // make a backup:
+  SDL_BlitSurface(screen, 0, _backup, 0);
+
+   // fill region:
+  SDL_FillRect(screen,
+	       &fill,
+	       SDL_MapRGB(pf,
+			  Uint8(0xFF * red),
+			  Uint8(0xFF * green),
+			  Uint8(0xFF * blue)));
+  SDL_UpdateRect(screen, fill.x, fill.y, fill.w, fill.h);
+
+  // wait a bit
+  timeval tv = {0, 100000};
+  select(0, 0, 0, 0, &tv);
+
+  // restore old content
+  SDL_BlitSurface(_backup, NULL, screen, NULL);
+  SDL_UpdateRect(screen, 0, 0, 0, 0);
+#endif  
 }
 
 

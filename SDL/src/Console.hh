@@ -104,7 +104,10 @@ public:
   virtual Warsaw::Input::Event *next_event();
   virtual void activate_autoplay();
   virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
-				Warsaw::Coord, Warsaw::Coord) {}
+				Warsaw::Coord, Warsaw::Coord,
+				float red = 1.0,
+				float green = 0.0,
+				float blue = 0.0);
   virtual void wakeup();
 
   void add_drawable(SDL::Drawable *);
@@ -137,6 +140,10 @@ private:
 
   int                 _wakeupPipe[2];
   long                _position[2];
+
+#ifdef RMDEBUG
+  SDL_Surface       * _backup;
+#endif
 };
 
 }; // namespace SDL

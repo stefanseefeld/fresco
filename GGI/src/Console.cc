@@ -19,6 +19,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+
 #include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Path.hh>
@@ -345,7 +346,10 @@ Input::Event *GGI::Console::synthesize(const ggi_event &e)
 }
 
 void GGI::Console::highlight_screen(Coord lx, Coord ly,
-				    Coord ux, Coord uy)
+				    Coord ux, Coord uy,
+				    float red = 1.0,
+				    float green = 0.0,
+				    float blue = 0.0)
 {
 #ifdef RMDEBUG
    // compute the device space coordinates
@@ -360,7 +364,7 @@ void GGI::Console::highlight_screen(Coord lx, Coord ly,
    // fill region with red
    ggi_pixel back;
    ggiGetGCForeground(_visual, &back);
-   ggi_color hi = {0xffff, 0, 0, 0xffff};
+   ggi_color hi = {0xffff * red, 0xffff * green, 0xffff * blue, 0xffff};
    ggiSetGCForeground(_visual, ggiMapColor(_visual, &hi));
    ggiDrawBox(_visual, x, y, w, h);
    ggiFlushRegion(_visual, x, y, w, h);
@@ -372,8 +376,10 @@ void GGI::Console::highlight_screen(Coord lx, Coord ly,
 
    // restore old content
    ggiCrossBlit(_backup, x, y, w, h, _visual, x, y);
+   ggiFlush(_visual);
 #endif  
 }
+
 
 Console::Extension *GGI::Console::create_extension(const std::string &id)
 {
