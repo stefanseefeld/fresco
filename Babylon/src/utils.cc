@@ -627,7 +627,7 @@ get_embedding_levels(const Babylon::Embedding_Levels & emb) {
 	i != emb.types.end();
 	++i)
 	for(size_t j = 0; j < i->length; ++j)
-	    result.push_back(i->embed_level);
+	    result += i->embed_level; // WORKAROUND. should be push_back(...)
     return result;
 }
 
