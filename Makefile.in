@@ -54,13 +54,13 @@ $(optional_dirs): %: %/Makefile
 depend:
 	$(MAKE) action="depend"
 
-doc:	config
+doc:
 	$(MAKE) action="doc"
 
 install:
 	$(MAKE) action="install"
 
-install-doc:	config
+install-doc:
 	$(MAKE) action="install-doc"
 
 uninstall:
