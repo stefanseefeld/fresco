@@ -178,6 +178,7 @@ int main(int argc, char **argv)
 	      else if (token == "traversal") Logger::set(Logger::traversal);
 	      else if (token == "widget") Logger::set(Logger::widget);
 	      else if (token == "text") Logger::set(Logger::text);
+	      else if (token == "desktop") Logger::set(Logger::desktop);
 	    }
 	}
       else Logger::setall();
