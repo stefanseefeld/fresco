@@ -89,7 +89,7 @@ public:
   //. should use the other constructor.
   Trace(const char *s) : _section(s), _obj_name(0)
   {
-    Tracer::add("enter", 0, _section);
+    _start = Tracer::add("enter", 0, _section);
     ++*Tracer::_indent;
   }
   
@@ -108,7 +108,7 @@ public:
   ~Trace() 
   {
     --*Tracer::_indent;
-    Tracer::add("leave", _obj_name, _section);
+    Tracer::add("leave", _obj_name, _section, _start);
   }
 private:
   //. The name of the section, or function

@@ -27,6 +27,7 @@
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/WidgetKit.hh>
+#include <Warsaw/TextKit.hh>
 #include <Warsaw/Desktop.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
@@ -43,7 +44,7 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new DesktopKitImpl(repo_id(), p);}
   virtual void bind(Warsaw::ServerContext_ptr);
   virtual Warsaw::Desktop_ptr desk();
-  virtual Warsaw::Window_ptr shell(Warsaw::Controller_ptr);
+  virtual Warsaw::Window_ptr shell(Warsaw::Controller_ptr, Warsaw::ClientContext_ptr);
   virtual Warsaw::Window_ptr transient(Warsaw::Controller_ptr);
   virtual Warsaw::Window_ptr pulldown(Warsaw::Controller_ptr);
 
@@ -57,6 +58,7 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   RefCount_var<Warsaw::LayoutKit> _layout;
   RefCount_var<Warsaw::ToolKit>   _tool;
   RefCount_var<Warsaw::WidgetKit> _widget;
+  RefCount_var<Warsaw::TextKit>   _text;
   Warsaw::Command_var             _exit;
 };
 

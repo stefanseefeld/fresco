@@ -39,7 +39,8 @@
 
 class Berlin_Server {
 public:
-    Berlin_Server(int argc, char** argv) {
+    Berlin_Server(int argc, char** argv, char const * appname) {
+
 	// CORBA initialization
 	orb = CORBA::ORB_init(argc, argv);
 	name = resolve_init<CosNaming::NamingContext>(orb, "NameService");
@@ -48,7 +49,7 @@ public:
 	poa_manager->activate();
 	
 	// Berlin initialization
-	client = new ClientContextImpl;
+	client = new ClientContextImpl(appname);
 	server = resolve_name<Warsaw::Server>(name, "IDL:Warsaw/Server:1.0");
 	server_context =
 	    server->create_server_context(Warsaw::ClientContext_var(client->_this()));

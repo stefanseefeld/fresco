@@ -41,13 +41,13 @@ int main(int argc, char **argv)
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
       
-      ClientContextImpl *client = new ClientContextImpl;
+      ClientContextImpl *client = new ClientContextImpl("Demo3D");
       
       Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
       ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
       
-      Application *application = new Application(server);
-      
+      Application *application = new Application(server, ClientContext_var(client->_this()));
+
       Demo *primitive = new PrimitiveDemo(application);
       application->run();
       delete primitive;

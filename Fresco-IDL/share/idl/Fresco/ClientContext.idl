@@ -38,7 +38,11 @@ module Warsaw
       //. The name of the user that started the client. This is the
       //. login name of the user, not his real name.
       readonly attribute Unistring user_name;
-      // FIXME: We need to provide more attributes like UID/GID, real name, ...
+
+      //. The application title; later this may be accessed in its own
+      //. interface, enabling multi-application ClientContexts and
+      //. applications to (reliably) span multiple ClientContexts.
+      readonly attribute Unistring application_title;
 
       //. The command called when the server wants the client to quit
       //. (for example in response to the user clicking on the close button

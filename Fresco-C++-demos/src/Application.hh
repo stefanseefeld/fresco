@@ -71,7 +71,7 @@ public:
     virtual void execute(const CORBA::Any &) = 0;
     virtual void destroy();
   };
-  Application(Warsaw::ServerContext_ptr);
+  Application(Warsaw::ServerContext_ptr, Warsaw::ClientContext_ptr);
   Warsaw::TextKit_ptr text() { return Warsaw::TextKit::_duplicate(_tk);}
   Warsaw::DesktopKit_ptr desktop() { return Warsaw::DesktopKit::_duplicate(_dk);}
   Warsaw::LayoutKit_ptr layout() { return Warsaw::LayoutKit::_duplicate(_lk);}
@@ -88,6 +88,7 @@ protected:
   Item make_item(const Babylon::String &);
 private:
   Warsaw::ServerContext_var _server;
+  Warsaw::ClientContext_var _client;
   Warsaw::TextKit_var       _tk;
   Warsaw::DesktopKit_var    _dk;
   Warsaw::LayoutKit_var     _lk;

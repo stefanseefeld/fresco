@@ -70,7 +70,7 @@ int main(int argc, char **argv)
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
-  ClientContextImpl *client = new ClientContextImpl;
+  ClientContextImpl *client = new ClientContextImpl("GGI Wrapper");
 
   Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
@@ -78,7 +78,8 @@ int main(int argc, char **argv)
   DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:Warsaw/DesktopKit:1.0");
   GGI::GGIKit_var ggi = resolve_kit<GGI::GGIKit>(server, "IDL:GGI/GGIKit:1.0");
   GGI::Visual_var visual = ggi->create_visual(width, height);
-  Window_var window = desktop->shell(visual);
+  Window_var window = desktop->shell(visual, ClientContext_var(client->_this()));
+
   /*
    * set up the client side visual part...
    */

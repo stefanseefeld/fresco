@@ -65,8 +65,9 @@ class ExitCommand : public Application::CommandImpl
   void execute(const CORBA::Any &) { exit(0); }
 };
 
-Application::Application(ServerContext_ptr sc)
+Application::Application(ServerContext_ptr sc, ClientContext_ptr cc)
   : _server(ServerContext::_duplicate(sc)),
+    _client(ClientContext::_duplicate(cc)),
     _tk(resolve_kit<TextKit>(_server, "IDL:Warsaw/TextKit:1.0")),
     _dk(resolve_kit<DesktopKit>(_server, "IDL:Warsaw/DesktopKit:1.0")),
     _lk(resolve_kit<LayoutKit>(_server, "IDL:Warsaw/LayoutKit:1.0")),
@@ -162,7 +163,7 @@ void Application::run()
   group->append_controller(_choice);
   group->append_controller(run);
   group->append_controller(quit);
-  Window_var window = _dk->shell(group);
+  Window_var window = _dk->shell(group, _client);
   while (true) Thread::delay(Prague::Time(1000));
 }
 

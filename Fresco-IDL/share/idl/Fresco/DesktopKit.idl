@@ -31,7 +31,8 @@ module Warsaw
   interface Window;
   interface Desktop;
   interface Command;
-  
+  interface ClientContext;
+
   //. A DesktopKit defines the interface between client and server.
   //. All DesktopKit generated Graphics are top level objects, they
   //. should be used to wrap client sub graphs into.
@@ -53,8 +54,9 @@ module Warsaw
       //. Get the decorations for a normal application Window.
       //. It will wrap the given Controller. A graphic is not sufficient,
       //. as the contents of a Window must be able to react to Events.
-      //. FIXME: We need to pass a text, icon, etc. too. -- tobias
-      Window  shell(in Controller g);
+      //. The ClientContext provides a way to obtain application
+      //. meta-data, including such things as titles, icons, etc.
+      Window  shell(in Controller g, in ClientContext n);
       //. Get the decorations for a transient Window.
       //. It will wrap the given Controller. A graphic is not sufficient,
       //. as the contents of a Window must be able to react to Events.

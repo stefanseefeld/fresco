@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 #include "Warsaw/ClientContextImpl.hh"
+#include "Warsaw/Unicode.hh"
 #include <iostream>
 #include <string>
 
@@ -42,16 +43,24 @@ namespace
   };
 };
 
-ClientContextImpl::ClientContextImpl()
-  : user(new Prague::User())
+ClientContextImpl::ClientContextImpl(const char *title)
+  : _title(title),
+    _user(new Prague::User())
 {};  
   
 Unistring *ClientContextImpl::user_name()
 {
-  std::string name = user->name();
+  std::string name = _user->name();
   Unistring *ustring = new Unistring;
   ustring->length(name.length());
   for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
+  return ustring;
+}
+
+Unistring *ClientContextImpl::application_title()
+{
+  Unistring *ustring = new Unistring;
+  *ustring = Unicode::to_CORBA(Babylon::String(_title));
   return ustring;
 }
 

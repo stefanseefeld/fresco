@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
-  ClientContextImpl *client = new ClientContextImpl;
+  ClientContextImpl *client = new ClientContextImpl("Canvas");
 
   Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
@@ -79,7 +79,9 @@ int main(int argc, char **argv)
   DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:Warsaw/DesktopKit:1.0");
   ToolKit_var tool = resolve_kit<ToolKit>(server, "IDL:Warsaw/ToolKit:1.0");
   Canvas_var canvas = tool->create_canvas(256, 256);
-  Window_var window = desktop->shell(Controller_var(tool->group(canvas)));
+
+  Window_var window = desktop->shell(Controller_var(tool->group(canvas)),
+				     ClientContext_var(client->_this()));
 
   /*
    * set up the client side visual part...

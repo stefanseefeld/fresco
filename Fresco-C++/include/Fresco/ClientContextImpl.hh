@@ -27,7 +27,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/ClientContext.hh>
 #include <Warsaw/Command.hh>
-
+#include <Babylon/Babylon.hh>
 
 //. This is a handle to a client application that the display server holds. It
 //. provides the display server with enough mechanisms to check to see if the
@@ -36,12 +36,15 @@
 class ClientContextImpl : public virtual POA_Warsaw::ClientContext
 {
 public:
-  ClientContextImpl();
+  ClientContextImpl(const char *);
+
   Warsaw::Unistring *user_name();
+  Warsaw::Unistring *application_title();
   Warsaw::Command_ptr exit();
   void ping() {}
 protected:
-  Prague::User *user;
+  Babylon::String _title;
+  Prague::User   *_user;
 };
 
 #endif

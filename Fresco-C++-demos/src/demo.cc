@@ -50,12 +50,12 @@ int main(int argc, char **argv)
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
 
-      ClientContextImpl *client = new ClientContextImpl;
+      ClientContextImpl *client = new ClientContextImpl("Demo application");
 
       Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
       ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
-      Application *application = new Application(server);
+      Application *application = new Application(server, ClientContext_var(client->_this()));
 
       Demo *layout    = new LayoutDemo(application);
       Demo *text      = new TextDemo(application);
@@ -83,5 +83,9 @@ int main(int argc, char **argv)
   catch (const CORBA::COMM_FAILURE &c)
     {
       std::cerr << "Could not connect to the display server (CORBA::COMM_FAILURE)." << std::endl;
+    }
+  catch (const std::exception &e)
+    {
+      std::cerr << "Exception: " << e.what() << std::endl;
     }
 }

@@ -52,6 +52,8 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
   _layout = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
   _tool   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
   _widget = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
+  _text   = resolve_kit<TextKit>(context, "IDL:Warsaw/TextKit:1.0", props);
+
   ClientContext_var client = context->client();
   _exit = client->exit();
 }
@@ -62,7 +64,7 @@ Desktop_ptr DesktopKitImpl::desk()
 }
 
 
-Window_ptr DesktopKitImpl::shell(Controller_ptr g)
+Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
 {
   Trace trace("DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
@@ -70,29 +72,37 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   Window_var wptr = window->_this();
   Graphic::Requisition req;
   req.x.defined = true;
-  req.x.minimum = 0.;
-  req.x.natural = 0.;
-  req.x.maximum = _layout->fill();
-  req.x.align = 0.;
-  req.y.defined = true;
-  req.y.minimum = 180.;
-  req.y.natural = 180.;
-  req.y.maximum = 180.;
-  req.y.align = 0;
-  //Trigger_var exit = _widget->button(RefCount_var<Warsaw::Graphic>(_layout->fixed_size(Warsaw::Graphic::_nil(), 200., 200.)), _exit);
-  Trigger_var exit = _widget->button(Warsaw::Graphic::_nil(), _exit);
-  RefCount_var<Graphic> tbexit = _layout->fixed_size(exit, 200, 200);
-  Command_var mover = move(wptr);
-  ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(ToolKit::outset);
-  RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
-  RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
-  Graphic_var top = _layout->hbox();
-  top->append_graphic(tbdragger);
-  top->append_graphic(tbexit);
   req.x.minimum = 200.;
   req.x.natural = 200.;
   req.x.maximum = 200.;
+
+  req.x.align = 0.;
+  req.y.defined = true;
+  req.y.minimum = 0.;
+  req.y.natural = 0.;
+  req.y.maximum = _layout->fill();
+  req.y.align = 0.;
+  RefCount_var<Graphic> exitgraphic = _layout->glue_requisition(req);
+  Trigger_var tbexit = _widget->button(exitgraphic, _exit);
+
+  Command_var mover = move(wptr);
+  ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(ToolKit::outset);
+
+  Unistring const * const title = n->application_title();
+  RefCount_var<Graphic> titletext = _text->chunk(*title);
+  delete title;
+
+  RefCount_var<Graphic> titlebox = _layout->hbox();
+  titlebox->append_graphic(RefCount_var<Graphic>(_tool->rgb(titletext, 0., 0., 0.)));
+  titlebox->append_graphic(RefCount_var<Graphic>(_layout->hfill()));
+  RefCount_var<Graphic> tbframe = _tool->frame(titlebox, 20., spec, true);
+
+  RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
+  Graphic_var top = _layout->hbox_align_elements(0);
+
+  top->append_graphic(tbdragger);
+  top->append_graphic(tbexit);
   req.y.minimum = 40.;
   req.y.natural = 40.;
   req.y.maximum = 40.;

@@ -145,7 +145,7 @@ int main(int argc, char ** argv) {
     // do the real work:
     try {
 	// Do CORBA-magic and connect to server:
-	Berlin_Server server(argc, argv);
+	Berlin_Server server(argc, argv, "Pinyin demo");
 
 	// Get Kits:
 
@@ -273,7 +273,8 @@ int main(int argc, char ** argv) {
 	spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
 	Warsaw::Graphic_var body = tlk->frame(vbox, 20., spec, true);
 	Warsaw::Window_var window =
-	    dk->shell(tlk->text_input(body, input_buf));
+	    dk->shell(tlk->text_input(body, input_buf), 
+		      Warsaw::ClientContext_var(server.get_client_context()->_this()));
 
 	// Don't quit but idle around a bit so the server has the chance
 	// to do its work:-)
