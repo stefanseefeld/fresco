@@ -48,7 +48,7 @@ public:
 
 };
 
-class GenericFactoryImpl : implementsscoped(CosLifeCycle, GenericFactory) {
+class GenericFactoryImpl : implementsscoped(CosLifeCycle,GenericFactory) {
   
 public:
   

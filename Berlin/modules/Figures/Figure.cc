@@ -22,6 +22,7 @@
 
 #include "Warsaw/config.hh"
 #include "Figure/Figure.hh"
+#include "Warsaw/DrawingKit.hh"
 #include <iostream>
 
 Figure::Figure(const  Style::Spec &sty) {

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <seefelds@magellan.umontreal.ca>
+ * Copyright (C) 1999 Stefan Seefelds <seefelds@magellan.umontreal.ca>
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -135,9 +135,6 @@ Stage_ptr LayoutKitImpl::createStage()
 
 Grid_ptr LayoutKitImpl::fixedGrid(const Grid::Index &upper)
 {
-//   GridImpl *grid = new GridImpl(upper);
-//   grid->_obj_is_ready(_boa());
-//   return grid->_this();
   return create<GridImpl, Grid_ptr>(new GridImpl(upper), _boa());
 }
 

@@ -37,7 +37,7 @@
 class unInitializedGenericFactoryException {};
 class FactoryFinderImpl;
 
-class FactoryFinderImpl : implementsscoped(CosLifeCycle, FactoryFinder) {
+class FactoryFinderImpl : implementsscoped(CosLifeCycle,FactoryFinder) {
   
 public:
 

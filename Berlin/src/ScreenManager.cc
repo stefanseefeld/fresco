@@ -88,8 +88,8 @@ void ScreenManager::repair()
 	}
     
     glFinish();
-    ggiSetGCForeground(visual,255);
-    GGIMesaSwapBuffers();
+//     ggiSetGCForeground(visual,255);
+//     GGIMesaSwapBuffers();
 }
 
 void ScreenManager::nextEvent()
