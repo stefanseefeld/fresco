@@ -27,6 +27,7 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
+#include "Berlin/Logger.hh"
 
 RegionImpl::RegionImpl()
 {
@@ -50,10 +51,9 @@ RegionImpl::RegionImpl(const RegionImpl &region)
 RegionImpl::RegionImpl(Region_ptr a, Transform_ptr t)
 {
   RegionImpl::copy(a);
-  if (!CORBA::is_nil(t))
-    if (!t->Identity())
-      RegionImpl::applyTransform(t);
-    else CORBA::release(t);
+  Transform_var transformation = t;
+  if (!CORBA::is_nil(transformation) && !transformation->Identity())
+    RegionImpl::applyTransform(Transform::_duplicate(transformation));
 }
 
 RegionImpl::~RegionImpl() {}
@@ -167,6 +167,7 @@ void RegionImpl::subtract(Region_ptr r)
 
 void RegionImpl::applyTransform(Transform_ptr t)
 {
+  SectionLog section(Logger::layout, "RegionImpl::applyTransform");
   Transform_var transform;
   if (valid)
     {

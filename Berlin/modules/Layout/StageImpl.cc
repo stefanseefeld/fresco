@@ -526,22 +526,36 @@ void StageImpl::needRedrawRegion(Region_ptr r)
   allocation->_obj_is_ready(_boa());
   allocateParents(allocation->_this());
   CORBA::Long size = allocation->size();
+  Logger::log(Logger::layout) << "go over " << size << " children" << endl;
   for (long i = 0; i < size; i++)
     {
       Allocation::Info_var info = allocation->get(i);
       if (!CORBA::is_nil(info->damaged))
 	{
-	  RegionImpl *r = new RegionImpl(Region::_duplicate(region), Transform::_duplicate(info->transformation));
-	  r->_obj_is_ready(_boa());
+	  SectionLog section(Logger::layout, "info->damaged");
+	  RegionImpl *tmp = new RegionImpl(Region::_duplicate(region), Transform::_duplicate(info->transformation));
+	  Logger::log(Logger::layout) << 1 << endl;
+	  tmp->_obj_is_ready(_boa());
+	  Logger::log(Logger::layout) << 2 << endl;
 	  Vertex origin;
+	  Logger::log(Logger::layout) << 3 << endl;
 	  info->allocation->origin(origin);
+	  Logger::log(Logger::layout) << 4 << endl;
 	  TransformImpl *tx = new TransformImpl;
+	  Logger::log(Logger::layout) << 5 << endl;
 	  tx->_obj_is_ready(_boa());
+	  Logger::log(Logger::layout) << 6 << endl;
 	  tx->translate(origin);
-	  r->applyTransform(tx->_this());
-	  if (r->valid) info->damaged->extend(r->_this());
+	  Logger::log(Logger::layout) << 7 << endl;
+	  tmp->applyTransform(tx->_this());
+	  Logger::log(Logger::layout) << 8 << endl;
+	  if (tmp->valid)
+	    {
+	      SectionLog section(Logger::layout, "info->damaged->extend");
+	      info->damaged->extend(tmp->_this());
+	    }
 	  tx->_dispose();
-	  r->_dispose();
+	  tmp->_dispose();
 	}
     }
   allocation->_dispose();

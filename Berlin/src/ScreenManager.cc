@@ -45,6 +45,7 @@ ScreenManager::~ScreenManager()
 
 void ScreenManager::damage(Region_ptr r)
 {
+  SectionLog section(Logger::layout, "ScreenManager::damage");
   MutexGuard guard(damageMutex);
   RegionImpl *region = new RegionImpl(r, Transform::_nil());
   region->_obj_is_ready(CORBA::BOA::getBOA());
