@@ -19,6 +19,24 @@ from omniORB import CORBA, PortableServer
 import Warsaw, Unidraw
 import Warsaw__POA
 
+true, false = 1, 0
+
+# Fake Babylon keys
+class Babylon:
+    KEY_CURSOR_UP = 0xE032
+    KEY_CURSOR_DOWN = 0xE033
+    KEY_CURSOR_LEFT = 0xE034
+    KEY_CURSOR_RIGHT = 0xE035
+    UC_HORIZONTAL_TABULATION = 0x0009
+
+def min(a,b):
+    if a < b: return a
+    return b
+
+def max(a,b):
+    if a > b: return a
+    return b
+
 # ---------------
 # -- Python base classes
 
@@ -35,12 +53,12 @@ class PyRefCountBase (Warsaw__POA.RefCountBase):
 	#print "PyRefCountBase.increment()"
 	self.__refcount = self.__refcount + 1
     def decrement(self):
-	print "PyRefCountBase.decrement()"
 	self.__refcount = self.__refcount - 1
 	if self.__refcount < 1:
 	    print "PyRefCountBase.decrement(): RefCount reached",self.__refcount
 
-class PyServantBase: # (PortableServer::RefCountServantBase):
+ # (PortableServer::RefCountServantBase):
+class PyServantBase:
     def deactivate(self):
 	# Something to do with poa here
 	pass
@@ -165,13 +183,13 @@ class PyRegion (Warsaw__POA.Region):
 	if math.fabs(lower - upper) < 1e-4: return 0
 	return (origin - lower) / (upper - lower)
     def merge_min(self, v0, v):
-	v0.x = math.min(v0.x, v.x)
-	v0.y = math.min(v0.y, v.y)
-	v0.z = math.min(v0.z, v.z)
+	v0.x = min(v0.x, v.x)
+	v0.y = min(v0.y, v.y)
+	v0.z = min(v0.z, v.z)
     def merge_max(self, v0, v):
-	v0.x = math.max(v0.x, v.x)
-	v0.y = math.max(v0.y, v.y)
-	v0.z = math.max(v0.z, v.z)
+	v0.x = max(v0.x, v.x)
+	v0.y = max(v0.y, v.y)
+	v0.z = max(v0.z, v.z)
 
 def dump_transform(transform):
     m = transform.store_matrix()
@@ -424,7 +442,7 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	self.__parents = []
 
     class Iterator (Warsaw__POA.GraphicIterator, PyServantBase):
-	def destroy(): self.deactivate()
+	def destroy(self): self.deactivate()
 
     # Attribute 'body'
     def _get_body(self): return None
@@ -582,12 +600,12 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	self._children = []
 	self.__transparent = transparent
 
-    class Iterator (Warsaw__POA.ControllerIterator, PyServantBase):
+    class Iterator (Warsaw__POA.ControllerIterator, PyGraphic.Iterator):
 	def __init__(self, con, tag):
 	    self.__parent = con
 	    self.__cursor = tag
 	def child(self): # --> Controller
-	    if self.__cursor > len(self.__parent._children): return None
+	    if self.__cursor >= len(self.__parent._children): return None
 	    if self.__cursor < 0: return None
 	    return self.__parent._children[self.__cursor] # duplicate?
 	def next(self): self.__cursor = self.__cursor + 1
@@ -675,13 +693,15 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	return self.__parent
     def first_child_controller(self): # --> Iterator
 	iter = PyController.Iterator(self, 0)
-	activate(iter)
+	#self.activate(iter)
 	return iter._this()
     def last_child_controller(self): # --> Iterator
-	iter = PyController.Iterator(this, len(self._children) - 1)
-	activate(iter)
+	iter = PyController.Iterator(self, len(self._children) - 1)
+	#self.activate(iter)
 	return iter._this()
     def grabbed(self, input_device): return self.__grabs & (1 << input_device)
+    def _test_focus(self, input_device):
+	return self.__focus & (1 << input_device)
     def set_focus(self, input_device):
 	self.__focus = self.__focus | (1 << input_device)
 	self.update_state()
@@ -689,11 +709,12 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	self.__focus = self.__focus & ~(1 << input_device)
 	self.update_state()
     def request_focus(self, controller, input_device): # --> boolean
-	return self.__parent and self.__parent.request_focus(controller, input_device)
+	if not self.__parent: return 0
+	return self.__parent.request_focus(controller, input_device)
     def receive_focus(self, focus): # --> boolean
 	self.set_focus(focus._get_device())
 	if (focus._get_device() == 0): self.set(Warsaw.Controller.active)
-	return 1
+	return true
     def lose_focus(self, input_device): # --> void
 	self.clear_focus(input_device)
 	if (input_device == 0): self.clear(Warsaw.Controller.active)
@@ -701,20 +722,22 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	# Ask children first
 	for child in self._children:
 	    if child.first_focus(input_device):
-		return 1
+		return true
 	# Request ourself
 	parent = self.parent_controller()
-	return parent and parent.request_focus(self._this(), input_device)
+	if not parent: return false
+	return parent.request_focus(self._this(), input_device)
     def last_focus(self, input_device): # --> boolean
 	# Ask children first
 	children = list(self._children)
 	children.reverse()
 	for child in children:
 	    if child.first_focus(input_device):
-		return 1
+		return true
 	# Request ourself
 	parent = self.parent_controller()
-	return parent and parent.request_focus(self._this(), input_device)
+	if not parent: return false
+	return parent.request_focus(self._this(), input_device)
     def next_focus(self, input_device): # --> boolean
 	parent = self.parent_controller()
 	if not parent: return false
@@ -740,7 +763,7 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	iter = parent.first_child_controller()
 	prev = iter.child()
 	while prev and not self.is_identical(prev):
-	    iter.prev()
+	    iter.next()
 	    prev = iter.child()
 	# If 'self' is not in the list then its an error!
 	if not prev: raise NameError, 'I wasnt in my parent\'s controllers!'
