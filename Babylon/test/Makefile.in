@@ -67,7 +67,8 @@ endif
 
 ifdef FRESCO_TEST_CONFIG
 run-tests: build-tests
-	@echo Running tests, please wait...
+	@echo Running tests...
+	@echo These tests take a *LONG* time to complete, please be patient.
 	LD_LIBRARY_PATH=`$(FRESCO_TEST_CONFIG) --lib-dir`:$(top_builddir)/lib:$(DESTDIR)$(libdir):$(LD_LIBRARY_PATH) `$(FRESCO_TEST_CONFIG) --test-runner` $(TARGETS) $(SCRIPT_TARGETS)
 else
 run-tests:

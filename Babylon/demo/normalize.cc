@@ -43,8 +43,15 @@ void output_char(std::ostream & out, Char a)
         out << std::setw(8) << a.value();
 }
 
-int dump_norms(const String & s)
+void dump_norms(const String & s)
 {
+    for (String::const_iterator i = s.begin(); i != s.end(); ++i)
+	if (! i->is_defined())
+	{
+            std::cout << "UNDEFINED CHARACTER" << std::endl;
+	    return;
+	}		
+
     for (String::const_iterator i = s.begin(); i != s.end(); ++i)
     {
 	if (i != s.begin()) std::cout << " ";

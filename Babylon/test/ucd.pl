@@ -8,7 +8,7 @@ my $ftp_path   = "ftp://ftp.unicode.org/Public/UNIDATA/";
 my @registered_tests = ("test_ucd", "test_blocks", "test_linebreak",
 			"test_eawidth", "test_compexclude",
 			"test_properties", "test_coreproperties",
-			"test_normalize");
+			"test_normalize", "test_unlisted_norms");
 
 $MAKE_TOP_BUILDDIR = "@MAKE_TOP_BUILDDIR@";
 $dump_ucd = "$MAKE_TOP_BUILDDIR/bin/dump_ucd $MAKE_TOP_BUILDDIR/modules";
@@ -18,6 +18,8 @@ $dump_ea = "$MAKE_TOP_BUILDDIR/bin/dump_ea $MAKE_TOP_BUILDDIR/modules";
 $dump_compexclude = "$MAKE_TOP_BUILDDIR/bin/dump_compexclude $MAKE_TOP_BUILDDIR/modules";
 $dump_props = "$MAKE_TOP_BUILDDIR/bin/dump_props $MAKE_TOP_BUILDDIR/modules";
 $normalize  = "$MAKE_TOP_BUILDDIR/bin/normalize interactive $MAKE_TOP_BUILDDIR/modules"; 
+
+$MAX_TEST = 0x110001;
 
 # --------------------
 
@@ -98,6 +100,7 @@ sub test_ucd
     
     while(<UCD>)
     {
+	next if /^$/;
 	# remove comments and names from UCD file, eval digit values:
 	my @parts = split ';', strip_WS($_), 15;
 	$parts[1] = "";
@@ -530,7 +533,8 @@ sub test_normalize
     
     unless (open UCD, $unicode_normalize)
     {
-	abort("Can't open $unicode_ea", "Error opening file $unicode_ea");
+	abort("Can't open $unicode_normalize",
+              "Error opening file $unicode_normalize");
 	return;
     }
     
@@ -610,9 +614,75 @@ sub test_normalize
     close UCD;
 
     pass() unless ($diff);
-    fail("dump_ea output differs from the file downloaded.",
+    fail("normalize output differs from the file downloaded.",
 	 "First difference:\n$diff\n    Total: $total, not OK: $nok\n") if ($diff);
 }
+
+sub test_unlisted_norms
+{
+    my $unicode_normalize = "NormalizationTest.txt";
+    
+    system ("if [ ! -f $unicode_normalize ] ; then wget $ftp_path$unicode_normalize ; fi");
+    
+    unless (open UCD, $unicode_normalize)
+    {
+	abort("Can't open $unicode_normalize",
+              "Error opening file $unicode_normalize");
+	return;
+    }
+    
+    my $pid;
+    unless ($pid = open2( \*Reader, \*Writer, "$normalize"))
+    {
+	abort("Can't open pipes to $normalize", "Error opening pipes.");
+	return;
+    }	
+
+    my $diff = "";
+    my $nok = 0;
+    my $total = 0;
+
+    my @listed_norms;
+    while(<UCD>)
+    {
+	my $orig = $_;
+	$orig =~ s/# \(.*\) (.*)\n$/# $1/;
+	
+	s/\s*#.*$//;
+	
+	# Only one letter in first position!
+	next unless (/^[A-F0-9]+;/);
+
+	my @c = split /;/, $_, 6;
+	$listed_norms{hex($c[0])} = 1;
+    }
+
+    for (my $i = 0; $i <= $MAX_TEST; $i++)
+    {
+	next if exists $listed_norms{$i};
+
+	printf Writer "n%X\n", $i;
+	my @res = split /;/, <Reader>, 6;
+	next if $res[0] eq "UNDEFINED CHARACTER\n";
+	if ($res[0] ne $res[1] || $res[0] ne $res[2] ||
+	    $res[0] ne $res[3] || $res[0] ne $res[4])
+	{
+	    $nok++;
+	    $diff .= "    Expected: $i: $i;$i;$i;$i;$i\n";
+	    $diff .= "    got     : $i: $res[0];$res[1];$res[2];$res[3];$res[4]\n";
+	}
+    }
+
+    close *Reader;
+    close *Writer;
+    close UCD;
+
+    pass() unless ($diff);
+    fail("normalize output differs from the file downloaded.",
+	 "First difference:\n$diff\n    not OK: $nok\n") if ($diff);
+}
+
+
 
 # --------------------
 
