@@ -83,19 +83,6 @@ module Warsaw
       void remove_forward(in long d);
       //. Clear the buffer. It will be empty afterwards.
       void clear();
-
-      //. The order in which the String in this TextBuffer is stored.
-      readonly attribute StringOrder order;
-
-      //. Get the accociated TextBuffer that contains the String stored
-      //. in here in memory order. This operation returns a reference to
-      //. this TextBuffer if it stores the string in memory order.
-      TextBuffer get_memory_buffer();
-      
-      //. Get the accociated TextBuffer that contains the String stored
-      //. in here in visual order. This operation returns a reference to
-      //. this TextBuffer if it stores the string in visual order.
-      TextBuffer get_visual_buffer(); 
     };
 };
 
