@@ -79,7 +79,6 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES(config/local.mk)
-AC_CONFIG_FILES([config/SDL.spec])
 AC_CONFIG_FILES([Makefile src/Makefile])
 
 mkdir -p lib/Fresco/Console
