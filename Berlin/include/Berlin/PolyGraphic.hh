@@ -44,7 +44,7 @@ public:
   virtual void need_resize();
   virtual void need_resize(Fresco::Tag);
 protected:
-  CORBA::Long num_children();
+  CORBA::ULong num_children();
   Fresco::Tag unique_child_id();
   glist_t::iterator child_id_to_iterator(Fresco::Tag);
   CORBA::Long child_id_to_index(Fresco::Tag);

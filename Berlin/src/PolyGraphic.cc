@@ -50,7 +50,10 @@ public:
     edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
     edge.localId = _parent->unique_child_id();
     edge.peerId = child->add_parent_graphic(Graphic_var(_parent->_this()), edge.localId);
-    _parent->_children.insert(_parent->_children.begin() + _cursor, edge);
+    if (_cursor >= _parent->_children.size())
+       _parent->_children.insert(_parent->_children.end(), edge);
+    else
+       _parent->_children.insert(_parent->_children.begin() + _cursor, edge);
     _parent->_mutex.unlock();
     _parent->need_resize();
   }
@@ -96,7 +99,7 @@ public:
   }
 private:
   PolyGraphic *_parent;
-  size_t       _cursor;
+  CORBA::ULong _cursor;
 };
 
 Pool<Fresco::Graphic::Requisition> PolyGraphic::_pool;
@@ -183,7 +186,8 @@ Fresco::GraphicIterator_ptr PolyGraphic::first_child_graphic()
 Fresco::GraphicIterator_ptr PolyGraphic::last_child_graphic()
 {
   Trace trace(this, "PolyGraphic::last_child_graphic");
-  Iterator *iterator = new Iterator(this, num_children()-1);
+  
+  Iterator *iterator = new Iterator(this, num_children() ? num_children() - 1 : 0);
   activate(iterator);
   return iterator->_this();
 }
@@ -191,7 +195,7 @@ Fresco::GraphicIterator_ptr PolyGraphic::last_child_graphic()
 void PolyGraphic::need_resize() { GraphicImpl::need_resize();}
 void PolyGraphic::need_resize(Tag) { GraphicImpl::need_resize();}
 
-CORBA::Long PolyGraphic::num_children()
+CORBA::ULong PolyGraphic::num_children()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _children.size();
