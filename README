@@ -54,11 +54,11 @@ __EOF__
 This will bring your Debian installation to Potato
 # apt-get dist-upgrade
 
-# apt-get install libc6 libgii0-dev gcc g++ omniorb omniorb-dev \
+# apt-get install libc6 libgii0 libgii0-dev gcc g++ omniorb omniorb-dev \
                   libggi2 libggi2-dev mesag3+ggi mesag3+ggi-dev \
                   glutg3+ggi glutg3+ggi-dev libggi-samples \
                   libggi-target-x libstdc++2.9-glibc2.1 libg++272-dev \
-                  freetype2 freetype2-dev
+                  freetype2 freetype2-dev autoconf
 
 # apt-get check
 # apt-get upgrade
