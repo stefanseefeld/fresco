@@ -1,7 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,49 +20,48 @@
  * MA 02139, USA.
  -P*/
 /* $Id$ */
-#ifndef _cbuf_h
-#define _cbuf_h
+#ifndef _cbuf_hh
+#define _cbuf_hh
 
-#include <streambuf.h>
+#include <streambuf>
 
 /* @Class {cbuf : public streambuf}
  *
  * @Description {suppress comments from input}
  */
-class cbuf: public streambuf
+class cbuf: public std::streambuf
 {
 public:
-  cbuf(streambuf *sb, char c = '#') :sbuf(sb), comment(c), newline(true) {}
+  cbuf(std::streambuf *sb, char c = '#') : my_sbuf(sb), my_comment(c), my_newline(true) {}
 protected:
-  int sync() { return sbuf->sync();}
+  int sync() { return my_sbuf->sync();}
   inline int uflow();
-  int sungetc() { return sbuf->sungetc();}
+  int sungetc() { return my_sbuf->sungetc();}
 private:
   cbuf(cbuf const &);
   void operator= (cbuf const &);
-  streambuf *sbuf;
-  const char comment;
-  bool newline;
+  std::streambuf *my_sbuf;
+  const char      my_comment;
+  bool            my_newline;
 };
 
 inline int cbuf::uflow()
 {
-  int c = sbuf->sbumpc();
-  if (c == '\n') newline = true;
-  else if (c == comment)
+  int c = my_sbuf->sbumpc();
+  if (c == '\n') my_newline = true;
+  else if (c == my_comment)
     {
       do // for all lines starting with <comment>
 	{
-	  do c = sbuf->sbumpc();
+	  do c = my_sbuf->sbumpc();
 	  while (c != EOF && c != '\n'); // for all letters of the line
-	  if (newline && c == '\n') c = sbuf->sbumpc();
+	  if (my_newline && c == '\n') c = my_sbuf->sbumpc();
 	}
-      while (c == comment);
-      if (c == '\n') newline = true;
+      while (c == my_comment);
+      if (c == '\n') my_newline = true;
     }
-  else newline = false;
-//   std::cerr << (char)c << std::endl;
+  else my_newline = false;
   return c;
 }
 
-#endif /* _cbuf_h */
+#endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * this code is based on binio from Dietmar Kuehl:
  *
@@ -24,19 +24,19 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _xdrbuf_h
-#define _xdrbuf_h
+#ifndef _xdrbuf_hh
+#define _xdrbuf_hh
 
-#include <streambuf.h>
+#include <streambuf>
 #include <rpc/rpc.h>
 #include <rpc/xdr.h>
 
 namespace Prague
 {
 
-extern void xdrbuf_create(XDR *xdrs, streambuf *sb, xdr_op op);
-extern void xdrbuf_reseat(XDR *xdrs, streambuf *sb);
+extern void xdrbuf_create(XDR *xdrs, std::streambuf *sb, xdr_op op);
+extern void xdrbuf_reseat(XDR *xdrs, std::streambuf *sb);
 
 };
 
-#endif /* xdrbuf_h */
+#endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * this file defines a C++ interface to zlib
  * written by Kevin Ruland <kevin@rodin.wustl.edu>
@@ -27,23 +27,23 @@
 
 using namespace Prague;
 
-bzbuf::bzbuf(streambuf *b, int mode)
-  : comp(new char_type [BUFSIZ]), back(b)
+bzbuf::bzbuf(std::streambuf *b, int mode)
+  : my_comp(new char_type [BUFSIZ]), my_back(b)
 {
-  char_type *buf = new char_type [BUFSIZ];
-  if (mode & ios::in)
+  char_type *buf = new char_type[BUFSIZ];
+  if (mode & std::ios::in)
     {
       setg (buf, buf + BUFSIZ, buf + BUFSIZ);
-      next_in = comp;
+      next_in = my_comp;
       avail_in = BUFSIZ;
-      pout = eback();
+      my_pout = eback();
     }
-  else if (mode & ios::out)
+  else if (mode & std::ios::out)
     {
       setp (buf, buf + BUFSIZ);
-      next_out = comp;
+      next_out = my_comp;
       avail_out = BUFSIZ;
-      pout = pbase();
+      my_pout = pbase();
     }
   bzalloc = 0;
   bzfree = 0;
@@ -52,10 +52,10 @@ bzbuf::bzbuf(streambuf *b, int mode)
   int verbosity = 4;
   int workFactor = 30;
   int small = 0;
-  if (mode &= ios::out)
-    int ret = bzCompressInit (this, blocksize, verbosity, workFactor);
+  if (mode &= std::ios::out)
+    int ret = BZ2_bzCompressInit(this, blocksize, verbosity, workFactor);
   else
-    int ret = bzDecompressInit (this, verbosity, small);
+    int ret = BZ2_bzDecompressInit(this, verbosity, small);
 }
 
 bzbuf::~bzbuf()
@@ -66,45 +66,45 @@ bzbuf::~bzbuf()
       bool done;
       do
 	{
-	  done = bzCompress(this, BZ_FINISH) == BZ_STREAM_END;
-	  if (avail_out) pout = next_out;
+	  done = BZ2_bzCompress(this, BZ_FINISH) == BZ_STREAM_END;
+	  if (avail_out) my_pout = next_out;
 	  else
 	    {
-	      pout = next_out = cbase();
+	      my_pout = next_out = cbase();
 	      avail_out = BUFSIZ;
 	    }
-	  streamsize l = next_out - cout();//comp + BUFSIZ - next_out;
-	  if (l) l = back->sputn(cout(), l), ::cout << "writing " << l << " bytes " << endl;
+	  std::streamsize l = next_out - cout();//comp + BUFSIZ - next_out;
+	  if (l) l = my_back->sputn(cout(), l);
 	  next_out -= l;
 	  avail_out += l;
 	}
       while (!done);
-      bzCompressEnd(this);
+      BZ2_bzCompressEnd(this);
       delete [] pbase();
     }
   else delete [] eback();
-  delete [] comp;
-  back->sync();
+  delete [] my_comp;
+  my_back->pubsync();
 }
 
 int bzbuf::sync()
 {
   if (pptr() && avail_in)
     {
-      bzCompress(this, BZ_RUN);
+      BZ2_bzCompress(this, BZ_RUN);
       if (cin() == epptr()) next_in = pbase();
       setp (cin(), epptr());
       
-      streamsize l = next_out - cout();
+      std::streamsize l = next_out - cout();
       /*
        * what if sputn returns less than l ???
        */
-      if (l) l = back->sputn(cout(), l), ::cout << "writing " << l << " bytes " << endl;
-      pout += l;
-      if (avail_out) pout = next_out;
+      if (l) l = my_back->sputn(cout(), l);
+      my_pout += l;
+      if (avail_out) my_pout = next_out;
       else
 	{
-	  pout = next_out = cbase();
+	  my_pout = next_out = cbase();
 	  avail_out = BUFSIZ;
 	}
     }
@@ -113,11 +113,11 @@ int bzbuf::sync()
 
 bzbuf::int_type bzbuf::overflow (int c)
 {
-  if (pbase () == 0) return EOF;
+  if (pbase() == 0) return EOF;
   if (c == EOF) return sync();
-  if (pptr () == epptr()) sync();
+  if (pptr() == epptr()) sync();
   *pptr() = (char_type) c;
-  pbump (1);
+  pbump(1);
   avail_in++;
   return c;
 }
@@ -134,11 +134,11 @@ bzbuf::int_type bzbuf::underflow ()
   if (!avail_in)
     {
       if (cin() == ecptr()) next_in = cbase();
-      streamsize l = back->sgetn(cin(), ecptr() - cin());
+      std::streamsize l = my_back->sgetn(cin(), ecptr() - cin());
       if (l == EOF) return EOF;
       avail_in += l;
     }
-  bzDecompress(this);  
+  BZ2_bzDecompress(this);  
   setg (cout(), cout(), next_out);
   return (unsigned char) *gptr();
 }
@@ -152,6 +152,6 @@ bzbuf::int_type bzbuf::uflow ()
   int_type ret = underflow ();
   if (ret == EOF) return EOF;
   gbump(1);
-  pout++;
+  my_pout++;
   return ret;
 }

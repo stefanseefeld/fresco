@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,7 @@
 #ifndef _bzbuf_hh
 #define _bzbuf_hh
 
-#include <streambuf.h>
+#include <streambuf>
 #include <cstdio>
 extern "C" 
 {
@@ -36,28 +36,28 @@ namespace Prague
  *
  * @Description {filter using bzip2 library}
  */
-class bzbuf : public streambuf, private bz_stream
+class bzbuf : public std::streambuf, private bz_stream
 {
 public:
-  typedef char          char_type;
-  typedef streampos     pos_type;
-  typedef streamoff     off_type;
-  typedef int           int_type;
-  bzbuf(streambuf *, int);
+  typedef char           char_type;
+  typedef std::streampos pos_type;
+  typedef std::streamoff off_type;
+  typedef int            int_type;
+  bzbuf(std::streambuf *, int);
   virtual ~bzbuf();
   virtual int sync();
 protected:
   virtual int_type underflow();
   virtual int_type uflow();
   virtual int_type overflow(int = EOF);
-  char_type  *cbase() const { return comp;}
-  char_type  *ecptr() const { return comp + BUFSIZ;}
+  char_type  *cbase() const { return my_comp;}
+  char_type  *ecptr() const { return my_comp + BUFSIZ;}
   char_type  *cin() const { return next_in + avail_in;}
-  char_type  *cout() const { return pout;}
+  char_type  *cout() const { return my_pout;}
 private:
-  char_type *comp;
-  char_type *pout;
-  streambuf *back;
+  char_type      *my_comp;
+  char_type      *my_pout;
+  std::streambuf *my_back;
 };
 
 };
