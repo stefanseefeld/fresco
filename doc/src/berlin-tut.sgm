@@ -249,14 +249,22 @@
 
 </para><sect2><title>input devices and event types</title>
 <para>
-	<!-- talk about input devices and event types --> 
+	<!-- talk about input devices and event types -->Events from a device
+	are categorized (at the moment) by very simple type tags. we hope in the
+	future modify this to work with an event attribute trading service, such
+	that an application can deal with events strictly in terms of the type
+	of information they convey, rather than the fixed device type which
+	created them.
+
 </para><sect3><title>device attributes</title>
 <para>
-	<!-- talk about device attributes -->
+
+	<!-- talk about device attributes -->TBC
+
 </para></sect3>
 <sect3><title>event types</title>
 <para>
-	<!-- talk about event types -->
+	<!-- talk about event types -->TBC
 </para></sect3>
 </sect2>
 <sect2><title>controllers, focus and picking</title>
@@ -326,45 +334,151 @@
 
 <sect2><title>why separate?</title>
 <para>
-	<!-- talk about why separate? -->
+	<!-- talk about why separate? -->Separating a program into Model, View
+	and Controller has a number of important advantages over attacking all
+	three concepts at once. First and foremost, it provides a natural set of
+	encapsulation boundaries, which helps reduce program interdependencies
+	and interactions, and thus reduce bugs and enhance program
+	comprehension. Secondly, the separation encourages many-to-many
+	relationships along the component boundaries, which (as it turns out) is
+	implicit in many program requirements from the onset. For instance,
+	having a model separated from the controller makes it very easy to adapt
+	your model to simultaneous manipulation by multiple parties, such as
+	remote users or script engines, or by manipulation through previously
+	unknown event types. Likewise having separate view components makes it
+	easy to produce multiple views of the same model (for simultaneous
+	interaction through different representations) and to adapt to novel
+	representations. In our case, the MVC separation is also an ideal set of
+	boundaries along which to make a switch between programming languages or
+	process address spaces (as allowed by CORBA). We make it a common
+	practise to store some or all of a data model in a client application,
+	and most of the controller and model components in the display server
+	where they have high-bandwidth access to display and input
+	hardware. 
 </para></sect2>
+
+
+
+
+
 <sect2><title>application space vs. representation space</title>
 <para>
-	<!-- talk about application space vs. representation space -->
+	<!-- talk about application space vs. representation space -->The
+	aforementionned separation between process address spaces is, in
+	general, referred to as the client/server separation. In many windowing
+	systems, the client stores the majority of data structures, and the
+	display server stores the minimum data required to represent its drawing
+	state. In berlin, we have much more flexibility over storage locations,
+	for two reasons: the client/server communication protocol is generated
+	automatically by the CORBA stub compiler, so it is very easy to add
+	semantically rich concepts to its "vocabulary"; and the display server
+	has no special operating-system level privilidges, so can be much more
+	promiscuous about the sort of dynamic extensions it loads. The resulting
+	flexibility means that we can load most of the representation code of a
+	user interface metaphor into the display server, and just "attach"
+	application models, running in separate processes, to the UI at
+	appropriate places. This separation between "representation space" and
+	"application space" gives us concrete advantages: applications written
+	in simple scripting languages have access to powerful UI components,
+	accessibility mechanisms and user preferences (like "themes") have a
+	more universal effect on applications, network traffic is greatly
+	reduced, multiple representations can be attached to the same
+	application relatively painlessly, and application writers do not need
+	to know as much about the device they are drawing to.
+
+
 </para></sect2>
 <sect2><title>models in application space</title>
 <para>
-	<!-- talk about models in application space -->
+	<!-- talk about models in application space -->Models support a common
+	interface, which we have named <classname>Subject</classname> in order
+	to be familliar to Java programmers. It includes operations for adding
+	and removing <classname>Observers</classname> (such as
+	<classname>Views</classname), as well as a common notification method
+	which a client (or the model itself) should call when observers should
+	be notified of a change to the model. In addition, most models subclass
+	the <classname>Subject</classname> interface a little, to provide
+	accessors for their concrete datatype.
+
 </para><sect3><title>concrete examples</title>
 <para>
-	<!-- talk about concrete examples -->
+	<!-- talk about concrete examples -->Here we give some examples of
+	Models which berlin has pre-made interfaces for observing and
+	modifying. They should help convey the idea of Model, if it's not yet
+	clear.
+
 </para><sect4><title>bounded values</title>
 <para>
-	<!-- talk about bounded values -->
+	<!-- talk about bounded values -->A <classname>BoundedValue</classname>
+	is a double precision floating point value with some built-in named
+	incriments. The incriments are important, because it allows
+	general-purpose controllers to be constructed which "step through" the
+	numeric range without needing to care exactly how large the range is or
+	what the incriments of stepping are. When the value is changed, the
+	<classname>BoundedValue</classname> inspects the change to make sure it
+	represents an actual numeric difference (this step is important to avoid
+	notification loops) and then notifies all observers.
+
 </para></sect4>
 <sect4><title>telltales</title>
 <para>
-	<!-- talk about telltales -->
+	<!-- talk about telltales --><classname>Telltales</classname> represent
+	sets of flags, each of which can be independently tested, set or
+	unset. The flags are named to correspond to common "switchable" states
+	that UI controls can assume, such as enabled, visible, active, chosen,
+	running, stepping, choosable, toggle. These names are chosen in order to
+	allow telltales to, amongst other things, be used to model the state of
+	a controller itself. 
 </para></sect4>
+
 <sect4><title>strings</title>
 <para>
-	<!-- talk about strings -->
+	<!-- talk about strings -->Strings, the most common example that we all
+	know and love, are slightly more complex in berlin since we use the
+	Unicode text encoding internally. Specifically, every time text is
+	changed in a modifiable string buffer, we must re-chunk the text into
+	indivisible units (not the same as characters), and then sequentially
+	process any unit which was changed by re-rendering it into glyphs. This
+	feature alone precludes making a 1:1 correspondence between the text
+	"model" and any view or control of it. 
+
 </para></sect4>
 </sect3>
 </sect2>
 <sect2><title>views in representation space</title>
 <para>
-	<!-- talk about views in representation space -->
+
+	<!-- talk about views in representation space -->As discussed
+	previously, views of models (a.k.a. "representation space") reside
+	primarily though not exclusively in the display server process. While it
+	is possible to attach remote "view" nodes to the scene graph, 2 reasons
+	prevent this from occuring in the common case: CORBA itself is somewhat
+	slow when making a large number of inter-process calls, and doing so
+	would also eliminate any user preferences which might effect the view's
+	concrete appearance. Since part of our goal is to allow users to
+	centrally enforce their preferences across all UI elements, the second
+	issue is considered quite serious. It is recommended that you let the
+	server construct views for you in as many cases as possible.
+
 </para><sect3><title>concete examples</title>
 <para>
-	<!-- talk about concete examples -->
-</para><sect4><title>radio boxes</title>
+	<!-- talk about concete examples -->Here we give some specific views of
+	abstract models. This will help set the concept of
+	<classname>View</classname>.</para>
+
+<sect4><title>radio boxes</title>
 <para>
-	<!-- talk about radio boxes -->
+	<!-- talk about radio boxes -->Radio boxes are a specific view of a set
+	of mutually excluside telltales. Selecting one will unselect any
+	other. They are usually presented with a set of labelled, bevelled discs
+	or rectangles, possibly with checkmarks drawn on top of them. 
+
 </para></sect4>
 <sect4><title>sliders</title>
 <para>
-	<!-- talk about sliders -->
+	<!-- talk about sliders -->Sliders are a specific view of a
+	<classname>BoundedValue</classname>. 
+
 </para></sect4>
 <sect4><title>text glyphs</title>
 <para>
