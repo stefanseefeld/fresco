@@ -88,6 +88,17 @@ static inline art_u32 artColor(Color &c) {
 	  ((art_u8)(c.alpha * 0xff)));
 }
 
+static inline ggi_pixel ggiColor(Color c1, ggi_visual_t vis) {
+  ggi_color c2;
+  // GGI _appears_ to use 16 bit color + alpha throughout. *sigh*
+  static double scale = 0xffff;
+  c2.r = static_cast<uint16>(c1.red * scale);
+  c2.g = static_cast<uint16>(c1.green * scale);
+  c2.b = static_cast<uint16>(c1.blue * scale);
+  c2.a = static_cast<uint16>(c1.alpha * scale);
+  return ggiMapColor(vis,&c2);
+}
+
 static inline void fix_order_of_irect(ArtIRect &ir) {
   if (ir.x0 > ir.x1) {int tmp = ir.x0; ir.x1 = ir.x0; ir.x0 = tmp;}
   if (ir.y0 > ir.y1) {int tmp = ir.y0; ir.y0 = ir.y1; ir.y1 = tmp;}
@@ -136,6 +147,7 @@ void LibArtDrawingKit::setForeground(const Color &c)
 {
   fg = c;
   art_fg = artColor(fg);
+  ggi_fg = ggiColor(fg,memvis);
 }
 
 void LibArtDrawingKit::setLighting(const Color &c)
@@ -236,9 +248,7 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
       affine[0] == 1 &&
       affine[1] == 0 &&
       affine[2] == 0 &&
-      affine[3] == 1 &&
-      fs == solid
-      ) {
+      affine[3] == 1) {
 
     ArtIRect rect;
     rect.x0 = (int)((bot.x + affine[4]) * xres);
@@ -246,35 +256,21 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
     rect.y0 = (int)((bot.y + affine[5]) * yres);
     rect.y1 = (int)((top.y + affine[5]) * yres);
     art_irect_intersect(&rect,&rect,&clip);
-    int pix = ((pb->n_channels * pb->bits_per_sample + 7) >> 3);
     int width = (rect.x1 - rect.x0);
     int height = (rect.y1 - rect.y0);
     if ((height * width) < 1) return;
-    int skip = pb->rowstride - (width * pix);
-    unsigned char *buf_end = pb->pixels + ((pb->height - 1) * pb->rowstride + pb->width * pix);
-    unsigned char *writer = pb->pixels;
-    writer += (rect.x0 * pix) + (rect.y0 * pb->rowstride);
-    art_u8 r = (art_u8)((art_fg & 0xff000000) >> 24);
-    art_u8 g = (art_u8)((art_fg & 0x00ff0000) >> 16);
-    art_u8 b = (art_u8)((art_fg & 0x0000ff00) >> 8);
-    
-    // write first row
-    unsigned char *first = writer;
-    unsigned char *line_end = writer + (width * pix);
-    if (line_end > buf_end) line_end = buf_end;
-    while (writer < line_end) {
-      *writer++ = r; *writer++ = g; *writer++ = b;
+    ggiSetGCForeground(memvis, ggi_fg);
+    if ( fs == solid ) {
+      ggiDrawBox(memvis, rect.x0, rect.y0, width, height);
+    } else {
+      ggiDrawHLine(memvis, rect.x0, rect.y0, width);
+      ggiDrawHLine(memvis, rect.x0, rect.y1, width);
+      ggiDrawVLine(memvis, rect.x0, rect.y0, height);
+      ggiDrawVLine(memvis, rect.x1, rect.y0, height);
     }
-    writer += skip;
-    // memcpy the remaining rows
-    for (int i = 1; i < (height) && 
-	   // in case of rounding errors
-	   (writer + (width*pix)) < buf_end; 
-	 ++i, writer += pb->rowstride) 
-      memcpy(writer,first,(width*pix));      
     art_irect_union (&bbox,&bbox,&rect);
     return;
-
+    
     // non-degenerate rectangles
   } else {
     Path path;

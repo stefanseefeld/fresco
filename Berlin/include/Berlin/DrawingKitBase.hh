@@ -162,10 +162,10 @@ inline void DrawingKitBase::restoreState()
   if(prev.flags & (1 << st_texture))            setTexture(prev.saved_texture);
   if(prev.flags & (1 << st_font_size))          setFontSize(prev.saved_font_size);
   if(prev.flags & (1 << st_font_weight))        setFontWeight(prev.saved_font_weight);
-  if(prev.flags & (1 << st_font_family))        setFontFamily(prev.saved_font_family);
-  if(prev.flags & (1 << st_font_subfamily))     setFontSubFamily(prev.saved_font_subfamily);
-  if(prev.flags & (1 << st_font_fullname))      setFontFullName(prev.saved_font_fullname);
-  if(prev.flags & (1 << st_font_style))         setFontStyle(prev.saved_font_style);
+  if(prev.flags & (1 << st_font_family))        setFontFamily((Unistring &)prev.saved_font_family);
+  if(prev.flags & (1 << st_font_subfamily))     setFontSubFamily((Unistring &)prev.saved_font_subfamily);
+  if(prev.flags & (1 << st_font_fullname))      setFontFullName((Unistring &)prev.saved_font_fullname);
+  if(prev.flags & (1 << st_font_style))         setFontStyle((Unistring &)prev.saved_font_style);
     //    if(prev.flags[st_font_attr]) {
     //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
     // 	     setFontAttr(prev.saved_font_attr[i]);

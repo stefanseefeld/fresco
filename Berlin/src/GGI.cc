@@ -147,10 +147,21 @@ bool GGI::Drawable::nextEvent(ggi_event &event)
       int m = ggiEventsQueued(vis, mask);
       int n = ggiEventsQueued(vis, move_mask);
       if (m == n) { // nothing but a bunch of moves queued up
+	int x=event.pmove.x, y=event.pmove.y;
 	for (int i = 0; i < n; ++i) {
 	  // consume them all
 	  ggiEventRead(vis, &event, move_mask); 	  
+	  if (event.any.type == evPtrAbsolute) {
+	    x = event.pmove.x;
+	    y = event.pmove.y;
+	  } else {
+	    x += event.pmove.x;
+	    y += event.pmove.y;
+	  }
 	}
+	event.any.type = evPtrAbsolute;
+	event.pmove.x = x;
+	event.pmove.y = y;
       }
     }
     if (autoplay) writeEvent(event);

@@ -134,6 +134,7 @@ public:
   art_u8 alphabank[256][256];
   ArtAlphaGamma *agam;
   art_u32        art_fg;
+  ggi_pixel ggi_fg;
   ArtIRect screen, clip;
   ArtVpath vpath[max_vpath_sz];
   
