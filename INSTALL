@@ -124,7 +124,9 @@ http://www2.berlin-consortium.org/wiki/html/Berlin/FAQ.htm
 
 please be sure that third party libraries are correctly installed before
 you post about a bug. For example, the by far most frequent problem encountered
-is reported by people who forgot to start the name server...
+is reported by people who forgot to start the name server or have it
+misconfigured. A good way to test the nameserver is 'nameclt list'. That
+should not give you a timeout nor any error message.
 
 Good luck,
 		Stefan <stefan@berlin-consortium.org>
