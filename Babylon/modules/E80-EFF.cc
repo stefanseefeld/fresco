@@ -1,11 +1,11 @@
-/*$Id: E80-EFF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp E80-EFF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:01:44 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:03:56 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -262,7 +262,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(LaoE80::m_bidir[uc - m_first_letter]);
+      return LaoE80::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -377,7 +377,7 @@ namespace Babylon {
     static const std::bitset<128> m_is_defined;
     static const unsigned char _cat[128];
     static const unsigned char _comb_cl[128];
-    static const unsigned char m_bidir[128];
+    static const Babylon::Bidir_Props m_bidir[128];
     static const unsigned char _decomp[128];
     static const UCS2 m_decompStr[128][2];
     static const unsigned char m_lb[128];
@@ -425,7 +425,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char LaoE80::m_bidir[] = {
+  const Babylon::Bidir_Props LaoE80::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 

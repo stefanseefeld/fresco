@@ -1,11 +1,11 @@
-/*$Id: 2B0-2FF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 2B0-2FF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:00:35 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:03:23 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -115,7 +115,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Spacing_Modifier_Letters2B0::m_bidir[uc - m_first_letter]);
+      return Spacing_Modifier_Letters2B0::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -229,7 +229,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<80> m_is_defined;
     static const unsigned char _cat[80];
-    static const unsigned char m_bidir[80];
+    static const Babylon::Bidir_Props m_bidir[80];
     static const unsigned char _decomp[80];
     static const UCS2 m_decompStr[80][2];
     static const unsigned char m_lb[80];
@@ -254,7 +254,7 @@ namespace Babylon {
     CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm
   };
 
-  const unsigned char Spacing_Modifier_Letters2B0::m_bidir[] = {
+  const Babylon::Bidir_Props Spacing_Modifier_Letters2B0::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 

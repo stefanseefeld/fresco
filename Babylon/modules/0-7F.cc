@@ -1,11 +1,11 @@
-/*$Id: 0-7F.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 0-7F.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:00:16 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:03:15 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -640,7 +640,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Basic_Latin0::m_bidir[uc - m_first_letter]);
+      return Basic_Latin0::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -750,7 +750,7 @@ namespace Babylon {
     static const UCS4 m_lower[128];
     static const UCS4 m_title[128];
     static const unsigned char _cat[128];
-    static const unsigned char m_bidir[128];
+    static const Babylon::Bidir_Props m_bidir[128];
     static const std::bitset<128> m_mirror;
     static const unsigned char m_lb[128];
     static const unsigned char m_ea[128];
@@ -836,7 +836,7 @@ namespace Babylon {
     CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ps, CAT_Sm, CAT_Pe, CAT_Sm, CAT_Cc
   };
 
-  const unsigned char Basic_Latin0::m_bidir[] = {
+  const Babylon::Bidir_Props Basic_Latin0::m_bidir[] = {
     BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, 
     BIDIR_BN, BIDIR_S, BIDIR_B, BIDIR_S, BIDIR_WS, BIDIR_B, BIDIR_BN, BIDIR_BN, 
     BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, 

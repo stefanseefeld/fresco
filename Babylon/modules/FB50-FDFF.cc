@@ -1,11 +1,11 @@
-/*$Id: FB50-FDFF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp FB50-FDFF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:25:39 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:12:06 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -115,7 +115,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Arabic_Presentation_FormsAFB50::m_bidir[uc - m_first_letter]);
+      return Arabic_Presentation_FormsAFB50::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -954,7 +954,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<688> m_is_defined;
     static const unsigned char _cat[688];
-    static const unsigned char m_bidir[688];
+    static const Babylon::Bidir_Props m_bidir[688];
     static const unsigned char _decomp[688];
     static const UCS4 m_decompStr[688][2];
     static const unsigned char m_lb[688];
@@ -1052,7 +1052,7 @@ namespace Babylon {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo
   };
 
-  const unsigned char Arabic_Presentation_FormsAFB50::m_bidir[] = {
+  const Babylon::Bidir_Props Arabic_Presentation_FormsAFB50::m_bidir[] = {
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 

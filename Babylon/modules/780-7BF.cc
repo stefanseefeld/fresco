@@ -1,11 +1,11 @@
-/*$Id: 780-7BF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 780-7BF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:01:05 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:03:37 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -115,7 +115,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Thaana780::m_bidir[uc - m_first_letter]);
+      return Thaana780::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -223,7 +223,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<64> m_is_defined;
     static const unsigned char _cat[64];
-    static const unsigned char m_bidir[64];
+    static const Babylon::Bidir_Props m_bidir[64];
     static const unsigned char m_lb[64];
     static const std::bitset<64> m_Other_Alphabetic;
     static const std::bitset<64> m_Diacritic;
@@ -242,7 +242,7 @@ namespace Babylon {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo
   };
 
-  const unsigned char Thaana780::m_bidir[] = {
+  const Babylon::Bidir_Props Thaana780::m_bidir[] = {
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 
     BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, BIDIR_AL, 

@@ -33,6 +33,7 @@
 #include <Babylon/Char.hh>
 
 namespace Babylon {
+    typedef std::basic_string<size_t> Char_Mapping;
 
     // g++ does not yet support char_traits :-(
     class String : public std::basic_string<Babylon::Char> {

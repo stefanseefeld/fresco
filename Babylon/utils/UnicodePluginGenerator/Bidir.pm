@@ -92,11 +92,11 @@ sub function {
   $tmp   .= "        return BIDIR_INVALID;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon::Bidir_Props($bl_name\:\:m_bidir\[uc - m_first_letter\]);\n";
+    $tmp .= "      return $bl_name\:\:m_bidir\[uc - m_first_letter\];\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
-    $tmp .= sprintf "      return Babylon::Bidir_Props(%s);\n    }\n\n",
+    $tmp .= sprintf "      return %s;\n    }\n\n",
                     $self->{_ELEM};
     return $tmp;
   }
@@ -128,7 +128,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const unsigned char m_bidir\[$bl_length\];\n";
+    return "    static const Babylon::Bidir_Props m_bidir\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -161,7 +161,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const unsigned char $bl_name\:\:m_bidir\[\] = {";
+    my $tmp = "  const Babylon::Bidir_Props $bl_name\:\:m_bidir\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";

@@ -41,53 +41,68 @@ class vis_iterator : public iterator_traits<Babylon::String::iterator> {
 public:
     vis_iterator(const Babylon::String::iterator,
 		 const Babylon::String::iterator);
-    vis_iterator(Babylon::String);
-
-    friend bool operator == (const vis_iterator & a,
-			 const vis_iterator & b) {
-	return a.m_current == b.m_current;
+    
+    friend bool operator == (const Babylon::vis_iterator & a,
+			     const Babylon::vis_iterator & b) {
+	return (a.m_current == b.m_current);
     }
 
-    friend bool operator == (const vis_iterator & a,
-			 const Babylon::String::iterator & b) {
-	return a.m_current == b;
+    friend bool operator == (const Babylon::vis_iterator & a,
+			     const Babylon::String::iterator & b) {
+	return (a.m_current == b);
     }
 
     friend bool operator == (const Babylon::String::iterator & b,
-			 const vis_iterator & a) {
-	return a.m_current == b;
+			     const Babylon::vis_iterator & a) {
+	return (a.m_current == b);
     }
 
     friend bool operator != (const vis_iterator & a,
-			 const vis_iterator & b) {
-	return a.m_current != b.m_current;
+			     const vis_iterator & b) {
+	return (a.m_current != b.m_current);
     }
 
     friend bool operator != (const vis_iterator & a,
-			 const Babylon::String::iterator & b) {
-	return a.m_current != b;
+			     const Babylon::String::iterator & b) {
+	return (a.m_current != b);
     }
 
     friend bool operator != (const Babylon::String::iterator & b,
-			 const vis_iterator & a) {
-	return a.m_current != b;
+			     const vis_iterator & a) {
+	return (a.m_current != b);
+    }
+
+    inline Babylon::vis_iterator::reference_type
+    Babylon::vis_iterator::operator * () const {
+	return (*m_current);
+    }
+    
+    inline Babylon::vis_iterator::reference_type *
+    Babylon::vis_iterator::operator -> () const {
+	return (m_current);
+    }
+
+    inline Babylon::vis_iterator::reference_type
+    Babylon::vis_iterator::operator [] (Babylon::vis_iterator::Dist d) const {
+	return *(m_start + m_vis_current[d]);
+    }
+
+    inline Babylon::String::iterator convert() {
+	return m_current;
     }
 
     vis_iterator & operator = (const Babylon::String::iterator &);
-    reference_type operator * () const;
-    reference_type operator -> () const;
     vis_iterator operator + (Dist d);
-    reference_type operator [] (Dist d) const;
     vis_iterator& operator++ ();
     vis_iterator operator++ (int);
     vis_iterator& operator-- ();
     vis_iterator operator-- (int);
 private:
-    std::basic_string<size_t> m_vis2log_str;
+    Babylon::Char_Mapping m_vis2log;
     Babylon::String::iterator m_current;
     Babylon::String::iterator m_start;
     Babylon::String::iterator m_end;
-    std::basic_string<size_t>::iterator m_vis_current;
+    Babylon::Char_Mapping::iterator m_vis_current;
 };
 
 }; // namespace Babylon

@@ -1,11 +1,11 @@
-/*$Id: 30A0-30FF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 30A0-30FF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:04:03 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:05:04 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -147,7 +147,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Katakana30A0::m_bidir[uc - m_first_letter]);
+      return Katakana30A0::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -261,7 +261,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<96> m_is_defined;
     static const unsigned char _cat[96];
-    static const unsigned char m_bidir[96];
+    static const Babylon::Bidir_Props m_bidir[96];
     static const UCS4 m_decompStr[96][2];
     static const unsigned char m_lb[96];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
@@ -285,7 +285,7 @@ namespace Babylon {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Pc, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lo
   };
 
-  const unsigned char Katakana30A0::m_bidir[] = {
+  const Babylon::Bidir_Props Katakana30A0::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 

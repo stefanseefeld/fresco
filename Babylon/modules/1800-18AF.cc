@@ -1,11 +1,11 @@
-/*$Id: 1800-18AF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 1800-18AF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:02:35 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:04:22 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -262,7 +262,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Mongolian1800::m_bidir[uc - m_first_letter]);
+      return Mongolian1800::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -371,7 +371,7 @@ namespace Babylon {
     static const std::bitset<176> m_is_defined;
     static const unsigned char _cat[176];
     static const unsigned char _comb_cl[176];
-    static const unsigned char m_bidir[176];
+    static const Babylon::Bidir_Props m_bidir[176];
     static const unsigned char m_lb[176];
     static const std::bitset<176> m_Terminal_Punctuation;
   }; // class Mongolian1800
@@ -428,7 +428,7 @@ namespace Babylon {
     0, 228, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char Mongolian1800::m_bidir[] = {
+  const Babylon::Bidir_Props Mongolian1800::m_bidir[] = {
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_ON, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 

@@ -27,11 +27,6 @@
 
 namespace Babylon {
 
-bool Babylon::is_graphem_boundary(Babylon::Char a, Babylon::Char b) {
-    // FIXME!
-    return 0;
-} // isGraphemBoundary(...)  
-
 // The following code is a copy of fribidi 0.9.0 published under LGPL
 // by Behdad Esfahbod and Dov Grobgeld.
 //
@@ -46,7 +41,7 @@ run_length_encode_types(std::vector<Babylon::Bidir_Props> char_type) {
     current.length = 1;
     current.bidir_type = char_type[0];
 
-    for(size_t i = 1; i < char_type.size(); i++) {
+    for(size_t i = 1; i < char_type.size(); ++i) {
 	if(char_type[i] == current.bidir_type)
 	    current.length++;
 	else {
@@ -70,8 +65,7 @@ inline bool bidir_is_neutral(const Babylon::Bidir_Props & p) {
 }
 
 inline bool bidir_is_explicit_or_bn(const Babylon::Bidir_Props & p) {
-    return (p & (BIDIR_MASK_EXPLICIT | BIDIR_MASK_SEPARATOR |
-		 BIDIR_MASK_BN | BIDIR_MASK_WS));
+    return (p & (BIDIR_MASK_EXPLICIT | BIDIR_MASK_BN));
 }
 
 inline bool bidir_is_letter(const Babylon::Bidir_Props & p) {
@@ -92,6 +86,10 @@ inline bool bidir_is_ES_or_CS(const Babylon::Bidir_Props & p) {
 
 inline bool bidir_is_separator(const Babylon::Bidir_Props & p) {
     return (p & Babylon::BIDIR_MASK_SEPARATOR);
+}
+
+inline Babylon::Bidir_Props bidir_change_number_to_RTL(const Babylon::Bidir_Props &p) {
+    return (bidir_is_number(p) ? Babylon::BIDIR_R : p);
 }
 
 inline bool
@@ -116,7 +114,7 @@ inline unsigned char bidir_to_level(const Babylon::Bidir_Props&  p) {
 }
 
 inline Babylon::Bidir_Props level_to_bidir(const unsigned char lev) {
-    return Babylon::Bidir_Props(Babylon::BIDIR_L | (lev & 1));
+    return (Babylon::Bidir_Props(Babylon::BIDIR_L | (lev & 1)));
 }
 
 inline Babylon::Bidir_Props
@@ -126,7 +124,7 @@ bidir_explicit_to_override_dir(const Babylon::Bidir_Props & p) {
 	    BIDIR_ON);
 }
 
-inline bool compact (const Babylon::Type & a, const Babylon::Type &b) {
+inline bool compact (const Babylon::Type & a, const Babylon::Type & b) {
     return (a.bidir_type == b.bidir_type && a.embed_level == b.embed_level);
 }
 
@@ -145,7 +143,7 @@ inline Babylon::Bidir_Props change_number_to_rtl(Babylon::Bidir_Props p) {
 std::vector<Babylon::Type>::iterator
 compact(const std::vector<Babylon::Type>::iterator & start,
 	const std::vector<Babylon::Type>::iterator & end) {
-    if (start == end) return end;
+    if (start == end) return(end);
 
     std::vector<Babylon::Type>::iterator last_used = start;
     std::vector<Babylon::Type>::iterator current = start;
@@ -162,13 +160,13 @@ compact(const std::vector<Babylon::Type>::iterator & start,
 	++current;
     }
 
-    return ++last_used;
+    return (++last_used);
 }
 
 std::vector<Babylon::Type>::iterator
 compact_neutrals(const std::vector<Babylon::Type>::iterator & start,
 		 const std::vector<Babylon::Type>::iterator & end) {
-    if (start == end) return end;
+    if (start == end) return (end);
 
     std::vector<Babylon::Type>::iterator last_used = start;
     std::vector<Babylon::Type>::iterator current = start;
@@ -187,63 +185,66 @@ compact_neutrals(const std::vector<Babylon::Type>::iterator & start,
 	++current;
     }
 
-    return ++last_used;
+    return(++last_used);
 }
 
-vector<Babylon::Type> override(vector<Babylon::Type> & base,
+vector<Babylon::Type> override_lists(const vector<Babylon::Type> & base,
 			       const vector<Babylon::Type> & over) {
-    
-    if (base.empty()) return over;
+    if (base.empty()) return (over);
 
-    if (over.empty()) return base;
+    if (over.empty()) return (base);
 
     vector<Babylon::Type>::const_iterator over_it = over.begin();
-    vector<Babylon::Type>::iterator base_it = base.begin();
+    vector<Babylon::Type>::const_iterator base_it = base.begin();
 
     vector<Babylon::Type> result;
 
+    Babylon::Type current = *base_it;
     while(!(over_it == over.end() && base_it == base.end())) {
 	if (over_it == over.end()) {
 	    // copy base
 	    std::copy(base_it, base.end(),
 		      std::back_inserter(result));
 	    base_it = base.end();
-	} else if (base_it == base.end()) {
+	    continue;
+	}
+
+	if (base_it == base.end()) {
 	    // copy over
 	    std::copy(over_it, over.end(),
 		      std::back_inserter(result));
-	    base_it = base.end();
-	} else {
-	    // mix...
-	    if (over_it->length == 0 ||
-		over_it->start < 0) {
-		++over_it;
-		continue;
-	    }
-
-	    if (base_it->length == 0 ||
-		base_it->start < 0) {
-		++base_it;
-		continue;
-	    }
-
-	    Babylon::Type current = *base_it;
-	    size_t max_current = current.start + current.length - 1;
-	    if (current.start < over_it->start) {
-		current.length = over_it->start - current.start;
-		result.push_back(current);
-		result.push_back(*over_it);
-		++over_it;
-	    } else {
-		result.push_back(*over_it);
-		++over_it;
-	    }
-	    base_it->start = over_it->start + over_it->length + 1;
-	    base_it->length = max_current - base_it->start;
+	    over_it = over.end();
+	    continue;
 	}
-    }
 
-    return result;
+	// mix...
+	if (over_it->length == 0 ||
+	    over_it->start < 0) {
+	    ++over_it;
+	    continue;
+	}
+	
+	if (base_it->length == 0 ||
+	    base_it->start < 0) {
+	    ++base_it;
+	    continue;
+	}
+	
+	size_t max_current = current.start + current.length - 1;
+	if (current.start < over_it->start) {
+	    current.length = over_it->start - current.start;
+	    result.push_back(current);
+	    result.push_back(*over_it);
+	    ++over_it;
+	} else {
+	    result.push_back(*over_it);
+	    ++over_it;
+	}
+	current.start = result.back().start + result.back().length + 1;
+	current.length = max_current - current.start;
+    } // while
+
+    return (result);
 }
 
 Embedding_Levels
@@ -251,24 +252,25 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 		 const Babylon::String::const_iterator end,
 		 const Babylon::Base_Dir & pbase_dir) {
     Embedding_Levels emb;
-    if (start == end) return emb;
+    if (start == end) return (emb);
 
-    size_t str_length(distance(start, end) -  1);
+    size_t str_length(distance(start, end));
 
     std::vector<Babylon::Type> type_rl;
     std::vector<Babylon::Bidir_Props> char_type(str_length);
-    {
-	// Determinate character types
-	transform(start, end,
-		  char_type.begin(),
-		  std::mem_fun_ref(& Babylon::Char::direction));
-	
-	// Run length encode the character types
-	type_rl = run_length_encode_types(char_type);
-    }
+
+    // Determinate character types
+    transform(start, end,
+	      char_type.begin(),
+	      std::mem_fun_ref(& Babylon::Char::direction));
+    
+    // Run length encode the character types
+    type_rl = run_length_encode_types(char_type);
 
     unsigned char base_level = 0;
     Babylon::Bidir_Props base_dir = Babylon::BIDIR_ON;
+
+    // Find the base level
     if(bidir_is_strong(Babylon::Bidir_Props(pbase_dir)))
 	base_level = bidir_to_level(Babylon::Bidir_Props(pbase_dir));
     else {
@@ -289,7 +291,7 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 	    base_level = bidir_to_level(Babylon::Bidir_Props(pbase_dir));
     }
     base_dir = level_to_bidir(base_level);
-
+    
     // Explicit Levels and Directions
     std::vector<Babylon::Type> explicits;
     {
@@ -405,10 +407,6 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 	Babylon::Bidir_Props prev_type(Babylon::BIDIR_INVALID);
 	Babylon::Bidir_Props this_type(i->bidir_type);
 	Babylon::Bidir_Props next_type;
-	if ((i+1) != type_rl.end())
-	    next_type = (i+1)->bidir_type;
-	else
-	    next_type = Babylon::BIDIR_INVALID;
 
 	for( ; i != type_rl.end(); ++i) {
 	    // get next_type:
@@ -528,26 +526,26 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 	// N1. and N2.
 	// For each neutral, resolve it.
 	std::vector<Babylon::Type>::iterator i = type_rl.begin();
-	Babylon::Bidir_Props prev_type(Babylon::BIDIR_INVALID);
-	Babylon::Bidir_Props this_type(i->bidir_type);
+
+	Babylon::Bidir_Props prev_type(bidir_change_number_to_RTL(Babylon::BIDIR_INVALID));
+	Babylon::Bidir_Props this_type(bidir_change_number_to_RTL(i->bidir_type));
 	Babylon::Bidir_Props next_type;
-	if ((i+1) != type_rl.end())
-	    next_type = (i+1)->bidir_type;
-	else
-	    next_type = Babylon::BIDIR_INVALID;	
-	    
+
 	for( ; i != type_rl.end(); ++i) {
-	    // "European and arabic numbers are treated as though they were R"
-	    if(bidir_is_neutral(this_type))
-		i->bidir_type = (prev_type == next_type) ?
-		    /* N1. */ prev_type :
-		    /* N2. */ level_to_bidir(i->embed_level);
-	    prev_type = this_type;
-	    this_type = next_type;
 	    if ((i+1) != type_rl.end())
-		next_type = (i+1)->bidir_type;
+		next_type = bidir_change_number_to_RTL((i+1)->bidir_type);
 	    else
 		next_type = Babylon::BIDIR_INVALID;
+
+	    // "European and arabic numbers are treated as though they were R"
+	    if(bidir_is_neutral(this_type))
+		if (prev_type == next_type)
+		    i->bidir_type = prev_type; // N1.
+		else
+		    i->bidir_type = level_to_bidir(i->embed_level); // N2.
+
+	    prev_type = this_type;
+	    this_type = next_type;
 	} // for(i...)
     }
 
@@ -560,7 +558,6 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 	    i != type_rl.end();
 	    ++i) {
 	Babylon::Bidir_Props this_type = i->bidir_type;
-	unsigned char level = i->embed_level;
 
 	/* I1. Even */
 	/* I2. Odd */
@@ -579,14 +576,14 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 
     // Reinsert the explicit codes & bn's that were removed, from the
     // explicits to type_rl_list.
-    type_rl = override(type_rl, explicits);
+    type_rl = override_lists(type_rl, explicits);
     vector<Babylon::Type>::iterator i = type_rl.begin();
     if (i->embed_level < 0)
 	i->embed_level = base_level;
     for ( ; i != type_rl.end();	++i)
 	if (i->embed_level < 0)
 	    i->embed_level = (i-1)->embed_level;
-
+    
     // L1. Reset the embedding levels.
     {
 	vector<Babylon::Type> list;
@@ -613,36 +610,35 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 		}
 	    }
 	}
-	type_rl = override(type_rl, list);
+
+	type_rl = override_lists(type_rl, list);
     }
 
     emb.types = type_rl;
     emb.max_level = max_level;
 
-    return emb;
+    return (emb);
 }
 
-void log2vis(const Babylon::String::const_iterator start,
-	     const Babylon::String::const_iterator end,
-	     const Babylon::Base_Dir & pbase_dir,
-	     std::basic_string<size_t> & log2vis_str,
-	     std::basic_string<size_t> & vis2log_str,
-	     std::basic_string<unsigned char> & embed_levels,
-	     size_t start_offset = 0) {
-    // Initialise result-strings:
-    log2vis_str.erase();
-    for(size_t i = 0; i <= std::distance(start, end); ++i)
-	log2vis_str.push_back(i + start_offset);
-    vis2log_str = log2vis_str;
-
-    Babylon::Embedding_Levels emb = analyse(start, end, pbase_dir);
-    
-    embed_levels.erase();
+std::basic_string<unsigned char>
+get_embedding_levels(const Babylon::Embedding_Levels & emb) {
+    std::basic_string<unsigned char> result;
     for(vector<Babylon::Type>::const_iterator i = emb.types.begin();
 	i != emb.types.end();
 	++i)
 	for(size_t j = 0; j < i->length; ++j)
-	    embed_levels.push_back(i->embed_level);
+	    result.push_back(i->embed_level);
+    return result;
+}
+
+Babylon::Char_Mapping
+get_vis2log(const size_t & start_offset,
+	    const Babylon::Embedding_Levels & emb) {
+    Babylon::Char_Mapping vis2log_str;
+    size_t str_length(emb.types.back().start + emb.types.back().length);
+
+    for(size_t i = 0; i < str_length; ++i)
+	vis2log_str.push_back(i + start_offset);
 
     // FIXME: This is missing:
     // L4. Mirror all characters that are in odd levels and have mirrors
@@ -663,13 +659,26 @@ void log2vis(const Babylon::String::const_iterator start,
 		    ++k;
 		}
 		std::reverse(vis2log_str.begin() + pos,
-			     vis2log_str.begin() + pos +len);
+			     vis2log_str.begin() + pos + len);
+
+		if (k == emb.types.end())
+		    break;
+		else
+		    j = k;
 	    }
 	}
 
-    // Convert vis2log_str into log2vis_str:
-    for(size_t i = 0; i < std::distance(start, end) - 1; ++i)
-	log2vis_str[vis2log_str[i] - start_offset] = i + start_offset;
+    return vis2log_str;
+}
+
+
+Babylon::Char_Mapping
+get_log2vis(const size_t & start_offset,
+	    const Babylon::Char_Mapping & vis2log) {
+    Babylon::Char_Mapping log2vis;
+    for(size_t i = 0; i < vis2log.length(); ++i)
+	log2vis[vis2log[i] - start_offset] = i + start_offset;
+    return log2vis;
 }
 
 } // namespace Babylon

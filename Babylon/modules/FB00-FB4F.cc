@@ -1,11 +1,11 @@
-/*$Id: FB00-FB4F.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp FB00-FB4F.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:25:37 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:12:05 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -118,7 +118,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Alphabetic_Presentation_FormsFB00::m_bidir[uc - m_first_letter]);
+      return Alphabetic_Presentation_FormsFB00::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -246,7 +246,7 @@ namespace Babylon {
     static const std::bitset<80> m_is_defined;
     static const unsigned char _cat[80];
     static const unsigned char _comb_cl[80];
-    static const unsigned char m_bidir[80];
+    static const Babylon::Bidir_Props m_bidir[80];
     static const unsigned char _decomp[80];
     static const UCS4 m_decompStr[80][2];
     static const unsigned char m_lb[80];
@@ -281,7 +281,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char Alphabetic_Presentation_FormsFB00::m_bidir[] = {
+  const Babylon::Bidir_Props Alphabetic_Presentation_FormsFB00::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 

@@ -1,11 +1,11 @@
-/*$Id: 2300-23FF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp 2300-23FF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Sat,  5 May 2001 13:03:12 +0200.
+ * ftp.unicode.org on Fri, 11 May 2001 01:04:40 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -115,7 +115,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return Babylon::Bidir_Props(Miscellaneous_Technical2300::m_bidir[uc - m_first_letter]);
+      return Miscellaneous_Technical2300::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -224,7 +224,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<256> m_is_defined;
     static const unsigned char _cat[256];
-    static const unsigned char m_bidir[256];
+    static const Babylon::Bidir_Props m_bidir[256];
     static const UCS2 m_decompStr[256];
     static const std::bitset<256> m_mirror;
     static const unsigned char m_lb[256];
@@ -268,7 +268,7 @@ namespace Babylon {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So
   };
 
-  const unsigned char Miscellaneous_Technical2300::m_bidir[] = {
+  const Babylon::Bidir_Props Miscellaneous_Technical2300::m_bidir[] = {
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
