@@ -63,7 +63,7 @@ namespace Babylon {
 	void utf32(const UTF32_string &, const Norm norm = NORM_NONE);
 	UTF8_string  utf8() const throw (Trans_Error);
 	UTF16_string utf16() const throw(Trans_Error);
-	UTF32_string utf32() const;
+	UTF32_string utf32() const throw(Trans_Error);
 
 	void swap(String &);
     

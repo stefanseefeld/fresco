@@ -59,7 +59,7 @@ namespace Babylon {
 	//. Transcodes the character to UTF-32.
 	//. Throws : Trans_Error
 	//.          if transcoding was not successful.
-	UTF32_string utf32() const throw();
+	UTF32_string utf32() const throw(Trans_Error);
 
 	//. Creates a character from an UTF-8 encoded string.
 	//. Throws : Trans_Error
@@ -89,7 +89,7 @@ namespace Babylon {
 	//.          this character.
 	UTF32_string::const_iterator utf32(const UTF32_string &,
 					   UTF32_string::const_iterator)
-	    throw();
+	    throw(Trans_Error);
 
 	// ------------------------------------------------------------
 	// QUERIES:
