@@ -29,8 +29,6 @@
 #include "Console/DirectBuffer.hh"
 #include "Console/GLContext.hh"
 #include <strstream.h>
-#include <GL/ggimesa.h>
-
 
 using namespace Prague;
 using namespace Warsaw;

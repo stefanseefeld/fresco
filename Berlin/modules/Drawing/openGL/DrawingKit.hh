@@ -148,7 +148,7 @@ public:
 //   virtual void draw_points(const Warsaw::Vertices &coords);
 
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
-  virtual void flush() { glFlush();}
+  virtual void flush() { _glcontext->flush(); }
 
 //   void clear(Coord, Coord, Coord, Coord);
 //   Coord width() { return drawable->width();}

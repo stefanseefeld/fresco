@@ -36,9 +36,15 @@ public:
       throw std::runtime_error("GGIMesaSetVisual() failed");
     GGIMesaMakeCurrent(_context);
   }
+
   ~GGIGLContext()
   {
     GGIMesaDestroyContext(_context);
+  }
+
+  void flush() {
+    glFlush();
+    _drawable->flush()
   }
 private:
   GGIMesaContext _context;  

@@ -29,6 +29,8 @@
 class GLContext : virtual public Console::Extension
 {
   //. I really don't know what to put here. Yet it works...:-)
+public:
+  virtual void flush() = 0;
 };
 
 #endif

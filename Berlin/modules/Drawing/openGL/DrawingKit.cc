@@ -167,7 +167,7 @@ void GLDrawingKit::set_clipping(Region_ptr r)
       glColor4d(1., 0., 0., 1.);
       glRectf(0, 0, 10000., 10000.);
       glFlush();
-      Console::drawable()->flush();
+      _glcontext->flush();
       sleep(1);
 #endif
     }
