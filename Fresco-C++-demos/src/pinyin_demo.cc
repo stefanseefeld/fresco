@@ -26,7 +26,7 @@
 #include <string>
 
 // everything needed for clients
-#include <client.hh>
+#include "client.hh"
 
 // need to include the Kits I'll use
 #include <Warsaw/LayoutKit.hh>
