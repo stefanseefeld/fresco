@@ -35,14 +35,14 @@ IDL	= omniidl
 IDLFLAGS= -I$(wpath) -nf -bpython# -Wbglobal=Warsaw
 
 DYNINT	= Types.idl
-STATINT	= RefCountBase.idl ClientContext.idl Server.idl Kit.idl \
+STATINT	= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl Kit.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl \
 	  DrawingKit.idl \
 	  Figure.idl Image.idl FigureKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  Command.idl CommandKit.idl \
-	  Subject.idl Controller.idl View.idl \
+	  Subject.idl Observer.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl Selection.idl \
 	  Trigger.idl ToolKit.idl \
 	  Choice.idl  WidgetKit.idl GadgetKit.idl \

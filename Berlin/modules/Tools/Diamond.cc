@@ -40,9 +40,9 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->kit();
 
-  drawing->saveState();
-  if (drawing->surfaceFillstyle() == DrawingKit::outlined)
-    drawing->surfaceFillstyle(DrawingKit::solid);
+  drawing->save();
+  if (drawing->surface_fillstyle() == DrawingKit::outlined)
+    drawing->surface_fillstyle(DrawingKit::solid);
 
   Vertex center = {(u.x + l.x)/2, (u.y + l.y)/2, 0.};
   Vertex length = {(u.x - l.x), (u.y - l.y), 0.};
@@ -58,7 +58,7 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = center.x, path[2].y = u.y, path[2].z = 0;
       path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   else
     {
@@ -70,7 +70,7 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = l.x + dx, path[2].y = center.y, path[2].z = 0;
       path[3].x = center.x, path[3].y = l.y + dy, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
       /*
        * bottom left
        */
@@ -79,7 +79,7 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = center.x, path[2].y = u.y - dy, path[2].z = 0;
       path[3].x = l.x + dx, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
       /*
        * bottom right
        */
@@ -88,7 +88,7 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
       path[3].x = center.x, path[3].y = u.y - dy, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
       /*
        * top right
        */
@@ -97,9 +97,9 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
       path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
-  drawing->restoreState();
+  drawing->restore();
 }
 
 void BeveledDiamond::draw(DrawTraversal_ptr traversal)
@@ -112,9 +112,9 @@ void BeveledDiamond::draw(DrawTraversal_ptr traversal)
   Color light = brightness(color,-bright);
   Color dark  = brightness(color, bright);
 
-  drawing->saveState();
-  if (drawing->surfaceFillstyle() == DrawingKit::outlined)
-    drawing->surfaceFillstyle(DrawingKit::solid);
+  drawing->save();
+  if (drawing->surface_fillstyle() == DrawingKit::outlined)
+    drawing->surface_fillstyle(DrawingKit::solid);
 
   switch (style)
     {
@@ -135,7 +135,7 @@ void BeveledDiamond::draw(DrawTraversal_ptr traversal)
       Beveler::diamond(traversal, thickness/2, color, light, dark, l.x, u.x, l.y, u.y, fill);
       break;
     }
-  drawing->restoreState();
+  drawing->restore();
 }
 
 void ColoredDiamond::draw(DrawTraversal_ptr traversal)
@@ -145,9 +145,9 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->kit();
 
-  drawing->saveState();
-  if (drawing->surfaceFillstyle() == DrawingKit::outlined)
-    drawing->surfaceFillstyle(DrawingKit::solid);
+  drawing->save();
+  if (drawing->surface_fillstyle() == DrawingKit::outlined)
+    drawing->surface_fillstyle(DrawingKit::solid);
   Color tmp = drawing->foreground();
   tmp.red = color.red;
   tmp.green = color.green;
@@ -168,7 +168,7 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = center.x, path[2].y = u.y, path[2].z = 0;
       path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   else
     {
@@ -180,7 +180,7 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = l.x + dx, path[2].y = center.y, path[2].z = 0;
       path[3].x = center.x, path[3].y = l.y + dy, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
       /*
        * bottom left
        */
@@ -189,7 +189,7 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = center.x, path[2].y = u.y - dy, path[2].z = 0;
       path[3].x = l.x + dx, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
       /*
        * bottom right
        */
@@ -198,7 +198,7 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
       path[3].x = center.x, path[3].y = u.y - dy, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
       /*
        * top right
        */
@@ -207,8 +207,8 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
       path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
       path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
-  drawing->restoreState();
+  drawing->restore();
 }
 

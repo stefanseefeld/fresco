@@ -48,7 +48,7 @@ void AllocationImpl::add(Region_ptr region, Screen_ptr root)
   reg->copy(region);
   state.allocation = reg._retn();
   Lease_var<TransformImpl> trafo(Provider<TransformImpl>::provide());
-  trafo->loadIdentity();
+  trafo->load_identity();
   state.transformation = trafo._retn();
   state.root = Screen::_duplicate(root);
   list.push_back(state);

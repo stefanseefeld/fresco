@@ -24,23 +24,21 @@
 
 #include <Warsaw/Kit.idl>
 #include <Warsaw/Grid.idl>
+#include <Warsaw/Stage.idl>
+#include <Warsaw/Viewport.idl>
 
 module Warsaw
 {
-  interface Viewport;
-  interface Stage;
-  interface Graphic;
-  
   //. LayoutKit provides operations for creating glyphs that
   //. are useful in managing the arrangement of one or more glyphs.
   //. Many of the LayoutKit objects are modelled after
   //. Knuth's TeX document processing system.
   interface LayoutKit : Kit
     {
-      //. The "fil" attribute defines an "infinity" coordinate
+      //. The "fill" attribute defines an "infinity" coordinate
       //. for the purposes of specifying stretchability that
       //. is large relative to other objects.
-      attribute Coord fil;
+      attribute Coord fill;
       
       //. A clipper confines the drawing of its child within its allocation
       Graphic clipper(in Graphic g);
@@ -51,18 +49,18 @@ module Warsaw
       //   AutoScroll create_auto_scroll(in Adjustment x_adjustment, in Adjustment y_adjustment);
       
       //. A viewport allows its child to be scrolled.
-      Viewport scrollable(in Graphic g);
+      Layout::Viewport scrollable(in Graphic g);
       
       //. A stage allows its children to be placed at any position and
       //. layering.
-      Stage createStage();
+      Layout::Stage create_stage();
       
       //. A fixed grid tiles its children into columns and rows and aligns
       //. the children within each column and row.
-      Grid fixedGrid(in Grid::Index upper);
+      Layout::Grid fixed_grid(in Layout::Grid::Index upper);
       
       //. A fixed range manages a subrange of a grid.
-      Graphic fixedRange(in Grid g, in Grid::Range r);
+      Graphic fixed_range(in Layout::Grid g, in Layout::Grid::Range r);
       
       //. An hbox tiles its children left-to-right along
       //. the X axis and aligns their origins along the Y axis.
@@ -88,13 +86,13 @@ module Warsaw
       //. hbox_first_aligned and vbox_first_aligned
       //. use the alignment of their first component
       //. for their alignment along the tiling axis.
-      Graphic hboxFirstAligned();
-      Graphic vboxFirstAligned();
+      Graphic hbox_first_aligned();
+      Graphic vbox_first_aligned();
       
       //. These operations return an hbox and vbox that automatically
       //. align thier children according to the given alignment. 
-      Graphic hboxAlignElements(in Alignment align);
-      Graphic vboxAlignElements(in Alignment align);
+      Graphic hbox_align_elements(in Alignment align);
+      Graphic vbox_align_elements(in Alignment align);
       
       //. An overlay aligns the origins of its children
       //. along both the X and Y axis.  Overlays draw
@@ -140,30 +138,30 @@ module Warsaw
       
       //. Return a glue object that uses the given requisition
       //. as its desired size.
-      Graphic glueRequisition(in Graphic::Requisition r);
+      Graphic glue_requisition(in Graphic::Requisition r);
       
-      //. Return different kinds of horizontal glue.  The hfil and
-      //. hglueFil operations return glue that is infinitely
-      //. stretchable and not shrinkable; hfil has zero for its
+      //. Return different kinds of horizontal glue.  The hfill and
+      //. hglue_fill operations return glue that is infinitely
+      //. stretchable and not shrinkable; hfill has zero for its
       //. natural size.  The hglue and hglue_aligned operations
       //. return horizontal glue with the given sizes.  The hspace
       //. operation returns rigid glue.
-      Graphic hfil();
-      Graphic hglueFil(in Coord natural);
+      Graphic hfill();
+      Graphic hglue_fill(in Coord natural);
       Graphic hglue(in Coord natural, in Coord stretch, in Coord shrink);
-      Graphic hglueAligned(in Coord natural, in Coord stretch, in Coord shrink, in Alignment a);
+      Graphic hglue_aligned(in Coord natural, in Coord stretch, in Coord shrink, in Alignment a);
       Graphic hspace(in Coord natural);
       
-      //. Return different kinds of vertical glue.  The vfil and
-      //. vglueFil operations return glue that is infinitely
-      //. stretchable and not shrinkable; vfil has zero for its
+      //. Return different kinds of vertical glue.  The vfill and
+      //. vglue_fill operations return glue that is infinitely
+      //. stretchable and not shrinkable; vfill has zero for its
       //. natural size.  The vglue and vglue_aligned operations
       //. return vertical glue with the given sizes.  The vspace
       //. operation returns rigid glue.
-      Graphic vfil();
-      Graphic vglueFil(in Coord natural);
+      Graphic vfill();
+      Graphic vglue_fill(in Coord natural);
       Graphic vglue(in Coord natural, in Coord stretch, in Coord shrink);
-      Graphic vglueAligned(in Coord natural, in Coord stretch, in Coord shrink, in Alignment a);
+      Graphic vglue_aligned(in Coord natural, in Coord stretch, in Coord shrink, in Alignment a);
       Graphic vspace(in Coord natural);
       
       //. Return a graphic that has the same desired size as
@@ -171,12 +169,12 @@ module Warsaw
       //. any drawing.  The shapeOf operation has the same
       //. sizes as a given graphic along all axes, shapeOfXY
       //. uses different graphics for the X and Y axis, and
-      //. shapeOfXYZ also uses a different graphic for the Z axis
-      //. (shapeOfXY returns a graphic whose Z requirement
+      //. shape_of_xyz also uses a different graphic for the Z axis
+      //. (shape_of_xy returns a graphic whose Z requirement
       //. is undefined).
-      Graphic shapeOf(in Graphic g);
-      Graphic shapeOfXY(in Graphic gx, in Graphic gy);
-      Graphic shapeOfXYZ(in Graphic gx, in Graphic gy, in Graphic gz);
+      Graphic shape_of(in Graphic g);
+      Graphic shape_of_xy(in Graphic gx, in Graphic gy);
+      Graphic shape_of_xyz(in Graphic gx, in Graphic gy, in Graphic gz);
       
       //. These operations return a graphic that positions a given
       //. graphic according to a given alignment. The align operation
@@ -185,7 +183,7 @@ module Warsaw
       //. The halign and valign operations return graphics aligned for
       //. the horizontal and vertical axes, respectively.
       Graphic align(in Graphic g, in Alignment x, in Alignment y);
-      Graphic alignAxis(in Graphic g, in Axis a, in Alignment algn);
+      Graphic align_axis(in Graphic g, in Axis a, in Alignment algn);
       Graphic halign(in Graphic g, in Alignment x);
       Graphic valign(in Graphic g, in Alignment y);
       
@@ -198,22 +196,22 @@ module Warsaw
       //. returns a graphic fixed in one dimension.  The
       //. hfixed and vfixed operations return fixed graphics
       //. for the horizontal and vertical axes, respectively.
-      Graphic fixedSize(in Graphic g, in Coord x, in Coord y);
-      Graphic fixedAxis(in Graphic g, in Axis a, in Coord size);
+      Graphic fixed_size(in Graphic g, in Coord x, in Coord y);
+      Graphic fixed_axis(in Graphic g, in Axis a, in Coord size);
       Graphic hfixed(in Graphic g, in Coord x);
       Graphic vfixed(in Graphic g, in Coord y);
       
       //. These operations return a graphic that makes a given graphic
       //. act flexible even if is rigid.  The flexible operation
       //. returns a graphic with a given stretchability and
-      //. shrinkability along all axes.  The flexible_fil operation
-      //. is equivalent to calling flexible with fil stretchability and
+      //. shrinkability along all axes.  The flexible_fill operation
+      //. is equivalent to calling flexible with fill stretchability and
       //. zero shrinkability.  The hflexible and vflexible operations
       //. return a graphic with a given flexibility in the X or Y axis,
       //. respectively.
       Graphic flexible(in Graphic g, in Coord stretch, in Coord shrink);
-      Graphic flexibleFil(in Graphic g);
-      Graphic flexibleAxis(in Graphic g, in Axis a, in Coord stretch, in Coord shrink);
+      Graphic flexible_fill(in Graphic g);
+      Graphic flexible_axis(in Graphic g, in Axis a, in Coord stretch, in Coord shrink);
       Graphic hflexible(in Graphic g, in Coord stretch, in Coord shrink);
       Graphic vflexible(in Graphic g, in Coord stretch, in Coord shrink);
       
@@ -227,7 +225,7 @@ module Warsaw
       //. operations return a graphic with the given natural size
       //. along the X or Y axis, respectively.
       Graphic natural(in Graphic g, in Coord x, in Coord y);
-      Graphic naturalAxis(in Graphic g, in Axis a, in Coord size);
+      Graphic natural_axis(in Graphic g, in Axis a, in Coord size);
       Graphic hnatural(in Graphic g, in Coord x);
       Graphic vnatural(in Graphic g, in Coord y);
       
@@ -240,15 +238,15 @@ module Warsaw
       //. operation is the most general, returning a graphic
       //. with independent sizes and flexibility for each margin.
       Graphic margin(in Graphic g, in Coord all);
-      Graphic marginLRBT(in Graphic g,
-			 in Coord lmargin, in Coord rmargin, in Coord bmargin, in Coord tmargin);
-      Graphic marginFlexible(in Graphic g,
-			     in Coord margn, in Coord stretch, in Coord shrink);
-      Graphic marginLRBTFlexible(in Graphic g,
-				 in Coord lmargin, in Coord lstretch, in Coord lshrink,
-				 in Coord rmargin, in Coord rstretch, in Coord rshrink,
-				 in Coord bmargin, in Coord bstretch, in Coord bshrink,
-				 in Coord tmargin, in Coord tstretch, in Coord tshrink);
+      Graphic margin_lrbt(in Graphic g,
+			  in Coord lmargin, in Coord rmargin, in Coord bmargin, in Coord tmargin);
+      Graphic margin_flexible(in Graphic g,
+			      in Coord margn, in Coord stretch, in Coord shrink);
+      Graphic margin_lrbt_flexible(in Graphic g,
+				   in Coord lmargin, in Coord lstretch, in Coord lshrink,
+				   in Coord rmargin, in Coord rstretch, in Coord rshrink,
+				   in Coord bmargin, in Coord bstretch, in Coord bshrink,
+				   in Coord tmargin, in Coord tstretch, in Coord tshrink);
       
       //. These operations are short-hand for specifying
       //. margin graphics with zero-size top and bottom margins.
@@ -259,10 +257,10 @@ module Warsaw
       //. "margin_lrbt_flexible(g, lmargin, lstretch, lshrink,
       //. rmargin, rstretch, rshrink, 0, 0, 0, 0, 0, 0)."
       Graphic hmargin(in Graphic g, in Coord both);
-      Graphic hmarginLR(in Graphic g, in Coord lmargin, in Coord rmargin);
-      Graphic hmarginLRFlexible(in Graphic g,
-				in Coord lmargin, in Coord lstretch, in Coord lshrink,
-				in Coord rmargin, in Coord rstretch, in Coord rshrink);
+      Graphic hmargin_lr(in Graphic g, in Coord lmargin, in Coord rmargin);
+      Graphic hmargin_lr_flexible(in Graphic g,
+			 	  in Coord lmargin, in Coord lstretch, in Coord lshrink,
+			 	  in Coord rmargin, in Coord rstretch, in Coord rshrink);
       
       //. These operations are short-hand for specifying
       //. margin graphics with zero-size left and right margins.
@@ -273,38 +271,38 @@ module Warsaw
       //. "margin_lrbt_flexible(g, 0, 0, 0, 0, 0, 0,
       //. bmargin, bstretch, bshrink, tmargin, tstretch, tshrink)."
       Graphic vmargin(in Graphic g, in Coord both);
-      Graphic vmarginBT(in Graphic g, in Coord bmargin, in Coord tmargin);
-      Graphic vmarginBTFlexible(in Graphic g,
-				in Coord bmargin, in Coord bstretch, in Coord bshrink,
-				in Coord tmargin, in Coord tstretch, in Coord tshrink);
+      Graphic vmargin_bt(in Graphic g, in Coord bmargin, in Coord tmargin);
+      Graphic vmargin_bt_flexible(in Graphic g,
+			 	  in Coord bmargin, in Coord bstretch, in Coord bshrink,
+				  in Coord tmargin, in Coord tstretch, in Coord tshrink);
       
       //. These operations return a graphic with a left margin.
       //. The lmargin operation is equivalent to
       //. "hmargin(g, natural, 0)." The lmargin_flexible operation is
       //. equivalent to "hmargin(g, natural, stretch, shrink, 0, 0, 0)."
       Graphic lmargin(in Graphic g, in Coord nat);
-      Graphic lmarginFlexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
+      Graphic lmargin_flexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
       
       //. These operations return a graphic with a right margin.
       //. The rmargin operation is equivalent to
       //. "hmargin(g, 0, natural)." The rmarginFlexible operation is
       //. equivalent to "hmargin(g, 0, 0, 0, natural, stretch, shrink)."
       Graphic rmargin(in Graphic g, in Coord nat);
-      Graphic rmarginFlexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
+      Graphic rmargin_flexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
       
       //. These operations return a graphic with a bottom margin.
       //. The bmargin operation is equivalent to
       //. "vmargin(g, natural, 0)." The bmargin_flexible operation is
       //. equivalent to "vmargin(g, natural, stretch, shrink, 0, 0, 0)."
       Graphic bmargin(in Graphic g, in Coord nat);
-      Graphic bmarginFlexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
+      Graphic bmargin_flexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
       
       //. These operations return a graphic with a top margin.
       //. The tmargin operation is equivalent to
       //. "vmargin(g, 0, natural)." The tmargin_flexible operation is
       //. equivalent to "vmargin(g, 0, 0, 0, natural, stretch, shrink)."
       Graphic tmargin(in Graphic g, in Coord nat);
-      Graphic tmarginFlexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
+      Graphic tmargin_flexible(in Graphic g, in Coord nat, in Coord stretch, in Coord shrink);
     };
 };
 

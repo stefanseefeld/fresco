@@ -57,10 +57,10 @@ Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
     x(RefCount_var<BoundedRange>::increment(xx)),
     y(RefCount_var<BoundedRange>::increment(yy))
 {
-  BoundedRange::Settings settings = x->getSettings();
+  BoundedRange::Settings settings = x->state();
   offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);
   offset[xaxis].upper = settings.uvalue/(settings.upper - settings.lower);
-  settings = y->getSettings();
+  settings = y->state();
   offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
   offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
   x->attach(Observer_var(translateX->_this()));
@@ -70,36 +70,36 @@ Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
 void Panner::init(Controller_ptr t)
 {
   body(t);
-  t->addParent(Graphic_var(_this()), 0);
-  appendController(t);
+  t->add_parent_graphic(Graphic_var(_this()), 0);
+  append_controller(t);
 }
 
 void Panner::update(const CORBA::Any &)
 {
-  BoundedRange::Settings settings = x->getSettings();
+  BoundedRange::Settings settings = x->state();
   offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
   offset[xaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
-  settings = y->getSettings();
+  settings = y->state();
   offset[yaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
   offset[yaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
-  needRedraw();
+  need_redraw();
 }
 
 void Panner::draw(DrawTraversal_ptr traversal)
 {
-  traverseThumb(traversal);
+  traverse_thumb(traversal);
 }
 
 void Panner::pick(PickTraversal_ptr traversal)
 {
   Trace trace("Panner::pick");
-  if (grabbed(traversal->device()) || traversal->intersectsAllocation())
+  if (grabbed(traversal->device()) || traversal->intersects_allocation())
     {
-      traversal->enterController(Controller_var(_this()));
+      traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!grabbed(traversal->device())) traverseThumb(traversal);
+      if (!grabbed(traversal->device())) traverse_thumb(traversal);
       if (!traversal->picked()) traversal->hit();
-      traversal->leaveController();
+      traversal->leave_controller();
     }
 }
 
@@ -121,7 +121,7 @@ void Panner::allocate(Tag, const Allocation::Info &info)
 
 Command_ptr Panner::drag() { return _drag->_this();}
 
-void Panner::traverseThumb(Traversal_ptr traversal)
+void Panner::traverse_thumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
@@ -137,5 +137,5 @@ void Panner::traverseThumb(Traversal_ptr traversal)
   allocation->upper.y = lower + scale*offset[yaxis].upper;
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
-  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
+  traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
 }

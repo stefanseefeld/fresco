@@ -28,10 +28,12 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Region.hh>
 
+using namespace Prague;
 using namespace Warsaw;
+using namespace Layout;
 
 DesktopImpl::DesktopImpl(Stage_ptr s)
-  : ControllerImpl(false), stage(Warsaw::Stage::_duplicate(s))
+  : ControllerImpl(false), stage(Layout::Stage::_duplicate(s))
 {
   /*
    * Attention !!: this invokes _this(), which implicitely activates the desktop.
@@ -39,25 +41,8 @@ DesktopImpl::DesktopImpl(Stage_ptr s)
   ControllerImpl::body(stage);
 }
 DesktopImpl::~DesktopImpl() {}
-// void DesktopImpl::draw(DrawTraversal_ptr traversal)
-// {  
-//   Region_var allocation = traversal->allocation();
-//   Vertex upper, lower;
-//   allocation->bounds(lower, upper);
-//   DrawingKit_var drawing = traversal->kit();
-//   drawing->saveState();
-//   Color background;
-//   background.red = 1.0;
-//   background.green = 0.9;
-//   background.blue = 0.8;
-//   background.alpha = 1.0;
-//   drawing->foreground(background);
-//   drawing->drawRect(lower, upper);
-//   drawing->restoreState();
-//   MonoGraphic::traverse(traversal);
-// }
 
-Warsaw::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw::Vertex &p, const Warsaw::Vertex &s, Warsaw::Stage::Index l)
+Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw::Vertex &p, const Warsaw::Vertex &s, Layout::Stage::Index l)
 {
   return stage->insert(g, p, s, l);
 }

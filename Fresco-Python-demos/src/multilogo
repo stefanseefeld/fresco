@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import sys, time
 import string
 
 # Import the CORBA module
@@ -34,7 +34,7 @@ def main():
     name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
     object = context.resolve(name)
     server = object._narrow(Warsaw.Server)
-    context  = server.newServerContext(client)
+    context  = server.create_server_context(client)
 
     # get some kits
     properties = []
@@ -51,21 +51,38 @@ def main():
 
     raster = image.create("../etc/PNG/berlin-48.png")
     pixmap = figure.pixmap(raster)
-    spec1   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.concav, 0.5)
-    spec2   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.convex, 0.5)
-    frame1  = tool.frame(pixmap, 100, spec1, 1)
-    frame2  = tool.frame(pixmap, 100, spec1, 1)
-##    nothing = layout.fixedSize(Warsaw.Graphic._nil, 1000., 1000.)
-#    trigger = tool.button(frame, Warsaw.Command._nil)
-##    frame  = tool.dynamicTriangle(nothing, 200, Warsaw.Controller.pressed, spec1, spec2, CORBA.TRUE, Warsaw.ToolKit.up, trigger)
-##    trigger._set_body(frame)
-#    bg = image.create("../etc/PNG/marble.png");
-#    texture = figure.texture(trigger, bg);
+    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 0.5, 0.5, 1.))
+    frame1 = tool.frame(pixmap, 50, spec, 1)
+    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(0.5, 1., 0.5, 1.))
+    frame2 = tool.frame(pixmap, 50, spec, 1)
+    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(0.5, 0.5, 1., 1.))
+    frame3 = tool.frame(pixmap, 50, spec, 1)
+    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 1., 0.5, 1.))
+    frame4 = tool.frame(pixmap, 50, spec, 1)
+    spec   = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.colored, Warsaw.Color(1., 0.5, 1., 1.))
+    frame5 = tool.frame(pixmap, 50, spec, 1)
     box    = layout.hbox()
-    box.append(frame1)
-    box.append(frame2)
+    box.append_graphic(frame1)
+    box.append_graphic(frame2)
+    box.append_graphic(frame3)
+    box.append_graphic(frame4)
+    box.append_graphic(frame5)
     group  = tool.group(box)
     shell  = desktop.shell(group)
+    iterator = box.first_child_graphic()
+    for i in [1,2,3,4,5]:
+        iterator.remove()
+        time.sleep(1)
+    iterator.insert(frame1)
+    time.sleep(1)
+    iterator.insert(frame2)
+    time.sleep(1)
+    iterator.insert(frame3)
+    time.sleep(1)
+    iterator.insert(frame4)
+    time.sleep(1)
+    iterator.insert(frame5)
+    iterator.destroy()
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break

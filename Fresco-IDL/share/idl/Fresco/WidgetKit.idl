@@ -54,8 +54,8 @@ module Warsaw
       Controller   slider(in BoundedValue v, in Axis a);
       Controller   panner(in BoundedRange x, in BoundedRange y);
       Controller   scrollbar(in BoundedRange x, in Axis a);
-      Choice       toggleChoice();
-      Choice       checkboxChoice();
+      Choice       toggle_choice();
+      Choice       checkbox_choice();
       Controller   terminal();
       
       Controller   scrollable(in Graphic g);

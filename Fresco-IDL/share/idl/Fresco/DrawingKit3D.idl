@@ -48,14 +48,13 @@ module Warsaw {
     // -- Operations --
     
     // Render triangles in 3D.
-    void drawTriangles(in Vertices coords, in Vertices normals,
-		       in TexCoords tcs);
+    void draw_triangles(in Vertices coords, in Vertices normals, in TexCoords tcs);
     
     // Render lines in 3D.
-    void drawLines(in Vertices coords, in TexCoords tcs);
+    void draw_lines(in Vertices coords, in TexCoords tcs);
     
     // Render points in 3D.
-    void drawPoints(in Vertices coords);
+    void draw_points(in Vertices coords);
 
     // Flush all rendering operations (make sure it is finished and
     // sent to the pipeline) @@@ Redundant? 

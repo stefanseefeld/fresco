@@ -41,7 +41,7 @@ module Warsaw
       
       attribute Vertex position;
       attribute Vertex size;
-      attribute Stage::Index layer;
+      attribute Layout::Stage::Index layer;
       attribute boolean mapped;
     };
   

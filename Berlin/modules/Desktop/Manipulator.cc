@@ -108,7 +108,7 @@ void MoveResizer::execute(const CORBA::Any &any)
 
 void Relayerer::execute(const CORBA::Any &any)
 {
-  Warsaw::Stage::Index i;
+  Layout::Stage::Index i;
   if (any >>= i) window->layer(i);
   else cerr << "Relayerer::execute : wrong message type !" << endl;
 }

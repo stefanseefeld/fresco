@@ -33,16 +33,17 @@ class ServantBase : public virtual PortableServer::RefCountServantBase
   friend class IdentifiableImpl;
 public:
   ServantBase() : poa(PortableServer::POA::_nil()) {}
-  ~ServantBase() {}
-  void deactivate();
+  virtual ~ServantBase() {}
+  virtual void deactivate();
 protected:
+  static void deactivate(ServantBase *);
   //.in case this object serves as a factory,
   //.this method allows to activate the manufactored objects
   //.with the same POA this object is registered with
   void activate(ServantBase *);
   //.if the servant is a composite, it needs to implement this method
   //.to activate the child servants
-  virtual void activateComposite() {}
+  virtual void activate_composite() {}
 private:
   PortableServer::POA_var poa;
 };

@@ -59,46 +59,46 @@ module Warsaw
       enum Endstyle { butt, cap, round};
       enum Fillstyle { outlined, solid, textured, gradient};
       
-      void saveState();
-      void restoreState();
+      void save();
+      void restore();
       
       // general drawing state
       attribute Transform transformation;
       attribute Region clipping;
       attribute Color foreground;
       attribute Color lighting;
-      attribute Coord pointSize;
-      attribute Coord lineWidth;
-      attribute Endstyle lineEndstyle;
-      attribute Fillstyle surfaceFillstyle;
+      attribute Coord point_size;
+      attribute Coord line_width;
+      attribute Endstyle line_endstyle;
+      attribute Fillstyle surface_fillstyle;
       attribute Raster texture;
       
       // font state
-      attribute unsigned long fontSize;
-      attribute unsigned long fontWeight;
-      attribute Unistring fontFamily;
-      attribute Unistring fontSubFamily;
-      attribute Unistring fontFullName;
-      attribute Unistring fontStyle;
+      attribute unsigned long font_size;
+      attribute unsigned long font_weight;
+      attribute Unistring font_family;
+      attribute Unistring font_subfamily;
+      attribute Unistring font_fullname;
+      attribute Unistring font_style;
       
       // detailed font state
-      readonly attribute FontMetrics fmetrics;
-      GlyphMetrics gmetrics(in Unichar uc);
-      void fontAttr(in NVPair nvp);
-      any getFontAttr(in Unistring name);
+      readonly attribute FontMetrics font_metrics;
+      GlyphMetrics glyph_metrics(in Unichar uc);
+      void font_attribute(in NVPair nvp);
+      any get_font_attribute(in Unistring name);
       
       // imperative commands
       Coord resolution(in Axis a);
-      void drawPath(in Path p);
+      void draw_path(in Path p);
       //   void drawPatch(in Patch p);
-      void drawRect(in Vertex lower, in Vertex upper);
-      void drawEllipse(in Vertex lower, in Vertex upper);
-      void drawImage(in Raster r);
+      void draw_rectangle(in Vertex lower, in Vertex upper);
+      void draw_ellipse(in Vertex lower, in Vertex upper);
+      void draw_image(in Raster r);
       
-      void drawText(in Unistring s);
-      void allocateText(in Unistring s, inout Graphic::Requisition req);
-      void drawChar(in Unichar c);
-      void allocateChar(in Unichar c, inout Graphic::Requisition req);
+      void draw_text(in Unistring s);
+      void allocate_text(in Unistring s, inout Graphic::Requisition req);
+      void draw_char(in Unichar c);
+      void allocate_char(in Unichar c, inout Graphic::Requisition req);
       
       //. Initialize drawing kit for a rendering pass. Called before
       //. each pass.

@@ -31,7 +31,6 @@
 #include "Figure/Transformer.hh"
 
 using namespace Warsaw;
-using namespace Figures;
 
 FigureKitImpl::FigureKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p) {}
@@ -65,7 +64,7 @@ Graphic_ptr FigureKitImpl::ugroup()
   return pf->_this();
 }
 
-Point_ptr FigureKitImpl::point(Coord x, Coord y)
+Figure::Point_ptr FigureKitImpl::point(Coord x, Coord y)
 {
   Vertex v;
   v.x = x, v.y = y;
@@ -74,7 +73,7 @@ Point_ptr FigureKitImpl::point(Coord x, Coord y)
   return pt->_this();
 }
 
-Line_ptr FigureKitImpl::line(Coord x0, Coord y0, Coord x1, Coord y1)
+Figure::Line_ptr FigureKitImpl::line(Coord x0, Coord y0, Coord x1, Coord y1)
 {
   Vertex v1, v2;
   v1.x = x0, v1.y = y0;
@@ -84,7 +83,7 @@ Line_ptr FigureKitImpl::line(Coord x0, Coord y0, Coord x1, Coord y1)
   return l->_this();
 }
 
-Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t, Coord r, Coord b)
+Figure::Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t, Coord r, Coord b)
 {
   Vertex lower, upper;
   lower.x = l, lower.y = t;
@@ -94,7 +93,7 @@ Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t, Coord r, Coord b)
   return rect->_this();
 }
 
-Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
+Figure::Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
 {
   Vertex center;
   center.x = x, center.y = y;
@@ -103,7 +102,7 @@ Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
   return c->_this();
 }
 
-Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
+Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
 {
   Vertex center;
   center.x = x, center.y = y;
@@ -112,14 +111,14 @@ Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
   return e->_this();
 }
 
-Path_ptr FigureKitImpl::multiline(const Figure::Vertices &v)
+Figure::Path_ptr FigureKitImpl::multiline(const Figure::Vertices &v)
 {
   PathImpl *p = new PathImpl(v);
   activate(p);
   return p->_this();
 }
 
-Path_ptr FigureKitImpl::polygon(const Figure::Vertices &v)
+Figure::Path_ptr FigureKitImpl::polygon(const Figure::Vertices &v)
 {
   PathImpl *p = new PathImpl(v);
   activate(p);

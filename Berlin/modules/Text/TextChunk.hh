@@ -41,8 +41,8 @@ public:
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void request(Warsaw::Graphic::Requisition &);
   
-  void getText(Unicode::String &); 
-  unsigned long getLength();
+  void get_text(Unicode::String &); 
+  unsigned long get_length();
 protected:
   Warsaw::Coord width, height;
   Warsaw::Alignment xalign, yalign;
@@ -50,4 +50,3 @@ protected:
 };
 
 #endif
-

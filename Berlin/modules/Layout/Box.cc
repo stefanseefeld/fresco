@@ -41,19 +41,19 @@ Box::Box(LayoutManager *l)
 
 Box::~Box() { delete layout;}
 
-void Box::request(Requisition &r)
+void Box::request(Warsaw::Graphic::Requisition &r)
 {
-//   Trace trace("Box::request");
+  Trace trace("Box::request");
   if (!requested)
     {
-      GraphicImpl::defaultRequisition(requisition);
-      GraphicImpl::initRequisition(requisition);
-      long n = numChildren();
+      GraphicImpl::default_requisition(requisition);
+      GraphicImpl::init_requisition(requisition);
+      long n = num_children();
       if (n > 0)
 	{
-	  Warsaw::Graphic::Requisition *r = childrenRequests();
+	  Warsaw::Graphic::Requisition *r = children_requests();
 	  layout->request(n, r, requisition);
-	  deallocateRequisitions(r);
+	  deallocate_requisitions(r);
 	}
       requested = true;
     }
@@ -62,8 +62,8 @@ void Box::request(Requisition &r)
 
 void Box::extension(const Allocation::Info &info, Region_ptr region)
 {
-//   Trace trace("Box::extension");  
-  long n = numChildren();
+  Trace trace("Box::extension");  
+  long n = num_children();
   if (n > 0)
     {
       Allocation::Info child;
@@ -72,12 +72,12 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 
       Lease_var<TransformImpl> child_tx(Provider<TransformImpl>::provide());
       Lease_var<TransformImpl> tmp_tx(Provider<TransformImpl>::provide());  
-      tmp_tx->loadIdentity();
-      child_tx->loadIdentity();
+      tmp_tx->load_identity();
+      child_tx->load_identity();
       
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
-      LayoutManager::Allocations result = childrenAllocations(info.allocation);
+      LayoutManager::Allocations result = children_allocations(info.allocation);
       for (long i = 0; i < n; i++)
 	{
 	  result[i]->normalize(origin);
@@ -86,7 +86,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 	  tmp_tx->translate(delta);
 	  child.allocation = result[i]->_this();
 	  child.transformation->premultiply(Transform_var(tmp_tx->_this()));
-	  childExtension(i, child, region);
+	  child_extension(i, child, region);
 	  previous = origin;
 	}
       for (CORBA::Long i = 0; i != n; ++i) Provider<RegionImpl>::adopt(result[i]);
@@ -97,7 +97,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 void Box::traverse(Traversal_ptr traversal)
 {
   Trace trace("Box::traverse");
-  if (numChildren())
+  if (num_children())
     {
       Region_var given = traversal->allocation();
       if (!CORBA::is_nil(given))
@@ -108,22 +108,22 @@ void Box::traverse(Traversal_ptr traversal)
 	   * the alternative - using extension - is expensive...
 	   *              -stefan
 	   */
-	  if (traversal->intersectsAllocation())
-	    traverseWithAllocation(traversal, given);
+	  if (traversal->intersects_allocation())
+	    traverse_with_allocation(traversal, given);
 	}
-      else traverseWithoutAllocation(traversal);
+      else traverse_without_allocation(traversal);
     }
 }
 
-void Box::needResize()
+void Box::need_resize()
 {
   requested = false;
-  PolyGraphic::needResize();
+  PolyGraphic::need_resize();
 }
 
-void Box::needResize(Tag)
+void Box::need_resize(Tag)
 {
-  needResize();
+  need_resize();
 }
 
 /*
@@ -137,15 +137,15 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
   /*
    * fetch requested (presumably allocated) child regions
    */
-  CORBA::Long n = numChildren();
-  LayoutManager::Allocations result = childrenAllocations(info.allocation);
+  CORBA::Long n = num_children();
+  LayoutManager::Allocations result = children_allocations(info.allocation);
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
+  tx->load_identity();
 
   /*
    * copy transformation and region into allocation
    */
-  CORBA::Long idx = childIdToIndex(tag);
+  CORBA::Long idx = child_id_to_index(tag);
   result[idx]->normalize(Transform_var(tx->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
@@ -161,16 +161,16 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
  * the children's requests so that the real layout (at draw time) will happen
  * faster. 
  */
-LayoutManager::Allocations Box::childrenAllocations(Region_ptr allocation)
+LayoutManager::Allocations Box::children_allocations(Region_ptr allocation)
 {
-  Trace trace("Box::childrenAllocations");
-  CORBA::Long children = numChildren();
-  Warsaw::Graphic::Requisition *childrenRequisitions = childrenRequests();
+  Trace trace("Box::children_allocations");
+  CORBA::Long children = num_children();
+  Warsaw::Graphic::Requisition *childrenRequisitions = children_requests();
     
   // cache integrated form of children requisitions
   if (!requested)
     {
-      GraphicImpl::initRequisition(requisition);
+      GraphicImpl::init_requisition(requisition);
       layout->request(children, childrenRequisitions, requisition);
       requested = true;
     }
@@ -183,20 +183,20 @@ LayoutManager::Allocations Box::childrenAllocations(Region_ptr allocation)
     }
   // fill in children regions which are reasonable matches for the given requesitions
   layout->allocate(children, childrenRequisitions, allocation, childrenRegions);
-  deallocateRequisitions(childrenRequisitions);
+  deallocate_requisitions(childrenRequisitions);
   return childrenRegions;
 }
 
-void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
+void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
 {
-  Trace trace("Box::traverseWithAllocation");
+  Trace trace("Box::traverse_with_allocation");
   LayoutManager::Allocations result;
-  result = childrenAllocations(r);
-  CORBA::Long size = numChildren();
+  result = children_allocations(r);
+  CORBA::Long size = num_children();
   CORBA::Long begin, end, incr;
 
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
+  tx->load_identity();
 
   if (t->direction() == Traversal::up)
     {
@@ -212,37 +212,37 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
     }
   for (CORBA::Long i = begin; i != end; i += incr)
     {
-      if (CORBA::is_nil(children[i].peer)) continue;
+      if (CORBA::is_nil(_children[i].peer)) continue;
       Vertex origin;
       result[i]->normalize(origin);
-      tx->loadIdentity();
+      tx->load_identity();
       /*
        * ok, so we stipulate that Boxes lay out their children 
        * only translating them -stefan
        */
       tx->translate(origin);
-      t->traverseChild(children[i].peer, children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));
+      t->traverse_child(_children[i].peer, _children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
   for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
   delete [] result;
 }
 
-void Box::traverseWithoutAllocation(Traversal_ptr t)
+void Box::traverse_without_allocation(Traversal_ptr t)
 {
-  Trace trace("Box::traverseWithoutAllocation");
+  Trace trace("Box::traverse_without_allocation");
   if (t->direction() == Traversal::up)
-    for (glist_t::iterator i = children.begin(); i != children.end(); i++)
+    for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
       {
 	if (CORBA::is_nil((*i).peer)) continue;
-	t->traverseChild((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	t->traverse_child((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
   else
-    for (glist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
+    for (glist_t::reverse_iterator i = _children.rbegin(); i != _children.rend(); i++)
       {
 	if (CORBA::is_nil((*i).peer)) continue;
-	t->traverseChild((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	t->traverse_child((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
 }
@@ -251,16 +251,16 @@ BoxAlignElements::BoxAlignElements(LayoutManager *layout, Axis a, Alignment alig
   : Box(layout), axis(a), alignment(align) {}
 BoxAlignElements::~BoxAlignElements() {}
 
-void BoxAlignElements::append(Graphic_ptr g)
+void BoxAlignElements::append_graphic(Graphic_ptr g)
 {
   Placement *placement = new Placement(new LayoutCenter(axis, alignment));
   placement->body(g);
-  Box::append(Graphic_var(placement->_this()));
+  Box::append_graphic(Graphic_var(placement->_this()));
 }
 
-void BoxAlignElements::prepend(Graphic_ptr g)
+void BoxAlignElements::prepend_graphic(Graphic_ptr g)
 {
   Placement *placement = new Placement(new LayoutCenter(axis, alignment));
   placement->body(g);
-  Box::prepend(Graphic_var(placement->_this()));
+  Box::prepend_graphic(Graphic_var(placement->_this()));
 }

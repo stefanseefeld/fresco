@@ -84,14 +84,14 @@ static inline void fix_order_of_irect(ArtIRect &ir)
   if (ir.y0 > ir.y1) {int tmp = ir.y0; ir.y0 = ir.y1; ir.y1 = tmp;}
 }
 
-void LibArtDrawingKit::setTransformation(Transform_ptr t)
+void LibArtDrawingKit::set_transformation(Transform_ptr t)
 {
   if (CORBA::is_nil(t)) {
     art_affine_identity(affine);
   } else {
     tr = Transform::_duplicate(t);
     Transform::Matrix matrix;
-    tr->storeMatrix(matrix);  
+    tr->store_matrix(matrix);  
     affine[0] = matrix[0][0];
     affine[1] = matrix[1][0];
     affine[2] = matrix[0][1];
@@ -108,7 +108,7 @@ void LibArtDrawingKit::setTransformation(Transform_ptr t)
   scaled_affine[5] *= yres;
 }
 
-void LibArtDrawingKit::setClipping(Region_ptr r)
+void LibArtDrawingKit::set_clipping(Region_ptr r)
 {
   if (CORBA::is_nil(r)) {clip = screen; return;}
   cl = Region::_duplicate(r);
@@ -122,7 +122,7 @@ void LibArtDrawingKit::setClipping(Region_ptr r)
   art_irect_intersect(&clip,&clip,&screen);
 }
 
-void LibArtDrawingKit::setForeground(const Color &c)
+void LibArtDrawingKit::set_foreground(const Color &c)
 {
   fg = c;
   Color tmp;
@@ -134,7 +134,7 @@ void LibArtDrawingKit::setForeground(const Color &c)
   con_fg    = buffer->map(tmp);
 }
 
-void LibArtDrawingKit::setLighting(const Color &c)
+void LibArtDrawingKit::set_lighting(const Color &c)
 {
   lt = c;
   Color tmp;
@@ -145,20 +145,20 @@ void LibArtDrawingKit::setLighting(const Color &c)
   con_fg    = buffer->map(tmp);
 }
 
-void LibArtDrawingKit::setPointSize(Coord s) { ps = s;}
-void LibArtDrawingKit::setLineWidth(Coord w) { lw = w;}
-void LibArtDrawingKit::setLineEndstyle(Warsaw::DrawingKit::Endstyle style) { es = style;}
-void LibArtDrawingKit::setSurfaceFillstyle(Warsaw::DrawingKit::Fillstyle style) { fs = style;}
-void LibArtDrawingKit::setTexture(Raster_ptr t) {}
-void LibArtDrawingKit::setFontSize(CORBA::ULong) {}
-void LibArtDrawingKit::setFontWeight(CORBA::ULong) {}
-void LibArtDrawingKit::setFontFamily(const Unistring&) {}
-void LibArtDrawingKit::setFontSubFamily(const Unistring&) {}
-void LibArtDrawingKit::setFontFullName(const Unistring&) {}
-void LibArtDrawingKit::setFontStyle(const Unistring&) {}
-void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
+void LibArtDrawingKit::set_point_size(Coord s) { ps = s;}
+void LibArtDrawingKit::set_line_width(Coord w) { lw = w;}
+void LibArtDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style) { es = style;}
+void LibArtDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style) { fs = style;}
+void LibArtDrawingKit::set_texture(Raster_ptr t) {}
+void LibArtDrawingKit::set_font_size(CORBA::ULong) {}
+void LibArtDrawingKit::set_font_weight(CORBA::ULong) {}
+void LibArtDrawingKit::set_font_family(const Unistring&) {}
+void LibArtDrawingKit::set_font_subfamily(const Unistring&) {}
+void LibArtDrawingKit::set_font_fullname(const Unistring&) {}
+void LibArtDrawingKit::set_font_style(const Unistring&) {}
+void LibArtDrawingKit::set_font_attribute(const NVPair & nvp) {}
 
-void LibArtDrawingKit::drawPath(const Path &p) 
+void LibArtDrawingKit::draw_path(const Path &p) 
 {
   int len = p.length();
   ArtVpath vpath[fs == Warsaw::DrawingKit::outlined ? len : len + 1];
@@ -208,7 +208,7 @@ void LibArtDrawingKit::drawPath(const Path &p)
 
 //void LibArtDrawingKit::drawPatch(const Patch &);
 
-void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top) 
+void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top) 
 {
   // fast path opaque non-transformed rectangles
   if (fg.alpha == 1. &&
@@ -256,17 +256,17 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
       path[3].x = bot.x, path[3].y = top.y;
       path[4].x = bot.x, path[4].y = bot.y;
     }
-    this->drawPath(static_cast<const Path>(path));
+    draw_path(static_cast<const Path>(path));
   }
 }
 
-void LibArtDrawingKit::drawEllipse(const Vertex &, const Vertex &) {}
+void LibArtDrawingKit::draw_ellipse(const Vertex &, const Vertex &) {}
 
-void LibArtDrawingKit::drawImage(Raster_ptr remote) {
-  rasterizePixbuf(rasters.lookup(Raster::_duplicate(remote))->pixbuf);
+void LibArtDrawingKit::draw_image(Raster_ptr remote) {
+  rasterize_pixbuf(rasters.lookup(Raster::_duplicate(remote))->pixbuf);
 }
 
-void LibArtDrawingKit::identityPixbuf(ArtPixBuf *pixbuf) {
+void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf) {
   // fast path for non-transformed grey-scale glyph images
   ArtIRect rect;
   rect.x0 = (int)(affine[4] * xres);
@@ -313,7 +313,7 @@ void LibArtDrawingKit::identityPixbuf(ArtPixBuf *pixbuf) {
 }
 
 
-void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
+void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf) {
 
   // NOTE: this entire routine takes place "in device space"
   // since that is (a) the source of the raster and (b) the destination
@@ -375,12 +375,12 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
   pixbuf->pixels = save;
 }
 
-void LibArtDrawingKit::drawText(const Unistring &u) 
+void LibArtDrawingKit::draw_text(const Unistring &u) 
 {
   // presently disabled. should delegate to drawChar
 }
 
-void LibArtDrawingKit::drawChar(Unichar c)
+void LibArtDrawingKit::draw_char(Unichar c)
 {
   double x0 = affine[4];
   double y0 = affine[5];
@@ -421,7 +421,7 @@ void LibArtDrawingKit::drawChar(Unichar c)
 		      affine[3] == 1)) {
 
     affine[5] -= (affine[2] * r.x.maximum * r.x.align) + (affine[3] * r.y.maximum * r.y.align);
-    identityPixbuf(pb);      
+    identity_pixbuf(pb);      
 
   } else {   
     // *sigh* use primitive libart pixel functions
@@ -442,7 +442,7 @@ void LibArtDrawingKit::drawChar(Unichar c)
     for (int i = 0; i < height; ++i) memcpy (pixels + (i * row), pixels, row);
     for (int i = 0; i < (width * height); ++i) pixels[pix*i + 3] = pb->pixels[i];    
     ArtPixBuf *pb2 = art_pixbuf_new_const_rgba (pixels, width, height, row);  
-    rasterizePixbuf(pb2);
+    rasterize_pixbuf(pb2);
     art_pixbuf_free(pb2);
   }
   
@@ -450,7 +450,7 @@ void LibArtDrawingKit::drawChar(Unichar c)
   affine[5] = y0;
 }
 
-void LibArtDrawingKit::allocateChar(Unichar c, Graphic::Requisition & req) {
+void LibArtDrawingKit::allocate_char(Unichar c, Graphic::Requisition & req) {
   if (c > 127) {
     unifont->allocateChar(c,req);
   } else {
@@ -459,7 +459,7 @@ void LibArtDrawingKit::allocateChar(Unichar c, Graphic::Requisition & req) {
 }
 
 
-void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & req) {
+void LibArtDrawingKit::allocate_text(const Unistring & s, Graphic::Requisition & req) {
 //   font->allocate(s,req);
 }
 

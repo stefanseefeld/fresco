@@ -99,7 +99,7 @@ GLDrawingKit::~GLDrawingKit()
 #endif
 }
 
-void GLDrawingKit::setTransformation(Transform_ptr t)
+void GLDrawingKit::set_transformation(Transform_ptr t)
 {
   static GLdouble identity[16] = {1., 0., 0., 0.,
 				  0., 1., 0., 0.,
@@ -110,7 +110,7 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
     {
       tr = Transform::_duplicate(t);
       Transform::Matrix matrix;
-      tr->storeMatrix(matrix);
+      tr->store_matrix(matrix);
       GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
 			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
 			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
@@ -119,7 +119,7 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
     }
 }
 
-void GLDrawingKit::setClipping(Region_ptr r)
+void GLDrawingKit::set_clipping(Region_ptr r)
 {
   cl = Region::_duplicate(r);
   if (CORBA::is_nil(cl)) glScissor(0, 0, drawable->width(), drawable->height());
@@ -142,45 +142,45 @@ void GLDrawingKit::setClipping(Region_ptr r)
     }
 }
 
-void GLDrawingKit::setForeground(const Color &c)
+void GLDrawingKit::set_foreground(const Color &c)
 {
   fg = c;
   glColor4d(lt.red * fg.red, lt.green * fg.green, lt.blue * fg.blue, fg.alpha);
 }
 
-void GLDrawingKit::setLighting(const Color &c)
+void GLDrawingKit::set_lighting(const Color &c)
 {
   lt = c;
   glColor4d(lt.red * fg.red, lt.green * fg.green, lt.blue * fg.blue, fg.alpha);
 }
 
-void GLDrawingKit::setPointSize(Coord s)
+void GLDrawingKit::set_point_size(Coord s)
 {
   ps = s;
   // FIXME !: glPointSize uses pixel units !
   glPointSize(ps);
 }
 
-void GLDrawingKit::setLineWidth(Coord w)
+void GLDrawingKit::set_line_width(Coord w)
 {
   lw = w;
   // FIXME !: glLineWidth uses pixel units !
   glLineWidth(lw);
 }
 
-void GLDrawingKit::setLineEndstyle(Warsaw::DrawingKit::Endstyle style)
+void GLDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style)
 {
   es = style;
 }
 
-void GLDrawingKit::setSurfaceFillstyle(Warsaw::DrawingKit::Fillstyle style)
+void GLDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style)
 {
   if (fs == Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
   fs = style;
   if (fs == Warsaw::DrawingKit::textured) glEnable(GL_TEXTURE_2D);
 }
 
-void GLDrawingKit::setTexture(Raster_ptr t)
+void GLDrawingKit::set_texture(Raster_ptr t)
 {
   tx = CORBA::is_nil(t) ? 0 : textures.lookup(Raster::_duplicate(t));
   if (tx) glBindTexture(GL_TEXTURE_2D, tx->texture);
@@ -192,7 +192,7 @@ void GLDrawingKit::setTexture(Raster_ptr t)
 //   glRectf(l, t, r, b);
 // }
 
-void GLDrawingKit::drawPath(const Path &path)
+void GLDrawingKit::draw_path(const Path &path)
 {
   if (fs == Warsaw::DrawingKit::solid)
     {
@@ -222,7 +222,7 @@ void GLDrawingKit::drawPath(const Path &path)
     }
 }
 
-void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
+void GLDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
   if (fs == Warsaw::DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
   else if (fs == Warsaw::DrawingKit::textured)
@@ -247,7 +247,7 @@ void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
     }
 }
 
-void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
+void GLDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 {
   glPushMatrix();
   glScaled(upper.x - lower.x, upper.y - lower.y, upper.z - lower.z);
@@ -257,9 +257,9 @@ void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
   glPopMatrix();
 }
 
-void GLDrawingKit::drawImage(Raster_ptr raster)
+void GLDrawingKit::draw_image(Raster_ptr raster)
 {
-  Profiler prf("GLDrawingKit::drawImage");
+  Profiler prf("GLDrawingKit::draw_image");
   GLImage *glimage = images.lookup(Raster::_duplicate(raster));
   GLint tbackup = -1;
   if (fs == Warsaw::DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
@@ -287,17 +287,17 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
-void GLDrawingKit::setFontSize(CORBA::ULong s) {}
-void GLDrawingKit::setFontWeight(CORBA::ULong w) {}
-void GLDrawingKit::setFontFamily(const Unistring &f) {}
-void GLDrawingKit::setFontSubFamily(const Unistring &sf) {}
-void GLDrawingKit::setFontFullName(const Unistring &fn) {}
-void GLDrawingKit::setFontStyle(const Unistring &s) {}
-void GLDrawingKit::setFontAttr(const NVPair & nvp) {}
-void GLDrawingKit::allocateText(const Unistring &s, Graphic::Requisition &req) {}
-void GLDrawingKit::drawText(const Unistring &us) {}
-void GLDrawingKit::allocateChar(Unichar c, Graphic::Requisition &req) { font->allocateChar(c, req);}
-void GLDrawingKit::drawChar(Unichar c) { font->drawChar(c);}
+void GLDrawingKit::set_font_size(CORBA::ULong s) {}
+void GLDrawingKit::set_font_weight(CORBA::ULong w) {}
+void GLDrawingKit::set_font_family(const Unistring &f) {}
+void GLDrawingKit::set_font_subfamily(const Unistring &sf) {}
+void GLDrawingKit::set_font_fullname(const Unistring &fn) {}
+void GLDrawingKit::set_font_style(const Unistring &s) {}
+void GLDrawingKit::set_font_attribute(const NVPair & nvp) {}
+void GLDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
+void GLDrawingKit::draw_text(const Unistring &us) {}
+void GLDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { font->allocateChar(c, req);}
+void GLDrawingKit::draw_char(Unichar c) { font->drawChar(c);}
 
 extern "C" KitFactory *load()
 {

@@ -55,7 +55,7 @@ Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisit
     range(RefCount_var<BoundedRange>::increment(v)),
     axis(a)
 {
-  BoundedRange::Settings settings = v->getSettings();
+  BoundedRange::Settings settings = v->state();
   offset.lower = settings.lvalue/(settings.upper - settings.lower);
   offset.upper = settings.uvalue/(settings.upper - settings.lower);
   v->attach(Observer_var(translate->_this()));
@@ -64,8 +64,8 @@ Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisit
 void Scrollbar::init(Controller_ptr t)
 {
   body(t);
-  t->addParent(Graphic_var(_this()), 0);
-  appendController(t);
+  t->add_parent_graphic(Graphic_var(_this()), 0);
+  append_controller(t);
 }
 
 void Scrollbar::update(const CORBA::Any &any)
@@ -74,23 +74,23 @@ void Scrollbar::update(const CORBA::Any &any)
   any >>= settings;
   offset.lower = (settings->lvalue - settings->lower)/(settings->upper - settings->lower);
   offset.upper = (settings->uvalue - settings->lower)/(settings->upper - settings->lower);
-  needRedraw();
+  need_redraw();
 }
 
 void Scrollbar::draw(DrawTraversal_ptr traversal)
 {
-  traverseThumb(traversal);
+  traverse_thumb(traversal);
 }
 
 void Scrollbar::pick(PickTraversal_ptr traversal)
 {
-  if (grabbed(traversal->device()) || traversal->intersectsAllocation())
+  if (grabbed(traversal->device()) || traversal->intersects_allocation())
     {
-      traversal->enterController(Controller_var(_this()));
+      traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!grabbed(traversal->device())) traverseThumb(traversal);
+      if (!grabbed(traversal->device())) traverse_thumb(traversal);
       if (!traversal->picked()) traversal->hit();
-      traversal->leaveController();
+      traversal->leave_controller();
     }
 }
 
@@ -118,14 +118,14 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
 
 Command_ptr Scrollbar::drag() { return _drag->_this();}
 
-void Scrollbar::traverseThumb(Traversal_ptr traversal)
+void Scrollbar::traverse_thumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(Region_var(traversal->allocation()));
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
+  tx->load_identity();
   if (axis == xaxis)
     {
       Coord lower = allocation->lower.x;
@@ -143,5 +143,5 @@ void Scrollbar::traverseThumb(Traversal_ptr traversal)
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));
-  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
+  traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
 }

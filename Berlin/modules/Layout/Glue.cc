@@ -25,7 +25,7 @@ using namespace Warsaw;
 
 Glue::Glue(Axis a, Coord natural, Coord stretch, Coord shrink, Alignment align)
 {
-  GraphicImpl::initRequisition(requisition);
+  GraphicImpl::init_requisition(requisition);
   Warsaw::Graphic::Requirement *r = GraphicImpl::requirement(requisition, a);
   if (r != 0) GraphicImpl::require(*r, natural, stretch, shrink, align);
 }

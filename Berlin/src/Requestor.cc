@@ -25,15 +25,15 @@ using namespace Warsaw;
 
 Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
 {
-  GraphicImpl::defaultRequisition(requisition);
-  Warsaw::Graphic::Requirement *rx = GraphicImpl::requirement(requisition, xaxis);
-  Warsaw::Graphic::Requirement *ry = GraphicImpl::requirement(requisition, yaxis);
+  GraphicImpl::default_requisition(_requisition);
+  Warsaw::Graphic::Requirement *rx = GraphicImpl::requirement(_requisition, xaxis);
+  Warsaw::Graphic::Requirement *ry = GraphicImpl::requirement(_requisition, yaxis);
   rx->align = xalign;
   ry->align = yalign;
   rx->natural = rx->maximum = rx->minimum = xspan;
   ry->natural = ry->maximum = ry->minimum = yspan; 
 }
 
-Requestor::Requestor(const Warsaw::Graphic::Requisition &r) : requisition(r) {}
+Requestor::Requestor(const Warsaw::Graphic::Requisition &r) : _requisition(r) {}
 Requestor::~Requestor() {}
-void Requestor::request(Requisition &r) { r = requisition;}
+void Requestor::request(Warsaw::Graphic::Requisition &r) { r = _requisition;}

@@ -46,11 +46,11 @@ EditTextDemo::EditTextDemo(Application *a)
   Unicode::String str(34, chars);
     
   TextBuffer_var buf = command->text();
-  Graphic_var txt = text->simpleViewer(buf);
+  Graphic_var txt = text->simple_viewer(buf);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var frame = tool->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tool->rgb(txt, 0., 0., 0.)), 4000)),
 							     50.)), 20., spec, true);
-  buf->insertString(toCORBA(str));
-  application->append(Controller_var(tool->textInput(frame, buf)), Unicode::String("editable text demo"));
+  buf->insert_string(toCORBA(str));
+  application->append(Controller_var(tool->text_input(frame, buf)), Unicode::String("editable text demo"));
 };

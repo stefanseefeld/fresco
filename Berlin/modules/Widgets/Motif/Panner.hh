@@ -59,7 +59,7 @@ public:
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
   Warsaw::Command_ptr drag();
 private:
-  void traverseThumb(Warsaw::Traversal_ptr);
+  void traverse_thumb(Warsaw::Traversal_ptr);
   Impl_var<Observer> translateX;
   Impl_var<Observer> translateY;
   Impl_var<Dragger> _drag;

@@ -41,7 +41,7 @@ public:
   virtual void request(long n, Warsaw::Graphic::Requisition *requests, Warsaw::Graphic::Requisition &result) = 0;
   virtual void allocate(long n, Warsaw::Graphic::Requisition *requests, Warsaw::Region_ptr given, LayoutManager::Allocations result) = 0;
 
-  static void setSpan(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
+  static void set_span(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
 };
 
 class LayoutAlign : public LayoutManager
@@ -142,8 +142,8 @@ private:
   Warsaw::Coord tnatural, tstretch, tshrink;
   Warsaw::Graphic::Requisition requisition;
 
-  void allocateAxis(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-		    Warsaw::Coord, Warsaw::Coord, LayoutManager::Allocations);
+  void allocate_axis(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
+		     Warsaw::Coord, Warsaw::Coord, LayoutManager::Allocations);
   static Warsaw::Coord span(Warsaw::Coord, Warsaw::Graphic::Requirement &, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
 };
 
@@ -175,11 +175,11 @@ public:
   virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
   virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
 
-  static void computeRequest(Warsaw::Axis, Warsaw::Alignment, long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  static void computeAllocations(Warsaw::Axis, Warsaw::Graphic::Requisition &, bool, long, Warsaw::Graphic::Requisition *,
-				 Warsaw::Region_ptr, LayoutManager::Allocations);
-  static Warsaw::Coord computeLength(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
-  static Warsaw::Coord computeSqueeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
+  static void compute_request(Warsaw::Axis, Warsaw::Alignment, long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
+  static void compute_allocations(Warsaw::Axis, Warsaw::Graphic::Requisition &, bool, long, Warsaw::Graphic::Requisition *,
+				  Warsaw::Region_ptr, LayoutManager::Allocations);
+  static Warsaw::Coord compute_length(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
+  static Warsaw::Coord compute_squeeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
 private:
   Warsaw::Axis axis;
   Warsaw::Graphic::Requisition requisition;
@@ -195,8 +195,8 @@ public:
 
   virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
   virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
-  static void computeReversedAllocations(Warsaw::Axis, Warsaw::Graphic::Requisition &, bool, long, Warsaw::Graphic::Requisition *,
-					 Warsaw::Region_ptr, LayoutManager::Allocations);
+  static void compute_reversed_allocations(Warsaw::Axis, Warsaw::Graphic::Requisition &, bool, long, Warsaw::Graphic::Requisition *,
+					   Warsaw::Region_ptr, LayoutManager::Allocations);
 private:
   Warsaw::Axis axis;
   Warsaw::Graphic::Requisition requisition;
@@ -213,7 +213,7 @@ public:
 
   virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
   virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
-  static void computeRequestFirstAligned(Warsaw::Axis, long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
+  static void compute_request_first_aligned(Warsaw::Axis, long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
 private:
   Warsaw::Axis axis;
   Warsaw::Graphic::Requisition requisition;

@@ -90,10 +90,9 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, 
-				  Region_ptr region, Transform_ptr transform)
+void TraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-  Trace trace("TraversalImpl::traverseChild");
+  Trace trace("TraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
   cumulative->copy(Transform_var(transformation()));

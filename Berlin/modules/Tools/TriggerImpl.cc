@@ -33,13 +33,17 @@ TriggerImpl::TriggerImpl() : ControllerImpl(false) {}
 TriggerImpl::~TriggerImpl()
 {
   Trace trace("Trigger::~Trigger");
-  if (!CORBA::is_nil(command)) command->destroy();
+  if (!CORBA::is_nil(command))
+    try { command->destroy();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) {}
 }
 void TriggerImpl::action(Command_ptr c)
 {
   Trace trace("TriggerImpl::action");
   MutexGuard guard(mutex);
-  if (!CORBA::is_nil(command)) command->destroy();
+  if (!CORBA::is_nil(command))
+    try { command->destroy();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) {}
   command = Command::_duplicate(c);
 }
 
@@ -76,7 +80,7 @@ void TriggerImpl::keyPress(const Input::Event &event)
 	  clear(Warsaw::Controller::pressed);
 	}
     }
-  else ControllerImpl::keyPress(event);
+  else ControllerImpl::key_press(event);
 }
 
 void TriggerImpl::execute(const CORBA::Any &any)

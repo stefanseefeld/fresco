@@ -59,14 +59,14 @@ void Placement::traverse(Traversal_ptr traversal)
       result->copy(allocation);
 
       Warsaw::Graphic::Requisition r;
-      GraphicImpl::initRequisition(r);
+      GraphicImpl::init_requisition(r);
       MonoGraphic::request(r);
       RegionImpl *tmp = static_cast<RegionImpl *>(result);
       layout->allocate(1, &r, allocation, &tmp);
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-      tx->loadIdentity();
+      tx->load_identity();
       result->normalize(Transform_var(tx->_this()));
-      traversal->traverseChild(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
+      traversal->traverse_child(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
     }
   else MonoGraphic::traverse(traversal);
 }
@@ -75,12 +75,12 @@ void Placement::allocate(Tag, const Allocation::Info &a)
 {
   region->copy(a.allocation);
   Warsaw::Graphic::Requisition r;
-  GraphicImpl::initRequisition(r);
+  GraphicImpl::init_requisition(r);
   MonoGraphic::request(r);
   RegionImpl *cast = region;
   layout->allocate(1, &r, a.allocation, &cast);
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
+  tx->load_identity();
   region->normalize(Transform_var(tx->_this()));
   a.transformation->premultiply(Transform_var(tx->_this()));
   a.allocation->copy(Region_var(region->_this()));

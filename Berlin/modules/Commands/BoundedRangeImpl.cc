@@ -39,10 +39,16 @@ BoundedRangeImpl::~BoundedRangeImpl()
 {
 };
 
-BoundedRange::Settings BoundedRangeImpl::getSettings()
+BoundedRange::Settings BoundedRangeImpl::state()
 {
   MutexGuard guard(mutex);
   return settings;
+}
+
+void BoundedRangeImpl::state(const Warsaw::BoundedRange::Settings &s)
+{
+  MutexGuard guard(mutex);
+  settings = s;
 }
 
 Coord BoundedRangeImpl::lower()

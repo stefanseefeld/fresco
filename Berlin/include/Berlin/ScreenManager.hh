@@ -44,7 +44,6 @@ public:
   ~ScreenManager();
   void damage(Warsaw::Region_ptr);
   void repair();
-  void nextEvent() { emanager->nextEvent();}
   void run();
 private:
   ScreenImpl                 *screen;
@@ -57,4 +56,4 @@ private:
   Prague::Mutex mutex;
 };
 
-#endif /* _ScreenManager_hh */
+#endif

@@ -32,8 +32,8 @@ module Warsaw
   interface PickTraversal : Traversal
     {
       readonly attribute Input::Device device;
-      void enterController(in Controller c);
-      void leaveController();
+      void enter_controller(in Controller c);
+      void leave_controller();
       void hit();
       boolean picked();
       void grab();

@@ -151,9 +151,9 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    */
   Graphic_var box = axis == xaxis ? layout->hbox() : layout->vbox();
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var quad = layout->fixedSize(Graphic_var(Warsaw::Graphic::_nil()), 80., 80.);
-  box->append(Graphic_var(tool->frame(quad, 20., spec, true)));
-  box->append(Graphic_var(tool->frame(quad, 20., spec, true)));
+  Graphic_var quad = layout->fixed_size(Graphic_var(Warsaw::Graphic::_nil()), 80., 80.);
+  box->append_graphic(Graphic_var(tool->frame(quad, 20., spec, true)));
+  box->append_graphic(Graphic_var(tool->frame(quad, 20., spec, true)));
   Controller_var thumb = tool->dragger(box, Command_var(slider->drag()));
   slider->init(thumb);
   /*
@@ -161,11 +161,11 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    */
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::inset);
   Graphic_var inset = tool->frame(Graphic_var(slider->_this()), 20., spec, false);
-  Controller_var root = tool->group(Graphic_var(layout->alignAxis(inset, axis == xaxis ? yaxis : xaxis, 1.0)));
+  Controller_var root = tool->group(Graphic_var(layout->align_axis(inset, axis == xaxis ? yaxis : xaxis, 1.0)));
   /*
    * now wire up the control structure
    */
-  root->appendController(Controller_var(slider->_this()));
+  root->append_controller(Controller_var(slider->_this()));
   return root._retn();
 }
 
@@ -180,13 +180,13 @@ Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
   panner->init(thumb);
 
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::inset);
-  Graphic_var fixed = layout->fixedSize(Graphic_var(panner->_this()), 1000., 1000.);
+  Graphic_var fixed = layout->fixed_size(Graphic_var(panner->_this()), 1000., 1000.);
   Graphic_var inset = tool->frame(fixed, 20., spec, true);
   Controller_var root = tool->group(inset);
   /*
    * now wire up the control structure
    */
-  root->appendController(Controller_var(panner->_this()));
+  root->append_controller(Controller_var(panner->_this()));
   return root._retn();
 }
 
@@ -201,7 +201,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   flexible.defined = true;
   flexible.minimum = 0.;
   flexible.natural = 0.;
-  flexible.maximum = layout->fil();
+  flexible.maximum = layout->fill();
   flexible.align = 0.;
   fixed.defined = true;
   fixed.minimum = 120.;
@@ -229,23 +229,23 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   CommandImpl *backward = new Backward(x);
   activate(backward);
   Controller_var lower = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(backward->_this()));
-  outset = layout->fixedSize(Graphic_var(tool->dynamicTriangle(Graphic_var(Graphic::_nil()), 20.,
-							       Warsaw::Controller::pressed, in, out, true,
-							       a == xaxis ? Warsaw::ToolKit::left : Warsaw::ToolKit::up, lower)), 120., 120.);
+  outset = layout->fixed_size(Graphic_var(tool->dynamic_triangle(Graphic_var(Graphic::_nil()), 20.,
+							         Warsaw::Controller::pressed, in, out, true,
+							         a == xaxis ? Warsaw::ToolKit::left : Warsaw::ToolKit::up, lower)), 120., 120.);
   lower->body(outset);
 
   CommandImpl *forward = new Forward(x);
   activate(forward);
   Controller_var upper = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(forward->_this()));
-  outset = layout->fixedSize(Graphic_var(tool->dynamicTriangle(Graphic_var(Warsaw::Graphic::_nil()), 20.,
-							       Warsaw::Controller::pressed, in, out, true,
-							       a == xaxis ? Warsaw::ToolKit::right : Warsaw::ToolKit::down, upper)), 120., 120.);
+  outset = layout->fixed_size(Graphic_var(tool->dynamic_triangle(Graphic_var(Warsaw::Graphic::_nil()), 20.,
+							         Warsaw::Controller::pressed, in, out, true,
+							         a == xaxis ? Warsaw::ToolKit::right : Warsaw::ToolKit::down, upper)), 120., 120.);
   upper->body(outset);
 
   Graphic_var box = a == xaxis ? layout->hbox() : layout->vbox();
-  box->append(lower);
-  box->append(Controller_var(scrollbar->_this()));
-  box->append(upper);
+  box->append_graphic(lower);
+  box->append_graphic(Controller_var(scrollbar->_this()));
+  box->append_graphic(upper);
   /*
    * now put it into an inset
    */
@@ -255,13 +255,13 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   /*
    * now wire up the control structure
    */
-  root->appendController(lower);
-  root->appendController(Controller_var(scrollbar->_this()));
-  root->appendController(upper);
+  root->append_controller(lower);
+  root->append_controller(Controller_var(scrollbar->_this()));
+  root->append_controller(upper);
   return root._retn();
 }
 
-Choice_ptr WidgetKit::toggleChoice()
+Choice_ptr WidgetKit::toggle_choice()
 {
   RefCount_var<Selection> selection = command->group(Selection::exclusive);
   Choice *choice = new ToggleChoice(selection, layout, tool, WidgetKit_var(_this()));
@@ -270,7 +270,7 @@ Choice_ptr WidgetKit::toggleChoice()
   return choice->_this();
 }
 
-Choice_ptr WidgetKit::checkboxChoice()
+Choice_ptr WidgetKit::checkbox_choice()
 {
   RefCount_var<Selection> selection = command->group(0);
   Choice *choice = new CheckboxChoice(selection, layout, tool, WidgetKit_var(_this()));
@@ -292,23 +292,23 @@ Controller_ptr WidgetKit::terminal()
 
 Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
 {
-  Viewport_var viewport = layout->scrollable(g);
+  Layout::Viewport_var viewport = layout->scrollable(g);
   Controller_var xscroller = scrollbar(viewport->adjustment(xaxis), xaxis);
   Controller_var yscroller = scrollbar(viewport->adjustment(yaxis), yaxis);
   Graphic_var hbox1 = layout->hbox();
   Warsaw::ToolKit::FrameSpec inset;
   inset.brightness(0.5); inset._d(Warsaw::ToolKit::inset);
-  hbox1->append(Graphic_var(tool->frame(viewport, 20, inset, false)));
-  hbox1->append(yscroller);
+  hbox1->append_graphic(Graphic_var(tool->frame(viewport, 20, inset, false)));
+  hbox1->append_graphic(yscroller);
   Graphic_var hbox2 = layout->hbox();
-  hbox2->append(xscroller);
-  hbox2->append(Graphic_var(layout->fixedSize(Graphic_var(Warsaw::Graphic::_nil()), 160., 160.)));
+  hbox2->append_graphic(xscroller);
+  hbox2->append_graphic(Graphic_var(layout->fixed_size(Graphic_var(Warsaw::Graphic::_nil()), 160., 160.)));
   Graphic_var vbox = layout->vbox();
-  vbox->append(hbox1);
-  vbox->append(hbox2);
+  vbox->append_graphic(hbox1);
+  vbox->append_graphic(hbox2);
   Controller_var group = tool->group(vbox);
-  group->appendController(xscroller);
-  group->appendController(yscroller);
+  group->append_controller(xscroller);
+  group->append_controller(yscroller);
   return group._retn();
 }
 

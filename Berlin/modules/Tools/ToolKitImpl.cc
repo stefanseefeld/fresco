@@ -50,12 +50,12 @@ public:
   virtual void draw(DrawTraversal_ptr traversal)
   {
     DrawingKit_var kit = traversal->kit();
-    kit->saveState();
+    kit->save();
     Color color = kit->foreground();
     color.red = red, color.green = green, color.blue = blue;
     kit->foreground(color);
     MonoGraphic::traverse(traversal);
-    kit->restoreState();    
+    kit->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 private:
@@ -70,12 +70,12 @@ public:
   virtual void draw(DrawTraversal_ptr traversal)
   {
     DrawingKit_var kit = traversal->kit();
-    kit->saveState();
+    kit->save();
     Color color = kit->lighting();
     color.red *= red, color.green *= green, color.blue *= blue;
     kit->lighting(color);
     MonoGraphic::traverse(traversal);
-    kit->restoreState();    
+    kit->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 private:
@@ -90,12 +90,12 @@ public:
   virtual void draw(DrawTraversal_ptr traversal) 
   {
     DrawingKit_var kit = traversal->kit();
-    kit->saveState();
+    kit->save();
     Color color = kit->foreground();
     color.alpha *= alpha;
     kit->foreground(color);
     MonoGraphic::traverse(traversal);
-    kit->restoreState();    
+    kit->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 private:
@@ -185,7 +185,7 @@ Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Warsaw::Telltal
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::framedTriangle(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill, Warsaw::ToolKit::Direction d)
+Graphic_ptr ToolKitImpl::framed_triangle(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill, Warsaw::ToolKit::Direction d)
 {
   Frame::Renderer *renderer = 0;
   switch (spec._d())
@@ -203,8 +203,8 @@ Graphic_ptr ToolKitImpl::framedTriangle(Graphic_ptr g, Coord thickness, const Wa
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
-					 const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Warsaw::ToolKit::Direction d, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamic_triangle(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
+					  const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Warsaw::ToolKit::Direction d, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
@@ -233,7 +233,7 @@ Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltal
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::framedDiamond(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
+Graphic_ptr ToolKitImpl::framed_diamond(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
 {
   Frame::Renderer *renderer = 0;
   switch (spec._d())
@@ -251,8 +251,8 @@ Graphic_ptr ToolKitImpl::framedDiamond(Graphic_ptr g, Coord thickness, const War
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
-					const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamic_diamond(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
+					 const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
@@ -342,7 +342,7 @@ Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
   return stepper->_this();
 }
 
-Controller_ptr ToolKitImpl::textInput(Graphic_ptr g, TextBuffer_ptr buffer)
+Controller_ptr ToolKitImpl::text_input(Graphic_ptr g, TextBuffer_ptr buffer)
 {
   TextInput *input = new TextInput(buffer);
   activate(input);

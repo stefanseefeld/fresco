@@ -35,7 +35,7 @@ ServerImpl::ServerImpl() : thread(&ServerImpl::run, this) {}
 //. no pretense of having security, we take over and handle security manually
 //. once you've found the server. It allocates contexts. It's pretty simple.
 
-ServerContext_ptr ServerImpl::newServerContext(ClientContext_ptr c) throw (SecurityException)
+ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c) throw (SecurityException)
 {
   MutexGuard guard (mutex);
   Impl_var<ServerContextImpl> sc(new ServerContextImpl(this, c));
@@ -43,14 +43,14 @@ ServerContext_ptr ServerImpl::newServerContext(ClientContext_ptr c) throw (Secur
   return sc._retn()->_this();
 }
 
-void ServerImpl::setSingleton(const char *name, CORBA::Object_ptr singleton) 
+void ServerImpl::set_singleton(const char *name, CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException)
 {
   MutexGuard guard (mutex);
   singletons[name] = singleton;
 }
 
-void ServerImpl::delSingleton(const char *name) 
+void ServerImpl::remove_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
   MutexGuard guard (mutex);
@@ -58,7 +58,7 @@ void ServerImpl::delSingleton(const char *name)
   if (p != singletons.end()) singletons.erase(p);
 }
 
-CORBA::Object_ptr ServerImpl::getSingleton(const char *name) 
+CORBA::Object_ptr ServerImpl::get_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
   MutexGuard guard (mutex);
@@ -69,6 +69,7 @@ CORBA::Object_ptr ServerImpl::getSingleton(const char *name)
 
 void ServerImpl::ping()
 {
+  Trace trace("ServerImpl::ping");
   MutexGuard guard (mutex);
   clist_t tmp;
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
@@ -76,6 +77,7 @@ void ServerImpl::ping()
       if ((*i)->ping()) tmp.push_back(*i);	    
       else
 	{
+	  Trace trace("ServerContext cleanup");
 	  PortableServer::POA_var poa = (*i)->_default_POA();
 	  PortableServer::ObjectId *oid = poa->servant_to_id(*i);
 	  try

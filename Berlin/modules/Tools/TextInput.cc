@@ -30,17 +30,17 @@
 using namespace Prague;
 using namespace Warsaw;
 
-void TextInput::keyPress(const Input::Event &event)
+void TextInput::key_press(const Input::Event &event)
 {
-  Trace trace("TextInput::keyPress");
+  Trace trace("TextInput::key_press");
   const Input::Toggle &toggle = event[0].attr.selection();
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
-  if (uc.is_printable()) buffer->insertChar(Unicode::toCORBA(uc));
+  if (uc.is_printable()) buffer->insert_char(Unicode::toCORBA(uc));
   else switch (toggle.number)
     {
-    case Unicode::UC_BACKSPACE:     buffer->removeBackward(1); break; // backspace
+    case Unicode::UC_BACKSPACE:     buffer->remove_backward(1); break; // backspace
     case Unicode::KEY_CURSOR_LEFT:  buffer->backward(); break;        // left
     case Unicode::KEY_CURSOR_RIGHT: buffer->forward(); break;         // right
-    default:                        ControllerImpl::keyPress(event); break;
+    default:                        ControllerImpl::key_press(event); break;
     };
 }

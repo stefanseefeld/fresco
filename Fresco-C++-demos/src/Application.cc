@@ -77,7 +77,7 @@ Application::Application(ServerContext_ptr sc)
     ik(resolve_kit<ImageKit>(server, "IDL:Warsaw/ImageKit:1.0")),
     gk(resolve_kit<GadgetKit>(server, "IDL:Warsaw/GadgetKit:1.0")),
     vbox(lk->vbox()),
-    choice(wk->toggleChoice()),
+    choice(wk->toggle_choice()),
     mapper(new Mapper(demos, Selection_var(choice->state())))
 {
   char *berlin_root = getenv("BERLIN_ROOT");
@@ -91,9 +91,9 @@ Application::Application(ServerContext_ptr sc)
   Raster_var raster = ik->create((string(berlin_root) + string("/etc/PNG/berlin-48.png")).c_str());
   Image_var  image = fk->pixmap(raster);
   Graphic_var hbox = lk->hbox();
-  hbox->append(image);
-  hbox->append(Graphic_var(lk->hfil()));
-  vbox->append(hbox);
+  hbox->append_graphic(image);
+  hbox->append_graphic(Graphic_var(lk->hfill()));
+  vbox->append_graphic(hbox);
 
   Graphic_var glyph = tk->chunk(Unicode::toCORBA(Unicode::String("close")));
   done = lk->margin(Graphic_var(ttk->rgb(glyph, 0., 0., 0.)), 20.);
@@ -103,19 +103,19 @@ Application::Application(ServerContext_ptr sc)
 
 void Application::append(Controller_ptr demo, const Unicode::String &name)
 {
-  Item item = makeItem(name);
+  Item item = make_item(name);
 
   Graphic_var hbox = lk->hbox();
-  hbox->append(Graphic_var(lk->hfil()));
+  hbox->append_graphic(Graphic_var(lk->hfill()));
   Trigger_var button1 = wk->button(done, Command_var(Command::_nil()));
-  hbox->append(button1);
-  hbox->append(Graphic_var(lk->hspace(200.)));
+  hbox->append_graphic(button1);
+  hbox->append_graphic(Graphic_var(lk->hspace(200.)));
   Trigger_var button2 = wk->button(settings, item.settings);
-  hbox->append(button2);
-  hbox->append(Graphic_var(lk->hfil()));
+  hbox->append_graphic(button2);
+  hbox->append_graphic(Graphic_var(lk->hfill()));
   Graphic_var vb = lk->vbox();
-  vb->append(demo);
-  vb->append(hbox);
+  vb->append_graphic(demo);
+  vb->append_graphic(hbox);
 
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
@@ -127,9 +127,9 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   decorator = gk->zoomer(decorator, item.zoom);
 
   Controller_var group = ttk->group(Graphic_var(lk->align(decorator, 0., 0.)));
-  group->appendController(demo);
-  group->appendController(button1);
-  group->appendController(button2);
+  group->append_controller(demo);
+  group->append_controller(button1);
+  group->append_controller(button2);
   Window_var window = dk->transient(group);
   button1->action(Command_var(dk->map(window, false)));
   item.mapper = dk->map(window, true);
@@ -138,11 +138,11 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
 
 void Application::run()
 {
-  vbox->append(Graphic_var(lk->vspace(200.)));
+  vbox->append_graphic(Graphic_var(lk->vspace(200.)));
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::concav);
-  vbox->append(Graphic_var(ttk->frame(choice, 40., spec, false)));
-  vbox->append(Graphic_var(lk->vspace(200.)));
+  vbox->append_graphic(Graphic_var(ttk->frame(choice, 40., spec, false)));
+  vbox->append_graphic(Graphic_var(lk->vspace(200.)));
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
   Graphic_var label1 = lk->margin(glyph1, 20.);
   Trigger_var run = wk->button(Graphic_var(ttk->rgb(label1, 0., 0., 0.)), Command_var(mapper->_this()));
@@ -151,27 +151,27 @@ void Application::run()
   ExitCommand *cmd = new ExitCommand();
   Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
 
-  vbox->append(Graphic_var(lk->vspace(200.)));
+  vbox->append_graphic(Graphic_var(lk->vspace(200.)));
 
   Graphic_var hbox = lk->hbox();
-  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
-  hbox->append(run);
-  hbox->append(Graphic_var(lk->hspace(200.)));
-  hbox->append(quit);
-  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
-  vbox->append(hbox);
+  hbox->append_graphic(Graphic_var(lk->hglue(200., 0., 10000.)));
+  hbox->append_graphic(run);
+  hbox->append_graphic(Graphic_var(lk->hspace(200.)));
+  hbox->append_graphic(quit);
+  hbox->append_graphic(Graphic_var(lk->hglue(200., 0., 10000.)));
+  vbox->append_graphic(hbox);
   Graphic_var margin = lk->margin(vbox, 200.);
   
   spec.brightness(1.0); spec._d(ToolKit::outset);
   Controller_var group = ttk->group(Graphic_var(ttk->frame(margin, 10., spec, true)));
-  group->appendController(choice);
-  group->appendController(run);
-  group->appendController(quit);
+  group->append_controller(choice);
+  group->append_controller(run);
+  group->append_controller(quit);
   Window_var window = dk->shell(group);
   while (true) Thread::delay(Prague::Time(1000));
 }
 
-Application::Item Application::makeItem(const Unicode::String &name)
+Application::Item Application::make_item(const Unicode::String &name)
 {
   Item item;
 
@@ -179,7 +179,7 @@ Application::Item Application::makeItem(const Unicode::String &name)
    * insert an item into the choice
    */
   Graphic_var label = tk->chunk(Unicode::toCORBA(name));
-  item.id = choice->appendItem(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
+  item.id = choice->append_item(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
   /*
    * create the control elements
    */
@@ -194,78 +194,78 @@ Application::Item Application::makeItem(const Unicode::String &name)
   /*
    * create the settings window
    */
-  Grid::Index index;
+  Layout::Grid::Index index;
   index.col = 2, index.row = 7;
-  Grid_var grid = lk->fixedGrid(index);
+  Layout::Grid_var grid = lk->fixed_grid(index);
   index.row = 0;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("alpha")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.alpha, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.alpha, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   index.row = 1;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("red")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.red, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.red, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   index.row = 2;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("green")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.green, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.green, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   index.row = 3;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("blue")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.blue, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.blue, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   index.row = 4;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("z rotation")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.zrotation, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.zrotation, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   index.row = 5;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("y rotation")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.yrotation, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.yrotation, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   index.row = 6;
   index.col = 0;
   grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("zoom")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->marginFlexible(Graphic_var(wk->slider(item.zoom, xaxis)),
-								      100., 100., 100.)), 0.5)), index);
+  grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.zoom, xaxis)),
+								       100., 100., 100.)), 0.5)), index);
 
   Graphic_var hbox = lk->hbox();
-  hbox->append(Graphic_var(lk->hfil()));
+  hbox->append_graphic(Graphic_var(lk->hfill()));
   Graphic_var glyph = tk->chunk(Unicode::toCORBA(Unicode::String("done")));
   Graphic_var dlabel = lk->margin(glyph, 20.);
   Trigger_var done = wk->button(Graphic_var(ttk->rgb(dlabel, 0., 0., 0.)), Command::_nil());
-  hbox->append(done);
-  hbox->append(Graphic_var(lk->hfil()));
+  hbox->append_graphic(done);
+  hbox->append_graphic(Graphic_var(lk->hfill()));
 
   Graphic_var vbox = lk->vbox();
-  vbox->append(Graphic_var(lk->vspace(200.)));
-  vbox->append(grid);
-  vbox->append(Graphic_var(lk->vspace(200.)));
-  vbox->append(hbox);
+  vbox->append_graphic(Graphic_var(lk->vspace(200.)));
+  vbox->append_graphic(grid);
+  vbox->append_graphic(Graphic_var(lk->vspace(200.)));
+  vbox->append_graphic(hbox);
   ToolKit::FrameSpec outset;
   outset.brightness(0.5); outset._d(ToolKit::outset);
   Controller_var root = ttk->group(Graphic_var(ttk->frame(Graphic_var(lk->margin(vbox, 100.)), 20., outset, true)));

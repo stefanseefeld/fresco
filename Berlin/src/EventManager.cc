@@ -55,16 +55,17 @@ EventManager::~EventManager()
   for (flist_t::iterator i = focus.begin(); i != focus.end(); i++) deactivate(*i);
 }
 
-bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
+bool EventManager::request_focus(Controller_ptr c, Input::Device d)
 {
+  Trace trace("EventManager::request_focus");
   if (d < focus.size()) return focus[d]->request(c);
   return false;
 }
 
-void EventManager::nextEvent()
+void EventManager::next_event()
 {
-  Trace trace("EventManager::nextEvent");
-  Input::Event *e = Console::nextEvent();
+  Trace trace("EventManager::next_event");
+  Input::Event *e = Console::next_event();
   if (!e) return; // repair
   Input::Event_var event(e);
   /*

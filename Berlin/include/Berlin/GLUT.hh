@@ -202,7 +202,7 @@ public:
     static DrawableTie<Drawable> *drawable() { return _drawable; }
     static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord) { return 0; }
     
-    Input::Event *nextEvent();
+    Input::Event *next_event();
     void wakeup();
     void activate_autoplay() { _autoplay = true; }
   

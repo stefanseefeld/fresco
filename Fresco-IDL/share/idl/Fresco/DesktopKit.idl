@@ -56,7 +56,7 @@ module Warsaw
 
       Command move(in Window w);
       Command resize(in Window w);
-      Command moveResize(in Window w, in Alignment x, in Alignment y, in short b);
+      Command move_resize(in Window w, in Alignment x, in Alignment y, in short b);
       Command relayer(in Window w);
       Command map(in Window w, in boolean f);
     };

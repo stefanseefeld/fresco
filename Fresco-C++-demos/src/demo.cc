@@ -50,19 +50,20 @@ int main(int argc, char **argv)
   ClientContextImpl *client = new ClientContextImpl;
 
   Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
-  ServerContext_var server = s->newServerContext(ClientContext_var(client->_this()));
+  ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
   Application *application = new Application(server);
-  LayoutDemo *layout = new LayoutDemo(application);
-  TextDemo *text = new TextDemo(application);
-  EditTextDemo *etext = new EditTextDemo(application);
-  RasterDemo *raster = new RasterDemo(application);
-  ColorDemo *color = new ColorDemo(application);
-  LogoDemo *logo = new LogoDemo(application);
-  FocusDemo *focus = new FocusDemo(application);
-  ViewportDemo *viewport = new ViewportDemo(application);
-  DocDemo *document = new DocDemo(application);
-  TermDemo *terminal = new TermDemo(application);
+
+  Demo *layout   = new LayoutDemo(application);
+  Demo *text     = new TextDemo(application);
+  Demo *edit     = new EditTextDemo(application);
+  Demo *raster   = new RasterDemo(application);
+  Demo *color    = new ColorDemo(application);
+  Demo *logo     = new LogoDemo(application);
+  Demo *focus    = new FocusDemo(application);
+  Demo *viewport = new ViewportDemo(application);
+  Demo *document = new DocDemo(application);
+  Demo *terminal = new TermDemo(application);
   application->run();
   delete terminal;
   delete document;
@@ -71,7 +72,7 @@ int main(int argc, char **argv)
   delete logo;
   delete color;
   delete raster;
-  delete etext;
+  delete edit;
   delete text;
   delete layout;
   delete application;

@@ -40,9 +40,9 @@ class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
   Warsaw::Command_ptr log(const char *);
   Warsaw::MacroCommand_ptr composite();
   Warsaw::TelltaleConstraint_ptr exclusive(Warsaw::Telltale::Mask);
-  Warsaw::TelltaleConstraint_ptr selectionRequired();
-  Warsaw::Telltale_ptr     constrainedTelltale(Warsaw::TelltaleConstraint_ptr);
-  Warsaw::Telltale_ptr     normalTelltale();
+  Warsaw::TelltaleConstraint_ptr selection_required();
+  Warsaw::Telltale_ptr     constrained_telltale(Warsaw::TelltaleConstraint_ptr);
+  Warsaw::Telltale_ptr     normal_telltale();
   Warsaw::Selection_ptr    group(Warsaw::Selection::Policy);
   Warsaw::BoundedValue_ptr bvalue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   Warsaw::BoundedRange_ptr brange(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);

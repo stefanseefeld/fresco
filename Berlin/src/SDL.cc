@@ -130,9 +130,9 @@ static void writeEvent(SDL_Event &e)
   cout << endl;
 }
 
-Input::Event *SDLConsole::nextEvent()
+Input::Event *SDLConsole::next_event()
 {
-  Prague::Trace trace("SDL::Console::nextEvent");
+  Prague::Trace trace("SDL::Console::next_event");
   SDL_Event event;
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);

@@ -32,19 +32,18 @@ class DesktopImpl : public virtual POA_Warsaw::Desktop,
                     public ControllerImpl
 {
  public:
-  DesktopImpl(Warsaw::Stage_ptr);
+  DesktopImpl(Layout::Stage_ptr);
   virtual ~DesktopImpl();
   virtual void body(Warsaw::Graphic_ptr) {}
-  virtual Warsaw::Graphic_ptr body() { return CORBA::is_nil(stage) ? Warsaw::Stage::_nil() : Warsaw::Stage::_duplicate(stage);}
-//   virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual Warsaw::Graphic_ptr body() { return CORBA::is_nil(stage) ? Layout::Stage::_nil() : Layout::Stage::_duplicate(stage);}
   Warsaw::Region_ptr bbox() { return stage->bbox();}
   CORBA::Long layers() { return stage->layers();}
-  Warsaw::StageHandle_ptr layer(Warsaw::Stage::Index l) { return stage->layer(l);}
+  Layout::StageHandle_ptr layer(Layout::Stage::Index l) { return stage->layer(l);}
   void begin() { stage->begin();}
   void end() { stage->end();}
-  Warsaw::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Stage::Index);
+  Layout::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Layout::Stage::Index);
  private:
-  Warsaw::Stage_var stage;
+  Layout::Stage_var stage;
 };
 
 #endif 

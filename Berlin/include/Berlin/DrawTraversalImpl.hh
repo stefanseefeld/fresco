@@ -36,9 +36,9 @@ public:
   DrawTraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr, Warsaw::DrawingKit_ptr);
   DrawTraversalImpl(const DrawTraversalImpl &);
   virtual ~DrawTraversalImpl();
-  virtual CORBA::Boolean intersectsAllocation();
-  virtual CORBA::Boolean intersectsRegion(Warsaw::Region_ptr);
-  virtual void traverseChild(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
+  virtual CORBA::Boolean intersects_allocation();
+  virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr);
+  virtual void traverse_child(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
   virtual void visit(Warsaw::Graphic_ptr);
   virtual Warsaw::Traversal::order direction() { return Warsaw::Traversal::up;}
   virtual CORBA::Boolean ok() { return true;}

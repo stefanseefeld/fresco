@@ -44,17 +44,17 @@ void TextChunk::request(Warsaw::Graphic::Requisition &r)
   r.y.align   = yalign;
 }
 
-void TextChunk::getText(Unicode::String &u) 
+void TextChunk::get_text(Unicode::String &u) 
 { 
   u = Unicode::String(myChar);
 }
 
-unsigned long TextChunk::getLength() 
+unsigned long TextChunk::get_length() 
 { 
   return 1;
 }
 
 void TextChunk::draw(DrawTraversal_ptr dt)
 {
-  DrawingKit_var(dt->kit())->drawChar(myChar);  
+  DrawingKit_var(dt->kit())->draw_char(myChar);  
 }

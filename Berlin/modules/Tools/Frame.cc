@@ -37,7 +37,7 @@ using namespace Warsaw;
 
 Frame::Frame(Coord t, Frame::Renderer *r) : thickness(t), allocation(new RegionImpl), renderer(r) {}
 Frame::~Frame() { Trace trace("Frame::~Frame");}
-void Frame::request(Requisition &requisition)
+void Frame::request(Warsaw::Graphic::Requisition &requisition)
 {
   MonoGraphic::request(requisition);
   Coord t = thickness + thickness;
@@ -58,7 +58,7 @@ void Frame::request(Requisition &requisition)
 void Frame::traverse(Traversal_ptr traversal)
 {
   Trace trace("Frame::traverse");
-  if (!traversal->intersectsAllocation()) return;
+  if (!traversal->intersects_allocation()) return;
   traversal->visit(Graphic_var(_this()));
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
@@ -67,34 +67,30 @@ void Frame::traverse(Traversal_ptr traversal)
       allocation->copy(Region_var(traversal->allocation()));
 
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-      tx->loadIdentity();
+      tx->load_identity();
 
       Allocation::Info info;
       info.allocation = allocation->_this();
       info.transformation = tx->_this();
       allocate(0, info);
-      traversal->traverseChild(child, 0, info.allocation, info.transformation);
+      traversal->traverse_child(child, 0, info.allocation, info.transformation);
     }
 }
 
 void Frame::extension(const Allocation::Info &info, Region_ptr region)
 {
-  if (!CORBA::is_nil(info.allocation)) defaultExtension(info, region);
+  if (!CORBA::is_nil(info.allocation)) default_extension(info, region);
   else MonoGraphic::extension(info, region);
 }
 
 void Frame::allocate(Tag, const Allocation::Info &info)
 {
-  Requisition req;
-  GraphicImpl::initRequisition(req);
+  Warsaw::Graphic::Requisition req;
+  GraphicImpl::init_requisition(req);
   MonoGraphic::request(req);
   allocation->valid = true;
   Region::Allotment a;
-  /*
-   * same as Placement::normalTransform...
-   */
   Vertex o;
-
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->copy(info.allocation);
 
@@ -104,14 +100,14 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   
   Vertex delta;
   info.allocation->span(xaxis, a);
-  allocateSpan(req.x, a, thickness, 0.);
+  allocate_span(req.x, a, thickness, 0.);
   allocation->lower.x = -(a.end - a.begin) * a.align;
   allocation->upper.x = allocation->lower.x + (a.end - a.begin);
   allocation->xalign = a.align;
   delta.x = a.begin - allocation->lower.x;
 
   info.allocation->span(yaxis, a);
-  allocateSpan(req.y, a, thickness, 0.);
+  allocate_span(req.y, a, thickness, 0.);
   allocation->lower.y = -(a.end - a.begin) * a.align;
   allocation->upper.y = allocation->lower.y + (a.end - a.begin);
   allocation->yalign = a.align;
@@ -122,7 +118,7 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   info.transformation->translate(delta);
 }
 
-void Frame::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
+void Frame::allocate_span(const Warsaw::Graphic::Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
 {
   a.begin += margin;
   a.end -= margin;
@@ -131,26 +127,31 @@ void Frame::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margi
 DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame::Renderer *r2)
   : Frame(t, r2), renderer1(r1), renderer2(r2), on(true), mask(m)
 {
+  Trace trace("DynamicFrame::DynamicFrame");
 }
 
 DynamicFrame::~DynamicFrame()
 {
   Trace trace("DynamicFrame::~DynamicFrame");
-  if (!CORBA::is_nil(telltale)) telltale->detach(Observer_var(_this()));
   delete renderer1;
   delete renderer2;
 }
 
 void DynamicFrame::attach(Telltale_ptr subject)
 {
+  Trace trace("DynamicFrame::attach");
   if (!CORBA::is_nil(telltale)) telltale->detach(Observer_var(_this()));
-  telltale = RefCount_var<Telltale>::increment(subject);
-  telltale->attach(Observer_var(_this()));
-  bool flag = telltale->test(mask);
-  if (flag == on) return;
-  on = flag;
-  renderer = on ? renderer1 : renderer2;
-  needRedraw();
+  if (!CORBA::is_nil(subject))
+    {
+      telltale = RefCount_var<Telltale>::increment(subject);
+      telltale->attach(Observer_var(_this()));
+      bool flag = telltale->test(mask);
+      if (flag == on) return;
+      on = flag;
+      renderer = on ? renderer1 : renderer2;
+      need_redraw();
+    }
+  else telltale = Telltale::_nil();
 }
 
 void DynamicFrame::update(const CORBA::Any &)
@@ -160,7 +161,7 @@ void DynamicFrame::update(const CORBA::Any &)
   if (flag == on) return;
   on = flag;
   renderer = on ? renderer1 : renderer2;
-  needRedraw();
+  need_redraw();
 }
 
 void InvisibleFrame::draw(DrawTraversal_ptr traversal)
@@ -169,28 +170,28 @@ void InvisibleFrame::draw(DrawTraversal_ptr traversal)
   Vertex l, u;
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->kit();
-  DrawingKit::Fillstyle style = drawing->surfaceFillstyle();
-  if (style != DrawingKit::outlined && fill) drawing->drawRect(l, u);
+  DrawingKit::Fillstyle style = drawing->surface_fillstyle();
+  if (style != DrawingKit::outlined && fill) drawing->draw_rectangle(l, u);
   else if (fill)
     {
-      drawing->saveState();
-      drawing->surfaceFillstyle(DrawingKit::solid);
-      drawing->drawRect(l, u);
-      drawing->restoreState();
+      drawing->save();
+      drawing->surface_fillstyle(DrawingKit::solid);
+      drawing->draw_rectangle(l, u);
+      drawing->restore();
     }
   else
     {
       Vertex ltmp = l, utmp = u;
       utmp.y = ltmp.y + thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
       utmp.y = u.y - thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.x = l.x, utmp.x = l.x + thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.y = u.y - thickness;
       utmp = u;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
     }
 }
 
@@ -230,29 +231,29 @@ void ColoredFrame::draw(DrawTraversal_ptr traversal)
   Vertex l, u;
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->kit();
-  DrawingKit::Fillstyle style = drawing->surfaceFillstyle();
-  drawing->saveState();
+  DrawingKit::Fillstyle style = drawing->surface_fillstyle();
+  drawing->save();
   Color tmp = drawing->foreground();
   tmp.red = color.red;
   tmp.green = color.green;
   tmp.blue = color.blue;
   drawing->foreground(tmp);
-  if (style == DrawingKit::outlined) drawing->surfaceFillstyle(DrawingKit::solid);
-  if (fill) drawing->drawRect(l, u);
+  if (style == DrawingKit::outlined) drawing->surface_fillstyle(DrawingKit::solid);
+  if (fill) drawing->draw_rectangle(l, u);
   else
     {
       Vertex ltmp = l, utmp = u;
       utmp.y = ltmp.y + thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
       utmp.y = u.y - thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.x = l.x, utmp.x = l.x + thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.y = u.y - thickness;
       utmp = u;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
     }
-  drawing->restoreState();
+  drawing->restore();
 }
 

@@ -35,14 +35,14 @@ public:
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
 
   virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void needResize();
-  virtual void needResize(Warsaw::Tag);
+  virtual void need_resize();
+  virtual void need_resize(Warsaw::Tag);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
 protected:
-  LayoutManager::Allocations  childrenAllocations(Warsaw::Region_ptr);
-  void traverseWithAllocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr);
-  void traverseWithoutAllocation(Warsaw::Traversal_ptr);
+  LayoutManager::Allocations  children_allocations(Warsaw::Region_ptr);
+  void traverse_with_allocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr);
+  void traverse_without_allocation(Warsaw::Traversal_ptr);
 private:
   LayoutManager *layout;
   bool requested;
@@ -55,8 +55,8 @@ public:
   BoxAlignElements(LayoutManager *, Warsaw::Axis, Warsaw::Alignment);
   virtual ~BoxAlignElements();
 
-  virtual void append(Warsaw::Graphic_ptr);
-  virtual void prepend(Warsaw::Graphic_ptr);
+  virtual void append_graphic(Warsaw::Graphic_ptr);
+  virtual void prepend_graphic(Warsaw::Graphic_ptr);
 private:
   Warsaw::Axis axis;
   Warsaw::Alignment alignment;

@@ -47,7 +47,7 @@ public:
   virtual void draw(Warsaw::DrawTraversal_ptr); 
   virtual void update(const CORBA::Any &);
 protected:
-  virtual void activateComposite();
+  virtual void activate_composite();
 private:
   RefCount_var<Warsaw::Raster> raster;
   Warsaw::Coord width, height;

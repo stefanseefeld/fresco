@@ -44,7 +44,7 @@ public:
 	    try {t->decrement();}
 	    catch (const CORBA::OBJECT_NOT_EXIST &) {}
           t = o.t;
-	  if (!CORBA::is_nil(t)) t->increase();
+	  if (!CORBA::is_nil(t)) t->increment();
         }
       return *this;
     }
@@ -58,7 +58,7 @@ public:
     }
   T_ptr operator->() const { return t;}
   operator T_ptr () const { return t;}
-  T_ptr _retn() { T_ptr tmp = t._retn(); t = 0; return tmp;}
+  T_ptr _retn() { T_ptr tmp = t._retn(); t = T::_nil(); return tmp;}
 
   static T_ptr increment(T_ptr t, bool dup = true)
   {

@@ -32,6 +32,7 @@
 
 using namespace Prague;
 using namespace Warsaw;
+using namespace Layout;
 
 static const double epsilon = 10e-6;
 
@@ -41,7 +42,8 @@ class ViewportImpl::Adjustment : public virtual POA_Warsaw::BoundedRange,
  public:
   Adjustment();
   virtual ~Adjustment();
-  virtual Warsaw::BoundedRange::Settings getSettings();
+  virtual Warsaw::BoundedRange::Settings state();
+  virtual void state(const Warsaw::BoundedRange::Settings &);
   virtual Coord lower();
   virtual void lower(Coord);
   virtual Coord upper();
@@ -77,10 +79,16 @@ ViewportImpl::Adjustment::~Adjustment()
 {
 }
 
-Warsaw::BoundedRange::Settings ViewportImpl::Adjustment::getSettings()
+Warsaw::BoundedRange::Settings ViewportImpl::Adjustment::state()
 {
   MutexGuard guard(mutex);
   return settings;
+}
+
+void ViewportImpl::Adjustment::state(const Warsaw::BoundedRange::Settings &s)
+{
+  MutexGuard guard(mutex);
+  settings = s;
 }
 
 Coord ViewportImpl::Adjustment::lower()
@@ -291,15 +299,15 @@ ViewportImpl::~ViewportImpl() {}
 void ViewportImpl::body(Graphic_ptr g)
 {
   MonoGraphic::body(g);
-  needResize();
-  MonoGraphic::needResize();
+  need_resize();
+  MonoGraphic::need_resize();
 }
 
 Transform_ptr ViewportImpl::transformation() { return Transform::_nil();}
 
-void ViewportImpl::request(Requisition &r)
+void ViewportImpl::request(Warsaw::Graphic::Requisition &r)
 {
-  cacheRequisition();
+  cache_requisition();
   GraphicImpl::require(r.x, requisition.x.natural, 0., requisition.x.natural, requisition.x.align);
   GraphicImpl::require(r.y, requisition.y.natural, 0., requisition.y.natural, requisition.y.align);
   if(requisition.z.defined)
@@ -309,13 +317,13 @@ void ViewportImpl::request(Requisition &r)
 void ViewportImpl::traverse(Traversal_ptr traversal)
 {
   Graphic_var child = body();
-  if (!CORBA::is_nil(child) && traversal->intersectsAllocation())
+  if (!CORBA::is_nil(child) && traversal->intersects_allocation())
     {
       /*
        * first update the cached allocation and the adjustments
        */
       Region_var allocation = traversal->allocation();
-      cacheAllocation(allocation);
+      cache_allocation(allocation);
       traversal->visit(Graphic_var(_this()));
     }
 }
@@ -331,24 +339,24 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
 
   Lease_var<RegionImpl> clipping(Provider<RegionImpl>::provide());
   clipping->copy(allocation);
-  if (!CORBA::is_nil(transformation) && !transformation->Identity())
-    clipping->applyTransform(transformation);
+  if (!CORBA::is_nil(transformation) && !transformation->identity())
+    clipping->apply_transform(transformation);
 
   DrawingKit_var dk = traversal->kit();
-  dk->saveState();
+  dk->save();
   dk->clipping(Region_var(clipping->_this()));
 
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
-  bodyAllocation(allocation, b);
+  body_allocation(allocation, b);
   region->copy(Region_var(b->_this()));
 
   Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
-  transform->loadIdentity();
+  transform->load_identity();
 
   region->normalize(Transform_var(transform->_this()));
-  traversal->traverseChild(child.peer, child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
-  dk->restoreState();
+  traversal->traverse_child(_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
+  dk->restore();
 }
 
 void ViewportImpl::pick(PickTraversal_ptr traversal)
@@ -360,24 +368,24 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
   Region_var allocation = traversal->allocation();
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
-  bodyAllocation(allocation, b);
+  body_allocation(allocation, b);
   region->copy(Region_var(b->_this()));
 
   Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
-  transform->loadIdentity();
+  transform->load_identity();
 
   region->normalize(Transform_var(transform->_this()));
-  traversal->traverseChild(child.peer, child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
+  traversal->traverse_child(_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));
 }
 
-void ViewportImpl::needResize()
+void ViewportImpl::need_resize()
 {
   /*
    * set adjustment's outer range according to the body size
    */
   requested = false;
-  cacheRequisition();
-  needRedraw();
+  cache_requisition();
+  need_redraw();
 }
 
 void ViewportImpl::update(const CORBA::Any &)
@@ -386,8 +394,8 @@ void ViewportImpl::update(const CORBA::Any &)
    * we are only interested in changes concerning the outer range (body)
    * or the offset
    */
-  Warsaw::BoundedRange::Settings x = xadjustment->getSettings();
-  Warsaw::BoundedRange::Settings y = yadjustment->getSettings();
+  Warsaw::BoundedRange::Settings x = xadjustment->state();
+  Warsaw::BoundedRange::Settings y = yadjustment->state();
   bool damage = (x.lower != settings[xaxis].lower || y.lower != settings[yaxis].lower ||
 		 x.upper != settings[xaxis].upper || y.upper != settings[yaxis].upper ||
 		 x.lvalue != settings[xaxis].lvalue || y.lvalue != settings[yaxis].lvalue);
@@ -395,10 +403,10 @@ void ViewportImpl::update(const CORBA::Any &)
   settings[xaxis].uvalue = x.uvalue;
   settings[yaxis].lvalue = y.lvalue;
   settings[yaxis].uvalue = y.uvalue;
-  if (damage) needRedraw();
+  if (damage) need_redraw();
 }
 
-void ViewportImpl::activateComposite()
+void ViewportImpl::activate_composite()
 {
   Adjustment *adjustment = new Adjustment;
   activate(adjustment);
@@ -410,12 +418,12 @@ void ViewportImpl::activateComposite()
   yadjustment->attach(Observer_var(_this()));
 }
 
-void ViewportImpl::allocateChild(Allocation::Info &info)
+void ViewportImpl::allocate_child(Allocation::Info &info)
 {
-  scrollTransform(info.transformation);
+  scroll_transform(info.transformation);
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   Lease_var<RegionImpl> b(Provider<RegionImpl>::provide());
-  bodyAllocation(info.allocation, b);
+  body_allocation(info.allocation, b);
   region->copy(Region_var(b->_this()));
   info.allocation->copy(Region_var(region->_this()));
 }
@@ -425,15 +433,15 @@ BoundedRange_ptr ViewportImpl::adjustment(Axis a)
   return a == xaxis ? RefCount_var<BoundedRange>::increment(xadjustment) : RefCount_var<BoundedRange>::increment(yadjustment);
 }
 
-void ViewportImpl::cacheRequisition()
+void ViewportImpl::cache_requisition()
 //. retrieves requisition from body and updates adjustments
 {
   if (!requested)
     {
       requested = true;
       MonoGraphic::request(requisition);
-      Requirement &rx = requisition.x;
-      Requirement &ry = requisition.y;
+      Warsaw::Graphic::Requirement &rx = requisition.x;
+      Warsaw::Graphic::Requirement &ry = requisition.y;
 
       settings[xaxis].lvalue = settings[xaxis].lower = rx.defined ? - rx.natural * rx.align : 0.;
       settings[xaxis].uvalue = settings[xaxis].upper = rx.defined ? settings[xaxis].lvalue + rx.natural : 0.;
@@ -452,7 +460,7 @@ void ViewportImpl::cacheRequisition()
     }
 }
 
-void ViewportImpl::cacheAllocation(Region_ptr allocation)
+void ViewportImpl::cache_allocation(Region_ptr allocation)
 {
   if (!CORBA::is_nil(allocation))
     {
@@ -473,7 +481,7 @@ void ViewportImpl::cacheAllocation(Region_ptr allocation)
     }
 }
 
-void ViewportImpl::bodyAllocation(Region_ptr, RegionImpl *ca)
+void ViewportImpl::body_allocation(Region_ptr, RegionImpl *ca)
 {
   /*
    * FIXME!! : this implementation ignores completely the body alignment...
@@ -488,7 +496,7 @@ void ViewportImpl::bodyAllocation(Region_ptr, RegionImpl *ca)
   ca->xalign = ca->yalign = ca->yalign = 0.;
 }
 
-void ViewportImpl::scrollTransform(Transform_ptr tx)
+void ViewportImpl::scroll_transform(Transform_ptr tx)
 {
   Vertex v;
   v.x = settings[xaxis].lvalue - settings[xaxis].lower;

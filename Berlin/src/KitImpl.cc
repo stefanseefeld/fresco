@@ -58,7 +58,7 @@ void KitImpl::activate(::ServantBase *servant)
   servant->poa = PortableServer::POA::_duplicate(poa);
   servant->_remove_ref();
   delete oid;
-  servant->activateComposite();
+  servant->activate_composite();
 }
 
 void KitImpl::deactivate(::ServantBase *servant)

@@ -120,7 +120,7 @@ public:
   static DrawableTie<typename T::Drawable> *drawable() { return T::drawable();}
   static DrawableTie<typename T::Drawable> *newDrawable(Warsaw::PixelCoord w, Warsaw::PixelCoord h, Warsaw::PixelCoord d) { return T::newDrawable(w, h, d);}
 
-  static Warsaw::Input::Event *nextEvent() { return t->nextEvent();}
+  static Warsaw::Input::Event *next_event() { return t->next_event();}
   static void wakeup() { t->wakeup();}
   static void activate_autoplay() { t->activate_autoplay();}
 private:

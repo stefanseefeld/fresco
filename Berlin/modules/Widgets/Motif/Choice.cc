@@ -56,120 +56,120 @@ ToggleChoice::ToggleChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, Widg
   : ::Motif::Choice(s, l, t, w)
 {}
 
-Tag ToggleChoice::appendItem(Graphic_ptr g)
+Tag ToggleChoice::append_item(Graphic_ptr g)
 {
-  Trace trace("ToggleChoice::appendItem");
+  Trace trace("ToggleChoice::append_item");
   RefCount_var<Warsaw::Controller> toggle =
-    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-								    60., 60.)));
+    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+								     60., 60.)));
   Tag tag = selection->add(toggle);
-  appendController(toggle);
+  append_controller(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
   RefCount_var<Warsaw::Graphic> box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->append_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
-Tag ToggleChoice::prependItem(Graphic_ptr g)
+Tag ToggleChoice::prepend_item(Graphic_ptr g)
 {
-  Trace trace("ToggleChoice::prependItem");
+  Trace trace("ToggleChoice::prepend_item");
   RefCount_var<Warsaw::Controller> toggle =
-    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-								    60., 60.)));
+    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+								     60., 60.)));
   Tag tag = selection->add(toggle);
-  appendController(toggle);
+  append_controller(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
   RefCount_var<Warsaw::Graphic> box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->prepend(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->prepend_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
-void ToggleChoice::removeItem(Tag t)
+void ToggleChoice::remove_item(Tag t)
 {
-  Trace trace("ToggleChoice::remove");
+  Trace trace("ToggleChoice::remove_item");
   selection->remove(t);
   RefCount_var<Warsaw::Graphic> box = body();
-  box->remove(t);
+  box->remove_graphic(t);
 }
 
 CheckboxChoice::CheckboxChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
   : ::Motif::Choice(s, l, t, w)
 {}
 
-Tag CheckboxChoice::appendItem(Graphic_ptr g)
+Tag CheckboxChoice::append_item(Graphic_ptr g)
 {
-  Trace trace("CheckboxChoice::append");
+  Trace trace("CheckboxChoice::append_item");
   RefCount_var<Warsaw::Controller> toggle = tools->toggle(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()));
   Tag tag = selection->add(toggle);
-  appendController(toggle);
+  append_controller(toggle);
 
   Warsaw::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
   RefCount_var<Warsaw::Graphic> frame =
-    tools->dynamicDiamond(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-									  60., 60.)),
+    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+									    60., 60.)),
 			  20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
   RefCount_var<Warsaw::Graphic> box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->append_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
-Tag CheckboxChoice::prependItem(Graphic_ptr g)
+Tag CheckboxChoice::prepend_item(Graphic_ptr g)
 {
-  Trace trace("CheckboxChoice::prepend");
+  Trace trace("CheckboxChoice::prepend_item");
   RefCount_var<Warsaw::Controller> toggle = tools->toggle(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()));
   Tag tag = selection->add(toggle);
-  appendController(toggle);
+  append_controller(toggle);
 
   ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
   RefCount_var<Warsaw::Graphic> frame =
-    tools->dynamicDiamond(RefCount_var<Warsaw::Graphic>(layout->fixedSize(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-									  60., 60.)),
+    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
+									    60., 60.)),
 			  20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
   RefCount_var<Warsaw::Graphic> box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->prepend(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->prepend_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
-void CheckboxChoice::removeItem(Tag t)
+void CheckboxChoice::remove_item(Tag t)
 {
-  Trace trace("CheckboxChoice::remove");
+  Trace trace("CheckboxChoice::remove_item");
   selection->remove(t);
   RefCount_var<Warsaw::Graphic> box = body();
-  box->remove(t);
+  box->remove_graphic(t);
 }
 
 };

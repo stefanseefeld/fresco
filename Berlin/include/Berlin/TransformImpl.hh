@@ -37,27 +37,27 @@ public:
   virtual ~TransformImpl();
 
   virtual void copy(Warsaw::Transform_ptr);
-  virtual void loadIdentity();
-  virtual void loadMatrix(const Warsaw::Transform::Matrix);
-  virtual void storeMatrix(Warsaw::Transform::Matrix);
+  virtual void load_identity();
+  virtual void load_matrix(const Warsaw::Transform::Matrix);
+  virtual void store_matrix(Warsaw::Transform::Matrix);
   virtual CORBA::Boolean equal(Warsaw::Transform_ptr);
-  virtual CORBA::Boolean Identity();
-  virtual CORBA::Boolean Translation();
-  virtual CORBA::Boolean detIsZero();
+  virtual CORBA::Boolean identity();
+  virtual CORBA::Boolean translation();
+  virtual CORBA::Boolean det_is_zero();
   virtual void scale(const Warsaw::Vertex &);
   virtual void rotate(CORBA::Double, Warsaw::Axis);
   virtual void translate(const Warsaw::Vertex &);
   virtual void premultiply(Warsaw::Transform_ptr);
   virtual void postmultiply(Warsaw::Transform_ptr);
   virtual void invert();
-  virtual void transformVertex(Warsaw::Vertex &);
-  virtual void inverseTransformVertex(Warsaw::Vertex &);
+  virtual void transform_vertex(Warsaw::Vertex &);
+  virtual void inverse_transform_vertex(Warsaw::Vertex &);
 
   Warsaw::Transform::Matrix &matrix() { return mat;}
-protected:
+private:
   Warsaw::Transform::Matrix mat;
   bool valid;
-  bool identity;
+  bool ident;
   bool translate_only;
   bool xy;
 

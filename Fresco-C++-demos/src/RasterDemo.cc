@@ -43,9 +43,9 @@ RasterDemo::RasterDemo(Application *a)
   Image_var  im = figure->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();
-  hbox->append(Graphic_var(widget->button(im, command1)));
-  hbox->append(Graphic_var(widget->button(im, command2)));
-  hbox->append(Graphic_var(widget->button(im, command3)));
+  hbox->append_graphic(Graphic_var(widget->button(im, command1)));
+  hbox->append_graphic(Graphic_var(widget->button(im, command2)));
+  hbox->append_graphic(Graphic_var(widget->button(im, command3)));
   Controller_var group = tool->group(hbox);
 
   application->append(group, Unicode::String("raster demo"));

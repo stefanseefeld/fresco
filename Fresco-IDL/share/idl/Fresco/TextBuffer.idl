@@ -42,14 +42,14 @@ module Warsaw
       readonly attribute long size;
       readonly attribute Unistring value;
       attribute long position;
-      Unistring getChars(in unsigned long pos, in unsigned long len);
+      Unistring get_chars(in unsigned long pos, in unsigned long len);
       void forward();
       void backward();
       void shift(in long d);
-      void insertChar(in Unichar u);
-      void insertString(in Unistring u);
-      void removeBackward(in long d);
-      void removeForward(in long d);
+      void insert_char(in Unichar u);
+      void insert_string(in Unistring u);
+      void remove_backward(in long d);
+      void remove_forward(in long d);
     };
 };
 

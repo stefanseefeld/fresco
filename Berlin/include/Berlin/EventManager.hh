@@ -39,8 +39,8 @@ class EventManager
 public:
   EventManager(ScreenImpl *);
   ~EventManager();
-  bool requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  void nextEvent();
+  bool request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  void next_event();
   void restore(Warsaw::Region_ptr);
   void damage(Warsaw::Region_ptr);
 private:

@@ -29,7 +29,7 @@
 
 using namespace Warsaw;
 
-void Compositor::setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align)
+void Compositor::set_span(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align)
 {
   Coord begin = origin - length * align;
   Coord end = begin + length;
@@ -53,7 +53,7 @@ void Compositor::setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alig
     }
 }
 
-Coord Compositor::computeLength(const Graphic::Requirement &r, const Region::Allotment &a)
+Coord Compositor::compute_length(const Graphic::Requirement &r, const Region::Allotment &a)
 {
   Coord length = a.end - a.begin;
   Coord s_a = a.align;
@@ -64,7 +64,7 @@ Coord Compositor::computeLength(const Graphic::Requirement &r, const Region::All
   return length;
 }
 
-Coord Compositor::computeSqueeze(const Graphic::Requirement &r, Coord length)
+Coord Compositor::compute_squeeze(const Graphic::Requirement &r, Coord length)
 {
   Coord f;
   Coord nat = r.natural;
@@ -129,7 +129,7 @@ void LRCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
 	}
     }
   r = GraphicImpl::requirement(result, yaxis);
-  GraphicImpl::requireLeadTrail(*r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
+  GraphicImpl::require_lead_trail(*r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
 
   requisition = result;
 }
@@ -143,10 +143,10 @@ void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
    */
   r = GraphicImpl::requirement(requisition, xaxis);
   given->span(xaxis, a);
-  Coord length = computeLength(*r, a);
+  Coord length = compute_length(*r, a);
   bool growing = length > r->natural;
   bool shrinking = length < r->natural;
-  double f = computeSqueeze(*r, length);
+  double f = compute_squeeze(*r, length);
   Coord p = a.begin + a.align * (a.end - a.begin);
   for (long i = 0; i < n; i++)
     {
@@ -156,10 +156,10 @@ void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
 	  Coord cspan = r->natural;
 	  if (growing) cspan += f * (r->maximum - r->natural);
 	  else if (shrinking) cspan -= f * (r->natural - r->minimum);
-	  setSpan(result[i], xaxis, p + cspan * r->align, cspan, r->align);
+	  set_span(result[i], xaxis, p + cspan * r->align, cspan, r->align);
 	  p += cspan;
         }
-      else setSpan(result[i], xaxis, p, 0., 0.);
+      else set_span(result[i], xaxis, p, 0., 0.);
     }
   /*
    * align vertically
@@ -171,9 +171,9 @@ void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
       if (r->defined)
 	{
 	  Coord length = Math::max(Math::min(a.end - a.begin, r->maximum), r->minimum);
-	  setSpan(result[i], yaxis, a.begin + a.align*(a.end-a.begin), length, r->align);
+	  set_span(result[i], yaxis, a.begin + a.align*(a.end-a.begin), length, r->align);
 	}
-      else setSpan(result[i], yaxis, 0., 0., 0.);
+      else set_span(result[i], yaxis, 0., 0., 0.);
     }
 }
 
@@ -230,7 +230,7 @@ void TBCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
 	}
     }
   r = GraphicImpl::requirement(result, xaxis);
-  GraphicImpl::requireLeadTrail(*r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
+  GraphicImpl::require_lead_trail(*r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
 
   requisition = result;
 }
@@ -244,10 +244,10 @@ void TBCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
    */
   r = GraphicImpl::requirement(requisition, yaxis);
   given->span(yaxis, a);
-  Coord length = computeLength(*r, a);
+  Coord length = compute_length(*r, a);
   bool growing = length > r->natural;
   bool shrinking = length < r->natural;
-  double f = computeSqueeze(*r, length);
+  double f = compute_squeeze(*r, length);
   Coord p = a.begin + a.align * (a.end - a.begin);
   for (long i = 0; i < n; i++)
     {
@@ -257,10 +257,10 @@ void TBCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
 	  Coord cspan = r->natural;
 	  if (growing) cspan += f * (r->maximum - r->natural);
 	  else if (shrinking) cspan -= f * (r->natural - r->minimum);
-	  setSpan(result[i], yaxis, p + cspan * r->align, cspan, r->align);
+	  set_span(result[i], yaxis, p + cspan * r->align, cspan, r->align);
 	  p += cspan;
         }
-      else setSpan(result[i], yaxis, p, 0., 0.);
+      else set_span(result[i], yaxis, p, 0., 0.);
     }
   /*
    * align horizontally
@@ -272,8 +272,8 @@ void TBCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
       if (r->defined)
 	{
 	  Coord length = Math::max(Math::min(a.end - a.begin, r->maximum), r->minimum);
-	  setSpan(result[i], xaxis, a.begin + a.align*(a.end-a.begin), length, r->align);
+	  set_span(result[i], xaxis, a.begin + a.align*(a.end-a.begin), length, r->align);
 	}
-      else setSpan(result[i], xaxis, 0., 0., 0.);
+      else set_span(result[i], xaxis, 0., 0., 0.);
     }
 }

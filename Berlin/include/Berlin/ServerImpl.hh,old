@@ -51,12 +51,12 @@ class ServerImpl : public virtual POA_Warsaw::Server,
  public:
   typedef multimap<string, Warsaw::Kit::PropertySeq_var> FactoryList;
   ServerImpl();
-  virtual Warsaw::ServerContext_ptr newServerContext(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
-  virtual void setSingleton(const char *, CORBA::Object_ptr)
+  virtual Warsaw::ServerContext_ptr create_server_context(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
+  virtual void set_singleton(const char *, CORBA::Object_ptr)
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
-  virtual void delSingleton(const char *)
+  virtual void remove_singleton(const char *)
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
-  virtual CORBA::Object_ptr getSingleton(const char *) 
+  virtual CORBA::Object_ptr get_singleton(const char *) 
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   
   template <class K>

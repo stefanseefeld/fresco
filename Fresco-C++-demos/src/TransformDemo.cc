@@ -44,9 +44,9 @@ TransformDemo::TransformDemo(Application *a)
   Image_var  im = figure->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();
-  hbox->append(Graphic_var(widget->button(im, command1)));
-  hbox->append(Graphic_var(widget->button(im, command2)));
-  hbox->append(Graphic_var(widget->button(im, command3)));
+  hbox->append_graphic(Graphic_var(widget->button(im, command1)));
+  hbox->append_graphic(Graphic_var(widget->button(im, command2)));
+  hbox->append_graphic(Graphic_var(widget->button(im, command3)));
   Graphic_var transformer = figure->transformer(hbox);
   Transform_var(transformer->transformation())->rotate(45., zaxis);
   Graphic_var root = layout->halign(transformer, 0.);

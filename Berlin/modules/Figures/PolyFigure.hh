@@ -29,7 +29,7 @@
 
 class TransformImpl;
 
-class PolyFigure : public virtual POA_Warsaw::Figure,
+class PolyFigure : public virtual POA_Figure::FigureBase,
 		   public PolyGraphic
 {
 public:
@@ -41,8 +41,8 @@ public:
     virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
     virtual void traverse(Warsaw::Traversal_ptr);
     virtual Warsaw::Transform_ptr transformation();
-    virtual void needRedraw();
-    virtual void needResize();
+    virtual void need_redraw();
+    virtual void need_resize();
     virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
     /*
@@ -50,8 +50,8 @@ public:
      *                     by styles so PolyFigures simply ignore it...
      *                     -stefan
      */
-    Warsaw::Figure::Mode type() { return 0;}
-    void type(Warsaw::Figure::Mode) {}
+    Figure::Mode type() { return 0;}
+    void type(Figure::Mode) {}
     Warsaw::Color foreground() { return Warsaw::Color();}
     void foreground(const Warsaw::Color &) {}
     Warsaw::Color background() { return Warsaw::Color();}
@@ -59,7 +59,7 @@ public:
     virtual void resize() {}
 
 protected:
-    void updateBbox();
+    void update_bbox();
     Impl_var<TransformImpl> tx;
     Impl_var<RegionImpl> bbox;
 };

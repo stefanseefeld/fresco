@@ -39,9 +39,9 @@ class TextViewer : public virtual ViewImpl,
   virtual ~TextViewer();
   virtual void update(const CORBA::Any &);
  protected:
-  virtual void activateComposite();
-  Warsaw::TextKit_var kit;
-  Warsaw::TextBuffer_var buffer;
+  virtual void activate_composite();
+  Warsaw::TextKit_var _kit;
+  Warsaw::TextBuffer_var _buffer;
 };
 
 #endif

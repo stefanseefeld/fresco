@@ -134,9 +134,9 @@ static void writeEvent(ggi_event &e)
   cout << endl;
 }
 
-Input::Event *GGIConsole::nextEvent()
+Input::Event *GGIConsole::next_event()
 {
-  Prague::Trace trace("GGI::Console::nextEvent");
+  Prague::Trace trace("GGI::Console::next_event");
   ggi_event event;
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);

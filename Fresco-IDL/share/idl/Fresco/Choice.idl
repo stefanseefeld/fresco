@@ -30,9 +30,9 @@ module Warsaw
   interface Choice : Controller
     {
       readonly attribute Selection state;
-      Tag appendItem(in Graphic g);
-      Tag prependItem(in Graphic g);
-      void removeItem(in Tag t);
+      Tag append_item(in Graphic g);
+      Tag prepend_item(in Graphic g);
+      void remove_item(in Tag t);
     };
 };
 

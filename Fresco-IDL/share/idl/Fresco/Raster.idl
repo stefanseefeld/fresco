@@ -56,18 +56,18 @@ module Warsaw
       
       //. these methods are suitable to transfer the Raster.
       //. the used format follows the PNG specs
-      void loadData(in Data d);
-      void storeData(out Data d);
+      void load_data(in Data d);
+      void store_data(out Data d);
       
       //. access and modify individual pixel values
-      void loadPixel(in Index i, in Color c);
-      void storePixel(in Index i, out Color c);
+      void load_pixel(in Index i, in Color c);
+      void store_pixel(in Index i, out Color c);
       
       //. access and modify ranges of pixels.
-      //. the length of the ColorSeq in loadPixels must at least correspond 
+      //. the length of the ColorSeq in load_pixels must at least correspond 
       //. to the given width times the given height
-      void loadPixels(in Index lower, in Index upper, in ColorSeq s);
-      void storePixels(in Index lower, in Index upper, out ColorSeq s);
+      void load_pixels(in Index lower, in Index upper, in ColorSeq s);
+      void store_pixels(in Index lower, in Index upper, out ColorSeq s);
     };
 };
 

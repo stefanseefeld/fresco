@@ -50,7 +50,7 @@ public:
 
   virtual void draw(Warsaw::DrawTraversal_ptr traversal) { if (renderer) renderer->draw(traversal);}
 protected:
-  void allocateSpan(const Warsaw::Graphic::Requirement &, Warsaw::Region::Allotment &, Warsaw::Coord, Warsaw::Alignment);
+  void allocate_span(const Warsaw::Graphic::Requirement &, Warsaw::Region::Allotment &, Warsaw::Coord, Warsaw::Alignment);
   Warsaw::Coord        thickness;
   Impl_var<RegionImpl> allocation;
   Renderer            *renderer;

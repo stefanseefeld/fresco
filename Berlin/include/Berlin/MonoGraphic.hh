@@ -32,12 +32,12 @@ public:
 
   virtual Warsaw::Graphic_ptr body();
   virtual void body(Warsaw::Graphic_ptr);
-  virtual void append(Warsaw::Graphic_ptr);
-  virtual void prepend(Warsaw::Graphic_ptr);
-  virtual void remove(Warsaw::Tag);
-  virtual void removeChild(Warsaw::Tag);
-  virtual Iterator_ptr firstChild();
-  virtual Iterator_ptr lastChild();
+  virtual void append_graphic(Warsaw::Graphic_ptr);
+  virtual void prepend_graphic(Warsaw::Graphic_ptr);
+  virtual void remove_graphic(Warsaw::Tag);
+  virtual void remove_child_graphic(Warsaw::Tag);
+  virtual Warsaw::Graphic::Iterator_ptr first_child_graphic();
+  virtual Warsaw::Graphic::Iterator_ptr last_child_graphic();
 
   virtual Warsaw::Transform_ptr transformation();
   virtual void request(Warsaw::Graphic::Requisition &);
@@ -46,8 +46,8 @@ public:
 
   virtual void traverse(Warsaw::Traversal_ptr);
 protected:
-  Edge          child;
-  Prague::Mutex childMutex;
+  Edge          _child;
+  Prague::Mutex _mutex;
 };
 
 #endif 

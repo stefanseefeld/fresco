@@ -41,18 +41,18 @@ public:
   virtual void traverse(Warsaw::Traversal_ptr);
 
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  virtual void needResize();
+  virtual void need_resize();
 // private:
-  bool requested : 1;
-  bool allocated : 1;
-  Warsaw::Graphic::Requisition requisition;
-  Impl_var<RegionImpl> natural;
-  Impl_var<RegionImpl> extension;
+  bool _requested : 1;
+  bool _allocated : 1;
+  Warsaw::Graphic::Requisition _requisition;
+  Impl_var<RegionImpl> _natural;
+  Impl_var<RegionImpl> _extension;
   
-  void cacheRequisition();
-  void cacheAllocation();
-  void needDamage(RegionImpl *, Warsaw::Allocation_ptr);
-  static void naturalAllocation(const Warsaw::Graphic::Requisition &, RegionImpl &);
+  void cache_requisition();
+  void cache_allocation();
+  void need_damage(RegionImpl *, Warsaw::Allocation_ptr);
+  static void natural_allocation(const Warsaw::Graphic::Requisition &, RegionImpl &);
 };
 
 class TransformAllocator : public Allocator
@@ -70,10 +70,10 @@ public:
   virtual void traverse(Warsaw::Traversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 protected:
-  Warsaw::Alignment xparent, yparent, zparent;
-  Warsaw::Alignment xchild, ychild, zchild;
+  Warsaw::Alignment _xparent, _yparent, _zparent;
+  Warsaw::Alignment _xchild, _ychild, _zchild;
 
-  void computeDelta(const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Vertex &);
+  void compute_delta(const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Vertex &);
 };
 
 #endif 

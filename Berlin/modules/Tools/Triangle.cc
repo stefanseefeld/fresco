@@ -39,7 +39,7 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
   Vertex l, u;
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->kit();
-  DrawingKit::Fillstyle style = drawing->surfaceFillstyle();
+  DrawingKit::Fillstyle style = drawing->surface_fillstyle();
   if (style != DrawingKit::outlined && fill)
     {
       Path path;
@@ -71,12 +71,12 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 	  path[3] = path[0];
 	  break;
 	}
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   else if (fill)
     {
-      drawing->saveState();
-      drawing->surfaceFillstyle(DrawingKit::solid);
+      drawing->save();
+      drawing->surface_fillstyle(DrawingKit::solid);
       Path path;
       path.length(4);
       switch (direction)
@@ -106,8 +106,8 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 	  path[3] = path[0];
 	  break;
 	}      
-      drawing->drawPath(path);
-      drawing->restoreState();
+      drawing->draw_path(path);
+      drawing->restore();
     }
   else
     {
@@ -140,9 +140,9 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
   Color light = brightness(color,-bright);
   Color dark  = brightness(color, bright);
 
-  drawing->saveState();
-  if (drawing->surfaceFillstyle() == DrawingKit::outlined)
-    drawing->surfaceFillstyle(DrawingKit::solid);
+  drawing->save();
+  if (drawing->surface_fillstyle() == DrawingKit::outlined)
+    drawing->surface_fillstyle(DrawingKit::solid);
 
   switch (direction)
     {
@@ -231,7 +231,7 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 	}
       break;
     }
-  drawing->restoreState();
+  drawing->restore();
 }
 
 void ColoredTriangle::draw(DrawTraversal_ptr traversal)
@@ -240,29 +240,29 @@ void ColoredTriangle::draw(DrawTraversal_ptr traversal)
   Vertex l, u;
   allocation->bounds(l, u);
   DrawingKit_var drawing = traversal->kit();
-  DrawingKit::Fillstyle style = drawing->surfaceFillstyle();
-  drawing->saveState();
+  DrawingKit::Fillstyle style = drawing->surface_fillstyle();
+  drawing->save();
   Color tmp = drawing->foreground();
   tmp.red = color.red;
   tmp.green = color.green;
   tmp.blue = color.blue;
   drawing->foreground(tmp);
-  if (style == DrawingKit::outlined) drawing->surfaceFillstyle(DrawingKit::solid);
-  if (fill) drawing->drawRect(l, u);
+  if (style == DrawingKit::outlined) drawing->surface_fillstyle(DrawingKit::solid);
+  if (fill) drawing->draw_rectangle(l, u);
   else
     {
       Vertex ltmp = l, utmp = u;
       utmp.y = ltmp.y + thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.x = utmp.x - thickness, ltmp.y = utmp.y;
       utmp.y = u.y - thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.x = l.x, utmp.x = l.x + thickness;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
       ltmp.y = u.y - thickness;
       utmp = u;
-      drawing->drawRect(ltmp, utmp);
+      drawing->draw_rectangle(ltmp, utmp);
     }
-  drawing->restoreState();
+  drawing->restore();
 }
 

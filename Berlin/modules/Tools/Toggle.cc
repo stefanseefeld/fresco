@@ -51,5 +51,5 @@ void Toggle::keyPress(const Input::Event &event)
       if (test(Warsaw::Controller::toggled)) clear(Warsaw::Controller::toggled);
       else set(Warsaw::Controller::toggled);
     }
-  else ControllerImpl::keyPress(event);
+  else ControllerImpl::key_press(event);
 }

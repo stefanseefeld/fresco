@@ -48,25 +48,28 @@ class TextKitImpl : public virtual POA_Warsaw::TextKit,
   Warsaw::Graphic_ptr chunk(const Warsaw::Unistring &u);
   Warsaw::Graphic_ptr glyph(Warsaw::Unichar c);
   Warsaw::Graphic_ptr strut();
-  Warsaw::Graphic_ptr simpleViewer(Warsaw::TextBuffer_ptr);  
+  Warsaw::Graphic_ptr simple_viewer(Warsaw::TextBuffer_ptr);  
   Warsaw::Graphic_ptr terminal(Warsaw::StreamBuffer_ptr);
   Warsaw::Graphic_ptr size(Warsaw::Graphic_ptr, CORBA::ULong);
   Warsaw::Graphic_ptr weight(Warsaw::Graphic_ptr, CORBA::ULong);
   Warsaw::Graphic_ptr family(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
-  Warsaw::Graphic_ptr subFamily(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
-  Warsaw::Graphic_ptr fullName(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
+  Warsaw::Graphic_ptr subfamily(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
+  Warsaw::Graphic_ptr fullname(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
   Warsaw::Graphic_ptr style(Warsaw::Graphic_ptr, const Warsaw::Unistring &);
-  Warsaw::Graphic_ptr fontAttr(Warsaw::Graphic_ptr, const Warsaw::NVPair &);
+  Warsaw::Graphic_ptr font_attribute(Warsaw::Graphic_ptr, const Warsaw::NVPair &);
  private:
-  static Prague::Mutex staticMutex;
-  static map<Warsaw::Unichar, Impl_var<TextChunk> > charCache;
-  static Warsaw::DrawingKit_var canonicalDK;
+//   static Prague::Mutex _staticMutex;
+//   static map<Warsaw::Unichar, Impl_var<TextChunk *> > _charCache;
+//   static Warsaw::DrawingKit_var _canonicalDK;
 
-  Warsaw::LayoutKit_var layout;
+  map<Warsaw::Unichar, Warsaw::Graphic_var> _charCache;
+  Warsaw::DrawingKit_var _canonicalDK;
+
+  Warsaw::LayoutKit_var _layout;
   Impl_var<Strut> _strut;
-  Prague::Mutex localMutex;
-  Compositor *lineCompositor;
-  Compositor *pageCompositor;
+  Prague::Mutex _mutex;
+  Compositor *_lineCompositor;
+  Compositor *_pageCompositor;
 };
 
 #endif

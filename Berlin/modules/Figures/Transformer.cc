@@ -39,11 +39,11 @@ Transformer::Transformer() : transform(new TransformImpl) {}
 Transformer::~Transformer() {}
 Transform_ptr Transformer::transformation() { return transform->_this();}
 
-void Transformer::request(Requisition &requisition)
+void Transformer::request(Warsaw::Graphic::Requisition &requisition)
 {
   Trace trace("Transformer::request");
   Allocator::request(requisition);
-  GraphicImpl::transformRequest(requisition, Transform_var(transform->_this()));
+  GraphicImpl::transform_request(requisition, Transform_var(transform->_this()));
 }
 
 void Transformer::traverse(Traversal_ptr traversal)
@@ -51,23 +51,23 @@ void Transformer::traverse(Traversal_ptr traversal)
   Trace trace("Transformer::traverse");
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  if (!transform->Identity())
+  if (!transform->identity())
     {
       Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
       rr->copy(traversal->allocation());
 	  
       Warsaw::Graphic::Requisition r;
-      GraphicImpl::initRequisition(r);
+      GraphicImpl::init_requisition(r);
 	  
       Allocator::request(r);
 
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-      tx->loadIdentity();
+      tx->load_identity();
 //       cout << "allocation before trafo " << *rr << endl;
-      Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
+      Vertex delta = GraphicImpl::transform_allocate(*rr, r, Transform_var(transform->_this()));
 //       cout << "allocation after trafo " << *rr << endl;
       tx->copy(Transform_var(transform->_this()));
-      traversal->traverseChild(child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));
+      traversal->traverse_child(child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));
     }
   else Allocator::traverse(traversal);
 }
@@ -75,18 +75,18 @@ void Transformer::traverse(Traversal_ptr traversal)
 void Transformer::allocate(Tag, const Allocation::Info &info)
 {
   Trace trace("Transformer::allocate");
-  if (!transform->Identity())
+  if (!transform->identity())
     {
       if (!CORBA::is_nil(info.allocation))
 	{
 	  Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
 	  rr->copy(info.allocation);
 	  Warsaw::Graphic::Requisition r;
-	  GraphicImpl::initRequisition(r);
+	  GraphicImpl::init_requisition(r);
 	  Allocator::request(r);
 	  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-	  tx->loadIdentity();
-	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
+	  tx->load_identity();
+	  Vertex delta = GraphicImpl::transform_allocate(*rr, r, Transform_var(transform->_this()));
  	  tx->copy(Transform_var(transform->_this()));
 	  info.transformation->premultiply(Transform_var(tx->_this()));
 	  info.allocation->copy(Region_var(rr->_this()));

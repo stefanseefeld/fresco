@@ -47,9 +47,9 @@ module Warsaw
       Command log(in string t);
       MacroCommand composite();
       TelltaleConstraint exclusive(in Telltale::Mask m);
-      TelltaleConstraint selectionRequired();
-      Telltale     normalTelltale();
-      Telltale     constrainedTelltale(in TelltaleConstraint c);
+      TelltaleConstraint selection_required();
+      Telltale     normal_telltale();
+      Telltale     constrained_telltale(in TelltaleConstraint c);
       Selection    group(in Selection::Policy p);
       BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
       BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);

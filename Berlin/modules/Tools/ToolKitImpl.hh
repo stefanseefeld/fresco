@@ -44,24 +44,23 @@ class ToolKitImpl : public virtual POA_Warsaw::ToolKit,
   Warsaw::Graphic_ptr      frame(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
   Warsaw::Graphic_ptr      dynamic(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
 			   const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
-  Warsaw::Graphic_ptr      framedTriangle(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean,
-					  Warsaw::ToolKit::Direction d);
-  Warsaw::Graphic_ptr      dynamicTriangle(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
-					   const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::ToolKit::Direction d,
-					   Warsaw::Telltale_ptr);
-  Warsaw::Graphic_ptr      framedDiamond(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
-  Warsaw::Graphic_ptr      dynamicDiamond(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
-				  const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
+  Warsaw::Graphic_ptr      framed_triangle(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean,
+					   Warsaw::ToolKit::Direction d);
+  Warsaw::Graphic_ptr      dynamic_triangle(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
+					    const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::ToolKit::Direction d,
+					    Warsaw::Telltale_ptr);
+  Warsaw::Graphic_ptr      framed_diamond(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
+  Warsaw::Graphic_ptr      dynamic_diamond(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
+				           const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
   Warsaw::Trigger_ptr      button(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
   Warsaw::Controller_ptr   dragger(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
   Warsaw::Controller_ptr   stepper(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
-  Warsaw::Controller_ptr   textInput(Warsaw::Graphic_ptr, Warsaw::TextBuffer_ptr);
+  Warsaw::Controller_ptr   text_input(Warsaw::Graphic_ptr, Warsaw::TextBuffer_ptr);
   Warsaw::Controller_ptr   terminal(Warsaw::Graphic_ptr, Warsaw::StreamBuffer_ptr);
   Warsaw::Controller_ptr   group(Warsaw::Graphic_ptr);
   Warsaw::Controller_ptr   toggle(Warsaw::Graphic_ptr);
- private:
 };
 
 #endif

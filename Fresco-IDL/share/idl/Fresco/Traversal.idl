@@ -44,10 +44,10 @@ module Warsaw
       //. the current graphic in the traversal.
       Transform transformation();
       boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
-      boolean intersectsAllocation();
-      boolean intersectsRegion(in Region r);
+      boolean intersects_allocation();
+      boolean intersects_region(in Region r);
       //. Continue traversing down to the given child graphic.
-      void traverseChild (in Graphic g, in Tag e, in Region r, in Transform t);
+      void traverse_child (in Graphic g, in Tag e, in Region r, in Transform t);
       //. Call the traversal-specific operation on the current graphic.
       //. This operation should be called on a leaf graphic
       //. (or a composite that wants to do more than traverse

@@ -34,17 +34,17 @@ using namespace Warsaw;
 
 TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *l, Compositor *p)
   : Composition(dk, p),
-    stream(StreamBuffer::_duplicate(s)),
-    kit(TextKit::_duplicate(tk)),
-    canonicalDK(DrawingKit::_duplicate(dk)),
-    compositor(l),
-    locked(false)
+    _stream(StreamBuffer::_duplicate(s)),
+    _kit(TextKit::_duplicate(tk)),
+    _canonicalDK(DrawingKit::_duplicate(dk)),
+    _compositor(l),
+    _locked(false)
 {
   Trace trace("TerminalView::TerminalView");
 }
 
 TerminalView::~TerminalView() {}
-void TerminalView::request(Requisition &r)
+void TerminalView::request(Warsaw::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.minimum = r.x.natural = r.x.maximum = 4000.;
@@ -54,9 +54,9 @@ void TerminalView::request(Requisition &r)
   r.y.align   = 0.;
 }
 
-void TerminalView::needResize()
+void TerminalView::need_resize()
 {
-  if (!locked) Composition::needResize();
+  if (!_locked) Composition::need_resize();
 }
 
 void TerminalView::update(const CORBA::Any &)
@@ -65,14 +65,14 @@ void TerminalView::update(const CORBA::Any &)
   {
 //     MutexGuard guard(childMutex);
     begin();
-    if (!lines.size())
+    if (!_lines.size())
       {
- 	Composition *composition = new Composition(canonicalDK, compositor);
+ 	Composition *composition = new Composition(_canonicalDK, _compositor);
 	activate(composition);
- 	lines.push_back(composition);
- 	append(Graphic_var(lines.back()->_this()));
+ 	_lines.push_back(composition);
+ 	append_graphic(Graphic_var(_lines.back()->_this()));
       }
-    StreamBuffer::Data_var data = stream->read();
+    StreamBuffer::Data_var data = _stream->read();
     char *begin = (char *)data->get_buffer();
     char *end   = begin + data->length();
     for (char *i = begin; i != end; i++)
@@ -83,19 +83,19 @@ void TerminalView::update(const CORBA::Any &)
 	    Unistring us;
 	    us.length(1);
 	    us[0] = Unicode::toCORBA(uc);
-	    Graphic_var child = kit->chunk(us);
-	    lines.back()->append(child);
+	    Graphic_var child = _kit->chunk(us);
+	    _lines.back()->append_graphic(child);
 	  }
 	else switch(*i)
 	  {
 	  case '\r':
 	  case '\n':
 	    {
-	      Composition *composition = new Composition(canonicalDK, compositor);
+	      Composition *composition = new Composition(_canonicalDK, _compositor);
 	      activate(composition);
-	      lines.push_back(composition);
-	      lines.back()->append(Graphic_var(kit->strut()));
-	      append(Graphic_var(lines.back()->_this()));
+	      _lines.push_back(composition);
+	      _lines.back()->append_graphic(Graphic_var(_kit->strut()));
+	      append_graphic(Graphic_var(_lines.back()->_this()));
 	    }
 	    break;
 	  case '\b':
@@ -104,10 +104,10 @@ void TerminalView::update(const CORBA::Any &)
       }
     this->end();
   }
-  needResize();
-  needRedraw();
+  need_resize();
+  need_redraw();
 }
 
-void TerminalView::begin() { locked = true;}
+void TerminalView::begin() { _locked = true;}
 
-void TerminalView::end() { locked = false;}
+void TerminalView::end() { _locked = false;}

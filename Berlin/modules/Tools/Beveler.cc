@@ -41,7 +41,7 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   Coord topi = top + thickness;
   Coord bottomi = bottom - thickness;
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
   Path path;
   path.length(7);
   Vertex lower = {left, top, 0.};
@@ -50,9 +50,9 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   if (fill)
     {
       drawing->foreground(medium);
-      drawing->drawRect(lower, upper);
+      drawing->draw_rectangle(lower, upper);
     }
-  drawing->surfaceFillstyle(DrawingKit::solid);
+  drawing->surface_fillstyle(DrawingKit::solid);
   /*
    * light (left and top) edges
    */
@@ -61,10 +61,10 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
     // fast path
     lower.x = left; lower.y = top;
     upper.x = lefti; upper.y = bottom;
-    drawing->drawRect(lower,upper);    
+    drawing->draw_rectangle(lower,upper);    
     lower.x = left; lower.y = top;
     upper.x = right; upper.y = topi;
-    drawing->drawRect(lower,upper);  
+    drawing->draw_rectangle(lower,upper);  
   } else {
     path[0].x = left, path[0].y = top, path[0].z = 0.;
     path[1].x = left, path[1].y = bottom, path[1].z = 0.;
@@ -73,7 +73,7 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
     path[4].x = righti, path[4].y = topi, path[4].z = 0.;
     path[5].x = right, path[5].y = top, path[5].z = 0.;
     path[6].x = left, path[6].y = top, path[6].z = 0.;
-    drawing->drawPath(path);
+    drawing->draw_path(path);
   }
 
   /*
@@ -87,8 +87,8 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   path[4].x = righti, path[4].y = bottomi, path[4].z = 0.;
   path[5].x = righti, path[5].y = topi, path[5].z = 0.;
   path[6].x = right, path[6].y = top, path[6].z = 0.;
-  drawing->drawPath(path);
-  drawing->restoreState();
+  drawing->draw_path(path);
+  drawing->restore();
 }
 
 void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
@@ -102,7 +102,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   Coord dy = thickness * (1 + slope);
 
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
   
   Path path;
   if (fill)
@@ -113,7 +113,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
       path[1].x = right, path[1].y = top, path[1].z = 0;
       path[2].x = left, path[2].y = center.y, path[2].z = 0;
       path[3] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   path.length(5);
   /*
@@ -125,7 +125,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   path[2].x = right - thickness, path[2].y = top + dy, path[2].z = 0;
   path[3].x = right, path[3].y = top, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * right
    */
@@ -135,7 +135,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   path[2].x = right - thickness, path[2].y = top + dy, path[2].z = 0;
   path[3].x = right - thickness, path[3].y = bottom - dy, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * bottom
    */
@@ -144,8 +144,8 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   path[2].x = right - thickness, path[2].y = bottom - dy, path[2].z = 0;
   path[3].x = left + dx, path[3].y = center.y, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
-  drawing->restoreState();
+  drawing->draw_path(path);
+  drawing->restore();
 }
 
 void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
@@ -158,7 +158,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   Coord dy = thickness * (1 + slope);
 
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
 
   Path path;
   if (fill)
@@ -169,7 +169,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
       path[1].x = left, path[1].y = top, path[1].z = 0;
       path[2].x = left, path[2].y = bottom, path[2].z = 0;
       path[3] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   path.length(5);
   /*
@@ -181,7 +181,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   path[2].x = right - dx, path[2].y = center.y, path[2].z = 0.;
   path[3].x = left + thickness, path[3].y = bottom - dy, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * left
    */
@@ -191,7 +191,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   path[2].x = left + thickness, path[2].y = bottom - dy, path[2].z = 0;
   path[3].x = left + thickness, path[3].y = top + dy, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * top
    */
@@ -200,8 +200,8 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   path[2].x = left + thickness, path[2].y = top + dy, path[2].z = 0;
   path[3].x = right - dx, path[3].y = center.y, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
-  drawing->restoreState();
+  drawing->draw_path(path);
+  drawing->restore();
 }
 
 void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
@@ -214,7 +214,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   Coord dx = thickness * (1 + 1 / slope);
 
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
 
   Path path;
   if (fill)
@@ -225,7 +225,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
       path[1].x = right, path[1].y = bottom, path[1].z = 0;
       path[2].x = center.x, path[2].y = top, path[2].z = 0;
       path[3] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   path.length(5);
   /*
@@ -237,7 +237,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = left + dx, path[2].y = bottom - thickness, path[2].z = 0;
   path[3].x = center.x, path[3].y = top + dy, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * right
    */
@@ -247,7 +247,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = right - dx, path[2].y = bottom - thickness, path[2].z = 0;
   path[3].x = right, path[3].y = bottom, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * bottom
    */
@@ -256,8 +256,8 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = right - dx, path[2].y = bottom - thickness, path[2].z = 0;
   path[3].x = left + dx, path[3].y = bottom - thickness, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
-  drawing->restoreState();
+  drawing->draw_path(path);
+  drawing->restore();
 }
 
 void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
@@ -270,7 +270,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   Coord dx = thickness * (1 + 1 / slope);
 
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
 
   Path path;
   if (fill)
@@ -281,7 +281,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
       path[1].x = left, path[1].y = top, path[1].z = 0;
       path[2].x = center.x, path[2].y = bottom, path[2].z = 0;
       path[3] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   path.length(5);
   /*
@@ -293,7 +293,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
   path[3].x = center.x, path[3].y = bottom, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * top
    */
@@ -303,7 +303,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   path[2].x = left + dx, path[2].y = top + thickness, path[2].z = 0;
   path[3].x = right - dx, path[3].y = top + thickness, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * left
    */
@@ -312,8 +312,8 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
   path[3].x = left + dx, path[3].y = top + thickness, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
-  drawing->restoreState();
+  drawing->draw_path(path);
+  drawing->restore();
 }
 
 void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
@@ -325,7 +325,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   Coord dy = thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
 
   Path path;
   path.length(5);
@@ -337,7 +337,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
       path[2].x = center.x, path[2].y = bottom, path[2].z = 0;
       path[3].x = right, path[3].y = center.y, path[3].z = 0;
       path[4] = path[0];
-      drawing->drawPath(path);
+      drawing->draw_path(path);
     }
   /*
    * top left
@@ -348,7 +348,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = left + dx, path[2].y = center.y, path[2].z = 0;
   path[3].x = center.x, path[3].y = top + dy, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * top right
    */
@@ -357,7 +357,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
   path[3].x = right, path[3].y = center.y, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * bottom left
    */
@@ -367,7 +367,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
   path[3].x = left + dx, path[3].y = center.y, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
+  drawing->draw_path(path);
   /*
    * bottom right
    */
@@ -376,8 +376,8 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
   path[3].x = center.x, path[3].y = bottom - dy, path[3].z = 0;
   path[4] = path[0];
-  drawing->drawPath(path);
-  drawing->restoreState();
+  drawing->draw_path(path);
+  drawing->restore();
 }
 
 void circle(DrawTraversal_ptr, Coord thickness, const Color &medium, const Color &light, const Color &dark,

@@ -25,9 +25,9 @@
 using namespace Prague;
 using namespace Warsaw;
 
-void Pulldown::loseFocus(Input::Device)
+void Pulldown::lose_focus(Input::Device)
 {
-  Trace trace("Pulldown::loseFocus");
+  Trace trace("Pulldown::lose_focus");
   mapped(false);
 }
 
@@ -37,6 +37,6 @@ void Pulldown::mapped(CORBA::Boolean flag)
   /*
    * make sure we get focus before we are mapped
    */
-//   if (!flag || requestFocus(Controller_var(_this()), 1))
+//   if (!flag || request_focus(Controller_var(_this()), 1))
     WindowImpl::mapped(flag);
 }

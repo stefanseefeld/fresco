@@ -36,8 +36,8 @@ public:
   virtual void traverse(Warsaw::Traversal_ptr);
 
 protected:
-  bool requested;
-  Warsaw::Graphic::Requisition requisition;
+  bool _requested;
+  Warsaw::Graphic::Requisition _requisition;
 };
 
 #endif

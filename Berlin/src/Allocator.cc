@@ -34,9 +34,9 @@ using namespace Prague;
 using namespace Warsaw;
 
 Allocator::Allocator()
-  : requested(false),
-    natural(new RegionImpl),
-    extension(new RegionImpl)
+  : _requested(false),
+    _natural(new RegionImpl),
+    _extension(new RegionImpl)
 {
 }
 
@@ -47,8 +47,8 @@ Allocator::~Allocator()
 void Allocator::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("Allocator::request");
-  cacheRequisition();
-  r = requisition;
+  cache_requisition();
+  r = _requisition;
 }
 
 void Allocator::traverse(Traversal_ptr traversal)
@@ -57,27 +57,27 @@ void Allocator::traverse(Traversal_ptr traversal)
 //   updateRequisition();
   Region_var allocation = traversal->allocation();
   if (!CORBA::is_nil(allocation))
-    traversal->traverseChild(Graphic_var(body()), 0, allocation, Transform_var(Transform::_nil()));
+    traversal->traverse_child(Graphic_var(body()), 0, allocation, Transform_var(Transform::_nil()));
   else
-    traversal->traverseChild(Graphic_var(body()), 0, Region_var(natural->_this()), Transform_var(Transform::_nil()));
+    traversal->traverse_child(Graphic_var(body()), 0, Region_var(_natural->_this()), Transform_var(Transform::_nil()));
 }
 
-void Allocator::needResize()
+void Allocator::need_resize()
 {
-  Trace trace("Allocator::needResize");
+  Trace trace("Allocator::need_resize");
   Lease_var<AllocationImpl> allocation(Provider<AllocationImpl>::provide());
   allocation->clear();
   allocations(Allocation_var(allocation->_this()));
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->clear();
-  if (extension->valid) region->copy(Region_var(extension->_this()));
-  requested = false;
-  allocated = false;
-  cacheRequisition();
-  cacheAllocation();
-  if (extension->valid) region->mergeUnion(Region_var(extension->_this()));
-  if (region->valid) needDamage(region, Allocation_var(allocation->_this()));
-  MonoGraphic::needResize();
+  if (_extension->valid) region->copy(Region_var(_extension->_this()));
+  _requested = false;
+  _allocated = false;
+  cache_requisition();
+  cache_allocation();
+  if (_extension->valid) region->merge_union(Region_var(_extension->_this()));
+  if (region->valid) need_damage(region, Allocation_var(allocation->_this()));
+  MonoGraphic::need_resize();
 }
 
 void Allocator::allocate(Tag, const Allocation::Info &i)
@@ -87,7 +87,7 @@ void Allocator::allocate(Tag, const Allocation::Info &i)
 //  i.allocation->copy(Region_var(natural->_this()));
 }
 
-void Allocator::naturalAllocation(const Warsaw::Graphic::Requisition &r, RegionImpl &natural)
+void Allocator::natural_allocation(const Warsaw::Graphic::Requisition &r, RegionImpl &natural)
 {
   if (r.x.defined)
     {
@@ -112,40 +112,40 @@ void Allocator::naturalAllocation(const Warsaw::Graphic::Requisition &r, RegionI
     }
 }
 
-void Allocator::cacheRequisition()
+void Allocator::cache_requisition()
 {
-  Trace trace("Allocator::cacheRequisition");
-  if (!requested)
+  Trace trace("Allocator::cache_requisition");
+  if (!_requested)
     {
       Warsaw::Graphic::Requisition r;
-      GraphicImpl::initRequisition(r);
+      GraphicImpl::init_requisition(r);
       MonoGraphic::request(r);
-      requisition = r;
-      requested = r.x.defined && r.y.defined && r.z.defined;
+      _requisition = r;
+      _requested = r.x.defined && r.y.defined && r.z.defined;
     }
 }
 
-void Allocator::cacheAllocation()
+void Allocator::cache_allocation()
 {
-  Trace trace("Allocator::cacheAllocation");
-  cacheRequisition();
-  if (!allocated)
+  Trace trace("Allocator::cache_allocation");
+  cache_requisition();
+  if (!_allocated)
     {
-      naturalAllocation(requisition, *natural);
-      extension->valid = false;
+      natural_allocation(_requisition, *_natural);
+      _extension->valid = false;
       Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
       tmp->clear();
       Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
-      transform->loadIdentity();
+      transform->load_identity();
       Allocation::Info info;
       info.allocation = tmp->_this();
       info.transformation = transform->_this();
-      MonoGraphic::extension(info, Region_var(extension->_this()));
-      allocated = true;
+      MonoGraphic::extension(info, Region_var(_extension->_this()));
+      _allocated = true;
     }
 }
 
-void Allocator::needDamage(RegionImpl *e, Allocation_ptr allocation)
+void Allocator::need_damage(RegionImpl *e, Allocation_ptr allocation)
 {
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   region->clear();
@@ -154,13 +154,13 @@ void Allocator::needDamage(RegionImpl *e, Allocation_ptr allocation)
     {
       Allocation::Info_var info = allocation->get(i);
       region->copy(Region_var(e->_this()));
-      region->applyTransform(info->transformation);
+      region->apply_transform(info->transformation);
       info->root->damage(Region_var(region->_this()));
     }
 }
 
 TransformAllocator::TransformAllocator(Alignment xp, Alignment yp, Alignment zp, Alignment xc, Alignment yc, Alignment zc)
-  : xparent(xp), yparent(yp), zparent(zp), xchild(xc), ychild(yc), zchild(zc)
+  : _xparent(xp), _yparent(yp), _zparent(zp), _xchild(xc), _ychild(yc), _zchild(zc)
 {}
 
 TransformAllocator::~TransformAllocator() {}
@@ -169,13 +169,13 @@ void TransformAllocator::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("TransformAllocator::request");
   Allocator::request(r);
-  Coord fil = 1000000.;
+  Coord fill = 1000000.;
   Coord zero = 0.;
-  r.x.maximum = fil;
+  r.x.maximum = fill;
   r.x.minimum = zero;
-  r.y.maximum = fil;
+  r.y.maximum = fill;
   r.y.minimum = zero;
-  r.z.maximum = fil;
+  r.z.maximum = fill;
   r.z.minimum = zero;
 //   requisition.x.maximum = fil;
 //   requisition.x.minimum = zero;
@@ -190,34 +190,34 @@ void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
   Trace trace("TransformAllocator::allocate");
   Vertex lower, upper, delta;
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
+  tx->load_identity();
   Allocator::allocate(t, i);
   i.allocation->bounds(lower, upper);
-  computeDelta(lower, upper, delta);
+  compute_delta(lower, upper, delta);
   tx->translate(delta);
   i.transformation->premultiply(Transform_var(tx->_this()));
-  i.allocation->copy(Region_var(natural->_this()));
+  i.allocation->copy(Region_var(_natural->_this()));
 }
 
 void TransformAllocator::traverse(Traversal_ptr traversal)
 {
   Trace trace("TransformAllocator::traverse");
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
-  cacheAllocation();
+  tx->load_identity();
+  cache_allocation();
   Vertex lower, upper, v;
   traversal->bounds(lower, upper, v);
-  computeDelta(lower, upper, v);
+  compute_delta(lower, upper, v);
   tx->translate(v);
-  traversal->traverseChild(Graphic_var(body()), 0, Region_var(natural->_this()), Transform_var(tx->_this()));
+  traversal->traverse_child(Graphic_var(body()), 0, Region_var(_natural->_this()), Transform_var(tx->_this()));
 }
 
-void TransformAllocator::computeDelta(const Vertex &lower, const Vertex &upper, Vertex &delta)
+void TransformAllocator::compute_delta(const Vertex &lower, const Vertex &upper, Vertex &delta)
 {
-  delta.x = (lower.x - natural->lower.x + xparent * (upper.x - lower.x) -
-	     xchild * (natural->upper.x - natural->lower.x));
-  delta.y = (lower.y - natural->lower.y + yparent * (upper.y - lower.y) -
-	     ychild * (natural->upper.y - natural->lower.y));
-  delta.z = (lower.z - natural->lower.z + zparent * (upper.z - lower.z) -
-	     zchild * (natural->upper.z - natural->lower.z));
+  delta.x = (lower.x - _natural->lower.x + _xparent * (upper.x - lower.x) -
+	     _xchild * (_natural->upper.x - _natural->lower.x));
+  delta.y = (lower.y - _natural->lower.y + _yparent * (upper.y - lower.y) -
+	     _ychild * (_natural->upper.y - _natural->lower.y));
+  delta.z = (lower.z - _natural->lower.z + _zparent * (upper.z - lower.z) -
+	     _zchild * (_natural->upper.z - _natural->lower.z));
 }

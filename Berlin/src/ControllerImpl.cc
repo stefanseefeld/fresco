@@ -33,208 +33,328 @@
 using namespace Prague;
 using namespace Warsaw;
 
-ControllerImpl::ControllerImpl(bool t) : telltale(0), focus(0), grabs(0), transparent(t) {}
-ControllerImpl::~ControllerImpl() { Trace trace("ControllerImpl::~ControllerImpl");}
+class ControllerImpl::Iterator : public virtual POA_Warsaw::ControllerIterator,
+		                 public virtual ServantBase
+{
+public:
+  Iterator(ControllerImpl *p, Tag c) : _parent(p), _cursor(c) { Trace trace("ControllerImpl::Iterator::Iterator"); _parent->_add_ref();}
+  virtual ~Iterator() { Trace trace("ControllerImpl::Iterator::~Iterator"); _parent->_remove_ref();}
+  virtual Warsaw::Controller_ptr child()
+  {
+    Trace trace("ControllerImpl::Iterator::child");
+    MutexGuard guard(_parent->_mutex);
+    if (_cursor > _parent->_children.size()) return Warsaw::Controller::_nil();
+    return RefCount_var<Warsaw::Controller>::increment(_parent->_children[_cursor]);
+  }
+  virtual void next() { _cursor++;}
+  virtual void prev() { _cursor--;}
+  virtual void insert(Controller_ptr child)
+  {
+    Trace trace("ControllerImpl::Iterator::insert");
+    {
+      MutexGuard guard(_parent->_mutex);
+      if (_cursor > _parent->_children.size()) _cursor = _parent->_children.size();
+      _parent->_children.insert(_parent->_children.begin() + _cursor, RefCount_var<Warsaw::Controller>::increment(child));
+      child->set_parent_controller(Controller_var(_parent->_this()));
+    }
+    _parent->need_resize();
+  }
+  virtual void replace(Controller_ptr child)
+  {
+    Trace trace("ControllerImpl::Iterator::replace");
+    {
+      MutexGuard guard(_parent->_mutex);
+      if (_cursor > _parent->_children.size()) return;
+      Controller_var old = static_cast<Controller_ptr>(_parent->_children[_cursor]);
+      if (!CORBA::is_nil(old))
+	try
+	  {
+	    old->remove_parent_controller();
+	  }
+	catch(const CORBA::OBJECT_NOT_EXIST &) {}
+      _parent->_children[_cursor] = RefCount_var<Warsaw::Controller>::increment(child);
+      child->set_parent_controller(Controller_var(_parent->_this()));
+    }
+    _parent->need_resize();
+  }
+  virtual void remove()
+  {
+    Trace trace("ControllerImpl::Iterator::remove");
+    {
+      MutexGuard guard(_parent->_mutex);
+      if (_cursor > _parent->_children.size()) return;
+      ControllerImpl::clist_t::iterator i = _parent->_children.begin() + _cursor;
+      try
+	{
+	  (*i)->remove_parent_controller();
+	}
+      catch(const CORBA::OBJECT_NOT_EXIST &) {}
+      _parent->_children.erase(i);
+    }
+    _parent->need_resize();
+  }
+  virtual void destroy() { deactivate();}
+private:
+  ControllerImpl *_parent;
+  size_t          _cursor;
+};
+
+ControllerImpl::ControllerImpl(bool t) : _telltale(0), _focus(0), _grabs(0), _transparent(t) {}
+ControllerImpl::~ControllerImpl()
+{
+  Trace trace("ControllerImpl::~ControllerImpl");
+}
+void ControllerImpl::deactivate()
+{
+  Trace trace("ControllerImpl::deactivate");
+  remove_parent_controller();
+  ServantBase::deactivate(this);
+}
+
+void ControllerImpl::traverse(Traversal_ptr traversal)
+{
+  Trace trace("ControllerImpl::traverse");
+  traversal->visit(Graphic_var(_this()));
+}
+
+void ControllerImpl::draw(DrawTraversal_ptr traversal)
+{
+  Trace trace("ControllerImpl::draw");
+  MonoGraphic::traverse(traversal);
+}
 
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   Trace trace("ControllerImpl::pick");
-  if (grabbed(traversal->device()) || traversal->intersectsAllocation())
+  if (grabbed(traversal->device()) || traversal->intersects_allocation())
     {
-      traversal->enterController(Controller_var(_this()));
+      traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!transparent && !traversal->picked()) traversal->hit();
-      traversal->leaveController();
+      if (!_transparent && !traversal->picked()) traversal->hit();
+      traversal->leave_controller();
     }
 }
 
-void ControllerImpl::appendController(Controller_ptr c)
+void ControllerImpl::append_controller(Controller_ptr c)
 {
-  Trace trace("ControllerImpl::appendController");
-  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
-  MutexGuard guard(mutex);
-  Controller_ptr nc = Warsaw::Controller::_duplicate(c);
-  nc->setControllerLinks(Controller_var(_this()), last, Controller_var(Warsaw::Controller::_nil()));
-  last = nc;
-  if (CORBA::is_nil(first)) first = last;
+  Trace trace("ControllerImpl::append_controller");
+  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
+  MutexGuard guard(_mutex);
+  RefCount_var<Warsaw::Controller> tmp = RefCount_var<Warsaw::Controller>::increment(c);
+  _children.push_back(tmp);
+  c->set_parent_controller(Controller_var(_this()));
 }
 
-void ControllerImpl::prependController(Controller_ptr c)
+void ControllerImpl::prepend_controller(Controller_ptr c)
 {
-  Trace trace("ControllerImpl::prependController");
-  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
-  MutexGuard guard(mutex);
-  Controller_ptr nc = Warsaw::Controller::_duplicate(c);
-  nc->setControllerLinks(Controller_var(_this()), Controller_var(Warsaw::Controller::_nil()), first);
-  first = nc;
-  if (CORBA::is_nil(last)) last = nc;
+  Trace trace("ControllerImpl::prepend_controller");
+  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
+  MutexGuard guard(_mutex);
+  _children.insert(_children.begin(), RefCount_var<Warsaw::Controller>::increment(c));
+  c->set_parent_controller(Controller_var(_this()));
 }
 
-void ControllerImpl::insertController(Controller_ptr c)
+void ControllerImpl::remove_controller(Controller_ptr c)
 {
-  Trace trace("ControllerImpl::insertController");
-  if (CORBA::is_nil(c)) return;
-  Controller_ptr nc = Warsaw::Controller::_duplicate(c);
-  nc->setControllerLinks(parent, prev, Controller_var(_this()));
-//   if (is_eq(this, Viewer_var(parent_->first_viewer())))
-  if (CORBA::is_nil(prev)) parent->setFirstController(nc);
-  prev = nc;
+  Trace trace("ControllerImpl::remove_controller");
+  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
+  MutexGuard guard(_mutex);
+  for (clist_t::iterator i = _children.begin(); i != _children.end(); ++i)
+    if ((*i)->is_identical(c))
+      {
+	(*i)->remove_parent_controller();
+	_children.erase(i);
+	return;
+      }
 }
 
-void ControllerImpl::replaceController(Controller_ptr c)
+void ControllerImpl::set_parent_controller(Controller_ptr p)
 {
-  Trace trace("ControllerImpl::replaceController");
-  if (CORBA::is_nil(c)) removeController();
-  else
-    {
-      c->setControllerLinks(parent, prev, next);
-      if (CORBA::is_nil(parent)) return;
-      if (CORBA::is_nil(prev)) parent->setFirstController(c);
-      if (CORBA::is_nil(next)) parent->setLastController(c);
-      prev = Warsaw::Controller::_nil();
-      next = Warsaw::Controller::_nil();
-    }
+  Trace trace("ControllerImpl::set_parent_controller");
+  MutexGuard guard(_mutex);
+  _parent = Warsaw::Controller::_duplicate(p);
 }
 
-void ControllerImpl::removeController()
+void ControllerImpl::remove_parent_controller()
 {
-  Trace trace("ControllerImpl::removeController");
-  if (CORBA::is_nil(parent)) return;
-  if (CORBA::is_nil(prev)) parent->setFirstController(next);
-  else prev->setControllerLinks(Controller_var(Warsaw::Controller::_nil()), Controller_var(prev->prevController()), next);
-  if (CORBA::is_nil(next)) parent->setLastController(prev);
-  else next->setControllerLinks(Controller_var(Warsaw::Controller::_nil()), prev, Controller_var(next->nextController()));
-  parent = Warsaw::Controller::_nil();
-  prev = Warsaw::Controller::_nil();
-  next = Warsaw::Controller::_nil();
+  Trace trace("ControllerImpl::remove_parent_controller");
+  MutexGuard guard(_mutex);
+  _parent = Warsaw::Controller::_nil();
 }
 
-void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Controller_ptr ne)
+Controller_ptr ControllerImpl::parent_controller()
 {
-  Trace trace("ControllerImpl::setControllerLinks");
-  if (!CORBA::is_nil(pa))
-    {
-      parent = Warsaw::Controller::_duplicate(pa);
-      prev = Warsaw::Controller::_duplicate(pr);
-      if (!CORBA::is_nil(pr))
-	{
-	  pr->setControllerLinks(Controller_var(Warsaw::Controller::_nil()),
-				 Controller_var(pr->prevController()), Controller_var(_this()));
-	}
-      next = Warsaw::Controller::_duplicate(ne);
-      if (!CORBA::is_nil(ne))
-	{
-	  ne->setControllerLinks(Controller_var(Warsaw::Controller::_nil()),
-				 Controller_var(_this()), Controller_var(next->nextController()));
-	}
-    }
-  else
-    {
-      prev = Warsaw::Controller::_duplicate(pr);
-      next = Warsaw::Controller::_duplicate(ne);
-    }
+  Trace trace("ControllerImpl::parent_controller");
+  Prague::MutexGuard guard(_mutex);
+  return Warsaw::Controller::_duplicate(_parent);
 }
 
-void ControllerImpl::setFirstController(Controller_ptr c)
+Warsaw::Controller::Iterator_ptr ControllerImpl::first_child_controller()
 {
-  Trace trace("ControllerImpl::setFirstController");
-  first = Warsaw::Controller::_duplicate(c);
-  if (CORBA::is_nil(c)) last = Warsaw::Controller::_nil();
+  Trace trace("ControllerImpl::first_child_controller");
+  Iterator *iterator = new Iterator(this, 0);
+  activate(iterator);
+  return iterator->_this();
 }
 
-void ControllerImpl::setLastController(Controller_ptr c)
+Warsaw::Controller::Iterator_ptr ControllerImpl::last_child_controller()
 {
-  Trace trace("ControllerImpl::setLastController");
-  last = c;
-  if (CORBA::is_nil(c)) first = Warsaw::Controller::_nil();
+  Trace trace("ControllerImpl::last_child_controller");
+  Prague::MutexGuard guard(_mutex);
+  Iterator *iterator = new Iterator(this, _children.size() - 1);
+  activate(iterator);
+  return iterator->_this();
 }
 
-CORBA::Boolean ControllerImpl::requestFocus(Controller_ptr c, Input::Device d)
+CORBA::Boolean ControllerImpl::request_focus(Controller_ptr c, Input::Device d)
 {
-  Trace trace("ControllerImpl::requestFocus");  
-  return CORBA::is_nil(parent) ? false : parent->requestFocus(c, d);
+  Trace trace("ControllerImpl::request_focus");  
+  Controller_var parent = parent_controller();
+  return CORBA::is_nil(parent) ? false : parent->request_focus(c, d);
 }
 
-CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
+CORBA::Boolean ControllerImpl::receive_focus(Focus_ptr f)
 {
-  Trace trace("ControllerImpl::receiveFocus");  
-  setFocus(f->device());
+  Trace trace("ControllerImpl::receive_focus");
+  set_focus(f->device());
   if (f->device() == 0) set(Warsaw::Controller::active);
   return true;
 }
 
-void ControllerImpl::loseFocus(Input::Device d)
+void ControllerImpl::lose_focus(Input::Device d)
 {
-  Trace trace("ControllerImpl::loseFocus");
-  clearFocus(d);
+  Trace trace("ControllerImpl::lose_focus");
+  clear_focus(d);
   if (d == 0) clear(Warsaw::Controller::active);
 }
 
-CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)
+CORBA::Boolean ControllerImpl::first_focus(Input::Device d)
 {
-  Controller_ptr ne = Warsaw::Controller::_nil();
-  for (Controller_var c = firstController(); !CORBA::is_nil(c); c = ne)
-    {
-      if (c->firstFocus(d)) return true;
-      ne = c->nextController();
-    }
+  Trace trace("ControllerImpl::first_focus");
+  /*
+   * if we have children, ask them if they take the focus...
+   */
+  {
+    MutexGuard guard(_mutex);
+    for (clist_t::iterator i = _children.begin(); i != _children.end(); ++i)
+      if ((*i)->first_focus(d)) return true;
+  }
+  /*
+   * ...else we have to request it ourself
+   */
+  Controller_var parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
-  return parent->requestFocus(Controller_var(_this()), d);
+  return parent->request_focus(Controller_var(_this()), d);
 }
 
-CORBA::Boolean ControllerImpl::lastFocus(Input::Device d)
+CORBA::Boolean ControllerImpl::last_focus(Input::Device d)
 {
-  Controller_ptr pr = Warsaw::Controller::_nil();
-  for (Controller_var c = lastController(); !CORBA::is_nil(c); c = pr)
-    {
-      if (c->lastFocus(d)) return true;
-      pr = c->prevController();
-    }
+  Trace trace("ControllerImpl::last_focus");
+  /*
+   * if we have children, ask them if they take the focus...
+   */
+  {
+    MutexGuard guard(_mutex);
+    for (clist_t::reverse_iterator i = _children.rbegin(); i != _children.rend(); ++i)
+      if ((*i)->last_focus(d)) return true;
+  }
+  /*
+   * ...else we have to request it ourself
+   */
+  Controller_var parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
-  return parent->requestFocus(Controller_var(_this()), d);
+  return parent->request_focus(Controller_var(_this()), d);
 }
 
-CORBA::Boolean ControllerImpl::nextFocus(Input::Device d)
+CORBA::Boolean ControllerImpl::next_focus(Input::Device d)
 {
-  if (!CORBA::is_nil(next)) return next->firstFocus(d);
+  Trace trace("ControllerImpl::next_focus");
+  RefCount_var<Warsaw::Controller> parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
-  return parent->nextFocus(d);
+  /*
+   * first locate the next controller in the control graph...
+   */
+  Warsaw::Controller::Iterator_var iterator = parent->first_child_controller();
+  RefCount_var<Warsaw::Controller> next;
+  /*
+   * set the iterator to refer to 'this' child...
+   */
+  for (next = iterator->child(); !CORBA::is_nil(next) && !is_identical(next); iterator->next(), next = iterator->child());
+  /*
+   * 'this' not being contained in the parent's child list indicates an internal error
+   */
+  assert(!CORBA::is_nil(next));
+  iterator->next();
+  next = iterator->child();
+  iterator->destroy();
+  /*
+   * ...now try to pass the focus to it...
+   */
+  if (!CORBA::is_nil(next)) return next->first_focus(d);
+  /*
+   * ...else pass up to the parent
+   */
+  else return parent->next_focus(d);
 }
 
-CORBA::Boolean ControllerImpl::prevFocus(Input::Device d)
+CORBA::Boolean ControllerImpl::prev_focus(Input::Device d)
 {
-  if (!CORBA::is_nil(prev)) return prev->lastFocus(d);
+  Trace trace("ControllerImpl::prev_focus");
+  RefCount_var<Warsaw::Controller> parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
-  else return parent->prevFocus(d);
+  /*
+   * first locate the previous controller in the control graph...
+   */
+  Warsaw::Controller::Iterator_var iterator = _parent->last_child_controller();
+  RefCount_var<Warsaw::Controller> prev;
+  /*
+   * set the iterator to refer to 'this' child...
+   */
+  for (prev = iterator->child(); !CORBA::is_nil(prev) && !is_identical(prev); iterator->prev(), prev = iterator->child());
+  /*
+   * 'this' not being contained in the parent's child list indicates an internal error
+   */
+  assert(!CORBA::is_nil(prev));
+  iterator->prev();
+  prev = iterator->child();
+  iterator->destroy();
+  /*
+   * ...now try to pass the focus to it...
+   */
+  if (!CORBA::is_nil(prev)) return prev->first_focus(d);
+  /*
+   * ...else pass up to the parent
+   */
+  else return _parent->prev_focus(d);
 }
 
 void ControllerImpl::set(Warsaw::Telltale::Mask m)
 {
   Trace trace("ControllerImpl::set");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
+  if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
 void ControllerImpl::clear(Warsaw::Telltale::Mask m)
 {
   Trace trace("ControllerImpl::clear");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
+  if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
 CORBA::Boolean ControllerImpl::test(Warsaw::Telltale::Mask m)
 {
-  MutexGuard guard(mutex);
-  return (telltale & m) == m;
+  MutexGuard guard(_mutex);
+  return (_telltale & m) == m;
 }
 
 void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
-  unsigned long nf = on ? telltale | m : telltale & ~m;
+  unsigned long nf = on ? _telltale | m : _telltale & ~m;
   {
-    MutexGuard guard(mutex);
-    if (nf == telltale) return;
-    else telltale = nf;
+    MutexGuard guard(_mutex);
+    if (nf == _telltale) return;
+    else _telltale = nf;
   }
   CORBA::Any any;
   any <<= nf;
@@ -243,19 +363,19 @@ void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 
 void ControllerImpl::constraint(TelltaleConstraint_ptr c)
 {
-  MutexGuard guard(mutex);
-  myConstraint = TelltaleConstraint::_duplicate(c);
+  MutexGuard guard(_mutex);
+  _constraint = TelltaleConstraint::_duplicate(c);
 }
 
 TelltaleConstraint_ptr ControllerImpl::constraint()
 {
-  MutexGuard guard(mutex);
-  return TelltaleConstraint::_duplicate(myConstraint);
+  MutexGuard guard(_mutex);
+  return TelltaleConstraint::_duplicate(_constraint);
 }
 
-CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, const Input::Event &event)
+CORBA::Boolean ControllerImpl::handle_positional(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  Trace trace("ControllerImpl::handlePositional");
+  Trace trace("ControllerImpl::handle_positional");
   Input::Position position;
   if (Input::getPosition(event, position) == -1)
     {
@@ -277,23 +397,23 @@ CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, con
   return true;
 }
 
-CORBA::Boolean ControllerImpl::handleNonPositional(const Input::Event &event)
+CORBA::Boolean ControllerImpl::handle_non_positional(const Input::Event &event)
 {
-  Trace trace("ControllerImpl::handleNonPositional");
+  Trace trace("ControllerImpl::handle_non_positional");
   if (event[0].dev != 0 || event[0].attr._d() != Input::key)
     {
       cerr << "ControllerImpl::handleNonPositional fatal error : unknown event" << endl;
       return false;
     }
   if (event[0].attr.selection().actuation != Input::Toggle::press) return false;
-  keyPress(event);
+  key_press(event);
   return true;
 }
 
 bool ControllerImpl::inside(PickTraversal_ptr traversal)
   //. default implementation: use bounding box
 {
-  return traversal->intersectsAllocation();
+  return traversal->intersects_allocation();
 }
 
 void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
@@ -303,7 +423,7 @@ void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
 void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
 {
   grab(traversal);
-  requestFocus(Controller_var(_this()), 0);
+  request_focus(Controller_var(_this()), 0);
   set(Warsaw::Controller::pressed);
 }
 
@@ -317,33 +437,32 @@ void ControllerImpl::release(PickTraversal_ptr traversal, const Input::Event &)
   ungrab(traversal);
 }
 
-void ControllerImpl::doubleClick(PickTraversal_ptr, const Input::Event &)
+void ControllerImpl::double_click(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::keyPress(const Input::Event &event)
+void ControllerImpl::key_press(const Input::Event &event)
 {
-  Trace trace("ControllerImpl::keyPress");
+  Trace trace("ControllerImpl::key_press");
   const Input::Toggle &toggle = event[0].attr.selection();
-//   cout << "ControllerImpl::keyPress : " << toggle.number << ' ' << (char) toggle.number << endl;
   switch (toggle.number)
     {
     case Unicode::KEY_CURSOR_LEFT:          // left
       {
-	prevFocus(event[0].dev);
+	prev_focus(event[0].dev);
 	break;
       }
     case Unicode::UC_HORIZONTAL_TABULATION: // tab
     case Unicode::KEY_CURSOR_RIGHT:         // right
       {
-	nextFocus(event[0].dev);
+	next_focus(event[0].dev);
 	break;
       }
     default: break;
     }
 }
 
-void ControllerImpl::keyRelease(const Input::Event &)
+void ControllerImpl::key_release(const Input::Event &)
 {
 }
 
@@ -351,6 +470,6 @@ void ControllerImpl::other(const Input::Event &)
 {
 }
 
-void ControllerImpl::updateState()
+void ControllerImpl::update_state()
 {
 }

@@ -39,7 +39,7 @@ module Warsaw
 	Coord lvalue;
 	Coord uvalue;
       };
-      Settings getSettings();
+      attribute Settings state;
       attribute Coord lower;
       attribute Coord upper;
       attribute Coord step;

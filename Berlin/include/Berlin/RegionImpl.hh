@@ -43,13 +43,13 @@ public:
 
   virtual CORBA::Boolean defined();
   virtual CORBA::Boolean contains(const Warsaw::Vertex &);
-  virtual CORBA::Boolean containsPlane(const Warsaw::Vertex &, Warsaw::Axis a);
+  virtual CORBA::Boolean contains_plane(const Warsaw::Vertex &, Warsaw::Axis a);
   virtual CORBA::Boolean intersects(Warsaw::Region_ptr);
   virtual void copy(Warsaw::Region_ptr);
-  virtual void mergeIntersect(Warsaw::Region_ptr);
-  virtual void mergeUnion(Warsaw::Region_ptr);
+  virtual void merge_intersect(Warsaw::Region_ptr);
+  virtual void merge_union(Warsaw::Region_ptr);
   virtual void subtract(Warsaw::Region_ptr);
-  virtual void applyTransform(Warsaw::Transform_ptr);
+  virtual void apply_transform(Warsaw::Transform_ptr);
   virtual void bounds(Warsaw::Vertex &, Warsaw::Vertex &);
   virtual void center(Warsaw::Vertex &);
   virtual void origin(Warsaw::Vertex &);
@@ -65,13 +65,13 @@ public:
   Warsaw::Vertex lower, upper;
   Warsaw::Alignment xalign, yalign, zalign;
 
-  static void mergeMin(Warsaw::Vertex &, const Warsaw::Vertex &);
-  static void mergeMax(Warsaw::Vertex &, const Warsaw::Vertex &);
-  static Warsaw::Coord spanAlign(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  static Warsaw::Coord spanOrigin(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  static void merge_min(Warsaw::Vertex &, const Warsaw::Vertex &);
+  static void merge_max(Warsaw::Vertex &, const Warsaw::Vertex &);
+  static Warsaw::Coord span_align(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  static Warsaw::Coord span_origin(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
 };
 
-inline Warsaw::Coord RegionImpl::spanOrigin(Warsaw::Coord lower, Warsaw::Coord upper, Warsaw::Coord align)
+inline Warsaw::Coord RegionImpl::span_origin(Warsaw::Coord lower, Warsaw::Coord upper, Warsaw::Coord align)
 {
   Warsaw::Coord orig;
   if (Math::equal(lower, upper, 1e-4)) orig = 0.;
@@ -79,7 +79,7 @@ inline Warsaw::Coord RegionImpl::spanOrigin(Warsaw::Coord lower, Warsaw::Coord u
   return orig;
 }
 
-inline Warsaw::Coord RegionImpl::spanAlign(Warsaw::Coord lower, Warsaw::Coord upper, Warsaw::Coord origin)
+inline Warsaw::Coord RegionImpl::span_align(Warsaw::Coord lower, Warsaw::Coord upper, Warsaw::Coord origin)
 {
   Warsaw::Coord s;
   if (Math::equal(lower, upper, 1e-4)) s = 0.;
@@ -87,14 +87,14 @@ inline Warsaw::Coord RegionImpl::spanAlign(Warsaw::Coord lower, Warsaw::Coord up
   return s;
 }
 
-inline void RegionImpl::mergeMin(Warsaw::Vertex &v0, const Warsaw::Vertex &v)
+inline void RegionImpl::merge_min(Warsaw::Vertex &v0, const Warsaw::Vertex &v)
 {
   v0.x = Math::min(v0.x, v.x);
   v0.y = Math::min(v0.y, v.y);
   v0.z = Math::min(v0.z, v.z);
 }
 
-inline void RegionImpl::mergeMax(Warsaw::Vertex &v0, const Warsaw::Vertex &v)
+inline void RegionImpl::merge_max(Warsaw::Vertex &v0, const Warsaw::Vertex &v)
 {
   v0.x = Math::max(v0.x, v.x);
   v0.y = Math::max(v0.y, v.y);
@@ -103,9 +103,9 @@ inline void RegionImpl::mergeMax(Warsaw::Vertex &v0, const Warsaw::Vertex &v)
 
 inline void RegionImpl::normalize(Warsaw::Vertex &o)
 {
-  o.x = spanOrigin(lower.x, upper.x, xalign);
-  o.y = spanOrigin(lower.y, upper.y, yalign);
-  o.z = spanOrigin(lower.z, upper.z, zalign);
+  o.x = span_origin(lower.x, upper.x, xalign);
+  o.y = span_origin(lower.y, upper.y, yalign);
+  o.z = span_origin(lower.z, upper.z, zalign);
   lower -= o;
   upper -= o;
 }

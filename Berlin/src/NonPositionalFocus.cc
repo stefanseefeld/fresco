@@ -33,7 +33,7 @@ using namespace Warsaw;
 NonPositionalFocus::NonPositionalFocus(Input::Device d, ScreenImpl *s) : FocusImpl(d), screen(s) {}
 NonPositionalFocus::~NonPositionalFocus() {}
 
-void NonPositionalFocus::addFilter(Input::Filter_ptr)
+void NonPositionalFocus::add_filter(Input::Filter_ptr)
 {
   // not implemented
 }
@@ -54,7 +54,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
   while (!CORBA::is_nil(p))
     {
       tmp.insert(tmp.begin(), p);
-      p = p->parentController();
+      p = p->parent_controller();
     }
   cstack_t::iterator of = controllers.begin();
   vector<Controller_var>::iterator nf = tmp.begin();
@@ -68,14 +68,14 @@ bool NonPositionalFocus::request(Controller_ptr c)
    * ...remove the old controllers in reverse order,...
    */
   for (cstack_t::reverse_iterator o = controllers.rbegin(); o.base() != of; o++)
-    (*o)->loseFocus(device());
+    (*o)->lose_focus(device());
   controllers.erase(of, controllers.end());
   /*
    * ...add the new controllers,...
    */
   for (; nf != tmp.end(); nf++)
     {
-      (*nf)->receiveFocus(Focus_var(_this()));
+      (*nf)->receive_focus(Focus_var(_this()));
       controllers.push_back(*nf);
     }
   return true;
@@ -83,9 +83,8 @@ bool NonPositionalFocus::request(Controller_ptr c)
 
 void NonPositionalFocus::dispatch(Input::Event &event)
 {
-  MutexGuard guard(mutex);
-  Prague::Profiler prf("NonPositionalFocus::dispatch");
   Trace trace("NonPositionalFocus::dispatch");
+  MutexGuard guard(mutex);
   if (controllers.size())
-    controllers.back()->handleNonPositional(event);
+    controllers.back()->handle_non_positional(event);
 }

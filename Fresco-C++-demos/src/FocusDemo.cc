@@ -56,48 +56,48 @@ FocusDemo::FocusDemo(Application *a)
   /*
    * first group
    */
-  Choice_var c1 = widget->toggleChoice();
+  Choice_var c1 = widget->toggle_choice();
   for (size_t i = 0; i != 5; i++)
-    c1->appendItem(Graphic_var(Graphic::_nil()));
+    c1->append_item(Graphic_var(Graphic::_nil()));
   c1->attach(Observer_var(observer->_this()));
   /*
    * second group
    */
-  Choice_var c2 = widget->checkboxChoice();
+  Choice_var c2 = widget->checkbox_choice();
   for (size_t i = 0; i != 5; i++)
-    c2->appendItem(Graphic_var(Graphic::_nil()));
+    c2->append_item(Graphic_var(Graphic::_nil()));
   c2->attach(Observer_var(observer->_this()));
-  hbox1->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c1, 100.)),
-								   20., spec, true)), 100.)));
-  hbox1->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c2, 100.)),
-								   20., spec, true)), 100.)));
+  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c1, 100.)),
+									   20., spec, true)), 100.)));
+  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c2, 100.)),
+									   20., spec, true)), 100.)));
   Graphic_var     hbox2 = layout->hbox();
   /*
    * third group
    */
-  Choice_var c3 = widget->toggleChoice();
+  Choice_var c3 = widget->toggle_choice();
   for (size_t i = 0; i != 5; i++)
-    c3->appendItem(Graphic_var(Graphic::_nil()));
+    c3->append_item(Graphic_var(Graphic::_nil()));
   c3->attach(Observer_var(observer->_this()));
   /*
    * fourth group
    */
-  Choice_var c4 = widget->checkboxChoice();
+  Choice_var c4 = widget->checkbox_choice();
   for (size_t i = 0; i != 5; i++)
-    c4->appendItem(Graphic_var(Graphic::_nil()));
+    c4->append_item(Graphic_var(Graphic::_nil()));
   c4->attach(Observer_var(observer->_this()));
-  hbox2->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c3, 100.)),
-								   20., spec, true)), 100.)));
-  hbox2->append(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c4, 100.)),
-								   20., spec, true)), 100.)));
-  vbox->append(hbox1);
-  vbox->append(hbox2);
+  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c3, 100.)),
+									   20., spec, true)), 100.)));
+  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c4, 100.)),
+									   20., spec, true)), 100.)));
+  vbox->append_graphic(hbox1);
+  vbox->append_graphic(hbox2);
   Raster_var raster = image->create("../etc/PNG/marble.png");
   Graphic_var texture = figure->texture(vbox, raster);
   Controller_var gr = tool->group(texture);
-  gr->appendController(c1);
-  gr->appendController(c2);
-  gr->appendController(c3);
-  gr->appendController(c4);
+  gr->append_controller(c1);
+  gr->append_controller(c2);
+  gr->append_controller(c3);
+  gr->append_controller(c4);
   application->append(gr, Unicode::String("focus demo"));
 };

@@ -55,55 +55,55 @@ ColorDemo::ColorDemo(Application *a)
   value->attach(Observer_var(adapter[5]->_this()));
 
   Graphic_var hbox = layout->hbox();
-  Graphic_var panel = layout->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.);
+  Graphic_var panel = layout->fixed_size(Graphic_var(Graphic::_nil()), 1000., 1000.);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
-  hbox->append(Graphic_var(layout->margin(Graphic_var(gadget->rgb(Graphic_var(tool->frame(panel, 20., spec, true)), red, green, blue)), 500.)));
+  hbox->append_graphic(Graphic_var(layout->margin(Graphic_var(gadget->rgb(Graphic_var(tool->frame(panel, 20., spec, true)), red, green, blue)), 500.)));
 
   Graphic_var vbox = layout->vbox();
 
   Graphic_var hbox21 = layout->hbox();
-  hbox21->append(Graphic_var(layout->hfil()));
-  hbox21->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("RGB Color Model")))), 0., 0., 0.)));
-  hbox21->append(Graphic_var(layout->hfil()));
-  vbox->append(hbox21);
+  hbox21->append_graphic(Graphic_var(layout->hfill()));
+  hbox21->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("RGB Color Model")))), 0., 0., 0.)));
+  hbox21->append_graphic(Graphic_var(layout->hfill()));
+  vbox->append_graphic(hbox21);
 
   Graphic_var hbox22 = layout->hbox();
-  hbox22->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("R  ")))), 0., 0., 0.)));
-  hbox22->append(Graphic_var(widget->slider(red, xaxis)));
-  vbox->append(hbox22);
+  hbox22->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("R  ")))), 0., 0., 0.)));
+  hbox22->append_graphic(Graphic_var(widget->slider(red, xaxis)));
+  vbox->append_graphic(hbox22);
  
   Graphic_var hbox23 = layout->hbox();
-  hbox23->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("G  ")))), 0., 0., 0.)));
-  hbox23->append(Graphic_var(widget->slider(green, xaxis)));
-  vbox->append(hbox23);
+  hbox23->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("G  ")))), 0., 0., 0.)));
+  hbox23->append_graphic(Graphic_var(widget->slider(green, xaxis)));
+  vbox->append_graphic(hbox23);
 
   Graphic_var hbox24 = layout->hbox();
-  hbox24->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("B  ")))), 0., 0., 0.)));
-  hbox24->append(Graphic_var(widget->slider(blue, xaxis)));
-  vbox->append(hbox24);
+  hbox24->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("B  ")))), 0., 0., 0.)));
+  hbox24->append_graphic(Graphic_var(widget->slider(blue, xaxis)));
+  vbox->append_graphic(hbox24);
 
   Graphic_var hbox25 = layout->hbox();
-  hbox25->append(Graphic_var(layout->hfil()));
-  hbox25->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("HSV Color Model")))), 0., 0., 0.)));
-  hbox25->append(Graphic_var(layout->hfil()));
-  vbox->append(hbox25);
+  hbox25->append_graphic(Graphic_var(layout->hfill()));
+  hbox25->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("HSV Color Model")))), 0., 0., 0.)));
+  hbox25->append_graphic(Graphic_var(layout->hfill()));
+  vbox->append_graphic(hbox25);
 
   Graphic_var hbox26 = layout->hbox();
-  hbox26->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("H  ")))), 0., 0., 0.)));
-  hbox26->append(Graphic_var(widget->slider(hue, xaxis)));
-  vbox->append(hbox26);
+  hbox26->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("H  ")))), 0., 0., 0.)));
+  hbox26->append_graphic(Graphic_var(widget->slider(hue, xaxis)));
+  vbox->append_graphic(hbox26);
  
   Graphic_var hbox27 = layout->hbox();
-  hbox27->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("S  ")))), 0., 0., 0.)));
-  hbox27->append(Graphic_var(widget->slider(saturation, xaxis)));
-  vbox->append(hbox27);
+  hbox27->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("S  ")))), 0., 0., 0.)));
+  hbox27->append_graphic(Graphic_var(widget->slider(saturation, xaxis)));
+  vbox->append_graphic(hbox27);
 
   Graphic_var hbox28 = layout->hbox();
-  hbox28->append(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("V  ")))), 0., 0., 0.)));
-  hbox28->append(Graphic_var(widget->slider(value, xaxis)));
-  vbox->append(hbox28);
-  hbox->append(vbox);
+  hbox28->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("V  ")))), 0., 0., 0.)));
+  hbox28->append_graphic(Graphic_var(widget->slider(value, xaxis)));
+  vbox->append_graphic(hbox28);
+  hbox->append_graphic(vbox);
   Controller_var root = tool->group(Graphic_var(layout->margin(hbox, 100.)));
   application->append(root, Unicode::String("Color demo"));
 }

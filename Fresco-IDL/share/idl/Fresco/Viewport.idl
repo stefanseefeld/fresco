@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_Viewport_idl
-#define _Warsaw_Viewport_idl
+#ifndef _Layout_Viewport_idl
+#define _Layout_Viewport_idl
 
 #include <Warsaw/Graphic.idl>
 #include <Warsaw/View.idl>
@@ -28,11 +28,14 @@
 module Warsaw
 {
   interface BoundedRange;
-  
+};
+
+module Layout
+{ 
   //. A viewport allows adjustment of the view of a graphic.
-  interface Viewport : View
+  interface Viewport : Warsaw::View
     {
-      BoundedRange adjustment(in Axis a);
+      Warsaw::BoundedRange adjustment(in Warsaw::Axis a);
     };
 };
 

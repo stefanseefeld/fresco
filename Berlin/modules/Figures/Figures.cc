@@ -24,10 +24,9 @@
 
 // using namespace Geometry;
 using namespace Warsaw;
-using namespace Warsaw::Figures;
 
-PointImpl::PointImpl() { addPoint(0., 0.);}
-PointImpl::PointImpl (const Vertex &v) { addPoint(v.x, v.y);}
+PointImpl::PointImpl() { add_point(0., 0.);}
+PointImpl::PointImpl (const Vertex &v) { add_point(v.x, v.y);}
 PointImpl::PointImpl (const PointImpl &f) { copy(f);}
 PointImpl::~PointImpl() {}
 Vertex PointImpl::pt() { return path[0];}
@@ -35,14 +34,14 @@ void PointImpl::pt(const Vertex &v) { path[0] = v; resize();}
 
 LineImpl::LineImpl()
 {
-  addPoint(0., 0.);
-  addPoint(0., 0.);
+  add_point(0., 0.);
+  add_point(0., 0.);
 }
 
 LineImpl::LineImpl (const Vertex &v1, const Vertex &v2)
 {
-  addPoint(v1.x, v1.y);
-  addPoint(v2.x, v2.y);
+  add_point(v1.x, v1.y);
+  add_point(v2.x, v2.y);
 }
 
 LineImpl::LineImpl (const LineImpl &line) { copy(line);}
@@ -54,18 +53,18 @@ void LineImpl::pt2(const Vertex &v) { path[1] = v; resize();}
 
 RectangleImpl::RectangleImpl()
 {
-  addPoint(0., 0.);
-  addPoint(0., 0.);
-  addPoint(0., 0.);
-  addPoint(0., 0.);
+  add_point(0., 0.);
+  add_point(0., 0.);
+  add_point(0., 0.);
+  add_point(0., 0.);
 }
 
 RectangleImpl::RectangleImpl(const Vertex &v1, const Vertex &v2)
 {
-  addPoint(v1.x, v1.y);
-  addPoint(v1.x, v2.y);
-  addPoint(v2.x, v2.y);
-  addPoint(v2.x, v1.y);
+  add_point(v1.x, v1.y);
+  add_point(v1.x, v2.y);
+  add_point(v2.x, v2.y);
+  add_point(v2.x, v1.y);
   resize();
 }
 
@@ -121,7 +120,7 @@ void CircleImpl::resize()
 
 //   float r0 = magic * r;
   reset();
-  addPoint(c.x + r, c.y);
+  add_point(c.x + r, c.y);
 //   add_curve(c.x, c.y - r, c.x + r, c.y - r0, c.x + r0, c.y - r);
 //   add_curve(c.x - r, c.y, c.x - r0, c.y - r, c.x - r, c.y - r0);
 //   add_curve(c.x, c.y + r, c.x - r, c.y + r0, c.x - r0, c.y + r);
@@ -169,7 +168,7 @@ void EllipseImpl::resize()
 //   float px4 = p4 * r1, py4 = p4 * r2;
 
   reset();
-  addPoint(x + r1, y);
+  add_point(x + r1, y);
 //     add_curve(x + px2, y + py2, x + px0, y + py4, x + px1, y + py3);
 //     add_curve(x, y + r2, x + px3, y + py1, x + px4, y + py0);
 //     add_curve(x - px2, y + py2, x - px4, y + py0, x - px3, y + py1);
@@ -188,17 +187,17 @@ void EllipseImpl::radius1(Coord r) { radius1_ = r; resize();}
 Coord EllipseImpl::radius2() { return radius2_;}
 void EllipseImpl::radius2(Coord r) { radius2_ = r; resize();}
 
-PathImpl::PathImpl() { FigureImpl::handle = new Warsaw::Figure::Vertices;}
-PathImpl::PathImpl (const Warsaw::Figure::Vertices &v)
+PathImpl::PathImpl() { FigureImpl::handle = new Figure::Vertices;}
+PathImpl::PathImpl (const Figure::Vertices &v)
 {
-  handle = new Warsaw::Figure::Vertices(v);
+  handle = new Figure::Vertices(v);
   resize();
 }
 
 PathImpl::PathImpl(const PathImpl &path)
 {
   copy(path);
-  handle = new Warsaw::Figure::Vertices(path.handle);
+  handle = new Figure::Vertices(path.handle);
 }
 
 void PathImpl::resize()
@@ -236,7 +235,7 @@ void PathImpl::resize()
 //             vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
 //         );
 //     } else {
-  for (CORBA::ULong i = 0; i < handle->length(); ++i) addPoint(handle[i].x, handle[i].y);
+  for (CORBA::ULong i = 0; i < handle->length(); ++i) add_point(handle[i].x, handle[i].y);
 //         }
 //     }
 //   cerr << "sorry, PathImpl::resize not implemented" << endl;
@@ -244,4 +243,4 @@ void PathImpl::resize()
 
 PathImpl::~PathImpl () {}
 
-Warsaw::Figure::Vertices *PathImpl::handles() { Warsaw::Figure::Vertices *ret = new Warsaw::Figure::Vertices(handle); return ret;}
+Figure::Vertices *PathImpl::handles() { Figure::Vertices *ret = new Figure::Vertices(handle); return ret;}

@@ -56,22 +56,22 @@ ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate
 
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
-void ServerContextImpl::setSingleton(const char *name, CORBA::Object_ptr singleton) 
+void ServerContextImpl::set_singleton(const char *name, CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException)
 {
-  server->setSingleton(name, singleton);
+  server->set_singleton(name, singleton);
 }
 
-void ServerContextImpl::delSingleton(const char *name) 
+void ServerContextImpl::remove_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  server->delSingleton(name);
+  server->remove_singleton(name);
 }
 
-CORBA::Object_ptr ServerContextImpl::getSingleton(const char *name) 
+CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  return server->getSingleton(name);
+  return server->get_singleton(name);
 }
 
 // this method should eventually do some kind of checking on the
@@ -96,7 +96,7 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
    */
   PortableServer::POA_var root = _default_POA();
   ostrstream oss;
-  oss << type << ' ' << counter++ << ends;
+  oss << type << '#' << counter++ << ends;
   char *name = oss.str();
   PortableServer::POAManager_var manager = root->the_POAManager();
   PortableServer::POA_var poa = root->create_POA(name, manager, policies);
@@ -115,6 +115,7 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
 
 bool ServerContextImpl::ping()
 {
+  Trace trace("ServerContextImpl::ping");
   MutexGuard guard (mutex);
   bool alive = true;
   try

@@ -35,12 +35,13 @@
 
 using namespace Prague;
 using namespace Warsaw;
+using namespace Layout;
 
 LayoutKitImpl::LayoutKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p), fil_(GraphicImpl::infinity) {}
-LayoutKitImpl::~LayoutKitImpl() {}
-void LayoutKitImpl::fil(Coord c) { fil_ = c;}
-Coord LayoutKitImpl::fil() { return fil_;}
+  : KitImpl(f, p), _fill(GraphicImpl::infinity) {}
+LayoutKitImpl::~LayoutKitImpl() { Trace trace("LayoutKitImpl::~LayoutKitImpl");}
+void LayoutKitImpl::fill(Coord c) { _fill = c;}
+Coord LayoutKitImpl::fill() { return _fill;}
 Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 {
   return Graphic::_nil();
@@ -89,17 +90,17 @@ Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
   return vp->_this();
 }
 
-Stage_ptr LayoutKitImpl::createStage()
+Stage_ptr LayoutKitImpl::create_stage()
 {
   return create<Stage>(new StageImpl);
 }
 
-Grid_ptr LayoutKitImpl::fixedGrid(const Grid::Index &upper)
+Grid_ptr LayoutKitImpl::fixed_grid(const Grid::Index &upper)
 {
   return create<Grid>(new GridImpl(upper));
 }
 
-Graphic_ptr LayoutKitImpl::fixedRange(Grid_ptr g, const Grid::Range &r)
+Graphic_ptr LayoutKitImpl::fixed_range(Grid_ptr g, const Grid::Range &r)
 {
   return create<Graphic>(new SubGridImpl(g, r));
 }
@@ -116,22 +117,22 @@ Graphic_ptr LayoutKitImpl::vbox()
   return create<Graphic>(new VBox);
 }
 
-Graphic_ptr LayoutKitImpl::hboxFirstAligned()
+Graphic_ptr LayoutKitImpl::hbox_first_aligned()
 {
   return create<Graphic>(new HBoxFirstAligned);
 }
 
-Graphic_ptr LayoutKitImpl::vboxFirstAligned()
+Graphic_ptr LayoutKitImpl::vbox_first_aligned()
 {
   return create<Graphic>(new VBoxFirstAligned);
 }
 
-Graphic_ptr LayoutKitImpl::hboxAlignElements(Alignment align)
+Graphic_ptr LayoutKitImpl::hbox_align_elements(Alignment align)
 {
   return create<Graphic>(new HBoxAlignElements(align));
 }
 
-Graphic_ptr LayoutKitImpl::vboxAlignElements(Alignment align)
+Graphic_ptr LayoutKitImpl::vbox_align_elements(Alignment align)
 {
   return create<Graphic>(new VBoxAlignElements(align));
 }
@@ -166,19 +167,19 @@ Graphic_ptr LayoutKitImpl::glue(Axis a, Coord natural, Coord stretch, Coord shri
   return create<Graphic>(new Glue(a, natural, stretch, shrink, align));
 }
 
-Graphic_ptr LayoutKitImpl::glueRequisition(const Graphic::Requisition &r)
+Graphic_ptr LayoutKitImpl::glue_requisition(const Graphic::Requisition &r)
 {
   return create<Graphic>(new Glue(r));
 }
 
-Graphic_ptr LayoutKitImpl::hfil()
+Graphic_ptr LayoutKitImpl::hfill()
 {
-  return create<Graphic>(new Glue(xaxis, 0., fil_, 0., 0.));
+  return create<Graphic>(new Glue(xaxis, 0., _fill, 0., 0.));
 }
 
-Graphic_ptr LayoutKitImpl::hglueFil(Coord natural)
+Graphic_ptr LayoutKitImpl::hglue_fill(Coord natural)
 {
-  return create<Graphic>(new Glue(xaxis, natural, fil_, 0., 0.));
+  return create<Graphic>(new Glue(xaxis, natural, _fill, 0., 0.));
 }
 
 Graphic_ptr LayoutKitImpl::hglue(Coord natural, Coord stretch, Coord shrink)
@@ -186,7 +187,7 @@ Graphic_ptr LayoutKitImpl::hglue(Coord natural, Coord stretch, Coord shrink)
   return create<Graphic>(new Glue(xaxis, natural, stretch, shrink, 0.));
 }
 
-Graphic_ptr LayoutKitImpl::hglueAligned(Coord natural, Coord stretch, Coord shrink, Alignment a)
+Graphic_ptr LayoutKitImpl::hglue_aligned(Coord natural, Coord stretch, Coord shrink, Alignment a)
 {
   return create<Graphic>(new Glue(xaxis, natural, stretch, shrink, a));
 }
@@ -196,14 +197,14 @@ Graphic_ptr LayoutKitImpl::hspace(Coord natural)
   return create<Graphic>(new Glue(xaxis, natural, 0., 0., 0.));
 }
 
-Graphic_ptr LayoutKitImpl::vfil()
+Graphic_ptr LayoutKitImpl::vfill()
 {
-  return create<Graphic>(new Glue(yaxis, 0., fil_, 0., 0.));
+  return create<Graphic>(new Glue(yaxis, 0., _fill, 0., 0.));
 }
 
-Graphic_ptr LayoutKitImpl::vglueFil(Coord natural)
+Graphic_ptr LayoutKitImpl::vglue_fill(Coord natural)
 {
-  return create<Graphic>(new Glue(yaxis, natural, fil_, 0., 0.));
+  return create<Graphic>(new Glue(yaxis, natural, _fill, 0., 0.));
 }
 
 Graphic_ptr LayoutKitImpl::vglue(Coord natural, Coord stretch, Coord shrink)
@@ -211,7 +212,7 @@ Graphic_ptr LayoutKitImpl::vglue(Coord natural, Coord stretch, Coord shrink)
   return create<Graphic>(new Glue(yaxis, natural, stretch, shrink, 0.));
 }
 
-Graphic_ptr LayoutKitImpl::vglueAligned(Coord natural, Coord stretch, Coord shrink, Alignment a)
+Graphic_ptr LayoutKitImpl::vglue_aligned(Coord natural, Coord stretch, Coord shrink, Alignment a)
 {
   return create<Graphic>(new Glue(yaxis, natural, stretch, shrink, a));
 }
@@ -221,17 +222,17 @@ Graphic_ptr LayoutKitImpl::vspace(Coord natural)
   return create<Graphic>(new Glue(yaxis, natural, 0., 0., 0.));
 }
 
-Graphic_ptr LayoutKitImpl::shapeOf(Graphic_ptr g)
+Graphic_ptr LayoutKitImpl::shape_of(Graphic_ptr g)
 {
   return create<Graphic>(new ShapeOf(g, 0, 0));
 }
 
-Graphic_ptr LayoutKitImpl::shapeOfXY(Graphic_ptr gx, Graphic_ptr gy)
+Graphic_ptr LayoutKitImpl::shape_of_xy(Graphic_ptr gx, Graphic_ptr gy)
 {
   return create<Graphic>(new ShapeOf(gx, gy, 0));
 }
 
-Graphic_ptr LayoutKitImpl::shapeOfXYZ(Graphic_ptr gx, Graphic_ptr gy, Graphic_ptr gz)
+Graphic_ptr LayoutKitImpl::shape_of_xyz(Graphic_ptr gx, Graphic_ptr gy, Graphic_ptr gz)
 {
   return create<Graphic>(new ShapeOf(gx, gy, gz));
 }
@@ -264,7 +265,7 @@ Graphic_ptr LayoutKitImpl::align(Graphic_ptr g, Alignment x, Alignment y)
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::alignAxis(Graphic_ptr g, Axis a, Alignment align)
+Graphic_ptr LayoutKitImpl::align_axis(Graphic_ptr g, Axis a, Alignment align)
 {
   Placement *placement = new Placement(new LayoutCenter(a, align));
   activate(placement);
@@ -274,15 +275,15 @@ Graphic_ptr LayoutKitImpl::alignAxis(Graphic_ptr g, Axis a, Alignment align)
  
 Graphic_ptr LayoutKitImpl::halign(Graphic_ptr g, Alignment x)
 {
-  return alignAxis(g, xaxis, x);
+  return align_axis(g, xaxis, x);
 }
  
 Graphic_ptr LayoutKitImpl::valign(Graphic_ptr g, Alignment y)
 {
-  return alignAxis(g, yaxis, y);
+  return align_axis(g, yaxis, y);
 }
 
-Graphic_ptr LayoutKitImpl::fixedSize(Graphic_ptr g, Coord x, Coord y)
+Graphic_ptr LayoutKitImpl::fixed_size(Graphic_ptr g, Coord x, Coord y)
 {
   Placement *placement = new Placement(new LayoutSuperpose(new LayoutFixed(xaxis, x), new LayoutFixed(yaxis, y)));
   activate(placement);
@@ -290,7 +291,7 @@ Graphic_ptr LayoutKitImpl::fixedSize(Graphic_ptr g, Coord x, Coord y)
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::fixedAxis(Graphic_ptr g, Axis a, Coord size)
+Graphic_ptr LayoutKitImpl::fixed_axis(Graphic_ptr g, Axis a, Coord size)
 {
   Placement *placement = new Placement(new LayoutFixed(a, size));
   activate(placement);
@@ -300,12 +301,12 @@ Graphic_ptr LayoutKitImpl::fixedAxis(Graphic_ptr g, Axis a, Coord size)
 
 Graphic_ptr LayoutKitImpl::hfixed(Graphic_ptr g, Coord x)
 {
-  return fixedAxis(g, xaxis, x);
+  return fixed_axis(g, xaxis, x);
 }
 
 Graphic_ptr LayoutKitImpl::vfixed(Graphic_ptr g, Coord y)
 {
-  return fixedAxis(g, yaxis, y);
+  return fixed_axis(g, yaxis, y);
 }
 
 Graphic_ptr LayoutKitImpl::flexible(Graphic_ptr g, Coord stretch, Coord shrink)
@@ -317,12 +318,12 @@ Graphic_ptr LayoutKitImpl::flexible(Graphic_ptr g, Coord stretch, Coord shrink)
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::flexibleFil(Graphic_ptr g)
+Graphic_ptr LayoutKitImpl::flexible_fill(Graphic_ptr g)
 {
-  return flexible(g, fil_, 0.);
+  return flexible(g, _fill, 0.);
 }
 
-Graphic_ptr LayoutKitImpl::flexibleAxis(Graphic_ptr g, Axis a, Coord stretch, Coord shrink)
+Graphic_ptr LayoutKitImpl::flexible_axis(Graphic_ptr g, Axis a, Coord stretch, Coord shrink)
 {
   Placement *placement = new Placement(new LayoutVariable(a, stretch, shrink));
   activate(placement);
@@ -332,12 +333,12 @@ Graphic_ptr LayoutKitImpl::flexibleAxis(Graphic_ptr g, Axis a, Coord stretch, Co
 
 Graphic_ptr LayoutKitImpl::hflexible(Graphic_ptr g, Coord stretch, Coord shrink)
 {
-  return flexibleAxis(g, xaxis, stretch, shrink);
+  return flexible_axis(g, xaxis, stretch, shrink);
 }
 
 Graphic_ptr LayoutKitImpl::vflexible(Graphic_ptr g, Coord stretch, Coord shrink)
 {
-  return flexibleAxis(g, yaxis, stretch, shrink);
+  return flexible_axis(g, yaxis, stretch, shrink);
 }
 
 Graphic_ptr LayoutKitImpl::natural(Graphic_ptr g, Coord x, Coord y)
@@ -348,7 +349,7 @@ Graphic_ptr LayoutKitImpl::natural(Graphic_ptr g, Coord x, Coord y)
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::naturalAxis(Graphic_ptr g, Axis a, Coord size)
+Graphic_ptr LayoutKitImpl::natural_axis(Graphic_ptr g, Axis a, Coord size)
 {
   Placement *placement = new Placement(new LayoutNatural(a, size));
   activate(placement);
@@ -358,12 +359,12 @@ Graphic_ptr LayoutKitImpl::naturalAxis(Graphic_ptr g, Axis a, Coord size)
 
 Graphic_ptr LayoutKitImpl::hnatural(Graphic_ptr g, Coord x)
 {
-  return naturalAxis(g, xaxis, x);
+  return natural_axis(g, xaxis, x);
 }
 
 Graphic_ptr LayoutKitImpl::vnatural(Graphic_ptr g, Coord y)
 {
-  return naturalAxis(g, yaxis, y);
+  return natural_axis(g, yaxis, y);
 }
 
 Graphic_ptr LayoutKitImpl::margin(Graphic_ptr g, Coord all)
@@ -374,7 +375,7 @@ Graphic_ptr LayoutKitImpl::margin(Graphic_ptr g, Coord all)
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::marginFlexible(Graphic_ptr g, Coord margin, Coord stretch, Coord shrink)
+Graphic_ptr LayoutKitImpl::margin_flexible(Graphic_ptr g, Coord margin, Coord stretch, Coord shrink)
 {
   Placement *placement = new Placement(new LayoutMargin(margin, stretch, shrink, margin, stretch, shrink,
 							margin, stretch, shrink, margin, stretch, shrink));
@@ -383,7 +384,7 @@ Graphic_ptr LayoutKitImpl::marginFlexible(Graphic_ptr g, Coord margin, Coord str
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::marginLRBT(Graphic_ptr g, Coord lmargin, Coord rmargin, Coord bmargin, Coord tmargin)
+Graphic_ptr LayoutKitImpl::margin_lrbt(Graphic_ptr g, Coord lmargin, Coord rmargin, Coord bmargin, Coord tmargin)
 {
   Placement *placement = new Placement(new LayoutMargin(lmargin, rmargin, bmargin, tmargin));
   activate(placement);
@@ -391,10 +392,10 @@ Graphic_ptr LayoutKitImpl::marginLRBT(Graphic_ptr g, Coord lmargin, Coord rmargi
   return placement->_this();
 }
 
-Graphic_ptr LayoutKitImpl::marginLRBTFlexible(Graphic_ptr g, Coord lmargin, Coord lstretch, Coord lshrink,
-					      Coord rmargin, Coord rstretch, Coord rshrink,
-					      Coord tmargin, Coord tstretch, Coord tshrink,
-					      Coord bmargin, Coord bstretch, Coord bshrink)
+Graphic_ptr LayoutKitImpl::margin_lrbt_flexible(Graphic_ptr g, Coord lmargin, Coord lstretch, Coord lshrink,
+						Coord rmargin, Coord rstretch, Coord rshrink,
+						Coord tmargin, Coord tstretch, Coord tshrink,
+						Coord bmargin, Coord bstretch, Coord bshrink)
 {
   Placement *placement = new Placement(new LayoutMargin(lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
 							tmargin, tstretch, tshrink, bmargin, bstretch, bshrink));
@@ -405,72 +406,72 @@ Graphic_ptr LayoutKitImpl::marginLRBTFlexible(Graphic_ptr g, Coord lmargin, Coor
 
 Graphic_ptr LayoutKitImpl::hmargin(Graphic_ptr g, Coord both)
 {
-  return marginLRBT(g, both, both, 0., 0.);
+  return margin_lrbt(g, both, both, 0., 0.);
 }
 
-Graphic_ptr LayoutKitImpl::hmarginLR(Graphic_ptr g, Coord lmargin, Coord rmargin)
+Graphic_ptr LayoutKitImpl::hmargin_lr(Graphic_ptr g, Coord lmargin, Coord rmargin)
 {
-  return marginLRBT(g, lmargin, rmargin, 0., 0.);
+  return margin_lrbt(g, lmargin, rmargin, 0., 0.);
 }
 
-Graphic_ptr LayoutKitImpl::hmarginLRFlexible(Graphic_ptr g, Coord lmargin, Coord lstretch, Coord lshrink,
-					     Coord rmargin, Coord rstretch, Coord rshrink)
+Graphic_ptr LayoutKitImpl::hmargin_lr_flexible(Graphic_ptr g, Coord lmargin, Coord lstretch, Coord lshrink,
+					       Coord rmargin, Coord rstretch, Coord rshrink)
 {
-  return marginLRBTFlexible(g, lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
-			    0., 0., 0., 0., 0., 0.);
+  return margin_lrbt_flexible(g, lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
+			      0., 0., 0., 0., 0., 0.);
 }
 
-Graphic_ptr LayoutKitImpl::vmargin(Graphic_ptr g, Coord both) { return marginLRBT(g, 0., 0., both, both);}
+Graphic_ptr LayoutKitImpl::vmargin(Graphic_ptr g, Coord both) { return margin_lrbt(g, 0., 0., both, both);}
 
-Graphic_ptr LayoutKitImpl::vmarginBT(Graphic_ptr g, Coord tmargin, Coord bmargin)
+Graphic_ptr LayoutKitImpl::vmargin_bt(Graphic_ptr g, Coord tmargin, Coord bmargin)
 {
-  return marginLRBT(g, 0., 0., tmargin, bmargin);
+  return margin_lrbt(g, 0., 0., tmargin, bmargin);
 }
 
-Graphic_ptr LayoutKitImpl::vmarginBTFlexible(Graphic_ptr g, Coord tmargin, Coord tstretch, Coord tshrink,
-					     Coord bmargin, Coord bstretch, Coord bshrink)
+Graphic_ptr LayoutKitImpl::vmargin_bt_flexible(Graphic_ptr g, Coord tmargin, Coord tstretch, Coord tshrink,
+					       Coord bmargin, Coord bstretch, Coord bshrink)
 {
-  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., tmargin, tstretch, tshrink, bmargin, bstretch, bshrink);
+  return margin_lrbt_flexible(g, 0., 0., 0., 0., 0., 0., tmargin, tstretch, tshrink, bmargin, bstretch, bshrink);
 }
 
 Graphic_ptr LayoutKitImpl::lmargin(Graphic_ptr g, Coord natural)
 {
-  return marginLRBT(g, natural, 0., 0., 0.);
+  return margin_lrbt(g, natural, 0., 0., 0.);
 }
 
-Graphic_ptr LayoutKitImpl::lmarginFlexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
+Graphic_ptr LayoutKitImpl::lmargin_flexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
 {
-  return marginLRBTFlexible(g, natural, stretch, shrink, 0., 0., 0., 0., 0., 0., 0., 0., 0.);
+  return margin_lrbt_flexible(g, natural, stretch, shrink, 0., 0., 0., 0., 0., 0., 0., 0., 0.);
 }
 
 Graphic_ptr LayoutKitImpl::rmargin(Graphic_ptr g, Coord natural)
 {
-  return marginLRBT(g, 0., natural, 0., 0.);
+  return margin_lrbt(g, 0., natural, 0., 0.);
 }
 
-Graphic_ptr LayoutKitImpl::rmarginFlexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
+Graphic_ptr LayoutKitImpl::rmargin_flexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
 {
-  return marginLRBTFlexible(g, 0., 0., 0., natural, stretch, shrink, 0., 0., 0., 0., 0., 0.);
+  return margin_lrbt_flexible(g, 0., 0., 0., natural, stretch, shrink, 0., 0., 0., 0., 0., 0.);
 }
 
 Graphic_ptr LayoutKitImpl::bmargin(Graphic_ptr g, Coord natural)
 {
-  return marginLRBT(g, 0., 0., 0., natural);
+  return margin_lrbt(g, 0., 0., 0., natural);
 }
 
-Graphic_ptr LayoutKitImpl::bmarginFlexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
+Graphic_ptr LayoutKitImpl::bmargin_flexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
 {
-  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., natural, stretch, shrink, 0., 0., 0.);
+  return margin_lrbt_flexible(g, 0., 0., 0., 0., 0., 0., natural, stretch, shrink, 0., 0., 0.);
 }
 
 Graphic_ptr LayoutKitImpl::tmargin(Graphic_ptr g, Coord natural)
 {
-  return marginLRBT(g, 0., 0., natural, 0.);
+  return margin_lrbt(g, 0., 0., natural, 0.);
 }
 
-Graphic_ptr LayoutKitImpl::tmarginFlexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
+Graphic_ptr LayoutKitImpl::tmargin_flexible(Graphic_ptr g, Coord natural, Coord stretch, Coord shrink)
 {
-  return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., natural, stretch, shrink, 0., 0., 0.);
+  return margin_lrbt_flexible(g, 0., 0., 0., 0., 0., 0., natural, stretch, shrink, 0., 0., 0.);
 }
 
 extern "C" KitFactory *load()

@@ -41,7 +41,7 @@ class NonPositionalFocus : public FocusImpl
 
   virtual void grab() {}
   virtual void ungrab() {}
-  virtual void addFilter(Warsaw::Input::Filter_ptr);
+  virtual void add_filter(Warsaw::Input::Filter_ptr);
 
   virtual bool request(Warsaw::Controller_ptr);
   virtual void restore(Warsaw::Region_ptr) {}

@@ -27,7 +27,7 @@
 
 module Warsaw
 {
-  interface Desktop : Controller, Stage {};
+  interface Desktop : Controller, Layout::Stage {};
 };
 
 #endif

@@ -27,10 +27,10 @@
 class Strut : public GraphicImpl
 {
 public:
-  Strut(const Requisition &r) : requisition(r) {}
-  virtual void request(Requisition &r) { r = requisition;}
+  Strut(const Warsaw::Graphic::Requisition &r) : requisition(r) {}
+  virtual void request(Warsaw::Graphic::Requisition &r) { r = requisition;}
 private:
-  Requisition requisition;
+  Warsaw::Graphic::Requisition requisition;
 };
 
-#endif /* _Strut_hh */
+#endif

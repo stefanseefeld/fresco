@@ -56,7 +56,7 @@ public:
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
   Warsaw::Command_ptr drag();
 private:
-  void traverseThumb(Warsaw::Traversal_ptr);
+  void traverse_thumb(Warsaw::Traversal_ptr);
   Warsaw::Graphic::Requisition requisition;
   Impl_var<Observer> translate;
   Impl_var<Dragger> _drag;

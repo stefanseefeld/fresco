@@ -43,20 +43,20 @@ module Warsaw
 	raises (SecurityException, CreationFailureException);
       
       //. access to singletons (like the fontManager) this way
-      void setSingleton(in string name, in Object singleton) 
+      void set_singleton(in string name, in Object singleton) 
 	raises (SecurityException, SingletonFailureException);
       
-      void delSingleton(in string name)
+      void remove_singleton(in string name)
 	raises (SecurityException, SingletonFailureException);
       
-      Object getSingleton(in string name) 
+      Object get_singleton(in string name) 
 	raises (SecurityException, SingletonFailureException);
     };
   
   interface Server
     //. this is the "super-context" -- the entry point for all new contexts.
     {
-      ServerContext newServerContext(in ClientContext C) raises (SecurityException);
+      ServerContext create_server_context(in ClientContext C) raises (SecurityException);
     };
 };
 

@@ -41,10 +41,10 @@ void Rotator::update(const CORBA::Any &)
 {
   Coord ydegree = value->value();
   Transform_var tx = child->transformation();
-  tx->loadIdentity();
+  tx->load_identity();
   tx->rotate(ydegree, yaxis);
   tx->rotate(zdegree, zaxis);
-  parent->needRedraw();
+  parent->need_redraw();
 }
 
 LogoDemo::LogoDemo(Application *a)
@@ -82,13 +82,13 @@ LogoDemo::LogoDemo(Application *a)
   Color blue = {0.5, 0.5, 1.0, 0.5};
 //   Color white = {1.0, 1.0, 1.0, 1.0};
   
-  Figures::Path_var triangle1 = figure->polygon(path);
+  Figure::Path_var triangle1 = figure->polygon(path);
   triangle1->type(Figure::fill);
   triangle1->background(green);
-  Figures::Path_var triangle2 = figure->polygon(path);
+  Figure::Path_var triangle2 = figure->polygon(path);
   triangle2->type(Figure::fill);
   triangle2->background(blue);
-  Figures::Path_var triangle3 = figure->polygon(path);
+  Figure::Path_var triangle3 = figure->polygon(path);
   triangle3->type(Figure::fill);
   triangle3->background(red);
   Graphic_var transformer1 = figure->transformer(triangle1);
@@ -105,27 +105,27 @@ LogoDemo::LogoDemo(Application *a)
   bv3->attach(Observer_var(rotator3->_this()));
   
   Graphic_var root = figure->root(group);
-  group->append(transformer1);
-  group->append(transformer2);
-  group->append(transformer3);
+  group->append_graphic(transformer1);
+  group->append_graphic(transformer2);
+  group->append_graphic(transformer3);
   
   Graphic_var hbox1 = layout->hbox();
-  hbox1->append(Graphic_var(layout->hfil()));
-  hbox1->append(Graphic_var(widget->slider(bv1, xaxis)));
-  hbox1->append(Graphic_var(layout->hfil()));
+  hbox1->append_graphic(Graphic_var(layout->hfill()));
+  hbox1->append_graphic(Graphic_var(widget->slider(bv1, xaxis)));
+  hbox1->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var hbox2 = layout->hbox();
-  hbox2->append(Graphic_var(layout->hfil()));
-  hbox2->append(Graphic_var(widget->slider(bv2, xaxis)));
-  hbox2->append(Graphic_var(layout->hfil()));
+  hbox2->append_graphic(Graphic_var(layout->hfill()));
+  hbox2->append_graphic(Graphic_var(widget->slider(bv2, xaxis)));
+  hbox2->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var hbox3 = layout->hbox();
-  hbox3->append(Graphic_var(layout->hfil()));
-  hbox3->append(Graphic_var(widget->slider(bv3, xaxis)));
-  hbox3->append(Graphic_var(layout->hfil()));
+  hbox3->append_graphic(Graphic_var(layout->hfill()));
+  hbox3->append_graphic(Graphic_var(widget->slider(bv3, xaxis)));
+  hbox3->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var box = layout->vbox();
-  box->append(Graphic_var(layout->align(group, 0., 0.)));
-  box->append(hbox1);
-  box->append(hbox2);
-  box->append(hbox3);
+  box->append_graphic(Graphic_var(layout->align(group, 0., 0.)));
+  box->append_graphic(hbox1);
+  box->append_graphic(hbox2);
+  box->append_graphic(hbox3);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var foo = tool->frame(box, 10., spec, true);
@@ -133,7 +133,7 @@ LogoDemo::LogoDemo(Application *a)
   application->append(bar, Unicode::String("MVC demo"));
 }
 
-Graphic_ptr LogoDemo::makeController(BoundedValue_ptr value, const Color &color)
+Graphic_ptr LogoDemo::make_controller(BoundedValue_ptr value, const Color &color)
 {
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
@@ -141,14 +141,14 @@ Graphic_ptr LogoDemo::makeController(BoundedValue_ptr value, const Color &color)
   Graphic_var gauge = widget->gauge(value);
   Forward *forward = new Forward(value);
   Backward *backward = new Backward(value);
-  Graphic_var rectangle = layout->fixedSize(Graphic_var(Graphic::_nil()), 200., 200.);
+  Graphic_var rectangle = layout->fixed_size(Graphic_var(Graphic::_nil()), 200., 200.);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Controller_var begin = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(backward->_this()));
   Controller_var end = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(forward->_this()));
   Graphic_var box = layout->hbox();
-  box->append(begin);
-  box->append(gauge);
-  box->append(end);
+  box->append_graphic(begin);
+  box->append_graphic(gauge);
+  box->append_graphic(end);
   return Graphic::_duplicate(box);
 }

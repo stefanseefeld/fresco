@@ -46,18 +46,18 @@ class PickTraversalImpl : public virtual POA_Warsaw::PickTraversal,
   void visit(Warsaw::Graphic_ptr g) { g->pick(Warsaw::PickTraversal_var(_this()));}
   Warsaw::Traversal::order direction() { return Warsaw::Traversal::down;}
   CORBA::Boolean ok() { return !mem;}
-  CORBA::Boolean intersectsAllocation();
-  CORBA::Boolean intersectsRegion(Warsaw::Region_ptr);
+  CORBA::Boolean intersects_allocation();
+  CORBA::Boolean intersects_region(Warsaw::Region_ptr);
   Warsaw::Input::Device device() { return focus->device();}
-  void enterController(Warsaw::Controller_ptr);
-  void leaveController();
+  void enter_controller(Warsaw::Controller_ptr);
+  void leave_controller();
   void hit();
-  void popController();
+  void pop_controller();
   CORBA::Boolean picked() { return mem;}
   void grab() { focus->grab();}
   void ungrab() { focus->ungrab();}
 
-  Warsaw::Controller_ptr topController();
+  Warsaw::Controller_ptr top_controller();
   const vector<Warsaw::Controller_var> &controllerStack() const { return controllers;}
   PickTraversalImpl   *memento() { PickTraversalImpl *m = mem; mem = 0; return m;}
   void reset(const Warsaw::Input::Position &);
@@ -72,10 +72,10 @@ class PickTraversalImpl : public virtual POA_Warsaw::PickTraversal,
   PickTraversalImpl      *mem;
 };
 
-inline void PickTraversalImpl::popController()
 //. remove one controller level from the top, it might have got out of scope
+inline void PickTraversalImpl::pop_controller()
 {
-  Prague::Trace trace("PickTraversal::popController");
+  Prague::Trace trace("PickTraversal::pop_controller");
   if (controllers.size())
     {
       while (size() > positions.back()) pop();
@@ -84,7 +84,7 @@ inline void PickTraversalImpl::popController()
     }
 }
 
-inline Warsaw::Controller_ptr PickTraversalImpl::topController()
+inline Warsaw::Controller_ptr PickTraversalImpl::top_controller()
 {
   return controllers.size() ? Warsaw::Controller::_duplicate(controllers.back()) : Warsaw::Controller::_nil();
 }
@@ -94,7 +94,7 @@ inline void PickTraversalImpl::reset(const Warsaw::Input::Position &p)
 //. so the traversal can be used to start over directly at the top
 {
   Prague::Trace trace("PickTraversal::reset");
-  popController();
+  pop_controller();
   pointer = p;
 }
 

@@ -30,16 +30,16 @@
 using namespace Prague;
 using namespace Warsaw;
 
-MonoGraphic::MonoGraphic() { child.peer = Warsaw::Graphic::_nil();}
+MonoGraphic::MonoGraphic() { _child.peer = Warsaw::Graphic::_nil();}
 MonoGraphic::~MonoGraphic()
 {
   Trace trace("MonoGraphic::~MonoGraphic");
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer))
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer))
     try
       {
-	child.peer->decrement();
-	child.peer->removeParent(child.peerId);
+	_child.peer->decrement();
+	_child.peer->remove_parent_graphic(_child.peerId);
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
 }
@@ -47,76 +47,76 @@ MonoGraphic::~MonoGraphic()
 Graphic_ptr MonoGraphic::body()
 {
   Trace trace("MonoGraphic::body");
-  MutexGuard guard(childMutex);
-  return RefCount_var<Warsaw::Graphic>::increment(child.peer);
+  MutexGuard guard(_mutex);
+  return RefCount_var<Warsaw::Graphic>::increment(_child.peer);
 }
 
 void MonoGraphic::body(Graphic_ptr c)
 {
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer))
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer))
     try
       {
-	child.peer->removeParent(child.peerId);
-	child.peer->decrement();
+	_child.peer->remove_parent_graphic(_child.peerId);
+	_child.peer->decrement();
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
-  child.peer = Warsaw::Graphic::_duplicate(c);
-  if (!CORBA::is_nil(child.peer))
+  _child.peer = Warsaw::Graphic::_duplicate(c);
+  if (!CORBA::is_nil(_child.peer))
     try
       {
-	child.peerId = child.peer->addParent(Graphic_var(_this()), 0);
-	child.peer->increment();
+	_child.peerId = _child.peer->add_parent_graphic(Graphic_var(_this()), 0);
+	_child.peer->increment();
       }
-    catch(const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+    catch(const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
   //   needResize();
 }
 
-void MonoGraphic::append(Graphic_ptr c)
+void MonoGraphic::append_graphic(Graphic_ptr c)
 {
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer))
-    try { child.peer->append(c);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer))
+    try { _child.peer->append_graphic(c);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
 }
 
-void MonoGraphic::prepend(Graphic_ptr c)
+void MonoGraphic::prepend_graphic(Graphic_ptr c)
 {
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer))
-    try { child.peer->prepend(c);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer))
+    try { _child.peer->prepend_graphic(c);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
 }
 
-void MonoGraphic::remove(Tag localId)
+void MonoGraphic::remove_graphic(Tag localId)
 {
-  Trace trace("MonoGraphic::remove");
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer))
-    try { child.peer->remove(localId);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { child.peer = Warsaw::Graphic::_nil();}
+  Trace trace("MonoGraphic::remove_graphic");
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer))
+    try { _child.peer->remove_graphic(localId);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
 }
 
-void MonoGraphic::removeChild(Tag localId)
+void MonoGraphic::remove_child_graphic(Tag localId)
 {
-  Trace trace("MonoGraphic::removeChild");
+  Trace trace("MonoGraphic::remove_child");
   {
-    MutexGuard guard(childMutex);
-    if (localId == 0) child.peer = Warsaw::Graphic::_nil();
+    MutexGuard guard(_mutex);
+    if (localId == 0) _child.peer = Warsaw::Graphic::_nil();
   }
-  needResize();
+  need_resize();
 }
 
-Warsaw::Graphic::Iterator_ptr MonoGraphic::firstChild()
+Warsaw::Graphic::Iterator_ptr MonoGraphic::first_child_graphic()
 {
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer)) return child.peer->firstChild();
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer)) return _child.peer->first_child_graphic();
 }
 
-Warsaw::Graphic::Iterator_ptr MonoGraphic::lastChild()
+Warsaw::Graphic::Iterator_ptr MonoGraphic::last_child_graphic()
 {
-  MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child.peer)) return child.peer->lastChild();
+  MutexGuard guard(_mutex);
+  if (!CORBA::is_nil(_child.peer)) return _child.peer->last_child_graphic();
 }
 
 Transform_ptr MonoGraphic::transformation()
@@ -141,7 +141,7 @@ void MonoGraphic::extension(const Warsaw::Allocation::Info &info, Region_ptr reg
       Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
       tmp->clear();
       Lease_var<TransformImpl> transform(Provider<TransformImpl>::provide());
-      transform->loadIdentity();
+      transform->load_identity();
       Allocation::Info i;
       i.allocation = tmp->_this();
       i.allocation->copy(info.allocation);
@@ -163,5 +163,5 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
   Trace trace("MonoGraphic::traverse");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
-    traversal->traverseChild(child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+    traversal->traverse_child(child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 }

@@ -29,7 +29,7 @@
 #include <Warsaw/WidgetKit.hh>
 #include <Warsaw/Desktop.hh>
 #include <Berlin/KitImpl.hh>
-#include <vector>
+#include <Berlin/RefCountVar.hh>
 
 class WindowImpl;
 class DesktopImpl;
@@ -48,14 +48,14 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
 
   virtual Warsaw::Command_ptr move(Warsaw::Window_ptr);
   virtual Warsaw::Command_ptr resize(Warsaw::Window_ptr);
-  virtual Warsaw::Command_ptr moveResize(Warsaw::Window_ptr, Warsaw::Alignment, Warsaw::Alignment, CORBA::Short);
+  virtual Warsaw::Command_ptr move_resize(Warsaw::Window_ptr, Warsaw::Alignment, Warsaw::Alignment, CORBA::Short);
   virtual Warsaw::Command_ptr relayer(Warsaw::Window_ptr);
   virtual Warsaw::Command_ptr map(Warsaw::Window_ptr, CORBA::Boolean);
  private:
-  Warsaw::Desktop_var   desktop;
-  Warsaw::LayoutKit_var layout;
-  Warsaw::ToolKit_var   tool;
-  Warsaw::WidgetKit_var widget;
+  RefCount_var<Warsaw::Desktop>   desktop;
+  RefCount_var<Warsaw::LayoutKit> layout;
+  RefCount_var<Warsaw::ToolKit>   tool;
+  RefCount_var<Warsaw::WidgetKit> widget;
 };
 
 #endif

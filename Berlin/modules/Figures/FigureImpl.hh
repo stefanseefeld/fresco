@@ -30,7 +30,7 @@
 class TransformImpl;
 class RegionImpl;
 
-class TransformFigure : public virtual POA_Warsaw::Figure,
+class TransformFigure : public virtual POA_Figure::FigureBase,
 			public GraphicImpl
 {
  public:
@@ -40,20 +40,20 @@ class TransformFigure : public virtual POA_Warsaw::Figure,
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void needRedraw();
+  virtual void need_redraw();
   
-  Warsaw::Figure::Mode type() { return mode;}
-  void type(Warsaw::Figure::Mode m) { mode = m; needRedraw();}
+  Figure::Mode type() { return mode;}
+  void type(Figure::Mode m) { mode = m; need_redraw();}
   Warsaw::Color foreground() { return fg;}
-  void foreground(const Warsaw::Color &f) { fg = f; needRedraw();}
+  void foreground(const Warsaw::Color &f) { fg = f; need_redraw();}
   Warsaw::Color background() { return bg;}
-  void background(const Warsaw::Color &b) { bg = b; needRedraw();}
+  void background(const Warsaw::Color &b) { bg = b; need_redraw();}
 
   virtual void resize();
 
   void copy(const TransformFigure &);
  protected:
-  Warsaw::Figure::Mode mode;
+  Figure::Mode mode;
   Warsaw::Color fg, bg;
   Impl_var<TransformImpl> tx;
   Impl_var<RegionImpl> ext;
@@ -65,7 +65,7 @@ public:
   FigureImpl();
   virtual ~FigureImpl();
 
-  void addPoint(Warsaw::Coord, Warsaw::Coord);
+  void add_point(Warsaw::Coord, Warsaw::Coord);
   void reset();
   virtual void resize();
 
@@ -75,8 +75,8 @@ public:
 
   void copy(const FigureImpl &);
 protected:
-  Warsaw::Figure::Vertices_var path;
-  Warsaw::Figure::Vertices_var handle;
+  Figure::Vertices_var path;
+  Figure::Vertices_var handle;
 };
 
 #endif

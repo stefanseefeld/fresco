@@ -64,7 +64,7 @@ class LogoDemo : public Demo
 {
 public:
   LogoDemo(Application *);
-  Warsaw::Graphic_ptr makeController(Warsaw::BoundedValue_ptr, const Warsaw::Color &);
+  Warsaw::Graphic_ptr make_controller(Warsaw::BoundedValue_ptr, const Warsaw::Color &);
 private:
   Warsaw::BoundedValue_var bv1;
   Warsaw::BoundedValue_var bv2;

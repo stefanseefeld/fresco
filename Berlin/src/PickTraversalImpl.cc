@@ -50,11 +50,11 @@ PickTraversalImpl::~PickTraversalImpl()
   delete mem;
 }
 
-CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr region)
+CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
 {
   Transform::Matrix matrix;
   Transform_var transform = transformation();
-  transform->storeMatrix(matrix);
+  transform->store_matrix(matrix);
   Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
   if (d == 0.) return false;
   Coord x = pointer.x - matrix[0][3];
@@ -68,22 +68,22 @@ CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr region)
   return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
 }
 
-CORBA::Boolean PickTraversalImpl::intersectsAllocation()
+CORBA::Boolean PickTraversalImpl::intersects_allocation()
 {
   Region_var region = allocation();
-  return intersectsRegion(region);
+  return intersects_region(region);
 }
 
-void PickTraversalImpl::enterController(Controller_ptr c)
+void PickTraversalImpl::enter_controller(Controller_ptr c)
 {
-  Trace trace("PickTraversal::enterController");
+  Trace trace("PickTraversal::enter_controller");
   controllers.push_back(Controller::_duplicate(c));
   positions.push_back(size());
 }
 
-void PickTraversalImpl::leaveController()
+void PickTraversalImpl::leave_controller()
 {
-  Trace trace("PickTraversal::leaveController");
+  Trace trace("PickTraversal::leave_controller");
   controllers.pop_back();
   positions.pop_back();
 }
@@ -108,9 +108,9 @@ void PickTraversalImpl::debug()
   cout << "pointer is " << pointer << endl;
   Vertex local = pointer;
   Transform::Matrix matrix;
-  t->storeMatrix(matrix);
+  t->store_matrix(matrix);
   cout << "current trafo \n" << matrix;
-  t->inverseTransformVertex(local);
+  t->inverse_transform_vertex(local);
   region.copy(r);
   cout << "local CS: current allocation is " << region << endl;
   cout << "local CS: pointer is " << local << endl;      

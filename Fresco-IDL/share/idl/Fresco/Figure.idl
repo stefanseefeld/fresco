@@ -25,66 +25,63 @@
 
 #include <Warsaw/Graphic.idl>
 
-module Warsaw
+module Figure
 {
-  interface Figure : Graphic
+  typedef Warsaw::Path Vertices;
+  typedef short Mode;
+  const Mode fill = 1;
+  const Mode outline = 2;
+
+  interface FigureBase : Warsaw::Graphic
     {
       //. The Vertices type defines a sequence of vertex structures
       //. for figures with an arbitrary number of vertices,
       //. such as polygons and B-splines.
-      typedef Path Vertices;
-      
-      typedef short Mode;
-      const Mode fill = 1;
-      const Mode outline = 2;
       
       //   attribute Style figure_style;
       //   attribute Mode figure_mode;
       
       attribute Mode type;
-      attribute Color foreground;
-      attribute Color background;
+      attribute Warsaw::Color foreground;
+      attribute Warsaw::Color background;
       
       void resize();
     };
 
-  module Figures
-    {
-      interface Point : Figure
+    interface Point : FigureBase
 	{
-	  attribute Vertex pt;
+	  attribute Warsaw::Vertex pt;
 	};
       
-      interface Line : Figure
+      interface Line : FigureBase
 	{
-	  attribute Vertex pt1, pt2;
+	  attribute Warsaw::Vertex pt1, pt2;
 	};
       
-      interface Rectangle : Figure
+      interface Rectangle : FigureBase
 	{
-	  attribute Vertex pt1, pt2;
+	  attribute Warsaw::Vertex pt1, pt2;
 	};
       
-      interface Circle : Figure
+      interface Circle : FigureBase
 	{
-	  attribute Vertex center;
-	  attribute Coord radius;
+	  attribute Warsaw::Vertex center;
+	  attribute Warsaw::Coord radius;
 	};
       
-      interface Ellipse : Figure
+      interface Ellipse : FigureBase
 	{
-	  attribute Vertex center;
-	  attribute Coord radius1;
-	  attribute Coord radius2;
+	  attribute Warsaw::Vertex center;
+	  attribute Warsaw::Coord radius1;
+	  attribute Warsaw::Coord radius2;
 	};
       
-      interface Path : Figure
+      interface Path : FigureBase
 	{
 	  Vertices handles();        
 	  //     attribute boolean closed;
 	  //     attribute boolean curved;
 	};
     };
-};
 
 #endif

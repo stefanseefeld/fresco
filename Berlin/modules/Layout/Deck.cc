@@ -26,35 +26,35 @@
 
 using namespace Warsaw;
 
-Deck::Deck() : requested(false) {}
+Deck::Deck() : _requested(false) {}
 Deck::~Deck() {}
 
 void Deck::request(Warsaw::Graphic::Requisition &r)
 {
-  if (!requested)
+  if (!_requested)
     {
-      GraphicImpl::initRequisition(requisition);
-      long n = children.size();
+      GraphicImpl::init_requisition(_requisition);
+      long n = _children.size();
       if (n > 0)
 	{
-	  Warsaw::Graphic::Requisition *r = childrenRequests();
+	  Warsaw::Graphic::Requisition *r = children_requests();
 	  LayoutAlign x(xaxis);
-	  x.request(n, r, requisition);
+	  x.request(n, r, _requisition);
 	  LayoutAlign y(yaxis);
-	  y.request(n, r, requisition);
-	  pool.deallocate(r);
+	  y.request(n, r, _requisition);
+	  _pool.deallocate(r);
 	}
-      requested = true;
+      _requested = true;
     }
-  r = requisition;
+  r = _requisition;
 }
 
 void Deck::extension(const Allocation::Info &a, Region_ptr r)
 {
-  if (size_t n = children.size()) children[n - 1].peer->extension(a, r);
+  if (size_t n = _children.size()) _children[n - 1].peer->extension(a, r);
 }
 
 void Deck::traverse(Traversal_ptr t)
 {
-  if (size_t n = children.size()) t->traverseChild(children[n - 1].peer, children[n - 1].localId, Region::_nil(), Transform::_nil());
+  if (size_t n = _children.size()) t->traverse_child(_children[n - 1].peer, _children[n - 1].localId, Region::_nil(), Transform::_nil());
 }

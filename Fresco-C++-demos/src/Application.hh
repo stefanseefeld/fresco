@@ -83,7 +83,7 @@ public:
   void append(Warsaw::Controller_ptr, const Unicode::String &);
   void run();
 protected:
-  Item makeItem(const Unicode::String &);
+  Item make_item(const Unicode::String &);
 private:
   Warsaw::ServerContext_var server;
   Warsaw::TextKit_var tk;

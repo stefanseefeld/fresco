@@ -43,7 +43,7 @@ void ShapeOf::request(Warsaw::Graphic::Requisition &r)
   else
     {
       Warsaw::Graphic::Requisition req;
-      GraphicImpl::initRequisition(req);
+      GraphicImpl::init_requisition(req);
       if (!CORBA::is_nil(x))
 	{
 	  x->request(req);

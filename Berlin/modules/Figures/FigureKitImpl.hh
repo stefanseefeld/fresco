@@ -42,20 +42,19 @@ class FigureKitImpl : public virtual POA_Warsaw::FigureKit,
   Warsaw::Graphic_ptr group();
   Warsaw::Graphic_ptr ugroup();
   
-  Warsaw::Figures::Point_ptr point(Warsaw::Coord, Warsaw::Coord);
-  Warsaw::Figures::Line_ptr line(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  Warsaw::Figures::Rectangle_ptr rectangle(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  Warsaw::Figures::Circle_ptr circle(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  Warsaw::Figures::Ellipse_ptr ellipse(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Figure::Point_ptr point(Warsaw::Coord, Warsaw::Coord);
+  Figure::Line_ptr line(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Figure::Rectangle_ptr rectangle(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Figure::Circle_ptr circle(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Figure::Ellipse_ptr ellipse(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   //   Figures::Path_ptr openBspline(const Figure::Vertices &);
   //   Figures::Path_ptr closedBspline(const Figure::Vertices &);
-  Warsaw::Figures::Path_ptr multiline(const Warsaw::Figure::Vertices &);
-  Warsaw::Figures::Path_ptr polygon(const Warsaw::Figure::Vertices &);
+  Figure::Path_ptr multiline(const Figure::Vertices &);
+  Figure::Path_ptr polygon(const Figure::Vertices &);
   
   Warsaw::Image_ptr   pixmap(Warsaw::Raster_ptr);
   Warsaw::Graphic_ptr texture(Warsaw::Graphic_ptr, Warsaw::Raster_ptr);
   Warsaw::Graphic_ptr transformer(Warsaw::Graphic_ptr);
 };
-
 
 #endif

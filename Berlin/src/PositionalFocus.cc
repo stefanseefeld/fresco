@@ -55,7 +55,7 @@ void PositionalFocus::ungrab()
   grabbed = false;
 }
 
-void PositionalFocus::addFilter(Input::Filter_ptr)
+void PositionalFocus::add_filter(Input::Filter_ptr)
 {
   // not implemented
 }
@@ -88,8 +88,8 @@ void PositionalFocus::damage(Region_ptr region)
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
   allocation->bounds(l, u);
-  transformation->transformVertex(l);
-  transformation->transformVertex(u);
+  transformation->transform_vertex(l);
+  transformation->transform_vertex(u);
 
   Lease_var<RegionImpl> bbox(Provider<RegionImpl>::provide());
 
@@ -138,7 +138,7 @@ void PositionalFocus::dispatch(Input::Event &event)
   if (!traversal)
     {
       traversal = new PickTraversalImpl(Screen_var(screen->_this()),
-					Region_var(screen->getRegion()),
+					Region_var(screen->get_region()),
 					Transform_var(Transform::_nil()),
 					position, Focus_var(_this()));
 //      traversal->_obj_is_ready(CORBA::BOA::getBOA());
@@ -155,8 +155,8 @@ void PositionalFocus::dispatch(Input::Event &event)
 	{
 	  top->traverse(Traversal_var(traversal->_this()));
 	  if (traversal->picked()) break;
-	  top = traversal->topController();
-	  traversal->popController();
+	  top = traversal->top_controller();
+	  traversal->pop_controller();
 	}
     }
   PickTraversalImpl *picked = traversal->memento();
@@ -184,7 +184,7 @@ void PositionalFocus::dispatch(Input::Event &event)
    */
   for (cstack_t::reverse_iterator o = controllers.rbegin(); o.base() != of; o++)
     {
-      (*o)->loseFocus(device());
+      (*o)->lose_focus(device());
     }
   controllers.erase(of, controllers.end());
   /*
@@ -192,7 +192,7 @@ void PositionalFocus::dispatch(Input::Event &event)
    */
   for (; nf != picked->controllerStack().end(); nf++)
     {
-      (*nf)->receiveFocus(Focus_var(_this()));
+      (*nf)->receive_focus(Focus_var(_this()));
       controllers.push_back(*nf);
     }
   /*
@@ -201,7 +201,7 @@ void PositionalFocus::dispatch(Input::Event &event)
 //   traversal->debug();
 //   Transform_var(traversal->transformation())->inverseTransformVertex(position);
 //   event[pidx].attr.location(position);
-  controllers.back()->handlePositional(PickTraversal_var(traversal->_this()), event);
+  controllers.back()->handle_positional(PickTraversal_var(traversal->_this()), event);
   if (!grabbed)
     {
 //      traversal->_dispose();

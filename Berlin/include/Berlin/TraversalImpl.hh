@@ -53,9 +53,9 @@ class TraversalImpl : public virtual POA_Warsaw::Traversal,
   virtual Warsaw::Region_ptr allocation();
   virtual Warsaw::Transform_ptr transformation();
   virtual CORBA::Boolean bounds(Warsaw::Vertex &, Warsaw::Vertex &, Warsaw::Vertex &);
-  virtual CORBA::Boolean intersectsAllocation() = 0;
-  virtual CORBA::Boolean intersectsRegion(Warsaw::Region_ptr) = 0;
-  virtual void traverseChild(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
+  virtual CORBA::Boolean intersects_allocation() = 0;
+  virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr) = 0;
+  virtual void traverse_child(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
   virtual void visit(Warsaw::Graphic_ptr) = 0;
   virtual Warsaw::Traversal::order direction() = 0;
   virtual CORBA::Boolean ok() = 0;

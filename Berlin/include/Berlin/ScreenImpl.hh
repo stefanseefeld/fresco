@@ -41,25 +41,21 @@ public:
 
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocations(Warsaw::Allocation_ptr);
-  virtual void needResize() { needRedraw();}
+  virtual void need_resize() { need_redraw();}
 
   virtual Warsaw::Coord width();
   virtual Warsaw::Coord height();
   virtual Warsaw::DrawingKit_ptr kit();
   virtual void damage(Warsaw::Region_ptr);
 
-  virtual void insertController(Warsaw::Controller_ptr) {}
-  virtual void replaceController(Warsaw::Controller_ptr) {}
-  virtual void removeController() {}
-  virtual void setControllerLinks(Warsaw::Controller_ptr, Warsaw::Controller_ptr, Warsaw::Controller_ptr) {}
-  virtual CORBA::Boolean requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  virtual CORBA::Boolean receiveFocus(Warsaw::Focus_ptr) { return true;}
-  virtual void loseFocus(Warsaw::Input::Device) {}
-  virtual CORBA::Boolean handlePositional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
-  virtual CORBA::Boolean handleNonPositional(const Warsaw::Input::Event &) { return false;}
+  virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr) { return true;}
+  virtual void lose_focus(Warsaw::Input::Device) {}
+  virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
+  virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &) { return false;}
 
   ScreenManager *manager();
-  Warsaw::Region_ptr getRegion();
+  Warsaw::Region_ptr get_region();
 protected:
   Warsaw::DrawingKit_var  drawing;
   ScreenManager *smanager;

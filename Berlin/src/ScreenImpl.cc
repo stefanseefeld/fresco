@@ -58,12 +58,12 @@ ScreenImpl::~ScreenImpl()
 void ScreenImpl::pick(PickTraversal_ptr traversal)
 {
   Trace trace("ScreenImpl::pick");
-  if (traversal->intersectsAllocation())
+  if (traversal->intersects_allocation())
     {
-      traversal->enterController(Controller_var(_this()));
+      traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
       if (!traversal->picked()) traversal->hit();
-      traversal->leaveController();
+      traversal->leave_controller();
     }
   else cout << "no intersection !" << endl;
 }
@@ -75,15 +75,15 @@ void ScreenImpl::allocations(Allocation_ptr allocation)
 
 void ScreenImpl::damage(Region_ptr region) { smanager->damage(region);}
 
-bool ScreenImpl::requestFocus(Controller_ptr c, Input::Device d)
+bool ScreenImpl::request_focus(Controller_ptr c, Input::Device d)
 {
-  return emanager->requestFocus(c, d);
+  return emanager->request_focus(c, d);
 }
 
 DrawingKit_ptr ScreenImpl::kit() { return DrawingKit::_duplicate(drawing);}
 
 ScreenManager *ScreenImpl::manager() { return smanager;}
-Region_ptr ScreenImpl::getRegion() {return region->_this();}
+Region_ptr ScreenImpl::get_region() {return region->_this();}
 
 Coord ScreenImpl::width() { return region->upper.x;}
 Coord ScreenImpl::height() { return region->upper.y;}

@@ -43,9 +43,9 @@ class Choice : public virtual POA_Warsaw::Choice,
   Choice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
   virtual ~Choice();
   virtual Warsaw::Selection_ptr state();
-  virtual Warsaw::Tag appendItem(Warsaw::Graphic_ptr) = 0;
-  virtual Warsaw::Tag prependItem(Warsaw::Graphic_ptr) = 0;
-  void removeItem(Warsaw::Tag) = 0;
+  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr) = 0;
+  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr) = 0;
+  void remove_item(Warsaw::Tag) = 0;
  protected:
   RefCount_var<Warsaw::Selection> selection;
   RefCount_var<Warsaw::LayoutKit> layout;
@@ -57,18 +57,18 @@ class ToggleChoice : public Choice
 {
  public:
   ToggleChoice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
-  virtual Warsaw::Tag appendItem(Warsaw::Graphic_ptr);
-  virtual Warsaw::Tag prependItem(Warsaw::Graphic_ptr);
-  void removeItem(Warsaw::Tag);
+  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr);
+  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr);
+  void remove_item(Warsaw::Tag);
 };
 
 class CheckboxChoice : public Choice
 {
  public:
   CheckboxChoice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
-  virtual Warsaw::Tag appendItem(Warsaw::Graphic_ptr);
-  virtual Warsaw::Tag prependItem(Warsaw::Graphic_ptr);
-  void removeItem(Warsaw::Tag);
+  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr);
+  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr);
+  void remove_item(Warsaw::Tag);
 };
 
 };

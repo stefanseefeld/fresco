@@ -33,7 +33,7 @@ public:
  
   virtual void request(Warsaw::Graphic::Requisition &);
 protected:
-  Warsaw::Graphic::Requisition requisition;
+  Warsaw::Graphic::Requisition _requisition;
 };
 
 #endif 

@@ -52,8 +52,8 @@ RegionImpl::RegionImpl(Region_ptr region)
 RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
 {
   RegionImpl::copy(region);
-  if (!CORBA::is_nil(transformation) && !transformation->Identity())
-    RegionImpl::applyTransform(transformation);
+  if (!CORBA::is_nil(transformation) && !transformation->identity())
+    RegionImpl::apply_transform(transformation);
 }
 
 RegionImpl::~RegionImpl() {}
@@ -70,7 +70,7 @@ CORBA::Boolean RegionImpl::contains(const Vertex &v)
 	  );
 }
 
-CORBA::Boolean RegionImpl::containsPlane(const Vertex &v, Axis a)
+CORBA::Boolean RegionImpl::contains_plane(const Vertex &v, Axis a)
 {
   bool b = false;
   if (valid)
@@ -126,7 +126,7 @@ void RegionImpl::copy(Region_ptr region)
     }
 }
 
-void RegionImpl::mergeIntersect(Region_ptr region)
+void RegionImpl::merge_intersect(Region_ptr region)
 {
   if (region->defined())
     {
@@ -134,14 +134,14 @@ void RegionImpl::mergeIntersect(Region_ptr region)
 	{
 	  Vertex l, u;
 	  region->bounds(l, u);
-	  mergeMax(lower, l);
-	  mergeMin(upper, u);
+	  merge_max(lower, l);
+	  merge_min(upper, u);
         }
       else copy(region);
     }
 }
 
-void RegionImpl::mergeUnion(Region_ptr region)
+void RegionImpl::merge_union(Region_ptr region)
 {
   if (region->defined())
     {
@@ -149,8 +149,8 @@ void RegionImpl::mergeUnion(Region_ptr region)
 	{
 	  Vertex l, u;
 	  region->bounds(l, u);
-	  mergeMin(lower, l);
-	  mergeMax(upper, u);
+	  merge_min(lower, l);
+	  merge_max(upper, u);
         }
       else copy(region);
     }
@@ -179,16 +179,16 @@ void RegionImpl::subtract(Region_ptr region)
  * forms a (w, 0, 0) vector.  After transformation, it becomes
  * (Xw, Yw, Zw). The new width is then given as abs(Xw) + abs(Xh) + abs(Xd)
  */
-void RegionImpl::applyTransform(Transform_ptr transformation)
+void RegionImpl::apply_transform(Transform_ptr transformation)
 {
   if (valid)
     {
       Vertex o;
 
       origin(o);
-      transformation->transformVertex(o);
+      transformation->transform_vertex(o);
       Transform::Matrix m;
-      transformation->storeMatrix(m);
+      transformation->store_matrix(m);
 
       Coord lx = upper.x - lower.x;
       Coord ly = upper.y - lower.y;
@@ -201,7 +201,7 @@ void RegionImpl::applyTransform(Transform_ptr transformation)
 
       // transform the center
 
-      transformation->transformVertex(center);
+      transformation->transform_vertex(center);
 
       // optimized computation of new width and height
       Coord nlx = Math::abs(lx * m[0][0]) + Math::abs(ly * m[0][1]) + Math::abs(lz * m[0][2]);
@@ -237,9 +237,9 @@ void RegionImpl::center(Vertex &c)
 
 void RegionImpl::origin(Vertex &v)
 {
-  v.x = spanOrigin(lower.x, upper.x, xalign);
-  v.y = spanOrigin(lower.y, upper.y, yalign);
-  v.z = spanOrigin(lower.z, upper.z, zalign);
+  v.x = span_origin(lower.x, upper.x, xalign);
+  v.y = span_origin(lower.y, upper.y, yalign);
+  v.z = span_origin(lower.z, upper.z, zalign);
 }
 
 void RegionImpl::span(Axis a, Warsaw::Region::Allotment &s)

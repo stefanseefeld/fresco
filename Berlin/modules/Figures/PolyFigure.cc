@@ -49,16 +49,16 @@ PolyFigure::~PolyFigure()
 {
 }
 
-void PolyFigure::updateBbox()
+void PolyFigure::update_bbox()
 {
   if (!bbox->valid)
     {
-      CORBA::ULong n = numChildren();
+      CORBA::ULong n = num_children();
       if (n > 0)
 	{
 	  Allocation::Info info;
 	  for (CORBA::ULong i = 0; i < n; i++)
-	    children[i].peer->extension(info, Region_var(bbox->_this()));
+	    _children[i].peer->extension(info, Region_var(bbox->_this()));
 	}
     }
 }
@@ -70,19 +70,19 @@ void PolyFigure::allocate(Tag, const Allocation::Info &info)
   info.transformation->premultiply(Transform_var(tx->_this()));
 }
 
-void PolyFigure::request(Requisition &r)
+void PolyFigure::request(Warsaw::Graphic::Requisition &r)
 {
-  GraphicImpl::initRequisition(r);
+  GraphicImpl::init_requisition(r);
   Impl_var<RegionImpl> region(new RegionImpl);
-  updateBbox();
+  update_bbox();
   if (bbox->valid)
     {
       region->copy(Region_var(bbox->_this()));
-      region->applyTransform(Transform_var(tx->_this()));
+      region->apply_transform(Transform_var(tx->_this()));
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
       Coord y_lead = -region->lower.y, y_trail = region->upper.y;
-      GraphicImpl::requireLeadTrail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
-      GraphicImpl::requireLeadTrail(r.y, y_lead, y_lead, y_lead, y_trail, y_trail, y_trail);
+      GraphicImpl::require_lead_trail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
+      GraphicImpl::require_lead_trail(r.y, y_lead, y_lead, y_lead, y_trail, y_trail, y_trail);
     }
 }
 
@@ -93,15 +93,15 @@ void PolyFigure::request(Requisition &r)
 void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
   Impl_var<RegionImpl> tmp(new RegionImpl);
-  updateBbox();
+  update_bbox();
   if (bbox->valid)
     {
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(tx->_this()));
       tmp->copy(Region_var(bbox->_this()));
-      tmp->applyTransform(Transform_var(transformation->_this()));
-      region->mergeUnion(Region_var(tmp->_this()));
+      tmp->apply_transform(Transform_var(transformation->_this()));
+      region->merge_union(Region_var(tmp->_this()));
     }
 }
 
@@ -113,17 +113,17 @@ void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
 void PolyFigure::traverse(Traversal_ptr traversal)
 {
   Trace trace("PolyFigure::traverse");
-  updateBbox();
+  update_bbox();
   if (bbox->valid)
     {
       Impl_var<RegionImpl> region(new RegionImpl(Region_var(bbox->_this()), Transform_var(tx->_this())));
-      if (!traversal->intersectsRegion(Region_var(region->_this()))) return;
+      if (!traversal->intersects_region(Region_var(region->_this()))) return;
     }
   else return;
-  CORBA::Long n = numChildren();
+  CORBA::Long n = num_children();
   for (CORBA::Long i = 0; i != n; i++)
     {
-      traversal->traverseChild(children[i].peer, children[i].localId, Region_var(bbox->_this()), Transform_var(tx->_this()));
+      traversal->traverse_child(_children[i].peer, _children[i].localId, Region_var(bbox->_this()), Transform_var(tx->_this()));
       if (!traversal->ok()) break;
     }
 
@@ -134,9 +134,9 @@ Transform_ptr PolyFigure::transformation()
   return tx->_this();
 }
 
-void PolyFigure::needRedraw()
+void PolyFigure::need_redraw()
 {
-  GraphicImpl::needRedraw();
+  GraphicImpl::need_redraw();
   // Calling GraphicImpl::needRedraw does not allow us to take
   // advantage of bbox for damage. However, to do damage with
   // bbox, we would need to grow the transformed bbox to compensate
@@ -145,10 +145,10 @@ void PolyFigure::needRedraw()
   // when the outer part of an outer leaf's brush is damaged.)
 }
 
-void PolyFigure::needResize()
+void PolyFigure::need_resize()
 {
   bbox->valid = false;
-  PolyGraphic::needResize();
+  PolyGraphic::need_resize();
 }
 
 UPolyFigure::UPolyFigure(const UPolyFigure &up) : PolyFigure(up) {}

@@ -27,113 +27,178 @@
 using namespace Prague;
 using namespace Warsaw;
 
-class PolyGraphicIterator : public virtual POA_Warsaw::GraphicIterator,
-			    public virtual PortableServer::RefCountServantBase
+class PolyGraphic::Iterator : public virtual POA_Warsaw::GraphicIterator,
+		              public virtual GraphicImpl::Iterator
 {
 public:
-  PolyGraphicIterator(PolyGraphic *g) : graphic(g) { graphic->increment();}
-  virtual ~PolyGraphicIterator() { graphic->decrement();}
-  virtual Graphic_ptr child() {}
-  virtual void next() {}
-  virtual void prev() {}
-  virtual void dispose() {}// deactivate(this);}
+  Iterator(PolyGraphic *p, Tag c) : parent(p), cursor(c) { Trace trace("PolyGraphic::Iterator::Iterator"); parent->_add_ref();}
+  virtual ~Iterator() { Trace trace("PolyGraphic::Iterator::~Iterator"); parent->_remove_ref();}
+  virtual Warsaw::Graphic_ptr child()
+  {
+    Trace trace("PolyGraphic::Iterator::child");
+    MutexGuard guard(parent->_mutex);
+    if (cursor > parent->_children.size()) Warsaw::Graphic::_nil();
+    return RefCount_var<Warsaw::Graphic>::increment(parent->_children[cursor].peer);
+  }
+  virtual void next() { cursor++;}
+  virtual void prev() { cursor--;}
+  virtual void insert(Graphic_ptr child)
+  {
+    Trace trace("PolyGraphic::Iterator::insert");
+    parent->_mutex.lock();
+    Edge edge;
+    edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
+    edge.localId = parent->unique_child_id();
+    edge.peerId = child->add_parent_graphic(Graphic_var(parent->_this()), edge.localId);
+    parent->_children.insert(parent->_children.begin() + cursor, edge);
+    parent->_mutex.unlock();
+    parent->need_resize();
+  }
+  virtual void replace(Graphic_ptr child)
+  {
+    Trace trace("PolyGraphic::Iterator::replace");
+    {
+      MutexGuard guard(parent->_mutex);
+      if (cursor > parent->_children.size()) return;
+      Edge &edge = parent->_children[cursor];
+      if (!CORBA::is_nil(edge.peer))
+	try
+	  {
+	    edge.peer->remove_parent_graphic(edge.peerId);
+	    edge.peer->decrement();
+	  }
+	catch(const CORBA::OBJECT_NOT_EXIST &) {}
+      edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
+      edge.peerId = child->add_parent_graphic(Graphic_var(parent->_this()), edge.localId);
+    }
+    parent->need_resize();
+  }
+  virtual void remove()
+  {
+    Trace trace("PolyGraphic::Iterator::remove");
+    {
+      MutexGuard guard(parent->_mutex);
+      if (cursor >= parent->_children.size()) return;
+      GraphicImpl::glist_t::iterator i = parent->_children.begin() + cursor;
+      try
+	{
+	  (*i).peer->remove_parent_graphic((*i).peerId);
+	  (*i).peer->decrement();
+	}
+      catch(const CORBA::OBJECT_NOT_EXIST &) {}
+      parent->_children.erase(i);
+    }
+    parent->need_resize();
+  }
 private:
-  PolyGraphic *graphic;
-  Tag          cursor;
+  PolyGraphic *parent;
+  size_t       cursor;
 };
 
-Pool<Warsaw::Graphic::Requisition> PolyGraphic::pool;
+Pool<Warsaw::Graphic::Requisition> PolyGraphic::_pool;
 
 PolyGraphic::PolyGraphic() {}
-
 PolyGraphic::~PolyGraphic()
 {
   Trace trace("PolyGraphic::~PolyGraphic");
-  MutexGuard guard(childMutex);
-  for (glist_t::iterator i = children.begin(); i != children.end(); i++)
+  MutexGuard guard(_mutex);
+  for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
     {
       try
 	{
-	  (*i).peer->removeParent((*i).peerId);
+	  (*i).peer->remove_parent_graphic((*i).peerId);
 	  (*i).peer->decrement();
 	}
       catch(const CORBA::OBJECT_NOT_EXIST &) {}
     }
 }
 
-void PolyGraphic::append(Graphic_ptr child)
+void PolyGraphic::append_graphic(Graphic_ptr child)
 {
-  Trace trace("PolyGraphic::append");
-  childMutex.lock();
+  Trace trace("PolyGraphic::append_graphic");
+  _mutex.lock();
   Edge edge;
   edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
-  edge.localId = uniqueChildId();
-  edge.peerId = child->addParent(Graphic_var(_this()), edge.localId);
-  children.push_back(edge);
-  childMutex.unlock();
-  needResize();
+  edge.localId = unique_child_id();
+  edge.peerId = child->add_parent_graphic(Graphic_var(_this()), edge.localId);
+  _children.push_back(edge);
+  _mutex.unlock();
+  need_resize();
 }
 
-void PolyGraphic::prepend(Graphic_ptr child)
+void PolyGraphic::prepend_graphic(Graphic_ptr child)
 {
-  Trace trace("PolyGraphic::prepend");
-  childMutex.lock();
+  Trace trace("PolyGraphic::prepend_graphic");
+  _mutex.lock();
   Edge edge;
   edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
-  edge.localId = uniqueChildId();
-  edge.peerId = child->addParent(Graphic_var(_this()), edge.localId);
-  children.insert(children.begin(), edge);
-  childMutex.unlock();
-  needResize();
+  edge.localId = unique_child_id();
+  edge.peerId = child->add_parent_graphic(Graphic_var(_this()), edge.localId);
+  _children.insert(_children.begin(), edge);
+  _mutex.unlock();
+  need_resize();
 }
 
-void PolyGraphic::remove(Tag localId)
+void PolyGraphic::remove_graphic(Tag localId)
 {
-  Trace trace("PolyGraphic::remove");
-  childMutex.lock();
-  glist_t::iterator i = childIdToIterator(localId);
+  Trace trace("PolyGraphic::remove_graphic");
+  _mutex.lock();
+  glist_t::iterator i = child_id_to_iterator(localId);
   try
     {
-      (*i).peer->removeParent((*i).peerId);
+      (*i).peer->remove_parent_graphic((*i).peerId);
       (*i).peer->decrement();
     }
   catch(const CORBA::OBJECT_NOT_EXIST &) {}
-  children.erase(i);
-  childMutex.unlock();
-  needResize();
+  _children.erase(i);
+  _mutex.unlock();
+  need_resize();
 }
 
-void PolyGraphic::removeChild(Tag localId)
+void PolyGraphic::remove_child_graphic(Tag localId)
 {
-  Trace trace("PolyGraphic::removeChild");
-  childMutex.lock();
-  glist_t::iterator i = childIdToIterator(localId);
-  children.erase(i);
-  childMutex.unlock();
-  needResize();
+  Trace trace("PolyGraphic::remove_child_graphic");
+  _mutex.lock();
+  glist_t::iterator i = child_id_to_iterator(localId);
+  _children.erase(i);
+  _mutex.unlock();
+  need_resize();
 }
 
-Warsaw::Graphic::Iterator_ptr PolyGraphic::firstChild() { return Iterator::_nil();}
-Warsaw::Graphic::Iterator_ptr PolyGraphic::lastChild() { return Iterator::_nil();}
-
-void PolyGraphic::needResize() { GraphicImpl::needResize();}
-void PolyGraphic::needResize(Tag) { GraphicImpl::needResize();}
-
-long PolyGraphic::numChildren()
+Warsaw::Graphic::Iterator_ptr PolyGraphic::first_child_graphic()
 {
-  MutexGuard guard(childMutex);
-  return children.size();
+  Trace trace("PolyGraphic::first_child_graphic");
+  Iterator *iterator = new Iterator(this, 0);
+  activate(iterator);
+  return iterator->_this();
 }
 
-Warsaw::Graphic::Requisition *PolyGraphic::childrenRequests()
+Warsaw::Graphic::Iterator_ptr PolyGraphic::last_child_graphic()
 {
-  Trace trace("PolyGraphic::childrenRequests");
-  MutexGuard guard(childMutex);
-  Warsaw::Graphic::Requisition *requisitions = pool.allocate(children.size());
+  Trace trace("PolyGraphic::last_child_graphic");
+  Iterator *iterator = new Iterator(this, num_children() - 1);
+  activate(iterator);
+  return iterator->_this();
+}
+
+void PolyGraphic::need_resize() { GraphicImpl::need_resize();}
+void PolyGraphic::need_resize(Tag) { GraphicImpl::need_resize();}
+
+long PolyGraphic::num_children()
+{
+  MutexGuard guard(_mutex);
+  return _children.size();
+}
+
+Warsaw::Graphic::Requisition *PolyGraphic::children_requests()
+{
+  Trace trace("PolyGraphic::children_requests");
+  MutexGuard guard(_mutex);
+  Warsaw::Graphic::Requisition *requisitions = _pool.allocate(_children.size());
   Warsaw::Graphic::Requisition *r = requisitions;
-  for (glist_t::iterator i = children.begin(); i != children.end(); i++)
+  for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
     {
-      GraphicImpl::initRequisition(*r);
+      GraphicImpl::init_requisition(*r);
       if (!CORBA::is_nil((*i).peer))
 	try { (*i).peer->request(*r);}
 	catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
@@ -142,17 +207,17 @@ Warsaw::Graphic::Requisition *PolyGraphic::childrenRequests()
   return requisitions;
 }
 
-void PolyGraphic::deallocateRequisitions(Warsaw::Graphic::Requisition *r)
+void PolyGraphic::deallocate_requisitions(Warsaw::Graphic::Requisition *r)
 {
-  MutexGuard guard(childMutex);
-  pool.deallocate(r);
+  MutexGuard guard(_mutex);
+  _pool.deallocate(r);
 }
 
-void PolyGraphic::childExtension(size_t i, const Warsaw::Allocation::Info &info, Region_ptr region)
+void PolyGraphic::child_extension(size_t i, const Warsaw::Allocation::Info &info, Region_ptr region)
 {
-  MutexGuard guard(childMutex);
-  Graphic_var child = children[i].peer;
+  MutexGuard guard(_mutex);
+  Graphic_var child = _children[i].peer;
   if (!CORBA::is_nil(child))
     try { child->extension(info, region);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { children[i].peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _children[i].peer = Warsaw::Graphic::_nil();}
 }

@@ -32,7 +32,7 @@ class TextInput : public ControllerImpl
   TextInput(Warsaw::TextBuffer_ptr b) : ControllerImpl(false), buffer(Warsaw::TextBuffer::_duplicate(b)) {}
   ~TextInput() {}
 // protected:
-  virtual void keyPress(const Warsaw::Input::Event &);
+  virtual void key_press(const Warsaw::Input::Event &);
  private:
   Warsaw::TextBuffer_var buffer;
 };

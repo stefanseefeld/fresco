@@ -36,7 +36,7 @@ class Slider::Dragger : public CommandImpl
 {
 public:
   Dragger(BoundedValue_ptr v, Axis a) : value(RefCount_var<BoundedValue>::increment(v)), scale(1.), axis(a) {}
-  void setScale(Coord s) { scale = s;}
+  void set_scale(Coord s) { scale = s;}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -53,7 +53,7 @@ private:
   Axis axis;
 };
 
-Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
+Slider::Slider(BoundedValue_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
   : ControllerImpl(false),
     requisition(r),
     translate(new Observer(this)),
@@ -68,33 +68,33 @@ Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
 void Slider::init(Controller_ptr t)
 {
   body(t);
-  t->addParent(Graphic_var(_this()), 0);
-  appendController(t);
+  t->add_parent_graphic(Graphic_var(_this()), 0);
+  append_controller(t);
 }
 
 void Slider::update(const CORBA::Any &any)
 {
-//   needRedraw();
+//   need_redraw();
   any >>= offset;
   offset -= value->lower();
   offset /= (value->upper() - value->lower());
-  needRedraw();
+  need_redraw();
 }
 
 void Slider::draw(DrawTraversal_ptr traversal)
 {
-  traverseThumb(traversal);
+  traverse_thumb(traversal);
 }
 
 void Slider::pick(PickTraversal_ptr traversal)
 {
-  if (grabbed(traversal->device()) || traversal->intersectsAllocation())
+  if (grabbed(traversal->device()) || traversal->intersects_allocation())
     {
-      traversal->enterController(Controller_var(_this()));
+      traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!grabbed(traversal->device())) traverseThumb(traversal);
+      if (!grabbed(traversal->device())) traverse_thumb(traversal);
       if (!traversal->picked()) traversal->hit();
-      traversal->leaveController();
+      traversal->leave_controller();
     }
 }
 
@@ -118,18 +118,18 @@ void Slider::allocate(Tag, const Allocation::Info &info)
   allocation->normalize(info.transformation);
 }
 
-void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r);}
+void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::default_extension(a, r);}
 
 Command_ptr Slider::drag() { return _drag->_this();}
 
-void Slider::traverseThumb(Traversal_ptr traversal)
+void Slider::traverse_thumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(Region_var(traversal->allocation()));
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-  tx->loadIdentity();
+  tx->load_identity();
   Coord length;
   if (axis == xaxis)
     {
@@ -145,6 +145,6 @@ void Slider::traverseThumb(Traversal_ptr traversal)
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));
-  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
-  _drag->setScale((value->upper() - value->lower())/length);
+  traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
+  _drag->set_scale((value->upper() - value->lower())/length);
 }

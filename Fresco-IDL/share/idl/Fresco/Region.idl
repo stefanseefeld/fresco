@@ -65,7 +65,7 @@ module Warsaw
       //. (therefore ignoring its z-coordinate),
       //. one would pass zaxis as the second parameter.
       boolean contains(in Vertex v);
-      boolean containsPlane(in Vertex v, in Axis a);
+      boolean contains_plane(in Vertex v, in Axis a);
       boolean intersects(in Region r);
       //. Copy the given region into this region.  This operation
       //. is equivalent to setting this region to the empty region and
@@ -76,8 +76,8 @@ module Warsaw
       //. the intersection of itself with the given region;
       //. merge_union sets the region to cover both regions.
       //. For both operations, the origin of the region is unchanged.
-      void mergeIntersect(in Region r);
-      void mergeUnion(in Region r);
+      void merge_intersect(in Region r);
+      void merge_union(in Region r);
       //. Set this region to be the difference between itself and
       //. the intersection of itself and the given region.
       //. The origin of the region is unchanged.
@@ -89,7 +89,7 @@ module Warsaw
       //. transforming a region first by a matrix and then by
       //. the inverse of the matrix may yield a larger (but not smaller)
       //. region that the original.
-      void applyTransform(in Transform t);
+      void apply_transform(in Transform t);
       //. Return information about the region.  The bounds operation
       //. returns two vertices that contain the lower and upper
       //. coordinate values, respectively.  The center operation

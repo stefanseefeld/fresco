@@ -50,10 +50,10 @@ DocDemo::DocDemo(Application *a)
       Graphic_var line;
       if (buf.length())	line = text->chunk(Unicode::toCORBA(Unicode::String(buf)));
       else line = text->strut();
-      column->append(line);
+      column->append_graphic(line);
     }
   Controller_var page = widget->scrollable(Graphic_var(tool->rgb(column, 0., 0., .0)));
-  Controller_var root = tool->group(Graphic_var(layout->fixedSize(page, 3000., 2000.)));
-  root->appendController(page);
+  Controller_var root = tool->group(Graphic_var(layout->fixed_size(page, 3000., 2000.)));
+  root->append_controller(page);
   application->append(root, Unicode::String("multiline text demo"));
 };

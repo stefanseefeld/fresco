@@ -39,11 +39,11 @@ class Composition : public PolyGraphic
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
   virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void needResize();
-  virtual void needResize(Warsaw::Tag);
+  virtual void need_resize();
+  virtual void need_resize(Warsaw::Tag);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
  protected:
-  RegionImpl **childrenAllocations(Warsaw::Region_ptr);
+  RegionImpl **children_allocations(Warsaw::Region_ptr);
   Warsaw::DrawingKit_var canonicalDK;
   Compositor  *compositor;
   bool requested;

@@ -38,9 +38,9 @@ public:
   virtual ~Compositor() {}
   virtual void request(long n, Warsaw::Graphic::Requisition *requests, Warsaw::DrawingKit_ptr dk, Warsaw::Graphic::Requisition &result) = 0;
   virtual void allocate(long n, Warsaw::Graphic::Requisition *requests, Warsaw::DrawingKit_ptr dk, Warsaw::Region_ptr given, Allocations result) = 0;
-  static void setSpan(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
-  static Warsaw::Coord computeLength(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
-  static Warsaw::Coord computeSqueeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
+  static void set_span(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
+  static Warsaw::Coord compute_length(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
+  static Warsaw::Coord compute_squeeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
 };
 
 class LRCompositor : public Compositor

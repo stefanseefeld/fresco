@@ -34,9 +34,9 @@ using namespace Warsaw;
 template <class T>
 T ceiling(T a, T b) { return a % b == 0 ? a/b : a/b + 1;}
 
-bool scaleImage(GLenum format,
-		size_t widthin, size_t heightin, const unsigned char *datain,
-		size_t widthout, size_t heightout, unsigned char *dataout)
+bool scale_image(GLenum format,
+		 size_t widthin, size_t heightin, const unsigned char *datain,
+		 size_t widthout, size_t heightout, unsigned char *dataout)
 {
   unsigned short components;
   /* Determine number of components per pixel */
@@ -240,9 +240,9 @@ static GLint bytes_per_pixel(GLenum format)
     }
 }
 
-void resizeImage(GLenum format,
-		 size_t widthin, size_t heightin, const unsigned char *datain,
-		 size_t widthout, size_t heightout, unsigned char *dataout)
+void resize_image(GLenum format,
+		  size_t widthin, size_t heightin, const unsigned char *datain,
+		  size_t widthout, size_t heightout, unsigned char *dataout)
 {
   GLint bpp = bytes_per_pixel(format);
   Memory::zero(dataout, widthout * heightout * bpp);
@@ -258,7 +258,7 @@ GLTexture::GLTexture(Raster_var r)
   Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
-  remote->storePixels(lower, upper, pixels);
+  remote->store_pixels(lower, upper, pixels);
   width = info.width;
   height = info.height;
   vector<unsigned char> data(4*width*height);
@@ -326,7 +326,7 @@ GLuint GLTexture::bind(GLint components, GLenum format, unsigned char *data)
   if (w != width || h != height)
     {
       image = new unsigned char [(w+4) * h * bpp];
-      scaleImage(format, width, height, data, w, h, image);
+      scale_image(format, width, height, data, w, h, image);
     }
   else image = data;
 
@@ -347,7 +347,7 @@ GLuint GLTexture::bind(GLint components, GLenum format, unsigned char *data)
       neww = (w < 2) ? 1 : w / 2;
       newh = (h < 2) ? 1 : h / 2;
       newimage = new unsigned char [(neww + 4) * newh * bpp];
-      error = scaleImage(format, w, h, image, neww, newh, newimage);
+      error = scale_image(format, w, h, image, neww, newh, newimage);
       if (error) done = true;
       if (image != data) delete [] image;
       image = newimage;
@@ -377,7 +377,7 @@ GLImage::GLImage(Raster_var r)
   Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
-  remote->storePixels(lower, upper, pixels);
+  remote->store_pixels(lower, upper, pixels);
   width = info.width;
   height = info.height;
   vector<unsigned char> data(4*width*height);
@@ -446,7 +446,7 @@ GLuint GLImage::bind(GLint components, GLenum format, unsigned char *data)
     {
       /* just copy the raster into a larger image, adapting the texture coordinates */
       image = new unsigned char [(w+4) * h * bpp];
-      resizeImage(format, width, height, data, w, h, image);
+      resize_image(format, width, height, data, w, h, image);
       s = static_cast<GLfloat>(width)/w;
       t = static_cast<GLfloat>(height)/h;
     }
@@ -469,7 +469,7 @@ GLuint GLImage::bind(GLint components, GLenum format, unsigned char *data)
       neww = (w < 2) ? 1 : w / 2;
       newh = (h < 2) ? 1 : h / 2;
       newimage = new unsigned char [(neww + 4) * newh * bpp];
-      error = scaleImage(format, w, h, image, neww, newh, newimage);
+      error = scale_image(format, w, h, image, neww, newh, newimage);
       if (error) done = true;
       if (image != data) delete [] image;
       image = newimage;

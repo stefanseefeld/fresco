@@ -43,7 +43,7 @@ struct GridDimension
   vector<Warsaw::Graphic::Requirement> requirements;
 };
 
-class GridImpl : public virtual POA_Warsaw::Grid,
+class GridImpl : public virtual POA_Layout::Grid,
 		 public GraphicImpl
 {
   struct Span
@@ -53,45 +53,45 @@ class GridImpl : public virtual POA_Warsaw::Grid,
     Warsaw::Alignment align;
   };
 public:
-  GridImpl(const Warsaw::Grid::Index &upper);
+  GridImpl(const Layout::Grid::Index &upper);
   ~GridImpl();
 
-  virtual void append(Warsaw::Graphic_ptr);
-  virtual void prepend(Warsaw::Graphic_ptr);
+  virtual void append_graphic(Warsaw::Graphic_ptr);
+  virtual void prepend_graphic(Warsaw::Graphic_ptr);
 
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void needResize();
+  virtual void need_resize();
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
 
-  virtual void replace(Warsaw::Graphic_ptr, const Warsaw::Grid::Index &);
-  virtual Warsaw::Grid::Index find(Warsaw::Traversal_ptr);
-  virtual void allocateCell(Warsaw::Region_ptr, const Warsaw::Grid::Index &, Warsaw::Region_ptr);
-  virtual void requestRange(Warsaw::Graphic::Requisition &, const Warsaw::Grid::Range &);
-  virtual void traverseRange(Warsaw::Traversal_ptr, const Warsaw::Grid::Range &);
-  virtual Warsaw::Grid::Index findRange(Warsaw::Traversal_ptr, const Warsaw::Grid::Range &);
-  virtual void rangePosition(Warsaw::Region_ptr, const Warsaw::Grid::Range &, Warsaw::Vertex &);
-  virtual Warsaw::Grid::Index upper();
+  virtual void replace(Warsaw::Graphic_ptr, const Layout::Grid::Index &);
+  virtual Layout::Grid::Index find(Warsaw::Traversal_ptr);
+  virtual void allocate_cell(Warsaw::Region_ptr, const Layout::Grid::Index &, Warsaw::Region_ptr);
+  virtual void request_range(Warsaw::Graphic::Requisition &, const Layout::Grid::Range &);
+  virtual void traverse_range(Warsaw::Traversal_ptr, const Layout::Grid::Range &);
+  virtual Layout::Grid::Index find_range(Warsaw::Traversal_ptr, const Layout::Grid::Range &);
+  virtual void range_position(Warsaw::Region_ptr, const Layout::Grid::Range &, Warsaw::Vertex &);
+  virtual Layout::Grid::Index upper();
 
  private:
-  Warsaw::Tag index2tag(const Warsaw::Grid::Index &index) { return (index.col << 16) + index.row;}
-  Warsaw::Grid::Index tag2index(Warsaw::Tag tag)
+  Warsaw::Tag index_to_tag(const Layout::Grid::Index &index) { return (index.col << 16) + index.row;}
+  Layout::Grid::Index tag_to_index(Warsaw::Tag tag)
     {
-      Warsaw::Grid::Index index;
+      Layout::Grid::Index index;
       index.col = tag >> 16;
       index.row = tag & 0xffff;
       return index;
     }
-  void cacheRequest();
-  void partialRequest(Warsaw::Axis axis, long lower, long, Warsaw::Graphic::Requirement &);
-  void fullRequest(Warsaw::Axis, Warsaw::Axis);
-  Span *fullAllocate(Warsaw::Axis, Warsaw::Region_ptr);
-  void traverseWithAllocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr, const Warsaw::Grid::Range &);
-  void traverseWithoutAllocation(Warsaw::Traversal_ptr, const Warsaw::Grid::Range &);
+  void cache_request();
+  void partial_request(Warsaw::Axis axis, long lower, long, Warsaw::Graphic::Requirement &);
+  void full_request(Warsaw::Axis, Warsaw::Axis);
+  Span *full_allocate(Warsaw::Axis, Warsaw::Region_ptr);
+  void traverse_with_allocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr, const Layout::Grid::Range &);
+  void traverse_without_allocation(Warsaw::Traversal_ptr, const Layout::Grid::Range &);
 
   GridDimension dimensions[2];
 
-  Warsaw::Grid::Index cursor;
+  Layout::Grid::Index cursor;
 
   bool requested;
   Warsaw::Graphic::Requisition requisition;
@@ -100,14 +100,14 @@ public:
 class SubGridImpl : public GraphicImpl
 {
 public:
-  SubGridImpl(Warsaw::Grid_ptr, const Warsaw::Grid::Range &);
+  SubGridImpl(Layout::Grid_ptr, const Layout::Grid::Range &);
   ~SubGridImpl();
 
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void traverse(Warsaw::Traversal_ptr);
 private:
-  Warsaw::Grid_var child;
-  Warsaw::Grid::Range range;
+  Layout::Grid_var child;
+  Layout::Grid::Range range;
 };
 
 #endif

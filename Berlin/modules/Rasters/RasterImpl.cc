@@ -28,12 +28,12 @@
 using namespace Prague;
 using namespace Warsaw;
 
-RasterImpl::RasterImpl() : rows(0) {}
-RasterImpl::RasterImpl(const char *file) : rows(0)
+RasterImpl::RasterImpl() : _rows(0) {}
+RasterImpl::RasterImpl(const char *file) : _rows(0)
 {
-  rows = png.read(file);
+  _rows = _png.read(file);
 
-  if (!rows)
+  if (!_rows)
     {
       string pngfile = getenv("BERLIN_ROOT");
       pngfile += "/etc/PNG/berlin-128.png";
@@ -42,64 +42,67 @@ RasterImpl::RasterImpl(const char *file) : rows(0)
 	  cerr << "Please set environment variable BERLIN_ROOT first" << endl;
 	  exit(-1);
 	}
-     rows = png.read(pngfile);
+     _rows = _png.read(pngfile);
   }
 }
 RasterImpl::~RasterImpl() { Trace trace("RasterImpl::~RasterImpl");}
 void RasterImpl::clear()
 {
-  delete [] rows;
-  rows = 0;
-  png.clear();
+  delete [] _rows;
+  _rows = 0;
+  _png.clear();
 }
 
 Warsaw::Raster::Info RasterImpl::header()
 {
   Warsaw::Raster::Info info;
-  png.header(info);
+  _png.header(info);
   return info;
 }
 
-void RasterImpl::loadData(const Warsaw::Raster::Data &data)
+void RasterImpl::load_data(const Warsaw::Raster::Data &data)
 {
-  Trace trace("RasterImpl::loadData");
+  Trace trace("RasterImpl::load_data");
   clear();
-  rows = png.demarshal(data);
+  _rows = _png.demarshal(data);
 }
 
-void RasterImpl::storeData(Warsaw::Raster::Data_out data)
+void RasterImpl::store_data(Warsaw::Raster::Data_out data)
 {
-  Trace trace("RasterImpl::storeData");
+  Trace trace("RasterImpl::store_data");
   delete data;
   data = 0;
-  data = png.marshal(rows);
+  data = _png.marshal(_rows);
 }
 
-void RasterImpl::storePixel(const Warsaw::Raster::Index &index, Color &color)
+void RasterImpl::store_pixel(const Warsaw::Raster::Index &index, Color &color)
 {
-  Trace trace("RasterImpl::storePixel");
-  color = png.pixel(index.x, index.y, rows);
+  Trace trace("RasterImpl::store_pixel");
+  color = _png.pixel(index.x, index.y, _rows);
 }
 
-void RasterImpl::loadPixel(const Warsaw::Raster::Index &index, const Color &color)
+void RasterImpl::load_pixel(const Warsaw::Raster::Index &index, const Color &color)
 {
-  Trace trace("RasterImpl::loadPixel");
-  png.pixel(index.x, index.y, color, rows);
+  Trace trace("RasterImpl::load_pixel");
+  _png.pixel(index.x, index.y, color, _rows);
 }
 
-void RasterImpl::storePixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, Warsaw::Raster::ColorSeq_out pixels)
+void RasterImpl::store_pixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, Warsaw::Raster::ColorSeq_out pixels)
 {
+  Trace trace("RasterImpl::store_pixels");
   delete pixels;
   pixels = 0;
-  pixels = png.pixels(lower.x, lower.y, upper.x, upper.y, rows);
+  pixels = _png.pixels(lower.x, lower.y, upper.x, upper.y, _rows);
 }
 
-void RasterImpl::loadPixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, const Warsaw::Raster::ColorSeq &pixels)
+void RasterImpl::load_pixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, const Warsaw::Raster::ColorSeq &pixels)
 {
-  png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, rows);
+  Trace trace("RasterImpl::load_pixels");
+  _png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, _rows);
 }
 
 void RasterImpl::write(const char *file)
 {
-  png.write(file, rows);
+  Trace trace("RasterImpl::write");
+  _png.write(file, _rows);
 }

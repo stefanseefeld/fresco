@@ -45,20 +45,20 @@ void DrawTraversalImpl::init()
   /*
    * initialize the different drawing kit attributes
    */
-  drawing->saveState();
+  drawing->save();
   drawing->clipping(clipping);
   Color fg = {0., 0., 0., 1.};
   drawing->foreground(fg);
   Color white = {1., 1., 1., 1.};
   drawing->lighting(white);
   drawing->transformation(Transform_var(id->_this()));
-  drawing->surfaceFillstyle(DrawingKit::solid);
+  drawing->surface_fillstyle(DrawingKit::solid);
   Vertex l, u;
   clipping->bounds(l, u);
   /*
    * clear the background of the damaged region...
    */
-  drawing->drawRect(l, u);
+  drawing->draw_rectangle(l, u);
 #if 0
   drawing->flush();
   Console::drawable()->flush();
@@ -66,7 +66,7 @@ void DrawTraversalImpl::init()
 #endif
 }
 
-void DrawTraversalImpl::finish() { drawing->restoreState();}
+void DrawTraversalImpl::finish() { drawing->restore();}
 
 DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
   : TraversalImpl(t),
@@ -78,18 +78,19 @@ DrawTraversalImpl::DrawTraversalImpl(const DrawTraversalImpl &t)
 
 DrawTraversalImpl::~DrawTraversalImpl()
 {
-  drawing->restoreState();
+  drawing->restore();
 //  id->_dispose();
 }
 
-CORBA::Boolean DrawTraversalImpl::intersectsAllocation()
+CORBA::Boolean DrawTraversalImpl::intersects_allocation()
 {
   Region_var r = allocation();
   Transform_var t = transformation();
   RegionImpl region(r, t);
   return region.intersects(clipping);
 }
-CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
+
+CORBA::Boolean DrawTraversalImpl::intersects_region(Region_ptr r)
 {
   Transform_var t = transformation();
   RegionImpl region(r, t);
@@ -98,9 +99,9 @@ CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
   return region.intersects(clipping);
 }
 
-void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
+void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-  Trace trace("DrawTraversalImpl::traverseChild");
+  Trace trace("DrawTraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
   cumulative->copy(Transform_var(transformation()));

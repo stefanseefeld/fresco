@@ -64,7 +64,7 @@ DrawableTie<CAVEDrawable> *CAVEConsole::newDrawable(PixelCoord w, PixelCoord h, 
     return 0;
 }
 
-Input::Event *CAVEConsole::nextEvent()
+Input::Event *CAVEConsole::next_event()
 {
     Input::Event_var e = _eventQueue.pop();
     return e._retn();

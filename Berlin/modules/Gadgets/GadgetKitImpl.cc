@@ -72,13 +72,13 @@ class RGBAdjuster : public virtual ViewImpl,
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->saveState();
-    Color tmp = kit->foreground();
+    DrawingKit_var drawing = traversal->kit();
+    drawing->save();
+    Color tmp = drawing->foreground();
     color.alpha = tmp.alpha;
-    kit->foreground(color);
+    drawing->foreground(color);
     MonoGraphic::traverse(traversal);
-    kit->restoreState();    
+    drawing->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 
@@ -87,7 +87,7 @@ class RGBAdjuster : public virtual ViewImpl,
       color.red = red->value();
       color.green = green->value();
       color.blue = blue->value();
-      needRedraw();
+      need_redraw();
     }
  private:
   RefCount_var<BoundedValue> red, green, blue;
@@ -102,17 +102,17 @@ class AlphaAdjuster : public virtual ViewImpl,
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->saveState();
-    Color color = kit->foreground();
+    DrawingKit_var drawing = traversal->kit();
+    drawing->save();
+    Color color = drawing->foreground();
     color.alpha *= alpha;
-    kit->foreground(color);
+    drawing->foreground(color);
     MonoGraphic::traverse(traversal);
-    kit->restoreState();    
+    drawing->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 
-  virtual void update(const CORBA::Any &any) { any >>= alpha; needRedraw();}
+  virtual void update(const CORBA::Any &any) { any >>= alpha; need_redraw();}
  private:
   Coord alpha;
 };
@@ -133,18 +133,18 @@ class LightingAdjuster : public virtual ViewImpl,
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var kit = traversal->kit();
-    kit->saveState();
-    Color tmp = kit->lighting();
+    DrawingKit_var drawing = traversal->kit();
+    drawing->save();
+    Color tmp = drawing->lighting();
     /*
      * how is the light attribute concatenated, subtractive, additive ? -stefan
      */
     tmp.red *= color.red;
     tmp.green *= color.green;
     tmp.blue *= color.blue;
-    kit->lighting(tmp);
+    drawing->lighting(tmp);
     MonoGraphic::traverse(traversal);
-    kit->restoreState();    
+    drawing->restore();    
   }
   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
 
@@ -153,7 +153,7 @@ class LightingAdjuster : public virtual ViewImpl,
       color.red = red->value();
       color.green = green->value();
       color.blue = blue->value();
-      needRedraw();
+      need_redraw();
     }
  private:
   RefCount_var<BoundedValue> red, green, blue;
@@ -171,9 +171,9 @@ class RotationAdjuster : public virtual ViewImpl,
       Transform_var transformation = child->transformation(); if (CORBA::is_nil(transformation)) return;
       Coord phi;
       any >>= phi;
-      transformation->loadIdentity();
+      transformation->load_identity();
       transformation->rotate(phi, axis);
-      needResize();
+      need_resize();
     }
  private:
   Axis axis;
@@ -191,9 +191,9 @@ class ZoomAdjuster : public virtual ViewImpl,
       any >>= scale;
       Vertex s;
       s.x = s.y = s.z = exp(scale);
-      transformation->loadIdentity();
+      transformation->load_identity();
       transformation->scale(s);
-      needResize();
+      need_resize();
     }
 };
 

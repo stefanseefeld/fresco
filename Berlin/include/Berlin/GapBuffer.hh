@@ -108,7 +108,7 @@ public:
       rep_type::insert(cursor(), u, u + n);
       curs += n, gapbegin += n, gapend += n;
     }
-  void removeBackward(size_type n)
+  void remove_backward(size_type n)
     {
       if (curs <= gapbegin)
 	{
@@ -130,7 +130,7 @@ public:
 	  curs -= n;
 	}
     }
-  void removeForward(size_type n)
+  void remove_forward(size_type n)
     {
       if (curs >= gapend)
 	{
@@ -155,4 +155,4 @@ private:
   size_type curs, gapbegin, gapend;
 };
 
-#endif /* _GapBuffer_h */
+#endif

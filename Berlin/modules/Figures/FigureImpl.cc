@@ -37,7 +37,7 @@ using namespace Prague;
 using namespace Warsaw;
 
 TransformFigure::TransformFigure()
-  : mode(Warsaw::Figure::outline),
+  : mode(Figure::outline),
     tx(new TransformImpl),
     ext(new RegionImpl)
 {
@@ -47,7 +47,7 @@ TransformFigure::TransformFigure()
 
 TransformFigure::~TransformFigure() {}
 Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(Transform_var(tx->_this()));}
-void TransformFigure::request(Requisition &r)
+void TransformFigure::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace("TransformFigure::request");
   Allocation::Info info;
@@ -57,8 +57,8 @@ void TransformFigure::request(Requisition &r)
     {
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
       Coord y_lead = -region->lower.y, y_trail = region->upper.y;
-      GraphicImpl::requireLeadTrail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
-      GraphicImpl::requireLeadTrail(r.y, y_lead, y_lead, y_lead, y_trail, y_trail, y_trail);
+      GraphicImpl::require_lead_trail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
+      GraphicImpl::require_lead_trail(r.y, y_lead, y_lead, y_lead, y_trail, y_trail, y_trail);
       r.z.defined = false;
     }
   else
@@ -79,24 +79,24 @@ void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(tx->_this()));
-      tmp->applyTransform(Transform_var(transformation->_this()));
-      region->mergeUnion(Region_var(tmp->_this()));
+      tmp->apply_transform(Transform_var(transformation->_this()));
+      region->merge_union(Region_var(tmp->_this()));
     }
 }
 
 void TransformFigure::pick(PickTraversal_ptr traversal)
 {
-  if (ext->valid && traversal->intersectsRegion(Region_var(ext->_this())))
+  if (ext->valid && traversal->intersects_region(Region_var(ext->_this())))
     traversal->hit();
 }
 
-void TransformFigure::needRedraw()
+void TransformFigure::need_redraw()
 {
-  Trace trace("TransformFigure::needRedraw");
+  Trace trace("TransformFigure::need_redraw");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, Region_var(region->_this()));
-  needRedrawRegion(Region_var(region->_this()));
+  need_redraw_region(Region_var(region->_this()));
 }
 
 void TransformFigure::resize() {}
@@ -109,10 +109,10 @@ void TransformFigure::copy(const TransformFigure &tf)
   if (tf.ext->valid) ext->copy(Region_var(tf.ext->_this()));
 }
 
-FigureImpl::FigureImpl() { path = new Warsaw::Figure::Vertices;}
+FigureImpl::FigureImpl() { path = new Figure::Vertices();}
 FigureImpl::~FigureImpl() {}
 
-void FigureImpl::addPoint(Coord x, Coord y)
+void FigureImpl::add_point(Coord x, Coord y)
 {
   if (path->length() == 0)
     {
@@ -150,8 +150,8 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(Transform_var(tx->_this()));
-      tmp->applyTransform(Transform_var(transformation->_this()));
-      if (mode & Warsaw::Figure::outline)
+      tmp->apply_transform(Transform_var(transformation->_this()));
+      if (mode & Figure::outline)
 	{
 // 	  Coord w = 1.;
 // 	  if (is_not_nil(style_))
@@ -168,7 +168,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 // 	  tmp->lower.y -= w; tmp->upper.y += w;
 // 	  tmp->lower.z -= w; tmp->upper.z += w;
 	}
-      region->mergeUnion(Region_var(tmp->_this()));
+      region->merge_union(Region_var(tmp->_this()));
     }
 }
 
@@ -181,23 +181,23 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       Allocation::Info info;
       Impl_var<RegionImpl> region(new RegionImpl);
       extension(info, Region_var(region->_this()));
-      if (traversal->intersectsRegion(Region_var(region->_this())))
+      if (traversal->intersects_region(Region_var(region->_this())))
 	{
 	  DrawingKit_var drawing = traversal->kit();
-	  drawing->saveState();
- 	  if (mode & Warsaw::Figure::fill)
+	  drawing->save();
+ 	  if (mode & Figure::fill)
  	    {
 	      drawing->foreground(bg);
-	      drawing->surfaceFillstyle(DrawingKit::solid);
-	      drawing->drawPath(path);
+	      drawing->surface_fillstyle(DrawingKit::solid);
+	      drawing->draw_path(path);
 	    }
- 	  if (mode & Warsaw::Figure::outline)
+ 	  if (mode & Figure::outline)
 	    {
 	      drawing->foreground(fg);
-	      drawing->surfaceFillstyle(DrawingKit::outlined);
-	      drawing->drawPath(path);
+	      drawing->surface_fillstyle(DrawingKit::outlined);
+	      drawing->draw_path(path);
 	    }
-	  drawing->restoreState();
+	  drawing->restore();
 	}
     }
 }
@@ -334,12 +334,12 @@ void FigureImpl::resize()
 
 void FigureImpl::reset()
 {
-  path = new Warsaw::Figure::Vertices;
+  path = new Figure::Vertices();
   ext->valid = false;
 }
 
-void FigureImpl::copy (const FigureImpl &f)
+void FigureImpl::copy(const FigureImpl &f)
 {
   TransformFigure::copy(f);
-  path = new Warsaw::Figure::Vertices(f.path);
+  path = new Figure::Vertices(f.path);
 }

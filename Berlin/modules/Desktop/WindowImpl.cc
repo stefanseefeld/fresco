@@ -27,42 +27,43 @@
 
 using namespace Prague;
 using namespace Warsaw;
+using namespace Layout;
 
-class WindowImpl::UnmappedStageHandle : public virtual POA_Warsaw::StageHandle,
+class WindowImpl::UnmappedStageHandle : public virtual POA_Layout::StageHandle,
 		                        public virtual ServantBase
 {
 public:
-  UnmappedStageHandle(Warsaw::Stage_ptr, Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Stage::Index);
-  UnmappedStageHandle(Warsaw::StageHandle_ptr);
+  UnmappedStageHandle(Stage_ptr, Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
+  UnmappedStageHandle(StageHandle_ptr);
   virtual ~UnmappedStageHandle();
-  virtual Warsaw::Stage_ptr parent() { return Warsaw::Stage::_duplicate(stage);}
-  virtual Warsaw::Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
+  virtual Stage_ptr parent() { return Stage::_duplicate(stage);}
+  virtual Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
   virtual void remove() {}
-  virtual Warsaw::Vertex position() { return p;}
-  virtual void position(const Warsaw::Vertex &pp) { p = pp;}
-  virtual Warsaw::Vertex size() { return s;}
-  virtual void size(const Warsaw::Vertex &ss) { s = s;}
-  virtual Warsaw::Stage::Index layer() { return l;}
-  virtual void layer(Warsaw::Stage::Index ll) { l = ll;}
+  virtual Vertex position() { return p;}
+  virtual void position(const Vertex &pp) { p = pp;}
+  virtual Vertex size() { return s;}
+  virtual void size(const Vertex &ss) { s = s;}
+  virtual Stage::Index layer() { return l;}
+  virtual void layer(Stage::Index ll) { l = ll;}
 private:
-  Warsaw::Stage_var stage;
-  Warsaw::Graphic_var c;
-  Warsaw::Vertex p;
-  Warsaw::Vertex s;
-  Warsaw::Stage::Index l;
+  Stage_var stage;
+  Graphic_var c;
+  Vertex p;
+  Vertex s;
+  Stage::Index l;
 };
 
-WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Warsaw::Stage_ptr par, Warsaw::Graphic_ptr cc,
-						     const Warsaw::Vertex &pp, const Warsaw::Vertex &ss, Warsaw::Stage::Index ll)
-  : stage(Warsaw::Stage::_duplicate(par)), c(Warsaw::Graphic::_duplicate(cc)), p(pp), s(ss), l(ll) {}
-WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Warsaw::StageHandle_ptr handle)
+WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par, Graphic_ptr cc,
+						     const Vertex &pp, const Vertex &ss, Stage::Index ll)
+  : stage(Stage::_duplicate(par)), c(Warsaw::Graphic::_duplicate(cc)), p(pp), s(ss), l(ll) {}
+WindowImpl::UnmappedStageHandle::UnmappedStageHandle(StageHandle_ptr handle)
   : stage(handle->parent()),
     c(handle->child()),
     p(handle->position()),
     s(handle->size()),
     l(handle->layer())
 {}
-WindowImpl::UnmappedStageHandle::~UnmappedStageHandle() { Prague::Trace trace("UnmappedStageHandle::~UnmappedStageHandle");}
+WindowImpl::UnmappedStageHandle::~UnmappedStageHandle() { Trace trace("UnmappedStageHandle::~UnmappedStageHandle");}
 
 WindowImpl::WindowImpl()
   : ControllerImpl(false)
@@ -76,16 +77,16 @@ WindowImpl::~WindowImpl()
   mapped(false);
 }
 
-void WindowImpl::needResize()
+void WindowImpl::need_resize()
 {
-  Trace trace("WindowImpl::needResize");
+  Trace trace("WindowImpl::need_resize");
   Vertex size = handle->size();
   Warsaw::Graphic::Requisition r;
   request(r);
   if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
       r.y.minimum <= size.y && r.y.maximum >= size.y &&
       r.z.minimum <= size.z && r.z.maximum >= size.z)
-    needRedraw();
+    need_redraw();
   else
     {
       size.x = min(r.x.maximum, max(r.x.minimum, size.x));
@@ -99,12 +100,12 @@ void WindowImpl::needResize()
  * cache the focus holding controllers so we can restore them when the window
  * receives focus again...
  */
-CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Warsaw::Input::Device d)
+CORBA::Boolean WindowImpl::request_focus(Controller_ptr c, Warsaw::Input::Device d)
 {
   if (unmapped) return false;
-  Controller_var parent = parentController();
+  Controller_var parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
-  if (parent->requestFocus(c, d))
+  if (parent->request_focus(c, d))
     {
       if (focus.size() <= d) focus.resize(d + 1);
       focus[d] = Warsaw::Controller::_duplicate(c);
@@ -113,7 +114,7 @@ CORBA::Boolean WindowImpl::requestFocus(Controller_ptr c, Warsaw::Input::Device 
   else return false;
 }
 
-void WindowImpl::insert(Desktop_ptr desktop, bool flag)
+void WindowImpl::insert(Desktop_ptr desktop)
 {
   Trace trace("WindowImpl::insert");
   Vertex position, size;
@@ -123,7 +124,6 @@ void WindowImpl::insert(Desktop_ptr desktop, bool flag)
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
   unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
   handle = unmapped->_this();
-  mapped(flag);
 }
 
 Vertex WindowImpl::position()

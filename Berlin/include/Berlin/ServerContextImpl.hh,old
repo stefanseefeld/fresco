@@ -43,11 +43,11 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
   Warsaw::ClientContext_ptr client();
   Warsaw::Kit_ptr resolve(const char *, const Warsaw::Kit::PropertySeq &)
     throw (Warsaw::SecurityException, Warsaw::CreationFailureException);
-  void setSingleton(const char *, CORBA::Object_ptr) 
+  void set_singleton(const char *, CORBA::Object_ptr) 
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
-  void delSingleton(const char *) 
+  void remove_singleton(const char *) 
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
-  CORBA::Object_ptr getSingleton(const char *) 
+  CORBA::Object_ptr get_singleton(const char *) 
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   bool ping();
  private:

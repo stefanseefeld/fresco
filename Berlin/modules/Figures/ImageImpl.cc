@@ -51,17 +51,17 @@ void ImageImpl::request(Warsaw::Graphic::Requisition &r)
 
 void ImageImpl::draw(DrawTraversal_ptr traversal)
 {
-  if (!traversal->intersectsAllocation()) return;
-  DrawingKit_var dk = traversal->kit();
-  dk->drawImage(raster);
+  if (!traversal->intersects_allocation()) return;
+  DrawingKit_var drawing = traversal->kit();
+  drawing->draw_image(raster);
 }
 
 void ImageImpl::update(const CORBA::Any &)
 {
-  needRedraw();
+  need_redraw();
 }
 
-void ImageImpl::activateComposite()
+void ImageImpl::activate_composite()
 {
   raster->attach(Observer_var(_this()));
 }
@@ -74,11 +74,11 @@ void Texture::draw(DrawTraversal_ptr traversal)
   Graphic_var g = body();
   if (CORBA::is_nil(g)) return;
   DrawingKit_var drawing = traversal->kit();
-  drawing->saveState();
+  drawing->save();
   drawing->texture(raster);
-  drawing->surfaceFillstyle(DrawingKit::textured);
+  drawing->surface_fillstyle(DrawingKit::textured);
   g->traverse(traversal);
-  drawing->restoreState();
+  drawing->restore();
 }
 
 void Texture::pick(PickTraversal_ptr traversal)

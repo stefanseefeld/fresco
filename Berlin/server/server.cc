@@ -171,20 +171,20 @@ int main(int argc, char **argv)
   props.length(0);
   ToolKit_var tools = server->resolve<ToolKit>("IDL:Warsaw/ToolKit:1.0", props, poa);
   LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
-  Stage_var stage = layout->createStage();
+  Layout::Stage_var stage = layout->create_stage();
   DesktopImpl *desktop = new DesktopImpl(stage);
 //   ToolKit::FrameSpec spec;
 //   Color color = {0.7, 1.0, 0.7, 1.0};
 //   spec.foreground(color);
 //   screen->body(Graphic_var(tools->frame(Desktop_var(desktop->_this()), 10., spec, true)));
   screen->body(Desktop_var(desktop->_this()));
-  screen->appendController(Desktop_var(desktop->_this()));
+  screen->append_controller(Desktop_var(desktop->_this()));
 
   Logger::log(Logger::layout) << "[3/5] created desktop" << endl;
 
   // initialize the client listener
-  server->setSingleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
-  server->setSingleton("IDL:Warsaw/DrawingKit:1.0", drawing);
+  server->set_singleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
+  server->set_singleton("IDL:Warsaw/DrawingKit:1.0", drawing);
   server->start();
 
   Logger::log(Logger::layout) << "started server" << endl;

@@ -97,21 +97,21 @@ TelltaleConstraint_ptr CommandKitImpl::exclusive(Telltale::Mask m)
   return constraint->_this();
 }
 
-TelltaleConstraint_ptr CommandKitImpl::selectionRequired()
+TelltaleConstraint_ptr CommandKitImpl::selection_required()
 {
   SelectionRequired *constraint = new SelectionRequired();
   activate(constraint);
   return constraint->_this();
 }
 
-Telltale_ptr CommandKitImpl::normalTelltale()
+Telltale_ptr CommandKitImpl::normal_telltale()
 {
   TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
   activate(telltale);
   return telltale->_this();
 }
 
-Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
+Telltale_ptr CommandKitImpl::constrained_telltale(TelltaleConstraint_ptr constraint)
 {
     TelltaleImpl *telltale = new TelltaleImpl(constraint);
     activate(telltale);

@@ -34,7 +34,8 @@ class BoundedRangeImpl : public virtual POA_Warsaw::BoundedRange,
  public:
   BoundedRangeImpl(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   virtual ~BoundedRangeImpl();
-  virtual Warsaw::BoundedRange::Settings getSettings();
+  virtual Warsaw::BoundedRange::Settings state();
+  virtual void state(const Warsaw::BoundedRange::Settings &);
   virtual Warsaw::Coord lower();
   virtual void lower(Warsaw::Coord);
   virtual Warsaw::Coord upper();

@@ -36,16 +36,16 @@ class TextBufferImpl : public virtual POA_Warsaw::TextBuffer,
   virtual ~TextBufferImpl();
   virtual CORBA::Long size();
   virtual Warsaw::Unistring *value();
-  virtual Warsaw::Unistring *getChars(CORBA::ULong, CORBA::ULong);
+  virtual Warsaw::Unistring *get_chars(CORBA::ULong, CORBA::ULong);
   virtual CORBA::Long position();
   virtual void position(CORBA::Long);
   virtual void forward();
   virtual void backward();
   virtual void shift(CORBA::Long d);
-  virtual void insertChar(Warsaw::Unichar);
-  virtual void insertString(const Warsaw::Unistring &);
-  virtual void removeBackward(CORBA::Long);
-  virtual void removeForward(CORBA::Long);
+  virtual void insert_char(Warsaw::Unichar);
+  virtual void insert_string(const Warsaw::Unistring &);
+  virtual void remove_backward(CORBA::Long);
+  virtual void remove_forward(CORBA::Long);
  private:
   GapBuffer<Warsaw::Unichar, 32> buffer;
   Prague::Mutex mutex;

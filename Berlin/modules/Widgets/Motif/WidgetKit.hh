@@ -30,6 +30,7 @@
 #include <Warsaw/TextKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/RefCountVar.hh>
 #include <vector>
 
 class GraphicImpl;
@@ -51,16 +52,16 @@ class WidgetKit : public virtual POA_Warsaw::WidgetKit,
   Warsaw::Controller_ptr   slider(Warsaw::BoundedValue_ptr, Warsaw::Axis);
   Warsaw::Controller_ptr   panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
   Warsaw::Controller_ptr   scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis);
-  Warsaw::Choice_ptr       toggleChoice();
-  Warsaw::Choice_ptr       checkboxChoice();
+  Warsaw::Choice_ptr       toggle_choice();
+  Warsaw::Choice_ptr       checkbox_choice();
   Warsaw::Controller_ptr   terminal();
 
   Warsaw::Controller_ptr   scrollable(Warsaw::Graphic_ptr);
  private:
-  Warsaw::LayoutKit_var  layout;
-  Warsaw::CommandKit_var command;
-  Warsaw::ToolKit_var    tool;
-  Warsaw::TextKit_var    text;
+  RefCount_var<Warsaw::LayoutKit>  layout;
+  RefCount_var<Warsaw::CommandKit> command;
+  RefCount_var<Warsaw::ToolKit>    tool;
+  RefCount_var<Warsaw::TextKit>    text;
 };
 
 };

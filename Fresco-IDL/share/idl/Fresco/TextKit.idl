@@ -40,16 +40,16 @@ module Warsaw
       Graphic glyph(in Unichar u);    
       //. placeholder for an empty line
       Graphic strut();
-      Graphic simpleViewer(in TextBuffer buf);
+      Graphic simple_viewer(in TextBuffer buf);
       Graphic terminal(in StreamBuffer buf);
       
       Graphic size(in Graphic body, in unsigned long ems);
       Graphic weight(in Graphic body, in unsigned long wt);
       Graphic family(in Graphic body, in Unistring fam);
-      Graphic subFamily(in Graphic body, in Unistring fam);
-      Graphic fullName(in Graphic body, in Unistring name);
+      Graphic subfamily(in Graphic body, in Unistring fam);
+      Graphic fullname(in Graphic body, in Unistring name);
       Graphic style(in Graphic body, in Unistring sty);
-      Graphic fontAttr(in Graphic body, in NVPair nvp);
+      Graphic font_attribute(in Graphic body, in NVPair nvp);
     };
 };
 

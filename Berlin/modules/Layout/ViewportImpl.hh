@@ -31,7 +31,7 @@
 
 class RegionImpl;
 
-class ViewportImpl : public virtual POA_Warsaw::Viewport,
+class ViewportImpl : public virtual POA_Layout::Viewport,
 		     public virtual ViewImpl,
 		     public MonoGraphic
 {
@@ -39,7 +39,6 @@ class ViewportImpl : public virtual POA_Warsaw::Viewport,
  public:
   ViewportImpl();
   ~ViewportImpl();
-  void attachAdjustments();
   virtual void body(Warsaw::Graphic_ptr);
   virtual Warsaw::Graphic_ptr body() { return MonoGraphic::body();}
 
@@ -50,19 +49,19 @@ class ViewportImpl : public virtual POA_Warsaw::Viewport,
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
 
-  virtual void needResize();
+  virtual void need_resize();
 
   virtual Warsaw::BoundedRange_ptr adjustment(Warsaw::Axis);
 
   virtual void update(const CORBA::Any &);
 
 protected:
-  virtual void activateComposite();
-  void allocateChild(Warsaw::Allocation::Info &);
-  void cacheRequisition();
-  void cacheAllocation(Warsaw::Region_ptr);
-  void bodyAllocation(Warsaw::Region_ptr, RegionImpl *);
-  void scrollTransform(Warsaw::Transform_ptr);
+  virtual void activate_composite();
+  void allocate_child(Warsaw::Allocation::Info &);
+  void cache_requisition();
+  void cache_allocation(Warsaw::Region_ptr);
+  void body_allocation(Warsaw::Region_ptr, RegionImpl *);
+  void scroll_transform(Warsaw::Transform_ptr);
 
   Warsaw::BoundedRange::Settings settings[2];
   RefCount_var<Warsaw::BoundedRange> xadjustment;

@@ -28,54 +28,56 @@
 
 class PolyGraphic : public GraphicImpl
 {
+  class Iterator;
+  friend class Iterator;
 public:
   PolyGraphic();
   virtual ~PolyGraphic();
 
-  virtual void append(Warsaw::Graphic_ptr);
-  virtual void prepend(Warsaw::Graphic_ptr);
-  virtual void remove(Warsaw::Tag);
-  virtual void removeChild(Warsaw::Tag);
-  virtual Iterator_ptr firstChild();
-  virtual Iterator_ptr lastChild();
+  virtual void append_graphic(Warsaw::Graphic_ptr);
+  virtual void prepend_graphic(Warsaw::Graphic_ptr);
+  virtual void remove_graphic(Warsaw::Tag);
+  virtual void remove_child_graphic(Warsaw::Tag);
+  virtual Warsaw::Graphic::Iterator_ptr first_child_graphic();
+  virtual Warsaw::Graphic::Iterator_ptr last_child_graphic();
 
-  virtual void needResize();
-  virtual void needResize(Warsaw::Tag);
+  virtual void need_resize();
+  virtual void need_resize(Warsaw::Tag);
 protected:
-  CORBA::Long numChildren();
-  Warsaw::Tag uniqueChildId();
-  glist_t::iterator childIdToIterator(Warsaw::Tag);
-  CORBA::Long childIdToIndex(Warsaw::Tag);
-  Warsaw::Graphic::Requisition *childrenRequests();
-  void deallocateRequisitions(Warsaw::Graphic::Requisition *);
-  void childExtension(size_t, const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  CORBA::Long num_children();
+  Warsaw::Tag unique_child_id();
+  glist_t::iterator child_id_to_iterator(Warsaw::Tag);
+  CORBA::Long child_id_to_index(Warsaw::Tag);
+  Warsaw::Graphic::Requisition *children_requests();
+  void deallocate_requisitions(Warsaw::Graphic::Requisition *);
+  void child_extension(size_t, const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
 // private:
-  static Pool<Warsaw::Graphic::Requisition> pool;
-  glist_t children;
-  Prague::Mutex childMutex;
+  static Pool<Warsaw::Graphic::Requisition> _pool;
+  glist_t _children;
+  Prague::Mutex _mutex;
 };
 
 /*
  * the following methods are inlined for speed.
  * Attention : they must be used within a PolyGraphic::childMutex locked section !
  */
-inline Warsaw::Tag PolyGraphic::uniqueChildId()
+inline Warsaw::Tag PolyGraphic::unique_child_id()
 {
   Warsaw::Tag localId = 0;
   do
-    if (find_if(children.begin(), children.end(), localId_eq(localId)) == children.end())
+    if (find_if(_children.begin(), _children.end(), localId_eq(localId)) == _children.end())
       return localId;
   while(++localId);
 }
 
-inline PolyGraphic::glist_t::iterator PolyGraphic::childIdToIterator(Warsaw::Tag localId)
+inline PolyGraphic::glist_t::iterator PolyGraphic::child_id_to_iterator(Warsaw::Tag localId)
 {
-  return find_if(children.begin(), children.end(), localId_eq(localId));
+  return find_if(_children.begin(), _children.end(), localId_eq(localId));
 }
 
-inline CORBA::Long PolyGraphic::childIdToIndex(Warsaw::Tag localId)
+inline CORBA::Long PolyGraphic::child_id_to_index(Warsaw::Tag localId)
 {
-  return find_if(children.begin(), children.end(), localId_eq(localId)) - children.begin();
+  return find_if(_children.begin(), _children.end(), localId_eq(localId)) - _children.begin();
 }
 
 #endif 

@@ -38,17 +38,17 @@ class TerminalView : public virtual ViewImpl,
   TerminalView(Warsaw::StreamBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *, Compositor *);
   virtual ~TerminalView();
   virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void needResize();
+  virtual void need_resize();
   virtual void update(const CORBA::Any &);
  protected:
   void begin();
   void end();
-  Warsaw::StreamBuffer_ptr stream;
-  Warsaw::TextKit_var kit;
-  Warsaw::DrawingKit_var canonicalDK;
-  Compositor *compositor;
-  lines_t lines;
-  bool locked;
+  Warsaw::StreamBuffer_ptr _stream;
+  Warsaw::TextKit_var _kit;
+  Warsaw::DrawingKit_var _canonicalDK;
+  Compositor *_compositor;
+  lines_t _lines;
+  bool _locked;
 };
 
 #endif

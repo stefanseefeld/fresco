@@ -102,7 +102,7 @@ public:
   static DrawableTie<Drawable> *drawable();
   static DrawableTie<Drawable> *newDrawable(Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
 
-  Warsaw::Input::Event *nextEvent();
+  Warsaw::Input::Event *next_event();
   void wakeup();
   void activate_autoplay() {autoplay = true;}
 private:

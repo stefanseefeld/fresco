@@ -345,9 +345,9 @@ GLUTConsole::~GLUTConsole()
     delete _drawable;
 }
 
-Input::Event *GLUTConsole::nextEvent()
+Input::Event *GLUTConsole::next_event()
 {
-    Trace trace("GLUTConsole::nextEvent");
+    Trace trace("GLUTConsole::next_event");
     Input::Event_var e = _eventQueue.pop();
     return e._retn();
 }

@@ -28,10 +28,15 @@ using namespace Warsaw;
 
 void ServantBase::deactivate()
 {
-  Trace trace("ServantBase::deactivate");
-  assert(!CORBA::is_nil(poa));
-  PortableServer::ObjectId *oid = poa->servant_to_id(this);
-  poa->deactivate_object(*oid);
+  ServantBase::deactivate(this);
+};
+
+void ServantBase::deactivate(ServantBase *servant)
+{
+  Trace trace("ServantBase::deactivate(ServantBase *)");
+  assert(!CORBA::is_nil(servant->poa));
+  PortableServer::ObjectId *oid = servant->poa->servant_to_id(servant);
+  servant->poa->deactivate_object(*oid);
   delete oid;
 };
 
@@ -43,6 +48,6 @@ void ServantBase::activate(ServantBase *servant)
   servant->poa = PortableServer::POA::_duplicate(poa);
   servant->_remove_ref();
   delete oid;
-  servant->activateComposite();
+  servant->activate_composite();
 };
 

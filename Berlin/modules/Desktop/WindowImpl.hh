@@ -38,19 +38,19 @@ class WindowImpl : public virtual POA_Warsaw::Window,
 public:
   WindowImpl();
   virtual ~WindowImpl();
-  virtual void needResize();
-  virtual CORBA::Boolean requestFocus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  void insert(Warsaw::Desktop_ptr, bool);
+  virtual void need_resize();
+  virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  void insert(Warsaw::Desktop_ptr);
   virtual Warsaw::Vertex position();
   virtual void position(const Warsaw::Vertex &);
   virtual Warsaw::Vertex size();
   virtual void size(const Warsaw::Vertex &);
-  virtual Warsaw::Stage::Index layer();
-  virtual void layer(Warsaw::Stage::Index);
+  virtual Layout::Stage::Index layer();
+  virtual void layer(Layout::Stage::Index);
   virtual CORBA::Boolean mapped();
   virtual void mapped(CORBA::Boolean);
 private:
-  Warsaw::StageHandle_var handle;
+  Layout::StageHandle_var handle;
   Impl_var<UnmappedStageHandle> unmapped;
   Prague::Mutex mutex;
   vector<Warsaw::Controller_var> focus;

@@ -42,7 +42,7 @@ ScreenManager::~ScreenManager() {}
 void ScreenManager::damage(Region_ptr r)
 {
   MutexGuard guard(mutex);
-  theDamage->mergeUnion(r);
+  theDamage->merge_union(r);
   Console::wakeup();
 }
 
@@ -100,6 +100,6 @@ void ScreenManager::run()
 	      last = current;
 	    }
 	}
-      nextEvent();
+      emanager->next_event();
     }
 }

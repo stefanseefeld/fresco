@@ -32,7 +32,7 @@ LibArtRaster::LibArtRaster(Raster_var r) :
   Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
-  remote->storePixels(lower, upper, colors);
+  remote->store_pixels(lower, upper, colors);
   int width = (int)(info.width);
   int height = (int)(info.height);
   pixels = new art_u8[4*width*height];

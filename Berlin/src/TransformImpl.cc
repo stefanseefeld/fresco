@@ -97,8 +97,8 @@ TransformImpl::TransformImpl() { init();}
 TransformImpl::TransformImpl(Warsaw::Transform::Matrix m)
 {
   Trace trace("TransformImpl::TransformImpl(Warsaw::Transform::Matrix)");
-  loadMatrix(m);
-  identity = false;
+  load_matrix(m);
+  ident = false;
   translate_only = false;
   xy = true;
   valid = false;
@@ -113,7 +113,7 @@ void TransformImpl::init()
   mat[1][0] = mat[1][2] = mat[1][3] = 0.;
   mat[2][0] = mat[2][1] = mat[2][3] = 0.;
   mat[3][0] = mat[3][1] = mat[3][2] = 0.;
-  identity     = true;
+  ident     = true;
   translate_only = true;
   xy = true;
   valid = true;
@@ -130,10 +130,10 @@ void TransformImpl::recompute()
 		    Math::equal(mat[2][0], 0., tolerance) &&
 		    Math::equal(mat[1][2], 0., tolerance) &&
 		    Math::equal(mat[2][1], 0., tolerance));
-  identity = (translate_only &&
-	      Math::equal(mat[0][3], 0., tolerance) &&
-	      Math::equal(mat[1][3], 0., tolerance) &&
-	      Math::equal(mat[2][3], 0., tolerance));
+  ident = (translate_only &&
+	   Math::equal(mat[0][3], 0., tolerance) &&
+	   Math::equal(mat[1][3], 0., tolerance) &&
+	   Math::equal(mat[2][3], 0., tolerance));
   valid = true;
 }
 
@@ -162,14 +162,14 @@ void TransformImpl::copy(Transform_ptr transform)
   else
     {
       Warsaw::Transform::Matrix m;
-      transform->storeMatrix(m);
-      loadMatrix(m);
+      transform->store_matrix(m);
+      load_matrix(m);
     }
 }
 
-void TransformImpl::loadMatrix(const Warsaw::Transform::Matrix m)
+void TransformImpl::load_matrix(const Warsaw::Transform::Matrix m)
 {
-  Trace trace("TransformImpl::loadMatrix");
+  Trace trace("TransformImpl::load_matrix");
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
       mat[i][j] = m[i][j];
@@ -177,11 +177,11 @@ void TransformImpl::loadMatrix(const Warsaw::Transform::Matrix m)
   modified();
 }
 
-void TransformImpl::loadIdentity() { init();}
+void TransformImpl::load_identity() { init();}
 
-void TransformImpl::storeMatrix(Warsaw::Transform::Matrix m)
+void TransformImpl::store_matrix(Warsaw::Transform::Matrix m)
 {
-  Trace trace("TransformImpl::storeMatrix");
+  Trace trace("TransformImpl::store_matrix");
   for (short i = 0; i != 3; i++)
     for (short j = 0; j != 4; j++)
       m[i][j] = mat[i][j];
@@ -192,10 +192,10 @@ CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
 {
   Trace trace("TransformImpl::equal");
   if (!valid) recompute();
-  if (identity) return CORBA::is_nil(transform) || transform->Identity();
-  if (CORBA::is_nil(transform) || transform->Identity()) return false;
+  if (ident) return CORBA::is_nil(transform) || transform->identity();
+  if (CORBA::is_nil(transform) || transform->identity()) return false;
   Warsaw::Transform::Matrix m;
-  transform->storeMatrix(m);
+  transform->store_matrix(m);
   return
     Math::equal(mat[0][0], m[0][0], tolerance) &&
     Math::equal(mat[0][1], m[0][1], tolerance) &&
@@ -211,19 +211,19 @@ CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
     Math::equal(mat[2][3], m[2][3], tolerance);
 }
 
-CORBA::Boolean TransformImpl::Identity()
+CORBA::Boolean TransformImpl::identity()
 {
   if (!valid) recompute();
-  return identity;
+  return ident;
 }
 
-CORBA::Boolean TransformImpl::Translation()
+CORBA::Boolean TransformImpl::translation()
 {
   if (!valid) recompute();
   return translate_only;
 }
 
-CORBA::Boolean TransformImpl::detIsZero()
+CORBA::Boolean TransformImpl::det_is_zero()
 {
   Coord d = det();
   return d < tolerance && d > -tolerance;
@@ -281,11 +281,10 @@ void TransformImpl::translate(const Vertex &v)
 
 void TransformImpl::premultiply(Transform_ptr transform)
 {
-  if (!CORBA::is_nil(transform) && !transform->Identity())
+  if (!CORBA::is_nil(transform) && !transform->identity())
     {
-//       Prague::Profiler prf("TransformImpl::premultiply");
       Warsaw::Transform::Matrix m;
-      transform->storeMatrix(m);
+      transform->store_matrix(m);
       for (unsigned short i = 0; i != 3; i++)
 	{
 	  Coord mi0 = mat[i][0], mi1 = mat[i][1], mi2 = mat[i][2], mi3 = mat[i][3];
@@ -300,11 +299,10 @@ void TransformImpl::premultiply(Transform_ptr transform)
 
 void TransformImpl::postmultiply(Transform_ptr transform)
 {
-  if (!CORBA::is_nil(transform) && !transform->Identity())
+  if (!CORBA::is_nil(transform) && !transform->identity())
     {
-//       Prague::Profiler prf("TransformImpl::postmultiply");
       Warsaw::Transform::Matrix m;
-      transform->storeMatrix(m);
+      transform->store_matrix(m);
       for (unsigned short i = 0; i != 4; i++)
 	{
 	  Coord m0i = mat[0][i], m1i = mat[1][i], m2i = mat[2][i];
@@ -356,9 +354,9 @@ void TransformImpl::invert()
     }
 }
 
-void TransformImpl::transformVertex(Vertex &v)
+void TransformImpl::transform_vertex(Vertex &v)
 {
-//   Prague::Profiler prf("TransformImpl::transformVertex");
+//   Prague::Profiler prf("TransformImpl::transform_vertex");
   Coord tx = v.x;
   Coord ty = v.y;
   v.x = mat[0][0] * tx + mat[0][1] * ty + mat[0][2] * v.z + mat[0][3];
@@ -366,9 +364,9 @@ void TransformImpl::transformVertex(Vertex &v)
   v.z = mat[2][0] * tx + mat[2][1] * ty + mat[2][2] * v.z + mat[2][3];
 }
 
-void TransformImpl::inverseTransformVertex(Vertex &v)
+void TransformImpl::inverse_transform_vertex(Vertex &v)
 {
-//   Prague::Profiler prf("TransformImpl::inverseTransformVertex");
+//   Prague::Profiler prf("TransformImpl::inverse_transform_vertex");
 #if 0
   size_t pivot[4];
   Coord vertex[4];

@@ -83,8 +83,8 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
     // for holding NVPair saved_font_attr;
   };
  public:
-  virtual void saveState() { DrawState st; states.push(st);}
-  virtual void restoreState();
+  virtual void save() { DrawState st; states.push(st);}
+  virtual void restore();
   //######################################################
   //############### subclass signatures ##################
   //######################################################
@@ -97,33 +97,33 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
   virtual void foreground(const Warsaw::Color &);
   virtual Warsaw::Color lighting() = 0;
   virtual void lighting(const Warsaw::Color &);
-  virtual Warsaw::Coord pointSize() = 0;
-  virtual void pointSize(Warsaw::Coord);
-  virtual Warsaw::Coord lineWidth() = 0;
-  virtual void lineWidth(Warsaw::Coord);
-  virtual Warsaw::DrawingKit::Endstyle lineEndstyle() = 0;
-  virtual void lineEndstyle(Warsaw::DrawingKit::Endstyle);
-  virtual Warsaw::DrawingKit::Fillstyle surfaceFillstyle() = 0;
-  virtual void surfaceFillstyle(Warsaw::DrawingKit::Fillstyle);
+  virtual Warsaw::Coord point_size() = 0;
+  virtual void point_size(Warsaw::Coord);
+  virtual Warsaw::Coord line_width() = 0;
+  virtual void line_width(Warsaw::Coord);
+  virtual Warsaw::DrawingKit::Endstyle line_endstyle() = 0;
+  virtual void line_endstyle(Warsaw::DrawingKit::Endstyle);
+  virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() = 0;
+  virtual void surface_fillstyle(Warsaw::DrawingKit::Fillstyle);
   virtual Warsaw::Raster_ptr texture() = 0;
   virtual void texture(Warsaw::Raster_ptr);
 
-  virtual CORBA::ULong fontSize() = 0;
-  virtual void fontSize(CORBA::ULong);
-  virtual CORBA::ULong fontWeight() = 0;
-  virtual void fontWeight(CORBA::ULong);
-  virtual Warsaw::Unistring *fontFamily() = 0;
-  virtual void fontFamily(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *fontSubFamily() = 0;
-  virtual void fontSubFamily(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *fontFullName() = 0;
-  virtual void fontFullName(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *fontStyle() = 0;
-  virtual void fontStyle(const Warsaw::Unistring &);
-  virtual Warsaw::DrawingKit::FontMetrics fmetrics() = 0;
-  virtual Warsaw::DrawingKit::GlyphMetrics gmetrics(Warsaw::Unichar) = 0;
-  virtual CORBA::Any *getFontAttr(const Warsaw::Unistring &) = 0;
-  virtual void fontAttr(const Warsaw::NVPair &);
+  virtual CORBA::ULong font_size() = 0;
+  virtual void font_size(CORBA::ULong);
+  virtual CORBA::ULong font_weight() = 0;
+  virtual void font_weight(CORBA::ULong);
+  virtual Warsaw::Unistring *font_family() = 0;
+  virtual void font_family(const Warsaw::Unistring &);
+  virtual Warsaw::Unistring *font_subfamily() = 0;
+  virtual void font_subfamily(const Warsaw::Unistring &);
+  virtual Warsaw::Unistring *font_fullname() = 0;
+  virtual void font_fullname(const Warsaw::Unistring &);
+  virtual Warsaw::Unistring *font_style() = 0;
+  virtual void font_style(const Warsaw::Unistring &);
+  virtual Warsaw::DrawingKit::FontMetrics font_metrics() = 0;
+  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar) = 0;
+  virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring &) = 0;
+  virtual void font_attribute(const Warsaw::NVPair &);
 
   virtual void init() { }
   virtual void finish() { }
@@ -131,47 +131,47 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
 
   virtual Warsaw::DrawingKit3D_ptr dk3D() { return Warsaw::DrawingKit3D::_nil(); }
 
-  virtual void setTransformation (Warsaw::Transform_ptr) = 0;
-  virtual void setClipping(Warsaw::Region_ptr) = 0;
-  virtual void setForeground(const Warsaw::Color &) = 0;
-  virtual void setLighting(const Warsaw::Color &) = 0;
-  virtual void setPointSize(Warsaw::Coord) = 0;
-  virtual void setLineWidth(Warsaw::Coord) = 0;
-  virtual void setLineEndstyle(Warsaw::DrawingKit::Endstyle) = 0;
-  virtual void setSurfaceFillstyle(Warsaw::DrawingKit::Fillstyle) = 0;
-  virtual void setTexture(Warsaw::Raster_ptr) = 0;
+  virtual void set_transformation (Warsaw::Transform_ptr) = 0;
+  virtual void set_clipping(Warsaw::Region_ptr) = 0;
+  virtual void set_foreground(const Warsaw::Color &) = 0;
+  virtual void set_lighting(const Warsaw::Color &) = 0;
+  virtual void set_point_size(Warsaw::Coord) = 0;
+  virtual void set_line_width(Warsaw::Coord) = 0;
+  virtual void set_line_endstyle(Warsaw::DrawingKit::Endstyle) = 0;
+  virtual void set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle) = 0;
+  virtual void set_texture(Warsaw::Raster_ptr) = 0;
 
-  virtual void setFontSize(CORBA::ULong) = 0;
-  virtual void setFontWeight(CORBA::ULong) = 0;
-  virtual void setFontFamily(const Warsaw::Unistring &) = 0;
-  virtual void setFontSubFamily(const Warsaw::Unistring &) = 0;
-  virtual void setFontFullName(const Warsaw::Unistring &) = 0;
-  virtual void setFontStyle(const Warsaw::Unistring &) = 0;
-  virtual void setFontAttr(const Warsaw::NVPair &) = 0;
+  virtual void set_font_size(CORBA::ULong) = 0;
+  virtual void set_font_weight(CORBA::ULong) = 0;
+  virtual void set_font_family(const Warsaw::Unistring &) = 0;
+  virtual void set_font_subfamily(const Warsaw::Unistring &) = 0;
+  virtual void set_font_fullname(const Warsaw::Unistring &) = 0;
+  virtual void set_font_style(const Warsaw::Unistring &) = 0;
+  virtual void set_font_attribute(const Warsaw::NVPair &) = 0;
 
 private:
   stack<DrawState> states;
 };
 
-inline void DrawingKitBase::restoreState()
+inline void DrawingKitBase::restore()
 {
   if (states.empty()) return; // no state to restore
   DrawState &prev = states.top();
-  if(prev.flags & (1 << st_trafo))              setTransformation(prev.saved_trafo);
-  if(prev.flags & (1 << st_clip))               setClipping(prev.saved_clip);
-  if(prev.flags & (1 << st_fg_color))           setForeground(prev.saved_fg_color);
-  if(prev.flags & (1 << st_lt_color))           setLighting(prev.saved_lt_color);
-  if(prev.flags & (1 << st_point_size))         setPointSize(prev.saved_point_size);
-  if(prev.flags & (1 << st_line_width))         setLineWidth(prev.saved_line_width);
-  if(prev.flags & (1 << st_line_end_style))     setLineEndstyle(prev.saved_line_end_style);
-  if(prev.flags & (1 << st_surface_fill_style)) setSurfaceFillstyle(prev.saved_surface_fill_style);
-  if(prev.flags & (1 << st_texture))            setTexture(prev.saved_texture);
-  if(prev.flags & (1 << st_font_size))          setFontSize(prev.saved_font_size);
-  if(prev.flags & (1 << st_font_weight))        setFontWeight(prev.saved_font_weight);
-  if(prev.flags & (1 << st_font_family))        setFontFamily((Warsaw::Unistring &)prev.saved_font_family);
-  if(prev.flags & (1 << st_font_subfamily))     setFontSubFamily((Warsaw::Unistring &)prev.saved_font_subfamily);
-  if(prev.flags & (1 << st_font_fullname))      setFontFullName((Warsaw::Unistring &)prev.saved_font_fullname);
-  if(prev.flags & (1 << st_font_style))         setFontStyle((Warsaw::Unistring &)prev.saved_font_style);
+  if(prev.flags & (1 << st_trafo))              set_transformation(prev.saved_trafo);
+  if(prev.flags & (1 << st_clip))               set_clipping(prev.saved_clip);
+  if(prev.flags & (1 << st_fg_color))           set_foreground(prev.saved_fg_color);
+  if(prev.flags & (1 << st_lt_color))           set_lighting(prev.saved_lt_color);
+  if(prev.flags & (1 << st_point_size))         set_point_size(prev.saved_point_size);
+  if(prev.flags & (1 << st_line_width))         set_line_width(prev.saved_line_width);
+  if(prev.flags & (1 << st_line_end_style))     set_line_endstyle(prev.saved_line_end_style);
+  if(prev.flags & (1 << st_surface_fill_style)) set_surface_fillstyle(prev.saved_surface_fill_style);
+  if(prev.flags & (1 << st_texture))            set_texture(prev.saved_texture);
+  if(prev.flags & (1 << st_font_size))          set_font_size(prev.saved_font_size);
+  if(prev.flags & (1 << st_font_weight))        set_font_weight(prev.saved_font_weight);
+  if(prev.flags & (1 << st_font_family))        set_font_family((Warsaw::Unistring &)prev.saved_font_family);
+  if(prev.flags & (1 << st_font_subfamily))     set_font_subfamily((Warsaw::Unistring &)prev.saved_font_subfamily);
+  if(prev.flags & (1 << st_font_fullname))      set_font_fullname((Warsaw::Unistring &)prev.saved_font_fullname);
+  if(prev.flags & (1 << st_font_style))         set_font_style((Warsaw::Unistring &)prev.saved_font_style);
     //    if(prev.flags[st_font_attr]) {
     //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
     // 	     setFontAttr(prev.saved_font_attr[i]);
@@ -198,98 +198,98 @@ inline void DrawingKitBase::restoreState()
 inline void DrawingKitBase::transformation(Warsaw::Transform_ptr t)
 {
   REMEMBER(trafo, Warsaw::Transform_var,transformation());
-  setTransformation(t);
+  set_transformation(t);
 }
 
 inline void DrawingKitBase::clipping(Warsaw::Region_ptr c)
 {
   REMEMBER(clip, Warsaw::Region_var, clipping());
-  setClipping(c);
+  set_clipping(c);
 }
 
 inline void DrawingKitBase::foreground(const Warsaw::Color &c)
 {
   REMEMBER(fg_color, Warsaw::Color, foreground())
-  setForeground(c);
+  set_foreground(c);
 }
 
 inline void DrawingKitBase::lighting(const Warsaw::Color &c)
 {
   REMEMBER(lt_color, Warsaw::Color, lighting())
-  setLighting(c);
+  set_lighting(c);
 }
 
-inline void DrawingKitBase::pointSize(Warsaw::Coord s)
+inline void DrawingKitBase::point_size(Warsaw::Coord s)
 {
-  REMEMBER(point_size, Warsaw::Coord, pointSize());
-  setPointSize(s);
+  REMEMBER(point_size, Warsaw::Coord, point_size());
+  set_point_size(s);
 }
 
-inline void DrawingKitBase::lineWidth(Warsaw::Coord w)
+inline void DrawingKitBase::line_width(Warsaw::Coord w)
 {
-  REMEMBER(line_width, Warsaw::Coord, lineWidth());
-  setLineWidth(w);
+  REMEMBER(line_width, Warsaw::Coord, line_width());
+  set_line_width(w);
 }
 
-inline void DrawingKitBase::lineEndstyle(Warsaw::DrawingKit::Endstyle s)
+inline void DrawingKitBase::line_endstyle(Warsaw::DrawingKit::Endstyle s)
 {
-  REMEMBER(line_end_style, Warsaw::DrawingKit::Endstyle, lineEndstyle());
-  setLineEndstyle(s);
+  REMEMBER(line_end_style, Warsaw::DrawingKit::Endstyle, line_endstyle());
+  set_line_endstyle(s);
 }
 
-inline void DrawingKitBase::surfaceFillstyle(Warsaw::DrawingKit::Fillstyle s)
+inline void DrawingKitBase::surface_fillstyle(Warsaw::DrawingKit::Fillstyle s)
 {
-  REMEMBER(surface_fill_style, Warsaw::DrawingKit::Fillstyle, surfaceFillstyle());
-  setSurfaceFillstyle(s);
+  REMEMBER(surface_fill_style, Warsaw::DrawingKit::Fillstyle, surface_fillstyle());
+  set_surface_fillstyle(s);
 }
 
 inline void DrawingKitBase::texture(Warsaw::Raster_ptr t)
 {
   REMEMBER(texture, Warsaw::Raster_var, texture());
-  setTexture(t);
+  set_texture(t);
 }
 
   ////////
   // text
   ////////
 
-inline void DrawingKitBase::fontSize(CORBA::ULong s)
+inline void DrawingKitBase::font_size(CORBA::ULong s)
 {
-  REMEMBER(font_size,CORBA::ULong,fontSize());
-  setFontSize(s);
+  REMEMBER(font_size,CORBA::ULong, font_size());
+  set_font_size(s);
 }
 
-inline void DrawingKitBase::fontWeight(CORBA::ULong w)
+inline void DrawingKitBase::font_weight(CORBA::ULong w)
 {
-  REMEMBER(font_weight,CORBA::ULong,fontWeight());
-  setFontWeight(w);
+  REMEMBER(font_weight,CORBA::ULong, font_weight());
+  set_font_weight(w);
 }
 
-inline void DrawingKitBase::fontFamily(const Warsaw::Unistring &f)
+inline void DrawingKitBase::font_family(const Warsaw::Unistring &f)
 {
-  REMEMBER(font_family, Warsaw::Unistring_var, fontFamily());
-  setFontFamily(f);
+  REMEMBER(font_family, Warsaw::Unistring_var, font_family());
+  set_font_family(f);
 }
 
-inline void DrawingKitBase::fontSubFamily(const Warsaw::Unistring &f)
+inline void DrawingKitBase::font_subfamily(const Warsaw::Unistring &f)
 {
-  REMEMBER(font_subfamily, Warsaw::Unistring_var, fontSubFamily());
-  setFontSubFamily(f);
+  REMEMBER(font_subfamily, Warsaw::Unistring_var, font_subfamily());
+  set_font_subfamily(f);
 }
 
-inline void DrawingKitBase::fontFullName(const Warsaw::Unistring &f)
+inline void DrawingKitBase::font_fullname(const Warsaw::Unistring &f)
 {
-  REMEMBER(font_fullname, Warsaw::Unistring_var, fontFullName());
-  setFontFullName(f);
+  REMEMBER(font_fullname, Warsaw::Unistring_var, font_fullname());
+  set_font_fullname(f);
 }
 
-inline void DrawingKitBase::fontStyle(const Warsaw::Unistring &s)
+inline void DrawingKitBase::font_style(const Warsaw::Unistring &s)
 {
-  REMEMBER(font_style, Warsaw::Unistring_var, fontStyle());
-  setFontStyle(s);
+  REMEMBER(font_style, Warsaw::Unistring_var, font_style());
+  set_font_style(s);
 }
 
-inline void DrawingKitBase::fontAttr(const Warsaw::NVPair &nvp)
+inline void DrawingKitBase::font_attribute(const Warsaw::NVPair &nvp)
 {
   // !FIXME! fill this in.. it's not _too_ hard
 }
