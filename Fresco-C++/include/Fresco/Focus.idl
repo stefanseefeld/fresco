@@ -29,6 +29,11 @@ interface Focus
 //   readonly attribute Event::Device device;
   void grab();
   void ungrab();
+  void addFilter(in Event::Filter f);
+  //. The addFilter operation requests that all input events
+  //. be routed through the filter.
+  //. The filter will be removed automatically when the controller
+  //. loses the focus
 };
 
 #endif /* _Focus_idl */

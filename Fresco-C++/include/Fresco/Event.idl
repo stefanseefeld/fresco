@@ -26,33 +26,40 @@
 #include <Types.idl>
 
 
-// the event module defines the payloads for messages which describe user
-// actions, like pointer actions or typing. 
-
-module Event {
-    
-// typedef long Device;
-
-    enum ActuationType {press, hold, release};
-    
-    struct Key {
-	ActuationType whatHappened;
-	Unichar theChar;
-	unsigned long modifiers; // !!!FIXME!!! this needs some clear definition!
-    };
-    
-    
-    // this is just a timing pulse, to keep components up to date on what
-    // time the server thinks it is.
-    
-    struct PulseEvent {
-	Time PulseTime;
-    };
-    
-    struct Pointer {
-	Vertex location;
-	ActuationType whatHappened;
-	unsigned long buttonNumber;
+module Event
+//. the event module defines the payloads for messages which describe user
+//. actions, like pointer actions or typing. 
+{
+  // typedef long Device;
+  
+  enum ActuationType {press, hold, release};
+  struct Key
+  {
+    ActuationType whatHappened;
+    Unichar theChar;
+    unsigned long modifiers; // !!!FIXME!!! this needs some clear definition!
+  };
+  // this is just a timing pulse, to keep components up to date on what
+  // time the server thinks it is.  
+  struct PulseEvent
+  {
+    Time PulseTime;
+  };
+  struct Pointer
+  {
+    Vertex location;
+    ActuationType whatHappened;
+    unsigned long buttonNumber;
+  };
+      
+  interface Filter
+    //. An event filter controls the routing of events received
+    //. by a display.
+    {
+      boolean handle(in any a);
+      //. The filter should return true if it does not want the event
+      //. to be processed by any other filters or the event's
+      //. target window.
     };
 };
 #endif

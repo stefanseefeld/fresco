@@ -45,6 +45,11 @@ void FocusImpl::ungrab()
   grabbed = false;
 }
 
+void FocusImpl::addFilter(Event::Filter_ptr)
+{
+  // not implemented
+}
+
 void FocusImpl::request(Controller_ptr c)
 {
   // not granted !

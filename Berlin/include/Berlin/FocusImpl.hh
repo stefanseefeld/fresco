@@ -42,6 +42,7 @@ class FocusImpl : implements(Focus)
 
   virtual void grab();
   virtual void ungrab();
+  virtual void addFilter(Event::Filter_ptr);
 
   void request(Controller_ptr);
   void damage(Region_ptr);
