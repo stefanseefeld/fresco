@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 2001 Tobias Hunger <tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999-2003 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2001 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -131,8 +131,6 @@ private:
   Mutex &mutex;
 };
 
-#if 0
-
 class RWLock
 {
 public:
@@ -144,6 +142,7 @@ public:
     pthread_rwlockattr_t impl;
   };
   RWLock() { pthread_rwlock_init(&impl, 0);}
+  RWLock(const Attribute &a) { pthread_rwlock_init(&impl, &a.impl);}
   ~RWLock() { pthread_rwlock_destroy(&impl);}
   void rlock() { pthread_rwlock_rdlock(&impl);}
   void wlock() { pthread_rwlock_wrlock(&impl);}
@@ -153,31 +152,18 @@ public:
   pthread_rwlock_t impl;
 };
 
-#else
-
-class RWLock 
+class RLockTrait
 {
 public:
-  RWLock() {}
-  ~RWLock() {}
-  void rlock() {}
-  void wlock() {}
-  void unlock() {}
-  bool tryrlock() { return false;}
-  bool trywlock() { return false;}
-private:
-  Mutex mutex;
-  Semaphore readers;
-  Semaphore writers;
+   static void lock(RWLock &l) { l.rlock();}
+   static void unlock(RWLock &l) { l.unlock();}
 };
 
-#endif
-
-template <> class Lock_Trait<RWLock> 
+class WLockTrait
 {
 public:
-  void lock(RWLock & l) { l.rlock();}
-  void unlock(RWLock & l) { l.unlock();}
+   static void lock(RWLock &l) { l.wlock();}
+   static void unlock(RWLock &l) { l.unlock();}
 };
 
 //. a thread housekeeping class.

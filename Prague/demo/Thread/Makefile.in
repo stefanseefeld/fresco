@@ -29,11 +29,11 @@ docdir		:= $(top_builddir)/share/doc/Prague
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= @CPPFLAGS@
+CPPFLAGS	+= @CPPFLAGS@ -I $(top_builddir)/include -I $(top_srcdir)
 LDFLAGS		+= -L ../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:=   $(patsubst %, $(top_builddir)/bin/%, Thread Signal Timer Diner Queue ThreadPool)
+TARGETS		:=   $(patsubst %, $(top_builddir)/bin/%, Thread RWLock Signal Timer Diner Queue ThreadPool)
 
 vpath %.hh  $(srcdir)
 vpath %.cc  $(srcdir)
@@ -45,6 +45,10 @@ all:		$(TARGETS)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
 
 $(top_builddir)/bin/Thread:	Thread.o
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(top_builddir)/bin/RWLock:	RWLock.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
