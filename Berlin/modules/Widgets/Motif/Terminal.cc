@@ -56,9 +56,14 @@ bool Terminal::Output::notify(Agent::iomask_t mask)
   while (is)
     {
       getline(is, line);
-      if (is) line += '\n';
-      StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);
-      terminal->obuf->write(data);
+//       if (is) line += '\n';
+//       cout << line << flush;
+//       StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);
+      if (is)
+	{
+	  StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);
+	  terminal->obuf->write(data);
+	}
     }
   return true;
 }
