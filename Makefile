@@ -21,7 +21,7 @@
 
 SHELL	= /bin/sh
 
-include config/local.mk
+-include config/local.mk
 
 #subdirs	= $(wildcard src server clients)
 # doc
@@ -36,7 +36,7 @@ config::
 	./configure $$CONFIGURE_OPTS
 # Added shell env var $$CONFIGURE_OPTS
 
-all:
+all: config/local.mk
 	@if [ -f include/Warsaw/config.hh ]; then \
 	  for dir in ${subdirs}; do \
 	    (cd $$dir && $(MAKE)) \
@@ -78,3 +78,6 @@ install: all
 
 debs:
 	dpkg-buildpackage -rfakeroot -uc -us
+
+config/local.mk: config/configure
+	@(cd config && ./configure $$CONFIGURE_OPTS)
