@@ -1,0 +1,60 @@
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#ifndef _Warsaw_Widget_idl
+#define _Warsaw_Widget_idl
+
+#include <Warsaw/Controller.idl>
+
+module Warsaw
+{
+  interface Graphic;
+  interface BoundedValue;
+  interface Selection;
+};
+
+module Widget
+{
+  //. a Choice
+  interface Choice : Warsaw::Controller
+    {
+      readonly attribute Warsaw::Selection state;
+      Warsaw::Tag append_item(in Warsaw::Graphic g);
+      Warsaw::Tag prepend_item(in Warsaw::Graphic g);
+      void remove_item(in Warsaw::Tag t);
+    };
+  //. a Paned graphic is used to fine-tune the relative allocation
+  //. for two tiled graphics inside a parent graphic.
+  //. If the two graphics are flexible, the positions's range
+  //. reflects the constraints of a relative resize.
+  interface Paned : Warsaw::Controller
+    {
+      //. a resize policy of 0 means that the size difference
+      //. should be absorbed by the first child if possible, a
+      //. value of 1 means by the second
+      attribute Warsaw::Alignment resize_policy;
+      //. return the current value of the adjustment
+      readonly attribute Warsaw::BoundedValue adjustment;
+    };
+};
+
+#endif
+

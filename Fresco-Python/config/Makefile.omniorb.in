@@ -40,7 +40,8 @@ INT		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Observer.idl Controller.idl View.idl Telltale.idl \
 		   BoundedValue.idl BoundedRange.idl TextBuffer.idl \
 		   StreamBuffer.idl Selection.idl Trigger.idl \
-		   Canvas.idl State.idl ToolKit.idl Choice.idl  WidgetKit.idl GadgetKit.idl \
+		   Canvas.idl State.idl ToolKit.idl Widget.idl WidgetKit.idl \
+		   GadgetKit.idl \
 		   TextKit.idl Raster.idl ImageKit.idl Desktop.idl \
 		   Window.idl DesktopKit.idl GGIKit.idl UnidrawKit.idl \
 		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl 
