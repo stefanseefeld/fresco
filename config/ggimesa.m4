@@ -44,8 +44,8 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 	dnl Check for GGIMesa libs
 	if test x$no_gl = x ; then
 
-		if test x$gl_eprefix != x ; then
-			GL_LIBS=-L$gl_eprefix/lib
+		if test x$ggimesa_prefix != x ; then
+			GL_LIBS=-L$ggimesa_prefix/lib -lgii
 		fi
 		save_LDFLAGS="$LDFLAGS"
 		LDFLAGS="$GL_LIBS $LDFLAGS"
