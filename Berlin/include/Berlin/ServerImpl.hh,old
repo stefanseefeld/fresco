@@ -49,7 +49,7 @@ class ServerImpl : public virtual POA_Warsaw::Server,
 public:
     // Singelton pattern: This makes sure that only one ServerImpl is around.
     static ServerImpl *instance();
-    typedef multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
+    typedef std::multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
     virtual Warsaw::ServerContext_ptr create_server_context(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
     virtual void set_singleton(const char *, CORBA::Object_ptr)
 	throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);

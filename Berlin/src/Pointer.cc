@@ -121,7 +121,7 @@ void Pointer::save()
   PixelCoord r = screen->row_length();
   PixelCoord s = screen->vwidth() * screen->vheight();
   PixelCoord d = screen->pixel_format().size >> 3;
-  auto_ptr<Console::Drawable::Buffer> from_buf(screen->read_buffer());
+  std::auto_ptr<Console::Drawable::Buffer> from_buf(screen->read_buffer());
   Console::Drawable::Buffer::data_type * from = from_buf->data() + y*r + x*d;
   unsigned char *to = cache;
   for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
@@ -139,7 +139,7 @@ void Pointer::restore()
   PixelCoord s = screen->vwidth() * screen->vheight();
   PixelCoord d = screen->pixel_format().size >> 3;
   Console::Drawable::Buffer::data_type * from = cache;
-  auto_ptr<Console::Drawable::Buffer> to_buf(screen->write_buffer());
+  std::auto_ptr<Console::Drawable::Buffer> to_buf(screen->write_buffer());
   Console::Drawable::Buffer::data_type * to = to_buf->data() + y*r + x*d;
   for (PixelCoord o = 0;
        o != h && (y + o) * r / d + x + w < s;
@@ -159,7 +159,7 @@ void Pointer::draw()
   PixelCoord d = screen->pixel_format().size >> 3;
   unsigned char *from = image;
   unsigned char *bits = mask;
-  auto_ptr<Console::Drawable::Buffer> to_buf(screen->write_buffer());
+  std::auto_ptr<Console::Drawable::Buffer> to_buf(screen->write_buffer());
   Console::Drawable::Buffer::data_type * to = to_buf->data() + y * r + x * d;
   for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
     for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
