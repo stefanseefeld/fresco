@@ -95,6 +95,7 @@ install:	all
 	$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco
 	$(INSTALL) -m 644 $(top_srcdir)/share/glyph.dat $(DESTDIR)$(datadir)/Fresco
+	$(INSTALL) -m 644 $(top_srcdir)/share/unifont.bdf $(DESTDIR)$(datadir)/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG $(DESTDIR)$(datadir)/Fresco
 	@for image in $(patsubst $(top_srcdir)/share/PNG/%, %, $(wildcard $(top_srcdir)/share/PNG/*.png)); do \
 	  if ! cmp -s $(top_srcdir)/share/PNG/$$image $(DESTDIR)$(datadir)/Fresco/PNG/$$image 2>/dev/null; then \

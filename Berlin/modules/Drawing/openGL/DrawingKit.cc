@@ -29,7 +29,7 @@
 #include <Berlin/Color.hh>
 #include "Quadric.hh"
 #include "DrawingKit.hh"
-#include "Unifont.hh"
+#include "FTFont.hh"
 #include <iostream>
 
 using namespace Prague;
@@ -100,7 +100,7 @@ void openGL::DrawingKit::init()
   _drawable = console->drawable();
   _glcontext = console->get_extension<GLContext>("GLContext");
 
-  _font = new Unifont();
+  _font = new FTFont();
   _light = new Light();
   glViewport(0, 0, _drawable->width(), _drawable->height());
   glMatrixMode(GL_PROJECTION); 
@@ -329,7 +329,7 @@ void openGL::DrawingKit::draw_image(Raster_ptr raster)
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
-void openGL::DrawingKit::set_font_size(CORBA::ULong s) {}
+void openGL::DrawingKit::set_font_size(CORBA::ULong s) { _font->size(s); }
 void openGL::DrawingKit::set_font_weight(CORBA::ULong w) {}
 void openGL::DrawingKit::set_font_family(const Unistring &f) {}
 void openGL::DrawingKit::set_font_subfamily(const Unistring &sf) {}

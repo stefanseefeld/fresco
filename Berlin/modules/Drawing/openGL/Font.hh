@@ -39,6 +39,7 @@ public:
   Font() {}
   virtual ~Font() {}
   virtual CORBA::ULong size() = 0;
+  virtual void size(CORBA::ULong) = 0;
   virtual CORBA::ULong weight() = 0;
   virtual Fresco::Unistring *family() = 0;
   virtual Fresco::Unistring *subfamily() = 0;

@@ -29,11 +29,11 @@ cdir		:= $(top_builddir)/config
 include $(cdir)/local.mk
 
 # Compilation and linking flags.
-EXTRA_CPPFLAGS	+= $(filter-out -I/usr/include, @GL_CPPFLAGS@)
-EXTRA_LIBS	+= @GL_LIBS@
+EXTRA_CPPFLAGS	+= $(filter-out -I/usr/include, @GL_CPPFLAGS@ @FREETYPE_CPPFLAGS@)
+EXTRA_LIBS	+= @GL_LIBS@ @FREETYPE_LIBS@
 
-SRC		:= Raster.cc Unifont.cc Quadric.cc DrawingKit.cc 
-HDR		:= Raster.hh Unifont.hh Quadric.hh DrawingKit.hh
+SRC		:= Raster.cc FTFont.cc Quadric.cc DrawingKit.cc 
+HDR		:= Raster.hh FTFont.hh Quadric.hh DrawingKit.hh
 MODULE		:= GLDrawingKit
 
 include $(cdir)/module.mk
