@@ -27,6 +27,7 @@
 #include "Warsaw/Text.hh"
 #include "Drawing/openGL/GLFont.hh"
 
+
 extern "C" {
 #include "ggi/ggi.h"
 }
@@ -53,10 +54,10 @@ void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &st
   MutexGuard guard(mutex);
   try
     { 
-      GLFont *newfont = new GLFont(fd,sty); 
+/*      GLFont *newfont = new GLFont(fd,sty); 
       newfont->_obj_is_ready(_boa());
       if (font) font->_dispose();
-      font = newfont;
+      font = newfont;*/
     }
   catch (Text::NoSuchFontException &ex)
     {
@@ -97,12 +98,14 @@ void GLDrawingKit::drawImage(const Image_ptr im)
 	// NOT IMPLEMENTED
 	
 	// First, get the raster from the image
-	RasterImpl_var r = Image_ptr->getRaster();
-	CORBA::long width = r->getWidth();
-	CORBA::long height = r->getHeight();
-	Data mem;
+	Raster_var r = im->getRaster();
+	long width = r->getWidth();
+	long height = r->getHeight();
+	Raster::Data mem;
 	r->getData(mem);
-	
+
+	GLvoid* imgData = mem.NP_data();
+		
 	glClear(GL_COLOR_BUFFER_BIT);
-	//glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, mem);
+	glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
 }
