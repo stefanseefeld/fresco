@@ -114,8 +114,18 @@ install:	all
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Filter
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Network
 	$(SHTOOL) install -C -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague
-	for header in $(HDR); do \
-	  $(SHTOOL) install -C -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague; \
+	$(SHTOOL) install -C -m 644 ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague
+	for header in $(SysH); do \
+	  $(SHTOOL) install -C -m 644 $(hdir)/Sys/$$header $(DESTDIR)$(includedir)/Prague/Sys; \
+	done
+	for header in $(IPCH); do \
+	  $(SHTOOL) install -C -m 644 $(hdir)/IPC/$$header $(DESTDIR)$(includedir)/Prague/IPC; \
+	done
+	for header in $(FilterH); do \
+	  $(SHTOOL) install -C -m 644 $(hdir)/Filter/$$header $(DESTDIR)$(includedir)/Prague/Filter; \
+	done
+	for header in $(NetworkH); do \
+	  $(SHTOOL) install -C -m 644 $(hdir)/Network/$$header $(DESTDIR)$(includedir)/Prague/Network; \
 	done
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(bindir)
 	$(SHTOOL) install -C -m 755 ../config/Prague-config $(DESTDIR)$(bindir)
