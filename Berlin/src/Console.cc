@@ -42,6 +42,11 @@ CAVEConsole *Console::t = 0;
 
 GLUTConsole *Console::t = 0;
 
+#elif defined(CONSOLE_DIRECTFB)
+#  include "DirectFB.cc"
+
+DirectFBConsole *Console::t = 0;
+
 #else
 #  warning "no console type defined"
 #endif

@@ -93,6 +93,20 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 				AC_DEFINE(CONSOLE_GLUT)
                         fi
                         ;;
+		DirectFB)
+			BERLIN_DIRECTFB_CHECK
+			if test ".$ac_cv_lib_directfb" != .yes; then
+				if test ".$1" = .mandatory; then
+					AC_MSG_ERROR(No supported Console environment found!)
+				else
+					CON_IMPL="none"
+				fi
+			else
+				AC_DECIDE(DIRECTFBCONSOLE, [use DirectFB])
+				CON_IMPL=DIRECTFB
+				AC_DEFINE(CONSOLE_DIRECTFB)
+			fi
+			;;
 		*)
 			if test ".$1" = .mandatory; then
 				AC_MSG_ERROR($CON_IMPL is not supported!)

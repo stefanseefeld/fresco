@@ -318,6 +318,11 @@ typedef ConsoleTie<CAVEConsole> Console;
 
 typedef ConsoleTie<GLUTConsole> Console;
 
+#elif defined(CONSOLE_DIRECTFB)
+#  include <Berlin/DirectFB.hh>
+
+typedef ConsoleTie<DirectFBConsole> Console;
+
 #else
 #  warning "no console type defined"
 #endif
