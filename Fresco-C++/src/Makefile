@@ -32,7 +32,7 @@ rpath	= $(lpath)
 include $(cpath)/local.mk
 
 IDLFLAGS+= -I$(wpath)
-CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I$(ipath)/Warsaw -I$(ipath)
+CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) $(ORBDEFS) -I$(ipath)/Warsaw -I$(ipath)
 CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)

@@ -21,7 +21,11 @@
 
 SHELL	= /bin/sh
 
-subdirs = FT openGL libArt #GGI
+cpath	= ../../config
+
+include $(cpath)/local.mk
+
+subdirs = FT $(DRAWING_KITS)
 
 all:
 	@for dir in ${subdirs}; do \

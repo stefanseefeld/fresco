@@ -19,55 +19,56 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_GGI_CHECK(mandatory-flag)
+dnl BERLIN_GGIMESA_CHECK(mandatory-flag)
 dnl
-dnl Checks if GGI is found. If it is, $ac_cv_lib_GGI is set to "yes".
+dnl Checks if GGIMesa is found. If it is, $ac_cv_lib_GGIMesa is set to "yes".
 
-AC_DEFUN([BERLIN_GGI_CHECK],[
+AC_DEFUN([BERLIN_GGIMESA_CHECK],[
 
 	AC_LANG_SAVE
 	AC_LANG_C
 
-	AC_ARG_WITH(ggi-prefix,
-		[  --with-ggi-prefix=PFX   Prefix for GGI],[
-		ggi_prefix="$withval"])
+	AC_ARG_WITH(ggimesa-prefix,
+		[  --with-ggimesa-prefix=PFX Prefix for GGIMesa],[
+		ggimesa_prefix="$withval"])
 
-	dnl Check for GGI includes
-	if test x$ggi_prefix != x ; then
-		GGI_INCLUDES=-I$ggi_prefix/include
+	dnl Check for GGIMesa includes
+	if test x$ggimesa_prefix != x ; then
+		GL_INCLUDES=-I$ggimesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GGI_INCLUDES $CPPFLAGS"
-	AC_CHECK_HEADER(ggi/ggi.h,:,no_ggi=yes)
+	CPPFLAGS="$GL_INCLUDES $CPPFLAGS"
+	AC_CHECK_HEADER(GL/ggimesa.h,,no_gl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
-	dnl Check for GGI libs
-	if test x$no_ggi = x ; then
+	dnl Check for GGIMesa libs
+	if test x$no_gl = x ; then
 
-		if test x$ggi_prefix != x ; then
-			GGI_LIBS=-L$ggi_prefix/lib
+		if test x$gl_eprefix != x ; then
+			GL_LIBS=-L$gl_eprefix/lib
 		fi
-
 		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$GGI_LIBS $LDFLAGS"
-		AC_CHECK_LIB(ggi, ggiInit, :, no_ggi=yes)
+		LDFLAGS="$GL_LIBS $LDFLAGS"
+		AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_gl=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
 
-	if test x$no_ggi != x ; then
+	if test x$no_gl != x ; then
 
-		ac_cv_lib_GGI=no
+		ac_cv_lib_GGIMesa=no		
 		dnl Abort or warn?
 		if test ".$1" = .mandatory ; then
-			AC_MSG_ERROR(GGI library was not found!)
+			AC_MSG_ERROR(OpenGL library was not found!)
+		else
+			AC_MSG_WARN(OpenGL library was not found!)
 		fi
 	else
-		ac_cv_lib_GGI=yes
-		GGI_LIBS="$GGI_LIBS -lggi"
+		ac_cv_lib_GGIMesa=yes
+		GL_LIBS="$GL_LIBS -lGL -lGLU"
 	fi
 
-	AC_SUBST(GGI_INCLUDES)
-	AC_SUBST(GGI_LIBS)
+	AC_SUBST(GL_INCLUDES)
+	AC_SUBST(GL_LIBS)
 
 	AC_LANG_RESTORE
 ])

@@ -21,4 +21,13 @@
 #  error "sorry, currently only OMNIORB2 is supported"
 #endif
 
+#undef ORBFLAGS
+#undef UsePthread
+#undef _REENTRANT
+#undef __OSVERSION__
+#undef __linux__
+/* add more here */
+#undef __x86__
+/* add more here */
+
 #endif /* _config_hh */

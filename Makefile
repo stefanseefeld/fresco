@@ -21,8 +21,11 @@
 
 SHELL	= /bin/sh
 
-subdirs	= $(wildcard src server clients)
+include config/local.mk
+
+#subdirs	= $(wildcard src server clients)
 # doc
+subdirs		= $(BASE_SUBDIRS)
 
 .PHONY:	config test depclean clean distclean install debs
 

@@ -27,9 +27,6 @@ hpath	= $(top)/include/Drawing/libArt
 
 include $(cpath)/local.mk
 
-LIBART_INCLUDES=-I/usr/include/libart_lgpl
-LIBART_LIBS=-lart_lgpl -lggi
-
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(LIBART_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
