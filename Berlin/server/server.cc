@@ -77,8 +77,11 @@ struct Dump : Signal::Notifier
       switch (signo)
 	{
 	case Signal::usr2: 
-	  Console::instance()->activate_autoplay(); 
-	  Console::instance()->wakeup();
+	  if (Console::instance())
+	  {
+	    Console::instance()->activate_autoplay(); 
+	    Console::instance()->wakeup();
+	  }
 	  return;
 	case Signal::hangup: Profiler::dump(std::cerr); break;
 	case Signal::abort:
@@ -309,11 +312,14 @@ int main(int argc, char **argv) /*FOLD00*/
 #endif
 
   Fork *child = 0;
+
+  Logger::log(Logger::loader) << "Commandline arguments are parsed,"
+			      << " configuration is read in." << std::endl;
   
   // ---------------------------------------------------------------
   // Setup CORBA
   // ---------------------------------------------------------------
-	
+
   CORBA::ORB_var orb;
   try
   {
@@ -321,7 +327,7 @@ int main(int argc, char **argv) /*FOLD00*/
       PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
-      Logger::log(Logger::corba) << "root POA is activated" << std::endl;
+      Logger::log(Logger::corba) << "Root POA is activated." << std::endl;
        
       CORBA::PolicyList policies;
 #ifdef COLOCATION_OPTIMIZATION
@@ -363,7 +369,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	   exit(2);
        }
        
-       Logger::log(Logger::console) << "console is initialized" << std::endl;
+       Logger::log(Logger::console) << "Console is initialized." << std::endl;
        
        // ---------------------------------------------------------------
        // Construct Server
@@ -392,7 +398,7 @@ int main(int argc, char **argv) /*FOLD00*/
        Prague::Path path = RCManager::get_path("modulepath");
        for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
 	   server->scan(*i);
-       Logger::log(Logger::loader) << "modules are loaded" << std::endl;
+       Logger::log(Logger::loader) << "Kits are loaded." << std::endl;
        
        // ---------------------------------------------------------------
        // Setup default DrawingKit
@@ -419,7 +425,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	   exit(3);
        }
        
-       Logger::log(Logger::drawing) << "drawing system is built" << std::endl;
+       Logger::log(Logger::drawing) << "Drawing system is set up." << std::endl;
       
        // ---------------------------------------------------------------
        // make a Screen graphic to hold this server's scene graph
@@ -430,7 +436,8 @@ int main(int argc, char **argv) /*FOLD00*/
        ScreenManager *smanager = new ScreenManager(Graphic_var(screen->_this()), emanager, drawing);
        screen->bind_managers(emanager, smanager);
 
-       Logger::log(Logger::loader) << "screen is setup and managers are bound to it." << std::endl;
+       Logger::log(Logger::loader) << "Screen is set up and managers are "
+	                           << "bound to it." << std::endl;
 
        props.length(0);
        LayoutKit_var layout = server->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0", props, poa);
@@ -439,14 +446,15 @@ int main(int argc, char **argv) /*FOLD00*/
        screen->body(Desktop_var(desktop->_this()));
        screen->append_controller(Desktop_var(desktop->_this()));
        
-       Logger::log(Logger::layout) << "desktop is created" << std::endl;
+       Logger::log(Logger::layout) << "Desktop is created." << std::endl;
        
        // initialize the client listener
        server->set_singleton("IDL:fresco.org/Fresco/Desktop:1.0", Desktop_var(desktop->_this()));
        server->set_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0", drawing);
        server->start();
       
-       Logger::log(Logger::layout) << "started server" << std::endl;
+       Logger::log(Logger::loader) << "Server started, registering with "
+				   << "CORBA now." << std::endl;
        value = "";
        getopt.get("export-ref",&value);
        if (value == "ior")
@@ -454,7 +462,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	   Server_var serverRef = server->_this();
 	   std::cout << "Export Reference: FrescoServer=" 
 		     << orb->object_to_string(serverRef) << std::endl;
-	   Logger::log(Logger::loader) << "IOR exported." << std::endl;
+	   Logger::log(Logger::corba) << "IOR exported." << std::endl;
        }
        else if (value == "corbaloc")
        {
@@ -465,7 +473,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	   // TODO: Look for host name here
 	   std::cout << "Export Reference: FrescoServer="
 		     << "corbaloc::localhost/FrescoServer" << std::endl;
-	   Logger::log(Logger::loader) << "corbaloc exported." << std::endl;
+	   Logger::log(Logger::corba) << "Corbaloc exported." << std::endl;
        }
        else if (value == "nameserver" || value.empty())
        {
@@ -474,7 +482,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	       bind_name(orb,
 			 Server_var(server->_this()),
 			 "IDL:fresco.org/Fresco/Server:1.0");
-	       Logger::log(Logger::loader) << "Nameservice entry created."
+	       Logger::log(Logger::corba) << "Nameservice entry created."
 		                           << std::endl;
 	   } 
 	   catch (CORBA::COMM_FAILURE)
@@ -490,16 +498,16 @@ int main(int argc, char **argv) /*FOLD00*/
 	       std::cerr << "Unknown exception finding Fresco" << std::endl;
 	       exit(5);
 	   }
-	 }
+       }
        
-       Logger::log(Logger::corba) << "listening for clients" << std::endl;
+       Logger::log(Logger::corba) << "Server is registered with CORBA." << std::endl;
        
-       // Start client via --execute argument
+       // Start client via --execute argument 
        value = "";
        getopt.get("execute", &value);
-       if (!value.empty()) {
+       if (!value.empty())
+       {
 	   exec_child(child, value);
-	   Logger::log(Logger::loader) << "client started." << std::endl;
        }
 
        Logger::log(Logger::loader) << "Running the ScreenManager now."
