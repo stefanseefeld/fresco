@@ -35,6 +35,7 @@ import omniORB, CosNaming
 # Import the Fresco stubs
 import Unidraw
 import Fresco__POA
+from Impl import *
 
 class ExitCommand(Fresco__POA.Command):
     def execute(self, any): app.quit.set()

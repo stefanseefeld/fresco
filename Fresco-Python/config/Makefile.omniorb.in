@@ -27,7 +27,7 @@ cdir		:= @top_builddir@/config
 include $(cdir)/local.mk
 
 IDLPY		:= omniidl
-IDLPYFLAGS	:= -I$(idir) -nf -bpython# -Wbglobal=Warsaw
+IDLPYFLAGS	:= -I$(idir) -nf -bpython -Wbstubs=FrescoStubs
 
 IDL		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Server.idl Kit.idl Transform.idl Region.idl \
@@ -44,29 +44,29 @@ IDL		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Window.idl DesktopKit.idl UnidrawKit.idl \
 		   PrimitiveKit.idl Primitive.idl
 
-SRC	 	:= $(patsubst %.idl, %_idl.py, $(IDL)) 
+SRC	 	:= $(patsubst %.idl, FrescoStubs/%_idl.py, $(IDL)) 
 CMP		:= $(patsubst %.py, %.pyc, $(SRC))
 
 PACKAGES	:= Fresco Figure Layout Primitive Unidraw Widget
-PACKAGES	:= $(PACKAGES) $(PACKAGES:%=%__POA)
-PACKAGES	:= $(PACKAGES) Fresco/Input Fresco__POA/Input
+PACKAGES	+= $(patsubst %, %__POA, $(PACKAGES))
+#PACKAGES	:= $(PACKAGES) Fresco/Input Fresco__POA/Input
 
 TARGET		:= $(SRC)
 
 all:	$(TARGET)
 
 clean:	
-	rm -rf $(SRC) $(CMP) Input Figure Fresco Layout *__POA *~
+	rm -rf $(SRC) $(CMP) $(PACKAGES)
 
 distclean:	clean
 	rm -f $(TARGET)
 
 cvsclean:	distclean
 
-$(SRC): %_idl.py:		$(idir)/Fresco/%.idl
-	@echo generating $(@F)
+$(SRC): FrescoStubs/%_idl.py:		$(idir)/Fresco/%.idl
+	@echo generating $@
 	$(IDLPY) $(IDLPYFLAGS) $<
-	mv -f $(@F) $(@F).old
-	cat $(@F).old | sed -e "s,@Fresco_IDL_prefix@,$(prefix)," > $(@F)
-	rm -f $(@F).old
+	mv -f $@ $@.old
+	cat $@.old | sed -e "s,@Fresco_IDL_prefix@,$(prefix)," > $@
+	rm -f $@.old
 

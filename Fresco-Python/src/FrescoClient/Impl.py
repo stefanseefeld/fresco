@@ -1,6 +1,22 @@
-# Python Fresco library
-# Copyright (c) 2000 by Stephen Davies
-# This file is licensed for use under the GPL
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 by Stephen Davies
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
 #
 # Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
 #
@@ -41,30 +57,30 @@ def max(a,b):
 # ---------------
 # -- Python base classes
 
-class PyIdentifiable (Fresco__POA.Identifiable):
+class Identifiable (Fresco__POA.Identifiable):
     def is_identical(self, other):
 	try:
 	    me_id = self._default_POA().servant_to_id(self)
 	    other_id = self._default_POA().reference_to_id(other)
 	    return me_id == other_id
 	except:
-	    print "An error occurred in PyIdentifiable.is_identical():"
+	    print "An error occurred in Identifiable.is_identical():"
 	    traceback.print_exc()
 	    return 0
 
-class PyRefCountBase (Fresco__POA.RefCountBase):
+class RefCountBase (Fresco__POA.RefCountBase):
     def __init__(self):
 	self.__refcount = 0
     def increment(self):
-	#print "PyRefCountBase.increment()"
+	#print "RefCountBase.increment()"
 	self.__refcount = self.__refcount + 1
     def decrement(self):
 	self.__refcount = self.__refcount - 1
 	if self.__refcount < 1:
-	    print "PyRefCountBase.decrement(): RefCount reached",self.__refcount
+	    print "RefCountBase.decrement(): RefCount reached",self.__refcount
 
  # (PortableServer::RefCountServantBase):
-class PyServantBase:
+class ServantBase:
     def deactivate(self):
 	# Something to do with poa here
 	pass
@@ -77,7 +93,7 @@ def dump_region(region):
 	yspan.begin, yspan.end, yspan.align
     )
 
-class PyRegion (Fresco__POA.Region):
+class Region (Fresco__POA.Region):
     def __init__(self):
 	self.__lower = Fresco.Vertex(0, 0, 0)
 	self.__upper = Fresco.Vertex(0, 0, 0)
@@ -203,7 +219,8 @@ def dump_transform(transform):
 	if j == 1: print "M =",
 	else: print "   ",
 	print "[ %s ]"%string.join(map(str, m[j]))
-class PyTransform (Fresco__POA.Transform):
+
+class Transform (Fresco__POA.Transform):
     """Transform impl.
             [ r00 r01 r02 tx]
         M = [ r10 r11 r12 ty]
@@ -394,13 +411,13 @@ class PyTransform (Fresco__POA.Transform):
 	     (self[0][0] * self[1][1] - self[0][1] * self[1][0])) / d
 	return Fresco.Vertex(nx, ny, nz)
 
-class PyAllocation (Fresco__POA.Allocation):
+class Allocation (Fresco__POA.Allocation):
     def __init__(self):
 	self.__list = []
     def add(self, region, screen):
-	alloc = PyRegion()
+	alloc = Region()
 	alloc.copy(region)
-	xform = PyTransform()
+	xform = Transform()
 	xform.load_identity()
 	info = Fresco.Allocation.Info(alloc._this(), xform._this(), screen)
 	self.__list.append(info)
@@ -409,9 +426,9 @@ class PyAllocation (Fresco__POA.Allocation):
     def get(self, index):
 	return self.__list[index]
 
-class PySubject (Fresco__POA.Identifiable, Fresco__POA.RefCountBase):
+class Subject (Fresco__POA.Identifiable, Fresco__POA.RefCountBase):
     def __init__(self):
-	PyRefCountBase.__init__(self)
+	RefCountBase.__init__(self)
 	self.__blocked = 0
 	self.__observers = []
     def attach(self, observer):
@@ -432,7 +449,7 @@ class PySubject (Fresco__POA.Identifiable, Fresco__POA.RefCountBase):
 		# Remove observer
 		self.__observers.remove(observer)
 	    except:
-		print "PySubject.notify(): Error occurred during update."
+		print "Subject.notify(): Error occurred during update."
 		raise
 
 class Edge:
@@ -442,12 +459,12 @@ class Edge:
 	self.peerId = peerId
 	self.localId = localId
 
-class PyGraphic (Fresco__POA.Graphic, PyIdentifiable, PyRefCountBase):
+class Graphic (Fresco__POA.Graphic, Identifiable, RefCountBase):
     def __init__(self):
-	PyRefCountBase.__init__(self)
+	RefCountBase.__init__(self)
 	self.__parents = []
 
-    class Iterator (Fresco__POA.GraphicIterator, PyServantBase):
+    class Iterator (Fresco__POA.GraphicIterator, ServantBase):
 	def destroy(self): self.deactivate()
 
     # Attribute 'body'
@@ -491,7 +508,7 @@ class PyGraphic (Fresco__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	
     def extension(self, alloc_info, region): # --> void
 	if alloc_info.transformation:
-	    tmp = PyRegion()
+	    tmp = Region()
 	    tmp.copy(alloc_info.allocation)
 	    if not alloc_info.transformation.identity():
 		tmp.apply_transform(alloc_info.transformation)
@@ -533,10 +550,10 @@ class PyGraphic (Fresco__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def need_resize(self): # --> void
 	pass
 
-class PyMonoGraphic (PyGraphic):
+class MonoGraphic (Graphic):
     "Python analogue of MonoGraphic"
     def __init__(self):
-	PyGraphic.__init__(self)
+	Graphic.__init__(self)
 	self.__child = Edge()
     def _get_body(self):
 	self.__child.peer.increment()
@@ -576,9 +593,9 @@ class PyMonoGraphic (PyGraphic):
 	    self.__child.peer.request()
     def extension(self, info, region):
 	if not self.__child.peer: return
-	my_region = PyRegion()
+	my_region = Region()
 	my_region.copy(info.allocation)
-	my_trans = PyTransform()
+	my_trans = Transform()
 	my_trans.copy(info.transformation)
 	my_info = Fresco.Allocation.Info(my_region._this(), my_trans._this(), None)
 	self.allocate(0, my_info) # Template method to modify as per the concrete Graphic type (eg layout decorators etc)
@@ -593,11 +610,11 @@ class PyMonoGraphic (PyGraphic):
 	    
 
 
-class PyController (Fresco__POA.Controller, PyMonoGraphic, PySubject):
+class Controller (Fresco__POA.Controller, MonoGraphic, Subject):
     "Python impl of Fresco::Controller interface"
     def __init__(self, transparent):
-	PyMonoGraphic.__init__(self)
-	PySubject.__init__(self)
+	MonoGraphic.__init__(self)
+	Subject.__init__(self)
 	self.__parent = None
 	self.__telltale = 0
 	self.__constraint = None
@@ -606,7 +623,7 @@ class PyController (Fresco__POA.Controller, PyMonoGraphic, PySubject):
 	self._children = []
 	self.__transparent = transparent
 
-    class Iterator (Fresco__POA.ControllerIterator, PyGraphic.Iterator):
+    class Iterator (Fresco__POA.ControllerIterator, Graphic.Iterator):
 	def __init__(self, con, tag):
 	    self.__parent = con
 	    self.__cursor = tag
@@ -663,12 +680,12 @@ class PyController (Fresco__POA.Controller, PyMonoGraphic, PySubject):
 
     # ---- Graphic interface
     def draw(self, drawTraversal):
-	PyMonoGraphic.traverse(self, drawTraversal)
+	MonoGraphic.traverse(self, drawTraversal)
 
     def pick(self, traversal):
 	if not traversal.intersects_allocation(): return
 	traversal.enter_controller(self._this())
-	PyMonoGraphic.traverse(self, traversal)
+	MonoGraphic.traverse(self, traversal)
 	if not self.__transparent and not traversal.picked():
 	    traversal.hit()
 	traversal.leave_controller()
@@ -698,11 +715,11 @@ class PyController (Fresco__POA.Controller, PyMonoGraphic, PySubject):
     def parent_controller(self): # --> Controller
 	return self.__parent
     def first_child_controller(self): # --> Iterator
-	iter = PyController.Iterator(self, 0)
+	iter = Controller.Iterator(self, 0)
 	#self.activate(iter)
 	return iter._this()
     def last_child_controller(self): # --> Iterator
-	iter = PyController.Iterator(self, len(self._children) - 1)
+	iter = Controller.Iterator(self, len(self._children) - 1)
 	#self.activate(iter)
 	return iter._this()
     def grabbed(self, input_device): return self.__grabs & (1 << input_device)

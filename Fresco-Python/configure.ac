@@ -64,7 +64,7 @@ AC_CONFIG_FILES([setup.py], [chmod +x setup.py])
 AC_CONFIG_FILES([config/local.mk])
 AC_CONFIG_FILES([Makefile src/Makefile:config/Makefile.omniorb.in])
 if test "$srcdir" != .; then
-  AC_CONFIG_LINKS([Fresco/__init__.py:Fresco/__init__.py])
+  AC_CONFIG_LINKS([src/FrescoClient:src/FrescoClient])
 fi
 
 mkdir -p src/FrescoStubs

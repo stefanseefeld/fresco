@@ -45,7 +45,8 @@ depend: #do nothing
 xref: #do nothing
 doc: #do nothing here
 
-install: all
+install:
+	$(MAKE) action="all"
 	./setup.py install --prefix=$(DESTDIR)$(prefix)
 
 install-doc: #do nothing here
