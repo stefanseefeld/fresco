@@ -82,7 +82,7 @@ void GLPencil::drawPath(const Path &p) {
     // we're drawing polys
     if (myFillMode == Style::solid) {
       // filled polys
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myFillColor);
+      glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
       glBegin(GL_POLYGON);
       for (unsigned long i = 0; i < p.p.length(); i++) { 
 	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
@@ -91,17 +91,12 @@ void GLPencil::drawPath(const Path &p) {
       
     } else { // for the time being there's only solid and nofill
       
-      // line strips (no final connecting line)
-      // !!!FIXME!!! this is somehow broken on my machine. I can't draw lines. Am I living
-      // on jupiter?
-
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myLineColor);
+      // line strips (no final connecting line)      
+      glColor4d(myLineColor[0],myLineColor[1],myLineColor[2],myLineColor[3]);      
       glBegin(GL_LINE_STRIP);
       
       for (unsigned long i = 0; i < p.p.length(); i++) {
 	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
-	// 	cerr << "drawing line strip with colors: " << myLineColor[0] << " " << myLineColor[1] << " " << 
-	// 	  myLineColor[2] << " " << myLineColor[3] << " thru (" << p.p[i].x << ", " << p.p[i].y << ") " << endl;
       }
       glEnd();
     }
@@ -120,13 +115,10 @@ void GLPencil::drawRect(const Vertex &lower, const Vertex &upper) {
   glLineWidth(myThickness);
 
   if (myFillMode == Style::solid) {
-    //     cerr << "drawing solid rect with colors: " << myFillColor[0] << " " << myFillColor[1] << " " << 
-    //       myFillColor[2] << " " << myFillColor[3] << "from (" << lower.x << ", " << lower.y << ") to (" <<
-    //       upper.x << ", " << upper.y << ")" << endl;
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myFillColor);
+    glColor4d(myFillColor[0],myFillColor[1],myFillColor[2],myFillColor[3]);      
     glRectf(lower.x,lower.y,upper.x,upper.y);
   } else {
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myLineColor);
+    glColor4d(myLineColor[0],myLineColor[1],myLineColor[2],myLineColor[3]);      
     glBegin(GL_LINE_LOOP);
     glVertex3d(lower.x,lower.y,0);
     glVertex3d(upper.x,lower.y,0);

@@ -1,9 +1,9 @@
 TOPDIR=../../..
 OS_ARCH='Linux'
-DIR_CXXFLAGS = -c -Wall -Wno-unused -fno-rtti
+DIR_CXXFLAGS = -fno-rtti -Wall 
 DIR_INCLUDES =  
-DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
-CXXSRCS	=	Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc
+DIR_LDFLAGS  =  -L./ -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lWarsaw -lpthread -ltcpwrapGK -lomniLC -lGltt
+CXXSRCS	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc  GLFont.cc 
 SO_TARGET = libDrawing.so
 SO_MAJOR_libDrawing.so = 0
 SO_MINOR_libDrawing.so = 0

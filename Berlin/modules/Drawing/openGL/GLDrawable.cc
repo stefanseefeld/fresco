@@ -66,7 +66,7 @@ GLDrawable::GLDrawable()
   mode.size.x = mode.size.y = GGI_AUTO;
   mode.dpp.x = mode.dpp.y = 1;
   mode.graphtype = GT_AUTO;
-  mode.frames = 2;
+  mode.frames = 1;
   // Open the default visual --
   visual = ggiOpen( NULL );
   if ( visual == NULL ) {
@@ -128,14 +128,19 @@ GLDrawable::GLDrawable()
   reshape( mode.visible.x, mode.visible.y );
 
   // initialize some friendly OpenGL states
-  static GLfloat white[4] = {0.1, 0.1, 0.1, 0.1 };
-  glLightfv( GL_LIGHT0, GL_AMBIENT, white ); 
-  glEnable( GL_LIGHTING );  
-  glEnable(GL_LIGHT0);   
+//    static GLfloat white[4] = {0.1, 0.1, 0.1, 0.1 };
+//    glEnable(GL_LIGHTING);   
+//    glLightfv( GL_LIGHT0, GL_AMBIENT, white ); 
+//    glEnable(GL_LIGHT0);   
+//    glClear( GL_COLOR_BUFFER_BIT );
+   glShadeModel(GL_FLAT);
+//    glDisable(GL_DEPTH_TEST);
+//    glDisable(GL_ALPHA_TEST);
+    glDisable( GL_LIGHTING );  
   //  glEnable( GL_CULL_FACE ); 
   // glEnable( GL_DEPTH_TEST ); 
-  glFrontFace(GL_CW); 
-  glShadeModel(GL_FLAT);
+   glFrontFace(GL_CW); 
+//   glShadeModel(GL_FLAT);
 
 }
 
@@ -143,12 +148,15 @@ GLDrawable::GLDrawable()
 // this is just a utility function for reshaping.
 void GLDrawable::reshape( int width, int height )
 {
-   glMatrixMode(GL_PROJECTION); 
-   glLoadIdentity();
-   glOrtho(0, width, height, 0, -1.0, 1.0); 
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
-   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  glViewport(0, 0, width, height);
+  glMatrixMode(GL_PROJECTION); 
+  glLoadIdentity();
+  glOrtho(0, width, height, 0, -1.0, 1.0); 
+  glTranslatef(0.375,0.375,0.);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
 

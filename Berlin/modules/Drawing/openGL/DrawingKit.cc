@@ -26,12 +26,15 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
+#include "Warsaw/Text.hh"
+#include "Drawing/openGL/GLFont.hh"
 
 extern "C" {
 #include "ggi/ggi.h"
 }
 
 #include <strstream>
+#include <iostream>
 
 GLDrawingKit::GLDrawingKit()
 {
@@ -44,6 +47,30 @@ GLDrawingKit::~GLDrawingKit()
 {
   drawable->_dispose();
   ggiExit();
+}
+
+void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &sty) 
+  throw (Text::NoSuchFontException) {
+  myMutex.lock();
+  try { 
+    GLFont *newfont = new GLFont(fd,sty); 
+    newfont->_obj_is_ready(_boa());
+    if (myFont != NULL && (! CORBA::is_nil(myFont->_this()))) {
+      CORBA::release(myFont->_this());
+    }
+    myFont = newfont;
+  } catch (Text::NoSuchFontException &ex) {    
+    myMutex.unlock();
+    throw ex;
+  }
+  myMutex.unlock();    
+}
+
+Text::Font_ptr GLDrawingKit::currentFont() {
+  myMutex.lock();
+  Text::Font_ptr fp = myFont->_this();
+  myMutex.unlock();
+  return fp;
 }
 
 Drawable_ptr GLDrawingKit::getDrawable()
