@@ -33,21 +33,23 @@ LDFLAGS		+= $(SO_LDFLAGS)
 
 SRC		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
 	  	   File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
-	  	   DLL.cc MMap.cc SHM.cc Thread.cc Timer.cc Signal.cc Fork.cc
+	  	   DLL.cc MMap.cc SHM.cc Thread.cc Timer.cc Signal.cc Fork.cc \
+		   Env.cc
 SRC		+= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
 	  	   Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc TTYAgent.cc SocketAgent.cc
 SRC		+= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
 SRC		+= protocol.cc echo.cc ftp.cc smtp.cc url.cc
 
-SysH		:= logbuf.hh logstream.hh ntree.hh Tracer.hh regex.hh User.hh Process.hh \
-                   Stopwatch.hh Profiler.hh Time.hh \
-	  	   File.hh Directory.hh FLock.hh FdSet.hh Path.hh GetOpt.hh DataTypeManager.hh \
-	  	   Memory.hh DLL.hh MMap.hh SHM.hh \
+SysH		:= logbuf.hh logstream.hh ntree.hh Tracer.hh regex.hh User.hh \
+		   Process.hh Stopwatch.hh Profiler.hh Time.hh \
+	  	   File.hh Directory.hh FLock.hh FdSet.hh Path.hh GetOpt.hh \
+		   DataTypeManager.hh Memory.hh DLL.hh MMap.hh SHM.hh \
                    Thread.hh ThreadData.hh ThreadQueue.hh ThreadPool.hh \
-		   Timer.hh Signal.hh Fork.hh Plugin.hh
-IPCH		:= ipcbuf.hh pipebuf.hh sockbuf.hh sockstream.hh ptybuf.hh mmapbuf.hh convert.hh \
-	  	   Agent.hh Dispatcher.hh Coprocess.hh PipeAgent.hh TTYAgent.hh SocketAgent.hh \
-                   Acceptor.hh Connector.hh
+		   Timer.hh Signal.hh Fork.hh Plugin.hh Env.hh
+IPCH		:= ipcbuf.hh pipebuf.hh sockbuf.hh sockstream.hh ptybuf.hh \
+		   mmapbuf.hh convert.hh Agent.hh Dispatcher.hh Coprocess.hh \
+		   PipeAgent.hh TTYAgent.hh SocketAgent.hh Acceptor.hh \
+		   Connector.hh
 FilterH		:= gzbuf.hh gzstream.hh# xdrbuf.cc #bzbuf.cc 
 NetworkH	:= protocol.hh echo.hh ftp.hh smtp.hh url.hh
 

@@ -1,4 +1,4 @@
- /*$Id$
+/*$Id$
  *
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
@@ -22,6 +22,7 @@
 
 #include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Prague/Sys/Env.hh>
 #include <Fresco/config.hh>
 #include <Fresco/resolve.hh>
 #include <Fresco/Server.hh>
@@ -84,12 +85,12 @@ int main(int argc, char **argv)
    * set up the client side visual part...
    */
   ggiInit();
-  CORBA::String_var name = visual->name();
+  std::string name = visual->name();
   std::cout << "visual name " << name << std::endl;
-  setenv("GGI_DISPLAY", name, 1);
-  CORBA::String_var mode = visual->mode();
+  Prague::putenv("GGI_DISPLAY", name);
+  std::string mode = visual->mode();
   std::cout << "visual mode " << mode << std::endl;
-  setenv("GGI_DEFMODE", mode, 1);
+  Prague::putenv("GGI_DEFMODE", mode);
   switch (fork())
     {
     case -1: std::cerr << "can't fork !" << std::endl; exit(-1); break;

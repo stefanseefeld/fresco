@@ -108,6 +108,13 @@ fi
 AC_CHECK_FILE("/dev/ptc", [AC_DEFINE(HAVE_DEV_PTS_AND_PTC, 1, [Define if you have /dev/ptc.]) have_dev_ptc=1])
 
 dnl ------------------------------------------------------------------
+dnl Environment
+dnl ------------------------------------------------------------------
+
+AC_HEADER_STDC
+AC_CHECK_FUNCS(getenv putenv setenv unsetenv)
+
+dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 
