@@ -93,7 +93,43 @@ AC_MSG_NOTICE([IPC Implementation])
 AC_CHECK_HEADERS([sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h])
 AC_CHECK_HEADERS([pty.h sys/stropts.h libutil.h])
 AC_CHECK_HEADERS([arpa/inet.h sys/un.h])
-AC_CHECK_TYPE([socklen_t], [], [], [#include <sys/socket.h>])
+AC_CHECK_TYPES([socklen_t],
+   [ AC_DEFINE_UNQUOTED(HAVE_SOCKLEN_T, 1, [defined if we have a socklen_t]) ],
+   [
+     AC_MSG_CHECKING([for socklen_t equivalent])
+     prague_socklen_t_equiv=""
+     for arg2 in "struct sockaddr" void; do
+         for t in int size_t unsigned long "unsigned long"; do
+             AC_TRY_COMPILE([
+                  #ifdef HAVE_SYS_TYPES_H
+                  #include <sys/types.h>
+                  #endif
+                  #ifdef HAVE_SYS_SOCKET_H
+                  #include <sys/socket.h>
+                  #endif
+
+                  int getpeername (int, $arg2 *, $t *);
+               ],[
+                  $t len;
+                  getpeername(0,0,&len);
+               ],[
+                  prague_socklen_t_equiv="$t"
+                  break
+               ]
+             )
+         done
+     done
+
+     if test ".$prague_socklen_t_equiv" = "." ; then
+         AC_MSG_ERROR([Cannot find a type to use in place of socklen_t])
+     fi
+
+     AC_MSG_RESULT($prague_socklen_t_equiv)
+     AC_DEFINE_UNQUOTED(SOCKLEN_T_EQUIV, $prague_socklen_t_equiv,
+			[type to use in place of socklen_t if not defined])
+   ],
+   [#include <sys/types.h>
+#include <sys/socket.h>])
 AC_SEARCH_LIBS(socket, [socket])
 AC_SEARCH_LIBS(inet_aton, [socket resolv])
 AC_SEARCH_LIBS(login, [util])

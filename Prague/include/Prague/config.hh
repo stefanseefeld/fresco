@@ -23,7 +23,7 @@ extern "C" const char *strsignal(int);
 #endif
 
 #ifndef HAVE_SOCKLEN_T
-typedef int socklen_t;
+typedef SOCKLEN_T_EQUIV socklen_t;
 #endif
 
 #endif

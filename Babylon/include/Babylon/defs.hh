@@ -53,11 +53,11 @@ namespace Babylon
   typedef u_int16_t UCS2;
   typedef u_int32_t UCS4;
   
-  const std::string UTF8_format("UTF8");
-  const std::string UTF16_format("UTF16LE");
-  const std::string UTF32_format("UTF32LE");
+  const std::string UTF8_format("UTF-8");
+  const std::string UTF16_format("UTF-16LE");
+  const std::string UTF32_format("UTF-32LE");
 
-  const std::string internal_format("UTF32LE");
+  const std::string internal_format("UTF-32LE");
 
   // These classes are defined in Char.hh and String.hh
   class Char;
