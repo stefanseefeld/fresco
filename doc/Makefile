@@ -12,4 +12,6 @@ html/HTML.manifest: $(BOOK_FILES)
 	cd html; jade -d $(HTML_SHEET) -t sgml ../$(BOOK_ROOT); cd ..;
 
 print/berlin-man.tex: $(BOOK_FILES)
-	jade -d $(PRINT_SHEET) -t tex -o print/berlin-man.tex $(BOOK_ROOT)
+	jade -d $(PRINT_SHEET) -t tex -o print/berlin-man.tex $(BOOK_ROOT);\
+	cd print; jadetex berlin-man.tex; \
+	dvips -o berlin-man.ps berlin-man.dvi; cd ..;
