@@ -58,7 +58,6 @@ void AllocationImpl::add(Region_ptr region, Screen_ptr root)
       state.allocation = reg._retn();
       state.transformation = trafo._retn();
       state.root = scrn;
-      CORBA::release (scrn);
     }
   catch (...)
     {
