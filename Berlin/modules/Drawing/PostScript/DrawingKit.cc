@@ -54,7 +54,7 @@ KitImpl *PostScript::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
 {
   DrawingKit *kit = new DrawingKit(repo_id(), p);
   kit->init();
-  kit->increment();
+  kit->increment(); // XXX covering up a bug elsewhere.
   return kit;
 }
 
@@ -68,6 +68,9 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   RegionImpl region(allocation, transformation);
 
   _tr->load_identity();
+
+  Lease_var<RegionImpl> clip(Provider<RegionImpl>::provide());
+  _cl = Region_var(clip->_this());
 
   // FIXME: figure out what is wrong with the resolution,
   //        the problems seems to be in the coordinate system used,
@@ -93,6 +96,9 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   Vertex translate; translate.x = 35.; translate.z = 0.;
   translate.y = lower.y - upper.y + 35.;  
   _tr_adjust->translate(translate);
+
+  _cl_none = new RegionImpl(region);
+  _cl = Region_var(_cl_none->_this());
 
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
   _os.precision(0);
@@ -132,28 +138,42 @@ void PostScript::DrawingKit::set_transformation(Transform_ptr t)
 {
   if (CORBA::is_nil(t)) _tr->load_identity();
   else _tr = Transform::_duplicate(t);
-  //set_clipping(_cl);
 }
 
 void PostScript::DrawingKit::set_clipping(Region_ptr r)
 {
+  _cl = Region::_duplicate(r);
 #if 0
   _os << "%set_clipping" << std::endl;
-  _cl = Region::_duplicate(r);
+  Vertex lower, upper;
   if (CORBA::is_nil(_cl))
-  { 
-      _os << "initclip" << std::endl;
-      _os << std::endl; // disallowed in EPS
+  {
+    _cl_none->bounds(lower, upper);
+    _os << "%none" << std::endl;
   } else {
-    Vertex lower, upper;
     _cl->bounds(lower, upper);
-    //_tr->transform_vertex(lower);
-    //_tr->transform_vertex(upper);
-    
-    _os << lower.x << " " << lower.y << " " << upper.x - lower.x << " "
-	<< upper.x - lower.x << " rectclip" << std::endl;
+    _os << "%real" << std::endl;
   }
+  _os << "newpath" << std::endl;
+  Vertex v;
+  v.x = lower.x; v.y = lower.y; v.z = 0;
+  vertex(v, " moveto");
+  v.x = lower.x; v.y = upper.y; v.z = 0;
+  vertex(v, " lineto");
+  v.x = upper.x; v.y = upper.y; v.z = 0;
+  vertex(v, " lineto");
+  v.x = upper.x; v.y = lower.y; v.z = 0;
+  vertex(v, " lineto");
+  v.x = lower.x; v.y = lower.y; v.z = 0;
+  vertex(v, " lineto");
+  _os << "closepath clip" << std::endl;
   _os << std::endl;
+
+  // uncomment this to debug clipping
+#if 0
+  _os << "0 0 0 99999 99999 99999 99999 0 1 0 0 setrgbcolor moveto lineto lineto lineto closepath fill";
+  set_foreground(_fg);
+#endif
 #endif
 }
 

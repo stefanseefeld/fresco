@@ -104,6 +104,7 @@ private:
   Fresco::Transform_var         _tr;
   Fresco::Transform_var         _tr_adjust;
   Fresco::Region_var            _cl;
+  RegionImpl                   *_cl_none;
   Fresco::Color                 _fg;
   Fresco::Color                 _lt;
   Fresco::Coord                 _ps;
