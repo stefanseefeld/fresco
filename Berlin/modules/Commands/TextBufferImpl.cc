@@ -75,7 +75,6 @@ void TextBufferImpl::position(CORBA::ULong p)
   }
   ch.len = 0;
   ch.type = Fresco::TextBuffer::cursor;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -94,7 +93,6 @@ void TextBufferImpl::forward()
   }
   ch.len = 0;
   ch.type = Fresco::TextBuffer::cursor;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -113,7 +111,6 @@ void TextBufferImpl::backward()
   }
   ch.len = 0;
   ch.type = Fresco::TextBuffer::cursor;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -131,7 +128,6 @@ void TextBufferImpl::shift(CORBA::Long d)
   }
   ch.len = 0;
   ch.type = Fresco::TextBuffer::cursor;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -149,7 +145,6 @@ void TextBufferImpl::insert_char(Unichar u)
   }
   ch.len = 1;
   ch.type = Fresco::TextBuffer::insert;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -173,7 +168,6 @@ void TextBufferImpl::insert_string(const Unistring &s)
   }
 
   ch.type = Fresco::TextBuffer::insert;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -193,7 +187,6 @@ void TextBufferImpl::remove_backward(CORBA::ULong n)
   }
   ch.len = -n;
   ch.type = Fresco::TextBuffer::remove;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -213,7 +206,6 @@ void TextBufferImpl::remove_forward(CORBA::ULong n)
   }
   ch.len = n;
   ch.type = Fresco::TextBuffer::remove;
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;
@@ -230,7 +222,6 @@ void TextBufferImpl::clear() {
       ch.pos = 0;
       _buffer.clear_buffer();
   }
-  ch.visual = 0;
 
   CORBA::Any any;
   any <<= ch;

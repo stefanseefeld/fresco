@@ -39,9 +39,6 @@ module Fresco
       //. These are the changes that can happen to a TextBuffer:
       enum ChangeType {insert, remove, cursor};
 
-      //. The possible orders in which the String in the TextBuffer can be.
-      enum StringOrder {memory_order, visual_order};
-      
       //. This structure is passed to observers whenever the
       //. TextBuffer changed.
       struct Change
@@ -49,7 +46,6 @@ module Fresco
 	  ChangeType type;    //.< What happened?
 	  unsigned long pos;  //.< Where did it happen?
 	  long len;           //.< How long was the change? This might be a negative number.
-	  boolean visual;     //.< Did this change happen to the string in memory or visual order?
       };
       
       //. The length of the TextBuffer.
