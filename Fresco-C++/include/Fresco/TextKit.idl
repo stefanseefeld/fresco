@@ -25,7 +25,6 @@
 //
 
 #include "Cloneable.idl"
-#include "Style.idl"
 #include "Text.idl"
 
 // a TextKit serves as a registry for available fonts, as well as
@@ -40,7 +39,7 @@ interface TextKit : Cloneable {
   readonly attribute Text::FontDescriptorSeq fonts;
   readonly attribute DrawingKit dk;
   Graphic chunk(in Unistring u, in Text::Font f);    
-  Graphic fontChange(in Text::FontDescriptor fd, in Style::Spec sty);    
+//   Graphic fontChange(in Text::FontDescriptor fd, in Style::Spec sty);    
 };
 
 #endif

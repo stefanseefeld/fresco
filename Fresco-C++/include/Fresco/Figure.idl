@@ -23,7 +23,6 @@
 #ifndef _Figure_idl
 #define _Figure_idl
 
-#include "Style.idl"
 #include "Graphic.idl"
 
 interface Figure : Graphic

@@ -24,7 +24,6 @@
 #define _FigureKit_idl
 
 #include "Types.idl"
-#include "Style.idl"
 #include "Cloneable.idl"
 #include "Figure.idl"
 
