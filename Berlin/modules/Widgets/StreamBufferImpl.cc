@@ -52,6 +52,20 @@ void StreamBufferImpl::write(const Data &data)
     }
 }
 
+void StreamBufferImpl::flush()
+{
+  bool overflow = false;
+  {
+    MutexGuard guard(mutex); 
+    if (buffer.size()) overflow = true;
+  }
+  if (overflow)
+    {
+      CORBA::Any any;
+      notify(any);
+    }  
+}
+
 StreamBuffer::Data *StreamBufferImpl::read()
 {
   MutexGuard guard(mutex);

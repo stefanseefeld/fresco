@@ -30,8 +30,9 @@ interface StreamBuffer : Subject
   typedef sequence<octet> Data;
   readonly attribute long size;
   readonly attribute long available;
-  void write(in Data d);
   Data read();
+  void write(in Data d);
+  void flush();
 };
 
 #endif /* _StreamBuffer_idl */
