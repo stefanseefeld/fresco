@@ -45,10 +45,10 @@ public:
   ~GLDrawingKit();
   Drawable_ptr getDrawable();
 
+  void image(Raster_ptr, Transform_ptr);
   void setFont(const Text::FontDescriptor &, const Style::Spec &) throw (Text::NoSuchFontException);
   Text::Font_ptr currentFont();
   Pencil_ptr getPencil(const Style::Spec &);
-  void drawImage(const Image_ptr im);
       
   ggi_visual_t getVisual() { return drawable->Visual();}
   void clear(Coord, Coord, Coord, Coord);

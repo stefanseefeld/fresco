@@ -92,20 +92,17 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
   glRectf(l, t, r, b);
 }
 
-void GLDrawingKit::drawImage(const Image_ptr im)
+void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
+  Raster::Info info = raster->header();
+  Raster::Data mem;
 	// Up here should probably be fancy layout stuff.
 	// NOT IMPLEMENTED
 	
-	// First, get the raster from the image
-	Raster_var r = im->getRaster();
-	long width = r->getWidth();
-	long height = r->getHeight();
-	Raster::Data mem;
-	r->getData(mem);
+// 	r->getData(mem);
 
-	GLvoid* imgData = mem.NP_data();
+// 	GLvoid* imgData = mem.NP_data();
 		
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
+// 	glClear(GL_COLOR_BUFFER_BIT);
+// 	glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
 }

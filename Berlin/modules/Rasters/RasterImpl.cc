@@ -30,17 +30,19 @@ RasterImpl::RasterImpl()
 {
   rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
   rinfo = png_create_info_struct(rpng);
+  rend = png_create_info_struct(rpng);
 }
 
 RasterImpl::RasterImpl(const char *file)
 {
   rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
   rinfo = png_create_info_struct(rpng);
+  rend = png_create_info_struct(rpng);
   ifstream ifs(file);
   if (!ifs) cerr << "RasterImpl : file " << file << " unreadable" << endl;
   else
     {
-      PNGDecoder decoder(ifs.rdbuf(), rpng, rinfo);
+      PNGDecoder decoder(ifs.rdbuf(), rpng, rinfo, rend);
       rows = decoder.decode();
     }
 }
@@ -48,14 +50,30 @@ RasterImpl::RasterImpl(const char *file)
 RasterImpl::~RasterImpl()
 {
   clear();
-  png_destroy_read_struct(&rpng, &rinfo, 0);
+  png_destroy_read_struct(&rpng, &rinfo, &rend);
+}
+
+Raster::Info RasterImpl::header()
+{
+  png_uint_32 w, h;
+  int d, c, i, z, f;
+  png_get_IHDR(rpng, rinfo, &w, &h, &d, &c, &i, &z, &f);
+  Info info;
+  info.width = w;
+  info.height = h;
+  info.depth = d;
+  info.colortype = c;
+  info.compression = z;
+  info.filter = f;
+  info.interlace = i;
+  return info;
 }
 
 void RasterImpl::load(const Raster::Data &data)
 {
   clear();
   ibuf buffer(data);
-  PNGDecoder decoder(&buffer, rpng, rinfo);
+  PNGDecoder decoder(&buffer, rpng, rinfo, rend);
   rows = decoder.decode();
 }
 
@@ -68,11 +86,15 @@ void RasterImpl::export(Raster::Data *&data)
   /*
    * create temporary write structures here...
    */
-  PNGEncoder encoder(&buffer, rpng, rinfo);
+  png_structp wpng = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  png_infop winfo = png_create_info_struct(rpng);
+  png_infop wend = png_create_info_struct(rpng);
+  PNGEncoder encoder(&buffer, wpng, winfo, wend);
   encoder.encode(rows);
   delete data;
   data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
 		  reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
+  png_destroy_write_struct(&wpng, &winfo);
 }
 
 void RasterImpl::getData(Raster::Data &buffer)
@@ -98,9 +120,13 @@ void RasterImpl::getData(Raster::Data &buffer)
 
 void RasterImpl::write(const char *file)
 {
+  png_structp wpng = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  png_infop winfo = png_create_info_struct(rpng);
+  png_infop wend = png_create_info_struct(rpng);
   ofstream ofs(file);
-  PNGEncoder encoder(ofs.rdbuf(), rpng, rinfo);
+  PNGEncoder encoder(ofs.rdbuf(), wpng, winfo, wend);
   encoder.encode(rows);
+  png_destroy_write_struct(&wpng, &winfo);
 }
 
 void RasterImpl::clear()

@@ -32,13 +32,22 @@
 
 interface Raster
 {
-    typedef sequence<octet> Data;
-	
-    void export(out Data d);	// Export raw image data as octets
-    void load(in Data d);	// load data into the image
-    void getData(inout Data d);	// Get image mem block from raster
-    long getWidth();		// Image width
-    long getHeight();		// Image height
+  typedef sequence<octet> Data;
+  struct Info
+  {
+    unsigned long  width;       // 4 bytes
+    unsigned long  height;      // 4 bytes
+    unsigned short depth;       // 1 byte
+    unsigned short colortype;   // 1 byte
+    unsigned short compression; // 1 byte
+    unsigned short filter;      // 1 byte
+    unsigned short interlace;   // 1 byte
+  };
+
+  Info header();
+  void export(out Data d);	// Export raw image data as octets
+  void load(in Data d);	// load data into the image
+  void getData(inout Data d);	// Get image mem block from raster
 
 // Eventually, manipulations, etc.
 };
