@@ -79,8 +79,6 @@ GGI::Pointer::Pointer(GGI::Drawable *drawable, Raster_ptr raster)
 	  _mask[y*depth*_size[0]+depth*x + d] = flag;
       }
   _cache = new data_type[_size[0]*_size[1]*depth];
-  save();
-  draw();
 }
 
 GGI::Pointer::~Pointer()

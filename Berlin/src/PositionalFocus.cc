@@ -38,6 +38,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
+static bool should_track;
+
 //. implement a PickTraversal that keeps a fixed pointer to
 //. a memento cache. As there is always exactly one picked
 //. graphic, we are simply using a static pair of traversals
@@ -79,7 +81,17 @@ CORBA::Boolean PositionalFocus::Traversal::intersects_region(Region_ptr region)
   local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
   Vertex lower, upper;
   region->bounds(lower, upper);
-  return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
+  bool inside = lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
+  if (should_track && inside)
+    {
+      Region_var r = current_allocation();
+      Transform_var t = current_transformation();
+      RegionImpl region(r, t);
+      Console::instance()->highlight_screen(region.lower.x, region.lower.y, region.upper.x, region.upper.y);
+      
+    }
+  return inside;
+//   return lower.x <= local.x && local.x <= upper.x && lower.y <= local.y && local.y <= upper.y;
 }
 
 void PositionalFocus::Traversal::debug()
@@ -121,6 +133,8 @@ PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g, Region_ptr r)
     {
       _default_raster = new RasterImpl(name);
       _pointer = _pointers->lookup(Raster_var(_default_raster->_this()));
+      _pointer->save();
+      _pointer->draw();
     }
   _traversal_cache[0] = new Traversal(_root, r, Transform::_nil(), this);
   _traversal_cache[1] = new Traversal(_root, r, Transform::_nil(), this);
@@ -253,6 +267,13 @@ void PositionalFocus::dispatch(Input::Event &event)
 	  return;
 	}
       else _traversal = picked;
+
+      should_track = false;
+      if (event[0].attr._d() == Input::button)
+	{
+	  const Input::Toggle &toggle = event[0].attr.selection();
+	  if (toggle.actuation == Input::Toggle::press) should_track = true;
+	}
       /*
        * ...now do the [lose/receive]Focus stuff,...
        */
