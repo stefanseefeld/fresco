@@ -1,6 +1,10 @@
 berlin for Debian
 ----------------------
 
-No comments
+To rebuild this:
+
+	# mv berlin-tree berlin-x.x.x
+	# cd berlin-x.x.x
+	# make -f debian/rules binary
 
  <jordy@mail.wserv.com>, Tue, 29 Jun 1999 03:49:37 -0400
