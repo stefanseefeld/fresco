@@ -90,7 +90,7 @@ void ptybuf::setup()
 
 #ifdef __linux__ //_bsd_
 #include "ptybuf.bsd44.cc"
-#elif defined __sgi__ //_svr4_
+#elif defined __svr4__
 #include "ptybuf.svr4.cc"
 #else
 #error sorry, ptybuf not yet implemented for this architecture
