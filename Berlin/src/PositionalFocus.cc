@@ -331,6 +331,7 @@ void PositionalFocus::dispatch(Input::Event &event)
 	  }
 	catch (const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
+	catch (const CORBA::TRANSIENT &) {}
       _controllers.erase(of, _controllers.end());
       /*
        * ...add the new controllers,...

@@ -40,35 +40,35 @@ class ControllerImpl::Iterator : public virtual POA_Fresco::ControllerIterator,
 		                 public virtual ServantBase
 {
 public:
-  Iterator(ControllerImpl *p, Tag c) : _parent(p), _cursor(c) { Trace trace("ControllerImpl::Iterator::Iterator"); _parent->_add_ref();}
-  virtual ~Iterator() { Trace trace("ControllerImpl::Iterator::~Iterator"); _parent->_remove_ref();}
+  Iterator(ControllerImpl *p, Tag c) : my_parent(p), my_cursor(c) { Trace trace("ControllerImpl::Iterator::Iterator"); my_parent->_add_ref();}
+  virtual ~Iterator() { Trace trace("ControllerImpl::Iterator::~Iterator"); my_parent->_remove_ref();}
   virtual Fresco::Controller_ptr child()
   {
     Trace trace("ControllerImpl::Iterator::child");
-    Prague::Guard<Mutex> guard(_parent->_cmutex);
-    if (_cursor >= _parent->_children.size()) return Fresco::Controller::_nil();
-    return Fresco::Controller::_duplicate(_parent->_children[_cursor]);
+    Prague::Guard<Mutex> guard(my_parent->my_cmutex);
+    if (my_cursor >= my_parent->my_children.size()) return Fresco::Controller::_nil();
+    return Fresco::Controller::_duplicate(my_parent->my_children[my_cursor]);
   }
-  virtual void next() { _cursor++;}
-  virtual void prev() { _cursor--;}
+  virtual void next() { my_cursor++;}
+  virtual void prev() { my_cursor--;}
   virtual void insert(Controller_ptr child)
   {
     Trace trace("ControllerImpl::Iterator::insert");
     {
-      Prague::Guard<Mutex> guard(_parent->_cmutex);
-      if (_cursor > _parent->_children.size()) _cursor = _parent->_children.size();
-      _parent->_children.insert(_parent->_children.begin() + _cursor, RefCount_var<Fresco::Controller>::increment(child));
-      child->set_parent_controller(Controller_var(_parent->_this()));
+      Prague::Guard<Mutex> guard(my_parent->my_cmutex);
+      if (my_cursor > my_parent->my_children.size()) my_cursor = my_parent->my_children.size();
+      my_parent->my_children.insert(my_parent->my_children.begin() + my_cursor, RefCount_var<Fresco::Controller>::increment(child));
+      child->set_parent_controller(Controller_var(my_parent->_this()));
     }
-    _parent->need_resize();
+    my_parent->need_resize();
   }
   virtual void replace(Controller_ptr child)
   {
     Trace trace("ControllerImpl::Iterator::replace");
     {
-      Prague::Guard<Mutex> guard(_parent->_cmutex);
-      if (_cursor > _parent->_children.size()) return;
-      Controller_var old = static_cast<Controller_ptr>(_parent->_children[_cursor]);
+      Prague::Guard<Mutex> guard(my_parent->my_cmutex);
+      if (my_cursor > my_parent->my_children.size()) return;
+      Controller_var old = static_cast<Controller_ptr>(my_parent->my_children[my_cursor]);
       if (!CORBA::is_nil(old))
 	try
 	  {
@@ -76,36 +76,38 @@ public:
 	  }
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
-      _parent->_children[_cursor] = RefCount_var<Fresco::Controller>::increment(child);
-      child->set_parent_controller(Controller_var(_parent->_this()));
+	catch (const CORBA::TRANSIENT &) {}
+      my_parent->my_children[my_cursor] = RefCount_var<Fresco::Controller>::increment(child);
+      child->set_parent_controller(Controller_var(my_parent->_this()));
     }
-    _parent->need_resize();
+    my_parent->need_resize();
   }
   virtual void remove()
   {
     Trace trace("ControllerImpl::Iterator::remove");
     {
-      Prague::Guard<Mutex> guard(_parent->_cmutex);
-      if (_cursor > _parent->_children.size()) return;
-      ControllerImpl::clist_t::iterator i = _parent->_children.begin() + _cursor;
+      Prague::Guard<Mutex> guard(my_parent->my_cmutex);
+      if (my_cursor > my_parent->my_children.size()) return;
+      ControllerImpl::clist_t::iterator i = my_parent->my_children.begin() + my_cursor;
       try
 	{
 	  (*i)->remove_parent_controller();
 	}
       catch (const CORBA::OBJECT_NOT_EXIST &) {}
       catch (const CORBA::COMM_FAILURE &) {}
-      _parent->_children.erase(i);
+      catch (const CORBA::TRANSIENT &) {}
+      my_parent->my_children.erase(i);
     }
-    _parent->need_resize();
+    my_parent->need_resize();
   }
   virtual void destroy() { deactivate();}
 private:
-  ControllerImpl *_parent;
-  size_t          _cursor;
+  ControllerImpl *my_parent;
+  size_t          my_cursor;
 };
 
 ControllerImpl::ControllerImpl(bool t)
-  : _telltale(0), _focus(0), _grabs(0), _transparent(t)
+  : my_telltale(0), my_focus(0), my_grabs(0), my_transparent(t)
 {
   Trace trace(this, "ControllerImpl::ControllerImpl");
 }
@@ -141,7 +143,7 @@ void ControllerImpl::pick(PickTraversal_ptr traversal)
     {
       traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!_transparent && !traversal->picked()) traversal->hit();
+      if (!my_transparent && !traversal->picked()) traversal->hit();
       traversal->leave_controller();
     }
 }
@@ -150,8 +152,8 @@ void ControllerImpl::append_controller(Controller_ptr c)
 {
   Trace trace(this, "ControllerImpl::append_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
-  Prague::Guard<Mutex> guard(_cmutex);
-  _children.push_back(RefCount_var<Fresco::Controller>::increment(c));
+  Prague::Guard<Mutex> guard(my_cmutex);
+  my_children.push_back(RefCount_var<Fresco::Controller>::increment(c));
   c->set_parent_controller(Controller_var(_this()));
 }
 
@@ -159,8 +161,8 @@ void ControllerImpl::prepend_controller(Controller_ptr c)
 {
   Trace trace(this, "ControllerImpl::prepend_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
-  Prague::Guard<Mutex> guard(_cmutex);
-  _children.insert(_children.begin(), RefCount_var<Fresco::Controller>::increment(c));
+  Prague::Guard<Mutex> guard(my_cmutex);
+  my_children.insert(my_children.begin(), RefCount_var<Fresco::Controller>::increment(c));
   c->set_parent_controller(Controller_var(_this()));
 }
 
@@ -168,12 +170,12 @@ void ControllerImpl::remove_controller(Controller_ptr c)
 {
   Trace trace(this, "ControllerImpl::remove_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
-  Prague::Guard<Mutex> guard(_cmutex);
-  for (clist_t::iterator i = _children.begin(); i != _children.end(); ++i)
+  Prague::Guard<Mutex> guard(my_cmutex);
+  for (clist_t::iterator i = my_children.begin(); i != my_children.end(); ++i)
     if ((*i)->is_identical(c))
       {
 	(*i)->remove_parent_controller();
-	_children.erase(i);
+	my_children.erase(i);
 	return;
       }
 }
@@ -181,22 +183,22 @@ void ControllerImpl::remove_controller(Controller_ptr c)
 void ControllerImpl::set_parent_controller(Controller_ptr p)
 {
   Trace trace(this, "ControllerImpl::set_parent_controller");
-  Prague::Guard<Mutex> guard(_pmutex);
-  _parent = Fresco::Controller::_duplicate(p);
+  Prague::Guard<Mutex> guard(my_pmutex);
+  my_parent = Fresco::Controller::_duplicate(p);
 }
 
 void ControllerImpl::remove_parent_controller()
 {
   Trace trace(this, "ControllerImpl::remove_parent_controller");
-  Prague::Guard<Mutex> guard(_pmutex);
-  _parent = Fresco::Controller::_nil();
+  Prague::Guard<Mutex> guard(my_pmutex);
+  my_parent = Fresco::Controller::_nil();
 }
 
 Controller_ptr ControllerImpl::parent_controller()
 {
   Trace trace(this, "ControllerImpl::parent_controller");
-  Prague::Guard<Mutex> guard(_pmutex);
-  return Fresco::Controller::_duplicate(_parent);
+  Prague::Guard<Mutex> guard(my_pmutex);
+  return Fresco::Controller::_duplicate(my_parent);
 }
 
 Fresco::ControllerIterator_ptr ControllerImpl::first_child_controller()
@@ -210,8 +212,8 @@ Fresco::ControllerIterator_ptr ControllerImpl::first_child_controller()
 Fresco::ControllerIterator_ptr ControllerImpl::last_child_controller()
 {
   Trace trace(this, "ControllerImpl::last_child_controller");
-  Prague::Guard<Mutex> guard(_cmutex);
-  Iterator *iterator = new Iterator(this, _children.size() - 1);
+  Prague::Guard<Mutex> guard(my_cmutex);
+  Iterator *iterator = new Iterator(this, my_children.size() - 1);
   activate(iterator);
   return iterator->_this();
 }
@@ -249,8 +251,8 @@ CORBA::Boolean ControllerImpl::first_focus(Input::Device d)
    * if we have children, ask them if they take the focus...
    */
   {
-    Prague::Guard<Mutex> guard(_cmutex);
-    for (clist_t::iterator i = _children.begin(); i != _children.end(); ++i)
+    Prague::Guard<Mutex> guard(my_cmutex);
+    for (clist_t::iterator i = my_children.begin(); i != my_children.end(); ++i)
       if ((*i)->first_focus(d)) return true;
   }
   /*
@@ -268,8 +270,8 @@ CORBA::Boolean ControllerImpl::last_focus(Input::Device d)
    * if we have children, ask them if they take the focus...
    */
   {
-    Prague::Guard<Mutex> guard(_cmutex);
-    for (clist_t::reverse_iterator i = _children.rbegin(); i != _children.rend(); ++i)
+    Prague::Guard<Mutex> guard(my_cmutex);
+    for (clist_t::reverse_iterator i = my_children.rbegin(); i != my_children.rend(); ++i)
       if ((*i)->last_focus(d)) return true;
   }
   /*
@@ -345,30 +347,30 @@ CORBA::Boolean ControllerImpl::prev_focus(Input::Device d)
 void ControllerImpl::set(Fresco::Telltale::Mask m)
 {
   Trace trace(this, "ControllerImpl::set");
-  if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, true);
+  if (!CORBA::is_nil(my_constraint)) my_constraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
 void ControllerImpl::clear(Fresco::Telltale::Mask m)
 {
   Trace trace(this, "ControllerImpl::clear");
-  if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, false);
+  if (!CORBA::is_nil(my_constraint)) my_constraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
 CORBA::Boolean ControllerImpl::test(Fresco::Telltale::Mask m)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return (_telltale & m) == m;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return (my_telltale & m) == m;
 }
 
 void ControllerImpl::modify(Fresco::Telltale::Mask m, CORBA::Boolean on)
 {
-  CORBA::ULong nf = on ? _telltale | m : _telltale & ~m;
+  CORBA::ULong nf = on ? my_telltale | m : my_telltale & ~m;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    if (nf == _telltale) return;
-    else _telltale = nf;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (nf == my_telltale) return;
+    else my_telltale = nf;
   }
   CORBA::Any any;
   any <<= nf;
@@ -377,14 +379,14 @@ void ControllerImpl::modify(Fresco::Telltale::Mask m, CORBA::Boolean on)
 
 void ControllerImpl::constraint(TelltaleConstraint_ptr c)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _constraint = TelltaleConstraint::_duplicate(c);
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_constraint = TelltaleConstraint::_duplicate(c);
 }
 
 TelltaleConstraint_ptr ControllerImpl::constraint()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return TelltaleConstraint::_duplicate(_constraint);
+  Prague::Guard<Mutex> guard(my_mutex);
+  return TelltaleConstraint::_duplicate(my_constraint);
 }
 
 CORBA::Boolean ControllerImpl::handle_positional(PickTraversal_ptr traversal, const Input::Event &event)
@@ -492,7 +494,7 @@ void ControllerImpl::grab(Fresco::PickTraversal_ptr traversal)
   Focus_var focus = traversal->get_focus();
   if (CORBA::is_nil(focus)) return;
   focus->grab();
-  _grabs |= 1 << focus->device();
+  my_grabs |= 1 << focus->device();
   update_state();
 }
 
@@ -501,7 +503,7 @@ void ControllerImpl::ungrab(Fresco::PickTraversal_ptr traversal)
   Focus_var focus = traversal->get_focus();
   if (CORBA::is_nil(focus)) return;
   focus->ungrab();
-  _grabs &= ~(1 << focus->device());
+  my_grabs &= ~(1 << focus->device());
   update_state();
 }
 

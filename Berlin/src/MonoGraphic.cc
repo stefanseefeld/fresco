@@ -47,6 +47,7 @@ MonoGraphic::~MonoGraphic()
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
+    catch (const CORBA::TRANSIENT &) {}
 }
 
 Graphic_ptr MonoGraphic::body()
@@ -67,6 +68,7 @@ void MonoGraphic::body(Graphic_ptr c)
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
+    catch (const CORBA::TRANSIENT &) {}
   _child.peer = Fresco::Graphic::_duplicate(c);
   if (!CORBA::is_nil(_child.peer))
     try
@@ -76,6 +78,7 @@ void MonoGraphic::body(Graphic_ptr c)
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _child.peer = Fresco::Graphic::_nil();}
   //   needResize();
 }
 
@@ -86,6 +89,7 @@ void MonoGraphic::append_graphic(Graphic_ptr c)
     try { _child.peer->append_graphic(c);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _child.peer = Fresco::Graphic::_nil();}
 }
 
 void MonoGraphic::prepend_graphic(Graphic_ptr c)
@@ -95,6 +99,7 @@ void MonoGraphic::prepend_graphic(Graphic_ptr c)
     try { _child.peer->prepend_graphic(c);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _child.peer = Fresco::Graphic::_nil();}
 }
 
 void MonoGraphic::remove_graphic(Tag localId)
@@ -105,6 +110,7 @@ void MonoGraphic::remove_graphic(Tag localId)
     try { _child.peer->remove_graphic(localId);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _child.peer = Fresco::Graphic::_nil();}
 }
 
 void MonoGraphic::remove_child_graphic(Tag localId)
@@ -147,6 +153,7 @@ void MonoGraphic::request(Fresco::Graphic::Requisition &r)
   try { child->request(r);}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::TRANSIENT &) { body(Fresco::Graphic::_nil());}
 }
 
 void MonoGraphic::extension(const Fresco::Allocation::Info &info, Region_ptr region)
@@ -183,5 +190,6 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
   try { traversal->traverse_child (child, 0, Region::_nil(), Transform::_nil());}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body (Fresco::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::TRANSIENT &) { body(Fresco::Graphic::_nil());}
 }
 

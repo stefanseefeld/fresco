@@ -89,22 +89,22 @@ protected:
   virtual void other(const Fresco::Input::Event &);
   void grab(Fresco::PickTraversal_ptr);
   void ungrab(Fresco::PickTraversal_ptr);
-  bool grabbed(Fresco::Input::Device d) { return _grabs & (1 << d);}
-  void set_focus(Fresco::Input::Device d) { _focus |= 1 << d; update_state();}
-  void clear_focus(Fresco::Input::Device d) { _focus &= ~(1 << d); update_state();}
-  bool have_focus(Fresco::Input::Device d) { return _focus & (1 << d); }
+  bool grabbed(Fresco::Input::Device d) { return my_grabs & (1 << d);}
+  void set_focus(Fresco::Input::Device d) { my_focus |= 1 << d; update_state();}
+  void clear_focus(Fresco::Input::Device d) { my_focus &= ~(1 << d); update_state();}
+  bool have_focus(Fresco::Input::Device d) { return my_focus & (1 << d); }
   virtual void update_state();
 private:
-  Fresco::Controller_var _parent;
-  clist_t _children;
-  CORBA::ULong _telltale;
-  CORBA::ULong _focus;
-  CORBA::ULong _grabs;
-  bool _transparent;
-  Fresco::TelltaleConstraint_var _constraint;
-  Prague::Mutex _pmutex; // for the parent link
-  Prague::Mutex _cmutex; // for the children links
-  Prague::Mutex _mutex;  // for the state
+  Fresco::Controller_var         my_parent;
+  clist_t                        my_children;
+  CORBA::ULong                   my_telltale;
+  CORBA::ULong                   my_focus;
+  CORBA::ULong                   my_grabs;
+  bool                           my_transparent;
+  Fresco::TelltaleConstraint_var my_constraint;
+  Prague::Mutex                  my_pmutex; // for the parent link
+  Prague::Mutex                  my_cmutex; // for the children links
+  Prague::Mutex                  my_mutex;  // for the state
 };
 
 #endif 

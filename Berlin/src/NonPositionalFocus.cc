@@ -76,6 +76,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
     try { (*o)->lose_focus(device());}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
+    catch (const CORBA::TRANSIENT &) {}
 
   _controllers.erase(of, _controllers.end());
   /*
@@ -105,5 +106,6 @@ void NonPositionalFocus::dispatch(Input::Event &event)
       try { done = _controllers [i]->handle_non_positional(event);}
       catch (const CORBA::OBJECT_NOT_EXIST &) { _controllers.resize (i);}
       catch (const CORBA::COMM_FAILURE &) { _controllers.resize (i);}
+      catch (const CORBA::TRANSIENT &) { _controllers.resize (i);}
     }
 }

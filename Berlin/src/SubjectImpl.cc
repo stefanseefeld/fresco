@@ -73,5 +73,6 @@ void SubjectImpl::notify(const CORBA::Any &change)
 	try { (*i)->update(change);}
         catch (const CORBA::OBJECT_NOT_EXIST &) { *i = Observer::_nil();}
 	catch (const CORBA::COMM_FAILURE &) { *i = Observer::_nil();}
+	catch (const CORBA::TRANSIENT &) { *i = Observer::_nil();}
     }
 }

@@ -72,6 +72,7 @@ public:
 	  }
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
+	catch (const CORBA::TRANSIENT &) {}
       edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
       edge.peerId = child->add_parent_graphic(Graphic_var(_parent->_this()), edge.localId);
     }
@@ -93,6 +94,7 @@ public:
 	}
       catch(const CORBA::OBJECT_NOT_EXIST &) {}
       catch (const CORBA::COMM_FAILURE &) {}
+      catch (const CORBA::TRANSIENT &) {}
       _parent->_children.erase(i);
     }
     _parent->need_resize();
@@ -119,6 +121,7 @@ PolyGraphic::~PolyGraphic()
 	  }
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
+	catch (const CORBA::TRANSIENT &) {}
     }
 }
 
@@ -160,6 +163,7 @@ void PolyGraphic::remove_graphic(Tag localId)
     }
   catch(const CORBA::OBJECT_NOT_EXIST &) {}
   catch (const CORBA::COMM_FAILURE &) {}
+  catch (const CORBA::TRANSIENT &) {}
   _children.erase(i);
   _mutex.unlock();
   need_resize();
@@ -214,6 +218,7 @@ Fresco::Graphic::Requisition *PolyGraphic::children_requests()
 	try { (*i).peer->request(*r);}
 	catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Fresco::Graphic::_nil();}
 	catch (const CORBA::COMM_FAILURE &) { (*i).peer = Fresco::Graphic::_nil();}
+	catch (const CORBA::TRANSIENT &) { (*i).peer = Fresco::Graphic::_nil();}
       ++r;
     }
   return requisitions;
@@ -233,4 +238,5 @@ void PolyGraphic::child_extension(size_t i, const Fresco::Allocation::Info &info
     try { child->extension(info, region);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _children[i].peer = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _children[i].peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _children[i].peer = Fresco::Graphic::_nil();}
 }

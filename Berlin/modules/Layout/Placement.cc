@@ -70,6 +70,7 @@ void Placement::traverse(Traversal_ptr traversal)
       try { traversal->traverse_child (child, 0, Region_var(result->_this()), Transform_var(tx->_this()));}
       catch (const CORBA::OBJECT_NOT_EXIST &) { body (Fresco::Graphic::_nil());}
       catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
+      catch (const CORBA::TRANSIENT &) { body(Fresco::Graphic::_nil());}
     }
   else MonoGraphic::traverse(traversal);
 }
@@ -107,9 +108,11 @@ void LayoutLayer::traverse(Traversal_ptr t)
     try { _under->traverse(t);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _under = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _under = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _under = Fresco::Graphic::_nil();}
   MonoGraphic::traverse(t);
   if (!CORBA::is_nil(_over))
     try { _over->traverse(t);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _over = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _over = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { _over = Fresco::Graphic::_nil();}
 }

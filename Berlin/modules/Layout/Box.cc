@@ -294,6 +294,7 @@ void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
       try { t->traverse_child(_children[i].peer, _children[i].localId, region_this, tx_this);}
       catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Fresco::Graphic::_nil ();}
       catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Fresco::Graphic::_nil ();}
+      catch (const CORBA::TRANSIENT &) { _children [i].peer = Fresco::Graphic::_nil ();}
       if (!t->ok()) break;
     }
 #ifndef USE_ALLOCATION_CACHE
@@ -313,6 +314,7 @@ void Box::traverse_without_allocation(Traversal_ptr t)
 	  try { t->traverse_child (i->peer, i->localId, Region::_nil (), Transform::_nil ());}
 	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Fresco::Graphic::_nil ();}
 	  catch (const CORBA::COMM_FAILURE &) { i->peer = Fresco::Graphic::_nil ();}
+	  catch (const CORBA::TRANSIENT &) { i->peer = Fresco::Graphic::_nil ();}
 	}
     }
   else
@@ -323,6 +325,7 @@ void Box::traverse_without_allocation(Traversal_ptr t)
 	  try { t->traverse_child (i->peer, i->localId, Region::_nil(), Transform::_nil());}
 	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Fresco::Graphic::_nil();}
 	  catch (const CORBA::COMM_FAILURE &) { i->peer = Fresco::Graphic::_nil();}
+	  catch (const CORBA::TRANSIENT &) { i->peer = Fresco::Graphic::_nil();}
 	}
     }
 }

@@ -38,6 +38,7 @@ TriggerImpl::~TriggerImpl()
     try { _command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
+    catch (const CORBA::TRANSIENT &) {}
 }
 void TriggerImpl::action(Command_ptr c)
 {
@@ -47,6 +48,7 @@ void TriggerImpl::action(Command_ptr c)
     try { _command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
+    catch (const CORBA::TRANSIENT &) {}
   _command = Command::_duplicate(c);
 }
 
@@ -105,4 +107,5 @@ void TriggerImpl::execute()
     try { _command->execute(_data);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _command = Fresco::Command::_nil();}
     catch (const CORBA::COMM_FAILURE &) { _command = Fresco::Command::_nil();}
+    catch (const CORBA::TRANSIENT &) { _command = Fresco::Command::_nil();}
 }

@@ -62,4 +62,5 @@ void Deck::traverse(Traversal_ptr t)
   try { t->traverse_child (_children [n-1].peer, _children [n-1].localId, Region::_nil(), Transform::_nil());}
   catch (const CORBA::OBJECT_NOT_EXIST &) { _children [n-1].peer = Fresco::Graphic::_nil();}
   catch (const CORBA::COMM_FAILURE &) { _children [n-1].peer = Fresco::Graphic::_nil();}
+  catch (const CORBA::TRANSIENT &) { _children [n-1].peer = Fresco::Graphic::_nil();}
 }

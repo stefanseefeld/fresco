@@ -266,15 +266,16 @@ GraphicImpl::~GraphicImpl() {}
 void GraphicImpl::deactivate()
 {
   Trace trace(this, "GraphicImpl::deactivate");
-  Prague::Guard<Mutex> guard(_mutex);
-  for (glist_t::iterator i = _parents.begin(); i != _parents.end(); ++i)
+  Prague::Guard<Mutex> guard(my_mutex);
+  for (glist_t::iterator i = my_parents.begin(); i != my_parents.end(); ++i)
     {
       if (!CORBA::is_nil((*i).peer)) 
 	try { (*i).peer->remove_child_graphic((*i).peerId);}
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
+	catch (const CORBA::TRANSIENT &) {}
     }
-  _parents.clear();
+  my_parents.clear();
   ServantBase::deactivate(this);
 }
 
@@ -289,7 +290,7 @@ Tag GraphicImpl::unique_parent_id()
 {
   Tag t;
   for (t = 0;
-       find_if (_parents.begin(), _parents.end(), localId_eq(t)) != _parents.end();
+       find_if (my_parents.begin(), my_parents.end(), localId_eq(t)) != my_parents.end();
        t++);
       return t;
 }
@@ -310,8 +311,8 @@ Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
   edge.peerId = peerId;
   edge.localId = unique_parent_id();
   {
-      Prague::Guard<Mutex> guard(_mutex);
-      _parents.push_back(edge);
+      Prague::Guard<Mutex> guard(my_mutex);
+      my_parents.push_back(edge);
   }
   return edge.localId;
 }
@@ -319,11 +320,11 @@ Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
 void GraphicImpl::remove_parent_graphic(Tag localId)
 {
   Trace trace(this, "GraphicImpl::remove_parent_graphic");
-  Prague::Guard<Mutex> guard(_mutex);
-  for (glist_t::iterator i = _parents.begin(); i != _parents.end(); ++i)
+  Prague::Guard<Mutex> guard(my_mutex);
+  for (glist_t::iterator i = my_parents.begin(); i != my_parents.end(); ++i)
     if ((*i).localId == localId)
       {
-        _parents.erase(i);
+        my_parents.erase(i);
         return;
       }
 }
@@ -352,9 +353,9 @@ void GraphicImpl::pick(PickTraversal_ptr) {}
 void GraphicImpl::allocate(Tag, const Allocation::Info &) {}
 void GraphicImpl::allocations(Allocation_ptr allocation)
 {
-  Prague::Guard<Mutex> guard(_mutex);
+  Prague::Guard<Mutex> guard(my_mutex);
   CORBA::Long begin = allocation->size();
-  for (glist_t::iterator i = _parents.begin(); i != _parents.end(); i++)
+  for (glist_t::iterator i = my_parents.begin(); i != my_parents.end(); i++)
     {
       if (CORBA::is_nil((*i).peer)) continue;
       try
@@ -370,6 +371,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 	}
       catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Fresco::Graphic::_nil();}
       catch (const CORBA::COMM_FAILURE &) { (*i).peer = Fresco::Graphic::_nil();}
+      catch (const CORBA::TRANSIENT &) { (*i).peer = Fresco::Graphic::_nil();}
     }
 }
 
@@ -426,11 +428,12 @@ void GraphicImpl::need_redraw_region(Region_ptr region)
 
 void GraphicImpl::need_resize()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  for (glist_t::iterator i = _parents.begin(); i != _parents.end(); i++)
+  Prague::Guard<Mutex> guard(my_mutex);
+  for (glist_t::iterator i = my_parents.begin(); i != my_parents.end(); i++)
     try {(*i).peer->need_resize();}
     catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Fresco::Graphic::_nil();}
     catch (const CORBA::COMM_FAILURE &) { (*i).peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::TRANSIENT &) { (*i).peer = Fresco::Graphic::_nil();}
 }
 
 void GraphicImpl::init_requisition(Fresco::Graphic::Requisition &r)

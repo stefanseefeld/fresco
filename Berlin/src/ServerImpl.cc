@@ -209,6 +209,11 @@ void ServerImpl::destroy_context(ServerContextImpl *context)
       std::cerr << "Caught CORBA::COMM_FAILURE while cleaning up "
 		<< "a ServerContext" << std::endl;
   }
+  catch (const CORBA::TRANSIENT &)
+  {
+      std::cerr << "Caught CORBA::TRANSIENT while cleaning up "
+		<< "a ServerContext" << std::endl;
+  }
   catch (const PortableServer::POA::ObjectNotActive &)
   {
       std::cerr << "Caught POA::ObjectNotActive while cleaning up "

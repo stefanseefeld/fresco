@@ -66,6 +66,7 @@ void Allocator::traverse(Traversal_ptr traversal)
     }
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::TRANSIENT &) { body(Fresco::Graphic::_nil());}
 }
 
 void Allocator::need_resize()
@@ -223,6 +224,7 @@ void TransformAllocator::traverse(Traversal_ptr traversal)
     }
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::TRANSIENT &) { body(Fresco::Graphic::_nil());}
 }
 
 void TransformAllocator::compute_delta(const Vertex &lower, const Vertex &upper, Vertex &delta)

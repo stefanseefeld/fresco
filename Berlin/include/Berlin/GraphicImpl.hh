@@ -100,8 +100,8 @@ class GraphicImpl : public virtual POA_Fresco::Graphic,
   static Fresco::Vertex transform_allocate(RegionImpl &, const Fresco::Graphic::Requisition &, Fresco::Transform_ptr);
 private:
   Fresco::Tag unique_parent_id();
-  glist_t              _parents;
-  Prague::Mutex        _mutex;
+  glist_t              my_parents;
+  Prague::Mutex        my_mutex;
 };
 
 class GraphicIteratorImpl : public virtual POA_Fresco::GraphicIterator,

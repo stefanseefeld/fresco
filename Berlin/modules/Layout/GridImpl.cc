@@ -307,6 +307,7 @@ void GridImpl::replace(Graphic_ptr g, const Layout::Grid::Index &i)
     try { old->remove_parent_graphic(index_to_tag(i));}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
+    catch (const CORBA::TRANSIENT &) {}
   _dimensions[xaxis].children[i.col][i.row] = Fresco::Graphic::_duplicate(g);
   _dimensions[yaxis].children[i.row][i.col] = Fresco::Graphic::_duplicate(g);
   g->add_parent_graphic(Graphic_var(_this()), index_to_tag(i));
@@ -487,6 +488,7 @@ void GridImpl::traverse_with_allocation(Traversal_ptr t, Region_ptr given, const
 	try { t->traverse_child (child, index_to_tag(i), Region_var(region->_this()), Transform_var(tx->_this()));}
 	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
 	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+	catch (const CORBA::TRANSIENT &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
       }
   delete [] xspans;
   delete [] yspans;
@@ -504,6 +506,7 @@ void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::
 	try { t->traverse_child (child, index_to_tag(i), Region::_nil(), Transform::_nil());}
 	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
 	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+	catch (const CORBA::TRANSIENT &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
       }
 }
 
@@ -519,5 +522,6 @@ void SubGridImpl::traverse(Traversal_ptr t)
   try { t->traverse_child (_child, 0, Region::_nil(), Transform::_nil());}
   catch (const CORBA::OBJECT_NOT_EXIST &) { _child = Layout::Grid::_nil();}
   catch (const CORBA::COMM_FAILURE &) { _child = Layout::Grid::_nil();}
+  catch (const CORBA::TRANSIENT &) { _child = Layout::Grid::_nil();}
 }
 
