@@ -20,6 +20,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Console/SDL/SDL.hh"
@@ -85,6 +86,276 @@ static void writeEvent(SDL_Event &e)
 };
 
 SDLConsole::dlist_t SDLConsole::_drawables;
+
+SDLConsole::SDLConsole(int &argc, char **argv)// throw (exception)
+  : _autoplay(false)
+{
+  Logger::log(Logger::loader) << "trying to open console" << endl;
+  Trace trace("SDLConsole::SDLConsole");
+  SDL_Init(SDL_INIT_VIDEO);
+  SDLDrawable *drawable = new SDLDrawable(0);
+  _surface = drawable->surface();
+  _size[0] = _surface->w;
+  _size[1] = _surface->h;
+  _position[0] = 0;
+  _position[1] = 0;
+  _resolution[0] = drawable->resolution(Warsaw::xaxis);
+  _resolution[1] = drawable->resolution(Warsaw::yaxis);
+
+  _drawables.push_back(drawable);
+  pipe(_wakeupPipe);
+}
+
+SDLConsole::~SDLConsole()
+{
+  Trace trace("SDLConsole::~SDLConsole");
+  for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); i++) delete *i;
+  close(_wakeupPipe[0]);
+  close(_wakeupPipe[1]);
+  SDL_Quit();
+}
+
+SDLPointer *SDLConsole::pointer()
+{
+  Trace trace("SDLConsole::pointer");
+  return new SDLPointer(drawable());
+}
+
+SDLDrawable *SDLConsole::drawable()
+{
+  Trace trace("SDLConsole::drawable");
+  assert(_drawables.size());
+  return _drawables.front();
+}
+
+SDLDrawable *SDLConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
+{
+  _drawables.push_back(new SDLDrawable("display-memory", w, h, d));
+  return _drawables.back();
+}
+
+SDLDrawable *SDLConsole::reference_to_servant(Warsaw::Drawable_ptr drawable)
+{
+  Trace trace("SDLConsole::reference_to_servant");
+  PortableServer::Servant servant = Console::reference_to_servant(drawable);
+  for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); ++i)
+    if (*i == servant) return *i;
+  return 0;
+}
+
+void SDLConsole::device_info(std::ostream &os)
+{
+  os << "sorry, device info isn't available for SDL at this time" << std::endl;
+}
+
+Input::Event *SDLConsole::next_event()
+{
+  Trace trace("SDL::Console::next_event");
+  SDL_Event event;
+  SDL_WaitEvent(&event);
+  return synthesize(event);
+}
+
+void SDLConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
+
+Input::Event *SDLConsole::synthesize(const SDL_Event &e)
+{
+  Input::Event_var event = new Input::Event;
+  switch (e.type)
+    {
+     case SDL_KEYDOWN:
+       {
+ 	Input::Toggle toggle;
+ 	toggle.actuation = Input::Toggle::press;
+ 	toggle.number = e.key.keysym.sym;
+ 	event->length(1);
+ 	event[0].dev = 0;
+ 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
+ 	break;
+       }
+    case SDL_MOUSEMOTION:
+      {
+	_position[0] = e.motion.x;
+ 	_position[1] = e.motion.y;
+ 	Input::Position position;
+ 	position.x = _position[0]/_resolution[0];
+ 	position.y = _position[1]/_resolution[1];
+ 	position.z = 0;
+ 	event->length(1);
+ 	event[0].dev = 1;
+ 	event[0].attr.location(position);
+ 	break;
+      }
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      {
+ 	Input::Toggle toggle;
+ 	if (e.type == SDL_MOUSEBUTTONDOWN)
+ 	  toggle.actuation = Input::Toggle::press;
+ 	else
+ 	  toggle.actuation = Input::Toggle::release;
+  	toggle.number = e.button.button;	  
+ 	Input::Position position;
+ 	position.x = _position[0]/_resolution[0];
+ 	position.y = _position[1]/_resolution[1];
+ 	position.z = 0;
+ 	event->length(2);
+ 	event[0].dev = 1;
+ 	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
+ 	event[1].dev = 1;
+ 	event[1].attr.location(position);
+ 	break;
+      }
+    }
+  return event._retn();
+}
+
+namespace
+{
+unsigned char pointerImg[256] = 
+{ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,1,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,2,1,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,2,2,1,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,1,1,1,1,0,0,0,0,0,0,
+  1,2,2,1,2,2,1,0,0,0,0,0,0,0,0,0,
+  1,1,0,1,2,2,2,1,0,0,0,0,0,0,0,0,
+  1,0,0,0,1,2,2,1,0,0,0,0,0,0,0,0,
+  0,0,0,0,1,2,2,2,1,0,0,0,0,0,0,0,
+  0,0,0,0,0,1,2,2,1,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0 };
+}
+
+SDLPointer::SDLPointer(SDLDrawable *d)
+  : _screen(d)
+{
+  _origin[0] = _origin[1] = 0;
+  _position[0] = _position[1] = 8;
+  _size[0] = _size[1] = 16;
+  _scale[0] = 1/_screen->resolution(xaxis);
+  _scale[1] = 1/_screen->resolution(yaxis);
+  
+  Drawable::PixelFormat format = _screen->pixel_format();
+
+  Pixel trans = 0;
+  Pixel red = (static_cast<Pixel>(1. * (~0L)) >> format.red_shift) & format.red_mask;
+  Pixel green = (static_cast<Pixel>(1. * (~0L)) >> format.green_shift) & format.green_mask;
+  Pixel blue = (static_cast<Pixel>(1. * (~0L)) >> format.blue_shift) & format.blue_mask;
+  Pixel black =  0;
+  Pixel white = red | green | blue;
+
+  /*
+   * create the pointer image
+   */
+  PixelCoord depth =  format.size >> 3;
+  _image = new data_type[_size[0]*_size[1] * depth];
+  for (unsigned short y = 0; y != _size[1]; y++)
+    for (unsigned short x = 0; x != _size[0]; x++)
+      {
+	Pixel color = pointerImg[y*_size[0] + x] == 1 ? white : black;
+ 	for (unsigned short d = 0; d != depth; d++)
+	  _image[y*depth*_size[0] + depth*x + d] = (color >> d) & 0xff;
+      }
+  /*
+   * create the pointer mask
+   */
+  _mask = new data_type[_size[0]*_size[1]*depth];
+  for (unsigned short y = 0; y != _size[1]; y++)
+    for (unsigned short x = 0; x != _size[0]; x++)
+      {
+	char flag = pointerImg[y*_size[0] + x] == 0 ? 0 : ~0;
+	for (unsigned short d = 0; d != depth; d++)
+	  _mask[y*depth*_size[0]+depth*x + d] = flag;
+      }
+  _cache = new data_type[_size[0]*_size[1]*depth];
+  save();
+  draw();
+}
+
+SDLPointer::~SDLPointer()
+{
+  delete [] _image;
+  delete [] _cache;
+}
+
+bool SDLPointer::intersects(Warsaw::Coord l, Warsaw::Coord r, Warsaw::Coord t, Warsaw::Coord b)
+{
+  return
+    l/_scale[0] <= _position[0] + _size[0] &&
+    r/_scale[0] >= _position[0] &&
+    t/_scale[1] <= _position[1] + _size[1] &&
+    b/_scale[1] >= _position[1];
+}
+
+void SDLPointer::move(Coord x, Coord y)
+{
+  restore();
+  _position[0] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(x/_scale[0]), _origin[0]));
+  _position[1] = static_cast<PixelCoord>(std::max(static_cast<PixelCoord>(y/_scale[1]), _origin[1]));
+  save();
+  draw();
+};
+
+void SDLPointer::save()
+{
+  Trace trace("Pointer::save");
+  PixelCoord x = _position[0] - _origin[0];
+  PixelCoord y = _position[1] - _origin[1];
+  PixelCoord w = _size[0];
+  PixelCoord h = _size[1];
+  PixelCoord r = _screen->row_length();
+  PixelCoord s = _screen->vwidth() * _screen->vheight();
+  PixelCoord d = _screen->pixel_format().size >> 3;
+  SDLDrawable::Buffer buffer = _screen->read_buffer();
+  data_type *from = buffer.get() + y*r + x*d;
+  data_type *to = _cache;
+  for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
+    Memory::copy(from, to, d * w);
+}
+
+void SDLPointer::restore()
+{
+  Trace trace("Pointer::restore");
+  PixelCoord x = _position[0] - _origin[0];
+  PixelCoord y = _position[1] - _origin[1];
+  PixelCoord w = _size[0];
+  PixelCoord h = _size[1];
+  PixelCoord r = _screen->row_length();
+  PixelCoord s = _screen->vwidth() * _screen->vheight();
+  PixelCoord d = _screen->pixel_format().size >> 3;
+  data_type *from = _cache;
+  SDLDrawable::Buffer buffer = _screen->write_buffer();
+  data_type *to = buffer.get() + y*r + x*d;
+  for (PixelCoord o = 0;
+       o != h && (y + o) * r / d + x + w < s;
+       o++, from += d * w, to += r)
+    Memory::copy(from, to, d * w);
+}
+
+void SDLPointer::draw()
+{
+  Trace trace("SDLPointer::draw");
+  PixelCoord x = _position[0] - _origin[0];
+  PixelCoord y = _position[1] - _origin[1];
+  PixelCoord w = _size[0];
+  PixelCoord h = _size[1];
+  PixelCoord r = _screen->row_length();
+  PixelCoord s = _screen->vwidth() * _screen->vheight();
+  PixelCoord d = _screen->pixel_format().size >> 3;
+  data_type *from = _image;
+  data_type *bits = _mask;
+  SDLDrawable::Buffer buffer = _screen->write_buffer();
+  data_type *to = buffer.get() + y * r + x * d;
+  for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
+    for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
+      *to = (*from & *bits) | (*to & ~*bits);
+  _screen->flush();
+}
 
 SDLDrawable::SDLDrawable(const char *display, PixelCoord w, PixelCoord h, PixelCoord d) // throw (exception)
 {
@@ -215,121 +486,4 @@ Warsaw::Drawable::BufferFormat SDLDrawable::buffer_format()
   return format;
 }
 
-
-SDLConsole::SDLConsole(int &argc, char **argv)// throw (exception)
-  : _autoplay(false)
-{
-  Logger::log(Logger::loader) << "trying to open console" << endl;
-  Trace trace("SDLConsole::SDLConsole");
-  SDL_Init(SDL_INIT_VIDEO);
-  SDLDrawable *drawable = new SDLDrawable(0);
-  _surface = drawable->surface();
-  _size[0] = _surface->w;
-  _size[1] = _surface->h;
-  _position[0] = 0;
-  _position[1] = 0;
-  _resolution[0] = drawable->resolution(Warsaw::xaxis);
-  _resolution[1] = drawable->resolution(Warsaw::yaxis);
-
-  _drawables.push_back(drawable);
-  pipe(_wakeupPipe);
-}
-
-SDLConsole::~SDLConsole()
-{
-  Trace trace("SDLConsole::~SDLConsole");
-  for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); i++) delete *i;
-  close(_wakeupPipe[0]);
-  close(_wakeupPipe[1]);
-  SDL_Quit();
-}
-
-SDLDrawable *SDLConsole::drawable()
-{
-  Trace trace("SDLConsole::drawable");
-  assert(_drawables.size());
-  return _drawables.front();
-}
-
-SDLDrawable *SDLConsole::create_drawable(PixelCoord w, PixelCoord h, PixelCoord d)
-{
-  _drawables.push_back(new SDLDrawable("display-memory", w, h, d));
-  return _drawables.back();
-}
-
-SDLDrawable *SDLConsole::reference_to_servant(Warsaw::Drawable_ptr drawable)
-{
-  Trace trace("SDLConsole::reference_to_servant");
-  PortableServer::Servant servant = Console::reference_to_servant(drawable);
-  for (dlist_t::iterator i = _drawables.begin(); i != _drawables.end(); ++i)
-    if (*i == servant) return *i;
-  return 0;
-}
-
-void SDLConsole::device_info(std::ostream &os)
-{
-  os << "sorry, device info isn't available for SDL at this time" << std::endl;
-}
-
-Input::Event *SDLConsole::next_event()
-{
-  Trace trace("SDL::Console::next_event");
-  SDL_Event event;
-  SDL_WaitEvent(&event);
-  return synthesize(event);
-}
-
-void SDLConsole::wakeup() { char c = 'z'; write(_wakeupPipe[1],&c,1);}
-
-Input::Event *SDLConsole::synthesize(const SDL_Event &e)
-{
-  Input::Event_var event = new Input::Event;
-  switch (e.type)
-    {
-     case SDL_KEYDOWN:
-       {
- 	Input::Toggle toggle;
- 	toggle.actuation = Input::Toggle::press;
- 	toggle.number = e.key.keysym.sym;
- 	event->length(1);
- 	event[0].dev = 0;
- 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
- 	break;
-       }
-    case SDL_MOUSEMOTION:
-      {
-	_position[0] = e.motion.x;
- 	_position[1] = e.motion.y;
- 	Input::Position position;
- 	position.x = _position[0]/_resolution[0];
- 	position.y = _position[1]/_resolution[1];
- 	position.z = 0;
- 	event->length(1);
- 	event[0].dev = 1;
- 	event[0].attr.location(position);
- 	break;
-      }
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
-      {
- 	Input::Toggle toggle;
- 	if (e.type == SDL_MOUSEBUTTONDOWN)
- 	  toggle.actuation = Input::Toggle::press;
- 	else
- 	  toggle.actuation = Input::Toggle::release;
-  	toggle.number = e.button.button;	  
- 	Input::Position position;
- 	position.x = _position[0]/_resolution[0];
- 	position.y = _position[1]/_resolution[1];
- 	position.z = 0;
- 	event->length(2);
- 	event[0].dev = 1;
- 	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
- 	event[1].dev = 1;
- 	event[1].attr.location(position);
- 	break;
-      }
-    }
-  return event._retn();
-}
-
+extern "C" ConsoleLoader<SDLConsole> *load() { return new ConsoleLoader<SDLConsole>();}
