@@ -98,7 +98,7 @@ AC_DEFUN([FRESCO_OMNIORB],
     *)
       AC_MSG_WARN([Unknown CPU type $host_cpu.])
       AC_MSG_WARN([Please check the omniORB documentation to see if your CPU type is supported,])
-      AC_MSG_WARN([and update config/macros/omniorb.m4])
+      AC_MSG_WARN([and update config/omniorb.m4])
       ;;
     esac
   
@@ -136,10 +136,13 @@ AC_DEFUN([FRESCO_OMNIORB],
     freebsd*)
       AC_DEFINE(__freebsd__, 1, [what os])
       ;;
+    darwin*)
+      AC_DEFINE(__darwin__, 1, [what os])
+      ;;
     *)
       AC_MSG_WARN(Unknown OS $host_os.)
       AC_MSG_WARN(Please check the omniORB documentation to see if you OS is supported,)
-      AC_MSG_WARN(and update config/macros/omniorb.m4.)
+      AC_MSG_WARN(and update config/omniorb.m4.)
       ;;
     esac
   
