@@ -45,19 +45,25 @@ LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @LIBS@
 
 DEMO_SRC	:= Application.cc LayoutDemo.cc TextDemo.cc \
 		   EditTextDemo.cc RasterDemo.cc TransformDemo.cc \
-		   ColorDemo.cc LogoDemo.cc PrimitiveDemo.cc FocusDemo.cc \
+		   ColorDemo.cc LogoDemo.cc FocusDemo.cc \
 		   ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
-PINYIN_SRC	:= pinyin_demo.cc TextConverter.cc
 DEMO_OBJ	:= $(patsubst %.cc, %.o, $(DEMO_SRC))
+DEMO3D_SRC	:= Application.cc PrimitiveDemo.cc demo3D.cc
+DEMO3D_OBJ	:= $(patsubst %.cc, %.o, $(DEMO3D_SRC))
+PINYIN_SRC	:= pinyin_demo.cc TextConverter.cc
 PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
 
-TARGETS		:= $(bdir)/demo $(bdir)/canvas $(bdir)/ggiwrapper $(bdir)/pinyin_demo
+TARGETS		:= $(bdir)/demo $(bdir)/demo3D $(bdir)/canvas $(bdir)/ggiwrapper $(bdir)/pinyin_demo
 
 all:	$(TARGETS)
 
 $(bdir)/demo:	$(DEMO_OBJ)
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $(DEMO_OBJ) $(LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(bdir)/demo3D:	$(DEMO3D_OBJ)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 $(bdir)/canvas:	canvas.o
 	@echo linking $(@F)

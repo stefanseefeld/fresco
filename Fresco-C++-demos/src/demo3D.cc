@@ -23,16 +23,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include "Application.hh"
-#include "LayoutDemo.hh"
-#include "TextDemo.hh"
-#include "EditTextDemo.hh"
-#include "RasterDemo.hh"
-#include "ColorDemo.hh"
-#include "LogoDemo.hh"
-#include "FocusDemo.hh"
-#include "ViewportDemo.hh"
-#include "DocDemo.hh"
-#include "TermDemo.hh"
+#include "PrimitiveDemo.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -55,27 +46,9 @@ int main(int argc, char **argv)
 
     Application *application = new Application(server);
 
-    Demo *layout    = new LayoutDemo(application);
-    Demo *text      = new TextDemo(application);
-    Demo *edit      = new EditTextDemo(application);
-    Demo *raster    = new RasterDemo(application);
-    Demo *color     = new ColorDemo(application);
-    Demo *logo      = new LogoDemo(application);
-    Demo *focus     = new FocusDemo(application);
-    Demo *viewport  = new ViewportDemo(application);
-    Demo *document  = new DocDemo(application);
-    Demo *terminal  = new TermDemo(application);
+    Demo *primitive = new PrimitiveDemo(application);
     application->run();
-    delete terminal;
-    delete document;
-    delete viewport;
-    delete focus;
-    delete logo;
-    delete color;
-    delete raster;
-    delete edit;
-    delete text;
-    delete layout;
+    delete primitive;
     delete application;
   } catch (CORBA::COMM_FAILURE c) {
     std::cerr << "Could not connect to the berlin server (CORBA::COMM_FAILURE)." << std::endl;
