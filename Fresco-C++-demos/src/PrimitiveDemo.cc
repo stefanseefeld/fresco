@@ -67,7 +67,6 @@ void PrimitiveDemo::Rotator::update(const CORBA::Any &)
   Transform_var tx = child->transformation();
   tx->load_identity();
   tx->rotate(ydegree, axis);
-  std::cout << "parent needs redraw..." << std::endl;
   parent->need_redraw();
 }
 
