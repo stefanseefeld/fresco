@@ -57,6 +57,5 @@ void UViewImpl::pick(PickTraversal_ptr traversal)
 Unidraw::Model_ptr UViewImpl::subject() { return Unidraw::Model::_duplicate(_model);}
 CORBA::Boolean UViewImpl::handle_positional(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  std::cout << "handle_positional" << std::endl;
   return false;
 }

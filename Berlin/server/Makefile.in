@@ -37,7 +37,7 @@ CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
 CPPFLAGS	+= -DVERSION='"@PACKAGE_VERSION@"'
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
-SRC		:= ServerImpl.cc ServerContextImpl.cc server.cc kits.cc devices.cc
+SRC		:= server.cc kits.cc devices.cc
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 
 TARGETS		:= ../bin/berlin ../bin/berlin-kits ../bin/berlin-devices
@@ -76,11 +76,11 @@ ifeq ($(JPROF),yes)
 
 endif
 
-../bin/berlin:	ServerImpl.o ServerContextImpl.o server.o
+../bin/berlin:	server.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-../bin/berlin-kits:	ServerImpl.o ServerContextImpl.o kits.o
+../bin/berlin-kits:	kits.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
@@ -119,15 +119,11 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.d:    %.cc
-	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-
-Server%.d:    %.cc %.hh
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 

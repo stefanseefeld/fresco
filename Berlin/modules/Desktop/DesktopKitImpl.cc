@@ -43,8 +43,9 @@ using namespace Fresco;
 using namespace Berlin::DesktopKit;
 
 DesktopKitImpl::DesktopKitImpl(const std::string &id,
-			       const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) { }
+			       const Fresco::Kit::PropertySeq &p,
+			       ServerContextImpl *c)
+  : KitImpl(id, p, c) { }
 DesktopKitImpl::~DesktopKitImpl() { }
 
 void DesktopKitImpl::bind(ServerContext_ptr context)
@@ -345,5 +346,5 @@ Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window,
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "DesktopKitImpl"};
-  return create_kit<DesktopKitImpl> ("IDL:fresco.org/Fresco/DesktopKit:1.0", properties, 2);
+  return create_prototype<DesktopKitImpl> ("IDL:fresco.org/Fresco/DesktopKit:1.0", properties, 2);
 }

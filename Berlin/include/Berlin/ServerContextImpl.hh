@@ -39,7 +39,8 @@ class ServerContextImpl : public virtual POA_Fresco::ServerContext,
 			  public DefaultPOA
 {
   typedef std::multimap<std::string, KitImpl *> klist_t;
- public:
+  friend class KitImpl;
+public:
   ServerContextImpl(ServerImpl *, const CORBA::PolicyList &, Fresco::ClientContext_ptr);
   ~ServerContextImpl();
   PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
@@ -54,13 +55,14 @@ class ServerContextImpl : public virtual POA_Fresco::ServerContext,
   CORBA::Object_ptr get_singleton(const char *) 
     throw (Fresco::SecurityException, Fresco::SingletonFailureException);
   bool ping();
- private:
-  static unsigned long      _counter;
-  ServerImpl               *_server;
-  CORBA::PolicyList         _policies;
-  Fresco::ClientContext_var _client;
-  klist_t                   _kits;
-  Prague::Mutex             _mutex;
+private:
+  void erase(KitImpl *);
+  static unsigned long      my_counter;
+  ServerImpl               *my_server;
+  CORBA::PolicyList         my_policies;
+  Fresco::ClientContext_var my_client;
+  klist_t                   my_kits;
+  Prague::Mutex             my_mutex;
 };
 
 #endif

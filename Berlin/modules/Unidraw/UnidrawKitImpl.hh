@@ -30,16 +30,21 @@
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace UnidrawKit {
+namespace Berlin 
+{
+namespace UnidrawKit 
+{
 
 class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
 		       public KitImpl
 {
 public:
-  UnidrawKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  UnidrawKitImpl(const std::string &,
+		 const Fresco::Kit::PropertySeq &,
+		 ServerContextImpl *);
   virtual ~UnidrawKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new UnidrawKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new UnidrawKitImpl(repo_id(), p, c);}
   virtual void bind(Fresco::ServerContext_ptr);
   virtual Unidraw::Tool_ptr select_tool();
   virtual Unidraw::Editor_ptr create_editor();

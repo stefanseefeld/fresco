@@ -41,9 +41,12 @@
 
 #include <GL/glu.h>
 
-namespace Berlin {
-namespace DrawingKit {
-namespace openGL {
+namespace Berlin 
+{
+namespace DrawingKit 
+{
+namespace openGL 
+{
 
 class DrawingKit : public virtual POA_Fresco::DrawingKit3D,
 		   public DrawingKitBase, public KitImpl
@@ -74,9 +77,11 @@ class DrawingKit : public virtual POA_Fresco::DrawingKit3D,
     size_t lights;
   };
 public:
-  DrawingKit(const std::string &, const Fresco::Kit::PropertySeq &);
+  DrawingKit(const std::string &,
+	     const Fresco::Kit::PropertySeq &,
+	     ServerContextImpl *);
   virtual ~DrawingKit();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &);
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &, ServerContextImpl *);
 
   virtual void save();
   virtual void restore();

@@ -32,16 +32,21 @@
 
 class RasterImpl;
 
-namespace Berlin {
-namespace ImageKit {
+namespace Berlin 
+{
+namespace ImageKit 
+{
 
 class ImageKitImpl : public virtual POA_Fresco::ImageKit,
 		     public KitImpl
 {
 public:
-  ImageKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  ImageKitImpl(const std::string &,
+	       const Fresco::Kit::PropertySeq &,
+	       ServerContextImpl *);
   virtual ~ImageKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new ImageKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new ImageKitImpl(repo_id(), p, c);}
 
   Fresco::Raster_ptr create_empty_raster();
   Fresco::Raster_ptr create_raster(const char *file);

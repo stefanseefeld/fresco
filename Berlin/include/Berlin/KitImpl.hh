@@ -29,6 +29,7 @@
 #include <Berlin/DefaultPOA.hh>
 
 class ServerImpl;
+class ServerContextImpl;
 class ServantBase;
 
 class KitImpl : public virtual POA_Fresco::Kit,
@@ -37,12 +38,12 @@ class KitImpl : public virtual POA_Fresco::Kit,
 {
   friend class ServerImpl;
 public:
-  KitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  KitImpl(const std::string &, const Fresco::Kit::PropertySeq &, ServerContextImpl *);
   ~KitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &) = 0;
-  const std::string &repo_id() const { return _repo_id;}
-  virtual Fresco::Kit::PropertySeq *properties() { return new Fresco::Kit::PropertySeq(*_props);}
-  virtual void bind(Fresco::ServerContext_ptr) {};
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &, ServerContextImpl *) = 0;
+  const std::string &repo_id() const { return my_repo_id;}
+  virtual Fresco::Kit::PropertySeq *properties() { return new Fresco::Kit::PropertySeq(*my_props);}
+  virtual void bind(Fresco::ServerContext_ptr) {}
   virtual CORBA::Boolean supports(const Fresco::Kit::PropertySeq &);
 
   void activate(::ServantBase *);
@@ -53,41 +54,42 @@ public:
   virtual void decrement();
 
 protected:
-    template <typename I, typename Im>
-    typename I::_ptr_type create(Im *impl)
-    {
-	activate(impl);
-	return impl->_this();
-    }
-
-    template <typename I, typename Im>
-    typename I::_ptr_type create_and_set_body(Im *impl, Fresco::Graphic_ptr g)
-    {           
-        activate(impl);
-	impl->body(g);
-        return impl->_this();
-    }
+  template <typename I, typename Im>
+  typename I::_ptr_type create(Im *impl)
+  {
+    activate(impl);
+    return impl->_this();
+  }
+  
+  template <typename I, typename Im>
+  typename I::_ptr_type create_and_set_body(Im *impl, Fresco::Graphic_ptr g)
+  {           
+    activate(impl);
+    impl->body(g);
+    return impl->_this();
+  }
 
 private:
   void activate(PortableServer::POA_ptr);
   void deactivate();
-  PortableServer::POA_var         _poa;
-  const std::string               _repo_id;
-  const Fresco::Kit::PropertySeq *_props;
-  int                             _refcount;
+  PortableServer::POA_var         my_poa;
+  const std::string               my_repo_id;
+  const Fresco::Kit::PropertySeq *my_props;
+  int                             my_refcount;
+  ServerContextImpl              *my_context;
 };
 
 template <typename T>
-inline T *create_kit(const std::string &repo, std::string props[], size_t n)
+inline T *create_prototype(const std::string &repo, std::string props[], size_t n)
 {
   Fresco::Kit::PropertySeq properties;
   properties.length(n/2);
   for (size_t i = 0; i != n/2; ++i)
-    {
-      properties[i].name = CORBA::string_dup((props++)->c_str());
-      properties[i].value = CORBA::string_dup((props++)->c_str());
-    }
-  return new T(repo, properties);
+  {
+    properties[i].name = CORBA::string_dup((props++)->c_str());
+    properties[i].value = CORBA::string_dup((props++)->c_str());
+  }
+  return new T(repo, properties, 0);
 }
 
 #endif

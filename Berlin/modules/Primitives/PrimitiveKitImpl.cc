@@ -33,8 +33,9 @@ using namespace Fresco;
 using namespace Berlin::PrimitiveKit;
 
 PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id,
-		                   const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) { }
+		                   const Fresco::Kit::PropertySeq &p,
+				   ServerContextImpl *c)
+  : KitImpl(id, p, c) { }
 
 PrimitiveKitImpl::~PrimitiveKitImpl() { }
 
@@ -141,5 +142,5 @@ Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "PrimitiveKitImpl"};
-  return create_kit<PrimitiveKitImpl> ("IDL:fresco.org/Fresco/PrimitiveKit:1.0", properties, 2);
+  return create_prototype<PrimitiveKitImpl> ("IDL:fresco.org/Fresco/PrimitiveKit:1.0", properties, 2);
 }

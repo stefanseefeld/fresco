@@ -25,30 +25,30 @@
 #include <Prague/Sys/Directory.hh>
 #include "Berlin/Logger.hh"
 #include "Berlin/ImplVar.hh"
-#include "ServerImpl.hh"
-#include "ServerContextImpl.hh"
+#include "Berlin/ServerImpl.hh"
+#include "Berlin/ServerContextImpl.hh"
 
 using namespace Prague;
 using namespace Fresco;
 
-ServerImpl *ServerImpl::_server = 0;;
+ServerImpl *ServerImpl::my_server = 0;;
 
 ServerImpl *ServerImpl::create(PortableServer::POA_ptr poa, const CORBA::PolicyList &policies)
 {
-  assert(_server == 0);
-  _server = new ServerImpl(policies);
-  _server->_poa = PortableServer::POA::_duplicate(poa);
-  return _server;
+  assert(my_server == 0);
+  my_server = new ServerImpl(policies);
+  my_server->my_poa = PortableServer::POA::_duplicate(poa);
+  return my_server;
 }
 
 ServerImpl *ServerImpl::instance()
 {
-  return _server;
+  return my_server;
 }
 
 ServerImpl::ServerImpl(const CORBA::PolicyList &policies)
-  : _policies(policies),
-    _thread(&ServerImpl::run, this)
+  : my_policies(policies),
+    my_thread(&ServerImpl::run, this)
 {
 }
 
@@ -57,9 +57,9 @@ ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c)
     throw (SecurityException)
 {
   Trace trace("ServerImpl::create_server_context");
-  Prague::Guard<Mutex> guard (_mutex);
-  Impl_var<ServerContextImpl> sc(new ServerContextImpl(this, _policies, c));
-  _contexts.push_back(sc);
+  Prague::Guard<Mutex> guard(my_mutex);
+  Impl_var<ServerContextImpl> sc(new ServerContextImpl(this, my_policies, c));
+  my_contexts.push_back(sc);
   return sc._retn()->_this();
 }
 
@@ -67,63 +67,63 @@ void ServerImpl::set_singleton(const char *name,
 			       CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException)
 {
-  Prague::Guard<Mutex> guard (_mutex);
+  Prague::Guard<Mutex> guard(my_mutex);
   // test wether the name is allready in use:
-  smap_t::iterator p = _singletons.find(name);
-  if (p != _singletons.end()) throw SingletonFailureException();
-  else _singletons[name] = singleton;
+  smap_t::iterator p = my_singletons.find(name);
+  if (p != my_singletons.end()) throw SingletonFailureException();
+  else my_singletons[name] = singleton;
 }
 
 void ServerImpl::remove_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  Prague::Guard<Mutex> guard (_mutex);
-  smap_t::iterator p = _singletons.find(name);
-  if (p != _singletons.end()) _singletons.erase(p);
+  Prague::Guard<Mutex> guard(my_mutex);
+  smap_t::iterator p = my_singletons.find(name);
+  if (p != my_singletons.end()) my_singletons.erase(p);
   throw SingletonFailureException();
 }
 
 CORBA::Object_ptr ServerImpl::get_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  Prague::Guard<Mutex> guard (_mutex);
-  smap_t::iterator p = _singletons.find(name);
-  if (p != _singletons.end()) return CORBA::Object::_duplicate(p->second);
+  Prague::Guard<Mutex> guard(my_mutex);
+  smap_t::iterator p = my_singletons.find(name);
+  if (p != my_singletons.end()) return CORBA::Object::_duplicate(p->second);
   throw SingletonFailureException();
 }
 
 void ServerImpl::start()
 {
-  _thread.start();
+  my_thread.start();
 }
 
 void ServerImpl::stop()
 {
   Trace trace("ServerImpl::stop");
-  Prague::Guard<Mutex> guard (_mutex);
-  for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
+  Prague::Guard<Mutex> guard (my_mutex);
+  for (clist_t::iterator i = my_contexts.begin(); i != my_contexts.end(); i++)
     ServerImpl::destroy_context(*i);
-  _contexts.clear();
+  my_contexts.clear();
 }
 
 void ServerImpl::ping()
 {
   Trace trace("ServerImpl::ping");
-  Prague::Guard<Mutex> guard (_mutex);
+  Prague::Guard<Mutex> guard(my_mutex);
   clist_t updated_contexts;
-  for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
+  for (clist_t::iterator i = my_contexts.begin(); i != my_contexts.end(); i++)
   {
     if ((*i)->ping())
-	updated_contexts.push_back(*i);
+      updated_contexts.push_back(*i);
     else
-	destroy_context(*i);
+      destroy_context(*i);
   }
-  _contexts = updated_contexts;
+  my_contexts = updated_contexts;
 };
 
 void ServerImpl::scan(const std::string &name)
 {
-  Prague::Guard<Mutex> guard(_mutex);
+  Prague::Guard<Mutex> guard(my_mutex);
   /*
    * load all files in <name> according to the regexp '\\.so$'
    */
@@ -139,7 +139,7 @@ void ServerImpl::scan(const std::string &name)
 	  Logger::log(Logger::loader) << (*i)->name() << " not loadable " << e.what() << std::endl;
 	  continue;
 	}
-      _plugins.push_back(plugin);
+      my_plugins.push_back(plugin);
       Logger::log(Logger::loader) << "ServerImpl: loaded plugin for " << (*plugin)->repo_id() << " from " << (*i)->name() << std::endl;
     }
 }
@@ -147,35 +147,36 @@ void ServerImpl::scan(const std::string &name)
 //. hope you know what you are doing if you call this...
 void ServerImpl::clear()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i) delete *i;
-  _plugins.clear();
+  Prague::Guard<Mutex> guard(my_mutex);
+  for (pmap_t::iterator i = my_plugins.begin(); i != my_plugins.end(); ++i) delete *i;
+  my_plugins.clear();
 }
 
 ServerImpl::PluginList ServerImpl::list()
 {
   PluginList pl;
-  for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
+  for (pmap_t::iterator i = my_plugins.begin(); i != my_plugins.end(); ++i)
     pl.insert(PluginList::value_type((**i)->repo_id(), (**i)->properties()));
   return pl;
 }
 
 KitImpl *ServerImpl::create(const char *type,
 			    const Kit::PropertySeq &properties,
-			    PortableServer::POA_ptr poa)
+			    PortableServer::POA_ptr poa,
+			    ServerContextImpl *context)
 {
   Trace trace("ServerImpl::create");
-  for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
+  for (pmap_t::iterator i = my_plugins.begin(); i != my_plugins.end(); ++i)
     if ((**i)->_is_a(type) && (**i)->supports(properties))
-      {
-	KitImpl *kit = (**i)->clone(properties);
-	kit->_poa = PortableServer::POA::_duplicate(poa);
-	PortableServer::POA_var root = kit->_default_POA();
-	PortableServer::ObjectId *oid = root->activate_object(kit);
-	kit->_remove_ref();
-	delete oid;
-	return kit;
-      }
+    {
+      KitImpl *kit = (**i)->clone(properties, context);
+      kit->my_poa = PortableServer::POA::_duplicate(poa);
+      PortableServer::POA_var root = kit->_default_POA();
+      PortableServer::ObjectId *oid = root->activate_object(kit);
+      kit->_remove_ref();
+      delete oid;
+      return kit;
+    }
   return 0;
 }
 
@@ -183,10 +184,10 @@ void *ServerImpl::run(void *X)
 {
   ServerImpl *server = reinterpret_cast<ServerImpl *>(X);
   while (true)
-    {
-      Thread::delay(1000);
-      server->ping();
-    }
+  {
+    Thread::delay(1000);
+    server->ping();
+  }
   return 0;
 }
 
@@ -202,38 +203,38 @@ void ServerImpl::destroy_context(ServerContextImpl *context)
    */
   catch (const CORBA::OBJECT_NOT_EXIST &)
   {
-      std::cerr << "Caught CORBA::OBJECT_NOT_EXIST while cleaning up "
-		<< "a ServerContext" << std::endl;
+    std::cerr << "Caught CORBA::OBJECT_NOT_EXIST while cleaning up "
+	      << "a ServerContext" << std::endl;
   }
   catch (const CORBA::COMM_FAILURE &)
   {
-      std::cerr << "Caught CORBA::COMM_FAILURE while cleaning up "
-		<< "a ServerContext" << std::endl;
+    std::cerr << "Caught CORBA::COMM_FAILURE while cleaning up "
+	      << "a ServerContext" << std::endl;
   }
   catch (const CORBA::TRANSIENT &)
   {
-      std::cerr << "Caught CORBA::TRANSIENT while cleaning up "
-		<< "a ServerContext" << std::endl;
+    std::cerr << "Caught CORBA::TRANSIENT while cleaning up "
+	      << "a ServerContext" << std::endl;
   }
   catch (const PortableServer::POA::ObjectNotActive &)
   {
-      std::cerr << "Caught POA::ObjectNotActive while cleaning up "
-		<< "a ServerContext" << std::endl;
+    std::cerr << "Caught POA::ObjectNotActive while cleaning up "
+	      << "a ServerContext" << std::endl;
   }
   catch (const PortableServer::POA::WrongPolicy &)
   {
-      std::cerr << "Caught POA::WrongPolicy while cleaning up "
-		<< "a ServerContext" << std::endl;
+    std::cerr << "Caught POA::WrongPolicy while cleaning up "
+	      << "a ServerContext" << std::endl;
   }
   catch(const std::exception & e)
   {
-      std::cerr << "Caught a std::exeception while cleaning up "
-		<< "a ServerContext (" << e.what() << ")" << std::endl;
+    std::cerr << "Caught a std::exeception while cleaning up "
+	      << "a ServerContext (" << e.what() << ")" << std::endl;
   }
   catch(...)
   {
-      std::cerr << "Caught unknown exception while cleaning up "
-		<< "a ServerContext" << std::endl;
+    std::cerr << "Caught unknown exception while cleaning up "
+	      << "a ServerContext" << std::endl;
   }
   delete oid;
 }

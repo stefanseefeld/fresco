@@ -32,8 +32,9 @@ using namespace Fresco;
 using namespace Berlin::ImageKit;
 
 ImageKitImpl::ImageKitImpl(const std::string &id,
-			   const Fresco::Kit::PropertySeq &p)
-    : KitImpl(id, p) { }
+			   const Fresco::Kit::PropertySeq &p,
+			   ServerContextImpl *c)
+    : KitImpl(id, p, c) { }
 ImageKitImpl::~ImageKitImpl() { }
 
 Raster_ptr ImageKitImpl::create_empty_raster()
@@ -51,5 +52,5 @@ Raster_ptr ImageKitImpl::create_raster(const char *file)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ImageKitImpl"};
-  return create_kit<ImageKitImpl> ("IDL:fresco.org/Fresco/ImageKit:1.0", properties, 2);
+  return create_prototype<ImageKitImpl> ("IDL:fresco.org/Fresco/ImageKit:1.0", properties, 2);
 }

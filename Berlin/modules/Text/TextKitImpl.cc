@@ -46,16 +46,18 @@ using namespace Fresco;
 using namespace Berlin::TextKit;
 
 TextKitImpl::TextKitImpl(const std::string &id,
-			 const Fresco::Kit::PropertySeq &p)
-    : KitImpl(id, p),  _strut(0),
-      _lineCompositor(new LRCompositor()), 
-      _pageCompositor(new TBCompositor())
+			 const Fresco::Kit::PropertySeq &p,
+			 ServerContextImpl *c)
+  : KitImpl(id, p, c),
+    my_strut(0),
+    my_lineCompositor(new LRCompositor()), 
+    my_pageCompositor(new TBCompositor())
 { }
 
 TextKitImpl::~TextKitImpl()
 {
-  delete _lineCompositor;
-  delete _pageCompositor;
+  delete my_lineCompositor;
+  delete my_pageCompositor;
 }
 
 void TextKitImpl::bind(ServerContext_ptr sc)
@@ -63,12 +65,11 @@ void TextKitImpl::bind(ServerContext_ptr sc)
   KitImpl::bind(sc);
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  _canonicalDK =
-      DrawingKit::_narrow(sc->
-			  get_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0"));
-  _layout = resolve_kit<LayoutKit>(sc,
-				   "IDL:fresco.org/Fresco/LayoutKit:1.0",
-				   props);
+  my_canonicalDK =
+    DrawingKit::_narrow(sc->get_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0"));
+  my_layout = resolve_kit<LayoutKit>(sc,
+				     "IDL:fresco.org/Fresco/LayoutKit:1.0",
+				     props);
 }
 
 // chunks are flyweights
@@ -90,59 +91,59 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
   if (len == 1) return glyph(u[0]);
   else 
   {
-      Graphic_var hbox = _layout->hbox();
-      hbox->append_graphic(Graphic_var(strut()));
-      Babylon::String tmp(Unicode::to_internal(u));
-      // for (unsigned int i = 0; i < len; ++i)
-      for(Babylon::vis_iterator i(tmp.begin(), tmp.end());
-	  i != tmp.end();
-	  ++i)
-	  hbox->append_graphic(Graphic_var(glyph(Unicode::to_CORBA(*i))));
-      return hbox._retn();
+    Graphic_var hbox = my_layout->hbox();
+    hbox->append_graphic(Graphic_var(strut()));
+    Babylon::String tmp(Unicode::to_internal(u));
+    // for (unsigned int i = 0; i < len; ++i)
+    for(Babylon::vis_iterator i(tmp.begin(), tmp.end());
+	i != tmp.end();
+	++i)
+      hbox->append_graphic(Graphic_var(glyph(Unicode::to_CORBA(*i))));
+    return hbox._retn();
   }
 }
 
 Graphic_ptr TextKitImpl::glyph(Unichar ch)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  if (_cache.find(ch) == _cache.end())
+  Prague::Guard<Mutex> guard(my_mutex);
+  if (my_cache.find(ch) == my_cache.end())
   {
-      Graphic::Requisition r;
-      GraphicImpl::init_requisition(r);
-      _canonicalDK->allocate_char(ch, r);
-      TextChunk *chunk = new TextChunk(ch, r);
-      activate(chunk);
-      _cache[ch] = chunk->_this();
+    Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    my_canonicalDK->allocate_char(ch, r);
+    TextChunk *chunk = new TextChunk(ch, r);
+    activate(chunk);
+    my_cache[ch] = chunk->_this();
   }
-  return Graphic::_duplicate(_cache[ch]);
+  return Graphic::_duplicate(my_cache[ch]);
 }
 
 Graphic_ptr TextKitImpl::strut()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  if (!_strut)
+  Prague::Guard<Mutex> guard(my_mutex);
+  if (!my_strut)
   {
-      DrawingKit::FontMetrics metrics = _canonicalDK->font_metrics();
-      Graphic::Requisition r;
-      GraphicImpl::init_requisition(r);
-      r.y.natural = r.y.minimum = r.y.maximum =
-	  static_cast<Coord>(metrics.height >> 6) /
-	  _canonicalDK->resolution(yaxis);
-      r.y.defined = true;
-      r.y.align = metrics.height == 0 ? 0.0 :
-	  static_cast<double>(metrics.ascender) / metrics.height; 
-      _strut = new Strut(r);
-      activate(_strut);
+    DrawingKit::FontMetrics metrics = my_canonicalDK->font_metrics();
+    Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    r.y.natural = r.y.minimum = r.y.maximum =
+      static_cast<Coord>(metrics.height >> 6) /
+      my_canonicalDK->resolution(yaxis);
+    r.y.defined = true;
+    r.y.align = metrics.height == 0 ? 0.0 :
+      static_cast<double>(metrics.ascender) / metrics.height; 
+    my_strut = new Strut(r);
+    activate(my_strut);
   }
-  return _strut->_this();
+  return my_strut->_this();
 }
 
 Graphic_ptr TextKitImpl::simple_viewer(TextBuffer_ptr buf)
 {
   Graphic_var tv = create<Graphic>(new TextViewer(buf,
 						  TextKit_var(_this()),
-						  _canonicalDK,
-						  _lineCompositor));
+						  my_canonicalDK,
+						  my_lineCompositor));
   buf->attach(Observer_ptr(Graphic_ptr(tv)));
   return tv;
 }
@@ -151,9 +152,9 @@ Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
 {
   Graphic_var tv = create<Graphic>(new TerminalView(buf,
 						    TextKit_var(_this()),
-						    _canonicalDK,
-						    _lineCompositor,
-						    _pageCompositor));
+						    my_canonicalDK,
+						    my_lineCompositor,
+						    my_pageCompositor));
   buf->attach(Observer_ptr(Graphic_ptr(tv)));
   return tv;
 }
@@ -237,5 +238,5 @@ Graphic_ptr TextKitImpl::font_attribute(Graphic_ptr g, const NVPair &nvp)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
-  return create_kit<TextKitImpl>("IDL:fresco.org/Fresco/TextKit:1.0", properties, 4);
+  return create_prototype<TextKitImpl>("IDL:fresco.org/Fresco/TextKit:1.0", properties, 4);
 } 

@@ -126,6 +126,7 @@ CORBA::Boolean VertexManipulator::manipulate(PickTraversal_ptr traversal, const 
       _path->nodes.length(i + 2);
       _path->nodes[i] = current;
       _path->nodes[i + 1] = current;
+
       _figure->handles(_path);
       _figure->need_resize();
 

@@ -30,16 +30,21 @@
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
-namespace Berlin {
-namespace FigureKit {
+namespace Berlin 
+{
+namespace FigureKit 
+{
 
 class FigureKitImpl : public virtual POA_Fresco::FigureKit,
 		      public KitImpl
 {
  public:
-  FigureKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  FigureKitImpl(const std::string &,
+		const Fresco::Kit::PropertySeq &,
+		ServerContextImpl *);
   virtual ~FigureKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new FigureKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new FigureKitImpl(repo_id(), p, c);}
   
   Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
   Fresco::Graphic_ptr fitter(Fresco::Graphic_ptr);

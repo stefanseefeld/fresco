@@ -50,7 +50,7 @@ class ServerImpl : public virtual POA_Fresco::Server,
   typedef std::map<std::string, CORBA::Object_var> smap_t;
 
 public:
-  PortableServer::POA_ptr _default_POA() { return PortableServer::POA::_duplicate(_poa);}
+  PortableServer::POA_ptr _default_POA() { return PortableServer::POA::_duplicate(my_poa);}
 
   typedef std::multimap<std::string, Fresco::Kit::PropertySeq_var> PluginList;
 
@@ -85,8 +85,8 @@ public:
   //. Finds the requested Kit and returns a reference to it.
   template <class K>
   typename K::_ptr_type resolve(const char *,
-	  const Fresco::Kit::PropertySeq &,
-	  PortableServer::POA_ptr);
+				const Fresco::Kit::PropertySeq &,
+				PortableServer::POA_ptr);
 
   //. Starts the server.
   void start();
@@ -108,7 +108,8 @@ protected:
   //. Use resolve,
   KitImpl *create(const char *,
 		  const Fresco::Kit::PropertySeq &,
-		  PortableServer::POA_ptr);
+		  PortableServer::POA_ptr,
+		  ServerContextImpl *);
 
 private:
   ServerImpl(const CORBA::PolicyList &);
@@ -119,39 +120,41 @@ private:
   //. Destroys a given Servercontext (and with that the client's resources
   //. in this server).
   static void destroy_context(ServerContextImpl *);
-  PortableServer::POA_var _poa;
-  CORBA::PolicyList       _policies;
-  Prague::Thread          _thread;
-  Prague::Mutex           _mutex;
-  smap_t                  _singletons;
-  clist_t                 _contexts;
-  pmap_t                  _plugins;
-  kmap_t                  _kits;
-  static ServerImpl      *_server;
+  PortableServer::POA_var my_poa;
+  CORBA::PolicyList       my_policies;
+  Prague::Thread          my_thread;
+  Prague::Mutex           my_mutex;
+  smap_t                  my_singletons;
+  clist_t                 my_contexts;
+  pmap_t                  my_plugins;
+  kmap_t                  my_kits;
+  static ServerImpl      *my_server;
 };
 
 template <class K>
-typename K::_ptr_type ServerImpl::resolve(const char *type, const Fresco::Kit::PropertySeq &properties, PortableServer::POA_ptr poa)
+typename K::_ptr_type ServerImpl::resolve(const char *type,
+					  const Fresco::Kit::PropertySeq &properties,
+					  PortableServer::POA_ptr poa)
 {
-    KitImpl *kit = create(type, properties, poa);
-    if (!kit) return K::_nil();
-    typename K::_var_type reference;
-    try
-      {
-	reference = K::_narrow(Fresco::Kit_var(kit->_this()));
-      }
-    catch (CORBA::Exception &e)
-      {
-	std::cerr << "Cannot narrow reference: " << e << std::endl;
-	return K::_nil();
-      }
-    if (CORBA::is_nil(reference))
-      {
-	std::cerr << "Reference has incorrect type" << std::endl;
-	return K::_nil();
-      }
-    _kits.push_back(kit);
-    return reference._retn();
+  KitImpl *kit = create(type, properties, poa, 0);
+  if (!kit) return K::_nil();
+  typename K::_var_type reference;
+  try
+  {
+    reference = K::_narrow(Fresco::Kit_var(kit->_this()));
+  }
+  catch (CORBA::Exception &e)
+  {
+    std::cerr << "Cannot narrow reference: " << e << std::endl;
+    return K::_nil();
+  }
+  if (CORBA::is_nil(reference))
+  {
+    std::cerr << "Reference has incorrect type" << std::endl;
+    return K::_nil();
+  }
+  my_kits.push_back(kit);
+  return reference._retn();
 }
 
 #endif

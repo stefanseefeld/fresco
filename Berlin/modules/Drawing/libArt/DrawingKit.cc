@@ -49,8 +49,9 @@ using namespace Berlin::DrawingKit;
 libArt::DrawingKit::~DrawingKit() {}
 
 libArt::DrawingKit::DrawingKit(const std::string &id,
-                               const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p),
+                               const Fresco::Kit::PropertySeq &p,
+			       ServerContextImpl *c)
+  : KitImpl(id, p, c),
     _drawable(0),
     _xres(1.),
     _yres(1.),
@@ -64,9 +65,10 @@ libArt::DrawingKit::DrawingKit(const std::string &id,
     _fg.red = 1.0; _fg.green = 1.0; _fg.blue = 1.0; _fg.alpha = 1.0;
 }
 
-KitImpl *libArt::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
+KitImpl *libArt::DrawingKit::clone(const Fresco::Kit::PropertySeq &p,
+				   ServerContextImpl *c)
 {
-  libArt::DrawingKit *kit = new libArt::DrawingKit(repo_id(), p);
+  libArt::DrawingKit *kit = new libArt::DrawingKit(repo_id(), p, c);
   kit->init();
   return kit;
 }
@@ -558,5 +560,5 @@ void libArt::DrawingKit::flush()
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LibArtDrawingKit"};
-  return create_kit<libArt::DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
+  return create_prototype<libArt::DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
 }

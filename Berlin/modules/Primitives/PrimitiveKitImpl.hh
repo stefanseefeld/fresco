@@ -28,16 +28,21 @@
 #include <Fresco/Primitive.hh>
 #include <Berlin/KitImpl.hh>
 
-namespace Berlin {
-namespace PrimitiveKit {
+namespace Berlin 
+{
+namespace PrimitiveKit 
+{
 
 class PrimitiveKitImpl : public virtual POA_Fresco::PrimitiveKit,
 			 public KitImpl
 {
 public:
-  PrimitiveKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  PrimitiveKitImpl(const std::string &,
+		   const Fresco::Kit::PropertySeq &,
+		   ServerContextImpl *);
   virtual ~PrimitiveKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new PrimitiveKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new PrimitiveKitImpl(repo_id(), p, c);}
 
   Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
   Primitive::Geometry_ptr geometry(const Fresco::Mesh &);

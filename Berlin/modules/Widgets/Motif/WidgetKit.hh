@@ -35,17 +35,23 @@
 
 class GraphicImpl;
 
-namespace Berlin {
-namespace WidgetKit {
-namespace Motif {
+namespace Berlin 
+{
+namespace WidgetKit 
+{
+namespace Motif 
+{
 
 class WidgetKit : public virtual POA_Fresco::WidgetKit,
 		  public KitImpl
 {
  public:
-  WidgetKit(const std::string &, const Fresco::Kit::PropertySeq &);
+  WidgetKit(const std::string &,
+	    const Fresco::Kit::PropertySeq &,
+	    ServerContextImpl *);
   virtual ~WidgetKit();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new WidgetKit(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new WidgetKit(repo_id(), p, c);}
   virtual void bind(Fresco::ServerContext_ptr);
   
   Fresco::Trigger_ptr      button(Fresco::Graphic_ptr, Fresco::Command_ptr);

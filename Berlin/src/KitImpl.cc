@@ -25,6 +25,7 @@
 #include <Berlin/Logger.hh>
 #include <Berlin/KitImpl.hh>
 #include "Berlin/ServantBase.hh"
+#include "Berlin/ServerContextImpl.hh"
 #include <typeinfo>
 
 using namespace Prague;
@@ -35,8 +36,13 @@ namespace
   Mutex mutex;
 };
 
-KitImpl::KitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : _repo_id(id), _props(new Fresco::Kit::PropertySeq(p)), _refcount(1)
+KitImpl::KitImpl(const std::string &id,
+		 const Fresco::Kit::PropertySeq &p,
+		 ServerContextImpl *c)
+  : my_repo_id(id),
+    my_props(new Fresco::Kit::PropertySeq(p)),
+    my_refcount(1),
+    my_context(c)
 {
   Trace trace("KitImpl::KitImpl");
 #ifdef LCLOG
@@ -47,13 +53,14 @@ KitImpl::KitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
 KitImpl::~KitImpl()
 {
   Trace trace("KitImpl::~KitImpl");  
-  Logger::log(Logger::lifecycle) << "destroying POA... " << _poa << std::endl;
-  _poa->destroy(true, true);
-  Logger::log(Logger::lifecycle) << "destroying POA done " << _poa << std::endl;
+  Logger::log(Logger::lifecycle) << "destroying POA... " << my_poa << std::endl;
+  my_poa->destroy(true, false);
+  Logger::log(Logger::lifecycle) << "destroying POA done " << my_poa << std::endl;
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "KitImpl::~KitImpl: " << this << " destructed" << std::endl;
 #endif
-  delete _props;
+  delete my_props;
+  if (my_context) my_context->erase(this);
 }
 
 CORBA::Boolean KitImpl::supports(const Fresco::Kit::PropertySeq &p)
@@ -62,18 +69,18 @@ CORBA::Boolean KitImpl::supports(const Fresco::Kit::PropertySeq &p)
   const Fresco::Kit::Property *begin2 = p.get_buffer();
   const Fresco::Kit::Property *end2 = begin2 + p.length();
   for (const Fresco::Kit::Property *property2 = begin2; property2 != end2; property2++)
-    {
-      const Fresco::Kit::Property *begin1 = _props->get_buffer();
-      const Fresco::Kit::Property *end1 = begin1 + _props->length();
-      const Fresco::Kit::Property *property1;
-      for (property1 = begin1; property1 != end1; property1++)
-	if (strcmp(property1->name, property2->name) == 0)
-	  {
-	    if (strcmp(property1->value, property2->value) == 0) break;
-	    else return false; // value not supported
-	  }
-      if (property1 == end1) return false; // property not supported
-    }
+  {
+    const Fresco::Kit::Property *begin1 = my_props->get_buffer();
+    const Fresco::Kit::Property *end1 = begin1 + my_props->length();
+    const Fresco::Kit::Property *property1;
+    for (property1 = begin1; property1 != end1; property1++)
+      if (strcmp(property1->name, property2->name) == 0)
+      {
+	if (strcmp(property1->value, property2->value) == 0) break;
+	else return false; // value not supported
+      }
+    if (property1 == end1) return false; // property not supported
+  }
   return true;
 }
 
@@ -83,8 +90,8 @@ void KitImpl::activate(::ServantBase *servant)
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "activating " << servant << " (" << typeid(*servant).name() << ")" << std::endl;
 #endif
-  PortableServer::ObjectId *oid = _poa->activate_object(servant);
-  servant->_poa = PortableServer::POA::_duplicate(_poa);
+  PortableServer::ObjectId *oid = my_poa->activate_object(servant);
+  servant->_poa = PortableServer::POA::_duplicate(my_poa);
   servant->_remove_ref();
   delete oid;
   servant->activate_composite();
@@ -93,11 +100,11 @@ void KitImpl::activate(::ServantBase *servant)
 void KitImpl::deactivate(::ServantBase *servant)
 {
   Trace trace("KitImpl::deactivate(PortableServer::Servant)");
-  PortableServer::ObjectId *oid = _poa->servant_to_id(servant);
+  PortableServer::ObjectId *oid = my_poa->servant_to_id(servant);
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "deactivating " << servant << " (" << typeid(*servant).name() << ")" << std::endl;
 #endif
-  _poa->deactivate_object(*oid);
+  my_poa->deactivate_object(*oid);
   delete oid;
 }
 
@@ -105,7 +112,7 @@ void KitImpl::increment()
 {
   Trace trace("KitImpl::increment");
   Prague::Guard<Mutex> guard(mutex);
-  ++_refcount;
+  ++my_refcount;
 #ifdef LCLOG
   Logger::log(Logger::lifecycle) << "KitImpl::increment on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
 #endif
@@ -117,7 +124,7 @@ void KitImpl::decrement()
   bool done;
   {
     Prague::Guard<Mutex> guard(mutex);
-    done = --_refcount;
+    done = --my_refcount;
 #ifdef LCLOG
     Logger::log(Logger::lifecycle) << "KitImpl::decrement on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
 #endif

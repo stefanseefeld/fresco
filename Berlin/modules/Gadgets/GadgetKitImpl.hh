@@ -31,16 +31,21 @@
 
 class GraphicImpl;
 
-namespace Berlin {
-namespace GadgetKit {
+namespace Berlin 
+{
+namespace GadgetKit 
+{
 
 class GadgetKitImpl : public virtual POA_Fresco::GadgetKit,
 		      public KitImpl
 {
  public:
-  GadgetKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  GadgetKitImpl(const std::string &,
+		const Fresco::Kit::PropertySeq &,
+		ServerContextImpl *);
   virtual ~GadgetKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new GadgetKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new GadgetKitImpl(repo_id(), p, c);}
   virtual void bind(Fresco::ServerContext_ptr);
   virtual Fresco::Graphic_ptr rgb(Fresco::Graphic_ptr, Fresco::BoundedValue_ptr, Fresco::BoundedValue_ptr, Fresco::BoundedValue_ptr);
   virtual Fresco::Graphic_ptr alpha(Fresco::Graphic_ptr, Fresco::BoundedValue_ptr);

@@ -40,8 +40,10 @@ using namespace Fresco;
 
 using namespace Berlin::DrawingKit;
 
-PostScript::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p),
+PostScript::DrawingKit::DrawingKit(const std::string &id,
+				   const Fresco::Kit::PropertySeq &p,
+				   ServerContextImpl *c)
+  : KitImpl(id, p, c),
     _os(new std::filebuf())
 {
   _os.precision(5);
@@ -54,11 +56,11 @@ PostScript::DrawingKit::~DrawingKit()
 {
 }
 
-KitImpl *PostScript::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
+KitImpl *PostScript::DrawingKit::clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
 {
-  DrawingKit *kit = new DrawingKit(repo_id(), p);
+  DrawingKit *kit = new DrawingKit(repo_id(), p, c);
   kit->init();
-  kit->increment(); // XXX covering up a bug elsewhere.
   return kit;
 }
 
@@ -384,5 +386,5 @@ void PostScript::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCo
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "PSDrawingKit"};
-  return create_kit<PostScript::DrawingKit> ("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
+  return create_prototype<PostScript::DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
 }

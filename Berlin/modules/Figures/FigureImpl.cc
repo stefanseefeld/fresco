@@ -207,6 +207,9 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 // 	    {
 // 	      drawing->foreground(_fg);
 // 	      drawing->surface_fillstyle(DrawingKit::outlined);
+	  std::cout << "drawing " << _path->nodes.length() << std::endl;
+	  for (size_t i = 0; i != _path->nodes.length(); ++i)
+	    std::cout << _path->nodes[i].x << ' ' << _path->nodes[i].y << std::endl;
 	  drawing->draw_path(_path);
 // 	}
 	  drawing->restore();

@@ -36,11 +36,13 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Berlin::DrawingKit;
 
-class openGL::DrawingKit::Light::Init : public virtual GLContext::Callback {
+class openGL::DrawingKit::Light::Init : public virtual GLContext::Callback 
+{
 public:
   Init::Init(int *max)
     : my_max(max) {}
-  void operator()() {
+  void operator()() 
+  {
     glGetIntegerv(GL_MAX_LIGHTS, my_max);  
     delete this;
   }
@@ -73,8 +75,10 @@ void openGL::DrawingKit::Light::pop()
   --_number;
 }
 
-openGL::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p),
+openGL::DrawingKit::DrawingKit(const std::string &id,
+			       const Fresco::Kit::PropertySeq &p,
+			       ServerContextImpl *c)
+  : KitImpl(id, p, c),
     _drawable(0),
     _tx(0),
     _font(0),
@@ -84,9 +88,10 @@ openGL::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::Propert
 {
 }
 
-KitImpl *openGL::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
+KitImpl *openGL::DrawingKit::clone(const Fresco::Kit::PropertySeq &p,
+				   ServerContextImpl *c)
 {
-  openGL::DrawingKit *kit = new openGL::DrawingKit(repo_id(), p);
+  openGL::DrawingKit *kit = new openGL::DrawingKit(repo_id(), p, c);
   kit->init();
   return kit;
 }
@@ -707,6 +712,6 @@ void openGL::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord 
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "GLDrawingKit"};
-  return create_kit<openGL::DrawingKit> ("IDL:fresco.org/Fresco/DrawingKit3D:1.0", properties, 2);
+  return create_prototype<openGL::DrawingKit> ("IDL:fresco.org/Fresco/DrawingKit3D:1.0", properties, 2);
 }
 

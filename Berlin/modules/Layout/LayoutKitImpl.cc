@@ -42,14 +42,15 @@ using namespace Layout;
 using namespace Berlin::LayoutKit;
 
 LayoutKitImpl::LayoutKitImpl(const std::string &id,
-			     const Fresco::Kit::PropertySeq &p)
-    : KitImpl(id, p), _fill(GraphicImpl::infinity) { }
+			     const Fresco::Kit::PropertySeq &p,
+			     ServerContextImpl *c)
+    : KitImpl(id, p, c), my_fill(GraphicImpl::infinity) { }
 
 LayoutKitImpl::~LayoutKitImpl() {}
 
-void LayoutKitImpl::fill(Coord c) { _fill = c; }
+void LayoutKitImpl::fill(Coord c) { my_fill = c; }
 
-Coord LayoutKitImpl::fill() { return _fill; }
+Coord LayoutKitImpl::fill() { return my_fill; }
 
 Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 {
@@ -191,12 +192,12 @@ Graphic_ptr LayoutKitImpl::glue_requisition(const Graphic::Requisition &r)
 
 Graphic_ptr LayoutKitImpl::hfill()
 {
-    return create<Graphic>(new Glue(xaxis, 0., _fill, 0., 0.));
+    return create<Graphic>(new Glue(xaxis, 0., my_fill, 0., 0.));
 }
 
 Graphic_ptr LayoutKitImpl::hglue_fill(Coord natural)
 {
-    return create<Graphic>(new Glue(xaxis, natural, _fill, 0., 0.));
+    return create<Graphic>(new Glue(xaxis, natural, my_fill, 0., 0.));
 }
 
 Graphic_ptr LayoutKitImpl::hglue(Coord natural,
@@ -220,12 +221,12 @@ Graphic_ptr LayoutKitImpl::hspace(Coord natural)
 
 Graphic_ptr LayoutKitImpl::vfill()
 {
-    return create<Graphic>(new Glue(yaxis, 0., _fill, 0., 0.));
+    return create<Graphic>(new Glue(yaxis, 0., my_fill, 0., 0.));
 }
 
 Graphic_ptr LayoutKitImpl::vglue_fill(Coord natural)
 {
-    return create<Graphic>(new Glue(yaxis, natural, _fill, 0., 0.));
+    return create<Graphic>(new Glue(yaxis, natural, my_fill, 0., 0.));
 }
 
 Graphic_ptr LayoutKitImpl::vglue(Coord natural,
@@ -346,7 +347,7 @@ LayoutKitImpl::flexible(Graphic_ptr g, Coord stretch, Coord shrink)
 
 Graphic_ptr LayoutKitImpl::flexible_fill(Graphic_ptr g)
 {
-    return flexible(g, _fill, 0.);
+    return flexible(g, my_fill, 0.);
 }
 
 Graphic_ptr
@@ -552,5 +553,5 @@ LayoutKitImpl::tmargin_flexible(Graphic_ptr g,
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LayoutKitImpl"};
-  return create_kit<LayoutKitImpl> ("IDL:fresco.org/Fresco/LayoutKit:1.0", properties, 2);
+  return create_prototype<LayoutKitImpl> ("IDL:fresco.org/Fresco/LayoutKit:1.0", properties, 2);
 }

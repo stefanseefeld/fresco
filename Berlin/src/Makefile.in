@@ -42,7 +42,7 @@ SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
 	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
 	   PNG.cc RasterImpl.cc \
-	   KitImpl.cc RCManager.cc
+	   KitImpl.cc RCManager.cc ServerContextImpl.cc ServerImpl.cc
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
@@ -56,7 +56,8 @@ HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
 	   ControllerImpl.hh ViewImpl.hh DesktopImpl.hh ScreenImpl.hh \
 	   ScreenManager.hh EventManager.hh PositionalFocus.hh \
 	   NonPositionalFocus.hh FilterImpl.hh SubjectImpl.hh KitImpl.hh \
-	   RCManager.hh DefaultPOA.hh ObserverImpl.hh config.hh
+	   RCManager.hh DefaultPOA.hh ObserverImpl.hh config.hh \
+           ServerContextImpl.hh ServerImpl.hh
 
 CHDR	:= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))

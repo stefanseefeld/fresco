@@ -35,8 +35,10 @@
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace DesktopKit {
+namespace Berlin 
+{
+namespace DesktopKit 
+{
 
 class WindowImpl;
 class DesktopImpl;
@@ -44,10 +46,13 @@ class DesktopImpl;
 class DesktopKitImpl : public virtual POA_Fresco::DesktopKit,
 		       public KitImpl
 {
- public:
-  DesktopKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+public:
+  DesktopKitImpl(const std::string &,
+		 const Fresco::Kit::PropertySeq &,
+		 ServerContextImpl *);
   virtual ~DesktopKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new DesktopKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new DesktopKitImpl(repo_id(), p, c);}
   virtual void bind(Fresco::ServerContext_ptr);
   virtual Fresco::Desktop_ptr desk();
   virtual Fresco::Window_ptr shell(Fresco::Controller_ptr, Fresco::ClientContext_ptr);

@@ -143,8 +143,9 @@ public:
 
 
 CommandKitImpl::CommandKitImpl(const std::string &id,
-			       const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) { }
+			       const Fresco::Kit::PropertySeq &p,
+			       ServerContextImpl *c)
+  : KitImpl(id, p, c) { }
 
 CommandKitImpl::~CommandKitImpl() { }
 
@@ -270,5 +271,5 @@ StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "CommandKitImpl"};
-  return create_kit<CommandKitImpl>("IDL:fresco.org/Fresco/CommandKit:1.0", properties, 2);
+  return create_prototype<CommandKitImpl>("IDL:fresco.org/Fresco/CommandKit:1.0", properties, 2);
 }

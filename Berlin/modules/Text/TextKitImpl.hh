@@ -34,8 +34,10 @@
 #include "TextChunk.hh"                // for our chunks
 #include <map>                         // for the cache
 
-namespace Berlin {
-namespace TextKit {
+namespace Berlin 
+{
+namespace TextKit 
+{
 
 class Compositor;
 class Strut;
@@ -45,9 +47,12 @@ class TextKitImpl : public virtual POA_Fresco::TextKit,
 {
   typedef std::map<Fresco::Unichar, Fresco::Graphic_var> cache_t;
  public:
-  TextKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  TextKitImpl(const std::string &,
+	      const Fresco::Kit::PropertySeq &,
+	      ServerContextImpl *);
   virtual ~TextKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new TextKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new TextKitImpl(repo_id(), p, c);}
   virtual void bind(Fresco::ServerContext_ptr);
 
   Fresco::Graphic_ptr chunk(const Fresco::Unistring &u);
@@ -63,14 +68,14 @@ class TextKitImpl : public virtual POA_Fresco::TextKit,
   Fresco::Graphic_ptr style(Fresco::Graphic_ptr, const Fresco::Unistring &);
   Fresco::Graphic_ptr font_attribute(Fresco::Graphic_ptr, const Fresco::NVPair &);
  private:
-  cache_t                _cache;
-  Fresco::DrawingKit_var _canonicalDK;
+  cache_t                my_cache;
+  Fresco::DrawingKit_var my_canonicalDK;
 
-  RefCount_var<Fresco::LayoutKit> _layout;
-  Impl_var<Strut>       _strut;
-  Prague::Mutex         _mutex;
-  Compositor           *_lineCompositor;
-  Compositor           *_pageCompositor;
+  RefCount_var<Fresco::LayoutKit> my_layout;
+  Impl_var<Strut>       my_strut;
+  Prague::Mutex         my_mutex;
+  Compositor           *my_lineCompositor;
+  Compositor           *my_pageCompositor;
 };
 
 } // namespace

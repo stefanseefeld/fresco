@@ -109,8 +109,9 @@ private:
 };
 
 ToolKitImpl::ToolKitImpl(const std::string &id,
-			 const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
+			 const Fresco::Kit::PropertySeq &p,
+			 ServerContextImpl *c)
+  : KitImpl(id, p, c) {}
 
 ToolKitImpl::~ToolKitImpl() { }
 
@@ -330,5 +331,5 @@ Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width,
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ToolKitImpl"};
-  return create_kit<Berlin::ToolKit::ToolKitImpl> ("IDL:fresco.org/Fresco/ToolKit:1.0", properties, 2);
+  return create_prototype<Berlin::ToolKit::ToolKitImpl> ("IDL:fresco.org/Fresco/ToolKit:1.0", properties, 2);
 }

@@ -203,8 +203,9 @@ class ZoomAdjuster : public virtual ViewImpl,
 };
 
 GadgetKitImpl::GadgetKitImpl(const std::string &id,
-			     const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) { }
+			     const Fresco::Kit::PropertySeq &p,
+			     ServerContextImpl *c)
+  : KitImpl(id, p, c) { }
 GadgetKitImpl::~GadgetKitImpl() { }
 void GadgetKitImpl::bind(ServerContext_ptr context)
 {
@@ -280,5 +281,5 @@ Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "GadgetKitImpl"};
-  return create_kit<GadgetKitImpl>("IDL:fresco.org/Fresco/GadgetKit:1.0", properties, 2);
+  return create_prototype<GadgetKitImpl>("IDL:fresco.org/Fresco/GadgetKit:1.0", properties, 2);
 } 

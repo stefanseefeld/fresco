@@ -36,9 +36,12 @@ class CommandKitImpl : public virtual POA_Fresco::CommandKit,
 		       public KitImpl
 {
  public:
-  CommandKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  CommandKitImpl(const std::string &,
+		 const Fresco::Kit::PropertySeq &,
+		 ServerContextImpl *);
   virtual ~CommandKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new CommandKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new CommandKitImpl(repo_id(), p, c);}
   virtual void bind(Fresco::ServerContext_ptr);
 
   virtual Fresco::Command_ptr debugger(Fresco::Command_ptr, const char *);

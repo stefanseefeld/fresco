@@ -30,16 +30,21 @@
 
 class GraphicImpl;
 
-namespace Berlin {
-namespace ToolKit {
+namespace Berlin 
+{
+namespace ToolKit 
+{
 
 class ToolKitImpl : public virtual POA_Fresco::ToolKit,
 		    public KitImpl
 {
 public:
-  ToolKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  ToolKitImpl(const std::string &,
+	      const Fresco::Kit::PropertySeq &,
+	      ServerContextImpl *);
   virtual ~ToolKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new ToolKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+ { return new ToolKitImpl(repo_id(), p, c);}
 
   Fresco::Graphic_ptr      debugger(Fresco::Graphic_ptr, const char *);
   Fresco::DrawingState_ptr decorator(Fresco::Graphic_ptr);

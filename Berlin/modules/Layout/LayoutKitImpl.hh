@@ -29,16 +29,21 @@
 
 class GraphicImpl;
 
-namespace Berlin {
-namespace LayoutKit {
+namespace Berlin 
+{
+namespace LayoutKit 
+{
 
 class LayoutKitImpl : public virtual POA_Fresco::LayoutKit,
 		      public KitImpl
 {
 public:
-  LayoutKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
+  LayoutKitImpl(const std::string &,
+		const Fresco::Kit::PropertySeq &,
+		ServerContextImpl *);
   ~LayoutKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new LayoutKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
+  { return new LayoutKitImpl(repo_id(), p, c);}
 
   virtual Fresco::Coord fill();
   virtual void fill(Fresco::Coord);
@@ -119,7 +124,7 @@ public:
   virtual Fresco::Graphic_ptr tmargin(Fresco::Graphic_ptr, Fresco::Coord);
   virtual Fresco::Graphic_ptr tmargin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
 private:
-  Fresco::Coord _fill;
+  Fresco::Coord my_fill;
 };
 
 } // namespace

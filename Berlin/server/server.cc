@@ -40,11 +40,10 @@
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Berlin/RCManager.hh>
+#include <Berlin/ServerImpl.hh>
 
 // to allow to override the default Babylon path:
 #include <Babylon/Dictionary.hh>
-
-#include "ServerImpl.hh"
 
 #include <fstream>
 #include <sstream>
@@ -376,240 +375,239 @@ int main(int argc, char **argv) /*FOLD00*/
   CORBA::ORB_var orb;
   try
   {
-      orb = CORBA::ORB_init(argc, argv);
-      PortableServer::POA_var poa = 
-              resolve_init<PortableServer::POA>(orb, "RootPOA");
-      PortableServer::POAManager_var pman = poa->the_POAManager();
-      pman->activate();
-      Logger::log(Logger::corba) << "Root POA is activated." << std::endl;
-       
-      CORBA::PolicyList policies;
+    orb = CORBA::ORB_init(argc, argv);
+    PortableServer::POA_var poa = 
+      resolve_init<PortableServer::POA>(orb, "RootPOA");
+    PortableServer::POAManager_var pman = poa->the_POAManager();
+    pman->activate();
+    Logger::log(Logger::corba) << "Root POA is activated." << std::endl;
+    
+    CORBA::PolicyList policies;
 #ifdef COLOCATION_OPTIMIZATION
 #  if defined(ORB_omniORB)
-      {
-        // create a POA for global objects derived from ServantBase
-        policies.length(2);
-        policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
-        CORBA::Any value;
-        value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
-        policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE,
-                                         value);
-        poa = poa->create_POA("shortcut", pman, policies);
-
-        // create a policy list to be used by kit specific POAs
-        policies.length(1);
-        policies[0] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE,
-                                         value);
-       }
+    {
+      // create a POA for global objects derived from ServantBase
+      policies.length(2);
+      policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
+      CORBA::Any value;
+      value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
+      policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE,
+				       value);
+      poa = poa->create_POA("shortcut", pman, policies);
+      
+      // create a policy list to be used by kit specific POAs
+      policies.length(1);
+      policies[0] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE,
+				       value);
+    }
 #  elif defined(ORB_TAO)
-       // fillin TAO-specific initialisation here...
+    // fillin TAO-specific initialisation here...
 #  endif
-      Logger::log(Logger::corba) << "Colocation optimization activated."
-                                 << std::endl;
+    Logger::log(Logger::corba) << "Colocation optimization activated."
+			       << std::endl;
 #endif
       
-       DefaultPOA::default_POA(poa);
+    DefaultPOA::default_POA(poa);
 
-       Logger::log(Logger::corba) << "Default POA set up." << std::endl;
+    Logger::log(Logger::corba) << "Default POA set up." << std::endl;
 
-       // ---------------------------------------------------------------
-       // Setup Babylon
-       // ---------------------------------------------------------------
+    // ---------------------------------------------------------------
+    // Setup Babylon
+    // ---------------------------------------------------------------
        
-       {
-           Prague::Path path = RCManager::get_path("babylonpath");
-           Babylon::override_path(path);
-       }
+    {
+      Prague::Path path = RCManager::get_path("babylonpath");
+      Babylon::override_path(path);
+    }
 
-       Logger::log(Logger::loader) << "Babylon path set." << std::endl;
+    Logger::log(Logger::loader) << "Babylon path set." << std::endl;
 
-       // ---------------------------------------------------------------
-       // Open the Console
-       // ---------------------------------------------------------------
-      
-       std::string pixels;
-       Fresco::PixelCoord x_pixels(640), y_pixels(480);
-       if (getopt.is_set("pixels")) 
-       {
-	 getopt.get("pixels",&pixels);
-	 unsigned x_position = pixels.find("x");
-	 bool invalid_format = false;
-	 if (x_position == std::string::npos) invalid_format = true;
-	 else
-	 {
-           std::stringstream s(pixels.substr(0,x_position));
-	   s >> x_pixels;
-	   std::stringstream t(pixels.substr(x_position+1,pixels.size()));
-	   t >> y_pixels;
-	 }
-	 if ((x_pixels <= 0) || (y_pixels <= 0)) invalid_format = true;
-	 if (invalid_format)
-	 {
-	   std::cerr << "ERROR: Format of 'pixels' option should be:\n"
-		     << " --pixels=800x600, with 800 and 600 replaced\n"
-		     << "by the desired x and y values"
-		     << std::endl;
-	   exit(1);
-	 }
-       }
+    // ---------------------------------------------------------------
+    // Open the Console
+    // ---------------------------------------------------------------
+    
+    std::string pixels;
+    Fresco::PixelCoord x_pixels(640), y_pixels(480);
+    if (getopt.is_set("pixels")) 
+    {
+      getopt.get("pixels",&pixels);
+      unsigned x_position = pixels.find("x");
+      bool invalid_format = false;
+      if (x_position == std::string::npos) invalid_format = true;
+      else
+      {
+	std::stringstream s(pixels.substr(0,x_position));
+	s >> x_pixels;
+	std::stringstream t(pixels.substr(x_position+1,pixels.size()));
+	t >> y_pixels;
+      }
+      if ((x_pixels <= 0) || (y_pixels <= 0)) invalid_format = true;
+      if (invalid_format)
+      {
+	std::cerr << "ERROR: Format of 'pixels' option should be:\n"
+		  << " --pixels=800x600, with 800 and 600 replaced\n"
+		  << "by the desired x and y values"
+		  << std::endl;
+	exit(1);
+      }
+    }
        
-       value = "";
-       getopt.get("console", &value);
-       try { Console::open(value, argc, argv, poa, x_pixels, y_pixels); }
-       catch (const std::runtime_error &e)
-       {
-	 std::cerr << "ERROR: Failed to open the Console \"" << value
-		   << "\":\n\t" << e.what() << std::endl;
-	 exit(2);
-       }
-       
-       Logger::log(Logger::console) << "Console is initialized." << std::endl;
-       
-       // ---------------------------------------------------------------
-       // Construct Server and load it with kits
-       // ---------------------------------------------------------------
-       
-       // NOTE: currently pass default poa; ideally function would know
-       PortableServer::POA_var server_poa = get_server_poa(orb,poa);
-       ServerImpl * server = ServerImpl::create(server_poa, policies);
-       Logger::log(Logger::loader) << "Server created in server-POA" 
-                                   << std::endl;
-
-       Prague::Path path = RCManager::get_path("modulepath");
-       for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
-           server->scan(*i);
-       Logger::log(Logger::loader) << "Kits are loaded." << std::endl;
-       
-       // ---------------------------------------------------------------
-       // Setup default DrawingKit
-       // ---------------------------------------------------------------
-       
-       Kit::PropertySeq props;
-       props.length(1);
-       props[0].name = CORBA::string_dup("implementation");
-       value = "";
-       getopt.get("drawing", &value);
-       if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
-       else props[0].value = CORBA::string_dup("LibArtDrawingKit");
-       DrawingKit_var drawing =
-         server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
-                                     props, poa);
-       Logger::log(Logger::drawing) << "DrawingKit is resolved." << std::endl;
-       if (CORBA::is_nil(drawing))
-       {
-         std::cerr << "ERROR: Unable to open "
-                   << "IDL:fresco.org/Fresco/DrawingKit:1.0"
-                   << " with attribute "
-                   << props[0].name << '=' << props[0].value << std::endl;
-         exit(3);
-       }
-       Logger::log(Logger::drawing) << "Drawing system is set up." << std::endl;
-      
-       // ---------------------------------------------------------------
-       // make a Screen graphic to hold this server's scene graph
-       // ---------------------------------------------------------------
-       
-       ScreenImpl *screen = new ScreenImpl();
-       EventManager *emanager = 
-               new EventManager(Controller_var(screen->_this()), 
-                                screen->allocation());
-       ScreenManager *smanager = 
-               new ScreenManager(Graphic_var(screen->_this()), 
-                                 emanager, drawing);
-       screen->bind_managers(emanager, smanager);
-       Logger::log(Logger::loader) << "Screen is set up and managers are "
-                                   << "bound to it." << std::endl;
-
-       props.length(0);
-       LayoutKit_var layout = 
-               server->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0",
-                                          props, poa);
-       Layout::Stage_var stage = layout->create_stage();
-       DesktopImpl *desktop = new DesktopImpl(orb, stage, sem);
-       screen->body(Desktop_var(desktop->_this()));
-       screen->append_controller(Desktop_var(desktop->_this()));
-       Logger::log(Logger::layout) << "Desktop is created." << std::endl;
-       
-       server->set_singleton("IDL:fresco.org/Fresco/Desktop:1.0", 
-                             Desktop_var(desktop->_this()));
-       server->set_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0", drawing);
-       Logger::log(Logger::loader) << "singletons set" << std::endl;
-
-       // ---------------------------------------------------------------
-       // Start the server thread - start the client listener and publish it
-       // ---------------------------------------------------------------
-
-       server->start();
-       Logger::log(Logger::loader) << "Server started." << std::endl;
-
-       Server_var server_ref = server->_this();
-       publish_server(server_ref, getopt, orb); 
-
-       Logger::log(Logger::corba) << "Server location published."
-                                  << std::endl;
-       
-       // ---------------------------------------------------------------
-       // Start any clients specified using --execute
-       // ---------------------------------------------------------------
-       value = "";
-       getopt.get("execute", &value);
-       if (!value.empty())
-       {
-         exec_child(child, value);
-         Logger::log(Logger::loader) << "Child process started." << std::endl;
-       }
-
-       // ---------------------------------------------------------------
-       // Start ScreenManager thread
-       // ---------------------------------------------------------------
-
-       smanager->start();
-       Logger::log(Logger::loader) << "ScreenManager is running." << std::endl;
-
-       // ---------------------------------------------------------------
-       // Wait until we receive a request to shut down, then do so
-       // NOTE: server/smanager threads assumed to be shut-down implicitly
-       // ---------------------------------------------------------------
-
-       Logger::log(Logger::loader) << "Blocking waiting for shutdown request." 
-                                   << std::endl;
-       sem.wait();
-       Logger::log(Logger::loader) << "Starting server shutdown." << std::endl;
- 
-       unpublish_server(orb);
-       Logger::log(Logger::loader) << "Un-published Server." << std::endl;
-
-       server->stop();
-       Logger::log(Logger::loader) << "Server stopped." << std::endl;
+    value = "";
+    getopt.get("console", &value);
+    try { Console::open(value, argc, argv, poa, x_pixels, y_pixels); }
+    catch (const std::runtime_error &e)
+    {
+      std::cerr << "ERROR: Failed to open the Console \"" << value
+		<< "\":\n\t" << e.what() << std::endl;
+      exit(2);
+    }
+    
+    Logger::log(Logger::console) << "Console is initialized." << std::endl;
+    
+    // ---------------------------------------------------------------
+    // Construct Server and load it with kits
+    // ---------------------------------------------------------------
+    
+    // NOTE: currently pass default poa; ideally function would know
+    PortableServer::POA_var server_poa = get_server_poa(orb,poa);
+    ServerImpl * server = ServerImpl::create(server_poa, policies);
+    Logger::log(Logger::loader) << "Server created in server-POA" 
+				<< std::endl;
+    
+    Prague::Path path = RCManager::get_path("modulepath");
+    for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+      server->scan(*i);
+    Logger::log(Logger::loader) << "Kits are loaded." << std::endl;
+    
+    // ---------------------------------------------------------------
+    // Setup default DrawingKit
+    // ---------------------------------------------------------------
+    
+    Kit::PropertySeq props;
+    props.length(1);
+    props[0].name = CORBA::string_dup("implementation");
+    value = "";
+    getopt.get("drawing", &value);
+    if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
+    else props[0].value = CORBA::string_dup("LibArtDrawingKit");
+    DrawingKit_var drawing =
+      server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
+				  props, poa);
+    Logger::log(Logger::drawing) << "DrawingKit is resolved." << std::endl;
+    if (CORBA::is_nil(drawing))
+    {
+      std::cerr << "ERROR: Unable to open "
+		<< "IDL:fresco.org/Fresco/DrawingKit:1.0"
+		<< " with attribute "
+		<< props[0].name << '=' << props[0].value << std::endl;
+      exit(3);
+    }
+    Logger::log(Logger::drawing) << "Drawing system is set up." << std::endl;
+    
+    // ---------------------------------------------------------------
+    // make a Screen graphic to hold this server's scene graph
+    // ---------------------------------------------------------------
+    
+    ScreenImpl *screen = new ScreenImpl();
+    EventManager *emanager = 
+      new EventManager(Controller_var(screen->_this()), 
+		       screen->allocation());
+    ScreenManager *smanager = 
+      new ScreenManager(Graphic_var(screen->_this()), 
+			emanager, drawing);
+    screen->bind_managers(emanager, smanager);
+    Logger::log(Logger::loader) << "Screen is set up and managers are "
+				<< "bound to it." << std::endl;
+    
+    props.length(0);
+    LayoutKit_var layout = 
+      server->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0",
+				 props, poa);
+    Layout::Stage_var stage = layout->create_stage();
+    DesktopImpl *desktop = new DesktopImpl(orb, stage, sem);
+    screen->body(Desktop_var(desktop->_this()));
+    screen->append_controller(Desktop_var(desktop->_this()));
+    Logger::log(Logger::layout) << "Desktop is created." << std::endl;
+    
+    server->set_singleton("IDL:fresco.org/Fresco/Desktop:1.0", 
+			  Desktop_var(desktop->_this()));
+    server->set_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0", drawing);
+    Logger::log(Logger::loader) << "singletons set" << std::endl;
+    
+    // ---------------------------------------------------------------
+    // Start the server thread - start the client listener and publish it
+    // ---------------------------------------------------------------
+    
+    server->start();
+    Logger::log(Logger::loader) << "Server started." << std::endl;
+    
+    Server_var server_ref = server->_this();
+    publish_server(server_ref, getopt, orb); 
+    
+    Logger::log(Logger::corba) << "Server location published."
+			       << std::endl;
+    
+    // ---------------------------------------------------------------
+    // Start any clients specified using --execute
+    // ---------------------------------------------------------------
+    value = "";
+    getopt.get("execute", &value);
+    if (!value.empty())
+    {
+      exec_child(child, value);
+      Logger::log(Logger::loader) << "Child process started." << std::endl;
+    }
+    
+    // ---------------------------------------------------------------
+    // Start ScreenManager thread
+    // ---------------------------------------------------------------
+    
+    smanager->start();
+    Logger::log(Logger::loader) << "ScreenManager is running." << std::endl;
+    
+    // ---------------------------------------------------------------
+    // Wait until we receive a request to shut down, then do so
+    // NOTE: server/smanager threads assumed to be shut-down implicitly
+    // ---------------------------------------------------------------
+    
+    Logger::log(Logger::loader) << "Blocking waiting for shutdown request." 
+				<< std::endl;
+    sem.wait();
+    Logger::log(Logger::loader) << "Starting server shutdown." << std::endl;
+    
+    unpublish_server(orb);
+    Logger::log(Logger::loader) << "Un-published Server." << std::endl;
+    
+    server->stop();
+    Logger::log(Logger::loader) << "Server stopped." << std::endl;
   }
   catch (const CORBA::SystemException &e)
   {
-      std::cerr << "ERROR: Unexpected CORBA::System exception caught: "
-                << e << std::endl;
+    std::cerr << "ERROR: Unexpected CORBA::System exception caught: "
+	      << e << std::endl;
   }
 #ifdef ORB_omniORB
   catch(const omniORB::fatalException &fe)
   {
-      std::cerr << "ERROR: OmniORB fatal exception caught at "
-                << fe.file() << " " << fe.line() << ":"
-                << fe.errmsg() << std::endl;
+    std::cerr << "ERROR: OmniORB fatal exception caught at "
+	      << fe.file() << " " << fe.line() << ":"
+	      << fe.errmsg() << std::endl;
   }
 #endif
   catch (const CORBA::Exception &e)
   {
-      std::cerr << "ERROR: Unexpected CORBA::Exception caught: "
-                << e << std::endl;
+    std::cerr << "ERROR: Unexpected CORBA::Exception caught: "
+	      << e << std::endl;
   }
   catch (const std::exception &e)
   {
-      std::cerr << "ERROR: Unexpected std::exception: "
-                << e.what() << std::endl;
+    std::cerr << "ERROR: Unexpected std::exception: "
+	      << e.what() << std::endl;
   }
   catch (...)
   {
-      std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
-  };
-
+    std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
+  }
   Logger::log(Logger::corba) << "CORBA servants gone." << std::endl;
   delete child;
   return 0;

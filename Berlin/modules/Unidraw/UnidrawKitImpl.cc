@@ -33,8 +33,9 @@ using namespace Fresco;
 using namespace Berlin::UnidrawKit;
 
 UnidrawKitImpl::UnidrawKitImpl(const std::string &id,
-			       const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p)
+			       const Fresco::Kit::PropertySeq &p,
+			       ServerContextImpl *c)
+  : KitImpl(id, p, c)
 { }
 
 UnidrawKitImpl::~UnidrawKitImpl()
@@ -93,5 +94,5 @@ Fresco::WidgetKit_ptr UnidrawKitImpl::widgets()
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "UnidrawKitImpl"};
-  return create_kit<UnidrawKitImpl>("IDL:fresco.org/Unidraw/UnidrawKit:1.0", properties, 2);
+  return create_prototype<UnidrawKitImpl>("IDL:fresco.org/Unidraw/UnidrawKit:1.0", properties, 2);
 } 

@@ -46,16 +46,21 @@
 #include <string>
 #include <vector>
 
-namespace Berlin {
-namespace DrawingKit {
-namespace libArt {
+namespace Berlin 
+{
+namespace DrawingKit 
+{
+namespace libArt 
+{
 
 class DrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
-  DrawingKit(const std::string &, const Fresco::Kit::PropertySeq &);
+  DrawingKit(const std::string &,
+	     const Fresco::Kit::PropertySeq &,
+	     ServerContextImpl *);
   virtual ~DrawingKit();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &);
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &, ServerContextImpl *);
 
   virtual void transformation(Fresco::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Fresco::Transform_ptr transformation() { return Fresco::Transform::_duplicate(_tr);}
