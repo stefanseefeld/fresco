@@ -1,0 +1,45 @@
+Welcome to the Berlin windowing system
+
+The current release is DR1, which means it is not even into the stage
+where the most adventuresome users will gain any productivity from
+it. It's a *developers* release. If you want to help develop berlin,
+you can work off this release with some modicum of confidence and
+convenience. 
+
+If you're unpacked the entire source tree, you should be able to
+make from the root with little difficulty. When (if) the build
+finishes, the berlin display server "berlin" will be in the /bin
+directory, and a program demonstrating a widget "testButton" will
+be under /bin/demo. You'll have to have omniNames running for 
+either of them to work. You'll have to either add the path to /lib to
+your ld.so.config file or append it in a LD_LIBRARY_PATH variable to
+the command line before running the programs, as berlin uses shared
+libraries extensively.
+
+Testing has been confined to an extremely narrow environment. The
+facilities we build & test with are:
+
+ * linux 2.0.3x
+ * egcs 1.0.3
+ * glibc 2.0.7 & pthreads
+ * libstdc++ 2.9 & devel
+ * libggi 1.499 & devel
+ * Mesa 3.0 & devel
+ * ggiMesa
+ * omniORB 2.6 (or late august snapshot) & devel
+
+Please do not hesitate to customize the build process for an
+additional platform and send us patches to this tree. If it builds
+naked on any configuration other than the above mentionned, please
+report this fact to us as well. If you encounter any bugs, please let
+us know. This whole process relies on you communicating your
+experiences back to the people who wrote it.
+
+Questions / comments are best directed towards the mailing list:
+  design@berlin-consortium.org
+
+Archives of the mailing list & FAQ are on our web site: 
+  http://www.berlin-consortium.org
+
+Hope you enjoy it
+-graydon <graydon@pobox.com>
