@@ -11,15 +11,19 @@ If you're unpacked the entire source tree, and you meet the prerequisites
 
 $ make CONFIGURE_OPTS='<whatever you want to pass to configure>'
 
-with little difficulty. When (if) the build finishes, you will find
-several test applications in the /clients/C++ directory. You must have
-omniNames running for any of these to work. 
+with little difficulty.  For a list of available CONFIGURE_OPTS, try
+running 
+  cd config
+  ./configure --help
+(Remember to "cd .." before running make.)  When (if) the build finishes,
+you will find several test applications in the /clients/C++ directory.
+You must have omniNames running for any of these to work. 
 
 To try the server after compiling it, you should do something like:
 
 $ export BERLIN_ROOT=.../Berlin
-  (where .../Berlin is the directory containing this file, with subdirectories
-  src/, include/, etc.)
+  (where ".../Berlin" is the directory containing this file, with
+  subdirectories src/, include/, etc.)
 $ export LD_LIBRARY_PATH=$BERLIN_ROOT/lib:$LD_LIBRARY_PATH
 $ cd server
 $ ./server
