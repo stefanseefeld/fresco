@@ -1,0 +1,128 @@
+
+<chapter>
+  <title>Introduction</title>
+  
+    <abstract>
+      <para>
+      The berlin project is an attempt to make a new graphical user
+      interface for computers. This book is intended to teach you what
+      you need to know as a programmer interacting with berlin, either
+      from the inside of the display server or from the outside, as a
+      client. Here we present an overview of the project, its history,
+      motivation, and design goals.</para>      
+    </abstract>
+
+    <sect1>
+      <title>Background</title>
+
+      <para>Berlin is a long term project which was conceived of in
+	1996 by Matt Messier and Jim Fetters. It has been intended
+	from the beginning to be a project with a lot of lasting
+	power, one which sacrifices time and energy spent today for
+	the correct long term decisions of tomorrow. Thus, while every
+	emphasis possible was placed on speed and practicality, the
+	overriding design goal was to <emphasis>get it right this
+	time</emphasis>, and avoid the need to make an other graphical
+	environment for the forseeable future.</para>
+
+      <para>The problems seen with current graphical environments
+	were as follows</para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+	  Their network transparency schemes all required too much
+	  bandwidth. The balance of power between CPU speed and
+	  network speed strongly favours localized computation.</para>
+	</listitem>
+	<listitem><para>
+	  They were too difficult to extend as new features were
+	  required.</para>
+	</listitem>
+	<listitem><para>
+	  They were not coded in device-independent terms, so
+	  high-resolution or high-color devices were not
+	  automatically taken advantage of.</para>
+	</listitem>
+	<listitem>
+	  <para>Their imaging models were impoverished.</para>
+	</listitem>
+	<listitem>
+	  <para>They did not handle text well, and did not provide well
+	  for non-ascii text. In particular, ideographic, vertical,
+	  and right-to-left text was very poorly supported.</para>
+	</listitem>
+	<listitem>
+	  <para>They did not encourage component reuse terribly well. In
+	  general, existing windowing systems had too much
+	  interconnected legacy code to be able to produce small,
+	  simple, useful encapsulated graphical components.</para>
+	</listitem>
+      </orderedlist>
+      
+      <para>In order to eliminate these problems, it was decided that pretty
+     much everything above the hardware access level was going to need
+     rewriting. </para>
+      
+      <para>The design was broken up into 3 large blocks of work which
+      would have to be accomplished:</para>
+      
+      <glosslist>
+	
+	<glossentry>
+	  <glossterm>Berlin Core</glossterm>	    
+	  <glossdef>
+	    <para>
+	      The imaging layer, Inter-process communication system,
+	      text processing system, and interface to the hardware.
+	      The first Berlin Core was written as a C library using
+	      unix IPC mechanisms and custom image processing
+	      routines. The second (and current) Berlin Core uses
+	      OpenGL as its imaging layer, Corba as its IPC system,
+	      and is written in multi-threaded C++. Both relied on
+	      libGGI to access the display devices. </para>
+	  </glossdef>
+	</glossentry>
+	
+	<glossentry>
+	  <glossterm>Warsaw</glossterm>
+	  <glossdef><para>
+	      The API applications would use to communicate with the
+	      berlin core. This would be an object-oriented class
+	      hierarchy, and include a number of "pluggable"
+	      components which could be replaced to control and
+	      customize the look and feel of the system without the
+	      application's knowledge. Warsaw was developed in concert
+	      with the second Berlin Core, and is specified entirely
+	      in OMG IDL, the interface definition language used in
+	      Corba.</para>
+	  </glossdef>
+	</glossentry>
+	
+	<glossentry>
+	  <glossterm>Moscow</glossterm>
+	  <glossdef><para>
+	      The API to common inter-process services, state
+	      preservation, user services, and content type
+	      negotiation. Moscow is still unspecified as of this
+	      writing.</para>
+	  </glossdef>
+	</glossentry>
+	
+      </glosslist>
+      
+      <para>This division of labour turned out to be somewhat artificial,
+      but the "code names" Warsaw and Moscow still persist, and are
+      useful when referring to different levels of
+      abstraction. </para>
+    </sect1>
+    
+  </chapter>
+
+    <!--
+     Local Variables:
+     mode: sgml
+     sgml-doctype: "berlin-man.sgm"
+     sgml-parent-document: ("berlin-man.sgm" "book" "chapter")
+     End:
+     -->

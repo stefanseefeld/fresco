@@ -1,0 +1,161 @@
+
+  <chapter>
+    <title>Programming the Display Server</title>
+    
+    <abstract>
+    <para>This chapter describes the ideas (and interfaces) which play
+    key roles in the berlin display server, and how to program
+    them.</para>
+    </abstract>
+
+    <sect1>
+      <title>Graphics</title> 
+      
+      <para>A <classname>graphic</classname> is any thing which can
+	be displayed visually. Thus <classname>graphic</classname> is
+	one of the simplest and most widespread types in the berlin
+	code. All graphics support a single method, 
+
+<funcsynopsis>
+	  <funcprototype>
+	    <funcdef>
+<function>draw</function>
+                    </funcdef>
+	    <void>
+	  </funcprototype>
+	</funcsynopsis>
+
+               which causes them to <emphasis>prepare</emphasis>
+               themselves to be shown on a display device. The draw
+               method does <emphasis>not</emphasis> actually display
+               the graphic on the screen. The
+               <classname>graphic</classname> interface has no
+               explicit knowledge of what sort of rendering system is
+               used to actually produce a visual image on a display
+               device. In the case of the berlin reference
+               implementation, an OpenGL display list is generated,
+               which is then transfered by other means to the
+               screen. It is very important to realize that calling
+               draw does not necessarily cause anything visible to
+               occur at all. Furthermore, the draw method may operate
+               asynchronously, so it is not guaranteed that an object
+               has actually prepared itself when the draw method
+               returns. In order to guarantee that, one must take
+               other measures, such as registering oneself as an
+               observer and waiting for an update to come from the
+               object.</para>
+      </sect1>
+
+
+      <sect1>
+	<title>Reactors</title> 
+
+	<para>A reactor is a common pattern in a software system. Many
+	systems have reactors they don't call reactors, they call them
+	dispatch tables. The concept is very simple. There is a table
+	stored within some software module which relates incoming
+	requests to actions to be taken. The actions have an anonymous
+	signature, so they can be rearranged or reassigned. The point
+	of a reactor is that it serves as a dynamically reconfigurable
+	part of an otherwise statically-typed program. It serves as
+	the key flexibility abstraction.</para>
+
+	<para>Reactors are implemented in berlin as Corba
+	interfaces. The "incoming requests" are of type
+	<classname>Any</classname> which is an inspectable,
+	unspecified type. The Any's are inspected and their typecodes
+	are matched against other typecodes stored in the reactor, and
+	a set of selections is made based on the typecodes which
+	match.
+	</para>
+
+	<para> Since there is no such thing as a function pointer in
+	IDL, it is necessary to promote the action part of a dispatch
+	table to full interface status. Thus we have instances of
+	interface <classname>command</classname>, which must support a
+	single method:
+
+<funcsynopsis>
+	    <funcprototype>
+	    <funcdef>
+<function>execute</function>
+                    </funcdef>
+	    <paramdef><parameter>Any a</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+
+              The Any, which may contain a great deal of important
+              information, is provided as a parameter to the command
+              to do with as it pleases. An application may bind
+              multiple commands to multiple typecodes, in order to
+              customize the behaviour of a reactor.</para>
+      </sect1>
+
+
+      <sect1>
+	<title>Factories</title>
+
+      <para>A factory is an easily locatable object which is
+      responsible for creating new objects in response to some
+      requests. In the berlin display server, there is an
+      implementation of a Corba <classname>GenericFactory</classname>,
+      which dynamically loads pluggable objects and creates instances
+      of them in response to Corba requests. The objects created by
+      the <classname>GenericFactory</classname> reside in the address
+      space of the display server, but Corba references to them are
+      sent to clients once the objects have been created and
+      activated.</para>
+
+      <para>The Orb we are currently using supports Corba Lifecycle
+      service, which is a common protocol for creating, destroying and
+      moving (by copying and redirecting) objects. The GenericFactory
+      written for berlin implements a part of the LIfecycle
+      specification, as does the
+      <classname>LifeCycleObject</classname> and
+      <classname>omniLC</classname> code, from which most of our
+      runtime objects are derived. Thus it is possible to move widgets
+      from one berlin display server to another, or to replace running
+      widgets on a single display server (called "hot swap") without
+      interrupting the clients at all.</para>
+
+      </sect1>
+
+
+      <sect1>
+	<title>Sessions</title>
+      
+      <para>A <classname>session</classname> is a logical collection
+	of all the allocated resources a given client uses when
+	connecting to the display server. The server maintains a
+	collection of sessions in an object called a
+	<classname>sessionManager</classname>, which is responsible
+	for granting new sessions to connecting clients. A client is
+	represented in the system by the
+	<classname>principal</classname> interface, which the session
+	may query from time to time to determine its security rights
+	and identity. When a client is no longer reachable, a session
+	destroys all the resources it is in charge of, and then
+	destroys itself. Sessions occasionally ping clients to check
+	to see if they are still alive. </para>
+
+      <para>This implies that principals are in the client address
+      space, which indeed (if you look at berlin clients) they
+      are. Not only do principals represent the reachability of a
+      given client, they are also the place in which all security
+      mechanisms will be implemented. Obviously it is unacceptable to
+      transmit ones security credentials over the wire to a display
+      server -- rather, the client must respond intelligently to a
+      given challenge with appropriate credentials. This allows berlin
+      to use asymetric security systems like public key cryptography.
+      </para>
+    </sect1>
+  </chapter>
+
+
+    <!--
+     Local Variables:
+     mode: sgml
+     sgml-doctype: "berlin-man.sgm"
+     sgml-parent-document: ("berlin-man.sgm" "book" "chapter")
+     End:
+     -->

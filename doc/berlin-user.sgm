@@ -1,0 +1,19 @@
+<chapter>
+  <title>User's Guide</title>
+  <abstract>
+    <para>This chapter should help you run berlin.</para>
+  </abstract>
+  <sect1>
+    <title>Prerequisites</title>
+    <para></para>
+  </sect1>
+</chapter>
+
+     <!--
+     Local Variables:
+     mode: sgml
+     sgml-doctype: "berlin-man.sgm"
+     sgml-parent-document: ("berlin-man.sgm" "book" "chapter")
+     End:
+     -->
+
