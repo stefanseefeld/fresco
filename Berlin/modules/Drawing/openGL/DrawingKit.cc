@@ -103,17 +103,11 @@ void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
   upper.x = info.width, upper.y = info.height;
   raster->storePixels(lower, upper, pixels);
 
-  Vertex origin;
-  origin.x = origin.y = origin.z = 0.;
-  transform->transformVertex(origin);
-  glRasterPos2d(origin.x, origin.y + info.height);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, info.width);
-
   /*
    * transform the ColorSeq to the format internally used by openGL
    */
-  vector<char> data(4*pixels->length());
-  vector<char>::iterator pixel = data.begin();
+  GLRaster *glraster = new GLRaster(info.width, info.height);
+  GLRaster::iterator pixel = glraster->data.begin();
   for (int y = info.height - 1; y >= 0; y--)
     for (int x = 0; x != info.width; x++)
       {
@@ -123,5 +117,36 @@ void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 	*pixel++ = static_cast<char>(color.blue * 256);
 	*pixel++ = static_cast<char>(color.alpha * 256);
       }
-  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, data.begin());
+
+#if 1
+  Vertex origin;
+  origin.x = origin.y = origin.z = 0.;
+  transform->transformVertex(origin);
+  glRasterPos2d(origin.x, origin.y + info.height);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, info.width);
+  glDrawPixels(glraster->width, glraster->height, GL_RGBA, GL_UNSIGNED_BYTE, glraster->data.begin());
+#else
+  Path path;
+  path.p.length(5);
+  path.p[0].x = path.p[0].y = path.p[0].z = 0.;
+  path.p[1].x = info.width, path.p[1].y = path.p[1].z = 0.;
+  path.p[2].x = info.width, path.p[2].y = info.height, path.p[2].z = 0.;
+  path.p[3].x = 0, path.p[3].y = info.height, path.p[3].z = 0.;
+  path.p[4].x = path.p[4].y = path.p[4].z = 0.;
+  for (unsigned int i = 0; i != 5; i++) transform->transformVertex(path.p[i]);
+  texturedPolygon(path, glraster);
+#endif
+  delete glraster;
 }
+
+void GLDrawingKit::texturedPolygon(const Path &path, GLRaster *raster)
+{
+  glBegin(GL_POLYGON);
+  glEnable(GL_TEXTURE_2D);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, raster->width, raster->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
+  for (unsigned long i = 0; i < path.p.length(); i++)
+    glVertex3f(path.p[i].x, path.p[i].y, path.p[i].z);   
+  glDisable(GL_TEXTURE_2D);
+  glEnd();
+}
+

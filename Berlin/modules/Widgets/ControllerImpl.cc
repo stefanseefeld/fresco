@@ -30,7 +30,7 @@ void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   SectionLog section(Logger::picking, "ControllerImpl::pick");
   /*
-   * for now take the even if falls inside our allocation
+   * for now take the event if it falls inside our allocation
    */
   if (traversal->intersectsAllocation())
     traversal->hit(Controller_var(_this()));

@@ -40,6 +40,14 @@ extern "C" {
 
 class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
 {
+  struct GLRaster
+  {
+    typedef vector<char>::iterator iterator;
+    GLRaster(CORBA::ULong w, CORBA::ULong h) : width(w), height(h), data(4*width*height) {}
+    PixelCoord width;
+    PixelCoord height;
+    vector<char> data;
+  };
 public:
   GLDrawingKit();
   ~GLDrawingKit();
@@ -53,7 +61,8 @@ public:
   ggi_visual_t getVisual() { return drawable->Visual();}
   void clear(Coord, Coord, Coord, Coord);
   void sync() { glFlush();}
- protected:
+ private:
+  void texturedPolygon(const Path &, GLRaster *); 
   Mutex mutex;
   GLFont *font;
   GLDrawable *drawable;

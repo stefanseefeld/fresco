@@ -22,7 +22,9 @@
 #ifndef _Vertex_hh
 #define _Vertex_hh
 
-Vertex operator + (const Vertex &p, const Vertex &q)
+#include <iostream>
+
+inline Vertex operator + (const Vertex &p, const Vertex &q)
 {
   Vertex r;
   r.x = p.x + q.x;
@@ -31,7 +33,7 @@ Vertex operator + (const Vertex &p, const Vertex &q)
   return r;
 }
 
-Vertex operator - (const Vertex &p, const Vertex &q)
+inline Vertex operator - (const Vertex &p, const Vertex &q)
 {
   Vertex r;
   r.x = p.x - q.x;
@@ -39,5 +41,7 @@ Vertex operator - (const Vertex &p, const Vertex &q)
   r.z = p.z - q.z;
   return r;
 }
+
+inline ostream &operator << (ostream &os, const Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
 
 #endif /* _Vertex_hh */

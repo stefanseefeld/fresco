@@ -27,9 +27,11 @@
 #include "Warsaw/Event.hh"
 #include "Warsaw/Controller.hh"
 #include "Warsaw/PickTraversal.hh"
+#include "Warsaw/Transform.hh"
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/Vertex.hh"
 
 /* this is a traversal which is responsible for distributing events to
    graphics.  as such, speed is somewhat important. We set everything for
@@ -47,9 +49,19 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
     CORBA::Boolean ok() { return !memento;}
     CORBA::Boolean intersectsAllocation()
       {
-	RegionImpl region(allocation(), transformation());
+#if 1 // transform the pointer's location into the local CS
+	Vertex local = pointer.location;
+	Transform_var transform = transformation();
+	transform->inverseTransformVertex(local);
+	Region_var alloc = allocation();
+	RegionImpl region(alloc, Transform::_nil());
+	if (region.contains(local)) return true;
+#else // transform the local CS to global coordinates
+	Region_var alloc = allocation();
+	RegionImpl region(alloc, Transform_var(transformation()));
 	if (region.contains(pointer.location)) return true;
-	else return false;
+#endif
+	return false;
       }
     CORBA::Boolean intersectsRegion(Region_ptr allocation)
       {

@@ -64,6 +64,10 @@ void Bevel::request(Requisition &requisition)
 
 void Bevel::traverse(Traversal_ptr traversal)
 {
+  /*
+   * cheap and dirty cull test -stefan
+   */
+//   if (!traversal->intersectsAllocation()) return;
   traversal->visit(Graphic_var(_this()));
   Graphic_var child = body();
   if (!CORBA::is_nil(child))

@@ -130,6 +130,8 @@ class StageImpl : implements(Stage), public GraphicImpl
   virtual void allocate(Graphic_ptr, Allocation_ptr);
   virtual void needRedraw();
   virtual void needRedrawRegion(Region_ptr);
+  virtual void needResize();
+  //. relayout the children. If the bounding box changes call needResize on the parent
   
   virtual Region_ptr bbox();
   virtual CORBA::Long layers() { return tree.size();}

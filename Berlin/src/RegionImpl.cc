@@ -161,6 +161,7 @@ void RegionImpl::subtract(Region_ptr region)
 
 void RegionImpl::applyTransform(Transform_ptr transformation)
 {
+  SectionLog section(Logger::layout, "RegionImpl::applyTransform");
   if (valid)
     {
       Vertex o;

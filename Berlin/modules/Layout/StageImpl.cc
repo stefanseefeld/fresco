@@ -558,6 +558,15 @@ void StageImpl::needRedrawRegion(Region_ptr region)
   allocation->_dispose();
 }
 
+void StageImpl::needResize()
+{
+  SectionLog section(Logger::layout, "StageImpl::needResize");
+  /*
+   * FIXME !!!: need to work out how to process this. (which sub region to damage etc...)
+   */
+  GraphicImpl::needResize();
+}
+
 Region_ptr StageImpl::bbox()
 {
   Geometry::Rectangle<Coord> bb = tree.bbox();
@@ -605,7 +614,7 @@ void StageImpl::end()
  	      ! Math::equal(bbregion->lower.y, bb.t, epsilon) ||
  	      ! Math::equal(bbregion->upper.x, bb.r, epsilon) ||
  	      ! Math::equal(bbregion->upper.y, bb.b, epsilon))
- 	    needResize();
+ 	    GraphicImpl::needResize();
  	  need_resize = false;
 	}
     }
