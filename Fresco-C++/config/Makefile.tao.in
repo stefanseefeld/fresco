@@ -31,6 +31,24 @@ h2dir		:= @top_builddir@/include
 
 include $(cdir)/local.mk
 
+define makestat
+@echo generating $(@F)
+$(IDLCXX) -I$(idldir) -Ge 0 -Sc -Sa -St -cs C.cc -ss S.cc $<
+sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F)S.h
+rm $(*F)S.h
+mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
+echo -e "#include <Fresco/$(*F)C.h>\n#include <Fresco/$(*F)S.h>\n" > $(h2dir)/Fresco/$(@F)
+endef
+
+define makedyn
+@echo generating $(@F)
+$(IDLCXX) -I$(idldir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
+sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F)S.h
+rm $(*F)S.h
+mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
+echo -e "#include <Fresco/$(*F)C.h>\n#include <Fresco/$(*F)S.h>\n" > $(h2dir)/Fresco/$(@F)
+endef
+
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
 CPPFLAGS	+= -include $(h2dir)/Fresco/acconfig.hh -I$(ACE_ROOT) -I$(TAO_ROOT)
@@ -137,31 +155,17 @@ maintainer-clean: distclean
 	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir) $< \
 	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
 $(STATSSRC): %S.cc:	%.idl
-	@echo generating $(@F)
-	$(IDLCXX) -I$(idldir) -Ge 0 -Sc -Sa -St -cs C.cc -ss S.cc $<
+	@$(makestat)
 $(STATCSRC): %C.cc:	%.idl
-	@echo generating $(@F)
-	$(IDLCXX) -I$(idldir) -Ge 0 -Sc -Sa -St -cs C.cc -ss S.cc $<
+	@$(makestat)
 $(DYNSSRC): %S.cc:	%.idl
-	@echo generating $(@F)
-	$(IDLCXX) -I$(idldir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
+	@$(makedyn)
 $(DYNCSRC): %C.cc:	%.idl
-	@echo generating $(@F)
-	$(IDLCXX) -I$(idldir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
+	@$(makedyn)
 $(STATHDR): %.hh:	%.idl
-	@echo generating $(@F)
-	$(IDLCXX) -I$(idldir) -Ge 0 -Sc -Sa -St -cs C.cc -ss S.cc $<
-	sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F)S.h
-	rm $(*F)S.h
-	mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
-	echo -e "#include <Fresco/$(*F)C.h>\n#include <Fresco/$(*F)S.h>\n" > $@
+	@$(makestat)
 $(DYNHDR): %.hh:	%.idl
-	@echo generating $(@F)
-	$(IDLCXX) -I$(idldir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
-	sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F)S.h
-	rm $(*F)S.h
-	mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
-	echo -e "#include <Fresco/$(*F)C.h>\n#include <Fresco/$(*F)S.h>\n" > $@
+	@$(makedyn)
 %.cc.d:	%.cc $(GENHDR)
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $< \
