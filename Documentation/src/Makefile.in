@@ -67,7 +67,7 @@ distclean maintainer-clean:
 	rm -f Makefile
 
 figures/%.eps: $(srcdir)/figures/%.dia
-	dia --export=$@ $< 
+	dia --nosplash --export=$@ $< 
 
 figures/%.jpg: figures/%.eps
 	mogrify -format jpg -geometry 55%x55% $<
