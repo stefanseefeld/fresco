@@ -12,7 +12,7 @@
     internally as well as when communicating with applications in separate
     processes. It is very important to understand how and why we use MVC.
   </para>
-  <sect1><title>why separate?</title>
+  <section><title>why separate?</title>
     <para>
       <!-- talk about why separate? -->Separating a program into Model, View
       and Controller has a number of important advantages over attacking all
@@ -36,8 +36,8 @@
       where they have high-bandwidth access to display and input
       hardware. 
     </para>
-  </sect1>
-  <sect1><title>application space vs. representation space</title>
+  </section>
+  <section><title>application space vs. representation space</title>
     <para>
       <!-- talk about application space vs. representation space -->The
       aforementionned separation between process address spaces is, in
@@ -62,8 +62,8 @@
       application relatively painlessly, and application writers do not need
       to know as much about the device they are drawing to.
     </para>
-  </sect1>
-  <sect1><title>models in application space</title>
+  </section>
+  <section><title>models in application space</title>
     <para>
       <!-- talk about models in application space -->Models support a common
       interface, which we have named <classname>Subject</classname> in order
@@ -75,7 +75,7 @@
       the <classname>Subject</classname> interface a little, to provide
       accessors for their concrete datatype.
     </para>
-    <sect2><title>a special case: Controllers</title>
+    <section><title>a special case: Controllers</title>
       <para>
 	<!-- talk about the Controller and it's state -->A good example which helps
         illustrating the purpose of the MVC paradigm is the separation of data and
@@ -128,15 +128,15 @@
           </tgroup>
         </table>
       </para>
-    </sect2>
-    <sect2><title>concrete examples</title>
+    </section>
+    <section><title>concrete examples</title>
       <para>
 	<!-- talk about concrete examples -->Here we give some examples of
 	Models which fresco has pre-made interfaces for observing and
 	modifying. They should help convey the idea of Model, if it's not yet
 	clear.
       </para>
-      <sect3><title>bounded values</title>
+      <section><title>bounded values</title>
         <para>
 	  <!-- talk about bounded values -->A <classname>BoundedValue</classname>
 	  is a double precision floating point value with some built-in named
@@ -148,8 +148,8 @@
 	  represents an actual numeric difference (this step is important to avoid
 	  notification loops) and then notifies all observers.
         </para>
-      </sect3>
-      <sect3><title>telltales</title>
+      </section>
+      <section><title>telltales</title>
         <para>
 	  <!-- talk about telltales --><classname>Telltales</classname> represent
 	  sets of flags, each of which can be independently tested, set or
@@ -159,8 +159,8 @@
 	  allow telltales to, amongst other things, be used to model the state of
 	  a controller itself. 
         </para>
-      </sect3>
-      <sect3><title>strings</title>
+      </section>
+      <section><title>strings</title>
         <para>
 	  <!-- talk about strings -->Strings, the most common example that we all
 	  know and love, are slightly more complex in fresco since we use the
@@ -171,10 +171,10 @@
 	  feature alone precludes making a 1:1 correspondence between the text
 	  "model" and any view or control of it. 
         </para>
-      </sect3>
-    </sect2>
-  </sect1>
-  <sect1><title>views in representation space</title>
+      </section>
+    </section>
+  </section>
+  <section><title>views in representation space</title>
     <para>      
       <!-- talk about views in representation space -->As discussed
       previously, views of models (a.k.a. "representation space") reside
@@ -188,56 +188,56 @@
       issue is considered quite serious. It is recommended that you let the
       server construct views for you in as many cases as possible.
     </para>
-    <sect2><title>concete examples</title>
+    <section><title>concete examples</title>
       <para>
 	<!-- talk about concete examples -->Here we give some specific views of
 	abstract models. This will help set the concept of
 	<classname>View</classname>.
       </para>
-      <sect3><title>radio boxes</title>
+      <section><title>radio boxes</title>
         <para>
  	  <!-- talk about radio boxes -->Radio boxes are a specific view of a set
 	  of mutually excluside telltales. Selecting one will unselect any
 	  other. They are usually presented with a set of labelled, bevelled discs
 	  or rectangles, possibly with checkmarks drawn on top of them. 
         </para>
-      </sect3>
-      <sect3><title>sliders</title>
+      </section>
+      <section><title>sliders</title>
         <para>
 	  <!-- talk about sliders -->Sliders are a specific view of a
 	  <classname>BoundedValue</classname>. 
         </para>
-      </sect3>
-      <sect3><title>text glyphs</title>
+      </section>
+      <section><title>text glyphs</title>
         <para>
 	  <!-- talk about text glyphs -->
         </para>
-      </sect3>
-    </sect2>
-  </sect1>
-  <sect1><title>controllers: bridging spaces</title>
+      </section>
+    </section>
+  </section>
+  <section><title>controllers: bridging spaces</title>
     <para>
       <!-- talk about controllers: bridging spaces -->
     </para>
-    <sect2><title>concrete examples</title>
+    <section><title>concrete examples</title>
       <para>
 	<!-- talk about concrete examples -->
       </para>
-      <sect3><title>incrimenting a value</title>
+      <section><title>incrimenting a value</title>
         <para>
 	  <!-- talk about incrimenting a value -->
         </para>
-      </sect3>
-      <sect3><title>editing a buffer</title>
+      </section>
+      <section><title>editing a buffer</title>
         <para>
 	  <!-- talk about editing a buffer -->
         </para>
-      </sect3>
-      <sect3><title>executing a command </title>
+      </section>
+      <section><title>executing a command </title>
         <para>
 	  <!-- talk about executing a command  -->
         </para>
-      </sect3>
-    </sect2>
-  </sect1>
+      </section>
+    </section>
+  </section>
 </chapter>

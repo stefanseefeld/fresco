@@ -2,7 +2,7 @@
   <para>
     <!-- talk about setting up fresco and writing a first little applet -->
   </para>
-  <sect1>
+  <section>
     <title>finding the server</title>
     <para>
       The first thing to do when starting a client is to get a reference to the server object. The display server
@@ -40,8 +40,8 @@
       with it. (Various ORB's provide applets to inspect the naming context graph. You can use these tools as a debugging
       help.)
     </para>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
     <title>establishing a connection</title>
     <para>
       The next step is to register with the server, i.e. to request that it hands you a ServerContext. To authenticate
@@ -67,8 +67,8 @@
       ClientContext_var client = ci->_this();
       ServerContext_var context = server->create_server_context(client);
     </programlisting>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
     <title>requesting some kits</title>
     <para>
       Now that you have a ServerContext, you can ask for some resources that are allocated
@@ -98,8 +98,8 @@
       WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
       ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:Warsaw/ToolKit:1.0");
     </programlisting>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
   <title>building a scene graph</title>
     <para>
       Now let's build a scene graph for a tiny applet. We'll start with a little text label,
@@ -118,8 +118,8 @@
       Controller_var button = widgets->button(black, Command::_nil());
       Window_var window = desktop->shell(button, client);
     </programlisting>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
     <title>hello world</title>
     <para>
       To run, we'll just start an endless loop. This works, since the ORB is multi-threaded, so
@@ -135,5 +135,5 @@
     <programlisting>
       while (true) Thread::delay(1000);
     </programlisting>
-  </sect1>
+  </section>
 </chapter>

@@ -7,7 +7,7 @@
     applications to repaint every window whenever any change occurs, a lot
     of the redrawing machinery is contained within the server. 
   </para>
-  <sect1><title>graph structure</title>
+  <section><title>graph structure</title>
     <para>
       <!-- talk about graph structure --> The scene graph abstractly resembles
       a tree. That is, there are a number of nodes (called "Graphics"), which
@@ -15,8 +15,8 @@
       meaning of this relation is a hybrid of a number of intuitively related
       concepts.
     </para>
-  </sect1>
-  <sect1><title>logical containment</title>
+  </section>
+  <section><title>logical containment</title>
     <para>
       <!-- talk about logical containment -->The basic idea of the
       parent/child relation is that it expresses the logical
@@ -27,8 +27,8 @@
       its children, and may play a "containing" role in memory management,
       event distribution, etc.
     </para>
-  </sect1>
-  <sect1><title>transformational containment</title>
+  </section>
+  <section><title>transformational containment</title>
     <para>
       <!-- talk about transformational containment -->Since the scene graph is actually
       stored in double-precision floating point values, and since any graphic
@@ -43,8 +43,8 @@
       undesirable, but it fits with one's physical intuitions so it is
       included as part of the general semantics of the parent/child relation.
     </para>
-  </sect1>
-  <sect1><title>sharing</title>
+  </section>
+  <section><title>sharing</title>
     <para>
       <!-- talk about sharing -->There are instances in which it is desirable
       to share children between multiple parents in the scene graph. This is
@@ -55,7 +55,7 @@
       central to our design and must be understood at least in passing in
       order to understand the remaining secion, on the visitation pattern.
     </para>
-    <sect2><title>efficiency motivation</title>
+    <section><title>efficiency motivation</title>
       <para>
 	<!-- talk about efficiency motivation -->Storing a large number of
 	small objects can frequently cost too much, in terms of
@@ -66,8 +66,8 @@
 	each object and allow it to appear in multiple logical places in the
 	scene graph.
       </para>
-    </sect2>
-    <sect2><title>trails</title>
+    </section>
+    <section><title>trails</title>
       <para>
 	<!-- talk about trails -->While each graphic may occur in multiple
 	places, if we enforce the DAG (directed, acyclic graph) structure on our
@@ -92,8 +92,8 @@
 	multiple-parent condition is not a serious problem, and to explain why
         traversals do all the things they do.
       </para>
-    </sect2>
-    <sect2><title>externalization of state</title>
+    </section>
+    <section><title>externalization of state</title>
       <para>
 	<!-- talk about externalization of state -->In addition to understanding
 	the concept of a trail, it is important to realize that a graphic cannot
@@ -109,15 +109,15 @@
 	which are highly dynamic to begin with. Since we compute them on the
 	fly, such values are never "out of sync" with one another.
       </para>
-    </sect2>
-  </sect1>
-  <sect1><title>traversal</title>
+    </section>
+  </section>
+  <section><title>traversal</title>
     <para>
       <!-- talk about traversal -->The scene graph is subject to a few "bulk"
       operations, such as delivering events and drawing. These operations are
       encapsulated in stateful objects, called Traversals.
     </para>
-    <sect2><title>a generic algorithm</title>
+    <section><title>a generic algorithm</title>
       <para>
 	<!-- talk about a generic algorithm -->The traversal algorithm is a
 	generic "walk" over the scene graph. It may be either depth first or
@@ -126,9 +126,9 @@
 	externalized state of each node as they visit, so that the node can
 	"read off" its state as it is traversed through.
       </para>
-    </sect2>
-  </sect1>
-  <sect1><title>altering the screen</title>
+    </section>
+  </section>
+  <section><title>altering the screen</title>
     <para>
       <!-- talk about altering the screen -->Obviously a static scene graph is
       not interesting; the point of a windowing system is to allow users to
@@ -140,7 +140,7 @@
       <function>this->needredraw()</function>, which calculates the graphic's
       damaged region and requests redrawing from the draw thread.
     </para>
-    <sect2><title>allocation</title>
+    <section><title>allocation</title>
       <para>
 	<!-- talk about allocation -->A graphic may occur in any number of
 	places in the scene graph, so the first thing a graphic must do when
@@ -161,8 +161,8 @@
 	many steps, it all happens in process, following pointers, so
 	allocation computing is usually very quick.
       </para>
-    </sect2>
-    <sect2><title>damage</title>
+    </section>
+    <section><title>damage</title>
       <para>
         <!-- talk about damage -->In the case of
 	<function>needredraw()</function>, the graphic's allocations are all
@@ -173,8 +173,8 @@
 	the damage region into. Doing so queues up a redraw which the drawing
 	thread will dispatch with a draw traversal.
       </para>
-    </sect2>
-    <sect2><title>draw traversal </title>
+    </section>
+    <section><title>draw traversal </title>
       <para>
 	<!-- talk about draw traversal --><classname>DrawTraversal</classname>s
 	are objects which the drawing thread passes over the scene graph,
@@ -185,8 +185,8 @@
 	<classname>DrawingKit</classname>, which subsequently can be used to
 	draw to the device in charge of the traversal.
       </para>
-    </sect2>
-    <sect2><title>dynamic layout</title>
+    </section>
+    <section><title>dynamic layout</title>
       <para>
 	<!-- talk about dynamic layout -->The technical details of the drawing
 	kit (lines, paths, paint, textures) are not deeply relevant at this
@@ -199,7 +199,7 @@
 	systems such as box-packing, typesetting concepts such as "springs" and
 	"glue", absolute positioning, and more.
       </para>
-    </sect2>
-  </sect1>
+    </section>
+  </section>
 </chapter>
 

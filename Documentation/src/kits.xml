@@ -7,7 +7,7 @@
     is not necessary for the server to know all kit interfaces, resulting in the high level
     of extensibility we have.
   </para>
-  <sect1>
+  <section>
     <title>Composition: how to amalgamate domain specific objects into complex tools</title>
     <para>Berlin's principal paradigm is composition. All complex objects are compositions out of
     small, leightweight building blocks, each from a specific domain, such as 'text', 'layout',
@@ -41,8 +41,8 @@
     /*...*/
   };
   </programlisting>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
     <title>Factories: making a high abstraction level possible</title>
     <para>The high abstraction level used in Berlin is provided through the extensive use of factories.
     Location transparent is achieved through the use of the proxy pattern, i.e. some reference factory
@@ -62,8 +62,8 @@
     <para>The exact type of the returned object isn't known, which means that the server has more freedom to choose
     an appropriate implementation that is most appropriate. What that means can depend on the specific hardware the
     server is using, or some UI styles which the server is configured for, etc.</para>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
     <title>Prototype: how specific kits can be requested</title>
     <para>When the server is started, it doesn't really load any kits. It rather looks up all available kits and waits
     for clients to request them. But how does a client express what kits it needs ?</para>
@@ -138,5 +138,5 @@
   resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0", properties);
   </programlisting>
   
-  </sect1>
+  </section>
 </chapter>

@@ -5,7 +5,7 @@
     devices. Unlike many GUIs, we take an extensible and "low impact"
     approach to dispatching events to their respective destinations.
   </para>
-  <sect1><title>input devices and event types</title>
+  <section><title>input devices and event types</title>
     <para>
       <!-- Events from a device
       are categorized (at the moment) by very simple type tags. we hope in the
@@ -138,8 +138,8 @@
       ...
       </programlisting>
     </para>
-  </sect1>
-  <sect1><title>controllers, focus and picking</title>
+  </section>
+  <section><title>controllers, focus and picking</title>
     <para>
       <!-- talk about controllers, focus and picking -->In order for events to
       have any effect on an application, they must be "dispatched" from the
@@ -147,7 +147,7 @@
       object in the scene graph. Such objects are called
       <classname>Controllers</classname>.
     </para>
-    <sect2><title>decorators which consume events</title>
+    <section><title>decorators which consume events</title>
       <para>
 	<!-- talk about decorators which consume events -->
 	<classname>Controllers</classname> are implemented in terms of invisible
@@ -160,8 +160,8 @@
 	become an "active" recipient of events merely by being wrapped in a
 	suitable controller.
       </para>
-    </sect2>
-    <sect2><title>focus</title>
+    </section>
+    <section><title>focus</title>
       <para>
 	<!-- talk about the concept of focus -->the Controller receiving the
 	event is said to hold the focus for the device the event originated in.
@@ -171,8 +171,8 @@
 	determination of this controller is done with a pick traversal.
 	For non positional devices a controller can request the focus explicitly.
       </para>
-    </sect2>
-    <sect2><title>logical control graph</title>
+    </section>
+    <section><title>logical control graph</title>
       <para>
 	<!-- talk about logical control graph -->If you step back from the scene
 	graph and just concentrate on the controllers, you will see that they
@@ -195,8 +195,8 @@
         order for the navigation of non positional focus, it is the desired behavior which should
         ultimately drive the topology if this graph.
       </para>
-    </sect2>
-    <sect2><title>picking</title>
+    </section>
+    <section><title>picking</title>
       <para>
 	<!-- talk about picking -->For positional events the target controller
 	must be determined - at least if no device grab is active - by comparing
@@ -305,8 +305,8 @@
         A special iterator allows it to access the graphics which, inside the editor, were intersecting
         with the device.
       </para>
-    </sect2>
-    <sect2><title>navigating non positional devices</title>
+    </section>
+    <section><title>navigating non positional devices</title>
       <para>
 	<!-- talk about focus navigation -->
         <figure id="control-graph-figure" float="1">
@@ -333,8 +333,8 @@
         };
         </programlisting>
       </para>
-    </sect2>
-    <sect2><title>sumary</title>
+    </section>
+    <section><title>sumary</title>
       <para>
 	<!-- event dispatching sumary -->
         <figure id="event-dispatching-figure" float="1">
@@ -346,6 +346,6 @@
           </mediaobject>
         </figure>
       </para>
-    </sect2>
-  </sect1>
+    </section>
+  </section>
 </chapter>

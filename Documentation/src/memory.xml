@@ -2,19 +2,19 @@
   <para>
     <!-- talk about memory management -->
   </para>
-  <sect1><title>Servants, Proxies, and Objects</title>
+  <section><title>Servants, Proxies, and Objects</title>
     <para>
       <!-- talk about the distinction between the three -->
     </para>
-    <sect2><title>Proxy life cycle</title>
+    <section><title>Proxy life cycle</title>
       <para>
       </para>
-    </sect2>
-    <sect2><title>Object life cycle</title>
+    </section>
+    <section><title>Object life cycle</title>
       <para>
       </para>
-    </sect2>
-    <sect2><title>Servant lifecycle</title>
+    </section>
+    <section><title>Servant lifecycle</title>
       <para>
         In the sake of scalability CORBA provides a variety of coupling strategies
         between objects and servants. While the fastest and easiest way is a 
@@ -25,9 +25,9 @@
         where objects are activated with newly created servants, and the servants
         life time is bound by the object.
       </para>
-    </sect2>
-  </sect1>
-  <sect1><title>The problem of Ownership</title>
+    </section>
+  </section>
+  <section><title>The problem of Ownership</title>
     <para>
       In a distributed environment we can no longer use explicit construction to
       create new instances. Instead, we rely on factory methods to create objects for
@@ -38,12 +38,12 @@
       </itemizedlist>
       Therefor, we need some other means to inform the system that we no longer need the reference we hold.
     </para>
-    <sect2><title>Proxies</title>
+    <section><title>Proxies</title>
       <para>
         <!-- talk about _duplicate() and release() -->
       </para>
-    </sect2>
-    <sect2><title>Servants</title>
+    </section>
+    <section><title>Servants</title>
       <para>
         For reasons we discussed before, it is the POA which needs to delete the servant
         whenever the last pending request has been processed. All servants therefor need
@@ -95,9 +95,9 @@
           </calloutlist>
         </programlistingco>
       </example>
-    </sect2>
-    <sect2><title>Objects</title>
-      <sect3><title>local temporary objects</title>
+    </section>
+    <section><title>Objects</title>
+      <section><title>local temporary objects</title>
         <example><title>a local temporary object</title>	
           <programlisting>
           {
@@ -119,8 +119,8 @@
           }
           </programlisting>
         </example>
-      </sect3>
-      <sect3><title>objects with a single owner</title>
+      </section>
+      <section><title>objects with a single owner</title>
         <example><title>a single owned object is created and destroyed</title>	
           <programlisting>
           {
@@ -131,8 +131,8 @@
           }
           </programlisting>
         </example>
-      </sect3>
-      <sect3><title>objects with multiple owners</title>
+      </section>
+      <section><title>objects with multiple owners</title>
         <example><title>a multiowned object is referenced temporarily</title>	
           <programlisting>
           {
@@ -151,7 +151,7 @@
           }
           </programlisting>
         </example>
-      </sect3>
-    </sect2>
-  </sect1>
+      </section>
+    </section>
+  </section>
 </appendix>
