@@ -194,7 +194,7 @@ all this myself!" factor). To start a client with the server you need
 to tell it its location (starting now the $fresco-build stuff will be
 assumed) using the -e (execute) flag:
 
-> bin/berlin -e bin/demo
+> bin/berlin -e bin/fresco-demo
 
 The demo program is a set of small applications showing some fresco
 possibilities (new demos are welcome!).
@@ -211,11 +211,11 @@ has no 3D support, so you have to tell Fresco to use another DrawingKit
 
 In short:
 
-> bin/berlin -e bin/demo3D -c SDL -d GLDrawingKit
+> bin/berlin -e bin/fresco-demo3D -c SDL -d GLDrawingKit
 
 for SDL console or
 
-> bin/berlin -e bin/demo3D -c GGI -d GLDrawingKit
+> bin/berlin -e bin/fresco-demo3D -c GGI -d GLDrawingKit
 
 for GGI console.
 
@@ -293,17 +293,18 @@ the nameserver configured and RUNNING. A good way to test the nameserver
 is 'nameclt list'.  This should return no error message and terminate
 immediatly.
 
-Note that simply running bin/berlin -e bin/demo will work regardless of
-which -R option you use.  When loading, the server also publishes its
-initial reference into the environment under FRESCO_DISPLAY which the
-client will try first when searching for the server. Because -e program
-is executed as a child of the server, it inherits the environment variable
-and will not attempt to use the nameserver or filesystem.
+Note that simply running bin/berlin -e bin/fresco-demo will work
+regardless of which -R option you use.  When loading, the server also
+publishes its initial reference into the environment under
+FRESCO_DISPLAY which the client will try first when searching for the
+server. Because -e program is executed as a child of the server, it
+inherits the environment variable and will not attempt to use the
+nameserver or filesystem. 
 
 If you're running two servers together, one with the id "FrescoServer"
 (as per default) and the other with the id "nested", then to start a
 client in nested from the Terminal Demo in FrescoServer, run 
-   bin/demo -i nested
+   bin/fresco-demo -i nested
 to bypass the server lookup from the environment.
 
 Report a bug
