@@ -35,9 +35,10 @@ public:
   DrawStateContainer(Graphic_ptr b) {body(b);}
   virtual void draw(DrawTraversal_ptr traversal) 
   {
-    traversal->kit()->saveState();
+    DrawingKit_var kit = traversal->kit();
+    kit->saveState();
     MonoGraphic::traverse(traversal);
-    traversal->kit()->restoreState();    
+    kit->restoreState();    
   }  
 };
 
@@ -47,20 +48,20 @@ public:
 template <class T>
 class DrawDecorator : public MonoGraphic
 {
-  typedef void (DrawingKit::*method)(T);
-  method meth;
-  T myVal;  
+  typedef void (DrawingKit::*Method)(T);
 public:
-  DrawDecorator(T val, method meth, Graphic_ptr b) : 
-    myVal(val)
-  {
-    body(b);
-  }
+  DrawDecorator(Method m, T v) : method(m), value(v) {}
   virtual void draw(DrawTraversal_ptr traversal) 
   {
-    (traversal->kit()->*meth)(myVal);
+    DrawingKit_var kit = traversal->kit();
+    kit->saveState();
+    (kit->*method)(value);
     MonoGraphic::traverse(traversal);
+    kit->restoreState();    
   }
+private:
+  Method method;
+  T value;
 };
 
 #endif

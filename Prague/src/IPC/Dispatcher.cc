@@ -145,7 +145,6 @@ void Dispatcher::release(Agent *agent, int fd)
    * release file descriptors
    */
   MutexGuard guard(mutex);
-  cout << "still there" << endl;
   for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
     if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
       {
@@ -205,8 +204,10 @@ void Dispatcher::dispatch(task *t)
 
 void Dispatcher::process(const task &t)
 {
-  if (t.agent->processIO(t.fd, t.mask)) activate(t);
+  bool done = !t.agent->process(t.fd, t.mask);
   t.mutex.unlock();
+  if (done) t.agent->done(t.fd, t.mask);
+  else activate(t);
 }
 
 void Dispatcher::deactivate(const task &t)

@@ -62,7 +62,8 @@ public:
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
 protected:
-  virtual bool processIO(int, iomask_t);
+  virtual bool process(int, iomask_t);
+  virtual void done(int, iomask_t);
   void  terminate();
   void  shutdown(short);  
 protected:

@@ -102,9 +102,9 @@ void Coprocess::stop()
   Agent::stop();
 }
 
-bool Coprocess::processIO(int, iomask_t m)
+bool Coprocess::process(int, iomask_t m)
 {
-  Trace trace("Coprocess::processIO");
+  Trace trace("Coprocess::process");
   MutexGuard guard(mutex);
   /*
    * let the client process the IO
@@ -120,7 +120,6 @@ bool Coprocess::processIO(int, iomask_t m)
     case Agent::inexc:
       if (ibuf()->eof())
 	{
-	  shutdown(in);
 	  if (eofNotifier) eofNotifier->notify(Agent::in);
 	  flag = false;
 	}
@@ -129,7 +128,6 @@ bool Coprocess::processIO(int, iomask_t m)
     case Agent::outexc:
       if (obuf()->eof()) 
 	{
-	  shutdown(out);
 	  if (eofNotifier) eofNotifier->notify(Agent::out);
 	  flag = false;
 	}
@@ -138,7 +136,6 @@ bool Coprocess::processIO(int, iomask_t m)
     case Agent::errexc:
       if (ebuf()->eof())
 	{
-	  shutdown(err);
 	  if (eofNotifier) eofNotifier->notify(Agent::err);
 	  flag = false;
 	}
@@ -146,6 +143,22 @@ bool Coprocess::processIO(int, iomask_t m)
     default: break;
     }
   return flag;
+}
+
+void Coprocess::done(int, iomask_t m)
+{
+  Trace trace("Coprocess::done");
+  MutexGuard guard(mutex);
+  switch (m)
+    {
+    case Agent::inready:
+    case Agent::inexc: shutdown(in); break;
+    case Agent::outready:
+    case Agent::outexc: shutdown(out); break;
+    case Agent::errready:
+    case Agent::errexc: shutdown(err); break;
+    default: break;
+    }
 }
 
 void Coprocess::terminate()
@@ -166,25 +179,21 @@ void Coprocess::terminate()
 
 void Coprocess::shutdown(short m)
 {
-  cout << "shutdown " << m << endl;
   short om = mask();
   m &= om;
-  mask(om & ~m );
+  mask(om & ~m);
   if (m & in)
     {
-      cout << "deleting inbuf" << endl;
       delete inbuf;
       inbuf = 0;
     }
   if (m & out)
     {
-      cout << "deleting outbuf" << endl;
       delete outbuf;
       outbuf = 0;
     }
   if (m & err)
     {
-      cout << "deleting errbuf" << endl;
       delete errbuf;
       errbuf = 0;
     }

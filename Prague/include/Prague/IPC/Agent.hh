@@ -49,7 +49,8 @@ public:
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);
-  virtual bool processIO(int, iomask_t) = 0;
+  virtual bool process(int, iomask_t) = 0;
+  virtual void done(int, iomask_t) = 0;
   short iomask;
   bool  running : 1;
 };

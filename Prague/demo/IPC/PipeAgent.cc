@@ -53,7 +53,7 @@ public:
 
 int main (int argc, char **argv)
 {
-  Tracer::logging(true);
+  if (argc == 2 && string("--trace") == argv[1]) Tracer::logging(true);
   Output *out = new Output;
   ConnectionClosed *eof = new ConnectionClosed;
   agent = new PipeAgent("./echo", out, eof);

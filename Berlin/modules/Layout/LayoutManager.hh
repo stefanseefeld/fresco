@@ -181,7 +181,7 @@ public:
   static void computeAllocations(Axis, Graphic::Requisition &, bool, long, Graphic::Requisition *,
 				 Region_ptr, LayoutManager::Allocations);
   static Coord computeLength(const Graphic::Requirement &, const Region::Allotment &);
-  static float computeSqueeze(const Graphic::Requirement &, Coord);
+  static Coord computeSqueeze(const Graphic::Requirement &, Coord);
 private:
   Axis axis;
   Graphic::Requisition requisition;

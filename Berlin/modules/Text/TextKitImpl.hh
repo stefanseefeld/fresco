@@ -40,14 +40,6 @@ class Compositor;
 
 class TextKitImpl : implements(TextKit),  public KitImpl
 {
-  static Mutex staticMutex;
-  static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
-  static DrawingKit_var canonicalDK;
-
-  Mutex localMutex;
-  Compositor *myCompositor;
-  vector<GraphicImpl *> myAllocations;
-
  public:
   TextKitImpl(KitFactory *, const PropertySeq &);
   virtual ~TextKitImpl();
@@ -62,6 +54,14 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   Graphic_ptr fullName(Graphic_ptr body, const Unistring & name);
   Graphic_ptr style(Graphic_ptr body, const Unistring & sty);
   Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
+ private:
+  static Mutex staticMutex;
+  static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
+  static DrawingKit_var canonicalDK;
+
+  Mutex localMutex;
+  Compositor *compositor;
+  vector<GraphicImpl *> allocations;
 };
 
 

@@ -4,11 +4,6 @@
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -135,13 +130,6 @@ void LayoutAlign::allocate(long n, Graphic::Requisition *requests, Region_ptr gi
       r = GraphicImpl::requirement(requests[i], axis);
       if (r->defined)
 	{
-	  // Can someone explain to me why it's doing a LayoutTile::compute_length here? 
-	  /*
-	    Coord length = Math::max(
-	    Math::min(LayoutTile::compute_length(*r, s), r->maximum),
-	    r->minimum
-	    );
-	  */
 	  Coord length = Math::max(Math::min(a.end - a.begin, r->maximum), r->minimum);
 	  setSpan(result[i], axis, a.begin + a.align*(a.end-a.begin), length, r->align);
 	}
@@ -299,7 +287,7 @@ Coord LayoutMargin::span(Coord span, Graphic::Requirement &total, Coord natural,
 {
   Coord extra = span - total.natural;
   Coord result = natural;
-  float ss = 0.0f;
+  Coord ss = 0.;
   Coord total_stretch = total.maximum - total.natural;
   Coord total_shrink = total.natural - total.minimum;
   if (extra > 0 && total_stretch > 0) ss = stretch / total_stretch;
@@ -378,8 +366,7 @@ void LayoutTile::computeRequest(Axis a, Alignment align, long n, Graphic::Requis
       r = GraphicImpl::requirement(requests[i], a);
       if (r->defined)
 	{
-	  Coord n = r->natural;
-	  natural += n;
+	  natural += r->natural;
 	  max_size += r->maximum;
 	  min_size += r->minimum;
 	}
@@ -402,7 +389,7 @@ void LayoutTile::computeAllocations(Axis axis, Graphic::Requisition &total, bool
   Coord length = computeLength(*r, a);
   bool growing = length > r->natural;
   bool shrinking = length < r->natural;
-  float f = computeSqueeze(*r, length);
+  Coord f = computeSqueeze(*r, length);
   Coord p = a.begin + a.align * (a.end - a.begin);
   for (long i = 0; i < n; i++)
     {
@@ -431,9 +418,9 @@ Coord LayoutTile::computeLength(const Graphic::Requirement &r, const Region::All
   return length;
 }
 
-float LayoutTile::computeSqueeze(const Graphic::Requirement &r, Coord length)
+Coord LayoutTile::computeSqueeze(const Graphic::Requirement &r, Coord length)
 {
-  float f;
+  Coord f;
   Coord nat = r.natural;
   if (length > nat && r.maximum > nat)
     f = (length - nat) / (r.maximum - nat);
@@ -471,7 +458,7 @@ void LayoutTileReversed::computeReversedAllocations(Axis axis, Graphic::Requisit
   Coord length = LayoutTile::computeLength(*r, a);
   bool growing = length > r->natural;
   bool shrinking = length < r->natural;
-  float f = LayoutTile::computeSqueeze(*r, length);
+  Coord f = LayoutTile::computeSqueeze(*r, length);
   Coord p = a.begin + a.align * (a.end - a.begin);
   for (long i = 0; i < n; i++)
     {
