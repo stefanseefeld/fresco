@@ -34,8 +34,9 @@
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/Thread.hh"
 
-class ServerContextManagerImpl : implements(ServerContextManager), public virtual Thread {
-
+class ServerContextManagerImpl : implements(ServerContextManager), public virtual Thread
+{
+  typedef vector<ServerContextImpl *> clist_t;
 public:  
   ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g);
   void verify();
@@ -47,7 +48,7 @@ public:
 protected:
   FactoryFinderImpl *myFactoryFinder;
   Mutex myMutex;
-  vector<ServerContextImpl *> allocatedServerContexts;
+  clist_t contexts;
   Stage_var mySceneRoot;
 
 };

@@ -3,6 +3,7 @@
 //
 // This source file is a part of the Berlin Project.
 // Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
 // http://www.berlin-consortium.org
 //
 // This program is free software; you can redistribute it and/or
@@ -41,6 +42,7 @@
 class noSuchProtoException {};
 class noSuchPluginException {};
 class SeverContextImpl;
+class Plugin;
 
 // this is a comparator for our lookup table
 struct keyComp
@@ -48,20 +50,22 @@ struct keyComp
   bool operator()(const CosLifeCycle::Key &a, const CosLifeCycle::Key &b);
 };
 
-class GenericFactoryImpl : implementsscoped(CosLifeCycle,GenericFactory) {
-  
+class GenericFactoryImpl : implementsscoped(CosLifeCycle,GenericFactory) 
+{  
+  typedef map<CosLifeCycle::Key, Plugin *, keyComp> plist_t;
 public:
   
   GenericFactoryImpl();
+  ~GenericFactoryImpl();
   
   // stuff declared in IDL
   virtual CORBA::Boolean  supports ( const CosLifeCycle::Key & k );
   virtual CORBA::Object_ptr create_object 
   ( const CosLifeCycle::Key & k, const CosLifeCycle::Criteria & the_criteria );
   
-  // this builds the function pointer table
-  void init();
-  
+  // this builds the plugin table
+  void scan(const char *);
+  void clear();
 protected:
   
   // this is a simple helper function to make it easier to find the
@@ -73,16 +77,8 @@ protected:
     throw (noSuchPluginException);
   
   // lock the whole thing during a load.
-  Mutex _loader_mutex;  
-  
-  // this stores the function pointers loaded through libdl
-  map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp> _pluginLoadingFunctionTable;
-  
-  // this is responsible for trying to start new threads.
-  //   void startThread(CORBA::Object_ptr o);
-  //   reactorManager *_rm;
+  Mutex mutex;
+  plist_t plugins;
 };
-
-
 
 #endif

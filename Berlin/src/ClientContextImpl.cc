@@ -28,6 +28,7 @@
 // instantiated within the client address space.
 
 #include "Berlin/ClientContextImpl.hh"
+#include "Berlin/Logger.hh"
 #include <iostream>
 #include <string>
 
@@ -44,4 +45,8 @@ Unistring *ClientContextImpl::userName()
   return ustring;
 }
 
-CORBA::Boolean ClientContextImpl::stillAlive() {return (unsigned char)true;}
+CORBA::Boolean ClientContextImpl::stillAlive()
+{
+  SectionLog section(Logger::layout, "ClientContextImpl::stillAlive");
+  return (unsigned char)true;
+}

@@ -30,40 +30,42 @@
 #include "Berlin/ServerContextImpl.hh"
 #include "Warsaw/Stage.hh"
 
-ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g) {
+ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g)
+{
   myFactoryFinder = FactoryFinderImpl::getInstance(factory);
   mySceneRoot = g;
 }
 
-void ServerContextManagerImpl::run(void* arg) {
-    while (true) {
-	sleep(1);
-	verify();
+void ServerContextManagerImpl::run(void* arg)
+{
+  while (true)
+    {
+      sleep(1);
+      verify();
     }
 }
 
-void ServerContextManagerImpl::verify() {
-    MutexGuard guard (myMutex);
-    vector<ServerContextImpl *> tmp;
-    for (vector<ServerContextImpl *>::iterator i = allocatedServerContexts.begin();
-	 i != allocatedServerContexts.end(); i++) {
-	if ((*i)->verify()) {
-	    tmp.push_back(*i);	    
-	} else {
-	    (*i)->_dispose();
-	}
+void ServerContextManagerImpl::verify()
+{
+  MutexGuard guard (myMutex);
+  clist_t tmp;
+  for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
+    {
+      if ((*i)->verify()) tmp.push_back(*i);	    
+      else (*i)->_dispose();
     }
-    allocatedServerContexts = tmp;	    
+  contexts = tmp;	    
 };
 
 // declared in IDL
 ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c) 
-throw (SecurityException) {
-    MutexGuard guard (myMutex);
-    ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, Stage::_duplicate(mySceneRoot));
-    temp->_obj_is_ready(this->_boa());
-    allocatedServerContexts.push_back(temp);
-    return temp->_this();
+throw (SecurityException)
+{
+  MutexGuard guard (myMutex);
+  ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, Stage::_duplicate(mySceneRoot));
+  temp->_obj_is_ready(this->_boa());
+  contexts.push_back(temp);
+  return temp->_this();
 }
   
 

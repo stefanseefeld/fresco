@@ -3,6 +3,7 @@
 //
 // This source file is a part of the Berlin Project.
 // Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
 // http://www.berlin-consortium.org
 //
 // This program is free software; you can redistribute it and/or
@@ -30,22 +31,35 @@
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/CloneableImpl.hh"
 #include "Berlin/Logger.hh"
-#include <sys/types.h>
-#include <dirent.h>
-#include <dlfcn.h>
+#include "Prague/Sys/DLL.hh"
+#include "Prague/Sys/Directory.hh"
 
-#include <stdlib.h>   // getenv()
+class Plugin : private DLL
+{
+public:
+  Plugin(const string &name) : DLL(name), id(0), loader(0)
+    {
+      char *(*getName)() = (char *(*)()) resolve("getName");
+      if (!getName)
+	{
+	  Logger::log(Logger::loader) << "Plugin " << DLL::name() << " failed to load (reason: " << DLL::error() << ')' << endl;
+	  return;
+	}
+      id = getName();
+      loader = (CloneableImpl *(*)()) resolve("getPlugin");
+    }
+  ~Plugin() {}
+  bool ok() { return loader != 0;}
+  const char *name() { return id;}
+  CloneableImpl *load() { return loader ? loader() : 0;}
+private:
+  const char *id;
+  CloneableImpl *(*loader)();
+};
 
 
-#define NUMDIRS 3
-
-// LOUSY HACK! we should be getting this from somewhere other than env
-#define PLUGINBASE "WARSAW"
-
-
-GenericFactoryImpl::GenericFactoryImpl() {
-//   _rm = ReactorManager::getManager();
-}
+GenericFactoryImpl::GenericFactoryImpl() {}
+GenericFactoryImpl::~GenericFactoryImpl() { clear();}
 
 // this is the method your average factory-finder is going to call from
 // god knows where on the network. Its job it to make the object 
@@ -61,7 +75,7 @@ GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k,
 
   try
     {    
-      MutexGuard guard(_loader_mutex);
+      MutexGuard guard(mutex);
       newCloneable = loadPlugin(k);  
     }
   catch (noSuchPluginException e)
@@ -131,32 +145,28 @@ GenericFactoryImpl::extractLifeCycleFromCriteria(const CosLifeCycle::Criteria & 
 // disk and connected to the BOA. It's not pretty, but that's all it does.
 
 CloneableImpl *GenericFactoryImpl::loadPlugin(const CosLifeCycle::Key &k) 
-  throw (noSuchPluginException) {
-  
-  CloneableImpl *plugin = NULL;
-
-  map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp>::iterator p = _pluginLoadingFunctionTable.find(k);
-  
-  if (p == _pluginLoadingFunctionTable.end()) {
-    // naughty boy, you should have called supports() first!
-    throw noSuchPluginException();
-    
-  } else {
-    plugin = (*(p->second))(); 
-    return plugin;
-  }
+  throw (noSuchPluginException)
+{
+  map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(k);
+  if (p == plugins.end())
+    {
+      // naughty boy, you should have called supports() first!
+      throw noSuchPluginException();
+    }
+  else return (*p).second->load(); 
 }
 
 
 // you can call this is you're curious about creation support in the factory.
-CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key & k ) {
-  map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp>::iterator p = _pluginLoadingFunctionTable.find(k);
+CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key & k )
+{
+  map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(k);
 
-  if (p == _pluginLoadingFunctionTable.end())
+  if (p == plugins.end())
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl::supports does not support " << ((string)(k[0].id)).c_str() << endl;    
       Logger::log(Logger::loader) << "GenericFactoryImpl::supports interface listing follows: " << endl;
-      for(p = _pluginLoadingFunctionTable.begin(); p != _pluginLoadingFunctionTable.end(); p++)
+      for(p = plugins.begin(); p != plugins.end(); p++)
 	Logger::log(Logger::loader) << p->first[0].id << endl;
       return false;
     }
@@ -168,89 +178,42 @@ CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key & k ) {
 // if you ever want to re-scan the directory for new plugins, well, we could use stat
 // records or something, or you could just call init again. That would probably do OK.
 
-void GenericFactoryImpl::init()
+void GenericFactoryImpl::scan(const char *name)
 {
-  _pluginLoadingFunctionTable.clear();
-  MutexGuard guard(_loader_mutex);
-  char *pluginDir;
-  char pluginName[256];
-  
-  pluginDir = getenv(PLUGINBASE);
-  
-  if (!pluginDir)  {}
-  else
-    {  
-      DIR *dirHandle = opendir(pluginDir);
-      char *error;
+  MutexGuard guard(mutex);
+  /*
+   * load all files in <name> according to the regexp '\\.so'
+   */
+  Directory directory(name, Directory::alpha, "\\.so");
+  Logger::log(Logger::loader) << "GenericFactoryImpl::init scanning plugin dir " << name << endl;
+  for (Directory::iterator i = directory.begin(); i != directory.end(); i++)
+    {
+      Plugin *plugin = new Plugin((*i)->LongName());
+      /*
+       * if this is not a plugin, skip over it
+       */
+      if (!plugin->ok()) continue;
+      CosLifeCycle::Key prototypeName;
+      prototypeName.length(1);
+      prototypeName[0].id   = (const char*) plugin->name();    // string copied
+      prototypeName[0].kind = (const char*) "Object";          // string copied    
       
-      if (dirHandle)
-	{
-	  struct dirent *pluginEntry;
-	  Logger::log(Logger::loader) << "GenericFactoryImpl::init scanning plugin dir " << pluginDir << endl;
-	
-	  while((pluginEntry = readdir(dirHandle)))
-	    {
-	      if (strstr(pluginEntry->d_name, ".so") != 0)
-		{
-		  strcpy(pluginName, pluginDir);
-		  // Once again the infamous / - Jonas
-		  strcat(pluginName, "/");
-		  strcat(pluginName, pluginEntry->d_name);
-	    
-		  // now we actually map the file into our address space
-		  void *handle = dlopen (pluginName, RTLD_NOW);
-		  if (!handle)
-		    {
-		      Logger::log(Logger::loader) << "GenericFactoryImpl::init failed to load "
-						  << pluginName << " (reason: " << dlerror() << ')' << endl;
-		      continue;
-		    }
-	    
-		  // ask it if it's a plugin, or just some random .so...
-		  char *(*nameGetter)();
-		  nameGetter = (char *(*)())dlsym(handle, "getName");
-	    
-		  // check for erorrs in symbol lookup
-		  error = dlerror();
-		  if (error != 0)
-		    {
-		      Logger::log(Logger::loader) << "GenericFactoryImpl::init can't locate symbol in plugin: " << error << endl;
-		      continue;
-		    }
-	    
-		  // ask it what plugin it provides
-		  char *nameInFile = (*nameGetter)();
-		  CosLifeCycle::Key prototypeName;
-		  prototypeName.length(1);
-		  prototypeName[0].id   = (const char*) nameInFile;    // string copied
-		  prototypeName[0].kind = (const char*) "Object"; // string copied    
-	    
-		  map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp>::iterator p = 
-		    _pluginLoadingFunctionTable.find(prototypeName);
-	    
-		  if (p != _pluginLoadingFunctionTable.end())
-		    Logger::log(Logger::loader) << "GenericFactoryImpl::init warning: multiple definitions for plugin "
-						<< nameInFile << endl;
-	    
-		  // believe it or not, this is a "standard C" variable declaration
-		  CloneableImpl *(*pluginGetter)();
-	    
-		  // and this monster here is a cast of a pointer returned by dlsym. 
-		  pluginGetter = (CloneableImpl *(*)())dlsym(handle, "getPlugin");
-	    
-		  // if all is well and good, we have a function pointer we can call to get the plugin
-		  char *error = dlerror();
-		  if (error != 0)
-		    Logger::log(Logger::loader) << "GenericFactoryImpl::init failed to load plugin function: "
-						<< nameInFile << " (reason: " << error << ')' << endl;
-		  // stash the function pointer for loading new object in the future
-		  _pluginLoadingFunctionTable[prototypeName] = pluginGetter;
-		  Logger::log(Logger::loader) << "GenericFactoryImpl::init loaded plugin " << nameInFile << endl;		       
-		}
-	    }
-	}
-      closedir(dirHandle);
+      map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(prototypeName);
+      if (p != plugins.end())
+	Logger::log(Logger::loader) << "GenericFactoryImpl::init warning: multiple definitions for plugin "
+				    << plugin->name() << endl;
+      
+      // stash the function pointer for loading new object in the future
+      plugins[prototypeName] = plugin;
+      Logger::log(Logger::loader) << "GenericFactoryImpl::init loaded plugin " << plugin->name() << endl;
     }
+}
+
+void GenericFactoryImpl::clear()
+{
+  MutexGuard guard(mutex);
+  for (plist_t::iterator i = plugins.begin(); i != plugins.end(); i++) delete (*i).second;
+  plugins.erase(plugins.begin(), plugins.end());
 }
 
 bool keyComp::operator()(const CosLifeCycle::Key &a, const CosLifeCycle::Key &b) {

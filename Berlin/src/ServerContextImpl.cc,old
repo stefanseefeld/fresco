@@ -27,6 +27,7 @@
 
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/ClientContextImpl.hh"
+#include "Berlin/Logger.hh"
 #include "Warsaw/Stage.hh"
 
 // static singletons mapping
@@ -35,11 +36,13 @@ Mutex ServerContextImpl::singletons_mutex;
 Stage_var ServerContextImpl::ourSceneRoot;
 
 ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, 
-				     ClientContext_ptr theClient, Stage_ptr root) {
+				     ClientContext_ptr theClient, Stage_ptr r)
+{
     _ff = theFactoryFinder;
     _client = theClient;
+    Stage_var stage = r;
     MutexGuard guard(singletons_mutex);
-    if (CORBA::is_nil(ourSceneRoot)) ourSceneRoot = root;
+    if (CORBA::is_nil(ourSceneRoot)) ourSceneRoot = stage;
 }
 
 Stage_ptr ServerContextImpl::sceneRoot() {
@@ -61,26 +64,35 @@ ClientContext_ptr ServerContextImpl::myClient() {
 // (ServerContextManager) who will most likely destroy this ServerContext.
 
 bool ServerContextImpl::verify() {
+  SectionLog section(Logger::layout, "ServerContextImpl::verify");
   MutexGuard guard (_ServerContext_mutex);
   bool clientIsStillThere = true;
-  try {      
-    if (CORBA::is_nil(_client)) {
+  try
+    {      
+      SectionLog section(Logger::layout, "try");
+      if (CORBA::is_nil(_client))
+	clientIsStillThere = false;
+      else
+	clientIsStillThere = _client->stillAlive();
+    }
+  catch (...)
+    {
+      SectionLog section(Logger::layout, "catch");
       clientIsStillThere = false;
-    } else {
-      clientIsStillThere = _client->stillAlive();
     }
-  } catch (...) {
-    clientIsStillThere = false;
-  }
-  if (!clientIsStillThere) {
-    typedef vector<CORBA::Object_var>::iterator VI;
-    for(VI i = allocatedObjects.begin(); i != allocatedObjects.end(); i++) {
-      CosLifeCycle::LifeCycleObject_var p = CosLifeCycle::LifeCycleObject::_narrow(*i);
-      if (!CORBA::is_nil(p)) {
-	p->remove();
-      }
+  if (!clientIsStillThere)
+    {
+      SectionLog section(Logger::layout, "!clientIsStillThere");
+      typedef vector<CORBA::Object_var>::iterator VI;
+      for(VI i = allocatedObjects.begin(); i != allocatedObjects.end(); i++)
+	{
+	  CosLifeCycle::LifeCycleObject_var p = CosLifeCycle::LifeCycleObject::_narrow(*i);
+	  if (!CORBA::is_nil(p))
+	    {
+	      p->remove();
+	    }
+	}
     }
-  }
   return clientIsStillThere;
 }
     

@@ -167,7 +167,6 @@ void RegionImpl::subtract(Region_ptr r)
 
 void RegionImpl::applyTransform(Transform_ptr t)
 {
-  SectionLog section(Logger::layout, "RegionImpl::applyTransform");
   Transform_var transform;
   if (valid)
     {

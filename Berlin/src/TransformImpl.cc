@@ -26,6 +26,7 @@
  */
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
+#include "Berlin/Logger.hh"
 
 static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;
