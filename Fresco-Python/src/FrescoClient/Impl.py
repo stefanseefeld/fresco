@@ -401,9 +401,12 @@ class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
 	self.__blocked = blocked
     def notify(self, any):
 	if self.__blocked: return
-	for observer in self.__observers:
+	for observer in list(self.__observers):
 	    try:
 		observer.update(any)
+	    except CORBA.SystemException:
+		# Remove observer
+		self.__observers.remove(observer)
 	    except:
 		print "PySubject.notify(): Error occurred during update."
 		raise
