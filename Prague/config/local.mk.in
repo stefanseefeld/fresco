@@ -20,7 +20,7 @@
 # MA 02139, USA.
 
 # Which Unicode modules to build
-UNICODE_MODULES	= @UNICODE_MODULES@
+UNICODE_BLOCKS	= @UNICODE_BLOCKS@
 
 #
 # Set flags, paths and libraries specific to the Prague package
