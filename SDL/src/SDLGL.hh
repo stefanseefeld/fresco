@@ -84,7 +84,7 @@ private:
 class GLPointer : public SDL::Pointer
 {
 public:
-  GLPointer(Drawable *, Warsaw::Raster_ptr);
+  GLPointer(Drawable *, Fresco::Raster_ptr);
   ~GLPointer();
 
   void draw();
@@ -92,7 +92,7 @@ public:
   void restore();
 
 private:
-  Warsaw::PixelCoord _max_y_size;
+  Fresco::PixelCoord _max_y_size;
 
   Uint8  * _cursor;
   Uint8  * _saved_area;

@@ -75,8 +75,8 @@ SDL::GLContext::GLContext()
   _drawable =
     dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
 
-  Warsaw::PixelCoord w(_drawable->width());
-  Warsaw::PixelCoord h(_drawable->height());
+  Fresco::PixelCoord w(_drawable->width());
+  Fresco::PixelCoord h(_drawable->height());
   
   Logger::log(Logger::loader) << "setting video mode GL " << " w="
 			      << w << " h= " << h << std::endl;
@@ -165,40 +165,40 @@ void SDL::GLContext::flush() {
 // class SDL::GLPointer (implementation)
 // ---------------------------------------------------------------
 
-SDL::GLPointer::GLPointer(Drawable * drawable, Warsaw::Raster_ptr raster)
+SDL::GLPointer::GLPointer(Drawable * drawable, Fresco::Raster_ptr raster)
 {
   Prague::Trace trace("SDL::GLPointer::GLPointer(...)");
 
   // copy over the Raster:
-  _raster = Warsaw::Raster::_duplicate(raster);
+  _raster = Fresco::Raster::_duplicate(raster);
 
   // get screensizes:
   _max_y_size = drawable->height();
 
   // copy over the Raster:
-  _raster = Warsaw::Raster::_duplicate(raster);
+  _raster = Fresco::Raster::_duplicate(raster);
 
   // Disable SDL default mousecursor
   SDL_ShowCursor(0);
 
   // Copy the raster over into the Drawable:
-  Warsaw::Raster::Info info = raster->header();
-  Warsaw::Raster::ColorSeq_var pixels;
-  Warsaw::Raster::Index lower, upper;
+  Fresco::Raster::Info info = raster->header();
+  Fresco::Raster::ColorSeq_var pixels;
+  Fresco::Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
   raster->store_pixels(lower, upper, pixels);
   _origin[0] = _origin[1] = 0;
   _size[0] = info.width;
   _size[1] = info.height;
-  _scale[0] = 1.0/drawable->resolution(Warsaw::xaxis);
-  _scale[1] = 1.0/drawable->resolution(Warsaw::yaxis);
+  _scale[0] = 1.0/drawable->resolution(Fresco::xaxis);
+  _scale[1] = 1.0/drawable->resolution(Fresco::yaxis);
 
   _cursor = new Uint8[_size[0] * _size[1] * 4]; // RGBA
   _saved_area = new Uint8[_size[0] * _size[1] * 3]; //RGB
 
   unsigned pos = 0;
-  Warsaw::Color c;
+  Fresco::Color c;
 
   for (unsigned short y = 0; y != _size[1]; ++y)
     for (unsigned short x = 0; x != _size[0]; ++x)
@@ -230,8 +230,8 @@ void SDL::GLPointer::save()
 {
   Prague::Trace trace("SDL::GLPointer::save()");
 
-  Warsaw::PixelCoord x = _position[0] - _origin[0];
-  Warsaw::PixelCoord y = _max_y_size - _position[1] - _size[1] + _origin[1];
+  Fresco::PixelCoord x = _position[0] - _origin[0];
+  Fresco::PixelCoord y = _max_y_size - _position[1] - _size[1] + _origin[1];
   glDisable(GL_BLEND);
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
@@ -251,8 +251,8 @@ void SDL::GLPointer::restore()
 {
   Prague::Trace trace("SDL::GLPointer::restore()");
 
-  Warsaw::PixelCoord x = _position[0] - _origin[0];
-  Warsaw::PixelCoord y = _position[1] + _size[1] - _origin[1];
+  Fresco::PixelCoord x = _position[0] - _origin[0];
+  Fresco::PixelCoord y = _position[1] + _size[1] - _origin[1];
   glDisable(GL_BLEND);
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
@@ -272,8 +272,8 @@ void SDL::GLPointer::draw()
 {
   Prague::Trace trace("SDL::GLPointer::draw()");
 
-  Warsaw::PixelCoord x = _position[0] - _origin[0];
-  Warsaw::PixelCoord y = _position[1] + _size[1] - _origin[1];
+  Fresco::PixelCoord x = _position[0] - _origin[0];
+  Fresco::PixelCoord y = _position[1] + _size[1] - _origin[1];
   glDisable(GL_SCISSOR_TEST);
 
   glDrawBuffer(GL_FRONT);

@@ -29,7 +29,7 @@ cdir		:= $(builddir)/config
 include $(cdir)/local.mk
 
 # Compilation and linking flags.
-HAVE_MESA	:= @HAVE_MESA@
+HAVE_GL		:= @HAVE_GL@
 
 SRC	:= Drawable.cc Extension.cc Pointer.cc Console.cc
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
@@ -37,11 +37,10 @@ OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
 TARGET	:= ../lib/Fresco/Console/SDL.so
 
-ifeq ($(HAVE_MESA), 1)
+ifeq ($(HAVE_GL), 1)
 TARGET	+= ../lib/Fresco/Console/SDLGL.so
-../lib/Fresco/Console/SDLGL.so: SDLGL.cc
-
 endif
+../lib/Fresco/Console/SDLGL.so: SDLGL.cc
 
 
 all:	$(TARGET)

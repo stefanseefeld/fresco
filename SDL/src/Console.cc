@@ -46,6 +46,7 @@ namespace
     switch (e.type)
       {
       case SDL_KEYDOWN:
+      case SDL_KEYUP:
 	{
 	  std::cin >> t;
 	  e.key.keysym.sym = static_cast<SDLKey>(t);
@@ -72,6 +73,7 @@ namespace
     switch (e.type)
       {
       case SDL_KEYDOWN:
+      case SDL_KEYUP:
 	{
 	  std::cout << static_cast<unsigned int>(e.key.keysym.sym);
 	  break;
@@ -226,6 +228,16 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
 	event[0].dev = 0;
 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
 	break;
+      }
+    case SDL_KEYUP:
+      {
+        Input::Toggle toggle;
+        toggle.actuation = Input::Toggle::release;
+        toggle.number = e.key.keysym.unicode;
+        event->length(1);
+        event[0].dev = 0;
+        event[0].attr.selection(toggle); event[0].attr._d(Input::key);
+        break;
       }
     case SDL_MOUSEMOTION:
       {

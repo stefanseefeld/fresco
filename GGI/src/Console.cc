@@ -44,6 +44,7 @@ void read_event(ggi_event &e)
     {
     case evKeyPress:
     case evKeyRepeat:
+    case evKeyRelease:
       {
 	std::cin >> t;
 	e.key.sym = t;
@@ -68,6 +69,7 @@ void write_event(ggi_event &e)
     {
     case evKeyPress:
     case evKeyRepeat:
+    case evKeyRelease:
       {
 	std::cout << ((unsigned int)(e.key.sym));
 	break;
@@ -275,6 +277,16 @@ Input::Event *GGI::Console::synthesize(const ggi_event &e)
 	event[0].dev = 0;
 	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
 	break;
+      }
+    case evKeyRelease:
+      {
+        Input::Toggle toggle;
+        toggle.actuation = Input::Toggle::release;
+        toggle.number = e.key.sym;
+        event->length(1);
+        event[0].dev = 0;
+        event[0].attr.selection(toggle); event[0].attr._d(Input::key);
+        break;
       }
     case evPtrRelative:
       {

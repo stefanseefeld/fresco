@@ -92,6 +92,7 @@ protected:
   bool grabbed(Fresco::Input::Device d) { return _grabs & (1 << d);}
   void set_focus(Fresco::Input::Device d) { _focus |= 1 << d; update_state();}
   void clear_focus(Fresco::Input::Device d) { _focus &= ~(1 << d); update_state();}
+  bool have_focus(Fresco::Input::Device d) { return _focus & (1 << d); }
   virtual void update_state();
 private:
   Fresco::Controller_var _parent;

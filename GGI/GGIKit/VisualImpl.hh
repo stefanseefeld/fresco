@@ -45,7 +45,10 @@ public:
   virtual void extension(const Fresco::Allocation::Info &info, Fresco::Region_ptr region);
   virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
   virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &);
+  // this overrides ControllerImpl:
+  virtual void move(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
 private:
+  virtual void handle_pointer_button(const Fresco::Input::Event &);
   void forward_event(const ggi_event &);
   static GGIDrawableFactory *_factory;
   Fresco::PixelCoord         _width;
