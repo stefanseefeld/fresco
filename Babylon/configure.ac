@@ -1,6 +1,6 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
 dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
 dnl Copyright (C) 2000 Tobias Hunger <tobias@fresco.org>
@@ -44,8 +44,13 @@ dnl Prague
 dnl ------------------------------------------------------------------
 
 FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS $Prague_LIBS"
+INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
+INSTALL_LIBS="$Prague_LIBS $LIBS"
+CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
+LIBS="$Prague_BUILD_LIBS $LIBS"
+
+AC_SUBST(INSTALL_CPPFLAGS)
+AC_SUBST(INSTALL_LIBS)
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -64,7 +69,10 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile modules/Makefile])
+AC_CONFIG_FILES([config/local.mk config/synopsis.py])
+AC_CONFIG_FILES([config/Babylon-config], [chmod +x config/Babylon-config])
+AC_CONFIG_FILES([bin/Babylon-config:config/Babylon-build-config.in], [chmod +x bin/Babylon-config])
+AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile])
 
 mkdir -p lib
 mkdir -p modules

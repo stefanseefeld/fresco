@@ -73,12 +73,12 @@ else
 fi
 
 FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
-CPPFLAGS="$Fresco_CPPFLAGS $CPPFLAGS"
-LIBS="$Fresco_LIBS $LIBS"
+CPPFLAGS="$CPPFLAGS $Fresco_BUILD_CPPFLAGS"
+LIBS="$Fresco_BUILD_LIBS $LIBS"
+
 FRESCO_PACKAGE(Berlin, $PACKAGE_VERSION)
-echo "Berlin_CPPFLAGS $Berlin_CPPFLAGS"
-CPPFLAGS="$Berlin_CPPFLAGS $CPPFLAGS"
-LIBS="$Berlin_LIBS $LIBS"
+CPPFLAGS="$CPPFLAGS $Berlin_BUILD_CPPFLAGS"
+LIBS="$Berlin_BUILD_LIBS $LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Decisions

@@ -29,10 +29,42 @@ AC_PREREQ(2.52)
 AC_REVISION($Revision$)
 AC_INIT(Fresco, M3, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
+AC_CONFIG_AUX_DIR(config)
 
 echo "The Fresco Windowing System,
 Copyright (c) 2000 The Fresco Project <devel@fresco.org>
 "
+
+if test -d $srcdir/Prague; then
+  AC_CONFIG_SUBDIRS(Prague)
+fi
+if test -d $srcdir/Babylon; then
+  AC_CONFIG_SUBDIRS(Babylon)
+fi
+if test -d $srcdir/Fresco; then
+  AC_CONFIG_SUBDIRS(Fresco)
+fi
+if test -d $srcdir/Berlin; then
+  AC_CONFIG_SUBDIRS(Berlin)
+fi
+if test -d $srcdir/GGI; then
+  AC_CONFIG_SUBDIRS(GGI)
+fi
+if test -d $srcdir/SDL; then
+  AC_CONFIG_SUBDIRS(SDL)
+fi
+if test -d $srcdir/Clients-C++; then
+  AC_CONFIG_SUBDIRS(Clients-C++)
+fi
+if test -d $srcdir/Clients-Python; then
+  AC_CONFIG_SUBDIRS(Clients-Python)
+fi
+if test -d $srcdir/Clients-Java; then
+  AC_CONFIG_SUBDIRS(Clients-Java)
+fi
+if test -d $srcdir/Clients-Perl; then
+  AC_CONFIG_SUBDIRS(Clients-Perl)
+fi
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

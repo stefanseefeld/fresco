@@ -71,20 +71,11 @@ vpath %.cc  $(srcdir)/Sys:$(srcdir)/IPC:$(srcdir)/Filter:$(srcdir)/Network
 
 .PHONY: all config doc install install-doc clean distclean maintainer-clean dist
 
-all:	$(TARGET) ../bin/Prague-config
+all:	$(TARGET)
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
-
-../bin/Prague-config: $(top_srcdir)/config/Prague-config.in
-	rm -f $@ $@.tmp
-	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
-	  	-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
-	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
-	  $< > $@.tmp
-	chmod +x $@.tmp
-	mv $@.tmp $@
 
 config: ../bin/Prague-config
 
@@ -114,14 +105,7 @@ install:	all
 	  fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/Prague-config $(DESTDIR)$(bindir)/Prague-config.tmp
-	$(EDIT) \
-	  -e 's,@prefix\@,$(prefix),g' \
-          -e 's,@exec_prefix\@,$(exec_prefix),g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
-          $(top_srcdir)/config/Prague-config.in > $(DESTDIR)$(bindir)/Prague-config.tmp
-	chmod +x $(DESTDIR)$(bindir)/Prague-config.tmp
-	mv $(DESTDIR)$(bindir)/Prague-config.tmp $(DESTDIR)$(bindir)/Prague-config
+	$(INSTALL) -D -m 755 ../config/Prague-config $(DESTDIR)$(bindir)/Prague-config
 
 install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/doc/Prague

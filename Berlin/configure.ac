@@ -77,18 +77,29 @@ if test ".$HAVE_GL" = .1 ; then
 fi
 
 dnl ------------------------------------------------------------------
-dnl Prague and Warsaw
+dnl Prague, Babylon, and Fresco
 dnl ------------------------------------------------------------------
 
 FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$Prague_LIBS $LIBS"
+INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
+INSTALL_LIBS="$LIBS $Prague_LIBS"
+CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
+LIBS="$LIBS $Prague_BUILD_LIBS"
+
 FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$Babylon_LIBS $LIBS"
+INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Babylon_CPPFLAGS"
+INSTALL_LIBS="$INSTALL_LIBS $Babylon_LIBS"
+CPPFLAGS="$CPPFLAGS $Babylon_BUILD_CPPFLAGS"
+LIBS="$LIBS $Babylon_BUILD_LIBS"
+
 FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
-LIBS="$Fresco_LIBS $LIBS"
+INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Fresco_CPPFLAGS"
+INSTALL_LIBS="$INSTALL_LIBS $Fresco_LIBS"
+CPPFLAGS="$CPPFLAGS $Fresco_BUILD_CPPFLAGS"
+LIBS="$LIBS $Fresco_BUILD_LIBS"
+
+AC_SUBST(INSTALL_CPPFLAGS)
+AC_SUBST(INSTALL_LIBS)
 
 dnl ------------------------------------------------------------------
 dnl some helper utils
@@ -129,6 +140,8 @@ for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Images
 done
 
 AC_CONFIG_FILES([config/local.mk config/module.mk config/synopsis.py])
+AC_CONFIG_FILES([config/Berlin-config], [chmod +x config/Berlin-config])
+AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-build-config.in], [chmod +x bin/Berlin-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile])
 
 mkdir -p lib

@@ -68,22 +68,13 @@ vpath %.cc  $(srcdir)
 
 .FORCE:
 
-all:	$(TARGET) ../bin/Berlin-config
+all:	$(TARGET)
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-../bin/Berlin-config: $(top_srcdir)/config/Berlin-config.in
-	rm -f $@ $@.tmp
-	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
-		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
-	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
-	  $< > $@.tmp
-	chmod +x $@.tmp
-	mv $@.tmp $@
-
-config:  ../bin/Berlin-config
+config:
 
 depend: $(DEP)
 
@@ -115,12 +106,7 @@ install:	all
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/Berlin-config $(DESTDIR)$(bindir)/Berlin-config.tmp
-	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
-		-e 's,@exec_prefix\@,$(exec_prefix),g' \
-	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
-          $(top_srcdir)/config/Berlin-config.in > $(DESTDIR)$(bindir)/Berlin-config.tmp
-	chmod +x $(DESTDIR)$(bindir)/Berlin-config.tmp
-	mv $(DESTDIR)$(bindir)/Berlin-config.tmp $(DESTDIR)$(bindir)/Berlin-config
+	$(INSTALL) -D -m 755 ../config/Berlin-config $(DESTDIR)$(bindir)/Berlin-config
 
 install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/Berlin/doc

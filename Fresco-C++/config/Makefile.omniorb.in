@@ -96,16 +96,7 @@ $(TARGET): $(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-../bin/Fresco-config: $(top_srcdir)/config/Fresco-config.in
-	rm -f $@ $@.tmp
-	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
-		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
-		-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
-	  $< > $@.tmp
-	chmod +x $@.tmp
-	mv $@.tmp $@
-
-config:  ../bin/Fresco-config
+config:
 	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
 
 depend: $(DEP)
@@ -139,12 +130,7 @@ install:	all
           fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
-		-e 's,@exec_prefix\@,$(exec_prefix),g' \
-	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
-          $(top_srcdir)/config/Fresco-config.in > $(DESTDIR)$(bindir)/Fresco-config.tmp
-	chmod +x $(DESTDIR)$(bindir)/Fresco-config.tmp
-	mv $(DESTDIR)$(bindir)/Fresco-config.tmp $(DESTDIR)$(bindir)/Fresco-config
+	$(INSTALL) -D -m 755 ../config/Fresco-config $(DESTDIR)$(bindir)/Fresco-config
 
 install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco

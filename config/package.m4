@@ -26,54 +26,79 @@ AC_DEFUN(FRESCO_PACKAGE,
 [dnl 
 dnl Get the cppflags and libraries from the package-config script
 dnl
-  AC_ARG_WITH($1-prefix, AC_HELP_STRING([--with-$1-prefix],
-                                        [Prefix where $1 is installed]),
-              $1_prefix="$withval", $1_prefix="")
-  AC_ARG_WITH($1-exec-prefix, AC_HELP_STRING([--with-$1-exec-prefix],
-                                             [Exec prefix where $1 is installed]),
-              $1_exec_prefix="$withval", $1_exec_prefix="")
 
-  if test x$$1_exec_prefix != x ; then
-     ac_$1_args="$ac_$1_args --exec-prefix=$$1_exec_prefix"
-     if test x${$1_CONFIG+set} != xset ; then
-        $1_CONFIG=$$1_exec_prefix/bin/$1-config
-     fi
-  fi
-  if test x$$1_prefix != x ; then
-     ac_$1_args="$ac_$1_args --prefix=$$1_prefix"
-     if test x${$1_CONFIG+set} != xset ; then
-        $1_CONFIG=$$1_prefix/bin/$1-config
-     fi
-  fi
+dnl
+dnl if the distribution ships the requested package, all is simple:
+dnl we know where to find it (${top_srcdir}/$1) and we don't need any
+dnl additional tests
+dnl
+dnl if not search elsewhere...
+dnl
 
-  dnl Work around some strange quoting issue:
-  AC_PATH_PROG($1_CONFIG, $1-config, no, $PATH$PATH_SEPARATOR$prefix/bin)
-  min_$1_version=ifelse([$2], ,1.0.0,$2)
-  AC_MSG_CHECKING([for $1 - version >= $min_$1_version])
+  dnl now test for the <package>-build-config script to be used
+  dnl to retrieve the flags for the build process itself
+  dnl
+  dnl if this test fails, it means the specified package is not
+  dnl part of the distribution, so we use the flags determined
+  dnl by <package>-config
+  dnl
+  AC_PATH_PROG($1_BUILD_CONFIG, $1-config, no, ../$1/bin)
+  AC_PATH_PROG($1_CONFIG, $1-config, no, ../$1/config)
   no_$1=""
-  if test "$$1_CONFIG" = "no" ; then
-    no_$1=yes
+  if test "$$1_BUILD_CONFIG" != "no" ; then
+    $1_CPPFLAGS="`$$1_CONFIG --cppflags`"
+    $1_LIBS="`$$1_CONFIG --libs`"
+    $1_BUILD_CPPFLAGS="`$$1_BUILD_CONFIG --cppflags`"
+    $1_BUILD_LIBS="`$$1_BUILD_CONFIG --libs`"
   else
-    $1_CPPFLAGS="`$$1_CONFIG $ac_$1_args --cppflags`"
-    $1_LIBS="`$$1_CONFIG $ac_$1_args --libs`"
-    $1_prefix="`$$1_CONFIG $ac_$1_args --prefix`"
+    AC_ARG_WITH($1-prefix, AC_HELP_STRING([--with-$1-prefix],
+                                          [Prefix where $1 is installed]),
+                $1_prefix="$withval", $1_prefix="")
+    AC_ARG_WITH($1-exec-prefix, AC_HELP_STRING([--with-$1-exec-prefix],
+                                               [Exec prefix where $1 is installed]),
+                $1_exec_prefix="$withval", $1_exec_prefix="")
 
-    $1_major_version=`$$1_CONFIG $ac_$1_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-    $1_minor_version=`$$1_CONFIG $ac_$1_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-    $1_patch_level=`$$1_CONFIG $ac_$1_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-    if test "x$enable_$1test" = "xyes" ; then
-      ac_save_CPPFLAGS="$CPPFLAGS"
-      ac_save_LIBS="$LIBS"
-      CPPFLAGS="$CPPFLAGS $$1_CPPFLAGS"
-      LIBS="$LIBS $$1_LIBS"
-dnl
-dnl Now check if the installed PACKAGE is sufficiently new.
-dnl
-      rm -f conf.$1test
-      AC_TRY_RUN([
+    if test x$$1_exec_prefix != x ; then
+      ac_$1_args="$ac_$1_args --exec-prefix=$$1_exec_prefix"
+      if test x${$1_CONFIG+set} != xset ; then
+        $1_CONFIG=$$1_exec_prefix/bin/$1-config
+      fi
+    fi
+    if test x$$1_prefix != x ; then
+      ac_$1_args="$ac_$1_args --prefix=$$1_prefix"
+      if test x${$1_CONFIG+set} != xset ; then
+        $1_CONFIG=$$1_prefix/bin/$1-config
+      fi
+    fi
+
+    dnl Work around some strange quoting issue:
+    AC_PATH_PROG($1_CONFIG, $1-config, no, $PATH$PATH_SEPARATOR$prefix/bin)
+    min_$1_version=ifelse([$2], ,1.0.0,$2)
+    AC_MSG_CHECKING([for $1 - version >= $min_$1_version])
+    no_$1=""
+    if test "$$1_CONFIG" = "no" ; then
+      no_$1=yes
+    else
+      $1_CPPFLAGS="`$$1_CONFIG $ac_$1_args --cppflags`"
+      $1_LIBS="`$$1_CONFIG $ac_$1_args --libs`"
+      $1_prefix="`$$1_CONFIG $ac_$1_args --prefix`"
+
+      $1_major_version=`$$1_CONFIG $ac_$1_args --version | \
+             sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+      $1_minor_version=`$$1_CONFIG $ac_$1_args --version | \
+             sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+      $1_patch_level=`$$1_CONFIG $ac_$1_args --version | \
+             sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+      if test "x$enable_$1test" = "xyes" ; then
+        ac_save_CPPFLAGS="$CPPFLAGS"
+        ac_save_LIBS="$LIBS"
+        CPPFLAGS="$CPPFLAGS $$1_CPPFLAGS"
+        LIBS="$LIBS $$1_LIBS"
+        dnl
+        dnl Now check if the installed PACKAGE is sufficiently new.
+        dnl
+        rm -f conf.$1test
+        AC_TRY_RUN([
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -130,41 +155,26 @@ int main (int argc, char *argv[])
 }
 
 ],, no_$1=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CPPFLAGS="$ac_save_CPPFLAGS"
-       LIBS="$ac_save_LIBS"
-     fi
-  fi
-  if test "x$no_$1" = x ; then
-     AC_MSG_RESULT(yes)
-     AC_SUBST($1_prefix)
-     ifelse([$3], , :, [$3])     
-  else
-     AC_MSG_RESULT(no)
-     if test "$$1_CONFIG" = "no" ; then
-       echo "*** The $1-config script installed by $1 could not be found"
-       echo "*** If $1 was installed in PREFIX, make sure PREFIX/bin is in"
-       echo "*** your path, or set the $1_CONFIG environment variable to the"
-       echo "*** full path to $1-config."
-     fi
-     $1_CPPFLAGS=""
-     $1_LIBS=""
-     ifelse([$4], , :, [$4])
-  fi
-  rm -f conf.$1test
-])
-
-dnl FRESCO_BUILD_PACKAGE(PACKAGE)
-dnl
-AC_DEFUN(FRESCO_BUILD_PACKAGE,
-[dnl 
-dnl Get the cppflags and libraries from the package-build-config script
-dnl
-
-  AC_PATH_PROG($1_CONFIG, $1-config, no, ../$1/bin/$1-build-config)
-  no_$1=""
-  if test "$$1_CONFIG" != "no" ; then
-    $1_CPPFLAGS="`$$1_CONFIG --cppflags`"
-    $1_LIBS="`$$1_CONFIG --libs`"
+        CPPFLAGS="$ac_save_CPPFLAGS"
+        LIBS="$ac_save_LIBS"
+      fi
+    fi
+    if test "x$no_$1" = x ; then
+      AC_MSG_RESULT(yes)
+      AC_SUBST($1_prefix)
+      ifelse([$3], , :, [$3])     
+    else
+      AC_MSG_RESULT(no)
+      if test "$$1_CONFIG" = "no" ; then
+        echo "*** The $1-config script installed by $1 could not be found"
+        echo "*** If $1 was installed in PREFIX, make sure PREFIX/bin is in"
+        echo "*** your path, or set the $1_CONFIG environment variable to the"
+        echo "*** full path to $1-config."
+      fi
+      $1_CPPFLAGS=""
+      $1_LIBS=""
+      ifelse([$4], , :, [$4])
+    fi
+    rm -f conf.$1test
   fi
 ])
-

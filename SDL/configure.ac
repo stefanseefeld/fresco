@@ -73,11 +73,12 @@ fi
 FRESCO_OPENGL_CHECK
 
 FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
-LIBS="$LIBS -lFresco $Fresco_LIBS"
+CPPFLAGS="$CPPFLAGS $Fresco_BUILD_CPPFLAGS"
+LIBS="$Fresco_BUILD_LIBS $LIBS"
+
 FRESCO_PACKAGE(Berlin, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Berlin_CPPFLAGS"
-LIBS="$LIBS -lBabylon $Berlin_LIBS"
+CPPFLAGS="$CPPFLAGS $Berlin_BUILD_CPPFLAGS"
+LIBS="$Berlin_BUILD_LIBS $LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Decisions

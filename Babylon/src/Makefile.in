@@ -47,20 +47,11 @@ vpath %.cc  $(srcdir)
 
 .PHONY: depend config doc install install-doc uninstall clean distclean maintainer-clean dist
 
-all:	$(TARGET) ../bin/Babylon-config
+all:	$(TARGET)
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-
-../bin/Babylon-config: $(top_srcdir)/config/Babylon-config.in
-	rm -f $@ $@.tmp
-	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
-		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
-	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
-	  $< > $@.tmp
-	chmod +x $@.tmp
-	mv $@.tmp $@
 
 config: ../bin/Babylon-config
 
@@ -85,12 +76,7 @@ install:	all
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/Babylon-config $(DESTDIR)$(bindir)/Babylon-config.tmp
-	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
-		-e 's,@exec_prefix\@,$(exec_prefix),g' \
-	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
-        $(top_srcdir)/config/Babylon-config.in > $(DESTDIR)$(bindir)/Babylon-config.tmp
-	chmod +x $(DESTDIR)$(bindir)/Babylon-config.tmp
-	mv $(DESTDIR)$(bindir)/Babylon-config.tmp $(DESTDIR)$(bindir)/Babylon-config
+	$(INSTALL) -D -m 755 ../config/Babylon-config $(DESTDIR)$(bindir)/Babylon-config
 
 install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/doc/Babylon

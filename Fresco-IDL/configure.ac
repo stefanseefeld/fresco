@@ -57,9 +57,24 @@ dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
 
+dnl ------------------------------------------------------------------
+dnl Prague and Babylon
+dnl ------------------------------------------------------------------
+
+FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
+INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
+INSTALL_LIBS="$LIBS $Prague_LIBS"
+CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
+LIBS="$LIBS $Prague_BUILD_LIBS"
+
 FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$LIBS $Babylon_LIBS"
+INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Babylon_CPPFLAGS"
+INSTALL_LIBS="$INSTALL_LIBS $Babylon_LIBS"
+CPPFLAGS="$CPPFLAGS $Babylon_BUILD_CPPFLAGS"
+LIBS="$LIBS $Babylon_BUILD_LIBS"
+
+AC_SUBST(INSTALL_CPPFLAGS)
+AC_SUBST(INSTALL_LIBS)
 
 FRESCO_FLAG_SO
 
@@ -69,7 +84,10 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile:config/$MAKEFILE])
+AC_CONFIG_FILES([config/local.mk config/synopsis.py])
+AC_CONFIG_FILES([config/Fresco-config], [chmod +x config/Fresco-config])
+AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-build-config.in], [chmod +x bin/Fresco-config])
+AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
 
 mkdir -p share
 mkdir -p lib

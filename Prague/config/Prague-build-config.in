@@ -39,13 +39,13 @@ while test $# -gt 0; do
       echo @PACKAGE_VERSION@
       ;;
     --cppflags)
-      echo @CPPFLAGS@ -I@includedir@
+      echo @CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include
       ;;
     --cxxflags)
       echo @CXXFLAGS@
       ;;
     --libs)
-      echo -L@libdir@ -lPrague @LIBS@
+      echo -L@abs_top_builddir@/lib -lPrague @LIBS@
       ;;
     *)
       echo "${usage}" 1>&2
