@@ -27,6 +27,7 @@
 #include <Warsaw/View.hh>
 #include <Warsaw/TextKit.hh>
 #include <Berlin/PolyGraphic.hh>
+#include <Berlin/Lease.hh>
 #include <map>
 
 class Compositor;
@@ -46,7 +47,7 @@ class Composition : public PolyGraphic
   virtual void needResize(Tag);
   virtual void allocate(Tag, const Allocation::Info &);
  protected:
-  RegionImpl **childrenAllocations(Region_ptr);
+  Lease<RegionImpl> *childrenAllocations(Region_ptr);
   DrawingKit_var canonicalDK;
   Compositor  *compositor;
   bool requested;

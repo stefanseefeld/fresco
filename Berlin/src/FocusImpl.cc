@@ -25,6 +25,7 @@
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include "Berlin/Logger.hh"
 #include "Prague/Sys/Profiler.hh"
 
@@ -57,7 +58,7 @@ void FocusImpl::request(Controller_ptr c)
 
 void FocusImpl::damage(Region_ptr region)
 {
-  SectionLog section("FocusImpl::damage");
+//   SectionLog section("FocusImpl::damage");
   MutexGuard guard(mutex);
   if (!grabbed || !traversal) return;
   Region_var allocation = traversal->allocation();
@@ -66,7 +67,8 @@ void FocusImpl::damage(Region_ptr region)
   allocation->bounds(l, u);
   transformation->transformVertex(l);
   transformation->transformVertex(u);
-  Impl_var<RegionImpl> bbox(new RegionImpl);
+  Lease<RegionImpl> bbox;
+  Providers::region.provide(bbox);
   bbox->valid = true;
   bbox->lower.x = min(l.x, u.x);
   bbox->lower.y = min(l.y, u.y);

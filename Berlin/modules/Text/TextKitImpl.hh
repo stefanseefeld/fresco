@@ -37,6 +37,8 @@
 declare_corba_ptr_type(DrawingKit)
 
 class Compositor;
+class Strut;
+
 
 class TextKitImpl : implements(TextKit),  public KitImpl
 {
@@ -61,6 +63,7 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
   static DrawingKit_var canonicalDK;
 
+  Strut* _strut;
   Prague::Mutex localMutex;
   Compositor *lineCompositor;
   Compositor *pageCompositor;

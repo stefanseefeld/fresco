@@ -76,33 +76,98 @@ GGI::Drawable::~Drawable()
 }
 
 
+static void readEvent(ggi_event &e) {
+  unsigned int t;
+  cin >> t;
+  e.any.type = (char)t;
+  switch (e.any.type) {
+    case evKeyPress:
+    case evKeyRepeat:
+      {
+	cin >> t;
+	e.key.sym = t;
+	break;
+      }
+    case evPtrRelative:
+    case evPtrAbsolute:
+      {
+	cin >> e.pmove.x
+	    >> e.pmove.y;
+	break;
+      }
+    case evPtrButtonPress:
+    case evPtrButtonRelease:
+      {
+	break;
+      }
+  }
+}
+
+static void writeEvent(ggi_event &e) {
+  cout << ((unsigned int)(e.any.type)) << ' ';
+  switch (e.any.type)
+    {
+    case evKeyPress:
+    case evKeyRepeat:
+      {
+	cout << ((unsigned int)(e.key.sym));
+	break;
+      }
+    case evPtrRelative:
+    case evPtrAbsolute:
+      {
+	cout << e.pmove.x << ' '
+	     << e.pmove.y;
+	break;
+      }
+    case evPtrButtonPress:
+    case evPtrButtonRelease:
+      {
+	break;
+      }
+    }
+  cout << endl;
+}
+
 bool GGI::Drawable::nextEvent(ggi_event &event)
 {
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
 
+  int input = fileno(stdin);
   Prague::FdSet rfdset;
   rfdset.set(wakeupPipe[0]);
-  switch(ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0))
-    {
-    case 0: {
-      ggiEventRead(vis, &event, mask); 
-      if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute) {
-	int m = ggiEventsQueued(vis, mask);
-	int n = ggiEventsQueued(vis, move_mask);
-	if (m == n) { // nothing but a bunch of moves queued up
-	  for (int i = 0; i < n; ++i) {
-	    // consume them all
-	    ggiEventRead(vis, &event, move_mask); 	  
-	  }
+  if (autoplay) rfdset.set(input);
+  int nfds = ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+ 
+  if (nfds == 0) {
+    // no input from the outside world
+    ggiEventRead(vis, &event, mask); 
+    if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute) {
+      int m = ggiEventsQueued(vis, mask);
+      int n = ggiEventsQueued(vis, move_mask);
+      if (m == n) { // nothing but a bunch of moves queued up
+	for (int i = 0; i < n; ++i) {
+	  // consume them all
+	  ggiEventRead(vis, &event, move_mask); 	  
 	}
       }
+    }
+    if (autoplay) writeEvent(event);
+    return true;
+    
+  } else {
+    if (autoplay && rfdset.isset(input)) {
+      readEvent(event);
       return true;
       
-    case 1:{ char c; read(wakeupPipe[0], &c, 1); }
-    default: break;
+    } else {
+      if (rfdset.isset(wakeupPipe[0])) {
+	char c; read(wakeupPipe[0], &c, 1);
+	return false;
+      }
     }
-    }
+  }
   return false;
 }
 

@@ -27,6 +27,7 @@
 #include <Warsaw/Subject.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/Providers.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Color.hh>
 #include <Prague/Sys/Tracer.hh>
@@ -71,8 +72,14 @@ void Frame::traverse(Traversal_ptr traversal)
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
-      Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
-      Impl_var<TransformImpl> tx(new TransformImpl);
+      Lease<RegionImpl> allocation;
+      Providers::region.provide(allocation);
+      allocation->copy(traversal->allocation());
+
+      Lease<TransformImpl> tx;
+      Providers::trafo.provide(tx);
+      tx->loadIdentity();
+
       Allocation::Info info;
       info.allocation = allocation->_this();
       info.transformation = tx->_this();
@@ -98,7 +105,11 @@ void Frame::allocate(Tag, const Allocation::Info &info)
    * same as Placement::normalTransform...
    */
   Vertex o;
-  Impl_var<RegionImpl> region(new RegionImpl(info.allocation));
+
+  Lease<RegionImpl> region;
+  Providers::region.provide(region);
+  region->copy(info.allocation);
+
   region->normalize(o);
   info.transformation->translate(o);
   info.allocation->copy(Region_var(region->_this()));

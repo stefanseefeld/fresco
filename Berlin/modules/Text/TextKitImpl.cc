@@ -43,7 +43,12 @@ map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
 DrawingKit_var TextKitImpl::canonicalDK;
 
 TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p)
-  : KitImpl(f, p), lineCompositor(new LRCompositor()), pageCompositor(new TBCompositor()) {}
+  : KitImpl(f, p),  _strut(0),
+  lineCompositor(new LRCompositor()), 
+  pageCompositor(new TBCompositor())
+{
+}
+
 TextKitImpl::~TextKitImpl() { delete lineCompositor; delete pageCompositor;}
 
 void TextKitImpl::bind(ServerContext_ptr sc)
@@ -69,13 +74,15 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 
 Graphic_ptr TextKitImpl::strut()
 {
-  MutexGuard guard(staticMutex);
-  Unistring us = Unicode::toCORBA(Unicode::String("M"));
-  Graphic::Requisition r;
-  canonicalDK->allocateText(us, r);
-  Strut *strut = new Strut (r);
-  strut->_obj_is_ready(_boa());
-  return strut->_this();
+  MutexGuard guard(localMutex);
+  if (! _strut) {
+    Unistring us = Unicode::toCORBA(Unicode::String("M"));
+    Graphic::Requisition r;
+    canonicalDK->allocateText(us, r);
+    _strut = new Strut (r);
+    _strut->_obj_is_ready(CORBA::BOA::getBOA());
+  }
+  return _strut->_this();
 }
 
 Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)

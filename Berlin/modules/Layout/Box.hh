@@ -23,6 +23,7 @@
 #define _Box_hh
 
 #include <Berlin/PolyGraphic.hh>
+#include <Berlin/Lease.hh>
 #include <Layout/LayoutManager.hh>
 
 class Box : public PolyGraphic
@@ -40,7 +41,7 @@ public:
   virtual void allocate(Tag, const Allocation::Info &);
 
 protected:
-  RegionImpl **childrenAllocations(Region_ptr);
+  Lease<RegionImpl> *childrenAllocations(Region_ptr);
   void traverseWithAllocation(Traversal_ptr, Region_ptr);
   void traverseWithoutAllocation(Traversal_ptr);
 private:

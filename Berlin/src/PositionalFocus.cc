@@ -25,6 +25,7 @@
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/Providers.hh"
 #include "Berlin/GGI.hh"
 #include "Berlin/Event.hh"
 #include "Berlin/Vertex.hh"
@@ -87,7 +88,10 @@ void PositionalFocus::damage(Region_ptr region)
   allocation->bounds(l, u);
   transformation->transformVertex(l);
   transformation->transformVertex(u);
-  Impl_var<RegionImpl> bbox(new RegionImpl);
+
+  Lease<RegionImpl> bbox;
+  Providers::region.provide(bbox);
+
   bbox->valid = true;
   bbox->lower.x = min(l.x, u.x);
   bbox->lower.y = min(l.y, u.y);

@@ -29,6 +29,7 @@
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
 #include <Berlin/ServerImpl.hh>
+#include <Berlin/GGI.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Prague/Sys/Tracer.hh>
@@ -51,6 +52,10 @@ struct Dump : Signal::Notifier
     {
       switch (signo)
 	{
+	case Signal::usr2: 
+	  GGI::drawable()->activate_autoplay(); 
+	  GGI::drawable()->wakeup();
+	  return;
 	case Signal::hangup: Profiler::dump(cerr); break;
 	case Signal::abort:
 	case Signal::segv:
@@ -70,6 +75,7 @@ struct Dump : Signal::Notifier
 int main(int argc, char **argv)
 {
   Dump *dump = new Dump;
+  Signal::set(Signal::usr2, dump);
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);

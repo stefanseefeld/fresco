@@ -131,6 +131,7 @@ void LibArtDrawingKit::setClipping(Region_ptr r)
 void LibArtDrawingKit::setForeground(const Color &c)
 {
   fg = c;
+  art_fg = artColor(fg);
 }
 
 void LibArtDrawingKit::setLighting(const Color &c)
@@ -208,7 +209,7 @@ void LibArtDrawingKit::drawPath(const Path &p)
   art_irect_union (&bbox,&bbox,&loc);
   fix_order_of_irect(loc); 
   art_rgb_svp_alpha (svp, loc.x0, loc.y0, loc.x1, loc.y1,
- 		     artColor(fg),
+ 		     art_fg,
  		     ((art_u8 *)buf->write) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
  		     buf->buffer.plb.stride,
  		     agam);
@@ -227,6 +228,55 @@ void LibArtDrawingKit::drawPath(const Path &p)
 void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top) 
 {
   Path path;
+  /**
+  // fast path (not presently working)
+  if (fg.alpha == 1. &&
+      affine[0] == 1 &&
+      affine[1] == 0 &&
+      affine[2] == 0 &&
+      affine[3] == 1
+      ) {
+
+#define MIN(a,b)  (a<b?a:b)
+#define MAX(a,b) (a<b?b:a)
+#define TRUNC(a) (a<0?0:a)
+    ArtIRect rect;
+    rect.x0 = (int)(bot.x * xres);
+    rect.x1 = (int)(top.x * xres);
+    rect.y0 = (int)(bot.y * yres);
+    rect.y1 = (int)(top.y * yres);
+    art_irect_intersect(&rect,&rect,&clip);
+    int offset = (int)((affine[4] * xres) + (((int)(affine[5] * yres)) * pb->rowstride));
+    int width = 1 + (rect.x1 - rect.x0);
+    int height = 1 + (rect.y1 - rect.y0);
+    int skip = pb->rowstride - width;
+    int last = width - 1;
+    int sz = height * width;
+    unsigned char *writer = (unsigned char *)(pb->pixels);
+    writer += offset;
+    if (fs == outlined) {
+//       for (int i = 0; i < sz; ++i, writer += 3) {
+// 	if ((i % width == 0) ||
+// 	    (i % width == last) ||
+// 	    (i < width) ||
+// 	    (i > (sz - width)))
+// 	  *writer = art_fg;
+// 	if (i % width == last) writer += skip;      
+//       }
+    } else {
+      cerr << "fastpath " << sz << " pixels " << bot.x << " " << bot.y << " " << top.x << " " << top.y << " :" 
+	   << rect.x0 << " " << rect.y0 << " " << rect.x1 << " " << rect.y1 << endl;
+      for (int i = 0; i < sz; ++i, writer += 3) {
+// 	cerr << i << endl;	   
+	*writer = art_fg;
+	if (i % width == last) writer += skip;      
+      }
+    }
+    return;
+  }
+
+  cerr << "affine" << affine[0] << affine[1] << affine[2] << affine[3] << affine[4] << affine[5] << endl;
+  */
   if (fs == outlined) {
     path.length(4);
     path[0].x = bot.x, path[0].y = bot.y;
@@ -260,27 +310,35 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
 
   double dev_affine[6] = {affine[0], affine[1], affine[2], affine[3], 
 			    affine[4] * xres, affine[5] * yres };
-			      
+  			      
   // pre-transformation target rectangle, in device space coords
   ArtDRect slocd = {0,0,(double)(pixbuf->width),(double)(pixbuf->height)};
   ArtDRect tslocd; 
   ArtIRect tsloci; 
-  bool deletepixbuf = false;
+  int width = pixbuf->width;
+  int pix = ((pixbuf->n_channels * pixbuf->bits_per_sample + 7) >> 3); 
+  int row = width * pix;
+  int size = (fg.alpha == 1. ? 0 : (pixbuf->height - 1) * pixbuf->rowstride + width * pix);      
+  unsigned char tmp[size];
+  unsigned char *save = pixbuf->pixels;
 
+  // alpha-correct the image
+  if (fg.alpha != 1.) {
+    int skip = pixbuf->rowstride - row;
+    int last = width - 1;
+    unsigned char *writer = tmp;
+    unsigned char *reader = pixbuf->pixels;
+    for (int i = 0; i < size; ++i, ++reader, ++writer) {
+      *writer = (unsigned char)((*reader) * fg.alpha);
+      if (i % width == last) reader += skip;	
+    }
+    pixbuf->pixels = tmp;
+  }
+  
   // transform target (in device space)
   art_drect_affine_transform(&tslocd,&slocd,dev_affine); 
   art_drect_to_irect(&tsloci, &tslocd); 
   fix_order_of_irect(tsloci); 
-
-  // match alpha to fg color
-  if (fg.alpha != 1.) {
-    deletepixbuf = true;
-    pixbuf = art_pixbuf_duplicate(pixbuf);
-    int size = (pixbuf->height - 1) * pixbuf->rowstride +
-      pixbuf->width * ((pixbuf->n_channels * pixbuf->bits_per_sample + 7) >> 3);    
-    for (int i = 0; i < size; ++i) 
-      (pixbuf->pixels)[i] = (unsigned char)(fg.alpha * (pixbuf->pixels)[i]);
-  }
 
   // clip 
   art_irect_intersect(&tsloci,&tsloci,&clip);
@@ -295,8 +353,7 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
 			pixbuf, dev_affine,
 			ART_FILTER_NEAREST, agam);  
 
-  if (deletepixbuf) art_pixbuf_free(pixbuf);
-
+  pixbuf->pixels = save;
 }
 
 void LibArtDrawingKit::drawText(const Unistring &u) 

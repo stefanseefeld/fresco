@@ -67,12 +67,14 @@ public:
     }
   Coord dpi(Axis a) const { return resolution(a) * 254.0;}
   ggi_visual_t visual() { return vis;}
+  void activate_autoplay() {autoplay = true;}
   const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (vis, i);}
 private:
   Drawable();
   ~Drawable();
   ggi_visual_t vis;
   ggi_mode     mode;
+  bool autoplay;
   int          wakeupPipe[2];
 };
 

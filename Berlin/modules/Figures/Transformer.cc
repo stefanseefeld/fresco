@@ -27,6 +27,7 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/TransformImpl.hh>
+#include <Berlin/Providers.hh>
 #include <Berlin/RegionImpl.hh>
 #include "Figure/Transformer.hh"
 #include <Prague/Sys/Tracer.hh>
@@ -64,14 +65,18 @@ void Transformer::traverse(Traversal_ptr traversal)
   if (CORBA::is_nil(child)) return;
   if (!transform->Identity())
     {
-      Region_var allocation = traversal->allocation();
-      Impl_var<RegionImpl> rr(new RegionImpl(allocation));
+      Lease<RegionImpl> rr;
+      Providers::region.provide(rr);
+      rr->copy(traversal->allocation());
 	  
       Requisition r;
       GraphicImpl::initRequisition(r);
 	  
       Allocator::request(r);
-      Impl_var<TransformImpl> tx(new TransformImpl);
+
+      Lease<TransformImpl> tx;
+      Providers::trafo.provide(tx);
+      tx->loadIdentity();
 //       cout << "parent region " << rr << endl;
       Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
 //       Vertex origin;
@@ -103,11 +108,15 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
     {
       if (!CORBA::is_nil(info.allocation))
 	{
-	  Impl_var<RegionImpl> rr(new RegionImpl(info.allocation));
+	  Lease<RegionImpl> rr;
+	  Providers::region.provide(rr);
+	  rr->copy(info.allocation);
 	  Requisition r;
 	  GraphicImpl::initRequisition(r);
 	  Allocator::request(r);
-	  Impl_var<TransformImpl> tx(new TransformImpl);
+	  Lease<TransformImpl> tx;
+	  Providers::trafo.provide(tx);
+	  tx->loadIdentity();
 	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(transform->_this()));
 // 	  rr->normalize(Transform_var(tx->_this()));
  	  tx->copy(Transform_var(transform->_this()));

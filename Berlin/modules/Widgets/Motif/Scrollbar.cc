@@ -21,6 +21,7 @@
  */
 
 #include "Widget/Motif/Scrollbar.hh"
+#include <Berlin/Providers.hh>
 #include <Berlin/RegionImpl.hh>
 
 using namespace Motif;
@@ -93,7 +94,9 @@ void Scrollbar::pick(PickTraversal_ptr traversal)
 
 void Scrollbar::allocate(Tag, const Allocation::Info &info)
 {
-  Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
+  Lease<RegionImpl> allocation;
+  Providers::region.provide(allocation);
+  allocation->copy(info.allocation);
   if (axis == xaxis)
     {
       Coord lower = allocation->lower.x;
@@ -118,8 +121,12 @@ void Scrollbar::traverseThumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
-  Impl_var<TransformImpl> transformation(new TransformImpl);
+  Lease<RegionImpl> allocation;
+  Providers::region.provide(allocation);
+  allocation->copy(traversal->allocation());
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);
+  tx->loadIdentity();
   if (axis == xaxis)
     {
       Coord lower = allocation->lower.x;
@@ -136,6 +143,6 @@ void Scrollbar::traverseThumb(Traversal_ptr traversal)
       allocation->upper.y = lower + scale*offset.upper;
     }
   allocation->lower.z = allocation->upper.z = 0.;
-  allocation->normalize(Transform_var(transformation->_this()));
-  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
+  allocation->normalize(Transform_var(tx->_this()));
+  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
 }

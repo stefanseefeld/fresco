@@ -25,6 +25,7 @@
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/Providers.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Warsaw/Warsaw.hh>
 
@@ -98,7 +99,9 @@ void Slider::pick(PickTraversal_ptr traversal)
 
 void Slider::allocate(Tag, const Allocation::Info &info)
 {
-  Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
+  Lease<RegionImpl> allocation;
+  Providers::region.provide(allocation);
+  allocation->copy(info.allocation);
   if (axis == xaxis)
     {
       Coord length = allocation->upper.x - allocation->lower.x - 200.;
@@ -121,8 +124,12 @@ void Slider::traverseThumb(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
-  Impl_var<TransformImpl> transformation(new TransformImpl);
+  Lease<RegionImpl> allocation;
+  Providers::region.provide(allocation);
+  allocation->copy(traversal->allocation());
+  Lease<TransformImpl> tx;
+  Providers::trafo.provide(tx);
+  tx->loadIdentity();
   Coord length;
   if (axis == xaxis)
     {
@@ -137,7 +144,7 @@ void Slider::traverseThumb(Traversal_ptr traversal)
       allocation->upper.y = offset * length + 200.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
-  allocation->normalize(Transform_var(transformation->_this()));
-  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
+  allocation->normalize(Transform_var(tx->_this()));
+  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
   _drag->setScale((value->upper() - value->lower())/length);
 }

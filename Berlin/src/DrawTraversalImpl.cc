@@ -100,14 +100,12 @@ void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr reg
   Providers::trafo.provide(cumulative);
   cumulative->copy(transformation());
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  drawing->saveState();
-  drawing->transformation(Transform_var(cumulative->_this()));
+  drawing->transformation(cumulative->_this());
   //   drawable->clipping(region, Transform_var(tx->_this()));
   push(child, tag, region, cumulative.release());
-  child->traverse(Traversal_var(_this()));
-  drawing->restoreState();
+  child->traverse(_this());
   pop();
 };
 
-void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}
+void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(_this());}
 DrawingKit_ptr DrawTraversalImpl::kit() { return DrawingKit::_duplicate(drawing);}
