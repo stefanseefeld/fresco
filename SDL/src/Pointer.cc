@@ -25,9 +25,6 @@
 #include <Console/SDL/Extension.hh>
 #include <Console/SDL/Pointer.hh>
 
-#include <GL/gl.h>
-
-
 
 
 
