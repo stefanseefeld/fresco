@@ -42,7 +42,7 @@ LIBS		+= -lFresco -lPrague @LIBS@
 
 SRC             := ServantBase.cc RefCountBase.cc Tool.cc Document.cc Models.cc Commands.cc Manipulators.cc Tools.cc
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
-DEP             := $(patsubst %.cc, %.d, $(SRC))
+DEP             := $(patsubst %.cc, %.d, $(SRC) main.cc)
 
 TARGET		:= daVinci
 
@@ -52,6 +52,11 @@ vpath %.cc $(srcdir)
 .FORCE:
 
 all:	$(TARGET)
+
+depend: $(DEP)
+
+xref: #do nothing
+doc: #do nothing
 
 daVinci:	$(OBJ) main.o
 	@echo linking $(@F)
@@ -82,3 +87,15 @@ maintainer-clean: distclean
 %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+%.d:    %.cc
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:    .FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), depend doc clean distclean maintainer-clean))
+-include $(DEP)
+endif
