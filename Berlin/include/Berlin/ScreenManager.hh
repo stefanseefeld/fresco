@@ -25,6 +25,7 @@
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Drawing/openGL/GLDrawingKit.hh>
+#include <Drawing/openGL/Pointer.hh>
 #include <vector>
 
 class ScreenManager
@@ -41,6 +42,7 @@ private:
   long ptrPositionY;
   ScreenImpl *screen;
   GLDrawingKit *drawing;
+  Pointer *pointer;
   ggi_visual_t visual;
   typedef vector<RegionImpl *> DamageList;
   DamageList damages;

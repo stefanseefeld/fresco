@@ -27,10 +27,12 @@
 ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
   : screen(s), drawing(d), visual(drawing->getVisual())
 {
+  pointer = new Pointer(visual);
 }
 
 ScreenManager::~ScreenManager()
 {
+  delete pointer;
 }
 
 void ScreenManager::damage(Region_ptr r)
@@ -81,6 +83,7 @@ void ScreenManager::nextEvent()
   case evPtrAbsolute: {
       ptrPositionX = event.pmove.x;
       ptrPositionY = event.pmove.y;
+      pointer->move(ptrPositionX, ptrPositionY);
       // absence of break statement here is intentional
   }
   case evPtrButtonPress:
@@ -94,7 +97,7 @@ void ScreenManager::nextEvent()
 	  event.any.type == evPtrAbsolute ? Event::hold :
 	  event.any.type == evPtrButtonPress ? Event::press :
 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-      cerr << "m";
+//       cerr << "m";
       a <<= pe;
       break;
   }
