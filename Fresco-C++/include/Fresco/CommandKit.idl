@@ -71,11 +71,11 @@ interface CommandKit : Cloneable {
     // thread during Message receipt
     Reactor syncReactor(in ReactorBindingList initialBindings);
 
-    Command SendMessage(in Message msgToSend, in MessageListener recipient);
-    Command ForwardMessage(in MessageListener recipient);
-    Command ForwardByGeometry(in Widget recipient);
-    Command InsertText(in Text::Editor Buffer);
-    Command ExecuteAfterCompleteClick(in Command otherCmd, 
+    Command sendMessage(in Message msgToSend, in MessageListener recipient);
+    Command forwardMessage(in MessageListener recipient);
+    Command forwardByGeometry(in MessageListener recipient, in Graphic geom);
+    Command insertText(in Text::Editor Buffer);
+    Command executeAfterCompleteClick(in Command otherCmd, 
 				      in Graphic regionToWatch, 
 				      in unsigned long buttonNumber);
     // more commands to follow in here
