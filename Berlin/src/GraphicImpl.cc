@@ -297,7 +297,6 @@ Tag GraphicImpl::unique_parent_id()
 Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
 {
   Trace trace(this, "GraphicImpl::add_parent_graphic");
-  Prague::Guard<Mutex> guard(_mutex);
   /*
    * note: we don't do ref counting on the parents to avoid cyclic dependencies.
    *       whenever a graphic node has no more parents (and no other party holding
@@ -310,7 +309,10 @@ Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
   edge.peer = Fresco::Graphic::_duplicate(parent);
   edge.peerId = peerId;
   edge.localId = unique_parent_id();
-  _parents.push_back(edge);
+  {
+      Prague::Guard<Mutex> guard(_mutex);
+      _parents.push_back(edge);
+  }
   return edge.localId;
 }
 

@@ -296,7 +296,14 @@ void ViewportImpl::Adjustment::adjust(Coord d)
   notify(any);
 }
 
-ViewportImpl::ViewportImpl() : _requested(false) {}
+ViewportImpl::ViewportImpl() : _requested(false)
+{
+    init_requisition(_requisition);
+    _settings[xaxis].lower = _settings[xaxis].upper =
+	_settings[xaxis].lvalue = _settings[xaxis].uvalue = 0;
+    _settings[yaxis].lower = _settings[yaxis].upper =
+	_settings[yaxis].lvalue = _settings[yaxis].uvalue = 0;
+}
 ViewportImpl::~ViewportImpl() {}
 
 void ViewportImpl::body(Graphic_ptr g)
@@ -404,9 +411,12 @@ void ViewportImpl::update(const CORBA::Any &)
    */
   Fresco::BoundedRange::Settings x = _xadjustment->state();
   Fresco::BoundedRange::Settings y = _yadjustment->state();
-  bool damage = (x.lower != _settings[xaxis].lower || y.lower != _settings[yaxis].lower ||
-		 x.upper != _settings[xaxis].upper || y.upper != _settings[yaxis].upper ||
-		 x.lvalue != _settings[xaxis].lvalue || y.lvalue != _settings[yaxis].lvalue);
+  bool damage = (x.lower != _settings[xaxis].lower ||
+		 y.lower != _settings[yaxis].lower ||
+		 x.upper != _settings[xaxis].upper ||
+		 y.upper != _settings[yaxis].upper ||
+		 x.lvalue != _settings[xaxis].lvalue ||
+		 y.lvalue != _settings[yaxis].lvalue);
   _settings[xaxis].lvalue = x.lvalue;
   _settings[xaxis].uvalue = x.uvalue;
   _settings[yaxis].lvalue = y.lvalue;
