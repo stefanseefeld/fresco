@@ -114,7 +114,7 @@ CubeDemo::CubeDemo(Application *a)
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var foo = tools->frame(box, 10., spec, true);
   MainController_var bar = tools->group(foo);
-  application->append(bar, Babylon::String("Geometry"));
+  application->append(bar, Babylon::String("Cube"));
 }
 
 Graphic_ptr CubeDemo::make_controller(BoundedValue_ptr value, const Color &color)
