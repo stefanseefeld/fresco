@@ -33,7 +33,7 @@ typedef omni_semaphore Semaphore;
 typedef omni_thread Thread;
 
 #else
-#include <Prague/Sys/Thread.h>
+#include <Prague/Sys/Thread.hh>
 
 typedef Prague::Mutex Mutex;
 typedef Prague::Condition Condition;
@@ -49,14 +49,14 @@ public:
   MutexGuard(Mutex &m) : mutex(m)
     {
       ostrstream msg;
-      msg << "locking Mutex " << &mutex;
+      msg << "locking Mutex " << &mutex << ends;
       debug::log(msg.str(), debug::thread);
       mutex.lock();
     }
   ~MutexGuard()
     {
       ostrstream msg;
-      msg << "unlocking Mutex " << &mutex;
+      msg << "unlocking Mutex " << &mutex << ends;
       debug::log(msg.str(), debug::thread);
       mutex.unlock();	
     }

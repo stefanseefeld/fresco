@@ -86,7 +86,7 @@ $(opath)/%.o:	%.cc
 
 clean:	
 		rm -f $(opath)/*.o $(dpath)/*.d
-		rm *.cc *.hh
+		rm -f *.cc *.hh
 
 distclean:	clean
 		rm -f $(TARGET)

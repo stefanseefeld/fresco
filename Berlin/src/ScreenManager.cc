@@ -145,10 +145,12 @@ void ScreenManager::nextEvent()
       break;
   }
   }
-  PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
-  traversal->_obj_is_ready(CORBA::BOA::getBOA());
-  screen->traverse(traversal);
-  traversal->_dispose();
+//   PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
+//   traversal->_obj_is_ready(CORBA::BOA::getBOA());
+//   screen->traverse(traversal);
+//   cout << "call traversal->_dispose()" << endl;
+//   traversal->_dispose();
+//   cout << "called traversal->_dispose()" << endl;
   delete event;
 }
 
@@ -156,13 +158,13 @@ void ScreenManager::run()
 {
   while (true)
     {
-	damageMutex.lock();
-	int amountOfDamage = damages.size();
-	damageMutex.unlock();
-
-	if (amountOfDamage > 0) {
-	    repair();
+      damageMutex.lock();
+      int amountOfDamage = damages.size();
+      damageMutex.unlock();
+      if (amountOfDamage > 0)
+	{
+	  repair();
 	} 
-	nextEvent();
+      nextEvent();
     }
 }

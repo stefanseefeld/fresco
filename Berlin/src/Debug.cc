@@ -28,8 +28,9 @@ Mutex debug::cerrMutex;
   
 void debug::log(string msg, debugGroup g)
 {
-  MutexGuard guard(cerrMutex);
+  cerrMutex.lock();
   if (activeDebugGroups[g])  cerr << msg << endl;
+  cerrMutex.unlock();
 }
 
 void debug::set(debugGroup g) { activeDebugGroups[g] = true; }

@@ -47,17 +47,9 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
     inline CORBA::Boolean intersects()
       {  
 	RegionImpl region(allocation(), transformation());
-// 	Event::Pointer ptrEv;
 	Event::Pointer *pointer;
-// 	bool flag = false;
-	if ((myEvent >>= pointer) && region.contains(pointer->location))
-	  {
-	    delete pointer;
-	    return true;
-	  }
-// 	  return region.contains(ptrEv.location);
+	if ((myEvent >>= pointer) && region.contains(pointer->location)) return true;
 	else return false;
-// 	  return true;
       }
     inline CORBA::Any *event() {return &myEvent;}
 

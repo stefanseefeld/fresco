@@ -1,10 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -33,6 +30,7 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/LayoutKit.hh"
 #include "Berlin/CloneableImpl.hh"
+#include <vector>
 
 class LayoutKitImpl : implements(LayoutKit), virtual public CloneableImpl
 {
@@ -117,6 +115,8 @@ public:
   virtual Graphic_ptr tmarginFlexible(Graphic_ptr, Coord, Coord, Coord);
 protected:
   Coord fil_;
+ public:
+  vector<Graphic *> graphics;
 };
 
 #endif /* _LayoutKitImpl_hh */

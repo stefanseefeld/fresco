@@ -31,11 +31,9 @@ using namespace Geometry;
  
 void StageInfoImpl::cacheBBox()
 {
-  cout << "StageInfoImpl::cacheBBox" << endl;
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
   child->request(r);
-  cout << "I'm here" << endl;
   if (r.x.defined && r.y.defined)
     {
       xalign = r.x.align;

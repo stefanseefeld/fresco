@@ -47,3 +47,8 @@ GLTT:
 		cd gltt; $(MAKE)
 
 target:	$(TARGET)
+
+clean:	glttclean
+
+glttclean:
+	cd gltt; $(MAKE) distclean
