@@ -1,25 +1,24 @@
-//
-// $Id$
-//
-// This source file is a part of the Berlin Project.
-// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-// http://www.berlin-consortium.org
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public License
-// as published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this program; if not, write to the Free Software
-// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
 #ifndef _TextKitImpl_hh
 #define _TextKitImpl_hh
 
@@ -27,10 +26,10 @@
 #include <Warsaw/TextKit.hh>           // for our IDL definition
 #include <Text/TextChunk.hh>           // for our chunks
 #include <Berlin/MonoGraphic.hh>       // for our decorators
-#include <Prague/Unicode/Unistring.hh> // for Unicode::String
 #include <Berlin/KitImpl.hh>           // for our parent impl
-#include <Berlin/Thread.hh>            // for the mutex
 #include <Berlin/ImplVar.hh>           // for the impls
+#include <Prague/Unicode/Unistring.hh> // for Unicode::String
+#include <Prague/Sys/Thread.hh>        // for Mutex
 #include <map>                         // for the cache
 #include <vector>                      // for the gc
 
@@ -55,11 +54,11 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   Graphic_ptr style(Graphic_ptr body, const Unistring & sty);
   Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
  private:
-  static Mutex staticMutex;
+  static Prague::Mutex staticMutex;
   static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
   static DrawingKit_var canonicalDK;
 
-  Mutex localMutex;
+  Prague::Mutex localMutex;
   Compositor *compositor;
   vector<GraphicImpl *> allocations;
 };

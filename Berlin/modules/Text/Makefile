@@ -30,7 +30,7 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath) 
-LIBS	= -lPrague -lBerlin -lLayout
+LIBS	= -lPrague -lBerlin
 
 SRC	= Compositor.cc TextViewer.cc TextKitImpl.cc TextChunk.cc 
 

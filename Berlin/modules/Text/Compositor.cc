@@ -128,18 +128,18 @@ void LRCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
     }
   r = GraphicImpl::requirement(result, yaxis);
   GraphicImpl::requireLeadTrail(*r, natural_lead, max_lead, min_lead, natural_trail, max_trail, min_trail);
+
+  requisition = result;
 }
 
-void LRCompositor::allocate(Graphic::Requisition &total,
-			    long n, Graphic::Requisition *requests, DrawingKit_ptr,
-			    Region_ptr given, Allocations result)
+void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr, Region_ptr given, Allocations result)
 {
   Graphic::Requirement* r;
   Region::Allotment a;
   /*
    * tile horizontally
    */
-  r = GraphicImpl::requirement(total, xaxis);
+  r = GraphicImpl::requirement(requisition, xaxis);
   given->span(xaxis, a);
   Coord length = computeLength(*r, a);
   bool growing = length > r->natural;

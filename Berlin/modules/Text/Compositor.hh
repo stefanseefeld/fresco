@@ -39,8 +39,7 @@ public:
   typedef RegionImpl **Allocations;
   virtual ~Compositor() {}
   virtual void request(long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Graphic::Requisition &result) = 0;
-  virtual void allocate(Graphic::Requisition &total,
-			long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Region_ptr given, Allocations result) = 0;
+  virtual void allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Region_ptr given, Allocations result) = 0;
   static void setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align);
 };
 
@@ -51,9 +50,11 @@ class LRCompositor : public Compositor
 {
 public:
   virtual void request(long, Graphic::Requisition *, DrawingKit_ptr, Graphic::Requisition &);
-  virtual void allocate(Graphic::Requisition &, long, Graphic::Requisition *, DrawingKit_ptr, Region_ptr, Allocations);    
+  virtual void allocate(long, Graphic::Requisition *, DrawingKit_ptr, Region_ptr, Allocations);    
   static Coord computeLength(const Graphic::Requirement &, const Region::Allotment &);
   static Coord computeSqueeze(const Graphic::Requirement &, Coord);
+private:
+  Graphic::Requisition requisition;
 };
 
 #endif

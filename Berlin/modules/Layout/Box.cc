@@ -31,9 +31,9 @@
 using namespace Prague;
 
 Box::Box(LayoutManager *l)
+  : layout(l),
+    requested(false)
 {
-  layout = l;
-  requested = false;
 }
 
 Box::~Box() { delete layout;}

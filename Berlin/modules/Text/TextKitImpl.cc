@@ -29,6 +29,9 @@
 #include <Text/TextViewer.hh>           // the viewer polygraphic type
 #include <Text/Compositor.hh>           // the compositor strategy
 #include <Drawing/DrawDecorator.hh> // the decorator monographic template
+#include <Prague/Sys/Tracer.hh>
+
+using namespace Prague;
 
 Mutex TextKitImpl::staticMutex;
 map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
@@ -44,6 +47,7 @@ void TextKitImpl::bind(ServerContext_ptr sc)
 
 Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
 {
+  Trace trace("TextKitImpl::simpleViewer");
   Impl_var<TextViewer> tv(new TextViewer(buf,this->_this(),canonicalDK, compositor));
   allocations.push_back(tv.get());
   buf->attach(tv.get());
