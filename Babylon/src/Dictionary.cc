@@ -465,10 +465,11 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
     }
     
     if (p->m_block == 0) { // need to dynamically load the relevant script
-	p->m_block = new Prague::Plugin<Dictionary::Block>(p->m_file);
-	if(p->m_block == 0 || *(p->m_block) == 0) {
-	    // Failed to load the plugin for this block
-	    throw Block_Error(p->m_start, p->m_end, p->m_block->error());
+      try { p->m_block = new Prague::Plugin<Dictionary::Block>(p->m_file);}
+      catch(const std::runtime_error &e)
+	{
+	  // Failed to load the plugin for this block
+	  throw Block_Error(p->m_start, p->m_end, e.what());
 	}
     }
 
@@ -491,17 +492,14 @@ void Dictionary::update(const std::string & scanDir) {
 	if ( !((*dir_it)->is(Prague::Directory::reg)) )
 	    continue;
 	
-	Prague::Plugin<Dictionary::Block> * block =
-	    new Prague::Plugin<Dictionary::Block>(name);
-	
-	// new throws en exception when running out of memory,
-	// so this is not necesarry:
-	// if (block == 0)
-	//    continue;
-	
-	if (*block == 0)
+	Prague::Plugin<Dictionary::Block> * block;
+	try { block =  new Prague::Plugin<Dictionary::Block>(name);}
+	catch(const std::runtime_error &e)
+	  {
+	    // block can't be loaded, so skip it
 	    continue;
-	
+	  }
+
 	UCS4 start = (*block)->first_letter();
 	UCS4 end   = (*block)->last_letter();
 

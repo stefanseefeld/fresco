@@ -36,22 +36,21 @@ class Plugin : public DLL
 public:
   //. create a Plugin from the fiven file, using a factory with name loader
   //. to create the actual object
-  Plugin(const std::string &file, const std::string &loader = "load") : DLL(file)
-    {
-      typedef T *(* DL) ();
-      DL dl = (DL) resolve(loader);
-      t = dl ? (T *) dl() : 0;
-    }
-  ~Plugin() { delete t;}
-  T &operator *() const { return *t;}
-  T *operator->() const { return  t;}
-  T *get() const { return t;}
+  Plugin(const std::string &file, const std::string &loader = "load") throw(std::runtime_error, std::logic_error)
+    : DLL(file)
+  {
+    typedef T *(* DL) ();
+    DL dl = (DL) resolve(loader);
+    _t = dl ? (T *) dl() : 0;
+  }
+  ~Plugin() { delete _t;}
+  T &operator *() const { return *_t;}
+  T *operator->() const { return  _t;}
+  T *get() const { return _t;}
 private:
-  T *t;
+  T *_t;
 };
 
 }
-
-#define dload(T) extern "C" T *load() { return new T;}
 
 #endif

@@ -19,9 +19,10 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DLL_hh
-#define _DLL_hh
+#ifndef _Prague_DLL_hh
+#define _Prague_DLL_hh
 
+#include <stdexcept>
 #include <string>
 
 namespace Prague
@@ -31,27 +32,16 @@ namespace Prague
 class DLL
 {
 public:
-  //. create a nil library handle
-  DLL() : handle(0) {}
   //. create a library handle for the named library
-  DLL(const std::string &name, bool now = true) { open(name, now);}
-  ~DLL() { close();}
-  //. open the given library
-  void open(const std::string &, bool = true);
-  //. close the library
-  void close();
+  DLL(const std::string &name, bool now = true) throw(std::runtime_error, std::logic_error);
+  ~DLL() throw();
   //. resolve the given symbol
-  void *resolve(const std::string &);
+  void *resolve(const std::string &) throw(std::runtime_error);
   //. return the library's name
-  const std::string &name() const { return lib;}
-  //. return the last error (should we replace that with an exception ?)
-  const std::string &error() const { return err;}
-  //. return true if the handle is valid
-  operator bool () const { return handle;}
+  const std::string &name() const throw() { return _name;}
 private:
-  std::string lib;
-  std::string err;
-  void *handle;
+  std::string _name;
+  void       *_handle;
 };
 
 }

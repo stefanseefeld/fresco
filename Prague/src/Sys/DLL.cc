@@ -30,49 +30,43 @@
 
 using namespace Prague;
 
-void DLL::open(const std::string &name, bool now)
+DLL::DLL(const std::string &name, bool now) throw(std::runtime_error, std::logic_error)
+  : _name(name)
 {
-  lib = name;
-  if (lib != "")
+  if (!_name.empty())
     {
 #if defined(HAVE_DLFCN)
       int flags = now ? RTLD_NOW : RTLD_LAZY;
       flags |= RTLD_GLOBAL;
-      handle = dlopen(lib.c_str(), flags);
-      if (!handle) err = dlerror();
+      _handle = dlopen(_name.c_str(), flags);
+      if (!_handle) throw std::runtime_error(dlerror());
 #elif defined(HAVE_DLAIX)
-      shl_t shl_handle = shl_load (lib.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
-      if (!shl_handle) err = strerror(errno);
-      else handle = shl_handle;
+      shl_t shl_handle = shl_load (_name.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
+      if (!shl_handle) throw std::runtime_error(strerror(errno));
+      else _handle = shl_handle;
 #endif
     }
-  else
-    {
-      handle = 0;
-      err = "Empty Filename given.";
-    }
+  else throw std::logic_error("empty filename");
 }
 
-void DLL::close()
+DLL::~DLL() throw()
 {
 #if defined(HAVE_DLFCN)
-  if (handle) dlclose(handle);
+  dlclose(_handle);
 #elif defined(HAVE_AIX)
-  if (handle) shl_unload (reinterpret_cast<shl_t>(handle));
+  shl_unload (reinterpret_cast<shl_t>(_handle));
 #endif
-  handle = 0;
 }
 
-void *DLL::resolve(const std::string &symbol)
+void *DLL::resolve(const std::string &symbol) throw(std::runtime_error)
 {
-  if (!handle) return 0;
 #if defined(HAVE_DLFCN)
-  void *tmp = dlsym(handle, symbol.c_str());
-  if (!tmp) err = dlerror();
+  void *tmp = dlsym(_handle, symbol.c_str());
+  if (!tmp) throw std::runtime_error(dlerror());
 #elif defined(HAVE_DLAIX)
   void *tmp;
-  if (shl_findsym (reinterpret_cast<shl_t *>(&handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || handle == 0 || tmp == 0)
-    err = strerror(errno);
+  if (shl_findsym(reinterpret_cast<shl_t *>(&_handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || _handle == 0 || tmp == 0)
+    throw std::runtime_error(strerror(errno));
 #endif
   return tmp;
 };

@@ -102,23 +102,22 @@ void ServerImpl::ping() {
   _contexts = tmp;
 };
 
-void ServerImpl::scan(const std::string &name) {
+void ServerImpl::scan(const std::string &name)
+{
   Prague::Guard<Mutex> guard(_mutex);
   /*
-   * load all files in <name> according to the regexp '\\.so'
+   * load all files in <name> according to the regexp '\\.so$'
    */
-  Directory directory(name, Directory::alpha, "\\.so");
+  Directory directory(name, Directory::alpha, "\\.so$");
   Logger::log(Logger::loader) << "ServerImpl: scanning plugin dir " << name << std::endl;
   for (Directory::iterator i = directory.begin(); i != directory.end(); i++)
     {
-      Plugin<KitImpl> *plugin = new Plugin<KitImpl>((*i)->long_name());
-      /*
-       * if this is not a plugin, skip over it
-       */
-      if (!*plugin)
+      Plugin<KitImpl> *plugin;
+      try { plugin = new Plugin<KitImpl>((*i)->long_name());}
+      catch(const std::runtime_error &e)
 	{
-	  Logger::log(Logger::loader) << (*i)->name() << " not loadable " << plugin->error() << std::endl;
-	  delete plugin;
+	  // not loadable, skip over it
+	  Logger::log(Logger::loader) << (*i)->name() << " not loadable " << e.what() << std::endl;
 	  continue;
 	}
       _plugins.push_back(plugin);
