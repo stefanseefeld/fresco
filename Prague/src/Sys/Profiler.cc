@@ -57,7 +57,7 @@ struct CP_compare : public binary_function<Profiler::CheckPoint, Profiler::Check
 {
   bool operator()(const Profiler::CheckPoint &cp1, const Profiler::CheckPoint &cp2) const
   {
-    return cp1.elapsed/cp1.count < cp2.elapsed/cp2.count;
+    return cp1.elapsed/cp1.count > cp2.elapsed/cp2.count;
   }
 };
 struct CP_find : public unary_function<Profiler::CheckPoint, bool>
@@ -78,7 +78,7 @@ void Profiler::dump(ostream &os)
        */
       CheckPoint cp = *(*i).value;
       for (ntree<CheckPoint *>::const_child_iterator j = (*i).child_begin(); j != (*i).child_end(); j++)
-	cp.elapsed -= (*i).value->elapsed;
+	cp.elapsed -= (*j).value->elapsed;
       /*
        * now insert it into the chart
        */
