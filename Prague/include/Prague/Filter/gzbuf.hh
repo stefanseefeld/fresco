@@ -19,16 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _gzbuf_h
-#define _gzbuf_h
+#ifndef _Prague_gzbuf_h
+#define _Prague_gzbuf_h
 
-#include <streambuf.h>
+#include <iostream>
 #include "zlib.h"
 
 namespace Prague
 {
 
-class gzbuf : public streambuf
+class gzbuf : public std::streambuf
 {
 public:
   gzbuf();
@@ -38,18 +38,19 @@ public:
   gzbuf *close();
   int setcompressionlevel(short);
   int setcompressionstrategy(short);
-  int is_open() const {return file != 0;}
-  virtual streampos seekoff(streamoff, ios::seek_dir, int);
+  int is_open() const {return _file != 0;}
+  virtual std::streampos seekoff(std::streamoff, std::ios::seekdir, int);
   virtual int sync();
 protected:
   virtual int underflow();
   virtual int overflow(int = EOF);
 private:
-  gzFile file;
-  short mode;
-  bool fd_owner;
   int flushbuf();
   int fillbuf();
+  gzFile _file;
+  int    _mode;
+  bool   _owner;
+  char  *_buf;
 };
 
 };

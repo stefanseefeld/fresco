@@ -17,7 +17,7 @@ public:
     std::ostream os(ibuf());
     os << "hi there" << std::endl;
   }
-  ~Connection() { Trace trace("Connection::~Connection"); running = false;}
+  ~Connection() { Trace trace("Connection::~Connection"); ::running = false;}
 private:
   virtual bool process(int, iomask)
   {

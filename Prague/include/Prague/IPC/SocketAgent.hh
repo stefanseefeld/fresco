@@ -42,6 +42,7 @@ public:
   virtual sockbuf *ibuf() { return _socket;}
   virtual sockbuf *obuf() { return _socket;}
   virtual sockbuf *ebuf() { return 0;}
+  sockbuf *release_buf();
 private:
   sockbuf *_socket;
 };

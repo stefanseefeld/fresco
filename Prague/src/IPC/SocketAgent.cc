@@ -37,3 +37,11 @@ SocketAgent::~SocketAgent()
   Trace trace("SocketAgent::~SocketAgent");
   delete _socket;
 }
+
+sockbuf *SocketAgent::release_buf()
+{
+  stop();
+  sockbuf *s = _socket;
+  _socket = 0;
+  return s;
+}

@@ -45,6 +45,7 @@ public:
   virtual void start();
   //. release the Agent from the Dispatcher, which decrements the ref counter.
   virtual void stop();
+  bool running() const { return _running;}
   //. set a new iomask, to be used by the Dispatcher to determine what events
   //. this agent is interested in.
   void mask(short);

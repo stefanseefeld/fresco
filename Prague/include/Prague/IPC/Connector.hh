@@ -64,7 +64,7 @@ bool Connector<Connection, Socket>::process(int, iomask)
   if (!error)
     {
       stop();
-      Connection *connection = new Connection(new Socket(*obuf()));
+      Connection *connection = new Connection(release_buf());
       connection->mask(out);
       connection->start();
       connection->remove_ref();

@@ -28,40 +28,32 @@
 namespace Prague
 {
 
-class gzstream_common : virtual public ios
-{  
-  friend class gzifstream;
-  friend class gzofstream;
+class gzifstream : public std::istream
+{
+public:
+  gzifstream() : std::istream(new gzbuf()) {}
+  gzifstream(const char *name, int mode = std::ios::in) : std::istream(new gzbuf()) { open(name, mode);}
+  gzifstream(int fd, int mode = std::ios::in) : std::istream(new gzbuf()) { attach(fd, mode);}
+  virtual ~gzifstream() { delete rdbuf();}
+  gzbuf *rdbuf() { return static_cast<gzbuf *>(std::istream::rdbuf());}
+  void attach(int fd, int mode) { if (!gzifstream::rdbuf()->attach(fd, mode)) clear(std::ios::failbit|std::ios::badbit); else clear();}
+  void open(const char *name, int mode) { if (!gzifstream::rdbuf()->open(name, mode)) clear(std::ios::failbit|std::ios::badbit); else clear();}
+  void close() { if (!rdbuf()->close()) clear(std::ios::failbit | std::ios::badbit);}
+};
+
+class gzofstream : public std::ostream
+{
   friend gzofstream &set_compressionlevel(gzofstream &, int);
   friend gzofstream &set_compressionstrategy(gzofstream &, int);
 public:
-  virtual ~gzstream_common() {}
-  void attach(int fd, int mode) { if (!buffer.attach(fd, mode)) clear(ios::failbit|ios::badbit); else clear();}
-  void open(const char *name, int mode) { if (!buffer.open(name, mode)) clear(ios::failbit|ios::badbit); else clear();}
-  void close() { if (!buffer.close()) clear(ios::failbit | ios::badbit);}
-protected:
-  gzstream_common() : ios(gzstream_common::rdbuf()) {}
-private:
-  gzbuf *rdbuf() { return &buffer;}
-  gzbuf buffer;
-};
-
-class gzifstream : public gzstream_common, public istream
-{
-public:
-  gzifstream() : ios(gzstream_common::rdbuf()) { clear(ios::badbit);}
-  gzifstream(const char *name, int mode = ios::in) : ios(gzstream_common::rdbuf()) { gzstream_common::open(name, mode);}
-  gzifstream(int fd, int mode = ios::in) : ios(gzstream_common::rdbuf()) { gzstream_common::attach(fd, mode);}
-  virtual ~gzifstream() {}
-};
-
-class gzofstream : public gzstream_common, public ostream
-{
-public:
-  gzofstream() : ios(gzstream_common::rdbuf()) { clear(ios::badbit);}
-  gzofstream(const char *name, int mode = ios::out) : ios(gzstream_common::rdbuf()) { gzstream_common::open(name, mode);}
-  gzofstream(int fd, int mode = ios::out) : ios(gzstream_common::rdbuf()) { gzstream_common::attach(fd, mode);}
-  virtual ~gzofstream() {}
+  gzofstream() : std::ostream(new gzbuf()) {}
+  gzofstream(const char *name, int mode = std::ios::out) : std::ostream(new gzbuf()) { open(name, mode);}
+  gzofstream(int fd, int mode = std::ios::out) : std::ostream(new gzbuf()) { attach(fd, mode);}
+  virtual ~gzofstream() { delete rdbuf();}
+  gzbuf *rdbuf() { return static_cast<gzbuf *>(std::ostream::rdbuf());}
+  void attach(int fd, int mode) { if (!gzofstream::rdbuf()->attach(fd, mode)) clear(std::ios::failbit|std::ios::badbit); else clear();}
+  void open(const char *name, int mode) { if (!gzofstream::rdbuf()->open(name, mode)) clear(std::ios::failbit|std::ios::badbit); else clear();}
+  void close() { if (!rdbuf()->close()) clear(std::ios::failbit | std::ios::badbit);}
 };
 
 template<class T> class gzomanip
@@ -81,13 +73,13 @@ template<class T> gzofstream &operator << (gzofstream &s, const gzomanip<T> &m)
 
 inline gzofstream &set_compressionlevel(gzofstream &s, int l)
 {
-  (s.rdbuf())->set_compressionlevel(l);
+  (s.rdbuf())->setcompressionlevel(l);
   return s;
 }
 
 inline gzofstream &set_compressionstrategy(gzofstream &s, int l)
 {
-  (s.rdbuf())->set_compressionstrategy(l);
+  (s.rdbuf())->setcompressionstrategy(l);
   return s;
 }
 
