@@ -157,7 +157,7 @@ private:
     DrawableTie<DirectFBDrawable>::PixelFormat 
                        m_format;
 
-    int                m_width,
+    unsigned int       m_width,
                        m_height;
   
   Pixel                m_cur_col;
@@ -355,7 +355,7 @@ inline void DirectFBDrawable::put_hline(Warsaw::PixelCoord x,
     Prague::Trace("DirectFBDrawable::put_hline(...)");
     IDirectFBSurface * surface;
     DFBSurfaceDescription desc;
-    desc.bpp = 4;
+    desc.pixelformat = DSPF_ARGB;
     desc.height = 1;
     desc.width = w;
     s_dfb->CreateSurface(s_dfb, &desc, &surface);
@@ -374,7 +374,7 @@ inline void DirectFBDrawable::put_vline(Warsaw::PixelCoord x,
     Prague::Trace("DirectFBDrawable::put_vline(...)");;
     IDirectFBSurface * surface;
     DFBSurfaceDescription desc;
-    desc.bpp = 4;
+    desc.pixelformat = DSPF_ARGB;
     desc.height = h;
     desc.width = 1;
     s_dfb->CreateSurface(s_dfb, &desc, &surface);
@@ -394,7 +394,7 @@ inline void DirectFBDrawable::draw_pixels(Warsaw::PixelCoord x,
     Prague::Trace("DirectFBDrawable::draw_pixels(...)");
     IDirectFBSurface * surface;
     DFBSurfaceDescription desc;
-    desc.bpp = 4;
+    desc.pixelformat = DSPF_ARGB;
     desc.height = h;
     desc.width = w;
     s_dfb->CreateSurface(s_dfb, &desc, &surface);
@@ -450,7 +450,7 @@ inline void DirectFBDrawable::blit(Warsaw::Drawable_ptr d,
 
 inline void DirectFBDrawable::flush() {
     Prague::Trace("DirectFBDrawable::flush()");     
-    m_surface->Flip(m_surface, NULL, DSFLIP_WAITFORSYNC);
+    // m_surface->Flip(m_surface, NULL, DFBSurfaceFlipFlags(0));
 }
 
 inline void DirectFBDrawable::flush(Warsaw::PixelCoord x,
@@ -460,7 +460,7 @@ inline void DirectFBDrawable::flush(Warsaw::PixelCoord x,
     Prague::Trace("DirectFBDrawable::flush(PixelCoord, ...)");
     DFBRegion region;
     region.x1 = x; region.x2 = x + w; region.y1 = y; region.y2 = y + h;
-    m_surface->Flip(m_surface, &region, DSFLIP_WAITFORSYNC);
+    // m_surface->Flip(m_surface, &region, DSFLIP_WAITFORSYNC);
 }
 
 
