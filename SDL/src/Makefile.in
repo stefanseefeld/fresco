@@ -23,8 +23,7 @@ SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= $(top_srcdir)/src
-builddir	:= ..
-cdir		:= $(builddir)/config
+cdir		:= ../config
 
 include $(cdir)/local.mk
 
@@ -40,7 +39,7 @@ TARGET	:= ../lib/Fresco/Console/SDL.so
 ifeq ($(HAVE_GL), 1)
 TARGET	+= ../lib/Fresco/Console/SDLGL.so
 endif
-../lib/Fresco/Console/SDLGL.so: SDLGL.cc
+../lib/Fresco/Console/SDLGL.so: SDLGL.o
 
 
 all:	$(TARGET)

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,11 +20,11 @@
  * MA 02139, USA.
  */
 
-#ifndef _SDL_GL_hh
-#define _SDL_GL_hh
+#ifndef _SDLGL_hh
+#define _SDLGL_hh
 
-#include <Console/SDL/Pointer.hh>
-#include <Console/GLContext.hh>
+#include <Berlin/Console/GLContext.hh>
+#include "Pointer.hh"
 
 extern "C" {
 #include <GL/gl.h>

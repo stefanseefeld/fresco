@@ -22,52 +22,29 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/clients
+srcdir		:= $(top_srcdir)/src
 cdir		:= ../config
-
-define makedep
-@echo generating dependencies for $(<F)
-$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-endef
-
-define compile
-@echo compiling $(@F)
-$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-endef
 
 include $(cdir)/local.mk
 
-#CPPFLAGS	+= @CPPFLAGS@
-#LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @LIBS@
+TARGETS		:= 
 
-TARGET	:= ../bin/ggiwrapper
-
-all:	$(TARGET)
-
-../bin/ggiwrapper:	ggiwrapper.o
-	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+all:
 
 install:	all
-		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(bindir)
+	@for target in $(TARGETS); do \
+	  $(INSTALL) -m 755 $$target $(DESTDIR)$(bindir)/$$target; \
+	done
 
 uninstall:
-		rm -f $(DESTDIR)$(bindir)/$(TARGET)
+	for target in $(TARGETS) ; do
+	  rm -f $(DESTDIR)$(bindir)/$$target; \
+	done
 
 clean:	
-		rm -f $(TARGETS)
-		rm -f *.o
+	rm -f ../bin/$(TARGETS)
 
-distclean:	clean 
+distclean:	clean
 	rm -f Makefile
 
 maintainer-clean: distclean
-
-%.o:	$(srcdir)/%.cc
-	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
-
-
-%.o:	$(srcdir)/%.cc
-	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@

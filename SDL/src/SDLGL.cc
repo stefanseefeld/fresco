@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
  * Copyright (C) 2001 Philip Philonenko <philonenko@orgacom.ru> 
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,8 +23,7 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/Logger.hh>
-
-#include <Console/SDL/SDLGL.hh>
+#include "SDLGL.hh"
 
 
 

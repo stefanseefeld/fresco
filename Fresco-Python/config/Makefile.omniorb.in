@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -60,14 +60,9 @@ TARGET		:= $(SRC)
 
 all:	$(TARGET)
 
-$(STATSRC): %_idl.py:		$(idir)/Fresco/%.idl
-	$(IDLPY) $(IDLPYFLAGS) $<
-
-$(DYNSTATSRC): %_idl.py: 	$(idir)/Fresco/%.idl
-	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
-
-$(DYNSRC): %DynSK.py:	$(idir)/Fresco/%.idl
-	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
+install:	all
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/python
+	$(INSTALL) -m 644 $(TARGET) $(DESTDIR)$(libdir)/python
 
 clean:	
 	rm -rf $(SRC) $(CMP) Input Figure Fresco Layout *__POA *~
@@ -78,6 +73,12 @@ distclean:	clean
 
 cvsclean:	distclean
 
-install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/python
-	$(INSTALL) -m 644 $(TARGET) $(DESTDIR)$(libdir)/python
+$(STATSRC): %_idl.py:		$(idir)/Fresco/%.idl
+	$(IDLPY) $(IDLPYFLAGS) $<
+
+$(DYNSTATSRC): %_idl.py: 	$(idir)/Fresco/%.idl
+	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
+
+$(DYNSRC): %DynSK.py:	$(idir)/Fresco/%.idl
+	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
+
