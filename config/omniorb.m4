@@ -50,7 +50,7 @@ AC_DEFUN([FRESCO_OMNIORB],
               [Define whether special colocation optimizations are supported])
   fi
 
-  AC_SEARCH_LIBS(recv, resolv)
+  AC_SEARCH_LIBS(recv, [socket resolv])
 
   dnl Check for omniidl.
   if test ".$omniorb_prefix" != "." ; then
