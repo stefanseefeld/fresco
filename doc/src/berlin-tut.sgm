@@ -473,6 +473,30 @@ ey convey, rather than the fixed device type which
           <title>trail</title>
           <graphic fileref="../figures/trail.jpg"></graphic>
         </figure>
+        For each position, the trail contains the following information:
+        <table frame=all pgwide=1>
+          <title>stack information at each position in a traversal</title>
+          <tgroup cols=2>
+            <tbody>
+              <row>
+                <entry>Graphic</entry>
+                <entry>the actual node in the scene graph</entry>
+              </row>
+              <row>
+                <entry>Tag</entry>
+                <entry>an identifier for the edge to the parent</entry>
+              </row>
+              <row>
+                <entry>Region</entry>
+                <entry>allocation, in local coordinates</entry>
+              </row>
+              <row>
+                <entry>Transform</entry>
+                <entry>the transfomration from global to local coordinate system</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
         Since after the traversal is over, the stack will be empty, the <classname>Picktraversal</classname>
         needs to create a memento of itself, which can be used later on to deliver the event.
         The controller stack, extracted out of the trail, is
