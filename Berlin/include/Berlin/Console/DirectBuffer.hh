@@ -20,13 +20,13 @@
  * MA 02139, USA.
  */
 
-#ifndef _DirectBuffer_hh
-#define _DirectBuffer_hh
+#ifndef _Console_DirectBuffer_hh
+#define _Console_DirectBuffer_hh
 
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
 
-class DirectBuffer : virtual public Console::Extension
+class DirectBuffer : virtual public Console::Drawable::Extension
 {
 public:
   typedef Console::Drawable::data_type data_type;
@@ -37,23 +37,19 @@ public:
     Guard(const Console::Drawable *drawable, data_type *data)
       : _drawable(drawable), _data(data)
     {
-      Prague::Trace("DirectBuffer::Guard::Guard(...)");
     }
 
     ~Guard()
     {
-      Prague::Trace("DirectBuffer::Guard::~Guard()");
     }
 
     Guard(const Guard &buffer)
     {
-      Prague::Trace("DirectBuffer::Buard::Guard(Guard)");
       _data = buffer.release();
       _drawable = buffer._drawable;
     }
     Guard &operator = (const Guard &buffer)
     {
-      Prague::Trace("DirectBuffer::Guard::operator =");
       _data = buffer.release();
       _drawable = buffer._drawable;
       return *this;
@@ -61,13 +57,11 @@ public:
 
     data_type *get() const
     {
-      Prague::Trace("DirectBuffer::Guard::get()");
       return _data;
     }
 
     data_type *release() const
     {
-      Prague::Trace("DirectBuffer::Guard::release()");
       data_type *tmp = _data;
       _data = 0;
       return tmp;

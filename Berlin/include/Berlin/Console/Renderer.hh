@@ -20,13 +20,13 @@
  * MA 02139, USA.
  */
 
-#ifndef _Renderer_hh
-#define _Renderer_hh
+#ifndef _Console_Renderer_hh
+#define _Console_Renderer_hh
 
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
 
-class Renderer : virtual public Console::Extension
+class Renderer : virtual public Console::Drawable::Extension
 {
 public:
   //. Set the color used for all drawing operations to the one given.
