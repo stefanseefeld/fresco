@@ -101,7 +101,6 @@ ExclusiveChoice::ExclusiveChoice(Telltale::Flag f)
 
 void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 {
-  cout << "ExclusiveChoice::trymodify" << endl;
   MutexGuard guard(mutex);
   for (tlist_t::iterator i = telltales.begin(); i != telltales.end(); i++)
     if ((*i)->test(f)) (*i)->modify(f, false);

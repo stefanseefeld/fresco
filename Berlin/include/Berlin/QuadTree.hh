@@ -100,13 +100,16 @@ protected:
 
   Geometry::Rectangle<T> region;
   Geometry::Rectangle<T> boundingbox;
-  int          elements;
-  list         items;
+  int          elements; // total count of objects at or below this level
+  list         items;    // items straddling the fence.
   QTNode<T, I> *quadrants[4];
   friend void dumpQuadNode(const QTNode<T,I> &node, short ind)
     {
       for (short i = 0; i != ind; i++) cout.put(' ');
-      cout << "Node : " << node.elements << ' ' << " elements, extension : " << node.region << endl;
+      cout << "Node : " << node.elements << '(' << node.items.size() << ") elements, extension : " << node.region << endl;
+      for (list::const_iterator i = node.items.begin(); i != node.items.end(); i++)
+	cout << (*i)->boundingbox << ';';
+      cout << endl;
       if (!node.leaf()) for (short i = 0; i != 4; i++) dumpQuadNode(*node.quadrants[i], ind + 2);
     }
 };
@@ -196,8 +199,8 @@ inline QTNode<T, I>::index QTNode<T, I>::where(const Geometry::Rectangle<T> &r)
       /*
        * is r inside one of the quarters ?
        */
-      if ((r.r <= x) == (r.l < x) && (r.t <= y) == (r.b < y))
-	idx = (r.r <= x ? left : right) | (r.b <= y ? bottom : top);
+      if ((r.r <= x) == (r.l < x) && (r.b <= y) == (r.t < y))
+	idx = (r.r <= x ? left : right) | (r.b <= y ? top : bottom);
     }
   return static_cast<index>(idx);
 }

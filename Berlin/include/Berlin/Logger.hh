@@ -1,27 +1,25 @@
-//
-// $Id$
-//
-// This source file is a part of the Berlin Project.
-// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-// Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
-// http://www.berlin-consortium.org
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public License
-// as published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this program; if not, write to the Free Software
-// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//
-
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
 #ifndef _Logger_hh
 #define _Logger_hh
 
@@ -47,8 +45,8 @@ public:
     image, figure, layout, drawing, desktop,
     picking, focus, geometry};
 private:
-  struct _streamlock;
-  friend struct _streamlock;
+  struct streamlock;
+  friend struct streamlock;
   template <class T>
   static void write(group g, const T &t)
     {
@@ -65,9 +63,9 @@ public:
       Prague::MutexGuard guard(mutex);
       events.add(c, Prague::Time::currentTime() - start);
     }
-  static _streamlock log(group g)
+  static streamlock log(group g)
     {
-      _streamlock slock(g);
+      streamlock slock(g);
       write(g, '[');
       write(g, static_cast<double>(Prague::Time::currentTime() - start));
       write(g, ':');
@@ -80,18 +78,19 @@ public:
   static void dump(ostream &);
 protected:
 private:
-  struct _streamlock
+  struct streamlock
   {
-    _streamlock(group gg) : owner(true), g(gg), prf("logger") { Logger::mutex.lock();}
-    _streamlock(const _streamlock &sl) : owner(true), g(sl.g), prf("logger") { sl.owner = false;}
-    ~_streamlock() { if (owner) Logger::mutex.unlock();}
+    streamlock(group gg) : owner(true), g(gg), prf("logger") { Logger::mutex.lock();}
+    streamlock(const streamlock &sl) : owner(true), g(sl.g), prf("logger") { sl.owner = false;}
+    ~streamlock() { if (owner) Logger::mutex.unlock();}
     mutable bool owner;
     group g;
     Prague::Profiler prf;
   };
-  friend _streamlock operator << (const _streamlock &sl, ostream & (func)(ostream &)) { Logger::write(sl.g, func); return sl;}
+  friend const streamlock &operator << (const streamlock &sl, ostream & (func)(ostream &))
+    { Logger::write(sl.g, func); return sl;}
   template <class T>
-  friend _streamlock operator << (const _streamlock &sl, const T &t) { Logger::write(sl.g, t); return sl;}
+  friend const streamlock &operator << (const streamlock &sl, const T &t) { Logger::write(sl.g, t); return sl;}
   static bool active[numGroups];
   static const char *groupname[numGroups]; 
   static Prague::logbuf buf;

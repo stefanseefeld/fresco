@@ -185,7 +185,7 @@ inline bool Rectangle<T>::intersects(const Line<T> &i) const
 template <class T>
 inline bool Rectangle<T>::contains(const Rectangle<T> &c) const
 {
-  return c.l >= l && c.t >= t && c.r <= r && c.b <= b;
+  return l <= c.l && t <= c.t && r >= c.r && b >= c.b;
 }
 
 template <class T>

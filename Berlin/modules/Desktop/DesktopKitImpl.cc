@@ -22,8 +22,6 @@
 
 #include "Desktop/DesktopKitImpl.hh"
 #include "Desktop/WindowImpl.hh"
-#include "Desktop/Titlebar.hh"
-#include "Desktop/Border.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Plugin.hh"
 
@@ -53,28 +51,49 @@ Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
   window->_obj_is_ready(_boa());
   Color gray = {0.5, 0.5, 0.5, 1.0};
 
-  Titlebar *tb = new Titlebar(gray);
-  tb->_obj_is_ready(_boa());
+  Graphic::Requisition req;
+  req.x.defined = true;
+  req.x.minimum = 0.;
+  req.x.natural = 0.;
+  req.x.maximum = lk->fil();
+  req.x.align = 0.;
+  req.y.defined = true;
+  req.y.minimum = 20.;
+  req.y.natural = 20.;
+  req.y.maximum = 20.;
+  req.y.align = 0;
   Command_var move = window->move();
-  Graphic_var tbframe = wk->outset(Graphic_var(tb->_this()), gray, false);
+  Graphic_var tbframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var tbdragger = wk->dragger(tbframe, move);
 
-  Corner *left = new Corner(gray);
-  left->_obj_is_ready(_boa());
+  req.x.minimum = 20.;
+  req.x.natural = 20.;
+  req.x.maximum = 20.;
+  req.y.minimum = 4.;
+  req.y.natural = 4.;
+  req.y.maximum = 4.;
   Command_var lresize = window->moveResize(1.0, 0.0, Window::left|Window::bottom);
-  Graphic_var lframe = wk->outset(Graphic_var(left->_this()), gray, false);
+  Graphic_var lframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var ldragger = wk->dragger(lframe, lresize);
 
-  Border *border = new Border(gray);
-  border->_obj_is_ready(_boa());
+  req.x.minimum = 0.;
+  req.x.natural = 0.;
+  req.x.maximum = lk->fil();
+  req.y.minimum = 4.;
+  req.y.natural = 4.;
+  req.y.maximum = 4.;
   Command_var bresize = window->moveResize(0.0, 0.0, Window::bottom);
-  Graphic_var bframe = wk->outset(Graphic_var(border->_this()), gray, false);
+  Graphic_var bframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var bdragger = wk->dragger(bframe, bresize);
 
-  Corner *right = new Corner(gray);
-  right->_obj_is_ready(_boa());
+  req.x.minimum = 20.;
+  req.x.natural = 20.;
+  req.x.maximum = 20.;
+  req.y.minimum = 4.;
+  req.y.natural = 4.;
+  req.y.maximum = 4.;
   Command_var rresize = window->moveResize(0.0, 0.0, Window::right|Window::bottom);
-  Graphic_var rframe = wk->outset(Graphic_var(right->_this()), gray, false);
+  Graphic_var rframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var rdragger = wk->dragger(rframe, rresize);
 
   Graphic_var vbox = lk->vbox();
@@ -99,28 +118,49 @@ Window_ptr DesktopKitImpl::transient(Graphic_ptr g)
   window->_obj_is_ready(_boa());
   Color gray = {0.5, 0.5, 0.5, 1.0};
 
-  Titlebar *tb = new Titlebar(gray);
-  tb->_obj_is_ready(_boa());
+  Graphic::Requisition req;
+  req.x.defined = true;
+  req.x.minimum = 0.;
+  req.x.natural = 0.;
+  req.x.maximum = lk->fil();
+  req.x.align = 0.;
+  req.y.defined = true;
+  req.y.minimum = 20.;
+  req.y.natural = 20.;
+  req.y.maximum = 20.;
+  req.y.align = 0;
   Command_var move = window->move();
-  Graphic_var tbframe = wk->outset(Graphic_var(tb->_this()), gray, false);
+  Graphic_var tbframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var tbdragger = wk->dragger(tbframe, move);
 
-  Corner *left = new Corner(gray);
-  left->_obj_is_ready(_boa());
+  req.x.minimum = 20.;
+  req.x.natural = 20.;
+  req.x.maximum = 20.;
+  req.y.minimum = 4.;
+  req.y.natural = 4.;
+  req.y.maximum = 4.;
   Command_var lresize = window->moveResize(1.0, 0.0, Window::left|Window::bottom);
-  Graphic_var lframe = wk->outset(Graphic_var(left->_this()), gray, false);
+  Graphic_var lframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var ldragger = wk->dragger(lframe, lresize);
 
-  Border *border = new Border(gray);
-  border->_obj_is_ready(_boa());
+  req.x.minimum = 0.;
+  req.x.natural = 0.;
+  req.x.maximum = lk->fil();
+  req.y.minimum = 4.;
+  req.y.natural = 4.;
+  req.y.maximum = 4.;
   Command_var bresize = window->moveResize(0.0, 0.0, Window::bottom);
-  Graphic_var bframe = wk->outset(Graphic_var(border->_this()), gray, false);
+  Graphic_var bframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var bdragger = wk->dragger(bframe, bresize);
 
-  Corner *right = new Corner(gray);
-  right->_obj_is_ready(_boa());
+  req.x.minimum = 20.;
+  req.x.natural = 20.;
+  req.x.maximum = 20.;
+  req.y.minimum = 4.;
+  req.y.natural = 4.;
+  req.y.maximum = 4.;
   Command_var rresize = window->moveResize(0.0, 0.0, Window::right|Window::bottom);
-  Graphic_var rframe = wk->outset(Graphic_var(right->_this()), gray, false);
+  Graphic_var rframe = wk->outset(Graphic_var(lk->glueRequisition(req)), gray, true);
   Graphic_var rdragger = wk->dragger(rframe, rresize);
 
   Graphic_var vbox = lk->vbox();

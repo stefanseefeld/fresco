@@ -21,6 +21,8 @@
  * MA 02139, USA.
  */
 
+#include "Warsaw/config.hh"
+#include "Warsaw/LayoutKit.hh"
 #include "Widget/WidgetKitImpl.hh"
 #include "Widget/TelltaleImpl.hh"
 #include "Widget/BoundedValueImpl.hh"
@@ -45,6 +47,12 @@ WidgetKitImpl::WidgetKitImpl()
 
 WidgetKitImpl::~WidgetKitImpl()
 {
+}
+
+void WidgetKitImpl::bind(ServerContext_ptr sc)
+{
+  CloneableImpl::bind(sc);
+  lk = obtain(context, LayoutKit);
 }
 
 TelltaleConstraint_ptr WidgetKitImpl::exclusive()
@@ -241,6 +249,32 @@ Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)
 
 Controller_ptr WidgetKitImpl::slider(const Color &color, BoundedValue_ptr value)
 {
+//   Graphic::Requisition req;
+//   req.x.defined = true;
+//   req.x.minimum = 10.;
+//   req.x.natural = 10.;
+//   req.x.maximum = 10.;
+//   req.x.align = 0.;
+//   req.y.defined = true;
+//   req.y.minimum = 10.;
+//   req.y.natural = 10.;
+//   req.y.maximum = 10.;
+//   req.y.align = 0;
+//   Controller_var thumb;// = dragger(Graphic_var(outset(lk->glueRequisition(req), color, true)));
+//   Slider *s = new Slider(xaxis);
+//   s->_obj_is_ready(_boa());
+//   s->init(thumb, value);
+//   req.x.minimum = 100.;
+//   req.x.natural = 100.;
+//   req.x.maximum = 100.;
+//   req.x.align = 0.;
+//   req.y.minimum = 12.;
+//   req.y.natural = 12.;
+//   req.y.maximum = 12.;
+//   req.y.align = 0;
+//   s->body(Graphic_var(inset(Graphic_var(lk->glueRequisition(req)), color, true)));
+//   graphics->push_back(s);
+//   return s->_this();
   return Controller::_nil();
 }
 

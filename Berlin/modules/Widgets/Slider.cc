@@ -22,14 +22,59 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Transform.hh"
 #include "Warsaw/PickTraversal.hh"
+#include "Warsaw/DrawTraversal.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/TransformImpl.hh"
 #include "Widget/Slider.hh"
 
-BVController::BVController(Controller_ptr t)
+BVController::BVController()
   : ControllerImpl(false),
-    thumb(Controller::_duplicate(t)),
     current(0)
 {}
+
+void BVController::init(Controller_ptr t)
+{
+  thumb = Controller::_duplicate(t);
+  if (!CORBA::is_nil(thumb))
+    {
+      thumb->addParent(Graphic_var(ControllerImpl::_this()), 1);
+      appendController(thumb);
+    }
+}
+
+void BVController::draw(DrawTraversal_ptr traversal)
+{
+  ControllerImpl::draw(traversal);
+  Allocation::Info info;
+  Region_var allocation = traversal->allocation();
+  Impl_var<RegionImpl> region(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+  Impl_var<TransformImpl> transformation(new TransformImpl);
+  transformation->copy(Transform_var(traversal->transformation()));
+  info.allocation = region;
+  info.transformation = transformation;
+  allocateThumb(info);
+  if (traversal->intersectsRegion(info.allocation)) thumb->traverse(traversal);
+}
+
+void BVController::pick(PickTraversal_ptr traversal)
+{
+  Allocation::Info info;
+  Region_var allocation = traversal->allocation();
+  Impl_var<RegionImpl> region(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+  Impl_var<TransformImpl> transformation(new TransformImpl);
+  transformation->copy(Transform_var(traversal->transformation()));
+  info.allocation = region;
+  info.transformation = transformation;
+  allocateThumb(info);
+  if (traversal->intersectsRegion(info.allocation)) thumb->traverse(traversal);
+  else ControllerImpl::pick(traversal);
+}
+
+void BVController::allocate(Tag tag, const Allocation::Info &info)
+{
+  if (!tag) ControllerImpl::allocate(tag, info);
+  else allocateThumb(info);
+}
 
 void BVController::update(Subject_ptr) { needRedraw();}
 
@@ -87,15 +132,15 @@ class CompositeModifier : public BVController::Modifier
   BVController::Modifier *second;
 };
 
-Slider::Slider(Controller_ptr thumb, Axis a)
-  : BVController(thumb),
-    offset(0),
+Slider::Slider(Axis a)
+  : offset(0),
     axis(a)
 {
 }
 
-void Slider::init(BoundedValue_ptr v)
+void Slider::init(Controller_ptr t, BoundedValue_ptr v)
 {
+  BVController::init(t);
   value = BoundedValue::_duplicate(v);
   backward = new Backward(value);
   forward = new Forward(value);
@@ -103,6 +148,22 @@ void Slider::init(BoundedValue_ptr v)
   backwardStepper->action(backward);
   forwardStepper = new Stepper;
   forwardStepper->action(forward);
+}
+
+void Slider::allocateThumb(const Allocation::Info &info)
+{
+  Requisition req;
+  thumb->request(req);
+  Impl_var<RegionImpl> region(new RegionImpl);
+  region->lower.x =  - req.x.align * req.x.natural;
+  region->lower.y =  - req.y.align * req.y.natural;
+  region->upper.x = (1. - req.x.align) * req.x.natural;
+  region->upper.y = (1. - req.y.align) * req.y.natural;
+  info.allocation->copy(Region_var(region->_this()));
+  Vertex origin = {0., 0., 0.};
+  if (axis == xaxis) origin.x += offset;
+  else origin.y += offset;
+  info.transformation->translate(origin);
 }
 
 Stepper *Slider::stepper(PickTraversal_ptr traversal, const Event::Pointer *pointer)
@@ -118,19 +179,20 @@ Stepper *Slider::stepper(PickTraversal_ptr traversal, const Event::Pointer *poin
   else return forwardStepper;
 }
 
-XYSlider::XYSlider(Controller_ptr thumb)
-  : BVController(thumb)
+XYSlider::XYSlider()
 {
+}
+
+void XYSlider::init(Controller_ptr t, BoundedValue_ptr xv, BoundedValue_ptr yv)
+{
+  BVController::init(t);
   Requisition r;
   GraphicImpl::initRequisition(r);
   thumb->request(r);
   thumbSize.x = r.x.defined ? r.x.natural : 0;
   thumbSize.y = r.y.defined ? r.y.natural : 0;
   thumbSize.z = r.z.defined ? r.z.natural : 0;
-}
 
-void XYSlider::init(BoundedValue_ptr xv, BoundedValue_ptr yv)
-{
   xvalue = BoundedValue::_duplicate(xv);
   yvalue = BoundedValue::_duplicate(yv);
   modifiers[0] = new Backward(xvalue);
@@ -146,6 +208,11 @@ void XYSlider::init(BoundedValue_ptr xv, BoundedValue_ptr yv)
        steppers[i] = new Stepper;
        steppers[i]->action(modifiers[i]);
     }
+}
+
+void XYSlider::allocateThumb(const Allocation::Info &info)
+{
+  cerr << "sorry, XYSlider::allocateThumb not yet implemented" << endl;
 }
 
 Stepper *XYSlider::stepper(PickTraversal_ptr traversal, const Event::Pointer *pointer)

@@ -177,6 +177,7 @@ void GLDrawable::pushClipping(Region_ptr region, Transform_ptr transformation)
   double cp1[] = {0.,  1., 0., -clip->lower.y};
   double cp2[] = {-1., 0., 0., clip->upper.x};
   double cp3[] = {0., -1., 0., clip->upper.y};
+  cout << "GLDrawable::pushClipping " << *clip << endl;
   glClipPlane(GL_CLIP_PLANE0, cp0);
   glClipPlane(GL_CLIP_PLANE1, cp1);
   glClipPlane(GL_CLIP_PLANE2, cp2);
@@ -197,6 +198,7 @@ void GLDrawable::popClipping()
       double cp1[] = {0., 1., 0., -clip->lower.y};
       double cp2[] = {-1., 0., 0., clip->upper.x};
       double cp3[] = {0., -1., 0., clip->upper.y};
+      cout << "GLDrawable::pushClipping " << *clip << endl;
       glClipPlane(GL_CLIP_PLANE0, cp0);
       glClipPlane(GL_CLIP_PLANE1, cp1);
       glClipPlane(GL_CLIP_PLANE2, cp2);

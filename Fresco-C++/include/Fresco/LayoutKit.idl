@@ -213,7 +213,7 @@ interface LayoutKit : Cloneable
     //. The halign and valign operations return graphics aligned for
     //. the horizontal and vertical axes, respectively.
     
-    Graphic fixedAlloc(in Graphic g, in Coord x, in Coord y);
+    Graphic fixed(in Graphic g, in Coord x, in Coord y);
     Graphic fixedAxis(in Graphic g, in Axis a, in Coord size);
     Graphic hfixed(in Graphic g, in Coord x);
     Graphic vfixed(in Graphic g, in Coord y);
@@ -222,7 +222,7 @@ interface LayoutKit : Cloneable
     //. are ideal for specifying sizes that are otherwise undefined,
     //. such as the initial dimensions of a file chooser.
     //. The fixed operation returns a graphic fixed with given
-    //. width and height natural sizes.  The fixed_axis operation
+    //. width and height natural sizes.  The fixedAxis operation
     //. returns a graphic fixed in one dimension.  The
     //. hfixed and vfixed operations return fixed graphics
     //. for the horizontal and vertical axes, respectively.

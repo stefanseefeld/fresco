@@ -36,6 +36,10 @@ Frame::~Frame() {}
 
 void Frame::draw(DrawTraversal_ptr traversal)
 {
+  if (!traversal->intersectsAllocation()) return;
+//   cout << "draw frame";
+//   if (fill) cout << " filled" << endl;
+//   else cout << endl;
   Region_var allocation = traversal->allocation();
   Vertex u, l;
   allocation->bounds(l, u);

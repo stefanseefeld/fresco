@@ -27,72 +27,19 @@
 #include "Warsaw/Traversal.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/QuadTree.hh"
-#include "Berlin/Thread.hh"
+#include "Berlin/ImplVar.hh"
+#include "Berlin/Geometry.hh"
+#include "Prague/Sys/Thread.hh"
 #include <list>
 
 class StageHandleImpl;
 
-class StageSequence : public list<StageHandleImpl *>
-{
-  typedef list<StageHandleImpl *> parent_t;
-  iterator lookup(Stage::Index layer);
-public:
-  StageSequence() : cursor(begin()) {}
-  ~StageSequence() {}
-  
-  void insert(StageHandleImpl *);
-  void remove(StageHandleImpl *);
-  
-  StageHandleImpl *find(Stage::Index layer) { return *lookup(layer);}
-  StageHandleImpl *front() { return parent_t::front();}
-  StageHandleImpl *back() { return parent_t::back();}
-private:
-  iterator cursor;
-};
- 
-class StageFinder
-{
-public:
-  virtual ~StageFinder() {}
-  virtual void found(StageHandleImpl *) = 0;
-};
-
-class StageQuad : public QTNode<Coord, StageHandleImpl *>
-{
-  typedef QTNode<Coord, StageHandleImpl *> parent_t;
-public:
-  StageQuad(const Geometry::Rectangle<Coord> &);
-  StageQuad(const Geometry::Rectangle<Coord> &, StageQuad *);
-  StageQuad *node(int i) { return static_cast<StageQuad *>(parent_t::node(static_cast<index>(i)));}
-  void within(const Geometry::Rectangle<Coord> &, StageFinder &);
-  void contains(const Geometry::Point<Coord> &, StageFinder &);
-  void intersects(const Geometry::Rectangle<Coord> &, StageFinder &);
-  void intersects(const Geometry::Rectangle<Coord> &, const Geometry::Polygon<Coord> &, StageFinder &);
-};
-
-class StageQuadTree : public QuadTree<Coord, StageHandleImpl *>
-{
-  typedef QuadTree<Coord, StageHandleImpl *> parent_t;
-public:
-  StageQuadTree() : transaction(0), operations(0) {}
-  StageQuad *node() { return static_cast<StageQuad *>(parent_t::node());}
-
-  void begin(){ transaction++;}
-  void insert(StageHandleImpl *);
-  void remove(StageHandleImpl *);
-  void end();
-  StageHandleImpl *contains(const Geometry::Point<Coord> &);
-  void within(const Geometry::Rectangle<Coord> &r, StageFinder &f) { if (node()) node()->within(r, f);}
-  void intersects(const Geometry::Rectangle<Coord> &r, StageFinder &f) { if (node()) node()->intersects(r, f);}
-  void intersects(const Geometry::Polygon<Coord> &, StageFinder &);
-private:
-  unsigned transaction;
-  unsigned operations;
-};
-
 class StageImpl : implements(Stage), public GraphicImpl
 {
+  class Sequence;
+  class Finder;
+  class Quad;
+  class QuadTree;
  public:
   StageImpl();
   ~StageImpl();
@@ -108,7 +55,7 @@ class StageImpl : implements(Stage), public GraphicImpl
   //. relayout the children. If the bounding box changes call needResize on the parent
   
   virtual Region_ptr bbox();
-  virtual CORBA::Long layers() { return tree.size();}
+  virtual CORBA::Long layers();
   virtual StageHandle_ptr layer(Stage::Index);
   /*
    * begin() and end() 'lock' the stage
@@ -127,14 +74,14 @@ private:
   StageHandleImpl *tag2handle(Tag);
   void damage(StageHandleImpl *);
 
-  StageSequence list;
-  StageQuadTree tree;
+  Sequence *children;
+  QuadTree *tree;
   long nesting;
-  RegionImpl *damage_;
-  RegionImpl *bbregion;
+  Impl_var<RegionImpl> damage_;
+  Impl_var<RegionImpl> bbregion;
   bool need_redraw : 1;
   bool need_resize : 1;
-  Mutex childMutex;
+  Prague::Mutex childMutex;
 };
 
 class StageHandleImpl : implements(StageHandle)
@@ -143,11 +90,11 @@ class StageHandleImpl : implements(StageHandle)
   StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
   virtual Stage_ptr parent() { return stage->_this();}
   virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
-  virtual Vertex position() { MutexGuard guard(mutex); return p;}
+  virtual Vertex position() { Prague::MutexGuard guard(mutex); return p;}
   virtual void position(const Vertex &);
-  virtual Vertex size() { MutexGuard guard(mutex); return s;}
+  virtual Vertex size() { Prague::MutexGuard guard(mutex); return s;}
   virtual void size(const Vertex &);
-  virtual Stage::Index layer() { MutexGuard guard(mutex); return l;}
+  virtual Stage::Index layer() { Prague::MutexGuard guard(mutex); return l;}
   virtual void layer(Stage::Index);
 
   const Geometry::Rectangle<Coord> &bbox() { return boundingbox;}
@@ -172,7 +119,7 @@ class StageHandleImpl : implements(StageHandle)
   Geometry::Rectangle<Coord> boundingbox;
   Alignment xalign;
   Alignment yalign;
-  Mutex mutex;
+  Prague::Mutex mutex;
 };
 
 #endif
