@@ -33,6 +33,7 @@ ppath	= prf
 rpath	= $(lpath)
 
 include $(cpath)/local.mk
+include $(cpath)/Warsaw/local.mk  # for ORBLIBS
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS) $(GL_INCLUDES)
