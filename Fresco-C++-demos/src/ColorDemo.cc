@@ -110,7 +110,17 @@ ColorDemo::ColorDemo(Application *a)
 }
 
 void ColorDemo::adjust(Tag tag)
+  //. this is a hack of a constraint solver.
+  //. the reason to do this serialization is
+  //. that we update the three values one at
+  //. a time, though only after all three
+  //. have been set the color is in a coherent
+  //. state...
+  //.  -stefan
 {
+  static bool processing = false;
+  if (processing) return;
+  processing = true;
   if (tag < 3) // set hsv sliders
     {
       Color color;
@@ -119,6 +129,7 @@ void ColorDemo::adjust(Tag tag)
       color.blue = blue->value();
       Coord h, s, v;
       RGBtoHSV(color, h, s, v);
+      //. the following three calls need to be atomic
       hue->value(h);
       saturation->value(s);
       value->value(v);
@@ -130,8 +141,10 @@ void ColorDemo::adjust(Tag tag)
       Coord s = saturation->value();
       Coord v = value->value();
       HSVtoRGB(h, s, v, color);
+      // the following three calls need to be atomic
       red->value(color.red);
       green->value(color.green);
       blue->value(color.blue);
     }
+  processing = false;
 }
