@@ -26,12 +26,11 @@
 
 EventManager::EventManager(ScreenImpl *s)
   : screen(s),
-    focus(new FocusImpl(screen))
+    pfocus(new PositionalFocus(screen)),
+    npfocus(new NonPositionalFocus(screen))
 {}
 
 EventManager::~EventManager() {}
-void EventManager::requestFocus(Controller_ptr c) { focus->request(c);}
-
 void EventManager::nextEvent()
 {
   ggi_event event;
@@ -43,7 +42,7 @@ void EventManager::nextEvent()
       {      
 	Event::Key key;
 	key.theChar = event.key.sym;
-	dispatch(key);
+	npfocus->dispatch(key);
 	break;
       }
     case evPtrRelative:
@@ -74,13 +73,11 @@ void EventManager::nextEvent()
 	  event.any.type == evPtrAbsolute ? Event::hold :
 	  event.any.type == evPtrButtonPress ? Event::press :
 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-	dispatch(ptrEvent);
+	pfocus->dispatch(ptrEvent);
 	break;
       }
     }
 }
 
-void EventManager::damage(Region_ptr r) { focus->damage(r);}
-void EventManager::dispatch(const Event::Pointer &pointer) { focus->dispatch(pointer);}
-void EventManager::dispatch(const Event::Key &) {}
+void EventManager::damage(Region_ptr r) { pfocus->damage(r);}
 

@@ -26,7 +26,8 @@
 #include <Warsaw/Event.hh>
 #include <Warsaw/Controller.hh>
 #include <Berlin/ScreenImpl.hh>
-#include <Berlin/FocusImpl.hh>
+#include <Berlin/PositionalFocus.hh>
+#include <Berlin/NonPositionalFocus.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/GGI.hh>
 #include <Berlin/Pointer.hh>
@@ -38,17 +39,15 @@ class EventManager
 public:
   EventManager(ScreenImpl *);
   ~EventManager();
-  void requestFocus(Controller_ptr);
   void nextEvent();
   void damage(Region_ptr);
-  void dispatch(const Event::Pointer &);
-  void dispatch(const Event::Key &);
 private:
   long ptrPositionX;
   long ptrPositionY;
   ScreenImpl *screen;
   GGI::Drawable *drawable;
-  Impl_var<FocusImpl>  focus;
+  Impl_var<PositionalFocus> pfocus;
+  Impl_var<NonPositionalFocus> npfocus;
 };
 
 #endif /* _EventManager_hh */
