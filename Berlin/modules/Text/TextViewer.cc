@@ -50,9 +50,11 @@ void TextViewer::init()
     {
       single[0] = (*u)[i];
       Graphic_var child = kit->chunk(single);
-      edge_t edge(Graphic::_duplicate(child), tag());
+      Edge edge;
+      edge.parent = Graphic::_duplicate(child);
+      edge.id = tag();
       children.insert(children.begin() + i, edge);
-      child->addParent(Graphic_var(_this()), edge.second);
+      child->addParent(Graphic_var(_this()), edge.id);
     }
 }
 
