@@ -68,7 +68,8 @@ int main(int argc, char **argv)
   std::string value;
   if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
 
-  ServerImpl *server = ServerImpl::instance();
+  CORBA::PolicyList policies;
+  ServerImpl *server = ServerImpl::create(policies);
 
   Prague::Path path = RCManager::get_path("modulepath");
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
