@@ -133,11 +133,17 @@ void exec_child(Fork*& child, std::string& value) /*fold00*/
 
       // FIXME: Where should we log this to?
       std::ostringstream oss;
-      oss << "Starting client \"" << args[0];
+      oss << "Starting client ";
+      char fill_char = '\"';
       for (std::vector<char *>::const_iterator i = args.begin();
-           i != args.end();
-           ++i) oss << " " << *i;
-      oss << std::endl;
+           i != args.end() && 0 != *i;
+           ++i)
+      {
+	   std::string tmp(*i);
+	   oss << fill_char << tmp;
+           fill_char = ' ';
+      }
+      oss << "\"" << std::endl;
       Logger::log(Logger::loader) << oss.str();
 
       // Execute command
