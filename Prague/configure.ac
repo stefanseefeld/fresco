@@ -33,6 +33,14 @@ AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
+
+dnl ------------------------------------------------------------------
+dnl Environment (this needs to go before AC_LANG_CPLUSPLUS)
+dnl ------------------------------------------------------------------
+
+AC_HEADER_STDC
+AC_CHECK_FUNCS(getenv putenv setenv unsetenv)
+
 AC_LANG_CPLUSPLUS
 
 dnl ------------------------------------------------------------------
@@ -106,13 +114,6 @@ if test -z "$no_dev_ptmx" ; then
   AC_CHECK_FILE("/dev/ptmx", [AC_DEFINE(HAVE_DEV_PTMX, 1, [Define if you have /dev/ptmx.]) have_dev_ptmx=1])
 fi
 AC_CHECK_FILE("/dev/ptc", [AC_DEFINE(HAVE_DEV_PTS_AND_PTC, 1, [Define if you have /dev/ptc.]) have_dev_ptc=1])
-
-dnl ------------------------------------------------------------------
-dnl Environment
-dnl ------------------------------------------------------------------
-
-AC_HEADER_STDC
-AC_CHECK_FUNCS(getenv putenv setenv unsetenv)
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
