@@ -33,10 +33,13 @@ DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr 
     clipping(Region::_duplicate(r)),
     id(new TransformImpl)
 {
-  id->_obj_is_ready(_boa());
- /*
-  * initialize the different drawing kit attributes
-  */
+  init();
+}
+
+void DrawTraversalImpl::init() {
+  /*
+   * initialize the different drawing kit attributes
+   */
   drawing->saveState();
   drawing->clipping(clipping);
   Color black = {0., 0., 0., 1.};

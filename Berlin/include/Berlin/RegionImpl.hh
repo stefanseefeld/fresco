@@ -57,6 +57,9 @@ public:
   virtual void origin(Vertex &);
   virtual void span(Axis, Region::Allotment &);
   virtual void outline(Path *&);
+
+  void clear();
+
 public:
   void normalize(Vertex &);
   void normalize(TransformImpl *);

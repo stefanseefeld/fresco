@@ -26,6 +26,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Berlin/TraversalImpl.hh>
+#include <Berlin/ImplVar.hh>
 #include <vector>
 
 declare_corba_ptr_type(DrawingKit)
@@ -44,11 +45,12 @@ public:
   virtual order direction() { return up;}
   virtual CORBA::Boolean ok() { return true;}
   virtual DrawingKit_ptr kit();
+  void init();
 private:
   DrawingKit_var drawing;
 //   Drawable_var drawable;
   Region_var clipping;
-  TransformImpl *id;
+  Impl_var<TransformImpl> id;
 };
 
 #endif /* _DrawTraversalImpl_hh */

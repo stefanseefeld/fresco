@@ -47,7 +47,9 @@ STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Button.idl \
 	  Metrics.idl \
 	  Raster.idl \
-	  Desktop.idl Window.idl 
+	  Desktop.idl Window.idl  
+#\
+#	  Registrar.idl
 LCINT	= LifeCycle.idl Cloneable.idl DrawingKit.idl FigureKit.idl LayoutKit.idl CommandKit.idl \
 	  WidgetKit.idl TextKit.idl ImageKit.idl DesktopKit.idl
 

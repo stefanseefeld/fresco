@@ -62,6 +62,7 @@ RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
 RegionImpl::~RegionImpl() {}
 
 CORBA::Boolean RegionImpl::defined() { return valid;}
+void RegionImpl::clear() { valid = false;}
 
 CORBA::Boolean RegionImpl::contains(const Vertex &v)
 {

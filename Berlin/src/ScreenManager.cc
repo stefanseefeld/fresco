@@ -21,7 +21,6 @@
  */
 
 #include "Berlin/ScreenManager.hh"
-#include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/EventManager.hh"
@@ -37,55 +36,46 @@ using namespace Prague;
 ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, DrawingKit_ptr d)
   : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(GGI::drawable())
 {}
+
 ScreenManager::~ScreenManager() {}
 void ScreenManager::damage(Region_ptr r)
 {
-  SectionLog section("ScreenManager::damage");
   MutexGuard guard(mutex);
-  RegionImpl *region = new RegionImpl(r);
-  region->_obj_is_ready(CORBA::BOA::getBOA());
-  damages.push_back(region);
-  Logger::log(Logger::drawing) << "ScreenManager::damage region " << *region << endl;
+  theDamage->mergeUnion(r);
   drawable->wakeup();
 }
 
 void ScreenManager::repair()
 {
-  SectionLog section("ScreenManager::repair");
   mutex.lock();
-  dlist_t tmp = damages;
-  damages.erase(damages.begin(), damages.end());
+  tmpDamage->copy(theDamage);
+  theDamage->clear();
   mutex.unlock();
-  
-  for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
-    {
-      Prague::Profiler prf("ScreenManager::redraw cycle");
-      Logger::log(Logger::drawing) << "repairing region " << **i << endl;
-//       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
-      emanager->restore(Region_var((*i)->_this()));
-      DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
- 							   Region_var((*i)->_this()),
- 							   Transform_var(Transform::_nil()),
- 							   drawing);
-      traversal->_obj_is_ready(CORBA::BOA::getBOA());
-      screen->traverse(Traversal_var(traversal->_this()));
-      traversal->_dispose();
-      emanager->damage(Region_var((*i)->_this()));
-      (*i)->_dispose();
-    }
+  emanager->restore(Region_var(tmpDamage->_this()));
+  traversal->init();
+  screen->traverse(Traversal_var(traversal->_this()));
+  emanager->damage(Region_var(tmpDamage->_this()));
   drawing->flush();
   drawable->flush();
 }
 
 void ScreenManager::run()
 {
+
+  theDamage = new RegionImpl;
+  tmpDamage = new RegionImpl;
+  traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
+				    Region_var(tmpDamage->_this()),
+				    Transform_var(Transform::_nil()),
+				    drawing);
+  
   Prague::Time last;
   while (true)
     {
       mutex.lock();
-      size_t damage = damages.size();
+      bool haveDamage = theDamage->defined();
       mutex.unlock();
-      if (damage > 0)
+      if (haveDamage)
 	{
 	  Prague::Time current = Prague::Time::currentTime();
 	  if (current > last + Prague::Time(33))

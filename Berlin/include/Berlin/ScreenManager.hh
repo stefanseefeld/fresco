@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 2000 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -28,7 +29,9 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/GGI.hh>
+#include <Berlin/ImplVar.hh>
 #include <Berlin/EventManager.hh>
+#include <Berlin/DrawTraversalImpl.hh>
 #include <vector>
 
 class ScreenImpl;
@@ -36,7 +39,6 @@ class RegionImpl;
 
 class ScreenManager
 {
-  typedef vector<RegionImpl *> dlist_t;
 public:
   ScreenManager(ScreenImpl *, EventManager *, DrawingKit_ptr);
   ~ScreenManager();
@@ -49,7 +51,9 @@ private:
   EventManager *emanager;
   DrawingKit_var drawing;
   GGI::Drawable *drawable;
-  dlist_t damages;
+  Impl_var<RegionImpl> theDamage;
+  Impl_var<RegionImpl> tmpDamage;
+  Impl_var<DrawTraversalImpl> traversal;
   Prague::Mutex mutex;
 };
 
