@@ -30,15 +30,15 @@ RasterImpl::RasterImpl(const char *file) : rows(0)
 {
   rows = png.read(file);
 
-  if (!rows) {
-     string pngfile = getenv("BERLIN_DATA");
-     pngfile.append("/PNG/berlin-128.png");
-
-     if (pngfile.empty()) {
-        cerr << "Please run demos with the \'runtest.sh\' script" << endl;
-        exit(-1);
-     }
-     
+  if (!rows)
+    {
+      string pngfile = getenv("BERLIN_ROOT");
+      pngfile += "/etc/PNG/berlin-128.png";
+      if (pngfile.empty())
+	{
+	  cerr << "Please set environment variable BERLIN_ROOT first" << endl;
+	  exit(-1);
+	}
      rows = png.read(pngfile);
   }
 }

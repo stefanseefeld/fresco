@@ -47,10 +47,15 @@ GLUnifont::GLUnifont() : rendered(65536)
 {
     myDescriptor.pointsize = 16;
     myDescriptor.name = UNIFY("GNU Unifont");
-    char *glyphdbName = getenv("GLYPH_DB");
-    if (Db::open(glyphdbName, DB_BTREE, DB_RDONLY|DB_NOMMAP, 0644, NULL, NULL,&glyphdb) == DB_RUNRECOVERY) {
+    char *env = getenv("BERLIN_ROOT");
+    if (!env)
+      {
+	cerr << "Please set environment variable BERLIN_ROOT first" << endl;
+	exit(-1);
+      }
+    string glyphDB = string(env) + "/etc/glyphs.db";
+    if (Db::open(glyphDB.c_str(), DB_BTREE, DB_RDONLY|DB_NOMMAP, 0644, NULL, NULL,&glyphdb) == DB_RUNRECOVERY)
       perror("Unifont initialization");
-    }
     myDisplaylistOffset = glGenLists(65536);
 }
 
