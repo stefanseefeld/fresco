@@ -30,7 +30,6 @@ namespace Prague
 
 class ptybuf : public ipcbuf
 {
-  class backup;
 public:
   ptybuf();
   virtual ~ptybuf();
@@ -41,9 +40,8 @@ public:
   void setup();
 protected:
   std::string ptydev;
-  std::string ttydev;
 private:
-  backup *save;
+  int pty;
 };
 
 };

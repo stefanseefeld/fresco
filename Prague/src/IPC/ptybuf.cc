@@ -2,6 +2,8 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
+ * Copyright (C) 2001 Bastian Blank <bastianb@gmx.de> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -28,54 +30,29 @@
 #include <termios.h>
 #include <Prague/Sys/Thread.hh>
 
-#if defined(__linux__) || defined(__FreeBSD__) // XXX: should use configure
-#  define __bsd44__
-#elif defined(__sgi__)
-#  define __svr4__
-#endif
-
 using namespace Prague;
 
-inline char ctrl(char c) { return c & 0x1f;}
+#if defined(HAVE__GETPTY) || defined(HAVE_OPENPTY)
+#undef HAVE_DEV_PTMX
+#endif
 
-class ptybuf::backup
-{
-public:
-  backup(int fd)
-    {
-      /*
-      fstat(fd, &mode);
-      tcgetattr (fd, &tios);
-      uid = geteuid();
-      gid = getegid();
-      */
-    };
-  struct stat mode;
-  struct termios tios;
-  uid_t uid;
-  gid_t gid;
-};
+#ifdef HAVE_PTY_H
+# include <pty.h>
+#endif
+#if defined(HAVE_DEV_PTMX) && defined(HAVE_SYS_STROPTS_H)
+# include <sys/stropts.h>
+#endif
+
+//inline char ctrl(char c) { return c & 0x1f;}
 
 ptybuf::ptybuf()
-  : ipcbuf(std::ios::in|std::ios::out), save(0)
-{
-  ptydev[0] = ttydev[0] = '\0';
-}
+: ipcbuf ( std::ios::in | std::ios::out ), pty ( -1 )
+{ }
 
 ptybuf::~ptybuf()
 {
-//   fclose(ptystream);
-  if (save && fd() != -1)
-    {
-      /*
-      seteuid(save->uid);
-      setegid(save->gid);
-      chmod(ptydev, save->mode.st_mode);
-      chown(ptydev, save->mode.st_uid, save->mode.st_gid);
-      tcsetattr (fd(), TCSANOW, &save->tios);
-      */
-    }
-  delete save;
+  if ( pty =! -1 )
+    close ( pty );
 }
 
 std::streamsize ptybuf::sys_read(char *buf, std::streamsize len)
@@ -88,16 +65,189 @@ std::streamsize ptybuf::sys_read(char *buf, std::streamsize len)
   return rval;
 }
 
-void ptybuf::setup()
+int ptybuf::openpty ()
 {
-//   ptystream = fdopen(fd(), "r+");
-  if (!save) save = new backup(fd());
+  if ( pty == -1 )
+    setup ();
+  return pty;
 }
 
-#if defined __bsd44__
-#include "ptybuf.bsd44.cc"
-#elif defined __svr4__
-#include "ptybuf.svr4.cc"
-#else
-#error sorry, ptybuf not yet implemented for this architecture
-#endif
+int ptybuf::opentty ()
+{
+  if ( pty == -1 )
+    setup ();
+  if ( pty == -1 )
+    return fd ();
+  else
+    return -1;
+}
+
+void ptybuf::setup  ()
+{
+  int ttyfd;
+  int ptyfd;
+  char * name;
+
+#if defined(HAVE_OPENPTY) || defined(BSD4_4)
+  /* openpty(3) exists in OSF/1 and some other os'es */
+  int i;
+
+  i = ::openpty ( &ptyfd, &ttyfd, NULL, NULL, NULL );
+
+  if ( i < 0 )
+  {
+    perror ( "openpty" );
+    return;
+  }
+
+  fd ( ttyfd );
+  pty = ptyfd;
+  ptydev = ttyname ( ptyfd );
+#else /* HAVE_OPENPTY */
+  #ifdef HAVE__GETPTY
+  /*
+   * _getpty(3) exists in SGI Irix 4.x, 5.x & 6.x -- it generates more
+   * pty's automagically when needed
+   */
+
+  name = _getpty ( &ptyfd, O_RDWR, 0622, 0 );
+  if ( ! name )
+  {
+    perror ( "_getpty" );
+    return;
+  }
+
+  /* Open the slave side. */
+  ttyfd = open ( name, O_RDWR | O_NOCTTY );
+
+  if ( ttyfd < 0 )
+  {
+    perror ( name );
+    close ( ptyfd );
+    return;
+  }
+
+  fd ( ttyfd );
+  pty = ptyfd;
+  ptydev = name;
+  #else /* HAVE__GETPTY */
+    #ifdef HAVE_DEV_PTMX
+  /*
+   * This code is used e.g. on Solaris 2.x.  (Note that Solaris 2.3
+   * also has bsd-style ptys, but they simply do not work.)
+   */
+  int ptm;
+  mysig_t old_signal;
+
+  ptyfd = open ( "/dev/ptmx", O_RDWR | O_NOCTTY );
+
+  if ( ptyfd < 0 )
+  {
+    perror ( "/dev/ptmx" );
+    return;
+  }
+
+  old_signal = mysignal ( SIGCHLD, SIG_DFL );
+
+  if ( grantpt ( ptyfd ) < 0 )
+  {
+    perror ( "grantpt" );
+    return;
+  }
+
+  mysignal ( SIGCHLD, old_signal );
+
+  if ( unlockpt ( ptyfd ) < 0 )
+  {
+    perror ( "unlockpt" );
+    return;
+  }
+
+  /* Open the slave side. */
+  ttyfd = open ( name, O_RDWR | O_NOCTTY );
+
+  if ( ttyfd < 0 )
+  {
+    perror ( name );
+    close ( ptyfd );
+    return;
+  }
+
+  fd ( ttyfd );
+  pty = ptyfd;
+  ptydev = ptsname ( ptm );
+    #else /* HAVE_DEV_PTMX */
+      #ifdef HAVE_DEV_PTS_AND_PTC
+  /* AIX-style pty code. */
+
+  ptyfd = open ( "/dev/ptc", O_RDWR | O_NOCTTY );
+
+  if ( ptyfd < 0 )
+  {
+    perror ( "Could not open /dev/ptc" );
+    return;
+  }
+
+  name = ttyname ( ptyfd );
+
+  ttyfd = open ( name, O_RDWR | O_NOCTTY );
+
+  if ( ttyfd < 0 )
+  {
+    perror ( name );
+    close ( ptyfd );
+    return;
+  }
+
+  fd ( ttyfd );
+  pty = ptyfd;
+  ptydev = name;
+      #else /* HAVE_DEV_PTS_AND_PTC */
+  /* BSD-style pty code. */
+  char buf1[64];
+  char buf2[64];
+  int i;
+  const char *ptymajors = "pqrstuvwxyzabcdefghijklmnoABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const char *ptyminors = "0123456789abcdef";
+  int num_minors = strlen ( ptyminors );
+  int num_ptys = strlen ( ptymajors ) * num_minors;
+
+  for ( i = 0; i < num_ptys; i++ )
+  {
+    snprintf ( buf1, sizeof buf1, "/dev/pty%c%c", ptymajors[i / num_minors], ptyminors[i % num_minors]);
+    snprintf ( buf2, sizeof buf2, "/dev/tty%c%c", ptymajors[i / num_minors], ptyminors[i % num_minors]);
+
+    ptyfd = open ( buf1, O_RDWR | O_NOCTTY );
+
+    if ( ptyfd < 0 )
+    {
+      /* Try SCO style naming */
+      snprintf ( buf1, sizeof buf1, "/dev/ptyp%d", i );
+      snprintf ( buf2, sizeof buf2, "/dev/ttyp%d", i );
+
+      ptyfd = open ( buf1, O_RDWR | O_NOCTTY );
+
+      if ( ptyfd < 0 )
+        continue;
+    }
+
+    /* Open the slave side. */
+    ttyfd = open ( buf2, O_RDWR | O_NOCTTY );
+
+    if ( ttyfd < 0 )
+    {
+      perror ( buf2 );
+      close ( ptyfd );
+      return;
+    }
+
+    fd ( ttyfd );
+    pty = ptyfd;
+    ptydev = buf1;
+  }
+      #endif /* HAVE_DEV_PTS_AND_PTC */
+    #endif /* HAVE_DEV_PTMX */
+  #endif /* HAVE__GETPTY */
+#endif /* HAVE_OPENPTY */
+}
+

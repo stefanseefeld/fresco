@@ -89,6 +89,35 @@ dnl IPC support
 dnl ------------------------------------------------------------------
 AC_MSG_PART(IPC Implementation)
 BERLIN_LIB_SOCKET
+AC_CHECK_LIB(util, login, LIBS="$LIBS -lutil")
+AC_CHECK_HEADERS(pty.h sys/stropts.h)
+AC_CHECK_FUNCS(openpty _getpty)
+
+dnl won't work without AC_CANONICAL_HOST
+dnl 
+dnl case "$host" in
+dnl *-*-linux*)
+dnl 	no_dev_ptmx=1
+dnl 	;;
+dnl *-*-sco3.2v4*)
+dnl 	no_dev_ptmx=1
+dnl 	;;
+dnl *-*-sco3.2v5*)
+dnl 	no_dev_ptmx=1
+dnl 	;;
+dnl esac
+dnl 
+dnl complete disable
+no_dev_ptmx=1
+
+if test -z "$no_dev_ptmx" ; then
+	AC_CHECK_FILE("/dev/ptmx", [
+		AC_DEFINE_UNQUOTED(HAVE_DEV_PTMX)
+		have_dev_ptmx=1])
+fi
+AC_CHECK_FILE("/dev/ptc", [
+	AC_DEFINE_UNQUOTED(HAVE_DEV_PTS_AND_PTC)
+	have_dev_ptc=1])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
