@@ -180,7 +180,12 @@ class Connection:
 
         # Try with $FRESCO_DISPLAY
         if stringified_ior != "":
-            object = self.orb.string_to_object(stringified_ior)
+	    try:
+                object = self.orb.string_to_object(stringified_ior)
+	    except:
+		print >> sys.stderr, "WARNING: Server reference " \
+		  "from environment-variable is invalid.\n" \
+		  "Trying other methods."
         else:
             # Try with other methods
             if export_ref == "nameserver":
@@ -214,13 +219,35 @@ class Connection:
                       "published using another method; try the -R option." \
                       % ior_filename
                     sys.exit(1)
-                object = self.orb.string_to_object(stringified_ior)
+		try:
+                    object = self.orb.string_to_object(stringified_ior)
+		except:
+		    print >> sys.stderr, "ERROR: Server reference is invalid."
+		    sys.exit(1)
                 ior_file.close()
                 del ior_file
-        self.server = object._narrow(Fresco.Server)
-        self.context  = self.server.create_server_context(self.clientContext)
-        #print "Got Server var =",self.server
-        #print "Client Context var =",self.clientContext
+	try:
+            self.server = object._narrow(Fresco.Server)
+#        print "Got Server var =",self.server
+        except: 
+            print >> sys.stderr, "ERROR: Reference supplied is not a server."
+            sys.exit(1)
+        try:
+            self.context = self.server.create_server_context(self.clientContext)
+#            print "Client Context var =",self.clientContext
+	except:
+	    print >> sys.stderr, "ERROR: Server reference is valid, " \
+              "but this server cannot be contacted.\n" \
+              "This server may have terminated or is suspended.\n" \
+              "If this is the case, restart or resume the server and " \
+              "try again.\n" \
+              "Alternatively the most recent valid server reference " \
+              "may have been published\n" \
+              "using a different method, in a different place or under " \
+              "another name.\n" \
+              "If this is the case, try using different parameters to the " \
+              "-R, -I or -i options.\n"
+	    sys.exit(1)
 
 class KBThread (threading.Thread):
     """A thread that waits for the user to hit enter, and then signals an
