@@ -81,7 +81,7 @@ AC_ARG_ENABLE(perl-clients,
 AC_ARG_ENABLE(docs,
 	[  --enable-docs           Build the documentation],[
 	enable_docs="$enableval"],[
-	enable_docs=yes])
+	enable_docs=no])
 AC_ARG_ENABLE(complete-deps,
 	[  --disable-complete-deps Use a faster, but less correct, dependency generator],[
 	enable_complete_deps="$enableval"],[
