@@ -89,6 +89,7 @@ $(TARGET):	$(OBJ)
 Makefile:	$(cpath)/Makefile.in $(cpath)/config.status
 		cd $(cpath); ./config.status
 
-$(cpath)/config.status:	$(cpath)/configure
-		cd $(cpath); ./config.status --recheck
+$(cpath)/config.status:
+		($(cpath)/configure
+		cd $(cpath) && ./config.status --recheck)
 
