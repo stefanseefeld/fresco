@@ -6,10 +6,16 @@ it. It's a *developers* release. If you want to help develop berlin,
 you can work off this release with some modicum of confidence and
 convenience. 
 
-If you're unpacked the entire source tree, you should be able to run
+If you're unpacked the entire source tree, you should be able to run:
 
-config/configure
-make
+For bash:
+# export LD_LIBRARY_PATH=`pwd`/lib
+
+For csh:
+# setenv LD_LIBRARY_PATH `pwd`/lib
+
+# make config
+# make
 
 with little difficulty. When (if) the build finishes, the berlin
 display server "berlin" will be in the /bin directory, and a program
