@@ -73,9 +73,10 @@ bool NonPositionalFocus::request(Controller_ptr c)
   /*
    * ...add the new controllers,...
    */
+  Focus_var __this = _this ();
   for (; nf != tmp.end(); nf++)
     {
-      (*nf)->receive_focus(Focus_var(_this()));
+      (*nf)->receive_focus (__this);
       controllers.push_back(*nf);
     }
   return true;
