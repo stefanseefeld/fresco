@@ -35,7 +35,7 @@ test_class_root = ("SyUnit", "TestCase")
 ignore_methods = ("set_up", "tear_down")
 
 """Illegal test names."""
-bad_names = ("all")
+bad_names = ("all",)
 
 test_file_tmpl = """\
 /* This file was automatically generated.  Do not edit! */
@@ -108,12 +108,12 @@ class FindTestsVisitor(AST.Visitor):
         # figure out if this class inherits from base_class
         # probably this will broken on embedded classes -- how do we tell when
         # we exit a class scope?
-        file_name = node.file()
+        file_name = node.file().filename()
         class_name = "::".join(node.name())
         parent_names = [n.parent().name() for n in node.parents()]
-        print "Parent names of class %s (in %s): %s" % (class_name,
-                                                        file_name,
-                                                        `parent_names`)
+        #print "Parent names of class %s (in %s): %s" % (class_name,
+        #                                                file_name,
+        #                                                `parent_names`)
         if self.base_class in parent_names:
             #print "Ah-hah, gotcha!"
             self.in_test_class = 1
@@ -184,8 +184,9 @@ def main():
     if len(sys.argv) != 3:
         usage()
         return
-#    fill_template_from_ast(AST.load(sys.argv[1]), open(sys.argv[2], "w"))
-    fill_template_from_ast(AST.load(sys.argv[1]), sys.stdout)
+    fill_template_from_ast(AST.load(sys.argv[1]), open(sys.argv[2], "w"))
+# useful for debugging:
+#    fill_template_from_ast(AST.load(sys.argv[1]), sys.stdout)
 
 if __name__ == "__main__":
     main()
