@@ -276,23 +276,20 @@ public:
   virtual Guard read_buffer()
   {
     Trace trace("SDLDirectBuffer::read_buffer()");
-    Guard guard(drawable,
+    Guard guard(drawable(),
 		static_cast<Console::Drawable::data_type *>
-		(drawable->surface()->pixels));
+		(drawable()->surface()->pixels));
     return guard;
   }
 
   virtual Guard write_buffer()
   {
     Trace trace("SDLDirectBuffer::write_buffer()");
-    Guard guard(drawable,
+    Guard guard(drawable(),
 		static_cast<Console::Drawable::data_type *>
-		(drawable->surface()->pixels));
+		(drawable()->surface()->pixels));
     return guard;
   }
-
-private:
-  SDLDrawable *drawable;
 };
 
 
@@ -358,10 +355,6 @@ public:
   virtual ~SDLGLContext()
   {
     Trace trace("SDLGLContext::~SDLGLContext()");
-
-    glCopyPixels_ptr = 0;
-    glDrawBuffer_ptr = 0;
-    glReadBuffer_ptr = 0;
   }
 
   void flush() {
@@ -372,7 +365,7 @@ public:
     glReadBuffer_ptr(0x405); // GL_BACK
     glDrawBuffer_ptr(0x404); // GL_FRONT
     glCopyPixels_ptr(0, 0, drawable()->width(), drawable()->height(),
-		     0x1800); // GL_COLOR
+                     0x1800); // GL_COLOR
     glReadBuffer_ptr(0x404);
     glDrawBuffer_ptr(0x405);
   }
