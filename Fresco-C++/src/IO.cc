@@ -76,14 +76,18 @@ std::ostream &operator << (std::ostream &os, const Region::Allotment &a)
 
 std::ostream &operator << (std::ostream &os, Region_ptr r)
 {
-  Region::Allotment a;
-  os << "X(";
-  r->span(xaxis, a);
-  os << a << "), Y(";
-  r->span(yaxis, a);
-  os << a << "), Z(";
-  r->span(zaxis, a);
-  os << a << ')';
+  if (!r->defined()) os << "undef";
+  else
+    {
+      Region::Allotment a;
+      os << "X(";
+      r->span(xaxis, a);
+      os << a << "), Y(";
+      r->span(yaxis, a);
+      os << a << "), Z(";
+      r->span(zaxis, a);
+      os << a << ')';
+    }
   return os;
 }
 
