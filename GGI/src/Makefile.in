@@ -68,3 +68,8 @@ else
 clean:
 	@echo "Noting to clean up."
 endif
+
+distclean:	clean
+		rm -f Makefile
+
+maintainer-clean: distclean
