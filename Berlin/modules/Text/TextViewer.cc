@@ -3,6 +3,7 @@
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Nathaniel Smith <njs@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -36,10 +37,30 @@ TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Co
   Trace trace("TextViewer::TextViewer");
 }
 
+// FIXME: move all this to the constructor when we go to POA
+void TextViewer::init()
+{
+  MutexGuard guard(childMutex);
+  Trace trace("TextViewer::init");
+  Unistring *u = buffer->value();
+  CORBA::ULong len = u->length();
+  Unistring single;
+  single.length(1);
+  for (unsigned long i = 0; i < len; i++)
+    {
+      single[0] = (*u)[i];
+      Graphic_var child = kit->chunk(single);
+      edge_t edge(Graphic::_duplicate(child), tag());
+      children.insert(children.begin() + i, edge);
+      child->addParent(Graphic_var(_this()), edge.second);
+    }
+}
+
 TextViewer::~TextViewer() {}
 
 void TextViewer::update(const CORBA::Any &a) 
 {
+  Trace trace1("TextViewer::update");
   TextBuffer::Change *ch;  
   if (a >>= ch)
     {
@@ -47,6 +68,7 @@ void TextViewer::update(const CORBA::Any &a)
 	{
 	case TextBuffer::insert:
 	  {
+            Trace trace2("TextViewer::update - insert");
 	    MutexGuard guard(childMutex);
 	    Unistring *u = buffer->getChars(ch->pos, (CORBA::ULong)ch->len);
 	    CORBA::ULong len = u->length();
@@ -65,6 +87,7 @@ void TextViewer::update(const CORBA::Any &a)
 	  
 	case TextBuffer::remove:
 	  {
+            Trace trace2("TextViewer::update - remove");
 	    MutexGuard guard(childMutex);
 	    unsigned long start = min(ch->pos, static_cast<CORBA::ULong>(children.size()));
 	    unsigned long end = min(ch->pos + ch->len, static_cast<CORBA::ULong>(children.size()));
@@ -75,6 +98,7 @@ void TextViewer::update(const CORBA::Any &a)
 	  }	
 	  break;
 	case TextBuffer::cursor:
+          Trace trace2("TextViewer::update - cursor");
 	  // we'll do some cursor-ish stuff someday
 	  break;
 	}

@@ -81,6 +81,7 @@ Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
 {
   Trace trace("TextKitImpl::simpleViewer");
   Impl_var<TextViewer> tv(new TextViewer(buf, TextKit_var(_this()), canonicalDK, lineCompositor));
+  tv->init(); // FIXME: we can get rid of this stuff when we switch to POA
   allocations.push_back(tv.get());
   buf->attach(tv.get());
   return tv.release()->_this();
@@ -88,7 +89,7 @@ Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
 
 Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
 {
-  Trace trace("TextKitImpl::simpleViewer");
+  Trace trace("TextKitImpl::terminal");
   Impl_var<TerminalView> tv(new TerminalView(buf, TextKit_var(_this()), canonicalDK, lineCompositor, pageCompositor));
   allocations.push_back(tv.get());
   buf->attach(tv.get());
