@@ -135,6 +135,8 @@ public:
   virtual void texture(Raster_ptr);
   virtual Raster_ptr texture() = 0;
 
+  virtual void flush() = 0;
+
   // font business
   virtual CORBA::ULong fontSize() = 0;
   virtual void fontSize(CORBA::ULong);
