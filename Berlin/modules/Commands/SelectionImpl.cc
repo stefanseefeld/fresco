@@ -157,11 +157,11 @@ struct Id_eq : public unary_function<SelectionImpl::Observer *, bool>
 
 Tag SelectionImpl::uniqueId()
 {
-  Tag id = 0;
-  do
-    if (find_if(items.begin(), items.end(), ::Id_eq(id)) == items.end())
+  Tag id;
+  for (id = 0;
+       find_if(items.begin(), items.end(), ::Id_eq(id)) != items.end();
+       id++);
       return id;
-  while(++id);
 }
 
 CORBA::Long SelectionImpl::idToIndex(Tag id)
