@@ -30,7 +30,8 @@ ALL_SUBTARGETS := 	BoundedValue.idl   Damage.idl	   LayoutKit.idl  Pencil.idl   
 			ClientContext.idl  Drawable.idl    LifeCycle.idl  Reactor.idl  Transform.idl \
 			Cloneable.idl	   DrawingKit.idl  Message.idl	  Region.idl   Traversal.idl \
 			Graphic.idl	   Metrics.idl	  Screen.idl   Types.idl	Text.idl \
-			Command.idl	   Grid.idl	   Naming.idl	  Subject.idl  WidgetKit.idl 
+			CommandKit.idl	   Grid.idl	   Naming.idl	  Subject.idl  WidgetKit.idl  \
+			Event.idl
 
 IDLSRCS := Naming.idl $(ALL_SUBTARGETS) 
 SO_TARGET := libwarsaw.so 

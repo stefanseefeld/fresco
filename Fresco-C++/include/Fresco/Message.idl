@@ -26,8 +26,6 @@
 
 #include <Types.idl>
 
-interface MessageListener;
-
 // a message is a prioritized payload. gets passed around between
 // various objects.  there is an additional headers field for embedding
 // hints to the message listener about which messages to dispose of
@@ -59,6 +57,5 @@ struct SpatialVertexHeader {
 struct ExpiryHeader {
     Time expires;
 };
-
 
 #endif

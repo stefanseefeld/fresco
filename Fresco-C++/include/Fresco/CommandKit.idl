@@ -1,5 +1,5 @@
-#ifndef _Command_idl
-#define _Command_idl
+#ifndef _CommandKit_idl
+#define _CommandKit_idl
 
 //
 // $Id$
@@ -28,6 +28,7 @@ interface Command;
 
 #include <Message.idl>
 #include <Cloneable.idl>
+#include <Text.idl>
 
 // commands are objects which represent promises to do something.
 // you make a command and pass it to someone who doesn't know what
@@ -35,6 +36,19 @@ interface Command;
 
 interface Command : Cloneable {	
     void execute(in Message args);
+};
+
+interface CommandKit : Cloneable {
+
+    Command SendMessage(in Message msgToSend, in MessageListener recipient);
+    Command ForwardMessage(in MessageListener recipient);
+    Command ForwardByGeometry(in Widget recipient);
+    Command InsertText(in Text::Editor Buffer);
+    Command ExecuteAfterCompleteClick(in Command otherCmd, 
+				      in Graphic regionToWatch, 
+				      in unsigned long buttonNumber);
+    // more commands to follow in here
+
 };
 
 #endif

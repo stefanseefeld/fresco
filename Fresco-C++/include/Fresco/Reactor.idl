@@ -26,7 +26,8 @@
 
 #include <Cloneable.idl>
 #include <Message.idl>
-#include <Command.idl>
+
+interface Command;
 
 // anything which can accept a Message
 interface MessageListener : Cloneable {
