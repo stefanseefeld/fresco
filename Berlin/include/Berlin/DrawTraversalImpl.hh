@@ -29,6 +29,9 @@
 #include <Berlin/TraversalImpl.hh>
 #include <vector>
 
+//. The DrawTraversal walks the SceneGraph and 'makes it visible' by
+//. asking the DrawingKit to render the nodes as the Traversal
+//. passes through it.
 class DrawTraversalImpl : public virtual POA_Warsaw::DrawTraversal,
                           public TraversalImpl
 {
@@ -43,7 +46,11 @@ public:
   virtual Warsaw::Traversal::order direction();
   virtual CORBA::Boolean ok();
   virtual Warsaw::DrawingKit_ptr drawing();
+  //. Saves the DrawingKit's state and sets it to sane values for
+  //. the DrawTraversal.
+  //  FIXME: Why is the state changed _before_ it is saved?
   void init();
+  //. Restores the DrawingKit's state prior to the DrawTraversal.
   void finish();
 private:
   Warsaw::DrawingKit_var     _drawing;

@@ -30,8 +30,12 @@
 #include <Berlin/ImplVar.hh>
 #include <vector>
 
-//. synthesize events according to a global device and event descriptor map
-//. for now, device 0 is the keyboard, device 1 the mouse
+//. The Eventmanager keeps a list of Focus-Objects assoziated with Inputdevices.
+//. It queries these Devices through the Console and assoziates them to
+//. the Focus-Objects.
+
+//. For now we keep a list of global devices and a event descriptor map.
+//. Device 0 is the keyboard, device 1 the mouse.
 class EventManager
 {
   typedef std::vector<FocusImpl *> flist_t;
@@ -39,6 +43,8 @@ public:
   EventManager(Warsaw::Controller_ptr, Warsaw::Region_ptr);
   ~EventManager();
   bool request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  //. This method is polled by the ScreenManager. It qeries the Console
+  //. for new events and distributes them to the matching focus.
   void next_event();
   void restore(Warsaw::Region_ptr);
   void damage(Warsaw::Region_ptr);

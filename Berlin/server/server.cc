@@ -66,7 +66,7 @@ using namespace Warsaw;
 
 struct Dump : Signal::Notifier 
 {
-  void notify(int signo)
+  void notify(int signo) /*FOLD00*/
     {
       switch (signo)
 	{
@@ -92,7 +92,7 @@ struct Dump : Signal::Notifier
 
 //. Execute a client using the command in 'value'. The process is stored in
 //. client
-void exec_child(Fork*& child, std::string& value)
+void exec_child(Fork*& child, std::string& value) /*fold00*/
 {
   // Fork to create child process to execute client in
   child = new Fork(true, true);
@@ -110,10 +110,10 @@ void exec_child(Fork*& child, std::string& value)
 	}
       args.push_back(&*value.begin() + start);
       args.push_back(0);
-
+      
       // Execute command
       execvp(args[0], &*args.begin());
-
+      
       // Should not get here
       perror("client execvp");
       exit(1);
@@ -125,21 +125,31 @@ void exec_child(Fork*& child, std::string& value)
   child->suicide_on_signal(Signal::segv);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char **argv) /*FOLD00*/
 {
-  /*
-   * start with some administrative stuff...
-   */
+  // ---------------------------------------------------------------
+  // Setup signalhandling
+  // ---------------------------------------------------------------
+	
   Dump *dump = new Dump;
   Signal::set(Signal::usr2, dump);
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
+	
+  // ---------------------------------------------------------------
+  // Search for berlinrc
+  // ---------------------------------------------------------------
+	
   if (~prefix.empty()) RCManager::read(prefix + "/share/berlin/berlinrc");
-
   const char *rcfile = getenv("BERLINRC");
   if (rcfile) RCManager::read(Prague::Path::expand_user(rcfile));
   else RCManager::read(std::string(User().home()) + "/.berlin");
+	
+  // ---------------------------------------------------------------
+  // Parse commandline arguments
+  // ---------------------------------------------------------------
+  
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
@@ -195,120 +205,134 @@ int main(int argc, char **argv)
 #endif
 
   Fork *child = 0;
-  /*
-   * ...then start the ORB...
-   */
+  
+  // ---------------------------------------------------------------
+  // Setup CORBA
+  // ---------------------------------------------------------------
+	
   CORBA::ORB_var orb;
   try
     {
-      orb = CORBA::ORB_init(argc, argv);
-      PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
-      PortableServer::POAManager_var pman = poa->the_POAManager();
-      pman->activate();
-      Logger::log(Logger::corba) << "root POA is activated" << std::endl;
-
-      CORBA::PolicyList policies;
+       orb = CORBA::ORB_init(argc, argv);
+       PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+       PortableServer::POAManager_var pman = poa->the_POAManager();
+       pman->activate();
+       Logger::log(Logger::corba) << "root POA is activated" << std::endl;
+       
+       CORBA::PolicyList policies;
 #ifdef COLOCATION_OPTIMIZATION
 #  if defined(ORB_omniORB)
-      {
-	// create a POA for global objects derived from ServantBase
-	policies.length(2);
-	policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
-	CORBA::Any value;
-	value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
-	policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
-	poa = poa->create_POA("shortcut", pman, policies);
-
-	// create a policy list to be used by kit specific POAs
-	policies.length(1);
-	policies[0] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
-      }
+       {
+	 // create a POA for global objects derived from ServantBase
+	 policies.length(2);
+	 policies[0] = poa->create_implicit_activation_policy(PortableServer::IMPLICIT_ACTIVATION);
+	 CORBA::Any value;
+	 value <<= omniPolicy::LOCAL_CALLS_SHORTCUT; 
+	 policies[1] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
+	 poa = poa->create_POA("shortcut", pman, policies);
+	 
+	 // create a policy list to be used by kit specific POAs
+	 policies.length(1);
+	 policies[0] = orb->create_policy(omniPolicy::LOCAL_SHORTCUT_POLICY_TYPE, value);
+       }
 #  elif defined(ORB_TAO)
-
+       // fillin TAO-specific initialisation here...
 #  endif
 #endif
       
-      ServantBase::_default_POA(poa);
-      Console::open(argc, argv, poa);
+       ServantBase::_default_POA(poa);
+       
+       // ---------------------------------------------------------------
+       // Open the Console
+       // ---------------------------------------------------------------
       
-      Logger::log(Logger::console) << "console is initialized" << std::endl;
+       Console::open(argc, argv, poa);
+       
+       Logger::log(Logger::console) << "console is initialized" << std::endl;
+       
+       // ---------------------------------------------------------------
+       // Construct Server
+       // ---------------------------------------------------------------
+       
+       ServerImpl *server = ServerImpl::create(policies);
+       
+       Prague::Path path = RCManager::get_path("modulepath");
+       for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+	   server->scan(*i);
+       Logger::log(Logger::loader) << "modules are loaded" << std::endl;
+       
+       // ---------------------------------------------------------------
+       // Setup default DrawingKit
+       // ---------------------------------------------------------------
+       
+       Kit::PropertySeq props;
+       props.length(1);
+       props[0].name = CORBA::string_dup("implementation");
+       value = "";
+       getopt.get("drawing", &value);
+       if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
+       else props[0].value = CORBA::string_dup("LibArtDrawingKit");
+       DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:Warsaw/DrawingKit:1.0", props, poa);
+       if (CORBA::is_nil(drawing))
+	 {
+	   std::cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0"
+		     << " with attribute " << props[0].name << '=' << props[0].value << std::endl;
+	   return -1;
+	 }
+       
+       Logger::log(Logger::drawing) << "drawing system is built" << std::endl;
+      
+       // ---------------------------------------------------------------
+       // make a Screen graphic to hold this server's scene graph
+       // ---------------------------------------------------------------
+       
+       ScreenImpl *screen = new ScreenImpl();
+       EventManager *emanager = new EventManager(Controller_var(screen->_this()), screen->allocation());
+       ScreenManager *smanager = new ScreenManager(Graphic_var(screen->_this()), emanager, drawing);
+       screen->bind_managers(emanager, smanager);
 
-      /*
-       * ...and finally construct the server.
-       */
-      ServerImpl *server = ServerImpl::create(policies);
-
-      Prague::Path path = RCManager::get_path("modulepath");
-      for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
-	server->scan(*i);
-
-      Logger::log(Logger::loader) << "modules are loaded" << std::endl;
-
-      Kit::PropertySeq props;
-      props.length(1);
-      props[0].name = CORBA::string_dup("implementation");
-      value = "";
-      getopt.get("drawing", &value);
-      if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
-      else props[0].value = CORBA::string_dup("LibArtDrawingKit");
-      DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:Warsaw/DrawingKit:1.0", props, poa);
-      if (CORBA::is_nil(drawing))
-	{
-	  std::cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0" << " with attribute "
-		    << props[0].name << '=' << props[0].value << std::endl;
-	  return -1;
-	}
+       props.length(0);
+       LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
+       Layout::Stage_var stage = layout->create_stage();
+       DesktopImpl *desktop = new DesktopImpl(stage);
+       screen->body(Desktop_var(desktop->_this()));
+       screen->append_controller(Desktop_var(desktop->_this()));
+       
+       Logger::log(Logger::layout) << "desktop is created" << std::endl;
+       
+       // initialize the client listener
+       server->set_singleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
+       server->set_singleton("IDL:Warsaw/DrawingKit:1.0", drawing);
+       server->start();
       
-      Logger::log(Logger::drawing) << "drawing system is built" << std::endl;
-      
-      // make a Screen graphic to hold this server's scene graph
-      ScreenImpl *screen = new ScreenImpl();
-      EventManager *emanager = new EventManager(Controller_var(screen->_this()), screen->allocation());
-      ScreenManager *smanager = new ScreenManager(Graphic_var(screen->_this()), emanager, drawing);
-      screen->bind_managers(emanager, smanager);
-      props.length(0);
-      ToolKit_var tools = server->resolve<ToolKit>("IDL:Warsaw/ToolKit:1.0", props, poa);
-      LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
-      Layout::Stage_var stage = layout->create_stage();
-      DesktopImpl *desktop = new DesktopImpl(stage);
-      screen->body(Desktop_var(desktop->_this()));
-      screen->append_controller(Desktop_var(desktop->_this()));
-      
-      Logger::log(Logger::layout) << "desktop is created" << std::endl;
-      
-      // initialize the client listener
-      server->set_singleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
-      server->set_singleton("IDL:Warsaw/DrawingKit:1.0", drawing);
-      server->start();
-      
-      Logger::log(Logger::layout) << "started server" << std::endl;
-      try
-	{
-	  bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
-	} 
-      catch (CORBA::COMM_FAILURE)
-	{
-	  std::cerr << "CORBA communications failure finding Warsaw." << std::endl
-		    << "Are you sure the name service is running?" << std::endl;
-	  return -1;
-	}
-      catch (...)
-	{
-	  std::cerr << "Unknown exception finding Warsaw" << std::endl;
-	  return -1;
-	}
-
-      Logger::log(Logger::corba) << "listening for clients" << std::endl;
-      // initialize the event distributor and draw thread
-      Logger::log(Logger::corba) << "event manager is constructed" << std::endl;
-      
-      // Start client via --execute argument
-      value = "";
-      getopt.get("execute", &value);
-      if (!value.empty())
-	exec_child(child, value);
-
-      smanager->run();
+       Logger::log(Logger::layout) << "started server" << std::endl;
+       try
+	 {
+	   bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
+	 } 
+       catch (CORBA::COMM_FAILURE)
+	 {
+	   std::cerr << "CORBA communications failure finding Warsaw." << std::endl
+		     << "Are you sure the name service is running?" << std::endl;
+	   return -1;
+	 }
+       catch (...)
+	 {
+	   std::cerr << "Unknown exception finding Warsaw" << std::endl;
+	   return -1;
+	 }
+       
+       Logger::log(Logger::corba) << "listening for clients" << std::endl;
+       // initialize the event distributor and draw thread
+       Logger::log(Logger::corba) << "event manager is constructed" << std::endl;
+       
+       // Start client via --execute argument
+       value = "";
+       getopt.get("execute", &value);
+       if (!value.empty())
+	   exec_child(child, value);
+       
+       smanager->run();
     }
   catch (const CORBA::SystemException &e)
     {
@@ -317,7 +341,8 @@ int main(int argc, char **argv)
 #ifdef ORB_omniORB
   catch(const omniORB::fatalException &fe)
     {
-      std::cerr << "fatal exception at " << fe.file() << " " << fe.line() << ":" << fe.errmsg() << std::endl;
+      std::cerr << "fatal exception at " << fe.file() << " " << fe.line() << ":"
+		<< fe.errmsg() << std::endl;
     }
 #endif
   catch (const CORBA::Exception &e)

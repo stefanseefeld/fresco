@@ -37,6 +37,10 @@
 
 class RegionImpl;
 
+//. The ScreenManager contains the main event loop. It queries the
+//. EventManager for those Events, registers damages to the screen's
+//. contents and repairs them by initialising a DrawTraversal whenever
+//. needed.
 class ScreenManager
 {
 public:
@@ -45,6 +49,7 @@ public:
   //. This method marks the given Region as damaged.
   void damage(Warsaw::Region_ptr);
   //. This method redraws the damaged regions of the screen.
+  //. The DrawTraversal gets started here!
   void repair();
   //. Main event loop.
   void run();
