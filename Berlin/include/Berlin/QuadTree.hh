@@ -40,7 +40,24 @@
 template <class T, class I>
 class QTNode
 {
-  class move_down;
+
+  /* For some reason GCC 2.95 doesn't allow us to forward declare
+   * this... so just define it inline 
+   */
+  class move_down : public unary_function<I *, bool> {
+  public:
+    move_down(QTNode<T, I> *n) : node(n) {}
+    bool operator()(I *i) {
+      QTNode<T, I>::index idx = node->where(i);
+      if (idx != QTNode<T, I>::fence) {
+        node->quadrants[idx]->insert(i);
+        return true;
+      } else 
+        return false;
+    };
+    QTNode<T, I> *node;
+  };
+
   friend class move_down;
 public:
   enum index
@@ -150,20 +167,6 @@ inline void QTNode<T, I>::adjust(int min, int max, T min_w, T min_h)
       if (elements < min || elements - items.size() == 0 || (region.w() < min_w && region.h() < min_h)) collaps();
     }
 }
-
-template <class T, class I>
-class QTNode<T, I>::move_down : public unary_function<I *, bool>
-{
-public:
-  move_down(QTNode<T, I> *n) : node(n) {}
-  bool operator()(I *i)
-    {
-      QTNode<T, I>::index idx = node->where(i);
-      if (idx != QTNode<T, I>::fence) { node->quadrants[idx]->insert(i); return true;}
-      else return false;
-    };
-  QTNode<T, I> *node;
-};
 
 template <class T, class I>
 inline void QTNode<T, I>::unfold()
