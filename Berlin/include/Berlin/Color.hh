@@ -56,7 +56,7 @@ inline void RGBtoHSV(const Warsaw::Color &color, Warsaw::Coord &hue, Warsaw::Coo
 {
   Warsaw::Coord max = color.red > color.green ? (color.red > color.blue ? color.red : color.blue) : color.green > color.blue ? color.green : color.blue;
   Warsaw::Coord min = color.red < color.green ? (color.red < color.blue ? color.red : color.blue) : color.green < color.blue ? color.green : color.blue;
-  hue = max;
+  value = max;
   saturation = max != 0. ? (max - min) / max : 0.; 
   if (saturation == 0.) hue = 0.; // undefined...
   else
