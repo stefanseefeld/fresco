@@ -134,6 +134,11 @@ CORBA::Boolean VertexManipulator::manipulate(PickTraversal_ptr traversal, const 
       else if (event[0].attr.selection().number == 2) return false; // right
       else return false;
     }
+  else if (event[0].attr._d() == Fresco::Input::button &&
+	   event[0].attr.selection().actuation == Input::Toggle::release)
+    {
+      return false;
+    }
   else
     {
       Vertex current = event[0].attr.location();
