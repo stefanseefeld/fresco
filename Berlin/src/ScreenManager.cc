@@ -69,7 +69,10 @@ void ScreenManager::repair()
   _tmpDamage->copy(Region_var(_theDamage->_this()));
   _theDamage->clear();
   _mutex.unlock();
+
+  // Place here for single-buffered Consoles:
   // _emanager->restore(Region_var(_tmpDamage->_this()));
+
   _traversal->damage(Region_var(_tmpDamage->_this()));
   _traversal->init();
   _drawing->start_traversal();
@@ -86,10 +89,12 @@ void ScreenManager::repair()
     {
       std::cerr << "ScreenManager: caught bad parameter" << std::endl;
     }
-
   _drawing->finish_traversal();
   _traversal->finish();
   mid2 = myclock();
+  
+  // Place here for doublebuffered Consoles:
+  _emanager->restore(Region_var(_tmpDamage->_this()));
   _drawing->flush();
 
   end = myclock();
