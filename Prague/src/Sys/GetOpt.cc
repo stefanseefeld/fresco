@@ -28,31 +28,11 @@ using namespace Prague;
 GetOpt::GetOpt(const char *program, const char *use) : p(program), u(use) {}
 GetOpt::~GetOpt() {}
 
-/* @Method{int GetOpt::add(char o, const string &option, type t, const string &description)}
- *
- * @Description{adds option specifications to the options data base.
- @table @var
- @item o
- is the option character
- @item option
- is the option string (for long option)
- @item t
- is the type of the option, one of @code{novalue}, @code{mandatory}, @code{optional}
- @item description
- is a small, descriptive text for that option
- @item default
- is the default value, which is returned if the option is not specified
- @end table
- */
 void GetOpt::add(char o, const string &opt, type t, const string &desc)
 {
    table.push_back(cell(o, opt, t, desc));
 }
 
-/* @Method{void GetOpt::get(char o, string *v) const}
- *
- * @Description{returns the value found for option @var{-o}}
- */
 void GetOpt::get(char o, string *v) const
 {
   table_t::const_iterator i = find(o);
@@ -60,10 +40,6 @@ void GetOpt::get(char o, string *v) const
   else if ((*i).value.length()) *v = (*i).value;
 }
 
-/* @Method{void GetOpt::get(const string &option, string *v) const}
- *
- * @Description{returns the value found for @var{option}}
- */
 void GetOpt::get(const string &option, string *v) const
 {
   table_t::const_iterator i = find(option);
@@ -71,10 +47,6 @@ void GetOpt::get(const string &option, string *v) const
   else if ((*i).value.length()) *v = (*i).value;
 }
 
-/* @Method{int GetOpt::parse(int argc, const char **argv)}
- *
- * @Description{parses @var{argc} tokens starting at @var{argv}. the return value is the index of the first non optional argument.}
- */
 int GetOpt::parse(int argc, char **argv)
 {
   int begin_unknown = 0, end_unknown = 0, optind = 0;
@@ -149,29 +121,9 @@ unsigned int GetOpt::getopt(int argc, char **argv)
 	  return 1;
 	}
     }
-//   do
-//     {
-//       option++;
-//       struct
-//       {
-// 	compName(char &cc) : c(cc) {}
-// 	bool operator () (Cell *c) { return c == c->o;}
-// 	char c;
-//       } comp(option);
-//       i = find(*option);
-//       if (i == table.end()) return 0;
-//     }
-//   while (
-//   if ((*i)->t == novalue) (*i)->value = ~0; return 1;
-//   else if (*token == '=') (*i)->value = token + 1;
-//   else if ((*i)->t == mandatory) cerr << "GetOpt: option " << (*i)->name << " requires a value" << endl;
   return 0;
 }
 
-/* @Method{void GetOpt::usage() const}
- *
- * @Description{ prints the usage information to stdandard output}
- */
 void GetOpt::usage() const
 {
   cout << "Usage: " << p << " " << u << "\n";

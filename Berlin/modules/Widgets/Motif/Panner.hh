@@ -38,16 +38,16 @@ class Panner : public ControllerImpl
     Coord lower;
     Coord upper;
   }; 
-  class PObserver : implements(Observer)
+  class Observer : implements(Observer)
   {
   public:
-    PObserver(Panner *p) : panner(p) {}
+    Observer(Panner *p) : panner(p) {}
     void update(const CORBA::Any &any) { panner->update(any);}
   private:
     Panner *panner;
   };
-  friend class PObserver;
-  class Modifier : implements(Command) {};
+  friend class Observer;
+  class Dragger;
 public:
   Panner(BoundedRange_ptr, BoundedRange_ptr);
   void init(Controller_ptr);
@@ -55,12 +55,11 @@ public:
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
   virtual void allocate(Tag, const Allocation::Info &);
-  Command_ptr drag() { return _drag->_this();}
+  Command_ptr drag();
 private:
   void traverseThumb(Traversal_ptr);
-  Controller_var thumb;
-  Impl_var<PObserver> redirect;
-  Impl_var<Modifier> _drag;
+  Impl_var<Observer> redirect;
+  Impl_var<Dragger> _drag;
   BoundedRange_var x;
   BoundedRange_var y;
   Offset offset[2];

@@ -162,16 +162,22 @@ Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 {
   Panner *panner = new Panner(x, y);
   panner->_obj_is_ready(_boa());
+
   ToolKit::FrameSpec spec;
-  spec.abrightness(0.5);
-  Graphic_var fixed = layout->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.);
-  Graphic_var inset = tool->frame(fixed, 20., spec, true);
-  panner->body(inset);
   spec.bbrightness(0.5);
   Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 20., spec, true);
   Controller_var thumb = tool->dragger(outset, Command_var(panner->drag()));
   panner->init(thumb);
-  return panner->_this();
+
+  spec.abrightness(0.5);
+  Graphic_var fixed = layout->fixedSize(Graphic_var(panner->_this()), 1000., 1000.);
+  Graphic_var inset = tool->frame(fixed, 20., spec, true);
+  Controller_var root = tool->group(inset);
+  /*
+   * now wire up the control structure
+   */
+  root->appendController(Controller_var(panner->_this()));
+  return root._retn();
 }
 
 Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)

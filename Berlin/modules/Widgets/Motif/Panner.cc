@@ -26,10 +26,10 @@
 
 using namespace Motif;
 
-class PDrag : public Panner::Modifier
+class Panner::Dragger : implements(Command)
 {
 public:
-  PDrag(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(BoundedRange::_duplicate(x)), yvalue(BoundedRange::_duplicate(y)) {}
+  Dragger(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(BoundedRange::_duplicate(x)), yvalue(BoundedRange::_duplicate(y)) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -47,8 +47,8 @@ private:
 
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   : ControllerImpl(false),
-    redirect(new PObserver(this)),
-    _drag(new PDrag(xx, yy)),
+    redirect(new Observer(this)),
+    _drag(new Dragger(xx, yy)),
     x(BoundedRange::_duplicate(xx)),
     y(BoundedRange::_duplicate(yy))
 {
@@ -64,9 +64,9 @@ Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
 
 void Panner::init(Controller_ptr t)
 {
-  thumb = t;
-  t->addParent(Graphic_var(_this()), 1);
-  appendController(thumb);
+  body(t);
+  t->addParent(Graphic_var(_this()), 0);
+  appendController(t);
 }
 
 void Panner::update(const CORBA::Any &)
@@ -82,7 +82,6 @@ void Panner::update(const CORBA::Any &)
 
 void Panner::draw(DrawTraversal_ptr traversal)
 {
-  MonoGraphic::traverse(traversal);
   traverseThumb(traversal);
 }
 
@@ -99,12 +98,8 @@ void Panner::pick(PickTraversal_ptr traversal)
     }
 }
 
-void Panner::allocate(Tag t, const Allocation::Info &info)
+void Panner::allocate(Tag, const Allocation::Info &info)
 {
-  /*
-   * t == 0 is the body, t == 1 is the thumb
-   */
-  if (t == 0) return;
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;
@@ -119,8 +114,12 @@ void Panner::allocate(Tag t, const Allocation::Info &info)
   allocation->normalize(info.transformation);
 }
 
+Command_ptr Panner::drag() { return _drag->_this();}
+
 void Panner::traverseThumb(Traversal_ptr traversal)
 {
+  Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
   Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   Coord lower = allocation->lower.x;
@@ -133,5 +132,5 @@ void Panner::traverseThumb(Traversal_ptr traversal)
   allocation->upper.y = lower + scale*offset[yaxis].upper;
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
-  traversal->traverseChild(thumb, 1, Region_var(allocation->_this()), Transform_var(transformation->_this()));
+  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
 }

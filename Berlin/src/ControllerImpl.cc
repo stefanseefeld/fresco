@@ -47,7 +47,7 @@ void ControllerImpl::pick(PickTraversal_ptr traversal)
 
 void ControllerImpl::appendController(Controller_ptr c)
 {
-  if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
+  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
   Controller_ptr nc = Controller::_duplicate(c);
   nc->setControllerLinks(Controller_var(_this()), last, Controller_var(Controller::_nil()));
@@ -57,7 +57,7 @@ void ControllerImpl::appendController(Controller_ptr c)
 
 void ControllerImpl::prependController(Controller_ptr c)
 {
-  if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
+  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
   Controller_ptr nc = Controller::_duplicate(c);
   nc->setControllerLinks(Controller_var(_this()), Controller_var(Controller::_nil()), first);
@@ -67,6 +67,7 @@ void ControllerImpl::prependController(Controller_ptr c)
 
 void ControllerImpl::insertController(Controller_ptr c)
 {
+  if (CORBA::is_nil(c)) return;
   Controller_ptr nc = Controller::_duplicate(c);
   nc->setControllerLinks(parent, prev, Controller_var(_this()));
 //   if (is_eq(this, Viewer_var(parent_->first_viewer())))
@@ -76,13 +77,16 @@ void ControllerImpl::insertController(Controller_ptr c)
 
 void ControllerImpl::replaceController(Controller_ptr c)
 {
-  c->setControllerLinks(parent, prev, next);
-  if (CORBA::is_nil(parent)) return;
-  if (CORBA::is_nil(prev)) parent->setFirstController(c);
-  if (CORBA::is_nil(next)) parent->setLastController(c);
-  prev = Controller::_nil();
-  next = Controller::_nil();
-//   CORBA::release(Viewer_ptr(this));
+  if (CORBA::is_nil(c)) removeController();
+  else
+    {
+      c->setControllerLinks(parent, prev, next);
+      if (CORBA::is_nil(parent)) return;
+      if (CORBA::is_nil(prev)) parent->setFirstController(c);
+      if (CORBA::is_nil(next)) parent->setLastController(c);
+      prev = Controller::_nil();
+      next = Controller::_nil();
+    }
 }
 
 void ControllerImpl::removeController()

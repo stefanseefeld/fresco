@@ -57,7 +57,10 @@ void ScreenManager::repair()
   screen->traverse(Traversal_var(traversal->_this()));
   traversal->finish();
   drawing->flush();
-  drawable->flush();
+  {
+    Profiler prf("Drawable::flush");
+    drawable->flush();
+  }
   emanager->damage(Region_var(tmpDamage->_this()));
 }
 

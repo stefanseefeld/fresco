@@ -76,9 +76,10 @@ int main(int argc, char **argv)
   string value;
   getopt.get("version", &value);
   if (value == "true") { cout << "version is " << "0.2" << endl; exit(0);}
+  value == "";
   getopt.get("help", &value);
   if (value == "true") { getopt.usage(); exit(0);}
-  
+  value == "";  
   getopt.get("logging", &value);
   if (value == "true")
     {
@@ -95,6 +96,7 @@ int main(int argc, char **argv)
     }
 
 #ifdef JPROF
+  value == "";
   getopt.get("profiling", &value);
   if (value == "true") setupProfilingStuff();
 #endif
@@ -118,6 +120,7 @@ int main(int argc, char **argv)
   Kit::PropertySeq props;
   props.length(1);
   props[0].name = CORBA::string_dup("implementation");
+  value = "";
   getopt.get("drawing", &value);
   if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
   else props[0].value = CORBA::string_dup("GLDrawingKit");

@@ -430,6 +430,7 @@ struct less<StageHandleImpl *> : public binary_function<StageHandleImpl *, Stage
 
 void StageTraversal::execute()
 {
+  Profiler prf("StageTraversal::execute");
   if (traversal->direction() == Traversal::down)
     sort(buffer.begin(), buffer.end(), less<StageHandleImpl *>());
   else
@@ -487,6 +488,7 @@ void StageImpl::request(Requisition &r)
 void StageImpl::traverse(Traversal_ptr traversal)
 {
   SectionLog section("StageImpl::traverse");
+  Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->allocation()));
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;

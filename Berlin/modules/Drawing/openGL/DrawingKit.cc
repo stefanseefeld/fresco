@@ -29,9 +29,12 @@
 #include "Berlin/Logger.hh"
 #include "Berlin/Color.hh"
 #include "Warsaw/Warsaw.hh"
+#include "Prague/Sys/Profiler.hh"
 
 #include <strstream>
 #include <iostream>
+
+using namespace Prague;
 
 GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
@@ -223,6 +226,7 @@ void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
 
 void GLDrawingKit::drawImage(Raster_ptr raster)
 {
+  Profiler prf("GLDrawingKit::drawImage");
   GLImage *glimage = images.lookup(Raster::_duplicate(raster));
   GLint tbackup = -1;
   if (fs == textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
