@@ -21,12 +21,12 @@ import Fresco, Unidraw, Layout
 import Fresco__POA
 
 # Import Python client lib
-import pywarsaw
-from pywarsaw import Babylon
+import pyfresco
+from pyfresco import Babylon
 
-class Mapper (pywarsaw.PyController):
+class Mapper (pyfresco.PyController):
     def __init__(self, xrange, yrange):
-        pywarsaw.PyController.__init__(self, 0)
+        pyfresco.PyController.__init__(self, 0)
         self.__xrange = xrange
         self.__yrange = yrange
         self._set_body(kits.layout.align(kits.layout.fixed_size(Fresco.Graphic._nil, 200., 200.), 0., 0.))
@@ -34,7 +34,7 @@ class Mapper (pywarsaw.PyController):
         self.__pulldown = kits.desktop.pulldown(panner)
 
     def press(self, pickTraversal, input_event):
-        position = pywarsaw.get_position(input_event)
+        position = pyfresco.get_position(input_event)
         self.__pulldown._set_position(position)
 	self.__pulldown._set_mapped(1)
 

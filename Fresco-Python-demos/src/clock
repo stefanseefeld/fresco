@@ -18,9 +18,9 @@ import Fresco, Unidraw
 import Fresco__POA
 
 # Import Fresco lib
-import pywarsaw
+import pyfresco
 
-class TickGraphic (pywarsaw.PyGraphic):
+class TickGraphic (pyfresco.PyGraphic):
     "Simple graphic that draws a 'tick'"
     def request(self): # --> void
 	x = Fresco.Graphic.Requirement(1, 2000., 3000., 100., 0.)
@@ -51,10 +51,10 @@ class TickGraphic (pywarsaw.PyGraphic):
 	dk.restore()
 
 
-class ClockGraphic (pywarsaw.PyGraphic):
+class ClockGraphic (pyfresco.PyGraphic):
     "Simple graphic that draws a clock"
     def __init__(self):
-	pywarsaw.PyGraphic.__init__(self)
+	pyfresco.PyGraphic.__init__(self)
 	thread.start_new_thread(self._run_update_thread, ())
 	self._offset = 0. #angular offset
 	self._lock = threading.Lock()
@@ -127,9 +127,9 @@ class ClockGraphic (pywarsaw.PyGraphic):
 	dk.draw_path(path)
 	dk.restore()
 
-class ClockController (pywarsaw.PyController):
+class ClockController (pyfresco.PyController):
     def __init__(self):
-	pywarsaw.PyController.__init__(self, 0)
+	pyfresco.PyController.__init__(self, 0)
 	self.clock = ClockGraphic()
 	self._set_body(self.clock._this())
 	self._rot = 0.
@@ -139,25 +139,25 @@ class ClockController (pywarsaw.PyController):
 	print "Press a key (in the berlin window) to reset the angle"
 
     def traverse(self, traversal):
-	pywarsaw.PyController.traverse(self, traversal)
+	pyfresco.PyController.traverse(self, traversal)
     def press(self, pickTraversal, input_event):
 	print "Press"
 	self.clock._lock.acquire()
-	pywarsaw.PyController.press(self, pickTraversal, input_event)
-	self._pos = pywarsaw.get_position(input_event)
+	pyfresco.PyController.press(self, pickTraversal, input_event)
+	self._pos = pyfresco.get_position(input_event)
 	self._rot = self.clock._offset
 	self._start_rot = None
 	self._curr_rot = self._rot
     def release(self, pickTraversal, input_event):
 	print "Release"
-	pywarsaw.PyController.release(self, pickTraversal, input_event)
-	pos = pywarsaw.get_position(input_event)
+	pyfresco.PyController.release(self, pickTraversal, input_event)
+	pos = pyfresco.get_position(input_event)
 	bounds = pickTraversal.current_allocation().bounds()
 	bounds = map(pickTraversal.current_transformation().transform_vertex, bounds)
 	self.do_drag(bounds, pos)
 	self.clock._lock.release()
     def drag(self, pickTraversal, input_event):
-	pos = pywarsaw.get_position(input_event)
+	pos = pyfresco.get_position(input_event)
 	bounds = pickTraversal.current_allocation().bounds()
 	bounds = map(pickTraversal.current_transformation().transform_vertex, bounds)
 	self.do_drag(bounds, pos)

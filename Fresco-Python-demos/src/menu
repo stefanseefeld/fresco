@@ -21,8 +21,8 @@ import Fresco, Layout
 import Fresco__POA
 
 # Import Python client lib
-import pywarsaw
-from pywarsaw import Babylon
+import pyfresco
+from pyfresco import Babylon
 
 class MenuKitImpl (Fresco__POA.MenuKit):
     """Pretend kit that builds menu objects"""
@@ -47,11 +47,11 @@ def get_local(object_var, class_obj):
     if not isinstance(obj, class_obj): raise TypeError, "Not local object"
     return obj
 
-class MenuItem (pywarsaw.PyController):
+class MenuItem (pyfresco.PyController):
     """Encapsulates a Menu item with label and optional submenu and callback.
     TODO: provide api to close all parent popups once an item is selected."""
     def __init__(self, root, label, orient, submenu=None, callback=None):
-	pywarsaw.PyController.__init__(self, 0)
+	pyfresco.PyController.__init__(self, 0)
 	self.root = root
 	self.label = label
 	self.submenu = submenu
@@ -130,10 +130,10 @@ class MenuItem (pywarsaw.PyController):
 	if device != 0 and not self._test_focus(0):
 	    # Grab KB focus too
 	    self.request_focus(self._this(), 0)
-	return pywarsaw.PyController.receive_focus(self, focus)
+	return pyfresco.PyController.receive_focus(self, focus)
     def lose_focus(self, device):
 	#print self, "lose focus", device
-	pywarsaw.PyController.lose_focus(self, device)
+	pyfresco.PyController.lose_focus(self, device)
     def key_press(self, input_event):
 	key = input_event[0].attr.selection.number
 	device = input_event[0].dev
@@ -224,11 +224,11 @@ class MenuItem (pywarsaw.PyController):
 	    import traceback
 	    traceback.print_exc()
     def get_alloc(self):
-	alloc = pywarsaw.PyAllocation()
+	alloc = pyfresco.PyAllocation()
 	self.allocations(alloc._this())
 	info = alloc.get(0) # controller only has one parent
-	region = pywarsaw.PyRegion()
-	pywarsaw.PyGraphic.extension(self, info, region._this())
+	region = pyfresco.PyRegion()
+	pyfresco.PyGraphic.extension(self, info, region._this())
 	return region
 
     def _show_submenu(self, device):
@@ -248,11 +248,11 @@ class MenuItem (pywarsaw.PyController):
 	else: to = Fresco.Vertex(lower.x, upper.y, 0.)
 	sub._set_position(to)
 
-class Menu (pywarsaw.PyController):
+class Menu (pyfresco.PyController):
     """Encapsulates a vertical menu of MenuItems"""
     def __init__(self):
 	"Creates menu from sequence of items"
-	pywarsaw.PyController.__init__(self, 1)
+	pyfresco.PyController.__init__(self, 1)
 	self.items = []
 	self.graphic = None
 	self.pulldown = None
@@ -263,17 +263,17 @@ class Menu (pywarsaw.PyController):
 
     def receive_focus(self, focus):
 	#print self, "menu receive focus",focus._get_device()
-	return pywarsaw.PyController.receive_focus(self, focus)
+	return pyfresco.PyController.receive_focus(self, focus)
     def lose_focus(self, device):
 	#print self, "menu lose focus",device
-	pywarsaw.PyController.lose_focus(self, device)
+	pyfresco.PyController.lose_focus(self, device)
     def append_controller(self, item):
 	self.items.append(item)
 	self._add_item(item)
     def _add_item(self, item):
 	#item._set_orientation(1)
 	self.box.append_graphic(item)
-	pywarsaw.PyController.append_controller(self, item)
+	pyfresco.PyController.append_controller(self, item)
 
 
     def _init(self):
@@ -291,7 +291,7 @@ class MenuBar(Menu):
     def _add_item(self, item):
 	self.box.append_graphic(self.hspace)
 	self.box.append_graphic(item)
-	pywarsaw.PyController.append_controller(self, item)
+	pyfresco.PyController.append_controller(self, item)
     def _init(self):
 	"""Returns or creates the controller/graphic for this Menu"""
 	# Create menu

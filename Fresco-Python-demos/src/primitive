@@ -18,7 +18,7 @@ import Fresco, Unidraw
 import Fresco__POA
 
 # Import Fresco lib
-import pywarsaw
+import pyfresco
 
 class Rotator(Fresco__POA.Observer):
     def __init__(self, value, child, parent, axis):
@@ -60,10 +60,10 @@ def generate_mesh(w, h, d):
     return Fresco.Mesh(map(scale, nodes), map(triangulate, triangles), map(normalize, normals))
 
 
-class Primitive (pywarsaw.PyGraphic):
+class Primitive (pyfresco.PyGraphic):
     "Simple graphic that draws a clock"
     def __init__(self, w, h, d):
-	pywarsaw.PyGraphic.__init__(self)
+	pyfresco.PyGraphic.__init__(self)
         self.__width = w
         self.__height = h
         self.__depth = d
