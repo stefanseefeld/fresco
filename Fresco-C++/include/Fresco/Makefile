@@ -59,7 +59,10 @@ DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
 DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
 STATSRC	= $(patsubst %.idl, %SK.cc, $(DYNINT)) $(patsubst %.idl, %SK.cc, $(STATINT))
 LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
-SRC	= $(DYNSRC) $(STATSRC) $(LCSRC)
+
+UTIL	= Warsaw.cc
+
+SRC	= $(DYNSRC) $(STATSRC) $(LCSRC) $(UTIL)
 
 DYNHDR	= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR	= $(patsubst %.idl, %.hh, $(STATINT))
@@ -110,7 +113,7 @@ $(opath)/%.o:	%.cc
 
 clean:	
 		rm -f $(opath)/*.o $(dpath)/*.d
-		rm -f *.cc *.hh *~
+		rm -f $(SRC) $(HDR) *~
 
 distclean:	clean
 		rm -f $(TARGET)
