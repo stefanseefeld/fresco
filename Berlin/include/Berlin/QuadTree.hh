@@ -116,8 +116,12 @@ protected:
   //. Frees the memory of this node and the subnodes.
   void free()
   {
-    if (!leaf()) for (int i = 0; i < 4; i++)
-      delete quadrants[i]; quadrants[i] = 0;
+    if (!leaf())
+      for (int i = 0; i < 4; i++)
+	{
+	  delete quadrants[i];
+	  quadrants[i] = 0;
+	}
   }
   //. Returns the index the point p belongs into.
   index where(const Geometry::Point<T> &p)

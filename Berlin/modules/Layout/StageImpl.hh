@@ -101,7 +101,7 @@ class StageHandleImpl : public virtual POA_Layout::StageHandle
 
   const Geometry::Rectangle<Warsaw::Coord> &bbox();
   void bbox(RegionImpl &);
- private:
+//  private:
   //. Calculate the bounding box of the graphic in this StageHandle and
   //. stores the result in _bbox.
   void cache_bbox();
