@@ -39,10 +39,12 @@ class Config(Base):
 	
 	class SXR(Base.Formatter.HTML):
 	    stylesheet = 'manual.css'
-	    pages=['FilePages', 'XRefPages']
+	    pages=['DirBrowse', 'FilePages', 'XRefPages']
 	    toc_out = 'sxrPrague.toc'
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    default_toc = 'XRefPages'
+	    start_dir = top_srcdir
+	    base_dir = '.'
 	    class XRefPages:
             	xref_file = 'Prague.xref'
 	    class FilePages (Base.Formatter.HTML.FilePages):
