@@ -45,6 +45,14 @@ class PyServantBase: # (PortableServer::RefCountServantBase):
 	# Something to do with poa here
 	pass
 
+def dump_region(region):
+    xspan = region.span(Warsaw.xaxis)
+    yspan = region.span(Warsaw.yaxis)
+    print "Region: X=[%.1f,%.1f]@%.1f Y=[%.1f,%.1f]@%.1f"%(
+	xspan.begin, xspan.end, xspan.align,
+	yspan.begin, yspan.end, yspan.align
+    )
+
 class PyRegion (Warsaw__POA.Region):
     def __init__(self):
 	self.__lower = Warsaw.Vertex(0, 0, 0)
@@ -293,10 +301,10 @@ class PyTransform (Warsaw__POA.Transform):
 	self[1][3] = self[1][3] + vertex.y
 	self[2][3] = self[2][3] + vertex.z
 	self.__dirty = 1
-    def premultiple(self, transform):
+    def premultiply(self, transform):
 	if not transform or transform.identity(): return
 	m = transform.store_matrix()
-	if self.__identity:
+	if self.identity():
 	    self.load_matrix(m)
 	    return
 	for i in range(3):
@@ -304,10 +312,10 @@ class PyTransform (Warsaw__POA.Transform):
 	    for j in range(4):
 		self[i][j] = mi[0]*m[0][j] + mi[1]*m[1][j] + mi[2]*m[2][j] + mi[3]*m[3][j]
 	self.__dirty = 1
-    def postmultiple(self, transform):
+    def postmultiply(self, transform):
 	if not transform or transform.identity(): return
 	m = transform.store_matrix()
-	if self.__identity:
+	if self.identity():
 	    self.load_matrix(m)
 	    return
 	for j in range(4):
@@ -316,8 +324,7 @@ class PyTransform (Warsaw__POA.Transform):
 		self[i][j] = mj[0]*m[i][0] + mj[1]*m[i][1] + mj[2]*m[i][2]
 	self.__dirty = 1
     def invert(self):
-	if self.__dirty: self.recompute()
-	if self.__translation:
+	if self.translation():
 	    self[0][3] = -self[0][3]
 	    self[1][3] = -self[1][3]
 	    self[2][3] = -self[2][3]
@@ -349,19 +356,34 @@ class PyTransform (Warsaw__POA.Transform):
 	d = self.det()
 	if math.fabs(d) < 1e-4: return Warsaw.Vertex(0,0,0)
 	tmp = Warsaw.Vertex(vertex.x, vertex.y, vertex.z)
-	tmp.x = tmp.x - self[0][3];
-	tmp.y = tmp.y - self[1][3];
-	tmp.z = tmp.z - self[2][3];
-	v.x = ((self[1][1] * self[2][2] - self[1][2] * self[2][1]) * tmp.x -
+	tmp.x = tmp.x - self[0][3]
+	tmp.y = tmp.y - self[1][3]
+	tmp.z = tmp.z - self[2][3]
+	nx = ((self[1][1] * self[2][2] - self[1][2] * self[2][1]) * tmp.x -
 	     (self[0][1] * self[2][2] - self[0][2] * self[2][1]) * tmp.y +
 	     (self[0][1] * self[1][2] - self[0][2] * self[1][1]) * tmp.z) / d
-	v.y = (-(self[1][0] * self[2][2] - self[1][2] * self[2][0]) * tmp.x +
+	ny = (-(self[1][0] * self[2][2] - self[1][2] * self[2][0]) * tmp.x +
 	     (self[0][0] * self[2][2] - self[0][2] * self[2][0]) * tmp.y -
 	     (self[0][0] * self[1][2] - self[0][2] * self[1][0])) / d
-	v.z = ((self[1][0] * self[2][1] - self[1][1] * self[2][0]) -
+	nz = ((self[1][0] * self[2][1] - self[1][1] * self[2][0]) -
 	     (self[0][0] * self[2][1] - self[0][1] * self[2][0]) +
 	     (self[0][0] * self[1][1] - self[0][1] * self[1][0])) / d
-	return v
+	return Warsaw.Vertex(nx, ny, nz)
+
+class PyAllocation (Warsaw__POA.Allocation):
+    def __init__(self):
+	self.__list = []
+    def add(self, region, screen):
+	alloc = PyRegion()
+	alloc.copy(region)
+	xform = PyTransform()
+	xform.load_identity()
+	info = Warsaw.Allocation.Info(alloc._this(), xform._this(), screen)
+	self.__list.append(info)
+    def size(self):
+	return len(self.__list)
+    def get(self, index):
+	return self.__list[index]
 
 class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
     def __init__(self):
