@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/ToolKit.hh>
+#include <Warsaw/State.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
@@ -37,6 +38,7 @@ class ToolKitImpl : public virtual POA_Warsaw::ToolKit,
   virtual ~ToolKitImpl();
 
   Warsaw::Graphic_ptr      debugger(Warsaw::Graphic_ptr, const char *);
+  Warsaw::DrawingState_ptr decorator(Warsaw::Graphic_ptr);
   Warsaw::Graphic_ptr      rgb(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   Warsaw::Graphic_ptr      alpha(Warsaw::Graphic_ptr, Warsaw::Coord);
   Warsaw::Graphic_ptr      lighting(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);

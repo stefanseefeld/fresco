@@ -25,6 +25,7 @@
 #include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/DebugGraphic.hh>
 #include "Tool/ToolKitImpl.hh"
 // #include "Tool/Filler.hh"
 // #include "Tool/Indicator.hh"
@@ -37,8 +38,8 @@
 #include "Tool/Stepper.hh"
 #include "Tool/TextInput.hh"
 #include "Tool/Terminal.hh"
-#include "Berlin/DebugGraphic.hh"
 #include "Tool/CanvasImpl.hh"
+#include "Tool/DrawingStateImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -113,6 +114,15 @@ Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
   activate(debug);
   debug->body(g);
   return debug->_this();
+};
+
+DrawingState_ptr ToolKitImpl::decorator(Graphic_ptr g)
+{
+  Trace trace("ToolKitImpl::decorator");
+  DrawingStateImpl *state = new DrawingStateImpl();
+  activate(state);
+  state->body(g);
+  return state->_this();
 };
 
 Graphic_ptr ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)

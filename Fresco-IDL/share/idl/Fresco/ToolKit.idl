@@ -36,6 +36,7 @@ module Warsaw
   interface Command;
   interface TextBuffer;
   interface StreamBuffer;
+  interface DrawingState;
   interface Canvas;
   
   //. this kit provides common objects for very basic interaction tasks
@@ -56,6 +57,7 @@ module Warsaw
 	};
       
       Graphic      debugger(in Graphic g, in string s);
+      DrawingState decorator(in Graphic gg);
       Graphic      rgb(in Graphic gg, in Coord r, in Coord g, in Coord b);
       Graphic      alpha(in Graphic g, in Coord a);
       Graphic      lighting(in Graphic gg, in Coord r, in Coord g, in Coord b);
