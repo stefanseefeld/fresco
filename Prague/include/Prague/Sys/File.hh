@@ -92,6 +92,8 @@ public:
   bool rm();
   //. static method to determine the base name for the given string
   static std::string base(const std::string &);
+  //. static method to determine the directory name for the given string
+  static std::string directory(const std::string &);
   //. generate a temporary file name
   static std::string tmp() { return ::tmpnam(0);}
 protected:
@@ -106,8 +108,14 @@ private:
 
 inline std::string File::base(const std::string &s)
 {
-  std::string::size_type p = s.find_last_of('/');
+  std::string::size_type p = s.rfind('/');
   return p == std::string::npos ? s : s.substr(p + 1);
+}
+
+inline std::string File::directory(const std::string &s)
+{
+  std::string::size_type p = s.rfind('/');
+  return p == std::string::npos ? "" : s.substr(0, p);
 }
 
 inline bool File::get_status()
