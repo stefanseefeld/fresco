@@ -26,6 +26,7 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 // #include "Warsaw/Text.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/Plugin.hh"
 
 #include <GL/glu.h>
 #include <strstream>
@@ -42,7 +43,7 @@ GLDrawingKit::GLDrawingKit()
       cerr << "GGIMesaCreateContext() failed" << endl;
       exit(4);
     }
-  if (GGIMesaSetVisual(context, drawable, GL_TRUE, GL_FALSE))
+  if (GGIMesaSetVisual(context, drawable->visual(), GL_TRUE, GL_FALSE))
     {
       cerr << "GGIMesaSetVisual() failed" << endl;
       exit(7);
@@ -204,3 +205,5 @@ void GLDrawingKit::drawText(const Unistring &us)
 {
 
 }
+
+EXPORT_PLUGIN(GLDrawingKit, interface(DrawingKit))

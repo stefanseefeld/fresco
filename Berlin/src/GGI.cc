@@ -43,8 +43,8 @@ GGI::Drawable *GGI::drawable()
 
 GGI::Drawable::Drawable() // throw (exception)
 {
-  visual = ggiOpen(0);
-  if (!visual) throw exception();
+  vis = ggiOpen(0);
+  if (!vis) throw exception();
   mode.visible.x = mode.visible.y = GGI_AUTO;
   mode.virt.x = mode.virt.y = GGI_AUTO;
   mode.size.x = 768;
@@ -52,17 +52,17 @@ GGI::Drawable::Drawable() // throw (exception)
   mode.dpp.x = mode.dpp.y = 1;
   mode.graphtype = GT_AUTO;
   mode.frames = 1;
-  if (ggiCheckMode(visual, &mode) == 0)
+  if (ggiCheckMode(vis, &mode) == 0)
     {
       // Cannot set visual, even though GGI says it's ok???
-      if (ggiSetMode(visual, &mode) != 0) throw exception();
+      if (ggiSetMode(vis, &mode) != 0) throw exception();
     }
   else
     {
       // Hmm. internal GGI problem. The mode GGI gave us still won't work.
-      if (ggiCheckMode(visual, &mode) != 0 || ggiSetMode(visual, &mode) != 0) throw exception();
+      if (ggiCheckMode(vis, &mode) != 0 || ggiSetMode(vis, &mode) != 0) throw exception();
     }
-  ggiAddFlags(visual, GGIFLAG_ASYNC);
+  ggiAddFlags(vis, GGIFLAG_ASYNC);
   pipe(wakeupPipe);
 }
 
@@ -70,7 +70,7 @@ GGI::Drawable::~Drawable()
 {
   close(wakeupPipe[0]);
   close(wakeupPipe[1]);
-  ggiClose(visual);
+  ggiClose(vis);
 }
 
 bool GGI::Drawable::nextEvent(ggi_event &event)
@@ -78,9 +78,9 @@ bool GGI::Drawable::nextEvent(ggi_event &event)
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   Prague::FdSet rfdset;
   rfdset.set(wakeupPipe[0]);
-  switch (ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0))
+  switch (ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0))
     {
-    case 0: ggiEventRead(visual, &event, mask); return true;
+    case 0: ggiEventRead(vis, &event, mask); return true;
     case 1:{ char c; read(wakeupPipe[0], &c, 1); }
     default: break;
     }

@@ -91,10 +91,8 @@ interface Controller : Graphic, Telltale
   //. the input focus. If the controller does accept, then
   //. it should perform the appropriate operations
   //. on the focus object, such as installing key translations.
-  void loseFocus(in Focus f);
-  //. Notify a controller that it is losing input focus. The focus
-  //. and primary values are the same values that were previously
-  //. passed to receive focus.
+  void loseFocus(in Input::Device d);
+  //. Notify a controller that it is losing input focus.
   boolean firstFocus(in Input::Device d);
   boolean lastFocus(in Input::Device d);
   boolean nextFocus(in Input::Device d);

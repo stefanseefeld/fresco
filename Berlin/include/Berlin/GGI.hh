@@ -48,7 +48,7 @@ class GGI::Drawable
 public:
   bool nextEvent(ggi_event &event); // to be encapsulated further...
   void wakeup();
-  void flush() { ggiFlush(visual);}
+  void flush() { ggiFlush(vis);}
   PixelCoord width() const { return mode.visible.x;}
   PixelCoord height() const { return mode.visible.y;}
   PixelCoord vwidth() const { return mode.virt.x;}
@@ -64,11 +64,12 @@ public:
 	0.1 * mode.visible.y / mode.size.y;
     }
   Coord dpi(Axis a) const { return resolution(a) * 254.0;}
-  const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (visual, i);}
+  ggi_visual_t visual() { return vis;}
+  const ggi_directbuffer *buffer(unsigned int i) const { return ggiDBGetBuffer (vis, i);}
 private:
   Drawable();
   ~Drawable();
-  ggi_visual_t visual;
+  ggi_visual_t vis;
   ggi_mode     mode;
   int          wakeupPipe[2];
 };

@@ -24,15 +24,16 @@
 #include "Warsaw/Transform.hh"
 #include "Warsaw/Region.hh"
 #include "Warsaw/PickTraversal.hh"
+#include "Warsaw/Focus.hh"
 #include "Berlin/Logger.hh"
 
 using namespace Prague;
 
-ControllerImpl::ControllerImpl(bool t) : flags(0L), grabbed(false), transparent(t) {}
+ControllerImpl::ControllerImpl(bool t) : telltale(0), focus(0), grabs(0), transparent(t) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   SectionLog section("ControllerImpl::pick");
-  if (grabbed || traversal->intersectsAllocation())
+  if (grabbed(traversal->device()) || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
@@ -137,14 +138,14 @@ CORBA::Boolean ControllerImpl::requestFocus(Controller_ptr c, Input::Device d)
 CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 {
   SectionLog section("ControllerImpl::receiveFocus");  
-  set(Telltale::active);
+  setFocus(f->device());
   return true;
 }
 
-void ControllerImpl::loseFocus(Focus_ptr)
+void ControllerImpl::loseFocus(Input::Device d)
 {
   SectionLog section("ControllerImpl::loseFocus");
-  clear(Telltale::active);
+  clearFocus(d);
 }
 
 CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)
@@ -202,17 +203,17 @@ void ControllerImpl::clear(Telltale::Flag f)
 CORBA::Boolean ControllerImpl::test(Telltale::Flag f)
 {
   MutexGuard guard(mutex);
-  return flags & (1 << f);
+  return telltale & (1 << f);
 }
 
 void ControllerImpl::modify(Telltale::Flag f, CORBA::Boolean on)
 {
   unsigned long fs = 1 << f;
-  unsigned long nf = on ? flags | fs : flags & ~fs;
+  unsigned long nf = on ? telltale | fs : telltale & ~fs;
   {
     MutexGuard guard(mutex);
-    if (nf == flags) return;
-    else flags = nf;
+    if (nf == telltale) return;
+    else telltale = nf;
   }
   CORBA::Any any;
   notify(any);
@@ -312,14 +313,6 @@ void ControllerImpl::other(const Input::Event &)
 {
 }
 
-void ControllerImpl::grab(PickTraversal_ptr traversal)
+void ControllerImpl::updateState()
 {
-  traversal->grab();
-  grabbed = true;
-}
-
-void ControllerImpl::ungrab(PickTraversal_ptr traversal)
-{
-  traversal->ungrab();
-  grabbed = false;
 }

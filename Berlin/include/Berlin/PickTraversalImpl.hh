@@ -47,6 +47,7 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
   CORBA::Boolean ok() { return !mem;}
   CORBA::Boolean intersectsAllocation();
   CORBA::Boolean intersectsRegion(Region_ptr);
+  Input::Device device() { return focus->device();}
   void enterController(Controller_ptr);
   void leaveController();
   void hit();

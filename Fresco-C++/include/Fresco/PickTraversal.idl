@@ -23,11 +23,13 @@
 #define _PickTraversal_idl
 
 #include "Traversal.idl"
+#include "Input.idl"
 
 interface Controller;
 
 interface PickTraversal : Traversal
 {
+  readonly attribute Input::Device device;
   void enterController(in Controller c);
   void leaveController();
   void hit();

@@ -68,9 +68,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
    * ...remove the old controllers in reverse order,...
    */
   for (cstack_t::reverse_iterator o = controllers.rbegin(); o.base() != of; o++)
-    {
-      (*o)->loseFocus(Focus_var(_this()));
-    }
+    (*o)->loseFocus(device());
   controllers.erase(of, controllers.end());
   /*
    * ...add the new controllers,...

@@ -53,7 +53,7 @@ public:
   virtual void setControllerLinks(Controller_ptr, Controller_ptr, Controller_ptr) {}
   virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
   virtual CORBA::Boolean receiveFocus(Focus_ptr) { return true;}
-  virtual void loseFocus(Focus_ptr) {}
+  virtual void loseFocus(Input::Device) {}
   virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const Input::Event &) { return false;}
   virtual CORBA::Boolean handleNonPositional(const Input::Event &) { return false;}
 

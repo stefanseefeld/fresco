@@ -35,10 +35,10 @@ CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
 
-DYNINT	= Types.idl Input.idl
+DYNINT	= Types.idl
 STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
-	  Focus.idl \
+	  Input.idl Focus.idl \
 	  Figure.idl Image.idl Transformator.idl \
 	  Grid.idl Viewport.idl Stage.idl \
 	  Command.idl \
@@ -62,7 +62,7 @@ LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
 
 UTIL	= Warsaw.cc Unicode.cc
 
-SRC	= $(DYNSRC) $(STATSRC) $(LCSRC) $(UTIL)
+SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(LCSRC) $(UTIL)
 
 DYNHDR	= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR	= $(patsubst %.idl, %.hh, $(STATINT))

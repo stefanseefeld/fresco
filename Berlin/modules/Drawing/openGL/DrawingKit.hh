@@ -69,7 +69,7 @@ public:
   virtual void drawEllipse(const Vertex &, const Vertex &);
   virtual void drawImage(Raster_ptr);
   virtual void drawText(const Unistring &);
-  virtual void flash() { glFlush();}
+  virtual void flush() { glFlush();}
 
 //   void clear(Coord, Coord, Coord, Coord);
 //   Coord width() { return drawable->width();}

@@ -56,7 +56,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void setLastController(Controller_ptr);
   virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
   virtual CORBA::Boolean receiveFocus(Focus_ptr);
-  virtual void loseFocus(Focus_ptr);
+  virtual void loseFocus(Input::Device);
   virtual CORBA::Boolean firstFocus(Input::Device);
   virtual CORBA::Boolean lastFocus(Input::Device);
   virtual CORBA::Boolean nextFocus(Input::Device);
@@ -70,7 +70,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void modify(Telltale::Flag, CORBA::Boolean);
   virtual void constraint(TelltaleConstraint_ptr c);
   virtual TelltaleConstraint_ptr constraint();
-// protected:
+ protected:
   virtual bool inside(PickTraversal_ptr);
   virtual void move(PickTraversal_ptr, const Input::Event &);
   virtual void press(PickTraversal_ptr, const Input::Event &);
@@ -80,8 +80,12 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void keyPress(const Input::Event &);
   virtual void keyRelease(const Input::Event &);
   virtual void other(const Input::Event &);
-  void grab(PickTraversal_ptr);
-  void ungrab(PickTraversal_ptr);
+  void grab(PickTraversal_ptr t) { t->grab(); grabs |= 1 << t->device(); updateState();} 
+  void ungrab(PickTraversal_ptr t) { t->ungrab(); grabs &= ~(1 << t->device()); updateState();}
+  bool grabbed(Input::Device d) { return grabs & (1 << d);}
+  void setFocus(Input::Device d) { focus |= 1 << d; updateState();}
+  void clearFocus(Input::Device d) { focus &= ~(1 << d); updateState();}
+  virtual void updateState();
  private:
   Controller_var parent;
   Controller_ptr next;
@@ -89,8 +93,9 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   Controller_ptr first;
   Controller_ptr last;
 //   clist_t controllers;
-  unsigned long flags;
-  bool grabbed;
+  unsigned long telltale;
+  unsigned long focus;
+  unsigned long grabs;
   bool transparent;
   TelltaleConstraint_var myConstraint;
   Prague::Mutex mutex;
