@@ -1,0 +1,53 @@
+#ifndef __CLIENTCONTEXT__
+#define __CLIENTCONTEXT__ 
+
+//
+// $Id$
+//
+// This source file is a part of the Berlin Project.
+// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// http://www.berlin-consortium.org
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public License
+// as published by the Free Software Foundation; either version 2 of
+// the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+//
+//
+
+
+#include "TextTypes.idl"
+
+exception securityException {};
+
+// a Client Context object is an interface any client connecting to a
+// berlin server needs to present. It is used in managing the
+// resources the client allocates and in authenticating the client's
+// requests. The default security mechanism is obviously rediculously
+// simplistic but we don't really have any security folks around to
+// help us with this at the moment. You're welcome to improve on it.
+
+interface ClientContext {
+
+  readonly attribute Unistring userName;
+
+  // this raises an orb error more often than returning false :)
+  // when the server tries to call this, and it fails, the server will 
+  // most likely destroy your serverContext object, which will
+  // decrement all the refcounts on objects you allocated.
+  boolean stillAlive(); 
+
+  // .. additional security-related topics should show up in here  
+};
+
+
+#endif

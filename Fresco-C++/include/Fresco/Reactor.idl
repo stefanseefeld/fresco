@@ -1,0 +1,86 @@
+//
+// $Id$
+//
+// This source file is a part of the Berlin Project.
+// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// http://www.berlin-consortium.org
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public License
+// as published by the Free Software Foundation; either version 2 of
+// the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+//
+//
+#ifndef __REACTOR__
+#define __REACTOR__ 
+
+#include "Cloneable.idl"
+#include "Message.idl"
+#include "Command.idl"
+
+// anything which can accept a message
+interface MessageListener : Cloneable {
+  void accept(in message m);
+};
+
+// this is a listener which has configurable behaviour based on the
+// message types it receives
+interface Reactor : MessageListener {
+  void bind(in CORBA::TypeCode ty, in command c);
+  void unbind(in CORBA::TypeCode ty, in command c);
+  void bind_default_handlers();
+  attribute boolean active;
+};
+
+// this is just a helper to make the sequence-initialization below a
+// little simpler.
+struct ReactorBinding {
+    CORBA::TypeCode ty;
+    Command cmd;
+};
+
+
+// this is a kit for producing a couple types of reactors, as well as
+// initializing their bindings in one call. The reactors which are
+// returned here are usually passed straight into the WidgetKit
+// constructors as strategy-pattern delegates.  the widget will use
+// the provided reactor as its message processor. So even though a
+// widget appears to be a reactor, it's this inner reactor which is
+// doing all the work.
+
+interface ReactorKit {
+
+    // this usually results in a reactor with its own thread for
+    // processing messages, so when you send it a message the call
+    // returns in constant time
+    Reactor async(sequence<ReactorBinding>);
+
+    // whereas this results in a reactor which consumes the calling
+    // thread during message receipt
+    Reactor sync(sequence<ReactorBinding>);
+
+};
+
+// this header will appear on a message which requests a response be
+// sent on its arrival. the original sender, and the message to send
+// in response, are included in the header. Note: the sender must be
+// prepared to live with the fact that an rsvpHeader might be totally
+// ignored.  it has to live in this file because it depends on the
+// MessageListener interface. omni include semantics are wacked.
+
+struct RsvpHeader {
+  MessageListener originalSender;
+  Message receiptConfirmation;
+};
+
+
+#endif

@@ -1,0 +1,109 @@
+#ifndef __CLONEABLE__
+#define __CLONEABLE__ 
+
+//
+// $Id$
+//
+// This source file is a part of the Berlin Project.
+// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+// http://www.berlin-consortium.org
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public License
+// as published by the Free Software Foundation; either version 2 of
+// the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+//
+//
+
+#include "LifeCycle.idl"
+#include "ClientContext.idl"
+
+interface ServerContext;
+
+// ths cloneable interface is the base type for most of the objects
+// you will allocate in a berlin server. It is an extended form of
+// lifecycle object which supports a few extra convenience methods
+// such as hot-swapping and reference counting (since many resources
+// are shared in berlin)
+
+interface Cloneable;
+interface Cloneable : ::CosLifeCycle::LifeCycleObject {
+
+    // these are used by the various parenting operations of container
+    // objects, to indicate when a cloneable should be freed and when
+    // it's still in use somewhere inside the server. They usually
+    // delegate to a singleton map somewhere in the server
+    // implementation. The important thing to note is that there is no
+    // complex mark/sweep collector at work here. You have to put
+    // clones into a strict DAG if you ever want the GC to reap them.
+    void reference();
+    void forget();
+
+    // clone reproduces this object on this server. It doesn't remove
+    // the current object
+    Cloneable clone();
+    
+    // reload replaces this object with a freshly created copy,
+    // reloaded from disk.  you don't notice the change,
+    // hopefully. All your references to the old object should be
+    // transparently redirected via lifecycle service to the new
+    // object.
+    void reload();
+        
+    // copyStateToOther is overridden by subclasses. It is used in
+    // lifecycle code which migrates objects from one place to
+    // another, hot-swapping, etc.
+    void copyStateToOther(in Cloneable c);
+};
+
+exception SingletonFailureException {};
+exception CreationFailureException {};
+
+
+
+
+// like subjobs, these two are mutually dependent interfaces so they
+// have to go in the same file. This SUCKS
+
+
+// the ServerContext is an object you pick up from the berlin
+// server's root ContextManager, and which you use to create all
+// generic interfaces (kits, plugins, etc) using a thin layer around
+// the COS GenericFactory mechanism. If you need to invoke any of the
+// Lifecycle operations using a FactoryFinder, you can do so using the
+// attribute of the serverContext. It will always resolve to the
+// GenericFactory running inside the berlin server you're connected
+// to.
+
+interface ServerContext {
+    
+    readonly attribute ClientContext myClient;
+    readonly attribute ::CosLifeCycle::FactoryFinder myFactoryFinder;
+
+    // this is the entry point to generic object creation on a server. 
+    Object create(in string interfaceName) 
+	raises (SecurityException, CreationFailureException);
+    
+    // access to singletons (like the fontManager) this way
+    void setSingleton(in string name, in CosLifeCycle::LifeCycleObject singleton) 
+	raises (SecurityException, SingletonFailureException);
+
+    void delSingleton(in string name) 
+	raises (SecurityException, SingletonFailureException);
+
+    CosLifeCycle::LifeCycleObject getSingleton(in string name) 
+	raises (SecurityException, SingletonFailureException);
+    
+};
+
+
+#endif
