@@ -43,7 +43,7 @@ public:
   EventManager(Warsaw::Controller_ptr, Warsaw::Region_ptr);
   ~EventManager();
   bool request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  //. This method is polled by the ScreenManager. It qeries the Console
+  //. This method is polled by the ScreenManager. It queries the Console
   //. for new events and distributes them to the matching focus.
   void next_event();
   void restore(Warsaw::Region_ptr);
