@@ -43,6 +43,7 @@ PostScript::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::Pro
     _os(new std::filebuf())
 {
   _os.precision(5);
+  _os.setf(std::ios::fixed);
 }
 
 PostScript::DrawingKit::~DrawingKit()
@@ -59,7 +60,7 @@ KitImpl *PostScript::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
 void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
 {
   _os.clear();
-  static_cast<std::filebuf *>(_os.rdbuf())->open("berlin-output.ps", std::ios::out);
+  static_cast<std::filebuf *>(_os.rdbuf())->open("berlin-output.eps", std::ios::out);
 
   Region_var allocation = traversal->current_allocation();
   Transform_var transformation = traversal->current_transformation();
@@ -71,17 +72,34 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   //        -stefan
   double xfactor = resolution(xaxis);
   double yfactor = resolution(yaxis);
+
+  static Transform::Matrix m =
+    {{xfactor*xfactor, 0., 0., 0.},
+     {0., 0.-yfactor*yfactor, 0., 0.},
+     {0., 0., 1., 0.},
+     {0., 0., 0., 1.}};
+  TransformImpl *adjust = new TransformImpl(m);
+  _tr_adjust = adjust->_this();
+
+  Vertex lower = region.lower;
+  Vertex upper = region.upper;
+
+  _tr_adjust->transform_vertex(lower);
+  _tr_adjust->transform_vertex(upper);
+
+  Vertex translate; translate.y = lower.y - upper.y; translate.x = 0; translate.z = 0;
+  _tr_adjust->translate(translate);
+
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
   _os << "%%BoundingBox: "
       << region.lower.x*resolution(xaxis)*xfactor << ' '
-      << (region.lower.y - region.upper.y)*resolution(yaxis)*yfactor << ' '
+      << region.lower.y*resolution(yaxis)*yfactor << ' '
       << (region.upper.x - region.lower.x)*resolution(xaxis)*xfactor << ' '
-      << region.lower.y*resolution(yaxis)*yfactor << std::endl;
+      << (region.upper.y - region.lower.y)*resolution(yaxis)*yfactor << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Fresco" << std::endl;
-  _os << "/Times-Roman findfont 12 scalefont setfont" << std::endl;
+  _os << "/Times-Roman findfont 112 scalefont setfont" << std::endl;
   _os << "0 0 0 setrgbcolor" << std::endl;
-  _os << resolution(xaxis) << " " << -resolution(yaxis) << " scale" << std::endl;
   _os << std::endl;
 }
 
@@ -220,10 +238,11 @@ void PostScript::DrawingKit::draw_rectangle(const Vertex &lower, const Vertex &u
  _os << std::endl;
 }
 
-inline void PostScript::DrawingKit::vertex(const Vertex &x, char *c) {
+inline void PostScript::DrawingKit::vertex(const Vertex &x, const char *c) {
   Vertex v = x;
   _tr->transform_vertex(v);
-  _os << v.x*resolution(xaxis) << ' ' << v.y*resolution(yaxis) << c << std::endl;
+  _tr_adjust->transform_vertex(v);
+  _os << v.x << ' ' << v.y << c << std::endl;
 }
 
 void PostScript::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric, Fresco::Coord, Fresco::Coord)
@@ -238,20 +257,22 @@ void PostScript::DrawingKit::draw_image(Raster_ptr raster)
 {
   Raster_var r = Raster::_duplicate(raster);
   _os << "%draw_image" << std::endl;
-  Fresco::Transform::Matrix matrix;
-  _tr->store_matrix(matrix);
-  Vertex o; _tr->transform_vertex(o);
-  o.x *= (matrix[0][0]+matrix[1][0]) * resolution(xaxis);
-  o.y *= (matrix[0][1]+matrix[1][1]) * resolution(yaxis);
 
   _os << r->header().width << " " << r->header().height << " "
       << r->header().depth << std::endl;
-  _os << "[ " << matrix[0][0]*resolution(xaxis)
-      << " " << matrix[0][1]*resolution(xaxis)
-      << " " << matrix[1][0]*resolution(yaxis)
-      << " " << matrix[1][1]*resolution(yaxis)
-      << " " << 0-o.x*resolution(xaxis) << " "
-      << 0-o.y*resolution(yaxis) << " ]" << std::endl;
+  {
+  Vertex o = {0., 0., 0.};
+  Vertex i = {1.28354, 0., 0.};
+  Vertex j = {0., 1.28354, 0.};
+  _tr->transform_vertex(o);
+  _tr->transform_vertex(i);
+  _tr->transform_vertex(j);
+  _os << "[ " << i.x-o.x << " " << i.y-o.y
+      << " "  << j.x-o.x << " " << -j.y+o.y;
+  _tr_adjust->transform_vertex(o);
+  _os << " "  << -o.x*resolution(xaxis) << " " << o.y*resolution(yaxis) << " ]" << std::endl;
+  }
+
   _os << "{<" << std::endl;
   Raster::Index i;
   for (i.y = 0; i.y < r->header().height; i.y++) {
@@ -269,6 +290,7 @@ void PostScript::DrawingKit::draw_image(Raster_ptr raster)
   _os << std::endl;
 }
 
+//FIXME: what units is our font size in?
 void PostScript::DrawingKit::set_font_size(CORBA::ULong s)
 {
   _os << "%set_font_size" << std::endl;
@@ -301,11 +323,20 @@ void PostScript::DrawingKit::draw_char(Unichar c)
 {
   _os << "%draw_char" << std::endl;
   _os << "gsave" << std::endl;
-  Fresco::Transform::Matrix matrix;
-  _tr->store_matrix(matrix);
-  _os << matrix[0][3]*resolution(xaxis) << " " << matrix[1][3]*resolution(yaxis) << " moveto" << std::endl;
-  _os << "[ " << matrix[0][0] << " " << 0.-matrix[0][1] << " " << matrix[1][0] << " " << 0.-matrix[1][1] << " 0 0 ] concat" << std::endl;
-  _os << 1./resolution(xaxis) << " " << 1./resolution(yaxis) << " scale" << std::endl;
+  Vertex o = {0., 0., 0.}; vertex(o, " moveto");
+  Vertex i = {1., 0., 0.};
+  Vertex j = {0., 1., 0.};
+  _tr->transform_vertex(o);
+  _tr_adjust->transform_vertex(o);
+  _tr->transform_vertex(i);
+  _tr_adjust->transform_vertex(i);
+  _tr->transform_vertex(j);
+  _tr_adjust->transform_vertex(j);
+  // this is transposed from what makes sense to my brain.
+  _os << "[ " << i.x-o.x << " " << j.x-o.x
+      << " "  << o.y-i.y << " " << o.y-j.y
+      << " 0 0 ] concat" << std::endl;
+  
   char x[2];
   sprintf(x, "%02x", (int)c);
   _os << "<" << x << "> show" << std::endl;

@@ -100,9 +100,10 @@ public:
 
   virtual void flush() {}
 private:
-  void vertex(const Fresco::Vertex &, char *);
+  void vertex(const Fresco::Vertex &, const char *);
   Prague::Mutex                 _mutex;
   Fresco::Transform_var         _tr;
+  Fresco::Transform_var         _tr_adjust;
   Fresco::Region_var            _cl;
   Fresco::Color                 _fg;
   Fresco::Color                 _lt;
