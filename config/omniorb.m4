@@ -152,7 +152,7 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
     fi
     if test ".$omniorb_version" = ".3" || \
        test ".$omniorb_version" = "." -a ".$no_omniorb" = ".yes" ; then
-      AC_CHECK_HEADER(omniORB3/CORBA.h, omniorb_version=3, no_omniorb=yes)
+      AC_CHECK_HEADER(omniORB3/CORBA.h, omniorb_version=3 no_omniorb=, no_omniorb=yes)
     fi
   fi
 
