@@ -594,7 +594,7 @@ static void compensate(Coord a, Coord &x, Coord &y)
  */
 Vertex GraphicImpl::transform_allocate(RegionImpl &region, const Warsaw::Graphic::Requisition &_req, Transform_ptr t)
 {
-  Trace trace(0, "GraphicImpl::transform_allocation");
+  Trace trace("GraphicImpl::transform_allocation");
   Vertex delta;
   delta.x = delta.y = delta.z = 0.;
 
