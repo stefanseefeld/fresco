@@ -66,7 +66,7 @@ void Switch::attach(Telltale_ptr subject)
       if (flag == my_on) return;
       my_on = flag;
       set(my_alternate, body());
-      need_redraw();
+      need_resize();
     }
   else my_telltale = Telltale::_nil();
 }
@@ -77,8 +77,9 @@ void Switch::update(const CORBA::Any &)
   bool flag = my_telltale->test(my_mask);
   if (flag == my_on) return;
   my_on = flag;
+  need_resize(); // FIXME race condition, see bug256.
   set(my_alternate, body());
-  need_redraw();
+  need_resize();
 }
 
 void Switch::set(Graphic_ptr g1, Graphic_ptr g2)
