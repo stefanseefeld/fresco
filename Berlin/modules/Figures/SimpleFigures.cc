@@ -44,10 +44,13 @@ RectFig::~RectFig() {}
 void RectFig::request(Requisition &requisition)
 {
   requisition.x.defined = true;
-  requisition.x.natural = requisition.x.maximum = requisition.x.minimum = width;
+  requisition.x.natural = requisition.x.maximum =
+    requisition.x.minimum = width;
   requisition.x.align = 0.;
+
   requisition.y.defined = true;
-  requisition.y.natural = requisition.y.maximum = requisition.y.minimum = height;
+  requisition.y.natural = requisition.y.maximum =
+    requisition.y.minimum = height;
   requisition.y.align = 0.;
 }
 
