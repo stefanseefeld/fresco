@@ -34,7 +34,7 @@
 // ---------------------------------------------------------------
 
 // Internal defaults for server-publishing
-static std::string const my_default_reference_transfer_method("nameserver");
+static std::string const my_default_reference_transfer_method("ior");
 static std::string const my_default_ior_file_path("/tmp/fresco/");
 static std::string const my_default_server_id("FrescoServer");
 
