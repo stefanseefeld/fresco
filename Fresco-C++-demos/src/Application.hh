@@ -32,6 +32,7 @@
 #include <Warsaw/DesktopKit.hh>
 #include <Warsaw/ImageKit.hh>
 #include <Warsaw/GadgetKit.hh>
+#include <Warsaw/PrimitiveKit.hh>
 #include <Warsaw/Trigger.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Warsaw/Server.hh>
@@ -71,37 +72,39 @@ public:
     virtual void destroy();
   };
   Application(Warsaw::ServerContext_ptr);
-  Warsaw::TextKit_ptr text() { return Warsaw::TextKit::_duplicate(tk);}
-  Warsaw::DesktopKit_ptr desktop() { return Warsaw::DesktopKit::_duplicate(dk);}
-  Warsaw::LayoutKit_ptr layout() { return Warsaw::LayoutKit::_duplicate(lk);}
-  Warsaw::ToolKit_ptr tool() { return Warsaw::ToolKit::_duplicate(ttk);}
-  Warsaw::WidgetKit_ptr widget() { return Warsaw::WidgetKit::_duplicate(wk);}
-  Warsaw::FigureKit_ptr figure() { return Warsaw::FigureKit::_duplicate(fk);}
-  Warsaw::CommandKit_ptr command() { return Warsaw::CommandKit::_duplicate(ck);}
-  Warsaw::ImageKit_ptr image() { return Warsaw::ImageKit::_duplicate(ik);}
-  Warsaw::GadgetKit_ptr gadget() { return Warsaw::GadgetKit::_duplicate(gk);}
+  Warsaw::TextKit_ptr text() { return Warsaw::TextKit::_duplicate(_tk);}
+  Warsaw::DesktopKit_ptr desktop() { return Warsaw::DesktopKit::_duplicate(_dk);}
+  Warsaw::LayoutKit_ptr layout() { return Warsaw::LayoutKit::_duplicate(_lk);}
+  Warsaw::ToolKit_ptr tool() { return Warsaw::ToolKit::_duplicate(_ttk);}
+  Warsaw::WidgetKit_ptr widget() { return Warsaw::WidgetKit::_duplicate(_wk);}
+  Warsaw::FigureKit_ptr figure() { return Warsaw::FigureKit::_duplicate(_fk);}
+  Warsaw::CommandKit_ptr command() { return Warsaw::CommandKit::_duplicate(_ck);}
+  Warsaw::ImageKit_ptr image() { return Warsaw::ImageKit::_duplicate(_ik);}
+  Warsaw::GadgetKit_ptr gadget() { return Warsaw::GadgetKit::_duplicate(_gk);}
+  Warsaw::PrimitiveKit_ptr primitive() { return Warsaw::PrimitiveKit::_duplicate(_pk);}
   void append(Warsaw::Controller_ptr, const Babylon::String &);
   void run();
 protected:
   Item make_item(const Babylon::String &);
 private:
-  Warsaw::ServerContext_var server;
-  Warsaw::TextKit_var tk;
-  Warsaw::DesktopKit_var dk;
-  Warsaw::LayoutKit_var lk;
-  Warsaw::ToolKit_var ttk;
-  Warsaw::WidgetKit_var wk;
-  Warsaw::FigureKit_var fk;
-  Warsaw::CommandKit_var ck;
-  Warsaw::ImageKit_var ik;
-  Warsaw::GadgetKit_var gk;
-  Warsaw::Graphic_var vbox;
-  Widget::Choice_var  choice;
-  list_t demos;
-  Mapper *mapper;
-  Warsaw::Color background;
-  Warsaw::Graphic_var done;
-  Warsaw::Graphic_var settings;
+  Warsaw::ServerContext_var _server;
+  Warsaw::TextKit_var       _tk;
+  Warsaw::DesktopKit_var    _dk;
+  Warsaw::LayoutKit_var     _lk;
+  Warsaw::ToolKit_var       _ttk;
+  Warsaw::WidgetKit_var     _wk;
+  Warsaw::FigureKit_var     _fk;
+  Warsaw::CommandKit_var    _ck;
+  Warsaw::ImageKit_var      _ik;
+  Warsaw::GadgetKit_var     _gk;
+  Warsaw::PrimitiveKit_var  _pk;
+  Warsaw::Graphic_var       _vbox;
+  Widget::Choice_var        _choice;
+  list_t                    _demos;
+  Mapper                   *_mapper;
+  Warsaw::Color             _background;
+  Warsaw::Graphic_var       _done;
+  Warsaw::Graphic_var       _settings;
 };
 
 #endif

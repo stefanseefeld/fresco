@@ -77,16 +77,10 @@ module Primitive
   interface StaticTriangleGeometry : StaticGeometry {};
   */
     
-//   interface Geometry : PrimitiveBase
-//   {
-    
-//     exception OutOfRange { };
-//     attribute long vertexnumber;  
-//     void setVertex(in long index, in Warsaw::Vertex v);
-//     Warsaw::Vertex getVertex(in long index) raises (OutOfRange);
-//     void setVertices(in long index, in Warsaw::Vertices vs);
-//     Warsaw::Vertices getVertices(in long index, in long len) raises (OutOfRange);
-//   };
+  interface Geometry : PrimitiveBase
+    {
+      attribute Warsaw::Mesh mesh;
+    };
 
 //   interface PointGeometry : Geometry { };    
 

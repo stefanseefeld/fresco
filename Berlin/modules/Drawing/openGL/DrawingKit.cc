@@ -91,7 +91,7 @@ void GLDrawingKit::init()
   glViewport(0, 0, _drawable->width(), _drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
-  glOrtho(0, _drawable->width()/_drawable->resolution(xaxis), _drawable->height()/_drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
+  glOrtho(0, _drawable->width()/_drawable->resolution(xaxis), _drawable->height()/_drawable->resolution(yaxis), 0, -5000.0, 5000.0); 
   glTranslatef(0.375, 0.375, 0.);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -327,7 +327,7 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
   GLfloat light_position[] = { 5., 5., 10., 0.};
   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
   glEnable(GL_COLOR_MATERIAL);
-  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+  glEnable(GL_CULL_FACE);
 
   bool normals = mesh.normals.length() == mesh.triangles.length();
   glBegin(GL_TRIANGLES);
@@ -338,7 +338,6 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
 	  const Vertex &n = mesh.normals[i];
 	  glNormal3f(n.x, n.y, n.z);
 	}
-      else glEnable(GL_NORMALIZE);
       const Vertex &a = mesh.nodes[mesh.triangles[i].a];
       const Vertex &b = mesh.nodes[mesh.triangles[i].b];
       const Vertex &c = mesh.nodes[mesh.triangles[i].c];
@@ -349,7 +348,6 @@ void GLDrawingKit::draw_mesh(const Warsaw::Mesh &mesh)
   glEnd();
   glDisable(GL_LIGHTING);
   glDisable(GL_LIGHT0);
-  glDisable(GL_NORMALIZE);
 }
 
 void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}

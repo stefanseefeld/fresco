@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-#include "LogoDemo.hh"
+#include "PrimitiveDemo.hh"
 #include "Warsaw/config.hh"
 #include "Warsaw/Command.hh"
 #include "Warsaw/Desktop.hh"
@@ -49,98 +49,93 @@ class Backward : public Application::CommandImpl
 
 };
 
-LogoDemo::Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Coord d)
+PrimitiveDemo::Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Axis a)
   : value(BoundedValue::_duplicate(v)),
     child(Graphic::_duplicate(c)),
     parent(Graphic::_duplicate(p)),
-    zdegree(d)
+    axis(a)
 {
   CORBA::Any dummy;
   update(dummy);
 }
 
-void LogoDemo::Rotator::update(const CORBA::Any &)
+void PrimitiveDemo::Rotator::update(const CORBA::Any &)
 {
   Coord ydegree = value->value();
   Transform_var tx = child->transformation();
   tx->load_identity();
-  tx->rotate(ydegree, yaxis);
-  tx->rotate(zdegree, zaxis);
+  tx->rotate(ydegree, axis);
   parent->need_redraw();
 }
 
-LogoDemo::LogoDemo(Application *a)
+PrimitiveDemo::PrimitiveDemo(Application *a)
   : Demo(a),
     tx1(new TransformImpl),
-    tx2(new TransformImpl),
-    tx3(new TransformImpl)
+    tx2(new TransformImpl)
 {
   LayoutKit_var layout = application->layout();
   ToolKit_var   tools = application->tool();
   WidgetKit_var widgets = application->widget();
-  FigureKit_var figures = application->figure();
+  PrimitiveKit_var primitives = application->primitive();
   CommandKit_var commands = application->command();
   
-  bv1 = commands->bvalue(0., 360., 0., 5., 5.);
-  bv2 = commands->bvalue(0., 360., 0., 5., 5.);
-  bv3 = commands->bvalue(0., 360., 0., 5., 5.);
-  
-  tx1->rotate(10., zaxis);
-  tx2->rotate(-10., zaxis);
-  tx3->rotate(-20., zaxis);
+  phi = commands->bvalue(0., 360., 0., 5., 5.);
+  psi = commands->bvalue(0., 360., 0., 5., 5.);
   
   Coord a = 2000.;
   Vertex offset;
   offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Warsaw::Path path; path.length(3);
-  path[0].x = a/2 + offset.x, path[0].y = + offset.y, path[0].z = offset.z;
-  path[1].x = a + offset.x, path[1].y = 0.866*a + offset.y, path[1].z = offset.z;
-  path[2].x = offset.x, path[2].y = 0.866*a + offset.y, path[2].z = offset.z;
+  Warsaw::Mesh mesh;
+  mesh.nodes.length(4);
+  Coord w = 3000.;
+  Coord h = 3000.;
+  Coord d = 3000.;
+  mesh.nodes[0].x = -w/2, mesh.nodes[0].y = -h/2, mesh.nodes[0].z = -d/2;
+  mesh.nodes[1].x =  w/2, mesh.nodes[1].y = -h/2, mesh.nodes[1].z = -d/2;
+  mesh.nodes[2].x =  0, mesh.nodes[2].y = -h/2, mesh.nodes[2].z =  d/2;
+  mesh.nodes[3].x =  0, mesh.nodes[3].y =  h/2, mesh.nodes[3].z = 0;
+  mesh.triangles.length(4);
+  mesh.triangles[0].a = 0, mesh.triangles[0].b = 1, mesh.triangles[0].c = 3;
+  mesh.triangles[1].a = 1, mesh.triangles[1].b = 2, mesh.triangles[1].c = 3;
+  mesh.triangles[2].a = 2, mesh.triangles[2].b = 0, mesh.triangles[2].c = 3;
+  mesh.triangles[3].a = 0, mesh.triangles[3].b = 2, mesh.triangles[3].c = 1;
+  mesh.normals.length(4);
+  mesh.normals[0].x = 0., mesh.normals[0].y = .8, mesh.normals[0].z = .2;
+  mesh.normals[1].x = .8, mesh.normals[1].y = .2, mesh.normals[1].z = .2;
+  mesh.normals[2].x = -.2, mesh.normals[2].y = .2, mesh.normals[2].z = .2;
+  mesh.normals[3].x = 0., mesh.normals[3].y = -1., mesh.normals[3].z = 0.;
   
-  Figure::Path_var triangle = figures->polygon(path);
-  Graphic_var transformer1 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 1., 0.5, 0.5)));
-  Graphic_var transformer2 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 0.5, 0.5, 1.)));
-  Graphic_var transformer3 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 0.5, 1., 0.5)));
+  Primitive::Geometry_var triangle = primitives->geometry(mesh);
+  Graphic_var transformer1 = primitives->transformer(Graphic_var(tools->rgb(triangle, 0.6, 0.6, 1.0)));
+  Graphic_var transformer2 = primitives->transformer(Graphic_var(transformer1));
   
-  Graphic_var group = figures->group();
-  
-  rotator1 = new Rotator(bv1, transformer1, group, -10.);
-  bv1->attach(Observer_var(rotator1->_this()));
-  rotator2 = new Rotator(bv2, transformer2, group, 10.);
-  bv2->attach(Observer_var(rotator2->_this()));
-  rotator3 = new Rotator(bv3, transformer3, group, 20.);
-  bv3->attach(Observer_var(rotator3->_this()));
-  
-  Graphic_var root = figures->root(group);
-  group->append_graphic(transformer1);
-  group->append_graphic(transformer2);
-  group->append_graphic(transformer3);
+  Graphic_var root = primitives->root(transformer2);
+
+  rotator1 = new Rotator(phi, transformer1, root, zaxis);
+  phi->attach(Observer_var(rotator1->_this()));
+  rotator2 = new Rotator(psi, transformer2, root, yaxis);
+  psi->attach(Observer_var(rotator2->_this()));
   
   Graphic_var hbox1 = layout->hbox();
   hbox1->append_graphic(Graphic_var(layout->hfill()));
-  hbox1->append_graphic(Graphic_var(widgets->slider(bv1, xaxis)));
+  hbox1->append_graphic(Graphic_var(widgets->slider(phi, xaxis)));
   hbox1->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var hbox2 = layout->hbox();
   hbox2->append_graphic(Graphic_var(layout->hfill()));
-  hbox2->append_graphic(Graphic_var(widgets->slider(bv2, xaxis)));
+  hbox2->append_graphic(Graphic_var(widgets->slider(psi, xaxis)));
   hbox2->append_graphic(Graphic_var(layout->hfill()));
-  Graphic_var hbox3 = layout->hbox();
-  hbox3->append_graphic(Graphic_var(layout->hfill()));
-  hbox3->append_graphic(Graphic_var(widgets->slider(bv3, xaxis)));
-  hbox3->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var box = layout->vbox();
-  box->append_graphic(Graphic_var(layout->align(group, 0., 0.)));
+  box->append_graphic(Graphic_var(layout->align(root, 0., 0.)));
   box->append_graphic(hbox1);
   box->append_graphic(hbox2);
-  box->append_graphic(hbox3);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var foo = tools->frame(box, 10., spec, true);
   Controller_var bar = tools->group(foo);
-  application->append(bar, Babylon::String("MVC demo"));
+  application->append(bar, Babylon::String("3D demo"));
 }
 
-Graphic_ptr LogoDemo::make_controller(BoundedValue_ptr value, const Color &color)
+Graphic_ptr PrimitiveDemo::make_controller(BoundedValue_ptr value, const Color &color)
 {
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();

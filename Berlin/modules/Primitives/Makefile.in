@@ -34,7 +34,7 @@ hdir		:= $(top_srcdir)/include/Primitive
 CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
-SRC		:= Root.cc PrimitiveImpl.cc Primitives.cc PrimitiveKitImpl.cc
+SRC		:= Root.cc PrimitiveImpl.cc Primitives.cc Transformer.cc PrimitiveKitImpl.cc
 
 MODULE		:= Primitive
 

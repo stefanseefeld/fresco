@@ -41,19 +41,6 @@ module Widget
       Warsaw::Tag prepend_item(in Warsaw::Graphic g);
       void remove_item(in Warsaw::Tag t);
     };
-  //. a Paned graphic is used to fine-tune the relative allocation
-  //. for two tiled graphics inside a parent graphic.
-  //. If the two graphics are flexible, the positions's range
-  //. reflects the constraints of a relative resize.
-  interface Paned : Warsaw::Controller
-    {
-      //. a resize policy of 0 means that the size difference
-      //. should be absorbed by the first child if possible, a
-      //. value of 1 means by the second
-      attribute Warsaw::Alignment resize_policy;
-      //. return the current value of the adjustment
-      readonly attribute Warsaw::BoundedValue adjustment;
-    };
 };
 
 #endif

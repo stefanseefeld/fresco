@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,26 +20,36 @@
  * MA 02139, USA.
  */
 
-#ifndef _PrimitiveKitImpl_hh
-#define _PrimitiveKitImpl_hh
+#ifndef _Transformer_hh
+#define _Transformer_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/PrimitiveKit.hh>
-#include <Warsaw/Primitive.hh>
-#include <Berlin/KitImpl.hh>
-#include <vector>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/Allocator.hh>
+#include <Berlin/ImplVar.hh>
 
-class PrimitiveKitImpl : public virtual POA_Warsaw::PrimitiveKit,
-			 public KitImpl
+class Transformer : public Allocator
+{
+ public:
+  Transformer();
+  virtual ~Transformer();
+  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual Warsaw::Transform_ptr transformation();
+  void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+ private:
+  Impl_var<TransformImpl> transform;
+};
+
+class BodyTransformer : public Transformer
 {
 public:
-  PrimitiveKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
-  virtual ~PrimitiveKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new PrimitiveKitImpl(repo_id(), p);}
-
-  Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
-  Primitive::Geometry_ptr geometry(const Warsaw::Mesh &);
-  Warsaw::Graphic_ptr transformer(Warsaw::Graphic_ptr);
+  BodyTransformer(Transformer*, unsigned d = 0);
+  BodyTransformer(Warsaw::Transform_ptr, unsigned d = 0);
+  virtual void body(Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic_ptr body();
+protected:
+  unsigned depth;
 };
 
 #endif

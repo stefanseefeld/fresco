@@ -23,10 +23,9 @@
 #include <Warsaw/config.hh>
 #include "Primitive/Root.hh"
 #include "Primitive/PrimitiveKitImpl.hh"
-// #include "Primitive/PrimitiveImpl.hh"
 // #include "Primitive/PolyPrimitive.hh"
 #include "Primitive/Primitives.hh"
-// #include "Primitive/Transformer.hh"
+#include "Primitive/Transformer.hh"
 
 using namespace Warsaw;
 
@@ -42,16 +41,26 @@ Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr child)
   return g->_this();
 }
 
-Graphic_ptr PrimitiveKitImpl::geometry(const Warsaw::Mesh &)
+Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Warsaw::Mesh &mesh)
 {
-  return Warsaw::Graphic::_nil();
+  GeometryImpl *geometry = new GeometryImpl(mesh);
+  activate(geometry);
+  return geometry->_this();
 }
 
-Primitive::Box_ptr PrimitiveKitImpl::cube(const Vertex &lower, const Vertex &upper)
+// Primitive::Box_ptr PrimitiveKitImpl::cube(const Vertex &lower, const Vertex &upper)
+// {
+//   BoxImpl *box = new BoxImpl(lower, upper);
+//   activate(box);
+//   return box->_this();
+// }
+
+Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {
-  BoxImpl *box = new BoxImpl(lower, upper);
-  activate(box);
-  return box->_this();
+  Transformer *transformer = new Transformer;
+  activate(transformer);
+  transformer->body(g);
+  return transformer->_this();
 }
 
 extern "C" KitImpl *load()

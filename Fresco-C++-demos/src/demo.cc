@@ -29,6 +29,7 @@
 #include "RasterDemo.hh"
 #include "ColorDemo.hh"
 #include "LogoDemo.hh"
+#include "PrimitiveDemo.hh"
 #include "FocusDemo.hh"
 #include "ViewportDemo.hh"
 #include "DocDemo.hh"
@@ -54,21 +55,23 @@ int main(int argc, char **argv)
 
   Application *application = new Application(server);
 
-  Demo *layout   = new LayoutDemo(application);
-  Demo *text     = new TextDemo(application);
-  Demo *edit     = new EditTextDemo(application);
-  Demo *raster   = new RasterDemo(application);
-  Demo *color    = new ColorDemo(application);
-  Demo *logo     = new LogoDemo(application);
-  Demo *focus    = new FocusDemo(application);
-  Demo *viewport = new ViewportDemo(application);
-  Demo *document = new DocDemo(application);
-  Demo *terminal = new TermDemo(application);
+  Demo *layout    = new LayoutDemo(application);
+  Demo *text      = new TextDemo(application);
+  Demo *edit      = new EditTextDemo(application);
+  Demo *raster    = new RasterDemo(application);
+  Demo *color     = new ColorDemo(application);
+  Demo *logo      = new LogoDemo(application);
+  Demo *primitive = new PrimitiveDemo(application);
+  Demo *focus     = new FocusDemo(application);
+  Demo *viewport  = new ViewportDemo(application);
+  Demo *document  = new DocDemo(application);
+  Demo *terminal  = new TermDemo(application);
   application->run();
   delete terminal;
   delete document;
   delete viewport;
   delete focus;
+  delete primitive;
   delete logo;
   delete color;
   delete raster;

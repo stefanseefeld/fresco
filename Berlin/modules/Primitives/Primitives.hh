@@ -108,21 +108,15 @@ private:
 //   Warsaw::Coord  _radius2;
 // };
 
-// class PathImpl : public virtual POA_Figure::Path,
-//                  public FigureImpl
-// {
-// public:
-//   PathImpl(bool);
-//   PathImpl(const Warsaw::Path &, bool);
-//   PathImpl(const PathImpl &);
-//   virtual ~PathImpl();
-//   virtual void resize();
-//   Warsaw::Path *handles();
-//   void handles(const Warsaw::Path &);
-//   CORBA::Boolean closed();
-// private:
-//   Warsaw::Path_var _handles;
-//   bool             _closed;
-// };
+class GeometryImpl : public virtual POA_Primitive::Geometry,
+		     public PrimitiveImpl
+{
+public:
+  GeometryImpl(const Warsaw::Mesh &);
+  GeometryImpl(const GeometryImpl &);
+  virtual ~GeometryImpl();
+  virtual Warsaw::Mesh *mesh();
+  virtual void mesh(const Warsaw::Mesh &);
+};
 
 #endif

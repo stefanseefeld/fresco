@@ -26,6 +26,7 @@
 #include <Warsaw/Grid.idl>
 #include <Warsaw/Stage.idl>
 #include <Warsaw/Viewport.idl>
+//#include <Warsaw/Splitter.idl>
 
 module Warsaw
 {
@@ -50,6 +51,9 @@ module Warsaw
       
       //. A viewport allows its child to be scrolled.
       Layout::Viewport scrollable(in Graphic g);
+
+      //. A splitter allocates space for the first and the second according to a externally controllable value.
+      //      Layout::Splitter splitter(in Graphic g, in Graphic p, in Axis a);
       
       //. A stage allows its children to be placed at any position and
       //. layering.

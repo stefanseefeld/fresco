@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _LogoDemo_hh
-#define _LogoDemo_hh
+#ifndef _PrimitiveDemo_hh
+#define _PrimitiveDemo_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Command.hh>
@@ -30,32 +30,30 @@
 #include <Berlin/ImplVar.hh>
 #include "Demo.hh"
 
-class LogoDemo : public Demo
+class PrimitiveDemo : public Demo
 {
   class Rotator : public ObserverImpl
   {
   public:
-    Rotator(Warsaw::BoundedValue_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Coord);
+    Rotator(Warsaw::BoundedValue_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
     void update(const CORBA::Any &);
   private:
     Warsaw::BoundedValue_var value;
     Warsaw::Graphic_var child;
     Warsaw::Graphic_var parent;
-    Warsaw::Coord zdegree;
+    Warsaw::Axis axis;
   };
+
 public:
-  LogoDemo(Application *);
+  PrimitiveDemo(Application *);
   Warsaw::Graphic_ptr make_controller(Warsaw::BoundedValue_ptr, const Warsaw::Color &);
 private:
-  Warsaw::BoundedValue_var bv1;
-  Warsaw::BoundedValue_var bv2;
-  Warsaw::BoundedValue_var bv3;
+  Warsaw::BoundedValue_var phi;
+  Warsaw::BoundedValue_var psi;
   Impl_var<TransformImpl> tx1;
   Impl_var<TransformImpl> tx2;
-  Impl_var<TransformImpl> tx3;
   Impl_var<Rotator> rotator1;
   Impl_var<Rotator> rotator2;
-  Impl_var<Rotator> rotator3;
 };
 
 #endif

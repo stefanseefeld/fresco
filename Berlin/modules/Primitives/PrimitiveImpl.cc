@@ -59,9 +59,10 @@ void TransformPrimitive::request(Warsaw::Graphic::Requisition &r)
     {
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
       Coord y_lead = -region->lower.y, y_trail = region->upper.y;
+      Coord z_lead = -region->lower.z, z_trail = region->upper.z;
       GraphicImpl::require_lead_trail(r.x, x_lead, x_lead, x_lead, x_trail, x_trail, x_trail);
       GraphicImpl::require_lead_trail(r.y, y_lead, y_lead, y_lead, y_trail, y_trail, y_trail);
-      r.z.defined = false;
+      GraphicImpl::require_lead_trail(r.z, z_lead, z_lead, z_lead, z_trail, z_trail, z_trail);
     }
   else
     {
@@ -115,43 +116,9 @@ void TransformPrimitive::copy(const TransformPrimitive &tp)
 PrimitiveImpl::PrimitiveImpl() : _mesh(new Warsaw::Mesh()) {}
 PrimitiveImpl::~PrimitiveImpl() {}
 
-void PrimitiveImpl::extension(const Allocation::Info &info, Region_ptr region)
-{
-  Trace trace("PrimitiveImpl::extension");
-  if (_mesh->nodes.length() > 0)
-    {
-      Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
-      tmp->copy(Region_var(_ext->_this()));
-      tmp->xalign = tmp->yalign = tmp->zalign = 0.;
-      Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
-      transformation->copy(info.transformation);
-      transformation->premultiply(Transform_var(_tx->_this()));
-      tmp->apply_transform(Transform_var(transformation->_this()));
-      //      if (_mode & Figure::outline)
-      //	{
-// 	  Coord w = 1.;
-// 	  if (is_not_nil(style_))
-// 	    {
-// 	      Brush_var b = style_->brush_attr();
-// 	      if (is_not_nil(b))
-// 		{
-// 		  XfBrush::Info* i;
-// 		  b->brush_info(i);
-// 		  if (!Math::equal(i->width, float(0), float(1e-2))) w = i->width;
-//                 }
-//             }
-// 	  tmp->lower.x -= w; tmp->upper.x += w;
-// 	  tmp->lower.y -= w; tmp->upper.y += w;
-// 	  tmp->lower.z -= w; tmp->upper.z += w;
-//	}
-//      region->merge_union(Region_var(tmp->_this()));
-    }
-}
-
 void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("PrimitiveImpl::draw");
-#if 0
   if (_mesh->nodes.length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
@@ -161,13 +128,15 @@ void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
       if (traversal->intersects_region(Region_var(region->_this())))
 	{
 	  DrawingKit_var drawing = traversal->drawing();
-	  Color color = drawing->foreground();
-	  drawing->save();
-	  Transform_var tmp = drawing->transformation();
-	  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-	  cumulative->copy(Transform_var(drawing->transformation()));
-	  cumulative->premultiply(Transform_var(_tx->_this()));
-	  drawing->transformation(Transform_var(cumulative->_this()));
+	  DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
+	  if (CORBA::is_nil(d3d)) return;
+	  d3d->save();
+// 	  Transform_var tmp = d3d->transformation();
+// 	  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
+// 	  cumulative->copy(Transform_var(d3d->transformation()));
+// 	  cumulative->premultiply(Transform_var(_tx->_this()));
+// 	  d3d->transformation(Transform_var(cumulative->_this()));
+
 //  	  if (_mode & Figure::fill)
 //  	    {
 // 	      drawing->foreground(_bg);
@@ -178,12 +147,10 @@ void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
 // 	    {
 // 	      drawing->foreground(_fg);
 // 	      drawing->surface_fillstyle(DrawingKit::outlined);
-//	  drawing->draw_mesh(_mesh);
-// 	}
-	  drawing->restore();
+	  d3d->draw_mesh(_mesh);
+	  d3d->restore();
 	}
     }
-#endif
 }
 
 /*
@@ -297,31 +264,33 @@ void PrimitiveImpl::pick(PickTraversal_ptr traversal)
 
 void PrimitiveImpl::resize()
 {
-//   _ext->valid = false;
-//   if (_mesh.vertices->length() > 0)
-//     {
-//       _ext->valid = true;
-//       //      _ext->lower = _mesh[0];
-//       //      _ext->upper = _mesh[0];
-//       CORBA::ULong n = _mesh->length();
-//       for (CORBA::ULong i = 1; i < n; i++)
-// 	{
-// 	  _ext->lower.x = Math::min(_ext->lower.x, _mesh[i].x);
-// 	  _ext->upper.x = Math::max(_ext->upper.x, _mesh[i].x);
-// 	  _ext->lower.y = Math::min(_ext->lower.y, _mesh[i].y);
-// 	  _ext->upper.y = Math::max(_ext->upper.y, _mesh[i].y);
-//         }
-//       // in case of vertical/horizontal line with nil brush, 
-//       // painter->is_visible will be return false, so add 1
+  _ext->valid = false;
+  if (_mesh->nodes.length() > 0)
+    {
+      _ext->valid = true;
+      _ext->lower = _mesh->nodes[0];
+      _ext->upper = _mesh->nodes[0];
+      CORBA::ULong n = _mesh->nodes.length();
+      for (CORBA::ULong i = 1; i < n; ++i)
+ 	{
+ 	  _ext->lower.x = Math::min(_ext->lower.x, _mesh->nodes[i].x);
+ 	  _ext->upper.x = Math::max(_ext->upper.x, _mesh->nodes[i].x);
+ 	  _ext->lower.y = Math::min(_ext->lower.y, _mesh->nodes[i].y);
+ 	  _ext->upper.y = Math::max(_ext->upper.y, _mesh->nodes[i].y);
+ 	  _ext->lower.z = Math::min(_ext->lower.z, _mesh->nodes[i].z);
+ 	  _ext->upper.z = Math::max(_ext->upper.z, _mesh->nodes[i].z);
+	}
+      // in case of vertical/horizontal line with nil brush, 
+      // painter->is_visible will be return false, so add 1
 //       if ((ext_.lower_.x == ext_.upper_.x) ||
-// 	  (ext_.lower_.y == ext_.upper_.y)) 
+//  	  (ext_.lower_.y == ext_.upper_.y)) 
 // 	ext_.upper_.x +=1; ext_.upper_.y +=1;
-//     }	
+    }	
 }
 
 void PrimitiveImpl::reset()
 {
-  _mesh = new Warsaw::Mesh();
+//   _mesh = new Warsaw::Mesh();
   _ext->valid = false;
 }
 

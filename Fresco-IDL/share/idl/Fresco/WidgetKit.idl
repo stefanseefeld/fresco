@@ -56,18 +56,18 @@ module Warsaw
   //. particular way by modifying the subjects they're bound to.
   interface WidgetKit : Kit
     {
-      Trigger        button(in Graphic g, in Command c);
-      Controller     toggle(in Graphic g);
-      Graphic        gauge(in BoundedValue v);
-      Controller     slider(in BoundedValue v, in Axis a);
-      Controller     panner(in BoundedRange x, in BoundedRange y);
-      Controller     scrollbar(in BoundedRange x, in Axis a);
-      Widget::Choice toggle_choice();
-      Widget::Choice checkbox_choice();
-      Widget::Choice toolbar();
-      Controller     terminal();
-      Widget::Paned  paned(in Graphic g1, in Graphic g2, in Axis a);
-      Controller     scrollable(in Graphic g);
+      Trigger          button(in Graphic g, in Command c);
+      Controller       toggle(in Graphic g);
+      Graphic          gauge(in BoundedValue v);
+      Controller       slider(in BoundedValue v, in Axis a);
+      Controller       panner(in BoundedRange x, in BoundedRange y);
+      Controller       scrollbar(in BoundedRange x, in Axis a);
+      Widget::Choice   toggle_choice();
+      Widget::Choice   checkbox_choice();
+      Widget::Choice   toolbar();
+      Controller       terminal();
+//       Widget::Splitter splitter(in Graphic g1, in Graphic g2, in Axis a);
+      Controller       scrollable(in Graphic g);
     };
 };
 

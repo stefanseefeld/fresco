@@ -69,7 +69,6 @@ public:
   void reset();
   virtual void resize();
 
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
 

@@ -188,54 +188,9 @@ void BoxImpl::draw(DrawTraversal_ptr traversal)
 // Coord EllipseImpl::radius2() { return _radius2;}
 // void EllipseImpl::radius2(Coord r) { _radius2 = r; resize();}
 
-// PathImpl::PathImpl(bool flag) : _handles(new Warsaw::Path()), _closed(flag) {}
-// PathImpl::PathImpl (const Warsaw::Path &path, bool flag) : _handles(new Warsaw::Path(path)), _closed(flag) { resize();}
-// PathImpl::PathImpl(const PathImpl &path) : _handles(new Warsaw::Path(path._handles)), _closed(path._closed) { copy(path);}
+GeometryImpl::GeometryImpl (const Warsaw::Mesh &mesh) { _mesh = new Warsaw::Mesh(mesh); resize();}
+GeometryImpl::GeometryImpl(const GeometryImpl &geometry) { resize();}
+GeometryImpl::~GeometryImpl () {}
 
-// void PathImpl::resize()
-// {
-// //   FigureKit::Vertices& vv = *handles_;
-// //   long n = vv.length();
-//   reset();
-// //   if (!closed_ && curved_) {
-// //         Bspline_move_to(vv[0].x, vv[0].y, vv[0].x, vv[0].y, vv[0].x, vv[0].y);
-// //         Bspline_curve_to(vv[0].x, vv[0].y, vv[0].x, vv[0].y, vv[1].x, vv[1].y);
-// //         for (long i = 1; i < n - 1; ++i) {
-// //             Bspline_curve_to(
-// //                 vv[i].x, vv[i].y, vv[i-1].x, vv[i-1].y, vv[i+1].x, vv[i+1].y
-// //             );
-// //         }
-// //         Bspline_curve_to(
-// // 	    vv[n-1].x, vv[n-1].y, vv[n-2].x, vv[n-2].y, vv[n-1].x, vv[n-1].y
-// //         );
-// //         Bspline_curve_to(
-// // 	    vv[n-1].x, vv[n-1].y, vv[n-1].x, vv[n-1].y, vv[n-1].x, vv[n-1].y
-// //         );
-// //     } else if (closed_ && curved_) {
-// //         Bspline_move_to(
-// // 	    vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
-// //         );
-// //         for (long i = 1; i < n - 1; ++i) {
-// //             Bspline_curve_to(
-// //                 vv[i].x, vv[i].y, vv[i-1].x, vv[i-1].y, vv[i+1].x, vv[i+1].y
-// //             );
-// //         }
-// //         Bspline_curve_to(
-// //             vv[n-1].x, vv[n-1].y, vv[n-2].x, vv[n-2].y, vv[0].x, vv[0].y
-// //         );
-// //         Bspline_curve_to(
-// //             vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
-// //         );
-// //     } else {
-//   for (CORBA::ULong i = 0; i < _handles->length(); ++i) add_point(_handles[i].x, _handles[i].y);
-//   if (_closed && _handles->length()) add_point(_handles[0].x, _handles[0].y);
-// //         }
-// //     }
-// //   cerr << "sorry, PathImpl::resize not implemented" << endl;
-// }
-
-// PathImpl::~PathImpl () {}
-
-// Warsaw::Path *PathImpl::handles() { return new Warsaw::Path(_handles);}
-// void PathImpl::handles(const Warsaw::Path &path) { _handles = new Warsaw::Path(path); resize();}
-// CORBA::Boolean PathImpl::closed() { return _closed;}
+Warsaw::Mesh *GeometryImpl::mesh() { return new Warsaw::Mesh(_mesh);}
+void GeometryImpl::mesh(const Warsaw::Mesh &m) { _mesh = new Warsaw::Mesh(m); resize();}

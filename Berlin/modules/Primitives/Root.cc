@@ -40,7 +40,7 @@ void Root::draw(DrawTraversal_ptr traversal)
   DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
   if (!CORBA::is_nil(d3d))
     {
-      cout << "success !" << endl;
+      // initialize the 3D substate of the DrawingKit here...
     }
   TransformAllocator::traverse(traversal);
 }

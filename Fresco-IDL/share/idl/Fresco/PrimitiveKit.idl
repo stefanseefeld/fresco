@@ -29,16 +29,20 @@
 
 module Warsaw
 {
-  interface BoundedValue;
-  interface Graphic;
-  interface Raster;
-  interface Image;
-  
+  //. This kit produces graphics with appropriate logic for rendering
+  //. abstract 3D shapes.  you input meshes, patches, styles (which define
+  //. attributes like color, line thickness, pattern, etc) and you get
+  //. back an object which will draw the specified type of object when it
+  //. is traversed.
   interface PrimitiveKit : Kit
     {
+      //. Return a graphic that centers its body by transformation.
+      //. This kind of graphic should be put around a collection
+      //. of primitives that are inside a layout object such as a box.
       Graphic root(in Graphic g);
-      Graphic geometry(in Mesh m);
-      Primitive::Box cube(in Vertex l, in Vertex u);
+      Primitive::Geometry geometry(in Mesh m);
+      //. apply a fixed transformation to the body graphic
+      Graphic transformer(in Graphic g);
     };
 };
 
