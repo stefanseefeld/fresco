@@ -168,7 +168,8 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 		dnl Hard to check the GateKeeper lib because of circular
 		dnl dependency between it and libomniORB3
 		if test ".$omniorb_version" = ".4" ; then
-			ORB_LIBS="$ORB_LIBS -lomniAsyncInvoker"
+# libomniAsyncInvoker has been removed from recent omniORB4 snapshots
+#			ORB_LIBS="$ORB_LIBS -lomniAsyncInvoker"
 			BERLIN_CHECK_LIB(ORB_LIBS, omniORB4, [CORBA::ORB_var orb],
 				omniORB4/CORBA.h)
 			BERLIN_CHECK_LIB(ORB_LIBS, omniDynamic4, [CORBA::Any_var any;],
