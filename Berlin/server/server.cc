@@ -384,9 +384,9 @@ int main(int argc, char **argv) /*FOLD00*/
 	 if (x_position == std::string::npos) invalid_format = true;
 	 else
 	 {
-	   stringstream s(pixels.substr(0,x_position));
+           std::stringstream s(pixels.substr(0,x_position));
 	   s >> x_pixels;
-	   stringstream t(pixels.substr(x_position+1,pixels.size()));
+	   std::stringstream t(pixels.substr(x_position+1,pixels.size()));
 	   t >> y_pixels;
 	 }
 	 if ((x_pixels <= 0) || (y_pixels <= 0)) invalid_format = true;
@@ -395,7 +395,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	   std::cerr << "ERROR: Format of 'pixels' option should be:\n"
 		     << " --pixels 800x600, with 800 and 600 replaced\n"
 		     << "by the desired x and y values"
-		     << endl;
+		     << std::endl;
 	   exit(1);
 	 }
        }
