@@ -701,10 +701,10 @@ Babylon::analyse(const Babylon::String::const_iterator start,
     return (emb);
 }
 
-std::basic_string<unsigned char>
+std::string
 get_embedding_levels(const Babylon::Embedding_Levels & emb) {
     Prague::Trace trace("Babylon::get_embedding_levels(...)");
-    std::basic_string<unsigned char> result;
+    std::string result;
     for(std::vector<Babylon::Type>::const_iterator i = emb.types.begin();
 	i != emb.types.end();
 	++i)

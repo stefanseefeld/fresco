@@ -32,7 +32,8 @@ CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 CPPFLAGS        += -DRC_MODULEPATH='"$(libdir)/Babylon"'
 
-SRC		:= String.cc Char.cc Dictionary.cc utils.cc vis_iterator.cc
+SRC		:= traits.cc String.cc Char.cc Dictionary.cc utils.cc \
+                   vis_iterator.cc
 HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/*.hh))
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))

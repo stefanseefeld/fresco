@@ -67,7 +67,7 @@ analyse(const Babylon::String::const_iterator, //.< start of input string
 
 //. This function gets returns a string of embedding levels from
 //. the runlength encoded list of levels in Embedding_Level.
-std::basic_string<unsigned char>
+std::string
 get_embedding_levels(const Babylon::Embedding_Levels & emb);
 
 //. Generates a mapping from the visual string of characters to the
