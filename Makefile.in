@@ -94,30 +94,30 @@ maintainer-clean:
 ifneq ($(findstring Prague, $(subdirs)),)
 Prague	:= --with-Prague-prefix=$(builddir)/Prague
 
-Babylon:	Prague
-Berlin:		Prague
-Clients-C++:	Prague
+Babylon/Makefile:	Prague/Makefile
+Berlin/Makefile:	Prague/Makefile
+Clients-C++/Makefile:	Prague/Makefile
 endif
 ifneq ($(findstring Babylon, $(subdirs)),)
 Babylon	:= --with-Babylon-prefix=$(builddir)/Babylon
 
-Fresco:		Babylon
-Berlin:		Babylon
-Clients-C++:	Babylon
+Fresco/Makefile:		Babylon/Makefile
+Berlin/Makefile:		Babylon/Makefile
+Clients-C++/Makefile:	Babylon/Makefile
 endif
 ifneq ($(findstring Fresco, $(subdirs)),)
 Fresco	:= --with-Fresco-prefix=$(builddir)/Fresco
 
-Berlin:		Fresco
-Clients-C++:	Fresco
-Clients-Python:	Fresco
-Clients-Perl:	Fresco
+Berlin/Makefile:		Fresco/Makefile
+Clients-C++/Makefile:	Fresco/Makefile
+Clients-Python/Makefile:	Fresco/Makefile
+Clients-Perl/Makefile:	Fresco/Makefile
 endif
 ifneq ($(findstring Berlin, $(subdirs)),)
 Berlin	:= --with-Berlin-prefix=$(builddir)/Berlin
 
-GGI:		Berlin
-SDL:		Berlin
+GGI/Makefile:		Berlin/Makefile
+SDL/Makefile:		Berlin/Makefile
 Clients-C++:	Berlin #this has to go !
 endif
 
