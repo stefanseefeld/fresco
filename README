@@ -17,25 +17,51 @@ For csh:
 # make config
 # make
 
-with little difficulty. When (if) the build finishes, the berlin
-display server "berlin" will be in the /bin directory, and a program
-demonstrating a widget "testButton" will be under /bin/demo. You'll
-have to have omniNames running for either of them to work. You'll have
-to either add the path to /lib to your ld.so.config file or append it
-in a LD_LIBRARY_PATH variable to the command line before running the
-programs, as berlin uses shared libraries extensively.
+with little difficulty. When (if) the build finishes, you will find
+several test applications in the /bin directory. You must have omniNames
+running for any of these to work.
 
 Testing has been confined to an extremely narrow environment. The
 facilities we build & test with are:
 
- * linux 2.0.3x
- * egcs 1.0.3
- * glibc 2.0.7 & pthreads
+ * linux 2.2.x
+ * egcs 1.1.2
+ * glibc 2.1.1 & pthreads
  * libstdc++ 2.9 & devel
  * libggi 1.499 & devel
  * Mesa 3.0 & devel
  * ggiMesa
- * omniORB 2.6 (or late august snapshot) & devel
+ * omniORB 2.7.1
+
+Currently most development is being done under Debian Linux Potato. You
+can update your current Debian machine to get the packages necessary by
+doing the following:
+
+If you do not have apt-get, please download it from:
+ftp://ftp.debian.org/debian/dists/slink/main/upgrade-2.0-i386/apt_0.1.8_i386.deb
+
+and run:
+
+# dpkg -i  apt_0.1.8_i386.deb
+
+# cat << __EOF__ > /etc/apt/sources.list
+deb http://ftp.debian.org/debian stable main contrib non-free
+deb http://ftp.debian.org/debian unstable main contrib non-free
+__EOF__
+
+# apt-get update
+
+This will bring your Debian installation to Potato
+# apt-get dist-upgrade
+
+# apt-get install libc6 libgii0-dev gcc g++ omniorb omniorb-dev \
+                  libggi2 libggi2-dev mesag3+ggi mesag3+ggi-dev \
+                  glutg3+ggi glutg3+ggi-dev libggi-samples \
+                  libggi-target-x libstdc++2.9-glibc2.1 libg++272-dev \
+                  freetype2 freetype2-dev
+
+# apt-get check
+# apt-get upgrade
 
 Please do not hesitate to customize the build process for an
 additional platform and send us patches to this tree. If it builds
