@@ -30,14 +30,24 @@ module Warsaw
 {
   interface ClientContext;
 
-  //. The ServerContext is an object you pick up from the berlin
-  //. server's root ContextManager, and which you use to create all
-  //. generic interfaces (kits, plugins, etc).
+  //. Interface of the per-client context object. Each client receives a
+  //. reference to a ServerContext upon authentication by the Server object's
+  //. create_server_context operation. Through the ServerContext the client can
+  //. resolve singletons and Kits. 
+  //. @see Server
+  //. @see Kit
   interface ServerContext
     {
-      //. The ClientContext that is associated with this
+      //. The ClientContext that is associated with this ServerContext
       readonly attribute ClientContext client;
-      //. This is the entry point to generic object creation on a server.
+
+      //. The entry point to generic object creation on a server. The
+      //. ServerContext will use the type string and the property sequence to
+      //. locate a suitable Kit object.
+      //. @param type The type of Kit to resolve
+      //. @param attr Allows specific Kit implementations to be selected in a
+      //. generic manner
+      //. @return The resolved kit
       Kit resolve(in string type, in Kit::PropertySeq attr)
 	raises (SecurityException, CreationFailureException);
       
@@ -49,6 +59,7 @@ module Warsaw
       //. singleton with a name that allready exists.
       void set_singleton(in string name, in Object singleton) 
 	raises (SecurityException, SingletonFailureException);
+
       //. Remove the singleton with the given name from the serverwide map of
       //. available singletons.
       //. SecurityException is raised if the client is not permitted to
@@ -57,6 +68,7 @@ module Warsaw
       //. a name that does not exist in the map.
       void remove_singleton(in string name)
 	raises (SecurityException, SingletonFailureException);
+
       //. Get the Singleton-Object that is associated to the given name.
       //. SecurityException is raised if the client is not permitted to
       //. access the Singleton.
@@ -65,16 +77,23 @@ module Warsaw
       Object get_singleton(in string name) 
 	raises (SecurityException, SingletonFailureException);
     };
-
-  //. This is the interface of the only Object that can be looked up in
-  //. the CORBA nameservice: This is what a client sees.
+  
+  //. Interface of the public factory object used to contact the Berlin
+  //. Server. A Berlin Server will create an object with this interface and
+  //. register it with a CORBA NameService, where it can be located by
+  //. clients. It only has one operation, which is to create a new
+  //. ServerContext to handle communications with a given client.
+  //. @see ServerContext
+  //. @see ClientContext
   interface Server
     {
-      //. create_server_context() is the method used by a Berlin client to
-      //. connect to the Berlin server.
-      //. The server examines the given ClientContext and if it has
-      //. sufficient permissions the server will return a ServerContext which
-      //. can then be used to access the server's resources.
+      //. Create a new server context. This is the first operation called by a
+      //. new client. The given ClientContext is used to determine if the 
+      //. client has sufficient permissions to connect, and is also the object
+      //. that the server uses to ensure the liveness of the client.
+      //. @param C the ClientContext created in the client
+      //. @return A ServerContext that the client can use for further
+      //. communication with the Berlin server.
       ServerContext create_server_context(in ClientContext C) raises (SecurityException);
     };
 };

@@ -27,7 +27,8 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/ServantBase.hh>
 
-//.implement distributed reference counting
+//.Implements distributed reference counting. To ease the process of keeping
+//.track of references, see the RefCount_var template.
 class RefCountBaseImpl : public virtual POA_Warsaw::RefCountBase,
                          public virtual ServantBase
 {
@@ -37,6 +38,7 @@ public:
   virtual void increment();
   virtual void decrement();
 private:
+  //. The number of references to this object.
   int _refcount;
 };
 
