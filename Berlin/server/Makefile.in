@@ -33,7 +33,10 @@ JPROF_OBJ	:= $(patsubst %.cpp, %.o, $(JPROF_SRC))
 CPPFLAGS	+= -I$(top_srcdir)/contrib/jprof -DJPROF
 endif
 
-CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
+CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
+ifdef VERSION
+CPPFLAGS	+= -DVERSION='"$(VERSION)"'
+endif
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
 TARGETS		:= ../bin/server ../bin/kits ../bin/devices
