@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   getopt.add('r', "run", GetOpt::mandatory, "the ggi program to run");
   getopt.add('f', "frequency", GetOpt::optional, "the frequency with which to poll the ggi visual");
   getopt.parse(argc - 1, argv + 1);
-  string value;
+  std::string value;
   getopt.get("help", &value);
   if (value == "true") { getopt.usage(); exit(0);}
   value = "";  
@@ -85,8 +85,8 @@ int main(int argc, char **argv)
    * set up the client side visual part...
    */
   ggiInit();
-  ostrstream oss;
-  oss << "display-memory:-input:shmid:" << canvas->shm_id() << ends;
+  std::ostrstream oss;
+  oss << "display-memory:-input:shmid:" << canvas->shm_id() << std::ends;
   const char *name = oss.str();
   setenv("GGI_DISPLAY", name, 1);
   delete [] name;
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
   setenv("GGI_DEFMODE", buffer, 1);
   switch (fork())
     {
-    case -1: cerr << "can't fork !" << endl; exit(-1); break;
+    case -1: std::cerr << "can't fork !" << std::ndl; exit(-1); break;
     case 0:
       execlp("/bin/sh","/bin/sh","-c", program.c_str(), 0);
       exit(127);

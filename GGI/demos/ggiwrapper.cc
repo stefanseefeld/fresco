@@ -51,14 +51,14 @@ int main(int argc, char **argv)
   getopt.add('h', "height", GetOpt::mandatory, "the height of the visual");
   getopt.parse(argc - 1, argv + 1);
   if (getopt.is_set("help")) { getopt.usage(); exit(0);}
-  string value;
+  std::string value;
   getopt.get("run", &value);
   if (value.empty()) { getopt.usage(); exit(0);}
-  string program = value;
+  std::string program = value;
   value = "";
   getopt.get("width", &value);
   size_t width = 256;
-  if (value.empty()) { istrstream iss(value.c_str()); iss >> width;}
+  if (value.empty()) { std::istrstream iss(value.c_str()); iss >> width;}
   value = "";
   getopt.get("height", &value);
   size_t height = 256;
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
   setenv("GGI_DEFMODE", mode, 1);
   switch (fork())
     {
-    case -1: cerr << "can't fork !" << endl; exit(-1); break;
+    case -1: std::cerr << "can't fork !" << std::endl; exit(-1); break;
     case 0:
       execlp("/bin/sh","/bin/sh","-c", program.c_str(), 0);
       exit(127);

@@ -57,7 +57,7 @@ public:
 					      output(o) {
 	// get the path of the Memorymap we need from the RCManager
 	Prague::Path path = RCManager::get_path("pinyindbpath");
-	string pinyinDB = path.lookup_file("pinyin.db");
+	std::string pinyinDB = path.lookup_file("pinyin.db");
 	converter = new TextConverter(pinyinDB);
     }
 	
