@@ -21,14 +21,10 @@
 
 SHELL	:= /bin/sh
 
-define configure
-@echo configuring package $(@D) with $(configure_args)
-mkdir -p $(@D)
-(cd $(@D); ../$(srcdir)/$(@D)/configure $(configure_args))
-endef
-
 srcdir	:= @srcdir@
 builddir:= @abs_builddir@
+
+distdir	:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
 packages:= Prague Babylon Fresco Berlin GGI SDL \
            Clients-C++ Clients-Python Clients-Java Clients-Perl
@@ -65,6 +61,15 @@ depclean:
 clean:
 	$(MAKE) action="clean"
 
+dist:
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	cp -pr $(srcdir) $(distdir)
+	-chmod -R a+r $(distdir)
+	tar czhf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+
 distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
 	@echo 'run configure to regenerate them.'
@@ -79,7 +84,9 @@ maintainer-clean:
 	rm -f Makefile config.cache config.log config.status configure
 
 %/Makefile: $(srcdir)/%/Makefile.in
-	@$(configure)
+	@echo configuring package $(@D) with $(configure_args)
+	mkdir -p $(@D)
+	(cd $(@D); ../$(srcdir)/$(@D)/configure $(configure_args))
 
 ifneq ($(findstring Prague, $(subdirs)),)
 Prague	:= --with-Prague-prefix=$(builddir)/Prague
