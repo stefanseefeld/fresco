@@ -37,7 +37,15 @@ CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
 CPPFLAGS	+= -DVERSION='"@PACKAGE_VERSION@"'
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
+SRC		:= ServerImpl.cc ServerContextImpl.cc server.cc kits.cc devices.cc
+DEP		:= $(patsubst %.cc, %.d, $(SRC))
+
 TARGETS		:= ../bin/berlin ../bin/kits ../bin/devices
+
+vpath %.hh $(srcdir)
+vpath %.cc $(srcdir)
+
+.FORCE:
 
 ifeq ($(JPROF),yes)
 JPROFTARGETS	:= ../lib/libjprof.so ../bin/jprof
@@ -48,8 +56,8 @@ else
 all:	$(TARGETS)
 endif
 
-config: #do nothing
-depend: #do nothing
+depend: $(DEP)
+
 doc: #do nothing
 
 ifeq ($(JPROF),yes)
@@ -105,7 +113,7 @@ uninstall:
 	rm -f $(DESTDIR)$(sysconfdir)/berlinrc
 clean:	
 	rm -f $(TARGETS)
-	rm -f *.o
+	rm -f *.o *.d
 
 distclean:	clean
 	rm -f Makefile ../etc/berlinrc
@@ -116,3 +124,18 @@ maintainer-clean: distclean
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
+%.d:    %.cc
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+Server%.d:    %.cc %.hh
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:    .FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), depend doc clean distclean maintainer-clean))
+-include $(DEP)
+endif
