@@ -197,7 +197,8 @@ void *Signal::run(void *)
 {
   while (true)
     {
-      int signo = Signal::queue.pop();
+      int signo = Signal::queue.top();
+      Signal::queue.pop();
       Signal::notify(signo);
       Thread::testcancel();
     }

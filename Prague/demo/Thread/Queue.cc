@@ -69,7 +69,8 @@ private:
   Thread thread;
   void read()
     {
-      std::string msg = messages.pop();
+      std::string msg = messages.top();
+      messages.pop();
       lostream() << "worker " << number << " reading (" << messages.size() << " messages left)" << std::endl;
     }
   static void *start(void *X)

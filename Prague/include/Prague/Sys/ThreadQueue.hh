@@ -34,31 +34,35 @@ class Thread::Queue : private std::priority_queue<T>
 {
   typedef std::priority_queue<T> rep_type;
 public:
-  Queue(size_t capacity) : free(capacity) {}
+  Queue(size_t capacity) : _free(capacity) {}
   void push(const T &t)
     {
-      free.wait();
-      Prague::Guard<Mutex> guard(mutex);
+      _free.wait();
+      Prague::Guard<Mutex> guard(_mutex);
       rep_type::push(t);
-      tasks.post();
+      _tasks.post();
     }
-  T pop()
+  T top()
     {
-      tasks.wait();
-      Prague::Guard<Mutex> guard(mutex);
+      _tasks.wait();
+      Prague::Guard<Mutex> guard(_mutex);
       T t = rep_type::top();
-      rep_type::pop();
-      free.post();
+      _free.post();
       return t;
     }
-  size_t size() { Prague::Guard<Mutex> guard(mutex); return rep_type::size();}
+  void pop()
+  {
+    Prague::Guard<Mutex> guard(_mutex);
+    rep_type::pop();
+  }
+  size_t size() { Prague::Guard<Mutex> guard(_mutex); return rep_type::size();}
 protected:
 private:
-  Semaphore tasks;
-  Semaphore free;
-  Mutex mutex;
+  Semaphore _tasks;
+  Semaphore _free;
+  Mutex     _mutex;
 };
 
 };
 
-#endif /* _ThreadQueue_hh */
+#endif

@@ -47,11 +47,12 @@ public:
 private:
   static void *run(void *X)
     {
-      ThreadPool *pool = reinterpret_cast<ThreadPool *>(X);
+      ThreadPool *_this = reinterpret_cast<ThreadPool *>(X);
       while (1)
 	{
-	  Task task = pool->_tasks.pop();
-	  Handler *handler = pool->_acceptor.consume(task);
+	  Task task = _this->_tasks.top();
+	  _this->_tasks.pop();
+	  Handler *handler = _this->_acceptor.consume(task);
 	  handler->process();
 	  delete handler;
 	  Thread::testcancel();
