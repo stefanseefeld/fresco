@@ -44,9 +44,7 @@ all:
 	  "\nIf you need to provide arguments to the configure scripts use:"\
 	  "\n    cd config"\
 	  "\n    ./configure --whatever-you-need"\
-	  "\n    cd ../src/Prague/config"\
-	  "\n    ./configure"\
-	  "\n    cd ../../.."\
+	  "\n    cd .."\
 	  "\nThen run make again."; \
 	fi
 
