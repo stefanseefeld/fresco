@@ -25,10 +25,7 @@ top_srcdir	:= @topdir@
 # Global flags
 VERSION		:= @VERSION@
 
-CPPFLAGS	+= @CPPFLAGS@
-LIBS		+= @LIBS@
-
-CON_CFLAGS	:= @CON_CFLAGS@
-CON_LIBS	:= @CON_LIBS@
+CPPFLAGS	+= @CPPFLAGS@ @CON_CFLAGS@
+LIBS		+= @LIBS@ @CON_LIBS@
 
 JPROF		:= @JPROF@
