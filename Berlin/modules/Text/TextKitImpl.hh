@@ -36,6 +36,8 @@
 
 declare_corba_ptr_type(DrawingKit)
 
+class Compositor;
+
 class TextKitImpl : lcimplements(TextKit), 
 		    public virtual CloneableImpl 
 {
@@ -44,12 +46,15 @@ class TextKitImpl : lcimplements(TextKit),
   static DrawingKit_var canonicalDK;
 
   Mutex localMutex;
-  vector<MonoGraphic *> myDecorators;
+  Compositor *myCompositor;
+  vector<GraphicImpl *> myAllocations;
+
  public:
   TextKitImpl();
   virtual ~TextKitImpl();
   virtual void bind(ServerContext_ptr);
-  
+
+  Graphic_ptr simpleViewer(TextBuffer_ptr);  
   Graphic_ptr chunk(const Unistring & u);
   Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
   Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);

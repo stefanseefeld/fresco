@@ -40,6 +40,17 @@ Unistring *TextBufferImpl::value()
   return us;
 }
 
+Unistring *TextBufferImpl::getChars(CORBA::ULong pos, CORBA::ULong len)
+{
+  MutexGuard guard(mutex);
+  CORBA::ULong fin = buffer.size() - 1;
+  CORBA::ULong start = (pos > fin ? fin : pos);
+  CORBA::ULong end = (start + len > fin ? fin : start + len);
+  Unistring *us = new Unistring(end-start, end-start, const_cast<Unichar *>(buffer.get() + start), false);
+  return us;
+}
+
+
 CORBA::Long TextBufferImpl::position()
 {
   MutexGuard guard(mutex);
@@ -54,20 +65,47 @@ void TextBufferImpl::position(CORBA::Long p)
 
 void TextBufferImpl::forward()
 {
-  MutexGuard guard(mutex);
-  buffer.forward();
+  TextBuffer::Change ch;  
+  {
+    MutexGuard guard(mutex);
+    buffer.forward();
+    ch.pos = buffer.position();
+  }
+  ch.len = 0;
+  ch.type = cursor;
+  CORBA::Any any;
+  any <<= ch;
+  notify(any);
 }
 
 void TextBufferImpl::backward()
 {
-  MutexGuard guard(mutex);
-  buffer.backward();
+  TextBuffer::Change ch;  
+  {
+    MutexGuard guard(mutex);
+    buffer.backward();
+    ch.pos = buffer.position();
+  }
+  ch.len = 0;
+  ch.type = cursor;
+  CORBA::Any any;
+  any <<= ch;
+  notify(any);
 }
 
 void TextBufferImpl::shift(CORBA::Long d)
 {
-  MutexGuard guard(mutex);
-  buffer.shift(d);
+  TextBuffer::Change ch;  
+  {
+    MutexGuard guard(mutex);
+    buffer.shift(d);
+    ch.pos = buffer.position();
+  }
+  ch.len = 0;
+  ch.type = cursor;
+  CORBA::Any any;
+  any <<= ch;
+  notify(any);
 }
 
 void TextBufferImpl::insertChar(Unichar u)

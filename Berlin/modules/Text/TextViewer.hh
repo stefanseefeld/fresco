@@ -25,10 +25,10 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/View.hh"
+#include "Warsaw/TextKit.hh"
 #include "Berlin/GapBuffer.hh"
-#include "Berlin/PolyGraphic.hh"
+#include "Layout/Box.hh"
 #include <map>
-
 
 class TextChunk;
 class FontChange;
@@ -38,11 +38,17 @@ declare_corba_ptr_type(DrawingKit)
 declare_corba_ptr_type(TextBuffer)
 declare_corba_ptr_type(DrawTraversal)
 
-class TextViewer : implements(View), public virtual PolyGraphic {
+  //!!!FIXME!!! at the moment we are using a non-compensated
+  // hbox to layout text. this needs to be improved quite a bit.
+  // i.e. at the moment it totally ignores the compositor and canonical
+  // DK passed into it, and just uses a LayoutKit LayoutManager
+  // by inheritence.
+
+class TextViewer : implements(View), public virtual HBox {
 
     public:
 
-    TextViewer(TextBuffer_ptr txt, TextKit_ptr tk DrawingKit_ptr dk, Compositor *);
+    TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);
     void draw(DrawTraversal_ptr dt);
     void update(Subject_ptr s, const CORBA::Any &a);
     virtual ~TextViewer();

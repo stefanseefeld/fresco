@@ -31,9 +31,12 @@
 // TextKit produces text chunks (flyweights) as well as decorators which set the
 // current font state as a traversal passes through them.
 
+interface TextBuffer;
+
 interface TextKit : Cloneable {
     
   Graphic chunk(in Unistring u);    
+  Graphic simpleViewer(in TextBuffer buf);
 
   Graphic size(in Graphic body, in unsigned long ems);
   Graphic weight(in Graphic body, in unsigned long wt);

@@ -32,13 +32,14 @@ interface TextBuffer : Subject
 
   struct Change {
     ChangeType type;
-    long pos;
+    unsigned long pos;
     long len;
   };
   
   readonly attribute long size;
   readonly attribute Unistring value;
   attribute long position;
+  Unistring getChars(in unsigned long pos, in unsigned long len);
   void forward();
   void backward();
   void shift(in long d);

@@ -24,22 +24,36 @@
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
 #include <Text/TextKitImpl.hh>         // for our own definition
-#include <Text/TextChunk.hh>           // the chunk subtype
-#include <Drawing/DrawDecorator.hh>
+#include <Text/TextChunk.hh>           // the chunk graphic type
+#include <Text/TextViewer.hh>           // the viewer polygraphic type
+#include <Text/Compositor.hh>           // the compositor strategy
+#include <Drawing/DrawDecorator.hh> // the decorator monographic template
 #include <Berlin/Plugin.hh>
 
 Mutex TextKitImpl::staticMutex;
 map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
 DrawingKit_var TextKitImpl::canonicalDK;
 
-TextKitImpl::TextKitImpl() {}
-TextKitImpl::~TextKitImpl() {}
+TextKitImpl::TextKitImpl() : 
+  myCompositor(new IdentityCompositor(xaxis)) 
+{
+}
+
+TextKitImpl::~TextKitImpl() {
+  delete myCompositor;
+}
 
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
   canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
 }
 
+Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
+{
+  Impl_var<TextViewer> tv(new TextViewer(buf,this->_this(),canonicalDK,myCompositor));
+  myAllocations.push_back(tv.get());
+  return tv.release()->_this();
+}
 
 // chunks are flyweights
 
@@ -66,7 +80,7 @@ Graphic_ptr TextKitImpl::size(Graphic_ptr body, CORBA::ULong ems)
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<CORBA::ULong> > 
     decor(new DrawDecorator<CORBA::ULong>(ems,&DrawingKit::fontSize,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 
@@ -75,7 +89,7 @@ Graphic_ptr TextKitImpl::weight(Graphic_ptr body, CORBA::ULong wt)
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<CORBA::ULong> > 
     decor(new DrawDecorator<CORBA::ULong>(wt,&DrawingKit::fontWeight,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 
@@ -84,7 +98,7 @@ Graphic_ptr TextKitImpl::family(Graphic_ptr body, const Unistring & fam)
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<const Unistring &> > 
     decor(new DrawDecorator<const Unistring &>(fam,&DrawingKit::fontFamily,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 
@@ -93,7 +107,7 @@ Graphic_ptr TextKitImpl::subFamily(Graphic_ptr body, const Unistring & fam)
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<const Unistring &> > 
     decor(new DrawDecorator<const Unistring &>(fam,&DrawingKit::fontSubFamily,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 
@@ -102,7 +116,7 @@ Graphic_ptr TextKitImpl::fullName(Graphic_ptr body, const Unistring & name)
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<const Unistring &> > 
     decor(new DrawDecorator<const Unistring &>(name,&DrawingKit::fontFullName,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 
@@ -111,7 +125,7 @@ Graphic_ptr TextKitImpl::style(Graphic_ptr body, const Unistring & sty)
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<const Unistring &> > 
     decor(new DrawDecorator<const Unistring &>(sty,&DrawingKit::fontStyle,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 
@@ -119,7 +133,7 @@ Graphic_ptr TextKitImpl::fontAttr(Graphic_ptr body, const NVPair & nvp) {
   MutexGuard guard(localMutex);
   Impl_var<DrawDecorator<const NVPair &> > 
     decor(new DrawDecorator<const NVPair &>(nvp,&DrawingKit::fontAttr,body));
-  myDecorators.push_back(decor.get());
+  myAllocations.push_back(decor.get());
   return decor.release()->_this();
 }
 

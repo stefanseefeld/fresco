@@ -1,5 +1,5 @@
-#ifndef _TextViewer_hh
-#define _TextViewer_hh
+#ifndef _Compositor_hh
+#define _Compositor_hh
 
 //
 // $Id$
