@@ -31,8 +31,8 @@ extern int unlockpt(int);
 int ptybuf::openpty()
 {
   char *ptr;
-  strcpy(ptydev, "/dev/ptmx");	/* in case open fails */
-  int fdm = open(ptydev, O_RDWR);
+  ptydev = "/dev/ptmx";	/* in case open fails */
+  int fdm = open(ptydev.c_str(), O_RDWR);
   if (fdm < 0) return -1;
   if (grantpt(fdm) < 0)	/* grant access to slave */
     {
@@ -49,7 +49,7 @@ int ptybuf::openpty()
       close(fdm);
       return -4;
     }
-  strcpy(ptydev, ptr);	/* return name of slave */
+  ptydev = ptr;	/* return name of slave */
   data->fd = fdm;
   return fdm;	     	/* return fd of master */
 }
@@ -58,7 +58,7 @@ int ptybuf::opentty()
 {
   int fds;
   /* following should allocate controlling terminal */
-  if ((fds = open(ptydev, O_RDWR)) < 0)
+  if ((fds = open(ptydev.c_str(), O_RDWR)) < 0)
     {
       close(fd());
       return(-5);
