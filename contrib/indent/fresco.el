@@ -9,8 +9,7 @@
 ;;;       // -*- mode: c++; c-file-style: fresco -*-
 
 ;;; Known bugs:
-;;;   -- uses 4 spaces of indentation for namespaces, instead of 2
-;;;   -- class access labels are indented 0 spaces, instead of 2
+;;;    none.
 ;;; probably lots more of improvements possible, but this is a start
 ;;; If you find any particular problems or fixes, post to issues.fresco.org.
 
