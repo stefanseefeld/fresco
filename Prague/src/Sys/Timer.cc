@@ -49,6 +49,7 @@ void Timer::stop()
 void Timer::run()
 {
   MutexGuard guard(mutex);
+  if (running == true) return;
   running = true;
   server.start();
 }

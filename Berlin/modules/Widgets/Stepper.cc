@@ -65,7 +65,9 @@ void Stepper::step()
 
 void Stepper::start()
 {
-  timer.start(delay, delta);
+  timer.run();
+  Prague::Time t = Prague::Time::currentTime() + delay;
+  timer.start(t, delta);
 }
 
 void Stepper::stop()

@@ -133,23 +133,26 @@ void ScreenManager::nextEvent()
       {
 	ptrPositionX = event.pmove.x;
 	ptrPositionY = event.pmove.y;
-	pointer->move(ptrPositionX, ptrPositionY);
-	ggiFlush(visual);
 	// absence of break statement here is intentional
       }
     case evPtrButtonPress:
     case evPtrButtonRelease:
       {
-	Event::Pointer pointer;	  
-	pointer.location.x = ptrPositionX;
-	pointer.location.y = ptrPositionY;	  
-	pointer.location.z = 0; // time being we're using non-3d mice.
-	pointer.buttonNumber = event.pbutton.button;	  
-	pointer.whatHappened = 
+	Event::Pointer ptrEvent;	  
+	ptrEvent.location.x = ptrPositionX;
+	ptrEvent.location.y = ptrPositionY;	  
+	ptrEvent.location.z = 0; // time being we're using non-3d mice.
+
+	// update the pointer object / image
+	pointer->move(ptrPositionX, ptrPositionY);
+	ggiFlush(visual);
+
+	ptrEvent.buttonNumber = event.pbutton.button;	  
+	ptrEvent.whatHappened = 
 	  event.any.type == evPtrAbsolute ? Event::hold :
 	  event.any.type == evPtrButtonPress ? Event::press :
 	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-	emanager->dispatch(pointer);
+	emanager->dispatch(ptrEvent);
 	break;
       }
     }
