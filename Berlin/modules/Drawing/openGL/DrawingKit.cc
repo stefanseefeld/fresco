@@ -211,7 +211,11 @@ void openGL::DrawingKit::set_surface_fillstyle(Fresco::DrawingKit::Fillstyle sty
 void openGL::DrawingKit::set_texture(Raster_ptr t)
 {
   _tx = CORBA::is_nil(t) ? 0 : _textures.lookup(Fresco::Raster::_duplicate(t));
-  if (_tx) glBindTexture(GL_TEXTURE_2D, _tx->texture);
+  if (_tx) {
+    glBindTexture(GL_TEXTURE_2D, _tx->texture);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  }
 }
 
 // void openGL::DrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
