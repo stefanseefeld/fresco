@@ -77,10 +77,17 @@ using namespace Fresco;
 
 struct Dump : Signal::Notifier 
 {
+  private:
+  Prague::Semaphore & my_semaphore;
+  Dump(Dump const &);                   // no impl
+  Dump const & operator=(Dump const &); // no impl
+  public:
+  Dump(Prague::Semaphore & semaphore)
+          : my_semaphore(semaphore){}
   void notify(int signo) /*FOLD00*/
-    {
+  {
       switch (signo)
-        {
+      {
         case Signal::usr2: 
           if (Console::instance())
           {
@@ -88,6 +95,7 @@ struct Dump : Signal::Notifier
             Console::instance()->wakeup();
           }
           return;
+        case Signal::interrupt: break;
         case Signal::hangup: Profiler::dump(std::cerr); break;
         case Signal::abort:
         case Signal::segv:
@@ -104,10 +112,12 @@ struct Dump : Signal::Notifier
                       << "(together with a description\n"
                       << "of your configuration and what you were doing"
                       << " before the crash).\n\n";
-            exit(-1);
+            exit(-1); // NOTE: Must exit after getting segv:
+                      // behaviour is undefined if not!
           }
-        }
-    }
+      }
+      my_semaphore.post();
+  }
 };
 
 //. Execute a client using the command in 'value'. The process is stored in
@@ -169,11 +179,13 @@ int main(int argc, char **argv) /*FOLD00*/
   // Setup signalhandling
   // ---------------------------------------------------------------
   
-  Dump *dump = new Dump;
+  Prague::Semaphore sem;
+  Dump *dump = new Dump(sem);
   Signal::set(Signal::usr2, dump);
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
+  Signal::set(Signal::interrupt, dump);
   
   // ---------------------------------------------------------------
   // Parse commandline arguments
@@ -471,6 +483,7 @@ int main(int argc, char **argv) /*FOLD00*/
        DrawingKit_var drawing =
        server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0",
                                    props, poa);
+       Logger::log(Logger::drawing) << "DrawingKit is resolved." << std::endl;
        if (CORBA::is_nil(drawing))
        {
          std::cerr << "ERROR: Unable to open "
@@ -501,7 +514,7 @@ int main(int argc, char **argv) /*FOLD00*/
                server->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0",
                                           props, poa);
        Layout::Stage_var stage = layout->create_stage();
-       DesktopImpl *desktop = new DesktopImpl(orb, stage);
+       DesktopImpl *desktop = new DesktopImpl(orb, stage, sem);
        screen->body(Desktop_var(desktop->_this()));
        screen->append_controller(Desktop_var(desktop->_this()));
        Logger::log(Logger::layout) << "Desktop is created." << std::endl;
@@ -512,7 +525,7 @@ int main(int argc, char **argv) /*FOLD00*/
        Logger::log(Logger::loader) << "singletons set" << std::endl;
 
        // ---------------------------------------------------------------
-       // Start the server - Initialise the client listener and publish it
+       // Start the server thread - start the client listener and publish it
        // ---------------------------------------------------------------
 
        server->start();
@@ -532,11 +545,31 @@ int main(int argc, char **argv) /*FOLD00*/
        if (!value.empty())
        {
          exec_child(child, value);
+         Logger::log(Logger::loader) << "Child process started." << std::endl;
        }
 
-       Logger::log(Logger::loader) << "Running the ScreenManager now."
+       // ---------------------------------------------------------------
+       // Start ScreenManager thread
+       // ---------------------------------------------------------------
+
+       smanager->start();
+       Logger::log(Logger::loader) << "ScreenManager is running." << std::endl;
+
+       // ---------------------------------------------------------------
+       // Wait until we receive a request to shut down, then do so
+       // NOTE: server/smanager threads assumed to be shut-down implicitly
+       // ---------------------------------------------------------------
+
+       Logger::log(Logger::loader) << "Blocking waiting for shutdown request." 
                                    << std::endl;
-       smanager->run();
+       sem.wait();
+       Logger::log(Logger::loader) << "Starting server shutdown." << std::endl;
+ 
+       unpublish_server(orb);
+       Logger::log(Logger::loader) << "Un-published Server." << std::endl;
+
+       server->stop();
+       Logger::log(Logger::loader) << "Server stopped." << std::endl;
   }
   catch (const CORBA::SystemException &e)
   {
@@ -566,8 +599,8 @@ int main(int argc, char **argv) /*FOLD00*/
       std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
   };
 
+  Logger::log(Logger::corba) << "CORBA servants gone." << std::endl;
   delete child;
-  if (!CORBA::is_nil(orb)) orb->destroy();
   return 0;
 }
 

@@ -104,20 +104,21 @@ void ServerImpl::stop()
   for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
     ServerImpl::destroy_context(*i);
   _contexts.clear();
-  exit(0);
 }
 
 void ServerImpl::ping()
 {
   Trace trace("ServerImpl::ping");
   Prague::Guard<Mutex> guard (_mutex);
-  clist_t tmp;
+  clist_t updated_contexts;
   for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
+  {
     if ((*i)->ping())
-	tmp.push_back(*i);
+	updated_contexts.push_back(*i);
     else
 	destroy_context(*i);
-  _contexts = tmp;
+  }
+  _contexts = updated_contexts;
 };
 
 void ServerImpl::scan(const std::string &name)

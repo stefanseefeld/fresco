@@ -203,6 +203,11 @@ void publish_server(Fresco::Server_ptr server,
                     std::string ior_file_path,
                     CORBA::ORB_ptr orb);
 
+// -----------------------------------------------------------------------------
+// Un-publish the server reference (once server is finished)
+// -----------------------------------------------------------------------------
+
+void unpublish_server(CORBA::ORB_ptr orb);
 
 // -----------------------------------------------------------------------------
 // Helpers if using external Prague::Getopt

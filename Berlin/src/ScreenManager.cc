@@ -29,13 +29,17 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/ScreenManager.hh"
+#include <Prague/Sys/Thread.hh>
 #include <sstream>
 
 using namespace Prague;
 using namespace Fresco;
 
 ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em, DrawingKit_ptr d)
-  : _screen(g), _emanager(em), _drawing(DrawingKit::_duplicate(d))
+  : _screen(g), 
+    _emanager(em), 
+    _drawing(DrawingKit::_duplicate(d)),
+    my_thread(&ScreenManager::run_thread, this)
 {
 }
 
@@ -111,6 +115,17 @@ void ScreenManager::repair()
     Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is " << Provider<TransformImpl>::size() << std::endl;
     Logger::log(Logger::lifecycle) << "Provider<Region> pool size is " << Provider<RegionImpl>::size() << std::endl;
   }
+}
+
+void ScreenManager::start()
+{
+  my_thread.start();
+}
+
+void *ScreenManager::run_thread(void *X)
+{
+  ScreenManager * const s = reinterpret_cast<ScreenManager*>(X);
+  s->run();
 }
 
 void ScreenManager::run()

@@ -26,6 +26,7 @@
 #include <Fresco/Desktop.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
+#include <Prague/Sys/Thread.hh>
 
 class WindowImpl;
 
@@ -33,7 +34,7 @@ class DesktopImpl : public virtual POA_Fresco::Desktop,
                     public ControllerImpl
 {
 public:
-  DesktopImpl(CORBA::ORB_ptr, Layout::Stage_ptr);
+  DesktopImpl(CORBA::ORB_ptr, Layout::Stage_ptr, Prague::Semaphore &);
   virtual ~DesktopImpl();
   virtual void body(Fresco::Graphic_ptr);
   virtual Fresco::Graphic_ptr body();
@@ -52,6 +53,7 @@ protected:
 private:
   RefCount_var<Layout::Stage> _stage;
   CORBA::ORB_var              _orb;
+  Prague::Semaphore           & my_shutdown_semaphore;
 };
 
 #endif 

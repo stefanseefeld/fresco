@@ -35,10 +35,12 @@ using namespace Fresco;
 using namespace Layout;
 
 DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb,
-			 Stage_ptr stage) :
+			 Stage_ptr stage,
+                         Prague::Semaphore &shutdown_sem) :
   ControllerImpl(false),
   _stage(RefCount_var<Layout::Stage>::increment(stage)),
-  _orb(CORBA::ORB::_duplicate(orb))
+  _orb(CORBA::ORB::_duplicate(orb)),
+  my_shutdown_semaphore(shutdown_sem)
 {
   // Attention !!: this invokes _this(), which implicitely activates the desktop.
   ControllerImpl::body(_stage);
@@ -81,5 +83,5 @@ void DesktopImpl::key_press(const Input::Event &event)
 {
   Trace trace(this, "DesktopImpl::key_press");
   const Input::Toggle &toggle = event[0].attr.selection();
-  if (toggle.number == Babylon::UC_ESCAPE) _orb->shutdown(false);
+  if (toggle.number == Babylon::UC_ESCAPE) my_shutdown_semaphore.post();
 }

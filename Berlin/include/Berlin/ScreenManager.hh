@@ -51,9 +51,11 @@ public:
   //. This method redraws the damaged regions of the screen.
   //. The DrawTraversal gets started here!
   void repair();
-  //. Main event loop.
-  void run();
+  //. Start the gui thread
+  void start();
 private:
+  static void *run_thread(void *);
+  void run();
   Fresco::Graphic_var         _screen;    //.< The graphic that is managed.
   EventManager               *_emanager;
   Fresco::DrawingKit_var      _drawing;   //.< The DrawingKit used to update this screen. 
@@ -61,6 +63,7 @@ private:
   Impl_var<RegionImpl>        _tmpDamage; //.< Temporary copy of _theDamage
   Impl_var<DrawTraversalImpl> _traversal;
   Prague::Mutex               _mutex;
+  Prague::Thread              my_thread;
 };
 
 #endif

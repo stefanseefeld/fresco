@@ -94,11 +94,9 @@ public:
   void stop();
   //. Pings all ServerContexts and destroys those that do not
   //. respond (aka. crashed).
-
   void ping();
   //. This scans all directories given as modulepath in berlinrc for Kits
   //. and loads the whole lot of them.
-
   void scan(const std::string &);
   //. Deletes all known Kits.
   void clear();

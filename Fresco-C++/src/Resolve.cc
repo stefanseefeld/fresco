@@ -27,6 +27,7 @@
 #include <iostream>
 #include <sys/stat.h> // XXX use prague instead
 #include <errno.h>    // XXX use prague instead
+#include <unistd.h>   // XXX use prague instead (unlink)
 #include <Prague/Sys/Env.hh>
 
 // ---------------------------------------------------------------
@@ -40,6 +41,10 @@ static std::string const my_default_server_id("FrescoServer");
 
 // Internal stored data for server-publishing
 static std::string reference_export_method(my_default_reference_transfer_method);
+static std::string published_ior_file_path;
+static std::string published_server_id;
+static std::string published_stringified_ior;
+
 static PortableServer::POA_var insPOA; // poa for corbaloc use
 
 
@@ -252,7 +257,7 @@ Fresco::Server_ptr resolve_server(std::string server_id,
               << "may have been published" << std::endl
               << "using a different method, in a different place or under "
               << "another name." << std::endl
-              << "If this is the case, try using different paramters to the "
+              << "If this is the case, try using different parameters to the "
               << "-R, -I or -i options."
               << std::endl;
     exit(1);
@@ -458,7 +463,72 @@ void publish_server(Fresco::Server_ptr server,
   CORBA::String_var const s = orb->object_to_string(server);
   std::string const stringified_ior(s);
   Prague::putenv("FRESCO_DISPLAY", stringified_ior);
+
+  // server is published; store details of where it was published
+  // for un-publishing later
+  published_ior_file_path = ior_file_path;
+  published_server_id = exported_server_id;
+  published_stringified_ior = stringified_ior;
 }
+
+void unpublish_server(CORBA::ORB_ptr orb)
+{
+  if (reference_export_method == "ior")
+  {
+  // FIXME Don't unpublish files yet (security/race-conditions)
+#if 0
+    std::string full_path(published_ior_file_path);
+    full_path += published_server_id;
+    std::ifstream ifs(full_path.c_str());
+    if (ifs.is_open())
+    {
+      // check if it contains the correct ior for the started server
+      std::string ior;
+      ifs >> ior;
+      if (ior==published_stringified_ior)
+      {
+        ifs.close();
+        // assume that file contains this server ref, so remove the file
+        if (unlink(full_path.c_str())==-1)
+        {
+          std::cerr << "ERROR: Could not remove server-reference file" 
+                    << std::endl;
+        }
+      }
+    }
+#endif
+  }
+  else if (reference_export_method == "nameserver")
+  {
+    try
+    {
+      CosNaming::NamingContext_var context = 
+            resolve_init<CosNaming::NamingContext>(orb, "NameService");    
+      Fresco::Server_var server = 
+            resolve_name<Fresco::Server>(context,published_server_id.c_str());
+      CORBA::String_var const s = orb->object_to_string(server);
+      std::string const stringified_nameserver_object(s);
+      if (stringified_nameserver_object == published_stringified_ior)
+      { // remove name from nameserver since stringified version is the same
+        CosNaming::Name server_name;
+        server_name.length(1);
+        server_name[0].id = CORBA::string_dup(published_server_id.c_str());
+        server_name[0].kind = "Object"; // string_dup?
+        context->unbind(server_name);
+      }
+    }
+    catch(CORBA::SystemException const &)
+    {
+      std::cerr << "WARNING: Failed to remove server-id from nameservice"
+                << std::endl;
+    }
+  }
+  else if (reference_export_method == "corbaloc")
+  {
+    // implement me?
+  }
+}
+
 // ---------------------------------------------------------------
 // Helpers if using external Prague::GetOpt
 // ---------------------------------------------------------------
