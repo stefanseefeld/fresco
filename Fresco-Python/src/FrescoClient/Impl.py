@@ -12,6 +12,9 @@ prototyping purposes!
 """
 import math, string
 
+# Import CORBA module
+from omniORB import CORBA, PortableServer
+
 # Import the Warsaw stubs
 import Warsaw, Unidraw
 import Warsaw__POA
@@ -21,8 +24,9 @@ import Warsaw__POA
 
 class PyIdentifiable (Warsaw__POA.Identifiable):
     def is_identical(self, other):
-	print "PyIdentifiable.is_identical(%s)"%other
-	return 0
+	me_id = PortableServer._rootPOA.servant_to_id(self)
+	other_id = PortableServer._rootPOA.reference_to_id(other)
+	return me_id == other_id
 
 class PyRefCountBase (Warsaw__POA.RefCountBase):
     def __init__(self):
@@ -406,13 +410,10 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	pass
 
     def add_parent_graphic(self, graphic, parent_tag): # --> Tag
-	print "PyGraphic.add_parent_graphic(graphic: %s, tag: %s)"%(graphic, parent_tag),
 	mytag = len(self.__parents)
 	self.__parents.append( Edge(graphic, parent_tag, mytag) )
-	print "-->",mytag
 	return mytag
     def remove_parent_graphic(self, parent_tag): # --> void
-	print "PyGraphic.remove_parent_graphic(tag: %s)"%parent_tag
 	for i in range(len(self.__parents)):
 	    if self.__parents[i].peerId == parent_tag:
 		del self.__parents[i]
@@ -529,14 +530,16 @@ class PyMonoGraphic (PyGraphic):
 
 class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
     "Python impl of Warsaw::Controller interface"
-    def __init__(self):
+    def __init__(self, transparent):
 	PyMonoGraphic.__init__(self)
 	PySubject.__init__(self)
 	self.__parent = None
 	self.__telltale = 0
 	self.__constraint = None
-	self.__grabs = 0
+	self.__grabs = 0 # bitmap against input_devices
+	self.__focus = 0 # bitmap against input_devices
 	self._children = []
+	self.__transparent = transparent
 
     class Iterator (Warsaw__POA.ControllerIterator, PyServantBase):
 	def __init__(self, con, tag):
@@ -594,6 +597,9 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	self.notify(any)
 
     # ---- Graphic interface
+    def draw(self, drawTraversal):
+	PyMonoGraphic.traverse(self, drawTraversal)
+
     def pick(self, traversal):
 	if not traversal.intersects_allocation(): return
 	traversal.enter_controller(self._this())
@@ -601,6 +607,9 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	if not self.__transparent and not traversal.picked():
 	    traversal.hit()
 	traversal.leave_controller()
+
+    def traverse(self, traversal):
+	traversal.visit(self._this())
 
     # ---- Controller interface
     def append_controller(self, controller): # --> void
@@ -631,11 +640,18 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	iter = PyController.Iterator(this, len(self._children) - 1)
 	activate(iter)
 	return iter._this()
+    def grabbed(self, input_device): return self.__grabs & (1 << input_device)
+    def set_focus(self, input_device):
+	self.__focus = self.__focus | (1 << input_device)
+	self.update_state()
+    def clear_focus(self, input_device):
+	self.__focus = self.__focus & ~(1 << input_device)
+	self.update_state()
     def request_focus(self, controller, input_device): # --> boolean
 	return self.__parent and self.__parent.request_focus(controller, input_device)
     def receive_focus(self, focus): # --> boolean
-	self.set_focus(focus.device())
-	if (focus.device() == 0): self.set(Warsaw.Controller.active)
+	self.set_focus(focus._get_device())
+	if (focus._get_device() == 0): self.set(Warsaw.Controller.active)
 	return 1
     def lose_focus(self, input_device): # --> void
 	self.clear_focus(input_device)
@@ -699,13 +715,13 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	    position = get_position(input_event)
 	except TypeError:
 	    return 0 # Fatal error, but we silently ignore
-	if event[0].attr._d() == Warsaw.Input.button:
-	    toggle = event[0].attr.selection()
+	if input_event[0].attr._d == Warsaw.Input.button:
+	    toggle = input_event[0].attr.selection
 	    if toggle.actuation == Warsaw.Input.Toggle.press:
 		self.press(pickTraversal, input_event)
 	    elif toggle.actuation == Warsaw.Input.Toggle.release:
 		self.release(pickTraversal, input_event)
-	elif event[0].attr._d() == Warsaw.Input.positional:
+	elif input_event[0].attr._d == Warsaw.Input.positional:
 	    if self.test(Warsaw.Controller.pressed):
 		self.drag(pickTraversal, input_event)
 	    else:
@@ -714,10 +730,10 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	    self.other(input_event)
 	return 1 #Handled
     def handle_non_positional(self, input_event): # --> boolean
-	if event[0].dev != 0 or event[0].attr._d() != Warsaw.Input.key:
+	if input_event[0].dev != 0 or input_event[0].attr._d != Warsaw.Input.key:
 	    # fatal, silent ignore
 	    return 0
-	if event[0].attr.selection().actuation != Warsaw.Input.Toggle.press:
+	if input_event[0].attr.selection.actuation != Warsaw.Input.Toggle.press:
 	    return 0
 	self.key_press(input_event)
 	return 1 # Handled
@@ -738,12 +754,12 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
     def double_click(self, pickTraversal, input_event):
 	pass
     def key_press(self, input_event):
-	toggle = event[0].attr.selection()
+	toggle = input_event[0].attr.selection
 	if toggle.number == Babylon.KEY_CURSOR_LEFT:
-	    self.prev_focus(event[0].dev)
+	    self.prev_focus(input_event[0].dev)
 	elif toggle.number == Babylon.UC_HORIZONTAL_TABULATION or \
 		toggle.number == Babylon.KEY_CURSOR_RIGHT:
-	    self.next_focus(event[0].dev)
+	    self.next_focus(input_event[0].dev)
     def key_release(self, input_event):
 	pass
     def other(self, input_event):
@@ -752,13 +768,13 @@ class PyController (Warsaw__POA.Controller, PyMonoGraphic, PySubject):
 	focus = pickTraversal.get_focus()
 	if not focus: return
 	focus.grab()
-	self.__grabs = self.__grabs | (1 << focus.device())
+	self.__grabs = self.__grabs | (1 << focus._get_device())
 	self.update_state()
     def ungrab(self, pickTraversal):
 	focus = pickTraversal.get_focus()
 	if not focus: return
 	focus.ungrab()
-	self.__grabs = self.__grabs & ~(1 << focus.device())
+	self.__grabs = self.__grabs & ~(1 << focus._get_device())
 	self.update_state()
     def update_state(self):
 	pass
@@ -768,8 +784,8 @@ def get_position(event): # --> Position
     device = event[0].dev
     for i in range(len(event)):
 	if event[i].dev != device: raise TypeError, "No positionals found"
-	if event[i].attr._d() == Warsaw.Input.positional:
-	    return event[i].attr.location()
+	if event[i].attr._d == Warsaw.Input.positional:
+	    return event[i].attr.location
     raise TypeError, "No positionals found"
 
 
