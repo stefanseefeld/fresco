@@ -63,11 +63,24 @@ SRC		:= $(patsubst %, Sys/%, $(Sys))
 SRC		+= $(patsubst %, IPC/%, $(IPC))
 SRC		+= $(patsubst %, Filter/%, $(Filter))
 SRC		+= $(patsubst %, Network/%, $(Network))
+
+SysH		:= logbuf.hh logstream.hh ntree.hh Tracer.hh regex.hh User.hh Process.hh \
+                   Stopwatch.hh Profiler.hh Time.hh \
+	  	   File.hh Directory.hh FLock.hh FdSet.hh Path.hh GetOpt.hh DataTypeManager.hh \
+	  	   Memory.hh DLL.hh MMap.hh SHM.hh \
+                   Thread.hh ThreadData.hh ThreadQueue.hh ThreadPool.hh \
+		   Timer.hh Signal.hh Fork.hh Plugin.hh
+IPCH		:= ipcbuf.hh pipebuf.hh sockbuf.hh sockstream.hh ptybuf.hh mmapbuf.hh convert.hh \
+	  	   Agent.hh Dispatcher.hh Coprocess.hh PipeAgent.hh TTYAgent.hh SocketAgent.hh \
+                   Acceptor.hh Connector.hh
+FilterH		:= gzbuf.hh# xdrbuf.cc #bzbuf.cc 
+NetworkH	:= protocol.hh echo.hh ftp.hh smtp.hh url.hh
+
 HDR		:= Prague/config.hh
-HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Sys/*.hh))
-HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/IPC/*.hh))
-HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Filter/*.hh))
-HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Network/*.hh))
+HDR		+= $(patsubst %, Prague/Sys/%, $(SysH))
+HDR		+= $(patsubst %, Prague/IPC/%, $(IPCH))
+HDR		+= $(patsubst %, Prague/Filter/%, $(FilterH))
+HDR		+= $(patsubst %, Prague/Network/%, $(NetworkH))
 DEP		:= $(patsubst %.cc, %.d, $(notdir $(SRC)))
 OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
 SYN		:= $(patsubst Prague/%.hh, %.syn, $(HDR))
@@ -89,7 +102,7 @@ $(TARGET):	$(OBJ)
 	$(edit) \
 	  -e 's,@prefix\@,@abs_top_builddir@,g' \
 	  -e 's,@exec_prefix\@,@abs_top_builddir@,g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include ,g'
+	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include ,g' \
 	  $< > $@.tmp
 	chmod +x $@.tmp
 	mv $@.tmp $@
@@ -123,7 +136,7 @@ install:	all
 	  -e 's,@prefix\@,$(prefix),g' \
           -e 's,@exec_prefix\@,$(exec_prefix),g' \
 	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
-        $(top_srcdir)/config/Prague-config.in > $(DESTDIR)$(bindir)/Prague-config.tmp
+          $(top_srcdir)/config/Prague-config.in > $(DESTDIR)$(bindir)/Prague-config.tmp
 	chmod +x $(DESTDIR)$(bindir)/Prague-config.tmp
 	mv $(DESTDIR)$(bindir)/Prague-config.tmp $(DESTDIR)$(bindir)/Prague-config
 

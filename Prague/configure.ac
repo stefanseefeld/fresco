@@ -118,5 +118,6 @@ AC_CONFIG_FILES([demo/Makefile demo/Sys/Makefile demo/Thread/Makefile demo/IPC/M
                  demo/Filter/Makefile demo/Network/Makefile])
 
 mkdir -p lib
+mkdir -p bin
 
 AC_OUTPUT
