@@ -23,19 +23,20 @@
  * MA 02139, USA.
  */
 
-#include <db2/db_cxx.h>
 #include <GL/gl.h>
 #include <vector>
 #include "Warsaw/config.hh"
 #include "Warsaw/Style.hh"
 #include "Warsaw/Types.hh"
 #include "Warsaw/Text.hh"
+#include "Prague/Sys/MMap.hh"
 
 // This is a default font, just in case -- a character cell bitmapped unicode
-// font which is generated "on the fly" from the GNU unifont, which we're storing
-// in a berkeley DB file. this is so that, even if all the font manufactureres
-// in the world turn against us, we can still render multilingual text, albeit
-// not quite as well as certain (ahem) proprietary text systems
+// font which is generated "on the fly" from the GNU unifont, which we're
+// storing in a packed binary array we mmap() in. this is so that, even if all
+// the font manufactureres in the world turn against us, we can still render
+// multilingual text, albeit not quite as well as certain (ahem) proprietary
+// text systems
 
 class GLUnifont :
     implementsscoped(Text,BaseFont) 
@@ -57,11 +58,9 @@ class GLUnifont :
     void setColor(Color c);
 
  protected:
-    Db *glyphdb;    
+    MMap *glyphmap;
     Text::FontDescriptor myDescriptor;
     Color myColor;
-    GLuint myDisplaylistOffset;
-    vector<bool> rendered;
 };
 
 
