@@ -30,10 +30,10 @@ AC_DEFUN([FRESCO_ICONV],[
                                [search for iconv library in prefix]),
                 [
                     if test -d $withval/include ; then
-                        ICONV_CPPFLAGS="$CPPFLAGS -I$withval/include"
+                        ICONV_CPPFLAGS="-I$withval/include"
                     fi
                     if test -d $withval/lib ; then
-                        ICONV_LIBS="$LIBS -L$withval/lib"
+                        ICONV_LIBS="-L$withval/lib"
                     fi
                 ]
     )
