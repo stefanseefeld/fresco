@@ -1,6 +1,6 @@
 Welcome to the Berlin windowing system
 
-The current release is 0.2.0, which means it is not even into the stage
+The current release is 0.2.2, which means it is not even into the stage
 where the most adventuresome users will gain any productivity from
 it. It's a *developer's* release. If you want to help develop berlin,
 you can work off this release with some modicum of confidence and
@@ -15,7 +15,7 @@ us know. This whole process relies on you communicating your
 experiences back to the people who wrote it.
 
 Questions / comments are best directed towards the mailing list:
-  design@berlin-consortium.org
+   berlin-design@lists.sourceforge.net
 
 Archives of the mailing list & FAQ are on our web site: 
   http://www.berlin-consortium.org
