@@ -154,8 +154,8 @@ public:
   const value_type *get() { compact(); return begin();}
 
   void clear_buffer() {
-      curs = 0; gapbegin = 0; gapend = 0;
-      clear();
+      position(0);
+      remove_forward(size());
   }
 private:
   size_type curs, gapbegin, gapend;
