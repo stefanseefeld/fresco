@@ -208,9 +208,14 @@ int ipcbuf::write(const void *buf, int len)
   int wlen = 0;
   while(len > 0)
     {
-      int wval = ::write(fd(), (char*) buf, len);
-      if (wval == -1 && errno == EAGAIN) return EOF;
-      else if (wval == -1) perror("ipcbuf::write");
+      int wval = -1;
+      do wval = ::write(fd(), (char*) buf, len);
+      while (wval == -1 && errno == EINTR);
+      if (wval == -1)
+        {
+          if (errno != EAGAIN) perror("ipcbuf::write");
+          return EOF;
+        }
       len -= wval;
       wlen += wval;
     }
@@ -219,8 +224,15 @@ int ipcbuf::write(const void *buf, int len)
 
 int ipcbuf::read(void *buf, int len)
 {
-//   if (!readready ()) return 0;  
-  int rval = ::read(fd(), (char *)buf, len);
+  int rval = -1;
+  do
+    {
+      rval = ::read(fd(), (char *)buf, len);
+      cout << "read " << rval << endl;
+    }
+  while (rval == -1 && errno == EINTR);
+  cout << rval << ' ' << errno << ' ' << '(' << EINTR << ')' << endl;
   if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");
+  if (rval == 0) cerr << "ipcbuf::read returned 0" << endl;
   return rval;
 }
