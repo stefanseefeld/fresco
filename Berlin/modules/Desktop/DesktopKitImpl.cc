@@ -40,6 +40,12 @@ void DesktopKitImpl::bind(ServerContext_ptr sc)
   wk = obtain(context, WidgetKit);
 }
 
+Desktop_ptr DesktopKitImpl::desk()
+{
+  return Desktop::_duplicate(desktop);
+}
+
+
 Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
 {
   SectionLog section(Logger::desktop, "DesktopKitImpl::shell");

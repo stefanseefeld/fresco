@@ -172,8 +172,9 @@ void GLDrawable::pushClipping(Region_ptr region, Transform_ptr transformation)
 //   y = toPixels(clip->lower.y, yaxis);
 //   w = toPixels(clip->upper.x - clip->lower.x, xaxis);
 //   h = toPixels(clip->upper.y - clip->lower.y, yaxis);
-  double cp0[] = {1., 0., 0., clip->lower.x};
-  double cp1[] = {0., 1., 0., clip->lower.y};
+//   cout << "GLDrawable::pushClipping " << *clip << '\n';
+  double cp0[] = {1., 0., 0., -clip->lower.x};
+  double cp1[] = {0.,  1., 0., -clip->lower.y};
   double cp2[] = {-1., 0., 0., clip->upper.x};
   double cp3[] = {0., -1., 0., clip->upper.y};
   glClipPlane(GL_CLIP_PLANE0, cp0);
@@ -192,8 +193,8 @@ void GLDrawable::popClipping()
       if (!clipping.size()) return;
       clip = clipping.top();
       makeCurrent();
-      double cp0[] = {1., 0., 0., clip->lower.x};
-      double cp1[] = {0., 1., 0., clip->lower.y};
+      double cp0[] = {1., 0., 0., -clip->lower.x};
+      double cp1[] = {0., 1., 0., -clip->lower.y};
       double cp2[] = {-1., 0., 0., clip->upper.x};
       double cp3[] = {0., -1., 0., clip->upper.y};
       glClipPlane(GL_CLIP_PLANE0, cp0);

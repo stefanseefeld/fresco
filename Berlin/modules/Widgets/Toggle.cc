@@ -19,22 +19,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Widget/Toggle.hh"
+#include "Berlin/Logger.hh"
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Event.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Widget/ButtonImpl.hh"
+using namespace Prague;
 
-void ButtonImpl::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+Toggle::Toggle(bool f) : ControllerImpl(f) {}
+Toggle::~Toggle() {}
+
+void Toggle::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  /*
-   * once we have real focus management the command should be executed
-   * if we have focus and the Telltale::toggle is to be released... -stefan
-   */
-  if (inside(traversal) && test(Telltale::toggle))
-    {
-      CORBA::Any dummy;
-      execute(dummy);
-    }
+  SectionLog section(Logger::widget, "Toggle::press");
+  ControllerImpl::press(traversal, pointer);
+  if (test(Telltale::chosen)) clear(Telltale::chosen);
+  else set(Telltale::chosen);
+}
+
+void Toggle::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+{
+  SectionLog section(Logger::widget, "Toggle::release");
   ControllerImpl::release(traversal, pointer);
 }

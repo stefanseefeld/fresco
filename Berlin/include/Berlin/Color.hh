@@ -41,6 +41,7 @@ inline Color brightness(const Color &c1, double adjust)
       c2.green = c1.green * (1 + adjust);
       c2.blue  = c1.blue * (1 + adjust);
     }
+  c2.alpha = c1.alpha;
   return c2;
 };
 

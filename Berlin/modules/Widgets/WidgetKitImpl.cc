@@ -31,9 +31,11 @@
 #include "Widget/Indicator.hh"
 #include "Widget/Frame.hh"
 #include "Widget/ButtonImpl.hh"
+#include "Widget/Toggle.hh"
 #include "Widget/Dragger.hh"
 #include "Widget/Stepper.hh"
 #include "Widget/Gauge.hh"
+#include "Widget/Slider.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
 
@@ -189,6 +191,21 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   return button->_this();
 }
 
+Controller_ptr WidgetKitImpl::toggle(Graphic_ptr g, const Color &b)
+{
+  Toggle *t = new Toggle;
+  t->_obj_is_ready(_boa());
+  graphics.push_back(t);
+  DynamicFrame *frame = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::chosen, true);
+  frame->_obj_is_ready(_boa());
+  graphics.push_back(frame);
+  frame->attach(Controller_var(t->_this()));
+  frame->body(g);
+
+  t->body(Graphic_var(frame->_this()));
+  return t->_this();
+}
+
 Controller_ptr WidgetKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 {
   Dragger *dragger = new Dragger(command);
@@ -220,6 +237,11 @@ Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)
   graphics.push_back(frame);
   frame->body(g);
   return frame->_this();
+}
+
+Controller_ptr WidgetKitImpl::slider(const Color &color, BoundedValue_ptr value)
+{
+  return Controller::_nil();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

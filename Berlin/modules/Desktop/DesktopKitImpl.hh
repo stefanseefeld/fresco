@@ -39,6 +39,7 @@ class DesktopKitImpl : lcimplements(DesktopKit), virtual public CloneableImpl
   DesktopKitImpl();
   virtual ~DesktopKitImpl();
   virtual void bind(ServerContext_ptr);
+  virtual Desktop_ptr desk();
   virtual Window_ptr shell(Graphic_ptr);
   virtual Window_ptr transient(Graphic_ptr);
  private:

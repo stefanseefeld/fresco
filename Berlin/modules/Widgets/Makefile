@@ -34,7 +34,7 @@ LIBS	= -lPrague -lBerlin
 
 SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
 	  Bevel.cc Frame.cc Filler.cc \
-	  ButtonImpl.cc Dragger.cc Stepper.cc Indicator.cc Gauge.cc WidgetKitImpl.cc
+	  ButtonImpl.cc Dragger.cc Stepper.cc Toggle.cc Indicator.cc Gauge.cc Slider.cc WidgetKitImpl.cc
 
 TARGET	= $(mpath)/libWidget.so
 

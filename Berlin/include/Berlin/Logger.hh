@@ -22,10 +22,6 @@
 //
 //
 
-// this file encapsulates a debugging facility
-// you can use to log messages to (in logical groups)
-// it's a singleton, and it's synchronized, which are both 
-// reasonably important :)
 #ifndef _Logger_hh
 #define _Logger_hh
 
@@ -36,13 +32,12 @@
 #include "Prague/Sys/Thread.hh"
 #include "Prague/Sys/Profiler.hh"
 
-// this is a rewrite of our debugging class to use some NANA features.  the idea
-// is that what was previously just a matter of writing to stderr, we now log
-// *everything* to an internal buffer, and only write to stderr if the group
-// you're writing to is enabled. Then when the system keels over, we dump the
-// in-core log and ask users to mail it to us, as a bug report
-
 class Logger
+//. this is a rewrite of our debugging class to use some NANA features.  the idea
+//. is that what was previously just a matter of writing to stderr, we now log
+//. *everything* to an internal buffer, and only write to stderr if the group
+//. you're writing to is enabled. Then when the system keels over, we dump the
+//. in-core log and ask users to mail it to us, as a bug report
 {
 public:
   enum group
@@ -106,6 +101,7 @@ private:
   static Prague::Mutex mutex;
 };
 
+#if 1
 class SectionLog
 {
 public:
@@ -115,5 +111,13 @@ private:
   Logger::group group;
   const char *section;
 };
+#elif
+class SectionLog
+{
+public:
+  SectionLog(Logger::group, const char *) {}
+  ~SectionLog() {}
+};
+#endif
 
 #endif /* _Logger_hh */

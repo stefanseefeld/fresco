@@ -81,6 +81,7 @@ void TelltaleConstraintImpl::add(Telltale_ptr t)
 {
   MutexGuard guard(mutex);
   telltales.push_back(Telltale::_duplicate(t));
+  t->constraint(TelltaleConstraint_var(_this()));
 }
 
 void TelltaleConstraintImpl::remove(Telltale_ptr t)
@@ -94,21 +95,22 @@ void TelltaleConstraintImpl::remove(Telltale_ptr t)
       }
 }
 
-ExclusiveChoice::ExclusiveChoice()
-  : choosen(Telltale::_nil())
+ExclusiveChoice::ExclusiveChoice(Telltale::Flag f)
+  : flag(f)
 {}
 
 void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 {
-  if (!CORBA::is_nil(choosen)) choosen->modify(f, false);
+  cout << "ExclusiveChoice::trymodify" << endl;
+  MutexGuard guard(mutex);
+  for (tlist_t::iterator i = telltales.begin(); i != telltales.end(); i++)
+    if ((*i)->test(f)) (*i)->modify(f, false);
   t->modify(f, true);
 }
 
 SelectionRequired::SelectionRequired()
-  : choosen(0)
 {}
 
 void SelectionRequired::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 {
-  if (choosen > 1) t->modify(f, false);
 }

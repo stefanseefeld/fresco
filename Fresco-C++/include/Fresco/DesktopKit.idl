@@ -26,6 +26,7 @@
 
 interface Graphic;
 interface Window;
+interface Desktop;
 
 /*
  * entry point for Moscow :
@@ -46,8 +47,9 @@ interface DesktopKit : Cloneable
   /*
    * all names subject to change
    */
-  Window shell(in Graphic g);
-  Window transient(in Graphic g);
+  Desktop desk();
+  Window  shell(in Graphic g);
+  Window  transient(in Graphic g);
 //   Controller menu(in Graphic g);
 };
 

@@ -59,7 +59,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void modify(Telltale::Flag, CORBA::Boolean);
   virtual void constraint(TelltaleConstraint_ptr c);
   virtual TelltaleConstraint_ptr constraint();
- protected:
+// protected:
   virtual bool handlePositionalEvent(PickTraversal_ptr, const Event::Pointer *);
   virtual bool inside(PickTraversal_ptr);
   virtual void move(PickTraversal_ptr, const Event::Pointer *);

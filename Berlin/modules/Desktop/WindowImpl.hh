@@ -39,7 +39,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   public:
     virtual ~Manipulator() {}
     void bind(StageHandle_ptr h) { handle = StageHandle::_duplicate(h);}
-    virtual void execute(const Message &) = 0;
+    virtual void execute(const CORBA::Any &) = 0;
   protected:
     StageHandle_var handle;
   };
@@ -47,7 +47,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   {
   public:
     Mapper(WindowImpl *w, bool f) : window(w), flag(f) {}
-    virtual void execute(const Message &);
+    virtual void execute(const CORBA::Any &);
   private:
     WindowImpl *window;
     bool flag;

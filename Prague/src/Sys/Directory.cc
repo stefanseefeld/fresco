@@ -26,10 +26,10 @@
 
 using namespace Prague;
 
-bool compSize(File *a, File *b) { return  (a->Size() > b->Size());}
-bool compAccTime(File *a, File *b) { return a->AccTime() < b->AccTime();}
-bool compModTime(File *a, File *b) { return a->ModTime() < b->ModTime();}
-bool compAlpha(File *a, File *b) { return a->Name() < b->Name();}
+bool compSize(File *a, File *b) { return  (a->size() > b->size());}
+bool compAccTime(File *a, File *b) { return a->accTime() < b->accTime();}
+bool compModTime(File *a, File *b) { return a->modTime() < b->modTime();}
+bool compAlpha(File *a, File *b) { return a->name() < b->name();}
 bool compDirsFirst(File *a, File *b)
 {
   if (a->is(File::dir) && !b->is(File::dir)) return true;
@@ -37,10 +37,6 @@ bool compDirsFirst(File *a, File *b)
   else return compAlpha(a, b);
 };
 
-/* @Method{Directory::Directory(const string &name, int order = 0, int filter = unfiltered)}
- *
- * @Description{list all files according to @var{filter} in the order given by @var{order}}
- */
 Directory::Directory(const string &n, int order, int filter)
   : File(n)
 {
@@ -49,7 +45,7 @@ Directory::Directory(const string &n, int order, int filter)
       string::size_type i = longname.rfind('/', longname.length() - 3);
       longname.erase(i, longname.length());
     }
-  shortname = BaseName(longname);
+  shortname = File::base(longname);
   if (getStatus() && is(File::dir))
     {
       DIR *dir = opendir(longname.c_str());
@@ -75,10 +71,6 @@ Directory::Directory(const string &n, int order, int filter)
     }
 }
 
-/* @Method{Directory::Directory(const string &name, int order = 0, const string &pattern)}
- *
- * @Description{list all files according to @var{filter} in the order given by @var{order}}
- */
 Directory::Directory(const string &n, int order, const string &pattern)
   : File(n)
 {
@@ -87,7 +79,7 @@ Directory::Directory(const string &n, int order, const string &pattern)
       string::size_type i = longname.rfind('/', longname.length() - 3);
       longname.erase(i, longname.length());
     }
-  shortname = BaseName(n);
+  shortname = File::base(n);
   if (getStatus() && is(File::dir))
     {
       regex filter(pattern);
@@ -113,21 +105,13 @@ Directory::Directory(const string &n, int order, const string &pattern)
     }
 }
 
-/* @Method{Directory::Directory(const Directory &D)}
- *
- * @Description{copy constructor}
- */
 Directory::Directory(const Directory &D)
   : File(D)
 {
   for (vector<File *>::const_iterator i = D.children.begin(); i != D.children.end(); i++)
-    children.push_back(new File((*i)->Name()));
+    children.push_back(new File((*i)->name()));
 }
 
-/* @Method{Directory::~Directory()}
- *
- * @Description{}
- */
 Directory::~Directory()
 {
   for (vector<File *>::iterator i = children.begin(); i != children.end(); i++) delete *i;

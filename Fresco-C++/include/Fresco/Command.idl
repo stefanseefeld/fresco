@@ -31,7 +31,7 @@ interface Command
 //. commands are anonymous encapsulated actions. 
 //. you never know what they'll do.
 {
-  void execute(in Message args);
+  void execute(in any a);
 };
 
 interface Reactor : MessageListener

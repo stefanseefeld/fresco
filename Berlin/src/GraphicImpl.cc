@@ -124,6 +124,7 @@ static void compensate (double a, double &x, double &y)
 
 static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
+  SectionLog section(Logger::drawing, "flexibleTransformRequest");
   if (t->Identity()) return;
   if (t->Translation())
     {
@@ -193,6 +194,7 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 
 static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
+  SectionLog section(Logger::drawing, "fixedTransformRequest");
   if (t->Identity()) return;
   if (t->Translation())
     {
@@ -201,8 +203,8 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
       Coord tx = mat[2][0];
       Coord ty = mat[2][1];
 
-      req.x.align = -(-req.x.align * req.x.natural + tx) / req.x.natural;
-      req.y.align = -(-req.y.align * req.y.natural + ty) / req.y.natural;
+      req.x.align = (req.x.align * req.x.natural - tx) / req.x.natural;
+      req.y.align = (req.y.align * req.y.natural - ty) / req.y.natural;
       return;
     }
 
@@ -216,19 +218,15 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   nat.upper.y = nat.lower.y + req.y.natural;
   nat.lower.z = nat.upper.z = Coord(0);
   nat.valid = true;
-
   nat.applyTransform(t);
+  Coord xlead = -nat.lower.x;
+  Coord xtrail = nat.upper.x;
 
-  Coord x_nat_lead = -nat.lower.x;
-  Coord x_nat_trail = nat.upper.x;
+  Coord ylead = -nat.lower.y;
+  Coord ytrail = nat.upper.y;
 
-  Coord y_nat_lead = -nat.lower.y;
-  Coord y_nat_trail = nat.upper.y;
-
-  GraphicImpl::requireLeadTrail(req.x, x_nat_lead, x_nat_lead, x_nat_lead, 
-				x_nat_trail, x_nat_trail, x_nat_trail);
-  GraphicImpl::requireLeadTrail(req.y, y_nat_lead, y_nat_lead, y_nat_lead, 
-				y_nat_trail, y_nat_trail, y_nat_trail);
+  GraphicImpl::requireLeadTrail(req.x, xlead, xlead, xlead, xtrail, xtrail, xtrail);
+  GraphicImpl::requireLeadTrail(req.y, ylead, ylead, ylead, ytrail, ytrail, ytrail);
 }
 
 /*****************************************************/
@@ -489,6 +487,7 @@ void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
 
 Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &req, Transform_ptr t)
 {
+  SectionLog section(Logger::drawing, "GraphicImpl::transformAllocation");
   Vertex delta;
   delta.x = Coord(0); delta.y = Coord(0); delta.z = Coord(0);
   if (!rotated(t))

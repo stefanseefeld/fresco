@@ -78,9 +78,8 @@ void ScreenManager::repair()
   
   for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
-//       Logger::log(Logger::drawing) << "repairing region "
-// 				   << '(' << (*i)->lower.x << ',' << (*i)->lower.y
-// 				   << ',' << (*i)->upper.x << ',' << (*i)->upper.y << ')' << endl;
+//       Logger::log(Logger::drawing) << "repairing region " << **i << endl;
+//       cout << "repairing region " << **i << endl;
       bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();

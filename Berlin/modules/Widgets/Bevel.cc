@@ -25,6 +25,7 @@
 #include "Warsaw/Pencil.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/ImplVar.hh"
+#include "Berlin/Color.hh"
 #include "Berlin/Logger.hh"
 
 Bevel::Bevel(Coord t, Alignment x, Alignment y, bool h, bool v)

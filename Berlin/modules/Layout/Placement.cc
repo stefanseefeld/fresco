@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -50,6 +50,8 @@ void Placement::request(Requisition &r)
 
 void Placement::traverse(Traversal_ptr traversal)
 {
+  Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
   /*
    * cheap and dirty cull test -stefan
    */
@@ -65,7 +67,7 @@ void Placement::traverse(Traversal_ptr traversal)
       layout->allocate(1, &r, allocation, &tmp);
       Impl_var<TransformImpl> tx(new TransformImpl);
       result->normalize(tx);
-      traversal->traverseChild(Graphic_var(body()), 0, Region_var(result->_this()), Transform_var(tx->_this()));
+      traversal->traverseChild(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
     }
   else MonoGraphic::traverse(traversal);
 }

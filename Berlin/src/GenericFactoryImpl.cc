@@ -83,10 +83,7 @@ GenericFactoryImpl::create_object(const CosLifeCycle::Key &key, const CosLifeCyc
       throw CosLifeCycle::CannotMeetCriteria();
     }
   if (!cloneable)
-    {
-      Logger::log(Logger::loader) << "GenericFactoryImpl: loaded NULL pointer in response to "
-				  << ((string)(key[0].id)).c_str() << endl;
-    }
+    Logger::log(Logger::loader) << "GenericFactoryImpl: loaded NULL pointer in response to " << key[0].id << '\n';
   CORBA::Object_var object;
   // see if we are doing a lifecycle migration here
   omniLifeCycleInfo_ptr li = extractLifeCycleFromCriteria(criteria);
@@ -94,30 +91,21 @@ GenericFactoryImpl::create_object(const CosLifeCycle::Key &key, const CosLifeCyc
   // no lifeCycleInfo detected
   if (CORBA::is_nil(li))
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl: not doing lifecycle copy for "
-				  << ((string)(key[0].id)).c_str() << endl;    
+      Logger::log(Logger::loader) << "GenericFactoryImpl: not doing lifecycle copy for " << key[0].id << '\n';
       cloneable->_obj_is_ready(_boa());
       object = cloneable->_this();
     
       if (CORBA::is_nil(object))
-	{
-	  Logger::log(Logger::loader) << "GenericFactoryImpl: returning a nil reference for "
-				      << ((string)(key[0].id)).c_str() << endl;    
-	}
-
+	Logger::log(Logger::loader) << "GenericFactoryImpl: returning a nil reference for " << key[0].id << '\n';
       // lifeCycleInfo was found!
     }
   else 
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl: doing lifecycle copy for "
-				  << ((string)(key[0].id)).c_str() << endl;    
+      Logger::log(Logger::loader) << "GenericFactoryImpl: doing lifecycle copy for " << key[0].id << '\n';
       cloneable->_set_lifecycle(li);
       cloneable->_obj_is_ready(_boa());
       object = cloneable->_this();
     }
-  
-  //    newCloneable->registerWithMyManagers();
-  //    startThread(CORBA::Object::_duplicate(newObjectPtr));
   return CORBA::Object::_duplicate(object);
 }
 
@@ -138,11 +126,10 @@ GenericFactoryImpl::extractLifeCycleFromCriteria(const CosLifeCycle::Criteria &c
 
 // this method does the dirty work of getting the new C++ object off the
 // disk and connected to the BOA. It's not pretty, but that's all it does.
-
-CloneableImpl *GenericFactoryImpl::loadPlugin(const CosLifeCycle::Key &k) 
+CloneableImpl *GenericFactoryImpl::loadPlugin(const CosLifeCycle::Key &key)
   throw (noSuchPluginException)
 {
-  plist_t::iterator p = plugins.find(k);
+  plist_t::iterator p = plugins.find(key);
   if (p == plugins.end())
     {
       // naughty boy, you should have called supports() first!
@@ -158,11 +145,10 @@ CORBA::Boolean GenericFactoryImpl::supports (const CosLifeCycle::Key &key)
   plist_t::iterator p = plugins.find(key);
   if (p == plugins.end())
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl does not support "
-				  << ((string)(key[0].id)).c_str() << endl;
-      Logger::log(Logger::loader) << "GenericFactoryImpl interface listing follows: " << endl;
+      Logger::log(Logger::loader) << "GenericFactoryImpl does not support " << key[0].id << '\n';
+      Logger::log(Logger::loader) << "GenericFactoryImpl interface listing follows: \n";
       for(p = plugins.begin(); p != plugins.end(); p++)
-	Logger::log(Logger::loader) << p->first[0].id << endl;
+	Logger::log(Logger::loader) << p->first[0].id << '\n';
       return false;
     }
   else return true;
@@ -187,7 +173,11 @@ void GenericFactoryImpl::scan(const char *name)
       /*
        * if this is not a plugin, skip over it
        */
-      if (!plugin->ok()) continue;
+      if (!plugin->ok())
+	{
+	  delete plugin;
+	  continue;
+	}
       CosLifeCycle::Key prototype;
       prototype.length(1);
       prototype[0].id   = (const char*) plugin->name();    // string copied
@@ -211,7 +201,8 @@ void GenericFactoryImpl::clear()
   plugins.erase(plugins.begin(), plugins.end());
 }
 
-bool keyComp::operator()(const CosLifeCycle::Key &a, const CosLifeCycle::Key &b) {
+bool keyComp::operator()(const CosLifeCycle::Key &a, const CosLifeCycle::Key &b)
+{
   // Blast C-style strings! see pg 468 of Stroustrup 3rd ed.
   return( strcmp(a[0].id, b[0].id) < 0);
 };

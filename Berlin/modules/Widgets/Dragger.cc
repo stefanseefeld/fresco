@@ -42,9 +42,9 @@ void Dragger::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 void Dragger::drag(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
   Vertex delta = pointer->location - offset;
-  Message msg;
-  msg.payload <<= delta;
-  command->execute(msg);
+  CORBA::Any any;
+  any <<= delta;
+  command->execute(any);
   offset += delta;
 }
 

@@ -29,8 +29,7 @@
  */
 interface Transformator : Graphic
 {
-  void scale(in Vertex v);
-  void rotate(in double angle, in Axis a);
+  attribute Transform transformation;
 };
 
 #endif /* _View_idl */

@@ -36,16 +36,15 @@ TransformatorImpl::~TransformatorImpl()
   transform->_dispose();
 }
 
-void TransformatorImpl::scale(const Vertex &zoom)
+void TransformatorImpl::transformation(Transform_ptr t)
 {
-  transform->scale(zoom);
+  transform->copy(t);
   needResize();
 }
 
-void TransformatorImpl::rotate(double angle, Axis axis)
+Transform_ptr TransformatorImpl::transformation()
 {
-  transform->rotate(angle, axis);
-  needResize();
+  return transform->_this();
 }
 
 void TransformatorImpl::request(Requisition &requisition)

@@ -542,6 +542,7 @@ void StageImpl::end()
       tree.end();
       if (need_redraw)
 	{
+//  	  cout << "need redraw " << *damage_ << endl;
 	  needRedrawRegion(Region_var(damage_->_this()));
 	  need_redraw = false;
 	}

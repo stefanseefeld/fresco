@@ -43,8 +43,10 @@ public:
   enum { unfiltered = 0x0, nohidden = 0x1, 
 	 readable = 0x2, writable = 0x4, executable = 0x8,
 	 dirs = 0x10, nodirs = 0x20};
-  Directory(const string &, int, int filter = unfiltered);
-  Directory(const string &, int, const string &);
+  Directory(const string &, int order, int filter = unfiltered);
+  //. list all files according to <i>filter</i> in the order given by @var{order}
+  Directory(const string &, int order, const string &);
+  //. list all files according to @var{filter} in the order given by @var{order}
   Directory(const Directory &);
   ~Directory();
   File *operator [] (unsigned int i) { return children[i];}

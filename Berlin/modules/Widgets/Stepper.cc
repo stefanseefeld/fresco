@@ -62,8 +62,8 @@ void Stepper::release(PickTraversal_ptr traversal, const Event::Pointer *pointer
 void Stepper::step()
 {
   SectionLog section(Logger::widget, "Stepper::step");
-  Message message;
-  execute(message);
+  CORBA::Any any;
+  execute(any);
 }
 
 void Stepper::start()

@@ -29,11 +29,11 @@ using namespace Prague;
 class Mover : public WindowImpl::Manipulator
 {
 public:
-  virtual void execute(const Message &message)
+  virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
       Vertex *delta;
-      if (message.payload >>= delta)
+      if (any >>= delta)
 	{
  	  Vertex p = handle->position();
 	  handle->position(p + *delta);
@@ -45,11 +45,11 @@ public:
 class Resizer : public WindowImpl::Manipulator
 {
 public:
-  virtual void execute(const Message &message)
+  virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
       Vertex *delta;
-      if (message.payload >>= delta)
+      if (any >>= delta)
 	{
  	  Vertex s = handle->size();
           Graphic::Requisition r;
@@ -76,12 +76,12 @@ class MoveResizer : public WindowImpl::Manipulator
 {
 public:
   MoveResizer(Alignment x, Alignment y, CORBA::Short b) : xalign(x), yalign(y), border(b) {}
-  virtual void execute(const Message &message)
+  virtual void execute(const CORBA::Any &any)
     {
       SectionLog section(Logger::desktop, "MoveResizer::execute");
       if (CORBA::is_nil(handle)) return;
       Vertex *vertex;
-      if (message.payload >>= vertex)
+      if (any >>= vertex)
 	{
           Graphic::Requisition r;
           handle->child()->request(r);
@@ -123,11 +123,11 @@ private:
 class Relayerer : public WindowImpl::Manipulator
 {
 public:
-  virtual void execute(const Message &message)
+  virtual void execute(const CORBA::Any &any)
     {
       if (CORBA::is_nil(handle)) return;
       Stage::Index i;
-      if (message.payload >>= i)
+      if (any >>= i)
 	{
 	  handle->layer(i);
 	}
@@ -135,7 +135,7 @@ public:
     }
 };
 
-void WindowImpl::Mapper::execute(const Message &)
+void WindowImpl::Mapper::execute(const CORBA::Any &)
 {
   if (flag) window->map();
   else window->unmap();

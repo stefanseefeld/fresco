@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin -lpng
 
-SRC	= RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
+SRC	= PNG.cc RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
 
 TARGET	= $(mpath)/libImage.so
 
