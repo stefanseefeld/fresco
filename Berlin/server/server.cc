@@ -86,7 +86,10 @@ struct Dump : Signal::Notifier
 	    Tracer::dump(ofs);
 	    std::cerr << "Something went wrong. '" << output
 		      << "' contains a debugging log.\n"
-		      << "Please mail this output to bugs@berlin-consortium.org\n\n";
+		      << "Please mail this output to bugs@fresco.org "
+                      << "(together with a description\n"
+                      << "of your configuration and what you were doing"
+                      << " before the crash).\n\n";
             exit(-1);
           }
 	}
