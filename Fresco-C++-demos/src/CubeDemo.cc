@@ -88,7 +88,7 @@ CubeDemo::CubeDemo(Application *a)
   Graphic_var transformer1 = primitives->transformer(Graphic_var(tools->rgb(cube, 0.6, 0.6, 1.0)));
   Graphic_var transformer2 = primitives->transformer(Graphic_var(transformer1));
   Color white = {1., 1., 1., 1.};
-  Vertex direction = {5., 5., 10.};
+  Vertex direction = {0., 0., -1.};
   Graphic_var light = primitives->directional_light(transformer2, white, 1., direction);
   
   Graphic_var root = primitives->root(light);
