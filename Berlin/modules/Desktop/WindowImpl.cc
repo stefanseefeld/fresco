@@ -164,9 +164,9 @@ WindowImpl::~WindowImpl()
   unmapper->_dispose();
 }
 
-void WindowImpl::needResize()
-{
-}
+// void WindowImpl::needResize()
+// {
+// }
 
 
 /*

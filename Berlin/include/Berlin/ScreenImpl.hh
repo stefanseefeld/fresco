@@ -41,6 +41,7 @@ public:
 
   virtual void pick(PickTraversal_ptr);
   virtual void allocations(Allocation_ptr);
+  virtual void needResize() { needRedraw();}
 
   virtual Coord width();
   virtual Coord height();

@@ -77,8 +77,7 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
     {
       if (!CORBA::is_nil(info.allocation))
 	{
-	  Impl_var<RegionImpl> rr(new RegionImpl);
-	  rr->copy(info.allocation);
+	  Impl_var<RegionImpl> rr(new RegionImpl(info.allocation));
 	  Requisition r;
 	  GraphicImpl::initRequisition(r);
 	  Allocator::request(r);
@@ -96,5 +95,4 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
         }
     }
   else Allocator::allocate(0, info);
-  info.transformation->premultiply(Transform_var(transform->_this()));
 }

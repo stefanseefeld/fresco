@@ -57,7 +57,7 @@ Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
     redirect(new Observer(this)),
     _drag(new Dragger(v, a)),
     value(BoundedValue::_duplicate(v)),
-    offset(v->value()),
+    offset(v->value()/(v->upper() - v->lower())),
     axis(a)
 {
   v->attach(Observer_var(redirect->_this()));
@@ -72,6 +72,7 @@ void Slider::init(Controller_ptr t)
 
 void Slider::update(const CORBA::Any &any)
 {
+  needRedraw();
   any >>= offset;
   offset /= (value->upper() - value->lower());
   needRedraw();

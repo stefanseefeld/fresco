@@ -25,7 +25,7 @@
 using namespace Prague;
 
 BoundedValueImpl::BoundedValueImpl(Coord ll, Coord uu, Coord vv, Coord ss, Coord pp)
-  : l(l), u(uu), v(vv), s(ss), p(pp)
+  : l(ll), u(uu), v(vv), s(ss), p(pp)
 {
 };
 

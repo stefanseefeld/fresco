@@ -21,6 +21,7 @@
  */
 #include "Gadget/GadgetKitImpl.hh"
 #include <Warsaw/View.hh>
+#include <Warsaw/Transform.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/BoundedValue.hh>
 #include <Warsaw/DrawTraversal.hh>
@@ -49,6 +50,21 @@ class AlphaAdjuster : implements(View), public MonoGraphic
   Coord alpha;
 };
 
+class TransformAdjuster : implements(View), public MonoGraphic
+{
+ public:
+  virtual void update(const CORBA::Any &any)
+    {
+      Graphic_var child = body(); if (CORBA::is_nil(child)) return;
+      Transform_var transformation = child->transformation(); if (CORBA::is_nil(transformation)) return;
+      Coord phi;
+      any >>= phi;
+      transformation->loadIdentity();
+      transformation->rotate(phi, zaxis);
+      needResize();
+    }
+};
+
 GadgetKitImpl::GadgetKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 GadgetKitImpl::~GadgetKitImpl() {}
 void GadgetKitImpl::bind(ServerContext_ptr context)
@@ -57,6 +73,7 @@ void GadgetKitImpl::bind(ServerContext_ptr context)
   PropertySeq props;
   props.length(0);
   command = resolve_kit<CommandKit>(context, interface(CommandKit), props);
+  figure = resolve_kit<FigureKit>(context, interface(FigureKit), props);
 }
 
 Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
@@ -68,9 +85,14 @@ Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
   return adjuster->_this();
 }
 
-Graphic_ptr GadgetKitImpl::transformer(Graphic_ptr, BoundedValue_ptr)
+Graphic_ptr GadgetKitImpl::transformer(Graphic_ptr g, BoundedValue_ptr value)
 {
-  return Graphic::_nil();
+  TransformAdjuster *adjuster = new TransformAdjuster;
+  adjuster->_obj_is_ready(_boa());
+  value->attach(Observer_var(adjuster->_this()));
+  Graphic_var transformer = figure->projection(g);
+  adjuster->body(transformer);
+  return adjuster->_this();
 }
 
 extern "C" KitFactory *load()

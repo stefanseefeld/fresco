@@ -523,22 +523,14 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       if (!Math::equal(m[0][0], 0.0, tol)) a0 = Math::abs(m[0][1] / m[0][0]);
       if (!Math::equal(m[1][0], 0.0, tol)) a1 = Math::abs(m[1][1] / m[1][0]);
 
-      r[0].x.natural = Math::abs(req.x.natural*m[0][0]);
-      r[0].x.maximum = Math::abs(req.x.maximum*m[0][0]);
-      r[0].x.minimum = Math::abs(req.x.minimum*m[0][0]);
+      r[0].x.natural = r[0].x.maximum = r[0].x.minimum = Math::abs(req.x.natural*m[0][0]);
       r[0].x.defined = true;
-      r[0].y.natural = Math::abs(req.x.natural*m[0][1]);
-      r[0].y.maximum = Math::abs(req.x.maximum*m[0][1]);
-      r[0].y.minimum = Math::abs(req.x.minimum*m[0][1]);
+      r[0].y.natural = r[0].y.maximum = r[0].y.minimum = Math::abs(req.x.natural*m[0][1]);
       r[0].y.defined = true;
 
-      r[1].x.natural = Math::abs(req.y.natural*m[1][0]);
-      r[1].x.maximum = Math::abs(req.y.maximum*m[1][0]);
-      r[1].x.minimum = Math::abs(req.y.minimum*m[1][0]);
+      r[1].x.natural = r[1].x.maximum = r[1].x.minimum = Math::abs(req.y.natural*m[1][0]);
       r[1].x.defined = true;
-      r[1].y.natural = Math::abs(req.y.natural*m[1][1]);
-      r[1].y.maximum = Math::abs(req.y.maximum*m[1][1]);
-      r[1].y.minimum = Math::abs(req.y.minimum*m[1][1]);
+      r[1].y.natural = r[1].y.maximum = r[1].y.minimum = Math::abs(req.y.natural*m[1][1]);
       r[1].y.defined = true;
 
       total.x.natural = r[0].x.natural + r[1].x.natural;
@@ -575,6 +567,6 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       region.upper.x = Coord(region.lower.x + x_len);
       region.upper.y = Coord(region.lower.y + y_len);
     }
-  cout << "transformed allocation with delta " << delta << endl;
+//   cout << "transformed allocation with delta " << delta << endl;
   return delta;
 }

@@ -112,6 +112,10 @@ void GLDrawingKit::setClipping(Region_ptr r)
       PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*drawable->resolution(xaxis) + 0.5);
       PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*drawable->resolution(yaxis) + 0.5);
       glScissor(x, y, w, h);
+//       glColor4d(1., 0., 0., 1.);
+//       glRectf(0, 0, 10000., 10000.);
+//       glFlush();
+//       GGI::drawable()->flush();
     }
 }
 

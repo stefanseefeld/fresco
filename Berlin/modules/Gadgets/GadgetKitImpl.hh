@@ -22,9 +22,10 @@
 #ifndef _GadgetKitImpl_hh
 #define _GadgetKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/GadgetKit.hh"
-#include "Warsaw/CommandKit.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/GadgetKit.hh>
+#include <Warsaw/CommandKit.hh>
+#include <Warsaw/FigureKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
@@ -40,6 +41,7 @@ class GadgetKitImpl : implements(GadgetKit), public KitImpl
   virtual Graphic_ptr transformer(Graphic_ptr, BoundedValue_ptr);
  private:
   CommandKit_var command;
+  FigureKit_var figure;
 };
 
 #endif /* _GadgetKitImpl_hh */
