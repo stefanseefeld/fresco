@@ -218,7 +218,8 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
   RefCount_var<Graphic> outset = _tool->frame(g, 20., spec, true);
-  wptr->body(outset);
+  RefCount_var<Graphic> background = _tool->rgb(outset, 0.7, 0.7, 0.7);
+  wptr->body(background);
   wptr->append_controller(g);
   menu->insert(_desktop);
   _desktop->append_controller(wptr);
