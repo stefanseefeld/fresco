@@ -42,6 +42,7 @@ Prague, The Berlin Utility Library, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
 VERSION)
 
+AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
