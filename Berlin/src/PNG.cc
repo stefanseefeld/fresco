@@ -348,8 +348,6 @@ unsigned char **PNG::pixels(unsigned long xlower, unsigned long ylower,
   png_uint_32 width = xupper - xlower;
   png_uint_32 height = yupper - ylower;
 
-  clear();
-
   _rinfo->color_type = rgbalpha;
   _rinfo->bit_depth = 8;
   _rinfo->width = width;
