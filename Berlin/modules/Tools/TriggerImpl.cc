@@ -70,7 +70,7 @@ void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event
   ControllerImpl::release(traversal, event);
 }
 
-void TriggerImpl::keyPress(const Input::Event &event)
+void TriggerImpl::key_press(const Input::Event &event)
 {
   const Input::Toggle &toggle = event[0].attr.selection();
   if (toggle.number == 32) // space

@@ -38,7 +38,7 @@ class TriggerImpl : public virtual POA_Warsaw::Trigger,
   void action(Warsaw::Command_ptr);
   Warsaw::Command_ptr action();
   virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void keyPress(const Warsaw::Input::Event &);
+  virtual void key_press(const Warsaw::Input::Event &);
   void execute(const CORBA::Any &);
  private:
   Prague::Mutex mutex;

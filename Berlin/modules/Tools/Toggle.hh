@@ -33,7 +33,7 @@ public:
 //protected:
   virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void keyPress(const Warsaw::Input::Event &);
+  virtual void key_press(const Warsaw::Input::Event &);
 private:
 };
 
