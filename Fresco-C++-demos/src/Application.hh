@@ -106,4 +106,25 @@ private:
   Fresco::Graphic_var       _print;
 };
 
+template <typename T> T *create_demo(Application *a)
+{
+   try { return new T(a);}
+   catch (std::exception &e)
+   {
+      std::cerr << "Unable to create one of the demo applets:" << std::endl
+                << "The error message I received awas: \""
+                << e.what() << "\"" << std::endl
+                << "This probably means that the server doesn't provide" << std::endl
+                << "some of the resources requested by this applet" << std::endl;
+      return 0;
+   }
+   catch (...)
+   {
+      std::cerr << "Unable to create one of the demo applets." << std::endl
+                << "This probably means that the server doesn't provide" << std::endl
+                << "some of the resources requested by this applet" << std::endl;
+      return 0;
+   }
+}
+
 #endif

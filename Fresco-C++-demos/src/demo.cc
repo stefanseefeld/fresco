@@ -39,18 +39,6 @@
 using namespace Prague;
 using namespace Fresco;
 
-template <typename T> T *create_demo(Application *a)
-{
-   try { return new T(a);}
-   catch (...)
-   {
-      std::cerr << "unable to create one of the demo applets\n"
-                << "this probably means that the server doesn't provide\n"
-                << "some of the resources requested by this applet" << std::endl;
-      return 0;
-   }
-}
-
 int main(int argc, char **argv)
 {
     Prague::GetOpt getopt(argv[0], "C++ fresco demo");
