@@ -36,6 +36,7 @@ bool Prague::putenv(const std::string & name, const std::string & value)
   std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
 #endif
+  return false;
 }
 
 bool Prague::putenv(const std::string & name)
@@ -48,6 +49,7 @@ bool Prague::putenv(const std::string & name)
   std::cout << "ERROR: Prague::putenv misconfiguration!" << std::endl;
   exit(1);
 #endif
+  return false;
 }
 
 std::string Prague::getenv(const std::string & name)
