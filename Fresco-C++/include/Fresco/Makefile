@@ -113,7 +113,7 @@ $(opath)/%.o:	%.cc
 
 clean:	
 		rm -f $(opath)/*.o $(dpath)/*.d
-		rm -f $(SRC) $(HDR) *~
+		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) $(DYNHDR) $(STATHDR) $(LCHDR) *~
 
 distclean:	clean
 		rm -f $(TARGET)

@@ -51,7 +51,7 @@ ScreenImpl::~ScreenImpl()
 
 void ScreenImpl::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section(Logger::picking, "ScreenImpl::pick");
+  SectionLog section("ScreenImpl::pick");
   if (traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));

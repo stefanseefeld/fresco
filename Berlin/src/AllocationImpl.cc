@@ -40,7 +40,7 @@ AllocationImpl::~AllocationImpl()
 void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
   State state;
-  state.allocation = new RegionImpl(region, Transform::_nil());
+  state.allocation = new RegionImpl(region);
   state.allocation->_obj_is_ready(_boa());
   state.transformation = new TransformImpl;
   state.transformation->_obj_is_ready(_boa());

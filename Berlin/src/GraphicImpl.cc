@@ -124,7 +124,7 @@ static void compensate (double a, double &x, double &y)
 
 static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
-  SectionLog section(Logger::drawing, "flexibleTransformRequest");
+  SectionLog section("flexibleTransformRequest");
   if (t->Identity()) return;
   if (t->Translation())
     {
@@ -194,7 +194,7 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 
 static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 {
-  SectionLog section(Logger::drawing, "fixedTransformRequest");
+  SectionLog section("fixedTransformRequest");
   if (t->Identity()) return;
   if (t->Translation())
     {
@@ -310,7 +310,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
  */
 void GraphicImpl::needRedraw()
 {
-  SectionLog section(Logger::drawing, "GraphicImpl::needRedraw");
+  SectionLog section("GraphicImpl::needRedraw");
   Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   Impl_var<RegionImpl> region(new RegionImpl);
@@ -332,7 +332,7 @@ void GraphicImpl::needRedraw()
  */
 void GraphicImpl::needRedrawRegion(Region_ptr region)
 {
-  SectionLog section(Logger::drawing, "GraphicImpl::needRedrawRegion");
+  SectionLog section("GraphicImpl::needRedrawRegion");
   if (region->defined())
     {
       Impl_var<AllocationImpl> allocation(new AllocationImpl);
@@ -487,7 +487,7 @@ void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)
 
 Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisition &req, Transform_ptr t)
 {
-  SectionLog section(Logger::drawing, "GraphicImpl::transformAllocation");
+  SectionLog section("GraphicImpl::transformAllocation");
   Vertex delta;
   delta.x = Coord(0); delta.y = Coord(0); delta.z = Coord(0);
   if (!rotated(t))

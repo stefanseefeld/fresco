@@ -32,7 +32,7 @@ using namespace Prague;
 ControllerImpl::ControllerImpl(bool t) : flags(0L), grabbed(false), transparent(t) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section(Logger::picking, "ControllerImpl::pick");
+  SectionLog section("ControllerImpl::pick");
   if (grabbed || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));
@@ -115,7 +115,7 @@ void ControllerImpl::setParentController(Controller_ptr c)
 
 void ControllerImpl::requestFocus(Controller_ptr c)
 {
-  SectionLog section(Logger::focus, "ControllerImpl::requestFocus");  
+  SectionLog section("ControllerImpl::requestFocus");  
   Controller_var parent = parentController();
   if (CORBA::is_nil(parent)) return;
   if (!c->_is_equivalent(Controller_var(_this())) &&
@@ -126,27 +126,27 @@ void ControllerImpl::requestFocus(Controller_ptr c)
 
 CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 {
-  SectionLog section(Logger::focus, "ControllerImpl::receiveFocus");  
+  SectionLog section("ControllerImpl::receiveFocus");  
   set(Telltale::active);
   return true;
 }
 
 void ControllerImpl::loseFocus(Focus_ptr)
 {
-  SectionLog section(Logger::focus, "ControllerImpl::loseFocus");
+  SectionLog section("ControllerImpl::loseFocus");
   clear(Telltale::active);
 }
 
 void ControllerImpl::set(Telltale::Flag f)
 {
-  SectionLog section(Logger::subject, "ControllerImpl::set");
+  SectionLog section("ControllerImpl::set");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, true);
   else modify(f, true);
 }
 
 void ControllerImpl::clear(Telltale::Flag f)
 {
-  SectionLog section(Logger::subject, "ControllerImpl::clear");
+  SectionLog section("ControllerImpl::clear");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, false);
   else modify(f, false);
 }
@@ -184,7 +184,7 @@ TelltaleConstraint_ptr ControllerImpl::constraint()
 
 CORBA::Boolean ControllerImpl::handle(PickTraversal_ptr traversal, const CORBA::Any &any)
 {
-  SectionLog section(Logger::picking, "ControllerImpl::handle");
+  SectionLog section("ControllerImpl::handle");
   Event::Pointer *pointer;
   if (any >>= pointer) return handlePositionalEvent(traversal, pointer);
   /* else key event ? */
@@ -216,9 +216,9 @@ void ControllerImpl::move(PickTraversal_ptr, const Event::Pointer *)
 {
 }
 
-void ControllerImpl::press(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::press(PickTraversal_ptr traversal, const Event::Pointer *)
 {
-  grab();
+  grab(traversal);
   set(Telltale::toggle);
 }
 
@@ -226,10 +226,10 @@ void ControllerImpl::drag(PickTraversal_ptr, const Event::Pointer *)
 {
 }
 
-void ControllerImpl::release(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::release(PickTraversal_ptr traversal, const Event::Pointer *)
 {
   clear(Telltale::toggle);
-  ungrab();
+  ungrab(traversal);
 }
 
 void ControllerImpl::doubleClick(PickTraversal_ptr, const Event::Pointer *)
@@ -246,4 +246,16 @@ void ControllerImpl::keyRelease(PickTraversal_ptr, const Event::Pointer *)
 
 void ControllerImpl::other(PickTraversal_ptr, const Event::Pointer *)
 {
+}
+
+void ControllerImpl::grab(PickTraversal_ptr traversal)
+{
+  traversal->grab();
+  grabbed = true;
+}
+
+void ControllerImpl::ungrab(PickTraversal_ptr traversal)
+{
+  traversal->ungrab();
+  grabbed = false;
 }

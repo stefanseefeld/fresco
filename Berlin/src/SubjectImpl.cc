@@ -28,14 +28,14 @@ SubjectImpl::SubjectImpl() : blocked(false) {}
 
 void SubjectImpl::attach(Observer_ptr o)
 {
-  SectionLog section(Logger::subject, "SubjectImpl::attach");
+  SectionLog section("SubjectImpl::attach");
   MutexGuard guard(observerMutex);
   observers.push_back(Observer::_duplicate(o));
 }
 
 void SubjectImpl::detach(Observer_ptr o)
 {
-  SectionLog section(Logger::subject, "SubjectImpl::detach");
+  SectionLog section("SubjectImpl::detach");
   MutexGuard guard(observerMutex);
   observers.remove(o);
 }
@@ -53,7 +53,7 @@ void SubjectImpl::notify() {
 
 void SubjectImpl::notify(const CORBA::Any &whatChanged)
 {
-  SectionLog section(Logger::subject, "SubjectImpl::notify");
+  SectionLog section("SubjectImpl::notify");
   MutexGuard guard(myMutex);
   if (!blocked)
     {

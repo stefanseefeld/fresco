@@ -38,7 +38,8 @@ GLDrawable::GLDrawable()
   // Configure the mode struct.
   mode.visible.x = mode.visible.y = GGI_AUTO;
   mode.virt.x = mode.virt.y = GGI_AUTO;
-  mode.size.x = mode.size.y = GGI_AUTO;
+  mode.size.x = 768;
+  mode.size.y = 1000;
   mode.dpp.x = mode.dpp.y = 1;
   mode.graphtype = GT_AUTO;
   mode.frames = 1;
@@ -122,6 +123,7 @@ GLDrawable::GLDrawable()
    glEnable(GL_BLEND);
 //    glEnable(GL_TEXTURE_2D);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   //   glDrawBuffer(GL_BACK);
 }
 
 
@@ -164,13 +166,14 @@ void GLDrawable::pushClipping(Region_ptr region, Transform_ptr transformation)
   Impl_var<RegionImpl> clip(new RegionImpl(region, Transform_var(Transform::_nil())));
   makeCurrent();
   PixelCoord x, y, w, h;
-  x = (long)(clip->lower.x);
-  y = (long)(height() - clip->upper.y);
-  w = (long)(clip->upper.x - clip->lower.x);
-  h = (long)(clip->upper.y - clip->lower.y);
+  x = (long)(clip->lower.x + 0.5);
+  y = (long)(height() - clip->upper.y + 0.5);
+  w = (long)(clip->upper.x - clip->lower.x + 0.5);
+  h = (long)(clip->upper.y - clip->lower.y + 0.5);
   glScissor((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h);
 }
 
 void GLDrawable::popClipping()
 {
+  glScissor(0, 0, static_cast<GLint>(width()), static_cast<GLint>(height()));
 }

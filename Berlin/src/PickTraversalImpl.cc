@@ -22,9 +22,10 @@
  */
 #include "Berlin/PickTraversalImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Event::Pointer &p)
+PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Event::Pointer &p, Focus_ptr f)
   : TraversalImpl(g, r, t),
     pointer(p),
+    focus(Focus::_duplicate(f)),
     mem(0)
 {}
 
@@ -33,9 +34,10 @@ PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
     controllers(t.controllers),
     positions(t.positions),
     pointer(t.pointer),
+    focus(t.focus),
     mem(0)
 {
-  SectionLog log(Logger::picking, "PickTraversal::PickTraversal");
+  SectionLog log("PickTraversal::PickTraversal");
 }
 
 PickTraversalImpl::~PickTraversalImpl()
@@ -43,13 +45,76 @@ PickTraversalImpl::~PickTraversalImpl()
   delete mem;
 }
 
-/*
- * pop all graphics up to the top most controller and set the pointer
- * so the traversal can be used to start over directly at the top
- */
-void PickTraversalImpl::reset(const Event::Pointer &p)
+CORBA::Boolean PickTraversalImpl::intersectsAllocation()
 {
-  SectionLog log(Logger::picking, "PickTraversal::reset");
-  popController();
-  pointer = p;
+#if 1 // transform the pointer's location into the local CS
+  Vertex local = pointer.location;
+  Transform_var transform = transformation();
+  transform->inverseTransformVertex(local);
+  Region_var region = allocation();
+  if (region->contains(local)) return true;
+#else // transform the local CS to global coordinates
+  Region_var r = allocation();
+  Transform_var t = transformation();
+  RegionImpl region(r, t);
+  if (region.contains(pointer.location)) return true;
+#endif
+  return false;
+}
+
+CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr allocation)
+{
+  if (allocation->contains(pointer.location)) return true;
+  else return false;
+}
+
+void PickTraversalImpl::enterController(Controller_ptr c)
+{
+  SectionLog log("PickTraversal::enterController");
+  controllers.push_back(Controller::_duplicate(c));
+  positions.push_back(size());
+}
+
+void PickTraversalImpl::leaveController()
+{
+  SectionLog log("PickTraversal::leaveController");
+  controllers.pop_back();
+  positions.pop_back();
+}
+
+void PickTraversalImpl::hit()
+{
+  SectionLog log("PickTraversal::hit");
+  delete mem;
+  mem = new PickTraversalImpl(*this);
+}
+
+ostream &operator << (ostream &os, const Transform::Matrix &m)
+{
+  os << '[' << m[0][0] << ',' << m[0][1] << ',' << m[0][2] << ',' << m[0][3] << "]\n"
+     << '[' << m[1][0] << ',' << m[1][1] << ',' << m[1][2] << ',' << m[1][3] << "]\n"
+     << '[' << m[2][0] << ',' << m[2][1] << ',' << m[2][2] << ',' << m[2][3] << "]\n"
+     << '[' << m[3][0] << ',' << m[3][1] << ',' << m[3][2] << ',' << m[3][3] << ']' << endl;
+  return os;
+};
+
+void PickTraversalImpl::debug()
+{
+  cout << "PickTraversal::debug : stack size = " << size() << '\n';
+  cout << "Controllers at ";
+  for (size_t i = 0; i != positions.size(); i++) cout << positions[i] << ' ';
+  cout << endl;
+  Region_var r = allocation();
+  Transform_var t = transformation();
+  RegionImpl region(r, t);
+  cout << "current allocation is " << region << endl;
+  cout << "pointer is " << pointer.location << endl;
+  Vertex local = pointer.location;
+  Transform::Matrix matrix;
+  t->storeMatrix(matrix);
+  cout << "current trafo \n" << matrix;
+  t->inverseTransformVertex(local);
+  region.copy(r);
+  cout << "local CS: current allocation is " << region << endl;
+  cout << "local CS: pointer is " << local << endl;      
 }

@@ -32,7 +32,7 @@ ImageKitImpl::~ImageKitImpl() {}
 
 Raster_ptr ImageKitImpl::empty()
 {
-  SectionLog section(Logger::image, "ImageKitImpl::empty");
+  SectionLog section("ImageKitImpl::empty");
   RasterImpl *raster = new RasterImpl();
   raster->_obj_is_ready(_boa());
   rasters.push_back(raster);
@@ -41,7 +41,7 @@ Raster_ptr ImageKitImpl::empty()
 
 Raster_ptr ImageKitImpl::create(const char *file)
 {
-  SectionLog section(Logger::image, "ImageKitImpl::create");
+  SectionLog section("ImageKitImpl::create");
   RasterImpl *raster = new RasterImpl(file);
   raster->_obj_is_ready(_boa());
   rasters.push_back(raster);

@@ -37,9 +37,6 @@ Frame::~Frame() {}
 void Frame::draw(DrawTraversal_ptr traversal)
 {
   if (!traversal->intersectsAllocation()) return;
-//   cout << "draw frame";
-//   if (fill) cout << " filled" << endl;
-//   else cout << endl;
   Region_var allocation = traversal->allocation();
   Vertex u, l;
   allocation->bounds(l, u);
@@ -85,7 +82,7 @@ void DynamicFrame::attach(Telltale_ptr subject)
 
 void DynamicFrame::update(Subject_ptr, const CORBA::Any &)
 {
-  SectionLog section(Logger::subject, "DynamicFrame::update");
+  SectionLog section("DynamicFrame::update");
   bool flag = telltale->test(mask);
   if (flag == on) return;
   on = flag;

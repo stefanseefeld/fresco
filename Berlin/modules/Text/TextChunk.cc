@@ -49,7 +49,7 @@ unsigned long TextChunk::getLength() {
 }
 
 void TextChunk::draw(DrawTraversal_ptr dt) {
-SectionLog section(Logger::drawing, "TextChunk::draw");
+SectionLog section("TextChunk::draw");
     Region_var allocation = dt->allocation();
     DrawingKit_ptr dk = dt->kit();
     Text::Font_var f = dk->currentFont();

@@ -104,7 +104,7 @@ inline PNG::Encoder::Encoder(streambuf *sb, png_structp p, png_infop i, png_info
 
 inline void PNG::Encoder::encode(unsigned char *const *rows)
 {
-  SectionLog section(Logger::image, "Encoder::encode");
+  SectionLog section("Encoder::encode");
   png_write_info(png, info);
   png_write_image(png, const_cast<unsigned char **>(rows));
   png_write_end(png, end);
@@ -151,10 +151,10 @@ inline PNG::Decoder::Decoder(streambuf *sbuf, png_structp p, png_infop i, png_in
 inline unsigned char **PNG::Decoder::decode()
 
 {
-  SectionLog section(Logger::image, "PNGDecoder::decode");
+  SectionLog section("PNGDecoder::decode");
   if (!valid)
     {
-      cerr << "PNGDecoder::decode : invalid raster !" << endl;
+      cerr << "PNG::Decoder::decode : invalid raster !" << endl;
       return 0;
     }
   png_uint_32 height = png_get_image_height(png, info);

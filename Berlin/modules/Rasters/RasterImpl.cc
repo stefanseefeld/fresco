@@ -60,14 +60,14 @@ Raster::Info RasterImpl::header()
 
 void RasterImpl::loadData(const Raster::Data &data)
 {
-  SectionLog section(Logger::image, "RasterImpl::loadData");
+  SectionLog section("RasterImpl::loadData");
   clear();
   rows = png.demarshal(data);
 }
 
 void RasterImpl::storeData(Raster::Data *&data)
 {
-  SectionLog section(Logger::image, "RasterImpl::storeData");
+  SectionLog section("RasterImpl::storeData");
   delete data;
   data = 0;
   data = png.marshal(rows);
@@ -75,13 +75,13 @@ void RasterImpl::storeData(Raster::Data *&data)
 
 void RasterImpl::storePixel(const Index &index, Color &color)
 {
-  SectionLog section(Logger::image, "RasterImpl::storePixel");
+  SectionLog section("RasterImpl::storePixel");
   color = png.pixel(index.x, index.y, rows);
 }
 
 void RasterImpl::loadPixel(const Index &index, const Color &color)
 {
-  SectionLog section(Logger::image, "RasterImpl::loadPixel");
+  SectionLog section("RasterImpl::loadPixel");
   png.pixel(index.x, index.y, color, rows);
 }
 

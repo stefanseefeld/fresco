@@ -32,6 +32,8 @@ interface PickTraversal : Traversal
   void leaveController();
   void hit();
   boolean picked();
+  void grab();
+  void ungrab();
 };
 
 #endif /* _PickTraversal_idl */

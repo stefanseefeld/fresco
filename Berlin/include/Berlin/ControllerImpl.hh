@@ -70,8 +70,8 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void keyPress(PickTraversal_ptr, const Event::Pointer *);
   virtual void keyRelease(PickTraversal_ptr, const Event::Pointer *);
   virtual void other(PickTraversal_ptr, const Event::Pointer *);
-  void grab() { grabbed = true;}
-  void ungrab() { grabbed = false;}
+  void grab(PickTraversal_ptr);
+  void ungrab(PickTraversal_ptr);
  private:
   Controller_var parent;
   clist_t controllers;

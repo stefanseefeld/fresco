@@ -74,14 +74,14 @@ Transform_ptr MonoGraphic::transformation()
 
 void MonoGraphic::request(Graphic::Requisition &r)
 {
-  SectionLog section(Logger::layout, "MonoGraphic::request");
+  SectionLog section("MonoGraphic::request");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
 void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section(Logger::layout, "MonoGraphic::extension");
+  SectionLog section("MonoGraphic::extension");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
@@ -105,7 +105,7 @@ void MonoGraphic::shape(Region_ptr region)
 
 void MonoGraphic::traverse(Traversal_ptr traversal)
 {
-  SectionLog section(Logger::traversal, "MonoGraphic::traverse");
+  SectionLog section("MonoGraphic::traverse");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) traversal->traverseChild(child, 0, Region::_nil(), Transform::_nil());
 }

@@ -78,7 +78,7 @@ public:
   MoveResizer(Alignment x, Alignment y, CORBA::Short b) : xalign(x), yalign(y), border(b) {}
   virtual void execute(const CORBA::Any &any)
     {
-      SectionLog section(Logger::desktop, "MoveResizer::execute");
+      SectionLog section("MoveResizer::execute");
       if (CORBA::is_nil(handle)) return;
       Vertex *vertex;
       if (any >>= vertex)
@@ -142,7 +142,7 @@ void WindowImpl::Mapper::execute(const CORBA::Any &)
 }
 
 WindowImpl::WindowImpl()
-  : ControllerImpl(true), unmapped(0), manipulators(3), mapper(0)
+  : ControllerImpl(false), unmapped(0), manipulators(3), mapper(0)
 {
   manipulators[0] = new Mover;
   manipulators[0]->_obj_is_ready(_boa());
@@ -166,7 +166,7 @@ WindowImpl::~WindowImpl()
 
 void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
 {
-  SectionLog section(Logger::desktop, "WindowImpl::insert");
+  SectionLog section("WindowImpl::insert");
   Vertex position, size;
   position.x = position.y = 100., position.z = 0.;
   Graphic::Requisition r;
@@ -192,13 +192,13 @@ Command_ptr WindowImpl::map(CORBA::Boolean f)
   return f ? mapper->_this() : unmapper->_this();
 }
 
-void WindowImpl::pick(PickTraversal_ptr traversal)
-{
-  SectionLog section(Logger::picking, "WindowImpl::pick");
-  traversal->enterController(Controller_var(_this()));
-  MonoGraphic::traverse(traversal);
-  traversal->leaveController();
-}
+// void WindowImpl::pick(PickTraversal_ptr traversal)
+// {
+//   SectionLog section("WindowImpl::pick");
+//   traversal->enterController(Controller_var(_this()));
+//   MonoGraphic::traverse(traversal);
+//   traversal->leaveController();
+// }
 
 void WindowImpl::map()
 {

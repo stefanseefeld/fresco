@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -30,7 +30,9 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/PickTraversal.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
+#include "Warsaw/Warsaw.hh"
 #include <iostream>
 #include <iomanip>
 
@@ -39,49 +41,46 @@ DebugGraphic::~DebugGraphic() {}
 
 void DebugGraphic::request(Requisition &r)
 {
-  SectionLog section(Logger::layout, "DebugGraphic::request");
+  SectionLog section("DebugGraphic::request");
   MonoGraphic::request(r);
   if (flags & requests)
     {
       heading(" request\t");
-      printRequirement(r.x);
-      cout << ", ";
-      printRequirement(r.y);
-      cout << ", ";
-      printRequirement(r.z);
-      cout << endl;
+      cout << r << '\n';
     }
 }
 
 void DebugGraphic::traverse(Traversal_ptr traversal)
 {
-  SectionLog section(Logger::layout, "DebugGraphic::traverse");
+  SectionLog section("DebugGraphic::traverse");
   if (flags & traversals) traversal->visit(Graphic_var(_this()));
   else MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section(Logger::layout, "DebugGraphic::draw");
+  SectionLog section("DebugGraphic::draw");
   if (flags & draws)
     {
       heading(" draw\t");
-      RegionImpl region(Region_var(traversal->allocation()), Transform_var(traversal->transformation()));
-      printRegion(&region);
-      cout << endl;
+      Region_var r = traversal->allocation();
+      Transform_var t = traversal->transformation();
+      Impl_var<RegionImpl> region(new RegionImpl(r, t));
+      cout << Region_var(region->_this()) << endl;
     }
   MonoGraphic::traverse(traversal);
 };
 
 void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section(Logger::layout, "DebugGraphic::pick");
+  SectionLog section("DebugGraphic::pick");
   if (flags & picks)
     {
       heading(" pick\t");
-      RegionImpl region(Region_var(traversal->allocation()), Transform_var(traversal->transformation()));
-      printRegion(&region);
-      cout << endl;
+      Region_var r = traversal->allocation();
+      Transform_var t = traversal->transformation();
+      Impl_var<RegionImpl> region(new RegionImpl(r, t));
+      cout << Region_var(region->_this()) << endl;
     }
   MonoGraphic::traverse(traversal);
 }
@@ -90,55 +89,4 @@ void DebugGraphic::heading(const char *s)
 {
   Graphic_var g = body();
   cout << message << " (" << g << ')' << s;
-}
-
-void DebugGraphic::printRequirement(Graphic::Requirement &r)
-{
-  if (!r.defined)
-    {
-      cout << "undef";
-    }
-  else
-    {
-      double tol = 1e-2;
-      cout << setiosflags(ios::fixed);
-      if (Math::equal(r.natural, r.minimum, tol))
-	{
-	  if (Math::equal(r.natural, r.maximum, tol))
-	    cout << setprecision(2) << r.natural;
-	  else
-	    cout << '(' << setprecision(2) << r.natural
-		 << ',' << setprecision(2) << r.maximum << ')';
-	}
-      else if (Math::equal(r.natural, r.maximum, tol))
-	cout << '(' << setprecision(2) << r.minimum
-	     << ',' << setprecision(2) << r.natural << ')';
-      else
-	cout << '(' << setprecision(2) << r.minimum
-	     << ',' << setprecision(2) << r.natural
-	     << ',' << setprecision(2) << r.maximum << ')';
-      if (!Math::equal(r.align, 0., tol))
-	cout << " @ " << setprecision(1) << r.align;
-    }
-}
-
-void DebugGraphic::printRegion(Region_ptr region)
-{
-  Region::Allotment a;
-  cout << "X(";
-  region->span(xaxis, a);
-  printAllotment(a);
-  cout << "), Y(";
-  region->span(yaxis, a);
-  printAllotment(a);
-  cout << "), Z(";
-  region->span(zaxis, a);
-  printAllotment(a);
-  cout << ')';
-}
-
-void DebugGraphic::printAllotment(const Region::Allotment &a)
-{
-  cout << setiosflags(ios::fixed) << setprecision(2) << a.begin << ',' << setprecision(2) << a.end;
-  if (!Math::equal(a.align, 0., 1e-2)) cout << " @ " << setprecision(1) << a.align;
 }

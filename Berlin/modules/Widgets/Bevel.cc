@@ -66,7 +66,7 @@ void Bevel::request(Requisition &requisition)
 
 void Bevel::traverse(Traversal_ptr traversal)
 {
-  SectionLog section(Logger::traversal, "Bevel::traverse");
+  SectionLog section("Bevel::traverse");
   /*
    * cheap and dirty cull test -stefan
    */
@@ -78,8 +78,7 @@ void Bevel::traverse(Traversal_ptr traversal)
       if (hmargin || vmargin)
 	{
 	  Allocation::Info info;
-	  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation()),
-							 Transform_var(Transform::_nil())));
+	  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
 	  info.allocation = allocation->_this();
 	  Impl_var<TransformImpl> tx(new TransformImpl);
 	  info.transformation = tx->_this();
@@ -107,11 +106,8 @@ void Bevel::allocate(Tag, const Allocation::Info &info)
    * same as Placement::normalTransform...
    */
   Vertex o;
-  Impl_var<RegionImpl> region(new RegionImpl(info.allocation, Transform_var(Transform::_nil())));
-  region->origin(o);
-  region->lower.x -= o.x; region->upper.x -= o.x;
-  region->lower.y -= o.y; region->upper.y -= o.y;
-  region->lower.z -= o.z; region->upper.z -= o.z;
+  Impl_var<RegionImpl> region(new RegionImpl(info.allocation));
+  region->normalize(o);
   info.transformation->translate(o);
   info.allocation->copy(Region_var(region->_this()));
   

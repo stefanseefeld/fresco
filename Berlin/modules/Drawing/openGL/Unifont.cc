@@ -47,16 +47,10 @@ GLUnifont::GLUnifont() : rendered(65536)
 {
     myDescriptor.pointsize = 16;
     myDescriptor.name = UNIFY("GNU Unifont");
-
-    // This is complicated, just to get a filename. Can't we use the ISO
-    // string class in favor of char*?
-    char *etc = getenv("BERLIN_DATA");
-    char *glyphdbName = new char [strlen(etc) + strlen("/glyphs.db") + 1];
-    strcpy(glyphdbName, etc);
-    strcat(glyphdbName, "/glyphs.db");
-    cerr << "glyph db is at " << glyphdbName << endl;
-
-    Db::open(glyphdbName, DB_BTREE, DB_RDONLY, 0644, NULL, NULL,&glyphdb);
+    char *glyphdbName = getenv("GLYPH_DB");
+    if (Db::open(glyphdbName, DB_BTREE, DB_RDONLY|DB_NOMMAP, 0644, NULL, NULL,&glyphdb) == DB_RUNRECOVERY) {
+      perror("Unifont initialization");
+    }
     myDisplaylistOffset = glGenLists(65536);
 }
 
@@ -156,7 +150,7 @@ void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
     r.x.align = 0.;
     r.y.natural = r.y.minimum = r.y.maximum = height;
     r.y.defined = true;
-    r.y.align = 1.;
+    r.y.align = 0.;
 }
 
 CORBA::Boolean  GLUnifont::canDrawText(const Unistring &u){

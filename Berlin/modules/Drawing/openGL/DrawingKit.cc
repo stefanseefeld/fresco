@@ -115,13 +115,10 @@ Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 // lower.x, lower.y, upper.x, upper.y
 void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 {
-  glColor4d(1., 0., 0., 1.);      
-  glRectf(l, t, r, b);
-  glFlush();
-  char c;
-  cout << "GLDrawingKit::clear: enter key to continue :";
-  cin.get(c);
   glColor4d(0., 0., 0., 1.);      
+  //glClearColor(0.0,0.0,0.0,1.0);
+  //glClear(GL_COLOR_BUFFER_BIT);
+
   glRectf(l, t, r, b);
 }
 

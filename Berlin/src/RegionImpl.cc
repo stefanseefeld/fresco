@@ -47,6 +47,11 @@ RegionImpl::RegionImpl(const RegionImpl &region)
     zalign(region.zalign)
 {}
 
+RegionImpl::RegionImpl(Region_ptr region)
+{
+  RegionImpl::copy(region);
+}
+
 RegionImpl::RegionImpl(Region_ptr region, Transform_ptr transformation)
 {
   RegionImpl::copy(region);
@@ -160,7 +165,7 @@ void RegionImpl::subtract(Region_ptr region)
 
 void RegionImpl::applyTransform(Transform_ptr transformation)
 {
-  SectionLog section(Logger::layout, "RegionImpl::applyTransform");
+  SectionLog section("RegionImpl::applyTransform");
   if (valid)
     {
       Vertex o;

@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -396,9 +396,8 @@ void LayoutTile::computeAllocations(Axis axis, Graphic::Requisition &total, bool
 				    long n, Graphic::Requisition *requests, Region_ptr given,
 				    LayoutManager::Allocations result)
 {
-  Graphic::Requirement *r;
+  Graphic::Requirement *r = GraphicImpl::requirement(total, axis);
   Region::Allotment a;
-  r = GraphicImpl::requirement(total, axis);
   given->span(axis, a);
   Coord length = computeLength(*r, a);
   bool growing = length > r->natural;

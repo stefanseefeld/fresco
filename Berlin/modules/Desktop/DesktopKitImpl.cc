@@ -46,7 +46,7 @@ Desktop_ptr DesktopKitImpl::desk()
 
 Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
 {
-  SectionLog section(Logger::desktop, "DesktopKitImpl::shell");
+  SectionLog section("DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
   Color gray = {0.5, 0.5, 0.5, 1.0};
@@ -113,7 +113,7 @@ Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
 
 Window_ptr DesktopKitImpl::transient(Graphic_ptr g)
 {
-  SectionLog section(Logger::desktop, "DesktopKitImpl::shell");
+  SectionLog section("DesktopKitImpl::transient");
   WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
   Color gray = {0.5, 0.5, 0.5, 1.0};

@@ -110,7 +110,7 @@ void PolyFigure::extension(const Allocation::Info &info, Region_ptr region)
  */
 void PolyFigure::traverse(Traversal_ptr traversal)
 {
-  SectionLog section(Logger::traversal, "PolyFigure::traverse");
+  SectionLog section("PolyFigure::traverse");
   updateBbox();
   if (bbox->valid)
     {
@@ -157,5 +157,5 @@ UPolyFigure::UPolyFigure(const UPolyFigure &up) : PolyFigure(up) {}
  */
 void UPolyFigure::traverse(Traversal_ptr traversal)
 {
-  SectionLog section(Logger::traversal, "UPolyFigure::traverse");  
+  SectionLog section("UPolyFigure::traverse");  
 }

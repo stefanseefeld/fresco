@@ -40,13 +40,17 @@ class FocusImpl : implements(Focus)
   FocusImpl(ScreenImpl *);
   virtual ~FocusImpl();
 
+  virtual void grab();
+  virtual void ungrab();
+
   void request(Controller_ptr);
   void damage(Region_ptr);
   void dispatch(const Event::Pointer &);
  private:
   ScreenImpl        *screen;
-  Impl_var<PickTraversalImpl> traversal;
+  PickTraversalImpl *traversal;
   cstack_t           controllers;
+  bool               grabbed;
   Prague::Mutex      mutex;
 };
 

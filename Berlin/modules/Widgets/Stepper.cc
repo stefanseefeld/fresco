@@ -35,7 +35,7 @@ private:
 };
 
 Stepper::Stepper()
-  : delay(1000), delta(500), notifier(new Notifier(this)), timer(notifier)
+  : delay(500), delta(300), notifier(new Notifier(this)), timer(notifier)
 {
 }
 
@@ -47,21 +47,21 @@ Stepper::~Stepper()
 
 void Stepper::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  SectionLog section(Logger::widget, "Stepper::press");
+  SectionLog section("Stepper::press");
   ControllerImpl::press(traversal, pointer);
   start();
 }
 
 void Stepper::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  SectionLog section(Logger::widget, "Stepper::release");
+  SectionLog section("Stepper::release");
   stop();
   ControllerImpl::release(traversal, pointer);
 }
 
 void Stepper::step()
 {
-  SectionLog section(Logger::widget, "Stepper::step");
+  SectionLog section("Stepper::step");
   CORBA::Any any;
   execute(any);
 }

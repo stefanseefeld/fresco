@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -42,10 +42,6 @@ public:
   virtual void traverse(Traversal_ptr);
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
-
-  static void  printRequirement(Graphic::Requirement &);
-  static void  printRegion(Region_ptr);
-  static void  printAllotment(const Region::Allotment &);
 private:
   string       message;
   unsigned int flags;

@@ -53,19 +53,20 @@ ScreenManager::~ScreenManager()
 
 void ScreenManager::damage(Region_ptr r)
 {
-  SectionLog section(Logger::drawing, "ScreenManager::damage");
+  SectionLog section("ScreenManager::damage");
   MutexGuard guard(mutex);
-  RegionImpl *region = new RegionImpl(r, Transform_var(Transform::_nil()));
+  RegionImpl *region = new RegionImpl(r);
 
-  region->upper.x += 0.5;
-  region->upper.y += 0.5;
-  region->lower.x -= 0.5;
-  region->lower.y -= 0.5;
+//   region->upper.x += 0.5;
+//   region->upper.y += 0.5;
+//   region->lower.x -= 0.5;
+//   region->lower.y -= 0.5;
 
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);
   
   Logger::log(Logger::drawing) << "ScreenManager::damage region " << *region << endl;
+//   cout << "ScreenManager::damage region " << *region << endl;
 
   // this injects a byte into a "wakeup" pipe, which terminates the select()
   // that the sleeping event-processor thread is in.
@@ -77,7 +78,7 @@ void ScreenManager::damage(Region_ptr r)
 
 void ScreenManager::repair()
 {
-  SectionLog section(Logger::drawing, "ScreenManager::repair");
+  SectionLog section("ScreenManager::repair");
   mutex.lock();
   dlist_t tmp = damages;
   damages.erase(damages.begin(), damages.end());
@@ -86,14 +87,14 @@ void ScreenManager::repair()
   for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
       // Logger::log(Logger::drawing) << "repairing region " << **i << endl;
-      // cout << "repairing region " << **i << endl;
+//       cout << "repairing region " << **i << endl;
       bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
-      drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
 							   Region_var((*i)->_this()),
 							   Transform_var(Transform::_nil()),
 							   DrawingKit_var(drawing->_this()));
+      drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
@@ -189,6 +190,7 @@ void ScreenManager::run()
 	    {
 	      drawing->sync();
 	      ggiFlush(visual);
+	      //	      GGIMesaSwapBuffers();
 	      last = current;
 	    }
 	}

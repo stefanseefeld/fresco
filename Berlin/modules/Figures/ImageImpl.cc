@@ -48,10 +48,8 @@ void ImageImpl::request(Requisition &r)
 
 void ImageImpl::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section(Logger::traversal, "Image::draw");
-//   cout << "draw image" << endl;
+  SectionLog section("Image::draw");
   if (!traversal->intersectsAllocation()) return;
-//   cout << "..." << endl;
   DrawingKit_var dk = traversal->kit();
   Transform_var transform = traversal->transformation();
   dk->image(raster, transform);

@@ -28,110 +28,72 @@
 #include "Warsaw/Controller.hh"
 #include "Warsaw/PickTraversal.hh"
 #include "Warsaw/Transform.hh"
+#include "Warsaw/Focus.hh"
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Vertex.hh"
-
-/* this is a traversal which is responsible for distributing events to
-   graphics.  as such, speed is somewhat important. We set everything for
-   "full throttle" -- everything's inline unfortunately. */
 
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
   typedef vector<Controller_var> cstack_t;
   typedef vector<size_t> pstack_t;
  public:
-  PickTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, const Event::Pointer &);
+  PickTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, const Event::Pointer &, Focus_ptr);
   //. to be used when starting from root level
   ~PickTraversalImpl();
-  void reset(const Event::Pointer &);
   void visit(Graphic_ptr g) { g->pick(PickTraversal_var(_this()));}
   order direction() { return down;}
   CORBA::Boolean ok() { return !mem;}
-  CORBA::Boolean intersectsAllocation()
-    {
-#if 1 // transform the pointer's location into the local CS
-      Vertex local = pointer.location;
-      Transform_var transform = transformation();
-      transform->inverseTransformVertex(local);
-      Region_var region = allocation();
-      if (region->contains(local)) return true;
-#else // transform the local CS to global coordinates
-      Region_var r = allocation();
-      Transform_var t = transformation();
-      RegionImpl region(r, t);
-      if (region.contains(pointer.location)) return true;
-#endif
-      return false;
-    }
-  CORBA::Boolean intersectsRegion(Region_ptr allocation)
-    {
-      if (allocation->contains(pointer.location)) return true;
-      else return false;
-    }
-  void enterController(Controller_ptr c)
-    {
-//       SectionLog log(Logger::picking, "PickTraversal::enterController");
-      controllers.push_back(Controller::_duplicate(c));
-      positions.push_back(size());
-//       debug();
-    }
-  void leaveController()
-    {
-//       SectionLog log(Logger::picking, "PickTraversal::leaveController");
-      controllers.pop_back();
-      positions.pop_back();
-//       debug();
-    }
-  void hit()
-    {
-//       SectionLog log(Logger::picking, "PickTraversal::hit");
-      delete mem;
-      mem = new PickTraversalImpl(*this);
-    }
-  void popController()
-    {
-//       SectionLog log(Logger::picking, "PickTraversal::popController");
-      if (controllers.size())
-	{
-	  while (size() > positions.back()) pop();
-	  controllers.pop_back();
-	  positions.pop_back();
-	}
-//       debug();
-    }
+  CORBA::Boolean intersectsAllocation();
+  CORBA::Boolean intersectsRegion(Region_ptr);
+  void enterController(Controller_ptr);
+  void leaveController();
+  void hit();
+  void popController();
   CORBA::Boolean picked() { return mem;}
-  Controller_ptr topController()
-    {
-      return controllers.size() ? Controller::_duplicate(controllers.back()) : Controller::_nil();
-    }
+  void grab() { focus->grab();}
+  void ungrab() { focus->ungrab();}
+
+  Controller_ptr topController();
   const vector<Controller_var> &controllerStack() const { return controllers;}
   PickTraversalImpl   *memento() { PickTraversalImpl *m = mem; mem = 0; return m;}
-  void debug()
-    {
-      cout << "PickTraversal::debug : stack size = " << size() << '\n';
-      cout << "Controllers at ";
-      for (size_t i = 0; i != positions.size(); i++) cout << positions[i] << ' ';
-      cout << endl;
-      Region_var r = allocation();
-      Transform_var t = transformation();
-      RegionImpl region(r, t);
-      cout << "current allocation is " << region << endl;
-      cout << "pointer is " << pointer.location << endl;
-      Vertex local = pointer.location;
-      t->inverseTransformVertex(local);
-      region.copy(r);
-      cout << "local CS: current allocation is " << region << endl;
-      cout << "local CS: pointer is " << local << endl;      
-    }
+  void reset(const Event::Pointer &);
+  void debug();
  private:
   PickTraversalImpl(const PickTraversalImpl &);
   //. to be used to create the memento
   cstack_t           controllers;
   pstack_t           positions;
   Event::Pointer     pointer;
+  Focus_var          focus;
   PickTraversalImpl *mem;
 };
+
+inline void PickTraversalImpl::popController()
+//. remove one controller level from the top, it might have got out of scope
+{
+  SectionLog log("PickTraversal::popController");
+  if (controllers.size())
+    {
+      while (size() > positions.back()) pop();
+      controllers.pop_back();
+      positions.pop_back();
+    }
+}
+
+inline Controller_ptr PickTraversalImpl::topController()
+{
+  return controllers.size() ? Controller::_duplicate(controllers.back()) : Controller::_nil();
+}
+
+inline void PickTraversalImpl::reset(const Event::Pointer &p)
+//. pop all graphics up to the top most controller and set the pointer
+//. so the traversal can be used to start over directly at the top
+{
+  SectionLog log("PickTraversal::reset");
+  popController();
+  pointer = p;
+}
 
 #endif /* _PickTraversalImpl_hh */

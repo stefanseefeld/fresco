@@ -136,12 +136,12 @@ void StageImpl::Sequence::remove(StageHandleImpl *handle)
     if ((*cursor)->l <= (front()->l / 2)) cursor++;
     else cursor--;
   for (iterator i = old++; i != end(); i++) (*i)->l = layer++;
-  parent_t::erase(old);
+  parent_t::erase(--old);
 }
 
 StageImpl::Quad::Quad(const Rectangle<Coord> &region) : parent_t(region)
 {
-//   SectionLog section(Logger::layout, "StageQuad::StageQuad(rectangle)");
+//   SectionLog section("StageQuad::StageQuad(rectangle)");
 }
 
 /*
@@ -150,7 +150,7 @@ StageImpl::Quad::Quad(const Rectangle<Coord> &region) : parent_t(region)
 StageImpl::Quad::Quad(const Rectangle<Coord> &r, StageImpl::Quad *node)
  : parent_t(r)
 {
-//   SectionLog section(Logger::layout, "StageQuad::StageQuad(rectangle, StageQuad *)");
+//   SectionLog section("StageQuad::StageQuad(rectangle, StageQuad *)");
   elements = node->elements;
   boundingbox = node->boundingbox;
 
@@ -434,17 +434,21 @@ void StageTraversal::execute()
   else
     sort(buffer.begin(), buffer.end(), greater<StageHandleImpl *>());
   for (vector<StageHandleImpl *>::iterator i = buffer.begin(); i != buffer.end() && traversal->ok(); i++)
-//     {
-//       if (traversal->direction() == Traversal::up) cout << "traversing " << *i << endl;
+    {
+      if (!traversal->ok()) break;
       traverse(*i);
-//     }
+    }
 }
 
 void StageTraversal::traverse(StageHandleImpl *handle)
 {
   Impl_var<RegionImpl> region(new RegionImpl);
   handle->bbox(*region);
-  traversal->traverseChild(handle->c, handle->tag, Region_var(region->_this()), Transform_var(Transform::_nil()));
+  Vertex origin;
+  region->normalize(origin);
+  Impl_var<TransformImpl> transformation(new TransformImpl);
+  transformation->translate(origin);
+  traversal->traverseChild(handle->c, handle->tag, Region_var(region->_this()), Transform_var(transformation->_this()));
 }
 
 StageImpl::StageImpl()
@@ -481,8 +485,8 @@ void StageImpl::request(Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr traversal)
 {
-  SectionLog section(Logger::traversal, "StageImpl::traverse");
-  RegionImpl region(Region_var(traversal->allocation()), Transform_var(Transform::_nil()));
+  SectionLog section("StageImpl::traverse");
+  RegionImpl region(Region_var(traversal->allocation()));
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;
   rectangle.t = region.lower.y;
@@ -508,12 +512,12 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
       a.allocation->copy(Region_var(region->_this()));
       a.transformation->premultiply(Transform_var(transform->_this()));
     }
-  else cerr << "StageImpl::allocate : child not found !" << endl;
+//   else cerr << "StageImpl::allocate : child not found ! (tag is " << tag << ')' << endl;
 }
 
 void StageImpl::needRedraw()
 {
-  SectionLog section(Logger::layout, "StageImpl::needRedraw");
+  SectionLog section("StageImpl::needRedraw");
   Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   Impl_var<RegionImpl> region(new RegionImpl);
@@ -537,7 +541,7 @@ void StageImpl::needRedraw()
 
 void StageImpl::needRedrawRegion(Region_ptr region)
 {
-  SectionLog section(Logger::layout, "StageImpl::needRedrawRegion");
+  SectionLog section("StageImpl::needRedrawRegion");
   Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
   CORBA::Long size = allocation->size();
@@ -559,7 +563,7 @@ void StageImpl::needRedrawRegion(Region_ptr region)
 
 void StageImpl::needResize()
 {
-  SectionLog section(Logger::layout, "StageImpl::needResize");
+  SectionLog section("StageImpl::needResize");
   /*
    * FIXME !!!: need to work out how to process this. (which sub region to damage etc...)
    */
@@ -602,14 +606,13 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
-  SectionLog section(Logger::layout, "StageImpl::end");
+  SectionLog section("StageImpl::end");
   MutexGuard guard(childMutex);
   if (!--nesting)
     {
       tree->end();
       if (need_redraw)
 	{
-//  	  cout << "need redraw " << *damage_ << endl;
 	  needRedrawRegion(Region_var(damage_->_this()));
 	  need_redraw = false;
 	}
@@ -628,9 +631,9 @@ void StageImpl::end()
 
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
-  SectionLog section(Logger::layout, "StageImpl::insert");
+  SectionLog section("StageImpl::insert");
   MutexGuard guard(childMutex);
-  StageHandleImpl *handle = new StageHandleImpl(this, Graphic::_duplicate(g), tag(), position, size, layer);
+  StageHandleImpl *handle = new StageHandleImpl(this, g, tag(), position, size, layer);
   handle->_obj_is_ready(_boa());
   tree->insert(handle);
 //   dumpQuadTree(*tree);
@@ -641,7 +644,7 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 
 void StageImpl::remove(StageHandle_ptr h)
 {
-  SectionLog section(Logger::layout, "StageImpl::remove");
+  SectionLog section("StageImpl::remove");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = children->find(h->layer());
   if (!handle) return;
@@ -656,7 +659,7 @@ void StageImpl::remove(StageHandle_ptr h)
 
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
-  SectionLog section(Logger::layout, "StageImpl::move");
+  SectionLog section("StageImpl::move");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 
@@ -679,7 +682,7 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
-  SectionLog section(Logger::layout, "StageImpl::resize");
+  SectionLog section("StageImpl::resize");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 
@@ -698,7 +701,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 
 void StageImpl::relayer(StageHandleImpl *handle, Stage::Index l)
 {
-  SectionLog section(Logger::layout, "StageImpl::relayer");
+  SectionLog section("StageImpl::relayer");
   MutexGuard guard(childMutex);
   children->remove(handle);
   handle->l = l;
@@ -711,9 +714,10 @@ Tag StageImpl::tag()
   Tag t = 0;
   do
     {
-      for (Sequence::iterator i = children->begin(); i != children->end(); i++)
+      Sequence::iterator i;
+      for (i = children->begin(); i != children->end(); i++)
 	if ((*i)->tag == t) break;
-      return t;
+      if (i == children->end()) return t;
     }
   while (++t);
   return 0;
@@ -768,7 +772,7 @@ void StageHandleImpl::layer(Stage::Index ll)
 
 void StageHandleImpl::cacheBBox()
 {
-  SectionLog section(Logger::layout, "StageHandleImpl::cacheBBox");
+  SectionLog section("StageHandleImpl::cacheBBox");
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
   c->request(r);

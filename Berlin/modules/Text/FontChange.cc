@@ -37,7 +37,7 @@ void FontChange::request(Requisition &r) {
 
 
 void FontChange::draw(DrawTraversal_ptr dt) {
-    SectionLog section(Logger::text, "FontChange::Draw");
+    SectionLog section("FontChange::Draw");
     DrawingKit_ptr dk = dt->kit();
     try {
 	dk->setFont(myFontDescriptor, myStyle);

@@ -47,7 +47,7 @@ void BVController::draw(DrawTraversal_ptr traversal)
   ControllerImpl::draw(traversal);
   Allocation::Info info;
   Region_var allocation = traversal->allocation();
-  Impl_var<RegionImpl> region(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+  Impl_var<RegionImpl> region(new RegionImpl(allocation));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   transformation->copy(Transform_var(traversal->transformation()));
   info.allocation = region;
@@ -60,7 +60,7 @@ void BVController::pick(PickTraversal_ptr traversal)
 {
   Allocation::Info info;
   Region_var allocation = traversal->allocation();
-  Impl_var<RegionImpl> region(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+  Impl_var<RegionImpl> region(new RegionImpl(allocation));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   transformation->copy(Transform_var(traversal->transformation()));
   info.allocation = region;
@@ -172,7 +172,7 @@ Stepper *Slider::stepper(PickTraversal_ptr traversal, const Event::Pointer *poin
   Transform_var transformation = traversal->transformation();
   Vertex location = pointer->location;
   transformation->inverseTransformVertex(location);
-  Impl_var<RegionImpl> region(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+  Impl_var<RegionImpl> region(new RegionImpl(allocation));
   if ((axis == xaxis && location.x < region->lower.x + offset) ||
       (axis == yaxis && location.y < region->lower.y + offset))
     return backwardStepper;
@@ -221,7 +221,7 @@ Stepper *XYSlider::stepper(PickTraversal_ptr traversal, const Event::Pointer *po
   Transform_var transformation = traversal->transformation();
   Vertex location = pointer->location;
   transformation->inverseTransformVertex(location);
-  Impl_var<RegionImpl> region(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+  Impl_var<RegionImpl> region(new RegionImpl(allocation));
   if (location.x < region->lower.x + xoffset)
     {
       if (location.y < region->lower.y + yoffset) return steppers[lefttop];

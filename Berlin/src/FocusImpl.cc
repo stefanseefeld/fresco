@@ -23,13 +23,27 @@
 #include "Berlin/FocusImpl.hh"
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
 #include "Prague/Sys/Profiler.hh"
 
 using namespace Prague;
 
-FocusImpl::FocusImpl(ScreenImpl *s) : screen(s), traversal(0) {}
+FocusImpl::FocusImpl(ScreenImpl *s) : screen(s), traversal(0), grabbed(false) {}
 FocusImpl::~FocusImpl() {}
+
+void FocusImpl::grab()
+{
+//   MutexGuard guard(mutex);
+  grabbed = true;
+}
+
+void FocusImpl::ungrab()
+{
+//   MutexGuard guard(mutex);
+  grabbed = false;
+}
 
 void FocusImpl::request(Controller_ptr c)
 {
@@ -38,11 +52,22 @@ void FocusImpl::request(Controller_ptr c)
 
 void FocusImpl::damage(Region_ptr region)
 {
-  SectionLog section(Logger::picking, "FocusImpl::damage");
+  SectionLog section("FocusImpl::damage");
   MutexGuard guard(mutex);
-  if (!traversal) return;
+  if (!grabbed || !traversal) return;
   Region_var allocation = traversal->allocation();
-  if (allocation->intersects(region)) traversal->update();
+  Transform_var transformation = traversal->transformation();
+  Vertex u, l;
+  allocation->bounds(l, u);
+  transformation->transformVertex(l);
+  transformation->transformVertex(u);
+  Impl_var<RegionImpl> bbox(new RegionImpl);
+  bbox->valid = true;
+  bbox->lower.x = min(l.x, u.x);
+  bbox->lower.y = min(l.y, u.y);
+  bbox->upper.x = max(l.x, u.x);
+  bbox->upper.y = max(l.y, u.y);
+  if (bbox->intersects(region)) traversal->update();
 }
 
 /*
@@ -63,7 +88,7 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("FocusImpl::dispatch(pointer)");
-  SectionLog section(Logger::picking, "FocusImpl::dispatch(pointer)");
+  SectionLog section("FocusImpl::dispatch(pointer)");
   /*
    * if we have no traversal, create one
    * and start from root...
@@ -73,7 +98,8 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
       traversal = new PickTraversalImpl(Screen_var(screen->_this()),
 					Region_var(screen->getRegion()),
 					Transform_var(Transform::_nil()),
-					pointer);
+					pointer, Focus_var(_this()));
+      traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
     }
   /*
@@ -102,6 +128,7 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
 	}
       return;
     }
+  else picked->_obj_is_ready(CORBA::BOA::getBOA());
   /*
    * ...now do the [lose/receive]Focus stuff,...
    */
@@ -116,8 +143,10 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
   /*
    * ...remove the old controllers in reverse order,...
    */
-  for (cstack_t::iterator o = controllers.end(); o != of; o--)
-    (*(o - 1))->loseFocus(Focus_var(_this()));
+  for (cstack_t::reverse_iterator o = controllers.rbegin(); o.base() != of; o++)
+    {
+      (*o)->loseFocus(Focus_var(_this()));
+    }
   controllers.erase(of, controllers.end());
   /*
    * ...add the new controllers,...
@@ -131,7 +160,13 @@ void FocusImpl::dispatch(const Event::Pointer &pointer)
    * ...and finally dispatch the event
    */
   traversal = picked;
+//   traversal->debug();
   CORBA::Any any;
   any <<= pointer;
   controllers.back()->handle(PickTraversal_var(traversal->_this()), any);
+  if (!grabbed)
+    {
+      traversal->_dispose();
+      traversal = 0;
+    }
 }

@@ -33,14 +33,14 @@ TelltaleImpl::~TelltaleImpl()
 
 void TelltaleImpl::set(Telltale::Flag f)
 {
-  SectionLog section(Logger::subject, "TelltaleImpl::set");
+  SectionLog section("TelltaleImpl::set");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, true);
   else modify(f, true);
 }
 
 void TelltaleImpl::clear(Telltale::Flag f)
 {
-  SectionLog section(Logger::subject, "TelltaleImpl::clear");
+  SectionLog section("TelltaleImpl::clear");
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, false);
   else modify(f, false);
 }

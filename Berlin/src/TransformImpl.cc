@@ -47,14 +47,11 @@ TransformImpl::~TransformImpl() { }
 
 void TransformImpl::init()
 {
-  mat[0][0] = mat[1][1] = Coord(1);
-  mat[0][1] = Coord(0);mat[1][0] = Coord(0);
-  mat[0][2] = Coord(0);mat[1][2] = Coord(0);
-  mat[0][3] = Coord(0);mat[1][3] = Coord(0);
-  mat[2][0] = Coord(0);mat[2][1] = Coord(0);
-  mat[2][2] = Coord(0);mat[2][3] = Coord(0);
-  mat[3][0] = Coord(0);mat[3][1] = Coord(0);
-  mat[3][2] = Coord(0);mat[3][3] = Coord(0);
+  mat[0][0] = mat[1][1] = mat[2][2] = 1., mat[3][3] = 0.;
+  mat[0][1] = mat[0][2] = mat[0][3] = 0.;
+  mat[1][0] = mat[1][2] = mat[1][3] = 0.;
+  mat[2][0] = mat[2][1] = mat[2][3] = 0.;
+  mat[3][0] = mat[3][1] = mat[3][2] = 0.;
   identity     = true;
   translate_only = true;
   xy = true;
@@ -180,25 +177,37 @@ void TransformImpl::scale(const Vertex &v)
 
 void TransformImpl::rotate(double angle, Axis a)
 {
-  if (a != zaxis) return;
   Transform::Matrix m;
   Coord r_angle = Coord(angle * radians_per_degree);
   Coord tmp1 = Coord(cos(r_angle));
   Coord tmp2 = Coord(sin(r_angle));
-    
-  m[0][0] = tmp1 * mat[0][0];
-  m[0][1] = tmp2 * mat[0][1];
-  m[1][0] = tmp1 * mat[1][0];
-  m[1][1] = tmp2 * mat[1][1];
-  m[2][0] = tmp1 * mat[2][0];
-  m[2][1] = tmp2 * mat[2][1];
-
-  mat[0][1] = mat[0][0] * tmp2 + mat[0][1] * tmp1;
-  mat[1][1] = mat[1][0] * tmp2 + mat[1][1] * tmp1;
-  mat[2][1] = mat[2][0] * tmp2 + mat[2][1] * tmp1;
-  mat[0][0] = m[0][0] - m[0][1];
-  mat[1][0] = m[1][0] - m[1][1];
-  mat[2][0] = m[2][0] - m[2][1];
+  short x = 0, y = 1, z = 2;
+  if (a == xaxis)
+    {
+      x = 2;
+      z = 0;
+    }
+  else if (a == yaxis)
+    {
+      y = 2;
+      z = 1;
+    }
+  //  if (a == zaxis)
+    {
+      m[x][x] = tmp1 * mat[x][x];
+      m[x][y] = tmp2 * mat[x][y];
+      m[y][x] = tmp1 * mat[y][x];
+      m[y][y] = tmp2 * mat[y][y];
+      m[z][x] = tmp1 * mat[z][x];
+      m[z][y] = tmp2 * mat[z][y];
+      
+      mat[x][y] = mat[x][x] * tmp2 + mat[x][y] * tmp1;
+      mat[y][y] = mat[y][x] * tmp2 + mat[y][y] * tmp1;
+      mat[z][y] = mat[z][x] * tmp2 + mat[z][y] * tmp1;
+      mat[x][x] = m[x][x] - m[x][y];
+      mat[y][x] = m[y][x] - m[y][y];
+      mat[z][x] = m[z][x] - m[z][y];
+    }
   modified();
 }
 

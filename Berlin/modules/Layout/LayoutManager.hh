@@ -5,7 +5,7 @@
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -49,11 +49,8 @@ public:
   static void setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align);
 };
 
-//
-// LayoutAlign -- align positions along an axis
-//
-
 class LayoutAlign : public LayoutManager
+//. LayoutAlign -- align positions along an axis
 {
 public:
   LayoutAlign(Axis, bool = false);
@@ -67,11 +64,8 @@ private:
   bool relaxed;
 };
 
-//
-// LayoutCenter -- center positions along an axis
-//
-
 class LayoutCenter : public LayoutManager
+//. LayoutCenter -- center positions along an axis
 {
 public:
   LayoutCenter(Axis, Alignment a);
@@ -85,11 +79,8 @@ private:
   Alignment alignment;
 };
 
-//
-// LayoutFixed -- set size along an axis
-//
-
 class LayoutFixed : public LayoutManager
+//. LayoutFixed -- set size along an axis
 {
 public:
   LayoutFixed(Axis, Coord size);
@@ -103,11 +94,8 @@ private:
   Coord size;
 };
 
-//
-// LayoutVariable -- allow flexibility along an axis
-//
-
 class LayoutVariable : public LayoutManager
+//. LayoutVariable -- allow flexibility along an axis
 {
 public:
   LayoutVariable(Axis, Coord stretch, Coord shrink);
@@ -122,11 +110,8 @@ private:
   Coord shrink;
 };
 
-//
-// LayoutNatural -- set the natural size along an axis
-//
-
 class LayoutNatural : public LayoutManager
+//. LayoutNatural -- set the natural size along an axis
 {
 public:
   LayoutNatural(Axis, Coord natural);
@@ -140,11 +125,8 @@ private:
   Coord natural;
 };
 
-//
-// LayoutMargin -- leave a margin around the sides
-//
-
 class LayoutMargin : public LayoutManager
+//. LayoutMargin -- leave a margin around the sides
 {
 public:
   LayoutMargin(Coord);
@@ -167,11 +149,8 @@ private:
   static Coord span(Coord, Graphic::Requirement &, Coord, Coord, Coord);
 };
 
-//
-// LayoutSuperpose - composite layout manager
-//
-
 class LayoutSuperpose : public LayoutManager
+//. LayoutSuperpose - composite layout manager
 {
 public:
   LayoutSuperpose(LayoutManager *, LayoutManager *);
@@ -187,11 +166,8 @@ private:
   LayoutManager *third;
 };
 
-//
-// LayoutTile -- side-by-side, first-to-last along an axis
-//
-
 class LayoutTile : public LayoutManager
+//. LayoutTile -- side-by-side, first-to-last along an axis
 {
 public:
   LayoutTile(Axis);
@@ -211,11 +187,8 @@ private:
   Graphic::Requisition requisition;
 };
 
-//
-// LayoutTileReversed -- side-by-side, last-to-first
-//
-
 class LayoutTileReversed : public LayoutManager
+//. LayoutTileReversed -- side-by-side, last-to-first
 {
 public:
   LayoutTileReversed(Axis);
@@ -231,11 +204,9 @@ private:
   Graphic::Requisition requisition;
 };
 
-//
-// LayoutTileFirstAligned -- like Tile but use first element's origin
-//
 
 class LayoutTileFirstAligned : public LayoutManager
+//. LayoutTileFirstAligned -- like Tile but use first element's origin
 {
 public:
   LayoutTileFirstAligned(Axis);
@@ -250,12 +221,9 @@ private:
   Graphic::Requisition requisition;
 };
 
-//
-// LayoutTileReversedFirstAligned -- like TileReversed
-//	but use first element's origin
-//
-
 class LayoutTileReversedFirstAligned : public LayoutManager
+//. LayoutTileReversedFirstAligned -- like TileReversed
+//. but use first element's origin
 {
 public:
   LayoutTileReversedFirstAligned(Axis);

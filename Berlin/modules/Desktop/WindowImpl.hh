@@ -63,7 +63,7 @@ class WindowImpl : implements(Window), public ControllerImpl
   Command_ptr moveResize(Alignment, Alignment, CORBA::Short);
   Command_ptr relayer();
   Command_ptr map(CORBA::Boolean);
-  virtual void pick(PickTraversal_ptr);
+//   virtual void pick(PickTraversal_ptr);
   void map();
   void unmap();
  private:

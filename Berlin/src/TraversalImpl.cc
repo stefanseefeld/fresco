@@ -88,7 +88,7 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
 
 void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr t)
 {
-  SectionLog section(Logger::traversal, "TraversalImpl::traverseChild");
+  SectionLog section("TraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   Impl_var<TransformImpl> cumulative(new TransformImpl);
   cumulative->copy(Transform_var(transformation()));
@@ -114,7 +114,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region,
 
 void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 {
-  SectionLog section(Logger::traversal, "TraversalImpl::push");
+  SectionLog section("TraversalImpl::push");
   State state;
   state.graphic = Graphic::_duplicate(g);
   state.tag = tag;
@@ -125,7 +125,7 @@ void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 
 void TraversalImpl::pop()
 {
-  SectionLog section(Logger::traversal, "TraversalImpl::pop");
+  SectionLog section("TraversalImpl::pop");
   State &state = *stack.rbegin();
   state.transformation->_dispose();
   stack.erase(stack.end() - 1);
@@ -133,20 +133,21 @@ void TraversalImpl::pop()
 
 void TraversalImpl::update()
 {
-  SectionLog section(Logger::traversal, "TraversalImpl::update");
+  SectionLog section("TraversalImpl::update");
   if (stack.size() == 1) return;
   stack_t::iterator parent = stack.begin();
-  Impl_var<RegionImpl> allocation(new RegionImpl((*parent).allocation, Transform_var(Transform::_nil())));
+  Impl_var<RegionImpl> allocation(new RegionImpl((*parent).allocation));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   transformation->copy((*parent).transformation);
   Allocation::Info info;
-  info.allocation = Region_var(allocation->_this());
-  info.transformation = Transform_var(transformation->_this());
+  info.allocation = allocation->_this();
+  info.transformation = transformation->_this();
   for (stack_t::iterator child = parent + 1; child != stack.end(); parent++, child++)
     {
       (*parent).graphic->allocate((*child).tag, info);
       (*child).allocation->copy(info.allocation);
-      (*child).transformation->copy((*parent).transformation);
-      (*child).transformation->premultiply(info.transformation);
+      (*child).transformation->copy(info.transformation);
+//       (*child).transformation->copy((*parent).transformation);
+//       (*child).transformation->premultiply(info.transformation);
     }
 }

@@ -107,7 +107,7 @@ static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
 
 void Allocator::updateRequisition()
 {
-  SectionLog section(Logger::layout, "Allocator::updateRequisition");
+  SectionLog section("Allocator::updateRequisition");
   if (!requested)
     {
       Graphic::Requisition r;

@@ -47,7 +47,7 @@ TransformFigure::~TransformFigure() {}
 Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(tx);}
 void TransformFigure::request(Requisition &r)
 {
-  SectionLog section(Logger::layout, "TransformFigure::request");
+  SectionLog section("TransformFigure::request");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
@@ -69,10 +69,10 @@ void TransformFigure::request(Requisition &r)
 
 void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section(Logger::layout, "TransformFigure::extension");
+  SectionLog section("TransformFigure::extension");
   if (ext->valid)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(ext, Transform_var(Transform::_nil())));
+      Impl_var<RegionImpl> tmp(new RegionImpl(ext));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
@@ -90,7 +90,7 @@ void TransformFigure::pick(PickTraversal_ptr traversal)
 
 void TransformFigure::needRedraw()
 {
-  SectionLog section(Logger::layout, "TransformFigure::needRedraw");
+  SectionLog section("TransformFigure::needRedraw");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
@@ -141,10 +141,10 @@ void FigureImpl::addPoint(Coord x, Coord y)
 
 void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
-  SectionLog section(Logger::layout, "FigureImpl::extension");
+  SectionLog section("FigureImpl::extension");
   if (path->length() > 0)
     {
-      Impl_var<RegionImpl> tmp(new RegionImpl(ext, Transform_var(Transform::_nil())));
+      Impl_var<RegionImpl> tmp(new RegionImpl(ext));
       tmp->xalign = tmp->yalign = tmp->zalign = 0.;
       Impl_var<TransformImpl> transformation(new TransformImpl);
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
@@ -173,7 +173,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 
 void FigureImpl::draw(DrawTraversal_ptr traversal)
 {
-  SectionLog section(Logger::drawing, "FigureImpl::draw");
+  SectionLog section("FigureImpl::draw");
   if (path->length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.

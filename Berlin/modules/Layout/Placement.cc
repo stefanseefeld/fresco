@@ -59,7 +59,7 @@ void Placement::traverse(Traversal_ptr traversal)
   Region_var allocation = Region::_duplicate(traversal->allocation());
   if (!CORBA::is_nil(allocation))
     {
-      Impl_var<RegionImpl> result(new RegionImpl(allocation, Transform_var(Transform::_nil())));
+      Impl_var<RegionImpl> result(new RegionImpl(allocation));
       Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);

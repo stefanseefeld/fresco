@@ -104,24 +104,20 @@ private:
   static Prague::Mutex mutex;
 };
 
-#if 1
+#if 0
 class SectionLog
 {
 public:
-  SectionLog(Logger::group g, const char *s) : group(g), section(s) { 
-    Logger::note("enter", section);
-  }
-
+  SectionLog(const char *s) : section(s) { Logger::note("enter", section);}
   ~SectionLog() { Logger::note("leave", section);}
 private:
-  Logger::group group;
   const char *section;
 };
-#elif
+#else
 class SectionLog
 {
 public:
-  SectionLog(Logger::group, const char *) {}
+  SectionLog(const char *) {}
   ~SectionLog() {}
 };
 #endif

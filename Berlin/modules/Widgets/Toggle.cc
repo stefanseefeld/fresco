@@ -29,7 +29,7 @@ Toggle::~Toggle() {}
 
 void Toggle::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  SectionLog section(Logger::widget, "Toggle::press");
+  SectionLog section("Toggle::press");
   ControllerImpl::press(traversal, pointer);
   if (test(Telltale::chosen)) clear(Telltale::chosen);
   else set(Telltale::chosen);
@@ -37,6 +37,6 @@ void Toggle::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 
 void Toggle::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  SectionLog section(Logger::widget, "Toggle::release");
+  SectionLog section("Toggle::release");
   ControllerImpl::release(traversal, pointer);
 }

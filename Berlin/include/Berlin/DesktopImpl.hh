@@ -35,6 +35,7 @@ class DesktopImpl : implements(Desktop), public ControllerImpl
   virtual ~DesktopImpl();
   virtual void body(Graphic_ptr) {}
   virtual Graphic_ptr body() { return CORBA::is_nil(stage) ? Stage::_nil() : Stage::_duplicate(stage);}
+//   virtual void draw(DrawTraversal_ptr);
 
   Region_ptr bbox() { return stage->bbox();}
   long layers() { return stage->layers();}

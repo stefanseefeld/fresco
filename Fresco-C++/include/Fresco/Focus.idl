@@ -27,6 +27,8 @@
 interface Focus
 {
 //   readonly attribute Event::Device device;
+  void grab();
+  void ungrab();
 };
 
 #endif /* _Focus_idl */
