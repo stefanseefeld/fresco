@@ -1,11 +1,13 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
+ *
+ * this code is based on code from Fresco.
+ * Copyright (c) 1987-91 Stanford University
+ * Copyright (c) 1991-94 Silicon Graphics, Inc.
+ * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,33 +24,34 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GLDrawingKit_hh
-#define _GLDrawingKit_hh
+
+
+// this file defines some common stuff which all figures have --
+// obtaining a pen given the Style::Spec, holding the style, copying
+// self to another figureKit.
+ 
+#ifndef _Figure_hh
+#define _Figure_hh
 
 #include "Warsaw/config.hh"
+#include "Berlin/GraphicImpl.hh"
+#include "Warsaw/FigureKit.hh"
 #include "Warsaw/DrawingKit.hh"
-#include "Berlin/CloneableImpl.hh"
-#include "Drawing/openGL/GLDrawable.hh"
-#include "Drawing/openGL/GLPencil.hh"
 
-#include <string>
-#include <vector>
-extern "C" {
-#include <ggi/ggi.h>
-}
+class Rect;
 
-class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
-{
+class Figure : virtual public GraphicImpl {
+
 public:
-  GLDrawingKit();
-  ~GLDrawingKit();
-  Drawable_ptr getDrawable();
-  ggi_visual_t getVisual() { return drawable->Visual();}
-  Pencil_ptr getPencil(const Style::Spec &sty);
- protected:
-  omni_mutex myMutex;
-  GLDrawable *drawable;
-  vector<GLPencil *> pencils;
+  Figure(const Style::Spec &sty);
+  virtual ~Figure();
+  virtual Graphic_ptr copyTo(FigureKit_ptr fk) = 0;
+  virtual void request(Requisition &r);
+  
+protected:
+  Pencil_ptr getStyledPencil(DrawingKit_ptr dk);
+  Style::Spec myStyle;
 };
 
-#endif /* _GLDrawingKit_hh */
+
+#endif

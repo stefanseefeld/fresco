@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -23,42 +26,94 @@
 #include "Drawing/openGL/GLPencil.hh"
 #include <iostream>
 
-GLPencil::GLPencil(GLDrawable *d)
-  : drawable(d)
+GLPencil::GLPencil(const Style::Spec &sty, GLDrawable *d)
+  : myDrawable(d)
 {
+
+  // init default values
+  Color defaultColor = {1.0, 1.0, 1.0, 1.0};
+  myFillColor = myLineColor = defaultColor;
+  myFillMode = Style::solid;
+  myThickness = 1.0;
+
+  // !!!FIXME!!! this part is incomplete. at the moment, it only 
+  // interprets a couple style parameters and ignores the rest. 
+  // please, some GL hackers, set it the way it should be :)
+  
+  for (unsigned long i = 0; i < sty.length(); i++) {
+    switch (sty[i].a) {
+    case Style::fillcolor:
+      sty[i].val >>= &myFillColor; break;
+    case Style::linecolor:
+      sty[i].val >>= &myLineColor; break;
+    case Style::fill:
+      sty[i].val >>= myFillMode; break;
+    case Style::linethickness:
+      sty[i].val >>= myThickness; break;
+    case Style::ends:
+    case Style::texture:
+    case Style::linegradient:
+    case Style::fillgradient:
+      break;
+    }
+  }
 };
 
-void GLPencil::drawLine(const Vertex &v1, const Vertex &v2)
-{
-  drawable->makeCurrent();
-  glBegin(GL_LINES);
-  glVertex3d(v1.x, v1.y, v1.z);
-  glVertex3d(v2.x, v2.y, v2.z);
-  glEnd();
+
+void GLPencil::drawPath(const Path &p) {
+  myDrawable->makeCurrent();
+  glLineWidth(myThickness);
+
+  if (p.m.length() == 0) {
+    // we're drawing polys
+    
+    if (myFillMode == Style::solid) {
+      // filled polys
+      glColor4f(myFillColor.red, myFillColor.green, myFillColor.blue, myFillColor.alpha);
+      glBegin(GL_POLYGON);
+      for (unsigned long i = 0; i < p.p.length(); i++)       
+	glVertex3d(p.p[i].x, p.p[i].y, p.p[i].z);      
+      glEnd();
+      
+    } else { // for the time being there's only solid and nofill
+      
+      // line strips (no final connecting line)
+      glColor4f(myLineColor.red, myLineColor.green, myLineColor.blue, myLineColor.alpha);
+      glBegin(GL_LINE_STRIP);
+      for (unsigned long i = 0; i < p.p.length(); i++)       
+	glVertex3d(p.p[i].x, p.p[i].y, p.p[i].z);      
+      glEnd();
+    }
+
+    // !!FIXME!! fill in evaluator setup / teardown code for curves
+    
+  }
 }
 
-void GLPencil::drawPath(const Path &path)
-{
-  drawable->makeCurrent();
-  glBegin(GL_LINE_STRIP);
-  for (unsigned int i = 0; i != path.p.length(); i++)
-    {
-      const Vertex &v = path.p[i];
-      glVertex3d(v.x, v.y, v.z);
-    }
-  glEnd();
+void GLPencil::drawPatch(const Patch &) {
+  // to be completed
 }
 
-void GLPencil::fillPath(const Path &path)
-{
-  GLfloat color[4] = { 1., 0.5, 0.5, 1.};
-  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color);
-  drawable->makeCurrent();
-  glBegin(GL_POLYGON);
-  for (unsigned int i = 0; i != path.p.length(); i++)
-    {
-      const Vertex &v = path.p[i];
-      glVertex3d(v.x, v.y, v.z);
-    }
-  glEnd();
+void GLPencil::drawRect(Coord w, Coord h) {
+  myDrawable->makeCurrent();
+  glLineWidth(myThickness);
+
+    if (myFillMode == Style::solid) {
+      glColor4f(myFillColor.red, myFillColor.green, myFillColor.blue, myFillColor.alpha);
+      glRectf(0,0,w,h);
+    } else {
+      glColor4f(myLineColor.red, myLineColor.green, myLineColor.blue, myLineColor.alpha);
+      glBegin(GL_LINE_LOOP);
+      glVertex3d(0,0,0);
+      glVertex3d(w,0,0);
+      glVertex3d(w,h,0);
+      glVertex3d(0,h,0);
+      glEnd();
+    }      
 }
+
+void GLPencil::drawEllipse(Coord w, Coord h) {
+  // !!!FIXME!!! quadrics code here
+}
+
+

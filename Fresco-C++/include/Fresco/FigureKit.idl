@@ -24,13 +24,34 @@
 #define _FigureKit_idl
 
 #include "Types.idl"
+#include "Style.idl"
 #include "Graphic.idl"
 #include "Cloneable.idl"
 #include "BoundedValue.idl"
 
+// This kit produces graphics with appropriate logic for rendering
+// abstract shapes.  you input paths, patches, styles (which define
+// attributes like color, line thickness, pattern, etc) and you get
+// back an object which will draw the specified type of object when it
+// is traversed. Figures have no particular logic for sizing
+// themselves -- they always resize to fit their allocation. The Path
+// and Patch arguments given to poly, curve, and surface figures will
+// be scaled within the allocation so that the allocation ranges over
+// the interval [0,1]x[0,1] -- in other words you should always
+// specify co-ordinates on the path/path in the unit square..
+
 interface FigureKit : Cloneable {
-    Graphic rect(in BoundedValue width, in BoundedValue Height);
-    Graphic ellipse(in BoundedValue size, in BoundedValue Height);
+
+// these ctors allow you to provide an overriding style specifier for
+// each object. any aspects it cannot determine from its specifier
+// (if you leave them blank, or just provide a null value) it will
+// attempt to inherit from its environment, via some sort of (possibly
+// persistent) style engine which analyzes the scene graph
+
+  Graphic rect(in Style::Spec sty);
+  Graphic ellipse(in Style::Spec sty);
+  Graphic path(in Style::Spec sty, in Path p);
+  Graphic patch(in Style::Spec sty, in Patch p);
 };
 
 

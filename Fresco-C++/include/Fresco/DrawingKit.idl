@@ -25,9 +25,10 @@
 #ifndef _DrawingKit_idl
 #define _DrawingKit_idl
 
-#include <Types.idl>
-#include <Region.idl>
-#include <Cloneable.idl>
+#include "Types.idl"
+#include "Region.idl"
+#include "Cloneable.idl"
+#include "Style.idl"
 
 // #include <Drawable.idl>
 // #include <Pencil.idl>
@@ -38,7 +39,7 @@ interface Pencil;
 interface DrawingKit : Cloneable 
 {
   Drawable getDrawable();
-  Pencil   solidPen();
+  Pencil getPencil(in Style::Spec sty);
 };
 
 #endif /* _DrawingKit_idl */

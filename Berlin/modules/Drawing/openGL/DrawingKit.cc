@@ -36,8 +36,8 @@ extern "C" {
 GLDrawingKit::GLDrawingKit()
 {
   ggiInit();
-    drawable = new GLDrawable();
-    drawable->_obj_is_ready(CORBA::BOA::getBOA());
+  drawable = new GLDrawable();
+  drawable->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 GLDrawingKit::~GLDrawingKit()
@@ -51,12 +51,12 @@ Drawable_ptr GLDrawingKit::getDrawable()
   return drawable->_this();
 }
 
-Pencil_ptr GLDrawingKit::solidPen()
+Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 {
     myMutex.lock();
-    GLPencil *pencil = new GLPencil(drawable);
+    GLPencil *pencil = new GLPencil(sty, drawable);
     pencil->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
-    pens.push_back(pencil);
+    pencils.push_back(pencil);
     myMutex.unlock();
     return pencil->_this();
 }

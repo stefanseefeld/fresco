@@ -1,10 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,33 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GLDrawingKit_hh
-#define _GLDrawingKit_hh
 
 #include "Warsaw/config.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Berlin/CloneableImpl.hh"
-#include "Drawing/openGL/GLDrawable.hh"
-#include "Drawing/openGL/GLPencil.hh"
+#include "Figure/Figure.hh"
 
-#include <string>
-#include <vector>
-extern "C" {
-#include <ggi/ggi.h>
+Figure::Figure(const  Style::Spec &sty) {
+  myStyle = sty;
 }
 
-class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
+void Figure::request(Requisition &r)
 {
-public:
-  GLDrawingKit();
-  ~GLDrawingKit();
-  Drawable_ptr getDrawable();
-  ggi_visual_t getVisual() { return drawable->Visual();}
-  Pencil_ptr getPencil(const Style::Spec &sty);
- protected:
-  omni_mutex myMutex;
-  GLDrawable *drawable;
-  vector<GLPencil *> pencils;
-};
+    r.x.defined = false;
+    r.y.defined = false;
+}
 
-#endif /* _GLDrawingKit_hh */
+Figure::~Figure() {}
+
+Pencil_ptr Figure::getStyledPencil(DrawingKit_ptr dk) {
+  // for the time being we have no advanced style inference or
+  // inheritence algorithm, so it just passes in the style it was
+  // constructed with.
+  return dk->getPencil(myStyle);
+}
+

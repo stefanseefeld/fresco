@@ -1,0 +1,117 @@
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * http://www.berlin-consortium.org
+ *
+ * this code is based on code from Fresco.
+ * Copyright (c) 1987-91 Stanford University
+ * Copyright (c) 1991-94 Silicon Graphics, Inc.
+ * Copyright (c) 1993-94 Fujitsu, Ltd.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+
+
+#include "Figure/SimpleFigures.hh"
+#include "Warsaw/DrawingKit.hh"
+#include "Warsaw/Traversal.hh"
+#include "Warsaw/Pencil.hh"
+
+// rectangles
+
+void RectFig::draw(DrawTraversal_ptr dt) {
+  DrawingKit_ptr dk = dt->kit();
+  Pencil_ptr p = getStyledPencil(dk);
+  RegionImpl region(dt->allocation(), dt->transformation());
+  p->drawRect(region.upper, region.lower);    
+}
+
+Graphic_ptr RectFig::copyTo(FigureKit_ptr fk) {return fk->rect(myStyle);}
+RectFig::RectFig(const Style::Spec &sty) : Figure(sty) {}
+RectFig::~RectFig() {}
+
+
+// ellipses
+
+void EllipseFig::draw(DrawTraversal_ptr dt) {
+  DrawingKit_ptr dk = dt->kit();
+  Pencil_ptr p = getStyledPencil(dk);
+  RegionImpl region(dt->allocation(), dt->transformation());
+  p->drawEllipse(region.upper, region.lower);    
+}
+
+Graphic_ptr EllipseFig::copyTo(FigureKit_ptr fk) {return fk->ellipse(myStyle);}
+EllipseFig::EllipseFig(const Style::Spec &sty) : Figure(sty) {}
+EllipseFig::~EllipseFig() {}
+
+
+// paths
+
+void PathFig::draw(DrawTraversal_ptr dt) {
+  DrawingKit_ptr dk = dt->kit();
+  Pencil_ptr p = getStyledPencil(dk);
+  RegionImpl region(dt->allocation(), dt->transformation());
+
+  Path pathToDraw;
+  pathToDraw.p.length(myPath.p.length());
+  
+  // stretch path to fit region
+  Coord dx = region.upper.x - region.lower.x;
+  Coord dy = region.upper.y - region.lower.y;
+  Coord dz = region.upper.z - region.lower.z;
+
+  for (unsigned long i = 0; i < myPath.p.length(); i++) {
+    pathToDraw.p[i].x = myPath.p[i].x * dx;
+    pathToDraw.p[i].y = myPath.p[i].y * dy;
+    pathToDraw.p[i].z = myPath.p[i].z * dz;
+  }
+  pathToDraw.m = myPath.m;    
+  p->drawPath(pathToDraw);    
+}
+
+Graphic_ptr PathFig::copyTo(FigureKit_ptr fk) {return fk->path(myStyle,myPath);}
+PathFig::PathFig(const Style::Spec &sty, const Path &p) : Figure(sty), myPath(p) {}
+PathFig::~PathFig() {}
+
+// patches
+
+void PatchFig::draw(DrawTraversal_ptr dt) {
+  DrawingKit_ptr dk = dt->kit();
+  Pencil_ptr p = getStyledPencil(dk);
+  RegionImpl region(dt->allocation(), dt->transformation());
+
+  Patch patchToDraw;
+  patchToDraw.p.length(myPatch.p.length());
+  
+  // stretch patch to fit region
+  Coord dx = region.upper.x - region.lower.x;
+  Coord dy = region.upper.y - region.lower.y;
+  Coord dz = region.upper.z - region.lower.z;
+
+  for (unsigned long i = 0; i < myPatch.p.length(); i++) {
+    patchToDraw.p[i].x = myPatch.p[i].x * dx;
+    patchToDraw.p[i].y = myPatch.p[i].y * dy;
+    patchToDraw.p[i].z = myPatch.p[i].z * dz;
+  }
+  patchToDraw.m = myPatch.m;    
+
+  p->drawPatch(patchToDraw);    
+}
+
+Graphic_ptr PatchFig::copyTo(FigureKit_ptr fk) {return fk->patch(myStyle,myPatch);}
+PatchFig::PatchFig(const Style::Spec &sty, const Patch &p) : Figure(sty), myPatch(p) {}
+PatchFig::~PatchFig() {}

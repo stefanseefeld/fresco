@@ -33,7 +33,7 @@ STATIC_INTERFACES := 	BoundedValue.idl   Damage.idl	LayoutKit.idl	Pencil.idl \
 			CommandKit.idl	Grid.idl		Naming.idl	Subject.idl \
 			Telltale.idl	Traversal.idl	Text.idl		WidgetKit.idl
 
-DYNAMIC_INTERFACES := Message.idl Event.idl Types.idl
+DYNAMIC_INTERFACES := Message.idl Event.idl Types.idl Style.idl
 
 IDLSRCS := Naming.idl $(STATIC_INTERFACES) $(DYNAMIC_INTERFACES) 
 

@@ -25,30 +25,47 @@
  * MA 02139, USA.
  */
 
-#ifndef _FigureKitImpl_hh
-#define _FigureKitImpl_hh
+#ifndef _SimpleFigures_hh
+#define _SimpleFigures_hh
 
-#include "Warsaw/FigureKit.hh"
 #include "Warsaw/config.hh"
-#include "Figure/SimpleFigures.hh"
-#include "Berlin/CloneableImpl.hh"
-#include <vector>
+#include "Warsaw/Types.hh"
+#include "Figure/Figure.hh"
 
-class Rect;
-
-class FigureKitImpl : implements(FigureKit), virtual public CloneableImpl {
- public:
-    FigureKitImpl();
-    virtual ~FigureKitImpl();
-
-    Graphic_ptr rect(const Style::Spec &sty);
-    Graphic_ptr ellipse(const Style::Spec &sty);
-    Graphic_ptr path(const Style::Spec &sty, const Path &p);
-    Graphic_ptr patch(const Style::Spec &sty, const Patch &p);
-
- protected:
-    vector<Figure *> figures;
+class RectFig : public virtual Figure  {
+public:
+  RectFig(const Style::Spec &);    
+  virtual ~RectFig();
+  virtual void draw(DrawTraversal_ptr);
+  virtual Graphic_ptr copyTo(FigureKit_ptr fk);
 };
 
+class EllipseFig : public virtual Figure  {
+public:
+  EllipseFig(const Style::Spec &);    
+  virtual ~EllipseFig();
+  virtual void draw(DrawTraversal_ptr);
+  virtual Graphic_ptr copyTo(FigureKit_ptr fk);
+};
+
+class PathFig : public virtual Figure  {
+public:
+  PathFig(const Style::Spec &, const Path &);    
+  virtual ~PathFig();
+  virtual void draw(DrawTraversal_ptr);
+  virtual Graphic_ptr copyTo(FigureKit_ptr fk);
+protected:
+  Path myPath;
+};
+
+class PatchFig : public virtual Figure  {
+public:
+  PatchFig(const Style::Spec &, const Patch &);    
+  virtual ~PatchFig();
+  virtual void draw(DrawTraversal_ptr);
+  virtual Graphic_ptr copyTo(FigureKit_ptr fk);
+protected:
+  Patch myPatch;
+};
 
 #endif

@@ -1,10 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,33 +19,40 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GLDrawingKit_hh
-#define _GLDrawingKit_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Berlin/CloneableImpl.hh"
-#include "Drawing/openGL/GLDrawable.hh"
-#include "Drawing/openGL/GLPencil.hh"
+#ifndef _Style_idl
+#define _Style_idl
 
-#include <string>
-#include <vector>
-extern "C" {
-#include <ggi/ggi.h>
-}
+module Style {
 
-class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
-{
-public:
-  GLDrawingKit();
-  ~GLDrawingKit();
-  Drawable_ptr getDrawable();
-  ggi_visual_t getVisual() { return drawable->Visual();}
-  Pencil_ptr getPencil(const Style::Spec &sty);
- protected:
-  omni_mutex myMutex;
-  GLDrawable *drawable;
-  vector<GLPencil *> pencils;
+  // these are produced either by a programmer or by some style
+  // engine, and have meaningful CORBA::Any values for each type, for
+  // instance a fillColor will extract type Color, a lineThickness
+  // will extract type Coord, etc.
+  
+  enum Aspect { 
+    fillcolor, linecolor,  // >>= Struct Color
+    linethickness, // >>= Coord
+    ends, // >>= enum Endstyle
+    fill,  // >>= enum Fillmode
+    texture, // >>= interface Image -- tbc.
+    linegradient, fillgradient // >>= Struct Gradient  -- tbc.
+  };
+  
+  enum Fillmode {
+    textureRepeat, textureClamp,
+    solid, gradient, nofill };
+  
+  enum Endstyle { butt, cap, round };
+  
+  struct Setting {
+    Aspect a;
+    any val; 
+  };
+  
+  typedef sequence<Setting> Spec;
+
 };
 
-#endif /* _GLDrawingKit_hh */
+
+#endif
