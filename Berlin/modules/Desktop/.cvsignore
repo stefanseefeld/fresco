@@ -1,3 +1,7 @@
 Makefile
 *.d
 
+DesktopKitImpl.syn
+Manipulator.syn
+Pulldown.syn
+WindowImpl.syn

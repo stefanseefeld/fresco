@@ -1,2 +1,11 @@
 Makefile
 *.d
+acconfig.syn
+Babylon.syn
+Char.syn
+config.syn
+defs.syn
+Dictionary.syn
+String.syn
+utils.syn
+vis_iterator.syn
