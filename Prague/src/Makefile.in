@@ -140,9 +140,9 @@ uninstall:
 	rm -rf $(DESTDIR)$(includedir)/Prague
 	rm -f $(DESTDIR)$(libdir)/libPrague.so
 
-build-tests:
+build-tests: all
 
-run-tests:
+run-tests: build-tests
 
 clean:	
 	rm -f $(TARGET)
