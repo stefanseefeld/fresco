@@ -26,7 +26,9 @@
 #define _Babylon_Defs_hh
 
 #include <string>
-#include <stdio.h>
+#include <exception>
+#include <sstream>
+#include <iomanip>
 
 namespace Babylon {
 
@@ -360,77 +362,73 @@ namespace Babylon {
 	}
 
 	const char * what() const throw() {
-	    char * res;
+	    ostringstream res;
+	    res << setw(4) << setfill('0') << hex; 
 	    switch (m_error_prop) {
 	    case PROP_CHARACTER:
-		sprintf(res, "(%08X) Character is undefined", m_error_uc);
+		res << "(" <<  m_error_uc << " Character is undefined";
 		break;
 	    case PROP_UNICODE_VALUE:
-		sprintf(res, "(%08X) Character has no unicode value.. how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Character has no unicode value.. how did this happen?";
 		break;
 	    case PROP_GEN_CAT:
-		sprintf(res, "(%08X) Character has no general category... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Character has no general category... how did this happen?";
 		break;
 	    case PROP_CHAR_DECOMP:
-		sprintf(res, "(%08X) Character has no decomposition",
-			m_error_uc);
+		res << "(" << m_error_uc << ") Character has no decomposition";
 		break;
 	    case PROP_COMB_CLASS :
-		sprintf(res, "(%08X) Character has no canonical combining class.",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Character has no canonical combining class.";
 		break;
 	    case PROP_BIDIR_PROPS:
-		sprintf(res, "(%08X) Character has no bidir property.",
-			m_error_uc);
+		res << "(" << m_error_uc << ") Character has no bidir property.";
 		break;
 	    case PROP_DEC_DIGIT_VALUE:
-		sprintf(res, "(%08X) Character has no decimal digit value.",
-			m_error_uc);
+		res << "(" << m_error_uc << ") Character has no decimal digit value.";
 		break;
 	    case PROP_DIGIT_VALUE:
-		sprintf(res, "(%08X) Character has no digit value.",
-			m_error_uc);
+		res << "(" << m_error_uc << ") Character has no digit value.";
 		break;
 	    case PROP_NUMERIC_VALUE:
-		sprintf(res, "(%08X) Character has no numeric value.",
-			m_error_uc);
+		res << "(" << m_error_uc << ") Character has no numeric value.";
 		break;
 	    case PROP_IS_MIRRORED:
-		sprintf(res, "(%08X) Character has no mirroring property... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc 
+		    << ") Mirroring property missing... how did this happen?";
 		break;
 	    case PROP_UPPER_EQUIV:
-		sprintf(res, "(%08X) Character has no uppercase equivalent... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Uppercase equivalent missing... how did this happen?";
 		break;
 	    case PROP_LOWER_EQUIV:
-		sprintf(res, "(%08X) Character has no lowercase equivalent... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Lowercase equivalent missing... how did this happen?";
 		break;
 	    case PROP_TITLE_EQUIV:
-		sprintf(res, "(%08X) Character has no titlecase equivalent... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Titlecase equivalent missing... how did this happen?";
 		break;
 	    case PROP_SCRIPT:
-		sprintf(res, "(%08X) Character belongs to no script... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") Character belongs to no script... how did this happen?";
 		break;
 	    case PROP_EA_WIDTH:
-		sprintf(res, "(%08X) Character has no EA width property set... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") EA width property missing... how did this happen?";
 		break;
 	    case PROP_LINE_BREAKING:
-		sprintf(res, "(%08X) Character has no linebreak property set... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") linebreak property missing... how did this happen?";
 		break;
 	    case PROP_MAX:
-		sprintf(res, "(%08X) PROP_MAX throw... how did this happen?",
-			m_error_uc);
+		res << "(" << m_error_uc
+		    << ") PROP_MAX throw... how did this happen?";
 		break;	
 	    }
-	    return res;
+	    return res.str().c_str();
 	}
     }; // class Undefined_Property
     
@@ -454,23 +452,24 @@ namespace Babylon {
 
     class Block_Error : std::exception {
     public:
-	UCS4 block_start;
-	UCS4 block_end;
-	string error_message;
+	UCS4 m_block_start;
+	UCS4 m_block_end;
+	string m_error_message;
 	
 	Block_Error(const UCS4 startUC,
 		    const UCS4 endUC,
 		    const string em) {
-	    block_start = startUC;
-	    block_end = endUC;
-	    error_message = em;
+	    m_block_start = startUC;
+	    m_block_end = endUC;
+	    m_error_message = em;
 	}
 
 	const char * what() const throw() {
-	    char * res;
-	    sprintf(res, "(%08X-%08X) %s",
-		    block_start, block_end, error_message.c_str());
-	    return res;
+	    ostringstream res;
+	    res << hex << setw(4) << setfill('0');
+	    res << "(" << m_block_start << "-" << m_block_end << "): "
+		<< m_error_message;
+	    return res.str().c_str();
 	}
     }; // class Block_Error
     
