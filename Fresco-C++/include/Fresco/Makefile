@@ -21,7 +21,7 @@ TOPDIR=../..
 OS_ARCH='Linux'
 
 DIR_CPPFLAGS := -D_MIT_POSIX_THREADS -D_REENTRANT -D__OSVERSION__=2 -D__OMNIORB2__
-DIR_CXXFLAGS := -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread -O3 -Os
+DIR_CXXFLAGS := -fsquangle -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread 
 DIR_INCLUDES :=  -I.  
 DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
 		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 

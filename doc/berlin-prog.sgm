@@ -13,6 +13,35 @@
     <sect1 ID="graphics">
       <title>Graphics</title> 
       
+      <para>The <classname>Graphic</classname> interface is
+      implemented by any object which is to appear on the screen or
+      other display device; in other words, any object which is
+      subject to the layout and rendering processes. Graphics are
+      composed within one another in a directed, acyclic graph
+      (DAG). Some examples of Graphics are: glyphs (anti-aliased
+      images of text characters), pixmaps, bezier curves, polygons,
+      windows, buttons, scroll bars, menus, and alignment, flow and
+      grouping boxes such as those found in TeX. 
+</para>
+
+      <para>Graphics in the DAG are connected together by Edges. An
+      Edge is an encapsulated relationship between a parent graphic
+      and a child. The DAG of all Graphics and Edges in a Berlin
+      server is commonly called the Scene Graph. Some examples of the
+      containment relationship are: glyphs within a word, words within
+      a line, lines within a page, entries within a menu, buttons
+      within a toolbar, polygons within a structured graphics editor,
+      images within a web page, windows within the screen. The same
+      type of Edge interface is used to represent each such
+      containment relationship.</para>
+
+      <para>The main operations on the scene graph are layout &amp;
+      drawing, and delivering events (picking). These operations are
+      encapsulated into visitor-pattern objects called Traversals. A
+      DrawTraversal traverses the scene graph laying graphics out and
+      then drawing them using its DrawingKit.
+
+
       <para>A <classname>graphic</classname> is any thing which can
 	be displayed visually. Thus <classname>graphic</classname> is
 	one of the simplest and most widespread types in the berlin

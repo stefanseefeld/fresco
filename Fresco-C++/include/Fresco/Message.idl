@@ -41,6 +41,13 @@ struct Message {
     any payload;
 };
 
+
+// anything which can accept a Message
+interface MessageListener : Cloneable {
+  void accept(in Message m);
+};
+
+
 // this header will appear on a message which can be sorted/filtered
 // by a spatial origin point. this needs to be rewritten when the message
 // crosses a transformation boundary.
@@ -57,5 +64,18 @@ struct SpatialVertexHeader {
 struct ExpiryHeader {
     Time expires;
 };
+
+
+// this header will appear on a Message which requests a response be
+// sent on its arrival. the original sender, and the Message to send
+// in response, are included in the header. Note: the sender must be
+// prepared to live with the fact that an rsvpHeader might be totally
+// ignored. 
+
+struct RsvpHeader {
+  MessageListener originalSender;
+  Message receiptConfirmation;
+};
+
 
 #endif

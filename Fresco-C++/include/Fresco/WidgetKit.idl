@@ -28,20 +28,24 @@
 #include <Telltale.idl>
 #include <BoundedValue.idl>
 
-interface Widget : MessageListener, Graphic {};
+/** this kit is a layer on top of the Graphic interface and
+    CommandKit. It is responsible for creating subjects, and binding
+    views and controller strategies to the subjects. These amalgams
+    are usually called "widgets" -- they react to events in a
+    particular way by modifying the subjects they're bound to. */
 
 interface WidgetKit {
 
   TelltaleConstraint exclusive();
   TelltaleConstraint selectionRequired();
-  Telltale           telltale();
+  Telltale           normalTelltale();
   Telltale           constrainedTelltale(in TelltaleConstraint c);
   BoundedValue       range(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
-
-    Widget button(in Reactor strategy, in Telltale subj);
-    Widget slider(in Reactor strategy, in BoundedValue subj);
-    Widget viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);
-    
+  
+  Graphic button(in Reactor strategy, in Telltale subj);
+  Graphic slider(in Reactor strategy, in BoundedValue subj);
+  Graphic viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);
+  
     // more widgets in here
 };
 

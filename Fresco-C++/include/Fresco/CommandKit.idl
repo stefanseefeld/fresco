@@ -30,15 +30,46 @@ interface Command;
 #include <Cloneable.idl>
 #include <Text.idl>
 
-// commands are objects which represent promises to do something.
-// you make a command and pass it to someone who doesn't know what
-// it does, they execute it anonymously by calling execute().
 
+// commands are anonymous encapsulated actions. 
+// you never know what they'll do.
 interface Command : Cloneable {	
     void execute(in Message args);
 };
 
+// this is a listener which has configurable behaviour based on the
+// Message types it receives
+interface Reactor : MessageListener {
+  void bind(in CORBA::TypeCode ty, in Command c);
+  void unbind(in CORBA::TypeCode ty, in Command c);
+  attribute boolean active;
+};
+
+// this is just a helper to make the sequence-initialization below a
+// little simpler.
+struct ReactorBinding {
+    CORBA::TypeCode ty;
+    Command cmd;
+};
+
+typedef sequence<ReactorBinding> ReactorBindingList;
+
+/** the command kit is a collection of strategy objects. they form the
+    basis of any control protocol between widgets and subjects. The
+    kit also encapsulates the constructors for command dispatchers
+    (a.k.a. reactors), which you can think of as threading strategies
+    if that suits you. */
+
 interface CommandKit : Cloneable {
+
+    // this usually results in a reactor with its own thread for
+    // processing Messages, so when you send it a Message the call
+    // returns in constant time
+    Reactor asyncReactor(in ReactorBindingList initialBindings);
+
+    // whereas this results in a reactor which consumes the calling
+    // thread during Message receipt
+    Reactor syncReactor(in ReactorBindingList initialBindings);
 
     Command SendMessage(in Message msgToSend, in MessageListener recipient);
     Command ForwardMessage(in MessageListener recipient);
