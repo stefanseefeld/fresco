@@ -44,7 +44,7 @@ class Config(Base):
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    default_toc = 'XRefPages'
 	    start_dir = top_srcdir
-	    base_dir = '.'
+	    base_dir = top_srcdir
 	    class XRefPages:
             	xref_file = 'Prague.xref'
 	    class FilePages (Base.Formatter.HTML.FilePages):
