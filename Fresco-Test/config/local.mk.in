@@ -40,6 +40,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
+SYN2CC		:= @abs_top_builddir@/bin/syn2cc.py
 SHTOOL		:= @top_srcdir@/config/shtool
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@

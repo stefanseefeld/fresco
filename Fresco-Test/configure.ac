@@ -46,8 +46,13 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk])
-AC_CONFIG_FILES([Makefile syunit-c++/Makefile syunit-c++/src/Makefile])
+AC_CONFIG_FILES([config/Fresco-Test-config], [chmod +x config/Fresco-Test-config])
+AC_CONFIG_FILES([bin/Fresco-Test-config:config/Fresco-Test-build-config.in], [chmod +x bin/Fresco-Test-config])
+AC_CONFIG_FILES([Makefile syunit/Makefile])
+AC_CONFIG_FILES([syunit-c++/Makefile syunit-c++/src/Makefile])
+AC_CONFIG_FILES([syunit-c++/test/Makefile])
 
 mkdir -p lib
+mkdir -p bin
 
 AC_OUTPUT

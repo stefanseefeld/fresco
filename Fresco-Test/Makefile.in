@@ -26,7 +26,7 @@ top_srcdir	:= @top_srcdir@
 
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-subdirs	:= syunit-c++
+subdirs	:= syunit syunit-c++
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
