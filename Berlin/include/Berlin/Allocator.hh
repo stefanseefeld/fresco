@@ -55,12 +55,12 @@ public:
   static void natural_allocation(const Warsaw::Graphic::Requisition &, RegionImpl &);
 };
 
-class TransformAllocator : public Allocator
 //. A TransformAllocator maps its allocate to a translation
 //. during traversal and always gives its child the child's
 //. natural allocation.  This functionality is useful
 //. as a gateway between layout objects and figure objects
 //. (which ignore their allocation).
+class TransformAllocator : public Allocator
 {
 public:
   TransformAllocator(Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment);
