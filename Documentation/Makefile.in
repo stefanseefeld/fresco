@@ -1,0 +1,86 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2002 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+SHELL	:= /bin/sh
+
+srcdir		:= @srcdir@
+top_srcdir	:= @top_srcdir@
+
+distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
+
+subdirs	:= src
+# insert inter-directory dependencies below
+
+# Overridden by the clean-targets, allowing the same subdirs-rule to be used
+# for everything.
+action	:= all
+
+.PHONY: all $(subdirs)
+.PHONY: depend doc install install-doc dist \
+        uninstall clean distclean maintainer-clean
+
+all:	$(subdirs)
+
+# insert inter-directory dependencies here
+#(none currently)
+
+$(subdirs):
+	@echo making $(action) in $@
+	$(MAKE) -C $@ $(action)
+
+depend:
+	$(MAKE) action="depend"
+
+doc:
+
+xref:
+
+install:
+	$(MAKE) action="install"
+
+install-doc:
+
+rpm: dist
+	@(unset CDPATH ; rpm -ta $(distdir).tar.gz)
+
+dist:
+
+uninstall:
+	$(MAKE) action="uninstall"
+
+clean:
+	$(MAKE) action="clean"
+
+distclean:
+	@echo 'This command removes Makefiles and auxiliary files;'
+	@echo 'run configure to regenerate them.'
+	$(MAKE) action="distclean"
+	rm -rf Makefile config.cache config.log config.status \
+               $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4
+
+maintainer-clean:
+	@echo 'This command is intended for maintainers to use;'
+	@echo 'it deletes configure and auxiliary files;'
+	@echo 'run autogen.sh to regenerated them.'
+	$(MAKE) action="maintainer-clean"
+	rm -rf Makefile config.cache config.log config.status \
+               $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
+               $(top_srcdir)/configure 
