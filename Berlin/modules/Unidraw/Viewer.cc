@@ -22,39 +22,47 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/IO.hh>
+#include <Warsaw/PickTraversal.hh>
 #include <Berlin/RefCountVar.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/Requestor.hh>
 #include <Berlin/Event.hh>
-#include "Unidraw/View.hh"
+#include "Unidraw/Viewer.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Unidraw;
 
-View::View(Coord width, Coord height, Editor_ptr editor, FigureKit_ptr figures)
+Viewer::Viewer(Coord width, Coord height, Editor_ptr editor, FigureKit_ptr figure, ToolKit_ptr tool)
   : ControllerImpl(false),
     _editor(RefCount_var<Editor>::increment(editor)),
-    _figure(RefCount_var<FigureKit>::increment(figures)),
-    _root(_figure->group()),
+    _figure(RefCount_var<FigureKit>::increment(figure)),
+    _root(tool->rgb(Warsaw::Graphic::_nil(), 1., 1., 1.)),
     _target_tx(new TransformImpl()),
     _width(width),
     _height(height)
-{}
-View::~View() {}
-
-void View::activate_composite()
 {
+  ToolKit::FrameSpec background;
+  Color white = {1., 1., 1., 1.};
+  background.foreground(white);
+  _root = tool->frame(Warsaw::Graphic::_nil(), 20., background, true);
+}
+Viewer::~Viewer() {}
+
+void Viewer::activate_composite()
+{
+  body(_root);
   Requestor *requestor = new Requestor(0.5, 0.5, _width, _height);
   activate(requestor);
+  _root = _figure->group();
   requestor->body(_root);
-  body(requestor->_this());
-
+  Graphic_var child = body();
+  child->body(Graphic_var(requestor->_this()));
 }
 
-void View::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
-  Trace trace("View::press");
+  Trace trace("Viewer::press");
   Input::Position position;
   if (Input::get_position(event, position) == -1) return; // internal error
   Transform_var trafo = traversal->current_transformation();
@@ -64,7 +72,6 @@ void View::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event
   if (picked)
     {
       while (traversal->forward()); // up to the leaf
-      cout << "picked !" << endl;
       _target = traversal->current_graphic();
       _target_tx->copy(Transform_var(traversal->current_transformation()));
 //       if (e->modifier_is_down(Event::shift))    _curtool = scale_tool;
@@ -83,21 +90,51 @@ void View::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event
 //       else	                                    _curtool = create_tool;
       _curtool = create_tool;
     }
-  return;
+  ControllerImpl::press(traversal, event);
 }
 
-void View::drag(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::drag(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
-  Trace trace("View::drag");
+  Trace trace("Viewer::drag");
+  Input::Position position;
+  if (Input::get_position(event, position) == -1) return; // internal error
+  Transform_var trafo = traversal->current_transformation();
+  trafo->inverse_transform_vertex(position);
+  Transform_var tx = _target->transformation();
+  if (!CORBA::is_nil(tx))
+    {
+      Vertex start, end;
+      start.x = _start.x;
+      start.y = _start.y;
+      end.x = position.x;
+      end.y = position.y;
+      if (_curtool == move_tool)
+	{
+	  _target_tx->inverse_transform_vertex(start);
+	  _target_tx->inverse_transform_vertex(end);
+	}
+      Vertex v;
+      v.x = end.x-start.x;
+      v.y = end.y-start.y;
+      _target->need_redraw();
+      if (_curtool == rotate_tool || _curtool == rotate_root_tool)
+	tx->rotate( long(v.y) % long(360), zaxis);
+      else
+	tx->translate(v);
+      _target->need_redraw();
+      _target->need_resize();
+      _start = position;
+    }
 }
 
-void View::release(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::release(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
-  Trace trace("View::release");
+  Trace trace("Viewer::release");
   if (_curtool == create_tool) add(_start.x, _start.y);
+  ControllerImpl::release(traversal, event);
 }
 
-void View::add(Coord x, Coord y)
+void Viewer::add(Coord x, Coord y)
 {
   static int toggle = 0;
   Figure::FigureBase_var fig;

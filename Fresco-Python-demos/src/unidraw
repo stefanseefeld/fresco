@@ -47,13 +47,13 @@ def main():
     object  = context.resolve("IDL:Warsaw/DesktopKit:1.0", properties)
     desktop = object._narrow(Warsaw.DesktopKit)
     object  = context.resolve("IDL:Warsaw/LayoutKit:1.0", properties)
-    layout = object._narrow(Warsaw.LayoutKit)
+    layout  = object._narrow(Warsaw.LayoutKit)
     object  = context.resolve("IDL:Unidraw/UnidrawKit:1.0", properties)
     unidraw = object._narrow(Unidraw.UnidrawKit)
 
     editor  = unidraw.create_editor()
-    view    = editor.create_view(3000, 3000)
-    shell  = desktop.shell(view)
+    view    = editor.create_viewer(3000, 3000)
+    shell   = desktop.shell(view)
     while 1:
 	line = sys.stdin.readline()
 	if len(line) == 1: break

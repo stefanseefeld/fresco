@@ -92,7 +92,7 @@ FocusDemo::FocusDemo(Application *a)
 									   20., spec, true)), 100.)));
   vbox->append_graphic(hbox1);
   vbox->append_graphic(hbox2);
-  Raster_var raster = image->create("../etc/PNG/marble.png");
+  Raster_var raster = image->create("marble.png");
   Graphic_var texture = figure->texture(vbox, raster);
   Controller_var gr = tool->group(texture);
   gr->append_controller(c1);

@@ -80,15 +80,8 @@ Application::Application(ServerContext_ptr sc)
     choice(wk->toggle_choice()),
     mapper(new Mapper(demos, Selection_var(choice->state())))
 {
-  char *berlin_root = getenv("BERLIN_ROOT");
-  // This should be changed to throwing a InitException or something - Jonas
-  if (!berlin_root)
-    {
-      cerr << "Please set environment variabled BERLIN_ROOT first" << endl;
-      exit(-1);
-    }
   background.red = background.green = background.blue = 0.6; background.alpha = 1.;
-  Raster_var raster = ik->create((string(berlin_root) + string("/etc/PNG/berlin-48.png")).c_str());
+  Raster_var raster = ik->create("berlin-48.png");
   Image_var  image = fk->pixmap(raster);
   Graphic_var hbox = lk->hbox();
   hbox->append_graphic(image);

@@ -95,6 +95,7 @@ inline void PickTraversalImpl::pop_controller()
   if (_controllers.size())
     {
       while (size() > _positions.back()) pop();
+      _cursor = size() - 1;
       _controllers.pop_back();
       _positions.pop_back();
     }

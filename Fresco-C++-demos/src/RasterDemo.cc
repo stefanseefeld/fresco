@@ -39,7 +39,7 @@ RasterDemo::RasterDemo(Application *a)
   Command_var command2 = command->log("hello World 2");
   Command_var command3 = command->log("hello World 3");
   
-  Raster_var raster = image->create("../etc/PNG/png.png");
+  Raster_var raster = image->create("png.png");
   Image_var  im = figure->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();

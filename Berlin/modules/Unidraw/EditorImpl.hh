@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
+#include <Warsaw/ToolKit.hh>
 #include <Warsaw/UnidrawKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 
@@ -31,13 +32,14 @@ class EditorImpl : public virtual POA_Unidraw::Editor,
 		   public RefCountBaseImpl
 {
 public:
-  EditorImpl(Warsaw::FigureKit_ptr);
+  EditorImpl(Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
   virtual ~EditorImpl();
   virtual Unidraw::Tool_ptr current_tool();
   virtual void current_tool(Unidraw::Tool_ptr);
-  virtual Warsaw::Controller_ptr create_view(Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Controller_ptr create_viewer(Warsaw::Coord, Warsaw::Coord);
 private:
   Warsaw::FigureKit_var _figure;
+  Warsaw::ToolKit_var   _tool;
 };
 
 #endif

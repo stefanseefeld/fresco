@@ -19,28 +19,42 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _UnidrawKitImpl_hh
-#define _UnidrawKitImpl_hh
+#ifndef _View_hh
+#define _View_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/UnidrawKit.hh>
-#include <Berlin/KitImpl.hh>
-#include <Berlin/RefCountVar.hh>
-#include <vector>
+#include <Berlin/ControllerImpl.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/ImplVar.hh>
 
-class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
-		       public KitImpl
+class Viewer : public ControllerImpl
 {
 public:
-  UnidrawKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
-  virtual ~UnidrawKitImpl();
-  virtual void bind(Warsaw::ServerContext_ptr);
-  virtual Unidraw::Editor_ptr create_editor();
+  Viewer(Warsaw::Coord, Warsaw::Coord, Unidraw::Editor_ptr, Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
+  virtual ~Viewer();
+protected:
+  virtual void activate_composite();
+  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
 private:
-  RefCount_var<Warsaw::FigureKit> _figure;
-  RefCount_var<Warsaw::ToolKit>   _tool;
+  void add(Warsaw::Coord, Warsaw::Coord);
+  Unidraw::Editor_var     _editor;
+  Warsaw::FigureKit_var   _figure;
+  Warsaw::Graphic_var     _root;
+  Warsaw::Vertex          _start;
+  Warsaw::Graphic_var     _target;
+  Impl_var<TransformImpl> _target_tx;
+  Warsaw::Coord           _width;
+  Warsaw::Coord           _height;
+  enum
+  {
+    create_tool, move_tool, move_root_tool,
+    scale_tool, scale_root_tool, rotate_tool, rotate_root_tool
+  } _curtool;
 };
 
 #endif

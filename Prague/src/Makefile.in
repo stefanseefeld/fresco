@@ -42,7 +42,7 @@ endef
 include $(cdir)/local.mk
 
 CPPFLAGS	+= @CPPFLAGS@
-CXXFLAGS	+= -ggdb $(SO_CXXFLAGS)
+CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 LIBS		+= @LIBS@
 

@@ -22,19 +22,22 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/RefCountVar.hh>
 #include "Unidraw/EditorImpl.hh"
-#include "Unidraw/View.hh"
+#include "Unidraw/Viewer.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Unidraw;
 
-EditorImpl::EditorImpl(FigureKit_ptr figure) : _figure(Warsaw::FigureKit::_duplicate(figure)) {}
+EditorImpl::EditorImpl(FigureKit_ptr figure, Warsaw::ToolKit_ptr tool)
+  : _figure(Warsaw::FigureKit::_duplicate(figure)),
+    _tool(Warsaw::ToolKit::_duplicate(tool))
+ {}
 EditorImpl::~EditorImpl() {}
 Tool_ptr EditorImpl::current_tool() { return Unidraw::Tool::_nil();}
 void EditorImpl::current_tool(Tool_ptr) {}
-Controller_ptr EditorImpl::create_view(Warsaw::Coord width, Warsaw::Coord height)
+Controller_ptr EditorImpl::create_viewer(Warsaw::Coord width, Warsaw::Coord height)
 {
-  View *view = new View(width, height, _this(), _figure);
-  activate(view);
-  return view->_this();
+  Viewer *viewer = new Viewer(width, height, _this(), _figure, _tool);
+  activate(viewer);
+  return viewer->_this();
 }

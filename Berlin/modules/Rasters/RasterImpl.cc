@@ -33,19 +33,19 @@ using namespace Warsaw;
 RasterImpl::RasterImpl() : _rows(0) {}
 RasterImpl::RasterImpl(const char *file) : _rows(0)
 {
-  _rows = _png.read(file);
-
+  Prague::Path path = RCManager::get_path("rasterpath");
+  string pngfile = path.lookup_file(file);
+  if (pngfile.empty())
+    {
+      cerr << "RasterImpl Warning : can't find '" << file << "' in current rasterpath" << endl;
+      pngfile = path.lookup_file("berlin-128.png");
+    }
+  _rows = _png.read(pngfile);
   if (!_rows)
     {
-      Prague::Path path = RCManager::get_path("rasterpath");
-      string pngfile = path.lookup_file("berlin-128.png");
-      if (pngfile.empty())
-	{
-	  cerr << "RasterImpl fatal error: can't read fallback raster berlin-128.png" << endl;
-	  exit(-1);
-	}
-     _rows = _png.read(pngfile);
-  }
+      cerr << "RasterImpl fatal error: can't read fallback raster berlin-128.png" << endl;
+      exit(-1);
+    }
 }
 RasterImpl::~RasterImpl() { Trace trace("RasterImpl::~RasterImpl");}
 void RasterImpl::clear()

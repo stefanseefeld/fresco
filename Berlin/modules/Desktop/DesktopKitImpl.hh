@@ -52,10 +52,10 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   virtual Warsaw::Command_ptr relayer(Warsaw::Window_ptr);
   virtual Warsaw::Command_ptr map(Warsaw::Window_ptr, CORBA::Boolean);
  private:
-  RefCount_var<Warsaw::Desktop>   desktop;
-  RefCount_var<Warsaw::LayoutKit> layout;
-  RefCount_var<Warsaw::ToolKit>   tool;
-  RefCount_var<Warsaw::WidgetKit> widget;
+  RefCount_var<Warsaw::Desktop>   _desktop;
+  RefCount_var<Warsaw::LayoutKit> _layout;
+  RefCount_var<Warsaw::ToolKit>   _tool;
+  RefCount_var<Warsaw::WidgetKit> _widget;
 };
 
 #endif

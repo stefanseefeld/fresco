@@ -54,7 +54,7 @@ module Unidraw
   interface Editor : Warsaw::RefCountBase
     {
       attribute Tool current_tool;
-      Warsaw::Controller create_view(in Warsaw::Coord width, in Warsaw::Coord height);
+      Warsaw::Controller create_viewer(in Warsaw::Coord width, in Warsaw::Coord height);
     };
   interface UnidrawKit : Warsaw::Kit
     {

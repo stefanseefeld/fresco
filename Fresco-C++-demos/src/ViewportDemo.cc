@@ -35,7 +35,7 @@ ViewportDemo::ViewportDemo(Application *a)
   ImageKit_var image = application->image();
   FigureKit_var figure = application->figure();
 
-  Raster_var raster = image->create("../etc/PNG/landscape.png");
+  Raster_var raster = image->create("landscape.png");
   Image_var pixmap = figure->pixmap(raster);
   Layout::Viewport_var viewport = layout->scrollable(pixmap);
   Controller_var panner = widget->panner(BoundedRange_var(viewport->adjustment(xaxis)), BoundedRange_var(viewport->adjustment(yaxis)));

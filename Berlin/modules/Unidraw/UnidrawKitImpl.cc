@@ -39,11 +39,12 @@ void UnidrawKitImpl::bind(ServerContext_ptr context)
   Warsaw::Kit::PropertySeq props;
   props.length(0);
   _figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
+  _tool   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
 }
 
 Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 {
-  EditorImpl *editor = new EditorImpl(_figure);
+  EditorImpl *editor = new EditorImpl(_figure, _tool);
   activate(editor);
   return editor->_this();
 }
