@@ -25,15 +25,42 @@
 
 using namespace Warsaw;
 
+namespace
+{
+  class ExitCommand : public virtual POA_Warsaw::Command,
+		      public virtual PortableServer::RefCountServantBase
+  {
+  public:
+    virtual void execute(const CORBA::Any &) { exit(0);} // the point of no return...
+    virtual void destroy()
+    {
+      PortableServer::POA_var poa = _default_POA();
+      PortableServer::ObjectId *oid = poa->servant_to_id(this);
+      poa->deactivate_object(*oid);
+      delete oid;
+    }
+  };
+};
+
 ClientContextImpl::ClientContextImpl()
   : user(new Prague::User())
 {};  
   
-Unistring *ClientContextImpl::userName()
+Unistring *ClientContextImpl::user_name()
 {
   std::string name = user->name();
   Unistring *ustring = new Unistring;
   ustring->length(name.length());
   for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
   return ustring;
+}
+
+Command_ptr ClientContextImpl::exit()
+{
+  ExitCommand *command = new ExitCommand();
+  PortableServer::POA_var poa = _default_POA();
+  PortableServer::ObjectId *oid = poa->activate_object(command);
+  command->_remove_ref();
+  delete oid;
+  return command->_this();
 }

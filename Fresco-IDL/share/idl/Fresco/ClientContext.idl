@@ -26,6 +26,7 @@
 
 module Warsaw
 {
+  interface Command;
   //. a Client Context object is an interface any client connecting to a
   //. berlin server needs to present. It is used in managing the
   //. resources the client allocates and in authenticating the client's
@@ -34,8 +35,8 @@ module Warsaw
   //. help us with this at the moment. You're welcome to improve on it.
   interface ClientContext
     {
-      readonly attribute Unistring userName;
-      
+      readonly attribute Unistring user_name;
+      Command exit();
       // when the server tries to call this, and it fails, the server will 
       // most likely destroy your serverContext object, which will
       // decrement all the refcounts on objects you allocated.

@@ -23,9 +23,10 @@
 #ifndef _ClientContextImpl_hh
 #define _ClientContextImpl_hh
 
+#include <Prague/Sys/User.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/ClientContext.hh>
-#include <Prague/Sys/User.hh>
+#include <Warsaw/Command.hh>
 
 
 //. This is a handle to a client application that the display server holds. It
@@ -36,8 +37,8 @@ class ClientContextImpl : public virtual POA_Warsaw::ClientContext
 {
 public:
   ClientContextImpl();
-  
-  Warsaw::Unistring *userName();
+  Warsaw::Unistring *user_name();
+  Warsaw::Command_ptr exit();
   void ping() {}
 protected:
   Prague::User *user;
