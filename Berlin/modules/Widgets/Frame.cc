@@ -20,9 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Widget/Frame.hh>
-#include <Warsaw/Traversal.hh>
-#include <Berlin/Color.hh>
+#include "Widget/Frame.hh"
+#include "Warsaw/Traversal.hh"
+#include "Warsaw/Subject.hh"
+#include "Berlin/Color.hh"
+
 
 Frame::Frame(Coord t, const Color &c, type ty)
   : Bevel(t, 0.5, 0.5, true, true), color(c), mode(ty)

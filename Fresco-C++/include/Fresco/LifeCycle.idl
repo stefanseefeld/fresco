@@ -24,7 +24,7 @@
 //
 //
 
-#include <Naming.idl>
+#include "Naming.idl"
 
 // this file defines the lifecycle interface presented by the OMG. 
 // it's used in manufacturing objects in remote locations, copying them

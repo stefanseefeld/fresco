@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -107,12 +110,12 @@ Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
 
 Graphic_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
-//   DynamicFrame *frame = new DynamicFrame(2, c, Frame::convex, Frame::concav, Telltale::toggle);
-//   frame->Frame::_obj_is_ready(_boa());
-//   frame->body(g);
-//   frame->attach(t);
-//   return frame->Frame::_this();
-  return Graphic::_nil();
+   DynamicFrame *frame = new DynamicFrame(2, c, Frame::convex, Frame::concav, Telltale::toggle);
+   frame->Frame::_obj_is_ready(_boa());
+   frame->body(g);
+   frame->attach(t);
+   return frame->Frame::_this();
+   return Graphic::_nil();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

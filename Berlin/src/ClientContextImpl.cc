@@ -32,11 +32,13 @@
 #include <iostream>
 #include <string>
 
-ClientContextImpl::ClientContextImpl() {};  
+ClientContextImpl::ClientContextImpl() {
+  user = new Prague::User();
+};  
   
 Unistring *ClientContextImpl::userName()
 {
-  string name = user.Name();
+  string name = user->Name();
   Unistring *ustring = new Unistring;
   ustring->length(name.length());
   for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];

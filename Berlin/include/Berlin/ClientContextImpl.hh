@@ -47,7 +47,7 @@ public:
   CORBA::Boolean stillAlive(); 
 
 protected:
-  Prague::User user;
+  Prague::User *user;
 };
 
 #endif

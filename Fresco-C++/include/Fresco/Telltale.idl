@@ -22,7 +22,7 @@
 #ifndef _Telltale_idl
 #define _Telltale_idl
 
-#include <Subject.idl>
+#include "Subject.idl"
 
 interface TelltaleConstraint;
 
