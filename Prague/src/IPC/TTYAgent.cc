@@ -32,7 +32,9 @@ TTYAgent::TTYAgent(const string &cmd, IONotifier *io, EOFNotifier *eof)
 
 TTYAgent::~TTYAgent()
 {
-  shutdown(in|out|err);
+  if (_running)
+	  stop();
+  //shutdown(in|out|err);
 }
 
 void TTYAgent::start()
@@ -75,6 +77,7 @@ void TTYAgent::start()
  	  break;
 	}
     }
+  _running = true;
   mask(out);
   Coprocess::start();
 };

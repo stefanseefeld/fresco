@@ -185,6 +185,7 @@ void *Dispatcher::dispatch(void *X)
 void Dispatcher::process(const task &t)
 {
   if (t.agent->processIO(t.fd, t.mask)) activate(t);
+  t.agent->task_finished();
 }
 
 void Dispatcher::deactivate(const task &t)
@@ -256,6 +257,9 @@ void Dispatcher::wait()
 	  read(wakeup[0],c,1);
 	}
       for (tlist_t::const_iterator i = t.begin(); i != t.end(); i++)
-	tasks.push(*i);
+      {
+	if ((*i).agent->new_task())
+		tasks.push(*i);
+      }
     }
-};
+}

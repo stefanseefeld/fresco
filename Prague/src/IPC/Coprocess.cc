@@ -161,19 +161,20 @@ void Coprocess::terminate()
 
 void Coprocess::shutdown(short m)
 {
-  m = mask() | ~m;
-  mask(m);
-  if (m ^ in)
+  short om = mask();
+  m &= om;
+  mask(om & ~m );
+  if (m & in)
     {
       delete inbuf;
       inbuf = 0;
     }
-  if (m ^ out)
+  if (m & out)
     {
       delete outbuf;
       outbuf = 0;
     }
-  if (m ^ err)
+  if (m & err)
     {
       delete errbuf;
       errbuf = 0;

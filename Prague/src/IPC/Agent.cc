@@ -35,7 +35,13 @@ Agent::~Agent()
       Dispatcher::instance()->release(this);
       running = false;
     }
-};
+  MutexGuard guard(task_mutex);
+  if (task_count != 0) {
+	  Condition may_destruct(task_mutex);
+	  destruct_ok = &may_destruct;
+	  may_destruct.wait();
+  }
+}
 
 void Agent::start()
 {
@@ -68,4 +74,12 @@ void Agent::stop()
   mask(none);
   Dispatcher::instance()->release(this);
   running = false;
+}
+void Agent::task_finished() {
+	int new_task_count;
+	task_mutex.lock();
+	new_task_count = -- task_count;
+	task_mutex.unlock();
+	if (destruct_ok != 0 && new_task_count == 0)
+		destruct_ok->broadcast();
 }
