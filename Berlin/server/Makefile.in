@@ -34,9 +34,7 @@ CPPFLAGS	+= -I$(top_srcdir)/contrib/jprof -DJPROF
 endif
 
 CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
-ifdef VERSION
-CPPFLAGS	+= -DVERSION='"$(VERSION)"'
-endif
+CPPFLAGS	+= -DVERSION='"@PACKAGE_VERSION@"'
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
 TARGETS		:= ../bin/berlin ../bin/kits ../bin/devices
