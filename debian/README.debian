@@ -1,0 +1,118 @@
+berlin for DEBIAN
+
+*******************************WARNING*************************************
+
+DO NOT RUN BERLIN UNDER ANY GGI TARGET OTHER THAN X.
+
+There is no defined quit key. basically it will take over your console, and
+you will *not* be able to get it back. You have been warned. And I told you
+to read this in the package description, so I *don't* expect *any*
+complaints.
+
+***************************************************************************
+
+
+	Berlin is an experimental OO windowing system based on upcoming
+standards such as OpenGL, CORBA, and Unicode.
+
+	Basically, the aims of the project are to produce a windowing
+environment where network is completely transparent from the three
+perspectives of client, implementation, and display server. However, a
+number of other concepts are being explored such as constraints and
+arbitrary, transparent transforms.
+
+	At this time, berlin is 100% experimental. nobody will gain any
+productivity from its use, and it boasts nothing but three demos.
+
+"Well, then, why did I download 7+ megs of garbage just to read this???"
+
+Berlin's communications layer is entirely CORBA. No dynamic interfaces are
+used at this time. Basically, what this means, is our communications
+library's size is at the mercy of whatever ORB we use. Currently this is
+omniOrb, which is overly verbose for our purposes.
+	To push this point, I can honestly tell you that the size of warsaw
+in its purest form (OMG IDL) does not exceed 115k.
+
+"Why does this thing take 95% of my cpu, even on my 5000-mhz supercomputer?"
+
+	Yes, the current event loop is very ugly. Because we were noticing
+some stability issues in the display server (ie mutex lockdown, resulting in
+a freeze), we turned the event polling frequency way up to make this
+release. In its current state, the server runs. deal with it for the time
+being ;)
+	Also, our logging facilities need to be cleaned up. when all logging
+is on, if you were keeping it in memory, you could panic a 256M virtual
+machine in five minutes (seriously). This is necessary for the time being,
+however.
+
+"Why do I get strange artifacts in the display when I'm running at YYYxZZZ
+	resolution and foobarbaz bpp?"
+
+	ggiMesa is severely underdeveloped. It's been hacked up to work,
+nothing more. We will eventually be putting in an entirely new display
+subsystem (possibly based on ggi/gwt), hopefully soon.
+	short answer: switch depth, see if that fixes it. if not, wait until
+berlin 0.1.0.
+
+HOW TO RUN BERLIN:
+
+	First of all, berlin was designed to make use of a feature-rich
+database for configuration variables. However, at this time the registrar
+has not been integrated yet; because of this we have to use some ugly
+workarounds.
+
+environment variables:
+
+WARSAW -- must contain the full path to the berlin plugins directory. in
+	this package, that will be /usr/lib/plugins.
+DEBUG -- If you want to see useless debugging garbage, set this to all. You
+	can also narrow the types of output your get by storing a
+	comma-separated list of categories here. At this time I believe we
+	support 'widget' and 'ggi'.
+FONTDIR -- Pretty much useless right now. Setting this will scan the
+	directory and find all psf/truetype fonts. However, as berlin's
+	font subsystem doesn't even work yet, there's no reason to.
+
+WARSAW *must* be in the environment if berlin is to run. Also, omniNames
+*must* be configured and running.
+
+berlin also takes three additional arguments: 'x y bpp'. 
+
+RUNNING THE DEMOS:
+
+	The included demos are: testButton testClock testEyes
+
+	forewarning: testEyes is *known* to crash the terminal fairly easily,
+but it does get its point across. so it got included. Just close down berlin
+and restart to continue on. If you move the mouse slowly enough, it probably
+won't crash.
+	This is also why it's choppy in its redraws. Do not take this as a
+signal that our communications library is slow; it's actually very fast.
+I've tuned it to display extremely smoothly, but it crashes almost
+instantly. So be content for now ;)
+
+	Simply type the name of the demo. Berlin is very state-oriented, and
+has many loose ends; at the current time the terminal has to recieve an
+event before it will even draw. So, run the demo, then move the mouse over
+the terminal. you'll see something.
+
+If you have any additional questions, please contact me at:
+Aaron Van Couwenberghe (<vanco@sonic.net>|<aaronv@debian.org>)
+
+or see our fine website:
+http://www.berlin-consortium.org
+
+We are *very* open to help. At this time berlin doesn't have a set in stone
+direction; any member of the team can pretty much work on whatever he/she
+wants.
+
+We need testing, development, ideas, documentation.... Do not hesitate to
+contact us. We will be happy to welcome you aboard ;)
+
+..Aaron Van Couwenberghe... ..vanco@sonic.net.. ..aaronv@debian.org....
+	Berlin:			http://www.berlin-consortium.org
+	Debian GNU/Linux:	http://www.debian.org
+----
+Nullum magnum ingenium sine mixtura dementiae fuit.
+        [There is no great genius without some touch of madness.]
+                -- Seneca

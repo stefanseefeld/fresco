@@ -1,0 +1,10 @@
+./usr/lib/plugins/widgets/boxWidget.so
+./usr/lib/plugins/widgets/buttonWidget.so
+./usr/lib/plugins/widgets/eyesWidget.so
+./usr/lib/plugins/widgets/clockWidget.so
+./usr/lib/plugins/widgets/polygonWidget.so
+./usr/lib/plugins/commands/callDoDrawCommand.so
+./usr/lib/plugins/commands/forwardMessageCommand.so
+./usr/lib/plugins/commands/sendMessageCommand.so
+./usr/lib/plugins/commands/dispatchEventCommand.so
+./usr/lib/plugins/commands/CFunctionPointerCommand.so

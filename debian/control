@@ -1,0 +1,56 @@
+Source: berlin
+Section: graphics
+Priority: extra
+Maintainer: Aaron Van Couwenberghe <vanco@sonic.net>
+Standards-Version: 2.4.0.0
+
+Package: berlin
+Section: graphics
+Architecture: any
+Priority: extra
+Depends: ${shlibs:Depends}
+Description: A display server based on OpenGL and CORBA
+ This is release 0.0.1 of berlin, the long-rumored CORBA display server.
+ .
+ It is entirely experimental; its current capabilities include a limited
+ event handling and forwarding mechanism, and the ability to handle openGL
+ calls via CORBA.
+ .
+ For more information, please see /usr/doc/berlin. It is *strongly*
+ recommended that you read what is included there before attempting to run
+ the display server.
+
+Package: libberlin
+Architecture: any
+Section: graphics
+Priority: extra
+Depends: ${shlibs:Depends}
+Description: Berlin's server-side class library
+ This class defines all classes of berlin objects.
+
+Package: libwarsaw
+Architecture: any
+Section: graphics
+Priority: extra
+Depends: ${shlibs:Depends}
+Description: Berlin's CORBA communications library
+ This package includes the interface definition library for berlin. This is
+ CORBA's legacy; because of this convention, now any client can operate on
+ any host from any host.
+ .
+ This library is fairly large; from 105k of IDL, this monstrosity came to
+ be. To alleviate this there will probably be a port to a different orb in
+ the near future.
+
+Package: berlin-modules
+Architecture: any
+Section: graphics
+Priority: extra
+Depends: ${shlibs:Depends}
+Description: Modular implementations for the Berlin display server
+ Berlin uses CORBA; as such, implementation may be separated from client.
+ These are a simple demonstration of that capability. Currently, modules
+ are split into two categories: widgets and commands.
+ .
+ Berlin's widgets are separate from both the client *and* the display
+ server; certain other functionality benefits from this capability as well.
