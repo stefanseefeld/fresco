@@ -36,7 +36,13 @@ oldincludedir	:= @oldincludedir@
 infodir		:= @infodir@
 mandir		:= @mandir@
 
+abs_builddir	:= @abs_builddir@
+abs_top_builddir:= @abs_top_builddir@
+abs_srcdir	:= @abs_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+
 CXX		:= @CXX@
+SYNOPSIS	:= synopsis
 INSTALL		:= @INSTALL@
 
 # CORBA specific variables

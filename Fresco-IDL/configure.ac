@@ -40,16 +40,6 @@ AC_PROG_CXXCPP
 AC_LANG_CPLUSPLUS
 
 dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
-FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$LIBS -lBabylon $Babylon_LIBS"
-
-FRESCO_FLAG_SO
-
-dnl ------------------------------------------------------------------
 dnl ORB
 dnl ------------------------------------------------------------------
 
@@ -62,13 +52,22 @@ elif test ".$ORB" = .TAO ; then
 fi
 
 dnl ------------------------------------------------------------------
+dnl General flags
+dnl ------------------------------------------------------------------
+
+FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
+LIBS="$LIBS $Babylon_LIBS"
+
+FRESCO_FLAG_SO
+
+dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-config.in], [chmod +x bin/Fresco-config])
-AC_CONFIG_FILES([config/local.mk Makefile src/Makefile:config/$MAKEFILE])
+AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile:config/$MAKEFILE])
 
 mkdir -p lib
 

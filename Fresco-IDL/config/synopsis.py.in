@@ -1,0 +1,41 @@
+# Synopsis configuration file for Fresco
+
+from Synopsis.Config import Base
+
+top_srcdir = '@top_srcdir@'
+
+class Config(Base):
+
+    class Parser(Base.Parser):
+
+	class IDL(Base.Parser.IDL):
+	    "Parser for Fresco IDL files, extends IDL parser"
+	    main_file = 1
+	    basename = top_srcdir + '/idl/'
+	    include_path = [top_srcdir + '/idl']
+	    keep_comments = 1
+
+	modules = {'Fresco' : IDL}
+
+    class Linker (Base.Linker):
+
+	class Fresco(Base.Linker.Linker):
+	    "Fresco style linker - override the comment stuff"
+	    comment_processors = ['ssd', 'prev', 'group']
+	
+	modules = {'Fresco' : Fresco}
+
+    class Formatter(Base.Formatter):
+
+	class HTML(Base.Formatter.HTML):
+	    "Set some local options common to all manuals"
+	    stylesheet = 'manual.css'
+	    stylesheet_file = top_srcdir + '/config/manual.css'
+	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
+	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
+	    toc_out = '../share/Fresco/doc/html/Fresco.toc'
+	
+	# Here we extend the base modules, so you can still use DUMP, ASCII etc
+	modules = Base.Formatter.modules
+	modules['HTML'] = HTML
+

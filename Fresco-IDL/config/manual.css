@@ -1,0 +1,83 @@
+body
+{
+  margin-left: 5%;
+  margin-right: 5%;
+  color: #003030;
+  background: #ffffff;
+}
+:link { color: #770000; text-decoration: none;}
+:visited { color: #770000; text-decoration: none;}
+:active { color: #800000; text-decoration: none;}
+span.keyword { font-style: italic;}
+span.variable { font-style: italic;}
+span.name { font-weight: bold; }
+span.root-current { background: #eeeeee; color: #888888; font-style: italic; }
+span.root-other { font-weight: bold; }
+a.name { font-weight: bold; }
+div.module { padding: 1.0em;}
+div.declarations { padding: 1.0em;}
+div.desc
+{
+  border: none;
+  font-style: italic;
+  color: #003030;
+}
+div.summary 
+{
+  border: none;
+  font-style: italic;
+  color: #003030;
+  margin-left: 2em;
+}
+span.summary
+{
+  border: none;
+  font-style: italic;
+  color: #003030;
+  margin-left: 2em;
+}
+div.enumerator { margin-left: 2em;}
+div.module-section { margin-left: 0.5em;}
+div.module-section img { vertical-align: text-bottom;}
+div.files { margin-left: 1em;}
+div.filepage-scope { margin-left: 1em;}
+td.heading 
+{
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0.1em;
+  background: #eeeeee;
+}
+td.summ-start { vertical-align: top;}
+td.summ-info { vertical-align: top;}
+div.section { margin-left: 2em;}
+
+div.logo
+{
+  margin-left: 2em;
+  text-align: center;
+  color: #dddddd;
+}
+div.nameindex-item { margin-left: 1em;}
+div.file-all { font-size: smaller;}
+span.file-linenum 
+{
+  color: red;
+  font-family: monospace;
+}
+span.file-indent { font-family: monospace;}
+span.file-default { color: #222222;}
+span.file-keyword { font-weight: bold;}
+span.file-comment { color: purple;}
+span.file-number 
+{
+  color: blue;
+  font-style: italic;
+}
+span.file-string 
+{
+  color: green;
+  font-style: italic;
+}
+a.file-ref { font-style: italic;}
+a.file-def { font-weight: bold;}
