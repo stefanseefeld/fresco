@@ -45,4 +45,5 @@ void Terminal::keyPress(const Input::Event &event)
     default: return; // don't know how to handle...
     }
   buffer->write(data);
+//   buffer->flush();
 }

@@ -34,22 +34,23 @@
 using namespace Geometry;
 using namespace Prague;
 
-class StageImpl::Sequence : public list<StageHandleImpl *>
+class StageImpl::Sequence : public vector<StageHandleImpl *>
 {
-  typedef list<StageHandleImpl *> parent_t;
-  iterator lookup(Stage::Index layer);
+  typedef vector<StageHandleImpl *> parent_t;
 public:
-  Sequence() : cursor(begin()) {}
+  Sequence() : cursor(0) {}
   ~Sequence() {}
   
   void insert(StageHandleImpl *);
   void remove(StageHandleImpl *);
   
-  StageHandleImpl *find(Stage::Index layer) { return *lookup(layer);}
-  StageHandleImpl *front() { return parent_t::front();}
-  StageHandleImpl *back() { return parent_t::back();}
+  StageHandleImpl *find(Stage::Index layer) { iterator i = lookup(layer); return i == end() ? 0 : *i;}
+  StageHandleImpl *front() { return size() ? parent_t::front() : 0;}
+  StageHandleImpl *back() { return size() ? parent_t::back() : 0;}
+  StageHandleImpl *current() { return cursor < size() ? *(begin() + cursor) : 0;}
 private:
-  iterator cursor;
+  iterator lookup(Stage::Index layer);
+  size_t cursor;
 };
  
 class StageImpl::Finder
@@ -94,28 +95,27 @@ private:
 
 StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 {
+  Trace trace("StageImpl::Sequence::lookup");
   if (layer == front()->l) return begin();
-  if (layer == back()->l) return --end();
-  if (layer == (*cursor)->l) return cursor;
+  if (layer == back()->l) return end() - 1;
+  if (layer == current()->l) return begin() + cursor;
   /*
    * start searching from the closest item
    */
   int fdist = front()->l - layer;
   int bdist = layer;
-  int cdist = Math::abs((*cursor)->l - layer);
+  int cdist = Math::abs(current()->l - layer);
   if (fdist < bdist)
     {
-      if (fdist < cdist) cursor = begin();
+      if (fdist < cdist) cursor = 0;
     }
   else
     {
-      if (bdist < cdist) cursor = --end();
+      if (bdist < cdist) cursor = size() - 1;
     }
 
-  int delta = layer - (*cursor)->l;
-  while (delta > 0) delta--, cursor++;
-  while (delta < 0) delta++, cursor--;
-  return cursor;
+  cursor += layer - current()->l;
+  return begin() + cursor;
 }
 
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
@@ -133,8 +133,8 @@ void StageImpl::Sequence::remove(StageHandleImpl *handle)
 {
   int layer = handle->l;
   iterator old = lookup(layer);
-  if (old == cursor)
-    if ((*cursor)->l <= (front()->l / 2)) cursor++;
+  if (old == begin() + cursor)
+    if (current()->l <= (front()->l / 2)) cursor++;
     else cursor--;
   for (iterator i = old++; i != end(); i++) (*i)->l = layer++;
   parent_t::erase(--old);

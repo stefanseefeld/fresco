@@ -47,6 +47,7 @@ void Terminal::Input::update(const CORBA::Any &)
 bool Terminal::Output::notify(Agent::iomask_t mask)
 {
   Trace trace("Terminal::output::notify");
+//   cout << "Terminal::Output::notify" << endl;
   if (mask != Agent::outready) return false;
   /*
    * the source
@@ -67,7 +68,7 @@ Terminal::Terminal(CommandKit_ptr command)
     _input(new Input(this)),
     _output(new Output(this)),
     agent(new TTYAgent("sh", _output, 0)),
-    ibuf(StreamBuffer::_duplicate(command->stream(1024))),
+    ibuf(StreamBuffer::_duplicate(command->stream(1))),
     obuf(StreamBuffer::_duplicate(command->stream(1024)))
 {
   Trace trace("Terminal::Terminal");

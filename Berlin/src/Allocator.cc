@@ -69,6 +69,7 @@ void Allocator::needResize()
   updateRequisition();
   if (extension->valid) region->mergeUnion(Region_var(extension->_this()));
   if (region->valid) needDamage(region, allocation);
+  MonoGraphic::needResize();
 }
 
 void Allocator::allocate(Tag, const Allocation::Info &i)

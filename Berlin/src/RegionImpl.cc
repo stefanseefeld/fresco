@@ -162,6 +162,20 @@ void RegionImpl::subtract(Region_ptr region)
 /*
  * note: the new region is the bounding box of the transformed
  *       old region
+ *
+ * This algorithm takes advantage of some
+ * interesting properties of affine transformations: i.e., opposite sides
+ * are always parallel and same in length.  Another property of
+ * affine transformation is that the transformed center of a box
+ * is equal to the center of the transformed box.  Realizing these
+ * properties, finding the transformed box can be broken down as finding
+ * the effective width, height, depth, and center.  The last is easy.
+ * Each of the other three values is found by first breaking down
+ * each of the transformed axis vectors into x, y,  and z vectors.
+ * Joining all the absolute vectors on a certain axis gives you
+ * the size of the box on that axis.  Width, for example,
+ * forms a (w, 0, 0) vector.  After transformation, it becomes
+ * (Xw, Yw, Zw). The new width is then given as abs(Xw) + abs(Xh) + abs(Xd)
  */
 void RegionImpl::applyTransform(Transform_ptr transformation)
 {

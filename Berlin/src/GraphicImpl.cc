@@ -219,9 +219,8 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
   nat.upper.y = nat.lower.y + req.y.natural;
   nat.lower.z = nat.upper.z = 0.;
   nat.valid = true;
-//   cout << "require before transform " << nat << endl;
+//   cout << "require before transform " << req << ' ' << nat << endl;
   nat.applyTransform(t);
-//   cout << "require after transform " << nat << endl;
   Coord xlead = -nat.lower.x;
   Coord xtrail = nat.upper.x;
 
@@ -230,6 +229,7 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
 
   GraphicImpl::requireLeadTrail(req.x, xlead, xlead, xlead, xtrail, xtrail, xtrail);
   GraphicImpl::requireLeadTrail(req.y, ylead, ylead, ylead, ytrail, ytrail, ytrail);
+//   cout << "require after transform " << req << ' ' << nat << endl;
 }
 
 /*****************************************************/
@@ -532,7 +532,7 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       Vertex center;
       center.x = (region.lower.x + region.upper.x) * 0.5;
       center.y = (region.lower.y + region.upper.y) * 0.5;
-
+//       cout << "center " << center.x << ' ' << center.y << endl;
       Transform::Matrix m;
       t->storeMatrix(m);
 //       cout << "matrix\n" << m;
@@ -591,19 +591,26 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
 
       Coord lx = sqrt(x0*x0 + y0*y0)/sqrt(m[0][0]*m[0][0]+m[1][0]*m[1][0]);
       Coord ly = sqrt(x1*x1 + y1*y1)/sqrt(m[0][1]*m[0][1]+m[1][1]*m[1][1]);
+
       region.xalign = req.x.align;
       region.yalign = req.y.align;
       region.zalign = req.z.align;
+//       cout << "center before "<< center << endl;
       t->inverseTransformVertex(center);
-//       cout << center << endl;
+//       cout << "center after " << center << endl;
+
       delta.x = center.x - lx * 0.5 - region.lower.x;
       delta.y = center.y - ly * 0.5 - region.lower.y;
 //       cout << delta.x << ' ' << center.x << ' ' << lx << ' ' << region.lower.x << endl;
 //      region.lower.x += delta.x;
 //      region.lower.y += delta.y;
 //      region.lower.z += delta.z;
+      region.lower.x = -region.xalign * lx;
+      region.lower.y = -region.yalign * ly;
+//       region.lower.z = -region.zalign * lz;
       region.upper.x = region.lower.x + lx;
       region.upper.y = region.lower.y + ly;
+//       region.upper.z = region.lower.z + lz;
 //       cout << "delta " << delta << '\n' << "inner region " << region << endl;
     }
   return delta;

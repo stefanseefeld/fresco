@@ -58,10 +58,9 @@ struct Dump : Signal::Notifier
             string output = "server.log";
             ofstream ofs(output.c_str());
 	    Logger::dump(ofs);
-	    ofs << "\n\nDetailed Trace:\n";
 	    Tracer::dump(ofs);
-	    cerr << "Something went wrong. " << output << " contains a debugging log.\n"
-                 << "Please mail this output to bugs@berlin-consortium.org :\n\n";
+	    cerr << "Something went wrong. '" << output << "' contains a debugging log.\n"
+                 << "Please mail this output to bugs@berlin-consortium.org\n\n";
             exit(-1);
           }
 	}
