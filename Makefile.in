@@ -21,7 +21,7 @@
 
 SHELL	:= /bin/sh
 
-srcdir	:= @srcdir@
+srcdir	:= @abs_srcdir@
 builddir	:= @abs_builddir@
 
 distdir	:= @PACKAGE_NAME@-@PACKAGE_VERSION@
@@ -93,7 +93,7 @@ maintainer-clean:
 %/Makefile: $(srcdir)/%/Makefile.in
 	@echo configuring package $(@D) with $(configure_args)
 	mkdir -p $(@D)
-	-(cd $(@D); ../$(srcdir)/$(@D)/configure $(configure_args))
+	-(cd $(@D); $(srcdir)/$(@D)/configure $(configure_args))
 
 ifneq ($(findstring Prague, $(subdirs)),)
 Prague	:= --with-Prague-prefix=$(builddir)/Prague
