@@ -27,13 +27,13 @@
 #include <Drawing/libArt/LibArtFont.hh>
 #include <Drawing/libArt/LibArtRaster.hh>
 #include <Berlin/KitImpl.hh>
-#include <Berlin/Thread.hh>
 #include <Berlin/ObjectCache.hh>
 #include <Berlin/GGI.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <Warsaw/Image.hh>
+#include <Prague/Sys/Thread.hh>
 
 #include <art_misc.h>
 #include <art_alphagamma.h>
@@ -108,7 +108,7 @@ public:
   ArtIRect bbox;
   const ggi_directbuffer * buf;
   GGI::Drawable *drawable;
-  Mutex mutex;
+  Prague::Mutex mutex;
   double affine[6];
   Impl_var<TransformImpl> tr;
   Impl_var<RegionImpl> cl;
