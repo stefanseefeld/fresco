@@ -27,8 +27,13 @@ vector<bool> debug::activeDebugGroups;
 omni_mutex debug::cerrMutex;
   
 void debug::log(string msg, debugGroup g) {
+  // XXX - Fixme - this should be initted early on to prevent this
+  if ((signed)activeDebugGroups.size() < g)
+    activeDebugGroups = vector<bool>(12, true);
+  
   cerrMutex.lock();
-  if (activeDebugGroups[g]) cerr << msg << endl;
+  if (activeDebugGroups[g])
+    cerr << msg << endl;
   cerrMutex.unlock();
 }
 
