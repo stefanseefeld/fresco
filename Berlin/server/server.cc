@@ -155,7 +155,12 @@ int main(int argc, char **argv)
   if (getopt.is_set("version")) { cout << "version is " << version << endl; return 0;}
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
   std::string value;
-  if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
+  if (getopt.get("resource", &value))
+    RCManager::read(Prague::Path::expand_user(value));
+  else {
+    getopt.usage();
+    exit(1);
+  }
   value = "";  
   if (getopt.get("logger", &value))
     {
