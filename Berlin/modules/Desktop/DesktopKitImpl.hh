@@ -56,8 +56,6 @@ class DesktopKitImpl : public virtual POA_Fresco::DesktopKit,
   virtual Fresco::Command_ptr move_resize(Fresco::Window_ptr, Fresco::Alignment, Fresco::Alignment, CORBA::Short);
   virtual Fresco::Command_ptr relayer(Fresco::Window_ptr);
   virtual Fresco::Command_ptr map(Fresco::Window_ptr, CORBA::Boolean);
-  virtual Fresco::Command_ptr shader(Fresco::Window_ptr, Fresco::Graphic_var,
-				     Fresco::Graphic_var);
  private:
   RefCount_var<Fresco::Desktop>    _desktop;
   RefCount_var<Fresco::LayoutKit>  _layout;

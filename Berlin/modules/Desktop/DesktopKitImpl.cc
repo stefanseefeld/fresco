@@ -105,8 +105,10 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
 
   raster = _image->create("shade.png");
   Image_var shadergraphic = _figure->pixmap(raster);
-  Command_var shade = shader(wptr, vbox, down);
-  Trigger_var shaderbutton = _widget->button(shadergraphic, shade);
+  
+  RefCount_var<Fresco::Controller> shaderbutton = _widget->toggle(shadergraphic);
+  Graphic_var visible = _tool->create_switch(Graphic::_nil(), down,
+					     Controller::toggled, shaderbutton);
 
   RefCount_var<Graphic> tbbuttons = _layout->hbox();
   tbbuttons->append_graphic(shaderbutton);
@@ -164,7 +166,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
 
   down->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
   down->append_graphic(hbox);
-  vbox->append_graphic(down);
+  vbox->append_graphic(visible);
   //RefCount_var<Graphic> background = _tool->rgb(vbox, 0.827, 0.827, 0.866);
   RefCount_var<Graphic> background = _tool->rgb(vbox, 0.8, 0.8, 0.8);
   wptr->body(background);
@@ -314,17 +316,6 @@ Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window, CORBA::Boolean flag)
   Manipulator *manipulator;
   if (flag) manipulator = new Mapper(window);
   else manipulator = new Unmapper(window);
-  activate(manipulator);
-  return manipulator->_this();
-}
-
-Command_ptr DesktopKitImpl::shader(Fresco::Window_ptr window,
-				   Fresco::Graphic_var container,
-				   Fresco::Graphic_var to_shade)
-{
-  Manipulator *manipulator;
-
-  manipulator = new Shader(window, container, to_shade);
   activate(manipulator);
   return manipulator->_this();
 }

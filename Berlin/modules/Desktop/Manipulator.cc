@@ -163,15 +163,3 @@ void Relayerer::execute(const CORBA::Any &any)
 
 void Mapper::execute(const CORBA::Any &) { window->mapped(true);}
 void Unmapper::execute(const CORBA::Any &) { window->mapped(false);}
-
-Shader::Shader(Window_ptr window, Graphic_var c, Graphic_var s)
-  : Manipulator(window), is_shaded(false), container(c), to_shade(s)
-{}
-
-void Shader::execute(const CORBA::Any &any) {
-  if (!is_shaded)
-    container->last_child_graphic()->remove();
-  else
-    container->append_graphic(to_shade);
-  is_shaded = !is_shaded;
-}

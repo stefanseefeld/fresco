@@ -85,16 +85,4 @@ public:
   virtual void execute(const CORBA::Any &);
 };
 
-class Shader : public Manipulator
-{
-public:
-  Shader(Fresco::Window_ptr window, Fresco::Graphic_var c,
-	 Fresco::Graphic_var s);
-  virtual void execute(const CORBA::Any &);
-private:
-  CORBA::Boolean is_shaded;
-  Fresco::Graphic_var container;
-  Fresco::Graphic_var to_shade;
-};
-
 #endif
