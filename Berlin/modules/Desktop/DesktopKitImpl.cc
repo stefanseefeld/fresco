@@ -118,7 +118,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   hbox->append(bdragger);
   hbox->append(rdragger);
   vbox->append(tbdragger);
-  vbox->append(g);
+  vbox->append(Graphic_var(layout->align(g, 0., 0.)));
   vbox->append(hbox);
   Graphic_var background = tool->rgb(vbox, 0.7, 0.7, 0.7);
   window->body(background);
@@ -193,7 +193,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   hbox->append(bdragger);
   hbox->append(rdragger);
   vbox->append(tbdragger);
-  vbox->append(g);
+  vbox->append(Graphic_var(layout->align(g, 0., 0.)));
   vbox->append(hbox);
   Graphic_var background = tool->rgb(vbox, 0.7, 0.7, 0.7);
   window->body(background);
