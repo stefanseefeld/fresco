@@ -81,8 +81,8 @@ void Box::request(Warsaw::Graphic::Requisition &r)
 void Box::extension(const Allocation::Info &info, Region_ptr ext_region)
 {
   Trace trace(this, "Box::extension");  
-  long n = num_children();
-  if (n > 0)
+  long size = num_children();
+  if (size > 0)
     {
       Allocation::Info child;
       Vertex origin, previous, delta;
@@ -99,7 +99,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr ext_region)
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
       LayoutManager::Allocations result = children_allocations(info.allocation);
-      for (long i = 0; i < n; i++)
+      for (long i = 0; i < size; i++)
 	{
 #if 1
 	  *region = *result[i];
@@ -122,6 +122,10 @@ void Box::extension(const Allocation::Info &info, Region_ptr ext_region)
 	  previous = origin;
 #endif
 	}
+#ifndef USE_ALLOCATION_CACHE
+      for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
+      delete [] result;
+#endif
     }
 }
 
@@ -153,7 +157,7 @@ void Box::need_resize()
     {
       for (CORBA::Long i = 0; i != _cache_size; ++i)
 	Provider<RegionImpl>::adopt(_cache_allocations[i]);
-      delete[] _cache_allocations;
+      delete [] _cache_allocations;
       _cache_allocations = 0;
     }
   {
@@ -234,26 +238,26 @@ LayoutManager::Allocations Box::children_allocations(Region_ptr allocation)
       _cache_allocations = childrenRegions;
       _cache_size = children;
     }
-#if 1
-  return _cache_allocations;
-#else
+#ifndef USE_ALLOCATION_CACHE
   // Return a copy of the region array for old code that changes the regions
-  RegionImpl **childrenRegions = new RegionImpl *[_cache_size];
-  for (CORBA::Long i = 0; i < _cache_size; i++) {
-    childrenRegions[i] = Provider<RegionImpl>::provide();
-    *childrenRegions[i] = *_cache_allocations[i];
-  }
+  RegionImpl **childrenRegions = _cache_allocations;
+//   new RegionImpl *[_cache_size];
+//   for (CORBA::Long i = 0; i < _cache_size; i++)
+//     {
+//       childrenRegions[i] = Provider<RegionImpl>::provide();
+//       *childrenRegions[i] = *_cache_allocations[i];
+//     }
+  _cache_allocations = 0;
   return childrenRegions;
+#else
+  return _cache_allocations;
 #endif
 }
 
 void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
 {
   Trace trace(this, "Box::traverse_with_allocation");
-  LayoutManager::Allocations result;
-  result = children_allocations(r);
-  CORBA::Long size = num_children();
-  CORBA::Long begin, end, incr;
+  LayoutManager::Allocations result = children_allocations(r);
 
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
@@ -261,6 +265,8 @@ void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
   Region_var region_this(region->_this());
   tx->load_identity();
 
+  CORBA::Long size = num_children();
+  CORBA::Long begin, end, incr;
   if (t->direction() == Traversal::up)
     {
       begin = 0;
@@ -290,6 +296,10 @@ void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
       catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
       if (!t->ok()) break;
     }
+#ifndef USE_ALLOCATION_CACHE
+  for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
+  delete [] result;
+#endif
 }
 
 void Box::traverse_without_allocation(Traversal_ptr t)
