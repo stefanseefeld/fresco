@@ -434,7 +434,7 @@ void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
+void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &e)
 {
   grab(traversal);
   // FIXME: This needs to be configurable! Hardcoding in the keyboard is bad.
