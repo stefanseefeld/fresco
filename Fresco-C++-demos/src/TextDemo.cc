@@ -27,11 +27,9 @@ using namespace Fresco;
 TextDemo::TextDemo(Application *a)
   : Demo(a)
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
+  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+
   Babylon::Char chars[] =
     {
       0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
@@ -43,6 +41,6 @@ TextDemo::TextDemo(Application *a)
 
   Babylon::String str(34, chars);
   Graphic_var txt = text->chunk(Unicode::to_CORBA(str));
-  Controller_var group = tool->group(Graphic_var(tool->rgb(txt, 0.7, 0.8, 1.0)));
+  Controller_var group = tools->group(Graphic_var(tools->rgb(txt, 0.7, 0.8, 1.0)));
   application->append(group, Babylon::String("text demo"));
 };

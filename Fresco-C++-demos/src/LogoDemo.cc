@@ -72,11 +72,11 @@ void LogoDemo::Rotator::update(const CORBA::Any &)
 LogoDemo::LogoDemo(Application *a)
   : Demo(a)
 {
-  LayoutKit_var layout = application->layout();
-  ToolKit_var   tools = application->tool();
-  WidgetKit_var widgets = application->widget();
-  FigureKit_var figures = application->figure();
-  CommandKit_var commands = application->command();
+  FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
   
   bv1 = commands->bvalue(0., 360., 0., 5., 5.);
   bv2 = commands->bvalue(0., 360., 0., 5., 5.);
@@ -136,17 +136,17 @@ LogoDemo::LogoDemo(Application *a)
 
 Graphic_ptr LogoDemo::make_controller(BoundedValue_ptr value, const Color &color)
 {
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
-  LayoutKit_var layout = application->layout();
-  Graphic_var gauge = widget->gauge(value);
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  Graphic_var gauge = widgets->gauge(value);
   Forward *forward = new Forward(value);
   Backward *backward = new Backward(value);
   Graphic_var rectangle = layout->fixed_size(Graphic_var(Graphic::_nil()), 200., 200.);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
-  Controller_var begin = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(backward->_this()));
-  Controller_var end = tool->stepper(Graphic_var(tool->frame(rectangle, 10., spec, true)), Command_var(forward->_this()));
+  Controller_var begin = tools->stepper(Graphic_var(tools->frame(rectangle, 10., spec, true)), Command_var(backward->_this()));
+  Controller_var end = tools->stepper(Graphic_var(tools->frame(rectangle, 10., spec, true)), Command_var(forward->_this()));
   Graphic_var box = layout->hbox();
   box->append_graphic(begin);
   box->append_graphic(gauge);

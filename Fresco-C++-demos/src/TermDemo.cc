@@ -29,16 +29,16 @@ using namespace Fresco;
 TermDemo::TermDemo(Application *a)
   : Demo(a)
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
 
-  Controller_var terminal = widget->terminal();
-  Controller_var scrollable = widget->scrollable(Graphic_var(tool->rgb(terminal, 0., 0., 0.)));
+  Controller_var terminal = widgets->terminal();
+  Controller_var scrollable = widgets->scrollable(Graphic_var(tools->rgb(terminal, 0., 0., 0.)));
   scrollable->append_controller(terminal);
-  Controller_var group = tool->group(Graphic_var(layout->fixed_size(scrollable, 4000., 3000.)));
+  Controller_var group = tools->group(Graphic_var(layout->fixed_size(scrollable, 4000., 3000.)));
   group->append_controller(scrollable);
   application->append(group, Babylon::String("terminal demo"));
 };

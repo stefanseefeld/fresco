@@ -44,13 +44,14 @@ class FocusDemo::Observer : public ObserverImpl
 FocusDemo::FocusDemo(Application *a)
   : Demo(a), observer(new Observer)
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ImageKit_var image = application->image();
-  FigureKit_var figure = application->figure();
-  ToolKit_var   tool = application->tool();
-  WidgetKit_var widget = application->widget();
+  ImageKit_var images = application->resolve<ImageKit>("IDL:fresco.org/Fresco/ImageKit:1.0");
+  FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
+
   Graphic_var      vbox = layout->vbox();
   Graphic_var     hbox1 = layout->hbox();
   ToolKit::FrameSpec spec;
@@ -58,46 +59,46 @@ FocusDemo::FocusDemo(Application *a)
   /*
    * first group
    */
-  Choice_var c1 = widget->toggle_choice();
+  Choice_var c1 = widgets->toggle_choice();
   for (size_t i = 0; i != 5; i++)
     c1->append_item(Graphic_var(Graphic::_nil()));
   c1->attach(Observer_var(observer->_this()));
   /*
    * second group
    */
-  Choice_var c2 = widget->checkbox_choice();
+  Choice_var c2 = widgets->checkbox_choice();
   for (size_t i = 0; i != 5; i++)
     c2->append_item(Graphic_var(Graphic::_nil()));
   c2->attach(Observer_var(observer->_this()));
-  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c1, 100.)),
+  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c1, 100.)),
 									   20., spec, true)), 100.)));
-  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c2, 100.)),
+  hbox1->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c2, 100.)),
 									   20., spec, true)), 100.)));
   Graphic_var     hbox2 = layout->hbox();
   /*
    * third group
    */
-  Choice_var c3 = widget->toggle_choice();
+  Choice_var c3 = widgets->toggle_choice();
   for (size_t i = 0; i != 5; i++)
     c3->append_item(Graphic_var(Graphic::_nil()));
   c3->attach(Observer_var(observer->_this()));
   /*
    * fourth group
    */
-  Choice_var c4 = widget->checkbox_choice();
+  Choice_var c4 = widgets->checkbox_choice();
   for (size_t i = 0; i != 5; i++)
     c4->append_item(Graphic_var(Graphic::_nil()));
   c4->attach(Observer_var(observer->_this()));
-  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c3, 100.)),
+  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c3, 100.)),
 									   20., spec, true)), 100.)));
-  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tool->frame(Graphic_var(layout->margin(c4, 100.)),
+  hbox2->append_graphic(Graphic_var(layout->margin(Graphic_var(tools->frame(Graphic_var(layout->margin(c4, 100.)),
 									   20., spec, true)), 100.)));
   vbox->append_graphic(hbox1);
   vbox->append_graphic(hbox2);
-  Raster_var raster = image->create("marble.png");
-  Graphic_var texture = figure->texture(vbox, raster);
-  MainController_var gr = tool->group(texture);
-  Raster_var pointer = image->create("ur-cursor.png");
+  Raster_var raster = images->create("marble.png");
+  Graphic_var texture = figures->texture(vbox, raster);
+  MainController_var gr = tools->group(texture);
+  Raster_var pointer = images->create("ur-cursor.png");
   gr->cursor(pointer);
   gr->append_controller(c1);
   gr->append_controller(c2);

@@ -28,25 +28,25 @@ using namespace Fresco;
 RasterDemo::RasterDemo(Application *a)
   : Demo(a)
 {
-  ImageKit_var image = application->image();
-  FigureKit_var figure = application->figure();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
+  ImageKit_var images = application->resolve<ImageKit>("IDL:fresco.org/Fresco/ImageKit:1.0");
+  FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
   
-  Command_var command1 = command->log("hello World 1");
-  Command_var command2 = command->log("hello World 2");
-  Command_var command3 = command->log("hello World 3");
+  Command_var command1 = commands->log("hello World 1");
+  Command_var command2 = commands->log("hello World 2");
+  Command_var command3 = commands->log("hello World 3");
   
-  Raster_var raster = image->create("png.png");
-  Image_var  im = figure->pixmap(raster);
+  Raster_var raster = images->create("png.png");
+  Image_var  im = figures->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();
-  hbox->append_graphic(Graphic_var(widget->button(im, command1)));
-  hbox->append_graphic(Graphic_var(widget->button(im, command2)));
-  hbox->append_graphic(Graphic_var(widget->button(im, command3)));
-  Controller_var group = tool->group(hbox);
+  hbox->append_graphic(Graphic_var(widgets->button(im, command1)));
+  hbox->append_graphic(Graphic_var(widgets->button(im, command2)));
+  hbox->append_graphic(Graphic_var(widgets->button(im, command3)));
+  Controller_var group = tools->group(hbox);
 
   application->append(group, Babylon::String("raster demo"));
 };

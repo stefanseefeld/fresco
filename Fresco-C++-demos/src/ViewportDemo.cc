@@ -29,18 +29,19 @@ using namespace Fresco;
 ViewportDemo::ViewportDemo(Application *a)
   : Demo(a)
 {
-  LayoutKit_var layout = application->layout();
-  ToolKit_var   tool = application->tool();
-  WidgetKit_var widget = application->widget();
-  ImageKit_var image = application->image();
-  FigureKit_var figure = application->figure();
+  ImageKit_var images = application->resolve<ImageKit>("IDL:fresco.org/Fresco/ImageKit:1.0");
+  FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
 
-  Raster_var raster = image->create("landscape.png");
-  Image_var pixmap = figure->pixmap(raster);
+  Raster_var raster = images->create("landscape.png");
+  Image_var pixmap = figures->pixmap(raster);
   Layout::Viewport_var viewport = layout->scrollable(pixmap);
-  Controller_var panner = widget->panner(BoundedRange_var(viewport->adjustment(xaxis)), BoundedRange_var(viewport->adjustment(yaxis)));
-  Controller_var xscroller = widget->scrollbar(BoundedRange_var(viewport->adjustment(xaxis)), xaxis);
-  Controller_var yscroller = widget->scrollbar(BoundedRange_var(viewport->adjustment(yaxis)), yaxis);
+  Controller_var panner = widgets->panner(BoundedRange_var(viewport->adjustment(xaxis)), BoundedRange_var(viewport->adjustment(yaxis)));
+  Controller_var xscroller = widgets->scrollbar(BoundedRange_var(viewport->adjustment(xaxis)), xaxis);
+  Controller_var yscroller = widgets->scrollbar(BoundedRange_var(viewport->adjustment(yaxis)), yaxis);
   Graphic_var hbox1 = layout->hbox();
   hbox1->append_graphic(viewport);
   hbox1->append_graphic(yscroller);
@@ -56,8 +57,8 @@ ViewportDemo::ViewportDemo(Application *a)
   hbox->append_graphic(vbox1);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
-  Graphic_var background = tool->frame(hbox, 10., spec, true);
-  Controller_var group  = tool->group(background);
+  Graphic_var background = tools->frame(hbox, 10., spec, true);
+  Controller_var group  = tools->group(background);
   group->append_controller(panner);
   group->append_controller(xscroller);
   group->append_controller(yscroller);

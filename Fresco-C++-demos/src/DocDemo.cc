@@ -28,11 +28,11 @@ using namespace Fresco;
 DocDemo::DocDemo(Application *a)
   : Demo(a)
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
+  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
 
   Graphic_var column = layout->vbox();
   std::string file = "/etc/passwd";
@@ -46,8 +46,8 @@ DocDemo::DocDemo(Application *a)
       else line = text->strut();
       column->append_graphic(line);
     }
-  Controller_var page = widget->scrollable(Graphic_var(tool->rgb(column, 0., 0., .0)));
-  Controller_var root = tool->group(Graphic_var(layout->fixed_size(page, 3000., 2000.)));
+  Controller_var page = widgets->scrollable(Graphic_var(tools->rgb(column, 0., 0., .0)));
+  Controller_var root = tools->group(Graphic_var(layout->fixed_size(page, 3000., 2000.)));
   root->append_controller(page);
   application->append(root, Babylon::String("multiline text demo"));
 };

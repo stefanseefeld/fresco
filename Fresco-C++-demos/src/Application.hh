@@ -24,6 +24,7 @@
 
 #include <Prague/Sys/Signal.hh>
 #include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
 #include <Fresco/TextKit.hh>
 #include <Fresco/LayoutKit.hh>
 #include <Fresco/ToolKit.hh>
@@ -33,7 +34,6 @@
 #include <Fresco/DesktopKit.hh>
 #include <Fresco/ImageKit.hh>
 #include <Fresco/GadgetKit.hh>
-#include <Fresco/PrimitiveKit.hh>
 #include <Fresco/MainController.hh>
 #include <Fresco/Trigger.hh>
 #include <Fresco/BoundedValue.hh>
@@ -73,16 +73,11 @@ public:
     virtual void destroy();
   };
   Application(Fresco::ServerContext_ptr, Fresco::ClientContext_ptr);
-  Fresco::TextKit_ptr text() { return Fresco::TextKit::_duplicate(_tk);}
-  Fresco::DesktopKit_ptr desktop() { return Fresco::DesktopKit::_duplicate(_dk);}
-  Fresco::LayoutKit_ptr layout() { return Fresco::LayoutKit::_duplicate(_lk);}
-  Fresco::ToolKit_ptr tool() { return Fresco::ToolKit::_duplicate(_ttk);}
-  Fresco::WidgetKit_ptr widget() { return Fresco::WidgetKit::_duplicate(_wk);}
-  Fresco::FigureKit_ptr figure() { return Fresco::FigureKit::_duplicate(_fk);}
-  Fresco::CommandKit_ptr command() { return Fresco::CommandKit::_duplicate(_ck);}
-  Fresco::ImageKit_ptr image() { return Fresco::ImageKit::_duplicate(_ik);}
-  Fresco::GadgetKit_ptr gadget() { return Fresco::GadgetKit::_duplicate(_gk);}
-  Fresco::PrimitiveKit_ptr primitive() { return Fresco::PrimitiveKit::_duplicate(_pk);}
+
+  template <typename K>
+  typename K::_ptr_type resolve(const char *repoId)
+   { return ::resolve_kit<K>(_server, repoId);}
+
   void append(Fresco::Controller_ptr, const Babylon::String &);
   void run();
 protected:
@@ -99,7 +94,6 @@ private:
   Fresco::CommandKit_var    _ck;
   Fresco::ImageKit_var      _ik;
   Fresco::GadgetKit_var     _gk;
-  Fresco::PrimitiveKit_var  _pk;
   Fresco::Graphic_var       _vbox;
   Widget::Choice_var        _choice;
   list_t                    _demos;

@@ -29,11 +29,12 @@ using namespace Fresco;
 EditTextDemo::EditTextDemo(Application *a)
   : Demo(a)
 {
-  TextKit_var text = application->text();
-  LayoutKit_var layout = application->layout();
-  CommandKit_var command = application->command();
-  ToolKit_var tool = application->tool();
-  WidgetKit_var widget = application->widget();
+  TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
+  LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
+  CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
+  ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
+  WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
+
   Babylon::Char chars[] =
   {
     0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
@@ -45,12 +46,12 @@ EditTextDemo::EditTextDemo(Application *a)
 
   Babylon::String str(34, chars);
     
-  TextBuffer_var buf = command->text();
+  TextBuffer_var buf = commands->text();
   TextBuffer_var vis_buf = buf->get_visual_buffer();
   Graphic_var txt = text->simple_viewer(vis_buf);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
-  Graphic_var frame = tool->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tool->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
+  Graphic_var frame = tools->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tools->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
   buf->insert_string(Unicode::to_CORBA(str));
-  application->append(Controller_var(tool->text_input(frame, vis_buf)), Babylon::String("editable text demo"));
+  application->append(Controller_var(tools->text_input(frame, vis_buf)), Babylon::String("editable text demo"));
 };
