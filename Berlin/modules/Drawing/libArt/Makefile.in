@@ -27,18 +27,12 @@ cdir		:= $(builddir)/config
 include $(cdir)/local.mk
 include $(cdir)/Server/local.mk
 
-LIBART_CFLAGS	:= @LIBART_CFLAGS@
-LIBART_LIBS	:= @LIBART_LIBS@
-
-FREETYPE_CFLAGS	:= @FREETYPE_CFLAGS@
-FREETYPE_LIBS	:= @FREETYPE_LIBS@
-
 srcdir		:= $(top_srcdir)/src/Drawing/libArt
 hdir		:= $(top_srcdir)/include/Drawing/libArt
 
 # Compilation and linking flags.
-CPPFLAGS	+= -I$(hdir) $(LIBART_CFLAGS) $(FREETYPE_CFLAGS)
-LIBS		+= -lBerlin $(LIBART_LIBS) $(FREETYPE_LIBS)
+CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @LIBART_CPPFLAGS@ @FREETYPE_CPPFLAGS@)
+LIBS		+= -lBerlin @LIBART_LIBS@ @FREETYPE_LIBS@
 
 SRC		:= LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc LibArtDrawingKit.cc 
 

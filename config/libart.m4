@@ -25,19 +25,16 @@ dnl Checks if libArt is found. If it is, $ac_cv_lib_libArt is set to "yes"
 
 AC_DEFUN([BERLIN_LIB_LIBART],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	dnl First, try to pull everything out of libart-config
-	BERLIN_PROG_LIBART_CONFIG
+	AC_PATH_PROG(LIBART_CONFIG, libart-config)
 	if test ".$LIBART_CONFIG" != . ; then
-		LIBART_CFLAGS=`$LIBART_CONFIG --cflags`
+		LIBART_CPPFLAGS=`$LIBART_CONFIG --cflags`
 		LIBART_LIBS=`$LIBART_CONFIG --libs`
 	else
 		dnl Second, try to pull everything out of gnome-config
-		BERLIN_PROG_GNOME_CONFIG
+		AC_PATH_PROG(GNOME_CONFIG, gnome-config)
 		if test ".$GNOME_CONFIG" != . ; then
-			LIBART_CFLAGS=`$GNOME_CONFIG --cflags libart`
+			LIBART_CPPFLAGS=`$GNOME_CONFIG --cflags libart`
 			LIBART_LIBS=`$GNOME_CONFIG --libs libart`
 		fi
 	fi
@@ -48,7 +45,7 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 
 	dnl Check for header files if above checks failed
 	if test ".$LIBART_LIBS" = . -a ".$art_prefix" != . ; then
-			LIBART_CFLAGS=-I$art_prefix/include
+			LIBART_CPPFLAGS=-I$art_prefix/include
 			LIBART_LIBS=-L$art_prefix/lib
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
@@ -65,7 +62,7 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 	dnl Assuming it's okay if the header was found
 	if test ".$no_libart" != yes ; then
 		ac_cv_lib_libArt=yes
-		AC_SUBST(LIBART_CFLAGS)
+		AC_SUBST(LIBART_CPPFLAGS)
 		AC_SUBST(LIBART_LIBS)
 	else
 		ifelse($1,mandatory,AC_MSG_ERROR(libArt could not be found!))

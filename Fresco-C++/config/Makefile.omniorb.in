@@ -52,7 +52,7 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Kit.idl Transform.idl Region.idl Allocation.idl Traversal.idl \
 		   PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 		   Input.idl Focus.idl Subject.idl Observer.idl Controller.idl View.idl \
-		   Drawable.idl DrawingKit.idl Grid.idl Viewport.idl Stage.idl Splitter.idl LayoutKit.idl \
+		   Drawable.idl DrawingKit.idl Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 		   Telltale.idl StreamBuffer.idl Trigger.idl Canvas.idl State.idl ToolKit.idl \
 		   Widget.idl WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 		   Image.idl FigureKit.idl Command.idl CommandKit.idl Metrics.idl \

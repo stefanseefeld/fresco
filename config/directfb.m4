@@ -25,19 +25,16 @@ dnl Checks if directfb is found. If it is, $ac_cv_lib_directfb is set to "yes".
 
 AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	AC_ARG_WITH(directfb-prefix,
 		[  --with-directfb-prefix=PFX   Prefix for DirectFb (console DirectFB)],[
 		directfb_prefix="$withval"])
 
 	dnl Check for directFB includes
 	if test ".$directfb_prefix" != . ; then
-		CON_INCLUDES="-I$directfb_prefix/include"
+		DFB_CPPFLAGS="-I$directfb_prefix/include"
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$CON_INCLUDES $CPPFLAGS"
+	CPPFLAGS="$DFB_CPPFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(directfb.h,:,no_directfb=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
@@ -45,11 +42,11 @@ AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
 	if test ".$no_directfb" = . ; then
 
 		if test ".$directfb_prefix" != . ; then
-			CON_LIBS="-L$directfb_prefix/lib"
+			DFB_LIBS="-L$directfb_prefix/lib"
 		fi
 
 		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$CON_LIBS $LDFLAGS"
+		LDFLAGS="$DFB_LIBS $LDFLAGS"
 		AC_CHECK_LIB(directfb, DirectFBCreate, :, no_directfb=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
@@ -61,11 +58,7 @@ AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
 		ifelse($1, mandatory, AC_MSG_ERROR(DirectFB was not found!))
 	else
 		ac_cv_lib_directfb=yes
-		CON_LIBS="$CON_LIBS -ldirectfb"
+		DFB_LIBS="$DFB_LIBS -ldirectfb"
 	fi
 
-dnl	AC_SUBST(CON_INCLUDES)
-dnl	AC_SUBST(CON_LIBS)
-
-	AC_LANG_RESTORE
 ])

@@ -6,7 +6,7 @@
 # Shamelessly stolen from Owen Taylor
 
 dnl AM_PATH_SDL_BERLIN([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
-dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
+dnl Test for SDL, and define SDL_CPPFLAGS and SDL_LIBS
 dnl
 AC_DEFUN(AM_PATH_SDL_BERLIN,
 [dnl 
@@ -39,7 +39,7 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
   if test "$SDL_CONFIG" = "no" ; then
     no_sdl=yes
   else
-    SDL_CFLAGS=`$SDL_CONFIG $sdlconf_args --cflags`
+    SDL_CPPFLAGS=`$SDL_CONFIG $sdlconf_args --cflags`
     SDL_LIBS=`$SDL_CONFIG $sdlconf_args --libs`
 
     sdl_major_version=`$SDL_CONFIG $sdl_args --version | \
@@ -49,9 +49,9 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
     sdl_micro_version=`$SDL_CONFIG $sdl_config_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
     if test "x$enable_sdltest" = "xyes" ; then
-      ac_save_CFLAGS="$CFLAGS"
+      ac_save_CPPFLAGS="$CPPFLAGS"
       ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $SDL_CFLAGS"
+      CPPFLAGS="$CPPFLAGS $SDL_CPPFLAGS"
       LIBS="$LIBS $SDL_LIBS"
 dnl
 dnl Now check if the installed SDL is sufficiently new. (Also sanity
@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
 }
 
 ],, no_sdl=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CFLAGS="$ac_save_CFLAGS"
+       CPPFLAGS="$ac_save_CPPFLAGS"
        LIBS="$ac_save_LIBS"
      fi
   fi
@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
         :
        else
           echo "*** Could not run SDL test program, checking why..."
-          CFLAGS="$CFLAGS $SDL_CFLAGS"
+          CPPFLAGS="$CPPFLAGS $SDL_CPPFLAGS"
           LIBS="$LIBS $SDL_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
@@ -154,13 +154,15 @@ int main (int argc, char *argv[])
           echo "*** exact error that occured. This usually means SDL was incorrectly installed"
           echo "*** or that you have moved SDL since it was installed. In the latter case, you"
           echo "*** may want to edit the sdl-config script: $SDL_CONFIG" ])
-          CFLAGS="$ac_save_CFLAGS"
+          CPPFLAGS="$ac_save_CPPFLAGS"
           LIBS="$ac_save_LIBS"
        fi
      fi
-     SDL_CFLAGS=""
+     SDL_CPPFLAGS=""
      SDL_LIBS=""
      ifelse([$3], , :, [$3])
   fi
   rm -f conf.sdltest
+  AC_SUBST(SDL_CPPFLAGS)
+  AC_SUBST(SDL_LIBS)
 ])

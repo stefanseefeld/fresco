@@ -31,10 +31,10 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 
 	dnl Check for GGI includes
 	if test ".$ggi_prefix" != . ; then
-		GGI_CFLAGS="-I$ggi_prefix/include"
+		GGI_CPPFLAGS="-I$ggi_prefix/include"
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GGI_CFLAGS $CPPFLAGS"
+	CPPFLAGS="$GGI_CPPFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(ggi/ggi.h,:,no_ggi=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 

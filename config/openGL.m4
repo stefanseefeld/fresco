@@ -25,16 +25,13 @@ dnl Checks if Mesa is found. If it is, $ac_cv_lib_Mesa is set to "yes".
 
 AC_DEFUN([BERLIN_LIB_MESA],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	AC_ARG_WITH(mesa-prefix,
 		[  --with-mesa-prefix=PFX Prefix for Mesa],[
 		mesa_prefix="$withval"])
 
 	dnl Check for Mesa includes
 	if test x$mesa_prefix != x ; then
-		GL_CFLAGS=-I$mesa_prefix/include
+		GL_CPPFLAGS=-I$mesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
 	CPPFLAGS="$GL_CFLAGS $CPPFLAGS"
@@ -67,8 +64,6 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 		GL_LIBS="$GL_LIBS -lGL -lGLU"
 	fi
 
-	AC_SUBST(GL_CFLAGS)
+	AC_SUBST(GL_CPPFLAGS)
 	AC_SUBST(GL_LIBS)
-
-	AC_LANG_RESTORE
 ])

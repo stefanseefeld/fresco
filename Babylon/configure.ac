@@ -43,6 +43,7 @@ Babylon, The Berlin Unicode Library, dnl
 VERSION)
 
 AC_PROG_MAKE_SET
+AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl Prague
 dnl ------------------------------------------------------------------

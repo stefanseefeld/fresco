@@ -42,7 +42,6 @@ Berlin Clients-C++, Berlin C++ clients, dnl
 VERSION)
 
 AC_PROG_MAKE_SET
-AC_PROG_CC_CXX
 AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl Warsaw and Prague

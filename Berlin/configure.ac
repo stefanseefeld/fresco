@@ -43,7 +43,7 @@ Berlin Server, The Berlin Server, dnl
 VERSION)
 
 AC_PROG_MAKE_SET
-
+AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl Options controlling what to build
 dnl ------------------------------------------------------------------

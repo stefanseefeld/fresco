@@ -26,9 +26,6 @@ dnl We want the OpenGL versions of CAVELib (not the default IrisGL)!
 
 AC_DEFUN([BERLIN_CAVELIB_CHECK],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	AC_ARG_WITH(cavelib-prefix,
 		[  --with-cavelib-prefix=PFX   Prefix for cavelib (console CAVELib)],[
 		cavelib_prefix="$withval"])
@@ -64,9 +61,4 @@ AC_DEFUN([BERLIN_CAVELIB_CHECK],[
 		ac_cv_lib_cave=yes
 		CON_LIBS="$CON_LIBS -lcave_ogl"
 	fi
-
-dnl	AC_SUBST(CON_INCLUDES)
-dnl	AC_SUBST(CON_LIBS)
-
-	AC_LANG_RESTORE
 ])

@@ -25,19 +25,16 @@ dnl Checks if GGIMesa is found. If it is, $ac_cv_lib_GGIMesa is set to "yes".
 
 AC_DEFUN([BERLIN_LIB_GGIMESA],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	AC_ARG_WITH(ggimesa-prefix,
 		[  --with-ggimesa-prefix=PFX Prefix for GGIMesa],[
 		ggimesa_prefix="$withval"])
 
 	dnl Check for GGIMesa includes
 	if test x$ggimesa_prefix != x ; then
-		GL_INCLUDES=-I$ggimesa_prefix/include
+		GL_CPPFLAGS=-I$ggimesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GL_INCLUDES $CPPFLAGS"
+	CPPFLAGS="$GL_CPPFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(GL/ggimesa.h,,no_gl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
@@ -67,8 +64,7 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 		GL_LIBS="$GL_LIBS -lGL -lGLU"
 	fi
 
-	AC_SUBST(GL_INCLUDES)
+	AC_SUBST(GL_CPPFLAGS)
 	AC_SUBST(GL_LIBS)
 
-	AC_LANG_RESTORE
 ])

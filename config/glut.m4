@@ -25,9 +25,6 @@ dnl Checks if GLUT is found. If it is, $ac_cv_lib_glut is set to "yes".
 
 AC_DEFUN([BERLIN_GLUT_CHECK],[
 
-	AC_LANG_SAVE
-	AC_LANG_C
-
 	AC_ARG_WITH(glut-prefix,
 		[  --with-glut-prefix=PFX   Prefix for GLUT],[
 		glut_prefix="$withval"])
@@ -45,19 +42,6 @@ AC_DEFUN([BERLIN_GLUT_CHECK],[
 		CON_LIBS="-L$glut_prefix/lib"
 	fi
 	
-#	dnl Check for GLUT libs (@@@ doesn't work for some reason!)
-#	if test ".$no_glut" = . ; then
-#
-#		if test ".$glut_prefix" != . ; then
-#			CON_LIBS="-L$glut_prefix/lib"
-#		fi
-#
-#		#save_LDFLAGS="$LDFLAGS"
-#		#LDFLAGS="$CON_LIBS $LDFLAGS"
-#		AC_CHECK_LIB(glut, glutInit, :, no_glut=yes)
-#		#LDFLAGS="$save_LDFLAGS"
-#	fi
-
 	if test ".$no_glut" != . ; then
 
 		ac_cv_lib_glut=no
@@ -69,8 +53,4 @@ AC_DEFUN([BERLIN_GLUT_CHECK],[
 		CON_LIBS="$CON_LIBS -lglut -lGL -lGLU"
 	fi
 
-dnl	AC_SUBST(CON_INCLUDES)
-dnl	AC_SUBST(CON_LIBS)
-
-	AC_LANG_RESTORE
 ])
