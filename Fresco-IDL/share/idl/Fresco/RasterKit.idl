@@ -41,7 +41,7 @@ module Fresco
   //. all of the nasty details related to layout and so forth.
   interface ImageKit : Kit
     {
-      //. Create a empty Raster.
+      //. Create an empty Raster.
       Raster create_empty_raster();
       //. Create a Raster from a file. 'rasterpath' from Berlin's config file
       //. is prepended! If the file is not found a the ImageKit

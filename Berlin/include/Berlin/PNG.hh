@@ -53,16 +53,23 @@ public:
   Fresco::Raster::Data *marshal(unsigned char *const *);
   unsigned char **demarshal(const Fresco::Raster::Data &);
   Fresco::Color pixel(unsigned long, unsigned long, unsigned char *const *);
-  void pixel(unsigned long, unsigned long, const Fresco::Color &, unsigned char **);
-  Fresco::Raster::ColorSeq *pixels(unsigned long, unsigned long, unsigned long, unsigned long, unsigned char *const *);
-  void pixels(unsigned long, unsigned long, unsigned long, unsigned long, const Fresco::Raster::ColorSeq &, unsigned char **);
+  void pixel(unsigned long, unsigned long, const Fresco::Color &, 
+             unsigned char **);
+  Fresco::Raster::ColorSeq *pixels(unsigned long, unsigned long, unsigned long, 
+                                   unsigned long, unsigned char *const *);
+  void pixels(unsigned long, unsigned long, unsigned long, unsigned long, 
+              const Fresco::Raster::ColorSeq &, unsigned char **);
   unsigned char **read(const std::string &);
   void write(const std::string &, unsigned char *const *);
 private:
-  void palette_to_rgbalpha(const unsigned char *, const unsigned char *, unsigned char *);
-  void gray_to_rgbalpha(const unsigned char *, const unsigned char *, unsigned char *);
-  void grayalpha_to_rgbalpha(const unsigned char *, const unsigned char *, unsigned char *);
-  void rgb_to_rgbalpha(const unsigned char *, const unsigned char *, unsigned char *);
+  void palette_to_rgbalpha(const unsigned char *, const unsigned char *, 
+                           unsigned char *);
+  void gray_to_rgbalpha(const unsigned char *, const unsigned char *, 
+                        unsigned char *);
+  void grayalpha_to_rgbalpha(const unsigned char *, const unsigned char *, 
+                             unsigned char *);
+  void rgb_to_rgbalpha(const unsigned char *, const unsigned char *, 
+                       unsigned char *);
   png_structp _rpng;
   png_infop   _rinfo;
   png_infop   _rend;
