@@ -83,5 +83,50 @@ sub uni2asc($) {
     $unicode->pack(@{shift()});
     return $unicode->latin1();
 }
+
+
+## Utility stuff for Command's
+
+# use like, my $c = command { print "Command called!\n" };
+# $c->execute($any) will lead to subref($c, $any)
+# 
+sub command(&) {
+    my ($closure) = @_;
     
+    return PerlCommand->new($closure);
+}
+
+sub commandClass(&) {
+    my ($closure) = @_;
+
+    return sub {
+	%oarams = @_;
+	return PerlCommand->new($closure, \%params);
+    }
+}
+
+package PerlCommand;
+use vars qw(@ISA);
+use Command_impl;
+
+@ISA = qw(Command_impl);
+
+sub new($$) {
+    my ($closure, $hash) = @_;
+    
+    return SUPER::new(closure => $closure, env => $hash});
+}
+
+sub execute($$) {
+    my ($self, $any) = @_;
+
+    if (!defined($self->{closure})) {
+	die "Called execute() on a PerlCommand without a subref";
+    }
+    if (!defined($self->{env})) {
+	$self->{env} = undef;
+    }
+
+    $self->{closure}->($self->{env}, $any);
+}
 1;

@@ -155,7 +155,7 @@ sub jab_connect($$$$) {
     my ($uid, $host, $resource, $pass) = @_;
     
     if (!defined($pass)) {
-	return "Error: bad call to connect()";
+	return "Error: bad call to jab_connect()";
     }
 
     $con = Net::Jabber::Client->new();
@@ -243,6 +243,8 @@ sub execute($$) {
 
 #    my $text = Warsaw::Utility::uni2asc($entry->getChars(0, $entry->size()));
     my $text = Warsaw::Utility::uni2asc($entry->value());
+    $entry->position(0);
+    $entry->removeForward($entry->size());
     print "User entered $text for $name\n";
     my $line = $kits->{TextKit}->chunk(Warsaw::Utility::asc2uni("$uid: $text"));
     $body->append($line);

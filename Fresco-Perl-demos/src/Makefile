@@ -60,6 +60,7 @@ nsref.ior: get-nameservice-ior
 
 warsaw-modules: Warsaw/build-stamp
 Warsaw/build-stamp: Warsaw.idl
+	rm -rf Warsaw impls
 	idl2perl -combine -out Warsaw Warsaw.idl
 	mv Warsaw/Warsaw.pm Warsaw/Warsaw.pm.back
 	echo 'use Warsaw::_file_;' > Warsaw/Warsaw.pm
