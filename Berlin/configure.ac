@@ -56,15 +56,22 @@ AC_ARG_WITH(png-prefix,
   [  --with-png-prefix=PFX   Prefix where PNG library is installed (optional)],
   [png_prefix="$withval"],[png_prefix=""])
 
-if test x"$png_prefix" != "x"; then
-  PNG_CPPFLAGS="-I$png_prefix/include"
-  PNG_LDFLAGS="-L$png_prefix/lib"
+AC_ARG_WITH(png-prefix,
+  [  --with-png-prefix=PFX   Prefix where PNG library is installed (optional)],
+  [png_path="$PATH:$withval/bin"],[png_path="$PATH"])
+
+AC_PATH_PROGS([libpng_config_program],
+              [libpng-config libpng12-config libpng10-config],
+              [], [$png_path])
+
+if test ".$libpng_config_program" != "." ; then
+  PNG_CPPFLAGS="`$libpng_config_program --cflags`"
+  PNG_LDFLAGS="`$libpng_config_program --ldflags`"
   CPPFLAGS="$CPPFLAGS $PNG_CPPFLAGS"
   LDFLAGS="$PNG_LDFLAGS $LDFLAGS"
+else
+  AC_MSG_ERROR([libpng was not found. Bailing out.])
 fi
-
-AC_CHECK_HEADERS(png.h)
-AC_CHECK_LIB(png, png_read_info,,[AC_MSG_ERROR([can't compile libBerlin without libpng])])
 
 dnl ------------------------------------------------------------------
 dnl Graphics environment
