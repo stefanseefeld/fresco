@@ -1,5 +1,5 @@
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
 dnl http://www.fresco.org/
 dnl
@@ -68,11 +68,11 @@ AC_DEFUN([FRESCO_LIB_ORB],[
 	case $ORB in
 		omniORB)
 			AC_MSG_RESULT([use omniORB])
-			AC_DEFINE(ORB_omniORB)
+			AC_DEFINE(ORB_omniORB, 1, [Define if omniORB is used.])
 			;;
 		TAO)
 			AC_MSG_RESULT([use TAO])
-			AC_DEFINE(ORB_TAO)
+			AC_DEFINE(ORB_TAO, 1, [Define if TAO is used.])
 			;;
 		none)
 			AC_MSG_RESULT([none found])

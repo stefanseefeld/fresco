@@ -1,6 +1,6 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
 dnl http://www.fresco.org/
 dnl

@@ -45,7 +45,8 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
       [  omniorb_shortcut="$withval"])
     SHORTCUT="$omniorb_shortcut"
     AC_SUBST(SHORTCUT)
-    AC_DEFINE(COLOCATION_OPTIMIZATION)
+    AC_DEFINE(COLOCATION_OPTIMIZATION, 1, 
+              [Define whether special colocation optimizations are supported])
   fi
 
   dnl Check for omniidl.
@@ -65,31 +66,31 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
   if test ".$no_omniorb" = "." ; then
     case $host_cpu in
     sparc)
-      AC_DEFINE(__sparc__)
+      AC_DEFINE(__sparc__, 1, [what cpu])
       ;;
     i*86)
-      AC_DEFINE(__x86__)
+      AC_DEFINE(__x86__, 1, [what cpu])
       ;;
     alpha*)
-      AC_DEFINE(__alpha__)
+      AC_DEFINE(__alpha__, 1, [what cpu])
       ;;
     hppa*)
-      AC_DEFINE(__hppa__)
+      AC_DEFINE(__hppa__, 1, [what cpu])
       ;;
     powerpc)
-      AC_DEFINE(__powerpc__)
+      AC_DEFINE(__powerpc__, 1, [what cpu])
       ;;
     vax)
-      AC_DEFINE(__vax__)
+      AC_DEFINE(__vax__, 1, [what cpu])
       ;;
     mips*)
-      AC_DEFINE(__mips__)
+      AC_DEFINE(__mips__, 1, [what cpu])
       ;;
     arm)
-      AC_DEFINE(__arm__)
+      AC_DEFINE(__arm__, 1, [what cpu])
       ;;
     m68k)
-      AC_DEFINE(__m68k__)
+      AC_DEFINE(__m68k__, 1, [what cpu])
       ;;
     *)
       AC_MSG_WARN([Unknown CPU type $host_cpu.])
@@ -100,37 +101,37 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
   
     case $host_os in
     linux*)
-      AC_DEFINE(__linux__)
+      AC_DEFINE(__linux__, 1, [what os])
       ;;
     solaris*)
-      AC_DEFINE(__sunos__)
+      AC_DEFINE(__sunos__, 1, [what os])
       ;;
     osf1)
-      AC_DEFINE(__osf1__)
+      AC_DEFINE(__osf1__, 1, [what os])
       ;;
     hpux*)
-      AC_DEFINE(__hpux__)
+      AC_DEFINE(__hpux__, 1, [what os])
       ;;
     aix*)
-      AC_DEFINE(__aix__)
+      AC_DEFINE(__aix__, 1, [what os])
       ;;
     winnt*)
       dnl Seems like Windows uses winnt*, cygwin32
       dnl or mingw32. Don't know which is which...
-      AC_DEFINE(__NT__)
-      AC_DEFINE(__WIN32__)
+      AC_DEFINE(__NT__, 1, [what os])
+      AC_DEFINE(__WIN32__, 1, [what os])
       ;;
     irix*)
-      AC_DEFINE(__irix__)
+      AC_DEFINE(__irix__, 1, [what os])
       ;;
     nextstep*)
-      AC_DEFINE(__nextstep__)
+      AC_DEFINE(__nextstep__, 1, [what os])
       ;;
     sysv4.2uw*)
-      AC_DEFINE(__uw7__)
+      AC_DEFINE(__uw7__, 1, [what os])
       ;;
     freebsd*)
-      AC_DEFINE(__freebsd__)
+      AC_DEFINE(__freebsd__, 1, [what os])
       ;;
     *)
       AC_MSG_WARN(Unknown OS $host_os.)
@@ -141,7 +142,7 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
   
     dnl Don't know if this is portable...
     os_major_version=[`uname -r | cut -d '.' -f 1`]
-    AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version)
+    AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version, [Define the os version.])
   
     dnl Check for omniORB includes
     CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"

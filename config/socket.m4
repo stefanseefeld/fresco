@@ -1,6 +1,6 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
 dnl http://www.fresco.org/
 dnl
@@ -34,14 +34,14 @@ SOCKET_LIBS=""
 AC_CHECK_HEADERS([sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h])
 AC_CHECK_HEADERS(arpa/inet.h, cv_inet_sockets=yes)
 AC_CHECK_HEADERS(sys/un.h, cv_unix_sockets=yes)
-AC_CHECK_TYPE(socklen_t, [AC_DEFINE(HAVE_SOCKLEN_T)], [], [#include <sys/socket.h>])
+AC_CHECK_TYPE(socklen_t, [AC_DEFINE(HAVE_SOCKLEN_T, 1, [Define if you have the socklen_t type.])], [], [#include <sys/socket.h>])
 AC_CHECK_LIB(socket, socket, [cv_lib_socket="socket" LIBS="$LIBS -lsocket"])
 if test $cv_inet_sockets = yes ; then
-	AC_DEFINE(HAVE_INET_SOCKETS)
-	AC_CHECK_LIB($cv_lib_socket, inet_aton,[AC_DEFINE(HAVE_INET_ATON)])
+	AC_DEFINE(HAVE_INET_SOCKETS, 1, [Define if you have inet sockets.])
+	AC_CHECK_LIB($cv_lib_socket, inet_aton,[AC_DEFINE(HAVE_INET_ATON, 1, [Define if you have the inet_aton function.])])
 fi
 
 if test $cv_unix_sockets = yes ; then
-	AC_DEFINE(HAVE_UNIX_SOCKETS)
+	AC_DEFINE(HAVE_UNIX_SOCKETS, 1, [Define if you have unix sockets.])
 fi
 ])

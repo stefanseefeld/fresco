@@ -36,7 +36,7 @@ SHORTCUT	:= @SHORTCUT@
 
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
-CPPFLAGS	+= -include $(h2dir)/Fresco/config.hh
+CPPFLAGS	+= -include $(h2dir)/Fresco/acconfig.hh
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
@@ -103,7 +103,7 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -m 644 $(patsubst %, $(top_srcdir)/idl/Fresco/%, $(INT)) $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
-	for header in Fresco/config.hh $(HDR) ; do \
+	for header in Fresco/acconfig.hh $(HDR) ; do \
 	  if ! cmp -s $(h2dir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
 	    echo "$(INSTALL) -m 644 $(h2dir)/$$header $(DESTDIR)$(includedir)/$$header"; \
 	    $(INSTALL) -m 644 $(h2dir)/$$header $(DESTDIR)$(includedir)/$$header; \
@@ -111,7 +111,7 @@ install:	all
 	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
           fi; \
 	done
-	for header in $(patsubst %, Fresco/%, $(UTILHDR)); do \
+	for header in $(patsubst %, Fresco/%, config.hh $(UTILHDR)); do \
 	  if ! cmp -s $(h1dir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
 	    echo "$(INSTALL) -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/$$header"; \
 	    $(INSTALL) -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/$$header; \
@@ -134,12 +134,12 @@ clean:
 	rm -f $(SRC) $(patsubst %, $(h2dir)/%, $(HDR))
 
 distclean:	clean
-	rm -f Makefile $(h2dir)/Fresco/config.hh \
+	rm -f Makefile $(h2dir)/Fresco/acconfig.hh \
 		config.log config.status \
 		../bin/Fresco-config
 
 maintainer-clean: distclean
-	rm -f $(top_srcdir)/configure $(top_srcdir)/config/config.hh.in \
+	rm -f $(top_srcdir)/configure $(top_srcdir)/config/acconfig.hh.in \
 		$(cdir)/aclocal.m4
 
 %.idl.d:	$(idir)/Fresco/%.idl

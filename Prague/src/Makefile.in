@@ -60,7 +60,8 @@ SRC		:= $(patsubst %, Sys/%, $(Sys))
 SRC		+= $(patsubst %, IPC/%, $(IPC))
 SRC		+= $(patsubst %, Filter/%, $(Filter))
 SRC		+= $(patsubst %, Network/%, $(Network))
-HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Sys/*.hh))
+HDR		:= Prague/config.hh
+HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Sys/*.hh))
 HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/IPC/*.hh))
 HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Filter/*.hh))
 HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Network/*.hh))
@@ -92,9 +93,9 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/IPC
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Filter
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Network
-	@if ! cmp -s ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague/config.hh 2>/dev/null; then \
-	  echo "$(INSTALL) -m 644 ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague/config.hh"; \
-	  $(INSTALL) -m 644 ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague/config.hh; \
+	@if ! cmp -s ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh 2>/dev/null; then \
+	  echo "$(INSTALL) -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh"; \
+	  $(INSTALL) -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague/acconfig.hh; \
 	else \
           echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
         fi
@@ -120,13 +121,13 @@ clean:
 #	cd Examples; $(MAKE) clean;
 
 distclean:	clean
-	rm -f Makefile $(hdir)/Prague/config.hh \
+	rm -f Makefile $(hdir)/Prague/acconfig.hh \
 		$(cdir)/config.log $(cdir)/config.status \
 		../bin/Prague-config
 #	cd Examples; $(MAKE) distclean
 
 maintainer-clean: distclean
-	rm -f $(top_srcdir)/configure $(top_srcdir)/config/config.hh.in \
+	rm -f $(top_srcdir)/configure $(top_srcdir)/config/acconfig.hh.in \
 		$(top_srcdir)/config/aclocal.m4
 
 %.d:	$(srcdir)/Sys/%.cc $(hdir)/Prague/Sys/%.hh

@@ -30,7 +30,7 @@ AC_REVISION($Revision$)
 
 AC_INIT(Berlin, 0.3.0, devel@fresco.org)
 AC_CONFIG_SRCDIR(../LICENSE)
-AC_CONFIG_HEADER(include/Berlin/config.hh:config/config.hh.in)
+AC_CONFIG_HEADER(include/Berlin/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
 
 dnl AC_HEADLINE(dnl
@@ -45,18 +45,6 @@ AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
-
-AC_ARG_ENABLE(complete-deps,
-              AC_HELP_STRING([--disable-complete-deps],[Use a faster, but less correct, dependency generator]),
-              [complete_deps_enabled="$enableval"],
-              [complete_deps_enabled=yes])
-
-DEPFLAGS=
-if test ".$complete_deps_enabled" = .yes ; then
-  AC_SUBST(DEPFLAGS,-M)
-else
-  AC_SUBST(DEPFLAGS,-MM)
-fi
 
 FRESCO_FLAG_SO
 
@@ -106,9 +94,14 @@ dnl ------------------------------------------------------------------
 dnl some helper utils
 dnl ------------------------------------------------------------------
 
-AC_ARG_ENABLE(jprof, AC_HELP_STRING([--enable-jprof],[enable profiling with the jprof tool]),[AC_DEFINE(JPROF)])
-AC_ARG_ENABLE(lclog, AC_HELP_STRING([--enable-lclog],[enable lifecycle logging]),[AC_DEFINE(LCLOG)])
-AC_ARG_ENABLE(rmdebug, AC_HELP_STRING([--enable-rmdebug],[enable region management debugging]),[AC_DEFINE(RMDEBUG)])
+AC_ARG_ENABLE(jprof, 
+              AC_HELP_STRING([--enable-jprof],[enable profiling with the jprof tool]),
+              [AC_DEFINE(JPROF, 1, [Define if jprof support should be compiled in.])])
+AC_ARG_ENABLE(lclog, AC_HELP_STRING([--enable-lclog],[enable lifecycle logging]),
+              [AC_DEFINE(LCLOG, 1, [Define if lifecycle debugging should be enabled.])])
+AC_ARG_ENABLE(rmdebug, 
+              AC_HELP_STRING([--enable-rmdebug],[enable region management debugging]),
+              [AC_DEFINE(RMDEBUG, 1, [Define if region management debugging should be enabled.])])
 
 dnl ------------------------------------------------------------------
 dnl Decisions

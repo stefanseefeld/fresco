@@ -1,7 +1,7 @@
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
-dnl http://www.berlin-consortium.org/
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -34,12 +34,12 @@ AC_CHECK_HEADERS(sys/un.h, cv_unix_sockets=yes)
 AC_CHECK_TYPEDEF(socklen_t, sys/socket.h)
 AC_CHECK_LIB(socket, socket, [cv_lib_socket="socket" LIBS="$LIBS -lsocket" SOCKET_LIBS="-lsocket"])
 if test $cv_inet_sockets = yes ; then
-	AC_DEFINE(HAVE_INET_SOCKETS)
+	AC_DEFINE(HAVE_INET_SOCKETS, 1, [Define if you have inet sockets])
 	AC_CHECK_LIB($cv_lib_socket, inet_aton,[AC_DEFINE(HAVE_INET_ATON)])
 fi
 
 if test $cv_unix_sockets = yes ; then
-	AC_DEFINE(HAVE_UNIX_SOCKETS)
+	AC_DEFINE(HAVE_UNIX_SOCKETS, 1, [Define if you have unix sockets.])
 fi
 AC_SUBST(SOCKET_LIBS)
 ])

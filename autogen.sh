@@ -9,10 +9,8 @@ for package in $packages;
 	(cd $package;
 	 echo Generating ${package}/configure...
 	 aclocal --output=config/aclocal.m4 -I ../config/macros
-	 if test -f config/acconfig.h; then
-	    autoheader -l config configure.ac > config/config.hh.in
-	 fi;
-	 autoconf --include config
+	 autoheader -l config configure.ac > config/acconfig.hh.in
+	 autoconf --include=config
          chmod a+x configure)
     fi
     done

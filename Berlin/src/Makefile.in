@@ -63,9 +63,9 @@ install:	all
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin/Console
-	@if ! cmp -s ../include/Berlin/config.hh $(DESTDIR)$(includedir)/Berlin/config.hh 2>/dev/null; then \
-	  echo "$(INSTALL) -m 644 ../include/Berlin/config.hh $(DESTDIR)$(includedir)/Berlin/config.hh"; \
-	  $(INSTALL) -m 644 ../include/Berlin/config.hh $(DESTDIR)$(includedir)/Berlin/config.hh; \
+	@if ! cmp -s ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh 2>/dev/null; then \
+	  echo "$(INSTALL) -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh"; \
+	  $(INSTALL) -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh; \
 	else \
           echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
         fi
@@ -88,13 +88,13 @@ clean:
 	rm -f *.o *.d
 
 distclean:	clean
-	rm -f Makefile $(hdir)/config.hh \
+	rm -f Makefile $(hdir)/acconfig.hh \
 	  $(cdir)/Server/local.mk $(cdir)/Server/module.mk \
 	  $(cdir)/Server/config.log $(cdir)/Server/config.status \
 	  $(bdir)/Berlin-config $(builddir)/config/berlinrc
 
 maintainer-clean: distclean
-	rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/config.hh.in \
+	rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/acconfig.hh.in \
 	  $(top_srcdir)/config/Server/aclocal.m4
 
 %.d:	$(srcdir)/%.cc $(hdir)/Berlin/%.hh

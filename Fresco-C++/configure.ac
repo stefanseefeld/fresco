@@ -25,13 +25,13 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
-AC_PREREQ(2.12)
+AC_PREREQ(2.52)
 AC_REVISION($Revision$)
 
 AC_INIT(Fresco, 0.3.0, devel@fresco.org)
 AC_CONFIG_SRCDIR(../LICENSE)
-AC_CONFIG_HEADER(include/Fresco/config.hh:config/config.hh.in)
 AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
@@ -42,18 +42,6 @@ AC_LANG_CPLUSPLUS
 dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
-
-AC_ARG_ENABLE(complete-deps,
-              AC_HELP_STRING([--disable-complete-deps],[Use a faster, but less correct, dependency generator]),
-              [complete_deps_enabled="$enableval"],
-              [complete_deps_enabled=yes])
-
-DEPFLAGS=
-if test ".$complete_deps_enabled" = .yes ; then
-  AC_SUBST(DEPFLAGS,-M)
-else
-  AC_SUBST(DEPFLAGS,-MM)
-fi
 
 FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"

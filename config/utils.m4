@@ -1,6 +1,6 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
 dnl http://www.fresco.org/
@@ -98,8 +98,7 @@ $2],
 eval "ac_cv_decl_needed_$1=no", eval "ac_cv_decl_needed_$1=yes")])
 if eval "test \"`echo '$ac_cv_decl_needed_'$1`\" = yes"; then
   AC_MSG_RESULT(yes)
-  ac_tr_decl=NEED_DECLARATION_`echo $1 | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-  AC_DEFINE_UNQUOTED($ac_tr_decl)
+  AC_DEFINE_UNQUOTED(NEED_DECLARATION_$1, 1, [Define if you need to declare $1])
 else
   AC_MSG_RESULT(no)
 fi

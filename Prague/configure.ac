@@ -1,7 +1,6 @@
 dnl $Id$
 dnl
 dnl This source file is a part of the Fresco Project.
-dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
 dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
 dnl http://www.fresco.org/
 dnl
@@ -29,8 +28,8 @@ AC_PREREQ(2.52)
 AC_REVISION($Revision$)
 AC_INIT(Prague, 0.3.0, devel@fresco.org)
 AC_CONFIG_SRCDIR(../LICENSE)
-AC_CONFIG_HEADER(include/Prague/config.hh:config/config.hh.in)
 AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
@@ -40,28 +39,16 @@ dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
 
-AC_ARG_ENABLE(complete-deps,
-              AC_HELP_STRING([--disable-complete-deps],[Use a faster, but less correct, dependency generator]),
-              [complete_deps_enabled="$enableval"],
-              [complete_deps_enabled=yes])
-
-DEPFLAGS=
-if test ".$complete_deps_enabled" = .yes ; then
-  AC_SUBST(DEPFLAGS,-M)
-else
-  AC_SUBST(DEPFLAGS,-MM)
-fi
-
 AC_ARG_ENABLE(tracer,
               AC_HELP_STRING([--enable-tracer],[Compile with tracer support]),
-              [AC_DEFINE(TRACER)])
+              [AC_DEFINE(TRACER, 1, [Define if you want tracer support.])])
 
 AC_MSG_NOTICE([platform specific system utilities])
 AC_CHECK_FUNCS(strsignal)
 AC_CHECK_HEADERS(string.h)
 AC_NEED_DECLARATION(strsignal)
 AC_HEADER_SYS_WAIT
-AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), [AC_MSG_ERROR([update your zlib, please])])
+AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB, 1, [Define if you have the zlib library.]), [AC_MSG_ERROR([update your zlib, please])])
 
 FRESCO_FLAG_SO
 
@@ -84,9 +71,9 @@ AC_CHECK_FUNCS(dlopen dlsym dlclose shl_load)
 AC_MSG_NOTICE([plugin method :])
 
 AC_IFALLYES([header:dlfcn.h func:dlopen func:dlsym func:dlclose],
-  [AC_DEFINE(HAVE_DLFCN) AC_MSG_RESULT([use dlopen family of functions for plugins])])
+  [AC_DEFINE(HAVE_DLFCN, 1, [Define if you have the dlfcn family of functions.]) AC_MSG_RESULT([use dlopen family of functions for plugins])])
 AC_IFALLYES([header:dl.h func:shl_load],
-  [AC_DEFINE(HAVE_DLAIX) AC_MSG_RESULT([use AIX shm_load for plugins])])
+  [AC_DEFINE(HAVE_DLAIX, 1, [Define if you have the AIX family of functions.]) AC_MSG_RESULT([use AIX shm_load for plugins])])
 
 dnl ------------------------------------------------------------------
 dnl IPC support
@@ -116,9 +103,9 @@ dnl complete disable
 no_dev_ptmx=1
 
 if test -z "$no_dev_ptmx" ; then
-  AC_CHECK_FILE("/dev/ptmx", [ AC_DEFINE_UNQUOTED(HAVE_DEV_PTMX) have_dev_ptmx=1])
+  AC_CHECK_FILE("/dev/ptmx", [AC_DEFINE(HAVE_DEV_PTMX, 1, [Define if you have /dev/ptmx.]) have_dev_ptmx=1])
 fi
-AC_CHECK_FILE("/dev/ptc", [ AC_DEFINE_UNQUOTED(HAVE_DEV_PTS_AND_PTC) have_dev_ptc=1])
+AC_CHECK_FILE("/dev/ptc", [AC_DEFINE(HAVE_DEV_PTS_AND_PTC, 1, [Define if you have /dev/ptc.]) have_dev_ptc=1])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

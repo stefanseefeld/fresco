@@ -21,7 +21,7 @@
 
 SHELL	:= /bin/sh
 
-packages:= Prague Babylon Fresco Berlin Clients-C++ Clients-Python Clients-Perl
+packages:= Prague Babylon Fresco Berlin Clients-C++ Clients-Python Clients-Java Clients-Perl GGI SDL
 subdirs	:= $(foreach package, $(packages), $(shell test -d $(package) && echo '$(package)'))
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
