@@ -148,7 +148,7 @@ AC_DEFUN(AC_CHECK_OPTIMIZE,[dnl
 				CXXFLAGS="$CXXFLAGS $user_O_CXXFLAGS"
 			else
 				if test ."$ac_cv_prog_gcc" = ."yes" ; then
-					OPT_CXXFLAGS='-O3 -funroll-loops -fstrength-reduce -fomit-frame-pointer -ffast-math'
+					OPT_CXXFLAGS='-O3 -funroll-loops -fstrength-reduce -ffast-math'
 					AC_COMPILER_OPTION(cxxoptimize_std,
 						[-f<xxx> for C++],
 						$OPT_CXXFLAGS,
