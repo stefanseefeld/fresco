@@ -20,9 +20,9 @@
  * MA 02139, USA.
  */
 
-#include "Desktop/WindowImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
+#include "Desktop/WindowImpl.hh"
 
 class Repositioner : public WindowImpl::Manipulator
 {
@@ -72,7 +72,7 @@ public:
 };
 
 WindowImpl::WindowImpl()
-  : manipulators(3)
+  : ControllerImpl(true), manipulators(3)
 {
   manipulators[0] = new Repositioner;
   manipulators[0]->_obj_is_ready(_boa());

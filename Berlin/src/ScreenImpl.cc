@@ -33,7 +33,7 @@
 #include <iostream>
 
 ScreenImpl::ScreenImpl(GLDrawingKit *d)
-  : drawing(d)
+  : ControllerImpl(false), drawing(d)
 {
   emanager = new EventManager(this);
   smanager = new ScreenManager(this, emanager, drawing);

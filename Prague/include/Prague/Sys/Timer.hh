@@ -29,10 +29,6 @@
 namespace Prague
 {
 
-/* @Class{Timer}
- *
- * @Description{}
- */
 class Timer
 {
   struct comp;

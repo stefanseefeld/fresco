@@ -25,6 +25,7 @@
 #define _Profiler_hh
 
 #include <Prague/Sys/ntree.hh>
+#include <Prague/Sys/Thread.hh>
 #include <ctime>
 #include <iostream>
 #include <string>

@@ -36,7 +36,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
 {
   typedef vector<Controller_var> clist_t;
  public:
-  ControllerImpl();
+  ControllerImpl(bool);
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
   virtual void draw(DrawTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
   virtual void pick(PickTraversal_ptr);
@@ -61,7 +61,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual TelltaleConstraint_ptr constraint();
  protected:
   virtual bool handlePositionalEvent(PickTraversal_ptr, const Event::Pointer *);
-  virtual bool inside(const Allocation::Info &, const Event::Pointer *);
+  virtual bool inside(PickTraversal_ptr);
   virtual void move(PickTraversal_ptr, const Event::Pointer *);
   virtual void press(PickTraversal_ptr, const Event::Pointer *);
   virtual void drag(PickTraversal_ptr, const Event::Pointer *);
@@ -77,6 +77,7 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   clist_t controllers;
   unsigned long flags;
   bool grabbed;
+  bool transparent;
   TelltaleConstraint_var myConstraint;
   Mutex mutex;
 };

@@ -24,7 +24,7 @@
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
 
-DesktopImpl::DesktopImpl() {}
+DesktopImpl::DesktopImpl() : ControllerImpl(false) {}
 DesktopImpl::~DesktopImpl() {}
 
 void DesktopImpl::init(Stage_ptr s)

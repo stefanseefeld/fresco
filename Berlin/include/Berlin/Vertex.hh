@@ -22,6 +22,8 @@
 #ifndef _Vertex_hh
 #define _Vertex_hh
 
+#include <Warsaw/config.hh>
+#include <Warsaw/Types.hh>
 #include <iostream>
 
 inline Vertex &operator += (Vertex &p, const Vertex &q)

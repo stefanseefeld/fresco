@@ -32,6 +32,7 @@
 #include "Widget/Frame.hh"
 #include "Widget/ButtonImpl.hh"
 #include "Widget/Dragger.hh"
+#include "Widget/Stepper.hh"
 #include "Widget/Gauge.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
@@ -195,6 +196,16 @@ Controller_ptr WidgetKitImpl::dragger(Graphic_ptr g, Command_ptr command)
   dragger->body(g);
   graphics.push_back(dragger);
   return dragger->_this();
+}
+
+Controller_ptr WidgetKitImpl::stepper(Graphic_ptr g, Command_ptr command)
+{
+  Stepper *stepper = new Stepper;
+  stepper->_obj_is_ready(_boa());
+  stepper->body(g);
+  stepper->action(command);
+  graphics.push_back(stepper);
+  return stepper->_this();
 }
 
 Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)

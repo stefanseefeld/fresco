@@ -27,7 +27,7 @@
 #include "Warsaw/Event.hh"
 #include "Berlin/Logger.hh"
 
-ControllerImpl::ControllerImpl() : flags(0L), grabbed(false) {}
+ControllerImpl::ControllerImpl(bool t) : flags(0L), grabbed(false), transparent(t) {}
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   SectionLog section(Logger::picking, "ControllerImpl::pick");
@@ -35,7 +35,7 @@ void ControllerImpl::pick(PickTraversal_ptr traversal)
     {
       traversal->enterController(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!traversal->picked()) traversal->hit();
+      if (!transparent && !traversal->picked()) traversal->hit();
       traversal->leaveController();
     }
 }
@@ -204,12 +204,10 @@ bool ControllerImpl::handlePositionalEvent(PickTraversal_ptr traversal, const Ev
   return true;
 }
 
-bool ControllerImpl::inside(const Allocation::Info &info, const Event::Pointer *pointer)
+bool ControllerImpl::inside(PickTraversal_ptr traversal)
   //. default implementation: use bounding box
 {
-  Vertex local = pointer->location;
-  info.transformation->inverseTransformVertex(local);
-  return (info.allocation->contains(local));
+  return traversal->intersectsAllocation();
 }
 
 void ControllerImpl::move(PickTraversal_ptr, const Event::Pointer *)

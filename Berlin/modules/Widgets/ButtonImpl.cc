@@ -31,10 +31,10 @@ void ButtonImpl::release(PickTraversal_ptr traversal, const Event::Pointer *poin
    * once we have real focus management the command should be executed
    * if we have focus and the Telltale::toggle is to be released... -stefan
    */
-  if (test(Telltale::toggle))
+  if (inside(traversal) && test(Telltale::toggle))
     {
       Message dummy;
-      command->execute(dummy);
+      execute(dummy);
     }
   ControllerImpl::release(traversal, pointer);
 }

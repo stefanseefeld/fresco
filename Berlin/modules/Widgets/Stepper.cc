@@ -19,36 +19,56 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
-#include "Widget/Dragger.hh"
+#include "Widget/Stepper.hh"
 
-Dragger::Dragger(Command_ptr c)
-  : ControllerImpl(false), command(Command::_duplicate(c))
+using namespace Prague;
+
+class Stepper::Notifier : public Timer::Notifier
+{
+public:
+  Notifier(Stepper *s) : stepper(s) {}
+  virtual void notify() { stepper->step();}
+private:
+  Stepper *stepper;
+};
+
+Stepper::Stepper()
+  : delay(1000), delta(500), notifier(new Notifier(this)), timer(notifier)
 {
 }
 
-Dragger::~Dragger()
+Stepper::~Stepper()
 {
+  stop();
+  delete notifier;
 }
 
-void Dragger::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Stepper::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
   ControllerImpl::press(traversal, pointer);
-  offset = pointer->location;
+  start();
 }
 
-void Dragger::drag(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Stepper::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  Vertex delta = pointer->location - offset;
-  Message msg;
-  msg.payload <<= delta;
-  command->execute(msg);
-  offset += delta;
-}
-
-void Dragger::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
-{
+  stop();
   ControllerImpl::release(traversal, pointer);
+}
+
+void Stepper::step()
+{
+  Message message;
+  execute(message);
+}
+
+void Stepper::start()
+{
+  timer.start(delay, delta);
+}
+
+void Stepper::stop()
+{
+  timer.stop();
 }
