@@ -133,18 +133,12 @@ int main(int argc, char ** argv) {
 	Berlin_Server server(argc, argv);
 
 	// Get Kits:
-	Warsaw::LayoutKit_var lk =
-	    server.get_kit<Warsaw::LayoutKit>("IDL:Warsaw/LayoutKit:1.0");
-	Warsaw::TextKit_var tk =
-	    server.get_kit<Warsaw::TextKit>("IDL:Warsaw/TextKit:1.0");
-	Warsaw::ToolKit_var tlk =
-	    server.get_kit<Warsaw::ToolKit>("IDL:Warsaw/ToolKit:1.0");
-	Warsaw::DesktopKit_var dk =
-	    server.get_kit<Warsaw::DesktopKit>("IDL:Warsaw/DesktopKit:1.0");
-	Warsaw::CommandKit_var ck =
-	    server.get_kit<Warsaw::CommandKit>("IDL:Warsaw/CommandKit:1.0");
-	Warsaw::WidgetKit_var wk =
-	    server.get_kit<Warsaw::WidgetKit>("IDL:Warsaw/WidgetKit:1.0");
+	REGISTER_KIT(server,lk,LayoutKit,1.0);
+	REGISTER_KIT(server,tk,TextKit,1.0);
+	REGISTER_KIT(server,tlk,ToolKit,1.0);
+	REGISTER_KIT(server,dk,DesktopKit,1.0);
+	REGISTER_KIT(server,ck,CommandKit,1.0);
+	REGISTER_KIT(server,wk,WidgetKit,1.0);
 
 	// Create Graphics:
 	Warsaw::TextBuffer_var input_buf = ck->text();
