@@ -46,7 +46,7 @@ AC_ARG_ENABLE(freetypetest,AC_HELP_STRING([--disable-freetypetest],[Do not try t
   fi
 
   AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
-  min_freetype_version=ifelse([$1], ,6.1.0,$1)
+  min_freetype_version=ifelse([$1], ,9.2.3,$1)
   AC_MSG_CHECKING(for freetype - version >= $min_freetype_version)
   no_freetype=""
   if test "$FREETYPE_CONFIG" = "no" ; then
