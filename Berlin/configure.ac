@@ -53,6 +53,9 @@ AC_CONFIG_LOAD($cpath/Server/config.param)
 dnl Required to determine host CPU and OS in BERLIN_ORB_CHECK
 AC_CANONICAL_SYSTEM
 
+dnl needed for other tests to follow
+AC_PROG_CC
+ 
 dnl ------------------------------------------------------------------
 dnl CORBA environment
 dnl ------------------------------------------------------------------

@@ -40,5 +40,11 @@ typedef int socklen_t;
 #define inet_aton(cp, addr) (((*(unsigned long int *)(addr)) = inet_addr(cp)) != -1)
 #endif
 
+#undef HAVE_STRSIGNAL
+
+#ifndef HAVE_STRSIGNAL
+#define strsignal(signo) (sys_siglist[(signo)])
+#endif
+
 /* Define if you want tracer support */
 #undef TRACER

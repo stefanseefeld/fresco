@@ -61,6 +61,13 @@ AC_ARG_ENABLE(tracer,
 AC_REGISTER_PARAM(enable_tracer)
 
 dnl #
+dnl # general stuff first...
+dnl #
+AC_MSG_PART(platform specific system utilities)
+AC_CHECK_FUNCS(strsignal)
+
+
+dnl #
 dnl # plugin support
 dnl #
 AC_MSG_PART(Dynamic Loading Implementation)
