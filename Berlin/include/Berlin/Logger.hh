@@ -104,7 +104,7 @@ private:
   static Prague::Mutex mutex;
 };
 
-#if 0
+#if 1
 class SectionLog
 {
 public:

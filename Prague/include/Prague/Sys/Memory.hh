@@ -51,7 +51,7 @@ T *move(const T *from, T *to, unsigned long n)
 template <class T>
 T *set(T *b, unsigned long n, T c) { return reinterpret_cast<T *>(memset(b, c, size_t(n)));}
 template <class T>
-T *zero(T *m, unsigned long l) { return set(m, l, 0);}
+T *zero(T *m, unsigned long l) { return reinterpret_cast<T *>(memset(m, 0, size_t(l)));}
 template <class T>
 int compare(const T *p, const T *q, unsigned long n) { return memcmp(p, q, size_t(n));}
 
