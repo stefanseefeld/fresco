@@ -30,14 +30,14 @@
 namespace Motif
 {
   class Paned : public virtual POA_Widget::Paned,
-		public ControllerImpl
+		public GraphicImpl
   {
     class Adjustment;
   public:
     Paned(Warsaw::Axis, Warsaw::Alignment);
     ~Paned();
     void init(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
-    virtual void resize_policy(Warsaw::Alignment a) { _alignment = a;}
+//     virtual void resize_policy(Warsaw::Alignment a) { _alignment = a;}
     virtual Warsaw::Alignment resize_policy() { return _alignment;}
     virtual Warsaw::BoundedValue_ptr adjustment();
     virtual void traverse(Warsaw::Traversal_ptr);

@@ -20,48 +20,17 @@
  * MA 02139, USA.
  */
 
-#include "Widget/Motif/Panner.hh"
+#include <Prague/Sys/Tracer.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/CommandImpl.hh>
-#include <Prague/Sys/Tracer.hh>
+#include "Widget/Motif/Panner.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Motif;
 
-class Panner::Observer : public ObserverImpl
-{
-public:
-  Observer(Panner *p) : _parent(p) {}
-  void update(const CORBA::Any &any) { _parent->update(any);}
-private:
-  Panner *_parent;
-};
-
-class Panner::Drag : public CommandImpl
-{
-public:
-  Drag(Panner *p) : _parent(p) { _parent->_add_ref();}
-  ~Drag() { _parent->_remove_ref();}
-  virtual void execute(const CORBA::Any &any)
-  {
-    Vertex *delta;
-    if (any >>= delta)
-      {
-	if (delta->x != 0.) _parent->_xvalue->adjust(delta->x);
-	if (delta->y != 0.) _parent->_yvalue->adjust(delta->y);
-      }
-    else  std::cerr << "Drag::execute : wrong message type !" << std::endl;
-  }
-private:
-  Panner *_parent;
-};
-
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
-  : ControllerImpl(false),
-    _translateX(new Observer(this)),
-    _translateY(new Observer(this)),
-    _xvalue(RefCount_var<BoundedRange>::increment(xx)),
+  : _xvalue(RefCount_var<BoundedRange>::increment(xx)),
     _yvalue(RefCount_var<BoundedRange>::increment(yy))
 {
   BoundedRange::Settings settings = _xvalue->state();
@@ -70,8 +39,8 @@ Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   settings = _yvalue->state();
   _offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
   _offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
-  _xvalue->attach(Observer_var(_translateX->_this()));
-  _yvalue->attach(Observer_var(_translateY->_this()));
+  _xvalue->attach(Observer_var(observer()));
+  _yvalue->attach(Observer_var(observer()));
 }
 
 void Panner::init(Controller_ptr t)
@@ -79,17 +48,6 @@ void Panner::init(Controller_ptr t)
   body(t);
   t->add_parent_graphic(Graphic_var(_this()), 0);
   append_controller(t);
-}
-
-void Panner::update(const CORBA::Any &)
-{
-  BoundedRange::Settings settings = _xvalue->state();
-  _offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
-  _offset[xaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
-  settings = _yvalue->state();
-  _offset[yaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
-  _offset[yaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
-  need_redraw();
 }
 
 void Panner::draw(DrawTraversal_ptr traversal)
@@ -126,11 +84,21 @@ void Panner::allocate(Tag, const Allocation::Info &info)
   allocation->normalize(info.transformation);
 }
 
-Command_ptr Panner::create_drag_command()
+void Panner::adjust(const Vertex &delta)
 {
-  Drag *d = new Drag(this);
-  activate(d);
-  return d->_this();
+  if (delta.x != 0.) _xvalue->adjust(delta.x);
+  if (delta.y != 0.) _yvalue->adjust(delta.y);
+}
+
+void Panner::update(const CORBA::Any &)
+{
+  BoundedRange::Settings settings = _xvalue->state();
+  _offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  _offset[xaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
+  settings = _yvalue->state();
+  _offset[yaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  _offset[yaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
+  need_redraw();
 }
 
 void Panner::traverse_thumb(Traversal_ptr traversal)

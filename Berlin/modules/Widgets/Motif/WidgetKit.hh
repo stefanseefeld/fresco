@@ -58,13 +58,13 @@ class WidgetKit : public virtual POA_Warsaw::WidgetKit,
   Widget::Choice_ptr       checkbox_choice();
   Widget::Choice_ptr       toolbar();
   Warsaw::Controller_ptr   terminal();
-  Widget::Paned_ptr        paned(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
+//   Widget::Splitter_ptr     splitter(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
   Warsaw::Controller_ptr   scrollable(Warsaw::Graphic_ptr);
  private:
-  RefCount_var<Warsaw::LayoutKit>  layout;
-  RefCount_var<Warsaw::CommandKit> command;
-  RefCount_var<Warsaw::ToolKit>    tool;
-  RefCount_var<Warsaw::TextKit>    text;
+  RefCount_var<Warsaw::LayoutKit>  _layout;
+  RefCount_var<Warsaw::CommandKit> _commands;
+  RefCount_var<Warsaw::ToolKit>    _tools;
+  RefCount_var<Warsaw::TextKit>    _text;
 };
 
 };

@@ -19,37 +19,41 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Motif_Slider_hh
-#define _Motif_Slider_hh
+#ifndef _Motif_Adjustable_hh
+#define _Motif_Adjustable_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/BoundedValue.hh>
-#include <Berlin/RefCountVar.hh>
-#include "Widget/Motif/Adjustable.hh"
+#include <Warsaw/Command.hh>
+#include <Berlin/ObserverImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/ControllerImpl.hh>
 
 namespace Motif
 {
 
-class Slider : public Adjustable
+class Adjustable : public ControllerImpl
 {
+  class Observer : public ObserverImpl
+  {
+  public:
+    Observer(Adjustable *a) : _adjustable(a) { _adjustable->_add_ref();}
+    ~Observer() { _adjustable->_remove_ref();}
+    void update(const CORBA::Any &any) { _adjustable->update(any);}
+  private:
+    Adjustable *_adjustable;
+  };
+  friend class Observer;
+  class Adjust;
+  friend class Adjust;
 public:
-  Slider(Warsaw::BoundedValue_ptr, Warsaw::Axis, const Warsaw::Graphic::Requisition &);
-  void init(Warsaw::Controller_ptr);
-  virtual void request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  Adjustable();
+  Warsaw::Command_ptr create_adjust_cmd();
 protected:
-  virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Warsaw::Vertex &);
+  virtual void update(const CORBA::Any &any) = 0;
+  virtual void adjust(const Warsaw::Vertex &) = 0;
+  Warsaw::Observer_ptr observer();
 private:
-  void traverse_thumb(Warsaw::Traversal_ptr);
-  Warsaw::Graphic::Requisition _requisition;
-  RefCount_var<Warsaw::BoundedValue> _value;
-  Warsaw::Coord _offset;
-  Warsaw::Axis _axis;
-  double _scale;
+  Impl_var<Observer> _translate;
 };
 
 };

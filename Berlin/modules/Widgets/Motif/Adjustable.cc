@@ -19,39 +19,41 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Motif_Slider_hh
-#define _Motif_Slider_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/BoundedValue.hh>
-#include <Berlin/RefCountVar.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Berlin/CommandImpl.hh>
 #include "Widget/Motif/Adjustable.hh"
 
-namespace Motif
-{
+using namespace Prague;
+using namespace Warsaw;
+using namespace Motif;
 
-class Slider : public Adjustable
+class Adjustable::Adjust : public CommandImpl
 {
 public:
-  Slider(Warsaw::BoundedValue_ptr, Warsaw::Axis, const Warsaw::Graphic::Requisition &);
-  void init(Warsaw::Controller_ptr);
-  virtual void request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-protected:
-  virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Warsaw::Vertex &);
+  Adjust(Adjustable *a) : _adjustable(a) { _adjustable->_add_ref();}
+  ~Adjust() { _adjustable->_remove_ref();}
+  virtual void execute(const CORBA::Any &any)
+  {
+    Vertex *delta;
+    if (any >>= delta) _adjustable->adjust(*delta);
+    else  std::cerr << "Adjustable::Adjust::execute : wrong message type !" << std::endl;
+  }
 private:
-  void traverse_thumb(Warsaw::Traversal_ptr);
-  Warsaw::Graphic::Requisition _requisition;
-  RefCount_var<Warsaw::BoundedValue> _value;
-  Warsaw::Coord _offset;
-  Warsaw::Axis _axis;
-  double _scale;
+  Adjustable *_adjustable;
 };
 
-};
+Adjustable::Adjustable() : ControllerImpl(false), _translate(new Observer(this)) {}
 
-#endif
+Command_ptr Adjustable::create_adjust_cmd()
+{
+  Adjust *a = new Adjust(this);
+  activate(a);
+  return a->_this();
+}
+
+Warsaw::Observer_ptr Adjustable::observer()
+{
+  return _translate->_this();
+}
+

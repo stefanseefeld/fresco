@@ -23,39 +23,31 @@
 #define _Motif_Panner_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Command.hh>
 #include <Warsaw/BoundedRange.hh>
-#include <Berlin/ImplVar.hh>
-#include <Berlin/ObserverImpl.hh>
-#include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
+#include "Widget/Motif/Adjustable.hh"
 
 namespace Motif
 {
 
-class Panner : public ControllerImpl
+class Panner : public Adjustable
 {
   struct Offset
   {
     Warsaw::Coord lower;
     Warsaw::Coord upper;
   }; 
-  class Observer;
-  friend class Observer;
-  class Drag;
-  friend class Drag;
 public:
   Panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
   void init(Warsaw::Controller_ptr);
-  virtual void update(const CORBA::Any &);
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  Warsaw::Command_ptr create_drag_command();
+protected:
+  virtual void update(const CORBA::Any &any);
+  virtual void adjust(const Warsaw::Vertex &);
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
-  Impl_var<Observer> _translateX;
-  Impl_var<Observer> _translateY;
   RefCount_var<Warsaw::BoundedRange> _xvalue;
   RefCount_var<Warsaw::BoundedRange> _yvalue;
   Offset _offset[2];

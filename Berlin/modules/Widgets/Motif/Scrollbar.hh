@@ -23,40 +23,33 @@
 #define _Motif_Scrollbar_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Command.hh>
 #include <Warsaw/BoundedRange.hh>
-#include <Berlin/ImplVar.hh>
-#include <Berlin/ObserverImpl.hh>
-#include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
+#include "Widget/Motif/Adjustable.hh"
 
 namespace Motif
 {
 
-class Scrollbar : public ControllerImpl
+class Scrollbar : public Adjustable
 {
   struct Offset
   {
     Warsaw::Coord lower;
     Warsaw::Coord upper;
   }; 
-  class Observer;
-  friend class Observer;
-  class Drag;
-  friend class Drag;
 public:
   Scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis, const Warsaw::Graphic::Requisition &);
   void init(Warsaw::Controller_ptr);
   virtual void request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
-  virtual void update(const CORBA::Any &);
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  Warsaw::Command_ptr create_drag_command();
+protected:
+  virtual void update(const CORBA::Any &any);
+  virtual void adjust(const Warsaw::Vertex &);
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
   Warsaw::Graphic::Requisition _requisition;
-  Impl_var<Observer> _translate;
   RefCount_var<Warsaw::BoundedRange> _value;
   Offset _offset;
   Warsaw::Axis _axis;

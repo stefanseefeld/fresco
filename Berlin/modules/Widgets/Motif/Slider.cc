@@ -23,7 +23,6 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/DrawTraversal.hh>
-#include <Berlin/CommandImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
@@ -32,44 +31,14 @@
 using namespace Warsaw;
 using namespace Motif;
 
-class Slider::Observer : public ObserverImpl
-{
-public:
-  Observer(Slider *s) : _parent(s) { _parent->_add_ref();}
-  ~Observer() { _parent->_remove_ref();}
-  void update(const CORBA::Any &any) { _parent->update(any);}
-private:
-  Slider *_parent;
-};
-
-class Slider::Drag : public CommandImpl
-{
-public:
-  Drag(Slider *s) : _parent(s) { _parent->_add_ref();}
-  ~Drag() { _parent->_remove_ref();}
-  virtual void execute(const CORBA::Any &any)
-  {
-    Vertex *delta;
-    if (any >>= delta)
-      {
-	if (_parent->_axis == xaxis && delta->x != 0.) _parent->_value->adjust(_parent->_scale * delta->x);
-	else if (_parent->_axis == yaxis && delta->y != 0.) _parent->_value->adjust(_parent->_scale * delta->y);
-      }
-    else  std::cerr << "Slider::Drag::execute : wrong message type !" << std::endl;
-  }
-private:
-  Slider *_parent;
-};
-
 Slider::Slider(BoundedValue_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
-  : ControllerImpl(false),
-    _requisition(r),
-    _translate(new Observer(this)),
+  : _requisition(r),
     _value(RefCount_var<BoundedValue>::increment(v)),
     _offset((_value->value() - _value->lower())/(_value->upper() - _value->lower())),
     _axis(a)
 {
-  _value->attach(Observer_var(_translate->_this()));
+  Observer_var o = observer();
+  _value->attach(o);
 }
 
 void Slider::init(Controller_ptr t)
@@ -77,15 +46,6 @@ void Slider::init(Controller_ptr t)
   body(t);
   t->add_parent_graphic(Graphic_var(_this()), 0);
   append_controller(t);
-}
-
-void Slider::update(const CORBA::Any &any)
-{
-//   need_redraw();
-  any >>= _offset;
-  _offset -= _value->lower();
-  _offset /= (_value->upper() - _value->lower());
-  need_redraw();
 }
 
 void Slider::draw(DrawTraversal_ptr traversal)
@@ -127,11 +87,19 @@ void Slider::allocate(Tag, const Allocation::Info &info)
 
 void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::default_extension(a, r);}
 
-Command_ptr Slider::create_drag_command()
+void Slider::adjust(const Vertex &delta)
 {
-  Drag *d = new Drag(this);
-  activate(d);
-  return d->_this();
+  if (_axis == xaxis && delta.x != 0.) _value->adjust(_scale * delta.x);
+  else if (_axis == yaxis && delta.y != 0.) _value->adjust(_scale * delta.y);
+}
+
+void Slider::update(const CORBA::Any &any)
+{
+//   need_redraw();
+  any >>= _offset;
+  _offset -= _value->lower();
+  _offset /= (_value->upper() - _value->lower());
+  need_redraw();
 }
 
 void Slider::traverse_thumb(Traversal_ptr traversal)

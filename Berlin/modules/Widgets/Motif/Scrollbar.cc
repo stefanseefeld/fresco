@@ -30,38 +30,8 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Motif;
 
-class Scrollbar::Observer : public ObserverImpl
-{
-public:
-  Observer(Scrollbar *s) : _scrollbar(s) {}
-  void update(const CORBA::Any &any) { _scrollbar->update(any);}
-private:
-  Scrollbar *_scrollbar;
-};
-
-class Scrollbar::Drag : public CommandImpl
-{
-public:
-  Drag(Scrollbar *s) : _parent(s) { _parent->_add_ref();}
-  ~Drag() { _parent->_remove_ref();}
-  virtual void execute(const CORBA::Any &any)
-  {
-    Vertex *delta;
-    if (any >>= delta)
-      {
-	if (_parent->_axis == xaxis && delta->x != 0.) _parent->_value->adjust(delta->x);
-	else if (_parent->_axis == yaxis && delta->y != 0.) _parent->_value->adjust(delta->y);
-      }
-    else  std::cerr << "Drag::execute : wrong message type !" << std::endl;
-  }
-private:
-  Scrollbar *_parent;
-};
-
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
-  : ControllerImpl(false),
-    _requisition(r),
-    _translate(new Observer(this)),
+  : _requisition(r),
     _value(RefCount_var<BoundedRange>::increment(v)),
     _axis(a)
 {
@@ -69,7 +39,7 @@ Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisit
   BoundedRange::Settings settings = _value->state();
   _offset.lower = settings.lvalue/(settings.upper - settings.lower);
   _offset.upper = settings.uvalue/(settings.upper - settings.lower);
-  _value->attach(Observer_var(_translate->_this()));
+  _value->attach(Observer_var(observer()));
 }
 
 void Scrollbar::init(Controller_ptr t)
@@ -78,15 +48,6 @@ void Scrollbar::init(Controller_ptr t)
   body(t);
   t->add_parent_graphic(Graphic_var(_this()), 0);
   append_controller(t);
-}
-
-void Scrollbar::update(const CORBA::Any &any)
-{
-  BoundedRange::Settings *settings;
-  any >>= settings;
-  _offset.lower = (settings->lvalue - settings->lower)/(settings->upper - settings->lower);
-  _offset.upper = (settings->uvalue - settings->lower)/(settings->upper - settings->lower);
-  need_redraw();
 }
 
 void Scrollbar::draw(DrawTraversal_ptr traversal)
@@ -130,11 +91,19 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
   allocation->normalize(info.transformation);
 }
 
-Command_ptr Scrollbar::create_drag_command()
+void Scrollbar::adjust(const Vertex &delta)
 {
-  Drag *d = new Drag(this);
-  activate(d);
-  return d->_this();
+  if (_axis == xaxis && delta.x != 0.) _value->adjust(delta.x);
+  else if (_axis == yaxis && delta.y != 0.) _value->adjust(delta.y);
+}
+
+void Scrollbar::update(const CORBA::Any &any)
+{
+  BoundedRange::Settings *settings;
+  any >>= settings;
+  _offset.lower = (settings->lvalue - settings->lower)/(settings->upper - settings->lower);
+  _offset.upper = (settings->uvalue - settings->lower)/(settings->upper - settings->lower);
+  need_redraw();
 }
 
 void Scrollbar::traverse_thumb(Traversal_ptr traversal)

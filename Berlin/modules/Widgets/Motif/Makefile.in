@@ -34,8 +34,8 @@ hdir		:= $(top_srcdir)/include/Widget/Motif
 CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
-SRC		:= Gauge.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc \
-		   Paned.cc Terminal.cc WidgetKit.cc
+SRC		:= Gauge.cc Adjustable.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc \
+		   Terminal.cc WidgetKit.cc
 
 MODULE		:= Motif
 
