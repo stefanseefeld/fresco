@@ -90,11 +90,11 @@ $(dpath)/%.d:	%.idl
 		@$(SHELL) -ec "$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(wpath) $(CXXFLAGS) $< \
 		| perl -e 'undef \$$/; while(<>)\
 		    {\
-	    	      (/^(.*)\\.idl\\.o:((.|\\n)*)/);\
+	    	      (/^(.*)\\.idl\\.o:((.|\\n)*)/) || next;\
 		      \$$file = \$$1;\
 		      \$$dep = \$$2;\
 		      print \"\$$file\", \"SK.cc \", \$$file, \"DynSK.cc \",\
-			    \"$(ipath)\/Warsaw\", \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
+			    \"$(ipath)\/Warsaw\/\", \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
 		      \$$dep =~ s#$(wpath)#$(ipath)/Warsaw#g;\
 		      \$$dep =~ s/\.idl/\.hh/g;\
 		      print \"$(opath)\/\", \$$file, \"SK.o $(opath)\/\", \$$file, \"DynSK.o\", \": \", \$$dep ;\
