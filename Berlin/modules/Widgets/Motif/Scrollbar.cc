@@ -111,7 +111,6 @@ void Scrollbar::adjust(const OriginatedDelta &od)
       delta = std::min(origin.x + delta, 0.);
     }
 
-    if (delta != 0.) _value->adjust(delta);
   } else if (_axis == yaxis) {
     delta = newpt.y - origin.y;
     if (origin.y < 0.) {
@@ -119,8 +118,8 @@ void Scrollbar::adjust(const OriginatedDelta &od)
     } else if (origin.y > _length) {
       delta = std::min(origin.y + delta, 0.);
     }
-    if (delta != 0.) _value->adjust(delta);
   }
+  if (delta != 0.) _value->adjust(_scale*delta);
 }
 
 void Scrollbar::update(const CORBA::Any &any)
@@ -159,6 +158,7 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));
+  _scale = (_value->upper() - _value->lower())/_length;
   _pickTrafo.copy(traversal->current_transformation());
   try { traversal->traverse_child (child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}

@@ -55,6 +55,7 @@ private:
   Warsaw::Axis _axis;
   TransformImpl _pickTrafo; // transformation at the last pick traversal.
   double _length;
+  double _scale;
 };
 
 };
