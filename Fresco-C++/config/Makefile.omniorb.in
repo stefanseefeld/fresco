@@ -99,6 +99,7 @@ install:
 clean:	
 		rm -f $(TARGET)
 		rm -f *.o *.d
+		rm $(SRC) $(HDR)
 
 distclean:	clean
 		rm -f Makefile $(hdir)/Warsaw/config.hh $(cdir)/Warsaw/subdirs.mk \
