@@ -105,6 +105,10 @@ other options that you may use when invoking the server:
 -t --tracer :                        trace method calls (requires configuration with --enable-tracer)
 -p --profiler :                      use jprof profiler (requires configuration with --enable-jprof)
 
+Of course, the server is a bit boring without clients. You'll find some (the C++ clients)
+in $berlin-build/bin/, the python clients are in the src tree in $berlin-src/clients/python/
+
+
 Installing
 ==========
 
