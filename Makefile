@@ -29,6 +29,7 @@ cpath	:= ./config
 #
 subdirs	=
 -include $(cpath)/packages.mk
+praguedir = src/Prague
 
 define makeconf
 (cd config && $(MAKE) -j1 $(MAKECMDGOALS)) || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; test -z "$$fail"
@@ -63,6 +64,26 @@ clean:
 	for dir in modules lib; do \
 	  find $$dir -name '*.so' -exec rm -f \{\} \; ; \
 	done
+
+#
+# removes everything but config and Prague
+#
+clean-no-prague:
+	  @for dir in $(subdirs); do \
+	    if [ $$dir = "src/Prague" ]; then continue ; fi ;\
+	    (cd $$dir && $(MAKE) clean) \
+	    || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
+	  done && test -z "$$fail"
+	  for dir in modules lib; do \
+	    find $$dir -name '*.so' -exec rm -f \{\} \; ; \
+	  done
+
+#
+# removes only config related files
+#
+clean-config:
+	( cd config && make clean ) \
+	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 
 #
 # removes config related data

@@ -30,9 +30,9 @@ include $(cpath)/Server/local.mk
 hpath	= $(ipath)/Drawing/libArt
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(LIBART_INCLUDES) $(ORBCPPFLAGS)
+CPPFLAGS= -I$(ipath) $(LIBART_INCLUDES) $(FREETYPE_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(LIBART_LIBS) -lfreetype
+LIBS	= -lPrague -lBerlin $(LIBART_LIBS) $(FREETYPE_LIBS)
 
 SRC	= LibArtDrawingKit.cc LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc  
 TARGET	= $(mpath)/libArtDrawing.so

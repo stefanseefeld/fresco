@@ -116,6 +116,16 @@ dnl 	fi
 dnl fi
 
 dnl ------------------------------------------------------------------
+dnl Text rendering
+dnl ------------------------------------------------------------------
+AC_MSG_PART(Text Rendering)
+
+dnl Dumb hard-wired check for freetype.  Change this to accept different
+dnl text rendering engines?
+
+BERLIN_FREETYPE_CHECK(mandatory)
+
+dnl ------------------------------------------------------------------
 dnl Graphics environment
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Graphics Environment)
