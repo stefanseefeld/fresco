@@ -44,15 +44,16 @@ SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
-	   ImplVar.hh Math.hh ObjectCache.hh Provider.hh Pool.hh QuadTree.hh RefCountVar.hh Vertex.hh LRUCache.hh \
-	   Logger.hh ServantBase.hh IdentifiableImpl.hh \
-	   RefCountBaseImpl.hh RegionImpl.hh TransformImpl.hh TraversalImpl.hh \
-	   AllocationImpl.hh Provider.hh GraphicImpl.hh MonoGraphic.hh PolyGraphic.hh \
+	   ImplVar.hh Math.hh ObjectCache.hh Provider.hh Pool.hh QuadTree.hh \
+	   RefCountVar.hh Vertex.hh LRUCache.hh Logger.hh ServantBase.hh \
+	   IdentifiableImpl.hh RefCountBaseImpl.hh RegionImpl.hh \
+	   TransformImpl.hh TraversalImpl.hh AllocationImpl.hh Provider.hh \
+	   GraphicImpl.hh MonoGraphic.hh PolyGraphic.hh \
 	   Allocator.hh Requestor.hh DebugGraphic.hh \
 	   DrawTraversalImpl.hh PickTraversalImpl.hh ControllerImpl.hh \
 	   DesktopImpl.hh ScreenImpl.hh ScreenManager.hh EventManager.hh \
-	   PositionalFocus.hh NonPositionalFocus.hh FilterImpl.hh SubjectImpl.hh \
-	   KitImpl.hh RCManager.hh
+	   PositionalFocus.hh NonPositionalFocus.hh FilterImpl.hh \
+	   SubjectImpl.hh KitImpl.hh RCManager.hh config.hh
 CHDR	+= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 SYN	:= $(patsubst %.hh, %.syn, $(HDR) $(CHDR))
