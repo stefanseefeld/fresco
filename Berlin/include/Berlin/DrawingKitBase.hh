@@ -138,49 +138,49 @@ private:
 
 inline void DrawingKitBase::transformation(Transform_ptr t)
 {
-  states.push(new PtrState<Transform>(transformation(), &setTransformation));
+  states.push(new PtrState<Transform>(transformation(), &DrawingKitBase::setTransformation));
   setTransformation(t);
 }
 
 inline void DrawingKitBase::clipping(Region_ptr c)
 {
-  states.push(new PtrState<Region>(clipping(), &setClipping));
+  states.push(new PtrState<Region>(clipping(), &DrawingKitBase::setClipping));
   setClipping(c);
 }
 
 inline void DrawingKitBase::foreground(const Color &c)
 {
-  states.push(new SimpleState<Color>(foreground(), &setForeground));
+  states.push(new SimpleState<Color>(foreground(), &DrawingKitBase::setForeground));
   setForeground(c);
 }
 
 inline void DrawingKitBase::pointSize(Coord s)
 {
- states.push(new SimpleState<Coord>(pointSize(), &setPointSize));
+ states.push(new SimpleState<Coord>(pointSize(), &DrawingKitBase::setPointSize));
  setPointSize(s);
 }
 
 inline void DrawingKitBase::lineWidth(Coord w)
 {
-  states.push(new SimpleState<Coord>(lineWidth(), &setLineWidth));
+  states.push(new SimpleState<Coord>(lineWidth(), &DrawingKitBase::setLineWidth));
   setLineWidth(w);
 }
 
 inline void DrawingKitBase::lineEndstyle(Endstyle s)
 {
-  states.push(new SimpleState<Endstyle>(lineEndstyle(), &setLineEndstyle));
+  states.push(new SimpleState<Endstyle>(lineEndstyle(), &DrawingKitBase::setLineEndstyle));
   setLineEndstyle(s);
 }
 
 inline void DrawingKitBase::surfaceFillstyle(Fillstyle s)
 {
-  states.push(new SimpleState<Fillstyle>(surfaceFillstyle(), &setSurfaceFillstyle));
+  states.push(new SimpleState<Fillstyle>(surfaceFillstyle(), &DrawingKitBase::setSurfaceFillstyle));
   setSurfaceFillstyle(s);
 }
 
 inline void DrawingKitBase::texture(Raster_ptr t)
 {
-  states.push(new PtrState<Raster>(texture(), &setTexture));
+  states.push(new PtrState<Raster>(texture(), &DrawingKitBase::setTexture));
   setTexture(t);
 }
 
