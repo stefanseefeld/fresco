@@ -39,11 +39,11 @@ class Dispatcher
   struct task
   {
     task() : fd(-1), agent(0), mask(Agent::none), released(false) {}
-    task(int ffd, Agent *a, Agent::iomask_t m) : fd(ffd), agent(a), mask(m) {}
+    task(int ffd, Agent *a, Agent::iomask m) : fd(ffd), agent(a), mask(m) {}
     bool operator < (const task &t) const { return fd < t.fd;}
     int             fd;
     Agent          *agent;
-    Agent::iomask_t mask;
+    Agent::iomask   mask;
     bool            released;
   };
   typedef map<int, task *> repository_t;
@@ -61,7 +61,7 @@ class Dispatcher
   friend struct Cleaner;
 public:
   static Dispatcher *instance();
-  void bind(Agent *, int, Agent::iomask_t);
+  void bind(Agent *, int, Agent::iomask);
   void release(Agent *, int = -1);
 private:
   Dispatcher();

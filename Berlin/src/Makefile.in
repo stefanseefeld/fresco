@@ -78,11 +78,11 @@ maintainer-clean: distclean
 
 %.d:	$(srcdir)/%.cc $(hdir)/Berlin/%.hh
 	@echo generating dependencies for $(<F)
-	@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

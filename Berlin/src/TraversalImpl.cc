@@ -81,41 +81,16 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-void TraversalImpl::copy(const TraversalImpl *traversal)
-{
-  Trace trace("TraversalImpl::copy");
-  while (_stack.size())
-    {
-      Provider<TransformImpl>::adopt((_stack.end() - 1)->transformation);
-      _stack.erase(_stack.end() - 1);
-    }
-  for (stack_t::const_iterator i = traversal->_stack.begin(); i != traversal->_stack.end(); i++)
-    {
-      State state;
-      state.graphic = Graphic::_duplicate((*i).graphic);
-      state.id = (*i).id;
-      state.allocation = Region::_duplicate((*i).allocation);
-      state.transformation = Provider<TransformImpl>::provide();
-      state.transformation->copy(Transform_var((*i).transformation->_this()));
-      _stack.push_back(state);
-    }
-}
-
 void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)
 {
   Trace trace("TraversalImpl::push");
-  State state;
-  state.graphic = Graphic::_duplicate(g);
-  state.id = id;
-  state.allocation = Region::_duplicate(r);
-  state.transformation = t;
-  _stack.push_back(state);
+  Lease_var<TransformImpl> tmp(t);
+  _stack.push_back(State(g, id, r, tmp._retn()));
 }
 
 void TraversalImpl::pop()
 {
   Trace trace("TraversalImpl::pop");
-  Provider<TransformImpl>::adopt((_stack.end() - 1)->transformation);
   _stack.erase(_stack.end() - 1);
 }
 

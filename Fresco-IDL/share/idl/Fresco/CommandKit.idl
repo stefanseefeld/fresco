@@ -44,6 +44,7 @@ module Warsaw
   //. if that suits you.
   interface CommandKit : Kit
     {
+      Command debugger(in Command c, in string s);
       Command log(in string t);
       MacroCommand composite();
       TelltaleConstraint exclusive(in Telltale::Mask m);

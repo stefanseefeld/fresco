@@ -26,7 +26,7 @@ using namespace Prague;
 using namespace Warsaw;
 
 TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long m)
-  : mask(m), myConstraint(c)
+  : _mask(m), _constraint(c)
 {}
 
 TelltaleImpl::~TelltaleImpl()
@@ -35,83 +35,114 @@ TelltaleImpl::~TelltaleImpl()
 void TelltaleImpl::set(Warsaw::Telltale::Mask m)
 {
   Trace trace("TelltaleImpl::set");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
+  if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
 void TelltaleImpl::clear(Warsaw::Telltale::Mask m)
 {
   Trace trace("TelltaleImpl::clear");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
+  if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
 CORBA::Boolean TelltaleImpl::test(Warsaw::Telltale::Mask m)
 {
-  MutexGuard guard(mutex);
-  return (mask & m) == m;
+  MutexGuard guard(_mutex);
+  return (_mask & m) == m;
 }
 
 void TelltaleImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
-  unsigned long nf = on ? mask | m : mask & ~m;
+  unsigned long nf = on ? _mask | m : _mask & ~m;
   {
-    MutexGuard guard(mutex);
-    if (nf == mask) return;
-    else mask = nf;
+    MutexGuard guard(_mutex);
+    if (nf == _mask) return;
+    else _mask = nf;
   }
   CORBA::Any any;
   any <<= nf;
   notify(any);
 }
 
-void TelltaleImpl::constraint(TelltaleConstraint_ptr c)
+void TelltaleImpl::constraint(TelltaleConstraint_ptr constraint)
 {
-  MutexGuard guard(mutex);
-  myConstraint = c;
+  MutexGuard guard(_mutex);
+  _constraint = constraint;
 }
 
 
 TelltaleConstraint_ptr TelltaleImpl::constraint()
 {
-  MutexGuard guard(mutex);
-  return TelltaleConstraint::_duplicate(myConstraint);
+  MutexGuard guard(_mutex);
+  return TelltaleConstraint::_duplicate(_constraint);
 }
 
 void TelltaleConstraintImpl::add(Telltale_ptr t)
 {
-  MutexGuard guard(mutex);
-  telltales.push_back(Telltale::_duplicate(t));
+  MutexGuard guard(_mutex);
+  _telltales.push_back(Telltale::_duplicate(t));
   t->constraint(TelltaleConstraint_var(_this()));
 }
 
 void TelltaleConstraintImpl::remove(Telltale_ptr t)
 {
-  MutexGuard guard(mutex);
-  for (vector<Telltale_var>::iterator i = telltales.begin(); i != telltales.end(); i++)
+  MutexGuard guard(_mutex);
+  for (vector<Telltale_var>::iterator i = _telltales.begin(); i != _telltales.end(); i++)
     if ((*i) == t)
       {
-	telltales.erase(i);
+	_telltales.erase(i);
 	break;
       }
 }
 
 ExclusiveChoice::ExclusiveChoice(Warsaw::Telltale::Mask m)
-  : mask(m)
+  : _mask(m)
 {}
 
 void ExclusiveChoice::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
 {
-  MutexGuard guard(mutex);
+  MutexGuard guard(_mutex);
   if (b)
-    for (tlist_t::iterator i = telltales.begin(); i != telltales.end(); i++)
+    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
       if ((*i)->test(m)) (*i)->modify(m, false);
   t->modify(m, b);
 }
 
-SelectionRequired::SelectionRequired()
-{}
+SelectionRequired::SelectionRequired(Warsaw::Telltale::Mask m)
+  : _mask(m)
+{
+}
 
 void SelectionRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
 {
+  MutexGuard guard(_mutex);
+  size_t selected = 0;
+  if (!b)
+    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+      if ((*i)->test(m)) selected++;
+  if (b || selected > 1) t->modify(m, b);
 }
+
+ExclusiveRequired::ExclusiveRequired(Warsaw::Telltale::Mask m)
+  : _mask(m)
+{}
+
+void ExclusiveRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
+{
+  MutexGuard guard(_mutex);
+  if (b)
+    {
+      for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+	if ((*i)->test(m)) (*i)->modify(m, false);
+      t->modify(m, true);
+    }
+  else
+    {
+      size_t selected = 0;
+      for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); i++)
+	if ((*i)->test(m)) selected++;
+      if (selected > 1) t->modify(m, false);
+    }
+}
+

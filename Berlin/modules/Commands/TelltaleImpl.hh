@@ -39,15 +39,15 @@ class TelltaleImpl : public virtual POA_Warsaw::Telltale,
   virtual void clear(Warsaw::Telltale::Mask);
   virtual CORBA::Boolean test(Warsaw::Telltale::Mask);
   virtual void modify(Warsaw::Telltale::Mask, CORBA::Boolean);
-  CORBA::ULong state() { return mask;}
+  CORBA::ULong state() { return _mask;}
 
   virtual void constraint(Warsaw::TelltaleConstraint_ptr);
   virtual Warsaw::TelltaleConstraint_ptr constraint();
 
  protected:
-  CORBA::ULong mask;
-  Warsaw::TelltaleConstraint_var myConstraint;
-  Prague::Mutex mutex;
+  Prague::Mutex                  _mutex;
+  CORBA::ULong                   _mask;
+  Warsaw::TelltaleConstraint_var _constraint;
 };
 
 class TelltaleConstraintImpl : public virtual POA_Warsaw::TelltaleConstraint,
@@ -62,8 +62,8 @@ class TelltaleConstraintImpl : public virtual POA_Warsaw::TelltaleConstraint,
   void remove(Warsaw::Telltale_ptr);
   virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean) = 0;
  protected:
-  tlist_t telltales;
-  Prague::Mutex mutex;
+  Prague::Mutex _mutex;
+  tlist_t       _telltales;
 };
 
 class ExclusiveChoice : public TelltaleConstraintImpl
@@ -72,14 +72,25 @@ public:
   ExclusiveChoice(Warsaw::Telltale::Mask);
   virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean);  
 private:
-  Warsaw::Telltale::Mask mask;
+  Warsaw::Telltale::Mask _mask;
 };
 
 class SelectionRequired : public TelltaleConstraintImpl
 {
 public:
-  SelectionRequired();
+  SelectionRequired(Warsaw::Telltale::Mask);
   virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean);  
+private:
+  Warsaw::Telltale::Mask _mask;
+};
+
+class ExclusiveRequired : public TelltaleConstraintImpl
+{
+public:
+  ExclusiveRequired(Warsaw::Telltale::Mask);
+  virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean);  
+private:
+  Warsaw::Telltale::Mask _mask;
 };
 
 #endif

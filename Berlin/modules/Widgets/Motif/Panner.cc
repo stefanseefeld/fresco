@@ -100,11 +100,11 @@ void Panner::draw(DrawTraversal_ptr traversal)
 void Panner::pick(PickTraversal_ptr traversal)
 {
   Trace trace("Panner::pick");
-  if (grabbed(traversal->device()) || traversal->intersects_allocation())
+  if (traversal->intersects_allocation())
     {
       traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!grabbed(traversal->device())) traverse_thumb(traversal);
+      traverse_thumb(traversal);
       if (!traversal->picked()) traversal->hit();
       traversal->leave_controller();
     }

@@ -40,7 +40,7 @@ public:
   virtual ~Acceptor() { Trace trace("Acceptor::~Acceptor");}
   virtual void start();
 private:
-  virtual bool process(int, iomask_t);
+  virtual bool process(int, iomask);
   bool   _forever;
   size_t _queue;
 };
@@ -55,13 +55,14 @@ void Acceptor<Connection>::start()
 }
 
 template <typename Connection>
-bool Acceptor<Connection>::process(int, iomask_t)
+bool Acceptor<Connection>::process(int, iomask)
 {
   Trace trace("Acceptor::process");
   Connection *connection = new Connection(obuf()->accept());
   connection->mask(out);
   connection->start();
   connection->remove_ref();
+  if (!_forever) stop();
   return _forever;
 }
 

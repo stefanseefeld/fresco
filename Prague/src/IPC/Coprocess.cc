@@ -104,7 +104,7 @@ void Coprocess::stop()
   Agent::stop();
 }
 
-bool Coprocess::process(int, iomask_t m)
+bool Coprocess::process(int, iomask m)
 {
   Trace trace("Coprocess::process");
   MutexGuard guard(mutex);
@@ -147,22 +147,6 @@ bool Coprocess::process(int, iomask_t m)
   return flag;
 }
 
-void Coprocess::done(int, iomask_t m)
-{
-  Trace trace("Coprocess::done");
-  MutexGuard guard(mutex);
-  switch (m)
-    {
-    case Agent::inready:
-    case Agent::inexc: shutdown(in); break;
-    case Agent::outready:
-    case Agent::outexc: shutdown(out); break;
-    case Agent::errready:
-    case Agent::errexc: shutdown(err); break;
-    default: break;
-    }
-}
-
 void Coprocess::terminate()
 {
   int sig = 0;
@@ -179,7 +163,7 @@ void Coprocess::terminate()
   if (pid()) cerr << "Coprocess " << pid() << " wouldn't die (" << Signal::name(sig) << ')' << endl;
 }
 
-void Coprocess::shutdown(short m)
+void Coprocess::shutdown(int m)
 {
   short om = mask();
   m &= om;

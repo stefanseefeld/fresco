@@ -260,38 +260,39 @@ string sockinetaddr::hostname() const
 sockbuf::sockbuf(int domain, sockbuf::type st, int proto)
   : ipcbuf(ios::in|ios::out)
 {
-  data->fd = ::socket(domain, st, proto);
-  if (data->fd == -1) throw sockerr (errno);
+  int socket = ::socket(domain, st, proto);
+  if (socket == -1) throw sockerr (errno);
+  else fd(socket);
 }
 
 int sockbuf::getopt(int op, void *buf, socklen_t len, int level) const
 {
-  if (::getsockopt (data->fd, level, op, (char *)buf, &len) == -1) throw sockerr(errno);
+  if (::getsockopt(fd(), level, op, (char *)buf, &len) == -1) throw sockerr(errno);
   return len;
 }
 
 void sockbuf::setopt(int op, void *buf, socklen_t len, int level) const
 {
-  if (::setsockopt (data->fd, level, op, (char *) buf, len) == -1) throw sockerr(errno);
+  if (::setsockopt(fd(), level, op, (char *) buf, len) == -1) throw sockerr(errno);
 }
 
 void sockbuf::listen(int num)
 {
-  if (::listen (data->fd, num) == -1) throw sockerr(errno);
+  if (::listen(fd(), num) == -1) throw sockerr(errno);
 }
 
 sockbuf::socklinger sockbuf::linger() const
 {
-  socklinger old (0, 0);
-  getopt (so_linger, &old, sizeof (old));
+  socklinger old(0, 0);
+  getopt(so_linger, &old, sizeof(old));
   return old;
 }
 
 sockbuf::socklinger sockbuf::linger(sockbuf::socklinger opt) const
 {
-  socklinger old (0, 0);
-  getopt (so_linger, &old, sizeof (old));
-  setopt (so_linger, &opt, sizeof (opt));
+  socklinger old(0, 0);
+  getopt(so_linger, &old, sizeof(old));
+  setopt(so_linger, &opt, sizeof(opt));
   return old;
 }
 
@@ -300,7 +301,7 @@ bool sockbuf::atmark() const
   // out of band data
 {
   int arg;
-  if (::ioctl (data->fd, SIOCATMARK, &arg) == -1) throw sockerr(errno);
+  if (::ioctl(fd(), SIOCATMARK, &arg) == -1) throw sockerr(errno);
   return arg;
 }
 
@@ -309,7 +310,7 @@ int sockbuf::pgrp() const
 // signals
 {
   int arg;
-  if (::ioctl (data->fd, SIOCGPGRP, &arg) == -1) throw sockerr (errno);
+  if (::ioctl(fd(), SIOCGPGRP, &arg) == -1) throw sockerr(errno);
   return arg;
 }
 
@@ -318,7 +319,7 @@ int sockbuf::pgrp(int new_pgrp) const
 // return the old pgrp
 {
   int old = pgrp();
-  if (::ioctl (data->fd, SIOCSPGRP, &new_pgrp) == -1) throw sockerr (errno);
+  if (::ioctl(fd(), SIOCSPGRP, &new_pgrp) == -1) throw sockerr(errno);
   return old;
 }
 
@@ -390,44 +391,44 @@ bool sockbuf::keepalive(bool set) const
 
 int sockbuf::read(void *buf, int len)
 {
-  if (data->rtmo != -1 && !readready())
-    throw sockerr(ETIMEDOUT);
+//   if (data->rtmo != -1 && !readready())
+//     throw sockerr(ETIMEDOUT);
   
-  if (data->oobbit && atmark())
+  if (oob() && atmark())
     throw sockoob();
 
   int rval = 0;
-  if ((rval = ::read (data->fd, (char*) buf, len)) == -1)
+  if ((rval = ::read (fd(), (char *)buf, len)) == -1)
     throw sockerr(errno);
   return rval;
 }
 
 int sockbuf::recv(void *buf, int len, int msgf)
 {
-  if (data->rtmo != -1 && !readready())
-    throw sockerr(ETIMEDOUT);
+//   if (data->rtmo != -1 && !readready())
+//     throw sockerr(ETIMEDOUT);
   
-  if (data->oobbit && atmark())
+  if (oob() && atmark())
     throw sockoob();
 
   int rval = 0;
-  if ((rval = ::recv(data->fd, (char*) buf, len, msgf)) == -1)
+  if ((rval = ::recv(fd(), (char*) buf, len, msgf)) == -1)
     throw sockerr (errno);
   return rval;
 }
 
 int sockbuf::recvfrom(sockaddr &sa, void *buf, int len, int msgf)
 {
-  if (data->rtmo != -1 && !readready())
-    throw sockerr(ETIMEDOUT);
+//   if (data->rtmo != -1 && !readready())
+//     throw sockerr(ETIMEDOUT);
   
-  if (data->oobbit && atmark())
+  if (oob() && atmark())
     throw sockoob();
 
   int rval = 0;
   socklen_t sa_length = sa.size ();
   
-  if ((rval = ::recvfrom(data->fd, (char*) buf, len, msgf, sa.addr(), &sa_length)) == -1)
+  if ((rval = ::recvfrom(fd(), (char*) buf, len, msgf, sa.addr(), &sa_length)) == -1)
     throw sockerr (errno);
   return rval;
 }
@@ -436,12 +437,12 @@ int sockbuf::write(const void *buf, int len)
 // upon error, write throws the number of bytes writen so far instead
 // of sockerr.
 {
-  if (data->stmo != -1 && !writeready())
-    throw sockerr(ETIMEDOUT);
+//   if (data->stmo != -1 && !writeready())
+//     throw sockerr(ETIMEDOUT);
   int wlen = 0;
   while(len > 0)
     {
-      int wval = ::write(data->fd, (char*) buf, len);
+      int wval = ::write(fd(), (char*) buf, len);
       if (wval == -1) throw wlen;
       len -= wval;
       wlen += wval;
@@ -453,13 +454,13 @@ int sockbuf::send(const void *buf, int len, int msgf)
 // upon error, write throws the number of bytes writen so far instead
 // of sockerr.
 {
-  if (data->fd != -1 && !writeready())
-    throw sockerr (ETIMEDOUT);
+//   if (fd() != -1 && !writeready())
+//     throw sockerr (ETIMEDOUT);
   
   int wlen = 0;
   while(len > 0)
     {
-      int wval = ::send (data->fd, (char*) buf, len, msgf);
+      int wval = ::send (fd(), (char*) buf, len, msgf);
       if (wval == -1) throw wlen;
       len -= wval;
       wlen += wval;
@@ -471,12 +472,12 @@ int sockbuf::sendto(sockaddr &sa, const void *buf, int len, int msgf)
 // upon error, write throws the number of bytes writen so far instead
 // of sockerr.
 {
-  if (data->fd != -1 && !writeready())
-    throw sockerr (ETIMEDOUT);
+//   if (fd() != -1 && !writeready())
+//     throw sockerr (ETIMEDOUT);
   int wlen = 0;
   while(len > 0)
     {
-      int wval = ::sendto(data->fd, (char*) buf, len, msgf, sa.addr (), sa.size());
+      int wval = ::sendto(fd(), (char *)buf, len, msgf, sa.addr (), sa.size());
       if (wval == -1) throw wlen;
       len -= wval;
       wlen += wval;
@@ -494,33 +495,33 @@ sockunixaddr sockunixbuf::addr() const
 {
   sockunixaddr sa;
   socklen_t len = sa.size();
-  if (::getsockname(data->fd, sa.addr(), &len) == -1) throw sockerr (errno);
+  if (::getsockname(fd(), sa.addr(), &len) == -1) throw sockerr (errno);
   return sa;
 }
 
 void sockunixbuf::bind(const sockunixaddr &sa)
 {
-  if (::bind (data->fd, sa.addr(), sa.size()) == -1) throw sockerr(errno);
+  if (::bind (fd(), sa.addr(), sa.size()) == -1) throw sockerr(errno);
 }
 
 sockunixbuf *sockunixbuf::accept(sockunixaddr &sa)
 {
   socklen_t len = sa.size();
   int soc = -1;
-  if ((soc = ::accept(data->fd, sa.addr(), &len)) == -1) throw sockerr(errno);
+  if ((soc = ::accept(fd(), sa.addr(), &len)) == -1) throw sockerr(errno);
   return new sockunixbuf(soc);
 }
 
 sockunixbuf *sockunixbuf::accept()
 {
   int soc = -1;
-  if ((soc = ::accept(data->fd, 0, 0)) == -1) throw sockerr(errno);
+  if ((soc = ::accept(fd(), 0, 0)) == -1) throw sockerr(errno);
   return new sockunixbuf(soc);
 }
 
 void sockunixbuf::connect(const sockunixaddr &sa)
 {
-  if (::connect(data->fd, sa.addr(), sa.size()) == -1) throw sockerr (errno);
+  if (::connect(fd(), sa.addr(), sa.size()) == -1) throw sockerr(errno);
 }
 
 sockinetbuf &sockinetbuf::operator = (const sockinetbuf &si)
@@ -533,7 +534,7 @@ sockinetaddr sockinetbuf::localaddr() const
 {
   sockinetaddr sa;
   socklen_t len = sa.size();
-  if (::getsockname(data->fd, sa.addr(), &len) == -1) throw sockerr (errno);
+  if (::getsockname(fd(), sa.addr(), &len) == -1) throw sockerr(errno);
   return sa;
 }
 
@@ -541,13 +542,13 @@ sockinetaddr sockinetbuf::peeraddr() const
 {
   sockinetaddr sa;
   socklen_t len = sa.size();
-  if (::getpeername(data->fd, sa.addr(), &len) == -1) throw sockerr (errno);
+  if (::getpeername(fd(), sa.addr(), &len) == -1) throw sockerr(errno);
   return sa;
 }
 
 void sockinetbuf::bind(const sockinetaddr &sa)
 {
-  if (::bind (data->fd, sa.addr(), sa.size()) == -1) throw sockerr(errno);
+  if (::bind (fd(), sa.addr(), sa.size()) == -1) throw sockerr(errno);
 }
 
 void sockinetbuf::bind_until_success(int portno)
@@ -561,7 +562,7 @@ void sockinetbuf::bind_until_success(int portno)
 	{
 	  bind(sockinetaddr((unsigned long) INADDR_ANY, portno++));
 	}
-      catch (sockerr e)
+      catch (const sockerr &e)
 	{
 	  if (e.number() != EADDRINUSE) throw;
 	  continue;
@@ -572,21 +573,21 @@ void sockinetbuf::bind_until_success(int portno)
 
 void sockinetbuf::connect(const sockinetaddr &sa)
 {
-  if (::connect(data->fd, sa.addr(), sa.size()) == -1) throw sockerr (errno);
+  if (::connect(fd(), sa.addr(), sa.size()) == -1) throw sockerr(errno);
 }
 
 sockinetbuf *sockinetbuf::accept(sockinetaddr &sa)
 {
   socklen_t len = sa.size();
   int soc = -1;
-  if ((soc = ::accept(data->fd, sa.addr(), &len)) == -1) throw sockerr(errno);
+  if ((soc = ::accept(fd(), sa.addr(), &len)) == -1) throw sockerr(errno);
   return new sockinetbuf(soc);
 }
 
 sockinetbuf *sockinetbuf::accept()
 {
   int soc = -1;
-  if ((soc = ::accept(data->fd, 0, 0)) == -1) throw sockerr(errno);
+  if ((soc = ::accept(fd(), 0, 0)) == -1) throw sockerr(errno);
   return new sockinetbuf(soc);
 }
 
@@ -595,17 +596,17 @@ bool sockinetbuf::tcpnodelay() const
   struct protoent *proto = getprotobyname("tcp");
   if (proto == 0) throw sockerr(ENOPROTOOPT);
   int old = 0;
-  getopt(TCP_NODELAY, &old, sizeof (old), proto->p_proto);
+  getopt(TCP_NODELAY, &old, sizeof(old), proto->p_proto);
   return old;
 }
 
 bool sockinetbuf::tcpnodelay(bool set) const
 {
   struct protoent *proto = getprotobyname("tcp");
-  if (proto == 0) throw sockerr (ENOPROTOOPT);
+  if (proto == 0) throw sockerr(ENOPROTOOPT);
   int old = 0;
   int opt = set;
-  getopt(TCP_NODELAY, &old, sizeof (old), proto->p_proto);
-  setopt(TCP_NODELAY, &opt, sizeof (opt), proto->p_proto);
+  getopt(TCP_NODELAY, &old, sizeof(old), proto->p_proto);
+  setopt(TCP_NODELAY, &opt, sizeof(opt), proto->p_proto);
   return old;
 }

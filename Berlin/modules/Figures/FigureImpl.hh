@@ -75,8 +75,7 @@ public:
 
   void copy(const FigureImpl &);
 protected:
-  Figure::Vertices_var _path;
-  Figure::Vertices_var _handle;
+  Warsaw::Path_var _path;
 };
 
 #endif

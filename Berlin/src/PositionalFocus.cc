@@ -37,22 +37,37 @@ using namespace Prague;
 using namespace Warsaw;
 
 
+class PositionalFocus::Traversal : public PickTraversalImpl
+{
+public:
+  Traversal(Warsaw::Graphic_ptr g, Warsaw::Region_ptr a, Warsaw::Transform_ptr t, PositionalFocus *f)
+    : PickTraversalImpl(g, a, t, f), _memento(0), _picked(false) {}
+  Traversal &operator = (const Traversal &t) { PickTraversalImpl::operator = (t); _picked = false;}
+  void memento(Traversal *m) { _memento = m;}
+  Traversal *memento() { return picked() ? _memento : 0;}
+  virtual void hit() { *_memento = *this, _picked = true;}
+  virtual CORBA::Boolean picked() { return _picked;}
+private:
+  Traversal *_memento;
+  bool       _picked;
+};
+
 PositionalFocus::PositionalFocus(Input::Device d, Graphic_ptr g, Region_ptr r)
   : FocusImpl(d), _root(g), _pointer(new Pointer(Console::drawable())), _traversal(0), _grabbed(false)
 {
   Trace trace("PositionalFocus::PositionalFocus");
-  _traversal_cache[0] = new PickTraversalImpl(_root, r, Transform::_nil(), this);
-  _traversal_cache[1] = new PickTraversalImpl(_root, r, Transform::_nil(), this);
-  _traversal_cache[0]->set_memento(_traversal_cache[1]);
-  _traversal_cache[1]->set_memento(_traversal_cache[0]);
+  _traversal_cache[0] = new Traversal(_root, r, Transform::_nil(), this);
+  _traversal_cache[1] = new Traversal(_root, r, Transform::_nil(), this);
+  _traversal_cache[0]->memento(_traversal_cache[1]);
+  _traversal_cache[1]->memento(_traversal_cache[0]);
   _traversal = _traversal_cache[0];
 }
 
 PositionalFocus::~PositionalFocus()
 {
   Trace trace("PositionalFocus::~PositionalFocus");
-  Impl_var<PickTraversalImpl>::deactivate(_traversal_cache[0]);
-  Impl_var<PickTraversalImpl>::deactivate(_traversal_cache[1]);  
+  Impl_var<Traversal>::deactivate(_traversal_cache[0]);
+  Impl_var<Traversal>::deactivate(_traversal_cache[1]);  
   delete _pointer;
 }
 
@@ -150,65 +165,45 @@ void PositionalFocus::dispatch(Input::Event &event)
    */
   _pointer->move(position.x, position.y);
   _traversal->reset(position);
-  /*
-   * if we hold a device grab, start the traversal at the current
-   * controller...
-   */
-  if (_grabbed)
-    {
-      Controller_var top = _controllers.back();
-      while (!CORBA::is_nil(top))
-	{
-	  try { top->traverse(Traversal_var(_traversal->_this()));}
-	  catch (const CORBA::OBJECT_NOT_EXIST &) {}
-	  catch (const CORBA::COMM_FAILURE &) {}
-	  if (_traversal->picked()) break;
-	  top = _traversal->top_controller();
-	  _traversal->pop_controller();
-	}
-    }
-  /*
-   * ...else start at screen level
-   */
-  else
+  if (!_grabbed)
     {
       _traversal->clear();
       _root->traverse(Traversal_var(_traversal->_this()));
-    }
-  PickTraversalImpl *picked = _traversal->memento();
-  if (!picked)
-    {
-      cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << position << ")" << endl;
-      return;
-    }
-  else _traversal = picked;
-  /*
-   * ...now do the [lose/receive]Focus stuff,...
-   */
-  vector<Controller_var>::const_iterator nf = _traversal->controllers().begin();
-  cstack_t::iterator of = _controllers.begin();
-  /*
-   * ...skip the unchanged controllers,...
-   */
-  while (nf != _traversal->controllers().end() &&
-	 of != _controllers.end() &&
-	 (*nf)->is_identical(*of)) nf++, of++;
-  /*
-   * ...remove the old controllers in reverse order,...
-   */
-  for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
-    try { (*o)->lose_focus(device());}
-    catch (const CORBA::OBJECT_NOT_EXIST &) {}
-    catch (const CORBA::COMM_FAILURE &) {}
-  _controllers.erase(of, _controllers.end());
-  /*
-   * ...add the new controllers,...
-   */
-  Focus_var __this = _this();
-  for (; nf != picked->controllers().end(); nf++)
-    {
-      (*nf)->receive_focus (__this);
-      _controllers.push_back(*nf);
+      Traversal *picked = _traversal->memento();
+      if (!picked)
+	{
+	  cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << position << ")" << endl;
+	  return;
+	}
+      else _traversal = picked;
+      /*
+       * ...now do the [lose/receive]Focus stuff,...
+       */
+      vector<Controller_var>::const_iterator nf = _traversal->controllers().begin();
+      cstack_t::iterator of = _controllers.begin();
+      /*
+       * ...skip the unchanged controllers,...
+       */
+      while (nf != _traversal->controllers().end() &&
+	     of != _controllers.end() &&
+	     (*nf)->is_identical(*of)) nf++, of++;
+      /*
+       * ...remove the old controllers in reverse order,...
+       */
+      for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; o++)
+	try { (*o)->lose_focus(device());}
+	catch (const CORBA::OBJECT_NOT_EXIST &) {}
+	catch (const CORBA::COMM_FAILURE &) {}
+      _controllers.erase(of, _controllers.end());
+      /*
+       * ...add the new controllers,...
+       */
+      Focus_var __this = _this();
+      for (; nf != picked->controllers().end(); nf++)
+	{
+	  (*nf)->receive_focus (__this);
+	  _controllers.push_back(*nf);
+	}
     }
   /*
    * ...and finally dispatch the event
@@ -216,5 +211,6 @@ void PositionalFocus::dispatch(Input::Event &event)
 //   _traversal->debug();
 //   Transform_var(_traversal->current_transformation())->inverse_transform_vertex(position);
 //   event[pidx].attr.location(position);
+//   cout << "distributing positional event at " << position << endl;
   _controllers.back()->handle_positional(PickTraversal_var(_traversal->_this()), event);
 }

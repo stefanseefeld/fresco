@@ -29,22 +29,22 @@ module Warsaw
 {
   interface Telltale;
 
+  //. selection is a subject which provides a higher level perspective
+  //. at groups of telltales, or more precisely, groups of flags.
   interface Selection : Subject
-    //. selection is a subject which provides a higher level perspective
-    //. at groups of telltales, or more precisely, groups of flags.
     {
       typedef long Policy;
       const Policy exclusive = 0x1;
       const Policy required = 0x2;
+      //. an item is used as the payload in the notify call, i.e. it is
+      //. what observers get in the delivered any
       struct Item
-	//. an item is used as the payload in the notify call, i.e. it is
-	//. what observers get in the delivered any
       {
 	Tag id;
 	boolean toggled;
       };
-      typedef sequence<Tag> Items;
       //. a list of toggled items
+      typedef sequence<Tag> Items;
       
       attribute Policy type;
       Tag add(in Telltale t);

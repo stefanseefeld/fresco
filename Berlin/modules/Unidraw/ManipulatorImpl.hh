@@ -34,9 +34,10 @@ class ManipulatorImpl : public virtual POA_Unidraw::Manipulator,
 public:
   ManipulatorImpl();
   virtual ~ManipulatorImpl();
-  CORBA::Boolean grasp(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  Unidraw::Command_ptr effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean grasp(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void destroy() { deactivate();}
 };
 
 class SelectManipulator : public ManipulatorImpl
@@ -44,9 +45,8 @@ class SelectManipulator : public ManipulatorImpl
 public:
   SelectManipulator();
   virtual ~SelectManipulator();
-  CORBA::Boolean grasp(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  Unidraw::Command_ptr effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean grasp(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
 };
 
 #endif

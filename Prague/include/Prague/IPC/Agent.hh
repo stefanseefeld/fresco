@@ -31,10 +31,10 @@ class Agent
 {
   friend class Dispatcher;
 public:
-  enum iomask_t {none = 0x00, outready = 0x01, inready = 0x02, errready = 0x04,
-		 outexc = 0x10, inexc = 0x20, errexc = 0x40,
-		 out = 0x11, in = 0x22, err = 0x44,
-		 asyncio = 0xff};
+  enum iomask {none = 0x00, outready = 0x01, inready = 0x02, errready = 0x04,
+	       outexc = 0x10, inexc = 0x20, errexc = 0x40,
+	       out = 0x11, in = 0x22, err = 0x44,
+	       asyncio = 0xff};
   Agent();
   virtual ~Agent();
 
@@ -51,8 +51,7 @@ public:
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);
-  virtual bool process(int, iomask_t) = 0;
-  virtual void done(int, iomask_t) = 0;
+  virtual bool process(int, iomask) = 0;
   short _refcount;
   short _iomask;
   bool  _running : 1;

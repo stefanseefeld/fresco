@@ -27,16 +27,16 @@
 
 module Figure
 {
-  typedef Warsaw::Path Vertices;
+//   typedef Warsaw::Path Vertices;
   typedef short Mode;
   const Mode fill = 1;
   const Mode outline = 2;
 
   interface FigureBase : Warsaw::Graphic
     {
-      //. The Vertices type defines a sequence of vertex structures
-      //. for figures with an arbitrary number of vertices,
-      //. such as polygons and B-splines.
+//       //. The Vertices type defines a sequence of vertex structures
+//       //. for figures with an arbitrary number of vertices,
+//       //. such as polygons and B-splines.
       
       //   attribute Style figure_style;
       //   attribute Mode figure_mode;
@@ -78,8 +78,8 @@ module Figure
       
       interface Path : FigureBase
 	{
-	  Vertices handles();        
-	  //     attribute boolean closed;
+	  attribute Warsaw::Path handles;        
+	  readonly attribute boolean closed;
 	  //     attribute boolean curved;
 	};
     };

@@ -187,18 +187,9 @@ void EllipseImpl::radius1(Coord r) { _radius1 = r; resize();}
 Coord EllipseImpl::radius2() { return _radius2;}
 void EllipseImpl::radius2(Coord r) { _radius2 = r; resize();}
 
-PathImpl::PathImpl() { FigureImpl::_handle = new Figure::Vertices;}
-PathImpl::PathImpl (const Figure::Vertices &v)
-{
-  _handle = new Figure::Vertices(v);
-  resize();
-}
-
-PathImpl::PathImpl(const PathImpl &path)
-{
-  copy(path);
-  _handle = new Figure::Vertices(path._handle);
-}
+PathImpl::PathImpl(bool flag) : _handles(new Warsaw::Path()), _closed(flag) {}
+PathImpl::PathImpl (const Warsaw::Path &path, bool flag) : _handles(new Warsaw::Path(path)), _closed(flag) { resize();}
+PathImpl::PathImpl(const PathImpl &path) : _handles(new Warsaw::Path(path._handles)), _closed(path._closed) { copy(path);}
 
 void PathImpl::resize()
 {
@@ -235,7 +226,8 @@ void PathImpl::resize()
 //             vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
 //         );
 //     } else {
-  for (CORBA::ULong i = 0; i < _handle->length(); ++i) add_point(_handle[i].x, _handle[i].y);
+  for (CORBA::ULong i = 0; i < _handles->length(); ++i) add_point(_handles[i].x, _handles[i].y);
+  if (_closed && _handles->length()) add_point(_handles[0].x, _handles[0].y);
 //         }
 //     }
 //   cerr << "sorry, PathImpl::resize not implemented" << endl;
@@ -243,4 +235,6 @@ void PathImpl::resize()
 
 PathImpl::~PathImpl () {}
 
-Figure::Vertices *PathImpl::handles() { Figure::Vertices *ret = new Figure::Vertices(_handle); return ret;}
+Warsaw::Path *PathImpl::handles() { return new Warsaw::Path(_handles);}
+void PathImpl::handles(const Warsaw::Path &path) { _handles = new Warsaw::Path(path); resize();}
+CORBA::Boolean PathImpl::closed() { return _closed;}

@@ -19,32 +19,32 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ToolImpl_hh
-#define _ToolImpl_hh
+#ifndef _SelectTool_hh
+#define _SelectTool_hh
 
 #include <Warsaw/config.hh>
+#include <Warsaw/Transform.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/UnidrawKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 
-class ToolImpl : public virtual POA_Unidraw::Tool,
-		 public RefCountBaseImpl
+class SelectTool : public virtual POA_Unidraw::Tool,
+		   public RefCountBaseImpl
 {
 public:
-  ToolImpl();
-  virtual ~ToolImpl();
-  Unidraw::Manipulator_ptr create_manipulator(Warsaw::Controller_ptr, Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  Unidraw::Command_ptr     interpret_manipulator(Unidraw::Manipulator_ptr);
-};
-
-class SelectTool : public ToolImpl
-{
-public:
-  SelectTool();
+  SelectTool(Warsaw::Graphic_ptr);
   virtual ~SelectTool();
-  Unidraw::Manipulator_ptr create_manipulator(Warsaw::Controller_ptr, Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  Unidraw::Command_ptr     interpret_manipulator(Unidraw::Manipulator_ptr);
+  virtual CORBA::Boolean grasp(Warsaw::Controller_ptr, Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual Unidraw::Command_ptr effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+private:
+  Warsaw::Controller_var      _root;
+  Warsaw::GraphicIterator_var _iterator;
+  Warsaw::Transform::Matrix   _matrix;
+  Warsaw::Graphic_var         _graphic;
+  Warsaw::Vertex              _begin;
+  Warsaw::Vertex              _end;
 };
 
 #endif

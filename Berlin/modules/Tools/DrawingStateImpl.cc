@@ -24,6 +24,7 @@
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/Raster.hh>
+#include <Warsaw/IO.hh>
 #include "Tool/DrawingStateImpl.hh"
 
 using namespace Prague;

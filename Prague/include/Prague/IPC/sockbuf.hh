@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _sockbuf_hh
-#define _sockbuf_hh
+#ifndef _Prague_sockbuf_hh
+#define _Prague_sockbuf_hh
 #include <Prague/config.hh>
 #include <Prague/IPC/ipcbuf.hh>
 #include <sys/types.h>
@@ -196,7 +196,7 @@ public:
     socklinger (int a, int b): l_onoff (a), l_linger (b) {}
   };
 
-  sockbuf(int s) : ipcbuf(ios::in|ios::out) { data->fd = s;}
+  sockbuf(int s) : ipcbuf(ios::in|ios::out) { fd(s);}
   sockbuf(int, type, int);
   sockbuf(const sockbuf &sb) : ipcbuf(sb) {}
   virtual           ~sockbuf() {}
@@ -231,8 +231,6 @@ public:
   bool		     broadcast(bool) const;
   bool		     oobinline() const;
   bool		     oobinline(bool) const;
-  bool               oob() const { return data->oobbit;}
-  bool               oob(bool);
   int		     sendbufsz() const;
   int		     sendbufsz(int)   const;
   int		     recvbufsz() const;

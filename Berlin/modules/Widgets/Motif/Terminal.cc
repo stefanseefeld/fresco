@@ -45,7 +45,7 @@ void Terminal::Input::update(const CORBA::Any &)
 }
 
 
-bool Terminal::Output::notify(Agent::iomask_t mask)
+bool Terminal::Output::notify(Agent::iomask mask)
 {
   Trace trace("Terminal::output::notify");
 //   cout << "Terminal::Output::notify" << endl;

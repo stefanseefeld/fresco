@@ -142,7 +142,7 @@ void MonoGraphic::request(Warsaw::Graphic::Requisition &r)
   if (CORBA::is_nil(child)) return;
   try { child->request(r);}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body (Warsaw::Graphic::_nil ());}
+  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
   if (!CORBA::is_nil(child)) child->request(r);
 }
 

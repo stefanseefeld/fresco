@@ -41,10 +41,34 @@ class TraversalImpl : public virtual POA_Warsaw::Traversal,
 protected:
   struct State
   {
-    Warsaw::Graphic_var graphic;
-    Warsaw::Tag         id;
-    Warsaw::Region_var  allocation;
-    TransformImpl      *transformation;    
+    State() : id(0), transformation(0) {}
+    State(Warsaw::Graphic_ptr g, Warsaw::Tag i, Warsaw::Region_ptr a, TransformImpl *t)
+      : graphic(Warsaw::Graphic::_duplicate(g)),
+	id(i),
+	allocation(Warsaw::Region::_duplicate(a)),
+	transformation(t)
+    {}
+    State(const State &state)
+      : graphic(Warsaw::Graphic::_duplicate(state.graphic)),
+	id(state.id),
+	allocation(Warsaw::Region::_duplicate(state.allocation)),
+	transformation(Provider<TransformImpl>::provide())
+    {
+      transformation->copy(Warsaw::Transform_var(state.transformation->_this()));
+    }
+    ~State() { if (transformation) Provider<TransformImpl>::adopt(transformation);}
+    State &operator = (const State &state)
+    {
+      graphic = Warsaw::Graphic::_duplicate(state.graphic);
+      id = state.id;
+      allocation = Warsaw::Region::_duplicate(state.allocation);
+      transformation = Provider<TransformImpl>::provide();
+      transformation->copy(Warsaw::Transform_var(state.transformation->_this()));
+    }
+    Warsaw::Graphic_var      graphic;
+    Warsaw::Tag              id;
+    Warsaw::Region_var       allocation;
+    TransformImpl           *transformation;    
   };
   typedef vector<State> stack_t;
 public:
@@ -62,7 +86,6 @@ public:
   virtual CORBA::Boolean ok() = 0;
   virtual void update();
 protected:
-  void copy(const TraversalImpl *);
   void push(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, TransformImpl *);
   void pop();
   size_t size() const { return _stack.size();}  

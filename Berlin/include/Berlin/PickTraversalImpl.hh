@@ -42,8 +42,9 @@ class PickTraversalImpl : public virtual POA_Warsaw::PickTraversal,
   typedef vector<size_t> pstack_t;
 public:
   PickTraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr, PositionalFocus *);
-  //. to be used when starting from root level
+  PickTraversalImpl(const PickTraversalImpl &);
   ~PickTraversalImpl();
+  PickTraversalImpl &operator = (const PickTraversalImpl &);
   virtual Warsaw::PickTraversal_ptr _this();
   virtual Warsaw::Region_ptr current_allocation();
   virtual Warsaw::Transform_ptr current_transformation();
@@ -54,36 +55,27 @@ public:
   virtual CORBA::Boolean ok();
   virtual CORBA::Boolean intersects_allocation();
   virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr);
-  virtual Warsaw::Input::Device device();
   virtual void enter_controller(Warsaw::Controller_ptr);
   virtual void leave_controller();
-  virtual void hit();
-  virtual CORBA::Boolean picked();
-  virtual void grab();
-  virtual void ungrab();
+  virtual void hit() = 0;
+  virtual CORBA::Boolean picked() = 0;
+  virtual Warsaw::Focus_ptr get_focus();
   virtual CORBA::Boolean forward();
   virtual CORBA::Boolean backward();
 
-  void copy(const PickTraversalImpl *);
-  void set_memento(PickTraversalImpl *m) { _memento = m;}
   void pop_controller();
   Warsaw::Controller_ptr top_controller();
   const vector<Warsaw::Controller_var> &controllers() const { return _controllers;}
-  PickTraversalImpl   *memento() { return _picked ? _memento : 0;}
   void reset(const Warsaw::Input::Position &);
   void clear();
   void debug();
 private:
-  //. to be used to create the memento
-  PickTraversalImpl(const PickTraversalImpl &);
   const State &top() const { return get(size() - 1);}
   const State &current() const { return get(_cursor);}
   cstack_t                   _controllers;
   pstack_t                   _positions;
   Warsaw::Input::Position    _pointer;
   PositionalFocus           *_focus;
-  PickTraversalImpl         *_memento;
-  bool                       _picked;
   size_t                     _cursor;
   Warsaw::PickTraversal_var __this;
 };
@@ -115,14 +107,12 @@ inline Warsaw::Controller_ptr PickTraversalImpl::top_controller()
   return _controllers.size() ? Warsaw::Controller::_duplicate(_controllers.back()) : Warsaw::Controller::_nil();
 }
 
-inline void PickTraversalImpl::reset(const Warsaw::Input::Position &p)
 //. pop all graphics up to the top most controller and set the pointer
 //. so the traversal can be used to start over directly at the top
+inline void PickTraversalImpl::reset(const Warsaw::Input::Position &p)
 {
   Prague::Trace trace("PickTraversal::reset");
-  pop_controller();
   _pointer = p;
-  _picked = false;
 }
 
 #endif 

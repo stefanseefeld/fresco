@@ -111,18 +111,18 @@ Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
   return e->_this();
 }
 
-Figure::Path_ptr FigureKitImpl::multiline(const Figure::Vertices &v)
+Figure::Path_ptr FigureKitImpl::multiline(const Warsaw::Path &p)
 {
-  PathImpl *p = new PathImpl(v);
-  activate(p);
-  return p->_this();
+  PathImpl *path = new PathImpl(p, false);
+  activate(path);
+  return path->_this();
 }
 
-Figure::Path_ptr FigureKitImpl::polygon(const Figure::Vertices &v)
+Figure::Path_ptr FigureKitImpl::polygon(const Warsaw::Path &p)
 {
-  PathImpl *p = new PathImpl(v);
-  activate(p);
-  return p->_this();
+  PathImpl *path = new PathImpl(p, true);
+  activate(path);
+  return path->_this();
 }
 
 Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)

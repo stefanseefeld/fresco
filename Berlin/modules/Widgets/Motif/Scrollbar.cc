@@ -96,11 +96,13 @@ void Scrollbar::draw(DrawTraversal_ptr traversal)
 
 void Scrollbar::pick(PickTraversal_ptr traversal)
 {
-  if (grabbed(traversal->device()) || traversal->intersects_allocation())
+//   if (grabbed(traversal->device()) || traversal->intersects_allocation())
+  if (traversal->intersects_allocation())
     {
       traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
-      if (!grabbed(traversal->device())) traverse_thumb(traversal);
+//       if (!grabbed(traversal->device())) traverse_thumb(traversal);
+      traverse_thumb(traversal);
       if (!traversal->picked()) traversal->hit();
       traversal->leave_controller();
     }

@@ -115,10 +115,10 @@ int main(int argc, char **argv)
   argv += argo;
   string value;
   getopt.get("version", &value);
-  if (value == "true") { cout << "version is " << version << endl; exit(0);}
+  if (value == "true") { cout << "version is " << version << endl; return 0;}
   value = "";
   getopt.get("help", &value);
-  if (value == "true") { getopt.usage(); exit(0);}
+  if (value == "true") { getopt.usage(); return 0;}
   value = "";
   getopt.get("resource", &value);
   if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
     {
       cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0" << " with attribute "
 	   << props[0].name << '=' << props[0].value << endl;
-      exit(-1);
+      return -1;
     }
 
   Logger::log(Logger::drawing) << "drawing system is built" << endl;

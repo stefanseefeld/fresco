@@ -19,24 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ipcbuf_hh
-#define _ipcbuf_hh
+#ifndef _Prague_ipcbuf_hh
+#define _Prague_ipcbuf_hh
 
+#include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Thread.hh>
 #include <streambuf.h>
 
 namespace Prague
 {
 
+//. ipcbuf is a streambuffer for inter process communication, i.e. pipes, sockets, ptys. 
+//. The low level reading/writing is based on file descriptors. The difference between an 
+//. ipcbuf and a normal filebuf is the meaning of EOF: in the context of IPC an EOF means 
+//. that the connection is closed. This case is not handled by the stream but by the 
+//. corresponding Agent. 
+//. If the ipcbuf is in nonblocking mode, it returns eof if the underlying read/write 
+//. causes an EAGAIN error (operation would block). If a real EOF is encountered, a flag 
+//. is set so the corresponding agent may terminate the process (or reestablish the connection...)}
 class ipcbuf : public streambuf
-  //. ipcbuf is a streambuffer for inter process communication, i.e. pipes, sockets, ptys. 
-  //. The low level reading/writing is based on file descriptors. The difference between an 
-  //. ipcbuf and a normal filebuf is the meaning of EOF: in the context of IPC an EOF means 
-  //. that the connection is closed. This case is not handled by the stream but by the 
-  //. corresponding Agent. 
-  //. If the ipcbuf is in nonblocking mode, it returns eof if the underlying read/write 
-  //. causes an EAGAIN error (operation would block). If a real EOF is encountered, a flag 
-  //. is set so the corresponding agent may terminate the process (or reestablish the connection...)}
 {
 public:
   typedef char          char_type;
@@ -44,7 +45,22 @@ public:
   typedef streamoff     off_type;
   typedef int           int_type;
   typedef ios::seek_dir seekdir;
-
+private:
+  struct control
+  {
+    control() : fd(-1), count(1), stmo(-1), rtmo(-1), oobbit(false), eofbit(false), gend(0), pend(0) {}
+    ~control() { Trace trace("ipcbuf::control::~control");}
+    Mutex mutex;
+    int	fd;
+    int	count;
+    int stmo;        // -1==block, 0==poll, >0 == waiting time in secs
+    int rtmo;        // -1==block, 0==poll, >0 == waiting time in secs
+    bool oobbit : 1; // check for out-of-band byte while reading
+    bool eofbit : 1; // connection closed
+    char_type *gend; // end of input buffer
+    char_type *pend; // end of output buffer
+  };
+public:
   ipcbuf(int);
   ipcbuf(const ipcbuf &);
   virtual ~ipcbuf();
@@ -58,7 +74,10 @@ public:
   virtual streamsize sys_write(const char *, streamsize);
 //   virtual int write (const void *, int);
 //   virtual int read (void *, int);
-  int fd() const { return data->fd;}
+  int  fd() const { return data->fd;}
+  void fd(int f) const { data->fd = f;}
+  bool oob() const { return data->oobbit;}
+  bool oob(bool f) { data->oobbit = f;}
   void async(bool);
   //. set the buffer to nonblocking mode if <i>flag</i> is true, to blocking mode otherwise
   bool async() const;
@@ -79,23 +98,10 @@ public:
   virtual int_type   pbackfail(int c = EOF);
   virtual streamsize xsputn(const char *, streamsize);
   virtual streamsize xsgetn(char *, streamsize);
-protected:
-  struct control
-  {
-    control() : fd(-1), count(1), stmo(-1), rtmo(-1), oobbit(false), eofbit(false), gend(0), pend(0) {}
-    Mutex mutex;
-    int	fd;
-    int	count;
-    int stmo;        // -1==block, 0==poll, >0 == waiting time in secs
-    int rtmo;        // -1==block, 0==poll, >0 == waiting time in secs
-    bool oobbit : 1; // check for out-of-band byte while reading
-    bool eofbit : 1; // connection closed
-    char_type *gend; // end of input buffer
-    char_type *pend; // end of output buffer
-  };
+private:
   control *data;  // counts the # refs to sock
 };
 
 };
 
-#endif /* _ipcbuf_hh */
+#endif

@@ -168,4 +168,50 @@ void CheckboxChoice::remove_item(Tag t)
   box->remove_graphic(t);
 }
 
+ToolChoice::ToolChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
+  : ::Motif::Choice(s, l, t, w)
+{}
+
+Tag ToolChoice::append_item(Graphic_ptr g)
+{
+  Trace trace("ToolChoice::append_item");
+  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
+  Tag tag = selection->add(toggle);
+  append_controller(toggle);
+
+  Warsaw::ToolKit::FrameSpec s1, s2;
+  s1.brightness(0.5); s1._d(ToolKit::inset);
+  s2.brightness(0.5); s2._d(ToolKit::outset);
+  RefCount_var<Warsaw::Graphic> frame = tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  toggle->body(frame);
+  RefCount_var<Warsaw::Graphic> box = body();
+  box->append_graphic(toggle);
+  return tag;
+}
+
+Tag ToolChoice::prepend_item(Graphic_ptr g)
+{
+  Trace trace("ToolChoice::prepend_item");
+  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
+  Tag tag = selection->add(toggle);
+  prepend_controller(toggle);
+
+  Warsaw::ToolKit::FrameSpec s1, s2;
+  s1.brightness(0.5); s1._d(ToolKit::outset);
+  s2.brightness(0.5); s2._d(ToolKit::inset);
+  RefCount_var<Warsaw::Graphic> frame = tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  toggle->body(frame);
+  RefCount_var<Warsaw::Graphic> box = body();
+  box->prepend_graphic(toggle);
+  return tag;
+}
+
+void ToolChoice::remove_item(Tag t)
+{
+  Trace trace("ToolChoice::remove_item");
+  selection->remove(t);
+  RefCount_var<Warsaw::Graphic> box = body();
+  box->remove_graphic(t);
+}
+
 };

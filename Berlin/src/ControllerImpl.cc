@@ -20,15 +20,16 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/ControllerImpl.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Prague/Unicode/Unicode.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/Input.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/Focus.hh>
+#include "Berlin/ControllerImpl.hh"
 #include "Berlin/Event.hh"
-#include <Prague/Sys/Tracer.hh>
-#include <Prague/Unicode/Unicode.hh>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -134,7 +135,7 @@ void ControllerImpl::draw(DrawTraversal_ptr traversal)
 void ControllerImpl::pick(PickTraversal_ptr traversal)
 {
   Trace trace("ControllerImpl::pick");
-  if (grabbed(traversal->device()) || traversal->intersects_allocation())
+  if (traversal->intersects_allocation())
     {
       traversal->enter_controller(Controller_var(_this()));
       MonoGraphic::traverse(traversal);
@@ -475,6 +476,24 @@ void ControllerImpl::key_release(const Input::Event &)
 
 void ControllerImpl::other(const Input::Event &)
 {
+}
+
+void ControllerImpl::grab(Warsaw::PickTraversal_ptr traversal)
+{
+  Focus_var focus = traversal->get_focus();
+  if (CORBA::is_nil(focus)) return;
+  focus->grab();
+  _grabs |= 1 << focus->device();
+  update_state();
+}
+
+void ControllerImpl::ungrab(Warsaw::PickTraversal_ptr traversal)
+{
+  Focus_var focus = traversal->get_focus();
+  if (CORBA::is_nil(focus)) return;
+  focus->ungrab();
+  _grabs &= ~(1 << focus->device());
+  update_state();
 }
 
 void ControllerImpl::update_state()

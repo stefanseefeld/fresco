@@ -37,17 +37,18 @@ class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
  public:
   CommandKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~CommandKitImpl();
-  Warsaw::Command_ptr log(const char *);
-  Warsaw::MacroCommand_ptr composite();
-  Warsaw::TelltaleConstraint_ptr exclusive(Warsaw::Telltale::Mask);
-  Warsaw::TelltaleConstraint_ptr selection_required();
-  Warsaw::Telltale_ptr     constrained_telltale(Warsaw::TelltaleConstraint_ptr);
-  Warsaw::Telltale_ptr     normal_telltale();
-  Warsaw::Selection_ptr    group(Warsaw::Selection::Policy);
-  Warsaw::BoundedValue_ptr bvalue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  Warsaw::BoundedRange_ptr brange(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  Warsaw::TextBuffer_ptr   text();
-  Warsaw::StreamBuffer_ptr stream(CORBA::Long);
+  virtual Warsaw::Command_ptr debugger(Warsaw::Command_ptr, const char *);
+  virtual Warsaw::Command_ptr log(const char *);
+  virtual Warsaw::MacroCommand_ptr composite();
+  virtual Warsaw::TelltaleConstraint_ptr exclusive(Warsaw::Telltale::Mask);
+  virtual Warsaw::TelltaleConstraint_ptr selection_required();
+  virtual Warsaw::Telltale_ptr     constrained_telltale(Warsaw::TelltaleConstraint_ptr);
+  virtual Warsaw::Telltale_ptr     normal_telltale();
+  virtual Warsaw::Selection_ptr    group(Warsaw::Selection::Policy);
+  virtual Warsaw::BoundedValue_ptr bvalue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::BoundedRange_ptr brange(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::TextBuffer_ptr   text();
+  virtual Warsaw::StreamBuffer_ptr stream(CORBA::Long);
  private:
 };
 

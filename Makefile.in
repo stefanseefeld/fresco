@@ -37,7 +37,7 @@ invdirs 	:=$(shell for dir in $(subdirs); do list="$$dir $$list"; done; echo "$$
 # for everything.
 action	:= all
 
-.PHONY: world $(subdirs) inverse
+.PHONY: all $(subdirs) inverse
 .PHONY: depclean clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)

@@ -30,37 +30,51 @@
 
 module Unidraw
 {
-  interface Component : Warsaw::Subject
+  interface View;
+  interface Model : Warsaw::RefCountBase
     {
-      Warsaw::Graphic create_view();
+      View create_view();
     };
-  interface Command : Warsaw::Command
+  interface View : Warsaw::Controller
     {
+      // add attributes to indicate selection, highlighting, etc.
+      readonly attribute Model subject;
+    };
+  interface Command
+    {
+      void execute();
       // memento protocol...
-      void store(in Component c, in any a);
-      any recall(in Component c);
+      void store(in Model m, in any a);
+      any recall(in Model m);
+      void destroy();
     };
-  interface Manipulator
+//   interface Manipulator
+//     {
+//       boolean grasp(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+//       boolean manipulate(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+//       void effect(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+//       void destroy();
+//     };
+  interface Tool : Warsaw::RefCountBase
     {
-      boolean grasp(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+      boolean grasp(in Warsaw::Controller c, in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
       boolean manipulate(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
       Command effect(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-    };
-  interface Tool
-    {
-      Manipulator create_manipulator(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
-      Command     interpret_manipulator(in Manipulator m);
+//       Manipulator create_manipulator(in Warsaw::Controller c, in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+//       Command interpret_manipulator(in Manipulator m);
     };
   interface Editor : Warsaw::RefCountBase
     {
-      Tool select();
-      Tool move();
+      void append_tool(in Tool t, in Warsaw::Graphic g);
       attribute Tool current_tool;
-      Warsaw::Controller create_viewer(in Warsaw::Coord width, in Warsaw::Coord height);
+      Warsaw::Controller create_viewer(in Model m, in Warsaw::Coord width, in Warsaw::Coord height);
+      Warsaw::Controller toolbar();
     };
   interface UnidrawKit : Warsaw::Kit
     {
+      Tool   select_tool();
       Editor create_editor();
+      View   create_view(in Warsaw::Graphic g, in Model m);
     };
 };
 

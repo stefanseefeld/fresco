@@ -19,15 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Prague/Sys/Tracer.hh>
-#include "Unidraw/CommandImpl.hh"
+#ifndef _UViewImpl_hh
+#define _UViewImpl_hh
 
-using namespace Prague;
-using namespace Warsaw;
-using namespace Unidraw;
+#include <Warsaw/config.hh>
+#include <Warsaw/UnidrawKit.hh>
+#include <Berlin/ControllerImpl.hh>
 
-CommandImpl::CommandImpl() {}
-CommandImpl::~CommandImpl() {}
-void CommandImpl::execute(const CORBA::Any &) {}
-void CommandImpl::store(Unidraw::Component_ptr, const CORBA::Any &) {}
-CORBA::Any *CommandImpl::recall(Unidraw::Component_ptr) { return 0;}
+class UViewImpl : public virtual POA_Unidraw::View,
+		  public ControllerImpl
+{
+public:
+  UViewImpl(Unidraw::Model_ptr);
+  virtual ~UViewImpl();
+  virtual Unidraw::Model_ptr subject();
+  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+private:
+  Unidraw::Model_var _model;
+};
+
+#endif

@@ -164,43 +164,46 @@ void LibArtDrawingKit::draw_path(const Path &p)
   ArtVpath vpath[fs == Warsaw::DrawingKit::outlined ? len : len + 1];
   ArtVpath *tvpath;  
 
-  if (fs == Warsaw::DrawingKit::outlined) {
-    for (int i = 0; i < len; ++i){
-      vpath[i].x = p[i].x; 
-      vpath[i].y = p[i].y;
-      vpath[i].code = ART_LINETO;
+  if (fs == Warsaw::DrawingKit::outlined)
+    {
+      for (int i = 0; i < len; ++i)
+	{
+	  vpath[i].x = p[i].x; 
+	  vpath[i].y = p[i].y;
+	  vpath[i].code = ART_LINETO;
+	}
+      vpath[0].code = ART_MOVETO_OPEN;
+      vpath[len-1].code = ART_END;
+      
     }
-    vpath[0].code = ART_MOVETO_OPEN;
-    vpath[len-1].code = ART_END;
-
-  } else {
-    for (int i = 0; i < len; ++i){
-      vpath[i].x = p[i].x; 
-      vpath[i].y = p[i].y;
-      vpath[i].code = ART_LINETO;
+  else
+    {
+      for (int i = 0; i < len; ++i)
+	{
+	  vpath[i].x = p[i].x; 
+	  vpath[i].y = p[i].y;
+	  vpath[i].code = ART_LINETO;
+	}
+      vpath[0].code = ART_MOVETO;
+      vpath[len].x = vpath[0].x;
+      vpath[len].y = vpath[0].y;
+      vpath[len].code = ART_END;
     }
-    vpath[0].code = ART_MOVETO;
-    vpath[len].x = vpath[0].x;
-    vpath[len].y = vpath[0].y;
-    vpath[len].code = ART_END;
-  }
   
   ArtDRect locd; ArtIRect loc;
-  tvpath = art_vpath_affine_transform(vpath,scaled_affine);
-  ArtSVP *svp1 = art_svp_from_vpath (tvpath); 
-  ArtSVP *svp2 = art_svp_uncross (svp1);
-  ArtSVP *svp = art_svp_rewind_uncrossed (svp2, ART_WIND_RULE_ODDEVEN);
+  tvpath = art_vpath_affine_transform(vpath, scaled_affine);
+  ArtSVP *svp1 = art_svp_from_vpath(tvpath); 
+  ArtSVP *svp2 = art_svp_uncross(svp1);
+  ArtSVP *svp = art_svp_rewind_uncrossed(svp2, ART_WIND_RULE_ODDEVEN);
 
-  art_drect_svp (&locd, svp);
+  art_drect_svp(&locd, svp);
   art_drect_to_irect(&loc, &locd);
   art_irect_intersect(&loc,&loc,&clip);
-  art_irect_union (&bbox,&bbox,&loc);
+  art_irect_union(&bbox,&bbox,&loc);
   fix_order_of_irect(loc); 
-  art_rgb_svp_alpha (svp, loc.x0, loc.y0, loc.x1, loc.y1,
- 		     art_fg,
- 		     ((art_u8 *)buffer->write_buffer()) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
- 		     buffer->row_length(),
- 		     agam);
+  art_rgb_svp_alpha(svp, loc.x0, loc.y0, loc.x1, loc.y1, art_fg,
+		    ((art_u8 *)buffer->write_buffer()) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
+		    buffer->row_length(), agam);
   art_svp_free(svp);
   art_svp_free(svp1);
   art_svp_free(svp2);

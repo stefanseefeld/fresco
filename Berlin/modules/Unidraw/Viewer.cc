@@ -33,62 +33,63 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Unidraw;
 
-Viewer::Viewer(Coord width, Coord height, Editor_ptr editor, FigureKit_ptr figure, ToolKit_ptr tool)
-  : ControllerImpl(false),
-    _editor(RefCount_var<Editor>::increment(editor)),
-    _figure(RefCount_var<FigureKit>::increment(figure)),
-    _root(tool->rgb(Warsaw::Graphic::_nil(), 1., 1., 1.)),
-    _target_tx(new TransformImpl()),
-    _width(width),
-    _height(height)
+Viewer::Viewer() : ControllerImpl(false) {}
+Viewer::~Viewer() {}
+
+void Viewer::init(Editor_ptr editor, Model_ptr model, Coord width, Coord height, FigureKit_ptr figures, ToolKit_ptr tools)
 {
+  _editor = RefCount_var<Editor>::increment(editor);
+  Requestor *requestor = new Requestor(0.5, 0.5, width, height);
+  activate(requestor);
+  _root = figures->group();
+  requestor->body(_root);
   ToolKit::FrameSpec background;
   Color white = {1., 1., 1., 1.};
   background.foreground(white);
-  _root = tool->frame(Warsaw::Graphic::_nil(), 20., background, true);
+  body(Warsaw::Graphic_var(tools->frame(Warsaw::Graphic_var(requestor->_this()), 20., background, true)));
+  if (!CORBA::is_nil(model))
+    {
+      Graphic_var view = model->create_view();
+      _root->append_graphic(view);
+    }
 }
-Viewer::~Viewer() {}
 
-void Viewer::activate_composite()
+void Viewer::append_graphic(Graphic_ptr c)
 {
-  body(_root);
-  Requestor *requestor = new Requestor(0.5, 0.5, _width, _height);
-  activate(requestor);
-  _root = _figure->group();
-  requestor->body(_root);
-  Graphic_var child = body();
-  child->body(Graphic_var(requestor->_this()));
+  _root->append_graphic(c);
+}
+
+void Viewer::prepend_graphic(Graphic_ptr c)
+{
+  _root->prepend_graphic(c);
+}
+
+Warsaw::Graphic::Iterator_ptr Viewer::first_child_graphic()
+{
+  return _root->first_child_graphic();
+}
+
+Warsaw::Graphic::Iterator_ptr Viewer::last_child_graphic()
+{
+  return _root->last_child_graphic();
 }
 
 void Viewer::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
   Trace trace("Viewer::press");
-  Input::Position position;
-  if (Input::get_position(event, position) == -1) return; // internal error
-  Transform_var trafo = traversal->current_transformation();
-  trafo->inverse_transform_vertex(position);
-  _start = position;
-  bool picked = traversal->forward(); // is there a target graphic ?
-  if (picked)
+  bool ok = false;
+  if (CORBA::is_nil(_active))
     {
-      while (traversal->forward()); // up to the leaf
-      _target = traversal->current_graphic();
-      _target_tx->copy(Transform_var(traversal->current_transformation()));
-//       if (e->modifier_is_down(Event::shift))    _curtool = scale_tool;
-//       else if (e->modifier_is_down(Event::alt))	_curtool = rotate_tool;
-//       else	                                _curtool = move_tool;
-      _curtool = move_tool;
+      _active = _editor->current_tool();
+      if (CORBA::is_nil(_active)) return;
+      ok = _active->grasp(Controller_var(_this()), traversal, event);
     }
-  else
+  else ok = _active->manipulate(traversal, event);
+  if (!ok && !CORBA::is_nil(_active))
     {
-      _target = _root;
-      _target_tx->copy(Transform_var(traversal->current_transformation()));
-      _target_tx->premultiply(Transform_var(_root->transformation()));
-//       if (e->modifier_is_down(Event::shift)) 	    _curtool = scale_root_tool;
-//       else if (e->modifier_is_down(Event::control)) _curtool = move_root_tool;
-//       else if (e->modifier_is_down(Event::alt))     _curtool = rotate_root_tool;
-//       else	                                    _curtool = create_tool;
-      _curtool = create_tool;
+      Unidraw::Command_var command = _active->effect(traversal, event);
+      command->execute();
+      _active = Unidraw::Tool::_nil();
     }
   ControllerImpl::press(traversal, event);
 }
@@ -96,67 +97,35 @@ void Viewer::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Eve
 void Viewer::drag(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
   Trace trace("Viewer::drag");
-  Input::Position position;
-  if (Input::get_position(event, position) == -1) return; // internal error
-  Transform_var trafo = traversal->current_transformation();
-  trafo->inverse_transform_vertex(position);
-  Transform_var tx = _target->transformation();
-  if (!CORBA::is_nil(tx))
+  if (CORBA::is_nil(_active)) return;
+  bool ok = _active->manipulate(traversal, event);
+  if (!ok)
     {
-      Vertex start, end;
-      start.x = _start.x;
-      start.y = _start.y;
-      end.x = position.x;
-      end.y = position.y;
-      if (_curtool == move_tool)
-	{
-	  _target_tx->inverse_transform_vertex(start);
-	  _target_tx->inverse_transform_vertex(end);
-	}
-      Vertex v;
-      v.x = end.x-start.x;
-      v.y = end.y-start.y;
-      _target->need_redraw();
-      if (_curtool == rotate_tool || _curtool == rotate_root_tool)
-	tx->rotate( long(v.y) % long(360), zaxis);
-      else
-	tx->translate(v);
-      _target->need_redraw();
-      _target->need_resize();
-      _start = position;
+      Unidraw::Command_var command = _active->effect(traversal, event);
+      command->execute();
+      _active = Unidraw::Tool::_nil();
     }
+}
+
+void Viewer::move(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+{
+  Viewer::drag(traversal, event);
 }
 
 void Viewer::release(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
 {
   Trace trace("Viewer::release");
-  if (_curtool == create_tool) add(_start.x, _start.y);
-  ControllerImpl::release(traversal, event);
-}
-
-void Viewer::add(Coord x, Coord y)
-{
-  static int toggle = 0;
-  Figure::FigureBase_var fig;
-  if (++toggle%2)
+  if (CORBA::is_nil(_active))
     {
-      Color green = {0.5, 1., 0.5, 0.8};
-      fig = _figure->rectangle(x - 180., y - 180., x + 180., y + 180.);
-//       fig = _figure->circle(x, y, 200.);
-      fig->type(Figure::fill);
-      fig->background(green);
+      ControllerImpl::release(traversal, event);
+      return;
     }
-  else
+  bool ok = _active->manipulate(traversal, event);
+  if (!ok)
     {
-      Color red = {1., 0.5, 0.5, 0.8};
-      fig = _figure->rectangle(x - 180., y - 180., x + 180., y + 180.);
-      fig->type(Figure::fill);
-      fig->background(red);
-    }  
-  _root->append_graphic(fig);
-//   Transform_var tx = fig->transformation();
-//   tx->copy(_target_tx->_this());
-//   tx->invert();
-  fig->need_redraw();
-  fig->need_resize();
+      Unidraw::Command_var command = _active->effect(traversal, event);
+      command->execute();
+      _active = Unidraw::Tool::_nil();
+    }
+  ControllerImpl::release(traversal, event);
 }

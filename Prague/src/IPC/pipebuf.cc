@@ -32,7 +32,7 @@ int pipebuf::open()
 {
   int fds[2];
   if (pipe(fds) < 0) return -1;
-  if (fl & ios::out) {data->fd = fds[1]; return fds[0];}
-  else  {data->fd = fds[0]; return fds[1];}
+  if (fl & ios::out) {fd(fds[1]); return fds[0];}
+  else  {fd(fds[0]); return fds[1];}
 };
 

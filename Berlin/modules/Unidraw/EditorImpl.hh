@@ -25,23 +25,33 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
-#include <Warsaw/UnidrawKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/ObserverImpl.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/RefCountVar.hh>
+#include <Unidraw/UnidrawKitImpl.hh>
+#include <map>
 
 class EditorImpl : public virtual POA_Unidraw::Editor,
 		   public RefCountBaseImpl
 {
+  typedef map<Warsaw::Tag, RefCount_var<Unidraw::Tool> > tdict_t;
+  class Observer;
+  friend class Observer;
 public:
-  EditorImpl(Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
+  EditorImpl(UnidrawKitImpl *);
   virtual ~EditorImpl();
-  Unidraw::Tool_ptr select();
-  Unidraw::Tool_ptr move();
+  virtual void append_tool(Unidraw::Tool_ptr, Warsaw::Graphic_ptr);
   virtual Unidraw::Tool_ptr current_tool();
   virtual void current_tool(Unidraw::Tool_ptr);
-  virtual Warsaw::Controller_ptr create_viewer(Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Controller_ptr create_viewer(Unidraw::Model_ptr, Warsaw::Coord, Warsaw::Coord);
+  virtual Warsaw::Controller_ptr toolbar();
 private:
-  Warsaw::FigureKit_var _figure;
-  Warsaw::ToolKit_var   _tool;
+  UnidrawKitImpl         *_unidraw;
+  Unidraw::Tool_var       _current;
+  Warsaw::Choice_var      _choice;
+  tdict_t                 _tools;
+  Impl_var<Observer>      _tool_setter;
 };
 
 #endif

@@ -99,13 +99,13 @@ module Warsaw
       //. controls whether the area is filled, stroked, or both.
       //. The style parameter controls which
       //. brush and colors are used for drawing.
-      Figure::Path multiline(in Figure::Vertices v);
+      Figure::Path multiline(in Warsaw::Path p);
       //. Return the polygon defined by the given vertices.
       //. The last and first vertices are automatically connected.
       //. The mode parameter controls whether the area is filled,
       //. stroked, or both.  The style parameter controls which
       //. brush and colors are used for drawing.
-      Figure::Path polygon(in Figure::Vertices v);
+      Figure::Path polygon(in Warsaw::Path p);
       //. Return a figure that draws the raster.
       Image   pixmap(in Raster r);
       //. Return a decorator that sets the texture for the body graphic

@@ -30,7 +30,7 @@ Coprocess *agent;
 class Output : public Coprocess::IONotifier
 {
 public:
-  virtual bool notify(Agent::iomask_t mask)
+  virtual bool notify(Agent::iomask mask)
   {
     if (mask != Agent::outready) return false;
     istream is(agent->obuf());
@@ -49,7 +49,7 @@ public:
 class ConnectionClosed : public Coprocess::EOFNotifier
 {
 public:
-  virtual void notify(Agent::iomask_t mask)
+  virtual void notify(Agent::iomask mask)
   {
     if (mask == Agent::outready)
       cout << "output : connection closed";

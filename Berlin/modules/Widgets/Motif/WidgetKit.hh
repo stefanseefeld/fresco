@@ -54,6 +54,7 @@ class WidgetKit : public virtual POA_Warsaw::WidgetKit,
   Warsaw::Controller_ptr   scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis);
   Warsaw::Choice_ptr       toggle_choice();
   Warsaw::Choice_ptr       checkbox_choice();
+  Warsaw::Choice_ptr       toolbar();
   Warsaw::Controller_ptr   terminal();
 
   Warsaw::Controller_ptr   scrollable(Warsaw::Graphic_ptr);

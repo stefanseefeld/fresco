@@ -20,29 +20,35 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include "Unidraw/ToolImpl.hh"
-#include "Unidraw/ManipulatorImpl.hh"
-#include "Unidraw/CommandImpl.hh"
+#include "Unidraw/ViewImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Unidraw;
 
-ToolImpl::ToolImpl() {}
-ToolImpl::~ToolImpl() {}
-Manipulator_ptr ToolImpl::create_manipulator(PickTraversal_ptr, const Input::Event &) { return Unidraw::Manipulator::_nil();}
-Unidraw::Command_ptr ToolImpl::interpret_manipulator(Manipulator_ptr) { return Unidraw::Command::_nil();}
+UViewImpl::UViewImpl(Unidraw::Model_ptr model) : ControllerImpl(false), _model(Unidraw::Model::_duplicate(model)) {}
+UViewImpl::~UViewImpl() {}
 
-SelectTool::SelectTool() {}
-SelectTool::~SelectTool() {}
-Manipulator_ptr SelectTool::create_manipulator(PickTraversal_ptr traversal, const Input::Event &event)
+void UViewImpl::traverse(Traversal_ptr traversal)
 {
-  SelectManipulator *select = new SelectManipulator();
-  activate(select);
-  return select->_this();
+  Trace trace("UViewImpl::traverse");
+  traversal->visit(Graphic_var(_this()));
 }
 
-Unidraw::Command_ptr SelectTool::interpret_manipulator(Manipulator_ptr)
+void UViewImpl::draw(DrawTraversal_ptr traversal)
 {
-  return Unidraw::Command::_nil();
+  Trace trace("UViewImpl::draw");
+  MonoGraphic::traverse(traversal);
+}
+
+void UViewImpl::pick(PickTraversal_ptr traversal)
+{
+  Trace trace("UViewImpl::pick");
+}
+
+Unidraw::Model_ptr UViewImpl::subject() { return Unidraw::Model::_duplicate(_model);}
+CORBA::Boolean UViewImpl::handle_positional(PickTraversal_ptr traversal, const Input::Event &event)
+{
+  cout << "handle_positional" << endl;
+  return false;
 }

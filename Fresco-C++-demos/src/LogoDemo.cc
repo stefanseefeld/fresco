@@ -54,14 +54,14 @@ LogoDemo::LogoDemo(Application *a)
     tx3(new TransformImpl)
 {
   LayoutKit_var layout = application->layout();
-  ToolKit_var   tool = application->tool();
-  WidgetKit_var widget = application->widget();
-  FigureKit_var figure = application->figure();
-  CommandKit_var command = application->command();
+  ToolKit_var   tools = application->tool();
+  WidgetKit_var widgets = application->widget();
+  FigureKit_var figures = application->figure();
+  CommandKit_var commands = application->command();
   
-  bv1 = command->bvalue(0., 360., 0., 5., 5.);
-  bv2 = command->bvalue(0., 360., 0., 5., 5.);
-  bv3 = command->bvalue(0., 360., 0., 5., 5.);
+  bv1 = commands->bvalue(0., 360., 0., 5., 5.);
+  bv2 = commands->bvalue(0., 360., 0., 5., 5.);
+  bv3 = commands->bvalue(0., 360., 0., 5., 5.);
   
   tx1->rotate(10., zaxis);
   tx2->rotate(-10., zaxis);
@@ -70,56 +70,41 @@ LogoDemo::LogoDemo(Application *a)
   Coord a = 2000.;
   Vertex offset;
   offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Figure::Vertices path; path.length(4);
+  Warsaw::Path path; path.length(3);
   path[0].x = a/2 + offset.x, path[0].y = + offset.y, path[0].z = offset.z;
   path[1].x = a + offset.x, path[1].y = 0.866*a + offset.y, path[1].z = offset.z;
   path[2].x = offset.x, path[2].y = 0.866*a + offset.y, path[2].z = offset.z;
-  path[3].x = a/2 + offset.x, path[3].y = + offset.y, path[3].z = offset.z;
-
   
-  Color red = {1.0, 0.5, 0.5, 0.5};
-  Color green = {0.5, 1.0, 0.5, 0.5};
-  Color blue = {0.5, 0.5, 1.0, 0.5};
-//   Color white = {1.0, 1.0, 1.0, 1.0};
+  Figure::Path_var triangle = figures->polygon(path);
+  Graphic_var transformer1 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 1., 0.5, 0.5)));
+  Graphic_var transformer2 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 0.5, 0.5, 1.)));
+  Graphic_var transformer3 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 0.5, 1., 0.5)));
   
-  Figure::Path_var triangle1 = figure->polygon(path);
-  triangle1->type(Figure::fill);
-  triangle1->background(green);
-  Figure::Path_var triangle2 = figure->polygon(path);
-  triangle2->type(Figure::fill);
-  triangle2->background(blue);
-  Figure::Path_var triangle3 = figure->polygon(path);
-  triangle3->type(Figure::fill);
-  triangle3->background(red);
-  Graphic_var transformer1 = figure->transformer(triangle1);
-  Graphic_var transformer2 = figure->transformer(triangle2);
-  Graphic_var transformer3 = figure->transformer(triangle3);
+  Graphic_var group = figures->group();
   
-  Graphic_var group = figure->group();
-  
-  rotator1 = new Rotator(bv1, transformer1, group, 20.);
+  rotator1 = new Rotator(bv1, transformer1, group, -10.);
   bv1->attach(Observer_var(rotator1->_this()));
   rotator2 = new Rotator(bv2, transformer2, group, 10.);
   bv2->attach(Observer_var(rotator2->_this()));
-  rotator3 = new Rotator(bv3, transformer3, group, -10.);
+  rotator3 = new Rotator(bv3, transformer3, group, 20.);
   bv3->attach(Observer_var(rotator3->_this()));
   
-  Graphic_var root = figure->root(group);
+  Graphic_var root = figures->root(group);
   group->append_graphic(transformer1);
   group->append_graphic(transformer2);
   group->append_graphic(transformer3);
   
   Graphic_var hbox1 = layout->hbox();
   hbox1->append_graphic(Graphic_var(layout->hfill()));
-  hbox1->append_graphic(Graphic_var(widget->slider(bv1, xaxis)));
+  hbox1->append_graphic(Graphic_var(widgets->slider(bv1, xaxis)));
   hbox1->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var hbox2 = layout->hbox();
   hbox2->append_graphic(Graphic_var(layout->hfill()));
-  hbox2->append_graphic(Graphic_var(widget->slider(bv2, xaxis)));
+  hbox2->append_graphic(Graphic_var(widgets->slider(bv2, xaxis)));
   hbox2->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var hbox3 = layout->hbox();
   hbox3->append_graphic(Graphic_var(layout->hfill()));
-  hbox3->append_graphic(Graphic_var(widget->slider(bv3, xaxis)));
+  hbox3->append_graphic(Graphic_var(widgets->slider(bv3, xaxis)));
   hbox3->append_graphic(Graphic_var(layout->hfill()));
   Graphic_var box = layout->vbox();
   box->append_graphic(Graphic_var(layout->align(group, 0., 0.)));
@@ -128,8 +113,8 @@ LogoDemo::LogoDemo(Application *a)
   box->append_graphic(hbox3);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
-  Graphic_var foo = tool->frame(box, 10., spec, true);
-  Controller_var bar = tool->group(foo);
+  Graphic_var foo = tools->frame(box, 10., spec, true);
+  Controller_var bar = tools->group(foo);
   application->append(bar, Unicode::String("MVC demo"));
 }
 

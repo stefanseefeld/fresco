@@ -37,7 +37,6 @@ public:
   virtual sockbuf *obuf() { return _socket;}
   virtual sockbuf *ebuf() { return 0;}
 private:
-  virtual void done(int, iomask_t) { stop();}
   sockbuf *_socket;
 };
 

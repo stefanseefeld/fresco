@@ -25,6 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
+#include <Warsaw/WidgetKit.hh>
 #include <Warsaw/UnidrawKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
@@ -37,10 +38,16 @@ public:
   UnidrawKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
   virtual ~UnidrawKitImpl();
   virtual void bind(Warsaw::ServerContext_ptr);
+  virtual Unidraw::Tool_ptr select_tool();
   virtual Unidraw::Editor_ptr create_editor();
+  virtual Unidraw::View_ptr   create_view(Warsaw::Graphic_ptr g, Unidraw::Model_ptr);
+  Warsaw::FigureKit_ptr figures();
+  Warsaw::ToolKit_ptr tools();
+  Warsaw::WidgetKit_ptr widgets();
 private:
-  RefCount_var<Warsaw::FigureKit> _figure;
-  RefCount_var<Warsaw::ToolKit>   _tool;
+  RefCount_var<Warsaw::FigureKit> _figures;
+  RefCount_var<Warsaw::ToolKit>   _tools;
+  RefCount_var<Warsaw::WidgetKit> _widgets;
 };
 
 #endif

@@ -20,17 +20,18 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/PickTraversal.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
+#include <Warsaw/IO.hh>
 #include <Berlin/Geometry.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Color.hh>
 #include <Berlin/Vertex.hh>
 #include <Berlin/Provider.hh>
-#include <Prague/Sys/Tracer.hh>
 #include "Figure/FigureImpl.hh"
 
 using namespace Geometry;
@@ -111,7 +112,7 @@ void TransformFigure::copy(const TransformFigure &tf)
   if (tf._ext->valid) _ext->copy(Region_var(tf._ext->_this()));
 }
 
-FigureImpl::FigureImpl() { _path = new Figure::Vertices();}
+FigureImpl::FigureImpl() : _path(new Warsaw::Path()) {}
 FigureImpl::~FigureImpl() {}
 
 void FigureImpl::add_point(Coord x, Coord y)
@@ -188,18 +189,22 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 	{
 	  DrawingKit_var drawing = traversal->drawing();
 	  drawing->save();
- 	  if (_mode & Figure::fill)
- 	    {
-	      drawing->foreground(_bg);
-	      drawing->surface_fillstyle(DrawingKit::solid);
-	      drawing->draw_path(_path);
-	    }
- 	  if (_mode & Figure::outline)
-	    {
-	      drawing->foreground(_fg);
-	      drawing->surface_fillstyle(DrawingKit::outlined);
-	      drawing->draw_path(_path);
-	    }
+	  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
+	  cumulative->copy(Transform_var(drawing->transformation()));
+	  cumulative->premultiply(Transform_var(_tx->_this()));
+	  drawing->transformation(Transform_var(cumulative->_this()));
+//  	  if (_mode & Figure::fill)
+//  	    {
+// 	      drawing->foreground(_bg);
+// 	      drawing->surface_fillstyle(DrawingKit::solid);
+// 	      drawing->draw_path(_path);
+// 	    }
+//  	  if (_mode & Figure::outline)
+// 	    {
+// 	      drawing->foreground(_fg);
+// 	      drawing->surface_fillstyle(DrawingKit::outlined);
+	  drawing->draw_path(_path);
+// 	}
 	  drawing->restore();
 	}
     }
@@ -340,12 +345,12 @@ void FigureImpl::resize()
 
 void FigureImpl::reset()
 {
-  _path = new Figure::Vertices();
+  _path = new Warsaw::Path();
   _ext->valid = false;
 }
 
 void FigureImpl::copy(const FigureImpl &f)
 {
   TransformFigure::copy(f);
-  _path = new Figure::Vertices(f._path);
+  _path = new Warsaw::Path(f._path);
 }

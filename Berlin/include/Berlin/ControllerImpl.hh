@@ -87,8 +87,8 @@ protected:
   virtual void key_press(const Warsaw::Input::Event &);
   virtual void key_release(const Warsaw::Input::Event &);
   virtual void other(const Warsaw::Input::Event &);
-  void grab(Warsaw::PickTraversal_ptr t) { t->grab(); _grabs |= 1 << t->device(); update_state();} 
-  void ungrab(Warsaw::PickTraversal_ptr t) { t->ungrab(); _grabs &= ~(1 << t->device()); update_state();}
+  void grab(Warsaw::PickTraversal_ptr);
+  void ungrab(Warsaw::PickTraversal_ptr);
   bool grabbed(Warsaw::Input::Device d) { return _grabs & (1 << d);}
   void set_focus(Warsaw::Input::Device d) { _focus |= 1 << d; update_state();}
   void clear_focus(Warsaw::Input::Device d) { _focus &= ~(1 << d); update_state();}

@@ -26,17 +26,18 @@
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/UnidrawKit.hh>
-#include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/ServantBase.hh>
 
 class CommandImpl : public virtual POA_Unidraw::Command,
-		    public RefCountBaseImpl
+		    public ServantBase
 {
 public:
   CommandImpl();
   virtual ~CommandImpl();
-  void execute(const CORBA::Any &);
-  void store(Unidraw::Component_ptr, const CORBA::Any &);
-  CORBA::Any *recall(Unidraw::Component_ptr);
+  virtual void execute();
+  virtual void store(Unidraw::Model_ptr, const CORBA::Any &);
+  virtual CORBA::Any *recall(Unidraw::Model_ptr);
+  virtual void destroy() { deactivate();}
 };
 
 #endif

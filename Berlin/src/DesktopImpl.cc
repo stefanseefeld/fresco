@@ -35,19 +35,25 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Layout;
 
-DesktopImpl::DesktopImpl(Stage_ptr s)
-  : ControllerImpl(false), stage(Layout::Stage::_duplicate(s))
+DesktopImpl::DesktopImpl(Stage_ptr stage)
+  : ControllerImpl(false), _stage(RefCount_var<Layout::Stage>::increment(stage))
 {
   /*
    * Attention !!: this invokes _this(), which implicitely activates the desktop.
    */
-  ControllerImpl::body(stage);
+  ControllerImpl::body(_stage);
 }
 DesktopImpl::~DesktopImpl() {}
-
+void DesktopImpl::body(Warsaw::Graphic_ptr) {}
+Warsaw::Graphic_ptr DesktopImpl::body() { return CORBA::is_nil(_stage) ? Layout::Stage::_nil() : Layout::Stage::_duplicate(_stage);}
+Warsaw::Region_ptr DesktopImpl::bbox() { return _stage->bbox();}
+CORBA::Long DesktopImpl::layers() { return _stage->layers();}
+Layout::StageHandle_ptr DesktopImpl::layer(Layout::Stage::Index l) { return _stage->layer(l);}
+void DesktopImpl::begin() { _stage->begin();}
+void DesktopImpl::end() { _stage->end();}
 Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw::Vertex &p, const Warsaw::Vertex &s, Layout::Stage::Index l)
 {
-  return stage->insert(g, p, s, l);
+  return _stage->insert(g, p, s, l);
 }
 
 /*

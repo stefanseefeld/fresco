@@ -101,8 +101,8 @@ class GraphicImpl : public virtual POA_Warsaw::Graphic,
   static Warsaw::Vertex transform_allocate(RegionImpl &, const Warsaw::Graphic::Requisition &, Warsaw::Transform_ptr);
 private:
   Warsaw::Tag unique_parent_id();
-  glist_t _parents;
-  Prague::Mutex _mutex;
+  glist_t              _parents;
+  Prague::Mutex        _mutex;
 };
 
 class GraphicImpl::Iterator : public virtual POA_Warsaw::GraphicIterator,

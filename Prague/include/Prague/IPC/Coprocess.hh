@@ -41,12 +41,12 @@ public:
   struct IONotifier
   {
     virtual ~IONotifier(){}
-    virtual bool notify(iomask_t) = 0;
+    virtual bool notify(iomask) = 0;
   };
   struct EOFNotifier
   {
     virtual ~EOFNotifier(){}
-    virtual void notify(iomask_t) = 0;
+    virtual void notify(iomask) = 0;
   };
   enum state_t {ready, running, exited, signaled};
   Coprocess(const string &, IONotifier *, EOFNotifier * = 0);
@@ -62,10 +62,9 @@ public:
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
 protected:
-  virtual bool process(int, iomask_t);
-  virtual void done(int, iomask_t);
+  virtual bool process(int, iomask);
   void  terminate();
-  void  shutdown(short);  
+  void  shutdown(int);
 protected:
   string       path;
   IONotifier  *ioNotifier;

@@ -38,7 +38,7 @@ public:
   }
   ~Connection() { Trace trace("Connection::~Connection"); running = false;}
 private:
-  virtual bool process(int, iomask_t)
+  virtual bool process(int, iomask)
   {
     Trace trace("Connection::process");
     istream is(obuf());
@@ -46,6 +46,7 @@ private:
     getline(is, line);
     ostream os(ibuf());
     os << "welcome !" << endl;
+    stop();
     return false;
   }
 };

@@ -42,7 +42,7 @@ public:
   virtual Socket *obuf() { return static_cast<Socket *>(SocketAgent::obuf());}
   virtual void start();
 private:
-  virtual bool process(int, iomask_t);
+  virtual bool process(int, iomask);
   typename Socket::address_type _peer;
 };
 
@@ -56,7 +56,7 @@ void Connector<Connection, Socket>::start()
 }
 
 template <typename Connection, typename Socket>
-bool Connector<Connection, Socket>::process(int, iomask_t)
+bool Connector<Connection, Socket>::process(int, iomask)
 {
   Trace trace("Connector::process");
   int error = ibuf()->clearerror();

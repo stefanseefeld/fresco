@@ -56,6 +56,7 @@ module Warsaw
       Controller   scrollbar(in BoundedRange x, in Axis a);
       Choice       toggle_choice();
       Choice       checkbox_choice();
+      Choice       toolbar();
       Controller   terminal();
       
       Controller   scrollable(in Graphic g);

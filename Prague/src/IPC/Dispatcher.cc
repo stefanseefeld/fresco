@@ -82,7 +82,7 @@ Dispatcher::~Dispatcher()
 {
 }
 
-void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
+void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
 {
   Trace trace("Dispatcher::bind");
   if (server.state() != Thread::running)
@@ -210,7 +210,6 @@ void Dispatcher::process(task *t)
   // save the agent from being deleted while it processes i/o
   agent->add_ref();
   bool done = !agent->process(t->fd, t->mask);
-  if (done) agent->done(t->fd, t->mask);
   agent->remove_ref();
   // now look whether the agent is released and the task should be deleted
   MutexGuard guard(mutex);

@@ -279,6 +279,15 @@ Choice_ptr WidgetKit::checkbox_choice()
   return choice->_this();
 }
 
+Choice_ptr WidgetKit::toolbar()
+{
+  RefCount_var<Selection> selection = command->group(Selection::exclusive|Selection::required);
+  Choice *choice = new ToolChoice(selection, layout, tool, WidgetKit_var(_this()));
+  activate(choice);
+  choice->body(Graphic_var(layout->vbox()));
+  return choice->_this();
+}
+
 Controller_ptr WidgetKit::terminal()
 {
   Terminal *terminal = new Terminal(command);

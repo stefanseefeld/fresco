@@ -33,28 +33,23 @@
 class Viewer : public ControllerImpl
 {
 public:
-  Viewer(Warsaw::Coord, Warsaw::Coord, Unidraw::Editor_ptr, Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
+  Viewer();
   virtual ~Viewer();
+  void init(Unidraw::Editor_ptr, Unidraw::Model_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
+  virtual void append_graphic(Warsaw::Graphic_ptr);
+  virtual void prepend_graphic(Warsaw::Graphic_ptr);
+  virtual Warsaw::Graphic::Iterator_ptr first_child_graphic();
+  virtual Warsaw::Graphic::Iterator_ptr last_child_graphic();
 protected:
-  virtual void activate_composite();
   virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void move(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
   virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
 private:
   void add(Warsaw::Coord, Warsaw::Coord);
-  Unidraw::Editor_var     _editor;
-  Warsaw::FigureKit_var   _figure;
-  Warsaw::Graphic_var     _root;
-  Warsaw::Vertex          _start;
-  Warsaw::Graphic_var     _target;
-  Impl_var<TransformImpl> _target_tx;
-  Warsaw::Coord           _width;
-  Warsaw::Coord           _height;
-  enum
-  {
-    create_tool, move_tool, move_root_tool,
-    scale_tool, scale_root_tool, rotate_tool, rotate_root_tool
-  } _curtool;
+  Unidraw::Editor_var      _editor;
+  Unidraw::Tool_var        _active;
+  Warsaw::Graphic_var      _root;
 };
 
 #endif

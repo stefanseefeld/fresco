@@ -28,16 +28,15 @@
 module Warsaw
 {
   interface Controller;
+  interface Focus;
 
   interface PickTraversal : Traversal
     {
-      readonly attribute Input::Device device;
       void enter_controller(in Controller c);
       void leave_controller();
       void hit();
       boolean picked();
-      void grab();
-      void ungrab();
+      Focus get_focus();
       boolean forward();
       boolean backward();
     };

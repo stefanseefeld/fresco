@@ -107,12 +107,17 @@ class PathImpl : public virtual POA_Figure::Path,
                  public FigureImpl
 {
 public:
-  PathImpl();
-  PathImpl(const Figure::Vertices &);
+  PathImpl(bool);
+  PathImpl(const Warsaw::Path &, bool);
   PathImpl(const PathImpl &);
   virtual ~PathImpl();
   virtual void resize();
-  Figure::Vertices *handles();
+  Warsaw::Path *handles();
+  void handles(const Warsaw::Path &);
+  CORBA::Boolean closed();
+private:
+  Warsaw::Path_var _handles;
+  bool             _closed;
 };
 
 #endif

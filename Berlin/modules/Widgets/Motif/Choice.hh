@@ -71,5 +71,14 @@ class CheckboxChoice : public Choice
   void remove_item(Warsaw::Tag);
 };
 
+class ToolChoice : public Choice
+{
+ public:
+  ToolChoice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
+  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr);
+  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr);
+  void remove_item(Warsaw::Tag);
+};
+
 };
 #endif

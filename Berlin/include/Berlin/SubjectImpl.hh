@@ -42,10 +42,10 @@ public:
   virtual void notify();
   void block(CORBA::Boolean);  
 private:
-  vector<Warsaw::Observer_var> observers;
-  CORBA::Boolean blocked;
-  Prague::Mutex mutex;
-  Prague::Mutex observerMutex;
+  vector<Warsaw::Observer_var> _observers;
+  CORBA::Boolean               _blocked;
+  Prague::Mutex                _mutex;
+  Prague::Mutex                _observerMutex;
 };
 
 #endif 

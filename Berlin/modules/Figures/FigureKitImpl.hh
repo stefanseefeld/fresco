@@ -49,8 +49,8 @@ class FigureKitImpl : public virtual POA_Warsaw::FigureKit,
   Figure::Ellipse_ptr ellipse(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   //   Figures::Path_ptr openBspline(const Figure::Vertices &);
   //   Figures::Path_ptr closedBspline(const Figure::Vertices &);
-  Figure::Path_ptr multiline(const Figure::Vertices &);
-  Figure::Path_ptr polygon(const Figure::Vertices &);
+  Figure::Path_ptr multiline(const Warsaw::Path &);
+  Figure::Path_ptr polygon(const Warsaw::Path &);
   
   Warsaw::Image_ptr   pixmap(Warsaw::Raster_ptr);
   Warsaw::Graphic_ptr texture(Warsaw::Graphic_ptr, Warsaw::Raster_ptr);

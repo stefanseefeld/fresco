@@ -40,13 +40,14 @@ public:
   }
   ~Connection() { Trace trace("Connection::~Connection"); running = false;}
 private:
-  virtual bool process(int, iomask_t)
+  virtual bool process(int, iomask)
   {
     Trace trace("Connection::process");
     istream is(obuf());
     string line;
     getline(is, line);
     cout << "server replied: " << line << endl;
+    stop();
     return false;
   }
 };
@@ -78,7 +79,15 @@ int main (int argc, char **argv)
   sockunixbuf *socket = new sockunixbuf(sockbuf::sock_stream);
   Agent *connector = new Connector<Connection, sockunixbuf>(socket, sockunixaddr(value));
   running = true;
-  connector->start();
+  try
+    {
+      connector->start();
+    }
+  catch (const sockerr &e)
+    {
+      cerr << "error starting the Connector: " << e.errstr() << endl;
+      running = false;
+    }
   connector->remove_ref();
   while (running) sleep(1);
 }

@@ -31,36 +31,36 @@ class PolyGraphic::Iterator : public virtual POA_Warsaw::GraphicIterator,
 		              public virtual GraphicImpl::Iterator
 {
 public:
-  Iterator(PolyGraphic *p, Tag c) : parent(p), cursor(c) { Trace trace("PolyGraphic::Iterator::Iterator"); parent->_add_ref();}
-  virtual ~Iterator() { Trace trace("PolyGraphic::Iterator::~Iterator"); parent->_remove_ref();}
+  Iterator(PolyGraphic *p, Tag c) : _parent(p), _cursor(c) { Trace trace("PolyGraphic::Iterator::Iterator"); _parent->_add_ref();}
+  virtual ~Iterator() { Trace trace("PolyGraphic::Iterator::~Iterator"); _parent->_remove_ref();}
   virtual Warsaw::Graphic_ptr child()
   {
     Trace trace("PolyGraphic::Iterator::child");
-    MutexGuard guard(parent->_mutex);
-    if (cursor > parent->_children.size()) return Warsaw::Graphic::_nil();
-    return RefCount_var<Warsaw::Graphic>::increment(parent->_children[cursor].peer);
+    MutexGuard guard(_parent->_mutex);
+    if (_cursor > _parent->_children.size()) return Warsaw::Graphic::_nil();
+    return RefCount_var<Warsaw::Graphic>::increment(_parent->_children[_cursor].peer);
   }
-  virtual void next() { cursor++;}
-  virtual void prev() { cursor--;}
+  virtual void next() { _cursor++;}
+  virtual void prev() { _cursor--;}
   virtual void insert(Graphic_ptr child)
   {
     Trace trace("PolyGraphic::Iterator::insert");
-    parent->_mutex.lock();
+    _parent->_mutex.lock();
     Edge edge;
     edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
-    edge.localId = parent->unique_child_id();
-    edge.peerId = child->add_parent_graphic(Graphic_var(parent->_this()), edge.localId);
-    parent->_children.insert(parent->_children.begin() + cursor, edge);
-    parent->_mutex.unlock();
-    parent->need_resize();
+    edge.localId = _parent->unique_child_id();
+    edge.peerId = child->add_parent_graphic(Graphic_var(_parent->_this()), edge.localId);
+    _parent->_children.insert(_parent->_children.begin() + _cursor, edge);
+    _parent->_mutex.unlock();
+    _parent->need_resize();
   }
   virtual void replace(Graphic_ptr child)
   {
     Trace trace("PolyGraphic::Iterator::replace");
     {
-      MutexGuard guard(parent->_mutex);
-      if (cursor > parent->_children.size()) return;
-      Edge &edge = parent->_children[cursor];
+      MutexGuard guard(_parent->_mutex);
+      if (_cursor > _parent->_children.size()) return;
+      Edge &edge = _parent->_children[_cursor];
       if (!CORBA::is_nil(edge.peer))
 	try
 	  {
@@ -70,17 +70,17 @@ public:
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
       edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
-      edge.peerId = child->add_parent_graphic(Graphic_var(parent->_this()), edge.localId);
+      edge.peerId = child->add_parent_graphic(Graphic_var(_parent->_this()), edge.localId);
     }
-    parent->need_resize();
+    _parent->need_resize();
   }
   virtual void remove()
   {
     Trace trace("PolyGraphic::Iterator::remove");
     {
-      MutexGuard guard(parent->_mutex);
-      if (cursor >= parent->_children.size()) return;
-      GraphicImpl::glist_t::iterator i = parent->_children.begin() + cursor;
+      MutexGuard guard(_parent->_mutex);
+      if (_cursor >= _parent->_children.size()) return;
+      GraphicImpl::glist_t::iterator i = _parent->_children.begin() + _cursor;
       try
 	{
 	  (*i).peer->remove_parent_graphic((*i).peerId);
@@ -88,13 +88,13 @@ public:
 	}
       catch(const CORBA::OBJECT_NOT_EXIST &) {}
       catch (const CORBA::COMM_FAILURE &) {}
-      parent->_children.erase(i);
+      _parent->_children.erase(i);
     }
-    parent->need_resize();
+    _parent->need_resize();
   }
 private:
-  PolyGraphic *parent;
-  size_t       cursor;
+  PolyGraphic *_parent;
+  size_t       _cursor;
 };
 
 Pool<Warsaw::Graphic::Requisition> PolyGraphic::_pool;
@@ -180,7 +180,7 @@ Warsaw::Graphic::Iterator_ptr PolyGraphic::first_child_graphic()
 Warsaw::Graphic::Iterator_ptr PolyGraphic::last_child_graphic()
 {
   Trace trace("PolyGraphic::last_child_graphic");
-  Iterator *iterator = new Iterator(this, num_children() - 1);
+  Iterator *iterator = new Iterator(this, num_children());
   activate(iterator);
   return iterator->_this();
 }

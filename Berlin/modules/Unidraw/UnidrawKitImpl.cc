@@ -23,6 +23,8 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include "Unidraw/UnidrawKitImpl.hh"
+#include "Unidraw/ViewImpl.hh"
+#include "Unidraw/SelectTool.hh"
 #include "Unidraw/EditorImpl.hh"
 
 using namespace Prague;
@@ -38,16 +40,37 @@ void UnidrawKitImpl::bind(ServerContext_ptr context)
   KitImpl::bind(context);
   Warsaw::Kit::PropertySeq props;
   props.length(0);
-  _figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
-  _tool   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
+  _figures = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
+  _tools   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
+  _widgets = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
+}
+
+Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
+{
+  Graphic_var box = _figures->rectangle(0., 0., 1., 1.);
+  SelectTool *tool = new SelectTool(box);
+  activate(tool);
+  return tool->_this();
 }
 
 Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 {
-  EditorImpl *editor = new EditorImpl(_figure, _tool);
+  EditorImpl *editor = new EditorImpl(this);
   activate(editor);
   return editor->_this();
 }
+
+Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr m)
+{
+  UViewImpl *view = new UViewImpl(m);
+  activate(view);
+  view->body(g);
+  return view->_this();
+}
+
+Warsaw::FigureKit_ptr UnidrawKitImpl::figures() { return RefCount_var<Warsaw::FigureKit>::increment(_figures);}
+Warsaw::ToolKit_ptr UnidrawKitImpl::tools() { return RefCount_var<Warsaw::ToolKit>::increment(_tools);}
+Warsaw::WidgetKit_ptr UnidrawKitImpl::widgets() { return RefCount_var<Warsaw::WidgetKit>::increment(_widgets);}
 
 extern "C" KitFactory *load()
 {

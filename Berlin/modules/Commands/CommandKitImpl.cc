@@ -37,45 +37,68 @@
 
 using namespace Warsaw;
 
+class DebugCommand : public CommandImpl
+{
+public:
+  DebugCommand(Command_ptr c, ostream &os, const char *t) : _command(Warsaw::Command::_duplicate(c)), _os(os), _text(t) {}
+  virtual void execute(const CORBA::Any &any)
+  {
+    _os << _text << " : entering execute" << endl; 
+    _command->execute(any);
+    _os << _text << " : leaving execute" << endl;
+  }
+ private:
+  Command_var _command;
+  ostream    &_os;
+  string      _text;
+};
+
+class LogCommand : public CommandImpl
+{
+public:
+  LogCommand(ostream &os, const char *text) : _os(os), _text(text) {}
+  virtual void execute(const CORBA::Any &) { _os << _text << endl;}
+ private:
+  ostream &_os;
+  string   _text;
+};
+
 class MacroCommandImpl : public virtual POA_Warsaw::MacroCommand,
 			 public CommandImpl
 {
 public:
   virtual ~MacroCommandImpl()
   {
-    for (vector<Warsaw::Command_var>::iterator i = commands.begin(); i != commands.end(); ++i)
+    for (vector<Warsaw::Command_var>::iterator i = _commands.begin(); i != _commands.end(); ++i)
       (*i)->destroy();
   }
   virtual void append(Warsaw::Command_ptr c)
   {
-    commands.push_back(Warsaw::Command::_duplicate(c));
+    _commands.push_back(Warsaw::Command::_duplicate(c));
   }
   virtual void prepend(Warsaw::Command_ptr c)
   {
-    commands.insert(commands.begin(), Warsaw::Command::_duplicate(c));
+    _commands.insert(_commands.begin(), Warsaw::Command::_duplicate(c));
   }
   virtual void execute(const CORBA::Any &any)
     {
-      for (vector<Warsaw::Command_var>::iterator i = commands.begin(); i != commands.end(); ++i)
+      for (vector<Warsaw::Command_var>::iterator i = _commands.begin(); i != _commands.end(); ++i)
 	(*i)->execute(any);
     }
  private:
-  vector<Warsaw::Command_var> commands;
-};
-
-class LogCommand : public CommandImpl
-{
-public:
-  LogCommand(ostream &oss, const char *t) : os(oss), text(t) {}
-  virtual void execute(const CORBA::Any &) { os << text << endl;}
- private:
-  ostream &os;
-  string text;
+  vector<Warsaw::Command_var> _commands;
 };
 
 CommandKitImpl::CommandKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p) {}
 CommandKitImpl::~CommandKitImpl() {}
+Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
+{
+  DebugCommand *command = new DebugCommand(c, cout, text);
+  activate(command);
+  return command->_this();
+}
+
 Command_ptr CommandKitImpl::log(const char *text)
 {
   LogCommand *command = new LogCommand(cout, text);
@@ -99,7 +122,7 @@ TelltaleConstraint_ptr CommandKitImpl::exclusive(Telltale::Mask m)
 
 TelltaleConstraint_ptr CommandKitImpl::selection_required()
 {
-  SelectionRequired *constraint = new SelectionRequired();
+  SelectionRequired *constraint = new SelectionRequired(Controller::toggled);
   activate(constraint);
   return constraint->_this();
 }
@@ -121,9 +144,27 @@ Telltale_ptr CommandKitImpl::constrained_telltale(TelltaleConstraint_ptr constra
 
 Selection_ptr CommandKitImpl::group(Selection::Policy policy)
 {
-  TelltaleConstraint_var constraint;
-  if (policy == Warsaw::Selection::exclusive) constraint = exclusive(Warsaw::Controller::toggled);
-  SelectionImpl *selection = new SelectionImpl(policy, constraint);
+  TelltaleConstraintImpl *constraint = 0;
+  switch (policy)
+    {
+    case Selection::exclusive:
+      constraint = new ExclusiveChoice(Controller::toggled);
+      break;
+    case Selection::required:
+      constraint = new SelectionRequired(Controller::toggled);
+      break;
+    case Selection::exclusive|Selection::required:
+      constraint = new ExclusiveRequired(Controller::toggled);
+      break;
+    default: break;
+    }
+  SelectionImpl *selection = 0;
+  if (constraint)
+    {
+      activate(constraint);
+      selection = new SelectionImpl(policy, TelltaleConstraint_var(constraint->_this()));
+    }
+  else selection = new SelectionImpl(policy, TelltaleConstraint::_nil());
   activate(selection);
   return selection->_this();
 }

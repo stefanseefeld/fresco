@@ -49,7 +49,7 @@ class Terminal : public MonoGraphic
   {
   public:
     Output(Terminal *t) : terminal(t) {}
-    virtual bool notify(Prague::Agent::iomask_t);
+    virtual bool notify(Prague::Agent::iomask);
   private:
     Terminal *terminal;
   };

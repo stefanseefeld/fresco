@@ -19,21 +19,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/SubjectImpl.hh"
 #include <Prague/Sys/Tracer.hh>
+#include "Berlin/SubjectImpl.hh"
 #include <algorithm>
 #include <functional>
 
 using namespace Prague;
 using namespace Warsaw;
 
-SubjectImpl::SubjectImpl() : blocked(false) {}
+SubjectImpl::SubjectImpl() : _blocked(false) {}
 
-void SubjectImpl::attach(Observer_ptr o)
+void SubjectImpl::attach(Observer_ptr observer)
 {
   Trace trace("SubjectImpl::attach");
-  MutexGuard guard(observerMutex);
-  observers.push_back(Warsaw::Observer::_duplicate(o));
+  MutexGuard guard(_observerMutex);
+  _observers.push_back(Warsaw::Observer::_duplicate(observer));
 }
 
 struct Id_eq : public unary_function<Warsaw::Identifiable_ptr, bool>
@@ -43,18 +43,18 @@ struct Id_eq : public unary_function<Warsaw::Identifiable_ptr, bool>
   Warsaw::Identifiable_ptr id;
 };
 
-void SubjectImpl::detach(Observer_ptr o)
+void SubjectImpl::detach(Observer_ptr observer)
 {
   Trace trace("SubjectImpl::detach");
-  MutexGuard guard(observerMutex);
-  observers.erase(find_if(observers.begin(), observers.end(), Id_eq(o)));
+  MutexGuard guard(_observerMutex);
+  _observers.erase(find_if(_observers.begin(), _observers.end(), Id_eq(observer)));
 }
 
 
-void SubjectImpl::block(CORBA::Boolean b)
+void SubjectImpl::block(CORBA::Boolean blocked)
 {
-  MutexGuard guard(mutex);
-  blocked = b;
+  MutexGuard guard(_mutex);
+  _blocked = blocked;
 }
 
 void SubjectImpl::notify()
@@ -65,11 +65,11 @@ void SubjectImpl::notify()
 void SubjectImpl::notify(const CORBA::Any &change)
 {
   Trace trace("SubjectImpl::notify");
-  MutexGuard guard(mutex);
-  if (!blocked)
+  MutexGuard guard(_mutex);
+  if (!_blocked)
     {
-      MutexGuard guard(observerMutex);
-      for(vector<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
+      MutexGuard guard(_observerMutex);
+      for(vector<Observer_var>::iterator i = _observers.begin(); i != _observers.end(); i++)
 	try { (*i)->update(change);}
         catch (const CORBA::OBJECT_NOT_EXIST &) { *i = Observer::_nil();}
 	catch (const CORBA::COMM_FAILURE &) { *i = Observer::_nil();}

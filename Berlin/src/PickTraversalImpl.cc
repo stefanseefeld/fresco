@@ -32,15 +32,35 @@ using namespace Warsaw;
 PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, PositionalFocus *f)
   : TraversalImpl(g, r, t),
     _focus(f),
-    _memento(0),
-    _picked(false),
     _cursor(0)
 {
   Trace trace("PickTraversalImpl::PickTraversalImpl");
   __this = POA_Warsaw::PickTraversal::_this();
 }
 
+PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &traversal)
+  : TraversalImpl(traversal),
+    _controllers(traversal._controllers),
+    _positions(traversal._positions),
+    _pointer(traversal._pointer),
+    _focus(traversal._focus),
+    _cursor(traversal._positions.back() - 1)
+{
+  __this = POA_Warsaw::PickTraversal::_this();
+}
+
 PickTraversalImpl::~PickTraversalImpl() {}
+
+PickTraversalImpl &PickTraversalImpl::operator = (const PickTraversalImpl &traversal)
+{
+  TraversalImpl::operator = (traversal);
+  _controllers = traversal._controllers;
+  _positions = traversal._positions;
+  _pointer = traversal._pointer;
+  _focus = traversal._focus;
+  _cursor = traversal._positions.back() - 1;
+  return *this;
+}
 
 PickTraversal_ptr PickTraversalImpl::_this()
 {
@@ -82,7 +102,7 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
 
 void PickTraversalImpl::visit(Warsaw::Graphic_ptr g) { g->pick(__this);}
 Warsaw::Traversal::order PickTraversalImpl::direction() { return Warsaw::Traversal::down;}
-CORBA::Boolean PickTraversalImpl::ok() { return !_picked;}
+CORBA::Boolean PickTraversalImpl::ok() { return !picked();}
 
 CORBA::Boolean PickTraversalImpl::intersects_region(Region_ptr region)
 {
@@ -107,7 +127,6 @@ CORBA::Boolean PickTraversalImpl::intersects_allocation()
   return intersects_region(region);
 }
 
-Warsaw::Input::Device PickTraversalImpl::device() { return _focus->device();}
 void PickTraversalImpl::enter_controller(Controller_ptr c)
 {
   Trace trace("PickTraversal::enter_controller");
@@ -122,16 +141,7 @@ void PickTraversalImpl::leave_controller()
   _positions.pop_back();
 }
 
-void PickTraversalImpl::hit()
-{
-  Trace trace("PickTraversal::hit");
-  _memento->copy(this);
-  _picked = true;
-}
-
-CORBA::Boolean PickTraversalImpl::picked() { return _picked;}
-void PickTraversalImpl::grab() { _focus->grab();}
-void PickTraversalImpl::ungrab() { _focus->ungrab();}
+Focus_ptr PickTraversalImpl::get_focus() { return _focus ? _focus->_this() : Focus::_nil();}
 CORBA::Boolean PickTraversalImpl::forward()
 {
   if (_cursor + 1 < size()) { ++_cursor; return true;}
@@ -142,18 +152,6 @@ CORBA::Boolean PickTraversalImpl::backward()
 {
   if (_cursor > _positions.back()) { --_cursor; return true;}
   return false;
-}
-
-void PickTraversalImpl::copy(const PickTraversalImpl *traversal)
-{
-  TraversalImpl::copy(traversal);
-  _controllers = traversal->_controllers;
-  _positions = traversal->_positions;
-  _pointer = traversal->_pointer;
-//   _focus = traversal->_focus;
-//   _memento = traversal;
-  _cursor = traversal->_positions.back() - 1; // the 'current' graphic is the picked controller
-  
 }
 
 void PickTraversalImpl::debug()
