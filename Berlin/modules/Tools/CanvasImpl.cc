@@ -41,9 +41,9 @@ CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
 {
   Trace trace("CanvasImpl::CanvasImpl");
   Console *console = Console::instance();
-  cout << "I'm still here" << endl;
+  std::cout << "I'm still here" << std::endl;
   if (!_factory) _factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
-  cout << "I'm still here" << endl;
+  std::cout << "I'm still here" << std::endl;
   Warsaw::Drawable::PixelFormat format = console->drawable()->pixel_format();
   size_t size = w * h * format.size;
   _shm = SHM::allocate(size);

@@ -40,7 +40,8 @@ public:
   console(unsigned short t, const string &filename)
     {
       ofstream out(filename);
-      if (!out) cerr << "console::console: couldn't open " << filename << " for write" << endl;
+      if (!out) std::cerr << "console::console: couldn't open " << filename
+	                  << " for write" << std::endl;
       else
 	{
 	  if (t & console::cerr) ::cerr.rdbuf(out.rdbuf());

@@ -240,5 +240,5 @@ void SDL::Drawable::blit(Warsaw::Drawable_ptr d,
 							 reference_to_servant(d));
   if (servant) blit(*servant, x1, y1, w, h, x2, y2);
   else Logger::log(Logger::drawing) << "SDL::Drawable::blit: unable to obtain servant "
-                                    << "from reference" << endl;
+                                    << "from reference" << std::endl;
 }

@@ -79,7 +79,7 @@ SDL::GLContext::GLContext()
   Warsaw::PixelCoord h(_drawable->height());
   
   Logger::log(Logger::loader) << "setting video mode GL " << " w="
-			      << w << " h= " << h << endl;
+			      << w << " h= " << h << std::endl;
   
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_Surface * surface = SDL_SetVideoMode(w, h, 0,
@@ -90,7 +90,7 @@ SDL::GLContext::GLContext()
   SDL_WM_SetCaption("Berlin on SDL (OpenGL)", NULL);
   SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &_isDoubleBuffered);
   if (!_isDoubleBuffered) {
-    cout << "SDL_Error: " << SDL_GetError() << endl;
+    std::cout << "SDL_Error: " << SDL_GetError() << std::endl;
     throw;
   }
   

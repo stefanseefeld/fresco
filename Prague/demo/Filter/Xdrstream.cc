@@ -9,14 +9,15 @@ int main(int argc, char **argv)
   const char *file = "xdr.dat";
   if (argc != 2 || (string("-r") != argv[1] && string("-w") != argv[1]))
     {
-      cout << "Usage: " << argv[0] << " -w|-r" << endl;
+      std::cout << "Usage: " << argv[0] << " -w|-r" << std::endl;
       exit(-1);
     };
   if (string("-r") == argv[1])
     {
       if (access(file, R_OK))
 	{
-	  cerr << "please use " << argv[0] << " -w first to create the data" << endl;
+          std::cerr << "please use " << argv[0]
+		    << " -w first to create the data" << std::endl;
 	  exit(-1);
 	}
       int    i = 0;
@@ -27,13 +28,14 @@ int main(int argc, char **argv)
       ifxdrstream is(file);
       is.width(sizeof(buffer));
       is >> i >> d >> buffer >> s >> c;
-      cout << i << ' ' << d << ' ' << buffer << ' ' << s << ' ' << c << endl;
+      std::cout << i << ' ' << d << ' ' << buffer << ' ' << s << ' ' << c
+	        << std::endl;
     }
   else if (string("-w") == argv[1])
     {
       ofxdrstream os(file);
       os << 42 << 3.1415 << "hello," << string("world") << '!';
-      if (!os) cout << "error writing binary data" << endl;
+      if (!os) std::cout << "error writing binary data" << std::endl;
     }
   return 0;
 };

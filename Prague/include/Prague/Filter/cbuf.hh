@@ -60,7 +60,7 @@ inline int cbuf::uflow()
       if (c == '\n') newline = true;
     }
   else newline = false;
-//   cerr << (char)c << endl;
+//   std::cerr << (char)c << std::endl;
   return c;
 }
 

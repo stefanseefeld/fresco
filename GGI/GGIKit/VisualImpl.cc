@@ -66,7 +66,7 @@ VisualImpl::~VisualImpl()
 
 char *VisualImpl::name()
 {
-  cout << _ggi->name() << endl;
+  std::cout << _ggi->name() << std::endl;
   return CORBA::string_dup(_ggi->name().c_str());
 }
 
@@ -109,7 +109,7 @@ CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr traversal, const 
 CORBA::Boolean VisualImpl::handle_non_positional(const Warsaw::Input::Event &event)
 {
   Trace trace("VisualImpl::handle_non_positional");
-  cout << "VisualImpl::handle_non_positional" << endl;
+  std::cout << "VisualImpl::handle_non_positional" << std::endl;
   /*
    * FIXME !: we assume a lot about the (berlin) event layout here. Make that more flexible...
    */

@@ -81,11 +81,12 @@ void SelectTraversal::hit()
 
 void SelectTraversal::debug()
 {
-  cout << "SelectTraversal::debug : stack size = " << size() << '\n';
+  std::cout << "SelectTraversal::debug : stack size = " << size()
+	    << std::endl;
 //   Region_var r = current_allocation();
 //   Transform_var t = current_transformation();
 //   RegionImpl region(r, t);
-//   cout << "current allocation is " << region << endl;
+//   std::cout << "current allocation is " << region << std::endl;
 }
 
 class SelectCommand : public virtual POA_Unidraw::Command,

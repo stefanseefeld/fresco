@@ -19,5 +19,5 @@ int main(int, char **)
 {
   Profiler prf("main");
   bar();
-  Profiler::dump(cout);
+  Profiler::dump(std::cout);
 }

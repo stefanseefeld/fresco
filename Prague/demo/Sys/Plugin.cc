@@ -3,7 +3,7 @@
 
 class Greeting : public Action
 {
-  virtual void execute() { cout << "Hello World !" << endl;}
+  virtual void execute() { std::cout << "Hello World !" << std::endl;}
 };
 
 dload(Greeting)

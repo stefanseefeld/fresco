@@ -269,7 +269,8 @@ void PositionalFocus::dispatch(Input::Event &event)
   int pidx = Input::get_position(event, position);
   if (pidx == -1)
     {
-      cerr << "PositionalFocus::dispatch error: non positional event" << endl;
+      std::cerr << "PositionalFocus::dispatch error: nonpositional event"
+	        << std::endl;
       return;
     }
   /*
@@ -284,8 +285,8 @@ void PositionalFocus::dispatch(Input::Event &event)
       Traversal *picked = _traversal->memento();
       if (!picked)
 	{
-	  cerr << "PositionalFocus::dispatch : no Controller found! "
-	       << "(position is " << position << ")" << endl;
+	  std::cerr << "PositionalFocus::dispatch : no Controller found!"
+	            << " (position is " << position << ")" << std::endl;
 	  return;
 	}
       else _traversal = picked; // picked == _traversal->memento():
@@ -349,7 +350,7 @@ void PositionalFocus::dispatch(Input::Event &event)
   // Transform_var(_traversal->current_transformation())->
   //   inverse_transform_vertex(position);
   // event[pidx].attr.location(position);
-  // cout << "distributing positional event at " << position << endl;
+  // std::cout << "distributing positional event at " << position << std::endl;
   _controllers.back()->
     handle_positional(PickTraversal_var(_traversal->_this()), event);
 }

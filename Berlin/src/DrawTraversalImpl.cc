@@ -104,7 +104,8 @@ CORBA::Boolean DrawTraversalImpl::intersects_region(Region_ptr r)
 {
   RegionImpl region(r, get_transformation(size() - 1));
 //   RegionImpl cl(clipping);
-//   cout << "DrawTraversalImpl::intersectsRegion " << region << ' ' << clipping << endl;
+//   std::cout << "DrawTraversalImpl::intersectsRegion " << region << ' '
+//             << clipping << std::endl;
   return region.intersects(_clipping);
 }
 

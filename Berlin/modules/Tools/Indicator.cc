@@ -55,5 +55,5 @@ void Indicator::draw(DrawTraversal_ptr traversal)
   Color background = color;
   if (!CORBA::is_nil(telltale) && telltale->test(Telltale::active))
     color = brightness(color, 0.5);
-  cout << "Indicator::draw" << endl;
+  std::cout << "Indicator::draw" << std::endl;
 }

@@ -163,6 +163,6 @@ void GGI::Drawable::blit(Warsaw::Drawable_ptr d,
 {
   GGI::Drawable *servant = dynamic_cast<GGI::Drawable *>(::Console::instance()->reference_to_servant(d));
   if (servant) blit(*servant, x1, y1, w, h, x2, y2);
-  else Logger::log(Logger::drawing) << "GGI::Drawable::blit: unable to obtain servant from reference" << endl;
+  else Logger::log(Logger::drawing) << "GGI::Drawable::blit: unable to obtain servant from reference" << std::endl;
 }
 

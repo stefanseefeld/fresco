@@ -50,165 +50,165 @@ int main (int argc, char **argv) {
 	for (A = UCS4(0x100000); A < UCS4(0x10FFFF); A++) {
 	    if (A.is_defined()) {
 		// code value
-		output_char(cout, A); cout << ";";
+		output_char(cout, A); std::cout << ";";
 		// character name
 
 		// Gen_Cat
 		switch(A.category()) {
-		case CAT_Lu: cout << "Lu;"; break;
-		case CAT_Ll: cout << "Ll;"; break;
-		case CAT_Lt: cout << "Lt;"; break;
-		case CAT_Mn: cout << "Mn;"; break;
-		case CAT_Mc: cout << "Mc;"; break;
-		case CAT_Me: cout << "Me;"; break;
-		case CAT_Nd: cout << "Nd;"; break;
-		case CAT_Nl: cout << "Nl;"; break;
-		case CAT_No: cout << "No;"; break;
-		case CAT_Zs: cout << "Zs;"; break;
-		case CAT_Zl: cout << "Zl;"; break;
-		case CAT_Zp: cout << "Zp;"; break;
-		case CAT_Cc: cout << "Cc;"; break;
-		case CAT_Cf: cout << "Cf;"; break;
-		case CAT_Cs: cout << "Cs;"; break;
-		case CAT_Co: cout << "Co;"; break;
-		case CAT_Cn: cout << "Cn;"; break;
-		case CAT_Lm: cout << "Lm;"; break;
-		case CAT_Lo: cout << "Lo;"; break;
-		case CAT_Pc: cout << "Pc;"; break;
-		case CAT_Pd: cout << "Pd;"; break;
-		case CAT_Ps: cout << "Ps;"; break;
-		case CAT_Pe: cout << "Pe;"; break;
-		case CAT_Pi: cout << "Pi;"; break;
-		case CAT_Pf: cout << "Pf;"; break;
-		case CAT_Po: cout << "Po;"; break;
-		case CAT_Sm: cout << "Sm;"; break;
-		case CAT_Sc: cout << "Sc;"; break;
-		case CAT_Sk: cout << "Sk;"; break;
-		case CAT_So: cout << "So;"; break;
-		default:     cout << "UNDEFINED;";
+		case CAT_Lu: std::cout << "Lu;"; break;
+		case CAT_Ll: std::cout << "Ll;"; break;
+		case CAT_Lt: std::cout << "Lt;"; break;
+		case CAT_Mn: std::cout << "Mn;"; break;
+		case CAT_Mc: std::cout << "Mc;"; break;
+		case CAT_Me: std::cout << "Me;"; break;
+		case CAT_Nd: std::cout << "Nd;"; break;
+		case CAT_Nl: std::cout << "Nl;"; break;
+		case CAT_No: std::cout << "No;"; break;
+		case CAT_Zs: std::cout << "Zs;"; break;
+		case CAT_Zl: std::cout << "Zl;"; break;
+		case CAT_Zp: std::cout << "Zp;"; break;
+		case CAT_Cc: std::cout << "Cc;"; break;
+		case CAT_Cf: std::cout << "Cf;"; break;
+		case CAT_Cs: std::cout << "Cs;"; break;
+		case CAT_Co: std::cout << "Co;"; break;
+		case CAT_Cn: std::cout << "Cn;"; break;
+		case CAT_Lm: std::cout << "Lm;"; break;
+		case CAT_Lo: std::cout << "Lo;"; break;
+		case CAT_Pc: std::cout << "Pc;"; break;
+		case CAT_Pd: std::cout << "Pd;"; break;
+		case CAT_Ps: std::cout << "Ps;"; break;
+		case CAT_Pe: std::cout << "Pe;"; break;
+		case CAT_Pi: std::cout << "Pi;"; break;
+		case CAT_Pf: std::cout << "Pf;"; break;
+		case CAT_Po: std::cout << "Po;"; break;
+		case CAT_Sm: std::cout << "Sm;"; break;
+		case CAT_Sc: std::cout << "Sc;"; break;
+		case CAT_Sk: std::cout << "Sk;"; break;
+		case CAT_So: std::cout << "So;"; break;
+		default:     std::cout << "UNDEFINED;";
 		}
 		// comp_class
 		cout << dec << A.comb_class() << ";";
 		// Bidir_Props
 		switch(A.direction()) {
-		case BIDIR_L:   cout << "L;"; break;
-		case BIDIR_LRE: cout << "LRE;"; break;
-		case BIDIR_LRO: cout << "LRO;"; break;
-		case BIDIR_R:   cout << "R;"; break;
-		case BIDIR_AL:  cout << "AL;"; break;
-		case BIDIR_RLE: cout << "RLE;"; break;
-		case BIDIR_RLO: cout << "RLO;"; break;
-		case BIDIR_PDF: cout << "PDF;"; break;
-		case BIDIR_EN:  cout << "EN;"; break;
-		case BIDIR_ES:  cout << "ES;"; break;
-		case BIDIR_ET:  cout << "ET;"; break;
-		case BIDIR_AN:  cout << "AN;"; break;
-		case BIDIR_CS:  cout << "CS;"; break;
-		case BIDIR_NSM: cout << "NSM;"; break;
-		case BIDIR_BN:  cout << "BN;"; break;
-		case BIDIR_B:   cout << "B;"; break;
-		case BIDIR_S:   cout << "S;"; break;
-		case BIDIR_WS:  cout << "WS;"; break;
-		case BIDIR_ON:  cout << "ON;"; break;
-		default:        cout << "UNDEFINED;";
+		case BIDIR_L:   std::cout << "L;"; break;
+		case BIDIR_LRE: std::cout << "LRE;"; break;
+		case BIDIR_LRO: std::cout << "LRO;"; break;
+		case BIDIR_R:   std::cout << "R;"; break;
+		case BIDIR_AL:  std::cout << "AL;"; break;
+		case BIDIR_RLE: std::cout << "RLE;"; break;
+		case BIDIR_RLO: std::cout << "RLO;"; break;
+		case BIDIR_PDF: std::cout << "PDF;"; break;
+		case BIDIR_EN:  std::cout << "EN;"; break;
+		case BIDIR_ES:  std::cout << "ES;"; break;
+		case BIDIR_ET:  std::cout << "ET;"; break;
+		case BIDIR_AN:  std::cout << "AN;"; break;
+		case BIDIR_CS:  std::cout << "CS;"; break;
+		case BIDIR_NSM: std::cout << "NSM;"; break;
+		case BIDIR_BN:  std::cout << "BN;"; break;
+		case BIDIR_B:   std::cout << "B;"; break;
+		case BIDIR_S:   std::cout << "S;"; break;
+		case BIDIR_WS:  std::cout << "WS;"; break;
+		case BIDIR_ON:  std::cout << "ON;"; break;
+		default:        std::cout << "UNDEFINED;";
 		}
 		// Char_Decomp_Type
 		if (A >= 0xAC00 && A <= 0xD7A3) {
 		    // The values in this area are
 		    // determined algorithmically
 		    // and not included in the file
-		    cout << ";";
+		    std::cout << ";";
 		} else {
 		    bool needSpace = 1;
 		    switch(A.decomp_type()) {
-		    case DECOMP_CANONICAL: cout << ""; needSpace = 0; break;
-		    case DECOMP_FONT:      cout << "<font>"; break;
-		    case DECOMP_NOBREAK:   cout << "<noBreak>"; break;
-		    case DECOMP_INITIAL:   cout << "<initial>"; break;
-		    case DECOMP_MEDIAL:    cout << "<medial>"; break;
-		    case DECOMP_FINAL:     cout << "<final>"; break;
-		    case DECOMP_ISOLATED:  cout << "<isolated>"; break;
-		    case DECOMP_CIRCLE:    cout << "<circle>"; break;
-		    case DECOMP_SUPER:     cout << "<super>"; break;
-		    case DECOMP_SUB:       cout << "<sub>"; break;
-		    case DECOMP_VERTICAL:  cout << "<vertical>"; break;
-		    case DECOMP_WIDE:      cout << "<wide>"; break;
-		    case DECOMP_NARROW:    cout << "<narrow>"; break;
-		    case DECOMP_SMALL:     cout << "<small>"; break;
-		    case DECOMP_SQUARE:    cout << "<square>"; break;
-		    case DECOMP_FRACTION:  cout << "<fraction>"; break;
-		    case DECOMP_COMPAT:    cout << "<compat>"; break;
-		    default:               cout << "UNDEFINED";
+		    case DECOMP_CANONICAL: std::cout << ""; needSpace = 0; break;
+		    case DECOMP_FONT:      std::cout << "<font>"; break;
+		    case DECOMP_NOBREAK:   std::cout << "<noBreak>"; break;
+		    case DECOMP_INITIAL:   std::cout << "<initial>"; break;
+		    case DECOMP_MEDIAL:    std::cout << "<medial>"; break;
+		    case DECOMP_FINAL:     std::cout << "<final>"; break;
+		    case DECOMP_ISOLATED:  std::cout << "<isolated>"; break;
+		    case DECOMP_CIRCLE:    std::cout << "<circle>"; break;
+		    case DECOMP_SUPER:     std::cout << "<super>"; break;
+		    case DECOMP_SUB:       std::cout << "<sub>"; break;
+		    case DECOMP_VERTICAL:  std::cout << "<vertical>"; break;
+		    case DECOMP_WIDE:      std::cout << "<wide>"; break;
+		    case DECOMP_NARROW:    std::cout << "<narrow>"; break;
+		    case DECOMP_SMALL:     std::cout << "<small>"; break;
+		    case DECOMP_SQUARE:    std::cout << "<square>"; break;
+		    case DECOMP_FRACTION:  std::cout << "<fraction>"; break;
+		    case DECOMP_COMPAT:    std::cout << "<compat>"; break;
+		    default:               std::cout << "UNDEFINED";
 		    }
 		    // Decomp String
 		    {
 			Babylon::String us;
 			us = A.decompose();
 			if (us[0] == A)
-			cout << ";" << flush;
+			std::cout << ";";
 			else {
-			    if (needSpace) cout << " " << flush;
+			    if (needSpace) std::cout << " ";
 			    for (unsigned long i = 0; i < us.length(); i++) {
-				output_char(cout, us[i]);
+				output_char(std::cout, us[i]);
 				
 				if ( i == ( us.length() - 1 ) )
-				    cout << ";";
+				    std::cout << ";";
 				else
-				    cout << " ";
+				    std::cout << " ";
 			    }
 			}
 		    }
 		}
 		// Dec_Digit_Value
 		try {
-		    cout << A.dec_digit_value();
+                  std::cout << A.dec_digit_value();
 		} catch (Undefined_Property & p) {}
-		cout << ";";
+		std::cout << ";";
 		// Digit_Value
 		try {
-		    cout << A.digit_value();
+	          std::cout << A.digit_value();
 		} catch (Undefined_Property & p) {}
-		cout << ";";
+		std::cout << ";";
 		// Numeric_Value
 		try {
-		    cout << A.numeric_value();
+	          std::cout << A.numeric_value();
 		} catch (Undefined_Property & p) {}
-		cout << ";";
+		std::cout << ";";
 		// Is_Mirrored
-		if (A.must_mirror()) cout << "Y;";
-		else cout << "N;";
+		if (A.must_mirror()) std::cout << "Y;";
+		else istd::cout << "N;";
 		// Comment and Unicode 1.0 name
 
 		// Uppercase
 		if (A.uppercase() != A)
-		    output_char(cout, A.uppercase());
+		    output_char(istd::cout, A.uppercase());
 		cout << ";";
 		// Lowercase
 		if (A.lowercase() != A)
-		    output_char(cout, A.lowercase());
+		    output_char(std::cout, A.lowercase());
 		cout << ";";
 		// Titlecase
 		if (A.titlecase() != A)
 		    output_char(cout, A.titlecase());
 
-		cout << endl;
+		std::cout << istd::endl;
 	    }
 	    A = skip_to(A);
 	} // for
     } // try
     catch (const Block_Error &Except) {
-	cerr << "ERROR: Block_Error -> EXITING (" 
-	     << Except.what() << ")" << endl;
-	exit(1);
+      std::cerr << "ERROR: Block_Error -> EXITING (" 
+                << Except.what() << ")" << std::endl;
+      exit(1);
     } // catch
     catch (const Undefined_Property &Except) {
-	cerr << "ERROR: Undefined_Property -> EXITING ("
-	     << Except.what() << ")" << endl;
-	exit(2);
+      std::cerr << "ERROR: Undefined_Property -> EXITING ("
+                << Except.what() << ")" << std::endl;
+      exit(2);
     }
     catch (const std::exception & Except) {
-	cerr << "ERROR: Something unexspected happened! -> EXITING ("
-	     << Except.what() << ")" << endl; 
-	exit(3);
+      std::cerr << "ERROR: Something unexspected happened! -> EXITING ("
+                << Except.what() << ")" << std::endl; 
+      exit(3);
     }
 }

@@ -35,8 +35,8 @@ public:
   lostream() { mutex.lock();}
   ~lostream() { mutex.unlock();}
   template <class T>
-  lostream &operator << (const T &t) { cout << t; return *this;}
-  lostream &operator << (ostream & (func)(ostream &)) { func(cout); return *this;}
+  lostream &operator << (const T &t) { std::cout << t; return *this;}
+  lostream &operator << (ostream & (func)(ostream &)) { func(std::cout); return *this;}
 private:
   static Mutex mutex;
 };
@@ -58,9 +58,9 @@ private:
       mutex.lock();
       tsd = counter++;
       mutex.unlock();
-      lostream() << "thread creates specific data: " << *tsd << endl;
+      lostream() << "thread creates specific data: " << *tsd << std::endl;
       Thread::delay(Time(200));
-      lostream() << "thread destroys specific data: " << *tsd << endl;
+      lostream() << "thread destroys specific data: " << *tsd << std::endl;
       return 0;
     }
 };

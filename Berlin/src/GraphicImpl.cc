@@ -169,11 +169,13 @@ static void flexible_transform_request(Graphic::Requisition &req, Transform_ptr 
   mini.upper.z = mini.lower.z + req.z.minimum;
   mini.valid = true;
 
-//   cout << "allocation before transform :\n\t" << nat << "\n\t" << mini << "\n\t" << maxi << endl;
+//   std::cout << "allocation before transform :\n\t" << nat << "\n\t"
+//             << mini << "\n\t" << maxi << std::endl;
   nat.apply_transform(t);
   maxi.apply_transform(t);
   mini.apply_transform(t);
-//   cout << "allocation after transform :\n\t" << nat << "\n\t" << mini << "\n\t" << maxi << endl;
+//   std::cout << "allocation after transform :\n\t" << nat << "\n\t"
+//             << mini << "\n\t" << maxi << std::endl;
 
   req.x.defined = true;
   req.x.natural = nat.upper.x - nat.lower.x;
@@ -240,9 +242,9 @@ static void fixed_transform_request(Graphic::Requisition &req, Transform_ptr t)
   nat.lower.z = -req.z.align * req.z.natural;
   nat.upper.z = nat.lower.z + req.z.natural;
   nat.valid = true;
-//   cout << "allocation before transform :" << nat << endl;
+//   std::cout << "allocation before transform :" << nat << std::endl;
   nat.apply_transform(t);
-//   cout << "allocation after transform :" << nat << endl;
+//   std::cout << "allocation after transform :" << nat << std::endl;
   Coord xlead = -nat.lower.x;
   Coord xtrail = nat.upper.x;
 

@@ -230,7 +230,7 @@ void PathImpl::resize()
   if (_closed && _handles->nodes.length()) add_point(_handles->nodes[0].x, _handles->nodes[0].y);
 //         }
 //     }
-//   cerr << "sorry, PathImpl::resize not implemented" << endl;
+//   std::cerr << "sorry, PathImpl::resize not implemented" << std::endl;
 }
 
 PathImpl::~PathImpl () {}

@@ -11,6 +11,6 @@ int main (int argc, char * argv) {
     us = Babylon::recode<Babylon::UTF8_string>(bs);
 
     for (unsigned int i = 0; i < us.length(); i++)
-	cout << char(us[i]);
-    cout << endl;
+	std::cout << char(us[i]);
+    std::cout << std::endl;
 }

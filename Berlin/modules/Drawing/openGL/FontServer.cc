@@ -38,7 +38,8 @@ FontServer::FontServer()
 //   char *env = getenv("BERLIN_ROOT");
 //   if (!env)
 //     {
-//       cerr << "Please set environment variable BERLIN_ROOT first" << endl;
+//       std::cerr << "Please set environment variable BERLIN_ROOT first"
+//                 << std::endl;
 //       exit(-1);
 //     }
 //   string ttf = string(env) + "/etc/Fonts/helv.ttf";

@@ -79,11 +79,11 @@ void ScreenManager::repair()
     }
   catch (const CORBA::OBJECT_NOT_EXIST &)
     {
-      cerr << "ScreenManager: warning: corrupt scene graph !" << endl;
+      std::cerr << "ScreenManager: warning: corrupt scene graph!" << std::endl;
     }
   catch (const CORBA::BAD_PARAM &)
     {
-      cerr << "ScreenManager: caught bad parameter" << endl;
+      std::cerr << "ScreenManager: caught bad parameter" << std::endl;
     }
 
   _drawing->finish_traversal();

@@ -76,12 +76,12 @@ void ReactorImpl::accept(const Message &m)
 	{
 	  try
 	    {
-	      Logger::log(Logger::command) << "ReactorImpl::accept running command for type " << m.payload.type()->id() << endl;
+	      Logger::log(Logger::command) << "ReactorImpl::accept running command for type " << m.payload.type()->id() << std::endl;
 	      (*i)->execute(m);
 	    }
 	  catch (...)
 	    {
-	      Logger::log(Logger::command) << "ReactorImpl::accept command failed, unbinding for " << m.payload.type()->id() << endl;
+	      Logger::log(Logger::command) << "ReactorImpl::accept command failed, unbinding for " << m.payload.type()->id() << std::endl;
 	      this->unbind(m.payload.type(), *i);
 	    }
 	}
@@ -122,7 +122,7 @@ CORBA::Boolean AsyncReactorImpl::active()
 void AsyncReactorImpl::accept(const Message &m)
 {
   mutex.lock();
-  Logger::log(Logger::message) << "received message of type " << m.payload.type()->id() << endl;
+  Logger::log(Logger::message) << "received message of type " << m.payload.type()->id() << std::endl;
   queue.push(m);
   mutex.unlock();
   condition.signal();
@@ -133,13 +133,13 @@ static void *AsyncReactorImpl::run(void *)
 {
   while(true)
     { // thread lives in here.        
-      Logger::log(Logger::message) << "sleeping on message queue" << endl;
+      Logger::log(Logger::message) << "sleeping on message queue" << std::endl;
       condition.wait(); // this unlocks the queue atomically while it sleeps
       while(!queue.empty() && running)
 	{ // when it wakes up, the queue is re-locked
 	  const Message m = queue.top();
 	  CORBA::TypeCode_var ty = m.payload.type();
-	  Logger::log(Logger::message) << "processing a new message of type " << ty->id() << endl; 
+	  Logger::log(Logger::message) << "processing a new message of type " << ty->id() << std::endl; 
 	  queue.pop();
 	  mutex.unlock();
 	  this->ReactorImpl::accept(m);
@@ -158,7 +158,7 @@ AsyncReactorImpl::AsyncReactorImpl() : queue_mutex(), queue_cond(&queue_mutex) {
 void ReactorImpl::bind(CORBA::TypeCode_ptr ty, Command_ptr c)
 {  
   Prague::Guard<Mutex> guard(mutex);
-  Logger::log(Logger::command) << "ReactorImpl::bind binding new command to type " << ty->id() << endl;
+  Logger::log(Logger::command) << "ReactorImpl::bind binding new command to type " << ty->id() << std::endl;
   CORBA::TypeCode_var newTy = ty;
   Command_var com = Command::_duplicate(c);
   vector<Command_var>::iterator i = find(commands[newTy].begin(), commands[ty].end(), com); 
@@ -174,7 +174,7 @@ void ReactorImpl::unbind(CORBA::TypeCode_ptr ty, Command_ptr c)
 {
   Prague::Guard<Mutex> guard(mutex);
   Command_var cmd = Command::_duplicate(c);
-  Logger::log(Logger::command) << "ReactorImpl::unbind unbinding command from type " << ty->id() << endl;
+  Logger::log(Logger::command) << "ReactorImpl::unbind unbinding command from type " << ty->id() << std::endl;
   std::remove(commands[ty].begin(), commands[ty].end(), cmd);
   // remove the vector altogether if it's empty. 
   dictionary_t::iterator i = commands.find(ty);

@@ -34,6 +34,6 @@ main()
 	       "[_a-zA-Z0-9\\-\\.]*\\.h$");
   string file1 = "a-a.cc";
   string file2 = "a-a.C~";
-  cout << rxfile.match(file1) << endl;
-  cout << rxfile.search(file1) << ' ' << rxfile.search(file2) << endl;
+  std::cout << rxfile.match(file1) << std::endl;
+  std::cout << rxfile.search(file1) << ' ' << rxfile.search(file2) << std::endl;
 }

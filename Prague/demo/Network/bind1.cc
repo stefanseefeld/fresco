@@ -20,12 +20,12 @@ int main ()
     }
   catch (sockerr e)
     {
-      cerr << e.errstr () << endl;
+      std::cerr << e.errstr () << std::endl;
       return 1;
     }
   catch (...)
     {
-      cerr << "unknown exception occured\n";
+      std::cerr << "unknown exception occured" << std::endl;
       return 1;
     }
   return 0;

@@ -50,7 +50,7 @@ private:
   static void write(group g, const T &t)
     {
       los << t;
-      if (active[g]) cerr << t;
+      if (active[g]) std::cerr << t;
     }
   static const int numGroups = 21;
 public:

@@ -297,8 +297,6 @@ Babylon::Paragraphs Babylon::String::get_paragraphs() {
 	i->levels = analyse(this->begin() + i->begin,
 			    this->begin() + i->end);
 
-    cerr << "String::get_paragraphs(): size: " << result.size() << endl;
-
     return result;
 }
 

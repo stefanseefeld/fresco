@@ -200,7 +200,7 @@ Input::Event *GGI::Console::next_event()
 	{
 	  int m = ggiEventsQueued(_visual, mask);
 	  int n = ggiEventsQueued(_visual, move_mask);
-	  //	  cout << "events " << m << ' ' << n << endl;
+	  // std::cout << "events " << m << ' ' << n << std::endl;
 	  if (m == n)  // nothing but a bunch of moves queued up
 	    {
 	      int x = event.pmove.x, y = event.pmove.y;
@@ -253,7 +253,7 @@ void GGI::Console::add_drawable(Console::Drawable *drawable)
 Input::Event *GGI::Console::synthesize(const ggi_event &e)
 {
   Input::Event_var event = new Input::Event;
-//   cerr << "input from event " << e.any.origin << endl;
+//   std::cerr << "input from event " << e.any.origin << std::endl;
   switch (e.any.type)
     {
     case evKeyPress:

@@ -20,7 +20,7 @@ int main ()
     }
   catch (sockerr e)
     {
-      cerr << e.errstr () << endl;
+      std::cerr << e.errstr () << std::endl;
       return 1;
     }
   return 0;
