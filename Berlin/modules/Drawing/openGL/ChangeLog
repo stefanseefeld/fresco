@@ -1,0 +1,5 @@
+1999-03-14  graydon@pobox.com  <graydon@pobox.com>
+
+	* GLDrawable.cc: hoisted in some code from the old DBGraphic for
+ 	initializing GL properly.  
+	
