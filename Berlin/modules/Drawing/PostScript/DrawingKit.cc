@@ -62,7 +62,7 @@ void PSDrawingKit::init()
       << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Berlin Consortium" << std::endl;
-  _os << "/Times-Roman findfont 52 scalefont setfont" << std::endl;
+  _os << "/Times-Roman findfont 12 scalefont setfont" << std::endl;
   _os << "0 0 0 setrgbcolor" << std::endl;
   _os << resolution(xaxis) << " " << -resolution(yaxis) << " scale" << std::endl;
   _os << std::endl;
@@ -103,25 +103,15 @@ void PSDrawingKit::set_clipping(Region_ptr r)
   Lease_var<RegionImpl> climpl(Provider<RegionImpl>::provide());
   climpl->copy(_cl);
 
-  _os << "newpath" << std::endl;
-  Vertex v;
-  v.x = climpl->lower.x; v.y = climpl->lower.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << " " << v.y << " moveto" << std::endl;
-  v.x = climpl->lower.x; v.y = climpl->upper.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << " " << v.y << " lineto" << std::endl;
-  v.x = climpl->upper.x; v.y = climpl->upper.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << " " << v.y << " lineto" << std::endl;
-  v.x = climpl->upper.x; v.y = climpl->lower.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << " " << v.y << " lineto" << std::endl;
-  v.x = climpl->lower.x; v.y = climpl->lower.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << " " << v.y << " lineto" << std::endl;
-  _os << "closepath" << std::endl;
-  _os << "clip" << std::endl;
+  Vertex lower = climpl->lower;
+  Vertex upper = climpl->upper;
+  _tr->transform_vertex(lower);
+  _tr->transform_vertex(upper);
+  
+  _os << lower.x << " " << lower.y << " ";
+      << upper.x - lower.x << " "
+      << upper.x - lower.x << " rectclip"
+
   _os << std::endl;
 #endif
 }
@@ -197,23 +187,18 @@ void PSDrawingKit::draw_path(const Path &path)
 void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
   _os << "%draw_rectangle" << std::endl;
-  _os << "newpath" << std::endl;
-  Vertex v;
-  v.x = lower.x; v.y = lower.y; v.z = 0;
-  vertex(v, " moveto");
-  v.x = lower.x; v.y = upper.y; v.z = 0;
-  vertex(v, " lineto");
-  v.x = upper.x; v.y = upper.y; v.z = 0;
-  vertex(v, " lineto");
-  v.x = upper.x; v.y = lower.y; v.z = 0;
-  vertex(v, " lineto");
-  v.x = lower.x; v.y = lower.y; v.z = 0;
-  vertex(v, " lineto");
-  _os << "closepath" << std::endl;
+  Vertex l = lower; Vertex u = upper;
+  _tr->transform_vertex(l);
+  _tr->transform_vertex(u);
+  
+  _os << l.x*resolution(xaxis) << " " << l.y*resolution(yaxis) << " "
+      << (u.x - l.x)*resolution(xaxis) << " "
+      << (u.y - l.y)*resolution(yaxis);
+
   if (_fs == Warsaw::DrawingKit::solid)
-    _os << "fill" << std::endl;
+    _os << " rectfill" << std::endl;
   else
-    _os << "stroke" << std::endl;
+    _os << " rectstroke" << std::endl;
   _os << std::endl;
 }
 
@@ -235,13 +220,12 @@ void PSDrawingKit::draw_image(Raster_ptr raster)
 {
   Raster_var r = Raster::_duplicate(raster);
   _os << "%draw_image" << std::endl;
-  _os << "gsave" << std::endl;
-  Vertex v; v.x = 0; v.y = 0; v.z = 0;
-  vertex(v, " translate");
+  Vertex o; o.x = 0; o.y = 0; o.z = 0;
+  _tr->transform_vertex(o);
   _os << r->header().width << " " << r->header().height << " "
       << r->header().depth << std::endl;
   _os << "[ " << resolution(xaxis) << " 0 0 "
-      << resolution(yaxis) << " 0 0 ]" << std::endl;
+      << resolution(yaxis) << " -" << o.x*resolution(xaxis)*resolution(xaxis) << " -" << o.y*resolution(yaxis)*resolution(yaxis) << " ]" << std::endl;
   _os << "{<" << std::endl;
   Raster::Index i;
   for (i.y = 0; i.y < r->header().height; i.y++) {
@@ -256,14 +240,13 @@ void PSDrawingKit::draw_image(Raster_ptr raster)
   }
   _os << ">}" << std::endl;
   _os << "false 3 colorimage" << std::endl;
-  _os << "grestore" << std::endl;
   _os << std::endl;
 }
 
 void PSDrawingKit::set_font_size(CORBA::ULong s)
 {
   _os << "%set_font_size" << std::endl;
-  _os << s*resolution(xaxis) << " scalefont" << std::endl;
+  _os << s << " scalefont" << std::endl;
   _os << std::endl;
 }
 
@@ -291,11 +274,13 @@ void PSDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req)
 void PSDrawingKit::draw_char(Unichar c)
 {
   _os << "%draw_char" << std::endl;
-  Vertex v; v.x = 0; v.y = 0; v.z = 0;
-  vertex(v, " moveto");
-  _os << "1 -1 scale" << std::endl;
+  _os << "gsave" << std::endl;
+  Vertex o; o.x = 0; o.y = 0; o.z = 0;
+  _tr->transform_vertex(o);
+  _os << o.x*resolution(xaxis) << " " << o.y*resolution(yaxis) << " moveto" << std::endl;
+  _os << "[ " << 1./resolution(xaxis) << " 0 0 -" << 1./resolution(yaxis) << " 0 0 ] concat" << std::endl;
   _os << "(" << (char)c << ") show" << std::endl;
-  _os << "1 -1 scale" << std::endl;
+  _os << "grestore" << std::endl;
   _os << std::endl;
 }
 
