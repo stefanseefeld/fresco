@@ -27,14 +27,12 @@
 // sophisticated security system just by hacking this, sessionManager, and session
 
 #include <Berlin/ClientContextImpl.hh>
-
-ClientContextImpl::ClientContextImpl() {
-  ClientContextImpl("unknownUser");
-}
+#include <iostream>
 
 ClientContextImpl::ClientContextImpl(const char *name) {
   int length = strlen(name);
-  Unistring *theString = new Unistring(length);
+  Unistring *theString = new Unistring;//(length);
+  theString->length(length);
   for(int i = 0; i < length; i++) {
     (*theString)[i] = (short unsigned int)name[i];
   }

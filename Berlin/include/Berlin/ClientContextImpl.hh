@@ -28,11 +28,11 @@
 #include <Warsaw/ClientContext.hh>
 #include <Warsaw/Cloneable.hh>
 
-class ClientContextImpl : public virtual _lc_sk_ClientContext {
-
+class ClientContextImpl : implements(ClientContext)
+{
 public:
-  ClientContextImpl();
-  ClientContextImpl(const char *name);
+//   ClientContextImpl();
+  ClientContextImpl(const char *name = "unknownUser");
   
   Unistring *userName();
   CORBA::Boolean stillAlive(); 
