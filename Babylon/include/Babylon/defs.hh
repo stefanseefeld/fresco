@@ -418,6 +418,8 @@ namespace Babylon {
 	UC_KEY_NUM_LOCK                = 0xE388,
 	UC_KEY_SCROLL_LOCK             = 0xE389,
 
+	UC_NOT_A_CHAR                  = 0xFFFE,
+
 	// IMPLEMENTATION DEPENDENT
 	UC_MAX_DEFINED              = 0x10FFFE
     }; // control_character_enum
