@@ -35,6 +35,7 @@
 #include <vector>                      // for the gc
 
 declare_corba_ptr_type(DrawingKit)
+declare_corba_ptr_type(LayoutKit)
 
 class Compositor;
 class Strut;
@@ -48,6 +49,7 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   virtual void bind(ServerContext_ptr);
 
   Graphic_ptr chunk(const Unistring & u);
+  Graphic_ptr ch(const Unichar c);
   Graphic_ptr strut();
   Graphic_ptr simpleViewer(TextBuffer_ptr);  
   Graphic_ptr terminal(StreamBuffer_ptr);
@@ -60,9 +62,10 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   Graphic_ptr fontAttr(Graphic_ptr body, const NVPair & nvp);
  private:
   static Prague::Mutex staticMutex;
-  static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
+  static map< Unichar, Impl_var<TextChunk> > charCache;
   static DrawingKit_var canonicalDK;
 
+  LayoutKit_var layout;
   Strut* _strut;
   Prague::Mutex localMutex;
   Compositor *lineCompositor;

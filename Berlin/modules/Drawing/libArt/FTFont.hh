@@ -52,9 +52,13 @@ public:
   virtual Unistring *fullname();
   virtual Unistring *style();
 
-  void segments(const Unistring u, vector<segment> &segs);
-  void rasterize(const Unistring u, ArtPixBuf *pixbuf);
-  void allocateText(const Unistring &u, Graphic::Requisition &r);
+//   void segments(const Unistring u, vector<segment> &segs);
+//   void rasterize(const Unistring u, ArtPixBuf *pixbuf);
+//   void allocateText(const Unistring &u, Graphic::Requisition &r);
+  
+  ArtPixBuf *getPixBuf(const Unichar ch);
+  virtual void allocateChar(const Unichar ch, Graphic::Requisition &);
+
 protected:
   
   typedef unsigned int atom;
@@ -87,9 +91,9 @@ protected:
   typedef unsigned int PtSize;
   typedef pair<PtSize,FamStyle> FaceSpec;
   typedef pair<Unichar,FaceSpec> CacheSpec;
-  typedef map<CacheSpec,segment>::iterator CacheIter;
+  typedef map<CacheSpec,ArtPixBuf *>::iterator CacheIter;
   
-  map<CacheSpec,segment> myCache;
+  map<CacheSpec,ArtPixBuf *> myCache;
   map<FamStyle,FT_Face> myFaceMap;
 
   atom myFam, myStyle;

@@ -104,6 +104,8 @@ public:
   virtual void drawImage(Raster_ptr);
   virtual void drawText(const Unistring &);
   virtual void allocateText(const Unistring & s, Graphic::Requisition & req);
+  virtual void drawChar(const Unichar);
+  virtual void allocateChar(const Unichar c, Graphic::Requisition & req);
   virtual void flush();
 
  private:

@@ -63,7 +63,10 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
       Region_var r = traversal->allocation();
       Transform_var t = traversal->transformation();
       Impl_var<RegionImpl> region(new RegionImpl(r, t));
-      cout << Region_var(region->_this()) << endl;
+      Transform::Matrix matrix;
+      t->storeMatrix(matrix);  
+      cout << "trafo: " << endl << matrix << endl;
+      cout << "region: " << endl << Region_var(region->_this()) << endl;
     }
   MonoGraphic::traverse(traversal);
 };

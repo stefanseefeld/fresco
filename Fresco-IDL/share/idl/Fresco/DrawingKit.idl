@@ -70,8 +70,12 @@ interface DrawingKit : Kit
   void drawRect(in Vertex lower, in Vertex upper);
   void drawEllipse(in Vertex lower, in Vertex upper);
   void drawImage(in Raster r);
+
   void drawText(in Unistring s);
   void allocateText(in Unistring s, inout Graphic::Requisition req);
+  void drawChar(in Unichar c);
+  void allocateChar(in Unichar c, inout Graphic::Requisition req);
+
   void flush();
 };
 

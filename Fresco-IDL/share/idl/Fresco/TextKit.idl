@@ -35,6 +35,7 @@ interface TextKit : Kit
 //. current font state as a traversal passes through them.
 {
   Graphic chunk(in Unistring u);    
+  Graphic ch(in Unichar u);    
   Graphic strut();
   //. placeholder for an empty line
   Graphic simpleViewer(in TextBuffer buf);

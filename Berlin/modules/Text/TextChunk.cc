@@ -25,9 +25,10 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/Region.hh>
+#include <Warsaw/IO.hh>
 
-TextChunk::TextChunk(const Unicode::String & u, const Requisition &r)
-  : width(r.x.natural), height(r.y.natural), xalign(r.x.align), yalign(r.y.align), myText(u)
+TextChunk::TextChunk(Unichar u, const Requisition &r)
+  : width(r.x.natural), height(r.y.natural), xalign(r.x.align), yalign(r.y.align), myChar(u)
 {}
 
 void TextChunk::request(Graphic::Requisition &r)
@@ -42,15 +43,16 @@ void TextChunk::request(Graphic::Requisition &r)
 
 void TextChunk::getText(Unicode::String &u) 
 { 
-  myText = u;
+  u = Unicode::String(myChar);
 }
 
 unsigned long TextChunk::getLength() 
 { 
-  return myText.length();
+  return 1;
 }
 
 void TextChunk::draw(DrawTraversal_ptr dt)
 {
-  dt->kit()->drawText(Unicode::toCORBA(myText));
+//   cerr << dt->allocation() << endl;
+  DrawingKit_var(dt->kit())->drawChar(myChar);  
 }

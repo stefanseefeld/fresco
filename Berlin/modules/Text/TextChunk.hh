@@ -39,7 +39,7 @@ class TextChunk : public virtual GraphicImpl
 //. winds up being at draw-time.
 {
 public:
-  TextChunk(const Unicode::String & u, const Requisition &);
+  TextChunk(const Unichar ch, const Requisition &);
   virtual void draw(DrawTraversal_ptr dt);
   virtual void request(Graphic::Requisition &);
   
@@ -48,7 +48,7 @@ public:
 protected:
   Coord width, height;
   Alignment xalign, yalign;
-  Unicode::String myText;
+  Unichar myChar;
 };
 
 #endif

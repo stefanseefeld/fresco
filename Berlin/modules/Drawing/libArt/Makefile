@@ -34,7 +34,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(LIBART_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin $(LIBART_LIBS) -lfreetype
 
-SRC	= LibArtDrawingKit.cc LibArtFTFont.cc LibArtUnifont.cc LibArtRaster.cc
+SRC	= LibArtDrawingKit.cc LibArtFTFont.cc LibArtRaster.cc # LibArtUnifont.cc 
 TARGET	= $(mpath)/libArtDrawing.so
 
 vpath %.d $(dpath)

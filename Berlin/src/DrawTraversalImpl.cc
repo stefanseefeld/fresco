@@ -98,7 +98,7 @@ void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr reg
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   Lease<TransformImpl> cumulative;
   Providers::trafo.provide(cumulative);
-  cumulative->copy(transformation());
+  cumulative->copy(Transform_var(transformation()));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   drawing->transformation(Transform_var(cumulative->_this()));
   //   drawable->clipping(region, Transform_var(tx->_this()));

@@ -189,7 +189,7 @@ Tag ToggleChoice::appendItem(Graphic_ptr g)
   Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 50.)));
+  item->append(Graphic_var(layout->valign(Graphic_var(layout->margin(toggle, 50.)),1.)));
   item->append(Graphic_var(layout->hspace(200.)));
   item->append(g);
   Graphic_var box = body();

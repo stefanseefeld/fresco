@@ -22,8 +22,10 @@
  */
 
 #include "Warsaw/config.hh"
+#include "Warsaw/resolve.hh"
 #include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
+#include <Warsaw/LayoutKit.hh>        // for the LK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
 #include <Warsaw/TextBuffer.hh>        // for TextBuffer type
 #include <Warsaw/StreamBuffer.hh>
@@ -39,7 +41,7 @@
 using namespace Prague;
 
 Mutex TextKitImpl::staticMutex;
-map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
+map<Unichar,Impl_var<TextChunk> > TextKitImpl::charCache;
 DrawingKit_var TextKitImpl::canonicalDK;
 
 TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p)
@@ -53,23 +55,49 @@ TextKitImpl::~TextKitImpl() { delete lineCompositor; delete pageCompositor;}
 
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
+  KitImpl::bind(sc);
+  PropertySeq props;
+  props.length(0);
   canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
+  layout = resolve_kit<LayoutKit>(sc, interface(LayoutKit), props);
 }
 
 // chunks are flyweights
+//
+// while we have the _capability_ to delegate text chunks to the drawingKit as
+// multi-character "might-be-a-glyph" candidates, at the moment we have _no
+// idea_ how to compute sane allocations and alignments for such beasts using
+// conventional font metrics, as might appear in say a truetype or T1 font file,
+// and the attempts we've made at fudging these numbers completley messes up the
+// layout caluclations. so instead, the "chunk" facility here will just give you
+// back an appropriate alignment box packed with single-character chunks if you
+// give it a multi-char chunk; if you give it a single-char chunk you will get
+// back just a single chunk graphic. it's transparent enough for now, and if some other
+// text genius wants to fix it they can go ahead.
 
 Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 {
   MutexGuard guard(staticMutex);
-  Unicode::String str = Unicode::toPrague(u);
-  if (chunkCache.find(str) == chunkCache.end())
-    {
-      Graphic::Requisition r;
-      canonicalDK->allocateText(u,r);
-      Impl_var<TextChunk> t(new TextChunk(str, r));
-      chunkCache[str] = t;
+  unsigned long len = u.length();
+  if (len == 1) {
+    return this->ch(u[0]);
+  } else {
+    Graphic_var hbox = layout->hbox();
+    for (unsigned int i = 0; i < len; ++i) {
+      hbox->append(this->ch(u[i]));
     }
-  return chunkCache[str]->_this();
+    return hbox._retn();
+  }
+}
+
+Graphic_ptr TextKitImpl::ch(Unichar ch) {
+  if (charCache.find(ch) == charCache.end()){
+    Graphic::Requisition r;
+    canonicalDK->allocateChar(ch,r);
+    Impl_var<TextChunk> t(new TextChunk(ch, r));
+    charCache[ch] = t;
+  }
+  return charCache[ch]->_this();
 }
 
 Graphic_ptr TextKitImpl::strut()
