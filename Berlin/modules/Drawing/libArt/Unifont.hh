@@ -61,7 +61,7 @@ protected:
   unsigned char slab[16*16];
   ArtPixBuf *myPixBuf;
 //   map<Unichar,ArtPixBuf *> cache;
-  MMap *glyphmap;
+  Prague::MMap *glyphmap;
 };
 
 #endif

@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+using namespace Prague;
 using namespace Warsaw;
 
 GLUnifont::GLUnifont()

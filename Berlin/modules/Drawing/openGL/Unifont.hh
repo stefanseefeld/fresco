@@ -71,7 +71,7 @@ public:
   void drawChar(Warsaw::Unichar);
   void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
 private:
-  MMap *glyphmap;
+  Prague::MMap *glyphmap;
   Warsaw::Unistring _family;
   Warsaw::Unistring _subfamily;
   Warsaw::Unistring _fullname;

@@ -24,6 +24,7 @@
 #ifndef _DrawingKitBase_hh
 #define _DrawingKitBase_hh
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/DrawingKit3D.hh>
@@ -155,6 +156,7 @@ private:
 
 inline void DrawingKitBase::restore()
 {
+  Prague::Trace trace("DrawingKitBase::restore");
   if (states.empty()) return; // no state to restore
   DrawState &prev = states.top();
   if(prev.flags & (1 << st_trafo))              set_transformation(prev.saved_trafo);
@@ -197,6 +199,7 @@ inline void DrawingKitBase::restore()
 
 inline void DrawingKitBase::transformation(Warsaw::Transform_ptr t)
 {
+  Prague::Trace trace("DrawingKitBase::transformation");
   REMEMBER(trafo, Warsaw::Transform_var,transformation());
   set_transformation(t);
 }

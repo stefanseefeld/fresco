@@ -20,14 +20,15 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
-#include "Drawing/libArt/LibArtDrawingKit.hh"
-#include "Drawing/libArt/LibArtFTFont.hh"
-#include "Drawing/libArt/LibArtUnifont.hh"
 #include <Warsaw/Transform.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/Console.hh>
+#include "Drawing/libArt/LibArtDrawingKit.hh"
+#include "Drawing/libArt/LibArtFTFont.hh"
+#include "Drawing/libArt/LibArtUnifont.hh"
 
 #include <libart_lgpl/art_pathcode.h>
 #include <libart_lgpl/art_pixbuf.h>
@@ -86,19 +87,23 @@ static inline void fix_order_of_irect(ArtIRect &ir)
 
 void LibArtDrawingKit::set_transformation(Transform_ptr t)
 {
-  if (CORBA::is_nil(t)) {
-    art_affine_identity(affine);
-  } else {
-    tr = Transform::_duplicate(t);
-    Transform::Matrix matrix;
-    tr->store_matrix(matrix);  
-    affine[0] = matrix[0][0];
-    affine[1] = matrix[1][0];
-    affine[2] = matrix[0][1];
-    affine[3] = matrix[1][1];
-    affine[4] = matrix[0][3];
-    affine[5] = matrix[1][3];
-  }  
+  Prague::Trace trace("LibArtDrawingKit::set_transformation");
+  if (CORBA::is_nil(t))
+    {
+      art_affine_identity(affine);
+    }
+  else
+    {
+      tr = Transform::_duplicate(t);
+      Transform::Matrix matrix;
+      tr->store_matrix(matrix);
+      affine[0] = matrix[0][0];
+      affine[1] = matrix[1][0];
+      affine[2] = matrix[0][1];
+      affine[3] = matrix[1][1];
+      affine[4] = matrix[0][3];
+      affine[5] = matrix[1][3];
+    }
   scaled_affine = affine;
   scaled_affine[0] *= xres;
   scaled_affine[1] *= xres;
