@@ -24,7 +24,6 @@
 
 using namespace Prague;
 
-long Profiler::count = 0;
+Profiler::Guard    Profiler::guard;
 Profiler::table_t *Profiler::table = 0;
-Profiler::item_t *Profiler::current = 0;
-ostream *Profiler::os = &cout;
+Profiler::item_t  *Profiler::current = 0;

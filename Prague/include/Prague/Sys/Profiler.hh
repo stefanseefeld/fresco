@@ -70,35 +70,40 @@ class Profiler
   typedef ntree<CheckPoint *>::node::child_iterator child_iterator;
   typedef ntree<CheckPoint *>::node::const_child_iterator const_child_iterator;
   typedef ntree<CheckPoint *>::node::up_iterator up_iterator;
+  struct Guard
+  {
+    Guard()
+      {
+	Profiler::table = new table_t(0);
+	Profiler::current = &Profiler::table->root();
+      }
+    ~Guard()
+      {
+	Profiler::clean(*Profiler::current);
+	delete Profiler::table;
+      }
+  };
+  friend struct Guard;
 public:
   Profiler(const string &name)
     {
-      if (!count++)
-	{
-	  table = new table_t(new CheckPoint("root"));
-	  current = &table->root();
-	  os = &cout;
-	}
+#ifdef profile
       child_iterator i = lookup(name);
       current = &*i;
       current->value->count++;
       current->value->start = clock(); 
+#endif /* profile */
     }
   ~Profiler()
     {
+#ifdef profile
       current->value->stop = clock();
       current->value->elapsed += (current->value->stop - current->value->start);
       up_iterator i = current->up_begin();
       current = &*++i;
-      if (!--count)
-	{
-	  dump(*current, 0);
-	  clean(*current);
-	  delete table;
-	}
+#endif /* profile */
     }
-  static void setOutput(ostream &o) { os = &o;}
-  static void dump() { dump(*current, 0);}
+  static void dump(ostream &os) { dump(os, *current, 0);}
 private:
   static child_iterator lookup(const string &name)
     {
@@ -106,11 +111,11 @@ private:
 	if ((*i).value->name == name) return i;
       return current->push_back(new CheckPoint(name));
     }
-  static void dump(const item_t &root, unsigned short ind)
+  static void dump(ostream &os, const item_t &root, unsigned short ind)
     {
       for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
-	dump(*i, ind + 1);
-      if (ind) root.value->output(*os, ind); // don't output the root
+	dump(os, *i, ind + 1);
+      if (root.value) root.value->output(os, ind);
     }
   static void clean(const item_t &root)
     {
@@ -118,10 +123,9 @@ private:
 	clean(*i);
       delete root.value;
     }
-  static long     count;
+  static Guard    guard;
   static table_t *table;
   static item_t  *current;
-  static ostream *os;
 };
 
 };
