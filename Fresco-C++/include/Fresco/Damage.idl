@@ -1,0 +1,37 @@
+interface Damage
+{
+  //. A damage object represents the smallest unit of screen update.
+  //. Typically, there will be one damage object for each main viewer.
+  //. Before a draw traversal begins, the damage object is normally
+  //. used to set the painter's clipping region and then reset
+  //. to be empty.
+  
+  //- incur
+  void incur();
+  //. Request an update on the entire region defined by the damage.
+  
+  //- extend
+  void extend(in Region r);
+  //. Extend the current update area to include the given region.
+  
+  //- current
+  Region current();
+  //. Return the current region that has been requested for update.
+  
+  //- begin_update, end_update
+  void begin_update();
+  void end_update();
+  //. These operations control when damage may be repaired.
+  //. Within the outermost begin-end pair of calls the damage area
+  //. will not be repaired, allowing one to perform multiple
+  //. operations that incur damage without the possibility of
+  //. a redisplay occuring until after the end_update call that
+  //. matches the first begin_update call.  Nested calls have
+  //. no effect other than to record the nesting level.
+  
+  //- window_ptr
+  Window window_ptr();
+  //. Return the window object associated with the damage.
+  //. There may be multiple damage areas within a window, but
+  //. a damage object can only be associated with one window.
+};

@@ -1,0 +1,87 @@
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * this code is based on code from Fresco.
+ * Copyright (c) 1987-91 Stanford University
+ * Copyright (c) 1991-94 Silicon Graphics, Inc.
+ * Copyright (c) 1993-94 Fujitsu, Ltd.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#include "Layout/Deck.hh"
+#include "Layout/LayoutManager.hh"
+
+Deck::Deck() { requested = false;}
+Deck::~Deck() {}
+
+void Deck::request(Requisition &r)
+{
+  if (!requested)
+    {
+      GraphicImpl::initRequisition(requisition);
+      long n = children.size();
+      if (n > 0)
+	{
+	  Graphic::Requisition req[10];
+	  Graphic::Requisition* r = childrenRequests(req, 10);
+	  LayoutAlign x(xaxis);
+	  x.request(n, r, requisition);
+	  LayoutAlign y(yaxis);
+	  y.request(n, r, requisition);
+	  if (r != req) delete [] r;
+	}
+      requested = true;
+    }
+  r = requisition;
+}
+
+void Deck::extension(const AllocationInfo &a, Region_ptr r)
+{
+  long n = children.size();
+  if (n) children[n - 1]->child->extension(a, r);
+}
+
+void Deck::traverse(Traversal_ptr t)
+{
+  long n = children.size();
+//   if (n > 0) t->traverseChild(children[n - 1], Region_var(t->allocation()));
+}
+
+PolyGraphicOffset *Deck::newOffset(long index, Graphic_ptr child)
+{
+  return new DeckOffset(this, index, child);
+}
+
+// void Deck::modified()
+// {
+//   requested = false;
+//   need_redraw();
+// }
+
+DeckOffset::DeckOffset(PolyGraphic *parent, long index, Graphic_ptr child)
+  : PolyGraphicOffset(parent, index, child)
+{}
+
+DeckOffset::~DeckOffset() {}
+
+void DeckOffset::allocations(Graphic::AllocationInfoSeq &a)
+{
+  if (index == static_cast<long>(parent->children.size()) - 1) PolyGraphicOffset::allocations(a);
+}
+

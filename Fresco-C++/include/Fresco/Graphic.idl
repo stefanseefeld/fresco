@@ -1,0 +1,100 @@
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * this code is based on code from Fresco.
+ * Copyright (c) 1987-91 Stanford University
+ * Copyright (c) 1991-94 Silicon Graphics, Inc.
+ * Copyright (c) 1993-94 Fujitsu, Ltd.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#ifndef _Graphic_idl
+#define _Graphic_idl
+
+#include <Types.idl>
+#include <Region.idl>
+
+interface GraphicOffset;
+interface Traversal;
+interface DrawTraversal;
+interface PickTraversal;
+
+interface Graphic
+{
+  struct Requirement
+  {
+    boolean defined;
+    Coord natural, maximum, minimum;
+    Alignment align;
+  };
+  struct Requisition
+  {
+    Requirement x, y, z;
+    boolean preserve_aspect;
+  };
+  struct AllocationInfo
+  {
+    Region allocation;
+    Transform transformation;
+  };
+  typedef sequence<AllocationInfo> AllocationInfoSeq;
+  typedef sequence<GraphicOffset> OffsetSeq;
+  Graphic cloneGraphic();
+  attribute Graphic body;
+  void append(in Graphic g);
+  void prepend(in Graphic g);
+  void addParent(in GraphicOffset g);
+  void removeParent(in GraphicOffset g);
+  GraphicOffset firstOffset();
+  GraphicOffset lastOffset();
+  void parentOffsets(inout OffsetSeq o);
+
+  Transform transformation();
+  void request(out Requisition r);
+  void extension(in AllocationInfo a, in Region r);
+  void shape(in Region r);
+
+  void traverse(in Traversal t);
+  void draw(in DrawTraversal t);
+  void pick(in PickTraversal t);
+
+  void allocations(inout AllocationInfoSeq a);
+//   void damages(inout DamageInfoSeq d);
+  void needRedraw();
+  void needRedrawRegion(in Region r);
+  void needResize();
+//   boolean restore_trail(in Traversal t);
+};
+
+interface GraphicOffset
+{
+  Graphic Parent();
+  Graphic Child();
+  void insert(in Graphic g);
+  void replace(in Graphic g);
+  GraphicOffset next();
+  GraphicOffset previous();
+  void remove();
+  
+  void needResize();
+  void traverse(in Traversal t);
+  void allocations(inout Graphic::AllocationInfoSeq a);
+};
+
+#endif /* _Graphic_idl */
