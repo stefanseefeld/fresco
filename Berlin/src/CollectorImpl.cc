@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 #include "Berlin/CollectorImpl.hh"
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/TransformImpl.hh>
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/TransformImpl.hh"
 
 CollectorImpl::CollectorImpl()
 {

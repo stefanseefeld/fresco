@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
+#include <Berlin/CloneableImpl.hh>
 #include <Drawing/openGL/GLDrawable.hh>
 #include <Drawing/openGL/GLPencil.hh>
 #include <string>
@@ -32,7 +33,7 @@ extern "C" {
 #include <ggi/ggi.h>
 }
 
-class GLDrawingKit : implements(DrawingKit)
+class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
 {
 public:
   GLDrawingKit();
@@ -41,7 +42,8 @@ public:
   ggi_visual_t getVisual() { return drawable->Visual();}
   Pencil_ptr solidPen();
 //   void releasePen(Pencil_ptr);
-private:
+protected:
+  omni_mutex myMutex;
   GLDrawable *drawable;
   vector<GLPencil *> pens;
 };

@@ -20,9 +20,9 @@
  * MA 02139, USA.
  */
 
-#include <Berlin/ScreenManager.hh>
-#include <Berlin/DrawTraversalImpl.hh>
-#include <Berlin/PickTraversalImpl.hh>
+#include "Berlin/ScreenManager.hh"
+#include "Berlin/DrawTraversalImpl.hh"
+#include "Berlin/PickTraversalImpl.hh"
 
 ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
   : screen(s), drawing(d), visual(drawing->getVisual())

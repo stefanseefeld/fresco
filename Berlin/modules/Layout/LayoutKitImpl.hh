@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -27,10 +30,11 @@
 #ifndef _LayoutKitImpl_hh
 #define _LayoutKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/LayoutKit.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/LayoutKit.hh"
+#include "Berlin/CloneableImpl.hh"
 
-class LayoutKitImpl : implements(LayoutKit)
+class LayoutKitImpl : implements(LayoutKit), virtual public CloneableImpl
 {
 public:
   LayoutKitImpl();

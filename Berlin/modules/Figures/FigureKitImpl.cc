@@ -1,10 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,11 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/PickTraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Warsaw/Graphic.hh"
-#include "Warsaw/Event.hh"
 
-PickTraversalImpl::PickTraversalImpl(const CORBA::Any &e, Region_ptr r) : TraversalImpl(r), myEvent(e) {}
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t) : TraversalImpl(t), myEvent(*(t.event())) {}    
-PickTraversalImpl::~PickTraversalImpl() {}
+#include "Warsaw/config.hh"
+#include "Figure/FigureKitImpl.hh"
+#include "Berlin/Plugin.hh"
+
+FigureKitImpl::FigureKitImpl() {}
+FigureKitImpl::~FigureKitImpl() {}
+
+Graphic_ptr FigureKitImpl::rect(BoundedValue_ptr width, BoundedValue_ptr height) {
+    Rect *rect = new Rect(width, height);
+    rect->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+    rects.push_back(rect);
+    return rect->_this();
+}
+
+Graphic_ptr FigureKitImpl::ellipse(BoundedValue_ptr width, BoundedValue_ptr height) {
+    Rect *rect = new Rect(width, height);
+    rect->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+    rects.push_back(rect);
+    return rect->_this();
+}
+
+EXPORT_PLUGIN(FigureKitImpl, interface(FigureKit))

@@ -24,9 +24,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Berlin/DebugGraphic.hh>
-#include <Berlin/Math.hh>
-#include <Warsaw/Traversal.hh>
+#include "Berlin/DebugGraphic.hh"
+#include "Berlin/Math.hh"
+#include "Warsaw/Traversal.hh"
 #include <iostream>
 #include <iomanip>
 

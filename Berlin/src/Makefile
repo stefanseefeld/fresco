@@ -2,7 +2,7 @@ TOPDIR=../..
 OS_ARCH='Linux'
 DIR_CPPFLAGS = 
 DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused -fno-rtti
-DIR_INCLUDES =  -I../../include -I../../include/Warsaw 
+DIR_INCLUDES = 
 DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
 CXXSRCS =	Debug.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 		RegionImpl.cc TransformImpl.cc TraversalImpl.cc DamageImpl.cc CollectorImpl.cc GraphicImpl.cc \

@@ -24,8 +24,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Berlin/RegionImpl.hh>
-#include <Layout/Backdrop.hh>
+#include "Berlin/RegionImpl.hh"
+#include "Layout/Backdrop.hh"
 
 static const Coord epsilon = 0.01;
 

@@ -28,7 +28,8 @@
 
 #include <vector>
 #include <string>
-#include "omnithread.h"
+#include <config.hh>
+#include <omnithread.h>
 
 #ifndef __DEBUG__
 #define __DEBUG__

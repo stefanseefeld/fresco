@@ -1,3 +1,11 @@
+1999-04-10  graydon@pobox.com  <graydon@pobox.com>
+
+	* Pointer.cc : Redid the pointer so that it looks like an X
+	pointer rather than a blob of colors, and fixed a buglet
+	in the directbuffer write loop (write()) which was causing
+	the screen update to skip lines, giving a somewhat cool 
+	but ultimately broken looking "scanline" effect.
+
 1999-03-14  graydon@pobox.com  <graydon@pobox.com>
 
 	* GLDrawable.cc: hoisted in some code from the old DBGraphic for

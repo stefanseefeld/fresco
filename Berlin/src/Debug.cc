@@ -21,7 +21,7 @@
 //
 //
 
-#include <Berlin/Debug.hh>
+#include "Berlin/Debug.hh"
 
 vector<bool> debug::activeDebugGroups;
 omni_mutex debug::cerrMutex;

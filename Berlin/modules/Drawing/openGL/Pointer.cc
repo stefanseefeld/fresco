@@ -28,9 +28,30 @@ extern "C"
 #include <iostream>
 #include <algorithm>
 
+
+static unsigned char pointerImg[256] = 
+
+{ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,1,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,1,0,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,2,1,0,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,2,2,1,0,0,0,0,0,0,0,
+  1,2,2,2,2,2,1,1,1,1,0,0,0,0,0,0,
+  1,2,2,1,2,2,1,0,0,0,0,0,0,0,0,0,
+  1,1,0,1,2,2,2,1,0,0,0,0,0,0,0,0,
+  1,0,0,0,1,2,2,1,0,0,0,0,0,0,0,0,
+  0,0,0,0,1,2,2,2,1,0,0,0,0,0,0,0,
+  0,0,0,0,0,1,2,2,1,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0 };
+
+  
 Pointer::Pointer(ggi_visual_t visual)
 {
-  origin[0] = origin[1] = 8;
+  origin[0] = origin[1] = 0;
   position[0] = position[1] = 8;
   size[0] = size[1] = 16;
 
@@ -42,24 +63,24 @@ Pointer::Pointer(ggi_visual_t visual)
     cerr << "Error: non-standard display buffer" << endl;
   depth = dbuf->buffer.plb.pixelformat->size/8;
   stride = dbuf->buffer.plb.stride;
+
   /*
-   * create the image, just a colored square
+   * create the pointer image
    */
   image = new unsigned char[size[0]*size[1]*depth];
   for (unsigned short y = 0; y != size[1]; y++)
     for (unsigned short x = 0; x != size[0]; x++)
-      for (unsigned short d = 0; d != depth; d++)
-	image[y*depth*size[0] + depth*x + d] = y*depth*size[0] + depth*x + d;
+	for (unsigned short d = 0; d != depth; d++)
+	    image[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] * 127;
+  
   /*
-   * create the mask, a circle
+   * create the pointer mask
    */
   mask = new unsigned char[size[0]*size[1]*depth];
   for (unsigned short y = 0; y != size[1]; y++)
-    for (unsigned short x = 0; x != size[0]; x++)
-      for (unsigned short d = 0; d != depth; d++)
-	mask[y*depth*size[0] + depth*x + d] =
-	  (y - size[1]/2)*(y - size[1]/2) + (x - size[0]/2)*(x - size[0]/2) > size[0]*size[0]/4 ?
-	  0 : ~0;
+      for (unsigned short x = 0; x != size[0]; x++)
+	  for (unsigned short d = 0; d != depth; d++)
+	      mask[y*depth*size[0] + depth*x + d] = ~0;
   backup = new unsigned char[size[0]*size[1]*depth];
   save();
 }
@@ -101,7 +122,8 @@ void Pointer::write()
   unsigned char *from = image;
   unsigned char *bits = mask;
   unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
-  for (PixelCoord y = 0; y != size[1]; y++, to += stride - 2*size[0])
-    for (PixelCoord x = 0; x != 2*size[0]; x++, from++, bits++, to++)
+
+  for (PixelCoord y = 0; y != size[1]; y++, to += stride - size[0]*4)
+    for (PixelCoord x = 0; x != size[0]*4; x++, from++, bits++, to++)
       *to = *from & *bits;
 }

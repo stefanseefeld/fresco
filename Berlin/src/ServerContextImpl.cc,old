@@ -25,9 +25,9 @@
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
-#include <Berlin/GenericFactoryImpl.hh>
-#include <Berlin/ClientContextImpl.hh>
-#include <Berlin/Debug.hh>
+#include "Berlin/GenericFactoryImpl.hh"
+#include "Berlin/ClientContextImpl.hh"
+#include "Berlin/Debug.hh"
 
 // static singletons mapping
 map<string, CosLifeCycle::LifeCycleObject_var> ServerContextImpl::singletons;

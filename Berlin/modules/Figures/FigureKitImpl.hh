@@ -1,11 +1,13 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
+ *
+ * this code is based on code from Fresco.
+ * Copyright (c) 1987-91 Stanford University
+ * Copyright (c) 1991-94 Silicon Graphics, Inc.
+ * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,11 +24,29 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/PickTraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Warsaw/Graphic.hh"
-#include "Warsaw/Event.hh"
 
-PickTraversalImpl::PickTraversalImpl(const CORBA::Any &e, Region_ptr r) : TraversalImpl(r), myEvent(e) {}
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t) : TraversalImpl(t), myEvent(*(t.event())) {}    
-PickTraversalImpl::~PickTraversalImpl() {}
+#ifndef _FigureKitImpl_hh
+#define _FigureKitImpl_hh
+
+#include "Warsaw/FigureKit.hh"
+#include "Warsaw/config.hh"
+#include "Figure/Rect.hh"
+#include "Berlin/CloneableImpl.hh"
+#include <vector>
+
+class Rect;
+
+class FigureKitImpl : implements(FigureKit), virtual public CloneableImpl {
+ public:
+    FigureKitImpl();
+    virtual ~FigureKitImpl();
+
+    Graphic_ptr rect(BoundedValue_ptr width, BoundedValue_ptr height);
+    Graphic_ptr ellipse(BoundedValue_ptr width, BoundedValue_ptr height);
+ protected:
+    vector<Rect *> rects;
+    //    vector<Ellipse *> ellipses;
+};
+
+
+#endif

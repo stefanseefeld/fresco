@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -23,9 +26,11 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
+
 extern "C" {
 #include "ggi/ggi.h"
 }
+
 #include <strstream>
 
 GLDrawingKit::GLDrawingKit()
@@ -35,7 +40,7 @@ GLDrawingKit::GLDrawingKit()
    * name should be composed as "widthxheightxdepth"
    */
   drawable = new GLDrawable();
-  drawable->_obj_is_ready(_boa());
+  drawable->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
 }
 
 GLDrawingKit::~GLDrawingKit()
@@ -51,8 +56,10 @@ Drawable_ptr GLDrawingKit::getDrawable()
 
 Pencil_ptr GLDrawingKit::solidPen()
 {
-  GLPencil *pencil = new GLPencil(drawable);
-  pencil->_obj_is_ready(_boa());
-  pens.push_back(pencil);
-  return pencil->_this();
+    myMutex.lock();
+    GLPencil *pencil = new GLPencil(drawable);
+    pencil->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
+    pens.push_back(pencil);
+    myMutex.unlock();
+    return pencil->_this();
 }

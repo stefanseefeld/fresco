@@ -26,10 +26,10 @@
 
 interface Command;
 
-#include <Message.idl>
-#include <Cloneable.idl>
-#include <Text.idl>
-
+#include "Message.idl"
+#include "Cloneable.idl"
+#include "Text.idl"
+#include "BoundedValue.idl"
 
 // commands are anonymous encapsulated actions. 
 // you never know what they'll do.
@@ -70,6 +70,9 @@ interface CommandKit : Cloneable {
     // whereas this results in a reactor which consumes the calling
     // thread during Message receipt
     Reactor syncReactor(in ReactorBindingList initialBindings);
+
+    Command adjustBoundedValue(in BoundedValue bv);
+
 
     Command sendMessage(in Message msgToSend, in MessageListener recipient);
     Command forwardMessage(in MessageListener recipient);

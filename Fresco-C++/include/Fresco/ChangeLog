@@ -1,3 +1,7 @@
+1999-04-10  graydon@pobox.com  <graydon@pobox.com>
+
+	* CommandKit.idl: added import
+
 1999-03-09  graydon@pobox.com  <graydon@pobox.com>
 
 	* Text.idl: Modified text to use new typenames, graphic

@@ -24,8 +24,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Berlin/TransformImpl.hh>
-#include <Berlin/Math.hh>
+#include "Berlin/TransformImpl.hh"
+#include "Berlin/Math.hh"
 
 static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;

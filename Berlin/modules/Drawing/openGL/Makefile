@@ -1,7 +1,7 @@
 TOPDIR=../../..
 OS_ARCH='Linux'
 DIR_CXXFLAGS = -c -Wall -Wno-unused -fno-rtti
-DIR_INCLUDES =  -I../../../include -I../../../include/Warsaw -I/data1/seefelds/omniORB_2.7.0/include
+DIR_INCLUDES =  
 DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
 CXXSRCS	=	Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc
 SO_TARGET = libDrawing.so

@@ -19,10 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/TelltaleImpl.hh"
+
+#include "Widget/TelltaleImpl.hh"
 
 TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long f)
-  : flags(f), constraint(c)
+  : flags(f), myConstraint(c)
 {}
 
 TelltaleImpl::~TelltaleImpl()
@@ -30,45 +31,73 @@ TelltaleImpl::~TelltaleImpl()
 
 void TelltaleImpl::set(Telltale::Flag f)
 {
-  if (!CORBA::is_nil(constraint)) constraint->trymodify(_this(), f, true);
-  else modify(f, true);
+    myMutex.lock();
+    if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(_this(), f, true);
+    else modify(f, true);
+    myMutex.unlock();
 }
 
 void TelltaleImpl::clear(Telltale::Flag f)
 {
-  if (!CORBA::is_nil(constraint)) constraint->trymodify(_this(), f, false);
-  else modify(f, false);
+    myMutex.lock();
+    if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(_this(), f, false);
+    else modify(f, false);
+    myMutex.unlock();
 }
 
 CORBA::Boolean TelltaleImpl::test(Telltale::Flag f)
 {
-  return flags & (1 << f);
+    myMutex.lock();
+    CORBA::Boolean tmp = flags & (1 << f);
+    myMutex.unlock();
+    return tmp;
 }
+
+void TelltaleImpl::constraint(TelltaleConstraint_ptr c) {
+    myMutex.lock();
+    myConstraint = c;
+    myMutex.unlock();
+}
+
+
+TelltaleConstraint_ptr TelltaleImpl::constraint() {    
+    myMutex.lock();
+    TelltaleConstraint_ptr tmp = TelltaleConstraint::_duplicate(myConstraint);
+    myMutex.unlock();
+    return tmp;
+}
+
 
 void TelltaleImpl::modify(Telltale::Flag f, CORBA::Boolean on)
 {
-  unsigned long fs = 1 << f;
-  unsigned long nf = on ? flags | fs : flags & ~fs;
-  if (nf != flags)
-    {
-      flags = nf;
-      notify();
-    }
+    myMutex.lock();
+    unsigned long fs = 1 << f;
+    unsigned long nf = on ? flags | fs : flags & ~fs;
+    if (nf != flags)
+	{
+	    flags = nf;
+	    notify();
+	}
+    myMutex.unlock();
 }
 
 void TelltaleConstraintImpl::add(Telltale_ptr t)
 {
-  telltales.push_back(t);
+    myMutex.lock();
+    telltales.push_back(t);
+    myMutex.unlock();
 }
 
 void TelltaleConstraintImpl::remove(Telltale_ptr t)
 {
-  for (vector<Telltale_var>::iterator i = telltales.begin(); i != telltales.end(); i++)
-    if ((*i) == t)
-      {
-	telltales.erase(i);
-	break;
-      }
+    myMutex.lock();
+    for (vector<Telltale_var>::iterator i = telltales.begin(); i != telltales.end(); i++)
+	if ((*i) == t)
+	    {
+		telltales.erase(i);
+		break;
+	    }
+    myMutex.unlock();    
 }
 
 ExclusiveChoice::ExclusiveChoice()
@@ -77,8 +106,10 @@ ExclusiveChoice::ExclusiveChoice()
 
 void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 {
-  if (!CORBA::is_nil(choosen)) choosen->modify(f, false);
-  t->modify(f, true);
+    myMutex.lock();
+    if (!CORBA::is_nil(choosen)) choosen->modify(f, false);
+    t->modify(f, true);
+    myMutex.unlock();        
 }
 
 SelectionRequired::SelectionRequired()
@@ -87,5 +118,7 @@ SelectionRequired::SelectionRequired()
 
 void SelectionRequired::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 {
-  if (choosen > 1) t->modify(f, false);
+    myMutex.lock();
+    if (choosen > 1) t->modify(f, false);
+    myMutex.unlock();        
 }

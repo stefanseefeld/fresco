@@ -26,7 +26,7 @@
 // principal which has no checking done against it, but you could work in a pretty
 // sophisticated security system just by hacking this, sessionManager, and session
 
-#include <Berlin/ClientContextImpl.hh>
+#include "Berlin/ClientContextImpl.hh"
 #include <iostream>
 
 ClientContextImpl::ClientContextImpl(const char *name) {

@@ -27,9 +27,9 @@
 // tags to the objects, so that they may migrate from one server to
 // another.
 
-#include <Berlin/GenericFactoryImpl.hh>
-#include <Berlin/CloneableImpl.hh>
-#include <Berlin/Debug.hh>
+#include "Berlin/GenericFactoryImpl.hh"
+#include "Berlin/CloneableImpl.hh"
+#include "Berlin/Debug.hh"
 #include <sys/types.h>
 #include <dirent.h>
 #include <dlfcn.h>
@@ -109,10 +109,9 @@ GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k,
 // perhaps someone who knows the Any interface a little better can advise me on whether
 // this is the proper way to do it?
 omniLifeCycleInfo_ptr
-GenericFactoryImpl::extractLifeCycleFromCriteria(
-						  const CosLifeCycle::Criteria & criteria) {
+GenericFactoryImpl::extractLifeCycleFromCriteria(const CosLifeCycle::Criteria & criteria) {
   omniLifeCycleInfo_ptr li = omniLifeCycleInfo::_nil();
-  for(int i = 0; i < criteria.length(); i++) {
+  for(unsigned int i = 0; i < criteria.length(); i++) {
     if (strcmp(criteria[i].name, "NP_omniLifeCycleInfo") == 0) {
       if(criteria[i].value >>= li) break;
     }
@@ -169,32 +168,20 @@ void GenericFactoryImpl::init() {
   _pluginLoadingFunctionTable.clear();
   _loader_mutex.lock();
 
-  // !!FIXME!! this is probably unwise. It's just for now. yeah yeah.
-  // Perhaps this can be a query to the registrar?
-  char *dirNames[NUMDIRS] = {"messages", "commands", "widgets"};
-
-  char *pluginBase;
-  char pluginDir[256];
+  char *pluginDir;
   char pluginName[256];
   
-  pluginBase = getenv(PLUGINBASE);
+  pluginDir = getenv(PLUGINBASE);
   
-  if ( pluginBase == NULL ) {
+  if ( pluginDir == NULL ) {
     
   } else {
-    
-    for (int i = 0; i < NUMDIRS; i++) {
       
-      strcpy(pluginDir, pluginBase);
-      // Bad hack! Need to ensure a seperating / - Jonas
-      strcat(pluginDir, "/");
-      strcat(pluginDir, dirNames[i]);
-
       DIR *dirHandle = opendir(pluginDir);
       char *error;
       
       if (dirHandle != NULL) {
-	
+	  
 	struct dirent *pluginEntry;
  	debug::log((string)"Scanning plugin dir: " + (string)pluginDir, debug::loader);
 	
@@ -222,7 +209,7 @@ void GenericFactoryImpl::init() {
 	    // check for erorrs in symbol lookup
 	    error = dlerror();
 	    if (error != NULL)  {
-	      debug::log((string)"can't locate symbol in plugin: " + (string)error, debug::loader);
+		debug::log((string)"can't locate symbol in plugin: " + (string)error, debug::loader);
 	      continue;
 	    }
 	    
@@ -232,26 +219,26 @@ void GenericFactoryImpl::init() {
 	    prototypeName.length(1);
 	    prototypeName[0].id   = (const char*) nameInFile;    // string copied
 	    prototypeName[0].kind = (const char*) "Object"; // string copied    
-
+	    
 	    map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp>::iterator p = 
-	      _pluginLoadingFunctionTable.find(prototypeName);
-
+		_pluginLoadingFunctionTable.find(prototypeName);
+	    
 	    if (p != _pluginLoadingFunctionTable.end())
-	      debug::log((string)"Warning: multiple definitions for plugin" + (string)nameInFile, debug::loader);
-
+		debug::log((string)"Warning: multiple definitions for plugin" + (string)nameInFile, debug::loader);
+	    
 	    // believe it or not, this is a "standard C" variable declaration
 	    CloneableImpl *(*pluginGetter)();
-
+	    
 	    // and this monster here is a cast of a pointer returned by dlsym. 
 	    pluginGetter = (CloneableImpl *(*)())dlsym(handle, "getPlugin");
 	    
 	    // if all is well and good, we have a function pointer we can call to get the plugin
 	    char *error = dlerror();
 	    if (error != NULL)  {
-	      debug::log((string)"Failed to load plugin function: " + ((string)nameInFile), debug::loader);
+		debug::log((string)"Failed to load plugin function: " + ((string)nameInFile), debug::loader);
 	      debug::log((string)"Reason: " + (string)error, debug::loader);
 	    }
-	    	    
+	    
 	    // stash the function pointer for loading new object in the future
 	    _pluginLoadingFunctionTable[prototypeName] = pluginGetter;
 	    debug::log((string)"Plugin: " + (string)nameInFile, debug::loader);		       
@@ -259,7 +246,6 @@ void GenericFactoryImpl::init() {
 	}
       }
       closedir(dirHandle);
-    }
   }
   _loader_mutex.unlock();
 }

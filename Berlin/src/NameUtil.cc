@@ -25,9 +25,9 @@
 // is so baroque and ugly it mucks up readability if you include code
 // inplace to handle it.
 
-#include <Warsaw/config.hh>
-#include <Berlin/NameUtil.hh>
-#include <Berlin/Debug.hh>
+#include "Warsaw/config.hh"
+#include "Berlin/NameUtil.hh"
+#include "Berlin/Debug.hh"
 
 static CosNaming::NamingContext_var rootContext;
 static omni_mutex rootContext_mutex;

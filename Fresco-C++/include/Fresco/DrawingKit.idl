@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -24,13 +27,15 @@
 
 #include <Types.idl>
 #include <Region.idl>
+#include <Cloneable.idl>
+
 // #include <Drawable.idl>
 // #include <Pencil.idl>
 
 interface Drawable;
 interface Pencil;
 
-interface DrawingKit
+interface DrawingKit : Cloneable 
 {
   Drawable getDrawable();
   Pencil   solidPen();

@@ -31,7 +31,7 @@
 #include <Graphic.idl>
 #include <Grid.idl>
 
-interface LayoutKit
+interface LayoutKit : Cloneable 
 {
   attribute Coord fil;
   //. The "fil" attribute defines an "infinity" coordinate
