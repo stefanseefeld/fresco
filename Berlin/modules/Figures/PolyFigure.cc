@@ -33,32 +33,31 @@ using namespace Prague;
 using namespace Fresco;
 
 Berlin::FigureKit::PolyFigure::PolyFigure() :
-  _tx(new TransformImpl),
-  _bbox(new RegionImpl)
+    my_tx(new TransformImpl),
+    my_bbox(new RegionImpl)
 { }
 
 Berlin::FigureKit::PolyFigure::PolyFigure(const PolyFigure &pf) :
-  _tx(new TransformImpl),
-  _bbox(new RegionImpl)
+    my_tx(new TransformImpl),
+    my_bbox(new RegionImpl)
 {
-  _bbox->valid = pf._bbox->valid;
-  if (_bbox->valid) _bbox->copy(Region_var(pf._bbox->_this()));
+    my_bbox->valid = pf.my_bbox->valid;
+    if (my_bbox->valid) my_bbox->copy(Region_var(pf.my_bbox->_this()));
 }
 
-Berlin::FigureKit::PolyFigure::~PolyFigure()
-{
-}
+Berlin::FigureKit::PolyFigure::~PolyFigure(){ }
 
 void Berlin::FigureKit::PolyFigure::update_bbox()
 {
-    if (!_bbox->valid)
+    if (!my_bbox->valid)
     {
         CORBA::ULong n = num_children();
         if (n > 0)
         {
             Allocation::Info info;
             for (CORBA::ULong i = 0; i < n; i++)
-            _children[i].peer->extension(info, Region_var(_bbox->_this()));
+		_children[i].peer->extension(info,
+					     Region_var(my_bbox->_this()));
         }
     }
 }
@@ -67,7 +66,7 @@ void Berlin::FigureKit::PolyFigure::allocate(Tag, const Allocation::Info &info)
 {
     // undefine the allocation...how ? -Stefan
     // info.allocation->;
-    info.transformation->premultiply(Transform_var(_tx->_this()));
+    info.transformation->premultiply(Transform_var(my_tx->_this()));
 }
 
 void Berlin::FigureKit::PolyFigure::request(Fresco::Graphic::Requisition &r)
@@ -75,10 +74,10 @@ void Berlin::FigureKit::PolyFigure::request(Fresco::Graphic::Requisition &r)
     GraphicImpl::init_requisition(r);
     Impl_var<RegionImpl> region(new RegionImpl);
     update_bbox();
-    if (_bbox->valid)
+    if (my_bbox->valid)
     {
-        region->copy(Region_var(_bbox->_this()));
-        region->apply_transform(Transform_var(_tx->_this()));
+        region->copy(Region_var(my_bbox->_this()));
+        region->apply_transform(Transform_var(my_tx->_this()));
         Coord x_lead = -region->lower.x, x_trail = region->upper.x;
         Coord y_lead = -region->lower.y, y_trail = region->upper.y;
         GraphicImpl::require_lead_trail(r.x, x_lead, x_lead, x_lead,
@@ -97,13 +96,13 @@ void Berlin::FigureKit::PolyFigure::extension(const Allocation::Info &info,
 {
     Impl_var<RegionImpl> tmp(new RegionImpl);
     update_bbox();
-    if (_bbox->valid)
+    if (my_bbox->valid)
     {
         Impl_var<TransformImpl> transformation(new TransformImpl);
         if (!CORBA::is_nil(info.transformation))
             transformation->copy(info.transformation);
-        transformation->premultiply(Transform_var(_tx->_this()));
-        tmp->copy(Region_var(_bbox->_this()));
+        transformation->premultiply(Transform_var(my_tx->_this()));
+        tmp->copy(Region_var(my_bbox->_this()));
         tmp->apply_transform(Transform_var(transformation->_this()));
         region->merge_union(Region_var(tmp->_this()));
     }
@@ -118,10 +117,10 @@ void Berlin::FigureKit::PolyFigure::traverse(Traversal_ptr traversal)
 {
     Trace trace("PolyFigure::traverse");
     update_bbox();
-    if (!_bbox->valid) return;
+    if (!my_bbox->valid) return;
     Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
-    region->copy(Region_var(_bbox->_this()));
-    region->apply_transform(Transform_var(_tx->_this()));
+    region->copy(Region_var(my_bbox->_this()));
+    region->apply_transform(Transform_var(my_tx->_this()));
     if (!traversal->intersects_region(Region_var(region->_this()))) return;
     CORBA::Long n = num_children();
     for (CORBA::Long i = 0; i != n && traversal->ok(); i++)
@@ -131,8 +130,8 @@ void Berlin::FigureKit::PolyFigure::traverse(Traversal_ptr traversal)
         try
         {
             traversal->traverse_child(child, _children[i].localId,
-                                      Region_var(_bbox->_this()),
-                                      Transform_var(_tx->_this()));
+                                      Region_var(my_bbox->_this()),
+                                      Transform_var(my_tx->_this()));
         }
         catch (const CORBA::OBJECT_NOT_EXIST &)
         {
@@ -147,7 +146,7 @@ void Berlin::FigureKit::PolyFigure::traverse(Traversal_ptr traversal)
 
 Transform_ptr Berlin::FigureKit::PolyFigure::transformation()
 {
-    return _tx->_this();
+    return my_tx->_this();
 }
 
 void Berlin::FigureKit::PolyFigure::need_redraw()
@@ -163,7 +162,7 @@ void Berlin::FigureKit::PolyFigure::need_redraw()
 
 void Berlin::FigureKit::PolyFigure::need_resize()
 {
-    _bbox->valid = false;
+    my_bbox->valid = false;
     PolyGraphic::need_resize();
 }
 

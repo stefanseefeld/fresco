@@ -43,7 +43,7 @@ namespace Berlin
 	virtual Fresco::Transform_ptr transformation();
 	void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
     private:
-	Impl_var<TransformImpl> transform;
+	Impl_var<TransformImpl> my_transform;
     };
 
     class BodyTransformer : public Transformer
@@ -54,7 +54,7 @@ namespace Berlin
 	virtual void body(Fresco::Graphic_ptr);
 	virtual Fresco::Graphic_ptr body();
       protected:
-	unsigned depth;
+	unsigned my_depth;
     };
 
   } // namespace

@@ -37,66 +37,76 @@ using namespace Fresco;
 
 using namespace Berlin::FigureKit;
 
-Transformer::Transformer() : transform(new TransformImpl) {}
+Transformer::Transformer() : my_transform(new TransformImpl) {}
 Transformer::~Transformer() {}
-Transform_ptr Transformer::transformation() { return transform->_this();}
+Transform_ptr Transformer::transformation() { return my_transform->_this();}
 
 void Transformer::request(Fresco::Graphic::Requisition &requisition)
 {
   Trace trace("Transformer::request");
   Allocator::request(requisition);
-  GraphicImpl::transform_request(requisition, Transform_var(transform->_this()));
+  GraphicImpl::transform_request(requisition,
+				 Transform_var(my_transform->_this()));
 }
 
 void Transformer::traverse(Traversal_ptr traversal)
 {
-  Trace trace("Transformer::traverse");
-  if (transform->identity())
+    Trace trace("Transformer::traverse");
+    if (my_transform->identity())
     {
-      Allocator::traverse(traversal);
+	Allocator::traverse(traversal);
     }
-  else
+    else
     {
-      Fresco::Graphic::Requisition r;
-      GraphicImpl::init_requisition(r);
-      Allocator::request(r);
-      Graphic_var child = body();
-      if (CORBA::is_nil(child))	return;
-      Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
-      rr->copy(Region_var(traversal->current_allocation()));
-      Vertex delta = GraphicImpl::transform_allocate(*rr, r, Transform_var(transform->_this()));
-      Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-      tx->copy(Transform_var(transform->_this()));
-      try { traversal->traverse_child (child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
-      catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
+	Fresco::Graphic::Requisition r;
+	GraphicImpl::init_requisition(r);
+	Allocator::request(r);
+	Graphic_var child = body();
+	if (CORBA::is_nil(child))	return;
+	Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
+	rr->copy(Region_var(traversal->current_allocation()));
+	Vertex delta =
+	    GraphicImpl::transform_allocate(*rr, r, Transform_var(my_transform->_this()));
+	Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
+	tx->copy(Transform_var(my_transform->_this()));
+	try
+	{
+	    traversal->traverse_child (child, 0,
+				       Region_var(rr->_this()),
+				       Transform_var(tx->_this()));}
+	catch (const CORBA::OBJECT_NOT_EXIST &)
+	{ body(Fresco::Graphic::_nil()); }
+	catch (const CORBA::COMM_FAILURE &)
+	{ body(Fresco::Graphic::_nil()); }
     }
 }
 
 void Transformer::allocate(Tag, const Allocation::Info &info)
 {
-  Trace trace("Transformer::allocate");
-  if (!transform->identity())
+    Trace trace("Transformer::allocate");
+    if (!my_transform->identity())
     {
-      if (!CORBA::is_nil(info.allocation))
+	if (!CORBA::is_nil(info.allocation))
 	{
-	  Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
-	  rr->copy(info.allocation);
-	  Fresco::Graphic::Requisition r;
-	  GraphicImpl::init_requisition(r);
-	  Allocator::request(r);
-	  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
-	  tx->load_identity();
-	  Vertex delta = GraphicImpl::transform_allocate(*rr, r, Transform_var(transform->_this()));
- 	  tx->copy(Transform_var(transform->_this()));
-	  info.transformation->premultiply(Transform_var(tx->_this()));
-	  info.allocation->copy(Region_var(rr->_this()));
+	    Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
+	    rr->copy(info.allocation);
+	    Fresco::Graphic::Requisition r;
+	    GraphicImpl::init_requisition(r);
+	    Allocator::request(r);
+	    Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
+	    tx->load_identity();
+	    Vertex delta =
+		GraphicImpl::transform_allocate(*rr, r, Transform_var(my_transform->_this()));
+	    tx->copy(Transform_var(my_transform->_this()));
+	    info.transformation->premultiply(Transform_var(tx->_this()));
+	    info.allocation->copy(Region_var(rr->_this()));
         }
-      else
+	else
 	{
-	  info.transformation->premultiply(Transform_var(transform->_this()));
-	  Allocator::allocate(0, info);
+	    info.transformation->
+		premultiply(Transform_var(my_transform->_this()));
+	    Allocator::allocate(0, info);
         }
     }
-  else Allocator::allocate(0, info);
+    else Allocator::allocate(0, info);
 }

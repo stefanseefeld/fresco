@@ -36,8 +36,9 @@ using namespace Berlin::FigureKit;
 
 FigureKitImpl::FigureKitImpl(const std::string &id,
 			     const Fresco::Kit::PropertySeq &p,
-			     ServerContextImpl *c)
-    : KitImpl(id, p, c) { }
+			     ServerContextImpl *c) :
+    KitImpl(id, p, c)
+{ }
 FigureKitImpl::~FigureKitImpl() { }
 
 Graphic_ptr FigureKitImpl::root(Graphic_ptr g)
@@ -54,61 +55,61 @@ Graphic_ptr FigureKitImpl::root(Graphic_ptr g)
 
 Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
 {
-  /* unimplemented */
-  return Graphic::_duplicate(g);
+    /* unimplemented */
+    return Graphic::_duplicate(g);
 }
 
 Graphic_ptr FigureKitImpl::group()
 {
-  return create<Graphic>(new PolyFigure, "FigureKit/group");
+    return create<Graphic>(new PolyFigure, "FigureKit/group");
 }
 
 Graphic_ptr FigureKitImpl::ugroup()
 {
-  return create<Graphic>(new UPolyFigure, "FigureKit/ugroup");
+    return create<Graphic>(new UPolyFigure, "FigureKit/ugroup");
 }
 
 Figure::Point_ptr FigureKitImpl::point(Coord x, Coord y)
 {
-  Vertex v;
-  v.x = x, v.y = y; v.z = 0;
-  return create<Figure::Point>(new PointImpl(v), "FigureKit/point");
+    Vertex v;
+    v.x = x, v.y = y; v.z = 0;
+    return create<Figure::Point>(new PointImpl(v), "FigureKit/point");
 }
 
 Figure::Line_ptr FigureKitImpl::line(Coord x0, Coord y0,
 				     Coord x1, Coord y1)
 {
-  Vertex v1, v2;
-  v1.x = x0, v1.y = y0, v1.z = 0;
-  v2.x = x1, v2.y = y1, v2.z = 0;
-  return create<Figure::Line>(new LineImpl(v1, v2), "FigureKit/line");
+    Vertex v1, v2;
+    v1.x = x0, v1.y = y0, v1.z = 0;
+    v2.x = x1, v2.y = y1, v2.z = 0;
+    return create<Figure::Line>(new LineImpl(v1, v2), "FigureKit/line");
 }
 
 Figure::Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t,
 					       Coord r, Coord b)
 {
-  Vertex lower, upper;
-  lower.x = l, lower.y = t, lower.z = 0;
-  upper.x = r, upper.y = b, upper.z = 0;
-  return create<Figure::Rectangle>(new RectangleImpl(lower, upper),
-				   "FigureKit/rectangle");
+    Vertex lower, upper;
+    lower.x = l, lower.y = t, lower.z = 0;
+    upper.x = r, upper.y = b, upper.z = 0;
+    return create<Figure::Rectangle>(new RectangleImpl(lower, upper),
+				     "FigureKit/rectangle");
 }
 
 Figure::Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
 {
-  Vertex center;
-  center.x = x, center.y = y; center.z = 0;
-  return create<Figure::Circle>(new CircleImpl(center, r),
-				"FigureKit/circle");
+    Vertex center;
+    center.x = x, center.y = y; center.z = 0;
+    return create<Figure::Circle>(new CircleImpl(center, r),
+				  "FigureKit/circle");
 }
 
 Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y,
 					   Coord r1, Coord r2)
 {
-  Vertex center;
-  center.x = x, center.y = y, center.z = 0;
-  return create<Figure::Ellipse>(new EllipseImpl(center, r1, r2),
-				 "FigureKit/ellipse");
+    Vertex center;
+    center.x = x, center.y = y, center.z = 0;
+    return create<Figure::Ellipse>(new EllipseImpl(center, r1, r2),
+				   "FigureKit/ellipse");
 }
 
 Figure::Path_ptr FigureKitImpl::multiline(const Fresco::Path &p)
@@ -119,31 +120,30 @@ Figure::Path_ptr FigureKitImpl::multiline(const Fresco::Path &p)
 
 Figure::Path_ptr FigureKitImpl::polygon(const Fresco::Path &p)
 {
-  return create<Figure::Path>(new PathImpl(p, true),
-			      "FigureKit/polygon");
+    return create<Figure::Path>(new PathImpl(p, true),
+				"FigureKit/polygon");
 }
 
 Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
 {
-  return create<Image>(new ImageImpl(raster), "FigureKit/pixmap");
+    return create<Image>(new ImageImpl(raster), "FigureKit/pixmap");
 }
 
 Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
 {
-  return create_and_set_body<Graphic>(new Texture(raster), g,
-				      "FigureKit/texture");
+    return create_and_set_body<Graphic>(new Texture(raster), g,
+					"FigureKit/texture");
 }
 
 Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 {
-  return create_and_set_body<Graphic>(new Transformer, g,
-				      "FigureKit/transformer");
+    return create_and_set_body<Graphic>(new Transformer, g,
+					"FigureKit/transformer");
 }
-
 
 
 extern "C" KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "FigureKitImpl"};
-  return create_prototype<FigureKitImpl> ("IDL:fresco.org/Fresco/FigureKit:1.0", properties, 2);
+    static std::string properties[] = {"implementation", "FigureKitImpl"};
+    return create_prototype<FigureKitImpl> ("IDL:fresco.org/Fresco/FigureKit:1.0", properties, 2);
 }

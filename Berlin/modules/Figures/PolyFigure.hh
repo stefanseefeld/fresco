@@ -34,7 +34,8 @@ namespace Berlin
   namespace FigureKit
   {
 
-    class PolyFigure : public virtual POA_Figure::FigureBase, public PolyGraphic
+    class PolyFigure : public virtual POA_Figure::FigureBase,
+		       public PolyGraphic
     {
       public:
         PolyFigure();
@@ -64,8 +65,8 @@ namespace Berlin
 
       protected:
         void update_bbox();
-        Impl_var<TransformImpl> _tx;
-        Impl_var<RegionImpl>    _bbox;
+        Impl_var<TransformImpl> my_tx;
+        Impl_var<RegionImpl>    my_bbox;
     };
 
     class UPolyFigure : public PolyFigure

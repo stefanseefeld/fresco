@@ -32,41 +32,46 @@
 
 namespace Berlin 
 {
-namespace FigureKit 
-{
+  namespace FigureKit 
+  {
 
-class FigureKitImpl : public virtual POA_Fresco::FigureKit,
-		      public KitImpl
-{
- public:
-  FigureKitImpl(const std::string &,
-		const Fresco::Kit::PropertySeq &,
-		ServerContextImpl *);
-  virtual ~FigureKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-  { return new FigureKitImpl(repo_id(), p, c);}
-  
-  Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
-  Fresco::Graphic_ptr fitter(Fresco::Graphic_ptr);
-  Fresco::Graphic_ptr group();
-  Fresco::Graphic_ptr ugroup();
-  
-  Figure::Point_ptr point(Fresco::Coord, Fresco::Coord);
-  Figure::Line_ptr line(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
-  Figure::Rectangle_ptr rectangle(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
-  Figure::Circle_ptr circle(Fresco::Coord, Fresco::Coord, Fresco::Coord);
-  Figure::Ellipse_ptr ellipse(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
-  //   Figures::Path_ptr openBspline(const Figure::Vertices &);
-  //   Figures::Path_ptr closedBspline(const Figure::Vertices &);
-  Figure::Path_ptr multiline(const Fresco::Path &);
-  Figure::Path_ptr polygon(const Fresco::Path &);
-  
-  Fresco::Image_ptr   pixmap(Fresco::Raster_ptr);
-  Fresco::Graphic_ptr texture(Fresco::Graphic_ptr, Fresco::Raster_ptr);
-  Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
-};
+    class FigureKitImpl : public virtual POA_Fresco::FigureKit,
+			  public KitImpl
+    {
+      public:
+	FigureKitImpl(const std::string &,
+		      const Fresco::Kit::PropertySeq &,
+		      ServerContextImpl *);
+	virtual ~FigureKitImpl();
+	virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+			       ServerContextImpl *c)
+	{ return new FigureKitImpl(repo_id(), p, c); }
+	
+	Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
+	Fresco::Graphic_ptr fitter(Fresco::Graphic_ptr);
+	Fresco::Graphic_ptr group();
+	Fresco::Graphic_ptr ugroup();
+	
+	Figure::Point_ptr point(Fresco::Coord, Fresco::Coord);
+	Figure::Line_ptr line(Fresco::Coord, Fresco::Coord,
+			      Fresco::Coord, Fresco::Coord);
+	Figure::Rectangle_ptr rectangle(Fresco::Coord, Fresco::Coord,
+					Fresco::Coord, Fresco::Coord);
+	Figure::Circle_ptr circle(Fresco::Coord, Fresco::Coord,
+				  Fresco::Coord);
+	Figure::Ellipse_ptr ellipse(Fresco::Coord, Fresco::Coord,
+				    Fresco::Coord, Fresco::Coord);
+	// Figures::Path_ptr openBspline(const Figure::Vertices &);
+	// Figures::Path_ptr closedBspline(const Figure::Vertices &);
+	Figure::Path_ptr multiline(const Fresco::Path &);
+	Figure::Path_ptr polygon(const Fresco::Path &);
+	
+	Fresco::Image_ptr   pixmap(Fresco::Raster_ptr);
+	Fresco::Graphic_ptr texture(Fresco::Graphic_ptr, Fresco::Raster_ptr);
+	Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
+    };
 
-} // namespace
+  } // namespace
 } // namespace
 
 #endif
