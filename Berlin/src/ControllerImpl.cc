@@ -143,6 +143,7 @@ CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 {
   SectionLog section("ControllerImpl::receiveFocus");  
   setFocus(f->device());
+  if (f->device() == 0) set(Telltale::active);
   return true;
 }
 
@@ -150,6 +151,7 @@ void ControllerImpl::loseFocus(Input::Device d)
 {
   SectionLog section("ControllerImpl::loseFocus");
   clearFocus(d);
+  if (d == 0) clear(Telltale::active);
 }
 
 CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)

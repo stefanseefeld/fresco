@@ -213,13 +213,20 @@ Controller_ptr WidgetKitImpl::toggle(Graphic_ptr g, const Color &b)
   Toggle *t = new Toggle;
   t->_obj_is_ready(_boa());
   graphics.push_back(t);
-  DynamicFrame *frame = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::chosen, true);
-  frame->_obj_is_ready(_boa());
-  graphics.push_back(frame);
-  frame->attach(Controller_var(t->_this()));
-  frame->body(g);
+  DynamicFrame *frame1 = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::chosen, true);
+  frame1->_obj_is_ready(_boa());
+  graphics.push_back(frame1);
+  frame1->body(g);
+  frame1->attach(Controller_var(t->_this()));
 
-  t->body(Graphic_var(frame->_this()));
+  DynamicFrame *frame2 = new DynamicFrame(10., b, Frame::black, Frame::flat, Telltale::active, false);
+  frame2->_obj_is_ready(_boa());
+  graphics.push_back(frame2);
+  frame2->body(g);
+  frame2->body(Graphic_var(frame1->_this()));
+  frame2->attach(Controller_var(t->_this()));
+
+  t->body(Graphic_var(frame2->_this()));
   return t->_this();
 }
 

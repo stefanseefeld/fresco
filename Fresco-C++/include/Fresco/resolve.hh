@@ -116,7 +116,7 @@ typename T::_ptr_type resolve_name(CosNaming::NamingContext_ptr context, const c
 
 inline void bind_name(CORBA::ORB_ptr orb, CORBA::Object_ptr object, const char *name)
 {
-  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NamingContext");
+  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
   CosNaming::Name cosname;
   cosname.length(1);
   cosname[0].id   = name; 
