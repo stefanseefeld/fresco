@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 # $Id$
 #
 # This source file is a part of the Berlin Project.
@@ -20,7 +21,7 @@
 # MA 02139, USA.
 
 # Places to install libraries, binaries, etc.
-prefix      = @prefix@
+prefix      = /usr/local
 bindir      = $(prefix)/bin
 libdir      = $(prefix)/lib
 includedir  = $(prefix)/include
@@ -31,30 +32,30 @@ CC          = gcc
 CXX         = g++
 
 # Various programs used in compilation and running of the programs.
-@SET_MAKE@
-AR	    = @AR@
-YACC	    = @YACC@
-FLEX	    = @LEX@
-INSTALL	    = @INSTALL@
-LD	    = @LD@
-MAKEINFO    = @MAKEINFO@
-RANLIB      = @RANLIB@
-TEXI2DVI    = @TEXI2DVI@
-TEXI2HTML   = @TEXI2HTML@
-TEX         = @TEX@
-DVIPS       = @DVIPS@
+
+AR	    = ar
+YACC	    = bison -y
+FLEX	    = flex
+INSTALL	    = /usr/bin/install -c
+LD	    = ld
+MAKEINFO    = makeinfo
+RANLIB      = ranlib
+TEXI2DVI    = texi2dvi
+TEXI2HTML   = texi2html
+TEX         = 
+DVIPS       = 
 
 # Compilation and linking flags.
-CFLAGS	   	= -Wall -I../../../include
-CXXFLAGS   	= -Wall -I../../../include
-LDFLAGS    	= -L../../../lib
+CFLAGS	   	= -Wall -I../../../include -pthread
+CXXFLAGS   	= -Wall -I../../../../include -pthread
+LDFLAGS    	= -L../../../../lib
 OPTFLAGS	= -O3
 SOFLAGS		= -fpic
 GDBFLAGS	= -ggdb -DGDB
 PROFILEFLAGS	= -pg -Winline 
 
-ipath		= ../../../include
-lpath		= ../../../lib
+ipath		= ../../../../include
+lpath		= ../../../../lib
 dpath		= dep
 opath		= obj
 gpath		= gdb
@@ -63,9 +64,25 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-include Examples.mk
+ALL        =   Datatype Plugin Loader
 
-distclean:	clean
+world:		$(ALL)
 
 %.o:		%.cc
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
+
+DataType:	DataType.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Plugin.so:	Plugin.o
+		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Loader:		Plugin.so Loader.o
+		$(CXX) $(LDFLAGS) -o $@ Loader.o $(LIBS)
+
+clean:	
+		$(RM) *.o *~
+
+distclean:	clean
+		$(RM) $(ALL)
+
