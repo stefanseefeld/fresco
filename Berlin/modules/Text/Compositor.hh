@@ -1,5 +1,6 @@
-#ifndef _TextChunk_hh
-#define _TextChunk_hh
+#ifndef _TextViewer_hh
+#define _TextViewer_hh
+
 //
 // $Id$
 //
@@ -23,35 +24,37 @@
 //
 //
 
-// A text chunk is constructed with a "canonical size", which is essentially its
-// requisition within the font it was constructed for, on the drawable it was
-// intended to be drawn on. This might not actually be the font it winds up
-// drawing with, nor the drawable it winds up using, but that's for its
-// container to compensate for. At this level, all the chunk needs to do is
-// store and request how big it *thinks* it should be, and ignore how large it
-// winds up being at draw-time.
-
 #include "Warsaw/config.hh"
-#include "Warsaw/Text.hh"
-#include "Berlin/GraphicImpl.hh"
+#include "Warsaw/Graphic.hh"
 
+class RegionImpl;
+
+declare_corba_ptr_type(Region)
 declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Font)
 
-class TextChunk : public virtual GraphicImpl {
+// this is a strategy object for adjusting text layouts to compensate for font
+// misses or hinting. It plays a very similar role to a LayoutManager.
+
+class Compositor {
     public:
-    TextChunk(const Unistring & u, const Requisition & r);	    
-    virtual void draw(DrawTraversal_ptr dt);
-    virtual void request(Graphic::Requisition &);
-
-    void getText(Unistring &u); 
-    unsigned long getLength();
-    
+    typedef RegionImpl **Allocations;
+    Compositor(Axis a);
+    virtual ~Compositor();
+    virtual void compose(long n, Graphic_ptr *chunks, DrawingKit_ptr dk, Region_ptr given, Compositor::Allocations result) = 0;
     protected:
-    Graphic::Requisition myCanonicalSize;
-    Unistring myText;
+    static void setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align);
+    Axis axis;
 };
 
+//
+// does no compensation -- to be used when current dk == canonical dk
+//
+
+class IdentityCompositor : public Compositor {
+    public:
+    IdentityCompositor(Axis a);
+    virtual ~IdentityCompositor();
+    virtual void compose(long n, Graphic_ptr *chunks, DrawingKit_ptr dk, Region_ptr given, Compositor::Allocations result);    
+};
 
 #endif
-

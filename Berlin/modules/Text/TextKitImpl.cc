@@ -23,28 +23,44 @@
 
 #include "Text/TextKitImpl.hh"
 #include "Text/TextChunk.hh"
-#include "Text/FontChange.hh"
+//#include "Text/FontChange.hh"
 #include "Berlin/Plugin.hh"
+
+DrawingKit_ptr canonicalDK;
+map<GlyphComp::Key,GlyphComp::Val,GlyphComp> glyphCache;
+Mutex staticMutex;
+
 
 TextKitImpl::TextKitImpl() {}
 TextKitImpl::~TextKitImpl() {}
+
+void TextKitImpl::setCanonicalDrawingKit(DrawingKit_ptr dk) {
+    MutexGuard guard(staticMutex);
+    canonicalDK = dk;
+}
 
 Text::FontSeq *TextKitImpl::enumerateFonts() {
   Text::FontSeq *fsq = new Text::FontSeq();
   return fsq;
 }
 
-Graphic_ptr TextKitImpl::textChunk(const Unistring &u) {
-  TextChunk *t = new TextChunk(u);
-  t->_obj_is_ready(_boa());
-  return t->_this();
+Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
+    GlyphComp::Key k = GlyphComp::Key(u,f);
+    if (glyphCache.find(k) == glyphCache.end() ) {
+	Graphic::Requisition r;
+	f->allocateText(u,r);
+	TextChunk *t = new TextChunk(u,r);
+	t->_obj_is_ready(_boa());
+	glyphCache[k] = t->_this();
+    }
+    return glyphCache[k];
 }
 
-Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &f, const Style::Spec &sty) {
-  FontChange *fc = new FontChange(f,sty);
-  fc->_obj_is_ready(_boa());
-  return fc->_this();
-}
+// Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &f, const Style::Spec &sty) {
+//   FontChange *fc = new FontChange(f,sty);
+//   fc->_obj_is_ready(_boa());
+//   return fc->_this();
+// }
 
 
 EXPORT_PLUGIN(TextKitImpl, interface(TextKit))

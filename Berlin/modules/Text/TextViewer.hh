@@ -1,3 +1,6 @@
+#ifndef _TextViewer_hh
+#define _TextViewer_hh
+
 //
 // $Id$
 //
@@ -21,34 +24,40 @@
 //
 //
 
-#include "Text/TextChunk.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/config.hh"
+#include "Warsaw/View.hh"
+#include "Widget/GapBuffer.hh"
+#include "Berlin/PolyGraphic.hh"
+#include <map>
 
-TextChunk::TextChunk(const Unistring & u, const Requisition &r) : 
-    myCanonicalSize(r), myText(u)  {
-}
 
-void TextChunk::request(Graphic::Requisition &r) {
-    r = myCanonicalSize;
-}
+class TextChunk;
+class FontChange;
+class Compositor;
 
-void TextChunk::getText(Unistring &u) {
-    unsigned long len = myText.length();
-    u.length(len);
-    for (unsigned long i = 0; i < len; i++) {
-	u[i] = myText[i];
-    }    
-}
+declare_corba_ptr_type(DrawingKit)
+declare_corba_ptr_type(TextBuffer)
+declare_corba_ptr_type(DrawTraversal)
 
-unsigned long TextChunk::getLength() {
-    return myText.length();
-}
+class TextViewer : implements(View), public virtual PolyGraphic {
 
-void TextChunk::draw(DrawTraversal_ptr dt) {
-    DrawingKit_ptr dk = dt->kit();
-    Text::Font_var f = dk->currentFont();
-    Vertex l, u, o;
-    dt->bounds(l, u, o);
-    f->drawText(myText, o);
-}
+    public:
+
+    TextViewer(TextBuffer_ptr txt, DrawingKit_ptr dk, Compositor *);
+    TextViewer(DrawingKit_ptr dk, Compositor *);
+    void draw(DrawTraversal_ptr dt);
+    void update(Subject_ptr s, const CORBA::Any &a);
+    virtual ~TextViewer();
+
+    protected:
+
+    TextBuffer_var myTextBuffer;
+    DrawingKit_var myCanonicalDK;
+    Compositor  *myCompositor;
+
+    GapBuffer<TextChunk *, 32> myGlyphs;
+    map<long, FontChange *> myFontSettings;
+
+};
+
+#endif

@@ -319,7 +319,7 @@ Graphic_ptr LayoutKitImpl::valign(Graphic_ptr g, Alignment y)
   return alignAxis(g, yaxis, y);
 }
 
-Graphic_ptr LayoutKitImpl::fixed(Graphic_ptr g, Coord x, Coord y)
+Graphic_ptr LayoutKitImpl::fixedAlloc(Graphic_ptr g, Coord x, Coord y)
 {
   Placement *placement = new Placement(new LayoutSuperpose(new LayoutFixed(xaxis, x), new LayoutFixed(yaxis, y)));
   placement->_obj_is_ready(_boa());

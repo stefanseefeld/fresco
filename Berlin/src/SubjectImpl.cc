@@ -44,7 +44,11 @@ void SubjectImpl::block(CORBA::Boolean b)
   blocked = b;
 }
 
-void SubjectImpl::notify()
+void SubjectImpl::notify() {
+    this->notify(CORBA::Any());
+}
+
+void SubjectImpl::notify(const CORBA::Any &whatChanged)
 {
   MutexGuard guard(myMutex);
   if (!blocked)
@@ -52,6 +56,6 @@ void SubjectImpl::notify()
       MutexGuard guard(observerMutex);
       Subject_var me = _this();
       for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
-	(*i)->update(me);
+	(*i)->update(me,whatChanged);
     }
 }

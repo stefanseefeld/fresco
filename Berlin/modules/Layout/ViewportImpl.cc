@@ -327,7 +327,7 @@ void ViewportImpl::needResize()
   MonoGraphic::needResize();
 }
 
-void ViewportImpl::update(Subject_ptr subject)
+void ViewportImpl::update(Subject_ptr subject, const CORBA::Any &a)
 {
 }
 

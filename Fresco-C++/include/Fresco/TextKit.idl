@@ -34,10 +34,13 @@
 // textChunk flyweights will produce text, fontChange flyweights will try
 // to set the current font. simple as that.
 
+interface DrawingKit;
+
 interface TextKit : Cloneable {
   Text::FontSeq enumerateFonts();
-  Graphic textChunk(in Unistring u);    
-  Graphic fontChange(in Text::FontDescriptor f, in Style::Spec sty);
+  void setCanonicalDrawingKit(in DrawingKit dk);
+  Graphic chunk(in Unistring u, in Text::Font f);    
+  //  Graphic fontChange(in Text::FontDescriptor f, in Style::Spec sty);
 };
 
 #endif

@@ -24,23 +24,45 @@
 //
 
 #include "Warsaw/config.hh"
+#include "Text/SeqComp.hh"
 #include "Warsaw/TextKit.hh"
 #include "Warsaw/Text.hh"
 #include "Berlin/CloneableImpl.hh"
+#include "Berlin/Thread.hh"
+#include <map>
 
-/** the idea with a textKit is that it's responsible for "bundling up"
-    chunks of unicode and their associated style and font
-    settings. If a chunk has no such settings, a simplified chunk
-    is built which uses the drawingKit's "default" font. */
+declare_corba_ptr_type(DrawingKit)
+
+struct GlyphComp {
+    typedef pair<Unistring,Text::Font_ptr> Key;
+    typedef Graphic_ptr Val;    
+    
+    inline bool operator()(const Key &a, const Key &b) {
+	Text::FontDescriptor d1, d2;
+	a.second->getDescriptor(d1);
+	b.second->getDescriptor(d2);
+	return SeqComp(a.first,b.first) || 
+	    SeqComp(d1.name,d2.name) ||
+	    SeqComp(d1.style,d2.style) ||
+	    (d1.pointsize > d2.pointsize);
+    }
+};
 
 class TextKitImpl : implements(TextKit), public virtual CloneableImpl {
  public:
-  TextKitImpl();
-  virtual ~TextKitImpl();
-  Text::FontSeq *enumerateFonts();
-  Graphic_ptr textChunk(const Unistring &u);
-  Graphic_ptr fontChange(const Text::FontDescriptor &f, const Style::Spec &sty);
+    TextKitImpl();
+    virtual ~TextKitImpl();
+    Text::FontSeq *enumerateFonts();
+    Graphic_ptr chunk(const Unistring &u, Text::Font_ptr f);
+    void setCanonicalDrawingKit(DrawingKit_ptr dk);
+    //  Graphic_ptr TextViewer(const Text::FontDescriptor &f, const Style::Spec &sty);
+    
+ protected:
+    static DrawingKit_ptr canonicalDK;
+    static map<GlyphComp::Key,GlyphComp::Val,GlyphComp> glyphCache;
+    static Mutex staticMutex;
 };
+
 
 
 #endif

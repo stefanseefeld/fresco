@@ -29,13 +29,13 @@ interface Subject
 {
   void attach(in Observer o);
   void detach(in Observer o);
-  void notify();
+  void notify(in any a);
   void block(in boolean b);  
 };
 
 interface Observer
 {
-  void update(in Subject s);
+  void update(in Subject s, in any a);
 };
 
 #endif /* _Subject_idl */

@@ -1,3 +1,5 @@
+#ifndef _SeqComp_hh
+#define _SeqComp_hh
 //
 // $Id$
 //
@@ -21,34 +23,20 @@
 //
 //
 
-#include "Text/TextChunk.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Traversal.hh"
+// this is a helper template you can use if you want to compare 2 of omniorb's sequence templates.
+// it might need a little tweakin' to work with other ORBs.
 
-TextChunk::TextChunk(const Unistring & u, const Requisition &r) : 
-    myCanonicalSize(r), myText(u)  {
-}
+#include <omniORB2/CORBA.h>
+#include <omniORB2/seqtemplates.h>
 
-void TextChunk::request(Graphic::Requisition &r) {
-    r = myCanonicalSize;
-}
-
-void TextChunk::getText(Unistring &u) {
-    unsigned long len = myText.length();
-    u.length(len);
+template <class T> inline bool SeqComp(const _CORBA_Sequence<T> &a, const _CORBA_Sequence<T> &b) {
+    unsigned long len1 = a.length();
+    unsigned long len2 = b.length();
+    unsigned long len = len1 > len2 ? len2 : len1;	
     for (unsigned long i = 0; i < len; i++) {
-	u[i] = myText[i];
-    }    
+	if (a[i] != b[i]) return a[i] > b[i];
+    }
+    return false;
 }
 
-unsigned long TextChunk::getLength() {
-    return myText.length();
-}
-
-void TextChunk::draw(DrawTraversal_ptr dt) {
-    DrawingKit_ptr dk = dt->kit();
-    Text::Font_var f = dk->currentFont();
-    Vertex l, u, o;
-    dt->bounds(l, u, o);
-    f->drawText(myText, o);
-}
+#endif

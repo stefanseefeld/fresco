@@ -47,7 +47,7 @@ class ViewportImpl : implements(Viewport), public MonoGraphic
 
   virtual BoundedRange_ptr adjustment(Axis);
 
-  virtual void update(Subject_ptr);
+  virtual void update(Subject_ptr, const CORBA::Any &a);
 
   void scrollTo(Axis, Coord);
   Coord lower(Axis);
