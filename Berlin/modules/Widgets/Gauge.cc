@@ -51,8 +51,8 @@ void Gauge::draw(DrawTraversal_ptr traversal)
   path.p[1].x = path.p[2].x, path.p[1].y = path.p[0].y, path.p[1].z = 0.;
   path.p[3].x = path.p[0].x, path.p[3].y = path.p[2].y, path.p[3].z = 0.;
   path.p[4] = path.p[0];
-  Transform_var transform = traversal->transformation();
-  for (unsigned int i = 0; i != path.p.length(); i++) transform->transformVertex(path.p[i]);
+//   Transform_var transform = traversal->transformation();
+//   for (unsigned int i = 0; i != path.p.length(); i++) transform->transformVertex(path.p[i]);
   Style::Spec style;
   style.length(1);
   style[0].a = Style::fillcolor;
@@ -65,7 +65,7 @@ void Gauge::draw(DrawTraversal_ptr traversal)
   path.p[1].x = path.p[2].x, path.p[1].y = path.p[0].y, path.p[1].z = 0.;
   path.p[3].x = path.p[0].x, path.p[3].y = path.p[2].y, path.p[3].z = 0.;
   path.p[4] = path.p[0];
-  for (unsigned int i = 0; i != path.p.length(); i++) transform->transformVertex(path.p[i]);
+//   for (unsigned int i = 0; i != path.p.length(); i++) transform->transformVertex(path.p[i]);
   bg = brightness(color, -0.7);
   style[0].val <<= bg;
   pen = dk->getPencil(style);

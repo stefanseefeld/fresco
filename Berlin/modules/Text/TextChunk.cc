@@ -56,7 +56,7 @@ SectionLog section("TextChunk::draw");
     Vertex l,u;
     allocation->bounds(l,u);
     u.x = l.x;
-    Transform_var transform = dt->transformation();
-    transform->transformVertex(u);
+//     Transform_var transform = dt->transformation();
+//     transform->transformVertex(u);
     f->drawText(myText, u);
 }

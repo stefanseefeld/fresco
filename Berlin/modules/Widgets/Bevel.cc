@@ -162,7 +162,6 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
       path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
       path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
       path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-      for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
       pen->drawPath(path);
     }
   /*
@@ -178,7 +177,6 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   path.p[2].x = lefti, path.p[2].y = bottomi, path.p[2].z = 0.;
   path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
   path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
   pen->drawPath(path);
   /*
    * top edge
@@ -188,7 +186,6 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   path.p[2].x = righti, path.p[2].y = topi, path.p[2].z = 0.;
   path.p[3].x = lefti, path.p[3].y = topi, path.p[3].z = 0.;
   path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
   pen->drawPath(path);
   /*
    * dark edges
@@ -203,7 +200,6 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   path.p[2].x = righti, path.p[2].y = bottomi, path.p[2].z = 0.;
   path.p[3].x = righti, path.p[3].y = topi, path.p[3].z = 0.;
   path.p[4].x = right, path.p[4].y = top, path.p[4].z = 0.;
-  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
   pen->drawPath(path);
   /*
    * bottom edge
@@ -213,8 +209,6 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   path.p[2].x = righti, path.p[2].y = bottomi, path.p[2].z = 0.;
   path.p[3].x = right, path.p[3].y = bottom, path.p[3].z = 0.;
   path.p[4].x = left, path.p[4].y = bottom, path.p[4].z = 0.;
-  
-  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
   pen->drawPath(path);
 }
 

@@ -60,34 +60,34 @@ void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &st
   MutexGuard guard(mutex);
 
   // make sure the gnufont tracks color changes
-  for (unsigned long i = 0; i < sty.length(); i++) {    
+  for (unsigned long i = 0; i < sty.length(); i++)
+    {    
       Color *tmp;
-      if (sty[i].a == Style::fillcolor) {
+      if (sty[i].a == Style::fillcolor)
+	{
 	  sty[i].val >>= tmp;
-	  //	  cerr << "set color " << tmp->red << ", " << tmp->green << ", " << tmp->blue << ", " << tmp->alpha << endl;
 	  gnufont->setColor(*tmp);
-      }
-  }
-  
+	}
+    }
   try
-      { 
-	  //
-	  // at this time, there is _no_ way to add new fonts to the runtime.
-	  // it uses GNU Unifont, and nothing else.
-	  //
-	  // it will eventually look like this, once we get the GLFont truetype &
-	  // T1 registry alive.
-	  //
-	  
-	  /*      GLFont *newfont = new GLFont(fd,sty); 
-		  newfont->_obj_is_ready(_boa());
-		  if (font) font->_dispose();
-		  font = newfont;*/
-      }
+    { 
+      //
+      // at this time, there is _no_ way to add new fonts to the runtime.
+      // it uses GNU Unifont, and nothing else.
+      //
+      // it will eventually look like this, once we get the GLFont truetype &
+      // T1 registry alive.
+      //
+      
+      /*      GLFont *newfont = new GLFont(fd,sty); 
+	      newfont->_obj_is_ready(_boa());
+	      if (font) font->_dispose();
+	      font = newfont;*/
+    }
   catch (Text::NoSuchFontException &ex)
-      {
-	  throw ex;
-      }
+    {
+      throw ex;
+    }
 }
 
 Text::Font_ptr GLDrawingKit::currentFont()
@@ -112,18 +112,14 @@ Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
   return pencil->_this();
 }
 
-// lower.x, lower.y, upper.x, upper.y
 void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 {
-  glColor4d(0., 0., 0., 1.);      
-  //glClearColor(0.0,0.0,0.0,1.0);
-  //glClear(GL_COLOR_BUFFER_BIT);
-
+  glColor4d(0., 0., 0., 1.);
   glRectf(l, t, r, b);
 }
 
-void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
+void GLDrawingKit::image(Raster_ptr raster)
 {
   GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
-  glraster->draw(transform);
+  glraster->draw();
 }

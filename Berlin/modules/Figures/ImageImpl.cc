@@ -51,7 +51,6 @@ void ImageImpl::draw(DrawTraversal_ptr traversal)
   SectionLog section("Image::draw");
   if (!traversal->intersectsAllocation()) return;
   DrawingKit_var dk = traversal->kit();
-  Transform_var transform = traversal->transformation();
-  dk->image(raster, transform);
+  dk->image(raster);
 }
 

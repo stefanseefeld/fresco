@@ -48,7 +48,7 @@ public:
   ~GLDrawingKit();
   Drawable_ptr getDrawable();
 
-  void image(Raster_ptr, Transform_ptr);
+  void image(Raster_ptr);
   void setFont(const Text::FontDescriptor &, const Style::Spec &) throw (Text::NoSuchFontException);
   Text::Font_ptr currentFont();
   Pencil_ptr getPencil(const Style::Spec &);

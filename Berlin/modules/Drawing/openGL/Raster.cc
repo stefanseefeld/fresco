@@ -370,7 +370,7 @@ GLRaster::GLRaster(Raster_var r)
   remote->storePixels(lower, upper, pixels);
   width = info.width;
   height = info.height;
-  data.resize(4*width*height);
+  vector<unsigned char> data(4*width*height);
   vector<unsigned char>::iterator pixel = data.begin();
   for (int y = height - 1; y >= 0; y--)
     for (int x = 0; x != width; x++)
@@ -389,7 +389,7 @@ GLRaster::~GLRaster()
   unbind();
 }
 
-void GLRaster::draw(Transform_ptr transform)
+void GLRaster::draw()
 {
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, texture);
@@ -401,7 +401,6 @@ void GLRaster::draw(Transform_ptr transform)
   path.p[1].x = width, path.p[1].y = path.p[1].z = 0.;
   path.p[2].x = width, path.p[2].y = height, path.p[2].z = 0.;
   path.p[3].x = 0, path.p[3].y = height, path.p[3].z = 0.;
-  for (unsigned int i = 0; i != 4; i++) transform->transformVertex(path.p[i]);
   glTexCoord2f(0., 0.); glVertex3f(path.p[3].x, path.p[3].y, path.p[3].z);
   glTexCoord2f(s, 0.);  glVertex3f(path.p[2].x, path.p[2].y, path.p[2].z);
   glTexCoord2f(s, t);   glVertex3f(path.p[1].x, path.p[1].y, path.p[1].z);

@@ -30,6 +30,7 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Color.hh>
+#include <Berlin/Vertex.hh>
 #include <Berlin/Logger.hh>
 #include <Figure/FigureImpl.hh>
 
@@ -133,7 +134,6 @@ void FigureImpl::addPoint(Coord x, Coord y)
   v.x = x;
   v.y = y;
   v.z = 0.;
-//   FigureImpl::growVertices(v_);
   CORBA::ULong n = path->length();
   path->length(n + 1);
   path[n] = v;
@@ -182,12 +182,6 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       extension(info, region);
       if (traversal->intersectsRegion(region))
 	{
-	  ::Path p;
-	  CORBA::ULong n = path->length();
-	  p.p.length(n);
-	  for (CORBA::ULong i = 0; i != n; i++) p.p[i] = path[i];
-	  Transform_var transformation = traversal->transformation();
-	  for (CORBA::ULong i = 0; i != n; i++) transformation->transformVertex(p.p[i]);
 	  Style::Spec style;
 	  if (mode == (stroke | fill))
 	    {
@@ -207,6 +201,10 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 	    }
 	  DrawingKit_var drawing = traversal->kit();
 	  Pencil_var pencil = drawing->getPencil(style);
+	  ::Path p;
+	  CORBA::ULong n = path->length();
+	  p.p.length(n);
+	  for (CORBA::ULong i = 0; i != n; i++) p.p[i] = path[i];
 	  pencil->drawPath(p);
 	}
     }

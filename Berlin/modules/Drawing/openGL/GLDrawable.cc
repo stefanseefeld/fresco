@@ -121,7 +121,6 @@ GLDrawable::GLDrawable()
    glEnable(GL_ALPHA_TEST);
    glEnable(GL_SCISSOR_TEST);
    glEnable(GL_BLEND);
-//    glEnable(GL_TEXTURE_2D);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    //   glDrawBuffer(GL_BACK);
 }
@@ -160,6 +159,26 @@ Coord GLDrawable::dpi(Axis axis)
 
 Coord GLDrawable::toCoord(PixelCoord p, Axis axis) { return p/dpi(axis);}
 PixelCoord GLDrawable::toPixels(Coord c, Axis axis) { return static_cast<long>(c*dpi(axis));}
+
+void GLDrawable::pushTransform(Transform_ptr transform)
+{
+  glPushMatrix();
+  if (!CORBA::is_nil(transform))
+    {
+      Transform::Matrix matrix;
+      transform->storeMatrix(matrix);
+      GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
+			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
+			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
+			       matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
+      glMultMatrixd(glmatrix);
+    }
+}
+
+void GLDrawable::popTransform()
+{
+  glPopMatrix();
+}
 
 void GLDrawable::pushClipping(Region_ptr region, Transform_ptr transformation)
 {

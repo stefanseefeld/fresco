@@ -32,13 +32,12 @@ class GLRaster
 public:
   GLRaster(Raster_var);
   ~GLRaster();
-  void draw(Transform_ptr);
+  void draw();
   Raster_var remote;
   PixelCoord width;
   PixelCoord height;
   GLuint texture;
   GLfloat s, t;
-  vector<unsigned char> data;
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);
   void unbind();

@@ -30,6 +30,8 @@ interface Transform;
 interface Drawable
 {
   Coord dpi(in Axis a);
+  void pushTransform(in Transform t);
+  void popTransform();
   void pushClipping(in Region r, in Transform t);
   void popClipping();
 };

@@ -72,7 +72,9 @@ void DrawTraversalImpl::traverseChild(Graphic_ptr g, Tag t, Region_ptr region, T
 //   tx->copy(Transform_var(transformation()));
 //   tx->premultiply(transform);
 //   drawable->pushClipping(region, Transform_var(tx->_this()));
+  drawable->pushTransform(transform);
   TraversalImpl::traverseChild(g, t, region, transform);
+  drawable->popTransform();
 //   drawable->popClipping();
 };
 
