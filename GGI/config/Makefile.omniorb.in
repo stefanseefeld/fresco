@@ -23,7 +23,7 @@ SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idldir		:= @idldir@
+idldir		:= @Fresco_IDL_prefix@/share/idl
 abs_builddir	:= @abs_builddir@
 cdir		:= @top_builddir@/config
 h1dir		:= @FRESCO_CXX_prefix@/include/Fresco
@@ -39,7 +39,7 @@ CPPFLAGS	+= -I$(h1dir)
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(abs_builddir) -I$(idldir)/share/idl
+IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(abs_builddir) -I$(idldir)
 ifeq ($(SHORTCUT), yes)
 IDLCXXFLAGS	+= -Wbshortcut
 endif
@@ -101,20 +101,20 @@ maintainer-clean: distclean
 
 %.idl.d:	%.idl
 	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir)/share/idl $< \
+	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir) $< \
 	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
 
 $(GENSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
 	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $(<F))
    # what a hack...
-	sed s%$(idldir)/share/idl/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
+	sed s%$(idldir)/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
 
 $(GENHDR): %.hh:	%.idl
 	@echo generating $(@F)
 	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $(<F))
    # what a hack...
-	sed s%$(idldir)/share/idl/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
+	sed s%$(idldir)/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
 
 %.cc.d:	%.cc $(GENHDR)
 	@echo generating dependencies for $<

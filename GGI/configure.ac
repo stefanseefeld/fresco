@@ -52,8 +52,8 @@ elif test ".$ORB" = .TAO ; then
 fi
 
 FRESCO_IDL_PATH
-idldir="$FRESCO_IDL_PREFIX"
-AC_SUBST(idldir)
+
+AC_SUBST(Fresco_IDL_prefix)
 
 dnl ------------------------------------------------------------------
 dnl General flags
