@@ -179,6 +179,13 @@ class PySubject (Warsaw__POA.Identifiable, Warsaw__POA.RefCountBase):
 		print "PySubject.notify(): Error occurred during update."
 		raise
 
+class Edge:
+    "An edge in the DAG"
+    def __init__(self, peer=None, peerId=None, localId=None):
+	self.peer = peer
+	self.peerId = peerId
+	self.localId = localId
+
 class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def __init__(self):
 	PyRefCountBase.__init__(self)
@@ -201,13 +208,13 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def add_parent_graphic(self, graphic, parent_tag): # --> Tag
 	print "PyGraphic.add_parent_graphic(graphic: %s, tag: %s)"%(graphic, parent_tag),
 	mytag = len(self.__parents)
-	self.__parents.append( (graphic, parent_tag, mytag) )
+	self.__parents.append( Edge(graphic, parent_tag, mytag) )
 	print "-->",mytag
 	return mytag
     def remove_parent_graphic(self, parent_tag): # --> void
 	print "PyGraphic.remove_parent_graphic(tag: %s)"%parent_tag
 	for i in range(len(self.__parents)):
-	    if self.__parents[i][1] == parent_tag:
+	    if self.__parents[i].peerId == parent_tag:
 		del self.__parents[i]
 		return
 
@@ -252,12 +259,62 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
     def allocations(self, alloc): # --> void
 	pass
     def need_redraw(self): # --> void
-	for parent, ptag, mytag in self.__parents:
-	    parent.need_redraw()
+	for edge in self.__parents:
+	    edge.peer.need_redraw()
     def need_redraw_region(self, Region): # --> void
 	pass
     def need_resize(self): # --> void
 	pass
+
+class PyMonoGraphic (PyGraphic):
+    "Python analogue of MonoGraphic"
+    def __init__(self):
+	self.__child = Warsaw.Edge()
+    def _get_body(self):
+	self.__child.peer.increment()
+	return self.__child.peer
+    def _set_body(self, newpeer):
+	peer = self.__child.peer
+	if peer:
+	    peer.remove_parent_graphic(self.__child.peerId)
+	    peer.decrement()
+	peer = self.__child.peer = newpeer
+	if peer:
+	    self.__child.peerId = peer.add_parent_graphic(self._this(), 0) 
+	    peer.increment()
+    def append_graphic(self, graphic):
+	if not self.__child.peer: return
+	self.__child.peer.append_graphic(graphic)
+    def prepend_graphic(self, graphic):
+	if not self.__child.peer: return
+	self.__child.peer.prepend_graphic(graphic)
+    def remove_graphic(self, localId):
+	if not self.__child.peer: return
+	self.__child.peer.remove_graphic(localId)
+    def remove_child_graphic(self, localId):
+	if localId == 0: self.__child.peer = None
+	self.need_resize()
+    def first_child_graphic(self):
+	return self.__child.peer and \
+	    self.__child.peer.first_child_graphic()
+    def last_child_graphic(self):
+	return self.__child.peer and \
+	    self.__child.peer.first_child_graphic()
+    def transformation(self):
+	return self.__child.peer and \
+	    self.__child.peer.transformation()
+    def request(self):
+	return self.__child.peer and \
+	    self.__child.peer.request()
+    def extension(self, info, region):
+	if not self.__child.peer: return
+	# the C++ code creates a new info struct
+	# it also calls 'allocate(0, i)'
+	# TODO: find if this is necessary
+	#self.__child.peer.extension
+# This is where I ran out of time. More updates soon :)	
+	    
+
 
 class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
     "Python impl of Warsaw::Controller interface"
