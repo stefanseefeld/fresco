@@ -31,15 +31,29 @@ AC_REVISION($Revision$)
 AC_INIT(Berlin-GGI, M1, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
-
-dnl AC_HEADLINE(dnl
-dnl Berlin Server, The Berlin Server, dnl
-dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-dnl VERSION)
+AC_CONFIG_HEADER(GGIKit/acconfig.hh:config/acconfig.hh.in)
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_LANG_CPLUSPLUS
+
+dnl ------------------------------------------------------------------
+dnl ORB
+dnl ------------------------------------------------------------------
+
+AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
+
+FRESCO_LIB_ORB(mandatory)
+MAKEFILE=
+if test ".$ORB" = .omniORB ; then
+  MAKEFILE="Makefile.omniorb.in"
+elif test ".$ORB" = .TAO ; then
+  MAKEFILE="Makefile.tao.in"
+fi
+
+FRESCO_IDL_PATH
+idldir="$FRESCO_IDL_PREFIX"
+AC_SUBST(idldir)
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -60,11 +74,7 @@ else
   AC_MSG_ERROR([this package needs GGI to compile and run])
 fi
 
-FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Fresco_BUILD_CPPFLAGS"
-LIBS="$Fresco_BUILD_LIBS $LIBS"
-
-FRESCO_PACKAGE(Berlin, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Berlin, Berlin, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Berlin_BUILD_CPPFLAGS"
 LIBS="$Berlin_BUILD_LIBS $LIBS"
 
@@ -81,6 +91,8 @@ AC_MSG_NOTICE([Output Substitution])
 AC_CONFIG_FILES(config/local.mk)
 AC_CONFIG_FILES([config/GGI.spec])
 AC_CONFIG_FILES([Makefile src/Makefile GGIKit/Makefile clients/Makefile])
+dnl don't use that yet...
+dnl AC_CONFIG_FILES([Makefile GGIKit/Makefile:config/$MAKEFILE])
 
 mkdir -p lib/Fresco/Console
 mkdir -p bin

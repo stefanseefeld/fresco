@@ -67,6 +67,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 
 %{prefix}/include/*
-%{prefix}/bin/Fresco-config
+%{prefix}/bin/Fresco-C++-config
 
 %changelog

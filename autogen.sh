@@ -26,11 +26,13 @@ echo "Generating toplevel configure..."
 autoconf
 conf_with_header Prague
 conf_with_header Babylon
-conf_with_header Fresco
+conf Fresco-IDL
+conf_with_header Fresco-C++
 conf_with_header Berlin
-conf GGI
+conf_with_header GGI
 conf SDL
-conf Clients-C++
-conf Clients-Python
-conf Clients-Java
-conf Clients-Perl
+conf Fresco-Python
+conf Fresco-Java
+conf Fresco-Perl
+conf Fresco-C++-demos
+conf Fresco-Python-demos

@@ -75,7 +75,7 @@ $(distdir).tar.gz:
        --exclude '*.m4' \
        --exclude '*.ac' \
        --exclude '*~' \
-       $(distdir) config/Fresco.spec
+       $(distdir) config/Fresco-C++.spec
 	-rm -rf $(distdir)
 
 uninstall:

@@ -20,7 +20,7 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 dnl
 
-dnl FRESCO_PACKAGE(PACKAGE[, MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl FRESCO_PACKAGE(PACKAGE, PACKAGE-VAR[, MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
 AC_DEFUN(FRESCO_PACKAGE,
 [dnl 
@@ -42,61 +42,61 @@ dnl
   dnl part of the distribution, so we use the flags determined
   dnl by <package>-config
   dnl
-  AC_PATH_PROG($1_LOCAL_BUILD_CONFIG, $1-config, no, ../$1/bin)
-  AC_PATH_PROG($1_LOCAL_CONFIG, $1-config, no, ../$1/config)
-  no_$1=""
-  if test "$$1_LOCAL_BUILD_CONFIG" != "no" ; then
-    $1_CPPFLAGS="`$$1_LOCAL_CONFIG --cppflags`"
-    $1_LIBS="`$$1_LOCAL_CONFIG --libs`"
-    $1_BUILD_CPPFLAGS="`$$1_LOCAL_BUILD_CONFIG --cppflags`"
-    $1_BUILD_LIBS="`$$1_LOCAL_BUILD_CONFIG --libs`"
-    $1_prefix="`$$1_LOCAL_BUILD_CONFIG $ac_$1_args --prefix`"
+  AC_PATH_PROG($2_LOCAL_BUILD_CONFIG, $1-config, no, ../$1/bin)
+  AC_PATH_PROG($2_LOCAL_CONFIG, $1-config, no, ../$1/config)
+  no_$2=""
+  if test "$$2_LOCAL_BUILD_CONFIG" != "no" ; then
+    $2_CPPFLAGS="`$$2_LOCAL_CONFIG --cppflags`"
+    $2_LIBS="`$$2_LOCAL_CONFIG --libs`"
+    $2_BUILD_CPPFLAGS="`$$2_LOCAL_BUILD_CONFIG --cppflags`"
+    $2_BUILD_LIBS="`$$2_LOCAL_BUILD_CONFIG --libs`"
+    $2_prefix="`$$2_LOCAL_BUILD_CONFIG --prefix`"
   else
     AC_ARG_WITH($1-prefix, AC_HELP_STRING([--with-$1-prefix],
                                           [Prefix where $1 is installed]),
-                $1_prefix="$withval", $1_prefix="")
+                $2_prefix="$withval", $2_prefix="")
     AC_ARG_WITH($1-exec-prefix, AC_HELP_STRING([--with-$1-exec-prefix],
                                                [Exec prefix where $1 is installed]),
-                $1_exec_prefix="$withval", $1_exec_prefix="")
+                $2_exec_prefix="$withval", $2_exec_prefix="")
 
-    if test x$$1_exec_prefix != x ; then
-      ac_$1_args="$ac_$1_args --exec-prefix=$$1_exec_prefix"
-      if test x${$1_CONFIG+set} != xset ; then
-        $1_CONFIG=$$1_exec_prefix/bin/$1-config
+    if test x$$2_exec_prefix != x ; then
+      ac_$2_args="$ac_$2_args --exec-prefix=$$2_exec_prefix"
+      if test x${$2_CONFIG+set} != xset ; then
+        $2_CONFIG=$$2_exec_prefix/bin/$1-config
       fi
     fi
-    if test x$$1_prefix != x ; then
-      ac_$1_args="$ac_$1_args --prefix=$$1_prefix"
-      if test x${$1_CONFIG+set} != xset ; then
-        $1_CONFIG=$$1_prefix/bin/$1-config
+    if test x$$2_prefix != x ; then
+      ac_$2_args="$ac_$2_args --prefix=$$2_prefix"
+      if test x${$2_CONFIG+set} != xset ; then
+        $2_CONFIG=$$2_prefix/bin/$1-config
       fi
     fi
 
     dnl Work around some strange quoting issue:
-    AC_PATH_PROG($1_CONFIG, $1-config, no, $PATH$PATH_SEPARATOR$prefix/bin)
-    min_$1_version=ifelse([$2], ,1.0.0,$2)
-    AC_MSG_CHECKING([for $1 - version >= $min_$1_version])
-    no_$1=""
-    if test "$$1_CONFIG" = "no" ; then
-      no_$1=yes
+    AC_PATH_PROG($2_CONFIG, $1-config, no, $PATH$PATH_SEPARATOR$prefix/bin)
+    min_$2_version=ifelse([$3], ,1.0.0,$3)
+    AC_MSG_CHECKING([for $1 - version >= $min_$2_version])
+    no_$2=""
+    if test "$$2_CONFIG" = "no" ; then
+      no_$2=yes
     else
-      $1_CPPFLAGS="`$$1_CONFIG $ac_$1_args --cppflags`"
-      $1_LIBS="`$$1_CONFIG $ac_$1_args --libs`"
-      $1_BUILD_CPPFLAGS="`$$1_CONFIG --cppflags`"
-      $1_BUILD_LIBS="`$$1_CONFIG --libs`"
-      $1_prefix="`$$1_CONFIG $ac_$1_args --prefix`"
+      $2_CPPFLAGS="`$$2_CONFIG $ac_$2_args --cppflags`"
+      $2_LIBS="`$$2_CONFIG $ac_$2_args --libs`"
+      $2_BUILD_CPPFLAGS="`$$2_CONFIG --cppflags`"
+      $2_BUILD_LIBS="`$$2_CONFIG --libs`"
+      $2_prefix="`$$2_CONFIG $ac_$2_args --prefix`"
 
-      $1_major_version=`$$1_CONFIG $ac_$1_args --version | \
+      $2_major_version=`$$2_CONFIG $ac_$2_args --version | \
              sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-      $1_minor_version=`$$1_CONFIG $ac_$1_args --version | \
+      $2_minor_version=`$$2_CONFIG $ac_$2_args --version | \
              sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-      $1_patch_level=`$$1_CONFIG $ac_$1_args --version | \
+      $2_patch_level=`$$2_CONFIG $ac_$2_args --version | \
              sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-      if test "x$enable_$1test" = "xyes" ; then
+      if test "x$enable_$2test" = "xyes" ; then
         ac_save_CPPFLAGS="$CPPFLAGS"
         ac_save_LIBS="$LIBS"
-        CPPFLAGS="$CPPFLAGS $$1_CPPFLAGS"
-        LIBS="$LIBS $$1_LIBS"
+        CPPFLAGS="$CPPFLAGS $$2_CPPFLAGS"
+        LIBS="$LIBS $$2_LIBS"
         dnl
         dnl Now check if the installed PACKAGE is sufficiently new.
         dnl
@@ -133,50 +133,50 @@ int main (int argc, char *argv[])
   { FILE *fp = fopen("conf.$1test", "a"); if ( fp ) fclose(fp); }
 
   /* HP/UX 9 (%@#!) writes to sscanf strings */
-  tmp_version = my_strdup("$min_$1_version");
+  tmp_version = my_strdup("$min_$2_version");
   if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &patch) != 3) {
-     printf("%s, bad version string\n", "$min_$1_version");
+     printf("%s, bad version string\n", "$min_$2_version");
      exit(1);
    }
 
-   if (($$1_major_version > major) ||
-      (($$1_major_version == major) && ($$1_minor_version > minor)) ||
-      (($$1_major_version == major) && ($$1_minor_version == minor) && ($$1_patch_level >= patch)))
+   if (($$2_major_version > major) ||
+      (($$2_major_version == major) && ($$2_minor_version > minor)) ||
+      (($$2_major_version == major) && ($$2_minor_version == minor) && ($$2_patch_level >= patch)))
     {
       return 0;
     }
   else
     {
-      printf("\n*** '$1-config --version' returned %d.%d.%d, but the minimum version\n", $$1_major_version, $$1_minor_version, $$1_patch_level);
+      printf("\n*** '$1-config --version' returned %d.%d.%d, but the minimum version\n", $$2_major_version, $$2_minor_version, $$2_patch_level);
       printf("*** of $1 required is %d.%d.%d. If $1-config is correct, then it is\n", major, minor, micro);
       printf("*** best to upgrade to the required version.\n");
-      printf("*** If $1-config was wrong, set the environment variable $1_CONFIG\n");
+      printf("*** If $1-config was wrong, set the environment variable $2_CONFIG\n");
       printf("*** to point to the correct copy of $1-config, and remove the file\n");
       printf("*** config.cache before re-running configure\n");
       return 1;
     }
 }
 
-],, no_$1=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
+],, no_$2=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
         CPPFLAGS="$ac_save_CPPFLAGS"
         LIBS="$ac_save_LIBS"
       fi
     fi
-    if test "x$no_$1" = x ; then
+    if test "x$no_$2" = x ; then
       AC_MSG_RESULT(yes)
-      AC_SUBST($1_prefix)
-      ifelse([$3], , :, [$3])     
+      AC_SUBST($2_prefix)
+      ifelse([$4], , :, [$4])     
     else
       AC_MSG_RESULT(no)
-      if test "$$1_CONFIG" = "no" ; then
+      if test "$$2_CONFIG" = "no" ; then
         echo "*** The $1-config script installed by $1 could not be found"
         echo "*** If $1 was installed in PREFIX, make sure PREFIX/bin is in"
-        echo "*** your path, or set the $1_CONFIG environment variable to the"
+        echo "*** your path, or set the $2_CONFIG environment variable to the"
         echo "*** full path to $1-config."
       fi
-      $1_CPPFLAGS=""
-      $1_LIBS=""
-      ifelse([$4], , :, [$4])
+      $2_CPPFLAGS=""
+      $2_LIBS=""
+      ifelse([$5], , :, [$5])
     fi
     rm -f conf.$1test
   fi

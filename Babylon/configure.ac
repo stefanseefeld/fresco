@@ -43,7 +43,7 @@ dnl ------------------------------------------------------------------
 dnl Prague
 dnl ------------------------------------------------------------------
 
-FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Prague, Prague, $PACKAGE_VERSION)
 INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 INSTALL_LIBS="$Prague_LIBS $LIBS"
 CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"

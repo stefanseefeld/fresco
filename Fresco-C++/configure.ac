@@ -61,13 +61,13 @@ dnl ------------------------------------------------------------------
 dnl Prague and Babylon
 dnl ------------------------------------------------------------------
 
-FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Prague, Prague, $PACKAGE_VERSION)
 INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 INSTALL_LIBS="$LIBS $Prague_LIBS"
 CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
 LIBS="$LIBS $Prague_BUILD_LIBS"
 
-FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Babylon, Babylon, $PACKAGE_VERSION)
 INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Babylon_CPPFLAGS"
 INSTALL_LIBS="$INSTALL_LIBS $Babylon_LIBS"
 CPPFLAGS="$CPPFLAGS $Babylon_BUILD_CPPFLAGS"
@@ -89,9 +89,9 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk config/synopsis.py])
-AC_CONFIG_FILES([config/Fresco-config], [chmod +x config/Fresco-config])
-AC_CONFIG_FILES([config/Fresco.spec])
-AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-build-config.in], [chmod +x bin/Fresco-config])
+AC_CONFIG_FILES([config/Fresco-C++-config], [chmod +x config/Fresco-C++-config])
+AC_CONFIG_FILES([bin/Fresco-C++-config:config/Fresco-C++-build-config.in], [chmod +x bin/Fresco-C++-config])
+AC_CONFIG_FILES([config/Fresco-C++.spec])
 AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
 
 mkdir -p lib

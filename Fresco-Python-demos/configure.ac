@@ -27,28 +27,10 @@ dnl ------------------------------------------------------------------
 
 AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-AC_INIT(Berlin, 0.3.0, devel@fresco.org)
+AC_INIT(Berlin, M3, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
 
-dnl AC_HEADLINE(dnl
-dnl Berlin Clients-Python, Berlin python clients, dnl
-dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-dnl VERSION)
-
 AC_PROG_INSTALL
-
-dnl ------------------------------------------------------------------
-dnl CORBA environment
-dnl ------------------------------------------------------------------
-
-dnl AC_MSG_PART(CORBA Environment)
-FRESCO_OMNIORBPY_CHECK
-
-FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
-INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Fresco_CPPFLAGS"
-INSTALL_LIBS="$INSTALL_LIBS $Fresco_LIBS"
-CPPFLAGS="$CPPFLAGS $Fresco_BUILD_CPPFLAGS"
-LIBS="$LIBS $Fresco_BUILD_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
@@ -56,6 +38,6 @@ dnl ------------------------------------------------------------------
 
 dnl AC_MSG_PART(Output Substitution)
 
-AC_CONFIG_FILES([config/local.mk Makefile Fresco/Makefile:config/Makefile.omniorb.in src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 
 AC_OUTPUT

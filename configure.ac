@@ -41,12 +41,15 @@ AC_ARG_ENABLE(ggi,
 AC_ARG_ENABLE(sdl,
               AC_HELP_STRING([--enable-sdl],[Configure with sdl support]),
               [config_sdl="$enableval"],[config_sdl="yes"])
-AC_ARG_ENABLE(clients-c++,
-              AC_HELP_STRING([--enable-clients-c++],[Configure c++ clients support]),
-              [config_clients_cxx="$enableval"],[config_clients_cxx="yes"])
-AC_ARG_ENABLE(clients-python,
-              AC_HELP_STRING([--enable-clients-py],[Configure python clients support]),
-              [config_clients_py="$enableval"],[config_clients_py="yes"])
+AC_ARG_ENABLE(c++-demos,
+              AC_HELP_STRING([--enable-c++-demos],[Configure c++ demos support]),
+              [config_cxx_demos="$enableval"],[config_cxx_demos="yes"])
+AC_ARG_ENABLE(python-runtime,
+              AC_HELP_STRING([--enable-python-runtime],[Configure python runtime support]),
+              [config_python_runtime="$enableval"],[config_python_runtime="yes"])
+AC_ARG_ENABLE(python-demos,
+              AC_HELP_STRING([--enable-python-demos],[Configure python demos support]),
+              [config_python_demos="$enableval"],[config_python_demos="yes"])
 
 if test -d $srcdir/Prague; then
   AC_CONFIG_SUBDIRS(Prague)
@@ -54,8 +57,11 @@ fi
 if test -d $srcdir/Babylon; then
   AC_CONFIG_SUBDIRS(Babylon)
 fi
-if test -d $srcdir/Fresco; then
-  AC_CONFIG_SUBDIRS(Fresco)
+if test -d $srcdir/Fresco-IDL; then
+  AC_CONFIG_SUBDIRS(Fresco-IDL)
+fi
+if test -d $srcdir/Fresco-C++; then
+  AC_CONFIG_SUBDIRS(Fresco-C++)
 fi
 if test -d $srcdir/Berlin; then
   AC_CONFIG_SUBDIRS(Berlin)
@@ -66,17 +72,20 @@ fi
 if test -d $srcdir/SDL -a ".$config_sdl" = ".yes"; then
   AC_CONFIG_SUBDIRS(SDL)
 fi
-if test -d $srcdir/Clients-C++ -a ".$config_clients_cxx" = ".yes"; then
-  AC_CONFIG_SUBDIRS(Clients-C++)
+if test -d $srcdir/Fresco-Python -a ".$config_python_runtime" = ".yes"; then
+  AC_CONFIG_SUBDIRS(Fresco-Python)
 fi
-if test -d $srcdir/Clients-Python -a ".$config_clients_py" = ".yes"; then
-  AC_CONFIG_SUBDIRS(Clients-Python)
+if test -d $srcdir/Fresco-Java -a ".$config_java_runtime" = ".yes"; then
+  AC_CONFIG_SUBDIRS(Fresco-Java)
 fi
-if test -d $srcdir/Clients-Java; then
-  AC_CONFIG_SUBDIRS(Clients-Java)
+if test -d $srcdir/Fresco-Perl -a ".$config_perl_runtime" = ".yes"; then
+  AC_CONFIG_SUBDIRS(Fresco-Perl)
 fi
-if test -d $srcdir/Clients-Perl; then
-  AC_CONFIG_SUBDIRS(Clients-Perl)
+if test -d $srcdir/Fresco-C++-demos -a ".$config_cxx_demos" = ".yes"; then
+  AC_CONFIG_SUBDIRS(Fresco-C++-demos)
+fi
+if test -d $srcdir/Fresco-Python-demos -a ".$config_python_demos" = ".yes"; then
+  AC_CONFIG_SUBDIRS(Fresco-Python-demos)
 fi
 
 AC_CONFIG_FILES([Makefile])

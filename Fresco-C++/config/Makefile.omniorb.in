@@ -117,12 +117,12 @@ install:	all
           fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
-	$(INSTALL) -D -m 755 ../config/Fresco-config $(DESTDIR)$(bindir)/Fresco-config
+	$(INSTALL) -D -m 755 ../config/Fresco-C++-config $(DESTDIR)$(bindir)/Fresco-C++-config
 
 install-doc:
 
 uninstall:
-	rm -f $(DESTDIR)$(bindir)/Fresco-config
+	rm -f $(DESTDIR)$(bindir)/Fresco-C++-config
 	rm -rf $(DESTDIR)$(includedir)/Fresco
 	rm -f $(DESTDIR)$(libdir)/libFresco.so
 
@@ -133,7 +133,7 @@ clean:
 
 distclean:	clean
 	rm -f Makefile ../include/Fresco/acconfig.hh \
-		../bin/Fresco-config
+		../bin/Fresco-C++-config
 
 maintainer-clean: distclean
 
