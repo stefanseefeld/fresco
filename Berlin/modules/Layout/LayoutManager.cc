@@ -23,6 +23,7 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Math.hh"
 #include "Layout/LayoutManager.hh"
+#include <Warsaw/IO.hh>
 
 // class LayoutManager
 
@@ -193,32 +194,32 @@ void LayoutFixed::allocate(long, Graphic::Requisition *, Region_ptr, LayoutManag
 LayoutMargin::LayoutMargin(Coord m)
   : lnatural(m), lstretch(0), lshrink(0),
     rnatural(m), rstretch(0), rshrink(0),
-    bnatural(m), bstretch(0), bshrink(0),
-    tnatural(m), tstretch(0), tshrink(0)
+    tnatural(m), tstretch(0), tshrink(0),
+    bnatural(m), bstretch(0), bshrink(0)
 {}
 
 LayoutMargin::LayoutMargin(Coord h, Coord v)
   : lnatural(h), lstretch(0), lshrink(0),
     rnatural(h), rstretch(0), rshrink(0),
-    bnatural(v), bstretch(0), bshrink(0),
-    tnatural(v), tstretch(0), tshrink(0)
+    tnatural(v), tstretch(0), tshrink(0),
+    bnatural(v), bstretch(0), bshrink(0)
 {}
 
-LayoutMargin::LayoutMargin(Coord l, Coord r, Coord b, Coord t)
+LayoutMargin::LayoutMargin(Coord l, Coord r, Coord t, Coord b)
   : lnatural(l), lstretch(0), lshrink(0),
     rnatural(r), rstretch(0), rshrink(0),
-    bnatural(b), bstretch(0), bshrink(0),
-    tnatural(t), tstretch(0), tshrink(0)
+    tnatural(t), tstretch(0), tshrink(0),
+    bnatural(b), bstretch(0), bshrink(0)
 {}
 
 LayoutMargin::LayoutMargin(Coord lm, Coord lS, Coord ls,
 			   Coord rm, Coord rS, Coord rs,
-			   Coord bm, Coord bS, Coord bs,
-			   Coord tm, Coord tS, Coord ts)
+			   Coord tm, Coord tS, Coord ts,
+			   Coord bm, Coord bS, Coord bs)
   : lnatural(lm), lstretch(lS), lshrink(ls),
     rnatural(rm), rstretch(rS), rshrink(rs),
-    bnatural(bm), bstretch(bS), bshrink(bs),
-    tnatural(tm), tstretch(tS), tshrink(ts)
+    tnatural(tm), tstretch(tS), tshrink(ts),
+    bnatural(bm), bstretch(bS), bshrink(bs)
 {}
 
 LayoutMargin::~LayoutMargin() {}
@@ -227,8 +228,8 @@ LayoutManager *LayoutMargin::clone()
 {
   return new LayoutMargin(lnatural, lstretch, lshrink,
 			  rnatural, rstretch, rshrink,
-			  bnatural, bstretch, bshrink,
-			  tnatural, tstretch, tshrink);
+			  tnatural, tstretch, tshrink,
+			  bnatural, bstretch, bshrink);
 }
 
 void LayoutMargin::request(long, Graphic::Requisition *, Graphic::Requisition &result)
@@ -266,7 +267,7 @@ void LayoutMargin::request(long, Graphic::Requisition *, Graphic::Requisition &r
 void LayoutMargin::allocate(long, Graphic::Requisition *, Region_ptr, LayoutManager::Allocations result)
 {
   allocateAxis(xaxis, lnatural, lstretch, lshrink, rnatural, rstretch, rshrink, result);
-  allocateAxis(yaxis, bnatural, bstretch, bshrink, tnatural, tstretch, tshrink, result);
+  allocateAxis(yaxis, tnatural, tstretch, tshrink, bnatural, bstretch, bshrink, result);
 }
 
 void LayoutMargin::allocateAxis(Axis axis, Coord natural_lead, Coord stretch_lead, Coord shrink_lead,
@@ -278,9 +279,9 @@ void LayoutMargin::allocateAxis(Axis axis, Coord natural_lead, Coord stretch_lea
   Graphic::Requirement *r = GraphicImpl::requirement(requisition, axis);
   Coord lead = span(a.end - a.begin, *r, natural_lead, stretch_lead, shrink_lead);
   Coord trail = span(a.end - a.begin, *r, natural_trail, stretch_trail, shrink_trail);
-  a.end -= (lead + trail);
+  Coord length = a.end - a.begin - (lead + trail);
   Coord origin = a.begin + a.align * (a.end - a.begin) + ((1 - r->align) * lead - r->align * trail);
-  setSpan(result[0], axis, origin, a.end - a.begin, a.align);
+  setSpan(result[0], axis, origin, length, a.align);
 }
 
 Coord LayoutMargin::span(Coord span, Graphic::Requirement &total, Coord natural, Coord stretch, Coord shrink)
