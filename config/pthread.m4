@@ -37,6 +37,10 @@ AC_DEFUN([FRESCO_PTHREAD],[
             pthread_cppflags="-D_REENTRANT"
             pthread_lib="-pthread"
             ;;
+        *-*-freebsd*)
+            pthread_cppflags="-D_THREAD_SAFE"
+            pthread_lib="-pthread"
+            ;;
         *-*-solaris*)
             pthread_cppflags="-D_REENTRANT"
             pthread_lib="-lpthread -lposix4"
