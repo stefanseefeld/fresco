@@ -43,7 +43,7 @@ class Font : public virtual POA_Fresco::Font,
              public virtual IdentifiableImpl
 {
 public:
-  Font(const char *filename, int size, FT_Library library);
+  Font(const char *filename, CORBA::ULong size, FT_Library library);
   virtual ~Font();
 
   virtual Fresco::Glyph_ptr glyph_char(Fresco::Unichar c);
@@ -62,7 +62,7 @@ public:
 private:
   FT_Library my_ftlib;
   FT_Face my_face;
-  Fresco::Coord my_size;
+  CORBA::ULong my_size;
 };
 
 } // namespace

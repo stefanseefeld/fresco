@@ -29,8 +29,9 @@ namespace Berlin
 namespace FontKit
 {
 
-GlyphImpl::GlyphImpl(FT_Face face, Fresco::Coord size, FT_ULong char_index)
-  : my_face(face), my_size(size), my_uc(char_index)
+GlyphImpl::GlyphImpl(const FT_Face face, const CORBA::ULong size,
+                     Fresco::Unichar char_index)
+  : my_face(face), my_size(size*64), my_uc(char_index)
 {
   my_tr.xx = 0x10000;
   my_tr.xy = 0x00000;
@@ -40,9 +41,9 @@ GlyphImpl::GlyphImpl(FT_Face face, Fresco::Coord size, FT_ULong char_index)
 
 GlyphImpl::~GlyphImpl() {}
 
-Fresco::Raster_ptr GlyphImpl::bitmap(short unsigned int xdpi, short unsigned int ydpi)
+Fresco::Raster_ptr GlyphImpl::bitmap(CORBA::ULong xdpi, CORBA::ULong ydpi)
 {
-  if (FT_Set_Char_Size(my_face, 0, my_size*64, xdpi, ydpi) != 0)
+  if (FT_Set_Char_Size(my_face, 0, my_size, xdpi, ydpi) != 0)
     std::cerr << "FontKit bitmap: set char size failed." << std::endl;
   FT_Set_Transform(my_face, &my_tr, 0);
 
@@ -126,13 +127,28 @@ Fresco::Raster_ptr GlyphImpl::bitmap(short unsigned int xdpi, short unsigned int
 
 Fresco::FontShape *GlyphImpl::decompose()
 {
-  FT_Set_Char_Size(my_face, 0, my_size*64, 0, 0);
+  FT_Set_Char_Size(my_face, 0, my_size, 0, 0);
   FT_Set_Transform(my_face, &my_tr, 0);
   if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
 		    FT_LOAD_DEFAULT) != 0)
       std::cerr << "FontKit decompose: load glyph failed." << std::endl;
   Fresco::FontShape *f = new Fresco::FontShape(); f->length(0);
   // use FT_Outline_Decompose
+
+  FT_Outline_Funcs funcs;
+  funcs.move_to = &moveto;
+  funcs.line_to = &lineto;
+  funcs.conic_to = &conicto;
+  funcs.shift = 0;
+  funcs.delta = 0;
+
+  FT_Glyph glyph;
+  FT_Get_Glyph(my_face->glyph, &glyph);
+  FT_OutlineGlyph oglyph = (FT_OutlineGlyph)glyph;
+
+  FT_Outline_Decompose(&(oglyph->outline), &funcs, 0);
+
+  FT_Done_Glyph(glyph);
   FT_Set_Transform(my_face, 0, 0);
 
   return f;
@@ -140,12 +156,16 @@ Fresco::FontShape *GlyphImpl::decompose()
 
 void GlyphImpl::char_info(Fresco::GlyphMetrics &gm)
 {
+  if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
+		    FT_LOAD_DEFAULT) != 0)
+      std::cerr << "FontKit char_info: load glyph failed." << std::endl;
+
   double scale = 1.;
-  // this isn't safe enough. We need to keep our own copy of the glyph.
+
   gm.size.x = static_cast<CORBA::Long>(my_face->glyph->metrics.width / scale);
   gm.size.y = static_cast<CORBA::Long>(my_face->glyph->metrics.height / scale);
   gm.hori_bearing.x = static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingX / scale);
-  gm.hori_bearing.y = static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingY /scale);
+  gm.hori_bearing.y = static_cast<CORBA::Long>(my_face->glyph->metrics.horiBearingY / scale);
   gm.hori_advance =  static_cast<CORBA::Long>(my_face->glyph->metrics.horiAdvance / scale);
   gm.vert_bearing.x = static_cast<CORBA::Long>(my_face->glyph->metrics.vertBearingX / scale);
   gm.vert_bearing.y = static_cast<CORBA::Long>(my_face->glyph->metrics.vertBearingY / scale);
@@ -156,7 +176,7 @@ void GlyphImpl::char_info(Fresco::GlyphMetrics &gm)
   void *table = FT_Get_Sfnt_Table(my_face, ft_sfnt_hhea);
   if (table) {
     TT_HoriHeader *header = (TT_HoriHeader*)table;
-    gm.italic_correction = header->caret_Offset / 64.; // XXX MAYBE WRONG
+    gm.italic_correction = header->caret_Offset / scale; // XXX MAYBE WRONG
   }
 }
 
@@ -170,10 +190,53 @@ void GlyphImpl::transformation(Fresco::Transform_ptr tr)
   tr->transform_vertex(e1);
   tr->transform_vertex(e2);
 
-  my_tr.xx = (e1.x-o.x)*0x10000;
-  my_tr.xy = (e1.y-o.y)*0x10000;
-  my_tr.yx = (e2.x-o.x)*0x10000;
-  my_tr.yy = (e2.y-o.y)*0x10000;
+  my_tr.xx = static_cast<FT_Fixed>((e1.x-o.x)*0x10000);
+  my_tr.xy = static_cast<FT_Fixed>((e1.y-o.y)*0x10000);
+  my_tr.yx = static_cast<FT_Fixed>((e2.x-o.x)*0x10000);
+  my_tr.yy = static_cast<FT_Fixed>((e2.y-o.y)*0x10000);
+}
+
+int moveto(FT_Vector *to, void*f)
+{
+  Fresco::FontShape *fs = (Fresco::FontShape*)f;
+
+  Fresco::FontShapeSegment *fss = new Fresco::FontShapeSegment;
+  fss->type = Fresco::move;
+  fss->to.x = to->x; fss->to.y = to->y;
+  return 0;
+}
+
+int lineto(FT_Vector *to, void*f)
+{
+  Fresco::FontShape *fs = (Fresco::FontShape*)f;
+
+  Fresco::FontShapeSegment *fss = new Fresco::FontShapeSegment;
+  fss->type = Fresco::line;
+  fss->to.x = to->x; fss->to.y = to->y;
+  return 0;
+}
+
+int conicto(FT_Vector *c, FT_Vector *to, void*f)
+{
+  Fresco::FontShape *fs = (Fresco::FontShape*)f;
+
+  Fresco::FontShapeSegment *fss = new Fresco::FontShapeSegment;
+  fss->type = Fresco::conic;
+  fss->to.x = to->x; fss->to.y = to->y;
+  fss->control1.x = c->x; fss->control1.y = c->y;
+  return 0;
+}
+
+int cubicto(FT_Vector *c1, FT_Vector *c2, FT_Vector *to, void*f)
+{
+  Fresco::FontShape *fs = (Fresco::FontShape*)f;
+
+  Fresco::FontShapeSegment *fss = new Fresco::FontShapeSegment;
+  fss->type = Fresco::conic;
+  fss->to.x = to->x; fss->to.y = to->y;
+  fss->control1.x = c1->x; fss->control1.y = c1->y;
+  fss->control2.x = c2->x; fss->control2.y = c2->y;
+  return 0;
 }
 
 } // namespace

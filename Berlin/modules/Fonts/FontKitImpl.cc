@@ -40,15 +40,18 @@ namespace FontKit
 class FontDecorator : public MonoGraphic
 {
 public:
-  FontDecorator(Font_ptr f) : my_font(f) {}
+  FontDecorator(Font_ptr f) : my_font(Fresco::Font::_duplicate(f)) {}
   virtual void traverse(Traversal_ptr traversal)
   {
     traversal->visit(Graphic_var(_this()));
   }
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var drawing = traversal->drawing();
     // and do... NOTHING! yet.
+#if 0
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->set_font(my_font);
+#endif
     MonoGraphic::traverse(traversal);
   }
   virtual void pick(PickTraversal_ptr traversal)
@@ -56,21 +59,23 @@ public:
     MonoGraphic::traverse(traversal);
   }
 private:
-  Font_ptr my_font;
+  Font_var my_font;
 };
 
 class FontSizeDecorator : public MonoGraphic
 {
 public:
-  FontSizeDecorator(Coord s) : my_size(s) {}
+  FontSizeDecorator(CORBA::ULong s) : my_size(s) {}
   virtual void traverse(Traversal_ptr traversal)
   {
     traversal->visit(Graphic_var(_this()));
   }
   virtual void draw(DrawTraversal_ptr traversal)
   {
-    DrawingKit_var drawing = traversal->drawing();
     // and do... NOTHING! yet.
+#if 0
+    DrawingKit_var drawing = traversal->drawing();
+#endif
     MonoGraphic::traverse(traversal);
   }
   virtual void pick(PickTraversal_ptr traversal)
@@ -78,7 +83,7 @@ public:
     MonoGraphic::traverse(traversal);
   }
 private:
-  Coord my_size;
+  CORBA::ULong my_size;
 };
 
 FontKitImpl::FontIterator::FontIterator(FontKitImpl *fk)
@@ -117,17 +122,17 @@ void FontKitImpl::FontIterator::scan(Prague::Path path)
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
     {
       Directory directory(*i, Directory::alpha);
-      for (Prague::Directory::iterator j = directory.begin(); j != directory.end(); ++j)
-	{
-	  if ((*j)->name()[0] == '.') continue;
-	  std::string file = (*j)->long_name();
-	  if (FT_New_Face(*(my_fk->get_ftlibrary()), file.c_str(), 0, &my_face))
-	    {
-	      Logger::log(Logger::text) << "file " << file << " is not a font." << std::endl;
-	      continue;
-	    }
-	  faces.push_back(file);
-	}
+      for (Directory::iterator j = directory.begin(); j != directory.end(); ++j)
+        {
+          if ((*j)->name()[0] == '.') continue;
+          std::string file = (*j)->long_name();
+          if (FT_New_Face(*(my_fk->get_ftlibrary()), file.c_str(), 0, &my_face))
+            {
+              Logger::log(Logger::text) << "file " << file << " is not a font." << std::endl;
+              continue;
+            }
+          faces.push_back(file);
+        }
     }
 }
 
@@ -153,51 +158,48 @@ Font_ptr FontKitImpl::_cxx_default()
   return f->_this();
 }
 
-Font_ptr FontKitImpl::filename(const char *fn, const Fresco::Unistring &style,
-                               const Fresco::Coord size)
+Font_ptr FontKitImpl::filename(const char *fn, const Unistring &style,
+                               const CORBA::ULong size)
 {
   Font *f = new Font(fn, size, my_library);
   return f->_this();
 }
 
-Font_ptr FontKitImpl::provide(const Fresco::Unistring &family,
-                              const Fresco::Unistring &style,
-                              const Fresco::Coord size)
+Font_ptr FontKitImpl::provide(const Unistring &family, const Unistring &style,
+                              const CORBA::ULong size)
 {
   return _cxx_default(); // XXX
 }
 
-// pantone 1 and 2 font matching functions belong here.
+// panose 1 and 2 font matching functions belong here.
 
-Fresco::Graphic_ptr FontKitImpl::set_font(Fresco::Graphic_ptr g, Font_ptr f)
+Graphic_ptr FontKitImpl::set_font(Graphic_ptr g, Font_ptr f)
 {
   Trace trace("FontKitImpl::set_font");
-  return create_and_set_body<Graphic>(new FontDecorator(f), g);
+  return create_and_set_body<Graphic>(new FontDecorator(f), g,
+                                              "FontKit/Font");
 }
 
-Fresco::Graphic_ptr FontKitImpl::size(Fresco::Graphic_ptr g,
-                                      const Fresco::Coord s)
+Graphic_ptr FontKitImpl::size(Graphic_ptr g, const CORBA::ULong s)
 {
   Trace trace("FontKitImpl::size");
-  return create_and_set_body<Graphic>(new FontSizeDecorator(s), g);
+  return create_and_set_body<Graphic>(new FontSizeDecorator(s), g,
+                                              "FontKit/size");
 }
 
-Fresco::Graphic_ptr FontKitImpl::style(Fresco::Graphic_ptr g,
-                                       const Fresco::Unistring &style)
+Graphic_ptr FontKitImpl::style(Graphic_ptr g, const Unistring &style)
 {
   Trace trace("FontKitImpl::style");
   return Graphic::_nil();
 }
 
-Fresco::Graphic_ptr FontKitImpl::delta_size(Fresco::Graphic_ptr g,
-                                            const Fresco::Coord ds)
+Graphic_ptr FontKitImpl::delta_size(Graphic_ptr g, const CORBA::Long ds)
 {
   Trace trace("FontKitImpl::delta_size");
   return Graphic::_nil();
 }
 
-Fresco::Graphic_ptr FontKitImpl::delta_style(Fresco::Graphic_ptr g,
-                                             const Fresco::Unistring &style)
+Graphic_ptr FontKitImpl::delta_style(Graphic_ptr g, const Unistring &style)
 {
   Trace trace("FontKitImpl::delta_style");
   return Graphic::_nil();

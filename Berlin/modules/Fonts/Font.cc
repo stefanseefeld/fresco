@@ -27,7 +27,7 @@ namespace Berlin
 namespace FontKit
 {
 
-Font::Font(const char *filename, int size, FT_Library library)
+Font::Font(const char *filename, CORBA::ULong size, FT_Library library)
   : my_ftlib(library), my_size(size)
 {
   if (FT_New_Face(my_ftlib, filename, 0, &my_face) != 0)
@@ -45,7 +45,7 @@ Fresco::Glyph_ptr Font::glyph_char(Fresco::Unichar c)
 
 CORBA::Boolean Font::has_char(Fresco::Unichar c)
 {
-  return FT_Get_Char_Index(my_face, c);
+  return FT_Get_Char_Index(my_face, c) != 0;
 }
 
 CORBA::Boolean Font::can_display(Fresco::Unichar begin, Fresco::Unichar end)
@@ -90,12 +90,17 @@ Fresco::Coord Font::height()
 Fresco::Vertex Font::kerning(Fresco::Unichar first, Fresco::Unichar second)
 {
   // XXX this is BIDI-incorrect, of course...
-  FT_Vector kern;
-  FT_Get_Kerning(my_face, first, second, FT_KERNING_DEFAULT, &kern);
-  Fresco::Vertex v;
-  v.x = kern.x / 0x10000;
-  v.y = kern.y / 0x10000;
-  return v;
+  Fresco::Vertex k;
+  k.x = 0; k.y = 0;
+  if (FT_HAS_KERNING(my_face))
+    {
+      FT_Vector kern;
+      FT_Get_Kerning(my_face, FT_Get_Char_Index(my_face, first),
+          FT_Get_Char_Index(my_face, second), FT_KERNING_UNFITTED, &kern);
+      k.x = kern.x >> 6;
+      k.y = kern.y >> 6;
+    }
+  return k;
 }
 
 CORBA::Float Font::angle()

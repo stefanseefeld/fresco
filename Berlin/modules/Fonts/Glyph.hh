@@ -33,6 +33,7 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
+#include FT_OUTLINE_H
 
 class Fresco::Raster;
 
@@ -41,23 +42,28 @@ namespace Berlin
 namespace FontKit
 {
 
+  int moveto(FT_Vector *, void*);
+  int lineto(FT_Vector *, void*);
+  int conicto(FT_Vector *, FT_Vector *, void*);
+  int cubicto(FT_Vector *, FT_Vector *, FT_Vector *, void*);
+
 class GlyphImpl : public virtual POA_Fresco::Glyph,
                   public virtual RefCountBaseImpl,
                   public virtual IdentifiableImpl
 {
 public:
-  GlyphImpl(FT_Face face, Fresco::Coord size, FT_ULong char_index);
+  GlyphImpl(const FT_Face face, const CORBA::ULong size,
+            const Fresco::Unichar char_index);
   virtual ~GlyphImpl();
 
-  virtual Fresco::Raster_ptr bitmap(short unsigned int xdpi,
-                                    short unsigned int ydpi);
+  virtual Fresco::Raster_ptr bitmap(CORBA::ULong xdpi, CORBA::ULong ydpi);
   virtual Fresco::FontShape *decompose();
   virtual void char_info(Fresco::GlyphMetrics &gm);
   virtual void transformation(Fresco::Transform_ptr);
 private:
   FT_Face my_face;
   FT_Matrix my_tr;
-  Fresco::Coord my_size;
+  CORBA::ULong my_size;
   Fresco::Unichar my_uc;
 };
 

@@ -42,6 +42,12 @@ module Fresco
                       // horizontally to the center line of vertical
                       // fonts.
       Coord underline_offset, underline_thickness;
+      unsigned long point_size;
+      // PANOSE: classification (latin, kanji...), genre (text, decorative)
+      // variation (normal, italic), weight, serif-type (panose1 lists
+      // 13 possible styles while panose2 has ten measurments to make)
+      // proportion (monospace, expanded), contrast, stroke variation,
+      // arm style, letterform, midline, x-height...
     };
 
   enum SegmentType { move, line, conic, cubic };
@@ -71,7 +77,7 @@ module Fresco
 
   interface Glyph : RefCountBase, Identifiable
     {
-      Raster bitmap(in unsigned short xdpi, in unsigned short ydpi);
+      Raster bitmap(in unsigned long xdpi, in unsigned long ydpi);
       FontShape decompose();
       void char_info(out GlyphMetrics gm);
       void transformation(in Transform t);
@@ -94,8 +100,6 @@ module Fresco
       void font_metrics(out FontMetrics fm);
       Unistring font_style();
       Unistring fullname();
-      //. font size
-      Coord height();
 
       Vertex kerning(in Unichar first, //.< first in visual order
                      in Unichar second); //.< second in visual order

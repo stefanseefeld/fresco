@@ -46,14 +46,16 @@ module Fresco
       //. supply the One True Font.
       Font _default();
       //. inform the FontKit of a new Font
-      Font filename(in string file, in Unistring style, in Coord size);
+      Font filename(in string file, in Unistring style,
+                    in unsigned long point_size);
       //. look up font from list of known fonts.
-      Font provide(in Unistring family, in Unistring style, in Coord size);
+      Font provide(in Unistring family, in Unistring style,
+                   in unsigned long point_size);
 
       Graphic set_font(in Graphic g, in Font f);
-      Graphic size(in Graphic g, in Coord s);
+      Graphic size(in Graphic g, in unsigned long s);
       Graphic style(in Graphic g, in Unistring s);
-      Graphic delta_size(in Graphic g, in Coord ds);
+      Graphic delta_size(in Graphic g, in long ds);
       Graphic delta_style(in Graphic g, in Unistring ds);
 
       FontIterator first_font();

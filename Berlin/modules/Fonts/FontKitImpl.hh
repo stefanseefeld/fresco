@@ -78,17 +78,24 @@ public:
                          ServerContextImpl *);
 
   virtual Fresco::Font_ptr _cxx_default();
-  virtual Fresco::Font_ptr filename(const char* file, const Fresco::Unistring& style,
-			            Fresco::Coord size);
-  virtual Fresco::Font_ptr provide(const Fresco::Unistring& family, const Fresco::Unistring& style,
-                           const Fresco::Coord size);
-  virtual Fresco::Graphic_ptr set_font(Fresco::Graphic_ptr g, const Fresco::Font_ptr f);
-  virtual Fresco::Graphic_ptr size(Fresco::Graphic_ptr g, const Fresco::Coord s);
-  virtual Fresco::Graphic_ptr style(Fresco::Graphic_ptr g, const Fresco::Unistring& s);
-  virtual Fresco::Graphic_ptr delta_size(Fresco::Graphic_ptr g, const Fresco::Coord ds);
-  virtual Fresco::Graphic_ptr delta_style(Fresco::Graphic_ptr g, const Fresco::Unistring& ds);
+  virtual Fresco::Font_ptr filename(const char* file,
+                                    const Fresco::Unistring& style,
+                                    const CORBA::ULong size);
+  virtual Fresco::Font_ptr provide(const Fresco::Unistring& family,
+                                   const Fresco::Unistring& style,
+                                   const CORBA::ULong size);
+  virtual Fresco::Graphic_ptr set_font(Fresco::Graphic_ptr g,
+                                       const Fresco::Font_ptr f);
+  virtual Fresco::Graphic_ptr size(Fresco::Graphic_ptr g,
+                                   const CORBA::ULong s);
+  virtual Fresco::Graphic_ptr style(Fresco::Graphic_ptr g,
+                                    const Fresco::Unistring& s);
+  virtual Fresco::Graphic_ptr delta_size(Fresco::Graphic_ptr g,
+                                         const CORBA::Long ds);
+  virtual Fresco::Graphic_ptr delta_style(Fresco::Graphic_ptr g,
+                                         const Fresco::Unistring& ds);
 
-  virtual FT_Library *FontKitImpl::get_ftlibrary();
+  virtual FT_Library *get_ftlibrary();
 
   virtual Fresco::FontIterator_ptr first_font();
   virtual Fresco::FontIterator_ptr last_font();
