@@ -51,7 +51,6 @@ void EventManager::nextEvent()
   SectionLog section("EventManager::nextEvent");
   ggi_event event;
   if (!GGI::drawable()->nextEvent(event)) return; // repair
-  cout << "OOO" << endl;
   switch (event.any.type)
     {
     case evKeyPress:
