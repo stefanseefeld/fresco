@@ -46,7 +46,8 @@ dnl
      fi
   fi
 
-  AC_PATH_PROG($1_CONFIG, $1-config, no, $PATH:$prefix/bin)
+  dnl Work around some strange quoting issue:
+  AC_PATH_PROG($1_CONFIG, $1-config, no, $PATH$PATH_SEPARATOR$prefix/bin)
   min_$1_version=ifelse([$2], ,1.0.0,$2)
   AC_MSG_CHECKING([for $1 - version >= $min_$1_version])
   no_$1=""
