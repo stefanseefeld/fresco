@@ -70,10 +70,7 @@ void LogoDemo::Rotator::update(const CORBA::Any &)
 }
 
 LogoDemo::LogoDemo(Application *a)
-  : Demo(a),
-    tx1(new TransformImpl),
-    tx2(new TransformImpl),
-    tx3(new TransformImpl)
+  : Demo(a)
 {
   LayoutKit_var layout = application->layout();
   ToolKit_var   tools = application->tool();
@@ -84,10 +81,6 @@ LogoDemo::LogoDemo(Application *a)
   bv1 = commands->bvalue(0., 360., 0., 5., 5.);
   bv2 = commands->bvalue(0., 360., 0., 5., 5.);
   bv3 = commands->bvalue(0., 360., 0., 5., 5.);
-  
-  tx1->rotate(10., zaxis);
-  tx2->rotate(-10., zaxis);
-  tx3->rotate(-20., zaxis);
   
   Coord a = 2000.;
   Vertex offset;
@@ -113,7 +106,6 @@ LogoDemo::LogoDemo(Application *a)
   rotator3 = new Rotator(bv3, transformer3, group, 20.);
   bv3->attach(Observer_var(rotator3->_this()));
   
-  Graphic_var root = figures->root(group);
   group->append_graphic(transformer1);
   group->append_graphic(transformer2);
   group->append_graphic(transformer3);

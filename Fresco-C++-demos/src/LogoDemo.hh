@@ -50,9 +50,6 @@ private:
   Warsaw::BoundedValue_var bv1;
   Warsaw::BoundedValue_var bv2;
   Warsaw::BoundedValue_var bv3;
-  Impl_var<TransformImpl> tx1;
-  Impl_var<TransformImpl> tx2;
-  Impl_var<TransformImpl> tx3;
   Impl_var<Rotator> rotator1;
   Impl_var<Rotator> rotator2;
   Impl_var<Rotator> rotator3;
