@@ -28,7 +28,7 @@ cdir		:= ../../config
 
 dbxsl		:=
 
-SRC		:= book.xml chapter0.xml chapter1.xml chapter2.xml chapter3.xml
+SRC		:= hello.xml kits.xml hello-list.xml book.xml #chapter1.xml chapter2.xml chapter3.xml
 FIG		:= $(wildcard $(srcdir)/figures/*.dia)
 EPS		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.eps, $(FIG))
 JPG		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.jpg, $(FIG))

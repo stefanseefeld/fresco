@@ -1,0 +1,114 @@
+<chapter><title>Kits</title>
+  <para>
+    Berlin's underlying architecture is extremely modular. All non-basic functionality is
+    encapsulated within domain specific modules, which may or may not be loaded by the
+    server, depending on the platform, and on the client requesting it. These modules are
+    called 'kits'. Since only clients will access the most derived interface of a kit, it
+    is not necessary for the server to know all kit interfaces, resulting in the high level
+    of extensibility we have.
+  </para>
+  <sect1>
+    <title>Composition: how to amalgamate domain specific objects into complex tools</title>
+    <para>Berlin's principal paradigm is composition. All complex objects are compositions out of
+    small, leightweight building blocks, each from a specific domain, such as 'text', 'layout',
+    'figure'. Let's have a look at a simple button widget.</para>
+    <figure id="fig:about-button" float="1">
+      <title>A button...</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/about-button.jpg" align="center" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure id="fig:about-button-sg" float="1">
+      <title>...and its underlaying scene graph</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/about-button-sg.jpg" align="center" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  <para>As simple as this button looks, it is already an amazing composition of smaller parts coming
+  from a variety of kits. Since each domain is supported by its own kit, only those kits that are
+  actually used will be loaded. For example, there is nothing intrinsic to a button that requires text.
+  A button just contains a graphic. That can be a text label, an image, a figure, or even a 3D scene.
+  The method that generates the button takes a graphic and wraps it by a Controller that implements
+  the specifics of a button, i.e. some 'clickable' behavior together with some form of visual feedback:</para>
+  <programlisting>
+  interface WidgetKit : Kit
+  {
+    Trigger button(in Graphic g, in Command c)
+    /*...*/
+  };
+  </programlisting>
+  </sect1>
+  <sect1>
+    <title>Factories: making a high abstraction level possible</title>
+    <para>The high abstraction level used in Berlin is provided through the extensive use of factories.
+    Location transparent is achieved through the use of the proxy pattern, i.e. some reference factory
+    returns either a local reference (possibly typedefed to a real pointer in C++), or a proxy to a remote
+    object, depending on the location of the servant. In much the same way becomes Berlin flexible to use 
+    various styles through the use of exchangable implementations.</para>
+    <para>Clients don't instantiate objects by themselfs. Instead, they ask factory objects to create objects 
+    for them.</para>
+    <figure id="fig:abstract-factory" float="1">
+      <title>the abstract factory pattern</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/abstract-factory.jpg" align="center" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>The exact type of the returned object isn't known, which means that the server has more freedom to choose
+    an appropriate implementation that is most appropriate. What that means can depend on the specific hardware the
+    server is using, or some UI styles which the server is configured for, etc.</para>
+  </sect1>
+  <sect1>
+    <title>Prototype: how specific kits can be requested</title>
+    <para>When the server is started, it doesn't really load any kits. It rather looks up all available kits and waits
+    for clients to request them. But how does a client express what kits it needs ?</para>
+    <para>First of all, there is the specific type of the kit, which is encoded within a 'repoId'. RepoIds are the CORBA
+    way of expressing type information. Given such a repoId, an arbitrary object can be asked whether it supports that type.
+    This is similar to the RTTI facilities provided by C++. Additionally, Kits provide a PropertySeq which can be inspected.
+    That is simply a set of name/value pairs (strings).</para>
+    <programlisting>
+    interface Kit
+    {
+      struct Property
+      {
+	string name;
+	string value;
+      };
+      typedef sequence&lt;Property&gt; PropertySeq;
+      readonly attribute PropertySeq properties;
+      boolean supports(in PropertySeq p);
+      /*...*/
+    };
+    </programlisting>
+    <para>The 'properties' method returns the full list of properties, while the 'supports' method checks that all properties that
+    are specified are supported.</para>
+    <para>With this information, a query method can be provided that asks the server for a specific kit type that supports a given
+    set of properties:</para>
+    <programlisting>
+    interface ServerContext
+    {
+      Kit resolve(in string type, in Kit::PropertySeq attr);
+	raises (SecurityException, CreationFailureException);
+    }
+    </programlisting>
+    <para>Since such a request may fail, either because the desired kit isn't available or because the client isn't authorized to use it,
+    this method can throw specific exceptions to indicate the failure.</para>
+    <para> On the server side, all this is provided by means of the prototype pattern. On startup, one object per type is loaded into a lookup
+    table (no worries, kits are almost stateless, so this isn't as expensive as it sounds), such that the lookup can be implemented by means of
+    CORBA's own type system (objects have an '_is_a(in string repoId)' method). If an appropriate object was found, it is simply cloned and the
+    new copy is assigned to the client's ServerContext.</para>
+    <figure id="fig:prototype" float="1">
+      <title>the prototype pattern</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/prototype.jpg" align="center" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+</chapter>

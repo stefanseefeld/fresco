@@ -4,6 +4,7 @@
 <!-- these are chapter-entity declarations -->
 
 <!ENTITY hello         SYSTEM "hello.xml">
+<!ENTITY kits          SYSTEM "kits.xml">
 <!ENTITY chapter1      SYSTEM "chapter1.xml">
 <!ENTITY chapter2      SYSTEM "chapter2.xml">
 <!ENTITY chapter3      SYSTEM "chapter3.xml">
@@ -37,6 +38,7 @@
   </bookinfo>
 
 &hello;
+&kits;
 <!-- &chapter1; -->
 <!-- &chapter2; -->
 <!-- &chapter3; -->
