@@ -41,7 +41,7 @@ Babylon::UTF8_string Babylon::Char::utf8() const throw (Trans_Error) {
     else if (c <= 0x7FFFFFFF) chars_needed = 5;
     else throw Trans_Error(TRANS_CAN_NOT_ENCODE);
 
-    for (int i = chars_needed; i > 0; --i) {
+    for (unsigned int i = chars_needed; i > 0; --i) {
         UCS1 t = 0x80;
         t |= UCS1(c & 0x3f);
         c = c >> 6;

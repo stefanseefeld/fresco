@@ -235,14 +235,14 @@ void openGL::DrawingKit::draw_path(const Fresco::Path &path)
     {
       glBegin(GL_POLYGON);
 //       glBegin(GL_LINE_LOOP);
-      for (unsigned long i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
+      for (CORBA::ULong i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
       glEnd();
     }
   else if (_fs == Fresco::DrawingKit::textured)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
-      for (unsigned long i = 0; i < path.nodes.length(); i++)
+      for (CORBA::ULong i = 0; i < path.nodes.length(); i++)
 	{
 	  glTexCoord2f(path.nodes[i].x * _tx->width * 10., path.nodes[i].y * _tx->height * 10.); 
 	  glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
@@ -254,7 +254,7 @@ void openGL::DrawingKit::draw_path(const Fresco::Path &path)
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       // line strips (no final connecting line)      
-      for (unsigned long i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
+      for (CORBA::ULong i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
       glEnd();
     }
 }
@@ -452,7 +452,7 @@ void openGL::DrawingKit::draw_mesh(const Fresco::Mesh &mesh)
 
   bool normals = mesh.normals.length() == mesh.triangles.length();
   glBegin(GL_TRIANGLES);
-  for (int i = 0; i < mesh.triangles.length(); ++i)
+  for (CORBA::ULong i = 0; i < mesh.triangles.length(); ++i)
     {
       if (normals)
 	{
