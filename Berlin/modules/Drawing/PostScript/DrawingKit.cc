@@ -44,6 +44,8 @@ PostScript::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::Pro
 {
   _os.precision(5);
   _os.setf(std::ios::fixed);
+  _lt.red = 1.0; _lt.green = 1.0; _lt.blue = 1.0; _lt.alpha = 1.0;
+  _fg.red = 1.0; _fg.green = 1.0; _fg.blue = 1.0; _fg.alpha = 1.0;
 }
 
 PostScript::DrawingKit::~DrawingKit()
