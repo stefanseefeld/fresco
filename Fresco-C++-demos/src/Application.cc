@@ -62,7 +62,7 @@ void Application::Mapper::execute(const CORBA::Any &)
 class ExitCommand : public Application::CommandImpl
 {
  public:
-  void execute(const CORBA::Any &) { exit(0);}
+  void execute(const CORBA::Any &) {}// exit(0);}
 };
 
 Application::Application(ServerContext_ptr sc)
@@ -190,7 +190,7 @@ Application::Item Application::make_item(const Unicode::String &name)
   item.zrotation = ck->bvalue(0., 360., 0., 5., 5.);
   item.yrotation = ck->bvalue(0., 360., 0., 5., 5.);
   item.zoom = ck->bvalue(-1., 1., 0., 0.1, 0.1);
-
+  
   /*
    * create the settings window
    */

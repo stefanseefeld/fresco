@@ -32,37 +32,44 @@
 using namespace Warsaw;
 using namespace Motif;
 
-class Slider::Dragger : public CommandImpl
+class Slider::Observer : public ObserverImpl
 {
 public:
-  Dragger(BoundedValue_ptr v, Axis a) : value(RefCount_var<BoundedValue>::increment(v)), scale(1.), axis(a) {}
-  void set_scale(Coord s) { scale = s;}
+  Observer(Slider *s) : _parent(s) { _parent->_add_ref();}
+  ~Observer() { _parent->_remove_ref();}
+  void update(const CORBA::Any &any) { _parent->update(any);}
+private:
+  Slider *_parent;
+};
+
+class Slider::Drag : public CommandImpl
+{
+public:
+  Drag(Slider *s) : _parent(s) { _parent->_add_ref();}
+  ~Drag() { _parent->_remove_ref();}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
     if (any >>= delta)
       {
-	if (axis == xaxis && delta->x != 0.) value->adjust(scale*delta->x);
-	else if (axis == yaxis && delta->y != 0.) value->adjust(scale*delta->y);
+	if (_parent->_axis == xaxis && delta->x != 0.) _parent->_value->adjust(_parent->_scale * delta->x);
+	else if (_parent->_axis == yaxis && delta->y != 0.) _parent->_value->adjust(_parent->_scale * delta->y);
       }
-    else  cerr << "Drag::execute : wrong message type !" << endl;
+    else  cerr << "Slider::Drag::execute : wrong message type !" << endl;
   }
 private:
-  RefCount_var<BoundedValue> value;
-  Coord scale;
-  Axis axis;
+  Slider *_parent;
 };
 
 Slider::Slider(BoundedValue_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
   : ControllerImpl(false),
-    requisition(r),
-    translate(new Observer(this)),
-    _drag(new Dragger(v, a)),
-    value(RefCount_var<BoundedValue>::increment(v)),
-    offset((v->value() - v->lower())/(v->upper() - v->lower())),
-    axis(a)
+    _requisition(r),
+    _translate(new Observer(this)),
+    _value(RefCount_var<BoundedValue>::increment(v)),
+    _offset((_value->value() - _value->lower())/(_value->upper() - _value->lower())),
+    _axis(a)
 {
-  v->attach(Observer_var(translate->_this()));
+  _value->attach(Observer_var(_translate->_this()));
 }
 
 void Slider::init(Controller_ptr t)
@@ -75,9 +82,9 @@ void Slider::init(Controller_ptr t)
 void Slider::update(const CORBA::Any &any)
 {
 //   need_redraw();
-  any >>= offset;
-  offset -= value->lower();
-  offset /= (value->upper() - value->lower());
+  any >>= _offset;
+  _offset -= _value->lower();
+  _offset /= (_value->upper() - _value->lower());
   need_redraw();
 }
 
@@ -102,17 +109,17 @@ void Slider::allocate(Tag, const Allocation::Info &info)
 {
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(info.allocation);
-  if (axis == xaxis)
+  if (_axis == xaxis)
     {
       Coord length = allocation->upper.x - allocation->lower.x - 240.;
-      allocation->lower.x = offset * length;
-      allocation->upper.x = offset * length + 240.;
+      allocation->lower.x = _offset * length;
+      allocation->upper.x = _offset * length + 240.;
     }
   else
     {
       Coord length = allocation->upper.y - allocation->lower.y - 240.;
-      allocation->lower.y = offset * length;
-      allocation->upper.y = offset * length + 240.;
+      allocation->lower.y = _offset * length;
+      allocation->upper.y = _offset * length + 240.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
@@ -120,7 +127,12 @@ void Slider::allocate(Tag, const Allocation::Info &info)
 
 void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::default_extension(a, r);}
 
-Command_ptr Slider::drag() { return _drag->_this();}
+Command_ptr Slider::create_drag_command()
+{
+  Drag *d = new Drag(this);
+  activate(d);
+  return d->_this();
+}
 
 void Slider::traverse_thumb(Traversal_ptr traversal)
 {
@@ -131,20 +143,20 @@ void Slider::traverse_thumb(Traversal_ptr traversal)
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
   Coord length;
-  if (axis == xaxis)
+  if (_axis == xaxis)
     {
       length = allocation->upper.x - allocation->lower.x - 240.;
-      allocation->lower.x = offset * length;
-      allocation->upper.x = offset * length + 240.;
+      allocation->lower.x = _offset * length;
+      allocation->upper.x = _offset * length + 240.;
     }
-  else if (axis == yaxis)
+  else if (_axis == yaxis)
     {
       length = allocation->upper.y - allocation->lower.y - 240.;
-      allocation->lower.y = offset * length;
-      allocation->upper.y = offset * length + 240.;
+      allocation->lower.y = _offset * length;
+      allocation->upper.y = _offset * length + 240.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));
   traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));
-  _drag->set_scale((value->upper() - value->lower())/length);
+  _scale = (_value->upper() - _value->lower())/length;
 }

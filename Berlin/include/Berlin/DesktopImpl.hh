@@ -31,7 +31,7 @@ class WindowImpl;
 class DesktopImpl : public virtual POA_Warsaw::Desktop,
                     public ControllerImpl
 {
- public:
+public:
   DesktopImpl(Layout::Stage_ptr);
   virtual ~DesktopImpl();
   virtual void body(Warsaw::Graphic_ptr) {}
@@ -42,7 +42,9 @@ class DesktopImpl : public virtual POA_Warsaw::Desktop,
   void begin() { stage->begin();}
   void end() { stage->end();}
   Layout::StageHandle_ptr insert(Warsaw::Graphic_ptr, const Warsaw::Vertex &, const Warsaw::Vertex &, Layout::Stage::Index);
- private:
+protected:
+  virtual void key_press(const Warsaw::Input::Event &); 
+private:
   Layout::Stage_var stage;
 };
 

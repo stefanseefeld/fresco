@@ -36,32 +36,32 @@ public:
   UnmappedStageHandle(Stage_ptr, Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
   UnmappedStageHandle(StageHandle_ptr);
   virtual ~UnmappedStageHandle();
-  virtual Stage_ptr parent() { return Stage::_duplicate(stage);}
-  virtual Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
+  virtual Stage_ptr parent() { return Stage::_duplicate(_parent);}
+  virtual Graphic_ptr child() { return Warsaw::Graphic::_duplicate(_child);}
   virtual void remove() {}
-  virtual Vertex position() { return p;}
-  virtual void position(const Vertex &pp) { p = pp;}
-  virtual Vertex size() { return s;}
-  virtual void size(const Vertex &ss) { s = s;}
-  virtual Stage::Index layer() { return l;}
-  virtual void layer(Stage::Index ll) { l = ll;}
+  virtual Vertex position() { return _position;}
+  virtual void position(const Vertex &pp) { _position = pp;}
+  virtual Vertex size() { return _size;}
+  virtual void size(const Vertex &ss) { _size = ss;}
+  virtual Stage::Index layer() { return _layer;}
+  virtual void layer(Stage::Index ll) { _layer = ll;}
 private:
-  Stage_var stage;
-  Graphic_var c;
-  Vertex p;
-  Vertex s;
-  Stage::Index l;
+  Stage_var _parent;
+  Graphic_var _child;
+  Vertex _position;
+  Vertex _size;
+  Stage::Index _layer;
 };
 
 WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par, Graphic_ptr cc,
 						     const Vertex &pp, const Vertex &ss, Stage::Index ll)
-  : stage(Stage::_duplicate(par)), c(Warsaw::Graphic::_duplicate(cc)), p(pp), s(ss), l(ll) {}
+  : _parent(Stage::_duplicate(par)), _child(Warsaw::Graphic::_duplicate(cc)), _position(pp), _size(ss), _layer(ll) {}
 WindowImpl::UnmappedStageHandle::UnmappedStageHandle(StageHandle_ptr handle)
-  : stage(handle->parent()),
-    c(handle->child()),
-    p(handle->position()),
-    s(handle->size()),
-    l(handle->layer())
+  : _parent(handle->parent()),
+    _child(handle->child()),
+    _position(handle->position()),
+    _size(handle->size()),
+    _layer(handle->layer())
 {}
 WindowImpl::UnmappedStageHandle::~UnmappedStageHandle() { Trace trace("UnmappedStageHandle::~UnmappedStageHandle");}
 
@@ -80,7 +80,7 @@ WindowImpl::~WindowImpl()
 void WindowImpl::need_resize()
 {
   Trace trace("WindowImpl::need_resize");
-  Vertex size = handle->size();
+  Vertex size = _handle->size();
   Warsaw::Graphic::Requisition r;
   request(r);
   if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
@@ -92,7 +92,7 @@ void WindowImpl::need_resize()
       size.x = min(r.x.maximum, max(r.x.minimum, size.x));
       size.y = min(r.y.maximum, max(r.y.minimum, size.y));
       size.z = min(r.z.maximum, max(r.z.minimum, size.z));
-      handle->size(size);
+      _handle->size(size);
     }
 }
 
@@ -102,13 +102,13 @@ void WindowImpl::need_resize()
  */
 CORBA::Boolean WindowImpl::request_focus(Controller_ptr c, Warsaw::Input::Device d)
 {
-  if (unmapped) return false;
+  if (_unmapped) return false;
   Controller_var parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
   if (parent->request_focus(c, d))
     {
-      if (focus.size() <= d) focus.resize(d + 1);
-      focus[d] = Warsaw::Controller::_duplicate(c);
+      if (_focus.size() <= d) _focus.resize(d + 1);
+      _focus[d] = Warsaw::Controller::_duplicate(c);
       return true;
     }
   else return false;
@@ -122,53 +122,53 @@ void WindowImpl::insert(Desktop_ptr desktop)
   Warsaw::Graphic::Requisition r;
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
-  unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
-  handle = unmapped->_this();
+  _unmapped = new UnmappedStageHandle(desktop, Graphic_var(_this()), position, size, 0);
+  _handle = _unmapped->_this();
 }
 
 Vertex WindowImpl::position()
 {
-  MutexGuard guard(mutex);
-  return handle->position();
+  MutexGuard guard(_mutex);
+  return _handle->position();
 }
 
 void WindowImpl::position(const Vertex &p)
 {
   Trace trace("WindowImpl::position");
-  MutexGuard guard(mutex);
-  handle->position(p);
+  MutexGuard guard(_mutex);
+  _handle->position(p);
 }
 
 Vertex WindowImpl::size()
 {
-  MutexGuard guard(mutex);
-  return handle->size();
+  MutexGuard guard(_mutex);
+  return _handle->size();
 }
 
 void WindowImpl::size(const Vertex &s)
 {
   Trace trace("WindowImpl::size");
-  MutexGuard guard(mutex);
-  handle->size(s);
+  MutexGuard guard(_mutex);
+  _handle->size(s);
 }
 
 Stage::Index WindowImpl::layer()
 {
-  MutexGuard guard(mutex);
-  return handle->layer();
+  MutexGuard guard(_mutex);
+  return _handle->layer();
 }
 
 void WindowImpl::layer(Stage::Index l)
 {
   Trace trace("WindowImpl::layer");
-  MutexGuard guard(mutex);
-  handle->layer(l);
+  MutexGuard guard(_mutex);
+  _handle->layer(l);
 }
 
 CORBA::Boolean WindowImpl::mapped()
 {
-  MutexGuard guard(mutex);
-  return !unmapped;
+  MutexGuard guard(_mutex);
+  return !_unmapped;
 }
 
 void WindowImpl::mapped(CORBA::Boolean flag)
@@ -179,23 +179,24 @@ void WindowImpl::mapped(CORBA::Boolean flag)
      * map
      */
     {
-      MutexGuard guard(mutex);
-      if (!unmapped) return;
-      Stage_var stage = handle->parent();
+      MutexGuard guard(_mutex);
+      if (!_unmapped) return;
+      Stage_var stage = _handle->parent();
       stage->begin();
-      StageHandle_var tmp = stage->insert(Graphic_var(_this()), handle->position(), handle->size(), handle->layer()); 
+      StageHandle_var tmp = stage->insert(Graphic_var(_this()), _handle->position(), _handle->size(), _handle->layer()); 
       stage->end();
-      handle = tmp;
-      unmapped = 0;
+      _handle = tmp;
+      _unmapped = 0;
     }
   else
     /*
      * unmap
      */
     {
-      MutexGuard guard(mutex);
-      if (unmapped) return;
-      unmapped = new UnmappedStageHandle(handle);
-      handle->remove();
+      MutexGuard guard(_mutex);
+      if (_unmapped) return;
+      _unmapped = new UnmappedStageHandle(_handle);
+      _handle->remove();
+      _handle = _unmapped->_this();
     }
 }

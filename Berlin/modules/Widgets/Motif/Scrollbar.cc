@@ -20,49 +20,61 @@
  * MA 02139, USA.
  */
 
-#include "Widget/Motif/Scrollbar.hh"
+#include <Prague/Sys/Tracer.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/CommandImpl.hh>
+#include "Widget/Motif/Scrollbar.hh"
 
+using namespace Prague;
 using namespace Warsaw;
 using namespace Motif;
 
-class Scrollbar::Dragger : public CommandImpl
+class Scrollbar::Observer : public ObserverImpl
 {
 public:
-  Dragger(BoundedRange_ptr v, Axis a) : value(RefCount_var<BoundedRange>::increment(v)), axis(a) {}
+  Observer(Scrollbar *s) : _scrollbar(s) {}
+  void update(const CORBA::Any &any) { _scrollbar->update(any);}
+private:
+  Scrollbar *_scrollbar;
+};
+
+class Scrollbar::Drag : public CommandImpl
+{
+public:
+  Drag(Scrollbar *s) : _parent(s) { _parent->_add_ref();}
+  ~Drag() { _parent->_remove_ref();}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
     if (any >>= delta)
       {
-	if (axis == xaxis && delta->x != 0.) value->adjust(delta->x);
-	else if (axis == yaxis && delta->y != 0.) value->adjust(delta->y);
+	if (_parent->_axis == xaxis && delta->x != 0.) _parent->_value->adjust(delta->x);
+	else if (_parent->_axis == yaxis && delta->y != 0.) _parent->_value->adjust(delta->y);
       }
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
-  RefCount_var<BoundedRange> value;
-  Axis axis;
+  Scrollbar *_parent;
 };
 
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
   : ControllerImpl(false),
-    requisition(r),
-    translate(new Observer(this)),
-    _drag(new Dragger(v, a)),
-    range(RefCount_var<BoundedRange>::increment(v)),
-    axis(a)
+    _requisition(r),
+    _translate(new Observer(this)),
+    _value(RefCount_var<BoundedRange>::increment(v)),
+    _axis(a)
 {
-  BoundedRange::Settings settings = v->state();
-  offset.lower = settings.lvalue/(settings.upper - settings.lower);
-  offset.upper = settings.uvalue/(settings.upper - settings.lower);
-  v->attach(Observer_var(translate->_this()));
+  Trace trace("Scrollbar::Scrollbar");
+  BoundedRange::Settings settings = _value->state();
+  _offset.lower = settings.lvalue/(settings.upper - settings.lower);
+  _offset.upper = settings.uvalue/(settings.upper - settings.lower);
+  _value->attach(Observer_var(_translate->_this()));
 }
 
 void Scrollbar::init(Controller_ptr t)
 {
+  Trace trace("Scrollbar::init");
   body(t);
   t->add_parent_graphic(Graphic_var(_this()), 0);
   append_controller(t);
@@ -72,8 +84,8 @@ void Scrollbar::update(const CORBA::Any &any)
 {
   BoundedRange::Settings *settings;
   any >>= settings;
-  offset.lower = (settings->lvalue - settings->lower)/(settings->upper - settings->lower);
-  offset.upper = (settings->uvalue - settings->lower)/(settings->upper - settings->lower);
+  _offset.lower = (settings->lvalue - settings->lower)/(settings->upper - settings->lower);
+  _offset.upper = (settings->uvalue - settings->lower)/(settings->upper - settings->lower);
   need_redraw();
 }
 
@@ -98,25 +110,30 @@ void Scrollbar::allocate(Tag, const Allocation::Info &info)
 {
   Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
   allocation->copy(info.allocation);
-  if (axis == xaxis)
+  if (_axis == xaxis)
     {
       Coord lower = allocation->lower.x;
       Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*offset.lower;
-      allocation->upper.x = lower + scale*offset.upper;
+      allocation->lower.x = lower + scale*_offset.lower;
+      allocation->upper.x = lower + scale*_offset.upper;
     }
   else
     {
       Coord lower = allocation->lower.y;
       Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*offset.lower;
-      allocation->upper.y = lower + scale*offset.upper;
+      allocation->lower.y = lower + scale*_offset.lower;
+      allocation->upper.y = lower + scale*_offset.upper;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
 }
 
-Command_ptr Scrollbar::drag() { return _drag->_this();}
+Command_ptr Scrollbar::create_drag_command()
+{
+  Drag *d = new Drag(this);
+  activate(d);
+  return d->_this();
+}
 
 void Scrollbar::traverse_thumb(Traversal_ptr traversal)
 {
@@ -126,20 +143,20 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
   allocation->copy(Region_var(traversal->allocation()));
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
-  if (axis == xaxis)
+  if (_axis == xaxis)
     {
       Coord lower = allocation->lower.x;
       Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*offset.lower;
-      allocation->upper.x = lower + scale*offset.upper;
+      allocation->lower.x = lower + scale*_offset.lower;
+      allocation->upper.x = lower + scale*_offset.upper;
       allocation->lower.z = allocation->upper.z = 0.;
     }
-  else if (axis == yaxis)
+  else if (_axis == yaxis)
     {
       Coord lower = allocation->lower.y;
       Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*offset.lower;
-      allocation->upper.y = lower + scale*offset.upper;
+      allocation->lower.y = lower + scale*_offset.lower;
+      allocation->upper.y = lower + scale*_offset.upper;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));

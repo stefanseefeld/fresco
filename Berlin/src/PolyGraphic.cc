@@ -68,6 +68,7 @@ public:
 	    edge.peer->decrement();
 	  }
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
+	catch (const CORBA::COMM_FAILURE &) {}
       edge.peer = RefCount_var<Warsaw::Graphic>::increment(child);
       edge.peerId = child->add_parent_graphic(Graphic_var(parent->_this()), edge.localId);
     }
@@ -86,6 +87,7 @@ public:
 	  (*i).peer->decrement();
 	}
       catch(const CORBA::OBJECT_NOT_EXIST &) {}
+      catch (const CORBA::COMM_FAILURE &) {}
       parent->_children.erase(i);
     }
     parent->need_resize();
@@ -110,6 +112,7 @@ PolyGraphic::~PolyGraphic()
 	  (*i).peer->decrement();
 	}
       catch(const CORBA::OBJECT_NOT_EXIST &) {}
+      catch (const CORBA::COMM_FAILURE &) {}
     }
 }
 
@@ -150,6 +153,7 @@ void PolyGraphic::remove_graphic(Tag localId)
       (*i).peer->decrement();
     }
   catch(const CORBA::OBJECT_NOT_EXIST &) {}
+  catch (const CORBA::COMM_FAILURE &) {}
   _children.erase(i);
   _mutex.unlock();
   need_resize();
@@ -202,6 +206,7 @@ Warsaw::Graphic::Requisition *PolyGraphic::children_requests()
       if (!CORBA::is_nil((*i).peer))
 	try { (*i).peer->request(*r);}
 	catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
+	catch (const CORBA::COMM_FAILURE &) { (*i).peer = Warsaw::Graphic::_nil();}
       ++r;
     }
   return requisitions;
@@ -220,4 +225,5 @@ void PolyGraphic::child_extension(size_t i, const Warsaw::Allocation::Info &info
   if (!CORBA::is_nil(child))
     try { child->extension(info, region);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _children[i].peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _children[i].peer = Warsaw::Graphic::_nil();}
 }

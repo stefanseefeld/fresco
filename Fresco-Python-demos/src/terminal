@@ -5,11 +5,11 @@ import string
 
 # Import the CORBA module
 from omniORB import CORBA
+import CosNaming
 
 # Import the Warsaw stubs
 import Warsaw
 import Warsaw__POA
-import CosNaming
 # Define an implementation of the ClientContext interface
 class ClientContextImpl (Warsaw__POA.ClientContext):
     def userName(self): return "joe"
@@ -29,30 +29,32 @@ def main():
     client = ci._this()
 
     # get a server context
-    context = orb.resolve_initial_references("NameService")
-    name = [CosNaming.NameComponent("IDL:Server:1.0", "Object")]
-    server = context.resolve(name)
-    context  = server.newServerContext(client)
+    object = orb.resolve_initial_references("NameService");
+    context = object._narrow(CosNaming.NamingContext)
+    name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
+    object = context.resolve(name)
+    server = object._narrow(Warsaw.Server)
+    context  = server.create_server_context(client)
 
     # get some kits
     properties = []
-    object  = context.resolve("IDL:ToolKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/ToolKit:1.0", properties)
     tool    = object._narrow(Warsaw.ToolKit)
-    object  = context.resolve("IDL:DesktopKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/DesktopKit:1.0", properties)
     desktop = object._narrow(Warsaw.DesktopKit)
-    object  = context.resolve("IDL:LayoutKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/LayoutKit:1.0", properties)
     layout  = object._narrow(Warsaw.LayoutKit)
-    object  = context.resolve("IDL:WidgetKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/WidgetKit:1.0", properties)
     widget  = object._narrow(Warsaw.WidgetKit)
-    object  = context.resolve("IDL:TextKit:1.0", properties)
+    object  = context.resolve("IDL:Warsaw/TextKit:1.0", properties)
     text    = object._narrow(Warsaw.TextKit)
 
     terminal   = widget.terminal()
     scrollable = widget.scrollable(tool.rgb(terminal, 0., 0., 0.))
-    scrollable.appendController(terminal)
+    scrollable.append_controller(terminal)
     outset     = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
-    group      = tool.group(tool.frame(layout.fixedSize(scrollable, 4000., 3000.), 20., outset, 1))
-    group.appendController(scrollable)
+    group      = tool.group(tool.frame(layout.fixed_size(scrollable, 4000., 3000.), 20., outset, 1))
+    group.append_controller(scrollable)
     shell      = desktop.shell(group)
     while 1:
 	line = sys.stdin.readline()

@@ -20,13 +20,16 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/DesktopImpl.hh"
-#include "Berlin/Vertex.hh"
-#include "Berlin/Logger.hh"
+#include <Prague/Unicode/Unicode.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Region.hh>
+#include "Berlin/DesktopImpl.hh"
+#include "Berlin/Vertex.hh"
+#include "Berlin/Logger.hh"
+#include "Berlin/ServerImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -45,4 +48,14 @@ DesktopImpl::~DesktopImpl() {}
 Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g, const Warsaw::Vertex &p, const Warsaw::Vertex &s, Layout::Stage::Index l)
 {
   return stage->insert(g, p, s, l);
+}
+
+/*
+ * little hack: stop the server when the <escape> key is hit
+ */
+void DesktopImpl::key_press(const Input::Event &event)
+{
+  Trace trace("DesktopImpl::key_press");
+  const Input::Toggle &toggle = event[0].attr.selection();
+  if (toggle.number == Unicode::UC_ESCAPE) ServerImpl::instance()->stop();
 }

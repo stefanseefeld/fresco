@@ -245,67 +245,70 @@ void LayoutTileAllocate::next_span(const Graphic::Requirement &r, GridImpl::Span
 
 GridImpl::GridImpl(const Layout::Grid::Index &upper)
 {
-  dimensions[xaxis].init(upper.col, upper.row);
-  dimensions[yaxis].init(upper.row, upper.col);
-  cursor.col = cursor.row = 0;
-  requested = false;
-  GridImpl::init_requisition(requisition);
+  _dimensions[xaxis].init(upper.col, upper.row);
+  _dimensions[yaxis].init(upper.row, upper.col);
+  _cursor.col = _cursor.row = 0;
+  _requested = false;
+  GridImpl::init_requisition(_requisition);
 }
 
 GridImpl::~GridImpl() {}
 
 void GridImpl::append_graphic(Graphic_ptr g)
 {
-  replace(g, cursor);
+  replace(g, _cursor);
   
-  if (++cursor.col >= dimensions[xaxis].size())
+  if (++_cursor.col >= _dimensions[xaxis].size())
     {
-      long count = dimensions[yaxis].size();
-      cursor.row = (cursor.row + 1) % count;
-      cursor.col = 0;
+      long count = _dimensions[yaxis].size();
+      _cursor.row = (_cursor.row + 1) % count;
+      _cursor.col = 0;
     }
 }
 
 void GridImpl::prepend_graphic(Graphic_ptr g)
 {
-  if (--cursor.col < 0)
+  if (--_cursor.col < 0)
     {
-      long count = dimensions[yaxis].size();
-      cursor.row = (cursor.row - 1 + count) % count;
-      cursor.col = dimensions[xaxis].size() - 1;
+      long count = _dimensions[yaxis].size();
+      _cursor.row = (_cursor.row - 1 + count) % count;
+      _cursor.col = _dimensions[xaxis].size() - 1;
     }
-  replace(g, cursor);
+  replace(g, _cursor);
 }
 
 void GridImpl::request(Warsaw::Graphic::Requisition &r)
 {
   cache_request();
-  r = requisition;
+  r = _requisition;
 }
 
 void GridImpl::traverse(Traversal_ptr traversal)
 {
   Layout::Grid::Range range;
   range.lower.col = 0;
-  range.upper.col = dimensions[xaxis].size();
+  range.upper.col = _dimensions[xaxis].size();
   range.lower.row = 0;
-  range.upper.row = dimensions[yaxis].size();
+  range.upper.row = _dimensions[yaxis].size();
   
   traverse_range(traversal, range);
 }
 
 void GridImpl::need_resize()
 {
-  requested = false;
+  _requested = false;
   GraphicImpl::need_resize();
 }
 
 void GridImpl::replace(Graphic_ptr g, const Layout::Grid::Index &i)
 {
-  Graphic_var old = dimensions[xaxis].children[i.col][i.row];
-  if (!CORBA::is_nil(old)) old->remove_parent_graphic(index_to_tag(i));
-  dimensions[xaxis].children[i.col][i.row] = g;
-  dimensions[yaxis].children[i.row][i.col] = Warsaw::Graphic::_duplicate(g);
+  Graphic_ptr old = _dimensions[xaxis].children[i.col][i.row];
+  if (!CORBA::is_nil(old))
+    try { old->remove_parent_graphic(index_to_tag(i));}
+    catch (const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
+  _dimensions[xaxis].children[i.col][i.row] = Warsaw::Graphic::_duplicate(g);
+  _dimensions[yaxis].children[i.row][i.col] = Warsaw::Graphic::_duplicate(g);
   g->add_parent_graphic(Graphic_var(_this()), index_to_tag(i));
 }
 
@@ -313,9 +316,9 @@ Layout::Grid::Index GridImpl::find(Traversal_ptr traversal)
 {
   Layout::Grid::Range range;
   range.lower.col = 0;
-  range.upper.col = dimensions[xaxis].size();
+  range.upper.col = _dimensions[xaxis].size();
   range.lower.row = 0;
-  range.upper.row = dimensions[yaxis].size();
+  range.upper.row = _dimensions[yaxis].size();
   
   return find_range(traversal, range);
 }
@@ -389,8 +392,8 @@ void GridImpl::range_position(Region_ptr given, const Layout::Grid::Range &a, Ve
 Layout::Grid::Index GridImpl::upper()
 {
   Layout::Grid::Index upper;
-  upper.col = dimensions[xaxis].size();
-  upper.row = dimensions[yaxis].size();
+  upper.col = _dimensions[xaxis].size();
+  upper.row = _dimensions[yaxis].size();
   return upper;
 }
 
@@ -410,17 +413,17 @@ void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 
 void GridImpl::cache_request()
 {
-  if (!requested)
+  if (!_requested)
     {
       full_request(xaxis, yaxis);
       full_request(yaxis, xaxis);
-      requested = true;
+      _requested = true;
     }
 }
 
 void GridImpl::partial_request(Axis axis, long begin, long end, Warsaw::Graphic::Requirement &r)
 {
-  GridDimension &d = dimensions[axis];
+  Dimension &d = _dimensions[axis];
   LayoutTileRequest tile;
   for (long i = begin; i < end; i++)
     tile.accumulate(d.requirements[i]);
@@ -429,7 +432,7 @@ void GridImpl::partial_request(Axis axis, long begin, long end, Warsaw::Graphic:
 
 void GridImpl::full_request(Axis axis, Axis direction)
 {
-  GridDimension &d = dimensions[axis];
+  Dimension &d = _dimensions[axis];
   LayoutTileRequest tile;
   for (int i = 0; i < d.size(); i++)
     {
@@ -447,15 +450,15 @@ void GridImpl::full_request(Axis axis, Axis direction)
       align.requirement(r);
       tile.accumulate(r);
     }
-  Warsaw::Graphic::Requirement &r = *GraphicImpl::requirement(requisition, axis);
+  Warsaw::Graphic::Requirement &r = *GraphicImpl::requirement(_requisition, axis);
   tile.requirement(r);
 }
 
 GridImpl::Span *GridImpl::full_allocate(Axis axis, Region_ptr given)
 {
-  GridDimension &d = dimensions[axis];
+  Dimension &d = _dimensions[axis];
   Span *spans = new Span[d.size()];
-  LayoutTileAllocate allocate(axis, requisition, false, given);
+  LayoutTileAllocate allocate(axis, _requisition, false, given);
   for (int i = 0; i < d.size(); i++)
     allocate.next_span(d.requirements[i], spans[i]);
   return spans;
@@ -470,7 +473,7 @@ void GridImpl::traverse_with_allocation(Traversal_ptr t, Region_ptr given, const
   Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
   tx->load_identity();
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
-  GridDimension &d = dimensions[yaxis];
+  Dimension &d = _dimensions[yaxis];
   Layout::Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
@@ -487,7 +490,7 @@ void GridImpl::traverse_with_allocation(Traversal_ptr t, Region_ptr given, const
 
 void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::Range &range)
 {
-  GridDimension &d = dimensions[yaxis];
+  Dimension &d = _dimensions[yaxis];
   Layout::Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
@@ -495,13 +498,13 @@ void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::
 }
 
 SubGridImpl::SubGridImpl(Grid_ptr grid, const Layout::Grid::Range &r)
- : child(grid), range(r) {}
+ : _child(Layout::Grid::_duplicate(grid)), _range(r) {}
 
 SubGridImpl::~SubGridImpl() {}
-void SubGridImpl::request(Warsaw::Graphic::Requisition &r) { child->request_range(r, range);}
+void SubGridImpl::request(Warsaw::Graphic::Requisition &r) { _child->request_range(r, _range);}
 
 void SubGridImpl::traverse(Traversal_ptr t)
 {
-  t->traverse_child(child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+  t->traverse_child(_child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 }
 

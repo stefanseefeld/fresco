@@ -40,16 +40,10 @@ class Panner : public ControllerImpl
     Warsaw::Coord lower;
     Warsaw::Coord upper;
   }; 
-  class Observer : public ObserverImpl
-  {
-  public:
-    Observer(Panner *p) : panner(p) {}
-    void update(const CORBA::Any &any) { panner->update(any);}
-  private:
-    Panner *panner;
-  };
+  class Observer;
   friend class Observer;
-  class Dragger;
+  class Drag;
+  friend class Drag;
 public:
   Panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
   void init(Warsaw::Controller_ptr);
@@ -57,15 +51,14 @@ public:
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  Warsaw::Command_ptr drag();
+  Warsaw::Command_ptr create_drag_command();
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
-  Impl_var<Observer> translateX;
-  Impl_var<Observer> translateY;
-  Impl_var<Dragger> _drag;
-  RefCount_var<Warsaw::BoundedRange> x;
-  RefCount_var<Warsaw::BoundedRange> y;
-  Offset offset[2];
+  Impl_var<Observer> _translateX;
+  Impl_var<Observer> _translateY;
+  RefCount_var<Warsaw::BoundedRange> _xvalue;
+  RefCount_var<Warsaw::BoundedRange> _yvalue;
+  Offset _offset[2];
 };
 
 };

@@ -40,33 +40,27 @@ class Scrollbar : public ControllerImpl
     Warsaw::Coord lower;
     Warsaw::Coord upper;
   }; 
-  class Observer : public ObserverImpl
-  {
-  public:
-    Observer(Scrollbar *s) : scrollbar(s) {}
-    void update(const CORBA::Any &any) { scrollbar->update(any);}
-  private:
-    Scrollbar *scrollbar;
-  };
+  class Observer;
   friend class Observer;
-  class Dragger;
+  class Drag;
+  friend class Drag;
 public:
   Scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis, const Warsaw::Graphic::Requisition &);
   void init(Warsaw::Controller_ptr);
-  virtual void request(Warsaw::Graphic::Requisition &r) { r = requisition;}
+  virtual void request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
   virtual void update(const CORBA::Any &);
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  Warsaw::Command_ptr drag();
+  Warsaw::Command_ptr create_drag_command();
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
-  Warsaw::Graphic::Requisition requisition;
-  Impl_var<Observer> translate;
-  Impl_var<Dragger> _drag;
-  RefCount_var<Warsaw::BoundedRange> range;
-  Offset offset;
-  Warsaw::Axis axis;
+  Warsaw::Graphic::Requisition _requisition;
+  Impl_var<Observer> _translate;
+  RefCount_var<Warsaw::BoundedRange> _value;
+  Offset _offset;
+  Warsaw::Axis _axis;
+  double _scale;
 };
 
 };

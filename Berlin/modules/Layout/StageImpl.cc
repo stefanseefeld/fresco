@@ -99,15 +99,15 @@ private:
 StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index layer)
 {
   Trace trace("StageImpl::Sequence::lookup");
-  if (layer == front()->l) return begin();
-  if (layer == back()->l) return end() - 1;
-  if (layer == current()->l) return begin() + cursor;
+  if (layer == front()->_layer) return begin();
+  if (layer == back()->_layer) return end() - 1;
+  if (layer == current()->_layer) return begin() + cursor;
   /*
    * start searching from the closest item
    */
-  Layout::Stage::Index fdist = front()->l - layer;
+  Layout::Stage::Index fdist = front()->_layer - layer;
   Layout::Stage::Index bdist = layer;
-  Layout::Stage::Index cdist = Math::abs(current()->l - layer);
+  Layout::Stage::Index cdist = Math::abs(current()->_layer - layer);
   if (fdist < bdist)
     {
       if (fdist < cdist) cursor = 0;
@@ -116,31 +116,31 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index l
     {
       if (bdist < cdist) cursor = size() - 1;
     }
-  cursor += layer - current()->l;
+  cursor += layer - current()->_layer;
   return begin() + cursor;
 }
 
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::insert");
-  Layout::Stage::Index layer = handle->l;
+  Layout::Stage::Index layer = handle->_layer;
   iterator i;
   if (!size() || layer == 0) i = begin();
-  else if (front()->l < layer) i = end();
+  else if (front()->_layer < layer) i = end();
   else i = lookup(layer);
-  for (iterator j = i; j != end(); j++) (*j)->l = ++layer;
+  for (iterator j = i; j != end(); j++) (*j)->_layer = ++layer;
   parent_t::insert(i, handle);
 }
  
 void StageImpl::Sequence::remove(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::remove");
-  Layout::Stage::Index layer = handle->l;
+  Layout::Stage::Index layer = handle->_layer;
   iterator old = lookup(layer);
   if (old == begin() + cursor)
-    if (current()->l <= (front()->l / 2)) cursor++;
+    if (current()->_layer <= (front()->_layer / 2)) cursor++;
     else cursor--;
-  for (iterator i = old++; i != end(); i++) (*i)->l = layer++;
+  for (iterator i = old++; i != end(); i++) (*i)->_layer = layer++;
   parent_t::erase(--old);
 }
 
@@ -379,7 +379,7 @@ public:
   StageQuadTreeContains(Traversal::order o) : handle(0), order(o) {}
   virtual void found(StageHandleImpl *h)
     {
-      if (!handle || (order == Traversal::down && handle->l > h->l) || handle->l < h->l)
+      if (!handle || (order == Traversal::down && handle->_layer > h->_layer) || handle->_layer < h->_layer)
 	handle = h;
     }
   StageHandleImpl *handle;
@@ -426,11 +426,11 @@ StageTraversal::~StageTraversal() {}
 
 template <>
 struct greater<StageHandleImpl *> : public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
-{ bool operator() (StageHandleImpl *a, StageHandleImpl *b) const { return a->l > b->l;}};
+{ bool operator() (StageHandleImpl *a, StageHandleImpl *b) const { return a->_layer > b->_layer;}};
 
 template <>
 struct less<StageHandleImpl *> : public binary_function<StageHandleImpl *, StageHandleImpl *, bool>
-{ bool operator() (StageHandleImpl *a, StageHandleImpl *b) const { return a->l < b->l;}};
+{ bool operator() (StageHandleImpl *a, StageHandleImpl *b) const { return a->_layer < b->_layer;}};
 
 void StageTraversal::execute()
 {
@@ -448,6 +448,7 @@ void StageTraversal::execute()
 
 void StageTraversal::traverse(StageHandleImpl *handle)
 {
+  Trace trace("StageTraversal::traverse");
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
   handle->bbox(*region);
   Vertex origin;
@@ -455,15 +456,15 @@ void StageTraversal::traverse(StageHandleImpl *handle)
   Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
   transformation->load_identity();
   transformation->translate(origin);
-  traversal->traverse_child(handle->c, handle->tag, Region_var(region->_this()), Transform_var(transformation->_this()));
+  traversal->traverse_child(handle->_child, handle->_tag, Region_var(region->_this()), Transform_var(transformation->_this()));
 }
 
 StageImpl::StageImpl()
-  : children(new Sequence),
-    tree(new QuadTree),
-    nesting(0),
+  : _children(new Sequence),
+    _tree(new QuadTree),
+    _nesting(0),
     _damage(new RegionImpl),
-    bbregion(new RegionImpl),
+    _bbregion(new RegionImpl),
     _need_redraw(false),
     _need_resize(false)
 {
@@ -471,16 +472,16 @@ StageImpl::StageImpl()
 
 StageImpl::~StageImpl()
 {
-  delete tree;
-  delete tree;
+  delete _tree;
+  delete _children;
 }
 
 void StageImpl::request(Warsaw::Graphic::Requisition &r)
 {
   GraphicImpl::init_requisition(r);
-  if (tree->size() > 0)
+  if (_tree->size() > 0)
     {
-      Geometry::Rectangle<Coord> b = tree->bbox();
+      Geometry::Rectangle<Coord> b = _tree->bbox();
       Coord w = b.r - b.l;
       Coord h = b.b - b.t;
       Coord ax = (Math::equal(w, 0., epsilon) ? 0 : (-b.l / w));
@@ -493,6 +494,7 @@ void StageImpl::request(Warsaw::Graphic::Requisition &r)
 void StageImpl::traverse(Traversal_ptr traversal)
 {
   Trace trace("StageImpl::traverse");
+  MutexGuard guard(_mutex);
 //   Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->allocation()));
   Geometry::Rectangle<Coord> rectangle;
@@ -502,7 +504,7 @@ void StageImpl::traverse(Traversal_ptr traversal)
   rectangle.b = region.upper.y;
 //   dumpQuadTree(*tree);
   StageTraversal st(traversal);
-  tree->intersects(rectangle, st);
+  _tree->intersects(rectangle, st);
   st.execute();
 }
 
@@ -517,7 +519,7 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
       Vertex origin;
       handle->bbox(*region);
       region->normalize(origin);
-      transform->translate(handle->p);
+      transform->translate(handle->_position);
       a.allocation->copy(Region_var(region->_this()));
       a.transformation->premultiply(Transform_var(transform->_this()));
     }
@@ -581,45 +583,51 @@ void StageImpl::need_resize()
 
 Region_ptr StageImpl::bbox()
 {
-  Geometry::Rectangle<Coord> bb = tree->bbox();
-  bbregion->valid = true;
-  bbregion->lower.x = bb.l;
-  bbregion->lower.y = bb.t;
-  bbregion->lower.z = 0.;
-  bbregion->upper.x = bb.r;
-  bbregion->upper.y = bb.b;
-  bbregion->upper.z = 0.;
-  return bbregion->_this();
+  MutexGuard guard(_mutex);
+  Geometry::Rectangle<Coord> bb = _tree->bbox();
+  _bbregion->valid = true;
+  _bbregion->lower.x = bb.l;
+  _bbregion->lower.y = bb.t;
+  _bbregion->lower.z = 0.;
+  _bbregion->upper.x = bb.r;
+  _bbregion->upper.y = bb.b;
+  _bbregion->upper.z = 0.;
+  return _bbregion->_this();
 }
 
-CORBA::Long StageImpl::layers() { return tree->size();}
+CORBA::Long StageImpl::layers()
+{
+  MutexGuard guard(_mutex);
+  return _tree->size();
+}
 
 StageHandle_ptr StageImpl::layer(Layout::Stage::Index i)
 {
-  StageHandleImpl *handle = children->find(i);
+  MutexGuard guard(_mutex);
+  StageHandleImpl *handle = _children->find(i);
   return handle ? handle->_this() : StageHandle::_nil();
 }
 
 void StageImpl::begin()
 {
-  if (!nesting++)
+  if (!_nesting++)
     {
-      Geometry::Rectangle<Coord> bb = tree->bbox();
-      bbregion->lower.x = bb.l;
-      bbregion->lower.y = bb.t;
-      bbregion->upper.x = bb.r;
-      bbregion->upper.y = bb.b;
-      tree->begin();
+      Geometry::Rectangle<Coord> bb = _tree->bbox();
+      _bbregion->lower.x = bb.l;
+      _bbregion->lower.y = bb.t;
+      _bbregion->upper.x = bb.r;
+      _bbregion->upper.y = bb.b;
+      _tree->begin();
     }
 }
 
 void StageImpl::end()
 {
   Trace trace("StageImpl::end");
-  MutexGuard guard(childMutex);
-  if (!--nesting)
+  MutexGuard guard(_mutex);
+  if (!--_nesting)
     {
-      tree->end();
+      _tree->end();
       if (_need_redraw)
 	{
 	  need_redraw_region(Region_var(_damage->_this()));
@@ -627,11 +635,11 @@ void StageImpl::end()
 	}
       if (_need_resize)
 	{
- 	  Geometry::Rectangle<Coord> bb = tree->bbox();
- 	  if (! Math::equal(bbregion->lower.x, bb.l, epsilon) ||
- 	      ! Math::equal(bbregion->lower.y, bb.t, epsilon) ||
- 	      ! Math::equal(bbregion->upper.x, bb.r, epsilon) ||
- 	      ! Math::equal(bbregion->upper.y, bb.b, epsilon))
+ 	  Geometry::Rectangle<Coord> bb = _tree->bbox();
+ 	  if (! Math::equal(_bbregion->lower.x, bb.l, epsilon) ||
+ 	      ! Math::equal(_bbregion->lower.y, bb.t, epsilon) ||
+ 	      ! Math::equal(_bbregion->upper.x, bb.r, epsilon) ||
+ 	      ! Math::equal(_bbregion->upper.y, bb.b, epsilon))
  	    GraphicImpl::need_resize();
  	  _need_resize = false;
 	}
@@ -641,11 +649,11 @@ void StageImpl::end()
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Layout::Stage::Index layer)
 {
   Trace trace("StageImpl::insert");
-  MutexGuard guard(childMutex);
-  StageHandleImpl *handle = new StageHandleImpl(this, g, tag(), position, size, layer);
-  tree->insert(handle);
+  MutexGuard guard(_mutex);
+  StageHandleImpl *handle = new StageHandleImpl(this, g, unique_tag(), position, size, layer);
+  _tree->insert(handle);
 //   dumpQuadTree(*tree);
-  children->insert(handle);
+  _children->insert(handle);
   damage(handle);
   return handle->_this();
 }
@@ -653,12 +661,12 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 void StageImpl::remove(StageHandle_ptr h)
 {
   Trace trace("StageImpl::remove");
-  MutexGuard guard(childMutex);
-  StageHandleImpl *handle = children->find(h->layer());
+  MutexGuard guard(_mutex);
+  StageHandleImpl *handle = _children->find(h->layer());
   if (!handle) return;
-  tree->remove(handle);
+  _tree->remove(handle);
 //   dumpQuadTree(*tree);
-  children->remove(handle);
+  _children->remove(handle);
 
   damage(handle);
 //  handle->_dispose();
@@ -669,21 +677,21 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
   Trace trace("StageImpl::move");
 //   Prague::Profiler prf("StageImpl::move");
-  MutexGuard guard(childMutex);
-  tree->remove(handle);
+  MutexGuard guard(_mutex);
+  _tree->remove(handle);
 
   damage(handle);
   _need_resize = true;
 
   
-  Coord dx = p.x - handle->p.x;
-  Coord dy = p.y - handle->p.y;
-  handle->boundingbox.l += dx;
-  handle->boundingbox.t += dy;
-  handle->boundingbox.r += dx;
-  handle->boundingbox.b += dy;
-  handle->p = p;
-  tree->insert(handle);
+  Coord dx = p.x - handle->_position.x;
+  Coord dy = p.y - handle->_position.y;
+  handle->_bbox.l += dx;
+  handle->_bbox.t += dy;
+  handle->_bbox.r += dx;
+  handle->_bbox.b += dy;
+  handle->_position = p;
+  _tree->insert(handle);
 //   dumpQuadTree(*tree);
 
   damage(handle);
@@ -693,16 +701,16 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
   Trace trace("StageImpl::resize");
-  MutexGuard guard(childMutex);
-  tree->remove(handle);
+  MutexGuard guard(_mutex);
+  _tree->remove(handle);
 
   damage(handle);
   _need_resize = true;
   
-  handle->boundingbox.r = handle->boundingbox.l + s.x;
-  handle->boundingbox.b = handle->boundingbox.t + s.y;
-  handle->s = s;
-  tree->insert(handle);
+  handle->_bbox.r = handle->_bbox.l + s.x;
+  handle->_bbox.b = handle->_bbox.t + s.y;
+  handle->_size = s;
+  _tree->insert(handle);
 //   dumpQuadTree(*tree);
 
   damage(handle);
@@ -712,22 +720,22 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 void StageImpl::relayer(StageHandleImpl *handle, Layout::Stage::Index l)
 {
   Trace trace("StageImpl::relayer");
-  MutexGuard guard(childMutex);
-  children->remove(handle);
-  handle->l = l;
-  children->insert(handle);
+  MutexGuard guard(_mutex);
+  _children->remove(handle);
+  handle->_layer = l;
+  _children->insert(handle);
   damage(handle);
 }
 
-Tag StageImpl::tag()
+Tag StageImpl::unique_tag()
 {
   Tag t = 0;
   do
     {
       Sequence::iterator i;
-      for (i = children->begin(); i != children->end(); i++)
-	if ((*i)->tag == t) break;
-      if (i == children->end()) return t;
+      for (i = _children->begin(); i != _children->end(); i++)
+	if ((*i)->_tag == t) break;
+      if (i == _children->end()) return t;
     }
   while (++t);
   return 0;
@@ -735,8 +743,8 @@ Tag StageImpl::tag()
 
 StageHandleImpl *StageImpl::tag_to_handle(Tag tag)
 {
-  for (Sequence::iterator i = children->begin(); i != children->end(); i++)
-    if ((*i)->tag == tag) return *i;
+  for (Sequence::iterator i = _children->begin(); i != _children->end(); i++)
+    if ((*i)->_tag == tag) return *i;
   return 0;
 }
 
@@ -752,39 +760,84 @@ void StageImpl::damage(StageHandleImpl *handle)
     }
 }
 
-StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vertex &pp, const Vertex &ss, Layout::Stage::Index ll)
-  : stage(pa), c(Graphic::_duplicate(g)), tag(t), p(pp), s(ss), l(ll)
+StageHandleImpl::StageHandleImpl(StageImpl *stage, Graphic_ptr g, Tag t, const Vertex &p, const Vertex &s, Layout::Stage::Index l)
+  : _parent(stage), _child(Graphic::_duplicate(g)), _tag(t), _position(p), _size(s), _layer(l)
 {
-  c->add_parent_graphic(Stage_var(stage->_this()), tag);
+  _child->add_parent_graphic(Stage_var(_parent->_this()), _tag);
   cache_bbox();
+}
+
+Layout::Stage_ptr StageHandleImpl::parent()
+{
+  return _parent->_this();
+}
+Warsaw::Graphic_ptr StageHandleImpl::child()
+{
+  return Warsaw::Graphic::_duplicate(_child);
 }
 
 void StageHandleImpl::remove()
 {
-  stage->begin();
-  stage->remove(StageHandle_var(_this()));
-  stage->end();
+  _parent->begin();
+  _parent->remove(StageHandle_var(_this()));
+  _parent->end();
+}
+
+Warsaw::Vertex StageHandleImpl::position()
+{
+  MutexGuard guard(_mutex);
+  return _position;
 }
 
 void StageHandleImpl::position(const Vertex &pp)
 {
-  stage->begin();
-  stage->move(this, pp);
-  stage->end();
+  _parent->begin();
+  _parent->move(this, pp);
+  _parent->end();
+}
+
+Warsaw::Vertex StageHandleImpl::size()
+{
+  MutexGuard guard(_mutex);
+  return _size;
 }
 
 void StageHandleImpl::size(const Vertex &ss)
 {
-  stage->begin();
-  stage->resize(this, ss);
-  stage->end();
+  _parent->begin();
+  _parent->resize(this, ss);
+  _parent->end();
+}
+
+Layout::Stage::Index StageHandleImpl::layer() 
+{
+  MutexGuard guard(_mutex);
+  return _layer;
 }
 
 void StageHandleImpl::layer(Layout::Stage::Index ll)
 {
-  stage->begin();
-  stage->relayer(this, ll);
-  stage->end();
+  _parent->begin();
+  _parent->relayer(this, ll);
+  _parent->end();
+}
+
+const Geometry::Rectangle<Warsaw::Coord> &StageHandleImpl::bbox()
+{
+  MutexGuard guard(_mutex);
+  return _bbox;
+}
+
+void StageHandleImpl::bbox(RegionImpl &region)
+{
+  MutexGuard guard(_mutex);
+  region.valid   = true;
+  region.lower.x = _bbox.l;
+  region.upper.x = _bbox.r;
+  region.xalign  = _xalign;
+  region.lower.y = _bbox.t;
+  region.upper.y = _bbox.b;
+  region.yalign  = _yalign;
 }
 
 void StageHandleImpl::cache_bbox()
@@ -792,40 +845,40 @@ void StageHandleImpl::cache_bbox()
   Trace trace("StageHandleImpl::cache_bbox");
   Graphic::Requisition r;
   GraphicImpl::init_requisition(r);    
-  c->request(r);
+  _child->request(r);
   if (r.x.defined && r.y.defined)
     {
-      xalign = r.x.align;
-      yalign = r.y.align;
-      if (s.x != 0)
+      _xalign = r.x.align;
+      _yalign = r.y.align;
+      if (_size.x != 0)
 	{
-	  boundingbox.l = p.x;
-	  boundingbox.r = p.x + s.x;
+	  _bbox.l = _position.x;
+	  _bbox.r = _position.x + _size.x;
 	}
       else
 	{
-	  boundingbox.l = p.x - r.x.natural * r.x.align;
-	  boundingbox.r = p.x + r.x.natural * (1. - r.x.align);
+	  _bbox.l = _position.x - r.x.natural * r.x.align;
+	  _bbox.r = _position.x + r.x.natural * (1. - r.x.align);
 	}
-      if (s.y != 0)
+      if (_size.y != 0)
 	{
-	  boundingbox.t = p.y;
-	  boundingbox.b = p.y + s.y;
+	  _bbox.t = _position.y;
+	  _bbox.b = _position.y + _size.y;
 	}
       else
 	{
-	  boundingbox.t = p.y - r.y.natural * r.y.align;
-	  boundingbox.b = p.y + r.y.natural * (1. - r.y.align);
+	  _bbox.t = _position.y - r.y.natural * r.y.align;
+	  _bbox.b = _position.y + r.y.natural * (1. - r.y.align);
 	}
     }
   else
     {
-      xalign = 0.;
-      yalign = 0.;
-      boundingbox.l = p.x;
-      boundingbox.r = p.x;
-      boundingbox.t = p.y;
-      boundingbox.b = p.y;
+      _xalign = 0.;
+      _yalign = 0.;
+      _bbox.l = _position.x;
+      _bbox.r = _position.x;
+      _bbox.t = _position.y;
+      _bbox.b = _position.y;
     }
 }
 

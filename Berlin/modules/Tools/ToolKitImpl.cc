@@ -107,6 +107,7 @@ ToolKitImpl::ToolKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
 ToolKitImpl::~ToolKitImpl() { Trace trace("ToolKitImpl::~ToolKitImpl");}
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {
+  Trace trace("ToolKitImpl::debugger");
   DebugGraphic *debug = new DebugGraphic(cout, s);
   activate(debug);
   debug->body(g);
@@ -115,6 +116,7 @@ Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 
 Graphic_ptr ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
+  Trace trace("ToolKitImpl::rgb");
   RGBDecorator *decorator = new RGBDecorator(r, g, b);
   activate(decorator);
   decorator->body(gg);
@@ -123,6 +125,7 @@ Graphic_ptr ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)
 
 Graphic_ptr ToolKitImpl::alpha(Graphic_ptr g, Coord a)
 {
+  Trace trace("ToolKitImpl::alpha");
   AlphaDecorator *decorator = new AlphaDecorator(a);
   activate(decorator);
   decorator->body(g);
@@ -131,6 +134,7 @@ Graphic_ptr ToolKitImpl::alpha(Graphic_ptr g, Coord a)
 
 Graphic_ptr ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
+  Trace trace("ToolKitImpl::lighting");
   LightingDecorator *decorator = new LightingDecorator(r, g, b);
   activate(decorator);
   decorator->body(gg);
@@ -139,6 +143,7 @@ Graphic_ptr ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
 
 Graphic_ptr ToolKitImpl::frame(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
 {
+  Trace trace("ToolKitImpl::frame");
   Frame::Renderer *renderer = 0;
   switch (spec._d())
     {
@@ -158,6 +163,7 @@ Graphic_ptr ToolKitImpl::frame(Graphic_ptr g, Coord thickness, const Warsaw::Too
 Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Warsaw::Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
 				 const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
+  Trace trace("ToolKitImpl::dynamic");
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
     {
@@ -187,6 +193,7 @@ Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Warsaw::Telltal
 
 Graphic_ptr ToolKitImpl::framed_triangle(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill, Warsaw::ToolKit::Direction d)
 {
+  Trace trace("ToolKitImpl::triangle");
   Frame::Renderer *renderer = 0;
   switch (spec._d())
     {
@@ -206,6 +213,7 @@ Graphic_ptr ToolKitImpl::framed_triangle(Graphic_ptr g, Coord thickness, const W
 Graphic_ptr ToolKitImpl::dynamic_triangle(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
 					  const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Warsaw::ToolKit::Direction d, Telltale_ptr telltale)
 {
+  Trace trace("ToolKitImpl::dynamic_triangle");
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
     {
@@ -235,6 +243,7 @@ Graphic_ptr ToolKitImpl::dynamic_triangle(Graphic_ptr g, Coord thickness, Tellta
 
 Graphic_ptr ToolKitImpl::framed_diamond(Graphic_ptr g, Coord thickness, const Warsaw::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
 {
+  Trace trace("ToolKitImpl::framed_diamond");
   Frame::Renderer *renderer = 0;
   switch (spec._d())
     {
@@ -254,6 +263,7 @@ Graphic_ptr ToolKitImpl::framed_diamond(Graphic_ptr g, Coord thickness, const Wa
 Graphic_ptr ToolKitImpl::dynamic_diamond(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const Warsaw::ToolKit::FrameSpec &s1,
 					 const Warsaw::ToolKit::FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
+  Trace trace("ToolKitImpl::dynamic_diamond");
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
     {
@@ -302,6 +312,7 @@ Graphic_ptr ToolKitImpl::dynamic_diamond(Graphic_ptr g, Coord thickness, Telltal
 
 Controller_ptr ToolKitImpl::group(Graphic_ptr g)
 {
+  Trace trace("ToolKitImpl::group");
   ControllerImpl *parent = new ControllerImpl(true);
   activate(parent);
   parent->body(g);
@@ -310,6 +321,7 @@ Controller_ptr ToolKitImpl::group(Graphic_ptr g)
 
 Trigger_ptr ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
 {
+  Trace trace("ToolKitImpl::button");
   TriggerImpl *trigger = new TriggerImpl();
   activate(trigger);
   trigger->action(c);
@@ -319,6 +331,7 @@ Trigger_ptr ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
 
 Controller_ptr ToolKitImpl::toggle(Graphic_ptr g)
 {
+  Trace trace("ToolKitImpl::toggle");
   Toggle *t = new Toggle;
   activate(t);
   t->body(g);
@@ -327,6 +340,7 @@ Controller_ptr ToolKitImpl::toggle(Graphic_ptr g)
 
 Controller_ptr ToolKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 {
+  Trace trace("ToolKitImpl::dragger");
   Dragger *dragger = new Dragger(command);
   activate(dragger);
   dragger->body(g);
@@ -335,6 +349,7 @@ Controller_ptr ToolKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 
 Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
 {
+  Trace trace("ToolKitImpl::stepper");
   Stepper *stepper = new Stepper;
   activate(stepper);
   stepper->body(g);
@@ -344,6 +359,7 @@ Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
 
 Controller_ptr ToolKitImpl::text_input(Graphic_ptr g, TextBuffer_ptr buffer)
 {
+  Trace trace("ToolKitImpl::text_input");
   TextInput *input = new TextInput(buffer);
   activate(input);
   input->body(g);
@@ -352,6 +368,7 @@ Controller_ptr ToolKitImpl::text_input(Graphic_ptr g, TextBuffer_ptr buffer)
 
 Controller_ptr ToolKitImpl::terminal(Graphic_ptr g, StreamBuffer_ptr buffer)
 {
+  Trace trace("ToolKitImpl::terminal");
   Terminal *input = new Terminal(buffer);
   activate(input);
   input->body(g);

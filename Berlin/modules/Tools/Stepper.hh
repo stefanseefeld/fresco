@@ -41,10 +41,10 @@ public:
 private:
   void start();
   void stop();
-  Prague::Time  delay;
-  Prague::Time  delta;
-  Notifier     *notifier;
-  Prague::Timer timer;
+  Prague::Time  _delay;
+  Prague::Time  _delta;
+  Notifier     *_notifier;
+  Prague::Timer _timer;
 };
 
 #endif

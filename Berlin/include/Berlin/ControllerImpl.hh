@@ -101,7 +101,9 @@ private:
   CORBA::ULong _grabs;
   bool _transparent;
   Warsaw::TelltaleConstraint_var _constraint;
-  Prague::Mutex _mutex;
+  Prague::Mutex _pmutex; // for the parent link
+  Prague::Mutex _cmutex; // for the children links
+  Prague::Mutex _mutex;  // for the state
 };
 
 #endif 

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -87,6 +87,7 @@ void Timer::schedule(Timer *timer)
 void Timer::cancel(Timer *timer)
 {
   MutexGuard guard(mutex);
-  timers.erase(find(timers.begin(), timers.end(), timer));
+  vector<Timer *>::iterator i = find(timers.begin(), timers.end(), timer);
+  if (i != timers.end()) timers.erase(i);
   condition.signal();
 }

@@ -71,6 +71,7 @@ void SubjectImpl::notify(const CORBA::Any &change)
       MutexGuard guard(observerMutex);
       for(vector<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
 	try { (*i)->update(change);}
-        catch (const CORBA::OBJECT_NOT_EXIST &) { *i = Observer::_nil(); }
+        catch (const CORBA::OBJECT_NOT_EXIST &) { *i = Observer::_nil();}
+	catch (const CORBA::COMM_FAILURE &) { *i = Observer::_nil();}
     }
 }

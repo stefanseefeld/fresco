@@ -98,8 +98,9 @@ void TraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region
   cumulative->copy(Transform_var(transformation()));
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   push(child, tag, region, cumulative._retn());
-  child->traverse(Traversal_var(_this()));
-  pop();
+  try { child->traverse(Traversal_var(_this()));}
+  catch (...) { pop(); throw;}
+  pop(); 
 }
 
 void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)

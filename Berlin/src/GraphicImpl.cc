@@ -269,6 +269,7 @@ void GraphicImpl::deactivate()
       if (!CORBA::is_nil((*i).peer)) 
 	try { (*i).peer->remove_child_graphic((*i).peerId);}
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
+	catch (const CORBA::COMM_FAILURE &) {}
     }
   _parents.clear();
   ServantBase::deactivate(this);
@@ -363,6 +364,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 	  begin = end;
 	}
       catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
+      catch (const CORBA::COMM_FAILURE &) { (*i).peer = Warsaw::Graphic::_nil();}
     }
 }
 
@@ -423,6 +425,7 @@ void GraphicImpl::need_resize()
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); i++)
     try {(*i).peer->need_resize();}
     catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { (*i).peer = Warsaw::Graphic::_nil();}
 }
 
 void GraphicImpl::init_requisition(Warsaw::Graphic::Requisition &r)

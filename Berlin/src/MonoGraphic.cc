@@ -42,6 +42,7 @@ MonoGraphic::~MonoGraphic()
 	_child.peer->remove_parent_graphic(_child.peerId);
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
 }
 
 Graphic_ptr MonoGraphic::body()
@@ -61,6 +62,7 @@ void MonoGraphic::body(Graphic_ptr c)
 	_child.peer->decrement();
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
   _child.peer = Warsaw::Graphic::_duplicate(c);
   if (!CORBA::is_nil(_child.peer))
     try
@@ -69,6 +71,7 @@ void MonoGraphic::body(Graphic_ptr c)
 	_child.peer->increment();
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
   //   needResize();
 }
 
@@ -78,6 +81,7 @@ void MonoGraphic::append_graphic(Graphic_ptr c)
   if (!CORBA::is_nil(_child.peer))
     try { _child.peer->append_graphic(c);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::prepend_graphic(Graphic_ptr c)
@@ -86,6 +90,7 @@ void MonoGraphic::prepend_graphic(Graphic_ptr c)
   if (!CORBA::is_nil(_child.peer))
     try { _child.peer->prepend_graphic(c);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::remove_graphic(Tag localId)
@@ -95,6 +100,7 @@ void MonoGraphic::remove_graphic(Tag localId)
   if (!CORBA::is_nil(_child.peer))
     try { _child.peer->remove_graphic(localId);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
 }
 
 void MonoGraphic::remove_child_graphic(Tag localId)

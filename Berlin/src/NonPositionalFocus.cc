@@ -20,12 +20,12 @@
  * MA 02139, USA.
  */
 
+#include <Prague/Sys/Profiler.hh>
+#include <Prague/Sys/Tracer.hh>
 #include "Berlin/NonPositionalFocus.hh"
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include <Prague/Sys/Profiler.hh>
-#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
 using namespace Warsaw;

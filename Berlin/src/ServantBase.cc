@@ -22,6 +22,7 @@
 #include <Prague/Sys/Tracer.hh>
 #include "Berlin/ServantBase.hh"
 #include "Berlin/KitImpl.hh"
+#include <typeinfo>
 
 using namespace Prague;
 using namespace Warsaw;

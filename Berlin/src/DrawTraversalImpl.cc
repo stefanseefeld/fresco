@@ -109,8 +109,9 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   drawing->transformation(Transform_var(cumulative->_this()));
   //   drawable->clipping(region, Transform_var(tx->_this()));
   push(child, tag, region, cumulative._retn());
-  child->traverse(Traversal_var(_this()));
-  pop();
+  try { child->traverse(Traversal_var(_this()));}
+  catch (...) { pop(); throw;}
+  pop(); 
 };
 
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}

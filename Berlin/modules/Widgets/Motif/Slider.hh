@@ -35,34 +35,28 @@ namespace Motif
 
 class Slider : public ControllerImpl
 {
-  class Observer : public ObserverImpl
-  {
-  public:
-    Observer(Slider *s) : slider(s) {}
-    void update(const CORBA::Any &any) { slider->update(any);}
-  private:
-    Slider *slider;
-  };
+  class Observer;
   friend class Observer;
-  class Dragger;
+  class Drag;
+  friend class Drag;
 public:
   Slider(Warsaw::BoundedValue_ptr, Warsaw::Axis, const Warsaw::Graphic::Requisition &);
   void init(Warsaw::Controller_ptr);
-  virtual void request(Warsaw::Graphic::Requisition &r) { r = requisition;}
+  virtual void request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
   virtual void update(const CORBA::Any &);
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void pick(Warsaw::PickTraversal_ptr);
   virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
   virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  Warsaw::Command_ptr drag();
+  Warsaw::Command_ptr create_drag_command();
 private:
   void traverse_thumb(Warsaw::Traversal_ptr);
-  Warsaw::Graphic::Requisition requisition;
-  Impl_var<Observer> translate;
-  Impl_var<Dragger> _drag;
-  RefCount_var<Warsaw::BoundedValue> value;
-  Warsaw::Coord offset;
-  Warsaw::Axis axis;
+  Warsaw::Graphic::Requisition _requisition;
+  Impl_var<Observer> _translate;
+  RefCount_var<Warsaw::BoundedValue> _value;
+  Warsaw::Coord _offset;
+  Warsaw::Axis _axis;
+  double _scale;
 };
 
 };

@@ -29,14 +29,14 @@ using namespace Warsaw;
 class Stepper::Notifier : public Timer::Notifier
 {
 public:
-  Notifier(Stepper *s) : stepper(s) {}
-  virtual void notify() { stepper->step();}
+  Notifier(Stepper *s) : _stepper(s) {}
+  virtual void notify() { _stepper->step();}
 private:
-  Stepper *stepper;
+  Stepper *_stepper;
 };
 
 Stepper::Stepper()
-  : delay(500), delta(300), notifier(new Notifier(this)), timer(notifier)
+  : _delay(500), _delta(300), _notifier(new Notifier(this)), _timer(_notifier)
 {
 }
 
@@ -44,7 +44,7 @@ Stepper::~Stepper()
 {
   Trace trace("Stepper::~Stepper");
   stop();
-  delete notifier;
+  delete _notifier;
 }
 
 void Stepper::press(PickTraversal_ptr traversal, const Input::Event &event)
@@ -70,10 +70,10 @@ void Stepper::step()
 
 void Stepper::start()
 {
-  timer.start(Prague::Time::currentTime() + delay, delta);
+  _timer.start(Prague::Time::currentTime() + _delay, _delta);
 }
 
 void Stepper::stop()
 {
-  timer.stop();
+  _timer.stop();
 }

@@ -71,57 +71,48 @@ class StageImpl : public virtual POA_Layout::Stage,
   void resize(StageHandleImpl *, const Warsaw::Vertex &);
   void relayer(StageHandleImpl *, Layout::Stage::Index);
 private:
-  Warsaw::Tag tag();
+  Warsaw::Tag unique_tag();
   StageHandleImpl *tag_to_handle(Warsaw::Tag);
   void damage(StageHandleImpl *);
 
-  Sequence *children;
-  QuadTree *tree;
-  long nesting;
+  Sequence            *_children;
+  QuadTree            *_tree;
+  long                 _nesting;
   Impl_var<RegionImpl> _damage;
-  Impl_var<RegionImpl> bbregion;
-  bool _need_redraw : 1;
-  bool _need_resize : 1;
-  Prague::Mutex childMutex;
+  Impl_var<RegionImpl> _bbregion;
+  bool                 _need_redraw : 1;
+  bool                 _need_resize : 1;
+  Prague::Mutex        _mutex;
 };
 
 class StageHandleImpl : public virtual POA_Layout::StageHandle
 {
  public:
   StageHandleImpl(StageImpl *, Warsaw::Graphic_ptr, Warsaw::Tag, const Warsaw::Vertex &, const Warsaw::Vertex &, Layout::Stage::Index);
-  virtual Layout::Stage_ptr parent() { return stage->_this();}
-  virtual Warsaw::Graphic_ptr child() { return Warsaw::Graphic::_duplicate(c);}
+  virtual Layout::Stage_ptr parent();
+  virtual Warsaw::Graphic_ptr child();
   virtual void remove();
-  virtual Warsaw::Vertex position() { Prague::MutexGuard guard(mutex); return p;}
+  virtual Warsaw::Vertex position();
   virtual void position(const Warsaw::Vertex &);
-  virtual Warsaw::Vertex size() { Prague::MutexGuard guard(mutex); return s;}
+  virtual Warsaw::Vertex size();
   virtual void size(const Warsaw::Vertex &);
-  virtual Layout::Stage::Index layer() { Prague::MutexGuard guard(mutex); return l;}
+  virtual Layout::Stage::Index layer();
   virtual void layer(Layout::Stage::Index);
 
-  const Geometry::Rectangle<Warsaw::Coord> &bbox() { return boundingbox;}
-  void bbox(RegionImpl &region)
-    {
-      region.valid   = true;
-      region.lower.x = boundingbox.l;
-      region.upper.x = boundingbox.r;
-      region.xalign  = xalign;
-      region.lower.y = boundingbox.t;
-      region.upper.y = boundingbox.b;
-      region.yalign  = yalign;
-    }
+  const Geometry::Rectangle<Warsaw::Coord> &bbox();
+  void bbox(RegionImpl &);
 //  private:
   void cache_bbox();
-  StageImpl *stage;
-  Warsaw::Graphic_var c;
-  Warsaw::Tag tag;
-  Warsaw::Vertex p;
-  Warsaw::Vertex s;
-  Layout::Stage::Index l;
-  Geometry::Rectangle<Warsaw::Coord> boundingbox;
-  Warsaw::Alignment xalign;
-  Warsaw::Alignment yalign;
-  Prague::Mutex mutex;
+  StageImpl                         *_parent;
+  Warsaw::Graphic_var                _child;
+  Warsaw::Tag                        _tag;
+  Warsaw::Vertex                     _position;
+  Warsaw::Vertex                     _size;
+  Layout::Stage::Index               _layer;
+  Geometry::Rectangle<Warsaw::Coord> _bbox;
+  Warsaw::Alignment                  _xalign;
+  Warsaw::Alignment                  _yalign;
+  Prague::Mutex                      _mutex;
 };
 
 #endif

@@ -36,6 +36,7 @@ TriggerImpl::~TriggerImpl()
   if (!CORBA::is_nil(command))
     try { command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
 }
 void TriggerImpl::action(Command_ptr c)
 {
@@ -44,6 +45,7 @@ void TriggerImpl::action(Command_ptr c)
   if (!CORBA::is_nil(command))
     try { command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
   command = Command::_duplicate(c);
 }
 
@@ -87,5 +89,8 @@ void TriggerImpl::execute(const CORBA::Any &any)
 {
   Trace trace("TriggerImpl::execute");
   MutexGuard guard(mutex);
-  if (!CORBA::is_nil(command)) command->execute(any);
+  if (!CORBA::is_nil(command))
+    try { command->execute(any);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { command = Warsaw::Command::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { command = Warsaw::Command::_nil();}
 }

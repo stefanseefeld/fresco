@@ -37,6 +37,7 @@ CORBA::Boolean IdentifiableImpl::is_identical(Identifiable_ptr id)
       if (s == this) return 1;
     }
   catch (const PortableServer::POA::ObjectNotActive &) {}
+  catch (const PortableServer::POA::WrongAdapter &) {}
   catch (const CORBA::OBJECT_NOT_EXIST &) {}
   return 0;
 }

@@ -29,42 +29,49 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Motif;
 
-class Panner::Dragger : public CommandImpl
+class Panner::Observer : public ObserverImpl
 {
 public:
-  Dragger(BoundedRange_ptr x, BoundedRange_ptr y)
-    : xvalue(RefCount_var<BoundedRange>::increment(x)), yvalue(RefCount_var<BoundedRange>::increment(y)) {}
+  Observer(Panner *p) : _parent(p) {}
+  void update(const CORBA::Any &any) { _parent->update(any);}
+private:
+  Panner *_parent;
+};
+
+class Panner::Drag : public CommandImpl
+{
+public:
+  Drag(Panner *p) : _parent(p) { _parent->_add_ref();}
+  ~Drag() { _parent->_remove_ref();}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
     if (any >>= delta)
       {
-	if (delta->x != 0.) xvalue->adjust(delta->x);
-	if (delta->y != 0.) yvalue->adjust(delta->y);
+	if (delta->x != 0.) _parent->_xvalue->adjust(delta->x);
+	if (delta->y != 0.) _parent->_yvalue->adjust(delta->y);
       }
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
-  RefCount_var<BoundedRange> xvalue;
-  RefCount_var<BoundedRange> yvalue;
+  Panner *_parent;
 };
 
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   : ControllerImpl(false),
-    translateX(new Observer(this)),
-    translateY(new Observer(this)),
-    _drag(new Dragger(xx, yy)),
-    x(RefCount_var<BoundedRange>::increment(xx)),
-    y(RefCount_var<BoundedRange>::increment(yy))
+    _translateX(new Observer(this)),
+    _translateY(new Observer(this)),
+    _xvalue(RefCount_var<BoundedRange>::increment(xx)),
+    _yvalue(RefCount_var<BoundedRange>::increment(yy))
 {
-  BoundedRange::Settings settings = x->state();
-  offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);
-  offset[xaxis].upper = settings.uvalue/(settings.upper - settings.lower);
-  settings = y->state();
-  offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
-  offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
-  x->attach(Observer_var(translateX->_this()));
-  y->attach(Observer_var(translateY->_this()));
+  BoundedRange::Settings settings = _xvalue->state();
+  _offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);
+  _offset[xaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  settings = _yvalue->state();
+  _offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
+  _offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  _xvalue->attach(Observer_var(_translateX->_this()));
+  _yvalue->attach(Observer_var(_translateY->_this()));
 }
 
 void Panner::init(Controller_ptr t)
@@ -76,12 +83,12 @@ void Panner::init(Controller_ptr t)
 
 void Panner::update(const CORBA::Any &)
 {
-  BoundedRange::Settings settings = x->state();
-  offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
-  offset[xaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
-  settings = y->state();
-  offset[yaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
-  offset[yaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
+  BoundedRange::Settings settings = _xvalue->state();
+  _offset[xaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  _offset[xaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
+  settings = _yvalue->state();
+  _offset[yaxis].lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  _offset[yaxis].upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
   need_redraw();
 }
 
@@ -108,18 +115,23 @@ void Panner::allocate(Tag, const Allocation::Info &info)
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;
-  allocation->lower.x = lower + scale*offset[xaxis].lower;
-  allocation->upper.x = lower + scale*offset[xaxis].upper;
+  allocation->lower.x = lower + scale*_offset[xaxis].lower;
+  allocation->upper.x = lower + scale*_offset[xaxis].upper;
   lower = allocation->lower.y;
   scale = allocation->upper.y - allocation->lower.y;
-  allocation->lower.y = lower + scale*offset[yaxis].lower;
-  allocation->upper.y = lower + scale*offset[yaxis].upper;
+  allocation->lower.y = lower + scale*_offset[yaxis].lower;
+  allocation->upper.y = lower + scale*_offset[yaxis].upper;
   allocation->lower.z = allocation->upper.z = 0.;
   
   allocation->normalize(info.transformation);
 }
 
-Command_ptr Panner::drag() { return _drag->_this();}
+Command_ptr Panner::create_drag_command()
+{
+  Drag *d = new Drag(this);
+  activate(d);
+  return d->_this();
+}
 
 void Panner::traverse_thumb(Traversal_ptr traversal)
 {
@@ -129,12 +141,12 @@ void Panner::traverse_thumb(Traversal_ptr traversal)
   Impl_var<TransformImpl> transformation(new TransformImpl);
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;
-  allocation->lower.x = lower + scale*offset[xaxis].lower;
-  allocation->upper.x = lower + scale*offset[xaxis].upper;
+  allocation->lower.x = lower + scale*_offset[xaxis].lower;
+  allocation->upper.x = lower + scale*_offset[xaxis].upper;
   lower = allocation->lower.y;
   scale = allocation->upper.y - allocation->lower.y;
-  allocation->lower.y = lower + scale*offset[yaxis].lower;
-  allocation->upper.y = lower + scale*offset[yaxis].upper;
+  allocation->lower.y = lower + scale*_offset[yaxis].lower;
+  allocation->upper.y = lower + scale*_offset[yaxis].upper;
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
   traversal->traverse_child(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));

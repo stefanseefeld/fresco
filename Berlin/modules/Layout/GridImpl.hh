@@ -29,23 +29,22 @@
 
 class GridImpl;
 
-struct GridDimension
+class GridImpl : public virtual POA_Layout::Grid,
+		 public GraphicImpl
 {
-  void init(long count, long n)
+  struct Dimension
+  {
+    void init(long count, long n)
     {
       children.resize(count);
       for (vector<vector<Warsaw::Graphic_var> >::iterator i = children.begin(); i != children.end(); i++)
 	(*i).resize(n);
       requirements.resize(count);
     }
-  CORBA::Long size() { return children.size();}
-  vector<vector<Warsaw::Graphic_var> > children;
-  vector<Warsaw::Graphic::Requirement> requirements;
-};
-
-class GridImpl : public virtual POA_Layout::Grid,
-		 public GraphicImpl
-{
+    CORBA::Long size() { return children.size();}
+    vector<vector<Warsaw::Graphic_var> > children;
+    vector<Warsaw::Graphic::Requirement> requirements;
+  };
   struct Span
   {
     Warsaw::Coord lower;
@@ -89,12 +88,11 @@ public:
   void traverse_with_allocation(Warsaw::Traversal_ptr, Warsaw::Region_ptr, const Layout::Grid::Range &);
   void traverse_without_allocation(Warsaw::Traversal_ptr, const Layout::Grid::Range &);
 
-  GridDimension dimensions[2];
+  Dimension _dimensions[2];
+  Layout::Grid::Index _cursor;
 
-  Layout::Grid::Index cursor;
-
-  bool requested;
-  Warsaw::Graphic::Requisition requisition;
+  bool _requested;
+  Warsaw::Graphic::Requisition _requisition;
 };
 
 class SubGridImpl : public GraphicImpl
@@ -106,8 +104,8 @@ public:
   virtual void request(Warsaw::Graphic::Requisition &);
   virtual void traverse(Warsaw::Traversal_ptr);
 private:
-  Layout::Grid_var child;
-  Layout::Grid::Range range;
+  Layout::Grid_var _child;
+  Layout::Grid::Range _range;
 };
 
 #endif

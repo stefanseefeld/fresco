@@ -134,7 +134,7 @@ int main(int argc, char **argv)
   /*
    * ...and finally construct the server.
    */
-  ServerImpl *server = new ServerImpl;
+  ServerImpl *server = ServerImpl::instance();
 
   char *pluginDir = getenv("BERLIN_ROOT");
   if (!pluginDir)

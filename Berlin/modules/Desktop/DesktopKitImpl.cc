@@ -40,6 +40,7 @@ DesktopKitImpl::DesktopKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
 DesktopKitImpl::~DesktopKitImpl() {}
 void DesktopKitImpl::bind(ServerContext_ptr context)
 {
+  Trace trace("DesktopKitImpl::bind");
   KitImpl::bind(context);
   CORBA::Object_var object = context->get_singleton("IDL:Warsaw/Desktop:1.0");
   desktop = Desktop::_narrow(object);

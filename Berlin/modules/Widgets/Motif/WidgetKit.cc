@@ -154,7 +154,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   Graphic_var quad = layout->fixed_size(Graphic_var(Warsaw::Graphic::_nil()), 80., 80.);
   box->append_graphic(Graphic_var(tool->frame(quad, 20., spec, true)));
   box->append_graphic(Graphic_var(tool->frame(quad, 20., spec, true)));
-  Controller_var thumb = tool->dragger(box, Command_var(slider->drag()));
+  Controller_var thumb = tool->dragger(box, Command_var(slider->create_drag_command()));
   slider->init(thumb);
   /*
    * now put it into an inset
@@ -176,7 +176,7 @@ Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
   Warsaw::ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
   Graphic_var outset = tool->frame(Graphic_var(Warsaw::Graphic::_nil()), 20., spec, true);
-  Controller_var thumb = tool->dragger(outset, Command_var(panner->drag()));
+  Controller_var thumb = tool->dragger(outset, Command_var(panner->create_drag_command()));
   panner->init(thumb);
 
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::inset);
@@ -218,7 +218,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
    */
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
   Graphic_var outset = tool->frame(Graphic_var(Warsaw::Graphic::_nil()), 20., spec, true);
-  Controller_var thumb = tool->dragger(outset, Command_var(scrollbar->drag()));
+  Controller_var thumb = tool->dragger(outset, Command_var(scrollbar->create_drag_command()));
   scrollbar->init(thumb);
   /*
    * the triangles

@@ -28,13 +28,18 @@
 using namespace Prague;
 using namespace Warsaw;
 
-Dragger::Dragger(Command_ptr c) : ControllerImpl(false), command(Command::_duplicate(c)) {}
+Dragger::Dragger(Command_ptr c) : ControllerImpl(false), command(Command::_duplicate(c))
+{
+  Trace trace("Dragger::Dragger");
+}
+
 Dragger::~Dragger()
 {
   Trace trace("Dragger::~Dragger");
   if (!CORBA::is_nil(command))
     try { command->destroy();}
-    catch (CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::OBJECT_NOT_EXIST &) {}
+    catch (const CORBA::COMM_FAILURE &) {}
 }
 void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
@@ -49,7 +54,8 @@ void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
   any <<= delta;
   if (!CORBA::is_nil(command))
     try { command->execute(any);}
-    catch (CORBA::OBJECT_NOT_EXIST &) { command = Warsaw::Command::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { command = Warsaw::Command::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { command = Warsaw::Command::_nil();}
   offset += delta;
 }
 
