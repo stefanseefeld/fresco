@@ -14,10 +14,9 @@ configure-stamp:
 		cd build ; \
 		../configure \
 			--prefix=/usr \
-			--mandir=\$${prefix}/share/man \
-			--infodir=\$${prefix}/share/info \
+			--disable-py-clients \
 			--enable-optimize \
-			--enable-docs \
+			--disable-docs \
 	)
 
 	touch configure-stamp
@@ -43,128 +42,102 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	install -m755 `pwd`/debian/berlin.sh \
-		`pwd`/debian/berlin/usr/bin/berlin
-	install -m755 `pwd`/build/bin/server \
-		`pwd`/debian/berlin/usr/lib/Berlin/bin/
-	install -m755 `pwd`/debian/berlinrc \
-		`pwd`/debian/berlin/usr/lib/Berlin/etc/
-	install -m644 `pwd`/etc/glyph.dat `pwd`/etc/pinyin.db \
-		`pwd`/debian/berlin/usr/lib/Berlin/etc/
-	install -m644 `pwd`/etc/PNG/*.png \
-		`pwd`/debian/berlin/usr/lib/Berlin/etc/PNG/
-	install -m755 `pwd`/build/bin/demo \
-		`pwd`/debian/berlin-demos/usr/lib/Berlin/bin/
+	install -m755 $(CURDIR)/debian/Berlin \
+		$(CURDIR)/debian/berlin/usr/bin/
+	install -m755 $(CURDIR)/build/bin/devices $(CURDIR)/build/bin/kits \
+		$(CURDIR)/build/bin/server \
+		$(CURDIR)/debian/berlin/usr/lib/Berlin/bin/
+	install -m644 $(CURDIR)/debian/berlinrc \
+		$(CURDIR)/debian/berlin/usr/lib/Berlin/etc/
+	install -m644 $(CURDIR)/etc/glyph.dat $(CURDIR)/etc/pinyin.db \
+		$(CURDIR)/debian/berlin/usr/lib/Berlin/etc/
+	install -m644 $(CURDIR)/etc/PNG/*.png \
+		$(CURDIR)/debian/berlin/usr/lib/Berlin/etc/PNG/
+	install -m644 $(CURDIR)/debian/Berlin.1 \
+		$(CURDIR)/debian/berlin/usr/share/man/man1/
 
-	install -m644 `pwd`/build/lib/libBabylon.so \
-		`pwd`/debian/libbabylon/usr/lib/
-	install -m644 `pwd`/build/modules/Babylon/* \
-		`pwd`/debian/libbabylon/usr/lib/Berlin/modules/Babylon/
-	install -m644 `pwd`/build/lib/libBerlin.so \
-		`pwd`/debian/libberlin/usr/lib/
-	install -m644 `pwd`/build/lib/libPrague.so \
-		`pwd`/debian/libprague/usr/lib/
-	install -m644 `pwd`/build/lib/libWarsaw.so \
-		`pwd`/debian/libwarsaw/usr/lib/
+	install -m755 $(CURDIR)/build/bin/demo $(CURDIR)/build/bin/canvas \
+		$(CURDIR)/build/bin/ggiwrapper $(CURDIR)/build/bin/pinyin_demo \
+		$(CURDIR)/debian/berlin-clients/usr/lib/Berlin/bin/
 
-	install -m644 `pwd`/build/modules/libArtDrawing.so \
-		`pwd`/debian/berlin-kit-artdrawing/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libCommand.so \
-		`pwd`/debian/berlin-kit-command/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libDesktop.so \
-		`pwd`/debian/berlin-kit-desktop/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libFigure.so \
-		`pwd`/debian/berlin-kit-figure/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libGGI.so \
-		`pwd`/debian/berlin-kit-ggi/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libGadget.so \
-		`pwd`/debian/berlin-kit-gadget/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libImage.so \
-		`pwd`/debian/berlin-kit-image/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libLayout.so \
-		`pwd`/debian/berlin-kit-layout/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libMotif.so \
-		`pwd`/debian/berlin-kit-motif/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libPSDrawing.so \
-		`pwd`/debian/berlin-kit-psdrawing/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libPrimitive.so \
-		`pwd`/debian/berlin-kit-primitive/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libText.so \
-		`pwd`/debian/berlin-kit-text/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libTool.so \
-		`pwd`/debian/berlin-kit-tool/usr/lib/Berlin/modules/
-	install -m644 `pwd`/build/modules/libUnidraw.so \
-		`pwd`/debian/berlin-kit-unidraw/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/lib/libBabylon.so \
+		$(CURDIR)/debian/libbabylon/usr/lib/
+	install -m644 $(CURDIR)/build/modules/Babylon/* \
+		$(CURDIR)/debian/libbabylon/usr/lib/Berlin/modules/Babylon/
+	install -m644 $(CURDIR)/build/lib/libBerlin.so \
+		$(CURDIR)/debian/libberlin/usr/lib/
+	install -m644 $(CURDIR)/build/lib/libPrague.so \
+		$(CURDIR)/debian/libprague/usr/lib/
+	install -m644 $(CURDIR)/build/lib/libWarsaw.so \
+		$(CURDIR)/debian/libwarsaw/usr/lib/
 
-	install -m755 `pwd`/build/bin/Babylon-config \
-		`pwd`/debian/libbabylon-dev/usr/bin/
-	install -m644 `pwd`/debian/Babylon-config.1 \
-		`pwd`/debian/libbabylon-dev/usr/share/man/man1/
-	install -m644 `pwd`/include/Babylon/*.hh \
-		`pwd`/debian/libbabylon-dev/usr/include/Babylon/
+	install -m644 $(CURDIR)/build/modules/libCommand.so \
+		$(CURDIR)/debian/berlin-kit-command/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libDesktop.so \
+		$(CURDIR)/debian/berlin-kit-desktop/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libArtDrawing.so \
+		$(CURDIR)/debian/berlin-kit-drawing-libart/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libPSDrawing.so \
+		$(CURDIR)/debian/berlin-kit-drawing-postscript/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libFigure.so \
+		$(CURDIR)/debian/berlin-kit-figure/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libGGI.so \
+		$(CURDIR)/debian/berlin-kit-ggi/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libGadget.so \
+		$(CURDIR)/debian/berlin-kit-gadget/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libImage.so \
+		$(CURDIR)/debian/berlin-kit-image/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libLayout.so \
+		$(CURDIR)/debian/berlin-kit-layout/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libPrimitive.so \
+		$(CURDIR)/debian/berlin-kit-primitive/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libText.so \
+		$(CURDIR)/debian/berlin-kit-text/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libTool.so \
+		$(CURDIR)/debian/berlin-kit-tool/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libUnidraw.so \
+		$(CURDIR)/debian/berlin-kit-unidraw/usr/lib/Berlin/modules/
+	install -m644 $(CURDIR)/build/modules/libMotif.so \
+		$(CURDIR)/debian/berlin-kit-widget-motif/usr/lib/Berlin/modules/
 
-	install -m755 `pwd`/build/bin/Berlin-config \
-		`pwd`/debian/libberlin-dev/usr/bin/
-	install -m644 `pwd`/debian/Berlin-config.1 \
-		`pwd`/debian/libberlin-dev/usr/share/man/man1/
-	install -m644 `pwd`/include/Berlin/*.hh \
-		`pwd`/debian/libberlin-dev/usr/include/Berlin/
+	install -m755 $(CURDIR)/build/bin/Babylon-config \
+		$(CURDIR)/debian/libbabylon-dev/usr/bin/
+	install -m644 $(CURDIR)/debian/Babylon-config.1 \
+		$(CURDIR)/debian/libbabylon-dev/usr/share/man/man1/
+	install -m644 $(CURDIR)/include/Babylon/*.hh \
+		$(CURDIR)/debian/libbabylon-dev/usr/include/Babylon/
 
-	install -m755 `pwd`/build/bin/Prague-config \
-		`pwd`/debian/libprague-dev/usr/bin/
-	install -m644 `pwd`/debian/Prague-config.1 \
-		`pwd`/debian/libprague-dev/usr/share/man/man1/
-	install -m644 `pwd`/include/Prague/Filter/*.hh \
-		`pwd`/debian/libprague-dev/usr/include/Prague/Filter/
-	install -m644 `pwd`/include/Prague/IPC/*.hh \
-		`pwd`/debian/libprague-dev/usr/include/Prague/IPC/
-	install -m644 `pwd`/include/Prague/Network/*.hh \
-		`pwd`/debian/libprague-dev/usr/include/Prague/Network/
-	install -m644 `pwd`/include/Prague/SAX/*.hh \
-		`pwd`/debian/libprague-dev/usr/include/Prague/SAX/
-	install -m644 `pwd`/include/Prague/Sys/*.hh \
-		`pwd`/debian/libprague-dev/usr/include/Prague/Sys/
+	install -m755 $(CURDIR)/build/bin/Berlin-config \
+		$(CURDIR)/debian/libberlin-dev/usr/bin/
+	install -m644 $(CURDIR)/debian/Berlin-config.1 \
+		$(CURDIR)/debian/libberlin-dev/usr/share/man/man1/
+	install -m644 $(CURDIR)/include/Berlin/*.hh \
+		$(CURDIR)/debian/libberlin-dev/usr/include/Berlin/
 
-	install -m755 `pwd`/build/bin/Warsaw-config \
-		`pwd`/debian/libwarsaw-dev/usr/bin/
-	install -m644 `pwd`/debian/Warsaw-config.1 \
-		`pwd`/debian/libwarsaw-dev/usr/share/man/man1/
-	install -m644 `pwd`/include/Warsaw/*.hh \
-		`pwd`/debian/libwarsaw-dev/usr/include/Warsaw/
+	install -m755 $(CURDIR)/build/bin/Prague-config \
+		$(CURDIR)/debian/libprague-dev/usr/bin/
+	install -m644 $(CURDIR)/debian/Prague-config.1 \
+		$(CURDIR)/debian/libprague-dev/usr/share/man/man1/
+	install -m644 $(CURDIR)/include/Prague/Filter/*.hh \
+		$(CURDIR)/debian/libprague-dev/usr/include/Prague/Filter/
+	install -m644 $(CURDIR)/include/Prague/IPC/*.hh \
+		$(CURDIR)/debian/libprague-dev/usr/include/Prague/IPC/
+	install -m644 $(CURDIR)/include/Prague/Network/*.hh \
+		$(CURDIR)/debian/libprague-dev/usr/include/Prague/Network/
+	install -m644 $(CURDIR)/include/Prague/SAX/*.hh \
+		$(CURDIR)/debian/libprague-dev/usr/include/Prague/SAX/
+	install -m644 $(CURDIR)/include/Prague/Sys/*.hh \
+		$(CURDIR)/debian/libprague-dev/usr/include/Prague/Sys/
 
-	install -m644 `pwd`/include/Drawing/libArt/*.hh \
-		`pwd`/debian/berlin-kit-artdrawing-dev/usr/include/Berlin/Drawing/libArt/
-	install -m644 `pwd`/include/Command/*.hh \
-		`pwd`/debian/berlin-kit-command-dev/usr/include/Berlin/Command/
-	install -m644 `pwd`/include/Desktop/*.hh \
-		`pwd`/debian/berlin-kit-desktop-dev/usr/include/Berlin/Desktop/
-	install -m644 `pwd`/include/Drawing/*.hh \
-		`pwd`/debian/berlin-kit-drawing-dev/usr/include/Berlin/Drawing/
-	install -m644 `pwd`/include/Figure/*.hh \
-		`pwd`/debian/berlin-kit-figure-dev/usr/include/Berlin/Figure/
-	install -m644 `pwd`/include/Gadget/*.hh \
-		`pwd`/debian/berlin-kit-gadget-dev/usr/include/Berlin/Gadget/
-	install -m644 `pwd`/include/Drawing/GGI/*.hh \
-		`pwd`/debian/berlin-kit-ggi-dev/usr/include/Berlin/Drawing/GGI/
-	install -m644 `pwd`/include/Image/*.hh \
-		`pwd`/debian/berlin-kit-image-dev/usr/include/Berlin/Image/
-	install -m644 `pwd`/include/Layout/*.hh \
-		`pwd`/debian/berlin-kit-layout-dev/usr/include/Berlin/Layout/
-	install -m644 `pwd`/include/Widget/Motif/*.hh \
-		`pwd`/debian/berlin-kit-motif-dev/usr/include/Berlin/Widget/Motif/
-	install -m644 `pwd`/include/Primitive/*.hh \
-		`pwd`/debian/berlin-kit-primitive-dev/usr/include/Berlin/Primitive/
-	install -m644 `pwd`/include/Drawing/PostScript/*.hh \
-		`pwd`/debian/berlin-kit-psdrawing-dev/usr/include/Berlin/Drawing/PostScript
-	install -m644 `pwd`/include/Text/*.hh \
-		`pwd`/debian/berlin-kit-text-dev/usr/include/Berlin/Text/
-	install -m644 `pwd`/include/Tool/*.hh \
-		`pwd`/debian/berlin-kit-tool-dev/usr/include/Berlin/Tool/
-	install -m644 `pwd`/include/Unidraw/*.hh \
-		`pwd`/debian/berlin-kit-unidraw-dev/usr/include/Berlin/Unidraw/
+	install -m755 $(CURDIR)/build/bin/Warsaw-config \
+		$(CURDIR)/debian/libwarsaw-dev/usr/bin/
+	install -m644 $(CURDIR)/debian/Warsaw-config.1 \
+		$(CURDIR)/debian/libwarsaw-dev/usr/share/man/man1/
+	install -m644 $(CURDIR)/include/Warsaw/*.hh \
+		$(CURDIR)/debian/libwarsaw-dev/usr/include/Warsaw/
 
-	install -m644 `pwd`/idl/Warsaw/*.idl \
-		`pwd`/debian/libwarsaw-idl/usr/share/idl/Warsaw/
+	install -m644 $(CURDIR)/idl/Warsaw/*.idl \
+		$(CURDIR)/debian/warsaw-idl/usr/share/idl/Warsaw/
 
 # Build architecture-independent files here.
 # Pass -i to all debhelper commands in this target to reduce clutter.
