@@ -172,7 +172,7 @@ int main(int argc, char **argv) /*FOLD00*/
   getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
   getopt.add('r', "resource", GetOpt::mandatory,
-	     "the resource file to load (mandatory)");
+	     "the resource file to load");
   getopt.add('e', "execute", GetOpt::mandatory,
 	     "the command to execute upon startup");
   getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
@@ -453,16 +453,19 @@ int main(int argc, char **argv) /*FOLD00*/
        if (value == "ior")
        {
 	   Server_var serverRef = server->_this();
-	   std::cout << orb->object_to_string(serverRef) << std::endl;
+	   std::cout << "Export Reference: FrescoServer=" 
+		     << orb->object_to_string(serverRef) << std::endl;
 	   Logger::log(Logger::loader) << "IOR exported." << std::endl;
        }
        else if (value == "corbaloc")
        {
-	   PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId("FrescoServer");
+	   PortableServer::ObjectId_var oid =
+	       PortableServer::string_to_ObjectId("FrescoServer");
 	   insPOA->activate_object_with_id(oid,server);
 	   
 	   // TODO: Look for host name here
-	   std::cout << "corbaloc::localhost/FrescoServer" << std::endl;
+	   std::cout << "Export Reference: FrescoServer="
+		     << "corbaloc::localhost/FrescoServer" << std::endl;
 	   Logger::log(Logger::loader) << "corbaloc exported." << std::endl;
        }
        else if (value == "nameserver" || value.empty())
