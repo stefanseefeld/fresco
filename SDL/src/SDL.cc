@@ -340,6 +340,7 @@ void SDLPointer::restore()
        o != h && (y + o) * r / d + x + w < s;
        o++, from += d * w, to += r)
     Memory::copy(from, to, d * w);
+  _screen->flush(x, y, w, h);
 }
 
 void SDLPointer::draw()
@@ -359,7 +360,7 @@ void SDLPointer::draw()
   for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
     for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
       *to = (*from & *bits) | (*to & ~*bits);
-  _screen->flush();
+  _screen->flush(x, y, w, h);
 }
 
 SDLDrawable::SDLDrawable(const char *display, PixelCoord w, PixelCoord h, PixelCoord d) // throw (exception)
