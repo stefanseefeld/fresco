@@ -26,6 +26,9 @@
 #include <sys/types.h>
 #include <regex.h>
 
+namespace Prague
+{
+
 /* @Class{rxmatch}
  *
  * @Description{represents matches of a regular expression search}
@@ -92,5 +95,7 @@ extern const regex rxlowercase;      // = "[a-z]+"
 extern const regex rxuppercase;      // = "[A-Z]+"
 extern const regex rxalphanum;       // = "[0-9A-Za-z]+"
 extern const regex rxidentifier;     // = "[A-Za-z_][A-Za-z0-9_]*"
+
+};
 
 #endif /* _regex_hh */

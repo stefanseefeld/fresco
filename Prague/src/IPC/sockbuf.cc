@@ -1,7 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * this file is based on code from the socket++ library
  * Copyright (C) 1992-1996 Gnanasekaran Swaminathan <gs4t@virginia.edu>
@@ -20,17 +21,18 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-static char *rcsid = "$Id$";
-#include "Prague/IPC/socketbuf.hh"
+ */
+#include "Prague/IPC/sockbuf.hh"
 #include <iostream>
 #include <netdb.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <string.h>
-#include <errno.h>
+#include <cerrno>
+
+using namespace Prague;
 
 const char *sockerr::errstr () const
 {
@@ -245,40 +247,40 @@ const char* sockinetaddr::gethostname () const
   return "";
 }
 
-socketbuf::socketbuf (int domain, socketbuf::type st, int proto)
+sockbuf::sockbuf (int domain, sockbuf::type st, int proto)
   : ipcbuf(ios::in|ios::out)
 {
   data->fd = ::socket (domain, st, proto);
   if (data->fd == -1) throw sockerr (errno);
 }
 
-int socketbuf::getopt (int op, void *buf, socklen_t len, int level) const
+int sockbuf::getopt (int op, void *buf, socklen_t len, int level) const
 {
   if (::getsockopt (data->fd, level, op, (char *)buf, &len) == -1) throw sockerr (errno);
   return len;
 }
 
-void socketbuf::setopt (int op, void *buf, socklen_t len, int level) const
+void sockbuf::setopt (int op, void *buf, socklen_t len, int level) const
 {
   if (::setsockopt (data->fd, level, op, (char *) buf, len) == -1) throw sockerr (errno);
 }
 
-void socketbuf::bind (const socketaddr &sa)
+void sockbuf::bind (const sockaddr &sa)
 {
   if (::bind (data->fd, sa.addr(), sa.size()) == -1) throw sockerr (errno);
 }
 
-void socketbuf::connect (const socketaddr &sa)
+void sockbuf::connect (const sockaddr &sa)
 {
   if (::connect(data->fd, sa.addr(), sa.size()) == -1) throw sockerr (errno);
 }
 
-void socketbuf::listen (int num)
+void sockbuf::listen (int num)
 {
   if (::listen (data->fd, num) == -1) throw sockerr (errno);
 }
 
-int socketbuf::accept (const socketaddr &sa)
+int sockbuf::accept (const sockaddr &sa)
 {
   socklen_t len = sa.size();
   int soc = -1;
@@ -286,21 +288,21 @@ int socketbuf::accept (const socketaddr &sa)
   return soc;
 }
 
-int socketbuf::accept()
+int sockbuf::accept()
 {
   int soc = -1;
   if ((soc = ::accept (data->fd, 0, 0)) == -1) throw sockerr (errno);
   return soc;
 }
 
-socketbuf::socklinger socketbuf::linger () const
+sockbuf::socklinger sockbuf::linger () const
 {
   socklinger old (0, 0);
   getopt (so_linger, &old, sizeof (old));
   return old;
 }
 
-socketbuf::socklinger socketbuf::linger (socketbuf::socklinger opt) const
+sockbuf::socklinger sockbuf::linger (sockbuf::socklinger opt) const
 {
   socklinger old (0, 0);
   getopt (so_linger, &old, sizeof (old));
@@ -308,28 +310,28 @@ socketbuf::socklinger socketbuf::linger (socketbuf::socklinger opt) const
   return old;
 }
 
-socketbuf::type socketbuf::gettype () const
+sockbuf::type sockbuf::gettype () const
 {
   int ty=0;
   getopt (so_type, &ty, sizeof (ty));
-  return socketbuf::type(ty);
+  return sockbuf::type(ty);
 }
 
-int socketbuf::clearerror () const
+int sockbuf::clearerror () const
 {
   int err=0;
   getopt (so_error, &err, sizeof (err));
   return err;
 }
 
-bool socketbuf::debug () const
+bool sockbuf::debug () const
 {
   int old = 0;
   getopt (so_debug, &old, sizeof (old));
   return old;
 }
 
-bool socketbuf::debug (bool set) const
+bool sockbuf::debug (bool set) const
 {
   int old=0;
   int opt = set;
@@ -342,14 +344,14 @@ bool socketbuf::debug (bool set) const
   return old;
 }
 
-bool socketbuf::reuseaddr () const
+bool sockbuf::reuseaddr () const
 {
   int old = 0;
   getopt (so_reuseaddr, &old, sizeof (old));
   return old;
 }
 
-bool socketbuf::reuseaddr (bool set) const
+bool sockbuf::reuseaddr (bool set) const
 {
   int old=0;
   int opt = set;
@@ -358,14 +360,14 @@ bool socketbuf::reuseaddr (bool set) const
   return old;
 }
 
-bool socketbuf::keepalive () const
+bool sockbuf::keepalive () const
 {
   int old = 0;
   getopt (so_keepalive, &old, sizeof (old));
   return old;
 }
 
-bool socketbuf::keepalive (bool set) const
+bool sockbuf::keepalive (bool set) const
 {
   int old=0;
   int opt = set;
@@ -376,13 +378,13 @@ bool socketbuf::keepalive (bool set) const
 
 sockunixbuf &sockunixbuf::operator = (const sockunixbuf &su)
 {
-  socketbuf::operator = (su);
+  sockbuf::operator = (su);
   return *this;
 }
 
 sockinetbuf &sockinetbuf::operator = (const sockinetbuf &si)
 {
-  socketbuf::operator = (si);
+  sockbuf::operator = (si);
   return *this;
 }
 
@@ -472,12 +474,12 @@ void sockinetbuf::connect (const char *host, const char *service, const char *pr
 
 int sockinetbuf::accept ()
 {
-  return socketbuf::accept ();
+  return sockbuf::accept ();
 }
 
-int sockinetbuf::accept (const socketaddr &sa)
+int sockinetbuf::accept (const sockaddr &sa)
 {
-  return socketbuf::accept(sa);
+  return sockbuf::accept(sa);
 }
 
 int sockinetbuf::accept (unsigned long addr, int port)

@@ -1,7 +1,8 @@
-/*+P
- * This file is part of XW++,
- * a Graphical User Interface for the X Window System
- * Copyright (C) 1995-97  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,11 +18,12 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-static char *rcsid = "$Id$";
+ */
 #include "Prague/Sys/Signal.hh"
 #include <algorithm>
 #include <cstdio>
+
+using namespace Prague;
 
 typedef void (*sighnd_type) (...);
 void sighandler (int signo) { Signal::notify (signo);}

@@ -1,7 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,10 +18,11 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-static char *rcsid = "$Id$";
+ */
 
 #include "Prague/Sys/DLL.hh"
+
+using namespace Prague;
 
 /* @Method{DLL::DLL(const string &name)}
  *
@@ -30,6 +32,7 @@ DLL::DLL(const string &name)
 {
   lib = name;
   handle = dlopen(lib.c_str(), now);
+  if (!handle) err = dlerror();
 };
 
 /* @Method{DLL::~DLL()}
@@ -47,14 +50,8 @@ DLL::~DLL()
  */
 void *DLL::resolve(const string &symbol)
 {
-  return handle ? dlsym(handle, symbol.c_str()) : 0;
-};
-
-/* @Method{const char *DLL::Error()}
- *
- * @Description{return an error message describing the last occured error or NULL}
- */
-const char *DLL::Error() const
-{
-  return dlerror();
+  if (!handle) return 0;
+  void *tmp = dlsym(handle, symbol.c_str());
+  if (!tmp) err = dlerror();
+  return tmp;
 };

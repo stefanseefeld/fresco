@@ -1,7 +1,6 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
@@ -20,9 +19,10 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-static char *rcsid = "$Id$";
 
 #include "Prague/Sys/regex.hh"
+
+using namespace Prague;
 
 /* @Method{string regex::error(int errcode)}
  *

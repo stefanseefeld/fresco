@@ -26,6 +26,9 @@
 #include <Prague/IPC/ipcbuf.hh>
 #include <sys/types.h>
 
+namespace Prague
+{
+
 /* @Class {Agent}
  *
  * @Description {the interface to the client part of an ipc connection}
@@ -79,6 +82,8 @@ protected:
   bool  bound           : 1;
   int   status;
 private:
+};
+
 };
 
 #endif /* _Agent_hh */

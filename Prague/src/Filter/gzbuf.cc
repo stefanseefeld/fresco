@@ -1,6 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * this file defines a C++ interface to zlib
  * written by Kevin Ruland <kevin@rodin.wustl.edu>
@@ -19,10 +21,11 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-static char *rcsid = "$Id$";
+ */
 #include <memory.h>
 #include "Prague/Filter/gzbuf.hh"
+
+using namespace Prague;
 
 gzbuf::gzbuf() : file(0), mode(0), fd_owner(false) {}
 gzbuf::~gzbuf()

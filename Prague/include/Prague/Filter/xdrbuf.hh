@@ -1,7 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * this code is based on binio from Dietmar Kuehl:
  *
@@ -22,8 +23,7 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-/*$Id$*/
+ */
 #ifndef _xdrbuf_h
 #define _xdrbuf_h
 
@@ -31,7 +31,12 @@
 #include <rpc/rpc.h>
 #include <rpc/xdr.h>
 
+namespace Prague
+{
+
 extern void xdrbuf_create(XDR *xdrs, streambuf *sb, xdr_op op);
 extern void xdrbuf_reseat(XDR *xdrs, streambuf *sb);
+
+};
 
 #endif /* xdrbuf_h */

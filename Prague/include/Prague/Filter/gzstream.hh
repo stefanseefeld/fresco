@@ -1,10 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
+/*$Id$
  *
- * this file defines a C++ interface to zlib
- * written by Kevin Ruland <kevin@rodin.wustl.edu>
- * modified by Stefan Seefeld
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,12 +18,15 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
+ */
 #ifndef _gzstream_h
 #define _gzstream_h
 
 #include <iostream.h>
 #include <OffiX/Filter/gzbuf.h>
+
+namespace Prague
+{
 
 class gzstream_common : virtual public ios
 {  
@@ -99,6 +100,8 @@ inline gzomanip<int> setcompressionstrategy(int l)
 {
   return gzomanip<int>(&setcompressionstrategy,l);
 }
+
+};
 
 #endif /* _gzstream_h */
 

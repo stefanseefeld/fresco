@@ -1,6 +1,8 @@
 #include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/Timer.hh>
 
+using namespace Prague;
+
 const char *text1[] = {"Heut' kommt der Hans zu mir,",
 		       "Freut sich die Lies'.",
 		       "Kommt er aber \"uber Oberammergau,",

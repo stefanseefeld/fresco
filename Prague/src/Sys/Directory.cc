@@ -1,7 +1,8 @@
-/*+P
- * This file is part of OffiX,
- * a C++ API for the X Window System and Unix
- * Copyright (C) 1995-98  Stefan Seefeld
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,12 +18,13 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
- -P*/
-static char *rcsid = "$Id$";
+ */
 
 #include <Prague/Sys/Directory.hh>
 #include <Prague/Sys/regex.hh>
 #include <dirent.h>
+
+using namespace Prague;
 
 bool compSize(File *a, File *b) { return  (a->Size() > b->Size());}
 bool compAccTime(File *a, File *b) { return a->AccTime() < b->AccTime();}
@@ -42,11 +44,12 @@ bool compDirsFirst(File *a, File *b)
 Directory::Directory(const string &n, int order, int filter)
   : File(n)
 {
-  if (longname[longname.length() - 1] == '.' && longname[longname.length() - 2] == '.')
+  while (longname.length() > 2 && longname[longname.length() - 1] == '.' && longname[longname.length() - 2] == '.')
     {
       string::size_type i = longname.rfind('/', longname.length() - 3);
-      shortname = BaseName(longname);
+      longname.erase(i, longname.length());
     }
+  shortname = BaseName(longname);
   if (getStatus() && is(File::dir))
     {
       DIR *dir = opendir(longname.c_str());
@@ -79,11 +82,12 @@ Directory::Directory(const string &n, int order, int filter)
 Directory::Directory(const string &n, int order, const string &pattern)
   : File(n)
 {
-  if (longname[longname.length() - 1] == '.' && longname[longname.length() - 2] == '.')
+  while (longname.length() > 2 && longname[longname.length() - 1] == '.' && longname[longname.length() - 2] == '.')
     {
       string::size_type i = longname.rfind('/', longname.length() - 3);
-      shortname = BaseName(n);
+      longname.erase(i, longname.length());
     }
+  shortname = BaseName(n);
   if (getStatus() && is(File::dir))
     {
       regex filter(pattern);
