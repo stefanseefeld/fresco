@@ -32,6 +32,7 @@
 #include <stdexcept>
 #include <iosfwd>
 #include <vector>
+#include <map>
 
 //. This is an abstraction of the underlying graphics libraries Berlin uses.
 //. The DrawingKits call the methods of this object.
@@ -79,11 +80,17 @@ public:
 
   };
 
+  //. List available consoles (modules)
+  static void list_available(ostream &);
+
+  //. Check whether a particular console (module) is avilable
+  static bool is_available(std::string const &console);
 
   //. Sets up the graphics library. It gets passed the commandline arguments
-  //. of the server (argc and argv), checks them for any console-related options and
-  //. afterwards passes them on to the graphic's library. Finally you need to pass
-  //. the POA to this method.
+  //. of the server (argc and argv), checks them for any console-related 
+  //. options and afterwards passes them on to the graphic's library. 
+  //. Finally you need to pass the POA to this method.
+  // FIXME: argc/argv are unused? are we still aiming for cascading GetOpt?
   static int open(const std::string &, int argc, char **argv, 
                   PortableServer::POA_ptr, 
                   Fresco::PixelCoord x, Fresco::PixelCoord y)
@@ -103,7 +110,8 @@ public:
 				    Fresco::PixelCoord, //.< Requested y size.
 				    Fresco::PixelCoord) = 0; //.< Requested color depth.
 
-  //. Activates a given drawable: After activation it can recieve requests via CORBA.
+  //. Activates a given drawable: After activation it can recieve requests 
+  //. via CORBA.
   Fresco::Drawable_ptr activate_drawable(Drawable *);
   //. FIXME: Missing documentation!
   PortableServer::Servant reference_to_servant(Fresco::Drawable_ptr);
@@ -148,6 +156,11 @@ private:
   static Console         *_console;
   static Reaper           _reaper;
   elist_t                 _extensions;
+
+  typedef std::map<std::string, std::string> console_list_t;
+  static console_list_t my_available_consoles;
+  //. Attempt to load all consoles, and cache their name/location
+  static void cache_available_consoles();
 };
 
 //. This is a chunk of (video-) memory that is used to store raster data.

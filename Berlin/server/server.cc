@@ -203,8 +203,11 @@ int main(int argc, char **argv) /*FOLD00*/
              "the resource file to load");
   getopt.add('e', "execute", GetOpt::mandatory,
              "the command to execute upon startup");
-  getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
-  getopt.add('s', "pixels", GetOpt::mandatory, "number of pixels (eg. '640x480')");
+  getopt.add('c', "console", GetOpt::mandatory, "the console to use");
+  getopt.add('C', "list-available-consoles", GetOpt::novalue, 
+             "list known consoles");
+  getopt.add('s', "pixels", GetOpt::mandatory, 
+             "number of pixels (eg. '640x480')");
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
@@ -228,7 +231,7 @@ int main(int argc, char **argv) /*FOLD00*/
     getopt.get("export-ref",&value);
     set_server_reference_export_method(value);
   }
-  
+
   value="";
   if (getopt.get("logger", &value))
   {
@@ -345,6 +348,13 @@ int main(int argc, char **argv) /*FOLD00*/
       Logger::log(Logger::loader) << "Tracing enabled." << std::endl;
   }
 
+  if (getopt.is_set("list-available-consoles"))
+  {
+      std::cout << "Available consoles:" << endl;
+      Console::list_available(std::cout);
+      return 0;
+  }
+
 #ifdef JPROF
   if (getopt.is_set("profiler"))
   {
@@ -448,7 +458,7 @@ int main(int argc, char **argv) /*FOLD00*/
        catch (const std::runtime_error &e)
        {
 	 std::cerr << "ERROR: Failed to open the Console \"" << value
-		   << "\": " << e.what() << std::endl;
+		   << "\":\n\t" << e.what() << std::endl;
 	 exit(2);
        }
        
