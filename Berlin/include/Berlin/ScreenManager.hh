@@ -24,18 +24,22 @@
 
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Drawing/openGL/GLDrawingKit.hh>
 #include <vector>
 
 class ScreenManager
 {
 public:
-  ScreenManager(ScreenImpl *);
+  ScreenManager(ScreenImpl *, GLDrawingKit *);
   ~ScreenManager();
   void damage(Region_ptr);
   void repair();
+  void nextEvent();
   void run();
 private:
   ScreenImpl *screen;
+  GLDrawingKit *drawing;
+  ggi_visual_t visual;
   typedef vector<RegionImpl *> DamageList;
   DamageList damages;
 };

@@ -60,4 +60,7 @@ struct Patch
   long meshStride, controlStride;
 };
 
+typedef unsigned short unichar;
+typedef sequence<unichar> unistring;
+
 #endif /* _Types_idl */

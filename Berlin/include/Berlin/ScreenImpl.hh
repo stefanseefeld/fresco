@@ -27,13 +27,14 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/DamageImpl.hh>
 #include <Berlin/PolyGraphic.hh>
+#include <Drawing/openGL/GLDrawingKit.hh>
 
 class ScreenManager;
 
 class ScreenImpl : implements(Screen), public PolyGraphic
 {
 public:
-  ScreenImpl(Coord, Coord);
+  ScreenImpl(GLDrawingKit *, Coord, Coord);
   virtual void allocations(Collector_ptr);
   virtual void allocateChild(long, Graphic::AllocationInfo &);
   Coord width();

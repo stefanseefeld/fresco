@@ -7,13 +7,14 @@ DIR_INCLUDES =  -I.  -I/data1/seefelds/omniORB_2.7.0/include
 DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
 LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
 
-
-ALL_IDL	=	Types.idl Transform.idl Region.idl Damage.idl Graphic.idl Traversal.idl Grid.idl Screen.idl \
-		LayoutKit.idl Subject.idl \
+ALL_IDL	=	Types.idl LifeCycle.idl Naming.idl Cloneable.idl \
+		Transform.idl Region.idl Damage.idl Graphic.idl Traversal.idl Grid.idl Screen.idl \
+		LayoutKit.idl Subject.idl Telltale.idl \
 		Drawable.idl Pencil.idl DrawingKit.idl DrawTraversal.idl
 
-IDL	=	Types.idl Transform.idl Region.idl Damage.idl GTC.idl \
-		Grid.idl Screen.idl LayoutKit.idl Subject.idl
+IDL	=	Types.idl LifeCycle.idl Cloneable.idl \
+		Transform.idl Region.idl Damage.idl GTC.idl \
+		Grid.idl Screen.idl LayoutKit.idl Subject.idl Telltale.idl
 
 SRC	=	$(patsubst %.idl, %SK.cc, $(IDL))
 DSRC	=	$(patsubst %.idl, %DynSK.cc, $(IDL))

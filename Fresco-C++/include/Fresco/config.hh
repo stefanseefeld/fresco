@@ -9,5 +9,6 @@
 #define _REENTRANT
 
 #define implements(interface) virtual public _lc_sk_##interface
+#define implementsscoped(scope, interface) virtual public scope##::_lc_sk_##interface
 
 #endif /* _config_hh */

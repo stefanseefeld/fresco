@@ -63,13 +63,14 @@ PixelCoord GLDrawable::toPixels(Coord c, Axis axis) { return static_cast<long>(c
 
 void GLDrawable::clipping(Region_ptr r)
 {
+  makeCurrent();
   clip->copy(r);
   PixelCoord x, y, w, h;
   x = toPixels(clip->lower.x, xaxis);
   y = toPixels(clip->lower.y, yaxis);
   w = toPixels(clip->upper.x - clip->lower.x, xaxis);
   h = toPixels(clip->upper.y - clip->lower.y, yaxis);
-//   glViewport(x, y, w, h);
+  glViewport(x, y, w, h);
 }
 
 Region_ptr GLDrawable::clipping()

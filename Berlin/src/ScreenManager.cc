@@ -24,8 +24,8 @@
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 
-ScreenManager::ScreenManager(ScreenImpl *s)
-  : screen(s)
+ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
+  : screen(s), drawing(d), visual(drawing->getVisual())
 {
 }
 
@@ -36,26 +36,42 @@ ScreenManager::~ScreenManager()
 void ScreenManager::damage(Region_ptr r)
 {
   RegionImpl *region = new RegionImpl;
-//   region->_obj_is_ready(_boa());
+  region->_obj_is_ready(CORBA::BOA::getBOA());
   region->copy(r);
   damages.push_back(region);
+#ifdef DEBUG
   cout << "ScreenManager::damage region "
        << '(' << region->lower.x << ',' << region->lower.y << "),("
        << region->upper.x << ',' << region->upper.y << ')' << endl;
+#endif
 }
 
 void ScreenManager::repair()
 {
   for (DamageList::iterator i = damages.begin(); i != damages.end(); i++)
     {
-      DrawTraversalImpl *traversal;//(*i);
+      DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, *i);
+      traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(traversal);
-      delete *i;
+      traversal->_dispose();
+      (*i)->_dispose();
     }
   damages.erase(damages.begin(), damages.end());
 }
 
+void ScreenManager::nextEvent()
+{
+  ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+  ggiEventPoll(visual, mask, 0);
+  ggi_event event;
+  ggiEventRead(visual, &event, mask);
+}
+
 void ScreenManager::run()
 {
-  
+  while (true)
+    {
+      if (damages.size()) repair();
+      nextEvent();
+    }
 }

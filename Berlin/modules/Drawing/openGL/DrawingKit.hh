@@ -35,6 +35,7 @@ public:
   GLDrawingKit(const string &);
   ~GLDrawingKit();
   Drawable_ptr getDrawable();
+  ggi_visual_t getVisual() { return drawable->Visual();}
   Pencil_ptr solidPen();
 //   void releasePen(Pencil_ptr);
 private:

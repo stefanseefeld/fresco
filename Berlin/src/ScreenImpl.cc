@@ -24,9 +24,9 @@
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/TransformImpl.hh"
 
-ScreenImpl::ScreenImpl(Coord w, Coord h)
+ScreenImpl::ScreenImpl(GLDrawingKit *drawing, Coord w, Coord h)
 {
-  manager = new ScreenManager(this);
+  manager = new ScreenManager(this, drawing);
   region = new RegionImpl;
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
