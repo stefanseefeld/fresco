@@ -44,6 +44,8 @@ AC_MSG_NOTICE([Output Substitution])
 AC_CONFIG_FILES([config/synopsis.py])
 AC_CONFIG_FILES([config/Fresco-IDL.spec])
 AC_CONFIG_FILES([Makefile])
-AC_LINK_FILES(share/idl, share/idl)
+if test "$srcdir" != .; then
+  AC_CONFIG_LINKS([share/idl:share/idl])
+fi
 
 AC_OUTPUT
