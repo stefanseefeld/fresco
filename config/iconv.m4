@@ -46,7 +46,7 @@ AC_DEFUN([FRESCO_ICONV],[
     LIBS="$ICONV_LIBS"
     CPPFLAGS="$ICONV_CPPFLAGS"
 
-    AC_MSG_CHECKING([wether -liconv is needed])
+    AC_MSG_CHECKING([whether -liconv is needed])
 
     AC_TRY_LINK([#include <stdlib.h>
 #include <iconv.h>],
