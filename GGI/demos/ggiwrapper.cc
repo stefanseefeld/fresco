@@ -58,11 +58,11 @@ int main(int argc, char **argv)
   value = "";
   getopt.get("width", &value);
   size_t width = 256;
-  if (value.empty()) { std::istrstream iss(value.c_str()); iss >> width;}
+  if (!value.empty()) { std::istrstream iss(value.c_str()); iss >> width;}
   value = "";
   getopt.get("height", &value);
   size_t height = 256;
-  if (value.empty()) { std::istrstream iss(value.c_str()); iss >> height;}
+  if (!value.empty()) { std::istrstream iss(value.c_str()); iss >> height;}
 
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
   CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
