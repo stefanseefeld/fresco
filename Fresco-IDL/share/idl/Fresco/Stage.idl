@@ -32,45 +32,44 @@ module Layout
   //. layering.
   interface Stage : Warsaw::Graphic
     {
-	//. Position of the graphic in the window-stack. Lower
-	//. Index numbers are closer to the top.
+      //. An index refers to the position of a child graphic in the stack (the 'layer')
+      //. 0 refers to the top-most graphic
       typedef long Index;
-	//. Returns the boundingbox of the Stage.
+      //. Return the bounding box of the stage
       Warsaw::Region bbox();
-	//. The total number of layers.
+      //. Return the total number of layers
       long layers();
-	//. Returns a handle for the object forming layer l. Returns
-	//. nil if the layer is not found..
+      //. Return a handle for the object forming layer l. Return
+      //. nil if the layer is out of range
       StageHandle layer(in Index l);
-
-	//. 'Locks' the stage in that only after the last end() condition
-	//. for needRedraw() and needResize() are done.
+      
+      //. begin and end behave like a recursive lock, in that only after
+      //. the last end is called pending need_redraw and need_resize
+      //. requests will be executed. In particular, a typical implementation may
+      //. merge all need_redraw requests into one with the new damaged region
+      //. being the union of the individually requested regions
       void begin();
-	//. 'Unlocks' the stage after a begin(). One end() is needed for each
-	//. begin().
+      //. See begin()
       void end();
-	//. Inserts the given Graphic g into the Stage at the given position
-	//. (position) and with the given size (size). It get's it's own layer
-	//. (layer). If the layer is allready used all layers >= layer
-	//. get increased by one and layer gets inserted into the list.
-	//. FIXME: Are there any constraints for the layers? Does layer need
-	//. to be <= n+1 where n is the number of StageHandles allready in use?
+      //. Insert a graphic into the stage at a given layer with the given position
+      //. and the given size. All higher layers are increased ('pushed back').
       StageHandle insert(in Warsaw::Graphic g, in Warsaw::Vertex position, in Warsaw::Vertex size, in Index layer);
     };
   
   interface StageHandle
     {
-	//. Returns the Stage this StageHandle belongs to.
+      //. Return the stage this handle refers to
       Stage           parent();
-	//. Returns the Graphic this StageHandle consists of.
+      //. Return the graphic this handle refers to
       Warsaw::Graphic child();
-        //. Removes this StageHandle and deletes the Graphic it consists of.
+      //. Remove the graphic this handle refers to. As a sideeffect,
+      //. the handle itself is destroyed
       void            remove();
-	//. Returns the position of this StageHandle consists of.
+      //. Return the graphic's position
       attribute Warsaw::Vertex position;
-	//. Returns the size of this StageHandle Consists of.
+      //. Return the graphic's size
       attribute Warsaw::Vertex size;
-	//. Returns the layer of this StageHandle.
+      //. Return the graphic's layer
       attribute Stage::Index layer;
     };
 };

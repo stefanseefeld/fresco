@@ -35,14 +35,15 @@ module Warsaw
   //. will call them back
   interface Subject : RefCountBase, Identifiable
     {
-	//. Adds an observer to this object. All observers will be
-	//. notified after any change to the state of an Object.
+      //. Add an observer to this object. All observers will be
+      //. notified after any change to the state of an Object.
       void attach(in Observer o);
-	//. Removes an object from the list of observers.
+      //. Remove an object from the list of observers.
       void detach(in Observer o);
-	//. Notifies all observers of the changed given in a.
+      //. Notify all observers of the change. The argument may
+      //. contain some subject-specific detail for a given change.
       void notify(in any a);
-	//. Blocks the notification of the observers.
+      //. Block / unblock the notification of the observers.
       void block(in boolean b);  
     };
 };
