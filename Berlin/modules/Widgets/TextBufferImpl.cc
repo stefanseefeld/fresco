@@ -44,9 +44,9 @@ Unistring *TextBufferImpl::value()
 Unistring *TextBufferImpl::getChars(CORBA::ULong pos, CORBA::ULong len)
 {
   MutexGuard guard(mutex);
-  CORBA::ULong fin = buffer.size() - 1;
-  CORBA::ULong start = (pos > fin ? fin : pos);
-  CORBA::ULong end = (start + len > fin ? fin : start + len);
+  CORBA::ULong fin = buffer.size();
+  CORBA::ULong start = pos > fin ? fin : pos;
+  CORBA::ULong end = start + len > fin ? fin : start + len;
   Unistring *us = new Unistring(end-start, end-start, const_cast<Unichar *>(buffer.get() + start), false);
   return us;
 }
@@ -137,15 +137,10 @@ void TextBufferImpl::insertString(const Unistring &s)
     buffer.insert(u,ch.len);
   }
 
-  cerr << "inserted into buffer " << endl;
-
   ch.type = insert;
   CORBA::Any any;
   any <<= ch;
-  cerr << "notifying " << endl;
   notify(any);
-  cerr << "notified " << endl;
-
 }
 
 void TextBufferImpl::removeBackward(CORBA::Long n)
