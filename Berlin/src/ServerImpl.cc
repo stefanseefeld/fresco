@@ -51,7 +51,7 @@ ServerImpl::ServerImpl(const CORBA::PolicyList &policies)
 {
 }
 
-//. This is called by the client to get it's server context!
+//. This is called by the client to get its server context!
 ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c)
     throw (SecurityException)
 {
