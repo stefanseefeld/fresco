@@ -27,18 +27,21 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/ClientContext.hh>
 #include <Warsaw/Cloneable.hh>
+#include <Prague/Sys/User.hh>
+#include <Berlin/Thread.hh>
+#include <Berlin/Debug.hh>
 
 class ClientContextImpl : implements(ClientContext)
 {
 public:
-//   ClientContextImpl();
-  ClientContextImpl(const char *name = "unknownUser");
+  ClientContextImpl();
   
   Unistring *userName();
   CORBA::Boolean stillAlive(); 
 
 protected:
-  Unistring _userName;
+  Prague::User * _ClientUser;
+  Mutex _ClientContext_mutex;
 };
 
 #endif

@@ -29,20 +29,20 @@
 #include "Berlin/ClientContextImpl.hh"
 #include <iostream>
 
-ClientContextImpl::ClientContextImpl(const char *name) {
-  int length = strlen(name);
-  Unistring *theString = new Unistring;//(length);
-  theString->length(length);
-  for(int i = 0; i < length; i++) {
-    (*theString)[i] = (short unsigned int)name[i];
-  }
+ClientContextImpl::ClientContextImpl() {
+  MutexGuard guard(_ClientContext_mutex);
+  _ClientUser = new Prague::User(-1);
 };  
   
 Unistring *ClientContextImpl::userName() {
-  Unistring *theString = new Unistring(_userName.length());
-  for( unsigned int i = 0; i < _userName.length(); i++) {
-    (*theString)[i] = _userName[i];
+  const char *_userName = _ClientUser->Name();
+  const unsigned int length = strlen(_userName);
+  Unistring * theString = new Unistring[length];
+
+  for( unsigned int i = 0; i < length; i++) {
+    theString[i] = _userName[i];
   }
+
   return theString;
 }
 
