@@ -37,8 +37,11 @@ extern "C" {
 GLDrawingKit::GLDrawingKit()
   : rasters(500)
 {
+cout << "GLDrawingKit begin" << endl;
   ggiInit();
+cout << "initialized ggi" << endl;
   drawable = new GLDrawable();
+cout << "initialized drawable" << endl;
   drawable->_obj_is_ready(CORBA::BOA::getBOA());
   gnufont = new GLUnifont();
   gnufont->_obj_is_ready(CORBA::BOA::getBOA());
@@ -63,6 +66,7 @@ void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &st
       Color *tmp;
       if (sty[i].a == Style::fillcolor) {
 	  sty[i].val >>= tmp;
+	  //	  cerr << "set color " << tmp->red << ", " << tmp->green << ", " << tmp->blue << ", " << tmp->alpha << endl;
 	  gnufont->setColor(*tmp);
       }
   }

@@ -24,6 +24,8 @@
  */
 
 #include <db2/db_cxx.h>
+#include <GL/gl.h>
+#include <vector>
 #include "Warsaw/config.hh"
 #include "Warsaw/Style.hh"
 #include "Warsaw/Types.hh"
@@ -58,8 +60,8 @@ class GLUnifont :
     Db *glyphdb;    
     Text::FontDescriptor myDescriptor;
     Color myColor;
-
-
+    GLuint myDisplaylistOffset;
+    vector<bool> rendered;
 };
 
 

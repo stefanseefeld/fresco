@@ -38,7 +38,7 @@ GLDrawable::GLDrawable()
   //    case 24: gt = GT_24BIT; break;
   //    case 32: gt = GT_32BIT; break;
   //    }
-  context = GGIMesaCreateContext();
+context = GGIMesaCreateContext();
   if (!context)
     {
       cerr << "GGIMesaCreateContext() failed" << endl;

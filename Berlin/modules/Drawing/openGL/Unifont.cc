@@ -42,12 +42,13 @@ static Unistring UNIFY(const char *c) {
   return tmp;
 }
 
-GLUnifont::GLUnifont() 
+GLUnifont::GLUnifont() : rendered(65536)
 {
     myDescriptor.pointsize = 16;
     myDescriptor.name = UNIFY("GNU Unifont");
     char *glyphdbName = getenv("GLYPH_DB");
     Db::open(glyphdbName, DB_BTREE, DB_RDONLY, 0644, NULL, NULL,&glyphdb);
+    myDisplaylistOffset = glGenLists(65536);
 }
 
 GLUnifont::~GLUnifont() {}
@@ -59,38 +60,41 @@ void GLUnifont::setColor(Color c)
 
 void GLUnifont::drawText(const Unistring &u, const Vertex &p) 
 {
-    // record from DB
-    GLubyte glyphbuf[32]; 
-    Dbt glyph;
-    glyph.set_flags(DB_DBT_USERMEM);
-    glyph.set_data(glyphbuf); 
-    glyph.set_ulen(32);
-
-    // reuseable key for DB fetch
-    Dbt key;
-    key.set_size(2); // unicode values -- 2 bytes
-
-    // prepare GL to draw
-    glRasterPos2i((int)(p.x),(int)(p.y));  // position pen
-    glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
-//     glColor4d(myColor.red,myColor.green,myColor.blue,myColor.alpha); // load color
-    glColor4d(0.,0.,0.,1.); // load color
-    
-    for(unsigned long i = 0; i < u.length(); i++) {
-	unsigned short tmpchr = (unsigned short)(u[i]);
-// 	cerr << "(" << tmpchr << ") ";
-	key.set_data((void *)(&tmpchr)); // discard const ! 
-	if (glyphdb->get(NULL,&key,&glyph,0) == 0) {
-	    int height = 16;
-	    int width = (glyph.get_size() * 8) / height;
-// 	    cerr << "Writing out " << width << "x" << height << " bitmap @(" << p.x << "," << p.y << ") [" << myColor.red << "," << myColor.green << "," << myColor.blue << "," << myColor.alpha << "] ";
-// 	    for (int k = 0; k < glyph.get_size(); k++) {
-// 		cerr << (int)(glyphbuf[k]) << " ";
-// 	    } 
-// 	    cerr << endl;
-	    glBitmap(width, height, 0.0, 0.0, (float)width, 0.0, (const GLubyte *)(glyph.get_data()));
-	}
+  // record from DB
+  GLubyte glyphbuf[32]; 
+  Dbt glyph;
+  glyph.set_flags(DB_DBT_USERMEM);
+  glyph.set_data(glyphbuf); 
+  glyph.set_ulen(32);
+  
+  // reuseable key for DB fetch
+  Dbt key;
+  key.set_size(2); // unicode values -- 2 bytes
+  
+  // prepare GL to draw
+  glColor4d(myColor.red,myColor.green,myColor.blue,myColor.alpha); // load color
+  glRasterPos2i((int)(p.x),(int)(p.y));  // position pen
+  glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
+  GLushort idx[u.length()];
+  
+  for(unsigned long i = 0; i < u.length(); i++) {
+    unsigned short tmpchr = (unsigned short)(u[i]);
+    if (! rendered[tmpchr]) {
+      glNewList(myDisplaylistOffset + tmpchr, GL_COMPILE);
+      cerr << "(" << tmpchr << ") ";
+      key.set_data((void *)(&tmpchr)); // discard const ! 
+      if (glyphdb->get(NULL,&key,&glyph,0) == 0) {
+	int height = 16;
+	int width = (glyph.get_size() * 8) / height;
+	glBitmap(width, height, 0.0, 0.0, (float)width, 0.0, (const GLubyte *)(glyph.get_data()));
+	glEndList();
+      }
+      rendered[tmpchr] = true;
     }
+      idx[i] = u[i];
+  }
+    glListBase(myDisplaylistOffset);
+    glCallLists(u.length(),GL_UNSIGNED_SHORT,(GLvoid *)(idx));
 }
 
 
