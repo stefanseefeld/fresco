@@ -33,16 +33,22 @@ AC_DEFUN([FRESCO_LIBART_CHECK],[
    fi
 
    dnl First, try to pull everything out of libart-config
-   AC_PATH_PROG([LIBART_CONFIG],[libart2-config],,[$libart_config_prefix$PATH])
-   if test ".$LIBART_CONFIG" != . ; then
-     LIBART_CPPFLAGS=`$LIBART_CONFIG --cflags`
-     LIBART_LIBS=`$LIBART_CONFIG --libs`
+   AC_PATH_PROG([LIBART2_CONFIG],[libart2-config],,[$libart_config_prefix$PATH])
+   if test ".$LIBART2_CONFIG" != . ; then
+     LIBART_CPPFLAGS=`$LIBART2_CONFIG --cflags`
+     LIBART_LIBS=`$LIBART2_CONFIG --libs`
    else
-     dnl Second, try to pull everything out of gnome-config
-     AC_PATH_PROG([GNOME_CONFIG],[gnome-config],,[$libart_config_prefix$PATH])
-     if test ".$GNOME_CONFIG" != . ; then
-       LIBART_CPPFLAGS=`$GNOME_CONFIG --cflags libart`
-       LIBART_LIBS=`$GNOME_CONFIG --libs libart`
+     AC_PATH_PROG([LIBART_CONFIG],[libart-config],,[$libart_config_prefix$PATH])
+     if test ".$LIBART_CONFIG" != . ; then
+       LIBART_CPPFLAGS=`$LIBART_CONFIG --cflags`
+       LIBART_LIBS=`$LIBART_CONFIG --libs`
+     else
+       dnl Second, try to pull everything out of gnome-config
+       AC_PATH_PROG([GNOME_CONFIG],[gnome-config],,[$libart_config_prefix$PATH])
+       if test ".$GNOME_CONFIG" != . ; then
+         LIBART_CPPFLAGS=`$GNOME_CONFIG --cflags libart`
+         LIBART_LIBS=`$GNOME_CONFIG --libs libart`
+       fi
      fi
    fi
 
@@ -53,7 +59,7 @@ AC_DEFUN([FRESCO_LIBART_CHECK],[
    fi
    save_CPPFLAGS="$CPPFLAGS"
    CPPFLAGS="$LIBART_CPPFLAGS $CPPFLAGS"
-   AC_CHECK_HEADER(art_pixbuf.h, , [AC_CHECK_HEADER(libart_lgpl/art_pixbuf.h, , [no_libart=yes])])
+   AC_CHECK_HEADER(libart.h, , [AC_CHECK_HEADER(libart_lgpl/libart.h, , [no_libart=yes])])
    CPPFLAGS="$save_CPPFLAGS"
    
    dnl Assuming it's okay if the header was found
