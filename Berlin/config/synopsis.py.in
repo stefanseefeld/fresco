@@ -16,15 +16,15 @@ class Config(Base):
 	    include_path = ['../include', top_srcdir + '/include']
 	    basename = top_srcdir + '/include/'
 	
-         class KitCXX (CXX):
-	    "Extends CXX parser with an extra ../ in the include path"
-	    include_path = ['../../include', topdir + '/include']
+        class KitCXX(CXX):
+            "Extends CXX parser with an extra ../ in the include path"
+            include_path = ['../../include', top_srcdir + '/include']
 	
-	 class SubKitCXX (CXX):
-	    "Extends CXX parser with an extra ../../ in the include path"
-	    include_path = ['../../../include', topdir + '/include']
+        class SubKitCXX(CXX):
+            "Extends CXX parser with an extra ../../ in the include path"
+            include_path = ['../../../include', top_srcdir + '/include']
 	
-	modules = {'Berlin' : CXX, 'Kit' : KitCXX, 'SubKit' : 'SubKitCXX'}
+        modules = {'Berlin' : CXX, 'Kit' : KitCXX, 'SubKit' : 'SubKitCXX'}
 
     class Linker (Base.Linker):
 
@@ -33,7 +33,7 @@ class Config(Base):
 	    comment_processors = ['ssd', 'prev', 'group']
 	    mappers = ['C++toIDL']
 
-	modules = {'Fresco' : Fresco}
+	modules = {'Berlin' : Fresco}
 
     class Formatter(Base.Formatter):
 
@@ -44,6 +44,14 @@ class Config(Base):
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
 	    toc_out = '../share/doc/Berlin/html/Berlin.toc'
+	
+        class Berlin(HTML):
+	    toc_out = '../share/doc/Berlin/html/Berlin.toc'
+	    toc_in = [
+		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague/html',
+		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon/html',
+		'@Fresco_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco/html'
+	    ]
 	
         class KitHTML(HTML):
 	    "HTML formatter for all kits"

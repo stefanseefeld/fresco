@@ -37,6 +37,8 @@ OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
 TARGET	:= ../lib/Fresco/Console/GGI.so
 
+vpath %.cc $(srcdir)
+
 ifeq ($(HAVE_GGIMESA), 1)
 TARGET	+= ../lib/Fresco/Console/GGIGL.so
 endif
@@ -68,10 +70,11 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.d:	$(srcdir)/%.cc
+%.d:	%.cc
 	@echo generating dependencies for $<
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-%.o:	$(srcdir)/%.cc
+
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 

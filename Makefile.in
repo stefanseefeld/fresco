@@ -81,19 +81,24 @@ maintainer-clean:
 %/Makefile: $(srcdir)/%/Makefile.in
 	@$(configure)
 
-Babylon/Makefile: override configure_args	+= --with-Prague-prefix=$(builddir)/Prague
-Fresco/Makefile: override configure_args	+= --with-Babylon-prefix=$(builddir)/Babylon
-Berlin/Makefile: override configure_args	+= --with-Prague-prefix=$(builddir)/Prague \
-                                                   --with-Babylon-prefix=$(builddir)/Babylon \
-                                                   --with-Fresco-prefix=$(builddir)/Fresco
-GGI/Makefile: override configure_args		+= --with-Prague-prefix=$(builddir)/Prague \
-                                                   --with-Fresco-prefix=$(builddir)/Fresco \
-                                                   --with-Berlin-prefix=$(builddir)/Berlin
-SDL/Makefile: override configure_args		+= --with-Prague-prefix=$(builddir)/Prague \
-                                                   --with-Fresco-prefix=$(builddir)/Fresco \
-                                                   --with-Berlin-prefix=$(builddir)/Berlin
-Clients-C++/Makefile: override configure_args	+= --with-Prague-prefix=$(builddir)/Prague \
-                                                   --with-Babylon-prefix=$(builddir)/Babylon \
-                                                   --with-Fresco-prefix=$(builddir)/Fresco \
-                                                   --with-Berlin-prefix=$(builddir)/Berlin
+ifneq ($(findstring Prague, $(subdirs)),)
+Prague	:= --with-Prague-prefix=$(builddir)/Prague
+endif
+ifneq ($(findstring Babylon, $(subdirs)),)
+Babylon	:= --with-Babylon-prefix=$(builddir)/Babylon
+endif
+ifneq ($(findstring Fresco, $(subdirs)),)
+Fresco	:= --with-Fresco-prefix=$(builddir)/Fresco
+endif
+ifneq ($(findstring Berlin, $(subdirs)),)
+Berlin	:= --with-Berlin-prefix=$(builddir)/Berlin
+endif
+
+Babylon/Makefile: override configure_args	+= $(Prague)
+Fresco/Makefile: override configure_args	+= $(Prague) $(Babylon)
+Berlin/Makefile: override configure_args	+= $(Prague) $(Babylon) $(Fresco)
+GGI/Makefile: override configure_args		+= $(Prague) $(Fresco) $(Berlin)
+SDL/Makefile: override configure_args		+= $(Prague) $(Fresco) $(Berlin)
+Clients-C++/Makefile: override configure_args	+= $(Prague) $(Babylon) $(Fresco) $(Berlin)
+Clients-Python/Makefile: override configure_args+= $(Fresco)
 

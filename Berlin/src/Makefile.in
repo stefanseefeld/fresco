@@ -22,16 +22,11 @@
 SHELL	:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/src
-cdir		:= ../config
-hdir		:= $(top_srcdir)/include
+srcdir		:= @srcdir@
+cdir		:= @top_builddir@/config
+hdir		:= $(top_srcdir)/include/Berlin
 
 include $(cdir)/local.mk
-
-edit		:= sed \
-	           -e 's,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),g' \
-	           -e 's,@CXXFLAGS\@,@CXXFLAGS@,g' \
-		   -e 's,@LIBS\@,@LIBS@,g'
 
 CXXFLAGS+= $(SO_CXXFLAGS)
 LDFLAGS	+= $(SO_LDFLAGS)
@@ -48,14 +43,26 @@ SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 	   KitImpl.cc RCManager.cc
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
-HDR	:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Berlin/*.hh $(hdir)/Berlin/Console/*.hh))
+HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
+	   ImplVar.hh Math.hh ObjectCache.hh Provider.hh Pool.hh QuadTree.hh RefCountVar.hh Vertex.hh LRUCache.hh \
+	   Logger.hh ServantBase.hh IdentifiableImpl.hh \
+	   RefCountBaseImpl.hh RegionImpl.hh TransformImpl.hh TraversalImpl.hh \
+	   AllocationImpl.hh Provider.hh GraphicImpl.hh MonoGraphic.hh PolyGraphic.hh \
+	   Allocator.hh Requestor.hh DebugGraphic.hh \
+	   DrawTraversalImpl.hh PickTraversalImpl.hh ControllerImpl.hh \
+	   DesktopImpl.hh ScreenImpl.hh ScreenManager.hh EventManager.hh \
+	   PositionalFocus.hh NonPositionalFocus.hh FilterImpl.hh SubjectImpl.hh \
+	   KitImpl.hh RCManager.hh
+CHDR	+= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
+SYN	:= $(patsubst %.hh, %.syn, $(HDR) $(CHDR))
 
 LIBS	+= -lpng
 
 TARGET	:= ../lib/libBerlin.so
 
-vpath %.hh  $(hdir)/Berlin
+vpath %.hh  $(hdir):$(hdir)/Console
+vpath %.cc  $(srcdir)
 
 all:	$(TARGET) ../bin/Berlin-config
 
@@ -65,10 +72,9 @@ $(TARGET):	$(OBJ)
 
 ../bin/Berlin-config: $(top_srcdir)/config/Berlin-config.in
 	rm -f $@ $@.tmp
-	$(edit) \
-	  -e 's,@prefix\@,@abs_top_builddir@,g' \
-	  -e 's,@exec_prefix\@,@abs_top_builddir@,g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include ,g' \
+	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
+		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
+	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
 	  $< > $@.tmp
 	chmod +x $@.tmp
 	mv $@.tmp $@
@@ -77,7 +83,7 @@ doc:	../share/doc/Berlin/html ../bin/Berlin-config
 
 ../share/doc/Berlin/html:	$(SYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
 
 install:	all
@@ -89,22 +95,21 @@ install:	all
 	  echo "$(INSTALL) -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh"; \
 	  $(INSTALL) -m 644 ../include/Berlin/acconfig.hh $(DESTDIR)$(includedir)/Berlin/acconfig.hh; \
 	else \
-          echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+          echo "$(DESTDIR)$(includedir)/Berlin/$$header is up to date"; \
         fi
-	for header in $(HDR); do \
+	for header in $(HDR) $(addprefix Console/, $(CHDR)); do \
 	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
-	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Berlin/$$header"; \
+	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Berlin/$$header; \
 	  else \
-	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+	    echo "$(DESTDIR)$(includedir)/Berlin/$$header is up to date"; \
 	  fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/Berlin-config $(DESTDIR)$(bindir)/Berlin-config.tmp
-	$(edit) \
-	  -e 's,@prefix\@,$(prefix),g' \
-          -e 's,@exec_prefix\@,$(exec_prefix),g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
+	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
+		-e 's,@exec_prefix\@,$(exec_prefix),g' \
+	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
           $(top_srcdir)/config/Berlin-config.in > $(DESTDIR)$(bindir)/Berlin-config.tmp
 	chmod +x $(DESTDIR)$(bindir)/Berlin-config.tmp
 	mv $(DESTDIR)$(bindir)/Berlin-config.tmp $(DESTDIR)$(bindir)/Berlin-config
@@ -130,13 +135,17 @@ maintainer-clean: distclean
 	rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/acconfig.hh.in \
 	  $(top_srcdir)/config/Server/aclocal.m4
 
-%.d:	$(srcdir)/%.cc $(hdir)/Berlin/%.hh
+%.d:	%.cc %.hh
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+
+%.syn:	%.hh
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

@@ -37,17 +37,20 @@
 #
 
 # Compilation and linking flags.
-LIBS	:= -L$(builddir)/lib -lBerlin $(EXTRA_LIBS)
+LIBS	:= -L$(top_builddir)/lib -lBerlin $(EXTRA_LIBS)
 CPPFLAGS+= $(EXTRA_CPPFLAGS)
 
 .PHONY: all install uninstall clean distclean maintainer-clean
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
+HDR	?= $(wildcard $(srcdir)/*.hh)
+SYN	:= $(patsubst $(srcdir)/%.hh, %.syn, $(HDR))
 
 TARGET	:= $(MODULE).so
 
-vpath %.hh  $(top_srcdir)/include/Berlin
+vpath %.hh  $(srcdir)
+vpath %.cc  $(srcdir)
 
 all:	$(TARGET)
 
@@ -56,9 +59,20 @@ $(TARGET):	$(DEP) $(OBJ)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
 
+doc:	../share/doc/Berlin-$(MODULE)/html
+
+../share/doc/Berlin-$(MODULE)/html:	$(SYN)
+	@echo formatting $(@F)
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Kit,formatter=KitHTML -o $@ $(SYN)
+	touch $@
+
 install:	all
 		$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
+
+install-doc: doc
+	mkdir -p $(DESTDIR)$(datadir)/Berlin-$(MODULE)/doc
+	cp -r ../share/doc/Berlin-$(MODULE)/html $(DESTDIR)$(datadir)/doc/Berlin-$(MODULE)
 
 clean:	
 		rm -f $(TARGET)
@@ -69,12 +83,17 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.d:	$(srcdir)/%.cc
-	@echo generating dependencies for $<
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-%.o:	$(srcdir)/%.cc
+%.d:	%.cc
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) -I$(top_builddir)/include $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+%.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) -I../../include -I../../../include $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) -I$(top_builddir)/include $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+%.syn:	%.hh
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c $(cdir)/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Kit,linker=Berlin $(SFLAGS) -o $@ $?
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

@@ -22,32 +22,28 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/src
-cdir		:= ../config
-hdir		:= $(top_srcdir)/include
+srcdir		:= @srcdir@
+cdir		:= @top_builddir@/config
+hdir		:= $(top_srcdir)/include/Babylon
 
 include $(cdir)/local.mk
-
-edit		:= sed \
-	           -e 's,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),g' \
-	           -e 's,@CXXFLAGS\@,@CXXFLAGS@,g' \
-	           -e 's,@LIBS\@,@LIBS@,g'
 
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 CPPFLAGS        += -DRC_MODULEPATH='"$(libdir)/Babylon"'
 
 SRC		:= String.cc Char.cc Dictionary.cc utils.cc vis_iterator.cc
-HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Babylon/*.hh))
+HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/*.hh))
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
-SYN		:= $(patsubst Babylon/%.hh, %.syn, $(HDR))
+SYN		:= $(patsubst %.hh, %.syn, $(HDR))
 
 TARGET		:= ../lib/libBabylon.so
 
-vpath %.hh  $(hdir)/Babylon
+vpath %.hh  $(hdir)
+vpath %.cc  $(srcdir)
 
-.PHONY: install uninstall clean distclean maintainer-clean dist
+.PHONY: doc install install-doc uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET) ../bin/Babylon-config
 
@@ -57,10 +53,9 @@ $(TARGET):	$(OBJ)
 
 ../bin/Babylon-config: $(top_srcdir)/config/Babylon-config.in
 	rm -f $@ $@.tmp
-	$(edit) \
-	  -e 's,@prefix\@,@abs_top_builddir@,g' \
-          -e 's,@exec_prefix\@,@abs_top_builddir@,g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include ,g' \
+	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
+		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
+	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
 	  $< > $@.tmp
 	chmod +x $@.tmp
 	mv $@.tmp $@
@@ -69,25 +64,24 @@ doc:	../share/doc/Babylon/html ../bin/Babylon-config
 
 ../share/doc/Babylon/html:	$(SYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
 
 install:	all
 	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
 	@for header in $(HDR); do \
-	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
-            $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon/$$header 2>/dev/null; then \
+	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon/$$header"; \
+            $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Babylon/$$header; \
 	  else \
-	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+	    echo "$(DESTDIR)$(includedir)/Babylon/$$header is up to date"; \
           fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/Babylon-config $(DESTDIR)$(bindir)/Babylon-config.tmp
-	$(edit) \
-	  -e 's,@prefix\@,$(prefix),g' \
-          -e 's,@exec_prefix\@,$(exec_prefix),g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
+	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
+		-e 's,@exec_prefix\@,$(exec_prefix),g' \
+	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
         $(top_srcdir)/config/Babylon-config.in > $(DESTDIR)$(bindir)/Babylon-config.tmp
 	chmod +x $(DESTDIR)$(bindir)/Babylon-config.tmp
 	mv $(DESTDIR)$(bindir)/Babylon-config.tmp $(DESTDIR)$(bindir)/Babylon-config
@@ -115,18 +109,18 @@ maintainer-clean: distclean
 	rm -f $(top_srcdir)/configure $(top_srcdir)/config/acconfig.hh.in \
 		$(top_srcdir)/config/aclocal.m4
 
-%.d:	$(srcdir)/%.cc $(hdir)/Babylon/%.hh
+%.d:	%.cc %.hh
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-%.syn:	$(hdir)/Babylon/%.hh
-	@echo parsing $^
-	@$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Babylon,linker=Babylon $(SFLAGS) -o $@ $?
+%.syn:	%.hh
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Babylon,linker=Babylon $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

@@ -22,47 +22,22 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/src
-cdir		:= ../config
-hdir		:= $(top_srcdir)/include
-
-define makedep
-@echo generating dependencies for $(<F)
-$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-endef
-
-define compile
-@echo compiling $(@F)
-$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-endef
-
-define parse
-@echo parsing $^
-@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
-endef
+srcdir		:= @srcdir@
+cdir		:= @top_builddir@/config
+hdir		:= $(top_srcdir)/include/Prague
 
 include ../config/local.mk
-
-edit		:= sed \
-	           -e 's,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),g' \
-	           -e 's,@CXXFLAGS\@,@CXXFLAGS@,g' \
-		   -e 's,@LIBS\@,@LIBS@,g'
 
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-Sys		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
+SRC		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
 	  	   File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  	   DLL.cc MMap.cc SHM.cc Thread.cc Timer.cc Signal.cc Fork.cc
-IPC		:= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
+SRC		+= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
 	  	   Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc TTYAgent.cc SocketAgent.cc
-Filter		:= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
-Network		:= protocol.cc echo.cc ftp.cc smtp.cc url.cc
-
-SRC		:= $(patsubst %, Sys/%, $(Sys))
-SRC		+= $(patsubst %, IPC/%, $(IPC))
-SRC		+= $(patsubst %, Filter/%, $(Filter))
-SRC		+= $(patsubst %, Network/%, $(Network))
+SRC		+= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
+SRC		+= protocol.cc echo.cc ftp.cc smtp.cc url.cc
 
 SysH		:= logbuf.hh logstream.hh ntree.hh Tracer.hh regex.hh User.hh Process.hh \
                    Stopwatch.hh Profiler.hh Time.hh \
@@ -76,20 +51,21 @@ IPCH		:= ipcbuf.hh pipebuf.hh sockbuf.hh sockstream.hh ptybuf.hh mmapbuf.hh conv
 FilterH		:= gzbuf.hh gzstream.hh# xdrbuf.cc #bzbuf.cc 
 NetworkH	:= protocol.hh echo.hh ftp.hh smtp.hh url.hh
 
-HDR		:= Prague/config.hh
-HDR		+= $(patsubst %, Prague/Sys/%, $(SysH))
-HDR		+= $(patsubst %, Prague/IPC/%, $(IPCH))
-HDR		+= $(patsubst %, Prague/Filter/%, $(FilterH))
-HDR		+= $(patsubst %, Prague/Network/%, $(NetworkH))
-DEP		:= $(patsubst %.cc, %.d, $(notdir $(SRC)))
-OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
-SYN		:= $(patsubst Prague/%.hh, %.syn, $(HDR))
+HDR		:= config.hh
+HDR		+= $(patsubst %, Sys/%, $(SysH))
+HDR		+= $(patsubst %, IPC/%, $(IPCH))
+HDR		+= $(patsubst %, Filter/%, $(FilterH))
+HDR		+= $(patsubst %, Network/%, $(NetworkH))
+DEP		:= $(patsubst %.cc, %.d, $(SRC))
+OBJ		:= $(patsubst %.cc, %.o, $(SRC))
+SYN		:= $(patsubst %.hh, %.syn, $(notdir $(HDR)))
 
 TARGET		:= ../lib/libPrague.so
 
-vpath %.hh  $(hdir)/Prague/Sys $(hdir)/Prague/IPC $(hdir)/Prague/Filter $(hdir)/Prague/Network
+vpath %.hh  $(hdir):$(hdir)/Sys:$(hdir)/IPC:$(hdir)/Filter:$(hdir)/Network
+vpath %.cc  $(srcdir)/Sys:$(srcdir)/IPC:$(srcdir)/Filter:$(srcdir)/Network
 
-.PHONY: clean distclean maintainer-clean dist install
+.PHONY: all doc install install-doc clean distclean maintainer-clean dist
 
 all:	$(TARGET) ../bin/Prague-config
 
@@ -99,10 +75,9 @@ $(TARGET):	$(OBJ)
 
 ../bin/Prague-config: $(top_srcdir)/config/Prague-config.in
 	rm -f $@ $@.tmp
-	$(edit) \
-	  -e 's,@prefix\@,@abs_top_builddir@,g' \
-	  -e 's,@exec_prefix\@,@abs_top_builddir@,g' \
-	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I@abs_top_builddir@/include -I@abs_top_srcdir@/include ,g' \
+	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
+	  	-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
+	  	-e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(abs_top_builddir)/include -I$(abs_top_srcdir)/include ,g' \
 	  $< > $@.tmp
 	chmod +x $@.tmp
 	mv $@.tmp $@
@@ -123,16 +98,16 @@ install:	all
           echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
         fi
 	@for header in $(HDR); do \
-	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
-	    $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header 2>/dev/null; then \
+	    echo "$(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header"; \
+	    $(INSTALL) -D -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/Prague/$$header; \
 	  else \
-	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+	    echo "$(DESTDIR)$(includedir)/Prague/$$header is up to date"; \
 	  fi; \
 	done
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/Prague-config $(DESTDIR)$(bindir)/Prague-config.tmp
-	$(edit) \
+	$(EDIT) \
 	  -e 's,@prefix\@,$(prefix),g' \
           -e 's,@exec_prefix\@,$(exec_prefix),g' \
 	  -e 's,@CPPFLAGS\@,@CPPFLAGS@ -I$(includedir),g' \
@@ -141,7 +116,7 @@ install:	all
 	mv $(DESTDIR)$(bindir)/Prague-config.tmp $(DESTDIR)$(bindir)/Prague-config
 
 install-doc: doc
-	mkdir -p $(DESTDIR)$(datadir)/Prague/doc
+	mkdir -p $(DESTDIR)$(datadir)/doc/Prague
 	cp -r ../share/doc/Prague/html $(DESTDIR)$(datadir)/doc/Prague
 
 uninstall:
@@ -165,37 +140,22 @@ maintainer-clean: distclean
 	rm -f $(top_srcdir)/configure $(top_srcdir)/config/acconfig.hh.in \
 		$(top_srcdir)/config/aclocal.m4
 
-%.d:	$(srcdir)/Sys/%.cc $(hdir)/Prague/Sys/%.hh
-	$(makedep)
-%.d:	$(srcdir)/IPC/%.cc $(hdir)/Prague/IPC/%.hh
-	$(makedep)
-%.d:	$(srcdir)/Filter/%.cc $(hdir)/Prague/Filter/%.hh
-	$(makedep)
-%.d:	$(srcdir)/Network/%.cc $(hdir)/Prague/Network/%.hh
-	$(makedep)
-%.o:	$(srcdir)/Sys/%.cc
-	$(compile)
-DataTypeManager.o:	$(srcdir)/Sys/DataTypeManager.cc
+%.d:	%.cc %.hh
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+%.o:	%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+
+DataTypeManager.o:	DataTypeManager.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
-%.o:	$(srcdir)/IPC/%.cc
-	$(compile)
-%.o:	$(srcdir)/Filter/%.cc
-	$(compile)
-%.o:	$(srcdir)/Network/%.cc
-	$(compile)
 
-%.syn:	$(hdir)/Prague/%.hh
-	$(parse)
-Sys/%.syn:	$(hdir)/Prague/Sys/%.hh
-	$(parse)
-IPC/%.syn:	$(hdir)/Prague/IPC/%.hh
-	$(parse)
-Filter/%.syn:	$(hdir)/Prague/Filter/%.hh
-	$(parse)
-Network/%.syn:	$(hdir)/Prague/Network/%.hh
-	$(parse)
+%.syn:	%.hh
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

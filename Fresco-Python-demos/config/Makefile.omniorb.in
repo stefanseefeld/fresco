@@ -20,13 +20,11 @@
 # MA 02139, USA.
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/src
-cdir		:= ../config
+srcdir		:= @srcdir@
+idir		:= @Fresco_prefix@/idl
+cdir		:= @top_builddir@/config
 
 include $(cdir)/local.mk
-
-datadir		:= @datadir@
-idir		:= $(datadir)/idl
 
 IDLPY		:= omniidl
 IDLPYFLAGS	:= -I$(idir) -nf -bpython# -Wbglobal=Warsaw

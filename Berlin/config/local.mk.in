@@ -35,14 +35,15 @@ oldincludedir	:= @oldincludedir@
 infodir		:= @infodir@
 mandir		:= @mandir@
 
-abs_builddir	:= @abs_builddir@
 abs_top_builddir:= @abs_top_builddir@
-abs_srcdir	:= @abs_srcdir@
 abs_top_srcdir	:= @abs_top_srcdir@
 
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
 INSTALL		:= @INSTALL@
+EDIT		:= sed -e 's,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),g' \
+	               -e 's,@CXXFLAGS\@,@CXXFLAGS@,g' \
+		       -e 's,@LIBS\@,@LIBS@,g'
 
 SO_CXXFLAGS	:= @SO_CXXFLAGS@
 SO_LDFLAGS	:= @SO_LDFLAGS@

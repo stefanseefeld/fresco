@@ -82,13 +82,13 @@ dnl ------------------------------------------------------------------
 
 FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS $Prague_LIBS"
+LIBS="$Prague_LIBS $LIBS"
 FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$LIBS $Babylon_LIBS"
+LIBS="$Babylon_LIBS $LIBS"
 FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
-LIBS="$LIBS $Fresco_LIBS"
+LIBS="$Fresco_LIBS $LIBS"
 
 dnl ------------------------------------------------------------------
 dnl some helper utils
@@ -128,11 +128,11 @@ for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Images
   AC_CONFIG_FILES([modules/$kit/Makefile])
 done
 
-AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-config.in],[chmod +x bin/Berlin-config])
-AC_CONFIG_FILES([config/local.mk config/module.mk])
+AC_CONFIG_FILES([config/local.mk config/module.mk config/synopsis.py])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile etc/berlinrc:config/berlinrc.in])
 
 mkdir -p lib
 mkdir -p etc
+mkdir -p bin
 
 AC_OUTPUT

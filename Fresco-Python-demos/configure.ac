@@ -44,6 +44,8 @@ dnl ------------------------------------------------------------------
 dnl AC_MSG_PART(CORBA Environment)
 FRESCO_OMNIORBPY_CHECK
 
+FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
+
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------

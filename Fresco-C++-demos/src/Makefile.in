@@ -47,6 +47,8 @@ PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
 
 TARGETS		:= demo demo3D pinyin_demo
 
+vpath %.cc $(srcdir)
+
 all:	$(patsubst %, ../bin/%, $(TARGETS))
 
 ../bin/demo:	$(DEMO_OBJ)
@@ -92,11 +94,11 @@ distclean:	clean
 maintainer-clean: distclean
 	rm -f $(top_srcdir)/config/Clients-C++/configure $(top_srcdir)/config/Clients-C++/aclocal.m4
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-%.d:	$(srcdir)/%.cc
+%.d:	%.cc
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 

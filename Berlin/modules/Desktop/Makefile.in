@@ -22,9 +22,9 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
+top_builddir	:= @top_builddir@
 srcdir		:= $(top_srcdir)/modules/Desktop
-builddir	:= ../..
-cdir		:= $(builddir)/config
+cdir		:= $(top_builddir)/config
 
 include $(cdir)/local.mk
 

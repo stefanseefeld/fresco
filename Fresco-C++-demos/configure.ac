@@ -62,15 +62,18 @@ dnl ------------------------------------------------------------------
 dnl Warsaw and Prague
 dnl ------------------------------------------------------------------
 
-FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
-LIBS="$LIBS $Fresco_LIBS"
-FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$LIBS $Babylon_LIBS"
 FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-LIBS="$LIBS $Prague_LIBS"
+CPPFLAGS="$Prague_CPPFLAGS $CPPFLAGS"
+LIBS="$Prague_LIBS $LIBS"
+FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+CPPFLAGS="$Babylon_CPPFLAGS $CPPFLAGS"
+LIBS="$Babylon_LIBS $LIBS"
+FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
+CPPFLAGS="$Fresco_CPPFLAGS $CPPFLAGS"
+LIBS="$Fresco_LIBS $LIBS"
+FRESCO_PACKAGE(Berlin, $PACKAGE_VERSION)
+CPPFLAGS="$Berlin_CPPFLAGS $CPPFLAGS"
+LIBS="$Berlin_LIBS $LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

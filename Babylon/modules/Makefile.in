@@ -23,9 +23,9 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
-srcdir		:= $(top_srcdir)/modules
-cdir		:= ../config
-hdir		:= $(top_srcdir)/include
+srcdir		:= @srcdir@
+cdir		:= @top_builddir@/config
+hdir		:= $(top_srcdir)/include/Babylon
 
 include $(cdir)/local.mk
 
@@ -143,6 +143,8 @@ OBJ	= $(patsubst %.cc, %.o, $(SRC))
 
 TARGET	= $(patsubst %.cc, %.so, $(SRC))
 
+vpath %.cc  $(srcdir)
+
 .PHONY: install uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET)
@@ -165,7 +167,7 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOFLAGS) -c $< -o $@
 

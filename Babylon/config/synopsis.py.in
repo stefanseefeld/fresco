@@ -35,7 +35,7 @@ class Config(Base):
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
 	    toc_out = '../share/doc/Babylon/html/Babylon.toc'
-	    toc_in = ['@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../../doc/Prague/html']
+	    toc_in = ['@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague/html']
 	
 	# Here we extend the base modules, so you can still use DUMP, ASCII etc
 	modules = Base.Formatter.modules

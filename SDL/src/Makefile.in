@@ -41,6 +41,7 @@ TARGET	+= ../lib/Fresco/Console/SDLGL.so
 endif
 ../lib/Fresco/Console/SDLGL.so: SDLGL.o
 
+vpath %.cc $(srcdir)
 
 all:	$(TARGET)
 
@@ -68,10 +69,11 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.d:	$(srcdir)/%.cc
+%.d:	%.cc
 	@echo generating dependencies for $<
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-%.o:	$(srcdir)/%.cc
+
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
