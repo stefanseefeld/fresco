@@ -42,7 +42,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 CXXFLAGS= -pthread -Wall -Dprofile $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
-ldlibpath = LD_LIBRARY_PATH=$(lpath)
+ldlibpath = LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(lpath)
 
 world:	server kits
 
