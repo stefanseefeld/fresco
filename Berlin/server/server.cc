@@ -371,19 +371,18 @@ int main(int argc, char **argv) /*FOLD00*/
        getopt.get("export-ref",&value);
        if (value == "corbaloc")
        {
-	   CORBA::Object_var poaref = orb->resolve_initial_references("omniINSPOA");
-	   insPOA = PortableServer::POA::_narrow(poaref);
-	   PortableServer::POAManager_var poam = insPOA->the_POAManager();
-	   poam->activate();
-	   
-	   server = ServerImpl::create(insPOA, policies);
-	   Logger::log(Logger::loader) << "corbaloc setup." << std::endl;
+	 insPOA = resolve_init<PortableServer::POA>(orb,"omniINSPOA");
+	 PortableServer::POAManager_var poam = insPOA->the_POAManager();
+	 poam->activate();
+	 
+	 server = ServerImpl::create(insPOA, policies);
+	 Logger::log(Logger::loader) << "corbaloc setup." << std::endl;
        }
        else
        {
-	   server = ServerImpl::create(poa, policies);      
-	   Logger::log(Logger::loader) << "no corbaloc. Setup skipped."
-		                       << std::endl;
+	 server = ServerImpl::create(poa, policies);      
+	 Logger::log(Logger::loader) << "no corbaloc. Setup skipped."
+				     << std::endl;
        }
 
        Prague::Path path = RCManager::get_path("modulepath");
