@@ -175,6 +175,15 @@ void GGI::Console::device_info(std::ostream &os)
     }
 }
 
+bool GGI::Console::has_event()
+{
+  Prague::Trace trace("GGI::Console::has_event");
+  ggi_event_mask mask;
+
+  mask = ggi_event_mask(emKeyboard | emPtrMove | emPtrButton | emValuator);
+  return ggiEventsQueued(_visual, mask);
+}
+
 Input::Event *GGI::Console::next_event()
 {
   Prague::Trace trace("GGI::Console::next_event");

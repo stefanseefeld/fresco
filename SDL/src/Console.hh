@@ -124,6 +124,7 @@ public:
 
   // Input related:
   virtual void device_info(std::ostream &);
+  virtual bool has_event();
   virtual Fresco::Input::Event *next_event();
   virtual void activate_autoplay();
   virtual void highlight_screen(Fresco::Coord, Fresco::Coord,

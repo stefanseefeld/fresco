@@ -189,6 +189,14 @@ void SDL::Console::device_info(std::ostream &os)
   os << "sorry, device info isn't available for SDL at this time" << std::endl;
 }
 
+// a true result is a promise that we won't block when next_event is next called
+bool SDL::Console::has_event()
+{
+  Prague::Trace trace("SDL::Console::next_event()");
+
+  return SDL_PeepEvents(0, 1, SDL_PEEKEVENT, 0);
+}
+
 Input::Event *SDL::Console::next_event()
 {
   Prague::Trace trace("SDL::Console::next_event()");
@@ -342,8 +350,8 @@ void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
 				    double blue)
 {
 #ifdef RMDEBUG
-  // I try to stay 'below' the Drable whereever possible so that bugs in that
-  // code cannot influence the highlighting.
+  // I try to stay 'below' the Drawable where ever possible so that bugs in
+  // that code cannot influence the highlighting.
 
   if (is_gl()) {
     std::cerr << "Region Management Debugging does not work eith OpenGL on SDL."
