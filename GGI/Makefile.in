@@ -24,6 +24,7 @@ SHELL	:= /bin/sh
 top_srcdir	:= @top_srcdir@
 
 subdirs	:= src GGIKit clients
+# insert inter-directory dependencies below
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
@@ -33,6 +34,9 @@ action	:= all
 .PHONY: depend install uninstall clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
+
+# insert inter-directory dependencies here
+#(none currently)
 
 $(subdirs):
 	@echo making $(action) in $@

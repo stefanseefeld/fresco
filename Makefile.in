@@ -34,6 +34,8 @@ mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) &&
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
 subdirs		:= $(mandatory_dirs) $(optional_dirs)
 
+# insert inter-directory dependencies below
+
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
 action		:= all
@@ -43,6 +45,13 @@ action		:= all
         clean distclean maintainer-clean
 
 all:	$(subdirs)
+
+# insert inter-directory dependencies here
+Babylon: Prague
+Berlin: Babylon Prague Fresco
+GGI: Berlin Fresco Prague
+SDL: Berlin Fresco Prague
+Clients-C++: Berlin Babylon Fresco Prague
 
 $(mandatory_dirs): %: %/Makefile
 	@echo "making $(action) in $@"

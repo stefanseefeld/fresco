@@ -24,6 +24,7 @@ SHELL	:= /bin/sh
 top_srcdir	:= @top_srcdir@
 
 subdirs	:= src
+# insert inter-directory dependencies below
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
@@ -34,6 +35,9 @@ action	:= all
         uninstall clean distclean maintainer-clean
 
 all:	$(subdirs)
+
+# insert inter-directory dependencies here
+#(none currently)
 
 $(subdirs):
 	@echo making $(action) in $@
