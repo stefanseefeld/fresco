@@ -122,7 +122,7 @@ AC_DEFUN([FRESCO_CHECK_LIB],[
 	includes="patsubst(`$4', `\(\w\|\.\|/\)+', `#include <\&>
 ')"
 	changequote([, ])
-	AC_CACHE_CHECK("for -l$2",
+	AC_CACHE_CHECK(for -l$2,
 		fresco_cv_lib_$2,
 		AC_TRY_LINK($includes,
 			$3, fresco_cv_lib_$2="yes", fresco_cv_lib_$2="no"))
