@@ -23,7 +23,9 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Path.hh>
+#include <Prague/Sys/Directory.hh>
 #include <Prague/Sys/Plugin.hh>
+#include "Berlin/Logger.hh"
 #include "Berlin/RCManager.hh"
 #include "Berlin/Console.hh"
 
@@ -48,10 +50,27 @@ int Console::open(int argc, char **argv, PortableServer::POA_ptr poa) throw(std:
   getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
   int argo = getopt.parse(argc, argv);
   std::string value;
-  if (!getopt.get("console", &value)) value = "GGI";
+  getopt.get("console", &value);
   Prague::Path path = RCManager::get_path("modulepath");
-  std::string name = path.lookup_file(std::string("Console/") + value + ".so");
-  if (name.empty()) throw std::runtime_error("no console found");
+  if (!value.empty())
+    {
+      std::string name = path.lookup_file(std::string("Console/") + value + ".so");
+      if (name.empty()) throw std::runtime_error("no console found");
+      else plugin = new Plugin<Console::Loader>(name);
+    }
+  else
+    for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
+      {
+	Directory directory(*i + "/Console", Directory::alpha, "\\.so$");
+	for (Directory::iterator j = directory.begin(); j != directory.end() && !plugin; ++j)
+	  try { plugin = new Plugin<Console::Loader>((*j)->long_name());}
+	  catch (const std::runtime_error &e)
+	    { 
+	      Logger::log(Logger::loader) << (*j)->name() << " not loadable " << e.what() << std::endl;
+	      continue;
+	    }
+      }
+  if (!plugin) throw std::runtime_error("no console found");
   _console = (*plugin)->load(argo, argv);
   _console->_poa = PortableServer::POA::_duplicate(poa);
   return argo;
