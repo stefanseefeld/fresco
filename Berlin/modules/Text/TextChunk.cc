@@ -39,7 +39,7 @@ TextChunk::TextChunk(Unichar u, const Fresco::Graphic::Requisition &r)
 
 TextChunk::~TextChunk()
 {
-  delete _obj_name;
+  if (_obj_name) free(const_cast<char*>(_obj_name));
 }
 
 void TextChunk::request(Fresco::Graphic::Requisition &r)
