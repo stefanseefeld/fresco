@@ -40,6 +40,7 @@ PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq
   : KitImpl(id, p)
 {
   _os.rdbuf(cout.rdbuf());
+  _os.precision(5);
 }
 
 PSDrawingKit::~PSDrawingKit()
@@ -232,6 +233,31 @@ void PSDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 
 void PSDrawingKit::draw_image(Raster_ptr raster)
 {
+  Raster_var r = Raster::_duplicate(raster);
+  _os << "%draw_image" << std::endl;
+  _os << "gsave" << std::endl;
+  Vertex v; v.x = 0; v.y = 0; v.z = 0;
+  vertex(v, " translate");
+  _os << r->header().width << " " << r->header().height << " "
+      << r->header().depth << std::endl;
+  _os << "[ " << resolution(xaxis) << " 0 0 "
+      << resolution(yaxis) << " 0 0 ]" << std::endl;
+  _os << "{<" << std::endl;
+  Raster::Index i;
+  for (i.y = 0; i.y < r->header().height; i.y++) {
+    for (i.x = 0; i.x < r->header().width; i.x++) {
+      Color c;
+      char color[7];
+      r->store_pixel(i, c);
+      sprintf(color, "%02x%02x%02x", (int)(c.red*255), (int)(c.green*255), (int)(c.blue*255));
+      _os << color;
+    }
+    _os << std::endl;
+  }
+  _os << ">}" << std::endl;
+  _os << "false 3 colorimage" << std::endl;
+  _os << "grestore" << std::endl;
+  _os << std::endl;
 }
 
 void PSDrawingKit::set_font_size(CORBA::ULong s)
