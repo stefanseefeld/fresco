@@ -28,7 +28,7 @@ using namespace Warsaw;
 
 vector<DrawableTie<GGIDrawable> *> GGIConsole::drawables;
 
-GGIConsole::GGIConsole()// throw (exception)
+GGIConsole::GGIConsole(int &argc, char **argv)// throw (exception)
   : autoplay(false)
 {
   ggiInit();
