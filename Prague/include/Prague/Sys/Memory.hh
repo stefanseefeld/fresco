@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -30,24 +30,9 @@ namespace Prague
 namespace Memory
 {
 template <class T>
-T *copy(const T *from, T *to, unsigned long n)
-{
-  if (n > 0)
-    {
-#if defined(__sun) && !defined(__SVR4)
-      return bcopy(from, to, n);
-#else
-      return reinterpret_cast<T *>(memmove(to, from, size_t(n)));
-#endif
-    }
-  return to;
-}
+T *copy(const T *from, T *to, unsigned long n) { return n > 0 ? reinterpret_cast<T *>(memmove(to, from, size_t(n))) : to;}
 template <class T>
-T *move(const T *from, T *to, unsigned long n)
-{
-  if (n > 0) return reinterpret_cast<T *>(memmove(to, from, size_t(n)));
-  else return to;
-}
+T *move(const T *from, T *to, unsigned long n) { return n > 0 ? reinterpret_cast<T *>(memmove(to, from, size_t(n))) : to;}
 template <class T>
 T *set(T *b, unsigned long n, T c) { return reinterpret_cast<T *>(memset(b, c, size_t(n)));}
 template <class T>
