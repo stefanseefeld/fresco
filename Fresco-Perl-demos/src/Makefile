@@ -49,7 +49,7 @@ MISCDEP := $(foreach target,$(MISC),$(dpath)/$(target).d)
 
 TARGET	=  demo
 
-.PHONY: warsaw-modules demo clean distclean
+.PHONY: demo clean distclean warsaw-modules
 
 world:		$(TARGET)
 
@@ -58,11 +58,14 @@ demo: nsref.ior warsaw-modules
 nsref.ior: get-nameservice-ior
 	./get-nameservice-ior > nsref.ior
 
-warsaw-modules: Warsaw.idl
+warsaw-modules: Warsaw/build-stamp
+Warsaw/build-stamp: Warsaw.idl
 	idl2perl -combine -out Warsaw Warsaw.idl
 	mv Warsaw/Warsaw.pm Warsaw/Warsaw.pm.back
 	echo 'use Warsaw::_file_;' > Warsaw/Warsaw.pm
 	cat Warsaw/Warsaw.pm.back >> Warsaw/Warsaw.pm
+	idl2perl -out impls -impl Warsaw.idl
+	touch Warsaw/build-stamp
 
 Warsaw.idl: gen-warsaw-idl.pl $(wildcard $(top)/include/Warsaw/*.idl)
 	gen-warsaw-idl.pl $(top)/include/Warsaw/*.idl
@@ -80,7 +83,7 @@ install:	world
 clean:	
 		rm -f *.o $(opath)/*.o $(dpath)/*.d *~ bb.out gmon.out
 		rm -f nsref.ior Warsaw.idl
-		rm -rf Warsaw
+		rm -rf Warsaw impls
 
 distclean:	clean
 		rm -f $(MISC)
