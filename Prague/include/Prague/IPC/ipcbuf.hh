@@ -65,7 +65,7 @@ public:
   //. set the file descriptor
   void fd(int f) { _fd = f;}
   bool oob() const { return _oobbit;}
-  bool oob(bool f) { _oobbit = f;}
+  bool oob(bool f) { bool ret = _oobbit; _oobbit = f; return ret;}
   //. set the buffer to nonblocking mode if flag is true, to blocking mode otherwise
   void async(bool flag);
   //. return true if the buffer is in nonblocking mode, false otherwise

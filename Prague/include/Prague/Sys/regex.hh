@@ -46,13 +46,13 @@ private:
   std::string _s;
   size_t      _n;
   regmatch_t *_r;
-  rxmatch(const std::string &s, int p, int n, regmatch_t *r) : _s(s), _n(n), _r(r)
-    {
-      if (p == -1) _n = 0;
-      for (size_t i = 0; i != n; ++i)
-	if (r[i].rm_so == -1) { _n = i; break;}
-	else r[i].rm_so += p, r[i].rm_eo += p;
-    }
+  rxmatch(const std::string &s, int p, size_t n, regmatch_t *r) : _s(s), _n(n), _r(r)
+  {
+    if (p == -1) _n = 0;
+    for (size_t i = 0; i != n; ++i)
+      if (r[i].rm_so == -1) { _n = i; break;}
+      else r[i].rm_so += p, r[i].rm_eo += p;
+  }
 };
 
 class regex
