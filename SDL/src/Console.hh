@@ -153,10 +153,6 @@ private:
   
   bool                _is_gl;
 
-  Fresco::Coord       _resolution[2];
-  Fresco::PixelCoord  _size[2];
-  Fresco::PixelCoord  _vsize[2];
-
   int                 _wakeupPipe[2];
   long                _position[2];
 

@@ -30,8 +30,7 @@
 // ---------------------------------------------------------------
 
 SDL::Drawable::Drawable(const char *display,
-			Fresco::PixelCoord w, Fresco::PixelCoord h,
-			Fresco::PixelCoord d)
+			Fresco::PixelCoord w, Fresco::PixelCoord h, int d)
 {
   Prague::Trace trace("SDL::Drawable::Drawable()");
 

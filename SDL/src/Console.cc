@@ -118,16 +118,6 @@ SDL::Console::Console(int &argc, char **argv) :
   SDL_ShowCursor(SDL_DISABLE);
   SDL_EnableUNICODE(SDL_ENABLE);
 
-  // FIXME: Get some 'real' values!
-  _resolution[0] = 0.1;
-  _resolution[1] = 0.1;
-
-  _size[0] = 640;
-  _size[1] = 480;
-
-  _vsize[0] = 640;
-  _vsize[1] = 480;
-
   pipe(_wakeupPipe);
 }
 
@@ -258,8 +248,8 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
 	    _position[1] = e.motion.y;
 	  }
 	Input::Position position;
-	position.x = _position[0]/_resolution[0];
-	position.y = _position[1]/_resolution[1];
+	position.x = _position[0]/drawable()->resolution(Fresco::xaxis);
+	position.y = _position[1]/drawable()->resolution(Fresco::yaxis);
 	position.z = 0;
 	event->length(1);
 	event[0].dev = 1;
@@ -276,8 +266,8 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
 	  toggle.actuation = Input::Toggle::release;
 	toggle.number = e.button.button;          
 	Input::Position position;
-	position.x = _position[0]/_resolution[0];
-	position.y = _position[1]/_resolution[1];
+	position.x = _position[0]/drawable()->resolution(Fresco::xaxis);
+	position.y = _position[1]/drawable()->resolution(Fresco::yaxis);
 	position.z = 0;
 	event->length(2);
 	event[0].dev = 1;
@@ -357,10 +347,10 @@ void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
 
    // compute the device space coordinates
   SDL_Rect fill;
-  fill.x = static_cast<PixelCoord>(lx * _resolution[0]);
-  fill.y = static_cast<PixelCoord>(ly * _resolution[1]);
-  fill.w = static_cast<PixelCoord>(ux * _resolution[0] - fill.x);
-  fill.h = static_cast<PixelCoord>(uy * _resolution[1] - fill.y);
+  fill.x = static_cast<PixelCoord>(lx * drawable()->resolution(Fresco::xaxis));
+  fill.y = static_cast<PixelCoord>(ly * drawable()->resolution(Fresco::yaxis));
+  fill.w = static_cast<PixelCoord>(ux * drawable()->resolution(Fresco::xaxis) - fill.x);
+  fill.h = static_cast<PixelCoord>(uy * drawable()->resolution(Fresco::yaxis) - fill.y);
 
   SDL::Drawable * d = static_cast<SDL::Drawable *>(drawable());
   SDL_Surface * screen = d->surface();

@@ -49,8 +49,7 @@ public:
   typedef Uint32 Pixel;
 
   Drawable(const char *,
-	   Fresco::PixelCoord = 640, Fresco::PixelCoord = 480,
-	   Fresco::PixelCoord = 3);
+	   Fresco::PixelCoord = 640, Fresco::PixelCoord = 480, int = 3);
   virtual ~Drawable();
 
   virtual Fresco::Drawable::PixelFormat pixel_format();
