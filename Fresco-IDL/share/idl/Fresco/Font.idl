@@ -53,26 +53,6 @@ module Fresco
     };
   typedef sequence<FontShapeSegment> FontShape;
 
-#if 0
-  // impl supplied by caller, which would be the PSDrawingKit for
-  // example.
-   interface FontDecompose
-    {
-      void move(in Vertex to);
-      void line(in Vertex to);
-      void conic(in Vertex control, in Vertex to);
-      void cubic(in Vertex control1, in Vertex control2, in Vertex to);
-    };
-#endif
-
-  interface Glyph
-    {
-      Raster bitmap();
-      FontShape decompose();
-      void char_info(out FontMetrics fm);
-      void transformation(in Transform t);
-    };
-
   struct GlyphMetrics
     {
       Vertex size;
@@ -88,6 +68,14 @@ module Fresco
       //. restricted to italics, as a bold 'f' between single quotes
       //. will need correction as well. This variable covers both cases.
       Coord italic_correction;
+    };
+
+  interface Glyph
+    {
+      Raster bitmap();
+      FontShape decompose();
+      void char_info(out GlyphMetrics gm);
+      void transformation(in Transform t);
     };
 
   interface Font : RefCountBase, Identifiable
