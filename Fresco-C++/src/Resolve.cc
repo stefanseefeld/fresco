@@ -30,24 +30,32 @@
 #include <unistd.h>   // XXX use prague instead (unlink)
 #include <Prague/Sys/Env.hh>
 
-#ifdef FRESCO_PREFIX
-#  error #define conflict!
-#endif
-#define FRESCO_PREFIX "IDL:fresco.org/Fresco/"
-char const Kit_traits<Fresco::LayoutKit>::id[]=FRESCO_PREFIX"LayoutKit:1.0";
-char const Kit_traits<Fresco::ToolKit>::id[]=FRESCO_PREFIX"ToolKit:1.0";
-char const Kit_traits<Fresco::TextKit>::id[]=FRESCO_PREFIX"TextKit:1.0";
-char const Kit_traits<Fresco::DesktopKit>::id[]=FRESCO_PREFIX"DesktopKit:1.0";
-char const Kit_traits<Fresco::CommandKit>::id[]=FRESCO_PREFIX"CommandKit:1.0";
-char const Kit_traits<Fresco::WidgetKit>::id[]=FRESCO_PREFIX"WidgetKit:1.0";
-char const Kit_traits<Fresco::RasterKit>::id[]=FRESCO_PREFIX"RasterKit:1.0";
-char const Kit_traits<Fresco::FigureKit>::id[]=FRESCO_PREFIX"FigureKit:1.0";
-char const Kit_traits<Fresco::GadgetKit>::id[]=FRESCO_PREFIX"GadgetKit:1.0";
-char const Kit_traits<Fresco::PrimitiveKit>::id[]=FRESCO_PREFIX"PrimitiveKit:1.0";
-#undef FRESCO_PREFIX
+// ---------------------------------------------------------------
+// Kit_traits definitions
+// ---------------------------------------------------------------
+char const Kit_traits<Fresco::LayoutKit>::id[]="IDL:fresco.org/Fresco/"
+  "LayoutKit:1.0";
+char const Kit_traits<Fresco::ToolKit>::id[]="IDL:fresco.org/Fresco/"
+  "ToolKit:1.0";
+char const Kit_traits<Fresco::TextKit>::id[]="IDL:fresco.org/Fresco/"
+  "TextKit:1.0";
+char const Kit_traits<Fresco::DesktopKit>::id[]="IDL:fresco.org/Fresco/"
+  "DesktopKit:1.0";
+char const Kit_traits<Fresco::CommandKit>::id[]="IDL:fresco.org/Fresco/"
+  "CommandKit:1.0";
+char const Kit_traits<Fresco::WidgetKit>::id[]="IDL:fresco.org/Fresco/"
+  "WidgetKit:1.0";
+char const Kit_traits<Fresco::RasterKit>::id[]="IDL:fresco.org/Fresco/"
+  "RasterKit:1.0";
+char const Kit_traits<Fresco::FigureKit>::id[]="IDL:fresco.org/Fresco/"
+  "FigureKit:1.0";
+char const Kit_traits<Fresco::GadgetKit>::id[]="IDL:fresco.org/Fresco/"
+  "GadgetKit:1.0";
+char const Kit_traits<Fresco::PrimitiveKit>::id[]="IDL:fresco.org/Fresco/"
+  "PrimitiveKit:1.0";
 
 // ---------------------------------------------------------------
-// Internals
+// Internals for server publishing and resolution
 // ---------------------------------------------------------------
 
 // Internal defaults for server-publishing
