@@ -29,7 +29,8 @@
 #include <Fresco/Unicode.hh>
 #include <Berlin/LRUCache.hh>
 #include "Font.hh"
-#include <freetype/freetype.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <map>
 
 namespace Berlin {
