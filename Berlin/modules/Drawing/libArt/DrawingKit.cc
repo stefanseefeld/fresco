@@ -38,6 +38,7 @@ extern "C"
 #include <art_vpath.h>
 #include <art_svp.h>
 #include <art_svp_vpath.h>
+#include <art_svp_wind.h>
 #include <art_rect_svp.h>
 #include <art_rgb_svp.h>
 #include <art_rgb_pixbuf_affine.h>
@@ -196,7 +197,10 @@ void LibArtDrawingKit::drawPath(const Path &p)
   
   ArtDRect locd; ArtIRect loc;
   tvpath = art_vpath_affine_transform(vpath,scaled_affine);
-  ArtSVP *svp = art_svp_from_vpath (tvpath); 
+  ArtSVP *svp1 = art_svp_from_vpath (tvpath); 
+
+  ArtSVP *svp2 = art_svp_uncross (svp1);
+  ArtSVP *svp = art_svp_rewind_uncrossed (svp2, ART_WIND_RULE_ODDEVEN);
 
   art_drect_svp (&locd, svp);
   art_drect_to_irect(&loc, &locd);
@@ -209,6 +213,8 @@ void LibArtDrawingKit::drawPath(const Path &p)
  		     buf->buffer.plb.stride,
  		     agam);
   art_svp_free(svp);
+  art_svp_free(svp1);
+  art_svp_free(svp2);
 
   // reset damaged code points
   vpath[0].code = ART_LINETO;

@@ -75,16 +75,33 @@ GGI::Drawable::~Drawable()
   ggiClose(vis);
 }
 
+
 bool GGI::Drawable::nextEvent(ggi_event &event)
 {
   ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+  ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
+
   Prague::FdSet rfdset;
   rfdset.set(wakeupPipe[0]);
   switch(ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0))
     {
-    case 0: ggiEventRead(vis, &event, mask); return true;
+    case 0: {
+      ggiEventRead(vis, &event, mask); 
+      if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute) {
+	int m = ggiEventsQueued(vis, mask);
+	int n = ggiEventsQueued(vis, move_mask);
+	if (m == n) { // nothing but a bunch of moves queued up
+	  for (int i = 0; i < n; ++i) {
+	    // consume them all
+	    ggiEventRead(vis, &event, move_mask); 	  
+	  }
+	}
+      }
+      return true;
+      
     case 1:{ char c; read(wakeupPipe[0], &c, 1); }
     default: break;
+    }
     }
   return false;
 }
