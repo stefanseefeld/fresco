@@ -48,7 +48,7 @@ class LayoutAlign : public LayoutManager
 //. LayoutAlign -- align positions along an axis
 {
 public:
-  LayoutAlign(Warsaw::Axis, bool = false);
+  LayoutAlign(Warsaw::Axis);
   virtual ~LayoutAlign();
   virtual LayoutManager *clone();
 
@@ -56,7 +56,6 @@ public:
   virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
 private:
   Warsaw::Axis axis;
-  bool relaxed;
 };
 
 class LayoutCenter : public LayoutManager
