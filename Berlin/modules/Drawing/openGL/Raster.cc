@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -33,7 +33,6 @@ using namespace Prague;
 
 template <class T>
 T ceiling(T a, T b) { return a % b == 0 ? a/b : a/b + 1;}
-const double epsilong = 0.001;
 
 bool scaleImage(GLenum format,
 		size_t widthin, size_t heightin, const unsigned char *datain,

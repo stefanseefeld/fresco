@@ -396,19 +396,15 @@ ostream &operator << (ostream &os, const Grid::Index &i) { return os << i.col <<
 
 void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
-  cout << "GridImpl::allocate " << tag << ' ' << tag2index(tag) << endl;
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);  
   tx->loadIdentity();
-  cout << "before " << info.allocation << endl;
   allocateCell(info.allocation, tag2index(tag), info.allocation);
-  cout << "after " << info.allocation << endl;
   Lease<RegionImpl> region;
   Providers::region.provide(region);  
   region->copy(info.allocation);
   region->normalize(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(region->_this()));
-  cout << "after " << info.allocation << endl;
   info.transformation->premultiply(Transform_var(tx->_this()));
 }
 

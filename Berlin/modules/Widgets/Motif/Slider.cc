@@ -73,13 +73,11 @@ void Slider::init(Controller_ptr t)
 
 void Slider::update(const CORBA::Any &any)
 {
-  cout << "needRedraw" << endl;
 //   needRedraw();
   any >>= offset;
   offset -= value->lower();
   offset /= (value->upper() - value->lower());
   needRedraw();
-  cout << "~needRedraw" << endl;
 }
 
 void Slider::draw(DrawTraversal_ptr traversal)
@@ -101,21 +99,20 @@ void Slider::pick(PickTraversal_ptr traversal)
 
 void Slider::allocate(Tag, const Allocation::Info &info)
 {
-  cout << "Slider::allocate" << endl;
   Lease<RegionImpl> allocation;
   Providers::region.provide(allocation);
   allocation->copy(info.allocation);
   if (axis == xaxis)
     {
-      Coord length = allocation->upper.x - allocation->lower.x - 200.;
+      Coord length = allocation->upper.x - allocation->lower.x - 240.;
       allocation->lower.x = offset * length;
-      allocation->upper.x = offset * length + 200.;
+      allocation->upper.x = offset * length + 240.;
     }
   else
     {
-      Coord length = allocation->upper.y - allocation->lower.y - 200.;
+      Coord length = allocation->upper.y - allocation->lower.y - 240.;
       allocation->lower.y = offset * length;
-      allocation->upper.y = offset * length + 200.;
+      allocation->upper.y = offset * length + 240.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
@@ -138,15 +135,15 @@ void Slider::traverseThumb(Traversal_ptr traversal)
   Coord length;
   if (axis == xaxis)
     {
-      length = allocation->upper.x - allocation->lower.x - 200.;
+      length = allocation->upper.x - allocation->lower.x - 240.;
       allocation->lower.x = offset * length;
-      allocation->upper.x = offset * length + 200.;
+      allocation->upper.x = offset * length + 240.;
     }
   else if (axis == yaxis)
     {
-      length = allocation->upper.y - allocation->lower.y - 200.;
+      length = allocation->upper.y - allocation->lower.y - 240.;
       allocation->lower.y = offset * length;
-      allocation->upper.y = offset * length + 200.;
+      allocation->upper.y = offset * length + 240.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(tx->_this()));

@@ -101,7 +101,6 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
   if (layer == front()->l) return begin();
   if (layer == back()->l) return end() - 1;
   if (layer == current()->l) return begin() + cursor;
-  for (iterator i = begin(); i != end(); i++) cout << (*i)->l << endl;
   /*
    * start searching from the closest item
    */
@@ -351,9 +350,7 @@ void StageImpl::QuadTree::insert(StageHandleImpl *handle)
 
 void StageImpl::QuadTree::remove(StageHandleImpl *handle)
 {
-  cout << "StageImpl::QuadTree::remove" << endl;
   node()->remove(handle);
-  cout << "StageImpl::QuadTree::~remove" << endl;
 }
 
 void StageImpl::QuadTree::end()

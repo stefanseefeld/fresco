@@ -39,6 +39,23 @@ class GLUnifont : public GLFont
 //. multilingual text, albeit not quite as well as certain (ahem) proprietary
 //. text systems
 {
+  class Texture
+  //. Glyph Textures are layed out with 64 columns, 4 rows of glyphs
+  //. each 32x16 or 16x16 texels large
+  {
+    enum { columns = 64, rows = 4};
+  public:
+    Texture() : name(0), pos(0), data(0) {}
+    ~Texture();
+    void bind(unsigned char *glyphs, GLubyte block);
+    bool bound() const { return data;}
+    void coords(Unichar, float &, float &, float &, float &);
+    GLuint id() { return name;}
+  private:
+    GLuint   name;
+    GLuint  *pos;
+    GLubyte *data;
+  };
 public:
   GLUnifont();
   virtual ~GLUnifont();
@@ -59,6 +76,7 @@ private:
   Unistring _subfamily;
   Unistring _fullname;
   Unistring _style;
+  Texture textures[256];
 };
 
 #endif
