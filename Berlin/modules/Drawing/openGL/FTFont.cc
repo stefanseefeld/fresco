@@ -58,7 +58,8 @@ openGL::FTFont::FTFont(GLContext *glcontext)
   Prague::Path path = RCManager::get_path("unifontpath");
   std::string font_file = path.lookup_file("unifont.bdf");
   FT_Init_FreeType(&my_library);
-  FT_New_Face(my_library, font_file.c_str(), 0, &my_face);
+  if (FT_New_Face(my_library, font_file.c_str(), 0, &my_face) != 0)
+    throw std::runtime_error("unifont.bdf not found. Please check your font path!");
   FT_Set_Char_Size(my_face, 0, my_size*64, 72, 72);
 }
 
