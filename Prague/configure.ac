@@ -49,6 +49,9 @@ dnl will then override the global.
 AC_CONFIG_LOAD($cpath/config.param)
 dnl AC_CONFIG_LOAD($cpath/Prague/config.param)
 
+dnl needed for other tests to follow
+AC_PROG_CC
+
 dnl #
 dnl # plugin support
 dnl #
@@ -70,6 +73,13 @@ if test x$ac_decision = xDLFCN ; then
 else
 	AC_DEFINE(HAVE_DLAIX)
 fi
+
+dnl #
+dnl # IPC support
+dnl #
+AC_MSG_PART(IPC Implementation)
+AC_CHECK_HEADERS(sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h)
+PRAGUE_SOCKET_CHECK
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

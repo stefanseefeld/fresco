@@ -23,5 +23,5 @@
 # set flags, paths and libraries specific to the Prague package
 #
 
-LIBS	+= @LIBS@ -lz
+LIBS	+= @LIBS@ @SOCKET_LIBS@ -lz
 LDFLAGS	+= -shared -rdynamic

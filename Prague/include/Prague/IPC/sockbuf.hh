@@ -22,6 +22,7 @@
  */
 #ifndef _sockbuf_hh
 #define _sockbuf_hh
+#include <Prague/Sys/config.hh>
 #include <Prague/IPC/ipcbuf.hh>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -34,10 +35,6 @@ namespace Prague
 #ifdef __linux__
 #  define MSG_MAXIOVLEN	 16
 #endif // __linux__
-
-#ifdef __sgi__
-typedef int socklen_t;
-#endif // __sgi__
 
 // socket exception classes
 class sockerr

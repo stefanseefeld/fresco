@@ -26,3 +26,16 @@
 
 /* Define if you have the dl library (-ldl).  */
 #undef HAVE_LIBDL
+
+/* Define if you have the socklen_t type */
+#undef HAVE_SOCKLEN_T
+
+#ifndef HAVE_SOCKLEN_T
+typedef int socklen_t;
+#endif
+
+#undef HAVE_INET_ATON
+
+#ifndef HAVE_INET_ATON
+#define inet_aton(cp, addr) (((*(unsigned long int *)(addr)) = inet_addr(cp)) != -1)
+#endif

@@ -24,6 +24,10 @@ SHELL	= /bin/sh
 top	= ../..
 cpath	= $(top)/config
 
+ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))
+include $(top)/config/local.mk
+endif
+
 define makeconf
 echo Running configure $$CONFIGURE_OPTS...
 ./configure $$CONFIGURE_OPTS

@@ -69,10 +69,10 @@ clean:
 # removes config related data
 #
 distclean:	clean
-	$(makeconf)
+	@$(makeconf)
 
 dist:	distclean
-	$(makeconf)
+	@$(makeconf)
 
 #install: all
 #	@for dir in ${subdirs}; do \
@@ -83,4 +83,4 @@ dist:	distclean
 #	dpkg-buildpackage -rfakeroot -uc -us
 
 config:
-	$(makeconf)
+	@$(makeconf)

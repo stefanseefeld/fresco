@@ -24,21 +24,11 @@
 
 #include <sys/time.h>
 #include <sys/types.h>
-
-#if defined __sgi__
-#include <bstring.h>
-#endif
-#if defined __BSD__
-#include <string.h>
-#endif
+#include <cstring> // some platforms seem to need this (solaris, bsd)
 
 namespace Prague
 {
 
-/* @Class{FdSet}
- *
- * @Description{a set of file descriptors such as used by @var{select()}}
- */
 class FdSet
 {
 public:
@@ -58,26 +48,4 @@ protected:
 
 };
 
-/* @Method{FdSet::FdSet()}
- * @Description{default constructor}
- */
-/* @Method{FdSet::FdSet(const FdSet &F)}
- * @Description{copy constructor}
- */
-/* @Method{FdSet::~FdSet()}
- * @Description{destructor}
- */
-/* @Method{void FdSet::set(int fd)}
- * @Description{set the entry for file descriptor @var{fd}}
- */
-/* @Method{void FdSet::clear(int fd)}
- * @Description{clear the entry for file descriptor @var{fd}}
- */
-/* @Method{bool FdSet::isset(int fd)}
- * @Description{check the entry for file descriptor @var{fd}}
- */
-/* @Method{void FdSet::max()}
- * @Description{maximal used file descriptor}
- */
-
-#endif /* _FdSet_h */
+#endif
