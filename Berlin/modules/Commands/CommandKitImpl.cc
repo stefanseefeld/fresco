@@ -90,7 +90,10 @@ public:
     allocation->lower.x = allocation->lower.y = allocation->lower.z = 0; 
     allocation->upper.x = r.x.natural;
     allocation->upper.y = r.y.natural;
-    allocation->upper.z = 0; 
+    allocation->upper.z = 0;
+    allocation->xalign = r.x.align;
+    allocation->yalign = r.y.align;
+    allocation->zalign = r.z.align;
 
     DrawTraversalImpl *traversal = new DrawTraversalImpl(_graphic,
 							 allocation->_this(),

@@ -66,6 +66,8 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   Transform_var transformation = traversal->current_transformation();
   RegionImpl region(allocation, transformation);
 
+  _tr->load_identity();
+
   // FIXME: figure out what is wrong with the resolution,
   //        the problems seems to be in the coordinate system used,
   //        not PS...
@@ -87,8 +89,8 @@ void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
   _tr_adjust->transform_vertex(lower);
   _tr_adjust->transform_vertex(upper);
 
-  Vertex translate; translate.y = lower.y - upper.y + 35.; translate.x = 35.;
-  translate.z = 0;
+  Vertex translate; translate.x = 35.; translate.z = 0.;
+  translate.y = lower.y - upper.y + 35.;  
   _tr_adjust->translate(translate);
 
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;

@@ -115,7 +115,7 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   Trigger_var button2 = _wk->button(_settings, item.settings);
   hbox->append_graphic(button2);
   hbox->append_graphic(Graphic_var(_lk->hspace(200.)));
-  Trigger_var button3 = _wk->button(_print, Command_var(_ck->print(_ttk->rgb(_lk->align(decorator, 0., 0.), 0.8, 0.8, 0.8))));
+  Trigger_var button3 = _wk->button(_print, Command_var(Command::_nil()));
   hbox->append_graphic(button3);
   hbox->append_graphic(Graphic_var(_lk->hfill()));
   vb->append_graphic(demo);
@@ -134,6 +134,7 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   group->append_controller(button3);
   Window_var window = _dk->transient(group);
   button1->action(Command_var(_dk->map(window, false)));
+  button3->action(Command_var(_ck->print(_ttk->rgb(_lk->align(group, 0., 0.), 0.8, 0.8, 0.8))));
   item.mapper = _dk->map(window, true);
   _demos.push_back(item);
 }
