@@ -56,6 +56,7 @@
 #include "Layout/Glue.hh"
 #include "Layout/Placement.hh"
 #include "Layout/ShapeOf.hh"
+#include "Layout/ViewportImpl.hh"
 #include "Berlin/Plugin.hh"
 
 
@@ -116,7 +117,14 @@ Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 //   else fresco_fail("Layout kit can't create scroll box for given axis");
 //   return s;
 // }
-// Viewport_ptr LayoutKitImpl::create_viewport(Graphic_ptr g) { return new ViewportImpl(g);}
+
+Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
+{
+  ViewportImpl *vp = new ViewportImpl(g);
+  vp->_obj_is_ready(_boa());
+  vp->init();
+  return vp->_this();
+}
 // Stage_ptr LayoutKitImpl::create_stage() { return new StageImpl;}
 
 Grid_ptr LayoutKitImpl::fixedGrid(const Grid::Index &upper)

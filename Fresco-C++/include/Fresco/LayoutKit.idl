@@ -31,6 +31,8 @@
 #include <Graphic.idl>
 #include <Grid.idl>
 
+interface Viewport;
+
 interface LayoutKit : Cloneable 
 {
   attribute Coord fil;
@@ -54,7 +56,7 @@ interface LayoutKit : Cloneable
   //. Return a scrollable along the given axis that only traverses
   //. its visible children.
 
-//   Viewport create_viewport(in Graphic g);
+  Viewport scrollable(in Graphic g);
   //. A viewport allows its child to be scrolled.
 
 //     Stage create_stage();

@@ -5,6 +5,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -25,8 +26,6 @@
 
 #include <CommandKit.idl>
 #include <Graphic.idl>
-#include <Telltale.idl>
-#include <BoundedValue.idl>
 
 /** this kit is a layer on top of the Graphic interface and
     CommandKit. It is responsible for creating subjects, and binding
@@ -34,13 +33,19 @@
     are usually called "widgets" -- they react to events in a
     particular way by modifying the subjects they're bound to. */
 
+interface Telltale;
+interface TelltaleConstraint;
+interface BoundedValue;
+interface BoundedRange;
+
 interface WidgetKit : Cloneable {
 
   TelltaleConstraint exclusive();
   TelltaleConstraint selectionRequired();
   Telltale normalTelltale();
   Telltale constrainedTelltale(in TelltaleConstraint c);
-  BoundedValue range(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
+  BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
+  BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
   
 //   Graphic button(in Reactor strategy, in Telltale subj);
 //   Graphic slider(in Reactor strategy, in BoundedValue subj);

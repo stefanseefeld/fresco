@@ -23,6 +23,7 @@
 #include "Widget/WidgetKitImpl.hh"
 #include "Widget/TelltaleImpl.hh"
 #include "Widget/BoundedValueImpl.hh"
+#include "Widget/BoundedRangeImpl.hh"
 #include "Berlin/Plugin.hh"
 
 WidgetKitImpl::WidgetKitImpl()
@@ -62,9 +63,17 @@ Telltale_ptr WidgetKitImpl::constrainedTelltale(TelltaleConstraint_ptr constrain
     return telltale->_this();
 }
 
-BoundedValue_ptr WidgetKitImpl::range(Coord l, Coord u, Coord v, Coord s, Coord p)
+BoundedValue_ptr WidgetKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
 {
    BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
+  bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+
+  return bounded->_this();  
+}
+
+BoundedValue_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
+{
+   BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
   bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
 
   return bounded->_this();  

@@ -31,7 +31,14 @@ BoundedRangeImpl::~BoundedRangeImpl()
 {
 };
 
-Coord BoundedRangeImpl::lower() { return l;}
+Coord BoundedRangeImpl::lower()
+{
+  myMutex.lock();
+  Coord tmp = l;
+  myMutex.unlock();
+  return tmp;
+}
+
 void BoundedRangeImpl::lower(Coord ll)
 {
     myMutex.lock();
@@ -43,7 +50,14 @@ void BoundedRangeImpl::lower(Coord ll)
     notify();
 }
 
-Coord BoundedRangeImpl::upper() { return u;}
+Coord BoundedRangeImpl::upper()
+{
+  myMutex.lock();
+  Coord tmp = u;
+  myMutex.unlock();
+  return tmp;
+}
+
 void BoundedRangeImpl::upper(Coord uu)
 {
     myMutex.lock();

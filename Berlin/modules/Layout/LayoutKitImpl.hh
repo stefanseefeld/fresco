@@ -46,7 +46,7 @@ public:
 //   virtual AutoScroll_ptr create_auto_scroll(Adjustment_ptr x_adjustment, Adjustment_ptr y_adjustment);
 //   virtual FullyVisibleConstraint_ptr create_fully_visible_constraint(Float usable, Float align);
 //   virtual Scrollable* scroll_box(Axis a);
-//   virtual Viewport_ptr create_viewport(Graphic_ptr g);
+  virtual Viewport_ptr scrollable(Graphic_ptr);
 //   virtual Stage_ptr create_stage();
   virtual Grid_ptr fixedGrid(const Grid::Index &);
   virtual Graphic_ptr fixedRange(Grid_ptr g, const Grid::Range &);
