@@ -67,7 +67,7 @@ Tag ToggleChoice::append_item(Graphic_ptr g)
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
@@ -86,7 +86,7 @@ Tag ToggleChoice::prepend_item(Graphic_ptr g)
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
@@ -98,7 +98,7 @@ void ToggleChoice::remove_item(Tag t)
 {
   Trace trace("ToggleChoice::remove_item");
   selection->remove(t);
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   box->remove_graphic(t);
 }
 
@@ -125,7 +125,7 @@ Tag CheckboxChoice::append_item(Graphic_ptr g)
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
@@ -152,7 +152,7 @@ Tag CheckboxChoice::prepend_item(Graphic_ptr g)
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
   item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   Warsaw::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
@@ -164,7 +164,7 @@ void CheckboxChoice::remove_item(Tag t)
 {
   Trace trace("CheckboxChoice::remove_item");
   selection->remove(t);
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   box->remove_graphic(t);
 }
 
@@ -184,7 +184,7 @@ Tag ToolChoice::append_item(Graphic_ptr g)
   s2.brightness(0.5); s2._d(ToolKit::outset);
   RefCount_var<Warsaw::Graphic> frame = tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   box->append_graphic(toggle);
   return tag;
 }
@@ -201,7 +201,7 @@ Tag ToolChoice::prepend_item(Graphic_ptr g)
   s2.brightness(0.5); s2._d(ToolKit::inset);
   RefCount_var<Warsaw::Graphic> frame = tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   box->prepend_graphic(toggle);
   return tag;
 }
@@ -210,7 +210,7 @@ void ToolChoice::remove_item(Tag t)
 {
   Trace trace("ToolChoice::remove_item");
   selection->remove(t);
-  RefCount_var<Warsaw::Graphic> box = body();
+  Graphic_var box = body();
   box->remove_graphic(t);
 }
 

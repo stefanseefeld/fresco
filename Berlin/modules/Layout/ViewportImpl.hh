@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Viewport_hh
-#define _Viewport_hh
+#ifndef _ViewportImpl_hh
+#define _ViewportImpl_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Viewport.hh>

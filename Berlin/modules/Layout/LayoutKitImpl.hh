@@ -45,6 +45,7 @@ public:
 //   virtual FullyVisibleConstraint_ptr create_fully_visible_constraint(Float usable, Float align);
 //   virtual Scrollable* scroll_box(Axis a);
   virtual Layout::Viewport_ptr scrollable(Warsaw::Graphic_ptr);
+//   virtual Layout::Splitter_ptr splitter(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
   virtual Layout::Stage_ptr create_stage();
   virtual Layout::Grid_ptr fixed_grid(const Layout::Grid::Index &);
   virtual Warsaw::Graphic_ptr fixed_range(Layout::Grid_ptr g, const Layout::Grid::Range &);

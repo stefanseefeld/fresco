@@ -50,7 +50,8 @@ template <class T, short gapsize>
 class GapBuffer : private std::vector<T>
 {
   typedef std::vector<T> rep_type;
-  typedef typename std::vector<T>::value_type value_type;
+  typedef typename rep_type::value_type value_type;
+  typedef typename rep_type::iterator iterator;
   iterator gbegin() { return begin() + _gapbegin;}
   iterator gend() { return begin() + _gapend;}
   iterator cursor() { return begin() + _cursor;}

@@ -54,6 +54,22 @@ KitImpl *GLDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
   return kit;
 }
 
+void GLDrawingKit::save()
+{
+  DrawingKitBase::save();
+  _states.push(DrawState());
+}
+
+void GLDrawingKit::restore()
+{
+  DrawingKitBase::restore();
+  if (_states.empty()) return; // no state to restore
+  DrawState &prev = _states.top();
+//   if(prev.flags & (1 << DrawState::st_lighting)) set_lighting(prev.lighting);
+//   if(prev.flags & (1 << DrawState::st_lights)) set_lights(prev.lights);
+  _states.pop();
+}
+
 void GLDrawingKit::init()
 {   
   _drawable = Console::drawable();
@@ -315,6 +331,14 @@ void GLDrawingKit::set_font_subfamily(const Unistring &sf) {}
 void GLDrawingKit::set_font_fullname(const Unistring &fn) {}
 void GLDrawingKit::set_font_style(const Unistring &s) {}
 void GLDrawingKit::set_font_attribute(const NVPair & nvp) {}
+
+// vpod GLDrawingKit::set_lighting(bool flag)
+// {
+//   if (flag) glEnable(GL_LIGHTING);
+//   else glDisable(GL_LIGHTING);
+// }
+
+
 void GLDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
 void GLDrawingKit::draw_text(const Unistring &us) {}
 void GLDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { _font->allocate_char(c, req);}

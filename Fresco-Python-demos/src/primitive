@@ -20,6 +20,42 @@ import Warsaw__POA
 # Import Warsaw lib
 import pywarsaw
 
+class Rotator(Warsaw__POA.Observer):
+    def __init__(self, value, child, parent, axis):
+        self.__value = value
+        self.__child = child
+        self.__parent = parent
+        self.__axis = axis
+        
+    def update(self, any):
+        degree = self.__value._get_value()
+        transform = self.__child.transformation()
+        transform.load_identity()
+        transform.rotate(degree, self.__axis)
+        self.__parent.need_redraw()
+
+
+X = .525731112119133606 
+Z = .850650808352039932
+
+nodes = [(-X, 0.0, Z), (X, 0.0, Z), (-X, 0.0, -Z), (X, 0.0, -Z),    
+         (0.0, Z, X), (0.0, Z, -X), (0.0, -Z, X), (0.0, -Z, -X),    
+         (Z, X, 0.0), (-Z, X, 0.0), (Z, -X, 0.0), (-Z, -X, 0.0)]
+
+triangles = [(0,4,1), (0,9,4), (9,5,4), (4,5,8), (4,8,1),    
+             (8,10,1), (8,3,10), (5,3,8), (5,2,3), (2,7,3),    
+             (7,10,3), (7,6,10), (7,11,6), (11,0,6), (0,1,6), 
+             (6,1,10), (9,0,11), (9,11,2), (9,2,5), (7,2,11)]
+
+normals = nodes[:]
+
+def generate_mesh(w, h, d):
+    scale = lambda x, w=w, h=h, d=d: Warsaw.Vertex(x[0] * w, x[1] * h, x[2] * d)
+    triangulate = lambda x: Warsaw.Triangle(x[0], x[1], x[2])
+    normalize = lambda x: Warsaw.Vertex(x[0], x[1], x[2])
+    return Warsaw.Mesh(map(scale, nodes), map(triangulate, triangles), map(normalize, normals))
+
+
 class Primitive (pywarsaw.PyGraphic):
     "Simple graphic that draws a clock"
     def __init__(self, w, h, d):
@@ -27,28 +63,14 @@ class Primitive (pywarsaw.PyGraphic):
         self.__width = w
         self.__height = h
         self.__depth = d
-        nodes = []
-        nodes.append(Warsaw.Vertex(-w/2, -h/2, -d/2))
-        nodes.append(Warsaw.Vertex(w/2, -h/2, -d/2))
-        nodes.append(Warsaw.Vertex(0., -h/2, d/2))
-        nodes.append(Warsaw.Vertex(0., h/2, 0))
-        triangles = []
-        triangles.append(Warsaw.Triangle(0, 1, 3))
-        triangles.append(Warsaw.Triangle(1, 2, 3))
-        triangles.append(Warsaw.Triangle(2, 0, 3))
-        triangles.append(Warsaw.Triangle(0, 2, 1))
-        normals = []
-        normals.append(Warsaw.Vertex(0., .8, .2))
-        normals.append(Warsaw.Vertex(.8, .2, .2))
-        normals.append(Warsaw.Vertex(-.2, .2, .2))
-        normals.append(Warsaw.Vertex(0., -1., 0.))
-        self.__mesh = Warsaw.Mesh(nodes, triangles, normals)
-
+        self.__mesh = generate_mesh(w, h, d)
+        
     def request(self): # --> Requisition
 	x = Warsaw.Graphic.Requirement(1, self.__width, self.__width, self.__width, 0.5)
 	y = Warsaw.Graphic.Requirement(1, self.__height, self.__height, self.__height, 0.5)
 	z = Warsaw.Graphic.Requirement(1, self.__depth, self.__depth, self.__depth, 0.5)
 	req = Warsaw.Graphic.Requisition(x, y, z, 0)
+        print "requisition is", req
 	return req
     def draw(self, drawTraversal):
 	dk = drawTraversal.drawing()
@@ -58,7 +80,8 @@ class Primitive (pywarsaw.PyGraphic):
             return
 	transform = drawTraversal.current_transformation()
 	region = drawTraversal.current_allocation()
-	#dk._set_foreground(Warsaw.Color(0.9, 0.9, 0.9, 1.0))
+        dk.save()
+	dk._set_foreground(Warsaw.Color(0.6, 0.6, 1.0, 1.0))
 	dk._set_surface_fillstyle(Warsaw.DrawingKit.solid)
 	#dk.draw_rectangle(bounds_lower, bounds_upper)
 	dk.draw_mesh(self.__mesh)
@@ -80,18 +103,20 @@ class GraphicApp (berlin.App):
         hbox.append_graphic(kits.layout.hfill())
         vbox.append_graphic(hbox)
 
-	primitive = Primitive(3000., 3000., 3000.)._this()
-	zrotator = kits.gadget.rotator(primitive, phi, Warsaw.zaxis)
-	yrotator = kits.gadget.rotator(zrotator, psi, Warsaw.yaxis)
-        group = kits.figure.group()
-        group.append_graphic(yrotator)
-        root = kits.figure.root(group)
-	align = kits.layout.align(group, 0., 0.)
-	strut = kits.layout.fixed_size(align, 3000., 3000.)
-        #spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.inset, 0.5)
-        #vbox.prepend_graphic(kits.tool.frame(align, 10., spec, 1))
-        vbox.prepend_graphic(strut)
-	group = kits.tool.group(vbox)
+	#primitive = Primitive(3000., 3000., 3000.)._this()
+        primitive = kits.primitive.geometry(generate_mesh(300., 300., 300.))
+        primitive = kits.tool.rgb(primitive, 0.6, 0.6, 1.0)
+        root = kits.primitive.root(Warsaw.Graphic._nil)
+        # heh, try to figure out what the next few lines do :)
+        transformer = kits.primitive.transformer(primitive)
+        phi.attach(Rotator(phi, transformer, root, Warsaw.zaxis)._this())
+        transformer = kits.primitive.transformer(transformer)
+        psi.attach(Rotator(psi, transformer, root, Warsaw.yaxis)._this())
+        root._set_body(transformer)
+        vbox.prepend_graphic(kits.layout.align(root, 0., 0.))
+        spec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.inset, 0.5)
+        frame = kits.tool.frame(vbox, 10., spec, 1)
+	group = kits.tool.group(frame)
 	self.window = kits.desktop.shell(group)
 
 	#kits.desktop.shell(kits.tool.group(TickGraphic()._this()))

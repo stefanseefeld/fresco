@@ -50,10 +50,22 @@
 class GLDrawingKit : public virtual POA_Warsaw::DrawingKit3D,
 		     public DrawingKitBase, public KitImpl
 {
+  struct DrawState
+  {
+    enum { st_lighting, st_lights};
+    DrawState() : flags(0) {}
+//     bitset<st_last> flags;
+    unsigned long flags;
+    bool lighting;
+    size_t lights;
+  };
 public:
   GLDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~GLDrawingKit();
   virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &);
+
+  virtual void save();
+  virtual void restore();
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}
@@ -91,6 +103,8 @@ public:
   virtual Warsaw::Rasters *textures() { return new Warsaw::Rasters();}
   virtual void tex_mode(Warsaw::DrawingKit3D::TextureMode) {}
   virtual Warsaw::DrawingKit3D::TextureMode tex_mode() { return Warsaw::DrawingKit3D::TextureOff;}
+//   virtual void lighting(CORBA::Boolean) {}
+//   virtual CORBA::Boolean lighting();
   virtual void fog_mode(Warsaw::DrawingKit3D::FoggingMode) {}
   virtual Warsaw::DrawingKit3D::FoggingMode fog_mode() { return Warsaw::DrawingKit3D::FogOff;}
 
@@ -111,6 +125,8 @@ public:
   virtual void set_font_fullname(const Warsaw::Unistring &);
   virtual void set_font_style(const Warsaw::Unistring &);
   virtual void set_font_attribute(const Warsaw::NVPair &);
+
+//   virtual void set_lighting(bool);
 
   virtual Warsaw::Coord resolution(Warsaw::Axis a) { return _drawable->resolution(a);}
   virtual void draw_path(const Warsaw::Path &);
@@ -136,6 +152,7 @@ public:
 //   Coord height() { return drawable->height();}
  private:
   void init();
+  std::stack<DrawState>                      _states;
   Console::Drawable                         *_drawable;
 #if defined(CONSOLE_GGI)
   GGIMesaContext                             _context;

@@ -27,13 +27,17 @@
 #include <Warsaw/Types.hh>
 #include <cassert>
 
-class ServantBase : public virtual PortableServer::RefCountServantBase
+class ServantBase : virtual public PortableServer::ServantBase
 {
   friend class KitImpl;
   friend class IdentifiableImpl;
 public:
-  ServantBase() : poa(PortableServer::POA::_nil()) {}
-  virtual ~ServantBase() {}
+  ServantBase();
+  ServantBase(const ServantBase &);
+  virtual ~ServantBase();
+  ServantBase &operator = (const ServantBase &);
+  virtual void _add_ref();
+  virtual void _remove_ref();
   virtual void deactivate();
 protected:
   static void deactivate(ServantBase *);
@@ -45,7 +49,8 @@ protected:
   //.to activate the child servants
   virtual void activate_composite() {}
 private:
-  PortableServer::POA_var poa;
+  int                     _refcount;
+  PortableServer::POA_var _poa;
 };
 
 #endif

@@ -92,7 +92,7 @@ void BoxImpl::request(Warsaw::Graphic::Requisition &r)
 void BoxImpl::draw(DrawTraversal_ptr traversal)
 {
   DrawingKit_var drawing = traversal->drawing();
-  cout << "BoxImpl::draw" << endl;
+  std::cout << "BoxImpl::draw" << std::endl;
 }
 
 // static const float magic = 0.5522847498307934f; // 4/3 * (sqrt(2) - 1)

@@ -29,11 +29,11 @@ using namespace Warsaw;
 CORBA::Boolean IdentifiableImpl::is_identical(Identifiable_ptr id)
 {
   Trace trace("IdentifiableImpl::is_identical");
-  PortableServer::POA_var _poa = poa;
-  if (CORBA::is_nil(poa)) _poa = _default_POA();
+  PortableServer::POA_var poa = _poa;
+  if (CORBA::is_nil(poa)) poa = _default_POA();
   try
     {
-      PortableServer::Servant s = _poa->reference_to_servant(id);
+      PortableServer::ServantBase_var s = poa->reference_to_servant(id);
       if (s == this) return 1;
     }
   catch (const PortableServer::POA::ObjectNotActive &) {}

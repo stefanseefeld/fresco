@@ -32,6 +32,7 @@
 #include "Layout/Placement.hh"
 #include "Layout/ShapeOf.hh"
 #include "Layout/ViewportImpl.hh"
+// #include "Layout/SplitterImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
@@ -40,7 +41,7 @@ using namespace Layout;
 LayoutKitImpl::LayoutKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p), _fill(GraphicImpl::infinity) { }
 
-LayoutKitImpl::~LayoutKitImpl() { cerr << "LayoutKit destructed" << endl; }
+LayoutKitImpl::~LayoutKitImpl() {}
 
 void LayoutKitImpl::fill(Coord c) { _fill = c;}
 
@@ -93,6 +94,14 @@ Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
   vp->body(g);
   return vp->_this();
 }
+
+// Layout::Splitter_ptr LayoutKitImpl::splitter(Graphic_ptr g, Graphic_ptr p, Axis a)
+// {
+//   SplitterImpl *sp = new SplitterImpl(a);
+//   activate(sp);
+//   sp->init(g, p);
+//   return sp->_this();
+// }
 
 Stage_ptr LayoutKitImpl::create_stage()
 {

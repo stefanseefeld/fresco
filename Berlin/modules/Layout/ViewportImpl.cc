@@ -20,15 +20,16 @@
  * MA 02139, USA.
  */
 
-#include "Layout/ViewportImpl.hh"
-#include <Berlin/SubjectImpl.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/Math.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/PickTraversal.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/Math.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
+#include "Layout/ViewportImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;

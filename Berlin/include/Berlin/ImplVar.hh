@@ -25,6 +25,9 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Berlin/config.hh>
+#include <Berlin/Logger.hh>
+#include <typeinfo>
 
 //.these smart pointers take care of the activation/deactivation of
 //.servants they get assigned to
@@ -58,6 +61,9 @@ inline void Impl_var<T>::activate(T *t)
 {
   Prague::Trace trace("Impl_var::activate");
   PortableServer::POA_var poa = t->_default_POA();
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "activating " << t << " (" << typeid(*t).name() << ")" << std::endl;
+#endif
   PortableServer::ObjectId *oid = poa->activate_object(t);
   t->_remove_ref();
   delete oid;
@@ -69,6 +75,9 @@ inline void Impl_var<T>::deactivate(T *t)
   Prague::Trace trace("Impl_var::deactivate");
   PortableServer::POA_var poa = t->_default_POA();
   PortableServer::ObjectId *oid = poa->servant_to_id(t);
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "deactivating " << t << " (" << typeid(*t).name() << ")" << std::endl;
+#endif
   poa->deactivate_object(*oid);
   delete oid;
 }

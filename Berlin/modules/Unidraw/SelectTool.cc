@@ -70,7 +70,7 @@ void SelectTraversal::hit()
 {
   Trace trace("SelectTraversal::hit");
   // make sure the controller is really inside the hot region
-  cout << "hit !" << endl;
+  std::cout << "hit !" << std::endl;
   SelectTraversal *memento = new SelectTraversal(*this);
 //   activate(memento);
   _selected.push_back(memento);

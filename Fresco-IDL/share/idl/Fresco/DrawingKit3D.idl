@@ -45,11 +45,12 @@ module Warsaw
   interface DrawingKit3D : DrawingKit
   {
     enum TextureMode { TextureOff, Texture1D, Texture2D, Texture3D};
-    enum LightingMode { LightOff, LightOn};
     enum FoggingMode { FogOff, FogLinear, FogExponential};
     attribute MaterialAttr material;
     attribute Rasters textures;
     attribute TextureMode tex_mode;
+//     attribute bool lighting;
+//     void add_light();
     attribute FoggingMode fog_mode;
     
     void draw_mesh(in Mesh m);    

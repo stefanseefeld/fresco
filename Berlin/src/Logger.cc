@@ -26,8 +26,8 @@
 using namespace Prague;
 
 bool         Logger::active[numGroups] = {false, false, false, false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false, false};
-const char * Logger::groupname[numGroups] = {"corba", "loader", "traversal", "thread", "main",
+					  false, false, false, false, false, false, false, false, false};
+const char * Logger::groupname[numGroups] = {"corba", "loader", "console", "traversal", "thread", "lifecycle",
 					     "agent", "message", "command", "subject", 
 					     "observer", "text", "widget", "image", "figure",
 					     "layout", "drawing", "desktop", "picking", "focus", "geometry"};

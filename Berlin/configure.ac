@@ -183,7 +183,9 @@ dnl ------------------------------------------------------------------
 dnl some helper utils
 dnl ------------------------------------------------------------------
 
-AC_ARG_WITH(jprof, [--with-jprof   enable profiling with the jprof tool],[ jprof="$withval"])
+AC_ARG_ENABLE(jprof, [--enable-jprof   enable profiling with the jprof tool],[ jprof="yes"])
+
+AC_ARG_ENABLE(lclog, [--enable-lclog   enable lifecycle logging],[ lclog="yes"])
 
 dnl ------------------------------------------------------------------
 dnl Decisions
@@ -212,13 +214,22 @@ else
 	AC_SUBST(JPROF)
 fi
 
+LCLOG=
+if test ".$lclog" != .yes ; then
+	lclog="no"
+else
+	LCLOG="yes"
+	AC_DEFINE(LCLOG)
+fi
+
 dnl ------------------------------------------------------------------
 dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
-AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
-AC_MSG_RESULT([Build Kits:              $tested_drawing_kits $enable_kits])
-AC_MSG_RESULT([Add profiling support:    $jprof])
+AC_MSG_RESULT([Build libBerlin:           $enable_berlin])
+AC_MSG_RESULT([Build Kits:               $tested_drawing_kits $enable_kits])
+AC_MSG_RESULT([Add profiling support:     $jprof])
+AC_MSG_RESULT([Add lifecycle log support: $lclog])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

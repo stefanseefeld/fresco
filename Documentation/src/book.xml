@@ -4,11 +4,12 @@
 <!-- these are chapter-entity declarations -->
 
 <!ENTITY chapter0   SYSTEM "hello.xml">
-<!ENTITY chapter1   SYSTEM "scene-graph.xml">
-<!ENTITY chapter2   SYSTEM "control-graph.xml">
-<!ENTITY chapter3   SYSTEM "mvc.xml">
-<!ENTITY chapter4   SYSTEM "cda.xml">
-<!ENTITY chapter5   SYSTEM "kits.xml">
+<!ENTITY chapter1   SYSTEM "overview.xml">
+<!ENTITY chapter2   SYSTEM "scene-graph.xml">
+<!ENTITY chapter3   SYSTEM "control-graph.xml">
+<!ENTITY chapter4   SYSTEM "mvc.xml">
+<!ENTITY chapter5   SYSTEM "cda.xml">
+<!ENTITY chapter6   SYSTEM "kits.xml">
 <!ENTITY appendix1  SYSTEM "hello-list.xml">
 <!ENTITY appendix2  SYSTEM "memory.xml">
 
@@ -43,8 +44,9 @@
 &chapter1;
 &chapter2;
 &chapter3;
-<!-- &chapter4; -->
-&chapter5;
+&chapter4;
+<!-- &chapter5; -->
+&chapter6;
 &appendix1;
 &appendix2;
 </book>

@@ -87,7 +87,7 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
   virtual void save()
   {
     Prague::Trace trace("DrawingKitBase::save");
-    states.push(DrawState());
+    _states.push(DrawState());
   }
   virtual void restore();
   //######################################################
@@ -153,14 +153,14 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
   virtual void set_font_attribute(const Warsaw::NVPair &) = 0;
 
 private:
-  std::stack<DrawState> states;
+  std::stack<DrawState> _states;
 };
 
 inline void DrawingKitBase::restore()
 {
   Prague::Trace trace("DrawingKitBase::restore");
-  if (states.empty()) return; // no state to restore
-  DrawState &prev = states.top();
+  if (_states.empty()) return; // no state to restore
+  DrawState &prev = _states.top();
   if(prev.flags & (1 << st_trafo))              set_transformation(prev.saved_trafo);
   if(prev.flags & (1 << st_clip))               set_clipping(prev.saved_clip);
   if(prev.flags & (1 << st_fg_color))           set_foreground(prev.saved_fg_color);
@@ -180,7 +180,7 @@ inline void DrawingKitBase::restore()
     //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
     // 	     setFontAttr(prev.saved_font_attr[i]);
     //    }
-  states.pop();
+  _states.pop();
 }
 
 //########################################################
@@ -191,9 +191,9 @@ inline void DrawingKitBase::restore()
 // but in this case, templates are simply not cutting it.
 
 #define REMEMBER(state,ty,val) \
- if (!(states.empty() || states.top().flags & (1 << st_## state)))\
+ if (!(_states.empty() || _states.top().flags & (1 << st_## state)))\
 { \
-  DrawState &st = states.top(); \
+  DrawState &st = _states.top(); \
   ty tmp(val); \
   st.saved_## state = tmp; \
   st.flags |= (1 << st_## state); \

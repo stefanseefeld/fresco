@@ -31,7 +31,7 @@
 namespace Prague
 {
 
-//. GetOpt manages an command line option data base. It deals with short and long options,
+//. GetOpt manages a command line option data base. It deals with short and long options,
 //. and reorders the given option vector such that you can run different GetOpt instances over
 //. the argv vector one after another.
 class GetOpt
@@ -86,16 +86,23 @@ private:
   const char *p;	      // program basename
   const char *u;	      // usage message
   order ordering;
-  size_t getlongopt(int, char **);
-  size_t getopt(int, char **);
+  //. try to extract a long option, return number of tokens consumed
+  size_t getlongopt(int argc, char **argv);
+  //. try to extract a short option, return number of tokens consumed
+  size_t getopt(int argc, char **argv);
+  //. return the cell with the given option
   table_t::iterator find(const std::string &option)
     { return find_if(table.begin(), table.end(), comp_string(option));}
+  //. return the cell with the given option
   table_t::const_iterator find(const std::string &option) const
     { return find_if(table.begin(), table.end(), comp_string(option));}
+  //. return the cell with the given option
   table_t::iterator find(char o)
     { return find_if(table.begin(), table.end(), comp_char(o));}
+  //. return the cell with the given option
   table_t::const_iterator find(char o) const
     { return find_if(table.begin(), table.end(), comp_char(o));}
+  //. reorder the argument vector to move the consumed tokens to the front
   void exchange(char **, size_t, char **);
   struct comp_string
   {

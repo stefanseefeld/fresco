@@ -45,12 +45,8 @@ public:
   void activate(::ServantBase *);
   void deactivate(::ServantBase *);
 
-    virtual void increment() { _refcount++; }
-  virtual void decrement() {
-      --_refcount;
-      if (!_refcount) {
-	  deactivate();}
-  }
+  virtual void increment();
+  virtual void decrement();
 private:
   void activate(PortableServer::POA_ptr);
   void deactivate();

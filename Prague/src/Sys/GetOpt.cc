@@ -108,23 +108,25 @@ size_t GetOpt::getopt(int argc, char **argv)
   if (option[1] == '\0')
     {
       i = find(*option);
-      if (i == table.end()) return 0;
+      if (i == table.end()) return 0; // not for us
       
       (*i).set = true;
       if ((*i).t == novalue)
 	{
 	  return 1;
 	}
-      else if (argc > 1)
+      // if there is another non-option, consume it
+      else if (argc > 1 && argv[1][0] != '-')
 	{
 	  (*i).value = argv[1];
 	  return 2;
 	}
+      // no non-option but mandatory -> signal error
       else if ((*i).t == mandatory)
 	{
 	  std::cerr << p << ": option '-" << (*i).o << "' requires a value" << std::endl;
-	  return 1;
 	}
+      return 1;
     }
   return 0;
 }

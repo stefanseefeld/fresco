@@ -93,7 +93,7 @@ public:
 CommandKitImpl::CommandKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 
-CommandKitImpl::~CommandKitImpl() { cerr << "Destucting CommandKit" << endl; }
+CommandKitImpl::~CommandKitImpl() {}
 
 Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
 {

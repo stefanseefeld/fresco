@@ -49,7 +49,7 @@ Graphic_ptr MonoGraphic::body()
 {
   Trace trace("MonoGraphic::body");
   Prague::Guard<Mutex> guard(_mutex);
-  return RefCount_var<Warsaw::Graphic>::increment(_child.peer);
+  return Warsaw::Graphic::_duplicate(_child.peer);
 }
 
 void MonoGraphic::body(Graphic_ptr c)

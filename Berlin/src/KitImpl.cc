@@ -20,22 +20,38 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
+#include <Prague/Sys/Thread.hh>
+#include <Berlin/config.hh>
+#include <Berlin/Logger.hh>
 #include "Berlin/KitImpl.hh"
 #include "Berlin/ServantBase.hh"
+#include <typeinfo>
 
 using namespace Prague;
 using namespace Warsaw;
+
+namespace
+{
+  Mutex mutex;
+};
 
 KitImpl::KitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : _repo_id(id), _props(new Warsaw::Kit::PropertySeq(p)), _refcount(1)
 {
   Trace trace("KitImpl::KitImpl");
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "KitImpl::KitImpl: " << this << " constructed" << std::endl;
+#endif
 }
 
 KitImpl::~KitImpl()
 {
   Trace trace("KitImpl::~KitImpl");  
+  Logger::log(Logger::lifecycle) << "destroying POA " << _poa << std::endl;
   _poa->destroy(true, true);
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "KitImpl::~KitImpl: " << this << " destructed" << std::endl;
+#endif
   delete _props;
 }
 
@@ -63,8 +79,11 @@ CORBA::Boolean KitImpl::supports(const Warsaw::Kit::PropertySeq &p)
 void KitImpl::activate(::ServantBase *servant)
 {
   Trace trace("KitImpl::activate(PortableServer::Servant)");
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "activating " << servant << " (" << typeid(*servant).name() << ")" << std::endl;
+#endif
   PortableServer::ObjectId *oid = _poa->activate_object(servant);
-  servant->poa = PortableServer::POA::_duplicate(_poa);
+  servant->_poa = PortableServer::POA::_duplicate(_poa);
   servant->_remove_ref();
   delete oid;
   servant->activate_composite();
@@ -74,14 +93,45 @@ void KitImpl::deactivate(::ServantBase *servant)
 {
   Trace trace("KitImpl::deactivate(PortableServer::Servant)");
   PortableServer::ObjectId *oid = _poa->servant_to_id(servant);
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "deactivating " << servant << " (" << typeid(*servant).name() << ")" << std::endl;
+#endif
   _poa->deactivate_object(*oid);
   delete oid;
+}
+
+void KitImpl::increment()
+{
+  Trace trace("KitImpl::increment");
+  Prague::Guard<Mutex> guard(mutex);
+  ++_refcount;
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "KitImpl::increment on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
+#endif
+}
+
+void KitImpl::decrement()
+{
+  Trace trace("KitImpl::decrement");
+  bool done;
+  {
+    Prague::Guard<Mutex> guard(mutex);
+    done = --_refcount;
+#ifdef LCLOG
+    Logger::log(Logger::lifecycle) << "KitImpl::decrement on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
+#endif
+  }
+  if (done) return;
+  else deactivate();
 }
 
 void KitImpl::deactivate()
 {
   Trace trace("KitImpl::deactivate()");
   PortableServer::ObjectId *oid = _poa->servant_to_id(this);
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "deactivating " << this << std::endl;
+#endif
   _poa->deactivate_object(*oid);
   delete oid;
 }

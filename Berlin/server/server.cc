@@ -42,6 +42,7 @@
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <fstream>
+#include <strstream>
 
 #ifdef RC_PREFIX
 const std::string prefix = RC_PREFIX;
@@ -104,14 +105,14 @@ void exec_child(Fork*& child, std::string& value)
       while ( (index = value.find(' ', index)) != std::string::npos)
 	{
 	  value[index] = '\0';
-	  args.push_back(value.begin() + start);
+	  args.push_back(&*value.begin() + start);
 	  start = index + 1;
 	}
-      args.push_back(value.begin() + start);
-      args.push_back(NULL);
+      args.push_back(&*value.begin() + start);
+      args.push_back(0);
 
       // Execute command
-      execvp(args[0], args.begin());
+      execvp(args[0], &*args.begin());
 
       // Should not get here
       perror("client execvp");
@@ -142,8 +143,9 @@ int main(int argc, char **argv)
   GetOpt getopt(argv[0], "a berlin display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
-  getopt.add('l', "logging", GetOpt::novalue, "switch logging on");
-  getopt.add('p', "profiling", GetOpt::novalue, "switch profiling on");
+  getopt.add('l', "logger", GetOpt::optional, "switch logging on");
+  getopt.add('t', "tracer", GetOpt::novalue, "switch tracing on");
+  getopt.add('p', "profiler", GetOpt::novalue, "switch profiling on");
   getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
   getopt.add('r', "resource", GetOpt::mandatory, "the resource file to load");
   getopt.add('e', "execute", GetOpt::mandatory, "the command to execute upon startup");
@@ -154,24 +156,36 @@ int main(int argc, char **argv)
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
   std::string value;
   if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
-  if (getopt.is_set("logging"))
+  value = "";  
+  if (getopt.get("logger", &value))
     {
-      Logger::set(Logger::corba);
-      Logger::set(Logger::focus);
-      Logger::set(Logger::image);
-      Logger::set(Logger::loader);
-      Logger::set(Logger::subject);
-      Logger::set(Logger::layout);
-      Logger::set(Logger::picking);
-      Logger::set(Logger::drawing);
-      Logger::set(Logger::traversal);
-      Logger::set(Logger::widget);
-      Logger::set(Logger::text);
-      Tracer::logging(true);
+      if (!value.empty())
+	{
+	  std::istrstream iss(value.c_str());
+	  std::string token;
+	  while (iss >> token)
+	    {
+	      if (token == "corba") Logger::set(Logger::corba);
+	      else if (token == "lifecycle") Logger::set(Logger::lifecycle);
+	      else if (token == "focus") Logger::set(Logger::focus);
+	      else if (token == "image") Logger::set(Logger::image);
+	      else if (token == "loader") Logger::set(Logger::loader);
+	      else if (token == "console") Logger::set(Logger::console);
+	      else if (token == "subject") Logger::set(Logger::subject);
+	      else if (token == "layout") Logger::set(Logger::layout);
+	      else if (token == "picking") Logger::set(Logger::picking);
+	      else if (token == "drawing") Logger::set(Logger::drawing);
+	      else if (token == "traversal") Logger::set(Logger::traversal);
+	      else if (token == "widget") Logger::set(Logger::widget);
+	      else if (token == "text") Logger::set(Logger::text);
+	    }
+	}
+      else Logger::setall();
     }
+  if (getopt.is_set("tracer")) Tracer::logging(true);
 
 #ifdef JPROF
-  if (getopt.is_set("profiling")) setupProfilingStuff();
+  if (getopt.is_set("profiler")) setupProfilingStuff();
 #endif
 
   /*
@@ -187,7 +201,7 @@ int main(int argc, char **argv)
 
   Console::open(argc, argv, poa);
 
-  Logger::log(Logger::main) << "console is initialized" << std::endl;
+  Logger::log(Logger::console) << "console is initialized" << std::endl;
 
   /*
    * ...and finally construct the server.

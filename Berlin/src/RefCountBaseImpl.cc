@@ -19,31 +19,64 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/RefCountBaseImpl.hh"
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Berlin/config.hh>
+#include <Berlin/Logger.hh>
+#include "Berlin/RefCountBaseImpl.hh"
+#include <typeinfo>
 
 using namespace Prague;
 using namespace Warsaw;
 
-static Mutex mutex;
+namespace
+{
+  Mutex mutex;
+};
 
-RefCountBaseImpl::RefCountBaseImpl() : _refcount(1) {}
-
-RefCountBaseImpl::~RefCountBaseImpl() {
-    Trace trace("RefCountBaseImpl::~RefCountBaseImpl");
+RefCountBaseImpl::RefCountBaseImpl() : _refcount(1)
+{
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "RefCountBaseImpl::RefCountBaseImpl: " << this << " constructed" << std::endl;
+#endif
 }
 
-void RefCountBaseImpl::increment() {
+RefCountBaseImpl::~RefCountBaseImpl()
+{
+  Trace trace("RefCountBaseImpl::~RefCountBaseImpl");
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "RefCountBaseImpl::~RefCountBaseImpl: " << this << " destructed" << std::endl;
+#endif
+}
+
+void RefCountBaseImpl::increment()
+{
   Trace trace("RefCountBaseImpl::increment");
   Prague::Guard<Mutex> guard(mutex);
   ++_refcount;
+#ifdef LCLOG
+  Logger::log(Logger::lifecycle) << "RefCountBaseImpl::increment on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
+#endif
 }
 
-void RefCountBaseImpl::decrement() {
+void RefCountBaseImpl::decrement()
+{
   Trace trace("RefCountBaseImpl::decrement");
-  Prague::Guard<Mutex> guard(mutex);
-  --_refcount;
-  if (!_refcount) deactivate();
+  bool done;
+  {
+    Prague::Guard<Mutex> guard(mutex);
+    done = --_refcount;
+#ifdef LCLOG
+    Logger::log(Logger::lifecycle) << "RefCountBaseImpl::decrement on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
+#endif
+  }
+  if (done) return;
+  else
+    {
+#ifdef LCLOG
+      Logger::log(Logger::lifecycle) << "deactivating " << this << std::endl;
+#endif
+      deactivate();
+    }
 }
 

@@ -132,6 +132,7 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
 
 void Application::run()
 {
+
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::concav);

@@ -38,8 +38,8 @@ class Logger
 {
 public:
   enum group
-  { corba, loader, traversal, thread,
-    main, agent, message, command,
+  { corba, loader, console, traversal, thread,
+    lifecycle, agent, message, command,
     subject, observer, text, widget,
     image, figure, layout, drawing, desktop,
     picking, focus, geometry};
@@ -52,7 +52,7 @@ private:
       los << t;
       if (active[g]) cerr << t;
     }
-  static const int numGroups = 20;
+  static const int numGroups = 21;
 public:
   static void set(group g) { active[g] = true; }
   static void clear(group g) { active[g] = false; }

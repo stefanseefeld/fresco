@@ -45,7 +45,7 @@ std::streamsize logbuf::xsputn(const logbuf::char_type *s, std::streamsize n)
   std::streamsize length = epptr() - pptr();
   if (n <= length)
     {
-      memcpy (pptr (), s, n * sizeof (char_type));
+      std::memcpy(pptr(), s, n * sizeof(char_type));
       if (length == n)
 	{
 	  setp(pbase(), epptr());
@@ -56,7 +56,7 @@ std::streamsize logbuf::xsputn(const logbuf::char_type *s, std::streamsize n)
     }
   else
     {
-      memcpy (pptr (), s, length * sizeof (char_type));
+      std::memcpy(pptr(), s, length * sizeof(char_type));
       setp(pbase(), epptr());
       wrapped = true;
       return length + xsputn(s + length, n - length);

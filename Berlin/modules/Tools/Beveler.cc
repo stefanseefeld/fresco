@@ -27,6 +27,7 @@
 #include <Berlin/Color.hh>
 #include <Berlin/Logger.hh>
 #include "Tool/Beveler.hh"
+#include <cmath>
 
 using namespace Warsaw;
 
