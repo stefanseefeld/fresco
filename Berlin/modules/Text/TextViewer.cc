@@ -67,7 +67,6 @@ void TextViewer::update(const CORBA::Any &a) {
 	    break;
 	    
 	case TextBuffer::remove:
-	case TextBuffer::clear:
 	    {
 		Trace trace2("TextViewer::update - remove");
 		Prague::Guard<Mutex> guard(_mutex);
