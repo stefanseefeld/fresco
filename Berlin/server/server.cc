@@ -117,6 +117,11 @@ void exec_child(Fork*& child, std::string& value)
       perror("client execvp");
       exit(1);
     }
+  // Attempt to kill client on these signals
+  child->suicide_on_signal(Signal::interrupt);
+  child->suicide_on_signal(Signal::quit);
+  child->suicide_on_signal(Signal::abort);
+  child->suicide_on_signal(Signal::segv);
 }
 
 int main(int argc, char **argv)
