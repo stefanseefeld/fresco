@@ -21,24 +21,40 @@
 
 SHELL	:= /bin/sh
 
-packages:= Prague Babylon Fresco Berlin Clients-C++ Clients-Python Clients-Java Clients-Perl GGI SDL
-subdirs	:= $(foreach package, $(packages), $(shell test -d $(package) && echo '$(package)'))
+define configure
+@echo configuring package $(@D) with $(configure_args)
+mkdir -p $(@D)
+(cd $(@D); ../$(srcdir)/$(@D)/configure $(configure_args))
+endef
+
+srcdir	:= @srcdir@
+builddir:= @abs_builddir@
+
+packages:= Prague Babylon Fresco Berlin GGI SDL \
+           Clients-C++ Clients-Python Clients-Java Clients-Perl
+subdirs	:= $(foreach package, $(packages), $(shell test -d $(srcdir)/$(package) && echo '$(package)'))
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
 action	:= all
 
 .PHONY: all $(subdirs)
-.PHONY: install depclean clean distclean maintainer-clean dist clean
+.PHONY: doc install install-doc depclean clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
 
-$(subdirs):
+$(subdirs): %: %/Makefile
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
+doc:
+	$(MAKE) action="doc"
+
 install:
 	$(MAKE) action="install"
+
+install-doc:
+	$(MAKE) action="install-doc"
 
 uninstall:
 	$(MAKE) action="uninstall"
@@ -53,12 +69,21 @@ distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
 	@echo 'run configure to regenerate them.'
 	$(MAKE) action="distclean"
-	rm -f Makefile config/local.mk config.cache config.log config.status
+	rm -f Makefile config.cache config.log config.status
 
 maintainer-clean:
 	@echo 'This command is intended for maintainers to use;'
 	@echo 'it deletes configure and auxiliary files;'
 	@echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
-	rm -f Makefile config/local.mk config.cache config.log config.status \
-		configure config/aclocal.m4
+	rm -f Makefile config.cache config.log config.status configure
+
+%/Makefile: $(srcdir)/%/Makefile.in
+	@$(configure)
+
+Babylon/Makefile: override configure_args += "--with-Prague-prefix=$(builddir)/Prague"
+Fresco/Makefile: override configure_args += "--with-Babylon-prefix=$(builddir)/Babylon"
+Berlin/Makefile: override configure_args += "--with-Prague-prefix=$(builddir)/Prague \
+                                             --with-Babylon-prefix=$(builddir)/Babylon \
+                                             --with-Fresco-prefix=$(builddir)/Fresco"
+
