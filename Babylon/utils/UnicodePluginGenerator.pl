@@ -99,7 +99,7 @@ foreach my $block (@blocks) {
   print PLUGIN <<END;
 /*\$Id$filename
  *
- * This source file is a part of the Berlin Project
+ * This source file is a part of the Fresco Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias\@fresco.org>
  * http://www.fresco.org
  *
