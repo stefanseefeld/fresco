@@ -23,24 +23,28 @@ dnl FRESCO_LIBART_CHECK(mandatory-flag)
 dnl
 dnl Checks if libArt is found. If it is, $ac_cv_lib_libArt is set to "yes"
 
-AC_DEFUN([FRESCO_LIBART_CHECK],
-  [dnl First, try to pull everything out of libart-config
-   AC_PATH_PROG(LIBART_CONFIG, libart-config)
+AC_DEFUN([FRESCO_LIBART_CHECK],[
+   AC_ARG_WITH(libart-prefix,
+               AC_HELP_STRING([--with-art-prefix],[Prefix for libArt]),
+               [libart_prefix="$withval"])
+
+   if test ".$libart_prefix" != . ; then
+      libart_config_prefix="$libart_prefix/bin:" ;
+   fi
+
+   dnl First, try to pull everything out of libart-config
+   AC_PATH_PROG([LIBART_CONFIG],[libart2-config],,[$libart_config_prefix$PATH])
    if test ".$LIBART_CONFIG" != . ; then
      LIBART_CPPFLAGS=`$LIBART_CONFIG --cflags`
      LIBART_LIBS=`$LIBART_CONFIG --libs`
    else
      dnl Second, try to pull everything out of gnome-config
-     AC_PATH_PROG(GNOME_CONFIG, gnome-config)
+     AC_PATH_PROG([GNOME_CONFIG],[gnome-config],,[$libart_config_prefix$PATH])
      if test ".$GNOME_CONFIG" != . ; then
        LIBART_CPPFLAGS=`$GNOME_CONFIG --cflags libart`
        LIBART_LIBS=`$GNOME_CONFIG --libs libart`
      fi
    fi
-
-   AC_ARG_WITH(libart-prefix,
-	       AC_HELP_STRING([--with-art-prefix],[Prefix for libArt]),
-               [libart_prefix="$withval"])
 
    dnl Check for header files if above checks failed
    if test ".$LIBART_LIBS" = . -a ".$libart_prefix" != . ; then
