@@ -55,7 +55,7 @@ void ControllerImpl::appendController(Controller_ptr c)
 void ControllerImpl::prependController(Controller_ptr c)
 {
   if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
-  MutexGuard guard(mutex);
+//   MutexGuard guard(mutex);
   Controller_ptr nc = Controller::_duplicate(c);
   nc->setControllerLinks(Controller_var(_this()), Controller_var(Controller::_nil()), first);
   first = nc;
@@ -97,24 +97,25 @@ void ControllerImpl::removeController()
 
 void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Controller_ptr ne)
 {
-    if (!CORBA::is_nil(pa))
-      {
-	parent = Controller::_duplicate(pa);
-// 	style_->link_parent(StyleContext_var(parent->style()));
-	prev = Controller::_duplicate(pr);
-	if (!CORBA::is_nil(pr))
-	  pr->setControllerLinks(Controller_var(Controller::_nil()),
-				 Controller_var(pr->prevController()), Controller_var(_this()));
-	next = ne;
-	if (!CORBA::is_nil(ne))
-	  ne->setControllerLinks(Controller_var(Controller::_nil()),
-				 Controller_var(_this()), Controller_var(next->nextController()));
-      }
-    else
-      {
-        prev = pr;
-        next = ne;
-      }
+  //   cout << CORBA::is_nil(pa) << ' ' << CORBA::is_nil(pr) << ' ' << CORBA::is_nil(ne) << endl;
+  if (!CORBA::is_nil(pa))
+    {
+      parent = Controller::_duplicate(pa);
+      // 	style_->link_parent(StyleContext_var(parent->style()));
+      prev = Controller::_duplicate(pr);
+      if (!CORBA::is_nil(pr))
+	pr->setControllerLinks(Controller_var(Controller::_nil()),
+			       Controller_var(pr->prevController()), Controller_var(_this()));
+      next = ne;
+      if (!CORBA::is_nil(ne))
+	ne->setControllerLinks(Controller_var(Controller::_nil()),
+			       Controller_var(_this()), Controller_var(next->nextController()));
+    }
+  else
+    {
+      prev = pr;
+      next = ne;
+    }
 }
 
 void ControllerImpl::setFirstController(Controller_ptr c)

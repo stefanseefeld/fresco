@@ -21,7 +21,6 @@
  */
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
-#include <unistd.h>
 
 using namespace Prague;
 
@@ -85,7 +84,11 @@ void ServerContextManagerImpl::ping()
   for (clist_t::iterator i = contexts.begin(); i != contexts.end(); i++)
     {
       if ((*i)->ping()) tmp.push_back(*i);	    
-      else (*i)->_dispose();
+      else
+	{
+	  cout << "dispose" << endl;
+	  (*i)->_dispose();
+	}
     }
   contexts = tmp;
 };
@@ -95,7 +98,7 @@ void *ServerContextManagerImpl::run(void *X)
   ServerContextManagerImpl *manager = reinterpret_cast<ServerContextManagerImpl *>(X);
   while (true)
     {
-      sleep(1);
+      Thread::delay(1000);
       manager->ping();
     }
   return 0;

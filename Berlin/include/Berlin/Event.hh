@@ -19,31 +19,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FocusImpl_hh
-#define _FocusImpl_hh
-
 #include <Warsaw/config.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Focus.hh>
-#include <stack>
-#include <vector>
+#include <Warsaw/Input.hh>
 
-class FocusImpl : implements(Focus)
+namespace Input
 {
-  typedef stack<Input::Filter_var> fstack_t;
-  typedef vector<size_t> memento_t;
- public:
-  FocusImpl(Input::Device dd) : d(dd) {}
-  virtual ~FocusImpl() {}
-  virtual Input::Device device() { return d;}
 
-  virtual bool request(Controller_ptr) = 0;
-  virtual void damage(Region_ptr) = 0;
-  virtual void dispatch(const Input::Event &) = 0;
- private:
-  const Input::Device d;
-  fstack_t filters;
-  memento_t memento;
+bool position(const Event &event, Input::Position &position)
+{
+  Input::Device device = event[0].dev;
+  for (size_t i = 0; i != event.length(); i++)
+    if (event[i].dev != device) return false;
+    else if (event[i].attr._d() == Input::positional)
+      {
+	position = event[i].attr.location();
+	return true;
+      }
+  return false;
+}
+
 };
-
-#endif /* _FocusImpl_hh */

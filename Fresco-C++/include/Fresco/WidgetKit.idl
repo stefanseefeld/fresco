@@ -64,6 +64,7 @@ interface WidgetKit : Cloneable
   Controller   stepper(in Graphic g, in Command c);
 
   Button       pushButton(in Graphic g, in Color b, in Command c);
+  Controller   group(in Graphic g);
   Controller   toggle(in Graphic g, in Color b);
   Graphic      gauge(in Color c, in BoundedValue v);
   Controller   slider(in Color c, in BoundedValue v);

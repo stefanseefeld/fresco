@@ -41,7 +41,7 @@ class ServerContextImpl : implements(ServerContext)
   ServerContextImpl(ServerContextManagerImpl *,
                     CosLifeCycle::FactoryFinder_ptr,
                     ClientContext_ptr);
-
+  ~ServerContextImpl();
   ClientContext_ptr client();
   CosLifeCycle::FactoryFinder_ptr factoryFinder();
   CORBA::Object_ptr create(const char *)

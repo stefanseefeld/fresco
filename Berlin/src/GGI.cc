@@ -48,8 +48,8 @@ GGI::Drawable::Drawable() // throw (exception)
   if (!vis) throw exception();
   mode.visible.x = mode.visible.y = GGI_AUTO;
   mode.virt.x = mode.virt.y = GGI_AUTO;
-  mode.size.x = 768;
-  mode.size.y = 1000;
+  mode.size.x = GGI_AUTO;
+  mode.size.y = GGI_AUTO;
   mode.dpp.x = mode.dpp.y = 1;
   mode.graphtype = GT_AUTO;
   mode.frames = 1;
@@ -63,6 +63,7 @@ GGI::Drawable::Drawable() // throw (exception)
       // Hmm. internal GGI problem. The mode GGI gave us still won't work.
       if (ggiCheckMode(vis, &mode) != 0 || ggiSetMode(vis, &mode) != 0) throw exception();
     }
+  mode.size = mode.visible; // awful hack around a ggi bug...
   ggiAddFlags(vis, GGIFLAG_ASYNC);
   pipe(wakeupPipe);
 }

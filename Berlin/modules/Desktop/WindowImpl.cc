@@ -168,7 +168,7 @@ void WindowImpl::insert(Desktop_ptr desktop, bool mapped)
 {
   SectionLog section("WindowImpl::insert");
   Vertex position, size;
-  position.x = position.y = 100., position.z = 0.;
+  position.x = position.y = 1000., position.z = 0.;
   Graphic::Requisition r;
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;

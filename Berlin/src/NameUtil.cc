@@ -89,7 +89,8 @@ const CosNaming::Name charPtrToName(char *ch) {
 }
 
 
-void bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr obj, char *ch) {
+void bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr obj, char *ch)
+{
   MutexGuard guard(rootContext_mutex);
   getRootContext(orb);
   CosNaming::Name ourName = charPtrToName(ch);  

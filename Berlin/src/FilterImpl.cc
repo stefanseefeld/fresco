@@ -19,31 +19,20 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FocusImpl_hh
-#define _FocusImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Focus.hh>
-#include <stack>
-#include <vector>
+#include "Berlin/FilterImpl.hh"
 
-class FocusImpl : implements(Focus)
+Accelerator::Accelerator(Input::Device d, const Input::Toggle &t, Input::Bitset b, Command_ptr c)
+  : device(d), toggle(t), modifier(b), command(Command::_duplicate(c)) {}
+
+CORBA::Boolean Accelerator::handle(const Input::Event &event)
 {
-  typedef stack<Input::Filter_var> fstack_t;
-  typedef vector<size_t> memento_t;
- public:
-  FocusImpl(Input::Device dd) : d(dd) {}
-  virtual ~FocusImpl() {}
-  virtual Input::Device device() { return d;}
-
-  virtual bool request(Controller_ptr) = 0;
-  virtual void damage(Region_ptr) = 0;
-  virtual void dispatch(const Input::Event &) = 0;
- private:
-  const Input::Device d;
-  fstack_t filters;
-  memento_t memento;
-};
-
-#endif /* _FocusImpl_hh */
+  /*
+   * the device has to be the first one in the event list
+   */
+  bool found = true;
+//   for (size_t i = 0; i !=
+  CORBA::Any dummy;
+  if (found) command->execute(dummy);
+  return found;
+}

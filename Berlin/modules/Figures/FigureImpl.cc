@@ -36,7 +36,8 @@
 using namespace Geometry;
 
 TransformFigure::TransformFigure()
-  : tx(new TransformImpl),
+  : mode(outline),
+    tx(new TransformImpl),
     ext(new RegionImpl)
 {
   fg.red = fg.green = fg.blue = 0., fg.alpha = 1.;
@@ -149,9 +150,9 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(tx);
       tmp->applyTransform(transformation);
-      if (mode &= Figure::stroke)
+      if (mode & Figure::outline)
 	{
-	  Coord w = 1.;
+// 	  Coord w = 1.;
 // 	  if (is_not_nil(style_))
 // 	    {
 // 	      Brush_var b = style_->brush_attr();
@@ -162,9 +163,9 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 // 		  if (!Math::equal(i->width, float(0), float(1e-2))) w = i->width;
 //                 }
 //             }
-	  tmp->lower.x -= w; tmp->upper.x += w;
-	  tmp->lower.y -= w; tmp->upper.y += w;
-	  tmp->lower.z -= w; tmp->upper.z += w;
+// 	  tmp->lower.x -= w; tmp->upper.x += w;
+// 	  tmp->lower.y -= w; tmp->upper.y += w;
+// 	  tmp->lower.z -= w; tmp->upper.z += w;
 	}
       region->mergeUnion(tmp);
     }
@@ -181,28 +182,21 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       extension(info, region);
       if (traversal->intersectsRegion(region))
 	{
-// 	  Style::Spec style;
-// 	  if (mode == (stroke | fill))
-// 	    {
-// 	      style.length(2);
-// 	      style[0].a = Style::linecolor, style[0].val <<= fg;
-// 	      style[1].a = Style::fillcolor, style[1].val <<= bg; 
-// 	    }
-// 	  else if (mode == stroke)
-// 	    {
-// 	      style.length(1);
-// 	      style[0].a = Style::linecolor, style[0].val <<= fg;
-// 	    }
-// 	  else
-// 	    {
-// 	      style.length(1);
-// 	      style[0].a = Style::fillcolor, style[0].val <<= fg; 
-// 	    }
-	  DrawingKit_var dk = traversal->kit();
-	  dk->saveState();
-// 	  Pencil_var pencil = drawing->getPencil(style);
-	  dk->drawPath(path);
-	  dk->restoreState();
+	  DrawingKit_var drawing = traversal->kit();
+	  drawing->saveState();
+ 	  if (mode & fill)
+ 	    {
+	      drawing->foreground(bg);
+	      drawing->surfaceFillstyle(DrawingKit::solid);
+	      drawing->drawPath(path);
+	    }
+ 	  if (mode & outline)
+	    {
+	      drawing->foreground(fg);
+	      drawing->surfaceFillstyle(DrawingKit::outline);
+	      drawing->drawPath(path);
+	    }
+	  drawing->restoreState();
 	}
     }
 }

@@ -34,15 +34,16 @@ class Pointer
 public:
   Pointer(GGI::Drawable *);
   ~Pointer();
-  void move(PixelCoord, PixelCoord);
+  void move(Coord, Coord);
   void draw();
   void backup();
   void restore();
-  bool intersects(const PixelCoord &, const PixelCoord &, const PixelCoord &, const PixelCoord &);
+  bool intersects(const Coord &, const Coord &, const Coord &, const Coord &);
 private:
   PixelCoord              origin[2];
   PixelCoord              position[2];
   PixelCoord              size[2];
+  Coord                   scale[2];
   const ggi_directbuffer *dbuf;
   int                     depth;
   int                     stride;
@@ -52,9 +53,13 @@ private:
   unsigned char          *cache;
 };
 
-inline bool Pointer::intersects(const PixelCoord &l, const PixelCoord &r, const PixelCoord &t, const PixelCoord &b)
+inline bool Pointer::intersects(const Coord &l, const Coord &r, const Coord &t, const Coord &b)
 {
-  return l <= position[0] + size[0] && r >= position[0] && t <= position[1] + size[1] && b >= position[1];
+  return
+    l/size[0] <= position[0] + size[0] &&
+    r/size[0] >= position[0] &&
+    t/size[1] <= position[1] + size[1] &&
+    b/size[1] >= position[1];
 }
 
 #endif /* _Pointer_hh */

@@ -131,7 +131,7 @@ Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
 
 Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c, CORBA::Boolean fill)
 {
-  Frame *frame = new Frame(1, c, Frame::concav, fill);
+  Frame *frame = new Frame(10., c, Frame::concav, fill);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -140,7 +140,7 @@ Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c, CORBA::Boolean f
 
 Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c, CORBA::Boolean fill)
 {
-  Frame *frame = new Frame(1, c, Frame::convex, fill);
+  Frame *frame = new Frame(10., c, Frame::convex, fill);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -168,7 +168,7 @@ Graphic_ptr WidgetKitImpl::indicator(Graphic_ptr g, const Color &c, Telltale_ptr
 
 View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
-  DynamicFrame *frame = new DynamicFrame(1, c, Frame::concav, Frame::convex, Telltale::toggle, true);
+  DynamicFrame *frame = new DynamicFrame(10., c, Frame::concav, Frame::convex, Telltale::toggle, true);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
@@ -183,13 +183,13 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   button->action(c);
   graphics.push_back(button);
 
-  DynamicFrame *frame1 = new DynamicFrame(1, b, Frame::black, Frame::flat, Telltale::active, false);
+  DynamicFrame *frame1 = new DynamicFrame(10., b, Frame::black, Frame::flat, Telltale::active, false);
   frame1->_obj_is_ready(_boa());
   graphics.push_back(frame1);
   frame1->body(g);
   frame1->attach(Controller_var(button->_this()));
 
-  DynamicFrame *frame2 = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::toggle, true);
+  DynamicFrame *frame2 = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::toggle, true);
   frame2->_obj_is_ready(_boa());
   graphics.push_back(frame2);
   frame2->body(Graphic_var(frame1->_this()));
@@ -199,12 +199,21 @@ Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr 
   return button->_this();
 }
 
+Controller_ptr WidgetKitImpl::group(Graphic_ptr g)
+{
+  ControllerImpl *parent = new ControllerImpl(true);
+  parent->_obj_is_ready(_boa());
+  parent->body(g);
+  graphics.push_back(parent);
+  return parent->_this();
+}
+
 Controller_ptr WidgetKitImpl::toggle(Graphic_ptr g, const Color &b)
 {
   Toggle *t = new Toggle;
   t->_obj_is_ready(_boa());
   graphics.push_back(t);
-  DynamicFrame *frame = new DynamicFrame(1, b, Frame::concav, Frame::convex, Telltale::chosen, true);
+  DynamicFrame *frame = new DynamicFrame(10., b, Frame::concav, Frame::convex, Telltale::chosen, true);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->attach(Controller_var(t->_this()));
@@ -240,7 +249,7 @@ Graphic_ptr WidgetKitImpl::gauge(const Color &color, BoundedValue_ptr value)
   value->attach(g);
   graphics.push_back(g);
 
-  Frame *frame = new Frame(1, color, Frame::concav, false);
+  Frame *frame = new Frame(10., color, Frame::concav, false);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);

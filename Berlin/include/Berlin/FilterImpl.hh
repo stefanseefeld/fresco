@@ -19,31 +19,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FocusImpl_hh
-#define _FocusImpl_hh
+#ifndef _FilterImpl_hh
+#define _FilterImpl_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Focus.hh>
-#include <stack>
-#include <vector>
+#include <Warsaw/Input.hh>
+#include <Warsaw/Command.hh>
 
-class FocusImpl : implements(Focus)
+class Accelerator : implementsscoped(Input, Filter)
 {
-  typedef stack<Input::Filter_var> fstack_t;
-  typedef vector<size_t> memento_t;
  public:
-  FocusImpl(Input::Device dd) : d(dd) {}
-  virtual ~FocusImpl() {}
-  virtual Input::Device device() { return d;}
-
-  virtual bool request(Controller_ptr) = 0;
-  virtual void damage(Region_ptr) = 0;
-  virtual void dispatch(const Input::Event &) = 0;
+  Accelerator(Input::Device, const Input::Toggle &, Input::Bitset, Command_ptr);
+  virtual ~Accelerator() {}
+  virtual CORBA::Boolean handle(const Input::Event &);
  private:
-  const Input::Device d;
-  fstack_t filters;
-  memento_t memento;
+  const Input::Device device;
+  const Input::Toggle toggle;
+  const Input::Bitset modifier;
+  const Command_var command;
 };
 
 #endif /* _FocusImpl_hh */

@@ -24,7 +24,7 @@
 
 #include <Cloneable.idl>
 
-interface Graphic;
+interface Controller;
 interface Window;
 interface Desktop;
 
@@ -38,8 +38,6 @@ interface Desktop;
  * One day the DesktopKit should allow to define what communication
  * protocols a client understands (via Trading Service ?)
  *
- * DesktopKit should be a pluggable singleton
- *
  *   -stefan
  */
 interface DesktopKit : Cloneable
@@ -48,9 +46,9 @@ interface DesktopKit : Cloneable
    * all names subject to change
    */
   Desktop desk();
-  Window  shell(in Graphic g);
-  Window  transient(in Graphic g);
-//   Controller menu(in Graphic g);
+  Window  shell(in Controller g);
+  Window  transient(in Controller g);
+//   Controller menu(in Controller g);
 };
 
 #endif /* _DesktopKit_idl */

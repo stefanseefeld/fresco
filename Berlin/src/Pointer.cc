@@ -52,7 +52,8 @@ Pointer::Pointer(GGI::Drawable *drawable)
   origin[0] = origin[1] = 0;
   position[0] = position[1] = 8;
   size[0] = size[1] = 16;
-
+  scale[0] = 1/drawable->resolution(xaxis);
+  scale[1] = 1/drawable->resolution(yaxis);
   if (!(dbuf = drawable->buffer (0)))
     cerr << "Error getting display buffer" << endl;
   else if (dbuf->layout != blPixelLinearBuffer)
@@ -92,11 +93,11 @@ Pointer::~Pointer()
   delete [] cache;
 }
 
-void Pointer::move(PixelCoord x, PixelCoord y)
+void Pointer::move(Coord x, Coord y)
 {
   restore();
-  position[0] = max(x, origin[0]);
-  position[1] = max(y, origin[1]);
+  position[0] = static_cast<PixelCoord>(max(static_cast<PixelCoord>(x/scale[0]), origin[0]));
+  position[1] = static_cast<PixelCoord>(max(static_cast<PixelCoord>(y/scale[1]), origin[1]));
   backup();
   draw();
 };
@@ -130,4 +131,5 @@ void Pointer::draw()
 	*to = (*from & *bits) | (*to & ~*bits);
 	    
 	    //	    *to = *from & *bits;
+  GGI::drawable()->flush();
 }

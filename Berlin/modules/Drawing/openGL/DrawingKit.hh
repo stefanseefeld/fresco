@@ -63,6 +63,7 @@ public:
   virtual void setSurfaceFillstyle(Fillstyle);
   virtual void setTexture(Raster_ptr);
 
+  virtual Coord resolution(Axis a) { return drawable->resolution(a);}
   virtual void drawPath(const Path &);
 //   virtual void drawPatch(const Patch &);
   virtual void drawRect(const Vertex &, const Vertex &);

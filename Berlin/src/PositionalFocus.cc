@@ -28,11 +28,16 @@
 #include "Berlin/Logger.hh"
 #include "Prague/Sys/Profiler.hh"
 #include "Berlin/GGI.hh"
+#include "Berlin/Event.hh"
+#include "Berlin/Vertex.hh"
 
 using namespace Prague;
 
 PositionalFocus::PositionalFocus(Input::Device d, ScreenImpl *s)
-  : FocusImpl(d), screen(s), pointer(new Pointer(GGI::drawable())), traversal(0), grabbed(false) {}
+  : FocusImpl(d), screen(s), pointer(new Pointer(GGI::drawable())), traversal(0), grabbed(false)
+{
+}
+
 PositionalFocus::~PositionalFocus() { delete pointer;}
 
 void PositionalFocus::grab()
@@ -101,27 +106,26 @@ void PositionalFocus::dispatch(const Input::Event &event)
   MutexGuard guard(mutex);
   Prague::Profiler prf("PositionalFocus::dispatch");
   SectionLog section("PositionalFocus::dispatch");
-  // update the pointer object / image
-//   pointer->move(ptrPositionX, ptrPositionY);
-//   ggiFlush(drawable);
-	
-  /*
-   * if we have no traversal, create one
-   * and start from root...
-   */
-  Input::Position pointer;
-  if (event.length() == 0 || event[0].attr._d() != Input::positional)
+  Input::Position position;
+  if (!Input::position(event, position))
     {
       cerr << "PositionalFocus::dispatch error : non positional event" << endl;
       return;
     }
-  pointer = event[0].attr.location();
+  /*
+   * update the pointer object / image
+   */
+  pointer->move(position.x, position.y);
+  /*
+   * if we have no traversal, create one
+   * and start from root...
+   */
   if (!traversal)
     {
       traversal = new PickTraversalImpl(Screen_var(screen->_this()),
 					Region_var(screen->getRegion()),
 					Transform_var(Transform::_nil()),
-					pointer, Focus_var(_this()));
+					position, Focus_var(_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
     }
@@ -130,7 +134,7 @@ void PositionalFocus::dispatch(const Input::Event &event)
    */
   else
     {
-      traversal->reset(pointer);
+      traversal->reset(position);
       Controller_var top = controllers.back();
       while (!CORBA::is_nil(top))
 	{
@@ -143,7 +147,7 @@ void PositionalFocus::dispatch(const Input::Event &event)
   PickTraversalImpl *picked = traversal->memento();
   if (!picked)
     {
-      cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << pointer << ")" << endl;
+      cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << position << ")" << endl;
       if (traversal)
 	{
 	  traversal->_dispose();

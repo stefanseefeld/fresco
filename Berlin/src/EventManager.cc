@@ -26,10 +26,11 @@
 #include "Berlin/NonPositionalFocus.hh"
 #include "Berlin/PositionalFocus.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/Vertex.hh"
 
 
 EventManager::EventManager(ScreenImpl *s)
-  : screen(s)
+  : screen(s), drawable(GGI::drawable())
 {
   focus.push_back(new NonPositionalFocus(0, screen)); // keyboard
   focus.push_back(new PositionalFocus(1, screen));    // mouse
@@ -52,7 +53,7 @@ void EventManager::nextEvent()
 {
   SectionLog section("EventManager::nextEvent");
   ggi_event e;
-  if (!GGI::drawable()->nextEvent(e)) return; // repair
+  if (!drawable->nextEvent(e)) return; // repair
   Input::Event event;
   switch (e.any.type)
     {
@@ -92,8 +93,8 @@ void EventManager::nextEvent()
 	    ptrPositionY = e.pmove.y;
 	  }
 	Input::Position position;
-	position.x = ptrPositionX;
-	position.y = ptrPositionY;
+	position.x = ptrPositionX/drawable->resolution(xaxis);
+	position.y = ptrPositionY/drawable->resolution(yaxis);
 	position.z = 0; // time being we're using non-3d mice.
 	event.length(1);
 	event[0].dev = 1;
@@ -104,8 +105,8 @@ void EventManager::nextEvent()
     case evPtrButtonRelease:
       {
 	Input::Position position;
-	position.x = ptrPositionX;
-	position.y = ptrPositionY;
+	position.x = ptrPositionX/drawable->resolution(xaxis);
+	position.y = ptrPositionY/drawable->resolution(yaxis);
 	position.z = 0; // time being we're using non-3d mice.
 	Input::Toggle toggle;
 	if (e.any.type == evPtrButtonPress)
@@ -115,9 +116,9 @@ void EventManager::nextEvent()
  	toggle.number = e.pbutton.button;	  
 	event.length(2);
 	event[0].dev = 1;
-	event[0].attr.location(position);	
+	event[0].attr.kselection(toggle);
 	event[1].dev = 1;
-	event[1].attr.kselection(toggle);
+	event[1].attr.location(position);	
 	break;
       }
     }

@@ -35,6 +35,11 @@ ServerContextImpl::ServerContextImpl(ServerContextManagerImpl *m, CosLifeCycle::
   : manager(m), ffinder(ff), cContext(ClientContext::_duplicate(c)) 
 {}
 
+ServerContextImpl::~ServerContextImpl()
+{
+  cout << "bye bye" << endl;
+}
+
 CosLifeCycle::FactoryFinder_ptr ServerContextImpl::factoryFinder()
 {
   return CosLifeCycle::FactoryFinder::_duplicate(ffinder);

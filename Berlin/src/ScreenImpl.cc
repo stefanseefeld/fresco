@@ -41,7 +41,9 @@ ScreenImpl::ScreenImpl(DrawingKit_ptr d)
   region = new RegionImpl;
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
-  region->upper.x = GGI::drawable()->width(), region->upper.y = GGI::drawable()->height(), region->upper.z = 0;
+  region->upper.x = GGI::drawable()->width()/GGI::drawable()->resolution(xaxis);
+  region->upper.y = GGI::drawable()->height()/GGI::drawable()->resolution(yaxis);
+  region->upper.z = 0;
 }
 
 ScreenImpl::~ScreenImpl()

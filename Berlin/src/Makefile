@@ -36,7 +36,7 @@ SRC 	= GGI.cc Pointer.cc Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc Cl
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \
 	  MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \
-	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc PositionalFocus.cc NonPositionalFocus.cc NameUtil.cc \
+	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc NameUtil.cc \
 	  SubjectImpl.cc ServerContextImpl.cc ClientContextImpl.cc ServerContextManagerImpl.cc
 
 TARGET	= $(lpath)/libBerlin.so

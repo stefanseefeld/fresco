@@ -52,13 +52,8 @@ GLDrawingKit::GLDrawingKit()
   glViewport(0, 0, drawable->width(), drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
-//   cout << drawable->width()/drawable->resolution(xaxis) << ' ' << drawable->height()/drawable->resolution(yaxis) << endl;
-//   glOrtho(0, drawable->width()/drawable->resolution(xaxis), drawable->height()/drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
-  /*
-   * use the old scaling for now to make debugging easier
-   */
-  glOrtho(0, drawable->width(), drawable->height(), 0, -1000.0, 1000.0); 
-  glTranslatef(0.375,0.375,0.);
+  glOrtho(0, drawable->width()/drawable->resolution(xaxis), drawable->height()/drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
+  glTranslatef(0.375, 0.375, 0.);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -68,6 +63,7 @@ GLDrawingKit::GLDrawingKit()
   glFrontFace(GL_CW);
   glEnable(GL_ALPHA_TEST);
   glEnable(GL_SCISSOR_TEST);
+  glScissor(0, 0, drawable->width(), drawable->height());
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -167,7 +163,6 @@ void GLDrawingKit::drawPath(const Path &path)
 
 void GLDrawingKit::drawRect(const Vertex &lower, const Vertex &upper)
 {
-//   myDrawable->makeCurrent();
   if (fs == solid || (fs == textured && CORBA::is_nil(tx)))
     {
       glRectf(lower.x, lower.y, upper.x, upper.y);

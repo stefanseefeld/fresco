@@ -26,6 +26,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Region.hh>
+#include <Warsaw/Transform.hh>
 #include <Warsaw/Raster.hh>
 #include <stack>
 

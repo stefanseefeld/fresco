@@ -34,7 +34,7 @@ interface Figure : Graphic
   
   typedef short Mode;
   const Mode fill = 1;
-  const Mode stroke = 2;
+  const Mode outline = 2;
 
 //   attribute Style figure_style;
 //   attribute Mode figure_mode;

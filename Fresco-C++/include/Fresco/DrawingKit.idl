@@ -47,6 +47,7 @@ interface DrawingKit : Cloneable
   attribute Raster texture;
 //   attribute FontDescriptor font;
 
+  Coord resolution(in Axis a);
   void drawPath(in Path p);
 //   void drawPatch(in Patch p);
   void drawRect(in Vertex lower, in Vertex upper);
