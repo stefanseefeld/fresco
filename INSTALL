@@ -1,12 +1,12 @@
 These are instructions for the configuration, building, and installation
-of the Berlin/Fresco windowing system.
+of the Fresco windowing system.
 
 
 
 Prerequisites
 =============
 
-Berlin uses a number of third party libraries, which you will need to
+Fresco uses a number of third party libraries, which you will need to
 have installed before you can proceed. Please see at
 
 http://www.fresco.org/dependencies.html
@@ -16,7 +16,7 @@ in heavy development, so you may need to get the sources and compile
 them yourself. Respective rpm and deb packages may *not* be enough!
 
 You might want to try those packages first. There are even some debian
-packages of Berlin/Fresco, you might want to try those instead of building
+packages of Fresco, you might want to try those instead of building
 it yourself.
 
 
@@ -24,7 +24,7 @@ it yourself.
 Downloading
 ===========
 
-There are currently three ways to download berlin. You can check out the
+There are currently three ways to download Fresco. You can check out the
 sources directly from cvs, in which case you find instructions at
 
   http://www.fresco.org/cvs.html
@@ -42,39 +42,42 @@ or you can get release packages at
 Configuration and Building
 ===========================
 
-In case you use the cvs version, you have to step into the toplevel
-directory ('Fresco'), and call ./autogen.sh, to generate configure
-scripts and helper files.
+In case you use the cvs version, you have to prepare the source tree
+by stepping into the toplevel source directory ('Fresco'), and call 
+./autogen.sh, to generate configure scripts and helper files.
 
 autogen.sh assumes you are using autoconf 2.53. You might experience
 problems with earlier versions.
 
-Decide where to build Berlin, our implementation of the Fresco interfaces,
-either inside the source tree (let's refer to this as $berlin-src), or (the
-recomended way), in a separate build directory ($berlin-build).
-Step into the build directory, and run autobuild.sh:
+Decide where to build Fresco, our implementation of the Fresco interfaces,
+either inside the source tree (let's refer to this as $fresco-src), or (the
+recomended way), in a separate build directory ($fresco-build).
+Step into the build directory, and run the toplevel configure script:
 
-> cd $berlin-build
-> $berlin-src/autobuild.sh
+> cd $fresco-build
+> $fresco-src/configure
 
-this will set up the build tree and check for the available packages.
+this will just generate a single Makefile, which, however, is equipped
+with all the knowledge to do the rest of the work.
+
+call 'make' to configure and build all the available sub-projects:
+
+> make
+
+You may want to provide some arguments to the various configure
+scripts. You can do that with 'make configure_args="--enable-foo"'.
 Here is a list of the available options:
 
-  --prefix               Set the prefix into which Berlin will get installed.
+  --prefix               Set the prefix into which Fresco will get installed.
 
-  --sysconfdir           Set the directory for Berlin's configuration file(s).
-
-  --enable-docs          Build the documentation
-                         You will need synopsis (http://www.synopsis.org/)
-                         to build the Reference Manuals and XML processing
-                         tools (for example: http://www.4suite.org/(
+  --sysconfdir           Set the directory for Fresco's configuration file(s).
 
   --enable-tracer        Compile with tracer support
                          This produces tons of debugging output: A big help
                          if you want to debug the server or report
                          bugs.
 
-  --with-orb		 Select the CORBA ORB used by Berlin. This can be
+  --with-orb		 Select the CORBA ORB used by Fresco. This can be
   			 either omniORB or TAO for now.
 
   --with-omniorb-prefix  Prefix for omniORB
@@ -83,7 +86,7 @@ Here is a list of the available options:
   --with-omniorb-version omniORB version (3 and 4 supported)
                          Only needed if your ORB version is not autodetected.
 
-  --with-colocation-optimization Make Berlin use colocation optimization if
+  --with-colocation-optimization Make Fresco use colocation optimization if
                          this is supported by the ORB you selected.
 
   --enable-optimization  Make the compiler use optimization. This might
@@ -127,19 +130,22 @@ Here is a list of the available options:
 [ Add support for interactive configuration and document the options
   here]
 
-Instead of using autobuild.sh you can manually build everything with
-a sequence of commands liek this:
+Instead of using this toplevel Makefile you can manually build everything with
+a sequence of commands like this:
 
 > mkdir $(package)
 > cd $(package)
-> $(berlin-src)/$(package)/configure --with-some-options
+> $(fresco-src)/$(package)/configure --with-some-options
 > make && make install
 
-Make sure to build Prague, Babylon, Fresco and Berlin first. Afterwards
-any dependencies should be met, so you can build in arbitrary order
-from this point on. You will need to build at least Prague, Babylon,
-Fresco and Berlin plus either GGI or SDL and one of the Clients. Of course
-you can just build everything ;-)
+Please note the interdependencies of the subpackages. Babylon needs Prague,
+Fresco needs Babylon, Berlin needs Prague, Babylon, and Fresco, GGI needs
+Berlin, SDL needs Berlin, Clients-C++ needs Prague, Babylon, Fresco, and
+Berlin (the latter dependency will be removed, I promize), Clients-Python
+needs Fresco.
+
+You can specify paths to lookup any of these packages if you have installed
+them elsewhere with --with-<package>-prefix.
 
 Make sure to install the packages with make install. Packages depending on
 others will need them to be installed or their configuration will fail.
@@ -149,10 +155,10 @@ Testing and First Steps
 =======================
 
 You should now find some libraries in $prefix/lib, modules in
-$prefix/module, and binaries in $prefix/bin. If you have choosen a
+$prefix/lib/Fresco/module, and binaries in $prefix/bin. If you have choosen a
 non-standard prefix (anything but /usr/local/) you will need to tell
 the loader where to look for the libraries, and, in case you use the
-python environment, tell python where to find the Berlin modules:
+python environment, tell python where to find the Fresco modules:
 
 csh style:
 
@@ -177,12 +183,12 @@ and voila! that should start the server.
 Of course a berlin server without clients is just a bit more exciting
 than a X server without clients (mainly because the "I built all this
 myself!" factor). To start a client with the server you need to tell it
-its location (starting now the $berlin-build stuff will be assumed)
+its location (starting now the $fresco-build stuff will be assumed)
 using the -e (execute) flag:
 
 > bin/server -e bin/demo
 
-The demo program is a set of small applications showing some berlin
+The demo program is a set of small applications showing some fresco
 possibilities (new demos are welcome!).
 
 In order to run the other C++ demo available, demo3D, you need to pass
@@ -192,7 +198,7 @@ console built with 3D support or the GGI console with ggimesa support,
 both actived in compile time (Note: installing ggimesa may break you
 hardware accelerated 3D setup.  You've been warned). Then you need to
 use a 3D capable DrawingKit. The default DrawingKit, LibArtDrawingKit
-has no 3D support, so you have to tell Berlin to use another DrawingKit
+has no 3D support, so you have to tell Fresco to use another DrawingKit
 (namely GLDrawingKit).
 
 In short:
@@ -209,7 +215,7 @@ for GGI console.
 have a good video card use the SDL console instead).
 
 If you're brave you can check http://www.fresco.org/contrib.html to find
-"real" applications to run under Fresco/Berlin (they may be broken, or not,
+"real" applications to run under Fresco/Fresco (they may be broken, or not,
 contact their authors for more information).
 
 Finally here they are other options you may use when invoking the server:
@@ -232,7 +238,7 @@ Troubleshooting
 There are a couple of places which are frequently subject to problems.
 Please consult the FAQ at
 
-http://wiki.fresco.org/index.cgi/ProblemsWithRunningBerlin
+http://wiki.fresco.org/index.cgi/ProblemsWithRunningFresco
 http://wiki.fresco.org/index.cgi/FAQ
 
 Please be sure that third party libraries are correctly installed before
