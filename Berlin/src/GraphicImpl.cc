@@ -567,11 +567,17 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
   Vertex delta;
   delta.x = delta.y = delta.z = 0.;
 
+  /*
+   * FIXME !!
+   * this is a hack !
+   * we need to figure out how to treat undefined requisitions
+   * - stefan
+   */
   Requisition req = _req;
   if (!req.z.defined)
     {
       req.z.natural = req.z.maximum = req.z.minimum = 0.;
-      req.z.align = region.zalign;
+      req.z.align = 0.5;//region.zalign;
       req.z.defined = true;
     }
 

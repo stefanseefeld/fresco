@@ -20,8 +20,9 @@
 # MA 02139, USA.
 
 major	= 0
-minor	= 1
-patch	= 5
+minor	= 2
+patch	= 0
 kits	= Command Desktop Drawing Figure Gadget Image Layout Text Tool Widget
-archive	= lib modules etc/PNG etc/glyph.dat config/Server include/Berlin src/Berlin \
+archive	= LICENSE.Berlin LICENSE.Fresco lib modules etc/PNG etc/glyph.dat \
+          config/Server include/Berlin src/Berlin \
 	  $(patsubst %, include/%, $(kits)) $(patsubst %, src/%, $(kits)) server

@@ -20,6 +20,6 @@
 # MA 02139, USA.
 
 major	= 0
-minor	= 1
-patch	= 5
+minor	= 2
+patch	= 0
 archive	= lib modules config/Prague include/Prague src/Prague

@@ -54,7 +54,7 @@ def main():
     gadget  = object._narrow(Warsaw.GadgetKit)
 
     vbox   = layout.vbox();
-    adjustable1 = command.bvalue(-1., 1., 0.1, 0.1, 0.1)
+    adjustable1 = command.bvalue(0., 360., 0., 10., 10.)
     adjustable2 = command.bvalue(0., 360., 0., 10., 10.)
     vbox.append(layout.align(widget.slider(adjustable1, Warsaw.xaxis), 0.0, 0.0))
     vbox.append(layout.align(widget.slider(adjustable2, Warsaw.xaxis), 0.0, 0.0))
@@ -64,14 +64,10 @@ def main():
     rectangle._set_foreground(Warsaw.Color(1., 1., 1., 0.9))
     rectangle._set_background(Warsaw.Color(1., 0.5, 0.5, 0.9))
     hbox.append(widget.button(rectangle, Warsaw.Command._nil))
-    #hbox.append(layout.align(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable2), 0., 0.))
-#    hbox.append(tool.debugger(layout.align(tool.debugger(gadget.rotator(tool.debugger(layout.align(rectangle, 0.5, 0.5), "rectangle"), adjustable2, Warsaw.yaxis), "rotator"), 0., 0.), "trafo"))
-    hbox.append(layout.align(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable2, Warsaw.yaxis), 0., 0.))
+#    hbox.append(layout.align(gadget.rotator(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable1, Warsaw.yaxis), adjustable2, Warsaw.yaxis), 0., 0.))
+    hbox.append(layout.align(gadget.rotator(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable1, Warsaw.zaxis), adjustable2, Warsaw.yaxis), 0., 0.))
     hbox.append(widget.button(rectangle, Warsaw.Command._nil))
-    #vbox.append(layout.align(gadget.rotator(layout.align(hbox, 0.5, 0.5), adjustable2), 0., 0.))
-    #vbox.append(gadget.rotator(rectangle, adjustable2))
     vbox.append(hbox)
-    #shell = desktop.shell(tool.group(layout.flexible(vbox, 2000., 2000.)))
     outset = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
     shell = desktop.shell(tool.group(tool.frame(vbox, 20., outset, 1)))
     while 1:

@@ -189,9 +189,9 @@ Tag ToggleChoice::appendItem(Graphic_ptr g)
   Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->valign(Graphic_var(layout->margin(toggle, 50.)),1.)));
+  item->append(Graphic_var(layout->valign(Graphic_var(layout->margin(toggle, 50.)), 0.5)));
   item->append(Graphic_var(layout->hspace(200.)));
-  item->append(g);
+  item->append(Graphic_var(layout->valign(g, 0.5)));
   Graphic_var box = body();
   ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
@@ -207,9 +207,9 @@ Tag ToggleChoice::prependItem(Graphic_ptr g)
   Tag tag = _state->add(toggle);
   appendController(toggle);
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 50.)));
+  item->append(Graphic_var(layout->valign(Graphic_var(layout->margin(toggle, 50.)), 0.5)));
   item->append(Graphic_var(layout->hspace(200.)));
-  item->append(g);
+  item->append(Graphic_var(layout->valign(g, 0.5)));
   Graphic_var box = body();
   ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
@@ -245,9 +245,9 @@ Tag CheckboxChoice::appendItem(Graphic_ptr g)
   toggle->body(frame);
 
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 50.)));
+  item->append(Graphic_var(layout->valign(Graphic_var(layout->margin(toggle, 50.)), 0.5)));
   item->append(Graphic_var(layout->hspace(200.)));
-  item->append(g);
+  item->append(Graphic_var(layout->valign(g, 0.5)));
   Graphic_var box = body();
   ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
@@ -271,9 +271,9 @@ Tag CheckboxChoice::prependItem(Graphic_ptr g)
   toggle->body(frame);
 
   Graphic_var item = layout->hbox();
-  item->append(Graphic_var(layout->margin(toggle, 50.)));
+  item->append(Graphic_var(layout->valign(Graphic_var(layout->margin(toggle, 50.)), 0.5)));
   item->append(Graphic_var(layout->hspace(200.)));
-  item->append(g);
+  item->append(Graphic_var(layout->valign(g, 0.5)));
   Graphic_var box = body();
   ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};

@@ -43,6 +43,7 @@ GGI::Drawable *GGI::drawable()
 }
 
 GGI::Drawable::Drawable() // throw (exception)
+  : autoplay(false)
 {
   vis = ggiOpen(0);
 //  vis = ggiOpen("display-memory", 0);
