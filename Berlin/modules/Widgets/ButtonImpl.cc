@@ -38,3 +38,19 @@ void ButtonImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
     }
   ControllerImpl::release(traversal, event);
 }
+
+void ButtonImpl::keyPress(const Input::Event &event)
+{
+  const Input::Toggle &toggle = event[0].attr.kselection();
+  if (toggle.number == 32) // space
+    {
+      set(Telltale::toggle);
+      if (test(Telltale::toggle))
+	{
+	  CORBA::Any dummy;
+	  execute(dummy);
+	  clear(Telltale::toggle);
+	}
+    }
+  else ControllerImpl::keyPress(event);
+}

@@ -40,3 +40,15 @@ void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
   SectionLog section("Toggle::release");
   ControllerImpl::release(traversal, event);
 }
+
+void Toggle::keyPress(const Input::Event &event)
+{
+  SectionLog section("Toggle::press");
+  const Input::Toggle &toggle = event[0].attr.kselection();
+  if (toggle.number == 32) // space
+    {
+      if (test(Telltale::chosen)) clear(Telltale::chosen);
+      else set(Telltale::chosen);
+    }
+  else ControllerImpl::keyPress(event);
+}
