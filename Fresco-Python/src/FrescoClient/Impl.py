@@ -36,6 +36,11 @@ class PyRefCountBase (Warsaw__POA.RefCountBase):
 	if self.__refcount < 1:
 	    print "PyRefCountBase.decrement(): RefCount reached",self.__refcount
 
+class PyServantBase: # (PortableServer::RefCountServantBase):
+    def deactivate(self):
+	# Something to do with poa here
+	pass
+
 class PyRegion (Warsaw__POA.Region):
     def __init__(self):
 	self.__lower = Warsaw.Vertex(0, 0, 0)
@@ -378,6 +383,9 @@ class PyGraphic (Warsaw__POA.Graphic, PyIdentifiable, PyRefCountBase):
 	PyRefCountBase.__init__(self)
 	self.__parents = []
 
+    class Iterator (Warsaw__POA.GraphicIterator, PyServantBase):
+	def destroy(): self.deactivate()
+
     # Attribute 'body'
     def _get_body(self): return None
     def _set_body(self, body): pass
@@ -517,6 +525,40 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
 	PySubject.__init__(self)
 	self.__telltale = 0
 	self.__constraint = None
+	self.__grabs = 0
+	self._children = []
+
+    class Iterator (Warsaw__POA.ControllerIterator, PyServantBase):
+	def __init__(self, con, tag):
+	    self.__parent = con
+	    self.__cursor = tag
+	def child(self): # --> Controller
+	    if self.__cursor > len(self.__parent._children): return None
+	    if self.__cursor < 0: return None
+	    return self.__parent._children[self.__cursor] # duplicate?
+	def next(self): self.__cursor = self.__cursor + 1
+	def prev(self): self.__cursor = self.__cursor - 1
+	def insert(self, child):
+	    if self.__cursor > len(self.__parent._children):
+		self.__cursor = len(self.__parent._children)
+	    child.increment()
+	    self.__parent._children.insert(self.__cursor, child)
+	    child.set_parent_controller(self.__parent._this())
+	    self.__parent.need_resize()
+	def replace(self, child):
+	    if self.__cursor > len(self.__parent._children): return
+	    old = self.__parent._children[self.__cursor]
+	    if old: # try for corba errors
+		old.remove_parent_controller()
+	    child.increment()
+	    self.__parent._children[self.__cursor] = child
+	    child.set_parent_controller(self.__parent._this())
+	    self.__parent.need_resize()
+	def remove(self):
+	    if self.__cursor > len(self.__parent._children): return
+	    self.__parent._children[self.__cursor].remove_parent_controller()
+	    del self.__parent._children[self.__cursor]
+	    self.__parent.need_resize()
 
     # ---- also implement TellTale interface for Controller
     def _get_constraint(self):
@@ -553,17 +595,17 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
     # ---- Controller interface
     def append_controller(controller): # --> void
 	controller.increment()
-	self.__children.append(controller)
+	self._children.append(controller)
 	controller.set_parent_controller(self._this())
     def prepend_controller(controller): # --> void
 	controller.increment()
-	self.__children.insert(0, controller)
+	self._children.insert(0, controller)
 	controller.set_parent_controller(self._this())
     def remove_controller(controller): # --> void
-	for i in range(len(self.__children)):
-	    if self.__children[i].is_identical(controller):
+	for i in range(len(self._children)):
+	    if self._children[i].is_identical(controller):
 		controller.remove_parent_controller()
-		del self.__children[i]
+		del self._children[i]
 		return
     def set_parent_controller(controller): # --> void
 	self.__parent = controller
@@ -572,28 +614,153 @@ class PyController (Warsaw__POA.Controller, PyGraphic, PySubject):
     def parent_controller(): # --> Controller
 	return self.__parent
     def first_child_controller(): # --> Iterator
-	pass
+	iter = PyController.Iterator(self, 0)
+	activate(iter)
+	return iter._this()
     def last_child_controller(): # --> Iterator
-	pass
+	iter = PyController.Iterator(this, len(self._children) - 1)
+	activate(iter)
+	return iter._this()
     def request_focus(controller, input_device): # --> boolean
-	pass
+	return self.__parent and self.__parent.request_focus(controller, input_device)
     def receive_focus(focus): # --> boolean
-	pass
+	self.set_focus(focus.device())
+	if (focus.device() == 0): self.set(Warsaw.Controller.active)
+	return 1
     def lose_focus(input_device): # --> void
-	pass
+	self.clear_focus(input_device)
+	if (input_device == 0): self.clear(Warsaw.Controller.active)
     def first_focus(input_device): # --> boolean
-	pass
+	# Ask children first
+	for child in self._children:
+	    if child.first_focus(input_device):
+		return 1
+	# Request ourself
+	parent = self.parent_controller()
+	return parent and parent.request_focus(self._this(), input_device)
     def last_focus(input_device): # --> boolean
-	pass
+	# Ask children first
+	children = list(self._children)
+	children.reverse()
+	for child in children:
+	    if child.first_focus(input_device):
+		return 1
+	# Request ourself
+	parent = self.parent_controller()
+	return parent and parent.request_focus(self._this(), input_device)
     def next_focus(input_device): # --> boolean
-	pass
+	parent = self.parent_controller()
+	if not parent: return false
+	# First locate the next controller in control graph
+	iter = parent.first_child_controller()
+	next = iter.child()
+	while next and not self.is_identical(next):
+	    iter.next()
+	    next = iter.child()
+	# If 'self' is not in the list then its an error!
+	if not next: raise NameError, 'I wasnt in my parent\'s controllers!'
+	iter.next()
+	next = iter.child()
+	iter.destroy()
+	# Now try to pass focus to it
+	if next: return next.first_focus(input_device)
+	# Or pass up to parent if I was the last in the list
+	return parent.next_focus(input_device)
     def prev_focus(input_device): # --> boolean
-	pass
+	parent = self.parent_controller()
+	if not parent: return false
+	# First locate the next controller in control graph
+	iter = parent.first_child_controller()
+	prev = iter.child()
+	while prev and not self.is_identical(prev):
+	    iter.prev()
+	    prev = iter.child()
+	# If 'self' is not in the list then its an error!
+	if not prev: raise NameError, 'I wasnt in my parent\'s controllers!'
+	iter.prev()
+	prev = iter.child()
+	iter.destroy()
+	# Now try to pass focus to it
+	if prev: return prev.last_focus(input_device)
+	# Or pass up to parent if I was the last in the list
+	return parent.prev_focus(input_device)
     def handle_positional(pickTraversal, input_event): # --> boolean
-	pass
+	try:
+	    position = get_position(input_event)
+	except TypeError:
+	    return 0 # Fatal error, but we silently ignore
+	if event[0].attr._d() == Warsaw.Input.button:
+	    toggle = event[0].attr.selection()
+	    if toggle.actuation == Warsaw.Input.Toggle.press:
+		self.press(pickTraversal, input_event)
+	    elif toggle.actuation == Warsaw.Input.Toggle.release:
+		self.release(pickTraversal, input_event)
+	elif event[0].attr._d() == Warsaw.Input.positional:
+	    if self.test(Warsaw.Controller.pressed):
+		self.drag(pickTraversal, input_event)
+	    else:
+		self.move(pickTraversal, input_event)
+	else:
+	    self.other(input_event)
+	return 1 #Handled
     def handle_non_positional(input_event): # --> boolean
+	if event[0].dev != 0 or event[0].attr._d() != Warsaw.Input.key:
+	    # fatal, silent ignore
+	    return 0
+	if event[0].attr.selection().actuation != Warsaw.Input.Toggle.press:
+	    return 0
+	self.key_press(input_event)
+	return 1 # Handled
+    def inside(self, pickTraversal):
+	# Default impl: use bounding box
+	return pickTraversal.intersects_allocation()
+    def move(self, pickTraversal, input_event):
+	pass
+    def press(self, pickTraversal, input_event):
+	self.grab(pickTraversal)
+	self.request_focus(self._this(), 0)
+	self.set(Warsaw.Controller.pressed)
+    def drag(self, pickTraversal, input_event):
+	pass
+    def release(self, pickTraversal, input_event):
+	self.clear(Warsaw.Controller.pressed)
+	self.ungrab(pickTraversal)
+    def double_click(self, pickTraversal, input_event):
+	pass
+    def key_press(self, input_event):
+	toggle = event[0].attr.selection()
+	if toggle.number == Babylon.KEY_CURSOR_LEFT:
+	    self.prev_focus(event[0].dev)
+	elif toggle.number == Babylon.UC_HORIZONTAL_TABULATION or \
+		toggle.number == Babylon.KEY_CURSOR_RIGHT:
+	    self.next_focus(event[0].dev)
+    def key_release(self, input_event):
+	pass
+    def other(self, input_event):
+	pass
+    def grab(self, pickTraversal):
+	focus = pickTraversal.get_focus()
+	if not focus: return
+	focus.grab()
+	self.__grabs = self.__grabs | (1 << focus.device())
+	self.update_state()
+    def ungrab(self, pickTraversal):
+	focus = pickTraversal.get_focus()
+	if not focus: return
+	focus.ungrab()
+	self.__grabs = self.__grabs & ~(1 << focus.device())
+	self.update_state()
+    def update_state(self):
 	pass
 
+# Finds a position from event
+def get_position(event): # --> Position
+    device = event[0].dev
+    for i in range(len(event)):
+	if event[i].dev != device: raise TypeError, "No positionals found"
+	if event[i].attr._d() == Warsaw.Input.positional:
+	    return event[i].attr.location()
+    raise TypeError, "No positionals found"
 
 
 # vim: ts=8:sts=4:sw=4
