@@ -37,7 +37,7 @@ public:
   {
     Trace trace("PolyGraphic::Iterator::child");
     Prague::Guard<Mutex> guard(_parent->_mutex);
-    if (_cursor > _parent->_children.size()) return Fresco::Graphic::_nil();
+    if (_cursor >= _parent->_children.size()) return Fresco::Graphic::_nil();
     return RefCount_var<Fresco::Graphic>::increment(_parent->_children[_cursor].peer);
   }
   virtual void next() { _cursor++;}
