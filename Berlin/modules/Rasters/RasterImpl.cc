@@ -119,7 +119,7 @@ void RasterImpl::export(Raster::Data *&data)
 	png_destroy_write_struct(&wpng, &winfo);
 }
 
-void RasterImpl::getPixels(Raster::Data &buffer)
+void RasterImpl::getPixels(Raster::Data *&buffer)
 {
 	/*
 	 * Note:  This differs from 'export' in that it returns
@@ -136,13 +136,14 @@ void RasterImpl::getPixels(Raster::Data &buffer)
 
 	long long totBytes = rowbytes*height;
    
-	buffer.length(totBytes);
+	buffer = new Data;
+	buffer->length(totBytes);
 
 	for (png_uint_32 i=0; i<height; i++)
 	{
 		for (png_uint_32 j=0; j<rowbytes; j++)
 		{
-			buffer[(i*rowbytes)+j]=rows[(height-1)-i][j];
+			(*buffer)[(i*rowbytes)+j]=rows[(height-1)-i][j];
 		}
 	}
 }

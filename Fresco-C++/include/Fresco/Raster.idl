@@ -47,7 +47,7 @@ interface Raster
   Info header();
   void export(out Data d);	// Export raw image data as octets
   void load(in Data d);	// load data into the image
-  void getPixels(inout Data d);	// Get image mem block from raster
+  void getPixels(out Data d);	// Get image mem block from raster
 
 // Eventually, manipulations, etc.
 };

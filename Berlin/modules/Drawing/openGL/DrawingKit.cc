@@ -97,18 +97,18 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
   Raster::Info info = raster->header();
-  Raster::Data pixels;
+  Raster::Data_var pixels;
   raster->getPixels(pixels);
 
 //   Transform::Matrix matrix;
 //   transform->store(matrix);
 
   Vertex origin;
-  origin.x = origin.y = origin.z;
+  origin.x = origin.y = origin.z = 0.;
   transform->transformVertex(origin);
   glRasterPos2d(origin.x, origin.y);
   cout << "GLDrawingKit::image at " << origin.x << ' ' << origin.y << endl;
   glPixelStorei(GL_UNPACK_ROW_LENGTH, info.width);
   // 	glClear(GL_COLOR_BUFFER_BIT);
-  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels.NP_data());
+  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels->NP_data());
 }
