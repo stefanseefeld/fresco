@@ -7,8 +7,12 @@
 #define __OMNIORB2__
 #define _MIT_POSIX_THREADS
 #define _REENTRANT
+ 
+// this cruft is intended to help handle differences in ORBs. it's sad, really.
 
-#define implements(interface) virtual public _lc_sk_##interface
-#define implementsscoped(scope, interface) virtual public scope##::_lc_sk_##interface
+#define applyscope(scope, thing) scope##::##thing
+#define skeletonize(interfacename) _lc_sk_##interfacename
+#define implements(interface) virtual public skeletonize(interface)
+#define implementsscoped(scope, interface) virtual public applyscope(scope, skeletonize(interface))
 
 #endif /* _config_hh */
