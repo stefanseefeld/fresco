@@ -56,6 +56,7 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
   RefCount_var<Warsaw::LayoutKit> _layout;
   RefCount_var<Warsaw::ToolKit>   _tool;
   RefCount_var<Warsaw::WidgetKit> _widget;
+  Warsaw::Command_var             _exit;
 };
 
 #endif

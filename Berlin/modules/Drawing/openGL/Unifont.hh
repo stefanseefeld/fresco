@@ -68,8 +68,8 @@ public:
   virtual Warsaw::DrawingKit::FontMetrics metrics();
   virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar);
 
-  void drawChar(Warsaw::Unichar);
-  void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  void draw_char(Warsaw::Unichar);
+  void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
 private:
   Prague::MMap *glyphmap;
   Warsaw::Unistring _family;

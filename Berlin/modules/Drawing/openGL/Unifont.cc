@@ -137,6 +137,7 @@ void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
   glPixelStorei(GL_PACK_SKIP_ROWS, 0);
   glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
 //   glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 1024, 64, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 }
 
@@ -159,7 +160,7 @@ void GLUnifont::Texture::coords(Unichar uc, float &x1, float &y1, float &x2, flo
   x2 = static_cast<float>(x + width) / 1024;
 }
 
-void GLUnifont::drawChar(Unichar uc) 
+void GLUnifont::draw_char(Unichar uc) 
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   unsigned int stride = 33;
@@ -193,7 +194,7 @@ void GLUnifont::drawChar(Unichar uc)
 #endif
 }
 
-void GLUnifont::allocateChar(Unichar uc, Graphic::Requisition &r)
+void GLUnifont::allocate_char(Unichar uc, Graphic::Requisition &r)
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   

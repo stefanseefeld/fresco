@@ -43,7 +43,7 @@ RasterImpl::RasterImpl(const char *file) : _rows(0)
   _rows = _png.read(pngfile);
   if (!_rows)
     {
-      std::cerr << "RasterImpl fatal error: can't read fallback raster berlin-128.png" << std::endl;
+      std::cerr << "RasterImpl fatal error: can't read " << pngfile << std::endl;
       exit(-1);
     }
 }

@@ -12,7 +12,8 @@ import Warsaw, Unidraw
 import Warsaw__POA
 # Define an implementation of the ClientContext interface
 class ClientContextImpl (Warsaw__POA.ClientContext):
-    def userName(self): return "joe"
+    def user_name(self): return "joe"
+    def exit(self): return Warsaw.Command.nil
     def ping(self): return
 
 def main():

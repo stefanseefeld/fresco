@@ -41,7 +41,7 @@ GLFont::GLFont(const Text::FontDescriptor &fd, const Style::Spec &sty)
 
 GLFont::~GLFont() {}
 
-void GLFont::drawText(const Unistring &u, const Vertex &p) {
+void GLFont::draw_text(const Unistring &u, const Vertex &p) {
   // ... OpenGL initialization commands... 
 
   glColor4d(myFontColor[0],myFontColor[1],myFontColor[2],myFontColor[3]);
@@ -58,7 +58,7 @@ void GLFont::acceptFontVisitor(Text::FontVisitor_ptr v){
   CORBA::release(v);
 }
 
-void GLFont::allocateText(const Unistring &u, Graphic::Requisition &r){
+void GLFont::allocate_text(const Unistring &u, Graphic::Requisition &r){
     string txt = ASCIIFY(u);
     r.x.natural = font->getWidth(txt.c_str());
     r.x.defined = true;

@@ -39,30 +39,30 @@ using namespace Warsaw;
 
 GLDrawingKit::GLDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(f, p),
-    drawable(Console::drawable()),
-    tx(0),
-    font(new GLUnifont),
-    textures(100),
-    images(500)
+    _drawable(Console::drawable()),
+    _tx(0),
+    _font(new GLUnifont),
+    _textures(100),
+    _images(500)
 {
     
 #if defined(CONSOLE_GGI)
-  context = GGIMesaCreateContext();
-  if (!context)
+  _context = GGIMesaCreateContext();
+  if (!_context)
     {
-      cerr << "GGIMesaCreateContext() failed" << endl;
+      std::cerr << "GGIMesaCreateContext() failed" << std::endl;
       exit(4);
     }
   /*
    * if we made it up to here the console is GGI, so let's use inside info
    */
-  GGIDrawable &ggi = drawable->impl();
-  if (GGIMesaSetVisual(context, ggi.visual(), GL_TRUE, GL_FALSE))
+  GGIDrawable &ggi = _drawable->impl();
+  if (GGIMesaSetVisual(_context, ggi.visual(), GL_TRUE, GL_FALSE))
     {
-      cerr << "GGIMesaSetVisual() failed" << endl;
+      std::cerr << "GGIMesaSetVisual() failed" << std::endl;
       exit(7);
     }
-  GGIMesaMakeCurrent(context);
+  GGIMesaMakeCurrent(_context);
   
 #elif defined(CONSOLE_GLUT)
   
@@ -72,10 +72,10 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
 #  error "GLDrawingKit cannot be used with this console."
 #endif
   
-  glViewport(0, 0, drawable->width(), drawable->height());
+  glViewport(0, 0, _drawable->width(), _drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
-  glOrtho(0, drawable->width()/drawable->resolution(xaxis), drawable->height()/drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
+  glOrtho(0, _drawable->width()/_drawable->resolution(xaxis), _drawable->height()/_drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
   glTranslatef(0.375, 0.375, 0.);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -93,9 +93,9 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
 
 GLDrawingKit::~GLDrawingKit()
 {
-  delete font;
+  delete _font;
 #if defined(CONSOLE_GGI)
-  GGIMesaDestroyContext(context);
+  GGIMesaDestroyContext(_context);
 #endif
 }
 
@@ -108,9 +108,9 @@ void GLDrawingKit::set_transformation(Transform_ptr t)
   if (CORBA::is_nil(t)) glLoadMatrixd(identity);
   else
     {
-      tr = Transform::_duplicate(t);
+      _tr = Transform::_duplicate(t);
       Transform::Matrix matrix;
-      tr->store_matrix(matrix);
+      _tr->store_matrix(matrix);
       GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
 			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
 			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
@@ -121,16 +121,16 @@ void GLDrawingKit::set_transformation(Transform_ptr t)
 
 void GLDrawingKit::set_clipping(Region_ptr r)
 {
-  cl = Region::_duplicate(r);
-  if (CORBA::is_nil(cl)) glScissor(0, 0, drawable->width(), drawable->height());
+  _cl = Region::_duplicate(r);
+  if (CORBA::is_nil(_cl)) glScissor(0, 0, _drawable->width(), _drawable->height());
   else
     {
       Vertex lower, upper;
-      cl->bounds(lower, upper);
-      PixelCoord x = static_cast<PixelCoord>(lower.x*drawable->resolution(xaxis) + 0.5);
-      PixelCoord y = static_cast<PixelCoord>((drawable->height()/drawable->resolution(yaxis) - upper.y)*drawable->resolution(yaxis) + 0.5);
-      PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*drawable->resolution(xaxis) + 0.5);
-      PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*drawable->resolution(yaxis) + 0.5);
+      _cl->bounds(lower, upper);
+      PixelCoord x = static_cast<PixelCoord>(lower.x*_drawable->resolution(xaxis) + 0.5);
+      PixelCoord y = static_cast<PixelCoord>((_drawable->height()/_drawable->resolution(yaxis) - upper.y)*_drawable->resolution(yaxis) + 0.5);
+      PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*_drawable->resolution(xaxis) + 0.5);
+      PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*_drawable->resolution(yaxis) + 0.5);
       glScissor(x, y, w, h);
 #if 0 // uncomment this if you want to debug the repairing of regions
       glColor4d(1., 0., 0., 1.);
@@ -144,46 +144,46 @@ void GLDrawingKit::set_clipping(Region_ptr r)
 
 void GLDrawingKit::set_foreground(const Color &c)
 {
-  fg = c;
-  glColor4d(lt.red * fg.red, lt.green * fg.green, lt.blue * fg.blue, fg.alpha);
+  _fg = c;
+  glColor4d(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha);
 }
 
 void GLDrawingKit::set_lighting(const Color &c)
 {
-  lt = c;
-  glColor4d(lt.red * fg.red, lt.green * fg.green, lt.blue * fg.blue, fg.alpha);
+  _lt = c;
+  glColor4d(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha);
 }
 
 void GLDrawingKit::set_point_size(Coord s)
 {
-  ps = s;
+  _ps = s;
   // FIXME !: glPointSize uses pixel units !
-  glPointSize(ps);
+  glPointSize(_ps);
 }
 
 void GLDrawingKit::set_line_width(Coord w)
 {
-  lw = w;
+  _lw = w;
   // FIXME !: glLineWidth uses pixel units !
-  glLineWidth(lw);
+  glLineWidth(_lw);
 }
 
 void GLDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style)
 {
-  es = style;
+  _es = style;
 }
 
 void GLDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style)
 {
-  if (fs == Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
-  fs = style;
-  if (fs == Warsaw::DrawingKit::textured) glEnable(GL_TEXTURE_2D);
+  if (_fs == Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
+  _fs = style;
+  if (_fs == Warsaw::DrawingKit::textured) glEnable(GL_TEXTURE_2D);
 }
 
 void GLDrawingKit::set_texture(Raster_ptr t)
 {
-  tx = CORBA::is_nil(t) ? 0 : textures.lookup(Raster::_duplicate(t));
-  if (tx) glBindTexture(GL_TEXTURE_2D, tx->texture);
+  _tx = CORBA::is_nil(t) ? 0 : _textures.lookup(Raster::_duplicate(t));
+  if (_tx) glBindTexture(GL_TEXTURE_2D, _tx->texture);
 }
 
 // void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
@@ -194,20 +194,20 @@ void GLDrawingKit::set_texture(Raster_ptr t)
 
 void GLDrawingKit::draw_path(const Path &path)
 {
-  if (fs == Warsaw::DrawingKit::solid)
+  if (_fs == Warsaw::DrawingKit::solid)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
-  else if (fs == Warsaw::DrawingKit::textured)
+  else if (_fs == Warsaw::DrawingKit::textured)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       for (unsigned long i = 0; i < path.length() - 1; i++)
 	{
-	  glTexCoord2f(path[i].x * tx->width * 10., path[i].y * tx->height * 10.); 
+	  glTexCoord2f(path[i].x * _tx->width * 10., path[i].y * _tx->height * 10.); 
 	  glVertex3f(path[i].x, path[i].y, path[i].z);
 	}
       glEnd();
@@ -224,11 +224,11 @@ void GLDrawingKit::draw_path(const Path &path)
 
 void GLDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
-  if (fs == Warsaw::DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
-  else if (fs == Warsaw::DrawingKit::textured)
+  if (_fs == Warsaw::DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
+  else if (_fs == Warsaw::DrawingKit::textured)
     {
-      double w = (upper.x - lower.x)/(tx->width * 10.);
-      double h = (upper.y - lower.y)/(tx->height * 10.);
+      double w = (upper.x - lower.x)/(_tx->width * 10.);
+      double h = (upper.y - lower.y)/(_tx->height * 10.);
       glBegin(GL_POLYGON);
       glTexCoord2f(0., 0.); glVertex2d(lower.x, lower.y);
       glTexCoord2f(w, 0.);  glVertex2d(upper.x, lower.y);
@@ -256,7 +256,7 @@ void GLDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
   glPushMatrix();
   glScaled(upper.x - lower.x, upper.y - lower.y, upper.z - lower.z);
   glTranslated(lower.x, lower.y, lower.z);
-  GLQuadric quadric(fs, GLQuadric::out);
+  GLQuadric quadric(_fs, GLQuadric::out);
   quadric.disk(0., 1., 360., 100.);
   glPopMatrix();
 }
@@ -264,14 +264,14 @@ void GLDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 void GLDrawingKit::draw_image(Raster_ptr raster)
 {
   Profiler prf("GLDrawingKit::draw_image");
-  GLImage *glimage = images.lookup(Raster::_duplicate(raster));
+  GLImage *glimage = _images.lookup(Raster::_duplicate(raster));
   GLint tbackup = -1;
-  if (fs == Warsaw::DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
+  if (_fs == Warsaw::DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
   else glEnable(GL_TEXTURE_2D);
   GLfloat color_cache[4];
   glGetFloatv(GL_CURRENT_COLOR, color_cache);
   glBindTexture(GL_TEXTURE_2D, glimage->texture);
-  glColor4f(lt.red, lt.green, lt.blue, color_cache[3]); // use the current lighting
+  glColor4f(_lt.red, _lt.green, _lt.blue, color_cache[3]); // use the current lighting
   glBegin(GL_POLYGON);
   Path path;
   path.length(4);
@@ -287,7 +287,7 @@ void GLDrawingKit::draw_image(Raster_ptr raster)
   glTexCoord2f(0., glimage->t);           glVertex3f(path[0].x, path[0].y, path[0].z);
   glEnd();
   glColor4fv(color_cache);  
-  if (fs != Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
+  if (_fs != Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
@@ -300,13 +300,26 @@ void GLDrawingKit::set_font_style(const Unistring &s) {}
 void GLDrawingKit::set_font_attribute(const NVPair & nvp) {}
 void GLDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
 void GLDrawingKit::draw_text(const Unistring &us) {}
-void GLDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { font->allocateChar(c, req);}
-void GLDrawingKit::draw_char(Unichar c) { font->drawChar(c);}
+void GLDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { _font->allocate_char(c, req);}
+void GLDrawingKit::draw_char(Unichar c) { _font->draw_char(c);}
+
+void GLDrawingKit::draw_triangles(const Warsaw::Vertices &coords, const Warsaw::Vertices &normals, const Warsaw::TexCoords &tcs)
+{
+}
+
+void GLDrawingKit::draw_lines(const Warsaw::Vertices &coords, const Warsaw::TexCoords &tcs)
+{
+}
+
+void GLDrawingKit::draw_points(const Warsaw::Vertices &coords)
+{
+}
+
 void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
 
 extern "C" KitFactory *load()
 {
   static std::string properties[] = {"implementation", "GLDrawingKit"};
-  return new KitFactoryImpl<GLDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
+  return new KitFactoryImpl<GLDrawingKit> ("IDL:Warsaw/DrawingKit3D:1.0", properties, 1);
 }
 

@@ -25,41 +25,27 @@
 #ifndef _DrawingKit3D_idl
 #define _DrawingKit3D_idl
 
-#include <Warsaw/Kit.idl>
+#include <Warsaw/DrawingKit.idl>
 #include <Warsaw/Types3D.idl>
 
-module Warsaw {
-
-  interface DrawingKit3D : Kit {
-    
-    // -- Types --
-    
+module Warsaw
+{
+  interface DrawingKit3D : DrawingKit
+  {
     enum TextureMode { TextureOff, Texture1D, Texture2D, Texture3D };
     enum LightingMode { LightOff, LightOn };
     enum FoggingMode { FogOff, FogLinear, FogExponential };
-
-    // -- Attributes --
-
     attribute MaterialAttr material;
     attribute Rasters textures;
-    attribute TextureMode texMode;
-    attribute FoggingMode fogMode;
+    attribute TextureMode tex_mode;
+    attribute FoggingMode fog_mode;
     
-    // -- Operations --
-    
-    // Render triangles in 3D.
-    void draw_triangles(in Vertices coords, in Vertices normals, in TexCoords tcs);
-    
-    // Render lines in 3D.
+    //. Render triangles in 3D.
+    void draw_triangles(in Vertices coords, in Vertices normals, in TexCoords tcs);    
+    //. Render lines in 3D.
     void draw_lines(in Vertices coords, in TexCoords tcs);
-    
-    // Render points in 3D.
+    //. Render points in 3D.
     void draw_points(in Vertices coords);
-
-    // Flush all rendering operations (make sure it is finished and
-    // sent to the pipeline) @@@ Redundant? 
-    void flush();
-    
   };
 
 };

@@ -44,8 +44,8 @@ public:
   virtual Warsaw::DrawingKit::FontMetrics metrics() = 0;
   virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar uc) = 0;
 
-  virtual void drawChar(Warsaw::Unichar) = 0;
-  virtual void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &) = 0;
+  virtual void draw_char(Warsaw::Unichar) = 0;
+  virtual void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &) = 0;
 };
 
 #endif

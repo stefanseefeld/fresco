@@ -114,9 +114,6 @@ module Warsaw
       
       //. Flush the drawing kit.
       void flush();
-
-      //. 3D drawing extensions
-      readonly attribute DrawingKit3D dk3D;
     };
 };
 
