@@ -82,7 +82,7 @@ void ScreenManager::run()
   tmpDamage = new RegionImpl;
   traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
 				    Region_var(tmpDamage->_this()),
-				    Transform_var(Transform::_nil()),
+				    Transform::_nil(),
 				    drawing);
   
   Prague::Time last;

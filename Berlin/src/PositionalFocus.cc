@@ -139,7 +139,7 @@ void PositionalFocus::dispatch(Input::Event &event)
     {
       traversal = new PickTraversalImpl(Screen_var(screen->_this()),
 					Region_var(screen->get_region()),
-					Transform_var(Transform::_nil()),
+					Transform::_nil(),
 					position, Focus_var(_this()));
 //      traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));

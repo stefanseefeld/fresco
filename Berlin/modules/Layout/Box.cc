@@ -235,14 +235,14 @@ void Box::traverse_without_allocation(Traversal_ptr t)
     for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
       {
 	if (CORBA::is_nil((*i).peer)) continue;
-	t->traverse_child((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	t->traverse_child((*i).peer, (*i).localId, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }
   else
     for (glist_t::reverse_iterator i = _children.rbegin(); i != _children.rend(); i++)
       {
 	if (CORBA::is_nil((*i).peer)) continue;
-	t->traverse_child((*i).peer, (*i).localId, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	t->traverse_child((*i).peer, (*i).localId, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }
 }

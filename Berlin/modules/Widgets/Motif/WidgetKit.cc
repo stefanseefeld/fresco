@@ -100,7 +100,7 @@ Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
 
 Controller_ptr WidgetKit::toggle(Graphic_ptr g)
 {
-  Controller_var toggle = tool->toggle(Graphic_var(Warsaw::Graphic::_nil()));
+  Controller_var toggle = tool->toggle(Warsaw::Graphic::_nil());
   Warsaw::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::inset);
   s2.brightness(0.5); s2._d(ToolKit::outset);
@@ -151,7 +151,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    */
   Graphic_var box = axis == xaxis ? layout->hbox() : layout->vbox();
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var quad = layout->fixed_size(Graphic_var(Warsaw::Graphic::_nil()), 80., 80.);
+  Graphic_var quad = layout->fixed_size(Warsaw::Graphic::_nil(), 80., 80.);
   box->append_graphic(Graphic_var(tool->frame(quad, 20., spec, true)));
   box->append_graphic(Graphic_var(tool->frame(quad, 20., spec, true)));
   Controller_var thumb = tool->dragger(box, Command_var(slider->create_drag_command()));
@@ -175,7 +175,7 @@ Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
   activate(panner);
   Warsaw::ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var outset = tool->frame(Graphic_var(Warsaw::Graphic::_nil()), 20., spec, true);
+  Graphic_var outset = tool->frame(Warsaw::Graphic::_nil(), 20., spec, true);
   Controller_var thumb = tool->dragger(outset, Command_var(panner->create_drag_command()));
   panner->init(thumb);
 
@@ -217,7 +217,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
    * the thumb
    */
   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var outset = tool->frame(Graphic_var(Warsaw::Graphic::_nil()), 20., spec, true);
+  Graphic_var outset = tool->frame(Warsaw::Graphic::_nil(), 20., spec, true);
   Controller_var thumb = tool->dragger(outset, Command_var(scrollbar->create_drag_command()));
   scrollbar->init(thumb);
   /*
@@ -228,16 +228,16 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   out.brightness(0.5); out._d(Warsaw::ToolKit::outset);
   CommandImpl *backward = new Backward(x);
   activate(backward);
-  Controller_var lower = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(backward->_this()));
-  outset = layout->fixed_size(Graphic_var(tool->dynamic_triangle(Graphic_var(Graphic::_nil()), 20.,
+  Controller_var lower = tool->stepper(Graphic::_nil(), Command_var(backward->_this()));
+  outset = layout->fixed_size(Graphic_var(tool->dynamic_triangle(Graphic::_nil(), 20.,
 							         Warsaw::Controller::pressed, in, out, true,
 							         a == xaxis ? Warsaw::ToolKit::left : Warsaw::ToolKit::up, lower)), 120., 120.);
   lower->body(outset);
 
   CommandImpl *forward = new Forward(x);
   activate(forward);
-  Controller_var upper = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(forward->_this()));
-  outset = layout->fixed_size(Graphic_var(tool->dynamic_triangle(Graphic_var(Warsaw::Graphic::_nil()), 20.,
+  Controller_var upper = tool->stepper(Graphic::_nil(), Command_var(forward->_this()));
+  outset = layout->fixed_size(Graphic_var(tool->dynamic_triangle(Warsaw::Graphic::_nil(), 20.,
 							         Warsaw::Controller::pressed, in, out, true,
 							         a == xaxis ? Warsaw::ToolKit::right : Warsaw::ToolKit::down, upper)), 120., 120.);
   upper->body(outset);
@@ -302,7 +302,7 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
   hbox1->append_graphic(yscroller);
   Graphic_var hbox2 = layout->hbox();
   hbox2->append_graphic(xscroller);
-  hbox2->append_graphic(Graphic_var(layout->fixed_size(Graphic_var(Warsaw::Graphic::_nil()), 160., 160.)));
+  hbox2->append_graphic(Graphic_var(layout->fixed_size(Warsaw::Graphic::_nil(), 160., 160.)));
   Graphic_var vbox = layout->vbox();
   vbox->append_graphic(hbox1);
   vbox->append_graphic(hbox2);

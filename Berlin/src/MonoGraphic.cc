@@ -169,5 +169,5 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
   Trace trace("MonoGraphic::traverse");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
-    traversal->traverse_child(child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+    traversal->traverse_child(child, 0, Region::_nil(), Transform::_nil());
 }

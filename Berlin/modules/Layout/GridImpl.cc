@@ -494,7 +494,7 @@ void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::
   Layout::Grid::Index i;
   for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
     for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
-      t->traverse_child(d.children[i.row][i.col], index_to_tag(i), Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+      t->traverse_child(d.children[i.row][i.col], index_to_tag(i), Region::_nil(), Transform::_nil());
 }
 
 SubGridImpl::SubGridImpl(Grid_ptr grid, const Layout::Grid::Range &r)
@@ -505,6 +505,6 @@ void SubGridImpl::request(Warsaw::Graphic::Requisition &r) { _child->request_ran
 
 void SubGridImpl::traverse(Traversal_ptr t)
 {
-  t->traverse_child(_child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+  t->traverse_child(_child, 0, Region::_nil(), Transform::_nil());
 }
 

@@ -57,9 +57,9 @@ void Allocator::traverse(Traversal_ptr traversal)
 //   updateRequisition();
   Region_var allocation = traversal->allocation();
   if (!CORBA::is_nil(allocation))
-    traversal->traverse_child(Graphic_var(body()), 0, allocation, Transform_var(Transform::_nil()));
+    traversal->traverse_child(Graphic_var(body()), 0, allocation, Transform::_nil());
   else
-    traversal->traverse_child(Graphic_var(body()), 0, Region_var(_natural->_this()), Transform_var(Transform::_nil()));
+    traversal->traverse_child(Graphic_var(body()), 0, Region_var(_natural->_this()), Transform::_nil());
 }
 
 void Allocator::need_resize()

@@ -60,8 +60,7 @@ Tag ToggleChoice::append_item(Graphic_ptr g)
 {
   Trace trace("ToggleChoice::append_item");
   RefCount_var<Warsaw::Controller> toggle =
-    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-								     60., 60.)));
+    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)));
   Tag tag = selection->add(toggle);
   append_controller(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
@@ -80,8 +79,7 @@ Tag ToggleChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("ToggleChoice::prepend_item");
   RefCount_var<Warsaw::Controller> toggle =
-    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-								     60., 60.)));
+    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)));
   Tag tag = selection->add(toggle);
   append_controller(toggle);
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
@@ -111,7 +109,7 @@ CheckboxChoice::CheckboxChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, 
 Tag CheckboxChoice::append_item(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::append_item");
-  RefCount_var<Warsaw::Controller> toggle = tools->toggle(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()));
+  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
   Tag tag = selection->add(toggle);
   append_controller(toggle);
 
@@ -119,9 +117,8 @@ Tag CheckboxChoice::append_item(Graphic_ptr g)
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
   RefCount_var<Warsaw::Graphic> frame =
-    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-									    60., 60.)),
-			  20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)),
+			   20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
   RefCount_var<Warsaw::Graphic> item = layout->hbox();
@@ -139,7 +136,7 @@ Tag CheckboxChoice::append_item(Graphic_ptr g)
 Tag CheckboxChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::prepend_item");
-  RefCount_var<Warsaw::Controller> toggle = tools->toggle(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()));
+  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
   Tag tag = selection->add(toggle);
   append_controller(toggle);
 
@@ -147,9 +144,8 @@ Tag CheckboxChoice::prepend_item(Graphic_ptr g)
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
   RefCount_var<Warsaw::Graphic> frame =
-    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(RefCount_var<Warsaw::Graphic>(Warsaw::Graphic::_nil()),
-									    60., 60.)),
-			  20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)),
+			   20., Warsaw::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   
   RefCount_var<Warsaw::Graphic> item = layout->hbox();

@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 //   getopt.get("help", &value);
 //   if (value == "true") { getopt.usage(); exit(0);}
 
-  ServerImpl *server = new ServerImpl;
+  ServerImpl *server = ServerImpl::instance();
   char *pluginDir = getenv("BERLIN_ROOT");
   if (!pluginDir)
     {
