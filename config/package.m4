@@ -54,10 +54,9 @@ dnl
   if test "$$1_CONFIG" = "no" ; then
     no_$1=yes
   else
-    $1_CPPFLAGS="-I`$$1_CONFIG --prefix`/include"
-    $1_CPPFLAGS="$$1_CPPFLAGS `$$1_CONFIG $ac_$1_args --cppflags`"
-    $1_LIBS="$$1_LIBS -L`$$1_CONFIG --prefix`/lib"
-    $1_LIBS="$$1_LIBS `$$1_CONFIG $ac_$1_args --libs`"
+    $1_CPPFLAGS="`$$1_CONFIG $ac_$1_args --cppflags`"
+    $1_LIBS="`$$1_CONFIG $ac_$1_args --libs`"
+    $1_prefix="`$$1_CONFIG $ac_$1_args --prefix`"
 
     $1_major_version=`$$1_CONFIG $ac_$1_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
@@ -133,11 +132,11 @@ int main (int argc, char *argv[])
 ],, no_$1=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
        CPPFLAGS="$ac_save_CPPFLAGS"
        LIBS="$ac_save_LIBS"
-       echo "LIBS ..........$LIBS"
      fi
   fi
   if test "x$no_$1" = x ; then
      AC_MSG_RESULT(yes)
+     AC_SUBST($1_prefix)
      ifelse([$3], , :, [$3])     
   else
      AC_MSG_RESULT(no)
