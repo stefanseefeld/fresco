@@ -37,6 +37,8 @@
 #
 
 # Compilation and linking flags.
+CXXFLAGS+= $(SO_CXXFLAGS)
+LDFLAGS += $(SO_LDFLAGS)
 LIBS	:= -L$(top_builddir)/lib -lBerlin $(EXTRA_LIBS)
 CPPFLAGS+= $(EXTRA_CPPFLAGS)
 
