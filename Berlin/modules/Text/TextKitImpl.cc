@@ -23,8 +23,9 @@
 
 #include "Text/TextKitImpl.hh"
 #include "Text/TextChunk.hh"
-//#include "Text/FontChange.hh"
+#include "Text/FontChange.hh"
 #include "Berlin/Plugin.hh"
+#include <string>
 
 DrawingKit_ptr canonicalDK;
 map<GlyphComp::Key,GlyphComp::Val,GlyphComp> glyphCache;
@@ -34,14 +35,33 @@ Mutex staticMutex;
 TextKitImpl::TextKitImpl() {}
 TextKitImpl::~TextKitImpl() {}
 
-void TextKitImpl::setCanonicalDrawingKit(DrawingKit_ptr dk) {
+void TextKitImpl::dk(DrawingKit_ptr dk) {
     MutexGuard guard(staticMutex);
     canonicalDK = dk;
 }
 
-Text::FontSeq *TextKitImpl::enumerateFonts() {
-  Text::FontSeq *fsq = new Text::FontSeq();
-  return fsq;
+DrawingKit_ptr TextKitImpl::dk() {
+    MutexGuard guard(staticMutex);
+    return canonicalDK;
+}
+
+static Unistring UNIFY(const string &s) {
+  Unistring tmp;
+
+  tmp.length(s.length());
+  for (unsigned long i = 0; i < s.length(); i++) {
+      tmp[i] = (Unichar)(s[i]);
+  }
+  return tmp;
+}
+
+
+Text::FontDescriptorSeq* fonts() {
+    Text::FontDescriptorSeq *fdsq = new Text::FontDescriptorSeq();
+    fdsq->length(1);
+    (*fdsq)[0].pointsize = 14;
+    (*fdsq)[0].name = UNIFY((string)"Arial");;
+    return fdsq;
 }
 
 Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
@@ -56,11 +76,11 @@ Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
     return glyphCache[k];
 }
 
-// Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &f, const Style::Spec &sty) {
-//   FontChange *fc = new FontChange(f,sty);
-//   fc->_obj_is_ready(_boa());
-//   return fc->_this();
-// }
+Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style::Spec &s) {
+    FontChange *fc = new FontChange(fd,s);
+    fc->_obj_is_ready(_boa());
+    return fc->_this();
+}
 
 
 EXPORT_PLUGIN(TextKitImpl, interface(TextKit))

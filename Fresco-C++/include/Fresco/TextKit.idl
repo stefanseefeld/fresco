@@ -37,10 +37,10 @@
 interface DrawingKit;
 
 interface TextKit : Cloneable {
-  Text::FontSeq enumerateFonts();
-  void setCanonicalDrawingKit(in DrawingKit dk);
+  readonly attribute Text::FontDescriptorSeq fonts;
+  attribute DrawingKit dk;
   Graphic chunk(in Unistring u, in Text::Font f);    
-  //  Graphic fontChange(in Text::FontDescriptor f, in Style::Spec sty);
+  Graphic fontChange(in Text::FontDescriptor fd, in Style::Spec sty);    
 };
 
 #endif

@@ -24,11 +24,10 @@
 #include "Text/FontChange.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/DrawTraversal.hh"
-#include <iostream>
+#include "Berlin/Logger.hh"
 
 FontChange::FontChange(const Text::FontDescriptor & f, const Style::Spec &sty) :
   myFontDescriptor(f), myStyle(sty) {
-  cerr << "created a fontChange" << endl;
 }
 
 void FontChange::request(Requisition &r) {
@@ -38,12 +37,11 @@ void FontChange::request(Requisition &r) {
 
 
 void FontChange::draw(DrawTraversal_ptr dt) {
-  cerr << "in FontChange::Draw()" << endl;
-  DrawingKit_ptr dk = dt->kit();
-  try {
-    dk->setFont(myFontDescriptor, myStyle);
-  } catch (Text::NoSuchFontException &nsfe) {
-    // um, ok, no font. might try some other font-matching
-    // trick in here or signal the user or something.
-  }
+    SectionLog section(Logger::text, "FontChange::Draw");
+    DrawingKit_ptr dk = dt->kit();
+    try {
+	dk->setFont(myFontDescriptor, myStyle);
+    } catch (Text::NoSuchFontException &nsfe) {
+	//	Logger::log(Logger::text) << "Unable to load font \"" << myFontDescriptor.name << "\"";
+    }
 }

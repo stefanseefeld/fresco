@@ -33,18 +33,26 @@
 
 declare_corba_ptr_type(DrawingKit)
 
+
+/** this implements a simple text kit which manufactures text chunks and font
+ * change markers. the idea is that a font change marker delegates most of the
+ * responsibility of actually finding and setting a "current font" to the
+ * methods of the current drawingKit, and really only serves as a placeholder
+ * with which a buffer or label can say "here the text is supposed to become
+ * helvetica 12 pt."  
+ */
+
 struct GlyphComp {
     typedef pair<Unistring,Text::Font_ptr> Key;
     typedef Graphic_ptr Val;    
     
     inline bool operator()(const Key &a, const Key &b) {
-	Text::FontDescriptor d1, d2;
-	a.second->getDescriptor(d1);
-	b.second->getDescriptor(d2);
+	Text::FontDescriptor *d1 = a.second->descriptor();
+	Text::FontDescriptor *d2 = b.second->descriptor();
 	return SeqComp(a.first,b.first) || 
-	    SeqComp(d1.name,d2.name) ||
-	    SeqComp(d1.style,d2.style) ||
-	    (d1.pointsize > d2.pointsize);
+	    SeqComp(d1->name,d2->name) ||
+	    SeqComp(d1->style,d2->style) ||
+	    (d1->pointsize > d2->pointsize);
     }
 };
 
@@ -52,10 +60,12 @@ class TextKitImpl : implements(TextKit), public virtual CloneableImpl {
  public:
     TextKitImpl();
     virtual ~TextKitImpl();
-    Text::FontSeq *enumerateFonts();
-    Graphic_ptr chunk(const Unistring &u, Text::Font_ptr f);
-    void setCanonicalDrawingKit(DrawingKit_ptr dk);
-    //  Graphic_ptr TextViewer(const Text::FontDescriptor &f, const Style::Spec &sty);
+
+    Text::FontDescriptorSeq* fonts();
+    DrawingKit_ptr dk();
+    void dk(DrawingKit_ptr);
+    Graphic_ptr  chunk(const Unistring & u, Text::Font_ptr  f);
+    Graphic_ptr  fontChange(const Text::FontDescriptor & fd, const Style::Spec &s);
     
  protected:
     static DrawingKit_ptr canonicalDK;

@@ -45,6 +45,8 @@ module Text {
     Unistring name;
     Unistring style;
   };
+
+  typedef sequence<FontDescriptor> FontDescriptorSeq;
     
   // this is your basic visitor/typer. in the most common case it'll work (I think) much
   // faster than repeated narrowings, and speed is important in here.
@@ -63,7 +65,7 @@ module Text {
   
   interface Font {    
     void acceptFontVisitor(in FontVisitor v);
-    void getDescriptor(inout FontDescriptor desc);
+    readonly attribute FontDescriptor descriptor;
     boolean canDrawText(in Unistring u);      
     void allocateText(in Unistring u, inout Graphic::Requisition req);
     void drawText(in Unistring u, in Vertex v);
