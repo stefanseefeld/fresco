@@ -21,11 +21,11 @@
  */
 
 #include "Warsaw/config.hh"
-#include "Warsaw/Event.hh"
+#include "Warsaw/Input.hh"
 #include "Warsaw/PickTraversal.hh"
 #include "Widget/ButtonImpl.hh"
 
-void ButtonImpl::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void ButtonImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
   /*
    * once we have real focus management the command should be executed
@@ -36,5 +36,5 @@ void ButtonImpl::release(PickTraversal_ptr traversal, const Event::Pointer *poin
       CORBA::Any dummy;
       execute(dummy);
     }
-  ControllerImpl::release(traversal, pointer);
+  ControllerImpl::release(traversal, event);
 }

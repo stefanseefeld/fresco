@@ -45,18 +45,18 @@ Stepper::~Stepper()
   delete notifier;
 }
 
-void Stepper::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Stepper::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("Stepper::press");
-  ControllerImpl::press(traversal, pointer);
+  ControllerImpl::press(traversal, event);
   start();
 }
 
-void Stepper::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Stepper::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("Stepper::release");
   stop();
-  ControllerImpl::release(traversal, pointer);
+  ControllerImpl::release(traversal, event);
 }
 
 void Stepper::step()

@@ -36,14 +36,14 @@ interface CommandKit : Cloneable
   // this usually results in a reactor with its own thread for
   // processing Messages, so when you send it a Message the call
   // returns in constant time
-  Reactor asyncReactor(in ReactorBindingList initialBindings);
+//   Reactor asyncReactor(in ReactorBindingList initialBindings);
   
   // whereas this results in a reactor which consumes the calling
   // thread during Message receipt
-  Reactor syncReactor(in ReactorBindingList initialBindings);
+//   Reactor syncReactor(in ReactorBindingList initialBindings);
   
-  Command sendMessage(in Message msgToSend, in MessageListener recipient);
-  Command forwardMessage(in MessageListener recipient);
+//   Command sendMessage(in Message msgToSend, in MessageListener recipient);
+//   Command forwardMessage(in MessageListener recipient);
   Command log(in string t);
   // more commands to follow in here
 };

@@ -78,15 +78,15 @@ void BVController::allocate(Tag tag, const Allocation::Info &info)
 
 void BVController::update(Subject_ptr) { needRedraw();}
 
-void BVController::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void BVController::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  current = stepper(traversal, pointer);
-  current->press(traversal, pointer);
+  current = stepper(traversal, event);
+  current->press(traversal, event);
 }
 
-void BVController::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void BVController::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  current->release(traversal, pointer);
+  current->release(traversal, event);
   current = 0;
 }
 
@@ -166,11 +166,11 @@ void Slider::allocateThumb(const Allocation::Info &info)
   info.transformation->translate(origin);
 }
 
-Stepper *Slider::stepper(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+Stepper *Slider::stepper(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
-  Vertex location = pointer->location;
+  Vertex location = event[0].attr.location();
   transformation->inverseTransformVertex(location);
   Impl_var<RegionImpl> region(new RegionImpl(allocation));
   if ((axis == xaxis && location.x < region->lower.x + offset) ||
@@ -215,11 +215,11 @@ void XYSlider::allocateThumb(const Allocation::Info &info)
   cerr << "sorry, XYSlider::allocateThumb not yet implemented" << endl;
 }
 
-Stepper *XYSlider::stepper(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+Stepper *XYSlider::stepper(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Region_var allocation = traversal->allocation();
   Transform_var transformation = traversal->transformation();
-  Vertex location = pointer->location;
+  Vertex location = event[0].attr.location();
   transformation->inverseTransformVertex(location);
   Impl_var<RegionImpl> region(new RegionImpl(allocation));
   if (location.x < region->lower.x + xoffset)

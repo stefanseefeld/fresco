@@ -23,34 +23,32 @@
 #define _NonPositionalFocus_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Focus.hh>
 #include <Warsaw/Controller.hh>
 #include <Warsaw/Region.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Berlin/FocusImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <vector>
 
 class ScreenImpl;
 
-class NonPositionalFocus : implements(Focus)
+class NonPositionalFocus : public FocusImpl
 {
   typedef vector<Controller_var> cstack_t;
  public:
-  NonPositionalFocus(ScreenImpl *);
+  NonPositionalFocus(Input::Device, ScreenImpl *);
   virtual ~NonPositionalFocus();
 
-  virtual Event::Device device() { return 0;}
-  virtual void grab();
-  virtual void ungrab();
-  virtual void addFilter(Event::Filter_ptr);
+  virtual void grab() {}
+  virtual void ungrab() {}
+  virtual void addFilter(Input::Filter_ptr);
 
-  void request(Controller_ptr);
-  void damage(Region_ptr) {}
-  void dispatch(const Event::Key &);
+  virtual bool request(Controller_ptr);
+  virtual void damage(Region_ptr) {}
+  virtual void dispatch(const Input::Event &);
  private:
   ScreenImpl        *screen;
   cstack_t           controllers;
-  bool               grabbed;
   Prague::Mutex      mutex;
 };
 

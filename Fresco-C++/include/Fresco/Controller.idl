@@ -24,7 +24,7 @@
 
 #include "Graphic.idl"
 #include "Telltale.idl"
-#include "Event.idl"
+#include "Input.idl"
 
 interface PickTraversal;
 interface Focus;
@@ -46,19 +46,68 @@ interface Controller : Graphic, Telltale
 //. input handling and focus management.
 {
   Controller parentController();
+  Controller nextController();
+  Controller prevController();
+  Controller firstController();
+  Controller lastController();
+  //. These operations provide hierarchy information
+  //. starting from a controller, returning the parent,
+  //. right sibling, left sibling, first child, and last child,
+  //. respectively.  If the requested controller does not exist,
+  //. such as the right sibling for the last controller
+  //. in a list, then the operation returns a nil reference.
   void appendController(in Controller c);
   void prependController(in Controller c);
-  void insertController(in Controller i, in Controller c);
-  void replaceController(in Controller i, in Controller c);
-  void removeController(in Controller c);
-  void setParentController(in Controller c);
-
-  void requestFocus(in Controller c, in Event::Device d);
+  //. These operations modify the controller hierarchy
+  //. adding a child at the beginning or end of this controller's
+  //. list of children.
+  void insertController(in Controller i);
+  void replaceController(in Controller i);
+  //. These operations modify the controller hierarchy
+  //. by adding or replacing a new controller at the position
+  //. of this controller.
+  void removeController();
+  //. Remove this controller from its place in the hierarchy.
+  void setControllerLinks(in Controller parent, in Controller prev, in Controller next);
+  void setFirstController(in Controller v);
+  void setLastController(in Controller v);
+  //. These operations explicitly modify the links between controllers.
+  //. They need not be called directly, but are used to maintain
+  //. the controller tree.
+  //.
+  //. The setControllerLinks operation modifies the parent, next, and
+  //. previous links associated with a controller.  If the parent
+  //. is a nil reference, then a nil sibling reference will be
+  //. ignored.  Otherwise, the parent and siblings will all be set.
+  boolean requestFocus(in Controller c, in Input::Device d);
+  //. Ask for input focus.  Normally, a controller will call this
+  //. operation on its parent. The parent, in turn, may propagate
+  //. the call to its parent. The original caller passes
+  //. itself as the requestor, and the same requesting controller
+  //. is passed if the call is propagated.
   boolean receiveFocus(in Focus f);
+  //. Notify a controller that it has acquired input focus.
+  //. The operation returns whether the controller accepts
+  //. the input focus. If the controller does accept, then
+  //. it should perform the appropriate operations
+  //. on the focus object, such as installing key translations.
   void loseFocus(in Focus f);
-
-  boolean handlePositional(in PickTraversal t, in any a);
-  boolean handleNonPositional(in any a);
+  //. Notify a controller that it is losing input focus. The focus
+  //. and primary values are the same values that were previously
+  //. passed to receive focus.
+  boolean firstFocus(in Input::Device d);
+  boolean lastFocus(in Input::Device d);
+  boolean nextFocus(in Input::Device d);
+  boolean prevFocus(in Input::Device d);
+  //. These operations ask that this controller "move" the input
+  //. focus inside itself, such as navigating through the children
+  //. in the hierarchy. The firstFocus and lastFocus
+  //. operations ask focus to enter the controller at the beginning
+  //. or end, respectively. The nextFocus and prevFocus
+  //. operations ask to move focus to the right or left sibling,
+  //. respectively.
+  boolean handlePositional(in PickTraversal t, in Input::Event e);
+  boolean handleNonPositional(in Input::Event e);
 };
 
 #endif /* _Controller_idl */

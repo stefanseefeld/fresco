@@ -32,10 +32,10 @@ public:
   
   CommandKitImpl();
   virtual ~CommandKitImpl();
-  Reactor_ptr asyncReactor(const ReactorBindingList &);
-  Reactor_ptr syncReactor(const ReactorBindingList &);
-  Command_ptr sendMessage(const Message &, MessageListener_ptr);
-  Command_ptr forwardMessage(MessageListener_ptr);
+//   Reactor_ptr asyncReactor(const ReactorBindingList &);
+//   Reactor_ptr syncReactor(const ReactorBindingList &);
+//   Command_ptr sendMessage(const Message &, MessageListener_ptr);
+//   Command_ptr forwardMessage(MessageListener_ptr);
   Command_ptr log(const char *);
 };
 

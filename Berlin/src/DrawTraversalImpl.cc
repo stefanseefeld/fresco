@@ -25,6 +25,7 @@
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Region.hh"
+#include "Berlin/Logger.hh"
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
@@ -64,17 +65,19 @@ CORBA::Boolean DrawTraversalImpl::intersectsRegion(Region_ptr r)
   return region.intersects(clipping);
 }
 
-void DrawTraversalImpl::traverseChild(Graphic_ptr g, Tag t, Region_ptr region, Transform_ptr transform)
+void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
-//   Impl_var<TransformImpl> tx(new TransformImpl);
-//   tx->copy(Transform_var(transformation()));
-//   tx->premultiply(transform);
-//   drawable->pushClipping(region, Transform_var(tx->_this()));
+  SectionLog section("DrawTraversalImpl::traverseChild");
+  if (CORBA::is_nil(region)) region = Region_var(allocation());
+  Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(transformation())));
+  if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   drawing->saveState();
-//   drawing->pushTransform(transform);
-  TraversalImpl::traverseChild(g, t, region, transform);
+  drawing->transformation(Transform_var(cumulative->_this()));
+//   drawable->clipping(region, Transform_var(tx->_this()));
+  push(child, tag, region, cumulative.release());
+  child->traverse(Traversal_var(_this()));
+  pop();
   drawing->restoreState();
-//   drawable->popClipping();
 };
 
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}

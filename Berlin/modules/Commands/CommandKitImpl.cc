@@ -28,39 +28,39 @@
 CommandKitImpl::CommandKitImpl() {}
 CommandKitImpl::~CommandKitImpl() {}
 
-Reactor_ptr CommandKitImpl::asyncReactor(const ReactorBindingList &)
-{
+// Reactor_ptr CommandKitImpl::asyncReactor(const ReactorBindingList &)
+// {
 //   AsyncReactorImpl *r = new AsyncReactorImpl();
 //   r->active(true);
 //   r->_obj_is_ready(_boa());
 //   return r->_this();
-  return Reactor::_nil();
-}
+//   return Reactor::_nil();
+// }
 
-Reactor_ptr CommandKitImpl::syncReactor(const ReactorBindingList &)
-{
+// Reactor_ptr CommandKitImpl::syncReactor(const ReactorBindingList &)
+// {
 //   ReactorImpl *r = new ReactorImpl();
 //   r->active(true);
 //   r->_obj_is_ready(_boa());
 //   return r->_this();
-  return Reactor::_nil();
-}
+//   return Reactor::_nil();
+// }
 
-Command_ptr CommandKitImpl::sendMessage(const Message &m, MessageListener_ptr recipient)
-{
+// Command_ptr CommandKitImpl::sendMessage(const Message &m, MessageListener_ptr recipient)
+// {
 //   SendMessageImpl *c = new SendMessageImpl(m,recipient);
 //   c->_obj_is_ready(_boa());
 //   return c->_this();
-  return Command::_nil();
-}
+//   return Command::_nil();
+// }
 
-Command_ptr CommandKitImpl::forwardMessage(MessageListener_ptr recipient)
-{
+// Command_ptr CommandKitImpl::forwardMessage(MessageListener_ptr recipient)
+// {
 //   ForwardMessageImpl *c = new ForwardMessageImpl(m,recipient);
 //   c->_obj_is_ready(_boa());
 //   return c->_this();
-  return Command::_nil();
-}
+//   return Command::_nil();
+// }
 
 Command_ptr CommandKitImpl::log(const char *text)
 {

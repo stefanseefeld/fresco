@@ -47,8 +47,15 @@ public:
   virtual DrawingKit_ptr kit();
   virtual void damage(Region_ptr);
 
-  virtual void requestFocus(Controller_ptr, Event::Device);
-  virtual CORBA::Boolean handle(PickTraversal_ptr, const CORBA::Any &);
+  virtual void insertController(Controller_ptr) {}
+  virtual void replaceController(Controller_ptr) {}
+  virtual void removeController() {}
+  virtual void setControllerLinks(Controller_ptr, Controller_ptr, Controller_ptr) {}
+  virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
+  virtual CORBA::Boolean receiveFocus(Focus_ptr) { return true;}
+  virtual void loseFocus(Focus_ptr) {}
+  virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const Input::Event &) { return false;}
+  virtual CORBA::Boolean handleNonPositional(const Input::Event &) { return false;}
 
   ScreenManager *manager();
   Region_ptr getRegion();

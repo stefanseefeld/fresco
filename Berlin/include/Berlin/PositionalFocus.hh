@@ -23,10 +23,10 @@
 #define _PositionalFocus_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Focus.hh>
 #include <Warsaw/Controller.hh>
 #include <Warsaw/Region.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Berlin/FocusImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Pointer.hh>
 #include <vector>
@@ -34,21 +34,19 @@
 class PickTraversalImpl;
 class ScreenImpl;
 
-class PositionalFocus : implements(Focus)
+class PositionalFocus : public FocusImpl
 {
   typedef vector<Controller_var> cstack_t;
  public:
-  PositionalFocus(ScreenImpl *);
+  PositionalFocus(Input::Device, ScreenImpl *);
   virtual ~PositionalFocus();
-
-  virtual Event::Device device() { return 1;}
   virtual void grab();
   virtual void ungrab();
-  virtual void addFilter(Event::Filter_ptr);
+  virtual void addFilter(Input::Filter_ptr);
 
-  void request(Controller_ptr);
-  void damage(Region_ptr);
-  void dispatch(const Event::Pointer &);
+  virtual bool request(Controller_ptr);
+  virtual void damage(Region_ptr);
+  virtual void dispatch(const Input::Event &);
  private:
   ScreenImpl        *screen;
   Pointer           *pointer;

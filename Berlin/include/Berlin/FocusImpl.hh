@@ -23,36 +23,21 @@
 #define _FocusImpl_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Focus.hh>
-#include <Warsaw/Controller.hh>
 #include <Warsaw/Region.hh>
-#include <Prague/Sys/Thread.hh>
-#include <Berlin/ImplVar.hh>
-#include <vector>
-
-class PickTraversalImpl;
-class ScreenImpl;
+#include <Warsaw/Focus.hh>
 
 class FocusImpl : implements(Focus)
 {
-  typedef vector<Controller_var> cstack_t;
  public:
-  FocusImpl(ScreenImpl *);
-  virtual ~FocusImpl();
+  FocusImpl(Input::Device dd) : d(dd) {}
+  virtual ~FocusImpl() {}
+  virtual Input::Device device() { return d;}
 
-  virtual void grab();
-  virtual void ungrab();
-  virtual void addFilter(Event::Filter_ptr);
-
-  void request(Controller_ptr);
-  void damage(Region_ptr);
-  void dispatch(const Event::Pointer &);
+  virtual bool request(Controller_ptr) = 0;
+  virtual void damage(Region_ptr) = 0;
+  virtual void dispatch(const Input::Event &) = 0;
  private:
-  ScreenImpl        *screen;
-  PickTraversalImpl *traversal;
-  cstack_t           controllers;
-  bool               grabbed;
-  Prague::Mutex      mutex;
+  const Input::Device d;
 };
 
 #endif /* _FocusImpl_hh */

@@ -34,6 +34,7 @@ class TransformImpl : implements(Transform)
 {
 public:
   TransformImpl();
+  TransformImpl(Transform_ptr t) { copy(t);}
   TransformImpl(Transform::Matrix m);
   virtual ~TransformImpl();
 

@@ -31,8 +31,8 @@
 
 using namespace Prague;
 
-PositionalFocus::PositionalFocus(ScreenImpl *s)
-  : screen(s), pointer(new Pointer(GGI::drawable())), traversal(0), grabbed(false) {}
+PositionalFocus::PositionalFocus(Input::Device d, ScreenImpl *s)
+  : FocusImpl(d), screen(s), pointer(new Pointer(GGI::drawable())), traversal(0), grabbed(false) {}
 PositionalFocus::~PositionalFocus() { delete pointer;}
 
 void PositionalFocus::grab()
@@ -47,14 +47,14 @@ void PositionalFocus::ungrab()
   grabbed = false;
 }
 
-void PositionalFocus::addFilter(Event::Filter_ptr)
+void PositionalFocus::addFilter(Input::Filter_ptr)
 {
   // not implemented
 }
 
-void PositionalFocus::request(Controller_ptr c)
+bool PositionalFocus::request(Controller_ptr c)
 {
-  // not granted !
+  return false; // not granted !
 }
 
 void PositionalFocus::damage(Region_ptr region)
@@ -96,7 +96,7 @@ void PositionalFocus::damage(Region_ptr region)
  * it means that the controller should lose
  * focus, so we start over at the parent controller...
  */
-void PositionalFocus::dispatch(const Event::Pointer &pointer)
+void PositionalFocus::dispatch(const Input::Event &event)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("PositionalFocus::dispatch(pointer)");
@@ -109,6 +109,13 @@ void PositionalFocus::dispatch(const Event::Pointer &pointer)
    * if we have no traversal, create one
    * and start from root...
    */
+  Input::Position pointer;
+  if (event.length() == 0 || event[0].attr._d() != Input::positional)
+    {
+      cerr << "PositionalFocus::dispatch error : non positional event" << endl;
+      return;
+    }
+  pointer = event[0].attr.location();
   if (!traversal)
     {
       traversal = new PickTraversalImpl(Screen_var(screen->_this()),
@@ -136,7 +143,7 @@ void PositionalFocus::dispatch(const Event::Pointer &pointer)
   PickTraversalImpl *picked = traversal->memento();
   if (!picked)
     {
-      cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << pointer.location << ")" << endl;
+      cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << pointer << ")" << endl;
       if (traversal)
 	{
 	  traversal->_dispose();
@@ -177,9 +184,7 @@ void PositionalFocus::dispatch(const Event::Pointer &pointer)
    */
   traversal = picked;
 //   traversal->debug();
-  CORBA::Any any;
-  any <<= pointer;
-  controllers.back()->handlePositional(PickTraversal_var(traversal->_this()), any);
+  controllers.back()->handlePositional(PickTraversal_var(traversal->_this()), event);
   if (!grabbed)
     {
       traversal->_dispose();

@@ -22,13 +22,13 @@
 #ifndef _ScreenManager_hh
 #define _ScreenManager_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Region.hh"
-#include "Warsaw/Event.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Prague/Sys/Thread.hh"
-#include "Berlin/GGI.hh"
-#include "Berlin/EventManager.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Region.hh>
+#include <Warsaw/Input.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Prague/Sys/Thread.hh>
+#include <Berlin/GGI.hh>
+#include <Berlin/EventManager.hh>
 #include <vector>
 
 class ScreenImpl;

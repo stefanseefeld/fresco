@@ -25,8 +25,6 @@
 
 interface Command;
 
-#include "Message.idl"
-
 interface Command
 //. commands are anonymous encapsulated actions. 
 //. you never know what they'll do.
@@ -34,14 +32,14 @@ interface Command
   void execute(in any a);
 };
 
-interface Reactor : MessageListener
-//. a reactor is a listener which has configurable behaviour based on the
-//. Message types it receives
-{
-  void bind(in CORBA::TypeCode ty, in Command c);
-  void unbind(in CORBA::TypeCode ty, in Command c);
-  attribute boolean active;
-};
+// interface Reactor : MessageListener
+// //. a reactor is a listener which has configurable behaviour based on the
+// //. Message types it receives
+// {
+//   void bind(in CORBA::TypeCode ty, in Command c);
+//   void unbind(in CORBA::TypeCode ty, in Command c);
+//   attribute boolean active;
+// };
 
 struct ReactorBinding
 //. ReactorBinding is just a helper to make the sequence-initialization below a

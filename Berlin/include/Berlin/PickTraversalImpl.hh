@@ -23,23 +23,23 @@
 #ifndef _PickTraversalImpl_hh
 #define _PickTraversalImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Event.hh"
-#include "Warsaw/Controller.hh"
-#include "Warsaw/PickTraversal.hh"
-#include "Warsaw/Transform.hh"
-#include "Warsaw/Focus.hh"
-#include "Berlin/TraversalImpl.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/Logger.hh"
-#include "Berlin/Vertex.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Input.hh>
+#include <Warsaw/Controller.hh>
+#include <Warsaw/PickTraversal.hh>
+#include <Warsaw/Transform.hh>
+#include <Warsaw/Focus.hh>
+#include <Berlin/TraversalImpl.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/Logger.hh>
+#include <Berlin/Vertex.hh>
 
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
   typedef vector<Controller_var> cstack_t;
   typedef vector<size_t> pstack_t;
  public:
-  PickTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, const Event::Pointer &, Focus_ptr);
+  PickTraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr, const Input::Position &, Focus_ptr);
   //. to be used when starting from root level
   ~PickTraversalImpl();
   void visit(Graphic_ptr g) { g->pick(PickTraversal_var(_this()));}
@@ -58,14 +58,14 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
   Controller_ptr topController();
   const vector<Controller_var> &controllerStack() const { return controllers;}
   PickTraversalImpl   *memento() { PickTraversalImpl *m = mem; mem = 0; return m;}
-  void reset(const Event::Pointer &);
+  void reset(const Input::Position &);
   void debug();
  private:
   PickTraversalImpl(const PickTraversalImpl &);
   //. to be used to create the memento
   cstack_t           controllers;
   pstack_t           positions;
-  Event::Pointer     pointer;
+  Input::Position    pointer;
   Focus_var          focus;
   PickTraversalImpl *mem;
 };
@@ -87,7 +87,7 @@ inline Controller_ptr PickTraversalImpl::topController()
   return controllers.size() ? Controller::_duplicate(controllers.back()) : Controller::_nil();
 }
 
-inline void PickTraversalImpl::reset(const Event::Pointer &p)
+inline void PickTraversalImpl::reset(const Input::Position &p)
 //. pop all graphics up to the top most controller and set the pointer
 //. so the traversal can be used to start over directly at the top
 {

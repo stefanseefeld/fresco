@@ -33,22 +33,22 @@ Dragger::~Dragger()
 {
 }
 
-void Dragger::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  ControllerImpl::press(traversal, pointer);
-  offset = pointer->location;
+  ControllerImpl::press(traversal, event);
+  offset = event[0].attr.location();
 }
 
-void Dragger::drag(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  Vertex delta = pointer->location - offset;
+  Vertex delta = event[0].attr.location() - offset;
   CORBA::Any any;
   any <<= delta;
   command->execute(any);
   offset += delta;
 }
 
-void Dragger::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Dragger::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  ControllerImpl::release(traversal, pointer);
+  ControllerImpl::release(traversal, event);
 }

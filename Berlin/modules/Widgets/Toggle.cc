@@ -27,16 +27,16 @@ using namespace Prague;
 Toggle::Toggle(bool f) : ControllerImpl(f) {}
 Toggle::~Toggle() {}
 
-void Toggle::press(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("Toggle::press");
-  ControllerImpl::press(traversal, pointer);
+  ControllerImpl::press(traversal, event);
   if (test(Telltale::chosen)) clear(Telltale::chosen);
   else set(Telltale::chosen);
 }
 
-void Toggle::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
+void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("Toggle::release");
-  ControllerImpl::release(traversal, pointer);
+  ControllerImpl::release(traversal, event);
 }

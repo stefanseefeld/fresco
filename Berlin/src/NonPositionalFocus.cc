@@ -30,27 +30,15 @@
 
 using namespace Prague;
 
-NonPositionalFocus::NonPositionalFocus(ScreenImpl *s) : screen(s), grabbed(false) {}
+NonPositionalFocus::NonPositionalFocus(Input::Device d, ScreenImpl *s) : FocusImpl(d), screen(s) {}
 NonPositionalFocus::~NonPositionalFocus() {}
 
-void NonPositionalFocus::grab()
-{
-//   MutexGuard guard(mutex);
-  grabbed = true;
-}
-
-void NonPositionalFocus::ungrab()
-{
-//   MutexGuard guard(mutex);
-  grabbed = false;
-}
-
-void NonPositionalFocus::addFilter(Event::Filter_ptr)
+void NonPositionalFocus::addFilter(Input::Filter_ptr)
 {
   // not implemented
 }
 
-void NonPositionalFocus::request(Controller_ptr c)
+bool NonPositionalFocus::request(Controller_ptr c)
 {
   /*
    * brute force method:
@@ -92,14 +80,13 @@ void NonPositionalFocus::request(Controller_ptr c)
       (*nf)->receiveFocus(Focus_var(_this()));
       controllers.push_back(*nf);
     }
+  return true;
 }
 
-void NonPositionalFocus::dispatch(const Event::Key &key)
+void NonPositionalFocus::dispatch(const Input::Event &event)
 {
   MutexGuard guard(mutex);
   Prague::Profiler prf("NonPositionalFocus::dispatch");
   SectionLog section("NonPositionalFocus::dispatch");
-  CORBA::Any any;
-  any <<= key;
-  controllers.back()->handleNonPositional(any);
+  controllers.back()->handleNonPositional(event);
 }

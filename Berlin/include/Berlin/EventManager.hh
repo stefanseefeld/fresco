@@ -23,23 +23,21 @@
 #define _EventManager_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Event.hh>
+#include <Warsaw/Input.hh>
 #include <Warsaw/Controller.hh>
 #include <Berlin/ScreenImpl.hh>
-#include <Berlin/PositionalFocus.hh>
-#include <Berlin/NonPositionalFocus.hh>
-#include <Berlin/ImplVar.hh>
+#include <Berlin/FocusImpl.hh>
 #include <Berlin/GGI.hh>
-#include <Berlin/Pointer.hh>
-
-class Pointer;
+#include <vector>
 
 class EventManager
+//. synthetize events according to a global device and event descriptor map
+//. for now, device 0 is the keyboard, device 1 the mouse
 {
 public:
   EventManager(ScreenImpl *);
   ~EventManager();
-  void requestFocus(Controller_ptr, Event::Device);
+  bool requestFocus(Controller_ptr, Input::Device);
   void nextEvent();
   void damage(Region_ptr);
 private:
@@ -47,8 +45,7 @@ private:
   long ptrPositionY;
   ScreenImpl *screen;
   GGI::Drawable *drawable;
-  Impl_var<PositionalFocus> pfocus;
-  Impl_var<NonPositionalFocus> npfocus;
+  vector<FocusImpl *> focus;
 };
 
 #endif /* _EventManager_hh */

@@ -86,30 +86,15 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr t)
+void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
 {
   SectionLog section("TraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
-  Impl_var<TransformImpl> cumulative(new TransformImpl);
-  cumulative->copy(Transform_var(transformation()));
-  if (!CORBA::is_nil(t)) cumulative->premultiply(t);
-#if 1
+  Impl_var<TransformImpl> cumulative(new TransformImpl(Transform_var(transformation())));
+  if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   push(child, tag, region, cumulative.release());
   child->traverse(Traversal_var(_this()));
   pop();
-#else
-  Allocation::Info_var info = new Allocation::Info;
-  info->allocation = Region::_duplicate(region);
-  info->transformation = cumulative->_this();
-  Impl_var<RegionImpl> ext(new RegionImpl);
-  child->extension(info, Region_var(ext->_this()));
-  if (intersectsRegion(Region_var(ext->_this())))
-      {
-	push(child, tag, region, cumulative);
-	child->traverse(Traversal_var(_this()));
-	pop();
-      }
-#endif
 }
 
 void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)

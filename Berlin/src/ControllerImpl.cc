@@ -24,7 +24,6 @@
 #include "Warsaw/Transform.hh"
 #include "Warsaw/Region.hh"
 #include "Warsaw/PickTraversal.hh"
-#include "Warsaw/Event.hh"
 #include "Berlin/Logger.hh"
 
 using namespace Prague;
@@ -42,83 +41,97 @@ void ControllerImpl::pick(PickTraversal_ptr traversal)
     }
 }
 
-Controller_ptr ControllerImpl::parentController() { MutexGuard guard(mutex); return Controller::_duplicate(parent);}
-
 void ControllerImpl::appendController(Controller_ptr c)
 {
   if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
-  controllers.push_back(Controller::_duplicate(c));
-  c->setParentController(Controller_var(_this()));
+  Controller_ptr nc = Controller::_duplicate(c);
+  nc->setControllerLinks(Controller_var(_this()), last, Controller_var(Controller::_nil()));
+  last = nc;
+  if (CORBA::is_nil(first)) first = last;
 }
 
 void ControllerImpl::prependController(Controller_ptr c)
 {
   if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
   MutexGuard guard(mutex);
-  controllers.insert(controllers.begin(), Controller::_duplicate(c));
-  c->setParentController(Controller_var(_this()));
+  Controller_ptr nc = Controller::_duplicate(c);
+  nc->setControllerLinks(Controller_var(_this()), Controller_var(Controller::_nil()), first);
+  first = nc;
+  if (CORBA::is_nil(last)) last = nc;
 }
 
-void ControllerImpl::insertController(Controller_ptr m, Controller_ptr c)
+void ControllerImpl::insertController(Controller_ptr c)
 {
-  if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
-  if (CORBA::is_nil(m)) prependController(c);
-  else
-    {
-      MutexGuard guard(mutex);
-      clist_t::iterator i = controllers.begin();
-      while (i != controllers.end() && !m->_is_equivalent(*i)) i++;
-      if (i != controllers.end())
-	{
-	  controllers.insert(i, Controller::_duplicate(c));
-	  c->setParentController(Controller_var(_this()));
-	}
-    }
+  Controller_ptr nc = Controller::_duplicate(c);
+  nc->setControllerLinks(parent, prev, Controller_var(_this()));
+//   if (is_eq(this, Viewer_var(parent_->first_viewer())))
+  if (CORBA::is_nil(prev)) parent->setFirstController(nc);
+  prev = nc;
 }
 
-void ControllerImpl::replaceController(Controller_ptr m, Controller_ptr c)
+void ControllerImpl::replaceController(Controller_ptr c)
 {
-  if (CORBA::is_nil(m) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
-  if (CORBA::is_nil(c)) removeController(m);
-  else
-    {
-      MutexGuard guard(mutex);
-      clist_t::iterator i = controllers.begin();
-      while (i != controllers.end() && !m->_is_equivalent(*i)) i++;
-      if (i != controllers.end())
-	{
-	  *i = Controller::_duplicate(c);
-	  c->setParentController(Controller_var(_this()));
-	}
-    }
+  c->setControllerLinks(parent, prev, next);
+  if (CORBA::is_nil(parent)) return;
+  if (CORBA::is_nil(prev)) parent->setFirstController(c);
+  if (CORBA::is_nil(next)) parent->setLastController(c);
+  prev = Controller::_nil();
+  next = Controller::_nil();
+//   CORBA::release(Viewer_ptr(this));
 }
 
-void ControllerImpl::removeController(Controller_ptr c)
+void ControllerImpl::removeController()
 {
-  if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parentController()))) return;
-  MutexGuard guard(mutex);
-  clist_t::iterator i = controllers.begin();
-  while (i != controllers.end() && !c->_is_equivalent(*i)) i++;
-  if (i != controllers.end())
-    {
-      c->setParentController(Controller::_nil());
-      controllers.erase(i);
-    }
+  if (CORBA::is_nil(parent)) return;
+  if (CORBA::is_nil(prev)) parent->setFirstController(next);
+  else prev->setControllerLinks(Controller_var(Controller::_nil()), Controller_var(prev->prevController()), next);
+  if (CORBA::is_nil(next)) parent->setLastController(prev);
+  else next->setControllerLinks(Controller_var(Controller::_nil()), prev, Controller_var(next->nextController()));
+  parent = Controller::_nil();
+  prev = Controller::_nil();
+  next = Controller::_nil();
+//   CORBA::release(Viewer_ptr(this));
 }
 
-void ControllerImpl::setParentController(Controller_ptr c)
+void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Controller_ptr ne)
 {
-  MutexGuard guard(mutex);
-  parent = Controller::_duplicate(c);
+    if (!CORBA::is_nil(pa))
+      {
+	parent = Controller::_duplicate(pa);
+// 	style_->link_parent(StyleContext_var(parent->style()));
+	prev = Controller::_duplicate(pr);
+	if (!CORBA::is_nil(pr))
+	  pr->setControllerLinks(Controller_var(Controller::_nil()),
+				 Controller_var(pr->prevController()), Controller_var(_this()));
+	next = ne;
+	if (!CORBA::is_nil(ne))
+	  ne->setControllerLinks(Controller_var(Controller::_nil()),
+				 Controller_var(_this()), Controller_var(next->nextController()));
+      }
+    else
+      {
+        prev = pr;
+        next = ne;
+      }
 }
 
-void ControllerImpl::requestFocus(Controller_ptr c, Event::Device d)
+void ControllerImpl::setFirstController(Controller_ptr c)
+{
+  first = Controller::_duplicate(c);
+  if (CORBA::is_nil(c)) last = Controller::_nil();
+}
+
+void ControllerImpl::setLastController(Controller_ptr c)
+{
+  last = c;
+  if (CORBA::is_nil(c)) first = Controller::_nil();
+}
+
+CORBA::Boolean ControllerImpl::requestFocus(Controller_ptr c, Input::Device d)
 {
   SectionLog section("ControllerImpl::requestFocus");  
-  Controller_var parent = parentController();
-  if (CORBA::is_nil(parent)) return;
-  parent->requestFocus(c, d);
+  return CORBA::is_nil(parent) ? false : parent->requestFocus(c, d);
 }
 
 CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
@@ -132,6 +145,44 @@ void ControllerImpl::loseFocus(Focus_ptr)
 {
   SectionLog section("ControllerImpl::loseFocus");
   clear(Telltale::active);
+}
+
+CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)
+{
+  Controller_ptr ne = Controller::_nil();
+  for (Controller_var c = firstController(); !CORBA::is_nil(c); c = ne)
+    {
+      if (c->firstFocus(d)) return true;
+      ne = c->nextController();
+    }
+  if (CORBA::is_nil(parent)) return false;
+  return parent->requestFocus(Controller_var(_this()), d);
+}
+
+CORBA::Boolean ControllerImpl::lastFocus(Input::Device d)
+{
+  Controller_ptr pr = Controller::_nil();
+  for (Controller_var c = lastController(); !CORBA::is_nil(c); c = pr)
+    {
+      if (c->lastFocus(d)) return true;
+      pr = c->prevController();
+    }
+  if (CORBA::is_nil(parent)) return false;
+  return parent->requestFocus(Controller_var(_this()), d);
+}
+
+CORBA::Boolean ControllerImpl::nextFocus(Input::Device d)
+{
+  if (!CORBA::is_nil(next)) return next->firstFocus(d);
+  if (CORBA::is_nil(parent)) return false;
+  return parent->nextFocus(d);
+}
+
+CORBA::Boolean ControllerImpl::prevFocus(Input::Device d)
+{
+  if (!CORBA::is_nil(prev)) return prev->lastFocus(d);
+  if (CORBA::is_nil(parent)) return false;
+  else return parent->prevFocus(d);
 }
 
 void ControllerImpl::set(Telltale::Flag f)
@@ -179,42 +230,44 @@ TelltaleConstraint_ptr ControllerImpl::constraint()
   return TelltaleConstraint::_duplicate(myConstraint);
 }
 
-CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, const CORBA::Any &any)
+CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("ControllerImpl::handlePositional");
-  Event::Pointer *pointer;
-  if (any >>= pointer)
-    {
-      switch (pointer->whatHappened)
-	{
-	case Event::press: press(traversal, pointer); break;
-	case Event::release: release(traversal, pointer); break;
-	case Event::hold:
-	  if (test(Telltale::toggle)) drag(traversal, pointer);
-	  else move(traversal, pointer);
-	  break;
-	default: other(any); break;
-	}
-      return true;
-    }
-  else return false;
+//   Event::Pointer *pointer;
+//   if (any >>= pointer)
+//     {
+//       switch (pointer->whatHappened)
+// 	{
+// 	case Event::press: press(traversal, pointer); break;
+// 	case Event::release: release(traversal, pointer); break;
+// 	case Event::hold:
+// 	  if (test(Telltale::toggle)) drag(traversal, pointer);
+// 	  else move(traversal, pointer);
+// 	  break;
+// 	default: other(any); break;
+// 	}
+//       return true;
+//     }
+//   else return false;
+  return true;
 }
 
-bool ControllerImpl::handleNonPositional(const CORBA::Any &any)
+CORBA::Boolean ControllerImpl::handleNonPositional(const Input::Event &event)
 {
   SectionLog section("ControllerImpl::handleNonPositional");
-  Event::Key *key;
-  if (any >>= key)
-    {
-      switch (key->whatHappened)
-	{
-	case Event::press: keyPress(key); break;
-	case Event::release: keyRelease(key); break;
-	default: other(any); break;
-	}
-      return true;
-    }
-  else return false;
+//   Event::Key *key;
+//   if (any >>= key)
+//     {
+//       switch (key->whatHappened)
+// 	{
+// 	case Event::press: keyPress(key); break;
+// 	case Event::release: keyRelease(key); break;
+// 	default: other(any); break;
+// 	}
+//       return true;
+//     }
+//   else return false;
+  return true;
 }
 
 bool ControllerImpl::inside(PickTraversal_ptr traversal)
@@ -223,39 +276,39 @@ bool ControllerImpl::inside(PickTraversal_ptr traversal)
   return traversal->intersectsAllocation();
 }
 
-void ControllerImpl::move(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::press(PickTraversal_ptr traversal, const Event::Pointer *)
+void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
 {
   grab(traversal);
   set(Telltale::toggle);
 }
 
-void ControllerImpl::drag(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::release(PickTraversal_ptr traversal, const Event::Pointer *)
+void ControllerImpl::release(PickTraversal_ptr traversal, const Input::Event &)
 {
   clear(Telltale::toggle);
   ungrab(traversal);
 }
 
-void ControllerImpl::doubleClick(PickTraversal_ptr, const Event::Pointer *)
+void ControllerImpl::doubleClick(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::keyPress(const Event::Key *)
+void ControllerImpl::keyPress(const Input::Event &)
 {
 }
 
-void ControllerImpl::keyRelease(const Event::Key *)
+void ControllerImpl::keyRelease(const Input::Event &)
 {
 }
 
-void ControllerImpl::other(const CORBA::Any &)
+void ControllerImpl::other(const Input::Event &)
 {
 }
 

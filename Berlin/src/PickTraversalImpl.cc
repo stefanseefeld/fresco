@@ -22,7 +22,7 @@
  */
 #include "Berlin/PickTraversalImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Event::Pointer &p, Focus_ptr f)
+PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, const Input::Position &p, Focus_ptr f)
   : TraversalImpl(g, r, t),
     pointer(p),
     focus(Focus::_duplicate(f)),
@@ -52,8 +52,8 @@ CORBA::Boolean PickTraversalImpl::intersectsRegion(Region_ptr region)
   transform->storeMatrix(matrix);
   Coord d = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
   if (d == 0.) return false;
-  Coord x = pointer.location.x - matrix[0][3];
-  Coord y = pointer.location.y - matrix[1][3];
+  Coord x = pointer.x - matrix[0][3];
+  Coord y = pointer.y - matrix[1][3];
   Vertex local;
   local.x = (matrix[1][1] * x - matrix[0][1] * y)/d;
   local.y = (matrix[0][0] * y - matrix[1][0] * x)/d;
@@ -109,8 +109,8 @@ void PickTraversalImpl::debug()
   Transform_var t = transformation();
   RegionImpl region(r, t);
   cout << "current allocation is " << region << endl;
-  cout << "pointer is " << pointer.location << endl;
-  Vertex local = pointer.location;
+  cout << "pointer is " << pointer << endl;
+  Vertex local = pointer;
   Transform::Matrix matrix;
   t->storeMatrix(matrix);
   cout << "current trafo \n" << matrix;
