@@ -75,13 +75,18 @@ void TerminalView::update(const CORBA::Any &)
 	  Graphic_var child = kit->chunk(us);
 	  lines.back()->append(child);
 	}
-      else if (*i == '\r' || *i == '\n')
+      else switch(*i)
 	{
+	case '\r':
+	case '\n':
 	  lines.push_back(new Composition(canonicalDK, compositor));
 	  lines.back()->_obj_is_ready(_boa());
 	  lines.back()->append(Graphic_var(kit->strut()));
 	  append(Graphic_var(lines.back()->_this()));
-	}
+	  break;
+	case '\b':
+          break;
+        }
     }
   needResize();
   needRedraw();

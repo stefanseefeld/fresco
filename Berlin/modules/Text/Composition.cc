@@ -126,7 +126,7 @@ void Composition::traverse(Traversal_ptr traversal)
 	}
       for (CORBA::Long i = begin; i != end; i += incr)
 	{
-	  if (CORBA::is_nil(children[i].first)) continue;
+	  if (CORBA::is_nil(children[i].parent)) continue;
 	  Vertex origin;
 	  result[i]->normalize(origin);
 	  tx->loadIdentity();
@@ -135,7 +135,7 @@ void Composition::traverse(Traversal_ptr traversal)
 	   * only translating them -stefan
 	   */
 	  tx->translate(origin);
-	  traversal->traverseChild(children[i].first, children[i].second, Region_var(result[i]->_this()), Transform_var(tx->_this()));
+	  traversal->traverseChild(children[i].parent, children[i].id, Region_var(result[i]->_this()), Transform_var(tx->_this()));
 	  if (!traversal->ok()) break;
 	}
       for (long i = 0; i < size; i++) result[i]->_dispose();

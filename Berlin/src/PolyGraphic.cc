@@ -32,15 +32,17 @@ PolyGraphic::PolyGraphic() {}
 PolyGraphic::~PolyGraphic()
 {
   for (clist_t::iterator i = children.begin(); i != children.end(); i++)
-    (*i).first->removeParent(Graphic_var(_this()), (*i).second);
+    (*i).parent->removeParent(Graphic_var(_this()), (*i).id);
 }
 
 void PolyGraphic::append(Graphic_ptr child)
 {
   childMutex.lock();
-  edge_t edge(Graphic::_duplicate(child), tag());
+  Edge edge;
+  edge.parent = Graphic::_duplicate(child);
+  edge.id = tag();
   children.push_back(edge);
-  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), edge.second);
+  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), edge.id);
   childMutex.unlock();
   needResize();
 }
@@ -48,9 +50,11 @@ void PolyGraphic::append(Graphic_ptr child)
 void PolyGraphic::prepend(Graphic_ptr child)
 {
   childMutex.lock();
-  edge_t edge(Graphic::_duplicate(child), tag());
+  Edge edge;
+  edge.parent = Graphic::_duplicate(child);
+  edge.id = tag();
   children.insert(children.begin(), edge);
-  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), edge.second);
+  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), edge.id);
   childMutex.unlock();
   needResize();
 }
@@ -80,7 +84,7 @@ Tag PolyGraphic::tag()
     {
       clist_t::iterator i;
       for (i = children.begin(); i != children.end(); i++)
-	if ((*i).second == t) break;
+	if ((*i).id == t) break;
       if (i == children.end()) return t;
     }
   while (++t);
@@ -91,7 +95,7 @@ CORBA::Long PolyGraphic::index(Tag tag)
 {
   size_t i = 0;
   for (; i != children.size(); i++)
-    if (children[i].second == tag) break;
+    if (children[i].id == tag) break;
   return i;
 }
 
@@ -104,7 +108,7 @@ Graphic::Requisition *PolyGraphic::childrenRequests()
   for (clist_t::iterator i = children.begin(); i != children.end(); i++)
     {
       GraphicImpl::initRequisition(*r);
-      if (!CORBA::is_nil((*i).first)) (*i).first->request(*r);
+      if (!CORBA::is_nil((*i).parent)) (*i).parent->request(*r);
       ++r;
     }
   return requisitions;
@@ -119,6 +123,6 @@ void PolyGraphic::deallocateRequisitions(Graphic::Requisition *r)
 void PolyGraphic::childExtension(size_t i, const Allocation::Info &info, Region_ptr region)
 {
   MutexGuard guard(childMutex);
-  Graphic_var child = children[i].first;
+  Graphic_var child = children[i].parent;
   if (!CORBA::is_nil(child)) child->extension(info, region);
 }

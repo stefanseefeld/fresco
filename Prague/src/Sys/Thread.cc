@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 #include "Prague/Sys/Thread.hh"
+#include <unistd.h>
 
 using namespace Prague;
 
@@ -32,13 +33,13 @@ Thread::Guard Thread::guard;
 
 void id_deallocator(void *id) { delete reinterpret_cast<unsigned long *>(id);}
 
-Mutex::Mutex(type t)
-{
-  pthread_mutexattr_t attr;
-  pthread_mutexattr_init(&attr);
-  pthread_mutex_init(this, &attr);
-  pthread_mutexattr_destroy(&attr);
-}
+//Mutex::Mutex(type t)
+//{
+//  pthread_mutexattr_t attr;
+//  pthread_mutexattr_init(&attr);
+//  pthread_mutex_init(&impl, &attr);
+//  pthread_mutexattr_destroy(&attr);
+//}
 
 Thread::Guard::Guard()
 {

@@ -164,6 +164,11 @@ WindowImpl::~WindowImpl()
   unmapper->_dispose();
 }
 
+void WindowImpl::needResize()
+{
+}
+
+
 /*
  * cache the focus holding controllers so we can restore them when the window
  * receives focus again...

@@ -308,11 +308,7 @@ void ViewportImpl::attachAdjustments()
 void ViewportImpl::body(Graphic_ptr g)
 {
   MonoGraphic::body(g);
-//   xadjustment->block(true);
-//   yadjustment->block(true);
   needResize();
-//   xadjustment->block(false);
-//   yadjustment->block(false);
   MonoGraphic::needResize();
 }
 
@@ -381,6 +377,7 @@ void ViewportImpl::needResize()
    */
   requested = false;
   cacheRequisition();
+  needRedraw();
 }
 
 void ViewportImpl::update(const CORBA::Any &)

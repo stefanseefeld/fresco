@@ -56,6 +56,7 @@ class WindowImpl : implements(Window), public ControllerImpl
  public:
   WindowImpl();
   virtual ~WindowImpl();
+  virtual void needResize();
   virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
   void insert(Desktop_ptr, bool);
   virtual CORBA::Boolean mapped() { Prague::MutexGuard guard(mutex); return !unmapped;}

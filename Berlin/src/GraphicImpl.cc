@@ -242,14 +242,17 @@ void GraphicImpl::remove(Tag) {}
 void GraphicImpl::addParent(Graphic_ptr parent, Tag tag)
 {
   MutexGuard guard(parentMutex);
-  parents.push_back(edge_t(Graphic::_duplicate(parent), tag));
+  Edge edge;
+  edge.parent = Graphic::_duplicate(parent);
+  edge.id = tag;
+  parents.push_back(edge);
 }
 
 void GraphicImpl::removeParent(Graphic_ptr parent, Tag tag)
 {
   MutexGuard guard(parentMutex);
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    if ((*i).second == tag && (*i).first->_is_equivalent(parent))
+    if ((*i).id == tag && (*i).parent->_is_equivalent(parent))
       {
 	parents.erase(i);
 	break;
@@ -278,12 +281,12 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
   CORBA::Long begin = allocation->size();
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
     {
-      (*i).first->allocations(allocation);      
+      (*i).parent->allocations(allocation);      
       CORBA::Long end = allocation->size();
       for (CORBA::Long j = begin; j != end; j++)
 	{
 	  const Allocation::Info_var info = allocation->get(j);
-	  (*i).first->allocate((*i).second, info);
+	  (*i).parent->allocate((*i).id, info);
 	}
       begin = end;
     }
@@ -352,7 +355,7 @@ void GraphicImpl::needResize()
 {
   MutexGuard guard(parentMutex);
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).first->needResize();
+    (*i).parent->needResize();
 }
 
 void GraphicImpl::initRequisition(Graphic::Requisition &r)

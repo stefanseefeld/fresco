@@ -78,9 +78,11 @@ void TextViewer::update(const CORBA::Any &a)
 	      {
 		single[0] = (*u)[i];
 		Graphic_var child = kit->chunk(single);
-		edge_t edge(Graphic::_duplicate(child), tag());
+		Edge edge;
+		edge.parent = Graphic::_duplicate(child);
+		edge.id = tag();
 		children.insert(children.begin() + ch->pos + i, edge);
-		child->addParent(Graphic_var(_this()), edge.second);
+		child->addParent(Graphic_var(_this()), edge.id);
 	      }
 	  }
 	  break;
@@ -93,7 +95,7 @@ void TextViewer::update(const CORBA::Any &a)
 	    unsigned long end = min(ch->pos + ch->len, static_cast<CORBA::ULong>(children.size()));
 	    if (ch->len < 0) swap(start, end);
 	    for (clist_t::iterator i = children.begin() + start; i != children.begin() + end; i++)
-	      (*i).first->removeParent(Graphic_var(_this()), (*i).second);
+	      (*i).parent->removeParent(Graphic_var(_this()), (*i).id);
 	    children.erase(children.begin() + start, children.begin() + end);
 	  }	
 	  break;

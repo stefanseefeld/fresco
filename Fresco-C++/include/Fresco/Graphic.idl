@@ -64,6 +64,15 @@ interface Graphic
     Requirement x, y, z;
     boolean preserve_aspect;
   };
+  struct Edge
+    //. An edge is a reference to a graphic within a composite.
+    //. Because a graphic might appear twice within the same composite,
+    //. a graphic itself is insufficient to identify its position within
+    //. its parent.
+  {
+    Graphic parent;
+    Tag id;
+  };
   /*
    * structural methods
    */

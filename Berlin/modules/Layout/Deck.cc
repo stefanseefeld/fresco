@@ -54,10 +54,10 @@ void Deck::request(Requisition &r)
 
 void Deck::extension(const Allocation::Info &a, Region_ptr r)
 {
-  if (size_t n = children.size()) children[n - 1].first->extension(a, r);
+  if (size_t n = children.size()) children[n - 1].parent->extension(a, r);
 }
 
 void Deck::traverse(Traversal_ptr t)
 {
-  if (size_t n = children.size()) t->traverseChild(children[n - 1].first, children[n - 1].second, Region::_nil(), Transform::_nil());
+  if (size_t n = children.size()) t->traverseChild(children[n - 1].parent, children[n - 1].id, Region::_nil(), Transform::_nil());
 }

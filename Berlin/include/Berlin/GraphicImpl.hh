@@ -34,8 +34,7 @@ class RegionImpl;
 class GraphicImpl : implements(Graphic)
 {
  protected:
-  typedef pair<Graphic_var, Tag> edge_t;
-  typedef vector<edge_t> plist_t;
+  typedef vector<Edge> plist_t;
  public:
   static const Coord infinity = 10e6;
   GraphicImpl();

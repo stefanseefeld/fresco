@@ -53,17 +53,11 @@ bool Terminal::Output::notify(Agent::iomask_t mask)
    */
   istream is(terminal->agent->obuf());
   string line;
-  while (is)
+  while (getline(is, line))
     {
-      getline(is, line);
-//       if (is) line += '\n';
-//       cout << line << flush;
-//       StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);
-      if (is)
-	{
-	  StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);
-	  terminal->obuf->write(data);
-	}
+      StreamBuffer::Data data(line.length(), line.length(), (CORBA::Octet *)line.data(), false);
+      terminal->obuf->write(data);
+      terminal->obuf->flush();
     }
   return true;
 }
@@ -74,7 +68,7 @@ Terminal::Terminal(CommandKit_ptr command)
     _output(new Output(this)),
     agent(new TTYAgent("sh", _output, 0)),
     ibuf(StreamBuffer::_duplicate(command->stream(1))),
-    obuf(StreamBuffer::_duplicate(command->stream(1)))
+    obuf(StreamBuffer::_duplicate(command->stream(1024)))
 {
   Trace trace("Terminal::Terminal");
   _input->_obj_is_ready(CORBA::BOA::getBOA());

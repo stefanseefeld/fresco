@@ -58,7 +58,7 @@ void PolyFigure::updateBbox()
 	{
 	  Allocation::Info info;
 	  for (CORBA::ULong i = 0; i < n; i++)
-	    children[i].first->extension(info, bbox);
+	    children[i].parent->extension(info, bbox);
 	}
     }
 }
@@ -123,7 +123,7 @@ void PolyFigure::traverse(Traversal_ptr traversal)
   CORBA::Long n = numChildren();
   for (CORBA::Long i = 0; i != n; i++)
     {
-      traversal->traverseChild(children[i].first, children[i].second, Region_var(bbox->_this()), Transform_var(tx->_this()));
+      traversal->traverseChild(children[i].parent, children[i].id, Region_var(bbox->_this()), Transform_var(tx->_this()));
       if (!traversal->ok()) break;
     }
 

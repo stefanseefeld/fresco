@@ -38,6 +38,11 @@ void Terminal::keyPress(const Input::Event &event)
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
   char ascii = uc.myUnicode();
   if (isprint(ascii) || ascii == '\r' || ascii == '\n') data[0] = ascii;
-  else if(toggle.number == Unicode::UC_HORIZONTAL_TABULATION) data[0] = '\t';
+  else switch(toggle.number)
+    {
+    case Unicode::UC_HORIZONTAL_TABULATION: data[0] = '\t'; break;
+    case Unicode::UC_BACKSPACE:             data[0] = '\b'; break;
+    default: return; // don't know how to handle...
+    }
   buffer->write(data);
 }

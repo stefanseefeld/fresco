@@ -207,7 +207,7 @@ bool scaleImage(GLenum format,
  * openGL requires glTexImage2D to take width and height in the form 2^k
  * se we extract the exponent here and the residue
  */
-inline void logbase2(unsigned int n, int &v)
+inline void logbase2(unsigned int n, GLint &v)
 {
   unsigned int k;
   for (k = 0; n >>= 1; k++);

@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <termios.h>
+#include <Prague/Sys/Thread.hh>
 
 using namespace Prague;
 

@@ -28,7 +28,7 @@
 
 class PolyGraphic : public GraphicImpl
 {
-  typedef vector<edge_t> clist_t;
+  typedef vector<Edge> clist_t;
 public:
   PolyGraphic();
   virtual ~PolyGraphic();

@@ -203,7 +203,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
     }
   for (CORBA::Long i = begin; i != end; i += incr)
     {
-      if (CORBA::is_nil(children[i].first)) continue;
+      if (CORBA::is_nil(children[i].parent)) continue;
       Vertex origin;
       result[i]->normalize(origin);
       tx->loadIdentity();
@@ -212,7 +212,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
        * only translating them -stefan
        */
       tx->translate(origin);
-      t->traverseChild(children[i].first, children[i].second, Region_var(result[i]->_this()), Transform_var(tx->_this()));
+      t->traverseChild(children[i].parent, children[i].id, Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
   for (long i = 0; i < size; i++) result[i]->_dispose();
@@ -225,15 +225,15 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	if (CORBA::is_nil((*i).first)) continue;
-	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	if (CORBA::is_nil((*i).parent)) continue;
+	t->traverseChild((*i).parent, (*i).id, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
   else
     for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	if (CORBA::is_nil((*i).first)) continue;
-	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
+	if (CORBA::is_nil((*i).parent)) continue;
+	t->traverseChild((*i).parent, (*i).id, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
 }
