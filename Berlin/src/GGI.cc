@@ -158,16 +158,23 @@ Input::Event *GGIConsole::next_event()
 {
   Prague::Trace trace("GGI::Console::next_event");
   ggi_event event;
-  ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+  ggi_event_mask mask;
   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
 
   int input = fileno(stdin);
   Prague::FdSet rfdset;
-  rfdset.set(_wakeupPipe[0]);
-  if (_autoplay) rfdset.set(input);
+
   int nfds = -1;
-  do nfds = ggiEventSelect(_visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+  do
+    {
+      mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+      rfdset.set (_wakeupPipe [0]);
+      if (_autoplay)
+	rfdset.set (input);
+      nfds = ggiEventSelect (_visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+    }
   while (nfds == -1 && errno == EINTR);
+
   if (nfds == 0)
     {
       // no input from the outside world
