@@ -31,7 +31,6 @@ using namespace Prague;
 using namespace Warsaw;
 
 MonoGraphic::MonoGraphic()
-  : _request_cache(0)
 {
   _child.peer = Warsaw::Graphic::_nil();
 }
@@ -48,7 +47,6 @@ MonoGraphic::~MonoGraphic()
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
-  if (_request_cache) delete _request_cache;
 }
 
 Graphic_ptr MonoGraphic::body()
@@ -144,19 +142,11 @@ Transform_ptr MonoGraphic::transformation()
 void MonoGraphic::request(Warsaw::Graphic::Requisition &r)
 {
   Trace trace(this, "MonoGraphic::request");
-  if (_request_cache)
-    {
-      r = *_request_cache;
-      return;
-    }
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   try { child->request(r);}
   catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
   catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
-  
-  if (_request_cache) *_request_cache = r;
-  else _request_cache = new Warsaw::Graphic::Requisition(r);
 }
 
 void MonoGraphic::extension(const Warsaw::Allocation::Info &info, Region_ptr region)
@@ -195,12 +185,3 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
   catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
 }
 
-void MonoGraphic::need_resize()
-{
-  if (_request_cache)
-    {
-      delete _request_cache;
-      _request_cache = 0;
-    }
-  GraphicImpl::need_resize();
-}
