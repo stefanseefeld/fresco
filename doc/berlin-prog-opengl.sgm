@@ -39,20 +39,20 @@
       done in berlin.</para>
 
       <para>The imaging model consists of a geometric model, a number
-      of buffers, stacks of spatial transformation matricies and
+      of buffers, stacks of spatial transformation matrices and
       graphics state, and a set of functions you can call to add
-      verticies, lines, curves, surfaces, pixels, and textures to the
+      vertices, lines, curves, surfaces, pixels, and textures to the
       buffers and geometry model, as well as manipulate the stacks. In
-      addition, there is a set of objects called displayLists you can
+      addition, there is a set of objects called display-Lists you can
       allocate within the state-machine, which are "recorded"
       sequences of commands you can "replay" at a later time, relative
-      to a possibly-different context. DisplayLists do
+      to a possibly-different context. Display-Lists do
       <emphasis>not</emphasis> capture the environment they are
       created in. Rather, if you want to capture a certain setting,
       you must make sure you push the "current" setting on a context
-      stack at the beginning the displayList, followed by a command to
+      stack at the beginning the display-List, followed by a command to
       set the state to the way you want it, and then a context-stack
-      pop at the end of the displayList. DisplayLists can be thought
+      pop at the end of the display-List. Display-Lists can be thought
       of as dynamically scoped, primitive building blocks out of which
       you can construct a "program" for drawing.</para>
 
@@ -60,7 +60,7 @@
       similar to the one used by postscript. While one does not have
       the ability to define "subroutines" with parameters, as you can
       in forth, the structured approach to drawing by composition of
-      displayLists and context stacks should be familliar territory
+      display-Lists and context stacks should be familiar territory
       for postscript hackers. The additional buffers available in
       OpenGL, such as the texture, stencil, and accumulation buffers
       are not really put to much use in the current version of
