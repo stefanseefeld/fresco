@@ -134,7 +134,7 @@ if test ".$enable_openGL" = .yes ; then
 		if test ".$ac_cv_lib_GGIMesa" = .yes ; then
 			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
 		fi
-	elif test ".$CON_IMPL" = .GLUT ; then
+	elif test ".$CON_IMPL" = .GLUT || test ".$CON_IMPL" = .SDL ; then
 		BERLIN_LIB_MESA(mandatory)
 		if test ".$ac_cv_lib_Mesa" = .yes ; then
 			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"

@@ -38,6 +38,7 @@
 
 #if defined(CONSOLE_GGI)
 #  include <GL/ggimesa.h>
+#elif defined(CONSOLE_SDL)
 #elif defined(CONSOLE_GLUT)
 #else
 #  error "GLDrawingKit needs a OpenGL-enabled console to compile"

@@ -76,6 +76,10 @@ void GLDrawingKit::init()
     }
   GGIMesaMakeCurrent(_context);
   
+#elif defined(CONSOLE_SDL)
+  
+  // Do SDL-specific stuff
+  
 #elif defined(CONSOLE_GLUT)
   
   // Do GLUT-specific stuff
