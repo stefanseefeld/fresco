@@ -58,7 +58,7 @@ module Fresco
       //. SecurityException is raised if the client is not permitted to
       //. install Singletons.
       //. SingletonFailureException is raised whenever you try to add a
-      //. singleton with a name that allready exists.
+      //. singleton with a name that already exists.
       void set_singleton(in string name, in Object singleton) 
 	raises (SecurityException, SingletonFailureException);
 

@@ -56,11 +56,11 @@ module Fresco
       //. FIXME: Is this the right way to do it? We never use return values
       //.        for such things... -- tobias
       boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
-      //. Calculate the current region and check wether that intersects with
+      //. Calculate the current region and check whether that intersects with
       //. something relevant to the Traversal used (for example a clipping
       //. region). The actual test depends on the Traversal used.
       boolean intersects_allocation();
-      //. Test wether the given Region intersects with something relevant to
+      //. Test whether the given Region intersects with something relevant to
       //. the Traversal in use (for example a clipping region). The actual
       //. test depends on the Traversal used.
       boolean intersects_region(in Region r);

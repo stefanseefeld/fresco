@@ -50,7 +50,7 @@ module Fresco
       attribute Vertex size;
       //. The layer of the window.
       attribute Layout::Stage::Index layer;
-      //. Show wether the window is mapped or not.
+      //. Show whether the window is mapped or not.
       attribute boolean mapped;
     };
 };

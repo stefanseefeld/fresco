@@ -52,7 +52,7 @@ namespace Berlin
       };
     private:
       typedef std::vector<Extension *> elist_t;
-      //. Deletes this Console in its Destrcuctor.
+      //. Deletes this Console in its Destructor.
       struct Reaper
       {
       ~Reaper();
@@ -85,7 +85,7 @@ namespace Berlin
       //. List available consoles (modules)
       static void list_available(std::ostream &);
 
-      //. Check whether a particular console (module) is avilable
+      //. Check whether a particular console (module) is available
       static bool is_available(std::string const &console);
 
       //. Sets up the graphics library. It gets passed the commandline

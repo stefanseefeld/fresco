@@ -67,7 +67,7 @@ size_t Babylon::Char::convert(const std::string & s,
 {
     Prague::Trace trace("Babylon::Char::convert(INTO babylon)");
     
-    // check wether start position is valid.
+    // check whether start position is valid.
     if (pos >= s.length())
     {
     my_value = Babylon::UC_NULL;

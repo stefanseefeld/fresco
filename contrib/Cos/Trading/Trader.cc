@@ -116,7 +116,7 @@ FollowOption Trader::defLinkFollowPolicy() { return if_no_local;}
 FollowOption Trader::maxLinkFollowPolicy() { return always;}
 void Trader::export_offer(Offer *offer)
 {
-  // Check wether we know this service type
+  // Check whether we know this service type
   if (!typeRepository->isServiceTypeKnown(offer->vType.in()))
     {
       UnknownServiceType exc;
@@ -128,7 +128,7 @@ void Trader::export_offer(Offer *offer)
   // In addition its exceptions are a subset of ours
   ServiceTypeRepository::TypeStruct_var desc = typeRepository->fully_describe_type(offer->vType.in());
 
-  // Check wether the passed object has the correct interface
+  // Check whether the passed object has the correct interface
   if (!offer->vReference->_is_a(desc->if_name.in()))
   {
     Register::InterfaceTypeMismatch exc;
@@ -138,8 +138,8 @@ void Trader::export_offer(Offer *offer)
     throw exc;
   }
   
-  // Check wether property names are duplicated and
-  // wether the types of the property values match the ones of the repository
+  // Check whether property names are duplicated and
+  // whether the types of the property values match the ones of the repository
   list<string> names;
   CORBA::ULong len = offer->properties.length();
   for(CORBA::ULong l0 = 0; l0 < len; l0++)
@@ -173,7 +173,7 @@ void Trader::export_offer(Offer *offer)
       // OMG does not specify an exception for properties which are not mentioned
       // in the type repository. So we just say: Ok 
     }
-  // Check wether all mandatory properties are present
+  // Check whether all mandatory properties are present
   len = desc->props.length();
   for(CORBA::ULong l1 = 0; l1 < len; l1++)
     {
@@ -238,7 +238,7 @@ void Trader::import(const char *type, const char *constr, const char *pref, cons
   CORBA::ULong max = policies.length();
   for (CORBA::ULong i0 = 0; i0 < max; i0++)
     {
-      // Check wether no policy has a dupe
+      // Check whether no policy has a dupe
       if (find(policy_names.begin(), policy_names.end(), string(policies[i0].name.in())) != policy_names.end())
     {
       DuplicatePolicyName exc;
@@ -337,7 +337,7 @@ void Trader::import(const char *type, const char *constr, const char *pref, cons
     }
     }
   ////////////
-  // Check wether we already processed this query.
+  // Check whether we already processed this query.
   // We use the stem to find out
   ////////////
   bool cancel = true;
@@ -757,7 +757,7 @@ void Trader::import(const char *type, const char *constr, const char *pref, cons
           CORBA::release(itr);
         }
 
-      // Check wether we got a result. Otherwise skip this offer completely
+      // Check whether we got a result. Otherwise skip this offer completely
       if (seq->length() > 1)
         {
           cerr << "Oooops, the proxy did give us more than one return." << endl;
@@ -878,7 +878,7 @@ void Trader::modify( const char* id, const PropertyNameSeq& del_list,
     }
     del.push_back( del_list[l5].in() );
 
-    // Check wether the property is mandatory.
+    // Check whether the property is mandatory.
     // In this case we may not remove it.
     for( CORBA::ULong t = 0; t < ptlen; t++ )
     {
@@ -945,7 +945,7 @@ void Trader::modify( const char* id, const PropertyNameSeq& del_list,
       add[ modify_list[l6].name.in() ] = modify_list[l6];
     else
     {
-      // Check wether the property is readonly
+      // Check whether the property is readonly
       // In this case we may not modify it
       for( CORBA::ULong t = 0; t < ptlen; t++ )
       {
@@ -1002,7 +1002,7 @@ void Trader::modify( const char* id, const PropertyNameSeq& del_list,
 
 void Trader::withdraw_using_constraint( const char* type, const char* constr )
 {
-  // Check wether we know this service type
+  // Check whether we know this service type
   if ( !m_pTypeRepository->isServiceTypeKnown( type ) )
   {    
     UnknownServiceType exc;

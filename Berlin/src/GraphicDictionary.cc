@@ -125,7 +125,7 @@ void Berlin::GraphicDictionary::add(const Fresco::Graphic_ptr g,
 
     Prague::Guard<Prague::Mutex> guard(my_mutex);
 
-    // Is the Graphic allready known?
+    // Is the Graphic already known?
     dictionary_type::iterator i(find_if(my_dictionary.begin(),
                     my_dictionary.end(),
                     word_equal(g, p)));

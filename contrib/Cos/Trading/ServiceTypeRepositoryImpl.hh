@@ -71,7 +71,7 @@ protected:
    */
   void incIncarnationNumber();
   /**
-   * Checks wether a certain service type is registered and returns an iterator
+   * Checks whether a certain service type is registered and returns an iterator
    * pointing at this service type. If the service type does not exist, then
    * the exception @ref CosTading::UnknownServiceType is thrown.
    */

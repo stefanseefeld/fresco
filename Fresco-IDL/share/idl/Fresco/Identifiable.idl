@@ -27,7 +27,7 @@
 module Fresco
 {
   //. This interface is needed to test in a location transparent way
-  //. wether two Objects are identical.
+  //. whether two objects are identical.
   interface Identifiable
     {
       //. Returns true if the given Identifiable is identical with

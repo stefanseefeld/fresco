@@ -41,7 +41,7 @@ namespace Berlin
   template <class T, class I>
   class QTNode
   {
-      //. This structure is used to determine wether items can get pushed
+      //. This structure is used to determine whether items can get pushed
       //. into subnodes.
       struct move_down : std::unary_function<I, bool>
       {
@@ -117,7 +117,7 @@ namespace Berlin
       void adjust(int, int, T, T);
 
     protected:
-      //. Returns wether this node is a leaf of the QuadTree or not.
+      //. Returns whether this node is a leaf of the QuadTree or not.
       bool leaf() const { return my_quadrants[0] == 0;}
       //. Creates the quadrants if they were not allocated before.
       void allocate();

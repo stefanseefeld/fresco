@@ -68,29 +68,29 @@ namespace Babylon
       
       //. Gets the uppercase equivalent of the character.
       //. If no uppercase equivalent is defined then a copy of
-      //. the current chracter is returned.
+      //. the current character is returned.
       //.
       //. Warning: For some characters of some locales
       //.          this might not be the character you
-      //.          exspect!
+      //.          expect!
       Char uppercase() const throw (Block_Error);
       
       //. Gets the lowercase equivalent of the character.
       //. If no uppercase equivalent is defined then a copy of
-      //. the current chracter is returned.
+      //. the current character is returned.
       //.
       //. Warning: For some characters of some locales
       //.          this might not be the character you
-      //.          exspect!
+      //.          expect!
       Char lowercase() const throw (Block_Error);
       
       //. Gets the titlecase equivalent of the character.
       //. If no uppercase equivalent is defined then a copy of
-      //. the current chracter is returned.
+      //. the current character is returned.
       //.
       //. Warning: For some characters of some locales
       //.          this might not be the character you
-      //.          exspect!
+      //.          expect!
       Char titlecase() const throw (Block_Error);
       
       //. Gets the numeric value of the character.
@@ -204,7 +204,7 @@ namespace Babylon
       String decompose() const throw (Undefined_Property, Block_Error);
       // UTF32_string decompose() const throw (Undefined_Property, Block_Error);
 
-      //. Returns wether this character needs to be excluded from
+      //. Returns whether this character needs to be excluded from
       //. the composition process.
       //. Throws : Block_Error
       //.          if the block containing the character

@@ -207,7 +207,7 @@ int main (int argc, char **argv) {
       exit(2);
     }
     catch (const std::exception & Except) {
-      std::cerr << "ERROR: Something unexspected happened! -> EXITING ("
+      std::cerr << "ERROR: Something unexpected happened! -> EXITING ("
                 << Except.what() << ")" << std::endl; 
       exit(3);
     }

@@ -69,7 +69,7 @@ void ServerImpl::set_singleton(const char *name,
   throw (SecurityException, SingletonFailureException)
 {
   Prague::Guard<Mutex> guard(my_mutex);
-  // test wether the name is allready in use:
+  // test whether the name is already in use:
   smap_t::iterator p = my_singletons.find(name);
   if (p != my_singletons.end()) throw SingletonFailureException();
   else my_singletons[name] = singleton;

@@ -239,7 +239,7 @@ PNG::PNG(const Fresco::Raster::Info &info)
     break;
     default:
     std::cerr << "PNG doesn't know number of channels in this "
-          << "colour type." << std::endl;
+          << "color type." << std::endl;
     my_rinfo->channels = 1;
     }
     my_rinfo->rowbytes = info.width * info.depth * my_rinfo->channels / 8;

@@ -125,7 +125,7 @@ void ServiceTypeRepositoryImpl::remove_type(const char *name)
 repository_t::iterator i = checkServiceType(name);
   
 /**
- * Check wether it has sub types.
+ * Check whether it has sub types.
  */
 repository_t::iterator i2 = types.begin();
  for( ; i2 != types.end(); ++i2)
