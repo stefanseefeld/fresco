@@ -156,6 +156,7 @@ endif
 ifneq ($(findstring Fresco-C++, $(subdirs)),)
 Berlin: Fresco-C++
 Fresco-C++-demos: Fresco-C++
+contrib/daVinci: Fresco-C++
 endif
 ifneq ($(findstring Berlin, $(subdirs)),)
 GGI:	Berlin
