@@ -40,14 +40,18 @@ while test $# -gt 0; do
       ;;
     --cppflags)
       echo @INSTALL_CPPFLAGS@ -I@includedir@ |\
-          sed -e "s/ /\n/g" | sort -u | xargs echo -n
+          sed -e 's/^ *-//; s/ \+-/\n/g' | awk 'a[$0]++==0 { print "-"$0; }' |\
+          xargs echo -n
+      echo
       ;;
     --cxxflags)
       echo @CXXFLAGS@
       ;;
     --libs)
       echo -L@libdir@ -lBabylon @INSTALL_LIBS@ |\
-          sed -e "s/ /\n/g" | sort -u | xargs echo -n
+          sed -e 's/^ *-//; s/ \+-/\n/g' | awk 'a[$0]++==0 { print "-"$0; }' |\
+          xargs echo -n
+      echo
       ;;
     *)
       echo "${usage}" 1>&2
