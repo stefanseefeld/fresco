@@ -36,6 +36,11 @@ Dictionary             *Dictionary::m_dictionary = 0;
 Dictionary::Dict_Guard  Dictionary::m_guard;
 Mutex                   Dictionary::m_singleton_mutex;
 
+#ifdef RC_MODULEPATH
+const std::string babylon_modulepath=RC_MODULEPATH;
+#else
+const std::string babylon_modulepath="/usr/share/Babylon"
+#endif
 
 bool Dictionary::is_defined(const UCS4 uc)
     throw (Block_Error) {
@@ -547,10 +552,14 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 
 void Dictionary::update(const std::string & scanDir) {
     Prague::Trace trace("Babylon::Dictionary::update(...)");
+
     Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
     
     Prague::Directory dir(scanDir, 0);
+    if (!dir.is(Prague::File::dir)) std::cerr << "ERROR: \"" << scanDir
+	    	<< "\"  is not a directory. "
+		<< "Cannot scan it for Babylon modules." << std::endl;
     
     // start scanning the directory:
     for (Prague::Directory::const_iterator dir_it = dir.begin();
@@ -611,13 +620,8 @@ Dictionary::Dictionary() {
 	m_version[0] = UC_NULL;
 	m_undef_block = 0;
     }
-    char *env = getenv("BABYLON_PATH");
-    if (!env) {
-	std::cerr << "Please set environment variable BABYLON_PATH first" << std::endl;
-	exit(-1);
-    }
     
-    update(std::string(env));
+    update(babylon_modulepath);
 } // Dictionary::Dictionary
 
 

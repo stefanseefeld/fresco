@@ -30,6 +30,7 @@ include $(cdir)/local.mk
 
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
+CPPFLAGS        += -DRC_MODULEPATH='"$(libdir)/Babylon"'
 
 SRC		:= String.cc Char.cc Dictionary.cc utils.cc vis_iterator.cc
 HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Babylon/*.hh))

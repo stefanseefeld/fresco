@@ -148,11 +148,11 @@ TARGET	= $(patsubst %.cc, %.so, $(SRC))
 all:	$(TARGET)
 
 install:	all
-	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/Unicode
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/Unicode
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Babylon
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Babylon
 
 uninstall:
-	rm -fr $(DESTDIR)$(libdir)/Fresco/Unicode
+	rm -fr $(DESTDIR)$(libdir)/Babylon
 
 clean:		
 	rm -f $(TARGET)
