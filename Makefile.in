@@ -49,6 +49,7 @@ all:	$(subdirs)
 # insert inter-directory dependencies here
 Babylon: Prague
 Berlin: Babylon Prague Fresco
+Fresco: Babylon
 GGI: Berlin Fresco Prague
 SDL: Berlin Fresco Prague
 Clients-C++: Berlin Babylon Fresco Prague
