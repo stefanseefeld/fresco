@@ -43,7 +43,7 @@ SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 	   KitImpl.cc RCManager.cc
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
-HDR	:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Berlin/*.hh $(hdir)/Berlin/Console/*.hh)) Berlin/config.hh
+HDR	:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Berlin/*.hh $(hdir)/Berlin/Console/*.hh))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
 LIBS	+= -lpng
@@ -63,6 +63,12 @@ install:	all
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin/Console
+	@if ! cmp -s ../include/Berlin/config.hh $(DESTDIR)$(includedir)/Berlin/config.hh 2>/dev/null; then \
+	  echo "$(INSTALL) -m 644 ../include/Berlin/config.hh $(DESTDIR)$(includedir)/Berlin/config.hh"; \
+	  $(INSTALL) -m 644 ../include/Berlin/config.hh $(DESTDIR)$(includedir)/Berlin/config.hh; \
+	else \
+          echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+        fi
 	for header in $(HDR); do \
 	  if test -f $(hdir)/$$header; then \
 	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \

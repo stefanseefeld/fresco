@@ -26,7 +26,8 @@ srcdir		:= $(top_srcdir)/src
 idir		:= $(top_srcdir)/idl
 builddir	:= $(shell pwd)
 cdir		:= ../config
-hdir		:= ../include
+h1dir		:= $(top_srcdir)/include
+h2dir		:= ../include
 
 include $(cdir)/local.mk
 
@@ -35,7 +36,7 @@ SHORTCUT	:= @SHORTCUT@
 
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
-CPPFLAGS	+= -include $(hdir)/Fresco/config.hh
+CPPFLAGS	+= -include $(h2dir)/Fresco/config.hh
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
@@ -71,14 +72,14 @@ SRC		:= $(DYNSTATSRC) $(DYNSRC) $(STATSRC)
 DYNHDR		:= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR		:= $(patsubst %.idl, %.hh, $(STATINT))
 UTILHDR		:= ImplVar.hh resolve.hh exception.hh IO.hh Unicode.hh ClientContextImpl.hh
-HDR		:= $(patsubst %, $(hdir)/Fresco/%, $(DYNHDR) $(STATHDR))
+HDR		:= $(patsubst %, Fresco/%, $(DYNHDR) $(STATHDR))
 
 OBJ		:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
 TARGET		:= ../lib/libFresco.so
 
 vpath %.idl $(idir)/Fresco
-vpath %.hh $(hdir)/Fresco
+vpath %.hh $(h1dir)/Fresco $(h2dir)/Fresco
 
 .NOTPARALLEL:
 
@@ -100,12 +101,20 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
-	$(INSTALL) -m 644 $(patsubst %, ../idl/Fresco/%, $(INT)) $(DESTDIR)$(datadir)/idl/Fresco
+	$(INSTALL) -m 644 $(patsubst %, $(top_srcdir)/idl/Fresco/%, $(INT)) $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
-	for header in Fresco/config.hh $(HDR) $(patsubst %, Fresco/%, $(UTILHDR)); do \
-	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
-	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
-	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	for header in Fresco/config.hh $(HDR) ; do \
+	  if ! cmp -s $(h2dir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
+	    echo "$(INSTALL) -m 644 $(h2dir)/$$header $(DESTDIR)$(includedir)/$$header"; \
+	    $(INSTALL) -m 644 $(h2dir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	  else \
+	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+          fi; \
+	done
+	for header in $(patsubst %, Fresco/%, $(UTILHDR)); do \
+	  if ! cmp -s $(h1dir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
+	    echo "$(INSTALL) -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/$$header"; \
+	    $(INSTALL) -m 644 $(h1dir)/$$header $(DESTDIR)$(includedir)/$$header; \
 	  else \
 	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
           fi; \
@@ -122,10 +131,10 @@ uninstall:
 clean:	
 	rm -f $(TARGET)
 	rm -f *.o *.d
-	rm -f $(SRC) $(HDR)
+	rm -f $(SRC) $(patsubst %, $(h2dir)/%, $(HDR))
 
 distclean:	clean
-	rm -f Makefile $(hdir)/Fresco/config.hh \
+	rm -f Makefile $(h2dir)/Fresco/config.hh \
 		config.log config.status \
 		../bin/Fresco-config
 
@@ -140,29 +149,29 @@ maintainer-clean: distclean
 $(STATSRC): %SK.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
-	mv $*.hh $(hdir)/Fresco
+	mv $*.hh $(h2dir)/Fresco
 $(DYNSTATSRC): %SK.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
-	mv $*.hh $(hdir)/Fresco
+	mv $*.hh $(h2dir)/Fresco
 $(DYNSRC): %DynSK.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
-	mv $*.hh $(hdir)/Fresco
+	mv $*.hh $(h2dir)/Fresco
 $(DYNHDR): %.hh:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
-	mv $*.hh $(hdir)/Fresco
+	mv $*.hh $(h2dir)/Fresco
 %.cc.d:	%.cc
 	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Fresco $< \
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $< \
 	| sed "s/$*\\.o[ :]*/$*\\.cc.d $*\\.o : /g" > $@'
 %.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
 ifeq ($(MAKECMDGOALS), sources)
 -include $(patsubst %, %.d, $(notdir $(INT)))
