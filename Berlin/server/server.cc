@@ -26,7 +26,6 @@
 #include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Timer.hh>
 #include <Prague/Sys/Path.hh>
-#include <Prague/Sys/User.hh>
 #include <Prague/Sys/Fork.hh>
 #include <Prague/Sys/GetOpt.hh>
 #include <Fresco/config.hh>
@@ -301,77 +300,10 @@ int main(int argc, char **argv) /*FOLD00*/
                                       << std::endl;
       }
   }
-  value = "";
   
-  // Find our resource file:
-  if (getopt.get("resource", &value))
-  {
-      // Load resourcefile given on the commandline:
-      try
-      {
-          value = Prague::Path::expand_user(value);
-          RCManager::read(value);
-          Logger::log(Logger::loader) << "Resourcefile \""
-                                      << value << "\" read."
-                                      << std::endl;
-      }
-      catch (const std::runtime_error &e)
-      {
-          std::cerr << "ERROR: Resourcefile \"" << value
-                    << "\" given on the commandline failed to load: "
-                    << e.what() << std::endl;
-          exit (1);
-      }
-  }
-  else
-  {
-      // Search for berlinrc in default places:
-      value = sysconfdir + "/berlinrc";
+  // Load the berlin rc files
+  RCManager::setup(getopt);
 
-      bool is_configured = 0;
-      try
-      {
-          RCManager::read(value);
-          is_configured = 1;
-          Logger::log(Logger::loader) << "Resourcefile \""
-                                      << value << "\" read."
-                                      << std::endl;
-
-      }
-      catch (const std::runtime_error &e)
-      {
-          std::cerr << "Warning: Default resourcefile \"" << value
-                    << "\" failed to load: "
-                    << e.what() << std::endl;
-      }
-
-      // FIXME: merge additional configuration:
-      if(getenv("BERLINRC")) value = std::string(getenv("BERLINRC"));
-      else value ="";
-
-      if (value.empty())
-          value = std::string(User().home()) + "/.berlin";
-
-      try
-      {
-          if (!is_configured) 
-          {
-              RCManager::read(value);
-              Logger::log(Logger::loader) << "Resourcefile \""
-                                          << value << "\" read."
-                                          << std::endl;
-          }
-      }
-      catch (const std::runtime_error &e)
-      {
-          std::cerr << "ERROR: System resourcefile is missing and "
-                    << "user's resourcefile \"" << value
-                    << "\" failed to load too: "
-                    << e.what() << std::endl;
-          exit(1);
-      }
-  }
-  
   if (getopt.is_set("tracer"))
   {
       Tracer::logging(true);

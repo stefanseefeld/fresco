@@ -30,6 +30,7 @@ docdir		:= $(top_builddir)/share/doc/Berlin
 
 include $(cdir)/local.mk
 
+CPPFLAGS+= -DRC_PREFIX='"$(prefix)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
 CXXFLAGS+= $(SO_CXXFLAGS)
 LDFLAGS	+= $(SO_LDFLAGS)
 LIBS	+= -lpng

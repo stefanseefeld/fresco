@@ -53,10 +53,10 @@ int main(int argc, char **argv)
   argv += argo;
   if (getopt.is_set("version")) { std::cout << "version is " << version << std::endl; return 0;}
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
-  std::string value;
-  if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
 
-  value = "";
+  RCManager::setup(getopt);
+
+  std::string value;
   getopt.get("console",&value);
   try { Console::open(value, argc, argv, PortableServer::POA::_nil(), 1, 1);}
 

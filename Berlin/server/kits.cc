@@ -65,8 +65,8 @@ int main(int argc, char **argv)
   argv += argo;
   if (getopt.is_set("version")) { std::cout << "version is " << version << std::endl; exit(0);}
   if (getopt.is_set("help")) { getopt.usage(); exit(0);}
-  std::string value;
-  if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
+
+  RCManager::setup(getopt);
 
   CORBA::PolicyList policies;
   ServerImpl *server = ServerImpl::create(PortableServer::POA::_nil(),policies);

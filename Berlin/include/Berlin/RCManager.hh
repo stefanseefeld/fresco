@@ -22,18 +22,14 @@
 #ifndef _RCManager_hh
 #define _RCManager_hh
 
+#include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Path.hh>
-#include <stdexcept>
-#include <map>
 
 class RCManager
 {
-public:
-  static void read(const std::string &);
-  static Prague::Path get_path(const std::string &);
-  static void add_to_path(const std::string &, const std::string &);
-private:
-  static std::map<std::string, Prague::Path> _paths;
+  public:
+    static void setup(Prague::GetOpt const &);
+    static Prague::Path get_path(const std::string &);
 };
 
 #endif

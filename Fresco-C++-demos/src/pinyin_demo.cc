@@ -47,9 +47,14 @@
 
 #include <Fresco/TextBuffer.hh>
 #include <Babylon/Babylon.hh>
-#include <Prague/Sys/Path.hh>
-#include <Prague/Sys/GetOpt.hh>
-#include <Berlin/RCManager.hh>
+
+#ifdef DATADIR
+const std::string data_dir = DATADIR;
+#else
+const std::string data_dir = "";
+#endif
+
+static std::string pinyin_db_file;
 
 class InputObserver : public ObserverImpl {
 public:
@@ -59,9 +64,7 @@ public:
 					      select(s),
 					      output(o) {
 	// get the path of the Memorymap we need from the RCManager
-	Prague::Path path = RCManager::get_path("pinyindbpath");
-	std::string pinyinDB = path.lookup_file("pinyin.db");
-	converter = new TextConverter(pinyinDB);
+	converter = new TextConverter(pinyin_db_file);
     }
 	
 
@@ -133,8 +136,8 @@ int main(int argc, char ** argv)
     // Parse args:
     Prague::GetOpt getopt(argv[0], "a simple pinyin input application.");
     getopt.add('h', "help", Prague::GetOpt::novalue, "help text");
-    getopt.add('r', "resource", Prague::GetOpt::mandatory,
-	       "the resource file to load");
+    getopt.add('p', "pinyin-db-path", Prague::GetOpt::mandatory,
+	       "path to the pinyin database file to load");
     add_resolving_options_to_getopt(getopt);
     size_t argo = getopt.parse(argc, argv);
     argc -= argo;
@@ -146,17 +149,12 @@ int main(int argc, char ** argv)
       return 0;
     }
 
-    std::string value;
-    if (!getopt.get("resource", &value))
-    {
-      std::cerr << "ERROR: Must specify --resource option" << std::endl;
-      getopt.usage();
-      return 1;
-    }
-    else
-    {
-      RCManager::read(Prague::Path::expand_user(value));
-    }
+    // find the pinyin database
+    std::string pinyin_path;
+    getopt.get("pinyin-db-path", &pinyin_path);
+    if (pinyin_path=="") pinyin_path = data_dir;
+    Prague::Path path(pinyin_path);
+    pinyin_db_file = path.lookup_file("pinyin.db");
 
     // do the real work:
     CORBA::ORB_var orb;

@@ -32,6 +32,9 @@ include $(cdir)/local.mk
 # -stefan
 LIBS		:= -lBerlin $(LIBS)
 
+# Inserted for pinyin-db default path -neiljp
+CPPFLAGS        += -DDATADIR='"$(DESTDIR)$(datadir)/Fresco-demos"'
+
 DEMO_SRC	:= Application.cc LayoutDemo.cc TextDemo.cc \
 		   EditTextDemo.cc RasterDemo.cc TransformDemo.cc \
 		   ColorDemo.cc LogoDemo.cc FocusDemo.cc \
@@ -81,8 +84,8 @@ install:	all
 	@for target in $(TARGETS); do \
 	  $(SHTOOL) install -C -m 755 ../bin/$$target $(DESTDIR)$(bindir); \
 	done
-	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/Berlin
-	$(SHTOOL) install -C -m 644 $(top_srcdir)/share/pinyin.db $(DESTDIR)$(datadir)/Berlin
+	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(datadir)/Fresco-demos
+	$(SHTOOL) install -C -m 644 $(top_srcdir)/share/pinyin.db $(DESTDIR)$(datadir)/Fresco-demos
 
 uninstall:
 	for target in $(TARGETS) ; do
