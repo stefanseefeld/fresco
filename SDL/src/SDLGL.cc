@@ -130,7 +130,7 @@ public:
     glMatrixMode(GL_PROJECTION); 
     glLoadIdentity();
     glOrtho(0, my_width/drawable->resolution(Fresco::xaxis),
-	    my_height/drawable->resolution(Fresco::yaxis), 0, -5000.0, 5000.0); 
+            my_height/drawable->resolution(Fresco::yaxis), 0, -5000.0, 5000.0); 
     //glTranslatef(0.375, 0.375, 0.);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -309,7 +309,7 @@ class SDL::GLPointer::Save : public virtual GLContext::Callback {
 public:
   Save::Save(Fresco::PixelCoord x, Fresco::PixelCoord y,
              Fresco::PixelCoord width, Fresco::PixelCoord height,
-	     Fresco::PixelCoord xscale, Fresco::PixelCoord yscale,
+             Fresco::Coord xscale, Fresco::Coord yscale,
              std::vector<unsigned char> &buffer)
     : my_x(x), my_y(y), my_width(width), my_height(height),
       my_xscale(xscale), my_yscale(yscale),
@@ -328,7 +328,7 @@ public:
 private:
   Fresco::PixelCoord my_x, my_y;
   Fresco::PixelCoord my_width, my_height;
-  Fresco::PixelCoord my_xscale, my_yscale;
+  Fresco::Coord my_xscale, my_yscale;
   std::vector<unsigned char> &my_buffer;
 };
 
@@ -345,7 +345,7 @@ void SDL::GLPointer::save()
   }
 
   my_glcontext->add_to_queue(new Save(x, y, _size[0], _size[1]-offset,
-				      _scale[0], _scale[1],
+                                      _scale[0], _scale[1],
                                       my_saved_area));
 }
 
@@ -354,7 +354,7 @@ class SDL::GLPointer::Restore : public virtual GLContext::Callback {
 public:
   Restore::Restore(Fresco::PixelCoord x, Fresco::PixelCoord y,
                    Fresco::PixelCoord width, Fresco::PixelCoord height,
-                   Fresco::PixelCoord xscale, Fresco::PixelCoord yscale,
+                   Fresco::Coord xscale, Fresco::Coord yscale,
                    unsigned char *buffer)
     : my_x(x), my_y(y), my_width(width), my_height(height),
       my_xscale(xscale), my_yscale(yscale),
@@ -381,7 +381,7 @@ public:
 private:
   Fresco::PixelCoord my_x, my_y;
   Fresco::PixelCoord my_width, my_height;
-  Fresco::PixelCoord my_xscale, my_yscale;
+  Fresco::Coord my_xscale, my_yscale;
   unsigned char *my_buffer;
 };
 
@@ -406,7 +406,7 @@ class SDL::GLPointer::Draw : public virtual GLContext::Callback {
 public:
   Draw::Draw(Fresco::PixelCoord x, Fresco::PixelCoord y,
              Fresco::PixelCoord width, Fresco::PixelCoord height,
-             Fresco::PixelCoord xscale, Fresco::PixelCoord yscale,
+             Fresco::Coord xscale, Fresco::Coord yscale,
              unsigned char *cursor)
     : my_x(x), my_y(y), my_width(width), my_height(height),
       my_xscale(xscale), my_yscale(yscale),
@@ -430,7 +430,7 @@ public:
 private:
   Fresco::PixelCoord my_x, my_y;
   Fresco::PixelCoord my_width, my_height;
-  Fresco::PixelCoord my_xscale, my_yscale;
+  Fresco::Coord my_xscale, my_yscale;
   unsigned char *my_cursor;
 };
 
@@ -447,8 +447,8 @@ void SDL::GLPointer::draw()
   }
 
   my_glcontext->add_to_queue(new Draw(x, y, _size[0], _size[1]-offset,
-				      _scale[0], _scale[1],
-				      &my_cursor[offset*_size[0]*4]));
+                                      _scale[0], _scale[1],
+                                      &my_cursor[offset*_size[0]*4]));
 }
 
 
