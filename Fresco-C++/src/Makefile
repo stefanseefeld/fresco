@@ -21,21 +21,20 @@
 
 SHELL	= /bin/sh
 
-cpath	= ../../config
-wpath   = ../../idl/Warsaw
-ipath	= ../../include
-lpath	= ../../lib
-dpath	= dep
-opath	= obj
-rpath	= $(lpath)
+top	= ../..
+cpath	= $(top)/config
 
 include $(cpath)/local.mk
+-include $(cpath)/Warsaw/warsaw.mk
 
-IDLFLAGS+= -I$(wpath)
-CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) $(ORBDEFS) -I$(ipath)/Warsaw -I$(ipath)
-CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
-LDFLAGS	= -shared -rdynamic
-LIBS	+= $(ORBLIBS)
+wpath   = $(top)/idl/Warsaw
+rpath	= $(lpath)
+
+IDLFLAGS	+= -I$(wpath)
+CPPFLAGS	+= $(ORBCPPFLAGS) $(ORBDEFS) -I$(ipath)/Warsaw
+CXXFLAGS	+= $(SOFLAGS)
+LDFLAGS		+= -shared -rdynamic
+LIBS		+= $(ORBLIBS)
 
 DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl Selection.idl
 STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
@@ -73,12 +72,27 @@ TARGET	= $(lpath)/libWarsaw.so
 vpath %.d $(dpath)
 vpath %.idl $(wpath)
 vpath %.h $(ipath)/Warsaw
+vpath %.mk $(cpath)/Warsaw
 
-world:	$(TARGET)
+world:	$(cpath)/Warsaw/warsaw.mk
+	$(MAKE) $(TARGET)
 
 $(TARGET):	$(OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
+		$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
+
+$(cpath)/Warsaw/warsaw.mk: configure $(cpath)/Warsaw/warsaw.mk.in
+	@echo Running ./configure $$CONFIGURE_OPTS...
+	@./configure $$CONFIGURE_OPTS
+
+configure: $(cpath)/Warsaw/configure.in $(cpath)/Warsaw/aclocal.m4
+	@echo Running autoconf...
+	@autoconf -l $(cpath)/Warsaw $(cpath)/Warsaw/configure.in > configure
+	@chmod a+x configure
+
+$(cpath)/Warsaw/aclocal.m4: $(cpath)/macros/*.m4
+	@echo Running aclocal...
+	@(cd $(cpath)/Warsaw && aclocal -I ../macros)
 
 $(dpath)/%.d:	%.idl
 		@echo making dependencies for $<

@@ -30,17 +30,17 @@ IPC_PRF	= $(patsubst %.cc, $(ppath)/%.o, $(IPC_SRC))
 $(dpath)/%.d:	IPC/%.cc $(ipath)/Prague/IPC/%.hh
 		@echo making dependencies for $<
 		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	IPC/%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@ 
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@ 
 $(gpath)/%.o:	IPC/%.cc
 		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
 $(ppath)/%.o:	IPC/%.cc
 		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
 
 clean:		ipcclean
 ipcclean:

@@ -21,35 +21,22 @@
 
 SHELL	= /bin/sh
 
--include config/local.mk
+cpath	= ./config
+top	= .
 
-#subdirs	= $(wildcard src server clients)
-# doc
+-include $(cpath)/local.mk
+
 subdirs		= $(BASE_SUBDIRS)
 
 .PHONY:	config test depclean clean distclean install debs
 
-world:	all
+world: all
 
-config::
-	@cd config; ./configure $$CONFIGURE_OPTS; cd ../src/Prague/config; \
-	./configure $$CONFIGURE_OPTS
-# Added shell env var $$CONFIGURE_OPTS
-
-all: config/local.mk
-	@if [ -f include/Warsaw/config.hh ]; then \
-	  for dir in ${subdirs}; do \
-	    (cd $$dir && $(MAKE)) \
-	    || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	  done && test -z "$$fail"; \
-	else \
-	  echo -e "Please run \"make config\" first!\n" \
-	  "\nIf you need to provide arguments to the configure scripts use:"\
-	  "\n    cd config"\
-	  "\n    ./configure --whatever-you-need"\
-	  "\n    cd .."\
-	  "\nThen run make again."; \
-	fi
+all: $(cpath)/local.mk
+	@for dir in ${subdirs}; do \
+		(cd $$dir && $(MAKE)) \
+		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"; \
 
 depclean:
 	find -name '*.d' -exec rm -f \{\} \;
@@ -62,7 +49,7 @@ clean:
 	done && test -z "$$fail"
 
 distclean:
-	/bin/rm -f $(cpath)/config.cache $(cpath)/config.log
+	/bin/rm -f config.cache config.log config.status
 	@for dir in ${subdirs}; do \
 	  (cd $$dir && $(MAKE) distclean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
@@ -70,6 +57,7 @@ distclean:
 	for dir in modules lib; do \
 	  find $$dir -name '*.so' -exec rm -f \{\} \; ; \
 	done
+	/bin/rm -f $(cpath)/local.mk
 
 install: all
 	@for dir in ${subdirs}; do \
@@ -83,5 +71,15 @@ include config/packages.mk
 debs:
 	dpkg-buildpackage -rfakeroot -uc -us
 
-config/local.mk: config/configure
-	@(cd config && ./configure $$CONFIGURE_OPTS)
+$(cpath)/local.mk: configure $(cpath)/local.mk.in
+	@echo Running ./configure $$CONFIGURE_OPTS...
+	@./configure $$CONFIGURE_OPTS
+
+configure: $(cpath)/configure.in $(cpath)/aclocal.m4
+	@echo Running autoconf...
+	@autoconf -l $(cpath) $(cpath)/configure.in > configure
+	@chmod a+x configure
+
+$(cpath)/aclocal.m4: $(cpath)/macros/*.m4
+	@echo Running aclocal...
+	@(cd $(cpath) && aclocal -I macros)

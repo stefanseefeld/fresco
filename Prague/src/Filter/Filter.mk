@@ -29,17 +29,17 @@ FLT_PRF	= $(patsubst %.cc, $(ppath)/%.o, $(FLT_SRC))
 $(dpath)/%.d:	Filter/%.cc $(ipath)/Prague/Filter/%.hh
 		@echo making dependencies for $<
 		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+		@$(SHELL) -ec '$(CXX) -MM $(CPPFLAGS) $< \
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	Filter/%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 $(gpath)/%.o:	Filter/%.cc
 		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
 $(ppath)/%.o:	Filter/%.cc
 		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
 
 clean:		filterclean
 filterclean:

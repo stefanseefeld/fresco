@@ -29,9 +29,10 @@ AC_DEFUN([BERLIN_OMNIORB2_CHECK],[
 	AC_LANG_SAVE
 	AC_LANG_CPLUSPLUS
 
-	AC_ARG_WITH(orb-prefix,
-		[  --with-orb-prefix=PFX   Prefix for omniORB2],[
+	AC_ARG_WITH(omniorb2-prefix,
+		[  --with-omniorb2-prefix  Prefix for omniORB2],[
 		omniorb2_prefix="$withval"])
+	AC_REGISTER_PARAM(omniorb2_prefix)
 
 	dnl Check for omniidl2. Should we check in
 	dnl $omniorb_prefix/bin/<arch>, too?
@@ -217,7 +218,6 @@ main (int argc, char* argv[])
 	fi
 
 	if test x$ac_cv_lib_omniORB2 = xyes ; then
-		echo here!
 		ORBDEFS="$omniorb_defs"
 		ORBCPPFLAGS="$omniorb_includes"
 		ORBLIBS="$omniorb_libs -lomniDynamic2 -lomniLC -lomniORB2 -lomnithread -ltcpwrapGK"

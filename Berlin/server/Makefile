@@ -33,6 +33,9 @@ ppath	= prf
 rpath	= $(lpath)
 
 include $(cpath)/local.mk
+-include $(cpath)/Server/server.mk
+
+subdirs	= $(SERVER_SUBDIRS)
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
@@ -40,7 +43,13 @@ CXXFLAGS= -pthread -Wall -Dprofile $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
 
-world:		server
+world:		all
+
+all: $(cpath)/Server/server.mk
+	@for dir in ${subdirs}; do \
+		$(MAKE) -C $$dir; \
+	done
+	$(MAKE) server
 
 ldlibpath = LD_LIBRARY_PATH=$(lpath)
 
@@ -54,7 +63,15 @@ clean:
 		rm -f server.o server.d *~ bb.out gmon.out
 
 distclean:	clean
-		rm -f server
+	/bin/rm -f config.cache config.log config.status
+	@if [ ! ".${subdirs}" = . ] ; then \
+		for dir in ${subdirs}; do \
+			echo $$dir; \
+			$(MAKE) -C $$dir distclean; \
+		done; \
+	fi
+	/bin/rm -f server
+	/bin/rm -f $(cpath)/Server/server.mk
 
 server.d:	server.cc
 		@echo making dependencies for $<
@@ -62,6 +79,19 @@ server.d:	server.cc
 		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@'
 server.o:	server.cc
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(cpath)/Server/server.mk: configure $(cpath)/Server/server.mk.in
+	@echo Running ./configure $$CONFIGURE_OPTS...
+	@./configure $$CONFIGURE_OPTS
+
+configure: $(cpath)/Server/configure.in $(cpath)/Server/aclocal.m4
+	@echo Running autoconf...
+	@autoconf -l $(cpath)/Server $(cpath)/Server/configure.in > configure
+	@chmod a+x configure
+
+$(cpath)/Server/aclocal.m4: $(cpath)/macros/*.m4
+	@echo Running aclocal...
+	@(cd $(cpath)/Server && aclocal -I ../macros)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean) 

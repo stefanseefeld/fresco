@@ -33,8 +33,8 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 		ggi_prefix="$withval"])
 
 	dnl Check for GGI includes
-	if test x$ggi_prefix != x ; then
-		GGI_INCLUDES=-I$ggi_prefix/include
+	if test ".$ggi_prefix" != . ; then
+		GGI_INCLUDES="-I$ggi_prefix/include"
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
 	CPPFLAGS="$GGI_INCLUDES $CPPFLAGS"
@@ -42,10 +42,10 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 	CPPFLAGS="$save_CPPFLAGS"
 
 	dnl Check for GGI libs
-	if test x$no_ggi = x ; then
+	if test ".$no_ggi" = . ; then
 
-		if test x$ggi_prefix != x ; then
-			GGI_LIBS=-L$ggi_prefix/lib
+		if test ".$ggi_prefix" != . ; then
+			GGI_LIBS="-L$ggi_prefix/lib"
 		fi
 
 		save_LDFLAGS="$LDFLAGS"
@@ -54,13 +54,11 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 		LDFLAGS="$save_LDFLAGS"
 	fi
 
-	if test x$no_ggi != x ; then
+	if test ".$no_ggi" != . ; then
 
 		ac_cv_lib_GGI=no
 		dnl Abort or warn?
-		if test ".$1" = .mandatory ; then
-			AC_MSG_ERROR(GGI library was not found!)
-		fi
+		ifelse($1,mandatory,AC_MSG_ERROR(GGI library was not found!))
 	else
 		ac_cv_lib_GGI=yes
 		GGI_LIBS="$GGI_LIBS -lggi"

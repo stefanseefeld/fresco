@@ -30,7 +30,10 @@ AC_DEFUN([BERLIN_ORB_CHECK],[
 
 	AC_ARG_WITH(orb,[  --with-orb=NAME         Specify which ORB to use],[dnl
 		ORB="$withval"],[dnl
-		ORB="auto"])
+		if test ".$ORB" = . ; then
+			ORB="auto"
+		fi])
+	AC_REGISTER_PARAM(ORB)
 
 	case $ORB in
 		omniORB2|auto)

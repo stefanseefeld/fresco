@@ -135,6 +135,9 @@ dnl ##    AC_HEADLINE(<short-name>, <long-name>,
 dnl ##                <vers-var>, <vers-file>, 
 dnl ##                <copyright>)
 dnl ##
+dnl ##
+dnl ##  Modified to look for shtool in ./config too
+dnl ##  Warning: $ac_aux_dir isn't documented.
 
 AC_DEFUN(AC_HEADLINE,[dnl
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
@@ -149,7 +152,13 @@ changequote(, )dnl
     ac_srcdir=`echo $ac_prog | sed -e 's%/[^/][^/]*$%%' -e 's%\([^/]\)/*$%\1%'`
 changequote([, ])dnl
     test ".$ac_srcdir" = ".$ac_prog" && ac_srcdir=.
-    ac_shtool="$ac_srcdir/shtool"
+    if test -x "$ac_srcdir/shtool" ; then
+        ac_shtool="$ac_srcdir/shtool"
+    elif test -x "$ac_aux_dir/shtool" ; then
+	ac_shtool="$ac_aux_dir/shtool"
+    else
+	AC_MSG_ERROR(Unable to locate shtool!)
+    fi
 
     #   find out terminal sequences
     if test ".$enable_subdir" != .yes; then
@@ -385,6 +394,7 @@ fi
 CFLAGS=`echo "$CFLAGS" | sed -e 's/-O2//g'`
 CFLAGS="$CFLAGS -O0 -pg"
 LDFLAGS="$LDFLAGS -pg"
+AC_DEFINE(profile)
 msg="enabled"
 ],[
 msg="disabled"
