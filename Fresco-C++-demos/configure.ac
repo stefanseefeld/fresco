@@ -50,19 +50,19 @@ dnl ------------------------------------------------------------------
 dnl Warsaw and Prague
 dnl ------------------------------------------------------------------
 
-FRESCO_PACKAGE(Prague, Prague, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Prague, Prague, $PACKAGE_VERSION, ..)
 CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
 LIBS="$Prague_BUILD_LIBS $LIBS"
 
-FRESCO_PACKAGE(Babylon, Babylon, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Babylon, Babylon, $PACKAGE_VERSION, ..)
 CPPFLAGS="$CPPFLAGS $Babylon_BUILD_CPPFLAGS"
 LIBS="$Babylon_BUILD_LIBS $LIBS"
 
-FRESCO_PACKAGE(Fresco-C++, Fresco_CXX, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Fresco-C++, Fresco_CXX, $PACKAGE_VERSION, ..)
 CPPFLAGS="$CPPFLAGS $Fresco_CXX_BUILD_CPPFLAGS"
 LIBS="$Fresco_CXX_BUILD_LIBS $LIBS"
 
-FRESCO_PACKAGE(Berlin, Berlin, $PACKAGE_VERSION)
+FRESCO_PACKAGE(Berlin, Berlin, $PACKAGE_VERSION, ..)
 CPPFLAGS="$CPPFLAGS $Berlin_BUILD_CPPFLAGS"
 LIBS="$Berlin_BUILD_LIBS $LIBS"
 

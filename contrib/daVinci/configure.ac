@@ -47,21 +47,15 @@ dnl ------------------------------------------------------------------
 dnl Prague, Babylon, and Fresco
 dnl ------------------------------------------------------------------
 
-FRESCO_PACKAGE(Prague, Prague, $PACKAGE_VERSION)
-dnl INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-dnl INSTALL_LIBS="$LIBS $Prague_LIBS"
+FRESCO_PACKAGE(Prague, Prague, $PACKAGE_VERSION, ../..)
 CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
 LIBS="$LIBS $Prague_BUILD_LIBS"
 
-FRESCO_PACKAGE(Babylon, Babylon, $PACKAGE_VERSION)
-dnl INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Babylon_CPPFLAGS"
-dnl INSTALL_LIBS="$INSTALL_LIBS $Babylon_LIBS"
+FRESCO_PACKAGE(Babylon, Babylon, $PACKAGE_VERSION, ../..)
 CPPFLAGS="$CPPFLAGS $Babylon_BUILD_CPPFLAGS"
 LIBS="$LIBS $Babylon_BUILD_LIBS"
 
-FRESCO_PACKAGE(Fresco-C++, Fresco_CXX, $PACKAGE_VERSION)
-dnl INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Fresco_CXX_CPPFLAGS"
-dnl INSTALL_LIBS="$INSTALL_LIBS $Fresco_CXX_LIBS"
+FRESCO_PACKAGE(Fresco-C++, Fresco_CXX, $PACKAGE_VERSION, ../..)
 CPPFLAGS="$CPPFLAGS $Fresco_CXX_BUILD_CPPFLAGS"
 LIBS="$LIBS $Fresco_CXX_BUILD_LIBS"
 

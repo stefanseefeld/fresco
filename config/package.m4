@@ -20,7 +20,7 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 dnl
 
-dnl FRESCO_PACKAGE(PACKAGE, PACKAGE-VAR[, MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl FRESCO_PACKAGE(PACKAGE, PACKAGE-VAR, MINIMUM-VERSION, BUILD-PATH)
 dnl
 AC_DEFUN(FRESCO_PACKAGE,
 [dnl 
@@ -42,8 +42,8 @@ dnl
   dnl part of the distribution, so we use the flags determined
   dnl by <package>-config
   dnl
-  AC_PATH_PROG($2_LOCAL_BUILD_CONFIG, $1-config, no, ../$1/bin)
-  AC_PATH_PROG($2_LOCAL_CONFIG, $1-config, no, ../$1/config)
+  AC_PATH_PROG($2_LOCAL_BUILD_CONFIG, $1-config, no, $4/$1/bin)
+  AC_PATH_PROG($2_LOCAL_CONFIG, $1-config, no, $4/$1/config)
   no_$2=""
   if test "$$2_LOCAL_BUILD_CONFIG" != "no" ; then
     $2_CPPFLAGS="`$$2_LOCAL_CONFIG --cppflags`"
@@ -164,7 +164,6 @@ int main (int argc, char *argv[])
     if test "x$no_$2" = x ; then
       AC_MSG_RESULT(yes)
       AC_SUBST($2_prefix)
-      ifelse([$4], , :, [$4])     
     else
       AC_MSG_RESULT(no)
       if test "$$2_CONFIG" = "no" ; then
@@ -175,7 +174,6 @@ int main (int argc, char *argv[])
       fi
       $2_CPPFLAGS=""
       $2_LIBS=""
-      ifelse([$5], , :, [$5])
     fi
     rm -f conf.$1test
   fi
