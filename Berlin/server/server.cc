@@ -417,7 +417,7 @@ int main(int argc, char **argv) /*FOLD00*/
 	 if (invalid_format)
 	 {
 	   std::cerr << "ERROR: Format of 'pixels' option should be:\n"
-		     << " --pixels 800x600, with 800 and 600 replaced\n"
+		     << " --pixels=800x600, with 800 and 600 replaced\n"
 		     << "by the desired x and y values"
 		     << std::endl;
 	   exit(1);
