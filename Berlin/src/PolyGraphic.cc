@@ -64,10 +64,11 @@ void PolyGraphic::allocate(Graphic_ptr g, Allocation_ptr a)
 {
   Graphic_var child = g;
   Allocation_var allocation = a;
-  long start = allocation->size();
+  CORBA::Long start = allocation->size();
   GraphicImpl::allocate(Graphic::_duplicate(g), Allocation::_duplicate(allocation));
+  CORBA::Long size = allocation->size();
   long l = findChild(g);
-  for (long i = start; i != allocation->size(); i++)
+  for (long i = start; i != size; i++)
     {
       Allocation::Info_var info = allocation->get(i);
       allocateChild(l, info);
