@@ -30,14 +30,14 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin #$(ORBLIBS)
+LIBS	= -lPrague -lBerlin
 
 SRC	=  LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc Deck.cc ShapeOf.cc \
 	   StageImpl.cc ViewportImpl.cc LayoutKitImpl.cc #Backdrop.cc
 
-TARGET	= $(lpath)/libLayout.so
+TARGET	= $(mpath)/libLayout.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Layout
 
-include $(cpath)/plugin.mk
+include $(cpath)/module.mk

@@ -43,4 +43,4 @@ TARGET	= $(lpath)/libBerlin.so
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin
 
-include $(cpath)/plugin.mk
+include $(cpath)/library.mk

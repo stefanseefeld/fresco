@@ -2,13 +2,8 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
- *
- * this code is based on code from Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,85 +21,94 @@
  * MA 02139, USA.
  */
 
+#include "Berlin/Logger.hh"
 #include "Image/RasterImpl.hh"
 #include <fstream>
 
 RasterImpl::RasterImpl()
-	: data(0), totBytes(0)
+  : rows(0)
 {
-	rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-	rinfo = png_create_info_struct(rpng);
+  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  rinfo = png_create_info_struct(rpng);
 }
 
-RasterImpl::RasterImpl(const char* file)
+RasterImpl::RasterImpl(const char *file)
 {
-	rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-	rinfo = png_create_info_struct(rpng);
-	ifstream ifs(file);
-	PNGDecoder decoder(ifs.rdbuf());
-	totBytes = decoder.decode(rpng, rinfo, data);
+  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  rinfo = png_create_info_struct(rpng);
+  ifstream ifs(file);
+  if (!ifs) cerr << "RasterImpl : file " << file << " unreadable" << endl;
+  else
+    {
+      PNGDecoder decoder(ifs.rdbuf(), rpng, rinfo);
+      rows = decoder.decode();
+    }
 }
 
 RasterImpl::~RasterImpl()
 {
-	// delete data;
-	png_destroy_read_struct(&rpng, &rinfo, 0);
-	delete[] data;
+  clear();
+  png_destroy_read_struct(&rpng, &rinfo, 0);
 }
 
-void RasterImpl::load(const Raster::Data& buffer)
+void RasterImpl::load(const Raster::Data &data)
 {
-	/*
-	 * free the old data
-	 */
-	delete[] data;
-	data = NULL;
-	totBytes = 0;
-	
-	/*
-	 * create streambuf and associate it with the sequence
-	 */
-	rasterbuf rbuf;
-	unsigned long length = buffer.length();
-	rbuf.setg ((char*)(buffer.NP_data()), (char*)(buffer[length]),
-			   (char*)(buffer[length]));
-
-	/*
-	 * read it in
-	 */
- 	PNGDecoder decoder(&rbuf);
-	totBytes = decoder.decode(rpng, rinfo, data);
+  clear();
+  ibuf buffer(data);
+  PNGDecoder decoder(&buffer, rpng, rinfo);
+  rows = decoder.decode();
 }
 
-void RasterImpl::export(Raster::Data*& buffer)
+void RasterImpl::export(Raster::Data *&data)
 {
-	/*
-	 * set up buffer to hold new data
-	 */
-	rasterbuf rbuf;
-	unsigned long length = buffer->length();
-	rbuf.setp((char*)(buffer->NP_data()), (char*)(buffer+length));	
-	/*
-	 * create temporary write structures here...
-	 */
-	PNGEncoder encoder(&rbuf);
-	encoder.encode(rpng, rinfo, data);
+  /*
+   * set up buffer to hold new data
+   */
+  obuf buffer;
+  /*
+   * create temporary write structures here...
+   */
+  PNGEncoder encoder(&buffer, rpng, rinfo);
+  encoder.encode(rows);
+  delete data;
+  data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
+		  reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
 }
 
-void RasterImpl::getData(Raster::Data& buffer)
+void RasterImpl::getData(Raster::Data &buffer)
 {
-	/*
-	 * Note:  This differs from 'export' in that it returns
-	 * the actual manipulated block of memory that represents
-	 * the image.
-	 *
-	 * In addition, because of OpenGL's sematics, we need to
-	 * reverse the order of the pixel bytes to get the image
-	 * to come out right-side-up.
-	 */
-	// Make buffer correct size
-	buffer.length(totBytes);
-	
-	for (int i=0; i < totBytes; i++)
-		buffer[i] = *(data+((totBytes-1)-i));
+  /*
+   * Note:  This differs from 'export' in that it returns
+   * the actual manipulated block of memory that represents
+   * the image.
+   *
+   * In addition, because of OpenGL's sematics, we need to
+   * reverse the order of the pixel bytes to get the image
+   * to come out right-side-up.
+   */
+  // Make buffer correct size
+//   png_uint_32 width = png_get_image_width(rpng, rinfo);
+//   png_uint_32 height = png_get_image_height(rpng, rinfo);
+
+//   buffer.length(width*height);
+  
+//   for (int i=0; i < totBytes; i++)
+//     buffer[i] = *(data+((totBytes-1)-i));
 }
+
+void RasterImpl::write(const char *file)
+{
+  ofstream ofs(file);
+  PNGEncoder encoder(ofs.rdbuf(), rpng, rinfo);
+  encoder.encode(rows);
+}
+
+void RasterImpl::clear()
+{
+  if (!rpng || !rinfo) return;
+  png_uint_32 height = png_get_image_height(rpng, rinfo);
+  for (png_uint_32 i = 0; i < height; i++) delete [] rows;
+  delete [] rows;
+  rows = 0;
+}
+

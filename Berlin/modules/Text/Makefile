@@ -30,13 +30,13 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(ORBLIBS)
+LIBS	= -lPrague -lBerlin
 
 SRC	= Compositor.cc TextViewer.cc TextKitImpl.cc TextChunk.cc FontChange.cc
 
-TARGET	= $(lpath)/libText.so
+TARGET	= $(mpath)/libText.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Text
- 
-include $(cpath)/plugin.mk
+
+include $(cpath)/module.mk

@@ -3,8 +3,8 @@
 # if anyone would like to make it a little more portable
 # please feel free
 
-STYLESHEETS = /usr/lib/sgml/stylesheets/docbook
-HTML_SHEET = $(STYLESHEETS)/html/docbook.dsl
+STYLESHEETS = /usr/lib/sgml/stylesheets
+HTML_SHEET = $(STYLESHEETS)/dbtohtml.dsl
 PRINT_SHEET = $(STYLESHEETS)/print/docbook.dsl
 DOCBOOK_VARS = -V %use-id-as-filename% 
 BOOK_FILES = berlin-man.sgm berlin-intro.sgm berlin-prog-text.sgm \

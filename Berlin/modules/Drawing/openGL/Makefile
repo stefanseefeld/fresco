@@ -30,9 +30,9 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin -lGLtt -lttf -lMesaGL -lMesaGLU #$(ORBLIBS)
+LIBS	= -lPrague -lBerlin -lGLtt -lttf -lMesaGL -lMesaGLU
 
-SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc  GLFont.cc 
+SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc GLFont.cc 
 
 TARGET	= $(lpath)/libDrawing.so
 
@@ -41,7 +41,7 @@ vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Drawing/openGL
 
 world:	GLTT target
 
-include $(cpath)/plugin.mk
+include $(cpath)/library.mk
 
 GLTT:
 		cd gltt; $(MAKE)

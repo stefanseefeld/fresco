@@ -5,11 +5,6 @@
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -35,18 +30,18 @@
 #include "Berlin/CloneableImpl.hh"
 #include <vector>
 
+class RasterImpl;
+
 class ImageKitImpl : implements(ImageKit), virtual public CloneableImpl
 {
 public:
-    ImageKitImpl();
-    virtual ~ImageKitImpl();
+  ImageKitImpl();
+  virtual ~ImageKitImpl();
 
-    Raster_ptr empty();
-	Raster_ptr create(const char* file);
-
-
+  Raster_ptr empty();
+  Raster_ptr create(const char *file);
 protected:
-    vector<Raster*> rasters;
+  vector<RasterImpl *> rasters;
 };
 
 #endif

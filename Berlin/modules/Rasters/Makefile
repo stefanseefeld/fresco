@@ -30,13 +30,13 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(ORBLIBS)
+LIBS	= -lPrague -lBerlin -lpng
 
-SRC	= ImageKitImpl.cc RasterImpl.cc ImageImpl.cc
+SRC	= RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
 
-TARGET	= $(lpath)/libImage.so
+TARGET	= $(mpath)/libImage.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Image
- 
-include $(cpath)/plugin.mk
+
+include $(cpath)/module.mk

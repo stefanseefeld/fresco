@@ -30,14 +30,14 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin #$(ORBLIBS)
+LIBS	= -lPrague -lBerlin
 
 SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
 	  ControllerImpl.cc Bevel.cc Frame.cc Filler.cc WidgetKitImpl.cc
 
-TARGET	= $(lpath)/libWidget.so
+TARGET	= $(mpath)/libWidget.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Widget
 
-include $(cpath)/plugin.mk
+include $(cpath)/module.mk
