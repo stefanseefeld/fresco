@@ -60,7 +60,10 @@ HDR		+= $(patsubst %, Filter/%, $(FilterH))
 HDR		+= $(patsubst %, Network/%, $(NetworkH))
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
-SYN		:= $(patsubst %.hh, %.syn, $(notdir $(HDR)))
+HSYN		:= $(patsubst %, %.syn, $(notdir $(HDR)))
+SSYN		:= $(patsubst %, %.syn, $(SRC))
+XREF		:= $(patsubst %, %.xref, $(notdir $(HDR)))
+XREF		+= $(patsubst %, %.xref, $(SRC))
 
 TARGET		:= ../lib/libPrague.so
 
@@ -79,11 +82,21 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
+sxr:	Prague.xref Prague.syn
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=SXR -o sxr Prague.syn
+
 doc:	../share/doc/Prague/html 
 
-../share/doc/Prague/html:	$(SYN)
+Prague.xref:	$(XREF)
+	compile-xref -o $@ $^
+
+Prague.syn:	$(SSYN) $(HSYN)
+	@echo linking synopsis files together
+	@$(SYNOPSIS) -o $@ $^
+
+../share/doc/Prague/html:	$(HSYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -117,7 +130,7 @@ uninstall:
 
 clean:	
 	rm -f $(TARGET)
-	rm -f $(OBJ) $(DEP) $(SYN)
+	rm -f $(OBJ) $(DEP) $(SYN) $(XREF)
 #	cd Examples; $(MAKE) clean;
 
 distclean:	clean
@@ -139,9 +152,13 @@ DataTypeManager.o:	DataTypeManager.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
 
-%.syn:	%.hh
+%.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague -Wp,-x,$(<F).xref $(SFLAGS) -o $*.hh.syn $?
+
+%.cc.syn %.cc.xref:	%.cc
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague -Wp,-x,$(<F).xref $(SFLAGS) -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

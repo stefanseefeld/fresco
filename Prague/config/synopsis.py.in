@@ -36,7 +36,22 @@ class Config(Base):
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
 	    toc_out = '../share/doc/Prague/html/Prague.toc'
 	
+	class SXR(Base.Formatter.HTML):
+	    stylesheet = 'manual.css'
+	    pages=['FilePages', 'XRefPages']
+	    toc_out = 'sxrPrague.toc'
+	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
+	    default_toc = 'XRefPages'
+	    start_dir = ''
+	    base_dir = '.'
+	    class XRefPages:
+            	xref_file = 'Prague.xref'
+            #	link_to_scopepages = 1
+	    #class FilePages (Base.Formatter.HTML.FilePages):
+            #	toc_from = 'XRefPages'
+
 	# Here we extend the base modules, so you can still use DUMP, ASCII etc
 	modules = Base.Formatter.modules
 	modules['HTML'] = HTML
+	modules['SXR'] = SXR
 
