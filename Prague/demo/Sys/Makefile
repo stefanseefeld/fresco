@@ -64,7 +64,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   DataType Plugin.so Loader
+ALL        =   DataType Plugin1.so Plugin2.so Loader
 
 world:		$(ALL)
 
@@ -77,10 +77,13 @@ DataType.o:	DataType.cc
 DataType:	DataType.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Plugin.so:	Plugin.o
+Plugin1.so:	Plugin1.o
 		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Loader:		Plugin.so Loader.o
+Plugin2.so:	Plugin2.o
+		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
+
+Loader:		Plugin1.so Plugin2.so Loader.o
 		$(CXX) $(LDFLAGS) -o $@ Loader.o $(LIBS)
 
 clean:	
