@@ -77,8 +77,6 @@ int ptybuf::opentty ()
 {
   if ( tty == -1 )
     setup ();
-  if ( tty == -1 )
-    return -1;
   return tty;
 }
 

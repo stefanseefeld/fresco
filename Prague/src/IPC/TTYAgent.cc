@@ -53,6 +53,10 @@ void TTYAgent::start()
 	  return;
 	case  0:
 	  {
+	    // Set this (child) process to be its own process group leader
+	    // This allows the shell to implement job control properly
+	    // FIXME: portability of this function is uncertain
+	    setpgrp();
             int fds = pty->opentty();
 	    if (fds < 0) _exit(EXIT_FAILURE);
             close(fd);
