@@ -1,10 +1,1 @@
-#include "ResultsMap.hh"
-#include "TestCaseWrapper.hh"
-#include "TestCase.hh"
-#include "Breakpoint.hh"
-
-namespace Fresco_Test
-{
-
-
-}
+// There is no TestCaseWrapper.cc; all the code is in the header file

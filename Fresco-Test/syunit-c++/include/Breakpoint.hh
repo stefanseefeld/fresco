@@ -1,11 +1,11 @@
-#ifndef _FRESCO_TEST_BREAKPOINT_H
-#define _FRESCO_TEST_BREAKPOINT_H
+#ifndef _SYUNIT_BREAKPOINT_H
+#define _SYUNIT_BREAKPOINT_H
 
 extern "C"
 {
-  void Fresco_Test_fail_breakpoint();
-  void Fresco_Test_error_breakpoint();
-  void Fresco_Test_breakpoint(); // called by the other two
+  void SyUnit_fail_breakpoint();
+  void SyUnit_error_breakpoint();
+  void SyUnit_problem_breakpoint(); // called by the other two
 }
 
 #endif         /* header guard */

@@ -4,7 +4,7 @@
 #include "TestCmd.hh"
 #include "TestCase.hh"
 
-namespace Fresco_Test
+namespace SyUnit
 {
 
 TestCmd::TestCmd(char argc, char** argv)

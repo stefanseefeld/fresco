@@ -4,13 +4,13 @@
 #include "Breakpoint.hh"
 #include "ResultsMap.hh"
 
-namespace Fresco_Test
+namespace SyUnit
 {
 
 void
 TestCase::fail(const std::string msg)
 {
-  Fresco_Test_fail_breakpoint();
+  SyUnit_fail_breakpoint();
   result["Result"] = "FAIL";
   result["Cause"] = msg;
   throw TestFailure();
@@ -19,7 +19,7 @@ TestCase::fail(const std::string msg)
 void
 TestCase::error(const std::string msg)
 {
-  Fresco_Test_error_breakpoint();
+  SyUnit_error_breakpoint();
   result["Result"] = "ERROR";
   result["Cause"] = msg;
   throw TestError();

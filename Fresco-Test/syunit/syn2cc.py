@@ -29,7 +29,7 @@ inherit at all.  Ideally, we should also detect when we neither inherit from
 test_class_root nor have the @is_test_class tag, but do inherit from something
 that does have the @is_test_class tag.
 """
-test_class_root = ("Fresco_Test", "TestCase")
+test_class_root = ("SyUnit", "TestCase")
 
 test_file_tmpl = """\
 /* This file was automatically generated.  Do not edit! */
@@ -41,8 +41,8 @@ test_file_tmpl = """\
 
 int main(char argc, char** argv)
 {
-    Fresco_Test::TestCmd testcmd(argc, argv);
-    Fresco_Test::TestCaseWrapper* test;
+    SyUnit::TestCmd testcmd(argc, argv);
+    SyUnit::TestCaseWrapper* test;
   
 @all_tests@
 
@@ -53,7 +53,7 @@ int main(char argc, char** argv)
 test_include_tmpl = """#include "@test_class_file@"
 """
 
-single_test_tmpl = """test = new Fresco_Test::TestCaseWrapperImpl< @test_class@ >
+single_test_tmpl = """test = new SyUnit::TestCaseWrapperImpl< @test_class@ >
     (// name of test
      "@name@",
      // test method to call

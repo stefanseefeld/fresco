@@ -1,12 +1,12 @@
-#ifndef _FRESCO_TEST_TEST_CMD_H
-#define _FRESCO_TEST_TEST_CMD_H
+#ifndef _SYUNIT_TEST_CMD_H
+#define _SYUNIT_TEST_CMD_H
 
 #include <string>
 #include <map>
 
 #include "TestCaseWrapper.h"
 
-namespace Fresco_Test 
+namespace SyUnit
 {
 
 class TestCmd

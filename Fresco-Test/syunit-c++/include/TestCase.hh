@@ -1,11 +1,11 @@
-#ifndef _FRESCO_TEST_TEST_CASE_H
-#define _FRESCO_TEST_TEST_CASE_H
+#ifndef _SYUNIT_TEST_CASE_H
+#define _SYUNIT_TEST_CASE_H
 
 #include <string>
 
 #include "ResultsMap.h"
 
-namespace Fresco_Test 
+namespace SyUnit 
 {
 
 // A few cheap exception classes

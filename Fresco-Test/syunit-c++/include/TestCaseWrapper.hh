@@ -1,5 +1,5 @@
-#ifndef _FRESCO_TEST_TEST_CASE_WRAPPER_H
-#define _FRESCO_TEST_TEST_CASE_WRAPPER_H
+#ifndef _SYUNIT_TEST_CASE_WRAPPER_H
+#define _SYUNIT_TEST_CASE_WRAPPER_H
 
 #include <string>
 
@@ -7,7 +7,7 @@
 #include "TestCase.h"
 #include "Breakpoint.h"
 
-namespace Fresco_Test
+namespace SyUnit
 {
 
 class ResultsMap;
@@ -70,7 +70,7 @@ TestCaseWrapperImpl<TC>::run()
   }
   catch (std::exception& e)
   {
-    Fresco_Test_error_breakpoint();
+    SyUnit_error_breakpoint();
     test.result["Result"] = "ERROR";
     test.result["Cause"]  = "set_up() threw a std::exception: ";
     test.result["Exception"] = e.what();
@@ -78,7 +78,7 @@ TestCaseWrapperImpl<TC>::run()
   }
   catch (...)
   {
-    Fresco_Test_error_breakpoint();
+    SyUnit_error_breakpoint();
     test.result["Result"] = "ERROR";
     test.result["Cause"] = "set_up() threw an unknown exception";
     return test.result;
@@ -92,14 +92,14 @@ TestCaseWrapperImpl<TC>::run()
   // match exception thrown...
   catch (std::exception& e)
   {
-    Fresco_Test_error_breakpoint();
+    SyUnit_error_breakpoint();
     test.result["Result"] = "ERROR";
     test.result["Cause"]  = "test method threw a std::exception";
     test.result["Exception"] += e.what();
   }
   catch (...)
   {
-    Fresco_Test_error_breakpoint();
+    SyUnit_error_breakpoint();
     test.result["Result"] = "ERROR";
     test.result["Cause"] = "test method threw an unknown exception";
   }
@@ -111,7 +111,7 @@ TestCaseWrapperImpl<TC>::run()
   }
   catch (std::exception& e)
   {
-    Fresco_Test_error_breakpoint();
+    SyUnit_error_breakpoint();
     std::string msg = "tear_down() threw a std::exception: ";
     msg += e.what();
     if (test.result["Result"] == "ERROR")
@@ -127,7 +127,7 @@ TestCaseWrapperImpl<TC>::run()
   }
   catch (...)
   {
-    Fresco_Test_error_breakpoint();
+    SyUnit_error_breakpoint();
     std::string msg = "tear_down() threw an unknown exception";
     if (test.result["Result"] == "ERROR")
     {

@@ -1,12 +1,12 @@
-#ifndef _FRESCO_TEST_RESULTSMAP_H
-#define _FRESCO_TEST_RESULTSMAP_H
+#ifndef _SYUNIT_RESULTSMAP_H
+#define _SYUNIT_TEST_RESULTSMAP_H
 
 #include <string>
 #include <list>
 #include <map>
 #include <iostream>
 
-namespace Fresco_Test
+namespace SyUnit
 {
 
 class ResultsMapTest;

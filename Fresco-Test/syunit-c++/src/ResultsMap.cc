@@ -1,6 +1,6 @@
 #include "ResultsMap.hh"
 
-namespace Fresco_Test
+namespace SyUnit
 {
 
 const std::string ResultsMap::continuation_indent("   ");

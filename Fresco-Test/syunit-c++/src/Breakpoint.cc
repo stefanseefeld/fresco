@@ -4,17 +4,17 @@ extern "C"
 {
 
   void
-  Fresco_Test_fail_breakpoint()
+  SyUnit_fail_breakpoint()
   {
-    Fresco_Test_breakpoint();
+    SyUnit_problem_breakpoint();
   }
 
   void
-  Fresco_Test_error_breakpoint()
+  SyUnit_error_breakpoint()
   {
-    Fresco_Test_breakpoint();
+    SyUnit_problem_breakpoint();
   }
 
   void
-  Fresco_Test_breakpoint() {}  
+  SyUnit_problem_breakpoint() {}  
 }

@@ -4,13 +4,13 @@
 
 #include "ResultsMap.hh"
 
-namespace Fresco_Test
+namespace SyUnit
 {
   
 /**
  * This is a class-level comment.
  */
-class ResultsMapTest : public Fresco_Test::TestCase
+class ResultsMapTest : public SyUnit::TestCase
 {
 public:
 
