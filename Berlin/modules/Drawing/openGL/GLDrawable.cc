@@ -132,7 +132,7 @@ void GLDrawable::reshape( int width, int height )
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
-  glOrtho(0, width, height, 0, -1.0, 1.0); 
+  glOrtho(0, width, height, 0, -1000.0, 1000.0); 
   glTranslatef(0.375,0.375,0.);
 
   glMatrixMode(GL_MODELVIEW);
