@@ -19,22 +19,23 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top     = ../..
 cpath   = $(top)/config
 hpath   = $(top)/include/Text
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
-SRC	= TextChunk.cc Compositor.cc Composition.cc TextViewer.cc TerminalView.cc TextKitImpl.cc
+SRC		= \
+	TextChunk.cc Compositor.cc Composition.cc TextViewer.cc \
+	TerminalView.cc TextKitImpl.cc
 
-TARGET	= $(mpath)/libText.so
+MODULE		= Text
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Text

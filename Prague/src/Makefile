@@ -50,7 +50,7 @@ GDB = $(SYS_GDB) $(IPC_GDB) $(FLT_GDB) $(NTW_GDB) $(UNI_GDB) $(SAX_GDB)
 DEP = $(SYS_DEP) $(IPC_DEP) $(FLT_DEP) $(NTW_DEP) $(UNI_DEP) $(SAX_DEP)
 
 $(TARGET):	$(EXPAT) $(OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lexpat
+		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -L$(top)/lib -lexpat -lz
 
 $(EXPAT):
 		cd SAX/expat; $(MAKE);
@@ -59,7 +59,7 @@ install:
 		$(INSTALL) -m755 $(EXPAT) $(libdir)
 		$(INSTALL) -m755 $(TARGET) $(libdir)
 
-.PHONY: clean distclean
+.PHONY: clean distclean cvsclean
 
 clean:	
 		rm -f $(TARGET)
@@ -70,5 +70,6 @@ clean:
 		cd Unicode/Blocks; $(MAKE) clean;
 
 distclean:	clean
-		rm -f $(ipath)/Prague/Sys/config.hh
 		cd Examples; $(MAKE) distclean
+
+cvsclean: distclean

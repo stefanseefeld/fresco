@@ -19,63 +19,63 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
+top		= ../../..
+cpath		= $(top)/config
+wpath		= ../../../idl
+rpath		= $(lpath)
 
+include $(cpath)/local.mk
+include $(cpath)/Clients-Python/local.mk
 
-cpath	= ../../../config
-wpath	= ../../../idl
-ipath	= ../../../include
-lpath	= ../../../lib
-dpath	= dep
-opath	= obj
-rpath	= $(lpath)
+IDLPY		= omniidl
+IDLPYFLAGS	= -I$(wpath) -nf -bpython# -Wbglobal=Warsaw
+IDLDYNFLAGS	= 
 
-#include $(cpath)/local.mk
-IDL	= omniidl
-IDLFLAGS= -I$(wpath) -nf -bpython# -Wbglobal=Warsaw
+DYNINT		= Types.idl
+STATINT		= RefCountBase.idl Identifiable.idl ClientContext.idl \
+		  Server.idl Kit.idl Transform.idl Region.idl \
+		  Allocation.idl Traversal.idl PickTraversal.idl \
+		  DrawTraversal.idl Graphic.idl Screen.idl Input.idl \
+		  Focus.idl DrawingKit.idl Figure.idl Image.idl \
+		  FigureKit.idl Grid.idl Viewport.idl Stage.idl \
+		  LayoutKit.idl Command.idl CommandKit.idl Subject.idl \
+		  Observer.idl Controller.idl View.idl Telltale.idl \
+		  BoundedValue.idl BoundedRange.idl TextBuffer.idl \
+		  StreamBuffer.idl Selection.idl Trigger.idl \
+		  ToolKit.idl Choice.idl  WidgetKit.idl GadgetKit.idl \
+		  TextKit.idl Raster.idl ImageKit.idl Desktop.idl \
+		  Window.idl DesktopKit.idl
 
-DYNINT	= Types.idl
-STATINT	= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl Kit.idl \
-	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
-	  Input.idl Focus.idl \
-	  DrawingKit.idl \
-	  Figure.idl Image.idl FigureKit.idl \
-	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
-	  Command.idl CommandKit.idl \
-	  Subject.idl Observer.idl Controller.idl View.idl \
-	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl Selection.idl \
-	  Trigger.idl ToolKit.idl \
-	  Choice.idl  WidgetKit.idl GadgetKit.idl \
-	  TextKit.idl \
-	  Raster.idl ImageKit.idl \
-	  Desktop.idl Window.idl DesktopKit.idl
+INT		= $(DYNINT) $(STATINT) $(LCINT)
 
-INT	= $(DYNINT) $(STATINT) $(LCINT)
+#DYNSRC		= $(patsubst %.idl, %DynSK.py, $(DYNINT))
+DYNSTATSRC 	= $(patsubst %.idl, %_idl.py, $(DYNINT)) 
+STATSRC		= $(patsubst %.idl, %_idl.py, $(STATINT))
 
-#DYNSRC	= $(patsubst %.idl, %DynSK.py, $(DYNINT))
-DYNSTATSRC = $(patsubst %.idl, %_idl.py, $(DYNINT)) 
-STATSRC	= $(patsubst %.idl, %_idl.py, $(STATINT))
-
-SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC)
-CMP	= $(patsubst %.py, %.pyc, $(SRC))
+SRC		= $(DYNSRC) $(DYNSTATSRC) $(STATSRC)
+CMP		= $(patsubst %.py, %.pyc, $(SRC))
 
 vpath %.d $(dpath)
 
 world:	$(SRC)
 
 $(STATSRC): %_idl.py:		$(wpath)/Warsaw/%.idl
-		$(IDL) $(IDLFLAGS) $<
+	$(IDLPY) $(IDLPYFLAGS) $<
+
 $(DYNSTATSRC): %_idl.py: 	$(wpath)/Warsaw/%.idl
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
+
 $(DYNSRC): %DynSK.py:	$(wpath)/Warsaw/%.idl
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
 
 clean:	
-		rm -rf $(SRC) $(CMP) Input Figures POA_* Warsaw *~
+	rm -rf $(SRC) $(CMP) Input Figure Warsaw Layout *__POA *~
 
 distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(dpath)
+	rm -f $(TARGET)
+	rm -rf $(opath) $(dpath)
+
+cvsclean:	distclean
 
 install:
-		install -m755 $(TARGET) $(libdir)
+	install -m755 $(TARGET) $(libdir)

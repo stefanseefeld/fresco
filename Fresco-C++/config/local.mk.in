@@ -1,8 +1,8 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+# http://www.berlin-consortium.org/
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -18,15 +18,19 @@
 # License along with this library; if not, write to the
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
+#
+# @configure_input@
 
-# Build tools specific to Warsaw
-IDL		= @IDL@
+# CORBA specific variables
+ORB			= @ORB@
+ORB_CPPFLAGS		= @ORB_CPPFLAGS@
+ORB_LIBS		= @ORB_LIBS@
+IDLCXX			= @IDLCXX@
+IDLCXXFLAGS		= @IDLCXXFLAGS@
+IDLDYNFLAGS		= @IDLDYNFLAGS@
 
-# Compilation and linking flags.
-IDLFLAGS	= @IDLFLAGS@
-DYNIDLFLAGS	= @DYNIDLFLAGS@
-ORBFLAGS	= @ORBFLAGS@
-ORBDEFS		= @ORBDEFS@
-ORBCPPFLAGS	= @ORBCPPFLAGS@
-ORBOPTFLAGS	= -fno-default-inline -fomit-frame-pointer -fnonnull-objects
-ORBLIBS		= @ORBLIBS@
+# Other variables
+CPPFLAGS		+= @DEFS@ @CPPFLAGS@
+CXXFLAGS		+= @CXXFLAGS@
+LDFLAGS			+= @LDFLAGS@
+LIBS			+= @LIBS@

@@ -27,16 +27,16 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(../../clients/C++/Makefile)
+AC_INIT($top/clients/C++/Makefile)
 dnl AC_CONFIG_HEADER($top/include/Berlin/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
 dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=.
+top=../..
 cpath=..
-spath=../../src
+spath=$top/src
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
 
@@ -45,28 +45,16 @@ Berlin Clients C++, Berlin C++ clients, dnl
 Berlin_VERSION, $top/include/version.h, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
 
-dnl Load the global options first, then the local ones. The local options
-dnl will then override the global.
-AC_CONFIG_LOAD($cpath/config.param)
-AC_CONFIG_LOAD($cpath/Clients-C++/config.param)
+BERLIN_LIB_CORE(Warsaw)
 
-dnl ------------------------------------------------------------------
-dnl Decisions
-dnl ------------------------------------------------------------------
-
-dnl ------------------------------------------------------------------
-dnl Print a summary of what's going to be built
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Summary)
-dnl AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
-dnl AC_MSG_RESULT([Kits to build:            $tested_drawing_kits $enable_kits])
+dnl Put the Warsaw flags into CPPFLAGS and LIBS here, so that it doesn't
+dnl confuse the other tests
+CPPFLAGS="$CPPFLAGS $WARSAW_CPPFLAGS"
+LIBS="$LIBS $WARSAW_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
-
-AC_MSG_RESULT(Storing configuration in $cpath/Clients-C++/config.param...)
-AC_CONFIG_STORE($cpath/Clients-C++/config.param)
 
 AC_OUTPUT($cpath/Clients-C++/local.mk:$cpath/Clients-C++/local.mk.in)

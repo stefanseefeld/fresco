@@ -19,36 +19,52 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	:= /bin/sh
+top	= .
+cpath	= ./config
 
-top	:= .
-cpath	:= ./config
-
-#
-# define which package subdirs to traverse
-#
-subdirs	=
+ifeq (,$(findstring $(MAKECMDGOALS), reconf))
+SUBDIRS =
+PACKAGES =
 -include $(cpath)/packages.mk
-praguedir = src/Prague
+endif
 
-define makeconf
-(cd config && $(MAKE) -j1 $(MAKECMDGOALS)) || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; test -z "$$fail"
-endef
+# Overridden by the clean-targets, allowing the same subdirs-rule to be used
+# for everything.
+ACTION	=
 
+.PHONY: world subdirs $(SUBDIRS) config reconf
+.PHONY: depclean clean clean-no-prague distclean cvsclean
 
-.PHONY:	config depclean clean distclean install dist
+world:
+	$(MAKE) -j1 -C config
+	$(MAKE) subdirs
 
-world: all
+# Neat trick from make's info page -- under "Phony Targets".
+subdirs: $(SUBDIRS)
 
-all: $(cpath)/packages.mk
-	@$(makeconf)
-	@for dir in $(subdirs); do \
-		(cd $$dir && $(MAKE)) \
-		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"; \
+$(SUBDIRS):
+	$(MAKE) -C $@ $(ACTION)
 
-$(cpath)/packages.mk:
-	@$(makeconf)
+#
+# Dependencies between subdirs. Might be useful when doing a massive
+# parallell-make or when the packages are listed in the wrong order...
+#
+ifeq (Server, $(findstring Server, $(PACKAGES)))
+
+ifeq (Warsaw, $(findstring Warsaw, $(PACKAGES)))
+src/Berlin: src/Warsaw
+endif
+
+ifeq (Prague, $(findstring Prague, $(PACKAGES)))
+src/Berlin: src/Prague
+endif
+
+$(KIT_SUBDIRS): src/Berlin
+
+# Does the server binary actually depend on the kits? If so, add $(KIT_SUBDIRS)
+server: src/Berlin
+
+endif
 
 depclean:
 	find -name '*.d' -exec rm -f \{\} \;
@@ -56,51 +72,25 @@ depclean:
 #
 # removes everything but config stuff
 #
-clean:
-	@for dir in $(subdirs); do \
-	  (cd $$dir && $(MAKE) clean) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+clean distclean cvsclean:
+	$(MAKE) subdirs ACTION="$@"
 	for dir in modules lib; do \
-	  find $$dir -name '*.so' -exec rm -f \{\} \; ; \
+		find $$dir -name '*.so' -exec rm -f \{\} \; ; \
 	done
-
+	$(MAKE) -j1 -C config $@
 #
 # removes everything but config and Prague
 #
 clean-no-prague:
-	  @for dir in $(subdirs); do \
-	    if [ $$dir = "src/Prague" ]; then continue ; fi ;\
-	    (cd $$dir && $(MAKE) clean) \
-	    || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	  done && test -z "$$fail"
-	  for dir in modules lib; do \
-	    find $$dir -name '*.so' -exec rm -f \{\} \; ; \
-	  done
+	$(MAKE) subdirs ACTION="clean" \
+		SUBDIRS="$(filter-out src/Prague, $(SUBDIRS))"
+	for dir in modules lib ; do \
+		find $$dir -name '*.so' -exec rm -f \{\} \; ; \
+	done
+	$(MAKE) -j1 -C config clean
 
+# 
+# Forces a reconfiguration
 #
-# removes only config related files
-#
-clean-config:
-	( cd config && make clean ) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-
-#
-# removes config related data
-#
-distclean:	clean
-	@$(makeconf)
-
-dist:	distclean
-	@$(makeconf)
-
-#install: all
-#	@for dir in ${subdirs}; do \
-#	  (cd $$dir && $(MAKE) install); \
-#	done
-
-#debs:
-#	dpkg-buildpackage -rfakeroot -uc -us
-
-config:
-	@$(makeconf)
+reconf:
+	$(MAKE) -j1 -C config reconf

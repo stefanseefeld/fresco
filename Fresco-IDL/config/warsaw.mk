@@ -23,4 +23,5 @@
 # specify how the entry point(s) to this package's make
 #
 
-subdirs += src/Warsaw
+SUBDIRS += src/Warsaw
+PACKAGES += Warsaw

@@ -19,26 +19,26 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
-top     = ../..
-cpath   = $(top)/config
-hpath   = $(top)/include/Command
+top     	= ../..
+cpath   	= $(top)/config
+hpath   	= $(top)/include/Command
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
-SRC 	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc SelectionImpl.cc TextBufferImpl.cc StreamBufferImpl.cc CommandKitImpl.cc
-#ReactorImpl.cc
+SRC 		= \
+	BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc \
+	SelectionImpl.cc TextBufferImpl.cc StreamBufferImpl.cc \
+	CommandKitImpl.cc # ReactorImpl.cc
 
-TARGET	= $(mpath)/libCommand.so
+MODULE		= Command
+
+all: world
 
 vpath %.d $(dpath)
-vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Command
+vpath %.hh $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Command
 
 include $(cpath)/module.mk
-

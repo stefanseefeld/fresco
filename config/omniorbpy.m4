@@ -29,7 +29,6 @@ AC_DEFUN([BERLIN_OMNIORBPY_CHECK],[
 	AC_ARG_WITH(omniorbpy-prefix,
 		[  --with-omniorbpy-prefix  Prefix for omniORBpy],[
 		omniorbpy_prefix="$withval"])
-	AC_REGISTER_PARAM(omniorbpy_prefix)
 
 	dnl Check for omniidl. Should we check in
 	dnl $omniorb_prefix/bin/<arch>, too?

@@ -19,25 +19,24 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
-top	= ../../..
-cpath	= $(top)/config
+top		= ../../..
+cpath		= $(top)/config
+hpath		= $(ipath)/Drawing/libArt
 
 include $(cpath)/local.mk
 include $(cpath)/Server/local.mk
 
-hpath	= $(ipath)/Drawing/libArt
-
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(LIBART_INCLUDES) $(FREETYPE_INCLUDES) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(LIBART_LIBS) $(FREETYPE_LIBS)
+CPPFLAGS	+= $(LIBART_INCLUDES) $(FREETYPE_INCLUDES)
+LIBS		+= -lBerlin $(LIBART_LIBS) $(FREETYPE_LIBS)
 
-SRC	= LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc LibArtDrawingKit.cc 
-TARGET	= $(mpath)/libArtDrawing.so
+SRC		= \
+	LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc LibArtDrawingKit.cc 
 
-vpath %.d $(dpath)
+MODULE		= ArtDrawing
+
+all: world
+
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Drawing/libArt
 
 include $(cpath)/module.mk

@@ -26,15 +26,18 @@ cpath	= $(top)/config
 hpath	= $(top)/include/Widget/Motif
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
-SRC	= Gauge.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc Terminal.cc WidgetKit.cc
+SRC		= \
+	Gauge.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc \
+	Terminal.cc WidgetKit.cc
 
-TARGET	= $(mpath)/libMotif.so
+MODULE		= Motif
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Widget/Motif

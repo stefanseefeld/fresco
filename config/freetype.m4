@@ -19,12 +19,12 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_FREETYPE_CHECK
+dnl BERLIN_LIB_FREETYPE
 dnl
 dnl Checks if FreeType is found.  If it is, $ac_cv_lib_freetype is
 dnl set to "yes".
 
-AC_DEFUN([BERLIN_FREETYPE_CHECK],[
+AC_DEFUN([BERLIN_LIB_FREETYPE],[
 
 	AC_LANG_SAVE
 	AC_LANG_CPLUSPLUS
@@ -32,7 +32,6 @@ AC_DEFUN([BERLIN_FREETYPE_CHECK],[
 	AC_ARG_WITH(freetype-prefix,
 		[  --with-freetype-prefix  Prefix for Freetype],[
 		freetype_prefix="$withval"])
-	AC_REGISTER_PARAM(freetype_prefix)
 
 	dnl Check for Freetype includes.
 	if test ".$freetype_prefix" != . ; then

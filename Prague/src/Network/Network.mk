@@ -46,7 +46,9 @@ networkclean:
 ifneq ($(MAKECMDGOALS),config) 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
+ifneq ($(MAKECMDGOALS),cvsclean) 
 -include $(NTW_DEP)
+endif
 endif 
 endif 
 endif 

@@ -19,54 +19,12 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
+top		= ../..
+cpath		= ..
+m4path		= $(cpath)/macros
+EXTRA_MKS	= PragueConf.sh PragueConf-u.sh
+CONFIG_HH	= $(ipath)/Prague/Sys/config.hh
 
-top	= ../..
-cpath	= $(top)/config
+all: world
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))
-include $(top)/config/local.mk
-endif
-
-define makeconf
-echo Running configure $$CONFIGURE_OPTS...
-./configure $$CONFIGURE_OPTS
-endef
-
-.PHONY: config clean distclean dist
-.FORCE:
-
-world:	local.mk
-
-config: .FORCE configure
-	@$(makeconf)
-
-local.mk: configure local.mk.in
-	@$(makeconf)
-
-configure: configure.in aclocal.m4
-	@echo Running autoconf...
-	@autoconf
-
-aclocal.m4: $(cpath)/macros/*.m4
-	@echo Running aclocal...
-	@(aclocal -I $(cpath)/macros || cat $(cpath)/macros/*.m4 > aclocal.m4)
-
-clean:	
-	rm -f *~ local.mk config.log config.status
-
-distclean:	clean
-	rm -f configure config.cache config.param
-
-ifeq ($(MAKECMDGOALS), dist)
-include dist.mk
-
-dist:	distclean
-	@echo "Generating Prague-$(major).$(minor).$(patch).tar.gz"
-	@cat $(cpath)/archive > archive
-	@for file in $(archive); do echo Berlin/$$file >> archive; done
-	@(cd $(top)/.. && tar -czf Prague-$(major).$(minor).$(patch).tar.gz \
-	  --files-from Berlin/config/Prague/archive --exclude='CVS')
-	@rm archive
-
-endif
+include $(cpath)/config-rules.mk

@@ -19,8 +19,6 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ../../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Drawing/openGL
@@ -29,16 +27,17 @@ include $(cpath)/local.mk
 include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(GL_INCLUDES) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(GL_LIBS) #-lFT
+CPPFLAGS	+= $(GL_INCLUDES)
+LIBS		+= -lBerlin $(GL_LIBS) #-lFT
 
 #SRC	= GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc
-
 #SRC	= FontServer.cc GLRaster.cc GLQuadric.cc GLDrawingKit.cc #GLPixmapFont.cc
-SRC	= GLRaster.cc GLUnifont.cc GLQuadric.cc GLDrawingKit.cc 
 
-TARGET	= $(mpath)/libGLDrawing.so
+SRC		= GLRaster.cc GLUnifont.cc GLQuadric.cc GLDrawingKit.cc 
+
+MODULE		= GLDrawing
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Drawing/openGL

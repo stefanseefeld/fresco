@@ -19,69 +19,24 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
-top	= ../..
-cpath	= $(top)/config
-ipath	= $(top)/include
-lpath	= $(top)/lib
-mpath	= $(top)/modules
-dpath	= dep
-opath	= obj
-gpath	= gdb
-ppath	= prf
-rpath	= $(lpath)
+top		= ../..
+cpath		= $(top)/config
 
 include $(cpath)/local.mk
+include $(cpath)/Clients-C++/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-CXXFLAGS= -pthread -Wall $(OPTFLAGS)
-LDFLAGS	= -L$(lpath)
-LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
-DEMO =	  Application.cc LayoutDemo.cc TextDemo.cc EditTextDemo.cc RasterDemo.cc TransformDemo.cc ColorDemo.cc LogoDemo.cc \
-	  FocusDemo.cc ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
-DEP	= $(patsubst %.cc, $(dpath)/%.d, $(DEMO))
-OBJ	= $(patsubst %.cc, $(opath)/%.o, $(DEMO))
+CXXFLAGS	+= -Wall $(OPTFLAGS)
+LIBS		+= -lBerlin -lPrague
 
-TARGET	=  demo
+TARGETS		= demo # trafo -- doesn't work here. Anyone?
+demo_SRC	= \
+		  Application.cc LayoutDemo.cc TextDemo.cc \
+		  EditTextDemo.cc RasterDemo.cc TransformDemo.cc \
+		  ColorDemo.cc LogoDemo.cc FocusDemo.cc \
+		  ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
+trafo_SRC	= trafo.cc
 
-world:		$(TARGET)
+all: world
 
-ldlibpath = LD_LIBRARY_PATH=$(lpath)
-
-demo:		$(OBJ)
-		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-
-menu:		$(opath)/Application.o $(opath)/menu.o
-		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-install:	world
-		for i in $(TARGET); do \
-		  install -m755 $$i $(bindir); \
-		done
-
-clean:	
-		rm -f *.o $(opath)/*.o $(dpath)/*.d *~ bb.out gmon.out
-
-distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
-
-$(dpath)/%.d:	%.cc %.hh
-		@echo making dependencies for $<
-		-@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
-		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o : /g" > $@'
-$(opath)/%.o:	%.cc
-		-@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
-
-trafo:		trafo.o
-		g++ -L../../lib -o trafo trafo.o -lBerlin -lWarsaw
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean) 
--include $(DEP)
-endif 
-endif
+include $(cpath)/binary.mk

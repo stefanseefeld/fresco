@@ -19,25 +19,25 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Tool
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
 # Filler.cc Indicator.cc
-SRC	= Beveler.cc Frame.cc Triangle.cc Diamond.cc \
-	  TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
-	  TextInput.cc Terminal.cc ToolKitImpl.cc
+SRC		= \
+	Beveler.cc Frame.cc Triangle.cc Diamond.cc \
+	TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
+	TextInput.cc Terminal.cc ToolKitImpl.cc
 
-TARGET	= $(mpath)/libTool.so
+MODULE		= Tool
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Tool

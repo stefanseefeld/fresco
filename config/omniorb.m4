@@ -1,7 +1,7 @@
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org
+dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -19,12 +19,49 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_OMNIORB_CHECK
+dnl BERLIN_CHECK_LIB(variable, library, func_call, include_files)
 dnl
-dnl Checks if omniORB is found. If it is, $ac_cv_lib_omniORB is
-dnl set to "yes".
+dnl Checks if library is found by doing func_call. Include include_files
+dnl to avoid compilation errors, and add library to variable if successful.
+dnl variable is also used to specify additional libraries or paths.
+dnl
+dnl This functions is meant to address some of the severe limitations of
+dnl autoconf when it comes to handling C++.
+AC_DEFUN([BERLIN_CHECK_LIB],[
 
-AC_DEFUN([BERLIN_OMNIORB_CHECK],[
+	save_LIBS="$LIBS"
+	LIBS="$LIBS $$1 -l$2"
+	changequote(`, ')
+	includes="patsubst(`$4', `\(\w\|\.\|/\)+', `#include <\&>
+')"
+	changequote([, ])
+	AC_CACHE_CHECK("for -l$2",
+		berlin_cv_lib_$2,
+		AC_TRY_LINK($includes,
+			$3, berlin_cv_lib_$2="yes", berlin_cv_lib_$2="no"))
+
+	LIBS="$save_LIBS"
+	if test ".$berlin_cv_lib_$2" = ".yes" ; then
+		$1="$$1 -l$2"
+	fi
+])
+
+dnl
+dnl BERLIN_LIB_OMNIORB
+dnl
+dnl Checks if omniORB is found. If it is, $berlin_cv_lib_omniORB is
+dnl set to "yes". Also make the necessary AC_SUBSTs and DEFINEs.
+
+AC_DEFUN([BERLIN_LIB_OMNIORB],[
+
+	AC_REQUIRE([AC_CANONICAL_SYSTEM])
+	AC_REQUIRE([AC_PROG_CC])
+	AC_REQUIRE([AC_PROG_CXX])
+	AC_REQUIRE([AC_PROG_CPP])
+	AC_REQUIRE([AC_PROG_CXXCPP])
+ 	AC_REQUIRE([BERLIN_LIB_PTHREAD])
+	AC_REQUIRE([BERLIN_LIB_SOCKET])
+dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 
 	AC_LANG_SAVE
 	AC_LANG_CPLUSPLUS
@@ -32,16 +69,17 @@ AC_DEFUN([BERLIN_OMNIORB_CHECK],[
 	AC_ARG_WITH(omniorb-prefix,
 		[  --with-omniorb-prefix  Prefix for omniORB],[
 		omniorb_prefix="$withval"])
-	AC_REGISTER_PARAM(omniorb_prefix)
 
 	dnl Check for omniidl. Should we check in
 	dnl $omniorb_prefix/bin/<arch>, too?
-	if test x$omniorb_prefix != x ; then
-		omniorb_path=$omniorb_prefix/bin:$PATH
+	if test ".$omniorb_prefix" != "." ; then
+		omniorb_path="$omniorb_prefix/bin:$PATH"
+		ORB_LIBS="-L$omniorb_prefix/lib"
+		ORB_CPPFLAGS="-I$omniorb_prefix/include"
 	else
-		omniorb_path=$PATH
+		omniorb_path="$PATH"
 	fi
-	AC_PATH_PROG(OMNIIDL, omniidl, no, $omniorb_path)
+	AC_PATH_PROG(IDLCXX, omniidl, no, $omniorb_path)
 
 	dnl Get system information we pass in CPPFLAGS
 	dnl This is according to "The omniORB2 version 2.8.0 User's Guide"
@@ -50,98 +88,72 @@ AC_DEFUN([BERLIN_OMNIORB_CHECK],[
 	dnl based on looking at config.guess
 	case $host_cpu in
 		sparc)
-			omniorb_defs=-D__sparc__
 			AC_DEFINE(__sparc__)
 			;;
 		i*86)
-			omniorb_defs=-D__x86__
 			AC_DEFINE(__x86__)
 			;;
 		alpha*)
-			omniorb_defs=-D__alpha__
 			AC_DEFINE(__alpha__)
 			;;
 		hppa*)
-			omniorb_defs=-D__hppa__
 			AC_DEFINE(__hppa__)
 			;;
 		powerpc)
-			omniorb_defs=-D__powerpc__
 			AC_DEFINE(__powerpc__)
 			;;
 		vax)
-			omniorb_defs=-D__vax__
 			AC_DEFINE(__vax__)
 			;;
 		mips*)
-			omniorb_defs=-D__mips__
 			AC_DEFINE(__mips__)
 			;;
 		arm)
-			omniorb_defs=-D__arm__
 			AC_DEFINE(__arm__)
 			;;
 		m68k)
-			omniorb_defs=-D__m68k__
 			AC_DEFINE(__m68k__)
 			;;
 		*)
 			AC_MSG_WARN(Unknown CPU type $host_cpu.)
 			AC_MSG_WARN(Please check the omniORB documentation to see if your CPU type is supported,)
-			AC_MSG_WARN(and update macros/omniorb.m4)
+			AC_MSG_WARN(and update config/Warsaw/macros/omniorb.m4)
 			;;
 	esac
 
 	case $host_os in
 		linux*)
-			omniorb_defs="$omniorb_defs -D__linux__"
 			AC_DEFINE(__linux__)
 			;;
 		solaris*)
-			dnl Some of these definitions should probably be moved
-			dnl somewhere else...
-			omniorb_defs="-DUsePthread -D_REENTRANT $omniorb_defs -D__sunos__"
 			AC_DEFINE(__sunos__)
-			AC_DEFINE(UsePthread)
-			AC_DEFINE(_REENTRANT)
 			;;
 		osf1)
-			omniorb_defs="$omniorb_defs -D__osf1__"
 			AC_DEFINE(__osf1__)
 			;;
 		hpux*)
-			omniorb_defs="$omniorb_defs -D__hpux__"
 			AC_DEFINE(__hpux__)
 			;;
 		aix*)
-			omniorb_defs="$omniorb_defs -D__aix__"
 			AC_DEFINE(__aix__)
 			;;
 		winnt*)
 			dnl Seems like Windows uses winnt*, cygwin32
 			dnl or mingw32. Don't know which is which...
-			omniorb_defs="$omniorb_defs -D__NT__ -D__WIN32__"
 			AC_DEFINE(__NT__)
 			AC_DEFINE(__WIN32__)
 			;;
 		irix*)
-			omniorb_defs="$omniorb_defs -D__irix__"
 			AC_DEFINE(__irix__)
 			;;
 		nextstep*)
-			omniorb_defs="$omniorb_defs -D__nextstep__"
 			AC_DEFINE(__nextstep__)
 			;;
 		sysv4.2uw*)
-			omniorb_defs="$omniorb_defs -D__uw7__"
 			AC_DEFINE(__uw7__)
 			;;
 		freebsd*)
-			omniorb_defs="$omniorb_defs -D__freebsd__"
-			omniorb_defs="$omniorb_defs -D_REENTRANT -D_THREAD_SAFE"
 			AC_DEFINE(__freebsd__)
-			AC_DEFINE(_REENTRANT)
-			AC_DEFINE(_THREAD_SAFE)
 			;;
 		*)
 			AC_MSG_WARN(Unknown OS $host_os.)
@@ -153,84 +165,39 @@ AC_DEFUN([BERLIN_OMNIORB_CHECK],[
 	dnl Don't know if this is portable...
 	os_major_version=[`uname -r | cut -d '.' -f 1`]
 dnl	os_major_version=2
-	omniorb_defs="$omniorb_defs -D__OSVERSION__=$os_major_version"
 	AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version)
 
 	dnl Check for omniORB includes
-	if test x$omniorb_prefix != x ; then
-		omniorb_includes=-I$omniorb_prefix/include
-	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$omniorb_defs $omniorb_includes $CPPFLAGS"
+	CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"
 	AC_CHECK_HEADER(omniORB3/CORBA.h,,no_omniorb=yes)
+
+	dnl Check for omniORB libraries
+	if test ".$no_omniorb" = "." ; then
+		BERLIN_CHECK_LIB(ORB_LIBS, omnithread, [omni_mutex my_mutex],
+			omnithread.h)
+		dnl Hard to check the GateKeeper lib because of circular
+		dnl dependency between it and libomniORB3
+		ORB_LIBS="$ORB_LIBS -ltcpwrapGK"
+		BERLIN_CHECK_LIB(ORB_LIBS, omniDynamic3, [CORBA::Any_var any;],
+			omniORB3/CORBA.h)
+		BERLIN_CHECK_LIB(ORB_LIBS, omniORB3, [CORBA::ORB_var orb],
+			omniORB3/CORBA.h)
+	fi
+
 	CPPFLAGS="$save_CPPFLAGS"
 
-	dnl Check for omniORB libs
-	if test x$no_omniorb = x ; then
-		
-		if test x$omniorb_prefix != x ; then
-			omniorb_libs=-L$omniorb_prefix/lib
-		fi
-		omniorb_libs="$omniorb_libs -lomniORB3 -lomnithread -ltcpwrapGK"
-		case $host_os in
-			solaris2.6)
-				omniorb_libs="$omniorb_libs -lomniDynamic3 -lpthread -lposix4 -lsocket -lnsl"
-				;;
-			freebsd*)
-				omniorb2_libs="$omniorb_libs -lomniDynamic3 -pthread"
-				;;
-		esac
-
-		AC_CACHE_CHECK([for working omniORB environment],
-		ac_cv_lib_omniORB, [
-
-		save_LDFLAGS="$LDFLAGS"
-		save_CPPFLAGS="$CPPFLAGS"
-		LDFLAGS="$omniorb_libs $LDFLAGS"
-		CPPFLAGS="$omniorb_defs $omniorb_includes $CPPFLAGS"
-		
-		dnl Check if everything works
-		AC_TRY_RUN([
-#include <omniORB3/CORBA.h>
-#include <stdio.h>
-
-int
-main (int argc, char* argv[])
-{
-	try {
-		CORBA::ORB_ptr orb
-			= CORBA::ORB_init (argc, argv, "omniORB3");
-
-		/* Check if the name server is up and running */
-		CORBA::Object_var object;
-		try {
-			object = orb->resolve_initial_references
-				("NameService");
-		} catch (const CORBA::Exception& e) {
-			puts("Warning: No Name Service running! ");
-		}
-	} catch (...) {
-		return 1;
-	}
-
-	return 0;
-}
-			], ac_cv_lib_omniORB=yes,
-			   ac_cv_lib_omniORB=no,
-			   ac_cv_lib_omniORB=yes)
-
-		CPPFLAGS="$save_CPPFLAGS"
-		LDFLAGS="$save_LDFLAGS"
-
-		]) dnl End of AC_CACHE_CHECK
-
+	if test ".$berlin_cv_lib_omniORB3" = ".yes" \
+		-a ".$berlin_cv_lib_omniDynamic3" = ".yes" \
+		-a ".$berlin_cv_lib_omnithread" = ".yes" ; then
+		berlin_cv_lib_omniORB="yes"
+	else
+		ifelse($1,,:,AC_MSG_ERROR([omniORB3 was not found!]))
 	fi
 
-	if test x$ac_cv_lib_omniORB = xyes ; then
-		ORBDEFS="$omniorb_defs"
-		ORBCPPFLAGS="$omniorb_includes"
-		ORBLIBS="$omniorb_libs -lomniDynamic3 -lomniORB3 -lomnithread -ltcpwrapGK"
-	fi
-
+	dnl Additional output variables
+	IDLCXXFLAGS="-bcxx"
+	IDLDYNFLAGS="-Wba"
+	
 	AC_LANG_RESTORE
 ])

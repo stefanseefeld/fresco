@@ -19,25 +19,23 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
-top     = ../..
-cpath   = $(top)/config
-hpath   = $(top)/include/Image
+top     	= ../..
+cpath   	= $(top)/config
+hpath   	= $(top)/include/Image
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin -lpng
+LIBS		+= -lBerlin -lpng -lz
 
-SRC	= PNG.cc RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
+SRC		= PNG.cc RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
 
-TARGET	= $(mpath)/libImage.so
+MODULE		= Image
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Image
 
 include $(cpath)/module.mk
-

@@ -1,7 +1,7 @@
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@users.sourceforge.net>
-dnl http://berlin.benham.net/
+dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
+dnl http://www.berlin-consortium.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -20,65 +20,57 @@ dnl MA 02139, USA.
 
 dnl ------------------------------------------------------------------
 
-dnl BERLIN_ORB_CHECK(mandatory-flag)
+dnl BERLIN_LIB_ORB(mandatory-flag)
 dnl
 dnl Try to find a usable ORB. If mandatory-flag is "mandatory", abort if
 dnl none is found.
-dnl For now, only omniORB is supported.
+dnl For now, only omniORB is supported, more to come.
+dnl This macro doesn't check anything by itself. It just delegates it to
+dnl secondary macros, which checks if the specific ORB is available and
+dnl sets ORB_LIBS, ORB_CPPFLAGS, IDLCXX, IDLCXXFLAGS and IDLDYNFLAGS.
+dnl Those variables are AC_SUBSTed here.
 
-AC_DEFUN([BERLIN_ORB_CHECK],[
+AC_DEFUN([BERLIN_LIB_ORB],[
 
 	AC_BEGIN_DECISION([ORB])
-	AC_ARG_WITH(orb,[  --with-orb=NAME         Specify which ORB to use],[dnl
+	AC_ARG_WITH(orb,
+		[  --with-orb=NAME         Specify which ORB to use],[dnl
 		ORB="$withval"],[dnl
-		if test ".$ORB" = . ; then
+		if test ".$ORB" = "." ; then
 			ORB="auto"
 		fi])
-	AC_REGISTER_PARAM(ORB)
 
-	case $ORB in
+	case "$ORB" in
 		omniORB|auto)
-			BERLIN_OMNIORB_CHECK
-			if test ".$ac_cv_lib_omniORB" != .yes; then
-				if test ".$1" = .mandatory; then
-					AC_MSG_ERROR(No supported CORBA environment found!)
-				else
-					ORB="none"
-				fi
+			BERLIN_LIB_OMNIORB
+			if test ".$berlin_cv_lib_omniORB" != ".yes"; then
+				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
 			else
 				ORB=omniORB
 			fi				
 			;;
-		*)
-			if test ".$1" = .mandatory; then
-				AC_MSG_ERROR($ORB is not supported!)
-			else
-				AC_MSG_WARN($ORB is not supported!)
-			fi
-			;;
+ 		*)
+ 			msg="$ORB is not supported (yet)."
+ 			ifelse($1,mandatory,AC_MSG_ERROR($msg),
+ 				AC_MSG_WARN($msg))
+ 			ORB=none
+ 			;;
 	esac
 	
 	case $ORB in
 		omniORB)
 			AC_DECIDE(OMNIORB, [use omniORB])
-
-			IDL="$OMNIIDL"
-dnl			IDLFLAGS="$OMNIIDLFLAGS"
-dnl			DYNIDLFLAGS="$OMNIDYNIDLFLAGS"
-			ORB_IMPL="OMNIORB"
-		;;
+			;;
+		none)
+			AC_DECIDE(NONE, [none found])
+			;;
 	esac
 
 	AC_END_DECISION
 	AC_SUBST(ORB)
-	if test ".$ORB" != .none ; then
-		AC_SUBST(IDL)
-		AC_SUBST(IDLFLAGS)
-		AC_SUBST(DYNIDLFLAGS)
-		AC_DEFINE_UNQUOTED(ORB_IMPL, $ORB_IMPL)
-		AC_SUBST(ORB_IMPL)
-		AC_SUBST(ORBDEFS)
-		AC_SUBST(ORBCPPFLAGS)
-		AC_SUBST(ORBLIBS)
-	fi
+	AC_SUBST(ORB_CPPFLAGS)
+	AC_SUBST(ORB_LIBS)
+	AC_SUBST(IDLCXX)
+	AC_SUBST(IDLCXXFLAGS)
+	AC_SUBST(IDLDYNFLAGS)
 ])

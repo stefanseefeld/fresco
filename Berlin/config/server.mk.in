@@ -23,5 +23,6 @@
 # specify how the entry point(s) to this package's make
 #
 
-subdirs += @BERLIN@ @KITS@ @SERVER@
-
+KIT_SUBDIRS = @KITS@
+SUBDIRS	+= @BERLIN@ $(KIT_SUBDIRS) @SERVER@
+PACKAGES += Server

@@ -19,8 +19,6 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Berlin
@@ -28,23 +26,25 @@ hpath	= $(top)/include/Berlin
 include $(cpath)/local.mk
 include $(cpath)/Server/local.mk
 
-# Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS) $(CON_INCLUDES)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague $(CON_LIBS) #$(ORBLIBS)
+# Extra compilation and linking flags.
+CPPFLAGS	+= $(CON_INCLUDES)
+LIBS		+= $(CON_LIBS)
 
-SRC 	= Console.cc Pointer.cc Logger.cc ServantBase.cc IdentifiableImpl.cc RefCountBaseImpl.cc \
-	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc Provider.cc \
-	  GraphicImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
-	  DrawTraversalImpl.cc PickTraversalImpl.cc \
-	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
-	  PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc \
-	  SubjectImpl.cc KitImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc
+SRC	= \
+	Console.cc Pointer.cc Logger.cc ServantBase.cc IdentifiableImpl.cc \
+	RefCountBaseImpl.cc RegionImpl.cc TransformImpl.cc TraversalImpl.cc \
+	AllocationImpl.cc Provider.cc GraphicImpl.cc MonoGraphic.cc \
+	PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
+	DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
+	DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
+	PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
+	KitImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc
 
-TARGET	= $(lpath)/libBerlin.so
+MODULE	= Berlin
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin
 
 include $(cpath)/library.mk
-

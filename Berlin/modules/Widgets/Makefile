@@ -21,30 +21,31 @@
 
 SHELL	= /bin/sh
 
-subdirs = Motif
+SUBDIRS = Motif
 
-all:
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE)) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+ACTION	=
+
+.PHONY: world subdirs $(SUBDIRS) clean distclean cvsclean
+
+world: subdirs
+
+subdirs: $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@ $(ACTION)
 
 clean:
 	/bin/rm -f *~
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) clean) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+	$(MAKE) subdirs ACTION="$@"
 
-distclean: clean
-	/bin/rm -f $(cpath)/config.cache $(cpath)/config.log
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) distclean) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+distclean:
+	/bin/rm -f *~
+	$(MAKE) subdirs ACTION="$@"
+
+cvsclean:
+	/bin/rm -f *~
+	$(MAKE) subdirs ACTION="$@"
 
 install:
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE) install); \
-	done
+	$(MAKE) subdirs ACTION="$@"
 

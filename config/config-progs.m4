@@ -23,3 +23,26 @@ dnl This file just contains macros to find various <whatever>-config scripts
 AC_DEFUN([BERLIN_PROG_GNOME_CONFIG],[
 	AC_PATH_PROG(GNOME_CONFIG, gnome-config)
 ])
+
+dnl
+dnl BERLIN_PROG_BERLIN_CONFIG(cpath)
+dnl
+dnl Checks for berlin-config, first in cpath, if given, then in
+dnl $BERLIN_ROOT/bin:$PATH
+AC_DEFUN([BERLIN_PROG_BERLIN_CONFIG],[
+
+	if ! test ".$cpath" = "." ; then
+		AC_PATH_PROG(BERLIN_CONFIG, berlin-config, "not found", $cpath)
+	fi
+	if test ".$BERLIN_CONFIG" = ".not found" ; then
+		if test ".$BERLIN_ROOT" = "." ; then
+			bcpath="$PATH"
+		else
+			bcpath="$BERLIN_ROOT/bin:$PATH"
+		fi
+		AC_PATH_PROG(BERLIN_CONFIG, berlin-config, "not found", $bcpath)
+	fi
+	if test ".$BERLIN_CONFIG" = ".not found" ; then
+		AC_MSG_ERROR(berlin-config was not found)
+	fi
+])

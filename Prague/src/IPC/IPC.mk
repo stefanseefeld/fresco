@@ -50,7 +50,9 @@ ipcclean:
 ifneq ($(MAKECMDGOALS),config) 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
+ifneq ($(MAKECMDGOALS),cvsclean)
 -include $(IPC_DEP)
+endif
 endif 
 endif 
 endif 

@@ -19,22 +19,21 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Gadget
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
-SRC	= GadgetKitImpl.cc
+SRC		= GadgetKitImpl.cc
 
-TARGET	= $(mpath)/libGadget.so
+MODULE		= Gadget
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Gadget

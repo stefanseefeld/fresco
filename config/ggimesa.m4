@@ -19,11 +19,11 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_GGIMESA_CHECK(mandatory-flag)
+dnl BERLIN_LIB_GGIMESA(mandatory-flag)
 dnl
 dnl Checks if GGIMesa is found. If it is, $ac_cv_lib_GGIMesa is set to "yes".
 
-AC_DEFUN([BERLIN_GGIMESA_CHECK],[
+AC_DEFUN([BERLIN_LIB_GGIMESA],[
 
 	AC_LANG_SAVE
 	AC_LANG_C

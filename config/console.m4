@@ -33,7 +33,6 @@ AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 		if test ".$CON_IMPL" = . ; then
 			CON_IMPL="auto"
 		fi])
-	AC_REGISTER_PARAM(CON_IMPL)
 
 	case $CON_IMPL in
 		GGI|auto)

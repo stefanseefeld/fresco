@@ -27,16 +27,16 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(../../src/Berlin/Makefile)
-AC_CONFIG_HEADER(../../include/Berlin/config.hh)
+AC_INIT($top/src/Berlin/Makefile)
+AC_CONFIG_HEADER($top/include/Berlin/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
 dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=.
+top=../..
 cpath=..
-spath=../../src
+spath=$top/src
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
 
@@ -45,37 +45,16 @@ Berlin Server, The Berlin Server, dnl
 Berlin_VERSION, $top/include/version.h, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
 
-dnl Load the global options first, then the local ones. The local options
-dnl will then override the global.
-AC_CONFIG_LOAD($cpath/config.param)
-AC_CONFIG_LOAD($cpath/Server/config.param)
-
-dnl Required to determine host CPU and OS in BERLIN_ORB_CHECK
-AC_CANONICAL_SYSTEM
-
-dnl needed for other tests to follow
-AC_PROG_CC
- 
-dnl ------------------------------------------------------------------
-dnl CORBA environment
-dnl ------------------------------------------------------------------
-AC_MSG_PART(CORBA Environment)
-
-BERLIN_ORB_CHECK(mandatory)
-
 dnl ------------------------------------------------------------------
 dnl Options controlling what to build
 dnl ------------------------------------------------------------------
 
-dnl The enable_PACKAGE vars might be set in config.param, so set them
-dnl only if they don't exist, or if they are specified by the user.
 AC_ARG_ENABLE(berlin,
 	[  --disable-berlin        Don't build libBerlin],[
 	enable_berlin="$enableval"],[
 	if test ".$enable_berlin" = . ; then
 		enable_berlin=yes
 	fi])
-AC_REGISTER_PARAM(enable_berlin)
 AC_ARG_ENABLE(kits,
 	[  --enable-kits=LIST      Specify which kits to build (default: all)],
 [	if test ".$enableval" = .yes ; then
@@ -86,7 +65,6 @@ AC_ARG_ENABLE(kits,
 	if test ".$enable_kits" = . ; then	
 		enable_kits=all
 	fi])
-AC_REGISTER_PARAM(enable_kits)
 AC_ARG_ENABLE(drawing,
 	[  --enable-drawing=LIST   Specify which DrawingKits to build (default: all)], [
 	if test ".$enableval" = .yes ; then
@@ -97,23 +75,16 @@ AC_ARG_ENABLE(drawing,
 	if test ".$enable_drawing_kits" = . ; then
 		enable_drawing_kits=all
 	fi])
-AC_REGISTER_PARAM(enable_drawing_kits)
 AC_ARG_ENABLE(server,
 	[  --disable-server        Don't build the server],[
 	enable_server="$enableval"],[
 	enable_server=yes])
-AC_REGISTER_PARAM(enable_server)
 
 dnl ------------------------------------------------------------------
-dnl For all enable_PACKAGE=yes, check if it is in the source tree
+dnl Warsaw and Prague
 dnl ------------------------------------------------------------------
-dnl if test ".$enable_berlin" = .yes ; then
-dnl 	if test -d $spath/Berlin ; then
-dnl 		enable_berlin=yes
-dnl 	else
-dnl 		enable_berlin=no
-dnl 	fi
-dnl fi
+BERLIN_LIB_CORE(Warsaw)
+BERLIN_LIB_CORE(Prague)
 
 dnl ------------------------------------------------------------------
 dnl Text rendering
@@ -123,7 +94,7 @@ AC_MSG_PART(Text Rendering)
 dnl Dumb hard-wired check for freetype.  Change this to accept different
 dnl text rendering engines?
 
-BERLIN_FREETYPE_CHECK(mandatory)
+BERLIN_LIB_FREETYPE
 
 dnl ------------------------------------------------------------------
 dnl Graphics environment
@@ -142,6 +113,7 @@ else
 fi
 
 for kit in $enable_drawing_kits ; do
+	echo testing $kit...
 	if test -d $spath/Drawing/$kit ; then
 		eval enable_$kit=yes
 	else
@@ -160,13 +132,13 @@ fi
 
 tested_drawing_kits=
 if test ".$enable_libArt" = .yes ; then
-	BERLIN_LIBART_CHECK
+	BERLIN_LIB_LIBART
 	if test ".$ac_cv_lib_libArt" = .yes ; then
 		tested_drawing_kits="$tested_drawing_kits Drawing/libArt"
 	fi
 fi
 if test ".$enable_openGL" = .yes ; then
-	BERLIN_GGIMESA_CHECK
+	BERLIN_LIB_GGIMESA
 	if test ".$ac_cv_lib_GGIMesa" = .yes ; then
 		tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
 	fi
@@ -225,8 +197,5 @@ dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
-
-AC_MSG_RESULT(Storing configuration in $cpath/Server/config.param...)
-AC_CONFIG_STORE($cpath/Server/config.param)
 
 AC_OUTPUT($cpath/Server/local.mk:$cpath/Server/local.mk.in $cpath/Server/server.mk:$cpath/Server/server.mk.in)

@@ -49,7 +49,9 @@ filterclean:
 ifneq ($(MAKECMDGOALS),config) 
 ifneq ($(MAKECMDGOALS),clean) 
 ifneq ($(MAKECMDGOALS),distclean) 
+ifneq ($(MAKECMDGOALS),cvsclean)
 -include $(FLT_DEP)
+endif
 endif 
 endif 
 endif 

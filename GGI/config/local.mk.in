@@ -19,6 +19,13 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
+# Global flags
+CPPFLAGS	+= @DEFS@ @CPPFLAGS@ @WARSAW_CPPFLAGS@ @PRAGUE_CPPFLAGS@
+CXXFLAGS	+= @CXXFLAGS@
+LDFLAGS		+= @LDFLAGS@
+LIBS		+= @LIBS@ @WARSAW_LIBS@ @PRAGUE_LIBS@
+
+# Flags used by different kits
 CON_INCLUDES	= @CON_INCLUDES@
 CON_LIBS	= @CON_LIBS@
 

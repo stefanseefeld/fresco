@@ -2,7 +2,7 @@
 #
 # This source file is a part of the Berlin Project.
 # Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# http://www.berlin-consortium.org/
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -20,8 +20,10 @@
 # MA 02139, USA.
 
 #
-# set flags, paths and libraries specific to the Prague package
+# Set flags, paths and libraries specific to the Prague package
 #
 
-LIBS	+= @LIBS@ @SOCKET_LIBS@ -lz
-LDFLAGS	+= -shared -rdynamic
+CPPFLAGS	+= @DEFS@ @CPPFLAGS@
+CXXFLAGS	+= @CXXFLAGS@ $(SO_CXXFLAGS)
+LDFLAGS 	+= @LDFLAGS@ $(SO_LDFLAGS)
+LIBS		+= @LIBS@

@@ -34,9 +34,9 @@ dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
 dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=.
+top=../..
 cpath=..
-spath=../../src
+spath=$top/src
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
 
@@ -44,11 +44,6 @@ AC_HEADLINE(dnl
 Berlin Clients Python, Berlin python clients, dnl
 Berlin_VERSION, $top/include/version.h, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
-
-dnl Load the global options first, then the local ones. The local options
-dnl will then override the global.
-AC_CONFIG_LOAD($cpath/config.param)
-AC_CONFIG_LOAD($cpath/Clients-Python/config.param)
 
 dnl ------------------------------------------------------------------
 dnl CORBA environment
@@ -77,8 +72,5 @@ dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
-
-AC_MSG_RESULT(Storing configuration in $cpath/Clients-Python/config.param...)
-AC_CONFIG_STORE($cpath/Clients-Python/config.param)
 
 AC_OUTPUT($cpath/Clients-Python/local.mk:$cpath/Clients-Python/local.mk.in $cpath/Clients-Python/clients-python.mk:$cpath/Clients-Python/clients-python.mk.in)

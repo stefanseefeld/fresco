@@ -19,26 +19,26 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Layout
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
-SRC	=  LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc Deck.cc ShapeOf.cc \
-	   StageImpl.cc ViewportImpl.cc LayoutKitImpl.cc #Backdrop.cc
+SRC		= \
+	LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc \
+	Deck.cc ShapeOf.cc StageImpl.cc ViewportImpl.cc \
+	LayoutKitImpl.cc #Backdrop.cc
 
-TARGET	= $(mpath)/libLayout.so
+MODULE		= Layout
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Layout
 
 include $(cpath)/module.mk
-

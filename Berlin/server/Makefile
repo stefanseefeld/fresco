@@ -19,55 +19,21 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ..
 cpath	= $(top)/config
-ipath	= $(top)/include
-lpath	= $(top)/lib
-mpath	= $(top)/modules
-dpath	= dep
-opath	= obj
-gpath	= gdb
-ppath	= prf
-rpath	= $(lpath)
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))
 include $(cpath)/local.mk
 include $(cpath)/Server/local.mk
-endif
 
-# Compilation and linking flags.
-CPPFLAGS= -I$(ipath)
-CXXFLAGS= -pthread -Wall $(OPTFLAGS)
-LDFLAGS	= -L$(lpath)
-LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
-ldlibpath = LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(lpath)
+# Extra compilation and linking flags.
+CXXFLAGS	+= -Wall $(OPTFLAGS)
+LIBS		+= -lBerlin
 
-world:	server kits
+DISTCLEAN_EXTRA	= server.log
+TARGETS		= server kits
+server_SRC	= server.cc
+kits_SRC	= kits.cc
 
-server:		server.o
-		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
+all: world
 
-kits:		kits.o
-		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
-
-install:	world
-		install -m755 server $(bindir)
-
-clean:	
-		rm -f server.o server.d kits.o *~ bb.out gmon.out
-
-distclean:	clean
-		/bin/rm -f server kits
-
-server.d:	server.cc
-		@echo making dependencies for $<
-		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
-		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@'
-server.o:	server.cc
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
-
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))
--include server.d
-endif
+include $(cpath)/binary.mk

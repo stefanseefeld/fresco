@@ -55,7 +55,9 @@ sysclean:
 ifneq ($(MAKECMDGOALS),config)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean) 
+ifneq ($(MAKECMDGOALS),cvsclean)
 -include $(SYS_DEP)
+endif
 endif 
 endif 
 endif 

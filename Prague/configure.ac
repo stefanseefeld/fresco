@@ -27,14 +27,14 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(../../src/Prague/Sys/DLL.cc)
-AC_CONFIG_HEADER(../../include/Prague/Sys/config.hh)
+AC_INIT($top/src/Prague/Sys/DLL.cc)
+AC_CONFIG_HEADER($top/include/Prague/Sys/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
 dnl know what our AUX_DIR is...
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
-top=.
+top=../..
 cpath=..
 AC_CONFIG_AUX_DIR($cpath)
 AC_DIVERT_POP()
@@ -44,62 +44,56 @@ Prague, The Berlin Utility Library, dnl
 Berlin_VERSION, $top/include/version.h, dnl
 [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>])
 
-dnl Load the global options first, then the local ones. The local options
-dnl will then override the global.
-AC_CONFIG_LOAD($cpath/config.param)
-dnl AC_CONFIG_LOAD($cpath/Prague/config.param)
+SH_VERSION='\$Revision\$'
+AC_SUBST(SH_VERSION)
 
-dnl needed for other tests to follow
-AC_PROG_CC
-
-dnl #
-dnl # general flags
-dnl #
+dnl ------------------------------------------------------------------
+dnl General flags
+dnl ------------------------------------------------------------------
 AC_ARG_ENABLE(tracer,
         [  --enable-tracer        Compile with tracer support],[
         AC_DEFINE(TRACER)])
-AC_REGISTER_PARAM(enable_tracer)
 
-dnl #
-dnl # general stuff first...
-dnl #
 AC_MSG_PART(platform specific system utilities)
 AC_CHECK_FUNCS(strsignal)
 AC_NEED_DECLARATION(strsignal)
-AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(ZLIB), AC_MSG_ERROR(error: update your zlib please))
+AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), AC_MSG_ERROR(update your zlib, please))
 
-dnl #
-dnl # plugin support
-dnl #
+BERLIN_LIB_PTHREAD
+
+dnl ------------------------------------------------------------------
+dnl Plugin support
+dnl ------------------------------------------------------------------
 AC_MSG_PART(Dynamic Loading Implementation)
 
-AC_CHECK_HEADERS(dlfcn.h)
+AC_CHECK_HEADERS(dlfcn.h dl.h)
 AC_CHECK_LIB(dl, dlopen)
-AC_CHECK_FUNCS(dlopen dlsym dlclose)
-AC_CHECK_HEADERS(dl.h)
-AC_CHECK_FUNCS(shl_load)
+AC_CHECK_FUNCS(dlopen dlsym dlclose shl_load)
 AC_BEGIN_DECISION([plugin method])
-AC_IFALLYES(header:dlfcn.h func:dlopen func:dlsym func:dlclose, 
-            AC_DECIDE(DLFCN, [use dlopen family of functions for plugins]))
-AC_IFALLYES(header:dl.h func:shl_load, 
-            AC_DECIDE(DLAIX, [use AIX shm_load for plugins]))
+AC_IFALLYES(header:dlfcn.h func:dlopen func:dlsym func:dlclose,
+	AC_DECIDE(DLFCN, [use dlopen family of functions for plugins]))
+AC_IFALLYES(header:dl.h func:shl_load,
+	AC_DECIDE(DLAIX, [use AIX shm_load for plugins]))
 AC_END_DECISION
-if test x$ac_decision = xDLFCN ; then
+if test ".$ac_decision" = ".DLFCN" ; then
 	AC_DEFINE(HAVE_DLFCN)
 else
 	AC_DEFINE(HAVE_DLAIX)
 fi
 
-dnl #
-dnl # IPC support
-dnl #
+dnl ------------------------------------------------------------------
+dnl IPC support
+dnl ------------------------------------------------------------------
 AC_MSG_PART(IPC Implementation)
-AC_CHECK_HEADERS(sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h)
-PRAGUE_SOCKET_CHECK
+BERLIN_LIB_SOCKET
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Output Substitution)
 
-AC_OUTPUT($cpath/Prague/local.mk:$cpath/Prague/local.mk.in)
+AC_OUTPUT([
+	$cpath/Prague/local.mk:$cpath/Prague/local.mk.in
+	$cpath/Prague/PragueConf.sh:$cpath/Prague/PragueConf.sh.in
+	$cpath/Prague/PragueConf-u.sh:$cpath/Prague/PragueConf-u.sh.in
+])

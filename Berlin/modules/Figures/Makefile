@@ -19,22 +19,23 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL	= /bin/sh
-
 top	= ../..
 cpath	= $(top)/config
 hpath	= $(top)/include/Figure
 
 include $(cpath)/local.mk
+include $(cpath)/Server/local.mk
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) $(ORBCPPFLAGS)
-LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin
+LIBS		+= -lBerlin
 
-SRC	= FigureImpl.cc PolyFigure.cc Figures.cc ImageImpl.cc Transformer.cc FigureKitImpl.cc
+SRC		= \
+	FigureImpl.cc PolyFigure.cc Figures.cc ImageImpl.cc \
+	Transformer.cc FigureKitImpl.cc
 
-TARGET	= $(mpath)/libFigure.so
+MODULE		= Figure
+
+all: world
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Figure
