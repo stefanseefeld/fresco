@@ -47,9 +47,25 @@ LIBS	= $(ORBLIBS)
 MISC    = get-nameservice-ior
 MISCDEP := $(foreach target,$(MISC),$(dpath)/$(target).d)
 
-TARGET	=  
+TARGET	=  demo
+
+.PHONY: warsaw-modules demo clean distclean
 
 world:		$(TARGET)
+
+demo: nsref.ior warsaw-modules
+
+nsref.ior: get-nameservice-ior
+	./get-nameservice-ior > nsref.ior
+
+warsaw-modules: Warsaw.idl
+	idl2perl -combine -out Warsaw Warsaw.idl
+	mv Warsaw/Warsaw.pm Warsaw/Warsaw.pm.back
+	echo 'use Warsaw::_file_;' > Warsaw/Warsaw.pm
+	cat Warsaw/Warsaw.pm.back >> Warsaw/Warsaw.pm
+
+Warsaw.idl: gen-warsaw-idl.pl $(wildcard $(top)/include/Warsaw/*.idl)
+	gen-warsaw-idl.pl $(top)/include/Warsaw/*.idl
 
 ldlibpath = LD_LIBRARY_PATH=$(lpath)
 
@@ -63,9 +79,11 @@ install:	world
 
 clean:	
 		rm -f *.o $(opath)/*.o $(dpath)/*.d *~ bb.out gmon.out
+		rm -f nsref.ior Warsaw.idl
+		rm -rf Warsaw
 
 distclean:	clean
-		rm -f $(TARGET) $(MISC)
+		rm -f $(MISC)
 		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
 
 # These need a special rule, because they generally have no .hh file
