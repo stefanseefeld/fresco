@@ -49,7 +49,9 @@ dnl General flags
 dnl ------------------------------------------------------------------
 AC_ARG_ENABLE(tracer,
         [  --enable-tracer        Compile with tracer support],[
-        AC_DEFINE(TRACER)])
+        if test ".$enableval" = ".yes"; then
+          AC_DEFINE(TRACER)
+        fi])
 
 AC_MSG_PART(platform specific system utilities)
 AC_CHECK_FUNCS(strsignal)
