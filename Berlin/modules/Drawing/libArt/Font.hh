@@ -43,12 +43,8 @@ public:
   virtual Unistring *subfamily() = 0;
   virtual Unistring *fullname() = 0;
   virtual Unistring *style() = 0;
-//   typedef pair<double,double> step;
-//   typedef pair<step ,ArtPixBuf *> segment;
-//   virtual void segments(const Unistring u, vector<segment> &segs) = 0;
-//   virtual void allocateText(const Unistring &, Graphic::Requisition &) = 0;
   virtual void allocateChar(const Unichar ch, Graphic::Requisition &) = 0;
-  virtual ArtPixBuf *getPixBuf(const Unichar ch) = 0;
+  virtual void getPixBuf(const Unichar ch, ArtPixBuf &) = 0;
 };
 
 #endif

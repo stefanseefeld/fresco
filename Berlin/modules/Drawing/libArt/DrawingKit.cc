@@ -23,6 +23,7 @@
 #include <Warsaw/config.hh>
 #include <Drawing/libArt/LibArtDrawingKit.hh>
 #include <Drawing/libArt/LibArtFTFont.hh>
+#include <Drawing/libArt/LibArtUnifont.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/Providers.hh>
@@ -52,6 +53,7 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
     xres(drawable->resolution(xaxis)),
     yres(drawable->resolution(yaxis)),
     font(new LibArtFTFont(drawable)),
+    unifont(new LibArtUnifont(drawable)),
     rasters(500)
   // textures(100), 
   // tx(0)
@@ -61,9 +63,6 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
   screen.x1 = drawable->width();
   screen.y1 = drawable->height();
   
-  for (int i = 0; i < max_vpath_sz; i++)
-    vpath[i].code = ART_LINETO;
-
   agam = art_alphagamma_new (2.5);
   memvis = ggiOpen("display-memory", NULL);
   if(!memvis) {
@@ -202,32 +201,43 @@ void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
 void LibArtDrawingKit::drawPath(const Path &p) 
 {
   int len = p.length();
-  ArtVpath *tvpath;
-
-  for (int i = 0, j = len - 1; i < len; ++i, --j){
-    // there's a bug in libart; it rasterizes alpha segments
-    // in our "normal" clockwise order incorrectly. so we
-    // are for the time being installing the horrendous hack
-    // of "unclockwising" things. this should _not_ be an issue.
-    // ~FIXME~
-    vpath[i].x = p[j].x; 
-    vpath[i].y = p[j].y;
-  }
+  ArtVpath vpath[fs == outlined ? len : len + 1];
+  ArtVpath *tvpath;  
 
   if (fs == outlined) {
+    for (int i = 0; i < len; ++i){
+      vpath[i].x = p[i].x; 
+      vpath[i].y = p[i].y;
+      vpath[i].code = ART_LINETO;
+    }
+//     if (len == 3) cerr << "open triangle" << endl;
     vpath[0].code = ART_MOVETO_OPEN;
     vpath[len-1].code = ART_END;
+
   } else {
-    // close off filled path
-    vpath[len] = vpath[0];
+    for (int i = 0; i < len; ++i){
+      vpath[i].x = p[i].x; 
+      vpath[i].y = p[i].y;
+      vpath[i].code = ART_LINETO;
+    }
+//     if (len == 3) cerr << "closed triangle" << endl;
     vpath[0].code = ART_MOVETO;
+    vpath[len].x = vpath[0].x;
+    vpath[len].y = vpath[0].y;
     vpath[len].code = ART_END;
   }
+
+//   if (len == 3) {
+//     cerr << "triangle: ";
+//     for (int i = 0; i < 4; i++) {
+//       cerr << "(" << vpath[i].x << "," << vpath[i].y << ") ";
+//     } 
+//     cerr << endl;
+//   }    
   
   ArtDRect locd; ArtIRect loc;
   tvpath = art_vpath_affine_transform(vpath,scaled_affine);
   ArtSVP *svp1 = art_svp_from_vpath (tvpath); 
-
   ArtSVP *svp2 = art_svp_uncross (svp1);
   ArtSVP *svp = art_svp_rewind_uncrossed (svp2, ART_WIND_RULE_ODDEVEN);
 
@@ -244,11 +254,6 @@ void LibArtDrawingKit::drawPath(const Path &p)
   art_svp_free(svp);
   art_svp_free(svp1);
   art_svp_free(svp2);
-
-  // reset damaged code points
-  vpath[0].code = ART_LINETO;
-  vpath[len].code = ART_LINETO;
-  vpath[len-1].code = ART_LINETO;
 }
 
 //void LibArtDrawingKit::drawPatch(const Patch &);
@@ -339,8 +344,12 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
     art_u8 *tab = alphabank[(art_u8)(art_fg & 0x000000ff)];
     art_u8 *eol;
     for (art_u8 *writer = tmp; writer < end_write; reader += skip, writer += skip) {
-      eol = writer + row;
-      while (writer < eol) *writer++ = *(tab + *reader++);      
+      memcpy(writer,reader,row);
+      eol = writer + row;      
+      while (writer < eol) {
+	writer += 3; reader += 3;
+	*writer++ = *(tab + *reader++);      
+      }
     }
     pixbuf->pixels = tmp;
   }
@@ -368,29 +377,64 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
 
 void LibArtDrawingKit::drawText(const Unistring &u) 
 {
-  // presently disabled. 
+  // presently disabled. should delegate to drawChar
 }
 
 void LibArtDrawingKit::drawChar(Unichar c) {
   double x0 = affine[4];
   double y0 = affine[5];
+  int width;
+  int height;
   Graphic::Requisition r;
-  font->allocateChar(c,r);
-  
 
-  affine[4] -= (r.y.natural * r.y.align * affine[2]);
-  affine[5] -= (r.y.natural * r.y.align * affine[3]);        
+  if (c > 127) {
+    unifont->allocateChar(c,r);
+    width = (int) (r.x.maximum * xres);
+    height = (int) (r.y.maximum * yres);
+  } else {
+    font->allocateChar(c,r);
+    FT_Glyph_Metrics metrics;
+    font->getMetrics(c,metrics);
+    width = (int) (metrics.width >> 6);
+    height = (int) (metrics.height >> 6);
+  }
   
-  ArtPixBuf *pb = font->getPixBuf(c);
-  if (pb != 0)
-    rasterizePixbuf(pb);
+  affine[4] -= (r.y.maximum * r.y.align * affine[2]);
+  affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
 
+  int pix = 4;
+  int row = width * pix; 
+  int size = height * row;
+  art_u8 pixels[size];
+  
+  // setup foreground color
+  for (int i = 0; i < row; ++i){
+    pixels[i] = (unsigned char) ((art_fg >> 24) & 0x000000ff);
+    pixels[++i] = (unsigned char) ((art_fg >> 16) & 0x000000ff);
+    pixels[++i] = (unsigned char) ((art_fg >> 8) & 0x000000ff);
+    pixels[++i] = (unsigned char) 0;
+  }
+  for (int i = 0; i < height; ++i) 
+    memcpy (pixels + (i * row), pixels, row);
+  
+  ArtPixBuf *pb = art_pixbuf_new_const_rgba (pixels, width, height, row);  
+  if (c > 127) {
+    unifont->getPixBuf(c,*pb);
+  } else {
+    font->getPixBuf(c,*pb);
+  }
+  rasterizePixbuf(pb);
+  art_pixbuf_free(pb);
   affine[4] = x0;
   affine[5] = y0;
 }
 
 void LibArtDrawingKit::allocateChar(Unichar c, Graphic::Requisition & req) {
-  font->allocateChar(c,req);
+  if (c > 127) {
+    unifont->allocateChar(c,req);
+  } else {
+    font->allocateChar(c,req);
+  }
 }
 
 

@@ -36,11 +36,13 @@
 using namespace Prague;
 
 LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
-  xdpi(drawable->dpi(xaxis)),
-  ydpi(drawable->dpi(yaxis)),
+//   xdpi(drawable->dpi(xaxis)),
+//   ydpi(drawable->dpi(yaxis)),
+  xdpi(96.),
+  ydpi(96.),
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis)),
-  mySize(20)
+  mySize(14)
 {
   if (FT_Init_FreeType( &myLibrary )) {
       cerr << "failed to open freetype library" << endl;
@@ -151,13 +153,29 @@ void LibArtFTFont::setup_size(FT_Face &f) {
   FT_Set_Char_Size
     ( f,                // handle to face object           
       mySize << 6,     // char_width in 1/64th of points  
-       mySize << 6,     // char_height in 1/64th of points 
-      72, 72);
-//       (unsigned int)xdpi,             // horizontal device resolution    
-//       (unsigned int)ydpi );           // vertical device resolution      
+      mySize << 6,     // char_height in 1/64th of points 
+      (unsigned int)xdpi,   // horizontal device resolution    
+      (unsigned int)ydpi ); // vertical device resolution      
 }
 
 bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
+
+  FT_CharMap  found = 0;
+  FT_CharMap  charmap;  
+  for (int n = 0; n < f->num_charmaps; n++ ){
+      charmap = f->charmaps[n];
+      if (charmap->encoding == ft_encoding_unicode) {	
+	found = charmap;
+	break;
+      }
+  }
+  if (!found) { 
+    // no way of translating!
+    return false; 
+  }
+
+  /* now, select the charmap for the face object */
+  if (FT_Set_Charmap( f, found )) return false;
   int idx = FT_Get_Char_Index(f,(unsigned char)c);
   if (FT_Load_Glyph (f,idx,0)) {
     return false;
@@ -165,70 +183,51 @@ bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
   return true;
 }
   
-static inline bool render_pixbuf(ArtPixBuf **pb, 
+static inline bool render_pixbuf(ArtPixBuf &pb, 
 				  FT_GlyphSlot &glyph,
 				  FT_Library &library) {
     
-  // first, render the glyph into an intermediate buffer
-  FT_Bitmap  bit;
-
-  int pixwidth = 4;
-  int left  = FLOOR( glyph->metrics.horiBearingX );
-  int right = CEIL( glyph->metrics.horiBearingX + glyph->metrics.width );
-  int width = TRUNC(right - left);
-  int top    = CEIL( glyph->metrics.horiBearingY );
-  int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
-  int height = TRUNC( top - bottom );
-  
+  // first, render the glyph into an intermediate buffer  
   if ( glyph->format != ft_glyph_format_outline ) return false;
-       
-  int pitch  = (width+3) & -4;
-  int size   = pitch*height;             
-  char   bit_buffer[size];
-  bit.width      = width;
-  bit.rows       = height;
-  bit.pitch      = pitch;
+  int size = pb.width * pb.height;
+  char bit_buffer[size];
+  memset(bit_buffer,0,size);      
+
+  FT_Bitmap  bit;
+  bit.width      = pb.width;
+  bit.rows       = pb.height;
+  bit.pitch      = pb.width;
   bit.pixel_mode = ft_pixel_mode_grays;
   bit.buffer     = bit_buffer;      
 
+  int left  = FLOOR( glyph->metrics.horiBearingX );
+  int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
   FT_Outline_Translate(&glyph->outline, -left, -bottom );    
-  memset( bit_buffer, 0, size );      
   if (FT_Outline_Get_Bitmap( library, &glyph->outline, &bit)) return false;
       
-  // now build a pixbuf
-  unsigned char *pixels = 
-    new unsigned char[size * pixwidth];
-  memset(pixels,0,size * pixwidth);
-  *pb = art_pixbuf_new_const_rgba
-    (pixels, width, height, width * pixwidth);
-  
-  // copy alpha values
-  for (int row = 0; row < height; ++row) 
-    for (int col = 0; col < width; ++col)
-      *(pixels + (((row * width) + col) * pixwidth) + 3) = 
-	*(bit_buffer + (row * pitch) + col);
+  while (--size > -1) 
+    pb.pixels[(size << 2) + 3] = bit_buffer[size];
+
   return true;
 }
 
 
-ArtPixBuf *LibArtFTFont::getPixBuf(const Unichar ch) {
+void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf &pb) {
   FT_Face newface;
   setup_face(newface);
   setup_size(newface);
-  FaceSpec fspec(mySize,FamStyle(myFam,myStyle));
-  CacheSpec cspec(ch,fspec);
-  CacheIter ci = myCache.find(cspec);
-  ArtPixBuf *pb;
-  if (ci == myCache.end()) {
-    if (!load_glyph(ch,newface)) return 0;
-    if (!render_pixbuf(&pb,newface->glyph,myLibrary)) return 0;      
-    myCache.insert(pair<CacheSpec,ArtPixBuf *>(cspec,pb));
-    return pb;
-  } else {
-    return ci->second;
-  }
+  if (!load_glyph(ch,newface)) return;
+  if (!render_pixbuf(pb,newface->glyph,myLibrary)) return;      
 }
 
+void LibArtFTFont::getMetrics(const Unichar ch, FT_Glyph_Metrics &m) {
+  FT_Face newface;
+  setup_face(newface);
+  setup_size(newface);
+  FT_GlyphSlot glyph = newface->glyph;
+  if (!load_glyph(ch,newface)) return;       
+  m = glyph->metrics;
+}
 
 void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
   FT_Face newface;
@@ -236,18 +235,12 @@ void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
   setup_size(newface);
   FT_GlyphSlot glyph = newface->glyph;
   if (!load_glyph(ch,newface)) return;       
-
-  double yscale = yres * 64;
-  double xscale = xres * 64;
-
-  r.x.natural = r.x.minimum = r.x.maximum = ((double)(glyph->metrics.horiAdvance)) / xscale;
+  r.x.natural = r.x.minimum = r.x.maximum = ((double)(glyph->metrics.horiAdvance >> 6)) / xres;
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = ((double)(glyph->metrics.height)) / yscale; 
+  r.y.natural = r.y.minimum = r.y.maximum = ((double)(glyph->metrics.height >> 6)) / yres; 
   r.y.defined = true;
-     
-  double b = glyph->metrics.horiBearingY;
-  double h = glyph->metrics.height;
-  r.y.align = (h == 0.) ? 0. : b/h; 
+  r.y.align = (glyph->metrics.height == 0) ? 0. : 
+    ((double)glyph->metrics.horiBearingY)/((double)glyph->metrics.height); 
 }
 

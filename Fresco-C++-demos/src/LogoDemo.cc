@@ -68,10 +68,12 @@ LogoDemo::LogoDemo(Application *a)
   Coord a = 2000.;
   Vertex offset;
   offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Figure::Vertices path; path.length(3);
+  Figure::Vertices path; path.length(4);
   path[0].x = a/2 + offset.x, path[0].y = + offset.y, path[0].z = offset.z;
   path[1].x = a + offset.x, path[1].y = 0.866*a + offset.y, path[1].z = offset.z;
   path[2].x = offset.x, path[2].y = 0.866*a + offset.y, path[2].z = offset.z;
+  path[3].x = a/2 + offset.x, path[3].y = + offset.y, path[3].z = offset.z;
+
   
   Color red = {1.0, 0.5, 0.5, 0.5};
   Color green = {0.5, 1.0, 0.5, 0.5};

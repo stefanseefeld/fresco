@@ -53,6 +53,5 @@ unsigned long TextChunk::getLength()
 
 void TextChunk::draw(DrawTraversal_ptr dt)
 {
-//   cerr << dt->allocation() << endl;
   DrawingKit_var(dt->kit())->drawChar(myChar);  
 }

@@ -45,7 +45,9 @@
 // multilingual text, albeit not quite as well as certain (ahem) proprietary
 // text systems
 
-LibArtUnifont::LibArtUnifont()
+LibArtUnifont::LibArtUnifont(GGI::Drawable *drawable) :
+  xres(drawable->resolution(xaxis)),
+  yres(drawable->resolution(yaxis))
 {
     char *env = getenv("BERLIN_ROOT");
     if (!env)
@@ -65,33 +67,8 @@ Unistring *LibArtUnifont::subfamily() { return 0;}
 Unistring *LibArtUnifont::fullname() { return 0;}
 Unistring *LibArtUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
 
-void LibArtUnifont::segments(const Unistring u, 
-			     vector<segment> &segs) {
-  unsigned int len = u.length();
-  segs.reserve(len);
-  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
-  int width = 0;
-  int height = 16;
-  int pixwidth = 4;  
- 
-  for(unsigned int idx = 0; idx < len; ++idx) {
-    unsigned int stride = 33;
-    Unichar ch = u[idx];
-    unsigned int base = stride * ch;
-    bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-    width = is_halfwidth ? 8 : 16; 
-    if (cache.find(ch) == cache.end()) {
-      unsigned char *pixels = new unsigned char[width * height * pixwidth];
-      memset(pixels,0,width * height * pixwidth);
-      glyph2pixels(ch,pixels);
-      ArtPixBuf *buf = art_pixbuf_new_const_rgba(pixels, 
-						 width, 
-						 height, 
-						 width * pixwidth);
-      cache.insert(pair<Unichar,ArtPixBuf *>(ch,buf));
-    }
-    segs.push_back(segment(step(width,0),cache[ch]));		   
-  }    
+void LibArtUnifont::getPixBuf(const Unichar ch, ArtPixBuf &pb) {
+  glyph2pixels(ch,pb.pixels);
 }
 
 void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
@@ -119,25 +96,16 @@ void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
   }
 }
 
-void LibArtUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
+void LibArtUnifont::allocateChar(Unichar u, Graphic::Requisition &r)
 {    
-  unsigned char *glyphs = (unsigned char *)glyphmap->addr();
-  
-  int width = 0;
+  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
   int height = 16;
-  
-  for(unsigned int idx = 0; idx < u.length(); idx++) {
-    unsigned int stride = 33;
-    unsigned int base = stride * u[idx];
-    bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-    width += is_halfwidth ? 8 : 16; 
-  }
-  
-  r.x.natural = r.x.minimum = r.x.maximum = width*10.;
+  int width = (glyphs[u * 33] == (unsigned char)0xFF) ? 8 : 16;  
+  r.x.natural = r.x.minimum = r.x.maximum = width / xres;
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = height*10.;
+  r.y.natural = r.y.minimum = r.y.maximum = height / yres;
   r.y.defined = true;
-  r.y.align = 0.;
+  r.y.align = 1.;
 }
 

@@ -25,6 +25,7 @@
 #include <map>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
+#include <Berlin/GGI.hh>
 #include <Warsaw/Graphic.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
@@ -39,7 +40,7 @@ class LibArtUnifont : public LibArtFont
 //. text systems
 {
 public:
-  LibArtUnifont();
+  LibArtUnifont(GGI::Drawable *drawable);
   virtual ~LibArtUnifont();
   virtual unsigned long size();
   virtual void size(unsigned long) {}
@@ -50,10 +51,11 @@ public:
   virtual Unistring *fullname();
   virtual Unistring *style();
 
-  void segments(const Unistring u, vector<segment> &segs);
-  void allocateText(const Unistring &u, Graphic::Requisition &r);
+  virtual void allocateChar(const Unichar ch, Graphic::Requisition &);
+  virtual void getPixBuf(const Unichar ch, ArtPixBuf &);
 protected:
   void glyph2pixels(const Unichar ch, unsigned char *pix);
+  double xres, yres;  
 
   map<Unichar,ArtPixBuf *> cache;
   MMap *glyphmap;

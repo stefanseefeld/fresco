@@ -51,12 +51,8 @@ public:
   virtual Unistring *subfamily();
   virtual Unistring *fullname();
   virtual Unistring *style();
-
-//   void segments(const Unistring u, vector<segment> &segs);
-//   void rasterize(const Unistring u, ArtPixBuf *pixbuf);
-//   void allocateText(const Unistring &u, Graphic::Requisition &r);
-  
-  ArtPixBuf *getPixBuf(const Unichar ch);
+  virtual void getPixBuf(const Unichar ch, ArtPixBuf &);
+  void getMetrics(const Unichar ch, FT_Glyph_Metrics &);
   virtual void allocateChar(Unichar ch, Graphic::Requisition &);
 
 protected:

@@ -30,9 +30,9 @@ LayoutDemo::LayoutDemo(Application *a)
   CommandKit_var command = application->command();
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
-  Graphic_var label1 = text->chunk(Unicode::toCORBA(Unicode::String("first button")));
-  Graphic_var label2 = text->chunk(Unicode::toCORBA(Unicode::String("second button")));
-  Graphic_var label3 = text->chunk(Unicode::toCORBA(Unicode::String("third button")));
+  Graphic_var label1 = tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("first button")))), 0.0,0.0,0.0);
+  Graphic_var label2 = tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("second button")))), 0.0,0.0,0.0);
+  Graphic_var label3 = tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("third button")))), 0.0,0.0,0.0);
   
   Graphic_var hbox = layout->hbox();
   Command_var command1 = command->log("hello World 1");

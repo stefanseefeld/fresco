@@ -24,7 +24,7 @@
 #define _LibArtDrawingKit_hh
 
 #include <Drawing/DrawingKitBase.hh>
-#include <Drawing/libArt/LibArtFont.hh>
+#include <Drawing/libArt/LibArtFTFont.hh>
 #include <Drawing/libArt/LibArtRaster.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/ObjectCache.hh>
@@ -122,8 +122,6 @@ public:
   double affine[6];
   double scaled_affine[6];
 
-  static const int max_vpath_sz = 1024;
-
   Transform_var  tr;
   Region_var     cl;
   Color          fg;
@@ -132,13 +130,13 @@ public:
   Coord          lw;
   Endstyle       es;
   Fillstyle      fs;
-  LibArtFont   *font;
+  LibArtFTFont   *font;
+  LibArtFont   *unifont;
   art_u8 alphabank[256][256];
   ArtAlphaGamma *agam;
   art_u32        art_fg;
   ggi_pixel ggi_fg;
   ArtIRect screen, clip;
-  ArtVpath vpath[max_vpath_sz];
   
   ObjectCache<Raster_var, LibArtRaster> rasters;
 };
