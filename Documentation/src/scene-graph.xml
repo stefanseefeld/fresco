@@ -30,7 +30,8 @@
   </section>
   <section><title>transformational containment</title>
     <para>
-      <!-- talk about transformational containment -->Since the scene graph is actually
+      <!-- talk about transformational containment -->Since the scene graph
+      is actually
       stored in double-precision floating point values, and since any graphic
       may be subject to arbitrary linear transformations within the scene, the
       parent/child relationship between graphics naturally extends to
@@ -104,10 +105,10 @@
 	have its true state computed on the fly. This is known as
 	"externalizing" its state; in fresco we attempt to externalize as much
 	state from each graphic as possible. Partly this is done to facilitate
-	the memory savings mentionned previously, but it also simplifies the task of
-	maintaining the proper values for layout and cumulative transformation,
-	which are highly dynamic to begin with. Since we compute them on the
-	fly, such values are never "out of sync" with one another.
+	the memory savings mentionned previously, but it also simplifies the
+        task of maintaining the proper values for layout and cumulative
+        transformation, which are highly dynamic to begin with. Since we compute
+        them on the fly, such values are never "out of sync" with one another.
       </para>
     </section>
   </section>
