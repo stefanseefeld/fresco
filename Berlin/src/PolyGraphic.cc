@@ -191,7 +191,7 @@ Warsaw::Graphic::Iterator_ptr PolyGraphic::last_child_graphic()
 void PolyGraphic::need_resize() { GraphicImpl::need_resize();}
 void PolyGraphic::need_resize(Tag) { GraphicImpl::need_resize();}
 
-long PolyGraphic::num_children()
+CORBA::Long PolyGraphic::num_children()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _children.size();
