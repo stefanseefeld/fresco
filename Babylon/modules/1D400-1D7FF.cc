@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:41:02 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 17:05:42 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -83,154 +83,154 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x1D7CE:
+      case 0x1D7CEu:
         return 0;
         break;
-      case 0x1D7CF:
+      case 0x1D7CFu:
         return 1;
         break;
-      case 0x1D7D0:
+      case 0x1D7D0u:
         return 2;
         break;
-      case 0x1D7D1:
+      case 0x1D7D1u:
         return 3;
         break;
-      case 0x1D7D2:
+      case 0x1D7D2u:
         return 4;
         break;
-      case 0x1D7D3:
+      case 0x1D7D3u:
         return 5;
         break;
-      case 0x1D7D4:
+      case 0x1D7D4u:
         return 6;
         break;
-      case 0x1D7D5:
+      case 0x1D7D5u:
         return 7;
         break;
-      case 0x1D7D6:
+      case 0x1D7D6u:
         return 8;
         break;
-      case 0x1D7D7:
+      case 0x1D7D7u:
         return 9;
         break;
-      case 0x1D7D8:
+      case 0x1D7D8u:
         return 0;
         break;
-      case 0x1D7D9:
+      case 0x1D7D9u:
         return 1;
         break;
-      case 0x1D7DA:
+      case 0x1D7DAu:
         return 2;
         break;
-      case 0x1D7DB:
+      case 0x1D7DBu:
         return 3;
         break;
-      case 0x1D7DC:
+      case 0x1D7DCu:
         return 4;
         break;
-      case 0x1D7DD:
+      case 0x1D7DDu:
         return 5;
         break;
-      case 0x1D7DE:
+      case 0x1D7DEu:
         return 6;
         break;
-      case 0x1D7DF:
+      case 0x1D7DFu:
         return 7;
         break;
-      case 0x1D7E0:
+      case 0x1D7E0u:
         return 8;
         break;
-      case 0x1D7E1:
+      case 0x1D7E1u:
         return 9;
         break;
-      case 0x1D7E2:
+      case 0x1D7E2u:
         return 0;
         break;
-      case 0x1D7E3:
+      case 0x1D7E3u:
         return 1;
         break;
-      case 0x1D7E4:
+      case 0x1D7E4u:
         return 2;
         break;
-      case 0x1D7E5:
+      case 0x1D7E5u:
         return 3;
         break;
-      case 0x1D7E6:
+      case 0x1D7E6u:
         return 4;
         break;
-      case 0x1D7E7:
+      case 0x1D7E7u:
         return 5;
         break;
-      case 0x1D7E8:
+      case 0x1D7E8u:
         return 6;
         break;
-      case 0x1D7E9:
+      case 0x1D7E9u:
         return 7;
         break;
-      case 0x1D7EA:
+      case 0x1D7EAu:
         return 8;
         break;
-      case 0x1D7EB:
+      case 0x1D7EBu:
         return 9;
         break;
-      case 0x1D7EC:
+      case 0x1D7ECu:
         return 0;
         break;
-      case 0x1D7ED:
+      case 0x1D7EDu:
         return 1;
         break;
-      case 0x1D7EE:
+      case 0x1D7EEu:
         return 2;
         break;
-      case 0x1D7EF:
+      case 0x1D7EFu:
         return 3;
         break;
-      case 0x1D7F0:
+      case 0x1D7F0u:
         return 4;
         break;
-      case 0x1D7F1:
+      case 0x1D7F1u:
         return 5;
         break;
-      case 0x1D7F2:
+      case 0x1D7F2u:
         return 6;
         break;
-      case 0x1D7F3:
+      case 0x1D7F3u:
         return 7;
         break;
-      case 0x1D7F4:
+      case 0x1D7F4u:
         return 8;
         break;
-      case 0x1D7F5:
+      case 0x1D7F5u:
         return 9;
         break;
-      case 0x1D7F6:
+      case 0x1D7F6u:
         return 0;
         break;
-      case 0x1D7F7:
+      case 0x1D7F7u:
         return 1;
         break;
-      case 0x1D7F8:
+      case 0x1D7F8u:
         return 2;
         break;
-      case 0x1D7F9:
+      case 0x1D7F9u:
         return 3;
         break;
-      case 0x1D7FA:
+      case 0x1D7FAu:
         return 4;
         break;
-      case 0x1D7FB:
+      case 0x1D7FBu:
         return 5;
         break;
-      case 0x1D7FC:
+      case 0x1D7FCu:
         return 6;
         break;
-      case 0x1D7FD:
+      case 0x1D7FDu:
         return 7;
         break;
-      case 0x1D7FE:
+      case 0x1D7FEu:
         return 8;
         break;
-      case 0x1D7FF:
+      case 0x1D7FFu:
         return 9;
         break;
       default:
@@ -240,56 +240,56 @@ namespace Babylon {
 
     bool is_Decimal_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x1D7CE:
-      case 0x1D7CF:
-      case 0x1D7D0:
-      case 0x1D7D1:
-      case 0x1D7D2:
-      case 0x1D7D3:
-      case 0x1D7D4:
-      case 0x1D7D5:
-      case 0x1D7D6:
-      case 0x1D7D7:
-      case 0x1D7D8:
-      case 0x1D7D9:
-      case 0x1D7DA:
-      case 0x1D7DB:
-      case 0x1D7DC:
-      case 0x1D7DD:
-      case 0x1D7DE:
-      case 0x1D7DF:
-      case 0x1D7E0:
-      case 0x1D7E1:
-      case 0x1D7E2:
-      case 0x1D7E3:
-      case 0x1D7E4:
-      case 0x1D7E5:
-      case 0x1D7E6:
-      case 0x1D7E7:
-      case 0x1D7E8:
-      case 0x1D7E9:
-      case 0x1D7EA:
-      case 0x1D7EB:
-      case 0x1D7EC:
-      case 0x1D7ED:
-      case 0x1D7EE:
-      case 0x1D7EF:
-      case 0x1D7F0:
-      case 0x1D7F1:
-      case 0x1D7F2:
-      case 0x1D7F3:
-      case 0x1D7F4:
-      case 0x1D7F5:
-      case 0x1D7F6:
-      case 0x1D7F7:
-      case 0x1D7F8:
-      case 0x1D7F9:
-      case 0x1D7FA:
-      case 0x1D7FB:
-      case 0x1D7FC:
-      case 0x1D7FD:
-      case 0x1D7FE:
-      case 0x1D7FF:
+      case 0x1D7CEu:
+      case 0x1D7CFu:
+      case 0x1D7D0u:
+      case 0x1D7D1u:
+      case 0x1D7D2u:
+      case 0x1D7D3u:
+      case 0x1D7D4u:
+      case 0x1D7D5u:
+      case 0x1D7D6u:
+      case 0x1D7D7u:
+      case 0x1D7D8u:
+      case 0x1D7D9u:
+      case 0x1D7DAu:
+      case 0x1D7DBu:
+      case 0x1D7DCu:
+      case 0x1D7DDu:
+      case 0x1D7DEu:
+      case 0x1D7DFu:
+      case 0x1D7E0u:
+      case 0x1D7E1u:
+      case 0x1D7E2u:
+      case 0x1D7E3u:
+      case 0x1D7E4u:
+      case 0x1D7E5u:
+      case 0x1D7E6u:
+      case 0x1D7E7u:
+      case 0x1D7E8u:
+      case 0x1D7E9u:
+      case 0x1D7EAu:
+      case 0x1D7EBu:
+      case 0x1D7ECu:
+      case 0x1D7EDu:
+      case 0x1D7EEu:
+      case 0x1D7EFu:
+      case 0x1D7F0u:
+      case 0x1D7F1u:
+      case 0x1D7F2u:
+      case 0x1D7F3u:
+      case 0x1D7F4u:
+      case 0x1D7F5u:
+      case 0x1D7F6u:
+      case 0x1D7F7u:
+      case 0x1D7F8u:
+      case 0x1D7F9u:
+      case 0x1D7FAu:
+      case 0x1D7FBu:
+      case 0x1D7FCu:
+      case 0x1D7FDu:
+      case 0x1D7FEu:
+      case 0x1D7FFu:
         return 1;
       default:
         return 0;
@@ -300,154 +300,154 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x1D7CE:
+      case 0x1D7CEu:
         return 0;
         break;
-      case 0x1D7CF:
+      case 0x1D7CFu:
         return 1;
         break;
-      case 0x1D7D0:
+      case 0x1D7D0u:
         return 2;
         break;
-      case 0x1D7D1:
+      case 0x1D7D1u:
         return 3;
         break;
-      case 0x1D7D2:
+      case 0x1D7D2u:
         return 4;
         break;
-      case 0x1D7D3:
+      case 0x1D7D3u:
         return 5;
         break;
-      case 0x1D7D4:
+      case 0x1D7D4u:
         return 6;
         break;
-      case 0x1D7D5:
+      case 0x1D7D5u:
         return 7;
         break;
-      case 0x1D7D6:
+      case 0x1D7D6u:
         return 8;
         break;
-      case 0x1D7D7:
+      case 0x1D7D7u:
         return 9;
         break;
-      case 0x1D7D8:
+      case 0x1D7D8u:
         return 0;
         break;
-      case 0x1D7D9:
+      case 0x1D7D9u:
         return 1;
         break;
-      case 0x1D7DA:
+      case 0x1D7DAu:
         return 2;
         break;
-      case 0x1D7DB:
+      case 0x1D7DBu:
         return 3;
         break;
-      case 0x1D7DC:
+      case 0x1D7DCu:
         return 4;
         break;
-      case 0x1D7DD:
+      case 0x1D7DDu:
         return 5;
         break;
-      case 0x1D7DE:
+      case 0x1D7DEu:
         return 6;
         break;
-      case 0x1D7DF:
+      case 0x1D7DFu:
         return 7;
         break;
-      case 0x1D7E0:
+      case 0x1D7E0u:
         return 8;
         break;
-      case 0x1D7E1:
+      case 0x1D7E1u:
         return 9;
         break;
-      case 0x1D7E2:
+      case 0x1D7E2u:
         return 0;
         break;
-      case 0x1D7E3:
+      case 0x1D7E3u:
         return 1;
         break;
-      case 0x1D7E4:
+      case 0x1D7E4u:
         return 2;
         break;
-      case 0x1D7E5:
+      case 0x1D7E5u:
         return 3;
         break;
-      case 0x1D7E6:
+      case 0x1D7E6u:
         return 4;
         break;
-      case 0x1D7E7:
+      case 0x1D7E7u:
         return 5;
         break;
-      case 0x1D7E8:
+      case 0x1D7E8u:
         return 6;
         break;
-      case 0x1D7E9:
+      case 0x1D7E9u:
         return 7;
         break;
-      case 0x1D7EA:
+      case 0x1D7EAu:
         return 8;
         break;
-      case 0x1D7EB:
+      case 0x1D7EBu:
         return 9;
         break;
-      case 0x1D7EC:
+      case 0x1D7ECu:
         return 0;
         break;
-      case 0x1D7ED:
+      case 0x1D7EDu:
         return 1;
         break;
-      case 0x1D7EE:
+      case 0x1D7EEu:
         return 2;
         break;
-      case 0x1D7EF:
+      case 0x1D7EFu:
         return 3;
         break;
-      case 0x1D7F0:
+      case 0x1D7F0u:
         return 4;
         break;
-      case 0x1D7F1:
+      case 0x1D7F1u:
         return 5;
         break;
-      case 0x1D7F2:
+      case 0x1D7F2u:
         return 6;
         break;
-      case 0x1D7F3:
+      case 0x1D7F3u:
         return 7;
         break;
-      case 0x1D7F4:
+      case 0x1D7F4u:
         return 8;
         break;
-      case 0x1D7F5:
+      case 0x1D7F5u:
         return 9;
         break;
-      case 0x1D7F6:
+      case 0x1D7F6u:
         return 0;
         break;
-      case 0x1D7F7:
+      case 0x1D7F7u:
         return 1;
         break;
-      case 0x1D7F8:
+      case 0x1D7F8u:
         return 2;
         break;
-      case 0x1D7F9:
+      case 0x1D7F9u:
         return 3;
         break;
-      case 0x1D7FA:
+      case 0x1D7FAu:
         return 4;
         break;
-      case 0x1D7FB:
+      case 0x1D7FBu:
         return 5;
         break;
-      case 0x1D7FC:
+      case 0x1D7FCu:
         return 6;
         break;
-      case 0x1D7FD:
+      case 0x1D7FDu:
         return 7;
         break;
-      case 0x1D7FE:
+      case 0x1D7FEu:
         return 8;
         break;
-      case 0x1D7FF:
+      case 0x1D7FFu:
         return 9;
         break;
       default:
@@ -457,56 +457,56 @@ namespace Babylon {
 
     bool is_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x1D7CE:
-      case 0x1D7CF:
-      case 0x1D7D0:
-      case 0x1D7D1:
-      case 0x1D7D2:
-      case 0x1D7D3:
-      case 0x1D7D4:
-      case 0x1D7D5:
-      case 0x1D7D6:
-      case 0x1D7D7:
-      case 0x1D7D8:
-      case 0x1D7D9:
-      case 0x1D7DA:
-      case 0x1D7DB:
-      case 0x1D7DC:
-      case 0x1D7DD:
-      case 0x1D7DE:
-      case 0x1D7DF:
-      case 0x1D7E0:
-      case 0x1D7E1:
-      case 0x1D7E2:
-      case 0x1D7E3:
-      case 0x1D7E4:
-      case 0x1D7E5:
-      case 0x1D7E6:
-      case 0x1D7E7:
-      case 0x1D7E8:
-      case 0x1D7E9:
-      case 0x1D7EA:
-      case 0x1D7EB:
-      case 0x1D7EC:
-      case 0x1D7ED:
-      case 0x1D7EE:
-      case 0x1D7EF:
-      case 0x1D7F0:
-      case 0x1D7F1:
-      case 0x1D7F2:
-      case 0x1D7F3:
-      case 0x1D7F4:
-      case 0x1D7F5:
-      case 0x1D7F6:
-      case 0x1D7F7:
-      case 0x1D7F8:
-      case 0x1D7F9:
-      case 0x1D7FA:
-      case 0x1D7FB:
-      case 0x1D7FC:
-      case 0x1D7FD:
-      case 0x1D7FE:
-      case 0x1D7FF:
+      case 0x1D7CEu:
+      case 0x1D7CFu:
+      case 0x1D7D0u:
+      case 0x1D7D1u:
+      case 0x1D7D2u:
+      case 0x1D7D3u:
+      case 0x1D7D4u:
+      case 0x1D7D5u:
+      case 0x1D7D6u:
+      case 0x1D7D7u:
+      case 0x1D7D8u:
+      case 0x1D7D9u:
+      case 0x1D7DAu:
+      case 0x1D7DBu:
+      case 0x1D7DCu:
+      case 0x1D7DDu:
+      case 0x1D7DEu:
+      case 0x1D7DFu:
+      case 0x1D7E0u:
+      case 0x1D7E1u:
+      case 0x1D7E2u:
+      case 0x1D7E3u:
+      case 0x1D7E4u:
+      case 0x1D7E5u:
+      case 0x1D7E6u:
+      case 0x1D7E7u:
+      case 0x1D7E8u:
+      case 0x1D7E9u:
+      case 0x1D7EAu:
+      case 0x1D7EBu:
+      case 0x1D7ECu:
+      case 0x1D7EDu:
+      case 0x1D7EEu:
+      case 0x1D7EFu:
+      case 0x1D7F0u:
+      case 0x1D7F1u:
+      case 0x1D7F2u:
+      case 0x1D7F3u:
+      case 0x1D7F4u:
+      case 0x1D7F5u:
+      case 0x1D7F6u:
+      case 0x1D7F7u:
+      case 0x1D7F8u:
+      case 0x1D7F9u:
+      case 0x1D7FAu:
+      case 0x1D7FBu:
+      case 0x1D7FCu:
+      case 0x1D7FDu:
+      case 0x1D7FEu:
+      case 0x1D7FFu:
         return 1;
       default:
         return 0;
@@ -517,154 +517,154 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x1D7CE:
+      case 0x1D7CEu:
         return 0.000000;
         break;
-      case 0x1D7CF:
+      case 0x1D7CFu:
         return 1.000000;
         break;
-      case 0x1D7D0:
+      case 0x1D7D0u:
         return 2.000000;
         break;
-      case 0x1D7D1:
+      case 0x1D7D1u:
         return 3.000000;
         break;
-      case 0x1D7D2:
+      case 0x1D7D2u:
         return 4.000000;
         break;
-      case 0x1D7D3:
+      case 0x1D7D3u:
         return 5.000000;
         break;
-      case 0x1D7D4:
+      case 0x1D7D4u:
         return 6.000000;
         break;
-      case 0x1D7D5:
+      case 0x1D7D5u:
         return 7.000000;
         break;
-      case 0x1D7D6:
+      case 0x1D7D6u:
         return 8.000000;
         break;
-      case 0x1D7D7:
+      case 0x1D7D7u:
         return 9.000000;
         break;
-      case 0x1D7D8:
+      case 0x1D7D8u:
         return 0.000000;
         break;
-      case 0x1D7D9:
+      case 0x1D7D9u:
         return 1.000000;
         break;
-      case 0x1D7DA:
+      case 0x1D7DAu:
         return 2.000000;
         break;
-      case 0x1D7DB:
+      case 0x1D7DBu:
         return 3.000000;
         break;
-      case 0x1D7DC:
+      case 0x1D7DCu:
         return 4.000000;
         break;
-      case 0x1D7DD:
+      case 0x1D7DDu:
         return 5.000000;
         break;
-      case 0x1D7DE:
+      case 0x1D7DEu:
         return 6.000000;
         break;
-      case 0x1D7DF:
+      case 0x1D7DFu:
         return 7.000000;
         break;
-      case 0x1D7E0:
+      case 0x1D7E0u:
         return 8.000000;
         break;
-      case 0x1D7E1:
+      case 0x1D7E1u:
         return 9.000000;
         break;
-      case 0x1D7E2:
+      case 0x1D7E2u:
         return 0.000000;
         break;
-      case 0x1D7E3:
+      case 0x1D7E3u:
         return 1.000000;
         break;
-      case 0x1D7E4:
+      case 0x1D7E4u:
         return 2.000000;
         break;
-      case 0x1D7E5:
+      case 0x1D7E5u:
         return 3.000000;
         break;
-      case 0x1D7E6:
+      case 0x1D7E6u:
         return 4.000000;
         break;
-      case 0x1D7E7:
+      case 0x1D7E7u:
         return 5.000000;
         break;
-      case 0x1D7E8:
+      case 0x1D7E8u:
         return 6.000000;
         break;
-      case 0x1D7E9:
+      case 0x1D7E9u:
         return 7.000000;
         break;
-      case 0x1D7EA:
+      case 0x1D7EAu:
         return 8.000000;
         break;
-      case 0x1D7EB:
+      case 0x1D7EBu:
         return 9.000000;
         break;
-      case 0x1D7EC:
+      case 0x1D7ECu:
         return 0.000000;
         break;
-      case 0x1D7ED:
+      case 0x1D7EDu:
         return 1.000000;
         break;
-      case 0x1D7EE:
+      case 0x1D7EEu:
         return 2.000000;
         break;
-      case 0x1D7EF:
+      case 0x1D7EFu:
         return 3.000000;
         break;
-      case 0x1D7F0:
+      case 0x1D7F0u:
         return 4.000000;
         break;
-      case 0x1D7F1:
+      case 0x1D7F1u:
         return 5.000000;
         break;
-      case 0x1D7F2:
+      case 0x1D7F2u:
         return 6.000000;
         break;
-      case 0x1D7F3:
+      case 0x1D7F3u:
         return 7.000000;
         break;
-      case 0x1D7F4:
+      case 0x1D7F4u:
         return 8.000000;
         break;
-      case 0x1D7F5:
+      case 0x1D7F5u:
         return 9.000000;
         break;
-      case 0x1D7F6:
+      case 0x1D7F6u:
         return 0.000000;
         break;
-      case 0x1D7F7:
+      case 0x1D7F7u:
         return 1.000000;
         break;
-      case 0x1D7F8:
+      case 0x1D7F8u:
         return 2.000000;
         break;
-      case 0x1D7F9:
+      case 0x1D7F9u:
         return 3.000000;
         break;
-      case 0x1D7FA:
+      case 0x1D7FAu:
         return 4.000000;
         break;
-      case 0x1D7FB:
+      case 0x1D7FBu:
         return 5.000000;
         break;
-      case 0x1D7FC:
+      case 0x1D7FCu:
         return 6.000000;
         break;
-      case 0x1D7FD:
+      case 0x1D7FDu:
         return 7.000000;
         break;
-      case 0x1D7FE:
+      case 0x1D7FEu:
         return 8.000000;
         break;
-      case 0x1D7FF:
+      case 0x1D7FFu:
         return 9.000000;
         break;
       default:
@@ -674,56 +674,56 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x1D7CE:
-      case 0x1D7CF:
-      case 0x1D7D0:
-      case 0x1D7D1:
-      case 0x1D7D2:
-      case 0x1D7D3:
-      case 0x1D7D4:
-      case 0x1D7D5:
-      case 0x1D7D6:
-      case 0x1D7D7:
-      case 0x1D7D8:
-      case 0x1D7D9:
-      case 0x1D7DA:
-      case 0x1D7DB:
-      case 0x1D7DC:
-      case 0x1D7DD:
-      case 0x1D7DE:
-      case 0x1D7DF:
-      case 0x1D7E0:
-      case 0x1D7E1:
-      case 0x1D7E2:
-      case 0x1D7E3:
-      case 0x1D7E4:
-      case 0x1D7E5:
-      case 0x1D7E6:
-      case 0x1D7E7:
-      case 0x1D7E8:
-      case 0x1D7E9:
-      case 0x1D7EA:
-      case 0x1D7EB:
-      case 0x1D7EC:
-      case 0x1D7ED:
-      case 0x1D7EE:
-      case 0x1D7EF:
-      case 0x1D7F0:
-      case 0x1D7F1:
-      case 0x1D7F2:
-      case 0x1D7F3:
-      case 0x1D7F4:
-      case 0x1D7F5:
-      case 0x1D7F6:
-      case 0x1D7F7:
-      case 0x1D7F8:
-      case 0x1D7F9:
-      case 0x1D7FA:
-      case 0x1D7FB:
-      case 0x1D7FC:
-      case 0x1D7FD:
-      case 0x1D7FE:
-      case 0x1D7FF:
+      case 0x1D7CEu:
+      case 0x1D7CFu:
+      case 0x1D7D0u:
+      case 0x1D7D1u:
+      case 0x1D7D2u:
+      case 0x1D7D3u:
+      case 0x1D7D4u:
+      case 0x1D7D5u:
+      case 0x1D7D6u:
+      case 0x1D7D7u:
+      case 0x1D7D8u:
+      case 0x1D7D9u:
+      case 0x1D7DAu:
+      case 0x1D7DBu:
+      case 0x1D7DCu:
+      case 0x1D7DDu:
+      case 0x1D7DEu:
+      case 0x1D7DFu:
+      case 0x1D7E0u:
+      case 0x1D7E1u:
+      case 0x1D7E2u:
+      case 0x1D7E3u:
+      case 0x1D7E4u:
+      case 0x1D7E5u:
+      case 0x1D7E6u:
+      case 0x1D7E7u:
+      case 0x1D7E8u:
+      case 0x1D7E9u:
+      case 0x1D7EAu:
+      case 0x1D7EBu:
+      case 0x1D7ECu:
+      case 0x1D7EDu:
+      case 0x1D7EEu:
+      case 0x1D7EFu:
+      case 0x1D7F0u:
+      case 0x1D7F1u:
+      case 0x1D7F2u:
+      case 0x1D7F3u:
+      case 0x1D7F4u:
+      case 0x1D7F5u:
+      case 0x1D7F6u:
+      case 0x1D7F7u:
+      case 0x1D7F8u:
+      case 0x1D7F9u:
+      case 0x1D7FAu:
+      case 0x1D7FBu:
+      case 0x1D7FCu:
+      case 0x1D7FDu:
+      case 0x1D7FEu:
+      case 0x1D7FFu:
         return 1;
       default:
         return 0;
@@ -893,7 +893,7 @@ namespace Babylon {
     static const unsigned char _cat[1024];
     static const unsigned char m_bidir[1024];
     static const unsigned char _decomp[1024];
-    static const UCS2 m_decompStr[1024];
+    static const UCS4 m_decompStr[1024];
     static const unsigned char m_lb[1024];
 
   }; // class Mathematical_Alphanumeric_Symbols1D400
@@ -1293,7 +1293,7 @@ namespace Babylon {
     DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT
   };
 
-  const UCS2 Mathematical_Alphanumeric_Symbols1D400::m_decompStr[] = {
+  const UCS4 Mathematical_Alphanumeric_Symbols1D400::m_decompStr[] = {
     0x0041u, 0x0042u, 0x0043u, 0x0044u, 
     0x0045u, 0x0046u, 0x0047u, 0x0048u, 
     0x0049u, 0x004Au, 0x004Bu, 0x004Cu, 

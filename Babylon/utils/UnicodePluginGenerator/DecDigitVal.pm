@@ -89,7 +89,7 @@ sub function {
     $tmp .= "      switch(uc) {\n";
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if($self->data($i) ne "undef") {
-        $tmp .= sprintf "      case 0x%04X:\n        return %d;\n", 
+        $tmp .= sprintf "      case 0x%04Xu:\n        return %d;\n", 
 	                $i, $self->{$i};
 	$tmp .= "        break;\n";
       }
@@ -107,7 +107,7 @@ sub function {
     $tmp .= "      switch(uc) {\n";
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if($self->data($i) ne "undef") {
-        $tmp .= sprintf "      case 0x%04X:\n", 
+        $tmp .= sprintf "      case 0x%04Xu:\n",
 	                $i;
       }
     }

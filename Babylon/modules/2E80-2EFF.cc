@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:34 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:31 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -264,7 +264,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const bitset<128> m_is_defined;
     static const unsigned char _decomp[128];
-    static const UCS2 m_decompStr[128];
+    static const UCS4 m_decompStr[128];
 
   }; // class CJK_Radicals_Supplement2E80
 
@@ -289,7 +289,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 CJK_Radicals_Supplement2E80::m_decompStr[] = {
+  const UCS4 CJK_Radicals_Supplement2E80::m_decompStr[] = {
     0x2E80u, 0x2E81u, 0x2E82u, 0x2E83u, 
     0x2E84u, 0x2E85u, 0x2E86u, 0x2E87u, 
     0x2E88u, 0x2E89u, 0x2E8Au, 0x2E8Bu, 

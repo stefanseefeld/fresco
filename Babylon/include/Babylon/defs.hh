@@ -27,7 +27,7 @@
 
 #include <string>
 #include <exception>
-#include <sstream>
+#include <strstream>
 #include <iomanip>
 
 namespace Babylon {
@@ -362,7 +362,7 @@ namespace Babylon {
 	}
 
 	const char * what() const throw() {
-	    ostringstream res;
+	    ostrstream res;
 	    res << setw(4) << setfill('0') << hex; 
 	    switch (m_error_prop) {
 	    case PROP_CHARACTER:
@@ -428,7 +428,7 @@ namespace Babylon {
 		    << ") PROP_MAX throw... how did this happen?";
 		break;	
 	    }
-	    return res.str().c_str();
+	    return res.str();
 	}
     }; // class Undefined_Property
     
@@ -465,11 +465,11 @@ namespace Babylon {
 	}
 
 	const char * what() const throw() {
-	    ostringstream res;
+	    strstream res;
 	    res << hex << setw(4) << setfill('0');
 	    res << "(" << m_block_start << "-" << m_block_end << "): "
 		<< m_error_message;
-	    return res.str().c_str();
+	    return res.str();
 	}
     }; // class Block_Error
     

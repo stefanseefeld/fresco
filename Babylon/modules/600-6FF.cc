@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:30:59 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:55:58 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -92,64 +92,64 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x0660:
+      case 0x0660u:
         return 0;
         break;
-      case 0x0661:
+      case 0x0661u:
         return 1;
         break;
-      case 0x0662:
+      case 0x0662u:
         return 2;
         break;
-      case 0x0663:
+      case 0x0663u:
         return 3;
         break;
-      case 0x0664:
+      case 0x0664u:
         return 4;
         break;
-      case 0x0665:
+      case 0x0665u:
         return 5;
         break;
-      case 0x0666:
+      case 0x0666u:
         return 6;
         break;
-      case 0x0667:
+      case 0x0667u:
         return 7;
         break;
-      case 0x0668:
+      case 0x0668u:
         return 8;
         break;
-      case 0x0669:
+      case 0x0669u:
         return 9;
         break;
-      case 0x06F0:
+      case 0x06F0u:
         return 0;
         break;
-      case 0x06F1:
+      case 0x06F1u:
         return 1;
         break;
-      case 0x06F2:
+      case 0x06F2u:
         return 2;
         break;
-      case 0x06F3:
+      case 0x06F3u:
         return 3;
         break;
-      case 0x06F4:
+      case 0x06F4u:
         return 4;
         break;
-      case 0x06F5:
+      case 0x06F5u:
         return 5;
         break;
-      case 0x06F6:
+      case 0x06F6u:
         return 6;
         break;
-      case 0x06F7:
+      case 0x06F7u:
         return 7;
         break;
-      case 0x06F8:
+      case 0x06F8u:
         return 8;
         break;
-      case 0x06F9:
+      case 0x06F9u:
         return 9;
         break;
       default:
@@ -159,26 +159,26 @@ namespace Babylon {
 
     bool is_Decimal_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x0660:
-      case 0x0661:
-      case 0x0662:
-      case 0x0663:
-      case 0x0664:
-      case 0x0665:
-      case 0x0666:
-      case 0x0667:
-      case 0x0668:
-      case 0x0669:
-      case 0x06F0:
-      case 0x06F1:
-      case 0x06F2:
-      case 0x06F3:
-      case 0x06F4:
-      case 0x06F5:
-      case 0x06F6:
-      case 0x06F7:
-      case 0x06F8:
-      case 0x06F9:
+      case 0x0660u:
+      case 0x0661u:
+      case 0x0662u:
+      case 0x0663u:
+      case 0x0664u:
+      case 0x0665u:
+      case 0x0666u:
+      case 0x0667u:
+      case 0x0668u:
+      case 0x0669u:
+      case 0x06F0u:
+      case 0x06F1u:
+      case 0x06F2u:
+      case 0x06F3u:
+      case 0x06F4u:
+      case 0x06F5u:
+      case 0x06F6u:
+      case 0x06F7u:
+      case 0x06F8u:
+      case 0x06F9u:
         return 1;
       default:
         return 0;
@@ -189,64 +189,64 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x0660:
+      case 0x0660u:
         return 0;
         break;
-      case 0x0661:
+      case 0x0661u:
         return 1;
         break;
-      case 0x0662:
+      case 0x0662u:
         return 2;
         break;
-      case 0x0663:
+      case 0x0663u:
         return 3;
         break;
-      case 0x0664:
+      case 0x0664u:
         return 4;
         break;
-      case 0x0665:
+      case 0x0665u:
         return 5;
         break;
-      case 0x0666:
+      case 0x0666u:
         return 6;
         break;
-      case 0x0667:
+      case 0x0667u:
         return 7;
         break;
-      case 0x0668:
+      case 0x0668u:
         return 8;
         break;
-      case 0x0669:
+      case 0x0669u:
         return 9;
         break;
-      case 0x06F0:
+      case 0x06F0u:
         return 0;
         break;
-      case 0x06F1:
+      case 0x06F1u:
         return 1;
         break;
-      case 0x06F2:
+      case 0x06F2u:
         return 2;
         break;
-      case 0x06F3:
+      case 0x06F3u:
         return 3;
         break;
-      case 0x06F4:
+      case 0x06F4u:
         return 4;
         break;
-      case 0x06F5:
+      case 0x06F5u:
         return 5;
         break;
-      case 0x06F6:
+      case 0x06F6u:
         return 6;
         break;
-      case 0x06F7:
+      case 0x06F7u:
         return 7;
         break;
-      case 0x06F8:
+      case 0x06F8u:
         return 8;
         break;
-      case 0x06F9:
+      case 0x06F9u:
         return 9;
         break;
       default:
@@ -256,26 +256,26 @@ namespace Babylon {
 
     bool is_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x0660:
-      case 0x0661:
-      case 0x0662:
-      case 0x0663:
-      case 0x0664:
-      case 0x0665:
-      case 0x0666:
-      case 0x0667:
-      case 0x0668:
-      case 0x0669:
-      case 0x06F0:
-      case 0x06F1:
-      case 0x06F2:
-      case 0x06F3:
-      case 0x06F4:
-      case 0x06F5:
-      case 0x06F6:
-      case 0x06F7:
-      case 0x06F8:
-      case 0x06F9:
+      case 0x0660u:
+      case 0x0661u:
+      case 0x0662u:
+      case 0x0663u:
+      case 0x0664u:
+      case 0x0665u:
+      case 0x0666u:
+      case 0x0667u:
+      case 0x0668u:
+      case 0x0669u:
+      case 0x06F0u:
+      case 0x06F1u:
+      case 0x06F2u:
+      case 0x06F3u:
+      case 0x06F4u:
+      case 0x06F5u:
+      case 0x06F6u:
+      case 0x06F7u:
+      case 0x06F8u:
+      case 0x06F9u:
         return 1;
       default:
         return 0;
@@ -286,64 +286,64 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x0660:
+      case 0x0660u:
         return 0.000000;
         break;
-      case 0x0661:
+      case 0x0661u:
         return 1.000000;
         break;
-      case 0x0662:
+      case 0x0662u:
         return 2.000000;
         break;
-      case 0x0663:
+      case 0x0663u:
         return 3.000000;
         break;
-      case 0x0664:
+      case 0x0664u:
         return 4.000000;
         break;
-      case 0x0665:
+      case 0x0665u:
         return 5.000000;
         break;
-      case 0x0666:
+      case 0x0666u:
         return 6.000000;
         break;
-      case 0x0667:
+      case 0x0667u:
         return 7.000000;
         break;
-      case 0x0668:
+      case 0x0668u:
         return 8.000000;
         break;
-      case 0x0669:
+      case 0x0669u:
         return 9.000000;
         break;
-      case 0x06F0:
+      case 0x06F0u:
         return 0.000000;
         break;
-      case 0x06F1:
+      case 0x06F1u:
         return 1.000000;
         break;
-      case 0x06F2:
+      case 0x06F2u:
         return 2.000000;
         break;
-      case 0x06F3:
+      case 0x06F3u:
         return 3.000000;
         break;
-      case 0x06F4:
+      case 0x06F4u:
         return 4.000000;
         break;
-      case 0x06F5:
+      case 0x06F5u:
         return 5.000000;
         break;
-      case 0x06F6:
+      case 0x06F6u:
         return 6.000000;
         break;
-      case 0x06F7:
+      case 0x06F7u:
         return 7.000000;
         break;
-      case 0x06F8:
+      case 0x06F8u:
         return 8.000000;
         break;
-      case 0x06F9:
+      case 0x06F9u:
         return 9.000000;
         break;
       default:
@@ -353,26 +353,26 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x0660:
-      case 0x0661:
-      case 0x0662:
-      case 0x0663:
-      case 0x0664:
-      case 0x0665:
-      case 0x0666:
-      case 0x0667:
-      case 0x0668:
-      case 0x0669:
-      case 0x06F0:
-      case 0x06F1:
-      case 0x06F2:
-      case 0x06F3:
-      case 0x06F4:
-      case 0x06F5:
-      case 0x06F6:
-      case 0x06F7:
-      case 0x06F8:
-      case 0x06F9:
+      case 0x0660u:
+      case 0x0661u:
+      case 0x0662u:
+      case 0x0663u:
+      case 0x0664u:
+      case 0x0665u:
+      case 0x0666u:
+      case 0x0667u:
+      case 0x0668u:
+      case 0x0669u:
+      case 0x06F0u:
+      case 0x06F1u:
+      case 0x06F2u:
+      case 0x06F3u:
+      case 0x06F4u:
+      case 0x06F5u:
+      case 0x06F6u:
+      case 0x06F7u:
+      case 0x06F8u:
+      case 0x06F9u:
         return 1;
       default:
         return 0;

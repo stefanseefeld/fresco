@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:31:13 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:56:12 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -88,31 +88,31 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x0BE7:
+      case 0x0BE7u:
         return 1;
         break;
-      case 0x0BE8:
+      case 0x0BE8u:
         return 2;
         break;
-      case 0x0BE9:
+      case 0x0BE9u:
         return 3;
         break;
-      case 0x0BEA:
+      case 0x0BEAu:
         return 4;
         break;
-      case 0x0BEB:
+      case 0x0BEBu:
         return 5;
         break;
-      case 0x0BEC:
+      case 0x0BECu:
         return 6;
         break;
-      case 0x0BED:
+      case 0x0BEDu:
         return 7;
         break;
-      case 0x0BEE:
+      case 0x0BEEu:
         return 8;
         break;
-      case 0x0BEF:
+      case 0x0BEFu:
         return 9;
         break;
       default:
@@ -122,15 +122,15 @@ namespace Babylon {
 
     bool is_Decimal_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x0BE7:
-      case 0x0BE8:
-      case 0x0BE9:
-      case 0x0BEA:
-      case 0x0BEB:
-      case 0x0BEC:
-      case 0x0BED:
-      case 0x0BEE:
-      case 0x0BEF:
+      case 0x0BE7u:
+      case 0x0BE8u:
+      case 0x0BE9u:
+      case 0x0BEAu:
+      case 0x0BEBu:
+      case 0x0BECu:
+      case 0x0BEDu:
+      case 0x0BEEu:
+      case 0x0BEFu:
         return 1;
       default:
         return 0;
@@ -141,31 +141,31 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x0BE7:
+      case 0x0BE7u:
         return 1;
         break;
-      case 0x0BE8:
+      case 0x0BE8u:
         return 2;
         break;
-      case 0x0BE9:
+      case 0x0BE9u:
         return 3;
         break;
-      case 0x0BEA:
+      case 0x0BEAu:
         return 4;
         break;
-      case 0x0BEB:
+      case 0x0BEBu:
         return 5;
         break;
-      case 0x0BEC:
+      case 0x0BECu:
         return 6;
         break;
-      case 0x0BED:
+      case 0x0BEDu:
         return 7;
         break;
-      case 0x0BEE:
+      case 0x0BEEu:
         return 8;
         break;
-      case 0x0BEF:
+      case 0x0BEFu:
         return 9;
         break;
       default:
@@ -175,15 +175,15 @@ namespace Babylon {
 
     bool is_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x0BE7:
-      case 0x0BE8:
-      case 0x0BE9:
-      case 0x0BEA:
-      case 0x0BEB:
-      case 0x0BEC:
-      case 0x0BED:
-      case 0x0BEE:
-      case 0x0BEF:
+      case 0x0BE7u:
+      case 0x0BE8u:
+      case 0x0BE9u:
+      case 0x0BEAu:
+      case 0x0BEBu:
+      case 0x0BECu:
+      case 0x0BEDu:
+      case 0x0BEEu:
+      case 0x0BEFu:
         return 1;
       default:
         return 0;
@@ -194,40 +194,40 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x0BE7:
+      case 0x0BE7u:
         return 1.000000;
         break;
-      case 0x0BE8:
+      case 0x0BE8u:
         return 2.000000;
         break;
-      case 0x0BE9:
+      case 0x0BE9u:
         return 3.000000;
         break;
-      case 0x0BEA:
+      case 0x0BEAu:
         return 4.000000;
         break;
-      case 0x0BEB:
+      case 0x0BEBu:
         return 5.000000;
         break;
-      case 0x0BEC:
+      case 0x0BECu:
         return 6.000000;
         break;
-      case 0x0BED:
+      case 0x0BEDu:
         return 7.000000;
         break;
-      case 0x0BEE:
+      case 0x0BEEu:
         return 8.000000;
         break;
-      case 0x0BEF:
+      case 0x0BEFu:
         return 9.000000;
         break;
-      case 0x0BF0:
+      case 0x0BF0u:
         return 10.000000;
         break;
-      case 0x0BF1:
+      case 0x0BF1u:
         return 100.000000;
         break;
-      case 0x0BF2:
+      case 0x0BF2u:
         return 1000.000000;
         break;
       default:
@@ -237,18 +237,18 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x0BE7:
-      case 0x0BE8:
-      case 0x0BE9:
-      case 0x0BEA:
-      case 0x0BEB:
-      case 0x0BEC:
-      case 0x0BED:
-      case 0x0BEE:
-      case 0x0BEF:
-      case 0x0BF0:
-      case 0x0BF1:
-      case 0x0BF2:
+      case 0x0BE7u:
+      case 0x0BE8u:
+      case 0x0BE9u:
+      case 0x0BEAu:
+      case 0x0BEBu:
+      case 0x0BECu:
+      case 0x0BEDu:
+      case 0x0BEEu:
+      case 0x0BEFu:
+      case 0x0BF0u:
+      case 0x0BF1u:
+      case 0x0BF2u:
         return 1;
       default:
         return 0;

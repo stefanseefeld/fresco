@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:39 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:36 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -99,43 +99,43 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x3007:
+      case 0x3007u:
         return 0.000000;
         break;
-      case 0x3021:
+      case 0x3021u:
         return 1.000000;
         break;
-      case 0x3022:
+      case 0x3022u:
         return 2.000000;
         break;
-      case 0x3023:
+      case 0x3023u:
         return 3.000000;
         break;
-      case 0x3024:
+      case 0x3024u:
         return 4.000000;
         break;
-      case 0x3025:
+      case 0x3025u:
         return 5.000000;
         break;
-      case 0x3026:
+      case 0x3026u:
         return 6.000000;
         break;
-      case 0x3027:
+      case 0x3027u:
         return 7.000000;
         break;
-      case 0x3028:
+      case 0x3028u:
         return 8.000000;
         break;
-      case 0x3029:
+      case 0x3029u:
         return 9.000000;
         break;
-      case 0x3038:
+      case 0x3038u:
         return 10.000000;
         break;
-      case 0x3039:
+      case 0x3039u:
         return 20.000000;
         break;
-      case 0x303A:
+      case 0x303Au:
         return 30.000000;
         break;
       default:
@@ -145,19 +145,19 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x3007:
-      case 0x3021:
-      case 0x3022:
-      case 0x3023:
-      case 0x3024:
-      case 0x3025:
-      case 0x3026:
-      case 0x3027:
-      case 0x3028:
-      case 0x3029:
-      case 0x3038:
-      case 0x3039:
-      case 0x303A:
+      case 0x3007u:
+      case 0x3021u:
+      case 0x3022u:
+      case 0x3023u:
+      case 0x3024u:
+      case 0x3025u:
+      case 0x3026u:
+      case 0x3027u:
+      case 0x3028u:
+      case 0x3029u:
+      case 0x3038u:
+      case 0x3039u:
+      case 0x303Au:
         return 1;
       default:
         return 0;
@@ -330,7 +330,7 @@ namespace Babylon {
     static const unsigned char _comb_cl[64];
     static const unsigned char m_bidir[64];
     static const unsigned char _decomp[64];
-    static const UCS2 m_decompStr[64];
+    static const UCS4 m_decompStr[64];
     static const bitset<64> m_mirror;
     static const unsigned char m_lb[64];
     static const unsigned char m_ea[64];
@@ -388,7 +388,7 @@ namespace Babylon {
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 CJK_Symbols_and_Punctuation3000::m_decompStr[] = {
+  const UCS4 CJK_Symbols_and_Punctuation3000::m_decompStr[] = {
     0x0020u, 0x3001u, 0x3002u, 0x3003u, 
     0x3004u, 0x3005u, 0x3006u, 0x3007u, 
     0x3008u, 0x3009u, 0x300Au, 0x300Bu, 

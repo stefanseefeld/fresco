@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:40:46 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 17:05:26 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -265,7 +265,7 @@ namespace Babylon {
     static const bitset<32> m_is_defined;
     static const unsigned char _cat[32];
     static const unsigned char _decomp[32];
-    static const UCS2 m_decompStr[32];
+    static const UCS4 m_decompStr[32];
     static const unsigned char m_lb[32];
     static const bitset<32> m_Dash;
     static const bitset<32> m_Identifier_Part_Not_Cf;
@@ -288,7 +288,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT
   };
 
-  const UCS2 CJK_Compatibility_FormsFE30::m_decompStr[] = {
+  const UCS4 CJK_Compatibility_FormsFE30::m_decompStr[] = {
     0x2025u, 0x2014u, 0x2013u, 0x005Fu, 
     0x005Fu, 0x0028u, 0x0029u, 0x007Bu, 
     0x007Du, 0x3014u, 0x3015u, 0x3010u, 

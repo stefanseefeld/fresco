@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:06 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:04 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -83,55 +83,55 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2070:
+      case 0x2070u:
         return 0;
         break;
-      case 0x2074:
+      case 0x2074u:
         return 4;
         break;
-      case 0x2075:
+      case 0x2075u:
         return 5;
         break;
-      case 0x2076:
+      case 0x2076u:
         return 6;
         break;
-      case 0x2077:
+      case 0x2077u:
         return 7;
         break;
-      case 0x2078:
+      case 0x2078u:
         return 8;
         break;
-      case 0x2079:
+      case 0x2079u:
         return 9;
         break;
-      case 0x2080:
+      case 0x2080u:
         return 0;
         break;
-      case 0x2081:
+      case 0x2081u:
         return 1;
         break;
-      case 0x2082:
+      case 0x2082u:
         return 2;
         break;
-      case 0x2083:
+      case 0x2083u:
         return 3;
         break;
-      case 0x2084:
+      case 0x2084u:
         return 4;
         break;
-      case 0x2085:
+      case 0x2085u:
         return 5;
         break;
-      case 0x2086:
+      case 0x2086u:
         return 6;
         break;
-      case 0x2087:
+      case 0x2087u:
         return 7;
         break;
-      case 0x2088:
+      case 0x2088u:
         return 8;
         break;
-      case 0x2089:
+      case 0x2089u:
         return 9;
         break;
       default:
@@ -141,23 +141,23 @@ namespace Babylon {
 
     bool is_Decimal_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x2070:
-      case 0x2074:
-      case 0x2075:
-      case 0x2076:
-      case 0x2077:
-      case 0x2078:
-      case 0x2079:
-      case 0x2080:
-      case 0x2081:
-      case 0x2082:
-      case 0x2083:
-      case 0x2084:
-      case 0x2085:
-      case 0x2086:
-      case 0x2087:
-      case 0x2088:
-      case 0x2089:
+      case 0x2070u:
+      case 0x2074u:
+      case 0x2075u:
+      case 0x2076u:
+      case 0x2077u:
+      case 0x2078u:
+      case 0x2079u:
+      case 0x2080u:
+      case 0x2081u:
+      case 0x2082u:
+      case 0x2083u:
+      case 0x2084u:
+      case 0x2085u:
+      case 0x2086u:
+      case 0x2087u:
+      case 0x2088u:
+      case 0x2089u:
         return 1;
       default:
         return 0;
@@ -168,55 +168,55 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2070:
+      case 0x2070u:
         return 0;
         break;
-      case 0x2074:
+      case 0x2074u:
         return 4;
         break;
-      case 0x2075:
+      case 0x2075u:
         return 5;
         break;
-      case 0x2076:
+      case 0x2076u:
         return 6;
         break;
-      case 0x2077:
+      case 0x2077u:
         return 7;
         break;
-      case 0x2078:
+      case 0x2078u:
         return 8;
         break;
-      case 0x2079:
+      case 0x2079u:
         return 9;
         break;
-      case 0x2080:
+      case 0x2080u:
         return 0;
         break;
-      case 0x2081:
+      case 0x2081u:
         return 1;
         break;
-      case 0x2082:
+      case 0x2082u:
         return 2;
         break;
-      case 0x2083:
+      case 0x2083u:
         return 3;
         break;
-      case 0x2084:
+      case 0x2084u:
         return 4;
         break;
-      case 0x2085:
+      case 0x2085u:
         return 5;
         break;
-      case 0x2086:
+      case 0x2086u:
         return 6;
         break;
-      case 0x2087:
+      case 0x2087u:
         return 7;
         break;
-      case 0x2088:
+      case 0x2088u:
         return 8;
         break;
-      case 0x2089:
+      case 0x2089u:
         return 9;
         break;
       default:
@@ -226,23 +226,23 @@ namespace Babylon {
 
     bool is_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x2070:
-      case 0x2074:
-      case 0x2075:
-      case 0x2076:
-      case 0x2077:
-      case 0x2078:
-      case 0x2079:
-      case 0x2080:
-      case 0x2081:
-      case 0x2082:
-      case 0x2083:
-      case 0x2084:
-      case 0x2085:
-      case 0x2086:
-      case 0x2087:
-      case 0x2088:
-      case 0x2089:
+      case 0x2070u:
+      case 0x2074u:
+      case 0x2075u:
+      case 0x2076u:
+      case 0x2077u:
+      case 0x2078u:
+      case 0x2079u:
+      case 0x2080u:
+      case 0x2081u:
+      case 0x2082u:
+      case 0x2083u:
+      case 0x2084u:
+      case 0x2085u:
+      case 0x2086u:
+      case 0x2087u:
+      case 0x2088u:
+      case 0x2089u:
         return 1;
       default:
         return 0;
@@ -253,55 +253,55 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2070:
+      case 0x2070u:
         return 0.000000;
         break;
-      case 0x2074:
+      case 0x2074u:
         return 4.000000;
         break;
-      case 0x2075:
+      case 0x2075u:
         return 5.000000;
         break;
-      case 0x2076:
+      case 0x2076u:
         return 6.000000;
         break;
-      case 0x2077:
+      case 0x2077u:
         return 7.000000;
         break;
-      case 0x2078:
+      case 0x2078u:
         return 8.000000;
         break;
-      case 0x2079:
+      case 0x2079u:
         return 9.000000;
         break;
-      case 0x2080:
+      case 0x2080u:
         return 0.000000;
         break;
-      case 0x2081:
+      case 0x2081u:
         return 1.000000;
         break;
-      case 0x2082:
+      case 0x2082u:
         return 2.000000;
         break;
-      case 0x2083:
+      case 0x2083u:
         return 3.000000;
         break;
-      case 0x2084:
+      case 0x2084u:
         return 4.000000;
         break;
-      case 0x2085:
+      case 0x2085u:
         return 5.000000;
         break;
-      case 0x2086:
+      case 0x2086u:
         return 6.000000;
         break;
-      case 0x2087:
+      case 0x2087u:
         return 7.000000;
         break;
-      case 0x2088:
+      case 0x2088u:
         return 8.000000;
         break;
-      case 0x2089:
+      case 0x2089u:
         return 9.000000;
         break;
       default:
@@ -311,23 +311,23 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x2070:
-      case 0x2074:
-      case 0x2075:
-      case 0x2076:
-      case 0x2077:
-      case 0x2078:
-      case 0x2079:
-      case 0x2080:
-      case 0x2081:
-      case 0x2082:
-      case 0x2083:
-      case 0x2084:
-      case 0x2085:
-      case 0x2086:
-      case 0x2087:
-      case 0x2088:
-      case 0x2089:
+      case 0x2070u:
+      case 0x2074u:
+      case 0x2075u:
+      case 0x2076u:
+      case 0x2077u:
+      case 0x2078u:
+      case 0x2079u:
+      case 0x2080u:
+      case 0x2081u:
+      case 0x2082u:
+      case 0x2083u:
+      case 0x2084u:
+      case 0x2085u:
+      case 0x2086u:
+      case 0x2087u:
+      case 0x2088u:
+      case 0x2089u:
         return 1;
       default:
         return 0;

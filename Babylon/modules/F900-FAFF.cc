@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:40:29 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 17:05:10 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -263,14 +263,14 @@ namespace Babylon {
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
     static const bitset<512> m_is_defined;
-    static const UCS2 m_decompStr[512];
+    static const UCS4 m_decompStr[512];
     static const bitset<512> m_Identifier_Part_Not_Cf;
 
   }; // class CJK_Compatibility_IdeographsF900
 
     const bitset<512> CJK_Compatibility_IdeographsF900::m_is_defined(string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
-  const UCS2 CJK_Compatibility_IdeographsF900::m_decompStr[] = {
+  const UCS4 CJK_Compatibility_IdeographsF900::m_decompStr[] = {
     0x8C48u, 0x66F4u, 0x8ECAu, 0x8CC8u, 
     0x6ED1u, 0x4E32u, 0x53E5u, 0x9F9Cu, 
     0x9F9Cu, 0x5951u, 0x91D1u, 0x5587u, 

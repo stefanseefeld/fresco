@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:49 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:45 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -1045,7 +1045,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const bitset<256> m_is_defined;
     static const unsigned char _decomp[256];
-    static const UCS2 m_decompStr[256][2];
+    static const UCS4 m_decompStr[256][2];
     static const bitset<256> m_Composite;
 
   }; // class CJK_Compatibility3300
@@ -1087,7 +1087,7 @@ namespace Babylon {
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP
   };
 
-  const UCS2 CJK_Compatibility3300::m_decompStr[][2] = {
+  const UCS4 CJK_Compatibility3300::m_decompStr[][2] = {
     { 0x30A2u, 0x30D1u }, { 0x30A2u, 0x30EBu }, { 0x30A2u, 0x30F3u }, { 0x30A2u, 0x30FCu }, 
     { 0x30A4u, 0x30CBu }, { 0x30A4u, 0x30F3u }, { 0x30A6u, 0x30A9u }, { 0x30A8u, 0x30B9u }, 
     { 0x30A8u, 0x30FCu }, { 0x30AAu, 0x30F3u }, { 0x30AAu, 0x30FCu }, { 0x30ABu, 0x30A4u }, 

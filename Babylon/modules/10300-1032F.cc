@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:40:53 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 17:05:33 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -99,16 +99,16 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x10320:
+      case 0x10320u:
         return 1.000000;
         break;
-      case 0x10321:
+      case 0x10321u:
         return 5.000000;
         break;
-      case 0x10322:
+      case 0x10322u:
         return 10.000000;
         break;
-      case 0x10323:
+      case 0x10323u:
         return 50.000000;
         break;
       default:
@@ -118,10 +118,10 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x10320:
-      case 0x10321:
-      case 0x10322:
-      case 0x10323:
+      case 0x10320u:
+      case 0x10321u:
+      case 0x10322u:
+      case 0x10323u:
         return 1;
       default:
         return 0;

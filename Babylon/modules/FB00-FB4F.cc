@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:40:35 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 17:05:16 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -288,7 +288,7 @@ namespace Babylon {
     static const unsigned char _comb_cl[80];
     static const unsigned char m_bidir[80];
     static const unsigned char _decomp[80];
-    static const UCS2 m_decompStr[80][2];
+    static const UCS4 m_decompStr[80][2];
     static const unsigned char m_lb[80];
     map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const bitset<80> m_Composite;
@@ -351,7 +351,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT
   };
 
-  const UCS2 Alphabetic_Presentation_FormsFB00::m_decompStr[][2] = {
+  const UCS4 Alphabetic_Presentation_FormsFB00::m_decompStr[][2] = {
     { 0x0066u, 0x0066u }, { 0x0066u, 0x0069u }, { 0x0066u, 0x006Cu }, { 0x0066u, 0x0066u }, 
     { 0x0066u, 0x0066u }, { 0x017Fu, 0x0074u }, { 0x0073u, 0x0074u }, { 0xFB07u, 0x0000u }, 
     { 0xFB08u, 0x0000u }, { 0xFB09u, 0x0000u }, { 0xFB0Au, 0x0000u }, { 0xFB0Bu, 0x0000u }, 

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:20 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:17 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -91,88 +91,88 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2460:
+      case 0x2460u:
         return 1;
         break;
-      case 0x2461:
+      case 0x2461u:
         return 2;
         break;
-      case 0x2462:
+      case 0x2462u:
         return 3;
         break;
-      case 0x2463:
+      case 0x2463u:
         return 4;
         break;
-      case 0x2464:
+      case 0x2464u:
         return 5;
         break;
-      case 0x2465:
+      case 0x2465u:
         return 6;
         break;
-      case 0x2466:
+      case 0x2466u:
         return 7;
         break;
-      case 0x2467:
+      case 0x2467u:
         return 8;
         break;
-      case 0x2468:
+      case 0x2468u:
         return 9;
         break;
-      case 0x2474:
+      case 0x2474u:
         return 1;
         break;
-      case 0x2475:
+      case 0x2475u:
         return 2;
         break;
-      case 0x2476:
+      case 0x2476u:
         return 3;
         break;
-      case 0x2477:
+      case 0x2477u:
         return 4;
         break;
-      case 0x2478:
+      case 0x2478u:
         return 5;
         break;
-      case 0x2479:
+      case 0x2479u:
         return 6;
         break;
-      case 0x247A:
+      case 0x247Au:
         return 7;
         break;
-      case 0x247B:
+      case 0x247Bu:
         return 8;
         break;
-      case 0x247C:
+      case 0x247Cu:
         return 9;
         break;
-      case 0x2488:
+      case 0x2488u:
         return 1;
         break;
-      case 0x2489:
+      case 0x2489u:
         return 2;
         break;
-      case 0x248A:
+      case 0x248Au:
         return 3;
         break;
-      case 0x248B:
+      case 0x248Bu:
         return 4;
         break;
-      case 0x248C:
+      case 0x248Cu:
         return 5;
         break;
-      case 0x248D:
+      case 0x248Du:
         return 6;
         break;
-      case 0x248E:
+      case 0x248Eu:
         return 7;
         break;
-      case 0x248F:
+      case 0x248Fu:
         return 8;
         break;
-      case 0x2490:
+      case 0x2490u:
         return 9;
         break;
-      case 0x24EA:
+      case 0x24EAu:
         return 0;
         break;
       default:
@@ -182,34 +182,34 @@ namespace Babylon {
 
     bool is_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x2460:
-      case 0x2461:
-      case 0x2462:
-      case 0x2463:
-      case 0x2464:
-      case 0x2465:
-      case 0x2466:
-      case 0x2467:
-      case 0x2468:
-      case 0x2474:
-      case 0x2475:
-      case 0x2476:
-      case 0x2477:
-      case 0x2478:
-      case 0x2479:
-      case 0x247A:
-      case 0x247B:
-      case 0x247C:
-      case 0x2488:
-      case 0x2489:
-      case 0x248A:
-      case 0x248B:
-      case 0x248C:
-      case 0x248D:
-      case 0x248E:
-      case 0x248F:
-      case 0x2490:
-      case 0x24EA:
+      case 0x2460u:
+      case 0x2461u:
+      case 0x2462u:
+      case 0x2463u:
+      case 0x2464u:
+      case 0x2465u:
+      case 0x2466u:
+      case 0x2467u:
+      case 0x2468u:
+      case 0x2474u:
+      case 0x2475u:
+      case 0x2476u:
+      case 0x2477u:
+      case 0x2478u:
+      case 0x2479u:
+      case 0x247Au:
+      case 0x247Bu:
+      case 0x247Cu:
+      case 0x2488u:
+      case 0x2489u:
+      case 0x248Au:
+      case 0x248Bu:
+      case 0x248Cu:
+      case 0x248Du:
+      case 0x248Eu:
+      case 0x248Fu:
+      case 0x2490u:
+      case 0x24EAu:
         return 1;
       default:
         return 0;
@@ -220,187 +220,187 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2460:
+      case 0x2460u:
         return 1.000000;
         break;
-      case 0x2461:
+      case 0x2461u:
         return 2.000000;
         break;
-      case 0x2462:
+      case 0x2462u:
         return 3.000000;
         break;
-      case 0x2463:
+      case 0x2463u:
         return 4.000000;
         break;
-      case 0x2464:
+      case 0x2464u:
         return 5.000000;
         break;
-      case 0x2465:
+      case 0x2465u:
         return 6.000000;
         break;
-      case 0x2466:
+      case 0x2466u:
         return 7.000000;
         break;
-      case 0x2467:
+      case 0x2467u:
         return 8.000000;
         break;
-      case 0x2468:
+      case 0x2468u:
         return 9.000000;
         break;
-      case 0x2469:
+      case 0x2469u:
         return 10.000000;
         break;
-      case 0x246A:
+      case 0x246Au:
         return 11.000000;
         break;
-      case 0x246B:
+      case 0x246Bu:
         return 12.000000;
         break;
-      case 0x246C:
+      case 0x246Cu:
         return 13.000000;
         break;
-      case 0x246D:
+      case 0x246Du:
         return 14.000000;
         break;
-      case 0x246E:
+      case 0x246Eu:
         return 15.000000;
         break;
-      case 0x246F:
+      case 0x246Fu:
         return 16.000000;
         break;
-      case 0x2470:
+      case 0x2470u:
         return 17.000000;
         break;
-      case 0x2471:
+      case 0x2471u:
         return 18.000000;
         break;
-      case 0x2472:
+      case 0x2472u:
         return 19.000000;
         break;
-      case 0x2473:
+      case 0x2473u:
         return 20.000000;
         break;
-      case 0x2474:
+      case 0x2474u:
         return 1.000000;
         break;
-      case 0x2475:
+      case 0x2475u:
         return 2.000000;
         break;
-      case 0x2476:
+      case 0x2476u:
         return 3.000000;
         break;
-      case 0x2477:
+      case 0x2477u:
         return 4.000000;
         break;
-      case 0x2478:
+      case 0x2478u:
         return 5.000000;
         break;
-      case 0x2479:
+      case 0x2479u:
         return 6.000000;
         break;
-      case 0x247A:
+      case 0x247Au:
         return 7.000000;
         break;
-      case 0x247B:
+      case 0x247Bu:
         return 8.000000;
         break;
-      case 0x247C:
+      case 0x247Cu:
         return 9.000000;
         break;
-      case 0x247D:
+      case 0x247Du:
         return 10.000000;
         break;
-      case 0x247E:
+      case 0x247Eu:
         return 11.000000;
         break;
-      case 0x247F:
+      case 0x247Fu:
         return 12.000000;
         break;
-      case 0x2480:
+      case 0x2480u:
         return 13.000000;
         break;
-      case 0x2481:
+      case 0x2481u:
         return 14.000000;
         break;
-      case 0x2482:
+      case 0x2482u:
         return 15.000000;
         break;
-      case 0x2483:
+      case 0x2483u:
         return 16.000000;
         break;
-      case 0x2484:
+      case 0x2484u:
         return 17.000000;
         break;
-      case 0x2485:
+      case 0x2485u:
         return 18.000000;
         break;
-      case 0x2486:
+      case 0x2486u:
         return 19.000000;
         break;
-      case 0x2487:
+      case 0x2487u:
         return 20.000000;
         break;
-      case 0x2488:
+      case 0x2488u:
         return 1.000000;
         break;
-      case 0x2489:
+      case 0x2489u:
         return 2.000000;
         break;
-      case 0x248A:
+      case 0x248Au:
         return 3.000000;
         break;
-      case 0x248B:
+      case 0x248Bu:
         return 4.000000;
         break;
-      case 0x248C:
+      case 0x248Cu:
         return 5.000000;
         break;
-      case 0x248D:
+      case 0x248Du:
         return 6.000000;
         break;
-      case 0x248E:
+      case 0x248Eu:
         return 7.000000;
         break;
-      case 0x248F:
+      case 0x248Fu:
         return 8.000000;
         break;
-      case 0x2490:
+      case 0x2490u:
         return 9.000000;
         break;
-      case 0x2491:
+      case 0x2491u:
         return 10.000000;
         break;
-      case 0x2492:
+      case 0x2492u:
         return 11.000000;
         break;
-      case 0x2493:
+      case 0x2493u:
         return 12.000000;
         break;
-      case 0x2494:
+      case 0x2494u:
         return 13.000000;
         break;
-      case 0x2495:
+      case 0x2495u:
         return 14.000000;
         break;
-      case 0x2496:
+      case 0x2496u:
         return 15.000000;
         break;
-      case 0x2497:
+      case 0x2497u:
         return 16.000000;
         break;
-      case 0x2498:
+      case 0x2498u:
         return 17.000000;
         break;
-      case 0x2499:
+      case 0x2499u:
         return 18.000000;
         break;
-      case 0x249A:
+      case 0x249Au:
         return 19.000000;
         break;
-      case 0x249B:
+      case 0x249Bu:
         return 20.000000;
         break;
-      case 0x24EA:
+      case 0x24EAu:
         return 0.000000;
         break;
       default:
@@ -410,67 +410,67 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x2460:
-      case 0x2461:
-      case 0x2462:
-      case 0x2463:
-      case 0x2464:
-      case 0x2465:
-      case 0x2466:
-      case 0x2467:
-      case 0x2468:
-      case 0x2469:
-      case 0x246A:
-      case 0x246B:
-      case 0x246C:
-      case 0x246D:
-      case 0x246E:
-      case 0x246F:
-      case 0x2470:
-      case 0x2471:
-      case 0x2472:
-      case 0x2473:
-      case 0x2474:
-      case 0x2475:
-      case 0x2476:
-      case 0x2477:
-      case 0x2478:
-      case 0x2479:
-      case 0x247A:
-      case 0x247B:
-      case 0x247C:
-      case 0x247D:
-      case 0x247E:
-      case 0x247F:
-      case 0x2480:
-      case 0x2481:
-      case 0x2482:
-      case 0x2483:
-      case 0x2484:
-      case 0x2485:
-      case 0x2486:
-      case 0x2487:
-      case 0x2488:
-      case 0x2489:
-      case 0x248A:
-      case 0x248B:
-      case 0x248C:
-      case 0x248D:
-      case 0x248E:
-      case 0x248F:
-      case 0x2490:
-      case 0x2491:
-      case 0x2492:
-      case 0x2493:
-      case 0x2494:
-      case 0x2495:
-      case 0x2496:
-      case 0x2497:
-      case 0x2498:
-      case 0x2499:
-      case 0x249A:
-      case 0x249B:
-      case 0x24EA:
+      case 0x2460u:
+      case 0x2461u:
+      case 0x2462u:
+      case 0x2463u:
+      case 0x2464u:
+      case 0x2465u:
+      case 0x2466u:
+      case 0x2467u:
+      case 0x2468u:
+      case 0x2469u:
+      case 0x246Au:
+      case 0x246Bu:
+      case 0x246Cu:
+      case 0x246Du:
+      case 0x246Eu:
+      case 0x246Fu:
+      case 0x2470u:
+      case 0x2471u:
+      case 0x2472u:
+      case 0x2473u:
+      case 0x2474u:
+      case 0x2475u:
+      case 0x2476u:
+      case 0x2477u:
+      case 0x2478u:
+      case 0x2479u:
+      case 0x247Au:
+      case 0x247Bu:
+      case 0x247Cu:
+      case 0x247Du:
+      case 0x247Eu:
+      case 0x247Fu:
+      case 0x2480u:
+      case 0x2481u:
+      case 0x2482u:
+      case 0x2483u:
+      case 0x2484u:
+      case 0x2485u:
+      case 0x2486u:
+      case 0x2487u:
+      case 0x2488u:
+      case 0x2489u:
+      case 0x248Au:
+      case 0x248Bu:
+      case 0x248Cu:
+      case 0x248Du:
+      case 0x248Eu:
+      case 0x248Fu:
+      case 0x2490u:
+      case 0x2491u:
+      case 0x2492u:
+      case 0x2493u:
+      case 0x2494u:
+      case 0x2495u:
+      case 0x2496u:
+      case 0x2497u:
+      case 0x2498u:
+      case 0x2499u:
+      case 0x249Au:
+      case 0x249Bu:
+      case 0x24EAu:
         return 1;
       default:
         return 0;

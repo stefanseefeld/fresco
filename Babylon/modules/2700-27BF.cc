@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:29 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:26 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -91,85 +91,85 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2776:
+      case 0x2776u:
         return 1;
         break;
-      case 0x2777:
+      case 0x2777u:
         return 2;
         break;
-      case 0x2778:
+      case 0x2778u:
         return 3;
         break;
-      case 0x2779:
+      case 0x2779u:
         return 4;
         break;
-      case 0x277A:
+      case 0x277Au:
         return 5;
         break;
-      case 0x277B:
+      case 0x277Bu:
         return 6;
         break;
-      case 0x277C:
+      case 0x277Cu:
         return 7;
         break;
-      case 0x277D:
+      case 0x277Du:
         return 8;
         break;
-      case 0x277E:
+      case 0x277Eu:
         return 9;
         break;
-      case 0x2780:
+      case 0x2780u:
         return 1;
         break;
-      case 0x2781:
+      case 0x2781u:
         return 2;
         break;
-      case 0x2782:
+      case 0x2782u:
         return 3;
         break;
-      case 0x2783:
+      case 0x2783u:
         return 4;
         break;
-      case 0x2784:
+      case 0x2784u:
         return 5;
         break;
-      case 0x2785:
+      case 0x2785u:
         return 6;
         break;
-      case 0x2786:
+      case 0x2786u:
         return 7;
         break;
-      case 0x2787:
+      case 0x2787u:
         return 8;
         break;
-      case 0x2788:
+      case 0x2788u:
         return 9;
         break;
-      case 0x278A:
+      case 0x278Au:
         return 1;
         break;
-      case 0x278B:
+      case 0x278Bu:
         return 2;
         break;
-      case 0x278C:
+      case 0x278Cu:
         return 3;
         break;
-      case 0x278D:
+      case 0x278Du:
         return 4;
         break;
-      case 0x278E:
+      case 0x278Eu:
         return 5;
         break;
-      case 0x278F:
+      case 0x278Fu:
         return 6;
         break;
-      case 0x2790:
+      case 0x2790u:
         return 7;
         break;
-      case 0x2791:
+      case 0x2791u:
         return 8;
         break;
-      case 0x2792:
+      case 0x2792u:
         return 9;
         break;
       default:
@@ -179,33 +179,33 @@ namespace Babylon {
 
     bool is_Digit(const UCS4 uc) const {
       switch(uc) {
-      case 0x2776:
-      case 0x2777:
-      case 0x2778:
-      case 0x2779:
-      case 0x277A:
-      case 0x277B:
-      case 0x277C:
-      case 0x277D:
-      case 0x277E:
-      case 0x2780:
-      case 0x2781:
-      case 0x2782:
-      case 0x2783:
-      case 0x2784:
-      case 0x2785:
-      case 0x2786:
-      case 0x2787:
-      case 0x2788:
-      case 0x278A:
-      case 0x278B:
-      case 0x278C:
-      case 0x278D:
-      case 0x278E:
-      case 0x278F:
-      case 0x2790:
-      case 0x2791:
-      case 0x2792:
+      case 0x2776u:
+      case 0x2777u:
+      case 0x2778u:
+      case 0x2779u:
+      case 0x277Au:
+      case 0x277Bu:
+      case 0x277Cu:
+      case 0x277Du:
+      case 0x277Eu:
+      case 0x2780u:
+      case 0x2781u:
+      case 0x2782u:
+      case 0x2783u:
+      case 0x2784u:
+      case 0x2785u:
+      case 0x2786u:
+      case 0x2787u:
+      case 0x2788u:
+      case 0x278Au:
+      case 0x278Bu:
+      case 0x278Cu:
+      case 0x278Du:
+      case 0x278Eu:
+      case 0x278Fu:
+      case 0x2790u:
+      case 0x2791u:
+      case 0x2792u:
         return 1;
       default:
         return 0;
@@ -216,94 +216,94 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x2776:
+      case 0x2776u:
         return 1.000000;
         break;
-      case 0x2777:
+      case 0x2777u:
         return 2.000000;
         break;
-      case 0x2778:
+      case 0x2778u:
         return 3.000000;
         break;
-      case 0x2779:
+      case 0x2779u:
         return 4.000000;
         break;
-      case 0x277A:
+      case 0x277Au:
         return 5.000000;
         break;
-      case 0x277B:
+      case 0x277Bu:
         return 6.000000;
         break;
-      case 0x277C:
+      case 0x277Cu:
         return 7.000000;
         break;
-      case 0x277D:
+      case 0x277Du:
         return 8.000000;
         break;
-      case 0x277E:
+      case 0x277Eu:
         return 9.000000;
         break;
-      case 0x277F:
+      case 0x277Fu:
         return 10.000000;
         break;
-      case 0x2780:
+      case 0x2780u:
         return 1.000000;
         break;
-      case 0x2781:
+      case 0x2781u:
         return 2.000000;
         break;
-      case 0x2782:
+      case 0x2782u:
         return 3.000000;
         break;
-      case 0x2783:
+      case 0x2783u:
         return 4.000000;
         break;
-      case 0x2784:
+      case 0x2784u:
         return 5.000000;
         break;
-      case 0x2785:
+      case 0x2785u:
         return 6.000000;
         break;
-      case 0x2786:
+      case 0x2786u:
         return 7.000000;
         break;
-      case 0x2787:
+      case 0x2787u:
         return 8.000000;
         break;
-      case 0x2788:
+      case 0x2788u:
         return 9.000000;
         break;
-      case 0x2789:
+      case 0x2789u:
         return 10.000000;
         break;
-      case 0x278A:
+      case 0x278Au:
         return 1.000000;
         break;
-      case 0x278B:
+      case 0x278Bu:
         return 2.000000;
         break;
-      case 0x278C:
+      case 0x278Cu:
         return 3.000000;
         break;
-      case 0x278D:
+      case 0x278Du:
         return 4.000000;
         break;
-      case 0x278E:
+      case 0x278Eu:
         return 5.000000;
         break;
-      case 0x278F:
+      case 0x278Fu:
         return 6.000000;
         break;
-      case 0x2790:
+      case 0x2790u:
         return 7.000000;
         break;
-      case 0x2791:
+      case 0x2791u:
         return 8.000000;
         break;
-      case 0x2792:
+      case 0x2792u:
         return 9.000000;
         break;
-      case 0x2793:
+      case 0x2793u:
         return 10.000000;
         break;
       default:
@@ -313,36 +313,36 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x2776:
-      case 0x2777:
-      case 0x2778:
-      case 0x2779:
-      case 0x277A:
-      case 0x277B:
-      case 0x277C:
-      case 0x277D:
-      case 0x277E:
-      case 0x277F:
-      case 0x2780:
-      case 0x2781:
-      case 0x2782:
-      case 0x2783:
-      case 0x2784:
-      case 0x2785:
-      case 0x2786:
-      case 0x2787:
-      case 0x2788:
-      case 0x2789:
-      case 0x278A:
-      case 0x278B:
-      case 0x278C:
-      case 0x278D:
-      case 0x278E:
-      case 0x278F:
-      case 0x2790:
-      case 0x2791:
-      case 0x2792:
-      case 0x2793:
+      case 0x2776u:
+      case 0x2777u:
+      case 0x2778u:
+      case 0x2779u:
+      case 0x277Au:
+      case 0x277Bu:
+      case 0x277Cu:
+      case 0x277Du:
+      case 0x277Eu:
+      case 0x277Fu:
+      case 0x2780u:
+      case 0x2781u:
+      case 0x2782u:
+      case 0x2783u:
+      case 0x2784u:
+      case 0x2785u:
+      case 0x2786u:
+      case 0x2787u:
+      case 0x2788u:
+      case 0x2789u:
+      case 0x278Au:
+      case 0x278Bu:
+      case 0x278Cu:
+      case 0x278Du:
+      case 0x278Eu:
+      case 0x278Fu:
+      case 0x2790u:
+      case 0x2791u:
+      case 0x2792u:
+      case 0x2793u:
         return 1;
       default:
         return 0;

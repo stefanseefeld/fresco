@@ -64,7 +64,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -lBabylon -ldl -lpthread
 
-ALL             = UnicodeData Blocks
+ALL             = test UnicodeData Blocks
 
 world:		$(ALL)
 

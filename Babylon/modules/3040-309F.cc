@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:40 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:36 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -300,7 +300,7 @@ namespace Babylon {
     static const unsigned char _comb_cl[96];
     static const unsigned char m_bidir[96];
     static const unsigned char _decomp[96];
-    static const UCS2 m_decompStr[96][2];
+    static const UCS4 m_decompStr[96][2];
     static const unsigned char m_lb[96];
     map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const bitset<96> m_Composite;
@@ -373,7 +373,7 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Hiragana3040::m_decompStr[][2] = {
+  const UCS4 Hiragana3040::m_decompStr[][2] = {
     { 0x3040u, 0x0000u }, { 0x3041u, 0x0000u }, { 0x3042u, 0x0000u }, { 0x3043u, 0x0000u }, 
     { 0x3044u, 0x0000u }, { 0x3045u, 0x0000u }, { 0x3046u, 0x0000u }, { 0x3047u, 0x0000u }, 
     { 0x3048u, 0x0000u }, { 0x3049u, 0x0000u }, { 0x304Au, 0x0000u }, { 0x304Bu, 0x0000u }, 

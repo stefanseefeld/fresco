@@ -130,10 +130,14 @@ sub function {
 	if (($tmpstr =~ tr/ / /) > $self->{_ATTENTION_NEEDED} - 1) {
 	  $self->{_ATTENTION_NEEDED} = ($tmpstr =~ tr/ / /) + 1;
 	}
-	my @datas = split / /, $self->data($i);
-	foreach my $data (@datas) {
-	  if (hex($data) > 0xFFFF) {
-	    $self->{_MAX_LENGTH} = 4;
+	if (hex($bl_end) > 0xFFFF) {
+	  $self->{_MAX_LENGTH} = 4;
+	} else {
+	  my @datas = split / /, $self->data($i);
+	  foreach my $data (@datas) {
+	    if (hex($data) > 0xFFFF) {
+	      $self->{_MAX_LENGTH} = 4;
+	    }
 	  }
 	}
       }
@@ -199,10 +203,14 @@ sub var_def {
 	if (($tmpstr =~ tr/ / /) > $self->{_ATTENTION_NEEDED} - 1) {
 	  $self->{_ATTENTION_NEEDED} = ($tmpstr =~ tr/ / /) + 1;
 	}
-	my @datas = split / /, $self->data($i);
-	foreach my $data (@datas) {
-	  if (hex($data) > 0xFFFF) {
-	    $self->{_MAX_LENGTH} = 4;
+	if (hex($bl_end) > 0xFFFF) {
+	  $self->{_MAX_LENGTH} = 4;
+	} else {
+	  my @datas = split / /, $self->data($i);
+	  foreach my $data (@datas) {
+	    if (hex($data) > 0xFFFF) {
+	      $self->{_MAX_LENGTH} = 4;
+	    }
 	  }
 	}
       }
@@ -239,10 +247,14 @@ sub var {
 	if (($tmpstr =~ tr/ / /) > $self->{_ATTENTION_NEEDED} - 1) {
 	  $self->{_ATTENTION_NEEDED} = ($tmpstr =~ tr/ / /) + 1;
 	}
-	my @datas = split / /, $self->data($i);
-	foreach my $data (@datas) {
-	  if (hex($data) > 0xFFFF) {
-	    $self->{_MAX_LENGTH} = 4;
+	if (hex($bl_end) > 0xFFFF) {
+	  $self->{_MAX_LENGTH} = 4;
+	} else {
+	  my @datas = split / /, $self->data($i);
+	  foreach my $data (@datas) {
+	    if (hex($data) > 0xFFFF) {
+	      $self->{_MAX_LENGTH} = 4;
+	    }
 	  }
 	}
       }

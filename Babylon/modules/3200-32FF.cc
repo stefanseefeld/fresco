@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:46 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:42 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -99,64 +99,64 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x3220:
+      case 0x3220u:
         return 1.000000;
         break;
-      case 0x3221:
+      case 0x3221u:
         return 2.000000;
         break;
-      case 0x3222:
+      case 0x3222u:
         return 3.000000;
         break;
-      case 0x3223:
+      case 0x3223u:
         return 4.000000;
         break;
-      case 0x3224:
+      case 0x3224u:
         return 5.000000;
         break;
-      case 0x3225:
+      case 0x3225u:
         return 6.000000;
         break;
-      case 0x3226:
+      case 0x3226u:
         return 7.000000;
         break;
-      case 0x3227:
+      case 0x3227u:
         return 8.000000;
         break;
-      case 0x3228:
+      case 0x3228u:
         return 9.000000;
         break;
-      case 0x3229:
+      case 0x3229u:
         return 10.000000;
         break;
-      case 0x3280:
+      case 0x3280u:
         return 1.000000;
         break;
-      case 0x3281:
+      case 0x3281u:
         return 2.000000;
         break;
-      case 0x3282:
+      case 0x3282u:
         return 3.000000;
         break;
-      case 0x3283:
+      case 0x3283u:
         return 4.000000;
         break;
-      case 0x3284:
+      case 0x3284u:
         return 5.000000;
         break;
-      case 0x3285:
+      case 0x3285u:
         return 6.000000;
         break;
-      case 0x3286:
+      case 0x3286u:
         return 7.000000;
         break;
-      case 0x3287:
+      case 0x3287u:
         return 8.000000;
         break;
-      case 0x3288:
+      case 0x3288u:
         return 9.000000;
         break;
-      case 0x3289:
+      case 0x3289u:
         return 10.000000;
         break;
       default:
@@ -166,26 +166,26 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x3220:
-      case 0x3221:
-      case 0x3222:
-      case 0x3223:
-      case 0x3224:
-      case 0x3225:
-      case 0x3226:
-      case 0x3227:
-      case 0x3228:
-      case 0x3229:
-      case 0x3280:
-      case 0x3281:
-      case 0x3282:
-      case 0x3283:
-      case 0x3284:
-      case 0x3285:
-      case 0x3286:
-      case 0x3287:
-      case 0x3288:
-      case 0x3289:
+      case 0x3220u:
+      case 0x3221u:
+      case 0x3222u:
+      case 0x3223u:
+      case 0x3224u:
+      case 0x3225u:
+      case 0x3226u:
+      case 0x3227u:
+      case 0x3228u:
+      case 0x3229u:
+      case 0x3280u:
+      case 0x3281u:
+      case 0x3282u:
+      case 0x3283u:
+      case 0x3284u:
+      case 0x3285u:
+      case 0x3286u:
+      case 0x3287u:
+      case 0x3288u:
+      case 0x3289u:
         return 1;
       default:
         return 0;
@@ -717,7 +717,7 @@ namespace Babylon {
     static const bitset<256> m_is_defined;
     static const unsigned char _cat[256];
     static const unsigned char _decomp[256];
-    static const UCS2 m_decompStr[256][2];
+    static const UCS4 m_decompStr[256][2];
     static const bitset<256> m_Composite;
 
   }; // class Enclosed_CJK_Letters_and_Months3200
@@ -794,7 +794,7 @@ namespace Babylon {
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Enclosed_CJK_Letters_and_Months3200::m_decompStr[][2] = {
+  const UCS4 Enclosed_CJK_Letters_and_Months3200::m_decompStr[][2] = {
     { 0x0028u, 0x1100u }, { 0x0028u, 0x1102u }, { 0x0028u, 0x1103u }, { 0x0028u, 0x1105u }, 
     { 0x0028u, 0x1106u }, { 0x0028u, 0x1107u }, { 0x0028u, 0x1109u }, { 0x0028u, 0x110Bu }, 
     { 0x0028u, 0x110Cu }, { 0x0028u, 0x110Eu }, { 0x0028u, 0x110Fu }, { 0x0028u, 0x1110u }, 

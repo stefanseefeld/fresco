@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon,  8 Jan 2001 23:32:45 +0100.
+ * ftp.unicode.org on Wed, 10 Jan 2001 16:57:41 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -99,16 +99,16 @@ namespace Babylon {
       if (!is_defined(uc))
         return 0;
       switch(uc) {
-      case 0x3192:
+      case 0x3192u:
         return 1.000000;
         break;
-      case 0x3193:
+      case 0x3193u:
         return 2.000000;
         break;
-      case 0x3194:
+      case 0x3194u:
         return 3.000000;
         break;
-      case 0x3195:
+      case 0x3195u:
         return 4.000000;
         break;
       default:
@@ -118,10 +118,10 @@ namespace Babylon {
 
     bool is_Numeric(const UCS4 uc) const {
       switch(uc) {
-      case 0x3192:
-      case 0x3193:
-      case 0x3194:
-      case 0x3195:
+      case 0x3192u:
+      case 0x3193u:
+      case 0x3194u:
+      case 0x3195u:
         return 1;
       default:
         return 0;
@@ -289,7 +289,7 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const unsigned char _cat[16];
     static const unsigned char _decomp[16];
-    static const UCS2 m_decompStr[16];
+    static const UCS4 m_decompStr[16];
 
   }; // class Kanbun3190
 
@@ -303,7 +303,7 @@ namespace Babylon {
     DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER
   };
 
-  const UCS2 Kanbun3190::m_decompStr[] = {
+  const UCS4 Kanbun3190::m_decompStr[] = {
     0x3190u, 0x3191u, 0x4E00u, 0x4E8Cu, 
     0x4E09u, 0x56DBu, 0x4E0Au, 0x4E2Du, 
     0x4E0Bu, 0x7532u, 0x4E59u, 0x4E19u, 
