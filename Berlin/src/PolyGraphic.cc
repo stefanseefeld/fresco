@@ -37,7 +37,7 @@ public:
   {
     Trace trace("PolyGraphic::Iterator::child");
     MutexGuard guard(parent->_mutex);
-    if (cursor > parent->_children.size()) Warsaw::Graphic::_nil();
+    if (cursor > parent->_children.size()) return Warsaw::Graphic::_nil();
     return RefCount_var<Warsaw::Graphic>::increment(parent->_children[cursor].peer);
   }
   virtual void next() { cursor++;}
