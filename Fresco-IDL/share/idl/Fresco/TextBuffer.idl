@@ -77,10 +77,10 @@ module Warsaw
       void insert_string(in Unistring u);
       //. Remove d characters backward.
       //. This is relative to the current cursor position.
-      void remove_backward(in unsigned long d);
+      void remove_backward(in long d);
       //. Remove d characters forward.
       //. This is relative to the current cursor position.
-      void remove_forward(in unsigned long d);
+      void remove_forward(in long d);
       //. Clear the buffer. It will be empty afterwards.
       void clear();
 
@@ -97,8 +97,6 @@ module Warsaw
       //. this TextBuffer if it stores the string in visual order.
       TextBuffer get_visual_buffer(); 
     };
-
-    interface VisualTextBuffer : TextBuffer, Subject, Observer { };
 };
 
 #endif
