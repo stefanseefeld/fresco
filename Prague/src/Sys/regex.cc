@@ -31,9 +31,9 @@ using namespace Prague;
 string regex::error(int errcode)
 {
   if (errcode == 0) return string();
-  size_t length = regerror(errcode, rx, 0, 0);
+  size_t length = regerror(errcode, info->rx, 0, 0);
   char *buffer = new char[length];
-  regerror(errcode, rx, buffer, length);
+  regerror(errcode, info->rx, buffer, length);
   string text = buffer;
   delete[] buffer;
   return text;
@@ -44,10 +44,49 @@ string regex::error(int errcode)
  * @Description{}
  */
 regex::regex(const string &p, int flags)
+  : info(new rx_t(flags & extended))
 {
-    rx = new regex_t;
-    int errcode = regcomp(rx, p.c_str(), flags);
-    if (errcode) { delete rx; rx = 0;}
+  info->rx = new regex_t;
+  int errcode = regcomp(info->rx, p.c_str(), info->extended ? extended : 0);
+  if (errcode) { delete info->rx; info->rx = 0;}
+}
+
+/* @Method{regex::regex(const regex &r)}
+ *
+ * @Description{}
+ */
+regex::regex(const regex &r) : info(r.info)
+{
+  info->count++;
+}
+
+/* @Method{regex &regex::operator =(const regex &r)}
+ *
+ * @Description{}
+ */
+regex &regex::operator = (const regex &r)
+{
+  if (!--info->count) delete info;
+  info = r.info;
+  info->count++;
+  return *this;
+}
+
+/* @Method{regex &regex::operator =(const string &p)}
+ *
+ * @Description{}
+ */
+regex &regex::operator = (const string &p)
+{
+  if (info->count != 1)
+    {
+      info->count--;
+      info = new rx_t(info->extended);
+    }
+  info->rx = new regex_t;
+  int errcode = regcomp(info->rx, p.c_str(), extended);
+  if (errcode) { delete info->rx; info->rx = 0;}
+  return *this;
 }
 
 /* @Method{regex::~regex()}
@@ -56,8 +95,7 @@ regex::regex(const string &p, int flags)
  */
 regex::~regex()
 {
-  if (rx) regfree(rx);
-  delete rx;
+  if (!--info->count) delete info;
 }
 
 /*
@@ -67,12 +105,12 @@ regex::~regex()
  */
 rxmatch regex::search(const string &s, int i) const
 {
-  int n = rx->re_nsub + 1;
+  int n = info->rx->re_nsub + 1;
   regmatch_t *rm = new regmatch_t [n];
   if (i >= 0)
     while (s[i] != '\0')
       {
- 	if (regexec(rx, s.c_str() + i, n, rm, i ? REG_NOTBOL : 0) == 0) return rxmatch(s, i, n, rm);
+ 	if (regexec(info->rx, s.c_str() + i, n, rm, i ? REG_NOTBOL : 0) == 0) return rxmatch(s, i, n, rm);
 	i++;
       }
   else
@@ -80,7 +118,7 @@ rxmatch regex::search(const string &s, int i) const
       i = s.length() - 1;
       do
         {
-	  if (regexec(rx, s.c_str() + i, n, rm, i ? REG_NOTBOL : 0) == 0) return rxmatch(s, i, n, rm);
+	  if (regexec(info->rx, s.c_str() + i, n, rm, i ? REG_NOTBOL : 0) == 0) return rxmatch(s, i, n, rm);
           i--;
         }
       while (i >= 0);
@@ -99,7 +137,7 @@ string::size_type regex::match(const string &s, int i) const
   if (i < 0) i += s.length();
   if (i > (int) s.length()) return string::npos;
   regmatch_t rm;  
-  int errcode = regexec(rx, s.c_str() + i, 1, &rm, 0);
+  int errcode = regexec(info->rx, s.c_str() + i, 1, &rm, 0);
   if (errcode == 0 && rm.rm_so >= 0) return rm.rm_eo - rm.rm_so;
   return string::npos;
 }

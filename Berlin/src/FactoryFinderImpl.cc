@@ -45,34 +45,28 @@ FactoryFinderImpl::FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr theFactory
 
 //These two global variables are for storing the
 //static member data in FactoryFinderImpl...
-omni_mutex FactoryFinderImpl::_instance_mutex;
+Mutex FactoryFinderImpl::_instance_mutex;
 FactoryFinderImpl *FactoryFinderImpl::_instance;
 
 // this takes care of singleton work.
-FactoryFinderImpl *FactoryFinderImpl::getInstance(GenericFactoryImpl *theFactory) {
-  _instance_mutex.lock();
-  FactoryFinderImpl *i;
-  if (_instance == NULL) {
-    _instance = new FactoryFinderImpl(theFactory->_this());
-    _instance->_obj_is_ready(theFactory->_boa());
-  } 
-  i = _instance;
-  _instance_mutex.unlock();
-  return i;
+FactoryFinderImpl *FactoryFinderImpl::getInstance(GenericFactoryImpl *theFactory)
+{
+  MutexGuard guard(_instance_mutex);
+  if (!_instance)
+    {
+      _instance = new FactoryFinderImpl(theFactory->_this());
+      _instance->_obj_is_ready(theFactory->_boa());
+    } 
+  return _instance;
 }
 
 // this is the dreaded singleton-which-might-explode method.
-FactoryFinderImpl *FactoryFinderImpl::getInstance() throw (unInitializedGenericFactoryException) {
-  _instance_mutex.lock();
-  FactoryFinderImpl *i;
-  if (_instance == NULL) {
-    _instance_mutex.unlock();
+FactoryFinderImpl *FactoryFinderImpl::getInstance() throw (unInitializedGenericFactoryException)
+{
+  MutexGuard guard(_instance_mutex);
+  if (!_instance)
     throw unInitializedGenericFactoryException();
-  } else {
-    i = _instance;
-    _instance_mutex.unlock();
-    return i;
-  }
+  return _instance;
 }
 
 

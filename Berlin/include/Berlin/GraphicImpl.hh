@@ -31,6 +31,7 @@
 #include <Warsaw/Graphic.hh>
 #include <Berlin/CloneableImpl.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/Thread.hh>
 #include <set>
 
 class GraphicImpl : implements(Graphic), public virtual CloneableImpl
@@ -73,25 +74,8 @@ public:
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:
   void allocateParents(Allocation_ptr);
-//   typedef omni_mutex_lock Guard;
-  class Guard
-  {
-  public:
-    Guard(omni_mutex &m) : mutex(m)
-      {
-	cout << "locking Graphic " << this << endl;
-	mutex.lock();
-      }
-    ~Guard()
-      {
-	cout << "unlocking Graphic " << this << endl;
-	mutex.unlock();	
-      }
-  private:
-    omni_mutex &mutex;
-  };
   plist_t parents;
-  omni_mutex parentMutex;
+  Mutex parentMutex;
 };
 
 #endif /* _GraphicImpl_hh */

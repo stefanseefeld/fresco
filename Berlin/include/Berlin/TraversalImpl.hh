@@ -61,8 +61,6 @@ class TraversalImpl : implements(Traversal)
   void pop();
  private:
   stack_t stack;
-  omni_mutex stackMutex;
-  typedef omni_mutex_lock Guard;
 };
 
 #endif /* _TraversalImpl_h */

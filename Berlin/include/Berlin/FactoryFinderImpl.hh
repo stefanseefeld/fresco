@@ -33,6 +33,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Cloneable.hh>
 #include <Berlin/GenericFactoryImpl.hh>
+#include <Berlin/Thread.hh>
 
 class unInitializedGenericFactoryException {};
 class FactoryFinderImpl;
@@ -54,7 +55,7 @@ protected:
 
 private:
   static FactoryFinderImpl *_instance;
-  static omni_mutex _instance_mutex;
+  static Mutex _instance_mutex;
 
   // never call this! It does not exist! I am hiding it from you!
   FactoryFinderImpl();

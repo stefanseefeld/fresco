@@ -28,8 +28,8 @@
 
 #include <vector>
 #include <string>
-#include <config.hh>
-#include <omnithread.h>
+#include <Warsaw/config.hh>
+#include <Berlin/Thread.hh>
 
 #ifndef __DEBUG__
 #define __DEBUG__
@@ -48,7 +48,7 @@ public:
 
 private:
   static vector<bool> activeDebugGroups;
-  static omni_mutex cerrMutex;
+  static Mutex cerrMutex;
 };
 
 

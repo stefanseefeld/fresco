@@ -27,63 +27,35 @@
 namespace Prague
 {
 
-/* @Class {Memory}
- *
- * @Description{wrappes low level memory manipulation}
- */
-class Memory
+namespace Memory
 {
-public:
-  inline static void *copy(const void *, void *, unsigned long);
-  inline static void *move(const void *, void *, unsigned long);
-  inline static void *zero(void *, unsigned long);
-  inline static int  compare(const void *, const void *, unsigned long);
-};
-
-/* @Method{void Memory::copy(const void *from, void *to, unsigned long n)}
- *
- * @Description{copies @var{n} bytes from position @var{from} to position @var{to}}
- */
-void *Memory::copy(const void *from, void *to, unsigned long n)
+template <class T>
+T *copy(const T *from, T *to, unsigned long n)
 {
   if (n > 0)
     {
 #if defined(__sun) && !defined(__SVR4)
       return bcopy(from, to, n);
 #else
-      return memmove(to, from, size_t(n));
+      return reinterpret_cast<T *>(memmove(to, from, size_t(n)));
 #endif
     }
   return to;
 }
-
-/* @Method{void Memory::move(const void *from, void *to, unsigned long n)}
- *
- * @Description{moves @var{n} bytes from position @var{from} to position @var{to}}
- */
-void *Memory::move(const void *from, void *to, unsigned long n)
+template <class T>
+T *move(const T *from, T *to, unsigned long n)
 {
-  if (n > 0) return memmove(to, from, size_t(n));
+  if (n > 0) return reinterpret_cast<T *>(memmove(to, from, size_t(n)));
   else return to;
 }
+template <class T>
+T *set(T *b, unsigned long n, T c) { return reinterpret_cast<T *>(memset(b, c, size_t(n)));}
+template <class T>
+T *zero(T *m, unsigned long l) { return set(m, l, 0);}
+template <class T>
+int compare(const T *p, const T *q, unsigned long n) { return memcmp(p, q, size_t(n));}
 
-/* @Method{void Memory::zero(void *b, unsigned long n)}
- *
- * @Description{sets @var{n} bytes to zero starting at @var{b}}
- */
-void *Memory::zero(void *b, unsigned long n)
-{
-  return memset(b, 0, size_t(n));
-}
-
-/* @Method{void Memory::compare(const void *p, const void *q, unsigned long n)}
- *
- * @Description{compares @var{n} bytes starting at @var{p} and @var{q}. The returned value is the position of the first mismatch.}
- */
-int Memory::compare(const void *p, const void *q, unsigned long n)
-{
-  return memcmp(p, q, size_t(n)) != 0;
-}
+};
 
 };
 

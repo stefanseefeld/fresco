@@ -33,6 +33,7 @@
 #include "Warsaw/Graphic.hh"
 #include "Berlin/FactoryFinderImpl.hh"
 #include "Berlin/GenericFactoryImpl.hh"
+#include "Berlin/Thread.hh"
 
 class ServerContextManagerImpl : implements(ServerContextManager) {
 
@@ -45,7 +46,7 @@ public:
 
 protected:
   FactoryFinderImpl *myFactoryFinder;
-  omni_mutex myMutex;
+  Mutex myMutex;
   vector<ServerContext_var> allocatedServerContexts;
   Stage_var mySceneRoot;
 

@@ -25,6 +25,7 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Subject.hh"
 #include "Berlin/CloneableImpl.hh"
+#include "Berlin/Thread.hh"
 #include <list>
 
 class SubjectImpl : implements(Subject), virtual public CloneableImpl
@@ -36,11 +37,10 @@ public:
   void notify();
   void block(CORBA::Boolean b);  
 protected:
-  typedef omni_mutex_lock Guard;
   list<Observer_var> observers;
   CORBA::Boolean blocked;
-  omni_mutex observerMutex;
-  omni_mutex autoMutex;
+  Mutex observerMutex;
+  Mutex myMutex;
 };
 
 #endif /* _SubjectImpl_hh */

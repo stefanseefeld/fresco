@@ -31,23 +31,20 @@
 
 // static singletons mapping
 map<string, CosLifeCycle::LifeCycleObject_var> ServerContextImpl::singletons;
-omni_mutex ServerContextImpl::singletons_mutex;
+Mutex ServerContextImpl::singletons_mutex;
 Stage_var ServerContextImpl::ourSceneRoot;
 
 ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, 
 				     ClientContext_ptr theClient, Stage_ptr root) {
     _ff = theFactoryFinder;
     _client = theClient;
-    singletons_mutex.lock();
+    MutexGuard guard(singletons_mutex);
     if (CORBA::is_nil(ourSceneRoot)) ourSceneRoot = Stage::_duplicate(root);
-    singletons_mutex.unlock();
 }
 
 Stage_ptr ServerContextImpl::sceneRoot() {
-    singletons_mutex.lock();
-    Stage_ptr tmp = Stage::_duplicate(ourSceneRoot);
-    singletons_mutex.unlock();
-    return tmp;
+    MutexGuard guard(singletons_mutex);
+    return Stage::_duplicate(ourSceneRoot);
 }
 
 CosLifeCycle::FactoryFinder_ptr ServerContextImpl::myFactoryFinder() {
@@ -64,7 +61,7 @@ ClientContext_ptr ServerContextImpl::myClient() {
 // (ServerContextManager) who will most likely destroy this ServerContext.
 
 bool ServerContextImpl::verify() {
-  _ServerContext_mutex.lock();
+  MutexGuard guard (_ServerContext_mutex);
   bool clientIsStillThere = true;
   try {
     clientIsStillThere = _client->stillAlive();
@@ -80,7 +77,6 @@ bool ServerContextImpl::verify() {
       }
     }
   }
-  _ServerContext_mutex.unlock();
   return clientIsStillThere;
 }
     
@@ -88,39 +84,34 @@ bool ServerContextImpl::verify() {
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
 void ServerContextImpl::setSingleton(const char *name, CosLifeCycle::LifeCycleObject_ptr singleton) 
-  throw (SecurityException, SingletonFailureException){
+  throw (SecurityException, SingletonFailureException)
+{
   //  this->delSingleton(name);
-  singletons_mutex.lock();
+  MutexGuard guard (singletons_mutex);
   singletons[name] = singleton;
-  singletons_mutex.unlock();
 }
 
 
 void ServerContextImpl::delSingleton(const char *name) 
-  throw (SecurityException, SingletonFailureException){
-  singletons_mutex.lock();  
+  throw (SecurityException, SingletonFailureException)
+{
+  MutexGuard guard (singletons_mutex);
   map<string, CosLifeCycle::LifeCycleObject_var>::iterator p = singletons.find(name);
   if (p != singletons.end()) {
     p->second->remove();
     singletons.erase(p);
   } 
-  singletons_mutex.unlock();  
 }
 
 
 CosLifeCycle::LifeCycleObject_ptr ServerContextImpl::getSingleton(const char *name) 
-  throw (SecurityException, SingletonFailureException){
-  singletons_mutex.lock();
+  throw (SecurityException, SingletonFailureException)
+{
+  MutexGuard guard (singletons_mutex);
   CosLifeCycle::LifeCycleObject_ptr tmp;
   map<string, CosLifeCycle::LifeCycleObject_var>::iterator p = singletons.find(name);
-  if (p != singletons.end()) {
-    tmp = p->second;
-  } else {
-    singletons_mutex.unlock();  
-    throw SingletonFailureException();
-  }
-  singletons_mutex.unlock();  
-  return tmp;
+  if (p != singletons.end()) return p->second;
+  throw SingletonFailureException();
 }
 
 
@@ -131,7 +122,7 @@ CosLifeCycle::LifeCycleObject_ptr ServerContextImpl::getSingleton(const char *na
 CORBA::Object_ptr ServerContextImpl::create(const char* interfaceName)    
   throw (SecurityException, CreationFailureException)
 {
-  _ServerContext_mutex.lock();
+  MutexGuard guard(_ServerContext_mutex);
 
   // make the string into a key
   CosLifeCycle::Key objectKey;
@@ -159,7 +150,6 @@ CORBA::Object_ptr ServerContextImpl::create(const char* interfaceName)
   // save a reference for future destroying purposes  
   allocatedObjects.push_back(CORBA::Object::_duplicate(newObj)); 
 
-  _ServerContext_mutex.unlock();
   return CORBA::Object::_duplicate(newObj);
 }
 

@@ -61,14 +61,12 @@ TraversalImpl::~TraversalImpl()
 
 Region_ptr TraversalImpl::allocation()
 {
-  Guard guard(stackMutex);
   Region_var region = stack.back().allocation;
   return region;
 }
 
 Transform_ptr TraversalImpl::transformation() 
 {
-  Guard guard(stackMutex);
   Transform_var transform = stack.back().transformation;
   return transform;
 }
@@ -76,7 +74,6 @@ Transform_ptr TraversalImpl::transformation()
 CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin) 
 {
   bool b = false;
-  Guard guard(stackMutex);
   State &state = stack.back();
   Region_ptr r = state.allocation;
   if (!CORBA::is_nil(r))

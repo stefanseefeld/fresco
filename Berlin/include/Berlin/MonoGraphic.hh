@@ -28,6 +28,7 @@
 #define _MonoGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/Thread.hh>
 
 class MonoGraphic : virtual public GraphicImpl
 {
@@ -50,9 +51,8 @@ public:
   virtual void allocate(Graphic_ptr, Allocation_ptr);
 protected:
   virtual void allocateChild(Allocation::Info &);
-  typedef omni_mutex_lock Guard;
   Graphic_var child;
-  omni_mutex childMutex;
+  Mutex childMutex;
 };
 
 #endif /* _MonoGraphic_hh */

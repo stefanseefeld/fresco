@@ -31,19 +31,19 @@
 MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()
 {
-  Guard guard(childMutex);
+  MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->removeParent(_this());
 }
 
 Graphic_ptr MonoGraphic::body()
 {
-  Guard guard(childMutex);
+  MutexGuard guard(childMutex);
   return child;
 }
 
 void MonoGraphic::body(Graphic_ptr c)
 {
-  Guard guard(childMutex);
+  MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->removeParent(_this());
   child = Graphic::_duplicate(c);
   child->addParent(_this());
@@ -51,13 +51,13 @@ void MonoGraphic::body(Graphic_ptr c)
 
 void MonoGraphic::append(Graphic_ptr c)
 {
-  Guard guard(childMutex);
+  MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->append(c);
 }
 
 void MonoGraphic::prepend(Graphic_ptr c)
 {
-  Guard guard(childMutex);
+  MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->prepend(c);
 }
 

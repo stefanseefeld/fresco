@@ -78,13 +78,17 @@ public:
   bool chmod(access);
   bool mv(const string &);
   bool rm();
+  static string BaseName(const string &s)
+    {
+      string::size_type p = s.find_last_of('/');
+      return p == string::npos ? s : s.substr(p + 1);
+    }
 protected:
   struct stat status;
   string longname;
   string shortname;
   bool getStatus() { if (stat(longname.c_str(), &status) == -1) { status.st_mode = 0; error = errno; return false;} return true;}
   const char *lastError() const;
-  static string BaseName(const string &s) { return s.substr(s.find_last_of('/') + 1);}
   int error;
 private:
 };

@@ -33,13 +33,13 @@ BoundedRangeImpl::~BoundedRangeImpl()
 
 Coord BoundedRangeImpl::lower()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return l;
 }
 
 void BoundedRangeImpl::lower(Coord ll)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (ll == l) return;
   l = ll;
   if (lv < l) lv = l;
@@ -49,13 +49,13 @@ void BoundedRangeImpl::lower(Coord ll)
 
 Coord BoundedRangeImpl::upper()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return u;
 }
 
 void BoundedRangeImpl::upper(Coord uu)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (uu == u) return;
   u = uu;
   if (lv > u) lv = u;
@@ -65,31 +65,31 @@ void BoundedRangeImpl::upper(Coord uu)
 
 Coord BoundedRangeImpl::step()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return s;
 }
 
 void BoundedRangeImpl::step(Coord ss)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   s = ss;
 }
 
 Coord BoundedRangeImpl::page()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return p;
 }
 
 void BoundedRangeImpl::page(Coord pp)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   p = pp;
 }
 
 void BoundedRangeImpl::forward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = uv + s > u ? u - uv : s;
   if (t <= 0.) return;
   lv += t;
@@ -99,7 +99,7 @@ void BoundedRangeImpl::forward()
 
 void BoundedRangeImpl::backward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = lv - s < l ? lv - l : s;
   if (t <= 0.) return;
   lv -= t;
@@ -109,7 +109,7 @@ void BoundedRangeImpl::backward()
 
 void BoundedRangeImpl::fastforward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = uv + p > u ? u - uv : p;
   if (t <= 0.) return;
   lv += t;
@@ -119,7 +119,7 @@ void BoundedRangeImpl::fastforward()
 
 void BoundedRangeImpl::fastbackward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = lv - p < l ? lv - l : p;
   if (t <= 0.) return;
   lv -= t;
@@ -129,7 +129,7 @@ void BoundedRangeImpl::fastbackward()
 
 void BoundedRangeImpl::begin()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = lv - l;
   if (t == 0.) return;
   lv -= t;
@@ -139,7 +139,7 @@ void BoundedRangeImpl::begin()
 
 void BoundedRangeImpl::end()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = u - uv;
   if (t == 0.) return;
   lv += t;
@@ -149,7 +149,7 @@ void BoundedRangeImpl::end()
 
 void BoundedRangeImpl::lvalue(Coord vv)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
   if (vv == lv) return;
@@ -159,14 +159,14 @@ void BoundedRangeImpl::lvalue(Coord vv)
 
 Coord BoundedRangeImpl::lvalue()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return lv;
 }
 
 
 void BoundedRangeImpl::uvalue(Coord vv)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
   if (vv == uv) return;
@@ -176,14 +176,14 @@ void BoundedRangeImpl::uvalue(Coord vv)
 
 Coord BoundedRangeImpl::uvalue()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return uv;
 }
 
 
 void BoundedRangeImpl::adjust(Coord d)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t =
     uv + d > u ? u - uv :
     lv + d < l ? lv - l : d;

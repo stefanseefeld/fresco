@@ -45,8 +45,8 @@ TEX         = @TEX@
 DVIPS       = @DVIPS@
 
 # Compilation and linking flags.
-CFLAGS	   	= -Wall -Wno-unused -I../../../include
-CXXFLAGS   	= -Wall -Wno-unused -I../../../include
+CFLAGS	   	= -Wall -I../../../include
+CXXFLAGS   	= -Wall -I../../../include
 LDFLAGS    	= -L../../../lib
 OPTFLAGS	= -O3
 SOFLAGS		= -fpic
@@ -63,13 +63,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-world:	Timer
-
-Timer:		Timer.o
-		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
-
-clean:	
-		rm -f *.o *.d *~ core Timer
+include Examples.mk
 
 distclean:	clean
 

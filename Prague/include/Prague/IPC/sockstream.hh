@@ -25,7 +25,7 @@
 #ifndef _sockstream_hh
 #define _sockstream_hh
 
-#include <Prague/IPC/socketbuf.hh>
+#include <Prague/IPC/sockbuf.hh>
 #include <iostream>
 
 namespace Prague

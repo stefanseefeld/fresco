@@ -28,6 +28,7 @@
 #include "Warsaw/Cloneable.hh"
 #include "Warsaw/ServerContext.hh"
 #include "Warsaw/Stage.hh"
+#include "Berlin/Thread.hh"
 #include <vector>
 #include <string>
 #include <map>
@@ -62,12 +63,12 @@ protected:
   
   CosLifeCycle::FactoryFinder_var _ff;
   ClientContext_var _client;
-  omni_mutex _ServerContext_mutex;
+  Mutex _ServerContext_mutex;
   vector<CORBA::Object_var> allocatedObjects;
   
   // things which all sessions share access to
   static map<string, CosLifeCycle::LifeCycleObject_var> singletons;
-  static omni_mutex singletons_mutex;
+  static Mutex singletons_mutex;
   static Stage_var ourSceneRoot;
 };
 

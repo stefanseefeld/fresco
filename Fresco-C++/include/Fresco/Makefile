@@ -1,51 +1,99 @@
+# $Id$
+#
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-# http:#www.berlin-consortium.org
+# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# http://www.berlin-consortium.org
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Library General Public License
-# as published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
+# Library General Public License for more details.
 #
 # You should have received a copy of the GNU Library General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-#
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
 
-TOPDIR=../..
-OS_ARCH='Linux'
+SHELL	= /bin/sh
 
-DIR_CPPFLAGS := -D_MIT_POSIX_THREADS -D_REENTRANT -D__OSVERSION__=2 -D__OMNIORB2__ -D__x86__
-DIR_CXXFLAGS := -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread 
-DIR_INCLUDES :=  -I.  
-DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
-		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 
+cpath	= ../../config
+ipath	= ../../include
+lpath	= ../../lib
+dpath	= dep
+opath	= obj
+rpath	= $(lpath)
 
-STATIC_INTERFACES := 	BoundedValue.idl BoundedRange.idl   Damage.idl	LayoutKit.idl	Pencil.idl \
-			ClientContext.idl ServerContext.idl 	Drawable.idl	LifeCycle.idl	Transform.idl \
-			Cloneable.idl	DrawingKit.idl	FigureKit.idl	Region.idl \
-			Graphic.idl	Metrics.idl	Screen.idl \
-			CommandKit.idl	Grid.idl Viewport.idl Stage.idl	Naming.idl	Subject.idl \
-			Telltale.idl TextBuffer.idl	Traversal.idl	Text.idl		WidgetKit.idl
+include $(cpath)/local.mk
 
-DYNAMIC_INTERFACES := Message.idl Event.idl Types.idl Style.idl
+CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I.
+CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
+LDFLAGS	= -shared -rdynamic
+LIBS	+= $(ORBLIBS)
 
-IDLSRCS := Naming.idl $(STATIC_INTERFACES) $(DYNAMIC_INTERFACES) 
+DYNINT	= Message.idl Event.idl Types.idl Style.idl
+STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable.idl \
+	  Drawable.idl Pencil.idl DrawingKit.idl \
+	  Damage.idl Transform.idl Region.idl Traversal.idl Graphic.idl Screen.idl \
+	  FigureKit.idl \
+	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
+	  CommandKit.idl \
+	  Subject.idl Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl WidgetKit.idl \
+	  Metrics.idl Text.idl 
 
-SO_TARGET := libWarsaw.so 
-SO_MAJOR_libWarsaw.so := 0
-SO_MINOR_libWarsaw.so := 0
-SO_PATCH_libWarsaw.so := 1
+INT	= $(DYNINT) $(STATINT)
+DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
+SRC	= $(patsubst %.idl, %SK.cc, $(INT)) $(patsubst %.idl, %DynSK.cc, $(DYNINT))
+OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
+TARGET	= $(lpath)/libWarsaw.so
 
-CXXSRCS := $(STATIC_INTERFACES:.idl=SK.cc) 
-CXXSRCS += $(DYNAMIC_INTERFACES:.idl=DynSK.cc) $(DYNAMIC_INTERFACES:.idl=SK.cc)
-SO_OBJS_libWarsaw.so := $(CXXSRCS:.cc=.o) 
+vpath %.d $(dpath)
 
-include $(TOPDIR)/config/rules.mk
+world:	$(TARGET)
 
+$(TARGET):	$(OBJ)
+		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lstdc++
+		strip --strip-unneeded $@
 
+$(dpath)/%.d:	%.idl
+		@echo making dependencies for $<
+		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
+		@$(SHELL) -ec "$(CXX) -x c++ -M $(CPPFLAGS) $(CXXFLAGS) $< \
+		| perl -e 'undef \$$/; while(<>)\
+		    {\
+	    	      (/^(.*)\\.idl\\.o:((.|\\n)*)/);\
+		      \$$file = \$$1;\
+		      \$$dep = \$$2;\
+		      print \"\$$1\", \"SK.cc \", \$$file, \"DynSK.cc \",\
+			    \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
+		      \$$file .= \"SK\";\
+		      \$$dep =~ s/\\.idl/\\.hh/g;\
+		      print \"$(opath)\/\", \$$file, \".o\", \": \", \$$file, \".cc\", \$$dep ;\
+		    }' > $@"
+%.hh:		%.idl
+		$(IDL) $(IDLFLAGS) $< 
+%SK.cc:		%.idl
+		$(IDL) $(IDLFLAGS) $<
+%DynSK.cc:	%.idl
+		$(IDL) $(DYNIDLFLAGS) $<
+$(opath)/%.o:	%.cc
+		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+clean:	
+		rm -f $(opath)/*.o $(dpath)/*.d
+		rm *.cc *.hh
+
+distclean:	clean
+		rm -f $(TARGET)
+		rm -rf $(opath) $(dpath)
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),distclean) 
+-include $(DEP)
+endif 
+endif 

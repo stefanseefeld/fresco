@@ -24,17 +24,15 @@
 #include "Berlin/Debug.hh"
 
 vector<bool> debug::activeDebugGroups;
-omni_mutex debug::cerrMutex;
+Mutex debug::cerrMutex;
   
 void debug::log(string msg, debugGroup g) {
   // XXX - Fixme - this should be initted early on to prevent this
   if ((signed)activeDebugGroups.size() < g)
     activeDebugGroups = vector<bool>(12, true);
-  
-  cerrMutex.lock();
+  MutexGuard guard(cerrMutex);
   if (activeDebugGroups[g])
     cerr << msg << endl;
-  cerrMutex.unlock();
 }
 
 void debug::set(debugGroup g) { activeDebugGroups[g] = true; }

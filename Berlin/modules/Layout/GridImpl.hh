@@ -31,6 +31,7 @@
 #include <Warsaw/Grid.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/CloneableImpl.hh>
+#include <vector>
 
 class GridImpl;
 

@@ -24,7 +24,7 @@
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 
-static omni_mutex ggi_mutex;
+static Mutex ggi_mutex;
 
 ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
   : screen(s), drawing(d), visual(drawing->getVisual())
@@ -39,7 +39,7 @@ ScreenManager::~ScreenManager()
 
 void ScreenManager::damage(Region_ptr r)
 {
-    damageMutex.lock();
+  MutexGuard guard(damageMutex);
     RegionImpl *region = new RegionImpl;
     region->_obj_is_ready(CORBA::BOA::getBOA());
     region->copy(r);
@@ -49,7 +49,6 @@ void ScreenManager::damage(Region_ptr r)
      	 << '(' << region->lower.x << ',' << region->lower.y << "),("
      	 << region->upper.x << ',' << region->upper.y << ')' << endl;
     //#endif
-    damageMutex.unlock();
 
     // this injects a damage notice into the event queue, waking up
     // the sleeping event thread.

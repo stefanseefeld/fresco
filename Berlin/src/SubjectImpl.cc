@@ -26,29 +26,29 @@ SubjectImpl::SubjectImpl()
 
 void SubjectImpl::attach(Observer_ptr o)
 {
-  Guard guard(observerMutex);
+  MutexGuard guard(observerMutex);
   observers.push_back(Observer::_duplicate(o));
 }
 
 void SubjectImpl::detach(Observer_ptr o)
 {
-  Guard guard(observerMutex);
+  MutexGuard guard(observerMutex);
   observers.remove(o);
 }
 
 
 void SubjectImpl::block(CORBA::Boolean b)
 {
-  Guard guard(autoMutex);
+  MutexGuard guard(myMutex);
   blocked = b;
 }
 
 void SubjectImpl::notify()
 {
-  Guard guard(autoMutex);
+  MutexGuard guard(myMutex);
   if (!blocked)
     {
-      Guard guard(observerMutex);
+      MutexGuard guard(observerMutex);
       for(list<Observer_var>::iterator i = observers.begin(); i != observers.end(); i++)
 	(*i)->update(this->_this());
     }

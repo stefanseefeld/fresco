@@ -30,7 +30,7 @@
 #include "Berlin/Debug.hh"
 
 static CosNaming::NamingContext_var rootContext;
-static omni_mutex rootContext_mutex;
+static Mutex rootContext_mutex;
 
 // this verifies that we have a root context reference. there's really
 // no point in trying to catch these. If you have no name service,
@@ -75,11 +75,10 @@ const CosNaming::Name charPtrToName(char *ch) {
 
 
 void bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr obj, char *ch) {
-  rootContext_mutex.lock();
+  MutexGuard guard(rootContext_mutex);
   getRootContext(orb);
   CosNaming::Name ourName = charPtrToName(ch);  
   rootContext->rebind(ourName, obj);
-  rootContext_mutex.unlock();
 }
 
 
@@ -88,10 +87,10 @@ CORBA::Object_ptr lookup(CORBA::ORB_ptr orb, char *ch)
 
   CORBA::Object_var tmpobj;
 
-  rootContext_mutex.lock();
-  getRootContext(orb);
-  rootContext_mutex.unlock();
-
+  {
+    MutexGuard guard(rootContext_mutex);
+    getRootContext(orb);
+  }
   CosNaming::Name ourName = charPtrToName(ch);  
 
   try {

@@ -34,6 +34,7 @@
 #include <Berlin/CloneableImpl.hh>
 #include <Berlin/ServerContextImpl.hh>
 #include <Berlin/ClientContextImpl.hh>
+#include <Berlin/Thread.hh>
 #include <string>
 #include <map>
 
@@ -73,7 +74,7 @@ protected:
     throw (noSuchPluginException);
   
   // lock the whole thing during a load.
-  omni_mutex _loader_mutex;  
+  Mutex _loader_mutex;  
   
   // this stores the function pointers loaded through libdl
   map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp> _pluginLoadingFunctionTable;

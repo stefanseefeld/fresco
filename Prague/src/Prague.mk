@@ -24,7 +24,7 @@ include IPC/IPC.mk
 include Filter/Filter.mk
 include Network/Network.mk
 
-vpath %.h  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network
+vpath %.hh  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network
 
 SRC = $(SYS_SRC) $(IPC_SRC) $(FLT_SRC) $(NTW_SRC)
 OBJ = $(SYS_OBJ) $(IPC_OBJ) $(FLT_OBJ) $(NTW_OBJ)

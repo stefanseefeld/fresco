@@ -24,6 +24,7 @@
 
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/Thread.hh>
 #include <Drawing/openGL/GLDrawingKit.hh>
 #include <Drawing/openGL/Pointer.hh>
 #include <vector>
@@ -46,7 +47,7 @@ class ScreenManager
     ggi_visual_t visual;
     typedef vector<RegionImpl *> DamageList;
     DamageList damages;
-    omni_mutex damageMutex;
+    Mutex damageMutex;
 };
 
 #endif /* _ScreenManager_hh */

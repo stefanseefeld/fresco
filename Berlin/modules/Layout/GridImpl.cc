@@ -350,7 +350,7 @@ Grid::Index GridImpl::findRange(Traversal_ptr t, const Grid::Range &a)
   Span *yspans = fullAllocate(yaxis, given);
 //   Painter_var p = t->current_painter();
 //   Region_var e = p->visible();
-  Vertex lower, upper;
+  Vertex lower;//, upper;
 //   e->bounds(lower, upper);
   Coord x = lower.x;
   Coord y = lower.y;

@@ -105,7 +105,7 @@ void StageSequence::insert(StageInfoImpl *info)
   iterator i;
   if (!size() || layer == 0) i = begin();
   else if (front()->layer < layer) i = end();
-  else iterator i = lookup(layer);
+  else i = lookup(layer);
   parent_t::insert(i++, info);
   for (i++; i != end(); i++) (*i)->layer = layer++;
 }
@@ -115,7 +115,7 @@ void StageSequence::remove(StageInfoImpl *info)
   if (info == *cursor)
     if ((*cursor)->layer <= (front()->layer / 2)) cursor++;
     else cursor--;
-  int layer = info->layer;
+//   int layer = info->layer;
 //   if (item == front()) erase(--end());
 //   if (item == back()) erase(begin());
 //   int layer = item->layer_;
@@ -169,7 +169,6 @@ void StageQuad::within(const Rectangle<Coord> &r, StageFinder &finder)
   index idx = where(region);
   if (idx == fence)
     {
-      int s = items.size();
       for (list::iterator i = items.begin(); i != items.end(); i++)
 	if ((*i)->bbox().within(r)) finder.found(*i);
       if (!leaf())

@@ -31,34 +31,34 @@ TelltaleImpl::~TelltaleImpl()
 
 void TelltaleImpl::set(Telltale::Flag f)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(_this(), f, true);
   else modify(f, true);
 }
 
 void TelltaleImpl::clear(Telltale::Flag f)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(_this(), f, false);
   else modify(f, false);
 }
 
 CORBA::Boolean TelltaleImpl::test(Telltale::Flag f)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return flags & (1 << f);
 }
 
 void TelltaleImpl::constraint(TelltaleConstraint_ptr c)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   myConstraint = c;
 }
 
 
 TelltaleConstraint_ptr TelltaleImpl::constraint()
 {    
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   TelltaleConstraint_ptr tmp = TelltaleConstraint::_duplicate(myConstraint);
   return tmp;
 }
@@ -66,7 +66,7 @@ TelltaleConstraint_ptr TelltaleImpl::constraint()
 
 void TelltaleImpl::modify(Telltale::Flag f, CORBA::Boolean on)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   unsigned long fs = 1 << f;
   unsigned long nf = on ? flags | fs : flags & ~fs;
   if (nf != flags)
@@ -78,13 +78,13 @@ void TelltaleImpl::modify(Telltale::Flag f, CORBA::Boolean on)
 
 void TelltaleConstraintImpl::add(Telltale_ptr t)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   telltales.push_back(t);
 }
 
 void TelltaleConstraintImpl::remove(Telltale_ptr t)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   for (vector<Telltale_var>::iterator i = telltales.begin(); i != telltales.end(); i++)
     if ((*i) == t)
       {
@@ -99,7 +99,7 @@ ExclusiveChoice::ExclusiveChoice()
 
 void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (!CORBA::is_nil(choosen)) choosen->modify(f, false);
   t->modify(f, true);
 }
@@ -110,6 +110,6 @@ SelectionRequired::SelectionRequired()
 
 void SelectionRequired::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
 { 
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (choosen > 1) t->modify(f, false);
 }

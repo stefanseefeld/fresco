@@ -20,7 +20,7 @@
 # MA 02139, USA.
 
 SYS_SRC	= regex.cc Signal.cc User.cc Stopwatch.cc Time.cc \
-	  File.cc Directory.cc Path.cc GetOpt.cc \
+	  File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  DLL.cc SHM.cc Thread.cc Timer.cc
 
 SYS_DEP	= $(patsubst %.cc, $(dpath)/%.d, $(SYS_SRC))
@@ -35,13 +35,17 @@ $(dpath)/%.d:	Sys/%.cc $(ipath)/Prague/Sys/%.hh
 		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
 $(opath)/%.o:	Sys/%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) $(SOFLAGS) -c $< -o $@
 $(gpath)/%.o:	Sys/%.cc
 		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
 		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
 $(ppath)/%.o:	Sys/%.cc
 		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
+
+$(opath)/DataTypeManager.o:	Sys/DataTypeManager.cc
+		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
+		$(CXX) $(CXXFLAGS) $(GDBFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
 
 clean:		sysclean
 sysclean:

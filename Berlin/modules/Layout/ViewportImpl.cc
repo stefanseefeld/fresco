@@ -54,21 +54,20 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
   virtual void adjust(Coord);
   void scrollTo(Coord);
  protected:
-  typedef omni_mutex_lock Guard;
   Coord l, u, lv, uv;
   Coord s, p;
-  omni_mutex myMutex;
+  Mutex myMutex;
 };                                
 
 Coord ViewportImpl::Adjustment::lower()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return l;
 }
 
 void ViewportImpl::Adjustment::lower(Coord ll)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (ll == l) return;
   l = ll;
   if (lv < l) lv = l;
@@ -78,13 +77,13 @@ void ViewportImpl::Adjustment::lower(Coord ll)
 
 Coord ViewportImpl::Adjustment::upper()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return u;
 }
 
 void ViewportImpl::Adjustment::upper(Coord uu)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (uu == u) return;
   u = uu;
   if (lv > u) lv = u;
@@ -94,31 +93,31 @@ void ViewportImpl::Adjustment::upper(Coord uu)
 
 Coord ViewportImpl::Adjustment::step()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return s;
 }
 
 void ViewportImpl::Adjustment::step(Coord ss)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   s = ss;
 }
 
 Coord ViewportImpl::Adjustment::page()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return p;
 }
 
 void ViewportImpl::Adjustment::page(Coord pp)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   p = pp;
 }
 
 void ViewportImpl::Adjustment::forward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = uv + s > u ? u - uv : s;
   if (t <= 0.) return;
   lv += t;
@@ -128,7 +127,7 @@ void ViewportImpl::Adjustment::forward()
 
 void ViewportImpl::Adjustment::backward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = lv - s < l ? lv - l : s;
   if (t <= 0.) return;
   lv -= t;
@@ -138,7 +137,7 @@ void ViewportImpl::Adjustment::backward()
 
 void ViewportImpl::Adjustment::fastforward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = uv + p > u ? u - uv : p;
   if (t <= 0.) return;
   lv += t;
@@ -148,7 +147,7 @@ void ViewportImpl::Adjustment::fastforward()
 
 void ViewportImpl::Adjustment::fastbackward()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = lv - p < l ? lv - l : p;
   if (t <= 0.) return;
   lv -= t;
@@ -158,7 +157,7 @@ void ViewportImpl::Adjustment::fastbackward()
 
 void ViewportImpl::Adjustment::begin()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = lv - l;
   if (t == 0.) return;
   lv -= t;
@@ -168,7 +167,7 @@ void ViewportImpl::Adjustment::begin()
 
 void ViewportImpl::Adjustment::end()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t = u - uv;
   if (t == 0.) return;
   lv += t;
@@ -178,7 +177,7 @@ void ViewportImpl::Adjustment::end()
 
 void ViewportImpl::Adjustment::lvalue(Coord vv)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
   if (vv == lv) return;
@@ -188,13 +187,13 @@ void ViewportImpl::Adjustment::lvalue(Coord vv)
 
 Coord ViewportImpl::Adjustment::lvalue()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return lv;
 }
 
 void ViewportImpl::Adjustment::uvalue(Coord vv)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   if (vv > u) vv = u;
   else if (vv < l) vv = l;
   if (vv == uv) return;
@@ -204,13 +203,13 @@ void ViewportImpl::Adjustment::uvalue(Coord vv)
 
 Coord ViewportImpl::Adjustment::uvalue()
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   return uv;
 }
 
 void ViewportImpl::Adjustment::adjust(Coord d)
 {
-  Guard guard(myMutex);
+  MutexGuard guard(myMutex);
   Coord t =
     uv + d > u ? u - uv :
     lv + d < l ? lv - l : d;

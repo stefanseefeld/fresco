@@ -64,26 +64,29 @@ private:
  */
 class regex
 {
+  struct rx_t
+  {
+    rx_t(bool e) : rx(0), count(1), extended(e) {}
+    ~rx_t() { if (rx) regfree(rx); delete rx;}
+    regex_t *rx;
+    short count;
+    bool extended;
+  };
 public:
   enum syntax { extended = REG_EXTENDED, basic};
+  regex(int e = extended) : info(new rx_t(e & extended)) {}
   regex(const string &, int = extended);
+  regex(const regex &);
+  regex &operator = (const regex &);
+  regex &operator = (const string &);
   ~regex();
   string::size_type match(const string &, int = 0) const;
   rxmatch search(const string &, int = 0) const;
-  bool OK() const { return rx;}
-protected:
-  regex_t *rx;
-  size_t nexprs() const;
-  string error(int);
+  bool OK() const { return info && info->rx;}
 private:
-  regex(const regex &);
-  regex &operator = (const regex &);
+  rx_t *info;
+  string error(int);
 };
-
-inline size_t regex::nexprs() const
-{
-  return rx->re_nsub + 1;
-}
 
 extern const regex rxwhite;          // = "[ \n\t\r\v\f]+"
 extern const regex rxint;            // = "-?[0-9]+"

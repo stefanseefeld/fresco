@@ -56,22 +56,23 @@ GenericFactoryImpl::GenericFactoryImpl() {
 
 CORBA::Object_ptr 
 GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k, 
-				     const CosLifeCycle::Criteria & the_criteria) {  
-  CloneableImpl *newCloneable = NULL;
+				    const CosLifeCycle::Criteria & the_criteria) {  
+  CloneableImpl *newCloneable = 0;
 
-  try {    
-    _loader_mutex.lock();
-    newCloneable = loadPlugin(k);  
-    _loader_mutex.unlock();
+  try
+    {    
+      MutexGuard guard(_loader_mutex);
+      newCloneable = loadPlugin(k);  
+    }
+  catch (noSuchPluginException e)
+    {
+      throw CosLifeCycle::CannotMeetCriteria();
+    }
 
-  } catch (noSuchPluginException e) {
-    _loader_mutex.unlock();
-    throw CosLifeCycle::CannotMeetCriteria();
-  }
-
-  if (newCloneable == NULL) {
-     debug::log((string)"!!WOAH THERE!! trying to work with a NULL pointer -->" + (string)k[0].id, debug::loader);    
-  }
+  if (!newCloneable)
+    {
+      debug::log((string)"!!WOAH THERE!! trying to work with a NULL pointer -->" + (string)k[0].id, debug::loader);    
+    }
 
   
   CORBA::Object_var newObjectPtr;
@@ -166,27 +167,27 @@ CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key & k ) {
 void GenericFactoryImpl::init() {
 
   _pluginLoadingFunctionTable.clear();
-  _loader_mutex.lock();
+  MutexGuard guard(_loader_mutex);
 
   char *pluginDir;
   char pluginName[256];
   
   pluginDir = getenv(PLUGINBASE);
   
-  if ( pluginDir == NULL ) {
-    
-  } else {
-      
+  if (!pluginDir)  {}
+  else
+    {  
       DIR *dirHandle = opendir(pluginDir);
       char *error;
       
-      if (dirHandle != NULL) {
+      if (dirHandle)
+	{
 	  
 	struct dirent *pluginEntry;
  	debug::log((string)"Scanning plugin dir: " + (string)pluginDir, debug::loader);
 	
 	while((pluginEntry = readdir(dirHandle))) {
-	  if (strstr(pluginEntry->d_name, ".so") != NULL) {
+	  if (strstr(pluginEntry->d_name, ".so") != 0) {
 	    
 	    strcpy(pluginName, pluginDir);
 	    // Once again the infamous / - Jonas
@@ -208,7 +209,7 @@ void GenericFactoryImpl::init() {
 	    
 	    // check for erorrs in symbol lookup
 	    error = dlerror();
-	    if (error != NULL)  {
+	    if (error != 0)  {
 		debug::log((string)"can't locate symbol in plugin: " + (string)error, debug::loader);
 	      continue;
 	    }
@@ -234,7 +235,7 @@ void GenericFactoryImpl::init() {
 	    
 	    // if all is well and good, we have a function pointer we can call to get the plugin
 	    char *error = dlerror();
-	    if (error != NULL)  {
+	    if (error != 0)  {
 		debug::log((string)"Failed to load plugin function: " + ((string)nameInFile), debug::loader);
 	      debug::log((string)"Reason: " + (string)error, debug::loader);
 	    }
@@ -247,7 +248,6 @@ void GenericFactoryImpl::init() {
       }
       closedir(dirHandle);
   }
-  _loader_mutex.unlock();
 }
 
 

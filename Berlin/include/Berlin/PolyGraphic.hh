@@ -28,6 +28,7 @@
 #define _PolyGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/Thread.hh>
 #include <Berlin/Pool.hh>
 #include <vector>
 
@@ -49,10 +50,9 @@ protected:
   long findChild(Graphic_ptr);
   Graphic::Requisition *childrenRequests();
   virtual void allocateChild(long, Allocation::Info &);
-  typedef omni_mutex_lock Guard;
   static Pool<Requisition> pool;
   clist_t children;
-  omni_mutex childMutex;
+  Mutex childMutex;
 };
 
 #endif /* _PolyGraphic_hh */

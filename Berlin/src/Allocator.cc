@@ -64,8 +64,7 @@ void Allocator::needResize()
 {
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).parent->allocate(_this(), allocation->_this());
+  allocateParents(allocation->_this());
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   if (ext->valid) region->copy(ext);
@@ -127,7 +126,6 @@ void Allocator::needDamage(RegionImpl *ext, Allocation_ptr allocation)
 {
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
-  double dot = 1.;
   for (long i = 0; i < allocation->size(); i++)
     {
       Allocation::Info *info = allocation->get(i);

@@ -23,10 +23,13 @@
 #include <algorithm>
 #include <cstdio>
 
-using namespace Prague;
-
+namespace Prague
+{
 typedef void (*sighnd_type) (...);
 void sighandler (int signo) { Signal::notify (signo);}
+};
+
+using namespace Prague;
 
 Signal::Dictionary Signal::notifiers;
 

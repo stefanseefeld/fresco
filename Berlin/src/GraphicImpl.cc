@@ -236,13 +236,13 @@ void GraphicImpl::prepend(Graphic_ptr) {}
 
 void GraphicImpl::addParent(Graphic_ptr parent)
 {
-  Guard guard(parentMutex);
+  MutexGuard guard(parentMutex);
   parents.insert(Graphic::_duplicate(parent));
 }
 
 void GraphicImpl::removeParent(Graphic_ptr parent)
 {
-  Guard guard(parentMutex);
+  MutexGuard guard(parentMutex);
   parents.erase(parent);
 }
 
@@ -302,9 +302,9 @@ void GraphicImpl::needRedrawRegion(Region_ptr r)
 
 void GraphicImpl::needResize()
 {
-  Guard guard(parentMutex);
+  MutexGuard guard(parentMutex);
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).parent->needResize();
+    (*i)->needResize();
 }
 
 void GraphicImpl::initRequisition(Graphic::Requisition &r)
@@ -532,7 +532,7 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
 
 void GraphicImpl::allocateParents(Allocation_ptr a)
 {
-  Guard guard(parentMutex);
+  MutexGuard guard(parentMutex);
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i).parent->allocate(_this(), a);
+    (*i)->allocate(_this(), a);
 }
