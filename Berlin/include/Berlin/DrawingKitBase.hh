@@ -129,7 +129,7 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
   virtual void finish() { }
   virtual void flush() = 0;
 
-  virtual DrawingKit3D_ptr dk3D() { return DrawingKit3D::_nil(); }
+  virtual Warsaw::DrawingKit3D_ptr dk3D() { return Warsaw::DrawingKit3D::_nil(); }
 
   virtual void setTransformation (Warsaw::Transform_ptr) = 0;
   virtual void setClipping(Warsaw::Region_ptr) = 0;
