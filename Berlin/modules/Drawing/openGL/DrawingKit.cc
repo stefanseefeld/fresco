@@ -72,7 +72,6 @@ GLDrawingKit::GLDrawingKit()
   glFrontFace(GL_CW);
   glEnable(GL_ALPHA_TEST);
   glEnable(GL_SCISSOR_TEST);
-  glScissor(0, 0, drawable->width(), drawable->height());
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -88,27 +87,39 @@ GLDrawingKit::~GLDrawingKit()
 void GLDrawingKit::setTransformation(Transform_ptr t)
 {
 //   tr->copy(t);
-  tr = Transform::_duplicate(t);
-  Transform::Matrix matrix;
-  tr->storeMatrix(matrix);
-  GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
-			   matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
-			   matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
-			   matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
-  glLoadMatrixd(glmatrix);
+  static GLdouble identity[16] = {1., 0., 0., 0.,
+				  0., 1., 0., 0.,
+				  0., 0., 1., 0.,
+				  0., 0., 0., 1.};
+  if (CORBA::is_nil(t)) glLoadMatrixd(identity);
+  else
+    {
+      tr = Transform::_duplicate(t);
+      Transform::Matrix matrix;
+      tr->storeMatrix(matrix);
+      GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
+			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
+			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
+			       matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
+      glLoadMatrixd(glmatrix);
+    }
 }
 
 void GLDrawingKit::setClipping(Region_ptr r)
 {
 //   cl->copy(r);
   cl = Region::_duplicate(r);
-  Vertex lower, upper;
-  cl->bounds(lower, upper);
-  PixelCoord x = static_cast<PixelCoord>(lower.x*drawable->resolution(xaxis) + 0.5);
-  PixelCoord y = static_cast<PixelCoord>((drawable->height()/drawable->resolution(yaxis) - upper.y)*drawable->resolution(yaxis) + 0.5);
-  PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*drawable->resolution(xaxis) + 0.5);
-  PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*drawable->resolution(yaxis) + 0.5);
-  glScissor(x, y, w, h);
+  if (CORBA::is_nil(cl)) glScissor(0, 0, drawable->width(), drawable->height());
+  else
+    {
+      Vertex lower, upper;
+      cl->bounds(lower, upper);
+      PixelCoord x = static_cast<PixelCoord>(lower.x*drawable->resolution(xaxis) + 0.5);
+      PixelCoord y = static_cast<PixelCoord>((drawable->height()/drawable->resolution(yaxis) - upper.y)*drawable->resolution(yaxis) + 0.5);
+      PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*drawable->resolution(xaxis) + 0.5);
+      PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*drawable->resolution(yaxis) + 0.5);
+      glScissor(x, y, w, h);
+    }
 }
 
 void GLDrawingKit::setForeground(const Color &c)

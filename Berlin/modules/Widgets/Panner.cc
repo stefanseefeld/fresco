@@ -23,10 +23,10 @@
 #include "Widget/Panner.hh"
 #include "Berlin/Logger.hh"
 
-class Drag : public Panner::Modifier
+class PDrag : public Panner::Modifier
 {
 public:
-  Drag(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(x), yvalue(y) {}
+  PDrag(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(BoundedRange::_duplicate(x)), yvalue(BoundedRange::_duplicate(y)) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
@@ -45,7 +45,7 @@ private:
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   : ControllerImpl(false),
     redirect(new PObserver(this)),
-    _drag(new Drag(xx, yy)),
+    _drag(new PDrag(xx, yy)),
     x(BoundedRange::_duplicate(xx)),
     y(BoundedRange::_duplicate(yy))
 {

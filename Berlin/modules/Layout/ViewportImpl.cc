@@ -342,7 +342,6 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
   Impl_var<RegionImpl> clipping(new RegionImpl(allocation, transformation));
   DrawingKit_var dk = traversal->kit();
   dk->saveState();
-  cout << "Viewport clip" << endl;
   dk->clipping(Region_var(clipping->_this()));
 
   Impl_var<RegionImpl> region(bodyAllocation(allocation));
@@ -350,7 +349,6 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
   region->normalize(Transform_var(transform->_this()));
   traversal->traverseChild(child, 0, Region_var(region->_this()), Transform_var(transform->_this()));
   dk->restoreState();
-  cout << "~Viewport clip" << endl;
 }
 
 void ViewportImpl::pick(PickTraversal_ptr traversal)

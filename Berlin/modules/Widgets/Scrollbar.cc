@@ -23,17 +23,17 @@
 #include "Widget/Scrollbar.hh"
 #include "Berlin/Logger.hh"
 
-class Drag : public Scrollbar::Modifier
+class SDrag : public Scrollbar::Modifier
 {
 public:
-  Drag(BoundedRange_ptr v, Axis a) : value(v), axis(a) {}
+  SDrag(BoundedRange_ptr v, Axis a) : value(BoundedRange::_duplicate(v)), axis(a) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
     if (any >>= delta)
       {
-	if (xaxis && delta->x != 0.) value->adjust(delta->x);
-	else if (yaxis && delta->y != 0.) value->adjust(delta->y);
+	if (axis == xaxis && delta->x != 0.) value->adjust(delta->x);
+	else if (axis == yaxis && delta->y != 0.) value->adjust(delta->y);
       }
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
@@ -43,8 +43,16 @@ private:
 };
 
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a)
-  : ControllerImpl(false), redirect(new SObserver(this)), _drag(new Drag(v, a)), axis(a)
+  : ControllerImpl(false),
+    redirect(new SObserver(this)),
+    _drag(new SDrag(v, a)),
+    range(BoundedRange::_duplicate(v)),
+    axis(a)
 {
+  BoundedRange::Settings settings = v->getSettings();
+  offset.lower = settings.lvalue/(settings.upper - settings.lower);
+  offset.upper = settings.uvalue/(settings.upper - settings.lower);
+  v->attach(Observer_var(redirect->_this()));
 }
 
 void Scrollbar::init(Controller_ptr t)
@@ -57,8 +65,8 @@ void Scrollbar::init(Controller_ptr t)
 void Scrollbar::update(Subject_ptr, const CORBA::Any &)
 {
   BoundedRange::Settings settings = range->getSettings();
-  offset.lower = settings.lvalue/(settings.upper - settings.lower);
-  offset.upper = settings.uvalue/(settings.upper - settings.lower);
+  offset.lower = (settings.lvalue - settings.lower)/(settings.upper - settings.lower);
+  offset.upper = (settings.uvalue - settings.lower)/(settings.upper - settings.lower);
   needRedraw();
 }
 
@@ -87,7 +95,23 @@ void Scrollbar::allocate(Tag t, const Allocation::Info &info)
    * t == 0 is the body, t == 1 is the thumb
    */
   if (t == 0) return;
-  //. not yet implemented
+  Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
+  if (axis == xaxis)
+    {
+      Coord lower = allocation->lower.x;
+      Coord scale = allocation->upper.x - allocation->lower.x;
+      allocation->lower.x = lower + scale*offset.lower;
+      allocation->upper.x = lower + scale*offset.upper;
+    }
+  else
+    {
+      Coord lower = allocation->lower.y;
+      Coord scale = allocation->upper.y - allocation->lower.y;
+      allocation->lower.y = lower + scale*offset.lower;
+      allocation->upper.y = lower + scale*offset.upper;
+    }
+  allocation->lower.z = allocation->upper.z = 0.;
+  allocation->normalize(info.transformation);
 }
 
 void Scrollbar::traverseThumb(Traversal_ptr traversal)
@@ -98,18 +122,18 @@ void Scrollbar::traverseThumb(Traversal_ptr traversal)
     {
       Coord lower = allocation->lower.x;
       Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*allocation->lower.x;
-      allocation->upper.x = lower + scale*allocation->upper.x;
+      allocation->lower.x = lower + scale*offset.lower;
+      allocation->upper.x = lower + scale*offset.upper;
       allocation->lower.z = allocation->upper.z = 0.;
     }
   else if (axis == yaxis)
     {
       Coord lower = allocation->lower.y;
       Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*allocation->lower.y;
-      allocation->upper.y = lower + scale*allocation->upper.y;
-      allocation->lower.z = allocation->upper.z = 0.;
+      allocation->lower.y = lower + scale*offset.lower;
+      allocation->upper.y = lower + scale*offset.upper;
     }
+  allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
   traversal->traverseChild(thumb, 1, Region_var(allocation->_this()), Transform_var(transformation->_this()));
 }
