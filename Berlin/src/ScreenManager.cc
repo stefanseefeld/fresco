@@ -49,11 +49,8 @@ void ScreenManager::damage(Region_ptr r)
   MutexGuard guard(mutex);
   RegionImpl *region = new RegionImpl(r, Transform_var(Transform::_nil()));
   region->_obj_is_ready(CORBA::BOA::getBOA());
-  cout << "insert " << region << endl;
   damages.push_back(region);
-  Logger::log(Logger::drawing) << "ScreenManager::damage region ("
-			       << region->lower.x << ',' << region->lower.y << "),("
-			       << region->upper.x << ',' << region->upper.y << ')' << endl;
+  Logger::log(Logger::drawing) << "ScreenManager::damage region " << *region << endl;
   // this injects a damage notice into the event queue, waking up
   // the sleeping event thread.
 
@@ -88,9 +85,9 @@ void ScreenManager::repair()
       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),
-							   Region_var((*i)->_this()),
-							   Transform_var(Transform::_nil()),
-							   DrawingKit_var(drawing->_this()));
+  							   Region_var((*i)->_this()),
+ 							   Transform_var(Transform::_nil()),
+ 							   DrawingKit_var(drawing->_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
@@ -100,9 +97,7 @@ void ScreenManager::repair()
 	  pointer->backup();
 	  pointer->draw();
 	}
-      Logger::log(Logger::drawing) << "going to damage event manager..." << endl;
       emanager->damage(Region_var((*i)->_this()));
-      Logger::log(Logger::drawing) << "...done" << endl;
       (*i)->_dispose();
     }
 }

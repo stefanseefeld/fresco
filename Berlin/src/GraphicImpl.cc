@@ -5,7 +5,7 @@
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
- * this code is based on code from Fresco.
+ * this code is based on Fresco.
  * Copyright (c) 1987-91 Stanford University
  * Copyright (c) 1991-94 Silicon Graphics, Inc.
  * Copyright (c) 1993-94 Fujitsu, Ltd.
@@ -25,13 +25,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Warsaw/config.hh"
+#include "Warsaw/Traversal.hh"
+#include "Warsaw/Screen.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/Screen.hh"
+#include "Berlin/Logger.hh"
 
 static double tol = 0.05;
 
@@ -284,6 +286,16 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 	}
       begin = end;
     }
+#if 0
+  for (CORBA::Long i = 0; i != allocation->size(); i++)
+    {
+      Allocation::Info_var info = allocation->get(i);
+      Region_var r = info->allocation;
+      Transform_var t = info->transformation;
+      RegionImpl region(r, t);
+      Logger::log(Logger::drawing) << "allocation at " << region << endl;
+    }
+#endif
 }
 
 /*
@@ -297,6 +309,7 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
  */
 void GraphicImpl::needRedraw()
 {
+  SectionLog section(Logger::drawing, "GraphicImpl::needRedraw");
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
   allocations(Allocation_var(allocation->_this()));

@@ -30,11 +30,11 @@ public:
   virtual void execute(const Message &message)
     {
       if (CORBA::is_nil(handle)) return;
-      Vertex *p;
-      if (message.payload >>= p)
+      Vertex *delta;
+      if (message.payload >>= delta)
 	{
-// 	  info.position += *p;
-	  handle->position(*p);
+ 	  Vertex p = handle->position();
+	  handle->position(p + *delta);
 	}
       else  cerr << "Repositioner::execute : wrong message type !" << endl;
     }
@@ -46,10 +46,11 @@ public:
   virtual void execute(const Message &message)
     {
       if (CORBA::is_nil(handle)) return;
-      Vertex *s;
-      if (message.payload >>= s)
+      Vertex *delta;
+      if (message.payload >>= delta)
 	{
-	  handle->size(*s);
+ 	  Vertex s = handle->size();
+	  handle->size(s + *delta);
 	}
       else cerr << "Resizer::execute : wrong message type !" << endl;
     }

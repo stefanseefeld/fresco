@@ -191,20 +191,16 @@ CORBA::Boolean ControllerImpl::handle(PickTraversal_ptr traversal, const CORBA::
 
 bool ControllerImpl::handlePositionalEvent(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-  /*
-   * for now, only react if pointer is in the controller
-   */
-  if (traversal->intersectsAllocation())
-    switch (pointer->whatHappened)
-      {
-      case Event::press: press(traversal, pointer); break;
-      case Event::release: release(traversal, pointer); break;
-      case Event::hold:
-	if (test(Telltale::toggle)) drag(traversal, pointer);
-	else move(traversal, pointer);
-	break;
-      default: other(traversal, pointer); break;
-      }
+  switch (pointer->whatHappened)
+    {
+    case Event::press: press(traversal, pointer); break;
+    case Event::release: release(traversal, pointer); break;
+    case Event::hold:
+      if (test(Telltale::toggle)) drag(traversal, pointer);
+      else move(traversal, pointer);
+      break;
+    default: other(traversal, pointer); break;
+    }
   return true;
 }
 
@@ -218,12 +214,11 @@ bool ControllerImpl::inside(const Allocation::Info &info, const Event::Pointer *
 
 void ControllerImpl::move(PickTraversal_ptr, const Event::Pointer *)
 {
-  set(Telltale::active);
 }
 
 void ControllerImpl::press(PickTraversal_ptr, const Event::Pointer *)
 {
-//   grab();
+  grab();
   set(Telltale::toggle);
 }
 
@@ -234,7 +229,7 @@ void ControllerImpl::drag(PickTraversal_ptr, const Event::Pointer *)
 void ControllerImpl::release(PickTraversal_ptr, const Event::Pointer *)
 {
   clear(Telltale::toggle);
-//   ungrab();
+  ungrab();
 }
 
 void ControllerImpl::doubleClick(PickTraversal_ptr, const Event::Pointer *)

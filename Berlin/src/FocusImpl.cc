@@ -36,22 +36,11 @@ void FocusImpl::request(Controller_ptr c)
 
 void FocusImpl::damage(Region_ptr region)
 {
-  cout << "@" << endl;
   SectionLog section(Logger::picking, "FocusImpl::damage");
   MutexGuard guard(mutex);
-  cout << "@" << endl;
   if (!traversal) return;
-  cout << "@" << endl;
   Region_var allocation = traversal->allocation();
-  cout << "@" << endl;
-  if (allocation->intersects(region))
-    {
-      cout << "@1" << endl;
-      traversal->_dispose();
-      cout << "@2" << endl;
-      traversal = 0;
-    }
-  cout << "@" << endl;
+  if (allocation->intersects(region)) traversal->update();
 }
 
 /*

@@ -24,6 +24,7 @@
 #include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Subject.hh"
 #include "Berlin/Color.hh"
+#include "Berlin/Logger.hh"
 
 
 Frame::Frame(Coord t, const Color &c, type ty)
@@ -80,6 +81,7 @@ void DynamicFrame::attach(Telltale_ptr subject)
 
 void DynamicFrame::update(Subject_ptr, const CORBA::Any &)
 {
+  SectionLog section(Logger::subject, "DynamicFrame::update");
   bool flag = telltale->test(mask);
   if (flag == on) return;
   on = flag;

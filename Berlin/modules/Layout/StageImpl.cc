@@ -20,12 +20,14 @@
  * MA 02139, USA.
  */
 
-#include "Layout/StageImpl.hh"
+#include "Warsaw/config.hh"
+#include "Warsaw/Screen.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/DebugGraphic.hh"
-#include "Warsaw/Screen.hh"
 #include "Berlin/Logger.hh"
+#include "Layout/StageImpl.hh"
+#include "Layout/Placement.hh"
 
 using namespace Geometry;
 
@@ -38,17 +40,23 @@ StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vert
 
 void StageHandleImpl::position(const Vertex &pp)
 {
+  parent->begin();
   parent->reposition(this, pp);
+  parent->end();
 }
 
 void StageHandleImpl::size(const Vertex &ss)
 {
+  parent->begin();
   parent->resize(this, ss);
+  parent->end();
 }
 
 void StageHandleImpl::layer(Stage::Index ll)
 {
+  parent->begin();
   parent->relayer(this, ll);
+  parent->end();
 }
 
 void StageHandleImpl::cacheBBox()
@@ -511,9 +519,11 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
       region->_obj_is_ready(_boa());
       TransformImpl *transform = new TransformImpl;
       transform->_obj_is_ready(_boa());
+      Vertex origin;
       handle->bbox(*region);
-      a.allocation->copy(Region_var(region->_this()));
+      Placement::normalOrigin(region, origin);
       transform->translate(handle->p);
+      a.allocation->copy(Region_var(region->_this()));
       a.transformation->premultiply(Transform_var(transform->_this()));
       region->_dispose();
       transform->_dispose();
