@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * Copyright (C) 2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +23,6 @@
 #ifndef _Prague_Dispatcher_hh
 #define _Prague_Dispatcher_hh
 
-#include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/ThreadPool.hh>
 #include <Prague/IPC/Agent.hh>
@@ -48,26 +48,28 @@ namespace Prague
       //. release an Agent from channel fd, or the whole Agent, if fd is -1
       void release(Agent *, int fd = -1);
     private:
-      typedef std::vector<Agent *> alist_t;
       struct task;
       typedef std::map<int, task *> repository_t;
       //. Handler is responsible for calling a specific method
       //. (determined by the mask) on the agent
       struct Handler
       {
-          Handler(task *tt) : t(tt) {}
-          void process() { dispatcher->process(t);}
+          Handler(task *tt) : t(tt) { }
+          void process() { dispatcher->process(t); }
           task *t;
       };
       friend struct Handler;
-      struct Acceptor { Handler *consume(task *t) const { return new Handler(t);}};
-      struct Cleaner { ~Cleaner();};
+      struct Acceptor { Handler *consume(task *t) const { return new Handler(t); } };
+      struct Cleaner { ~Cleaner(); };
       friend struct Cleaner;
       typedef Thread::Queue<task *> Queue;
       typedef ThreadPool<task *, Acceptor, Handler> Pool;
 
       Dispatcher();
       virtual ~Dispatcher();
+
+      void release(Agent *, int, repository_t::iterator, repository_t::iterator);
+
       void wait();
       void notify() { char *c = "c"; write(my_wakeup[1], c, 1); }
       static void *run(void *);
@@ -84,7 +86,6 @@ namespace Prague
       FdSet        my_rfds;
       FdSet        my_wfds;
       FdSet        my_xfds;
-      alist_t      my_agents;
       repository_t my_rchannel;
       repository_t my_wchannel;
       repository_t my_xchannel;

@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * Copyright (C) 2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -37,9 +38,11 @@ Dispatcher::Cleaner Dispatcher::cleaner;
 
 struct Dispatcher::task
 {
-    task() : fd(-1), agent(0), mask(Agent::none), released(false) {}
-    task(int ffd, Agent *a, Agent::iomask m) : fd(ffd), agent(a), mask(m) {}
-    bool operator < (const task &t) const { return fd < t.fd;}
+    task() : fd(-1), agent(0), mask(Agent::none), released(false) { }
+    task(int ffd, Agent *a, Agent::iomask m) : fd(ffd), agent(a), mask(m)
+    { a->add_ref(); }
+    ~task() { agent->remove_ref(); }
+    bool operator < (const task &t) const { return fd < t.fd; }
     int fd;
     Agent *agent;
     Agent::iomask mask;
@@ -69,7 +72,7 @@ Dispatcher::Dispatcher() :
     Signal::mask(Signal::pipe);
 }
 
-Dispatcher::~Dispatcher() { }
+Dispatcher::~Dispatcher() { Signal::unmask(Signal::pipe); }
 
 void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
   throw(std::invalid_argument)
@@ -82,11 +85,6 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
         my_server.start();
     }
     Prague::Guard<Mutex> guard(my_mutex);
-    if (find(my_agents.begin(), my_agents.end(), agent) == my_agents.end())
-    {
-        my_agents.push_back(agent);
-        agent->add_ref();
-    }
     if (mask & Agent::in)
     {
         if (mask & Agent::inready)
@@ -138,55 +136,35 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
     notify();
 }
 
+void Dispatcher::release(Agent *agent, int fd,
+                         repository_t::iterator s, repository_t::iterator e)
+{
+    // release file descriptors
+    for (repository_t::iterator i = s; i != e; ++i)
+        if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
+        {
+            deactivate((*i).second);
+            (*i).second->released = true;
+            dispatch((*i).second); // dispatch to get the agent freed up
+            my_rchannel.erase(i);
+        }
+}
+
 void Dispatcher::release(Agent *agent, int fd)
 {
     Trace trace("Dispatcher::release");
     // release file descriptors
     Prague::Guard<Mutex> guard(my_mutex);
-    for (repository_t::iterator i = my_rchannel.begin(); i != my_rchannel.end(); i++)
-        if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
-        {
-            deactivate((*i).second);
-            (*i).second->released = true;
-            my_rchannel.erase(i);
-        }
-    for (repository_t::iterator i = my_wchannel.begin(); i != my_wchannel.end(); i++)
-        if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
-        {
-            deactivate((*i).second);
-            (*i).second->released = true;
-            my_wchannel.erase(i);
-        }
-    for (repository_t::iterator i = my_xchannel.begin(); i != my_xchannel.end(); i++)
-        if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
-        {
-            deactivate((*i).second);
-            (*i).second->released = true;
-            my_xchannel.erase(i);
-        }
-    // release Agent if no more file descriptors left
-    for (repository_t::iterator i = my_rchannel.begin(); i != my_rchannel.end(); i++)
-        if ((*i).second->agent == agent) return;
-    for (repository_t::iterator i = my_wchannel.begin(); i != my_wchannel.end(); i++)
-        if ((*i).second->agent == agent) return;
-    for (repository_t::iterator i = my_xchannel.begin(); i != my_xchannel.end(); i++)
-        if ((*i).second->agent == agent) return;
-
-    alist_t::iterator i = find(my_agents.begin(), my_agents.end(), agent);
-    if (i != my_agents.end())
-    {
-        my_agents.erase(i);
-        agent->remove_ref();
-    }
+    release(agent, fd, my_rchannel.begin(), my_rchannel.end());
+    release(agent, fd, my_wchannel.begin(), my_wchannel.end());
+    release(agent, fd, my_xchannel.begin(), my_xchannel.end());
 }
 
 void *Dispatcher::run(void *X)
 {
     Dispatcher *dispatcher = reinterpret_cast<Dispatcher *>(X);
     dispatcher->my_workers.start();
-    do
-        dispatcher->wait();
-    while (true);
+    while(true) dispatcher->wait();
     return 0;
 }
 
@@ -259,9 +237,11 @@ void Dispatcher::activate(task *t)
 void Dispatcher::wait()
 {
     Trace trace("Dispatcher::wait");
-    FdSet tmprfds = my_rfds;
-    FdSet tmpwfds = my_wfds;
-    FdSet tmpxfds = my_xfds;
+    FdSet tmprfds, tmpwfds, tmpxfds;
+    {
+        Prague::Guard<Mutex> guard(my_mutex);
+        tmprfds = my_rfds, tmpwfds = my_wfds, tmpxfds = my_xfds;
+    }
     unsigned int fdsize = std::max(std::max(tmprfds.max(), tmpwfds.max()),
                                    tmpxfds.max()) + 1;
     int nsel = select(fdsize, tmprfds, tmpwfds, tmpxfds, 0);
