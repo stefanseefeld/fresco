@@ -77,8 +77,8 @@ void PipeAgent::start()
  	  break;
 	}
     }
-  mask(in|out|err);
-  mask(out);
+//   mask(in|out|err);
+  mask(out|err);
   Coprocess::start();
 };
 

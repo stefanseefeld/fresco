@@ -75,8 +75,8 @@ void TTYAgent::start()
  	  break;
 	}
     }
-//   if (bound) initTimer();
-//   setactive();
+  mask(out);
+  Coprocess::start();
 };
 
 void TTYAgent::notifyStateChange(int value)

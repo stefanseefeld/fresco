@@ -33,7 +33,7 @@ using namespace Prague;
 
 Coprocess::plist_t  Coprocess::processes;
 Coprocess::Reaper   Coprocess::reaper;
-Mutex               Coprocess::mutex;
+Mutex               Coprocess::singletonMutex;
 /*
  * we can't set the Signal::child handler within the Reapers constructor 
  * since Signals are possibly not initialized
@@ -45,7 +45,7 @@ static bool init = false;
 void Coprocess::Reaper::notify(int)
 {
   sleep(1);
-  MutexGuard guard(mutex);
+  MutexGuard guard(singletonMutex);
   for (plist_t::iterator i = processes.begin(); i != processes.end(); i++)
     {
       int status;
@@ -54,18 +54,25 @@ void Coprocess::Reaper::notify(int)
 	{
 	  if (WIFEXITED(status))
 	    {
+	      MutexGuard guard((*i)->mutex);
 	      (*i)->_state = exited;
-	      (*i)->notifyStateChange(WEXITSTATUS(status));
+	      (*i)->id     = 0;
+	      status = WEXITSTATUS(status);
 	    }
 	  else if (WIFSIGNALED(status))
 	    {
+	      MutexGuard guard((*i)->mutex);
 	      (*i)->_state = signaled;
-	      (*i)->notifyStateChange(WTERMSIG(status));
+	      (*i)->id     = 0;
+	      status = WTERMSIG(status);
 	    }
 	  else if (WIFSTOPPED(status))
 	    {
-	      (*i)->notifyStateChange(WSTOPSIG(status));
+	      MutexGuard guard((*i)->mutex);
+	      (*i)->id     = 0;
+	      status = WSTOPSIG(status);
 	    }
+	  (*i)->notifyStateChange(status);
 	  processes.erase(i);
 	  break;
 	}
@@ -171,16 +178,6 @@ void Coprocess::timeout()
 //     default: break;
 //     }
 }
-
-// void Coprocess::NewStatus(int s)
-// {
-//   status = s;
-// //   notify(Agent::newstatus);
-//   /*
-//    * if we run in asyncronous mode, update our status with some delay
-//    */
-//   if (bound) { timermode = 1; timer->start(1000);}
-// }
 
 void Coprocess::terminate(bool flag)
 {

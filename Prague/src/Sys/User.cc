@@ -25,20 +25,12 @@
 
 using namespace Prague;
 
-/* @Method{User::User(int uid = -1)}
- *
- * @Description{constructor, gets user information about user with ID @var{uid}, if not @code{-1}, the process owner otherwise}
- */
 User::User(int uid)
 {
   if (uid == -1) uid = getuid();
   pwd = getpwuid(uid);
 };
 
-/* @Method{User::User(const string &)}
- *
- * @Description{constructor, gets user information about user @var{name}}
- */
 User::User(const string &name)
 {
   pwd = getpwnam(name.c_str());

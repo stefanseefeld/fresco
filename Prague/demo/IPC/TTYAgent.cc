@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Prague/IPC/PipeAgent.hh>
+#include <Prague/IPC/TTYAgent.hh>
 #include <string>
 
 using namespace Prague;
@@ -45,8 +45,8 @@ class ConnectionClosed : public Coprocess::EOFNotifier
 public:
   virtual void notify(Agent::iomask_t mask)
   {
-    if (mask == Agent::out)
-      cout << "output : connection closed" << endl;
+    if (mask == Agent::outready)
+      cout << "output : connection closed";
   }
 };
 
@@ -54,7 +54,7 @@ int main (int argc, char **argv)
 {
   Output *out = new Output;
   ConnectionClosed *eof = new ConnectionClosed;
-  agent = new PipeAgent("./echo", out, eof);
+  agent = new TTYAgent("sh", out, eof);
   agent->start();
   while (cin && agent->ibuf())
     {
