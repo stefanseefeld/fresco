@@ -95,8 +95,10 @@ void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
 {
   glGenTextures(1, &name);
   pos = new GLuint[rows * (columns + 1)];
-//   data = new GLubyte[65536];
-  data = new GLubyte[3*65536];
+  data = new GLubyte[65536];
+  for( int n=0; n< 65536; n++ ) {
+    data[n]=0;
+  }
 
   glBindTexture(GL_TEXTURE_2D, name);
   unsigned int stride = 33;
@@ -105,8 +107,8 @@ void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
       unsigned int totalWidth = 0;
       for (int i = 0; i < columns; ++i)
 	{
-	  unsigned int base = stride * (block + (yrow * rows) + i);
-	  bool is_halfwidth = (glyphs[base] == (unsigned char)0xff) ? 0 : 1;
+	  unsigned int base = stride * (((unsigned int)block << 8) + (yrow * columns) + i);
+	  bool is_halfwidth = (glyphs[base] == (unsigned char)0xff) ? 1 : 0;
 	  unsigned char width = is_halfwidth ? 8 : 16; 
 	  unsigned char bytes = is_halfwidth ? 1 : 2;
 	  base++; // advance past width marker
@@ -118,9 +120,7 @@ void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
 		for (int k = 0; k < 8; ++k)
 		  {
 		    int index = totalWidth + k + (j * 8) + (15 - ypos + (yrow * 16)) * 1024;
-		    data[3*index] = (pos & (128 >> k)) ? 0 : 0xff;
-		    data[3*index + 1] = (pos & (128 >> k)) ? 0 : 0xff;
-		    data[3*index + 2] = (pos & (128 >> k)) ? 0 : 0xff;
+		    data[index] = (pos & (128 >> k)) ? 0xff : 0;
 		  }
 	      }
 	  pos[(yrow*65) + i] = totalWidth;
@@ -136,9 +136,11 @@ void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glPixelStorei(GL_PACK_SKIP_ROWS, 0);
   glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
-//   glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 1024, 64, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1024, 64, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
 }
 
 GLUnifont::Texture::~Texture()
@@ -154,8 +156,8 @@ void GLUnifont::Texture::coords(Unichar uc, float &x1, float &y1, float &x2, flo
   GLuint y = (uc & 0xff) >> 6;
   GLuint x = pos[(y*65) + (uc & 0x3f)];
   GLuint width = pos[(y*65) + (uc & 0x3f) + 1] - x;
-  y2 = (((4 - y) * static_cast<float>(16)) / 64);
-  y1 = y2 - 0.25;
+  y1 = ((y * static_cast<float>(16)) / 64);
+  y2 = y1 + 0.25;
   x1 = static_cast<float>(x) / 1024;
   x2 = static_cast<float>(x + width) / 1024;
 }
@@ -169,6 +171,7 @@ void GLUnifont::draw_char(Unichar uc)
   unsigned char width = is_halfwidth ? 8 : 16; 
   unsigned char height = 16;
   base++;			// advance past the width marker
+  // texfont doesn't work and will be seceeded by TextKit anyhow.
 #define TEXFONT 1
 #if TEXFONT == 1
   GLubyte block = uc >> 8;
@@ -177,7 +180,6 @@ void GLUnifont::draw_char(Unichar uc)
 
   float x1, y1, x2, y2;
   texture.coords(uc, x1, y1, x2, y2);
-  glColor3f(1.0, 1.0, 1.0);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, texture.id());
   glBegin(GL_POLYGON);
@@ -186,6 +188,7 @@ void GLUnifont::draw_char(Unichar uc)
   glTexCoord2f(x2, y1); glVertex3f(width*10.0, -height*10.0, 0.0);
   glTexCoord2f(x1, y1); glVertex3f(0.0, -height*10.0, 0.0);
   glEnd();
+  glDisable(GL_TEXTURE_2D);
 #else
   glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking

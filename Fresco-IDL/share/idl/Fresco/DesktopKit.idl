@@ -32,18 +32,17 @@ module Warsaw
   interface Desktop;
   interface Command;
   
-  /*
-   * entry point for Moscow :
-   * A DesktopKit defines the interface between client and server.
-   * All DesktopKit generated Graphics are top level objects, they
-   * should be used to wrap client sub graphs into.
-   * In this respect a DesktopKit plays the role of X's window manager 
-   * concept
-   * One day the DesktopKit should allow to define what communication
-   * protocols a client understands (via Trading Service ?)
-   *
-   *   -stefan
-   */
+  //. A DesktopKit defines the interface between client and server.
+  //. All DesktopKit generated Graphics are top level objects, they
+  //. should be used to wrap client sub graphs into.
+  //. In this respect a DesktopKit plays the role of X's window manager 
+  //. concept
+  //.
+  //. One day the DesktopKit should allow to define what communication
+  //. protocols a client understands (via Trading Service ?)
+  //. FIXME: Stefan, what communication protocol are you talking about here?
+  //.        Some compound document protocols?
+
   interface DesktopKit : Kit
     {
       /*

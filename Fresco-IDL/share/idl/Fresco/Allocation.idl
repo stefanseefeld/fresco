@@ -29,9 +29,9 @@ module Warsaw
   interface Screen;
   
   //. Allocation is used in the process of retreiving
-  //. cumulative geometry information for a given graphic.
-  //. This information is used to determine what regions to
-  //. damage in order to redraw the graphic.
+  //. cumulative geometry information for a given Graphic.
+  //. This information is used to determine what Regions to
+  //. damage in order to redraw the Graphic.
   interface Allocation
     {
       //. Info holds the region and transformation for one
@@ -42,14 +42,14 @@ module Warsaw
 	Transform transformation;
 	Screen root;
       };
-      //. add a new entry. This is typically called by the root
+      //. Add a new entry. This is typically called by the root
       //. node of the scene graph (which is a screen). Since we
       //. want to be able to draw on multiple screens at a time,
       //. the Screen parameter has to be given
       void add(in Region r, in Screen s);
-      //. the number of entries in the Allocation list.
+      //. Get the number of entries in the Allocation list.
       long size();
-      //. used to access the l'th entry
+      //. Used to access the l'th entry
       Info get(in long l);
     };
 };
