@@ -106,6 +106,8 @@ class ClockGraphic (FrescoClient.Graphic):
 	# Get time
 	times = time.localtime(time.time())
 	hours, mins, secs = times[3], times[4], times[5]
+        mins += secs / 60.
+        hours += mins / 60.
 	# Hours
         vertices =  [(-.03,.03),(0,-.6),(.03,.03),(-.03,.03)]
 	path.nodes = map(scale, rotate(hours*circle/12, vertices))
