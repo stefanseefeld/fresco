@@ -99,7 +99,7 @@
 	the concept of a trail, it is important to realize that a graphic cannot
 	reliably store a copy of its cumulative transformation or layout
 	information, since it may be laid out at multiple places on the screen,
-	many of which may have different cumulative transformations. Thus is can
+	many of which may have different cumulative transformations. Thus it can
 	only store "relative" information about its layout requirements, and
 	have its true state computed on the fly. This is known as
 	"externalizing" its state; in fresco we attempt to externalize as much
