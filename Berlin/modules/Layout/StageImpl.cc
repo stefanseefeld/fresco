@@ -97,16 +97,17 @@ private:
 
 StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 {
-//   Trace trace("StageImpl::Sequence::lookup");
+  Trace trace("StageImpl::Sequence::lookup");
   if (layer == front()->l) return begin();
   if (layer == back()->l) return end() - 1;
   if (layer == current()->l) return begin() + cursor;
+  for (iterator i = begin(); i != end(); i++) cout << (*i)->l << endl;
   /*
    * start searching from the closest item
    */
-  int fdist = front()->l - layer;
-  int bdist = layer;
-  int cdist = Math::abs(current()->l - layer);
+  Index fdist = front()->l - layer;
+  Index bdist = layer;
+  Index cdist = Math::abs(current()->l - layer);
   if (fdist < bdist)
     {
       if (fdist < cdist) cursor = 0;
@@ -115,7 +116,6 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
     {
       if (bdist < cdist) cursor = size() - 1;
     }
-
   cursor += layer - current()->l;
   return begin() + cursor;
 }
@@ -123,7 +123,7 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Stage::Index layer)
 void StageImpl::Sequence::insert(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::insert");
-  int layer = handle->l;
+  Index layer = handle->l;
   iterator i;
   if (!size() || layer == 0) i = begin();
   else if (front()->l < layer) i = end();
@@ -135,7 +135,7 @@ void StageImpl::Sequence::insert(StageHandleImpl *handle)
 void StageImpl::Sequence::remove(StageHandleImpl *handle)
 {
   Trace trace("StageImpl::Sequence::remove");
-  int layer = handle->l;
+  Index layer = handle->l;
   iterator old = lookup(layer);
   if (old == begin() + cursor)
     if (current()->l <= (front()->l / 2)) cursor++;
@@ -351,7 +351,9 @@ void StageImpl::QuadTree::insert(StageHandleImpl *handle)
 
 void StageImpl::QuadTree::remove(StageHandleImpl *handle)
 {
+  cout << "StageImpl::QuadTree::remove" << endl;
   node()->remove(handle);
+  cout << "StageImpl::QuadTree::~remove" << endl;
 }
 
 void StageImpl::QuadTree::end()
@@ -494,7 +496,7 @@ void StageImpl::request(Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr traversal)
 {
-//   Trace trace("StageImpl::traverse");
+  Trace trace("StageImpl::traverse");
 //   Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->allocation()));
   Geometry::Rectangle<Coord> rectangle;
@@ -530,7 +532,7 @@ void StageImpl::allocate(Tag tag, const Allocation::Info &a)
 
 void StageImpl::needRedraw()
 {
-//   Trace trace("StageImpl::needRedraw");
+  Trace trace("StageImpl::needRedraw");
   Lease<AllocationImpl> allocation;
   Providers::alloc.provide(allocation);  
   allocations(Allocation_var(allocation->_this()));
@@ -557,7 +559,7 @@ void StageImpl::needRedraw()
 
 void StageImpl::needRedrawRegion(Region_ptr region)
 {
-//   Trace trace("StageImpl::needRedrawRegion");
+  Trace trace("StageImpl::needRedrawRegion");
   Lease<AllocationImpl> allocation;
   Providers::alloc.provide(allocation);  
   allocations(Allocation_var(allocation->_this()));
@@ -582,7 +584,7 @@ void StageImpl::needRedrawRegion(Region_ptr region)
 
 void StageImpl::needResize()
 {
-//   Trace trace("StageImpl::needResize");
+  Trace trace("StageImpl::needResize");
   /*
    * FIXME !!!: need to work out how to process this. (which sub region to damage etc...)
    */
@@ -625,7 +627,7 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
-//   Trace trace("StageImpl::end");
+  Trace trace("StageImpl::end");
   MutexGuard guard(childMutex);
   if (!--nesting)
     {
@@ -650,7 +652,7 @@ void StageImpl::end()
 
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
-//   Trace trace("StageImpl::insert");
+  Trace trace("StageImpl::insert");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = new StageHandleImpl(this, g, tag(), position, size, layer);
   handle->_obj_is_ready(_boa());
@@ -663,7 +665,7 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 
 void StageImpl::remove(StageHandle_ptr h)
 {
-//   Trace trace("StageImpl::remove");
+  Trace trace("StageImpl::remove");
   MutexGuard guard(childMutex);
   StageHandleImpl *handle = children->find(h->layer());
   if (!handle) return;
@@ -678,7 +680,7 @@ void StageImpl::remove(StageHandle_ptr h)
 
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
-//   Trace trace("StageImpl::move");
+  Trace trace("StageImpl::move");
 //   Prague::Profiler prf("StageImpl::move");
   MutexGuard guard(childMutex);
   tree->remove(handle);
@@ -702,7 +704,7 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
-//   Trace trace("StageImpl::resize");
+  Trace trace("StageImpl::resize");
   MutexGuard guard(childMutex);
   tree->remove(handle);
 
@@ -721,7 +723,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 
 void StageImpl::relayer(StageHandleImpl *handle, Stage::Index l)
 {
-//   Trace trace("StageImpl::relayer");
+  Trace trace("StageImpl::relayer");
   MutexGuard guard(childMutex);
   children->remove(handle);
   handle->l = l;
@@ -800,7 +802,7 @@ void StageHandleImpl::layer(Stage::Index ll)
 
 void StageHandleImpl::cacheBBox()
 {
-//   Trace trace("StageHandleImpl::cacheBBox");
+  Trace trace("StageHandleImpl::cacheBBox");
   Graphic::Requisition r;
   GraphicImpl::initRequisition(r);    
   c->request(r);

@@ -53,6 +53,14 @@ dnl needed for other tests to follow
 AC_PROG_CC
 
 dnl #
+dnl # general flags
+dnl #
+AC_ARG_ENABLE(tracer,
+        [  --enable-tracer        Compile with tracer support],[
+        AC_DEFINE(TRACER)])
+AC_REGISTER_PARAM(enable_tracer)
+
+dnl #
 dnl # plugin support
 dnl #
 AC_MSG_PART(Dynamic Loading Implementation)

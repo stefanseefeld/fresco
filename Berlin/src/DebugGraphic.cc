@@ -85,6 +85,16 @@ void DebugGraphic::pick(PickTraversal_ptr traversal)
   MonoGraphic::traverse(traversal);
 }
 
+void DebugGraphic::allocate(Tag tag, const Allocation::Info &info)
+{
+  heading(" allocate\t");
+  Region_var r = info.allocation;
+  Transform_var t = info.transformation;
+  Impl_var<RegionImpl> region(new RegionImpl(r, t));
+  cout << Region_var(region->_this()) << endl;
+  MonoGraphic::allocate(tag, info);
+}
+
 void DebugGraphic::heading(const char *s)
 {
   Graphic_var g = body();

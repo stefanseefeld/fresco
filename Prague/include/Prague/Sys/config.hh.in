@@ -39,3 +39,6 @@ typedef int socklen_t;
 #ifndef HAVE_INET_ATON
 #define inet_aton(cp, addr) (((*(unsigned long int *)(addr)) = inet_addr(cp)) != -1)
 #endif
+
+/* Define if you want tracer support */
+#undef TRACER

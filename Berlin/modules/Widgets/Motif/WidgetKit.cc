@@ -146,14 +146,14 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   Graphic_var quad = layout->fixedSize(Graphic_var(Graphic::_nil()), 80., 80.);
   box->append(Graphic_var(tool->frame(quad, 20., spec, true)));
   box->append(Graphic_var(tool->frame(quad, 20., spec, true)));
-  Controller_var thumb = tool->dragger(box, Command_var(slider->drag()));
+  Controller_var thumb = tool->dragger(tool->debugger(box, "thumb"), Command_var(slider->drag()));
   slider->init(thumb);
   /*
    * now put it into an inset
    */
   spec.abrightness(0.5);
-  Graphic_var inset = tool->frame(slider, 20., spec, false);
-  Controller_var root = tool->group(Graphic_var(layout->alignAxis(inset, axis == xaxis ? yaxis : xaxis, 1.0)));
+  Graphic_var inset = tool->frame(tool->debugger(slider, "slider"), 20., spec, false);
+  Controller_var root = tool->group(tool->debugger(Graphic_var(layout->alignAxis(inset, axis == xaxis ? yaxis : xaxis, 1.0)), "slider frame"));
   /*
    * now wire up the control structure
    */

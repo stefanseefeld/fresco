@@ -41,7 +41,7 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
     drawable(GGI::drawable()),
     tx(0),
-//     fontServer(),
+    font(new GLUnifont),
     textures(100),
     images(500)
 {
@@ -77,6 +77,7 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
 
 GLDrawingKit::~GLDrawingKit()
 {
+  delete font;
   GGIMesaDestroyContext(context);
 }
 
@@ -96,7 +97,6 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
 			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
 			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
 			       matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
-//       cout << "setTransformation " << matrix;
       glLoadMatrixd(glmatrix);
     }
 }
@@ -178,14 +178,16 @@ void GLDrawingKit::drawPath(const Path &path)
 {
   if (fs == solid)
     {
-      glBegin(GL_POLYGON);
-      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+//       glBegin(GL_TRIANGLE_FAN);
+      glBegin(GL_LINE_LOOP);
+      for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
   else if (fs == textured)
     {
-      glBegin(GL_POLYGON);
-      for (unsigned long i = 0; i < path.length(); i++)
+//       glBegin(GL_TRIANGLE_FAN);
+      glBegin(GL_LINE_LOOP);
+      for (unsigned long i = 0; i < path.length() - 1; i++)
 	{
 	  glTexCoord2f(path[i].x * tx->width * 10., path[i].y * tx->height * 10.); 
 	  glVertex3f(path[i].x, path[i].y, path[i].z);
@@ -194,9 +196,10 @@ void GLDrawingKit::drawPath(const Path &path)
     }
   else
     {
-      glBegin(GL_LINE_STRIP);
+//       glBegin(GL_TRIANGLE_FAN);
+      glBegin(GL_LINE_LOOP);
       // line strips (no final connecting line)      
-      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      for (unsigned long i = 0; i < path.length() - 1; i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }
 }

@@ -57,16 +57,47 @@ unsigned long GLUnifont::size() { return 16;}
 unsigned long GLUnifont::weight() { return 100;}
 Unistring *GLUnifont::family() { return new Unistring(_family);}
 Unistring *GLUnifont::subfamily() { return new Unistring(_subfamily);}
-Unistring *GLUnifont::fullname() { return new Unistring(_fullname;}
+Unistring *GLUnifont::fullname() { return new Unistring(_fullname);}
 Unistring *GLUnifont::style() { return new Unistring(_style);}
+DrawingKit::FontMetrics GLUnifont::metrics()
+{
+  DrawingKit::FontMetrics fm;
+  fm.ascender = 16 << 6;
+  fm.descender = 0;
+  fm.height = 16 << 6;
+  fm.max_advance = 16 << 6;
+  return fm;
+}
 
-void GLUnifont::drawChar(Unichar &uc) 
+DrawingKit::GlyphMetrics GLUnifont::metrics(Unichar uc)
+{
+  DrawingKit::GlyphMetrics gm;
+  unsigned char *glyphs = (unsigned char *)glyphmap->addr();
+  
+  unsigned int stride = 33;
+  unsigned int base = stride * uc;
+  bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+  int width = is_halfwidth ? 8 : 16; 
+  int height = 16;
+    
+  gm.width = width << 6;
+  gm.height = height << 6;
+  gm.horiBearingX = 0;
+  gm.horiBearingY = 0;
+  gm.horiAdvance =  width << 6;
+  gm.vertBearingX = 0;
+  gm.vertBearingY = 0;
+  gm.vertAdvance = height << 6;
+  return gm;
+}
+
+void GLUnifont::drawChar(Unichar uc) 
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   // prepare GL to draw
   glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
-  glRasterPos2d(0., 160.);  // position pen
+  glRasterPos2d(0., 0.);  // position pen
   
   unsigned int stride = 33;
   unsigned int base = stride * uc;
@@ -92,6 +123,6 @@ void GLUnifont::allocateChar(Unichar uc, Graphic::Requisition &r)
   r.x.align = 0.;
   r.y.natural = r.y.minimum = r.y.maximum = height*10.;
   r.y.defined = true;
-  r.y.align = 0.;
+  r.y.align = 1.;
 }
 

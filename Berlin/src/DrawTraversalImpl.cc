@@ -58,6 +58,11 @@ void DrawTraversalImpl::init()
    * clear the background of the damaged region...
    */
   drawing->drawRect(l, u);
+#if 0
+  drawing->flush();
+  GGI::drawable()->flush();
+  sleep(1);
+#endif
 }
 
 void DrawTraversalImpl::finish() { drawing->restoreState();}

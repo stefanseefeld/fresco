@@ -51,6 +51,7 @@ public:
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
   virtual void allocate(Tag, const Allocation::Info &);
+  virtual void extension(const Allocation::Info &, Region_ptr);
   Command_ptr drag();
 private:
   void traverseThumb(Traversal_ptr);

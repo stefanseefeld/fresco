@@ -23,6 +23,7 @@
 #define _Math_hh
 
 #include <algorithm>
+#include <cstdlib>
 #include <cmath>
 
 class Math
@@ -38,7 +39,7 @@ public:
   static float abs(float a) { return fabs(a);}
   static double abs(double a) { return fabs(a);}
   static int abs(int a) { return abs(a);}
-  static long abs(long a) { return abs(a);}
+  static long abs(long a) { return labs(a);}
 
   template <class T> static int round(T a) { return a > 0 ? static_cast<int>(a + 0.5) : - static_cast<int>(-a + 0.5);}
 

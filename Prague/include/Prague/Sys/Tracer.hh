@@ -22,6 +22,7 @@
 #ifndef _Prague_Tracer_hh
 #define _Prague_Tracer_hh
 
+#include <Prague/Sys/config.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/ThreadData.hh>
 #include <vector>
@@ -90,7 +91,7 @@ private:
   static bool log;
 };
 
-#if 1
+#ifdef TRACER
 class Trace
 {
 public:

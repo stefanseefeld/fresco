@@ -73,11 +73,13 @@ void Slider::init(Controller_ptr t)
 
 void Slider::update(const CORBA::Any &any)
 {
+  cout << "needRedraw" << endl;
 //   needRedraw();
   any >>= offset;
   offset -= value->lower();
   offset /= (value->upper() - value->lower());
   needRedraw();
+  cout << "~needRedraw" << endl;
 }
 
 void Slider::draw(DrawTraversal_ptr traversal)
@@ -99,6 +101,7 @@ void Slider::pick(PickTraversal_ptr traversal)
 
 void Slider::allocate(Tag, const Allocation::Info &info)
 {
+  cout << "Slider::allocate" << endl;
   Lease<RegionImpl> allocation;
   Providers::region.provide(allocation);
   allocation->copy(info.allocation);
@@ -117,6 +120,8 @@ void Slider::allocate(Tag, const Allocation::Info &info)
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
 }
+
+void Slider::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r);}
 
 Command_ptr Slider::drag() { return _drag->_this();}
 

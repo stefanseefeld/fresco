@@ -48,6 +48,8 @@ public:
   virtual Unistring *subfamily();
   virtual Unistring *fullname();
   virtual Unistring *style();
+  virtual DrawingKit::FontMetrics metrics();
+  virtual DrawingKit::GlyphMetrics metrics(Unichar);
 
   void drawChar(Unichar);
   void allocateChar(Unichar, Graphic::Requisition &);

@@ -37,6 +37,7 @@ public:
   virtual void traverse(Traversal_ptr);
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
+  virtual void allocate(Tag, const Allocation::Info &);
 private:
   string       message;
   unsigned int flags;

@@ -106,7 +106,6 @@ void LayoutAlignRequest::accumulate(const Graphic::Requirement &r)
       Coord r_min = r.minimum;
       Coord r_align = r.align;
       Coord r_inv_align = Coord(1) - r_align;
-//       cout << this << " LayoutAlignRequest::accumulate " << r_nat << ' ' << r_max << ' ' << r_min << r_align << endl;
       natural_lead = Math::max(natural_lead, Coord(r_nat * r_align));
       max_lead = Math::min(max_lead, Coord(r_max * r_align));
       min_lead = Math::max(min_lead, Coord(r_min * r_align));
@@ -393,17 +392,23 @@ Grid::Index GridImpl::upper()
   return upper;
 }
 
+ostream &operator << (ostream &os, const Grid::Index &i) { return os << i.col << ' ' << i.row;}
+
 void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
+  cout << "GridImpl::allocate " << tag << ' ' << tag2index(tag) << endl;
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);  
   tx->loadIdentity();
+  cout << "before " << info.allocation << endl;
   allocateCell(info.allocation, tag2index(tag), info.allocation);
+  cout << "after " << info.allocation << endl;
   Lease<RegionImpl> region;
   Providers::region.provide(region);  
   region->copy(info.allocation);
   region->normalize(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(region->_this()));
+  cout << "after " << info.allocation << endl;
   info.transformation->premultiply(Transform_var(tx->_this()));
 }
 
