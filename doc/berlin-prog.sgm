@@ -4,8 +4,10 @@
     
     <abstract>
     <para>This chapter describes the ideas (and interfaces) which play
-    key roles in the berlin display server, and how to program
-    them.</para>
+    key roles in the berlin display server, and gives an overview of
+    their use in typical scenarios. The actual API is available in
+    other places (including the source tree :). This section is
+    intended to give you an idea how it all "fits together".</para>
     </abstract>
 
     <sect1>
@@ -14,7 +16,7 @@
       <para>A <classname>graphic</classname> is any thing which can
 	be displayed visually. Thus <classname>graphic</classname> is
 	one of the simplest and most widespread types in the berlin
-	code. All graphics support a single method, 
+	code. All <classname>graphic</classname>s support a single method, 
 
 <funcsynopsis>
 	  <funcprototype>
@@ -28,7 +30,7 @@
                which causes them to <emphasis>prepare</emphasis>
                themselves to be shown on a display device. The draw
                method does <emphasis>not</emphasis> actually display
-               the graphic on the screen. The
+               the <classname>graphic</classname> on the screen. The
                <classname>graphic</classname> interface has no
                explicit knowledge of what sort of rendering system is
                used to actually produce a visual image on a display
@@ -44,28 +46,80 @@
                other measures, such as registering oneself as an
                observer and waiting for an update to come from the
                object.</para>
-      </sect1>
 
+      <para>This may sound somewhat strange, as it sounds as though
+      maintaining a consistent image on the screen would be
+      exceedingly difficult. In fact, due to the presence of the
+      subject/observer pattern throughout the system, it is quite
+      stable and works. In general, a damaged (changed) region
+      finishes redrawing <emphasis>before</emphasis> notifying any of
+      its observers that it has changed state. In this case, redrawing
+      literally means recompiling a small displaylist in OpenGL -- the
+      displaylist which encompasses the graphical representaton of its
+      state. The observers, which in general include the composite
+      graphic which contains the damaged region, react to the
+      notification of a subject's change of state by recompiling their
+      own displaylists, and (when finished) notifying their own
+      observers. This proceeds out until the main terminal is
+      notified, and the screen refreshes. Thus, damaged regions of the
+      screen <emphasis>propagate themselves</emphasis> out to the
+      display. There is no need to send "expose events" or anything,
+      as the concept of the composition of graphical state by means of
+      sub-graphics is explicit at all levels of the API.</para>
+
+      </sect1>
+    
+    <sect1>
+      <title>Composite Graphics</title>
+
+      <para>With a little thought, it should be clear that a lot of
+      graphics (things on the screen) are logically well-represented
+      by a recursive nesting of sub-graphics, each in turn composed of
+      perhaps some number of sub-sub-graphics, etc. There must
+      eventually be a bunch of leaf-node graphics in this tree, but
+      there are also a sizeable number of interior nodes, such as
+      panning/scrolling windows, lines in a buffer, menus in a
+      menubar, etc. These sorts of graphics are a distinguished
+      subclass of <classname>graphic</classname> called
+      <classname>composite</classname>. They allow you to add, remove,
+      rearrange, and traverse the child graphics. They observe their
+      children, and when their children change, they change. They
+      often (though not always) clip their children's display area to
+      a bounding box or region. They also usually present a local
+      coordinate space in which their children can draw. This is very
+      easily accomplished in OpenGL, where one can arbitrarily push
+      and pop matricies from a stack of composed linear
+      transformations on the current drawing space. In such a case,
+      moving a parent has the visual effect of moving all of its
+      children along with it, as the coordinate spaces are composed
+      one within the other. Likewise stretching, tilting, rotating,
+      panning, etc. will, unless otherwise specified, effect all
+      children of a composite.</para>
+
+    </sect1>
 
       <sect1>
 	<title>Reactors</title> 
 
-	<para>A reactor is a common pattern in a software system. Many
-	systems have reactors they don't call reactors, they call them
-	dispatch tables. The concept is very simple. There is a table
-	stored within some software module which relates incoming
-	requests to actions to be taken. The actions have an anonymous
-	signature, so they can be rearranged or reassigned. The point
-	of a reactor is that it serves as a dynamically reconfigurable
-	part of an otherwise statically-typed program. It serves as
-	the key flexibility abstraction.</para>
+	<para>A <classname>reactor</classname> is a common pattern in
+	a software system. Many systems have reactors they don't call
+	reactors, they call them dispatch tables. The concept is very
+	simple. There is a table stored within some software module
+	which relates incoming requests to actions to be taken. The
+	actions have an anonymous signature, so they can be rearranged
+	or reassigned. The point of a <classname>reactor</classname>
+	is that it serves as a dynamically reconfigurable part of an
+	otherwise statically-typed program. It serves as the key
+	flexibility abstraction.</para>
 
-	<para>Reactors are implemented in berlin as Corba
-	interfaces. The "incoming requests" are of type
-	<classname>Any</classname> which is an inspectable,
-	unspecified type. The Any's are inspected and their typecodes
-	are matched against other typecodes stored in the reactor, and
-	a set of selections is made based on the typecodes which
+	<para><Classname>Reactor</Classname>s are implemented in
+	berlin as Corba interfaces. The "incoming requests" are of
+	type <classname>Any</classname> which is an inspectable,
+	unspecified type. The <Classname>Any</Classname>'s are
+	inspected and their <classname>typecode</classname>s are
+	matched against other <classname>typecode</classname>s stored
+	in the <classname>reactor</classname>, and a set of selections
+	is made based on the <classname>typecode</classname>s which
 	match.
 	</para>
 
@@ -84,13 +138,149 @@
 	  </funcprototype>
 	</funcsynopsis>
 
-              The Any, which may contain a great deal of important
-              information, is provided as a parameter to the command
-              to do with as it pleases. An application may bind
-              multiple commands to multiple typecodes, in order to
-              customize the behaviour of a reactor.</para>
+              The <Classname>Any</Classname>, which may contain a
+              great deal of important information, is provided as a
+              parameter to the <classname>command</classname> to do
+              with as it pleases. An application may bind multiple
+              <classname>command</classname>s to multiple
+              <classname>typecode</classname>s, in order to customize
+              the behaviour of a
+              <classname>reactor</classname>.</para>
       </sect1>
 
+    <sect1>
+      <title>Commands</title> 
+
+      <para>A <classname>command</classname>, as mentionned in the
+      <Classname>reactor</Classname> section, is a named, encapsulated
+      function supporting at least one anonymous interface which can
+      cause it to "execute". The entire purpose of
+      <classname>command</classname>s is that they can be placed in
+      <classname>reactor</classname>s, and the
+      <classname>reactor</classname> can be configured to execute them
+      on any type of incoming request without violating the
+      compile-time type safety of C++. Each
+      <classname>command</classname> can support additional methods
+      aside from execution; such methods can alter the state of each
+      individual instance of a <classname>command</classname>,
+      modifying its behaviour and thus simplifying the callback
+      interface. All the <classname>reactor</classname> will do is
+      trigger the <classname>command</classname> in its current state
+      -- it is up to the application programmer to put the command in
+      a useful state before any such triggerings occur.</para>
+
+      <informalexample>
+	<para>As an example of the use of commands, consider the
+	"message-passing" system in berlin. Any
+	<classname>reactor</classname> must receive its incoming
+	requests / messages from somewhere, and the general mechanism
+	for doing so is to bind an instance of a
+	<classname>sendMessageCommand</classname> or a
+	<classname>forwardMessageCommand</classname> to another,
+	pre-existing <classname>reactor</classname>. There is always
+	at least 1 reactor in a berlin server: the terminal widget,
+	which is in control of the console. 
+	<classname>SendMessageComand</classname> can be configured to
+	send some particular thing to some particular
+	<classname>reactor</classname>  upon
+	execution, using the
+	<function>reactor.accept(Any a)</function> method. If you want to send some
+	<symbol>fooMessage</symbol> to some
+	<symbol>barReactor</symbol>, every time a key is pressed, you
+	could create a <classname>SendMessageCommand</classname>
+	<symbol>fizz</symbol>, and call
+	<function>fizz.target(fooReactor)</function>, followed by
+	<function>fizz.theMessage(fooMessage)</function>, and then
+	<function>terminal.bind(fizz, _tc_keyEvent)</function>.  This
+	would instruct the terminal widget, which is itself just
+	another glorified reactor, to match all keyEvent
+	<classname>typecode</classname> <classname>Any</classname>s
+	against <symbol>fizz</symbol>. When it receives a keyEvent,
+	which it polls the console for, it would match against
+	<symbol>fizz</symbol>'s binding, and call
+	<function>command.execute(Any a)</function> on
+	<symbol>fizz</symbol>. Then your <symbol>fooMessage</symbol>
+	would be sent.</para>
+      </informalExample>
+    </sect1>
+
+    <sect1>
+      <title>Events</title> 
+
+      <para>Events are reasonably important in a GUI. They are the
+      data structures generated rapidly by users (and programs) as
+      they interact with the display server. Events cause basically
+      everything to happen. If the system has no events in it, then it
+      is most likely idle. Because event is such a broad term, it is
+      difficult to know exactly what sorts of event will come to
+      exist, how they should be dealt with, filtered, passed, ignored,
+      stored, replayed, etc. Every user seems to like their computer
+      to respond in a slightly different manner, and users themselves
+      vary in the sorts of events they generate. Programs vary in how
+      fast they can respond to events and wether they are interested
+      or not in even being informed of events. Thus we have a very
+      general, asynchronous mechanism for processing events (and
+      anything else you want to pass around between asynchronous
+      queues) called <classname>reactors</classname>. See that section
+      for details on how they work.
+      </para>
+
+      <para>The events defined in warsaw are small IDL structs
+      representing raw data we read out of the GGI visual. These
+      correspond to pointer movement information, pointer click and
+      release events, key press, repeat, and release events (and their
+      corresponding unicode character values). GGI obtains the events
+      from the console device, the X bridge, or whatever subsystem it
+      happens to be running on. It is not the concern of berlin to
+      deal with events below the GGI layer. Once inside berlin, the
+      events are passed and filtered by
+      <classname>commands</classname> in the various
+      <classname>reactors</classname>. Since windows are themselves
+      reactors, the top-level widget usually just calls commands which
+      check focus and geometric information in the events and forward
+      the interesting ones to the reactors of the individual
+      windows. If a window or subwidget (there is no difference) is
+      not interested in an event, it will not have explicitly asked to
+      be sent copies of it, and no traffic occurs at all. This
+      behaviour is completely configurable however, simply by writing
+      (and binding) new commands to the terminal widget or some
+      sub-widgets. It is not at all hard to create commands which, for
+      instance, expand keystrokes into macros of other events, replay
+      previous events, interpolate and re-sample events to lie below a
+      given frequency threshold, translate events between types,
+      display a debugging log of all events passed through them, etc.
+    </sect1>
+
+    <sect1>
+      <title>Widgets</title> 
+      <para>A widget is a composite graphic and a reactor. No more, no
+      less. It was named "widget" because subclasses of it play the
+      same role in berlin as other widgets in other toolkits -- they
+      are reuseable graphical components with configurable behaviour
+      and a reasonably clear, common means of operation by a user. If
+      a graphic does not need to asynchronously process messages or
+      events of any sort, it most likely does not need to be a
+      widget. On the other hand, many things which have separate
+      concepts in other windowing systems (windows, the controlling
+      terminal, etc) are implemented as special-cases of widgets in
+      berlin. This means that, in general, the entire server can be
+      run recursively inside a window on the screen, which should
+      simplify testing and remote administration /
+      troubleshooting. The terminal, since it is a widget and by
+      extension just another Corba lifecycle object, can be moved all
+      at once between 2 different hosts, just as any window or
+      sub-widget in berlin can be migrated between hosts.</para>
+    </sect1>
+
+    <sect1>
+      <title>Subject/Observer</title>
+      <para></para>
+    </sect1>
+
+    <sect1>
+      <title>Threads</title>
+      <para></para>
+    </sect1>
 
       <sect1>
 	<title>Factories</title>
@@ -149,6 +339,7 @@
       to use asymetric security systems like public key cryptography.
       </para>
     </sect1>
+
   </chapter>
 
 
