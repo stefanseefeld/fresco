@@ -70,18 +70,24 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
   WindowImpl *window = new WindowImpl;
   activate(window);
   Window_var wptr = window->_this();
+
   Graphic::Requisition req;
+  req.preserve_aspect = false;
+
   req.x.defined = true;
   req.x.minimum = 200.;
   req.x.natural = 200.;
   req.x.maximum = 200.;
-
   req.x.align = 0.;
+
   req.y.defined = true;
   req.y.minimum = 0.;
   req.y.natural = 0.;
   req.y.maximum = _layout->fill();
   req.y.align = 0.;
+
+  req.z.defined = false;
+
   RefCount_var<Graphic> exitgraphic = _layout->glue_requisition(req);
   Trigger_var tbexit = _widget->button(exitgraphic, _exit);
 
@@ -162,16 +168,22 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   spec.brightness(0.5); spec._d(ToolKit::outset);
 
   Graphic::Requisition req;
+  req.preserve_aspect = false;
+
   req.x.defined = true;
   req.x.minimum = 0.;
   req.x.natural = 0.;
   req.x.maximum = _layout->fill();
   req.x.align = 0.;
+
   req.y.defined = true;
   req.y.minimum = 200.;
   req.y.natural = 200.;
   req.y.maximum = 200.;
   req.y.align = 0;
+
+  req.z.defined = false;
+
   Command_var mover = move(wptr);
   RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 20., spec, true);
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
