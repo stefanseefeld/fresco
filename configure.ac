@@ -42,6 +42,7 @@ LIBRARY_PATH=""
 RTTI_FLAGS=""
 OPT_FLAGS=""
 DEBUG_FLAGS=""
+DEBUG="0"
 
 dnl ======================================================================
 dnl Check for programs and compatibility
@@ -78,7 +79,7 @@ AC_CHECK_LIB(pthread, pthread_attr_init,
 
 dnl OmniORB2 has no standard install path (sigh)
 AC_ARG_WITH(omniORB2,
-[  --with-omniORB2=PREFIX  use system libomniORB2 in PREFIX],
+[  --with-omniORB2=PREFIX  Use libomniORB2 in PREFIX],
 	[OMNIORB2_DIR=$withval
 	ORB_CFLAGS="-D__OMNIORB2__"
 	case "$target" in
@@ -123,6 +124,14 @@ else
     AC_MSG_ERROR("This will not compile without G++ or EGCS")
 fi
 
+AC_ARG_ENABLE(debug,
+[  --enable-debug          Enable debugging build],
+  [DEBUG=1
+   DEBUG_FLAGS="-g"
+   OPT_FLAGS=""
+  ]
+)
+
 dnl ======================================================================
 dnl Output makefiles and configuration
 
@@ -149,6 +158,7 @@ AC_SUBST(LIBRARY_PATH)
 AC_SUBST(RTTI_FLAGS)
 AC_SUBST(OPT_FLAGS)
 AC_SUBST(DEBUG_FLAGS)
+AC_SUBST(DEBUG)
 
 AC_CONFIG_HEADER(include/autoconf.h)
 AC_OUTPUT([config/autoconf.mk])
