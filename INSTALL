@@ -60,25 +60,28 @@ Step into the build directory, and run the toplevel configure script:
 this will just generate a single Makefile, which, however, is equipped
 with all the knowledge to do the rest of the work.
 
-call 'make' to configure and build all the available sub-projects:
+call 'make config' to configure and build all the available sub-projects:
 
-> make
+> make config
 
 You may want to provide some arguments to the various configure
-scripts. You can do that with 'make configure_args="--enable-foo"'.
+scripts. You can do that with 'make config configure_args="--enable-foo"'.
 Here is a list of the available options:
 
   --prefix               Set the prefix into which Fresco will get installed.
+                         [defaults to /usr/local and can be overridden later
+			  in case you should happen to forget to specify]
 
   --sysconfdir           Set the directory for Fresco's configuration file(s).
+  			 [defaults to $prefix/etc]
 
   --enable-tracer        Compile with tracer support
                          This produces tons of debugging output: A big help
                          if you want to debug the server or report
-                         bugs.
+                         bugs. [disabled by default]
 
   --with-orb		 Select the CORBA ORB used by Fresco. This can be
-  			 either omniORB or TAO for now.
+  			 either omniORB or TAO for now. [defaults to omniORB]
 
   --with-omniorb-prefix  Prefix for omniORB
                          Only needed if omniORB is not found automatically.
@@ -122,13 +125,21 @@ Here is a list of the available options:
 
   --enable-jprof   	 enable profiling with the jprof tool
                          This is only needed for people wanting to improve
-                         the performance of the server.
+                         the performance of the server. [disabled by default]
 
   --enable-lclog   	 enable lifecycle logging
-                         Another debugging option.
+                         Another debugging option. [disabled by default]
 
 [ Add support for interactive configuration and document the options
-  here]
+  here ]
+
+Afterwards you can install Fresco with 'make install'. You do not need to
+install to run it: You only need to make sure that the libraries are found.
+You can even override the configured path at this stage using
+'make install prefix=path'. Use with care as you will need to provide the
+path to the configuration file 'berlinrc' using the -r option of the server.
+
+
 
 Instead of using this toplevel Makefile you can manually build everything with
 a sequence of commands like this:
@@ -230,6 +241,23 @@ Finally here they are other options you may use when invoking the server:
   -p --profiler :                  use jprof profiler (requires configuration
                                    with --enable-jprof)
 
+  -r --resource path :             use the berlinrc file in path instead of the
+                                   configured default location. You must use
+				   this option if you did override the prefix
+				   during make install!
+
+  -R --export-ref (ior|corbaloc) : export the server's 'CORBA-ID' to stdout.
+                                   Use this option if you have trouble with
+				   your CORBA nameserver's setup
+
+  -e --execute [program] :         run program in the server
+
+  -d --drawing DrawingKit :        Use the given DrawingKit instead of the
+                                   default LibArtDrawingKit.
+
+  -c --console Console :           Use the specified Console (low level
+                                   rendering backend), instead of the default
+				   GGI Console.
 
 
 Troubleshooting
