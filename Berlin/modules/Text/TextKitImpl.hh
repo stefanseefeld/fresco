@@ -44,8 +44,9 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   virtual ~TextKitImpl();
   virtual void bind(ServerContext_ptr);
 
-  Graphic_ptr simpleViewer(TextBuffer_ptr);  
   Graphic_ptr chunk(const Unistring & u);
+  Graphic_ptr strut();
+  Graphic_ptr simpleViewer(TextBuffer_ptr);  
   Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
   Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);
   Graphic_ptr family(Graphic_ptr body, const Unistring & fam);
@@ -62,7 +63,5 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   Compositor *compositor;
   vector<GraphicImpl *> allocations;
 };
-
-
 
 #endif

@@ -40,7 +40,7 @@ CXXFLAGS= -pthread -Wall $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague
 DEMO =	  Application.cc LayoutDemo.cc TextDemo.cc EditTextDemo.cc RasterDemo.cc TransformDemo.cc LogoDemo.cc \
-	  FocusDemo.cc ViewportDemo.cc demo.cc
+	  FocusDemo.cc ViewportDemo.cc DocDemo.cc demo.cc
 DEP	= $(patsubst %.cc, $(dpath)/%.d, $(DEMO))
 OBJ	= $(patsubst %.cc, $(opath)/%.o, $(DEMO))
 

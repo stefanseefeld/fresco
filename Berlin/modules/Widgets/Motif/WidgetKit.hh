@@ -52,6 +52,8 @@ class WidgetKit : implements(WidgetKit), public KitImpl
   Controller_ptr   scrollbar(BoundedRange_ptr, Axis);
   Choice_ptr       toggleChoice();
   Choice_ptr       checkboxChoice();
+
+  Controller_ptr   scrollable(Graphic_ptr);
  private:
   LayoutKit_var layout;
   CommandKit_var   command;

@@ -27,6 +27,7 @@
 #include "Warsaw/resolve.hh"
 #include "Warsaw/Trigger.hh"
 #include "Warsaw/Command.hh"
+#include "Warsaw/Viewport.hh"
 #include "Warsaw/Selection.hh"
 #include "Widget/Motif/WidgetKit.hh"
 #include "Widget/Motif/Gauge.hh"
@@ -269,6 +270,28 @@ Choice_ptr WidgetKit::checkboxChoice()
   choice->body(Graphic_var(layout->vbox()));
   graphics.push_back(choice);
   return choice->_this();
+}
+
+Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
+{
+  Viewport_var viewport = layout->scrollable(g);
+  Controller_var xscroller = scrollbar(viewport->adjustment(xaxis), xaxis);
+  Controller_var yscroller = scrollbar(viewport->adjustment(yaxis), yaxis);
+  Graphic_var hbox1 = layout->hbox();
+  ToolKit::FrameSpec inset;
+  inset.abrightness(0.5);
+  hbox1->append(Graphic_var(tool->frame(viewport, 20, inset, false)));
+  hbox1->append(yscroller);
+  Graphic_var hbox2 = layout->hbox();
+  hbox2->append(xscroller);
+  hbox2->append(Graphic_var(layout->fixedSize(Graphic_var(Graphic::_nil()), 160., 160.)));
+  Graphic_var vbox = layout->vbox();
+  vbox->append(hbox1);
+  vbox->append(hbox2);
+  Controller_var group = tool->group(vbox);
+  group->appendController(xscroller);
+  group->appendController(yscroller);
+  return group._retn();
 }
 
 };

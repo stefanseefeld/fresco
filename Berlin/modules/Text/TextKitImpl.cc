@@ -23,12 +23,13 @@
 #include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
-#include <Warsaw/TextBuffer.hh>           // for TextBuffer type
+#include <Warsaw/TextBuffer.hh>        // for TextBuffer type
 #include <Text/TextKitImpl.hh>         // for our own definition
 #include <Text/TextChunk.hh>           // the chunk graphic type
-#include <Text/TextViewer.hh>           // the viewer polygraphic type
-#include <Text/Compositor.hh>           // the compositor strategy
-#include <Drawing/DrawDecorator.hh> // the decorator monographic template
+#include <Text/TextViewer.hh>          // the viewer polygraphic type
+#include <Text/Compositor.hh>          // the compositor strategy
+#include <Text/Strut.hh>               // the compositor strategy
+#include <Drawing/DrawDecorator.hh>    // the decorator monographic template
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
@@ -45,15 +46,6 @@ void TextKitImpl::bind(ServerContext_ptr sc)
   canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
 }
 
-Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
-{
-  Trace trace("TextKitImpl::simpleViewer");
-  Impl_var<TextViewer> tv(new TextViewer(buf,this->_this(),canonicalDK, compositor));
-  allocations.push_back(tv.get());
-  buf->attach(tv.get());
-  return tv.release()->_this();
-}
-
 // chunks are flyweights
 
 Graphic_ptr TextKitImpl::chunk(const Unistring & u)
@@ -68,6 +60,26 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
       chunkCache[str] = t;
     }
   return chunkCache[str]->_this();
+}
+
+Graphic_ptr TextKitImpl::strut()
+{
+  MutexGuard guard(staticMutex);
+  Unistring us = Unicode::toCORBA(Unicode::String("M"));
+  Graphic::Requisition r;
+  canonicalDK->allocateText(us, r);
+  Strut *strut = new Strut (r);
+  strut->_obj_is_ready(_boa());
+  return strut->_this();
+}
+
+Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
+{
+  Trace trace("TextKitImpl::simpleViewer");
+  Impl_var<TextViewer> tv(new TextViewer(buf,this->_this(),canonicalDK, compositor));
+  allocations.push_back(tv.get());
+  buf->attach(tv.get());
+  return tv.release()->_this();
 }
 
 ///////////////////////
