@@ -131,13 +131,15 @@ void RasterImpl::getData(Raster::Data &buffer)
    * to come out right-side-up.
    */
   // Make buffer correct size
-//   png_uint_32 width = png_get_image_width(rpng, rinfo);
-//   png_uint_32 height = png_get_image_height(rpng, rinfo);
+   png_uint_32 width = png_get_image_width(rpng, rinfo);
+   png_uint_32 height = png_get_image_height(rpng, rinfo);
 
-//   buffer.length(width*height);
+   long long totBytes = 4*width*height;
+   
+   buffer.length(totBytes);
   
-//   for (int i=0; i < totBytes; i++)
-//     buffer[i] = *(data+((totBytes-1)-i));
+   for (int i=0; i < totBytes; i++)
+     buffer[i] = *((*rows)+((totBytes-1)-i));
 }
 
 void RasterImpl::write(const char *file)

@@ -28,7 +28,7 @@
 #include "Drawing/openGL/GLPencil.hh"
 #include "Warsaw/Text.hh"
 #include "Drawing/openGL/GLFont.hh"
-
+#include "Berlin/Logger.hh"
 
 extern "C" {
 #include "ggi/ggi.h"
@@ -96,20 +96,27 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
-  Raster::Info info = raster->header();
-  Raster::Data pixels;
-
-  raster->getData(pixels);
+	Logger::log(Logger::drawing) << "In DrawingKitImage routine" << endl;
+	Raster::Info info = raster->header();
+	Logger::log(Logger::drawing) << "Header retrieved." << endl;
+	Raster::Data pixels;
+	raster->getData(pixels);
+	Logger::log(Logger::drawing) << "Pixels retrieved" << endl;
+	
 
 //   Transform::Matrix matrix;
 //   transform->store(matrix);
 
-  Vertex origin;
-  origin.x = origin.y = origin.z;
-  transform->transformVertex(origin);
-
-  glRasterPos2d(origin.x, origin.y);
+	Vertex origin;
+	origin.x = origin.y = origin.z;
+	transform->transformVertex(origin);
+	Logger::log(Logger::drawing) << "Transform origin made" << endl;
+	glRasterPos2d(origin.x, origin.y);
+	Logger::log(Logger::drawing) << "GL Raster positioned" << endl;
+	
 //   glPixelStorei(GL_UNPACK_ROW_LENGTH, gpixmap->getPixmapAllocatedWidth());
 // 	glClear(GL_COLOR_BUFFER_BIT);
-  glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels.NP_data());
+	glDrawPixels(info.width, info.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) pixels.NP_data());
+	Logger::log(Logger::drawing) << "It's drawn!" << endl;
+	
 }
