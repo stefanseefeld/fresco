@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,13 +22,13 @@
 #ifndef _ObserverImpl_hh
 #define _ObserverImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Observer.hh>
-#include <Warsaw/Subject.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Observer.hh>
+#include <Fresco/Subject.hh>
 #include <Berlin/ServantBase.hh>
 #include <Berlin/IdentifiableImpl.hh>
 
-class ObserverImpl : public virtual POA_Warsaw::Observer,
+class ObserverImpl : public virtual POA_Fresco::Observer,
 		     public virtual ServantBase,
 		     public virtual IdentifiableImpl
 {

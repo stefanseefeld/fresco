@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,8 +23,8 @@
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Time.hh>
 #include <Prague/Sys/Profiler.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Logger.hh"
@@ -32,7 +32,7 @@
 #include <strstream>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em, DrawingKit_ptr d)
   : _screen(g), _emanager(em), _drawing(DrawingKit::_duplicate(d))

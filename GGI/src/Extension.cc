@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,45 +19,45 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Console/GGI/Extension.hh>
-#include <Console/GGI/Drawable.hh>
+#include "Extension.hh"
+#include "Drawable.hh"
 #include <strstream.h>
 extern "C"
 {
 #include <ggi/ggi-unix.h>
 }
 
-void GGI::DExtension::attach(::Console::Drawable *drawable)
+void GGI::Extension::attach(::Console::Drawable *drawable)
 {
   _drawable = dynamic_cast<Drawable *>(drawable);
 }
 
-void GGI::Renderer::set_color(const Warsaw::Color &c)
+void GGI::Renderer::set_color(const Fresco::Color &c)
 {
   ggiSetGCForeground(drawable()->visual(), drawable()->map(c));
 }
 
-void GGI::Renderer::draw_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y)
+void GGI::Renderer::draw_pixel(Fresco::PixelCoord x, Fresco::PixelCoord y)
 {
   ggiDrawPixel(drawable()->visual(), x, y);
 }
 
-void GGI::Renderer::draw_hline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w)
+void GGI::Renderer::draw_hline(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord w)
 {
   ggiDrawHLine(drawable()->visual(), x, y, w);
 }
 
-void GGI::Renderer::draw_vline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord h)
+void GGI::Renderer::draw_vline(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord h)
 {
   ggiDrawVLine(drawable()->visual(), x, y, h);
 }
 
-void GGI::Renderer::draw_line(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+void GGI::Renderer::draw_line(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
   ggiDrawLine(drawable()->visual(), x, y, x + w, y + h);
 }
 
-void GGI::Renderer::draw_box(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+void GGI::Renderer::draw_box(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
   ggiDrawBox(drawable()->visual(), x, y, w, h);
 }
@@ -75,9 +75,9 @@ DirectBuffer::Guard GGI::DirectBuffer::write_buffer()
 }
 
 ::Console::Drawable *GGI::SHMDrawableFactory::create_drawable(int shmid,
-							      Warsaw::PixelCoord w,
-							      Warsaw::PixelCoord h,
-							      Warsaw::PixelCoord d)
+							      Fresco::PixelCoord w,
+							      Fresco::PixelCoord h,
+							      Fresco::PixelCoord d)
 {
   std::ostrstream oss;
   oss << "display-memory:shmid:" << shmid << std::ends;
@@ -97,9 +97,9 @@ DirectBuffer::Guard GGI::DirectBuffer::write_buffer()
 }
 
 ::GGIDrawable *GGI::GGIDrawableFactory::create_drawable(int shmid,
-							Warsaw::PixelCoord w,
-							Warsaw::PixelCoord h,
-							Warsaw::PixelCoord d)
+							Fresco::PixelCoord w,
+							Fresco::PixelCoord h,
+							Fresco::PixelCoord d)
 {
   std::ostrstream oss;
   oss << "display-memory:-input:shmid:" << shmid << std::ends;

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,19 +22,19 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Profiler.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Screen.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Screen.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/AllocationImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/DebugGraphic.hh>
 #include <Berlin/QuadTree.hh>
 #include <Berlin/Math.hh>
-#include <Layout/StageImpl.hh>
+#include "StageImpl.hh"
 
 using namespace Geometry;
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Layout;
 
 
@@ -501,11 +501,11 @@ void StageTraversal::traverse(StageHandleImpl *handle)
     }
   catch (const CORBA::OBJECT_NOT_EXIST &)
     {
-      handle->_child = Warsaw::Graphic::_nil();
+      handle->_child = Fresco::Graphic::_nil();
     }
   catch (const CORBA::COMM_FAILURE &)
     {
-      handle->_child = Warsaw::Graphic::_nil();
+      handle->_child = Fresco::Graphic::_nil();
     }
 }
 
@@ -526,7 +526,7 @@ StageImpl::~StageImpl()
   delete _children;
 }
 
-void StageImpl::request(Warsaw::Graphic::Requisition &r)
+void StageImpl::request(Fresco::Graphic::Requisition &r)
 {
   GraphicImpl::init_requisition(r);
   if (_tree->size() > 0)
@@ -834,9 +834,9 @@ Layout::Stage_ptr StageHandleImpl::parent()
 {
   return _parent->_this();
 }
-Warsaw::Graphic_ptr StageHandleImpl::child()
+Fresco::Graphic_ptr StageHandleImpl::child()
 {
-  return Warsaw::Graphic::_duplicate(_child);
+  return Fresco::Graphic::_duplicate(_child);
 }
 
 void StageHandleImpl::remove()
@@ -846,7 +846,7 @@ void StageHandleImpl::remove()
   _parent->unlock();
 }
 
-Warsaw::Vertex StageHandleImpl::position()
+Fresco::Vertex StageHandleImpl::position()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _position;
@@ -859,7 +859,7 @@ void StageHandleImpl::position(const Vertex &pp)
   _parent->unlock();
 }
 
-Warsaw::Vertex StageHandleImpl::size()
+Fresco::Vertex StageHandleImpl::size()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _size;
@@ -885,7 +885,7 @@ void StageHandleImpl::layer(Layout::Stage::Index ll)
   _parent->unlock();
 }
 
-const Geometry::Rectangle<Warsaw::Coord> &StageHandleImpl::bbox()
+const Geometry::Rectangle<Fresco::Coord> &StageHandleImpl::bbox()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _bbox;

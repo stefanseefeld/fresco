@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,10 +20,10 @@
  * MA 02139, USA.
  */
 
-#include <Figure/Figures.hh>
+#include "Figures.hh"
 
 // using namespace Geometry;
-using namespace Warsaw;
+using namespace Fresco;
 
 PointImpl::PointImpl() { add_point(0., 0.);}
 PointImpl::PointImpl (const Vertex &v) { add_point(v.x, v.y);}
@@ -187,9 +187,9 @@ void EllipseImpl::radius1(Coord r) { _radius1 = r; resize();}
 Coord EllipseImpl::radius2() { return _radius2;}
 void EllipseImpl::radius2(Coord r) { _radius2 = r; resize();}
 
-PathImpl::PathImpl(bool flag) : _handles(new Warsaw::Path()), _closed(flag) { _handles->shape = convex;}
-PathImpl::PathImpl (const Warsaw::Path &path, bool flag) : _handles(new Warsaw::Path(path)), _closed(flag) { _handles->shape = convex; resize();}
-PathImpl::PathImpl(const PathImpl &path) : _handles(new Warsaw::Path(path._handles)), _closed(path._closed) { copy(path);}
+PathImpl::PathImpl(bool flag) : _handles(new Fresco::Path()), _closed(flag) { _handles->shape = convex;}
+PathImpl::PathImpl (const Fresco::Path &path, bool flag) : _handles(new Fresco::Path(path)), _closed(flag) { _handles->shape = convex; resize();}
+PathImpl::PathImpl(const PathImpl &path) : _handles(new Fresco::Path(path._handles)), _closed(path._closed) { copy(path);}
 
 void PathImpl::resize()
 {
@@ -235,6 +235,6 @@ void PathImpl::resize()
 
 PathImpl::~PathImpl () {}
 
-Warsaw::Path *PathImpl::handles() { return new Warsaw::Path(_handles);}
-void PathImpl::handles(const Warsaw::Path &path) { _handles = new Warsaw::Path(path); resize();}
+Fresco::Path *PathImpl::handles() { return new Fresco::Path(_handles);}
+void PathImpl::handles(const Fresco::Path &path) { _handles = new Fresco::Path(path); resize();}
 CORBA::Boolean PathImpl::closed() { return _closed;}

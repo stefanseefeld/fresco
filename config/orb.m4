@@ -1,7 +1,7 @@
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl http://www.berlin-consortium.org/
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@ dnl MA 02139, USA.
 
 dnl ------------------------------------------------------------------
 
-dnl BERLIN_LIB_ORB(mandatory-flag)
+dnl FRESCO_LIB_ORB(mandatory-flag)
 dnl
 dnl Try to find a usable ORB. If mandatory-flag is "mandatory", abort if
 dnl none is found.
@@ -30,10 +30,9 @@ dnl secondary macros, which checks if the specific ORB is available and
 dnl sets ORB_LIBS, ORB_CPPFLAGS, IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS and
 dnl IDLTIEFLAGS. Those variables are AC_SUBSTed here.
 
-AC_DEFUN([BERLIN_LIB_ORB],[
+AC_DEFUN([FRESCO_LIB_ORB],[
 
-	AC_MSG_PART(ORB)
-	AC_BEGIN_DECISION([ORB])
+	AC_MSG_NOTICE(ORB)
 	AC_ARG_WITH(orb,
 		[  --with-orb=NAME         Specify which ORB to use],[dnl
 		ORB="$withval"],[dnl
@@ -43,16 +42,16 @@ AC_DEFUN([BERLIN_LIB_ORB],[
 
 	case "$ORB" in
 		omniORB|auto)
-			BERLIN_LIB_OMNIORB
-			if test ".$berlin_cv_lib_omniORB" != ".yes"; then
+			FRESCO_LIB_OMNIORB
+			if test ".$fresco_cv_lib_omniORB" != ".yes"; then
 				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
 			else
 				ORB=omniORB
 			fi		
 			;;
 		TAO)
-			BERLIN_LIB_TAO
-			if test ".$berlin_cv_lib_TAO" != ".yes"; then
+			FRESCO_LIB_TAO
+			if test ".$fresco_cv_lib_TAO" != ".yes"; then
 				ifelse($1,mandatory,AC_MSG_ERROR(No supported CORBA environment found!),ORB="none")
 			else
 				ORB=TAO
@@ -68,19 +67,17 @@ AC_DEFUN([BERLIN_LIB_ORB],[
 	
 	case $ORB in
 		omniORB)
-			AC_DECIDE(OMNIORB, [use omniORB])
+			AC_MSG_RESULT([use omniORB])
 			AC_DEFINE(ORB_omniORB)
 			;;
 		TAO)
-			AC_DECIDE(TAO, [use TAO])
+			AC_MSG_RESULT([use TAO])
 			AC_DEFINE(ORB_TAO)
 			;;
 		none)
-			AC_DECIDE(NONE, [none found])
+			AC_MSG_RESULT([none found])
 			;;
 	esac
-
-	AC_END_DECISION
 	AC_SUBST(ORB)
 	AC_SUBST(CPPFLAGS)
 	AC_SUBST(LIBS)

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,32 +22,32 @@
 #ifndef _Beveler_hh
 #define _Beveler_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
 
 namespace Beveler
 {
-  void rect(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-	    const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-	    Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
-  void leftArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-		 const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-		 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
-  void rightArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-		  const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-		  Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
-  void upArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-	       const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-	       Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
-  void downArrow(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-		 const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-		 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
-  void diamond(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-	       const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-	       Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
-  void circle(Warsaw::DrawTraversal_ptr, Warsaw::Coord,
-	      const Warsaw::Color &, const Warsaw::Color &, const Warsaw::Color&,
-	      Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, bool);
+  void rect(Fresco::DrawTraversal_ptr, Fresco::Coord,
+	    const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+	    Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
+  void leftArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		 const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+		 Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
+  void rightArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		  const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+		  Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
+  void upArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+	       const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+	       Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
+  void downArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		 const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+		 Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
+  void diamond(Fresco::DrawTraversal_ptr, Fresco::Coord,
+	       const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+	       Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
+  void circle(Fresco::DrawTraversal_ptr, Fresco::Coord,
+	      const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
+	      Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,15 +20,15 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Selection.hh>
-#include <Warsaw/Widget.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Selection.hh>
+#include <Fresco/Widget.hh>
 #include <Berlin/RefCountVar.hh>
-#include "Unidraw/EditorImpl.hh"
-#include "Unidraw/Viewer.hh"
+#include "EditorImpl.hh"
+#include "Viewer.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Unidraw;
 
 class EditorImpl::Observer : public ObserverImpl
@@ -38,7 +38,7 @@ public:
   ~Observer() { _parent->_remove_ref();}
   void update(const CORBA::Any &any)
   {
-    Warsaw::Selection::Item *item;
+    Fresco::Selection::Item *item;
     if (any >>= item)
       {
 	if (item->toggled) _parent->_current = RefCount_var<Tool>::increment(_parent->_tools[item->id]);
@@ -56,7 +56,7 @@ EditorImpl::EditorImpl(UnidrawKitImpl *unidraw)
   _unidraw->_add_ref();
   WidgetKit_var widgets = _unidraw->widgets();
   _choice = widgets->toolbar();
-  Warsaw::Selection_var selection = _choice->state();
+  Fresco::Selection_var selection = _choice->state();
   selection->attach(Observer_var(_tool_setter->_this()));
 }
 EditorImpl::~EditorImpl()
@@ -70,7 +70,7 @@ void EditorImpl::append_tool(Tool_ptr tool, Graphic_ptr graphic)
 }
 Unidraw::Tool_ptr EditorImpl::current_tool() { return Unidraw::Tool::_duplicate(_current);}
 void EditorImpl::current_tool(Tool_ptr current) { _current = Unidraw::Tool::_duplicate(current);}
-Controller_ptr EditorImpl::create_viewer(Unidraw::Model_ptr model, Warsaw::Coord width, Warsaw::Coord height)
+Controller_ptr EditorImpl::create_viewer(Unidraw::Model_ptr model, Fresco::Coord width, Fresco::Coord height)
 {
   FigureKit_var figures = _unidraw->figures();
   ToolKit_var tools = _unidraw->tools();

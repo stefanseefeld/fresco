@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Unicode.hh>
 #include <Prague/Sys/Tracer.hh>
-#include "Tool/Terminal.hh"
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Unicode.hh>
+#include "Terminal.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Babylon;
 
 void Terminal::key_press(const Input::Event &event)
@@ -45,6 +45,6 @@ void Terminal::key_press(const Input::Event &event)
     case Babylon::UC_BACKSPACE:             data[0] = '\b'; break;
     default: return; // don't know how to handle...
     }
-  buffer->write(data);
+  _buffer->write(data);
 //   buffer->flush();
 }

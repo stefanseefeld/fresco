@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Tobias Hunger <tobias@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Tobias Hunger <tobias@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,11 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Command/VisualTextBufferImpl.hh>
-#include <Command/TextBufferImpl.hh>
-#include <Berlin/ObserverImpl.hh>
 #include <Babylon/utils.hh>
-#include <Warsaw/Unicode.hh>
+#include <Fresco/Unicode.hh>
+#include <Berlin/ObserverImpl.hh>
+#include "VisualTextBufferImpl.hh"
+#include "TextBufferImpl.hh"
 #include <iostream>
 #include <functional>
 #include <algorithm>
@@ -49,7 +49,7 @@ VisualTextBufferImpl::Observer::Observer(VisualTextBufferImpl * v) {
 
 void VisualTextBufferImpl::Observer::update(const CORBA::Any & any) {
     Prague::Trace trace("VisualTextBufferImpl::Observer::update(...)");
-    Warsaw::TextBuffer::Change * ch;
+    Fresco::TextBuffer::Change * ch;
     if(any >>= ch) {
         _visual->update(ch->type, ch->pos, ch->len);
 	
@@ -85,22 +85,22 @@ CORBA::ULong VisualTextBufferImpl::size() {
     return _memory->size();
 }
 
-Warsaw::Unistring * VisualTextBufferImpl::value() {
+Fresco::Unistring * VisualTextBufferImpl::value() {
     Prague::Trace trace("VisualTextBufferImpl::value()");
-    Warsaw::Unistring * result = new Warsaw::Unistring();
+    Fresco::Unistring * result = new Fresco::Unistring();
     for (size_t i = 0; i < size(); ++i)
         result[i] = (*_memory->get_chars(i, 1))[0];
     return result;
 }
 
-Warsaw::Unistring * VisualTextBufferImpl::get_chars(CORBA::ULong pos,
+Fresco::Unistring * VisualTextBufferImpl::get_chars(CORBA::ULong pos,
                                                     CORBA::ULong len) {
     Prague::Trace trace("VisualTextBufferImpl::get_chars(...)"); 
     Prague::Guard<Prague::Mutex> guard(_mutex);
 
     CORBA::ULong start = std::min(pos, size());
     CORBA::ULong end = std::min(pos + len, size());
-    Warsaw::Unistring * result = new Warsaw::Unistring();
+    Fresco::Unistring * result = new Fresco::Unistring();
     result->length(end - start);
 
     for (size_t i = start; i < end; ++i)
@@ -157,13 +157,13 @@ void VisualTextBufferImpl::shift(CORBA::Long d) {
     _memory->shift(d);
 }
 
-void VisualTextBufferImpl::insert_char(Warsaw::Unichar c) {
+void VisualTextBufferImpl::insert_char(Fresco::Unichar c) {
     // FIXME: This needs some elaboration.
     Prague::Trace trace("VisualTextBufferImpl::insert_char(...)");
     _memory->insert_char(c);
 }
 
-void VisualTextBufferImpl::insert_string(const Warsaw::Unistring & s) {
+void VisualTextBufferImpl::insert_string(const Fresco::Unistring & s) {
     // FIXME: Same here.
     Prague::Trace trace("VisualTextBufferImpl::insert_string(...)");
     _memory->insert_string(s);
@@ -186,27 +186,27 @@ void VisualTextBufferImpl::clear() {
     _memory->clear();
 }
 
-void VisualTextBufferImpl::update(const Warsaw::TextBuffer::ChangeType type,
+void VisualTextBufferImpl::update(const Fresco::TextBuffer::ChangeType type,
                                   const CORBA::ULong pos,
                                   const CORBA::Long len) {
     Prague::Trace trace("VisualTextBufferImpl::update(...)");
-    std::vector<Warsaw::TextBuffer::Change> anys;
+    std::vector<Fresco::TextBuffer::Change> anys;
 
     switch (type) {
-    case Warsaw::TextBuffer::insert:
+    case Fresco::TextBuffer::insert:
         anys = insert(pos, len);
         break;
-    case Warsaw::TextBuffer::remove:
+    case Fresco::TextBuffer::remove:
         anys = remove(pos, len);
         break;
-    case Warsaw::TextBuffer::cursor:
+    case Fresco::TextBuffer::cursor:
         anys = cursor(pos, len);
         break;
     }
 
     // send all the updates that came up:
     // ---------------------------------------------------------
-    for (std::vector<Warsaw::TextBuffer::Change>::const_iterator i = anys.begin();
+    for (std::vector<Fresco::TextBuffer::Change>::const_iterator i = anys.begin();
          i != anys.end();
          ++i) {
         CORBA::Any any;
@@ -215,17 +215,17 @@ void VisualTextBufferImpl::update(const Warsaw::TextBuffer::ChangeType type,
     }
 }
 
-Warsaw::TextBuffer::StringOrder VisualTextBufferImpl::order() {
+Fresco::TextBuffer::StringOrder VisualTextBufferImpl::order() {
     Prague::Trace trace("VisualTextBufferImpl::order()");
-    return Warsaw::TextBuffer::visual_order;
+    return Fresco::TextBuffer::visual_order;
 }
 
-Warsaw::TextBuffer_ptr VisualTextBufferImpl::get_memory_buffer() {
+Fresco::TextBuffer_ptr VisualTextBufferImpl::get_memory_buffer() {
     Prague::Trace trace("VisualTextBufferImpl::get_memory_buffer()");
     return _memory->_this();
 }
 
-Warsaw::TextBuffer_ptr VisualTextBufferImpl::get_visual_buffer() {
+Fresco::TextBuffer_ptr VisualTextBufferImpl::get_visual_buffer() {
     Prague::Trace trace("VisualTextBufferImpl::get_visual_buffer()");
     return TextBuffer::_this();
 }
@@ -245,7 +245,7 @@ CORBA::ULong VisualTextBufferImpl::current_position() {
     return _vis2log[pos - 1] + 1;
 }
 
-std::vector<Warsaw::TextBuffer::Change>
+std::vector<Fresco::TextBuffer::Change>
 VisualTextBufferImpl::insert(const CORBA::ULong pos,
                              const CORBA::Long len) {
     Prague::Trace trace("VisualTextBufferImpl::insert(...)");
@@ -258,7 +258,7 @@ VisualTextBufferImpl::insert(const CORBA::ULong pos,
     assert(pos >= 0);
     assert(pos <= vis_size);
 
-    std::vector<Warsaw::TextBuffer::Change> anys;
+    std::vector<Fresco::TextBuffer::Change> anys;
     CORBA::ULong end = pos + len;
     {
         Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -415,9 +415,9 @@ VisualTextBufferImpl::insert(const CORBA::ULong pos,
 	size_t last(*i);
 	++i; // This is OK since we asserted that len is != 0.
 
-	Warsaw::TextBuffer::Change current;
+	Fresco::TextBuffer::Change current;
 	current.visual = 1;
-	current.type = Warsaw::TextBuffer::insert;
+	current.type = Fresco::TextBuffer::insert;
 	for(; i != ins_elem.end(); ++i)
 	    if (*i != last + 1) {
 		current.pos = start;
@@ -436,7 +436,7 @@ VisualTextBufferImpl::insert(const CORBA::ULong pos,
 
 
 
-std::vector<Warsaw::TextBuffer::Change>
+std::vector<Fresco::TextBuffer::Change>
 VisualTextBufferImpl::remove(const CORBA::ULong pos,
 			     const CORBA::Long len) {
     Prague::Trace trace("VisualTextBufferImpl::remove(...)");
@@ -446,7 +446,7 @@ VisualTextBufferImpl::remove(const CORBA::ULong pos,
     assert(pos + len >= 0);
     assert(pos + len <= _vis2log.size());
 
-    std::vector<Warsaw::TextBuffer::Change> anys;
+    std::vector<Fresco::TextBuffer::Change> anys;
     if(_paragraphs.empty())
 	return anys; // nothing to remove!
  
@@ -498,9 +498,9 @@ VisualTextBufferImpl::remove(const CORBA::ULong pos,
 	    size_t last_char = *i;
 	    ++i; // This is OK since we asserted that len is != 0.
 
-	    Warsaw::TextBuffer::Change current;
+	    Fresco::TextBuffer::Change current;
 	    current.visual = 1;
-	    current.type = Warsaw::TextBuffer::remove;
+	    current.type = Fresco::TextBuffer::remove;
 	    for (; i != rem_elem.end(); ++i)
 		if (*i != last_char + 1) {
 		    if (len > 0) {
@@ -596,7 +596,7 @@ VisualTextBufferImpl::remove(const CORBA::ULong pos,
 
 
 
-std::vector<Warsaw::TextBuffer::Change>
+std::vector<Fresco::TextBuffer::Change>
 VisualTextBufferImpl::cursor(const CORBA::ULong pos,
 			     const CORBA::Long len) {
     Prague::Trace trace("VisualTextBufferImpl::cursor(...)");
@@ -610,11 +610,11 @@ VisualTextBufferImpl::cursor(const CORBA::ULong pos,
     // ---------------------------------------------------------
     
     // there will be exactly one.
-    std::vector<Warsaw::TextBuffer::Change> anys;
+    std::vector<Fresco::TextBuffer::Change> anys;
 
-    Warsaw::TextBuffer::Change current;
+    Fresco::TextBuffer::Change current;
     current.visual = 1;
-    current.type = Warsaw::TextBuffer::cursor;
+    current.type = Fresco::TextBuffer::cursor;
     current.len = 0;
     {
 	Prague::Guard<Prague::Mutex> guard(_mutex);

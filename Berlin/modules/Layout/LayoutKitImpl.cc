@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefelds <stefan@berlin-consortium.org>
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefelds <stefan@fresco.org>
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,22 +23,22 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/ImplVar.hh>
-#include "Layout/LayoutKitImpl.hh"
-#include "Layout/Box.hh"
-#include "Layout/Deck.hh"
-#include "Layout/GridImpl.hh"
-#include "Layout/StageImpl.hh"
-#include "Layout/Glue.hh"
-#include "Layout/Placement.hh"
-#include "Layout/ShapeOf.hh"
-#include "Layout/ViewportImpl.hh"
-// #include "Layout/SplitterImpl.hh"
+#include "LayoutKitImpl.hh"
+#include "Box.hh"
+#include "Deck.hh"
+#include "GridImpl.hh"
+#include "StageImpl.hh"
+#include "Glue.hh"
+#include "Placement.hh"
+#include "ShapeOf.hh"
+#include "ViewportImpl.hh"
+// #include "SplitterImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Layout;
 
-LayoutKitImpl::LayoutKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+LayoutKitImpl::LayoutKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p), _fill(GraphicImpl::infinity) { }
 
 LayoutKitImpl::~LayoutKitImpl() {}
@@ -490,5 +490,5 @@ Graphic_ptr LayoutKitImpl::tmargin_flexible(Graphic_ptr g, Coord natural, Coord 
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LayoutKitImpl"};
-  return create_kit<LayoutKitImpl> ("IDL:Warsaw/LayoutKit:1.0", properties, 2);
+  return create_kit<LayoutKitImpl> ("IDL:Fresco/LayoutKit:1.0", properties, 2);
 }

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,21 +19,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Requestor_hh
-#define _Requestor_hh
+#ifndef _Berlin_Requestor_hh
+#define _Berlin_Requestor_hh
 
 #include <Berlin/MonoGraphic.hh>
 
 class Requestor : public MonoGraphic
 {
 public:
-  Requestor(Warsaw::Alignment xalign = .5, Warsaw::Alignment yalign = .5, Warsaw::Coord xspan = 1, Warsaw::Coord yspan = 1);
-  Requestor(const Warsaw::Graphic::Requisition &);
+  Requestor(Fresco::Alignment xalign = .5, Fresco::Alignment yalign = .5, Fresco::Coord xspan = 1, Fresco::Coord yspan = 1);
+  Requestor(const Fresco::Graphic::Requisition &);
   ~Requestor();
  
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void request(Fresco::Graphic::Requisition &);
 protected:
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 #endif 

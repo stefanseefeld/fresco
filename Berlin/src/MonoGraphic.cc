@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,17 +22,17 @@
 #include <Prague/Sys/Tracer.hh>
 #include "Berlin/MonoGraphic.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Warsaw/Traversal.hh"
+#include "Fresco/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Provider.hh"
 #include "Berlin/RefCountVar.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 MonoGraphic::MonoGraphic()
 {
-  _child.peer = Warsaw::Graphic::_nil();
+  _child.peer = Fresco::Graphic::_nil();
 }
 
 MonoGraphic::~MonoGraphic()
@@ -53,7 +53,7 @@ Graphic_ptr MonoGraphic::body()
 {
   Trace trace(this, "MonoGraphic::body");
   Prague::Guard<Mutex> guard(_mutex);
-  return Warsaw::Graphic::_duplicate(_child.peer);
+  return Fresco::Graphic::_duplicate(_child.peer);
 }
 
 void MonoGraphic::body(Graphic_ptr c)
@@ -67,15 +67,15 @@ void MonoGraphic::body(Graphic_ptr c)
       }
     catch(const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
-  _child.peer = Warsaw::Graphic::_duplicate(c);
+  _child.peer = Fresco::Graphic::_duplicate(c);
   if (!CORBA::is_nil(_child.peer))
     try
       {
 	_child.peerId = _child.peer->add_parent_graphic(Graphic_var(_this()), 0);
 	_child.peer->increment();
       }
-    catch(const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch(const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
   //   needResize();
 }
 
@@ -84,8 +84,8 @@ void MonoGraphic::append_graphic(Graphic_ptr c)
   Prague::Guard<Mutex> guard(_mutex);
   if (!CORBA::is_nil(_child.peer))
     try { _child.peer->append_graphic(c);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
 }
 
 void MonoGraphic::prepend_graphic(Graphic_ptr c)
@@ -93,8 +93,8 @@ void MonoGraphic::prepend_graphic(Graphic_ptr c)
   Prague::Guard<Mutex> guard(_mutex);
   if (!CORBA::is_nil(_child.peer))
     try { _child.peer->prepend_graphic(c);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
 }
 
 void MonoGraphic::remove_graphic(Tag localId)
@@ -103,8 +103,8 @@ void MonoGraphic::remove_graphic(Tag localId)
   Prague::Guard<Mutex> guard(_mutex);
   if (!CORBA::is_nil(_child.peer))
     try { _child.peer->remove_graphic(localId);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _child.peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _child.peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _child.peer = Fresco::Graphic::_nil();}
 }
 
 void MonoGraphic::remove_child_graphic(Tag localId)
@@ -112,24 +112,24 @@ void MonoGraphic::remove_child_graphic(Tag localId)
   Trace trace(this, "MonoGraphic::remove_child_graphic");
   {
     Prague::Guard<Mutex> guard(_mutex);
-    if (localId == 0) _child.peer = Warsaw::Graphic::_nil();
+    if (localId == 0) _child.peer = Fresco::Graphic::_nil();
   }
   need_resize();
 }
 
-Warsaw::GraphicIterator_ptr MonoGraphic::first_child_graphic()
+Fresco::GraphicIterator_ptr MonoGraphic::first_child_graphic()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return (CORBA::is_nil (_child.peer)
-	  ? Warsaw::GraphicIterator::_nil()
+	  ? Fresco::GraphicIterator::_nil()
 	  : _child.peer->first_child_graphic());
 }
 
-Warsaw::GraphicIterator_ptr MonoGraphic::last_child_graphic()
+Fresco::GraphicIterator_ptr MonoGraphic::last_child_graphic()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return (CORBA::is_nil (_child.peer)
-	  ? Warsaw::GraphicIterator::_nil()
+	  ? Fresco::GraphicIterator::_nil()
 	  : _child.peer->last_child_graphic());
 }
 
@@ -139,17 +139,17 @@ Transform_ptr MonoGraphic::transformation()
   return CORBA::is_nil(child) ? Transform::_nil() : child->transformation();
 }
 
-void MonoGraphic::request(Warsaw::Graphic::Requisition &r)
+void MonoGraphic::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace(this, "MonoGraphic::request");
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   try { child->request(r);}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }
 
-void MonoGraphic::extension(const Warsaw::Allocation::Info &info, Region_ptr region)
+void MonoGraphic::extension(const Fresco::Allocation::Info &info, Region_ptr region)
 {
   Trace trace(this, "MonoGraphic::extension");
   Graphic_var child = body();
@@ -181,7 +181,7 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   try { traversal->traverse_child (child, 0, Region::_nil(), Transform::_nil());}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body (Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body (Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }
 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,13 @@
  * MA 02139, USA.
  */
 
-#ifndef _SDL_Console_hh
-#define _SDL_Console_hh
+#ifndef _Console_hh
+#define _Console_hh
 
-#include <Warsaw/config.hh>
 #include <Prague/Sys/Plugin.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Input.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Input.hh>
 #include <Berlin/Console.hh>
 
 #include <vector>
@@ -48,10 +48,6 @@ namespace SDL
 class Drawable;
 class Pointer;
 
-
-
-
-
 // ---------------------------------------------------------------
 // class SDL::PointerManager declaration
 // ---------------------------------------------------------------
@@ -64,7 +60,7 @@ class Pointer;
 class PointerManager
 {
 public:
-  virtual SDL::Pointer * create_pointer(Warsaw::Raster_ptr) = 0;
+  virtual SDL::Pointer * create_pointer(Fresco::Raster_ptr) = 0;
 };
 
 
@@ -72,7 +68,7 @@ template<typename PointerT>
 class PointerManagerT : public PointerManager
 {
 public:
-  SDL::Pointer * create_pointer(Warsaw::Raster_ptr raster) {
+  SDL::Pointer * create_pointer(Fresco::Raster_ptr raster) {
     return new PointerT(dynamic_cast
 			<SDL::Drawable *>(::Console::instance()->drawable()),
 			raster);
@@ -112,20 +108,20 @@ public:
   static Console *instance() { return static_cast<SDL::Console *>(Console::instance());}
 
   // Create:
-  virtual Pointer *pointer(Warsaw::Raster_ptr);
+  virtual Pointer *pointer(Fresco::Raster_ptr);
   virtual Drawable *drawable();
-  virtual Drawable *create_drawable(Warsaw::PixelCoord, Warsaw::PixelCoord,
-				    Warsaw::PixelCoord);
+  virtual Drawable *create_drawable(Fresco::PixelCoord, Fresco::PixelCoord,
+				    Fresco::PixelCoord);
 
   // CORBA related:
-  Drawable *reference_to_servant(Warsaw::Drawable_ptr);
+  Drawable *reference_to_servant(Fresco::Drawable_ptr);
 
   // Input related:
   virtual void device_info(std::ostream &);
-  virtual Warsaw::Input::Event *next_event();
+  virtual Fresco::Input::Event *next_event();
   virtual void activate_autoplay();
-  virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
-				Warsaw::Coord, Warsaw::Coord,
+  virtual void highlight_screen(Fresco::Coord, Fresco::Coord,
+				Fresco::Coord, Fresco::Coord,
 				double red = 1.0,
 				double green = 0.0,
 				double blue = 0.0);
@@ -146,7 +142,7 @@ private:
 
   Console::Extension * create_extension(const std::string &);
 
-  Warsaw::Input::Event *synthesize(const SDL_Event &);
+  Fresco::Input::Event *synthesize(const SDL_Event &);
 
   bool                _autoplay;
   dlist_t             _drawables;
@@ -157,9 +153,9 @@ private:
   
   bool                _is_gl;
 
-  Warsaw::Coord       _resolution[2];
-  Warsaw::PixelCoord  _size[2];
-  Warsaw::PixelCoord  _vsize[2];
+  Fresco::Coord       _resolution[2];
+  Fresco::PixelCoord  _size[2];
+  Fresco::PixelCoord  _vsize[2];
 
   int                 _wakeupPipe[2];
   long                _position[2];

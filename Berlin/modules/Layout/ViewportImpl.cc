@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,31 +20,31 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/PickTraversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/PickTraversal.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Math.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
-#include "Layout/ViewportImpl.hh"
+#include "ViewportImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Layout;
 
 static const double epsilon = 10e-6;
 
-class ViewportImpl::Adjustment : public virtual POA_Warsaw::BoundedRange,
+class ViewportImpl::Adjustment : public virtual POA_Fresco::BoundedRange,
 		                 public SubjectImpl
 {
  public:
   Adjustment();
   virtual ~Adjustment();
-  virtual Warsaw::BoundedRange::Settings state();
-  virtual void state(const Warsaw::BoundedRange::Settings &);
+  virtual Fresco::BoundedRange::Settings state();
+  virtual void state(const Fresco::BoundedRange::Settings &);
   virtual Coord lower();
   virtual void lower(Coord);
   virtual Coord upper();
@@ -66,7 +66,7 @@ class ViewportImpl::Adjustment : public virtual POA_Warsaw::BoundedRange,
   virtual void adjust(Coord);
   virtual const char *object_name() { return "ViewportImpl::Adjustment";}
  private:
-  Warsaw::BoundedRange::Settings _settings;
+  Fresco::BoundedRange::Settings _settings;
   Coord                          _s;
   Coord                          _p;
   Mutex                          _mutex;
@@ -82,13 +82,13 @@ ViewportImpl::Adjustment::~Adjustment()
 {
 }
 
-Warsaw::BoundedRange::Settings ViewportImpl::Adjustment::state()
+Fresco::BoundedRange::Settings ViewportImpl::Adjustment::state()
 {
   Prague::Guard<Mutex> guard(_mutex);
   return _settings;
 }
 
-void ViewportImpl::Adjustment::state(const Warsaw::BoundedRange::Settings &s)
+void ViewportImpl::Adjustment::state(const Fresco::BoundedRange::Settings &s)
 {
   Prague::Guard<Mutex> guard(_mutex);
   _settings = s;
@@ -308,7 +308,7 @@ void ViewportImpl::body(Graphic_ptr g)
 
 Transform_ptr ViewportImpl::transformation() { return Transform::_nil();}
 
-void ViewportImpl::request(Warsaw::Graphic::Requisition &r)
+void ViewportImpl::request(Fresco::Graphic::Requisition &r)
 {
   cache_requisition();
   GraphicImpl::require(r.x, _requisition.x.natural, 0., _requisition.x.natural, _requisition.x.align);
@@ -359,8 +359,8 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
 
   region->normalize(Transform_var(transform->_this()));
   try { traversal->traverse_child (_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
   drawing->restore();
 }
 
@@ -381,8 +381,8 @@ void ViewportImpl::pick(PickTraversal_ptr traversal)
 
   region->normalize(Transform_var(transform->_this()));
   try { traversal->traverse_child (_child.peer, _child.localId, Region_var(region->_this()), Transform_var(transform->_this()));}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }
 
 void ViewportImpl::need_resize()
@@ -401,8 +401,8 @@ void ViewportImpl::update(const CORBA::Any &)
    * we are only interested in changes concerning the outer range (body)
    * or the offset
    */
-  Warsaw::BoundedRange::Settings x = _xadjustment->state();
-  Warsaw::BoundedRange::Settings y = _yadjustment->state();
+  Fresco::BoundedRange::Settings x = _xadjustment->state();
+  Fresco::BoundedRange::Settings y = _yadjustment->state();
   bool damage = (x.lower != _settings[xaxis].lower || y.lower != _settings[yaxis].lower ||
 		 x.upper != _settings[xaxis].upper || y.upper != _settings[yaxis].upper ||
 		 x.lvalue != _settings[xaxis].lvalue || y.lvalue != _settings[yaxis].lvalue);
@@ -450,8 +450,8 @@ void ViewportImpl::cache_requisition()
     {
       _requested = true;
       MonoGraphic::request(_requisition);
-      Warsaw::Graphic::Requirement &rx = _requisition.x;
-      Warsaw::Graphic::Requirement &ry = _requisition.y;
+      Fresco::Graphic::Requirement &rx = _requisition.x;
+      Fresco::Graphic::Requirement &ry = _requisition.y;
 
       _settings[xaxis].lvalue = _settings[xaxis].lower = rx.defined ? - rx.natural * rx.align : 0.;
       _settings[xaxis].uvalue = _settings[xaxis].upper = rx.defined ? _settings[xaxis].lvalue + rx.natural : 0.;

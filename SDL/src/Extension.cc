@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,22 +22,17 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/Logger.hh>
-#include <Console/SDL/Drawable.hh>
-#include <Console/SDL/Extension.hh>
-
-
+#include "Drawable.hh"
+#include "Extension.hh"
 
 // ---------------------------------------------------------------
 // class SDL::Renderer (implementation)
 // ---------------------------------------------------------------
 
-void SDL::DrawableExtension::attach(::Console::Drawable * drawable) {
+void SDL::Extension::attach(::Console::Drawable * drawable)
+{
   _drawable = dynamic_cast<SDL::Drawable *>(drawable);
 }
-
-
-
-
 
 // ---------------------------------------------------------------
 // class SDL::Renderer (implementation)
@@ -46,36 +41,36 @@ void SDL::DrawableExtension::attach(::Console::Drawable * drawable) {
 SDL::Renderer::Renderer() { }
 
 
-void SDL::Renderer::set_color(const Warsaw::Color &c)
+void SDL::Renderer::set_color(const Fresco::Color &c)
 {
   Prague::Trace trace("SDLRenderer::set_color()");
   _color = drawable()->map(c);
 }
 
 
-void SDL::Renderer::draw_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y)
+void SDL::Renderer::draw_pixel(Fresco::PixelCoord x, Fresco::PixelCoord y)
 {
   Prague::Trace trace("SDLRenderer::draw_pixel()");
   put_pixel(x, y);
 }
 
 
-void SDL::Renderer::draw_hline(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
-				       Warsaw::PixelCoord w)
+void SDL::Renderer::draw_hline(Fresco::PixelCoord x, Fresco::PixelCoord y,
+				       Fresco::PixelCoord w)
 {
   Prague::Trace trace("SDL::Renderer::draw_hline()");
   for (int i = 0; i < w; i++) put_pixel(x + i, y);
 }
 
-void SDL::Renderer::draw_vline(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
-				       Warsaw::PixelCoord h)
+void SDL::Renderer::draw_vline(Fresco::PixelCoord x, Fresco::PixelCoord y,
+				       Fresco::PixelCoord h)
 {
   Prague::Trace trace("SDL::Renderer::draw_vline()");
   for (int i = 0; i < h; i++) put_pixel(x, y + h);
 }
 
-void SDL::Renderer::draw_line(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
-				      Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+void SDL::Renderer::draw_line(Fresco::PixelCoord x, Fresco::PixelCoord y,
+				      Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
   Prague::Trace trace("SDLRenderer::draw_line()");
     
@@ -115,8 +110,8 @@ void SDL::Renderer::draw_line(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
   }
 }
   
-void SDL::Renderer::draw_box(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
-				     Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+void SDL::Renderer::draw_box(Fresco::PixelCoord x, Fresco::PixelCoord y,
+				     Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
   Prague::Trace trace("SDLRenderer::draw_box()");
   
@@ -129,7 +124,7 @@ void SDL::Renderer::draw_box(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
 }
 
 
-void SDL::Renderer::put_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y)
+void SDL::Renderer::put_pixel(Fresco::PixelCoord x, Fresco::PixelCoord y)
 {
   Prague::Trace trace("SDLRenderer::put_pixel()");
   
@@ -175,7 +170,7 @@ SDL::DirectBuffer::DirectBuffer() { }
 
 void SDL::DirectBuffer::attach(::Console::Drawable *d) {
   Prague::Trace trace("SDL::DirectBuffer::DirectBuffer(...)");
-  DrawableExtension::attach(d);
+  Extension::attach(d);
   if (drawable()->surface()->flags && SDL_OPENGL) { throw; }
 }
 

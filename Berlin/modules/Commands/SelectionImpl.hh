@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,16 +22,16 @@
 #ifndef _SelectionImpl_hh
 #define _SelectionImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Telltale.hh>
-#include <Warsaw/Selection.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Telltale.hh>
+#include <Fresco/Selection.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/RefCountVar.hh>
 #include <vector>
 #include <algorithm>
 #include <functional>
 
-class SelectionImpl : public virtual POA_Warsaw::Selection,
+class SelectionImpl : public virtual POA_Fresco::Selection,
 	              public SubjectImpl
 {
   class Observer;
@@ -39,26 +39,26 @@ class SelectionImpl : public virtual POA_Warsaw::Selection,
   typedef std::vector<Observer *> list_t;
   struct Id_eq : public std::unary_function<Observer *, bool>
   {
-    Id_eq(Warsaw::Tag t) : id(t) {}
+    Id_eq(Fresco::Tag t) : id(t) {}
     bool operator()(const Observer *) const;
-    Warsaw::Tag id;
+    Fresco::Tag id;
   };
  public:
-  SelectionImpl(Warsaw::Selection::Policy, Warsaw::TelltaleConstraint_ptr);
+  SelectionImpl(Fresco::Selection::Policy, Fresco::TelltaleConstraint_ptr);
   virtual ~SelectionImpl();
-  virtual Warsaw::Selection::Policy type();
-  virtual void type(Warsaw::Selection::Policy);
-  virtual Warsaw::Tag add(Warsaw::Telltale_ptr);
-  virtual void remove(Warsaw::Tag);
-  virtual Warsaw::Selection::Items *toggled();
+  virtual Fresco::Selection::Policy type();
+  virtual void type(Fresco::Selection::Policy);
+  virtual Fresco::Tag add(Fresco::Telltale_ptr);
+  virtual void remove(Fresco::Tag);
+  virtual Fresco::Selection::Items *toggled();
  private:
-  void update(Warsaw::Tag, bool);
-  void remove_observer(Warsaw::Tag);
-  Warsaw::Tag uniqueId();
-  CORBA::Long id_to_index(Warsaw::Tag);
+  void update(Fresco::Tag, bool);
+  void remove_observer(Fresco::Tag);
+  Fresco::Tag uniqueId();
+  CORBA::Long id_to_index(Fresco::Tag);
   Prague::Mutex mutex;
-  Warsaw::Selection::Policy policy;
-  RefCount_var<Warsaw::TelltaleConstraint> constraint;
+  Fresco::Selection::Policy policy;
+  RefCount_var<Fresco::TelltaleConstraint> constraint;
   list_t items;
 };
 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,8 @@
 #ifndef _exception_hh
 #define _exception_hh
 
-#include <Warsaw/Types.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
 #include <iostream>
 
 inline std::ostream &operator << (std::ostream &os, const CORBA::Exception &exception)

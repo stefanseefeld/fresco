@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #include <Prague/Sys/MMap.hh>
 #include <Prague/Sys/Path.hh>
 #include <Berlin/RCManager.hh>
-#include "Drawing/openGL/GLUnifont.hh"
+#include "Unifont.hh"
 
 #include <GL/gl.h>
 #include <string>
@@ -39,9 +39,9 @@
 #include <fcntl.h>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
-GLUnifont::GLUnifont()
+openGL::Unifont::Unifont()
   : _family(Unicode::to_CORBA(Babylon::String("GNU Unifont"))),
     _subfamily(),
     _fullname(),
@@ -52,14 +52,14 @@ GLUnifont::GLUnifont()
   glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
 }
 
-GLUnifont::~GLUnifont() { delete glyphmap ;}
-CORBA::ULong GLUnifont::size() { return 16;}
-CORBA::ULong GLUnifont::weight() { return 100;}
-Unistring *GLUnifont::family() { return new Unistring(_family);}
-Unistring *GLUnifont::subfamily() { return new Unistring(_subfamily);}
-Unistring *GLUnifont::fullname() { return new Unistring(_fullname);}
-Unistring *GLUnifont::style() { return new Unistring(_style);}
-DrawingKit::FontMetrics GLUnifont::metrics()
+openGL::Unifont::~Unifont() { delete glyphmap ;}
+CORBA::ULong openGL::Unifont::size() { return 16;}
+CORBA::ULong openGL::Unifont::weight() { return 100;}
+Unistring *openGL::Unifont::family() { return new Unistring(_family);}
+Unistring *openGL::Unifont::subfamily() { return new Unistring(_subfamily);}
+Unistring *openGL::Unifont::fullname() { return new Unistring(_fullname);}
+Unistring *openGL::Unifont::style() { return new Unistring(_style);}
+DrawingKit::FontMetrics openGL::Unifont::metrics()
 {
   DrawingKit::FontMetrics fm;
   fm.ascender = 16 << 6;
@@ -69,7 +69,7 @@ DrawingKit::FontMetrics GLUnifont::metrics()
   return fm;
 }
 
-DrawingKit::GlyphMetrics GLUnifont::metrics(Unichar uc)
+DrawingKit::GlyphMetrics openGL::Unifont::metrics(Unichar uc)
 {
   DrawingKit::GlyphMetrics gm;
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
@@ -91,7 +91,7 @@ DrawingKit::GlyphMetrics GLUnifont::metrics(Unichar uc)
   return gm;
 }
 
-void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
+void openGL::Unifont::Texture::bind(unsigned char *glyphs, GLubyte block)
 {
   glGenTextures(1, &name);
   pos = new GLuint[rows * (columns + 1)];
@@ -143,7 +143,7 @@ void GLUnifont::Texture::bind(unsigned char *glyphs, GLubyte block)
   glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1024, 64, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
 }
 
-GLUnifont::Texture::~Texture()
+openGL::Unifont::Texture::~Texture()
 {
   if (!data) return;
   glDeleteTextures(1, &name);
@@ -151,7 +151,7 @@ GLUnifont::Texture::~Texture()
   delete data;
 }
 
-void GLUnifont::Texture::coords(Unichar uc, float &x1, float &y1, float &x2, float &y2)
+void openGL::Unifont::Texture::coords(Unichar uc, float &x1, float &y1, float &x2, float &y2)
 {
   GLuint y = (uc & 0xff) >> 6;
   GLuint x = pos[(y*65) + (uc & 0x3f)];
@@ -162,7 +162,7 @@ void GLUnifont::Texture::coords(Unichar uc, float &x1, float &y1, float &x2, flo
   x2 = static_cast<float>(x + width) / 1024;
 }
 
-void GLUnifont::draw_char(Unichar uc) 
+void openGL::Unifont::draw_char(Unichar uc) 
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   unsigned int stride = 33;
@@ -197,7 +197,7 @@ void GLUnifont::draw_char(Unichar uc)
 #endif
 }
 
-void GLUnifont::allocate_char(Unichar uc, Graphic::Requisition &r)
+void openGL::Unifont::allocate_char(Unichar uc, Graphic::Requisition &r)
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   

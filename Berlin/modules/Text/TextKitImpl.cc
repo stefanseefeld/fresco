@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,29 +22,28 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/Server.hh>
-#include <Warsaw/DrawingKit.hh>        // for the DK to work on
-#include <Warsaw/LayoutKit.hh>        // for the LK to work on
-#include <Warsaw/Unicode.hh>           // for toCORBA and friends
-#include <Warsaw/TextBuffer.hh>        // for TextBuffer type
-#include <Warsaw/StreamBuffer.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/DrawingKit.hh>        // for the DK to work on
+#include <Fresco/LayoutKit.hh>        // for the LK to work on
+#include <Fresco/Unicode.hh>           // for toCORBA and friends
+#include <Fresco/TextBuffer.hh>        // for TextBuffer type
+#include <Fresco/StreamBuffer.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/GraphicImpl.hh>       // GraphicImpl::initRequisition
-#include "Text/TextKitImpl.hh"         // for our own definition
-#include "Text/TextChunk.hh"           // the chunk graphic type
-#include "Text/TextViewer.hh"          // the viewer polygraphic type
-#include "Text/TerminalView.hh"
-#include "Text/Compositor.hh"          // the compositor strategy
-#include "Text/Strut.hh"               // the compositor strategy
+#include "TextKitImpl.hh"         // for our own definition
+#include "TextChunk.hh"           // the chunk graphic type
+#include "TextViewer.hh"          // the viewer polygraphic type
+#include "TerminalView.hh"
+#include "Compositor.hh"          // the compositor strategy
+#include "Strut.hh"               // the compositor strategy
 // #include <Drawing/DrawDecorator.hh>    // the decorator monographic template
-#include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
-TextKitImpl::TextKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+TextKitImpl::TextKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),  _strut(0),
     _lineCompositor(new LRCompositor()), 
     _pageCompositor(new TBCompositor())
@@ -62,10 +61,10 @@ TextKitImpl::~TextKitImpl()
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
   KitImpl::bind(sc);
-  Warsaw::Kit::PropertySeq props;
+  Fresco::Kit::PropertySeq props;
   props.length(0);
-  _canonicalDK = DrawingKit::_narrow(sc->get_singleton("IDL:Warsaw/DrawingKit:1.0"));
-  _layout = resolve_kit<LayoutKit>(sc, "IDL:Warsaw/LayoutKit:1.0", props);
+  _canonicalDK = DrawingKit::_narrow(sc->get_singleton("IDL:Fresco/DrawingKit:1.0"));
+  _layout = resolve_kit<LayoutKit>(sc, "IDL:Fresco/LayoutKit:1.0", props);
 }
 
 // chunks are flyweights
@@ -225,5 +224,5 @@ Graphic_ptr TextKitImpl::font_attribute(Graphic_ptr g, const NVPair &nvp)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
-  return create_kit<TextKitImpl>("IDL:Warsaw/TextKit:1.0", properties, 4);
+  return create_kit<TextKitImpl>("IDL:fresco.org/Fresco/TextKit:1.0", properties, 4);
 } 

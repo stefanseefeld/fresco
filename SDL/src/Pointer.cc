@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,27 +21,24 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Console/SDL/Drawable.hh>
-#include <Console/SDL/Extension.hh>
-#include <Console/SDL/Pointer.hh>
-
-
-
+#include "Drawable.hh"
+#include "Extension.hh"
+#include "Pointer.hh"
 
 // ---------------------------------------------------------------
 // class SDL::Pointer (implementation)
 // ---------------------------------------------------------------
 
-Warsaw::Raster_ptr SDL::Pointer::raster()
+Fresco::Raster_ptr SDL::Pointer::raster()
 {
   Prague::Trace trace("SDL::Pointer::raster()");
 
-  return Warsaw::Raster::_duplicate(_raster);
+  return Fresco::Raster::_duplicate(_raster);
 }
 
 
-bool SDL::Pointer::intersects(Warsaw::Coord l, Warsaw::Coord r,
-			      Warsaw::Coord t, Warsaw::Coord b)
+bool SDL::Pointer::intersects(Fresco::Coord l, Fresco::Coord r,
+			      Fresco::Coord t, Fresco::Coord b)
 {
   Prague::Trace trace("SDL::Pointer::intersects(...)");
 
@@ -53,7 +50,7 @@ bool SDL::Pointer::intersects(Warsaw::Coord l, Warsaw::Coord r,
 }
 
 
-void SDL::Pointer::move(Warsaw::Coord x, Warsaw::Coord y)
+void SDL::Pointer::move(Fresco::Coord x, Fresco::Coord y)
 {
   Prague::Trace trace("SDL::Pointer::move(...)");
 
@@ -61,12 +58,12 @@ void SDL::Pointer::move(Warsaw::Coord x, Warsaw::Coord y)
 
   // update position
   _position[0] =
-    static_cast<Warsaw::PixelCoord>
-    (std::max(static_cast<Warsaw::PixelCoord>(x/_scale[0]),
+    static_cast<Fresco::PixelCoord>
+    (std::max(static_cast<Fresco::PixelCoord>(x/_scale[0]),
 	      _origin[0]));
   _position[1] =
-    static_cast<Warsaw::PixelCoord>
-    (std::max(static_cast<Warsaw::PixelCoord>(y/_scale[1]),
+    static_cast<Fresco::PixelCoord>
+    (std::max(static_cast<Fresco::PixelCoord>(y/_scale[1]),
 	      _origin[1]));
 
   save();
@@ -81,31 +78,31 @@ void SDL::Pointer::move(Warsaw::Coord x, Warsaw::Coord y)
 // class SDL::nonGLPointer (implementation)
 // ---------------------------------------------------------------
 
-SDL::nonGLPointer::nonGLPointer(Drawable * drawable, Warsaw::Raster_ptr raster) :
+SDL::nonGLPointer::nonGLPointer(Drawable * drawable, Fresco::Raster_ptr raster) :
   _screen(dynamic_cast<SDL::Drawable *>(drawable))
 {
   Prague::Trace trace("SDL::nonGLPointer::nonGLPointer(...)");
 
   // copy over the Raster:
-  _raster = Warsaw::Raster::_duplicate(raster);
+  _raster = Fresco::Raster::_duplicate(raster);
 
   // Disable SDL default mousecursor
   SDL_ShowCursor(0);
 
   // Copy the raster over into the Drawable:
-  Warsaw::Raster::Info info = raster->header();
-  Warsaw::Raster::ColorSeq_var pixels;
-  Warsaw::Raster::Index lower, upper;
+  Fresco::Raster::Info info = raster->header();
+  Fresco::Raster::ColorSeq_var pixels;
+  Fresco::Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
   raster->store_pixels(lower, upper, pixels);
   _origin[0] = _origin[1] = 0;
   _size[0] = info.width;
   _size[1] = info.height;
-  _scale[0] = 1.0/_screen->resolution(Warsaw::xaxis);
-  _scale[1] = 1.0/_screen->resolution(Warsaw::yaxis);
+  _scale[0] = 1.0/_screen->resolution(Fresco::xaxis);
+  _scale[1] = 1.0/_screen->resolution(Fresco::yaxis);
 
-  Warsaw::Drawable::PixelFormat format = _screen->pixel_format();
+  Fresco::Drawable::PixelFormat format = _screen->pixel_format();
 
   unsigned depth =  format.size >> 3;
   _cursor = new SDL::Drawable("mouse cursor", _size[0], _size[1], 4);
@@ -143,8 +140,8 @@ void SDL::nonGLPointer::save()
 {
   Prague::Trace trace("SDL::nonGLPointer::save()");
 
-  Warsaw::PixelCoord x = _position[0] - _origin[0];
-  Warsaw::PixelCoord y = _position[1] - _origin[1];
+  Fresco::PixelCoord x = _position[0] - _origin[0];
+  Fresco::PixelCoord y = _position[1] - _origin[1];
   _saved_area->blit(*_screen, x, y, _size[0], _size[1], 0, 0);
 }
 
@@ -153,8 +150,8 @@ void SDL::nonGLPointer::restore()
 {
   Prague::Trace trace("SDL::nonGLPointer::restore()");
 
-  Warsaw::PixelCoord x = _position[0] - _origin[0];
-  Warsaw::PixelCoord y = _position[1] - _origin[1];
+  Fresco::PixelCoord x = _position[0] - _origin[0];
+  Fresco::PixelCoord y = _position[1] - _origin[1];
   _screen->blit(*_saved_area, 0, 0, _size[0], _size[1], x, y);
   _old_x = x;
   _old_y = y;
@@ -165,15 +162,15 @@ void SDL::nonGLPointer::draw()
 {
   Prague::Trace trace("SDL::nonGLPointer::draw()");
 
-  Warsaw::PixelCoord x = _position[0] - _origin[0];
-  Warsaw::PixelCoord y = _position[1] - _origin[1];
+  Fresco::PixelCoord x = _position[0] - _origin[0];
+  Fresco::PixelCoord y = _position[1] - _origin[1];
   _screen->blit(*_cursor, 0, 0, _size[0], _size[1], x, y);
   
   // flush the area we worked on:
-  Warsaw::PixelCoord x1 = std::min(_old_x, x);
-  Warsaw::PixelCoord y1 = std::min(_old_y, y);
-  Warsaw::PixelCoord x2 = std::max(_old_x + _size[0], x + _size[0]);
-  Warsaw::PixelCoord y2 = std::max(_old_y + _size[1], y + _size[1]);
+  Fresco::PixelCoord x1 = std::min(_old_x, x);
+  Fresco::PixelCoord y1 = std::min(_old_y, y);
+  Fresco::PixelCoord x2 = std::max(_old_x + _size[0], x + _size[0]);
+  Fresco::PixelCoord y2 = std::max(_old_y + _size[1], y + _size[1]);
   _screen->flush(x1, y1, x2 - x1, y2 - y1);
 }
 

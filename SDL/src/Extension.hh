@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org> 
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,32 +20,30 @@
  * MA 02139, USA.
  */
 
-#ifndef _SDL_Extension_hh
-#define _SDL_Extension_hh
+#ifndef _Extension_hh
+#define _Extension_hh
 
-#include <Warsaw/config.hh>
+#include <Fresco/config.hh>
 #include <Berlin/Console.hh>
-#include <Console/SDL/Console.hh>
-#include <Console/SDL/Drawable.hh>
-#include <Console/Renderer.hh>
-#include <Console/DirectBuffer.hh>
-#include <Console/GLContext.hh>
+#include <Berlin/Console/Renderer.hh>
+#include <Berlin/Console/DirectBuffer.hh>
+#include <Berlin/Console/GLContext.hh>
+#include "Console.hh"
+#include "Drawable.hh"
 
 namespace SDL
 {
 
 class Drawable;
 
-
-
 // ---------------------------------------------------------------
 // class Extension
 // ---------------------------------------------------------------
 
-class DrawableExtension : virtual public Console::Drawable::Extension
+class Extension : virtual public Console::Drawable::Extension
 {
 public:
-  DrawableExtension() : _drawable(0) { }
+  Extension() : _drawable(0) { }
 
   virtual void attach(::Console::Drawable *);
 
@@ -58,38 +56,34 @@ private:
   SDL::Drawable * _drawable;
 };
 
-
-
-
-
 // ---------------------------------------------------------------
 // class Renderer
 // ---------------------------------------------------------------
 
-class Renderer : public SDL::DrawableExtension,
+class Renderer : public Extension,
 		 virtual public ::Renderer
 {
 public:
   Renderer();
 
-  virtual void set_color(const Warsaw::Color &);
+  virtual void set_color(const Fresco::Color &);
 
-  virtual void draw_pixel(Warsaw::PixelCoord, Warsaw::PixelCoord);
+  virtual void draw_pixel(Fresco::PixelCoord, Fresco::PixelCoord);
 
-  virtual void draw_hline(Warsaw::PixelCoord, Warsaw::PixelCoord,
-                          Warsaw::PixelCoord);
+  virtual void draw_hline(Fresco::PixelCoord, Fresco::PixelCoord,
+                          Fresco::PixelCoord);
 
-  virtual void draw_vline(Warsaw::PixelCoord, Warsaw::PixelCoord,
-                          Warsaw::PixelCoord);
+  virtual void draw_vline(Fresco::PixelCoord, Fresco::PixelCoord,
+                          Fresco::PixelCoord);
 
-  virtual void draw_line(Warsaw::PixelCoord, Warsaw::PixelCoord,
-                         Warsaw::PixelCoord, Warsaw::PixelCoord);
+  virtual void draw_line(Fresco::PixelCoord, Fresco::PixelCoord,
+                         Fresco::PixelCoord, Fresco::PixelCoord);
 
-  virtual void draw_box(Warsaw::PixelCoord, Warsaw::PixelCoord,
-                        Warsaw::PixelCoord, Warsaw::PixelCoord);
+  virtual void draw_box(Fresco::PixelCoord, Fresco::PixelCoord,
+                        Fresco::PixelCoord, Fresco::PixelCoord);
 
 private:
-  void put_pixel(Warsaw::PixelCoord, Warsaw::PixelCoord);
+  void put_pixel(Fresco::PixelCoord, Fresco::PixelCoord);
 
   SDL::Drawable::Pixel _color;
 };
@@ -102,7 +96,7 @@ private:
 // class DirectBuffer
 // ---------------------------------------------------------------
  
-class DirectBuffer : public SDL::DrawableExtension,
+class DirectBuffer : public Extension,
 		     virtual public ::DirectBuffer
 {
 public:

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,11 +22,11 @@
 #include <Berlin/TraversalImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/ImplVar.hh>
-#include "Layout/Placement.hh"
-#include "Layout/LayoutManager.hh"
+#include "Placement.hh"
+#include "LayoutManager.hh"
 #include <strstream>
 
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Prague;
 
 Placement::Placement(LayoutManager *l)
@@ -43,7 +43,7 @@ Placement::~Placement()
   delete _layout;
 }
 
-void Placement::request(Warsaw::Graphic::Requisition::Requisition &r)
+void Placement::request(Fresco::Graphic::Requisition::Requisition &r)
 {
   MonoGraphic::request(r);
   _layout->request(0, 0, r);
@@ -55,7 +55,7 @@ void Placement::traverse(Traversal_ptr traversal)
   Region_var allocation = traversal->current_allocation();
   if (!CORBA::is_nil(allocation))
     {
-      Warsaw::Graphic::Requisition r;
+      Fresco::Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
       MonoGraphic::request(r);
       Graphic_var child = body();
@@ -68,8 +68,8 @@ void Placement::traverse(Traversal_ptr traversal)
       tx->load_identity();
       result->normalize(Transform_var(tx->_this()));
       try { traversal->traverse_child (child, 0, Region_var(result->_this()), Transform_var(tx->_this()));}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { body (Warsaw::Graphic::_nil());}
-      catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { body (Fresco::Graphic::_nil());}
+      catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
     }
   else MonoGraphic::traverse(traversal);
 }
@@ -78,7 +78,7 @@ void Placement::allocate(Tag, const Allocation::Info &a)
 {
   Trace trace(this, "Placement::allocate");
   _region->copy(a.allocation);
-  Warsaw::Graphic::Requisition r;
+  Fresco::Graphic::Requisition r;
   GraphicImpl::init_requisition(r);
   MonoGraphic::request(r);
   RegionImpl *cast = _region;
@@ -91,8 +91,8 @@ void Placement::allocate(Tag, const Allocation::Info &a)
 }
 
 LayoutLayer::LayoutLayer(Graphic_ptr between, Graphic_ptr under, Graphic_ptr over)
-  : _under(Warsaw::Graphic::_duplicate(under)),
-    _over(Warsaw::Graphic::_duplicate(over))
+  : _under(Fresco::Graphic::_duplicate(under)),
+    _over(Fresco::Graphic::_duplicate(over))
 {
   body(between);
 }
@@ -105,11 +105,11 @@ void LayoutLayer::traverse(Traversal_ptr t)
 {
   if (!CORBA::is_nil(_under))
     try { _under->traverse(t);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _under = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _under = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _under = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _under = Fresco::Graphic::_nil();}
   MonoGraphic::traverse(t);
   if (!CORBA::is_nil(_over))
     try { _over->traverse(t);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _over = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _over = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _over = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _over = Fresco::Graphic::_nil();}
 }

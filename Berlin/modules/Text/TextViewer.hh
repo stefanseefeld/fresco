@@ -1,10 +1,10 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 2000 Nathaniel Smith <njs@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2000 Nathaniel Smith <njs@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,24 +24,24 @@
 #ifndef _TextViewer_hh
 #define _TextViewer_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/View.hh>
-#include <Warsaw/TextKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/View.hh>
+#include <Fresco/TextKit.hh>
 #include <Berlin/ViewImpl.hh>
-#include "Text/Composition.hh"
+#include "Composition.hh"
 #include <map>
 
 class TextViewer : public virtual ViewImpl,
 		   public Composition
 {
  public:
-  TextViewer(Warsaw::TextBuffer_ptr, Warsaw::TextKit_ptr, Warsaw::DrawingKit_ptr, Compositor *);
+  TextViewer(Fresco::TextBuffer_ptr, Fresco::TextKit_ptr, Fresco::DrawingKit_ptr, Compositor *);
   virtual ~TextViewer();
   virtual void update(const CORBA::Any &);
  protected:
   virtual void activate_composite();
-  Warsaw::TextKit_var _kit;
-  Warsaw::TextBuffer_var _buffer;
+  Fresco::TextKit_var _kit;
+  Fresco::TextBuffer_var _buffer;
 };
 
 #endif

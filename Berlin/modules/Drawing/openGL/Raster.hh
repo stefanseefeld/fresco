@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,39 +19,44 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GLRaster_hh
-#define _GLRaster_hh
+#ifndef _Raster_hh
+#define _Raster_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Raster.hh>
-#include <Warsaw/Transform.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Raster.hh>
+#include <Fresco/Transform.hh>
 #include <vector>
 #include <GL/gl.h>
 
-struct GLRaster
+namespace openGL
 {
-  GLRaster(Warsaw::Raster_var r) : remote(Warsaw::Raster::_duplicate(r)) {}
-  Warsaw::Raster_var remote;
-  Warsaw::PixelCoord width;
-  Warsaw::PixelCoord height;
+
+struct Raster
+{
+  Raster(Fresco::Raster_var r) : remote(Fresco::Raster::_duplicate(r)) {}
+  Fresco::Raster_var remote;
+  Fresco::PixelCoord width;
+  Fresco::PixelCoord height;
   GLuint texture;
 };
 
-struct GLTexture : GLRaster
+struct Texture : Raster
 {
-  GLTexture(Warsaw::Raster_var);
-  ~GLTexture();
+  Texture(Fresco::Raster_var);
+  ~Texture();
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);
 };
 
-struct GLImage : GLRaster
+struct Image : Raster
 {
-  GLImage(Warsaw::Raster_var);
-  ~GLImage();
+  Image(Fresco::Raster_var);
+  ~Image();
   GLfloat s, t;
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);
 };
+
+}
 
 #endif 

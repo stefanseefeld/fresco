@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,18 +20,18 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Provider.hh"
 #include "Berlin/Console.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
@@ -48,7 +48,7 @@ DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr 
   _drawing->surface_fillstyle(DrawingKit::solid);
 }
 
-void DrawTraversalImpl::damage(Warsaw::Region_ptr d)
+void DrawTraversalImpl::damage(Fresco::Region_ptr d)
 {
   assert(size() == 1);
   get_allocation(0)->copy(d);
@@ -147,6 +147,6 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
 };
 
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(__this);}
-Warsaw::Traversal::order DrawTraversalImpl::direction() { return Warsaw::Traversal::up;}
+Fresco::Traversal::order DrawTraversalImpl::direction() { return Fresco::Traversal::up;}
 CORBA::Boolean DrawTraversalImpl::ok() { return true;}
 DrawingKit_ptr DrawTraversalImpl::drawing() { return DrawingKit::_duplicate(_drawing);}

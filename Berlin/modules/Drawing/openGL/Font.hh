@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,33 +20,38 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GLFont_hh
-#define _GLFont_hh
+#ifndef _Font_hh
+#define _Font_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/DrawingKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/DrawingKit.hh>
 #include <string>
 #include <GL/gl.h>
 
-class GLFont
+namespace openGL
+{
+
+class Font
 {
 public:
-  GLFont() {}
-  virtual ~GLFont() {}
+  Font() {}
+  virtual ~Font() {}
   virtual CORBA::ULong size() = 0;
   virtual CORBA::ULong weight() = 0;
-  virtual Warsaw::Unistring *family() = 0;
-  virtual Warsaw::Unistring *subfamily() = 0;
-  virtual Warsaw::Unistring *fullname() = 0;
-  virtual Warsaw::Unistring *style() = 0;
-  virtual Warsaw::DrawingKit::FontMetrics metrics() = 0;
-  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar uc) = 0;
+  virtual Fresco::Unistring *family() = 0;
+  virtual Fresco::Unistring *subfamily() = 0;
+  virtual Fresco::Unistring *fullname() = 0;
+  virtual Fresco::Unistring *style() = 0;
+  virtual Fresco::DrawingKit::FontMetrics metrics() = 0;
+  virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar uc) = 0;
 
-  virtual void draw_char(Warsaw::Unichar) = 0;
-  virtual void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &) = 0;
+  virtual void draw_char(Fresco::Unichar) = 0;
+  virtual void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &) = 0;
 };
+
+}
 
 #endif
 

@@ -1,10 +1,10 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 2000 Nathaniel Smith <njs@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.com> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2000 Nathaniel Smith <njs@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,14 +21,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/TextBuffer.hh>
-#include "Text/TextViewer.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/TextBuffer.hh>
+#include "TextViewer.hh"
 #include <algorithm>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *c)
   : Composition(dk, c),
@@ -61,7 +61,7 @@ void TextViewer::update(const CORBA::Any &a)
 		 * FIXME: rewrite that with iterators
 		 */
 		Edge edge;
-		edge.peer = Warsaw::Graphic::_duplicate(child);
+		edge.peer = Fresco::Graphic::_duplicate(child);
 		edge.localId = unique_child_id();
 		edge.peerId = child->add_parent_graphic(Graphic_var(_this()), edge.localId);
 		_children.insert(_children.begin() + ch->pos + i, edge);
@@ -107,7 +107,7 @@ void TextViewer::activate_composite()
     {
       Graphic_var child = _kit->glyph(us[i]);
       Edge edge;
-      edge.peer = Warsaw::Graphic::_duplicate(child);
+      edge.peer = Fresco::Graphic::_duplicate(child);
       edge.localId = unique_child_id();
       edge.peerId = child->add_parent_graphic(Graphic_var(_this()), edge.localId);
       _children.insert(_children.begin() + i, edge);

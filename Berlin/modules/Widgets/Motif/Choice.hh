@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,13 +22,13 @@
 #ifndef _Motif_Choice_hh
 #define _Motif_Choice_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Widget.hh>
-#include <Warsaw/Selection.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/WidgetKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Widget.hh>
+#include <Fresco/Selection.hh>
+#include <Fresco/CommandKit.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/WidgetKit.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <vector>
@@ -40,44 +40,44 @@ class Choice : public virtual POA_Widget::Choice,
 	       public ControllerImpl
 {
  public:
-  Choice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
+  Choice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
   virtual ~Choice();
-  virtual Warsaw::Selection_ptr state();
-  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr) = 0;
-  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr) = 0;
-  virtual void remove_item(Warsaw::Tag) = 0;
+  virtual Fresco::Selection_ptr state();
+  virtual Fresco::Tag append_item(Fresco::Graphic_ptr) = 0;
+  virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr) = 0;
+  virtual void remove_item(Fresco::Tag) = 0;
  protected:
-  RefCount_var<Warsaw::Selection> selection;
-  RefCount_var<Warsaw::LayoutKit> layout;
-  RefCount_var<Warsaw::ToolKit>   tools;
-  RefCount_var<Warsaw::WidgetKit> widgets;
+  RefCount_var<Fresco::Selection> selection;
+  RefCount_var<Fresco::LayoutKit> layout;
+  RefCount_var<Fresco::ToolKit>   tools;
+  RefCount_var<Fresco::WidgetKit> widgets;
 };
 
 class ToggleChoice : public Choice
 {
  public:
-  ToggleChoice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
-  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr);
-  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr);
-  void remove_item(Warsaw::Tag);
+  ToggleChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+  virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
+  virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
+  void remove_item(Fresco::Tag);
 };
 
 class CheckboxChoice : public Choice
 {
  public:
-  CheckboxChoice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
-  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr);
-  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr);
-  void remove_item(Warsaw::Tag);
+  CheckboxChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+  virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
+  virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
+  void remove_item(Fresco::Tag);
 };
 
 class ToolChoice : public Choice
 {
  public:
-  ToolChoice(Warsaw::Selection_ptr, Warsaw::LayoutKit_ptr, Warsaw::ToolKit_ptr, Warsaw::WidgetKit_ptr);
-  virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr);
-  virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr);
-  void remove_item(Warsaw::Tag);
+  ToolChoice(Fresco::Selection_ptr, Fresco::LayoutKit_ptr, Fresco::ToolKit_ptr, Fresco::WidgetKit_ptr);
+  virtual Fresco::Tag append_item(Fresco::Graphic_ptr);
+  virtual Fresco::Tag prepend_item(Fresco::Graphic_ptr);
+  void remove_item(Fresco::Tag);
 };
 
 };

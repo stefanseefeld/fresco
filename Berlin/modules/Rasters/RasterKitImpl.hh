@@ -1,10 +1,10 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,24 +25,24 @@
 #ifndef _ImageKitImpl_hh
 #define _ImageKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/ImageKit.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/ImageKit.hh>
+#include <Fresco/Raster.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
 class RasterImpl;
 
-class ImageKitImpl : public virtual POA_Warsaw::ImageKit,
+class ImageKitImpl : public virtual POA_Fresco::ImageKit,
 		     public KitImpl
 {
 public:
-  ImageKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  ImageKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~ImageKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new ImageKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new ImageKitImpl(repo_id(), p);}
 
-  Warsaw::Raster_ptr empty();
-  Warsaw::Raster_ptr create(const char *file);
+  Fresco::Raster_ptr empty();
+  Fresco::Raster_ptr create(const char *file);
 protected:
 };
 

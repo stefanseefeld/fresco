@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,11 +27,11 @@
 #include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/User.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/WidgetKit.hh>
-#include <Warsaw/DrawingKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/WidgetKit.hh>
+#include <Fresco/DrawingKit.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
 #include <Berlin/Logger.hh>
@@ -79,9 +79,9 @@ int main(int argc, char **argv)
   for (ServerImpl::PluginList::iterator i = listing.begin(); i != listing.end(); ++i)
     {
       std::cout << (*i).first << " supports :\n";
-      Warsaw::Kit::Property *begin = (*i).second->get_buffer();
-      Warsaw::Kit::Property *end = (*i).second->get_buffer() + (*i).second->length();
-      for (Warsaw::Kit::Property *p = begin; p != end; ++p)
+      Fresco::Kit::Property *begin = (*i).second->get_buffer();
+      Fresco::Kit::Property *end = (*i).second->get_buffer() + (*i).second->length();
+      for (Fresco::Kit::Property *p = begin; p != end; ++p)
 	std::cout << (*p).name << " : " << (*p).value << '\n';
     }
 }

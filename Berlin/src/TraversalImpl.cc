@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,11 +21,11 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Allocation.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Allocation.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/Provider.hh"
 #include "Berlin/ImplVar.hh"
 #include "Berlin/RefCountVar.hh"
@@ -34,7 +34,7 @@
 #include "Berlin/RegionImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr a, Transform_ptr t)
 {
@@ -55,7 +55,7 @@ TraversalImpl::TraversalImpl(const TraversalImpl &traversal)
   stack_t::const_iterator j = traversal._stack.begin();
   for (; i != _stack.end(); ++i, ++j)
     {
-      (*i).graphic = Warsaw::Graphic::_duplicate((*j).graphic);
+      (*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
       (*i).id      = (*j).id;
       (*i).allocation = Provider<RegionImpl>::provide();
       *(*i).allocation = *(*j).allocation;
@@ -84,7 +84,7 @@ TraversalImpl &TraversalImpl::operator = (const TraversalImpl &traversal)
   if (i == _stack.end() || j == traversal._stack.end()) return *this;
   for (++i, ++j; i != _stack.end(); ++i, ++j)
     {
-      (*i).graphic = Warsaw::Graphic::_duplicate((*j).graphic);
+      (*i).graphic = Fresco::Graphic::_duplicate((*j).graphic);
       (*i).id      = (*j).id;
       (*i).allocation = Provider<RegionImpl>::provide();
       *(*i).allocation = *(*j).allocation;

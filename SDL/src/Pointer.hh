@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,15 +20,14 @@
  * MA 02139, USA.
  */
 
-#ifndef _SDL_Pointer_hh
-#define _SDL_Pointer_hh
+#ifndef _Pointer_hh
+#define _Pointer_hh
 
-#include <Warsaw/config.hh>
+#include <Fresco/config.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/Console.hh>
-#include <Console/SDL/Drawable.hh>
-
-#include <Console/SDL/Console.hh>
+#include "Drawable.hh"
+#include "Console.hh"
 
 extern "C"
 {
@@ -40,39 +39,37 @@ extern "C"
 namespace SDL
 {
 
-
-
 // ---------------------------------------------------------------
 // class Pointer
 // ---------------------------------------------------------------
 
-  class GLPointer;
+class GLPointer;
 
 class Pointer : public ::Console::Pointer
 {
   friend class nonGLPointer;
   friend class GLPointer;
 public:
-  Warsaw::Raster_ptr raster();
+  Fresco::Raster_ptr raster();
 
-  void move(Warsaw::Coord, Warsaw::Coord);
+  void move(Fresco::Coord, Fresco::Coord);
 
-  bool intersects(Warsaw::Coord, Warsaw::Coord,
-		  Warsaw::Coord, Warsaw::Coord);
+  bool intersects(Fresco::Coord, Fresco::Coord,
+		  Fresco::Coord, Fresco::Coord);
 
   virtual void draw() = 0;
   virtual void save() = 0;
   virtual void restore() = 0;
 
 private:
-  Warsaw::PixelCoord _size[2];
-  Warsaw::Raster_ptr _raster;
+  Fresco::PixelCoord _size[2];
+  Fresco::Raster_ptr _raster;
 
-  Warsaw::PixelCoord _origin[2];
-  Warsaw::PixelCoord _position[2];
-  Warsaw::PixelCoord _old_x, _old_y;
-  Warsaw::PixelCoord _x, _y;
-  Warsaw::Coord      _scale[2];
+  Fresco::PixelCoord _origin[2];
+  Fresco::PixelCoord _position[2];
+  Fresco::PixelCoord _old_x, _old_y;
+  Fresco::PixelCoord _x, _y;
+  Fresco::Coord      _scale[2];
 };
 
 
@@ -80,7 +77,7 @@ private:
 class nonGLPointer : public SDL::Pointer
 {
 public:
-  nonGLPointer(Drawable *, Warsaw::Raster_ptr);
+  nonGLPointer(Drawable *, Fresco::Raster_ptr);
   ~nonGLPointer();
 
   void draw();

@@ -1,5 +1,5 @@
-modulepath	= @builddir@/modules
-rasterpath	= @topdir@/etc/PNG
+modulepath	= @prefix@/lib/Fresco
+rasterpath	= @prefix@/etc/PNG
 fontpath	= /usr/lib/X11/fonts/Type1
-unifontpath	= @topdir@/etc
-pinyindbpath	= @topdir@/etc
+unifontpath	= @prefix@/etc
+pinyindbpath	= @prefix@/etc

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PolyGraphic_hh
-#define _PolyGraphic_hh
+#ifndef _Berlin_PolyGraphic_hh
+#define _Berlin_PolyGraphic_hh
 
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/Pool.hh>
@@ -34,25 +34,25 @@ public:
   PolyGraphic();
   virtual ~PolyGraphic();
 
-  virtual void append_graphic(Warsaw::Graphic_ptr);
-  virtual void prepend_graphic(Warsaw::Graphic_ptr);
-  virtual void remove_graphic(Warsaw::Tag);
-  virtual void remove_child_graphic(Warsaw::Tag);
-  virtual Warsaw::GraphicIterator_ptr first_child_graphic();
-  virtual Warsaw::GraphicIterator_ptr last_child_graphic();
+  virtual void append_graphic(Fresco::Graphic_ptr);
+  virtual void prepend_graphic(Fresco::Graphic_ptr);
+  virtual void remove_graphic(Fresco::Tag);
+  virtual void remove_child_graphic(Fresco::Tag);
+  virtual Fresco::GraphicIterator_ptr first_child_graphic();
+  virtual Fresco::GraphicIterator_ptr last_child_graphic();
 
   virtual void need_resize();
-  virtual void need_resize(Warsaw::Tag);
+  virtual void need_resize(Fresco::Tag);
 protected:
   CORBA::Long num_children();
-  Warsaw::Tag unique_child_id();
-  glist_t::iterator child_id_to_iterator(Warsaw::Tag);
-  CORBA::Long child_id_to_index(Warsaw::Tag);
-  Warsaw::Graphic::Requisition *children_requests();
-  void deallocate_requisitions(Warsaw::Graphic::Requisition *);
-  void child_extension(size_t, const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  Fresco::Tag unique_child_id();
+  glist_t::iterator child_id_to_iterator(Fresco::Tag);
+  CORBA::Long child_id_to_index(Fresco::Tag);
+  Fresco::Graphic::Requisition *children_requests();
+  void deallocate_requisitions(Fresco::Graphic::Requisition *);
+  void child_extension(size_t, const Fresco::Allocation::Info &, Fresco::Region_ptr);
 // private:
-  static Pool<Warsaw::Graphic::Requisition> _pool;
+  static Pool<Fresco::Graphic::Requisition> _pool;
   glist_t _children;
   Prague::Mutex _mutex;
 };
@@ -61,21 +61,21 @@ protected:
  * the following methods are inlined for speed.
  * Attention : they must be used within a PolyGraphic::childMutex locked section !
  */
-inline Warsaw::Tag PolyGraphic::unique_child_id()
+inline Fresco::Tag PolyGraphic::unique_child_id()
 {
-  Warsaw::Tag localId;
+  Fresco::Tag localId;
   for (localId = 0;
        find_if (_children.begin(), _children.end(), localId_eq(localId)) != _children.end();
        localId++);
       return localId;
 }
 
-inline PolyGraphic::glist_t::iterator PolyGraphic::child_id_to_iterator(Warsaw::Tag localId)
+inline PolyGraphic::glist_t::iterator PolyGraphic::child_id_to_iterator(Fresco::Tag localId)
 {
   return find_if(_children.begin(), _children.end(), localId_eq(localId));
 }
 
-inline CORBA::Long PolyGraphic::child_id_to_index(Warsaw::Tag localId)
+inline CORBA::Long PolyGraphic::child_id_to_index(Fresco::Tag localId)
 {
   return find_if(_children.begin(), _children.end(), localId_eq(localId)) - _children.begin();
 }

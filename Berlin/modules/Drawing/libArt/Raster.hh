@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 graydon hoare <graydon@pobox.com>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 graydon hoare <graydon@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,22 +19,27 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _LibArtRaster_hh
-#define _LibArtRaster_hh
+#ifndef _Raster_hh
+#define _Raster_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Raster.hh>
 #include <libart_lgpl/art_misc.h>
 #include <libart_lgpl/art_pixbuf.h>
 
-struct LibArtRaster
+namespace libArt
 {
-  LibArtRaster(Warsaw::Raster_var r);
-  virtual LibArtRaster::~LibArtRaster();  
-  Warsaw::Raster_var remote;
+
+struct Raster
+{
+  Raster(Fresco::Raster_var r);
+  virtual Raster::~Raster();  
+  Fresco::Raster_var remote;
   art_u8 *pixels;
 public:
   ArtPixBuf *pixbuf;
 };
+
+}
 
 #endif 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,10 +20,10 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/Screen.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/Screen.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/Provider.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
@@ -36,7 +36,7 @@
 #include <functional>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 static double tol = 0.005;
 
@@ -278,7 +278,7 @@ void GraphicImpl::deactivate()
   ServantBase::deactivate(this);
 }
 
-Graphic_ptr GraphicImpl::body() { return Warsaw::Graphic::_nil();}
+Graphic_ptr GraphicImpl::body() { return Fresco::Graphic::_nil();}
 void GraphicImpl::body(Graphic_ptr) {}
 void GraphicImpl::append_graphic(Graphic_ptr) {}
 void GraphicImpl::prepend_graphic(Graphic_ptr) {}
@@ -307,7 +307,7 @@ Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
    *       will just start over again then...
    */
   Edge edge;
-  edge.peer = Warsaw::Graphic::_duplicate(parent);
+  edge.peer = Fresco::Graphic::_duplicate(parent);
   edge.peerId = peerId;
   edge.localId = unique_parent_id();
   _parents.push_back(edge);
@@ -329,8 +329,8 @@ void GraphicImpl::remove_parent_graphic(Tag localId)
 /*
  * the following two methods need to be implemented...
  */
-Warsaw::GraphicIterator_ptr GraphicImpl::first_child_graphic() { return Warsaw::GraphicIterator::_nil();}
-Warsaw::GraphicIterator_ptr GraphicImpl::last_child_graphic() { return Warsaw::GraphicIterator::_nil();}
+Fresco::GraphicIterator_ptr GraphicImpl::first_child_graphic() { return Fresco::GraphicIterator::_nil();}
+Fresco::GraphicIterator_ptr GraphicImpl::last_child_graphic() { return Fresco::GraphicIterator::_nil();}
 
 /*
  * these are default implementations of the layout, picking and drawing protocol
@@ -339,7 +339,7 @@ Warsaw::GraphicIterator_ptr GraphicImpl::last_child_graphic() { return Warsaw::G
  */
 
 Transform_ptr GraphicImpl::transformation() { return Transform::_nil();}
-void GraphicImpl::request(Warsaw::Graphic::Requisition &) {}
+void GraphicImpl::request(Fresco::Graphic::Requisition &) {}
 void GraphicImpl::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::default_extension(a, r);}
 void GraphicImpl::shape(Region_ptr) {}
 
@@ -366,8 +366,8 @@ void GraphicImpl::allocations(Allocation_ptr allocation)
 	    }
 	  begin = end;
 	}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
-      catch (const CORBA::COMM_FAILURE &) { (*i).peer = Warsaw::Graphic::_nil();}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Fresco::Graphic::_nil();}
+      catch (const CORBA::COMM_FAILURE &) { (*i).peer = Fresco::Graphic::_nil();}
     }
 }
 
@@ -427,11 +427,11 @@ void GraphicImpl::need_resize()
   Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); i++)
     try {(*i).peer->need_resize();}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { (*i).peer = Warsaw::Graphic::_nil();}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Fresco::Graphic::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { (*i).peer = Fresco::Graphic::_nil();}
 }
 
-void GraphicImpl::init_requisition(Warsaw::Graphic::Requisition &r)
+void GraphicImpl::init_requisition(Fresco::Graphic::Requisition &r)
 {
   r.x.defined = false;
   r.y.defined = false;
@@ -439,7 +439,7 @@ void GraphicImpl::init_requisition(Warsaw::Graphic::Requisition &r)
   r.preserve_aspect = false;
 }
 
-void GraphicImpl::default_requisition(Warsaw::Graphic::Requisition &r)
+void GraphicImpl::default_requisition(Fresco::Graphic::Requisition &r)
 {
   Coord zero = 0.;
   require(r.x, zero, zero, zero, zero);
@@ -448,7 +448,7 @@ void GraphicImpl::default_requisition(Warsaw::Graphic::Requisition &r)
   r.preserve_aspect = false;
 }
 
-void GraphicImpl::require(Warsaw::Graphic::Requirement &r, Coord natural, Coord stretch, Coord shrink, Coord alignment)
+void GraphicImpl::require(Fresco::Graphic::Requirement &r, Coord natural, Coord stretch, Coord shrink, Coord alignment)
 {
   r.defined = true;
   r.natural = natural;
@@ -457,7 +457,7 @@ void GraphicImpl::require(Warsaw::Graphic::Requirement &r, Coord natural, Coord 
   r.align = alignment;
 }
 
-void GraphicImpl::require_lead_trail(Warsaw::Graphic::Requirement &r,
+void GraphicImpl::require_lead_trail(Fresco::Graphic::Requirement &r,
 				     Coord natural_lead, Coord max_lead, Coord min_lead,
 				     Coord natural_trail, Coord max_trail, Coord min_trail)
 {
@@ -493,9 +493,9 @@ void GraphicImpl::require_lead_trail(Warsaw::Graphic::Requirement &r,
     }
 }
 
-Warsaw::Graphic::Requirement *GraphicImpl::requirement(Warsaw::Graphic::Requisition &r, Axis a)
+Fresco::Graphic::Requirement *GraphicImpl::requirement(Fresco::Graphic::Requisition &r, Axis a)
 {
-  Warsaw::Graphic::Requirement *req;
+  Fresco::Graphic::Requirement *req;
   switch (a)
     {
     case xaxis: req = &r.x; break;
@@ -506,7 +506,7 @@ Warsaw::Graphic::Requirement *GraphicImpl::requirement(Warsaw::Graphic::Requisit
   return req;
 }
 
-void GraphicImpl::default_extension(const Warsaw::Allocation::Info &info, Region_ptr region)
+void GraphicImpl::default_extension(const Fresco::Allocation::Info &info, Region_ptr region)
 {
   if (!CORBA::is_nil(info.allocation))
     {
@@ -526,7 +526,7 @@ void GraphicImpl::default_extension(const Warsaw::Allocation::Info &info, Region
 
 void GraphicImpl::natural_allocation (Graphic_ptr g, RegionImpl &nat)
 {
-  Warsaw::Graphic::Requisition r;
+  Fresco::Graphic::Requisition r;
   GraphicImpl::init_requisition(r);
 
   g->request(r);
@@ -553,7 +553,7 @@ void GraphicImpl::natural_allocation (Graphic_ptr g, RegionImpl &nat)
     }
 }
 
-void GraphicImpl::transform_request (Warsaw::Graphic::Requisition &req, Transform_ptr tx)
+void GraphicImpl::transform_request (Fresco::Graphic::Requisition &req, Transform_ptr tx)
 {
   if (CORBA::is_nil(tx) || tx->identity()) return;
   if (Math::equal(req.x.natural, req.x.maximum, tol) &&
@@ -594,7 +594,7 @@ static void compensate(Coord a, Coord &x, Coord &y)
  *   |\ /    |
  *   +-x-----+
  */
-Vertex GraphicImpl::transform_allocate(RegionImpl &region, const Warsaw::Graphic::Requisition &_req, Transform_ptr t)
+Vertex GraphicImpl::transform_allocate(RegionImpl &region, const Fresco::Graphic::Requisition &_req, Transform_ptr t)
 {
   Trace trace("GraphicImpl::transform_allocation");
   Vertex delta;
@@ -606,7 +606,7 @@ Vertex GraphicImpl::transform_allocate(RegionImpl &region, const Warsaw::Graphic
    * we need to figure out how to treat undefined requisitions
    * - stefan
    */
-  Warsaw::Graphic::Requisition req = _req;
+  Fresco::Graphic::Requisition req = _req;
   if (!req.z.defined)
     {
       req.z.natural = req.z.maximum = req.z.minimum = 0.;
@@ -630,9 +630,9 @@ Vertex GraphicImpl::transform_allocate(RegionImpl &region, const Warsaw::Graphic
       center.x = (region.lower.x + region.upper.x) * 0.5;
       center.y = (region.lower.y + region.upper.y) * 0.5;
       center.z = (region.lower.z + region.upper.z) * 0.5;
-      Warsaw::Transform::Matrix m;
+      Fresco::Transform::Matrix m;
       t->store_matrix(m);
-      Warsaw::Graphic::Requisition r[3], total;
+      Fresco::Graphic::Requisition r[3], total;
       GraphicImpl::init_requisition(r[0]);
       GraphicImpl::init_requisition(r[1]);
       GraphicImpl::init_requisition(r[2]);

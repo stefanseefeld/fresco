@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,7 +27,7 @@
 #include "Berlin/RasterImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 RasterImpl::RasterImpl() : _rows(0) {}
 RasterImpl::RasterImpl(const std::string &file) : _rows(0)
@@ -54,21 +54,21 @@ void RasterImpl::clear()
   _png.clear();
 }
 
-Warsaw::Raster::Info RasterImpl::header()
+Fresco::Raster::Info RasterImpl::header()
 {
-  Warsaw::Raster::Info info;
+  Fresco::Raster::Info info;
   _png.header(info);
   return info;
 }
 
-void RasterImpl::load_data(const Warsaw::Raster::Data &data)
+void RasterImpl::load_data(const Fresco::Raster::Data &data)
 {
   Trace trace("RasterImpl::load_data");
   clear();
   _rows = _png.demarshal(data);
 }
 
-void RasterImpl::store_data(Warsaw::Raster::Data_out data)
+void RasterImpl::store_data(Fresco::Raster::Data_out data)
 {
   Trace trace("RasterImpl::store_data");
   delete data;
@@ -76,19 +76,19 @@ void RasterImpl::store_data(Warsaw::Raster::Data_out data)
   data = _png.marshal(_rows);
 }
 
-void RasterImpl::store_pixel(const Warsaw::Raster::Index &index, Color &color)
+void RasterImpl::store_pixel(const Fresco::Raster::Index &index, Color &color)
 {
   Trace trace("RasterImpl::store_pixel");
   color = _png.pixel(index.x, index.y, _rows);
 }
 
-void RasterImpl::load_pixel(const Warsaw::Raster::Index &index, const Color &color)
+void RasterImpl::load_pixel(const Fresco::Raster::Index &index, const Color &color)
 {
   Trace trace("RasterImpl::load_pixel");
   _png.pixel(index.x, index.y, color, _rows);
 }
 
-void RasterImpl::store_pixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, Warsaw::Raster::ColorSeq_out pixels)
+void RasterImpl::store_pixels(const Fresco::Raster::Index &lower, const Fresco::Raster::Index &upper, Fresco::Raster::ColorSeq_out pixels)
 {
   Trace trace("RasterImpl::store_pixels");
   delete pixels;
@@ -96,7 +96,7 @@ void RasterImpl::store_pixels(const Warsaw::Raster::Index &lower, const Warsaw::
   pixels = _png.pixels(lower.x, lower.y, upper.x, upper.y, _rows);
 }
 
-void RasterImpl::load_pixels(const Warsaw::Raster::Index &lower, const Warsaw::Raster::Index &upper, const Warsaw::Raster::ColorSeq &pixels)
+void RasterImpl::load_pixels(const Fresco::Raster::Index &lower, const Fresco::Raster::Index &upper, const Fresco::Raster::ColorSeq &pixels)
 {
   Trace trace("RasterImpl::load_pixels");
   _png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, _rows);

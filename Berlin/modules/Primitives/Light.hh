@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,25 +22,25 @@
 #ifndef _Light_hh
 #define _Light_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawingKit3D.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit3D.hh>
 #include <Berlin/MonoGraphic.hh>
 
 //. Abstract base light source node
 class Light : public MonoGraphic
 {
 public:
-  Light(const Warsaw::Color &, double);
+  Light(const Fresco::Color &, double);
   virtual ~Light();
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);  
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);  
 protected:
-  virtual void do_draw(Warsaw::DrawingKit3D_ptr) = 0;
+  virtual void do_draw(Fresco::DrawingKit3D_ptr) = 0;
 //   //. Whether light is on
 //   bool          _on;
   //. RGB source color
-  Warsaw::Color _color;
+  Fresco::Color _color;
   //. Source intensity (0 to 1)
   double        _intensity;
 };
@@ -48,30 +48,30 @@ protected:
 class DirectionalLight : public Light
 {
 public:
-  DirectionalLight(const Warsaw::Color &, double, const Warsaw::Vertex &);
+  DirectionalLight(const Fresco::Color &, double, const Fresco::Vertex &);
 protected:
-  virtual void do_draw(Warsaw::DrawingKit3D_ptr);
-  Warsaw::Vertex _direction;
+  virtual void do_draw(Fresco::DrawingKit3D_ptr);
+  Fresco::Vertex _direction;
 };
 
 class PointLight : public Light
 {
 public:
-  PointLight(const Warsaw::Color &, double, const Warsaw::Vertex &);
+  PointLight(const Fresco::Color &, double, const Fresco::Vertex &);
 protected:
-  virtual void do_draw(Warsaw::DrawingKit3D_ptr);
-  Warsaw::Vertex _position;
+  virtual void do_draw(Fresco::DrawingKit3D_ptr);
+  Fresco::Vertex _position;
 };
 
 class SpotLight : public Light
 {
 public:
-  SpotLight(const Warsaw::Color &, double, const Warsaw::Vertex &, const Warsaw::Vertex &,
+  SpotLight(const Fresco::Color &, double, const Fresco::Vertex &, const Fresco::Vertex &,
 	    double, double);
 protected:
-  virtual void do_draw(Warsaw::DrawingKit3D_ptr);
-  Warsaw::Vertex _direction;
-  Warsaw::Vertex _position;
+  virtual void do_draw(Fresco::DrawingKit3D_ptr);
+  Fresco::Vertex _direction;
+  Fresco::Vertex _position;
   double         _dropoffrate;
   double         _cutoffangle;
 };

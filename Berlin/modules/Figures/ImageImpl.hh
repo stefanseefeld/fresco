@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,45 +24,45 @@
 #ifndef _ImageImpl_hh
 #define _ImageImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Image.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Image.hh>
+#include <Fresco/Raster.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/ViewImpl.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
 
-class ImageImpl : public virtual POA_Warsaw::Image,
+class ImageImpl : public virtual POA_Fresco::Image,
 		  public virtual ViewImpl,
 		  public GraphicImpl
 {
 public:
-  ImageImpl(Warsaw::Raster_ptr);
+  ImageImpl(Fresco::Raster_ptr);
   ~ImageImpl();
   
-  virtual Warsaw::Raster_ptr data() { return Warsaw::Raster::_duplicate(raster);}
-  virtual void data(Warsaw::Raster_ptr r) { raster = r;}
+  virtual Fresco::Raster_ptr data() { return Fresco::Raster::_duplicate(raster);}
+  virtual void data(Fresco::Raster_ptr r) { raster = r;}
 
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void draw(Warsaw::DrawTraversal_ptr); 
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void draw(Fresco::DrawTraversal_ptr); 
   virtual void update(const CORBA::Any &);
 protected:
   virtual void activate_composite();
 private:
-  RefCount_var<Warsaw::Raster> raster;
-  Warsaw::Coord width, height;
+  RefCount_var<Fresco::Raster> raster;
+  Fresco::Coord width, height;
 };
 
 class Texture : public MonoGraphic
 {
 public:
-  Texture(Warsaw::Raster_ptr);
+  Texture(Fresco::Raster_ptr);
   ~Texture();
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 private:
-  RefCount_var<Warsaw::Raster> raster;
+  RefCount_var<Fresco::Raster> raster;
 };
 
 #endif

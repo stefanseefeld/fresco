@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,13 +25,13 @@
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/RCManager.hh>
-#include "Console/GGI/Console.hh"
-#include "Console/GGI/Drawable.hh"
-#include "Console/GGI/Extension.hh"
-#include "Console/GGI/Pointer.hh"
+#include "Console.hh"
+#include "Drawable.hh"
+#include "Extension.hh"
+#include "Pointer.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 namespace
 {

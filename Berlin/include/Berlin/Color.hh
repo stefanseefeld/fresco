@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,16 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Color_hh
-#define _Color_hh
+#ifndef _Berlin_Color_hh
+#define _Berlin_Color_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
 #include <iostream>
 
-inline Warsaw::Color brightness(const Warsaw::Color &c1, double adjust)
+inline Fresco::Color brightness(const Fresco::Color &c1, double adjust)
 {
-  Warsaw::Color c2;
+  Fresco::Color c2;
   if (adjust >= 0)
     {
       c2.red   = c1.red + (1 - c1.red) * adjust;
@@ -45,17 +45,17 @@ inline Warsaw::Color brightness(const Warsaw::Color &c1, double adjust)
   return c2;
 };
 
-inline void CMYtoRGB(Warsaw::Coord cyan, Warsaw::Coord magenta, Warsaw::Coord yellow, Warsaw::Color &color)
+inline void CMYtoRGB(Fresco::Coord cyan, Fresco::Coord magenta, Fresco::Coord yellow, Fresco::Color &color)
 {
   color.red = 1. - cyan;
   color.green = 1. - magenta;
   color.blue = 1. - yellow;
 }
 
-inline void RGBtoHSV(const Warsaw::Color &color, Warsaw::Coord &hue, Warsaw::Coord &saturation, Warsaw::Coord &value)
+inline void RGBtoHSV(const Fresco::Color &color, Fresco::Coord &hue, Fresco::Coord &saturation, Fresco::Coord &value)
 {
-  Warsaw::Coord max = color.red > color.green ? (color.red > color.blue ? color.red : color.blue) : color.green > color.blue ? color.green : color.blue;
-  Warsaw::Coord min = color.red < color.green ? (color.red < color.blue ? color.red : color.blue) : color.green < color.blue ? color.green : color.blue;
+  Fresco::Coord max = color.red > color.green ? (color.red > color.blue ? color.red : color.blue) : color.green > color.blue ? color.green : color.blue;
+  Fresco::Coord min = color.red < color.green ? (color.red < color.blue ? color.red : color.blue) : color.green < color.blue ? color.green : color.blue;
   value = max;
   saturation = max != 0. ? (max - min) / max : 0.; 
   if (saturation == 0.) hue = 0.; // undefined...
@@ -70,7 +70,7 @@ inline void RGBtoHSV(const Warsaw::Color &color, Warsaw::Coord &hue, Warsaw::Coo
    }
 }
 
-inline void HSVtoRGB(Warsaw::Coord hue, Warsaw::Coord saturation, Warsaw::Coord value, Warsaw::Color &color)
+inline void HSVtoRGB(Fresco::Coord hue, Fresco::Coord saturation, Fresco::Coord value, Fresco::Color &color)
 {
   if (saturation == 0.) color.red = color.green = color.blue = value;
   else
@@ -78,10 +78,10 @@ inline void HSVtoRGB(Warsaw::Coord hue, Warsaw::Coord saturation, Warsaw::Coord 
       if (hue == 360.) hue = 0.;
       hue /= 60.;
       int i = static_cast<int>(hue);
-      Warsaw::Coord f = hue - i;
-      Warsaw::Coord p = value * (1. - saturation);
-      Warsaw::Coord q = value * (1. - saturation * f);
-      Warsaw::Coord t = value * (1. - saturation * (1. - f));
+      Fresco::Coord f = hue - i;
+      Fresco::Coord p = value * (1. - saturation);
+      Fresco::Coord q = value * (1. - saturation * f);
+      Fresco::Coord t = value * (1. - saturation * (1. - f));
       switch (i)
         {
           case 0: color.red = value; color.green = t; color.blue = p; break;

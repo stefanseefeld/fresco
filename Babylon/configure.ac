@@ -2,9 +2,9 @@ dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl Copyright (C) 2000 Tobias Hunger <tobias@berlin-consortium.org>
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl Copyright (C) 2000 Tobias Hunger <tobias@fresco.org>
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -26,61 +26,59 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
+
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Babylon, 0.3.0, devel@fresco.org)
+AC_CONFIG_SRCDIR(../LICENSE)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
-
-AC_HEADLINE(dnl
-Babylon, The Berlin Unicode Library, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
 
 AC_PROG_MAKE_SET
+AC_PROG_INSTALL
 AC_LANG_CPLUSPLUS
+
 dnl ------------------------------------------------------------------
 dnl Prague
 dnl ------------------------------------------------------------------
-AC_PACKAGE(Prague, $VERSION)
+
+FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 LIBS="$LIBS -lPrague $Prague_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
-AC_ARG_ENABLE(unicode-blocks,
-	[  --enable-unicode-blocks complete or latin unicode support],[
-	UNICODE_BLOCKS="$enableval"],[
-	UNICODE_BLOCKS=complete])
 
-AC_SUBST(UNICODE_BLOCKS)
+AC_ARG_ENABLE(complete-deps,
+              AC_HELP_STRING([--disable-complete-deps].[Use a faster, but less correct, dependency generator]),
+              [complete_deps_enabled="$enableval"],
+              [complete_deps_enabled=yes])
+
+DEPFLAGS=
+if test ".$complete_deps_enabled" = .yes ; then
+  AC_SUBST(DEPFLAGS,-M)
+else
+  AC_SUBST(DEPFLAGS,-MM)
+fi
+
+AC_ARG_ENABLE(unicode-blocks,
+              AC_HELP_STRING([--enable-unicode-blocks],[complete or latin unicode support]),
+              [AC_SUBST(UNICODE_BLOCKS,"$enableval")],
+              [AC_SUBST(UNICODE_BLOCKS,complete)])
+
+FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
 
-mkdir -p $builddir/bin
-mkdir -p $builddir/lib
-mkdir -p $builddir/modules/Babylon
-mkdir -p $builddir/config/Babylon
-mkdir -p $builddir/include/Babylon
-mkdir -p $builddir/src/Babylon
-mkdir -p $builddir/src/Babylon/blocks
+AC_MSG_NOTICE([Output Substitution])
 
-AC_OUTPUT([
-	$builddir/bin/Babylon-config:config/package-config.in
-	$builddir/config/Babylon/subdirs.mk:config/Babylon/subdirs.mk.in
-	$builddir/src/Babylon/Makefile:src/Babylon/Makefile.in
-	$builddir/src/Babylon/blocks/Makefile:src/Babylon/blocks/Makefile.in
-],[
-	chmod +x $builddir/bin/Babylon-config
-],[
-	builddir=$builddir
-])
+AC_CONFIG_FILES([bin/Babylon-config:config/Babylon-config.in], [chmod +x bin/Babylon-config])
+AC_CONFIG_FILES([config/local.mk Makefile src/Makefile modules/Makefile])
+
+mkdir -p lib
+mkdir -p modules
+
+AC_OUTPUT

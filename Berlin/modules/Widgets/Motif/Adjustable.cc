@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,12 +21,13 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Region.hh>
 #include <Berlin/CommandImpl.hh>
-#include "Widget/Motif/Adjustable.hh"
-#include <Warsaw/Region.hh>
+#include "Adjustable.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Motif;
 
 class Adjustable::Adjust : public CommandImpl
@@ -56,7 +57,7 @@ Command_ptr Adjustable::create_adjust_cmd()
   return a->_this();
 }
 
-Warsaw::Observer_ptr Adjustable::observer()
+Fresco::Observer_ptr Adjustable::observer()
 {
   return _translate->_this();
 }

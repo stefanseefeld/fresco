@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,12 +19,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EventManager_hh
-#define _EventManager_hh
+#ifndef _Berlin_EventManager_hh
+#define _Berlin_EventManager_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Controller.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Controller.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/FocusImpl.hh>
 #include <Berlin/ImplVar.hh>
@@ -40,14 +40,14 @@ class EventManager
 {
   typedef std::vector<FocusImpl *> flist_t;
 public:
-  EventManager(Warsaw::Controller_ptr, Warsaw::Region_ptr);
+  EventManager(Fresco::Controller_ptr, Fresco::Region_ptr);
   ~EventManager();
-  bool request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
+  bool request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
   //. This method is polled by the ScreenManager. It queries the Console
   //. for new events and distributes them to the matching focus.
   void next_event();
-  void restore(Warsaw::Region_ptr);
-  void damage(Warsaw::Region_ptr);
+  void restore(Fresco::Region_ptr);
+  void damage(Fresco::Region_ptr);
 private:
   static void activate(FocusImpl *);
   static void deactivate(FocusImpl *);

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,7 +24,7 @@
 #include <Prague/Sys/Path.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/RCManager.hh>
-#include "Drawing/libArt/LibArtFTFont.hh"
+#include "FTFont.hh"
 #include <fstream>
 #include <map>
 #include <string>
@@ -38,9 +38,10 @@
 // #define MIN(X,Y) (X<Y?X:Y)
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
+using namespace libArt;
 
-bool LibArtFTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &faces,
+bool libArt::FTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &faces,
 					   const char *env, 
 					   Babylon::String &fam,
 					   Babylon::String &style)
@@ -65,7 +66,7 @@ bool LibArtFTFont::chooseFaceInteractively(const std::map<FamStyle,FT_Face> &fac
   return true;
 }
 
-LibArtFTFont::LibArtFTFont(double xres, double yres)
+libArt::FTFont::FTFont(double xres, double yres)
   : //   xdpi(drawable->dpi(xaxis)),
     //   ydpi(drawable->dpi(yaxis)),
   _xdpi(96.),
@@ -93,14 +94,14 @@ LibArtFTFont::LibArtFTFont(double xres, double yres)
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
     {
       Directory directory(*i, Directory::alpha);
-      Logger::log(Logger::text) << "LibArtFTFont: scanning font dir " << *i << std::endl;
+      Logger::log(Logger::text) << "libArt::FTFont: scanning font dir " << *i << std::endl;
       for (Directory::iterator j = directory.begin(); j != directory.end(); ++j)
 	{
 	  if ((*j)->name() == "." || (*j)->name() == "..") continue;	  
 	  std::string file = (*j)->long_name();
 	  if (FT_New_Face(_library, file.c_str(), 0, &_face))
 	    {
-	      Logger::log(Logger::text) << "LibArtFTFont: can't open font " << file << std::endl;
+	      Logger::log(Logger::text) << "libArt::FTFont: can't open font " << file << std::endl;
 	      continue;
 	    }
 	  _familyStr = Babylon::String(_face->family_name);
@@ -126,34 +127,34 @@ LibArtFTFont::LibArtFTFont(double xres, double yres)
 }
 
 
-LibArtFTFont::~LibArtFTFont() {}
-CORBA::ULong LibArtFTFont::size() { return _size;}
-CORBA::ULong LibArtFTFont::weight() { return 100;}
-void LibArtFTFont::size(CORBA::ULong sz) { _size = sz;}
-void LibArtFTFont::weight(CORBA::ULong wt) {}
+libArt::FTFont::~FTFont() {}
+CORBA::ULong libArt::FTFont::size() { return _size;}
+CORBA::ULong libArt::FTFont::weight() { return 100;}
+void libArt::FTFont::size(CORBA::ULong sz) { _size = sz;}
+void libArt::FTFont::weight(CORBA::ULong wt) {}
 
-Unistring *LibArtFTFont::family()
+Unistring *libArt::FTFont::family()
 { 
   return new Unistring (Unicode::to_CORBA(_familyStr));
 }
 
-Unistring *LibArtFTFont::subfamily() { return 0;}
-void LibArtFTFont::subfamily(const Unistring &fname) {}
-void LibArtFTFont::fullname(const Unistring &fname) {}
+Unistring *libArt::FTFont::subfamily() { return 0;}
+void libArt::FTFont::subfamily(const Unistring &fname) {}
+void libArt::FTFont::fullname(const Unistring &fname) {}
 
-void LibArtFTFont::family(const Unistring &fname)
+void libArt::FTFont::family(const Unistring &fname)
 { 
   _familyStr = Unicode::to_internal(fname);
   _family = atomize(_familyStr);
 }
 
-void LibArtFTFont::style(const Unistring &sname)
+void libArt::FTFont::style(const Unistring &sname)
 { 
   _styleStr = Unicode::to_internal(sname);
   _style = atomize(_styleStr);
 }
 
-Unistring *LibArtFTFont::fullname()
+Unistring *libArt::FTFont::fullname()
 { 
   Babylon::String str = _familyStr;
   str += Babylon::Char(' ');
@@ -161,12 +162,12 @@ Unistring *LibArtFTFont::fullname()
   return new Unistring(Unicode::to_CORBA(str));
 }
 
-Unistring *LibArtFTFont::style() 
+Unistring *libArt::FTFont::style() 
 { 
   return new Unistring (Unicode::to_CORBA(Babylon::String(_styleStr)));
 }
 
-DrawingKit::FontMetrics LibArtFTFont::metrics()
+DrawingKit::FontMetrics libArt::FTFont::metrics()
 {
   DrawingKit::FontMetrics fm;
   FaceSpec key(_size, FamStyle(_family, _style));
@@ -175,7 +176,7 @@ DrawingKit::FontMetrics LibArtFTFont::metrics()
 }
 
 
-DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
+DrawingKit::GlyphMetrics libArt::FTFont::metrics(Unichar &uc)
 {
   DrawingKit::GlyphMetrics gm;
   TGlyphSpec key(_matrix, GlyphSpec(uc, FaceSpec(_size, FamStyle(_family, _style))));
@@ -183,21 +184,21 @@ DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
   return gm;
 }
 
-void LibArtFTFont::buffer(Unichar ch, ArtPixBuf *&pb)
+void libArt::FTFont::buffer(Unichar ch, ArtPixBuf *&pb)
 {
   TGlyphSpec key(_matrix, GlyphSpec(ch, FaceSpec(((PtSize)(_size * _scale)), FamStyle(_family, _style))));
   _glyphCache.get(key, pb);
 }
 
 
-void LibArtFTFont::setup_face(FT_Face &f)
+void libArt::FTFont::setup_face(FT_Face &f)
 {
   FamStyle spec(_family, _style);
   if (_faces.find(spec) != _faces.end()) f = _faces[spec];
   else f = _face;
 }
 
-void LibArtFTFont::setup_size(FT_Face &f)
+void libArt::FTFont::setup_size(FT_Face &f)
 {
   FT_Set_Char_Size
     ( f,                // handle to face object           
@@ -210,7 +211,7 @@ void LibArtFTFont::setup_size(FT_Face &f)
 //       (unsigned int)ydpi ); // vertical device resolution      
 }
 
-bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f)
+bool libArt::FTFont::load_glyph(Unichar c, FT_Face &f)
 {
   FT_CharMap  found = 0;
   FT_CharMap  charmap;  
@@ -236,7 +237,7 @@ bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f)
   return true;
 }
 
-bool LibArtFTFont::transform(double trafo[4])
+bool libArt::FTFont::transform(double trafo[4])
 {
   _scale = trafo[0] * trafo[3] - trafo[1] * trafo[2];
   _matrix.xx = (FT_Fixed)(trafo[0] / _scale * 0x10000);
@@ -247,7 +248,7 @@ bool LibArtFTFont::transform(double trafo[4])
 }
 
   
-LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(Babylon::String &u)
+FTFont::atom libArt::FTFont::Atomizer::atomize(Babylon::String &u)
 {
   std::map<Babylon::String, atom>::iterator i = _atoms.find(u);
   if (i == _atoms.end())
@@ -258,7 +259,7 @@ LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(Babylon::String &u)
   else return i->second;
 }
 
-void LibArtFTFont::allocate_char(Unichar ch, Graphic::Requisition &r)
+void libArt::FTFont::allocate_char(Unichar ch, Graphic::Requisition &r)
 {
   DrawingKit::GlyphMetrics gm = metrics(ch);
   r.x.natural = r.x.minimum = r.x.maximum = gm.horiAdvance / (_xres * 64.0);
@@ -270,7 +271,7 @@ void LibArtFTFont::allocate_char(Unichar ch, Graphic::Requisition &r)
 }
 
 
-ArtPixBuf *LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::TGlyphSpec &gs)
+ArtPixBuf *libArt::FTFont::GlyphFactory::produce(const FTFont::TGlyphSpec &gs)
 {
   FT_Face face;
   FT_Glyph glyph;
@@ -307,7 +308,7 @@ ArtPixBuf *LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::TGlyphSpec &g
 }
 
 
-DrawingKit::FontMetrics LibArtFTFont::FaceMetricsFactory::produce(const LibArtFTFont::FaceSpec &cs) 
+DrawingKit::FontMetrics libArt::FTFont::FaceMetricsFactory::produce(const FTFont::FaceSpec &cs) 
 {
   DrawingKit::FontMetrics fm;
   FT_Face newface;
@@ -321,7 +322,7 @@ DrawingKit::FontMetrics LibArtFTFont::FaceMetricsFactory::produce(const LibArtFT
 }
 
 
-DrawingKit::GlyphMetrics LibArtFTFont::GlyphMetricsFactory::produce(const LibArtFTFont::TGlyphSpec &cs) 
+DrawingKit::GlyphMetrics libArt::FTFont::GlyphMetricsFactory::produce(const FTFont::TGlyphSpec &cs) 
 {
   double scale = _font->get_scale();
   DrawingKit::GlyphMetrics gm;

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,19 +19,19 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/DrawTraversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/DrawTraversal.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
-#include "Widget/Motif/Slider.hh"
+#include "Slider.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Motif;
 
-Slider::Slider(BoundedValue_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
+Slider::Slider(BoundedValue_ptr v, Axis a, const Fresco::Graphic::Requisition &r)
   : _requisition(r),
     _value(RefCount_var<BoundedValue>::increment(v)),
     _offset((_value->value() - _value->lower())/(_value->upper() - _value->lower())),

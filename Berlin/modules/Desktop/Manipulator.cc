@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,12 +22,12 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/Vertex.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/Logger.hh>
-#include "Desktop/Manipulator.hh"
+#include "Manipulator.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 void Mover::execute(const CORBA::Any &any)
 {
@@ -84,7 +84,7 @@ void MoveResizer::execute(const CORBA::Any &any)
   OriginatedDelta *od;
   if (any >>= od)
     {
-      Warsaw::Graphic::Requisition r;
+      Fresco::Graphic::Requisition r;
       // We need to initialise manually:-(
       r.x.defined = false;
       r.y.defined = false;
@@ -98,7 +98,7 @@ void MoveResizer::execute(const CORBA::Any &any)
       Logger::log(Logger::desktop) << "od: " << (od->delta.x +
 						 od->origin.x) <<
 	", p: " << (p.x + r.x.minimum) << std::endl;
-      if (border & Warsaw::Window::left && xalign != 0.)
+      if (border & Fresco::Window::left && xalign != 0.)
 	{
 	  if ((od->delta.x > 0 &&
 	       od->delta.x + od->origin.x >= p.x)
@@ -110,7 +110,7 @@ void MoveResizer::execute(const CORBA::Any &any)
 	    p.x = pos.x - xalign * (s.x - size.x);
 	  }
 	}
-      else if (border & Warsaw::Window::right && xalign != 1.)
+      else if (border & Fresco::Window::right && xalign != 1.)
 	{
 	  if ((od->delta.x > 0 &&
 	       od->delta.x + od->origin.x >= p.x + size.x)
@@ -122,7 +122,7 @@ void MoveResizer::execute(const CORBA::Any &any)
 	    p.x = pos.x - xalign * (s.x - size.x);
 	  }
 	}
-      if (border & Warsaw::Window::top && yalign != 0.)
+      if (border & Fresco::Window::top && yalign != 0.)
 	{
 	  if ((od->delta.y > 0 &&
 	       od->delta.y + od->origin.y >= p.y)
@@ -134,7 +134,7 @@ void MoveResizer::execute(const CORBA::Any &any)
 	    p.y = pos.y - yalign * (s.y - size.y);
 	  }
 	}
-      else if (border & Warsaw::Window::bottom && yalign != 1.)
+      else if (border & Fresco::Window::bottom && yalign != 1.)
 	{
 	  if ((od->delta.y > 0 &&
 	       od->delta.y + od->origin.y >= p.y + size.y)
@@ -165,7 +165,7 @@ void Mapper::execute(const CORBA::Any &) { window->mapped(true);}
 void Unmapper::execute(const CORBA::Any &) { window->mapped(false);}
 
 Shader::Shader(Window_ptr window, Graphic_var _shade)
-  : Manipulator(window), is_shaded(false), swap(Warsaw::Graphic::_nil()),
+  : Manipulator(window), is_shaded(false), swap(Fresco::Graphic::_nil()),
   to_shade(_shade) {}
 
 void Shader::execute(const CORBA::Any &any) {
@@ -179,10 +179,10 @@ void Shader::execute(const CORBA::Any &any) {
       }
     }
     swap->body(to_shade->body());
-    //to_shade->body(Warsaw::Graphic::_nil());
+    //to_shade->body(Fresco::Graphic::_nil());
   } else {
     cout << "case b" << endl;
     //to_shade->body(swap);
-    swap->body(Warsaw::Graphic::_nil());
+    swap->body(Fresco::Graphic::_nil());
   }
 }

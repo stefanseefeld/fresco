@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -20,75 +20,72 @@
 # MA 02139, USA.
 
 SHELL		:= /bin/sh
-VERSION		:= @VERSION@
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Babylon
-builddir	:= ../..
-cdir		:= $(builddir)/config
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/src
+cdir		:= ../config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
-
-define makedep
-@echo generating dependencies for $(<F)
-$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-endef
-
-define compile
-@echo compiling $(@F)
-$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-endef
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= @CPPFLAGS@
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
-LIBS		+= @LIBS@
 
-BABYLON		:= String.cc Char.cc Dictionary.cc utils.cc vis_iterator.cc
+SRC		:= String.cc Char.cc Dictionary.cc utils.cc vis_iterator.cc
+HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Babylon/*.hh))
+DEP		:= $(patsubst %.cc, %.d, $(SRC))
+OBJ		:= $(patsubst %.cc, %.o, $(SRC))
+SYN		:= $(patsubst Prague/%.hh, %.syn, $(HDR))
 
-SRC		:= $(patsubst %, %, $(BABYLON))
-
-DEP		:= $(patsubst %.cc, %.d, $(notdir $(SRC)))
-OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
-
-TARGET		:= $(ldir)/libBabylon.so
+TARGET		:= ../lib/libBabylon.so
 
 vpath %.hh  $(hdir)/Babylon
 
-.PHONY: clean distclean maintainer-clean dist install
+.PHONY: install uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET)
-	cd blocks; $(MAKE)
 
 $(TARGET):	$(OBJ)
-		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-install:
-		$(INSTALL) -m755 $(TARGET) $(libdir)
-		$(INSTALL) -m755 $(bdir)/Babylon-config $(bindir)
+install:	all
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Babylon
+	@for header in $(HDR); do \
+	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
+	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
+            $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	  else \
+	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+          fi; \
+	done
+	$(INSTALL) -m 755 ../bin/Babylon-config $(DESTDIR)$(bindir)
+
+uninstall:
+	rm -f $(DESTDIR)$(bindir)/Babylon-config
+	rm -f $(DESTDIR)$(libdir)/libBabylon.so
 
 clean:	
-		rm -f $(TARGET)
-		rm -f *.o *.d
-		cd blocks; $(MAKE) clean;
+	rm -f $(TARGET)
+	rm -f *.o *.d
 
 distclean:	clean
-		rm -f Makefile $(hdir)/Babylon/config.hh $(cdir)/Babylon/subdirs.mk \
-			$(cdir)/Babylon/config.log $(cdir)/Babylon/config.status \
-			$(bdir)/Babylon-config
-		cd blocks; $(MAKE) distclean;
+	rm -f Makefile $(hdir)/Babylon/config.hh \
+		$(cdir)/config.log $(cdir)/config.status \
+		../bin/Babylon-config
 
 maintainer-clean: distclean
-		rm -f $(top_srcdir)/config/Babylon/configure $(top_srcdir)/config/Babylon/config.hh.in \
-			$(top_srcdir)/config/Babylon/aclocal.m4
+	rm -f $(top_srcdir)/configure $(top_srcdir)/config/config.hh.in \
+		$(top_srcdir)/config/aclocal.m4
 
 %.d:	$(srcdir)/%.cc $(hdir)/Babylon/%.hh
-	$(makedep)
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
 %.o:	$(srcdir)/%.cc
-	$(compile)
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

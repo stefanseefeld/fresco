@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org/
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org/
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -19,17 +19,38 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 #
-# @configure_input@
+
+# Places to install libraries, binaries, etc, from Autoconf's info page
+prefix		:= @prefix@
+exec_prefix	:= @exec_prefix@
+bindir		:= @bindir@
+sbindir		:= @sbindir@
+libexecdir	:= @libexecdir@
+datadir		:= @datadir@
+sysconfdir	:= @sysconfdir@
+sharedstatedir	:= @sharedstatedir@
+localstatedir	:= @localstatedir@
+libdir		:= @libdir@
+includedir	:= @includedir@
+oldincludedir	:= @oldincludedir@
+infodir		:= @infodir@
+mandir		:= @mandir@
+
+CXX		:= @CXX@
+INSTALL		:= @INSTALL@
 
 # CORBA specific variables
-ORB			= @ORB@
-ORB_CPPFLAGS		= @ORB_CPPFLAGS@
-ORB_LIBS		= @ORB_LIBS@
-IDLCXX			= @IDLCXX@
-IDLCXXFLAGS		= @IDLCXXFLAGS@
-IDLDYNFLAGS		= @IDLDYNFLAGS@
-IDLTIEFLAGS		= @IDLTIEFLAGS@
+ORB		:= @ORB@
+ORB_CPPFLAGS	:= @ORB_CPPFLAGS@
+ORB_LIBS	:= @ORB_LIBS@
+IDLCXX		:= @IDLCXX@
+IDLCXXFLAGS	:= @IDLCXXFLAGS@
+IDLDYNFLAGS	:= @IDLDYNFLAGS@
+IDLTIEFLAGS	:= @IDLTIEFLAGS@
 
 # Other variables
-CPPFLAGS		+= @DEFS@ @CPPFLAGS@
-LIBS			+= @LIBS@
+CPPFLAGS	:= @CPPFLAGS@
+DEPFLAGS	:= @DEPFLAGS@
+LIBS		:= @LIBS@
+SO_CXXFLAGS     := @SO_CXXFLAGS@
+SO_LDFLAGS      := @SO_LDFLAGS@

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,14 +30,14 @@ public:
   Deck();
   virtual ~Deck();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
 
-  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
 
 protected:
   bool _requested;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 #endif

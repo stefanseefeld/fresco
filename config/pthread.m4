@@ -1,7 +1,7 @@
 dnl $Id$
 dnl This source file is a part of the Berlin Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl http://www.berlin-consortium.org/
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -89,7 +89,7 @@ AC_DEFUN([AC_PTHREAD],[
         if test x$use_pthreads = xyes; then
 	    ac_cv_pthread="yes"
 	else
-	    AC_MSG_ERROR(no pthread support found!)
+	    AC_MSG_ERROR([no pthread support found!])
 	fi
     fi
 ])

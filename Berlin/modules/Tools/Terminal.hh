@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,19 +22,19 @@
 #ifndef _Terminal_hh
 #define _Terminal_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/StreamBuffer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/StreamBuffer.hh>
 #include <Berlin/ControllerImpl.hh>
 
 class Terminal : public ControllerImpl
 {
  public:
-  Terminal(Warsaw::StreamBuffer_ptr b) : ControllerImpl(false), buffer(Warsaw::StreamBuffer::_duplicate(b)) {}
+  Terminal(Fresco::StreamBuffer_ptr b) : ControllerImpl(false), _buffer(Fresco::StreamBuffer::_duplicate(b)) {}
   ~Terminal() {}
 // protected:
-  virtual void key_press(const Warsaw::Input::Event &);
+  virtual void key_press(const Fresco::Input::Event &);
  private:
-  Warsaw::StreamBuffer_var buffer;
+  Fresco::StreamBuffer_var _buffer;
 };
 
 #endif

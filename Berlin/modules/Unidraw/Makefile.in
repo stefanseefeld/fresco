@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,24 +21,16 @@
 
 SHELL		:= /bin/sh
 
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/modules/Unidraw
 builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
 
-srcdir		:= $(top_srcdir)/src/Unidraw
-hdir		:= $(top_srcdir)/include/Unidraw
-
-include $(cdir)/Server/local.mk
-
-# Compilation and linking flags.
-LIBS		+= -lBerlin
-
 SRC		:= ViewImpl.cc Viewer.cc SelectTool.cc EditorImpl.cc UnidrawKitImpl.cc
 
 MODULE		:= UnidrawKit
 
-vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Unidraw
-
-include $(cdir)/Server/module.mk
+include $(cdir)/module.mk
 

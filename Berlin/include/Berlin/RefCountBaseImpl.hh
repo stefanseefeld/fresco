@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,17 +19,17 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _RefCountBaseImpl_hh
-#define _RefCountBaseImpl_hh
+#ifndef _Berlin_RefCountBaseImpl_hh
+#define _Berlin_RefCountBaseImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/RefCountBase.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/RefCountBase.hh>
 #include <Berlin/ServantBase.hh>
 
 //.Implements distributed reference counting. To ease the process of keeping
 //.track of references, see the RefCount_var template.
-class RefCountBaseImpl : public virtual POA_Warsaw::RefCountBase,
+class RefCountBaseImpl : public virtual POA_Fresco::RefCountBase,
                          public virtual ServantBase
 {
 public:

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999,2000 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,20 +29,20 @@
 #include "client.hh"
 
 // need to include the Kits I'll use
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/TextKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/DesktopKit.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Warsaw/WidgetKit.hh>
-#include <Warsaw/Unicode.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/TextKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/DesktopKit.hh>
+#include <Fresco/CommandKit.hh>
+#include <Fresco/WidgetKit.hh>
+#include <Fresco/Unicode.hh>
 
 #include <Berlin/ObserverImpl.hh>
 
 // pinyin input class
 #include "TextConverter.hh"
 
-#include <Warsaw/TextBuffer.hh>
+#include <Fresco/TextBuffer.hh>
 #include <Babylon/Babylon.hh>
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/GetOpt.hh>
@@ -50,9 +50,9 @@
 
 class InputObserver : public ObserverImpl {
 public:
-    InputObserver(Warsaw::TextBuffer_var i,
-		  Warsaw::TextBuffer_var s,
-		  Warsaw::TextBuffer_var o) : input(i),
+    InputObserver(Fresco::TextBuffer_var i,
+		  Fresco::TextBuffer_var s,
+		  Fresco::TextBuffer_var o) : input(i),
 					      select(s),
 					      output(o) {
 	// get the path of the Memorymap we need from the RCManager
@@ -64,7 +64,7 @@ public:
 
     // This function gets called as soon as the buffer I observe is updated.
     virtual void update(const CORBA::Any &any) {
-	Warsaw::TextBuffer::Change * change;
+	Fresco::TextBuffer::Change * change;
 
 	if (any >>= change) {
 	    // 'any' contained a TextBuffer::Change. This is what I exspected.
@@ -73,7 +73,7 @@ public:
 	    // to the contents of 'input'.
 	    // Unicode::to_internal() converts from the UCS2 encoded Unistring
 	    // passed by CORBA to the UCS4 encoded Babylon::String
-	    Babylon::String bs(Unicode::to_internal(Warsaw::Unistring_var(input->value())));
+	    Babylon::String bs(Unicode::to_internal(Fresco::Unistring_var(input->value())));
 
 	    Babylon::Char last = bs[bs.length() - 1];
 	    if (!bs.empty() && last >= 'A' && last <= 'Z') {
@@ -117,9 +117,9 @@ public:
     }
     
 private:
-    Warsaw::TextBuffer_var input;
-    Warsaw::TextBuffer_var select;
-    Warsaw::TextBuffer_var output;
+    Fresco::TextBuffer_var input;
+    Fresco::TextBuffer_var select;
+    Fresco::TextBuffer_var output;
     
     TextConverter * converter;
 }; // class InputObserver
@@ -150,8 +150,8 @@ int main(int argc, char ** argv) {
 	// Get Kits:
 
 	// This is what really happens:
-	Warsaw::LayoutKit_var lk =
-	    server.get_kit<Warsaw::LayoutKit>("IDL:Warsaw/LayoutKit:1.0");
+	Fresco::LayoutKit_var lk =
+	    server.get_kit<Fresco::LayoutKit>("IDL:Fresco/LayoutKit:1.0");
 
 	// Here is some Macro-Magic for the same:
 	REGISTER_KIT(server, tk, TextKit, 1.0);
@@ -169,20 +169,20 @@ int main(int argc, char ** argv) {
 	// - Change that string into something CORBA understands
 	// - Create a text chunk containing said string
 	// - Make it black using the ToolKit's rgb decorator.
-	Warsaw::Graphic_var title = tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("PinYin Input Applet")))), 0.0, 0.0, 0.0);
+	Fresco::Graphic_var title = tlk->rgb(Fresco::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("PinYin Input Applet")))), 0.0, 0.0, 0.0);
 
 	// create additional labels:
-	Warsaw::Graphic_var chinese_label =
-	    tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Possible Matches:")))), 0.0, 0.0, 0.0);
-	Warsaw::Graphic_var input_label =
-	    tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Input:")))), 0.0, 0.0, 0.0);
-	Warsaw::Graphic_var output_label =
-	    tlk->rgb(Warsaw::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Chinese Text:")))), 0.0, 0.0, 0.0);
+	Fresco::Graphic_var chinese_label =
+	    tlk->rgb(Fresco::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Possible Matches:")))), 0.0, 0.0, 0.0);
+	Fresco::Graphic_var input_label =
+	    tlk->rgb(Fresco::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Input:")))), 0.0, 0.0, 0.0);
+	Fresco::Graphic_var output_label =
+	    tlk->rgb(Fresco::Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("Chinese Text:")))), 0.0, 0.0, 0.0);
 
 	// We'll need three buffers to hold our text:
-	Warsaw::TextBuffer_var input_buf = ck->text();
-	Warsaw::TextBuffer_var chinese_buf = ck->text();
-	Warsaw::TextBuffer_var output_buf = ck->text();
+	Fresco::TextBuffer_var input_buf = ck->text();
+	Fresco::TextBuffer_var chinese_buf = ck->text();
+	Fresco::TextBuffer_var output_buf = ck->text();
 
 	// These buffers need associated views, else they are invisible:
 	// Since both ASCII and chinese do not need bidirectional output
@@ -193,27 +193,27 @@ int main(int argc, char ** argv) {
 	// the standard, memory-ordered TextBuffer.
 	// This line with a simple textviewer displaying in visual order would
 	// look like this:
-	// Warsaw::Graphic_var input_view =
+	// Fresco::Graphic_var input_view =
 	//     tk->simple_viewer(input_buf->get_visual_buffer());
-	Warsaw::Graphic_var input_view = tk->simple_viewer(input_buf);
-	Warsaw::Graphic_var chinese_view = tk->simple_viewer(chinese_buf);
-	Warsaw::Graphic_var output_view = tk->simple_viewer(output_buf);
+	Fresco::Graphic_var input_view = tk->simple_viewer(input_buf);
+	Fresco::Graphic_var chinese_view = tk->simple_viewer(chinese_buf);
+	Fresco::Graphic_var output_view = tk->simple_viewer(output_buf);
 
 	// Construct a frame. It will be drawn around each buffer later:
-	Warsaw::ToolKit::FrameSpec frame;
-	frame.brightness(0.5); frame._d(Warsaw::ToolKit::inset);
+	Fresco::ToolKit::FrameSpec frame;
+	frame.brightness(0.5); frame._d(Fresco::ToolKit::inset);
 
 	// Add text in front of the views:
 	// We use a hbox which will layout it's children one after another.
-	Warsaw::Graphic_var input_line = lk->hbox();
+	Fresco::Graphic_var input_line = lk->hbox();
 
 	// The first thing to add is the label
 	input_line->append_graphic(input_label);
 	// Now we add glue: a strechable, invisible graphic
-	input_line->append_graphic(Warsaw::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
+	input_line->append_graphic(Fresco::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
 	// Then the viewer created earlier. We add some decorations while we are
 	// at it anyway. Looks awfully complex, but is rather easy:-)
-	input_line->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(input_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+	input_line->append_graphic(tlk->frame(Fresco::Graphic_var(lk->margin(Fresco::Graphic_var(lk->hfixed(Fresco::Graphic_var(tlk->rgb(input_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
 	// This line does a lot of things:
 	// - It adds a decorator to 'input_view' which makes it display it's
 	//   contents in black (0.0, 0.0, 0.0). White would be (1.0, 1.0, 1.0).
@@ -228,24 +228,24 @@ int main(int argc, char ** argv) {
 	//   in a nive beleveled frame.
 
 	// The same again for the other viewers:
-	Warsaw::Graphic_var output_line = lk->hbox();
+	Fresco::Graphic_var output_line = lk->hbox();
 	output_line->append_graphic(output_label);
-	output_line->append_graphic(Warsaw::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
-	output_line->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(output_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
-	Warsaw::Graphic_var chinese_line = lk->hbox();
+	output_line->append_graphic(Fresco::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
+	output_line->append_graphic(tlk->frame(Fresco::Graphic_var(lk->margin(Fresco::Graphic_var(lk->hfixed(Fresco::Graphic_var(tlk->rgb(output_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+	Fresco::Graphic_var chinese_line = lk->hbox();
 
 	chinese_line->append_graphic(chinese_label);
-	chinese_line->append_graphic(Warsaw::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
-	chinese_line->append_graphic(tlk->frame(Warsaw::Graphic_var(lk->margin(Warsaw::Graphic_var(lk->hfixed(Warsaw::Graphic_var(tlk->rgb(chinese_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
+	chinese_line->append_graphic(Fresco::Graphic_var(lk->hglue(100.0, lk->fill(), 0.0)));
+	chinese_line->append_graphic(tlk->frame(Fresco::Graphic_var(lk->margin(Fresco::Graphic_var(lk->hfixed(Fresco::Graphic_var(tlk->rgb(chinese_view, 0.0, 0.0, 0.0)), 4000)), 50.0)), 20.0, frame, true));
 
 	// This was the hard part!
 	// Now we only need to arrange our graphics one above the other:
 
 	// I ask the LayoutKit for a vbox
-	Warsaw::Graphic_var vbox = lk->vbox();
+	Fresco::Graphic_var vbox = lk->vbox();
 
 	// Add the title created earlier ...
-	vbox->append_graphic(Warsaw::Graphic_var(lk->margin_lrbt_flexible(title, 0., 1e10, 0., 0., 1e10, 0., 50., 0., 0., 50., 0., 0.)));
+	vbox->append_graphic(Fresco::Graphic_var(lk->margin_lrbt_flexible(title, 0., 1e10, 0., 0., 1e10, 0., 50., 0., 0., 50., 0., 0.)));
 
 	// ... and then the lines.
 	vbox->append_graphic(chinese_line);	
@@ -260,7 +260,7 @@ int main(int argc, char ** argv) {
 
 	// Construct my observer and make it observe 'input_buf'
 	InputObserver observer(input_buf, chinese_buf, output_buf);
-	input_buf->attach(Warsaw::Observer_var(observer._this()));
+	input_buf->attach(Fresco::Observer_var(observer._this()));
 	// The 'observer' will now watch 'input_buf' for changes
 	// and alter the other buffers as necessary.
 
@@ -269,12 +269,12 @@ int main(int argc, char ** argv) {
 	// This controller accepts keyboard-events and updates a TextBuffer.
 	// It does not draw anything! That's done by the observers of
 	// 'input_buf' (which are 'observer' and 'input_view' in this applet).
-	Warsaw::ToolKit::FrameSpec spec;
-	spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-	Warsaw::Graphic_var body = tlk->frame(vbox, 20., spec, true);
-	Warsaw::Window_var window =
+	Fresco::ToolKit::FrameSpec spec;
+	spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
+	Fresco::Graphic_var body = tlk->frame(vbox, 20., spec, true);
+	Fresco::Window_var window =
 	    dk->shell(tlk->text_input(body, input_buf), 
-		      Warsaw::ClientContext_var(server.get_client_context()->_this()));
+		      Fresco::ClientContext_var(server.get_client_context()->_this()));
 
 	// Don't quit but idle around a bit so the server has the chance
 	// to do its work:-)

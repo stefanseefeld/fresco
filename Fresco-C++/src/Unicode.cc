@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Tobias Hunger <Tobias_Hunger@gmx.de>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Tobias Hunger <tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,9 +23,9 @@
 // This headerfile is necessary since Prague does not know about
 // the Unistring (defined in Warsaw) that CORBA needs.
 
-#include <Warsaw/Unicode.hh>
+#include <Fresco/Unicode.hh>
 
-using namespace Warsaw;
+using namespace Fresco;
 
 // This is ugly but necessary since Unistring does not
 // know iterators! So I can´t do decent assigment
@@ -33,14 +33,14 @@ using namespace Warsaw;
 
 Unistring Unicode::to_CORBA(const Babylon::String &s) {
   Babylon::UTF16_string tmp = s.utf16();
-  Warsaw::Unistring res(tmp.length(),
+  Fresco::Unistring res(tmp.length(),
 			tmp.length(),
 			const_cast<Babylon::UCS2 *>(tmp.data()));
   return res;
 }
 
-Warsaw::Unichar Unicode::to_CORBA(const Babylon::Char c) {
-    return Warsaw::Unichar(c.value());
+Fresco::Unichar Unicode::to_CORBA(const Babylon::Char c) {
+    return Fresco::Unichar(c.value());
 }
 
 Babylon::String Unicode::to_internal(const Unistring & us) {
@@ -50,6 +50,6 @@ Babylon::String Unicode::to_internal(const Unistring & us) {
     return res;
 }
 
-Babylon::Char Unicode::to_internal(const Warsaw::Unichar uc) {
+Babylon::Char Unicode::to_internal(const Fresco::Unichar uc) {
     return Babylon::Char(Babylon::UCS4(uc));
 }

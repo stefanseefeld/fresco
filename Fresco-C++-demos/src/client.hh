@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999,2000 Tobias Hunger <Tobias@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,16 +23,16 @@
 #ifndef _Client_hh
 #define _Client_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/exception.hh>
-#include <Warsaw/ClientContextImpl.hh>
-#include <Warsaw/Server.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/Window.hh>
-#include <Warsaw/Trigger.hh>
-#include <Warsaw/Unicode.hh>
-#include <Warsaw/Controller.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/exception.hh>
+#include <Fresco/ClientContextImpl.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Window.hh>
+#include <Fresco/Trigger.hh>
+#include <Fresco/Unicode.hh>
+#include <Fresco/Controller.hh>
 
 #include <Berlin/CommandImpl.hh>
 #include <Berlin/ControllerImpl.hh>
@@ -50,14 +50,14 @@ public:
 	
 	// Berlin initialization
 	client = new ClientContextImpl(appname);
-	server = resolve_name<Warsaw::Server>(name, "IDL:Warsaw/Server:1.0");
+	server = resolve_name<Fresco::Server>(name, "IDL:Fresco/Server:1.0");
 	server_context =
-	    server->create_server_context(Warsaw::ClientContext_var(client->_this()));
+	    server->create_server_context(Fresco::ClientContext_var(client->_this()));
     }
  
     template<class T>
     typename T::_ptr_type get_kit(const char *name,
-				  const Warsaw::Kit::PropertySeq &props = 0) {
+				  const Fresco::Kit::PropertySeq &props = 0) {
 	return resolve_kit<T>(server_context, name, props);
     }
 
@@ -67,10 +67,10 @@ public:
     PortableServer::POAManager_ptr get_POAManager() { return poa_manager; }
 
     ClientContextImpl * get_client_context() { return client; }
-    Warsaw::Server_ptr get_server() { return server; }
-    Warsaw::ServerContext_ptr get_server_context() { return server_context;}
+    Fresco::Server_ptr get_server() { return server; }
+    Fresco::ServerContext_ptr get_server_context() { return server_context;}
 
-    Warsaw::ServerContext_var operator() () { return server_context; }
+    Fresco::ServerContext_var operator() () { return server_context; }
 
     ~Berlin_Server() { delete client; };
 private:
@@ -85,10 +85,10 @@ private:
 
     // BERLIN
     ClientContextImpl * client;
-    Warsaw::Server_var server;
-    Warsaw::ServerContext_var server_context;
+    Fresco::Server_var server;
+    Fresco::ServerContext_var server_context;
 };
 
-#define REGISTER_KIT(server,name,kit,version) Warsaw::##kit##_var name = server##.get_kit<Warsaw::##kit>("IDL:Warsaw/" #kit ":" #version)
+#define REGISTER_KIT(server,name,kit,version) Fresco::##kit##_var name = server##.get_kit<Fresco::##kit>("IDL:Fresco/" #kit ":" #version)
 
 #endif // Client_hh

@@ -36,7 +36,7 @@ while test $# -gt 0; do
       echo $exec_prefix
       ;;
     --version)
-      echo @VERSION@
+      echo @PACKAGE_VERSION@
       ;;
     --cppflags)
       echo @CPPFLAGS@
@@ -45,7 +45,7 @@ while test $# -gt 0; do
       echo @CXXFLAGS@
       ;;
     --libs)
-      echo @LIBS@
+      echo -L$prefix/lib -lFresco @LIBS@
       ;;
     *)
       echo "${usage}" 1>&2

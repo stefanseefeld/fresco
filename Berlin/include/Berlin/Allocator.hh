@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Allocator_hh
-#define _Allocator_hh
+#ifndef _Berlin_Allocator_hh
+#define _Berlin_Allocator_hh
 
 #include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
@@ -36,23 +36,23 @@ public:
   Allocator();
   virtual ~Allocator();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void request(Fresco::Graphic::Requisition &);
 
-  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
 
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
   virtual void need_resize();
 // private:
   bool _requested : 1;
   bool _allocated : 1;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Graphic::Requisition _requisition;
   Impl_var<RegionImpl> _natural;
   Impl_var<RegionImpl> _extension;
   
   void cache_requisition();
   void cache_allocation();
-  void need_damage(RegionImpl *, Warsaw::Allocation_ptr);
-  static void natural_allocation(const Warsaw::Graphic::Requisition &, RegionImpl &);
+  void need_damage(RegionImpl *, Fresco::Allocation_ptr);
+  static void natural_allocation(const Fresco::Graphic::Requisition &, RegionImpl &);
 };
 
 //. A TransformAllocator maps its allocate to a translation
@@ -63,17 +63,17 @@ public:
 class TransformAllocator : public Allocator
 {
 public:
-  TransformAllocator(Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment);
+  TransformAllocator(Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment);
   ~TransformAllocator();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 protected:
-  Warsaw::Alignment _xparent, _yparent, _zparent;
-  Warsaw::Alignment _xchild, _ychild, _zchild;
+  Fresco::Alignment _xparent, _yparent, _zparent;
+  Fresco::Alignment _xchild, _ychild, _zchild;
 
-  void compute_delta(const Warsaw::Vertex &, const Warsaw::Vertex &, Warsaw::Vertex &);
+  void compute_delta(const Fresco::Vertex &, const Fresco::Vertex &, Fresco::Vertex &);
 };
 
 #endif 

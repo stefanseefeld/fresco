@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,47 +19,50 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _LibArtFTFont_hh
-#define _LibArtFTFont_hh
+#ifndef _FTFont_hh
+#define _FTFont_hh
 
 #include <Prague/Sys/MMap.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/Unicode.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Unicode.hh>
 #include <Berlin/LRUCache.hh>
-#include <Drawing/libArt/LibArtFont.hh>
+#include "Font.hh"
 #include <freetype/freetype.h>
 #include <map>
 
+namespace libArt
+{
+
 //. this is a simple Freetype font, which doesn't support
 //. ligatures or complex layout features
-class LibArtFTFont : public LibArtFont
+class FTFont : public Font
 {
 public:
-  LibArtFTFont(double, double);
-  virtual ~LibArtFTFont();
+  FTFont(double, double);
+  virtual ~FTFont();
   virtual CORBA::ULong size();
   virtual void size(CORBA::ULong);
   virtual CORBA::ULong weight();
   virtual void weight(CORBA::ULong);
-  virtual void family(const Warsaw::Unistring &);
-  virtual void subfamily(const Warsaw::Unistring &);
-  virtual void fullname(const Warsaw::Unistring &);
-  virtual void style(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *family();
-  virtual Warsaw::Unistring *subfamily();
-  virtual Warsaw::Unistring *fullname();
-  virtual Warsaw::Unistring *style();
-  virtual Warsaw::DrawingKit::FontMetrics metrics();
-  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &);
-  virtual void buffer(Warsaw::Unichar, ArtPixBuf *&);
+  virtual void family(const Fresco::Unistring &);
+  virtual void subfamily(const Fresco::Unistring &);
+  virtual void fullname(const Fresco::Unistring &);
+  virtual void style(const Fresco::Unistring &);
+  virtual Fresco::Unistring *family();
+  virtual Fresco::Unistring *subfamily();
+  virtual Fresco::Unistring *fullname();
+  virtual Fresco::Unistring *style();
+  virtual Fresco::DrawingKit::FontMetrics metrics();
+  virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar &);
+  virtual void buffer(Fresco::Unichar, ArtPixBuf *&);
   virtual bool transform(double trafo[4]);
-  virtual void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  virtual void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &);
 
   void setup_face(FT_Face &f);
   void setup_size(FT_Face &f);
-  bool load_glyph(Warsaw::Unichar c, FT_Face &f);
+  bool load_glyph(Fresco::Unichar c, FT_Face &f);
   void matrix(FT_Matrix &m) {m = _matrix;}
 
   double get_scale() const { return _scale;} 
@@ -83,7 +86,7 @@ protected:
   FT_Matrix _matrix;
   typedef std::pair<atom,atom> FamStyle;
   typedef std::pair<PtSize,FamStyle> FaceSpec;
-  typedef std::pair<Warsaw::Unichar,FaceSpec>  GlyphSpec;
+  typedef std::pair<Fresco::Unichar,FaceSpec>  GlyphSpec;
   typedef std::pair<FT_Matrix, GlyphSpec>  TGlyphSpec;
 
   class TGlyphSpec_cmp
@@ -107,32 +110,32 @@ protected:
   class GlyphMetricsFactory
   {
   private:
-    LibArtFTFont *_font;
+    FTFont *_font;
     FT_Library   *_lib;
   public:
-    GlyphMetricsFactory(LibArtFTFont *f, FT_Library *l) : _font(f), _lib(l) {}
-    Warsaw::DrawingKit::GlyphMetrics produce(const TGlyphSpec &);
-    void recycle(Warsaw::DrawingKit::GlyphMetrics) {};
+    GlyphMetricsFactory(FTFont *f, FT_Library *l) : _font(f), _lib(l) {}
+    Fresco::DrawingKit::GlyphMetrics produce(const TGlyphSpec &);
+    void recycle(Fresco::DrawingKit::GlyphMetrics) {};
   };
   
   class FaceMetricsFactory
   {
   private:
-    LibArtFTFont *_font;
-    FT_Library   *_lib;
+    FTFont     *_font;
+    FT_Library *_lib;
   public:
-    FaceMetricsFactory(LibArtFTFont *f, FT_Library *l) : _font(f), _lib(l) {}
-    Warsaw::DrawingKit::FontMetrics produce(const FaceSpec &);
-    void recycle(Warsaw::DrawingKit::FontMetrics) {};
+    FaceMetricsFactory(FTFont *f, FT_Library *l) : _font(f), _lib(l) {}
+    Fresco::DrawingKit::FontMetrics produce(const FaceSpec &);
+    void recycle(Fresco::DrawingKit::FontMetrics) {};
   };
 
   class GlyphFactory
   {
   private:
-    LibArtFTFont *_font;
-    FT_Library   *_lib;
+    FTFont     *_font;
+    FT_Library *_lib;
   public:
-    GlyphFactory(LibArtFTFont *f, FT_Library *l) : _font(f), _lib(l) {};
+    GlyphFactory(FTFont *f, FT_Library *l) : _font(f), _lib(l) {};
     ArtPixBuf *produce(const TGlyphSpec &);
     void recycle(ArtPixBuf *pb) { art_pixbuf_free(pb);};
   };
@@ -150,11 +153,13 @@ protected:
   // caches!
   LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, 
 	   std::map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > _glyphCache;
-  LRUCache<FaceSpec, Warsaw::DrawingKit::FontMetrics, FaceMetricsFactory> _faceMetricsCache;
-  LRUCache<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics, GlyphMetricsFactory,
-	   std::map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;
+  LRUCache<FaceSpec, Fresco::DrawingKit::FontMetrics, FaceMetricsFactory> _faceMetricsCache;
+  LRUCache<TGlyphSpec, Fresco::DrawingKit::GlyphMetrics, GlyphMetricsFactory,
+	   std::map<TGlyphSpec, Fresco::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;
 private:
   bool chooseFaceInteractively(const std::map<FamStyle, FT_Face> &, const char *, Babylon::String &, Babylon::String &);
 };
+
+}
 
 #endif

@@ -1,9 +1,9 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -25,42 +25,9 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
-AC_PREREQ(2.12)
+AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Berlin, 0.3.0, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
 
-AC_HEADLINE(dnl
-Berlin Clients-Perl, Berlin perl clients, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
-
-dnl ------------------------------------------------------------------
-dnl Decisions
-dnl ------------------------------------------------------------------
-PERL=
-AC_SUBST(PERL)
-
-dnl ------------------------------------------------------------------
-dnl Print a summary of what's going to be built
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Summary)
-
-dnl ------------------------------------------------------------------
-dnl Output substitution
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
-
-mkdir -p $builddir/bin
-mkdir -p $builddir/clients/perl
-
-AC_OUTPUT([
-	$builddir/config/Clients-Perl/subdirs.mk:config/Clients-Perl/subdirs.mk.in
-	$builddir/config/Clients-Perl/local.mk:config/Clients-Perl/local.mk.in
-])
+AC_OUTPUT

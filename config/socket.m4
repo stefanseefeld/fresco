@@ -1,8 +1,8 @@
 dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -21,20 +21,20 @@ dnl MA 02139, USA.
 
 dnl ------------------------------------------------------------------
 
-dnl BERLIN_LIB_SOCKET
+dnl FRESCO_LIB_SOCKET
 dnl
 dnl Check for a suitable socket implementation and add any needed
 dnl libraries to LIBS.
 
-AC_DEFUN(BERLIN_LIB_SOCKET,[
+AC_DEFUN(FRESCO_LIB_SOCKET,[
 cv_inet_sockets=no
 cv_unix_sockets=no
 cv_lib_socket="c"
 SOCKET_LIBS=""
-AC_CHECK_HEADERS(sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h)
+AC_CHECK_HEADERS([sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h])
 AC_CHECK_HEADERS(arpa/inet.h, cv_inet_sockets=yes)
 AC_CHECK_HEADERS(sys/un.h, cv_unix_sockets=yes)
-AC_CHECK_TYPEDEF(socklen_t, sys/socket.h)
+AC_CHECK_TYPE(socklen_t, [AC_DEFINE(HAVE_SOCKLEN_T)], [], [#include <sys/socket.h>])
 AC_CHECK_LIB(socket, socket, [cv_lib_socket="socket" LIBS="$LIBS -lsocket"])
 if test $cv_inet_sockets = yes ; then
 	AC_DEFINE(HAVE_INET_SOCKETS)

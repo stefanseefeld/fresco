@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,7 @@
 
 #include "TextDemo.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 TextDemo::TextDemo(Application *a)
   : Demo(a)
@@ -32,13 +32,14 @@ TextDemo::TextDemo(Application *a)
   CommandKit_var command = application->command();
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
-  Babylon::Char chars[] = {
-    0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
-    0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
-    0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
-    0x65e5, 0x672c, 0x8a9e, 0x0020, 0x4e2d, 0x6587, 0x0020, 0xd55c,
-    0xad6d, 0xc5b4
-  };
+  Babylon::Char chars[] =
+    {
+      0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
+      0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
+      0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
+      0x65e5, 0x672c, 0x8a9e, 0x0020, 0x4e2d, 0x6587, 0x0020, 0xd55c,
+      0xad6d, 0xc5b4
+    };
 
   Babylon::String str(34, chars);
   Graphic_var txt = text->chunk(Unicode::to_CORBA(str));

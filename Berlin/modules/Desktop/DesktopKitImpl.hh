@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,52 +22,52 @@
 #ifndef _DesktopKitImpl_hh
 #define _DesktopKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DesktopKit.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/WidgetKit.hh>
-#include <Warsaw/TextKit.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Warsaw/ImageKit.hh>
-#include <Warsaw/Image.hh>
-#include <Warsaw/FigureKit.hh>
-#include <Warsaw/Desktop.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DesktopKit.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/WidgetKit.hh>
+#include <Fresco/TextKit.hh>
+#include <Fresco/CommandKit.hh>
+#include <Fresco/ImageKit.hh>
+#include <Fresco/Image.hh>
+#include <Fresco/FigureKit.hh>
+#include <Fresco/Desktop.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
 class WindowImpl;
 class DesktopImpl;
 
-class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
+class DesktopKitImpl : public virtual POA_Fresco::DesktopKit,
 		       public KitImpl
 {
  public:
-  DesktopKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  DesktopKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~DesktopKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new DesktopKitImpl(repo_id(), p);}
-  virtual void bind(Warsaw::ServerContext_ptr);
-  virtual Warsaw::Desktop_ptr desk();
-  virtual Warsaw::Window_ptr shell(Warsaw::Controller_ptr, Warsaw::ClientContext_ptr);
-  virtual Warsaw::Window_ptr transient(Warsaw::Controller_ptr);
-  virtual Warsaw::Window_ptr pulldown(Warsaw::Controller_ptr);
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new DesktopKitImpl(repo_id(), p);}
+  virtual void bind(Fresco::ServerContext_ptr);
+  virtual Fresco::Desktop_ptr desk();
+  virtual Fresco::Window_ptr shell(Fresco::Controller_ptr, Fresco::ClientContext_ptr);
+  virtual Fresco::Window_ptr transient(Fresco::Controller_ptr);
+  virtual Fresco::Window_ptr pulldown(Fresco::Controller_ptr);
 
-  virtual Warsaw::Command_ptr move(Warsaw::Window_ptr);
-  virtual Warsaw::Command_ptr resize(Warsaw::Window_ptr);
-  virtual Warsaw::Command_ptr move_resize(Warsaw::Window_ptr, Warsaw::Alignment, Warsaw::Alignment, CORBA::Short);
-  virtual Warsaw::Command_ptr relayer(Warsaw::Window_ptr);
-  virtual Warsaw::Command_ptr map(Warsaw::Window_ptr, CORBA::Boolean);
-  virtual Warsaw::Command_ptr shader(Warsaw::Window_ptr, Warsaw::Graphic_var);
+  virtual Fresco::Command_ptr move(Fresco::Window_ptr);
+  virtual Fresco::Command_ptr resize(Fresco::Window_ptr);
+  virtual Fresco::Command_ptr move_resize(Fresco::Window_ptr, Fresco::Alignment, Fresco::Alignment, CORBA::Short);
+  virtual Fresco::Command_ptr relayer(Fresco::Window_ptr);
+  virtual Fresco::Command_ptr map(Fresco::Window_ptr, CORBA::Boolean);
+  virtual Fresco::Command_ptr shader(Fresco::Window_ptr, Fresco::Graphic_var);
  private:
-  RefCount_var<Warsaw::Desktop>    _desktop;
-  RefCount_var<Warsaw::LayoutKit>  _layout;
-  RefCount_var<Warsaw::ToolKit>    _tool;
-  RefCount_var<Warsaw::WidgetKit>  _widget;
-  RefCount_var<Warsaw::TextKit>    _text;
-  RefCount_var<Warsaw::CommandKit> _command;
-  RefCount_var<Warsaw::ImageKit>   _image;
-  RefCount_var<Warsaw::FigureKit>  _figure;
-  Warsaw::Command_var              _exit;
+  RefCount_var<Fresco::Desktop>    _desktop;
+  RefCount_var<Fresco::LayoutKit>  _layout;
+  RefCount_var<Fresco::ToolKit>    _tool;
+  RefCount_var<Fresco::WidgetKit>  _widget;
+  RefCount_var<Fresco::TextKit>    _text;
+  RefCount_var<Fresco::CommandKit> _command;
+  RefCount_var<Fresco::ImageKit>   _image;
+  RefCount_var<Fresco::FigureKit>  _figure;
+  Fresco::Command_var              _exit;
 };
 
 #endif

@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,16 +20,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/Unicode.hh>
-#include <Warsaw/StreamBuffer.hh>
-#include <Warsaw/DrawingKit.hh>
-#include "Text/TerminalView.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Unicode.hh>
+#include <Fresco/StreamBuffer.hh>
+#include <Fresco/DrawingKit.hh>
+#include "TerminalView.hh"
 #include <algorithm>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *l, Compositor *p)
   : Composition(dk, p),
@@ -43,7 +43,7 @@ TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk, DrawingKit_ptr dk
 }
 
 TerminalView::~TerminalView() {}
-void TerminalView::request(Warsaw::Graphic::Requisition &r)
+void TerminalView::request(Fresco::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.minimum = r.x.natural = r.x.maximum = 4000.;

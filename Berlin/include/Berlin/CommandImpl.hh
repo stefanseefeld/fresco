@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,11 +22,11 @@
 #ifndef _CommandImpl_hh
 #define _CommandImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Command.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Command.hh>
 #include <Berlin/ServantBase.hh>
 
-class CommandImpl : public virtual POA_Warsaw::Command,
+class CommandImpl : public virtual POA_Fresco::Command,
 		    public virtual ServantBase
 {
 public:

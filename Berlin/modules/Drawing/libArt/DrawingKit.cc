@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,13 +21,13 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/Provider.hh>
-#include "Drawing/libArt/LibArtDrawingKit.hh"
-#include "Drawing/libArt/LibArtFTFont.hh"
-#include "Drawing/libArt/LibArtUnifont.hh"
+#include "DrawingKit.hh"
+#include "FTFont.hh"
+#include "Unifont.hh"
 
 #include <libart_lgpl/art_pathcode.h>
 #include <libart_lgpl/art_pixbuf.h>
@@ -43,10 +43,11 @@
 
 #include <memory>
 
-using namespace Warsaw;
+using namespace Fresco;
+using namespace libArt;
 
-LibArtDrawingKit::~LibArtDrawingKit() {}
-LibArtDrawingKit::LibArtDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+libArt::DrawingKit::~DrawingKit() {}
+libArt::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),
     _drawable(0),
     _xres(1.),
@@ -59,21 +60,21 @@ LibArtDrawingKit::LibArtDrawingKit(const std::string &id, const Warsaw::Kit::Pro
 {
 }
 
-KitImpl *LibArtDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
+KitImpl *libArt::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
 {
-  LibArtDrawingKit *kit = new LibArtDrawingKit(repo_id(), p);
+  libArt::DrawingKit *kit = new libArt::DrawingKit(repo_id(), p);
   kit->init();
   return kit;
 }
 
-void LibArtDrawingKit::init()
+void libArt::DrawingKit::init()
 {
   Console *console = Console::instance();
   _drawable = console->drawable();
   _xres = _drawable->resolution(xaxis);
   _yres = _drawable->resolution(yaxis);
-  _font = new LibArtFTFont(_xres, _yres);
-  _unifont = new LibArtUnifont(_xres, _yres);
+  _font = new FTFont(_xres, _yres);
+  _unifont = new Unifont(_xres, _yres);
   _screen.x0 = 0;
   _screen.y0 = 0;
   _screen.x1 = _drawable->width();
@@ -109,9 +110,9 @@ inline void fix_order_of_irect(ArtIRect &ir)
 }
 };
 
-void LibArtDrawingKit::set_transformation(Transform_ptr t)
+void libArt::DrawingKit::set_transformation(Transform_ptr t)
 {
-  Prague::Trace trace("LibArtDrawingKit::set_transformation");
+  Prague::Trace trace("libArt::DrawingKit::set_transformation");
   if (CORBA::is_nil(t)) art_affine_identity(_affine);
   else
     {
@@ -134,7 +135,7 @@ void LibArtDrawingKit::set_transformation(Transform_ptr t)
   _scaled_affine[5] *= _yres;
 }
 
-void LibArtDrawingKit::set_clipping(Region_ptr r)
+void libArt::DrawingKit::set_clipping(Region_ptr r)
 {
   if (CORBA::is_nil(r)) {_clip = _screen; return;}
   _cl = Region::_duplicate(r);
@@ -148,7 +149,7 @@ void LibArtDrawingKit::set_clipping(Region_ptr r)
   art_irect_intersect(&_clip, &_clip, &_screen);
 }
 
-void LibArtDrawingKit::set_foreground(const Color &c)
+void libArt::DrawingKit::set_foreground(const Color &c)
 {
   _fg = c;
   _con_fg.red   = _fg.red * _lt.red;
@@ -158,7 +159,7 @@ void LibArtDrawingKit::set_foreground(const Color &c)
   _art_fg       = artColor(_con_fg);
 }
 
-void LibArtDrawingKit::set_lighting(const Color &c)
+void libArt::DrawingKit::set_lighting(const Color &c)
 {
   _lt = c;
   _con_fg.red   = _fg.red * _lt.red;
@@ -167,26 +168,26 @@ void LibArtDrawingKit::set_lighting(const Color &c)
   _art_fg       = artColor(_con_fg);
 }
 
-void LibArtDrawingKit::set_point_size(Coord s) { _ps = s;}
-void LibArtDrawingKit::set_line_width(Coord w) { _lw = w;}
-void LibArtDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style) { _es = style;}
-void LibArtDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style) { _fs = style;}
-void LibArtDrawingKit::set_texture(Raster_ptr t) {}
-void LibArtDrawingKit::set_font_size(CORBA::ULong) {}
-void LibArtDrawingKit::set_font_weight(CORBA::ULong) {}
-void LibArtDrawingKit::set_font_family(const Unistring&) {}
-void LibArtDrawingKit::set_font_subfamily(const Unistring&) {}
-void LibArtDrawingKit::set_font_fullname(const Unistring&) {}
-void LibArtDrawingKit::set_font_style(const Unistring&) {}
-void LibArtDrawingKit::set_font_attribute(const NVPair & nvp) {}
+void libArt::DrawingKit::set_point_size(Coord s) { _ps = s;}
+void libArt::DrawingKit::set_line_width(Coord w) { _lw = w;}
+void libArt::DrawingKit::set_line_endstyle(Fresco::DrawingKit::Endstyle style) { _es = style;}
+void libArt::DrawingKit::set_surface_fillstyle(Fresco::DrawingKit::Fillstyle style) { _fs = style;}
+void libArt::DrawingKit::set_texture(Raster_ptr t) {}
+void libArt::DrawingKit::set_font_size(CORBA::ULong) {}
+void libArt::DrawingKit::set_font_weight(CORBA::ULong) {}
+void libArt::DrawingKit::set_font_family(const Unistring&) {}
+void libArt::DrawingKit::set_font_subfamily(const Unistring&) {}
+void libArt::DrawingKit::set_font_fullname(const Unistring&) {}
+void libArt::DrawingKit::set_font_style(const Unistring&) {}
+void libArt::DrawingKit::set_font_attribute(const NVPair & nvp) {}
 
-void LibArtDrawingKit::draw_path(const Path &p) 
+void libArt::DrawingKit::draw_path(const Path &p) 
 {
   int len = p.nodes.length();
-  ArtVpath vpath[_fs == Warsaw::DrawingKit::outlined ? len : len + 1];
+  ArtVpath vpath[_fs == Fresco::DrawingKit::outlined ? len : len + 1];
   ArtVpath *tvpath;  
 
-  if (_fs == Warsaw::DrawingKit::outlined)
+  if (_fs == Fresco::DrawingKit::outlined)
     {
       for (int i = 0; i < len; ++i)
 	{
@@ -238,9 +239,9 @@ void LibArtDrawingKit::draw_path(const Path &p)
   art_svp_free(svp2);
 }
 
-//void LibArtDrawingKit::drawPatch(const Patch &);
+//void libArt::DrawingKit::drawPatch(const Patch &);
 
-void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top) 
+void libArt::DrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top) 
 {
   // fast path opaque non-transformed rectangles
   if (_fg.alpha == 1. &&
@@ -259,7 +260,7 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
       int height = (rect.y1 - rect.y0);
       if ((height * width) < 1) return;
       _renderer->set_color(_con_fg);
-      if (_fs == Warsaw::DrawingKit::solid)
+      if (_fs == Fresco::DrawingKit::solid)
 	_renderer->draw_box(rect.x0, rect.y0, width, height);
       else
 	{
@@ -276,7 +277,7 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
   else
     {
       Path path;
-      if (_fs == Warsaw::DrawingKit::outlined)
+      if (_fs == Fresco::DrawingKit::outlined)
 	{
 	  path.nodes.length(4);
 	  path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
@@ -299,18 +300,18 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
     }
 }
 
-void LibArtDrawingKit::draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord)
+void libArt::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric, Fresco::Coord, Fresco::Coord)
 {
 }
 
-void LibArtDrawingKit::draw_ellipse(const Vertex &, const Vertex &) {}
+void libArt::DrawingKit::draw_ellipse(const Vertex &, const Vertex &) {}
 
-void LibArtDrawingKit::draw_image(Raster_ptr remote)
+void libArt::DrawingKit::draw_image(Raster_ptr remote)
 {
-  rasterize_pixbuf(_rasters.lookup(Raster::_duplicate(remote))->pixbuf);
+  rasterize_pixbuf(_rasters.lookup(Fresco::Raster::_duplicate(remote))->pixbuf);
 }
 
-void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
+void libArt::DrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
 {
   // fast path for non-transformed grey-scale glyph images
   ArtIRect rect;
@@ -362,7 +363,7 @@ void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
 }
 
 
-void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
+void libArt::DrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
 {
   
   // NOTE: this entire routine takes place "in device space"
@@ -432,12 +433,12 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   pixbuf->pixels = save;
 }
 
-void LibArtDrawingKit::draw_text(const Unistring &u) 
+void libArt::DrawingKit::draw_text(const Unistring &u) 
 {
   // presently disabled. should delegate to drawChar
 }
 
-void LibArtDrawingKit::draw_char(Unichar c)
+void libArt::DrawingKit::draw_char(Unichar c)
 {
   double x0 = _affine[4];
   double y0 = _affine[5];
@@ -459,7 +460,7 @@ void LibArtDrawingKit::draw_char(Unichar c)
   else
     {
       _font->allocate_char(c,r);
-      Warsaw::DrawingKit::GlyphMetrics gm = _font->metrics(c);
+      Fresco::DrawingKit::GlyphMetrics gm = _font->metrics(c);
       width = (int) (gm.width >> 6);
       height = (int) (gm.height >> 6);
     }
@@ -516,26 +517,26 @@ void LibArtDrawingKit::draw_char(Unichar c)
   _affine[5] = y0;
 }
 
-void LibArtDrawingKit::allocate_char(Unichar c, Graphic::Requisition & req)
+void libArt::DrawingKit::allocate_char(Unichar c, Graphic::Requisition & req)
 {
   if (c > 127) _unifont->allocate_char(c,req);
   else _font->allocate_char(c,req);
 }
 
 
-void LibArtDrawingKit::allocate_text(const Unistring & s, Graphic::Requisition & req)
+void libArt::DrawingKit::allocate_text(const Unistring & s, Graphic::Requisition & req)
 {
   //   font->allocate(s,req);
 }
 
-void LibArtDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
+void libArt::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
 {
   CORBA::Double x2 = _affine[4] * _buffer->resolution(xaxis);
   CORBA::Double y2 = _affine[5] * _buffer->resolution(yaxis);
   _buffer->blit(d, x, y, w, h, static_cast<long>(x2 + x), static_cast<long>(y2 + y));
 }
 
-void LibArtDrawingKit::flush()
+void libArt::DrawingKit::flush()
 {   
   int x = _bbox.x0;
   int y = _bbox.y0;
@@ -550,5 +551,5 @@ void LibArtDrawingKit::flush()
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LibArtDrawingKit"};
-  return create_kit<LibArtDrawingKit>("IDL:Warsaw/DrawingKit:1.0", properties, 2);
+  return create_kit<libArt::DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
 }

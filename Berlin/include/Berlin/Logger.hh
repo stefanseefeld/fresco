@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Logger_hh
-#define _Logger_hh
+#ifndef _Berlin_Logger_hh
+#define _Berlin_Logger_hh
 
-#include "Warsaw/config.hh"
 #include "Prague/Sys/logstream.hh"
 #include "Prague/Sys/Time.hh"
 #include "Prague/Sys/Thread.hh"
 #include "Prague/Sys/Profiler.hh"
+#include "Fresco/config.hh"
 
 class Logger
 //. this is a rewrite of our debugging class to use some NANA features.  the idea

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#include <utility>
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/CommandImpl.hh>
-#include "Widget/Motif/Panner.hh"
+#include "Panner.hh"
+#include <utility>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Motif;
 
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
@@ -149,6 +149,6 @@ void Panner::traverse_thumb(Traversal_ptr traversal)
   _scale.y = (_yvalue->upper() - _yvalue->lower())/scale;
 
   try { traversal->traverse_child (child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,22 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Warsaw_IO_hh
-#define _Warsaw_IO_hh
+#ifndef _Fresco_IO_hh
+#define _Fresco_IO_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Transform.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/Transform.hh>
 #include <iostream>
 
-inline std::ostream &operator << (std::ostream &os, const Warsaw::Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
-std::ostream &operator << (std::ostream &, const Warsaw::Color &);
-std::ostream &operator << (std::ostream &, const Warsaw::Graphic::Requirement &);
-std::ostream &operator << (std::ostream &, const Warsaw::Graphic::Requisition &);
-std::ostream &operator << (std::ostream &, const Warsaw::Region::Allotment &);
-std::ostream &operator << (std::ostream &, Warsaw::Region_ptr);
-std::ostream &operator << (std::ostream &, const Warsaw::Transform::Matrix &);
-std::ostream &operator << (std::ostream &, Warsaw::Transform_ptr);
+inline std::ostream &operator << (std::ostream &os, const Fresco::Vertex &v) { return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';}
+std::ostream &operator << (std::ostream &, const Fresco::Color &);
+std::ostream &operator << (std::ostream &, const Fresco::Graphic::Requirement &);
+std::ostream &operator << (std::ostream &, const Fresco::Graphic::Requisition &);
+std::ostream &operator << (std::ostream &, const Fresco::Region::Allotment &);
+std::ostream &operator << (std::ostream &, Fresco::Region_ptr);
+std::ostream &operator << (std::ostream &, const Fresco::Transform::Matrix &);
+std::ostream &operator << (std::ostream &, Fresco::Transform_ptr);
 
 #endif

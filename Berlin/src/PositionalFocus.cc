@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,10 +20,10 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/IO.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Profiler.hh>
+#include <Fresco/config.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/PositionalFocus.hh"
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
@@ -36,7 +36,7 @@
 #include "Berlin/RasterImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 static bool should_track;
 
@@ -47,8 +47,8 @@ static bool should_track;
 class PositionalFocus::Traversal : public PickTraversalImpl
 {
 public:
-  Traversal(Warsaw::Graphic_ptr g, Warsaw::Region_ptr a,
-            Warsaw::Transform_ptr t, PositionalFocus *f)
+  Traversal(Fresco::Graphic_ptr g, Fresco::Region_ptr a,
+            Fresco::Transform_ptr t, PositionalFocus *f)
     : PickTraversalImpl(g, a, t, f), _memento(0), _picked(false) {}
   Traversal &operator = (const Traversal &t)
     {
@@ -59,15 +59,15 @@ public:
       // two Traversals (see PositionalFocus::PositionalFocusi() and
       // PositionalFocus::dispatch())
     }
-  void pointer(const Warsaw::Input::Position &p) { _pointer = p;}
+  void pointer(const Fresco::Input::Position &p) { _pointer = p;}
   void memento(Traversal *m) { _memento = m;}
   Traversal *memento() { return picked() ? _memento : 0;}
-  virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr);
+  virtual CORBA::Boolean intersects_region(Fresco::Region_ptr);
   virtual void hit() { *_memento = *this, _picked = true;}
   virtual CORBA::Boolean picked() { return _picked;}
   void debug();
 private:
-  Warsaw::Input::Position _pointer;
+  Fresco::Input::Position _pointer;
   Traversal              *_memento;
   bool                    _picked;
 };

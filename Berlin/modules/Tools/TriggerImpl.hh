@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,26 +23,26 @@
 #define _TriggerImpl_hh
 
 #include <Prague/Sys/Thread.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Trigger.hh>
-#include <Warsaw/Command.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Trigger.hh>
+#include <Fresco/Command.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-class TriggerImpl : public virtual POA_Warsaw::Trigger,
+class TriggerImpl : public virtual POA_Fresco::Trigger,
 		    public ControllerImpl
 {
  public:
   TriggerImpl();
   ~TriggerImpl();
-  void action(Warsaw::Command_ptr);
-  Warsaw::Command_ptr action();
-  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void key_press(const Warsaw::Input::Event &);
+  void action(Fresco::Command_ptr);
+  Fresco::Command_ptr action();
+  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void key_press(const Fresco::Input::Event &);
   void execute(const CORBA::Any &);
  private:
-  Prague::Mutex mutex;
-  Warsaw::Command_var command;
+  Prague::Mutex       _mutex;
+  Fresco::Command_var _command;
 };
 
 #endif

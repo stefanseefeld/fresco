@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,12 +28,12 @@
 #include "Berlin/RegionImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 NonPositionalFocus::NonPositionalFocus(Input::Device d, Controller_ptr root)
   : FocusImpl(d)
 {
-  _controllers.push_back(Warsaw::Controller::_duplicate(root));
+  _controllers.push_back(Fresco::Controller::_duplicate(root));
 }
 NonPositionalFocus::~NonPositionalFocus() {}
 void NonPositionalFocus::activate_composite() { _controllers.back()->receive_focus(Focus_var(_this()));}
@@ -85,7 +85,7 @@ bool NonPositionalFocus::request(Controller_ptr c)
   for (; nf != tmp.end(); ++nf)
     {
       (*nf)->receive_focus (__this);
-      _controllers.push_back(Warsaw::Controller::_duplicate(*nf));
+      _controllers.push_back(Fresco::Controller::_duplicate(*nf));
     }
   return true;
 }

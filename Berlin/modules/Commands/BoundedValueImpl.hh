@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,28 +23,28 @@
 #ifndef _BoundedValueImpl_hh
 #define _BoundedValueImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/BoundedValue.hh>
-#include <Berlin/SubjectImpl.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Fresco/config.hh>
+#include <Fresco/BoundedValue.hh>
+#include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class BoundedValueImpl : public virtual POA_Warsaw::BoundedValue,
+class BoundedValueImpl : public virtual POA_Fresco::BoundedValue,
 			 public SubjectImpl
 {
  public:
-  BoundedValueImpl(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  BoundedValueImpl(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
   virtual ~BoundedValueImpl();
-  virtual Warsaw::Coord lower();
-  virtual void lower(Warsaw::Coord);
-  virtual Warsaw::Coord upper();
-  virtual void upper(Warsaw::Coord);
-  virtual Warsaw::Coord step();
-  virtual void step(Warsaw::Coord);
-  virtual Warsaw::Coord page();
-  virtual void page(Warsaw::Coord);
-  virtual Warsaw::Coord value();
-  virtual void value(Warsaw::Coord);
+  virtual Fresco::Coord lower();
+  virtual void lower(Fresco::Coord);
+  virtual Fresco::Coord upper();
+  virtual void upper(Fresco::Coord);
+  virtual Fresco::Coord step();
+  virtual void step(Fresco::Coord);
+  virtual Fresco::Coord page();
+  virtual void page(Fresco::Coord);
+  virtual Fresco::Coord value();
+  virtual void value(Fresco::Coord);
 
   virtual void forward();
   virtual void backward();
@@ -52,13 +52,13 @@ class BoundedValueImpl : public virtual POA_Warsaw::BoundedValue,
   virtual void fastbackward();
   virtual void begin();
   virtual void end();
-  virtual void adjust(Warsaw::Coord);
+  virtual void adjust(Fresco::Coord);
 private:
-  Warsaw::Coord _l;
-  Warsaw::Coord _u;
-  Warsaw::Coord _v;
-  Warsaw::Coord _s;
-  Warsaw::Coord _p;
+  Fresco::Coord _l;
+  Fresco::Coord _u;
+  Fresco::Coord _v;
+  Fresco::Coord _s;
+  Fresco::Coord _p;
   Prague::Mutex _mutex;
 };
 

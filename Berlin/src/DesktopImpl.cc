@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,17 +21,17 @@
  */
 
 #include <Babylon/Babylon.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/Region.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/Region.hh>
 #include "Berlin/DesktopImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Layout;
 
 DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb,
@@ -46,15 +46,15 @@ DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb,
 
 DesktopImpl::~DesktopImpl() { }
 
-void DesktopImpl::body(Warsaw::Graphic_ptr) { }
+void DesktopImpl::body(Fresco::Graphic_ptr) { }
 
-Warsaw::Graphic_ptr DesktopImpl::body()
+Fresco::Graphic_ptr DesktopImpl::body()
 {
   return CORBA::is_nil(_stage) ?
     Layout::Stage::_nil() : Layout::Stage::_duplicate(_stage);
 }
 
-Warsaw::Region_ptr DesktopImpl::bbox() { return _stage->bbox();}
+Fresco::Region_ptr DesktopImpl::bbox() { return _stage->bbox();}
 
 CORBA::Long DesktopImpl::layers() { return _stage->layers();}
 
@@ -66,9 +66,9 @@ Layout::StageHandle_ptr DesktopImpl::layer(Layout::Stage::Index l)
 void DesktopImpl::lock() { _stage->lock();}
 void DesktopImpl::unlock() { _stage->unlock();}
 
-Layout::StageHandle_ptr DesktopImpl::insert(Warsaw::Graphic_ptr g,
-					    const Warsaw::Vertex &p,
-					    const Warsaw::Vertex &s,
+Layout::StageHandle_ptr DesktopImpl::insert(Fresco::Graphic_ptr g,
+					    const Fresco::Vertex &p,
+					    const Fresco::Vertex &s,
 					    Layout::Stage::Index l)
 {
   return _stage->insert(g, p, s, l);

@@ -1,7 +1,7 @@
 dnl $Id$
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org>
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org>
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -23,25 +23,24 @@ dnl AC_THREAD_CHECK
 dnl
 dnl Try to find a usable thread library.
 dnl Add the necessary stuff to LIBS and CPPFLAGS
-AC_DEFUN([AC_THREAD_CHECK],[
-	AC_BEGIN_DECISION([Threading])
-    	AC_ARG_ENABLE(pthreads,
-		[  --enable-pthreads       use POSIX threads for multi-threading (default: yes)], [
-		enable_pthreads="$enableval"])
-	if test ".$enable_pthreads" = . ; then
-		enable_pthreads=yes
-	fi
-	if test ".$enable_pthreads" = .yes ; then
-		AC_PTHREAD
-		if test ".$ac_cv_pthread" != .yes; then
-			if test ".$1" = .mandatory; then
-				AC_MSG_ERROR(No supported thread API found!)
-			fi
-		else
-			AC_DECIDE(PTHREADS, [use pthreads])
-			CPPFLAGS="$CPPFLAGS $pthread_cppflags"
-    			LIBS="$LIBS $pthread_lib"
-		fi
-	fi
-	AC_END_DECISION
+AC_DEFUN([AC_THREAD_CHECK],
+  [AC_MSG_NOTICE([Threading])
+   AC_ARG_ENABLE(pthreads,
+     [  --enable-pthreads       use POSIX threads for multi-threading (default: yes)],
+     [  enable_pthreads="$enableval"])
+   if test ".$enable_pthreads" = . ; then
+     enable_pthreads=yes
+   fi
+   if test ".$enable_pthreads" = .yes ; then
+     AC_PTHREAD
+     if test ".$ac_cv_pthread" != .yes; then
+       if test ".$1" = .mandatory; then
+         AC_MSG_ERROR([No supported thread API found!])
+       fi
+     else
+       AC_MSG_RESULT([use pthreads])
+       CPPFLAGS="$CPPFLAGS $pthread_cppflags"
+       LIBS="$LIBS $pthread_lib"
+     fi
+   fi
 ])

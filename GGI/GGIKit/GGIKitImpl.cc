@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,16 +19,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "GGI/GGIKitImpl.hh"
-#include "GGI/VisualImpl.hh"
+#include "GGIKitImpl.hh"
+#include "VisualImpl.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
-GGIKitImpl::GGIKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+GGIKitImpl::GGIKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 GGIKitImpl::~GGIKitImpl() {}
 
-GGI::Visual_ptr GGIKitImpl::create_visual(Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+GGI::Visual_ptr GGIKitImpl::create_visual(Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
   VisualImpl *visual = new VisualImpl(w, h);
   activate(visual);

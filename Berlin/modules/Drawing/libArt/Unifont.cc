@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Berlin/RCManager.hh>
-#include "Drawing/libArt/LibArtUnifont.hh"
+#include "Unifont.hh"
 
 #include <libart_lgpl/art_rgb.h> // for art_rgb_run_alpha
 
@@ -48,9 +48,9 @@
 // text systems
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
-LibArtUnifont::LibArtUnifont(double xres, double yres)
+libArt::Unifont::Unifont(double xres, double yres)
   : _xres(xres),
     _yres(yres)
 {
@@ -60,15 +60,15 @@ LibArtUnifont::LibArtUnifont(double xres, double yres)
   _buffer = art_pixbuf_new_rgb (_slab, 16, 16, 16);  
 }
 
-LibArtUnifont::~LibArtUnifont() { delete _glyphmap; art_pixbuf_free(_buffer);}
-CORBA::ULong LibArtUnifont::size() { return 16;}
-CORBA::ULong LibArtUnifont::weight() { return 100;}
-Unistring *LibArtUnifont::family() { return new Unistring(Unicode::to_CORBA(Babylon::String("GNU Unifont")));}
-Unistring *LibArtUnifont::subfamily() { return 0;}
-Unistring *LibArtUnifont::fullname() { return 0;}
-Unistring *LibArtUnifont::style() { return new Unistring(Unicode::to_CORBA(Babylon::String("monospace")));}
+libArt::Unifont::~Unifont() { delete _glyphmap; art_pixbuf_free(_buffer);}
+CORBA::ULong libArt::Unifont::size() { return 16;}
+CORBA::ULong libArt::Unifont::weight() { return 100;}
+Unistring *libArt::Unifont::family() { return new Unistring(Unicode::to_CORBA(Babylon::String("GNU Unifont")));}
+Unistring *libArt::Unifont::subfamily() { return 0;}
+Unistring *libArt::Unifont::fullname() { return 0;}
+Unistring *libArt::Unifont::style() { return new Unistring(Unicode::to_CORBA(Babylon::String("monospace")));}
 
-DrawingKit::FontMetrics LibArtUnifont::metrics()
+DrawingKit::FontMetrics libArt::Unifont::metrics()
 {
   DrawingKit::FontMetrics fm;
   fm.ascender = 16 << 6;
@@ -78,7 +78,7 @@ DrawingKit::FontMetrics LibArtUnifont::metrics()
   return fm;
 }
 
-DrawingKit::GlyphMetrics LibArtUnifont::metrics(Unichar &uc)
+DrawingKit::GlyphMetrics libArt::Unifont::metrics(Unichar &uc)
 {
   unsigned char *glyphs = (unsigned char *)_glyphmap->addr();  
 
@@ -94,7 +94,7 @@ DrawingKit::GlyphMetrics LibArtUnifont::metrics(Unichar &uc)
   return gm;
 }
 
-void LibArtUnifont::buffer(Unichar ch, ArtPixBuf *&pb)
+void libArt::Unifont::buffer(Unichar ch, ArtPixBuf *&pb)
 {
   unsigned char *glyphs = (unsigned char *)_glyphmap->addr();  
   int width = (glyphs[ch * 33] == (unsigned char)0xFF) ? 8 : 16;  
@@ -104,7 +104,7 @@ void LibArtUnifont::buffer(Unichar ch, ArtPixBuf *&pb)
   pb = _buffer;
 }
 
-void LibArtUnifont::glyph_to_pixels(Unichar ch, unsigned char pix[])
+void libArt::Unifont::glyph_to_pixels(Unichar ch, unsigned char pix[])
 {
   unsigned char *glyphs = (unsigned char *)_glyphmap->addr();
   const unsigned int stride = 33;
@@ -130,7 +130,7 @@ void LibArtUnifont::glyph_to_pixels(Unichar ch, unsigned char pix[])
   }
 }
 
-void LibArtUnifont::allocate_char(Unichar u, Graphic::Requisition &r)
+void libArt::Unifont::allocate_char(Unichar u, Graphic::Requisition &r)
 {    
   unsigned char *glyphs = (unsigned char *)_glyphmap->addr();  
   int height = 16;

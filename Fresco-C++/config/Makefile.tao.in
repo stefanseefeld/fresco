@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org/
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org/
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -20,15 +20,13 @@
 # MA 02139, USA.
 
 SHELL		:= /bin/sh
-VERSION		:= @VERSION@
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Warsaw
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/src
 idir		:= $(top_srcdir)/idl
-builddir	:= $(shell pwd | sed -e 's%/[^/][^/]*/[^/][^/]*$$%%')
-cdir		:= $(builddir)/config
-hdir		:= $(builddir)/include
-bdir		:= $(builddir)/bin
+builddir	:= $(shell pwd)
+cdir		:= ../config
+hdir		:= ../include
 
 include $(cdir)/local.mk
 
@@ -36,10 +34,9 @@ IDLCXX		:= @IDLCXX@
 
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
-CPPFLAGS	+= @CPPFLAGS@ -include $(hdir)/Warsaw/config.hh -I/usr/local/src/ACE_wrappers -I/usr/local/src/ACE_wrappers/TAO
+CPPFLAGS	+= -include $(hdir)/Warsaw/config.hh -I/usr/local/src/ACE_wrappers -I/usr/local/src/ACE_wrappers/TAO
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
-LIBS		+= @LIBS@
 
 DYNINT		:= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl \
 		   Selection.idl
@@ -65,14 +62,14 @@ SRC		:= $(DYNSSRC) $(DYNCSRC) $(STATSSRC) $(STATCSRC)
 
 DYNHDR		:= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR		:= $(patsubst %.idl, %.hh, $(STATINT))
-HDR		:= $(patsubst %, $(hdir)/Warsaw/%, $(DYNHDR) $(STATHDR))
+HDR		:= $(patsubst %, $(hdir)/Fresco/%, $(DYNHDR) $(STATHDR))
 
 OBJ		:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
-TARGET		:= $(ldir)/libWarsaw.so
+TARGET		:= ../lib/libFresco.so
 
-vpath %.idl $(idir)/Warsaw
-vpath %.hh $(hdir)/Warsaw
+vpath %.idl $(idir)/Fresco
+vpath %.hh $(hdir)/Fresco
 
 all: $(TARGET)
 
@@ -89,55 +86,55 @@ sources:	$(SRC) $(HDR)
 objects:	$(OBJ)
 
 install:
-		$(INSTALL) -m755 $(TARGET) $(libdir)
-		$(INSTALL) -m755 $(bdir)/Warsaw-config $(bindir)
+		$(INSTALL) -m755 $(TARGET) $(DESTDIR)$(libdir)
+		$(INSTALL) -m755 ../bin/Fresco-config $(DESTDIR)$(bindir)
 
 clean:	
 		rm -f $(TARGET)
 		rm -f *.o *.d
-		rm -f $(SRC) $(HDR) $(hdir)/Warsaw/*.i $(hdir)/Warsaw/*.h
+		rm -f $(SRC) $(HDR) $(hdir)/Fresco/*.i $(hdir)/Fresco/*.h
 
 distclean:	clean
-		rm -f Makefile $(hdir)/Warsaw/config.hh $(cdir)/Warsaw/subdirs.mk \
-			$(cdir)/Warsaw/config.log $(cdir)/Warsaw/config.status \
-			$(bdir)/Warsaw-config
+		rm -f Makefile $(hdir)/Fresco/config.hh \
+			config.log config.status \
+			../bin/Fresco-config
 
 maintainer-clean: distclean
-		rm -f $(top_srcdir)/config/Warsaw/configure $(top_srcdir)/config/Warsaw/config.hh.in \
-			$(cdir)/Warsaw/aclocal.m4
+		rm -f $(top_srcdir)/configure $(top_srcdir)/config/config.hh.in \
+			$(cdir)/Fresco/aclocal.m4
 
-%.idl.d:	$(idir)/Warsaw/%.idl
+%.idl.d:	$(idir)/Fresco/%.idl
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idir) $< \
 	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
-$(STATSSRC): %S.cc:	$(idir)/Warsaw/%.idl
+$(STATSSRC): %S.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	$(IDLCXX) -I$(idir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
-$(STATCSRC): %C.cc:	$(idir)/Warsaw/%.idl
+$(STATCSRC): %C.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	$(IDLCXX) -I$(idir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
-$(DYNSSRC): %S.cc:	$(idir)/Warsaw/%.idl
+$(DYNSSRC): %S.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	$(IDLCXX) -I$(idir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
-$(DYNCSRC): %C.cc:	$(idir)/Warsaw/%.idl
+$(DYNCSRC): %C.cc:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	$(IDLCXX) -I$(idir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
-$(HDR): $(hdir)/Warsaw/%.hh:	$(idir)/Warsaw/%.idl
+$(HDR): $(hdir)/Fresco/%.hh:	$(idir)/Fresco/%.idl
 	@echo generating $(@F)
-	sed -e "s|#include \"$(*F)C.h\"|#include \"Warsaw/$(*F)C.h\"|" $(*F)S.h > $(hdir)/Warsaw/$(*F)S.h
+	sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(hdir)/Fresco/$(*F)S.h
 	rm $(*F)S.h
-	mv $(*F)C.h $(*F)S.i $(*F)C.i $(hdir)/Warsaw
-	echo -e "#include <Warsaw/$(*F)C.h>\n#include <Warsaw/$(*F)S.h>\n" > $@
+	mv $(*F)C.h $(*F)S.i $(*F)C.i $(hdir)/Fresco
+	echo -e "#include <Fresco/$(*F)C.h>\n#include <Fresco/$(*F)S.h>\n" > $@
 %.cc.d:	%.cc
 	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Warsaw $< \
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Fresco $< \
 	| sed "s/$*\\.o[ :]*/$*\\.cc.d $*\\.o : /g" > $@'
 %.o:	%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Warsaw $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Warsaw $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) -I$(hdir) -I$(hdir)/Fresco $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
 ifeq ($(MAKECMDGOALS), sources)
 -include $(patsubst %, %.d, $(notdir $(INT)))

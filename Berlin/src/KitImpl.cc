@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,15 +28,15 @@
 #include <typeinfo>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 namespace
 {
   Mutex mutex;
 };
 
-KitImpl::KitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
-  : _repo_id(id), _props(new Warsaw::Kit::PropertySeq(p)), _refcount(1)
+KitImpl::KitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
+  : _repo_id(id), _props(new Fresco::Kit::PropertySeq(p)), _refcount(1)
 {
   Trace trace("KitImpl::KitImpl");
 #ifdef LCLOG
@@ -56,16 +56,16 @@ KitImpl::~KitImpl()
   delete _props;
 }
 
-CORBA::Boolean KitImpl::supports(const Warsaw::Kit::PropertySeq &p)
+CORBA::Boolean KitImpl::supports(const Fresco::Kit::PropertySeq &p)
 {
   Trace trace("KitImpl::supports");
-  const Warsaw::Kit::Property *begin2 = p.get_buffer();
-  const Warsaw::Kit::Property *end2 = begin2 + p.length();
-  for (const Warsaw::Kit::Property *property2 = begin2; property2 != end2; property2++)
+  const Fresco::Kit::Property *begin2 = p.get_buffer();
+  const Fresco::Kit::Property *end2 = begin2 + p.length();
+  for (const Fresco::Kit::Property *property2 = begin2; property2 != end2; property2++)
     {
-      const Warsaw::Kit::Property *begin1 = _props->get_buffer();
-      const Warsaw::Kit::Property *end1 = begin1 + _props->length();
-      const Warsaw::Kit::Property *property1;
+      const Fresco::Kit::Property *begin1 = _props->get_buffer();
+      const Fresco::Kit::Property *end1 = begin1 + _props->length();
+      const Fresco::Kit::Property *property1;
       for (property1 = begin1; property1 != end1; property1++)
 	if (strcmp(property1->name, property2->name) == 0)
 	  {

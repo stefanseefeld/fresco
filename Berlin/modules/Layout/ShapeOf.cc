@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,30 +19,27 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Layout/ShapeOf.hh"
+#include "ShapeOf.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
-ShapeOf::ShapeOf(Graphic_ptr x, Graphic_ptr y, Graphic_ptr z)
+ShapeOf::ShapeOf(Graphic_ptr xx, Graphic_ptr yy, Graphic_ptr zz)
+  : x(Fresco::Graphic::_duplicate(xx)),
+    y(Fresco::Graphic::_duplicate(yy)),
+    z(Fresco::Graphic::_duplicate(zz))
 {
-  x = Warsaw::Graphic::_duplicate(x);
-  y = Warsaw::Graphic::_duplicate(y);
-  z = Warsaw::Graphic::_duplicate(z);
 }
 
 ShapeOf::~ShapeOf()
 {
-  CORBA::release(x);
-  CORBA::release(y);
-  CORBA::release(z);
 }
 
-void ShapeOf::request(Warsaw::Graphic::Requisition &r)
+void ShapeOf::request(Fresco::Graphic::Requisition &r)
 {
   if (CORBA::is_nil(y) && CORBA::is_nil(z)) x->request(r);
   else
     {
-      Warsaw::Graphic::Requisition req;
+      Fresco::Graphic::Requisition req;
       GraphicImpl::init_requisition(req);
       if (!CORBA::is_nil(x))
 	{

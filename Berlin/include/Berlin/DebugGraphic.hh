@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DebugGraphic_hh
-#define _DebugGraphic_hh
+#ifndef _Berlin_DebugGraphic_hh
+#define _Berlin_DebugGraphic_hh
 
+#include <Fresco/config.hh>
+#include <Fresco/Region.hh>
 #include "Berlin/MonoGraphic.hh"
-#include <Warsaw/Region.hh>
 #include <iostream>
 #include <string>
 
@@ -34,11 +35,11 @@ public:
   DebugGraphic(std::ostream &, const std::string &, unsigned int f = traversals);
   virtual ~DebugGraphic();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 private:
   void         heading(const char *);
   std::ostream &_os;

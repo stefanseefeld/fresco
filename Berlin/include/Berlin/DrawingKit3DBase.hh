@@ -1,8 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2000 Niklas Elmqvist <elm@3dwm.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 2000, 2002 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,14 +24,14 @@
 #ifndef _DrawingKit3DBase_hh
 #define _DrawingKit3DBase_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawingKit3D.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit3D.hh>
+#include <Fresco/Raster.hh>
 
 #include <stack>
 
-class DrawingKit3DBase : public virtual POA_Warsaw::DrawingKit3D {
-
+class DrawingKit3DBase : public virtual POA_Fresco::DrawingKit3D
+{
  private:
 
     // Which parts of the state was stored?

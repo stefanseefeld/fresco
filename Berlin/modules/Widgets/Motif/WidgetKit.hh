@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,13 +22,13 @@
 #ifndef _Motif_WidgetKitImpl_hh
 #define _Motif_WidgetKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Widget.hh>
-#include <Warsaw/WidgetKit.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/TextKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Widget.hh>
+#include <Fresco/WidgetKit.hh>
+#include <Fresco/CommandKit.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/TextKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 #include <Berlin/RefCountVar.hh>
@@ -39,32 +39,32 @@ class GraphicImpl;
 namespace Motif
 {
 
-class WidgetKit : public virtual POA_Warsaw::WidgetKit,
+class WidgetKit : public virtual POA_Fresco::WidgetKit,
 		  public KitImpl
 {
  public:
-  WidgetKit(const std::string &, const Warsaw::Kit::PropertySeq &);
+  WidgetKit(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~WidgetKit();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new WidgetKit(repo_id(), p);}
-  virtual void bind(Warsaw::ServerContext_ptr);
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new WidgetKit(repo_id(), p);}
+  virtual void bind(Fresco::ServerContext_ptr);
   
-  Warsaw::Trigger_ptr      button(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
-  Warsaw::Controller_ptr   toggle(Warsaw::Graphic_ptr);
-  Warsaw::Graphic_ptr      gauge(Warsaw::BoundedValue_ptr);
-  Warsaw::Controller_ptr   slider(Warsaw::BoundedValue_ptr, Warsaw::Axis);
-  Warsaw::Controller_ptr   panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
-  Warsaw::Controller_ptr   scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis);
+  Fresco::Trigger_ptr      button(Fresco::Graphic_ptr, Fresco::Command_ptr);
+  Fresco::Controller_ptr   toggle(Fresco::Graphic_ptr);
+  Fresco::Graphic_ptr      gauge(Fresco::BoundedValue_ptr);
+  Fresco::Controller_ptr   slider(Fresco::BoundedValue_ptr, Fresco::Axis);
+  Fresco::Controller_ptr   panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
+  Fresco::Controller_ptr   scrollbar(Fresco::BoundedRange_ptr, Fresco::Axis);
   Widget::Choice_ptr       toggle_choice();
   Widget::Choice_ptr       checkbox_choice();
   Widget::Choice_ptr       toolbar();
-  Warsaw::Controller_ptr   terminal();
-//   Widget::Splitter_ptr     splitter(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
-  Warsaw::Controller_ptr   scrollable(Warsaw::Graphic_ptr);
+  Fresco::Controller_ptr   terminal();
+//   Widget::Splitter_ptr     splitter(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Axis);
+  Fresco::Controller_ptr   scrollable(Fresco::Graphic_ptr);
  private:
-  RefCount_var<Warsaw::LayoutKit>  _layout;
-  RefCount_var<Warsaw::CommandKit> _commands;
-  RefCount_var<Warsaw::ToolKit>    _tools;
-  RefCount_var<Warsaw::TextKit>    _text;
+  RefCount_var<Fresco::LayoutKit>  _layout;
+  RefCount_var<Fresco::CommandKit> _commands;
+  RefCount_var<Fresco::ToolKit>    _tools;
+  RefCount_var<Fresco::TextKit>    _text;
 };
 
 };

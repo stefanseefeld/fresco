@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,16 +21,16 @@
  * MA 02139, USA.
  */
 
-#ifndef _RasterImpl_hh
-#define _RasterImpl_hh
+#ifndef _Berlin_RasterImpl_hh
+#define _Berlin_RasterImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Raster.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/PNG.hh>
 #include <string>
 
-class RasterImpl : public virtual POA_Warsaw::Raster,
+class RasterImpl : public virtual POA_Fresco::Raster,
 		   public SubjectImpl
 						  
 {  	
@@ -38,14 +38,14 @@ public:
   RasterImpl();
   RasterImpl(const std::string &file);
   virtual ~RasterImpl();
-  virtual Warsaw::Raster::Info header();
+  virtual Fresco::Raster::Info header();
   virtual void clear();
-  virtual void load_data(const Warsaw::Raster::Data &);
-  virtual void store_data(Warsaw::Raster::Data_out);
-  virtual void load_pixel(const Warsaw::Raster::Index &, const Warsaw::Color &);
-  virtual void store_pixel(const Warsaw::Raster::Index &, Warsaw::Color &);
-  virtual void load_pixels(const Warsaw::Raster::Index &, const Warsaw::Raster::Index &, const Warsaw::Raster::ColorSeq &);
-  virtual void store_pixels(const Warsaw::Raster::Index &, const Warsaw::Raster::Index &, Warsaw::Raster::ColorSeq_out);
+  virtual void load_data(const Fresco::Raster::Data &);
+  virtual void store_data(Fresco::Raster::Data_out);
+  virtual void load_pixel(const Fresco::Raster::Index &, const Fresco::Color &);
+  virtual void store_pixel(const Fresco::Raster::Index &, Fresco::Color &);
+  virtual void load_pixels(const Fresco::Raster::Index &, const Fresco::Raster::Index &, const Fresco::Raster::ColorSeq &);
+  virtual void store_pixels(const Fresco::Raster::Index &, const Fresco::Raster::Index &, Fresco::Raster::ColorSeq_out);
   void write(const char *);
  private:
   PNG _png;

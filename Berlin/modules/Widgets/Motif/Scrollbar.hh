@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,10 +22,10 @@
 #ifndef _Motif_Scrollbar_hh
 #define _Motif_Scrollbar_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/BoundedRange.hh>
+#include <Fresco/config.hh>
+#include <Fresco/BoundedRange.hh>
 #include <Berlin/RefCountVar.hh>
-#include "Widget/Motif/Adjustable.hh"
+#include "Adjustable.hh"
 
 namespace Motif
 {
@@ -34,25 +34,25 @@ class Scrollbar : public Adjustable
 {
   struct Offset
   {
-    Warsaw::Coord lower;
-    Warsaw::Coord upper;
+    Fresco::Coord lower;
+    Fresco::Coord upper;
   }; 
 public:
-  Scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis, const Warsaw::Graphic::Requisition &);
-  void init(Warsaw::Controller_ptr);
-  virtual void request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  Scrollbar(Fresco::BoundedRange_ptr, Fresco::Axis, const Fresco::Graphic::Requisition &);
+  void init(Fresco::Controller_ptr);
+  virtual void request(Fresco::Graphic::Requisition &r) { r = _requisition;}
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 protected:
   virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Warsaw::OriginatedDelta &);
+  virtual void adjust(const Fresco::OriginatedDelta &);
 private:
-  void traverse_thumb(Warsaw::Traversal_ptr);
-  Warsaw::Graphic::Requisition _requisition;
-  RefCount_var<Warsaw::BoundedRange> _value;
+  void traverse_thumb(Fresco::Traversal_ptr);
+  Fresco::Graphic::Requisition _requisition;
+  RefCount_var<Fresco::BoundedRange> _value;
   Offset _offset;
-  Warsaw::Axis _axis;
+  Fresco::Axis _axis;
   TransformImpl _pickTrafo; // transformation at the last pick traversal.
   double _length;
   double _scale;

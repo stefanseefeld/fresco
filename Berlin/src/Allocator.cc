@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,9 +20,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/Screen.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/Screen.hh>
 #include "Berlin/Allocator.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/AllocationImpl.hh"
@@ -31,7 +31,7 @@
 #include <Prague/Sys/Tracer.hh>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 Allocator::Allocator()
   : _requested(false),
@@ -44,7 +44,7 @@ Allocator::~Allocator()
 { 
 }
 
-void Allocator::request(Warsaw::Graphic::Requisition &r)
+void Allocator::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace(this, "Allocator::request");
   cache_requisition();
@@ -64,8 +64,8 @@ void Allocator::traverse(Traversal_ptr traversal)
       else
 	traversal->traverse_child(child, 0, Region_var(_natural->_this()), Transform::_nil());
     }
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }
 
 void Allocator::need_resize()
@@ -93,7 +93,7 @@ void Allocator::allocate(Tag, const Allocation::Info &i)
 //  i.allocation->copy(Region_var(natural->_this()));
 }
 
-void Allocator::natural_allocation(const Warsaw::Graphic::Requisition &r, RegionImpl &natural)
+void Allocator::natural_allocation(const Fresco::Graphic::Requisition &r, RegionImpl &natural)
 {
   if (r.x.defined)
     {
@@ -123,7 +123,7 @@ void Allocator::cache_requisition()
   Trace trace(this, "Allocator::cache_requisition");
   if (!_requested)
     {
-      Warsaw::Graphic::Requisition r;
+      Fresco::Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
       MonoGraphic::request(r);
       _requisition = r;
@@ -171,7 +171,7 @@ TransformAllocator::TransformAllocator(Alignment xp, Alignment yp, Alignment zp,
 
 TransformAllocator::~TransformAllocator() {}
 
-void TransformAllocator::request(Warsaw::Graphic::Requisition &r)
+void TransformAllocator::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace(this, "TransformAllocator::request");
   Allocator::request(r);
@@ -221,8 +221,8 @@ void TransformAllocator::traverse(Traversal_ptr traversal)
     {
       traversal->traverse_child(child, 0, Region_var(_natural->_this()), Transform_var(tx->_this()));
     }
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }
 
 void TransformAllocator::compute_delta(const Vertex &lower, const Vertex &upper, Vertex &delta)

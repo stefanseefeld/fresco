@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,23 +21,50 @@
 
 SHELL		:= /bin/sh
 
-builddir	:= ../..
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/GGIKit
+builddir	:= ..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
 
-srcdir		:= $(top_srcdir)/src/GGI
-hdir		:= $(top_srcdir)/include/GGI
+SRC	:= VisualImpl.cc GGIKitImpl.cc
+DEP	:= $(patsubst %.cc, %.d, $(SRC))
+OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-include $(cdir)/Server/local.mk
+TARGET	:= ../lib/Fresco/GGIKit.so
 
-# Compilation and linking flags.
-LIBS		+= -lBerlin
+.PHONY: all install uninstall clean distclean maintainer-clean
 
-SRC		:= VisualImpl.cc GGIKitImpl.cc
+all:	$(TARGET)
 
-MODULE		:= GGIKit
+$(TARGET):	$(DEP) $(OBJ)
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+		strip --strip-unneeded $@
 
-vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/GGI
+install:
+		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
 
-include $(cdir)/Server/module.mk
+uninstall:
+		rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
+
+clean:	
+		rm -f $(TARGET)
+		rm -f *.o *.d
+
+distclean:	clean
+		rm -f Makefile
+
+maintainer-clean: distclean
+
+%.d:	$(srcdir)/%.cc
+	@echo generating dependencies for $<
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+%.o:	$(srcdir)/%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+-include $(DEP)
+endif

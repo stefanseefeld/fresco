@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,19 +19,19 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Layout/Glue.hh"
+#include "Glue.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 Glue::Glue(Axis a, Coord natural, Coord stretch, Coord shrink, Alignment align)
 {
   GraphicImpl::init_requisition(_requisition);
-  Warsaw::Graphic::Requirement *r = GraphicImpl::requirement(_requisition, a);
+  Fresco::Graphic::Requirement *r = GraphicImpl::requirement(_requisition, a);
   if (r != 0) GraphicImpl::require(*r, natural, stretch, shrink, align);
 }
 
-Glue::Glue(const Warsaw::Graphic::Requisition &r) { _requisition = r;}
+Glue::Glue(const Fresco::Graphic::Requisition &r) { _requisition = r;}
 Glue::~Glue() {}
 
-void Glue::request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
+void Glue::request(Fresco::Graphic::Requisition &r) { r = _requisition;}
 

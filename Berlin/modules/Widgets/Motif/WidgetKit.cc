@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,26 +21,26 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/Server.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/Trigger.hh>
-#include <Warsaw/MainController.hh>
-#include <Warsaw/Command.hh>
-#include <Warsaw/Viewport.hh>
-#include <Warsaw/Selection.hh>
+#include <Fresco/config.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/Trigger.hh>
+#include <Fresco/MainController.hh>
+#include <Fresco/Command.hh>
+#include <Fresco/Viewport.hh>
+#include <Fresco/Selection.hh>
 #include <Berlin/CommandImpl.hh>
-#include "Widget/Motif/WidgetKit.hh"
-#include "Widget/Motif/Gauge.hh"
-#include "Widget/Motif/Slider.hh"
-#include "Widget/Motif/Panner.hh"
-#include "Widget/Motif/Scrollbar.hh"
-#include "Widget/Motif/Choice.hh"
-#include "Widget/Motif/Terminal.hh"
-// #include "Widget/Motif/Splitter.hh"
+#include "WidgetKit.hh"
+#include "Gauge.hh"
+#include "Slider.hh"
+#include "Panner.hh"
+#include "Scrollbar.hh"
+#include "Choice.hh"
+#include "Terminal.hh"
+// #include "Splitter.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Widget;
 
 namespace Motif
@@ -76,39 +76,39 @@ private:
 //   Method method;
 // };
 
-WidgetKit::WidgetKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+WidgetKit::WidgetKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 WidgetKit::~WidgetKit() {}
 
 void WidgetKit::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
-  Warsaw::Kit::PropertySeq props;
+  Fresco::Kit::PropertySeq props;
   props.length(0);
-  _commands = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
-  _layout = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
-  _tools = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
-  _text = resolve_kit<TextKit>(context, "IDL:Warsaw/TextKit:1.0", props);
+  _commands = resolve_kit<CommandKit>(context, "IDL:fresco.org/Fresco/CommandKit:1.0", props);
+  _layout = resolve_kit<LayoutKit>(context, "IDL:fresco.org/Fresco/LayoutKit:1.0", props);
+  _tools = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
+  _text = resolve_kit<TextKit>(context, "IDL:fresco.org/Fresco/TextKit:1.0", props);
 }
 
 Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
 {
   Trigger_var trigger = _tools->button(g, c);
-  Warsaw::ToolKit::FrameSpec s1, s2;
-  s1.brightness(0.5); s1._d(Warsaw::ToolKit::inset);
-  s2.brightness(0.5); s2._d(Warsaw::ToolKit::outset);
-  Graphic_var frame = _tools->dynamic(g, 20., Warsaw::Controller::pressed, s1, s2, true, trigger);
+  Fresco::ToolKit::FrameSpec s1, s2;
+  s1.brightness(0.5); s1._d(Fresco::ToolKit::inset);
+  s2.brightness(0.5); s2._d(Fresco::ToolKit::outset);
+  Graphic_var frame = _tools->dynamic(g, 20., Fresco::Controller::pressed, s1, s2, true, trigger);
   trigger->body(frame);
   return trigger._retn();
 }
 
 Controller_ptr WidgetKit::toggle(Graphic_ptr g)
 {
-  Controller_var toggle = _tools->toggle(Warsaw::Graphic::_nil());
-  Warsaw::ToolKit::FrameSpec s1, s2;
+  Controller_var toggle = _tools->toggle(Fresco::Graphic::_nil());
+  Fresco::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::inset);
   s2.brightness(0.5); s2._d(ToolKit::outset);
-  Graphic_var frame = _tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  Graphic_var frame = _tools->dynamic(g, 20., Fresco::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   return toggle._retn();
 }
@@ -120,8 +120,8 @@ Graphic_ptr WidgetKit::gauge(BoundedValue_ptr value)
   activate(g);
   value->attach(Observer_var(g->_this()));
 
-  Warsaw::ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
+  Fresco::ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
 
   Graphic_var frame = _tools->frame(Graphic_var(g->_this()), 20., spec, false);
   return frame._retn();
@@ -129,12 +129,12 @@ Graphic_ptr WidgetKit::gauge(BoundedValue_ptr value)
 
 Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
 {
-  Warsaw::ToolKit::FrameSpec spec;
+  Fresco::ToolKit::FrameSpec spec;
   /*
    * the bar
    */
-  Warsaw::Graphic::Requirement fixed;
-  Warsaw::Graphic::Requirement flexible;
+  Fresco::Graphic::Requirement fixed;
+  Fresco::Graphic::Requirement flexible;
   flexible.defined = true;
   flexible.minimum = 2000.;
   flexible.natural = 2000.;
@@ -145,7 +145,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   fixed.natural = 120.;
   fixed.maximum = 120.;
   fixed.align = 0.;
-  Warsaw::Graphic::Requisition req;
+  Fresco::Graphic::Requisition req;
   if (axis == xaxis)
     {
       req.x = flexible;
@@ -168,8 +168,8 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    * the thumb
    */
   Graphic_var box = axis == xaxis ? _layout->hbox() : _layout->vbox();
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var quad = _layout->fixed_size(Warsaw::Graphic::_nil(), 80., 80.);
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
+  Graphic_var quad = _layout->fixed_size(Fresco::Graphic::_nil(), 80., 80.);
   box->append_graphic(Graphic_var(_tools->frame(quad, 20., spec, true)));
   box->append_graphic(Graphic_var(_tools->frame(quad, 20., spec, true)));
   Controller_var thumb = _tools->dragger(box, Command_var(slider->create_adjust_cmd()));
@@ -177,7 +177,7 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
   /*
    * now put it into an inset
    */
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::inset);
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::inset);
   Graphic_var inset = _tools->frame(Graphic_var(slider->_this()), 20., spec, false);
   Controller_var root = _tools->group(Graphic_var(_layout->align_axis(inset, axis == xaxis ? yaxis : xaxis, 1.0)));
   /*
@@ -191,13 +191,13 @@ Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 {
   Panner *panner = new Panner(x, y);
   activate(panner);
-  Warsaw::ToolKit::FrameSpec spec;
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var outset = _tools->frame(Warsaw::Graphic::_nil(), 20., spec, true);
+  Fresco::ToolKit::FrameSpec spec;
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
+  Graphic_var outset = _tools->frame(Fresco::Graphic::_nil(), 20., spec, true);
   Controller_var thumb = _tools->dragger(outset, Command_var(panner->create_adjust_cmd()));
   panner->init(thumb);
 
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::inset);
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::inset);
   Graphic_var fixed = _layout->fixed_size(Graphic_var(panner->_this()), 1000., 1000.);
   Graphic_var inset = _tools->frame(fixed, 20., spec, true);
   Controller_var root = _tools->group(inset);
@@ -210,12 +210,12 @@ Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 
 Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
 {
-  Warsaw::ToolKit::FrameSpec spec;
+  Fresco::ToolKit::FrameSpec spec;
   /*
    * the bar
    */
-  Warsaw::Graphic::Requirement fixed;
-  Warsaw::Graphic::Requirement flexible;
+  Fresco::Graphic::Requirement fixed;
+  Fresco::Graphic::Requirement flexible;
   flexible.defined = true;
   flexible.minimum = 0.;
   flexible.natural = 0.;
@@ -226,7 +226,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   fixed.natural = 120.;
   fixed.maximum = 120.;
   fixed.align = 0;
-  Warsaw::Graphic::Requisition req;
+  Fresco::Graphic::Requisition req;
   if (a == xaxis)
     {
       req.x = flexible;
@@ -247,30 +247,30 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   /*
    * the thumb
    */
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-  Graphic_var outset = _tools->frame(Warsaw::Graphic::_nil(), 20., spec, true);
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
+  Graphic_var outset = _tools->frame(Fresco::Graphic::_nil(), 20., spec, true);
   Controller_var thumb = _tools->dragger(outset, Command_var(scrollbar->create_adjust_cmd()));
   scrollbar->init(thumb);
   /*
    * the triangles
    */
-  Warsaw::ToolKit::FrameSpec in, out;
-  in.brightness(0.5); in._d(Warsaw::ToolKit::inset);
-  out.brightness(0.5); out._d(Warsaw::ToolKit::outset);
+  Fresco::ToolKit::FrameSpec in, out;
+  in.brightness(0.5); in._d(Fresco::ToolKit::inset);
+  out.brightness(0.5); out._d(Fresco::ToolKit::outset);
   CommandImpl *backward = new Backward(x);
   activate(backward);
   Controller_var lower = _tools->stepper(Graphic::_nil(), Command_var(backward->_this()));
   outset = _layout->fixed_size(Graphic_var(_tools->dynamic_triangle(Graphic::_nil(), 20.,
-								    Warsaw::Controller::pressed, in, out, true,
-								    a == xaxis ? Warsaw::ToolKit::left : Warsaw::ToolKit::up, lower)), 120., 120.);
+								    Fresco::Controller::pressed, in, out, true,
+								    a == xaxis ? Fresco::ToolKit::left : Fresco::ToolKit::up, lower)), 120., 120.);
   lower->body(outset);
 
   CommandImpl *forward = new Forward(x);
   activate(forward);
   Controller_var upper = _tools->stepper(Graphic::_nil(), Command_var(forward->_this()));
-  outset = _layout->fixed_size(Graphic_var(_tools->dynamic_triangle(Warsaw::Graphic::_nil(), 20.,
-								    Warsaw::Controller::pressed, in, out, true,
-								    a == xaxis ? Warsaw::ToolKit::right : Warsaw::ToolKit::down, upper)), 120., 120.);
+  outset = _layout->fixed_size(Graphic_var(_tools->dynamic_triangle(Fresco::Graphic::_nil(), 20.,
+								    Fresco::Controller::pressed, in, out, true,
+								    a == xaxis ? Fresco::ToolKit::right : Fresco::ToolKit::down, upper)), 120., 120.);
   upper->body(outset);
 
   Graphic_var box = a == xaxis ? _layout->hbox() : _layout->vbox();
@@ -280,7 +280,7 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   /*
    * now put it into an inset
    */
-  spec.brightness(0.5); spec._d(Warsaw::ToolKit::inset);
+  spec.brightness(0.5); spec._d(Fresco::ToolKit::inset);
   Graphic_var inset = _tools->frame(box, 20., spec, false);
   Controller_var root = _tools->group(inset);
   /*
@@ -338,9 +338,9 @@ Controller_ptr WidgetKit::terminal()
 //   /*
 //    * the thumb
 //    */
-//   Warsaw::ToolKit::FrameSpec spec;  
-//   spec.brightness(0.5); spec._d(Warsaw::ToolKit::outset);
-//   Graphic_var quad = _tools->frame(Graphic_var(_layout->fixed_size(Warsaw::Graphic::_nil(), 80., 80.)), 20., spec, true);
+//   Fresco::ToolKit::FrameSpec spec;  
+//   spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
+//   Graphic_var quad = _tools->frame(Graphic_var(_layout->fixed_size(Fresco::Graphic::_nil(), 80., 80.)), 20., spec, true);
 //   Controller_var thumb = _tools->dragger(quad, Command_var(splitter->create_adjust_cmd()));
 //   splitter->init(thumb, left, right);
 //   return splitter->_this();
@@ -352,13 +352,13 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
   Controller_var xscroller = scrollbar(viewport->adjustment(xaxis), xaxis);
   Controller_var yscroller = scrollbar(viewport->adjustment(yaxis), yaxis);
   Graphic_var hbox1 = _layout->hbox();
-  Warsaw::ToolKit::FrameSpec inset;
-  inset.brightness(0.5); inset._d(Warsaw::ToolKit::inset);
+  Fresco::ToolKit::FrameSpec inset;
+  inset.brightness(0.5); inset._d(Fresco::ToolKit::inset);
   hbox1->append_graphic(Graphic_var(_tools->frame(viewport, 20, inset, false)));
   hbox1->append_graphic(yscroller);
   Graphic_var hbox2 = _layout->hbox();
   hbox2->append_graphic(xscroller);
-  hbox2->append_graphic(Graphic_var(_layout->fixed_size(Warsaw::Graphic::_nil(), 160., 160.)));
+  hbox2->append_graphic(Graphic_var(_layout->fixed_size(Fresco::Graphic::_nil(), 160., 160.)));
   Graphic_var vbox = _layout->vbox();
   vbox->append_graphic(hbox1);
   vbox->append_graphic(hbox2);
@@ -373,5 +373,5 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "Motif::WidgetKit", "style", "Motif"};
-  return create_kit<Motif::WidgetKit> ("IDL:Warsaw/WidgetKit:1.0", properties, 4);
+  return create_kit<Motif::WidgetKit> ("IDL:fresco.org/Fresco/WidgetKit:1.0", properties, 4);
 }

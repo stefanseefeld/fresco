@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 2002 Nick Lewycky <nicholas@mxc.ca>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 2002 Nick Lewycky <nicholas@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,42 +21,42 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/Raster.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Console.hh>
-#include "Drawing/PostScript/PSDrawingKit.hh"
+#include "DrawingKit.hh"
 #include <strstream>
 #include <iostream>
 #include <fstream>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
-PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+PostScript::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),
     _os(new std::filebuf())
 {
   _os.precision(5);
 }
 
-PSDrawingKit::~PSDrawingKit()
+PostScript::DrawingKit::~DrawingKit()
 {
 }
 
-KitImpl *PSDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
+KitImpl *PostScript::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
 {
-  PSDrawingKit *kit = new PSDrawingKit(repo_id(), p);
+  DrawingKit *kit = new DrawingKit(repo_id(), p);
   kit->init();
   return kit;
 }
 
-void PSDrawingKit::start_traversal(Traversal_ptr traversal)
+void PostScript::DrawingKit::start_traversal(Traversal_ptr traversal)
 {
   _os.clear();
   static_cast<std::filebuf *>(_os.rdbuf())->open("berlin-output.ps", std::ios::out);
@@ -85,28 +85,28 @@ void PSDrawingKit::start_traversal(Traversal_ptr traversal)
   _os << std::endl;
 }
 
-void PSDrawingKit::finish_traversal()
+void PostScript::DrawingKit::finish_traversal()
 {
   _os << "%%EOF" << std::endl;
   static_cast<std::filebuf *>(_os.rdbuf())->close();
 }
 
-Warsaw::Unistring *PSDrawingKit::font_family() { return new Unistring(Unicode::to_CORBA(Babylon::String("Times Roman")));}
-Warsaw::Unistring *PSDrawingKit::font_subfamily() { return new Unistring();}
-Warsaw::Unistring *PSDrawingKit::font_fullname() { return new Unistring(Unicode::to_CORBA(Babylon::String("Times Roman")));}
-Warsaw::Unistring *PSDrawingKit::font_style() { return new Unistring(Unicode::to_CORBA(Babylon::String("Regular")));}
-Warsaw::DrawingKit::FontMetrics PSDrawingKit::font_metrics() { return Warsaw::DrawingKit::FontMetrics();}
-Warsaw::DrawingKit::GlyphMetrics PSDrawingKit::glyph_metrics(Warsaw::Unichar) { return Warsaw::DrawingKit::GlyphMetrics();}
-CORBA::Any *PSDrawingKit::get_font_attribute(const Warsaw::Unistring &) { return new CORBA::Any();}
+Fresco::Unistring *PostScript::DrawingKit::font_family() { return new Unistring(Unicode::to_CORBA(Babylon::String("Times Roman")));}
+Fresco::Unistring *PostScript::DrawingKit::font_subfamily() { return new Unistring();}
+Fresco::Unistring *PostScript::DrawingKit::font_fullname() { return new Unistring(Unicode::to_CORBA(Babylon::String("Times Roman")));}
+Fresco::Unistring *PostScript::DrawingKit::font_style() { return new Unistring(Unicode::to_CORBA(Babylon::String("Regular")));}
+Fresco::DrawingKit::FontMetrics PostScript::DrawingKit::font_metrics() { return Fresco::DrawingKit::FontMetrics();}
+Fresco::DrawingKit::GlyphMetrics PostScript::DrawingKit::glyph_metrics(Fresco::Unichar) { return Fresco::DrawingKit::GlyphMetrics();}
+CORBA::Any *PostScript::DrawingKit::get_font_attribute(const Fresco::Unistring &) { return new CORBA::Any();}
 
-void PSDrawingKit::set_transformation(Transform_ptr t)
+void PostScript::DrawingKit::set_transformation(Transform_ptr t)
 {
   if (CORBA::is_nil(t)) _tr->load_identity();
   else _tr = Transform::_duplicate(t);
   //set_clipping(_cl);
 }
 
-void PSDrawingKit::set_clipping(Region_ptr r)
+void PostScript::DrawingKit::set_clipping(Region_ptr r)
 {
 #if 0
   _os << "%set_clipping" << std::endl;
@@ -128,7 +128,7 @@ void PSDrawingKit::set_clipping(Region_ptr r)
 #endif
 }
 
-void PSDrawingKit::set_foreground(const Color &c)
+void PostScript::DrawingKit::set_foreground(const Color &c)
 {
   _fg = c;
   _os << "%set_foreground" << std::endl;
@@ -136,7 +136,7 @@ void PSDrawingKit::set_foreground(const Color &c)
   _os << std::endl;
 }
 
-void PSDrawingKit::set_lighting(const Color &c)
+void PostScript::DrawingKit::set_lighting(const Color &c)
 {
   _lt = c;
   _os << "%set_lighting" << std::endl;
@@ -144,12 +144,12 @@ void PSDrawingKit::set_lighting(const Color &c)
   _os << std::endl;
 }
 
-void PSDrawingKit::set_point_size(Coord s)
+void PostScript::DrawingKit::set_point_size(Coord s)
 {
   _ps = s;
 }
 
-void PSDrawingKit::set_line_width(Coord w)
+void PostScript::DrawingKit::set_line_width(Coord w)
 {
   _lw = w;
   _os << "%set_line_width" << std::endl;
@@ -157,28 +157,28 @@ void PSDrawingKit::set_line_width(Coord w)
   _os << std::endl;
 }
 
-void PSDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style)
+void PostScript::DrawingKit::set_line_endstyle(Fresco::DrawingKit::Endstyle style)
 {
   _es = style;
   switch (_es) {
-  case Warsaw::DrawingKit::butt:  _os << 0; break; //.< Butt
-  case Warsaw::DrawingKit::round: _os << 1; break; //.< Round
-  case Warsaw::DrawingKit::cap:   _os << 2; break; //.< Square
+  case Fresco::DrawingKit::butt:  _os << 0; break; //.< Butt
+  case Fresco::DrawingKit::round: _os << 1; break; //.< Round
+  case Fresco::DrawingKit::cap:   _os << 2; break; //.< Square
   }
   _os << " setlinecap" << std::endl;
   _os << std::endl;
 }
 
-void PSDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style)
+void PostScript::DrawingKit::set_surface_fillstyle(Fresco::DrawingKit::Fillstyle style)
 {
   _fs = style;
 }
 
-void PSDrawingKit::set_texture(Raster_ptr t)
+void PostScript::DrawingKit::set_texture(Raster_ptr t)
 {
 }
 
-void PSDrawingKit::draw_path(const Path &path)
+void PostScript::DrawingKit::draw_path(const Path &path)
 {
   _os << "%draw_path" << std::endl;
   _os << "newpath" << std::endl;
@@ -189,14 +189,14 @@ void PSDrawingKit::draw_path(const Path &path)
     vertex(v, " lineto");
   }
   _os << "closepath";
-  if (_fs == Warsaw::DrawingKit::solid)
+  if (_fs == Fresco::DrawingKit::solid)
     _os << " fill" << std::endl;
   else
     _os << " stroke" << std::endl;
   _os << std::endl;
 }
 
-void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
+void PostScript::DrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
   _os << "%draw_rectangle" << std::endl;
   _os << "newpath" << std::endl;
@@ -212,7 +212,7 @@ void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
   v.x = lower.x; v.y = lower.y; v.z = 0;
   vertex(v, " lineto");
   _os << "closepath";
-  if (_fs == Warsaw::DrawingKit::solid)
+  if (_fs == Fresco::DrawingKit::solid)
     _os << " fill" << std::endl;
   else
     _os << " stroke" << std::endl;
@@ -220,25 +220,25 @@ void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
  _os << std::endl;
 }
 
-inline void PSDrawingKit::vertex(const Vertex &x, char *c) {
+inline void PostScript::DrawingKit::vertex(const Vertex &x, char *c) {
   Vertex v = x;
   _tr->transform_vertex(v);
   _os << v.x*resolution(xaxis) << ' ' << v.y*resolution(yaxis) << c << std::endl;
 }
 
-void PSDrawingKit::draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord)
+void PostScript::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric, Fresco::Coord, Fresco::Coord)
 {
 }
 
-void PSDrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
+void PostScript::DrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 {
 }
 
-void PSDrawingKit::draw_image(Raster_ptr raster)
+void PostScript::DrawingKit::draw_image(Raster_ptr raster)
 {
   Raster_var r = Raster::_duplicate(raster);
   _os << "%draw_image" << std::endl;
-  Warsaw::Transform::Matrix matrix;
+  Fresco::Transform::Matrix matrix;
   _tr->store_matrix(matrix);
   Vertex o; _tr->transform_vertex(o);
   o.x *= (matrix[0][0]+matrix[1][0]) * resolution(xaxis);
@@ -269,23 +269,23 @@ void PSDrawingKit::draw_image(Raster_ptr raster)
   _os << std::endl;
 }
 
-void PSDrawingKit::set_font_size(CORBA::ULong s)
+void PostScript::DrawingKit::set_font_size(CORBA::ULong s)
 {
   _os << "%set_font_size" << std::endl;
   _os << s << " scalefont" << std::endl;
   _os << std::endl;
 }
 
-void PSDrawingKit::set_font_weight(CORBA::ULong w) {}
-void PSDrawingKit::set_font_family(const Unistring &f) {}
-void PSDrawingKit::set_font_subfamily(const Unistring &sf) {}
-void PSDrawingKit::set_font_fullname(const Unistring &fn) {}
-void PSDrawingKit::set_font_style(const Unistring &s) {}
-void PSDrawingKit::set_font_attribute(const NVPair & nvp) {}
-void PSDrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
-void PSDrawingKit::draw_text(const Unistring &us) {}
+void PostScript::DrawingKit::set_font_weight(CORBA::ULong w) {}
+void PostScript::DrawingKit::set_font_family(const Unistring &f) {}
+void PostScript::DrawingKit::set_font_subfamily(const Unistring &sf) {}
+void PostScript::DrawingKit::set_font_fullname(const Unistring &fn) {}
+void PostScript::DrawingKit::set_font_style(const Unistring &s) {}
+void PostScript::DrawingKit::set_font_attribute(const NVPair & nvp) {}
+void PostScript::DrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
+void PostScript::DrawingKit::draw_text(const Unistring &us) {}
 
-void PSDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req)
+void PostScript::DrawingKit::allocate_char(Unichar c, Graphic::Requisition &req)
 {
   int width = 10;
   int height = 20;
@@ -297,11 +297,11 @@ void PSDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req)
   req.y.align = 1.;
 }
 
-void PSDrawingKit::draw_char(Unichar c)
+void PostScript::DrawingKit::draw_char(Unichar c)
 {
   _os << "%draw_char" << std::endl;
   _os << "gsave" << std::endl;
-  Warsaw::Transform::Matrix matrix;
+  Fresco::Transform::Matrix matrix;
   _tr->store_matrix(matrix);
   _os << matrix[0][3]*resolution(xaxis) << " " << matrix[1][3]*resolution(yaxis) << " moveto" << std::endl;
   _os << "[ " << matrix[0][0] << " " << 0.-matrix[0][1] << " " << matrix[1][0] << " " << 0.-matrix[1][1] << " 0 0 ] concat" << std::endl;
@@ -313,10 +313,10 @@ void PSDrawingKit::draw_char(Unichar c)
   _os << std::endl;
 }
 
-void PSDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
+void PostScript::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
 
 extern "C" KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "PSDrawingKit"};
-  return create_kit<PSDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 2);
+  static std::string properties[] = {"implementation", "DrawingKit"};
+  return create_kit<PostScript::DrawingKit> ("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
 }

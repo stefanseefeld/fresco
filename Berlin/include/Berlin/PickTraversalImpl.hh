@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PickTraversalImpl_hh
-#define _PickTraversalImpl_hh
+#ifndef _Berlin_PickTraversalImpl_hh
+#define _Berlin_PickTraversalImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Controller.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/Transform.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Controller.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/Transform.hh>
 #include <Berlin/TraversalImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Vertex.hh>
@@ -45,37 +45,37 @@ class PositionalFocus;
 //. the 'hit()' method needs to be implemented as it adds a specific
 //. strategy for generating a memento. Derived classes may want to
 //. cache the memento to avoid frequent object activation
-class PickTraversalImpl : public virtual POA_Warsaw::PickTraversal,
+class PickTraversalImpl : public virtual POA_Fresco::PickTraversal,
                           public TraversalImpl
 {
-  typedef std::vector<Warsaw::Controller_var> cstack_t;
+  typedef std::vector<Fresco::Controller_var> cstack_t;
   typedef std::vector<size_t> pstack_t;
 public:
-  PickTraversalImpl(Warsaw::Graphic_ptr, Warsaw::Region_ptr, Warsaw::Transform_ptr, PositionalFocus *);
+  PickTraversalImpl(Fresco::Graphic_ptr, Fresco::Region_ptr, Fresco::Transform_ptr, PositionalFocus *);
   PickTraversalImpl(const PickTraversalImpl &);
   ~PickTraversalImpl();
   PickTraversalImpl &operator = (const PickTraversalImpl &);
-  virtual Warsaw::PickTraversal_ptr _this();
-  virtual Warsaw::Region_ptr current_allocation();
-  virtual Warsaw::Transform_ptr current_transformation();
-  virtual Warsaw::Graphic_ptr current_graphic();
-  virtual void traverse_child(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, Warsaw::Transform_ptr);
-  virtual void visit(Warsaw::Graphic_ptr);
-  virtual Warsaw::Traversal::order direction();
+  virtual Fresco::PickTraversal_ptr _this();
+  virtual Fresco::Region_ptr current_allocation();
+  virtual Fresco::Transform_ptr current_transformation();
+  virtual Fresco::Graphic_ptr current_graphic();
+  virtual void traverse_child(Fresco::Graphic_ptr, Fresco::Tag, Fresco::Region_ptr, Fresco::Transform_ptr);
+  virtual void visit(Fresco::Graphic_ptr);
+  virtual Fresco::Traversal::order direction();
   virtual CORBA::Boolean ok();
   virtual CORBA::Boolean intersects_allocation();
-//   virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr) = 0;
-  virtual void enter_controller(Warsaw::Controller_ptr);
+//   virtual CORBA::Boolean intersects_region(Fresco::Region_ptr) = 0;
+  virtual void enter_controller(Fresco::Controller_ptr);
   virtual void leave_controller();
   virtual void hit() = 0;
   virtual CORBA::Boolean picked() = 0;
-  virtual Warsaw::Focus_ptr get_focus();
+  virtual Fresco::Focus_ptr get_focus();
   virtual CORBA::Boolean forward();
   virtual CORBA::Boolean backward();
 
   void pop_controller();
-  Warsaw::Controller_ptr top_controller();
-  const std::vector<Warsaw::Controller_var> &controllers() const { return _controllers;}
+  Fresco::Controller_ptr top_controller();
+  const std::vector<Fresco::Controller_var> &controllers() const { return _controllers;}
   void reinit();
 protected:
   size_t current() const { return _cursor;}
@@ -84,7 +84,7 @@ private:
   pstack_t                   _positions;
   PositionalFocus           *_focus;
   size_t                     _cursor;
-  Warsaw::PickTraversal_var __this;
+  Fresco::PickTraversal_var __this;
 };
 
 //. remove one controller level from the top, it might have got out of scope
@@ -121,9 +121,9 @@ inline void PickTraversalImpl::reinit()
   _cursor = 0;
 }
 
-inline Warsaw::Controller_ptr PickTraversalImpl::top_controller()
+inline Fresco::Controller_ptr PickTraversalImpl::top_controller()
 {
-  return _controllers.size() ? Warsaw::Controller::_duplicate(_controllers.back()) : Warsaw::Controller::_nil();
+  return _controllers.size() ? Fresco::Controller::_duplicate(_controllers.back()) : Fresco::Controller::_nil();
 }
 
 #endif 

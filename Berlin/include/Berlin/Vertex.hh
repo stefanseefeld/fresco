@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,14 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Vertex_hh
-#define _Vertex_hh
+#ifndef _Berlin_Vertex_hh
+#define _Berlin_Vertex_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
 #include <iostream>
 
-inline Warsaw::Vertex &operator += (Warsaw::Vertex &p, const Warsaw::Vertex &q)
+inline Fresco::Vertex &operator += (Fresco::Vertex &p, const Fresco::Vertex &q)
 {
   p.x += q.x;
   p.y += q.y;
@@ -34,7 +34,7 @@ inline Warsaw::Vertex &operator += (Warsaw::Vertex &p, const Warsaw::Vertex &q)
   return p;
 }
 
-inline Warsaw::Vertex &operator -= (Warsaw::Vertex &p, const Warsaw::Vertex &q)
+inline Fresco::Vertex &operator -= (Fresco::Vertex &p, const Fresco::Vertex &q)
 {
   p.x -= q.x;
   p.y -= q.y;
@@ -42,22 +42,22 @@ inline Warsaw::Vertex &operator -= (Warsaw::Vertex &p, const Warsaw::Vertex &q)
   return p;
 }
 
-inline Warsaw::Vertex operator + (const Warsaw::Vertex &p, const Warsaw::Vertex &q)
+inline Fresco::Vertex operator + (const Fresco::Vertex &p, const Fresco::Vertex &q)
 {
-  Warsaw::Vertex r;
+  Fresco::Vertex r;
   r.x = p.x + q.x;
   r.y = p.y + q.y;
   r.z = p.z + q.z;
   return r;
 }
 
-inline Warsaw::Vertex operator - (const Warsaw::Vertex &p, const Warsaw::Vertex &q)
+inline Fresco::Vertex operator - (const Fresco::Vertex &p, const Fresco::Vertex &q)
 {
-  Warsaw::Vertex r;
+  Fresco::Vertex r;
   r.x = p.x - q.x;
   r.y = p.y - q.y;
   r.z = p.z - q.z;
   return r;
 }
 
-#endif /* _Vertex_hh */
+#endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,9 @@
 #ifndef _Motif_Gauge_hh
 #define _Motif_Gauge_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/View.hh>
-#include <Warsaw/BoundedValue.hh>
+#include <Fresco/config.hh>
+#include <Fresco/View.hh>
+#include <Fresco/BoundedValue.hh>
 #include <Berlin/ViewImpl.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/RefCountVar.hh>
@@ -36,16 +36,16 @@ class Gauge : public virtual ViewImpl,
 	      public GraphicImpl
 {
  public:
-  Gauge(Warsaw::BoundedValue_ptr v, const Warsaw::Color &c)
-    : value(RefCount_var<Warsaw::BoundedValue>::increment(v)), color(c), width(2000.), height(200.) {}
+  Gauge(Fresco::BoundedValue_ptr v, const Fresco::Color &c)
+    : value(RefCount_var<Fresco::BoundedValue>::increment(v)), color(c), width(2000.), height(200.) {}
   ~Gauge() {}
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void draw(Fresco::DrawTraversal_ptr);
   virtual void update(const CORBA::Any &);
 private:
-  RefCount_var<Warsaw::BoundedValue> value;
-  Warsaw::Color color;
-  Warsaw::Coord width, height;
+  RefCount_var<Fresco::BoundedValue> value;
+  Fresco::Color color;
+  Fresco::Coord width, height;
 };
 
 };

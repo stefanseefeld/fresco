@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,17 +19,18 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Layout/Deck.hh"
-#include "Layout/LayoutManager.hh"
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/Transform.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/Transform.hh>
+#include "Deck.hh"
+#include "LayoutManager.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 Deck::Deck() : _requested(false) {}
 Deck::~Deck() {}
 
-void Deck::request(Warsaw::Graphic::Requisition &r)
+void Deck::request(Fresco::Graphic::Requisition &r)
 {
   if (!_requested)
     {
@@ -37,7 +38,7 @@ void Deck::request(Warsaw::Graphic::Requisition &r)
       long n = _children.size();
       if (n > 0)
 	{
-	  Warsaw::Graphic::Requisition *r = children_requests();
+	  Fresco::Graphic::Requisition *r = children_requests();
 	  LayoutAlign x(xaxis);
 	  x.request(n, r, _requisition);
 	  LayoutAlign y(yaxis);
@@ -59,6 +60,6 @@ void Deck::traverse(Traversal_ptr t)
   size_t n = _children.size ();
   if (n == 0) return;
   try { t->traverse_child (_children [n-1].peer, _children [n-1].localId, Region::_nil(), Transform::_nil());}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [n-1].peer = Warsaw::Graphic::_nil();}
-  catch (const CORBA::COMM_FAILURE &) { _children [n-1].peer = Warsaw::Graphic::_nil();}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [n-1].peer = Fresco::Graphic::_nil();}
+  catch (const CORBA::COMM_FAILURE &) { _children [n-1].peer = Fresco::Graphic::_nil();}
 }

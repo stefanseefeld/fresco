@@ -1,7 +1,7 @@
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Tobias Hunger <Tobias@berlin-consortium.org>
-dnl http://www.berlin-consortium.org
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 2000 Tobias Hunger <Tobias@fresco.org>
+dnl http://www.fresco.org
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -19,46 +19,47 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_DIRECTFB_CHECK(mandatory-flag)
+dnl FRESCO_DIRECTFB_CHECK(mandatory-flag)
 dnl
 dnl Checks if directfb is found. If it is, $ac_cv_lib_directfb is set to "yes".
 
-AC_DEFUN([BERLIN_DIRECTFB_CHECK],[
+AC_DEFUN([FRESCO_DIRECTFB_CHECK],
+  [AC_ARG_WITH(directfb-prefix,
+	       AC_HELP_STRING([--with-directfb-prefix],[Prefix for DirectFb (console DirectFB)]),
+               [directfb_prefix="$withval"])
 
-	AC_ARG_WITH(directfb-prefix,
-		[  --with-directfb-prefix=PFX   Prefix for DirectFb (console DirectFB)],[
-		directfb_prefix="$withval"])
-
-	dnl Check for directFB includes
-	if test ".$directfb_prefix" != . ; then
-		DFB_CPPFLAGS="-I$directfb_prefix/include"
-	fi
-	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$DFB_CPPFLAGS $CPPFLAGS"
-	AC_CHECK_HEADER(directfb.h,:,no_directfb=yes)
-	CPPFLAGS="$save_CPPFLAGS"
-
-	dnl Check for directfb libs
-	if test ".$no_directfb" = . ; then
-
-		if test ".$directfb_prefix" != . ; then
-			DFB_LIBS="-L$directfb_prefix/lib"
-		fi
-
-		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$DFB_LIBS $LDFLAGS"
-		AC_CHECK_LIB(directfb, DirectFBCreate, :, no_directfb=yes)
-		LDFLAGS="$save_LDFLAGS"
-	fi
-
-	if test ".$no_directfb" != . ; then
-
-		ac_cv_directfb=no
-		dnl Abort or warn?
-		ifelse($1, mandatory, AC_MSG_ERROR(DirectFB was not found!))
-	else
-		ac_cv_lib_directfb=yes
-		DFB_LIBS="$DFB_LIBS -ldirectfb"
-	fi
-
-])
+   dnl Check for directFB includes
+   if test ".$directfb_prefix" != . ; then
+     DFB_CPPFLAGS="-I$directfb_prefix/include"
+   fi
+   save_CPPFLAGS="$CPPFLAGS"
+   CPPFLAGS="$DFB_CPPFLAGS $CPPFLAGS"
+   AC_CHECK_HEADER(directfb.h,:,no_directfb=yes)
+   CPPFLAGS="$save_CPPFLAGS"
+   
+   dnl Check for directfb libs
+   if test ".$no_directfb" = . ; then
+   
+     if test ".$directfb_prefix" != . ; then
+       DFB_LIBS="-L$directfb_prefix/lib"
+     fi
+   
+     save_LDFLAGS="$LDFLAGS"
+     LDFLAGS="$DFB_LIBS $LDFLAGS"
+     AC_CHECK_LIB(directfb, DirectFBCreate, :, no_directfb=yes)
+     LDFLAGS="$save_LDFLAGS"
+   fi
+   
+   if test ".$no_directfb" != . ; then
+   
+     ac_cv_directfb=no
+     dnl Abort or warn?
+     ifelse($1, mandatory, AC_MSG_ERROR(DirectFB was not found!))
+   else
+     ac_cv_lib_directfb=yes
+     DFB_LIBS="$DFB_LIBS -ldirectfb"
+     AC_SUBST(HAVE_DFB, 1)
+     AC_SUBST(DFB_CPPFLAGS)
+     AC_SUBST(DFB_LIBS)
+   fi
+  ])

@@ -1,8 +1,8 @@
 dnl $Id$
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -22,19 +22,17 @@ dnl MA 02139, USA.
 dnl TAO uses $ACE_ROOT and $TAO_ROOT, so let's just rely on it for now...
 dnl
 dnl Checks if TAO is found. If it
-dnl is, $berlin_cv_lib_TAO is set to "yes". Also, the
+dnl is, $fresco_cv_lib_TAO is set to "yes". Also, the
 dnl variables IDLCXX, ORB_LIBS
 dnl and ORB_CPPFLAGS are set, and necessary definitions are added.
 
-AC_DEFUN([BERLIN_LIB_TAO],[
+AC_DEFUN([FRESCO_LIB_TAO],[
 
 	AC_REQUIRE([AC_CANONICAL_SYSTEM])
 	AC_REQUIRE([AC_PROG_CC])
 	AC_REQUIRE([AC_PROG_CXX])
 	AC_REQUIRE([AC_PROG_CPP])
 	AC_REQUIRE([AC_PROG_CXXCPP])
-	AC_REQUIRE([BERLIN_LIB_SOCKET])
-dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 
 	use_tao=
 	if test ".$ACE_ROOT" = "." -a ".$TAO_ROOT" = "." ; then
@@ -58,10 +56,10 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 	dnl Check for TAO libraries
 	if test ".$no_tao" = "." ; then
 		ORB_LIBS="$ORB_LIBS -lACE"
-		BERLIN_CHECK_LIB(ORB_LIBS, TAO, [CORBA::ORB_var orb;],
+		FRESCO_CHECK_LIB(ORB_LIBS, TAO, [CORBA::ORB_var orb;],
 				tao/ORB.h)
-		if test ".$berlin_cv_lib_tao" = ".no" \
-			-a ".$berlin_cv_lib_tao" = ".no" ; then
+		if test ".$fresco_cv_lib_tao" = ".no" \
+			-a ".$fresco_cv_lib_tao" = ".no" ; then
 			no_tao="yes"
 		fi
 		LIBS="$ORB_LIBS $LIBS"
@@ -70,7 +68,7 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 dnl	CPPFLAGS="$save_CPPFLAGS"
 
 	if test ".$no_tao" = "." ; then
-		berlin_cv_lib_tao="yes"
+		fresco_cv_lib_tao="yes"
 	fi
 
 ])

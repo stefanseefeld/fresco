@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #ifndef _Transformer_hh
 #define _Transformer_hh
 
-#include <Warsaw/config.hh>
+#include <Fresco/config.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/Allocator.hh>
 #include <Berlin/ImplVar.hh>
@@ -33,10 +33,10 @@ class Transformer : public Allocator
  public:
   Transformer();
   virtual ~Transformer();
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual Warsaw::Transform_ptr transformation();
-  void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual Fresco::Transform_ptr transformation();
+  void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
  private:
   Impl_var<TransformImpl> transform;
 };
@@ -45,9 +45,9 @@ class BodyTransformer : public Transformer
 {
 public:
   BodyTransformer(Transformer*, unsigned d = 0);
-  BodyTransformer(Warsaw::Transform_ptr, unsigned d = 0);
-  virtual void body(Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr body();
+  BodyTransformer(Fresco::Transform_ptr, unsigned d = 0);
+  virtual void body(Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr body();
 protected:
   unsigned depth;
 };

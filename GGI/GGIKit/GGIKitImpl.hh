@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,8 @@
 #ifndef _GGIKitImpl_hh
 #define _GGIKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/GGIKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/GGIKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
@@ -31,10 +31,10 @@ class GGIKitImpl : public virtual POA_GGI::GGIKit,
 		   public KitImpl
 {
  public:
-  GGIKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  GGIKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~GGIKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new GGIKitImpl(repo_id(), p);}
-  virtual GGI::Visual_ptr create_visual(Warsaw::PixelCoord, Warsaw::PixelCoord);
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new GGIKitImpl(repo_id(), p);}
+  virtual GGI::Visual_ptr create_visual(Fresco::PixelCoord, Fresco::PixelCoord);
 };
 
 #endif

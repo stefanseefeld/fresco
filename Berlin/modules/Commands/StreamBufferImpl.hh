@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,13 +22,13 @@
 #ifndef _StreamBufferImpl_hh
 #define _StreamBufferImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/StreamBuffer.hh>
-#include <Berlin/SubjectImpl.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Fresco/config.hh>
+#include <Fresco/StreamBuffer.hh>
+#include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class StreamBufferImpl : public virtual POA_Warsaw::StreamBuffer,
+class StreamBufferImpl : public virtual POA_Fresco::StreamBuffer,
 			 public SubjectImpl
 {
  public:
@@ -36,8 +36,8 @@ class StreamBufferImpl : public virtual POA_Warsaw::StreamBuffer,
   virtual ~StreamBufferImpl() {}
   virtual CORBA::Long size();
   virtual CORBA::Long available();
-  virtual Warsaw::StreamBuffer::Data *read();
-  virtual void write(const Warsaw::StreamBuffer::Data &);
+  virtual Fresco::StreamBuffer::Data *read();
+  virtual void write(const Fresco::StreamBuffer::Data &);
   virtual void flush();
  private:
   size_t length;

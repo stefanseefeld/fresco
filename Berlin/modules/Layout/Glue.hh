@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,15 +27,15 @@
 class Glue : public GraphicImpl
 {
 public:
-  Glue(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
-  Glue(const Warsaw::Graphic::Requisition &);
+  Glue(Fresco::Axis, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Alignment);
+  Glue(const Fresco::Graphic::Requisition &);
   virtual ~Glue();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void request(Fresco::Graphic::Requisition &);
 
   virtual const char *object_name() { return "Layout/Glue";}
 private:
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,42 +19,44 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _LibArtUnifont_hh
-#define _LibArtUnifont_hh
+#ifndef _Unifont_hh
+#define _Unifont_hh
 
-#include <map>
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Graphic.hh>
 #include <Prague/Sys/MMap.hh>
-#include <Drawing/libArt/LibArtFont.hh>
-#include <Warsaw/Unicode.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Unicode.hh>
+#include "Font.hh"
+#include <map>
 
+namespace libArt
+{
 //. This is a default font, just in case -- a character cell bitmapped unicode
 //. font which is generated "on the fly" from the GNU unifont, which we're
 //. storing in a packed binary array we mmap() in. this is so that, even if all
 //. the font manufactureres in the world turn against us, we can still render
 //. multilingual text, albeit not quite as well as certain (ahem) proprietary
 //. text systems
-class LibArtUnifont : public LibArtFont
+class Unifont : public Font
 {
 public:
-  LibArtUnifont(double, double);
-  virtual ~LibArtUnifont();
+  Unifont(double, double);
+  virtual ~Unifont();
   virtual CORBA::ULong size();
   virtual void size(CORBA::ULong) {}
   virtual CORBA::ULong weight();
   virtual void weight(CORBA::ULong) {}
-  virtual Warsaw::Unistring *family();
-  virtual Warsaw::Unistring *subfamily();
-  virtual Warsaw::Unistring *fullname();
-  virtual Warsaw::Unistring *style();
-  virtual Warsaw::DrawingKit::FontMetrics metrics();
-  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &);
-  virtual void allocate_char(const Warsaw::Unichar, Warsaw::Graphic::Requisition &);
-  virtual void buffer(Warsaw::Unichar, ArtPixBuf *&);
+  virtual Fresco::Unistring *family();
+  virtual Fresco::Unistring *subfamily();
+  virtual Fresco::Unistring *fullname();
+  virtual Fresco::Unistring *style();
+  virtual Fresco::DrawingKit::FontMetrics metrics();
+  virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar &);
+  virtual void allocate_char(const Fresco::Unichar, Fresco::Graphic::Requisition &);
+  virtual void buffer(Fresco::Unichar, ArtPixBuf *&);
 private:
-  void glyph_to_pixels(Warsaw::Unichar, unsigned char *);
+  void glyph_to_pixels(Fresco::Unichar, unsigned char *);
   double        _xres;
   double        _yres;  
   unsigned char _slab[16*16];
@@ -62,5 +64,7 @@ private:
 //   map<Unichar,ArtPixBuf *> cache;
   Prague::MMap *_glyphmap;
 };
+
+}
 
 #endif

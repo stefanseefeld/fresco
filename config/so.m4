@@ -1,7 +1,7 @@
 dnl $Id$
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl http://www.berlin-consortium.org/
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -19,10 +19,10 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_FLAG_SO
+dnl FRESCO_FLAG_SO
 dnl
 dnl Check for compiler and linker flags needed to make shared libraries
-AC_DEFUN([BERLIN_FLAG_SO],[
+AC_DEFUN([FRESCO_FLAG_SO],[
 
 	dnl TODO: Add checks to set the right flag for all compilers
 	SO_CXXFLAGS="-fPIC"

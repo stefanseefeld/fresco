@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,19 +25,19 @@
 #define _DrawingKitBase_hh
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/DrawingKit3D.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/DrawingKit3D.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/Raster.hh>
 /*
  * bitset is buggy. Sorry, try again later...
  */
 // #include <bitset>
 #include <stack>
 
-class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
+class DrawingKitBase : public virtual POA_Fresco::DrawingKit
 {
   enum gstate
     {
@@ -65,21 +65,21 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
     DrawState() : flags(0) {}
     // bitset<st_last> flags;
     unsigned long flags;
-    Warsaw::Transform_var saved_trafo;
-    Warsaw::Region_var saved_clip;
-    Warsaw::Color saved_fg_color;
-    Warsaw::Color saved_lt_color;
-    Warsaw::Coord saved_point_size;
-    Warsaw::Coord saved_line_width;
-    Warsaw::DrawingKit::Endstyle saved_line_end_style;
-    Warsaw::DrawingKit::Fillstyle saved_surface_fill_style;
-    Warsaw::Raster_var saved_texture;
+    Fresco::Transform_var saved_trafo;
+    Fresco::Region_var saved_clip;
+    Fresco::Color saved_fg_color;
+    Fresco::Color saved_lt_color;
+    Fresco::Coord saved_point_size;
+    Fresco::Coord saved_line_width;
+    Fresco::DrawingKit::Endstyle saved_line_end_style;
+    Fresco::DrawingKit::Fillstyle saved_surface_fill_style;
+    Fresco::Raster_var saved_texture;
     CORBA::ULong saved_font_size;
     CORBA::ULong saved_font_weight;
-    Warsaw::Unistring_var saved_font_family;
-    Warsaw::Unistring_var saved_font_subfamily;
-    Warsaw::Unistring_var saved_font_fullname;
-    Warsaw::Unistring_var saved_font_style;
+    Fresco::Unistring_var saved_font_family;
+    Fresco::Unistring_var saved_font_subfamily;
+    Fresco::Unistring_var saved_font_fullname;
+    Fresco::Unistring_var saved_font_style;
     // something here...
     // for holding NVPair saved_font_attr;
   };
@@ -96,63 +96,63 @@ public:
   //############### subclass signatures ##################
   //######################################################
 
-  virtual Warsaw::Transform_ptr transformation() = 0;
-  virtual void transformation(Warsaw::Transform_ptr);
-  virtual Warsaw::Region_ptr clipping() = 0;
-  virtual void clipping(Warsaw::Region_ptr);
-  virtual Warsaw::Color foreground() = 0;
-  virtual void foreground(const Warsaw::Color &);
-  virtual Warsaw::Color lighting() = 0;
-  virtual void lighting(const Warsaw::Color &);
-  virtual Warsaw::Coord point_size() = 0;
-  virtual void point_size(Warsaw::Coord);
-  virtual Warsaw::Coord line_width() = 0;
-  virtual void line_width(Warsaw::Coord);
-  virtual Warsaw::DrawingKit::Endstyle line_endstyle() = 0;
-  virtual void line_endstyle(Warsaw::DrawingKit::Endstyle);
-  virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() = 0;
-  virtual void surface_fillstyle(Warsaw::DrawingKit::Fillstyle);
-  virtual Warsaw::Raster_ptr texture() = 0;
-  virtual void texture(Warsaw::Raster_ptr);
+  virtual Fresco::Transform_ptr transformation() = 0;
+  virtual void transformation(Fresco::Transform_ptr);
+  virtual Fresco::Region_ptr clipping() = 0;
+  virtual void clipping(Fresco::Region_ptr);
+  virtual Fresco::Color foreground() = 0;
+  virtual void foreground(const Fresco::Color &);
+  virtual Fresco::Color lighting() = 0;
+  virtual void lighting(const Fresco::Color &);
+  virtual Fresco::Coord point_size() = 0;
+  virtual void point_size(Fresco::Coord);
+  virtual Fresco::Coord line_width() = 0;
+  virtual void line_width(Fresco::Coord);
+  virtual Fresco::DrawingKit::Endstyle line_endstyle() = 0;
+  virtual void line_endstyle(Fresco::DrawingKit::Endstyle);
+  virtual Fresco::DrawingKit::Fillstyle surface_fillstyle() = 0;
+  virtual void surface_fillstyle(Fresco::DrawingKit::Fillstyle);
+  virtual Fresco::Raster_ptr texture() = 0;
+  virtual void texture(Fresco::Raster_ptr);
 
   virtual CORBA::ULong font_size() = 0;
   virtual void font_size(CORBA::ULong);
   virtual CORBA::ULong font_weight() = 0;
   virtual void font_weight(CORBA::ULong);
-  virtual Warsaw::Unistring *font_family() = 0;
-  virtual void font_family(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *font_subfamily() = 0;
-  virtual void font_subfamily(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *font_fullname() = 0;
-  virtual void font_fullname(const Warsaw::Unistring &);
-  virtual Warsaw::Unistring *font_style() = 0;
-  virtual void font_style(const Warsaw::Unistring &);
-  virtual Warsaw::DrawingKit::FontMetrics font_metrics() = 0;
-  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar) = 0;
-  virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring &) = 0;
-  virtual void font_attribute(const Warsaw::NVPair &);
+  virtual Fresco::Unistring *font_family() = 0;
+  virtual void font_family(const Fresco::Unistring &);
+  virtual Fresco::Unistring *font_subfamily() = 0;
+  virtual void font_subfamily(const Fresco::Unistring &);
+  virtual Fresco::Unistring *font_fullname() = 0;
+  virtual void font_fullname(const Fresco::Unistring &);
+  virtual Fresco::Unistring *font_style() = 0;
+  virtual void font_style(const Fresco::Unistring &);
+  virtual Fresco::DrawingKit::FontMetrics font_metrics() = 0;
+  virtual Fresco::DrawingKit::GlyphMetrics glyph_metrics(Fresco::Unichar) = 0;
+  virtual CORBA::Any *get_font_attribute(const Fresco::Unistring &) = 0;
+  virtual void font_attribute(const Fresco::NVPair &);
 
   virtual void init() { }
   virtual void finish() { }
   virtual void flush() = 0;
 
-  virtual void set_transformation (Warsaw::Transform_ptr) = 0;
-  virtual void set_clipping(Warsaw::Region_ptr) = 0;
-  virtual void set_foreground(const Warsaw::Color &) = 0;
-  virtual void set_lighting(const Warsaw::Color &) = 0;
-  virtual void set_point_size(Warsaw::Coord) = 0;
-  virtual void set_line_width(Warsaw::Coord) = 0;
-  virtual void set_line_endstyle(Warsaw::DrawingKit::Endstyle) = 0;
-  virtual void set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle) = 0;
-  virtual void set_texture(Warsaw::Raster_ptr) = 0;
+  virtual void set_transformation (Fresco::Transform_ptr) = 0;
+  virtual void set_clipping(Fresco::Region_ptr) = 0;
+  virtual void set_foreground(const Fresco::Color &) = 0;
+  virtual void set_lighting(const Fresco::Color &) = 0;
+  virtual void set_point_size(Fresco::Coord) = 0;
+  virtual void set_line_width(Fresco::Coord) = 0;
+  virtual void set_line_endstyle(Fresco::DrawingKit::Endstyle) = 0;
+  virtual void set_surface_fillstyle(Fresco::DrawingKit::Fillstyle) = 0;
+  virtual void set_texture(Fresco::Raster_ptr) = 0;
 
   virtual void set_font_size(CORBA::ULong) = 0;
   virtual void set_font_weight(CORBA::ULong) = 0;
-  virtual void set_font_family(const Warsaw::Unistring &) = 0;
-  virtual void set_font_subfamily(const Warsaw::Unistring &) = 0;
-  virtual void set_font_fullname(const Warsaw::Unistring &) = 0;
-  virtual void set_font_style(const Warsaw::Unistring &) = 0;
-  virtual void set_font_attribute(const Warsaw::NVPair &) = 0;
+  virtual void set_font_family(const Fresco::Unistring &) = 0;
+  virtual void set_font_subfamily(const Fresco::Unistring &) = 0;
+  virtual void set_font_fullname(const Fresco::Unistring &) = 0;
+  virtual void set_font_style(const Fresco::Unistring &) = 0;
+  virtual void set_font_attribute(const Fresco::NVPair &) = 0;
 
 private:
   std::stack<DrawState> _states;
@@ -174,10 +174,10 @@ inline void DrawingKitBase::restore()
   if(prev.flags & (1 << st_texture))            set_texture(prev.saved_texture);
   if(prev.flags & (1 << st_font_size))          set_font_size(prev.saved_font_size);
   if(prev.flags & (1 << st_font_weight))        set_font_weight(prev.saved_font_weight);
-  if(prev.flags & (1 << st_font_family))        set_font_family((Warsaw::Unistring &)prev.saved_font_family);
-  if(prev.flags & (1 << st_font_subfamily))     set_font_subfamily((Warsaw::Unistring &)prev.saved_font_subfamily);
-  if(prev.flags & (1 << st_font_fullname))      set_font_fullname((Warsaw::Unistring &)prev.saved_font_fullname);
-  if(prev.flags & (1 << st_font_style))         set_font_style((Warsaw::Unistring &)prev.saved_font_style);
+  if(prev.flags & (1 << st_font_family))        set_font_family((Fresco::Unistring &)prev.saved_font_family);
+  if(prev.flags & (1 << st_font_subfamily))     set_font_subfamily((Fresco::Unistring &)prev.saved_font_subfamily);
+  if(prev.flags & (1 << st_font_fullname))      set_font_fullname((Fresco::Unistring &)prev.saved_font_fullname);
+  if(prev.flags & (1 << st_font_style))         set_font_style((Fresco::Unistring &)prev.saved_font_style);
     //    if(prev.flags[st_font_attr]) {
     //       for (unsigned long i = 0; i < prev.saved_font_attr.length())
     // 	     setFontAttr(prev.saved_font_attr[i]);
@@ -201,58 +201,58 @@ inline void DrawingKitBase::restore()
   st.flags |= (1 << st_## state); \
 }
 
-inline void DrawingKitBase::transformation(Warsaw::Transform_ptr t)
+inline void DrawingKitBase::transformation(Fresco::Transform_ptr t)
 {
   Prague::Trace trace("DrawingKitBase::transformation");
-  REMEMBER(trafo, Warsaw::Transform_var,transformation());
+  REMEMBER(trafo, Fresco::Transform_var,transformation());
   set_transformation(t);
 }
 
-inline void DrawingKitBase::clipping(Warsaw::Region_ptr c)
+inline void DrawingKitBase::clipping(Fresco::Region_ptr c)
 {
-  REMEMBER(clip, Warsaw::Region_var, clipping());
+  REMEMBER(clip, Fresco::Region_var, clipping());
   set_clipping(c);
 }
 
-inline void DrawingKitBase::foreground(const Warsaw::Color &c)
+inline void DrawingKitBase::foreground(const Fresco::Color &c)
 {
-  REMEMBER(fg_color, Warsaw::Color, foreground())
+  REMEMBER(fg_color, Fresco::Color, foreground())
   set_foreground(c);
 }
 
-inline void DrawingKitBase::lighting(const Warsaw::Color &c)
+inline void DrawingKitBase::lighting(const Fresco::Color &c)
 {
-  REMEMBER(lt_color, Warsaw::Color, lighting())
+  REMEMBER(lt_color, Fresco::Color, lighting())
   set_lighting(c);
 }
 
-inline void DrawingKitBase::point_size(Warsaw::Coord s)
+inline void DrawingKitBase::point_size(Fresco::Coord s)
 {
-  REMEMBER(point_size, Warsaw::Coord, point_size());
+  REMEMBER(point_size, Fresco::Coord, point_size());
   set_point_size(s);
 }
 
-inline void DrawingKitBase::line_width(Warsaw::Coord w)
+inline void DrawingKitBase::line_width(Fresco::Coord w)
 {
-  REMEMBER(line_width, Warsaw::Coord, line_width());
+  REMEMBER(line_width, Fresco::Coord, line_width());
   set_line_width(w);
 }
 
-inline void DrawingKitBase::line_endstyle(Warsaw::DrawingKit::Endstyle s)
+inline void DrawingKitBase::line_endstyle(Fresco::DrawingKit::Endstyle s)
 {
-  REMEMBER(line_end_style, Warsaw::DrawingKit::Endstyle, line_endstyle());
+  REMEMBER(line_end_style, Fresco::DrawingKit::Endstyle, line_endstyle());
   set_line_endstyle(s);
 }
 
-inline void DrawingKitBase::surface_fillstyle(Warsaw::DrawingKit::Fillstyle s)
+inline void DrawingKitBase::surface_fillstyle(Fresco::DrawingKit::Fillstyle s)
 {
-  REMEMBER(surface_fill_style, Warsaw::DrawingKit::Fillstyle, surface_fillstyle());
+  REMEMBER(surface_fill_style, Fresco::DrawingKit::Fillstyle, surface_fillstyle());
   set_surface_fillstyle(s);
 }
 
-inline void DrawingKitBase::texture(Warsaw::Raster_ptr t)
+inline void DrawingKitBase::texture(Fresco::Raster_ptr t)
 {
-  REMEMBER(texture, Warsaw::Raster_var, texture());
+  REMEMBER(texture, Fresco::Raster_var, texture());
   set_texture(t);
 }
 
@@ -272,31 +272,31 @@ inline void DrawingKitBase::font_weight(CORBA::ULong w)
   set_font_weight(w);
 }
 
-inline void DrawingKitBase::font_family(const Warsaw::Unistring &f)
+inline void DrawingKitBase::font_family(const Fresco::Unistring &f)
 {
-  REMEMBER(font_family, Warsaw::Unistring_var, font_family());
+  REMEMBER(font_family, Fresco::Unistring_var, font_family());
   set_font_family(f);
 }
 
-inline void DrawingKitBase::font_subfamily(const Warsaw::Unistring &f)
+inline void DrawingKitBase::font_subfamily(const Fresco::Unistring &f)
 {
-  REMEMBER(font_subfamily, Warsaw::Unistring_var, font_subfamily());
+  REMEMBER(font_subfamily, Fresco::Unistring_var, font_subfamily());
   set_font_subfamily(f);
 }
 
-inline void DrawingKitBase::font_fullname(const Warsaw::Unistring &f)
+inline void DrawingKitBase::font_fullname(const Fresco::Unistring &f)
 {
-  REMEMBER(font_fullname, Warsaw::Unistring_var, font_fullname());
+  REMEMBER(font_fullname, Fresco::Unistring_var, font_fullname());
   set_font_fullname(f);
 }
 
-inline void DrawingKitBase::font_style(const Warsaw::Unistring &s)
+inline void DrawingKitBase::font_style(const Fresco::Unistring &s)
 {
-  REMEMBER(font_style, Warsaw::Unistring_var, font_style());
+  REMEMBER(font_style, Fresco::Unistring_var, font_style());
   set_font_style(s);
 }
 
-inline void DrawingKitBase::font_attribute(const Warsaw::NVPair &nvp)
+inline void DrawingKitBase::font_attribute(const Fresco::NVPair &nvp)
 {
   // !FIXME! fill this in.. it's not _too_ hard
 }

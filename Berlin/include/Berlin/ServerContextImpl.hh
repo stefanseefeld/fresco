@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,8 +24,8 @@
 #define _ServerContextImpl_hh
 
 #include <Prague/Sys/Thread.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Server.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Server.hh>
 #include <Berlin/DefaultPOA.hh>
 #include <Berlin/KitImpl.hh>
 #include <multimap.h>
@@ -34,31 +34,31 @@ class ServerImpl;
 
 //. this is an encapsulated "entry point" which a client uses to manufacture
 //. new objects, look up singletons, look up the scene root, etc.
-class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
+class ServerContextImpl : public virtual POA_Fresco::ServerContext,
 			  public virtual PortableServer::RefCountServantBase,
 			  public DefaultPOA
 {
   typedef std::multimap<std::string, KitImpl *> klist_t;
  public:
-  ServerContextImpl(ServerImpl *, const CORBA::PolicyList &, Warsaw::ClientContext_ptr);
+  ServerContextImpl(ServerImpl *, const CORBA::PolicyList &, Fresco::ClientContext_ptr);
   ~ServerContextImpl();
   PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
 
-  Warsaw::ClientContext_ptr client();
-  Warsaw::Kit_ptr resolve(const char *, const Warsaw::Kit::PropertySeq &)
-    throw (Warsaw::SecurityException, Warsaw::CreationFailureException);
+  Fresco::ClientContext_ptr client();
+  Fresco::Kit_ptr resolve(const char *, const Fresco::Kit::PropertySeq &)
+    throw (Fresco::SecurityException, Fresco::CreationFailureException);
   void set_singleton(const char *, CORBA::Object_ptr) 
-    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
+    throw (Fresco::SecurityException, Fresco::SingletonFailureException);
   void remove_singleton(const char *) 
-    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
+    throw (Fresco::SecurityException, Fresco::SingletonFailureException);
   CORBA::Object_ptr get_singleton(const char *) 
-    throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
+    throw (Fresco::SecurityException, Fresco::SingletonFailureException);
   bool ping();
  private:
   static unsigned long      _counter;
   ServerImpl               *_server;
   CORBA::PolicyList         _policies;
-  Warsaw::ClientContext_var _client;
+  Fresco::ClientContext_var _client;
   klist_t                   _kits;
   Prague::Mutex             _mutex;
 };

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ScreenImpl_hh
-#define _ScreenImpl_hh
+#ifndef _Berlin_ScreenImpl_hh
+#define _Berlin_ScreenImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Screen.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Screen.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/ControllerImpl.hh>
@@ -32,7 +32,7 @@ class ScreenManager;
 class EventManager;
 class RegionImpl;
 
-class ScreenImpl : public virtual POA_Warsaw::Screen,
+class ScreenImpl : public virtual POA_Fresco::Screen,
                    public ControllerImpl
 {
 public:
@@ -42,23 +42,23 @@ public:
     //. Sets up the Event- and Screenmanager for this screen.
     void bind_managers(EventManager *, ScreenManager *);
     
-    virtual void pick(Warsaw::PickTraversal_ptr);
-    virtual void allocations(Warsaw::Allocation_ptr);
+    virtual void pick(Fresco::PickTraversal_ptr);
+    virtual void allocations(Fresco::Allocation_ptr);
     virtual void need_resize() { need_redraw();}
     
-    virtual Warsaw::Coord width();
-    virtual Warsaw::Coord height();
-    virtual void damage(Warsaw::Region_ptr);
+    virtual Fresco::Coord width();
+    virtual Fresco::Coord height();
+    virtual void damage(Fresco::Region_ptr);
     
-    virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-    virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr) { return true;}
-    virtual void lose_focus(Warsaw::Input::Device) {}
-    virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &) { return false;}
-    virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &) { return false;}
+    virtual CORBA::Boolean request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
+    virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr) { return true;}
+    virtual void lose_focus(Fresco::Input::Device) {}
+    virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &) { return false;}
+    virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &) { return false;}
     
-    Warsaw::Region_ptr allocation();
+    Fresco::Region_ptr allocation();
 protected:
-    Warsaw::Screen_ptr    __this;
+    Fresco::Screen_ptr    __this;
     EventManager          *_emanager;
     ScreenManager         *_smanager;
     Impl_var<RegionImpl>   _region;

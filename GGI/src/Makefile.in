@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,55 +21,58 @@
 
 SHELL		:= /bin/sh
 
-builddir	:= ../../..
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/src
+builddir	:= ..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
-include $(cdir)/Server/local.mk
-
-srcdir		:= $(top_srcdir)/src/Console/GGI
-hdir		:= $(top_srcdir)/include/Console/GGI
 
 # Compilation and linking flags.
-HAS_GGIMESA	:= @HAS_GGIMESA@
-CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @GGI_CPPFLAGS@)
-LIBS		+= -lBerlin @GGI_LIBS@
+HAVE_GGIMESA	:= @HAVE_GGIMESA@
 
-ifeq (,$(findstring $(action), GGI GGIGL))
-all:
-	$(MAKE) action='GGI'
-ifeq ($(HAS_GGIMESA), 1)
-	$(MAKE) action='GGIGL'
-endif
-endif
+SRC	:= Drawable.cc Extension.cc Pointer.cc Console.cc
+DEP	:= $(patsubst %.cc, %.d, $(SRC))
+OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-ifeq ($(action), GGI)
-SRC		:= Drawable.cc Extension.cc Pointer.cc Console.cc
+TARGET	:= ../lib/Fresco/Console/GGI.so
 
-MODULE		:= Console/GGI
-endif
+#ifeq ($(HAVE_GGIMESA), 1)
+TARGET	+= ../lib/Fresco/Console/GGIGL.so
 
-ifeq ($(action), GGIGL)
-CPPFLAGS	+= $(filter-out -I/usr/include, @GGIMESA_CPPFLAGS@)
-LIBS		+= @GGIMESA_LIBS@
+../lib/Fresco/Console/GGIGL.so: GGIGL.o
 
-SRC		:= GGIGL.cc
+#endif
 
-MODULE		:= Console/GGIGL
-endif
+all:	$(TARGET)
 
-vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Berlin/Console $(top_srcdir)/include/Console/GGI
+$(TARGET):	$(DEP) $(OBJ)
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
+install:
+		$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/Console
+		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/Console
 
+uninstall:
+		rm -f $(DESTDIR)$(libdir)/Fresco/Console/$(TARGET)
 
-ifneq (,$(findstring $(action), GGI GGIGL))
-include $(cdir)/Server/module.mk
-else
-clean:
-	@echo "Noting to clean up."
+clean:	
+		rm -f $(TARGET)
+		rm -f *.o *.d
 
 distclean:	clean
 		rm -f Makefile
 
 maintainer-clean: distclean
+
+%.d:	$(srcdir)/%.cc
+	@echo generating dependencies for $<
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+%.o:	$(srcdir)/%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+-include $(DEP)
 endif

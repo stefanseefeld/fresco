@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,20 +20,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Text/Composition.hh"
-#include "Text/Compositor.hh"
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Traversal.hh>
+#include <Prague/Sys/Thread.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Traversal.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Prague/Sys/Thread.hh>
-#include <Prague/Sys/Tracer.hh>
+#include "Composition.hh"
+#include "Compositor.hh"
 #include <algorithm>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 Composition::Composition(DrawingKit_ptr dk, Compositor *c)
   : canonicalDK(DrawingKit::_duplicate(dk)),
@@ -45,7 +46,7 @@ Composition::Composition(DrawingKit_ptr dk, Compositor *c)
 
 Composition::~Composition() {}
 
-void Composition::request(Warsaw::Graphic::Requisition &r)
+void Composition::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace("Composition::request");
   if (!requested)
@@ -55,7 +56,7 @@ void Composition::request(Warsaw::Graphic::Requisition &r)
       long n = num_children();
       if (n > 0)
 	{
-	  Warsaw::Graphic::Requisition *r = children_requests();
+	  Fresco::Graphic::Requisition *r = children_requests();
 	  compositor->request(n, r, canonicalDK, requisition);
 	  deallocate_requisitions(r);
 	}
@@ -143,8 +144,8 @@ void Composition::traverse(Traversal_ptr traversal)
 	   */
 	  tx->translate(origin);
 	  try { traversal->traverse_child (child, _children[i].localId, Region_var(result[i]->_this()), Transform_var(tx->_this()));}
-	  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Warsaw::Graphic::_nil();}
-	  catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Fresco::Graphic::_nil();}
+	  catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Fresco::Graphic::_nil ();}
 	}
       for (CORBA::Long i = 0; i != size; ++i) Provider<RegionImpl>::adopt(result[i]);
       delete [] result;
@@ -181,7 +182,7 @@ RegionImpl **Composition::children_allocations(Region_ptr allocation)
 {
   Trace trace("Composition::children_allocations");
   CORBA::Long children = num_children();
-  Warsaw::Graphic::Requisition *childrenRequisitions = children_requests();
+  Fresco::Graphic::Requisition *childrenRequisitions = children_requests();
     
   // cache integrated form of children requisitions
   if (!requested)

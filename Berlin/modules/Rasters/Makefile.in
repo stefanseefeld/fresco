@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,24 +21,15 @@
 
 SHELL		:= /bin/sh
 
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/modules/Images
 builddir	:= ../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
-include $(cdir)/Server/local.mk
-
-srcdir		:= $(top_srcdir)/src/Image
-hdir		:= $(top_srcdir)/include/Image
-
-# Compilation and linking flags.
-CPPFLAGS	+= -I$(hdir)
-
-LIBS		+= -lBerlin
 
 SRC		:= ImageKitImpl.cc
 
 MODULE		:= ImageKit
 
-vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Image
-
-include $(cdir)/Server/module.mk
+include $(cdir)/module.mk

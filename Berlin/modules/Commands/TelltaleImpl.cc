@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Command/TelltaleImpl.hh"
 #include <Prague/Sys/Tracer.hh>
+#include "TelltaleImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, CORBA::ULong m)
   : _mask(m), _constraint(c)
@@ -32,27 +32,27 @@ TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, CORBA::ULong m)
 TelltaleImpl::~TelltaleImpl()
 {}
 
-void TelltaleImpl::set(Warsaw::Telltale::Mask m)
+void TelltaleImpl::set(Fresco::Telltale::Mask m)
 {
   Trace trace("TelltaleImpl::set");
   if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
-void TelltaleImpl::clear(Warsaw::Telltale::Mask m)
+void TelltaleImpl::clear(Fresco::Telltale::Mask m)
 {
   Trace trace("TelltaleImpl::clear");
   if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
-CORBA::Boolean TelltaleImpl::test(Warsaw::Telltale::Mask m)
+CORBA::Boolean TelltaleImpl::test(Fresco::Telltale::Mask m)
 {
   Prague::Guard<Mutex> guard(_mutex);
   return (_mask & m) == m;
 }
 
-void TelltaleImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
+void TelltaleImpl::modify(Fresco::Telltale::Mask m, CORBA::Boolean on)
 {
   CORBA::ULong nf = on ? _mask | m : _mask & ~m;
   {
@@ -96,11 +96,11 @@ void TelltaleConstraintImpl::remove(Telltale_ptr t)
       }
 }
 
-ExclusiveChoice::ExclusiveChoice(Warsaw::Telltale::Mask m)
+ExclusiveChoice::ExclusiveChoice(Fresco::Telltale::Mask m)
   : _mask(m)
 {}
 
-void ExclusiveChoice::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
+void ExclusiveChoice::trymodify(Telltale_ptr t, Fresco::Telltale::Mask m, CORBA::Boolean b)
 {
   Prague::Guard<Mutex> guard(_mutex);
   if (b)
@@ -109,12 +109,12 @@ void ExclusiveChoice::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA:
   t->modify(m, b);
 }
 
-SelectionRequired::SelectionRequired(Warsaw::Telltale::Mask m)
+SelectionRequired::SelectionRequired(Fresco::Telltale::Mask m)
   : _mask(m)
 {
 }
 
-void SelectionRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
+void SelectionRequired::trymodify(Telltale_ptr t, Fresco::Telltale::Mask m, CORBA::Boolean b)
 {
   Prague::Guard<Mutex> guard(_mutex);
   size_t selected = 0;
@@ -124,11 +124,11 @@ void SelectionRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORB
   if (b || selected > 1) t->modify(m, b);
 }
 
-ExclusiveRequired::ExclusiveRequired(Warsaw::Telltale::Mask m)
+ExclusiveRequired::ExclusiveRequired(Fresco::Telltale::Mask m)
   : _mask(m)
 {}
 
-void ExclusiveRequired::trymodify(Telltale_ptr t, Warsaw::Telltale::Mask m, CORBA::Boolean b)
+void ExclusiveRequired::trymodify(Telltale_ptr t, Fresco::Telltale::Mask m, CORBA::Boolean b)
 {
   Prague::Guard<Mutex> guard(_mutex);
   if (b)

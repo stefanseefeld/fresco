@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,10 +23,10 @@
 #define _VisualImpl_hh
 
 #include <Prague/Sys/Thread.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/GGIKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/GGIKit.hh>
 #include <Berlin/ControllerImpl.hh>
-#include <Console/GGIDrawableFactory.hh>
+#include <Berlin/Console/GGIDrawableFactory.hh>
 extern "C"
 {
 #include <ggi/ggi-unix.h>
@@ -36,21 +36,21 @@ class VisualImpl : public virtual POA_GGI::Visual,
                    public ControllerImpl
 {
 public:
-  VisualImpl(Warsaw::PixelCoord, Warsaw::PixelCoord);
+  VisualImpl(Fresco::PixelCoord, Fresco::PixelCoord);
   virtual ~VisualImpl();
   virtual char *name();
   virtual char *mode();
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void extension(const Warsaw::Allocation::Info &info, Warsaw::Region_ptr region);
-  virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void extension(const Fresco::Allocation::Info &info, Fresco::Region_ptr region);
+  virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &);
 private:
   void forward_event(const ggi_event &);
   static GGIDrawableFactory *_factory;
-  Warsaw::PixelCoord         _width;
-  Warsaw::PixelCoord         _height;
-  Warsaw::Drawable_var       _drawable;
+  Fresco::PixelCoord         _width;
+  Fresco::PixelCoord         _height;
+  Fresco::Drawable_var       _drawable;
   int                        _shm;
   GGIDrawable               *_ggi;
   std::string                _mode;

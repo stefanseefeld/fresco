@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -20,14 +20,11 @@
 # MA 02139, USA.
 
 SHELL		:= /bin/sh
-VERSION		:= @VERSION@
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Prague
-builddir	:= ../..
-cdir		:= $(builddir)/config
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/src
+cdir		:= ../config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
 
 define makedep
 @echo generating dependencies for $(<F)
@@ -39,9 +36,14 @@ define compile
 $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 endef
 
-include $(cdir)/local.mk
+define parse
+@echo parsing $(@F)
+@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
+endef
 
-CPPFLAGS	+= @CPPFLAGS@
+include ../config/local.mk
+
+CPPFLAGS	+= @CPPFLAGS@ -I$(hdir)
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 LIBS		+= @LIBS@
@@ -53,63 +55,72 @@ IPC		:= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
 	  	   Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc TTYAgent.cc SocketAgent.cc
 Filter		:= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
 Network		:= protocol.cc echo.cc ftp.cc smtp.cc url.cc
-SAX		:= AttributeListImpl.cc ParserImpl.cc
 
 SRC		:= $(patsubst %, Sys/%, $(Sys))
 SRC		+= $(patsubst %, IPC/%, $(IPC))
 SRC		+= $(patsubst %, Filter/%, $(Filter))
 SRC		+= $(patsubst %, Network/%, $(Network))
-#SRC		+= $(patsubst %, SAX/%, $(SAX))
-HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/*/*.hh)) Prague/config.hh
+HDR		:=  Prague/config.hh
+HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Sys/*.hh))
+HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/IPC/*.hh))
+HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Filter/*.hh))
+HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Network/*.hh))
 DEP		:= $(patsubst %.cc, %.d, $(notdir $(SRC)))
 OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
+SYN		:= $(patsubst Prague/%.hh, %.syn, $(HDR))
 
-TARGET		:= $(ldir)/libPrague.so
-#EXPAT		:= $(ldir)/libexpat.so
+TARGET		:= ../lib/libPrague.so
 
-vpath %.hh  $(hdir)/Prague/Sys $(hdir)/Prague/IPC $(hdir)/Prague/Filter $(hdir)/Prague/Network # $(hdir)/Prague/SAX
+vpath %.hh  $(hdir)/Prague/Sys $(hdir)/Prague/IPC $(hdir)/Prague/Filter $(hdir)/Prague/Network
 
 .PHONY: clean distclean maintainer-clean dist install
 
 all:	$(TARGET)
 
-$(TARGET):	$(EXPAT) $(OBJ)
-		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
+$(TARGET):	$(OBJ)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) -lz
 
-$(EXPAT):
-		cd SAX/expat; $(MAKE);
+doc:	$(SYN)
+	@echo formatting $(@F)
+	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=PragueHTML -o $@ $(SYN)
+	touch $@
 
-install:
-#		$(INSTALL) -m 755 $(EXPAT) $(libdir)
-		$(INSTALL) -m 755 $(TARGET) $(libdir)
-		$(INSTALL) -d -m 755 $(includedir)/Prague/Sys
-		$(INSTALL) -d -m 755 $(includedir)/Prague/IPC
-		$(INSTALL) -d -m 755 $(includedir)/Prague/Filter
-		$(INSTALL) -d -m 755 $(includedir)/Prague/Network
-		headers='$(HDR)'; for header in $$headers; do \
-		  if test -f $(hdir)/$$header; then \
-		    echo "$(INSTALL) -m 644 $(hdir)/$$header $(includedir)/$$header"; \
-		    $(INSTALL) -m 644 $(hdir)/$$header $(includedir)/$$header; \
-		  else :; fi; \
-		done
-		$(INSTALL) -m 755 $(bdir)/Prague-config $(bindir)
+install:	all
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Sys
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/IPC
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Filter
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Network
+	@for header in $(HDR); do \
+	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
+	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
+	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	  else \
+	    echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+	  fi; \
+	done
+	$(INSTALL) -m 755 ../bin/Prague-config $(DESTDIR)$(bindir)
+
+uninstall:
+	rm -f $(DESTDIR)$(bindir)/Prague-config
+	rm -rf $(DESTDIR)$(includedir)/Prague
+	rm -f $(DESTDIR)$(libdir)/libPrague.so
 
 clean:	
-		rm -f $(TARGET)
-		rm -f *.o *.d
-#		cd SAX/expat; $(MAKE) clean;
-#		cd Examples; $(MAKE) clean;
+	rm -f $(TARGET)
+	rm -f *.o *.d
+#	cd Examples; $(MAKE) clean;
 
 distclean:	clean
-		rm -f Makefile $(hdir)/Prague/config.hh $(cdir)/Prague/subdirs.mk \
-			$(cdir)/Prague/config.log $(cdir)/Prague/config.status \
-			$(bdir)/Prague-config
-#		cd Examples; $(MAKE) distclean
+	rm -f Makefile $(hdir)/Prague/config.hh \
+		$(cdir)/config.log $(cdir)/config.status \
+		../bin/Prague-config
+#	cd Examples; $(MAKE) distclean
 
 maintainer-clean: distclean
-		rm -f $(top_srcdir)/config/Prague/configure $(top_srcdir)/config/Prague/config.hh.in \
-			$(top_srcdir)/config/Prague/aclocal.m4
+	rm -f $(top_srcdir)/configure $(top_srcdir)/config/config.hh.in \
+		$(top_srcdir)/config/aclocal.m4
 
 %.d:	$(srcdir)/Sys/%.cc $(hdir)/Prague/Sys/%.hh
 	$(makedep)
@@ -130,6 +141,15 @@ DataTypeManager.o:	$(srcdir)/Sys/DataTypeManager.cc
 	$(compile)
 %.o:	$(srcdir)/Network/%.cc
 	$(compile)
+
+Sys/%.syn:	$(hdir)/Prague/Sys/%.hh
+	$(parse)
+IPC/%.syn:	$(hdir)/Prague/IPC/%.hh
+	$(parse)
+Filter/%.syn:	$(hdir)/Prague/Filter/%.hh
+	$(parse)
+Network/%.syn:	$(hdir)/Prague/Network/%.hh
+	$(parse)
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,10 +21,10 @@
  */
 #include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/Tracer.hh>
-#include "Console/GGI/Drawable.hh"
+#include "Drawable.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 GGI::Drawable::Drawable(const char *display, PixelCoord w, PixelCoord h, PixelCoord d) // throw (exception)
   : _name(display ? display : "")
@@ -69,9 +69,9 @@ GGI::Drawable::~Drawable()
   ggiClose(_visual);
 }
 
-Warsaw::Drawable::PixelFormat GGI::Drawable::pixel_format()
+Fresco::Drawable::PixelFormat GGI::Drawable::pixel_format()
 {
-  Warsaw::Drawable::PixelFormat format;
+  Fresco::Drawable::PixelFormat format;
   const ggi_pixelformat *pf = ggiGetPixelFormat(_visual);
   format.depth       = pf->depth;
   format.size        = pf->size;
@@ -86,9 +86,9 @@ Warsaw::Drawable::PixelFormat GGI::Drawable::pixel_format()
   return format;
 }
 
-Warsaw::Drawable::BufferFormat GGI::Drawable::buffer_format()
+Fresco::Drawable::BufferFormat GGI::Drawable::buffer_format()
 {
-  Warsaw::Drawable::BufferFormat format;
+  Fresco::Drawable::BufferFormat format;
   format.skip_width = 0;
   format.width = width();
   format.skip_height = 0;
@@ -97,33 +97,33 @@ Warsaw::Drawable::BufferFormat GGI::Drawable::buffer_format()
   return format;
 }
 
-Warsaw::PixelCoord GGI::Drawable::width() const { return _mode.visible.x;}
-Warsaw::PixelCoord GGI::Drawable::height() const { return _mode.visible.y;}
-Warsaw::PixelCoord GGI::Drawable::vwidth() const { return _mode.virt.x;}
-Warsaw::PixelCoord GGI::Drawable::vheight() const { return _mode.virt.y;}
-Warsaw::Coord GGI::Drawable::resolution(Warsaw::Axis a) const
+Fresco::PixelCoord GGI::Drawable::width() const { return _mode.visible.x;}
+Fresco::PixelCoord GGI::Drawable::height() const { return _mode.visible.y;}
+Fresco::PixelCoord GGI::Drawable::vwidth() const { return _mode.virt.x;}
+Fresco::PixelCoord GGI::Drawable::vheight() const { return _mode.virt.y;}
+Fresco::Coord GGI::Drawable::resolution(Fresco::Axis a) const
 {
   /*
    * mode.size is in mm
    * our base unit is 0.1 mm...
    */
-  return a == Warsaw::xaxis ?
+  return a == Fresco::xaxis ?
     0.1 * _mode.visible.x / _mode.size.x :
     0.1 * _mode.visible.y / _mode.size.y;
 }
-Warsaw::Coord GGI::Drawable::dpi(Warsaw::Axis a) const { return resolution(a) * 254.0;}
-Warsaw::PixelCoord GGI::Drawable::row_length() const
+Fresco::Coord GGI::Drawable::dpi(Fresco::Axis a) const { return resolution(a) * 254.0;}
+Fresco::PixelCoord GGI::Drawable::row_length() const
 { return ggiDBGetBuffer(_visual, 0)->buffer.plb.stride;}
 
 void GGI::Drawable::flush() { ggiFlush(_visual);}
-void GGI::Drawable::flush(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
-			    Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+void GGI::Drawable::flush(Fresco::PixelCoord x, Fresco::PixelCoord y,
+			    Fresco::PixelCoord w, Fresco::PixelCoord h)
 { ggiFlushRegion(_visual, x, y, w, h);}
 
 void GGI::Drawable::init() {}
 void GGI::Drawable::finish() {}
 
-ggi_pixel GGI::Drawable::map(const Warsaw::Color &c) const
+ggi_pixel GGI::Drawable::map(const Fresco::Color &c) const
 {
   ggi_color c2;
   // GGI _appears_ to use 16 bit color + alpha throughout. *sigh*
@@ -135,31 +135,31 @@ ggi_pixel GGI::Drawable::map(const Warsaw::Color &c) const
   return ggiMapColor(_visual, &c2);
 }
 
-void GGI::Drawable::blit(Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+void GGI::Drawable::blit(Fresco::PixelCoord x1, Fresco::PixelCoord y1,
+			 Fresco::PixelCoord w, Fresco::PixelCoord h,
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   ggiCopyBox(_visual, x1, y1, w, h, x2, y2);
 }
 void GGI::Drawable::blit(const GGI::Drawable &d,
-			 Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+			 Fresco::PixelCoord x1, Fresco::PixelCoord y1,
+			 Fresco::PixelCoord w, Fresco::PixelCoord h,
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   ggiCrossBlit(d._visual, x1, y1, w, h, _visual, x2, y2);
 }
 void GGI::Drawable::blit(const ::Console::Drawable &d,
-			 Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+			 Fresco::PixelCoord x1, Fresco::PixelCoord y1,
+			 Fresco::PixelCoord w, Fresco::PixelCoord h,
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   const Drawable &drawable = dynamic_cast<const GGI::Drawable &>(d);
   ggiCrossBlit(drawable._visual, x1, y1, w, h, _visual, x2, y2);
 }
-void GGI::Drawable::blit(Warsaw::Drawable_ptr d,
-			 Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+void GGI::Drawable::blit(Fresco::Drawable_ptr d,
+			 Fresco::PixelCoord x1, Fresco::PixelCoord y1,
+			 Fresco::PixelCoord w, Fresco::PixelCoord h,
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   GGI::Drawable *servant = dynamic_cast<GGI::Drawable *>(::Console::instance()->reference_to_servant(d));
   if (servant) blit(*servant, x1, y1, w, h, x2, y2);

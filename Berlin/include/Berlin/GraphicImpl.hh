@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GraphicImpl_hh
-#define _GraphicImpl_hh
+#ifndef _Berlin_GraphicImpl_hh
+#define _Berlin_GraphicImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Graphic.hh>
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 #include <algorithm>
@@ -34,7 +34,7 @@
 class RegionImpl;
 class AllocationImpl;
 
-class GraphicImpl : public virtual POA_Warsaw::Graphic,
+class GraphicImpl : public virtual POA_Fresco::Graphic,
                     public virtual RefCountBaseImpl,
                     public virtual IdentifiableImpl
 {
@@ -45,66 +45,66 @@ class GraphicImpl : public virtual POA_Warsaw::Graphic,
   //. its parent.
   struct Edge
   {
-    Warsaw::Graphic_var peer;
-    Warsaw::Tag         peerId;
-    Warsaw::Tag         localId;
+    Fresco::Graphic_var peer;
+    Fresco::Tag         peerId;
+    Fresco::Tag         localId;
   };
   typedef std::vector<Edge> glist_t;
   struct localId_eq : public std::unary_function<Edge, bool>
     {
-      localId_eq(Warsaw::Tag t) : id(t) {}
+      localId_eq(Fresco::Tag t) : id(t) {}
       bool operator()(const Edge &e) const { return e.localId == id; }
-      Warsaw::Tag id;
+      Fresco::Tag id;
     };
  public:
-  static const Warsaw::Coord infinity = 10e6;
+  static const Fresco::Coord infinity = 10e6;
   GraphicImpl();
   virtual ~GraphicImpl();
   virtual void deactivate();
 
-  virtual Warsaw::Graphic_ptr body();
-  virtual void body(Warsaw::Graphic_ptr);
-  virtual void append_graphic(Warsaw::Graphic_ptr);
-  virtual void prepend_graphic(Warsaw::Graphic_ptr);
-  virtual void remove_graphic(Warsaw::Tag);
-  virtual void remove_child_graphic(Warsaw::Tag);
-  virtual Warsaw::Tag add_parent_graphic(Warsaw::Graphic_ptr, Warsaw::Tag);
-  virtual void remove_parent_graphic(Warsaw::Tag);
-  virtual Warsaw::GraphicIterator_ptr first_child_graphic();
-  virtual Warsaw::GraphicIterator_ptr last_child_graphic();
+  virtual Fresco::Graphic_ptr body();
+  virtual void body(Fresco::Graphic_ptr);
+  virtual void append_graphic(Fresco::Graphic_ptr);
+  virtual void prepend_graphic(Fresco::Graphic_ptr);
+  virtual void remove_graphic(Fresco::Tag);
+  virtual void remove_child_graphic(Fresco::Tag);
+  virtual Fresco::Tag add_parent_graphic(Fresco::Graphic_ptr, Fresco::Tag);
+  virtual void remove_parent_graphic(Fresco::Tag);
+  virtual Fresco::GraphicIterator_ptr first_child_graphic();
+  virtual Fresco::GraphicIterator_ptr last_child_graphic();
 
-  virtual Warsaw::Transform_ptr transformation();
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  virtual void shape(Warsaw::Region_ptr);
+  virtual Fresco::Transform_ptr transformation();
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  virtual void shape(Fresco::Region_ptr);
 
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
-  virtual void allocations(Warsaw::Allocation_ptr);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+  virtual void allocations(Fresco::Allocation_ptr);
   virtual void need_redraw();
-  virtual void need_redraw_region(Warsaw::Region_ptr);
+  virtual void need_redraw_region(Fresco::Region_ptr);
   virtual void need_resize();
 
-  static void init_requisition(Warsaw::Graphic::Requisition &);
-  static void default_requisition(Warsaw::Graphic::Requisition &);
-  static void require(Warsaw::Graphic::Requirement &, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  static void require_lead_trail(Warsaw::Graphic::Requirement &,
-				 Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  static Warsaw::Graphic::Requirement *requirement(Warsaw::Graphic::Requisition &, Warsaw::Axis);
-  static void default_extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  static void natural_allocation(Warsaw::Graphic_ptr, RegionImpl &);
-  static void transform_request(Warsaw::Graphic::Requisition &, Warsaw::Transform_ptr);
-  static Warsaw::Vertex transform_allocate(RegionImpl &, const Warsaw::Graphic::Requisition &, Warsaw::Transform_ptr);
+  static void init_requisition(Fresco::Graphic::Requisition &);
+  static void default_requisition(Fresco::Graphic::Requisition &);
+  static void require(Fresco::Graphic::Requirement &, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  static void require_lead_trail(Fresco::Graphic::Requirement &,
+				 Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  static Fresco::Graphic::Requirement *requirement(Fresco::Graphic::Requisition &, Fresco::Axis);
+  static void default_extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  static void natural_allocation(Fresco::Graphic_ptr, RegionImpl &);
+  static void transform_request(Fresco::Graphic::Requisition &, Fresco::Transform_ptr);
+  static Fresco::Vertex transform_allocate(RegionImpl &, const Fresco::Graphic::Requisition &, Fresco::Transform_ptr);
 private:
-  Warsaw::Tag unique_parent_id();
+  Fresco::Tag unique_parent_id();
   glist_t              _parents;
   Prague::Mutex        _mutex;
 };
 
-class GraphicIteratorImpl : public virtual POA_Warsaw::GraphicIterator,
+class GraphicIteratorImpl : public virtual POA_Fresco::GraphicIterator,
 		            public virtual ServantBase
 {
 public:

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,13 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PositionalFocus_hh
-#define _PositionalFocus_hh
+#ifndef _Berlin_PositionalFocus_hh
+#define _Berlin_PositionalFocus_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Controller.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Controller.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/Raster.hh>
 #include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/FocusImpl.hh>
@@ -40,10 +40,10 @@ class RasterImpl;
 
 class PositionalFocus : public FocusImpl
 {
-  typedef std::vector<Warsaw::Controller_var> cstack_t;
+  typedef std::vector<Fresco::Controller_var> cstack_t;
   class Traversal;
   struct PointerCacheTrait;
-  typedef ObjectCache<Warsaw::Raster_var, Console::Pointer, PointerCacheTrait> PointerCache;
+  typedef ObjectCache<Fresco::Raster_var, Console::Pointer, PointerCacheTrait> PointerCache;
   struct Resources
   {
     enum state { set_pointer = 0x1};
@@ -54,21 +54,21 @@ class PositionalFocus : public FocusImpl
   };
   typedef std::stack<Resources> rstack_t;
 public:
-  PositionalFocus(Warsaw::Input::Device, Warsaw::Graphic_ptr, Warsaw::Region_ptr);
+  PositionalFocus(Fresco::Input::Device, Fresco::Graphic_ptr, Fresco::Region_ptr);
   virtual ~PositionalFocus();
   virtual void grab();
   virtual void ungrab();
-  virtual void set_cursor(Warsaw::Raster_ptr);
-  virtual void add_filter(Warsaw::Input::Filter_ptr);
+  virtual void set_cursor(Fresco::Raster_ptr);
+  virtual void add_filter(Fresco::Input::Filter_ptr);
 
-  virtual bool request(Warsaw::Controller_ptr);
-  virtual void restore(Warsaw::Region_ptr);
-  virtual void damage(Warsaw::Region_ptr);
-  virtual void dispatch(Warsaw::Input::Event &);
+  virtual bool request(Fresco::Controller_ptr);
+  virtual void restore(Fresco::Region_ptr);
+  virtual void damage(Fresco::Region_ptr);
+  virtual void dispatch(Fresco::Input::Event &);
 protected:
   virtual void activate_composite();
 private:
-  Warsaw::Graphic_ptr _root;
+  Fresco::Graphic_ptr _root;
   RasterImpl         *_default_raster;
   PointerCache       *_pointers;
   Console::Pointer   *_pointer;

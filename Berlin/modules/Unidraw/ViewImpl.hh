@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,8 @@
 #ifndef _UViewImpl_hh
 #define _UViewImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/UnidrawKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/UnidrawKit.hh>
 #include <Berlin/ControllerImpl.hh>
 
 class UViewImpl : public virtual POA_Unidraw::View,
@@ -33,10 +33,10 @@ public:
   UViewImpl(Unidraw::Model_ptr);
   virtual ~UViewImpl();
   virtual Unidraw::Model_ptr subject();
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
+  virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
 private:
   Unidraw::Model_var _model;
 };

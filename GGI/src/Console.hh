@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,13 +19,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GGI_Console_hh
-#define _GGI_Console_hh
+#ifndef _Console_hh
+#define _Console_hh
 
 #include <Prague/Sys/Plugin.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Input.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Input.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/Console.hh>
 #include <vector>
@@ -47,25 +47,25 @@ class Console : public ::Console
 public:
   Console(int &, char **);
   virtual ~Console();
-  virtual Pointer *pointer(Warsaw::Raster_ptr);
+  virtual Pointer *pointer(Fresco::Raster_ptr);
   virtual Drawable *drawable();
-  virtual Drawable *create_drawable(Warsaw::PixelCoord, Warsaw::PixelCoord,
-				    Warsaw::PixelCoord);
-  Drawable *reference_to_servant(Warsaw::Drawable_ptr);
+  virtual Drawable *create_drawable(Fresco::PixelCoord, Fresco::PixelCoord,
+				    Fresco::PixelCoord);
+  Drawable *reference_to_servant(Fresco::Drawable_ptr);
 
   virtual void device_info(std::ostream &);
-  virtual Warsaw::Input::Event *next_event();
+  virtual Fresco::Input::Event *next_event();
   virtual void wakeup();
   virtual void activate_autoplay() { _autoplay = true;}
-  virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
-				Warsaw::Coord, Warsaw::Coord,
+  virtual void highlight_screen(Fresco::Coord, Fresco::Coord,
+				Fresco::Coord, Fresco::Coord,
 				double red = 1.0,
 				double green = 0.0,
 				double blue = 0.0);
   void add_drawable(Drawable *);
 private:
   virtual Console::Extension *create_extension(const std::string &);
-  Warsaw::Input::Event *synthesize(const ggi_event &);
+  Fresco::Input::Event *synthesize(const ggi_event &);
   /*
    * to be used for event notification
    */

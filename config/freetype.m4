@@ -1,7 +1,7 @@
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -18,19 +18,19 @@ dnl License along with this library; if not, write to the
 dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
-dnl AM_PATH_FREETYPE([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl FRESCO_FREETYPE_CHECK([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for Freetype2, and define FREETYPE_CXXFLAGS and FREETYPE_LIBS
 dnl
-AC_DEFUN(AM_PATH_FREETYPE,
+AC_DEFUN(FRESCO_FREETYPE_CHECK,
 [dnl 
 dnl Get the cflags and libraries from the freetype-config script
 dnl
-AC_ARG_WITH(freetype-prefix,[  --with-freetype-prefix=PFX   Prefix where freetype is installed (optional)],
+AC_ARG_WITH(freetype-prefix,AC_HELP_STRING([--with-freetype-prefix],[Prefix where freetype is installed (optional)]),
             freetype_prefix="$withval", freetype_prefix="")
-AC_ARG_WITH(freetype-exec-prefix,[  --with-freetype-exec-prefix=PFX Exec prefix where freetype is installed (optional)],
+AC_ARG_WITH(freetype-exec-prefix,AC_HELP_STRING([--with-freetype-exec-prefix],[Exec prefix where freetype is installed (optional)]),
             freetype_exec_prefix="$withval", freetype_exec_prefix="")
-AC_ARG_ENABLE(freetypetest, [  --disable-freetypetest       Do not try to compile and run a test freetype program],
-		    , enable_freetypetest=yes)
+AC_ARG_ENABLE(freetypetest,AC_HELP_STRING([--disable-freetypetest],[Do not try to compile and run a test freetype program]),
+	      , enable_freetypetest=yes)
 
   if test x$freetype_exec_prefix != x ; then
      freetype_args="$freetype_args --exec-prefix=$freetype_exec_prefix"
@@ -134,6 +134,7 @@ int main (int argc, char *argv[])
   fi
   if test "x$no_freetype" = x ; then
      AC_MSG_RESULT(yes)
+     AC_SUBST(HAVE_FREETYPE, 1)
      ifelse([$2], , :, [$2])     
   else
      AC_MSG_RESULT(no)
@@ -172,94 +173,10 @@ int main (int argc, char *argv[])
      fi
      FREETYPE_CPPFLAGS=""
      FREETYPE_LIBS=""
+     AC_SUBST(HAVE_FREETYPE, 0)
      ifelse([$3], , :, [$3])
   fi
   AC_SUBST(FREETYPE_CPPFLAGS)
   AC_SUBST(FREETYPE_LIBS)
   rm -f conf.freetypetest
-])
-
-dnl
-dnl BERLIN_LIB_FREETYPE
-dnl
-dnl Checks if FreeType is found.  If it is, $ac_cv_lib_freetype is
-dnl set to "yes".
-
-AC_DEFUN([BERLIN_LIB_FREETYPE],[
-
-	AC_ARG_WITH(freetype-prefix,
-		[  --with-freetype-prefix  Prefix for Freetype],[
-		freetype_prefix="$withval"])
-
-	dnl Check for Freetype includes.
-	if test ".$freetype_prefix" != . ; then
-		FREETYPE_CPPFLAGS=-I$freetype_prefix/include
-	fi
-	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$FREETYPE_CPPFLAGS $CPPFLAGS"
-	AC_CHECK_HEADER(freetype/freetype.h,,no_freetype=yes)
-	CPPFLAGS="$save_CPPFLAGS"
-
-	if test ".$no_freetype" = yes; then
-		if test ".$1" = .mandatory; then
-			AC_MSG_ERROR(Could not find freetype.h!)
-		fi
-	fi
-	
-	dnl Check for Freetype libs
-	if test x$no_freetype = x ; then
-		    
-		if test x$freetype_prefix != x ; then
-		        freetype_libs=-L$freetype_prefix/lib
-		fi
-		freetype_libs="$freetype_libs -lfreetype"
-
-		AC_CACHE_CHECK([for working Freetype environment],
-		ac_cv_lib_freetype, [
-		
-		save_LDFLAGS="$LDFLAGS"
-		save_CPPFLAGS="$CPPFLAGS"
-		save_LIBS="$LIBS"
-		LIBS="$LIBS $freetype_libs"
-		LDFLAGS="$LDFLAGS"
-		CPPFLAGS="$CPPFLAGS $FREETYPE_CPPFLAGS"
-		
-		dnl Check if everything works
-		AC_TRY_RUN([
-#include <freetype/freetype.h>
-#include <iostream>
-
-int main (int argc, char* argv[])
-{
-  FT_Library library;
-  if(FT_Init_FreeType(&library) != 0)
-    {
-      cerr << "Error: Could not initialize FreeType engine!" << endl;
-      return 1;
-    }
-  return 0;
-}
- 			    ], ac_cv_lib_freetype=yes,
- 			       ac_cv_lib_freetype=no,
- 			       ac_cv_lib_freetype=yes)
- 
- 		CPPFLAGS="$save_CPPFLAGS"
- 		LDFLAGS="$save_LDFLAGS"
- 		LIBS="$save_LIBS"
- 
- 		]) dnl End of AC_CACHE_CHECK
- 
-	fi
- 	
-	if test x$ac_cv_lib_freetype = xyes ; then
-	        FREETYPE_LIBS=$freetype_libs
-        else
-		if test ".$1" = .mandatory ; then
-			AC_MSG_ERROR(Could not find freetype library!)
-		fi
-	fi
- 	
-	AC_SUBST(FREETYPE_CPPFLAGS)
-	AC_SUBST(FREETYPE_LIBS)
-
 ])

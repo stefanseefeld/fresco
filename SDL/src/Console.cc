@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
  * Copyright (C) 2001 Philip Philonenko <philonenko@orgacom.ru> 
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,12 +28,12 @@
 #include <Berlin/RCManager.hh>
 #include <Berlin/Logger.hh>
 
-#include <Console/SDL/Console.hh>
-#include <Console/SDL/Extension.hh>
-#include <Console/SDL/Drawable.hh>
-#include <Console/SDL/Pointer.hh>
+#include "Console.hh"
+#include "Extension.hh"
+#include "Drawable.hh"
+#include "Pointer.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 namespace
 {
@@ -158,8 +158,8 @@ Console::Drawable *SDL::Console::drawable()
 }
 
 Console::Drawable *
-SDL::Console::create_drawable(Warsaw::PixelCoord w,
-			      Warsaw::PixelCoord h, Warsaw::PixelCoord d)
+SDL::Console::create_drawable(Fresco::PixelCoord w,
+			      Fresco::PixelCoord h, Fresco::PixelCoord d)
 {
   Prague::Trace trace("SDL::Console::create_drawable");
 
@@ -167,7 +167,7 @@ SDL::Console::create_drawable(Warsaw::PixelCoord w,
   return _drawables.back();
 }
 
-Console::Drawable *SDL::Console::reference_to_servant(Warsaw::Drawable_ptr drawable)
+Console::Drawable *SDL::Console::reference_to_servant(Fresco::Drawable_ptr drawable)
 {
   Prague::Trace trace("SDL::Console::reference_to_servant()");
   
@@ -327,8 +327,8 @@ Console::Extension * SDL::Console::create_extension(const std::string & id)
 
 
 
-void SDL::Console::highlight_screen(Warsaw::Coord lx, Warsaw::Coord ly,
-				    Warsaw::Coord ux, Warsaw::Coord uy,
+void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
+				    Fresco::Coord ux, Fresco::Coord uy,
 				    double red = 1.0,
 				    double green = 0.0,
 				    double blue = 0.0)

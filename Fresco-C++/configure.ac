@@ -1,9 +1,9 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -28,52 +28,60 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-AC_CONFIG_HEADER($builddir/include/Warsaw/config.hh:config/Warsaw/config.hh.in)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Fresco, 0.3.0, devel@fresco.org)
+AC_CONFIG_SRCDIR(../LICENSE)
+AC_CONFIG_HEADER(include/Fresco/config.hh:config/config.hh.in)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
-
-AC_HEADLINE(dnl
-Warsaw, The Berlin Protocol, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
 
 AC_PROG_MAKE_SET
+AC_PROG_INSTALL
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG_CPLUSPLUS
 
 dnl ------------------------------------------------------------------
+dnl General flags
+dnl ------------------------------------------------------------------
 
-BERLIN_LIB_ORB(mandatory)
+AC_ARG_ENABLE(complete-deps,
+              AC_HELP_STRING([--disable-complete-deps].[Use a faster, but less correct, dependency generator]),
+              [complete_deps_enabled="$enableval"],
+              [complete_deps_enabled=yes])
+
+DEPFLAGS=
+if test ".$complete_deps_enabled" = .yes ; then
+  AC_SUBST(DEPFLAGS,-M)
+else
+  AC_SUBST(DEPFLAGS,-MM)
+fi
+
+FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
+LIBS="$LIBS -lBabylon $Babylon_LIBS"
+
+FRESCO_FLAG_SO
+
+dnl ------------------------------------------------------------------
+dnl ORB
+dnl ------------------------------------------------------------------
+
+FRESCO_LIB_ORB(mandatory)
 MAKEFILE=
 if test ".$ORB" = .omniORB ; then
-	MAKEFILE="Makefile.omniorb.in"
+  MAKEFILE="Makefile.omniorb.in"
 elif test ".$ORB" = .TAO ; then
-	MAKEFILE="Makefile.tao.in"
+  MAKEFILE="Makefile.tao.in"
 fi
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
 
-mkdir -p $builddir/bin
-mkdir -p $builddir/lib
-mkdir -p $builddir/config/Warsaw
-mkdir -p $builddir/include/Warsaw
-mkdir -p $builddir/src/Warsaw
+AC_MSG_NOTICE([Output Substitution])
 
-AC_OUTPUT([
-	$builddir/bin/Warsaw-config:config/package-config.in
-	$builddir/config/Warsaw/subdirs.mk:config/Warsaw/subdirs.mk.in
-	$builddir/src/Warsaw/Makefile:config/Warsaw/$MAKEFILE
-],[
-	chmod +x $builddir/bin/Warsaw-config
-],[
-	builddir=$builddir
-])
+AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-config.in], [chmod +x bin/Fresco-config])
+AC_CONFIG_FILES([config/local.mk Makefile src/Makefile:config/$MAKEFILE])
+
+mkdir -p lib
+
+AC_OUTPUT

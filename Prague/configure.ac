@@ -1,9 +1,9 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
+dnl This source file is a part of the Fresco Project.
 dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -25,75 +25,78 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
-AC_PREREQ(2.12)
+AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-AC_CONFIG_HEADER($builddir/include/Prague/config.hh:config/Prague/config.hh.in)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Prague, 0.3.0, devel@fresco.org)
+AC_CONFIG_SRCDIR(../LICENSE)
+AC_CONFIG_HEADER(include/Prague/config.hh:config/config.hh.in)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
-
-AC_HEADLINE(dnl
-Prague, The Berlin Utility Library, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
 
 AC_PROG_MAKE_SET
+AC_PROG_INSTALL
 AC_LANG_CPLUSPLUS
+
 dnl ------------------------------------------------------------------
 dnl General flags
 dnl ------------------------------------------------------------------
-AC_ARG_ENABLE(tracer,
-        [  --enable-tracer        Compile with tracer support],[
-        if test ".$enableval" = ".yes"; then
-          AC_DEFINE(TRACER)
-        fi])
 
-AC_MSG_PART(platform specific system utilities)
+AC_ARG_ENABLE(complete-deps,
+              AC_HELP_STRING([--disable-complete-deps].[Use a faster, but less correct, dependency generator]),
+              [complete_deps_enabled="$enableval"],
+              [complete_deps_enabled=yes])
+
+DEPFLAGS=
+if test ".$complete_deps_enabled" = .yes ; then
+  AC_SUBST(DEPFLAGS,-M)
+else
+  AC_SUBST(DEPFLAGS,-MM)
+fi
+
+AC_ARG_ENABLE(tracer,
+              AC_HELP_STRING([--enable-tracer],[Compile with tracer support]),
+              [AC_DEFINE(TRACER)])
+
+AC_MSG_NOTICE([platform specific system utilities])
 AC_CHECK_FUNCS(strsignal)
 AC_CHECK_HEADERS(string.h)
 AC_NEED_DECLARATION(strsignal)
 AC_HEADER_SYS_WAIT
-AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), AC_MSG_ERROR(update your zlib, please))
+AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), [AC_MSG_ERROR([update your zlib, please])])
+
+FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Thread support
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Thread Implementation)
+
+AC_MSG_NOTICE([Thread Implementation])
 AC_THREAD_CHECK(mandatory)
 
 dnl ------------------------------------------------------------------
 dnl Plugin support
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Dynamic Loading Implementation)
 
+AC_MSG_NOTICE([Dynamic Loading Implementation])
 AC_CHECK_HEADERS(dlfcn.h dl.h)
 AC_CHECK_LIB(dl, dlopen)
 AC_CHECK_FUNCS(dlopen dlsym dlclose shl_load)
-AC_BEGIN_DECISION([plugin method])
-AC_IFALLYES(header:dlfcn.h func:dlopen func:dlsym func:dlclose,
-	AC_DECIDE(DLFCN, [use dlopen family of functions for plugins]))
-AC_IFALLYES(header:dl.h func:shl_load,
-	AC_DECIDE(DLAIX, [use AIX shm_load for plugins]))
-AC_END_DECISION
-if test ".$ac_decision" = ".DLFCN" ; then
-	AC_DEFINE(HAVE_DLFCN)
-else
-	AC_DEFINE(HAVE_DLAIX)
-fi
+
+AC_MSG_NOTICE([plugin method :])
+
+AC_IFALLYES([header:dlfcn.h func:dlopen func:dlsym func:dlclose],
+  [AC_DEFINE(HAVE_DLFCN) AC_MSG_RESULT([use dlopen family of functions for plugins])])
+AC_IFALLYES([header:dl.h func:shl_load],
+  [AC_DEFINE(HAVE_DLAIX) AC_MSG_RESULT([use AIX shm_load for plugins])])
 
 dnl ------------------------------------------------------------------
 dnl IPC support
 dnl ------------------------------------------------------------------
-AC_MSG_PART(IPC Implementation)
-BERLIN_LIB_SOCKET
+
+AC_MSG_NOTICE([IPC Implementation])
+FRESCO_LIB_SOCKET
 AC_CHECK_LIB(util, login, LIBS="$LIBS -lutil")
-AC_CHECK_HEADERS(pty.h sys/stropts.h)
-AC_CHECK_FUNCS(openpty _getpty)
+AC_CHECK_HEADERS([pty.h sys/stropts.h])
+AC_CHECK_FUNCS([openpty _getpty])
 
 dnl won't work without AC_CANONICAL_HOST
 dnl 
@@ -113,45 +116,21 @@ dnl complete disable
 no_dev_ptmx=1
 
 if test -z "$no_dev_ptmx" ; then
-	AC_CHECK_FILE("/dev/ptmx", [
-		AC_DEFINE_UNQUOTED(HAVE_DEV_PTMX)
-		have_dev_ptmx=1])
+  AC_CHECK_FILE("/dev/ptmx", [ AC_DEFINE_UNQUOTED(HAVE_DEV_PTMX) have_dev_ptmx=1])
 fi
-AC_CHECK_FILE("/dev/ptc", [
-	AC_DEFINE_UNQUOTED(HAVE_DEV_PTS_AND_PTC)
-	have_dev_ptc=1])
+AC_CHECK_FILE("/dev/ptc", [ AC_DEFINE_UNQUOTED(HAVE_DEV_PTS_AND_PTC) have_dev_ptc=1])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
 
-mkdir -p $builddir/bin
-mkdir -p $builddir/lib
-mkdir -p $builddir/config/Prague
-mkdir -p $builddir/include/Prague
-mkdir -p $builddir/src/Prague
-dnl mkdir -p $builddir/src/Prague/SAX/expat
-mkdir -p $builddir/src/Prague/Examples/Sys
-mkdir -p $builddir/src/Prague/Examples/Thread
-mkdir -p $builddir/src/Prague/Examples/IPC
-mkdir -p $builddir/src/Prague/Examples/Filter
-mkdir -p $builddir/src/Prague/Examples/Network
-mkdir -p $builddir/src/Prague/Examples/bin
+AC_MSG_NOTICE([Output Substitution])
 
-AC_OUTPUT([
-	$builddir/bin/Prague-config:config/package-config.in
-	$builddir/config/Prague/subdirs.mk:config/Prague/subdirs.mk.in
-	$builddir/src/Prague/Makefile:src/Prague/Makefile.in
-dnl $builddir/src/Prague/SAX/expat/Makefile:src/Prague/SAX/expat/Makefile.in
-	$builddir/src/Prague/Examples/Makefile:src/Prague/Examples/Makefile.in
-	$builddir/src/Prague/Examples/Sys/Makefile:src/Prague/Examples/Sys/Makefile.in
-	$builddir/src/Prague/Examples/Thread/Makefile:src/Prague/Examples/Thread/Makefile.in
-	$builddir/src/Prague/Examples/IPC/Makefile:src/Prague/Examples/IPC/Makefile.in
-	$builddir/src/Prague/Examples/Filter/Makefile:src/Prague/Examples/Filter/Makefile.in
-	$builddir/src/Prague/Examples/Network/Makefile:src/Prague/Examples/Network/Makefile.in
-],[
-	chmod +x $builddir/bin/Prague-config
-],[
-	builddir=$builddir
-])
+AC_CONFIG_FILES([bin/Prague-config:config/Prague-config.in], [chmod +x bin/Prague-config])
+AC_CONFIG_FILES([config/local.mk Makefile src/Makefile])
+AC_CONFIG_FILES([demo/Makefile demo/Sys/Makefile demo/Thread/Makefile demo/IPC/Makefile
+                 demo/Filter/Makefile demo/Network/Makefile])
+
+mkdir -p lib
+
+AC_OUTPUT

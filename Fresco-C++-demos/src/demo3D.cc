@@ -1,8 +1,8 @@
  /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,15 +20,15 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
 #include "Application.hh"
 #include "PrimitiveDemo.hh"
 #include "CubeDemo.hh"
 
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 bool running;
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
       
       ClientContextImpl *client = new ClientContextImpl("Demo3D");
       
-      Server_var s = resolve_name<Server>(context, "IDL:Warsaw/Server:1.0");
+      Server_var s = resolve_name<Server>(context, "IDL:Fresco/Server:1.0");
       ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
       
       Application *application = new Application(server, ClientContext_var(client->_this()));

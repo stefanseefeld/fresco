@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,8 @@
 #ifndef _FigureImpl_hh
 #define _FigureImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Figure.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Figure.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/GraphicImpl.hh>
 
@@ -36,25 +36,25 @@ class TransformFigure : public virtual POA_Figure::FigureBase,
  public:
   TransformFigure();
   ~TransformFigure();
-  virtual Warsaw::Transform_ptr transformation();
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual Fresco::Transform_ptr transformation();
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
   virtual void need_redraw();
   
   Figure::Mode type() { return _mode;}
   void type(Figure::Mode m) { _mode = m; need_redraw();}
-  Warsaw::Color foreground() { return _fg;}
-  void foreground(const Warsaw::Color &f) { _fg = f; need_redraw();}
-  Warsaw::Color background() { return _bg;}
-  void background(const Warsaw::Color &b) { _bg = b; need_redraw();}
+  Fresco::Color foreground() { return _fg;}
+  void foreground(const Fresco::Color &f) { _fg = f; need_redraw();}
+  Fresco::Color background() { return _bg;}
+  void background(const Fresco::Color &b) { _bg = b; need_redraw();}
 
   virtual void resize();
 
   void copy(const TransformFigure &);
  protected:
   Figure::Mode            _mode;
-  Warsaw::Color           _fg, _bg;
+  Fresco::Color           _fg, _bg;
   Impl_var<TransformImpl> _tx;
   Impl_var<RegionImpl>    _ext;
 };
@@ -65,17 +65,17 @@ public:
   FigureImpl();
   virtual ~FigureImpl();
 
-  void add_point(Warsaw::Coord, Warsaw::Coord);
+  void add_point(Fresco::Coord, Fresco::Coord);
   void reset();
   virtual void resize();
 
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 
   void copy(const FigureImpl &);
 protected:
-  Warsaw::Path_var _path;
+  Fresco::Path_var _path;
 };
 
 #endif

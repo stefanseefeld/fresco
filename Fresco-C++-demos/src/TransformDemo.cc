@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,10 +21,10 @@
  */
 
 #include "TransformDemo.hh"
-#include <Warsaw/Transform.hh>
-#include <Warsaw/Image.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/Image.hh>
 
-using namespace Warsaw;
+using namespace Fresco;
 
 TransformDemo::TransformDemo(Application *a)
   : Demo(a)

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,15 +23,15 @@
 #define _WindowImpl_hh
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Window.hh>
-#include <Warsaw/Desktop.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Window.hh>
+#include <Fresco/Desktop.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-class WindowImpl : public virtual POA_Warsaw::Window,
+class WindowImpl : public virtual POA_Fresco::Window,
 		   public ControllerImpl
 {
   class UnmappedStageHandle;
@@ -39,12 +39,12 @@ public:
   WindowImpl();
   virtual ~WindowImpl();
   virtual void need_resize();
-  virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  void insert(Warsaw::Desktop_ptr);
-  virtual Warsaw::Vertex position();
-  virtual void position(const Warsaw::Vertex &);
-  virtual Warsaw::Vertex size();
-  virtual void size(const Warsaw::Vertex &);
+  virtual CORBA::Boolean request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
+  void insert(Fresco::Desktop_ptr);
+  virtual Fresco::Vertex position();
+  virtual void position(const Fresco::Vertex &);
+  virtual Fresco::Vertex size();
+  virtual void size(const Fresco::Vertex &);
   virtual Layout::Stage::Index layer();
   virtual void layer(Layout::Stage::Index);
   virtual CORBA::Boolean mapped();
@@ -53,7 +53,7 @@ private:
   Layout::StageHandle_var             _handle;
   Impl_var<UnmappedStageHandle>       _unmapped;
   Prague::Mutex                       _mutex;
-  std::vector<Warsaw::Controller_var> _focus;
+  std::vector<Fresco::Controller_var> _focus;
 };
 
 #endif

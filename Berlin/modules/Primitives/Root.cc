@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/DrawingKit3D.hh>
-#include "Primitive/Root.hh"
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/DrawingKit3D.hh>
+#include "Root.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 Root::Root(Alignment xp, Alignment yp, Alignment zp,
 	   Alignment xc, Alignment yc, Alignment zc)
@@ -45,7 +45,7 @@ void Root::draw(DrawTraversal_ptr traversal)
   TransformAllocator::traverse(traversal);
 }
 
-void Root::pick(Warsaw::PickTraversal_ptr traversal)
+void Root::pick(Fresco::PickTraversal_ptr traversal)
 {
   TransformAllocator::traverse(traversal);
 }

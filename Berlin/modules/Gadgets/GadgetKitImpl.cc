@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,21 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Gadget/GadgetKitImpl.hh"
-#include <Warsaw/View.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/BoundedValue.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/resolve.hh>
+#include <Fresco/config.hh>
+#include <Fresco/View.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/BoundedValue.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/resolve.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ViewImpl.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
+#include "GadgetKitImpl.hh"
 #include <cmath>
 
-using namespace Warsaw;
+using namespace Fresco;
 
 // class AlphaAdjuster : public virtual POA_View, public MonoGraphic
 // {
@@ -197,16 +198,16 @@ class ZoomAdjuster : public virtual ViewImpl,
     }
 };
 
-GadgetKitImpl::GadgetKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+GadgetKitImpl::GadgetKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 GadgetKitImpl::~GadgetKitImpl() {}
 void GadgetKitImpl::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
-  Warsaw::Kit::PropertySeq props;
+  Fresco::Kit::PropertySeq props;
   props.length(0);
-  _command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
-  _figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
+  _command = resolve_kit<CommandKit>(context, "IDL:fresco.org/Fresco/CommandKit:1.0", props);
+  _figure = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
 }
 
 Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
@@ -263,5 +264,5 @@ Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "GadgetKitImpl"};
-  return create_kit<GadgetKitImpl>("IDL:Warsaw/GadgetKit:1.0", properties, 2);
+  return create_kit<GadgetKitImpl>("IDL:fresco.org/Fresco/GadgetKit:1.0", properties, 2);
 } 

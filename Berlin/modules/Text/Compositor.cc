@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -21,13 +21,14 @@
  * MA 02139, USA.
  */
 
-#include "Text/Compositor.hh"
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/GraphicImpl.hh>
-#include <Warsaw/DrawingKit.hh>
 #include <Berlin/Math.hh>
+#include "Compositor.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 void Compositor::set_span(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align)
 {
@@ -78,7 +79,7 @@ Coord Compositor::compute_squeeze(const Graphic::Requirement &r, Coord length)
 
 void LRCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_ptr, Graphic::Requisition &result)
 {
-  Warsaw::Graphic::Requirement *r;
+  Fresco::Graphic::Requirement *r;
   /*
    * tile horizontally
    */
@@ -136,8 +137,8 @@ void LRCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
 
 void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr, Region_ptr given, Allocations result)
 {
-  Warsaw::Graphic::Requirement* r;
-  Warsaw::Region::Allotment a;
+  Fresco::Graphic::Requirement* r;
+  Fresco::Region::Allotment a;
   /*
    * tile horizontally
    */
@@ -179,7 +180,7 @@ void LRCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_p
 
 void TBCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_ptr, Graphic::Requisition &result)
 {
-  Warsaw::Graphic::Requirement *r;
+  Fresco::Graphic::Requirement *r;
   /*
    * tile vertically
    */
@@ -237,8 +238,8 @@ void TBCompositor::request(long n, Graphic::Requisition *requests, DrawingKit_pt
 
 void TBCompositor::allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr, Region_ptr given, Allocations result)
 {
-  Warsaw::Graphic::Requirement* r;
-  Warsaw::Region::Allotment a;
+  Fresco::Graphic::Requirement* r;
+  Fresco::Region::Allotment a;
   /*
    * tile vertically
    */

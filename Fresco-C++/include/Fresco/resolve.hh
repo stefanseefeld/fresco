@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,8 @@
 #ifndef _resolve_hh
 #define _resolve_hh
 
-#include <Warsaw/Server.hh>
-#include <Warsaw/exception.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/exception.hh>
 #include <assert.h>
 
 template <class T>
@@ -126,7 +126,7 @@ inline void bind_name(CORBA::ORB_ptr orb, CORBA::Object_ptr object, const char *
 }
 
 template <class T>
-typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context, const char *name, const Warsaw::Kit::PropertySeq &props)
+typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context, const char *name, const Fresco::Kit::PropertySeq &props)
 {
   CORBA::Object_ptr object;
   try
@@ -157,9 +157,9 @@ typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context, const char 
 }
 
 template <class T>
-typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context, const char *name)
+typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context, const char *name)
 {
-  Warsaw::Kit::PropertySeq empty;
+  Fresco::Kit::PropertySeq empty;
   empty.length(0);
   return resolve_kit<T>(context, name, empty);
 }

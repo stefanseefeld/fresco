@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,26 +20,24 @@
  * MA 02139, USA.
  */
 
-#define DELTA 0.5
-
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Image.hh>
-#include <Warsaw/Window.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Image.hh>
+#include <Fresco/Window.hh>
 #include "Application.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 class Application::Mapper : public Application::CommandImpl
 {
 public:
-  Mapper(Application::list_t &d, Warsaw::Selection_ptr s) : demos(d), selection(Warsaw::Selection::_duplicate(s)) {}
+  Mapper(Application::list_t &d, Fresco::Selection_ptr s) : demos(d), selection(Fresco::Selection::_duplicate(s)) {}
   virtual void execute(const CORBA::Any &);
 private:
   Application::list_t &demos;
-  Warsaw::Selection_var selection;
+  Fresco::Selection_var selection;
 };
 
 void Application::CommandImpl::destroy()
@@ -70,16 +68,16 @@ class ExitCommand : public Application::CommandImpl
 Application::Application(ServerContext_ptr sc, ClientContext_ptr cc)
   : _server(ServerContext::_duplicate(sc)),
     _client(ClientContext::_duplicate(cc)),
-    _tk(resolve_kit<TextKit>(_server, "IDL:Warsaw/TextKit:1.0")),
-    _dk(resolve_kit<DesktopKit>(_server, "IDL:Warsaw/DesktopKit:1.0")),
-    _lk(resolve_kit<LayoutKit>(_server, "IDL:Warsaw/LayoutKit:1.0")),
-    _ttk(resolve_kit<ToolKit>(_server, "IDL:Warsaw/ToolKit:1.0")),
-    _wk(resolve_kit<WidgetKit>(_server, "IDL:Warsaw/WidgetKit:1.0")),
-    _fk(resolve_kit<FigureKit>(_server, "IDL:Warsaw/FigureKit:1.0")),
-    _ck(resolve_kit<CommandKit>(_server, "IDL:Warsaw/CommandKit:1.0")),
-    _ik(resolve_kit<ImageKit>(_server, "IDL:Warsaw/ImageKit:1.0")),
-    _gk(resolve_kit<GadgetKit>(_server, "IDL:Warsaw/GadgetKit:1.0")),
-    _pk(resolve_kit<PrimitiveKit>(_server, "IDL:Warsaw/PrimitiveKit:1.0")),
+    _tk(resolve_kit<TextKit>(_server, "IDL:Fresco/TextKit:1.0")),
+    _dk(resolve_kit<DesktopKit>(_server, "IDL:Fresco/DesktopKit:1.0")),
+    _lk(resolve_kit<LayoutKit>(_server, "IDL:Fresco/LayoutKit:1.0")),
+    _ttk(resolve_kit<ToolKit>(_server, "IDL:Fresco/ToolKit:1.0")),
+    _wk(resolve_kit<WidgetKit>(_server, "IDL:Fresco/WidgetKit:1.0")),
+    _fk(resolve_kit<FigureKit>(_server, "IDL:Fresco/FigureKit:1.0")),
+    _ck(resolve_kit<CommandKit>(_server, "IDL:Fresco/CommandKit:1.0")),
+    _ik(resolve_kit<ImageKit>(_server, "IDL:Fresco/ImageKit:1.0")),
+    _gk(resolve_kit<GadgetKit>(_server, "IDL:Fresco/GadgetKit:1.0")),
+    _pk(resolve_kit<PrimitiveKit>(_server, "IDL:Fresco/PrimitiveKit:1.0")),
     _vbox(_lk->vbox()),
     _choice(_wk->toggle_choice()),
     _mapper(new Mapper(_demos, Selection_var(_choice->state())))
@@ -115,7 +113,7 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   vb->append_graphic(hbox);
 
   ToolKit::FrameSpec spec;
-  spec.brightness(DELTA); spec._d(ToolKit::outset);
+  spec.brightness(0.5); spec._d(ToolKit::outset);
   Graphic_var decorator = _ttk->frame(vb, 10., spec, true);
   decorator = _gk->alpha(decorator, item.alpha);
   decorator = _gk->lighting(decorator, item.red, item.green, item.blue);
@@ -138,7 +136,7 @@ void Application::run()
 
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   ToolKit::FrameSpec spec;
-  spec.brightness(DELTA); spec._d(ToolKit::concav);
+  spec.brightness(0.5); spec._d(ToolKit::concav);
   _vbox->append_graphic(Graphic_var(_ttk->frame(_choice, 20., spec, false)));
   _vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   Graphic_var glyph1 = _tk->chunk(Unicode::to_CORBA(Babylon::String("run")));
@@ -265,7 +263,7 @@ Application::Item Application::make_item(const Babylon::String &name)
   vbox->append_graphic(Graphic_var(_lk->vspace(200.)));
   vbox->append_graphic(hbox);
   ToolKit::FrameSpec outset;
-  outset.brightness(DELTA); outset._d(ToolKit::outset);
+  outset.brightness(0.5); outset._d(ToolKit::outset);
   Controller_var root = _ttk->group(Graphic_var(_ttk->frame(Graphic_var(_lk->margin(vbox, 100.)), 10., outset, true)));
   Window_var window = _dk->transient(root);
   item.settings = _dk->map(window, true);

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,44 +21,44 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Server.hh>
-#include <Warsaw/ClientContext.hh>
-#include <Warsaw/Trigger.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/FigureKit.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/Unicode.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/ClientContext.hh>
+#include <Fresco/Trigger.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/FigureKit.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/Unicode.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/CommandImpl.hh>
 #include <Berlin/RefCountVar.hh>
-#include "Desktop/DesktopKitImpl.hh"
-#include "Desktop/WindowImpl.hh"
-#include "Desktop/Pulldown.hh"
-#include "Desktop/Manipulator.hh"
+#include "DesktopKitImpl.hh"
+#include "WindowImpl.hh"
+#include "Pulldown.hh"
+#include "Manipulator.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
-DesktopKitImpl::DesktopKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+DesktopKitImpl::DesktopKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 DesktopKitImpl::~DesktopKitImpl() {}
 void DesktopKitImpl::bind(ServerContext_ptr context)
 {
   Trace trace("DesktopKitImpl::bind");
   KitImpl::bind(context);
-  CORBA::Object_var object = context->get_singleton("IDL:Warsaw/Desktop:1.0");
+  CORBA::Object_var object = context->get_singleton("IDL:Fresco/Desktop:1.0");
   _desktop = Desktop::_narrow(object);
   _desktop->increment();
-  Warsaw::Kit::PropertySeq props;
+  Fresco::Kit::PropertySeq props;
   props.length(0);
-  _layout  = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
-  _tool    = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
-  _widget  = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
-  _text    = resolve_kit<TextKit>(context, "IDL:Warsaw/TextKit:1.0", props);
-  _command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
-  _image   = resolve_kit<ImageKit>(context, "IDL:Warsaw/ImageKit:1.0", props);
-  _figure  = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
+  _layout  = resolve_kit<LayoutKit>(context, "IDL:fresco.org/Fresco/LayoutKit:1.0", props);
+  _tool    = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
+  _widget  = resolve_kit<WidgetKit>(context, "IDL:fresco.org/Fresco/WidgetKit:1.0", props);
+  _text    = resolve_kit<TextKit>(context, "IDL:fresco.org/Fresco/TextKit:1.0", props);
+  _command = resolve_kit<CommandKit>(context, "IDL:fresco.org/Fresco/CommandKit:1.0", props);
+  _image   = resolve_kit<ImageKit>(context, "IDL:fresco.org/Fresco/ImageKit:1.0", props);
+  _figure  = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
 
   ClientContext_var client = context->client();
   _exit = client->exit();
@@ -66,11 +66,11 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
 
 Desktop_ptr DesktopKitImpl::desk()
 {
-  return RefCount_var<Warsaw::Desktop>::increment(_desktop);
+  return RefCount_var<Fresco::Desktop>::increment(_desktop);
 }
 
 
-Window_ptr DesktopKitImpl::shell(Controller_ptr g, Warsaw::ClientContext_ptr n)
+Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
 {
   Trace trace("DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
@@ -295,35 +295,35 @@ Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
   return wptr._retn();
 }
 
-Command_ptr DesktopKitImpl::move(Warsaw::Window_ptr window)
+Command_ptr DesktopKitImpl::move(Fresco::Window_ptr window)
 {
   Manipulator *manipulator = new Mover(window);
   activate(manipulator);
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::resize(Warsaw::Window_ptr window)
+Command_ptr DesktopKitImpl::resize(Fresco::Window_ptr window)
 {
   Manipulator *manipulator = new Resizer(window);
   activate(manipulator);
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::move_resize(Warsaw::Window_ptr window, Warsaw::Alignment x, Warsaw::Alignment y, CORBA::Short border)
+Command_ptr DesktopKitImpl::move_resize(Fresco::Window_ptr window, Fresco::Alignment x, Fresco::Alignment y, CORBA::Short border)
 {
   Manipulator *manipulator = new MoveResizer(window, _desktop, x, y, border);
   activate(manipulator);
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::relayer(Warsaw::Window_ptr window)
+Command_ptr DesktopKitImpl::relayer(Fresco::Window_ptr window)
 {
   Manipulator *manipulator = new Relayerer(window);
   activate(manipulator);
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::map(Warsaw::Window_ptr window, CORBA::Boolean flag)
+Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window, CORBA::Boolean flag)
 {
   Manipulator *manipulator;
   if (flag) manipulator = new Mapper(window);
@@ -332,7 +332,7 @@ Command_ptr DesktopKitImpl::map(Warsaw::Window_ptr window, CORBA::Boolean flag)
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::shader(Warsaw::Window_ptr window, Warsaw::Graphic_var to_shade)
+Command_ptr DesktopKitImpl::shader(Fresco::Window_ptr window, Fresco::Graphic_var to_shade)
 {
   Manipulator *manipulator;
   if (CORBA::is_nil(to_shade)) {
@@ -350,5 +350,5 @@ Command_ptr DesktopKitImpl::shader(Warsaw::Window_ptr window, Warsaw::Graphic_va
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "DesktopKitImpl"};
-  return create_kit<DesktopKitImpl> ("IDL:Warsaw/DesktopKit:1.0", properties, 2);
+  return create_kit<DesktopKitImpl> ("IDL:fresco.org/Fresco/DesktopKit:1.0", properties, 2);
 }

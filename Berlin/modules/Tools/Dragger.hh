@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,23 +22,23 @@
 #ifndef _Dragger_hh
 #define _Dragger_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Command.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Command.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
 class Dragger : public ControllerImpl
 {
 public:
-  Dragger(Warsaw::Command_ptr);
+  Dragger(Fresco::Command_ptr);
   virtual ~Dragger();
 //protected:
-  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void drag(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
 private:
-  Warsaw::Vertex offset;
-  Warsaw::Command_var command;
+  Fresco::Vertex      _offset;
+  Fresco::Command_var _command;
 };
 
 #endif

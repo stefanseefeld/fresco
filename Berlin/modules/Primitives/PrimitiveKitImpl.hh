@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,30 +23,30 @@
 #ifndef _PrimitiveKitImpl_hh
 #define _PrimitiveKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/PrimitiveKit.hh>
-#include <Warsaw/Primitive.hh>
+#include <Fresco/config.hh>
+#include <Fresco/PrimitiveKit.hh>
+#include <Fresco/Primitive.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
-class PrimitiveKitImpl : public virtual POA_Warsaw::PrimitiveKit,
+class PrimitiveKitImpl : public virtual POA_Fresco::PrimitiveKit,
 			 public KitImpl
 {
 public:
-  PrimitiveKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  PrimitiveKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~PrimitiveKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new PrimitiveKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new PrimitiveKitImpl(repo_id(), p);}
 
-  Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
-  Primitive::Geometry_ptr geometry(const Warsaw::Mesh &);
-  Warsaw::Graphic_ptr cube();
-  //Warsaw::Graphic_ptr sphere();
-  //Warsaw::Graphic_ptr tetrahedron();
-  Warsaw::Graphic_ptr transformer(Warsaw::Graphic_ptr);
+  Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
+  Primitive::Geometry_ptr geometry(const Fresco::Mesh &);
+  Fresco::Graphic_ptr cube();
+  //Fresco::Graphic_ptr sphere();
+  //Fresco::Graphic_ptr tetrahedron();
+  Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
 
-  Warsaw::Graphic_ptr directional_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);
-  Warsaw::Graphic_ptr point_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &);
-  Warsaw::Graphic_ptr spot_light(Warsaw::Graphic_ptr, const Warsaw::Color &, CORBA::Float, const Warsaw::Vertex &, const Warsaw::Vertex &,
+  Fresco::Graphic_ptr directional_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &);
+  Fresco::Graphic_ptr point_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &);
+  Fresco::Graphic_ptr spot_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &, const Fresco::Vertex &,
 				 CORBA::Float, CORBA::Float);
 };
 

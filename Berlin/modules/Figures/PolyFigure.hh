@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,8 @@
 #ifndef _PolyFigure_hh
 #define _PolyFigure_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Figure.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Figure.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/PolyGraphic.hh>
 
@@ -37,13 +37,13 @@ public:
     PolyFigure(const PolyFigure &);
     virtual ~PolyFigure();
 
-    virtual void request(Warsaw::Graphic::Requisition &);
-    virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-    virtual void traverse(Warsaw::Traversal_ptr);
-    virtual Warsaw::Transform_ptr transformation();
+    virtual void request(Fresco::Graphic::Requisition &);
+    virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+    virtual void traverse(Fresco::Traversal_ptr);
+    virtual Fresco::Transform_ptr transformation();
     virtual void need_redraw();
     virtual void need_resize();
-    virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+    virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 
     /*
      * shameless hack !!!: eventually these settings are dealt with
@@ -52,10 +52,10 @@ public:
      */
     Figure::Mode type() { return 0;}
     void type(Figure::Mode) {}
-    Warsaw::Color foreground() { return Warsaw::Color();}
-    void foreground(const Warsaw::Color &) {}
-    Warsaw::Color background() { return Warsaw::Color();}
-    void background(const Warsaw::Color &) {}
+    Fresco::Color foreground() { return Fresco::Color();}
+    void foreground(const Fresco::Color &) {}
+    Fresco::Color background() { return Fresco::Color();}
+    void background(const Fresco::Color &) {}
     virtual void resize() {}
 
 protected:
@@ -69,7 +69,7 @@ class UPolyFigure : public PolyFigure
 public:
   UPolyFigure() {}
   UPolyFigure(const UPolyFigure &);
-  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
 };
 
 #endif

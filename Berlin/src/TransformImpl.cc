@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Berlin/Logger.hh"
@@ -31,7 +31,7 @@ static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 /*
  * transformation matrices are of the form:
@@ -117,7 +117,7 @@ TransformImpl::TransformImpl(const TransformImpl &transform)
   load_matrix(transform._matrix);
 }
 
-TransformImpl::TransformImpl(Warsaw::Transform::Matrix matrix)
+TransformImpl::TransformImpl(Fresco::Transform::Matrix matrix)
   : _dirty(true),
     _identity(false),
     _translation(false),
@@ -200,13 +200,13 @@ void TransformImpl::copy(Transform_ptr transform)
   if (CORBA::is_nil(transform)) init();
   else
     {
-      Warsaw::Transform::Matrix matrix;
+      Fresco::Transform::Matrix matrix;
       transform->store_matrix(matrix);
       load_matrix(matrix);
     }
 }
 
-void TransformImpl::load_matrix(const Warsaw::Transform::Matrix matrix)
+void TransformImpl::load_matrix(const Fresco::Transform::Matrix matrix)
 {
   Trace trace("TransformImpl::load_matrix");
   assert(_active);
@@ -216,14 +216,14 @@ void TransformImpl::load_matrix(const Warsaw::Transform::Matrix matrix)
       _matrix[i][j] = matrix[i][j];
   _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0., _matrix[3][3] = 1.;
 #else
-  memcpy(&_matrix[0][0], &matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+  memcpy(&_matrix[0][0], &matrix[0][0], sizeof(Fresco::Transform::Matrix));
 #endif
   modified();
 }
 
 void TransformImpl::load_identity() { init();}
 
-void TransformImpl::store_matrix(Warsaw::Transform::Matrix matrix)
+void TransformImpl::store_matrix(Fresco::Transform::Matrix matrix)
 {
   Trace trace("TransformImpl::store_matrix");
   assert(_active);
@@ -232,7 +232,7 @@ void TransformImpl::store_matrix(Warsaw::Transform::Matrix matrix)
      for (short j = 0; j != 4; j++)
        matrix[i][j] = _matrix[i][j];
 #else
-  memcpy(&matrix[0][0], &_matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+  memcpy(&matrix[0][0], &_matrix[0][0], sizeof(Fresco::Transform::Matrix));
 #endif
 }
 
@@ -242,7 +242,7 @@ CORBA::Boolean TransformImpl::equal(Transform_ptr transform)
   if (_dirty) recompute();
   if (_identity) return CORBA::is_nil(transform) || transform->identity();
   if (CORBA::is_nil(transform) || transform->identity()) return false;
-  Warsaw::Transform::Matrix matrix;
+  Fresco::Transform::Matrix matrix;
   transform->store_matrix(matrix);
   return
     Math::equal(_matrix[0][0], matrix[0][0], tolerance) &&
@@ -300,7 +300,7 @@ void TransformImpl::rotate(double angle, Axis a)
   Coord r_angle = angle * radians_per_degree;
   Coord c = cos(r_angle);
   Coord s = sin(r_angle);
-  Warsaw::Transform::Matrix matrix;
+  Fresco::Transform::Matrix matrix;
   short i = 0, j = 1;
   if (a == xaxis) i = 2;
   else if (a == yaxis) j = 2;
@@ -336,7 +336,7 @@ void TransformImpl::premultiply(Transform_ptr transform)
   assert(_active);
   if (!CORBA::is_nil(transform) && !transform->identity())
     {
-      Warsaw::Transform::Matrix matrix;
+      Fresco::Transform::Matrix matrix;
       transform->store_matrix(matrix);
       if (identity()) load_matrix(matrix);
       else
@@ -360,7 +360,7 @@ void TransformImpl::postmultiply(Transform_ptr transform)
   assert(_active);
   if (!CORBA::is_nil(transform) && !transform->identity())
     {
-      Warsaw::Transform::Matrix matrix;
+      Fresco::Transform::Matrix matrix;
       transform->store_matrix(matrix);
       if (identity()) load_matrix(matrix);
       else
@@ -393,7 +393,7 @@ void TransformImpl::invert()
     {
       Coord d = det();
       if (Math::equal(d, 0., tolerance)) return;
-      Warsaw::Transform::Matrix matrix;
+      Fresco::Transform::Matrix matrix;
 
       matrix[0][0] = _matrix[0][0], matrix[0][1] = _matrix[0][1], matrix[0][2] = _matrix[0][2], matrix[0][3] = _matrix[0][3];
       matrix[1][0] = _matrix[1][0], matrix[1][1] = _matrix[1][1], matrix[1][2] = _matrix[1][2], matrix[1][3] = _matrix[1][3];
@@ -467,7 +467,7 @@ void TransformImpl::inverse_transform_vertex(Vertex &v)
 #endif
 }
 
-void TransformImpl::set_and_premult(TransformImpl* set, Warsaw::Transform_ptr mult)
+void TransformImpl::set_and_premult(TransformImpl* set, Fresco::Transform_ptr mult)
 {
   Trace trace("TransformImpl::set_and_premult");
   // operator =
@@ -478,14 +478,14 @@ void TransformImpl::set_and_premult(TransformImpl* set, Warsaw::Transform_ptr mu
   //       _matrix[i][j] = matrix[i][j];
   //   _matrix[3][0] = _matrix[3][1] = _matrix[3][2] = 0., _matrix[3][3] = 1.;
   //   modified();
-  memcpy(&_matrix[0][0], &set->_matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+  memcpy(&_matrix[0][0], &set->_matrix[0][0], sizeof(Fresco::Transform::Matrix));
   // if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   if (!CORBA::is_nil(mult) && !mult->identity())
     {
-      Warsaw::Transform::Matrix matrix;
+      Fresco::Transform::Matrix matrix;
       mult->store_matrix(matrix);
       if (set->identity())// load_matrix(matrix);
-	memcpy(&_matrix[0][0], &matrix[0][0], sizeof(Warsaw::Transform::Matrix));
+	memcpy(&_matrix[0][0], &matrix[0][0], sizeof(Fresco::Transform::Matrix));
       else
 	{
 	  for (unsigned short i = 0; i != 3; i++)

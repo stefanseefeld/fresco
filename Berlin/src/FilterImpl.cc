@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,7 @@
 
 #include "Berlin/FilterImpl.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 Accelerator::Accelerator(Input::Device d, const Input::Toggle &t, Input::Bitset b, Command_ptr c)
   : device(d), toggle(t), modifier(b), command(Command::_duplicate(c)) {}

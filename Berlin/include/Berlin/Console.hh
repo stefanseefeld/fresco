@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#ifndef _Console_hh
-#define _Console_hh
+#ifndef _Berlin_Console_hh
+#define _Berlin_Console_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Drawable.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Drawable.hh>
+#include <Fresco/Raster.hh>
 #include <Berlin/config.hh>
 #include <stdexcept>
 #include <iosfwd>
@@ -84,25 +84,25 @@ public:
   static Console *instance();
 
   //. Get a pointerobject to use on this Console.
-  virtual Pointer *pointer(Warsaw::Raster_ptr) = 0;
+  virtual Pointer *pointer(Fresco::Raster_ptr) = 0;
 
   //. Get the 'root-drawable' used by this Console. That's the chunk of video
   //. memory covering the whole screen.
   virtual Drawable *drawable() = 0;
   //. Creates a new Drawable of the given size (x, y) and depth.
-  virtual Drawable *create_drawable(Warsaw::PixelCoord, //.< Requested x size.
-				    Warsaw::PixelCoord, //.< Requested y size.
-				    Warsaw::PixelCoord) = 0; //.< Requested color depth.
+  virtual Drawable *create_drawable(Fresco::PixelCoord, //.< Requested x size.
+				    Fresco::PixelCoord, //.< Requested y size.
+				    Fresco::PixelCoord) = 0; //.< Requested color depth.
 
   //. Activates a given drawable: After activation it can recieve requests via CORBA.
-  Warsaw::Drawable_ptr activate_drawable(Drawable *);
+  Fresco::Drawable_ptr activate_drawable(Drawable *);
   //. FIXME: Missing documentation!
-  PortableServer::Servant reference_to_servant(Warsaw::Drawable_ptr);
+  PortableServer::Servant reference_to_servant(Fresco::Drawable_ptr);
 
   //. FIXME: Missing documentation!
   virtual void device_info(std::ostream &) = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::Input::Event *next_event() = 0;
+  virtual Fresco::Input::Event *next_event() = 0;
   //. FIXME: Missing documentation!
   virtual void wakeup() = 0;
   //. FIXME: Missing documentation!
@@ -111,8 +111,8 @@ public:
   //. You can set the color of the highlight by passing a
   //. red, green and blue betwenn 0.0 and 1.0. If
   //. you do not pass a color it defaults to red.
-  virtual void highlight_screen(Warsaw::Coord, Warsaw::Coord,
-				Warsaw::Coord, Warsaw::Coord,
+  virtual void highlight_screen(Fresco::Coord, Fresco::Coord,
+				Fresco::Coord, Fresco::Coord,
 				double red = 1.0,
 				double green = 0.0,
 				double blue = 0.0) = 0;
@@ -142,7 +142,7 @@ private:
 };
 
 //. This is a chunk of (video-) memory that is used to store raster data.
-class Console::Drawable : public virtual POA_Warsaw::Drawable,
+class Console::Drawable : public virtual POA_Fresco::Drawable,
 	                  public virtual PortableServer::RefCountServantBase
 {
 public:
@@ -156,29 +156,29 @@ public:
   virtual ~Drawable() {}
 
   //. FIXME: Missing documentation!
-  virtual Warsaw::Drawable::PixelFormat pixel_format() = 0;
+  virtual Fresco::Drawable::PixelFormat pixel_format() = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::Drawable::BufferFormat buffer_format() = 0;
+  virtual Fresco::Drawable::BufferFormat buffer_format() = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::PixelCoord width() const = 0;
+  virtual Fresco::PixelCoord width() const = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::PixelCoord height() const = 0;
+  virtual Fresco::PixelCoord height() const = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::PixelCoord vwidth() const = 0;
+  virtual Fresco::PixelCoord vwidth() const = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::PixelCoord vheight() const = 0;
+  virtual Fresco::PixelCoord vheight() const = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::Coord resolution(Warsaw::Axis) const = 0;
+  virtual Fresco::Coord resolution(Fresco::Axis) const = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::Coord dpi(Warsaw::Axis) const = 0;
+  virtual Fresco::Coord dpi(Fresco::Axis) const = 0;
   //. FIXME: Missing documentation!
-  virtual Warsaw::PixelCoord row_length() const = 0;
+  virtual Fresco::PixelCoord row_length() const = 0;
 
   //. FIXME: Missing documentation!
   virtual void flush() = 0;
   //. FIXME: Missing documentation!
-  virtual void flush(Warsaw::PixelCoord, Warsaw::PixelCoord,
-		     Warsaw::PixelCoord, Warsaw::PixelCoord) = 0;
+  virtual void flush(Fresco::PixelCoord, Fresco::PixelCoord,
+		     Fresco::PixelCoord, Fresco::PixelCoord) = 0;
 
   //. Called by the server when the scene is about to be drawn.
   //. This is a suitable place to add calls for building display
@@ -189,33 +189,33 @@ public:
 
   //. Copy part of this Drawable to a new location in the same Drawable.
   //. These locations may overlap.
-  virtual void blit(Warsaw::PixelCoord, //.< x position of one corner of the source area
-		    Warsaw::PixelCoord, //.< y position of one corner of the source area
-		    Warsaw::PixelCoord, //.< width of the source area
-		    Warsaw::PixelCoord, //.< height of the source area
-		    Warsaw::PixelCoord, //.< x position of correspnding corner of the
+  virtual void blit(Fresco::PixelCoord, //.< x position of one corner of the source area
+		    Fresco::PixelCoord, //.< y position of one corner of the source area
+		    Fresco::PixelCoord, //.< width of the source area
+		    Fresco::PixelCoord, //.< height of the source area
+		    Fresco::PixelCoord, //.< x position of correspnding corner of the
 		                        //.< destination area
-		    Warsaw::PixelCoord) = 0; //.< y position of correspnding corner
+		    Fresco::PixelCoord) = 0; //.< y position of correspnding corner
 		                             //.< of the destination area
   //. Copy parts of the given Drawable to the specified position in this Drawable.
   virtual void blit(const Drawable &,   //.< source Drawable
- 		    Warsaw::PixelCoord, //.< x position of one corner of the source area
-		    Warsaw::PixelCoord, //.< y position of one corner of the source area
-		    Warsaw::PixelCoord, //.< width of the source area
-		    Warsaw::PixelCoord, //.< height of the source area
-		    Warsaw::PixelCoord, //.< x position of correspnding corner of the
+ 		    Fresco::PixelCoord, //.< x position of one corner of the source area
+		    Fresco::PixelCoord, //.< y position of one corner of the source area
+		    Fresco::PixelCoord, //.< width of the source area
+		    Fresco::PixelCoord, //.< height of the source area
+		    Fresco::PixelCoord, //.< x position of correspnding corner of the
 		                        //.< destination area
-		    Warsaw::PixelCoord) = 0; //.< y position of correspnding corner
+		    Fresco::PixelCoord) = 0; //.< y position of correspnding corner
 		                             //.< of the destination area
   //. Copy parts of the given Drawable to the specified position in this Drawable
-  virtual void blit(Warsaw::Drawable_ptr, //.< source Drawable
-		    Warsaw::PixelCoord, //.< x position of one corner of the source area
-		    Warsaw::PixelCoord, //.< y position of one corner of the source area
-		    Warsaw::PixelCoord, //.< width of the source area
-		    Warsaw::PixelCoord, //.< height of the source area
-		    Warsaw::PixelCoord, //.< x position of correspnding corner of the
+  virtual void blit(Fresco::Drawable_ptr, //.< source Drawable
+		    Fresco::PixelCoord, //.< x position of one corner of the source area
+		    Fresco::PixelCoord, //.< y position of one corner of the source area
+		    Fresco::PixelCoord, //.< width of the source area
+		    Fresco::PixelCoord, //.< height of the source area
+		    Fresco::PixelCoord, //.< x position of correspnding corner of the
 		                        //.< destination area
-		    Warsaw::PixelCoord) = 0; //.< y position of correspnding corner
+		    Fresco::PixelCoord) = 0; //.< y position of correspnding corner
 		                             //.< of the destination area
 private:
   Drawable(const Drawable &);
@@ -229,9 +229,9 @@ public:
   virtual ~Pointer() {}
 
   //. return the raster associated with this pointer
-  virtual Warsaw::Raster_ptr raster() = 0;
+  virtual Fresco::Raster_ptr raster() = 0;
   //. Move the pointer to the given Pixelcoordinate.
-  virtual void move(Warsaw::Coord, Warsaw::Coord) = 0;
+  virtual void move(Fresco::Coord, Fresco::Coord) = 0;
   //. FIXME: Missing documentation!
   virtual void draw() = 0;
   //. FIXME: Missing documentation!
@@ -239,8 +239,8 @@ public:
   //. FIXME: Missing documentation!
   virtual void restore() = 0;
   //. FIXME: Missing documentation!
-  virtual bool intersects(Warsaw::Coord, Warsaw::Coord,
-			  Warsaw::Coord, Warsaw::Coord) = 0;
+  virtual bool intersects(Fresco::Coord, Fresco::Coord,
+			  Fresco::Coord, Fresco::Coord) = 0;
 };
 
 #endif

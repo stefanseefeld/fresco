@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,18 +20,18 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Subject.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Subject.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/Color.hh>
-#include "Tool/Triangle.hh"
-#include "Tool/Beveler.hh"
+#include "Triangle.hh"
+#include "Beveler.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 {

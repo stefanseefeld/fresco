@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,26 +20,26 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/IO.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
-#include "Figure/Transformer.hh"
-#include <Prague/Sys/Tracer.hh>
+#include "Transformer.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 Transformer::Transformer() : transform(new TransformImpl) {}
 Transformer::~Transformer() {}
 Transform_ptr Transformer::transformation() { return transform->_this();}
 
-void Transformer::request(Warsaw::Graphic::Requisition &requisition)
+void Transformer::request(Fresco::Graphic::Requisition &requisition)
 {
   Trace trace("Transformer::request");
   Allocator::request(requisition);
@@ -55,7 +55,7 @@ void Transformer::traverse(Traversal_ptr traversal)
     }
   else
     {
-      Warsaw::Graphic::Requisition r;
+      Fresco::Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
       Allocator::request(r);
       Graphic_var child = body();
@@ -66,8 +66,8 @@ void Transformer::traverse(Traversal_ptr traversal)
       Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
       tx->copy(Transform_var(transform->_this()));
       try { traversal->traverse_child (child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-      catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+      catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
     }
 }
 
@@ -80,7 +80,7 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
 	{
 	  Lease_var<RegionImpl> rr(Provider<RegionImpl>::provide());
 	  rr->copy(info.allocation);
-	  Warsaw::Graphic::Requisition r;
+	  Fresco::Graphic::Requisition r;
 	  GraphicImpl::init_requisition(r);
 	  Allocator::request(r);
 	  Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());

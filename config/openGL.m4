@@ -1,7 +1,7 @@
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -19,56 +19,40 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_LIB_MESA(mandatory-flag)
+dnl FRESCO_OPENGL_CHECK
 dnl
-dnl Checks if Mesa is found. If it is, $ac_cv_lib_Mesa is set to "yes".
+AC_DEFUN([FRESCO_OPENGL_CHECK],
+  [AC_ARG_WITH(opengl-prefix,
+	       AC_HELP_STRING([--with-opengl-prefix],[Prefix for openGL]),
+               [opengl_prefix="$withval"])
 
-AC_DEFUN([BERLIN_LIB_MESA],[
-
-	AC_ARG_WITH(mesa-prefix,
-		[  --with-mesa-prefix=PFX Prefix for Mesa],[
-		mesa_prefix="$withval"])
-
-	dnl Check for Mesa includes
-	if test x$mesa_prefix != x ; then
-		GL_CPPFLAGS=-I$mesa_prefix/include
-	fi
-	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GL_CFLAGS $CPPFLAGS"
-	AC_CHECK_HEADER(GL/gl.h,,no_gl=yes)
-	CPPFLAGS="$save_CPPFLAGS"
-
-	HAS_MESA=
-
-	dnl Check for Mesa libs
-	if test "x$no_gl" = x ; then
-
-		if test x$mesa_prefix != x ; then
-			GL_LIBS=-L$mesa_prefix/lib
-		fi
-		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$GL_LIBS $LDFLAGS"
-		AC_CHECK_LIB(GL, glLoadIdentity, :, no_gl=yes)
-		LDFLAGS="$save_LDFLAGS"
-	fi
-
-	if test "x$no_gl" = xyes ; then
-
-		HAS_MESA=0
-		ac_cv_lib_Mesa=no		
-		dnl Abort or warn?
-		if test ".$1" = .mandatory ; then
-			AC_MSG_ERROR(OpenGL library was not found!)
-		else
-			AC_MSG_WARN(OpenGL library was not found!)
-		fi
-	else
-		HAS_MESA=1
-		ac_cv_lib_Mesa=yes
-		GL_LIBS="$GL_LIBS -lGL -lGLU"
-	fi
-
-	AC_SUBST(GL_CPPFLAGS)
-	AC_SUBST(GL_LIBS)
-	AC_SUBST(HAS_MESA)
+   dnl Check for opengl includes
+   if test x$opengl_prefix != x ; then
+     GL_CPPFLAGS=-I$opengl_prefix/include
+   fi
+   save_CPPFLAGS="$CPPFLAGS"
+   CPPFLAGS="$GL_CFLAGS $CPPFLAGS"
+   AC_CHECK_HEADER(GL/gl.h,,no_gl=yes)
+   CPPFLAGS="$save_CPPFLAGS"
+   
+   dnl Check for opengl libs
+   if test "x$no_gl" = x ; then
+   
+     if test x$opengl_prefix != x ; then
+       GL_LIBS=-L$opengl_prefix/lib
+     fi
+     save_LDFLAGS="$LDFLAGS"
+     LDFLAGS="$GL_LIBS $LDFLAGS"
+     AC_CHECK_LIB(GL, glLoadIdentity, :, no_gl=yes)
+     LDFLAGS="$save_LDFLAGS"
+   fi
+   
+   if test "x$no_gl" = xyes ; then
+   
+     AC_SUBST(HAVE_GL, 0)
+   else
+     AC_SUBST(HAVE_GL, 1)
+     AC_SUBST(GL_CPPFLAGS, "$GL_CFLAGS")
+     AC_SUBST(GL_LIBS, "$GL_LIBS -lGL -lGLU")
+   fi
 ])

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,13 @@
  * MA 02139, USA.
  */
 
-#include "Desktop/WindowImpl.hh"
-#include <Berlin/Vertex.hh>
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/IO.hh>
+#include <Berlin/Vertex.hh>
+#include <Fresco/IO.hh>
+#include "WindowImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Layout;
 
 class WindowImpl::UnmappedStageHandle : public virtual POA_Layout::StageHandle,
@@ -41,7 +41,7 @@ public:
   UnmappedStageHandle(StageHandle_ptr);
   virtual ~UnmappedStageHandle();
   virtual Stage_ptr parent() { return Stage::_duplicate(_parent);}
-  virtual Graphic_ptr child() { return Warsaw::Graphic::_duplicate(_child);}
+  virtual Graphic_ptr child() { return Fresco::Graphic::_duplicate(_child);}
   virtual void remove() {}
   virtual Vertex position() { return _position;}
   virtual void position(const Vertex &pp) { _position = pp;}
@@ -64,7 +64,7 @@ WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par,
 						     const Vertex &ss,
 						     Stage::Index ll) :
   _parent(Stage::_duplicate(par)),
-  _child(Warsaw::Graphic::_duplicate(cc)),
+  _child(Fresco::Graphic::_duplicate(cc)),
   _position(pp),
   _size(ss),
   _layer(ll) { }
@@ -97,7 +97,7 @@ void WindowImpl::need_resize()
 {
   Trace trace("WindowImpl::need_resize");
   Vertex size = _handle->size();
-  Warsaw::Graphic::Requisition r;
+  Fresco::Graphic::Requisition r;
   GraphicImpl::init_requisition(r);
   request(r);
   if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
@@ -117,7 +117,7 @@ void WindowImpl::need_resize()
  * cache the focus holding controllers so we can restore them when the window
  * receives focus again...
  */
-CORBA::Boolean WindowImpl::request_focus(Controller_ptr c, Warsaw::Input::Device d)
+CORBA::Boolean WindowImpl::request_focus(Controller_ptr c, Fresco::Input::Device d)
 {
   if (_unmapped) return false;
   Controller_var parent = parent_controller();
@@ -125,7 +125,7 @@ CORBA::Boolean WindowImpl::request_focus(Controller_ptr c, Warsaw::Input::Device
   if (parent->request_focus(c, d))
     {
       if (_focus.size() <= d) _focus.resize(d + 1);
-      _focus[d] = Warsaw::Controller::_duplicate(c);
+      _focus[d] = Fresco::Controller::_duplicate(c);
       return true;
     }
   else return false;
@@ -136,7 +136,7 @@ void WindowImpl::insert(Desktop_ptr desktop)
   Trace trace("WindowImpl::insert");
   Vertex position, size;
   position.x = position.y = 100., position.z = 0.;
-  Warsaw::Graphic::Requisition r;
+  Fresco::Graphic::Requisition r;
   GraphicImpl::init_requisition(r);
   request(r);
   size.x = r.x.natural, size.y = r.y.natural, size.z = 0;

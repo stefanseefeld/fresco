@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include "Tool/TextInput.hh"
-#include <Warsaw/Unicode.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Unicode.hh>
+#include "TextInput.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 void TextInput::key_press(const Input::Event &event)
 {

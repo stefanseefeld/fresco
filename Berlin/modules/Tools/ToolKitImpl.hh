@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,49 +22,49 @@
 #ifndef _ToolKitImpl_hh
 #define _ToolKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/State.hh>
+#include <Fresco/config.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/State.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
 class GraphicImpl;
 
-class ToolKitImpl : public virtual POA_Warsaw::ToolKit,
+class ToolKitImpl : public virtual POA_Fresco::ToolKit,
 		    public KitImpl
 {
  public:
-  ToolKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  ToolKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~ToolKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new ToolKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new ToolKitImpl(repo_id(), p);}
 
-  Warsaw::Graphic_ptr      debugger(Warsaw::Graphic_ptr, const char *);
-  Warsaw::DrawingState_ptr decorator(Warsaw::Graphic_ptr);
-  Warsaw::Graphic_ptr      rgb(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  Warsaw::Graphic_ptr      alpha(Warsaw::Graphic_ptr, Warsaw::Coord);
-  Warsaw::Graphic_ptr      lighting(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  Fresco::Graphic_ptr      debugger(Fresco::Graphic_ptr, const char *);
+  Fresco::DrawingState_ptr decorator(Fresco::Graphic_ptr);
+  Fresco::Graphic_ptr      rgb(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  Fresco::Graphic_ptr      alpha(Fresco::Graphic_ptr, Fresco::Coord);
+  Fresco::Graphic_ptr      lighting(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
 
-  Warsaw::Graphic_ptr      frame(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
-  Warsaw::Graphic_ptr      dynamic(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
-			   const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
-  Warsaw::Graphic_ptr      framed_triangle(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean,
-					   Warsaw::ToolKit::Direction d);
-  Warsaw::Graphic_ptr      dynamic_triangle(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
-					    const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::ToolKit::Direction d,
-					    Warsaw::Telltale_ptr);
-  Warsaw::Graphic_ptr      framed_diamond(Warsaw::Graphic_ptr, Warsaw::Coord, const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean);
-  Warsaw::Graphic_ptr      dynamic_diamond(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Telltale::Mask, const Warsaw::ToolKit::FrameSpec &,
-				           const Warsaw::ToolKit::FrameSpec &, CORBA::Boolean, Warsaw::Telltale_ptr);
+  Fresco::Graphic_ptr      frame(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
+  Fresco::Graphic_ptr      dynamic(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Telltale::Mask, const Fresco::ToolKit::FrameSpec &,
+			   const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::Telltale_ptr);
+  Fresco::Graphic_ptr      framed_triangle(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean,
+					   Fresco::ToolKit::Direction d);
+  Fresco::Graphic_ptr      dynamic_triangle(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Telltale::Mask, const Fresco::ToolKit::FrameSpec &,
+					    const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::ToolKit::Direction d,
+					    Fresco::Telltale_ptr);
+  Fresco::Graphic_ptr      framed_diamond(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
+  Fresco::Graphic_ptr      dynamic_diamond(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Telltale::Mask, const Fresco::ToolKit::FrameSpec &,
+				           const Fresco::ToolKit::FrameSpec &, CORBA::Boolean, Fresco::Telltale_ptr);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
-  Warsaw::Trigger_ptr      button(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
-  Warsaw::Controller_ptr   dragger(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
-  Warsaw::Controller_ptr   stepper(Warsaw::Graphic_ptr, Warsaw::Command_ptr);
-  Warsaw::Controller_ptr   text_input(Warsaw::Graphic_ptr, Warsaw::TextBuffer_ptr);
-  Warsaw::Controller_ptr   terminal(Warsaw::Graphic_ptr, Warsaw::StreamBuffer_ptr);
-  Warsaw::MainController_ptr   group(Warsaw::Graphic_ptr);
-  Warsaw::Controller_ptr   toggle(Warsaw::Graphic_ptr);
-  Warsaw::Canvas_ptr       create_canvas(Warsaw::PixelCoord, Warsaw::PixelCoord) throw (Warsaw::SecurityException, Warsaw::CreationFailureException);
+  Fresco::Trigger_ptr      button(Fresco::Graphic_ptr, Fresco::Command_ptr);
+  Fresco::Controller_ptr   dragger(Fresco::Graphic_ptr, Fresco::Command_ptr);
+  Fresco::Controller_ptr   stepper(Fresco::Graphic_ptr, Fresco::Command_ptr);
+  Fresco::Controller_ptr   text_input(Fresco::Graphic_ptr, Fresco::TextBuffer_ptr);
+  Fresco::Controller_ptr   terminal(Fresco::Graphic_ptr, Fresco::StreamBuffer_ptr);
+  Fresco::MainController_ptr   group(Fresco::Graphic_ptr);
+  Fresco::Controller_ptr   toggle(Fresco::Graphic_ptr);
+  Fresco::Canvas_ptr       create_canvas(Fresco::PixelCoord, Fresco::PixelCoord) throw (Fresco::SecurityException, Fresco::CreationFailureException);
 };
 
 #endif

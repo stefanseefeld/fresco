@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,13 +21,13 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/IO.hh>
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/PositionalFocus.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, PositionalFocus *f)
   : TraversalImpl(g, r, t),
@@ -35,7 +35,7 @@ PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr 
     _cursor(0)
 {
   Trace trace("PickTraversalImpl::PickTraversalImpl");
-  __this = POA_Warsaw::PickTraversal::_this();
+  __this = POA_Fresco::PickTraversal::_this();
 }
 
 PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &traversal)
@@ -45,7 +45,7 @@ PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &traversal)
     _focus(traversal._focus),
     _cursor(traversal._positions.back() - 1)
 {
-  __this = POA_Warsaw::PickTraversal::_this();
+  __this = POA_Fresco::PickTraversal::_this();
 }
 
 PickTraversalImpl::~PickTraversalImpl() {}
@@ -65,7 +65,7 @@ PickTraversalImpl &PickTraversalImpl::operator = (const PickTraversalImpl &trave
 
 PickTraversal_ptr PickTraversalImpl::_this()
 {
-  return Warsaw::PickTraversal::_duplicate(__this);
+  return Fresco::PickTraversal::_duplicate(__this);
 }
 
 Region_ptr PickTraversalImpl::current_allocation()
@@ -112,8 +112,8 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
   pop(); // cumulative still in scope... 
 }
 
-void PickTraversalImpl::visit(Warsaw::Graphic_ptr g) { g->pick(__this);}
-Warsaw::Traversal::order PickTraversalImpl::direction() { return Warsaw::Traversal::down;}
+void PickTraversalImpl::visit(Fresco::Graphic_ptr g) { g->pick(__this);}
+Fresco::Traversal::order PickTraversalImpl::direction() { return Fresco::Traversal::down;}
 CORBA::Boolean PickTraversalImpl::ok() { return !picked();}
 
 CORBA::Boolean PickTraversalImpl::intersects_allocation()

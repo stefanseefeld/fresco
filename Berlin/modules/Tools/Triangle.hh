@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,35 +22,35 @@
 #ifndef _Triangle_hh
 #define _Triangle_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/ToolKit.hh>
-#include "Tool/Frame.hh"
+#include <Fresco/config.hh>
+#include <Fresco/ToolKit.hh>
+#include "Frame.hh"
 
 class InvisibleTriangle : public Frame::Renderer
 {
 public:
-  InvisibleTriangle(Warsaw::Coord t, bool f, Warsaw::ToolKit::Direction d) : Frame::Renderer(t, f), _direction(d) {}
-  virtual void draw(Warsaw::DrawTraversal_ptr);
+  InvisibleTriangle(Fresco::Coord t, bool f, Fresco::ToolKit::Direction d) : Frame::Renderer(t, f), _direction(d) {}
+  virtual void draw(Fresco::DrawTraversal_ptr);
 private:
-  Warsaw::ToolKit::Direction _direction;
+  Fresco::ToolKit::Direction _direction;
 };
 
 class BeveledTriangle : public Bevel
 {
 public:
-  BeveledTriangle(Warsaw::Coord t, type s, Warsaw::Coord b, bool f, Warsaw::ToolKit::Direction d) : Bevel(t, s, b, f), _direction(d) {}
-  virtual void draw(Warsaw::DrawTraversal_ptr);
+  BeveledTriangle(Fresco::Coord t, type s, Fresco::Coord b, bool f, Fresco::ToolKit::Direction d) : Bevel(t, s, b, f), _direction(d) {}
+  virtual void draw(Fresco::DrawTraversal_ptr);
 protected:
-  Warsaw::ToolKit::Direction _direction;
+  Fresco::ToolKit::Direction _direction;
 };
 
 class ColoredTriangle : public ColoredFrame
 {
 public:
-  ColoredTriangle(Warsaw::Coord t, const Warsaw::Color &c, bool f, Warsaw::ToolKit::Direction d) : ColoredFrame(t, c, f), _direction(d) {}
-  virtual void draw(Warsaw::DrawTraversal_ptr);
+  ColoredTriangle(Fresco::Coord t, const Fresco::Color &c, bool f, Fresco::ToolKit::Direction d) : ColoredFrame(t, c, f), _direction(d) {}
+  virtual void draw(Fresco::DrawTraversal_ptr);
 protected:
-  Warsaw::ToolKit::Direction _direction;
+  Fresco::ToolKit::Direction _direction;
 };
 
 #endif

@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,31 +21,31 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Controller.hh>
-#include <Warsaw/Server.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/resolve.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Controller.hh>
+#include <Fresco/Server.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/resolve.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/DrawTraversalImpl.hh>
 #include <Berlin/CommandImpl.hh>
-#include "Command/CommandKitImpl.hh"
-#include "Command/TelltaleImpl.hh"
-#include "Command/SelectionImpl.hh"
-#include "Command/BoundedValueImpl.hh"
-#include "Command/BoundedRangeImpl.hh"
-#include "Command/TextBufferImpl.hh"
-#include "Command/StreamBufferImpl.hh"
+#include "CommandKitImpl.hh"
+#include "TelltaleImpl.hh"
+#include "SelectionImpl.hh"
+#include "BoundedValueImpl.hh"
+#include "BoundedRangeImpl.hh"
+#include "TextBufferImpl.hh"
+#include "StreamBufferImpl.hh"
 #include <string>
 #include <vector>
 
-using namespace Warsaw;
+using namespace Fresco;
 
 class DebugCommand : public CommandImpl
 {
 public:
-  DebugCommand(Command_ptr c, std::ostream &os, const char *t) : _command(Warsaw::Command::_duplicate(c)), _os(os), _text(t) {}
+  DebugCommand(Command_ptr c, std::ostream &os, const char *t) : _command(Fresco::Command::_duplicate(c)), _os(os), _text(t) {}
   virtual void execute(const CORBA::Any &any)
   {
     _os << _text << " : entering execute" << std::endl; 
@@ -77,12 +77,12 @@ public:
   {}
   virtual void execute(const CORBA::Any &)
   {
-    Warsaw::Kit::PropertySeq props;
+    Fresco::Kit::PropertySeq props;
     props.length(1);
     props[0].name = CORBA::string_dup("implementation");
     props[0].value = CORBA::string_dup("PSDrawingKit");
-    RefCount_var<DrawingKit> print = resolve_kit<DrawingKit>(_server, "IDL:Warsaw/DrawingKit:1.0", props);
-    Warsaw::Graphic::Requisition r;
+    RefCount_var<DrawingKit> print = resolve_kit<DrawingKit>(_server, "IDL:Fresco/DrawingKit:1.0", props);
+    Fresco::Graphic::Requisition r;
     GraphicImpl::init_requisition(r);
     _graphic->request(r);
     Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
@@ -110,23 +110,23 @@ public:
   ServerContext_var _server;
 };
 
-class MacroCommandImpl : public virtual POA_Warsaw::MacroCommand,
+class MacroCommandImpl : public virtual POA_Fresco::MacroCommand,
 			 public CommandImpl
 {
-  typedef std::vector<Warsaw::Command_var> clist_t;
+  typedef std::vector<Fresco::Command_var> clist_t;
 public:
   virtual ~MacroCommandImpl()
   {
     for (clist_t::iterator i = _commands.begin(); i != _commands.end(); ++i)
       (*i)->destroy();
   }
-  virtual void append(Warsaw::Command_ptr c)
+  virtual void append(Fresco::Command_ptr c)
   {
-    _commands.push_back(Warsaw::Command::_duplicate(c));
+    _commands.push_back(Fresco::Command::_duplicate(c));
   }
-  virtual void prepend(Warsaw::Command_ptr c)
+  virtual void prepend(Fresco::Command_ptr c)
   {
-    _commands.insert(_commands.begin(), Warsaw::Command::_duplicate(c));
+    _commands.insert(_commands.begin(), Fresco::Command::_duplicate(c));
   }
   virtual void execute(const CORBA::Any &any)
     {
@@ -137,7 +137,7 @@ public:
   clist_t _commands;
 };
 
-CommandKitImpl::CommandKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+CommandKitImpl::CommandKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 
 CommandKitImpl::~CommandKitImpl() {}
@@ -147,7 +147,7 @@ void CommandKitImpl::bind(ServerContext_ptr server)
   _server = ServerContext::_duplicate(server);
 }
 
-Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
+Command_ptr CommandKitImpl::debugger(Fresco::Command_ptr c, const char *text)
 {
   // FIXME: Shouldn't this be std::cerr? -- tobias
   DebugCommand *command = new DebugCommand(c, std::cout, text);
@@ -264,5 +264,5 @@ StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "CommandKitImpl"};
-  return create_kit<CommandKitImpl>("IDL:Warsaw/CommandKit:1.0", properties, 2);
+  return create_kit<CommandKitImpl>("IDL:Fresco/CommandKit:1.0", properties, 2);
 }

@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,43 +23,43 @@
 #ifndef _TelltaleImpl_hh
 #define _TelltaleImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Telltale.hh>
-#include <Berlin/SubjectImpl.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Telltale.hh>
+#include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class TelltaleImpl : public virtual POA_Warsaw::Telltale,
+class TelltaleImpl : public virtual POA_Fresco::Telltale,
 		     public SubjectImpl
 {
  public:
-  TelltaleImpl(Warsaw::TelltaleConstraint_ptr, CORBA::ULong m = 0);
+  TelltaleImpl(Fresco::TelltaleConstraint_ptr, CORBA::ULong m = 0);
   virtual ~TelltaleImpl();
-  virtual void set(Warsaw::Telltale::Mask);
-  virtual void clear(Warsaw::Telltale::Mask);
-  virtual CORBA::Boolean test(Warsaw::Telltale::Mask);
-  virtual void modify(Warsaw::Telltale::Mask, CORBA::Boolean);
+  virtual void set(Fresco::Telltale::Mask);
+  virtual void clear(Fresco::Telltale::Mask);
+  virtual CORBA::Boolean test(Fresco::Telltale::Mask);
+  virtual void modify(Fresco::Telltale::Mask, CORBA::Boolean);
   CORBA::ULong state() { return _mask;}
 
-  virtual void constraint(Warsaw::TelltaleConstraint_ptr);
-  virtual Warsaw::TelltaleConstraint_ptr constraint();
+  virtual void constraint(Fresco::TelltaleConstraint_ptr);
+  virtual Fresco::TelltaleConstraint_ptr constraint();
 
  protected:
   Prague::Mutex                  _mutex;
   CORBA::ULong                   _mask;
-  Warsaw::TelltaleConstraint_var _constraint;
+  Fresco::TelltaleConstraint_var _constraint;
 };
 
-class TelltaleConstraintImpl : public virtual POA_Warsaw::TelltaleConstraint,
+class TelltaleConstraintImpl : public virtual POA_Fresco::TelltaleConstraint,
 			       public virtual RefCountBaseImpl
 {
-  typedef std::vector<Warsaw::Telltale_var> tlist_t;
+  typedef std::vector<Fresco::Telltale_var> tlist_t;
  public:
   TelltaleConstraintImpl() {}
   virtual ~TelltaleConstraintImpl() {}
-  void add(Warsaw::Telltale_ptr);
-  void remove(Warsaw::Telltale_ptr);
-  virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean) = 0;
+  void add(Fresco::Telltale_ptr);
+  void remove(Fresco::Telltale_ptr);
+  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean) = 0;
  protected:
   Prague::Mutex _mutex;
   tlist_t       _telltales;
@@ -68,28 +68,28 @@ class TelltaleConstraintImpl : public virtual POA_Warsaw::TelltaleConstraint,
 class ExclusiveChoice : public TelltaleConstraintImpl
 {
 public:
-  ExclusiveChoice(Warsaw::Telltale::Mask);
-  virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean);  
+  ExclusiveChoice(Fresco::Telltale::Mask);
+  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean);  
 private:
-  Warsaw::Telltale::Mask _mask;
+  Fresco::Telltale::Mask _mask;
 };
 
 class SelectionRequired : public TelltaleConstraintImpl
 {
 public:
-  SelectionRequired(Warsaw::Telltale::Mask);
-  virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean);  
+  SelectionRequired(Fresco::Telltale::Mask);
+  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean);  
 private:
-  Warsaw::Telltale::Mask _mask;
+  Fresco::Telltale::Mask _mask;
 };
 
 class ExclusiveRequired : public TelltaleConstraintImpl
 {
 public:
-  ExclusiveRequired(Warsaw::Telltale::Mask);
-  virtual void trymodify(Warsaw::Telltale_ptr, Warsaw::Telltale::Mask, CORBA::Boolean);  
+  ExclusiveRequired(Fresco::Telltale::Mask);
+  virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask, CORBA::Boolean);  
 private:
-  Warsaw::Telltale::Mask _mask;
+  Fresco::Telltale::Mask _mask;
 };
 
 #endif

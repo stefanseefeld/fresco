@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,9 +23,9 @@
 #ifndef _Compositor_hh
 #define _Compositor_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/Region.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Region.hh>
 
 class RegionImpl;
 
@@ -36,11 +36,11 @@ class Compositor
 public:
   typedef RegionImpl **Allocations;
   virtual ~Compositor() {}
-  virtual void request(long n, Warsaw::Graphic::Requisition *requests, Warsaw::DrawingKit_ptr dk, Warsaw::Graphic::Requisition &result) = 0;
-  virtual void allocate(long n, Warsaw::Graphic::Requisition *requests, Warsaw::DrawingKit_ptr dk, Warsaw::Region_ptr given, Allocations result) = 0;
-  static void set_span(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
-  static Warsaw::Coord compute_length(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
-  static Warsaw::Coord compute_squeeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
+  virtual void request(long n, Fresco::Graphic::Requisition *requests, Fresco::DrawingKit_ptr dk, Fresco::Graphic::Requisition &result) = 0;
+  virtual void allocate(long n, Fresco::Graphic::Requisition *requests, Fresco::DrawingKit_ptr dk, Fresco::Region_ptr given, Allocations result) = 0;
+  static void set_span(RegionImpl *r, Fresco::Axis a, Fresco::Coord origin, Fresco::Coord length, Fresco::Alignment align);
+  static Fresco::Coord compute_length(const Fresco::Graphic::Requirement &, const Fresco::Region::Allotment &);
+  static Fresco::Coord compute_squeeze(const Fresco::Graphic::Requirement &, Fresco::Coord);
 };
 
 class LRCompositor : public Compositor
@@ -49,10 +49,10 @@ class LRCompositor : public Compositor
 //. no line breaking
 {
 public:
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Region_ptr, Allocations);    
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Region_ptr, Allocations);    
 private:
-  Warsaw::Graphic::Requisition requisition;
+  Fresco::Graphic::Requisition requisition;
 };
 
 class TBCompositor : public Compositor
@@ -61,10 +61,10 @@ class TBCompositor : public Compositor
 //. no line breaking
 {
 public:
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::DrawingKit_ptr, Warsaw::Region_ptr, Allocations);    
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Region_ptr, Allocations);    
 private:
-  Warsaw::Graphic::Requisition requisition;
+  Fresco::Graphic::Requisition requisition;
 };
 
 #endif

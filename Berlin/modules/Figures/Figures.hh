@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,18 +22,18 @@
 #ifndef _Figures_hh
 #define _Figures_hh
 
-#include <Figure/FigureImpl.hh>
+#include "FigureImpl.hh"
 
 class PointImpl : public virtual POA_Figure::Point,
                   public FigureImpl
 {
 public:
   PointImpl();
-  PointImpl(const Warsaw::Vertex &);
+  PointImpl(const Fresco::Vertex &);
   PointImpl(const PointImpl &);
   virtual ~PointImpl();
-  virtual Warsaw::Vertex pt();
-  virtual void pt(const Warsaw::Vertex &);
+  virtual Fresco::Vertex pt();
+  virtual void pt(const Fresco::Vertex &);
 };
   
 class LineImpl : public virtual POA_Figure::Line,
@@ -41,13 +41,13 @@ class LineImpl : public virtual POA_Figure::Line,
 {
 public:
   LineImpl();
-  LineImpl(const Warsaw::Vertex &, const Warsaw::Vertex &);
+  LineImpl(const Fresco::Vertex &, const Fresco::Vertex &);
   LineImpl(const LineImpl &);
   virtual ~LineImpl();
-  virtual Warsaw::Vertex pt1();
-  virtual void pt1(const Warsaw::Vertex &);
-  virtual Warsaw::Vertex pt2();
-  virtual void pt2(const Warsaw::Vertex &);
+  virtual Fresco::Vertex pt1();
+  virtual void pt1(const Fresco::Vertex &);
+  virtual Fresco::Vertex pt2();
+  virtual void pt2(const Fresco::Vertex &);
 };
 
 class RectangleImpl : public virtual POA_Figure::Rectangle,
@@ -55,13 +55,13 @@ class RectangleImpl : public virtual POA_Figure::Rectangle,
 {
 public:
   RectangleImpl();
-  RectangleImpl(const Warsaw::Vertex &, const Warsaw::Vertex &);
+  RectangleImpl(const Fresco::Vertex &, const Fresco::Vertex &);
   RectangleImpl(const RectangleImpl &);
   virtual ~RectangleImpl();
-  virtual Warsaw::Vertex pt1();
-  virtual void pt1(const Warsaw::Vertex &);
-  virtual Warsaw::Vertex pt2();
-  virtual void pt2(const Warsaw::Vertex &);
+  virtual Fresco::Vertex pt1();
+  virtual void pt1(const Fresco::Vertex &);
+  virtual Fresco::Vertex pt2();
+  virtual void pt2(const Fresco::Vertex &);
 };
 
 class CircleImpl : public virtual POA_Figure::Circle,
@@ -69,17 +69,17 @@ class CircleImpl : public virtual POA_Figure::Circle,
 {
 public:
   CircleImpl();
-  CircleImpl(const Warsaw::Vertex &, Warsaw::Coord);
+  CircleImpl(const Fresco::Vertex &, Fresco::Coord);
   CircleImpl(const CircleImpl &);
   virtual ~CircleImpl();
   virtual void resize();
-  virtual Warsaw::Vertex center();
-  virtual void center(const Warsaw::Vertex &);
-  virtual Warsaw::Coord radius();
-  virtual void radius(Warsaw::Coord);
+  virtual Fresco::Vertex center();
+  virtual void center(const Fresco::Vertex &);
+  virtual Fresco::Coord radius();
+  virtual void radius(Fresco::Coord);
 protected:
-  Warsaw::Vertex _center;
-  Warsaw::Coord  _radius;
+  Fresco::Vertex _center;
+  Fresco::Coord  _radius;
 };
 
 class EllipseImpl : public virtual POA_Figure::Ellipse,
@@ -87,20 +87,20 @@ class EllipseImpl : public virtual POA_Figure::Ellipse,
 {
 public:
   EllipseImpl();
-  EllipseImpl(const Warsaw::Vertex &, Warsaw::Coord, Warsaw::Coord);
+  EllipseImpl(const Fresco::Vertex &, Fresco::Coord, Fresco::Coord);
   EllipseImpl(const EllipseImpl &);
   virtual ~EllipseImpl();
   virtual void resize();
-  virtual Warsaw::Vertex center();
-  virtual void center(const Warsaw::Vertex &);
-  virtual Warsaw::Coord radius1();
-  virtual void radius1(Warsaw::Coord);
-  virtual Warsaw::Coord radius2();
-  virtual void radius2(Warsaw::Coord);
+  virtual Fresco::Vertex center();
+  virtual void center(const Fresco::Vertex &);
+  virtual Fresco::Coord radius1();
+  virtual void radius1(Fresco::Coord);
+  virtual Fresco::Coord radius2();
+  virtual void radius2(Fresco::Coord);
 protected:
-  Warsaw::Vertex _center;
-  Warsaw::Coord  _radius1;
-  Warsaw::Coord  _radius2;
+  Fresco::Vertex _center;
+  Fresco::Coord  _radius1;
+  Fresco::Coord  _radius2;
 };
 
 class PathImpl : public virtual POA_Figure::Path,
@@ -108,15 +108,15 @@ class PathImpl : public virtual POA_Figure::Path,
 {
 public:
   PathImpl(bool);
-  PathImpl(const Warsaw::Path &, bool);
+  PathImpl(const Fresco::Path &, bool);
   PathImpl(const PathImpl &);
   virtual ~PathImpl();
   virtual void resize();
-  Warsaw::Path *handles();
-  void handles(const Warsaw::Path &);
+  Fresco::Path *handles();
+  void handles(const Fresco::Path &);
   CORBA::Boolean closed();
 private:
-  Warsaw::Path_var _handles;
+  Fresco::Path_var _handles;
   bool             _closed;
 };
 

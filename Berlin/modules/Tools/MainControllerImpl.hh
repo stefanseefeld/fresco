@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,25 +22,25 @@
 #ifndef _MainControllerImpl_hh
 #define _MainControllerImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Raster.hh>
-#include <Warsaw/MainController.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Raster.hh>
+#include <Fresco/MainController.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-class MainControllerImpl : public virtual POA_Warsaw::MainController,
+class MainControllerImpl : public virtual POA_Fresco::MainController,
 			   public ControllerImpl
 {
  public:
   MainControllerImpl(bool);
   virtual ~MainControllerImpl();
-  virtual void cursor(Warsaw::Raster_ptr);
-  virtual Warsaw::Raster_ptr cursor();
+  virtual void cursor(Fresco::Raster_ptr);
+  virtual Fresco::Raster_ptr cursor();
 
-  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr f);
+  virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr f);
  private:
   Prague::Mutex      _mutex;
-  Warsaw::Raster_var _cursor;
+  Fresco::Raster_var _cursor;
 };
 
 #endif

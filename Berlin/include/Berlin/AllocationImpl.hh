@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _AllocationImpl_hh
-#define _AllocationImpl_hh
+#ifndef _Berlin_AllocationImpl_hh
+#define _Berlin_AllocationImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Graphic.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ServantBase.hh>
 #include <Berlin/Provider.hh>
@@ -35,23 +35,23 @@ class AllocationImpl;
 
 template <> struct Initializer<AllocationImpl>;
 
-class AllocationImpl : public virtual POA_Warsaw::Allocation,
+class AllocationImpl : public virtual POA_Fresco::Allocation,
                        public virtual ServantBase
 {
   struct State
   {
     RegionImpl        *allocation;
     TransformImpl     *transformation;
-    Warsaw::Screen_var root;
+    Fresco::Screen_var root;
   };
   typedef std::vector<State> list_t;
   friend class Provider<AllocationImpl>;
 public:
   AllocationImpl();
   ~AllocationImpl();
-  void add(Warsaw::Region_ptr, Warsaw::Screen_ptr);
+  void add(Fresco::Region_ptr, Fresco::Screen_ptr);
   CORBA::Long size();
-  Warsaw::Allocation::Info *get(CORBA::Long);
+  Fresco::Allocation::Info *get(CORBA::Long);
   void clear();
 private:
   bool _active : 1;

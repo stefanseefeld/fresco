@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-# http://www.berlin-consortium.org/
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+# http://www.fresco.org/
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -19,6 +19,29 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-# Global flags
-CPPFLAGS	+= @DEFS@ @CPPFLAGS@
-LIBS		+= @LIBS@
+# Places to install libraries, binaries, etc, from Autoconf's info page
+prefix		:= @prefix@
+exec_prefix	:= @exec_prefix@
+bindir		:= @bindir@
+sbindir		:= @sbindir@
+libexecdir	:= @libexecdir@
+datadir		:= @datadir@
+sysconfdir	:= @sysconfdir@
+sharedstatedir	:= @sharedstatedir@
+localstatedir	:= @localstatedir@
+libdir		:= @libdir@
+includedir	:= @includedir@
+oldincludedir	:= @oldincludedir@
+infodir		:= @infodir@
+mandir		:= @mandir@
+
+CXX		:= @CXX@
+INSTALL		:= @INSTALL@
+
+SO_CXXFLAGS	:= @SO_CXXFLAGS@
+SO_LDFLAGS	:= @SO_LDFLAGS@
+
+CPPFLAGS	:= -I../include -I$(top_srcdir)/include @CPPFLAGS@
+DEPFLAGS	:= @DEPFLAGS@
+CXXFLAGS	:= @CXXFLAGS@
+LIBS		:= @LIBS@

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,19 +22,19 @@
 #ifndef _TextInput_hh
 #define _TextInput_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/TextBuffer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/TextBuffer.hh>
 #include <Berlin/ControllerImpl.hh>
 
 class TextInput : public ControllerImpl
 {
  public:
-  TextInput(Warsaw::TextBuffer_ptr b) : ControllerImpl(false), buffer(Warsaw::TextBuffer::_duplicate(b)) {}
+  TextInput(Fresco::TextBuffer_ptr b) : ControllerImpl(false), buffer(Fresco::TextBuffer::_duplicate(b)) {}
   ~TextInput() {}
 // protected:
-  virtual void key_press(const Warsaw::Input::Event &);
+  virtual void key_press(const Fresco::Input::Event &);
  private:
-  Warsaw::TextBuffer_var buffer;
+  Fresco::TextBuffer_var buffer;
 };
 
 #endif

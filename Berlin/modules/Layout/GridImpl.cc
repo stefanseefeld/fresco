@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,19 +20,19 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/ImplVar.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/IO.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/Math.hh>
-#include "Layout/GridImpl.hh"
-#include "Layout/LayoutManager.hh"
+#include "GridImpl.hh"
+#include "LayoutManager.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Layout;
 
 std::ostream &operator << (std::ostream &os, const GridImpl::Span &span)
@@ -277,7 +277,7 @@ void GridImpl::prepend_graphic(Graphic_ptr g)
   replace(g, _cursor);
 }
 
-void GridImpl::request(Warsaw::Graphic::Requisition &r)
+void GridImpl::request(Fresco::Graphic::Requisition &r)
 {
   cache_request();
   r = _requisition;
@@ -307,8 +307,8 @@ void GridImpl::replace(Graphic_ptr g, const Layout::Grid::Index &i)
     try { old->remove_parent_graphic(index_to_tag(i));}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
-  _dimensions[xaxis].children[i.col][i.row] = Warsaw::Graphic::_duplicate(g);
-  _dimensions[yaxis].children[i.row][i.col] = Warsaw::Graphic::_duplicate(g);
+  _dimensions[xaxis].children[i.col][i.row] = Fresco::Graphic::_duplicate(g);
+  _dimensions[yaxis].children[i.row][i.col] = Fresco::Graphic::_duplicate(g);
   g->add_parent_graphic(Graphic_var(_this()), index_to_tag(i));
 }
 
@@ -335,7 +335,7 @@ void GridImpl::allocate_cell(Region_ptr given, const Layout::Grid::Index &i, Reg
   delete [] yspans;
 }
 
-void GridImpl::request_range(Warsaw::Graphic::Requisition &r, const Layout::Grid::Range &a)
+void GridImpl::request_range(Fresco::Graphic::Requisition &r, const Layout::Grid::Range &a)
 {
   cache_request();
   
@@ -421,7 +421,7 @@ void GridImpl::cache_request()
     }
 }
 
-void GridImpl::partial_request(Axis axis, long begin, long end, Warsaw::Graphic::Requirement &r)
+void GridImpl::partial_request(Axis axis, long begin, long end, Fresco::Graphic::Requirement &r)
 {
   Dimension &d = _dimensions[axis];
   LayoutTileRequest tile;
@@ -440,17 +440,17 @@ void GridImpl::full_request(Axis axis, Axis direction)
       for (std::vector<Graphic_var>::iterator j = d.children[i].begin(); j != d.children[i].end(); ++j)
 	if (!CORBA::is_nil(*j))
 	  {
-	    Warsaw::Graphic::Requisition r;
+	    Fresco::Graphic::Requisition r;
 	    GraphicImpl::init_requisition(r);
 	    GraphicImpl::default_requisition(r);
 	    (*j)->request(r);
 	    align.accumulate(axis == xaxis ? r.x : r.y);
 	  }
-      Warsaw::Graphic::Requirement &r = d.requirements[i];
+      Fresco::Graphic::Requirement &r = d.requirements[i];
       align.requirement(r);
       tile.accumulate(r);
     }
-  Warsaw::Graphic::Requirement &r = *GraphicImpl::requirement(_requisition, axis);
+  Fresco::Graphic::Requirement &r = *GraphicImpl::requirement(_requisition, axis);
   tile.requirement(r);
 }
 
@@ -485,8 +485,8 @@ void GridImpl::traverse_with_allocation(Traversal_ptr t, Region_ptr given, const
 	offset_region(region, dx, dy);
 	region->normalize(Transform_var(tx->_this()));
 	try { t->traverse_child (child, index_to_tag(i), Region_var(region->_this()), Transform_var(tx->_this()));}
-	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
-	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
+	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
       }
   delete [] xspans;
   delete [] yspans;
@@ -502,8 +502,8 @@ void GridImpl::traverse_without_allocation(Traversal_ptr t, const Layout::Grid::
 	Graphic_var child = d.children [i.row][i.col];
 	if (CORBA::is_nil (child)) continue;
 	try { t->traverse_child (child, index_to_tag(i), Region::_nil(), Transform::_nil());}
-	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
-	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Warsaw::Graphic::_nil();}
+	catch (const CORBA::OBJECT_NOT_EXIST &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
+	catch (const CORBA::COMM_FAILURE &) { d.children [i.row][i.col] = Fresco::Graphic::_nil();}
       }
 }
 
@@ -511,7 +511,7 @@ SubGridImpl::SubGridImpl(Grid_ptr grid, const Layout::Grid::Range &r)
  : _child(Layout::Grid::_duplicate(grid)), _range(r) {}
 
 SubGridImpl::~SubGridImpl() {}
-void SubGridImpl::request(Warsaw::Graphic::Requisition &r) { _child->request_range(r, _range);}
+void SubGridImpl::request(Fresco::Graphic::Requisition &r) { _child->request_range(r, _range);}
 
 void SubGridImpl::traverse(Traversal_ptr t)
 {

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,9 @@
 #ifndef _PrimitiveImpl_hh
 #define _PrimitiveImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Primitive.hh>
-#include <Warsaw/DrawTraversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Primitive.hh>
+#include <Fresco/DrawTraversal.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/GraphicImpl.hh>
 
@@ -37,25 +37,25 @@ class TransformPrimitive : public virtual POA_Primitive::PrimitiveBase,
  public:
   TransformPrimitive();
   ~TransformPrimitive();
-  virtual Warsaw::Transform_ptr transformation();
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual Fresco::Transform_ptr transformation();
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
   virtual void need_redraw();
   
   //  Figure::Mode type() { return _mode;}
   //  void type(Figure::Mode m) { _mode = m; need_redraw();}
-  //  Warsaw::Color foreground() { return _fg;}
-  //  void foreground(const Warsaw::Color &f) { _fg = f; need_redraw();}
-  //  Warsaw::Color background() { return _bg;}
-  //  void background(const Warsaw::Color &b) { _bg = b; need_redraw();}
+  //  Fresco::Color foreground() { return _fg;}
+  //  void foreground(const Fresco::Color &f) { _fg = f; need_redraw();}
+  //  Fresco::Color background() { return _bg;}
+  //  void background(const Fresco::Color &b) { _bg = b; need_redraw();}
 
   virtual void resize();
 
   void copy(const TransformPrimitive &);
  protected:
   //  Figure::Mode            _mode;
-  //  Warsaw::Color           _fg, _bg;
+  //  Fresco::Color           _fg, _bg;
   Impl_var<TransformImpl> _tx;
   Impl_var<RegionImpl>    _ext;
 };
@@ -69,12 +69,12 @@ public:
   void reset();
   virtual void resize();
 
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 
   void copy(const PrimitiveImpl &);
 protected:
-  Warsaw::Mesh_var _mesh;
+  Fresco::Mesh_var _mesh;
 };
 
 #endif

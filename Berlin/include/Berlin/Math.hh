@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Math_hh
-#define _Math_hh
+#ifndef _Berlin_Math_hh
+#define _Berlin_Math_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Transform.hh>
 #include <algorithm>
 #include <cstdlib>
 #include <cmath>
@@ -47,10 +47,10 @@ namespace Math
 
   //. general orthogonal matrix transformation
   //. needs to be refined for perspective trafos
-  inline Warsaw::Vertex &operator *= (Warsaw::Vertex &v, const Warsaw::Transform::Matrix &m)
+  inline Fresco::Vertex &operator *= (Fresco::Vertex &v, const Fresco::Transform::Matrix &m)
   {
-    Warsaw::Coord tx = v.x;
-    Warsaw::Coord ty = v.y;
+    Fresco::Coord tx = v.x;
+    Fresco::Coord ty = v.y;
     v.x = m[0][0] * tx + m[0][1] * ty + m[0][2] * v.z + m[0][3];
     v.y = m[1][0] * tx + m[1][1] * ty + m[1][2] * v.z + m[1][3];
     v.z = m[2][0] * tx + m[2][1] * ty + m[2][2] * v.z + m[2][3];
@@ -59,4 +59,4 @@ namespace Math
 
 };
 
-#endif /* _Math_hh */
+#endif

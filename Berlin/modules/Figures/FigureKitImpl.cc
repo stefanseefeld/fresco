@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,18 +21,18 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
+#include <Fresco/config.hh>
 #include <Berlin/Allocator.hh>
-#include "Figure/FigureKitImpl.hh"
-#include "Figure/FigureImpl.hh"
-#include "Figure/PolyFigure.hh"
-#include "Figure/Figures.hh"
-#include "Figure/ImageImpl.hh"
-#include "Figure/Transformer.hh"
+#include "FigureKitImpl.hh"
+#include "FigureImpl.hh"
+#include "PolyFigure.hh"
+#include "Figures.hh"
+#include "ImageImpl.hh"
+#include "Transformer.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
-FigureKitImpl::FigureKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+FigureKitImpl::FigureKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 FigureKitImpl::~FigureKitImpl() {}
 Graphic_ptr FigureKitImpl::root(Graphic_ptr child)
@@ -111,14 +111,14 @@ Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
   return e->_this();
 }
 
-Figure::Path_ptr FigureKitImpl::multiline(const Warsaw::Path &p)
+Figure::Path_ptr FigureKitImpl::multiline(const Fresco::Path &p)
 {
   PathImpl *path = new PathImpl(p, false);
   activate(path);
   return path->_this();
 }
 
-Figure::Path_ptr FigureKitImpl::polygon(const Warsaw::Path &p)
+Figure::Path_ptr FigureKitImpl::polygon(const Fresco::Path &p)
 {
   PathImpl *path = new PathImpl(p, true);
   activate(path);
@@ -151,5 +151,5 @@ Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "FigureKitImpl"};
-  return create_kit<FigureKitImpl> ("IDL:Warsaw/FigureKit:1.0", properties, 2);
+  return create_kit<FigureKitImpl> ("IDL:fresco.org/Fresco/FigureKit:1.0", properties, 2);
 }

@@ -1,10 +1,10 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,12 +25,12 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/RasterImpl.hh>
-#include "Image/ImageKitImpl.hh"
+#include "ImageKitImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
-ImageKitImpl::ImageKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+ImageKitImpl::ImageKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 ImageKitImpl::~ImageKitImpl() {}
 
@@ -53,5 +53,5 @@ Raster_ptr ImageKitImpl::create(const char *file)
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ImageKitImpl"};
-  return create_kit<ImageKitImpl> ("IDL:Warsaw/ImageKit:1.0", properties, 2);
+  return create_kit<ImageKitImpl> ("IDL:Fresco/ImageKit:1.0", properties, 2);
 }

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +19,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Tool/Toggle.hh"
 #include <Prague/Sys/Tracer.hh>
+#include "Toggle.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 Toggle::Toggle(bool f) : ControllerImpl(f) {}
 Toggle::~Toggle() {}
@@ -32,8 +32,8 @@ void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   Trace trace("Toggle::press");
   ControllerImpl::press(traversal, event);
-  if (test(Warsaw::Controller::toggled)) clear(Warsaw::Controller::toggled);
-  else set(Warsaw::Controller::toggled);
+  if (test(Fresco::Controller::toggled)) clear(Fresco::Controller::toggled);
+  else set(Fresco::Controller::toggled);
 }
 
 void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
@@ -48,8 +48,8 @@ void Toggle::key_press(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.selection();
   if (toggle.number == 32) // space
     {
-      if (test(Warsaw::Controller::toggled)) clear(Warsaw::Controller::toggled);
-      else set(Warsaw::Controller::toggled);
+      if (test(Fresco::Controller::toggled)) clear(Fresco::Controller::toggled);
+      else set(Fresco::Controller::toggled);
     }
   else ControllerImpl::key_press(event);
 }

@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -20,18 +20,12 @@
 # MA 02139, USA.
 
 SHELL		:= /bin/sh
-VERSION		:= @VERSION@
 
-top_srcdir	:= @topdir@
+top_srcdir	:= @top_srcdir@
 srcdir		:= $(top_srcdir)/server
-builddir	:= ..
-cdir		:= $(builddir)/config
-hdir		:= $(top_srcdir)/include
-ldir		:= $(builddir)/lib
-bdir		:= $(builddir)/bin
+cdir		:= ../config
 
 include $(cdir)/local.mk
-include $(cdir)/Server/local.mk
 
 ifeq ($(JPROF),yes)
 JPROF_SRC	:= bfd.cpp coff.cpp elf.cpp leaky.cpp strset.cpp intcnt.cpp
@@ -40,12 +34,12 @@ CPPFLAGS	+= -I$(top_srcdir)/contrib/jprof -DJPROF
 endif
 
 CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
-LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague
+LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
-TARGETS		:= $(bdir)/server $(bdir)/kits $(bdir)/devices
+TARGETS		:= ../bin/server ../bin/kits ../bin/devices
 
 ifeq ($(JPROF),yes)
-JPROFTARGETS	:= $(ldir)/libjprof.so $(bdir)/jprof
+JPROFTARGETS	:= ../lib/libjprof.so ../bin/jprof
 LIBS		+= -ljprof
 
 all:	$(JPROFTARGETS) $(TARGETS)
@@ -54,11 +48,11 @@ all:	$(TARGETS)
 endif
 
 ifeq ($(JPROF),yes)
-$(ldir)/libjprof.so:	libmalloc.o
+../lib/libjprof.so:	libmalloc.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -shared -o $@ $^
 
-$(bdir)/jprof:	$(JPROF_OBJ)
+../bin/jprof:	$(JPROF_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ -lbfd -liberty -ldl
 
@@ -68,22 +62,27 @@ $(bdir)/jprof:	$(JPROF_OBJ)
 
 endif
 
-$(bdir)/server:	server.o ServerImpl.o ServerContextImpl.o
+../bin/server:	server.o ServerImpl.o ServerContextImpl.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/kits:	kits.o ServerImpl.o ServerContextImpl.o
+../bin/kits:	kits.o ServerImpl.o ServerContextImpl.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/devices:	devices.o
+../bin/devices:	devices.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-install:
-		$(INSTALL) -m755 $(TARGETS) $(bindir)
-		$(INSTALL) -m755 $(bdir)/Berlin-config $(bindir)
+install:	all
+		$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
+		$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
 
+uninstall:
+		for target in $TARGETS ; do \
+		  rm -f $(DESTDIR)$(bindir)/$$target \
+		done
+		rm -f $(DESTDIR)$(sysconfdir)/berlinrc
 clean:	
 		rm -f $(TARGETS)
 		rm -f *.o

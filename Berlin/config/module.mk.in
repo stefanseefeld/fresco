@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -23,8 +23,8 @@
 # It requires the following variables to be set within the
 # including Makefile:
 #
-# srcdir:   	the source directory
-# hdir: 	the header directory
+# builddir      the build tree root
+#
 # SRC:   	the list of all source files to be compiled and linked
 #        	into the module
 # TARGET:	the name of the module to be generated
@@ -36,25 +36,27 @@
 #
 #
 
-VERSION		:= @VERSION@
+# Compilation and linking flags.
+LIBS	:= -L$(builddir)/lib -lBerlin
 
-.PHONY: all install clean distclean maintainer-clean
+.PHONY: all install uninstall clean distclean maintainer-clean
 
-DEP	= $(patsubst %.cc, %.d, $(SRC))
-OBJ	= $(patsubst %.cc, %.o, $(SRC))
+DEP	:= $(patsubst %.cc, %.d, $(SRC))
+OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-TARGET	= $(mdir)/$(MODULE).so
+TARGET	:= $(MODULE).so
+
+vpath %.hh  $(top_srcdir)/include/Berlin
 
 all:	$(TARGET)
 
 $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
-#		strip --strip-unneeded $@
+		strip --strip-unneeded $@
 
 install:
-#		$(INSTALL) -m755 $(EXPAT) $(libdir)
-#		$(INSTALL) -m755 $(TARGET) $(libdir)
+		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
 
 clean:	
 		rm -f $(TARGET)

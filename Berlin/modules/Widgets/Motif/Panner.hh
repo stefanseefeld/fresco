@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,11 +22,11 @@
 #ifndef _Motif_Panner_hh
 #define _Motif_Panner_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/BoundedRange.hh>
+#include <Fresco/config.hh>
+#include <Fresco/BoundedRange.hh>
 #include <Berlin/RefCountVar.hh>
-#include "Widget/Motif/Adjustable.hh"
 #include <Berlin/TransformImpl.hh>
+#include "Adjustable.hh"
 
 namespace Motif
 {
@@ -35,27 +35,27 @@ class Panner : public Adjustable
 {
   struct Offset
   {
-    Warsaw::Coord lower;
-    Warsaw::Coord upper;
+    Fresco::Coord lower;
+    Fresco::Coord upper;
   }; 
 public:
-  Panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
-  void init(Warsaw::Controller_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  Panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
+  void init(Fresco::Controller_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 protected:
   virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Warsaw::OriginatedDelta &);
+  virtual void adjust(const Fresco::OriginatedDelta &);
 private:
-  void traverse_thumb(Warsaw::Traversal_ptr);
-  RefCount_var<Warsaw::BoundedRange> _xvalue;
-  RefCount_var<Warsaw::BoundedRange> _yvalue;
+  void traverse_thumb(Fresco::Traversal_ptr);
+  RefCount_var<Fresco::BoundedRange> _xvalue;
+  RefCount_var<Fresco::BoundedRange> _yvalue;
   Offset _offset[2];
   TransformImpl _pickTrafo;
-  Warsaw::Vertex _upperBounds; // upper bounds from last pick traversal, in
+  Fresco::Vertex _upperBounds; // upper bounds from last pick traversal, in
                                // local coords.
-  Warsaw::Vertex _scale;
+  Fresco::Vertex _scale;
 };
 
 };

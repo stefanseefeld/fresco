@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,19 +21,19 @@
  */
 #include "Berlin/Requestor.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
 {
   GraphicImpl::default_requisition(_requisition);
-  Warsaw::Graphic::Requirement *rx = GraphicImpl::requirement(_requisition, xaxis);
-  Warsaw::Graphic::Requirement *ry = GraphicImpl::requirement(_requisition, yaxis);
+  Fresco::Graphic::Requirement *rx = GraphicImpl::requirement(_requisition, xaxis);
+  Fresco::Graphic::Requirement *ry = GraphicImpl::requirement(_requisition, yaxis);
   rx->align = xalign;
   ry->align = yalign;
   rx->natural = rx->maximum = rx->minimum = xspan;
   ry->natural = ry->maximum = ry->minimum = yspan; 
 }
 
-Requestor::Requestor(const Warsaw::Graphic::Requisition &r) : _requisition(r) {}
+Requestor::Requestor(const Fresco::Graphic::Requisition &r) : _requisition(r) {}
 Requestor::~Requestor() {}
-void Requestor::request(Warsaw::Graphic::Requisition &r) { r = _requisition;}
+void Requestor::request(Fresco::Graphic::Requisition &r) { r = _requisition;}

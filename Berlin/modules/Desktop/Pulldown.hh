@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,13 +22,13 @@
 #ifndef _Pulldown_hh
 #define _Pulldown_hh
 
-#include "Desktop/WindowImpl.hh"
+#include "WindowImpl.hh"
 
 class Pulldown : public WindowImpl
 {
 public:
-  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr);
-  virtual void lose_focus(Warsaw::Input::Device);
+  virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr);
+  virtual void lose_focus(Fresco::Input::Device);
   virtual void mapped(CORBA::Boolean);
 };
 

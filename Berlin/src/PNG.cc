@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,7 +21,7 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
+#include <Fresco/config.hh>
 #include <Berlin/PNG.hh>
 #include <Berlin/Logger.hh>
 #include <Prague/Sys/Memory.hh>
@@ -32,7 +32,7 @@
 #include <png.h>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 class PNG::ibuf : public std::streambuf
 {

@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,16 +24,16 @@
 #include <Prague/Sys/Plugin.hh>
 #include <Prague/Sys/Directory.hh>
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/ClientContext.hh>
-#include "Berlin/Logger.hh"
-#include "Berlin/KitImpl.hh"
+#include <Fresco/config.hh>
+#include <Fresco/ClientContext.hh>
+#include <Berlin/Logger.hh>
+#include <Berlin/KitImpl.hh>
 #include "ServerContextImpl.hh"
 #include "ServerImpl.hh"
 #include <strstream>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 unsigned long ServerContextImpl::_counter = 0;
 

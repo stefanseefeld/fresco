@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,22 +21,22 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/Geometry.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Color.hh>
 #include <Berlin/Vertex.hh>
 #include <Berlin/Provider.hh>
-#include "Figure/FigureImpl.hh"
+#include "FigureImpl.hh"
 
 using namespace Geometry;
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TransformFigure::TransformFigure()
   : _mode(Figure::outline),
@@ -49,7 +49,7 @@ TransformFigure::TransformFigure()
 
 TransformFigure::~TransformFigure() {}
 Transform_ptr TransformFigure::transformation() { return _tx->_this();}
-void TransformFigure::request(Warsaw::Graphic::Requisition &r)
+void TransformFigure::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace("TransformFigure::request");
   Allocation::Info info;
@@ -112,7 +112,7 @@ void TransformFigure::copy(const TransformFigure &tf)
   if (tf._ext->valid) _ext->copy(Region_var(tf._ext->_this()));
 }
 
-FigureImpl::FigureImpl() : _path(new Warsaw::Path()) { _path->shape = convex;}
+FigureImpl::FigureImpl() : _path(new Fresco::Path()) { _path->shape = convex;}
 FigureImpl::~FigureImpl() {}
 
 void FigureImpl::add_point(Coord x, Coord y)
@@ -347,7 +347,7 @@ void FigureImpl::resize()
 
 void FigureImpl::reset()
 {
-  _path = new Warsaw::Path();
+  _path = new Fresco::Path();
   _path->shape = convex;
   _ext->valid = false;
 }
@@ -355,6 +355,6 @@ void FigureImpl::reset()
 void FigureImpl::copy(const FigureImpl &f)
 {
   TransformFigure::copy(f);
-  _path = new Warsaw::Path(f._path);
+  _path = new Fresco::Path(f._path);
   _path->shape = convex;
 }

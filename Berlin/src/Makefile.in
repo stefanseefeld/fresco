@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -19,65 +19,73 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL		:= /bin/sh
-VERSION		:= @VERSION@
+SHELL	:= /bin/sh
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Berlin
-builddir	:= ../..
-cdir		:= $(builddir)/config
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/src
+cdir		:= ../config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
 
 include $(cdir)/local.mk
-include $(cdir)/Server/local.mk
 
-CXXFLAGS        += $(SO_CXXFLAGS)
-LDFLAGS         += $(SO_LDFLAGS)
-LIBS		+= -lpng
+CXXFLAGS+= $(SO_CXXFLAGS)
+LDFLAGS	+= $(SO_LDFLAGS)
+LIBS	+= -lpng
 
-SRC		:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
-	  	   RefCountBaseImpl.cc RegionImpl.cc TransformImpl.cc TraversalImpl.cc \
-	  	   AllocationImpl.cc GraphicImpl.cc MonoGraphic.cc \
-	  	   PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
-	  	   DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
-	  	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
-	  	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
-	  	   PNG.cc RasterImpl.cc \
-		   KitImpl.cc RCManager.cc
+SRC	:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
+	   RefCountBaseImpl.cc RegionImpl.cc TransformImpl.cc TraversalImpl.cc \
+	   AllocationImpl.cc GraphicImpl.cc MonoGraphic.cc \
+	   PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
+	   DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
+	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
+	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
+	   PNG.cc RasterImpl.cc \
+	   KitImpl.cc RCManager.cc
 
-DEP		:= $(patsubst %.cc, %.d, $(SRC))
-OBJ		:= $(patsubst %.cc, %.o, $(SRC))
+DEP	:= $(patsubst %.cc, %.d, $(SRC))
+HDR	:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Berlin/*.hh $(hdir)/Berlin/Console/*.hh)) Berlin/config.hh
+OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-LIBS		+= -lpng
+LIBS	+= -lpng
 
-TARGET		:= $(ldir)/libBerlin.so
+TARGET	:= ../lib/libBerlin.so
 
-vpath %.hh  $(hdir)/Warsaw $(hdir)/Berlin
+vpath %.hh  $(hdir)/Berlin
 
 all:	$(TARGET)
 
 $(TARGET):	$(OBJ)
-		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-install:
-		$(INSTALL) -m755 $(EXPAT) $(libdir)
-		$(INSTALL) -m755 $(TARGET) $(libdir)
+install:	all
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Berlin/Console
+	for header in $(HDR); do \
+	  if test -f $(hdir)/$$header; then \
+	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
+	    $(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header; \
+	  else :; fi; \
+	done
+	$(INSTALL) -m 755 ../bin/Berlin-config $(DESTDIR)$(bindir)
 
+uninstall:
+	rm -f $(DESTDIR)$(libdir)/$(TARGET)
+	rm -f $(DESTDIR)$(bindir)/Berlin-config
 clean:	
-		rm -f $(TARGET)
-		rm -f *.o *.d
+	rm -f $(TARGET)
+	rm -f *.o *.d
 
 distclean:	clean
-		rm -f Makefile $(hdir)/Server/config.hh $(cdir)/Server/subdirs.mk \
-			$(cdir)/Server/local.mk $(cdir)/Server/module.mk \
-			$(cdir)/Server/config.log $(cdir)/Server/config.status \
-			$(bdir)/Berlin-config $(builddir)/config/berlinrc
+	rm -f Makefile $(hdir)/config.hh \
+	  $(cdir)/Server/local.mk $(cdir)/Server/module.mk \
+	  $(cdir)/Server/config.log $(cdir)/Server/config.status \
+	  $(bdir)/Berlin-config $(builddir)/config/berlinrc
 
 maintainer-clean: distclean
-		rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/config.hh.in \
-			$(top_srcdir)/config/Server/aclocal.m4
+	rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/config.hh.in \
+	  $(top_srcdir)/config/Server/aclocal.m4
 
 %.d:	$(srcdir)/%.cc $(hdir)/Berlin/%.hh
 	@echo generating dependencies for $(<F)

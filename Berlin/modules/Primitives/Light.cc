@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/DrawingKit3D.hh>
-#include "Primitive/Light.hh"
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/DrawingKit3D.hh>
+#include "Light.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 Light::Light(const Color &color, double intensity) : _color(color), _intensity(intensity) {}
 Light::~Light() {}
@@ -44,29 +44,29 @@ void Light::draw(DrawTraversal_ptr traversal)
   drawing->restore();
 }
 
-void Light::pick(Warsaw::PickTraversal_ptr traversal)
+void Light::pick(Fresco::PickTraversal_ptr traversal)
 {
   MonoGraphic::traverse(traversal);
 }
 
-DirectionalLight::DirectionalLight(const Warsaw::Color &color, double intensity, const Warsaw::Vertex &direction)
+DirectionalLight::DirectionalLight(const Fresco::Color &color, double intensity, const Fresco::Vertex &direction)
   : Light(color, intensity), _direction(direction) {}
-void DirectionalLight::do_draw(Warsaw::DrawingKit3D_ptr drawing)
+void DirectionalLight::do_draw(Fresco::DrawingKit3D_ptr drawing)
 {
   drawing->directional_light(_color, _intensity, _direction);
 }
 
-PointLight::PointLight(const Warsaw::Color &color, double intensity, const Warsaw::Vertex &position)
+PointLight::PointLight(const Fresco::Color &color, double intensity, const Fresco::Vertex &position)
   : Light(color, intensity), _position(position) {}
-void PointLight::do_draw(Warsaw::DrawingKit3D_ptr drawing)
+void PointLight::do_draw(Fresco::DrawingKit3D_ptr drawing)
 {
   drawing->point_light(_color, _intensity, _position);
 }
 
-SpotLight::SpotLight(const Warsaw::Color &color, double intensity, const Warsaw::Vertex &position, const Warsaw::Vertex &direction,
+SpotLight::SpotLight(const Fresco::Color &color, double intensity, const Fresco::Vertex &position, const Fresco::Vertex &direction,
 		     double dropoffrate, double cutoffangle)
   : Light(color, intensity), _position(position), _direction(direction), _dropoffrate(dropoffrate), _cutoffangle(cutoffangle) {}
-void SpotLight::do_draw(Warsaw::DrawingKit3D_ptr drawing)
+void SpotLight::do_draw(Fresco::DrawingKit3D_ptr drawing)
 {
   drawing->spot_light(_color, _intensity, _position, _direction, _dropoffrate, _cutoffangle);
 }

@@ -1,9 +1,8 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -25,221 +24,102 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
+
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-AC_CONFIG_HEADER($builddir/include/Berlin/config.hh:include/Berlin/config.hh.in)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Berlin, 0.3.0, devel@fresco.org)
+AC_CONFIG_SRCDIR(../LICENSE)
+AC_CONFIG_HEADER(include/Berlin/config.hh:config/config.hh.in)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
 
-AC_HEADLINE(dnl
-Berlin Server, The Berlin Server, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
+dnl AC_HEADLINE(dnl
+dnl Berlin Server, The Berlin Server, dnl
+dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+dnl VERSION)
 
 AC_PROG_MAKE_SET
+AC_PROG_INSTALL
 AC_LANG_CPLUSPLUS
+
 dnl ------------------------------------------------------------------
-dnl Options controlling what to build
+dnl General flags
 dnl ------------------------------------------------------------------
 
-AC_ARG_ENABLE(berlin,
-	[  --disable-berlin        Don't build libBerlin],[
-	enable_berlin="$enableval"],[
-	if test ".$enable_berlin" = . ; then
-		enable_berlin=yes
-	fi])
-AC_ARG_ENABLE(kits,
-	[  --enable-kits=LIST      Specify which kits to build (default: all)],
-[	if test ".$enableval" = .yes ; then
-		enable_kits=all
-	else
-		enable_kits="$enableval"
-	fi],[
-	if test ".$enable_kits" = . ; then	
-		enable_kits=all
-	fi])
-AC_ARG_ENABLE(drawing,
-	[  --enable-drawing=LIST   Specify which DrawingKits to build (default: all)], [
-	if test ".$enableval" = .yes ; then
-		enable_drawing_kits=all
-	else
-		enable_drawing_kits="$enableval"
-	fi],[
-	if test ".$enable_drawing_kits" = . ; then
-		enable_drawing_kits=all
-	fi])
-AC_ARG_ENABLE(server,
-	[  --disable-server        Don't build the server],[
-	enable_server="$enableval"],[
-	enable_server=yes])
+AC_ARG_ENABLE(complete-deps,
+              AC_HELP_STRING([--disable-complete-deps].[Use a faster, but less correct, dependency generator]),
+              [complete_deps_enabled="$enableval"],
+              [complete_deps_enabled=yes])
+
+DEPFLAGS=
+if test ".$complete_deps_enabled" = .yes ; then
+  AC_SUBST(DEPFLAGS,-M)
+else
+  AC_SUBST(DEPFLAGS,-MM)
+fi
+
+FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Text rendering
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Text Rendering)
 
-dnl Dumb hard-wired check for freetype.  Change this to accept different
-dnl text rendering engines?
+AC_MSG_NOTICE([Text Rendering])
 
-AM_PATH_FREETYPE(6.1.0,,[AC_MSG_ERROR([can't compile Server without freetype])])
-
+FRESCO_FREETYPE_CHECK(6.1.0,,[AC_MSG_ERROR([can't compile Server without freetype])])
 AC_CHECK_HEADERS(png.h)
 AC_CHECK_LIB(png, png_read_info,,[AC_MSG_ERROR([can't compile libBerlin without libpng])])
 
 dnl ------------------------------------------------------------------
 dnl Graphics environment
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Graphics Environment)
 
-BERLIN_CONSOLE_CHECK
+AC_MSG_NOTICE([Graphics Environment])
 
-if test ".$enable_drawing_kits" = .all ; then
-	enable_drawing_kits="libArt openGL PostScript"
-elif test ".$enable_drawing_kits" = .no ; then
-	enable_drawing_kits=
-else
-	dnl Handle comma-separated lists, too
-	enable_drawing_kits=["`echo $enable_drawing_kits | sed 's/[, ]\+/ /g'`"]
+enabled_drawing_kits=
+
+FRESCO_LIBART_CHECK
+if test ".$HAVE_LIBART" = .1 ; then
+  enabled_drawing_kits="$enabled_drawing_kits Drawing/libArt"
 fi
 
-for kit in $enable_drawing_kits ; do
-	if test -d $srcdir/src/Drawing/$kit ; then
-		eval enable_$kit=yes
-	else
-		eval enable_$kit=no
-	fi
-done
-
-tested_drawing_kits=
-if test ".$enable_libArt" = .yes ; then
-	BERLIN_LIB_LIBART
-	if test ".$ac_cv_lib_libArt" = .yes ; then
-		tested_drawing_kits="$tested_drawing_kits Drawing/libArt"
-	fi
-fi
-
-if test ".$enable_openGL" = .yes ; then
-	BERLIN_LIB_MESA
-	if test ".$ac_cv_lib_Mesa" = .yes ; then
-		tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
-	fi
-fi
-
-if test ".$enable_PostScript" = .yes ; then
-	tested_drawing_kits="$tested_drawing_kits Drawing/PostScript"
-fi
-
-dnl ------------------------------------------------------------------
-dnl other kits to build
-dnl ------------------------------------------------------------------
-
-dnl Enable all Kits present if $enable_kits == all (the default)
-if test ".$enable_kits" = .all ; then
-	enable_kits=
-	for kit in Layout Command Tool Image Figure Primitive Text Widget/Motif Gadget Desktop Unidraw
-	do
-		if test -d $srcdir/src/$kit ; then
-			enable_kits="$enable_kits $kit"
-		fi
-	done
-	enable_kits=["`echo $enable_kits | sed 's/^ //'`"]
-	if test ".$enable_GGI" = .yes; then
-		enable_kits="$enable_kits GGI"
-	fi
-elif test ".$enable_kits" = .no ; then
-	enable_kits=
-else
-	dnl Handle comma-separated lists, too
-	enable_kits=["`echo $enable_kits | sed 's/[, ]\+/ /g'`"]
+FRESCO_OPENGL_CHECK
+if test ".$HAVE_GL" = .1 ; then
+  enabled_drawing_kits="$enabled_drawing_kits Drawing/openGL"
 fi
 
 dnl ------------------------------------------------------------------
 dnl Prague and Warsaw
 dnl ------------------------------------------------------------------
-AC_PACKAGE(Prague, $VERSION)
+
+FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 LIBS="$LIBS -lPrague $Prague_LIBS"
-AC_PACKAGE(Warsaw, $VERSION)
-CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
-LIBS="$LIBS -lWarsaw $Warsaw_LIBS"
+FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
+LIBS="$LIBS -lBabylon $Babylon_LIBS"
+FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
+LIBS="$LIBS -lFresco $Fresco_LIBS"
 
 dnl ------------------------------------------------------------------
 dnl some helper utils
 dnl ------------------------------------------------------------------
 
-AC_ARG_ENABLE(jprof, [--enable-jprof   enable profiling with the jprof tool],[ jprof="yes"])
-
-AC_ARG_ENABLE(lclog, [--enable-lclog   enable lifecycle logging],[ lclog="yes"])
-
-AC_ARG_ENABLE(rmdebug, [--enable-rmdebug   enable region management debugging (i.e. blinking regions)],[ rmdebug="yes"])
+AC_ARG_ENABLE(jprof, AC_HELP_STRING([--enable-jprof],[enable profiling with the jprof tool]),[AC_DEFINE(JPROF)])
+AC_ARG_ENABLE(lclog, AC_HELP_STRING([--enable-lclog],[enable lifecycle logging]),[AC_DEFINE(LCLOG)])
+AC_ARG_ENABLE(rmdebug, AC_HELP_STRING([--enable-rmdebug],[enable region management debugging]),[AC_DEFINE(RMDEBUG)])
 
 dnl ------------------------------------------------------------------
 dnl Decisions
 dnl ------------------------------------------------------------------
 
-dnl Decide which additional subdirectories are needed
-BERLIN=
-if test ".$enable_berlin" = .yes ; then
-	BERLIN="src/Berlin"
-fi
-AC_SUBST(BERLIN)
-
-CONSOLES=
-for con in $tested_consoles
-do
-	CONSOLES="$CONSOLES src/$con"
-done
-
-AC_SUBST(CONSOLES)
-
-KITS=
-for kit in $tested_drawing_kits $enable_kits
-do
-	KITS="$KITS src/$kit"
-done
-
-AC_SUBST(KITS)
-
-SERVER="server"
-AC_SUBST(SERVER)
-
-JPROF=
-if test ".$jprof" != .yes ; then
-	jprof="no"
-else
-	JPROF="yes"
-	AC_SUBST(JPROF)
-fi
-
-LCLOG=
-if test ".$lclog" != .yes ; then
-	lclog="no"
-else
-	LCLOG="yes"
-	AC_DEFINE(LCLOG)
-fi
-
-RMDEBUG=
-if test ".$rmdebug" != .yes ; then
-	rmdebug="no"
-else
-	RMDEBUG="yes"
-	AC_DEFINE(RMDEBUG)
-fi
-
 dnl ------------------------------------------------------------------
 dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Summary)
-AC_MSG_RESULT([Build libBerlin:                         $enable_berlin])
-AC_MSG_RESULT([Build Consoles:                         $tested_consoles])
-AC_MSG_RESULT([Build Kits:                             $tested_drawing_kits $enable_kits])
+
+AC_MSG_NOTICE(Summary)
+AC_MSG_RESULT([Build DrawingKits:                      $enabled_drawing_kits])
 AC_MSG_RESULT([Add profiling support:                   $jprof])
 AC_MSG_RESULT([Add lifecycle log support:               $lclog])
 AC_MSG_RESULT([Add region management debugging support: $rmdebug])
@@ -247,40 +127,19 @@ AC_MSG_RESULT([Add region management debugging support: $rmdebug])
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
 
-mkdir -p $builddir/bin
-mkdir -p $builddir/lib
-mkdir -p $builddir/modules/Console
-mkdir -p $builddir/config/Server
-mkdir -p $builddir/include/Berlin
-mkdir -p $builddir/src/Berlin
-mkdir -p $builddir/src/Console/$console
-console_output=
-for con in $CONSOLES ; do
-	mkdir -p $builddir/$con
-	console_output="$console_output $builddir/$con/Makefile:$con/Makefile.in"
-done
-kit_output=
-for kit in $KITS ; do
-	mkdir -p $builddir/$kit
-	kit_output="$kit_output $builddir/$kit/Makefile:$kit/Makefile.in"
+AC_MSG_NOTICE([Output Substitution])
+
+for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Images Figures Primitives Text Widgets/Motif Gadgets Desktop Unidraw ; do
+  mkdir -p modules/$kit
+  AC_CONFIG_FILES([modules/$kit/Makefile])
 done
 
-mkdir -p $builddir/server
+AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-config.in],[chmod +x ../bin/Berlin-config])
+AC_CONFIG_FILES([config/local.mk config/module.mk])
+AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile etc/berlinrc:config/berlinrc.in])
 
-AC_OUTPUT([
-	$builddir/bin/Berlin-config:config/package-config.in
-	$builddir/config/Server/subdirs.mk:config/Server/subdirs.mk.in
-	$builddir/config/Server/local.mk:config/Server/local.mk.in
-	$builddir/config/Server/module.mk:config/Server/module.mk.in
-	$builddir/src/Berlin/Makefile:src/Berlin/Makefile.in
-	$console_output
-	$kit_output
-	$builddir/server/Makefile:server/Makefile.in
-	$builddir/config/berlinrc:config/berlinrc.in
-],[
-	chmod +x $builddir/bin/Berlin-config
-],[
-	builddir=$builddir
-])
+mkdir -p lib
+mkdir -p etc
+
+AC_OUTPUT

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,15 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Math.hh>
-#include "Layout/LayoutManager.hh"
+#include "LayoutManager.hh"
 #include <strstream>
 
-using namespace Warsaw;
+using namespace Fresco;
 
 namespace
 {

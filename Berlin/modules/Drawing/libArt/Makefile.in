@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -21,23 +21,19 @@
 
 SHELL		:= /bin/sh
 
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/modules/Drawing/libArt
 builddir	:= ../../..
 cdir		:= $(builddir)/config
 
 include $(cdir)/local.mk
-include $(cdir)/Server/local.mk
-
-srcdir		:= $(top_srcdir)/src/Drawing/libArt
-hdir		:= $(top_srcdir)/include/Drawing/libArt
 
 # Compilation and linking flags.
-CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @LIBART_CPPFLAGS@ @FREETYPE_CPPFLAGS@)
-LIBS		+= -lBerlin @LIBART_LIBS@ @FREETYPE_LIBS@
+CPPFLAGS	+= $(filter-out -I/usr/include, @LIBART_CPPFLAGS@ @FREETYPE_CPPFLAGS@)
+LIBS		+= @LIBART_LIBS@ @FREETYPE_LIBS@
 
-SRC		:= LibArtUnifont.cc LibArtFTFont.cc LibArtRaster.cc LibArtDrawingKit.cc 
+SRC		:= Unifont.cc FTFont.cc Raster.cc DrawingKit.cc 
 
 MODULE		:= LibArtDrawingKit
 
-vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Drawing/libArt
-
-include $(cdir)/Server/module.mk
+include $(cdir)/module.mk

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,35 +19,35 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FocusImpl_hh
-#define _FocusImpl_hh
+#ifndef _Berlin_FocusImpl_hh
+#define _Berlin_FocusImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/Focus.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/Focus.hh>
 #include <Berlin/DefaultPOA.hh>
 #include <vector>
 #include <stack>
 
-class FocusImpl : public virtual POA_Warsaw::Focus,
+class FocusImpl : public virtual POA_Fresco::Focus,
                   public virtual PortableServer::RefCountServantBase,
                   private DefaultPOA
 {
   friend class EventManager;
 public:
-  FocusImpl(Warsaw::Input::Device device) : _device(device) {}
+  FocusImpl(Fresco::Input::Device device) : _device(device) {}
   virtual ~FocusImpl() {}
-  virtual Warsaw::Input::Device device() { return _device;}
+  virtual Fresco::Input::Device device() { return _device;}
 
-  virtual bool request(Warsaw::Controller_ptr) = 0;
-  virtual void restore(Warsaw::Region_ptr) = 0;
-  virtual void damage(Warsaw::Region_ptr) = 0;
-  virtual void dispatch(Warsaw::Input::Event &) = 0;
+  virtual bool request(Fresco::Controller_ptr) = 0;
+  virtual void restore(Fresco::Region_ptr) = 0;
+  virtual void damage(Fresco::Region_ptr) = 0;
+  virtual void dispatch(Fresco::Input::Event &) = 0;
   PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
 protected:
   virtual void activate_composite() {}
 private:
-  const Warsaw::Input::Device _device;
+  const Fresco::Input::Device _device;
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 2002 Tobias Hunger <tobias@fresco.org>
- * http://www.berlin-consortium.org
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,7 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/Logger.hh>
-#include <Console/SDL/Drawable.hh>
+#include "Drawable.hh"
 
 
 // ---------------------------------------------------------------
@@ -30,8 +30,8 @@
 // ---------------------------------------------------------------
 
 SDL::Drawable::Drawable(const char *display,
-			Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			Warsaw::PixelCoord d)
+			Fresco::PixelCoord w, Fresco::PixelCoord h,
+			Fresco::PixelCoord d)
 {
   Prague::Trace trace("SDL::Drawable::Drawable()");
 
@@ -96,11 +96,11 @@ SDL::Drawable::~Drawable()
 
 
 
-Warsaw::Drawable::PixelFormat SDL::Drawable::pixel_format()
+Fresco::Drawable::PixelFormat SDL::Drawable::pixel_format()
 {
   Prague::Trace trace("SDL::Drawable::pixel_format()");
 
-  Warsaw::Drawable::PixelFormat format;
+  Fresco::Drawable::PixelFormat format;
   const SDL_PixelFormat *pf = _surface->format;
 
   format.depth       = pf->BitsPerPixel;
@@ -119,11 +119,11 @@ Warsaw::Drawable::PixelFormat SDL::Drawable::pixel_format()
 
 
 
-Warsaw::Drawable::BufferFormat SDL::Drawable::buffer_format()
+Fresco::Drawable::BufferFormat SDL::Drawable::buffer_format()
 {
   Prague::Trace trace("SDL::Drawable::buffer_format()");
 
-  Warsaw::Drawable::BufferFormat format;
+  Fresco::Drawable::BufferFormat format;
   format.skip_width = 0;
   format.width = width();
   format.skip_height = 0;
@@ -134,41 +134,41 @@ Warsaw::Drawable::BufferFormat SDL::Drawable::buffer_format()
 
 
 
-Warsaw::PixelCoord SDL::Drawable::width() const { return _width;}
+Fresco::PixelCoord SDL::Drawable::width() const { return _width;}
 
 
-Warsaw::PixelCoord SDL::Drawable::height() const { return _height;}
+Fresco::PixelCoord SDL::Drawable::height() const { return _height;}
 
 
-Warsaw::PixelCoord SDL::Drawable::vwidth() const { return _width;}
+Fresco::PixelCoord SDL::Drawable::vwidth() const { return _width;}
 
 
-Warsaw::PixelCoord SDL::Drawable::vheight() const { return _height;}
+Fresco::PixelCoord SDL::Drawable::vheight() const { return _height;}
 
 
-Warsaw::Coord SDL::Drawable::resolution(Warsaw::Axis a) const
+Fresco::Coord SDL::Drawable::resolution(Fresco::Axis a) const
 {
   return 0.1; // FIXME: hack, see below
-  //  return a == Warsaw::xaxis ?
+  //  return a == Fresco::xaxis ?
   //    0.1 * 1.0:
   //    0.1 * 1.0; // FIXME: get some physical size in there.
 }
 
 
-Warsaw::Coord SDL::Drawable::dpi(Warsaw::Axis a) const {
+Fresco::Coord SDL::Drawable::dpi(Fresco::Axis a) const {
   return resolution(a) * 254.0;
 }
 
 
-inline Warsaw::PixelCoord SDL::Drawable::row_length() const {
+inline Fresco::PixelCoord SDL::Drawable::row_length() const {
   return _width * _depth; // return bytes-per-row
 }
 
 void SDL::Drawable::flush() { SDL_UpdateRect( _surface, 0, 0, _width, _height);}
 
 
-void SDL::Drawable::flush(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
-			Warsaw::PixelCoord w, Warsaw::PixelCoord h)
+void SDL::Drawable::flush(Fresco::PixelCoord x, Fresco::PixelCoord y,
+			Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
   if (x < 0) { w += x; x = 0;}
   if (y < 0) { h += y; y = 0;}
@@ -176,7 +176,7 @@ void SDL::Drawable::flush(Warsaw::PixelCoord x, Warsaw::PixelCoord y,
 }
 
 
-SDL::Drawable::Pixel SDL::Drawable::map(const Warsaw::Color &c) const
+SDL::Drawable::Pixel SDL::Drawable::map(const Fresco::Color &c) const
 {
   double scale = 0xff;
   return SDL_MapRGBA(_surface->format, 
@@ -187,9 +187,9 @@ SDL::Drawable::Pixel SDL::Drawable::map(const Warsaw::Color &c) const
 }
 
 
-void SDL::Drawable::blit(Warsaw::PixelCoord x1, Warsaw::PixelCoord y1, 
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h, 
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+void SDL::Drawable::blit(Fresco::PixelCoord x1, Fresco::PixelCoord y1, 
+			 Fresco::PixelCoord w, Fresco::PixelCoord h, 
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   Prague::Trace("SDL::Drawable::blit: surface-surface");
   SDL_Rect r1,r2;
@@ -206,9 +206,9 @@ void SDL::Drawable::blit(Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
 
 
 void SDL::Drawable::blit(const SDL::Drawable &src,
-			 Warsaw::PixelCoord x1, Warsaw::PixelCoord y1, 
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+			 Fresco::PixelCoord x1, Fresco::PixelCoord y1, 
+			 Fresco::PixelCoord w, Fresco::PixelCoord h,
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   Prague::Trace("SDL::Drawable::blit: other-surface");
   SDL_Rect r1,r2;
@@ -223,17 +223,17 @@ void SDL::Drawable::blit(const SDL::Drawable &src,
 
 
 void SDL::Drawable::blit(const ::Console::Drawable & d,
-			 Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h,
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+			 Fresco::PixelCoord x1, Fresco::PixelCoord y1,
+			 Fresco::PixelCoord w, Fresco::PixelCoord h,
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   blit(static_cast<const SDL::Drawable &>(d), x1, y1, w, h, x2, y2);
 }
 
-void SDL::Drawable::blit(Warsaw::Drawable_ptr d, 
-			 Warsaw::PixelCoord x1, Warsaw::PixelCoord y1, 
-			 Warsaw::PixelCoord w, Warsaw::PixelCoord h, 
-			 Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
+void SDL::Drawable::blit(Fresco::Drawable_ptr d, 
+			 Fresco::PixelCoord x1, Fresco::PixelCoord y1, 
+			 Fresco::PixelCoord w, Fresco::PixelCoord h, 
+			 Fresco::PixelCoord x2, Fresco::PixelCoord y2)
 {
   Prague::Trace("SDL::Drawable::blit 3");
   SDL::Drawable *servant = dynamic_cast<SDL::Drawable *>(::Console::instance()->

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,24 +20,24 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Subject.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Subject.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/Color.hh>
-#include <Prague/Sys/Tracer.hh>
-#include "Tool/Frame.hh"
-#include "Tool/Beveler.hh"
+#include "Frame.hh"
+#include "Beveler.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 Frame::Frame(Coord t, Frame::Renderer *r) : _thickness(t), _allocation(new RegionImpl), _renderer(r) {}
 Frame::~Frame() { Trace trace("Frame::~Frame");}
-void Frame::request(Warsaw::Graphic::Requisition &requisition)
+void Frame::request(Fresco::Graphic::Requisition &requisition)
 {
   MonoGraphic::request(requisition);
   Coord t = _thickness + _thickness;
@@ -73,8 +73,8 @@ void Frame::traverse(Traversal_ptr traversal)
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
   try { traversal->traverse_child (child, 0, info.allocation, info.transformation);}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }
 
 void Frame::extension(const Allocation::Info &info, Region_ptr region)
@@ -86,7 +86,7 @@ void Frame::extension(const Allocation::Info &info, Region_ptr region)
 void Frame::allocate(Tag, const Allocation::Info &info)
 {
   Trace trace(this, "Frame::allocate");
-  Warsaw::Graphic::Requisition req;
+  Fresco::Graphic::Requisition req;
   GraphicImpl::init_requisition(req);
   MonoGraphic::request(req);
   _allocation->valid = true;
@@ -119,13 +119,13 @@ void Frame::allocate(Tag, const Allocation::Info &info)
   info.transformation->translate(delta);
 }
 
-void Frame::draw(Warsaw::DrawTraversal_ptr traversal)
+void Frame::draw(Fresco::DrawTraversal_ptr traversal)
 {
   Trace trace(this, "Frame::draw");
   if (_renderer) _renderer->draw(traversal);
 }
 
-void Frame::allocate_span(const Warsaw::Graphic::Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
+void Frame::allocate_span(const Fresco::Graphic::Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
 {
   a.begin += margin;
   a.end -= margin;

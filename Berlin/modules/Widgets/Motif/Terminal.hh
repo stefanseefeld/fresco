@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,9 @@
 #ifndef _Motif_Terminal_hh
 #define _Motif_Terminal_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Warsaw/StreamBuffer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/CommandKit.hh>
+#include <Fresco/StreamBuffer.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ObserverImpl.hh>
 #include <Berlin/ControllerImpl.hh>
@@ -56,15 +56,15 @@ class Terminal : public MonoGraphic
   friend class Input;
   friend class Output;
  public:
-  Terminal(Warsaw::CommandKit_ptr);
-  Warsaw::StreamBuffer_ptr input() { return Warsaw::StreamBuffer::_duplicate(ibuf);}
-  Warsaw::StreamBuffer_ptr output() { return Warsaw::StreamBuffer::_duplicate(obuf);}
+  Terminal(Fresco::CommandKit_ptr);
+  Fresco::StreamBuffer_ptr input() { return Fresco::StreamBuffer::_duplicate(ibuf);}
+  Fresco::StreamBuffer_ptr output() { return Fresco::StreamBuffer::_duplicate(obuf);}
  private:
   Input *_input;
   Output *_output;
   Prague::TTYAgent *agent;
-  RefCount_var<Warsaw::StreamBuffer> ibuf;
-  RefCount_var<Warsaw::StreamBuffer> obuf;
+  RefCount_var<Fresco::StreamBuffer> ibuf;
+  RefCount_var<Fresco::StreamBuffer> obuf;
 };
 
 };

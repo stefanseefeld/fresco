@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,20 +19,20 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Provider.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Prague/Sys/Tracer.hh>
-#include "Layout/Box.hh"
-#include "Layout/LayoutManager.hh"
-#include "Layout/Placement.hh"
+#include "Box.hh"
+#include "LayoutManager.hh"
+#include "Placement.hh"
 #include <iostream>
 #include <strstream>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 Box::Box(LayoutManager *l)
   : _layout(l),
@@ -59,7 +59,7 @@ Box::~Box()
   delete _layout;
 }
 
-void Box::request(Warsaw::Graphic::Requisition &r)
+void Box::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace(this, "Box::request");
   if (!_requested)
@@ -69,7 +69,7 @@ void Box::request(Warsaw::Graphic::Requisition &r)
       long n = num_children();
       if (n > 0)
 	{
-	  Warsaw::Graphic::Requisition *r = children_requests();
+	  Fresco::Graphic::Requisition *r = children_requests();
 	  _layout->request(n, r, _requisition);
 	  deallocate_requisitions(r);
 	}
@@ -216,7 +216,7 @@ LayoutManager::Allocations Box::children_allocations(Region_ptr allocation)
   if (!_cache_allocations)
     {
       CORBA::Long children = num_children();
-      Warsaw::Graphic::Requisition *childrenRequisitions = children_requests();
+      Fresco::Graphic::Requisition *childrenRequisitions = children_requests();
 	
       // cache integrated form of children requisitions
       if (!_requested)
@@ -292,8 +292,8 @@ void Box::traverse_with_allocation(Traversal_ptr t, Region_ptr r)
        */
       tx->translate(origin);
       try { t->traverse_child(_children[i].peer, _children[i].localId, region_this, tx_this);}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Warsaw::Graphic::_nil ();}
-      catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Fresco::Graphic::_nil ();}
+      catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Fresco::Graphic::_nil ();}
       if (!t->ok()) break;
     }
 #ifndef USE_ALLOCATION_CACHE
@@ -311,8 +311,8 @@ void Box::traverse_without_allocation(Traversal_ptr t)
 	{
 	  if (CORBA::is_nil(i->peer)) continue;
 	  try { t->traverse_child (i->peer, i->localId, Region::_nil (), Transform::_nil ());}
-	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Warsaw::Graphic::_nil ();}
-	  catch (const CORBA::COMM_FAILURE &) { i->peer = Warsaw::Graphic::_nil ();}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Fresco::Graphic::_nil ();}
+	  catch (const CORBA::COMM_FAILURE &) { i->peer = Fresco::Graphic::_nil ();}
 	}
     }
   else
@@ -321,8 +321,8 @@ void Box::traverse_without_allocation(Traversal_ptr t)
 	{
 	  if (CORBA::is_nil (i->peer)) continue;
 	  try { t->traverse_child (i->peer, i->localId, Region::_nil(), Transform::_nil());}
-	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Warsaw::Graphic::_nil();}
-	  catch (const CORBA::COMM_FAILURE &) { i->peer = Warsaw::Graphic::_nil();}
+	  catch (const CORBA::OBJECT_NOT_EXIST &) { i->peer = Fresco::Graphic::_nil();}
+	  catch (const CORBA::COMM_FAILURE &) { i->peer = Fresco::Graphic::_nil();}
 	}
     }
 }

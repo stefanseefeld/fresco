@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,10 +24,10 @@
 
 #include <Prague/Sys/Time.hh>
 #include <Prague/Sys/Timer.hh>
-#include <Tool/TriggerImpl.hh>
+#include "TriggerImpl.hh"
 
-class Stepper : public TriggerImpl
 //. The Stepper class implements a button with autorepeat.
+class Stepper : public TriggerImpl
 {
   class Notifier;
   friend class Notifier;
@@ -35,8 +35,8 @@ public:
   Stepper();
   ~Stepper();
 //protected:
-  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
   virtual void step();
 private:
   void start();

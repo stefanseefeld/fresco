@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,9 +23,9 @@
 #ifndef _Composition_hh
 #define _Composition_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/View.hh>
-#include <Warsaw/TextKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/View.hh>
+#include <Fresco/TextKit.hh>
 #include <Berlin/PolyGraphic.hh>
 #include <map>
 
@@ -34,20 +34,20 @@ class Compositor;
 class Composition : public PolyGraphic
 {
  public:
-  Composition(Warsaw::DrawingKit_ptr, Compositor *);
+  Composition(Fresco::DrawingKit_ptr, Compositor *);
   virtual ~Composition();
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void extension(const Warsaw::Allocation::Info &, Warsaw::Region_ptr);
-  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
   virtual void need_resize();
-  virtual void need_resize(Warsaw::Tag);
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  virtual void need_resize(Fresco::Tag);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
  protected:
-  RegionImpl **children_allocations(Warsaw::Region_ptr);
-  Warsaw::DrawingKit_var canonicalDK;
+  RegionImpl **children_allocations(Fresco::Region_ptr);
+  Fresco::DrawingKit_var canonicalDK;
   Compositor  *compositor;
   bool requested;
-  Warsaw::Graphic::Requisition requisition;
+  Fresco::Graphic::Requisition requisition;
 };
 
 #endif

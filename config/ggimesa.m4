@@ -1,7 +1,7 @@
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -19,19 +19,18 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_LIB_GGIMESA(mandatory-flag)
+dnl FRESCO_GGIMESA_CHECK(mandatory-flag)
 dnl
 dnl Checks if GGIMesa is found. If it is, $ac_cv_lib_GGIMesa is set to "yes".
 
-AC_DEFUN([BERLIN_LIB_GGIMESA],[
-
-	AC_ARG_WITH(ggimesa-prefix,
-		[  --with-ggimesa-prefix=PFX Prefix for GGIMesa],[
-		ggimesa_prefix="$withval"])
+AC_DEFUN([FRESCO_GGIMESA_CHECK],
+  [AC_ARG_WITH(ggimesa-prefix,
+	       AC_HELP_STRING([--with-ggimesa-prefix],[Prefix for GGIMesa]),
+               [ggimesa_prefix="$withval"])
 
 	dnl Check for GGIMesa includes
 	if test x$ggimesa_prefix != x ; then
-		GGIMESA_CPPFLAGS=-I$ggimesa_prefix/include
+	  GGIMESA_CPPFLAGS=-I$ggimesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
 	CPPFLAGS="$GGIMESA_CPPFLAGS $CPPFLAGS"
@@ -41,25 +40,25 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 	dnl Check for GGIMesa libs
 	if test x$no_ggigl = x ; then
 
-		if test x$ggimesa_prefix != x ; then
-			GGIMESA_LIBS=-L$ggimesa_prefix/lib -lgii
-		fi
-		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$GGIMESA_LIBS $LDFLAGS"
-		AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_ggigl=yes)
-		LDFLAGS="$save_LDFLAGS"
+	  if test x$ggimesa_prefix != x ; then
+	    GGIMESA_LIBS=-L$ggimesa_prefix/lib -lgii
+	  fi
+	  save_LDFLAGS="$LDFLAGS"
+	  LDFLAGS="$GGIMESA_LIBS $LDFLAGS"
+	  AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_ggigl=yes)
+	  LDFLAGS="$save_LDFLAGS"
 	fi
 
 	if test x$no_ggigl != x ; then
 
-		ac_cv_lib_GGIMesa=no		
-		AC_MSG_WARN(GGI OpenGL library was not found!)
+	  ac_cv_lib_GGIMesa=no		
+	  AC_MSG_WARN(GGI OpenGL library was not found!)
 	else
-		ac_cv_lib_GGIMesa=yes
-		GGIMESA_LIBS="$GGIMESA_LIBS -lGL -lGLU"
+	  ac_cv_lib_GGIMesa=yes
+	  AC_SUBST(HAVE_GGIMESA, 1)
+	  GGIMESA_LIBS="$GGIMESA_LIBS -lGL -lGLU"
 	fi
 
 	AC_SUBST(GGIMESA_CPPFLAGS)
 	AC_SUBST(GGIMESA_LIBS)
-
 ])

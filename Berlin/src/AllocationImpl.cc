@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,15 +20,15 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Screen.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Screen.hh>
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Provider.hh"
 #include "Berlin/TransformImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 AllocationImpl::AllocationImpl()
 {
@@ -83,7 +83,7 @@ void AllocationImpl::clear()
 
 Allocation::Info *AllocationImpl::get(CORBA::Long l)
 {
-  Warsaw::Allocation::Info_var info = new Warsaw::Allocation::Info;
+  Fresco::Allocation::Info_var info = new Fresco::Allocation::Info;
   info->allocation = _list[l].allocation->_this();
   info->transformation = _list[l].transformation->_this();
   info->root = _list[l].root;

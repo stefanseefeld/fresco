@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,17 +20,17 @@
  * MA 02139, USA.
  */
 
-#include "Figure/PolyFigure.hh"
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/IO.hh>
-#include <Warsaw/PickTraversal.hh>
+#include <Prague/Sys/Tracer.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Traversal.hh>
+#include <Fresco/IO.hh>
+#include <Fresco/PickTraversal.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Prague/Sys/Tracer.hh>
+#include "PolyFigure.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 PolyFigure::PolyFigure()
   : _tx(new TransformImpl),
@@ -71,7 +71,7 @@ void PolyFigure::allocate(Tag, const Allocation::Info &info)
   info.transformation->premultiply(Transform_var(_tx->_this()));
 }
 
-void PolyFigure::request(Warsaw::Graphic::Requisition &r)
+void PolyFigure::request(Fresco::Graphic::Requisition &r)
 {
   GraphicImpl::init_requisition(r);
   Impl_var<RegionImpl> region(new RegionImpl);
@@ -126,8 +126,8 @@ void PolyFigure::traverse(Traversal_ptr traversal)
       Graphic_var child = _children[i].peer;
       if (CORBA::is_nil(child)) continue;
       try { traversal->traverse_child(child, _children[i].localId, Region_var(_bbox->_this()), Transform_var(_tx->_this()));}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Warsaw::Graphic::_nil ();}
-      catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Warsaw::Graphic::_nil ();}
+      catch (const CORBA::OBJECT_NOT_EXIST &) { _children [i].peer = Fresco::Graphic::_nil ();}
+      catch (const CORBA::COMM_FAILURE &) { _children [i].peer = Fresco::Graphic::_nil ();}
     }
 
 }

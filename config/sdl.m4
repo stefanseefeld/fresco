@@ -5,19 +5,22 @@
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
 
-dnl AM_PATH_SDL_BERLIN([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl FRESCO_SDL_CHECK([MINIMUM-VERSION])
 dnl Test for SDL, and define SDL_CPPFLAGS and SDL_LIBS
 dnl
-AC_DEFUN(AM_PATH_SDL_BERLIN,
+AC_DEFUN(FRESCO_SDL_CHECK,
 [dnl 
 dnl Get the cflags and libraries from the sdl-config script
 dnl
-AC_ARG_WITH(sdl-prefix,[  --with-sdl-prefix=PFX   Prefix where SDL is installed (optional)],
+AC_ARG_WITH(sdl-prefix,
+            AC_HELP_STRING([--with-sdl-prefix],[Prefix where SDL is installed (optional)]),
             sdl_prefix="$withval", sdl_prefix="")
-AC_ARG_WITH(sdl-exec-prefix,[  --with-sdl-exec-prefix=PFX Exec prefix where SDL is installed (optional)],
+AC_ARG_WITH(sdl-exec-prefix,
+            AC_HELP_STRING([--with-sdl-exec-prefix],[Exec prefix where SDL is installed (optional)]),
             sdl_exec_prefix="$withval", sdl_exec_prefix="")
-AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run a test SDL program],
-		    , enable_sdltest=yes)
+AC_ARG_ENABLE(sdltest,
+              AC_HELP_STRING([--disable-sdltest],[Do not try to compile and run a test SDL program]),
+	      ,enable_sdltest=yes)
 
   if test x$sdl_exec_prefix != x ; then
      sdl_args="$sdl_args --exec-prefix=$sdl_exec_prefix"
@@ -122,9 +125,10 @@ int main (int argc, char *argv[])
   fi
   if test "x$no_sdl" = x ; then
      AC_MSG_RESULT(yes)
-     ifelse([$2], , :, [$2])     
+     AC_SUBST(HAVE_SDL, 1)
   else
      AC_MSG_RESULT(no)
+     AC_SUBST(HAVE_SDL, 0)
      if test "$SDL_CONFIG" = "no" ; then
        echo "*** The sdl-config script installed by SDL could not be found"
        echo "*** If SDL was installed in PREFIX, make sure PREFIX/bin is in"
@@ -160,7 +164,6 @@ int main (int argc, char *argv[])
      fi
      SDL_CPPFLAGS=""
      SDL_LIBS=""
-     ifelse([$3], , :, [$3])
   fi
   rm -f conf.sdltest
   AC_SUBST(SDL_CPPFLAGS)

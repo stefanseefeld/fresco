@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,99 +22,99 @@
 #ifndef _LayoutKitImpl_hh
 #define _LayoutKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/LayoutKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/LayoutKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
 class GraphicImpl;
 
-class LayoutKitImpl : public virtual POA_Warsaw::LayoutKit,
+class LayoutKitImpl : public virtual POA_Fresco::LayoutKit,
 		      public KitImpl
 {
 public:
-  LayoutKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  LayoutKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   ~LayoutKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new LayoutKitImpl(repo_id(), p);}
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new LayoutKitImpl(repo_id(), p);}
 
-  virtual Warsaw::Coord fill();
-  virtual void fill(Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr clipper(Warsaw::Graphic_ptr);
+  virtual Fresco::Coord fill();
+  virtual void fill(Fresco::Coord);
+  virtual Fresco::Graphic_ptr clipper(Fresco::Graphic_ptr);
 //   virtual Graphic_ptr create_backdrop();
 //   virtual AutoScroll_ptr create_auto_scroll(Adjustment_ptr x_adjustment, Adjustment_ptr y_adjustment);
 //   virtual FullyVisibleConstraint_ptr create_fully_visible_constraint(Float usable, Float align);
 //   virtual Scrollable* scroll_box(Axis a);
-  virtual Layout::Viewport_ptr scrollable(Warsaw::Graphic_ptr);
-//   virtual Layout::Splitter_ptr splitter(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
+  virtual Layout::Viewport_ptr scrollable(Fresco::Graphic_ptr);
+//   virtual Layout::Splitter_ptr splitter(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Axis);
   virtual Layout::Stage_ptr create_stage();
   virtual Layout::Grid_ptr fixed_grid(const Layout::Grid::Index &);
-  virtual Warsaw::Graphic_ptr fixed_range(Layout::Grid_ptr g, const Layout::Grid::Range &);
-  virtual Warsaw::Graphic_ptr hbox();
-  virtual Warsaw::Graphic_ptr vbox();
-  virtual Warsaw::Graphic_ptr hbox_first_aligned();
-  virtual Warsaw::Graphic_ptr vbox_first_aligned();
-  virtual Warsaw::Graphic_ptr hbox_align_elements(Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr vbox_align_elements(Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr overlay();
-  virtual Warsaw::Graphic_ptr deck();
-  virtual Warsaw::Graphic_ptr back(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr front(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr between(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr glue(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr glue_requisition(const Warsaw::Graphic::Requisition &);
-  virtual Warsaw::Graphic_ptr hfill();
-  virtual Warsaw::Graphic_ptr hglue_fill(Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hglue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hglue_aligned(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr hspace(Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vfill();
-  virtual Warsaw::Graphic_ptr vglue_fill(Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vglue(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vglue_aligned(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr vspace(Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr shape_of(Warsaw::Graphic_ptr g);
-  virtual Warsaw::Graphic_ptr shape_of_xy(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr shape_of_xyz(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr align(Warsaw::Graphic_ptr, Warsaw::Alignment, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr align_axis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr halign(Warsaw::Graphic_ptr, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr valign(Warsaw::Graphic_ptr, Warsaw::Alignment);
-  virtual Warsaw::Graphic_ptr fixed_size(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr fixed_axis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hfixed(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vfixed(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr flexible_fill(Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr flexible_axis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hflexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vflexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr natural(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr natural_axis(Warsaw::Graphic_ptr, Warsaw::Axis, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hnatural(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vnatural(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr margin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr margin_lrbt(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr margin_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr margin_lrbt_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-						   Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-						   Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-						   Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hmargin_lr(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr hmargin_lr_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-						  Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vmargin_bt(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr vmargin_bt_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-						  Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr lmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr lmargin_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr rmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr rmargin_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr bmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr bmargin_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr tmargin(Warsaw::Graphic_ptr, Warsaw::Coord);
-  virtual Warsaw::Graphic_ptr tmargin_flexible(Warsaw::Graphic_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  virtual Fresco::Graphic_ptr fixed_range(Layout::Grid_ptr g, const Layout::Grid::Range &);
+  virtual Fresco::Graphic_ptr hbox();
+  virtual Fresco::Graphic_ptr vbox();
+  virtual Fresco::Graphic_ptr hbox_first_aligned();
+  virtual Fresco::Graphic_ptr vbox_first_aligned();
+  virtual Fresco::Graphic_ptr hbox_align_elements(Fresco::Alignment);
+  virtual Fresco::Graphic_ptr vbox_align_elements(Fresco::Alignment);
+  virtual Fresco::Graphic_ptr overlay();
+  virtual Fresco::Graphic_ptr deck();
+  virtual Fresco::Graphic_ptr back(Fresco::Graphic_ptr, Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr front(Fresco::Graphic_ptr, Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr between(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr glue(Fresco::Axis, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr glue_requisition(const Fresco::Graphic::Requisition &);
+  virtual Fresco::Graphic_ptr hfill();
+  virtual Fresco::Graphic_ptr hglue_fill(Fresco::Coord);
+  virtual Fresco::Graphic_ptr hglue(Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hglue_aligned(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr hspace(Fresco::Coord);
+  virtual Fresco::Graphic_ptr vfill();
+  virtual Fresco::Graphic_ptr vglue_fill(Fresco::Coord);
+  virtual Fresco::Graphic_ptr vglue(Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vglue_aligned(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr vspace(Fresco::Coord);
+  virtual Fresco::Graphic_ptr shape_of(Fresco::Graphic_ptr g);
+  virtual Fresco::Graphic_ptr shape_of_xy(Fresco::Graphic_ptr, Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr shape_of_xyz(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr align(Fresco::Graphic_ptr, Fresco::Alignment, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr align_axis(Fresco::Graphic_ptr, Fresco::Axis, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr halign(Fresco::Graphic_ptr, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr valign(Fresco::Graphic_ptr, Fresco::Alignment);
+  virtual Fresco::Graphic_ptr fixed_size(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr fixed_axis(Fresco::Graphic_ptr, Fresco::Axis, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hfixed(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vfixed(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr flexible_fill(Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr flexible_axis(Fresco::Graphic_ptr, Fresco::Axis, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hflexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vflexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr natural(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr natural_axis(Fresco::Graphic_ptr, Fresco::Axis, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hnatural(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vnatural(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr margin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr margin_lrbt(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr margin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr margin_lrbt_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord,
+						   Fresco::Coord, Fresco::Coord, Fresco::Coord,
+						   Fresco::Coord, Fresco::Coord, Fresco::Coord,
+						   Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hmargin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hmargin_lr(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr hmargin_lr_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord,
+						  Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vmargin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vmargin_bt(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr vmargin_bt_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord,
+						  Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr lmargin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr lmargin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr rmargin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr rmargin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr bmargin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr bmargin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  virtual Fresco::Graphic_ptr tmargin(Fresco::Graphic_ptr, Fresco::Coord);
+  virtual Fresco::Graphic_ptr tmargin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
 private:
   template <typename I, typename Im>
   typename I::_ptr_type create(Im *impl)
@@ -123,7 +123,7 @@ private:
     return impl->_this();
   }
 
-  Warsaw::Coord _fill;
+  Fresco::Coord _fill;
 };
 
 #endif

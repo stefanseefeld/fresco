@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,17 +20,17 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Transform.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/Transform.hh>
 #include <Berlin/Color.hh>
-#include "Widget/Motif/Gauge.hh"
+#include "Gauge.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Motif;
 
-void Gauge::request(Warsaw::Graphic::Requisition &requisition)
+void Gauge::request(Fresco::Graphic::Requisition &requisition)
 {
   requisition.x.defined = true;
   requisition.x.natural = requisition.x.maximum = requisition.x.minimum = width;

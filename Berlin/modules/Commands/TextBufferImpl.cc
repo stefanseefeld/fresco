@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,12 +20,12 @@
  * MA 02139, USA.
  */
 
-#include <Command/TextBufferImpl.hh>
-#include <Command/VisualTextBufferImpl.hh>
+#include "TextBufferImpl.hh"
+#include "VisualTextBufferImpl.hh"
 #include <iostream>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TextBufferImpl::TextBufferImpl() : _visual(0) {
   Prague::Trace trace("TextBufferImpl::TextBufferImpl()");
@@ -71,7 +71,7 @@ CORBA::ULong TextBufferImpl::position()
 void TextBufferImpl::position(CORBA::ULong p)
 {
   Prague::Trace trace("TextBufferImpl::position(...)");
-  Warsaw::TextBuffer::Change ch;
+  Fresco::TextBuffer::Change ch;
   {
       Prague::Guard<Mutex> guard(_mutex);
       if (p < 0 || p > _buffer.size()) return;
@@ -79,7 +79,7 @@ void TextBufferImpl::position(CORBA::ULong p)
       ch.pos = _buffer.position();
   }
   ch.len = 0;
-  ch.type = Warsaw::TextBuffer::cursor;
+  ch.type = Fresco::TextBuffer::cursor;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -90,7 +90,7 @@ void TextBufferImpl::position(CORBA::ULong p)
 void TextBufferImpl::forward()
 {
   Prague::Trace trace("TextBufferImpl::forward()");
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   {
     Prague::Guard<Mutex> guard(_mutex);
     if (_buffer.position() >= _buffer.size()) return;
@@ -98,7 +98,7 @@ void TextBufferImpl::forward()
     ch.pos = _buffer.position();
   }
   ch.len = 0;
-  ch.type = Warsaw::TextBuffer::cursor;
+  ch.type = Fresco::TextBuffer::cursor;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -109,7 +109,7 @@ void TextBufferImpl::forward()
 void TextBufferImpl::backward()
 {
   Prague::Trace trace("TextBufferImpl::backward()");
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   {
     Prague::Guard<Mutex> guard(_mutex);
     if (_buffer.position() <= 0) return;
@@ -117,7 +117,7 @@ void TextBufferImpl::backward()
     ch.pos = _buffer.position();
   }
   ch.len = 0;
-  ch.type = Warsaw::TextBuffer::cursor;
+  ch.type = Fresco::TextBuffer::cursor;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -128,14 +128,14 @@ void TextBufferImpl::backward()
 void TextBufferImpl::shift(CORBA::Long d)
 {
   Prague::Trace trace("TextBufferImpl::size()");
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   {
     Prague::Guard<Mutex> guard(_mutex);
     _buffer.shift(d);
     ch.pos = _buffer.position();
   }
   ch.len = 0;
-  ch.type = Warsaw::TextBuffer::cursor;
+  ch.type = Fresco::TextBuffer::cursor;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -146,14 +146,14 @@ void TextBufferImpl::shift(CORBA::Long d)
 void TextBufferImpl::insert_char(Unichar u)
 {
   Prague::Trace trace("TextBufferImpl::insert_char(...)");
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   {
     Prague::Guard<Mutex> guard(_mutex);
     ch.pos = _buffer.position();
     _buffer.insert(u);
   }
   ch.len = 1;
-  ch.type = Warsaw::TextBuffer::insert;
+  ch.type = Fresco::TextBuffer::insert;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -166,7 +166,7 @@ void TextBufferImpl::insert_string(const Unistring &s)
   Prague::Trace trace("TextBufferImpl::insert_string(...)");
   if (s.length() == 0) return;
 
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   ch.len = s.length();
   Unichar u[ch.len];
   for (long i = 0; i < ch.len; i++) u[i] = s[i];
@@ -177,7 +177,7 @@ void TextBufferImpl::insert_string(const Unistring &s)
     _buffer.insert(u,ch.len);
   }
 
-  ch.type = Warsaw::TextBuffer::insert;
+  ch.type = Fresco::TextBuffer::insert;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -188,7 +188,7 @@ void TextBufferImpl::insert_string(const Unistring &s)
 void TextBufferImpl::remove_backward(CORBA::ULong n)
 {
   Prague::Trace trace("TextBufferImpl::remove_backward(...)");
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   {
     Prague::Guard<Mutex> guard(_mutex);
     ch.pos = _buffer.position();
@@ -197,7 +197,7 @@ void TextBufferImpl::remove_backward(CORBA::ULong n)
     _buffer.remove_backward(n);
   }
   ch.len = -n;
-  ch.type = Warsaw::TextBuffer::remove;
+  ch.type = Fresco::TextBuffer::remove;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -208,7 +208,7 @@ void TextBufferImpl::remove_backward(CORBA::ULong n)
 void TextBufferImpl::remove_forward(CORBA::ULong n)
 {
   Prague::Trace trace("TextBufferImpl::remove_forward(...)");
-  Warsaw::TextBuffer::Change ch;  
+  Fresco::TextBuffer::Change ch;  
   {
     Prague::Guard<Mutex> guard(_mutex);
     ch.pos = _buffer.position();
@@ -217,7 +217,7 @@ void TextBufferImpl::remove_forward(CORBA::ULong n)
     _buffer.remove_forward(n);
   }
   ch.len = n;
-  ch.type = Warsaw::TextBuffer::remove;
+  ch.type = Fresco::TextBuffer::remove;
   ch.visual = 0;
 
   CORBA::Any any;
@@ -227,8 +227,8 @@ void TextBufferImpl::remove_forward(CORBA::ULong n)
 
 void TextBufferImpl::clear() {
   Prague::Trace trace("TextBufferImpl::clear()");
-  Warsaw::TextBuffer::Change ch;
-  ch.type = Warsaw::TextBuffer::remove;
+  Fresco::TextBuffer::Change ch;
+  ch.type = Fresco::TextBuffer::remove;
   {
       Prague::Guard<Mutex> guard(_mutex);
       ch.len = _buffer.size();
@@ -242,9 +242,9 @@ void TextBufferImpl::clear() {
   notify(any);
 }
 
-Warsaw::TextBuffer::StringOrder TextBufferImpl::order() {
+Fresco::TextBuffer::StringOrder TextBufferImpl::order() {
   Prague::Trace trace("TextBufferImpl::order()");
-  return Warsaw::TextBuffer::memory_order;
+  return Fresco::TextBuffer::memory_order;
 }
 
 

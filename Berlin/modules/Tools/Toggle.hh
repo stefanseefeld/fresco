@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,9 +31,9 @@ public:
   Toggle(bool = false);
   ~Toggle();
 //protected:
-  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void key_press(const Warsaw::Input::Event &);
+  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void key_press(const Fresco::Input::Event &);
 private:
 };
 

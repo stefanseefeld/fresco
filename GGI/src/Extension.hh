@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,47 +19,49 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GGI_Extension_hh
-#define _GGI_Extension_hh
+#ifndef _Extension_hh
+#define _Extension_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
 #include <Berlin/Logger.hh>
-#include <Console/Renderer.hh>
-#include <Console/DirectBuffer.hh>
-#include <Console/SHMDrawableFactory.hh>
-#include <Console/GGIDrawableFactory.hh>
-#include <Console/GGI/Console.hh>
+#include <Berlin/Console/Renderer.hh>
+#include <Berlin/Console/DirectBuffer.hh>
+#include <Berlin/Console/SHMDrawableFactory.hh>
+#include <Berlin/Console/GGIDrawableFactory.hh>
+#include "Console.hh"
 
 namespace GGI
 {
 
 class Drawable;
 
-class DExtension : virtual public ::Console::Drawable::Extension
+class Extension : virtual public ::Console::Drawable::Extension
 {
 public:
-  DExtension() : _drawable(0) {}
+  Extension() : _drawable(0) {}
   virtual void attach(::Console::Drawable *drawable);
   Drawable *drawable() { return _drawable;}
 private:
   Drawable *_drawable;
 };
 
-class Renderer : public DExtension,
+class Renderer : public Extension,
 		 virtual public ::Renderer
 {
 public:
   Renderer() {}
-  virtual void set_color(const Warsaw::Color &);
-  virtual void draw_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y);
-  virtual void draw_hline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w);
-  virtual void draw_vline(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord h);
-  virtual void draw_line(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h);
-  virtual void draw_box(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h);
+  virtual void set_color(const Fresco::Color &);
+  virtual void draw_pixel(Fresco::PixelCoord x, Fresco::PixelCoord y);
+  virtual void draw_hline(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord w);
+  virtual void draw_vline(Fresco::PixelCoord x, Fresco::PixelCoord y, Fresco::PixelCoord h);
+  virtual void draw_line(Fresco::PixelCoord x, Fresco::PixelCoord y,
+			 Fresco::PixelCoord w, Fresco::PixelCoord h);
+  virtual void draw_box(Fresco::PixelCoord x, Fresco::PixelCoord y,
+			Fresco::PixelCoord w, Fresco::PixelCoord h);
 };
 
-class DirectBuffer : public DExtension,
+class DirectBuffer : public Extension,
 		     virtual public ::DirectBuffer
 {
 public:
@@ -72,18 +74,18 @@ class SHMDrawableFactory : virtual public ::SHMDrawableFactory
 {
 public:
   virtual Console::Drawable *create_drawable(int shmid,
-					     Warsaw::PixelCoord,
-					     Warsaw::PixelCoord,
-					     Warsaw::PixelCoord);
+					     Fresco::PixelCoord,
+					     Fresco::PixelCoord,
+					     Fresco::PixelCoord);
 };
 
 class GGIDrawableFactory : virtual public ::GGIDrawableFactory
 {
 public:
   virtual ::GGIDrawable *create_drawable(int shmid,
-					 Warsaw::PixelCoord,
-					 Warsaw::PixelCoord,
-					 Warsaw::PixelCoord);
+					 Fresco::PixelCoord,
+					 Fresco::PixelCoord,
+					 Fresco::PixelCoord);
 };
 
 }

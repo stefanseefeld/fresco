@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org>
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,24 +22,24 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
-#include "Figure/ImageImpl.hh"
+#include <Fresco/config.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/DrawingKit.hh>
+#include "ImageImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 ImageImpl::ImageImpl(Raster_ptr r)
-  : raster(RefCount_var<Warsaw::Raster>::increment(r))
+  : raster(RefCount_var<Fresco::Raster>::increment(r))
 {
-  Warsaw::Raster::Info info = raster->header();
+  Fresco::Raster::Info info = raster->header();
   width = info.width*10.;
   height = info.height*10.;
 }
 ImageImpl::~ImageImpl() { Trace trace("ImageImpl::~ImageImpl");}
-void ImageImpl::request(Warsaw::Graphic::Requisition &r)
+void ImageImpl::request(Fresco::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.natural = r.x.maximum = r.x.minimum = width;
@@ -66,7 +66,7 @@ void ImageImpl::activate_composite()
   raster->attach(Observer_var(_this()));
 }
 
-Texture::Texture(Raster_ptr r) : raster(RefCount_var<Warsaw::Raster>::increment(r)) {}
+Texture::Texture(Raster_ptr r) : raster(RefCount_var<Fresco::Raster>::increment(r)) {}
 Texture::~Texture() {}
 void Texture::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
 void Texture::draw(DrawTraversal_ptr traversal)

@@ -1,9 +1,8 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -25,53 +24,62 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
+
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
-
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Clients-C++, 0.3.0, devel@fresco.org)
+AC_CONFIG_SRCDIR(../LICENSE)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
 
-AC_HEADLINE(dnl
-Berlin Clients-C++, Berlin C++ clients, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
+dnl AC_HEADLINE(dnl
+dnl Berlin Clients-C++, Berlin C++ clients, dnl
+dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+dnl VERSION)
 
 AC_PROG_MAKE_SET
+AC_PROG_INSTALL
 AC_LANG_CPLUSPLUS
+
+dnl ------------------------------------------------------------------
+dnl General flags
+dnl ------------------------------------------------------------------
+
+AC_ARG_ENABLE(complete-deps,
+              AC_HELP_STRING([--disable-complete-deps].[Use a faster, but less correct, dependency generator]),
+              [complete_deps_enabled="$enableval"],
+              [complete_deps_enabled=yes])
+
+DEPFLAGS=
+if test ".$complete_deps_enabled" = .yes ; then
+  AC_SUBST(DEPFLAGS,-M)
+else
+  AC_SUBST(DEPFLAGS,-MM)
+fi
+
+FRESCO_FLAG_SO
+
 dnl ------------------------------------------------------------------
 dnl Warsaw and Prague
 dnl ------------------------------------------------------------------
-AC_PACKAGE(Warsaw, $VERSION)
-CPPFLAGS="$CPPFLAGS $Warsaw_CPPFLAGS"
-LIBS="$LIBS $Warsaw_LIBS"
-AC_PACKAGE(Prague, $VERSION)
+
+FRESCO_PACKAGE(Fresco, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Fresco_CPPFLAGS"
+LIBS="$LIBS $Fresco_LIBS"
+FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
+LIBS="$LIBS $Babylon_LIBS"
+FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 LIBS="$LIBS $Prague_LIBS"
-
-BERLIN_GGI_CHECK
-
-HAS_GGI=0
-if test ".$ac_cv_lib_ggi" = .yes ; then
-	HAS_GGI=1
-fi
-AC_SUBST(HAS_GGI)
-AC_SUBST(GGI_CPPFLAGS)
-AC_SUBST(GGI_LIBS)
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
 
-mkdir -p $builddir/bin
-mkdir -p $builddir/clients/C++
+AC_MSG_NOTICE([Output Substitution])
 
-AC_OUTPUT([
-	$builddir/config/Clients-C++/subdirs.mk:config/Clients-C++/subdirs.mk.in
-	$builddir/clients/C++/Makefile:clients/C++/Makefile.in
-])
+AC_CONFIG_FILES([config/local.mk Makefile src/Makefile])
+
+mkdir -p bin
+
+AC_OUTPUT

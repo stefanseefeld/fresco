@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,9 +23,9 @@
 #ifndef _LayoutManager_hh
 #define _LayoutManager_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
-#include <Warsaw/Region.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Region.hh>
 
 class RegionImpl;
 
@@ -40,124 +40,124 @@ public:
 
   virtual char *name() = 0;
 
-  virtual void request(long n, Warsaw::Graphic::Requisition *requests, Warsaw::Graphic::Requisition &result) = 0;
-  virtual void allocate(long n, Warsaw::Graphic::Requisition *requests, Warsaw::Region_ptr given, LayoutManager::Allocations result) = 0;
+  virtual void request(long n, Fresco::Graphic::Requisition *requests, Fresco::Graphic::Requisition &result) = 0;
+  virtual void allocate(long n, Fresco::Graphic::Requisition *requests, Fresco::Region_ptr given, LayoutManager::Allocations result) = 0;
 
-  static void set_span(RegionImpl *r, Warsaw::Axis a, Warsaw::Coord origin, Warsaw::Coord length, Warsaw::Alignment align);
+  static void set_span(RegionImpl *r, Fresco::Axis a, Fresco::Coord origin, Fresco::Coord length, Fresco::Alignment align);
 };
 
 //. LayoutAlign -- align positions along an axis
 class LayoutAlign : public LayoutManager
 {
 public:
-  LayoutAlign(Warsaw::Axis);
+  LayoutAlign(Fresco::Axis);
   virtual ~LayoutAlign();
   virtual LayoutManager *clone();
 
   virtual char *name() { return "Align";}
 
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis axis;
+  Fresco::Axis axis;
 };
 
 //. LayoutCenter -- center positions along an axis
 class LayoutCenter : public LayoutManager
 {
 public:
-  LayoutCenter(Warsaw::Axis, Warsaw::Alignment a);
+  LayoutCenter(Fresco::Axis, Fresco::Alignment a);
   virtual ~LayoutCenter();
 
   virtual char *name() { return "Center";}
 
   virtual LayoutManager *clone();
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis      _axis;
-  Warsaw::Alignment _alignment;
+  Fresco::Axis      _axis;
+  Fresco::Alignment _alignment;
 };
 
 //. LayoutFixed -- set size along an axis
 class LayoutFixed : public LayoutManager
 {
 public:
-  LayoutFixed(Warsaw::Axis, Warsaw::Coord);
+  LayoutFixed(Fresco::Axis, Fresco::Coord);
   virtual ~LayoutFixed();
 
   virtual char *name() { return "Fixed";}
 
   virtual LayoutManager *clone();
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis  _axis;
-  Warsaw::Coord _size;
+  Fresco::Axis  _axis;
+  Fresco::Coord _size;
 };
 
 //. LayoutVariable -- allow flexibility along an axis
 class LayoutVariable : public LayoutManager
 {
 public:
-  LayoutVariable(Warsaw::Axis, Warsaw::Coord stretch, Warsaw::Coord shrink);
+  LayoutVariable(Fresco::Axis, Fresco::Coord stretch, Fresco::Coord shrink);
   virtual ~LayoutVariable();
 
   virtual char *name() { return "Variable";}
 
   virtual LayoutManager* clone();
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis  _axis;
-  Warsaw::Coord _stretch;
-  Warsaw::Coord _shrink;
+  Fresco::Axis  _axis;
+  Fresco::Coord _stretch;
+  Fresco::Coord _shrink;
 };
 
 //. LayoutNatural -- set the natural size along an axis
 class LayoutNatural : public LayoutManager
 {
 public:
-  LayoutNatural(Warsaw::Axis, Warsaw::Coord);
+  LayoutNatural(Fresco::Axis, Fresco::Coord);
   virtual ~LayoutNatural();
 
   virtual char *name() { return "Natural";}
 
   virtual LayoutManager *clone();
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis axis;
-  Warsaw::Coord natural;
+  Fresco::Axis axis;
+  Fresco::Coord natural;
 };
 
 //. LayoutMargin -- leave a margin around the sides
 class LayoutMargin : public LayoutManager
 {
 public:
-  LayoutMargin(Warsaw::Coord);
-  LayoutMargin(Warsaw::Coord, Warsaw::Coord);
-  LayoutMargin(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
-  LayoutMargin(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-	       Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-	       Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  LayoutMargin(Fresco::Coord);
+  LayoutMargin(Fresco::Coord, Fresco::Coord);
+  LayoutMargin(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+  LayoutMargin(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord,
+	       Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord,
+	       Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
   virtual ~LayoutMargin();
 
   virtual char *name() { return "Margin";}
 
   virtual LayoutManager *clone();
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  void allocate_axis(Warsaw::Axis, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord,
-		     Warsaw::Coord, Warsaw::Coord, LayoutManager::Allocations);
-  static Warsaw::Coord span(Warsaw::Coord, Warsaw::Graphic::Requirement &, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  void allocate_axis(Fresco::Axis, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord,
+		     Fresco::Coord, Fresco::Coord, LayoutManager::Allocations);
+  static Fresco::Coord span(Fresco::Coord, Fresco::Graphic::Requirement &, Fresco::Coord, Fresco::Coord, Fresco::Coord);
 
-  Warsaw::Coord _lnatural, _lstretch, _lshrink;
-  Warsaw::Coord _rnatural, _rstretch, _rshrink;
-  Warsaw::Coord _bnatural, _bstretch, _bshrink;
-  Warsaw::Coord _tnatural, _tstretch, _tshrink;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Coord _lnatural, _lstretch, _lshrink;
+  Fresco::Coord _rnatural, _rstretch, _rshrink;
+  Fresco::Coord _bnatural, _bstretch, _bshrink;
+  Fresco::Coord _tnatural, _tstretch, _tshrink;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 //. LayoutSuperpose - composite layout manager
@@ -171,8 +171,8 @@ public:
 
   virtual char *name() { return _name;}
 
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
   char          *_name;
   LayoutManager *_first;
@@ -184,61 +184,61 @@ private:
 class LayoutTile : public LayoutManager
 {
 public:
-  LayoutTile(Warsaw::Axis);
+  LayoutTile(Fresco::Axis);
   virtual ~LayoutTile();
   virtual LayoutManager *clone();
 
   virtual char *name() { return _name;}
 
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 
-  static void compute_request(Warsaw::Axis, Warsaw::Alignment, long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  static void compute_allocations(Warsaw::Axis, Warsaw::Graphic::Requisition &, bool, long, Warsaw::Graphic::Requisition *,
-				  Warsaw::Region_ptr, LayoutManager::Allocations);
-  static Warsaw::Coord compute_length(const Warsaw::Graphic::Requirement &, const Warsaw::Region::Allotment &);
-  static Warsaw::Coord compute_squeeze(const Warsaw::Graphic::Requirement &, Warsaw::Coord);
+  static void compute_request(Fresco::Axis, Fresco::Alignment, long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  static void compute_allocations(Fresco::Axis, Fresco::Graphic::Requisition &, bool, long, Fresco::Graphic::Requisition *,
+				  Fresco::Region_ptr, LayoutManager::Allocations);
+  static Fresco::Coord compute_length(const Fresco::Graphic::Requirement &, const Fresco::Region::Allotment &);
+  static Fresco::Coord compute_squeeze(const Fresco::Graphic::Requirement &, Fresco::Coord);
 private:
   char                        *_name;
-  Warsaw::Axis                 _axis;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Axis                 _axis;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 //. LayoutTileReversed -- side-by-side, last-to-first
 class LayoutTileReversed : public LayoutManager
 {
 public:
-  LayoutTileReversed(Warsaw::Axis);
+  LayoutTileReversed(Fresco::Axis);
   virtual ~LayoutTileReversed();
   virtual LayoutManager *clone();
 
   virtual char *name() { return "TileReversed";}
 
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
-  static void compute_reversed_allocations(Warsaw::Axis, Warsaw::Graphic::Requisition &, bool, long, Warsaw::Graphic::Requisition *,
-					   Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
+  static void compute_reversed_allocations(Fresco::Axis, Fresco::Graphic::Requisition &, bool, long, Fresco::Graphic::Requisition *,
+					   Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis                 _axis;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Axis                 _axis;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 //. LayoutTileFirstAligned -- like Tile but use first element's origin
 class LayoutTileFirstAligned : public LayoutManager
 {
 public:
-  LayoutTileFirstAligned(Warsaw::Axis);
+  LayoutTileFirstAligned(Fresco::Axis);
   virtual ~LayoutTileFirstAligned();
   virtual LayoutManager *clone();
 
   virtual char *name() { return "TileFirstAligned";}
 
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
-  static void compute_request_first_aligned(Warsaw::Axis, long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
+  static void compute_request_first_aligned(Fresco::Axis, long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
 private:
-  Warsaw::Axis                 _axis;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Axis                 _axis;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 //. LayoutTileReversedFirstAligned -- like TileReversed
@@ -246,17 +246,17 @@ private:
 class LayoutTileReversedFirstAligned : public LayoutManager
 {
 public:
-  LayoutTileReversedFirstAligned(Warsaw::Axis);
+  LayoutTileReversedFirstAligned(Fresco::Axis);
   virtual ~LayoutTileReversedFirstAligned();
   virtual LayoutManager *clone();
 
   virtual char *name() { return "TileReversedFirstAligned";}
 
-  virtual void request(long, Warsaw::Graphic::Requisition *, Warsaw::Graphic::Requisition &);
-  virtual void allocate(long, Warsaw::Graphic::Requisition *, Warsaw::Region_ptr, LayoutManager::Allocations);
+  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::Graphic::Requisition &);
+  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::Region_ptr, LayoutManager::Allocations);
 private:
-  Warsaw::Axis                 _axis;
-  Warsaw::Graphic::Requisition _requisition;
+  Fresco::Axis                 _axis;
+  Fresco::Graphic::Requisition _requisition;
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -90,7 +90,7 @@ int Console::open(const std::string &console, int argc, char **argv, PortableSer
 
 Console *Console::instance() { return _console;}
 
-PortableServer::Servant Console::reference_to_servant(Warsaw::Drawable_ptr drawable)
+PortableServer::Servant Console::reference_to_servant(Fresco::Drawable_ptr drawable)
 {
   Trace trace("Console::reference_to_servant");
   try { return _poa->reference_to_servant(drawable);}
@@ -100,7 +100,7 @@ PortableServer::Servant Console::reference_to_servant(Warsaw::Drawable_ptr drawa
   return 0;
 }
 
-Warsaw::Drawable_ptr Console::activate_drawable(Console::Drawable *d)
+Fresco::Drawable_ptr Console::activate_drawable(Console::Drawable *d)
 {
   Trace trace("Console::activate_drawable");
   PortableServer::ObjectId_var oid = _poa->activate_object(d);

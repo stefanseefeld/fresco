@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,25 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FilterImpl_hh
-#define _FilterImpl_hh
+#ifndef _Berlin_FilterImpl_hh
+#define _Berlin_FilterImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Command.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Command.hh>
 
-class Accelerator : public virtual POA_Warsaw::Input::Filter,
+class Accelerator : public virtual POA_Fresco::Input::Filter,
                     public virtual PortableServer::RefCountServantBase
 {
  public:
-  Accelerator(Warsaw::Input::Device, const Warsaw::Input::Toggle &, Warsaw::Input::Bitset, Warsaw::Command_ptr);
+  Accelerator(Fresco::Input::Device, const Fresco::Input::Toggle &, Fresco::Input::Bitset, Fresco::Command_ptr);
   virtual ~Accelerator() {}
-  virtual CORBA::Boolean handle(const Warsaw::Input::Event &);
+  virtual CORBA::Boolean handle(const Fresco::Input::Event &);
  private:
-  const Warsaw::Input::Device device;
-  const Warsaw::Input::Toggle toggle;
-  const Warsaw::Input::Bitset modifier;
-  const Warsaw::Command_var command;
+  const Fresco::Input::Device device;
+  const Fresco::Input::Toggle toggle;
+  const Fresco::Input::Bitset modifier;
+  const Fresco::Command_var command;
 };
 
 #endif 

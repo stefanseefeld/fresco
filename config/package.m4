@@ -1,8 +1,8 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -20,17 +20,18 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 dnl
 
-dnl AC_PACKAGE(PACKAGE[, MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
-dnl Test for PACKAGE, and define $PACKAGE_CPPFLAGS and $PACKAGE_LIBS
+dnl FRESCO_PACKAGE(PACKAGE[, MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
-AC_DEFUN(AC_PACKAGE,
+AC_DEFUN(FRESCO_PACKAGE,
 [dnl 
 dnl Get the cppflags and libraries from the package-config script
 dnl
-AC_ARG_WITH($1-prefix,[  --with-$1-prefix=PREFIX   Prefix where $1 is installed (optional)],
-            $1_prefix="$withval", $1_prefix="")
-AC_ARG_WITH($1-exec-prefix,[  --with-$1-exec-prefix=PREFIX Exec prefix where $1 is installed (optional)],
-            $1_exec_prefix="$withval", $1_exec_prefix="")
+  AC_ARG_WITH($1-prefix, AC_HELP_STRING([--with-$1-prefix],
+                                        [Prefix where $1 is installed]),
+              $1_prefix="$withval", $1_prefix="")
+  AC_ARG_WITH($1-exec-prefix, AC_HELP_STRING([--with-$1-exec-prefix],
+                                             [Exec prefix where $1 is installed]),
+              $1_exec_prefix="$withval", $1_exec_prefix="")
 
   if test x$$1_exec_prefix != x ; then
      ac_$1_args="$ac_$1_args --exec-prefix=$$1_exec_prefix"
@@ -45,15 +46,17 @@ AC_ARG_WITH($1-exec-prefix,[  --with-$1-exec-prefix=PREFIX Exec prefix where $1 
      fi
   fi
 
-  AC_PATH_PROG($1_CONFIG, $1-config, no, $builddir/bin:$PATH)
+  AC_PATH_PROG($1_CONFIG, $1-config, no, $PATH:$prefix/bin)
   min_$1_version=ifelse([$2], ,1.0.0,$2)
-  AC_MSG_CHECKING(for $1 - version >= $min_$1_version)
+  AC_MSG_CHECKING([for $1 - version >= $min_$1_version])
   no_$1=""
   if test "$$1_CONFIG" = "no" ; then
     no_$1=yes
   else
-    $1_CPPFLAGS=`$$1_CONFIG $ac_$1_args --cppflags`
-    $1_LIBS=`$$1_CONFIG $ac_$1_args --libs`
+    $1_CPPFLAGS="-I`$$1_CONFIG --prefix`/include"
+    $1_CPPFLAGS="$$1_CPPFLAGS `$$1_CONFIG $ac_$1_args --cppflags`"
+    $1_LIBS="$$1_LIBS -L`$$1_CONFIG --prefix`/lib"
+    $1_LIBS="$$1_LIBS `$$1_CONFIG $ac_$1_args --libs`"
 
     $1_major_version=`$$1_CONFIG $ac_$1_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
@@ -129,6 +132,7 @@ int main (int argc, char *argv[])
 ],, no_$1=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
        CPPFLAGS="$ac_save_CPPFLAGS"
        LIBS="$ac_save_LIBS"
+       echo "LIBS ..........$LIBS"
      fi
   fi
   if test "x$no_$1" = x ; then
@@ -146,7 +150,5 @@ int main (int argc, char *argv[])
      $1_LIBS=""
      ifelse([$4], , :, [$4])
   fi
-dnl AC_SUBST($1_CPPFLAGS)
-dnl AC_SUBST($1_LIBS)
   rm -f conf.$1test
 ])

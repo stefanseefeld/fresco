@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,32 +22,32 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Babylon/Babylon.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/Focus.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/Focus.hh>
 #include "Berlin/Logger.hh"
 #include "Berlin/ControllerImpl.hh"
 #include "Berlin/Event.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Babylon;
 
-class ControllerImpl::Iterator : public virtual POA_Warsaw::ControllerIterator,
+class ControllerImpl::Iterator : public virtual POA_Fresco::ControllerIterator,
 		                 public virtual ServantBase
 {
 public:
   Iterator(ControllerImpl *p, Tag c) : _parent(p), _cursor(c) { Trace trace("ControllerImpl::Iterator::Iterator"); _parent->_add_ref();}
   virtual ~Iterator() { Trace trace("ControllerImpl::Iterator::~Iterator"); _parent->_remove_ref();}
-  virtual Warsaw::Controller_ptr child()
+  virtual Fresco::Controller_ptr child()
   {
     Trace trace("ControllerImpl::Iterator::child");
     Prague::Guard<Mutex> guard(_parent->_cmutex);
-    if (_cursor >= _parent->_children.size()) return Warsaw::Controller::_nil();
-    return Warsaw::Controller::_duplicate(_parent->_children[_cursor]);
+    if (_cursor >= _parent->_children.size()) return Fresco::Controller::_nil();
+    return Fresco::Controller::_duplicate(_parent->_children[_cursor]);
   }
   virtual void next() { _cursor++;}
   virtual void prev() { _cursor--;}
@@ -57,7 +57,7 @@ public:
     {
       Prague::Guard<Mutex> guard(_parent->_cmutex);
       if (_cursor > _parent->_children.size()) _cursor = _parent->_children.size();
-      _parent->_children.insert(_parent->_children.begin() + _cursor, RefCount_var<Warsaw::Controller>::increment(child));
+      _parent->_children.insert(_parent->_children.begin() + _cursor, RefCount_var<Fresco::Controller>::increment(child));
       child->set_parent_controller(Controller_var(_parent->_this()));
     }
     _parent->need_resize();
@@ -76,7 +76,7 @@ public:
 	  }
 	catch(const CORBA::OBJECT_NOT_EXIST &) {}
 	catch (const CORBA::COMM_FAILURE &) {}
-      _parent->_children[_cursor] = RefCount_var<Warsaw::Controller>::increment(child);
+      _parent->_children[_cursor] = RefCount_var<Fresco::Controller>::increment(child);
       child->set_parent_controller(Controller_var(_parent->_this()));
     }
     _parent->need_resize();
@@ -151,7 +151,7 @@ void ControllerImpl::append_controller(Controller_ptr c)
   Trace trace(this, "ControllerImpl::append_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
   Prague::Guard<Mutex> guard(_cmutex);
-  _children.push_back(RefCount_var<Warsaw::Controller>::increment(c));
+  _children.push_back(RefCount_var<Fresco::Controller>::increment(c));
   c->set_parent_controller(Controller_var(_this()));
 }
 
@@ -160,7 +160,7 @@ void ControllerImpl::prepend_controller(Controller_ptr c)
   Trace trace(this, "ControllerImpl::prepend_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
   Prague::Guard<Mutex> guard(_cmutex);
-  _children.insert(_children.begin(), RefCount_var<Warsaw::Controller>::increment(c));
+  _children.insert(_children.begin(), RefCount_var<Fresco::Controller>::increment(c));
   c->set_parent_controller(Controller_var(_this()));
 }
 
@@ -182,24 +182,24 @@ void ControllerImpl::set_parent_controller(Controller_ptr p)
 {
   Trace trace(this, "ControllerImpl::set_parent_controller");
   Prague::Guard<Mutex> guard(_pmutex);
-  _parent = Warsaw::Controller::_duplicate(p);
+  _parent = Fresco::Controller::_duplicate(p);
 }
 
 void ControllerImpl::remove_parent_controller()
 {
   Trace trace(this, "ControllerImpl::remove_parent_controller");
   Prague::Guard<Mutex> guard(_pmutex);
-  _parent = Warsaw::Controller::_nil();
+  _parent = Fresco::Controller::_nil();
 }
 
 Controller_ptr ControllerImpl::parent_controller()
 {
   Trace trace(this, "ControllerImpl::parent_controller");
   Prague::Guard<Mutex> guard(_pmutex);
-  return Warsaw::Controller::_duplicate(_parent);
+  return Fresco::Controller::_duplicate(_parent);
 }
 
-Warsaw::ControllerIterator_ptr ControllerImpl::first_child_controller()
+Fresco::ControllerIterator_ptr ControllerImpl::first_child_controller()
 {
   Trace trace(this, "ControllerImpl::first_child_controller");
   Iterator *iterator = new Iterator(this, 0);
@@ -207,7 +207,7 @@ Warsaw::ControllerIterator_ptr ControllerImpl::first_child_controller()
   return iterator->_this();
 }
 
-Warsaw::ControllerIterator_ptr ControllerImpl::last_child_controller()
+Fresco::ControllerIterator_ptr ControllerImpl::last_child_controller()
 {
   Trace trace(this, "ControllerImpl::last_child_controller");
   Prague::Guard<Mutex> guard(_cmutex);
@@ -230,7 +230,7 @@ CORBA::Boolean ControllerImpl::receive_focus(Focus_ptr f)
   Input::Device d = f->device();
   Logger::log(Logger::focus) << this << " receiving focus for " << d << std::endl;
   set_focus(d);
-  if (d == 0) set(Warsaw::Controller::active);
+  if (d == 0) set(Fresco::Controller::active);
   return true;
 }
 
@@ -239,7 +239,7 @@ void ControllerImpl::lose_focus(Input::Device d)
   Trace trace(this, "ControllerImpl::lose_focus");
   Logger::log(Logger::focus) << this << " losing focus for " << d << std::endl;
   clear_focus(d);
-  if (d == 0) clear(Warsaw::Controller::active);
+  if (d == 0) clear(Fresco::Controller::active);
 }
 
 CORBA::Boolean ControllerImpl::first_focus(Input::Device d)
@@ -283,13 +283,13 @@ CORBA::Boolean ControllerImpl::last_focus(Input::Device d)
 CORBA::Boolean ControllerImpl::next_focus(Input::Device d)
 {
   Trace trace(this, "ControllerImpl::next_focus");
-  Warsaw::Controller_var parent = parent_controller();
+  Fresco::Controller_var parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
   /*
    * first locate the next controller in the control graph...
    */
-  Warsaw::ControllerIterator_var iterator = parent->first_child_controller();
-  Warsaw::Controller_var next;
+  Fresco::ControllerIterator_var iterator = parent->first_child_controller();
+  Fresco::Controller_var next;
   /*
    * set the iterator to refer to 'this' child...
    */
@@ -314,13 +314,13 @@ CORBA::Boolean ControllerImpl::next_focus(Input::Device d)
 CORBA::Boolean ControllerImpl::prev_focus(Input::Device d)
 {
   Trace trace(this, "ControllerImpl::prev_focus");
-  Warsaw::Controller_var parent = parent_controller();
+  Fresco::Controller_var parent = parent_controller();
   if (CORBA::is_nil(parent)) return false;
   /*
    * first locate the previous controller in the control graph...
    */
-  Warsaw::ControllerIterator_var iterator = parent->last_child_controller();
-  Warsaw::Controller_var prev;
+  Fresco::ControllerIterator_var iterator = parent->last_child_controller();
+  Fresco::Controller_var prev;
   /*
    * set the iterator to refer to 'this' child...
    */
@@ -342,27 +342,27 @@ CORBA::Boolean ControllerImpl::prev_focus(Input::Device d)
   else return parent->prev_focus(d);
 }
 
-void ControllerImpl::set(Warsaw::Telltale::Mask m)
+void ControllerImpl::set(Fresco::Telltale::Mask m)
 {
   Trace trace(this, "ControllerImpl::set");
   if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, true);
   else modify(m, true);
 }
 
-void ControllerImpl::clear(Warsaw::Telltale::Mask m)
+void ControllerImpl::clear(Fresco::Telltale::Mask m)
 {
   Trace trace(this, "ControllerImpl::clear");
   if (!CORBA::is_nil(_constraint)) _constraint->trymodify(Telltale_var(_this()), m, false);
   else modify(m, false);
 }
 
-CORBA::Boolean ControllerImpl::test(Warsaw::Telltale::Mask m)
+CORBA::Boolean ControllerImpl::test(Fresco::Telltale::Mask m)
 {
   Prague::Guard<Mutex> guard(_mutex);
   return (_telltale & m) == m;
 }
 
-void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
+void ControllerImpl::modify(Fresco::Telltale::Mask m, CORBA::Boolean on)
 {
   CORBA::ULong nf = on ? _telltale | m : _telltale & ~m;
   {
@@ -404,7 +404,7 @@ CORBA::Boolean ControllerImpl::handle_positional(PickTraversal_ptr traversal, co
     }
   else if (event[0].attr._d() == Input::positional)
     {
-      if (test(Warsaw::Controller::pressed)) drag(traversal, event);
+      if (test(Fresco::Controller::pressed)) drag(traversal, event);
       else move(traversal, event);
     }
   else other(event);
@@ -441,7 +441,7 @@ void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
   request_focus(Controller_var(_this()), 0); // request focus for the
                                              // keyboard
                                              // (click to focus)
-  set(Warsaw::Controller::pressed);
+  set(Fresco::Controller::pressed);
 }
 
 void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
@@ -450,7 +450,7 @@ void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
 
 void ControllerImpl::release(PickTraversal_ptr traversal, const Input::Event &)
 {
-  clear(Warsaw::Controller::pressed);
+  clear(Fresco::Controller::pressed);
   ungrab(traversal);
 }
 
@@ -487,7 +487,7 @@ void ControllerImpl::other(const Input::Event &)
 {
 }
 
-void ControllerImpl::grab(Warsaw::PickTraversal_ptr traversal)
+void ControllerImpl::grab(Fresco::PickTraversal_ptr traversal)
 {
   Focus_var focus = traversal->get_focus();
   if (CORBA::is_nil(focus)) return;
@@ -496,7 +496,7 @@ void ControllerImpl::grab(Warsaw::PickTraversal_ptr traversal)
   update_state();
 }
 
-void ControllerImpl::ungrab(Warsaw::PickTraversal_ptr traversal)
+void ControllerImpl::ungrab(Fresco::PickTraversal_ptr traversal)
 {
   Focus_var focus = traversal->get_focus();
   if (CORBA::is_nil(focus)) return;

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,10 +21,10 @@
  */
 
 #include "ViewportDemo.hh"
-#include "Warsaw/Image.hh"
-#include "Warsaw/Viewport.hh"
+#include "Fresco/Image.hh"
+#include "Fresco/Viewport.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 ViewportDemo::ViewportDemo(Application *a)
   : Demo(a)

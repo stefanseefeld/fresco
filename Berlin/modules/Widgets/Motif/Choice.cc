@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,17 +21,17 @@
  */
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Thread.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Selection.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Selection.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/RefCountVar.hh>
-#include "Widget/Motif/Choice.hh"
+#include "Choice.hh"
 #include <functional>
 #include <algorithm>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 namespace Motif
 {
@@ -59,38 +59,38 @@ ToggleChoice::ToggleChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, Widg
 Tag ToggleChoice::append_item(Graphic_ptr g)
 {
   Trace trace("ToggleChoice::append_item");
-  RefCount_var<Warsaw::Controller> toggle =
-    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)));
+  RefCount_var<Fresco::Controller> toggle =
+    widgets->toggle(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)));
   Tag tag = selection->add(toggle);
   append_controller(toggle);
-  RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  RefCount_var<Fresco::Graphic> item = layout->hbox();
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
   Graphic_var box = body();
-  Warsaw::ToolKit::FrameSpec none, colored;
+  Fresco::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
 Tag ToggleChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("ToggleChoice::prepend_item");
-  RefCount_var<Warsaw::Controller> toggle =
-    widgets->toggle(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)));
+  RefCount_var<Fresco::Controller> toggle =
+    widgets->toggle(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)));
   Tag tag = selection->add(toggle);
   append_controller(toggle);
-  RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  RefCount_var<Fresco::Graphic> item = layout->hbox();
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
   Graphic_var box = body();
-  Warsaw::ToolKit::FrameSpec none, colored;
+  Fresco::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->prepend_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->prepend_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
@@ -109,54 +109,54 @@ CheckboxChoice::CheckboxChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, 
 Tag CheckboxChoice::append_item(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::append_item");
-  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
+  RefCount_var<Fresco::Controller> toggle = tools->toggle(Fresco::Graphic::_nil());
   Tag tag = selection->add(toggle);
   append_controller(toggle);
 
-  Warsaw::ToolKit::FrameSpec s1, s2;
+  Fresco::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
-  RefCount_var<Warsaw::Graphic> frame =
-    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)),
-			   20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  RefCount_var<Fresco::Graphic> frame =
+    tools->dynamic_diamond(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)),
+			   20., Fresco::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
 
-  RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  RefCount_var<Fresco::Graphic> item = layout->hbox();
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
   Graphic_var box = body();
-  Warsaw::ToolKit::FrameSpec none, colored;
+  Fresco::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->append_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->append_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
 Tag CheckboxChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("CheckboxChoice::prepend_item");
-  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
+  RefCount_var<Fresco::Controller> toggle = tools->toggle(Fresco::Graphic::_nil());
   Tag tag = selection->add(toggle);
   append_controller(toggle);
 
   ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
-  RefCount_var<Warsaw::Graphic> frame =
-    tools->dynamic_diamond(RefCount_var<Warsaw::Graphic>(layout->fixed_size(Warsaw::Graphic::_nil(), 60., 60.)),
-			   20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  RefCount_var<Fresco::Graphic> frame =
+    tools->dynamic_diamond(RefCount_var<Fresco::Graphic>(layout->fixed_size(Fresco::Graphic::_nil(), 60., 60.)),
+			   20., Fresco::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   
-  RefCount_var<Warsaw::Graphic> item = layout->hbox();
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(RefCount_var<Warsaw::Graphic>(layout->margin(toggle, 50.)), 0.5)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->hspace(200.)));
-  item->append_graphic(RefCount_var<Warsaw::Graphic>(layout->valign(g, 0.5)));
+  RefCount_var<Fresco::Graphic> item = layout->hbox();
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(RefCount_var<Fresco::Graphic>(layout->margin(toggle, 50.)), 0.5)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->hspace(200.)));
+  item->append_graphic(RefCount_var<Fresco::Graphic>(layout->valign(g, 0.5)));
   Graphic_var box = body();
-  Warsaw::ToolKit::FrameSpec none, colored;
+  Fresco::ToolKit::FrameSpec none, colored;
   Color black = {0., 0., 0., 1.};
   colored.foreground(black);
-  box->prepend_graphic(RefCount_var<Warsaw::Graphic>(tools->dynamic(item, 20., Warsaw::Controller::active, colored, none, false, toggle)));
+  box->prepend_graphic(RefCount_var<Fresco::Graphic>(tools->dynamic(item, 20., Fresco::Controller::active, colored, none, false, toggle)));
   return tag;
 }
 
@@ -175,14 +175,14 @@ ToolChoice::ToolChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t, WidgetKi
 Tag ToolChoice::append_item(Graphic_ptr g)
 {
   Trace trace("ToolChoice::append_item");
-  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
+  RefCount_var<Fresco::Controller> toggle = tools->toggle(Fresco::Graphic::_nil());
   Tag tag = selection->add(toggle);
   append_controller(toggle);
 
-  Warsaw::ToolKit::FrameSpec s1, s2;
+  Fresco::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::inset);
   s2.brightness(0.5); s2._d(ToolKit::outset);
-  RefCount_var<Warsaw::Graphic> frame = tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  RefCount_var<Fresco::Graphic> frame = tools->dynamic(g, 20., Fresco::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   Graphic_var box = body();
   box->append_graphic(toggle);
@@ -192,14 +192,14 @@ Tag ToolChoice::append_item(Graphic_ptr g)
 Tag ToolChoice::prepend_item(Graphic_ptr g)
 {
   Trace trace("ToolChoice::prepend_item");
-  RefCount_var<Warsaw::Controller> toggle = tools->toggle(Warsaw::Graphic::_nil());
+  RefCount_var<Fresco::Controller> toggle = tools->toggle(Fresco::Graphic::_nil());
   Tag tag = selection->add(toggle);
   prepend_controller(toggle);
 
-  Warsaw::ToolKit::FrameSpec s1, s2;
+  Fresco::ToolKit::FrameSpec s1, s2;
   s1.brightness(0.5); s1._d(ToolKit::outset);
   s2.brightness(0.5); s2._d(ToolKit::inset);
-  RefCount_var<Warsaw::Graphic> frame = tools->dynamic(g, 20., Warsaw::Controller::toggled, s1, s2, true, toggle);
+  RefCount_var<Fresco::Graphic> frame = tools->dynamic(g, 20., Fresco::Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   Graphic_var box = body();
   box->prepend_graphic(toggle);

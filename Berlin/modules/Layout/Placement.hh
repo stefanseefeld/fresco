@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,11 +36,11 @@ public:
   Placement(LayoutManager *);
   virtual ~Placement();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void request(Fresco::Graphic::Requisition &);
 
-  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
 
-  virtual void allocate(Warsaw::Tag, const Warsaw::Allocation::Info &);
+  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 
   virtual const char *object_name() { return _name;}
 
@@ -53,15 +53,15 @@ private:
 class LayoutLayer : public MonoGraphic
 {
 public:
-  LayoutLayer(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  LayoutLayer(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr);
   virtual ~LayoutLayer();
-  virtual void traverse(Warsaw::Traversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
 
   virtual const char* object_name() { return "LayoutLayer";}
 
 private:
-  Warsaw::Graphic_var _under;
-  Warsaw::Graphic_var _over;
+  Fresco::Graphic_var _under;
+  Fresco::Graphic_var _over;
 };
 
 #endif

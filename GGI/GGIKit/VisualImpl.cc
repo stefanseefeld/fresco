@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,17 +22,17 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/SHM.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
 #include <Berlin/Logger.hh>
-#include "GGI/VisualImpl.hh"
+#include "VisualImpl.hh"
 #include <sys/ipc.h>
 #include <strstream.h>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 GGIDrawableFactory *VisualImpl::_factory = 0;
 
@@ -42,7 +42,7 @@ VisualImpl::VisualImpl(PixelCoord w, PixelCoord h)
   Trace trace("VisualImpl::VisualImpl");
   Console *console = Console::instance();
   if (!_factory) _factory = console->get_extension<GGIDrawableFactory>("GGIDrawableFactory");
-  Warsaw::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
+  Fresco::Drawable::PixelFormat format = Console::instance()->drawable()->pixel_format();
   /*
    * the drawable plus some memory for the event queue
    */
@@ -75,7 +75,7 @@ char *VisualImpl::mode()
   return CORBA::string_dup(_mode.c_str());
 }
 
-void VisualImpl::request(Warsaw::Graphic::Requisition &requisition)
+void VisualImpl::request(Fresco::Graphic::Requisition &requisition)
 {
   Trace trace("VisualImpl::request");
   requisition.x.defined = true;
@@ -100,13 +100,13 @@ void VisualImpl::extension(const Allocation::Info &info, Region_ptr region)
   GraphicImpl::extension(info, region);
 }
 
-CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+CORBA::Boolean VisualImpl::handle_positional(PickTraversal_ptr traversal, const Fresco::Input::Event &event)
 {
   Trace trace("VisualImpl::handle_positional");
   ControllerImpl::handle_positional(traversal, event);
 }
 
-CORBA::Boolean VisualImpl::handle_non_positional(const Warsaw::Input::Event &event)
+CORBA::Boolean VisualImpl::handle_non_positional(const Fresco::Input::Event &event)
 {
   Trace trace("VisualImpl::handle_non_positional");
   std::cout << "VisualImpl::handle_non_positional" << std::endl;

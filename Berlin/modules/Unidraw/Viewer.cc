@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,17 +20,17 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/IO.hh>
-#include <Warsaw/PickTraversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/IO.hh>
+#include <Fresco/PickTraversal.hh>
 #include <Berlin/RefCountVar.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/Requestor.hh>
 #include <Berlin/Event.hh>
-#include "Unidraw/Viewer.hh"
+#include "Viewer.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Unidraw;
 
 Viewer::Viewer() : ControllerImpl(false) {}
@@ -46,7 +46,7 @@ void Viewer::init(Editor_ptr editor, Model_ptr model, Coord width, Coord height,
   ToolKit::FrameSpec background;
   Color white = {1., 1., 1., 1.};
   background.foreground(white);
-  body(Warsaw::Graphic_var(tools->frame(Warsaw::Graphic_var(requestor->_this()), 20., background, true)));
+  body(Fresco::Graphic_var(tools->frame(Fresco::Graphic_var(requestor->_this()), 20., background, true)));
   if (!CORBA::is_nil(model))
     {
       Graphic_var view = model->create_view();
@@ -64,17 +64,17 @@ void Viewer::prepend_graphic(Graphic_ptr c)
   _root->prepend_graphic(c);
 }
 
-Warsaw::GraphicIterator_ptr Viewer::first_child_graphic()
+Fresco::GraphicIterator_ptr Viewer::first_child_graphic()
 {
   return _root->first_child_graphic();
 }
 
-Warsaw::GraphicIterator_ptr Viewer::last_child_graphic()
+Fresco::GraphicIterator_ptr Viewer::last_child_graphic()
 {
   return _root->last_child_graphic();
 }
 
-void Viewer::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::press(Fresco::PickTraversal_ptr traversal, const Fresco::Input::Event &event)
 {
   Trace trace("Viewer::press");
   bool ok = false;
@@ -94,7 +94,7 @@ void Viewer::press(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Eve
   ControllerImpl::press(traversal, event);
 }
 
-void Viewer::drag(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::drag(Fresco::PickTraversal_ptr traversal, const Fresco::Input::Event &event)
 {
   Trace trace("Viewer::drag");
   if (CORBA::is_nil(_active)) return;
@@ -107,12 +107,12 @@ void Viewer::drag(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Even
     }
 }
 
-void Viewer::move(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::move(Fresco::PickTraversal_ptr traversal, const Fresco::Input::Event &event)
 {
   Viewer::drag(traversal, event);
 }
 
-void Viewer::release(Warsaw::PickTraversal_ptr traversal, const Warsaw::Input::Event &event)
+void Viewer::release(Fresco::PickTraversal_ptr traversal, const Fresco::Input::Event &event)
 {
   Trace trace("Viewer::release");
   if (CORBA::is_nil(_active))

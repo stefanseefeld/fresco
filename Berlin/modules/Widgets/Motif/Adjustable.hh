@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,8 @@
 #ifndef _Motif_Adjustable_hh
 #define _Motif_Adjustable_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Command.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Command.hh>
 #include <Berlin/ObserverImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
@@ -47,11 +47,11 @@ class Adjustable : public ControllerImpl
   friend class Adjust;
 public:
   Adjustable();
-  Warsaw::Command_ptr create_adjust_cmd();
+  Fresco::Command_ptr create_adjust_cmd();
 protected:
   virtual void update(const CORBA::Any &any) = 0;
-  virtual void adjust(const Warsaw::OriginatedDelta &) = 0;
-  Warsaw::Observer_ptr observer();
+  virtual void adjust(const Fresco::OriginatedDelta &) = 0;
+  Fresco::Observer_ptr observer();
 private:
   Impl_var<Observer> _translate;
 };

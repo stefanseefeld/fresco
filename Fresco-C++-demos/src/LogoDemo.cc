@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,30 +21,30 @@
  */
 
 #include "LogoDemo.hh"
-#include "Warsaw/config.hh"
-#include "Warsaw/Command.hh"
-#include "Warsaw/Desktop.hh"
+#include "Fresco/config.hh"
+#include "Fresco/Command.hh"
+#include "Fresco/Desktop.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
 namespace
 {
 class Forward : public Application::CommandImpl
 {
  public:
-  Forward(Warsaw::BoundedValue_ptr v) : value(Warsaw::BoundedValue::_duplicate(v)) {}
+  Forward(Fresco::BoundedValue_ptr v) : value(Fresco::BoundedValue::_duplicate(v)) {}
   void execute(const CORBA::Any &) { value->forward();}
  private:
-  Warsaw::BoundedValue_var value;
+  Fresco::BoundedValue_var value;
 };
 
 class Backward : public Application::CommandImpl
 {
  public:
-  Backward(Warsaw::BoundedValue_ptr v) : value(Warsaw::BoundedValue::_duplicate(v)) {}
+  Backward(Fresco::BoundedValue_ptr v) : value(Fresco::BoundedValue::_duplicate(v)) {}
   void execute(const CORBA::Any &) { value->backward();}
  private:
-  Warsaw::BoundedValue_var value;
+  Fresco::BoundedValue_var value;
 };
 
 };
@@ -85,7 +85,7 @@ LogoDemo::LogoDemo(Application *a)
   Coord a = 2000.;
   Vertex offset;
   offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Warsaw::Path path;
+  Fresco::Path path;
   path.shape = convex;
   path.nodes.length(3);
   path.nodes[0].x = a/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * this code is adapted from the Mesa 3-D graphics library
  * Copyright (C) 1995-1999 Brian Paul
@@ -23,13 +23,13 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include "Drawing/openGL/GLQuadric.hh"
+#include <Fresco/config.hh>
+#include "Quadric.hh"
 #include "GL/gl.h"
 #include <cmath>
 #include <cstdlib>
 
-using namespace Warsaw;
+using namespace Fresco;
 
 /*
  * Convert degrees to radians:
@@ -57,7 +57,7 @@ static void normal3d(double x, double y, double z)
   glNormal3d(x, y, z);
 }
 
-void GLQuadric::cylinder(double baseRadius, double topRadius, double height, int slices, int stacks)
+void openGL::Quadric::cylinder(double baseRadius, double topRadius, double height, int slices, int stacks)
 {
   double nsign = orient == in ? -1. : 1.;
   double da = 2.0*M_PI / slices;
@@ -195,7 +195,7 @@ void GLQuadric::cylinder(double baseRadius, double topRadius, double height, int
     }
 }
 
-void GLQuadric::sphere(double radius, int slices, int stacks)
+void openGL::Quadric::sphere(double radius, int slices, int stacks)
 {
   double nsign = orient == in ? -1. : 1.;
   double drho = M_PI / static_cast<double>(stacks);
@@ -342,7 +342,7 @@ void GLQuadric::sphere(double radius, int slices, int stacks)
 //     }
 }
 
-void GLQuadric::disk(double innerRadius, double outerRadius, int slices, int loops)
+void openGL::Quadric::disk(double innerRadius, double outerRadius, int slices, int loops)
 {
   /* Normal vectors */
   if (norm != none)
@@ -476,8 +476,8 @@ void GLQuadric::disk(double innerRadius, double outerRadius, int slices, int loo
     }
 }
 
-void GLQuadric::partialDisk(double innerRadius, double outerRadius, int slices, int loops,
-			    double startAngle, double sweepAngle)
+void openGL::Quadric::partialDisk(double innerRadius, double outerRadius, int slices, int loops,
+				  double startAngle, double sweepAngle)
 {
   if (norm != none)
     {

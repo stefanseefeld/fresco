@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,13 +24,13 @@
 #include <Berlin/Provider.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/CommandImpl.hh>
-#include "Widget/Motif/Scrollbar.hh"
+#include "Scrollbar.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Motif;
 
-Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Warsaw::Graphic::Requisition &r)
+Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Fresco::Graphic::Requisition &r)
   : _requisition(r),
     _value(RefCount_var<BoundedRange>::increment(v)),
     _axis(a)
@@ -161,6 +161,6 @@ void Scrollbar::traverse_thumb(Traversal_ptr traversal)
   _scale = (_value->upper() - _value->lower())/_length;
   _pickTrafo.copy(traversal->current_transformation());
   try { traversal->traverse_child (child, 0, Region_var(allocation->_this()), Transform_var(tx->_this()));}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Warsaw::Graphic::_nil());}
-  catch (const CORBA::COMM_FAILURE &) { body(Warsaw::Graphic::_nil());}
+  catch (const CORBA::OBJECT_NOT_EXIST &) { body(Fresco::Graphic::_nil());}
+  catch (const CORBA::COMM_FAILURE &) { body(Fresco::Graphic::_nil());}
 }

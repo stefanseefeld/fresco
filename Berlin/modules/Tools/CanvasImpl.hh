@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,31 +23,31 @@
 #define _CanvasImpl_hh
 
 #include <Prague/Sys/Thread.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Canvas.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Canvas.hh>
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/Console.hh>
-#include <Console/SHMDrawableFactory.hh>
+#include <Berlin/Console/SHMDrawableFactory.hh>
 
-class CanvasImpl : public virtual POA_Warsaw::Canvas,
+class CanvasImpl : public virtual POA_Fresco::Canvas,
                    public GraphicImpl
 {
 public:
-  CanvasImpl(Warsaw::PixelCoord, Warsaw::PixelCoord);
+  CanvasImpl(Fresco::PixelCoord, Fresco::PixelCoord);
   virtual ~CanvasImpl();
   virtual CORBA::Long shm_id();
-  virtual Warsaw::Canvas::PixelFormat pixel_format();
-  virtual Warsaw::Canvas::BufferFormat buffer_format();
+  virtual Fresco::Canvas::PixelFormat pixel_format();
+  virtual Fresco::Canvas::BufferFormat buffer_format();
   virtual void lock();
   virtual void unlock();
   
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
+  virtual void request(Fresco::Graphic::Requisition &);
+  virtual void draw(Fresco::DrawTraversal_ptr);
 private:
   static SHMDrawableFactory *_factory;
-  Warsaw::PixelCoord         _width;
-  Warsaw::PixelCoord         _height;
-  Warsaw::Drawable_var       _drawable;
+  Fresco::PixelCoord         _width;
+  Fresco::PixelCoord         _height;
+  Fresco::Drawable_var       _drawable;
   Prague::Mutex              _mutex;
   CORBA::Long                _shm;
 };

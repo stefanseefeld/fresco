@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,8 +23,8 @@
 #ifndef _Root_hh
 #define _Root_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawingKit3D.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit3D.hh>
 #include <Berlin/Allocator.hh>
 
 //. Root is supposed to be the root node in a 3D scene graph hierarchy.
@@ -33,10 +33,10 @@
 class Root : public TransformAllocator
 {
 public:
-  Root(Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment, Warsaw::Alignment);
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  Root(Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 };
 
 #endif

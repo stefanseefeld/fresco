@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,14 +27,14 @@
 class ShapeOf : public GraphicImpl
 {
 public:
-  ShapeOf(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr);
+  ShapeOf(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr);
   virtual ~ShapeOf();
 
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void request(Fresco::Graphic::Requisition &);
 private:
-  Warsaw::Graphic_ptr x;
-  Warsaw::Graphic_ptr y;
-  Warsaw::Graphic_ptr z;
+  Fresco::Graphic_var x;
+  Fresco::Graphic_var y;
+  Fresco::Graphic_var z;
 };
 
 #endif

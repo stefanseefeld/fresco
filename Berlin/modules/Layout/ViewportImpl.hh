@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,9 @@
 #ifndef _ViewportImpl_hh
 #define _ViewportImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Viewport.hh>
-#include <Warsaw/BoundedRange.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Viewport.hh>
+#include <Fresco/BoundedRange.hh>
 #include <Berlin/ViewImpl.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
@@ -39,19 +39,19 @@ class ViewportImpl : public virtual POA_Layout::Viewport,
  public:
   ViewportImpl();
   ~ViewportImpl();
-  virtual void body(Warsaw::Graphic_ptr);
-  virtual Warsaw::Graphic_ptr body() { return MonoGraphic::body();}
+  virtual void body(Fresco::Graphic_ptr);
+  virtual Fresco::Graphic_ptr body() { return MonoGraphic::body();}
 
-  virtual Warsaw::Transform_ptr transformation();
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual Fresco::Transform_ptr transformation();
+  virtual void request(Fresco::Graphic::Requisition &);
 
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 
   virtual void need_resize();
 
-  virtual Warsaw::BoundedRange_ptr adjustment(Warsaw::Axis);
+  virtual Fresco::BoundedRange_ptr adjustment(Fresco::Axis);
 
   virtual void update(const CORBA::Any &);
 
@@ -59,17 +59,17 @@ class ViewportImpl : public virtual POA_Layout::Viewport,
 
 private:
   virtual void activate_composite();
-  void allocate_child(Warsaw::Allocation::Info &);
+  void allocate_child(Fresco::Allocation::Info &);
   void cache_requisition();
-  void cache_allocation(Warsaw::Region_ptr);
-  void body_allocation(Warsaw::Region_ptr, RegionImpl *);
-  void scroll_transform(Warsaw::Transform_ptr);
+  void cache_allocation(Fresco::Region_ptr);
+  void body_allocation(Fresco::Region_ptr, RegionImpl *);
+  void scroll_transform(Fresco::Transform_ptr);
 
-  Warsaw::BoundedRange::Settings     _settings[2];
-  RefCount_var<Warsaw::BoundedRange> _xadjustment;
-  RefCount_var<Warsaw::BoundedRange> _yadjustment;
+  Fresco::BoundedRange::Settings     _settings[2];
+  RefCount_var<Fresco::BoundedRange> _xadjustment;
+  RefCount_var<Fresco::BoundedRange> _yadjustment;
   bool                               _requested;
-  Warsaw::Graphic::Requisition       _requisition;
+  Fresco::Graphic::Requisition       _requisition;
 };
 
 #endif

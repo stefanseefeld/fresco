@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,9 @@
 #ifndef _LogoDemo_hh
 #define _LogoDemo_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Command.hh>
-#include <Warsaw/BoundedValue.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Command.hh>
+#include <Fresco/BoundedValue.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/ObserverImpl.hh>
 #include <Berlin/ImplVar.hh>
@@ -35,21 +35,21 @@ class LogoDemo : public Demo
   class Rotator : public ObserverImpl
   {
   public:
-    Rotator(Warsaw::BoundedValue_ptr, Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Coord);
+    Rotator(Fresco::BoundedValue_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Coord);
     void update(const CORBA::Any &);
   private:
-    Warsaw::BoundedValue_var value;
-    Warsaw::Graphic_var child;
-    Warsaw::Graphic_var parent;
-    Warsaw::Coord zdegree;
+    Fresco::BoundedValue_var value;
+    Fresco::Graphic_var child;
+    Fresco::Graphic_var parent;
+    Fresco::Coord zdegree;
   };
 public:
   LogoDemo(Application *);
-  Warsaw::Graphic_ptr make_controller(Warsaw::BoundedValue_ptr, const Warsaw::Color &);
+  Fresco::Graphic_ptr make_controller(Fresco::BoundedValue_ptr, const Fresco::Color &);
 private:
-  Warsaw::BoundedValue_var bv1;
-  Warsaw::BoundedValue_var bv2;
-  Warsaw::BoundedValue_var bv3;
+  Fresco::BoundedValue_var bv1;
+  Fresco::BoundedValue_var bv2;
+  Fresco::BoundedValue_var bv3;
   Impl_var<Rotator> rotator1;
   Impl_var<Rotator> rotator2;
   Impl_var<Rotator> rotator3;

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,26 +19,26 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ControllerImpl_hh
-#define _ControllerImpl_hh
+#ifndef _Berlin_ControllerImpl_hh
+#define _Berlin_ControllerImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Controller.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/PickTraversal.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Controller.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/PickTraversal.hh>
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/RefCountVar.hh>
 #include <vector>
 
-class ControllerImpl : public virtual POA_Warsaw::Controller,
+class ControllerImpl : public virtual POA_Fresco::Controller,
                        public MonoGraphic,
                        public SubjectImpl
 {
-  typedef std::vector<RefCount_var<Warsaw::Controller> > clist_t;
+  typedef std::vector<RefCount_var<Fresco::Controller> > clist_t;
   class Iterator;
   friend class Iterator;
 public:
@@ -46,61 +46,61 @@ public:
   virtual ~ControllerImpl();
   virtual void deactivate();
 
-  virtual void traverse(Warsaw::Traversal_ptr);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void pick(Warsaw::PickTraversal_ptr);
+  virtual void traverse(Fresco::Traversal_ptr);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void pick(Fresco::PickTraversal_ptr);
 
-  virtual void append_controller(Warsaw::Controller_ptr);
-  virtual void prepend_controller(Warsaw::Controller_ptr);
-  virtual void remove_controller(Warsaw::Controller_ptr);
-  virtual void set_parent_controller(Warsaw::Controller_ptr);
+  virtual void append_controller(Fresco::Controller_ptr);
+  virtual void prepend_controller(Fresco::Controller_ptr);
+  virtual void remove_controller(Fresco::Controller_ptr);
+  virtual void set_parent_controller(Fresco::Controller_ptr);
   virtual void remove_parent_controller();
 
-  virtual Warsaw::Controller_ptr parent_controller();
-  virtual Warsaw::ControllerIterator_ptr first_child_controller();
-  virtual Warsaw::ControllerIterator_ptr last_child_controller();
+  virtual Fresco::Controller_ptr parent_controller();
+  virtual Fresco::ControllerIterator_ptr first_child_controller();
+  virtual Fresco::ControllerIterator_ptr last_child_controller();
 
-  virtual CORBA::Boolean request_focus(Warsaw::Controller_ptr, Warsaw::Input::Device);
-  virtual CORBA::Boolean receive_focus(Warsaw::Focus_ptr);
-  virtual void lose_focus(Warsaw::Input::Device);
+  virtual CORBA::Boolean request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
+  virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr);
+  virtual void lose_focus(Fresco::Input::Device);
 
-  virtual CORBA::Boolean first_focus(Warsaw::Input::Device);
-  virtual CORBA::Boolean last_focus(Warsaw::Input::Device);
-  virtual CORBA::Boolean next_focus(Warsaw::Input::Device);
-  virtual CORBA::Boolean prev_focus(Warsaw::Input::Device);
-  virtual CORBA::Boolean handle_positional(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual CORBA::Boolean handle_non_positional(const Warsaw::Input::Event &);
+  virtual CORBA::Boolean first_focus(Fresco::Input::Device);
+  virtual CORBA::Boolean last_focus(Fresco::Input::Device);
+  virtual CORBA::Boolean next_focus(Fresco::Input::Device);
+  virtual CORBA::Boolean prev_focus(Fresco::Input::Device);
+  virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &);
 
-  virtual void set(Warsaw::Telltale::Mask);
-  virtual void clear(Warsaw::Telltale::Mask);
-  virtual CORBA::Boolean test(Warsaw::Telltale::Mask);
-  virtual void modify(Warsaw::Telltale::Mask, CORBA::Boolean);
-  virtual void constraint(Warsaw::TelltaleConstraint_ptr);
-  virtual Warsaw::TelltaleConstraint_ptr constraint();
+  virtual void set(Fresco::Telltale::Mask);
+  virtual void clear(Fresco::Telltale::Mask);
+  virtual CORBA::Boolean test(Fresco::Telltale::Mask);
+  virtual void modify(Fresco::Telltale::Mask, CORBA::Boolean);
+  virtual void constraint(Fresco::TelltaleConstraint_ptr);
+  virtual Fresco::TelltaleConstraint_ptr constraint();
 protected:
-  virtual bool inside(Warsaw::PickTraversal_ptr);
-  virtual void move(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void double_click(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void key_press(const Warsaw::Input::Event &);
-  virtual void key_release(const Warsaw::Input::Event &);
-  virtual void other(const Warsaw::Input::Event &);
-  void grab(Warsaw::PickTraversal_ptr);
-  void ungrab(Warsaw::PickTraversal_ptr);
-  bool grabbed(Warsaw::Input::Device d) { return _grabs & (1 << d);}
-  void set_focus(Warsaw::Input::Device d) { _focus |= 1 << d; update_state();}
-  void clear_focus(Warsaw::Input::Device d) { _focus &= ~(1 << d); update_state();}
+  virtual bool inside(Fresco::PickTraversal_ptr);
+  virtual void move(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void drag(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void double_click(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void key_press(const Fresco::Input::Event &);
+  virtual void key_release(const Fresco::Input::Event &);
+  virtual void other(const Fresco::Input::Event &);
+  void grab(Fresco::PickTraversal_ptr);
+  void ungrab(Fresco::PickTraversal_ptr);
+  bool grabbed(Fresco::Input::Device d) { return _grabs & (1 << d);}
+  void set_focus(Fresco::Input::Device d) { _focus |= 1 << d; update_state();}
+  void clear_focus(Fresco::Input::Device d) { _focus &= ~(1 << d); update_state();}
   virtual void update_state();
 private:
-  Warsaw::Controller_var _parent;
+  Fresco::Controller_var _parent;
   clist_t _children;
   CORBA::ULong _telltale;
   CORBA::ULong _focus;
   CORBA::ULong _grabs;
   bool _transparent;
-  Warsaw::TelltaleConstraint_var _constraint;
+  Fresco::TelltaleConstraint_var _constraint;
   Prague::Mutex _pmutex; // for the parent link
   Prague::Mutex _cmutex; // for the children links
   Prague::Mutex _mutex;  // for the state

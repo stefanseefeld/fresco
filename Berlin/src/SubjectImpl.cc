@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,7 +25,7 @@
 #include <functional>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 SubjectImpl::SubjectImpl() : _blocked(false) {}
 
@@ -33,14 +33,14 @@ void SubjectImpl::attach(Observer_ptr observer)
 {
   Trace trace(this, "SubjectImpl::attach");
   Prague::Guard<Mutex> guard(_observerMutex);
-  _observers.push_back(Warsaw::Observer::_duplicate(observer));
+  _observers.push_back(Fresco::Observer::_duplicate(observer));
 }
 
-struct Id_eq : public std::unary_function<Warsaw::Identifiable_ptr, bool>
+struct Id_eq : public std::unary_function<Fresco::Identifiable_ptr, bool>
 {
-  Id_eq(Warsaw::Identifiable_ptr i) : id(i) {}
-  bool operator()(const Warsaw::Identifiable_ptr i) const { return id->is_identical(i);}
-  Warsaw::Identifiable_ptr id;
+  Id_eq(Fresco::Identifiable_ptr i) : id(i) {}
+  bool operator()(const Fresco::Identifiable_ptr i) const { return id->is_identical(i);}
+  Fresco::Identifiable_ptr id;
 };
 
 void SubjectImpl::detach(Observer_ptr observer)

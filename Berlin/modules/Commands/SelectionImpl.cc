@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,13 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Controller.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Controller.hh>
 #include <Berlin/ObserverImpl.hh>
-#include "Command/SelectionImpl.hh"
+#include "SelectionImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 /*
  * a little glue class to notify the Selection if the 'toggled'
@@ -42,7 +42,7 @@ public:
   void update(const CORBA::Any &);
 private:
   SelectionImpl *selection;
-  RefCount_var<Warsaw::Telltale> item;
+  RefCount_var<Fresco::Telltale> item;
   bool cached;
   Tag t;
 };
@@ -51,8 +51,8 @@ bool SelectionImpl::Id_eq::operator()(const SelectionImpl::Observer *o) const { 
 
 SelectionImpl::Observer::Observer(SelectionImpl *s, Telltale_ptr i, Tag tt)
   : selection(s),
-    item(RefCount_var<Warsaw::Telltale>::increment(i)),
-    cached(item->test(Warsaw::Controller::toggled)),
+    item(RefCount_var<Fresco::Telltale>::increment(i)),
+    cached(item->test(Fresco::Controller::toggled)),
     t(tt)
 {
 }
@@ -66,13 +66,13 @@ SelectionImpl::Observer::~Observer()
 
 void SelectionImpl::Observer::update(const CORBA::Any &any)
 {
-  bool toggled = item->test(Warsaw::Controller::toggled);
+  bool toggled = item->test(Fresco::Controller::toggled);
   if (toggled == cached) return; // not for us...
   cached = toggled;
   selection->update(t, toggled);
 }
 
-SelectionImpl::SelectionImpl(Warsaw::Selection::Policy p, TelltaleConstraint_ptr c)
+SelectionImpl::SelectionImpl(Fresco::Selection::Policy p, TelltaleConstraint_ptr c)
   : policy(p), constraint(RefCount_var<TelltaleConstraint>::increment(c))
 {
   Trace trace("SelectionImpl::SelectionImpl");
@@ -86,8 +86,8 @@ SelectionImpl::~SelectionImpl()
 //     catch (CORBA::OBJECT_NOT_EXIST &) {}
 }
 
-Warsaw::Selection::Policy SelectionImpl::type() { return policy;}
-void SelectionImpl::type(Warsaw::Selection::Policy p) {
+Fresco::Selection::Policy SelectionImpl::type() { return policy;}
+void SelectionImpl::type(Fresco::Selection::Policy p) {
     Prague::Guard<Mutex> guard(mutex);
     policy = p;
 }
@@ -122,7 +122,7 @@ Selection::Items *SelectionImpl::toggled()
 {
   Trace trace("SelectionImpl::toggled");
   Prague::Guard<Mutex> guard(mutex);
-  Warsaw::Selection::Items_var ret = new Warsaw::Selection::Items;
+  Fresco::Selection::Items_var ret = new Fresco::Selection::Items;
   for (list_t::iterator i = items.begin(); i != items.end(); i++)
     if ((*i)->toggled())
       {
@@ -137,7 +137,7 @@ void SelectionImpl::update(Tag t, bool toggled)
 {
   Trace trace("SelectionImpl::update");
   CORBA::Any any;
-  Warsaw::Selection::Item item;
+  Fresco::Selection::Item item;
   item.id = t;
   item.toggled = toggled;
   any <<= item;

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,11 +22,11 @@
 #ifndef _UnidrawKitImpl_hh
 #define _UnidrawKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/FigureKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/WidgetKit.hh>
-#include <Warsaw/UnidrawKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/FigureKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/WidgetKit.hh>
+#include <Fresco/UnidrawKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
 #include <vector>
@@ -35,20 +35,20 @@ class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
 		       public KitImpl
 {
 public:
-  UnidrawKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
+  UnidrawKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~UnidrawKitImpl();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new UnidrawKitImpl(repo_id(), p);}
-  virtual void bind(Warsaw::ServerContext_ptr);
+  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new UnidrawKitImpl(repo_id(), p);}
+  virtual void bind(Fresco::ServerContext_ptr);
   virtual Unidraw::Tool_ptr select_tool();
   virtual Unidraw::Editor_ptr create_editor();
-  virtual Unidraw::View_ptr   create_view(Warsaw::Graphic_ptr g, Unidraw::Model_ptr);
-  Warsaw::FigureKit_ptr figures();
-  Warsaw::ToolKit_ptr tools();
-  Warsaw::WidgetKit_ptr widgets();
+  virtual Unidraw::View_ptr   create_view(Fresco::Graphic_ptr g, Unidraw::Model_ptr);
+  Fresco::FigureKit_ptr figures();
+  Fresco::ToolKit_ptr tools();
+  Fresco::WidgetKit_ptr widgets();
 private:
-  RefCount_var<Warsaw::FigureKit> _figures;
-  RefCount_var<Warsaw::ToolKit>   _tools;
-  RefCount_var<Warsaw::WidgetKit> _widgets;
+  RefCount_var<Fresco::FigureKit> _figures;
+  RefCount_var<Fresco::ToolKit>   _tools;
+  RefCount_var<Fresco::WidgetKit> _widgets;
 };
 
 #endif

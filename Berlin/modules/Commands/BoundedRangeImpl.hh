@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,32 +22,32 @@
 #ifndef _BoundedRangeImpl_hh
 #define _BoundedRangeImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/BoundedRange.hh>
-#include <Berlin/SubjectImpl.hh>
 #include <Prague/Sys/Thread.hh>
+#include <Fresco/config.hh>
+#include <Fresco/BoundedRange.hh>
+#include <Berlin/SubjectImpl.hh>
 #include <vector>
 
-class BoundedRangeImpl : public virtual POA_Warsaw::BoundedRange,
+class BoundedRangeImpl : public virtual POA_Fresco::BoundedRange,
 			 public SubjectImpl
 {
  public:
-  BoundedRangeImpl(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+  BoundedRangeImpl(Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord);
   virtual ~BoundedRangeImpl();
-  virtual Warsaw::BoundedRange::Settings state();
-  virtual void state(const Warsaw::BoundedRange::Settings &);
-  virtual Warsaw::Coord lower();
-  virtual void lower(Warsaw::Coord);
-  virtual Warsaw::Coord upper();
-  virtual void upper(Warsaw::Coord);
-  virtual Warsaw::Coord step();
-  virtual void step(Warsaw::Coord);
-  virtual Warsaw::Coord page();
-  virtual void page(Warsaw::Coord);
-  virtual Warsaw::Coord lvalue();
-  virtual void lvalue(Warsaw::Coord);
-  virtual Warsaw::Coord uvalue();
-  virtual void uvalue(Warsaw::Coord);
+  virtual Fresco::BoundedRange::Settings state();
+  virtual void state(const Fresco::BoundedRange::Settings &);
+  virtual Fresco::Coord lower();
+  virtual void lower(Fresco::Coord);
+  virtual Fresco::Coord upper();
+  virtual void upper(Fresco::Coord);
+  virtual Fresco::Coord step();
+  virtual void step(Fresco::Coord);
+  virtual Fresco::Coord page();
+  virtual void page(Fresco::Coord);
+  virtual Fresco::Coord lvalue();
+  virtual void lvalue(Fresco::Coord);
+  virtual Fresco::Coord uvalue();
+  virtual void uvalue(Fresco::Coord);
 
   virtual void forward();
   virtual void backward();
@@ -55,11 +55,11 @@ class BoundedRangeImpl : public virtual POA_Warsaw::BoundedRange,
   virtual void fastbackward();
   virtual void begin();
   virtual void end();
-  virtual void adjust(Warsaw::Coord);
+  virtual void adjust(Fresco::Coord);
 private:  
-  Warsaw::BoundedRange::Settings _settings;
-  Warsaw::Coord                  _s;
-  Warsaw::Coord                  _p;
+  Fresco::BoundedRange::Settings _settings;
+  Fresco::Coord                  _s;
+  Fresco::Coord                  _p;
   Prague::Mutex                  _mutex;
 };
 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,38 +21,38 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/PickTraversal.hh>
-#include "Tool/TriggerImpl.hh"
+#include <Fresco/config.hh>
+#include <Fresco/Input.hh>
+#include <Fresco/PickTraversal.hh>
+#include "TriggerImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TriggerImpl::TriggerImpl() : ControllerImpl(false) {}
 TriggerImpl::~TriggerImpl()
 {
   Trace trace("Trigger::~Trigger");
-  if (!CORBA::is_nil(command))
-    try { command->destroy();}
+  if (!CORBA::is_nil(_command))
+    try { _command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
 }
 void TriggerImpl::action(Command_ptr c)
 {
   Trace trace("TriggerImpl::action");
-  Prague::Guard<Mutex> guard(mutex);
-  if (!CORBA::is_nil(command))
-    try { command->destroy();}
+  Prague::Guard<Mutex> guard(_mutex);
+  if (!CORBA::is_nil(_command))
+    try { _command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
     catch (const CORBA::COMM_FAILURE &) {}
-  command = Command::_duplicate(c);
+  _command = Command::_duplicate(c);
 }
 
 Command_ptr TriggerImpl::action()
 {
-  Prague::Guard<Mutex> guard(mutex);
-  return Command::_duplicate(command);
+  Prague::Guard<Mutex> guard(_mutex);
+  return Command::_duplicate(_command);
 }
 
 void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
@@ -61,7 +61,7 @@ void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event
    * once we have real focus management the command should be executed
    * if we have focus and the Telltale::toggle is to be released... -stefan
    */
-  if (inside(traversal) && test(Warsaw::Controller::pressed))
+  if (inside(traversal) && test(Fresco::Controller::pressed))
     {
       CORBA::Any dummy;
       try { execute(dummy);}
@@ -75,12 +75,12 @@ void TriggerImpl::key_press(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.selection();
   if (toggle.number == 32) // space
     {
-      set(Warsaw::Controller::pressed);
-      if (test(Warsaw::Controller::pressed))
+      set(Fresco::Controller::pressed);
+      if (test(Fresco::Controller::pressed))
 	{
 	  CORBA::Any dummy;
 	  execute(dummy);
-	  clear(Warsaw::Controller::pressed);
+	  clear(Fresco::Controller::pressed);
 	}
     }
   else ControllerImpl::key_press(event);
@@ -89,9 +89,9 @@ void TriggerImpl::key_press(const Input::Event &event)
 void TriggerImpl::execute(const CORBA::Any &any)
 {
   Trace trace("TriggerImpl::execute");
-  Prague::Guard<Mutex> guard(mutex);
-  if (!CORBA::is_nil(command))
-    try { command->execute(any);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { command = Warsaw::Command::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { command = Warsaw::Command::_nil();}
+  Prague::Guard<Mutex> guard(_mutex);
+  if (!CORBA::is_nil(_command))
+    try { _command->execute(any);}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { _command = Fresco::Command::_nil();}
+    catch (const CORBA::COMM_FAILURE &) { _command = Fresco::Command::_nil();}
 }

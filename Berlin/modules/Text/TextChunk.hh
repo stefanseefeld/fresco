@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,8 +23,8 @@
 #ifndef _TextChunk_hh
 #define _TextChunk_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Unicode.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Unicode.hh>
 #include <Berlin/GraphicImpl.hh>
 
 //. A text chunk is constructed with a "canonical size", which is essentially its
@@ -37,19 +37,19 @@
 class TextChunk : public virtual GraphicImpl
 {
 public:
-  TextChunk(const Warsaw::Unichar ch, const Warsaw::Graphic::Requisition &);
+  TextChunk(const Fresco::Unichar ch, const Fresco::Graphic::Requisition &);
   virtual ~TextChunk();
 
-  virtual void draw(Warsaw::DrawTraversal_ptr);
-  virtual void request(Warsaw::Graphic::Requisition &);
+  virtual void draw(Fresco::DrawTraversal_ptr);
+  virtual void request(Fresco::Graphic::Requisition &);
   
   virtual const char *object_name();
   void get_text(Babylon::String &); 
   unsigned long get_length();
 protected:
-  Warsaw::Coord     _width, _height;
-  Warsaw::Alignment _xalign, _yalign;
-  Warsaw::Unichar   _char;
+  Fresco::Coord     _width, _height;
+  Fresco::Alignment _xalign, _yalign;
+  Fresco::Unichar   _char;
   const char       *_obj_name;
 };
 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 graydon hoare <graydon@pobox.com>
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 graydon hoare <graydon@fresco.org>
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,16 +20,17 @@
  * MA 02139, USA.
  */
 
-#include "Drawing/libArt/LibArtRaster.hh"
+#include "Raster.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
+using namespace libArt;
 
-LibArtRaster::LibArtRaster(Raster_var r) :
-  remote(Raster::_duplicate(r)) 
+libArt::Raster::Raster(Raster_var r)
+  : remote(Fresco::Raster::_duplicate(r)) 
 {  
-  Raster::Info info = remote->header();
-  Raster::ColorSeq_var colors;
-  Raster::Index lower, upper;
+  Fresco::Raster::Info info = remote->header();
+  Fresco::Raster::ColorSeq_var colors;
+  Fresco::Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
   remote->store_pixels(lower, upper, colors);
@@ -47,7 +48,7 @@ LibArtRaster::LibArtRaster(Raster_var r) :
   pixbuf = art_pixbuf_new_const_rgba (pixels, width, height, width * 4);
 }
 
-LibArtRaster::~LibArtRaster()
+libArt::Raster::~Raster()
 {
   art_pixbuf_free (pixbuf);
   delete[] pixels;

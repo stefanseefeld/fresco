@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@fresco.org> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,16 +21,16 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawingKit.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/Region.hh>
-#include <Warsaw/IO.hh>
-#include "Text/TextChunk.hh"
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/Region.hh>
+#include <Fresco/IO.hh>
+#include "TextChunk.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
-TextChunk::TextChunk(Unichar u, const Warsaw::Graphic::Requisition &r)
+TextChunk::TextChunk(Unichar u, const Fresco::Graphic::Requisition &r)
   : _width(r.x.natural), _height(r.y.natural), _xalign(r.x.align), _yalign(r.y.align), _char(u), _obj_name(0)
 {
 }
@@ -40,7 +40,7 @@ TextChunk::~TextChunk()
   delete _obj_name;
 }
 
-void TextChunk::request(Warsaw::Graphic::Requisition &r)
+void TextChunk::request(Fresco::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.minimum = r.x.natural = r.x.maximum = _width;

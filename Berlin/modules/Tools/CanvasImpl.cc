@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,17 +22,17 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/SHM.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/Console.hh>
-#include "Tool/CanvasImpl.hh"
+#include "CanvasImpl.hh"
 #include <sys/ipc.h>
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 SHMDrawableFactory *CanvasImpl::_factory = 0;
 
@@ -44,7 +44,7 @@ CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
   std::cout << "I'm still here" << std::endl;
   if (!_factory) _factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
   std::cout << "I'm still here" << std::endl;
-  Warsaw::Drawable::PixelFormat format = console->drawable()->pixel_format();
+  Fresco::Drawable::PixelFormat format = console->drawable()->pixel_format();
   size_t size = w * h * format.size;
   _shm = SHM::allocate(size);
   Console::Drawable *drawable = _factory->create_drawable(_shm, w, h, 3);
@@ -62,12 +62,12 @@ CORBA::Long CanvasImpl::shm_id()
   return _shm;
 }
 
-Warsaw::Canvas::PixelFormat CanvasImpl::pixel_format()
+Fresco::Canvas::PixelFormat CanvasImpl::pixel_format()
 {
   return _drawable->pixel_format();
 }
 
-Warsaw::Canvas::BufferFormat CanvasImpl::buffer_format()
+Fresco::Canvas::BufferFormat CanvasImpl::buffer_format()
 {
   return _drawable->buffer_format();
 }
@@ -82,7 +82,7 @@ void CanvasImpl::unlock()
   _mutex.unlock();
 }
 
-void CanvasImpl::request(Warsaw::Graphic::Requisition &requisition)
+void CanvasImpl::request(Fresco::Graphic::Requisition &requisition)
 {
   Trace trace("CanvasImpl::request");
   requisition.x.defined = true;

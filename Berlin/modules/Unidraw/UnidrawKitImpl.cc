@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,29 +20,29 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include "Unidraw/UnidrawKitImpl.hh"
-#include "Unidraw/ViewImpl.hh"
-#include "Unidraw/SelectTool.hh"
-#include "Unidraw/EditorImpl.hh"
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include "UnidrawKitImpl.hh"
+#include "ViewImpl.hh"
+#include "SelectTool.hh"
+#include "EditorImpl.hh"
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 // using namespace Unidraw;
 
-UnidrawKitImpl::UnidrawKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+UnidrawKitImpl::UnidrawKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 UnidrawKitImpl::~UnidrawKitImpl() {}
 void UnidrawKitImpl::bind(ServerContext_ptr context)
 {
   Trace trace("UnidrawKitImpl::bind");
   KitImpl::bind(context);
-  Warsaw::Kit::PropertySeq props;
+  Fresco::Kit::PropertySeq props;
   props.length(0);
-  _figures = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
-  _tools   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
-  _widgets = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
+  _figures = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
+  _tools   = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
+  _widgets = resolve_kit<WidgetKit>(context, "IDL:fresco.org/Fresco/WidgetKit:1.0", props);
 }
 
 Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
@@ -68,12 +68,12 @@ Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr 
   return view->_this();
 }
 
-Warsaw::FigureKit_ptr UnidrawKitImpl::figures() { return RefCount_var<Warsaw::FigureKit>::increment(_figures);}
-Warsaw::ToolKit_ptr UnidrawKitImpl::tools() { return RefCount_var<Warsaw::ToolKit>::increment(_tools);}
-Warsaw::WidgetKit_ptr UnidrawKitImpl::widgets() { return RefCount_var<Warsaw::WidgetKit>::increment(_widgets);}
+Fresco::FigureKit_ptr UnidrawKitImpl::figures() { return RefCount_var<Fresco::FigureKit>::increment(_figures);}
+Fresco::ToolKit_ptr UnidrawKitImpl::tools() { return RefCount_var<Fresco::ToolKit>::increment(_tools);}
+Fresco::WidgetKit_ptr UnidrawKitImpl::widgets() { return RefCount_var<Fresco::WidgetKit>::increment(_widgets);}
 
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "UnidrawKitImpl"};
-  return create_kit<UnidrawKitImpl>("IDL:Unidraw/UnidrawKit:1.0", properties, 2);
+  return create_kit<UnidrawKitImpl>("IDL:fresco.org/Unidraw/UnidrawKit:1.0", properties, 2);
 } 

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,29 +22,29 @@
 #ifndef _SelectTool_hh
 #define _SelectTool_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Transform.hh>
-#include <Warsaw/FigureKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/UnidrawKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Transform.hh>
+#include <Fresco/FigureKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/UnidrawKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 
 class SelectTool : public virtual POA_Unidraw::Tool,
 		   public RefCountBaseImpl
 {
 public:
-  SelectTool(Warsaw::Graphic_ptr);
+  SelectTool(Fresco::Graphic_ptr);
   virtual ~SelectTool();
-  virtual CORBA::Boolean grasp(Warsaw::Controller_ptr, Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual Unidraw::Command_ptr effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual CORBA::Boolean grasp(Fresco::Controller_ptr, Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual CORBA::Boolean manipulate(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual Unidraw::Command_ptr effect(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
 private:
-  Warsaw::Controller_var      _root;
-  Warsaw::GraphicIterator_var _iterator;
-  Warsaw::Transform::Matrix   _matrix;
-  Warsaw::Graphic_var         _graphic;
-  Warsaw::Vertex              _begin;
-  Warsaw::Vertex              _end;
+  Fresco::Controller_var      _root;
+  Fresco::GraphicIterator_var _iterator;
+  Fresco::Transform::Matrix   _matrix;
+  Fresco::Graphic_var         _graphic;
+  Fresco::Vertex              _begin;
+  Fresco::Vertex              _end;
 };
 
 #endif

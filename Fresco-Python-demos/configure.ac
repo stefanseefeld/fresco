@@ -1,9 +1,8 @@
 dnl $Id$
 dnl
-dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 2000 Håvard Skinnemoen <skinnemo@itk.ntnu.no>
-dnl Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-dnl http://www.berlin-consortium.org/
+dnl This source file is a part of the Fresco Project.
+dnl Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+dnl http://www.fresco.org/
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -25,56 +24,32 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ------------------------------------------------------------------
 dnl Autoconf initialization
 dnl ------------------------------------------------------------------
-AC_PREREQ(2.12)
+
+AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-
-AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 3, 0, CVS, 0, 0)
-AC_SET_PATHS(../..)
-
-AC_DIVERT_PUSH(AC_DIVERSION_INIT)dnl
+AC_INIT(Berlin, 0.3.0, devel@fresco.org)
 AC_CONFIG_AUX_DIR(config)
-AC_DIVERT_POP()
 
-AC_HEADLINE(dnl
-Berlin Clients-Python, Berlin python clients, dnl
-[Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-VERSION)
+dnl AC_HEADLINE(dnl
+dnl Berlin Clients-Python, Berlin python clients, dnl
+dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
+dnl VERSION)
+
+AC_PROG_INSTALL
 
 dnl ------------------------------------------------------------------
 dnl CORBA environment
 dnl ------------------------------------------------------------------
-AC_MSG_PART(CORBA Environment)
-BERLIN_OMNIORBPY_CHECK
 
-dnl ------------------------------------------------------------------
-dnl Decisions
-dnl ------------------------------------------------------------------
-
-dnl Decide whether we are ready to build
-PYTHON=
-if test ".$berlin_cv_sys_omniidl_py" = .yes ; then
-	PYTHON="clients/python"
-fi
-AC_SUBST(PYTHON)
-
-dnl ------------------------------------------------------------------
-dnl Print a summary of what's going to be built
-dnl ------------------------------------------------------------------
-AC_MSG_PART(Summary)
-AC_MSG_RESULT([Build Python runtime:          $ac_cv_lib_omniORBpy])
+dnl AC_MSG_PART(CORBA Environment)
+FRESCO_OMNIORBPY_CHECK
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
-AC_MSG_PART(Output Substitution)
 
-mkdir -p $builddir/bin
-mkdir -p $builddir/clients/python
-mkdir -p $builddir/lib/python
+dnl AC_MSG_PART(Output Substitution)
 
-AC_OUTPUT([
-	$builddir/config/Clients-Python/subdirs.mk:config/Clients-Python/subdirs.mk.in
-	$builddir/config/Clients-Python/local.mk:config/Clients-Python/local.mk.in
-	$builddir/clients/python/Makefile:config/Clients-Python/Makefile.omniorb.in
-])
+AC_CONFIG_FILES([config/local.mk Makefile Fresco/Makefile:config/Makefile.omniorb.in src/Makefile])
+
+AC_OUTPUT

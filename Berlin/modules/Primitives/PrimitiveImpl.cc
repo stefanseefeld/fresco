@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,22 +21,22 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/PickTraversal.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Warsaw/DrawingKit3D.hh>
-#include <Warsaw/IO.hh>
+#include <Fresco/config.hh>
+#include <Fresco/PickTraversal.hh>
+#include <Fresco/DrawTraversal.hh>
+#include <Fresco/DrawingKit3D.hh>
+#include <Fresco/IO.hh>
 #include <Berlin/Geometry.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Color.hh>
 #include <Berlin/Vertex.hh>
 #include <Berlin/Provider.hh>
-#include "Primitive/PrimitiveImpl.hh"
+#include "PrimitiveImpl.hh"
 
 using namespace Geometry;
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 TransformPrimitive::TransformPrimitive()
   : //_mode(Figure::outline),
@@ -47,7 +47,7 @@ TransformPrimitive::TransformPrimitive()
 
 TransformPrimitive::~TransformPrimitive() {}
 Transform_ptr TransformPrimitive::transformation() { return _tx->_this();}
-void TransformPrimitive::request(Warsaw::Graphic::Requisition &r)
+void TransformPrimitive::request(Fresco::Graphic::Requisition &r)
 {
   Trace trace("TransformPrimitive::request");
   Allocation::Info info;
@@ -111,7 +111,7 @@ void TransformPrimitive::copy(const TransformPrimitive &tp)
   if (tp._ext->valid) _ext->copy(Region_var(tp._ext->_this()));
 }
 
-PrimitiveImpl::PrimitiveImpl() : _mesh(new Warsaw::Mesh()) {}
+PrimitiveImpl::PrimitiveImpl() : _mesh(new Fresco::Mesh()) {}
 PrimitiveImpl::~PrimitiveImpl() {}
 
 void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
@@ -185,5 +185,5 @@ void PrimitiveImpl::reset()
 void PrimitiveImpl::copy(const PrimitiveImpl &p)
 {
   TransformPrimitive::copy(p);
-  _mesh = new Warsaw::Mesh(p._mesh);
+  _mesh = new Fresco::Mesh(p._mesh);
 }

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,19 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GLUnifont_hh
-#define _GLUnifont_hh
+#ifndef _Unifont_hh
+#define _Unifont_hh
 
+#include <Prague/Sys/MMap.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Types.hh>
+#include <Fresco/Graphic.hh>
+#include <Fresco/Unicode.hh>
+#include "Font.hh"
 #include <GL/gl.h>
 #include <vector>
-#include <Warsaw/config.hh>
-#include <Warsaw/Types.hh>
-#include <Warsaw/Graphic.hh>
-#include <Prague/Sys/MMap.hh>
-#include "Drawing/openGL/GLFont.hh"
-#include <Warsaw/Unicode.hh>
 
-class GLUnifont : public GLFont
+namespace openGL
+{
+
+class Unifont : public Font
 //. This is a default font, just in case -- a character cell bitmapped unicode
 //. font which is generated "on the fly" from the GNU unifont, which we're
 //. storing in a packed binary array we mmap() in. this is so that, even if all
@@ -49,7 +52,7 @@ class GLUnifont : public GLFont
     ~Texture();
     void bind(unsigned char *glyphs, GLubyte block);
     bool bound() const { return data;}
-    void coords(Warsaw::Unichar, float &, float &, float &, float &);
+    void coords(Fresco::Unichar, float &, float &, float &, float &);
     GLuint id() { return name;}
   private:
     GLuint   name;
@@ -57,26 +60,28 @@ class GLUnifont : public GLFont
     GLubyte *data;
   };
 public:
-  GLUnifont();
-  virtual ~GLUnifont();
+  Unifont();
+  virtual ~Unifont();
   virtual CORBA::ULong size();
   virtual CORBA::ULong weight();
-  virtual Warsaw::Unistring *family();
-  virtual Warsaw::Unistring *subfamily();
-  virtual Warsaw::Unistring *fullname();
-  virtual Warsaw::Unistring *style();
-  virtual Warsaw::DrawingKit::FontMetrics metrics();
-  virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar);
+  virtual Fresco::Unistring *family();
+  virtual Fresco::Unistring *subfamily();
+  virtual Fresco::Unistring *fullname();
+  virtual Fresco::Unistring *style();
+  virtual Fresco::DrawingKit::FontMetrics metrics();
+  virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar);
 
-  void draw_char(Warsaw::Unichar);
-  void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  void draw_char(Fresco::Unichar);
+  void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &);
 private:
   Prague::MMap *glyphmap;
-  Warsaw::Unistring _family;
-  Warsaw::Unistring _subfamily;
-  Warsaw::Unistring _fullname;
-  Warsaw::Unistring _style;
+  Fresco::Unistring _family;
+  Fresco::Unistring _subfamily;
+  Fresco::Unistring _fullname;
+  Fresco::Unistring _style;
   Texture textures[256];
 };
+
+}
 
 #endif

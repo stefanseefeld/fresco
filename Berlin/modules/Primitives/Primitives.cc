@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,13 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/DrawingKit3D.hh>
-#include <Warsaw/DrawTraversal.hh>
-#include <Primitive/Primitives.hh>
+#include <Fresco/config.hh>
+#include <Fresco/DrawingKit3D.hh>
+#include <Fresco/DrawTraversal.hh>
+#include "Primitives.hh"
 
 // using namespace Geometry;
-using namespace Warsaw;
+using namespace Fresco;
 
 // PointImpl::PointImpl() { add_point(0., 0.);}
 // PointImpl::PointImpl (const Vertex &v) { add_point(v.x, v.y);}
@@ -76,7 +76,7 @@ void BoxImpl::pt1(const Vertex &v1) { _lower = v1;}
 Vertex BoxImpl::pt2() { return _upper;}
 void BoxImpl::pt2(const Vertex &v2) { _upper = v2;}
 
-void BoxImpl::request(Warsaw::Graphic::Requisition &r)
+void BoxImpl::request(Fresco::Graphic::Requisition &r)
 {
   r.x.defined = true;
   r.x.minimum = r.x.natural = r.x.maximum = _upper.x - _lower.x;
@@ -188,9 +188,9 @@ void BoxImpl::draw(DrawTraversal_ptr traversal)
 // Coord EllipseImpl::radius2() { return _radius2;}
 // void EllipseImpl::radius2(Coord r) { _radius2 = r; resize();}
 
-GeometryImpl::GeometryImpl (const Warsaw::Mesh &mesh) { _mesh = new Warsaw::Mesh(mesh); resize();}
+GeometryImpl::GeometryImpl (const Fresco::Mesh &mesh) { _mesh = new Fresco::Mesh(mesh); resize();}
 GeometryImpl::GeometryImpl(const GeometryImpl &geometry) { resize();}
 GeometryImpl::~GeometryImpl () {}
 
-Warsaw::Mesh *GeometryImpl::mesh() { return new Warsaw::Mesh(_mesh);}
-void GeometryImpl::mesh(const Warsaw::Mesh &m) { _mesh = new Warsaw::Mesh(m); resize();}
+Fresco::Mesh *GeometryImpl::mesh() { return new Fresco::Mesh(_mesh);}
+void GeometryImpl::mesh(const Fresco::Mesh &m) { _mesh = new Fresco::Mesh(m); resize();}

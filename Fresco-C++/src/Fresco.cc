@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,10 +20,10 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/Warsaw.hh"
-#include "Warsaw/Server.hh"
+#include "Fresco/Fresco.hh"
+#include "Fresco/Server.hh"
 
-Warsaw::Warsaw(int argc, char **argv)
+Fresco::Fresco(int argc, char **argv)
   : orb(CORBA::ORB_init(argc, argv, "omniORB3")),
     client(new ClientContextImpl)
 {
@@ -37,7 +37,7 @@ Warsaw::Warsaw(int argc, char **argv)
   server = s->newServerContext(ClientContext_var(client->_this()));
 }
 
-Warsaw::~Warsaw()
+Fresco::~Fresco()
 {
 //  client->_dispose();
 }

@@ -1,27 +1,18 @@
 #!/bin/sh
 #
 
-#by default, run autoconf in each package
-packages="Prague Babylon Warsaw Server Clients-C++ Clients-Python Clients-Java Clients-Perl Docs"
-
-# Touch the timestamps on all the files since CVS messes them up
-#directory=`dirname $0`
-#touch $directory/configure.in
-
-# Regenerate configuration files
-echo "Generating configure...";
-aclocal -I config/macros
-/usr/bin/autoconf
+packages="Prague Babylon Fresco Berlin Clients-C++ Clients-Python Clients-Java Clients-Perl GGI SDL"
 
 for package in $packages;
     do
-    if test -d config/$package; then
-	(cd config/$package;
-	 echo Generating config/${package}/configure...;
-	 aclocal -I ../macros;
-	 if test -f acconfig.h; then
-	    /usr/bin/autoheader configure.in > config.hh.in
+    if test -d $package; then
+	(cd $package;
+	 echo Generating ${package}/configure...
+	 aclocal --output=config/aclocal.m4 -I ../config/macros
+	 if test -f config/acconfig.h; then
+	    autoheader -l config configure.ac > config/config.hh.in
 	 fi;
-	 /usr/bin/autoconf)
+	 autoconf -l config
+         chmod a+x configure)
     fi
     done

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,14 +20,14 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Subject.hh>
-#include <Warsaw/Widget.hh>
-#include <Warsaw/MainController.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Subject.hh>
+#include <Fresco/Widget.hh>
+#include <Fresco/MainController.hh>
 #include <Berlin/ObserverImpl.hh>
 #include "FocusDemo.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Widget;
 
 class FocusDemo::Observer : public ObserverImpl
@@ -35,7 +35,7 @@ class FocusDemo::Observer : public ObserverImpl
  public:
   virtual void update(const CORBA::Any &any)
     {
-      Warsaw::Selection::Item *item;
+      Fresco::Selection::Item *item;
       if (any >>= item)
 	cout << "new selection" << endl;
     }

@@ -1,8 +1,8 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -19,51 +19,46 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SHELL		:= /bin/sh
+SHELL	:= /bin/sh
 
-top_srcdir	:= @topdir@
-cdir		:= ./config
-
-# take all packages we know about...
-all		:= Prague Babylon Warsaw Server Clients-C++ Clients-Python Clients-Perl Docs
-# ...and extract the ones which are present...
-packages	:= $(foreach package, $(all), $(shell test -f config/$(package)/subdirs.mk && echo '$(package)'))
-# ...and generate a list of all subdirs to run make in
-subdirs		:=
-include $(patsubst %, config/%/subdirs.mk, $(packages))
-invdirs 	:=$(shell for dir in $(subdirs); do list="$$dir $$list"; done; echo "$$list")
+packages:= Prague Babylon Fresco Berlin Clients-C++ Clients-Python Clients-Perl
+subdirs	:= $(foreach package, $(packages), $(shell test -d $(package) && echo '$(package)'))
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.
 action	:= all
 
-.PHONY: all $(subdirs) inverse
-.PHONY: depclean clean distclean maintainer-clean dist clean
+.PHONY: all $(subdirs)
+.PHONY: install depclean clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
-
-inverse:	$(invdirs)
 
 $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
+install:
+	$(MAKE) action="install"
+
+uninstall:
+	$(MAKE) action="uninstall"
+
 depclean:
 	find -name '*.d' -exec rm -f '{}' ';'
 
 clean:
-	$(MAKE) inverse action="clean"
+	$(MAKE) action="clean"
 
 distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
 	@echo 'run configure to regenerate them.'
-	$(MAKE) inverse action="distclean"
-	rm -f Makefile $(cdir)/local.mk config.cache config.log config.status
+	$(MAKE) action="distclean"
+	rm -f Makefile config/local.mk config.cache config.log config.status
 
 maintainer-clean:
 	@echo 'This command is intended for maintainers to use;'
 	@echo 'it deletes configure and auxiliary files;'
 	@echo 'run autogen.sh to regenerated them.'
-	$(MAKE) inverse action="maintainer-clean"
-	rm -f Makefile $(cdir)/local.mk config.cache config.log config.status \
-		$(top_srcdir)/configure $(top_srcdir)/aclocal.m4
+	$(MAKE) action="maintainer-clean"
+	rm -f Makefile config/local.mk config.cache config.log config.status \
+		configure config/aclocal.m4

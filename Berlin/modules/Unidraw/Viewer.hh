@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresci Project.
+ * Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,10 +22,10 @@
 #ifndef _View_hh
 #define _View_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/FigureKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/UnidrawKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/FigureKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/UnidrawKit.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/ImplVar.hh>
@@ -36,21 +36,21 @@ public:
   Viewer();
   virtual ~Viewer();
 
-  void init(Unidraw::Editor_ptr, Unidraw::Model_ptr, Warsaw::Coord, Warsaw::Coord, Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
-  virtual void append_graphic(Warsaw::Graphic_ptr);
-  virtual void prepend_graphic(Warsaw::Graphic_ptr);
-  virtual Warsaw::GraphicIterator_ptr first_child_graphic();
-  virtual Warsaw::GraphicIterator_ptr last_child_graphic();
+  void init(Unidraw::Editor_ptr, Unidraw::Model_ptr, Fresco::Coord, Fresco::Coord, Fresco::FigureKit_ptr, Fresco::ToolKit_ptr);
+  virtual void append_graphic(Fresco::Graphic_ptr);
+  virtual void prepend_graphic(Fresco::Graphic_ptr);
+  virtual Fresco::GraphicIterator_ptr first_child_graphic();
+  virtual Fresco::GraphicIterator_ptr last_child_graphic();
 protected:
-  virtual void press(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void drag(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void move(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
-  virtual void release(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void drag(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void move(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
+  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
 private:
-  void add(Warsaw::Coord, Warsaw::Coord);
+  void add(Fresco::Coord, Fresco::Coord);
   Unidraw::Editor_var      _editor;
   Unidraw::Tool_var        _active;
-  Warsaw::Graphic_var      _root;
+  Fresco::Graphic_var      _root;
 };
 
 #endif

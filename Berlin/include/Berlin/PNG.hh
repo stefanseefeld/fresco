@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
+ * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,11 +20,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PNG_hh
-#define _PNG_hh
+#ifndef _Berlin_PNG_hh
+#define _Berlin_PNG_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Raster.hh>
+#include <Fresco/config.hh>
+#include <Fresco/Raster.hh>
 #include <png.h>
 #include <string>
 
@@ -49,13 +49,13 @@ public:
   PNG();
   ~PNG();
   void clear();
-  void header(Warsaw::Raster::Info &);
-  Warsaw::Raster::Data *marshal(unsigned char *const *);
-  unsigned char **demarshal(const Warsaw::Raster::Data &);
-  Warsaw::Color pixel(unsigned long, unsigned long, unsigned char *const *);
-  void pixel(unsigned long, unsigned long, const Warsaw::Color &, unsigned char **);
-  Warsaw::Raster::ColorSeq *pixels(unsigned long, unsigned long, unsigned long, unsigned long, unsigned char *const *);
-  void pixels(unsigned long, unsigned long, unsigned long, unsigned long, const Warsaw::Raster::ColorSeq &, unsigned char **);
+  void header(Fresco::Raster::Info &);
+  Fresco::Raster::Data *marshal(unsigned char *const *);
+  unsigned char **demarshal(const Fresco::Raster::Data &);
+  Fresco::Color pixel(unsigned long, unsigned long, unsigned char *const *);
+  void pixel(unsigned long, unsigned long, const Fresco::Color &, unsigned char **);
+  Fresco::Raster::ColorSeq *pixels(unsigned long, unsigned long, unsigned long, unsigned long, unsigned char *const *);
+  void pixels(unsigned long, unsigned long, unsigned long, unsigned long, const Fresco::Raster::ColorSeq &, unsigned char **);
   unsigned char **read(const std::string &);
   void write(const std::string &, unsigned char *const *);
 private:

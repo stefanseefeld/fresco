@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,7 +21,7 @@
  */
 
 #include <Prague/Sys/Memory.hh>
-#include "Drawing/openGL/GLRaster.hh"
+#include "Raster.hh"
 
 /*
  * this file contains modified code from Mesa's GLU (mipmap.c)
@@ -29,7 +29,7 @@
  */
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 template <class T>
 T ceiling(T a, T b) { return a % b == 0 ? a/b : a/b + 1;}
@@ -250,12 +250,12 @@ void resize_image(GLenum format,
     Memory::copy(datain, dataout, widthin * bpp);
 }
 
-GLTexture::GLTexture(Raster_var r)
-  : GLRaster(r)
+openGL::Texture::Texture(Fresco::Raster_var r)
+  : Raster(r)
 {
-  Raster::Info info = remote->header();
-  Raster::ColorSeq_var pixels;
-  Raster::Index lower, upper;
+  Fresco::Raster::Info info = remote->header();
+  Fresco::Raster::ColorSeq_var pixels;
+  Fresco::Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
   remote->store_pixels(lower, upper, pixels);
@@ -275,12 +275,12 @@ GLTexture::GLTexture(Raster_var r)
   texture = bind(GL_RGBA, GL_RGBA, &*data.begin());
 }
 
-GLTexture::~GLTexture()
+openGL::Texture::~Texture()
 {
   glDeleteTextures(1, &texture);  
 }
 
-GLuint GLTexture::bind(GLint components, GLenum format, unsigned char *data)
+GLuint openGL::Texture::bind(GLint components, GLenum format, unsigned char *data)
 {
   GLuint texture;
   glGenTextures(1, &texture);
@@ -369,12 +369,12 @@ GLuint GLTexture::bind(GLint components, GLenum format, unsigned char *data)
   return texture;
 }
 
-GLImage::GLImage(Raster_var r)
-  : GLRaster(r)
+openGL::Image::Image(Fresco::Raster_var r)
+  : Raster(r)
 {
-  Raster::Info info = remote->header();
-  Raster::ColorSeq_var pixels;
-  Raster::Index lower, upper;
+  Fresco::Raster::Info info = remote->header();
+  Fresco::Raster::ColorSeq_var pixels;
+  Fresco::Raster::Index lower, upper;
   lower.x = lower.y = 0;
   upper.x = info.width, upper.y = info.height;
   remote->store_pixels(lower, upper, pixels);
@@ -394,12 +394,12 @@ GLImage::GLImage(Raster_var r)
   texture = bind(GL_RGBA, GL_RGBA, &*data.begin());
 }
 
-GLImage::~GLImage()
+openGL::Image::~Image()
 {
   glDeleteTextures(1, &texture);  
 }
 
-GLuint GLImage::bind(GLint components, GLenum format, unsigned char *data)
+GLuint openGL::Image::bind(GLint components, GLenum format, unsigned char *data)
 {
   GLuint texture;
   glGenTextures(1, &texture);

@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 2001 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2001 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,17 +20,17 @@
  * MA 02139, USA.
  */
 
-#include <Warsaw/config.hh>
-#include "Primitive/Root.hh"
-#include "Primitive/PrimitiveKitImpl.hh"
-// #include "Primitive/PolyPrimitive.hh"
-#include "Primitive/Primitives.hh"
-#include "Primitive/Transformer.hh"
-#include "Primitive/Light.hh"
+#include <Fresco/config.hh>
+#include "Root.hh"
+#include "PrimitiveKitImpl.hh"
+// #include "PolyPrimitive.hh"
+#include "Primitives.hh"
+#include "Transformer.hh"
+#include "Light.hh"
 
-using namespace Warsaw;
+using namespace Fresco;
 
-PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 PrimitiveKitImpl::~PrimitiveKitImpl() {}
 Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr child)
@@ -42,7 +42,7 @@ Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr child)
   return g->_this();
 }
 
-Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Warsaw::Mesh &mesh)
+Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Fresco::Mesh &mesh)
 {
   GeometryImpl *geometry = new GeometryImpl(mesh);
   activate(geometry);
@@ -51,7 +51,7 @@ Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Warsaw::Mesh &mesh)
 
 Graphic_ptr PrimitiveKitImpl::cube()
 {
-  Warsaw::Mesh mesh;
+  Fresco::Mesh mesh;
   mesh.nodes.length(8);
   mesh.nodes[0].x = -500; mesh.nodes[0].y = -500; mesh.nodes[0].z = -500;
   mesh.nodes[1].x = -500; mesh.nodes[1].y = -500; mesh.nodes[1].z =  500;
@@ -110,7 +110,7 @@ Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
   return transformer->_this();
 }
 
-Graphic_ptr PrimitiveKitImpl::directional_light(Warsaw::Graphic_ptr g, const Warsaw::Color &c, CORBA::Float i, const Warsaw::Vertex &d)
+Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g, const Fresco::Color &c, CORBA::Float i, const Fresco::Vertex &d)
 {
   Light *light = new DirectionalLight(c, i, d);
   activate(light);
@@ -118,7 +118,7 @@ Graphic_ptr PrimitiveKitImpl::directional_light(Warsaw::Graphic_ptr g, const War
   return light->_this();
 }
 
-Graphic_ptr PrimitiveKitImpl::point_light(Warsaw::Graphic_ptr g, const Warsaw::Color &c, CORBA::Float i, const Warsaw::Vertex &p)
+Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g, const Fresco::Color &c, CORBA::Float i, const Fresco::Vertex &p)
 {
   Light *light = new PointLight(c, i, p);
   activate(light);
@@ -126,8 +126,8 @@ Graphic_ptr PrimitiveKitImpl::point_light(Warsaw::Graphic_ptr g, const Warsaw::C
   return light->_this();
 }
 
-Graphic_ptr PrimitiveKitImpl::spot_light(Warsaw::Graphic_ptr g, const Warsaw::Color &c, CORBA::Float i,
-					 const Warsaw::Vertex &p, const Warsaw::Vertex &d,
+Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g, const Fresco::Color &c, CORBA::Float i,
+					 const Fresco::Vertex &p, const Fresco::Vertex &d,
 					 CORBA::Float r, CORBA::Float a)
 {
   Light *light = new SpotLight(c, i, p, d, r, a);
@@ -139,5 +139,5 @@ Graphic_ptr PrimitiveKitImpl::spot_light(Warsaw::Graphic_ptr g, const Warsaw::Co
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "PrimitiveKitImpl"};
-  return create_kit<PrimitiveKitImpl> ("IDL:Warsaw/PrimitiveKit:1.0", properties, 2);
+  return create_kit<PrimitiveKitImpl> ("IDL:fresco.org/Fresco/PrimitiveKit:1.0", properties, 2);
 }

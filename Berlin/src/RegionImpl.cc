@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,7 +25,7 @@
 #include <iomanip>
 #include <cassert>
 
-using namespace Warsaw;
+using namespace Fresco;
 using namespace Math;
 
 RegionImpl::RegionImpl()
@@ -143,7 +143,7 @@ void RegionImpl::copy(Region_ptr region)
 {
   if (!CORBA::is_nil(region) && region->defined())
     {
-      Warsaw::Region::Allotment x, y, z;
+      Fresco::Region::Allotment x, y, z;
       region->span(xaxis, x);
       region->span(yaxis, y);
       region->span(zaxis, z);
@@ -278,7 +278,7 @@ void RegionImpl::origin(Vertex &v)
   v.z = span_origin(lower.z, upper.z, zalign);
 }
 
-void RegionImpl::span(Axis a, Warsaw::Region::Allotment &s)
+void RegionImpl::span(Axis a, Fresco::Region::Allotment &s)
 {
   switch (a)
     {

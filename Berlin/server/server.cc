@@ -1,9 +1,9 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,11 +29,11 @@
 #include <Prague/Sys/User.hh>
 #include <Prague/Sys/Fork.hh>
 #include <Prague/Sys/GetOpt.hh>
-#include <Warsaw/config.hh>
-#include <Warsaw/resolve.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/DrawingKit.hh>
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/LayoutKit.hh>
+#include <Fresco/ToolKit.hh>
+#include <Fresco/DrawingKit.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
 #include <Berlin/Console.hh>
@@ -62,7 +62,7 @@ const std::string version = "unknown";
 #endif
 
 using namespace Prague;
-using namespace Warsaw;
+using namespace Fresco;
 
 struct Dump : Signal::Notifier 
 {
@@ -281,10 +281,10 @@ int main(int argc, char **argv) /*FOLD00*/
        getopt.get("drawing", &value);
        if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
        else props[0].value = CORBA::string_dup("LibArtDrawingKit");
-       DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:Warsaw/DrawingKit:1.0", props, poa);
+       DrawingKit_var drawing = server->resolve<DrawingKit>("IDL:fresco.org/Fresco/DrawingKit:1.0", props, poa);
        if (CORBA::is_nil(drawing))
 	 {
-	   std::cerr << "unable to open " << "IDL:Warsaw/DrawingKit:1.0"
+	   std::cerr << "unable to open " << "IDL:fresco.org/Fresco/DrawingKit:1.0"
 		     << " with attribute " << props[0].name << '=' << props[0].value << std::endl;
 	   return -1;
 	 }
@@ -303,7 +303,7 @@ int main(int argc, char **argv) /*FOLD00*/
        Logger::log(Logger::loader) << "screen is setup and managers are bound to it." << std::endl;
 
        props.length(0);
-       LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
+       LayoutKit_var layout = server->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0", props, poa);
        Layout::Stage_var stage = layout->create_stage();
        DesktopImpl *desktop = new DesktopImpl(orb, stage);
        screen->body(Desktop_var(desktop->_this()));
@@ -312,24 +312,24 @@ int main(int argc, char **argv) /*FOLD00*/
        Logger::log(Logger::layout) << "desktop is created" << std::endl;
        
        // initialize the client listener
-       server->set_singleton("IDL:Warsaw/Desktop:1.0", Desktop_var(desktop->_this()));
-       server->set_singleton("IDL:Warsaw/DrawingKit:1.0", drawing);
+       server->set_singleton("IDL:fresco.org/Fresco/Desktop:1.0", Desktop_var(desktop->_this()));
+       server->set_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0", drawing);
        server->start();
       
        Logger::log(Logger::layout) << "started server" << std::endl;
        try
 	 {
-	   bind_name(orb, Server_var(server->_this()), "IDL:Warsaw/Server:1.0");
+	   bind_name(orb, Server_var(server->_this()), "IDL:fresco.org/Fresco/Server:1.0");
 	 } 
        catch (CORBA::COMM_FAILURE)
 	 {
-	   std::cerr << "CORBA communications failure finding Warsaw." << std::endl
+	   std::cerr << "CORBA communications failure finding Fresco." << std::endl
 		     << "Are you sure the name service is running?" << std::endl;
 	   return -1;
 	 }
        catch (...)
 	 {
-	   std::cerr << "Unknown exception finding Warsaw" << std::endl;
+	   std::cerr << "Unknown exception finding Fresco" << std::endl;
 	   return -1;
 	 }
        

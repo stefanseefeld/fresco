@@ -1,9 +1,9 @@
 # $Id$
 #
-# This source file is a part of the Berlin Project.
-# Copyright (C) 1999, 2000 Tobias Hunger <tobias@berlin-consortium.org> 
-# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
-# http://www.berlin-consortium.org
+# This source file is a part of the Fresco Project.
+# Copyright (C) 1999, 2000 Tobias Hunger <tobias@fresco.org> 
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -22,38 +22,25 @@
 
 SHELL		:= /bin/sh
 
-top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Babylon/blocks
-builddir	:= ../../..
-cdir		:= $(builddir)/config
+top_srcdir	:= @top_srcdir@
+srcdir		:= $(top_srcdir)/modules
+cdir		:= ../config
 hdir		:= $(top_srcdir)/include
-
-define compile
-@echo compiling $(@F)
-@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-endef
-
-define link
-@echo linking $(@F)
-@$(CXX) $(LDFLAGS) -o $@ $< $(LIBS) && strip --strip-unneeded $@
-endef
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= @CPPFLAGS@
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
-LIBS		+= @LIBS@
 
 # Which Unicode modules to build
 UNICODE_BLOCKS	= @UNICODE_BLOCKS@
 
 # General section
-SRC	= undef.cc \
-	  0-7F.cc \
-	  80-FF.cc \
-	  100-17F.cc \
-	  180-24F.cc
+SRC	:= undef.cc \
+	   0-7F.cc \
+	   80-FF.cc \
+	   100-17F.cc \
+	   180-24F.cc
 
 ifeq ($(UNICODE_BLOCKS),complete)
 SRC	+= 250-2AF.cc \
@@ -154,9 +141,19 @@ SRC	+= 250-2AF.cc \
 endif
 
 OBJ	= $(patsubst %.cc, %.o, $(SRC))
-TARGET	= $(patsubst %.cc, $(mdir)/Babylon/%.so, $(SRC))
+
+TARGET	= $(patsubst %.cc, %.so, $(SRC))
+
+.PHONY: install uninstall clean distclean maintainer-clean dist
 
 all:	$(TARGET)
+
+install:	all
+	$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/Unicode
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/Unicode
+
+uninstall:
+	rm -fr $(DESTDIR)$(libdir)/Fresco/Unicode
 
 clean:		
 	rm -f $(TARGET)
@@ -166,7 +163,9 @@ distclean:	clean
 maintainer-clean: distclean
 
 %.o:	$(srcdir)/%.cc
-	$(compile)
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOFLAGS) -c $< -o $@
 
-$(mdir)/Babylon/%.so:	%.o
-	$(link)
+%.so:	%.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $< $(LIBS) && strip --strip-unneeded $@
