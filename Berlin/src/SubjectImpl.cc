@@ -26,9 +26,9 @@ SubjectImpl::SubjectImpl()
 
 void SubjectImpl::attach(Observer_ptr o)
 {
-  observerMutex.lock();
-  observers.push_back(Observer::_duplicate(o));
-  observerMutex.unlock();
+    observerMutex.lock();
+    observers.push_back(Observer::_duplicate(o));
+    observerMutex.unlock();
 }
 
 void SubjectImpl::detach(Observer_ptr o)

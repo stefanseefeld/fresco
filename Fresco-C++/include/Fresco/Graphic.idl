@@ -32,6 +32,7 @@
 #include <Region.idl>
 #include <Damage.idl>
 #include <Cloneable.idl>
+#include <Subject.idl>
 
 interface GraphicOffset;
 interface Traversal;
@@ -39,7 +40,7 @@ interface DrawTraversal;
 interface PickTraversal;
 interface Collector;
 
-interface Graphic : Cloneable
+interface Graphic : Cloneable, Observer
 {
   struct Requirement
   {

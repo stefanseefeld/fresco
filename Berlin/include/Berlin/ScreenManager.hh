@@ -30,22 +30,23 @@
 
 class ScreenManager
 {
-public:
-  ScreenManager(ScreenImpl *, GLDrawingKit *);
-  ~ScreenManager();
-  void damage(Region_ptr);
-  void repair();
-  void nextEvent();
-  void run();
-private:
-  long ptrPositionX;
-  long ptrPositionY;
-  ScreenImpl *screen;
-  GLDrawingKit *drawing;
-  Pointer *pointer;
-  ggi_visual_t visual;
-  typedef vector<RegionImpl *> DamageList;
-  DamageList damages;
+    public:
+    ScreenManager(ScreenImpl *, GLDrawingKit *);
+    ~ScreenManager();
+    void damage(Region_ptr);
+    void repair();
+    void nextEvent();
+    void run();
+    private:
+    long ptrPositionX;
+    long ptrPositionY;
+    ScreenImpl *screen;
+    GLDrawingKit *drawing;
+    Pointer *pointer;
+    ggi_visual_t visual;
+    typedef vector<RegionImpl *> DamageList;
+    DamageList damages;
+    omni_mutex damageMutex;
 };
 
 #endif /* _ScreenManager_hh */

@@ -24,8 +24,8 @@
 //
 //
 
-#include <LifeCycle.idl>
-#include <ClientContext.idl>
+#include "LifeCycle.idl"
+#include "ClientContext.idl"
 
 interface ServerContext;
 interface Graphic;

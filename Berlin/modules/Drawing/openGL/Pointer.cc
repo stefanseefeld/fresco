@@ -80,7 +80,8 @@ Pointer::Pointer(ggi_visual_t visual)
   for (unsigned short y = 0; y != size[1]; y++)
       for (unsigned short x = 0; x != size[0]; x++)
 	  for (unsigned short d = 0; d != depth; d++)
-	      mask[y*depth*size[0] + depth*x + d] = ~0;
+	      mask[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] > 0 ? ~0 : 0;
+
   backup = new unsigned char[size[0]*size[1]*depth];
   save();
 }
@@ -125,5 +126,7 @@ void Pointer::write()
 
   for (PixelCoord y = 0; y != size[1]; y++, to += stride - size[0]*4)
     for (PixelCoord x = 0; x != size[0]*4; x++, from++, bits++, to++)
-      *to = *from & *bits;
+	*to = (*from & *bits) | (*to & ~*bits);
+	    
+	    //	    *to = *from & *bits;
 }

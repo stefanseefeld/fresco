@@ -30,10 +30,13 @@ interface Pencil
 {
   typedef sequence<char> Dash;
   typedef sequence<long> Pattern;
-//   attribute Color rgba;
-  attribute Coord thickness;
-//   attribute Dash dash;
-//   attribute Pattern pattern;
+
+  // these really oughta be controlled via subjects
+  // it's observing, provided in the ctor.
+  //  attribute Color rgba;
+  // attribute Coord thickness;
+  //   attribute Dash dash;
+  //   attribute Pattern pattern;
 
   void drawLine(in Vertex p, in Vertex q);
   void drawPath(in Path p);

@@ -31,6 +31,10 @@
 #include "Warsaw/Traversal.hh"
 #include "Warsaw/Pencil.hh"
 
+void Rect::update(Subject_ptr p) {
+    if (myWidth->_is_equivalent(p) || myHeight->_is_equivalent(p)) this->needRedraw();
+}
+
 void Rect::request(Requisition &r)
 {
     r.x.defined = true;
@@ -46,29 +50,43 @@ void Rect::draw(DrawTraversal_ptr dt) {
     DrawingKit_ptr dp = dt->kit();
     Pencil_ptr p = dp->solidPen();
 
-    Vertex p1, p2, p3, p4;
-    p1.x = 0; 
-    p1.y = 0; 
-    p1.z = 0.;
-    p2.x = myWidth->value();
-    p2.y = 0;
-    p2.z = 0.;
-    p3.x = myWidth->value();
-    p3.y = myHeight->value();
-    p3.z = 0.;
-    p4.x = 0;
-    p4.y = myHeight->value();
-    p4.z = 0.;
+//     Vertex p1, p2, p3, p4;
+//     p1.x = 0; 
+//     p1.y = 0; 
+//     p1.z = 0.;
+//     p2.x = myWidth->value();
+//     p2.y = 0;
+//     p2.z = 0.;
+//     p3.x = myWidth->value();
+//     p3.y = myHeight->value();
+//     p3.z = 0.;
+//     p4.x = 0;
+//     p4.y = myHeight->value();
+//     p4.z = 0.;
     
-    p->drawLine(p1, p2);
-    p->drawLine(p2, p3);
-    p->drawLine(p3, p4);
-    p->drawLine(p4, p1);
+    Path path;
+    path.p.length(4);
+    
+    RegionImpl region(dt->allocation(), dt->transformation());
+
+    path.p[0].x = region.lower.x, path.p[0].y = region.lower.y, path.p[0].z = 0;
+    path.p[1].x = region.upper.x, path.p[1].y = region.lower.y, path.p[1].z = 0;
+    path.p[2].x = region.upper.x, path.p[2].y = region.upper.y, path.p[1].z = 0;
+    path.p[3].x = region.lower.x, path.p[3].y = region.upper.y, path.p[1].z = 0;
+    p->fillPath(path);    
+}
+
+// this method has to happen in a non-ctor method because (surprise!)
+// you can't get a corba reference to yourself while you're still
+// being constructed and have yet to be registered with the boa.
+void Rect::init() {
+    myWidth->attach(this->_this());
+    myHeight->attach(this->_this());
 }
 
 Rect::Rect(BoundedValue_ptr width, BoundedValue_ptr height) {
     myWidth = BoundedValue::_duplicate(width);
-    myHeight = BoundedValue::_duplicate(myHeight);
+    myHeight = BoundedValue::_duplicate(height);
 }
 
 Rect::~Rect() {}

@@ -120,6 +120,10 @@ GLDrawable::GLDrawable()
     // exit code 7. Cannot set visual for GGIMesa.
   }
 
+  clip = new RegionImpl;
+  clip->_obj_is_ready(CORBA::BOA::getBOA());
+
+
   GGIMesaMakeCurrent(context);
   reshape( mode.visible.x, mode.visible.y );
 
@@ -128,15 +132,13 @@ GLDrawable::GLDrawable()
   glLightfv( GL_LIGHT0, GL_AMBIENT, white ); 
   glEnable( GL_LIGHTING );  
   glEnable(GL_LIGHT0);   
-  glEnable( GL_CULL_FACE ); 
-  glEnable( GL_DEPTH_TEST ); 
+  //  glEnable( GL_CULL_FACE ); 
+  // glEnable( GL_DEPTH_TEST ); 
   glFrontFace(GL_CW); 
   glShadeModel(GL_FLAT);
 
-  clip = new RegionImpl;
-  clip->_obj_is_ready(_boa());
-
 }
+
 
 // this is just a utility function for reshaping.
 void GLDrawable::reshape( int width, int height )

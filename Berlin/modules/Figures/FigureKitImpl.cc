@@ -30,6 +30,7 @@ FigureKitImpl::~FigureKitImpl() {}
 Graphic_ptr FigureKitImpl::rect(BoundedValue_ptr width, BoundedValue_ptr height) {
     Rect *rect = new Rect(width, height);
     rect->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+    rect->init();
     rects.push_back(rect);
     return rect->_this();
 }
@@ -37,6 +38,7 @@ Graphic_ptr FigureKitImpl::rect(BoundedValue_ptr width, BoundedValue_ptr height)
 Graphic_ptr FigureKitImpl::ellipse(BoundedValue_ptr width, BoundedValue_ptr height) {
     Rect *rect = new Rect(width, height);
     rect->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+    rect->init();
     rects.push_back(rect);
     return rect->_this();
 }

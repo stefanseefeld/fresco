@@ -74,6 +74,7 @@ public:
   virtual void needRedraw();
   virtual void needRedrawRegion(Region_ptr);
   virtual void needResize();
+  virtual void update(Subject_ptr p) {}
 //   virtual bool restore_trail(Traversal_ptr);
   static void initRequisition(Graphic::Requisition &);
   static void defaultRequisition(Graphic::Requisition &);

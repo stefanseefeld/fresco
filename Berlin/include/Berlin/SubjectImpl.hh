@@ -22,11 +22,12 @@
 #ifndef _SubjectImpl_hh
 #define _SubjectImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Subject.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Subject.hh"
+#include "Berlin/CloneableImpl.hh"
 #include <list>
 
-class SubjectImpl : implements(Subject)
+class SubjectImpl : implements(Subject), virtual public CloneableImpl
 {
 public:
   SubjectImpl();
@@ -39,13 +40,6 @@ protected:
   CORBA::Boolean blocked;
   omni_mutex observerMutex;
   omni_mutex autoMutex;
-};
-
-class ObserverImpl : virtual public _sk_Observer
-{
-  public:
-  ObserverImpl() {};
-  virtual void update(Subject_ptr) = 0;
 };
 
 #endif /* _SubjectImpl_hh */

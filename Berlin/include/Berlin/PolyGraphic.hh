@@ -84,7 +84,7 @@ public:
   GraphicOffset_ptr offset(long);
   PolyGraphic *parent;
   long index;
-  Graphic_ptr child;
+  Graphic_var child;
 };
 
 #endif /* _PolyGraphic_hh */

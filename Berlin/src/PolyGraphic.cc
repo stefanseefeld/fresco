@@ -125,7 +125,7 @@ PolyGraphicOffset::PolyGraphicOffset(PolyGraphic *p, long i, Graphic_ptr c)
 {
   parent = p;
   index  = i;
-  child  = Graphic::_duplicate(c);
+  child  = c;
 }
 
 PolyGraphicOffset::~PolyGraphicOffset()

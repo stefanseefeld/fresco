@@ -24,6 +24,8 @@
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
 
+static omni_mutex ggi_mutex;
+
 ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
   : screen(s), drawing(d), visual(drawing->getVisual())
 {
@@ -37,52 +39,89 @@ ScreenManager::~ScreenManager()
 
 void ScreenManager::damage(Region_ptr r)
 {
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(CORBA::BOA::getBOA());
-  region->copy(r);
-  damages.push_back(region);
-#ifdef DEBUG
-  cout << "ScreenManager::damage region "
-       << '(' << region->lower.x << ',' << region->lower.y << "),("
-       << region->upper.x << ',' << region->upper.y << ')' << endl;
-#endif
+    damageMutex.lock();
+    RegionImpl *region = new RegionImpl;
+    region->_obj_is_ready(CORBA::BOA::getBOA());
+    region->copy(r);
+    damages.push_back(region);
+    //#ifdef DEBUG
+    //     cout << "ScreenManager::damage region "
+    // 	 << '(' << region->lower.x << ',' << region->lower.y << "),("
+    // 	 << region->upper.x << ',' << region->upper.y << ')' << endl;
+    //#endif
+    damageMutex.unlock();
+
+    // this injects a damage notice into the event queue, waking up
+    // the sleeping event thread.
+
+    // sadly it appears that GGI's event queue is not threadsafe, so
+    // we must use a poll loop with a timeout. this is not totally
+    // awful, it just means we are zooming through a short loop once
+    // every 20000 microseconds. it doesn't take too much CPU time on my
+    // machine, and if it takes too much on yours, hey, go fix GGI. 
+
+    //     ggi_mutex.lock();
+    //     ggi_event *damageEvent = new ggi_event;
+    //     gettimeofday(&(damageEvent->any.time), NULL);
+    //     damageEvent->any.type = evCommand;
+    //     ggiEventSend (visual, damageEvent);    
+    //     ggi_mutex.unlock();
 }
 
 void ScreenManager::repair()
 {
-  for (DamageList::iterator i = damages.begin(); i != damages.end(); i++)
-    {
-      DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, *i);
-      traversal->_obj_is_ready(CORBA::BOA::getBOA());
-      screen->traverse(traversal);
-      traversal->_dispose();
-      (*i)->_dispose();
-    }
-  damages.erase(damages.begin(), damages.end());
+    damageMutex.lock();
+    DamageList tmp = damages;
+    damages.erase(damages.begin(), damages.end());
+    damageMutex.unlock();
+    
+    for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
+	{
+	    DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, (*i)->_this());
+	    traversal->_obj_is_ready(CORBA::BOA::getBOA());
+	    screen->traverse(traversal->_this());
+	    traversal->_dispose();
+	    (*i)->_dispose();
+	}
+    
+    glFinish();
+    ggiSetGCForeground(visual,255);
+    GGIMesaSwapBuffers();
 }
 
 void ScreenManager::nextEvent()
 {
-  ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-  ggiEventPoll(visual, mask, 0);
-  ggi_event event;
-  ggiEventRead(visual, &event, mask);
+
+    ggi_event_mask mask = ggi_event_mask (emCommand | emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+    timeval t;
+    ggi_event *event = new ggi_event;
+
+    t.tv_sec = 0;
+    t.tv_usec = 20000; 
+    
+    if (ggiEventPoll(visual, mask, &t)) {
+	ggiEventRead(visual, event, mask);
+    }
 
   CORBA::Any a;
 
-  switch (event.any.type) {
+  // we are being woken up by the damage subsystem
+  if (event->any.origin == GII_EV_ORIGIN_SENDEVENT) return;
+
+  // we can process this, it's a legitimate event.
+  switch (event->any.type) {
   case evKeyPress:
   case evKeyRepeat: {      
       Event::Key ke;
-      ke.theChar = event.key.sym;
+      ke.theChar = event->key.sym;
       a <<= ke;
       cerr << "k";
       break;
   }
   
   case evPtrAbsolute: {
-      ptrPositionX = event.pmove.x;
-      ptrPositionY = event.pmove.y;
+      ptrPositionX = event->pmove.x;
+      ptrPositionY = event->pmove.y;
       pointer->move(ptrPositionX, ptrPositionY);
       // absence of break statement here is intentional
   }
@@ -92,11 +131,11 @@ void ScreenManager::nextEvent()
       pe.location.x = ptrPositionX;
       pe.location.y = ptrPositionY;	  
       pe.location.z = 0; // time being we're using non-3d mice.
-      pe.buttonNumber = event.pbutton.button;	  
+      pe.buttonNumber = event->pbutton.button;	  
       pe.whatHappened = 
-	  event.any.type == evPtrAbsolute ? Event::hold :
-	  event.any.type == evPtrButtonPress ? Event::press :
-	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
+	  event->any.type == evPtrAbsolute ? Event::hold :
+	  event->any.type == evPtrButtonPress ? Event::press :
+	  event->any.type == evPtrButtonRelease ? Event::release : Event::hold;
 //       cerr << "m";
       a <<= pe;
       break;
@@ -106,13 +145,20 @@ void ScreenManager::nextEvent()
   traversal->_obj_is_ready(CORBA::BOA::getBOA());
   screen->traverse(traversal);
   traversal->_dispose();
+  delete event;
 }
 
 void ScreenManager::run()
 {
   while (true)
     {
-	if (damages.size()) repair();
+	damageMutex.lock();
+	int amountOfDamage = damages.size();
+	damageMutex.unlock();
+
+	if (amountOfDamage > 0) {
+	    repair();
+	} 
 	nextEvent();
     }
 }

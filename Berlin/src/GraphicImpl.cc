@@ -236,7 +236,7 @@ Graphic_ptr GraphicImpl::cloneGraphic() { return 0;}
 
 Transform_ptr GraphicImpl::transformation() { return 0;}
 void GraphicImpl::request(Requisition &) {}
-void GraphicImpl::extension(const AllocationInfo &a, Region_ptr r) { defaultExtension(a, r);}
+void GraphicImpl::extension(const AllocationInfo &a, Region_ptr r) {defaultExtension(a, r);}
 void GraphicImpl::shape(Region_ptr) {}
 void GraphicImpl::traverse(Traversal_ptr t) { t->visit(this);}
 void GraphicImpl::draw(DrawTraversal_ptr) {}
@@ -282,28 +282,29 @@ void GraphicImpl::allocations(Collector_ptr c)
 
 void GraphicImpl::needRedraw()
 {
-  CollectorImpl *collector = new CollectorImpl;
-  collector->_obj_is_ready(_boa());
-  allocations(collector->_this());
-  for (long i = 0; i < collector->size(); i++)
-    {
-      Graphic::AllocationInfo *a = collector->get(i);
-      if (!CORBA::is_nil(a->damaged))
- 	{
- 	  RegionImpl *region = new RegionImpl;
-	  region->_obj_is_ready(_boa());
- 	  extension(*a, region->_this());
- 	  if (region->valid)
- 	    {
-// 	      if (!CORBA::is_nil(a.clipping))
-// 		r.mergeIntersect(a.clipping);
- 	      a->damaged->extend(region->_this());
- 	    }
-	  region->_dispose();
- 	}
-//       Region_var(a.allocation)->_dispose();
-    }
-  collector->_dispose();
+    CollectorImpl *collector = new CollectorImpl;
+    collector->_obj_is_ready(_boa());
+    allocations(collector->_this());
+    for (long i = 0; i < collector->size(); i++)
+	{
+	    Graphic::AllocationInfo * const a = collector->get(i);
+	    if (!CORBA::is_nil(a->damaged))
+		{
+		    RegionImpl *newReg = new RegionImpl;
+		    newReg->_obj_is_ready(_boa());
+		    this->extension(*a, newReg->_this());
+		    
+		    if (newReg->valid)
+			{
+			    // 	      if (!CORBA::is_nil(a.clipping))
+			    // 		r.mergeIntersect(a.clipping);
+			    a->damaged->extend(newReg->_this());
+			}
+		    newReg->_dispose();
+		}
+	    //       Region_var(a.allocation)->_dispose();
+	}
+    collector->_dispose();
 }
 
 void GraphicImpl::needRedrawRegion(Region_ptr r)
@@ -417,16 +418,14 @@ Graphic::Requirement *GraphicImpl::requirement(Graphic::Requisition &r, Axis a)
 
 void GraphicImpl::defaultExtension (const Graphic::AllocationInfo &a, Region_ptr r)
 {
-  if (!CORBA::is_nil(a.allocation))
-    {
-      if (CORBA::is_nil(a.transformation))
-	r->mergeUnion(a.allocation);
-      else
-	{
+  if (!CORBA::is_nil(a.allocation)) {
+      if (CORBA::is_nil(a.transformation)) {
+	  r->mergeUnion(a.allocation);
+      }  else {
 	  RegionImpl tmp(a.allocation, a.transformation);
 	  r->mergeUnion(&tmp);
-	}
-    }
+      }
+  }
 }
 
 void GraphicImpl::getParentOffsets(Graphic::OffsetSeq &offsets, const GraphicOffsetList &parents)

@@ -41,7 +41,7 @@ interface BoundedValue : Subject
   void fastbackward();
   void begin();
   void end();
-  void move(in Coord d);
+  void adjust(in Coord d);
 };
 
 #endif /* _BoundedValue_idl */

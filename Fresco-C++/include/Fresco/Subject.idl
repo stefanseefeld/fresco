@@ -23,9 +23,10 @@
  * MA 02139, USA.
  */
 
+#include "Cloneable.idl"
 interface Observer;
 
-interface Subject
+interface Subject : Cloneable
 {
   void attach(in Observer o);
   void detach(in Observer o);
@@ -33,7 +34,7 @@ interface Subject
   void block(in boolean b);  
 };
 
-interface Observer
+interface Observer : Cloneable
 {
   void update(in Subject s);
 };

@@ -53,8 +53,7 @@ CORBA::Boolean DrawTraversalImpl::intersects()
 
 void DrawTraversalImpl::visit(Graphic_ptr g)
 {
-  DrawTraversal_ptr dt = this->_this();
-  g->draw(dt);
+    g->draw(this->_this());
 }
 
 DrawingKit_ptr DrawTraversalImpl::kit()

@@ -51,10 +51,10 @@ CORBA::Long CollectorImpl::size() { return allocations.size();}
 
 Graphic::AllocationInfo *CollectorImpl::get(CORBA::Long l)
 {
-  info.allocation = allocations[l].allocation->_this();
-  info.transformation = allocations[l].transformation->_this();
-  info.damaged = allocations[l].damage;
-  cout << l << ' ' << allocations[l].allocation->lower.x << ' ' << allocations[l].allocation->lower.y
-       << ' ' << allocations[l].allocation->upper.x << ' ' << allocations[l].allocation->upper.y << endl;
-  return &info;
+    info.allocation = allocations[l].allocation->_this();
+    info.transformation = allocations[l].transformation->_this();
+    info.damaged = allocations[l].damage;
+//     cout << l << ' ' << allocations[l].allocation->lower.x << ' ' << allocations[l].allocation->lower.y
+// 	 << ' ' << allocations[l].allocation->upper.x << ' ' << allocations[l].allocation->upper.y << endl;
+    return &info;
 }

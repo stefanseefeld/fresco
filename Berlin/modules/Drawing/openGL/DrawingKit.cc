@@ -36,11 +36,8 @@ extern "C" {
 GLDrawingKit::GLDrawingKit()
 {
   ggiInit();
-  /*
-   * name should be composed as "widthxheightxdepth"
-   */
-  drawable = new GLDrawable();
-  drawable->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
+    drawable = new GLDrawable();
+    drawable->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 GLDrawingKit::~GLDrawingKit()

@@ -21,14 +21,12 @@
  */
 
 #include "Drawing/openGL/GLPencil.hh"
+#include <iostream>
 
 GLPencil::GLPencil(GLDrawable *d)
   : drawable(d)
 {
 };
-
-Coord GLPencil::thickness() { return 0.;}
-void GLPencil::thickness(Coord) {}
 
 void GLPencil::drawLine(const Vertex &v1, const Vertex &v2)
 {

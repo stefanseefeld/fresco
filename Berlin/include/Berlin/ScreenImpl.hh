@@ -41,6 +41,7 @@ public:
   Coord height();
   ScreenManager *Manager() { return manager;}
   Region_ptr getRegion() {return region->_this();}
+  virtual void traverse(Traversal_ptr t);
 protected:
   ScreenManager *manager;
   RegionImpl *region;
