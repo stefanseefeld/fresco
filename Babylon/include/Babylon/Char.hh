@@ -24,7 +24,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
-#include <streambuf.h>
+#include <streambuf>
 #include <iostream>
 #include <iomanip>
 

@@ -28,7 +28,7 @@
 #include <Prague/Sys/Tracer.hh>
 #include <iostream>
 #include <fstream>
-#include <streambuf.h>
+#include <streambuf>
 #include <png.h>
 
 using namespace Prague;
