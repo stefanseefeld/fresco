@@ -31,7 +31,7 @@ subdirs		:= Sys Thread IPC Filter Network
 action	:= all
 
 .PHONY: all $(subdirs) inverse
-.PHONY: depclean clean distclean maintainer-clean dist clean
+.PHONY: depend clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
 

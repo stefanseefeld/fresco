@@ -55,9 +55,6 @@ install-doc:
 uninstall:
 	$(MAKE) action="uninstall"
 
-depclean:
-	find -name '*.d' -exec rm -f '{}' ';'
-
 clean:
 	$(MAKE) action="clean"
 

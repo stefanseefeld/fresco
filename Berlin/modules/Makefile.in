@@ -43,7 +43,7 @@ subdirs	+= Layout Commands Tools Images Figures Primitives Text Widgets/Motif \
 action	:= all
 
 .PHONY: all $(subdirs)
-.PHONY: install depclean clean distclean maintainer-clean dist clean
+.PHONY: depend install clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
 
@@ -67,9 +67,6 @@ install-doc:
 
 uninstall:
 	$(MAKE) action="uninstall"
-
-depclean:
-	find -name '*.d' -exec rm -f '{}' ';'
 
 clean:
 	$(MAKE) action="clean"
