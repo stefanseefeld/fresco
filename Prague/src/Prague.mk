@@ -23,11 +23,12 @@ include Sys/Sys.mk
 include IPC/IPC.mk
 include Filter/Filter.mk
 include Network/Network.mk
+include Unicode/Unicode.mk
 
-vpath %.hh  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network
+vpath %.hh  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network $(ipath)/Prague/Unicode
 
-SRC = $(SYS_SRC) $(IPC_SRC) $(FLT_SRC) $(NTW_SRC)
-OBJ = $(SYS_OBJ) $(IPC_OBJ) $(FLT_OBJ) $(NTW_OBJ)
-GDB = $(SYS_GDB) $(IPC_GDB) $(FLT_GDB) $(NTW_GDB)
-DEP = $(SYS_DEP) $(IPC_DEP) $(FLT_DEP) $(NTW_DEP)
+SRC = $(SYS_SRC) $(IPC_SRC) $(FLT_SRC) $(NTW_SRC) $(UNI_SRC)
+OBJ = $(SYS_OBJ) $(IPC_OBJ) $(FLT_OBJ) $(NTW_OBJ) $(UNI_OBJ)
+GDB = $(SYS_GDB) $(IPC_GDB) $(FLT_GDB) $(NTW_GDB) $(UNI_GDB)
+DEP = $(SYS_DEP) $(IPC_DEP) $(FLT_DEP) $(NTW_DEP) $(UNI_DEP)
 

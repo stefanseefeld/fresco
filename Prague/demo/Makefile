@@ -38,12 +38,12 @@ YACC	    = bison -y
 FLEX	    = flex
 INSTALL	    = /usr/bin/install -c
 LD	    = ld
-MAKEINFO    = makeinfo
+MAKEINFO    = 
 RANLIB      = ranlib
-TEXI2DVI    = texi2dvi
+TEXI2DVI    = 
 TEXI2HTML   = texi2html
-TEX         = 
-DVIPS       = 
+TEX         = latex
+DVIPS       = dvips
 
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../../include
@@ -62,7 +62,7 @@ gpath		= gdb
 ppath		= prf
 rpath		= $(lpath)
 
-LIBS		= -lPrague -ldl -lz -lpthread
+LIBS		= -lPrague -lWarsaw -ldl -lz -lpthread
 
 include Examples.mk
 
