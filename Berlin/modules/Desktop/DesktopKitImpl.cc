@@ -62,66 +62,6 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
 
   ClientContext_var client = context->client();
   _exit = client->exit();
-
-  // Make a nice logo.
-  
-  Warsaw::FigureKit_var figures  = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
-  Coord a = 4200.;
-  Vertex offset;
-  offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Warsaw::Path path;
-  path.shape = convex;
-  path.nodes.length(3);
-  path.nodes[0].x = a/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;
-  path.nodes[1].x = a + offset.x, path.nodes[1].y = 0.866*a + offset.y, path.nodes[1].z = offset.z;
-  path.nodes[2].x = offset.x, path.nodes[2].y = 0.866*a + offset.y, path.nodes[2].z = offset.z;
-  
-  Figure::Path_var triangle = figures->polygon(path);
-  Graphic_var transformer1 = figures->transformer(Graphic_var(_tool->rgb(Graphic_var(_tool->alpha(triangle, 0.8)), 1., 0.5, 0.5)));
-  Graphic_var transformer2 = figures->transformer(Graphic_var(_tool->rgb(Graphic_var(_tool->alpha(triangle, 0.8)), 0.5, 1., 0.5)));
-  Graphic_var transformer3 = figures->transformer(Graphic_var(_tool->rgb(Graphic_var(_tool->alpha(triangle, 0.8)), 0.5, 0.5, 1.)));
-
-  transformer1->transformation()->load_identity();
-  transformer2->transformation()->load_identity();
-  transformer3->transformation()->load_identity();
-  transformer1->transformation()->rotate(-10.,zaxis);
-  transformer2->transformation()->rotate(10.,zaxis);
-  transformer3->transformation()->rotate(20.,zaxis);
-  Vertex d;
-  d.x = -660;
-  d.y = 0;
-  transformer2->transformation()->translate(d);
-  d.x = -850;
-  d.y = -200;
-  transformer3->transformation()->translate(d);
-
-  Graphic_var group = figures->group();
-  group->append_graphic(transformer3);
-  group->append_graphic(transformer2);
-  group->append_graphic(transformer1);
-
-  Graphic_var label = _tool->rgb(Graphic_var(_text->chunk(Unicode::to_CORBA(Babylon::String("Welcome to Fresco!")))), 1.0,1.0,1.0);
-
-  Graphic_var hbox = _layout->hbox();
-  hbox->append_graphic(Graphic_var(_layout->hfill()));
-  hbox->append_graphic(label);
-  hbox->append_graphic(Graphic_var(_layout->hfill()));
-  Graphic_var box = _layout->vbox();
-  box->append_graphic(Graphic_var(_layout->align(group, 0., 0.)));
-  box->append_graphic(hbox);
-
-  // insert it into the desktop
-  Vertex position, size;
-  position.x = 300; position.y = -500; position.z = 0.;
-  Warsaw::Graphic::Requisition r;
-  GraphicImpl::init_requisition(r);
-  box->request(r);
-  size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
-
-  _desktop->insert(box,
-                   position,
-                   size,
-                   _desktop->layers());
 }
 
 Desktop_ptr DesktopKitImpl::desk()
