@@ -228,7 +228,7 @@ If you're brave you can check http://www.fresco.org/contrib.html to find
 "real" applications to run under Fresco/Fresco (they may be broken, or not,
 contact their authors for more information).
 
-Finally here they are other options you may use when invoking the server:
+Finally here are other options you may use when invoking the server:
 
   -l --logger [list of groups to log]: log messages (the special group
                                    'lifecycle' requires configuration
@@ -245,11 +245,24 @@ Finally here they are other options you may use when invoking the server:
 				   this option if you did override the prefix
 				   during make install!
 
-  -R --export-ref (ior|corbaloc) : export the server's 'CORBA-ID' to stdout.
-                                   Use this option if you have trouble with
-				   your CORBA nameserver's setup
+  -R --export-ref (ior|corbaloc|nameserver) : 
+                                   ior is the default, and stores the address
+                                   of the server in the filesystem (see the
+                                   -I option below). If you have a CORBA
+                                   nameserver running you can use this option
+                                   to make the server use that instead, making
+                                   sure that you use the same option when
+                                   running the clients.
 
-  -e --execute [program] :         run program in the server
+  -I --ior-file-path path :        used in conjunction with '-R ior' to
+                                   specify an alternate location for the file
+                                   which stores the server address (IOR); the 
+                                   default location is /tmp/fresco/. You can also 
+                                   use '-I stdout' to specify that the server
+                                   should output the address (IOR) to the
+                                   console on which you run the server.
+
+  -e --execute program :           run program in the server
 
   -d --drawing DrawingKit :        Use the given DrawingKit instead of the
                                    default LibArtDrawingKit.

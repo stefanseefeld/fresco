@@ -148,7 +148,6 @@ int main(int argc, char ** argv) {
 
     // do the real work:
     CORBA::ORB_var orb;
-    CosNaming::NamingContext_var context;
     PortableServer::POA_var poa;
     PortableServer::POAManager_var pman;
     ClientContextImpl *client;
@@ -156,16 +155,17 @@ int main(int argc, char ** argv) {
 
     try {
       orb = CORBA::ORB_init(argc, argv);
-      context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
       poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
       pman = poa->the_POAManager();
       pman->activate();
 
       client = new ClientContextImpl("Pinyin Demo");
 
-      Fresco::Server_var s = resolve_name<Fresco::Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
+      Fresco::Server_var s = resolve_server(argc, argv, orb);
+      
       server = s->create_server_context(Fresco::ClientContext_var(client->_this()));
-    } catch (CORBA::COMM_FAILURE c) {
+    } 
+      catch (const CORBA::COMM_FAILURE &) {
       std::cerr << "Could not connect to the berlin server (CORBA::COMM_FAILURE)." << std::endl;
     }
 

@@ -66,15 +66,15 @@ int main(int argc, char **argv)
       std::istrstream iss(value.c_str());
       iss >> wait;
     };
+  
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
-  CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
   PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();
   pman->activate();
 
   ClientContextImpl *client = new ClientContextImpl("Canvas");
 
-  Server_var s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
+  Server_var s = resolve_server(argc, argv, orb);
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
   DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");

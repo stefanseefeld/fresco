@@ -57,7 +57,7 @@ DYNSSRC		:= $(patsubst %.idl, %S.cc, $(DYNINT))
 DYNCSRC		:= $(patsubst %.idl, %C.cc, $(DYNINT))
 STATSSRC	:= $(patsubst %.idl, %S.cc, $(STATINT))
 STATCSRC	:= $(patsubst %.idl, %C.cc, $(STATINT))
-UTILSRC		:= IO.cc Unicode.cc ClientContextImpl.cc
+UTILSRC		:= IO.cc Unicode.cc ClientContextImpl.cc Resolve.cc
 SRC		:= $(DYNSSRC) $(DYNCSRC) $(STATSSRC) $(STATCSRC)
 
 DYNHDR		:= $(patsubst %.idl, %.hh, $(DYNINT))

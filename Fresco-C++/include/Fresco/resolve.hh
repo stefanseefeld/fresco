@@ -164,4 +164,6 @@ typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context, const char 
   return resolve_kit<T>(context, name, empty);
 }
 
+Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb);
+
 #endif

@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
   ClientContextImpl *client = new ClientContextImpl("GGI Wrapper");
 
-  Server_var s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
+  Server_var s = resolve_server(argc, argv, orb);
   ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
 
   DesktopKit_var desktop = resolve_kit<DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");

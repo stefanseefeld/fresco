@@ -47,37 +47,36 @@ int main(int argc, char **argv)
    try
    {
       CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
-      PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+      PortableServer::POA_var poa = 
+          resolve_init<PortableServer::POA>(orb, "RootPOA");
       DefaultPOA::default_POA(poa);
       PortableServer::POAManager_var pman = poa->the_POAManager();
       pman->activate();
       
+      Server_var server = resolve_server(argc, argv, orb);
+      
       ClientContextImpl *client = new ClientContextImpl("Demo3D");
+      ClientContext_var client_ref = client->_this();
       
-      // First try to resolve server reference from the initial references  
-      Server_var s = Server::_nil();
-      try { s = resolve_init<Server>(orb,"FrescoServer");}
-      catch (...) {}
+      ServerContext_var server_context = 
+          server->create_server_context(client_ref);
       
-      // Then try accessing the name service
-      if (CORBA::is_nil(s))
-      {
-         CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
-         s = resolve_name<Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
-      }
-      
-      ServerContext_var server = s->create_server_context(ClientContext_var(client->_this()));
-      
-      Application *application = new Application(server, ClientContext_var(client->_this()));
+      Application *application = new Application(server_context, client_ref);
       
       std::auto_ptr<Demo> primitive(create_demo<PrimitiveDemo>(application));
       std::auto_ptr<Demo> cube(create_demo<CubeDemo>(application));
       
       application->run();
       delete application;
+      delete client;
    }
    catch (const CORBA::COMM_FAILURE &)
    {
-      std::cerr << "Could not connect to the display server (CORBA::COMM_FAILURE)." << std::endl;
+      std::cerr << "Could not connect to the display server "
+                << "(CORBA::COMM_FAILURE)." << std::endl;
+   }
+   catch (const std::exception &e)
+   {
+      std::cerr << "Exception: " << e.what() << std::endl;
    }
 }
