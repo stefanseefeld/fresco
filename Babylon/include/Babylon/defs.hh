@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-/* This file supports Unicode version 3.0.1 */
+/* This file supports Unicode version 3.1 beta */
 
 #ifndef _Babylon_Defs_hh
 #define _Babylon_Defs_hh
@@ -362,7 +362,7 @@ namespace Babylon {
 	}
 
 	const char * what() const throw() {
-	    ostrstream res;
+	    strstream res;
 	    res << setw(4) << setfill('0') << hex; 
 	    switch (m_error_prop) {
 	    case PROP_CHARACTER:
