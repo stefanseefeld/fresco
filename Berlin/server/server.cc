@@ -171,7 +171,7 @@ void set_server_reference_export_method(std::string export_method)
     std::cerr << "ERROR: "
               << "Invalid method for exporting server reference given.\n"
               << "'" << export_method << "' is not one of\n"
-              << "'ior', 'corbaloc' or 'nameserver'" << endl;
+              << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
     exit(1);
   }
   reference_export_method = export_method;
