@@ -21,35 +21,102 @@
  */
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Berlin/RegionImpl.hh"
+extern "C" {
+#include "ggi/ggi.h"
+}
 #include <iostream>
 
-GLDrawable::GLDrawable(unsigned int w, unsigned int h, unsigned int d)
+GLDrawable::GLDrawable()
 {
-  int gt = GT_8BIT;
-  switch (d)
-    {
-    case 4:  gt = GT_4BIT;  break;
-    case 8:  gt = GT_8BIT;  break;
-    case 15: gt = GT_15BIT; break;
-    case 16: gt = GT_16BIT; break;
-    case 24: gt = GT_24BIT; break;
-    case 32: gt = GT_32BIT; break;
-    }
+  //  int gt = GT_8BIT;
+  //  switch (d)
+  //    {
+  //    case 4:  gt = GT_4BIT;  break;
+  //    case 8:  gt = GT_8BIT;  break;
+  //    case 15: gt = GT_15BIT; break;
+  //    case 16: gt = GT_16BIT; break;
+  //    case 24: gt = GT_24BIT; break;
+  //    case 32: gt = GT_32BIT; break;
+  //    }
   context = GGIMesaCreateContext();
-  if (!context) cerr << "GGIMesaCreateContext() failed" << endl;
-  visual = ggiOpen("display-X", 0);
-  if (!visual) cerr << "ggiOpen(0) failed" << endl;
-  if (ggiSetGraphMode(visual, w, h, GGI_AUTO, GGI_AUTO, gt))
-    cerr << "can't set graphmode (" << w << ',' << h << ") " << d << " bpp" << endl;
-  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
-    cerr << "GGIMesaSetVisual() failed" << endl;
-  GGIMesaMakeCurrent(context);
+  if (!context) {
+    cerr << "GGIMesaCreateContext() failed" << endl;
+    exit( 4 );
+    // Exit code 4, cannot create a GGIMesa context.
+  }
+
+  // New approach.
+  //  visual = ggiOpen("display-X", 0);
+  //  if (!visual) cerr << "ggiOpen(0) failed" << endl;
+  //  if (ggiSetGraphMode(visual, w, h, GGI_AUTO, GGI_AUTO, gt))
+  //    cerr << "can't set graphmode (" << w << ',' << h << ") " << d << " bpp" << endl;
+  //  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
+  //    cerr << "GGIMesaSetVisual() failed" << endl;
+  //  GGIMesaMakeCurrent(context);
     
   // let GGIMesa know how big the GGI visual is
-  ggi_mode mode;
-  if( ggiGetMode( visual, &mode ) ) {
-    cerr << "Couldn't set graphics mode!!" << endl;
+  //  ggi_mode mode;
+  //  if( ggiGetMode( visual, &mode ) ) {
+  //    cerr << "Couldn't set graphics mode!!" << endl;
+  //  }
+
+  // Configure the mode struct.
+  mode.visible.x = GGI_AUTO;
+  mode.visible.y = GGI_AUTO;
+  mode.virt.x = GGI_AUTO;
+  mode.virt.y = GGI_AUTO;
+  mode.graphtype = GT_AUTO;
+  // Open the default visual --
+  visual = ggiOpen( NULL );
+  if ( visual == NULL ) {
+    cerr << "ggiOpen(NULL) failed!" << endl;
+    exit( 5 );
+  } // exit code 5 -- can't acquire a visual
+
+  // We've acquired a visual, now let's decide on a mode. See libggi docs
+  // on the format of the environment variable GGI_DEFMODE, which we use to
+  // get all of our mode preferences.
+  if( ggiCheckMode( visual, &mode ) == 0 ) {
+    // The mode works! We try to set it....
+    if( ggiSetMode( visual, &mode ) != 0 ) {
+      cerr << "Cannot set visual, even though GGI says it's ok???\n";
+      exit( 6 );
+      // Cannot set the mode. Strange... Exit code 6, cannot find
+      // a suitable mode for the visual
+    }
+    cerr << "Successfully set the mode on our visual!\n";
   }
+  else {
+    cerr << "GGI says our mode won't work. Trying the one it suggests...\n";
+    // CheckMode said our mode wouldn't work.
+    // CheckMode should have modified our mode, so we try again...
+    if( ggiCheckMode( visual, &mode ) != 0 ) {
+      cerr << "What?? GGI doesn't like its own suggestion. Bailing.\n";
+      // Hmm. internal GGI problem. The mode GGI gave us still won't work.
+      exit( 6 );
+    }
+    else {
+      cerr << "Ahh, GGI likes its own suggestion; trying to set the suggested mode.\n";
+      // ggiCheckMode worked this time, on the mode it gave us last time.
+      // Try to set the mode.
+      if( ggiSetMode( visual, &mode ) != 0 ) {
+	cerr << "Huh?? Still can't set the mode. Bailing.\n";
+	exit( 6 );
+	// What?? after all this, GGI _STILL_ won't set the mode for us?
+	// If we get here GGI is having some serious trouble
+      }
+    }
+  }
+  // If we get here, we've successfully set a mode from GGI_DEFMODE.
+  // I know, I'm paranoid, but this implementation will save trouble in the
+  // long run. --Aaron
+    
+  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE)) {
+    cerr << "GGIMesaSetVisual() failed" << endl;
+    exit( 7 );
+    // exit code 7. Cannot set visual for GGIMesa.
+  }
+  GGIMesaMakeCurrent(context);
   reshape( mode.visible.x, mode.visible.y );
 
 

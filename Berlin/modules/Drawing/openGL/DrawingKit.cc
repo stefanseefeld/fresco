@@ -23,19 +23,18 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
+extern "C" {
+#include "ggi/ggi.h"
+}
 #include <strstream>
 
-GLDrawingKit::GLDrawingKit(const string &name)
+GLDrawingKit::GLDrawingKit()
 {
   ggiInit();
   /*
    * name should be composed as "widthxheightxdepth"
    */
-  istrstream iss(name.c_str());
-  unsigned int width, height, depth;
-  char buf;
-  iss >> width >> buf >> height >> buf >> depth;
-  drawable = new GLDrawable(width, height, depth);
+  drawable = new GLDrawable();
   drawable->_obj_is_ready(_boa());
 }
 
