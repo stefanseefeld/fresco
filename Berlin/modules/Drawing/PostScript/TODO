@@ -1,0 +1,22 @@
+CURRENT GOALS:
+
+1. Generate legit Encapsulated PostScript:
+ - the current %%BoundingBox should actually be %%HiResBoundingBox
+ - %%BoundingBox needs to rounded to integers, positive values up negative
+   values down
+
+2. Generate correct output:
+ - draw_image generates awful output when the transformation matrix isn't
+   the identity matrix
+ - set_font_size does nothing sensible.
+
+3. More testing:
+ - produce a DrawingKit testing system of some sort and ensure that all
+   functions do what they're supposed to
+
+FUTURE GOALS:
+
+4. Optimize output:
+ - common DrawingKit functions should be moved into PostScript functions
+ - provide compressed versions of moveto and lineto and compress the file size
+ - choose an encoding for images and implement it
