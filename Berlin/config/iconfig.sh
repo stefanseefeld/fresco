@@ -1,24 +1,6 @@
 #! /bin/sh
 
-# query_word asks for a single word. It takes the following parameters:
-#     1. The prompt
-#     2. The switch to set equal to the answer
-query_word () {
-    read -e -p "$1" answer dummy
-    if [ ! ".$answer" = "." ] ; then
-	CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS $2=$answer"
-    fi
-}
-
-# query_line asks for a complete line. It takes the following parameters:
-#     1. The prompt
-#     2. The switch to set equal to the answer
-query_line () {
-    read -e -p "$1" answer
-    if [ ! ".$answer" = "." ] ; then
-	CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS $2=\"$answer\""
-    fi
-}
+source ../iconfig-funcs.sh
 
 CONFIGURE_OPTIONS=""
 
