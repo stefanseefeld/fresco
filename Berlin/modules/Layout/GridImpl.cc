@@ -304,7 +304,8 @@ void GridImpl::need_resize()
 
 void GridImpl::replace(Graphic_ptr g, const Layout::Grid::Index &i)
 {
-  Graphic_ptr old = _dimensions[xaxis].children[i.col][i.row];
+  // use at(n) for ranged checked access throws out_of_range
+  Graphic_ptr old = _dimensions[xaxis].children.at(i.col).at(i.row);
   if (!CORBA::is_nil(old))
     try { old->remove_parent_graphic(index_to_tag(i));}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
