@@ -16,10 +16,10 @@ class Config(Base):
             start_dir = top_srcdir
             exclude_globs = ['CVS', '.cvsignore', 'autom4te.cache']
             class XRefPages:
-                xref_file = 'Prague.xref'
+                xref_file = 'data.xref'
             class FilePages (Base.Formatter.HTML.FilePages):
                     toc_from = 'XRefPages'
             file_path = top_srcdir+'/%s'
             links_path = 'sxr_data/%s'
 
-        modules['SXR'] = SXR
+        modules = {'SXR' : SXR}

@@ -58,7 +58,11 @@ $(optional_dirs): %: %/Makefile
 depend:
 	$(MAKE) action="depend"
 
-xref:	data.syn data.xref
+sxr:	xref
+	@echo "formatting sxr"
+	@synopsis -c config/synopsis.py -Wc,formatter=SXR -o sxr data.syn
+
+xref:	data.syn data.xref sxr_data
 
 doc:
 	$(MAKE) action="doc"
@@ -118,6 +122,17 @@ data.syn: $(join $(sxrdirs), $(patsubst %, /share/doc/%, $(join $(sxrdirs), $(pa
 data.xref: $(join $(sxrdirs), $(patsubst %, /share/doc/%, $(join $(sxrdirs), $(patsubst %, /sxr/%.xref, $(sxrdirs)))))
 	@echo linking xref files together
 	@compile-xref -m -o $@ $^
+
+sxr_data:
+	for dir in $(sxrdirs); do \
+          for file in `(cd $$dir/share/doc/$$dir/sxr/sxr_data && find . -type f -print)`; do \
+            if ! cmp -s $$dir/share/doc/$$dir/sxr/sxr_data/$$file sxr_data/$$dir/share/doc/$$dir/sxr/sxr_data/$$file 2>/dev/null; then \
+              mkdir -p `dirname sxr_data/$$dir/share/doc/$$dir/sxr/sxr_data/$$file`;\
+              cp -p $$dir/share/doc/$$dir/sxr/sxr_data/$$file sxr_data/$$dir/share/doc/$$dir/sxr/sxr_data/$$file;\
+              touch sxr_data;\
+            fi\
+          done\
+        done
 
 %/%.syn %/%.xref:
 	@$(MAKE) -C $(@D) xref
