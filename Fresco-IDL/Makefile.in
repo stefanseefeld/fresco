@@ -21,42 +21,45 @@
 
 SHELL	:= /bin/sh
 
+prefix		:= @prefix@
 srcdir		:= @srcdir@
 top_srcdir	:= @top_srcdir@
+datadir		:= @datadir@
+
+intdir		:= $(top_srcdir)/share/idl
 
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-subdirs	:= src
-# insert inter-directory dependencies below
+SYNOPSIS		:= synopsis
+INSTALL		:= @INSTALL@
 
-# Overridden by the clean-targets, allowing the same subdirs-rule to be used
-# for everything.
-action	:= all
+INT			:= $(wildcard $(intdir)/Fresco/*.idl)
+SYN			:= $(patsubst $(intdir)/Fresco/%.idl, %.syn, $(INT))
 
-.PHONY: all $(subdirs)
+vpath %.idl $(intdir)/Fresco
+
+.PHONY: all
 .PHONY: depend doc install install-doc dist \
         uninstall clean distclean maintainer-clean
 
-all:	$(subdirs)
-
-# insert inter-directory dependencies here
-#(none currently)
-
-$(subdirs):
-	@echo making $(action) in $@
-	$(MAKE) -C $@ $(action)
+all:
 
 depend:
-	$(MAKE) action="depend"
 
-doc:
-	$(MAKE) action="doc"
+doc: share/doc/Fresco/html
+
+share/doc/Fresco/html:	$(SYN)
+	@echo formatting $(@F)
+	$(SYNOPSIS) -c config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	touch $@
 
 install:
-	$(MAKE) action="install"
+	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
+	$(INSTALL) -m 644 $(INT) $(DESTDIR)$(datadir)/idl/Fresco
 
 install-doc:
-	$(MAKE) action="install-doc"
+	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco
+	cp -a share/doc/Fresco/html $(DESTDIR)$(datadir)/doc/Fresco
 
 rpm: dist
 	@(unset CDPATH ; rpm -ta $(distdir).tar.gz)
@@ -75,21 +78,22 @@ $(distdir).tar.gz:
        --exclude '*.m4' \
        --exclude '*.ac' \
        --exclude '*~' \
-       $(distdir) config/Fresco.spec
+       $(distdir) config/Fresco-IDL.spec
 	-rm -rf $(distdir)
 
 uninstall:
-	$(MAKE) action="uninstall"
+	rm -fr $(DESTDIR)$(datadir)/doc/Fresco
+	rm -rf $(DESTDIR)$(datadir)/idl/Fresco
 
 clean:
-	$(MAKE) action="clean"
+	rm -f $(SYN)
 
 distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
 	@echo 'run configure to regenerate them.'
 	$(MAKE) action="distclean"
-	rm -rf Makefile config/local.mk config.cache config.log config.status \
-               config/Fresco-config config/synopsis.py \
+	rm -rf Makefile config.cache config.log config.status \
+               config/synopsis.py \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4
 
 maintainer-clean:
@@ -97,7 +101,12 @@ maintainer-clean:
 	@echo 'it deletes configure and auxiliary files;'
 	@echo 'run autogen.sh to regenerated them.'
 	$(MAKE) action="maintainer-clean"
-	rm -rf Makefile config/local.mk config.cache config.log config.status \
-               config/Fresco-config config/synopsis.py \
+	rm -rf Makefile config.cache config.log config.status \
+               config/synopsis.py \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
                $(top_srcdir)/configure 
+
+%.syn:	%.idl
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c config/synopsis.py -Wp,-b,$(intdir) -Wc,parser=Fresco,linker=Fresco -o $@ $?
+

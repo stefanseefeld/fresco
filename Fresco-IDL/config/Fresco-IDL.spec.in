@@ -1,4 +1,4 @@
-Summary: interfaces and C++ runtime library for Fresco
+Summary: the Fresco interfaces
 Name: @PACKAGE_NAME@
 Version: @PACKAGE_VERSION@
 Release: 1
@@ -9,21 +9,9 @@ BuildRoot: /var/tmp/%{name}-buildroot
 URL: http://fresco.org/
 Prefix: %{_prefix}
 Docdir: %{_docdir}
-Requires: Prague = %{version}
-Requires: Babylon = %{version}
 
 %description
-interfaces and C++ runtime library for Fresco
-
-%package devel
-Summary: Libraries, includes, etc. to develop applications with Fresco
-Group: Development/Libraries
-Requires: Fresco = %{version}
-Requires: Prague-devel = %{version}
-Requires: Babylon-devel = %{version}
-
-%description devel
-all you need to develop applications with the Fresco library
+the Fresco interfaces
 
 %prep
 %setup -q
@@ -53,20 +41,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
 %files
 %defattr(-, root, root)
 
-%{prefix}/lib/lib*.so
 %{prefix}/share/*
-
-%files devel
-%defattr(-, root, root)
-
-%{prefix}/include/*
-%{prefix}/bin/Fresco-config
 
 %changelog

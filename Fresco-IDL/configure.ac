@@ -28,55 +28,12 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.53)
 AC_REVISION($Revision$)
 
-AC_INIT(Fresco, M1, devel@fresco.org)
+AC_INIT(Fresco-IDL, M1, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
-AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
-AC_PROG_CXX
-AC_PROG_CXXCPP
-AC_LANG_CPLUSPLUS
-
-dnl ------------------------------------------------------------------
-dnl ORB
-dnl ------------------------------------------------------------------
-
-AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
-
-FRESCO_LIB_ORB(mandatory)
-MAKEFILE=
-if test ".$ORB" = .omniORB ; then
-  MAKEFILE="Makefile.omniorb.in"
-elif test ".$ORB" = .TAO ; then
-  MAKEFILE="Makefile.tao.in"
-fi
-
-dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
-dnl ------------------------------------------------------------------
-dnl Prague and Babylon
-dnl ------------------------------------------------------------------
-
-FRESCO_PACKAGE(Prague, $PACKAGE_VERSION)
-INSTALL_CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
-INSTALL_LIBS="$LIBS $Prague_LIBS"
-CPPFLAGS="$CPPFLAGS $Prague_BUILD_CPPFLAGS"
-LIBS="$LIBS $Prague_BUILD_LIBS"
-
-FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
-INSTALL_CPPFLAGS="$INSTALL_CPPFLAGS $Babylon_CPPFLAGS"
-INSTALL_LIBS="$INSTALL_LIBS $Babylon_LIBS"
-CPPFLAGS="$CPPFLAGS $Babylon_BUILD_CPPFLAGS"
-LIBS="$LIBS $Babylon_BUILD_LIBS"
-
-AC_SUBST(INSTALL_CPPFLAGS)
-AC_SUBST(INSTALL_LIBS)
-
-FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
@@ -84,15 +41,8 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-AC_CONFIG_FILES([config/local.mk config/synopsis.py])
-AC_CONFIG_FILES([config/Fresco-config], [chmod +x config/Fresco-config])
-AC_CONFIG_FILES([config/Fresco.spec])
-AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-build-config.in], [chmod +x bin/Fresco-config])
-AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
-AC_CONFIG_LINKS([share/idl:idl])
-
-mkdir -p share
-mkdir -p lib
-mkdir -p bin
+AC_CONFIG_FILES([config/synopsis.py])
+AC_CONFIG_FILES([config/Fresco-IDL.spec])
+AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
