@@ -19,51 +19,51 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
 dnl
-dnl BERLIN_LIB_GGIMESA(mandatory-flag)
+dnl BERLIN_LIB_MESA(mandatory-flag)
 dnl
-dnl Checks if GGIMesa is found. If it is, $ac_cv_lib_GGIMesa is set to "yes".
+dnl Checks if Mesa is found. If it is, $ac_cv_lib_Mesa is set to "yes".
 
-AC_DEFUN([BERLIN_LIB_GGIMESA],[
+AC_DEFUN([BERLIN_LIB_MESA],[
 
 	AC_LANG_SAVE
 	AC_LANG_C
 
-	AC_ARG_WITH(ggimesa-prefix,
-		[  --with-ggimesa-prefix=PFX Prefix for GGIMesa],[
-		ggimesa_prefix="$withval"])
+	AC_ARG_WITH(mesa-prefix,
+		[  --with-mesa-prefix=PFX Prefix for Mesa],[
+		mesa_prefix="$withval"])
 
-	dnl Check for GGIMesa includes
-	if test x$ggimesa_prefix != x ; then
-		GL_INCLUDES=-I$ggimesa_prefix/include
+	dnl Check for Mesa includes
+	if test x$mesa_prefix != x ; then
+		GL_INCLUDES=-I$mesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
 	CPPFLAGS="$GL_INCLUDES $CPPFLAGS"
-	AC_CHECK_HEADER(GL/ggimesa.h,,no_gl=yes)
+	AC_CHECK_HEADER(GL/gl.h,,no_gl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
-	dnl Check for GGIMesa libs
-	if test x$no_gl = x ; then
+	dnl Check for Mesa libs
+	if test "x$no_gl" = x ; then
 
 		if test x$gl_eprefix != x ; then
 			GL_LIBS=-L$gl_eprefix/lib
 		fi
 		save_LDFLAGS="$LDFLAGS"
 		LDFLAGS="$GL_LIBS $LDFLAGS"
-		AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_gl=yes)
+		AC_CHECK_LIB(GL, main, :, no_gl=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
 
-	if test x$no_gl != x ; then
+	if test "x$no_gl" = x ; then
 
-		ac_cv_lib_GGIMesa=no		
+		ac_cv_lib_Mesa=no		
 		dnl Abort or warn?
 		if test ".$1" = .mandatory ; then
-			AC_MSG_ERROR(GGI OpenGL library was not found!)
+			AC_MSG_ERROR(OpenGL library was not found!)
 		else
-			AC_MSG_WARN(GGI OpenGL library was not found!)
+			AC_MSG_WARN(OpenGL library was not found!)
 		fi
 	else
-		ac_cv_lib_GGIMesa=yes
+		ac_cv_lib_Mesa=yes
 		GL_LIBS="$GL_LIBS -lGL -lGLU"
 	fi
 

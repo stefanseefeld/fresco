@@ -33,8 +33,8 @@
 #include <strstream.h>
 
 #if !defined(CONSOLE_GGI)
-#error "CanvasImpl is currently only available for the GGI console"
-#endif
+#warning "CanvasImpl is currently only available for the GGI console"
+#else
 
 using namespace Prague;
 using namespace Warsaw;
@@ -114,3 +114,5 @@ void CanvasImpl::draw(DrawTraversal_ptr traversal)
   DrawingKit_var drawing = traversal->drawing();
   drawing->copy_drawable(_drawable, 0, 0, _width, _height);
 }
+
+#endif

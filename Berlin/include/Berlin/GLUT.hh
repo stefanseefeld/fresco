@@ -30,6 +30,8 @@
 #include <Prague/Sys/ThreadQueue.hh>
 #include <vector>
 
+using namespace Warsaw;
+
 /* This is a console implementation based on GLUT, meaning that all
  * that is required is an OpenGL installation complete with GLUT, the
  * GL utility toolkit. In other words, it should be possible to run
@@ -103,7 +105,7 @@ private:
 public:
     typedef long Pixel;
     DrawableTie<GLUTDrawable>::PixelFormat pixel_format();
-  
+    Drawable::BufferFormat buffer_format();
     PixelCoord width() const { return _width; }
     PixelCoord height() const { return _height; }
     PixelCoord vwidth() const { return _width;}
@@ -197,7 +199,7 @@ class GLUTConsole {
 public:
   
     typedef GLUTDrawable Drawable;
-    GLUTConsole(int &argc, char **argv);
+    GLUTConsole(int &argc, char **argv, PortableServer::POA_ptr);
     ~GLUTConsole();
     static DrawableTie<Drawable> *drawable() { return _drawable; }
     static DrawableTie<Drawable> *create_drawable(PixelCoord, PixelCoord, PixelCoord) { return 0; }

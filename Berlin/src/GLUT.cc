@@ -314,8 +314,7 @@ void GLUTDrawable::reshape(int width, int height)
     glMatrixMode(GL_MODELVIEW);
 }
 
-DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixelFormat()
-{
+DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixel_format() {
     // Load dummy values (@@@ How do we fill in this correctly?)
     DrawableTie<GLUTDrawable>::PixelFormat pft = {
 	32, 32, 0xff000000, 24, 0x00ff0000, 16, 0x0000ff00, 8, 0x000000ff, 0
@@ -323,10 +322,20 @@ DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixelFormat()
     return pft;
 }
 
+Drawable::BufferFormat GLUTDrawable::buffer_format() {
+  Warsaw::Drawable::BufferFormat format;
+  format.skip_width = 0;
+  format.width = width();
+  format.skip_height = 0;
+  format.height = height();
+  format.row_length = row_length();
+  return format;
+}
+
 
 // -- GLUTConsole implementation 
 
-GLUTConsole::GLUTConsole(int &argc, char **argv)
+GLUTConsole::GLUTConsole(int &argc, char **argv, PortableServer::POA_ptr poa)
     : _eventQueue(eventQueueCapacity)
 {
     _drawable = new DrawableTie<Drawable>(new GLUTDrawable);

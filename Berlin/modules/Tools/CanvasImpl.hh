@@ -32,22 +32,35 @@ class CanvasImpl : public virtual POA_Warsaw::Canvas,
                    public GraphicImpl
 {
 public:
-  CanvasImpl(Warsaw::PixelCoord, Warsaw::PixelCoord);
-  virtual ~CanvasImpl();
-  virtual CORBA::Long shm_id();
-  virtual Warsaw::Canvas::PixelFormat pixel_format();
-  virtual Warsaw::Canvas::BufferFormat buffer_format();
-  virtual void lock();
-  virtual void unlock();
-
-  virtual void request(Warsaw::Graphic::Requisition &);
-  virtual void draw(Warsaw::DrawTraversal_ptr);
+#ifdef CONSOLE_GGI
+    CanvasImpl(Warsaw::PixelCoord, Warsaw::PixelCoord);
+    virtual ~CanvasImpl();
+    virtual CORBA::Long shm_id();
+    virtual Warsaw::Canvas::PixelFormat pixel_format();
+    virtual Warsaw::Canvas::BufferFormat buffer_format();
+    virtual void lock();
+    virtual void unlock();
+    
+    virtual void request(Warsaw::Graphic::Requisition &);
+    virtual void draw(Warsaw::DrawTraversal_ptr);
 private:
-  Warsaw::PixelCoord   _width;
-  Warsaw::PixelCoord   _height;
-  Warsaw::Drawable_var _drawable;
-  Prague::Mutex        _mutex;
-  CORBA::Long          _shm;
+    Warsaw::PixelCoord   _width;
+    Warsaw::PixelCoord   _height;
+    Warsaw::Drawable_var _drawable;
+    Prague::Mutex        _mutex;
+    CORBA::Long          _shm;
+#else
+    CanvasImpl(Warsaw::PixelCoord, Warsaw::PixelCoord) {}
+    virtual ~CanvasImpl() {}
+    virtual CORBA::Long shm_id() {}
+    virtual Warsaw::Canvas::PixelFormat pixel_format() {}
+    virtual Warsaw::Canvas::BufferFormat buffer_format() {}
+    virtual void lock() {}
+    virtual void unlock() {}
+
+    virtual void request(Warsaw::Graphic::Requisition &) {}
+    virtual void draw(Warsaw::DrawTraversal_ptr) {}
+#endif
 };
 
 #endif

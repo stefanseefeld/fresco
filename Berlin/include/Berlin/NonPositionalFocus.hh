@@ -49,7 +49,7 @@ class NonPositionalFocus : public FocusImpl
   virtual void dispatch(Warsaw::Input::Event &);
 protected:
   virtual void activate_composite();
- private:
+private:
   cstack_t      _controllers;
   Prague::Mutex _mutex;
 };
