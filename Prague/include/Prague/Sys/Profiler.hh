@@ -109,6 +109,7 @@ private:
 	dump(*i, ind + 1);
       if (ind) root.value->output(*os, ind); // don't output the root
     }
+  void dump() { dump(*current, 0);}
   static void clean(const item_t &root)
     {
       for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
