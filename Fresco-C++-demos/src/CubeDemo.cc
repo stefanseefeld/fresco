@@ -75,7 +75,7 @@ CubeDemo::CubeDemo(Application *a)
     tx1(new TransformImpl),
     tx2(new TransformImpl)
 {
-  ImageKit_var images = application->resolve<ImageKit>("IDL:fresco.org/Fresco/ImageKit:1.0");
+  RasterKit_var images = application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
   PrimitiveKit_var primitives = application->resolve<PrimitiveKit>("IDL:fresco.org/Fresco/PrimitiveKit:1.0");
   LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
   CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");

@@ -29,14 +29,14 @@ using namespace Fresco;
 ViewportDemo::ViewportDemo(Application *a)
   : Demo(a)
 {
-  ImageKit_var images = application->resolve<ImageKit>("IDL:fresco.org/Fresco/ImageKit:1.0");
+  RasterKit_var rasters = application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
   FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
   LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
   CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
   ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
   WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
 
-  Raster_var raster = images->create_raster("landscape.png");
+  Raster_var raster = rasters->create_raster("landscape.png");
   Image_var pixmap = figures->pixmap(raster);
   Layout::Viewport_var viewport = layout->scrollable(pixmap);
   Controller_var panner = widgets->panner(BoundedRange_var(viewport->adjustment(xaxis)), BoundedRange_var(viewport->adjustment(yaxis)));

@@ -40,7 +40,7 @@ IDL		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   BoundedValue.idl BoundedRange.idl TextBuffer.idl \
 		   StreamBuffer.idl Selection.idl Trigger.idl \
 		   Canvas.idl ToolKit.idl Widget.idl  WidgetKit.idl GadgetKit.idl \
-		   TextKit.idl Raster.idl ImageKit.idl Desktop.idl \
+		   TextKit.idl Raster.idl RasterKit.idl Desktop.idl \
 		   Window.idl DesktopKit.idl UnidrawKit.idl \
 		   PrimitiveKit.idl Primitive.idl
 

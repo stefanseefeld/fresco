@@ -53,7 +53,7 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Input.idl Focus.idl Subject.idl Observer.idl Controller.idl MainController.idl View.idl \
 		   Drawable.idl DrawingKit.idl Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 		   Telltale.idl StreamBuffer.idl Trigger.idl Canvas.idl State.idl ToolKit.idl \
-		   Widget.idl WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
+		   Widget.idl WidgetKit.idl GadgetKit.idl Raster.idl RasterKit.idl Figure.idl \
 		   Image.idl FigureKit.idl Command.idl CommandKit.idl \
 		   TextKit.idl Desktop.idl Window.idl DesktopKit.idl \
 		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl UnidrawKit.idl \

@@ -189,7 +189,10 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
       extension(info, Region_var(region->_this()));
       if (traversal->intersects_region(Region_var(region->_this())))
 	{
-	  DrawingKit_var drawing = traversal->drawing();
+      std::cout << "FigureImpl::draw with " << _path->nodes.length() << " vertices" << std::endl;
+      for (size_t i = 0; i != _path->nodes.length(); ++i)
+         std::cout << _path->nodes[i].x << ' ' << _path->nodes[i].y << std::endl;
+      DrawingKit_var drawing = traversal->drawing();
 	  Color color = drawing->foreground();
 	  drawing->save();
 	  Transform_var tmp = drawing->transformation();

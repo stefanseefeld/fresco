@@ -164,7 +164,7 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Output Substitution])
 
-for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Images Figures Primitives Text Widgets/Motif Gadgets Desktop Unidraw ; do
+for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Rasters Figures Primitives Text Widgets/Motif Gadgets Desktop Unidraw ; do
   mkdir -p modules/$kit
   AC_CONFIG_FILES([modules/$kit/Makefile])
 done

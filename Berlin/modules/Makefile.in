@@ -35,7 +35,7 @@ ifeq ($(HAVE_GL), 1)
 subdirs += Drawing/openGL
 endif
 
-subdirs	+= Layout Commands Tools Images Figures Primitives Text Widgets/Motif \
+subdirs	+= Layout Commands Tools Rasters Figures Primitives Text Widgets/Motif \
 	   Gadgets Desktop Unidraw
 
 # insert inter-directory dependencies below

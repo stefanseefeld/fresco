@@ -24,25 +24,25 @@
 
 #include <Berlin/ImplVar.hh>
 #include <Berlin/RasterImpl.hh>
-#include "ImageKitImpl.hh"
+#include "RasterKitImpl.hh"
 
 using namespace Prague;
 using namespace Fresco;
 
 using namespace Berlin::ImageKit;
 
-ImageKitImpl::ImageKitImpl(const std::string &id,
-			   const Fresco::Kit::PropertySeq &p,
-			   ServerContextImpl *c)
-    : KitImpl(id, p, c) { }
-ImageKitImpl::~ImageKitImpl() { }
+RasterKitImpl::RasterKitImpl(const std::string &id,
+                             const Fresco::Kit::PropertySeq &p,
+                             ServerContextImpl *c)
+   : KitImpl(id, p, c) { }
+RasterKitImpl::~RasterKitImpl() { }
 
-Raster_ptr ImageKitImpl::create_empty_raster()
+Raster_ptr RasterKitImpl::create_empty_raster()
 {
   return create<Fresco::Raster>(new RasterImpl());
 }
 
-Raster_ptr ImageKitImpl::create_raster(const char *file)
+Raster_ptr RasterKitImpl::create_raster(const char *file)
 {
   return create<Raster>(new RasterImpl(file));
 }
@@ -51,6 +51,6 @@ Raster_ptr ImageKitImpl::create_raster(const char *file)
 
 extern "C" KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "ImageKitImpl"};
-  return create_prototype<ImageKitImpl> ("IDL:fresco.org/Fresco/ImageKit:1.0", properties, 2);
+  static std::string properties[] = {"implementation", "RasterKitImpl"};
+  return create_prototype<RasterKitImpl> ("IDL:fresco.org/Fresco/RasterKit:1.0", properties, 2);
 }

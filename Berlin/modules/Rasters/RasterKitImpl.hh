@@ -22,11 +22,11 @@
  * MA 02139, USA.
  */
 
-#ifndef _ImageKitImpl_hh
-#define _ImageKitImpl_hh
+#ifndef _RasterKitImpl_hh
+#define _RasterKitImpl_hh
 
 #include <Fresco/config.hh>
-#include <Fresco/ImageKit.hh>
+#include <Fresco/RasterKit.hh>
 #include <Fresco/Raster.hh>
 #include <Berlin/KitImpl.hh>
 
@@ -37,20 +37,19 @@ namespace Berlin
 namespace ImageKit 
 {
 
-class ImageKitImpl : public virtual POA_Fresco::ImageKit,
-		     public KitImpl
+class RasterKitImpl : public virtual POA_Fresco::RasterKit,
+                      public KitImpl
 {
 public:
-  ImageKitImpl(const std::string &,
-	       const Fresco::Kit::PropertySeq &,
-	       ServerContextImpl *);
-  virtual ~ImageKitImpl();
+  RasterKitImpl(const std::string &,
+                const Fresco::Kit::PropertySeq &,
+                ServerContextImpl *);
+  virtual ~RasterKitImpl();
   virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-  { return new ImageKitImpl(repo_id(), p, c);}
+  { return new RasterKitImpl(repo_id(), p, c);}
 
   Fresco::Raster_ptr create_empty_raster();
   Fresco::Raster_ptr create_raster(const char *file);
-protected:
 };
 
 } // namespace

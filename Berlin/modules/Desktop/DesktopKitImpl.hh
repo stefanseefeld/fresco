@@ -28,7 +28,7 @@
 #include <Fresco/ToolKit.hh>
 #include <Fresco/WidgetKit.hh>
 #include <Fresco/TextKit.hh>
-#include <Fresco/ImageKit.hh>
+#include <Fresco/RasterKit.hh>
 #include <Fresco/Image.hh>
 #include <Fresco/FigureKit.hh>
 #include <Fresco/Desktop.hh>
@@ -65,14 +65,14 @@ public:
   virtual Fresco::Command_ptr relayer(Fresco::Window_ptr);
   virtual Fresco::Command_ptr map(Fresco::Window_ptr, CORBA::Boolean);
  private:
-  RefCount_var<Fresco::Desktop>    _desktop;
-  RefCount_var<Fresco::LayoutKit>  _layout;
-  RefCount_var<Fresco::ToolKit>    _tool;
-  RefCount_var<Fresco::WidgetKit>  _widget;
-  RefCount_var<Fresco::TextKit>    _text;
-  RefCount_var<Fresco::ImageKit>   _image;
-  RefCount_var<Fresco::FigureKit>  _figure;
-  Fresco::Command_var              _exit;
+  RefCount_var<Fresco::Desktop>    my_desktop;
+  RefCount_var<Fresco::LayoutKit>  my_layout;
+  RefCount_var<Fresco::ToolKit>    my_tools;
+  RefCount_var<Fresco::WidgetKit>  my_widgets;
+  RefCount_var<Fresco::TextKit>    my_text;
+  RefCount_var<Fresco::RasterKit>  my_rasters;
+  RefCount_var<Fresco::FigureKit>  my_figures;
+  Fresco::Command_var              my_exit;
 };
 
 } // namespace

@@ -53,17 +53,17 @@ def US(s):
 # The default kits available. More can be added using kits.add_kit()
 # TODO: include version and property information in the tuple
 _defaultKitNames = {
-    'tool'     : ('Fresco',  'ToolKit'),
-    'image'    : ('Fresco',  'ImageKit'),
-    'figure'   : ('Fresco',  'FigureKit'),
-    'primitive': ('Fresco',  'PrimitiveKit'),
-    'command'  : ('Fresco',  'CommandKit'),
-    'gadget'   : ('Fresco',  'GadgetKit'),
-    'desktop'  : ('Fresco',  'DesktopKit'),
-    'layout'   : ('Fresco',  'LayoutKit'),
-    'text'     : ('Fresco',  'TextKit'),
-    'widget'   : ('Fresco',  'WidgetKit'),
-    'unidraw'  : ('Unidraw', 'UnidrawKit'),
+    'tools'     : ('Fresco',  'ToolKit'),
+    'rasters'   : ('Fresco',  'RasterKit'),
+    'figures'   : ('Fresco',  'FigureKit'),
+    'primitives': ('Fresco',  'PrimitiveKit'),
+    'commands'  : ('Fresco',  'CommandKit'),
+    'gadgets'   : ('Fresco',  'GadgetKit'),
+    'desktop'   : ('Fresco',  'DesktopKit'),
+    'layout'    : ('Fresco',  'LayoutKit'),
+    'text'      : ('Fresco',  'TextKit'),
+    'widgets'   : ('Fresco',  'WidgetKit'),
+    'unidraw'   : ('Unidraw', 'UnidrawKit'),
 }
 
 # An empty Any object for sending to Commands

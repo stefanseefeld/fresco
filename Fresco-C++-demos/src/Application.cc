@@ -88,14 +88,14 @@ Application::Application(ServerContext_ptr sc, ClientContext_ptr cc)
     _wk(::resolve_kit<WidgetKit>(_server, "IDL:fresco.org/Fresco/WidgetKit:1.0")),
     _fk(::resolve_kit<FigureKit>(_server, "IDL:fresco.org/Fresco/FigureKit:1.0")),
     _ck(::resolve_kit<CommandKit>(_server, "IDL:fresco.org/Fresco/CommandKit:1.0")),
-    _ik(::resolve_kit<ImageKit>(_server, "IDL:fresco.org/Fresco/ImageKit:1.0")),
+    _rk(::resolve_kit<RasterKit>(_server, "IDL:fresco.org/Fresco/RasterKit:1.0")),
     _gk(::resolve_kit<GadgetKit>(_server, "IDL:fresco.org/Fresco/GadgetKit:1.0")),
     _vbox(_lk->vbox()),
     _choice(_wk->toggle_choice()),
     _mapper(new Mapper(_demos, Selection_var(_choice->state())))
 {
   _background.red = _background.green = _background.blue = 0.6; _background.alpha = 1.;
-  Raster_var raster = _ik->create_raster("fresco.png");
+  Raster_var raster = _rk->create_raster("fresco.png");
   Image_var  image = _fk->pixmap(raster);
   Graphic_var hbox = _lk->hbox();
   Graphic_var vbox = _lk->vbox();

@@ -32,7 +32,7 @@
 #include <Fresco/FigureKit.hh>
 #include <Fresco/CommandKit.hh>
 #include <Fresco/DesktopKit.hh>
-#include <Fresco/ImageKit.hh>
+#include <Fresco/RasterKit.hh>
 #include <Fresco/GadgetKit.hh>
 #include <Fresco/MainController.hh>
 #include <Fresco/Trigger.hh>
@@ -94,7 +94,7 @@ private:
   Fresco::WidgetKit_var     _wk;
   Fresco::FigureKit_var     _fk;
   Fresco::CommandKit_var    _ck;
-  Fresco::ImageKit_var      _ik;
+  Fresco::RasterKit_var     _rk;
   Fresco::GadgetKit_var     _gk;
   Fresco::Graphic_var       _vbox;
   Widget::Choice_var        _choice;

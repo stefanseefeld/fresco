@@ -29,7 +29,7 @@ using namespace Fresco;
 TransformDemo::TransformDemo(Application *a)
   : Demo(a)
 {
-  ImageKit_var images = application->resolve<ImageKit>("IDL:fresco.org/Fresco/ImageKit:1.0");
+  RasterKit_var rasters = application->resolve<RasterKit>("IDL:fresco.org/Fresco/RasterKit:1.0");
   FigureKit_var figures = application->resolve<FigureKit>("IDL:fresco.org/Fresco/FigureKit:1.0");
   LayoutKit_var layout = application->resolve<LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
   CommandKit_var commands = application->resolve<CommandKit>("IDL:fresco.org/Fresco/CommandKit:1.0");
@@ -40,13 +40,13 @@ TransformDemo::TransformDemo(Application *a)
   Command_var command2 = commands->log("hello World 2");
   Command_var command3 = commands->log("hello World 3");
   
-  Raster_var raster = images->create_raster("../etc/PNG/png.png");
-  Image_var  im = figures->pixmap(raster);
+  Raster_var raster = rasters->create_raster("png.png");
+  Image_var  image = figures->pixmap(raster);
   
   Graphic_var hbox = layout->hbox();
-  hbox->append_graphic(Graphic_var(widgets->button(im, command1)));
-  hbox->append_graphic(Graphic_var(widgets->button(im, command2)));
-  hbox->append_graphic(Graphic_var(widgets->button(im, command3)));
+  hbox->append_graphic(Graphic_var(widgets->button(image, command1)));
+  hbox->append_graphic(Graphic_var(widgets->button(image, command2)));
+  hbox->append_graphic(Graphic_var(widgets->button(image, command3)));
   Graphic_var transformer = figures->transformer(hbox);
   Transform_var(transformer->transformation())->rotate(45., zaxis);
   Graphic_var root = layout->halign(transformer, 0.);

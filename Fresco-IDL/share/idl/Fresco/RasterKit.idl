@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Fresco_ImageKit_idl
-#define _Fresco_ImageKit_idl
+#ifndef _Fresco_RasterKit_idl
+#define _Fresco_RasterKit_idl
 
 #include <Fresco/Types.idl>
 #include <Fresco/Kit.idl>
@@ -32,14 +32,14 @@
 
 module Fresco
 {
-  //. The ImageKit is used to add pixelbased Images into the SceneGraph.
+  //. The RasterKit is used to add pixelbased Images into the SceneGraph.
 
   //. Raster holds the detailed image data corresponding to a picture
   //. or texture mapping on the screen (or in memory).
   //.
   //. It is generally contained within an Image object, which handles
   //. all of the nasty details related to layout and so forth.
-  interface ImageKit : Kit
+  interface RasterKit : Kit
     {
       //. Create an empty Raster.
       Raster create_empty_raster();

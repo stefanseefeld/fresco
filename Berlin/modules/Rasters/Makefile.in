@@ -23,13 +23,13 @@ SHELL		:= /bin/sh
 
 abs_top_srcdir	:= @abs_top_srcdir@
 top_builddir	:= @top_builddir@
-srcdir		:= $(abs_top_srcdir)/modules/Images
+srcdir		:= $(abs_top_srcdir)/modules/Rasters
 cdir		:= $(top_builddir)/config
 
 include $(cdir)/local.mk
 
-SRC		:= ImageKitImpl.cc
+SRC		:= RasterKitImpl.cc
 
-MODULE		:= ImageKit
+MODULE		:= RasterKit
 
 include $(cdir)/module.mk
