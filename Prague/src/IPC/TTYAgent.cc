@@ -32,9 +32,8 @@ TTYAgent::TTYAgent(const string &cmd, IONotifier *io, EOFNotifier *eof)
 
 TTYAgent::~TTYAgent()
 {
-  if (_running)
-	  stop();
-  //shutdown(in|out|err);
+  stop();
+  shutdown(in|out|err);
 }
 
 void TTYAgent::start()

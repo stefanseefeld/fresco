@@ -84,6 +84,7 @@ Coprocess::Coprocess(const string &cmd, IONotifier *n, EOFNotifier *e)
 
 Coprocess::~Coprocess()
 {
+  stop();
   terminate();
 };
 

@@ -28,19 +28,11 @@ Agent::Agent()
   : iomask(none), running(false)
 {}
 
+
 Agent::~Agent()
 {
-  if (running)
-    {
-      Dispatcher::instance()->release(this);
-      running = false;
-    }
-  MutexGuard guard(task_mutex);
-  if (task_count != 0) {
-	  Condition may_destruct(task_mutex);
-	  destruct_ok = &may_destruct;
-	  may_destruct.wait();
-  }
+  Dispatcher::instance()->release(this);
+  running = false;
 }
 
 void Agent::start()
@@ -73,6 +65,12 @@ void Agent::stop()
 {
   mask(none);
   Dispatcher::instance()->release(this);
+  MutexGuard guard(task_mutex);
+  if (task_count != 0) {
+	  Condition may_destruct(task_mutex);
+	  destruct_ok = &may_destruct;
+	  may_destruct.wait();
+  }
   running = false;
 }
 void Agent::task_finished() {
