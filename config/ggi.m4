@@ -1,6 +1,6 @@
 dnl
 dnl This source file is a part of the Berlin Project.
-dnl Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+dnl Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 dnl http://www.berlin-consortium.org
 dnl
 dnl This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@ dnl MA 02139, USA.
 dnl
 dnl BERLIN_GGI_CHECK(mandatory-flag)
 dnl
-dnl Checks if GGI is found. If it is, $ac_cv_lib_GGI is set to "yes".
+dnl Checks if GGI is found. If it is, $ac_cv_lib_ggi is set to "yes".
 
 AC_DEFUN([BERLIN_GGI_CHECK],[
 
@@ -34,10 +34,10 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 
 	dnl Check for GGI includes
 	if test ".$ggi_prefix" != . ; then
-		GGI_INCLUDES="-I$ggi_prefix/include"
+		CON_INCLUDES="-I$ggi_prefix/include"
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GGI_INCLUDES $CPPFLAGS"
+	CPPFLAGS="$CON_INCLUDES $CPPFLAGS"
 	AC_CHECK_HEADER(ggi/ggi.h,:,no_ggi=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
@@ -45,27 +45,27 @@ AC_DEFUN([BERLIN_GGI_CHECK],[
 	if test ".$no_ggi" = . ; then
 
 		if test ".$ggi_prefix" != . ; then
-			GGI_LIBS="-L$ggi_prefix/lib"
+			CON_LIBS="-L$ggi_prefix/lib"
 		fi
 
 		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$GGI_LIBS $LDFLAGS"
+		LDFLAGS="$CON_LIBS $LDFLAGS"
 		AC_CHECK_LIB(ggi, ggiInit, :, no_ggi=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
 
 	if test ".$no_ggi" != . ; then
 
-		ac_cv_lib_GGI=no
+		ac_cv_lib_ggi=no
 		dnl Abort or warn?
 		ifelse($1,mandatory,AC_MSG_ERROR(GGI library was not found!))
 	else
-		ac_cv_lib_GGI=yes
-		GGI_LIBS="$GGI_LIBS -lggi"
+		ac_cv_lib_ggi=yes
+		CON_LIBS="$CON_LIBS -lggi"
 	fi
 
-	AC_SUBST(GGI_INCLUDES)
-	AC_SUBST(GGI_LIBS)
+dnl	AC_SUBST(CON_INCLUDES)
+dnl	AC_SUBST(CON_LIBS)
 
 	AC_LANG_RESTORE
 ])

@@ -28,7 +28,7 @@ AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
 AC_INIT(../../src/Berlin/Makefile)
-dnl AC_CONFIG_HEADER($top/include/Berlin/config.hh)
+AC_CONFIG_HEADER(../../include/Berlin/config.hh)
 
 dnl Set AC_CONFIG_AUX_DIR to the top-level config directory. I don't know
 dnl what the AC_DIVERT_PUSH magic does, but it is needed for AC_HEADLINE to
@@ -117,7 +117,7 @@ dnl Graphics environment
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Graphics Environment)
 
-BERLIN_GGI_CHECK(mandatory)
+BERLIN_CONSOLE_CHECK(mandatory)
 
 if test ".$enable_drawing_kits" = .all ; then
 	enable_drawing_kits="libArt openGL"
