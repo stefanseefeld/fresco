@@ -127,10 +127,10 @@ LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
 
 
 LibArtFTFont::~LibArtFTFont() {}
-unsigned long LibArtFTFont::size() { return _size;}
-unsigned long LibArtFTFont::weight() { return 100;}
-void LibArtFTFont::size(unsigned long sz) { _size = sz;}
-void LibArtFTFont::weight(unsigned long wt) {}
+CORBA::ULong LibArtFTFont::size() { return _size;}
+CORBA::ULong LibArtFTFont::weight() { return 100;}
+void LibArtFTFont::size(CORBA::ULong sz) { _size = sz;}
+void LibArtFTFont::weight(CORBA::ULong wt) {}
 
 Unistring *LibArtFTFont::family()
 { 

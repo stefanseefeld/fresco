@@ -61,8 +61,8 @@ LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
 }
 
 LibArtUnifont::~LibArtUnifont() { delete _glyphmap; art_pixbuf_free(_buffer);}
-unsigned long LibArtUnifont::size() { return 16;}
-unsigned long LibArtUnifont::weight() { return 100;}
+CORBA::ULong LibArtUnifont::size() { return 16;}
+CORBA::ULong LibArtUnifont::weight() { return 100;}
 Unistring *LibArtUnifont::family() { return new Unistring(Unicode::to_CORBA(Babylon::String("GNU Unifont")));}
 Unistring *LibArtUnifont::subfamily() { return 0;}
 Unistring *LibArtUnifont::fullname() { return 0;}
