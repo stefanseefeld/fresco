@@ -37,6 +37,24 @@ ColorDemo::ColorDemo(Application *a)
   TextKit_var text = application->resolve<TextKit>("IDL:fresco.org/Fresco/TextKit:1.0");
   GadgetKit_var gadgets = application->resolve<GadgetKit>("IDL:fresco.org/Fresco/GadgetKit:1.0");
   
+  Layout::Grid::Index index;
+  index.col = 3;
+  index.row = 3;
+  Layout::Grid_var rgb_grid = layout->fixed_grid(index);
+  Layout::Grid_var hsv_grid = layout->fixed_grid(index);
+
+  Graphic_var spacer = layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("  ")))), 0., 0., 0.)), 0.);
+
+  index.col = 1; index.row = 0;
+  rgb_grid->replace(spacer, index);
+  hsv_grid->replace(spacer, index);
+  index.col = 1; index.row = 1;
+  rgb_grid->replace(spacer, index);
+  hsv_grid->replace(spacer, index);
+  index.col = 1; index.row = 2;
+  rgb_grid->replace(spacer, index);
+  hsv_grid->replace(spacer, index);
+
   for (size_t i = 0; i != 6; ++i)
     adapter[i] = new Adapter(this, i);
   
@@ -64,26 +82,49 @@ ColorDemo::ColorDemo(Application *a)
 
   Graphic_var vbox = layout->vbox();
 
+  Graphic_var rgb_label = layout->hbox();
+  rgb_label->append_graphic(Graphic_var(layout->hfill()));
+  rgb_label->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("RGB Color Model")))), 0., 0., 0.)));
+  rgb_label->append_graphic(Graphic_var(layout->hfill()));
+  vbox->append_graphic(rgb_label);
+
+  Graphic_var hfill = layout->hfill();
+  Graphic_var vfill = layout->vfill();
+
+  index.col = 0; index.row = 0;
   Graphic_var hbox21 = layout->hbox();
-  hbox21->append_graphic(Graphic_var(layout->hfill()));
-  hbox21->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("RGB Color Model")))), 0., 0., 0.)));
-  hbox21->append_graphic(Graphic_var(layout->hfill()));
-  vbox->append_graphic(hbox21);
+  hbox21->append_graphic(hfill);
+  hbox21->append_graphic(Graphic_var(layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("R")))), 0., 0., 0.)), 0.)));
+  rgb_grid->replace(hbox21, index);
+  index.col = 2;
+  Graphic_var vbox21 = layout->vbox();
+  vbox21->append_graphic(Graphic_var(widgets->slider(red, xaxis)));
+  vbox21->append_graphic(vfill);
+  rgb_grid->replace(vbox21, index);
 
+  index.col = 0; index.row = 1;
   Graphic_var hbox22 = layout->hbox();
-  hbox22->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("R  ")))), 0., 0., 0.)));
-  hbox22->append_graphic(Graphic_var(widgets->slider(red, xaxis)));
-  vbox->append_graphic(hbox22);
- 
-  Graphic_var hbox23 = layout->hbox();
-  hbox23->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("G  ")))), 0., 0., 0.)));
-  hbox23->append_graphic(Graphic_var(widgets->slider(green, xaxis)));
-  vbox->append_graphic(hbox23);
+  hbox22->append_graphic(hfill);
+  hbox22->append_graphic(Graphic_var(layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("G")))), 0., 0., 0.)), 0.)));
+  rgb_grid->replace(hbox22, index);
+  index.col = 2;
+  Graphic_var vbox22 = layout->vbox();
+  vbox22->append_graphic(Graphic_var(widgets->slider(green, xaxis)));
+  vbox22->append_graphic(vfill);
+  rgb_grid->replace(vbox22, index);
 
-  Graphic_var hbox24 = layout->hbox();
-  hbox24->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("B  ")))), 0., 0., 0.)));
-  hbox24->append_graphic(Graphic_var(widgets->slider(blue, xaxis)));
-  vbox->append_graphic(hbox24);
+  index.col = 0; index.row = 2;
+  Graphic_var hbox23 = layout->hbox();
+  hbox23->append_graphic(hfill);
+  hbox23->append_graphic(Graphic_var(layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("B")))), 0., 0., 0.)), 0.)));
+  rgb_grid->replace(hbox23, index);
+  index.col = 2;
+  Graphic_var vbox23 = layout->vbox();
+  vbox23->append_graphic(Graphic_var(widgets->slider(blue, xaxis)));
+  vbox23->append_graphic(vfill);
+  rgb_grid->replace(vbox23, index);
+
+  vbox->append_graphic(rgb_grid);
 
   Graphic_var hbox25 = layout->hbox();
   hbox25->append_graphic(Graphic_var(layout->hfill()));
@@ -91,20 +132,41 @@ ColorDemo::ColorDemo(Application *a)
   hbox25->append_graphic(Graphic_var(layout->hfill()));
   vbox->append_graphic(hbox25);
 
+  index.col = 0; index.row = 0;
   Graphic_var hbox26 = layout->hbox();
-  hbox26->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("H  ")))), 0., 0., 0.)));
-  hbox26->append_graphic(Graphic_var(widgets->slider(hue, xaxis)));
-  vbox->append_graphic(hbox26);
- 
-  Graphic_var hbox27 = layout->hbox();
-  hbox27->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("S  ")))), 0., 0., 0.)));
-  hbox27->append_graphic(Graphic_var(widgets->slider(saturation, xaxis)));
-  vbox->append_graphic(hbox27);
+  hbox26->append_graphic(hfill);
+  hbox26->append_graphic(Graphic_var(layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("H")))), 0., 0., 0.)), 0.)));
+  hsv_grid->replace(hbox26, index);
+  index.col = 2;
+  Graphic_var vbox26 = layout->vbox();
+  vbox26->append_graphic(Graphic_var(widgets->slider(hue, xaxis)));
+  vbox26->append_graphic(vfill);
+  hsv_grid->replace(vbox26, index);
 
+  index.col = 0; index.row = 1;
+  Graphic_var hbox27 = layout->hbox();
+  hbox27->append_graphic(hfill);
+  hbox27->append_graphic(Graphic_var(layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("S")))), 0., 0., 0.)), 0.)));
+  hsv_grid->replace(hbox27, index);
+  index.col = 2;
+  Graphic_var vbox27 = layout->vbox();
+  vbox27->append_graphic(Graphic_var(widgets->slider(saturation, xaxis)));
+  vbox27->append_graphic(vfill);
+  hsv_grid->replace(vbox27, index);
+
+  index.col = 0; index.row = 2;
   Graphic_var hbox28 = layout->hbox();
-  hbox28->append_graphic(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("V  ")))), 0., 0., 0.)));
-  hbox28->append_graphic(Graphic_var(widgets->slider(value, xaxis)));
-  vbox->append_graphic(hbox28);
+  hbox28->append_graphic(hfill);
+  hbox28->append_graphic(Graphic_var(layout->valign(Graphic_var(tools->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("V")))), 0., 0., 0.)), 0.)));
+  hsv_grid->replace(hbox28, index);
+  index.col = 2;
+  Graphic_var vbox28 = layout->vbox();
+  vbox28->append_graphic(Graphic_var(widgets->slider(value, xaxis)));
+  vbox28->append_graphic(vfill);
+  hsv_grid->replace(vbox28, index);
+
+  vbox->append_graphic(hsv_grid);
+
   hbox->append_graphic(vbox);
   Controller_var root = tools->group(Graphic_var(layout->margin(hbox, 100.)));
   application->append(root, Babylon::String("Color"));
