@@ -100,7 +100,7 @@ void Babylon::String::utf8(const UTF8_string & s, Norm norm = NORM_NONE)
 
 Babylon::UTF8_string Babylon::String::utf8() const throw (Trans_Error) {
     Babylon::UTF8_string res;
-    res.reserve(this->length());
+
     for(String::const_iterator it = this->begin();
 	it != this->end();
 	++it)
@@ -123,7 +123,7 @@ void Babylon::String::utf16(const UTF16_string & in , const Norm norm = NORM_NON
 
 Babylon::UTF16_string Babylon::String::utf16() const throw (Trans_Error) {
     UTF16_string res;
-    res.reserve(this->length());
+
     for(String::const_iterator it = this->begin();
 	it != this->end();
 	++it)
@@ -132,19 +132,19 @@ Babylon::UTF16_string Babylon::String::utf16() const throw (Trans_Error) {
 }
 
 void Babylon::String::utf32(const UTF32_string & s, const Norm norm = NORM_NONE) {
-    this->reserve(s.length());
+    erase();
     m_current_norm = norm;
     UTF32_string::const_iterator it = s.begin();
     while(it != s.end()) {
 	Char t;
 	it = t.utf32(s, it);
-	*this += t; 
+	*this += t;
     }
 }
 
-Babylon::UTF32_string Babylon::String::utf32() const {
+Babylon::UTF32_string Babylon::String::utf32() const throw (Trans_Error) {
     UTF32_string res;
-    res.reserve(this->length());
+
     for(String::const_iterator it = this->begin();
 	it != this->end();
 	++it)

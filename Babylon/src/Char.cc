@@ -1,4 +1,5 @@
-/*$Id$
+/*
+ *$Id$
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999,2000 Tobias Hunger <Tobias@berlin-consortium.org>
@@ -37,20 +38,21 @@ Babylon::UTF8_string Babylon::Char::utf8() const throw (Trans_Error) {
     else if (c <= 0x03FFFFFF) chars_needed = 4;
     else if (c <= 0x7FFFFFFF) chars_needed = 5;
     else throw Trans_Error(TRANS_CAN_NOT_ENCODE);
-    
-    for(int i = chars_needed; i >= 0; i--) {
-	if (i == 0) {
-	    UCS1 t = 0;
-	    if (chars_needed != 0)
-		t = 0xFE << (6 - chars_needed);
-	    t = t | c;
-	    res += UCS1(t);
-	} else {
-	    UCS4 t = c & 0x3F; // t = 00xxxxxx;
-	    t = t | 0x80;      // t = 10xxxxxx;
-	    res += UCS1(t);
-	    c = c >> 5;
-	}
+
+    for (int i = chars_needed; i > 0; --i) {
+        UCS1 t = 0x80;
+        t |= UCS1(c & 0x3f);
+        c = c >> 6;
+        res = t + res;
+    }
+
+    if ( !chars_needed ) {
+      res = UCS1(c & 0x7F);
+    }
+    else {
+        UCS1 t = 0xFE << (6 - chars_needed);
+        t |= UCS1(c & 0xFF);
+        res = t + res;
     }
     return res;
 }
@@ -66,33 +68,35 @@ Babylon::UTF16_string Babylon::Char::utf16() const throw (Trans_Error) {
 	c -= 0x00010000;
 	UCS2 h = 0xD800;
 	UCS2 l = 0xDC00;
-	res += (h | (c & 0x3FF));
-	res += (l | (c >> 10));
+	res += (h | (c >> 10));
+	res += (l | (c & 0x3FF));
     }
 
     return res;
 }
 
-Babylon::UTF32_string Babylon::Char::utf32() const throw () {
-    UTF32_string res(m_value, Babylon::NORM_NONE);
-    return res;
+Babylon::UTF32_string Babylon::Char::utf32() const throw (Trans_Error) {
+    if (m_value > 0x10FFFF)
+        throw Trans_Error(TRANS_CAN_NOT_ENCODE);
+    UTF32_string res;//(m_value, Babylon::NORM_NONE);
+    return res += m_value;
 }
 
 Babylon::UTF8_string::const_iterator
 Babylon::Char::utf8(const Babylon::UTF8_string & s,
 		    Babylon::UTF8_string::const_iterator it)
     throw (Trans_Error) {
-    char first_byte_mask[] = {0x7F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
-    
-    UCS4 h = 0;
+ 
+    // rfc2279.txt: The trasfromation of UCS2 to UCS1 should be:
+    // UCS2 ---> UCS4 ---> UCS1, so surrogates of UCS2 are removed
 
-    READ_UTF8_CHAR:
+    UCS4 c = 0;
     unsigned int chars_needed;
     
     if      ((*it & 0x80) == 0) chars_needed = 0; // *s_it == 0xxx xxxx
     else if ((*it & 0x40) == 0)                   // *s_it == 10xx xxxx, should only
-	                                            // happen after a character
-	                                            // starting with 11xx xxxx
+	                                           // happen after a character
+	                                           // starting with 11xx xxxx
 	throw Trans_Error(TRANS_CAN_NOT_DECODE);
     else if ((*it & 0x20) == 0) chars_needed = 1; // *s_it == 110x xxxx
     else if ((*it & 0x10) == 0) chars_needed = 2; // *s_it == 1110 xxxx
@@ -100,45 +104,48 @@ Babylon::Char::utf8(const Babylon::UTF8_string & s,
     else if ((*it & 0x04) == 0) chars_needed = 4; // *s_it == 1111 10xx
     else if ((*it & 0x02) == 0) chars_needed = 5; // *s_it == 1111 110x
     else throw Trans_Error(TRANS_CAN_NOT_DECODE); // *s_it == 1111 111x,
-                                                    // should not happen in
-                                                    // a sequence of UTF8-Characters
-    
-    UCS4 c = 0;
-    for (int i = chars_needed; i >= 0; --i) {
-	if (i == 0) {
-	    c = *it & first_byte_mask[chars_needed];
-	} else {
-	    c << 5;
-	    c = c | (*it & 0x3F);
-	    
-	    ++it;
-	    if ((it == s.end()) || (*it & 0x80) == 0 || (*it & 0x40) != 0 )
+                                               // should not happen in
+                                               // a sequence of UTF8-Characters
+
+    if ( !chars_needed ) {
+        c = UCS4(*it);
+    }
+    else {
+        c = (*it) & (0x3F >> chars_needed);
+
+        for (int i = 1; i <= chars_needed; ++i) {
+	    if ( (++it == s.end()) || ((*it & 0xc0) != 0x80) )
 		// either we are at the end of the UTF8-sequence or the current
 		// character is not 10xx xxxx.
 		throw Trans_Error(TRANS_CAN_NOT_DECODE);
+            c = c << 6;
+            c |= UCS4(*it & 0x3F);
 	}
+
+        // Now we check the range of the value decodifed, to avoid problems
+        // of seccurity (Ex: C0 80 is the NULL char).
+        switch (chars_needed) {
+           case 1:
+               if (c < 0x80) throw Trans_Error(TRANS_CAN_NOT_DECODE);
+               break;
+           case 2:
+               if (c < 0x800) throw Trans_Error(TRANS_CAN_NOT_DECODE);
+               break;
+           case 3:
+               if (c < 0x10000) throw Trans_Error(TRANS_CAN_NOT_DECODE);
+               break;
+           case 4:
+               if (c < 0x200000) throw Trans_Error(TRANS_CAN_NOT_DECODE);
+               break;
+           case 5:
+               if (c < 0x4000000) throw Trans_Error(TRANS_CAN_NOT_DECODE);
+               break;
+           default:
+               throw Trans_Error(TRANS_CAN_NOT_DECODE);
+        }
     }
-    
-    if (c >= 0xD800 && c <= 0xDBFF) {
-	// c is a high surrogate
-	if (h != 0)
-	    throw Trans_Error(TRANS_CAN_NOT_DECODE);
-	h = c;
-	++it; // read the next character (wich should be a low surrogate)
-	goto READ_UTF8_CHAR;
-    }
-    
-    if (c >= 0xDC00 && c <= 0xDFFFF) {
-	if (h == 0)
-	    throw Trans_Error(TRANS_CAN_NOT_DECODE);
-	c = (((h & 0x3FF) << 10) | (c & 0x3FF)) + 0x10000;
-    }
-    
     m_value = UCS4(c);
-
-    ++it; // advance one past the last octet read.
-
-    return it;
+    return ++it;
 }
 
 Babylon::UTF16_string::const_iterator
@@ -152,23 +159,23 @@ Babylon::Char::utf16(const Babylon::UTF16_string & s,
 	    // it was a low surrogate...
 	    throw Trans_Error(TRANS_CAN_NOT_DECODE);
 	++it;
-	if (it == s.end() || *it <= 0xDC00 || *it > 0xDFFF)
+	if (it == s.end() || *it < 0xDC00 || *it > 0xDFFF)
 	    // didn't find a corresponding low surrogate...
 	    throw Trans_Error(TRANS_CAN_NOT_DECODE);
-	c = (((c & 0x3FF) << 10) | (*it & 0x3FFF)) + 0x10000;
+	c = (((c & 0x3FF) << 10) | (*it & 0x3FF)) + 0x10000;
     }
     m_value = c;
-    ++it;
-    return it;
+    return ++it;
 }
 
 Babylon::UTF32_string::const_iterator
 Babylon::Char::utf32(const Babylon::UTF32_string & s,
 		     Babylon::UTF32_string::const_iterator it)
-    throw () {
+    throw (Trans_Error) {
+    if (*it > 0x10FFFF)
+        throw Trans_Error(TRANS_CAN_NOT_ENCODE);
     m_value = *it;
-    ++it;
-    return it;
+    return ++it;
 }
 
 // TRANSFORMATIONS:
