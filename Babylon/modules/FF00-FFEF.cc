@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp FF00-FFEF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp FF00-FFEF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon, 26 May 2003 15:56:44 +0200.
+ * ftp.unicode.org on Tue, 05 Aug 2003 17:10:26 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -446,6 +446,16 @@ namespace Babylon
             return 0;
         }
 
+        bool is_XID_Start_Closure(const UCS4 uc) const
+        {
+            return my_XID_Start_Closure.test(uc - my_first_letter);
+        }
+
+        bool is_XID_Continue_Closure(const UCS4 uc) const
+        {
+            return 0;
+        }
+
       private:
         // functions
         Halfwidth_and_Fullwidth_FormsFF00(const Halfwidth_and_Fullwidth_FormsFF00 &) ; // no implementaion!
@@ -474,6 +484,7 @@ namespace Babylon
         static const std::bitset<240> my_Diacritic;
         static const std::bitset<240> my_Extender;
         static const std::bitset<240> my_Other_Default_Ignorable_Code_Point;
+        static const std::bitset<240> my_XID_Start_Closure;
     }; // class Halfwidth_and_Fullwidth_FormsFF00
 
     const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::my_is_defined(std::string("011111110111111100011100111111001111110011111100011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
@@ -922,6 +933,8 @@ namespace Babylon
     const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::my_Extender(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
     const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::my_Other_Default_Ignorable_Code_Point(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
+
+    const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::my_XID_Start_Closure(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
   }; // namespace
 }; // namespace

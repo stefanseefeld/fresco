@@ -12,6 +12,7 @@ sub new
     {
 	chop;
 	(my $info, my $rest) = split /#/;
+	next unless $info;
 	$info =~ s/([a-zA-Z0-9]*)\s*$/$1/; # remove trailing spaces
 	
 	next unless ($info);

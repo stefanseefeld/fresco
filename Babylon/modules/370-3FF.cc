@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp 370-3FF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp 370-3FF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon, 26 May 2003 15:55:53 +0200.
+ * ftp.unicode.org on Tue, 05 Aug 2003 17:09:39 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -425,6 +425,16 @@ namespace Babylon
             return 0;
         }
 
+        bool is_XID_Start_Closure(const UCS4 uc) const
+        {
+            return my_XID_Start_Closure.test(uc - my_first_letter);
+        }
+
+        bool is_XID_Continue_Closure(const UCS4 uc) const
+        {
+            return my_XID_Continue_Closure.test(uc - my_first_letter);
+        }
+
       private:
         // functions
         Greek_and_Coptic370(const Greek_and_Coptic370 &) ; // no implementaion!
@@ -447,6 +457,8 @@ namespace Babylon
         static const std::bitset<144> my_Terminal_Punctuation;
         static const std::bitset<144> my_Diacritic;
         static const std::bitset<144> my_Other_Lowercase;
+        static const std::bitset<144> my_XID_Start_Closure;
+        static const std::bitset<144> my_XID_Continue_Closure;
     }; // class Greek_and_Coptic370
 
     const std::bitset<144> Greek_and_Coptic370::my_is_defined(std::string("000011111111111111111111111111111111111111111111011111111111111111111111111111111111111111111011111111111111111111010111111100000100010000110000"));
@@ -761,6 +773,10 @@ namespace Babylon
     const std::bitset<144> Greek_and_Coptic370::my_Diacritic(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001100000000010000110000"));
 
     const std::bitset<144> Greek_and_Coptic370::my_Other_Lowercase(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000"));
+
+    const std::bitset<144> Greek_and_Coptic370::my_XID_Start_Closure(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000"));
+
+    const std::bitset<144> Greek_and_Coptic370::my_XID_Continue_Closure(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000"));
 
   }; // namespace
 }; // namespace

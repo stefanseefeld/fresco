@@ -4,7 +4,8 @@ use strict;
 use UnicodePluginGenerator qw( Defined Category CombClass Bidir DecompClass
 			       DecompString DecDigitVal DigitVal NumericVal
 			       Mirror Upper Lower Title Linebreak EAWidth
-			       Compositions CompExclude Block Prop);
+			       Compositions CompExclude Block Prop
+			       DerivedProps);
 
 my $UCD_File     = "UnicodeData.txt";
 my $Block_File   = "Blocks.txt";
@@ -12,6 +13,7 @@ my $EA_File      = "EastAsianWidth.txt";
 my $LB_File      = "LineBreak.txt";
 my $Exclude_File = "CompositionExclusions.txt";
 my $Prop_File    = "PropList.txt";
+my $DerivedProp_File = "DerivedCoreProperties.txt";
 my $Prefix       = "./modules/";
 
 # make directory if it doesnt exist
@@ -54,6 +56,7 @@ print "  ...compositions\n";
 my $COMP   = UnicodePluginGenerator::Compositions->new($UCD_File); print "  ...composition excludes\n";
 my $EXCL   = UnicodePluginGenerator::CompExclude->new($Exclude_File); print "  ...props\n";
 my $PROPS  = UnicodePluginGenerator::Props->new($Prop_File); print "  ...categories\n";
+my $DE_PROPS = UnicodePluginGenerator::DerivedProps->new($DerivedProp_File); print "  ...derived core properties\n";
 my $CAT    = UnicodePluginGenerator::Category->new($UCD_File); print "  ...defines\n";
 my $DEF    = UnicodePluginGenerator::Defined->new($UCD_File); print "  ...combining classes\n";
 my $CCLASS = UnicodePluginGenerator::CombClass->new($UCD_File); print "  ...bidir properties\n";
@@ -70,7 +73,7 @@ my $TITLE  = UnicodePluginGenerator::Title->new($UCD_File); print "  ...linebrea
 my $LB     = UnicodePluginGenerator::Linebreak->new($LB_File); print "  ...EA width properties\n";
 my $EA     = UnicodePluginGenerator::EAWidth->new($EA_File);
 
-my @MODULES = ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $EXCL, $PROPS );
+my @MODULES = ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $EXCL, $PROPS, $DE_PROPS);
 
 print "Creating plugins...\n";
 

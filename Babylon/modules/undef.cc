@@ -134,7 +134,8 @@ namespace Babylon
 	bool is_Soft_Dotted(const UCS4) const { return 0; }
 	bool is_Logical_Order_Exception(const UCS4) const { return 0; }
 	bool is_Other_ID_Start(const UCS4) const { return 0; }
-	
+	bool is_XID_Start_Closure(const UCS4 uc) const { return 0; }
+	bool is_XID_Continue_Closure(const UCS4 uc) const { return 0; }
       private:
 	// functions
 	undef0(const undef0 &) ; // no implementation!

@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp E80-EFF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp E80-EFF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon, 26 May 2003 15:55:56 +0200.
+ * ftp.unicode.org on Tue, 05 Aug 2003 17:09:41 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -449,6 +449,16 @@ namespace Babylon
             return 0;
         }
 
+        bool is_XID_Start_Closure(const UCS4 uc) const
+        {
+            return my_XID_Start_Closure.test(uc - my_first_letter);
+        }
+
+        bool is_XID_Continue_Closure(const UCS4 uc) const
+        {
+            return 0;
+        }
+
       private:
         // functions
         LaoE80(const LaoE80 &) ; // no implementaion!
@@ -468,6 +478,7 @@ namespace Babylon
         static const std::bitset<128> my_Diacritic;
         static const std::bitset<128> my_Extender;
         static const std::bitset<128> my_Logical_Order_Exception;
+        static const std::bitset<128> my_XID_Start_Closure;
     }; // class LaoE80
 
     const std::bitset<128> LaoE80::my_is_defined(std::string("00000000000000000000000000000000001100111111111100111111010111110011101111111111111011001010111011111110111100000010010110010110"));
@@ -677,6 +688,8 @@ namespace Babylon
     const std::bitset<128> LaoE80::my_Extender(std::string("00000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000"));
 
     const std::bitset<128> LaoE80::my_Logical_Order_Exception(std::string("00000000000000000000000000000000000000000000000000000000000111110000000000000000000000000000000000000000000000000000000000000000"));
+
+    const std::bitset<128> LaoE80::my_XID_Start_Closure(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000"));
 
   }; // namespace
 }; // namespace

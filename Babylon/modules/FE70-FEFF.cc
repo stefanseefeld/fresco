@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp FE70-FEFF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp FE70-FEFF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon, 26 May 2003 15:56:43 +0200.
+ * ftp.unicode.org on Tue, 05 Aug 2003 17:10:26 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -326,6 +326,16 @@ namespace Babylon
             return 0;
         }
 
+        bool is_XID_Start_Closure(const UCS4 uc) const
+        {
+            return my_XID_Start_Closure.test(uc - my_first_letter);
+        }
+
+        bool is_XID_Continue_Closure(const UCS4 uc) const
+        {
+            return my_XID_Continue_Closure.test(uc - my_first_letter);
+        }
+
       private:
         // functions
         Arabic_Presentation_FormsBFE70(const Arabic_Presentation_FormsBFE70 &) ; // no implementaion!
@@ -340,6 +350,8 @@ namespace Babylon
         static const unsigned char my_decomp[144];
         static const UCS4 my_decompStr[144][2];
         static const unsigned char my_lb[144];
+        static const std::bitset<144> my_XID_Start_Closure;
+        static const std::bitset<144> my_XID_Continue_Closure;
     }; // class Arabic_Presentation_FormsBFE70
 
     const std::bitset<144> Arabic_Presentation_FormsBFE70::my_is_defined(std::string("100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011111"));
@@ -542,6 +554,10 @@ namespace Babylon
         LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
         LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_WJ
     };
+
+    const std::bitset<144> Arabic_Presentation_FormsBFE70::my_XID_Start_Closure(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101010101010101"));
+
+    const std::bitset<144> Arabic_Presentation_FormsBFE70::my_XID_Continue_Closure(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101010101010101"));
 
   }; // namespace
 }; // namespace

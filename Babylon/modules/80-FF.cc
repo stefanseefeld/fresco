@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp 80-FF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp 80-FF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon, 26 May 2003 15:55:52 +0200.
+ * ftp.unicode.org on Tue, 05 Aug 2003 17:09:38 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -454,6 +454,16 @@ namespace Babylon
             return 0;
         }
 
+        bool is_XID_Start_Closure(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_XID_Continue_Closure(const UCS4 uc) const
+        {
+            return my_XID_Continue_Closure.test(uc - my_first_letter);
+        }
+
       private:
         // functions
         Latin1_Supplement80(const Latin1_Supplement80 &) ; // no implementaion!
@@ -478,6 +488,7 @@ namespace Babylon
         static const std::bitset<128> my_Quotation_Mark;
         static const std::bitset<128> my_Diacritic;
         static const std::bitset<128> my_Extender;
+        static const std::bitset<128> my_XID_Continue_Closure;
     }; // class Latin1_Supplement80
 
     const UCS4 Latin1_Supplement80::my_upper[] =
@@ -766,6 +777,8 @@ namespace Babylon
     const std::bitset<128> Latin1_Supplement80::my_Diacritic(std::string("00000000000000000000000000000000000000000000000000000000000000000000000110010000100000010000000000000000000000000000000000000000"));
 
     const std::bitset<128> Latin1_Supplement80::my_Extender(std::string("00000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000"));
+
+    const std::bitset<128> Latin1_Supplement80::my_XID_Continue_Closure(std::string("00000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000"));
 
   }; // namespace
 }; // namespace

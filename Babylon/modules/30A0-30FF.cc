@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.6 2002/05/31 23:42:14 tobias Exp 30A0-30FF.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp 30A0-30FF.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Mon, 26 May 2003 15:56:03 +0200.
+ * ftp.unicode.org on Tue, 05 Aug 2003 17:09:48 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -356,6 +356,16 @@ namespace Babylon
         }
 
         bool is_Other_ID_Start(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_XID_Start_Closure(const UCS4 uc) const
+        {
+            return 0;
+        }
+
+        bool is_XID_Continue_Closure(const UCS4 uc) const
         {
             return 0;
         }

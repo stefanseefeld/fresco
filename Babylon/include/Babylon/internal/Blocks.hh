@@ -103,6 +103,10 @@ namespace Babylon {
       virtual bool is_Soft_Dotted(const UCS4) const = 0;
       virtual bool is_Logical_Order_Exception(const UCS4) const = 0;
       virtual bool is_Other_ID_Start(const UCS4) const = 0;
+
+      // Derived Property helpers:
+      virtual bool is_XID_Start_Closure(const UCS4) const = 0;
+      virtual bool is_XID_Continue_Closure(const UCS4) const = 0;
       
       virtual UCS4 first_letter() const = 0;
       virtual UCS4 last_letter() const = 0;

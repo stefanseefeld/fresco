@@ -501,14 +501,17 @@ bool Dictionary::is_ID_Continue(const UCS4 uc) const throw (Block_Error)
 
 bool Dictionary::is_XID_Start(const UCS4 uc) const throw (Block_Error)
 {
-    // FIXME: This is wrong!
-    return(is_ID_Start(uc));
+    Prague::Trace trace("Babylon::Char::is_XID_Start()");
+    Guard<RWLock, RLockTrait> guard(my_rw_lock);
+    return (is_ID_Start(uc) ^ find_char(uc)->is_XID_Start_Closure(uc));
 }
 
 bool Dictionary::is_XID_Continue(const UCS4 uc) const throw (Block_Error)
 {
-    // FIXME: This is wrong!
-    return(is_ID_Continue(uc));
+    Prague::Trace trace("Babylon::Char::is_XID_Continue()");
+    Guard<RWLock, RLockTrait> guard(my_rw_lock);
+    return (is_ID_Continue(uc) ^
+	    find_char(uc)->is_XID_Continue_Closure(uc));
 }
 
 bool Dictionary::is_Default_Ignorable_Code_Point(const UCS4 uc) const
@@ -529,7 +532,7 @@ bool Dictionary::is_Grapheme_Extend(const UCS4 uc) const throw (Block_Error)
 bool Dictionary::is_Grapheme_Base(const UCS4 uc) const throw (Block_Error)
 {
     Gen_Cat cat = category(uc);
-    return ((0 <= uc && uc <= 0x10FFFF) &&
+   return ((0 <= uc && uc <= 0x10FFFF) &&
 	    !(cat == CAT_Cc || cat == CAT_Cf || cat == CAT_Cs ||
 	      cat == CAT_Co || cat == CAT_Cn || cat == CAT_Zl ||
 	      cat == CAT_Zp || is_Grapheme_Extend(uc)));
@@ -548,7 +551,7 @@ bool Dictionary::is_Full_Composition_Exclusion(const UCS4 uc) const
     if (decomp.length() == 1)
     {
 	if (decomp[0] == uc) return 0; // no decomposition
-	if (decomp_type(uc) == DECOMP_CANONICAL ) return 1;
+	if (decomp_type(uc) == DECOMP_CANONICAL) return 1;
 	return 0;
     }
     if (Dictionary::instance()->comb_class(decomp[0]) != CC_SPACING) return 1;
