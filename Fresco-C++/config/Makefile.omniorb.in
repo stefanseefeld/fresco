@@ -23,7 +23,7 @@ SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idldir		:= @idldir@
+idldir		:= @Fresco_IDL_prefix@/share/idl
 abs_builddir	:= @abs_builddir@
 cdir		:= @top_builddir@/config
 h1dir		:= $(top_srcdir)/include/Fresco
@@ -79,7 +79,7 @@ OBJ		:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
 TARGET		:= ../lib/libFresco.so
 
-vpath %.idl $(idldir)/share/idl/Fresco
+vpath %.idl $(idldir)/Fresco
 vpath %.hh $(h1dir):$(h2dir)/Fresco
 vpath %.cc $(srcdir)
 
@@ -139,27 +139,27 @@ maintainer-clean: distclean
 
 %.idl.d:	%.idl
 	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir)/share/idl $< \
+	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir) $< \
 	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
 $(STATSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
+	(cd $(idldir) && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(DYNSTATSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
+	(cd $(idldir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(DYNSRC): %DynSK.cc:	%.idl
 	@echo generating $(@F)
-	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
+	(cd $(idldir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(STATHDR): %.hh:	%.idl
 	@echo generating $(@F)
-	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
+	(cd $(idldir) && $(IDLCXX) $(IDLCXXFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 $(DYNHDR): %.hh:	%.idl
 	@echo generating $(@F)
-	(cd $(idldir)/share/idl && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
+	(cd $(idldir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
 
 %.cc.d:	%.cc $(GENHDR)

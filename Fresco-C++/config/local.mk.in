@@ -39,13 +39,11 @@ mandir		:= @mandir@
 abs_top_builddir:= @abs_top_builddir@
 abs_top_srcdir	:= @abs_top_srcdir@
 
-idldir      := @idldir@
-
 CXX		:= @CXX@
 SYNOPSIS	:= synopsis
-INSTALL	:= @INSTALL@
+INSTALL		:= @INSTALL@
 ORB		:= @ORB@
-IDLCXX	:= @IDLCXX@
+IDLCXX		:= @IDLCXX@
 SHORTCUT	:= @SHORTCUT@
 
 # Other variables

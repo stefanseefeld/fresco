@@ -41,7 +41,7 @@ class Config(Base):
 	    toc_in = [
 		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague/html',
 		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon/html',
-		'@Fresco_CXX_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco/html'
+		'@Fresco_IDL_prefix@/share/doc/Fresco-IDL/html/Fresco-IDL.toc|../../Fresco-IDL/html'
 	    ]
 	
         class Kit(HTML):
@@ -49,7 +49,7 @@ class Config(Base):
 	    toc_in = [
 		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague',
 		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon',
-		'@Fresco_CXX_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco',
+		'@Fresco_IDL_prefix@/share/doc/Fresco-IDL/html/Fresco-IDL.toc|../../Fresco-IDL',
 		top_builddir + '/share/doc/Berlin/html/Berlin.toc|../../Berlin',
 	    ]
 

@@ -98,8 +98,11 @@ INSTALL_LIBS="$INSTALL_LIBS $Fresco_CXX_LIBS"
 CPPFLAGS="$CPPFLAGS $Fresco_CXX_BUILD_CPPFLAGS"
 LIBS="$LIBS $Fresco_CXX_BUILD_LIBS"
 
+FRESCO_IDL_PATH
+
 AC_SUBST(INSTALL_CPPFLAGS)
 AC_SUBST(INSTALL_LIBS)
+AC_SUBST(Fresco_IDL_prefix)
 
 dnl ------------------------------------------------------------------
 dnl some helper utils

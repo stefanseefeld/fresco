@@ -200,19 +200,18 @@ AC_DEFUN(FRESCO_IDL_PATH,
   if test ".$Fresco_IDL_prefix" = .; then
     for dir in ${srcdir}/../Fresco-IDL /usr; do
       if test -r $dir/share/idl/Fresco/Types.idl; then
-        FRESCO_IDL_PREFIX=`cd $dir && pwd`
+        Fresco_IDL_prefix=`cd $dir && pwd`
         break
       fi
     done
   else
-    if test -r ${Fresco_IDL_prefix}/share/idl/Fresco/Types.idl; then
-      FRESCO_IDL_PREFIX="$Fresco_IDL_prefix"
-      break
+    if test ! -r ${Fresco_IDL_prefix}/share/idl/Fresco/Types.idl; then
+      Fresco_IDL_prefix=""
     fi
   fi
-  if test ".${FRESCO_IDL_PREFIX}" = .; then
+  if test ".${Fresco_IDL_prefix}" = .; then
     AC_MSG_ERROR([can not find Fresco interfaces])  
   else
-    AC_MSG_RESULT($FRESCO_IDL_PREFIX)
+    AC_MSG_RESULT($Fresco_IDL_prefix)
   fi
 ])
