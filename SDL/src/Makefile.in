@@ -31,15 +31,15 @@ include $(cdir)/local.mk
 HAVE_GL		:= @HAVE_GL@
 
 SRC	:= Drawable.cc Extension.cc Pointer.cc Console.cc
-DEP	:= $(patsubst %.cc, %.d, $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
-
 TARGET	:= ../lib/Fresco/Console/SDL.so
 
 ifeq ($(HAVE_GL), 1)
 TARGET	+= ../lib/Fresco/Console/SDLGL.so
+SRC     += SDLGL.cc
 endif
 ../lib/Fresco/Console/SDLGL.so: SDLGL.o
+DEP	:= $(patsubst %.cc, %.d, $(SRC))
 
 vpath %.cc $(srcdir)
 
