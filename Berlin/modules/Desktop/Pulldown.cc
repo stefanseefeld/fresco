@@ -28,7 +28,7 @@ using namespace Warsaw;
 void Pulldown::lose_focus(Input::Device)
 {
   Trace trace("Pulldown::lose_focus");
-  mapped(false);
+  //mapped(false);
 }
 
 void Pulldown::mapped(CORBA::Boolean flag)
