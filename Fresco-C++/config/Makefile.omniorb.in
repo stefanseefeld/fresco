@@ -95,7 +95,7 @@ $(TARGET): $(OBJ)
 
 depend: $(DEP)
 
-doc:
+doc: $(HDR)
 
 install:	all
 	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(notdir $(TARGET))
@@ -119,7 +119,7 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -D -m 755 ../config/Fresco-C++-config $(DESTDIR)$(bindir)/Fresco-C++-config
 
-install-doc:
+install-doc: doc
 
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/Fresco-C++-config
