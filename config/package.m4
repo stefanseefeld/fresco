@@ -152,3 +152,19 @@ int main (int argc, char *argv[])
   fi
   rm -f conf.$1test
 ])
+
+dnl FRESCO_BUILD_PACKAGE(PACKAGE)
+dnl
+AC_DEFUN(FRESCO_BUILD_PACKAGE,
+[dnl 
+dnl Get the cppflags and libraries from the package-build-config script
+dnl
+
+  AC_PATH_PROG($1_CONFIG, $1-config, no, ../$1/bin/$1-build-config)
+  no_$1=""
+  if test "$$1_CONFIG" != "no" ; then
+    $1_CPPFLAGS="`$$1_CONFIG --cppflags`"
+    $1_LIBS="`$$1_CONFIG --libs`"
+  fi
+])
+
