@@ -2,6 +2,6 @@ Makefile
 DrawingKit.d
 Quadric.d
 Raster.d
-Unifont.d
+FTFont.d
 DrawingKit.syn
 Font.syn
