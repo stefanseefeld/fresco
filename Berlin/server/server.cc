@@ -351,7 +351,7 @@ int main(int argc, char **argv) /*FOLD00*/
 
   if (getopt.is_set("list-available-consoles"))
   {
-      std::cout << "Available consoles:" << endl;
+      std::cout << "Available consoles:" << std::endl;
       Console::list_available(std::cout);
       return 0;
   }
@@ -360,7 +360,7 @@ int main(int argc, char **argv) /*FOLD00*/
   if (getopt.is_set("profiler"))
   {
       setupProfilingStuff();
-      Logger::log(Logger::loader) << "Profiling anabled." << std::endl;
+      Logger::log(Logger::loader) << "Profiling enabled." << std::endl;
   }
 #endif
 
