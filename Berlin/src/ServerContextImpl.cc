@@ -47,9 +47,9 @@ ServerContextImpl::ServerContextImpl(ServerImpl *s, const CORBA::PolicyList &pol
 {
   Trace trace("ServerContextImpl::ServerContextImpl");
   Babylon::String title = Unicode::to_internal(*_client->application_title());
-  Logger::log(Logger::corba) << "ServerContext for application \""
-			     << title.utf8() << "\" created."
-			     << std::endl;
+  Logger::log(Logger::corba) << (void *)(this) << " is the ServerContext "
+			     << "for application \"" << title.utf8()
+			     << "\"." << std::endl;
 }
 
 ServerContextImpl::~ServerContextImpl()
@@ -58,9 +58,8 @@ ServerContextImpl::~ServerContextImpl()
   for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
     (*i).second->decrement();
   Babylon::String title = Unicode::to_internal(*_client->application_title());
-  Logger::log(Logger::corba) << "ServerContext for application \""
-			     << title.utf8() << "\" destructed."
-			     << std::endl;
+  Logger::log(Logger::corba) << "ServerContext " << (void *)(this)
+			     << " destructed." << std::endl;
 }
 
 ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(_client);}
