@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -31,11 +31,12 @@ include $(cpath)/Server/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(GL_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(GL_LIBS) -lFT #-lttf
+LIBS	= -lPrague -lBerlin $(GL_LIBS) #-lFT
 
 #SRC	= GLTessellator.cc GLVectorFont.cc GLOutlineFont.cc GLBitmapFont.cc
 
-SRC	= FontServer.cc GLUnifont.cc GLRaster.cc GLQuadric.cc GLDrawingKit.cc #GLPixmapFont.cc
+#SRC	= FontServer.cc GLUnifont.cc GLRaster.cc GLQuadric.cc GLDrawingKit.cc #GLPixmapFont.cc
+SRC	= GLRaster.cc GLQuadric.cc GLDrawingKit.cc 
 
 TARGET	= $(mpath)/libGLDrawing.so
 

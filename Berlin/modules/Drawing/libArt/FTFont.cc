@@ -40,7 +40,7 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   ydpi(drawable->dpi(yaxis)),
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis)),
-  mySize(50)
+  mySize(20)
 {
   if (FT_Init_FreeType( &myLibrary )) {
       cerr << "failed to open freetype library" << endl;
@@ -152,8 +152,9 @@ void LibArtFTFont::setup_size(FT_Face &f) {
     ( f,                // handle to face object           
       mySize << 6,     // char_width in 1/64th of points  
        mySize << 6,     // char_height in 1/64th of points 
-      (unsigned int)xdpi,             // horizontal device resolution    
-      (unsigned int)ydpi );           // vertical device resolution      
+      72, 72);
+//       (unsigned int)xdpi,             // horizontal device resolution    
+//       (unsigned int)ydpi );           // vertical device resolution      
 }
 
 bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
@@ -229,7 +230,7 @@ ArtPixBuf *LibArtFTFont::getPixBuf(const Unichar ch) {
 }
 
 
-void LibArtFTFont::allocateChar(const Unichar ch, Graphic::Requisition &r) {
+void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
   FT_Face newface;
   setup_face(newface);
   setup_size(newface);

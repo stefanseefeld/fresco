@@ -36,12 +36,12 @@ public:
   virtual ~GLFont() {}
   virtual unsigned long size() = 0;
   virtual unsigned long weight() = 0;
-  virtual const Unistring &family() = 0;
-  virtual const Unistring &subfamily() = 0;
-  virtual const Unistring &fullname() = 0;
-  virtual const Unistring &style() = 0;
-  virtual void drawText(const Unistring &) = 0;
-  virtual void allocateText(const Unistring &, Graphic::Requisition &) = 0;
+  virtual Unistring *family() = 0;
+  virtual Unistring *subfamily() = 0;
+  virtual Unistring *fullname() = 0;
+  virtual Unistring *style() = 0;
+  virtual void drawChar(Unichar) = 0;
+  virtual void allocateChar(Unichar, Graphic::Requisition &) = 0;
 };
 
 #endif

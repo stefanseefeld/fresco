@@ -44,13 +44,13 @@ public:
   virtual ~GLUnifont();
   virtual unsigned long size();
   virtual unsigned long weight();
-  virtual const Unistring &family();
-  virtual const Unistring &subfamily();
-  virtual const Unistring &fullname();
-  virtual const Unistring &style();
+  virtual Unistring *family();
+  virtual Unistring *subfamily();
+  virtual Unistring *fullname();
+  virtual Unistring *style();
 
-  void drawText(const Unistring &);
-  void allocateText(const Unistring &, Graphic::Requisition &);
+  void drawChar(Unichar);
+  void allocateChar(Unichar, Graphic::Requisition &);
 private:
   MMap *glyphmap;
   Unistring _family;

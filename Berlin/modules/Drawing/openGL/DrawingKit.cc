@@ -41,7 +41,7 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
     drawable(GGI::drawable()),
     tx(0),
-    fontServer(),
+//     fontServer(),
     textures(100),
     images(500)
 {
@@ -266,15 +266,17 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }
 
-void GLDrawingKit::setFontSize(CORBA::ULong s) { fontServer.size(s);}
-void GLDrawingKit::setFontWeight(CORBA::ULong w) { fontServer.weight(w);}
-void GLDrawingKit::setFontFamily(const Unistring &f) { fontServer.family(f);}
-void GLDrawingKit::setFontSubFamily(const Unistring &sf) { fontServer.subfamily(sf);}
-void GLDrawingKit::setFontFullName(const Unistring &fn) { fontServer.fullname(fn);}
-void GLDrawingKit::setFontStyle(const Unistring &s) { fontServer.style(s);}
+void GLDrawingKit::setFontSize(CORBA::ULong s) {}
+void GLDrawingKit::setFontWeight(CORBA::ULong w) {}
+void GLDrawingKit::setFontFamily(const Unistring &f) {}
+void GLDrawingKit::setFontSubFamily(const Unistring &sf) {}
+void GLDrawingKit::setFontFullName(const Unistring &fn) {}
+void GLDrawingKit::setFontStyle(const Unistring &s) {}
 void GLDrawingKit::setFontAttr(const NVPair & nvp) {}
-void GLDrawingKit::allocateText(const Unistring &s, Graphic::Requisition &req) { fontServer.allocateText(s, req);}
-void GLDrawingKit::drawText(const Unistring &us) { fontServer.drawText(us);}
+void GLDrawingKit::allocateText(const Unistring &s, Graphic::Requisition &req) {}
+void GLDrawingKit::drawText(const Unistring &us) {}
+void GLDrawingKit::allocateChar(Unichar c, Graphic::Requisition &req) { font->allocateChar(c, req);}
+void GLDrawingKit::drawChar(Unichar c) { font->drawChar(c);}
 
 extern "C" KitFactory *load()
 {

@@ -55,12 +55,12 @@ GLUnifont::GLUnifont()
 GLUnifont::~GLUnifont() { delete glyphmap ;}
 unsigned long GLUnifont::size() { return 16;}
 unsigned long GLUnifont::weight() { return 100;}
-const Unistring &GLUnifont::family() { return _family;}
-const Unistring &GLUnifont::subfamily() { return _subfamily;}
-const Unistring &GLUnifont::fullname() { return _fullname;}
-const Unistring &GLUnifont::style() { return _style;}
+Unistring *GLUnifont::family() { return new Unistring(_family);}
+Unistring *GLUnifont::subfamily() { return new Unistring(_subfamily);}
+Unistring *GLUnifont::fullname() { return new Unistring(_fullname;}
+Unistring *GLUnifont::style() { return new Unistring(_style);}
 
-void GLUnifont::drawText(const Unistring &u) 
+void GLUnifont::drawChar(Unichar &uc) 
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   // prepare GL to draw
@@ -68,33 +68,25 @@ void GLUnifont::drawText(const Unistring &u)
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
   glRasterPos2d(0., 160.);  // position pen
   
-  for (unsigned long idx = 0; idx < u.length(); idx++)
-    {
-      unsigned int stride = 33;
-      unsigned int base = stride * u[idx];
-      bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-      unsigned char width = is_halfwidth ? 8 : 16; 
-      unsigned char height = 16;
-      base++;			// advance past the width marker
-      glBitmap(width, height, 0.0, 0.0, (float)width, 0.0, (const GLubyte *)(&(glyphs[base])));
-    }
+  unsigned int stride = 33;
+  unsigned int base = stride * uc;
+  bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+  unsigned char width = is_halfwidth ? 8 : 16; 
+  unsigned char height = 16;
+  base++;			// advance past the width marker
+  glBitmap(width, height, 0.0, 0.0, (float)width, 0.0, (const GLubyte *)(&(glyphs[base])));
 }
 
-void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
+void GLUnifont::allocateChar(Unichar uc, Graphic::Requisition &r)
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   
-  int width = 0;
+  unsigned int stride = 33;
+  unsigned int base = stride * uc;
+  bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+  int width = is_halfwidth ? 8 : 16; 
   int height = 16;
-  
-  for(unsigned int idx = 0; idx < u.length(); idx++)
-    {
-      unsigned int stride = 33;
-      unsigned int base = stride * u[idx];
-      bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-      width += is_halfwidth ? 8 : 16; 
-    }
-  
+    
   r.x.natural = r.x.minimum = r.x.maximum = width*10.;
   r.x.defined = true;
   r.x.align = 0.;

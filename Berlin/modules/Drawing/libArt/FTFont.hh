@@ -57,7 +57,7 @@ public:
 //   void allocateText(const Unistring &u, Graphic::Requisition &r);
   
   ArtPixBuf *getPixBuf(const Unichar ch);
-  virtual void allocateChar(const Unichar ch, Graphic::Requisition &);
+  virtual void allocateChar(Unichar ch, Graphic::Requisition &);
 
 protected:
   

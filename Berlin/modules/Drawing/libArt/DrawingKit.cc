@@ -147,13 +147,24 @@ void LibArtDrawingKit::setClipping(Region_ptr r)
 void LibArtDrawingKit::setForeground(const Color &c)
 {
   fg = c;
-  art_fg = artColor(fg);
-  ggi_fg = ggiColor(fg,memvis);
+  Color tmp;
+  tmp.red = fg.red*lt.red;
+  tmp.green = fg.green*lt.green;
+  tmp.blue = fg.blue*lt.blue;
+  tmp.alpha = fg.alpha;
+  art_fg = artColor(tmp);
+  ggi_fg = ggiColor(tmp, memvis);
 }
 
 void LibArtDrawingKit::setLighting(const Color &c)
 {
   lt = c;
+  Color tmp;
+  tmp.red = fg.red*lt.red;
+  tmp.green = fg.green*lt.green;
+  tmp.blue = fg.blue*lt.blue;
+  art_fg = artColor(tmp);
+  ggi_fg = ggiColor(tmp, memvis);
 }
 
 void LibArtDrawingKit::setPointSize(Coord s)
@@ -360,7 +371,7 @@ void LibArtDrawingKit::drawText(const Unistring &u)
   // presently disabled. 
 }
 
-void LibArtDrawingKit::drawChar(const Unichar c) {
+void LibArtDrawingKit::drawChar(Unichar c) {
   double x0 = affine[4];
   double y0 = affine[5];
   Graphic::Requisition r;
@@ -378,7 +389,7 @@ void LibArtDrawingKit::drawChar(const Unichar c) {
   affine[5] = y0;
 }
 
-void LibArtDrawingKit::allocateChar(const Unichar c, Graphic::Requisition & req) {
+void LibArtDrawingKit::allocateChar(Unichar c, Graphic::Requisition & req) {
   font->allocateChar(c,req);
 }
 
