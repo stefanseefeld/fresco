@@ -885,10 +885,8 @@
 <FIGURE ID="screen-appearance-figure" FLOAT="1">
 <TITLE>How the screen might appear, and how you might imagine it works
 </TITLE>
-<informaltable orient="land"><tgroup cols="2"><tbody><row><entry>
-<GRAPHIC FILEREF="../figures/you-see-it-on-screen.jpg"></GRAPHIC></entry><entry>
-<GRAPHIC FILEREF="../figures/you-see-it.jpg"></GRAPHIC></entry></row></tbody></tgroup>
-</informaltable>
+<GRAPHIC FILEREF="../figures/you-see-it-on-screen.jpg"></GRAPHIC>
+<GRAPHIC FILEREF="../figures/you-see-it.jpg"></GRAPHIC>
 </FIGURE>
 
 
@@ -964,10 +962,9 @@ different parts of the server will see it.
 
 </para><sect4><title>paths</title>
 <para>
-	<!-- talk about paths -->A path is a sequence of vectors, optionally
-	accompanied by a sequence of scalars specifying the knot vector of the
-	path if it represents a NURBS object. If the path has no knot vector, it
-	is interpreted as a polygon. 
+	<!-- talk about paths -->A path is a sequence of vectors, each given in
+	the standard double-precision physical device space, and subject to the
+	current transformation matrix.
 </para></sect4>
 
 <sect4><title>glyphs</title>
