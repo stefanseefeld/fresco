@@ -22,17 +22,19 @@
     PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
     PortableServer::POAManager_var pman = poa-&gt;the_POAManager();
     pman-&gt;activate();
-    ClientContextImpl *ci = new ClientContextImpl;
+    ClientContextImpl *ci = new ClientContextImpl(Unicode::to_CORBA(Babylon::String("hello world applet")));
     ClientContext_var client = ci-&gt;_this();
     ServerContext_var context = server-&gt;create_server_context(client);
 
     DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
     TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
     WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
+    ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:Warsaw/ToolKit:1.0");
 
     Graphic_var label = text-&gt;chunk(Unicode::to_CORBA(Babylon::String("hello world")));
+    Graphic_var black = tools->rgb(label, 0., 0., 0.);
     Controller_var button = widgets-&gt;button(label, Command::_nil());
-    Window_var window = desktop-&gt;shell(button);
+    Window_var window = desktop-&gt;shell(button, client);
 
     while (true) Thread::delay(1000);
   };

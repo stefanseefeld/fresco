@@ -109,14 +109,14 @@
       label = text.chunk(map(lambda x:ord(x), "hello world"))
       black = tools.rgb(label, 0., 0., 0.)
       button = widgets.button(black, Command._nil)
-      window = desktop.shell(button)
+      window = desktop.shell(button, client)
     </programlisting>
     <para>and in C++:</para>
     <programlisting>
       Graphic_var label = text->chunk(Unicode::to_CORBA(Babylon::String("hello world"));
       Graphic_var black = tools->rgb(label, 0., 0., 0.);
       Controller_var button = widgets->button(label, Command::_nil());
-      Window_var window = desktop->shell(button);
+      Window_var window = desktop->shell(button, client);
     </programlisting>
   </sect1>
   <sect1>
