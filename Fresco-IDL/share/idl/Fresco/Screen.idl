@@ -28,12 +28,17 @@
 module Warsaw {
     interface DrawingKit;
     interface Region;
-    
+
+    //. A Screen is a graphic that represents the visible area of the monitor.
+    //. Multiheaded Berlin servers just have two or more Screen Onjects in
+    //. their scenegraph.
     interface Screen : Controller {
 	//. Get screen width.
 	Coord width();
 	//. Get screen height
 	Coord height();
+	//. Report the given Region to be damaged. This will cause a redraw
+	//. of the damaged Region.
 	void damage(in Region r);
     };
 };

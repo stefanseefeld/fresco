@@ -36,15 +36,13 @@ module Warsaw
   //. is traversed.
   interface PrimitiveKit : Kit
     {
-      //. Return a graphic that centers its body by transformation.
+      //. Return a graphic that centers the given Graphic by transformation.
       //. This kind of graphic should be put around a collection
       //. of primitives that are inside a layout object such as a box.
-      //. FIXME: What do the parameters do?
       Graphic root(in Graphic g);
       //. FIXME: What does this do?
       Primitive::Geometry geometry(in Mesh m);
-      //. Apply a fixed transformation to the body graphic
-      //. FIXME: What does the parameter do?
+      //. Apply a fixed transformation to the given Graphic.
       Graphic transformer(in Graphic g);
       //. Create a directional light source.
       //. FIXME: What do the parameters do?

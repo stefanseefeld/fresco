@@ -45,25 +45,26 @@ module Warsaw
       void store_matrix(out Matrix m);
       //. The equal operation tests if a transformation matrix
       //. is the same as a given transform within
-      //. a standard coordinate tolerance.  The identity operation
-      //. tests if the matrix is equal to an identity matrix
-      //. (also with the standard tolerance).  The translate_only
-      //. operation test if a transform involves translation only.
+      //. a standard coordinate tolerance.
+      boolean equal(in Transform t);
+      //. This operation tests if the matrix is equal to an identity
+      //. matrix (also with the standard tolerance).
+      boolean identity();
+      //. This operation tests if a transform involves translation only.
       //. This operation can be useful for optimizing certain rendering
       //. operations that can be done faster in the absence of
-      //. scaling and rotation.  The det_is_zero
-      //. operation tests if the determinant of the matrix
-      //. is zero within the standard tolerance.
-      boolean equal(in Transform t);
-      boolean identity();
+      //. scaling and rotation.
       boolean translation();
+      //. This operation tests if the determinant of the matrix
+      //. is zero within the standard tolerance.
       boolean det_is_zero();
-      //. Modify the matrix to perform coordinate scaling,
-      //. rotation, and translation.  The rotation angle
-      //. is given in degrees.  A 2-dimensional implementation
-      //. only implements rotate about the z-axis.
+      //. Modify the matrix to perform coordinate scaling.
       void scale(in Vertex v);
+      //. Modify the matrix to perform coordinate rotation.
+      //. The rotation angle is given in degrees. A 2-dimensional
+      //. implementation only implements rotate about the z-axis.
       void rotate(in double angle, in Axis a);
+      //. Modify the matrix to perform coordinate translation.
       void translate(in Vertex v);
       //. These operations set the matrix to be the result of
       //. multiplying the matrix and the given transform.

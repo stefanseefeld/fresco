@@ -44,10 +44,13 @@ module Warsaw
       //. what observers get in the delivered any
       struct Item
       {
-	Tag id;
-	boolean toggled;
+	  Tag id; //.< The id of the Telltale that got toggled.
+	  boolean toggled; //.< The new value if the Telltale.
       };
+
       //. A list of Tags.
+      // FIXME: From the name I suspected that Items was supposed
+      //        to be sequence<Item>... Should we change one of those -- tobias
       typedef sequence<Tag> Items;
       
       //. This is the Policy for this Selection.

@@ -30,9 +30,6 @@ module Warsaw
     {
       //. Returns true if the given Identifiable is identical with
       //. this Identifiable and false otherwise.
-      //. FIXME: Is this really this simple? It does not ise _is_equivalent,
-      //.        so it might be... Two objects are identical if _is_equivalent
-      //.        is true, they might be identical if _is_equivalent os false.
       boolean is_identical(in Identifiable i);
     };
 };

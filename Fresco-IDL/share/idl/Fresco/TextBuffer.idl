@@ -60,7 +60,7 @@ module Warsaw
       //. Move the cursor backwards for one character.
       void backward();
       
-      //. FIXME: What does this do?!
+      //. FIXME: What does this do?! -- tobias
       void shift(in long d);
       //. Insert a character at the current position.
       //. Allways use insert_string since this

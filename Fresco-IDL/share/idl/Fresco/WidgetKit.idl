@@ -100,11 +100,13 @@ module Warsaw
       //. FIXME: see toggle_choice -- tobias
       Widget::Choice   toolbar();
       //. This returns a termial widget.
+      //. FIXME: Be more verbose. How does all the terminal stuff interconnect?
       Controller       terminal();
 //       Widget::Splitter splitter(in Graphic g1, in Graphic g2, in Axis a);
-      //. Adds scrollbars to the given Graphic g.
-      //  FIXME: Same here. It could just use the WidgetKit for the
-      //         Scrollbars and be done with it. -- tobias
+      //. Makes the given Graphic g scrollable.
+      //  FIXME: Same here (see toggle_choice()). It could just use
+      //         the WidgetKit for the Scrollbars and be done with it.
+      //         -- tobias
       Controller       scrollable(in Graphic g);
     };
 };

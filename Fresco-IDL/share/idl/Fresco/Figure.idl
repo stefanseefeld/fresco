@@ -25,63 +25,96 @@
 
 #include <Warsaw/Graphic.idl>
 
+//. These interfaces define simple 2-dimensional objects (so called
+//. figures) that can get put into the scenegraph.
 module Figure
 {
 //   typedef Warsaw::Path Vertices;
-  typedef short Mode;
-  const Mode fill = 1;
-  const Mode outline = 2;
-
-  interface FigureBase : Warsaw::Graphic
+    //. Mode is used to define how Figures get drawn.
+    typedef short Mode;
+    const Mode fill = 1; //.< The Figure will get drawn and filled with the
+                         //.< current color.
+    const Mode outline = 2; //.< The Figure will be drawn outlined.
+    
+    //. This interface is the base for all other Figures.
+    interface FigureBase : Warsaw::Graphic
     {
-//       //. The Vertices type defines a sequence of vertex structures
-//       //. for figures with an arbitrary number of vertices,
-//       //. such as polygons and B-splines.
-      
-      //   attribute Style figure_style;
-      //   attribute Mode figure_mode;
-      
-      attribute Mode type;
-      attribute Warsaw::Color foreground;
-      attribute Warsaw::Color background;
-      
-      void resize();
+	// //. The Vertices type defines a sequence of vertex structures
+	// //. for figures with an arbitrary number of vertices,
+	// //. such as polygons and B-splines.
+	
+	// attribute Style figure_style;
+	// attribute Mode figure_mode;
+	
+	//. The Mode used to draw this Figure.
+	attribute Mode type;
+	//. The foreground color.
+	attribute Warsaw::Color foreground;
+	//. The background color.
+	attribute Warsaw::Color background;
+	
+	//. FIXME: What does this do?
+	void resize();
     };
-
+    
+    //. A point.
     interface Point : FigureBase
-	{
-	  attribute Warsaw::Vertex pt;
-	};
-      
-      interface Line : FigureBase
-	{
-	  attribute Warsaw::Vertex pt1, pt2;
-	};
-      
-      interface Rectangle : FigureBase
-	{
-	  attribute Warsaw::Vertex pt1, pt2;
-	};
-      
-      interface Circle : FigureBase
-	{
-	  attribute Warsaw::Vertex center;
-	  attribute Warsaw::Coord radius;
-	};
-      
-      interface Ellipse : FigureBase
-	{
-	  attribute Warsaw::Vertex center;
-	  attribute Warsaw::Coord radius1;
-	  attribute Warsaw::Coord radius2;
-	};
-      
-      interface Path : FigureBase
-	{
-	  attribute Warsaw::Path handles;        
-	  readonly attribute boolean closed;
-	  //     attribute boolean curved;
-	};
+    {
+	//. The position of the Point. The z-Coordinate will be ignored.
+	attribute Warsaw::Vertex pt;
     };
+    
+    //. A line.
+    interface Line : FigureBase
+    {
+	//. The positions of the endpoints of the Line.
+	//. The z-Coordinate will be ignored.
+	attribute Warsaw::Vertex pt1, pt2;
+    };
+    
+    //. A Rectangle.
+    interface Rectangle : FigureBase
+    {
+	//. The positions of two opposing corners of the Rectangle.
+	//. The z-Coordinate will be ignored.
+	attribute Warsaw::Vertex pt1, pt2;
+    };
+    
+    //. A Circle.
+    interface Circle : FigureBase
+    {
+	//. The center of the Circle.
+	//. The z-Coordinate will be ignored.
+	attribute Warsaw::Vertex center;
+	//. The radius of the Circle. 
+	attribute Warsaw::Coord radius;
+    };
+    
+    //. An Ellipse.
+    interface Ellipse : FigureBase
+    {
+	//. The center of the Ellipse.
+	//. The z-Coordinate will be ignored.
+	attribute Warsaw::Vertex center;
+	//. The first radius used to draw the Ellipse.
+	attribute Warsaw::Coord radius1;
+	//. The second radius used to draw the Ellipse.
+	//. FIXME: Which one is which?
+	attribute Warsaw::Coord radius2;
+    };
+    
+    //. A Path, a sequence of lines.
+    interface Path : FigureBase
+    {
+	//. A seqence of points that will be connected by lines (the
+	//. first to the second, the second to the third, ...).
+	//. The z-Cooordinate will be ignored.
+	attribute Warsaw::Path handles;
+	//. The last point will be connected to the first one if set.
+	readonly attribute boolean closed;
+
+	// attribute boolean curved;
+    };
+};
 
 #endif

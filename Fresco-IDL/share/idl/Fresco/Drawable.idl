@@ -26,30 +26,40 @@
 
 module Warsaw
 {
+  //. The Drawable is a abstraction of the underlying hardware. It
+  //. is basically a chunk of video memory.
   interface Drawable
     {
+      //. The PixelFormat defines how the color of a pixel
+      //. is encoded.
       struct PixelFormat
       {
-        long depth;          /* Number of significant bits */
-        long size;           /* Physical size in bits */
-        long red_mask;       /* Bitmask of red bits */
-        long red_shift;      /* Shift  for red bits */
-        long green_mask;     /* Bitmask of green bits */
-        long green_shift;    /* Shift  for green bits */
-        long blue_mask;      /* Bitmask of blue bits */
-        long blue_shift;     /* Shift  for blue bits */
-        long alpha_mask;     /* Bitmask of alphachannel bits */
-        long alpha_shift;    /* Shift  for alpha bits */
+	  long depth;          //.< Number of significant bits
+	  long size;           //.< Physical size in bits
+	  long red_mask;       //.< Bitmask of red bits
+	  long red_shift;      //.< Shift for red bits
+	  long green_mask;     //.< Bitmask of green bits
+	  long green_shift;    //.< Shift for green bits
+	  long blue_mask;      //.< Bitmask of blue bits
+	  long blue_shift;     //.< Shift for blue bits
+	  long alpha_mask;     //.< Bitmask of alphachannel bits
+	  long alpha_shift;    //.< Shift for alpha bits
       };
+
+      //. The BufferFormat defines the encoding of the Drawable itself.
+      //. It defines how the pixel are arranged in memory.
       struct BufferFormat
       {
-        long skip_width;
-        long width;
-        long skip_height;
-        long height;
-        long row_length;
+	  long skip_width; //.< FIXME: What's this?
+	  long width; //.< The width of the Drawable.
+	  long skip_height; //.< FIXME: What's this?
+	  long height; //.< The height of the Drawable.
+	  long row_length; //.< FIXME: What's this?
       };
+
+      //. The PixelFormat of this Drawable.
       readonly attribute PixelFormat pixel_format;
+      //. The BufferFormat of this Drawable.
       readonly attribute BufferFormat buffer_format;
     };
 };

@@ -27,18 +27,22 @@
 module Warsaw
 {
   interface Command;
-  //. a Client Context object is an interface any client connecting to a
-  //. berlin server needs to present. It is used in managing the
+
+  //. A ClientContext object is an interface any client connecting to a
+  //. Berlin server needs to present. It is used in managing the
   //. resources the client allocates and in authenticating the client's
   //. requests. The default security mechanism is obviously rediculously
-  //. simplistic but we don't really have any security folks around to
-  //. help us with this at the moment. You're welcome to improve on it.
+  //. simplistic: Each connection request will be accepted for now.
   interface ClientContext
     {
+      //. The name of the user that started the client.
       readonly attribute Unistring user_name;
+      //. The command called when the server wants the client to quit
+      //. (for example in response to the user clicking on the close button
+      //. in a windows titlebar).
       Command exit();
-      // when the server tries to call this, and it fails, the server will 
-      // most likely destroy your serverContext object, which will
+      // When the server tries to call this, and it fails, the server will 
+      // most likely destroy your ServerContext object, which will
       // decrement all the refcounts on objects you allocated.
       void ping(); 
       

@@ -37,7 +37,9 @@ module Warsaw
   //. with each level of the traversal.
   interface Traversal
     {
-      enum order {up, down};
+      //. The order in which children are accessed.
+      enum order {up,    //.< Begin with the first child, end with the last.
+		  down}; //.< Begin with the last child, end with the first.
       //. Return the current allocation region for the current graphic
       //. in the traversal
       Region current_allocation();

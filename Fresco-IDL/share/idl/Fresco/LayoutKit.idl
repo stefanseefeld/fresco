@@ -45,7 +45,7 @@ module Warsaw
       attribute Coord fill;
       
       //. A clipper confines the drawing of its child within its allocation
-      Graphic clipper(in Graphic g);
+
       
       //. A backdrop tiles its body to fill the visible region.
       //   Graphic backdrop();

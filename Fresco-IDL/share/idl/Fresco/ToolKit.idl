@@ -168,7 +168,9 @@ module Warsaw
       //. does nothing). It can be used to adapt a Graphic so it can be
       //. used where a Controller is exspected or for focus navigation.
       //. FIXME: Is this really what it was meant to do? Or just what I use
-      //.        it for?
+      //.        it for? :-) -- tobias
+      //. FIXME: THere is a group() in the FigureKit too. How about renaming
+      //.        this one here to avoid confusion? -- tobias
       Controller   group(in Graphic g);
       //. Returns a graphic w pixels wide and h pixels high. It is
       //. supposed to be used for video playback and simular things.

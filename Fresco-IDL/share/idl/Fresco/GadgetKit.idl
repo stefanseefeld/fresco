@@ -34,6 +34,7 @@ module Warsaw
   //. modifying transparency or transforming a sub graph this is a
   //. just-for-fun kit which is provided to demonstrate how to extend the
   //. server's capabilities.
+  //.
   //. Nobody would actually make use of this kit in a serious application,
   //. eh ? ;)
   interface GadgetKit : Kit

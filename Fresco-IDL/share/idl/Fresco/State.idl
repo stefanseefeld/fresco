@@ -31,7 +31,8 @@ module Warsaw
   interface Transform;
   interface Region;
   interface Raster;
-  
+
+  // FIXME: What is this?
   interface DrawingState : Graphic
     {
 //       attribute Transform transformation;
@@ -44,6 +45,8 @@ module Warsaw
       attribute DrawingKit::Fillstyle surface_fillstyle;
       attribute Raster texture;
     };
+
+  // FIXME: What is this?
   interface FontState : Graphic
     {
       attribute unsigned long font_size;

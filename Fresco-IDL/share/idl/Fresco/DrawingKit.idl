@@ -34,81 +34,132 @@ module Warsaw
   interface Drawable;
   interface DrawingKit3D;
   
-  //. This kit provides a basic interface to renderers which can be used to
-  //. render the scene graph. It is state based, i.e. you can push new attributes
-  //. onto it and restore loder attributes later.
+  //. This Kit provides a basic interface to renderers which can be used to
+  //. render the scene graph. It is state based, i.e. you can push new
+  //. attributes onto it and restore loder attributes later.
   interface DrawingKit : Kit
     {
-      //.all values are in 1/64th of a pixel
+      //. All values are given in 1/64th of a pixel
       struct FontMetrics
       {
-	long ascender;      /* ascender in 26.6 frac. pixels          */
-	long descender;     /* descender in 26.6 frac. pixels         */
-	long height;        /* text height in 26.6 frac. pixels       */
-	long max_advance;   /* max horizontal advance, in 26.6 pixels */
+	  long ascender;      //.< Ascender in 26.6 frac. pixels
+	  long descender;     //.< Descender in 26.6 frac. pixels
+	  long height;        //.< Text height in 26.6 frac. pixels
+	  long max_advance;   //.< Max. horizontal advance, in 26.6 pixels
       };
-      //.all values are in 1/64th of a pixel
+	
+      //. All values are given in 1/64th of a pixel
       struct GlyphMetrics
       {
-	long width;         /* glyph width  */
-	long height;        /* glyph height */
-	long horiBearingX;  /* left side bearing in horizontal layouts */
-	long horiBearingY;  /* top side bearing in horizontal layouts  */
-	long horiAdvance;   /* advance width for horizontal layout     */
-	long vertBearingX;  /* left side bearing in vertical layouts */
-	long vertBearingY;  /* top side bearing in vertical layouts  */
-	long vertAdvance;   /* advance height for vertical layout    */
+	  long width;         //.< Glyph width
+	  long height;        //.< Glyph height
+	  long horiBearingX;  //.< Left side bearing in horizontal layouts
+	  long horiBearingY;  //.< Top side bearing in horizontal layouts
+	  long horiAdvance;   //.< Advance width for horizontal layout
+	  long vertBearingX;  //.< Left side bearing in vertical layouts
+	  long vertBearingY;  //.< Top side bearing in vertical layouts
+	  long vertAdvance;   //.< Advance height for vertical layout
       };
-      //.matrix to derive arbitrary quadrics from circle segments
+      //. Matrix to derive arbitrary quadrics from circle segments
+      //. FIXME: What's that?
       typedef Coord Quadric[3][3];
       
-      enum Endstyle { butt, cap, round};
-      enum Fillstyle { outlined, solid, textured, gradient};
+      //. Possible line end styles.
+      enum Endstyle { butt,   //.< --]
+		      cap,    //.< --x]
+		      round}; //.< --x)
+      //. Possible fill styles.
+      enum Fillstyle { outlined, //.< Outline only, not filled.
+		       solid, //.< Filled with the current color.
+		       textured, //.< Filled with the current texture.
+		       gradient}; //.< Filled with the current gradient.
       
-      void save();
+      //. Store the current state of the DrawingKit on a stack.
+      void save(); 
+      //. Restore the state from the stack.
       void restore();
       
-      // general drawing state
+      //. The current Transformation.
       attribute Transform transformation;
+      //. The current clipping Region.
       attribute Region clipping;
+      //. The current foreground color.
       attribute Color foreground;
+      //. The current lighting color.
       attribute Color lighting;
+      //. The current point size.
+      //. FIXME: ...of what?
       attribute Coord point_size;
+      //. The current line width.
       attribute Coord line_width;
+      //. The current line end style.
       attribute Endstyle line_endstyle;
+      //. The current surface fill style.
       attribute Fillstyle surface_fillstyle;
+      //. The current texture.
       attribute Raster texture;
       
-      // font state
+      // font state:
+      //. The current font size.
       attribute unsigned long font_size;
+      //. The current font weight.
       attribute unsigned long font_weight;
+      //. The current font family
       attribute Unistring font_family;
+      //. The current font subfamily.
       attribute Unistring font_subfamily;
+      //. The current font's fullname
       attribute Unistring font_fullname;
+      //. The current fontstyle.
       attribute Unistring font_style;
       
-      // detailed font state
+      //. The current font's metrics.
       readonly attribute FontMetrics font_metrics;
+      //. The metric of the given unicode character. Those metrics
+      //. are based on the current font.
       GlyphMetrics glyph_metrics(in Unichar uc);
+      //. Add an attribute about the font currently in use.
       void font_attribute(in NVPair nvp);
+      //. Get an attribute stored earlier under the given name.
       any get_font_attribute(in Unistring name);
       
-      // imperative commands
+      //. Return the resolution for the given Axis.
       Coord resolution(in Axis a);
+      //. Draws a given Path.
       void draw_path(in Path p);
       //   void drawPatch(in Patch p);
+      //. Draws a rectangle. You need to provide the coordinates of the
+      //. lower left corner of the rectangle (lower) and the upper right
+      //. corner (upper). 
       void draw_rectangle(in Vertex lower, in Vertex upper);
+      //. FIXME: What's that?
       void draw_quadric(in Quadric q, in Coord begin, in Coord end);
+      //. FIXME: Does this draw a ellipse inside a rectangle with
+      //.        the given corners? Why is this diffrent from the
+      //.        the Ellipse in the Figure.idl (given as center and
+      //.        two radii? -- tobias
       void draw_ellipse(in Vertex lower, in Vertex upper);
+      //. Draw the given Raster.
       void draw_image(in Raster r);
       
+      //. Draw the given unicode string.
       void draw_text(in Unistring s);
+      //. Calculate the space requirements of the given unicode string
+      //. and returns it in the Requisition.
       void allocate_text(in Unistring s, inout Graphic::Requisition req);
+      //. Draws the given unicode character.
       void draw_char(in Unichar c);
+      //. Calculate the space requirements of the given unicode character
+      //. and returns it in the Requisition.
       void allocate_char(in Unichar c, inout Graphic::Requisition req);
       
+      //. Copy a part of the given Drawable to the current positon.
+      //. The lower left corner of the copied part is at (x,y) and it is
+      //. w pixels wide and h pixels high.
+      //. The current position is taken from the transformation matrix
+      //. that is currently in effect.
       void copy_drawable(in Drawable d, in PixelCoord x, in PixelCoord y, in PixelCoord w, in PixelCoord h);
-      //. Initialize drawing kit for a rendering pass. Called before
+      //. Initialize DrawingKit for a rendering pass. Called before
       //. each pass.
       void init();
       
