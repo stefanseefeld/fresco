@@ -21,7 +21,7 @@
  */
 
 #include "Widget/Bevel.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Pencil.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Logger.hh"
@@ -40,7 +40,6 @@ Bevel::~Bevel()
 
 void Bevel::request(Requisition &requisition)
 {
-  SectionLog section(Logger::layout, "Bevel::request");
   MonoGraphic::request(requisition);
   if (hmargin || vmargin)
     {
@@ -50,16 +49,17 @@ void Bevel::request(Requisition &requisition)
 	  requisition.x.natural += t;
 	  requisition.x.maximum += t;
 	  requisition.x.minimum += t;
-	  requisition.x.align = ((requisition.x.natural - 2*t)*requisition.x.align + t)/requisition.x.natural;
+// 	  requisition.x.align = ((requisition.x.natural - 2*t)*requisition.x.align + t)/requisition.x.natural;
 	}
       if (vmargin && requisition.y.defined)
 	{
 	  requisition.y.natural += t;
 	  requisition.y.maximum += t;
 	  requisition.y.minimum += t;
-	  requisition.y.align = ((requisition.y.natural - 2*t)*requisition.y.align + t)/requisition.y.natural;
+// 	  requisition.y.align = ((requisition.y.natural - 2*t)*requisition.y.align + t)/requisition.y.natural;
 	}
     }
+//   cout << "Bevel::request " << requisition.x.align << ' ' << requisition.y.align << endl;
 }
 
 void Bevel::traverse(Traversal_ptr traversal)
@@ -132,7 +132,7 @@ void Bevel::allocateChild(Allocation::Info &info)
 
 void Bevel::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
 {
-  a.align = ((a.end - a.begin)*a.align - margin)/(a.end - a.begin - 2*margin);
+//   a.align = ((a.end - a.begin)*a.align - margin)/(a.end - a.begin - 2*margin);
   a.begin += margin;
   a.end -= margin;
 }
@@ -153,13 +153,13 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   Pencil_var pen = dk->getPencil(style);
   Path path;
   path.p.length(5);
-  path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
-  path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
-  path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
-  path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
-  path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
-  for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
-  pen->drawPath(path);
+//   path.p[0].x = left, path.p[0].y = top, path.p[0].z = 0.;
+//   path.p[1].x = right, path.p[1].y = top, path.p[1].z = 0.;
+//   path.p[2].x = right, path.p[2].y = bottom, path.p[2].z = 0.;
+//   path.p[3].x = left, path.p[3].y = bottom, path.p[3].z = 0.;
+//   path.p[4].x = left, path.p[4].y = top, path.p[4].z = 0.;
+//   for (unsigned int i = 0; i != 5; i++) tx->transformVertex(path.p[i]);
+//   pen->drawPath(path);
   /*
    * light edges
    */

@@ -25,14 +25,27 @@ subdirs	= include/Warsaw src test# doc
 
 .PHONY:	config test
 
+#world:	config all
+
 all:
-	@for dir in ${subdirs}; do \
-	  (cd $$dir && $(MAKE)) \
-	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+	@if [ -f include/Warsaw/config.hh ]; then \
+	  for dir in ${subdirs}; do \
+	    (cd $$dir && $(MAKE)) \
+	    || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
+	  done && test -z "$$fail"; \
+	else \
+	  echo -e "Please run \"make config\" first!\n" \
+	  "\nIf you need to provide arguments to the configure scripts use:"\
+	  "\n    cd config"\
+	  "\n    ./configure --whatever-you-need"\
+	  "\n    cd ../src/Prague/config"\
+	  "\n    ./configure"\
+	  "\n    cd ../../.."\
+	  "\nThen run make again."; \
+	fi
 
 config::
-	@cd config; ./configure
+	@cd config; ./configure; cd ../src/Prague/config; ./configure
 
 clean:
 	/bin/rm -f *~

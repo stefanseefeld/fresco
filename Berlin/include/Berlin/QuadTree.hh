@@ -49,8 +49,8 @@ public:
     none = 0,
     left = 0,
     right = 1,
-    bottom = 0,
-    top = 1,
+    top = 0,
+    bottom = 2,
     leftbottom = left|bottom,
     rightbottom = right|bottom,
     lefttop = left|top,
@@ -61,10 +61,19 @@ public:
     : region(r), elements(0) { quadrants[0] = quadrants[1] = quadrants[2] = quadrants[3] = 0;}
   ~QTNode() { free();}
   QTNode<T, I> *node(index i) { return quadrants[i];}
-  const Geometry::Rectangle<T> &extent() const { return region;}
+  /*
+   * region owned by this node
+   */
+  const Geometry::Rectangle<T> &extension() const { return region;}
+  /*
+   * bounding box of objects in this node
+   */
   const Geometry::Rectangle<T> &bbox() const { return boundingbox;}
   void insert(I *);
   void remove(I *);
+  /*
+   * number of objects in this node
+   */
   int  size() const { return elements;}
   void unfold();
   void collaps();
@@ -86,8 +95,7 @@ protected:
   friend void dumpQuadNode(const QTNode<T,I> &node, short ind)
     {
       for (short i = 0; i != ind; i++) cout.put(' ');
-      cout << "Node : " << node.elements << ' ' << " elements, "
-	   << node.boundingbox.l << ' ' << node.boundingbox.r << ' ' << node.boundingbox.t << ' ' << node.boundingbox.b << endl;
+      cout << "Node : " << node.elements << ' ' << " elements, extension : " << node.region << endl;
       if (!node.leaf()) for (short i = 0; i != 4; i++) dumpQuadNode(*node.quadrants[i], ind + 2);
     }
 };
@@ -113,10 +121,10 @@ inline void QTNode<T, I>::allocate()
   using namespace Geometry;
   if (leaf())
     {
-      quadrants[leftbottom] = new QTNode<T, I>(Rectangle<T>(region.l, region.b, region.cx(), region.cy()));
-      quadrants[rightbottom] = new QTNode<T, I>(Rectangle<T>(region.cx(), region.b, region.r, region.cy()));
-      quadrants[lefttop] = new QTNode<T, I>(Rectangle<T>(region.l, region.cy(), region.cx(), region.t));
-      quadrants[righttop] = new QTNode<T, I>(Rectangle<T>(region.cx(), region.cy(), region.r, region.t));
+      quadrants[lefttop] = new QTNode<T, I>(Rectangle<T>(region.l, region.t, region.cx(), region.cy()));
+      quadrants[righttop] = new QTNode<T, I>(Rectangle<T>(region.cx(), region.t, region.r, region.cy()));
+      quadrants[leftbottom] = new QTNode<T, I>(Rectangle<T>(region.l, region.cy(), region.cx(), region.b));
+      quadrants[rightbottom] = new QTNode<T, I>(Rectangle<T>(region.cx(), region.cy(), region.r, region.b));
     }
 }
 
@@ -188,8 +196,11 @@ inline QTNode<T, I>::index QTNode<T, I>::where(const Geometry::Rectangle<T> &r)
     {
       const T x = region.cx();
       const T y = region.cy();
+      /*
+       * is r inside one of the quarters ?
+       */
       if ((r.r <= x) == (r.l < x) && (r.t <= y) == (r.b < y))
-	idx = (r.r <= x ? left : right) | (r.t <= y ? bottom : top);
+	idx = (r.r <= x ? left : right) | (r.b <= y ? bottom : top);
     }
   return static_cast<index>(idx);
 }

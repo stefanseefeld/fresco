@@ -1,6 +1,3 @@
-#ifndef _Traversal_idl
-#define _Traversal_idl
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -27,12 +24,13 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Traversal_idl
+#define _Traversal_idl
 
 #include "Types.idl"
 
 interface Region;
 interface Graphic;
-interface DrawingKit;
 interface Transform;
 
 interface Traversal
@@ -41,26 +39,12 @@ interface Traversal
   Region allocation();
   Transform transformation();
   boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
-  boolean intersects();
+  boolean intersectsAllocation();
+  boolean intersectsRegion(in Region r);
   void traverseChild (in Graphic g, in Region r, in Transform t);
   void visit(in Graphic g);
   order direction();
   boolean ok();
-};
-
-interface DrawTraversal : Traversal
-{
-  DrawingKit kit();
-//   void clipPath(in Path p);
-//   void clipRegion(in Region r);
-//   void pushClipping();
-//   void popClipping();
-};
-
-interface PickTraversal : Traversal
-{
- //   void pick(in Graphic g);
-   readonly attribute any event;
 };
 
 #endif /* _Traversal_idl */

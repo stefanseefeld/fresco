@@ -39,10 +39,10 @@ void *Thread::start(void *X)
 {
   Thread *thread = reinterpret_cast<Thread *>(X);
   append(pthread_self(), thread);
-  void *status = thread->p(thread->arg);
+  void *ret = thread->p(thread->arg);
   pthread_exit(0);
   remove(pthread_self());
-  return status;
+  return ret;
 }
 
 bool Thread::delay(const Time &time)

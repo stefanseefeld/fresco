@@ -71,12 +71,14 @@ Transform_ptr MonoGraphic::transformation()
 
 void MonoGraphic::request(Graphic::Requisition &r)
 {
+  SectionLog section(Logger::layout, "MonoGraphic::request");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
 void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
 {
+  SectionLog section(Logger::layout, "MonoGraphic::extension");
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
@@ -104,12 +106,14 @@ void MonoGraphic::shape(Region_ptr region)
 
 void MonoGraphic::traverse(Traversal_ptr traversal)
 {
+  SectionLog section(Logger::traversal, "MonoGraphic::traverse");
   Graphic_var child = body();
   if (!CORBA::is_nil(child)) traversal->traverseChild(child, Region::_nil(), Transform::_nil());
 }
 
 void MonoGraphic::allocate(Graphic_ptr child, Allocation_ptr allocation)
 {
+  SectionLog section(Logger::layout, "MonoGraphic::allocate");
   if (child != Graphic_var(body())) return;
   GraphicImpl::allocate(child, allocation);
   CORBA::Long size = allocation->size();

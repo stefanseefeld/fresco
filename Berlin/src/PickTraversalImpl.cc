@@ -22,6 +22,8 @@
  */
 #include "Berlin/PickTraversalImpl.hh"
 
-PickTraversalImpl::PickTraversalImpl(const CORBA::Any &e, Region_ptr r) : TraversalImpl(r), myEvent(e) {}
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t) : TraversalImpl(t), myEvent(t.myEvent) {}    
-PickTraversalImpl::~PickTraversalImpl() {}
+PickTraversalImpl::PickTraversalImpl(const Event::Pointer &p, Region_ptr r)
+  : TraversalImpl(r), memento(0), pointer(p) {}
+PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
+  : TraversalImpl(t), memento(0), pointer(t.pointer), controller(t.controller) {}    
+PickTraversalImpl::~PickTraversalImpl() { if (memento) memento->_dispose();}

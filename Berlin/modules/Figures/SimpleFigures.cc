@@ -28,7 +28,7 @@
 
 #include "Figure/SimpleFigures.hh"
 #include "Warsaw/DrawingKit.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Pencil.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Warsaw/FigureKit.hh"
@@ -37,14 +37,29 @@
 
 // rectangles
 
-void RectFig::draw(DrawTraversal_ptr t)
+RectFig::RectFig(Coord w, Coord h, const Style::Spec &sty) : Figure(sty), width(w), height(h) {}
+RectFig::~RectFig() {}
+
+void RectFig::request(Requisition &requisition)
 {
-  DrawTraversal_var traversal = t;
+  requisition.x.defined = true;
+  requisition.x.natural = requisition.x.maximum = requisition.x.minimum = width;
+  requisition.x.align = 0.;
+  requisition.y.defined = true;
+  requisition.y.natural = requisition.y.maximum = requisition.y.minimum = height;
+  requisition.y.align = 0.;
+}
+
+void RectFig::draw(DrawTraversal_ptr traversal)
+{
   DrawingKit_var dk = traversal->kit();
   Pencil_var pen = getStyledPencil(dk);
   Path path;
   path.p.length(5);
-  traversal->allocation()->bounds(path.p[0], path.p[2]);
+//   path.p[0].x = -0.1*width, path.p[0].y = -0.1*height, path.p[0].z = 0;
+//   path.p[2].x = 0.9*width, path.p[2].y = 0.9*height, path.p[2].z = 0;
+  path.p[0].x = path.p[0].y = path.p[0].z = 0;
+  path.p[2].x = width, path.p[2].y = height, path.p[2].z = 0;
   path.p[1].x = path.p[2].x, path.p[1].y = path.p[0].y, path.p[1].z = 0.;
   path.p[3].x = path.p[0].x, path.p[3].y = path.p[2].y, path.p[3].z = 0.;
   path.p[4] = path.p[0];
@@ -53,9 +68,7 @@ void RectFig::draw(DrawTraversal_ptr t)
   pen->drawPath(path);
 }
 
-Graphic_ptr RectFig::copyTo(FigureKit_ptr fk) {return fk->rect(myStyle);}
-RectFig::RectFig(const Style::Spec &sty) : Figure(sty) {}
-RectFig::~RectFig() {}
+Graphic_ptr RectFig::copyTo(FigureKit_ptr fk) {return fk->rectangle(width, height, myStyle);}
 
 
 // ellipses

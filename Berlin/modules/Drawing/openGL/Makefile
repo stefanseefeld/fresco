@@ -30,7 +30,7 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(ORBLIBS)
+LIBS	= -lPrague -lBerlin -lGLtt -lttf -lMesaGL -lMesaGLU #$(ORBLIBS)
 
 SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc  GLFont.cc 
 

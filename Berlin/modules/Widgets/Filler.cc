@@ -24,7 +24,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Pencil.hh>
-#include <Warsaw/Traversal.hh>
+#include <Warsaw/DrawTraversal.hh>
 
 void Filler::request(Requisition &requisition)
 {

@@ -43,7 +43,8 @@ void BoundedValueImpl::lower(Coord ll)
   if (ll == l) return;
   l = ll;
   if (v < l) v = l;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedValueImpl::upper()
@@ -58,7 +59,8 @@ void BoundedValueImpl::upper(Coord uu)
   if (uu == u) return;
   u = uu;
   if (v > u) v = u;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedValueImpl::step()
@@ -92,7 +94,8 @@ void BoundedValueImpl::forward()
   if (t > u) t = u;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedValueImpl::backward()
@@ -102,7 +105,8 @@ void BoundedValueImpl::backward()
   if (t < l) t = l;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedValueImpl::fastforward()
@@ -112,7 +116,8 @@ void BoundedValueImpl::fastforward()
   if (t > u) t = u;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedValueImpl::fastbackward()
@@ -122,7 +127,8 @@ void BoundedValueImpl::fastbackward()
   if (t < l) t = l;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedValueImpl::begin()
@@ -131,7 +137,8 @@ void BoundedValueImpl::begin()
   Coord t = l;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 
@@ -141,7 +148,8 @@ void BoundedValueImpl::end()
   Coord t = u;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedValueImpl::value(Coord vv)
@@ -151,7 +159,8 @@ void BoundedValueImpl::value(Coord vv)
   else if (vv < l) vv = l;
   if (vv == v) return;
   v = vv;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedValueImpl::value()
@@ -169,5 +178,6 @@ void BoundedValueImpl::adjust(Coord d)
   else if (t < l) t = l;
   if (t == v) return;
   v = t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }

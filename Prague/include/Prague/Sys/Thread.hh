@@ -105,10 +105,11 @@ public:
   typedef void *(*proc)(void *);
   Thread(proc pp, void *a) : p(pp), arg(a), running(false) {}
   virtual ~Thread() { cancel(); join();}
-  void start() { if (pthread_create(&thread, 0, &start, this) == 0) running = true;}
-  void join() { pthread_join(thread, 0);}
-  void cancel() { if (running) pthread_cancel(thread);}
-  void exit() { if (running) pthread_exit(0);}
+  void  start() { if (pthread_create(&thread, 0, &start, this) == 0) running = true;}
+  void *join() { void *ret; pthread_join(thread, &ret); return ret;}
+  void  cancel() { if (running) pthread_cancel(thread);}
+  void  exit() { if (running) pthread_exit(0);}
+  void  detach() { pthread_detach(thread);}
   static bool delay(const Time &);
   static Thread *self() { return find(pthread_self());}
 private:

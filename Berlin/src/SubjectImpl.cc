@@ -50,6 +50,7 @@ void SubjectImpl::notify() {
 
 void SubjectImpl::notify(const CORBA::Any &whatChanged)
 {
+  SectionLog section(Logger::subject, "SubjectImpl::notify");
   MutexGuard guard(myMutex);
   if (!blocked)
     {

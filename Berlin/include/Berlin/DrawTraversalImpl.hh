@@ -24,7 +24,7 @@
 #define _DrawTraversal_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
+#include <Warsaw/DrawTraversal.hh>
 #include <Berlin/TraversalImpl.hh>
 #include <vector>
 
@@ -38,7 +38,8 @@ public:
   DrawTraversalImpl(DrawingKit_ptr, Region_ptr);
   DrawTraversalImpl(const DrawTraversalImpl &);
   ~DrawTraversalImpl();
-  CORBA::Boolean intersects();
+  CORBA::Boolean intersectsAllocation();
+  CORBA::Boolean intersectsRegion(Region_ptr);
   void visit(Graphic_ptr);
   order direction() { return up;}
   CORBA::Boolean ok() { return true;}

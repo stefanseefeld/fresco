@@ -89,12 +89,16 @@ long PolyGraphic::numChildren()
  * You are free to override it in special purpose containers which expect
  * to get large  -stefan
  */
+/*
+ * FIXME !!! this is plain wrong. findChild() should return a list of indexes
+ * since the child may appear more than once  -stefan
+ */
 long PolyGraphic::findChild(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
   long l = 0;
   for (clist_t::iterator i = children.begin(); i != children.end(); i++, l++)
-    if (child == *i) return l;
+    if (child->_is_equivalent(*i)) return l;
   return -1;
 }
 

@@ -21,7 +21,7 @@
  */
 
 #include "Widget/Frame.hh"
-#include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
 #include "Warsaw/Subject.hh"
 #include "Berlin/Color.hh"
 
@@ -58,7 +58,7 @@ void Frame::draw(DrawTraversal_ptr traversal)
 }
 
 DynamicFrame::DynamicFrame(Coord t, const Color &c, type t1, type t2, Telltale::Flag m)
-  : Bevel(t, 0.5, 0.5, true, true), Frame(t, c, t1), type1(t1), type2(t2), mask(m)
+  : Bevel(t, 0.5, 0.5, true, true), Frame(t, c, t2), type1(t1), type2(t2), mask(m)
 {
 }
 
@@ -70,11 +70,11 @@ DynamicFrame::~DynamicFrame()
 void DynamicFrame::attach(Telltale_ptr subject)
 {
   if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
-  telltale = subject;
+  telltale = Telltale::_duplicate(subject);
   telltale->attach(_this());
 }
 
-void DynamicFrame::update(Subject_ptr)
+void DynamicFrame::update(Subject_ptr, const CORBA::Any &)
 {
   bool flag = telltale->test(mask);
   if (flag == on) return;

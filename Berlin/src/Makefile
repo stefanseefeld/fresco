@@ -30,7 +30,7 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague $(ORBLIBS)
+LIBS	= -lPrague #$(ORBLIBS)
 
 SRC 	= Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \

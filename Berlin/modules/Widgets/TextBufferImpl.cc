@@ -62,26 +62,30 @@ void TextBufferImpl::insertChar(Unichar u)
 {
   MutexGuard guard(mutex);
   buffer.insert(u);
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void TextBufferImpl::insertString(const Unistring &s)
 {
   MutexGuard guard(mutex);
 //   buffer.insert(s);
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void TextBufferImpl::removeLeft(CORBA::Long n)
 {
   MutexGuard guard(mutex);
   buffer.removeLeft(n);
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void TextBufferImpl::removeRight(CORBA::Long n)
 {
   MutexGuard guard(mutex);
   buffer.removeRight(n);
-  notify();
+  CORBA::Any any;
+  notify(any);
 }

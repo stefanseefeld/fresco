@@ -69,8 +69,8 @@ GenericFactoryImpl::~GenericFactoryImpl() { clear();}
 // a _set_lifecycle on the new object.
 
 
-CORBA::Object_ptr 
-GenericFactoryImpl::create_object (const CosLifeCycle::Key &key, const CosLifeCycle::Criteria &criteria)
+CORBA::Object_ptr
+GenericFactoryImpl::create_object(const CosLifeCycle::Key &key, const CosLifeCycle::Criteria &criteria)
 {  
   CloneableImpl *newCloneable = 0;
   try
@@ -84,7 +84,7 @@ GenericFactoryImpl::create_object (const CosLifeCycle::Key &key, const CosLifeCy
     }
   if (!newCloneable)
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl::create_object loaded NULL pointer in response to "
+      Logger::log(Logger::loader) << "GenericFactoryImpl: loaded NULL pointer in response to "
 				  << ((string)(key[0].id)).c_str() << endl;
     }
   CORBA::Object_var newObjectPtr;
@@ -94,14 +94,14 @@ GenericFactoryImpl::create_object (const CosLifeCycle::Key &key, const CosLifeCy
   // no lifeCycleInfo detected
   if (CORBA::is_nil(li))
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl::create_object not doing lifecycle copy for "
+      Logger::log(Logger::loader) << "GenericFactoryImpl: not doing lifecycle copy for "
 				  << ((string)(key[0].id)).c_str() << endl;    
       newCloneable->_obj_is_ready(this->_boa());
       newObjectPtr = newCloneable->CloneableImpl::_this();
     
       if (CORBA::is_nil(newObjectPtr))
 	{
-	  Logger::log(Logger::loader) << "GenericFactoryImpl::create_object returning a nil reference for "
+	  Logger::log(Logger::loader) << "GenericFactoryImpl: returning a nil reference for "
 				      << ((string)(key[0].id)).c_str() << endl;    
 	}
 
@@ -109,7 +109,7 @@ GenericFactoryImpl::create_object (const CosLifeCycle::Key &key, const CosLifeCy
     }
   else 
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl::create_object doing lifecycle copy for "
+      Logger::log(Logger::loader) << "GenericFactoryImpl: doing lifecycle copy for "
 				  << ((string)(key[0].id)).c_str() << endl;    
       newCloneable->_set_lifecycle(li);
       newCloneable->_obj_is_ready(this->_boa());
@@ -142,7 +142,7 @@ GenericFactoryImpl::extractLifeCycleFromCriteria(const CosLifeCycle::Criteria &c
 CloneableImpl *GenericFactoryImpl::loadPlugin(const CosLifeCycle::Key &k) 
   throw (noSuchPluginException)
 {
-  map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(k);
+  plist_t::iterator p = plugins.find(k);
   if (p == plugins.end())
     {
       // naughty boy, you should have called supports() first!
@@ -153,13 +153,14 @@ CloneableImpl *GenericFactoryImpl::loadPlugin(const CosLifeCycle::Key &k)
 
 
 // you can call this is you're curious about creation support in the factory.
-CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key &key)
+CORBA::Boolean GenericFactoryImpl::supports (const CosLifeCycle::Key &key)
 {
-  map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(key);
+  plist_t::iterator p = plugins.find(key);
   if (p == plugins.end())
     {
-      Logger::log(Logger::loader) << "GenericFactoryImpl::supports does not support " << ((string)(key[0].id)).c_str() << endl;
-      Logger::log(Logger::loader) << "GenericFactoryImpl::supports interface listing follows: " << endl;
+      Logger::log(Logger::loader) << "GenericFactoryImpl does not support "
+				  << ((string)(key[0].id)).c_str() << endl;
+      Logger::log(Logger::loader) << "GenericFactoryImpl interface listing follows: " << endl;
       for(p = plugins.begin(); p != plugins.end(); p++)
 	Logger::log(Logger::loader) << p->first[0].id << endl;
       return false;
@@ -179,7 +180,7 @@ void GenericFactoryImpl::scan(const char *name)
    * load all files in <name> according to the regexp '\\.so'
    */
   Directory directory(name, Directory::alpha, "\\.so");
-  Logger::log(Logger::loader) << "GenericFactoryImpl::init scanning plugin dir " << name << endl;
+  Logger::log(Logger::loader) << "GenericFactoryImpl: scanning plugin dir " << name << endl;
   for (Directory::iterator i = directory.begin(); i != directory.end(); i++)
     {
       Plugin *plugin = new Plugin((*i)->LongName());
@@ -192,14 +193,14 @@ void GenericFactoryImpl::scan(const char *name)
       prototypeName[0].id   = (const char*) plugin->name();    // string copied
       prototypeName[0].kind = (const char*) "Object";          // string copied    
       
-      map<CosLifeCycle::Key, Plugin *, keyComp>::iterator p = plugins.find(prototypeName);
+      plist_t::iterator p = plugins.find(prototypeName);
       if (p != plugins.end())
-	Logger::log(Logger::loader) << "GenericFactoryImpl::init warning: multiple definitions for plugin "
+	Logger::log(Logger::loader) << "GenericFactoryImpl warning: multiple definitions for plugin "
 				    << plugin->name() << endl;
       
       // stash the function pointer for loading new object in the future
       plugins[prototypeName] = plugin;
-      Logger::log(Logger::loader) << "GenericFactoryImpl::init loaded plugin " << plugin->name() << endl;
+      Logger::log(Logger::loader) << "GenericFactoryImpl loaded plugin " << plugin->name() << endl;
     }
 }
 

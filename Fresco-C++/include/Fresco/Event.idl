@@ -1,6 +1,3 @@
-#ifndef _Event_idl
-#define _Event_idl
-
 //
 // $Id$
 //
@@ -23,6 +20,8 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
+#ifndef _Event_idl
+#define _Event_idl
 
 #include <Types.idl>
 

@@ -50,38 +50,43 @@ GLDrawingKit::~GLDrawingKit()
 void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &sty) 
   throw (Text::NoSuchFontException)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   try
     { 
       GLFont *newfont = new GLFont(fd,sty); 
       newfont->_obj_is_ready(_boa());
-      if (myFont) myFont->_dispose();
-      myFont = newfont;
+      if (font) font->_dispose();
+      font = newfont;
     }
   catch (Text::NoSuchFontException &ex)
     {
       throw ex;
     }
-  myMutex.unlock();    
 }
 
 Text::Font_ptr GLDrawingKit::currentFont()
 {
-  MutexGuard guard(myMutex);
-  return myFont->_this();
+  MutexGuard guard(mutex);
+  return font->_this();
 }
 
 Drawable_ptr GLDrawingKit::getDrawable()
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   return drawable->_this();
 }
 
 Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 {
-  MutexGuard guard(myMutex);
+  MutexGuard guard(mutex);
   GLPencil *pencil = new GLPencil(sty, drawable);
   pencil->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
   pencils.push_back(pencil);
   return pencil->_this();
+}
+
+void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
+{
+  glColor4d(0, 0, 0, 0);      
+  glRectf(l, t, r, b);
 }

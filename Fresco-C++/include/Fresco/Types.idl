@@ -1,6 +1,3 @@
-#ifndef _Types_idl
-#define _Types_idl
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -23,6 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Types_idl
+#define _Types_idl
 
 // !!!FIXME!!! this should become long long when it works
 typedef unsigned long Time; 

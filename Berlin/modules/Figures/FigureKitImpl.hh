@@ -40,7 +40,7 @@ class FigureKitImpl : implements(FigureKit), virtual public CloneableImpl {
     FigureKitImpl();
     virtual ~FigureKitImpl();
 
-    Graphic_ptr rect(const Style::Spec &sty);
+    Graphic_ptr rectangle(Coord, Coord, const Style::Spec &);
     Graphic_ptr ellipse(const Style::Spec &sty);
     Graphic_ptr path(const Style::Spec &sty, const Path &p);
     Graphic_ptr patch(const Style::Spec &sty, const Patch &p);

@@ -44,15 +44,16 @@ public:
   ~GLDrawingKit();
   Drawable_ptr getDrawable();
 
-  void setFont(const Text::FontDescriptor &fd, const Style::Spec &sty) 
-    throw (Text::NoSuchFontException);
+  void setFont(const Text::FontDescriptor &, const Style::Spec &) throw (Text::NoSuchFontException);
   Text::Font_ptr currentFont();
+  Pencil_ptr getPencil(const Style::Spec &);
 
   ggi_visual_t getVisual() { return drawable->Visual();}
-  Pencil_ptr getPencil(const Style::Spec &sty);
+  void clear(Coord, Coord, Coord, Coord);
+  void sync() { glFlush();}
  protected:
-  Mutex myMutex;
-  GLFont *myFont;
+  Mutex mutex;
+  GLFont *font;
   GLDrawable *drawable;
   vector<GLPencil *> pencils;
 };

@@ -72,8 +72,9 @@ void StageInfoImpl::cacheBBox()
 
 StageSequence::iterator StageSequence::lookup(Stage::Index layer)
 {
+  SectionLog section(Logger::layout, "StageSequence::lookup");
   if (layer == front()->layer) return begin();
-  if (layer == back()->layer) return end();
+  if (layer == back()->layer) return --end();
   if (layer == (*cursor)->layer) return cursor;
 
   /*
@@ -127,39 +128,50 @@ void StageSequence::remove(StageInfoImpl *info)
 //   invariants();
 }
 
-StageQuad::StageQuad(const Rectangle<Coord> &region) : parent_t(region) {}
+StageQuad::StageQuad(const Rectangle<Coord> &region) : parent_t(region)
+{
+  SectionLog section(Logger::layout, "StageQuad::StageQuad(rectangle)");
+}
 
+/*
+ * one child node is given; the other three are added inside
+ */
 StageQuad::StageQuad(const Rectangle<Coord> &r, StageQuad *node)
  : parent_t(r)
 {
+  SectionLog section(Logger::layout, "StageQuad::StageQuad(rectangle, StageQuad *)");
   elements = node->elements;
   boundingbox = node->boundingbox;
 
   const Rectangle<Coord> &b = node->region;
   int idx = none;
 
+  /*
+   * now determine in which directions we have to extend.
+   * node becomes one of our children, the other three are added
+   */
   Coord dl = b.l - r.l;
   Coord dr = r.r - b.r;
   if (dl < dr) { idx |= left; region.l = b.l; region.r = b.r + b.w();}
-  else { idx |= right; region.l = b.l - b.w(); region.r = b.r; }
+  else { idx |= right; region.l = b.l - b.w(); region.r = b.r;}
 
-  Coord db = b.b - r.b;
-  Coord dt = r.t - b.t;
-  if (db < dt) { idx |= bottom; region.b = b.b; region.t = b.t + b.h();}
-  else { idx |= top; region.b = b.b - b.h(); region.t = b.t;}
+  Coord dt = b.t - r.t;
+  Coord db = r.b - b.b;
+  if (dt < db) { idx |= top; region.t = b.t; region.b = b.b + b.h();}
+  else { idx |= bottom; region.t = b.t - b.h(); region.b = b.b;}
 
-  quadrants[leftbottom] =
-    idx == leftbottom ? node :
-    new StageQuad(Rectangle<Coord>(region.l, region.b, region.cx(), region.cy()));
-  quadrants[rightbottom] =
-    idx == rightbottom ? node :
-    new StageQuad(Rectangle<Coord>(region.cx(), region.b, region.r, region.cy()));
   quadrants[lefttop] =
     idx == lefttop ? node :
-    new StageQuad(Rectangle<Coord>(region.l, region.cy(), region.cx(), region.t));
+    new StageQuad(Rectangle<Coord>(region.l, region.t, region.cx(), region.cy()));
   quadrants[righttop] =
     idx == righttop ? node :
-    new StageQuad(Rectangle<Coord>(region.cx(), region.cy(), region.r, region.t));
+    new StageQuad(Rectangle<Coord>(region.cx(), region.t, region.r, region.cy()));
+  quadrants[leftbottom] =
+    idx == leftbottom ? node :
+    new StageQuad(Rectangle<Coord>(region.l, region.cy(), region.cx(), region.b));
+  quadrants[rightbottom] =
+    idx == rightbottom ? node :
+    new StageQuad(Rectangle<Coord>(region.cx(), region.cy(), region.r, region.b));
 }
 
 void StageQuad::within(const Rectangle<Coord> &r, StageFinder &finder)
@@ -173,23 +185,23 @@ void StageQuad::within(const Rectangle<Coord> &r, StageFinder &finder)
 	{
 	  if (r.r <= region.cx())
 	    {
-	      node(leftbottom)->within(r, finder);
 	      node(lefttop)->within(r, finder);
+	      node(leftbottom)->within(r, finder);
 	    }
 	  else if (r.l > region.cx())
 	    {
-	      node(rightbottom)->within(r, finder);
 	      node(righttop)->within(r, finder);
-	    }
-	  else if (r.t <= region.cy())
-	    {
-	      node(leftbottom)->within(r, finder);
 	      node(rightbottom)->within(r, finder);
 	    }
-	  else if (r.b > region.cy())
+	  else if (r.b <= region.cy())
 	    {
 	      node(lefttop)->within(r, finder);
 	      node(righttop)->within(r, finder);
+	    }
+	  else if (r.t > region.cy())
+	    {
+	      node(leftbottom)->within(r, finder);
+	      node(rightbottom)->within(r, finder);
 	    }
 	  else for (int i = 0; i < 4; ++i) node(i)->within(r, finder);
 	}
@@ -241,15 +253,15 @@ void StageQuad::intersects(const Rectangle<Coord> &r, StageFinder &finder)
 	      node(rightbottom)->intersects(r, finder);
 	      node(righttop)->intersects(r, finder);
 	    }
-	  else if (r.t <= region.cy())
-	    {
-	      node(leftbottom)->intersects(r, finder);
-	      node(rightbottom)->intersects(r, finder);
-	    }
-	  else if (r.b > region.cy())
+	  else if (r.b <= region.cy())
 	    {
 	      node(lefttop)->intersects(r, finder);
 	      node(righttop)->intersects(r, finder);
+	    }
+	  else if (r.t > region.cy())
+	    {
+	      node(leftbottom)->intersects(r, finder);
+	      node(rightbottom)->intersects(r, finder);
 	    }
 	  else for (int i = 0; i < 4; ++i) node(i)->intersects(r, finder);
 	}
@@ -287,15 +299,15 @@ void StageQuad::intersects(const Rectangle<Coord> &r, const Polygon<Coord> &poly
 	      node(rightbottom)->intersects(r, finder);
 	      node(righttop)->intersects(r, finder);
 	    }
-	  else if (r.t <= region.cy())
-	    {
-	      node(leftbottom)->intersects(r, finder);
-	      node(rightbottom)->intersects(r, finder);
-	    }
-	  else if (r.b > region.cy())
+	  else if (r.b <= region.cy())
 	    {
 	      node(lefttop)->intersects(r, finder);
 	      node(righttop)->intersects(r, finder);
+	    }
+	  else if (r.t > region.cy())
+	    {
+	      node(leftbottom)->intersects(r, finder);
+	      node(rightbottom)->intersects(r, finder);
 	    }
 	  else for (int i = 0; i < 4; i++) node(i)->intersects(r, finder);
 	}
@@ -307,7 +319,15 @@ void StageQuadTree::insert(StageInfoImpl *info)
 {
   const Rectangle<Coord> &bbox = info->bbox();
   if (!node()) quad = new StageQuad(bbox);
-  else while (!bbox.within(node()->extent())) quad = new StageQuad(bbox, node());
+  /*
+   * FIXME: currently, this code inserts new nodes as long as the outermost
+   *        doesn't completely contain the info's boundingbox. What if the
+   *        given bbox is infinity ?? On the other hand, guessing too large
+   *        values is tricky since we don't know the scale of this coordinate 
+   *        system, so may be a limiting depth of the tree would be a solution.
+   *                -stefan
+   */
+  else while (!bbox.within(node()->extension())) quad = new StageQuad(bbox, node());
   node()->insert(info);
 }
 
@@ -449,7 +469,8 @@ void StageImpl::request(Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr traversal)
 {
-  RegionImpl region(traversal->allocation(), Transform::_nil());
+  SectionLog section(Logger::traversal, "StageImpl::traverse");
+  RegionImpl region(Region_var(traversal->allocation()), Transform::_nil());
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;
   rectangle.t = region.lower.y;
@@ -565,23 +586,27 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
+  SectionLog section(Logger::layout, "StageImpl::end");
+  MutexGuard guard(childMutex);
   if (!--nesting)
     {
       tree.end();
       if (need_redraw)
 	{
+	  SectionLog section(Logger::layout, "StageImpl::need_redraw");
 	  needRedrawRegion(Region_var(damage_->_this()));
 	  need_redraw = false;
 	}
       if (need_resize)
 	{
-	  Geometry::Rectangle<Coord> bb = tree.bbox();
-	  if (! Math::equal(bbregion->lower.x, bb.l, epsilon) ||
-	      ! Math::equal(bbregion->lower.y, bb.t, epsilon) ||
-	      ! Math::equal(bbregion->upper.x, bb.r, epsilon) ||
-	      ! Math::equal(bbregion->upper.y, bb.b, epsilon))
-	    needResize();
-	  need_resize = false;
+ 	  SectionLog section(Logger::layout, "StageImpl::need_resize");
+ 	  Geometry::Rectangle<Coord> bb = tree.bbox();
+ 	  if (! Math::equal(bbregion->lower.x, bb.l, epsilon) ||
+ 	      ! Math::equal(bbregion->lower.y, bb.t, epsilon) ||
+ 	      ! Math::equal(bbregion->upper.x, bb.r, epsilon) ||
+ 	      ! Math::equal(bbregion->upper.y, bb.b, epsilon))
+ 	    needResize();
+ 	  need_resize = false;
 	}
     }
 }
@@ -593,6 +618,7 @@ Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Verte
   StageInfoImpl *info = new StageInfoImpl(Graphic::_duplicate(g), position, size, layer);
   info->child->addParent(Stage_var(_this()));
   tree.insert(info);
+//   dumpQuadTree(tree);
   list.insert(info);
   damage(info);
   return *info;
@@ -600,10 +626,12 @@ Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Verte
 
 void StageImpl::erase(const Stage::Info &i)
 {
+  SectionLog section(Logger::layout, "StageImpl::erase");
   MutexGuard guard(childMutex);
   StageInfoImpl *info = list.find(i.layer);
   if (!info) return;
   tree.remove(info);
+//   dumpQuadTree(tree);
   list.remove(info);
 
   damage(info);
@@ -613,6 +641,7 @@ void StageImpl::erase(const Stage::Info &i)
 
 void StageImpl::reposition(const Stage::Info &i, const Vertex &p)
 {
+  SectionLog section(Logger::layout, "StageImpl::reposition");
   MutexGuard guard(childMutex);
   StageInfoImpl *info = list.find(i.layer);
   if (!info) return;
@@ -629,6 +658,7 @@ void StageImpl::reposition(const Stage::Info &i, const Vertex &p)
   info->boundingbox.b += dy;
   info->position = p;
   tree.insert(info);
+//   dumpQuadTree(tree);
 
   damage(info);
   need_resize = true;
@@ -636,6 +666,7 @@ void StageImpl::reposition(const Stage::Info &i, const Vertex &p)
 
 void StageImpl::relayer(const Stage::Info &i, Stage::Index l)
 {
+  SectionLog section(Logger::layout, "StageImpl::relayer");
   MutexGuard guard(childMutex);
   StageInfoImpl *info = list.find(i.layer);
   list.remove(info);

@@ -34,7 +34,7 @@ public:
   SubjectImpl();
   void attach(Observer_ptr);
   void detach(Observer_ptr);
-  void notify(const CORBA::Any &whatChanged);
+  void notify(const CORBA::Any &);
   virtual void notify();
   void block(CORBA::Boolean b);  
 protected:

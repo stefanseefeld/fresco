@@ -1,6 +1,3 @@
-#ifndef _WidgetKit_idl
-#define _WidgetKit_idl
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -23,6 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _WidgetKit_idl
+#define _WidgetKit_idl
 
 #include "Cloneable.idl"
 #include "Types.idl"
@@ -40,9 +39,10 @@ interface BoundedRange;
 interface TextBuffer;
 interface Graphic;
 interface View;
+interface Controller;
 
-interface WidgetKit : Cloneable {
-
+interface WidgetKit : Cloneable
+{
   TelltaleConstraint exclusive();
   TelltaleConstraint selectionRequired();
   Telltale normalTelltale();
@@ -54,6 +54,9 @@ interface WidgetKit : Cloneable {
   Graphic inset(in Graphic g, in Color c);
   Graphic outset(in Graphic g, in Color c);
   View    pushButtonFrame(in Graphic g, in Color c, in Telltale t);
+
+  Controller button(in Graphic g, in Color c); // don't worry, just a test...
+
 //   Graphic button(in Reactor strategy, in Telltale subj);
 //   Graphic slider(in Reactor strategy, in BoundedValue subj);
 //   Graphic viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);

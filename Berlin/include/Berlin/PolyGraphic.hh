@@ -47,6 +47,10 @@ public:
   virtual void needResize(long);
 protected:
   long numChildren();
+  /*
+   * FIXME !!! this is plain wrong. findChild() should return a list of indexes
+   * since the child may appear more than once -stefan
+   */
   long findChild(Graphic_ptr);
   Graphic::Requisition *childrenRequests();
   virtual void allocateChild(long, Allocation::Info &);

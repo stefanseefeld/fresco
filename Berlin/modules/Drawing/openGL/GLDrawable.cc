@@ -39,11 +39,12 @@ GLDrawable::GLDrawable()
   //    case 32: gt = GT_32BIT; break;
   //    }
   context = GGIMesaCreateContext();
-  if (!context) {
-    cerr << "GGIMesaCreateContext() failed" << endl;
-    exit( 4 );
-    // Exit code 4, cannot create a GGIMesa context.
-  }
+  if (!context)
+    {
+      cerr << "GGIMesaCreateContext() failed" << endl;
+      exit(4);
+      // Exit code 4, cannot create a GGIMesa context.
+    }
 
   // New approach.
   //  visual = ggiOpen("display-X", 0);
@@ -53,7 +54,7 @@ GLDrawable::GLDrawable()
   //  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
   //    cerr << "GGIMesaSetVisual() failed" << endl;
   //  GGIMesaMakeCurrent(context);
-    
+  
   // let GGIMesa know how big the GGI visual is
   //  ggi_mode mode;
   //  if( ggiGetMode( visual, &mode ) ) {
@@ -68,61 +69,65 @@ GLDrawable::GLDrawable()
   mode.graphtype = GT_AUTO;
   mode.frames = 1;
   // Open the default visual --
-  visual = ggiOpen( NULL );
-  if ( visual == NULL ) {
-    cerr << "ggiOpen(NULL) failed!" << endl;
-    exit( 5 );
-  } // exit code 5 -- can't acquire a visual
+  visual = ggiOpen(0);
+  if (!visual) { cerr << "ggiOpen(NULL) failed!" << endl; exit(5);} // exit code 5 -- can't acquire a visual
 
   // We've acquired a visual, now let's decide on a mode. See libggi docs
   // on the format of the environment variable GGI_DEFMODE, which we use to
   // get all of our mode preferences.
 
-  if( ggiCheckMode( visual, &mode ) == 0 ) {
+  if(ggiCheckMode(visual, &mode) == 0)
+    {
       
-    // The mode works! We try to set it....
-    if( ggiSetMode( visual, &mode ) != 0 ) {
-      cerr << "Cannot set visual, even though GGI says it's ok???\n";
-      exit( 6 );
-      // Cannot set the mode. Strange... Exit code 6, cannot find
-      // a suitable mode for the visual
+      // The mode works! We try to set it....
+      if(ggiSetMode(visual, &mode) != 0)
+	{
+	  cerr << "Cannot set visual, even though GGI says it's ok???\n";
+	  exit(6);
+	  // Cannot set the mode. Strange... Exit code 6, cannot find
+	  // a suitable mode for the visual
+	}
+      //       cerr << "Successfully set the mode on our visual!\n";
     }
-    cerr << "Successfully set the mode on our visual!\n";
-  }
-  else {
-    cerr << "GGI says our mode won't work. Trying the one it suggests...\n";
-    // CheckMode said our mode wouldn't work.
-    // CheckMode should have modified our mode, so we try again...
-    if( ggiCheckMode( visual, &mode ) != 0 ) {
-      cerr << "What?? GGI doesn't like its own suggestion. Bailing.\n";
-      // Hmm. internal GGI problem. The mode GGI gave us still won't work.
-      exit( 6 );
+  else
+    {
+      cerr << "GGI says our mode won't work. Trying the one it suggests...\n";
+      // CheckMode said our mode wouldn't work.
+      // CheckMode should have modified our mode, so we try again...
+      if(ggiCheckMode(visual, &mode) != 0)
+	{
+	  cerr << "What?? GGI doesn't like its own suggestion. Bailing.\n";
+	  // Hmm. internal GGI problem. The mode GGI gave us still won't work.
+	  exit( 6 );
+	}
+      else
+	{
+	  cerr << "Ahh, GGI likes its own suggestion; trying to set the suggested mode.\n";
+	  // ggiCheckMode worked this time, on the mode it gave us last time.
+	  // Try to set the mode.
+	  if(ggiSetMode(visual, &mode) != 0)
+	    {
+	      cerr << "Huh?? Still can't set the mode. Bailing.\n";
+	      exit( 6 );
+	      // What?? after all this, GGI _STILL_ won't set the mode for us?
+	      // If we get here GGI is having some serious trouble
+	    }
+	}
     }
-    else {
-      cerr << "Ahh, GGI likes its own suggestion; trying to set the suggested mode.\n";
-      // ggiCheckMode worked this time, on the mode it gave us last time.
-      // Try to set the mode.
-      if( ggiSetMode( visual, &mode ) != 0 ) {
-	cerr << "Huh?? Still can't set the mode. Bailing.\n";
-	exit( 6 );
-	// What?? after all this, GGI _STILL_ won't set the mode for us?
-	// If we get here GGI is having some serious trouble
-      }
-    }
-  }
   // If we get here, we've successfully set a mode from GGI_DEFMODE.
   // I know, I'm paranoid, but this implementation will save trouble in the
   // long run. --Aaron
     
-  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE)) {
-    cerr << "GGIMesaSetVisual() failed" << endl;
-    exit( 7 );
-    // exit code 7. Cannot set visual for GGIMesa.
-  }
+  if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
+    {
+      cerr << "GGIMesaSetVisual() failed" << endl;
+      exit( 7 );
+      // exit code 7. Cannot set visual for GGIMesa.
+    }
 
   clip = new RegionImpl;
   clip->_obj_is_ready(CORBA::BOA::getBOA());
-
+  
 
   GGIMesaMakeCurrent(context);
   reshape( mode.visible.x, mode.visible.y );

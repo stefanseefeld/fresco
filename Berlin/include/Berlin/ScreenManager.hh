@@ -29,6 +29,7 @@ extern "C" {
 }
 
 #include "Warsaw/Region.hh"
+#include "Warsaw/Event.hh"
 #include "Berlin/Thread.hh"
 #include <vector>
 
@@ -39,23 +40,25 @@ class RegionImpl;
 
 class ScreenManager
 {
-    public:
-    ScreenManager(ScreenImpl *, GLDrawingKit *);
-    ~ScreenManager();
-    void damage(Region_ptr);
-    void repair();
-    void nextEvent();
-    void run();
-    private:
-    long ptrPositionX;
-    long ptrPositionY;
-    ScreenImpl *screen;
-    GLDrawingKit *drawing;
-    Pointer *pointer;
-    ggi_visual_t visual;
-    typedef vector<RegionImpl *> DamageList;
-    DamageList damages;
-    Mutex damageMutex;
+public:
+  ScreenManager(ScreenImpl *, GLDrawingKit *);
+  ~ScreenManager();
+  void damage(Region_ptr);
+  void repair();
+  void nextEvent();
+  void run();
+private:
+  void dispatchInput(const Event::Pointer &);
+  void dispatchInput(const Event::Key &);
+  long ptrPositionX;
+  long ptrPositionY;
+  ScreenImpl *screen;
+  GLDrawingKit *drawing;
+  Pointer *pointer;
+  ggi_visual_t visual;
+  typedef vector<RegionImpl *> DamageList;
+  DamageList damages;
+  Mutex damageMutex;
 };
 
 #endif /* _ScreenManager_hh */

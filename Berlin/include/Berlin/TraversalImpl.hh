@@ -49,7 +49,8 @@ class TraversalImpl : implements(Traversal)
   Region_ptr allocation();
   Transform_ptr transformation();
   CORBA::Boolean bounds(Vertex &, Vertex &, Vertex &);
-  CORBA::Boolean intersects() = 0;
+  CORBA::Boolean intersectsAllocation() = 0;
+  CORBA::Boolean intersectsRegion(Region_ptr) = 0;
   void traverseChild(Graphic_ptr, Region_ptr, Transform_ptr);
   void visit(Graphic_ptr) = 0;
   order direction() = 0;
@@ -57,6 +58,8 @@ class TraversalImpl : implements(Traversal)
 
   void push(Graphic_ptr, Region_ptr, TransformImpl *);
   void pop();
+ protected:
+  Graphic_ptr graphic();
  private:
   stack_t stack;
 };

@@ -61,15 +61,16 @@ template <class T>
 class Rectangle
 {
 public:
-  Rectangle() : l(0), b(0), r(0), t(0) {}
-  Rectangle(T ll, T bb, T rr, T tt) : l(ll), b(bb), r(rr), t(tt) {}
+  Rectangle() : l(0), t(0), r(0), b(0) {}
+  Rectangle(const Rectangle &rect) : l(rect.l), t(rect.t), r(rect.r), b(rect.b) {}
+  Rectangle(T ll, T tt, T rr, T bb) : l(ll), t(tt), r(rr), b(bb) {}
   T w() const {	return r - l;}
-  T h() const { return t - b;}
+  T h() const { return b - t;}
   T cx() const { return (l + r) / 2.;}
   T cy() const { return (b + t) / 2.;}
 
-  bool contains(const Point<T> &p) const { return p.x >= l && p.x <= r && p.y >= b && p.y <= t;}
-  bool contains(const Line<T> &c) const { return c.l() >= l && c.b() >= b && c.r() <= r && c.t() <= t;}
+  bool contains(const Point<T> &p) const { return p.x >= l && p.x <= r && p.y >= t && p.y <= b;}
+  bool contains(const Line<T> &c) const { return c.l() >= l && c.t() >= t && c.r() <= r && c.b() <= b;}
   bool intersects(const Line<T> &) const;
   bool contains(const Rectangle<T> &) const;
   bool intersects(const Rectangle<T> &) const;
@@ -80,9 +81,9 @@ public:
   void merge(const Rectangle<T> &);
 
   T l;
-  T b;
-  T r;
   T t;
+  T r;
+  T b;
 private:
   bool intersectsLine(const Line<T> &) const;
   static bool equal(T x, T y, T epsilon) { return x - y < epsilon && y - x < epsilon;}
@@ -149,10 +150,10 @@ template <class T>
 inline bool Line<T>::contains(const Point<T> &p, T bloat) const
 {
   T l = Math::min(u.x, v.x) - bloat;
-  T b = Math::min(u.y, v.y) - bloat;
+  T t = Math::min(u.y, v.y) - bloat;
   T r = Math::max(u.x, v.x) + bloat;
-  T t = Math::max(u.y, v.y) + bloat;
-  if (! (l <= p.x) && (p.x <= r) && (b <= p.y) && (p.y <= t)) return false;
+  T b = Math::max(u.y, v.y) + bloat;
+  if (! (l <= p.x) && (p.x <= r) && (t <= p.y) && (p.y <= b)) return false;
 
   T dx = u.x - v.x;
   T dy = u.y - v.y;
@@ -163,78 +164,84 @@ inline bool Line<T>::contains(const Point<T> &p, T bloat) const
   T x, y;
   rotate(radians, p.x - u.x, p.y - u.y, x, y);
   l = -length - bloat;
-  b = -bloat;
+  t = -bloat;
   r = bloat;
-  t = bloat;
-  return l <= x && x <= r && b <= y && y <= t;
+  b = bloat;
+  return l <= x && x <= r && t <= y && y <= b;
 }
 
 template <class T>
 inline bool Line<T>::intersects(const Line &i) const
 {
-  return l() <= i.r() && i.l() <= r() && b() <= i.t() && i.b() <= t() && same(i.u, i.v) <= 0 && same(u, v) <= 0;
+  return l() <= i.r() && i.l() <= r() && t() <= i.b() && i.t() <= b() && same(i.u, i.v) <= 0 && same(u, v) <= 0;
 }
 
 template <class T>
 inline bool Rectangle<T>::intersects(const Line<T> &i) const
 {
-  return l <= i.r() && i.l() <= r && b <= i.t() && i.b() <= t && intersectsLine(i);
+  return l <= i.r() && i.l() <= r && t <= i.b() && i.t() <= b && intersectsLine(i);
 }
   
 template <class T>
 inline bool Rectangle<T>::contains(const Rectangle<T> &c) const
 {
-  return c.l >= l && c.b >= b && c.r <= r && c.t <= t;
+  return c.l >= l && c.t >= t && c.r <= r && c.b <= b;
 }
 
 template <class T>
 inline bool Rectangle<T>::intersects(const Rectangle<T> &i) const
 {
-  return l <= i.r && r >= i.l && t < i.b && b > i.t;
+  return l <= i.r && r >= i.l && t <= i.b && b >= i.t;
 }
 
 template <class T>
 inline bool Rectangle<T>::within(const Rectangle<T> &w) const
 {
-  return l >= w.l && b >= w.b && r <= w.r && t <= w.t;
+  return l >= w.l && t >= w.t && r <= w.r && b <= w.b;
 }
-  
+
 template <class T>
 inline bool Rectangle<T>::touches(const Rectangle<T> &a, T epsilon) const
 {
-  return equal(l, a.l, epsilon) || equal(r, a.r, epsilon) || equal(b, a.b, epsilon) || equal(t, a.t, epsilon);
+  return equal(l, a.l, epsilon) || equal(r, a.r, epsilon) || equal(t, a.t, epsilon) || equal(b, a.b, epsilon);
 }
 
 template <class T>
 inline void Rectangle<T>::merge(const Rectangle<T> &m)
 {
   if (m.l < l) l = m.l;
-  if (m.b < b) b = m.b;
+  if (m.t < t) t = m.t;
   if (m.r > r) r = m.r;
-  if (m.t > t) t = m.t;
+  if (m.b > b) b = m.b;
 }
 
 template <class T>
 inline bool Rectangle<T>::intersectsLine(const Line<T> &i) const
 {
   return (contains(i.u) || contains(i.v) ||
-	  i.intersects(Line<T>(l, b, r, b)) ||
-	  i.intersects(Line<T>(r, b, r, t)) ||
-	  i.intersects(Line<T>(r, t, l, t)) ||
-	  i.intersects(Line<T>(l, t, l, b)));
+	  i.intersects(Line<T>(l, t, r, t)) ||
+	  i.intersects(Line<T>(r, t, r, b)) ||
+	  i.intersects(Line<T>(r, b, l, b)) ||
+	  i.intersects(Line<T>(l, b, l, t)));
+}
+
+template <class T>
+ostream &operator << (ostream &os, const Rectangle<T> &rectangle)
+{
+  return os << '(' << rectangle.l << ',' << rectangle.t << ',' << rectangle.r << ',' << rectangle.b << ')';
 }
 
 template <class T>
 inline void Polygon<T>::boundingBox(Rectangle<T> &b) const
 {
   b.l = b.r = points[0].x;
-  b.b = b.t = points[0].y;
+  b.t = b.b = points[0].y;
   for (int i = 1; i < count; i++)
     {
       b.l = Math::min(b.l, points[i].x);
-      b.b = Math::min(b.b, points[i].y);
+      b.t = Math::min(b.t, points[i].y);
       b.r = Math::max(b.r, points[i].x);
-      b.t = Math::max(b.t, points[i].y);
+      b.b = Math::max(b.b, points[i].y);
     }
 }
 
@@ -242,11 +249,6 @@ template <class T>
 inline bool Polygon<T>::contains(const Point<T> &p, T bloat) const
 {
   if (normCount == 0) normalize();
-//     {
-//       Polygon &self = *const_cast<Polygon *>(this);
-//       self.normalize();
-//     }
- 
   int count = 0;
   Point<T> p0;
   bool cury_sign = norm[0].y >= p.y;
@@ -285,11 +287,6 @@ inline bool Polygon<T>::intersects(const Line<T> &l) const
   Rectangle<T> b;
   bool intersects = false;
   if (normCount == 0) normalize();
-//     {
-//       Polygon& self = *const_cast<Polygon *>(this);
-//       self.normalize();
-//     }
- 
   boundingBox(b);
   if (b.intersects(l))
     {

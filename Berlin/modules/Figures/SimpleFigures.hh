@@ -32,12 +32,16 @@
 #include "Warsaw/Types.hh"
 #include "Figure/Figure.hh"
 
-class RectFig : public virtual Figure  {
+class RectFig : public virtual Figure
+{
 public:
-  RectFig(const Style::Spec &);    
+  RectFig(Coord, Coord, const Style::Spec &);    
   virtual ~RectFig();
+  virtual void request(Requisition &);
   virtual void draw(DrawTraversal_ptr);
   virtual Graphic_ptr copyTo(FigureKit_ptr fk);
+private:
+  Coord width, height;
 };
 
 class EllipseFig : public virtual Figure  {

@@ -105,7 +105,13 @@ void Box::traverse(Traversal_ptr traversal)
       Region_var given = traversal->allocation();
       if (!CORBA::is_nil(given))
  	{
-	  if (traversal->intersects())
+	  /*
+	   * this cull test is not accurate, it assumes that the children
+	   * don't draw outside the box' allocation.
+	   * the alternative - using extension - is expensive...
+	   *              -stefan
+	   */
+	  if (traversal->intersectsAllocation())
 	    traverseWithAllocation(traversal, given);
 	}
       else traverseWithoutAllocation(traversal);
@@ -207,7 +213,8 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
       tx->loadIdentity();
       /*
        * ok, so we stipulate that Boxes lay out their children 
-       * only translating them -stefan */
+       * only translating them -stefan
+       */
       tx->translate(o);
       t->traverseChild(children[i], Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;

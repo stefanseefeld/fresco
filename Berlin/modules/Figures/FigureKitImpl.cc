@@ -28,8 +28,9 @@
 FigureKitImpl::FigureKitImpl() {}
 FigureKitImpl::~FigureKitImpl() {}
 
-Graphic_ptr FigureKitImpl::rect(const Style::Spec &sty) {
-  RectFig *r = new RectFig(sty);
+Graphic_ptr FigureKitImpl::rectangle(Coord w, Coord h, const Style::Spec &sty)
+{
+  RectFig *r = new RectFig(w, h, sty);
   r->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
   figures.push_back(r);
   return r->_this();

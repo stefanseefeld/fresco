@@ -44,7 +44,8 @@ void BoundedRangeImpl::lower(Coord ll)
   l = ll;
   if (lv < l) lv = l;
   if (uv < l) uv = l;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedRangeImpl::upper()
@@ -60,7 +61,8 @@ void BoundedRangeImpl::upper(Coord uu)
   u = uu;
   if (lv > u) lv = u;
   if (uv > u) uv = u;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedRangeImpl::step()
@@ -94,7 +96,8 @@ void BoundedRangeImpl::forward()
   if (t <= 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedRangeImpl::backward()
@@ -104,7 +107,8 @@ void BoundedRangeImpl::backward()
   if (t <= 0.) return;
   lv -= t;
   uv -= t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedRangeImpl::fastforward()
@@ -114,7 +118,8 @@ void BoundedRangeImpl::fastforward()
   if (t <= 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedRangeImpl::fastbackward()
@@ -124,7 +129,8 @@ void BoundedRangeImpl::fastbackward()
   if (t <= 0.) return;
   lv -= t;
   uv -= t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedRangeImpl::begin()
@@ -134,7 +140,8 @@ void BoundedRangeImpl::begin()
   if (t == 0.) return;
   lv -= t;
   uv -= t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedRangeImpl::end()
@@ -144,7 +151,8 @@ void BoundedRangeImpl::end()
   if (t == 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void BoundedRangeImpl::lvalue(Coord vv)
@@ -154,7 +162,8 @@ void BoundedRangeImpl::lvalue(Coord vv)
   else if (vv < l) vv = l;
   if (vv == lv) return;
   lv = vv;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedRangeImpl::lvalue()
@@ -171,7 +180,8 @@ void BoundedRangeImpl::uvalue(Coord vv)
   else if (vv < l) vv = l;
   if (vv == uv) return;
   uv = vv;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord BoundedRangeImpl::uvalue()
@@ -190,5 +200,6 @@ void BoundedRangeImpl::adjust(Coord d)
   if (t == 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }

@@ -340,7 +340,7 @@ void GridImpl::traverseRange(Traversal_ptr traversal, const Grid::Range &a)
   Region_var given = traversal->allocation();
   if (!CORBA::is_nil(given))
     {
-      if (traversal->intersects())
+      if (traversal->intersectsAllocation())
 	traverseWithAllocation(traversal, given, a);
     }
   else

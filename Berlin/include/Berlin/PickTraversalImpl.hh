@@ -25,9 +25,11 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Event.hh"
-#include "Warsaw/Graphic.hh"
+#include "Warsaw/Controller.hh"
+#include "Warsaw/PickTraversal.hh"
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/Logger.hh"
 
 /* this is a traversal which is responsible for distributing events to
    graphics.  as such, speed is somewhat important. We set everything for
@@ -36,23 +38,40 @@
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
  public:
-    PickTraversalImpl(const CORBA::Any &e, Region_ptr r);
-    PickTraversalImpl(const PickTraversalImpl &t);
+    PickTraversalImpl(const Event::Pointer &, Region_ptr);
+    PickTraversalImpl(const PickTraversalImpl &);
     ~PickTraversalImpl();
     
-    inline void visit(Graphic_ptr g) { g->pick(this->_this());}
-    inline order direction() { return down;} 
-    inline CORBA::Boolean ok() { return true;}
-    inline CORBA::Boolean intersects()
+    void visit(Graphic_ptr g) { g->pick(PickTraversal_var(_this()));}
+    order direction() { return down;}
+    CORBA::Boolean ok() { return !memento;}
+    CORBA::Boolean intersectsAllocation()
       {
 	RegionImpl region(allocation(), transformation());
-	Event::Pointer *pointer;
-	if ((myEvent >>= pointer) && region.contains(pointer->location)) return true;
+	if (region.contains(pointer.location)) return true;
 	else return false;
       }
-    CORBA::Any *event() {return new CORBA::Any(myEvent);}
+    CORBA::Boolean intersectsRegion(Region_ptr allocation)
+      {
+	if (allocation->contains(pointer.location)) return true;
+	else return false;
+      }
+    void hit(Controller_ptr c)
+      {
+ 	Graphic_var current = graphic();
+ 	if (current->_is_equivalent(c))
+	  {
+	    controller = Controller::_duplicate(c);
+	    memento = new PickTraversalImpl(*this);
+	    memento->_obj_is_ready(_boa());
+	  }
+      }
+    PickTraversal_ptr picked() { return memento ? memento->_this() : PickTraversal::_nil();}
+    Controller_ptr receiver() { return Controller::_duplicate(controller);}
  private:
-    const CORBA::Any myEvent;
+    PickTraversalImpl *memento;
+    const Event::Pointer pointer;
+    Controller_var controller;
 };
 
 #endif /* _PickTraversalImpl_hh */

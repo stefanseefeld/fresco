@@ -73,7 +73,8 @@ void ViewportImpl::Adjustment::lower(Coord ll)
   l = ll;
   if (lv < l) lv = l;
   if (uv < l) uv = l;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord ViewportImpl::Adjustment::upper()
@@ -89,7 +90,8 @@ void ViewportImpl::Adjustment::upper(Coord uu)
   u = uu;
   if (lv > u) lv = u;
   if (uv > u) uv = u;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord ViewportImpl::Adjustment::step()
@@ -123,7 +125,8 @@ void ViewportImpl::Adjustment::forward()
   if (t <= 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::backward()
@@ -133,7 +136,8 @@ void ViewportImpl::Adjustment::backward()
   if (t <= 0.) return;
   lv -= t;
   uv -= t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::fastforward()
@@ -143,7 +147,8 @@ void ViewportImpl::Adjustment::fastforward()
   if (t <= 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::fastbackward()
@@ -153,7 +158,8 @@ void ViewportImpl::Adjustment::fastbackward()
   if (t <= 0.) return;
   lv -= t;
   uv -= t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::begin()
@@ -163,7 +169,8 @@ void ViewportImpl::Adjustment::begin()
   if (t == 0.) return;
   lv -= t;
   uv -= t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::end()
@@ -173,7 +180,8 @@ void ViewportImpl::Adjustment::end()
   if (t == 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::lvalue(Coord vv)
@@ -183,7 +191,8 @@ void ViewportImpl::Adjustment::lvalue(Coord vv)
   else if (vv < l) vv = l;
   if (vv == lv) return;
   lv = vv;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord ViewportImpl::Adjustment::lvalue()
@@ -199,7 +208,8 @@ void ViewportImpl::Adjustment::uvalue(Coord vv)
   else if (vv < l) vv = l;
   if (vv == uv) return;
   uv = vv;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 Coord ViewportImpl::Adjustment::uvalue()
@@ -217,7 +227,8 @@ void ViewportImpl::Adjustment::adjust(Coord d)
   if (t == 0.) return;
   lv += t;
   uv += t;
-  notify();
+  CORBA::Any any;
+  notify(any);
 }
 
 void ViewportImpl::Adjustment::scrollTo(Coord vv)
@@ -327,7 +338,7 @@ void ViewportImpl::needResize()
   MonoGraphic::needResize();
 }
 
-void ViewportImpl::update(Subject_ptr subject, const CORBA::Any &a)
+void ViewportImpl::update(Subject_ptr subject, const CORBA::Any &)
 {
 }
 
@@ -430,8 +441,9 @@ void ViewportImpl::checkAllocation(Region_ptr a)
 	  vi[yaxis] = ya.end - ya.begin;
 	  yadjustment->scrollTo(of[yaxis] - margin * ry.align);
         }
-	xadjustment->notify();
-	yadjustment->notify();
+      CORBA::Any any;
+      xadjustment->notify(any);
+      yadjustment->notify(any);
     }
 }
 

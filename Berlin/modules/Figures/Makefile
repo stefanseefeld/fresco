@@ -30,7 +30,7 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(ORBLIBS)
+LIBS	= -lPrague -lBerlin #$(ORBLIBS)
 
 SRC	= FigureKitImpl.cc Figure.cc SimpleFigures.cc  
 

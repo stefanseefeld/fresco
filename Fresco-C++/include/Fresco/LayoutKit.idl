@@ -1,6 +1,3 @@
-#ifndef _LayoutKit_idl
-#define _LayoutKit_idl
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -27,7 +24,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-
+#ifndef _LayoutKit_idl
+#define _LayoutKit_idl
 
 interface Viewport;
 interface Stage;

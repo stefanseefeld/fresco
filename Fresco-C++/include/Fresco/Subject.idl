@@ -1,6 +1,3 @@
-#ifndef _Subject_idl
-#define _Subject_idl
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -22,6 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _Subject_idl
+#define _Subject_idl
 
 interface Observer;
 

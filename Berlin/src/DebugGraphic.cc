@@ -27,7 +27,10 @@
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
+#include "Warsaw/DrawTraversal.hh"
+#include "Warsaw/PickTraversal.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/Logger.hh"
 #include <iostream>
 #include <iomanip>
 
@@ -36,6 +39,7 @@ DebugGraphic::~DebugGraphic() {}
 
 void DebugGraphic::request(Requisition &r)
 {
+  SectionLog section(Logger::layout, "DebugGraphic::request");
   MonoGraphic::request(r);
   if (flags & requests)
     {
@@ -51,16 +55,18 @@ void DebugGraphic::request(Requisition &r)
 
 void DebugGraphic::traverse(Traversal_ptr traversal)
 {
+  SectionLog section(Logger::layout, "DebugGraphic::traverse");
   if (flags & traversals) traversal->visit(Graphic_var(_this()));
   else MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
+  SectionLog section(Logger::layout, "DebugGraphic::draw");
   if (flags & draws)
     {
       heading(" draw\t");
-      RegionImpl region(traversal->allocation(), traversal->transformation());
+      RegionImpl region(Region_var(traversal->allocation()), Transform_var(traversal->transformation()));
       printRegion(&region);
       cout << endl;
     }
@@ -69,10 +75,11 @@ void DebugGraphic::draw(DrawTraversal_ptr traversal)
 
 void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
+  SectionLog section(Logger::layout, "DebugGraphic::pick");
   if (flags & picks)
     {
       heading(" pick\t");
-      RegionImpl region(traversal->allocation(), traversal->transformation());
+      RegionImpl region(Region_var(traversal->allocation()), Transform_var(traversal->transformation()));
       printRegion(&region);
       cout << endl;
     }
@@ -115,9 +122,8 @@ void DebugGraphic::printRequirement(Graphic::Requirement &r)
     }
 }
 
-void DebugGraphic::printRegion(Region_ptr r)
+void DebugGraphic::printRegion(Region_ptr region)
 {
-  Region_var region = r;
   Region::Allotment a;
   cout << "X(";
   region->span(xaxis, a);

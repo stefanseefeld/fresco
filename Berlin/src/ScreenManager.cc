@@ -45,7 +45,7 @@ ScreenManager::~ScreenManager()
 
 void ScreenManager::damage(Region_ptr r)
 {
-  SectionLog section(Logger::layout, "ScreenManager::damage");
+  SectionLog section(Logger::drawing, "ScreenManager::damage");
   MutexGuard guard(damageMutex);
   RegionImpl *region = new RegionImpl(r, Transform::_nil());
   region->_obj_is_ready(CORBA::BOA::getBOA());
@@ -78,86 +78,76 @@ void ScreenManager::repair()
   damages.erase(damages.begin(), damages.end());
   damageMutex.unlock();
   
-  glClearColor(0,0,0,0);
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  
   for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
-      DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, Region_var((*i)->_this()));
+      Logger::log(Logger::drawing) << "repairing region "
+				   << '(' << (*i)->lower.x << ',' << (*i)->lower.y
+				   << ',' << (*i)->upper.x << ',' << (*i)->upper.y << ')' << endl;
+      bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
+      drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
+      if (ptr) pointer->restore();
+      DrawTraversalImpl *traversal = new DrawTraversalImpl(DrawingKit_var(drawing->_this()), Region_var((*i)->_this()));
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
-      if (pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y))
+      drawing->sync();
+      if (ptr)
 	{
 	  pointer->backup();
 	  pointer->draw();
 	}
       (*i)->_dispose();
     }
-  
-  glFinish();
-  //     ggiSetGCForeground(visual,255);
-  //     GGIMesaSwapBuffers();
 }
 
 void ScreenManager::nextEvent()
 {
-
   ggi_event_mask mask = ggi_event_mask (emCommand | emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
   timeval t;
 
   t.tv_sec = 0;
   t.tv_usec = 20000; 
     
-  if (ggiEventPoll(visual, mask, &t)) {
-    ggiEventRead(visual, &event, mask);
-  } else {
-    return;
-  }
-
-  CORBA::Any a;
+  if (ggiEventPoll(visual, mask, &t)) ggiEventRead(visual, &event, mask);
+  else return;
 
   // we are being woken up by the damage subsystem
   if (event.any.origin == GII_EV_ORIGIN_SENDEVENT) return;
 
   // we can process this, it's a legitimate event.
-  switch (event.any.type) {
-  case evKeyPress:
-  case evKeyRepeat: {      
-    Event::Key ke;
-    ke.theChar = event.key.sym;
-    a <<= ke;
-    break;
-  }
-  
-  case evPtrAbsolute: {
-    ptrPositionX = event.pmove.x;
-    ptrPositionY = event.pmove.y;
-    pointer->move(ptrPositionX, ptrPositionY);
-    // absence of break statement here is intentional
-  }
-  case evPtrButtonPress:
-  case evPtrButtonRelease: {
-    Event::Pointer pe;	  
-    pe.location.x = ptrPositionX;
-    pe.location.y = ptrPositionY;	  
-    pe.location.z = 0; // time being we're using non-3d mice.
-    pe.buttonNumber = event.pbutton.button;	  
-    pe.whatHappened = 
-      event.any.type == evPtrAbsolute ? Event::hold :
-      event.any.type == evPtrButtonPress ? Event::press :
-      event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-    a <<= pe;
-    break;
-  }
-  }
-
-  Logger::log(Logger::picking) << "starting PickTraversal" << endl;
-  PickTraversalImpl *traversal = new PickTraversalImpl(a, Region_var(screen->getRegion()));
-  traversal->_obj_is_ready(CORBA::BOA::getBOA());
-  screen->traverse(Traversal_var(traversal->_this()));
-  traversal->_dispose();
-
+  switch (event.any.type)
+    {
+    case evKeyPress:
+    case evKeyRepeat:
+      {      
+	Event::Key key;
+	key.theChar = event.key.sym;
+	dispatchInput(key);
+	break;
+      }
+    case evPtrAbsolute:
+      {
+	ptrPositionX = event.pmove.x;
+	ptrPositionY = event.pmove.y;
+	pointer->move(ptrPositionX, ptrPositionY);
+	// absence of break statement here is intentional
+      }
+    case evPtrButtonPress:
+    case evPtrButtonRelease:
+      {
+	Event::Pointer pointer;	  
+	pointer.location.x = ptrPositionX;
+	pointer.location.y = ptrPositionY;	  
+	pointer.location.z = 0; // time being we're using non-3d mice.
+	pointer.buttonNumber = event.pbutton.button;	  
+	pointer.whatHappened = 
+	  event.any.type == evPtrAbsolute ? Event::hold :
+	  event.any.type == evPtrButtonPress ? Event::press :
+	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
+	dispatchInput(pointer);
+	break;
+      }
+    }
 }
 
 void ScreenManager::run()
@@ -170,7 +160,35 @@ void ScreenManager::run()
       if (amountOfDamage > 0)
 	{
 	  repair();
-	} 
+	}
       nextEvent();
     }
+}
+
+void ScreenManager::dispatchInput(const Event::Pointer &pointer)
+{
+  SectionLog section(Logger::main, "ScreenManager::dispatchInput(Pointer)");
+  /*
+   * try to find a potential receiver for the event
+   */
+  PickTraversalImpl *traversal = new PickTraversalImpl(pointer, Region_var(screen->getRegion()));
+  traversal->_obj_is_ready(CORBA::BOA::getBOA());
+  screen->traverse(Traversal_var(traversal->_this()));
+  /*
+   * has the traversal been picked ? then handle the event
+   */
+  PickTraversal_var picked = traversal->picked();
+  if (!CORBA::is_nil(picked))
+    {
+      SectionLog section(Logger::main, "picked controller non zero");
+      CORBA::Any any;
+      any <<= pointer;
+      Controller_var(picked->receiver())->handle(picked, any);
+    }
+  traversal->_dispose();
+}
+
+void ScreenManager::dispatchInput(const Event::Key &)
+{
+  SectionLog section(Logger::main, "ScreenManager::dispatchInput(Key)");
 }
