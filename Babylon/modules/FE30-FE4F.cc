@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:12:15 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:19 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -151,7 +152,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -187,6 +188,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -215,6 +220,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     CJK_Compatibility_FormsFE30(const CJK_Compatibility_FormsFE30 &) {}
@@ -230,7 +275,7 @@ namespace Babylon {
     static const std::bitset<32> m_Dash;
   }; // class CJK_Compatibility_FormsFE30
 
-    const std::bitset<32> CJK_Compatibility_FormsFE30::m_is_defined(std::string("11111110000111111111111111111111"));
+    const std::bitset<32> CJK_Compatibility_FormsFE30::m_is_defined(std::string("11111110011111111111111111111111"));
 
   const unsigned char CJK_Compatibility_FormsFE30::_cat[] = {
     CAT_Po, CAT_Pd, CAT_Pd, CAT_Pc, CAT_Pc, CAT_Ps, CAT_Pe, CAT_Ps, 

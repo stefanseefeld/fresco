@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:44 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:10 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -172,6 +173,33 @@ namespace Babylon {
       case 0x24EAu:
         return 0;
         break;
+      case 0x24F5u:
+        return 1;
+        break;
+      case 0x24F6u:
+        return 2;
+        break;
+      case 0x24F7u:
+        return 3;
+        break;
+      case 0x24F8u:
+        return 4;
+        break;
+      case 0x24F9u:
+        return 5;
+        break;
+      case 0x24FAu:
+        return 6;
+        break;
+      case 0x24FBu:
+        return 7;
+        break;
+      case 0x24FCu:
+        return 8;
+        break;
+      case 0x24FDu:
+        return 9;
+        break;
       default:
         return 0;
       }
@@ -207,6 +235,15 @@ namespace Babylon {
       case 0x248Fu:
       case 0x2490u:
       case 0x24EAu:
+      case 0x24F5u:
+      case 0x24F6u:
+      case 0x24F7u:
+      case 0x24F8u:
+      case 0x24F9u:
+      case 0x24FAu:
+      case 0x24FBu:
+      case 0x24FCu:
+      case 0x24FDu:
         return 1;
       default:
         return 0;
@@ -400,6 +437,66 @@ namespace Babylon {
       case 0x24EAu:
         return 0.000000;
         break;
+      case 0x24EBu:
+        return 11.000000;
+        break;
+      case 0x24ECu:
+        return 12.000000;
+        break;
+      case 0x24EDu:
+        return 13.000000;
+        break;
+      case 0x24EEu:
+        return 14.000000;
+        break;
+      case 0x24EFu:
+        return 15.000000;
+        break;
+      case 0x24F0u:
+        return 16.000000;
+        break;
+      case 0x24F1u:
+        return 17.000000;
+        break;
+      case 0x24F2u:
+        return 18.000000;
+        break;
+      case 0x24F3u:
+        return 19.000000;
+        break;
+      case 0x24F4u:
+        return 20.000000;
+        break;
+      case 0x24F5u:
+        return 1.000000;
+        break;
+      case 0x24F6u:
+        return 2.000000;
+        break;
+      case 0x24F7u:
+        return 3.000000;
+        break;
+      case 0x24F8u:
+        return 4.000000;
+        break;
+      case 0x24F9u:
+        return 5.000000;
+        break;
+      case 0x24FAu:
+        return 6.000000;
+        break;
+      case 0x24FBu:
+        return 7.000000;
+        break;
+      case 0x24FCu:
+        return 8.000000;
+        break;
+      case 0x24FDu:
+        return 9.000000;
+        break;
+      case 0x24FEu:
+        return 10.000000;
+        break;
       default:
         return 0;
       }
@@ -468,6 +565,26 @@ namespace Babylon {
       case 0x249Au:
       case 0x249Bu:
       case 0x24EAu:
+      case 0x24EBu:
+      case 0x24ECu:
+      case 0x24EDu:
+      case 0x24EEu:
+      case 0x24EFu:
+      case 0x24F0u:
+      case 0x24F1u:
+      case 0x24F2u:
+      case 0x24F3u:
+      case 0x24F4u:
+      case 0x24F5u:
+      case 0x24F6u:
+      case 0x24F7u:
+      case 0x24F8u:
+      case 0x24F9u:
+      case 0x24FAu:
+      case 0x24FBu:
+      case 0x24FCu:
+      case 0x24FDu:
+      case 0x24FEu:
         return 1;
       default:
         return 0;
@@ -829,7 +946,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -865,6 +982,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -893,6 +1014,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Enclosed_Alphanumerics2460(const Enclosed_Alphanumerics2460 &) {}
@@ -914,7 +1075,7 @@ namespace Babylon {
     static const std::bitset<160> m_Other_Uppercase;
   }; // class Enclosed_Alphanumerics2460
 
-    const std::bitset<160> Enclosed_Alphanumerics2460::m_is_defined(std::string("0000000000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<160> Enclosed_Alphanumerics2460::m_is_defined(std::string("0111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Enclosed_Alphanumerics2460::m_upper[] = {
     0x2460, 0x2461, 0x2462, 0x2463, 0x2464, 0x2465, 0x2466, 0x2467, 
@@ -1026,9 +1187,9 @@ namespace Babylon {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
-    BIDIR_L, BIDIR_L, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, 
-    BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, 
-    BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN
+    BIDIR_L, BIDIR_L, BIDIR_EN, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_EN
   };
 
   const unsigned char Enclosed_Alphanumerics2460::_decomp[] = {
@@ -1133,8 +1294,8 @@ namespace Babylon {
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
+    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 

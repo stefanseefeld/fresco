@@ -109,6 +109,7 @@ foreach my $block (@blocks) {
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 END
 

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:49 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:02 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,11 +40,11 @@ namespace Babylon {
       m_first_letter = 0xC80;
       m_last_letter  = 0xCFF;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x00000CBF, 0x00000CD5)] = 0x0CC0;
-      m_composeMap[make_pair(0x00000CC6, 0x00000CC2)] = 0x0CCA;
-      m_composeMap[make_pair(0x00000CC6, 0x00000CD5)] = 0x0CC7;
-      m_composeMap[make_pair(0x00000CC6, 0x00000CD6)] = 0x0CC8;
-      m_composeMap[make_pair(0x00000CCA, 0x00000CD5)] = 0x0CCB;
+      m_composeMap[std::make_pair(0x00000CBF, 0x00000CD5)] = 0x0CC0;
+      m_composeMap[std::make_pair(0x00000CC6, 0x00000CC2)] = 0x0CCA;
+      m_composeMap[std::make_pair(0x00000CC6, 0x00000CD5)] = 0x0CC7;
+      m_composeMap[std::make_pair(0x00000CC6, 0x00000CD6)] = 0x0CC8;
+      m_composeMap[std::make_pair(0x00000CCA, 0x00000CD5)] = 0x0CCB;
     }
 
     ~KannadaC80() {
@@ -306,10 +307,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -345,6 +346,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return m_Other_Alphabetic.test(uc - m_first_letter);
     }
@@ -373,6 +378,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     KannadaC80(const KannadaC80 &) {}
@@ -386,7 +431,7 @@ namespace Babylon {
     static const Babylon::Bidir_Props m_bidir[128];
     static const UCS2 m_decompStr[128][2];
     static const unsigned char m_lb[128];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<128> m_Other_Alphabetic;
   }; // class KannadaC80
 

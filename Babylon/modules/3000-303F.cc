@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:05:01 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:13 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -61,7 +62,7 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (m_is_defined.test(uc - m_first_letter));
+      return 1;
     }
 
     UCS4 uppercase(const UCS4 uc) const {
@@ -212,7 +213,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -248,6 +249,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -276,6 +281,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     CJK_Symbols_and_Punctuation3000(const CJK_Symbols_and_Punctuation3000 &) {}
@@ -283,7 +328,6 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const std::bitset<64> m_is_defined;
     static const unsigned char _cat[64];
     static const unsigned char _comb_cl[64];
     static const Babylon::Bidir_Props m_bidir[64];
@@ -299,8 +343,6 @@ namespace Babylon {
     static const std::bitset<64> m_Extender;
   }; // class CJK_Symbols_and_Punctuation3000
 
-    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_is_defined(std::string("1100011111111111111111111111111111111111111111111111111111111111"));
-
   const unsigned char CJK_Symbols_and_Punctuation3000::_cat[] = {
     CAT_Zs, CAT_Po, CAT_Po, CAT_Po, CAT_So, CAT_Lm, CAT_Lo, CAT_Nl, 
     CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, CAT_Ps, CAT_Pe, 
@@ -309,7 +351,7 @@ namespace Babylon {
     CAT_So, CAT_Nl, CAT_Nl, CAT_Nl, CAT_Nl, CAT_Nl, CAT_Nl, CAT_Nl, 
     CAT_Nl, CAT_Nl, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, 
     CAT_Pd, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_Lm, CAT_So, CAT_So, 
-    CAT_Nl, CAT_Nl, CAT_Nl, CAT_Zs, CAT_Zs, CAT_Zs, CAT_So, CAT_So
+    CAT_Nl, CAT_Nl, CAT_Nl, CAT_Lm, CAT_Lo, CAT_Po, CAT_So, CAT_So
   };
 
   const unsigned char CJK_Symbols_and_Punctuation3000::_comb_cl[] = {
@@ -331,7 +373,7 @@ namespace Babylon {
     BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, 
     BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, 
-    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_ON, BIDIR_ON
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON
   };
 
   const unsigned char CJK_Symbols_and_Punctuation3000::_decomp[] = {
@@ -374,14 +416,14 @@ namespace Babylon {
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
     LB_ID, LB_ID, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, 
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
-    LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID
+    LB_ID, LB_ID, LB_ID, LB_NS, LB_NS, LB_ID, LB_ID, LB_ID
   };
 
   const unsigned char CJK_Symbols_and_Punctuation3000::m_ea[] = {
+    EA_WIDTH_F, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
-    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
-    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, 
-    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
+    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
+    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:31 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:08 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -146,6 +147,12 @@ namespace Babylon {
         us.resize(3);
         us[2u] = 0x2035u;
         break;
+
+      case 0x2057:
+        us.resize(4);
+        us[2u] = 0x2032u;
+        us[3u] = 0x2032u;
+        break;
       }
       if (us[1] == 0x0000u) {
         us.resize(1);
@@ -174,8 +181,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
-      return m_White_space.test(uc - m_first_letter);
+    bool is_White_Space(const UCS4 uc) const {
+      return m_White_Space.test(uc - m_first_letter);
     }
 
     bool is_Bidi_Control(const UCS4 uc) const {
@@ -210,6 +217,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -238,6 +249,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return m_Other_Default_Ignorable_Code_Point.test(uc - m_first_letter);
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return m_Deprecated.test(uc - m_first_letter);
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     General_Punctuation2000(const General_Punctuation2000 &) {}
@@ -253,7 +304,7 @@ namespace Babylon {
     static const std::bitset<112> m_mirror;
     static const unsigned char m_lb[112];
     static const unsigned char m_ea[112];
-    static const std::bitset<112> m_White_space;
+    static const std::bitset<112> m_White_Space;
     static const std::bitset<112> m_Bidi_Control;
     static const std::bitset<112> m_Join_Control;
     static const std::bitset<112> m_Dash;
@@ -261,9 +312,11 @@ namespace Babylon {
     static const std::bitset<112> m_Quotation_Mark;
     static const std::bitset<112> m_Terminal_Punctuation;
     static const std::bitset<112> m_Other_Math;
+    static const std::bitset<112> m_Other_Default_Ignorable_Code_Point;
+    static const std::bitset<112> m_Deprecated;
   }; // class General_Punctuation2000
 
-    const std::bitset<112> General_Punctuation2000::m_is_defined(std::string("1111110000000000000000000000000000111111011111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<112> General_Punctuation2000::m_is_defined(std::string("1111110000001111100000001000011111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const unsigned char General_Punctuation2000::_cat[] = {
     CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
@@ -274,11 +327,11 @@ namespace Babylon {
     CAT_Zl, CAT_Zp, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Zs, 
     CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
     CAT_Po, CAT_Pi, CAT_Pf, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Pc, 
-    CAT_Pc, CAT_Po, CAT_Po, CAT_Po, CAT_Sm, CAT_Ps, CAT_Pe, CAT_Zs, 
-    CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Zs, CAT_Zs, 
+    CAT_Pc, CAT_Po, CAT_Po, CAT_Po, CAT_Sm, CAT_Ps, CAT_Pe, CAT_Po, 
+    CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
+    CAT_Po, CAT_Po, CAT_Sm, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Po, 
     CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
-    CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
-    CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
+    CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
     CAT_Zs, CAT_Zs, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf
   };
 
@@ -291,11 +344,11 @@ namespace Babylon {
     BIDIR_WS, BIDIR_B, BIDIR_LRE, BIDIR_RLE, BIDIR_PDF, BIDIR_LRO, BIDIR_RLO, BIDIR_WS, 
     BIDIR_ET, BIDIR_ET, BIDIR_ET, BIDIR_ET, BIDIR_ET, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_WS, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_WS, BIDIR_WS, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_ON, 
     BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, 
-    BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, 
-    BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, 
+    BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, 
     BIDIR_WS, BIDIR_WS, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN
   };
 
@@ -308,10 +361,10 @@ namespace Babylon {
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_NOBREAK, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
   };
@@ -334,13 +387,13 @@ namespace Babylon {
     { 0x2038u, 0x0000u }, { 0x2039u, 0x0000u }, { 0x203Au, 0x0000u }, { 0x203Bu, 0x0000u }, 
     { 0x0021u, 0x0021u }, { 0x203Du, 0x0000u }, { 0x0020u, 0x0305u }, { 0x203Fu, 0x0000u }, 
     { 0x2040u, 0x0000u }, { 0x2041u, 0x0000u }, { 0x2042u, 0x0000u }, { 0x2043u, 0x0000u }, 
-    { 0x2044u, 0x0000u }, { 0x2045u, 0x0000u }, { 0x2046u, 0x0000u }, { 0x2047u, 0x0000u }, 
+    { 0x2044u, 0x0000u }, { 0x2045u, 0x0000u }, { 0x2046u, 0x0000u }, { 0x003Fu, 0x003Fu }, 
     { 0x003Fu, 0x0021u }, { 0x0021u, 0x003Fu }, { 0x204Au, 0x0000u }, { 0x204Bu, 0x0000u }, 
     { 0x204Cu, 0x0000u }, { 0x204Du, 0x0000u }, { 0x204Eu, 0x0000u }, { 0x204Fu, 0x0000u }, 
     { 0x2050u, 0x0000u }, { 0x2051u, 0x0000u }, { 0x2052u, 0x0000u }, { 0x2053u, 0x0000u }, 
-    { 0x2054u, 0x0000u }, { 0x2055u, 0x0000u }, { 0x2056u, 0x0000u }, { 0x2057u, 0x0000u }, 
+    { 0x2054u, 0x0000u }, { 0x2055u, 0x0000u }, { 0x2056u, 0x0000u }, { 0x2032u, 0x2032u }, 
     { 0x2058u, 0x0000u }, { 0x2059u, 0x0000u }, { 0x205Au, 0x0000u }, { 0x205Bu, 0x0000u }, 
-    { 0x205Cu, 0x0000u }, { 0x205Du, 0x0000u }, { 0x205Eu, 0x0000u }, { 0x205Fu, 0x0000u }, 
+    { 0x205Cu, 0x0000u }, { 0x205Du, 0x0000u }, { 0x205Eu, 0x0000u }, { 0x0020u, 0x0000u }, 
     { 0x2060u, 0x0000u }, { 0x2061u, 0x0000u }, { 0x2062u, 0x0000u }, { 0x2063u, 0x0000u }, 
     { 0x2064u, 0x0000u }, { 0x2065u, 0x0000u }, { 0x2066u, 0x0000u }, { 0x2067u, 0x0000u }, 
     { 0x2068u, 0x0000u }, { 0x2069u, 0x0000u }, { 0x206Au, 0x0000u }, { 0x206Bu, 0x0000u }, 
@@ -358,11 +411,11 @@ namespace Babylon {
     LB_BK, LB_BK, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_GL, 
     LB_PO, LB_PO, LB_PO, LB_PO, LB_PO, LB_PO, LB_PO, LB_PO, 
     LB_AL, LB_QU, LB_QU, LB_AI, LB_NS, LB_AL, LB_AL, LB_AL, 
-    LB_AL, LB_AL, LB_AL, LB_AL, LB_NS, LB_OP, LB_CL, LB_BA, 
-    LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_BA, LB_BA, 
+    LB_AL, LB_AL, LB_AL, LB_AL, LB_NS, LB_OP, LB_CL, LB_AL, 
+    LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
+    LB_AL, LB_AL, LB_AL, LB_BA, LB_BA, LB_BA, LB_BA, LB_AL, 
     LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, 
-    LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, 
-    LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, 
+    LB_GL, LB_AL, LB_AL, LB_AL, LB_BA, LB_BA, LB_BA, LB_BA, 
     LB_BA, LB_BA, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
@@ -371,10 +424,10 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
+    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
@@ -383,7 +436,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const std::bitset<112> General_Punctuation2000::m_White_space(std::string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111"));
+    const std::bitset<112> General_Punctuation2000::m_White_Space(std::string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111"));
 
     const std::bitset<112> General_Punctuation2000::m_Bidi_Control(std::string("0000000000000000000000000000000000000000000000000000000000000000011111000000000000000000000000001100000000000000"));
 
@@ -398,6 +451,10 @@ namespace Babylon {
     const std::bitset<112> General_Punctuation2000::m_Terminal_Punctuation(std::string("0000000000000000000000000000000000000011000000000011000000000000000000000000000000000000000000000000000000000000"));
 
     const std::bitset<112> General_Punctuation2000::m_Other_Math(std::string("0000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000000000"));
+
+    const std::bitset<112> General_Punctuation2000::m_Other_Default_Ignorable_Code_Point(std::string("1111111111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
+
+    const std::bitset<112> General_Punctuation2000::m_Deprecated(std::string("1111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

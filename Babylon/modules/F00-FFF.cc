@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:57 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:03 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,23 +40,23 @@ namespace Babylon {
       m_first_letter = 0xF00;
       m_last_letter  = 0xFFF;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x00000F40, 0x00000FB5)] = 0x0F69;
-      m_composeMap[make_pair(0x00000F42, 0x00000FB7)] = 0x0F43;
-      m_composeMap[make_pair(0x00000F4C, 0x00000FB7)] = 0x0F4D;
-      m_composeMap[make_pair(0x00000F51, 0x00000FB7)] = 0x0F52;
-      m_composeMap[make_pair(0x00000F56, 0x00000FB7)] = 0x0F57;
-      m_composeMap[make_pair(0x00000F5B, 0x00000FB7)] = 0x0F5C;
-      m_composeMap[make_pair(0x00000F71, 0x00000F72)] = 0x0F73;
-      m_composeMap[make_pair(0x00000F71, 0x00000F74)] = 0x0F75;
-      m_composeMap[make_pair(0x00000F71, 0x00000F80)] = 0x0F81;
-      m_composeMap[make_pair(0x00000F90, 0x00000FB5)] = 0x0FB9;
-      m_composeMap[make_pair(0x00000F92, 0x00000FB7)] = 0x0F93;
-      m_composeMap[make_pair(0x00000F9C, 0x00000FB7)] = 0x0F9D;
-      m_composeMap[make_pair(0x00000FA1, 0x00000FB7)] = 0x0FA2;
-      m_composeMap[make_pair(0x00000FA6, 0x00000FB7)] = 0x0FA7;
-      m_composeMap[make_pair(0x00000FAB, 0x00000FB7)] = 0x0FAC;
-      m_composeMap[make_pair(0x00000FB2, 0x00000F80)] = 0x0F76;
-      m_composeMap[make_pair(0x00000FB3, 0x00000F80)] = 0x0F78;
+      m_composeMap[std::make_pair(0x00000F40, 0x00000FB5)] = 0x0F69;
+      m_composeMap[std::make_pair(0x00000F42, 0x00000FB7)] = 0x0F43;
+      m_composeMap[std::make_pair(0x00000F4C, 0x00000FB7)] = 0x0F4D;
+      m_composeMap[std::make_pair(0x00000F51, 0x00000FB7)] = 0x0F52;
+      m_composeMap[std::make_pair(0x00000F56, 0x00000FB7)] = 0x0F57;
+      m_composeMap[std::make_pair(0x00000F5B, 0x00000FB7)] = 0x0F5C;
+      m_composeMap[std::make_pair(0x00000F71, 0x00000F72)] = 0x0F73;
+      m_composeMap[std::make_pair(0x00000F71, 0x00000F74)] = 0x0F75;
+      m_composeMap[std::make_pair(0x00000F71, 0x00000F80)] = 0x0F81;
+      m_composeMap[std::make_pair(0x00000F90, 0x00000FB5)] = 0x0FB9;
+      m_composeMap[std::make_pair(0x00000F92, 0x00000FB7)] = 0x0F93;
+      m_composeMap[std::make_pair(0x00000F9C, 0x00000FB7)] = 0x0F9D;
+      m_composeMap[std::make_pair(0x00000FA1, 0x00000FB7)] = 0x0FA2;
+      m_composeMap[std::make_pair(0x00000FA6, 0x00000FB7)] = 0x0FA7;
+      m_composeMap[std::make_pair(0x00000FAB, 0x00000FB7)] = 0x0FAC;
+      m_composeMap[std::make_pair(0x00000FB2, 0x00000F80)] = 0x0F76;
+      m_composeMap[std::make_pair(0x00000FB3, 0x00000F80)] = 0x0F78;
     }
 
     ~TibetanF00() {
@@ -358,10 +359,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -397,6 +398,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return m_Other_Alphabetic.test(uc - m_first_letter);
     }
@@ -425,6 +430,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     TibetanF00(const TibetanF00 &) {}
@@ -439,7 +484,7 @@ namespace Babylon {
     static const unsigned char _decomp[256];
     static const UCS2 m_decompStr[256][2];
     static const unsigned char m_lb[256];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Other_Alphabetic;
     static const std::bitset<256> m_Diacritic;
   }; // class TibetanF00

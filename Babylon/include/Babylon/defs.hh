@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 #include <exception>
-#include <strstream>
+#include <sstream>
 #include <iomanip>
 
 namespace Babylon {
@@ -476,7 +476,7 @@ namespace Babylon {
 	}
 
 	const char * what() const throw() {
-	    std::strstream res;
+	    std::ostringstream res;
 	    res << std::setw(4) << std::setfill('0') << std::hex; 
 	    switch (m_error_prop) {
 	    case PROP_CHARACTER:
@@ -542,7 +542,7 @@ namespace Babylon {
 		    << ") PROP_MAX throw... how did this happen?";
 		break;	
 	    }
-	    return res.str();
+	    return res.str().c_str();
 	}
     }; // class Undefined_Property
     
@@ -579,11 +579,11 @@ namespace Babylon {
     ~Block_Error() throw() {}
     const char * what() const throw()
     {
-      std::strstream res;
+      std::ostringstream res;
       res << std::hex << std::setw(4) << std::setfill('0');
       res << "(" << m_block_start << "-" << m_block_end << "): "
 	  << m_error_message;
-      return res.str();
+      return res.str().c_str();
     }
   }; // class Block_Error
     

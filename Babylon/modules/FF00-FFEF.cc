@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:12:18 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:19 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -279,7 +280,7 @@ namespace Babylon {
     }
 
     bool must_mirror(const UCS4 uc) const {
-      return 0;
+      return m_mirror.test(uc - m_first_letter);
     }
 
     Line_Break linebreak(const UCS4 uc) const {
@@ -298,7 +299,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -334,6 +335,10 @@ namespace Babylon {
       return m_Hex_Digit.test(uc - m_first_letter);
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -362,6 +367,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return m_Other_Grapheme_Extend.test(uc - m_first_letter);
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Halfwidth_and_Fullwidth_FormsFF00(const Halfwidth_and_Fullwidth_FormsFF00 &) {}
@@ -377,14 +422,16 @@ namespace Babylon {
     static const Babylon::Bidir_Props m_bidir[240];
     static const unsigned char _decomp[240];
     static const UCS4 m_decompStr[240];
+    static const std::bitset<240> m_mirror;
     static const unsigned char m_lb[240];
     static const unsigned char m_ea[240];
     static const std::bitset<240> m_Terminal_Punctuation;
     static const std::bitset<240> m_Hex_Digit;
     static const std::bitset<240> m_Diacritic;
+    static const std::bitset<240> m_Other_Grapheme_Extend;
   }; // class Halfwidth_and_Fullwidth_FormsFF00
 
-    const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_is_defined(std::string("011111110111111100011100111111001111110011111100011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
+    const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_is_defined(std::string("011111110111111100011100111111001111110011111100011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
   const UCS4 Halfwidth_and_Fullwidth_FormsFF00::m_upper[] = {
     0xFF00, 0xFF01, 0xFF02, 0xFF03, 0xFF04, 0xFF05, 0xFF06, 0xFF07, 
@@ -497,8 +544,8 @@ namespace Babylon {
     CAT_Sk, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 
     CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 
     CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 
-    CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ps, CAT_Sm, CAT_Pe, CAT_Sm, CAT_Po, 
-    CAT_Po, CAT_Po, CAT_Ps, CAT_Pe, CAT_Po, CAT_Pc, CAT_Lo, CAT_Lo, 
+    CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ps, CAT_Sm, CAT_Pe, CAT_Sm, CAT_Ps, 
+    CAT_Pe, CAT_Po, CAT_Ps, CAT_Pe, CAT_Po, CAT_Pc, CAT_Lo, CAT_Lo, 
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
     CAT_Lm, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -563,8 +610,8 @@ namespace Babylon {
     DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, 
     DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, 
     DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, 
-    DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, 
+    DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, DECOMP_WIDE, 
+    DECOMP_WIDE, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, 
     DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, 
     DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, 
     DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, DECOMP_NARROW, 
@@ -608,8 +655,8 @@ namespace Babylon {
     0x0070u, 0x0071u, 0x0072u, 0x0073u, 
     0x0074u, 0x0075u, 0x0076u, 0x0077u, 
     0x0078u, 0x0079u, 0x007Au, 0x007Bu, 
-    0x007Cu, 0x007Du, 0x007Eu, 0xFF5Fu, 
-    0xFF60u, 0x3002u, 0x300Cu, 0x300Du, 
+    0x007Cu, 0x007Du, 0x007Eu, 0x2985u, 
+    0x2986u, 0x3002u, 0x300Cu, 0x300Du, 
     0x3001u, 0x30FBu, 0x30F2u, 0x30A1u, 
     0x30A3u, 0x30A5u, 0x30A7u, 0x30A9u, 
     0x30E3u, 0x30E5u, 0x30E7u, 0x30C3u, 
@@ -647,6 +694,8 @@ namespace Babylon {
     0x2193u, 0x25A0u, 0x25CBu, 0xFFEFu
   };
 
+  const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_mirror(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001101101010000000000000000000000000000010100000000000000000000000000001010000000000000000001100000000"));
+
   const unsigned char Halfwidth_and_Fullwidth_FormsFF00::m_lb[] = {
     LB_EX, LB_EX, LB_ID, LB_ID, LB_PR, LB_PO, LB_ID, LB_ID, 
     LB_OP, LB_CL, LB_ID, LB_ID, LB_CL, LB_ID, LB_CL, LB_ID, 
@@ -659,8 +708,8 @@ namespace Babylon {
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
-    LB_ID, LB_ID, LB_ID, LB_OP, LB_ID, LB_CL, LB_ID, LB_EX, 
-    LB_EX, LB_CL, LB_OP, LB_CL, LB_CL, LB_NS, LB_AL, LB_NS, 
+    LB_ID, LB_ID, LB_ID, LB_OP, LB_ID, LB_CL, LB_ID, LB_OP, 
+    LB_CL, LB_CL, LB_OP, LB_CL, LB_CL, LB_NS, LB_AL, LB_NS, 
     LB_NS, LB_NS, LB_NS, LB_NS, LB_NS, LB_NS, LB_NS, LB_NS, 
     LB_NS, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
@@ -718,6 +767,8 @@ namespace Babylon {
     const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_Hex_Digit(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111100000000000000000000000000111111000000011111111110000000000000000"));
 
     const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_Diacritic(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
+
+    const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_Other_Grapheme_Extend(std::string("000000000000000000000000000000000000000000000000000000000000000000000000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

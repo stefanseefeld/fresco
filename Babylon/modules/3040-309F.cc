@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:05:02 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:13 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,33 +40,33 @@ namespace Babylon {
       m_first_letter = 0x3040;
       m_last_letter  = 0x309F;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x00003046, 0x00003099)] = 0x3094;
-      m_composeMap[make_pair(0x0000304B, 0x00003099)] = 0x304C;
-      m_composeMap[make_pair(0x0000304D, 0x00003099)] = 0x304E;
-      m_composeMap[make_pair(0x0000304F, 0x00003099)] = 0x3050;
-      m_composeMap[make_pair(0x00003051, 0x00003099)] = 0x3052;
-      m_composeMap[make_pair(0x00003053, 0x00003099)] = 0x3054;
-      m_composeMap[make_pair(0x00003055, 0x00003099)] = 0x3056;
-      m_composeMap[make_pair(0x00003057, 0x00003099)] = 0x3058;
-      m_composeMap[make_pair(0x00003059, 0x00003099)] = 0x305A;
-      m_composeMap[make_pair(0x0000305B, 0x00003099)] = 0x305C;
-      m_composeMap[make_pair(0x0000305D, 0x00003099)] = 0x305E;
-      m_composeMap[make_pair(0x0000305F, 0x00003099)] = 0x3060;
-      m_composeMap[make_pair(0x00003061, 0x00003099)] = 0x3062;
-      m_composeMap[make_pair(0x00003064, 0x00003099)] = 0x3065;
-      m_composeMap[make_pair(0x00003066, 0x00003099)] = 0x3067;
-      m_composeMap[make_pair(0x00003068, 0x00003099)] = 0x3069;
-      m_composeMap[make_pair(0x0000306F, 0x00003099)] = 0x3070;
-      m_composeMap[make_pair(0x0000306F, 0x0000309A)] = 0x3071;
-      m_composeMap[make_pair(0x00003072, 0x00003099)] = 0x3073;
-      m_composeMap[make_pair(0x00003072, 0x0000309A)] = 0x3074;
-      m_composeMap[make_pair(0x00003075, 0x00003099)] = 0x3076;
-      m_composeMap[make_pair(0x00003075, 0x0000309A)] = 0x3077;
-      m_composeMap[make_pair(0x00003078, 0x00003099)] = 0x3079;
-      m_composeMap[make_pair(0x00003078, 0x0000309A)] = 0x307A;
-      m_composeMap[make_pair(0x0000307B, 0x00003099)] = 0x307C;
-      m_composeMap[make_pair(0x0000307B, 0x0000309A)] = 0x307D;
-      m_composeMap[make_pair(0x0000309D, 0x00003099)] = 0x309E;
+      m_composeMap[std::make_pair(0x00003046, 0x00003099)] = 0x3094;
+      m_composeMap[std::make_pair(0x0000304B, 0x00003099)] = 0x304C;
+      m_composeMap[std::make_pair(0x0000304D, 0x00003099)] = 0x304E;
+      m_composeMap[std::make_pair(0x0000304F, 0x00003099)] = 0x3050;
+      m_composeMap[std::make_pair(0x00003051, 0x00003099)] = 0x3052;
+      m_composeMap[std::make_pair(0x00003053, 0x00003099)] = 0x3054;
+      m_composeMap[std::make_pair(0x00003055, 0x00003099)] = 0x3056;
+      m_composeMap[std::make_pair(0x00003057, 0x00003099)] = 0x3058;
+      m_composeMap[std::make_pair(0x00003059, 0x00003099)] = 0x305A;
+      m_composeMap[std::make_pair(0x0000305B, 0x00003099)] = 0x305C;
+      m_composeMap[std::make_pair(0x0000305D, 0x00003099)] = 0x305E;
+      m_composeMap[std::make_pair(0x0000305F, 0x00003099)] = 0x3060;
+      m_composeMap[std::make_pair(0x00003061, 0x00003099)] = 0x3062;
+      m_composeMap[std::make_pair(0x00003064, 0x00003099)] = 0x3065;
+      m_composeMap[std::make_pair(0x00003066, 0x00003099)] = 0x3067;
+      m_composeMap[std::make_pair(0x00003068, 0x00003099)] = 0x3069;
+      m_composeMap[std::make_pair(0x0000306F, 0x00003099)] = 0x3070;
+      m_composeMap[std::make_pair(0x0000306F, 0x0000309A)] = 0x3071;
+      m_composeMap[std::make_pair(0x00003072, 0x00003099)] = 0x3073;
+      m_composeMap[std::make_pair(0x00003072, 0x0000309A)] = 0x3074;
+      m_composeMap[std::make_pair(0x00003075, 0x00003099)] = 0x3076;
+      m_composeMap[std::make_pair(0x00003075, 0x0000309A)] = 0x3077;
+      m_composeMap[std::make_pair(0x00003078, 0x00003099)] = 0x3079;
+      m_composeMap[std::make_pair(0x00003078, 0x0000309A)] = 0x307A;
+      m_composeMap[std::make_pair(0x0000307B, 0x00003099)] = 0x307C;
+      m_composeMap[std::make_pair(0x0000307B, 0x0000309A)] = 0x307D;
+      m_composeMap[std::make_pair(0x0000309D, 0x00003099)] = 0x309E;
     }
 
     ~Hiragana3040() {
@@ -181,10 +182,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -220,6 +221,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -248,6 +253,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Hiragana3040(const Hiragana3040 &) {}
@@ -262,12 +307,12 @@ namespace Babylon {
     static const unsigned char _decomp[96];
     static const UCS4 m_decompStr[96][2];
     static const unsigned char m_lb[96];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<96> m_Diacritic;
     static const std::bitset<96> m_Extender;
   }; // class Hiragana3040
 
-    const std::bitset<96> Hiragana3040::m_is_defined(std::string("011111100001111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
+    const std::bitset<96> Hiragana3040::m_is_defined(std::string("111111100111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
   const unsigned char Hiragana3040::_cat[] = {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -326,7 +371,7 @@ namespace Babylon {
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_VERTICAL
   };
 
   const UCS4 Hiragana3040::m_decompStr[][2] = {
@@ -353,7 +398,7 @@ namespace Babylon {
     { 0x3090u, 0x0000u }, { 0x3091u, 0x0000u }, { 0x3092u, 0x0000u }, { 0x3093u, 0x0000u }, 
     { 0x3046u, 0x3099u }, { 0x3095u, 0x0000u }, { 0x3096u, 0x0000u }, { 0x3097u, 0x0000u }, 
     { 0x3098u, 0x0000u }, { 0x3099u, 0x0000u }, { 0x309Au, 0x0000u }, { 0x0020u, 0x3099u }, 
-    { 0x0020u, 0x309Au }, { 0x309Du, 0x0000u }, { 0x309Du, 0x3099u }, { 0x309Fu, 0x0000u }
+    { 0x0020u, 0x309Au }, { 0x309Du, 0x0000u }, { 0x309Du, 0x3099u }, { 0x3088u, 0x308Au }
   };
 
   const unsigned char Hiragana3040::m_lb[] = {
@@ -368,7 +413,7 @@ namespace Babylon {
     LB_ID, LB_ID, LB_ID, LB_NS, LB_ID, LB_NS, LB_ID, LB_NS, 
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_NS, LB_ID, 
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_NS, LB_NS, LB_NS, 
-    LB_NS, LB_CM, LB_CM, LB_NS, LB_NS, LB_NS, LB_NS, LB_NS
+    LB_NS, LB_CM, LB_CM, LB_NS, LB_NS, LB_NS, LB_NS, LB_ID
   };
 
     const std::bitset<96> Hiragana3040::m_Diacritic(std::string("000111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));

@@ -87,7 +87,7 @@ namespace Babylon {
 	    virtual Line_Break linebreak(const UCS4) const = 0;
 
 	    // Properties:
-	    virtual bool is_White_space(const UCS4) const = 0;
+	    virtual bool is_White_Space(const UCS4) const = 0;
 	    virtual bool is_Bidi_Control(const UCS4) const = 0;
 	    virtual bool is_Join_Control(const UCS4) const = 0;
 	    virtual bool is_Dash(const UCS4) const = 0;
@@ -191,7 +191,7 @@ namespace Babylon {
 	    throw (Block_Error);
 
 	// Properties:
-	bool is_White_space(const UCS4 uc) 
+	bool is_White_Space(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Bidi_Control(const UCS4 uc) 
 	    throw (Block_Error);

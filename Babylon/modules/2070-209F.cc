@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:32 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:08 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -382,7 +383,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -418,6 +419,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -446,6 +451,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Superscripts_and_Subscripts2070(const Superscripts_and_Subscripts2070 &) {}
@@ -463,10 +508,10 @@ namespace Babylon {
     static const unsigned char m_ea[48];
   }; // class Superscripts_and_Subscripts2070
 
-    const std::bitset<48> Superscripts_and_Subscripts2070::m_is_defined(std::string("000000000000000001111111111111111111111111110001"));
+    const std::bitset<48> Superscripts_and_Subscripts2070::m_is_defined(std::string("000000000000000001111111111111111111111111110011"));
 
   const unsigned char Superscripts_and_Subscripts2070::_cat[] = {
-    CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
+    CAT_No, CAT_Ll, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
     CAT_No, CAT_No, CAT_Sm, CAT_Sm, CAT_Sm, CAT_Ps, CAT_Pe, CAT_Ll, 
     CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
     CAT_No, CAT_No, CAT_Sm, CAT_Sm, CAT_Sm, CAT_Ps, CAT_Pe, CAT_No, 
@@ -475,7 +520,7 @@ namespace Babylon {
   };
 
   const Babylon::Bidir_Props Superscripts_and_Subscripts2070::m_bidir[] = {
-    BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, 
+    BIDIR_EN, BIDIR_L, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, 
     BIDIR_EN, BIDIR_EN, BIDIR_ET, BIDIR_ET, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_L, 
     BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, BIDIR_EN, 
     BIDIR_EN, BIDIR_EN, BIDIR_ET, BIDIR_ET, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_EN, 
@@ -484,7 +529,7 @@ namespace Babylon {
   };
 
   const unsigned char Superscripts_and_Subscripts2070::_decomp[] = {
-    DECOMP_SUPER, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, 
+    DECOMP_SUPER, DECOMP_SUPER, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, 
     DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, DECOMP_SUPER, 
     DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, 
     DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_SUB, DECOMP_CANONICAL, 
@@ -493,7 +538,7 @@ namespace Babylon {
   };
 
   const UCS2 Superscripts_and_Subscripts2070::m_decompStr[] = {
-    0x0030u, 0x2071u, 0x2072u, 0x2073u, 
+    0x0030u, 0x0069u, 0x2072u, 0x2073u, 
     0x0034u, 0x0035u, 0x0036u, 0x0037u, 
     0x0038u, 0x0039u, 0x002Bu, 0x2212u, 
     0x003Du, 0x0028u, 0x0029u, 0x006Eu, 

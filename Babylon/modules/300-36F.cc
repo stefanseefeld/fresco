@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:25 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:47:59 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -156,7 +157,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -192,6 +193,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -220,6 +225,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return m_Deprecated.test(uc - m_first_letter);
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Combining_Diacritical_Marks300(const Combining_Diacritical_Marks300 &) {}
@@ -233,9 +278,10 @@ namespace Babylon {
     static const unsigned char _comb_cl[112];
     static const UCS2 m_decompStr[112][2];
     static const std::bitset<112> m_Diacritic;
+    static const std::bitset<112> m_Deprecated;
   }; // class Combining_Diacritical_Marks300
 
-    const std::bitset<112> Combining_Diacritical_Marks300::m_is_defined(std::string("0000000000000111000000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<112> Combining_Diacritical_Marks300::m_is_defined(std::string("1111111111111111000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Combining_Diacritical_Marks300::m_upper[] = {
     0x0300, 0x0301, 0x0302, 0x0303, 0x0304, 0x0305, 0x0306, 0x0307, 
@@ -284,8 +330,8 @@ namespace Babylon {
     220, 220, 230, 230, 230, 220, 220, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 
-    234, 234, 233, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
+    234, 234, 233, 230, 230, 230, 230, 230, 
+    230, 230, 230, 230, 230, 230, 230, 230
   };
 
   const UCS2 Combining_Diacritical_Marks300::m_decompStr[][2] = {
@@ -320,6 +366,8 @@ namespace Babylon {
   };
 
     const std::bitset<112> Combining_Diacritical_Marks300::m_Diacritic(std::string("0000000000000111000000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+
+    const std::bitset<112> Combining_Diacritical_Marks300::m_Deprecated(std::string("0000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

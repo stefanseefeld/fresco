@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:05:07 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:14 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -126,6 +127,51 @@ namespace Babylon {
       case 0x3229u:
         return 10.000000;
         break;
+      case 0x3251u:
+        return 21.000000;
+        break;
+      case 0x3252u:
+        return 22.000000;
+        break;
+      case 0x3253u:
+        return 23.000000;
+        break;
+      case 0x3254u:
+        return 24.000000;
+        break;
+      case 0x3255u:
+        return 25.000000;
+        break;
+      case 0x3256u:
+        return 26.000000;
+        break;
+      case 0x3257u:
+        return 27.000000;
+        break;
+      case 0x3258u:
+        return 28.000000;
+        break;
+      case 0x3259u:
+        return 29.000000;
+        break;
+      case 0x325Au:
+        return 30.000000;
+        break;
+      case 0x325Bu:
+        return 31.000000;
+        break;
+      case 0x325Cu:
+        return 32.000000;
+        break;
+      case 0x325Du:
+        return 33.000000;
+        break;
+      case 0x325Eu:
+        return 34.000000;
+        break;
+      case 0x325Fu:
+        return 35.000000;
+        break;
       case 0x3280u:
         return 1.000000;
         break;
@@ -156,6 +202,51 @@ namespace Babylon {
       case 0x3289u:
         return 10.000000;
         break;
+      case 0x32B1u:
+        return 36.000000;
+        break;
+      case 0x32B2u:
+        return 37.000000;
+        break;
+      case 0x32B3u:
+        return 38.000000;
+        break;
+      case 0x32B4u:
+        return 39.000000;
+        break;
+      case 0x32B5u:
+        return 40.000000;
+        break;
+      case 0x32B6u:
+        return 41.000000;
+        break;
+      case 0x32B7u:
+        return 42.000000;
+        break;
+      case 0x32B8u:
+        return 43.000000;
+        break;
+      case 0x32B9u:
+        return 44.000000;
+        break;
+      case 0x32BAu:
+        return 45.000000;
+        break;
+      case 0x32BBu:
+        return 46.000000;
+        break;
+      case 0x32BCu:
+        return 47.000000;
+        break;
+      case 0x32BDu:
+        return 48.000000;
+        break;
+      case 0x32BEu:
+        return 49.000000;
+        break;
+      case 0x32BFu:
+        return 50.000000;
+        break;
       default:
         return 0;
       }
@@ -173,6 +264,21 @@ namespace Babylon {
       case 0x3227u:
       case 0x3228u:
       case 0x3229u:
+      case 0x3251u:
+      case 0x3252u:
+      case 0x3253u:
+      case 0x3254u:
+      case 0x3255u:
+      case 0x3256u:
+      case 0x3257u:
+      case 0x3258u:
+      case 0x3259u:
+      case 0x325Au:
+      case 0x325Bu:
+      case 0x325Cu:
+      case 0x325Du:
+      case 0x325Eu:
+      case 0x325Fu:
       case 0x3280u:
       case 0x3281u:
       case 0x3282u:
@@ -183,6 +289,21 @@ namespace Babylon {
       case 0x3287u:
       case 0x3288u:
       case 0x3289u:
+      case 0x32B1u:
+      case 0x32B2u:
+      case 0x32B3u:
+      case 0x32B4u:
+      case 0x32B5u:
+      case 0x32B6u:
+      case 0x32B7u:
+      case 0x32B8u:
+      case 0x32B9u:
+      case 0x32BAu:
+      case 0x32BBu:
+      case 0x32BCu:
+      case 0x32BDu:
+      case 0x32BEu:
+      case 0x32BFu:
         return 1;
       default:
         return 0;
@@ -204,7 +325,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return BIDIR_L;
+      return Enclosed_CJK_Letters_and_Months3200::m_bidir[uc - m_first_letter];
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -603,7 +724,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -639,6 +760,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -667,6 +792,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Enclosed_CJK_Letters_and_Months3200(const Enclosed_CJK_Letters_and_Months3200 &) {}
@@ -676,11 +841,12 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<256> m_is_defined;
     static const unsigned char _cat[256];
+    static const Babylon::Bidir_Props m_bidir[256];
     static const unsigned char _decomp[256];
     static const UCS4 m_decompStr[256][2];
   }; // class Enclosed_CJK_Letters_and_Months3200
 
-    const std::bitset<256> Enclosed_CJK_Letters_and_Months3200::m_is_defined(std::string("0111111111111111111111111111111111111111111111110000111111111111000000000000000111111111111111111111111111111111111111111111111110001111111111111111111111111111000000000000000000000000000011111111111111111111111111111111111100011111111111111111111111111111"));
+    const std::bitset<256> Enclosed_CJK_Letters_and_Months3200::m_is_defined(std::string("0111111111111111111111111111111111111111111111110000111111111111111111111111111111111111111111111111111111111111111111111111111110001111111111111111111111111111111111111111111000000000000011111111111111111111111111111111111100011111111111111111111111111111"));
 
   const unsigned char Enclosed_CJK_Letters_and_Months3200::_cat[] = {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
@@ -693,8 +859,8 @@ namespace Babylon {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
-    CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
-    CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
+    CAT_So, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
+    CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
@@ -705,8 +871,8 @@ namespace Babylon {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
-    CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
-    CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
+    CAT_So, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
+    CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, CAT_No, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
@@ -715,6 +881,41 @@ namespace Babylon {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So
+  };
+
+  const Babylon::Bidir_Props Enclosed_CJK_Letters_and_Months3200::m_bidir[] = {
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L
   };
 
   const unsigned char Enclosed_CJK_Letters_and_Months3200::_decomp[] = {
@@ -728,8 +929,8 @@ namespace Babylon {
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
+    DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
@@ -740,8 +941,8 @@ namespace Babylon {
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
-    DECOMP_CIRCLE, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
+    DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, 
@@ -773,10 +974,10 @@ namespace Babylon {
     { 0x3244u, 0x0000u }, { 0x3245u, 0x0000u }, { 0x3246u, 0x0000u }, { 0x3247u, 0x0000u }, 
     { 0x3248u, 0x0000u }, { 0x3249u, 0x0000u }, { 0x324Au, 0x0000u }, { 0x324Bu, 0x0000u }, 
     { 0x324Cu, 0x0000u }, { 0x324Du, 0x0000u }, { 0x324Eu, 0x0000u }, { 0x324Fu, 0x0000u }, 
-    { 0x3250u, 0x0000u }, { 0x3251u, 0x0000u }, { 0x3252u, 0x0000u }, { 0x3253u, 0x0000u }, 
-    { 0x3254u, 0x0000u }, { 0x3255u, 0x0000u }, { 0x3256u, 0x0000u }, { 0x3257u, 0x0000u }, 
-    { 0x3258u, 0x0000u }, { 0x3259u, 0x0000u }, { 0x325Au, 0x0000u }, { 0x325Bu, 0x0000u }, 
-    { 0x325Cu, 0x0000u }, { 0x325Du, 0x0000u }, { 0x325Eu, 0x0000u }, { 0x325Fu, 0x0000u }, 
+    { 0x3250u, 0x0000u }, { 0x0032u, 0x0031u }, { 0x0032u, 0x0032u }, { 0x0032u, 0x0033u }, 
+    { 0x0032u, 0x0034u }, { 0x0032u, 0x0035u }, { 0x0032u, 0x0036u }, { 0x0032u, 0x0037u }, 
+    { 0x0032u, 0x0038u }, { 0x0032u, 0x0039u }, { 0x0033u, 0x0030u }, { 0x0033u, 0x0031u }, 
+    { 0x0033u, 0x0032u }, { 0x0033u, 0x0033u }, { 0x0033u, 0x0034u }, { 0x0033u, 0x0035u }, 
     { 0x1100u, 0x0000u }, { 0x1102u, 0x0000u }, { 0x1103u, 0x0000u }, { 0x1105u, 0x0000u }, 
     { 0x1106u, 0x0000u }, { 0x1107u, 0x0000u }, { 0x1109u, 0x0000u }, { 0x110Bu, 0x0000u }, 
     { 0x110Cu, 0x0000u }, { 0x110Eu, 0x0000u }, { 0x110Fu, 0x0000u }, { 0x1110u, 0x0000u }, 
@@ -797,10 +998,10 @@ namespace Babylon {
     { 0x4E0Au, 0x0000u }, { 0x4E2Du, 0x0000u }, { 0x4E0Bu, 0x0000u }, { 0x5DE6u, 0x0000u }, 
     { 0x53F3u, 0x0000u }, { 0x533Bu, 0x0000u }, { 0x5B97u, 0x0000u }, { 0x5B66u, 0x0000u }, 
     { 0x76E3u, 0x0000u }, { 0x4F01u, 0x0000u }, { 0x8CC7u, 0x0000u }, { 0x5354u, 0x0000u }, 
-    { 0x591Cu, 0x0000u }, { 0x32B1u, 0x0000u }, { 0x32B2u, 0x0000u }, { 0x32B3u, 0x0000u }, 
-    { 0x32B4u, 0x0000u }, { 0x32B5u, 0x0000u }, { 0x32B6u, 0x0000u }, { 0x32B7u, 0x0000u }, 
-    { 0x32B8u, 0x0000u }, { 0x32B9u, 0x0000u }, { 0x32BAu, 0x0000u }, { 0x32BBu, 0x0000u }, 
-    { 0x32BCu, 0x0000u }, { 0x32BDu, 0x0000u }, { 0x32BEu, 0x0000u }, { 0x32BFu, 0x0000u }, 
+    { 0x591Cu, 0x0000u }, { 0x0033u, 0x0036u }, { 0x0033u, 0x0037u }, { 0x0033u, 0x0038u }, 
+    { 0x0033u, 0x0039u }, { 0x0034u, 0x0030u }, { 0x0034u, 0x0031u }, { 0x0034u, 0x0032u }, 
+    { 0x0034u, 0x0033u }, { 0x0034u, 0x0034u }, { 0x0034u, 0x0035u }, { 0x0034u, 0x0036u }, 
+    { 0x0034u, 0x0037u }, { 0x0034u, 0x0038u }, { 0x0034u, 0x0039u }, { 0x0035u, 0x0030u }, 
     { 0x0031u, 0x6708u }, { 0x0032u, 0x6708u }, { 0x0033u, 0x6708u }, { 0x0034u, 0x6708u }, 
     { 0x0035u, 0x6708u }, { 0x0036u, 0x6708u }, { 0x0037u, 0x6708u }, { 0x0038u, 0x6708u }, 
     { 0x0039u, 0x6708u }, { 0x0031u, 0x0030u }, { 0x0031u, 0x0031u }, { 0x0031u, 0x0032u }, 

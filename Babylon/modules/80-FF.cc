@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:17 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:47:58 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,63 +40,63 @@ namespace Babylon {
       m_first_letter = 0x80;
       m_last_letter  = 0xFF;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x000000A8, 0x00000300)] = 0x1FED;
-      m_composeMap[make_pair(0x000000A8, 0x00000301)] = 0x0385;
-      m_composeMap[make_pair(0x000000A8, 0x00000342)] = 0x1FC1;
-      m_composeMap[make_pair(0x000000C2, 0x00000300)] = 0x1EA6;
-      m_composeMap[make_pair(0x000000C2, 0x00000301)] = 0x1EA4;
-      m_composeMap[make_pair(0x000000C2, 0x00000303)] = 0x1EAA;
-      m_composeMap[make_pair(0x000000C2, 0x00000309)] = 0x1EA8;
-      m_composeMap[make_pair(0x000000C4, 0x00000304)] = 0x01DE;
-      m_composeMap[make_pair(0x000000C5, 0x00000301)] = 0x01FA;
-      m_composeMap[make_pair(0x000000C6, 0x00000301)] = 0x01FC;
-      m_composeMap[make_pair(0x000000C6, 0x00000304)] = 0x01E2;
-      m_composeMap[make_pair(0x000000C7, 0x00000301)] = 0x1E08;
-      m_composeMap[make_pair(0x000000CA, 0x00000300)] = 0x1EC0;
-      m_composeMap[make_pair(0x000000CA, 0x00000301)] = 0x1EBE;
-      m_composeMap[make_pair(0x000000CA, 0x00000303)] = 0x1EC4;
-      m_composeMap[make_pair(0x000000CA, 0x00000309)] = 0x1EC2;
-      m_composeMap[make_pair(0x000000CF, 0x00000301)] = 0x1E2E;
-      m_composeMap[make_pair(0x000000D4, 0x00000300)] = 0x1ED2;
-      m_composeMap[make_pair(0x000000D4, 0x00000301)] = 0x1ED0;
-      m_composeMap[make_pair(0x000000D4, 0x00000303)] = 0x1ED6;
-      m_composeMap[make_pair(0x000000D4, 0x00000309)] = 0x1ED4;
-      m_composeMap[make_pair(0x000000D5, 0x00000301)] = 0x1E4C;
-      m_composeMap[make_pair(0x000000D5, 0x00000304)] = 0x022C;
-      m_composeMap[make_pair(0x000000D5, 0x00000308)] = 0x1E4E;
-      m_composeMap[make_pair(0x000000D6, 0x00000304)] = 0x022A;
-      m_composeMap[make_pair(0x000000D8, 0x00000301)] = 0x01FE;
-      m_composeMap[make_pair(0x000000DC, 0x00000300)] = 0x01DB;
-      m_composeMap[make_pair(0x000000DC, 0x00000301)] = 0x01D7;
-      m_composeMap[make_pair(0x000000DC, 0x00000304)] = 0x01D5;
-      m_composeMap[make_pair(0x000000DC, 0x0000030C)] = 0x01D9;
-      m_composeMap[make_pair(0x000000E2, 0x00000300)] = 0x1EA7;
-      m_composeMap[make_pair(0x000000E2, 0x00000301)] = 0x1EA5;
-      m_composeMap[make_pair(0x000000E2, 0x00000303)] = 0x1EAB;
-      m_composeMap[make_pair(0x000000E2, 0x00000309)] = 0x1EA9;
-      m_composeMap[make_pair(0x000000E4, 0x00000304)] = 0x01DF;
-      m_composeMap[make_pair(0x000000E5, 0x00000301)] = 0x01FB;
-      m_composeMap[make_pair(0x000000E6, 0x00000301)] = 0x01FD;
-      m_composeMap[make_pair(0x000000E6, 0x00000304)] = 0x01E3;
-      m_composeMap[make_pair(0x000000E7, 0x00000301)] = 0x1E09;
-      m_composeMap[make_pair(0x000000EA, 0x00000300)] = 0x1EC1;
-      m_composeMap[make_pair(0x000000EA, 0x00000301)] = 0x1EBF;
-      m_composeMap[make_pair(0x000000EA, 0x00000303)] = 0x1EC5;
-      m_composeMap[make_pair(0x000000EA, 0x00000309)] = 0x1EC3;
-      m_composeMap[make_pair(0x000000EF, 0x00000301)] = 0x1E2F;
-      m_composeMap[make_pair(0x000000F4, 0x00000300)] = 0x1ED3;
-      m_composeMap[make_pair(0x000000F4, 0x00000301)] = 0x1ED1;
-      m_composeMap[make_pair(0x000000F4, 0x00000303)] = 0x1ED7;
-      m_composeMap[make_pair(0x000000F4, 0x00000309)] = 0x1ED5;
-      m_composeMap[make_pair(0x000000F5, 0x00000301)] = 0x1E4D;
-      m_composeMap[make_pair(0x000000F5, 0x00000304)] = 0x022D;
-      m_composeMap[make_pair(0x000000F5, 0x00000308)] = 0x1E4F;
-      m_composeMap[make_pair(0x000000F6, 0x00000304)] = 0x022B;
-      m_composeMap[make_pair(0x000000F8, 0x00000301)] = 0x01FF;
-      m_composeMap[make_pair(0x000000FC, 0x00000300)] = 0x01DC;
-      m_composeMap[make_pair(0x000000FC, 0x00000301)] = 0x01D8;
-      m_composeMap[make_pair(0x000000FC, 0x00000304)] = 0x01D6;
-      m_composeMap[make_pair(0x000000FC, 0x0000030C)] = 0x01DA;
+      m_composeMap[std::make_pair(0x000000A8, 0x00000300)] = 0x1FED;
+      m_composeMap[std::make_pair(0x000000A8, 0x00000301)] = 0x0385;
+      m_composeMap[std::make_pair(0x000000A8, 0x00000342)] = 0x1FC1;
+      m_composeMap[std::make_pair(0x000000C2, 0x00000300)] = 0x1EA6;
+      m_composeMap[std::make_pair(0x000000C2, 0x00000301)] = 0x1EA4;
+      m_composeMap[std::make_pair(0x000000C2, 0x00000303)] = 0x1EAA;
+      m_composeMap[std::make_pair(0x000000C2, 0x00000309)] = 0x1EA8;
+      m_composeMap[std::make_pair(0x000000C4, 0x00000304)] = 0x01DE;
+      m_composeMap[std::make_pair(0x000000C5, 0x00000301)] = 0x01FA;
+      m_composeMap[std::make_pair(0x000000C6, 0x00000301)] = 0x01FC;
+      m_composeMap[std::make_pair(0x000000C6, 0x00000304)] = 0x01E2;
+      m_composeMap[std::make_pair(0x000000C7, 0x00000301)] = 0x1E08;
+      m_composeMap[std::make_pair(0x000000CA, 0x00000300)] = 0x1EC0;
+      m_composeMap[std::make_pair(0x000000CA, 0x00000301)] = 0x1EBE;
+      m_composeMap[std::make_pair(0x000000CA, 0x00000303)] = 0x1EC4;
+      m_composeMap[std::make_pair(0x000000CA, 0x00000309)] = 0x1EC2;
+      m_composeMap[std::make_pair(0x000000CF, 0x00000301)] = 0x1E2E;
+      m_composeMap[std::make_pair(0x000000D4, 0x00000300)] = 0x1ED2;
+      m_composeMap[std::make_pair(0x000000D4, 0x00000301)] = 0x1ED0;
+      m_composeMap[std::make_pair(0x000000D4, 0x00000303)] = 0x1ED6;
+      m_composeMap[std::make_pair(0x000000D4, 0x00000309)] = 0x1ED4;
+      m_composeMap[std::make_pair(0x000000D5, 0x00000301)] = 0x1E4C;
+      m_composeMap[std::make_pair(0x000000D5, 0x00000304)] = 0x022C;
+      m_composeMap[std::make_pair(0x000000D5, 0x00000308)] = 0x1E4E;
+      m_composeMap[std::make_pair(0x000000D6, 0x00000304)] = 0x022A;
+      m_composeMap[std::make_pair(0x000000D8, 0x00000301)] = 0x01FE;
+      m_composeMap[std::make_pair(0x000000DC, 0x00000300)] = 0x01DB;
+      m_composeMap[std::make_pair(0x000000DC, 0x00000301)] = 0x01D7;
+      m_composeMap[std::make_pair(0x000000DC, 0x00000304)] = 0x01D5;
+      m_composeMap[std::make_pair(0x000000DC, 0x0000030C)] = 0x01D9;
+      m_composeMap[std::make_pair(0x000000E2, 0x00000300)] = 0x1EA7;
+      m_composeMap[std::make_pair(0x000000E2, 0x00000301)] = 0x1EA5;
+      m_composeMap[std::make_pair(0x000000E2, 0x00000303)] = 0x1EAB;
+      m_composeMap[std::make_pair(0x000000E2, 0x00000309)] = 0x1EA9;
+      m_composeMap[std::make_pair(0x000000E4, 0x00000304)] = 0x01DF;
+      m_composeMap[std::make_pair(0x000000E5, 0x00000301)] = 0x01FB;
+      m_composeMap[std::make_pair(0x000000E6, 0x00000301)] = 0x01FD;
+      m_composeMap[std::make_pair(0x000000E6, 0x00000304)] = 0x01E3;
+      m_composeMap[std::make_pair(0x000000E7, 0x00000301)] = 0x1E09;
+      m_composeMap[std::make_pair(0x000000EA, 0x00000300)] = 0x1EC1;
+      m_composeMap[std::make_pair(0x000000EA, 0x00000301)] = 0x1EBF;
+      m_composeMap[std::make_pair(0x000000EA, 0x00000303)] = 0x1EC5;
+      m_composeMap[std::make_pair(0x000000EA, 0x00000309)] = 0x1EC3;
+      m_composeMap[std::make_pair(0x000000EF, 0x00000301)] = 0x1E2F;
+      m_composeMap[std::make_pair(0x000000F4, 0x00000300)] = 0x1ED3;
+      m_composeMap[std::make_pair(0x000000F4, 0x00000301)] = 0x1ED1;
+      m_composeMap[std::make_pair(0x000000F4, 0x00000303)] = 0x1ED7;
+      m_composeMap[std::make_pair(0x000000F4, 0x00000309)] = 0x1ED5;
+      m_composeMap[std::make_pair(0x000000F5, 0x00000301)] = 0x1E4D;
+      m_composeMap[std::make_pair(0x000000F5, 0x00000304)] = 0x022D;
+      m_composeMap[std::make_pair(0x000000F5, 0x00000308)] = 0x1E4F;
+      m_composeMap[std::make_pair(0x000000F6, 0x00000304)] = 0x022B;
+      m_composeMap[std::make_pair(0x000000F8, 0x00000301)] = 0x01FF;
+      m_composeMap[std::make_pair(0x000000FC, 0x00000300)] = 0x01DC;
+      m_composeMap[std::make_pair(0x000000FC, 0x00000301)] = 0x01D8;
+      m_composeMap[std::make_pair(0x000000FC, 0x00000304)] = 0x01D6;
+      m_composeMap[std::make_pair(0x000000FC, 0x0000030C)] = 0x01DA;
     }
 
     ~Latin1_Supplement80() {
@@ -304,10 +305,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -343,6 +344,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -371,6 +376,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Latin1_Supplement80(const Latin1_Supplement80 &) {}
@@ -388,7 +433,7 @@ namespace Babylon {
     static const std::bitset<128> m_mirror;
     static const unsigned char m_lb[128];
     static const unsigned char m_ea[128];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
   }; // class Latin1_Supplement80
 
   const UCS4 Latin1_Supplement80::m_upper[] = {
@@ -567,7 +612,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_A, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_A, 
-    EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_Na, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_Na, 
+    EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_Na, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_Na, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, 

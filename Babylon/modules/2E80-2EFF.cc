@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:57 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:13 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -151,7 +152,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -187,6 +188,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -215,6 +220,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return m_Radical.test(uc - m_first_letter);
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     CJK_Radicals_Supplement2E80(const CJK_Radicals_Supplement2E80 &) {}
@@ -225,6 +270,7 @@ namespace Babylon {
     static const std::bitset<128> m_is_defined;
     static const unsigned char _decomp[128];
     static const UCS4 m_decompStr[128];
+    static const std::bitset<128> m_Radical;
   }; // class CJK_Radicals_Supplement2E80
 
     const std::bitset<128> CJK_Radicals_Supplement2E80::m_is_defined(std::string("00000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011111111111111111111111111"));
@@ -282,6 +328,8 @@ namespace Babylon {
     0x2EF8u, 0x2EF9u, 0x2EFAu, 0x2EFBu, 
     0x2EFCu, 0x2EFDu, 0x2EFEu, 0x2EFFu
   };
+
+    const std::bitset<128> CJK_Radicals_Supplement2E80::m_Radical(std::string("00000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011111111111111111111111111"));
 
 }; // namespace Babylon
 

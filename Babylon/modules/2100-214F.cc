@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:34 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:09 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -165,7 +166,7 @@ namespace Babylon {
     }
 
     bool must_mirror(const UCS4 uc) const {
-      return 0;
+      return m_mirror.test(uc - m_first_letter);
     }
 
     Line_Break linebreak(const UCS4 uc) const {
@@ -184,7 +185,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -220,6 +221,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -248,6 +253,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Letterlike_Symbols2100(const Letterlike_Symbols2100 &) {}
@@ -261,12 +306,13 @@ namespace Babylon {
     static const Babylon::Bidir_Props m_bidir[80];
     static const unsigned char _decomp[80];
     static const UCS2 m_decompStr[80][2];
+    static const std::bitset<80> m_mirror;
     static const unsigned char m_lb[80];
     static const unsigned char m_ea[80];
     static const std::bitset<80> m_Other_Math;
   }; // class Letterlike_Symbols2100
 
-    const std::bitset<80> Letterlike_Symbols2100::m_is_defined(std::string("00000000000000000000011111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<80> Letterlike_Symbols2100::m_is_defined(std::string("00001111111111111110011111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Letterlike_Symbols2100::m_lower[] = {
     0x2100, 0x2101, 0x2102, 0x2103, 0x2104, 0x2105, 0x2106, 0x2107, 
@@ -289,9 +335,9 @@ namespace Babylon {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_Lu, CAT_So, CAT_Lu, CAT_So, 
     CAT_Lu, CAT_So, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Lu, CAT_So, CAT_Ll, 
     CAT_Lu, CAT_Lu, CAT_So, CAT_Lu, CAT_Ll, CAT_Lo, CAT_Lo, CAT_Lo, 
-    CAT_Lo, CAT_Ll, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
-    CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
-    CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So
+    CAT_Lo, CAT_Ll, CAT_So, CAT_So, CAT_So, CAT_Ll, CAT_Lu, CAT_Lu, 
+    CAT_Sm, CAT_Sm, CAT_Sm, CAT_Sm, CAT_Sm, CAT_Lu, CAT_Ll, CAT_Ll, 
+    CAT_Ll, CAT_Ll, CAT_So, CAT_Sm, CAT_So, CAT_So, CAT_So, CAT_So
   };
 
   const Babylon::Bidir_Props Letterlike_Symbols2100::m_bidir[] = {
@@ -302,9 +348,9 @@ namespace Babylon {
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_ON, BIDIR_L, BIDIR_ON, 
     BIDIR_L, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_ET, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
-    BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON
+    BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, 
+    BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON
   };
 
   const unsigned char Letterlike_Symbols2100::_decomp[] = {
@@ -315,9 +361,9 @@ namespace Babylon {
     DECOMP_SUPER, DECOMP_COMPAT, DECOMP_SUPER, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_FONT, 
     DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
-    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
+    DECOMP_COMPAT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, 
+    DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, 
+    DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
   };
 
   const UCS2 Letterlike_Symbols2100::m_decompStr[][2] = {
@@ -336,12 +382,14 @@ namespace Babylon {
     { 0x0045u, 0x0000u }, { 0x0046u, 0x0000u }, { 0x2132u, 0x0000u }, { 0x004Du, 0x0000u }, 
     { 0x006Fu, 0x0000u }, { 0x05D0u, 0x0000u }, { 0x05D1u, 0x0000u }, { 0x05D2u, 0x0000u }, 
     { 0x05D3u, 0x0000u }, { 0x0069u, 0x0000u }, { 0x213Au, 0x0000u }, { 0x213Bu, 0x0000u }, 
-    { 0x213Cu, 0x0000u }, { 0x213Du, 0x0000u }, { 0x213Eu, 0x0000u }, { 0x213Fu, 0x0000u }, 
-    { 0x2140u, 0x0000u }, { 0x2141u, 0x0000u }, { 0x2142u, 0x0000u }, { 0x2143u, 0x0000u }, 
-    { 0x2144u, 0x0000u }, { 0x2145u, 0x0000u }, { 0x2146u, 0x0000u }, { 0x2147u, 0x0000u }, 
-    { 0x2148u, 0x0000u }, { 0x2149u, 0x0000u }, { 0x214Au, 0x0000u }, { 0x214Bu, 0x0000u }, 
+    { 0x213Cu, 0x0000u }, { 0x03B3u, 0x0000u }, { 0x0393u, 0x0000u }, { 0x03A0u, 0x0000u }, 
+    { 0x2211u, 0x0000u }, { 0x2141u, 0x0000u }, { 0x2142u, 0x0000u }, { 0x2143u, 0x0000u }, 
+    { 0x2144u, 0x0000u }, { 0x0044u, 0x0000u }, { 0x0064u, 0x0000u }, { 0x0065u, 0x0000u }, 
+    { 0x0069u, 0x0000u }, { 0x006Au, 0x0000u }, { 0x214Au, 0x0000u }, { 0x214Bu, 0x0000u }, 
     { 0x214Cu, 0x0000u }, { 0x214Du, 0x0000u }, { 0x214Eu, 0x0000u }, { 0x214Fu, 0x0000u }
   };
+
+  const std::bitset<80> Letterlike_Symbols2100::m_mirror(std::string("00000000000000010000000000000000000000000000000000000000000000000000000000000000"));
 
   const unsigned char Letterlike_Symbols2100::m_lb[] = {
     LB_AL, LB_AL, LB_AL, LB_PO, LB_AL, LB_AI, LB_AL, LB_AL, 
@@ -352,14 +400,14 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AI, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
-    LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
+    LB_AI, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
   const unsigned char Letterlike_Symbols2100::m_ea[] = {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 

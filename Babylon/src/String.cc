@@ -33,7 +33,7 @@ Babylon::String::String() : m_current_norm(Babylon::NORM_NONE) {
     resize(0);
 }
 
-Babylon::String::String(const Char uc, Norm norm = NORM_NONE)  :
+Babylon::String::String(const Char uc, Norm norm)  :
     m_current_norm(norm) {
     Prague::Trace trace("Babylon::String::String(Char, ...)");
     Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -42,7 +42,7 @@ Babylon::String::String(const Char uc, Norm norm = NORM_NONE)  :
     m_current_norm = norm;
 }
 
-Babylon::String::String(const UCS4 uc, Norm norm = NORM_NONE) :
+Babylon::String::String(const UCS4 uc, Norm norm) :
     m_current_norm(norm) {
     Prague::Trace trace("Babylon::String::String(UCS4, ...)");
     Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -50,18 +50,18 @@ Babylon::String::String(const UCS4 uc, Norm norm = NORM_NONE) :
     (*this)[0] = uc;
 }
 
-Babylon::String::String(const UTF8_string & s, const Norm norm = NORM_NONE) :
+Babylon::String::String(const UTF8_string & s, const Norm norm) :
     m_current_norm(norm) {
     Prague::Trace trace("Babylon::String::String(UTF8_string, ...)");
     utf8(s, norm);
 }
 
-Babylon::String::String(const char * s, const Norm norm = NORM_NONE) {
+Babylon::String::String(const char * s, const Norm norm) {
     Prague::Trace trace("Babylon::String::String(char *, ...)");
     utf8(s, norm);
 }
 
-Babylon::String::String(size_t len, Char * data, const Norm norm = NORM_NONE) :
+Babylon::String::String(size_t len, Char * data, const Norm norm) :
     m_current_norm(norm) {
     Prague::Trace trace("Babylon::String::String(size_t, ...)");
     Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -83,7 +83,7 @@ Babylon::String::String(const String & us) {
     m_current_norm = us.norm();
 }
 
-Babylon::String::String(const UTF32_string & us, Norm norm = NORM_NONE) :
+Babylon::String::String(const UTF32_string & us, Norm norm) :
     m_current_norm(norm) {
     Prague::Trace trace("Babylon::String::String(UTF32_string, ...)"); 
     Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -105,7 +105,7 @@ Babylon::String::~String() {
     Prague::Trace trace("Babylon::String::~String()");
 }
 
-void Babylon::String::utf8(const UTF8_string & s, Norm norm = NORM_NONE)
+void Babylon::String::utf8(const UTF8_string & s, Norm norm)
     throw (Trans_Error) {
     Prague::Trace trace("Babylon::String::utf8(...)");
     Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -131,7 +131,7 @@ Babylon::UTF8_string Babylon::String::utf8() const throw (Trans_Error) {
     return res;
 }
 
-void Babylon::String::utf16(const UTF16_string & in , const Norm norm = NORM_NONE)
+void Babylon::String::utf16(const UTF16_string & in , const Norm norm)
     throw (Trans_Error) {
     Prague::Trace trace("Babylon::String::utf16(...)");
     Prague::Guard<Prague::Mutex> guard(_mutex);
@@ -156,8 +156,7 @@ Babylon::UTF16_string Babylon::String::utf16() const throw (Trans_Error) {
     return res;
 }
 
-void Babylon::String::utf32(const UTF32_string & s,
-			    const Norm norm = NORM_NONE) {
+void Babylon::String::utf32(const UTF32_string & s, const Norm norm) {
     Prague::Trace trace("Babylon::String::utf32(...)");
     Prague::Guard<Prague::Mutex> guard(_mutex);
     erase();

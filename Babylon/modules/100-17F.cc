@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:18 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:47:58 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,31 +40,31 @@ namespace Babylon {
       m_first_letter = 0x100;
       m_last_letter  = 0x17F;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x00000102, 0x00000300)] = 0x1EB0;
-      m_composeMap[make_pair(0x00000102, 0x00000301)] = 0x1EAE;
-      m_composeMap[make_pair(0x00000102, 0x00000303)] = 0x1EB4;
-      m_composeMap[make_pair(0x00000102, 0x00000309)] = 0x1EB2;
-      m_composeMap[make_pair(0x00000103, 0x00000300)] = 0x1EB1;
-      m_composeMap[make_pair(0x00000103, 0x00000301)] = 0x1EAF;
-      m_composeMap[make_pair(0x00000103, 0x00000303)] = 0x1EB5;
-      m_composeMap[make_pair(0x00000103, 0x00000309)] = 0x1EB3;
-      m_composeMap[make_pair(0x00000112, 0x00000300)] = 0x1E14;
-      m_composeMap[make_pair(0x00000112, 0x00000301)] = 0x1E16;
-      m_composeMap[make_pair(0x00000113, 0x00000300)] = 0x1E15;
-      m_composeMap[make_pair(0x00000113, 0x00000301)] = 0x1E17;
-      m_composeMap[make_pair(0x0000014C, 0x00000300)] = 0x1E50;
-      m_composeMap[make_pair(0x0000014C, 0x00000301)] = 0x1E52;
-      m_composeMap[make_pair(0x0000014D, 0x00000300)] = 0x1E51;
-      m_composeMap[make_pair(0x0000014D, 0x00000301)] = 0x1E53;
-      m_composeMap[make_pair(0x0000015A, 0x00000307)] = 0x1E64;
-      m_composeMap[make_pair(0x0000015B, 0x00000307)] = 0x1E65;
-      m_composeMap[make_pair(0x00000160, 0x00000307)] = 0x1E66;
-      m_composeMap[make_pair(0x00000161, 0x00000307)] = 0x1E67;
-      m_composeMap[make_pair(0x00000168, 0x00000301)] = 0x1E78;
-      m_composeMap[make_pair(0x00000169, 0x00000301)] = 0x1E79;
-      m_composeMap[make_pair(0x0000016A, 0x00000308)] = 0x1E7A;
-      m_composeMap[make_pair(0x0000016B, 0x00000308)] = 0x1E7B;
-      m_composeMap[make_pair(0x0000017F, 0x00000307)] = 0x1E9B;
+      m_composeMap[std::make_pair(0x00000102, 0x00000300)] = 0x1EB0;
+      m_composeMap[std::make_pair(0x00000102, 0x00000301)] = 0x1EAE;
+      m_composeMap[std::make_pair(0x00000102, 0x00000303)] = 0x1EB4;
+      m_composeMap[std::make_pair(0x00000102, 0x00000309)] = 0x1EB2;
+      m_composeMap[std::make_pair(0x00000103, 0x00000300)] = 0x1EB1;
+      m_composeMap[std::make_pair(0x00000103, 0x00000301)] = 0x1EAF;
+      m_composeMap[std::make_pair(0x00000103, 0x00000303)] = 0x1EB5;
+      m_composeMap[std::make_pair(0x00000103, 0x00000309)] = 0x1EB3;
+      m_composeMap[std::make_pair(0x00000112, 0x00000300)] = 0x1E14;
+      m_composeMap[std::make_pair(0x00000112, 0x00000301)] = 0x1E16;
+      m_composeMap[std::make_pair(0x00000113, 0x00000300)] = 0x1E15;
+      m_composeMap[std::make_pair(0x00000113, 0x00000301)] = 0x1E17;
+      m_composeMap[std::make_pair(0x0000014C, 0x00000300)] = 0x1E50;
+      m_composeMap[std::make_pair(0x0000014C, 0x00000301)] = 0x1E52;
+      m_composeMap[std::make_pair(0x0000014D, 0x00000300)] = 0x1E51;
+      m_composeMap[std::make_pair(0x0000014D, 0x00000301)] = 0x1E53;
+      m_composeMap[std::make_pair(0x0000015A, 0x00000307)] = 0x1E64;
+      m_composeMap[std::make_pair(0x0000015B, 0x00000307)] = 0x1E65;
+      m_composeMap[std::make_pair(0x00000160, 0x00000307)] = 0x1E66;
+      m_composeMap[std::make_pair(0x00000161, 0x00000307)] = 0x1E67;
+      m_composeMap[std::make_pair(0x00000168, 0x00000301)] = 0x1E78;
+      m_composeMap[std::make_pair(0x00000169, 0x00000301)] = 0x1E79;
+      m_composeMap[std::make_pair(0x0000016A, 0x00000308)] = 0x1E7A;
+      m_composeMap[std::make_pair(0x0000016B, 0x00000308)] = 0x1E7B;
+      m_composeMap[std::make_pair(0x0000017F, 0x00000307)] = 0x1E9B;
     }
 
     ~Latin_ExtendedA100() {
@@ -179,10 +180,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -218,6 +219,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -246,6 +251,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Latin_ExtendedA100(const Latin_ExtendedA100 &) {}
@@ -261,7 +306,7 @@ namespace Babylon {
     static const UCS2 m_decompStr[128][2];
     static const unsigned char m_lb[128];
     static const unsigned char m_ea[128];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
   }; // class Latin_ExtendedA100
 
   const UCS4 Latin_ExtendedA100::m_upper[] = {
@@ -423,7 +468,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, 
     EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, 
+    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, 

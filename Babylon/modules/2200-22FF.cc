@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:37 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:09 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,41 +40,41 @@ namespace Babylon {
       m_first_letter = 0x2200;
       m_last_letter  = 0x22FF;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x00002203, 0x00000338)] = 0x2204;
-      m_composeMap[make_pair(0x00002208, 0x00000338)] = 0x2209;
-      m_composeMap[make_pair(0x0000220B, 0x00000338)] = 0x220C;
-      m_composeMap[make_pair(0x00002223, 0x00000338)] = 0x2224;
-      m_composeMap[make_pair(0x00002225, 0x00000338)] = 0x2226;
-      m_composeMap[make_pair(0x0000223C, 0x00000338)] = 0x2241;
-      m_composeMap[make_pair(0x00002243, 0x00000338)] = 0x2244;
-      m_composeMap[make_pair(0x00002245, 0x00000338)] = 0x2247;
-      m_composeMap[make_pair(0x00002248, 0x00000338)] = 0x2249;
-      m_composeMap[make_pair(0x0000224D, 0x00000338)] = 0x226D;
-      m_composeMap[make_pair(0x00002261, 0x00000338)] = 0x2262;
-      m_composeMap[make_pair(0x00002264, 0x00000338)] = 0x2270;
-      m_composeMap[make_pair(0x00002265, 0x00000338)] = 0x2271;
-      m_composeMap[make_pair(0x00002272, 0x00000338)] = 0x2274;
-      m_composeMap[make_pair(0x00002273, 0x00000338)] = 0x2275;
-      m_composeMap[make_pair(0x00002276, 0x00000338)] = 0x2278;
-      m_composeMap[make_pair(0x00002277, 0x00000338)] = 0x2279;
-      m_composeMap[make_pair(0x0000227A, 0x00000338)] = 0x2280;
-      m_composeMap[make_pair(0x0000227B, 0x00000338)] = 0x2281;
-      m_composeMap[make_pair(0x0000227C, 0x00000338)] = 0x22E0;
-      m_composeMap[make_pair(0x0000227D, 0x00000338)] = 0x22E1;
-      m_composeMap[make_pair(0x00002282, 0x00000338)] = 0x2284;
-      m_composeMap[make_pair(0x00002283, 0x00000338)] = 0x2285;
-      m_composeMap[make_pair(0x00002286, 0x00000338)] = 0x2288;
-      m_composeMap[make_pair(0x00002287, 0x00000338)] = 0x2289;
-      m_composeMap[make_pair(0x00002291, 0x00000338)] = 0x22E2;
-      m_composeMap[make_pair(0x00002292, 0x00000338)] = 0x22E3;
-      m_composeMap[make_pair(0x000022A2, 0x00000338)] = 0x22AC;
-      m_composeMap[make_pair(0x000022A8, 0x00000338)] = 0x22AD;
-      m_composeMap[make_pair(0x000022A9, 0x00000338)] = 0x22AE;
-      m_composeMap[make_pair(0x000022AB, 0x00000338)] = 0x22AF;
-      m_composeMap[make_pair(0x000022B2, 0x00000338)] = 0x22EA;
-      m_composeMap[make_pair(0x000022B3, 0x00000338)] = 0x22EB;
-      m_composeMap[make_pair(0x000022B4, 0x00000338)] = 0x22EC;
-      m_composeMap[make_pair(0x000022B5, 0x00000338)] = 0x22ED;
+      m_composeMap[std::make_pair(0x00002203, 0x00000338)] = 0x2204;
+      m_composeMap[std::make_pair(0x00002208, 0x00000338)] = 0x2209;
+      m_composeMap[std::make_pair(0x0000220B, 0x00000338)] = 0x220C;
+      m_composeMap[std::make_pair(0x00002223, 0x00000338)] = 0x2224;
+      m_composeMap[std::make_pair(0x00002225, 0x00000338)] = 0x2226;
+      m_composeMap[std::make_pair(0x0000223C, 0x00000338)] = 0x2241;
+      m_composeMap[std::make_pair(0x00002243, 0x00000338)] = 0x2244;
+      m_composeMap[std::make_pair(0x00002245, 0x00000338)] = 0x2247;
+      m_composeMap[std::make_pair(0x00002248, 0x00000338)] = 0x2249;
+      m_composeMap[std::make_pair(0x0000224D, 0x00000338)] = 0x226D;
+      m_composeMap[std::make_pair(0x00002261, 0x00000338)] = 0x2262;
+      m_composeMap[std::make_pair(0x00002264, 0x00000338)] = 0x2270;
+      m_composeMap[std::make_pair(0x00002265, 0x00000338)] = 0x2271;
+      m_composeMap[std::make_pair(0x00002272, 0x00000338)] = 0x2274;
+      m_composeMap[std::make_pair(0x00002273, 0x00000338)] = 0x2275;
+      m_composeMap[std::make_pair(0x00002276, 0x00000338)] = 0x2278;
+      m_composeMap[std::make_pair(0x00002277, 0x00000338)] = 0x2279;
+      m_composeMap[std::make_pair(0x0000227A, 0x00000338)] = 0x2280;
+      m_composeMap[std::make_pair(0x0000227B, 0x00000338)] = 0x2281;
+      m_composeMap[std::make_pair(0x0000227C, 0x00000338)] = 0x22E0;
+      m_composeMap[std::make_pair(0x0000227D, 0x00000338)] = 0x22E1;
+      m_composeMap[std::make_pair(0x00002282, 0x00000338)] = 0x2284;
+      m_composeMap[std::make_pair(0x00002283, 0x00000338)] = 0x2285;
+      m_composeMap[std::make_pair(0x00002286, 0x00000338)] = 0x2288;
+      m_composeMap[std::make_pair(0x00002287, 0x00000338)] = 0x2289;
+      m_composeMap[std::make_pair(0x00002291, 0x00000338)] = 0x22E2;
+      m_composeMap[std::make_pair(0x00002292, 0x00000338)] = 0x22E3;
+      m_composeMap[std::make_pair(0x000022A2, 0x00000338)] = 0x22AC;
+      m_composeMap[std::make_pair(0x000022A8, 0x00000338)] = 0x22AD;
+      m_composeMap[std::make_pair(0x000022A9, 0x00000338)] = 0x22AE;
+      m_composeMap[std::make_pair(0x000022AB, 0x00000338)] = 0x22AF;
+      m_composeMap[std::make_pair(0x000022B2, 0x00000338)] = 0x22EA;
+      m_composeMap[std::make_pair(0x000022B3, 0x00000338)] = 0x22EB;
+      m_composeMap[std::make_pair(0x000022B4, 0x00000338)] = 0x22EC;
+      m_composeMap[std::make_pair(0x000022B5, 0x00000338)] = 0x22ED;
     }
 
     ~Mathematical_Operators2200() {
@@ -97,7 +98,7 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (m_is_defined.test(uc - m_first_letter));
+      return 1;
     }
 
     UCS4 uppercase(const UCS4 uc) const {
@@ -202,10 +203,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -241,6 +242,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -269,6 +274,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Mathematical_Operators2200(const Mathematical_Operators2200 &) {}
@@ -276,17 +321,14 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const std::bitset<256> m_is_defined;
     static const Babylon::Bidir_Props m_bidir[256];
     static const unsigned char _decomp[256];
     static const UCS2 m_decompStr[256][2];
     static const std::bitset<256> m_mirror;
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
   }; // class Mathematical_Operators2200
-
-    const std::bitset<256> Mathematical_Operators2200::m_is_defined(std::string("0000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const Babylon::Bidir_Props Mathematical_Operators2200::m_bidir[] = {
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
@@ -425,7 +467,7 @@ namespace Babylon {
     { 0x22FCu, 0x0000u }, { 0x22FDu, 0x0000u }, { 0x22FEu, 0x0000u }, { 0x22FFu, 0x0000u }
   };
 
-  const std::bitset<256> Mathematical_Operators2200::m_mirror(std::string("0000000000000011001111111111111111111111110000110011111000000000110000011111111111111111110011000000000100000111100111111111111111111111111111111100111111110101100000000011110000011111111111111111101000001111111110000101011110111100011000100011111100011110"));
+  const std::bitset<256> Mathematical_Operators2200::m_mirror(std::string("1111111111111111001111111111111111111111110000110011111000000000110000011111111111111111110011000000000100000111100111111111111111111111111111111100111111110101100000000011110000011111111111111111101000001111111110000101011110111100011000100011111100011110"));
 
   const unsigned char Mathematical_Operators2200::m_lb[] = {
     LB_AI, LB_AL, LB_AI, LB_AI, LB_AL, LB_AL, LB_AL, LB_AI, 
@@ -458,8 +500,8 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
-    LB_AL, LB_AL, LB_AI, LB_AI, LB_AI, LB_AI, LB_AI, LB_AI, 
-    LB_AI, LB_AI, LB_AI, LB_AI, LB_AI, LB_AI, LB_AI, LB_AI
+    LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
+    LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
   const unsigned char Mathematical_Operators2200::m_ea[] = {
@@ -493,8 +535,8 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
-    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, 
-    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A
+    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
+    EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
 }; // namespace Babylon

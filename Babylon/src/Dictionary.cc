@@ -236,12 +236,12 @@ Line_Break Dictionary::linebreak(const UCS4 uc)
 
 // Properties:
 
-bool Dictionary::is_White_space(const UCS4 uc) 
+bool Dictionary::is_White_Space(const UCS4 uc) 
     throw (Block_Error)  {
     Prague::Trace trace("Babylon::Dictionary::is_White_space(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_White_space(uc);
+    result = find_char(uc)->is_White_Space(uc);
     return result;
 }
 

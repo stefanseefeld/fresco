@@ -329,8 +329,8 @@ std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & bas
 Embedding_Levels
 Babylon::analyse(const Babylon::String::const_iterator start,
 		 const Babylon::String::const_iterator end,
-		 const Babylon::Base_Dir pbase_dir = Babylon::BASE_DIR_WL,
-		 const char right = 0) {
+		 const Babylon::Base_Dir pbase_dir,
+		 const char right) {
     Prague::Trace trace("Babylon::analyse(...)");
     Embedding_Levels emb;
     if (start == end) return (emb);

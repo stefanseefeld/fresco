@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:12:26 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:20 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,19 +40,19 @@ namespace Babylon {
       m_first_letter = 0x1D100;
       m_last_letter  = 0x1D1FF;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x0001D157, 0x0001D165)] = 0x1D15E;
-      m_composeMap[make_pair(0x0001D158, 0x0001D165)] = 0x1D15F;
-      m_composeMap[make_pair(0x0001D15F, 0x0001D16E)] = 0x1D160;
-      m_composeMap[make_pair(0x0001D15F, 0x0001D16F)] = 0x1D161;
-      m_composeMap[make_pair(0x0001D15F, 0x0001D170)] = 0x1D162;
-      m_composeMap[make_pair(0x0001D15F, 0x0001D171)] = 0x1D163;
-      m_composeMap[make_pair(0x0001D15F, 0x0001D172)] = 0x1D164;
-      m_composeMap[make_pair(0x0001D1B9, 0x0001D165)] = 0x1D1BB;
-      m_composeMap[make_pair(0x0001D1BA, 0x0001D165)] = 0x1D1BC;
-      m_composeMap[make_pair(0x0001D1BB, 0x0001D16E)] = 0x1D1BD;
-      m_composeMap[make_pair(0x0001D1BB, 0x0001D16F)] = 0x1D1BF;
-      m_composeMap[make_pair(0x0001D1BC, 0x0001D16E)] = 0x1D1BE;
-      m_composeMap[make_pair(0x0001D1BC, 0x0001D16F)] = 0x1D1C0;
+      m_composeMap[std::make_pair(0x0001D157, 0x0001D165)] = 0x1D15E;
+      m_composeMap[std::make_pair(0x0001D158, 0x0001D165)] = 0x1D15F;
+      m_composeMap[std::make_pair(0x0001D15F, 0x0001D16E)] = 0x1D160;
+      m_composeMap[std::make_pair(0x0001D15F, 0x0001D16F)] = 0x1D161;
+      m_composeMap[std::make_pair(0x0001D15F, 0x0001D170)] = 0x1D162;
+      m_composeMap[std::make_pair(0x0001D15F, 0x0001D171)] = 0x1D163;
+      m_composeMap[std::make_pair(0x0001D15F, 0x0001D172)] = 0x1D164;
+      m_composeMap[std::make_pair(0x0001D1B9, 0x0001D165)] = 0x1D1BB;
+      m_composeMap[std::make_pair(0x0001D1BA, 0x0001D165)] = 0x1D1BC;
+      m_composeMap[std::make_pair(0x0001D1BB, 0x0001D16E)] = 0x1D1BD;
+      m_composeMap[std::make_pair(0x0001D1BB, 0x0001D16F)] = 0x1D1BF;
+      m_composeMap[std::make_pair(0x0001D1BC, 0x0001D16E)] = 0x1D1BE;
+      m_composeMap[std::make_pair(0x0001D1BC, 0x0001D16F)] = 0x1D1C0;
     }
 
     ~Musical_Symbols1D100() {
@@ -167,10 +168,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -206,6 +207,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -234,6 +239,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Musical_Symbols1D100(const Musical_Symbols1D100 &) {}
@@ -247,7 +292,7 @@ namespace Babylon {
     static const Babylon::Bidir_Props m_bidir[256];
     static const UCS4 m_decompStr[256][2];
     static const unsigned char m_lb[256];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Diacritic;
   }; // class Musical_Symbols1D100
 

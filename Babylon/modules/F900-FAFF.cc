@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:12:00 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:16 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -151,7 +152,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -187,6 +188,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -215,6 +220,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return m_Unified_Ideograph.test(uc - m_first_letter);
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     CJK_Compatibility_IdeographsF900(const CJK_Compatibility_IdeographsF900 &) {}
@@ -225,9 +270,10 @@ namespace Babylon {
     static const std::bitset<512> m_is_defined;
     static const UCS4 m_decompStr[512];
     static const std::bitset<512> m_Ideographic;
+    static const std::bitset<512> m_Unified_Ideograph;
   }; // class CJK_Compatibility_IdeographsF900
 
-    const std::bitset<512> CJK_Compatibility_IdeographsF900::m_is_defined(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<512> CJK_Compatibility_IdeographsF900::m_is_defined(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 CJK_Compatibility_IdeographsF900::m_decompStr[] = {
     0x8C48u, 0x66F4u, 0x8ECAu, 0x8CC8u, 
@@ -250,7 +296,7 @@ namespace Babylon {
     0x7C60u, 0x807Eu, 0x7262u, 0x78CAu, 
     0x8CC2u, 0x96F7u, 0x58D8u, 0x5C62u, 
     0x6A13u, 0x6DDAu, 0x6F0Fu, 0x7D2Fu, 
-    0x7E37u, 0x96FBu, 0x52D2u, 0x808Bu, 
+    0x7E37u, 0x964Bu, 0x52D2u, 0x808Bu, 
     0x51DCu, 0x51CCu, 0x7A1Cu, 0x7DBEu, 
     0x83F1u, 0x9675u, 0x8B80u, 0x62CFu, 
     0x6A02u, 0x8AFEu, 0x4E39u, 0x5BE7u, 
@@ -306,21 +352,21 @@ namespace Babylon {
     0xFA24u, 0x9038u, 0x90FDu, 0xFA27u, 
     0xFA28u, 0xFA29u, 0x98EFu, 0x98FCu, 
     0x9928u, 0x9DB4u, 0xFA2Eu, 0xFA2Fu, 
-    0xFA30u, 0xFA31u, 0xFA32u, 0xFA33u, 
-    0xFA34u, 0xFA35u, 0xFA36u, 0xFA37u, 
-    0xFA38u, 0xFA39u, 0xFA3Au, 0xFA3Bu, 
-    0xFA3Cu, 0xFA3Du, 0xFA3Eu, 0xFA3Fu, 
-    0xFA40u, 0xFA41u, 0xFA42u, 0xFA43u, 
-    0xFA44u, 0xFA45u, 0xFA46u, 0xFA47u, 
-    0xFA48u, 0xFA49u, 0xFA4Au, 0xFA4Bu, 
-    0xFA4Cu, 0xFA4Du, 0xFA4Eu, 0xFA4Fu, 
-    0xFA50u, 0xFA51u, 0xFA52u, 0xFA53u, 
-    0xFA54u, 0xFA55u, 0xFA56u, 0xFA57u, 
-    0xFA58u, 0xFA59u, 0xFA5Au, 0xFA5Bu, 
-    0xFA5Cu, 0xFA5Du, 0xFA5Eu, 0xFA5Fu, 
-    0xFA60u, 0xFA61u, 0xFA62u, 0xFA63u, 
-    0xFA64u, 0xFA65u, 0xFA66u, 0xFA67u, 
-    0xFA68u, 0xFA69u, 0xFA6Au, 0xFA6Bu, 
+    0x4FAEu, 0x50E7u, 0x514Du, 0x52C9u, 
+    0x52E4u, 0x5351u, 0x559Du, 0x5606u, 
+    0x5668u, 0x5840u, 0x58A8u, 0x5C64u, 
+    0x5C6Eu, 0x6094u, 0x6168u, 0x618Eu, 
+    0x61F2u, 0x654Fu, 0x65E2u, 0x6691u, 
+    0x6885u, 0x6D77u, 0x6E1Au, 0x6F22u, 
+    0x716Eu, 0x722Bu, 0x7422u, 0x7891u, 
+    0x793Eu, 0x7949u, 0x7948u, 0x7950u, 
+    0x7956u, 0x795Du, 0x798Du, 0x798Eu, 
+    0x7A40u, 0x7A81u, 0x7BC0u, 0x7DF4u, 
+    0x7E09u, 0x7E41u, 0x7F72u, 0x8005u, 
+    0x81EDu, 0x8279u, 0x8279u, 0x8457u, 
+    0x8910u, 0x8996u, 0x8B01u, 0x8B39u, 
+    0x8CD3u, 0x8D08u, 0x8FB6u, 0x9038u, 
+    0x96E3u, 0x97FFu, 0x983Bu, 0xFA6Bu, 
     0xFA6Cu, 0xFA6Du, 0xFA6Eu, 0xFA6Fu, 
     0xFA70u, 0xFA71u, 0xFA72u, 0xFA73u, 
     0xFA74u, 0xFA75u, 0xFA76u, 0xFA77u, 
@@ -361,6 +407,8 @@ namespace Babylon {
   };
 
     const std::bitset<512> CJK_Compatibility_IdeographsF900::m_Ideographic(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+
+    const std::bitset<512> CJK_Compatibility_IdeographsF900::m_Unified_Ideograph(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001110011000000000000001100011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

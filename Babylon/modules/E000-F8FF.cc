@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:11:08 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:08 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,21 +26,22 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
-  class Private_UseE000 : public Babylon::Dictionary::Block {
+  class Private_Use_AreaE000 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Private_UseE000() {
+    Private_Use_AreaE000() {
       m_first_letter = 0xE000;
       m_last_letter  = 0xF8FF;
       // m_version="3.1" // Not yet supported!
     }
 
-    ~Private_UseE000() {
+    ~Private_Use_AreaE000() {
     }
 
     UCS4 first_letter() const {
@@ -57,7 +58,7 @@ namespace Babylon {
 
     // query functions:
     std::string blockname(const UCS4 uc) const {
-      return "Private Use";
+      return "Private Use Area";
     }
 
     bool is_defined(const UCS4 uc) const {
@@ -150,7 +151,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -186,6 +187,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -214,15 +219,55 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
-    Private_UseE000(const Private_UseE000 &) {}
+    Private_Use_AreaE000(const Private_Use_AreaE000 &) {}
 
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-  }; // class Private_UseE000
+  }; // class Private_Use_AreaE000
 
 }; // namespace Babylon
 
-dload(Babylon::Private_UseE000);
+dload(Babylon::Private_Use_AreaE000);

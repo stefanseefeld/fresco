@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:28 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:47:59 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,58 +40,58 @@ namespace Babylon {
       m_first_letter = 0x400;
       m_last_letter  = 0x4FF;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x00000406, 0x00000308)] = 0x0407;
-      m_composeMap[make_pair(0x00000410, 0x00000306)] = 0x04D0;
-      m_composeMap[make_pair(0x00000410, 0x00000308)] = 0x04D2;
-      m_composeMap[make_pair(0x00000413, 0x00000301)] = 0x0403;
-      m_composeMap[make_pair(0x00000415, 0x00000300)] = 0x0400;
-      m_composeMap[make_pair(0x00000415, 0x00000306)] = 0x04D6;
-      m_composeMap[make_pair(0x00000415, 0x00000308)] = 0x0401;
-      m_composeMap[make_pair(0x00000416, 0x00000306)] = 0x04C1;
-      m_composeMap[make_pair(0x00000416, 0x00000308)] = 0x04DC;
-      m_composeMap[make_pair(0x00000417, 0x00000308)] = 0x04DE;
-      m_composeMap[make_pair(0x00000418, 0x00000300)] = 0x040D;
-      m_composeMap[make_pair(0x00000418, 0x00000304)] = 0x04E2;
-      m_composeMap[make_pair(0x00000418, 0x00000306)] = 0x0419;
-      m_composeMap[make_pair(0x00000418, 0x00000308)] = 0x04E4;
-      m_composeMap[make_pair(0x0000041A, 0x00000301)] = 0x040C;
-      m_composeMap[make_pair(0x0000041E, 0x00000308)] = 0x04E6;
-      m_composeMap[make_pair(0x00000423, 0x00000304)] = 0x04EE;
-      m_composeMap[make_pair(0x00000423, 0x00000306)] = 0x040E;
-      m_composeMap[make_pair(0x00000423, 0x00000308)] = 0x04F0;
-      m_composeMap[make_pair(0x00000423, 0x0000030B)] = 0x04F2;
-      m_composeMap[make_pair(0x00000427, 0x00000308)] = 0x04F4;
-      m_composeMap[make_pair(0x0000042B, 0x00000308)] = 0x04F8;
-      m_composeMap[make_pair(0x0000042D, 0x00000308)] = 0x04EC;
-      m_composeMap[make_pair(0x00000430, 0x00000306)] = 0x04D1;
-      m_composeMap[make_pair(0x00000430, 0x00000308)] = 0x04D3;
-      m_composeMap[make_pair(0x00000433, 0x00000301)] = 0x0453;
-      m_composeMap[make_pair(0x00000435, 0x00000300)] = 0x0450;
-      m_composeMap[make_pair(0x00000435, 0x00000306)] = 0x04D7;
-      m_composeMap[make_pair(0x00000435, 0x00000308)] = 0x0451;
-      m_composeMap[make_pair(0x00000436, 0x00000306)] = 0x04C2;
-      m_composeMap[make_pair(0x00000436, 0x00000308)] = 0x04DD;
-      m_composeMap[make_pair(0x00000437, 0x00000308)] = 0x04DF;
-      m_composeMap[make_pair(0x00000438, 0x00000300)] = 0x045D;
-      m_composeMap[make_pair(0x00000438, 0x00000304)] = 0x04E3;
-      m_composeMap[make_pair(0x00000438, 0x00000306)] = 0x0439;
-      m_composeMap[make_pair(0x00000438, 0x00000308)] = 0x04E5;
-      m_composeMap[make_pair(0x0000043A, 0x00000301)] = 0x045C;
-      m_composeMap[make_pair(0x0000043E, 0x00000308)] = 0x04E7;
-      m_composeMap[make_pair(0x00000443, 0x00000304)] = 0x04EF;
-      m_composeMap[make_pair(0x00000443, 0x00000306)] = 0x045E;
-      m_composeMap[make_pair(0x00000443, 0x00000308)] = 0x04F1;
-      m_composeMap[make_pair(0x00000443, 0x0000030B)] = 0x04F3;
-      m_composeMap[make_pair(0x00000447, 0x00000308)] = 0x04F5;
-      m_composeMap[make_pair(0x0000044B, 0x00000308)] = 0x04F9;
-      m_composeMap[make_pair(0x0000044D, 0x00000308)] = 0x04ED;
-      m_composeMap[make_pair(0x00000456, 0x00000308)] = 0x0457;
-      m_composeMap[make_pair(0x00000474, 0x0000030F)] = 0x0476;
-      m_composeMap[make_pair(0x00000475, 0x0000030F)] = 0x0477;
-      m_composeMap[make_pair(0x000004D8, 0x00000308)] = 0x04DA;
-      m_composeMap[make_pair(0x000004D9, 0x00000308)] = 0x04DB;
-      m_composeMap[make_pair(0x000004E8, 0x00000308)] = 0x04EA;
-      m_composeMap[make_pair(0x000004E9, 0x00000308)] = 0x04EB;
+      m_composeMap[std::make_pair(0x00000406, 0x00000308)] = 0x0407;
+      m_composeMap[std::make_pair(0x00000410, 0x00000306)] = 0x04D0;
+      m_composeMap[std::make_pair(0x00000410, 0x00000308)] = 0x04D2;
+      m_composeMap[std::make_pair(0x00000413, 0x00000301)] = 0x0403;
+      m_composeMap[std::make_pair(0x00000415, 0x00000300)] = 0x0400;
+      m_composeMap[std::make_pair(0x00000415, 0x00000306)] = 0x04D6;
+      m_composeMap[std::make_pair(0x00000415, 0x00000308)] = 0x0401;
+      m_composeMap[std::make_pair(0x00000416, 0x00000306)] = 0x04C1;
+      m_composeMap[std::make_pair(0x00000416, 0x00000308)] = 0x04DC;
+      m_composeMap[std::make_pair(0x00000417, 0x00000308)] = 0x04DE;
+      m_composeMap[std::make_pair(0x00000418, 0x00000300)] = 0x040D;
+      m_composeMap[std::make_pair(0x00000418, 0x00000304)] = 0x04E2;
+      m_composeMap[std::make_pair(0x00000418, 0x00000306)] = 0x0419;
+      m_composeMap[std::make_pair(0x00000418, 0x00000308)] = 0x04E4;
+      m_composeMap[std::make_pair(0x0000041A, 0x00000301)] = 0x040C;
+      m_composeMap[std::make_pair(0x0000041E, 0x00000308)] = 0x04E6;
+      m_composeMap[std::make_pair(0x00000423, 0x00000304)] = 0x04EE;
+      m_composeMap[std::make_pair(0x00000423, 0x00000306)] = 0x040E;
+      m_composeMap[std::make_pair(0x00000423, 0x00000308)] = 0x04F0;
+      m_composeMap[std::make_pair(0x00000423, 0x0000030B)] = 0x04F2;
+      m_composeMap[std::make_pair(0x00000427, 0x00000308)] = 0x04F4;
+      m_composeMap[std::make_pair(0x0000042B, 0x00000308)] = 0x04F8;
+      m_composeMap[std::make_pair(0x0000042D, 0x00000308)] = 0x04EC;
+      m_composeMap[std::make_pair(0x00000430, 0x00000306)] = 0x04D1;
+      m_composeMap[std::make_pair(0x00000430, 0x00000308)] = 0x04D3;
+      m_composeMap[std::make_pair(0x00000433, 0x00000301)] = 0x0453;
+      m_composeMap[std::make_pair(0x00000435, 0x00000300)] = 0x0450;
+      m_composeMap[std::make_pair(0x00000435, 0x00000306)] = 0x04D7;
+      m_composeMap[std::make_pair(0x00000435, 0x00000308)] = 0x0451;
+      m_composeMap[std::make_pair(0x00000436, 0x00000306)] = 0x04C2;
+      m_composeMap[std::make_pair(0x00000436, 0x00000308)] = 0x04DD;
+      m_composeMap[std::make_pair(0x00000437, 0x00000308)] = 0x04DF;
+      m_composeMap[std::make_pair(0x00000438, 0x00000300)] = 0x045D;
+      m_composeMap[std::make_pair(0x00000438, 0x00000304)] = 0x04E3;
+      m_composeMap[std::make_pair(0x00000438, 0x00000306)] = 0x0439;
+      m_composeMap[std::make_pair(0x00000438, 0x00000308)] = 0x04E5;
+      m_composeMap[std::make_pair(0x0000043A, 0x00000301)] = 0x045C;
+      m_composeMap[std::make_pair(0x0000043E, 0x00000308)] = 0x04E7;
+      m_composeMap[std::make_pair(0x00000443, 0x00000304)] = 0x04EF;
+      m_composeMap[std::make_pair(0x00000443, 0x00000306)] = 0x045E;
+      m_composeMap[std::make_pair(0x00000443, 0x00000308)] = 0x04F1;
+      m_composeMap[std::make_pair(0x00000443, 0x0000030B)] = 0x04F3;
+      m_composeMap[std::make_pair(0x00000447, 0x00000308)] = 0x04F5;
+      m_composeMap[std::make_pair(0x0000044B, 0x00000308)] = 0x04F9;
+      m_composeMap[std::make_pair(0x0000044D, 0x00000308)] = 0x04ED;
+      m_composeMap[std::make_pair(0x00000456, 0x00000308)] = 0x0457;
+      m_composeMap[std::make_pair(0x00000474, 0x0000030F)] = 0x0476;
+      m_composeMap[std::make_pair(0x00000475, 0x0000030F)] = 0x0477;
+      m_composeMap[std::make_pair(0x000004D8, 0x00000308)] = 0x04DA;
+      m_composeMap[std::make_pair(0x000004D9, 0x00000308)] = 0x04DB;
+      m_composeMap[std::make_pair(0x000004E8, 0x00000308)] = 0x04EA;
+      m_composeMap[std::make_pair(0x000004E9, 0x00000308)] = 0x04EB;
     }
 
     ~Cyrillic400() {
@@ -206,10 +207,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -245,6 +246,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -273,6 +278,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Cyrillic400(const Cyrillic400 &) {}
@@ -290,11 +335,11 @@ namespace Babylon {
     static const UCS2 m_decompStr[256][2];
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Diacritic;
   }; // class Cyrillic400
 
-    const std::bitset<256> Cyrillic400::m_is_defined(std::string("0000001100111111111111111111111111111111111111110001100110011111111111111111111111111111111111111111111111111111111100110111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<256> Cyrillic400::m_is_defined(std::string("0000001100111111111111111111111111111111111111110111111111111111111111111111111111111111111111111111111111111111111111110111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Cyrillic400::m_upper[] = {
     0x0400, 0x0401, 0x0402, 0x0403, 0x0404, 0x0405, 0x0406, 0x0407, 
@@ -314,15 +359,15 @@ namespace Babylon {
     0x0470, 0x0470, 0x0472, 0x0472, 0x0474, 0x0474, 0x0476, 0x0476, 
     0x0478, 0x0478, 0x047A, 0x047A, 0x047C, 0x047C, 0x047E, 0x047E, 
     0x0480, 0x0480, 0x0482, 0x0483, 0x0484, 0x0485, 0x0486, 0x0487, 
-    0x0488, 0x0489, 0x048A, 0x048B, 0x048C, 0x048C, 0x048E, 0x048E, 
+    0x0488, 0x0489, 0x048A, 0x048A, 0x048C, 0x048C, 0x048E, 0x048E, 
     0x0490, 0x0490, 0x0492, 0x0492, 0x0494, 0x0494, 0x0496, 0x0496, 
     0x0498, 0x0498, 0x049A, 0x049A, 0x049C, 0x049C, 0x049E, 0x049E, 
     0x04A0, 0x04A0, 0x04A2, 0x04A2, 0x04A4, 0x04A4, 0x04A6, 0x04A6, 
     0x04A8, 0x04A8, 0x04AA, 0x04AA, 0x04AC, 0x04AC, 0x04AE, 0x04AE, 
     0x04B0, 0x04B0, 0x04B2, 0x04B2, 0x04B4, 0x04B4, 0x04B6, 0x04B6, 
     0x04B8, 0x04B8, 0x04BA, 0x04BA, 0x04BC, 0x04BC, 0x04BE, 0x04BE, 
-    0x04C0, 0x04C1, 0x04C1, 0x04C3, 0x04C3, 0x04C5, 0x04C6, 0x04C7, 
-    0x04C7, 0x04C9, 0x04CA, 0x04CB, 0x04CB, 0x04CD, 0x04CE, 0x04CF, 
+    0x04C0, 0x04C1, 0x04C1, 0x04C3, 0x04C3, 0x04C5, 0x04C5, 0x04C7, 
+    0x04C7, 0x04C9, 0x04C9, 0x04CB, 0x04CB, 0x04CD, 0x04CD, 0x04CF, 
     0x04D0, 0x04D0, 0x04D2, 0x04D2, 0x04D4, 0x04D4, 0x04D6, 0x04D6, 
     0x04D8, 0x04D8, 0x04DA, 0x04DA, 0x04DC, 0x04DC, 0x04DE, 0x04DE, 
     0x04E0, 0x04E0, 0x04E2, 0x04E2, 0x04E4, 0x04E4, 0x04E6, 0x04E6, 
@@ -349,15 +394,15 @@ namespace Babylon {
     0x0471, 0x0471, 0x0473, 0x0473, 0x0475, 0x0475, 0x0477, 0x0477, 
     0x0479, 0x0479, 0x047B, 0x047B, 0x047D, 0x047D, 0x047F, 0x047F, 
     0x0481, 0x0481, 0x0482, 0x0483, 0x0484, 0x0485, 0x0486, 0x0487, 
-    0x0488, 0x0489, 0x048A, 0x048B, 0x048D, 0x048D, 0x048F, 0x048F, 
+    0x0488, 0x0489, 0x048B, 0x048B, 0x048D, 0x048D, 0x048F, 0x048F, 
     0x0491, 0x0491, 0x0493, 0x0493, 0x0495, 0x0495, 0x0497, 0x0497, 
     0x0499, 0x0499, 0x049B, 0x049B, 0x049D, 0x049D, 0x049F, 0x049F, 
     0x04A1, 0x04A1, 0x04A3, 0x04A3, 0x04A5, 0x04A5, 0x04A7, 0x04A7, 
     0x04A9, 0x04A9, 0x04AB, 0x04AB, 0x04AD, 0x04AD, 0x04AF, 0x04AF, 
     0x04B1, 0x04B1, 0x04B3, 0x04B3, 0x04B5, 0x04B5, 0x04B7, 0x04B7, 
     0x04B9, 0x04B9, 0x04BB, 0x04BB, 0x04BD, 0x04BD, 0x04BF, 0x04BF, 
-    0x04C0, 0x04C2, 0x04C2, 0x04C4, 0x04C4, 0x04C5, 0x04C6, 0x04C8, 
-    0x04C8, 0x04C9, 0x04CA, 0x04CC, 0x04CC, 0x04CD, 0x04CE, 0x04CF, 
+    0x04C0, 0x04C2, 0x04C2, 0x04C4, 0x04C4, 0x04C6, 0x04C6, 0x04C8, 
+    0x04C8, 0x04CA, 0x04CA, 0x04CC, 0x04CC, 0x04CE, 0x04CE, 0x04CF, 
     0x04D1, 0x04D1, 0x04D3, 0x04D3, 0x04D5, 0x04D5, 0x04D7, 0x04D7, 
     0x04D9, 0x04D9, 0x04DB, 0x04DB, 0x04DD, 0x04DD, 0x04DF, 0x04DF, 
     0x04E1, 0x04E1, 0x04E3, 0x04E3, 0x04E5, 0x04E5, 0x04E7, 0x04E7, 
@@ -384,15 +429,15 @@ namespace Babylon {
     0x0470, 0x0470, 0x0472, 0x0472, 0x0474, 0x0474, 0x0476, 0x0476, 
     0x0478, 0x0478, 0x047A, 0x047A, 0x047C, 0x047C, 0x047E, 0x047E, 
     0x0480, 0x0480, 0x0482, 0x0483, 0x0484, 0x0485, 0x0486, 0x0487, 
-    0x0488, 0x0489, 0x048A, 0x048B, 0x048C, 0x048C, 0x048E, 0x048E, 
+    0x0488, 0x0489, 0x048A, 0x048A, 0x048C, 0x048C, 0x048E, 0x048E, 
     0x0490, 0x0490, 0x0492, 0x0492, 0x0494, 0x0494, 0x0496, 0x0496, 
     0x0498, 0x0498, 0x049A, 0x049A, 0x049C, 0x049C, 0x049E, 0x049E, 
     0x04A0, 0x04A0, 0x04A2, 0x04A2, 0x04A4, 0x04A4, 0x04A6, 0x04A6, 
     0x04A8, 0x04A8, 0x04AA, 0x04AA, 0x04AC, 0x04AC, 0x04AE, 0x04AE, 
     0x04B0, 0x04B0, 0x04B2, 0x04B2, 0x04B4, 0x04B4, 0x04B6, 0x04B6, 
     0x04B8, 0x04B8, 0x04BA, 0x04BA, 0x04BC, 0x04BC, 0x04BE, 0x04BE, 
-    0x04C0, 0x04C1, 0x04C1, 0x04C3, 0x04C3, 0x04C5, 0x04C6, 0x04C7, 
-    0x04C7, 0x04C9, 0x04CA, 0x04CB, 0x04CB, 0x04CD, 0x04CE, 0x04CF, 
+    0x04C0, 0x04C1, 0x04C1, 0x04C3, 0x04C3, 0x04C5, 0x04C5, 0x04C7, 
+    0x04C7, 0x04C9, 0x04C9, 0x04CB, 0x04CB, 0x04CD, 0x04CD, 0x04CF, 
     0x04D0, 0x04D0, 0x04D2, 0x04D2, 0x04D4, 0x04D4, 0x04D6, 0x04D6, 
     0x04D8, 0x04D8, 0x04DA, 0x04DA, 0x04DC, 0x04DC, 0x04DE, 0x04DE, 
     0x04E0, 0x04E0, 0x04E2, 0x04E2, 0x04E4, 0x04E4, 0x04E6, 0x04E6, 
@@ -419,15 +464,15 @@ namespace Babylon {
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_So, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Lu, 
-    CAT_Me, CAT_Me, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
+    CAT_Me, CAT_Me, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
-    CAT_Lu, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Lu, CAT_Lu, 
-    CAT_Ll, CAT_Lu, CAT_Lu, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Lu, CAT_Lu, 
+    CAT_Lu, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, 
+    CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 

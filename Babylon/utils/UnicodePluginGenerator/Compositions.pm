@@ -149,7 +149,7 @@ sub init {
   if ($self->{_ATTENTION_NEEDED} == 1) {
     my $tmp = "";
     foreach my $i (@blockkeys) {
-      $tmp .= sprintf "      m_composeMap\[make_pair(0x%s, 0x%s)\] = 0x%s;\n",
+      $tmp .= sprintf "      m_composeMap\[std::make_pair(0x%s, 0x%s)\] = 0x%s;\n",
       substr($i, 0, 8), substr($i, 8, 8),  $self->data($i);
     }
     return $tmp;
@@ -220,7 +220,7 @@ sub function {
   my $tmp = "    UCS4 compose (const UCS4 start, const UCS4 last) {\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return m_composeMap[make_pair(start, last)];\n";
+    $tmp .= "      return m_composeMap[std::make_pair(start, last)];\n";
   } else {
     $tmp .= "      return 0;\n";
   }
@@ -260,7 +260,7 @@ sub var_def {
   if ($self->{_ATTENTION_NEEDED} == 1) {
     my $inlength = $self->{_INPUT_MAX_LENGTH};
     my $outlength = $self->{_RES_MAX_LENGTH};
-    my $tmp = "    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;\n";
+    my $tmp = "    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;\n";
     return $tmp;
   }
 

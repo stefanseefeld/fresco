@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:03:20 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:47:58 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,35 +40,35 @@ namespace Babylon {
       m_first_letter = 0x180;
       m_last_letter  = 0x24F;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x000001A0, 0x00000300)] = 0x1EDC;
-      m_composeMap[make_pair(0x000001A0, 0x00000301)] = 0x1EDA;
-      m_composeMap[make_pair(0x000001A0, 0x00000303)] = 0x1EE0;
-      m_composeMap[make_pair(0x000001A0, 0x00000309)] = 0x1EDE;
-      m_composeMap[make_pair(0x000001A0, 0x00000323)] = 0x1EE2;
-      m_composeMap[make_pair(0x000001A1, 0x00000300)] = 0x1EDD;
-      m_composeMap[make_pair(0x000001A1, 0x00000301)] = 0x1EDB;
-      m_composeMap[make_pair(0x000001A1, 0x00000303)] = 0x1EE1;
-      m_composeMap[make_pair(0x000001A1, 0x00000309)] = 0x1EDF;
-      m_composeMap[make_pair(0x000001A1, 0x00000323)] = 0x1EE3;
-      m_composeMap[make_pair(0x000001AF, 0x00000300)] = 0x1EEA;
-      m_composeMap[make_pair(0x000001AF, 0x00000301)] = 0x1EE8;
-      m_composeMap[make_pair(0x000001AF, 0x00000303)] = 0x1EEE;
-      m_composeMap[make_pair(0x000001AF, 0x00000309)] = 0x1EEC;
-      m_composeMap[make_pair(0x000001AF, 0x00000323)] = 0x1EF0;
-      m_composeMap[make_pair(0x000001B0, 0x00000300)] = 0x1EEB;
-      m_composeMap[make_pair(0x000001B0, 0x00000301)] = 0x1EE9;
-      m_composeMap[make_pair(0x000001B0, 0x00000303)] = 0x1EEF;
-      m_composeMap[make_pair(0x000001B0, 0x00000309)] = 0x1EED;
-      m_composeMap[make_pair(0x000001B0, 0x00000323)] = 0x1EF1;
-      m_composeMap[make_pair(0x000001B7, 0x0000030C)] = 0x01EE;
-      m_composeMap[make_pair(0x000001EA, 0x00000304)] = 0x01EC;
-      m_composeMap[make_pair(0x000001EB, 0x00000304)] = 0x01ED;
-      m_composeMap[make_pair(0x00000226, 0x00000304)] = 0x01E0;
-      m_composeMap[make_pair(0x00000227, 0x00000304)] = 0x01E1;
-      m_composeMap[make_pair(0x00000228, 0x00000306)] = 0x1E1C;
-      m_composeMap[make_pair(0x00000229, 0x00000306)] = 0x1E1D;
-      m_composeMap[make_pair(0x0000022E, 0x00000304)] = 0x0230;
-      m_composeMap[make_pair(0x0000022F, 0x00000304)] = 0x0231;
+      m_composeMap[std::make_pair(0x000001A0, 0x00000300)] = 0x1EDC;
+      m_composeMap[std::make_pair(0x000001A0, 0x00000301)] = 0x1EDA;
+      m_composeMap[std::make_pair(0x000001A0, 0x00000303)] = 0x1EE0;
+      m_composeMap[std::make_pair(0x000001A0, 0x00000309)] = 0x1EDE;
+      m_composeMap[std::make_pair(0x000001A0, 0x00000323)] = 0x1EE2;
+      m_composeMap[std::make_pair(0x000001A1, 0x00000300)] = 0x1EDD;
+      m_composeMap[std::make_pair(0x000001A1, 0x00000301)] = 0x1EDB;
+      m_composeMap[std::make_pair(0x000001A1, 0x00000303)] = 0x1EE1;
+      m_composeMap[std::make_pair(0x000001A1, 0x00000309)] = 0x1EDF;
+      m_composeMap[std::make_pair(0x000001A1, 0x00000323)] = 0x1EE3;
+      m_composeMap[std::make_pair(0x000001AF, 0x00000300)] = 0x1EEA;
+      m_composeMap[std::make_pair(0x000001AF, 0x00000301)] = 0x1EE8;
+      m_composeMap[std::make_pair(0x000001AF, 0x00000303)] = 0x1EEE;
+      m_composeMap[std::make_pair(0x000001AF, 0x00000309)] = 0x1EEC;
+      m_composeMap[std::make_pair(0x000001AF, 0x00000323)] = 0x1EF0;
+      m_composeMap[std::make_pair(0x000001B0, 0x00000300)] = 0x1EEB;
+      m_composeMap[std::make_pair(0x000001B0, 0x00000301)] = 0x1EE9;
+      m_composeMap[std::make_pair(0x000001B0, 0x00000303)] = 0x1EEF;
+      m_composeMap[std::make_pair(0x000001B0, 0x00000309)] = 0x1EED;
+      m_composeMap[std::make_pair(0x000001B0, 0x00000323)] = 0x1EF1;
+      m_composeMap[std::make_pair(0x000001B7, 0x0000030C)] = 0x01EE;
+      m_composeMap[std::make_pair(0x000001EA, 0x00000304)] = 0x01EC;
+      m_composeMap[std::make_pair(0x000001EB, 0x00000304)] = 0x01ED;
+      m_composeMap[std::make_pair(0x00000226, 0x00000304)] = 0x01E0;
+      m_composeMap[std::make_pair(0x00000227, 0x00000304)] = 0x01E1;
+      m_composeMap[std::make_pair(0x00000228, 0x00000306)] = 0x1E1C;
+      m_composeMap[std::make_pair(0x00000229, 0x00000306)] = 0x1E1D;
+      m_composeMap[std::make_pair(0x0000022E, 0x00000304)] = 0x0230;
+      m_composeMap[std::make_pair(0x0000022F, 0x00000304)] = 0x0231;
     }
 
     ~Latin_ExtendedB180() {
@@ -183,10 +184,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -222,6 +223,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -250,6 +255,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Latin_ExtendedB180(const Latin_ExtendedB180 &) {}
@@ -266,16 +311,16 @@ namespace Babylon {
     static const UCS2 m_decompStr[208][2];
     static const unsigned char m_lb[208];
     static const unsigned char m_ea[208];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
   }; // class Latin_ExtendedB180
 
-    const std::bitset<208> Latin_ExtendedB180::m_is_defined(std::string("0000000000000000000000000000111111111111111111001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<208> Latin_ExtendedB180::m_is_defined(std::string("0000000000000000000000000000111111111111111111011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Latin_ExtendedB180::m_upper[] = {
     0x0180, 0x0181, 0x0182, 0x0182, 0x0184, 0x0184, 0x0186, 0x0187, 
     0x0187, 0x0189, 0x018A, 0x018B, 0x018B, 0x018D, 0x018E, 0x018F, 
     0x0190, 0x0191, 0x0191, 0x0193, 0x0194, 0x01F6, 0x0196, 0x0197, 
-    0x0198, 0x0198, 0x019A, 0x019B, 0x019C, 0x019D, 0x019E, 0x019F, 
+    0x0198, 0x0198, 0x019A, 0x019B, 0x019C, 0x019D, 0x0220, 0x019F, 
     0x01A0, 0x01A0, 0x01A2, 0x01A2, 0x01A4, 0x01A4, 0x01A6, 0x01A7, 
     0x01A7, 0x01A9, 0x01AA, 0x01AB, 0x01AC, 0x01AC, 0x01AE, 0x01AF, 
     0x01AF, 0x01B1, 0x01B2, 0x01B3, 0x01B3, 0x01B5, 0x01B5, 0x01B7, 
@@ -321,7 +366,7 @@ namespace Babylon {
     0x0209, 0x0209, 0x020B, 0x020B, 0x020D, 0x020D, 0x020F, 0x020F, 
     0x0211, 0x0211, 0x0213, 0x0213, 0x0215, 0x0215, 0x0217, 0x0217, 
     0x0219, 0x0219, 0x021B, 0x021B, 0x021D, 0x021D, 0x021F, 0x021F, 
-    0x0220, 0x0221, 0x0223, 0x0223, 0x0225, 0x0225, 0x0227, 0x0227, 
+    0x019E, 0x0221, 0x0223, 0x0223, 0x0225, 0x0225, 0x0227, 0x0227, 
     0x0229, 0x0229, 0x022B, 0x022B, 0x022D, 0x022D, 0x022F, 0x022F, 
     0x0231, 0x0231, 0x0233, 0x0233, 0x0234, 0x0235, 0x0236, 0x0237, 
     0x0238, 0x0239, 0x023A, 0x023B, 0x023C, 0x023D, 0x023E, 0x023F, 
@@ -333,7 +378,7 @@ namespace Babylon {
     0x0180, 0x0181, 0x0182, 0x0182, 0x0184, 0x0184, 0x0186, 0x0187, 
     0x0187, 0x0189, 0x018A, 0x018B, 0x018B, 0x018D, 0x018E, 0x018F, 
     0x0190, 0x0191, 0x0191, 0x0193, 0x0194, 0x01F6, 0x0196, 0x0197, 
-    0x0198, 0x0198, 0x019A, 0x019B, 0x019C, 0x019D, 0x019E, 0x019F, 
+    0x0198, 0x0198, 0x019A, 0x019B, 0x019C, 0x019D, 0x0220, 0x019F, 
     0x01A0, 0x01A0, 0x01A2, 0x01A2, 0x01A4, 0x01A4, 0x01A6, 0x01A7, 
     0x01A7, 0x01A9, 0x01AA, 0x01AB, 0x01AC, 0x01AC, 0x01AE, 0x01AF, 
     0x01AF, 0x01B1, 0x01B2, 0x01B3, 0x01B3, 0x01B5, 0x01B5, 0x01B7, 
@@ -379,7 +424,7 @@ namespace Babylon {
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
-    CAT_Ll, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
+    CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, 
     CAT_Lu, CAT_Ll, CAT_Lu, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 
     CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, CAT_Ll, 

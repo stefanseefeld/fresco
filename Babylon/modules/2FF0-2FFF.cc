@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:05:01 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:13 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -150,7 +151,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -186,6 +187,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -214,6 +219,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return m_IDS_Binary_Operator.test(uc - m_first_letter);
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return m_IDS_Trinary_Operator.test(uc - m_first_letter);
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Ideographic_Description_Characters2FF0(const Ideographic_Description_Characters2FF0 &) {}
@@ -222,9 +267,15 @@ namespace Babylon {
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
     static const std::bitset<16> m_is_defined;
+    static const std::bitset<16> m_IDS_Binary_Operator;
+    static const std::bitset<16> m_IDS_Trinary_Operator;
   }; // class Ideographic_Description_Characters2FF0
 
     const std::bitset<16> Ideographic_Description_Characters2FF0::m_is_defined(std::string("0000111111111111"));
+
+    const std::bitset<16> Ideographic_Description_Characters2FF0::m_IDS_Binary_Operator(std::string("0000111111110011"));
+
+    const std::bitset<16> Ideographic_Description_Characters2FF0::m_IDS_Trinary_Operator(std::string("0000000000001100"));
 
 }; // namespace Babylon
 

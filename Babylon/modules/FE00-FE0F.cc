@@ -1,11 +1,11 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp F0000-FFFFD.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.5 2001/05/06 12:18:46 tobias Exp FE00-FE0F.cc
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:19:53 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:18 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,21 +26,22 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
-  class Private_UseF0000 : public Babylon::Dictionary::Block {
+  class Variation_SelectorsFE00 : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
 
-    Private_UseF0000() {
-      m_first_letter = 0xF0000;
-      m_last_letter  = 0xFFFFD;
+    Variation_SelectorsFE00() {
+      m_first_letter = 0xFE00;
+      m_last_letter  = 0xFE0F;
       // m_version="3.1" // Not yet supported!
     }
 
-    ~Private_UseF0000() {
+    ~Variation_SelectorsFE00() {
     }
 
     UCS4 first_letter() const {
@@ -57,7 +58,7 @@ namespace Babylon {
 
     // query functions:
     std::string blockname(const UCS4 uc) const {
-      return "Private Use";
+      return "Variation Selectors";
     }
 
     bool is_defined(const UCS4 uc) const {
@@ -103,7 +104,7 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(CAT_Co);
+      return Babylon::Gen_Cat(CAT_Mn);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
@@ -115,7 +116,7 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_INVALID;
-      return BIDIR_L;
+      return BIDIR_NSM;
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -137,7 +138,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(LB_XX);
+      return Babylon::Line_Break(LB_CM);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -150,7 +151,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -186,6 +187,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -214,15 +219,55 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 1;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
-    Private_UseF0000(const Private_UseF0000 &) {}
+    Variation_SelectorsFE00(const Variation_SelectorsFE00 &) {}
 
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-  }; // class Private_UseF0000
+  }; // class Variation_SelectorsFE00
 
 }; // namespace Babylon
 
-dload(Babylon::Private_UseF0000);
+dload(Babylon::Variation_SelectorsFE00);

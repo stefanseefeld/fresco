@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:04:22 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:48:07 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 namespace Babylon {
 
@@ -297,7 +298,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -333,6 +334,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -361,6 +366,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return m_Other_Default_Ignorable_Code_Point.test(uc - m_first_letter);
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Mongolian1800(const Mongolian1800 &) {}
@@ -374,13 +419,14 @@ namespace Babylon {
     static const Babylon::Bidir_Props m_bidir[176];
     static const unsigned char m_lb[176];
     static const std::bitset<176> m_Terminal_Punctuation;
+    static const std::bitset<176> m_Other_Default_Ignorable_Code_Point;
   }; // class Mongolian1800
 
     const std::bitset<176> Mongolian1800::m_is_defined(std::string("00000011111111111111111111111111111111111111111100000000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000011111111110111111111111111"));
 
   const unsigned char Mongolian1800::_cat[] = {
     CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Pd, CAT_Po, 
-    CAT_Po, CAT_Po, CAT_Po, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Po, 
+    CAT_Po, CAT_Po, CAT_Po, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Cf, CAT_Po, 
     CAT_Nd, CAT_Nd, CAT_Nd, CAT_Nd, CAT_Nd, CAT_Nd, CAT_Nd, CAT_Nd, 
     CAT_Nd, CAT_Nd, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -430,7 +476,7 @@ namespace Babylon {
 
   const Babylon::Bidir_Props Mongolian1800::m_bidir[] = {
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
-    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_ON, 
+    BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_BN, BIDIR_ON, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
@@ -479,6 +525,8 @@ namespace Babylon {
   };
 
     const std::bitset<176> Mongolian1800::m_Terminal_Punctuation(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001100111100"));
+
+    const std::bitset<176> Mongolian1800::m_Other_Default_Ignorable_Code_Point(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011100000000000"));
 
 }; // namespace Babylon
 

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 11 May 2001 01:12:05 +0200.
+ * ftp.unicode.org on Thu, 30 May 2002 20:49:17 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
+#include <utility>
 
 #include <map>
 namespace Babylon {
@@ -39,8 +40,8 @@ namespace Babylon {
       m_first_letter = 0xFB00;
       m_last_letter  = 0xFB4F;
       // m_version="3.1" // Not yet supported!
-      m_composeMap[make_pair(0x0000FB49, 0x000005C1)] = 0xFB2C;
-      m_composeMap[make_pair(0x0000FB49, 0x000005C2)] = 0xFB2D;
+      m_composeMap[std::make_pair(0x0000FB49, 0x000005C1)] = 0xFB2C;
+      m_composeMap[std::make_pair(0x0000FB49, 0x000005C2)] = 0xFB2D;
     }
 
     ~Alphabetic_Presentation_FormsFB00() {
@@ -169,10 +170,10 @@ namespace Babylon {
     }
 
     UCS4 compose (const UCS4 start, const UCS4 last) {
-      return m_composeMap[make_pair(start, last)];
+      return m_composeMap[std::make_pair(start, last)];
     }
 
-    bool is_White_space(const UCS4 uc) const {
+    bool is_White_Space(const UCS4 uc) const {
       return 0;
     }
 
@@ -208,6 +209,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_ASCII_Hex_Digit(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
@@ -236,6 +241,46 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Other_Grapheme_Extend(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Grapheme_Link(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Binary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_IDS_Trinary_Operator(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Radical(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Unified_Ideograph(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Default_Ignorable_Code_Point(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Deprecated(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Soft_Dotted(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Logical_Order_Exception(const UCS4 uc) const {
+      return 0;
+    }
+
   private:
     // functions
     Alphabetic_Presentation_FormsFB00(const Alphabetic_Presentation_FormsFB00 &) {}
@@ -250,7 +295,7 @@ namespace Babylon {
     static const unsigned char _decomp[80];
     static const UCS4 m_decompStr[80][2];
     static const unsigned char m_lb[80];
-    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<std::pair<UCS4, UCS4>, UCS4> m_composeMap;
   }; // class Alphabetic_Presentation_FormsFB00
 
     const std::bitset<80> Alphabetic_Presentation_FormsFB00::m_is_defined(std::string("11111111110110110101111101111111111111111111111111100000111110000000000001111111"));
