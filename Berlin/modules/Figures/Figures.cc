@@ -29,8 +29,8 @@ PointImpl::PointImpl() { add_point(0., 0.);}
 PointImpl::PointImpl (const Vertex &v) { add_point(v.x, v.y);}
 PointImpl::PointImpl (const PointImpl &f) { copy(f);}
 PointImpl::~PointImpl() {}
-Vertex PointImpl::pt() { return _path[0];}
-void PointImpl::pt(const Vertex &v) { _path[0] = v; resize();}
+Vertex PointImpl::pt() { return _path->nodes[0];}
+void PointImpl::pt(const Vertex &v) { _path->nodes[0] = v; resize();}
 
 LineImpl::LineImpl()
 {
@@ -46,10 +46,10 @@ LineImpl::LineImpl (const Vertex &v1, const Vertex &v2)
 
 LineImpl::LineImpl (const LineImpl &line) { copy(line);}
 LineImpl::~LineImpl() {}
-Vertex LineImpl::pt1() { return _path[0];}
-void LineImpl::pt1(const Vertex &v) { _path[0] = v; resize();}
-Vertex LineImpl::pt2() { return _path[1];}
-void LineImpl::pt2(const Vertex &v) { _path[1] = v; resize();}
+Vertex LineImpl::pt1() { return _path->nodes[0];}
+void LineImpl::pt1(const Vertex &v) { _path->nodes[0] = v; resize();}
+Vertex LineImpl::pt2() { return _path->nodes[1];}
+void LineImpl::pt2(const Vertex &v) { _path->nodes[1] = v; resize();}
 
 RectangleImpl::RectangleImpl()
 {
@@ -70,27 +70,27 @@ RectangleImpl::RectangleImpl(const Vertex &v1, const Vertex &v2)
 
 RectangleImpl::RectangleImpl (const RectangleImpl &rectangle) { copy(rectangle);}
 RectangleImpl::~RectangleImpl() {}
-Vertex RectangleImpl::pt1() { return _path[0];}
+Vertex RectangleImpl::pt1() { return _path->nodes[0];}
 void RectangleImpl::pt1(const Vertex &v1)
 {
   Vertex v2 =  pt2();
-  _path[0] = v1;
-  _path[1].x = v1.x;
-  _path[1].y = v2.y;
-  _path[3].x = v2.x;
-  _path[3].y = v1.y;
+  _path->nodes[0] = v1;
+  _path->nodes[1].x = v1.x;
+  _path->nodes[1].y = v2.y;
+  _path->nodes[3].x = v2.x;
+  _path->nodes[3].y = v1.y;
   resize();
 }
 
-Vertex RectangleImpl::pt2() { return _path[2];}
+Vertex RectangleImpl::pt2() { return _path->nodes[2];}
 void RectangleImpl::pt2(const Vertex &v2)
 {
   Vertex v1 =  pt1();
-  _path[2] = v2;
-  _path[1].x = v1.x;
-  _path[1].y = v2.y;
-  _path[3].x = v2.x;
-  _path[3].y = v1.y;
+  _path->nodes[2] = v2;
+  _path->nodes[1].x = v1.x;
+  _path->nodes[1].y = v2.y;
+  _path->nodes[3].x = v2.x;
+  _path->nodes[3].y = v1.y;
   resize();
 }
 
@@ -187,8 +187,8 @@ void EllipseImpl::radius1(Coord r) { _radius1 = r; resize();}
 Coord EllipseImpl::radius2() { return _radius2;}
 void EllipseImpl::radius2(Coord r) { _radius2 = r; resize();}
 
-PathImpl::PathImpl(bool flag) : _handles(new Warsaw::Path()), _closed(flag) {}
-PathImpl::PathImpl (const Warsaw::Path &path, bool flag) : _handles(new Warsaw::Path(path)), _closed(flag) { resize();}
+PathImpl::PathImpl(bool flag) : _handles(new Warsaw::Path()), _closed(flag) { _handles->shape = convex;}
+PathImpl::PathImpl (const Warsaw::Path &path, bool flag) : _handles(new Warsaw::Path(path)), _closed(flag) { _handles->shape = convex; resize();}
 PathImpl::PathImpl(const PathImpl &path) : _handles(new Warsaw::Path(path._handles)), _closed(path._closed) { copy(path);}
 
 void PathImpl::resize()
@@ -226,8 +226,8 @@ void PathImpl::resize()
 //             vv[0].x, vv[0].y, vv[n-1].x, vv[n-1].y, vv[1].x, vv[1].y
 //         );
 //     } else {
-  for (CORBA::ULong i = 0; i < _handles->length(); ++i) add_point(_handles[i].x, _handles[i].y);
-  if (_closed && _handles->length()) add_point(_handles[0].x, _handles[0].y);
+  for (CORBA::ULong i = 0; i < _handles->nodes.length(); ++i) add_point(_handles->nodes[i].x, _handles->nodes[i].y);
+  if (_closed && _handles->nodes.length()) add_point(_handles->nodes[0].x, _handles->nodes[0].y);
 //         }
 //     }
 //   cerr << "sorry, PathImpl::resize not implemented" << endl;

@@ -92,10 +92,12 @@ LogoDemo::LogoDemo(Application *a)
   Coord a = 2000.;
   Vertex offset;
   offset.x = -a/2., offset.y = -3./2.*a, offset.z = 0.;
-  Warsaw::Path path; path.length(3);
-  path[0].x = a/2 + offset.x, path[0].y = + offset.y, path[0].z = offset.z;
-  path[1].x = a + offset.x, path[1].y = 0.866*a + offset.y, path[1].z = offset.z;
-  path[2].x = offset.x, path[2].y = 0.866*a + offset.y, path[2].z = offset.z;
+  Warsaw::Path path;
+  path.shape = convex;
+  path.nodes.length(3);
+  path.nodes[0].x = a/2 + offset.x, path.nodes[0].y = + offset.y, path.nodes[0].z = offset.z;
+  path.nodes[1].x = a + offset.x, path.nodes[1].y = 0.866*a + offset.y, path.nodes[1].z = offset.z;
+  path.nodes[2].x = offset.x, path.nodes[2].y = 0.866*a + offset.y, path.nodes[2].z = offset.z;
   
   Figure::Path_var triangle = figures->polygon(path);
   Graphic_var transformer1 = figures->transformer(Graphic_var(tools->rgb(Graphic_var(tools->alpha(triangle, 0.5)), 1., 0.5, 0.5)));

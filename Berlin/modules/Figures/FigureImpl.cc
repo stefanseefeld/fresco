@@ -112,12 +112,12 @@ void TransformFigure::copy(const TransformFigure &tf)
   if (tf._ext->valid) _ext->copy(Region_var(tf._ext->_this()));
 }
 
-FigureImpl::FigureImpl() : _path(new Warsaw::Path()) {}
+FigureImpl::FigureImpl() : _path(new Warsaw::Path()) { _path->shape = convex;}
 FigureImpl::~FigureImpl() {}
 
 void FigureImpl::add_point(Coord x, Coord y)
 {
-  if (_path->length() == 0)
+  if (_path->nodes.length() == 0)
     {
       _ext->lower.x = x;
       _ext->upper.x = x;
@@ -138,15 +138,15 @@ void FigureImpl::add_point(Coord x, Coord y)
   v.x = x;
   v.y = y;
   v.z = 0.;
-  CORBA::ULong n = _path->length();
-  _path->length(n + 1);
-  _path[n] = v;
+  CORBA::ULong n = _path->nodes.length();
+  _path->nodes.length(n + 1);
+  _path->nodes[n] = v;
 }
 
 void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
   Trace trace("FigureImpl::extension");
-  if (_path->length() > 0)
+  if (_path->nodes.length() > 0)
     {
       Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
       tmp->copy(Region_var(_ext->_this()));
@@ -179,7 +179,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 void FigureImpl::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("FigureImpl::draw");
-  if (_path->length() > 0)
+  if (_path->nodes.length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
@@ -324,18 +324,18 @@ void FigureImpl::pick(PickTraversal_ptr traversal)
 void FigureImpl::resize()
 {
   _ext->valid = false;
-  if (_path->length() > 0)
+  if (_path->nodes.length() > 0)
     {
       _ext->valid = true;
-      _ext->lower = _path[0];
-      _ext->upper = _path[0];
-      CORBA::ULong n = _path->length();
+      _ext->lower = _path->nodes[0];
+      _ext->upper = _path->nodes[0];
+      CORBA::ULong n = _path->nodes.length();
       for (CORBA::ULong i = 1; i < n; i++)
 	{
-	  _ext->lower.x = Math::min(_ext->lower.x, _path[i].x);
-	  _ext->upper.x = Math::max(_ext->upper.x, _path[i].x);
-	  _ext->lower.y = Math::min(_ext->lower.y, _path[i].y);
-	  _ext->upper.y = Math::max(_ext->upper.y, _path[i].y);
+	  _ext->lower.x = Math::min(_ext->lower.x, _path->nodes[i].x);
+	  _ext->upper.x = Math::max(_ext->upper.x, _path->nodes[i].x);
+	  _ext->lower.y = Math::min(_ext->lower.y, _path->nodes[i].y);
+	  _ext->upper.y = Math::max(_ext->upper.y, _path->nodes[i].y);
         }
 //       // in case of vertical/horizontal line with nil brush, 
 //       // painter->is_visible will be return false, so add 1
@@ -348,6 +348,7 @@ void FigureImpl::resize()
 void FigureImpl::reset()
 {
   _path = new Warsaw::Path();
+  _path->shape = convex;
   _ext->valid = false;
 }
 
@@ -355,4 +356,5 @@ void FigureImpl::copy(const FigureImpl &f)
 {
   TransformFigure::copy(f);
   _path = new Warsaw::Path(f._path);
+  _path->shape = convex;
 }
