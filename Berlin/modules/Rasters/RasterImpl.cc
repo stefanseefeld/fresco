@@ -23,6 +23,7 @@
 
 #include "Berlin/Logger.hh"
 #include "Image/RasterImpl.hh"
+#include "Berlin/Logger.hh"
 #include <fstream>
 
 RasterImpl::RasterImpl()
@@ -69,12 +70,14 @@ Raster::Info RasterImpl::header()
   return info;
 }
 
-void RasterImpl::load(const Raster::Data &data)
+void RasterImpl::load(const Raster::Data& data)
 {
-  clear();
-  ibuf buffer(data);
-  PNGDecoder decoder(&buffer, rpng, rinfo, rend);
-  rows = decoder.decode();
+	clear();
+	ibuf buffer(data);
+	PNGDecoder decoder(&buffer, rpng, rinfo, rend);
+	Logger::log(Logger::corba) << "About to Decode..." << endl;
+	rows = decoder.decode();
+    Logger::log(Logger::corba) << "Done decoding..." << endl;
 }
 
 void RasterImpl::export(Raster::Data *&data)
@@ -87,13 +90,30 @@ void RasterImpl::export(Raster::Data *&data)
    * create temporary write structures here...
    */
   png_structp wpng = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-  png_infop winfo = png_create_info_struct(rpng);
-  png_infop wend = png_create_info_struct(rpng);
+  png_infop winfo = png_create_info_struct(wpng);
+
+  // Get the data on the image
+  Raster::Info info = header();
+  png_set_IHDR(wpng, winfo, info.width, info.height, info.depth,
+			   info.colortype, info.interlace,
+			   info.compression, info.filter);
+
+  png_infop wend = png_create_info_struct(wpng);
+  // Set the "end" data  -- these are comments and similar
+  // text for the file.
+  //*wend = *rend;
+    
   PNGEncoder encoder(&buffer, wpng, winfo, wend);
   encoder.encode(rows);
-  delete data;
+  if (data != NULL)
+  {
+	  delete data;
+	  data = NULL;
+  }
+  
   data = new Data(static_cast<CORBA::ULong>(buffer.length()), static_cast<CORBA::ULong>(buffer.length()),
 		  reinterpret_cast<CORBA::Octet *>(buffer.data()), static_cast<CORBA::Boolean>(true));
+
   png_destroy_write_struct(&wpng, &winfo);
 }
 
@@ -136,5 +156,10 @@ void RasterImpl::clear()
   for (png_uint_32 i = 0; i < height; i++) delete [] rows;
   delete [] rows;
   rows = 0;
+
+  png_destroy_read_struct(&rpng, &rinfo, &rend);
+  rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  rinfo = png_create_info_struct(rpng);
+  rend = png_create_info_struct(rpng);  
 }
 

@@ -36,14 +36,14 @@ CXX         = g++
 AR	    = ar
 YACC	    = bison -y
 FLEX	    = flex
-INSTALL	    = /usr/bin/install -c
+INSTALL	    = /usr/bin/ginstall -c
 LD	    = ld
 MAKEINFO    = makeinfo
 RANLIB      = ranlib
 TEXI2DVI    = texi2dvi
 TEXI2HTML   = texi2html
-TEX         = 
-DVIPS       = 
+TEX         = latex
+DVIPS       = dvips
 
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../include
