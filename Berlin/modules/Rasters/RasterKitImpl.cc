@@ -32,13 +32,13 @@ using namespace Fresco;
 
 using namespace Berlin::ImageKit;
 
-ImageKitImpl::ImageKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
-ImageKitImpl::~ImageKitImpl() {}
+ImageKitImpl::ImageKitImpl(const std::string &id,
+			   const Fresco::Kit::PropertySeq &p)
+    : KitImpl(id, p) { }
+ImageKitImpl::~ImageKitImpl() { }
 
 Raster_ptr ImageKitImpl::empty()
 {
-  Trace trace("ImageKitImpl::empty");
   RasterImpl *raster = new RasterImpl();
   activate(raster);
   return raster->_this();
@@ -46,11 +46,12 @@ Raster_ptr ImageKitImpl::empty()
 
 Raster_ptr ImageKitImpl::create(const char *file)
 {
-  Trace trace("ImageKitImpl::create");
   RasterImpl *raster = new RasterImpl(file);
   activate(raster);
   return raster->_this();
 }
+
+
 
 extern "C" KitImpl *load()
 {

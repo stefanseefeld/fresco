@@ -42,28 +42,44 @@ using namespace Fresco;
 
 using namespace Berlin::DesktopKit;
 
-DesktopKitImpl::DesktopKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
-DesktopKitImpl::~DesktopKitImpl() {}
+DesktopKitImpl::DesktopKitImpl(const std::string &id,
+			       const Fresco::Kit::PropertySeq &p)
+  : KitImpl(id, p) { }
+DesktopKitImpl::~DesktopKitImpl() { }
+
 void DesktopKitImpl::bind(ServerContext_ptr context)
 {
   Trace trace("DesktopKitImpl::bind");
   KitImpl::bind(context);
-  CORBA::Object_var object = context->get_singleton("IDL:fresco.org/Fresco/Desktop:1.0");
+  CORBA::Object_var object =
+      context->get_singleton("IDL:fresco.org/Fresco/Desktop:1.0");
   _desktop = Desktop::_narrow(object);
   _desktop->increment();
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  _layout  = resolve_kit<LayoutKit>(context, "IDL:fresco.org/Fresco/LayoutKit:1.0", props);
-  _tool    = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
-  _widget  = resolve_kit<WidgetKit>(context, "IDL:fresco.org/Fresco/WidgetKit:1.0", props);
-  _text    = resolve_kit<TextKit>(context, "IDL:fresco.org/Fresco/TextKit:1.0", props);
-  _image   = resolve_kit<ImageKit>(context, "IDL:fresco.org/Fresco/ImageKit:1.0", props);
-  _figure  = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
+  _layout  = resolve_kit<LayoutKit>(context,
+				    "IDL:fresco.org/Fresco/LayoutKit:1.0",
+				    props);
+  _tool    = resolve_kit<ToolKit>(context,
+				  "IDL:fresco.org/Fresco/ToolKit:1.0",
+				  props);
+  _widget  = resolve_kit<WidgetKit>(context,
+				    "IDL:fresco.org/Fresco/WidgetKit:1.0",
+				    props);
+  _text    = resolve_kit<TextKit>(context,
+				  "IDL:fresco.org/Fresco/TextKit:1.0",
+				  props);
+  _image   = resolve_kit<ImageKit>(context,
+				   "IDL:fresco.org/Fresco/ImageKit:1.0",
+				   props);
+  _figure  = resolve_kit<FigureKit>(context,
+				    "IDL:fresco.org/Fresco/FigureKit:1.0",
+				    props);
 
   ClientContext_var client = context->client();
   _exit = client->exit();
 }
+
 
 Desktop_ptr DesktopKitImpl::desk()
 {
@@ -73,7 +89,6 @@ Desktop_ptr DesktopKitImpl::desk()
 
 Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
 {
-  Trace trace("DesktopKitImpl::shell");
   WindowImpl *window = new WindowImpl;
   activate(window);
   Window_var wptr = window->_this();
@@ -186,7 +201,6 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
 
 Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 {
-  Trace trace("DesktopKitImpl::transient");
   WindowImpl *window = new WindowImpl();
   activate(window);
   Window_var wptr = window->_this();
@@ -269,7 +283,6 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
 
 Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
 {
-  Trace trace("DesktopKitImpl::pulldown");
   Pulldown *menu = new Pulldown();
   activate(menu);
   Window_var wptr = menu->_this();
@@ -299,9 +312,13 @@ Command_ptr DesktopKitImpl::resize(Fresco::Window_ptr window)
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::move_resize(Fresco::Window_ptr window, Fresco::Alignment x, Fresco::Alignment y, CORBA::Short border)
+Command_ptr DesktopKitImpl::move_resize(Fresco::Window_ptr window,
+					Fresco::Alignment x,
+					Fresco::Alignment y,
+					CORBA::Short border)
 {
-  Manipulator *manipulator = new MoveResizer(window, _desktop, x, y, border);
+  Manipulator *manipulator =
+      new MoveResizer(window, _desktop, x, y, border);
   activate(manipulator);
   return manipulator->_this();
 }
@@ -313,7 +330,8 @@ Command_ptr DesktopKitImpl::relayer(Fresco::Window_ptr window)
   return manipulator->_this();
 }
 
-Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window, CORBA::Boolean flag)
+Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window,
+				CORBA::Boolean flag)
 {
   Manipulator *manipulator;
   if (flag) manipulator = new Mapper(window);
@@ -321,6 +339,8 @@ Command_ptr DesktopKitImpl::map(Fresco::Window_ptr window, CORBA::Boolean flag)
   activate(manipulator);
   return manipulator->_this();
 }
+
+
 
 extern "C" KitImpl *load()
 {

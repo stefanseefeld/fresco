@@ -171,7 +171,8 @@ class RotationAdjuster : public virtual ViewImpl,
   virtual void update(const CORBA::Any &any)
     {
       Graphic_var child = body(); if (CORBA::is_nil(child)) return;
-      Transform_var transformation = child->transformation(); if (CORBA::is_nil(transformation)) return;
+      Transform_var transformation =
+	  child->transformation(); if (CORBA::is_nil(transformation)) return;
       Coord phi;
       any >>= phi;
       transformation->load_identity();
@@ -189,7 +190,8 @@ class ZoomAdjuster : public virtual ViewImpl,
   virtual void update(const CORBA::Any &any)
     {
       Graphic_var child = body(); if (CORBA::is_nil(child)) return;
-      Transform_var transformation = child->transformation(); if (CORBA::is_nil(transformation)) return;
+      Transform_var transformation =
+	  child->transformation(); if (CORBA::is_nil(transformation)) return;
       Coord scale;
       any >>= scale;
       Vertex s;
@@ -200,68 +202,82 @@ class ZoomAdjuster : public virtual ViewImpl,
     }
 };
 
-GadgetKitImpl::GadgetKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
-GadgetKitImpl::~GadgetKitImpl() {}
+GadgetKitImpl::GadgetKitImpl(const std::string &id,
+			     const Fresco::Kit::PropertySeq &p)
+  : KitImpl(id, p) { }
+GadgetKitImpl::~GadgetKitImpl() { }
 void GadgetKitImpl::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  _command = resolve_kit<CommandKit>(context, "IDL:fresco.org/Fresco/CommandKit:1.0", props);
-  _figure = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
+  _command = resolve_kit<CommandKit>(context,
+				     "IDL:fresco.org/Fresco/CommandKit:1.0",
+				     props);
+  _figure = resolve_kit<FigureKit>(context,
+				   "IDL:fresco.org/Fresco/FigureKit:1.0",
+				   props);
 }
 
-Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
+
+Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr gg,
+			       BoundedValue_ptr r,
+			       BoundedValue_ptr g,
+			       BoundedValue_ptr b)
 {
-  RGBAdjuster *adjuster = new RGBAdjuster(r, g, b);
-  activate(adjuster);
-  r->attach(Observer_var(adjuster->_this()));
-  g->attach(Observer_var(adjuster->_this()));
-  b->attach(Observer_var(adjuster->_this()));
-  adjuster->body(body);
-  return adjuster->_this();
+  Graphic_ptr adjuster = create<Graphic>(new RGBAdjuster(r, g, b));
+  adjuster->body(gg);
+  r->attach(Observer_ptr(adjuster));
+  g->attach(Observer_ptr(adjuster));
+  b->attach(Observer_ptr(adjuster));
+  return adjuster;
 }
 
 Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
 {
-  AlphaAdjuster *adjuster = new AlphaAdjuster(value);
-  activate(adjuster);
-  value->attach(Observer_var(adjuster->_this()));
+  Graphic_ptr adjuster = create<Graphic>(new AlphaAdjuster(value));
+  value->attach(Observer_ptr(adjuster));
   adjuster->body(g);
-  return adjuster->_this();
+  return adjuster;
 }
 
-Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
+Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr gg,
+				    BoundedValue_ptr r,
+				    BoundedValue_ptr g,
+				    BoundedValue_ptr b)
 {
-  LightingAdjuster *adjuster = new LightingAdjuster(r, g, b);
-  activate(adjuster);
-  r->attach(Observer_var(adjuster->_this()));
-  g->attach(Observer_var(adjuster->_this()));
-  b->attach(Observer_var(adjuster->_this()));
-  adjuster->body(body);
-  return adjuster->_this();
+  Graphic_ptr adjuster = create<Graphic>(new LightingAdjuster(r, g, b));
+  r->attach(Observer_ptr(adjuster));
+  g->attach(Observer_ptr(adjuster));
+  b->attach(Observer_ptr(adjuster));
+  adjuster->body(gg);
+
+  return adjuster;
 }
 
-Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value, Axis axis)
+Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g,
+				   BoundedValue_ptr value,
+				   Axis axis)
 {
-  RotationAdjuster *adjuster = new RotationAdjuster(axis);
-  activate(adjuster);
-  value->attach(Observer_var(adjuster->_this()));
+  Graphic_ptr adjuster = create<Graphic>(new RotationAdjuster(axis));
+  value->attach(Observer_ptr(adjuster));
   Graphic_var transformer = _figure->transformer(g);
   adjuster->body(transformer);
-  return adjuster->_this();
+
+  return adjuster;
 }
 
 Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 {
-  ZoomAdjuster *adjuster = new ZoomAdjuster();
-  activate(adjuster);
-  value->attach(Observer_var(adjuster->_this()));
+  Graphic_ptr adjuster = create<Graphic>(new ZoomAdjuster());
+  value->attach(Observer_ptr(adjuster));
   Graphic_var transformer = _figure->transformer(g);
   adjuster->body(transformer);
-  return adjuster->_this();
+
+  return adjuster;
 }
+
+
 
 extern "C" KitImpl *load()
 {

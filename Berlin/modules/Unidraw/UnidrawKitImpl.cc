@@ -32,18 +32,29 @@ using namespace Fresco;
 
 using namespace Berlin::UnidrawKit;
 
-UnidrawKitImpl::UnidrawKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
-UnidrawKitImpl::~UnidrawKitImpl() {}
+UnidrawKitImpl::UnidrawKitImpl(const std::string &id,
+			       const Fresco::Kit::PropertySeq &p)
+  : KitImpl(id, p)
+{ }
+
+UnidrawKitImpl::~UnidrawKitImpl()
+{ }
+
 void UnidrawKitImpl::bind(ServerContext_ptr context)
 {
   Trace trace("UnidrawKitImpl::bind");
   KitImpl::bind(context);
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  _figures = resolve_kit<FigureKit>(context, "IDL:fresco.org/Fresco/FigureKit:1.0", props);
-  _tools   = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
-  _widgets = resolve_kit<WidgetKit>(context, "IDL:fresco.org/Fresco/WidgetKit:1.0", props);
+  _figures = resolve_kit<FigureKit>(context,
+				    "IDL:fresco.org/Fresco/FigureKit:1.0",
+				    props);
+  _tools   = resolve_kit<ToolKit>(context,
+				  "IDL:fresco.org/Fresco/ToolKit:1.0",
+				  props);
+  _widgets = resolve_kit<WidgetKit>(context,
+				    "IDL:fresco.org/Fresco/WidgetKit:1.0",
+				    props);
 }
 
 Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
@@ -51,14 +62,16 @@ Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
   Graphic_var box = _figures->rectangle(0., 0., 1., 1.);
   SelectTool *tool = new SelectTool(box);
   activate(tool);
-  return tool->_this();
+  Unidraw::Tool_ptr res = tool->_this();
+  return res;
 }
 
 Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 {
   EditorImpl *editor = new EditorImpl(this);
   activate(editor);
-  return editor->_this();
+  Unidraw::Editor_ptr res = editor->_this();
+  return res;
 }
 
 Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr m)
@@ -66,12 +79,26 @@ Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr 
   UViewImpl *view = new UViewImpl(m);
   activate(view);
   view->body(g);
-  return view->_this();
+  Unidraw::View_ptr res = view->_this();
+  return res;
 }
 
-Fresco::FigureKit_ptr UnidrawKitImpl::figures() { return RefCount_var<Fresco::FigureKit>::increment(_figures);}
-Fresco::ToolKit_ptr UnidrawKitImpl::tools() { return RefCount_var<Fresco::ToolKit>::increment(_tools);}
-Fresco::WidgetKit_ptr UnidrawKitImpl::widgets() { return RefCount_var<Fresco::WidgetKit>::increment(_widgets);}
+Fresco::FigureKit_ptr UnidrawKitImpl::figures()
+{
+    return RefCount_var<Fresco::FigureKit>::increment(_figures);
+}
+
+Fresco::ToolKit_ptr UnidrawKitImpl::tools()
+{
+    return RefCount_var<Fresco::ToolKit>::increment(_tools);
+}
+
+Fresco::WidgetKit_ptr UnidrawKitImpl::widgets()
+{
+    return RefCount_var<Fresco::WidgetKit>::increment(_widgets);
+}
+
+
 
 extern "C" KitImpl *load()
 {

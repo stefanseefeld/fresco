@@ -34,24 +34,23 @@ using namespace Berlin::PrimitiveKit;
 
 PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id,
 		                   const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
+  : KitImpl(id, p) { }
 
-PrimitiveKitImpl::~PrimitiveKitImpl() {}
+PrimitiveKitImpl::~PrimitiveKitImpl() { }
 
-Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr child)
+Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr g)
 {
-  GraphicImpl *g = new Root(Alignment(0.5), Alignment(0.5), Alignment(0.5), 
-			    Alignment(0.5), Alignment(0.5), Alignment(0.5));
-  activate(g);
-  g->body(child);
-  return g->_this();
+  Graphic_ptr res =
+      create<Graphic>(new Root(Alignment(0.5), Alignment(0.5),
+			       Alignment(0.5), Alignment(0.5),
+			       Alignment(0.5), Alignment(0.5)));
+  res->body(g);
+  return res;
 }
 
 Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Fresco::Mesh &mesh)
 {
-  GeometryImpl *geometry = new GeometryImpl(mesh);
-  activate(geometry);
-  return geometry->_this();
+  return create<Primitive::Geometry>(new GeometryImpl(mesh));
 }
 
 Graphic_ptr PrimitiveKitImpl::cube()
@@ -103,43 +102,51 @@ Graphic_ptr PrimitiveKitImpl::cube()
   mesh.normals[10].x =  0.; mesh.normals[10].y =  0.; mesh.normals[10].z =  1.;
   mesh.normals[11].x =  0.; mesh.normals[11].y =  0.; mesh.normals[11].z =  1.;
 
-  return this->geometry(mesh);
+  return geometry(mesh);
 }
 
 
 Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {
-  Transformer *transformer = new Transformer;
-  activate(transformer);
-  transformer->body(g);
-  return transformer->_this();
+  Graphic_ptr res = create<Graphic>(new Transformer);
+  res->body(g);
+  return res;
 }
 
-Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g, const Fresco::Color &c, CORBA::Float i, const Fresco::Vertex &d)
+Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
+						const Fresco::Color &c,
+						CORBA::Float i,
+						const Fresco::Vertex &d)
 {
-  Light *light = new DirectionalLight(c, i, d);
-  activate(light);
-  light->body(g);
-  return light->_this();
+  Graphic_ptr res = create<Graphic>(new DirectionalLight(c, i, d));
+  res->body(g);
+  return res;
 }
 
-Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g, const Fresco::Color &c, CORBA::Float i, const Fresco::Vertex &p)
+Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
+					  const Fresco::Color &c,
+					  CORBA::Float i,
+					  const Fresco::Vertex &p)
 {
-  Light *light = new PointLight(c, i, p);
-  activate(light);
-  light->body(g);
-  return light->_this();
+  Graphic_ptr res = create<Graphic>(new PointLight(c, i, p));
+  res->body(g);
+  return res;
 }
 
-Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g, const Fresco::Color &c, CORBA::Float i,
-					 const Fresco::Vertex &p, const Fresco::Vertex &d,
-					 CORBA::Float r, CORBA::Float a)
+Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
+					 const Fresco::Color &c,
+					 CORBA::Float i,
+					 const Fresco::Vertex &p,
+					 const Fresco::Vertex &d,
+					 CORBA::Float r,
+					 CORBA::Float a)
 {
-  Light *light = new SpotLight(c, i, p, d, r, a);
-  activate(light);
-  light->body(g);
-  return light->_this();
+  Graphic_ptr res = create<Graphic>(new SpotLight(c, i, p, d, r, a));
+  res->body(g);
+  return res;
 }
+
+
 
 extern "C" KitImpl *load()
 {

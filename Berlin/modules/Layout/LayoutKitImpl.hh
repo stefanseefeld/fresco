@@ -119,13 +119,6 @@ public:
   virtual Fresco::Graphic_ptr tmargin(Fresco::Graphic_ptr, Fresco::Coord);
   virtual Fresco::Graphic_ptr tmargin_flexible(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
 private:
-  template <typename I, typename Im>
-  typename I::_ptr_type create(Im *impl)
-  {
-    activate(impl);
-    return impl->_this();
-  }
-
   Fresco::Coord _fill;
 };
 

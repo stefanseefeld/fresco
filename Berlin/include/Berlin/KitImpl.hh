@@ -50,6 +50,15 @@ public:
 
   virtual void increment();
   virtual void decrement();
+
+protected:
+    template <typename I, typename Im>
+    typename I::_ptr_type create(Im *impl)
+    {
+	activate(impl);
+	return impl->_this();
+    }
+
 private:
   void activate(PortableServer::POA_ptr);
   void deactivate();
@@ -71,6 +80,5 @@ inline T *create_kit(const std::string &repo, std::string props[], size_t n)
     }
   return new T(repo, properties);
 }
-
 
 #endif

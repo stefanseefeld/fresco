@@ -140,10 +140,13 @@ public:
   clist_t _commands;
 };
 
-CommandKitImpl::CommandKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
 
-CommandKitImpl::~CommandKitImpl() {}
+
+CommandKitImpl::CommandKitImpl(const std::string &id,
+			       const Fresco::Kit::PropertySeq &p)
+  : KitImpl(id, p) { }
+
+CommandKitImpl::~CommandKitImpl() { }
 
 void CommandKitImpl::bind(ServerContext_ptr server)
 {

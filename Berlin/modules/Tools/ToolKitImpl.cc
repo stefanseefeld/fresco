@@ -108,111 +108,153 @@ private:
   Coord alpha;
 };
 
-ToolKitImpl::ToolKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
+ToolKitImpl::ToolKitImpl(const std::string &id,
+			 const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 
 ToolKitImpl::~ToolKitImpl() { }
 
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {
-  Trace trace("ToolKitImpl::debugger");
-  DebugGraphic *debug = new DebugGraphic(std::cout, s);
-  activate(debug);
-  debug->body(g);
-  return debug->_this();
-};
+  Graphic_ptr res = create<Graphic>(new DebugGraphic(std::cout, s));
+  res->body(g);
+  return res;
+}
 
 DrawingState_ptr ToolKitImpl::decorator(Graphic_ptr g)
 {
-  Trace trace("ToolKitImpl::decorator");
-  DrawingStateImpl *state = new DrawingStateImpl();
-  activate(state);
-  state->body(g);
-  return state->_this();
-};
+  DrawingState_ptr res = create<DrawingState>(new DrawingStateImpl());
+  res->body(g);
+  return res;
+}
 
 Graphic_ptr ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
-  Trace trace("ToolKitImpl::rgb");
-  RGBDecorator *decorator = new RGBDecorator(r, g, b);
-  activate(decorator);
-  decorator->body(gg);
-  return decorator->_this();
-};
+  Graphic_ptr res = create<Graphic>(new RGBDecorator(r, g, b));
+  res->body(gg);
+  return res;
+}
 
 Graphic_ptr ToolKitImpl::alpha(Graphic_ptr g, Coord a)
 {
-  Trace trace("ToolKitImpl::alpha");
-  AlphaDecorator *decorator = new AlphaDecorator(a);
-  activate(decorator);
-  decorator->body(g);
-  return decorator->_this();
-};
+  Graphic_ptr res = create<Graphic>(new AlphaDecorator(a));
+  res->body(g);
+  return res;
+}
 
 Graphic_ptr ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
-  Trace trace("ToolKitImpl::lighting");
-  LightingDecorator *decorator = new LightingDecorator(r, g, b);
-  activate(decorator);
-  decorator->body(gg);
-  return decorator->_this();
-};
-
-Graphic_ptr ToolKitImpl::frame(Graphic_ptr g, Coord thickness, const Fresco::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
-{
-  Trace trace("ToolKitImpl::frame");
-  Frame::Renderer *renderer = 0;
-  switch (spec._d())
-    {
-     case Fresco::ToolKit::none: renderer = new InvisibleFrame(thickness, fill); break;
-     case Fresco::ToolKit::inset: renderer = new Bevel(thickness, Bevel::inset, spec.brightness(), fill); break;
-     case Fresco::ToolKit::outset: renderer = new Bevel(thickness, Bevel::outset, spec.brightness(), fill); break;
-     case Fresco::ToolKit::convex: renderer = new Bevel(thickness, Bevel::convex, spec.brightness(), fill); break;
-     case Fresco::ToolKit::concav: renderer = new Bevel(thickness, Bevel::concav, spec.brightness(), fill); break;
-     case Fresco::ToolKit::colored: renderer = new ColoredFrame(thickness, spec.foreground(), fill); break;
-    }
-  Frame *f = new Frame(thickness, renderer);
-  activate(f);
-  f->body(g);
-  return f->_this();
+  Graphic_ptr res = create<Graphic>(new LightingDecorator(r, g, b));
+  res->body(gg);
+  return res;
 }
 
-Graphic_ptr ToolKitImpl::triangle(Graphic_ptr g, Coord thickness, const Fresco::ToolKit::FrameSpec &spec, CORBA::Boolean fill, Fresco::ToolKit::Direction d)
+Graphic_ptr ToolKitImpl::frame(Graphic_ptr g,
+			       Coord thickness,
+			       const Fresco::ToolKit::FrameSpec &spec,
+			       CORBA::Boolean fill)
 {
-  Trace trace("ToolKitImpl::triangle");
   Frame::Renderer *renderer = 0;
   switch (spec._d())
-    {
-     case Fresco::ToolKit::none: renderer = new InvisibleTriangle(thickness, fill, d); break;
-     case Fresco::ToolKit::inset: renderer = new BeveledTriangle(thickness, Bevel::inset, spec.brightness(), fill, d); break;
-     case Fresco::ToolKit::outset: renderer = new BeveledTriangle(thickness, Bevel::outset, spec.brightness(), fill, d); break;
-     case Fresco::ToolKit::convex: renderer = new BeveledTriangle(thickness, Bevel::convex, spec.brightness(), fill, d); break;
-     case Fresco::ToolKit::concav: renderer = new BeveledTriangle(thickness, Bevel::concav, spec.brightness(), fill, d); break;
-     case Fresco::ToolKit::colored: renderer = new ColoredTriangle(thickness, spec.foreground(), fill, d); break;
-    }
-  Frame *f = new Frame(thickness, renderer);
-  activate(f);
-  f->body(g);
-  return f->_this();
+  {
+  case Fresco::ToolKit::none:
+      renderer = new InvisibleFrame(thickness, fill);
+      break;
+  case Fresco::ToolKit::inset:
+      renderer = new Bevel(thickness, Bevel::inset,
+			   spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::outset:
+      renderer = new Bevel(thickness, Bevel::outset,
+			   spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::convex:
+      renderer = new Bevel(thickness, Bevel::convex,
+			   spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::concav:
+      renderer = new Bevel(thickness, Bevel::concav,
+			   spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::colored:
+      renderer = new ColoredFrame(thickness, spec.foreground(), fill);
+      break;
+  }
+  Graphic_ptr res = create<Graphic>(new Frame(thickness, renderer));
+  res->body(g);
+  return res;
 }
 
-Graphic_ptr ToolKitImpl::diamond(Graphic_ptr g, Coord thickness, const Fresco::ToolKit::FrameSpec &spec, CORBA::Boolean fill)
+Graphic_ptr ToolKitImpl::triangle(Graphic_ptr g, Coord thickness,
+				  const Fresco::ToolKit::FrameSpec &spec,
+				  CORBA::Boolean fill,
+				  Fresco::ToolKit::Direction d)
 {
-  Trace trace("ToolKitImpl::diamond");
   Frame::Renderer *renderer = 0;
   switch (spec._d())
-    {
-     case Fresco::ToolKit::none: renderer = new InvisibleDiamond(thickness, fill); break;
-     case Fresco::ToolKit::inset: renderer = new BeveledDiamond(thickness, Bevel::inset, spec.brightness(), fill); break;
-     case Fresco::ToolKit::outset: renderer = new BeveledDiamond(thickness, Bevel::outset, spec.brightness(), fill); break;
-     case Fresco::ToolKit::convex: renderer = new BeveledDiamond(thickness, Bevel::convex, spec.brightness(), fill); break;
-     case Fresco::ToolKit::concav: renderer = new BeveledDiamond(thickness, Bevel::concav, spec.brightness(), fill); break;
-     case Fresco::ToolKit::colored: renderer = new ColoredDiamond(thickness, spec.foreground(), fill); break;
-    }
-  Frame *f = new Frame(thickness, renderer);
-  activate(f);
-  f->body(g);
-  return f->_this();
+  {
+  case Fresco::ToolKit::none:
+      renderer = new InvisibleTriangle(thickness, fill, d); break;
+  case Fresco::ToolKit::inset:
+      renderer = new BeveledTriangle(thickness, Bevel::inset,
+				     spec.brightness(),
+				     fill, d);
+      break;
+  case Fresco::ToolKit::outset:
+      renderer = new BeveledTriangle(thickness, Bevel::outset,
+				     spec.brightness(), fill, d);
+      break;
+  case Fresco::ToolKit::convex:
+      renderer = new BeveledTriangle(thickness, Bevel::convex,
+				     spec.brightness(), fill, d);
+      break;
+  case Fresco::ToolKit::concav:
+      renderer = new BeveledTriangle(thickness, Bevel::concav,
+				     spec.brightness(), fill, d);
+      break;
+  case Fresco::ToolKit::colored:
+      renderer = new ColoredTriangle(thickness, spec.foreground(),
+				     fill, d);
+      break;
+  }
+  Graphic_ptr res = create<Graphic>(new Frame(thickness, renderer));
+  res->body(g);
+  return res;
+}
+
+Graphic_ptr ToolKitImpl::diamond(Graphic_ptr g, Coord thickness,
+				 const Fresco::ToolKit::FrameSpec &spec,
+				 CORBA::Boolean fill)
+{
+  Frame::Renderer *renderer = 0;
+  switch (spec._d())
+  {
+  case Fresco::ToolKit::none:
+      renderer = new InvisibleDiamond(thickness, fill);
+      break;
+  case Fresco::ToolKit::inset:
+      renderer = new BeveledDiamond(thickness, Bevel::inset,
+				    spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::outset:
+      renderer = new BeveledDiamond(thickness, Bevel::outset,
+				    spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::convex:
+      renderer = new BeveledDiamond(thickness, Bevel::convex,
+				    spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::concav:
+      renderer = new BeveledDiamond(thickness, Bevel::concav,
+				    spec.brightness(), fill);
+      break;
+  case Fresco::ToolKit::colored:
+      renderer = new ColoredDiamond(thickness, spec.foreground(), fill);
+      break;
+  }
+  Graphic_ptr res = create<Graphic>(new Frame(thickness, renderer));
+  res->body(g);
+  return res;
 }
 
 // Graphic_ptr ToolKitImpl::filler(Graphic_ptr g, const Color &c)
@@ -234,9 +276,10 @@ Graphic_ptr ToolKitImpl::diamond(Graphic_ptr g, Coord thickness, const Fresco::T
 //   return i->_this();
 // }
 
-Graphic_ptr ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_ptr g2, Telltale::Mask mask, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_ptr g2,
+				       Telltale::Mask mask,
+				       Telltale_ptr telltale)
 {
-  Trace trace("ToolKitImpl::create_switch");
   Switch *s = new Switch(mask);
   activate(s);
   s->attach(telltale);
@@ -246,80 +289,73 @@ Graphic_ptr ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_ptr g2, Telltale:
 
 MainController_ptr ToolKitImpl::group(Graphic_ptr g)
 {
-  Trace trace("ToolKitImpl::group");
-  MainControllerImpl *parent = new MainControllerImpl(true);
-  activate(parent);
-  parent->body(g);
-  return parent->_this();
+  MainController_ptr res =
+      create<MainController>(new MainControllerImpl(true));
+  res->body(g);
+  return res;
 }
 
 Trigger_ptr ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
 {
-  Trace trace("ToolKitImpl::button");
-  TriggerImpl *trigger = new TriggerImpl();
-  activate(trigger);
+  Trigger_ptr trigger = create<Trigger>(new TriggerImpl());
   trigger->action(c);
   trigger->body(g);
-  return trigger->_this();
+  return trigger;
 }
 
 Controller_ptr ToolKitImpl::toggle(Graphic_ptr g)
 {
-  Trace trace("ToolKitImpl::toggle");
-  Toggle *t = new Toggle;
-  activate(t);
-  t->body(g);
-  return t->_this();
+  Controller_ptr res = create<Controller>(new Toggle);
+  res->body(g);
+  return res;
 }
 
 Controller_ptr ToolKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 {
-  Trace trace("ToolKitImpl::dragger");
-  Dragger *dragger = new Dragger(command);
-  activate(dragger);
-  dragger->body(g);
-  return dragger->_this();
+  Controller_ptr res =create<Controller>(new Dragger(command));
+  res->body(g);
+  return res;
 }
 
 Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
 {
-  Trace trace("ToolKitImpl::stepper");
-  Stepper *stepper = new Stepper;
-  activate(stepper);
-  stepper->body(g);
+  Trigger_ptr stepper = create<Trigger>(new Stepper);
   stepper->action(command);
-  return stepper->_this();
+  stepper->body(g);
+  return stepper;
 }
 
-Controller_ptr ToolKitImpl::text_input(Graphic_ptr g, TextBuffer_ptr buffer)
+Controller_ptr ToolKitImpl::text_input(Graphic_ptr g,
+				       TextBuffer_ptr buffer)
 {
-  Trace trace("ToolKitImpl::text_input");
-  TextInput *input = new TextInput(buffer);
-  activate(input);
-  input->body(g);
-  return input->_this();
+  Controller_ptr res = create<Controller>(new TextInput(buffer));
+  res->body(g);
+  return res;
 }
 
-Controller_ptr ToolKitImpl::terminal(Graphic_ptr g, StreamBuffer_ptr buffer)
+Controller_ptr ToolKitImpl::terminal(Graphic_ptr g,
+				     StreamBuffer_ptr buffer)
 {
-  Trace trace("ToolKitImpl::terminal");
-  Terminal *input = new Terminal(buffer);
-  activate(input);
-  input->body(g);
-  return input->_this();
+  Controller_ptr res = create<Controller>(new Terminal(buffer));
+  res->body(g);
+  return res;
 }
 
-Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height) throw (SecurityException, CreationFailureException)
+Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width,
+				      PixelCoord height)
+    throw (SecurityException, CreationFailureException)
 {
-  Trace trace("ToolKitImpl::create_canvas");
   try
-    {
-      CanvasImpl *canvas = new CanvasImpl(width, height);
-      activate(canvas);
-      return canvas->_this();
-    }
-  catch (const std::runtime_error &e) { throw CreationFailureException();}
+  {
+      return create<Canvas>(new CanvasImpl(width, height));
+  }
+  catch (const std::runtime_error &e)
+  {
+      throw CreationFailureException();
+  }
 }
+
+
 
 extern "C" KitImpl *load()
 {

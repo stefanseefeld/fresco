@@ -34,16 +34,22 @@ using namespace Fresco;
 
 using namespace Berlin::FigureKit;
 
-FigureKitImpl::FigureKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
-FigureKitImpl::~FigureKitImpl() {}
-Graphic_ptr FigureKitImpl::root(Graphic_ptr child)
+FigureKitImpl::FigureKitImpl(const std::string &id,
+			     const Fresco::Kit::PropertySeq &p)
+    : KitImpl(id, p) { }
+FigureKitImpl::~FigureKitImpl() { }
+
+Graphic_ptr FigureKitImpl::root(Graphic_ptr g)
 {
-  GraphicImpl *g = new TransformAllocator(Alignment(0.5), Alignment(0.5), Alignment(0.5), 
-					  Alignment(0.5), Alignment(0.5), Alignment(0.5));
-  activate(g);
-  g->body(child);
-  return g->_this();
+    Graphic_ptr res =
+	create<Graphic>(new TransformAllocator(Alignment(0.5),
+					       Alignment(0.5),
+					       Alignment(0.5),
+					       Alignment(0.5),
+					       Alignment(0.5),
+					       Alignment(0.5)));
+    res->body(g);
+    return res;
 }
 
 Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
@@ -54,101 +60,84 @@ Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
 
 Graphic_ptr FigureKitImpl::group()
 {
-  PolyFigure *pf = new PolyFigure;
-  activate(pf);
-  return pf->_this();
+  return create<Graphic>(new PolyFigure);
 }
 
 Graphic_ptr FigureKitImpl::ugroup()
 {
-  UPolyFigure *pf = new UPolyFigure;
-  activate(pf);
-  return pf->_this();
+  return create<Graphic>(new UPolyFigure);
 }
 
 Figure::Point_ptr FigureKitImpl::point(Coord x, Coord y)
 {
   Vertex v;
-  v.x = x, v.y = y;
-  PointImpl *pt = new PointImpl(v);
-  activate(pt);
-  return pt->_this();
+  v.x = x, v.y = y; v.z = 0;
+  return create<Figure::Point>(new PointImpl(v));
 }
 
-Figure::Line_ptr FigureKitImpl::line(Coord x0, Coord y0, Coord x1, Coord y1)
+Figure::Line_ptr FigureKitImpl::line(Coord x0, Coord y0,
+				     Coord x1, Coord y1)
 {
   Vertex v1, v2;
-  v1.x = x0, v1.y = y0;
-  v2.x = x1, v2.y = y1;
-  LineImpl *l = new LineImpl(v1, v2);
-  activate(l);
-  return l->_this();
+  v1.x = x0, v1.y = y0, v1.z = 0;
+  v2.x = x1, v2.y = y1, v2.z = 0;
+  return create<Figure::Line>(new LineImpl(v1, v2));
 }
 
-Figure::Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t, Coord r, Coord b)
+Figure::Rectangle_ptr FigureKitImpl::rectangle(Coord l, Coord t,
+					       Coord r, Coord b)
 {
   Vertex lower, upper;
-  lower.x = l, lower.y = t;
-  upper.x = r, upper.y = b;
-  RectangleImpl *rect = new RectangleImpl(lower, upper);
-  activate(rect);
-  return rect->_this();
+  lower.x = l, lower.y = t, lower.z = 0;
+  upper.x = r, upper.y = b, upper.z = 0;
+  return create<Figure::Rectangle>(new RectangleImpl(lower, upper));
 }
 
 Figure::Circle_ptr FigureKitImpl::circle(Coord x, Coord y, Coord r)
 {
   Vertex center;
-  center.x = x, center.y = y;
-  CircleImpl *c = new CircleImpl(center, r);
-  activate(c);
-  return c->_this();
+  center.x = x, center.y = y; center.z = 0;
+  return create<Figure::Circle>(new CircleImpl(center, r));
 }
 
-Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y, Coord r1, Coord r2)
+Figure::Ellipse_ptr FigureKitImpl::ellipse(Coord x, Coord y,
+					   Coord r1, Coord r2)
 {
   Vertex center;
-  center.x = x, center.y = y;
-  EllipseImpl *e = new EllipseImpl(center, r1, r2);
-  activate(e);
-  return e->_this();
+  center.x = x, center.y = y, center.z = 0;
+  return create<Figure::Ellipse>(new EllipseImpl(center, r1, r2));
 }
 
 Figure::Path_ptr FigureKitImpl::multiline(const Fresco::Path &p)
 {
-  PathImpl *path = new PathImpl(p, false);
-  activate(path);
-  return path->_this();
+  return create<Figure::Path>(new PathImpl(p, false));
 }
 
 Figure::Path_ptr FigureKitImpl::polygon(const Fresco::Path &p)
 {
-  PathImpl *path = new PathImpl(p, true);
-  activate(path);
-  return path->_this();
+  return create<Figure::Path>(new PathImpl(p, true));
 }
 
 Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
 {
-  ImageImpl *image = new ImageImpl(raster);
-  activate(image);
-  return image->_this();
+  return create<Image>(new ImageImpl(raster));
 }
 
 Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
 {
-  Texture *t = new Texture(raster);
-  activate(t);
-  t->body(g);
-  return t->_this();
+  Graphic_ptr res = create<Graphic>(new Texture(raster));
+  res->body(g);
+  return res;
 }
 
 Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 {
-  Transformer *transformer = new Transformer;
-  activate(transformer);
-  transformer->body(g);
-  return transformer->_this();
+  Graphic_ptr res = create<Graphic>(new Transformer);
+  res->body(g);
+  return res;
 }
+
+
 
 extern "C" KitImpl *load()
 {

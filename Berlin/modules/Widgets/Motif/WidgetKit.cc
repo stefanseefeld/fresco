@@ -32,11 +32,11 @@
 #include <Fresco/Selection.hh>
 #include <Berlin/CommandImpl.hh>
 #include "WidgetKit.hh"
+#include "Choice.hh"
 #include "Gauge.hh"
 #include "Slider.hh"
 #include "Panner.hh"
 #include "Scrollbar.hh"
-#include "Choice.hh"
 #include "Terminal.hh"
 // #include "Splitter.hh"
 
@@ -81,19 +81,28 @@ private:
 
 WidgetKit::WidgetKit(const std::string &id,
                      const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p) {}
+  : KitImpl(id, p)
+{ }
 
-WidgetKit::~WidgetKit() {}
+WidgetKit::~WidgetKit() { }
 
 void WidgetKit::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  my_commands = resolve_kit<CommandKit>(context, "IDL:fresco.org/Fresco/CommandKit:1.0", props);
-  my_layout = resolve_kit<LayoutKit>(context, "IDL:fresco.org/Fresco/LayoutKit:1.0", props);
-  my_tools = resolve_kit<ToolKit>(context, "IDL:fresco.org/Fresco/ToolKit:1.0", props);
-  my_text = resolve_kit<TextKit>(context, "IDL:fresco.org/Fresco/TextKit:1.0", props);
+  my_commands = resolve_kit<CommandKit>(context,
+					"IDL:fresco.org/Fresco/CommandKit:1.0",
+					props);
+  my_layout = resolve_kit<LayoutKit>(context,
+				     "IDL:fresco.org/Fresco/LayoutKit:1.0",
+				     props);
+  my_tools = resolve_kit<ToolKit>(context,
+				  "IDL:fresco.org/Fresco/ToolKit:1.0",
+				  props);
+  my_text = resolve_kit<TextKit>(context,
+				 "IDL:fresco.org/Fresco/TextKit:1.0",
+				 props);
 
   Fresco::ToolKit::FrameSpec in, out;
   in.brightness(0.5); in._d(Fresco::ToolKit::inset);
@@ -104,14 +113,22 @@ void WidgetKit::bind(ServerContext_ptr context)
   my_out_square = my_tools->frame(my_strut, 20., out, true);
   my_in_diamond = my_tools->diamond(my_strut, 20., in, true);
   my_out_diamond = my_tools->diamond(my_strut, 20., out, true);
-  my_up_in_triangle = my_tools->triangle(my_strut, 20., in, true, ToolKit::up);
-  my_up_out_triangle = my_tools->triangle(my_strut, 20., out, true, ToolKit::up);
-  my_down_in_triangle = my_tools->triangle(my_strut, 20., in, true, ToolKit::down);
-  my_down_out_triangle = my_tools->triangle(my_strut, 20., out, true, ToolKit::down);
-  my_left_in_triangle = my_tools->triangle(my_strut, 20., in, true, ToolKit::left);
-  my_left_out_triangle = my_tools->triangle(my_strut, 20., out, true, ToolKit::left);
-  my_right_in_triangle = my_tools->triangle(my_strut, 20., in, true, ToolKit::right);
-  my_right_out_triangle = my_tools->triangle(my_strut, 20., out, true, ToolKit::right);
+  my_up_in_triangle =
+      my_tools->triangle(my_strut, 20., in, true, ToolKit::up);
+  my_up_out_triangle =
+      my_tools->triangle(my_strut, 20., out, true, ToolKit::up);
+  my_down_in_triangle =
+      my_tools->triangle(my_strut, 20., in, true, ToolKit::down);
+  my_down_out_triangle =
+      my_tools->triangle(my_strut, 20., out, true, ToolKit::down);
+  my_left_in_triangle =
+      my_tools->triangle(my_strut, 20., in, true, ToolKit::left);
+  my_left_out_triangle =
+      my_tools->triangle(my_strut, 20., out, true, ToolKit::left);
+  my_right_in_triangle =
+      my_tools->triangle(my_strut, 20., in, true, ToolKit::right);
+  my_right_out_triangle =
+      my_tools->triangle(my_strut, 20., out, true, ToolKit::right);
 }
 
 Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
@@ -122,7 +139,9 @@ Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
   Graphic_var inset = my_tools->frame(g, 20, s1, true);
   s2.brightness(0.5); s2._d(Fresco::ToolKit::outset);
   Graphic_var outset = my_tools->frame(g, 20, s2, true);
-  Graphic_var frame = my_tools->create_switch(inset, outset, Fresco::Controller::pressed, trigger);
+  Graphic_var frame = my_tools->create_switch(inset, outset,
+					      Fresco::Controller::pressed,
+					      trigger);
   trigger->body(frame);
   return trigger._retn();
 }
@@ -135,7 +154,10 @@ Controller_ptr WidgetKit::toggle(Graphic_ptr g)
   Graphic_var inset = my_tools->frame(g, 20, s1, true);
   s2.brightness(0.5); s2._d(ToolKit::outset);
   Graphic_var outset = my_tools->frame(g, 20, s2, true);
-  Graphic_var frame = my_tools->create_switch(inset, outset, Fresco::Controller::toggled, toggle);
+  Graphic_var frame = my_tools->create_switch(inset,
+					      outset,
+					      Fresco::Controller::toggled,
+					      toggle);
   toggle->body(frame);
   return toggle._retn();
 }
@@ -143,14 +165,13 @@ Controller_ptr WidgetKit::toggle(Graphic_ptr g)
 Graphic_ptr WidgetKit::gauge(BoundedValue_ptr value)
 {
   Color gray = {0.5, 0.5, 0.5, 1.0};
-  Gauge *g = new Gauge(value, gray);
-  activate(g);
-  value->attach(Observer_var(g->_this()));
+  Graphic_ptr g = create<Graphic>(new Gauge(value, gray));
+  value->attach(Observer_ptr(g));
 
   Fresco::ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
 
-  Graphic_var frame = my_tools->frame(Graphic_var(g->_this()), 20., spec, false);
+  Graphic_var frame = my_tools->frame(g, 20., spec, false);
   return frame._retn();
 }
 
@@ -196,16 +217,23 @@ Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
    */
   Graphic_var box = axis == xaxis ? my_layout->hbox() : my_layout->vbox();
   spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
-  box->append_graphic(Graphic_var(my_tools->frame(my_strut, 20., spec, true)));
-  box->append_graphic(Graphic_var(my_tools->frame(my_strut, 20., spec, true)));
-  Controller_var thumb = my_tools->dragger(box, Command_var(slider->create_adjust_cmd()));
+  box->append_graphic(Graphic_var(my_tools->frame(my_strut, 20.,
+						  spec, true)));
+  box->append_graphic(Graphic_var(my_tools->frame(my_strut, 20.,
+						  spec, true)));
+  Controller_var thumb =
+      my_tools->dragger(box, Command_var(slider->create_adjust_cmd()));
   slider->init(thumb);
   /*
    * now put it into an inset
    */
   spec.brightness(0.5); spec._d(Fresco::ToolKit::inset);
-  Graphic_var inset = my_tools->frame(Graphic_var(slider->_this()), 20., spec, false);
-  Controller_var root = my_tools->group(Graphic_var(my_layout->align_axis(inset, axis == xaxis ? yaxis : xaxis, 1.0)));
+  Graphic_var inset =
+      my_tools->frame(Graphic_var(slider->_this()), 20., spec, false);
+  Controller_var root =
+      my_tools->group(Graphic_var(my_layout->
+				  align_axis(inset, axis == xaxis ?
+					     yaxis : xaxis, 1.0)));
   /*
    * now wire up the control structure
    */
@@ -274,30 +302,46 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
    * the thumb
    */
   spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);
-  Graphic_var f = my_tools->frame(Fresco::Graphic::_nil(), 20., spec, true);
-  Controller_var thumb = my_tools->dragger(f, Command_var(scrollbar->create_adjust_cmd()));
+  Graphic_var f = my_tools->frame(Fresco::Graphic::_nil(),
+				  20., spec, true);
+  Controller_var thumb =
+      my_tools->dragger(f, Command_var(scrollbar->create_adjust_cmd()));
   scrollbar->init(thumb);
   /*
    * the triangles
    */
   CommandImpl *backward = new Backward(x);
   activate(backward);
-  Controller_var lower = my_tools->stepper(Graphic::_nil(), Command_var(backward->_this()));
+  Controller_var lower =
+      my_tools->stepper(Graphic::_nil(), Command_var(backward->_this()));
 
   CommandImpl *forward = new Forward(x);
   activate(forward);
-  Controller_var upper = my_tools->stepper(Graphic::_nil(), Command_var(forward->_this()));
+  Controller_var upper =
+      my_tools->stepper(Graphic::_nil(), Command_var(forward->_this()));
 
   Graphic_var lower_triangle, upper_triangle;
   if (a == xaxis)
   {
-    lower_triangle = my_tools->create_switch(my_left_in_triangle, my_left_out_triangle, Fresco::Controller::pressed, lower);
-    upper_triangle = my_tools->create_switch(my_right_in_triangle, my_right_out_triangle, Fresco::Controller::pressed, upper);
+    lower_triangle =
+	my_tools->create_switch(my_left_in_triangle,
+				my_left_out_triangle,
+				Fresco::Controller::pressed, lower);
+    upper_triangle =
+	my_tools->create_switch(my_right_in_triangle,
+				my_right_out_triangle,
+				Fresco::Controller::pressed, upper);
   }
   else // assume yaxis
   {
-    lower_triangle = my_tools->create_switch(my_up_in_triangle, my_up_out_triangle, Fresco::Controller::pressed, lower);
-    upper_triangle = my_tools->create_switch(my_down_in_triangle, my_down_out_triangle, Fresco::Controller::pressed, upper);
+    lower_triangle =
+	my_tools->create_switch(my_up_in_triangle,
+				my_up_out_triangle,
+				Fresco::Controller::pressed, lower);
+    upper_triangle =
+	my_tools->create_switch(my_down_in_triangle,
+				my_down_out_triangle,
+				Fresco::Controller::pressed, upper);
   }
 
   lower->body(lower_triangle);
@@ -319,14 +363,17 @@ Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   root->append_controller(lower);
   root->append_controller(Controller_var(scrollbar->_this()));
   root->append_controller(upper);
+
   return root._retn();
 }
 
 Choice_ptr WidgetKit::toggle_choice()
 {
-  RefCount_var<Selection> selection = my_commands->group(Selection::exclusive);
-  Choice *choice = new ToggleChoice(selection, my_in_diamond, my_out_diamond,
-				    my_layout, my_tools);
+  RefCount_var<Selection> selection =
+      my_commands->group(Selection::exclusive);
+  Choice *choice = new ToggleChoice(selection, my_in_diamond,
+				    my_out_diamond,
+                                    my_layout, my_tools);
   activate(choice);
   choice->body(Graphic_var(my_layout->vbox()));
   return choice->_this();
@@ -335,8 +382,9 @@ Choice_ptr WidgetKit::toggle_choice()
 Choice_ptr WidgetKit::checkbox_choice()
 {
   RefCount_var<Selection> selection = my_commands->group(0);
-  Choice *choice = new CheckboxChoice(selection, my_in_square, my_out_square,
-				      my_layout, my_tools);
+  Choice *choice =
+      new CheckboxChoice(selection, my_in_square, my_out_square,
+			 my_layout, my_tools);
   activate(choice);
   choice->body(Graphic_var(my_layout->vbox()));
   return choice->_this();
@@ -344,7 +392,8 @@ Choice_ptr WidgetKit::checkbox_choice()
 
 Choice_ptr WidgetKit::toolbar()
 {
-  RefCount_var<Selection> selection = my_commands->group(Selection::exclusive|Selection::required);
+  RefCount_var<Selection> selection =
+      my_commands->group(Selection::exclusive|Selection::required);
   Choice *choice = new ToolChoice(selection, my_layout, my_tools);
   activate(choice);
   choice->body(Graphic_var(my_layout->vbox()));
@@ -355,10 +404,13 @@ Controller_ptr WidgetKit::terminal()
 {
   Terminal *terminal = new Terminal(my_commands);
   activate(terminal);
-  Graphic_var view = my_text->terminal(StreamBuffer_var(terminal->output()));
+  Graphic_var view =
+      my_text->terminal(StreamBuffer_var(terminal->output()));
   terminal->body(view);
-  Controller_var input = my_tools->terminal(Graphic_var(terminal->_this()), StreamBuffer_var(terminal->input()));
-//   input->appendController(Controller_var(terminal->_this()));
+  Controller_var input =
+      my_tools->terminal(Graphic_var(terminal->_this()),
+			 StreamBuffer_var(terminal->input()));
+  // input->appendController(Controller_var(terminal->_this()));
   return input._retn();
 }
 
@@ -381,12 +433,15 @@ Controller_ptr WidgetKit::terminal()
 Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
 {
   Layout::Viewport_var viewport = my_layout->scrollable(g);
-  Controller_var xscroller = scrollbar(viewport->adjustment(xaxis), xaxis);
-  Controller_var yscroller = scrollbar(viewport->adjustment(yaxis), yaxis);
+  Controller_var xscroller =
+      scrollbar(viewport->adjustment(xaxis), xaxis);
+  Controller_var yscroller =
+      scrollbar(viewport->adjustment(yaxis), yaxis);
   Graphic_var hbox1 = my_layout->hbox();
   Fresco::ToolKit::FrameSpec inset;
   inset.brightness(0.5); inset._d(Fresco::ToolKit::inset);
-  hbox1->append_graphic(Graphic_var(my_tools->frame(viewport, 20, inset, false)));
+  hbox1->append_graphic(Graphic_var(my_tools->frame(viewport, 20,
+						    inset, false)));
   hbox1->append_graphic(yscroller);
   Graphic_var hbox2 = my_layout->hbox();
   hbox2->append_graphic(xscroller);
@@ -403,6 +458,8 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
 } // namespace
 } // namespace
 } // namespace
+
+
 
 extern "C" KitImpl *load()
 {

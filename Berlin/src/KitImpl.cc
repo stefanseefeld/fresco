@@ -23,7 +23,7 @@
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/config.hh>
 #include <Berlin/Logger.hh>
-#include "Berlin/KitImpl.hh"
+#include <Berlin/KitImpl.hh>
 #include "Berlin/ServantBase.hh"
 #include <typeinfo>
 

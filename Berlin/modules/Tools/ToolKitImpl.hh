@@ -36,7 +36,7 @@ namespace ToolKit {
 class ToolKitImpl : public virtual POA_Fresco::ToolKit,
 		    public KitImpl
 {
- public:
+public:
   ToolKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
   virtual ~ToolKitImpl();
   virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new ToolKitImpl(repo_id(), p);}

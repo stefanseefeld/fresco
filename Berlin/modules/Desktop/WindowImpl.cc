@@ -208,7 +208,7 @@ void WindowImpl::mapped(CORBA::Boolean flag)
       StageHandle_var tmp = stage->insert(Graphic_var(_this()),
 					  _handle->position(),
 					  _handle->size(),
-					  _handle->layer()); 
+					  _handle->layer());
       stage->unlock();
       _handle = tmp;
       _unmapped = 0;

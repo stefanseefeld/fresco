@@ -45,17 +45,15 @@ using namespace Fresco;
 
 using namespace Berlin::TextKit;
 
-TextKitImpl::TextKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-  : KitImpl(id, p),  _strut(0),
-    _lineCompositor(new LRCompositor()), 
-    _pageCompositor(new TBCompositor())
-{
-  Trace trace("TextKitImpl::TextKitImpl");
-}
+TextKitImpl::TextKitImpl(const std::string &id,
+			 const Fresco::Kit::PropertySeq &p)
+    : KitImpl(id, p),  _strut(0),
+      _lineCompositor(new LRCompositor()), 
+      _pageCompositor(new TBCompositor())
+{ }
 
 TextKitImpl::~TextKitImpl()
 {
-  Trace trace("TextKitImpl::~TextKitImpl");
   delete _lineCompositor;
   delete _pageCompositor;
 }
@@ -65,8 +63,12 @@ void TextKitImpl::bind(ServerContext_ptr sc)
   KitImpl::bind(sc);
   Fresco::Kit::PropertySeq props;
   props.length(0);
-  _canonicalDK = DrawingKit::_narrow(sc->get_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0"));
-  _layout = resolve_kit<LayoutKit>(sc, "IDL:fresco.org/Fresco/LayoutKit:1.0", props);
+  _canonicalDK =
+      DrawingKit::_narrow(sc->
+			  get_singleton("IDL:fresco.org/Fresco/DrawingKit:1.0"));
+  _layout = resolve_kit<LayoutKit>(sc,
+				   "IDL:fresco.org/Fresco/LayoutKit:1.0",
+				   props);
 }
 
 // chunks are flyweights
@@ -87,7 +89,7 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
   unsigned long len = u.length();
   if (len == 1) return glyph(u[0]);
   else 
-    {
+  {
       Graphic_var hbox = _layout->hbox();
       hbox->append_graphic(Graphic_var(strut()));
       Babylon::String tmp(Unicode::to_internal(u));
@@ -95,23 +97,24 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
       for(Babylon::vis_iterator i(tmp.begin(), tmp.end());
 	  i != tmp.end();
 	  ++i)
-	hbox->append_graphic(Graphic_var(glyph(Unicode::to_CORBA(*i))));
+	  hbox->append_graphic(Graphic_var(glyph(Unicode::to_CORBA(*i))));
       return hbox._retn();
-    }
+  }
 }
 
 Graphic_ptr TextKitImpl::glyph(Unichar ch)
 {
   Prague::Guard<Mutex> guard(_mutex);
   if (_cache.find(ch) == _cache.end())
-    {
+  {
       Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
       _canonicalDK->allocate_char(ch, r);
       TextChunk *chunk = new TextChunk(ch, r);
       activate(chunk);
-      _cache[ch] = chunk->_this();
-    }
+      Graphic_ptr res = chunk->_this();
+      _cache[ch] = res;
+  }
   return Graphic::_duplicate(_cache[ch]);
 }
 
@@ -119,34 +122,41 @@ Graphic_ptr TextKitImpl::strut()
 {
   Prague::Guard<Mutex> guard(_mutex);
   if (!_strut)
-    {
+  {
       DrawingKit::FontMetrics metrics = _canonicalDK->font_metrics();
       Graphic::Requisition r;
       GraphicImpl::init_requisition(r);
-      r.y.natural = r.y.minimum = r.y.maximum = static_cast<Coord>(metrics.height >> 6) / _canonicalDK->resolution(yaxis);
+      r.y.natural = r.y.minimum = r.y.maximum =
+	  static_cast<Coord>(metrics.height >> 6) /
+	  _canonicalDK->resolution(yaxis);
       r.y.defined = true;
-      r.y.align = metrics.height == 0 ? 0.: static_cast<double>(metrics.ascender) / metrics.height; 
+      r.y.align = metrics.height == 0 ? 0.0 :
+	  static_cast<double>(metrics.ascender) / metrics.height; 
       _strut = new Strut(r);
-    }
+      activate(_strut);
+  }
   return _strut->_this();
 }
 
 Graphic_ptr TextKitImpl::simple_viewer(TextBuffer_ptr buf)
 {
-  Trace trace("TextKitImpl::simple_viewer");
-  TextViewer *tv = new TextViewer(buf, TextKit_var(_this()), _canonicalDK, _lineCompositor);
-  activate(tv);
-  buf->attach(Observer_var(tv->_this()));
-  return tv->_this();
+  Graphic_ptr tv = create<Graphic>(new TextViewer(buf,
+						  TextKit_var(_this()),
+						  _canonicalDK,
+						  _lineCompositor));
+  buf->attach(Observer_ptr(tv));
+  return tv;
 }
 
 Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
 {
-  Trace trace("TextKitImpl::terminal");
-  TerminalView *tv = new TerminalView(buf, TextKit_var(_this()), _canonicalDK, _lineCompositor, _pageCompositor);
-  activate(tv);
-  buf->attach(Observer_var(tv->_this()));
-  return tv->_this();
+  Graphic_ptr tv = create<Graphic>(new TerminalView(buf,
+						    TextKit_var(_this()),
+						    _canonicalDK,
+						    _lineCompositor,
+						    _pageCompositor));
+  buf->attach(Observer_ptr(tv));
+  return tv;
 }
 
 ///////////////////////
@@ -222,6 +232,8 @@ Graphic_ptr TextKitImpl::font_attribute(Graphic_ptr g, const NVPair &nvp)
 //   return decor.release()->_this();
   return Graphic::_nil();
 }
+
+
 
 extern "C" KitImpl *load()
 {
