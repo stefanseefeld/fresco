@@ -29,7 +29,7 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ImplVar.hh>
 #include <Prague/Sys/Thread.hh>
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 #include <Berlin/EventManager.hh>
 #include <Berlin/DrawTraversalImpl.hh>
 #include <vector>
@@ -50,7 +50,7 @@ private:
   ScreenImpl *screen;
   EventManager *emanager;
   DrawingKit_var drawing;
-  GGI::Drawable *drawable;
+  Console::Drawable *drawable;
   Impl_var<RegionImpl> theDamage;
   Impl_var<RegionImpl> tmpDamage;
   Impl_var<DrawTraversalImpl> traversal;

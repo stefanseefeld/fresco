@@ -25,18 +25,18 @@
 
 #include <libart_lgpl/art_rgb.h> // for art_rgb_run_alpha
 
-#include <string>
-#include <string.h>
 #include <iostream>
-#include <stdlib.h>
+#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
 
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
 
 // This is a default font, just in case -- a character cell bitmapped unicode
 // font which is generated "on the fly" from the GNU unifont, which we're
@@ -45,7 +45,7 @@
 // multilingual text, albeit not quite as well as certain (ahem) proprietary
 // text systems
 
-LibArtUnifont::LibArtUnifont(GGI::Drawable *drawable) :
+LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis))
 {

@@ -30,8 +30,9 @@
 using namespace Prague;
 
 EventManager::EventManager(ScreenImpl *s)
-  : ptrPositionX(0), ptrPositionY(0), screen(s), drawable(GGI::drawable())
+  : screen(s), drawable(Console::drawable())
 {
+  Trace trace("EventManager::EventManager");
   focus.push_back(activate(new NonPositionalFocus(0, screen))); // keyboard
   focus.push_back(activate(new PositionalFocus(1, screen)));    // mouse
 }
@@ -50,84 +51,13 @@ bool EventManager::requestFocus(Controller_ptr c, Input::Device d)
 void EventManager::nextEvent()
 {
   Trace trace("EventManager::nextEvent");
-  ggi_event e;
-  if (!drawable->nextEvent(e)) return; // repair
-  Input::Event event;
-  switch (e.any.type)
-    {
-    case evKeyPress:
-      {
-	Input::Toggle toggle;
-	toggle.actuation = Input::Toggle::press;
-	toggle.number = e.key.sym;
-	event.length(1);
-	event[0].dev = 0;
-	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
-	break;
-      }
-    case evKeyRepeat:
-      {
-	Input::Toggle toggle;
-	toggle.actuation = Input::Toggle::hold;
-	toggle.number = e.key.sym;
-	event.length(1);
-	event[0].dev = 0;
-	event[0].attr.selection(toggle); event[0].attr._d(Input::key);
-	break;
-      }
-    case evPtrRelative:
-      {
-	if (ptrPositionX + e.pmove.x >= 0 &&
-	    ptrPositionX + e.pmove.x < screen->width()) ptrPositionX += e.pmove.x;
-	if (ptrPositionY + e.pmove.y >= 0 &&
-	    ptrPositionY + e.pmove.y < screen->height()) ptrPositionY += e.pmove.y;	  
-	Input::Position position;
-	position.x = ptrPositionX/drawable->resolution(xaxis);
-	position.y = ptrPositionY/drawable->resolution(yaxis);
-	position.z = 0;
-	event.length(1);
-	event[0].dev = 1;
-	event[0].attr.location(position);
-	break;
-      }
-    case evPtrAbsolute:
-      {
-	ptrPositionX = e.pmove.x;
-	ptrPositionY = e.pmove.y;
-	Input::Position position;
-	position.x = ptrPositionX/drawable->resolution(xaxis);
-	position.y = ptrPositionY/drawable->resolution(yaxis);
-	position.z = 0;
-	event.length(1);
-	event[0].dev = 1;
-	event[0].attr.location(position);
-	break;
-      }
-    case evPtrButtonPress:
-    case evPtrButtonRelease:
-      {
-	Input::Toggle toggle;
-	if (e.any.type == evPtrButtonPress)
-	  toggle.actuation = Input::Toggle::press;
-	else
-	  toggle.actuation = Input::Toggle::release;
- 	toggle.number = e.pbutton.button;	  
-	Input::Position position;
-	position.x = ptrPositionX/drawable->resolution(xaxis);
-	position.y = ptrPositionY/drawable->resolution(yaxis);
-	position.z = 0;
-	event.length(2);
-	event[0].dev = 1;
-	event[0].attr.selection(toggle); event[0].attr._d(Input::button);
-	event[1].dev = 1;
-	event[1].attr.location(position);
-	break;
-      }
-    }
+  Input::Event *e = Console::nextEvent();
+  if (!e) return; // repair
+  Input::Event_var event(e);
   /*
    * the first item determines which focus to send this event to
    */
-  if (event.length()) focus[event[0].dev]->dispatch(event);
+  if (event->length()) focus[event[0].dev]->dispatch(event);
 }
 
 void EventManager::restore(Region_ptr r)

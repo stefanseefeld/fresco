@@ -25,7 +25,7 @@
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Providers.hh"
-#include "Berlin/GGI.hh"
+#include "Berlin/Console.hh"
 #include "Berlin/Event.hh"
 #include "Berlin/Vertex.hh"
 #include <Prague/Sys/Tracer.hh>
@@ -34,7 +34,7 @@
 using namespace Prague;
 
 PositionalFocus::PositionalFocus(Input::Device d, ScreenImpl *s)
-  : FocusImpl(d), screen(s), pointer(new Pointer(GGI::drawable())), traversal(0), grabbed(false)
+  : FocusImpl(d), screen(s), pointer(new Pointer(Console::drawable())), traversal(0), grabbed(false)
 {
 }
 

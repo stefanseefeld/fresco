@@ -30,7 +30,7 @@
 #include <Drawing/libArt/LibArtRaster.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/ObjectCache.hh>
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Prague/Sys/Thread.hh>
@@ -113,11 +113,11 @@ public:
   void rasterizePixbuf(ArtPixBuf *pixbuf);
   void identityPixbuf(ArtPixBuf *pixbuf);
 
-  ggi_visual_t memvis;
+  Console::Drawable *drawable;
+  Console::Drawable *buffer;
   ArtPixBuf *pb;
   ArtIRect bbox;
-  const ggi_directbuffer * buf;
-  GGI::Drawable *drawable;
+//   const ggi_directbuffer * buf;
   double xres, yres;
   Prague::Mutex mutex;
 
@@ -136,9 +136,9 @@ public:
   LibArtFont   *unifont;
   art_u8 alphabank[256][256];
   ArtAlphaGamma *agam;
-  art_u32        art_fg;
-  ggi_pixel ggi_fg;
-  ArtIRect screen, clip;
+  art_u32         art_fg;
+  Console::Drawable::Pixel con_fg;
+  ArtIRect screen,clip;
   
   ObjectCache<Raster_var, LibArtRaster> rasters;
 };

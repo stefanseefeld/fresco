@@ -24,16 +24,16 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/EventManager.hh"
-#include "Prague/Sys/FdSet.hh"
-#include "Prague/Sys/Time.hh"
-#include "Prague/Sys/Profiler.hh"
+#include <Prague/Sys/FdSet.hh>
+#include <Prague/Sys/Time.hh>
+#include <Prague/Sys/Profiler.hh>
 #include "Berlin/Logger.hh"
-#include "Warsaw/IO.hh"
+#include <Warsaw/IO.hh>
 
 using namespace Prague;
 
 ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, DrawingKit_ptr d)
-  : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(GGI::drawable())
+  : screen(s), emanager(em), drawing(DrawingKit::_duplicate(d)), drawable(Console::drawable())
 {
 }
 
@@ -42,7 +42,7 @@ void ScreenManager::damage(Region_ptr r)
 {
   MutexGuard guard(mutex);
   theDamage->mergeUnion(r);
-  drawable->wakeup();
+  Console::wakeup();
 }
 
 void ScreenManager::repair()
@@ -58,7 +58,7 @@ void ScreenManager::repair()
   traversal->finish();
   drawing->flush();
   {
-    //     Profiler prf("Drawable::flushbox");
+    //     Profiler prf("Drawable::flush");
     Vertex l,u;
     tmpDamage->bounds(l,u);
     double xres = drawing->resolution(xaxis);
@@ -67,7 +67,7 @@ void ScreenManager::repair()
     u.x *= xres;
     l.y *= yres;
     u.y *= yres;
-    drawable->flushbox(l.x,l.y,u.x-l.x,u.y-l.y);
+    drawable->flush(l.x, l.y, u.x - l.x, u.y - l.y);
   }
   emanager->damage(Region_var(tmpDamage->_this()));
 }

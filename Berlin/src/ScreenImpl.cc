@@ -26,7 +26,7 @@
 #include "Berlin/EventManager.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Berlin/GGI.hh"
+#include "Berlin/Console.hh"
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Traversal.hh>
@@ -37,13 +37,14 @@ using namespace Prague;
 ScreenImpl::ScreenImpl(DrawingKit_ptr d)
   : ControllerImpl(false), drawing(d)
 {
+  Trace trace("ScreenImpl::ScreenImpl");
   emanager = new EventManager(this);
   smanager = new ScreenManager(this, emanager, drawing);
   region = new RegionImpl;
   region->valid = true;
   region->lower.x = region->lower.y = region->lower.z = 0;
-  region->upper.x = GGI::drawable()->width()/GGI::drawable()->resolution(xaxis);
-  region->upper.y = GGI::drawable()->height()/GGI::drawable()->resolution(yaxis);
+  region->upper.x = Console::drawable()->width()/Console::drawable()->resolution(xaxis);
+  region->upper.y = Console::drawable()->height()/Console::drawable()->resolution(yaxis);
   region->upper.z = 0;
 }
 

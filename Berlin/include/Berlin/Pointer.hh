@@ -22,7 +22,7 @@
 #ifndef _Pointer_hh
 #define _Pointer_hh
 
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 
 /*
  * a little pointer...
@@ -32,7 +32,7 @@
 class Pointer
 {
 public:
-  Pointer(GGI::Drawable *);
+  Pointer(Console::Drawable *);
   ~Pointer();
   void move(Coord, Coord);
   void draw();
@@ -40,17 +40,14 @@ public:
   void restore();
   bool intersects(const Coord &, const Coord &, const Coord &, const Coord &);
 private:
-  PixelCoord              origin[2];
-  PixelCoord              position[2];
-  PixelCoord              size[2];
-  Coord                   scale[2];
-  const ggi_directbuffer *dbuf;
-  int                     depth;
-  int                     stride;
-  int                     maxCoord;
-  unsigned char	         *image;
-  unsigned char	         *mask;
-  unsigned char          *cache;
+  Console::Drawable *screen;
+  PixelCoord         origin[2];
+  PixelCoord         position[2];
+  PixelCoord         size[2];
+  Coord              scale[2];
+  unsigned char     *image;
+  unsigned char     *mask;
+  unsigned char     *cache;
 };
 
 inline bool Pointer::intersects(const Coord &l, const Coord &r, const Coord &t, const Coord &b)

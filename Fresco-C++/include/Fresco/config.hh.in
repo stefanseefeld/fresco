@@ -1,5 +1,5 @@
-#ifndef _config_hh
-#define _config_hh
+#ifndef _Warsaw_config_hh
+#define _Warsaw_config_hh
 
 #undef ORBFLAGS
 #undef UsePthread
@@ -12,4 +12,4 @@
 #undef __x86__
 /* add more here */
 
-#endif /* _config_hh */
+#endif /* _Warsaw_config_hh */

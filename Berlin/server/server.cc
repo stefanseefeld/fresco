@@ -29,7 +29,7 @@
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
 #include <Berlin/ServerImpl.hh>
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Prague/Sys/Tracer.hh>
@@ -53,8 +53,8 @@ struct Dump : Signal::Notifier
       switch (signo)
 	{
 	case Signal::usr2: 
-	  GGI::drawable()->activate_autoplay(); 
-	  GGI::drawable()->wakeup();
+	  Console::activate_autoplay(); 
+	  Console::wakeup();
 	  return;
 	case Signal::hangup: Profiler::dump(cerr); break;
 	case Signal::abort:
@@ -146,6 +146,8 @@ int main(int argc, char **argv)
   server->scan(modules.c_str());
 
   Logger::log(Logger::loader) << "[1/5] initialized loadable modules" << endl;
+
+  Console::open();
 
   Kit::PropertySeq props;
   props.length(1);

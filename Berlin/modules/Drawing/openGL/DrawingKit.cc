@@ -21,15 +21,15 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Transform.hh"
-#include "Warsaw/IO.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Transform.hh>
+#include <Warsaw/IO.hh>
 #include "Drawing/openGL/GLQuadric.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLUnifont.hh"
-#include "Berlin/Logger.hh"
-#include "Berlin/Color.hh"
-#include "Prague/Sys/Profiler.hh"
+#include <Berlin/Logger.hh>
+#include <Berlin/Color.hh>
+#include <Prague/Sys/Profiler.hh>
 
 #include <strstream>
 #include <iostream>
@@ -38,7 +38,7 @@ using namespace Prague;
 
 GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
-    drawable(GGI::drawable()),
+    drawable(Console::drawable()),
     tx(0),
     font(new GLUnifont),
     textures(100),
@@ -50,7 +50,11 @@ GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
       cerr << "GGIMesaCreateContext() failed" << endl;
       exit(4);
     }
-  if (GGIMesaSetVisual(context, drawable->visual(), GL_TRUE, GL_FALSE))
+  /*
+   * if we made it up to here the console is GGI, so let's use inside info
+   */
+  GGIDrawable &ggi = drawable->impl();
+  if (GGIMesaSetVisual(context, ggi.visual(), GL_TRUE, GL_FALSE))
     {
       cerr << "GGIMesaSetVisual() failed" << endl;
       exit(7);
@@ -117,7 +121,7 @@ void GLDrawingKit::setClipping(Region_ptr r)
       glColor4d(1., 0., 0., 1.);
       glRectf(0, 0, 10000., 10000.);
       glFlush();
-      GGI::drawable()->flush();
+      Console::drawable()->flush();
       sleep(1);
 #endif
     }

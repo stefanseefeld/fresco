@@ -1,0 +1,6 @@
+#ifndef _Berlin_config_hh
+#define _Berlin_config_hh
+
+#undef CONSOLE_IMPL
+
+#endif /* _Berlin_config_hh */

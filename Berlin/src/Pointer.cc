@@ -20,7 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Prague/Sys/Memory.hh"
+#include <Prague/Sys/Memory.hh>
+#include <Prague/Sys/Tracer.hh>
 #include "Berlin/Pointer.hh"
 #include <iostream>
 #include <algorithm>
@@ -46,42 +47,48 @@ static unsigned char pointerImg[256] =
   0,0,0,0,0,1,2,2,1,0,0,0,0,0,0,0,
   0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0 };
 
-  
-Pointer::Pointer(GGI::Drawable *drawable)
+
+Pointer::Pointer(Console::Drawable *d)
+  : screen(d)
 {
   origin[0] = origin[1] = 0;
   position[0] = position[1] = 8;
   size[0] = size[1] = 16;
-  scale[0] = 1/drawable->resolution(xaxis);
-  scale[1] = 1/drawable->resolution(yaxis);
-  if (!(dbuf = drawable->buffer (0)))
-    cerr << "Error getting display buffer" << endl;
-  else if (dbuf->layout != blPixelLinearBuffer)
-    cerr << "Error: nonlinear display buffer" << endl;
-  else if (! (dbuf->type & GGI_DB_SIMPLE_PLB))
-    cerr << "Error: non-standard display buffer" << endl;
-  depth = dbuf->buffer.plb.pixelformat->size >> 3;
-  stride = dbuf->buffer.plb.stride;
-  maxCoord = drawable->vwidth() * drawable->vheight();
+  scale[0] = 1/screen->resolution(xaxis);
+  scale[1] = 1/screen->resolution(yaxis);
+  
+  Console::Drawable::PixelFormat format = screen->pixelFormat();
+
+  Console::Drawable::Pixel trans = 0;
+  Console::Drawable::Pixel red = (static_cast<Console::Drawable::Pixel>(1. * (~0L)) >> format.red_shift) & format.red_mask;
+  Console::Drawable::Pixel green = (static_cast<Console::Drawable::Pixel>(1. * (~0L)) >> format.green_shift) & format.green_mask;
+  Console::Drawable::Pixel blue = (static_cast<Console::Drawable::Pixel>(1. * (~0L)) >> format.blue_shift) & format.blue_mask;
+  Console::Drawable::Pixel black =  0;
+  Console::Drawable::Pixel white = red | green | blue;
 
   /*
    * create the pointer image
    */
-  image = new unsigned char[size[0]*size[1]*depth];
+  PixelCoord depth =  format.size >> 3;
+  image = new unsigned char[size[0]*size[1] * depth];
   for (unsigned short y = 0; y != size[1]; y++)
     for (unsigned short x = 0; x != size[0]; x++)
-      for (unsigned short d = 0; d != depth; d++)
-	image[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] * 127;
-  
+      {
+	Console::Drawable::Pixel color = pointerImg[y*size[0] + x] == 1 ? white : black;
+ 	for (unsigned short d = 0; d != depth; d++)
+	  image[y*depth*size[0] + depth*x + d] = (color >> d) & 0xff;
+      }
   /*
    * create the pointer mask
    */
   mask = new unsigned char[size[0]*size[1]*depth];
   for (unsigned short y = 0; y != size[1]; y++)
     for (unsigned short x = 0; x != size[0]; x++)
-      for (unsigned short d = 0; d != depth; d++)
-	mask[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] > 0 ? ~0 : 0;
-  
+      {
+	char flag = pointerImg[y*size[0] + x] == 0 ? 0 : ~0;
+	for (unsigned short d = 0; d != depth; d++)
+	  mask[y*depth*size[0] + depth*x + d] = flag;
+      }
   cache = new unsigned char[size[0]*size[1]*depth];
   save();
 }
@@ -89,7 +96,6 @@ Pointer::Pointer(GGI::Drawable *drawable)
 Pointer::~Pointer()
 {
   delete [] image;
-  delete [] mask;
   delete [] cache;
 }
 
@@ -102,34 +108,53 @@ void Pointer::move(Coord x, Coord y)
   draw();
 };
 
-#define PIXPOS  (((position[1] + y) - origin[1])*(stride/depth) + (position[0]-origin[0]) + size[0])
-
 void Pointer::save()
 {
-  unsigned char *from = static_cast<unsigned char *>(dbuf->read) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
+  Trace trace("Pointer::save");
+  PixelCoord x = position[0] - origin[0];
+  PixelCoord y = position[1] - origin[1];
+  PixelCoord w = size[0];
+  PixelCoord h = size[1];
+  PixelCoord r = screen->rowlength();
+  PixelCoord s = screen->vwidth() * screen->vheight();
+  PixelCoord d = screen->pixelFormat().size >> 3;
+  unsigned char *from = static_cast<unsigned char *>(screen->readBuffer()) + y * r + x * d;
   unsigned char *to = cache;
-  for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, from += stride, to += depth*size[0])
-    Memory::copy(from, to, depth*size[0]);
+  for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
+    Memory::copy(from, to, d * w);
 }
 
 void Pointer::restore()
 {
+  Trace trace("Pointer::restore");
+  PixelCoord x = position[0] - origin[0];
+  PixelCoord y = position[1] - origin[1];
+  PixelCoord w = size[0];
+  PixelCoord h = size[1];
+  PixelCoord r = screen->rowlength();
+  PixelCoord s = screen->vwidth() * screen->vheight();
+  PixelCoord d = screen->pixelFormat().size >> 3;
   unsigned char *from = cache;
-  unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
-  for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, from += depth*size[0], to += stride)
-    Memory::copy(from, to, depth*size[0]);
+  unsigned char *to = static_cast<unsigned char *>(screen->writeBuffer()) + y * r + x * d;
+  for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += d * w, to += r)
+    Memory::copy(from, to, d * w);
 }
 
 void Pointer::draw()
 {
+  Trace trace("Pointer::draw");
+  PixelCoord x = position[0] - origin[0];
+  PixelCoord y = position[1] - origin[1];
+  PixelCoord w = size[0];
+  PixelCoord h = size[1];
+  PixelCoord r = screen->rowlength();
+  PixelCoord s = screen->vwidth() * screen->vheight();
+  PixelCoord d = screen->pixelFormat().size >> 3;
   unsigned char *from = image;
   unsigned char *bits = mask;
-  unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
-
-  for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, to += stride - size[0]*depth)
-    for (PixelCoord x = 0; x != size[0]*depth; x++, from++, bits++, to++)
-	*to = (*from & *bits) | (*to & ~*bits);
-	    
-	    //	    *to = *from & *bits;
-  GGI::drawable()->flush();
+  unsigned char *to = static_cast<unsigned char *>(screen->writeBuffer()) + y * r + x * d; 
+  for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
+    for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
+      *to = (*from & *bits) | (*to & ~*bits);
+  screen->flush();
 }

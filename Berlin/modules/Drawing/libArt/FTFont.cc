@@ -61,9 +61,9 @@ bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, c
   return true;
 }
 
-LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
-//   xdpi(drawable->dpi(xaxis)),
-//   ydpi(drawable->dpi(yaxis)),
+LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
+  : //   xdpi(drawable->dpi(xaxis)),
+    //   ydpi(drawable->dpi(yaxis)),
   xdpi(96.),
   ydpi(96.),
   xres(drawable->resolution(xaxis)),
@@ -126,7 +126,6 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       Logger::log(Logger::text) << "completed scaning font directories" << endl;
       char *env = getenv("BERLIN_FONT_CHOOSER");
       Unicode::String tmpFam, tmpStyle;
-      cout << "font chooser: [" << env << "]" << endl;
       if (env && chooseFaceInteractively(myFaceMap, env, tmpFam, tmpStyle))
 	{
 	  myFamStr = tmpFam;
@@ -347,14 +346,14 @@ LibArtFTFont::GlyphMetricsFactory::produce(const LibArtFTFont::TGlyphSpec &cs)
   Unichar ch = cs.second.first;
   if (!font_->load_glyph(ch, face)) return gm;
   FT_GlyphSlot glyph = face->glyph;
-  gm.width = glyph->metrics.width / scale;
-  gm.height = glyph->metrics.height / scale;
-  gm.horiBearingX = glyph->metrics.horiBearingX / scale;
-  gm.horiBearingY = glyph->metrics.horiBearingY / scale;
-  gm.horiAdvance =  glyph->metrics.horiAdvance / scale;
-  gm.vertBearingX = glyph->metrics.vertBearingX / scale;
-  gm.vertBearingY = glyph->metrics.vertBearingY / scale;
-  gm.vertAdvance = glyph->metrics.vertAdvance / scale;
+  gm.width = static_cast<CORBA::Long>(glyph->metrics.width / scale);
+  gm.height = static_cast<CORBA::Long>(glyph->metrics.height / scale);
+  gm.horiBearingX = static_cast<CORBA::Long>(glyph->metrics.horiBearingX / scale);
+  gm.horiBearingY = static_cast<CORBA::Long>(glyph->metrics.horiBearingY / scale);
+  gm.horiAdvance =  static_cast<CORBA::Long>(glyph->metrics.horiAdvance / scale);
+  gm.vertBearingX = static_cast<CORBA::Long>(glyph->metrics.vertBearingX / scale);
+  gm.vertBearingY = static_cast<CORBA::Long>(glyph->metrics.vertBearingY / scale);
+  gm.vertAdvance = static_cast<CORBA::Long>(glyph->metrics.vertAdvance / scale);
   return gm;
 }
 

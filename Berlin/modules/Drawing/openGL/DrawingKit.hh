@@ -29,11 +29,16 @@
 #include <Prague/Sys/Thread.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/ObjectCache.hh>
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Warsaw/Image.hh>
-#include <GL/ggimesa.h>
+
+#if defined(CONSOLE_IMPL) && CONSOLE_IMPL == GGI
+#  include <GL/ggimesa.h>
+#else
+#  error "GLDrawingKit needs GGI to compile"
+#endif
 
 #include <string>
 #include <vector>
@@ -117,7 +122,7 @@ public:
 //   Coord width() { return drawable->width();}
 //   Coord height() { return drawable->height();}
  private:
-  GGI::Drawable *drawable;
+  Console::Drawable *drawable;
   GGIMesaContext context;
   Prague::Mutex  mutex;
   Transform_var  tr;

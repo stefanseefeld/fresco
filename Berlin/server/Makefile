@@ -38,7 +38,7 @@ include $(cpath)/Server/local.mk
 endif
 
 # Compilation and linking flags.
-CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
+CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw #$(ORBCPPFLAGS)
 CXXFLAGS= -pthread -Wall -Dprofile $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
 LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
@@ -50,8 +50,6 @@ server:		server.o
 		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
 
 kits:		kits.o
-		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
-bug:		bug.o
 		$(ldlibpath) $(CXX) $(LDFLAGS) -o $@ $? $(LIBS)
 
 install:	world
@@ -68,8 +66,6 @@ server.d:	server.cc
 		@$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< \
 		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@'
 server.o:	server.cc
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
-bug.o:		bug.cc
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))

@@ -19,34 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EventManager_hh
-#define _EventManager_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Input.hh>
-#include <Warsaw/Controller.hh>
-#include <Berlin/ScreenImpl.hh>
-#include <Berlin/FocusImpl.hh>
-#include <Berlin/Console.hh>
-#include <Berlin/ImplVar.hh>
-#include <vector>
+#include "Berlin/Console.hh"
 
-class EventManager
-//. synthetize events according to a global device and event descriptor map
-//. for now, device 0 is the keyboard, device 1 the mouse
-{
-  typedef vector<FocusImpl *> flist_t;
-public:
-  EventManager(ScreenImpl *);
-  ~EventManager();
-  bool requestFocus(Controller_ptr, Input::Device);
-  void nextEvent();
-  void restore(Region_ptr);
-  void damage(Region_ptr);
-private:
-  ScreenImpl *screen;
-  Console::Drawable *drawable;
-  flist_t focus;
-};
+#ifdef CONSOLE_IMPL
+#  if CONSOLE_IMPL == GGI
+#  include "GGI.cc"
 
-#endif /* _EventManager_hh */
+GGIConsole *Console::t = 0;
+
+#  elif CONSOLE_IMPL == SDL
+#  include "SDL.cc"
+
+SDLConsole *Console::t = 0;
+
+#  else
+#  warning "unknown console type defined"
+#  endif
+#else
+#  warning "no console type defined"
+#endif
+
+Console::Reaper Console::reaper;

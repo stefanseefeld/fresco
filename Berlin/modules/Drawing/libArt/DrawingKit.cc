@@ -27,11 +27,7 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/Providers.hh>
-
-extern "C"
-{
-#include <ggi/ggi.h>
-}
+#include <Berlin/Console.hh>
 
 #include <libart_lgpl/art_pathcode.h>
 #include <libart_lgpl/art_pixbuf.h>
@@ -49,7 +45,7 @@ extern "C"
 LibArtDrawingKit::~LibArtDrawingKit() {}
 LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
   : KitImpl(f, p),
-    drawable(GGI::drawable()), 
+    drawable(Console::drawable()), 
     xres(drawable->resolution(xaxis)),
     yres(drawable->resolution(yaxis)),
     font(new LibArtFTFont(drawable)),
@@ -64,16 +60,16 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
   screen.y1 = drawable->height();
   
   agam = art_alphagamma_new (2.5);
-  memvis = ggiOpen("display-memory", NULL);
-  if(!memvis) {
-    cerr << "memory-visual failed to open in LibArt DrawingKit";
-    exit(1);
-  }
-  ggiSetGraphMode(memvis, drawable->width(), drawable->height(), 
-		  drawable->width(), drawable->height(), GT_24BIT);
-  buf = ggiDBGetBuffer (memvis, 0);
-  int stride = buf->buffer.plb.stride;
-  pb = art_pixbuf_new_const_rgb ((art_u8 *)buf->write, drawable->width(), drawable->height(), stride);
+  buffer = Console::newDrawable(drawable->width(), drawable->height(), 3);
+//   if(!memvis) {
+//     cerr << "memory-visual failed to open in LibArt DrawingKit";
+//     exit(1);
+//   }
+//   ggiSetGraphMode(memvis, drawable->width(), drawable->height(), 
+// 		  drawable->width(), drawable->height(), GT_24BIT);
+//   buf = ggiDBGetBuffer (memvis, 0);
+//   int stride = buf->buffer.plb.stride;
+  pb = art_pixbuf_new_const_rgb ((art_u8 *)buffer->writeBuffer(), drawable->width(), drawable->height(), buffer->rowlength());
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)
@@ -81,25 +77,27 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
       alphabank[i][j] = (art_u8)(i * (j * step));
 }
 
-static inline art_u32 artColor(Color &c) {
+static inline art_u32 artColor(Color &c)
+{
   return (((art_u8)(c.blue * 0xff) << 24) | 
 	  ((art_u8)(c.green * 0xff) << 16) | 
 	  ((art_u8)(c.red * 0xff) << 8) | 
 	  ((art_u8)(c.alpha * 0xff)));
 }
 
-static inline ggi_pixel ggiColor(Color c1, ggi_visual_t vis) {
-  ggi_color c2;
-  // GGI _appears_ to use 16 bit color + alpha throughout. *sigh*
-  static double scale = 0xffff;
-  c2.r = static_cast<uint16>(c1.red * scale);
-  c2.g = static_cast<uint16>(c1.green * scale);
-  c2.b = static_cast<uint16>(c1.blue * scale);
-  c2.a = static_cast<uint16>(c1.alpha * scale);
-  return ggiMapColor(vis,&c2);
-}
+// static inline ggi_pixel ggiColor(Color c1, ggi_visual_t vis) {
+//   ggi_color c2;
+//   // GGI _appears_ to use 16 bit color + alpha throughout. *sigh*
+//   static double scale = 0xffff;
+//   c2.r = static_cast<uint16>(c1.red * scale);
+//   c2.g = static_cast<uint16>(c1.green * scale);
+//   c2.b = static_cast<uint16>(c1.blue * scale);
+//   c2.a = static_cast<uint16>(c1.alpha * scale);
+//   return ggiMapColor(vis,&c2);
+// }
 
-static inline void fix_order_of_irect(ArtIRect &ir) {
+static inline void fix_order_of_irect(ArtIRect &ir)
+{
   if (ir.x0 > ir.x1) {int tmp = ir.x0; ir.x1 = ir.x0; ir.x0 = tmp;}
   if (ir.y0 > ir.y1) {int tmp = ir.y0; ir.y0 = ir.y1; ir.y1 = tmp;}
 }
@@ -147,49 +145,30 @@ void LibArtDrawingKit::setForeground(const Color &c)
 {
   fg = c;
   Color tmp;
-  tmp.red = fg.red*lt.red;
+  tmp.red   = fg.red*lt.red;
   tmp.green = fg.green*lt.green;
-  tmp.blue = fg.blue*lt.blue;
+  tmp.blue  = fg.blue*lt.blue;
   tmp.alpha = fg.alpha;
-  art_fg = artColor(tmp);
-  ggi_fg = ggiColor(tmp, memvis);
+  art_fg    = artColor(tmp);
+  con_fg    = buffer->map(tmp);
 }
 
 void LibArtDrawingKit::setLighting(const Color &c)
 {
   lt = c;
   Color tmp;
-  tmp.red = fg.red*lt.red;
+  tmp.red   = fg.red*lt.red;
   tmp.green = fg.green*lt.green;
-  tmp.blue = fg.blue*lt.blue;
-  art_fg = artColor(tmp);
-  ggi_fg = ggiColor(tmp, memvis);
+  tmp.blue  = fg.blue*lt.blue;
+  art_fg    = artColor(tmp);
+  con_fg    = buffer->map(tmp);
 }
 
-void LibArtDrawingKit::setPointSize(Coord s)
-{
-  ps = s;
-}
-
-void LibArtDrawingKit::setLineWidth(Coord w)
-{
-  lw = w;
-}
-
-void LibArtDrawingKit::setLineEndstyle(DrawingKit::Endstyle style)
-{
-  es = style;
-}
-
-void LibArtDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
-{
-  fs = style;
-}
-
-void LibArtDrawingKit::setTexture(Raster_ptr t)
-{
-}
-
+void LibArtDrawingKit::setPointSize(Coord s) { ps = s;}
+void LibArtDrawingKit::setLineWidth(Coord w) { lw = w;}
+void LibArtDrawingKit::setLineEndstyle(DrawingKit::Endstyle style) { es = style;}
+void LibArtDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style) { fs = style;}
+void LibArtDrawingKit::setTexture(Raster_ptr t) {}
 void LibArtDrawingKit::setFontSize(CORBA::ULong) {}
 void LibArtDrawingKit::setFontWeight(CORBA::ULong) {}
 void LibArtDrawingKit::setFontFamily(const Unistring&) {}
@@ -238,8 +217,8 @@ void LibArtDrawingKit::drawPath(const Path &p)
   fix_order_of_irect(loc); 
   art_rgb_svp_alpha (svp, loc.x0, loc.y0, loc.x1, loc.y1,
  		     art_fg,
- 		     ((art_u8 *)buf->write) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
- 		     buf->buffer.plb.stride,
+ 		     ((art_u8 *)buffer->writeBuffer()) + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
+ 		     buffer->rowlength(),
  		     agam);
   art_svp_free(svp);
   art_svp_free(svp1);
@@ -266,15 +245,16 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
     int width = (rect.x1 - rect.x0);
     int height = (rect.y1 - rect.y0);
     if ((height * width) < 1) return;
-    ggiSetGCForeground(memvis, ggi_fg);
-    if ( fs == DrawingKit::solid ) {
-      ggiDrawBox(memvis, rect.x0, rect.y0, width, height);
-    } else {
-      ggiDrawHLine(memvis, rect.x0, rect.y0, width);
-      ggiDrawHLine(memvis, rect.x0, rect.y1, width);
-      ggiDrawVLine(memvis, rect.x0, rect.y0, height);
-      ggiDrawVLine(memvis, rect.x1, rect.y0, height);
-    }
+    buffer->setColor(con_fg);
+    if (fs == DrawingKit::solid)
+      buffer->drawBox(rect.x0, rect.y0, width, height);
+    else
+      {
+	buffer->drawHLine(rect.x0, rect.y0, width);
+	buffer->drawHLine(rect.x0, rect.y1, width);
+	buffer->drawVLine(rect.x0, rect.y0, height);
+	buffer->drawVLine(rect.x1, rect.y0, height);
+      }
     art_irect_union (&bbox,&bbox,&rect);
     return;
     
@@ -403,11 +383,11 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
   art_irect_union (&bbox,&bbox,&tsloci);
 	  	 
   // paint
-  art_rgb_pixbuf_affine((art_u8 *)buf->write + 
+  art_rgb_pixbuf_affine((art_u8 *)buffer->writeBuffer() + 
 			(tsloci.y0 * pb->rowstride) + 
 			(tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
 			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,
-			buf->buffer.plb.stride,
+			buffer->rowlength(),
 			pixbuf, dev_affine,
 			ART_FILTER_NEAREST, agam);  
 
@@ -502,15 +482,14 @@ void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & 
 //   font->allocate(s,req);
 }
 
-void LibArtDrawingKit::flush() {   
-  int 
-    x = bbox.x0,
-    y = bbox.y0,
-    w = bbox.x1-bbox.x0,
-    h = bbox.y1-bbox.y0;  
-  ggiFlushRegion(memvis,x,y,w,h);
-  ggi_visual_t vis = drawable->visual();
-  ggiCrossBlit(memvis,x,y,w,h,vis,x,y);
+void LibArtDrawingKit::flush()
+{   
+  int x = bbox.x0;
+  int y = bbox.y0;
+  int w = bbox.x1 - bbox.x0;
+  int h = bbox.y1 - bbox.y0;  
+  buffer->flush(x, y, w, h);
+  drawable->blit(*buffer, x, y, w, h, x, y);
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;  
 }
 

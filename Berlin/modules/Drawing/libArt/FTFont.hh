@@ -25,7 +25,7 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
 #include <Warsaw/Graphic.hh>
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 #include <Berlin/LRUCache.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
@@ -38,7 +38,7 @@ class LibArtFTFont : public LibArtFont
 //. ligatures or complex layout features
 {
 public:
-  LibArtFTFont(GGI::Drawable *drawable);
+  LibArtFTFont(Console::Drawable *drawable);
   virtual ~LibArtFTFont();
   virtual unsigned long size();
   virtual void size(unsigned long);

@@ -25,7 +25,7 @@
 #include <map>
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
-#include <Berlin/GGI.hh>
+#include <Berlin/Console.hh>
 #include <Warsaw/Graphic.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
@@ -40,7 +40,7 @@ class LibArtUnifont : public LibArtFont
 //. text systems
 {
 public:
-  LibArtUnifont(GGI::Drawable *drawable);
+  LibArtUnifont(Console::Drawable *drawable);
   virtual ~LibArtUnifont();
   virtual unsigned long size();
   virtual void size(unsigned long) {}

@@ -22,7 +22,7 @@
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Providers.hh"
-#include "Berlin/GGI.hh"
+#include "Berlin/Console.hh"
 #include <Warsaw/Graphic.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/Region.hh>
@@ -60,7 +60,7 @@ void DrawTraversalImpl::init()
   drawing->drawRect(l, u);
 #if 0
   drawing->flush();
-  GGI::drawable()->flush();
+  Console::drawable()->flush();
   sleep(1);
 #endif
 }
