@@ -70,17 +70,17 @@ doc:	$(MANUAL)
 
 $(docdir)/sxr/Babylon.xref:	$(XREF)
 	@echo linking xref files together
-	@mkdir -p $(docdir)/sxr
-	@compile-xref -o $@ $^
+	mkdir -p $(docdir)/sxr
+	compile-xref -o $@ $^
 
 $(docdir)/sxr/Babylon.syn:	$(SSYN) $(HSYN)
 	@echo linking synopsis files together
-	@mkdir -p $(docdir)/sxr
-	@$(SYNOPSIS) -o $@ $^
+	mkdir -p $(docdir)/sxr
+	$(SYNOPSIS) -o $@ $^
 
 $(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -123,15 +123,15 @@ maintainer-clean: distclean
 
 %.o:	%.cc
 	@echo compiling $(@F)
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
 	@echo parsing $(^F)
-	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
