@@ -81,9 +81,19 @@ maintainer-clean:
 %/Makefile: $(srcdir)/%/Makefile.in
 	@$(configure)
 
-Babylon/Makefile: override configure_args += "--with-Prague-prefix=$(builddir)/Prague"
-Fresco/Makefile: override configure_args += "--with-Babylon-prefix=$(builddir)/Babylon"
-Berlin/Makefile: override configure_args += "--with-Prague-prefix=$(builddir)/Prague \
-                                             --with-Babylon-prefix=$(builddir)/Babylon \
-                                             --with-Fresco-prefix=$(builddir)/Fresco"
+Babylon/Makefile: override configure_args	+= --with-Prague-prefix=$(builddir)/Prague
+Fresco/Makefile: override configure_args	+= --with-Babylon-prefix=$(builddir)/Babylon
+Berlin/Makefile: override configure_args	+= --with-Prague-prefix=$(builddir)/Prague \
+                                                   --with-Babylon-prefix=$(builddir)/Babylon \
+                                                   --with-Fresco-prefix=$(builddir)/Fresco
+GGI/Makefile: override configure_args		+= --with-Prague-prefix=$(builddir)/Prague \
+                                                   --with-Fresco-prefix=$(builddir)/Fresco \
+                                                   --with-Berlin-prefix=$(builddir)/Berlin
+SDL/Makefile: override configure_args		+= --with-Prague-prefix=$(builddir)/Prague \
+                                                   --with-Fresco-prefix=$(builddir)/Fresco \
+                                                   --with-Berlin-prefix=$(builddir)/Berlin
+Clients-C++/Makefile: override configure_args	+= --with-Prague-prefix=$(builddir)/Prague \
+                                                   --with-Babylon-prefix=$(builddir)/Babylon \
+                                                   --with-Fresco-prefix=$(builddir)/Fresco \
+                                                   --with-Berlin-prefix=$(builddir)/Berlin
 
