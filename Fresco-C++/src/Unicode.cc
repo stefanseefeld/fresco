@@ -1,4 +1,4 @@
-/*$Id$
+/*$Id Unicode.cc,v 1.6 2002/05/29 06:49:41 stefan Exp $
  *
  * This source file is a part of the Fresco Project.
  * Copyright (C) 1999 Tobias Hunger <tobias@fresco.org>
@@ -44,9 +44,12 @@ Fresco::Unichar Unicode::to_CORBA(const Babylon::Char c) {
 }
 
 Babylon::String Unicode::to_internal(const Unistring & us) {
+    std::cerr << "to_internal: started." << std::endl;
     Babylon::String res;
-    res.utf16(Babylon::UTF16_string(static_cast<const Babylon::UCS2 *>(us.get_buffer()),
-				    static_cast<size_t>(us.length())));
+    std::cerr << "to_internal: got res." << std::endl;
+    for (size_t i = 0; i < us.length(); ++i)
+      res.push_back(Babylon::Char(static_cast<const Babylon::UCS2>(us[i])));
+    std::cerr << "to_internal: res set." << std::endl;
     return res;
 }
 
