@@ -64,12 +64,15 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   Loader
+ALL        =   DataType Plugin.so Loader
 
 world:		$(ALL)
 
 %.o:		%.cc
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
+
+DataType.o:	DataType.cc
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -ftemplate-depth-23 -c $< -o $@
 
 DataType:	DataType.o
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)

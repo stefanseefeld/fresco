@@ -41,7 +41,7 @@ public:
   ~Plugin() { delete t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
-  operator T *() { return t; }
+  T *get() const { return t;}
 protected:
 private:
   T *t;

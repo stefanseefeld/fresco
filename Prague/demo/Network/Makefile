@@ -64,15 +64,21 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -lWarsaw -ldl -lz -lpthread
 
-ALL        =   bind0
+ALL        =   url ftp smtp
 
 world:		$(ALL)
 
 %.o:		%.cc
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
 
-%:		%.o
-		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+url:		url.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ftp:		ftp.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+smtp:		smtp.o
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:	
 		$(RM) *.o *~
