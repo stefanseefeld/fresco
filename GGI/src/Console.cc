@@ -30,6 +30,8 @@
 #include "Extension.hh"
 #include "Pointer.hh"
 
+#undef isset
+
 using namespace Prague;
 using namespace Fresco;
 
