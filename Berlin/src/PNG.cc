@@ -386,7 +386,6 @@ void PNG::pixels(unsigned long xlower, unsigned long ylower,
                  unsigned long xupper, unsigned long yupper,
                  const Raster::ColorSeq &pixels, unsigned char **rows)
 {
-  std::cerr << "PNG load_pixels in" << std::endl;
   if (xupper < xlower || yupper < ylower ||
       xupper > _rinfo->width || yupper > _rinfo->height ||
       xlower > _rinfo->width || ylower > _rinfo->height)
