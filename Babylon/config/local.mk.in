@@ -49,6 +49,7 @@ SO_CXXFLAGS	:= @SO_CXXFLAGS@
 SO_LDFLAGS	:= @SO_LDFLAGS@
 
 CPPFLAGS	:= -I../include -I$(top_srcdir)/include @CPPFLAGS@
+LDFLAGS         := @LDFLAGS@
 DEPFLAGS	:= -M
 CXXFLAGS	:= @CXXFLAGS@
 LIBS		:= @LIBS@
