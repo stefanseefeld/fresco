@@ -34,6 +34,7 @@ _defaultKitNames = {
     'desktop' : ('Warsaw',  'DesktopKit'),
     'layout'  : ('Warsaw',  'LayoutKit'),
     'text'    : ('Warsaw',  'TextKit'),
+    'widget'  : ('Warsaw',  'WidgetKit'),
     'unidraw' : ('Unidraw', 'UnidrawKit'),
 }
 
@@ -221,6 +222,31 @@ class MenuBar(Menu):
 	"""Overridden template method that returns a hbox instead"""
 	return kits.layout.hbox()
 
+class About:
+    text = ["MenuTest","A test of client-side menus","Copyright (c) 2001 by Stephen Davies"]
+    def __init__(self):
+	"Creates the about box but doesn't map it"
+	self.vbox = kits.layout.vbox_align_elements(0.5)
+	for line in self.text: 
+	    self.vbox.append_graphic(Label(line))
+	self.button = kits.widget.button(Label("Okay"), self._get_hide_cmd())
+	self.vbox.append_graphic(self.button)
+	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 0)
+	self.frame = kits.tool.frame(self.vbox, 0.0, fspec, 1)
+	self.group = kits.tool.group(kits.tool.rgb(self.frame, 0.8, 0.8, 0.8))
+	self.window = kits.desktop.transient(self.group)
+	self._mapper_show = kits.desktop.map(self.window, 1)
+	self._mapper_hide = kits.desktop.map(self.window, 0)
+
+    def _get_hide_cmd(self):
+	class HideCommand (Warsaw__POA.Command):
+	    def __init__(self, about): self.about = about
+	    def execute(self, any): self.about._mapper_hide.execute(any)
+	return HideCommand(self)._this()
+
+    def cb_show(self, any):
+	self._mapper_show.execute(any)
+
 class MenuApp:
     def __init__(self):
 	global app
@@ -242,15 +268,20 @@ class MenuApp:
 	    ])),
 	    MenuItem('Help', submenu=Menu([
 		MenuItem('Contents'),
-		MenuItem('About'),
+		MenuItem('About', callback=About().cb_show),
 	    ])),
 	])
 
 	vbox = kits.layout.vbox()
 	vbox.append_graphic(menu.get_graphic())
-	vbox.append_graphic(kits.layout.fixed_size(None,3000.,2000.))
+	vbox.append_graphic(kits.layout.fixed_size(None,6400.,4800.))
 
 	self.window = kits.desktop.shell(kits.tool.group(vbox))
+	pos = self.window._get_position()
+	pos.x = -pos.x; pos.y = -pos.y-200.
+	kits.desktop.move(self.window).execute(CORBA.Any(Warsaw._tc_Vertex, pos))
+	#pos.x = 6400.; pos.y = 4800.
+	#kits.desktop.resize(self.window).execute(CORBA.Any(Warsaw._tc_Vertex, pos))
 	#kits.desktop.map(self.window, 1).execute(nullAny)
 
     def exit(self, any):
