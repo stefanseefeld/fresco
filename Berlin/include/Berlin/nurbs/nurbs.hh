@@ -26,7 +26,6 @@
 #include <Berlin/nurbs/domain.hh>
 #include <Berlin/nurbs/array.hh>
 #include <vector>
-#include <string>
 
 namespace Berlin
 {
@@ -111,17 +110,16 @@ double basis_function_derivative(size_t i, size_t d, double p, const K &k)
 }
 
 template <typename T, size_t P>
-Weighted<T> eval_at(const domain<T, P> &ctrls,
-                    const domain<double, P> weights,
-                    const array<size_t, P> &degrees,
-                    const array<std::vector<double>, P> &knots,
-                    const array<size_t, P> &steps,
-                    array<double, P> params,
-                    array<size_t, P> idxs,
-                    size_t r)
+Weighted<T> evaluate_at(const domain<T, P> &ctrls,
+			const domain<double, P> weights,
+			const array<size_t, P> &degrees,
+			const array<std::vector<double>, P> &knots,
+			array<double, P> params,
+			array<size_t, P> idxs,
+			size_t r)
 {
   Weighted<T> sum;
-  sum.numerator = 0.;
+  assign(sum.numerator, 0.);
   sum.denominator = 0.;
 
   if(r > 1)
@@ -132,8 +130,8 @@ Weighted<T> eval_at(const domain<T, P> &ctrls,
                                     params[r - 1], knots[r - 1]);
       if(basis != 0.)
       {
-        Weighted<T> point = eval_at(ctrls, weights, degrees, knots, steps,
-                                    params, idxs, r - 1);
+        Weighted<T> point = evaluate_at(ctrls, weights, degrees, knots,
+					params, idxs, r - 1);
         sum.numerator += point.numerator * basis;
         sum.denominator += point.denominator * basis;
       }
@@ -156,28 +154,26 @@ Weighted<T> eval_at(const domain<T, P> &ctrls,
 }
 
 template <typename T, size_t P>
-T eval_at(const domain<T, P> &ctrls,
-          const domain<double, P> &weights,
-          const array<size_t, P> &degrees,
-          const array<std::vector<double>, P> &knots,
-          const array<size_t, P> &steps,
-          const array<double, P> &params)
+T evaluate_at(const domain<T, P> &ctrls,
+	      const domain<double, P> &weights,
+	      const array<size_t, P> &degrees,
+	      const array<std::vector<double>, P> &knots,
+	      const array<double, P> &params)
 {
   array<size_t, P> idx(0);
-  Weighted<T> point = eval_at(ctrls, weights, degrees, knots, steps,
-                              params, idx, P);
+  Weighted<T> point = evaluate_at(ctrls, weights, degrees, knots, params, idx, P);
   return point.numerator / point.denominator;
 }
 
 template <typename T, size_t P>
-void eval(const domain<T, P> &ctrls, 
-          const domain<double, P> &weights,
-          const array<size_t, P> &degrees,
-          const array<std::vector<double>, P> &knots,
-          const array<size_t, P> &steps,
-          array<double, P> params,
-          size_t r,
-          std::vector<T> &points)
+void evaluate(const domain<T, P> &ctrls, 
+	      const domain<double, P> &weights,
+	      const array<size_t, P> &degrees,
+	      const array<std::vector<double>, P> &knots,
+	      const array<size_t, P> &steps,
+	      array<double, P> params,
+	      size_t r,
+	      std::vector<T> &points)
 {
   size_t step = steps[r - 1];
   size_t length = ctrls.size(r - 1) + 1;
@@ -214,20 +210,18 @@ void eval(const domain<T, P> &ctrls,
   for(size_t i = index; i < plength; ++i)
   {
     params[r - 1] = pvalues[i];
-    if(r == 1)
-      points.push_back(eval_at(ctrls, weights, degrees, knots, steps,
-                               params));
-    else eval(ctrls, weights, degrees, knots, steps,
-              params, r - 1, points);
+    if(r == 1) points.push_back(evaluate_at(ctrls, weights, degrees, knots, params));
+    else evaluate(ctrls, weights, degrees, knots, steps, params, r - 1, points);
   }
 }
 
+//. return a P-dimensional domain of points
 template <typename T, size_t P>
-domain<T, P> *eval(const domain<T, P> &ctrls,
-		   const domain<double, P> &weights,
-		   const array<size_t, P> &degrees,
-		   const array<std::vector<double>, P> &knots,
-		   const array<size_t, P> &steps)
+domain<T, P> *evaluate(const domain<T, P> &ctrls,
+		       const domain<double, P> &weights,
+		       const array<size_t, P> &degrees,
+		       const array<std::vector<double>, P> &knots,
+		       const array<size_t, P> &steps)
 {
   std::vector<T> points;
   array<size_t, P> length;
@@ -240,81 +234,41 @@ domain<T, P> *eval(const domain<T, P> &ctrls,
       (ctrls.size(i) - degrees[i]) * (steps[i] - 1);
   }
   
-  eval(ctrls, weights, degrees, knots, steps, params, P, points);
+  evaluate(ctrls, weights, degrees, knots, steps, params, P, points);
 
   domain<T, P> *retn = new domain<T, P>(length.data());  
   for(size_t i = 0; i < points.size(); ++i) (*retn)[i] = points[i];
   return retn;
 }
 
+//. return a P-dimensional domain of points
+//. assume uniform knots
 template <typename T, size_t P>
-array<T, P + 1>
-eval_with_derivations_at(const domain<T, P> &ctrls,
-                         const domain<double, P> &weights,
-                         const array<size_t, P> &degrees,
-                         const array<std::vector<double>, P> &knots,
-                         const array<size_t, P> &steps,
-                         const array<double, P> &params)
+domain<T, P> *evaluate(const domain<T, P> &ctrls,
+                       const domain<double, P> &weights,
+                       const array<size_t, P> &degrees,
+                       const array<size_t, P> &steps)
 {
-  array<size_t, P> idx(0);
-  array<Weighted<T>, P + 1> points = eval_with_derivations_at(ctrls, weights,
-                                                              degrees, knots, steps,
-                                                              params, idx, P);
-  T numerator = points[0].numerator;
-  double denominator = points[0].denominator;
-
-  array<T, P + 1> derivations;
-
-  for(size_t k = 1; k < P + 1; ++k)
-  {
-    derivations[k] = points[k].numerator * denominator;
-    derivations[k] -= numerator * points[k].denominator;
-    if(denominator != 0) derivations[k] /= denominator * denominator;
-    else assign(derivations[k], 0.);
-  }
-
-  if(denominator != 0) derivations[0] = numerator / denominator;
-  else assign(derivations[0], 0.);
-  return derivations;
-}
-
-template <typename T, size_t P>
-domain<array<T, P + 1>, P> *
-eval_with_derivations(const domain<T, P> &ctrls,
-                      const domain<double, P> &weights,
-                      const array<size_t, P> &degrees,
-                      const array<std::vector<double>, P> &knots,
-                      const array<size_t, P> &steps)
-{
-  array<size_t, P> length;
-  array<double, P> params;
-
+  array<std::vector<double>, P> knots;
   for(size_t i = 0; i < P; ++i)
   {
-    params[i] = knots[i][0];
-    length[i] = ctrls.size(i) - degrees[i] + 1 +
-      (ctrls.size(i) - degrees[i]) * (steps[i] - 1);
+    knots[i].resize(ctrls.size(i) + degrees[i] + 1);
+    double delta = 1. / (ctrls.size(i) + degrees[i]);
+    for (size_t j = 0; j != ctrls.size(i) + degrees[i] + 1; ++j)
+      knots[i][j] = j * delta;
   }
-   
-  std::vector<array<T, P + 1> > points;
-  eval_with_derivations(ctrls, weights, degrees, knots, steps,
-                        params, P, points);
-
-  domain<array<T, P + 1>, P> *retn = new domain<array<T, P + 1>, P>(length.data());
-  for(size_t i = 0; i < points.size(); ++i) (*retn)[i] = points[i];
-  return retn;
+  return evaluate(ctrls, weights, degrees, knots, steps);
 }
 
 template <typename T, size_t P>
 array<Weighted<T>, P + 1>
-eval_with_derivations_at(const domain<T, P> &ctrls,
-                         const domain<double, P> &weights,
-                         const array<size_t, P> &degrees,
-                         const array<std::vector<double>, P> &knots,
-                         const array<size_t, P> &steps,
-                         array<double, P> params,
-                         array<size_t, P> idxs,
-                         size_t r)
+evaluate_with_derivations_at(const domain<T, P> &ctrls,
+			     const domain<double, P> &weights,
+			     const array<size_t, P> &degrees,
+			     const array<std::vector<double>, P> &knots,
+			     array<double, P> params,
+			     array<size_t, P> idxs,
+			     size_t r)
 {
   array<Weighted<T>, P + 1> sum;
   for(size_t i = 0; i < P + 1; ++i)
@@ -332,8 +286,8 @@ eval_with_derivations_at(const domain<T, P> &ctrls,
       double basis = basis_function(idxs[r - 1], degrees[r - 1],
                                     params[r -  1], knots[r - 1]);
       if(basis != 0 || derivative != 0)
-        points = eval_with_derivations_at(ctrls, weights, degrees, knots, steps,
-                                          params, idxs, r - 1);
+        points = evaluate_with_derivations_at(ctrls, weights, degrees, knots,
+					      params, idxs, r - 1);
       if(basis != 0)
       {
         sum[0].numerator += points[0].numerator * basis;
@@ -391,14 +345,44 @@ eval_with_derivations_at(const domain<T, P> &ctrls,
 }
 
 template <typename T, size_t P>
-void eval_with_derivations(const domain<T, P> &ctrls,
-                           const domain<double, P> &weights,
-                           const array<size_t, P> &degrees,
-                           const array<std::vector<double>, P> knots,
-                           const array<size_t, P> &steps,
-                           array<double, P> params,
-                           size_t r,
-                           std::vector<array<T, P + 1> > &points)
+array<T, P + 1>
+evaluate_with_derivations_at(const domain<T, P> &ctrls,
+			     const domain<double, P> &weights,
+			     const array<size_t, P> &degrees,
+			     const array<std::vector<double>, P> &knots,
+			     const array<double, P> &params)
+{
+  array<size_t, P> idx(0);
+  array<Weighted<T>, P + 1> points = evaluate_with_derivations_at(ctrls, weights,
+								  degrees, knots,
+								  params, idx, P);
+  T numerator = points[0].numerator;
+  double denominator = points[0].denominator;
+
+  array<T, P + 1> derivations;
+
+  for(size_t k = 1; k < P + 1; ++k)
+  {
+    derivations[k] = points[k].numerator * denominator;
+    derivations[k] -= numerator * points[k].denominator;
+    if(denominator != 0) derivations[k] /= denominator * denominator;
+    else assign(derivations[k], 0.);
+  }
+
+  if(denominator != 0) derivations[0] = numerator / denominator;
+  else assign(derivations[0], 0.);
+  return derivations;
+}
+
+template <typename T, size_t P>
+void evaluate_with_derivations(const domain<T, P> &ctrls,
+			       const domain<double, P> &weights,
+			       const array<size_t, P> &degrees,
+			       const array<std::vector<double>, P> knots,
+			       const array<size_t, P> &steps,
+			       array<double, P> params,
+			       size_t r,
+			       std::vector<array<T, P + 1> > &points)
 {
   size_t step = steps[r - 1];
   size_t length = ctrls.size(r - 1) + 1;
@@ -435,46 +419,44 @@ void eval_with_derivations(const domain<T, P> &ctrls,
     params[r - 1] = pvalues[i];
     if(r == 1)
     {
-      points.push_back(eval_with_derivations_at(ctrls, weights, degrees,
-                                                knots, steps, params)); 
+      points.push_back(evaluate_with_derivations_at(ctrls, weights, degrees, knots,
+						    params)); 
     }
-    else eval_with_derivations(ctrls, weights, degrees, knots, steps,
-                               params, r - 1, points);
+    else evaluate_with_derivations(ctrls, weights, degrees, knots, steps,
+				   params, r - 1, points);
   }
-}
-
-//. return a P-dimensional domain of points
-//. assume uniform knots
-template <typename T, size_t P>
-domain<T, P> *evaluate(const domain<T, P> &ctrls,
-                       const domain<double, P> &weights,
-                       const array<size_t, P> &degrees,
-                       const array<size_t, P> &steps)
-{
-  array<std::vector<double>, P> knots;
-  for(size_t i = 0; i < P; ++i)
-  {
-    knots[i].resize(ctrls.size(i) + degrees[i] + 1);
-    double delta = 1. / (ctrls.size(i) + degrees[i]);
-    for (size_t j = 0; j != ctrls.size(i) + degrees[i] + 1; ++j)
-      knots[i][j] = j * delta;
-  }
-  return eval(ctrls, weights, degrees, knots, steps);
-}
-
-//. return a P-dimensional domain of points
-template <typename T, size_t P>
-domain<T, P> *evaluate(const domain<T, P> &ctrls,
-                       const domain<double, P> &weights,
-                       const array<size_t, P> &degrees,
-                       const array<std::vector<double>, P> &knots,
-                       const array<size_t, P> &steps)
-{
-  return eval(ctrls, weights, degrees, knots, steps);
 }
 
 //. return a P-dimensional domain of points arrays
 //. each array contains the actual point and the P derivatives
+template <typename T, size_t P>
+domain<array<T, P + 1>, P> *
+evaluate_with_derivations(const domain<T, P> &ctrls,
+			  const domain<double, P> &weights,
+			  const array<size_t, P> &degrees,
+			  const array<std::vector<double>, P> &knots,
+			  const array<size_t, P> &steps)
+{
+  array<size_t, P> length;
+  array<double, P> params;
+
+  for(size_t i = 0; i < P; ++i)
+  {
+    params[i] = knots[i][0];
+    length[i] = ctrls.size(i) - degrees[i] + 1 +
+      (ctrls.size(i) - degrees[i]) * (steps[i] - 1);
+  }
+   
+  std::vector<array<T, P + 1> > points;
+  evaluate_with_derivations(ctrls, weights, degrees, knots, steps, params, P, points);
+
+  domain<array<T, P + 1>, P> *retn = new domain<array<T, P + 1>, P>(length.data());
+  for(size_t i = 0; i < points.size(); ++i) (*retn)[i] = points[i];
+  return retn;
+}
+
+//. return a P-dimensional domain of points arrays
+//. each array contains the actual point and the P derivatives.
 //. assume uniform knots
 template <typename T, size_t P>
 domain<array<T, P + 1>, P> *
@@ -491,20 +473,7 @@ evaluate_with_derivations(const domain<T, P> &ctrls,
     for (size_t j = 0; j != ctrls.size(i) + degrees[i] + 1; ++j)
       knots[i][j] = j * delta;
   }
-  return eval_with_derivations(ctrls, weights, degrees, knots, steps);
-}
-
-//. return a P-dimensional domain of points arrays
-//. each array contains the actual point and the P derivatives
-template <typename T, size_t P>
-domain<array<T, P + 1>, P> *
-evaluate_with_derivations(const domain<T, P> &ctrls,
-                          const domain<double, P> &weights,
-                          const array<size_t, P> &degrees,
-                          const array<std::vector<double>, P> &knots,
-                          const array<size_t, P> &steps)
-{
-  return eval_with_derivations(ctrls, weights, degrees, knots, steps);
+  return evaluate_with_derivations(ctrls, weights, degrees, knots, steps);
 }
 
 }
