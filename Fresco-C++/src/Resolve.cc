@@ -280,7 +280,6 @@ PortableServer::POA_ptr get_server_poa(CORBA::ORB_ptr orb,
 // publish server reference
 void publish_server(Fresco::Server_ptr server,
                     std::string exported_server_id,
-                    std::string reference_transfer_method,
                     std::string ior_file_path,
                     CORBA::ORB_ptr orb)
 {
@@ -536,9 +535,8 @@ void publish_server(Fresco::Server_ptr server,
                     Prague::GetOpt const &getopt,
                     CORBA::ORB_ptr orb)
 {
-  std::string server_id, reference_transfer_method, ior_file_path;
-  parse_getopt_for_resolve_options(getopt, server_id, reference_transfer_method,
+  std::string server_id, dummy_method, ior_file_path;
+  parse_getopt_for_resolve_options(getopt, server_id, dummy_method,
                                    ior_file_path);
-  publish_server(server, server_id, reference_transfer_method, 
-                        ior_file_path, orb);
+  publish_server(server, server_id, ior_file_path, orb);
 }

@@ -177,7 +177,6 @@ char const * default_ior_file_path();
 // Resolve server using strings directly
 // -----------------------------------------------------------------------------
 
-
 // resolve server using strings directly
 Fresco::Server_ptr resolve_server(std::string server_id,
                                   std::string reference_transfer_method,
@@ -198,7 +197,6 @@ PortableServer::POA_ptr get_server_poa(CORBA::ORB_ptr orb,
 // publish server reference
 void publish_server(Fresco::Server_ptr server,
                     std::string server_id,
-                    std::string reference_transfer_method,
                     std::string ior_file_path,
                     CORBA::ORB_ptr orb);
 
