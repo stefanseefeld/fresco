@@ -347,6 +347,7 @@ void ViewportImpl::draw(DrawTraversal_ptr traversal)
 
   DrawingKit_var drawing = traversal->drawing();
   drawing->save();
+  clipping->merge_intersect(drawing->clipping());
   drawing->clipping(Region_var(clipping->_this()));
 
   Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
