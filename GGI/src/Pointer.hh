@@ -61,7 +61,7 @@ private:
   Fresco::Raster_ptr  _raster;
   data_type          *_image;
   data_type          *_mask;
-  data_type          *_cache;
+  Drawable           *_cache;
 };
 
 }

@@ -48,13 +48,6 @@ GGI::Pointer::Pointer(GGI::Drawable *drawable, Raster_ptr raster)
   
   Fresco::Drawable::PixelFormat format = _screen->pixel_format();
 
-  Pixel trans = 0;
-  Pixel red = (static_cast<Pixel>(1. * (~0L)) >> format.red_shift) & format.red_mask;
-  Pixel green = (static_cast<Pixel>(1. * (~0L)) >> format.green_shift) & format.green_mask;
-  Pixel blue = (static_cast<Pixel>(1. * (~0L)) >> format.blue_shift) & format.blue_mask;
-  Pixel black =  0;
-  Pixel white = red | green | blue;
-
   /*
    * create the pointer image
    */
@@ -78,14 +71,18 @@ GGI::Pointer::Pointer(GGI::Drawable *drawable, Raster_ptr raster)
 	for (unsigned short d = 0; d != depth; d++)
 	  _mask[y*depth*_size[0]+depth*x + d] = flag;
       }
-  _cache = new data_type[_size[0]*_size[1]*depth];
+  /*
+   * create the save and restore cache
+   */
+  _cache = new Drawable("memory", _size[0], _size[1], depth);
+
 }
 
 GGI::Pointer::~Pointer()
 {
   delete _dbuffer;
   delete [] _image;
-  delete [] _cache;
+  delete _cache;
 }
 
 Raster_ptr GGI::Pointer::raster()
@@ -117,16 +114,7 @@ void GGI::Pointer::save()
   PixelCoord y = _position[1] - _origin[1];
   PixelCoord w = _size[0];
   PixelCoord h = _size[1];
-  PixelCoord r = _screen->row_length();
-  PixelCoord s = _screen->vwidth() * _screen->vheight();
-  PixelCoord d = _screen->pixel_format().size >> 3;
-  const ggi_directbuffer *dbuf = _screen->buffer(0);
-  ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_READ);
-  data_type *from = static_cast<char*>(dbuf->read) + y*r +x*d;
-  data_type *to = _cache;
-  for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
-    Memory::copy(from, to, d * w);
-  ggiResourceRelease(dbuf->resource);
+  _cache->blit(*_screen, x, y, w, h, 0, 0);
 }
 
 void GGI::Pointer::restore()
@@ -135,19 +123,8 @@ void GGI::Pointer::restore()
   PixelCoord y = _position[1] - _origin[1];
   PixelCoord w = _size[0];
   PixelCoord h = _size[1];
-  PixelCoord r = _screen->row_length();
-  PixelCoord s = _screen->vwidth() * _screen->vheight();
-  PixelCoord d = _screen->pixel_format().size >> 3;
-  data_type *from = _cache;
-  const ggi_directbuffer *dbuf = _screen->buffer(0);
-  ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_WRITE);
-  data_type *to = static_cast<char*>(dbuf->write) + y*r + x*d;
-  for (PixelCoord o = 0;
-       o != h && (y + o) * r / d + x + w < s;
-       o++, from += d * w, to += r)
-    Memory::copy(from, to, d * w);
+  _screen->blit(*_cache, 0, 0, w, h, x, y);
   _screen->flush(x, y, w, h);
-  ggiResourceRelease(dbuf->resource);
 }
 
 void GGI::Pointer::draw()
@@ -164,9 +141,10 @@ void GGI::Pointer::draw()
   const ggi_directbuffer *dbuf = _screen->buffer(0);
   ggiResourceAcquire(dbuf->resource, GGI_ACTYPE_WRITE);
   data_type *to = static_cast<char*>(dbuf->write) + y*r + x*d;
-  for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
-    for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)
-      *to = (*from & *bits) | (*to & ~*bits);
+  for (PixelCoord i = 0; i != h && (y+i)*r/d+x+w<s; i++, to += r - w * d)
+    for (PixelCoord j = 0; j != w * d ; j++, from++, bits++, to++)
+      if (x*d+j < r)
+        *to = (*from & *bits) | (*to & ~*bits);
   _screen->flush(x, y, w, h);
   ggiResourceRelease(dbuf->resource);
 }
