@@ -51,7 +51,7 @@ int Console::open(int argc, char **argv, PortableServer::POA_ptr poa) throw(std:
   if (!getopt.get("console", &value)) value = "GGI";
   Prague::Path path = RCManager::get_path("modulepath");
   std::string name = path.lookup_file(std::string("Console/") + value + ".so");
-  plugin = new Plugin<Console::Loader>(name);
+  if (name.empty()) throw std::runtime_error("no console found");
   _console = (*plugin)->load(argo, argv);
   _console->_poa = PortableServer::POA::_duplicate(poa);
   return argo;
