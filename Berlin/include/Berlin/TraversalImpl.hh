@@ -56,7 +56,6 @@ class TraversalImpl : implements(Traversal)
   order direction() = 0;
   CORBA::Boolean ok() = 0;
  protected:
-//   Graphic_ptr graphic();
   void push(Graphic_ptr, Region_ptr, TransformImpl *);
   void pop();
   size_t size() { return stack.size();}

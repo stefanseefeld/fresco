@@ -92,7 +92,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transfor
   if (CORBA::is_nil(region)) region = Region_var(allocation());
   TransformImpl *cumulative = new TransformImpl;
   cumulative->_obj_is_ready(_boa());
-  cumulative->copy(transformation());
+  cumulative->copy(Transform_var(transformation()));
   if (!CORBA::is_nil(t)) cumulative->premultiply(t);
 #if 1
   push(child, region, cumulative);
@@ -118,7 +118,6 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transfor
 void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)
 {
   SectionLog section(Logger::traversal, "TraversalImpl::push");
-  RegionImpl region(r, t->_this());
   State state;
   state.graphic = Graphic::_duplicate(g);
   state.allocation = Region::_duplicate(r);
@@ -133,8 +132,3 @@ void TraversalImpl::pop()
   state.transformation->_dispose();
   stack.erase(stack.end() - 1);
 }
-
-// Graphic_ptr TraversalImpl::graphic()
-// {
-//   return Graphic::_duplicate(stack.back().graphic);
-// }

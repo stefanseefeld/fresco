@@ -76,13 +76,16 @@ void Bevel::traverse(Traversal_ptr traversal)
       if (hmargin || vmargin)
 	{
 	  Allocation::Info info;
-	  info.allocation = traversal->allocation();
+	  RegionImpl *allocation = new RegionImpl(Region_var(traversal->allocation()), Transform::_nil());
+	  allocation->_obj_is_ready(_boa());
+	  info.allocation = Region_var(allocation->_this());
 	  TransformImpl *tx = new TransformImpl;
 	  tx->_obj_is_ready(_boa());
 	  info.transformation = tx->_this();
 	  allocateChild(info);
 	  traversal->traverseChild(child, info.allocation, info.transformation);
 	  tx->_dispose();
+	  allocation->_dispose();
 	}
       else MonoGraphic::traverse(traversal);
     }

@@ -108,13 +108,23 @@ class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
     }
   const vector<Controller_var> &controllerStack() const { return controllers;}
   PickTraversalImpl   *memento() { PickTraversalImpl *m = mem; mem = 0; return m;}
-//   void debug()
-//     {
-//       cout << "PickTraversal::debug : stack size = " << size() << '\n';
-//       cout << "Controllers at ";
-//       for (size_t i = 0; i != positions.size(); i++) cout << positions[i] << ' ';
-//       cout << endl;
-//     }
+  void debug()
+    {
+      cout << "PickTraversal::debug : stack size = " << size() << '\n';
+      cout << "Controllers at ";
+      for (size_t i = 0; i != positions.size(); i++) cout << positions[i] << ' ';
+      cout << endl;
+      Region_var r = allocation();
+      Transform_var t = transformation();
+      RegionImpl region(r, t);
+      cout << "current allocation is " << region << endl;
+      cout << "pointer is " << pointer.location << endl;
+      Vertex local = pointer.location;
+      t->inverseTransformVertex(local);
+      region.copy(r);
+      cout << "local CS: current allocation is " << region << endl;
+      cout << "local CS: pointer is " << local << endl;      
+    }
  private:
   PickTraversalImpl(const PickTraversalImpl &);
   //. to be used to create the memento

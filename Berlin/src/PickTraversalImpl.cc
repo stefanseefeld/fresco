@@ -35,8 +35,7 @@ PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &t)
     pointer(t.pointer),
     mem(0)
 {
-//   SectionLog log(Logger::picking, "PickTraversal::PickTraversal");
-//   debug();
+  SectionLog log(Logger::picking, "PickTraversal::PickTraversal");
 }
 
 PickTraversalImpl::~PickTraversalImpl()
@@ -50,7 +49,7 @@ PickTraversalImpl::~PickTraversalImpl()
  */
 void PickTraversalImpl::reset(const Event::Pointer &p)
 {
-//   SectionLog log(Logger::picking, "PickTraversal::reset");
+  SectionLog log(Logger::picking, "PickTraversal::reset");
   popController();
   pointer = p;
 }
