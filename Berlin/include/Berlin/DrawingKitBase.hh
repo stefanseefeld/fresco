@@ -22,8 +22,11 @@
  */
 #ifndef _DrawingKitBase_hh
 #define _DrawingKitBase_hh
+
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
+#include <Warsaw/Region.hh>
+#include <Warsaw/Raster.hh>
 #include <stack>
 
 class DrawingKitBase : lcimplements(DrawingKit)
@@ -47,7 +50,7 @@ class DrawingKitBase : lcimplements(DrawingKit)
   struct StateMarker : State { void restore(DrawingKitBase &) const {}};
   struct TransformationState : State
   {
-    TransformationState(Transform_ptr t) : transformation(t) {}
+    TransformationState(Transform_ptr t) : transformation(Transform::_duplicate(t)) {}
     void restore(DrawingKitBase &dk) const
     {
       dk.setTransformation(transformation);
@@ -57,7 +60,7 @@ class DrawingKitBase : lcimplements(DrawingKit)
   };
   struct ClippingState : State
   {
-    ClippingState(Region_ptr c) : clipping(c) {}
+    ClippingState(Region_ptr c) : clipping(Region::_duplicate(c)) {}
     void restore(DrawingKitBase &dk) const
     {
       dk.setClipping(clipping);
@@ -117,7 +120,7 @@ class DrawingKitBase : lcimplements(DrawingKit)
   };
   struct TextureState : State
   {
-    TextureState(Raster_ptr t) : texture(t) {}
+    TextureState(Raster_ptr t) : texture(Raster::_duplicate(t)) {}
     void restore(DrawingKitBase &dk) const
     {
       dk.setTexture(texture);

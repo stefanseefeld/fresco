@@ -99,8 +99,8 @@ void PositionalFocus::damage(Region_ptr region)
 void PositionalFocus::dispatch(const Input::Event &event)
 {
   MutexGuard guard(mutex);
-  Prague::Profiler prf("PositionalFocus::dispatch(pointer)");
-  SectionLog section("PositionalFocus::dispatch(pointer)");
+  Prague::Profiler prf("PositionalFocus::dispatch");
+  SectionLog section("PositionalFocus::dispatch");
   // update the pointer object / image
 //   pointer->move(ptrPositionX, ptrPositionY);
 //   ggiFlush(drawable);

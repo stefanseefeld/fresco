@@ -52,7 +52,12 @@ GLDrawingKit::GLDrawingKit()
   glViewport(0, 0, drawable->width(), drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
-  glOrtho(0, drawable->width()/drawable->resolution(xaxis), drawable->height()/drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
+//   cout << drawable->width()/drawable->resolution(xaxis) << ' ' << drawable->height()/drawable->resolution(yaxis) << endl;
+//   glOrtho(0, drawable->width()/drawable->resolution(xaxis), drawable->height()/drawable->resolution(yaxis), 0, -1000.0, 1000.0); 
+  /*
+   * use the old scaling for now to make debugging easier
+   */
+  glOrtho(0, drawable->width(), drawable->height(), 0, -1000.0, 1000.0); 
   glTranslatef(0.375,0.375,0.);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
