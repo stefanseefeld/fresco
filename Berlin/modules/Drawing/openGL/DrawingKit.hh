@@ -48,11 +48,13 @@ namespace openGL {
 class DrawingKit : public virtual POA_Fresco::DrawingKit3D,
 		   public DrawingKitBase, public KitImpl
 {
+  class Restore;
   friend class Texture;
   friend class Image;
 
   class Light
   {
+    friend class openGL::DrawingKit::Restore;
   public:
     Light(GLContext *);
     int push();

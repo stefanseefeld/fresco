@@ -98,12 +98,25 @@ void openGL::DrawingKit::save()
   _states.top().lights = _light->top();
 }
 
+class openGL::DrawingKit::Restore : public virtual GLContext::Callback {
+public:
+  Restore::Restore(openGL::DrawingKit::Light *light, int prev_light)
+    : my_light(light), my_prev(prev_light) {}
+  void operator()() {
+    while (my_light->top() > my_prev) my_light->pop();
+    delete this;
+  }
+private:
+  openGL::DrawingKit::Light *my_light;
+  int my_prev;
+};
+
 void openGL::DrawingKit::restore()
 {
   DrawingKitBase::restore();
   if (_states.empty()) return; // no state to restore
   DrawState &prev = _states.top();
-  while (_light->top() > prev.lights) _light->pop();
+  my_glcontext->add_to_queue(new Restore(_light, prev.lights));
   _states.pop();
 }
 
