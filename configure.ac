@@ -51,7 +51,7 @@ AC_ARG_ENABLE(prague,
                 enable_prague=yes
         fi])
 AC_ARG_ENABLE(babylon,
-	[ --disable-babylon	   Don't build libBabylon],[
+	[  --disable-babylon       Don't build libBabylon],[
 	enable_babylon="$enableval"],[
 	if test ".$enable_babylon" = . ; then
 		enable_babylon=yes
