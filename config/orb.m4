@@ -34,7 +34,9 @@ AC_DEFUN([FRESCO_ORB],[
 
 	AC_MSG_NOTICE(checking for CORBA environment.)
 	AC_ARG_WITH(orb,
-		[  --with-orb=NAME         Specify which ORB to use],[dnl
+                AC_HELP_STRING([--with-orb=NAME],
+                               [Specify which ORB to use (default is "auto")]),
+                [dnl
 		ORB="$withval"],[dnl
 		if test ".$ORB" = "." ; then
 			ORB="auto"
