@@ -29,7 +29,11 @@
 using namespace Prague;
 using namespace Fresco;
 
-RasterImpl::RasterImpl() : _rows(0) {}
+RasterImpl::RasterImpl(const Fresco::Raster::Info &rinfo)
+  : _rows(0), _png(rinfo)
+{
+  _rows = _png.empty();
+}
 RasterImpl::RasterImpl(const std::string &file) : _rows(0)
 {
   Prague::Path path = RCManager::get_path("rasterpath");
@@ -103,8 +107,7 @@ void RasterImpl::store_pixels(const Fresco::Raster::Index &lower, const Fresco::
 void RasterImpl::load_pixels(const Fresco::Raster::Index &lower, const Fresco::Raster::Index &upper, const Fresco::Raster::ColorSeq &pixels)
 {
   Trace trace("RasterImpl::load_pixels");
-  clear();
-  _rows = _png.pixels(lower.x, lower.y, upper.x, upper.y, pixels);
+  _png.pixels(lower.x, lower.y, upper.x, upper.y, pixels, _rows);
 }
 
 void RasterImpl::write(const char *file)

@@ -42,7 +42,7 @@ module Fresco
   interface RasterKit : Kit
     {
       //. Create an empty Raster.
-      Raster create_empty_raster();
+      Raster create_empty_raster(in Raster::Info rinfo);
       //. Create a Raster from a file. 'rasterpath' from Berlin's config file
       //. is prepended! If the file is not found a the ImageKit
       //. falls back to 'berlin-128.png' in 'rasterpath'.

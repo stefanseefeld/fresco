@@ -47,7 +47,9 @@ public:
 		     adam7 = PNG_INTERLACE_ADAM7,
 		     last = PNG_INTERLACE_LAST};
   PNG();
+  PNG(const Fresco::Raster::Info &);
   ~PNG();
+  unsigned char **empty();
   void clear();
   void header(Fresco::Raster::Info &);
   Fresco::Raster::Data *marshal(unsigned char *const *);
@@ -57,8 +59,9 @@ public:
              unsigned char **);
   Fresco::Raster::ColorSeq *pixels(unsigned long, unsigned long, unsigned long, 
                                    unsigned long, unsigned char *const *);
-  unsigned char **pixels(unsigned long, unsigned long, unsigned long,
-                         unsigned long, const Fresco::Raster::ColorSeq &);
+  void pixels(unsigned long, unsigned long, unsigned long,
+              unsigned long, const Fresco::Raster::ColorSeq &,
+              unsigned char **);
   unsigned char **read(const std::string &);
   void write(const std::string &, unsigned char *const *);
 private:

@@ -37,9 +37,9 @@ RasterKitImpl::RasterKitImpl(const std::string &id,
    : KitImpl(id, p, c) { }
 RasterKitImpl::~RasterKitImpl() { }
 
-Raster_ptr RasterKitImpl::create_empty_raster()
+Raster_ptr RasterKitImpl::create_empty_raster(const Fresco::Raster::Info &rinfo)
 {
-  return create<Fresco::Raster>(new RasterImpl());
+  return create<Fresco::Raster>(new RasterImpl(rinfo));
 }
 
 Raster_ptr RasterKitImpl::create_raster(const char *file)

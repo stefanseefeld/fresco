@@ -196,10 +196,51 @@ PNG::PNG()
   _rend = png_create_info_struct(_rpng);
 }
 
+PNG::PNG(const Fresco::Raster::Info &info)
+{
+  _rpng = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  _rinfo = png_create_info_struct(_rpng);
+  _rinfo->width = info.width;
+  _rinfo->height = info.height;
+  _rinfo->bit_depth = info.depth;
+  _rinfo->color_type = info.colortype;
+  _rinfo->compression_type = info.compression;
+  _rinfo->filter_type = info.filter;
+  _rinfo->interlace_type = info.interlace;
+  switch(_rinfo->color_type) {
+    case PNG_COLOR_TYPE_GRAY:
+    case PNG_COLOR_TYPE_PALETTE:
+      _rinfo->channels = 1;
+      break;
+    case PNG_COLOR_TYPE_GA:
+      _rinfo->channels = 2;
+      break;
+    case PNG_COLOR_TYPE_RGB:
+      _rinfo->channels = 3;
+      break;
+    case PNG_COLOR_TYPE_RGBA:
+      _rinfo->channels = 4;
+      break;
+    default:
+      std::cerr << "PNG doesn't know number of channels in this colour type." << std::endl;
+      _rinfo->channels = 1;
+  }
+  _rinfo->rowbytes = info.width * info.depth * _rinfo->channels / 8;
+  _rend = png_create_info_struct(_rpng);
+}
+
 PNG::~PNG()
 {
   clear();
   png_destroy_read_struct(&_rpng, &_rinfo, &_rend);
+}
+
+unsigned char **PNG::empty()
+{
+  unsigned char **rows = new unsigned char *[_rinfo->height];
+  for (png_uint_32 i = 0; i < _rinfo->height; i++)
+    rows[i] = new unsigned char[_rinfo->rowbytes];
+  return rows;
 }
 
 void PNG::clear()
@@ -341,37 +382,48 @@ Raster::ColorSeq *PNG::pixels(unsigned long xlower, unsigned long ylower, unsign
   return colors;
 }
 
-unsigned char **PNG::pixels(unsigned long xlower, unsigned long ylower,
-                            unsigned long xupper, unsigned long yupper,
-                            const Raster::ColorSeq &pixels)
+void PNG::pixels(unsigned long xlower, unsigned long ylower,
+                 unsigned long xupper, unsigned long yupper,
+                 const Raster::ColorSeq &pixels, unsigned char **rows)
 {
+  std::cerr << "PNG load_pixels in" << std::endl;
+  if (xupper < xlower || yupper < ylower ||
+      xupper > _rinfo->width || yupper > _rinfo->height ||
+      xlower > _rinfo->width || ylower > _rinfo->height)
+    {
+      std::cerr << "PNG::pixels: illegal indexes !\n";
+      std::cerr << xlower << ' ' << ylower << ' ' << xupper << ' ' << yupper
+	   << " not contained in " << ' ' << _rinfo->width << 'x' << _rinfo->height << std::endl;
+      return;
+    }
+
+  if (_rinfo->color_type != rgbalpha)
+    {
+      std::cerr << "wrong color type : "
+                << static_cast<int>(_rinfo->color_type) << std::endl;
+      return;
+    }
+  if (_rinfo->bit_depth != 8)
+    {
+      std::cerr << "wrong depth : " << static_cast<int>(_rinfo->bit_depth)
+                << std::endl;
+      return;
+    }
+
   png_uint_32 width = xupper - xlower;
-  png_uint_32 height = yupper - ylower;
 
-  _rinfo->color_type = rgbalpha;
-  _rinfo->bit_depth = 8;
-  _rinfo->width = width;
-  _rinfo->height = height;
-  _rinfo->rowbytes = width*4;
-  //_rinfo->compression_type = 0;
-  //_rinfo->filter =
-  //_rinfo->interlace
-
-  unsigned char **rows = new unsigned char *[height];
   for (png_uint_32 y = ylower, i = 0; y != yupper; y++, i++)
   {
-    rows[y] = new unsigned char[_rinfo->rowbytes];
     for (png_uint_32 x = xlower, j = 0; x != xupper; x++, j++)
     {
       Color color = pixels[i*width + j];
-      rows[y][4*x] = static_cast<unsigned char>(color.red * 255);
-      rows[y][4*x+1] = static_cast<unsigned char>(color.green * 255);
-      rows[y][4*x+2] = static_cast<unsigned char>(color.blue * 255);
-      rows[y][4*x+3] = static_cast<unsigned char>(color.alpha * 255);
+      unsigned char *pixel = rows[y] + 4*x;
+      *pixel++ = static_cast<png_byte>(color.red * 255);
+      *pixel++ = static_cast<png_byte>(color.green * 255);
+      *pixel++ = static_cast<png_byte>(color.blue * 255);
+      *pixel = static_cast<png_byte>(color.alpha * 255);
     }
   }
-
-  return rows;
 }
 
 unsigned char **PNG::read(const std::string &file)

@@ -35,7 +35,7 @@ class RasterImpl : public virtual POA_Fresco::Raster,
 						  
 {  	
 public:
-  RasterImpl();
+  RasterImpl(const Fresco::Raster::Info &);
   RasterImpl(const std::string &file);
   virtual ~RasterImpl();
   virtual Fresco::Raster::Info header();

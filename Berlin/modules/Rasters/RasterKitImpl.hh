@@ -48,7 +48,7 @@ public:
   virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
   { return new RasterKitImpl(repo_id(), p, c);}
 
-  Fresco::Raster_ptr create_empty_raster();
+  Fresco::Raster_ptr create_empty_raster(const Fresco::Raster::Info &);
   Fresco::Raster_ptr create_raster(const char *file);
 };
 
