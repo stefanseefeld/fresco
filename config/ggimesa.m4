@@ -41,11 +41,11 @@ AC_DEFUN([FRESCO_GGIMESA_CHECK],
 	if test x$no_ggigl = x ; then
 
 	  if test x$ggimesa_prefix != x ; then
-	    GGIMESA_LIBS="-L$ggimesa_prefix/lib -lgii"
+	    GGIMESA_LIBS="-L$ggimesa_prefix/lib"
 	  fi
 	  save_LDFLAGS="$LDFLAGS"
 	  LDFLAGS="$GGIMESA_LIBS $LDFLAGS"
-	  AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_ggigl=yes)
+	  AC_CHECK_LIB(GL, ggiMesaCreateContext, :, no_ggigl=yes)
 	  LDFLAGS="$save_LDFLAGS"
 	fi
 

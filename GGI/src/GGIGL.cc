@@ -31,16 +31,21 @@ class GGIGLContext : virtual public GLContext
 {
 public:
   GGIGLContext()
-    : _drawable(dynamic_cast<GGI::Drawable *>(Console::instance()->drawable())),
-      _context(GGIMesaCreateContext())
+    : _drawable(dynamic_cast<GGI::Drawable *>(Console::instance()->drawable()))
   {
-    if (GGIMesaSetVisual(_context, _drawable->visual(), GL_TRUE, GL_FALSE))
-      throw std::runtime_error("GGIMesaSetVisual() failed");
-    GGIMesaMakeCurrent(_context);
+    ggiMesaInit();
+    if (ggiMesaAttach(_drawable->visual()) < 0)
+      throw std::runtime_error("ggiMesaAttach() failed");
+    if (ggiMesaExtendVisual(_drawable->visual(), GL_FALSE, GL_FALSE, 16, 0, 0,
+      0, 0, 0, 1) < 0)
+      throw std::runtime_error("ggiMesaExtendVisual() failed");
+    if ((_context = ggiMesaCreateContext(_drawable->visual())) == NULL)
+      throw std::runtime_error("ggiMesaCreateContext() failed"); 
+    ggiMesaMakeCurrent(_context, _drawable->visual());
   }
   virtual ~GGIGLContext()
   {
-    GGIMesaDestroyContext(_context);
+    ggiMesaDestroyContext(_context);
   }
   virtual void flush()
   {
@@ -52,7 +57,7 @@ public:
   }
 private:
   GGI::Drawable   *_drawable;
-  GGIMesaContext _context;  
+  ggi_mesa_context_t _context;  
 };
 
 extern "C" Console::Extension *load() { return new GGIGLContext();}
