@@ -36,6 +36,9 @@ extern "C"
 }
 
 class DirectFBConsole;
+class DirectFBDrawable;
+
+typedef Buffer_var_decl<DirectFBDrawable> Buffer_var;
 
 //////////////////////////////////////////////////////////////////////////////
 // DirectFBDrawable declaration
@@ -65,8 +68,8 @@ public:
     Warsaw::Coord dpi(Warsaw::Axis a) const;
     Warsaw::PixelCoord row_length() const;
     Pixel map(const Warsaw::Color &) const;
-    void *read_buffer() const;
-    void *write_buffer() const;
+    Buffer_var read_buffer() const;
+    Buffer_var write_buffer() const;
     /*
      * read one or more pixels from framebuffer
      */
@@ -147,10 +150,10 @@ public:
 	Prague::Trace("DirectFBConsole::finish()");
     }
 
+    // DirectFB specific:
     IDirectFBSurface * surface() const { return m_surface; }
-    
+    IDirectFB        * dfb() const { return s_dfb; }
 private:
-    IDirectFBSurface * m_surface;
     string             m_name;
 
     DrawableTie<DirectFBDrawable>::PixelFormat
@@ -160,8 +163,19 @@ private:
 
     Pixel              m_cur_col;
     static IDirectFB * s_dfb;
+    IDirectFBSurface * m_surface;
 };
 
+template <>
+class Buffer_var_traits<DirectFBDrawable> {
+public:
+    typedef unsigned char buffer_data;
+
+    inline void release_buffer(DirectFBDrawable * draw) {
+	IDirectFBSurface * surface = draw->surface();
+	surface->Unlock(surface);
+    }
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // DirectFBConsole declaration
@@ -193,6 +207,7 @@ private:
 
     static IDirectFB     * s_dfb;
     IDirectFBInputDevice * m_mouse;
+    IDirectFBInputDevice * m_keyboard;
     IDirectFBInputBuffer * m_mouse_buf;
 
     long                   m_size[2];
@@ -202,6 +217,8 @@ private:
     int                    m_wakeup_pipe[2];
 
     static dlist_t         s_drawables;
+
+    IDirectFBSurface     * primary;
     
     bool   m_autoplay;
     static PortableServer::POA_var s_poa;
@@ -211,23 +228,20 @@ private:
 //////////////////////////////////////////////////////////////////////////////
 // DirectFBDrawable inlines
 //////////////////////////////////////////////////////////////////////////////
-inline void *DirectFBDrawable::read_buffer() const {
-    // Get a copy of the current surface.
+inline Buffer_var DirectFBDrawable::read_buffer() const {
     Prague::Trace("DirectFBDrawable::read_buffer()");
+    int pitch;
     void * src;
-    int length;
-    m_surface->Lock(m_surface, DSLF_READ, &src, &length);
-    length *= m_height;
-    void * dest = new(char[length]);
-    memcpy(src, dest, length);
-    m_surface->Unlock(m_surface);
-    return dest;
+    m_surface->Lock(m_surface, DSLF_READ, &src, &pitch);
+    return Buffer_var(this, static_cast<Buffer_var::data_type *>(src));
 }
 
-inline void *DirectFBDrawable::write_buffer() const { 
-    Prague::Trace("DirectFBDrawable::write_buffer() NOT IMPLEMENTED");
-    Logger::log(Logger::drawing)
-	<< "DirectFBDrawable::write_buffer: not implemented" << endl;
+inline Buffer_var DirectFBDrawable::write_buffer() const { 
+    Prague::Trace("DirectFBDrawable::write_buffer()");
+    int pitch;
+    void * src;
+    m_surface->Lock(m_surface, DSLF_WRITE, &src, &pitch);
+    return Buffer_var(this, static_cast<Buffer_var::data_type *>(src));
 }
 
 inline Warsaw::PixelCoord DirectFBDrawable::width() const { 
@@ -245,7 +259,7 @@ inline Warsaw::PixelCoord DirectFBDrawable::vwidth() const {
     return Warsaw::PixelCoord(m_width);
 }
 
-inline Warsaw::PixelCoord DirectFBDrawable::vheight() const { 
+inline Warsaw::PixelCoord DirectFBDrawable::vheight() const {
     Prague::Trace("DirectFBDrawable::vheight()");
     return Warsaw::PixelCoord(m_height);
 }
@@ -258,8 +272,8 @@ inline Warsaw::Coord DirectFBDrawable::resolution(Warsaw::Axis a) const {
      */
     Prague::Trace("DirectFBDrawable::resolution(...)");
     return a == Warsaw::xaxis ?
-	320 / m_width:
-	240 / m_height;
+	3200.0 / double(m_width):
+	2400.0 / double(m_height);
 }
 
 inline Warsaw::Coord DirectFBDrawable::dpi(Warsaw::Axis a) const {
@@ -268,7 +282,7 @@ inline Warsaw::Coord DirectFBDrawable::dpi(Warsaw::Axis a) const {
 }
 
 
-inline Warsaw::PixelCoord DirectFBDrawable::row_length() const { 
+inline Warsaw::PixelCoord DirectFBDrawable::row_length() const {
     // return bytes-per-row
     Prague::Trace("DirectFBDrawable::row_length()");
     return (m_width * (m_format.size >> 3));
@@ -430,7 +444,8 @@ inline void DirectFBDrawable::blit(Warsaw::Drawable_ptr d,
 				   Warsaw::PixelCoord x2,
 				   Warsaw::PixelCoord y2) {
     Prague::Trace("DirectFBDrawable::blit(Drawable_ptr, ...)");
-    DrawableTie<DirectFBDrawable> *servant = DirectFBConsole::reference_to_servant(d);
+    DrawableTie<DirectFBDrawable> *servant =
+	DirectFBConsole::reference_to_servant(d);
     if (servant) blit(servant->impl(), x1, y1, w, h, x2, y2);
     else
 	Logger::log(Logger::drawing)

@@ -79,7 +79,7 @@ void LibArtDrawingKit::init()
   
   _agam = art_alphagamma_new (2.5);
   _buffer = Console::create_drawable(_drawable->width(), _drawable->height(), 3);
-  _pb = art_pixbuf_new_const_rgb ((art_u8 *)_buffer->write_buffer(), _drawable->width(), _drawable->height(), _buffer->row_length());
+  _pb = art_pixbuf_new_const_rgb ((art_u8 *)(_buffer->write_buffer().get()), _drawable->width(), _drawable->height(), _buffer->row_length());
   _bbox.x0 = _bbox.y0 = _bbox.x1 = _bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)
@@ -223,7 +223,7 @@ void LibArtDrawingKit::draw_path(const Path &p)
   art_irect_union(&_bbox, &_bbox, &loc);
   fix_order_of_irect(loc); 
   art_rgb_svp_alpha(svp, loc.x0, loc.y0, loc.x1, loc.y1, _art_fg,
-		    ((art_u8 *)_buffer->write_buffer()) + (loc.y0 * _pb->rowstride) + (loc.x0 * 3), 
+		    ((art_u8 *)(_buffer->write_buffer().get())) + (loc.y0 * _pb->rowstride) + (loc.x0 * 3), 
 		    _buffer->row_length(), _agam);
   art_svp_free(svp);
   art_svp_free(svp1);
@@ -402,7 +402,7 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   art_irect_union (&_bbox, &_bbox, &tsloci);
   
   // paint
-  art_rgb_pixbuf_affine((art_u8 *)_buffer->write_buffer() + 
+  art_rgb_pixbuf_affine((art_u8 *)(_buffer->write_buffer().get()) + 
 			(tsloci.y0 * _pb->rowstride) + 
 			(tsloci.x0 * 3), // 3 for "R,G,B" packed pixels			
 			tsloci.x0, tsloci.y0, tsloci.x1, tsloci.y1,

@@ -33,6 +33,9 @@ extern "C"
 }
 
 class GGIConsole;
+class GGIDrawable;
+
+typedef Buffer_var_decl<GGIDrawable> Buffer_var;
 
 class GGIDrawable
 {
@@ -52,8 +55,8 @@ public:
   Warsaw::Coord dpi(Warsaw::Axis a) const;
   Warsaw::PixelCoord row_length() const;
   Pixel map(const Warsaw::Color &) const;
-  void *read_buffer() const;
-  void *write_buffer() const;
+  Buffer_var read_buffer() const;
+  Buffer_var write_buffer() const;
   /*
    * read one or more pixels from framebuffer
    */
@@ -76,7 +79,7 @@ public:
   void put_vline(Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, void *);
   void draw_pixels(Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, void *);
   /*
-   * fast blits
+   * fast blit
    */
   void blit(Warsaw::PixelCoord, Warsaw::PixelCoord,
 	    Warsaw::PixelCoord, Warsaw::PixelCoord,
@@ -170,10 +173,14 @@ inline GGIDrawable::Pixel GGIDrawable::map(const Warsaw::Color &c) const
   c2.a = static_cast<uint16>(c.alpha * scale);
   return ggiMapColor(_visual, &c2);
 }
-inline void *GGIDrawable::read_buffer() const
-{ return ggiDBGetBuffer (_visual, 0)->read;}
-inline void *GGIDrawable::write_buffer() const
-{ return ggiDBGetBuffer (_visual, 0)->write;}
+inline Buffer_var GGIDrawable::read_buffer() const
+{ return Buffer_var(this,
+		    static_cast<Buffer_var::data_type *>
+		    (ggiDBGetBuffer (_visual, 0)->read));}
+inline Buffer_var GGIDrawable::write_buffer() const
+{ return Buffer_var(this,
+		    static_cast<Buffer_var::data_type *>
+		    (ggiDBGetBuffer (_visual, 0)->write));}
 inline void GGIDrawable::read_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Pixel &p) const
 { ggiGetPixel(_visual, x, y, &p);}
 inline void GGIDrawable::read_pixels(Warsaw::PixelCoord x, Warsaw::PixelCoord y, Warsaw::PixelCoord w, Warsaw::PixelCoord h, void *p) const
@@ -213,7 +220,8 @@ inline void GGIDrawable::blit(const GGIDrawable &d,
 			      Warsaw::PixelCoord w, Warsaw::PixelCoord h,
 			      Warsaw::PixelCoord x2, Warsaw::PixelCoord y2)
 {
-  ggiCrossBlit(d._visual, x1, y1, w, h, _visual, x2, y2);
+    cerr << "GGIDrawable::blit(GGIDrawable)" << endl;
+    ggiCrossBlit(d._visual, x1, y1, w, h, _visual, x2, y2);
 }
 inline void GGIDrawable::blit(Warsaw::Drawable_ptr d,
 			      Warsaw::PixelCoord x1, Warsaw::PixelCoord y1,
