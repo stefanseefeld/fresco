@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Raster.hh>
+#include <Warsaw/Transform.hh>
 #include <vector>
 #include <GL/gl.h>
 class GLRaster
@@ -31,11 +32,16 @@ class GLRaster
 public:
   GLRaster(Raster_var);
   ~GLRaster();
+  void draw(Transform_ptr);
   Raster_var remote;
   PixelCoord width;
   PixelCoord height;
   GLuint texture;
-  vector<char> data;
+  GLfloat s, t;
+  vector<unsigned char> data;
+private:
+  GLuint bind(GLint components, GLenum format, unsigned char *data);
+  void unbind();
 };
 
 #endif /* _GLRaster_hh */

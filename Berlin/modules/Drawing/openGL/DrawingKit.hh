@@ -59,9 +59,6 @@ public:
   Coord width() { return drawable->width();}
   Coord height() { return drawable->height();}
  private:
-  void transformedImage(const GLRaster *, Transform_ptr);
-  void scaledImage(const GLRaster *, Transform_ptr);
-  void translatedImage(const GLRaster *, Transform_ptr);
   Mutex mutex;
   GLFont *font;
   GLUnifont *gnufont;

@@ -125,51 +125,5 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
   GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
-  transformedImage(glraster, transform);
-}
-
-/*
- * openGL requires glTexImage2D to take width and height in the form 2^k
- * se we extract the exponent here and the residue
- */
-inline void logbase2(unsigned int n, unsigned int &v, float &r)
-{
-  unsigned int k;
-  for (k = 0; n >>= 1; k++);
-  v = 1 << (k + 1), r = v - n;
-}
-
-void GLDrawingKit::transformedImage(const GLRaster *raster, Transform_ptr transform)
-{
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, raster->texture);
-  glColor4f(1., 1., 1., 1.);
-  glBegin(GL_POLYGON);
-  Path path;
-  path.p.length(4);
-  path.p[0].x = path.p[0].y = path.p[0].z = 0.;
-  path.p[1].x = raster->width, path.p[1].y = path.p[1].z = 0.;
-  path.p[2].x = raster->width, path.p[2].y = raster->height, path.p[2].z = 0.;
-  path.p[3].x = 0, path.p[3].y = raster->height, path.p[3].z = 0.;
-  for (unsigned int i = 0; i != 4; i++) transform->transformVertex(path.p[i]);
-  glTexCoord2f(0., 0.);              glVertex3f(path.p[3].x, path.p[3].y, path.p[3].z);
-  glTexCoord2f(1., 0.);              glVertex3f(path.p[2].x, path.p[2].y, path.p[2].z);
-  glTexCoord2f(1., 1.);              glVertex3f(path.p[1].x, path.p[1].y, path.p[1].z);
-  glTexCoord2f(0., 1.);              glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
-  glEnd();
-  glDisable(GL_TEXTURE_2D);
-}
-
-void GLDrawingKit::scaledImage(const GLRaster *raster, Transform_ptr transform)
-{
-}
-
-void GLDrawingKit::translatedImage(const GLRaster *raster, Transform_ptr transform)
-{
-  Vertex origin;
-  origin.x = origin.y = origin.z = 0.;
-  transform->transformVertex(origin);
-  glRasterPos2d(origin.x, origin.y + raster->height);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, raster->width);
-  glDrawPixels(raster->width, raster->height, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
+  glraster->draw(transform);
 }
