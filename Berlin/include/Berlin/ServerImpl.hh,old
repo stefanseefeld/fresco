@@ -48,6 +48,7 @@ class ServerImpl : public virtual POA_Warsaw::Server,
     typedef std::map<std::string, CORBA::Object_var> smap_t;
 public:
     // Singelton pattern: This makes sure that only one ServerImpl is around.
+    static ServerImpl *create(const CORBA::PolicyList &);
     static ServerImpl *instance();
     typedef std::multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
     virtual Warsaw::ServerContext_ptr create_server_context(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
@@ -78,18 +79,19 @@ protected:
     KitImpl *create(const char *, const Warsaw::Kit::PropertySeq &, PortableServer::POA_ptr);
 private:
     //. Sets up run() to run every secound.
-    ServerImpl();
+    ServerImpl(const CORBA::PolicyList &);
     //. Called every second to ping the clients.
     static void *run(void *);
     //. Destroys a given Servercontext (and with that the client's resources
     //. in this server).
     static void destroy_context(ServerContextImpl *);
-    smap_t  _singletons;
-    clist_t _contexts;
-    pmap_t  _plugins;
-    kmap_t  _kits;
-    Prague::Thread _thread;
-    Prague::Mutex _mutex;
+    CORBA::PolicyList  _policies;
+    Prague::Thread     _thread;
+    Prague::Mutex      _mutex;
+    smap_t             _singletons;
+    clist_t            _contexts;
+    pmap_t             _plugins;
+    kmap_t             _kits;
     static ServerImpl *_server;
 };
 

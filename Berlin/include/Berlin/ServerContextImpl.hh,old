@@ -38,7 +38,7 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
 {
   typedef std::multimap<std::string, KitImpl *> klist_t;
  public:
-  ServerContextImpl(ServerImpl *, Warsaw::ClientContext_ptr);
+  ServerContextImpl(ServerImpl *, const CORBA::PolicyList &, Warsaw::ClientContext_ptr);
   ~ServerContextImpl();
   Warsaw::ClientContext_ptr client();
   Warsaw::Kit_ptr resolve(const char *, const Warsaw::Kit::PropertySeq &)
@@ -55,9 +55,9 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
  private:
   static unsigned long      _counter;
   ServerImpl               *_server;
+  CORBA::PolicyList         _policies;
   Warsaw::ClientContext_var _client;
   klist_t                   _kits;
-  CORBA::PolicyList         _policies;
   Prague::Mutex             _mutex;
   PortableServer::POA_var   _my_poa;
 };

@@ -41,18 +41,17 @@ unsigned long ServerContextImpl::_counter = 0;
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
-ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
-    : _server(s), _client(ClientContext::_duplicate(c)) {
-    Trace trace("ServerContextImpl::ServerContextImpl");
-    //   PortableServer::POA_var root = _default_POA();
-    //   policies.length(1);
-    //   policies[0] = root->create_implicit_activation_policy(PortableServer::NO_IMPLICIT_ACTIVATION);
+ServerContextImpl::ServerContextImpl(ServerImpl *s, const CORBA::PolicyList &policies, ClientContext_ptr c)
+    : _server(s), _policies(policies), _client(ClientContext::_duplicate(c))
+{
+  Trace trace("ServerContextImpl::ServerContextImpl");
 }
 
-ServerContextImpl::~ServerContextImpl() {
+ServerContextImpl::~ServerContextImpl()
+{
   Trace trace("ServerContextImpl::~ServerContextImpl");
   for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
-      (*i).second->decrement();
+    (*i).second->decrement();
 }
 
 ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(_client);}
@@ -60,17 +59,20 @@ ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
 void ServerContextImpl::set_singleton(const char *name, CORBA::Object_ptr singleton)
-  throw (SecurityException, SingletonFailureException) {
+  throw (SecurityException, SingletonFailureException)
+{
   _server->set_singleton(name, singleton);
 }
 
 void ServerContextImpl::remove_singleton(const char *name)
-  throw (SecurityException, SingletonFailureException) {
-    _server->remove_singleton(name);
+  throw (SecurityException, SingletonFailureException)
+{
+  _server->remove_singleton(name);
 }
 
 CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name) 
-  throw (SecurityException, SingletonFailureException) {
+  throw (SecurityException, SingletonFailureException)
+{
   return _server->get_singleton(name);
 }
 
@@ -80,16 +82,18 @@ CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name)
 
 Kit_ptr ServerContextImpl::resolve(const char *type,
 				   const Kit::PropertySeq &properties)    
-  throw (SecurityException, CreationFailureException) {
+  throw (SecurityException, CreationFailureException)
+{
   /*
    * look for loaded kits first
    */
   klist_t::iterator k1 = _kits.lower_bound(type), k2 = _kits.upper_bound(type);
   for (klist_t::iterator i = k1; i != k2; ++i)
-    if ((*i).second->supports(properties)) {
+    if ((*i).second->supports(properties))
+      {
 	(*i).second->increment();
 	return (*i).second->_this();
-    }
+      }
   /*
    * now try the factories
    */
