@@ -73,7 +73,7 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk Makefile src/Makefile])
-AC_CONFIG_FILES([config/Clients-C++.spec])
+AC_CONFIG_FILES([config/Fresco-C++-demos.spec])
 
 mkdir -p bin
 

@@ -45,8 +45,6 @@ dnl ------------------------------------------------------------------
 dnl ORB
 dnl ------------------------------------------------------------------
 
-AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
-
 FRESCO_ORB
 MAKEFILE=
 if test ".$ORB" = .omniORB ; then

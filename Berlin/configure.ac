@@ -51,7 +51,7 @@ dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Text Rendering])
 
-FRESCO_FREETYPE_CHECK(6.1.0,,[AC_MSG_ERROR([can't compile Server without freetype])])
+FRESCO_FREETYPE_CHECK(9.2.3,,[AC_MSG_ERROR([can't compile Server without freetype])])
 
 AC_ARG_WITH(png-prefix,
   [  --with-png-prefix=PFX   Prefix where PNG library is installed (optional)],

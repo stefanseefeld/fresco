@@ -30,7 +30,8 @@ distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 mandatory	:= Prague Babylon Fresco-IDL Fresco-C++ Berlin 
 optional	:= GGI SDL \
                    Fresco-Python Fresco-Java Fresco-Perl \
-                   Fresco-C++-demos Fresco-Python-demos
+                   Fresco-C++-demos Fresco-Python-demos \
+                   contrib/daVinci
 
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))

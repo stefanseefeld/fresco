@@ -107,19 +107,19 @@ maintainer-clean: distclean
 
 %.d:	%.cc %.hh
 	@echo generating dependencies for $(<F)
-	@$(SHELL) -ec '$(CXX) $(DEPFLAGS) -I$(top_builddir)/include $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) -I$(top_builddir)/include $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
 %.o:	%.cc
 	@echo compiling $(@F)
-	@$(CXX) -I$(top_builddir)/include $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) -I$(top_builddir)/include $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
 %.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	@$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Fresco,linker=Fresco -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Fresco,linker=Fresco -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
 	@echo parsing $(^F)
-	@$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Fresco,linker=Fresco -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Fresco,linker=Fresco -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

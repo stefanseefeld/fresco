@@ -57,8 +57,17 @@ daVinci:	$(OBJ) main.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-install:
+install: all
 	$(INSTALL) -m755 $(TARGET) $(bindir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG/daVinci
+	@for image in $(patsubst $(top_srcdir)/share/PNG/daVinci/%, %, $(wildcard $(top_srcdir)/share/PNG/daVinci/*.png)); do \
+	  if ! cmp -s $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image 2>/dev/null; then \
+	    echo "$(INSTALL) -m 644 $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image"; \
+	    $(INSTALL) -m 644 $(top_srcdir)/share/PNG/daVinci/$$image $(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image; \
+	  else \
+	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/daVinci/$$image is up to date"; \
+	  fi; \
+	done
 
 clean:	
 	rm -f $(TARGET)

@@ -44,12 +44,12 @@ public:
    }
    T top()
    {
+      my_tasks.wait();
       Prague::Guard<Mutex> guard(my_mutex);
       return rep_type::front();
    }
    void pop()
    {
-      my_tasks.wait();
       Prague::Guard<Mutex> guard(my_mutex);
       rep_type::pop();
       my_free.post();

@@ -87,6 +87,13 @@ fi
 if test -d $srcdir/Fresco-Python-demos -a ".$config_python_demos" = ".yes"; then
   AC_CONFIG_SUBDIRS(Fresco-Python-demos)
 fi
+dnl
+dnl this doesn't work as long as I can't pass subproject specific arguments
+dnl down to configure    -stefan
+dnl
+dnl if test -d $srcdir/contrib/daVinci; then
+dnl  AC_CONFIG_SUBDIRS(contrib/daVinci)
+dnl fi
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([config/synopsis.py])
