@@ -20,6 +20,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+
 #ifndef _Warsaw_TextKit_idl
 #define _Warsaw_TextKit_idl
 
@@ -38,7 +39,9 @@ module Warsaw
     {
       Graphic chunk(in Unistring u);    
       Graphic glyph(in Unichar u);    
-      //. placeholder for an empty line
+      //. Placeholder for an empty line. It inserts enough vertical space so
+      //. that the lineheight will not grow when inserting characters in the
+      //. font currently set.
       Graphic strut();
       Graphic simple_viewer(in TextBuffer buf);
       Graphic terminal(in StreamBuffer buf);
