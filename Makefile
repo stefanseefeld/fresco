@@ -65,7 +65,7 @@ distclean:
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
 	for dir in modules lib; do \
-	  find $dir -name '*.so' -exec rm -f \{\} \; \
+	  find $$dir -name '*.so' -exec rm -f \{\} \; ; \
 	done
 
 install: all
