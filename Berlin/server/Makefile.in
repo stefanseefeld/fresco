@@ -75,12 +75,12 @@ endif
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 install:	all
-		$(INSTALL) -d 755 $(DESTDIR)$(bindir)
+		$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 		$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
-		$(INSTALL) -d 755 $(DESTDIR)$(sysconfdir)
+		$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
 		$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
 		$(INSTALL) -m 644 ../etc/glyph.dat $(DESTDIR)$(sysconfdir)
-		$(INSTALL) -d 755 $(DESTDIR)$(sysconfdir)/PNG
+		$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)/PNG
 		for IMAGE in ../etc/PNG/*.png; do \
 		   $(INSTALL) -m 644 $$IMAGE $(DESTDIR)$(sysconfdir)/PNG; \
 		done
