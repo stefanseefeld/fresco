@@ -119,9 +119,9 @@ void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
 #define GLYPHBYTE(row,col) (glyphs[base + ((rows-(row+1))*cols) + col])
 #define IS_SET(bit,byt) (byt & (1 << (bitsinbyte-(bit+1))))
   
-  for (int row = 0; row < rows; ++row) {
-    for (int col = 0; col < cols; ++col) {
-      for (int bit = 0; bit < bitsinbyte; ++bit, pix += pixsz) {
+  for (unsigned int row = 0; row < rows; ++row) {
+    for (unsigned int col = 0; col < cols; ++col) {
+      for (unsigned int bit = 0; bit < bitsinbyte; ++bit, pix += pixsz) {
 	if (IS_SET(bit, GLYPHBYTE(row,col))) {
 	  *(pix) = 0xff;
 	}
