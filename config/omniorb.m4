@@ -52,13 +52,41 @@ AC_DEFUN([BERLIN_OMNIORB_HOOK],[
 
 	dnl Get system information we pass in CPPFLAGS
 	dnl This is according to "The omniORB2 version 2.8.0 User's Guide"
-	dnl TODO: Add more CPU and OS types.
+	dnl TODO: Check if everything is correct.
+	dnl I don't have access to anything other that x86/linux, so this is
+	dnl based on looking at config.guess
 	case $host_cpu in
+		sparc)
+			omniorb_defs=-D__sparc__
+			;;
 		i*86)
 			omniorb_defs=-D__x86__
 			;;
+		alpha*)
+			omniorb_defs=-D__alpha__
+			;;
+		hppa*)
+			omniorb_defs=-D__hppa__
+			;;
+		powerpc)
+			omniorb_defs=-D__powerpc__
+			;;
+		vax)
+			omniorb_defs=-D__vax__
+			;;
+		mips*)
+			omniorb_defs=-D__mips__
+			;;
+		arm)
+			omniorb_defs=-D__arm__
+			;;
+		m68k)
+			omniorb_defs=-D__m68k__
+			;;
 		*)
-			AC_MSG_WARN(Unknown CPU type. Please fix.)
+			AC_MSG_WARN(Unknown CPU type $host_cpu.)
+			AC_MSG_WARN(Please check the omniORB documentation to see if your CPU type is supported,)
+			AC_MSG_WARN(and update macros/omniorb.m4)
 			;;
 	esac
 
@@ -66,14 +94,44 @@ AC_DEFUN([BERLIN_OMNIORB_HOOK],[
 		linux*)
 			omniorb_defs="$omniorb_defs -D__linux__"
 			;;
+		solaris*)
+			dnl Some of these definitions should probably be moved
+			dnl somewhere else...
+			omniorb_defs="-DUsePthread -D_REENTRANT $omniorb_defs -D__sunos__"
+			;;
+		osf1)
+			omniorb_defs="$omniorb_defs -D__osf1__"
+			;;
+		hpux*)
+			omniorb_defs="$omniorb_defs -D__hpux__"
+			;;
+		aix*)
+			omniorb_defs="$omniorb_defs -D__aix__"
+			;;
+		winnt*)
+			dnl Seems like Windows uses winnt*, cygwin32
+			dnl or mingw32. Don't know which is which...
+			omniorb_defs="$omniorb_defs -D__NT__ -D__WIN32__"
+			;;
+		irix*)
+			omniorb_defs="$omniorb_defs -D__irix__"
+			;;
+		nextstep*)
+			omniorb_defs="$omniorb_defs -D__nextstep__"
+			;;
+		sysv4.2uw*)
+			omniorb_defs="$omniorb_defs -D__uw7__"
+			;;
 		*)
-			AC_MSG_WARN(Unknown OS)
+			AC_MSG_WARN(Unknown OS $host_os.)
+			AC_MSG_WARN(Please check the omniORB documentation to see if you OS is supported,)
+			AC_MSG_WARN(and update macros/omniorb.m4.)
 			;;
 	esac
 
 	dnl Don't know if this is portable...
-dnl	os_major_version=[`uname -r | cut -d '.' -f 1`]
-	os_major_version=2
+	os_major_version=[`uname -r | cut -d '.' -f 1`]
+dnl	os_major_version=2
 	omniorb_defs="$omniorb_defs -D__OSVERSION__=$os_major_version"
 
 	dnl Check for omniORB includes
@@ -93,6 +151,11 @@ dnl	os_major_version=[`uname -r | cut -d '.' -f 1`]
 		fi
 		omniorb_libs="$omniorb_libs -lomniORB2 -lomnithread"
 		omniorb_libs="$omniorb_libs -ltcpwrapGK -lomniLC"
+		case $host_os in
+			solaris2.6)
+				omniorb_libs="$omniorb_libs -lomniDynamic2 -lpthread -lposix4 -lsocket -lnsl"
+				;;
+		esac
 
 		AC_CACHE_CHECK([for working omniORB environment],
 		berlin_cv_omniorb_found, [
