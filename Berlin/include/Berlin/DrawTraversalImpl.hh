@@ -22,12 +22,13 @@
 #ifndef _DrawTraversal_hh
 #define _DrawTraversal_hh
 
-#include "Warsaw/Traversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "TraversalImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Berlin/TraversalImpl.hh>
 #include <vector>
 
-class DrawTraversalImpl : virtual public _sk_DrawTraversal, public TraversalImpl
+class DrawTraversalImpl : implements(DrawTraversal), public TraversalImpl
 {
 public:
   DrawTraversalImpl(DrawingKit_ptr, Drawable_ptr, Region_ptr);

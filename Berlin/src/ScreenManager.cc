@@ -39,6 +39,9 @@ void ScreenManager::damage(Region_ptr r)
 //   region->_obj_is_ready(_boa());
   region->copy(r);
   damages.push_back(region);
+  cout << "ScreenManager::damage region "
+       << '(' << region->lower.x << ',' << region->lower.y << "),("
+       << region->upper.x << ',' << region->upper.y << ')' << endl;
 }
 
 void ScreenManager::repair()

@@ -151,13 +151,25 @@ GraphicOffset_ptr PolyGraphicOffset::offset(long index)
 GraphicOffset_ptr PolyGraphicOffset::next() { return offset(index + 1);}
 GraphicOffset_ptr PolyGraphicOffset::previous() { return offset(index - 1);}
 
-void PolyGraphicOffset::allocations(Graphic::AllocationInfoSeq &a)
+#if 1
+void PolyGraphicOffset::allocations(Collector_ptr c)
 {
-  ulong start = a.length();
-  parent->allocations(a);
-  for (ulong i = start; i < a.length(); i++)
-    parent->allocateChild(index, a[i]);
+  long start = c->size();
+  parent->allocations(c);
+  for (long i = start; i < c->size(); i++)
+    parent->allocateChild(index, *c->get(i));
 }
+#else
+void PolyGraphicOffset::allocations(Collector_ptr c)
+{
+  c.push();
+  parent->allocations(c);
+  for (c->begin(); c->next(); 
+  parent->allocateChild(index, c);
+//   c.allocateChild(parent, index);
+  c.pop();
+}
+#endif
 
 void PolyGraphicOffset::insert(Graphic_ptr g)
 {

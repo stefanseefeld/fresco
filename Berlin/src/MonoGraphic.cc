@@ -158,14 +158,14 @@ Graphic_ptr MonoGraphicOffset::Child() { return Graphic::_duplicate(child);}
 GraphicOffset_ptr MonoGraphicOffset::next() { return 0;}
 GraphicOffset_ptr MonoGraphicOffset::previous() { return 0;}
 
-void MonoGraphicOffset::allocations(Graphic::AllocationInfoSeq &a)
+void MonoGraphicOffset::allocations(Collector_ptr c)
 {
   if (parent)
     {
-      ulong start = a.length();
-      parent->allocations(a);
-      for (ulong i = start; i < a.length(); i++)
-	parent->allocateChild(a[i]);
+      long start = c->size();
+      parent->allocations(c);
+      for (long i = start; i < c->size(); i++)
+	parent->allocateChild(*c->get(i));
     }
 }
 

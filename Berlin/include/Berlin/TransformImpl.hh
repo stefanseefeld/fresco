@@ -27,9 +27,10 @@
 #ifndef _TransformImpl_h
 #define _TransformImpl_h
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Transform.hh>
 
-class TransformImpl : public virtual _sk_Transform
+class TransformImpl : implements(Transform)
 {
 public:
   TransformImpl();

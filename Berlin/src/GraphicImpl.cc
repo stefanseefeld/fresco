@@ -24,11 +24,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Traversal.hh"
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/CollectorImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
+#include "Warsaw/Traversal.hh"
 
 static double tol = 0.05;
 
@@ -264,10 +265,10 @@ GraphicOffset_ptr GraphicImpl::firstOffset() { return 0;}
 GraphicOffset_ptr GraphicImpl::lastOffset() { return 0;}
 void GraphicImpl::parentOffsets(OffsetSeq &os) { getParentOffsets(os, parents);}
 
-void GraphicImpl::allocations(AllocationInfoSeq &a)
+void GraphicImpl::allocations(Collector_ptr c)
 {
   for (GraphicOffsetList::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->allocations(a);
+    (*i)->allocations(c);
 }
 
 // void GraphicImpl::damages(DamageInfoSeq &d)
@@ -281,47 +282,53 @@ void GraphicImpl::allocations(AllocationInfoSeq &a)
 
 void GraphicImpl::needRedraw()
 {
-  Graphic::AllocationInfoSeq alist;
-  allocations(alist);
-  for (ulong i = 0; i < alist.length(); i++)
+  CollectorImpl *collector = new CollectorImpl;
+  collector->_obj_is_ready(_boa());
+  allocations(collector->_this());
+  for (long i = 0; i < collector->size(); i++)
     {
-      Graphic::AllocationInfo &a = alist[i];
-      if (!CORBA::is_nil(a.damaged))
+      Graphic::AllocationInfo *a = collector->get(i);
+      if (!CORBA::is_nil(a->damaged))
  	{
- 	  RegionImpl r;
-	  r._obj_is_ready(_boa());
- 	  extension(a, r._this());
- 	  if (r.valid)
+ 	  RegionImpl *region = new RegionImpl;
+	  region->_obj_is_ready(_boa());
+ 	  extension(*a, region->_this());
+ 	  if (region->valid)
  	    {
 // 	      if (!CORBA::is_nil(a.clipping))
 // 		r.mergeIntersect(a.clipping);
- 	      a.damaged->extend(&r);
+ 	      a->damaged->extend(region->_this());
  	    }
-	  r._dispose();
+	  region->_dispose();
  	}
 //       Region_var(a.allocation)->_dispose();
     }
+  collector->_dispose();
 }
 
 void GraphicImpl::needRedrawRegion(Region_ptr r)
 {
   if (r->defined())
     {
-      Graphic::AllocationInfoSeq alist;
-      allocations(alist);
-      RegionImpl dr;
-      for (ulong i = 0; i < alist.length(); i++)
+      CollectorImpl *collector = new CollectorImpl;
+      collector->_obj_is_ready(_boa());
+      allocations(collector->_this());
+      RegionImpl *dr = new RegionImpl;
+      dr->_obj_is_ready(_boa());
+      for (long i = 0; i < collector->size(); i++)
 	{
-	  Graphic::AllocationInfo &a = alist[i];
-// 	  if (!CORBA::is_nil(a.damaged))
-// 	    {
-// 	      dr.copy(r);
-// 	      dr.applyTransform(a.transformation);
+	  Graphic::AllocationInfo *a = collector->get(i);
+ 	  if (!CORBA::is_nil(a->damaged))
+ 	    {
+ 	      dr->copy(r);
+ 	      dr->applyTransform(a->transformation);
 // 	      if (!CORBA::is_nil(a.clipping))
 // 		dr.mergeIntersect(a.clipping);
-// 	      a.damaged->extend(&dr);
-// 	    }
+ 	      a->damaged->extend(dr->_this());
+ 	    }
 	}
+      dr->_dispose();
+      collector->_dispose();
     }
 }
 

@@ -27,9 +27,10 @@
 #ifndef _LayoutKitImpl_hh
 #define _LayoutKitImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/LayoutKit.hh>
 
-class LayoutKitImpl : virtual public _sk_LayoutKit
+class LayoutKitImpl : implements(LayoutKit)
 {
 public:
   LayoutKitImpl();
@@ -47,8 +48,8 @@ public:
   virtual Graphic_ptr fixedRange(Grid_ptr g, const Grid::Range &);
   virtual Graphic_ptr hbox();
   virtual Graphic_ptr vbox();
-  virtual Graphic_ptr hbox_FirstAligned();
-  virtual Graphic_ptr vbox_FirstAligned();
+  virtual Graphic_ptr hboxFirstAligned();
+  virtual Graphic_ptr vboxFirstAligned();
   virtual Graphic_ptr hboxAlignElements(Alignment);
   virtual Graphic_ptr vboxAlignElements(Alignment);
   virtual Graphic_ptr overlay();
@@ -60,7 +61,7 @@ public:
   virtual Graphic_ptr glueRequisition(const Graphic::Requisition &);
   virtual Graphic_ptr hfil();
   virtual Graphic_ptr hglueFil(Coord);
-  virtual Graphic_ptr hglue(Coord, Coord, Coord;
+  virtual Graphic_ptr hglue(Coord, Coord, Coord);
   virtual Graphic_ptr hglueAligned(Coord, Coord, Coord, Alignment);
   virtual Graphic_ptr hspace(Coord);
   virtual Graphic_ptr vfil();

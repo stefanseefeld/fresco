@@ -27,6 +27,7 @@
 #ifndef _GraphicImpl_hh
 #define _GraphicImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Graphic.hh>
 #include <Berlin/RegionImpl.hh>
 #include <vector>
@@ -41,7 +42,7 @@ struct OffsetTag
 typedef vector<GraphicOffset *> GraphicOffsetList;
 typedef vector<OffsetTag *> OffsetTagList;
 
-class GraphicImpl : public virtual _sk_Graphic
+class GraphicImpl : implements(Graphic)
 {
 public:
   static const Coord infinity = 10e6;
@@ -67,7 +68,7 @@ public:
   virtual GraphicOffset_ptr firstOffset();
   virtual GraphicOffset_ptr lastOffset();
   virtual void parentOffsets(OffsetSeq &);
-  virtual void allocations(AllocationInfoSeq &);
+  virtual void allocations(Collector_ptr);
 //   virtual void damages(DamageInfoSeq &);
   virtual void needRedraw();
   virtual void needRedrawRegion(Region_ptr);

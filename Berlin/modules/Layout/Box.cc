@@ -24,11 +24,11 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Traversal.hh"
-#include "Berlin/TransformImpl.hh"
 #include "Layout/Box.hh"
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
+#include "Berlin/TransformImpl.hh"
+#include "Warsaw/Traversal.hh"
 
 Box::Box(LayoutManager *l)
 {

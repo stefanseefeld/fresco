@@ -22,16 +22,18 @@
 #ifndef _GLDrawingKit_hh
 #define _GLDrawingKit_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/DrawingKit.hh>
-#include <Warsaw/Drawable.hh>
+#include <Drawing/openGL/GLDrawable.hh>
 
-class GLDrawingKit : public virtual _sk_DrawingKit
+class GLDrawingKit : implements(DrawingKit)
 {
 public:
   GLDrawingKit();
-  Drawable_ptr getdrawable();
-  Pencil_ptr solidPencil(Drawable_ptr);
+  Drawable_ptr getDrawable();
+  Pencil_ptr solidPen();
 private:
+  GLDrawable *drawable;
 };
 
 #endif /* _GLDrawingKit_hh */

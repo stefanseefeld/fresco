@@ -32,8 +32,8 @@ interface Pencil;
 
 interface DrawingKit
 {
-  Drawable getdrawable();
-  Pencil   solidPencil(in Drawable d);
+  Drawable getDrawable();
+  Pencil   solidPen();
 };
 
 #endif /* _DrawingKit_idl */

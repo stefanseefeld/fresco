@@ -27,10 +27,11 @@
 #ifndef _TraversalImpl_h
 #define _TraversalImpl_h
 
-#include "Warsaw/Traversal.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
 #include <vector>
 
-class TraversalImpl : public virtual _sk_Traversal
+class TraversalImpl : implements(Traversal)
 {
   struct State
   {

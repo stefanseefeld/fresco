@@ -26,15 +26,13 @@
 GLDrawable::GLDrawable()
 {
   context = GGIMesaCreateContext();
-}
-
-GLDrawable::GLDrawable(Drawable_ptr)
-{
-  context = GGIMesaCreateContext();
+  clip = new RegionImpl;
+  clip->_obj_is_ready(_boa());
 }
 
 GLDrawable::~GLDrawable()
 {
+  clip->_dispose();
   GGIMesaDestroyContext(context);
 }
 
@@ -48,23 +46,16 @@ PixelCoord GLDrawable::toPixels(Coord c, Axis axis) { return static_cast<long>(c
 
 void GLDrawable::clipping(Region_ptr r)
 {
-  Vertex v1, v2;
-  r->bounds(v1, v2);
-  clip.x = toPixels(v1.x, xaxis);
-  clip.y = toPixels(v1.y, yaxis);
-  clip.w = toPixels(v2.x - v1.x, xaxis);
-  clip.h = toPixels(v2.y - v1.y, yaxis);
-//   glViewport(clip.x, clip.y, clip.w, clip.h);
+  clip->copy(r);
+  PixelCoord x, y, w, h;
+  x = toPixels(clip->lower.x, xaxis);
+  y = toPixels(clip->lower.y, yaxis);
+  w = toPixels(clip->upper.x - clip->lower.x, xaxis);
+  h = toPixels(clip->upper.y - clip->lower.y, yaxis);
+//   glViewport(x, y, w, h);
 }
 
 Region_ptr GLDrawable::clipping()
 {
-  RegionImpl *r = new RegionImpl;
-  r->_obj_is_ready(_boa());
-  r->valid = true;
-  r->lower.x = toCoord(clip.x, xaxis);
-  r->lower.y = toCoord(clip.y, yaxis);
-  r->upper.x = toCoord(clip.x + clip.w, xaxis);
-  r->upper.y = toCoord(clip.y + clip.h, yaxis);
-  return r->_this();
+  return clip->_this();
 }

@@ -19,9 +19,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Berlin/DrawTraversalImpl.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Drawable.hh"
-#include "Berlin/DrawTraversalImpl.hh"
 
 DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Drawable_ptr d, Region_ptr r)
   : TraversalImpl(r)

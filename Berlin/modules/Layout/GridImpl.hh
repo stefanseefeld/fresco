@@ -27,12 +27,13 @@
 #ifndef _GridImpl_hh
 #define _GridImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Grid.hh>
 #include <Berlin/GraphicImpl.hh>
 
 class GridImpl;
 
-class GridOffset : virtual public _sk_GraphicOffset
+class GridOffset : implements(GraphicOffset)
 {
 public:
   GridOffset(GridImpl *parent, Graphic_ptr child, Grid::Index index);
@@ -45,7 +46,7 @@ public:
   virtual Graphic_ptr Child();
   virtual GraphicOffset_ptr next();
   virtual GraphicOffset_ptr previous();
-  virtual void allocations(Graphic::AllocationInfoSeq &a);
+  virtual void allocations(Collector_ptr);
   virtual void insert(Graphic_ptr);
   virtual void replace(Graphic_ptr);
   virtual void remove();
@@ -75,7 +76,7 @@ public:
   Graphic::Requirement *requirements;
 };
 
-class GridImpl : virtual public _sk_Grid, public GraphicImpl
+class GridImpl : implements(Grid), public GraphicImpl
 {
   struct Span
   {
@@ -122,7 +123,7 @@ private:
 
 class SubGridImpl;
 
-class SubGridOffset : virtual public _sk_GraphicOffset
+class SubGridOffset : implements(GraphicOffset)
 {
 public:
   SubGridOffset(SubGridImpl *, Grid_ptr, const Grid::Range &);
@@ -132,7 +133,7 @@ public:
   virtual Graphic_ptr Child();
   virtual GraphicOffset_ptr next();
   virtual GraphicOffset_ptr previous();
-  virtual void allocations(Graphic::AllocationInfoSeq &);
+  virtual void allocations(Collector_ptr);
   virtual void insert(Graphic_ptr);
   virtual void replace(Graphic_ptr);
   virtual void remove();

@@ -22,10 +22,11 @@
 #ifndef _SubjectImpl_hh
 #define _SubjectImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Subject.hh>
 #include <list>
 
-class SubjectImpl : public virtual _sk_Subject
+class SubjectImpl : implements(Subject)
 {
 public:
   SubjectImpl();

@@ -28,6 +28,7 @@
 #define _LayoutKit_idl
 
 #include <Graphic.idl>
+#include <Grid.idl>
 
 interface LayoutKit
 {

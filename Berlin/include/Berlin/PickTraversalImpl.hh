@@ -22,10 +22,11 @@
 #ifndef _PickTraversalImpl_hh
 #define _PickTraversalImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Traversal.hh>
 #include <Berlin/TraversalImpl.hh>
 
-class PickTraversalImpl : public virtual _sk_PickTraversal, public TraversalImpl
+class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {
 public:
   PickTraversalImpl(const Vertex &, Region_ptr);

@@ -53,7 +53,7 @@ public:
   DeckOffset(PolyGraphic *parent, long index, Graphic_ptr child);
   ~DeckOffset();
 
-  virtual void allocations(Graphic::AllocationInfoSeq &);
+  virtual void allocations(Collector_ptr);
 };
 
 #endif /* _Deck_hh */

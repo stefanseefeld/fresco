@@ -22,22 +22,25 @@
 #ifndef _ScreenImpl_hh
 #define _ScreenImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
+#include <Berlin/RegionImpl.hh>
 #include <Berlin/DamageImpl.hh>
+#include <Berlin/PolyGraphic.hh>
 
 class ScreenManager;
 
-class ScreenImpl : public virtual _sk_Screen
+class ScreenImpl : implements(Screen), public PolyGraphic
 {
 public:
   ScreenImpl(Coord, Coord);
-  virtual void allocations(AllocationInfoSeq &);
+  virtual void allocations(Collector_ptr);
   Coord width();
   Coord height();
   ScreenManager *Manager() { return manager;}
 protected:
-  Coord w, h;
   ScreenManager *manager;
+  RegionImpl *region;
   DamageImpl *damage;
 };
 

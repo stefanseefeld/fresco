@@ -24,32 +24,23 @@
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/TransformImpl.hh"
 
-ScreenImpl::ScreenImpl(Coord ww, Coord hh)
-  : w(ww), h(hh)
+ScreenImpl::ScreenImpl(Coord w, Coord h)
 {
   manager = new ScreenManager(this);
-  damage = new DamageImpl(manager);
-  RegionImpl *region = new RegionImpl;
+  region = new RegionImpl;
   region->valid = true;
-  region->lower.x = region->lower.y = 0;
-  region->upper.x = width();
-  region->upper.y = height();
+  region->lower.x = region->lower.y = region->lower.z = 0;
+  region->upper.x = w, region->upper.y = h, region->upper.z = 0;
   region->_obj_is_ready(_boa());
+  damage = new DamageImpl(manager);
+  damage->_obj_is_ready(_boa());
   damage->extend(region->_this());
-  region->_dispose();
 }
 
-void ScreenImpl::allocations(AllocationInfoSeq &allocations)
+void ScreenImpl::allocations(Collector_ptr collector)
 {
-  unsigned long i = allocations.length();
-  /*
-   * insert new AllocationInfo and initialize it appropriately
-   */
-  AllocationInfo &info = allocations[i];
-  info.allocation = new RegionImpl;
-  info.transformation = new TransformImpl;
-  info.damaged    = Damage::_duplicate(damage);
+  collector->add(region->_this(), damage->_this());
 }
 
-Coord ScreenImpl::width() { return w;}
-Coord ScreenImpl::height() { return h;}
+Coord ScreenImpl::width() { return region->upper.x;}
+Coord ScreenImpl::height() { return region->upper.y;}

@@ -50,7 +50,7 @@ public:
   virtual GraphicOffset_ptr lastOffset();
   virtual PolyGraphicOffset *newOffset(long, Graphic_ptr);
   Graphic::Requisition *childrenRequests();
-  virtual void allocateChild(long index, Graphic::AllocationInfo& a);
+  virtual void allocateChild(long index, Graphic::AllocationInfo &a);
 //   virtual void damages(DamageInfoSeq &);
   virtual void needResize();
   virtual void needResize(long);
@@ -69,7 +69,7 @@ public:
 
   virtual Graphic_ptr Parent();
   virtual Graphic_ptr Child();
-  virtual void allocations(Graphic::AllocationInfoSeq &);
+  virtual void allocations(Collector_ptr);
   virtual void insert(Graphic_ptr);
   virtual void replace(Graphic_ptr);
   virtual GraphicOffset_ptr next();

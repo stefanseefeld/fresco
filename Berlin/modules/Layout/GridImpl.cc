@@ -567,12 +567,12 @@ Graphic_ptr GridOffset::Child() { return Graphic::_duplicate(child);}
 GraphicOffset_ptr GridOffset::next() { return 0;}
 GraphicOffset_ptr GridOffset::previous() { return 0;}
 
-void GridOffset::allocations(Graphic::AllocationInfoSeq &a)
+void GridOffset::allocations(Collector_ptr c)
 {
-  long start = a.length();
-  parent->allocations(a);
-  for (ulong i = start; i < a.length(); i++)
-    parent->allocateChild(a[i], index);
+  long start = c->size();
+  parent->allocations(c);
+  for (long i = start; i < c->size(); i++)
+    parent->allocateChild(*c->get(i), index);
 }
 
 void GridOffset::insert(Graphic_ptr) {}
@@ -629,12 +629,12 @@ Graphic_ptr SubGridOffset::Child() { return Grid::_duplicate(child);}
 GraphicOffset_ptr SubGridOffset::next() { return 0;}
 GraphicOffset_ptr SubGridOffset::previous() { return 0;}
 
-void SubGridOffset::allocations(Graphic::AllocationInfoSeq &a)
+void SubGridOffset::allocations(Collector_ptr c)
 {
-  long start = a.length();
-  parent->allocations(a);
-  for (ulong i = start; i < a.length(); i++)
-    allocateChild(a[i]);
+  long start = c->size();
+  parent->allocations(c);
+  for (long i = start; i < c->size(); i++)
+    allocateChild(*c->get(i));
 }
 
 void SubGridOffset::insert(Graphic_ptr) {}

@@ -27,9 +27,10 @@
 #ifndef _RegionImpl_hh
 #define _RegionImpl_hh
 
+#include <Warsaw/config.hh>
 #include <Warsaw/Region.hh>
 
-class RegionImpl : public virtual _sk_Region
+class RegionImpl : implements(Region)
 {
 public:
   RegionImpl();

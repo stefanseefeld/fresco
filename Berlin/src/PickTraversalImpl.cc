@@ -19,9 +19,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Warsaw/Graphic.hh"
 #include "Berlin/PickTraversalImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Warsaw/Graphic.hh"
 
 PickTraversalImpl::PickTraversalImpl(const Vertex &v, Region_ptr r)
   : TraversalImpl(r), point(v)

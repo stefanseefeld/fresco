@@ -79,8 +79,8 @@ DeckOffset::DeckOffset(PolyGraphic *parent, long index, Graphic_ptr child)
 
 DeckOffset::~DeckOffset() {}
 
-void DeckOffset::allocations(Graphic::AllocationInfoSeq &a)
+void DeckOffset::allocations(Collector_ptr c)
 {
-  if (index == static_cast<long>(parent->children.size()) - 1) PolyGraphicOffset::allocations(a);
+  if (index == static_cast<long>(parent->children.size()) - 1) PolyGraphicOffset::allocations(c);
 }
 

@@ -53,7 +53,7 @@ public:
   virtual void prepend(Graphic_ptr);
   virtual GraphicOffset_ptr firstOffset();
   virtual GraphicOffset_ptr lastOffset();
-  virtual void allocateChild(Graphic::AllocationInfo& a);
+  virtual void allocateChild(Graphic::AllocationInfo &a);
 //   virtual void damages(DamageInfoSeq &);
 //   virtual bool restore_trail(Traversal_ptr);
 protected:
@@ -69,7 +69,7 @@ public:
 
   virtual Graphic_ptr Parent();
   virtual Graphic_ptr Child();
-  virtual void allocations(Graphic::AllocationInfoSeq &);
+  virtual void allocations(Collector_ptr);
   virtual void insert(Graphic_ptr);
   virtual void replace(Graphic_ptr);
   virtual GraphicOffset_ptr next();

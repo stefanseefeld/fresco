@@ -26,20 +26,17 @@
 
 GLDrawingKit::GLDrawingKit()
 {
+  drawable = new GLDrawable;
+  drawable->_obj_is_ready(_boa());
 }
 
-Drawable_ptr GLDrawingKit::getdrawable()
+Drawable_ptr GLDrawingKit::getDrawable()
 {
-  GLDrawable *drawable = new GLDrawable;
-  drawable->_obj_is_ready(_boa());
   return drawable->_this();
 }
 
-Pencil_ptr GLDrawingKit::solidPencil(Drawable_ptr d)
+Pencil_ptr GLDrawingKit::solidPen()
 {
-  // make sure 'd' is an openGL target
-  GLDrawable *drawable = new GLDrawable(d);
-  drawable->_obj_is_ready(_boa());
   GLPencil *pencil = new GLPencil(drawable);
   pencil->_obj_is_ready(_boa());
   return pencil->_this();

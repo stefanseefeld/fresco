@@ -26,6 +26,7 @@
  */
 #include "Berlin/Allocator.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/CollectorImpl.hh"
 
 Allocator::Allocator()
 {
@@ -46,10 +47,10 @@ void Allocator::request(Requisition &r)
   r = req;
 }
 
-void Allocator::allocations(AllocationInfoSeq &a)
+void Allocator::allocations(Collector_ptr c)
 {
   updateRequisition();
-  MonoGraphic::allocations(a);
+  MonoGraphic::allocations(c);
 }
 
 void Allocator::allocateChild(Graphic::AllocationInfo &i)
@@ -72,14 +73,16 @@ void Allocator::traverse(Traversal_ptr t)
 
 void Allocator::needResize()
 {
-  Graphic::AllocationInfoSeq alist;
-  allocations(alist);
+  CollectorImpl *collector = new CollectorImpl;
+  collector->_obj_is_ready(_boa());
+  allocations(collector->_this());
   RegionImpl region;
   if (ext->valid) region.copy(ext);
   requested = false;
   updateRequisition();
   if (ext->valid) region.mergeUnion(ext);
-  if (region.valid) needDamage(&region, alist);
+  if (region.valid) needDamage(&region, collector);
+  collector->_dispose();
   MonoGraphic::needResize();
 }
 
@@ -126,20 +129,20 @@ void Allocator::updateRequisition()
     }
 }
 
-void Allocator::needDamage(RegionImpl *ext, const Graphic::AllocationInfoSeq &a)
+void Allocator::needDamage(RegionImpl *ext, Collector_ptr c)
 {
   RegionImpl r;
   double dot = 1.;
-  for (ulong i = 0; i < a.length(); i++)
+  for (long i = 0; i < c->size(); i++)
     {
-      const Graphic::AllocationInfo &info = a[i];
-//       if (!CORBA::is_nil(info.damaged) && CORBA::is_nil(info.allocation))
-// 	{
-// 	  r.copy(ext);
-// 	  if (!CORBA::is_nil(info.transformation))
-// 	    r.applyTransform(info.transformation);
-//  	  info.damaged->extend(&r);
-// 	}
+      const Graphic::AllocationInfo *info = c->get(i);
+      if (!CORBA::is_nil(info->damaged) && CORBA::is_nil(info->allocation))
+ 	{
+ 	  r.copy(ext);
+ 	  if (!CORBA::is_nil(info->transformation))
+ 	    r.applyTransform(info->transformation);
+  	  info->damaged->extend(&r);
+ 	}
     }
 }
 
