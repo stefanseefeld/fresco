@@ -32,25 +32,17 @@ namespace Prague
 
 class Mutex
 {
+  friend class Condition;
 public:
-  class result
-  {
-  public:
-    result(int e) : error(e) { };
-    operator bool () const { return error == 0; };
-    operator int () const { return error; };
-  private:
-    int error;
-  };
   enum type { fast = PTHREAD_MUTEX_FAST_NP,
 	      recursive = PTHREAD_MUTEX_RECURSIVE_NP};
   Mutex() { pthread_mutex_init(&mutex, 0);}
   Mutex(type t);
   ~Mutex() { pthread_mutex_destroy(&mutex);}
-  result lock() { return pthread_mutex_lock(&mutex);}
-  result unlock() { return pthread_mutex_unlock(&mutex);}
-  result trylock() { return pthread_mutex_trylock(&mutex);}
-protected:
+  void lock() { pthread_mutex_lock(&mutex);}
+  void unlock() { pthread_mutex_unlock(&mutex);}
+  bool trylock() { return pthread_mutex_trylock(&mutex);}
+private:
   pthread_mutex_t mutex;
 };
 
@@ -60,19 +52,50 @@ public:
   MutexGuard(Mutex &m) : mutex(m) { mutex.lock();}
   ~MutexGuard() { mutex.unlock();}
 private:
+  MutexGuard(const MutexGuard &);
+  MutexGuard &operator = (const MutexGuard &);
   Mutex &mutex;
 };
 
-class Condition : public Mutex
+class Condition
 {
 public:
-  Condition() { pthread_cond_init(&condition, 0);}
+  Condition(Mutex &m) : mutex(m) { pthread_cond_init(&condition, 0);}
   ~Condition() { pthread_cond_destroy(&condition);}
-  result broadcast() { return pthread_cond_broadcast(&condition);}
-  result signal() { return pthread_cond_signal(&condition);}
-  result wait() { return pthread_cond_wait(&condition, &mutex);}
-protected:
+  void broadcast() { pthread_cond_broadcast(&condition);}
+  void signal() { pthread_cond_signal(&condition);}
+  void wait() { pthread_cond_wait(&condition, &mutex.mutex);}
+//   void timedwait() { pthread_cond_wait(&condition, &mutex.mutex);}
+private:
   pthread_cond_t condition;
+  Mutex &mutex;
+};
+
+class Semaphore
+{
+public:
+  Semaphore(unsigned int v) : condition(mutex), value(v) {}
+  ~Semaphore() {}
+  void wait() { MutexGuard guard(mutex); while (value == 0) condition.wait(); value--;}
+  bool trywait() { MutexGuard guard(mutex); if (value == 0) return false; value--; return true;}
+  void post() { { MutexGuard guard(mutex); value++;} condition.signal();}
+private:
+  Semaphore(const Semaphore &);
+  Semaphore &operator = (const Semaphore &);
+  Mutex mutex;
+  Condition condition;
+  int value;
+};
+
+class SemaphoreGuard
+{
+public:
+    SemaphoreGuard(Semaphore &s) : semaphore(s) { semaphore.wait();}
+    ~SemaphoreGuard() { semaphore.post();}
+private:
+  SemaphoreGuard(const SemaphoreGuard &);
+  SemaphoreGuard &operator = (const SemaphoreGuard &);
+  Semaphore &semaphore;
 };
 
 class Thread

@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-FLT_SRC	= gzbuf.cc xdrbuf.cc #bzbuf.cc 
+FLT_SRC	= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
 
 FLT_DEP = $(patsubst %.cc, $(dpath)/%.d, $(FLT_SRC))
 FLT_OBJ	= $(patsubst %.cc, $(opath)/%.o, $(FLT_SRC))

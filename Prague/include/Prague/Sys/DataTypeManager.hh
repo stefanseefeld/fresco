@@ -68,6 +68,8 @@ public:
   void merge(const string &);
   string match(const string &);
   string match(const string &, const unsigned char *, unsigned int);
+  string TypeToMime(const string &);
+  string MimeToType(const string &);
 private:
   static short compare(unsigned short, unsigned short, unsigned short, unsigned short);
   vector<Type> types;

@@ -282,3 +282,17 @@ string DataTypeManager::match(const string &file)
   ifs.get(data, 4096);
   return match(name, data, ifs.gcount());
 }
+
+string DataTypeManager::TypeToMime(const string &type)
+{
+  for (vector<Type>::iterator i = types.begin(); i != types.end(); i++)
+    if ((*i).type == type) return (*i).mime;
+  return string();
+}
+
+string DataTypeManager::MimeToType(const string &mime)
+{
+  for (vector<Type>::iterator i = types.begin(); i != types.end(); i++)
+    if ((*i).mime == mime) return (*i).type;
+  return string();
+}
