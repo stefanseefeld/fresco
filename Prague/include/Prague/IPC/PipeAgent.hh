@@ -31,7 +31,7 @@ namespace Prague
 class PipeAgent : public Coprocess
 {
 public:
-  PipeAgent(const string &, IONotifier *, EOFNotifier * = 0);
+  PipeAgent(const std::string &, IONotifier *, EOFNotifier * = 0);
   virtual      ~PipeAgent();
   //. spawns a child process after creating a pipe, then redirects i/o to it
   virtual void  start();

@@ -86,7 +86,7 @@ class sockunixaddr : public sockaddr_un, public sockaddr
 {
 public:
   sockunixaddr() {}
-  sockunixaddr(const string &);
+  sockunixaddr(const std::string &);
   sockunixaddr(const sockunixaddr &);
   ~sockunixaddr() {}
   int               size() const { return sizeof (sockaddr_un);}
@@ -102,9 +102,9 @@ class sockinetaddr : public sockaddr_in, public sockaddr
 public:
   sockinetaddr();
   sockinetaddr(unsigned long, int port_no=0);
-  sockinetaddr(const string &, int port_no=0);
-  sockinetaddr(unsigned long, const string &, const string &pn = "tcp");
-  sockinetaddr(const string &, const string &, const string &pn = "tcp");
+  sockinetaddr(const std::string &, int port_no=0);
+  sockinetaddr(unsigned long, const std::string &, const std::string &pn = "tcp");
+  sockinetaddr(const std::string &, const std::string &, const std::string &pn = "tcp");
   sockinetaddr(const sockinetaddr &);
   ~sockinetaddr() {}
   int               size() const { return sizeof (sockaddr_in);}
@@ -112,10 +112,10 @@ public:
   const ::sockaddr *addr() const { return reinterpret_cast<const ::sockaddr *>(this);}
   ::sockaddr       *addr() { return reinterpret_cast< ::sockaddr *>(this);}
   int               port() const;
-  string            hostname() const;
+  std::string       hostname() const;
 private:
-  void              port(const string &, const string &pn = "tcp");
-  void              addr(const string &);
+  void              port(const std::string &, const std::string &pn = "tcp");
+  void              addr(const std::string &);
 };
 
 struct msghdr;
@@ -195,9 +195,9 @@ public:
     socklinger (int a, int b): l_onoff (a), l_linger (b) {}
   };
 
-  sockbuf(int s) : ipcbuf(ios::in|ios::out) { fd(s);}
+  sockbuf(int s) : ipcbuf(std::ios::in|std::ios::out) { fd(s);}
   sockbuf(int, type, int);
-  sockbuf(const sockbuf &sb) : ipcbuf(sb) {}
+//   sockbuf(const sockbuf &sb) : ipcbuf(sb) {}
   virtual           ~sockbuf() {}
   //. listen for connection requests. Allow up to num requests to be accumulated in the queue
   void               listen(int num = somaxconn);
@@ -255,9 +255,9 @@ class sockunixbuf : public sockbuf
 public:
   typedef sockunixaddr address_type;
   sockunixbuf(int s) : sockbuf(s) {}
-  sockunixbuf(const sockunixbuf &su) : sockbuf(su) {}
+//   sockunixbuf(const sockunixbuf &su) : sockbuf(su) {}
   sockunixbuf(sockbuf::type ty, int proto = 0) : sockbuf(af_unix, ty, proto) {}
-  sockunixbuf &operator = (const sockunixbuf &);
+//   sockunixbuf &operator = (const sockunixbuf &);
   ~sockunixbuf() {}
   sockunixaddr addr() const;
   void bind(const sockunixaddr &);
@@ -272,9 +272,9 @@ class sockinetbuf : public sockbuf
 public:
   typedef sockinetaddr address_type;
   sockinetbuf (int s) : sockbuf(s) {}
-  sockinetbuf (const sockinetbuf &si): sockbuf (si) {}
+//   sockinetbuf (const sockinetbuf &si): sockbuf (si) {}
   sockinetbuf (sockbuf::type ty, int proto = 0) : sockbuf(af_inet4, ty, proto) {}
-  sockinetbuf &operator = (const sockinetbuf &);
+//   sockinetbuf &operator = (const sockinetbuf &);
   ~sockinetbuf () {}
   sockinetaddr localaddr() const;
   sockinetaddr peeraddr() const;

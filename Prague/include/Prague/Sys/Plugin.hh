@@ -24,7 +24,8 @@
 
 #include <Prague/Sys/DLL.hh>
 
-namespace Prague {
+namespace Prague
+{
 
 //. a special kind of a smart pointer which implements a plugin behavior.
 //. It assumes a special layout of the library, with a special factory
@@ -35,7 +36,7 @@ class Plugin : public DLL
 public:
   //. create a Plugin from the fiven file, using a factory with name loader
   //. to create the actual object
-  Plugin(const string &file, const string &loader = "load") : DLL(file)
+  Plugin(const std::string &file, const std::string &loader = "load") : DLL(file)
     {
       typedef T *(* DL) ();
       DL dl = (DL) resolve(loader);

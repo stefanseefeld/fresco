@@ -67,45 +67,45 @@ char transmode [][8] = {
 // When a connection is made, it receives a file from remote
 // host if the ostream o is set, or it sends a file to the remote
 // host if the istream i is set.
-ftp::replycodea ftp::ftpbuf::ftpdata (int portno, istream* i, ostream* o, const char* cmd, const char* arg)
+ftp::replycodea ftp::ftpbuf::ftpdata(int portno, std::istream *i, std::ostream *o, const char *cmd, const char *arg)
 {
   Trace trace("ftp::ftpbuf::ftpdata");
-  sockinetbuf sb (sockbuf::sock_stream, 0);
-  sb.bind_until_success (portno);
+  sockinetbuf sb(sockbuf::sock_stream, 0);
+  sb.bind_until_success(portno);
   useraddr(sb.localaddr());
   
   sb.listen(1);
 
-  cout << "I'm here" << endl;
+  std::cout << "I'm here" << std::endl;
   if (send_cmd(cmd, arg) >= ftp::rca_error) return ftp::rca_error;
-  cout << "...and still here" << endl;
+  std::cout << "...and still here" << std::endl;
   
   if (o)
     {
       sockinetbuf *c = sb.accept();
-      cout << "...and still here" << endl;
+      std::cout << "...and still here" << std::endl;
       // read data from c and put it in o
-      char buf [1024];
+      char buf[1024];
       int  rdsz;
       while ((rdsz = c->sys_read(buf, 1024)) != EOF)
 	{
 	  o->write(buf, rdsz);
-	  cout << rdsz << endl;
+	  std::cout << rdsz << std::endl;
 	}
-      cout << "done" << endl;
+      std::cout << "done" << std::endl;
       delete c;
     }
   else if (i)
     {
       sockinetbuf *c = sb.accept(); 
       // read data from i and send it to c
-      char buf [1024];
+      char buf[1024];
       int  rdsz;
       streambuf *rb = i->rdbuf();
-      while ((rdsz = rb->xsgetn(buf, 1024)) > 0)
+      while ((rdsz = rb->sgetn(buf, 1024)) > 0)
 	{
 	  int wrsz = c->sys_write(buf, rdsz);
-	  if (rdsz != wrsz) cerr << "write error\n";
+	  if (rdsz != wrsz) std::cerr << "write error\n";
 	}
       delete c;
     }
@@ -120,92 +120,87 @@ ftp::replycodea ftp::ftpbuf::get_response()
   Trace trace("ftp::ftpbuf::get_response");
   // if o is 0, then we trash data.
   bool  firstline = true;
-  while (underflow () != EOF)
+  while (underflow() != EOF)
     {
       int n = in_avail();
       if (n < 5) continue;
       // data is of this form: 221 repsonse <CRLF> or 221-response <CRLF>
-      char* q = gptr();
-      char* p = q;
+      char *q = gptr();
+      char *p = q;
       // zap upto <CRLF>
       int i = 0;
       for (i = 2; i <= n; i++, p++)
 	if (*p == '\r' && *(p+1) == '\n') break;
       if (o) o->write (q, i);
-      gbump (i);
+      gbump(i);
       if (firstline)
 	{
 	  strncpy(replycode, q, 3);
-	  replycode [3] = ' ';
-	  if (q [3] == ' ') break;
+	  replycode[3] = ' ';
+	  if (q[3] == ' ') break;
 	  firstline = false;
 	}
       else if (strncmp(q, replycode, 4) == 0) break;
     }
-  return (replycodea) replycode [0];
+  return (replycodea) replycode[0];
 }
 
-ftp::replycodea ftp::ftpbuf::send_cmd(const char* cmd, const char* arg)
+ftp::replycodea ftp::ftpbuf::send_cmd(const char *cmd, const char *arg)
 {
   Trace trace("ftp::ftpbuf::send_cmd");
-  xsputn(cmd, ::strlen (cmd));
+  xsputn(cmd, std::strlen(cmd));
   if (arg)
     {
       xsputn(" ", 1);
-      xsputn(arg, ::strlen (arg));
+      xsputn(arg, std::strlen(arg));
     }
   xsputn("\r\n", 2);
   sync();
   return get_response();
 }
 
-ftp::ftp(ostream *out)
-  : ios (0)
+ftp::ftpbuf::ftpbuf(std::ostream *out)
+  : protocol::protocolbuf(protocol::tcp),
+    o(out)
 {
-  ios::init(new ftpbuf(out));
-}
-
-ftp::ftpbuf::ftpbuf(ostream *out)
-  : protocol::protocolbuf (protocol::tcp),
-    o (out)
-{
-  replycode [4] = 0;
+  replycode[4] = 0;
 }
 
 void ftp::ftpbuf::serve_clients(int portno)
 // right now no server ftp class can be used as a server
 {}
 
-ftp::replycodea ftp::ftpbuf::cd(const char* dir)
+ftp::replycodea ftp::ftpbuf::cd(const char *dir)
 {
   return send_cmd("CWD", dir);
 }
 
-ftp::replycodea ftp::ftpbuf::useraddr(sockinetaddr sa)
+ftp::replycodea ftp::ftpbuf::useraddr(const sockinetaddr &saa)
 {
+  sockinetaddr sa(saa);
   if (sa.sin_addr.s_addr == 0)
     {
       // local host
       char hostname[64];
-      if (::gethostname(hostname, 63) == -1);// throw sockerr (EADDRNOTAVAIL);
+      if (::gethostname(hostname, 63) == -1); throw sockerr(EADDRNOTAVAIL);
       hostent *hp = gethostbyname(hostname);
-      //     if (hp == 0) throw sockerr (EADDRNOTAVAIL);
+      if (hp == 0) throw sockerr(EADDRNOTAVAIL);
       memcpy(&sa.sin_addr, hp->h_addr, hp->h_length);
     }
 
   struct in_addr ina = sa.sin_addr;
   int    portno      = ntohs(sa.sin_port);
-  char*  ina_p       = inet_ntoa (ina);
+  char  *ina_p       = inet_ntoa (ina);
   char   addr[80];
   
-  char* p = 0;
+  char *p = 0;
   strcpy(addr, ina_p);
   while ((p = strchr(addr, '.'))) *p = ',';
   
   int hi_portno = portno >> 8;
   int lo_portno = portno & 0xff;
   
-  sprintf(addr + strlen(addr), ",%d,%d", hi_portno, lo_portno);
+  sprintf(addr + std::strlen(addr), ",%d,%d", hi_portno, lo_portno);
   
   return send_cmd("PORT", addr);
 }
@@ -239,21 +234,21 @@ ftp::replycodea ftp::ftpbuf::trans_mode(ftp::transmode tm)
   return send_cmd("STRU", ::transmode[int(tm)]);
 }
 
-ftp::replycodea ftp::ftpbuf::getfile(const char* rpath, const char* lpath)
+ftp::replycodea ftp::ftpbuf::getfile(const char *rpath, const char *lpath)
 {
   if (lpath == 0) lpath = rpath;
   if (rpath == 0) list();
-  ofstream f(lpath);
+  std::ofstream f(lpath);
   return ftpdata(10000, 0, &f, "RETR", rpath);
 }
 
-ftp::replycodea ftp::ftpbuf::list(const char* rpath, int justnames)
+ftp::replycodea ftp::ftpbuf::list(const char *rpath, int justnames)
 {
   if (justnames) return ftpdata(10000, 0, o, "NLST", rpath);
   else return ftpdata(10000, 0, o, "LIST", rpath);
 }
 
-ftp::replycodea ftp::ftpbuf::putfile(const char* lpath, const char* rpath)
+ftp::replycodea ftp::ftpbuf::putfile(const char *lpath, const char *rpath)
 {
   if (rpath == 0) rpath = lpath;
   if (lpath == 0) return ftp::rca_error;
@@ -261,14 +256,14 @@ ftp::replycodea ftp::ftpbuf::putfile(const char* lpath, const char* rpath)
   return ftpdata(10000, &f, 0, "STOR", rpath);
 }
 
-ftp::replycodea ftp::ftpbuf::putfile(const char* lpath)
+ftp::replycodea ftp::ftpbuf::putfile(const char *lpath)
 {
   if (lpath == 0) return ftp::rca_error;
   ifstream f(lpath);
   return ftpdata(10000, &f, 0, "STOU", lpath);
 }
   
-ftp::replycodea ftp::ftpbuf::append(const char* lpath, const char* rpath)
+ftp::replycodea ftp::ftpbuf::append(const char *lpath, const char *rpath)
 {
   if (lpath == 0) return ftp::rca_error;
   if (rpath == 0) rpath = lpath;

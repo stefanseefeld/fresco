@@ -34,14 +34,14 @@ class ptybuf : public ipcbuf
 public:
   ptybuf();
   virtual ~ptybuf();
-  virtual streamsize sys_read (char *, streamsize);
-  const string &name() const { return ptydev;}
+  virtual std::streamsize sys_read(char *, std::streamsize);
+  const std::string &name() const { return ptydev;}
   int openpty();
   int opentty();
   void setup();
 protected:
-  string ptydev;
-  string ttydev;
+  std::string ptydev;
+  std::string ttydev;
 private:
   backup *save;
 };

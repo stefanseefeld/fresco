@@ -12,10 +12,10 @@ int main()
   // To prove this, run 'test | zcat'.
   os << "Hello, world" << endl;
 
-  os << setcompressionlevel(Z_NO_COMPRESSION);
+  os << set_compressionlevel(Z_NO_COMPRESSION);
   os << "hello, hello, hi, ho!" << endl;
 
-  setcompressionlevel(os, Z_DEFAULT_COMPRESSION)
+  set_compressionlevel(os, Z_DEFAULT_COMPRESSION)
     << "I'm compressing again" << endl;
 
   os.close();

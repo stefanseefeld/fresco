@@ -26,22 +26,16 @@
 namespace Prague
 {
 
-/* @Class{pipebuf : public ipcbuf}
- *
- * @Description{a ipcbuf based on a pipe}
- */
+//.a ipcbuf based on a pipe}
 class pipebuf : public ipcbuf
 {
 public:
   pipebuf(int flag) : ipcbuf(flag), fl(flag) {}
+  //. construct a pipebuf for reading, if @code{mode == ios::in}, writing otherwise
   int open();
 protected:
   int fl;
 };
-
-/* @Method{pipebuf::pipebuf(int mode)}
- * @Description{construct a pipebuf for reading, if @code{mode == ios::in}, writing otherwise}
- */
 
 };
 

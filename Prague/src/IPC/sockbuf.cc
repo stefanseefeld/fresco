@@ -153,7 +153,7 @@ bool sockerr::benign() const
   return false;
 }
 
-sockunixaddr::sockunixaddr(const string &path)
+sockunixaddr::sockunixaddr(const std::string &path)
 {
   sun_family = sockunixbuf::af_unix;
   ::strcpy(sun_path, path.c_str());
@@ -180,7 +180,7 @@ sockinetaddr::sockinetaddr(unsigned long addr, int port_no)
   sin_port	  = htons(port_no);
 }
 
-sockinetaddr::sockinetaddr(unsigned long addr, const string &sn, const string &pn)
+sockinetaddr::sockinetaddr(unsigned long addr, const std::string &sn, const std::string &pn)
 // addr is in host byte order
 {
   sin_family      = sockbuf::af_inet4;
@@ -188,14 +188,14 @@ sockinetaddr::sockinetaddr(unsigned long addr, const string &sn, const string &p
   port(sn, pn);
 }
 
-sockinetaddr::sockinetaddr(const string &host_name, int port_no)
+sockinetaddr::sockinetaddr(const std::string &host_name, int port_no)
 // port_no is in host byte order
 {
   addr(host_name);
   sin_port = htons(port_no);
 }
 
-sockinetaddr::sockinetaddr(const string &hn, const string &sn, const string &pn)
+sockinetaddr::sockinetaddr(const std::string &hn, const std::string &sn, const std::string &pn)
 {
   addr(hn);
   port(sn, pn);
@@ -208,7 +208,7 @@ sockinetaddr::sockinetaddr(const sockinetaddr &sina)
   sin_port	  = sina.sin_port;
 }   
 
-void sockinetaddr::port(const string &sn, const string &pn)
+void sockinetaddr::port(const std::string &sn, const std::string &pn)
 {
   servent *sp = getservbyname(sn.c_str(), pn.c_str());
   if (sp == 0) throw sockerr (EADDRNOTAVAIL);
@@ -220,7 +220,7 @@ int sockinetaddr::port() const
   return ntohs(sin_port);
 }
 
-void sockinetaddr::addr(const string &host)
+void sockinetaddr::addr(const std::string &host)
 {
   in_addr ia;
   if (inet_aton(host.c_str(), &ia) == 0)
@@ -228,9 +228,9 @@ void sockinetaddr::addr(const string &host)
       hostent *hp = gethostbyname(host.c_str());
       if (!hp)
 	{
-	  cout << "sockinetaddr::addr :" << endl;
-	  cout << "error in host lookup" << endl;
-	  cout << "error processing for this problem has not yet been implemented, sorry" << endl;
+	  std::cerr << "sockinetaddr::addr :" << std::endl;
+	  std::cerr << "error in host lookup" << std::endl;
+	  std::cerr << "error processing for this problem has not yet been implemented, sorry" << std::endl;
 	  exit(-1);
 	}
       memcpy(&sin_addr, hp->h_addr, hp->h_length);
@@ -243,7 +243,7 @@ void sockinetaddr::addr(const string &host)
     }
 }
 
-string sockinetaddr::hostname() const
+std::string sockinetaddr::hostname() const
 {
   if (sin_addr.s_addr == htonl(INADDR_ANY))
     {
@@ -258,7 +258,7 @@ string sockinetaddr::hostname() const
 }
 
 sockbuf::sockbuf(int domain, sockbuf::type st, int proto)
-  : ipcbuf(ios::in|ios::out)
+  : ipcbuf(std::ios::in|std::ios::out)
 {
   int socket = ::socket(domain, st, proto);
   if (socket == -1) throw sockerr (errno);
@@ -353,7 +353,7 @@ bool sockbuf::debug(bool set) const
     {
       setopt (so_debug, &opt, sizeof (opt));
     }
-  catch (sockerr e) { cerr << errno << ' ' << e.errstr() << endl;}
+  catch (sockerr e) { std::cerr << errno << ' ' << e.errstr() << std::endl;}
   return old;
 }
 
@@ -485,11 +485,11 @@ int sockbuf::sendto(sockaddr &sa, const void *buf, int len, int msgf)
   return wlen;
 }
 
-sockunixbuf &sockunixbuf::operator = (const sockunixbuf &su)
-{
-  sockbuf::operator = (su);
-  return *this;
-}
+// sockunixbuf &sockunixbuf::operator = (const sockunixbuf &su)
+// {
+//   sockbuf::operator = (su);
+//   return *this;
+// }
 
 sockunixaddr sockunixbuf::addr() const
 {
@@ -524,11 +524,11 @@ void sockunixbuf::connect(const sockunixaddr &sa)
   if (::connect(fd(), sa.addr(), sa.size()) == -1) throw sockerr(errno);
 }
 
-sockinetbuf &sockinetbuf::operator = (const sockinetbuf &si)
-{
-  sockbuf::operator = (si);
-  return *this;
-}
+// sockinetbuf &sockinetbuf::operator = (const sockinetbuf &si)
+// {
+//   sockbuf::operator = (si);
+//   return *this;
+// }
 
 sockinetaddr sockinetbuf::localaddr() const
 {

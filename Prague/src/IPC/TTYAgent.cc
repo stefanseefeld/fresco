@@ -27,7 +27,7 @@
 
 using namespace Prague;
 
-TTYAgent::TTYAgent(const string &cmd, IONotifier *io, EOFNotifier *eof)
+TTYAgent::TTYAgent(const std::string &cmd, IONotifier *io, EOFNotifier *eof)
   : Coprocess(cmd, io, eof)
 {}
 
@@ -45,10 +45,10 @@ void TTYAgent::start()
       terminate();
       ptybuf *pty  = new ptybuf;
       int fd = pty->openpty();
-      switch(id = fork())
+      switch(_id = fork())
 	{
 	case -1:
-	  id = 0;
+	  _id = 0;
 // 	  SystemError("cannot fork", true);
 	  return;
 	case  0:
@@ -63,7 +63,7 @@ void TTYAgent::start()
             const char *argv[4];
             argv[0] = "/bin/sh";
             argv[1] = "-c";
-            argv[2] = path.c_str();
+            argv[2] = _path.c_str();
             argv[3] = 0;
             execvp ("/bin/sh", (char**) argv);
             perror("/bin/sh");
@@ -72,9 +72,9 @@ void TTYAgent::start()
 	  }
 	default:
 	  pty->setup();
- 	  inbuf = outbuf = pty;
-	  errbuf = 0;
-	  inbuf->async(true);
+ 	  _inbuf = _outbuf = pty;
+	  _errbuf = 0;
+	  _inbuf->async(true);
  	  break;
 	}
     }

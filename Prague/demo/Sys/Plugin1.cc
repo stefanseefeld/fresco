@@ -1,9 +1,10 @@
-#include "Prague/Sys/Plugin.hh"
+#include <Prague/Sys/Plugin.hh>
+#include <iostream>
 #include "Action.hh"
 
 class Greeting1 : public Action
 {
-  virtual void execute() { cout << "Hello World !" << endl;}
+  virtual void execute() { std::cout << "Hello World !" << std::endl;}
 };
 
 dload(Greeting1)

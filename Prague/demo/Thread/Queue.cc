@@ -37,8 +37,8 @@ public:
   lostream() { mutex.lock();}
   ~lostream() { mutex.unlock();}
   template <class T>
-  lostream &operator << (const T &t) { cout << t; return *this;}
-  lostream & operator << (ostream & (func)(ostream &)) { func(cout); return *this;}
+  lostream &operator << (const T &t) { std::cout << t; return *this;}
+  lostream & operator << (std::ostream & (func)(std::ostream &)) { func(std::cout); return *this;}
 private:
   static Mutex mutex;
 };
@@ -52,7 +52,7 @@ int test_random()
   return rand();
 }
 
-typedef Thread::Queue<string> Queue;
+typedef Thread::Queue<std::string> Queue;
 
 Queue messages(5);
 
@@ -69,8 +69,8 @@ private:
   Thread thread;
   void read()
     {
-      string msg = messages.pop();
-      lostream() << "worker " << number << " reading (" << messages.size() << " messages left)" << endl;
+      std::string msg = messages.pop();
+      lostream() << "worker " << number << " reading (" << messages.size() << " messages left)" << std::endl;
     }
   static void *start(void *X)
     {
@@ -88,17 +88,17 @@ int main(int argc, char **argv)
 {
   if (argc != 3)
     {
-      cout << "Usage : " << argv[0] << " <msg interval> <read interval> " << endl;
-      exit(-1);
+      std::cout << "Usage : " << argv[0] << " <msg interval> <read interval> " << std::endl;
+      return -1;
     }
   writing = atoi(argv[1]);
   reading = atoi(argv[2]);
-  vector<Worker *> workers(10);
+  std::vector<Worker *> workers(10);
   for (size_t i = 0; i != workers.size(); i++) workers[i] = new Worker(i);
   for (int i = 0; i != 100; i++)
     {
       messages.push("hi there");
-      lostream() << "main writing (" << messages.size() << " messages in queue)" << endl;
+      lostream() << "main writing (" << messages.size() << " messages in queue)" << std::endl;
       Thread::delay(Time(test_random() % writing));
     }
   for (size_t i = 0; i != workers.size(); i++) delete workers[i];

@@ -19,18 +19,18 @@ int main(int argc, char **argv)
    * now test for some options
    */
   {
-    string version;
+    std::string version;
     getopt1.get("version", &version);
-    if (version == "true") cout << "version is " << "..." << endl;
+    if (version == "true") std::cout << "version is " << "..." << std::endl;
   }
   {
-    string help;
+    std::string help;
     getopt1.get("help", &help);
     if (help == "true") getopt1.usage();
   }
   {
-    string drawing;
+    std::string drawing;
     getopt1.get("drawing", &drawing);
-    if (!drawing.empty()) cout << "drawing: " << drawing << endl;
+    if (!drawing.empty()) std::cout << "drawing: " << drawing << std::endl;
   }
 }

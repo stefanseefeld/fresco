@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _smtp_hh
-#define _smtp_hh
+#ifndef _Prague_smtp_hh
+#define _Prague_smtp_hh
 
 #include <Prague/Network/protocol.hh>
 
@@ -34,13 +34,8 @@ class smtp: public protocol
 public:
   class smtpbuf : public protocol::protocolbuf
   {
-    ostream*            o; // send all the responses to o
-    void                send_cmd(const string &cmd, const string &s = "", const string &p = "");
-    void                get_response();
-//     smtpbuf(smtpbuf &);
-//     smtpbuf& operator = (smtpbuf &);
   public:
-    smtpbuf(ostream *out = 0) : protocol::protocolbuf (protocol::tcp), o (out) {}
+    smtpbuf(std::ostream *os = 0) : protocol::protocolbuf (protocol::tcp), _os(os) {}
     void                send_buf(const char *buf, int buflen);
 
     void                helo();
@@ -48,36 +43,37 @@ public:
     void                turn() { send_cmd("TURN");}
     void                rset() { send_cmd("RSET");}
     void                noop() { send_cmd("NOOP");}
-    void                vrfy(const string &s) { send_cmd("VRFY ", s);}
-    void                expn(const string &s) { send_cmd("EXPN ", s);}
+    void                vrfy(const std::string &s) { send_cmd("VRFY ", s);}
+    void                expn(const std::string &s) { send_cmd("EXPN ", s);}
 
     void                data() { send_cmd("DATA");}
     void                data(const char *buf, int buflen);
-    void                data(const string &filename); // filename = 0 => stdin
+    void                data(const std::string &filename); // filename = 0 => stdin
 
-    void                mail(const string &from);
-    void                rcpt(const string &to);
-    void                help(const string &s = "");
+    void                mail(const std::string &from);
+    void                rcpt(const std::string &to);
+    void                help(const std::string &s = "");
 
     virtual void        serve_clients(int portno = -1);
-    virtual const char* rfc_name() const { return "smtp";}
-    virtual const char* rfc_doc() const { return "rfc821";}
+    virtual const char *rfc_name() const { return "smtp";}
+    virtual const char *rfc_doc() const { return "rfc821";}
+  private:
+    std::ostream       *_os; // send all the responses to os
+    void                send_cmd(const std::string &cmd, const std::string &s = "", const std::string &p = "");
+    void                get_response();
+    //     smtpbuf(smtpbuf &);
+    //     smtpbuf& operator = (smtpbuf &);
   };
-    
-protected:
-  smtp(): ios (0) {}
-
 public:
-  smtp(ostream *out): ios (0) { ios::init (new smtpbuf(out));}
-  ~smtp() { delete ios::rdbuf(); ios::init(0);}
+  smtp(std::ostream *out): protocol(new smtpbuf(out)) {}
+  ~smtp() { delete protocol::rdbuf(); init(0);}
   int      get_response (char *buf, int len);
-
-  smtpbuf *rdbuf()       { return static_cast<smtpbuf *>(protocol::rdbuf()); }
+  smtpbuf *rdbuf()       { return static_cast<smtpbuf *>(protocol::rdbuf());}
   smtpbuf *operator ->() { return rdbuf();}
 };
 
 };
 
-extern ostream& operator << (ostream &o, Prague::smtp &s);
+extern std::ostream &operator << (std::ostream &, Prague::smtp &);
 
 #endif

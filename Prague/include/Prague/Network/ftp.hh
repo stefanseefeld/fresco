@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _ftp_hh
-#define _ftp_hh
+#ifndef _Prague_ftp_hh
+#define _Prague_ftp_hh
 
 #include <Prague/Network/protocol.hh>
 #include <sys/param.h>
@@ -79,77 +79,73 @@ public:
   class ftpbuf : public protocol::protocolbuf
   {
   public:
-    ftpbuf (ostream* out = 0);
+    ftpbuf(std::ostream *out = 0);
 
-    ftp::replycodea get_response ();
-    const char*     reply_code () const { return replycode; }
+    ftp::replycodea get_response();
+    const char *reply_code() const { return replycode;}
 
-    ftp::replycodea help () { return send_cmd ("HELP"); }
-    ftp::replycodea noop () { return send_cmd ("NOOP"); }
-    ftp::replycodea quit () { return send_cmd ("QUIT"); }
-    ftp::replycodea abort () { return send_cmd ("ABOR"); }
-    ftp::replycodea user (const char* name) {return send_cmd ("USER", name);}
-    ftp::replycodea passwd (const char* pw) {return send_cmd ("PASS", pw); }
-    ftp::replycodea acct (const char* ac) {return send_cmd ("ACCT", ac);}
-    ftp::replycodea cd   (const char* dir);
-    ftp::replycodea useraddr (sockinetaddr sa);
-    ftp::replycodea useraddr (const char* host, int portno);
-    ftp::replycodea server_port (int portno);
-    ftp::replycodea rep_type (ftp::reptype rt);
-    ftp::replycodea file_stru (ftp::filestru fs);
-    ftp::replycodea trans_mode  (ftp::transmode tm);
+    ftp::replycodea help() { return send_cmd ("HELP"); }
+    ftp::replycodea noop() { return send_cmd ("NOOP"); }
+    ftp::replycodea quit() { return send_cmd ("QUIT"); }
+    ftp::replycodea abort() { return send_cmd ("ABOR"); }
+    ftp::replycodea user(const char* name) {return send_cmd ("USER", name);}
+    ftp::replycodea passwd(const char* pw) {return send_cmd ("PASS", pw); }
+    ftp::replycodea acct(const char* ac) {return send_cmd ("ACCT", ac);}
+    ftp::replycodea cd(const char* dir);
+    ftp::replycodea useraddr(const sockinetaddr &sa);
+    ftp::replycodea useraddr(const char *host, int portno);
+    ftp::replycodea server_port(int portno);
+    ftp::replycodea rep_type(ftp::reptype rt);
+    ftp::replycodea file_stru(ftp::filestru fs);
+    ftp::replycodea trans_mode(ftp::transmode tm);
 
     // service commands
-    ftp::replycodea getfile (const char* rpath, const char* lpath);
-    ftp::replycodea list (const char* lpath=0, int justnames = 0);
-    ftp::replycodea putfile (const char* lpath, const char* rpath);
-    ftp::replycodea putfile (const char* lpath);
-    ftp::replycodea append  (const char* lpath, const char* rpath);
-    ftp::replycodea allocate (int numbytes);
-    ftp::replycodea restart (int marker);
-    ftp::replycodea rename (const char* rpath, const char* newrpath);
-    ftp::replycodea rmfile (const char* rpath);
-    ftp::replycodea rmdir  (const char* rpath);
-    ftp::replycodea mkdir  (const char* rpath);
-    ftp::replycodea pwd    () { return send_cmd ("PWD"); }
-    ftp::replycodea system () { return send_cmd ("SYST"); }
-    ftp::replycodea status () { return send_cmd ("STAT"); }
+    ftp::replycodea getfile(const char *rpath, const char *lpath);
+    ftp::replycodea list(const char *lpath = 0, int justnames = 0);
+    ftp::replycodea putfile(const char *lpath, const char *rpath);
+    ftp::replycodea putfile(const char *lpath);
+    ftp::replycodea append(const char *lpath, const char *rpath);
+    ftp::replycodea allocate(int numbytes);
+    ftp::replycodea restart(int marker);
+    ftp::replycodea rename(const char *rpath, const char *newrpath);
+    ftp::replycodea rmfile(const char *rpath);
+    ftp::replycodea rmdir(const char *rpath);
+    ftp::replycodea mkdir(const char *rpath);
+    ftp::replycodea pwd() { return send_cmd ("PWD");}
+    ftp::replycodea system() { return send_cmd ("SYST");}
+    ftp::replycodea status() { return send_cmd ("STAT");}
 
-    virtual void        serve_clients (int portno = -1);
-    virtual const char* rfc_name () const { return "ftp"; }
-    virtual const char* rfc_doc  () const { return "rfc959"; }
+    virtual void serve_clients(int portno = -1);
+    virtual const char *rfc_name() const { return "ftp";}
+    virtual const char *rfc_doc() const { return "rfc959";}
   private:
     // the following are used when this is used as a server
-    char*           usr;
-    char*           password;
-    char*           account;
-    char            cwd [MAXPATHLEN];
-    char            parentdir [MAXPATHLEN];
-    ftp::filestru   fs;
-    ftp::transmode  tm;
-    sockinetaddr    udata; // user will listen at this addr for data conn.
-    int             serverportno;
-    char            replycode [5];
+    char          *usr;
+    char*          password;
+    char*          account;
+    char           cwd[MAXPATHLEN];
+    char           parentdir[MAXPATHLEN];
+    ftp::filestru  fs;
+    ftp::transmode tm;
+    sockinetaddr   udata; // user will listen at this addr for data conn.
+    int            serverportno;
+    char           replycode[5];
 
-    ostream*           o;
+    std::ostream  *o;
 
-    ftp::replycodea send_cmd (const char* cmd, const char* arg=0);
-    ftp::replycodea ftpdata (int portno, istream* i, ostream* out,
-			     const char* cmd, const char* arg=0);
+    ftp::replycodea send_cmd(const char *cmd, const char *arg = 0);
+    ftp::replycodea ftpdata(int portno, std::istream *in, std::ostream *out,
+			    const char *cmd, const char *arg = 0);
 
-    ftpbuf (ftpbuf&);
-    ftpbuf& operator = (ftpbuf&);
+    ftpbuf (ftpbuf &);
+    ftpbuf &operator = (ftpbuf &);
   };
 
 public:
-  ftp (ostream* out);
-  ~ftp () { delete ios::rdbuf (); ios::init (0); }
-
-
-  ftpbuf* rdbuf ()       { return static_cast<ftpbuf *> (protocol::rdbuf ()); }
-  ftpbuf* operator -> () { return rdbuf (); }
-protected:
-  ftp (): ios (0) {}
+  ftp(std::ostream *out) : protocol(new ftpbuf(out)) {}
+  ~ftp() { delete protocol::rdbuf(); init(0);}
+  ftpbuf *rdbuf()       { return static_cast<ftpbuf *> (protocol::rdbuf());}
+  ftpbuf *operator ->() { return rdbuf ();}
 };  
 
 };

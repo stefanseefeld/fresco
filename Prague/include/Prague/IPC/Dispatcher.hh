@@ -38,7 +38,7 @@ namespace Prague
 //. This implementation uses a thread pool for the actual callbacks.
 class Dispatcher
 {
-  typedef vector<Agent *> alist_t;
+  typedef std::vector<Agent *> alist_t;
   struct task
   {
     task() : fd(-1), agent(0), mask(Agent::none), released(false) {}
@@ -49,7 +49,7 @@ class Dispatcher
     Agent::iomask   mask;
     bool            released;
   };
-  typedef map<int, task *> repository_t;
+  typedef std::map<int, task *> repository_t;
   struct Handler
   //. Handler is responsible for calling a specific method
   //. (determined by the mask) on the agent

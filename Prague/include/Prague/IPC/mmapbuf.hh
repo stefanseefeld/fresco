@@ -29,7 +29,7 @@
 namespace Prague
 {
 
-class mmapbuf : public streambuf
+class mmapbuf : public std::streambuf
 //. a streambuf for memory mapped files.
 //. since in this context buffering doesn't make sense,
 //. the strategy is different: client and server lock
@@ -37,14 +37,14 @@ class mmapbuf : public streambuf
 //. shift these windows after reading/writing a block of n characters
 {
 public:
-  typedef char          char_type;
-  typedef streampos     pos_type;
-  typedef streamoff     off_type;
-  typedef int           int_type;
-  typedef ios::seek_dir seekdir;
+  typedef char              char_type;
+  typedef std::streampos    pos_type;
+  typedef std::streamoff    off_type;
+  typedef int               int_type;
+  typedef std::ios::seekdir seekdir;
 
   mmapbuf(int, int);
-  mmapbuf(const string &, size_t, int);
+  mmapbuf(const std::string &, size_t, int);
   ~mmapbuf();
   bool readready() const;
   bool writeready() const;
@@ -54,14 +54,14 @@ public:
 //   int write(const void *, int);
 //   int read(void *, int);
 protected:
-  virtual int        sync();
-  virtual int        showmanyc() const;
-  virtual int_type   overflow(int c = EOF);
-  virtual int_type   underflow();
-  virtual int_type   uflow();
-  virtual int_type   pbackfail(int c = EOF);
-  virtual streamsize xsputn(const char *, streamsize);
-  virtual streamsize xsgetn(char *, streamsize);
+  virtual int             sync();
+  virtual int             showmanyc() const;
+  virtual int_type        overflow(int c = EOF);
+  virtual int_type        underflow();
+  virtual int_type        uflow();
+  virtual int_type        pbackfail(int c = EOF);
+  virtual std::streamsize xsputn(const char *, std::streamsize);
+  virtual std::streamsize xsgetn(char *, std::streamsize);
 private:
   mmapbuf(const mmapbuf &);
   mmapbuf &operator = (const mmapbuf &);

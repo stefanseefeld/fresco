@@ -31,7 +31,7 @@ namespace Prague
 class TTYAgent : public Coprocess
 {
 public:
-  TTYAgent(const string &cmd, IONotifier *, EOFNotifier * = 0);
+  TTYAgent(const std::string &cmd, IONotifier *, EOFNotifier * = 0);
   virtual ~TTYAgent();
   //. spawns a child process after creating a tty/pty pair, then redirects i/o to it
   virtual void  start();

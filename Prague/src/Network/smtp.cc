@@ -24,8 +24,8 @@
 #include <Prague/Network/smtp.hh>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 using namespace Prague;
 
@@ -33,9 +33,9 @@ void smtp::smtpbuf::get_response()
      // get all the response that one can get and send all of them to o
 {
   // if o is 0, then we trash data.
-  while (underflow () != EOF)
+  while (underflow() != EOF)
     {
-      int n = in_avail ();
+      int n = in_avail();
       if (n < 5) continue;
       // data is of this form: 221 repsonse <CRLF> or 221-response <CRLF>
       char* q = gptr ();
@@ -44,42 +44,42 @@ void smtp::smtpbuf::get_response()
       for (int i = 2; i <= n; i++, p++)
 	if (*p == '\r' && *(p+1) == '\n')
 	  {
-	    if (o) o->write (q, i);
-	    gbump (i);
+	    if(_os) _os->write(q, i);
+	    gbump(i);
 	    break;
 	  }
-    if (q [3] != '-') break;
+    if (q[3] != '-') break;
     }
 }
 
-void smtp::smtpbuf::send_cmd(const string &cmd, const string &s, const string &p)
+void smtp::smtpbuf::send_cmd(const std::string &cmd, const std::string &s, const std::string &p)
 {
   xsputn(cmd.c_str(), cmd.length());
   if (s.length()) xsputn(s.c_str(), s.length());
   if (p.length()) xsputn(p.c_str(), p.length());
   xsputn("\r\n", 2);
   sync();
-  if (o) get_response();
+  if (_os) get_response();
 }
 
 void smtp::smtpbuf::helo()
 {
-  if (o) get_response();
+  if (_os) get_response();
   send_cmd("HELO ", localaddr().hostname());
 }
 
-void smtp::smtpbuf::mail(const string &from)
+void smtp::smtpbuf::mail(const std::string &from)
 {
   if (from.length()) send_cmd("MAIL FROM:<", from, ">");
   else send_cmd("MAIL FROM:<>");
 }
 
-void smtp::smtpbuf::rcpt(const string &to)
+void smtp::smtpbuf::rcpt(const std::string &to)
 {
   if (to.length()) send_cmd("RCPT TO:<", to, ">");
 }
 
-void smtp::smtpbuf::help(const string &s)
+void smtp::smtpbuf::help(const std::string &s)
 {
   send_cmd("HELP ", s);
 }
@@ -108,10 +108,10 @@ void smtp::smtpbuf::data(const char *buf, int len)
   send_buf(buf, len);
   xsputn("\r\n.\r\n", 5);
   sync();
-  if (o) get_response();
+  if (_os) get_response();
 }
 
-void smtp::smtpbuf::data(const string &filename)
+void smtp::smtpbuf::data(const std::string &filename)
 {
   data ();
   int  fd = 0;
@@ -122,7 +122,7 @@ void smtp::smtpbuf::data(const string &filename)
   while ((rcnt = ::read(fd, buf, 1024)) > 0) send_buf(buf, rcnt);
   xsputn("\r\n.\r\n", 5);
   sync();
-  if (o) get_response();
+  if (_os) get_response();
 }
 
 int smtp::get_response(char *buf, int len)
@@ -140,16 +140,16 @@ int smtp::get_response(char *buf, int len)
   return buf[3] == '-';
 }
   
-ostream& operator << (ostream& o, smtp &s)
+std::ostream &operator << (std::ostream &os, smtp &s)
 {
   char buf[1024];
   int  cont = 1;
   while (cont)
     {
       cont = s.get_response(buf, 1024);
-      o << buf << endl;
+      os << buf << std::endl;
     }
-  return o;
+  return os;
 }
 
 void smtp::smtpbuf::serve_clients(int portno)

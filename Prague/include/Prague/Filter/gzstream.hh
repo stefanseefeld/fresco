@@ -32,8 +32,8 @@ class gzstream_common : virtual public ios
 {  
   friend class gzifstream;
   friend class gzofstream;
-  friend gzofstream &setcompressionlevel(gzofstream &, int);
-  friend gzofstream &setcompressionstrategy(gzofstream &, int);
+  friend gzofstream &set_compressionlevel(gzofstream &, int);
+  friend gzofstream &set_compressionstrategy(gzofstream &, int);
 public:
   virtual ~gzstream_common() {}
   void attach(int fd, int mode) { if (!buffer.attach(fd, mode)) clear(ios::failbit|ios::badbit); else clear();}
@@ -79,26 +79,26 @@ template<class T> gzofstream &operator << (gzofstream &s, const gzomanip<T> &m)
   return (*m.func)(s, m.val);
 }
 
-inline gzofstream &setcompressionlevel(gzofstream &s, int l)
+inline gzofstream &set_compressionlevel(gzofstream &s, int l)
 {
-  (s.rdbuf())->setcompressionlevel(l);
+  (s.rdbuf())->set_compressionlevel(l);
   return s;
 }
 
-inline gzofstream &setcompressionstrategy(gzofstream &s, int l)
+inline gzofstream &set_compressionstrategy(gzofstream &s, int l)
 {
-  (s.rdbuf())->setcompressionstrategy(l);
+  (s.rdbuf())->set_compressionstrategy(l);
   return s;
 }
 
-inline gzomanip<int> setcompressionlevel(int l)
+inline gzomanip<int> set_compressionlevel(int l)
 {
-  return gzomanip<int>(&setcompressionlevel,l);
+  return gzomanip<int>(&set_compressionlevel,l);
 }
 
-inline gzomanip<int> setcompressionstrategy(int l)
+inline gzomanip<int> set_compressionstrategy(int l)
 {
-  return gzomanip<int>(&setcompressionstrategy,l);
+  return gzomanip<int>(&set_compressionstrategy,l);
 }
 
 };

@@ -46,18 +46,15 @@ void protocol::protocolbuf::connect(unsigned long addr)
   sockinetbuf::connect (sockinetaddr(addr, rfc_name(), protocol_name()));
 }
 
-void protocol::protocolbuf::connect(const string &host)
+void protocol::protocolbuf::connect(const std::string &host)
 {
   if (pn == protocol::nil) throw sockerr(EPROTONOSUPPORT);
   sockinetbuf::connect(sockinetaddr(host, rfc_name(), protocol_name()));
 }
 
-void protocol::protocolbuf::connect(const string &host, int portno)
+void protocol::protocolbuf::connect(const std::string &host, int portno)
 {
-  cout << "ehe" << endl;
   if (pn == protocol::nil) throw sockerr(EPROTONOSUPPORT);
-  cout << "ehe" << endl;
   sockinetbuf::connect(sockinetaddr(host, portno));
-  cout << "ehe" << endl;
 }
 

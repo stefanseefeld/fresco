@@ -1,25 +1,3 @@
-/*$Id$
- *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
- * MA 02139, USA.
- */
-
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 #include <iostream>
@@ -33,8 +11,8 @@ public:
   lostream() { mutex.lock();}
   ~lostream() { mutex.unlock();}
   template <class T>
-  lostream &operator << (const T &t) { cout << t; return *this;}
-  lostream & operator << (ostream & (func)(ostream &)) { func(cout); return *this;}
+  lostream &operator << (const T &t) { std::cout << t; return *this;}
+  lostream & operator << (std::ostream & (func)(std::ostream &)) { func(std::cout); return *this;}
 private:
   static Mutex mutex;
 };
@@ -78,7 +56,7 @@ private:
       return 0;
     }
   void start();
-  vector<Philosopher *> philosophers;
+  std::vector<Philosopher *> philosophers;
   Thread server;
   Mutex mutex;
   Condition condition;
@@ -92,11 +70,11 @@ public:
   Philosopher(int i, Diner *d) : thread(proc, this), seat(i), diner(d)
     {
       thread.start();
-      lostream() << "Philosopher #" << seat << " has entered the room." << endl;
+      lostream() << "Philosopher #" << seat << " has entered the room." << std::endl;
     }
   ~Philosopher()
     {
-      lostream() << "Philosopher #" << seat << " has left the room." << endl;
+      lostream() << "Philosopher #" << seat << " has left the room." << std::endl;
     }
 private:
   static void *proc(void *X)
@@ -109,7 +87,7 @@ private:
   Thread thread;
   int seat;
   Diner *diner;
-  static vector<Mutex> chopsticks;
+  static std::vector<Mutex> chopsticks;
 };
 
 void Diner::start()
@@ -147,24 +125,24 @@ void Philosopher::start()
 {
   int left = seat;
   int right = left == Diner::seats - 1 ? 0 : left + 1;
-  if (left % 1) swap(left, right);
+  if (left % 1) std::swap(left, right);
   int count = test_random() % 10 + 1;
   while (count--)
     {
       chopsticks[left].lock();
       chopsticks[right].lock();
-      lostream() << "Philosopher #" << seat << " is eating spaghetti now." << endl;
+      lostream() << "Philosopher #" << seat << " is eating spaghetti now." << std::endl;
       Thread::delay(Time(test_random() % 2000));
       chopsticks[left].unlock();
       chopsticks[right].unlock();
-      lostream() << "Philosopher #" << seat << " is pondering about life." << endl;
+      lostream() << "Philosopher #" << seat << " is pondering about life." << std::endl;
       Thread::delay(Time(test_random() % 2000));
     }
   diner->remove(seat);
 }
 
 Mutex         lostream::mutex;
-vector<Mutex> Philosopher::chopsticks(Diner::seats);
+std::vector<Mutex> Philosopher::chopsticks(Diner::seats);
 
 int main(int argc, char *argv)
 {

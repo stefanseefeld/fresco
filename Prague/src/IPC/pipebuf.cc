@@ -24,15 +24,11 @@
 
 using namespace Prague;
 
-/* @Method{int pipebuf::open()}
- *
- * @Description{open the pipe and return the read or write end depending on the flag}
- */
 int pipebuf::open()
 {
   int fds[2];
   if (pipe(fds) < 0) return -1;
-  if (fl & ios::out) {fd(fds[1]); return fds[0];}
+  if (fl & std::ios::out) {fd(fds[1]); return fds[0];}
   else  {fd(fds[0]); return fds[1];}
 };
 

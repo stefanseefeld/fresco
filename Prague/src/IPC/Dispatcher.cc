@@ -39,7 +39,7 @@ struct SignalNotifier : Signal::Notifier
 {
   virtual void notify(int signum)
   {
-    cerr << Signal::name(signum) << endl;
+    std::cerr << Signal::name(signum) << std::endl;
     exit(1);
   }
 };
@@ -103,7 +103,7 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
 	{
 	  wfds.set(fd);
 	  if (wchannel.find(fd) == wchannel.end()) wchannel[fd] = new task(fd, agent, Agent::inready);
-	  else cerr << "Dispatcher::bind() : Error : file descriptor already in use" << endl;
+	  else std::cerr << "Dispatcher::bind() : Error : file descriptor already in use" << std::endl;
 	}
       if (mask & Agent::inexc)
 	{
@@ -117,7 +117,7 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
 	{
 	  rfds.set(fd);
 	  if (rchannel.find(fd) == rchannel.end()) rchannel[fd] = new task(fd, agent, Agent::outready);
-	  else cerr << "Dispatcher::bind() : Error : file descriptor already in use" << endl;
+	  else std::cerr << "Dispatcher::bind() : Error : file descriptor already in use" << std::endl;
 	}
       if (mask & Agent::outexc)
 	{
@@ -131,7 +131,7 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
 	{
 	  rfds.set(fd);
 	  if (rchannel.find(fd) == rchannel.end()) rchannel[fd] = new task(fd, agent, Agent::errready);
-	  else cerr << "Dispatcher::bind() : Error : file descriptor already in use" << endl;
+	  else std::cerr << "Dispatcher::bind() : Error : file descriptor already in use" << std::endl;
 	}
       if (mask & Agent::errexc)
 	{
@@ -255,7 +255,7 @@ void Dispatcher::wait()
   FdSet tmprfds = rfds;
   FdSet tmpwfds = wfds;
   FdSet tmpxfds = xfds;
-  unsigned int fdsize = max(max(tmprfds.max(), tmpwfds.max()), tmpxfds.max()) + 1;
+  unsigned int fdsize = std::max(std::max(tmprfds.max(), tmpwfds.max()), tmpxfds.max()) + 1;
   int nsel = select(fdsize, tmprfds, tmpwfds, tmpxfds, 0);
   pthread_testcancel();
   if (nsel == -1)

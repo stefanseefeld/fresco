@@ -19,6 +19,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Prague/config.hh"
 #include "Prague/IPC/Coprocess.hh"
 #include "Prague/Sys/Signal.hh"
 #include "Prague/Sys/Tracer.hh"
@@ -28,9 +29,16 @@
 #include <cstdio>
 #include <cerrno>
 #include <unistd.h>
-
-#define PRAGUE_INCL_FOR_WAITPID
-#include "Prague/Sys/includes.hh"
+#include <sys/types.h>
+#if HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#endif
+#ifndef WEXITSTATUS
+# define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
+#endif
+#ifndef WIFEXITED
+# define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
+#endif
 
 using namespace Prague;
 
@@ -57,15 +65,15 @@ void Coprocess::Reaper::notify(int)
 	{
 	  if (WIFEXITED(status))
 	    {
-	      Prague::Guard<Mutex> guard((*i)->mutex);
-	      (*i)->id     = 0;
+	      Prague::Guard<Mutex> guard((*i)->_mutex);
+	      (*i)->_id     = 0;
 	      (*i)->_state = exited;
 	      (*i)->_value = WEXITSTATUS(status);
 	    }
 	  else if (WIFSIGNALED(status))
 	    {
-	      Prague::Guard<Mutex> guard((*i)->mutex);
-	      (*i)->id     = 0;
+	      Prague::Guard<Mutex> guard((*i)->_mutex);
+	      (*i)->_id     = 0;
 	      (*i)->_state = signaled;
 	      (*i)->_value = WTERMSIG(status);
 	    }
@@ -75,8 +83,8 @@ void Coprocess::Reaper::notify(int)
     }
 }
 
-Coprocess::Coprocess(const string &cmd, IONotifier *n, EOFNotifier *e)
-  : path(cmd), ioNotifier(n), eofNotifier(e), id(0), _state(ready), inbuf(0), outbuf(0), errbuf(0)
+Coprocess::Coprocess(const std::string &cmd, IONotifier *n, EOFNotifier *e)
+  : _path(cmd), _ioNotifier(n), _eofNotifier(e), _id(0), _state(ready), _inbuf(0), _outbuf(0), _errbuf(0)
 {
   if (!init) Signal::set(Signal::child, &reaper);
   init = true;
@@ -93,7 +101,7 @@ Coprocess::~Coprocess()
 
 void Coprocess::start()
 {
-  Prague::Guard<Mutex> guard(mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   processes.push_back(this);
   _state = running;
   Agent::start();
@@ -107,12 +115,12 @@ void Coprocess::stop()
 bool Coprocess::process(int, iomask m)
 {
   Trace trace("Coprocess::process");
-  Prague::Guard<Mutex> guard(mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   /*
    * let the client process the IO
    */
-  bool flag = ioNotifier ? ioNotifier->notify(m) : false;
-  flag &= (id != 0);
+  bool flag = _ioNotifier ? _ioNotifier->notify(m) : false;
+  flag &= (_id != 0);
   /*
    * see whether the channel is still open
    */
@@ -122,7 +130,7 @@ bool Coprocess::process(int, iomask m)
     case Agent::inexc:
       if (ibuf()->eof())
 	{
-	  if (eofNotifier) eofNotifier->notify(Agent::in);
+	  if (_eofNotifier) _eofNotifier->notify(Agent::in);
 	  flag = false;
 	}
       break;
@@ -130,7 +138,7 @@ bool Coprocess::process(int, iomask m)
     case Agent::outexc:
       if (obuf()->eof()) 
 	{
-	  if (eofNotifier) eofNotifier->notify(Agent::out);
+	  if (_eofNotifier) _eofNotifier->notify(Agent::out);
 	  flag = false;
 	}
       break;
@@ -138,7 +146,7 @@ bool Coprocess::process(int, iomask m)
     case Agent::errexc:
       if (ebuf()->eof())
 	{
-	  if (eofNotifier) eofNotifier->notify(Agent::err);
+	  if (_eofNotifier) _eofNotifier->notify(Agent::err);
 	  flag = false;
 	}
       break;
@@ -160,7 +168,7 @@ void Coprocess::terminate()
       Thread::delay(1);
     }
   Thread::delay(10);
-  if (pid()) cerr << "Coprocess " << pid() << " wouldn't die (" << Signal::name(sig) << ')' << endl;
+  if (pid()) std::cerr << "Coprocess " << pid() << " wouldn't die (" << Signal::name(sig) << ')' << std::endl;
 }
 
 void Coprocess::shutdown(int m)
@@ -168,24 +176,12 @@ void Coprocess::shutdown(int m)
   short om = mask();
   m &= om;
   mask(om & ~m);
-  if (m & in)
-    {
-      delete inbuf;
-      inbuf = 0;
-    }
-  if (m & out)
-    {
-      delete outbuf;
-      outbuf = 0;
-    }
-  if (m & err)
-    {
-      delete errbuf;
-      errbuf = 0;
-    }
+  if (m & in) delete _inbuf, _inbuf = 0;
+  if (m & out) delete _outbuf, _outbuf = 0;
+  if (m & err) delete _errbuf, _errbuf = 0;
 }
 
 void Coprocess::kill(int signum)
 {
-  if (id > 0 && ::kill(id, signum) < 0) perror("Coprocess::kill");
+  if (_id > 0 && ::kill(_id, signum) < 0) std::perror("Coprocess::kill");
 }

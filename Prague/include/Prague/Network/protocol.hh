@@ -42,15 +42,15 @@ public:
   class protocolbuf: public sockinetbuf
   {
   public:
-    protocolbuf(sockinetbuf &si): sockinetbuf (si), pn (protocol::nil) {}
+//     protocolbuf(sockinetbuf &si): sockinetbuf (si), pn (protocol::nil) {}
     protocolbuf(protocol::p_name pname)
       : sockinetbuf((sockbuf::type) pname, 0), pn (pname) {}
 
     void                bind() { serve_clients();}
     void                connect();
     void                connect(unsigned long addr);
-    void                connect(const string &);
-    void                connect(const string &, int);
+    void                connect(const std::string &);
+    void                connect(const std::string &, int);
 
     const char         *protocol_name() const;
     virtual void        serve_clients(int portno = -1) = 0;
@@ -61,7 +61,7 @@ public:
     void bind (sockinetaddr &sa) { sockinetbuf::bind(sa);}
     void connect (sockinetaddr &sa) { sockinetbuf::connect(sa);}
   };
-  protocol (): ios (0) {}
+  protocol (sockbuf *sbuf) : iosockstream(sbuf) {}
 };
 
 };

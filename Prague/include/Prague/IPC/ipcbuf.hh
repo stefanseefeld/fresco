@@ -37,14 +37,14 @@ namespace Prague
 //. If the ipcbuf is in nonblocking mode, it returns eof if the underlying read/write 
 //. causes an EAGAIN error (operation would block). If a real EOF is encountered, a flag 
 //. is set so the corresponding agent may terminate the process (or reestablish the connection...)}
-class ipcbuf : public streambuf
+class ipcbuf : public std::streambuf
 {
 public:
-  typedef char          char_type;
-  typedef streampos     pos_type;
-  typedef streamoff     off_type;
-  typedef int           int_type;
-  typedef ios::seek_dir seekdir;
+  typedef char              char_type;
+  typedef std::streampos    pos_type;
+  typedef std::streamoff    off_type;
+  typedef int               int_type;
+  typedef std::ios::seekdir seekdir;
 private:
   struct control
   {
@@ -63,18 +63,18 @@ private:
 public:
   //. create a new ipcbuf for the given file descriptor
   ipcbuf(int);
-  ipcbuf(const ipcbuf &);
+//   ipcbuf(const ipcbuf &);
   virtual ~ipcbuf();
-  ipcbuf &operator = (const ipcbuf &);
+//   ipcbuf &operator = (const ipcbuf &);
   //. return true if read wouldn't block
   bool readready() const;
   //. return true if write wouldn't block
   bool writeready() const;
   bool exceptionpending() const;
   //. try to read n bytes into buf, return the number of bytes actually read
-  virtual streamsize sys_read(char *buf, streamsize n);
+  virtual std::streamsize sys_read(char *buf, std::streamsize n);
   //. try to write n bytes from buf, return the number of bytes actually written
-  virtual streamsize sys_write(const char *buf, streamsize n);
+  virtual std::streamsize sys_write(const char *buf, std::streamsize n);
 //   virtual int write (const void *, int);
 //   virtual int read (void *, int);
   //. return the file descriptor for that buffer
@@ -101,8 +101,8 @@ public:
   virtual int_type   underflow();
   virtual int_type   uflow();
   virtual int_type   pbackfail(int c = EOF);
-  virtual streamsize xsputn(const char *, streamsize);
-  virtual streamsize xsgetn(char *, streamsize);
+  virtual std::streamsize xsputn(const char *, std::streamsize);
+  virtual std::streamsize xsgetn(char *, std::streamsize);
 private:
   control *data;  // counts the # refs to sock
 };

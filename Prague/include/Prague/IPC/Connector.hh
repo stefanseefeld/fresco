@@ -69,7 +69,7 @@ bool Connector<Connection, Socket>::process(int, iomask)
       connection->start();
       connection->remove_ref();
     }
-  else clog << "connect: " << strerror(error) << endl;
+  else std::clog << "connect: " << strerror(error) << std::endl;
   return false;
 }
 

@@ -30,7 +30,7 @@
 #include <fcntl.h>
 #include <cerrno>
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 
 using namespace Prague;
 
@@ -38,13 +38,13 @@ ipcbuf::ipcbuf(int mode)
   : data(new control)
 {
   Trace trace("ipcbuf::ipcbuf");
-  if (mode & ios::in)
+  if (mode & std::ios::in)
     {
       char_type *gbuf = new char_type [BUFSIZ];
       setg (gbuf, gbuf + BUFSIZ, gbuf + BUFSIZ);
       data->gend = gbuf + BUFSIZ;
     }
-  if (mode & ios::out)
+  if (mode & std::ios::out)
     {
       char_type *pbuf = new char_type [BUFSIZ];
       setp (pbuf, pbuf + BUFSIZ);
@@ -52,13 +52,15 @@ ipcbuf::ipcbuf(int mode)
     }
 }
 
-ipcbuf::ipcbuf(const ipcbuf &ipc)
-  : streambuf(ipc), data(ipc.data)
-{
-  Trace trace("ipcbuf::ipcbuf");
-  Prague::Guard<Mutex> guard(data->mutex);
-  data->count++;
-}
+// ipcbuf::ipcbuf(const ipcbuf &ipc)
+//   : data(ipc.data)
+// {
+//   Trace trace("ipcbuf::ipcbuf");
+//   Prague::Guard<Mutex> guard(data->mutex);
+//   setg(ipc.gbuf, gbuf + BUFSIZ, gbuf + BUFSIZ);
+//   setp(pbuf, pbuf + BUFSIZ);
+//   data->count++;
+// }
 
 ipcbuf::~ipcbuf()
 {
@@ -74,28 +76,28 @@ ipcbuf::~ipcbuf()
   delete data;
 }
 
-ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
-{
-  Trace trace("ipcbuf::operator =");
-  if (this != &ipc && data != ipc.data && data->fd != ipc.data->fd)
-    {
-      streambuf::operator = (ipc);
-      this->ipcbuf::~ipcbuf();
-      // the streambuf::operator = (const streambuf&) is assumed
-      // to have handled pbase () and gbase () correctly.
-      data  = ipc.data;
-      Prague::Guard<Mutex> guard(data->mutex);
-      data->count++;
-    }
-  return *this;
-}
+// ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
+// {
+//   Trace trace("ipcbuf::operator =");
+//   if (this != &ipc && data != ipc.data && data->fd != ipc.data->fd)
+//     {
+//       std::streambuf::operator = (ipc);
+//       this->ipcbuf::~ipcbuf();
+//       // the streambuf::operator = (const streambuf&) is assumed
+//       // to have handled pbase () and gbase () correctly.
+//       data  = ipc.data;
+//       Prague::Guard<Mutex> guard(data->mutex);
+//       data->count++;
+//     }
+//   return *this;
+// }
 
 bool ipcbuf::readready() const
 {
   FdSet fds;
   fds.set(fd());
   Time T;
-  if (select (fds.max() + 1, fds, 0, 0, &T) == 0) return true;
+  if (select(fds.max() + 1, fds, 0, 0, &T) == 0) return true;
   return false;
 }
 
@@ -104,7 +106,7 @@ bool ipcbuf::writeready() const
   FdSet fds;
   fds.set(fd());
   Time T;
-  if (select (fds.max() + 1, 0, fds, 0, &T) == 0) return true;
+  if (select(fds.max() + 1, 0, fds, 0, &T) == 0) return true;
   return false;
 }
 
@@ -183,7 +185,7 @@ ipcbuf::int_type ipcbuf::pbackfail(int c)
   return EOF;
 }
 
-streamsize ipcbuf::xsputn(const ipcbuf::char_type *s, streamsize n)
+std::streamsize ipcbuf::xsputn(const ipcbuf::char_type *s, std::streamsize n)
 {
   int wval = epptr() - pptr();
   if (n <= wval)
@@ -198,7 +200,7 @@ streamsize ipcbuf::xsputn(const ipcbuf::char_type *s, streamsize n)
   return wval;
 }
 
-streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, streamsize n)
+std::streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, std::streamsize n)
 {
   int rval = showmanyc ();
   if (rval >= n)
@@ -213,10 +215,10 @@ streamsize ipcbuf::xsgetn(ipcbuf::char_type *s, streamsize n)
   return rval;
 }
 
-streamsize ipcbuf::sys_write(const char *buf, streamsize len)
+std::streamsize ipcbuf::sys_write(const char *buf, std::streamsize len)
 {
 //   if (!writeready ()) return 0;
-  streamsize wlen = 0;
+  std::streamsize wlen = 0;
   while(len > 0)
     {
       int wval = -1;
@@ -233,9 +235,9 @@ streamsize ipcbuf::sys_write(const char *buf, streamsize len)
   return wlen; // == len if every thing is all right
 }
 
-streamsize ipcbuf::sys_read(char *buf, streamsize len)
+std::streamsize ipcbuf::sys_read(char *buf, std::streamsize len)
 {
-  streamsize rval = -1;
+  std::streamsize rval = -1;
   do rval = ::read(fd(), buf, len);
   while (rval == -1 && errno == EINTR);
   if (rval == -1 && errno != EAGAIN) perror("ipcbuf::read");

@@ -57,7 +57,7 @@ public:
 };
 
 ptybuf::ptybuf()
-  : ipcbuf(ios::in|ios::out), save(0)
+  : ipcbuf(std::ios::in|std::ios::out), save(0)
 {
   ptydev[0] = ttydev[0] = '\0';
 }
@@ -78,9 +78,9 @@ ptybuf::~ptybuf()
   delete save;
 }
 
-streamsize ptybuf::sys_read(char *buf, streamsize len)
+std::streamsize ptybuf::sys_read(char *buf, std::streamsize len)
 {
-  streamsize rval = -1;
+  std::streamsize rval = -1;
   do rval = ::read(fd(), buf, len);
   while (rval == -1 && errno == EINTR);
   if (rval == -1 && errno == EIO) return 0;

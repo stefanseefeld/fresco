@@ -36,7 +36,7 @@ void echo::echobuf::serve_clients(int portno)
 	{
 	  sockinetbuf::bind(sockinetaddr((unsigned long) INADDR_ANY, portno));
 	  sockinetaddr local = localaddr();
-	  cout << "Host: " << local.hostname() << '\n' << "Port: " << local.port() << endl;
+	  std::cout << "Host: " << local.hostname() << '\n' << "Port: " << local.port() << std::endl;
 	}
       else sockinetbuf::bind(sockinetaddr((unsigned long) INADDR_ANY, portno));
       // act as a server now

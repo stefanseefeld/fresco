@@ -32,39 +32,33 @@ namespace Prague
 {
 
 //. an istream for sockets
-class isockstream : public istream
+class isockstream : public std::istream
 {
 public:
-  isockstream(sockbuf *sb) : ios (sb) {}
-  virtual ~isockstream () {}        
-  sockbuf *rdbuf () { return static_cast<sockbuf *> (ios::rdbuf()); }
-  sockbuf *operator -> () { return rdbuf(); }
-protected:
-  isockstream () : ios (0) {}
+  isockstream(sockbuf *sb) : std::istream(sb) {}
+  virtual ~isockstream() {}
+  sockbuf *rdbuf() { return static_cast<sockbuf *> (std::istream::rdbuf());}
+  sockbuf *operator ->() { return rdbuf();}
 };
 
 //. an ostream for sockets
-class osockstream : public ostream
+class osockstream : public std::ostream
 {
 public:
-  osockstream(sockbuf *sb) : ios (sb) {}
-  virtual ~osockstream () {}
-  sockbuf *rdbuf () { return static_cast<sockbuf *> (ios::rdbuf());}
-  sockbuf *operator -> () { return rdbuf();}
-protected:
-  osockstream () : ios (0) {}
+  osockstream(sockbuf *sb) : std::ostream(sb) {}
+  virtual ~osockstream() {}
+  sockbuf *rdbuf() { return static_cast<sockbuf *> (std::ostream::rdbuf());}
+  sockbuf *operator ->() { return rdbuf();}
 };
 
 //. an iostream for sockets
-class iosockstream : public iostream
+class iosockstream : public std::iostream
 {
 public:
-  iosockstream(sockbuf* sb): ios (sb) {}
-  virtual ~iosockstream () {}
-  sockbuf *rdbuf () { return static_cast<sockbuf *> (ios::rdbuf());}
-  sockbuf *operator -> () { return rdbuf();}
-protected:
-  iosockstream () : ios (0) {}
+  iosockstream(sockbuf* sb): std::iostream(sb) {}
+  virtual ~iosockstream() {}
+  sockbuf *rdbuf() { return static_cast<sockbuf *> (std::iostream::rdbuf());}
+  sockbuf *operator ->() { return rdbuf();}
 };
 
 // manipulators
@@ -86,44 +80,44 @@ protected:
 class isockunix : public isockstream
 {
 public:
-  isockunix (int s) : ios (new sockunixbuf (s)) {}
-  isockunix (const sockunixbuf& sb) : ios (new sockunixbuf (sb)) {}
-  isockunix (sockbuf::type ty = sockbuf::sock_stream, int proto = 0) : ios (new sockunixbuf (ty, proto)) {}
-  ~isockunix() { delete ios::rdbuf ();}
-  sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (rdbuf ()); }
+  isockunix(int s) : isockstream(new sockunixbuf(s)) {}
+//   isockunix(const sockunixbuf& sb) : ios (new sockunixbuf (sb)) {}
+  isockunix(sockbuf::type ty = sockbuf::sock_stream, int proto = 0) : isockstream(new sockunixbuf(ty, proto)) {}
+  ~isockunix() { delete rdbuf();}
+  sockunixbuf *operator -> () { return static_cast<sockunixbuf *>(isockstream::rdbuf());}
 };
 
 //. an ostream for unix sockets
 class osockunix : public osockstream
 {
 public:
-  osockunix (int s) : ios (new sockunixbuf (s)) {}
-  osockunix (const sockunixbuf& sb) : ios (new sockunixbuf (sb)) {}
-  osockunix (sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : ios (new sockunixbuf (ty, proto)) {}
-  ~osockunix () { delete ios::rdbuf ();}
-  sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (rdbuf()); }
+  osockunix(int s) : osockstream(new sockunixbuf(s)) {}
+//   osockunix (const sockunixbuf& sb) : ios (new sockunixbuf (sb)) {}
+  osockunix(sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : osockstream(new sockunixbuf(ty, proto)) {}
+  ~osockunix() { delete rdbuf();}
+  sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (osockstream::rdbuf());}
 };
 
 //. an iostream for unix sockets
 class iosockunix : public iosockstream
 {
 public:
-  iosockunix (int s) : ios (new sockunixbuf (s)) {}
-  iosockunix (const sockunixbuf &sb) : ios (new sockunixbuf (sb)) {}
-  iosockunix (sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : ios (new sockunixbuf (ty, proto)) {}
-  ~iosockunix () { delete ios::rdbuf ();}
-  sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (rdbuf()); }
+  iosockunix (int s) : iosockstream(new sockunixbuf(s)) {}
+//   iosockunix (const sockunixbuf &sb) : ios (new sockunixbuf (sb)) {}
+  iosockunix (sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : iosockstream(new sockunixbuf(ty, proto)) {}
+  ~iosockunix () { delete rdbuf();}
+  sockunixbuf *operator -> () { return static_cast<sockunixbuf *>(iosockstream::rdbuf());}
 };
 
 //. an istream for internet sockets
 class isockinet : public isockstream
 {
 public:
-  isockinet (int s) : ios (new sockinetbuf (s)) {}
-  isockinet (const sockinetbuf &sb) : ios (new sockinetbuf (sb)) {}
-  isockinet (sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : ios (new sockinetbuf (ty, proto)) {}
-  ~isockinet () { delete ios::rdbuf();}
-  sockinetbuf *rdbuf () { return static_cast<sockinetbuf *> (ios::rdbuf());}
+  isockinet (int s) : isockstream(new sockinetbuf(s)) {}
+//   isockinet (const sockinetbuf &sb) : ios (new sockinetbuf (sb)) {}
+  isockinet(sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : isockstream(new sockinetbuf(ty, proto)) {}
+  ~isockinet() { delete rdbuf();}
+  sockinetbuf *rdbuf() { return static_cast<sockinetbuf *> (isockstream::rdbuf());}
   sockinetbuf *operator -> () { return rdbuf();}
 };
 
@@ -131,11 +125,11 @@ public:
 class osockinet : public osockstream
 {
 public:
-  osockinet (int s) : ios (new sockinetbuf (s)) {}
-  osockinet (const sockinetbuf &sb) : ios (new sockinetbuf (sb)) {}
-  osockinet (sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : ios (new sockinetbuf (ty, proto)) {}
-  ~osockinet () { delete ios::rdbuf();}
-  sockinetbuf *rdbuf () { return static_cast<sockinetbuf *> (ios::rdbuf()); }
+  osockinet (int s) : osockstream(new sockinetbuf(s)) {}
+//   osockinet (const sockinetbuf &sb) : ios(new sockinetbuf(sb)) {}
+  osockinet (sockbuf::type ty=sockbuf::sock_stream, int proto = 0) : osockstream(new sockinetbuf (ty, proto)) {}
+  ~osockinet () { delete rdbuf();}
+  sockinetbuf *rdbuf() { return static_cast<sockinetbuf *> (osockstream::rdbuf());}
   sockinetbuf *operator -> () { return rdbuf();}
 };
 
@@ -143,11 +137,11 @@ public:
 class iosockinet : public iosockstream
 {
 public:
-  iosockinet (int s) : ios (new sockinetbuf (s)) {}
-  iosockinet (const sockinetbuf &sb) : ios (new sockinetbuf (sb)) {}
-  iosockinet (sockbuf::type ty = sockbuf::sock_stream, int proto = 0) : ios (new sockinetbuf (ty, proto)) {}
-  ~iosockinet () { delete ios::rdbuf();}
-  sockinetbuf *rdbuf () { return static_cast<sockinetbuf *> (ios::rdbuf());}
+  iosockinet (int s) : iosockstream(new sockinetbuf(s)) {}
+//   iosockinet (const sockinetbuf &sb) : ios (new sockinetbuf (sb)) {}
+  iosockinet (sockbuf::type ty = sockbuf::sock_stream, int proto = 0) : iosockstream(new sockinetbuf(ty, proto)) {}
+  ~iosockinet () { delete rdbuf();}
+  sockinetbuf *rdbuf() { return static_cast<sockinetbuf *> (iosockstream::rdbuf());}
   sockinetbuf *operator -> () { return rdbuf();}
 };
 
