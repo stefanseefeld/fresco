@@ -641,6 +641,58 @@
 	the <classname>Subject</classname> interface a little, to provide
 	accessors for their concrete datatype.
 
+</para><sect3><title>a special case: Controllers</title>
+<para>
+	<!-- talk about the Controller and it's state -->A good example which helps
+        illustrating the purpose of the MVC paradigm is the separation of data and
+        presentation within the Controller. As we have seen in the previous chapter,
+        the controller's job is to process input events. In fact, it <emphasis>interprets
+        </emphasis>the event and maps it to (observable) state changes. Events as such
+        are considered a private means between the server and the Controller for notification.
+        Therefor, focus changes and event reception isn't visible for the outer world.
+        However, the Controller is tightly coupled to a model, which represents it's state.
+        In fact, this coupling is so tight that we chose to implement it within the same
+        object. It's a <classname>Telltale</classname> <emphasis>inside</emphasis> the controller 
+        which serves this purpose. A typical controller implementation will set appropriate flags
+        in this telltale which are observable.
+        In other words - you never ask the controller whether it has keyboard focus or whether
+        it holds a grab for a positional device. You ask whether it is <emphasis>active</emphasis>,
+        <emphasis>pressed</emphasis>, <emphasis>choosen</emphasis>, etc. For buttons for example
+        you typically use frames or highlights to reflect these state flags.
+        This decoupling has the advantage that you can customize the behavior - i.e. the mapping 
+        from events to these semantic flags - and therefor have greater freedom to adapt the interface 
+        to your own needs. Here are the predefined flags declared in the Telltale interface:
+        <table frame=all>
+          <title>predefined telltale flags</title>
+          <tgroup cols=2>
+            <tbody>
+              <row>
+                <entry>enabled</entry>
+                <entry>the controller is enabled if it can receive events</entry>
+              </row>
+              <row>
+                <entry>active</entry>
+                <entry>a button click or the Enter key would press it</entry>
+              </row>
+              <row>
+                <entry>pressed</entry>
+                <entry>controller is being pressed</entry>
+              </row>
+              <row>
+                <entry>chosen</entry>
+                <entry>a flag used in toggable widgets</entry>
+              </row>
+              <row>
+                <entry>running</entry>
+                <entry>indicates that an associated command is being executed</entry>
+              </row>
+              <row>
+                <entry>...</entry>
+                <entry>...</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
 </para><sect3><title>concrete examples</title>
 <para>
 	<!-- talk about concrete examples -->Here we give some examples of
