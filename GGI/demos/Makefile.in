@@ -42,11 +42,16 @@ include $(cdir)/local.mk
 
 TARGET	:= ../bin/ggiwrapper
 
+vpath %.hh $(srcdir)
+vpath %.cc $(srcdir)
+
 all:	$(TARGET)
 
 ../bin/ggiwrapper:	ggiwrapper.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+depend:	
 
 install:	all
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(bindir)
@@ -63,11 +68,11 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
-%.o:	$(srcdir)/%.cc
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@

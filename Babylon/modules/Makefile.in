@@ -151,6 +151,8 @@ all:	$(TARGET)
 
 config: #nothing to do
 
+depend: #nothing to do
+
 doc: #nothing to do
 
 install:	all

@@ -37,6 +37,7 @@ $(subdirs):
 	$(MAKE) -C $@ $(action)
 
 config: #do nothing
+depend: #do nothing
 doc: #do nothing
 
 install:

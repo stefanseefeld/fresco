@@ -51,6 +51,7 @@ all:	$(TARGETS)
 endif
 
 config: #do nothing
+depend: #do nothing
 doc: #do nothing
 
 ifeq ($(JPROF),yes)

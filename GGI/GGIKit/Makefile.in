@@ -34,6 +34,11 @@ OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
 TARGET	:= ../lib/Fresco/GGIKit.so
 
+vpath %.hh $(srcdir)
+vpath %.cc $(srcdir)
+
+.FORCE:
+
 .PHONY: all install uninstall clean distclean maintainer-clean
 
 all:	$(TARGET)
@@ -41,6 +46,8 @@ all:	$(TARGET)
 $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+
+depend:		$(DEP)
 
 install:	all
 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
@@ -57,13 +64,18 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.d:	$(srcdir)/%.cc
+ifeq (,$(findstring depend, $(MAKECMDGOALS)))
+%.d:	%.cc
+else
+%.d:	%.cc .FORCE
+endif
 	@echo generating dependencies for $<
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-%.o:	$(srcdir)/%.cc
+
+%.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), depend clean distclean maintainer-clean))
 -include $(DEP)
 endif

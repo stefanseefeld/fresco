@@ -83,6 +83,8 @@ vpath %.idl $(idir)/Fresco
 vpath %.hh $(h1dir):$(h2dir)/Fresco
 vpath %.cc $(srcdir)
 
+.FORCE:
+
 .NOTPARALLEL:
 
 all: $(TARGET)
@@ -99,7 +101,11 @@ $(TARGET): config
 sources:	$(SRC)
 objects:	$(OBJ)
 
+ifeq (,$(findstring config, $(MAKECMDGOALS)))
 ../bin/Fresco-config: $(top_srcdir)/config/Fresco-config.in
+else
+../bin/Fresco-config: $(top_srcdir)/config/Fresco-config.in .FORCE
+endif
 	rm -f $@ $@.tmp
 	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
 		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
@@ -110,6 +116,8 @@ objects:	$(OBJ)
 
 config:  ../bin/Fresco-config
 	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
+
+depend:
 
 doc:	../share/doc/Fresco/html sources
 
@@ -192,6 +200,7 @@ $(DYNHDR): %.hh:	%.idl
 	@echo generating $(@F)
 	(cd $(idir) && $(IDLCXX) $(IDLCXXFLAGS) $(IDLDYNFLAGS) Fresco/$(<F))
 	mv $*.hh $(h2dir)/Fresco
+
 %.cc.d:	%.cc
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) -I$(h2dir) -I$(h2dir)/Fresco $< \

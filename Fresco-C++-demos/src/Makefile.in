@@ -37,17 +37,25 @@ DEMO_SRC	:= Application.cc LayoutDemo.cc TextDemo.cc \
 		   ColorDemo.cc LogoDemo.cc FocusDemo.cc \
 		   ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
 
+DEMO_DEP	:= $(patsubst %.cc, %.d, $(DEMO_SRC))
 DEMO_OBJ	:= $(patsubst %.cc, %.o, $(DEMO_SRC))
 
 DEMO3D_SRC	:= Application.cc PrimitiveDemo.cc CubeDemo.cc demo3D.cc
+DEMO3D_DEP	:= $(patsubst %.cc, %.d, $(DEMO3D_SRC))
 DEMO3D_OBJ	:= $(patsubst %.cc, %.o, $(DEMO3D_SRC))
 
 PINYIN_SRC	:= pinyin_demo.cc TextConverter.cc
+PINYIN_DEP	:= $(patsubst %.cc, %.d, $(PINYIN_SRC))
 PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
+
+DEP		:= $(DEMO_DEP) $(DEMO3D_DEP) $(PINYIN_DEP)
 
 TARGETS		:= demo demo3D pinyin_demo
 
 vpath %.cc $(srcdir)
+vpath %.hh $(srcdir)
+
+.FORCE:
 
 all:	$(patsubst %, ../bin/%, $(TARGETS))
 
@@ -70,6 +78,8 @@ all:	$(patsubst %, ../bin/%, $(TARGETS))
 ../bin/pinyin_demo:	$(PINYIN_OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $(PINYIN_OBJ) $(LIBS)
+
+depend: $(DEP)
 
 install:	all
 	@for target in $(TARGETS); do \
@@ -94,11 +104,18 @@ distclean:	clean
 maintainer-clean: distclean
 	rm -f $(top_srcdir)/config/Clients-C++/configure $(top_srcdir)/config/Clients-C++/aclocal.m4
 
+ifeq (,$(findstring depend, $(MAKECMDGOALS)))
+%.d:	%.cc
+else
+%.d:	%.cc .FORCE
+endif
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
 %.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-%.d:	%.cc
-	@echo generating dependencies for $(<F)
-	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
-
+ifeq (,$(filter $(MAKECMDGOALS), depend clean distclean maintainer-clean))
+-include $(DEP)
+endif

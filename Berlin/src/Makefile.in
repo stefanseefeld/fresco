@@ -66,13 +66,19 @@ TARGET	:= ../lib/libBerlin.so
 vpath %.hh  $(hdir):$(hdir)/Console
 vpath %.cc  $(srcdir)
 
+.FORCE:
+
 all:	$(TARGET) ../bin/Berlin-config
 
 $(TARGET):	$(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
+ifeq (,$(findstring config, $(MAKECMDGOALS)))
 ../bin/Berlin-config: $(top_srcdir)/config/Berlin-config.in
+else
+../bin/Berlin-config: $(top_srcdir)/config/Berlin-config.in .FORCE
+endif
 	rm -f $@ $@.tmp
 	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
 		-e 's,@exec_prefix\@,$(abs_top_builddir),g' \
@@ -82,6 +88,8 @@ $(TARGET):	$(OBJ)
 	mv $@.tmp $@
 
 config:  ../bin/Berlin-config
+
+depend: $(DEP)
 
 doc:	../share/doc/Berlin/html
 
@@ -139,7 +147,11 @@ maintainer-clean: distclean
 	rm -f $(top_srcdir)/config/Server/configure $(top_srcdir)/config/Server/acconfig.hh.in \
 	  $(top_srcdir)/config/Server/aclocal.m4
 
+ifeq (,$(findstring depend, $(MAKECMDGOALS)))
 %.d:	%.cc %.hh
+else
+%.d:	%.cc %.hh .FORCE
+endif
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
@@ -151,6 +163,6 @@ maintainer-clean: distclean
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(hdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), config depend doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

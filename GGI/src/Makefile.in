@@ -44,6 +44,8 @@ TARGET	+= ../lib/Fresco/Console/GGIGL.so
 endif
 ../lib/Fresco/Console/GGIGL.so: GGIGL.o
 
+.FORCE:
+
 all:	$(TARGET)
 
 ../lib/Fresco/Console/GGI.so:	$(OBJ)
@@ -53,6 +55,8 @@ all:	$(TARGET)
 ../lib/Fresco/Console/GGIGL.so:	GGIGL.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $^ $(LIBS)
+
+depend:		$(DEP)
 
 install:	all
 		$(INSTALL) -d -m 755 $(DESTDIR)$(libdir)/Fresco/Console
@@ -70,7 +74,11 @@ distclean:	clean
 
 maintainer-clean: distclean
 
+ifeq (,$(findstring depend, $(MAKECMDGOALS)))
 %.d:	%.cc
+else
+%.d:	%.cc .FORCE
+endif
 	@echo generating dependencies for $<
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
@@ -78,6 +86,6 @@ maintainer-clean: distclean
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), depend clean distclean maintainer-clean))
 -include $(DEP)
 endif

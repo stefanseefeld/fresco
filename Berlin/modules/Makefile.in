@@ -53,6 +53,9 @@ $(subdirs):
 
 config: #do nothing
 
+depend:
+	$(MAKE) action="depend"
+
 doc:
 	$(MAKE) action="doc"
 

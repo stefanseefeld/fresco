@@ -44,6 +44,8 @@ LDFLAGS += $(SO_LDFLAGS)
 LIBS	:= -L$(top_builddir)/lib -lBerlin $(EXTRA_LIBS)
 CPPFLAGS+= $(EXTRA_CPPFLAGS)
 
+.FORCE:
+
 .PHONY: all install uninstall clean distclean maintainer-clean
 
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
@@ -61,6 +63,8 @@ all:	$(TARGET)
 $(TARGET):	$(DEP) $(OBJ)
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+
+depend: $(DEP)
 
 doc:	$(abs_top_builddir)/share/doc/Berlin/$(docdir)/html
 
@@ -86,7 +90,11 @@ distclean:	clean
 
 maintainer-clean: distclean
 
-%.d:	%.cc
+ifeq (,$(findstring depend, $(MAKECMDGOALS)))
+%.d:	%.cc %.hh
+else
+%.d:	%.cc %.hh .FORCE
+endif
 	@echo generating dependencies for $(<F)
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) -I$(top_builddir)/include $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 
@@ -98,6 +106,6 @@ maintainer-clean: distclean
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c $(cdir)/synopsis.py -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(srcdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
+ifeq (,$(filter $(MAKECMDGOALS), config depend clean distclean maintainer-clean))
 -include $(DEP)
 endif

@@ -28,7 +28,8 @@ subdirs	:= src
 action	:= all
 
 .PHONY: all $(subdirs)
-.PHONY: config doc install uninstall depclean clean distclean maintainer-clean dist clean
+.PHONY: config depend doc install install-doc dist \
+        uninstall clean distclean maintainer-clean
 
 all:	$(subdirs)
 
@@ -38,6 +39,9 @@ $(subdirs):
 
 config:
 	$(MAKE) action="config"
+
+depend:
+	$(MAKE) action="depend"
 
 doc:
 	$(MAKE) action="doc"
