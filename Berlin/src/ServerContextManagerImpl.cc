@@ -37,13 +37,9 @@ ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c
   throw (SecurityException)
 {
   MutexGuard guard (mutex);
-  cerr << "1" << endl;
   ServerContextImpl *sc = new ServerContextImpl(this, CosLifeCycle::FactoryFinder_var(ffinder->_this()), c);
-  cerr << "2" << endl;
   sc->_obj_is_ready(_boa());
-  cerr << "3" << endl;
   contexts.push_back(sc);
-  cerr << "4" << endl;
   return sc->_this();
 }
 

@@ -28,13 +28,15 @@
 #include <Drawing/DrawDecorator.hh>
 #include <Berlin/Plugin.hh>
 
-map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
 Mutex TextKitImpl::staticMutex;
+map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
+DrawingKit_var TextKitImpl::canonicalDK;
 
 TextKitImpl::TextKitImpl() {}
 TextKitImpl::~TextKitImpl() {}
 
-void TextKitImpl::bind(ServerContext_ptr sc) {
+void TextKitImpl::bind(ServerContext_ptr sc)
+{
   canonicalDK = DrawingKit::_narrow(sc->getSingleton(interface(DrawingKit)));
 }
 
