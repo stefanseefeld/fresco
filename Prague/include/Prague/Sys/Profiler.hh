@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -23,7 +24,7 @@
 #ifndef _Profiler_hh
 #define _Profiler_hh
 
-#include <hash_set>
+#include <Prague/Sys/ntree.hh>
 #include <ctime>
 #include <iostream>
 #include <string>
@@ -42,16 +43,17 @@ struct CheckPoint
       stop(cp->stop),
       elapsed(cp->elapsed)
     {}
-  void Output()
+  void indent(ostream &os, unsigned short ind) { while (ind--) os.put(' ');}
+  void output(ostream &os, unsigned short ind)
     {
-      cout << setw(5) << name << ": " << setw(10) << count;
-      cout << " Times.  Total Time: ";
-      cout << setprecision(8) << setw(12);
-      cout.setf( ios::fixed, ios::floatfield);
-      cout << elapsed/CLOCKS_PER_SEC;
-      cout  << "  Avg/Iter.: ";
-      cout << setprecision(8) << setw(12);
-      cout << elapsed/count/CLOCKS_PER_SEC << endl;
+      indent(os, ind); os << name << ": " << setw(10) << count;
+      indent(os, ind); os << " Times.  Total Time: ";
+      indent(os, ind); os << setprecision(8) << setw(12);
+      indent(os, ind); os.setf( ios::fixed, ios::floatfield);
+      indent(os, ind); os << elapsed/CLOCKS_PER_SEC;
+      indent(os, ind); os  << "  Avg/Iter.: ";
+      indent(os, ind); os << setprecision(8) << setw(12);
+      indent(os, ind); os << elapsed/count/CLOCKS_PER_SEC << endl;
     }
   string name;
   long count;
@@ -60,70 +62,63 @@ struct CheckPoint
   double elapsed;
 };
  
-struct eqchkpt
-{
-  bool operator()(const Prague::CheckPoint *cp1, const Prague::CheckPoint *cp2) const
-    { return cp1->name == cp2->name;}
-};
-
-};
-
-struct hash<Prague::CheckPoint *>
-{
-  size_t operator()(const Prague::CheckPoint *cp) const
-    {
-      unsigned long h = 0; 
-      for (string::const_iterator s = cp->name.begin(); s != cp->name.end(); ++s)
-	h = 5*h + *s;
-      return size_t(h);
-    }
-};
-
-namespace Prague
-{
-
 class Profiler
 {
-  typedef hash_set<CheckPoint *, hash<Prague::CheckPoint *>, eqchkpt> table_t;
+  typedef ntree<CheckPoint *> table_t;
+  typedef ntree<CheckPoint *>::node item_t;
+  typedef ntree<CheckPoint *>::node::child_iterator child_iterator;
+  typedef ntree<CheckPoint *>::node::const_child_iterator const_child_iterator;
+  typedef ntree<CheckPoint *>::node::up_iterator up_iterator;
 public:
-  Profiler(const string &name) : now(name) 
+  Profiler(const string &name)
     {
-      if (!count++) table = new table_t;
-      CheckPoint *current = lookup(&now);
-      if (!current)
+      if (!count++)
 	{
-	  current = new CheckPoint(&now);
-	  table->insert(current);
+	  table = new table_t(new CheckPoint("root"));
+	  current = &table->root();
+	  os = &cout;
 	}
-      current->count++;
-      current->start = clock(); 
+      child_iterator i = lookup(name);
+      current = &*i;
+      current->value->count++;
+      current->value->start = clock(); 
     }
   ~Profiler()
     {
-      CheckPoint *current = lookup(&now);
-      if (!current)
-	{
-	  cerr << "Problem!" << endl;
-	  exit(1);
-	}
-      current->stop = clock();
-      current->elapsed += (current->stop - current->start);
+      current->value->stop = clock();
+      current->value->elapsed += (current->value->stop - current->value->start);
+      up_iterator i = current->up_begin();
+      current = &*++i;
       if (!--count)
 	{
-	  cout << "Dumping Profiling Data..." << endl;
-	  for (table_t::const_iterator i = table->begin(); i != table->end(); i++)
-	    (*i)->Output();
+	  dump(*current, 0);
+	  clean(*current);
 	}
     }
-  static CheckPoint *lookup(Prague::CheckPoint *cp)
-    {
-      table_t::iterator i = table->find(cp);
-      return i == table->end() ? 0 : *i;
-    }
+  static void setOutput(ostream &o) { os = &o;}
 private:
-  static long count;
+  static child_iterator lookup(const string &name)
+    {
+      for (child_iterator i = current->child_begin(); i != current->child_end(); i++)
+	if ((*i).value->name == name) return i;
+      return current->push_back(new CheckPoint(name));
+    }
+  static void dump(const item_t &root, unsigned short ind)
+    {
+      for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
+	dump(*i, ind + 1);
+      if (ind) root.value->output(*os, ind); // don't output the root
+    }
+  static void clean(const item_t &root)
+    {
+      for (const_child_iterator i = root.child_begin(); i != root.child_end(); i++)
+	clean(*i);
+      delete root.value;
+    }
+  static long     count;
   static table_t *table;
-  CheckPoint now;
+  static item_t  *current;
+  static ostream *os;
 };
 
 };
