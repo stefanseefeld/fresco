@@ -20,47 +20,84 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ServerContextManagerImpl_hh
-#define _ServerContextManagerImpl_hh
+#ifndef _ServerImpl_hh
+#define _ServerImpl_hh
 
 #include "Warsaw/config.hh"
-#include "Warsaw/ServerContext.hh"
+#include "Warsaw/Server.hh"
 #include "Warsaw/Graphic.hh"
 #include "Berlin/KitImpl.hh"
 #include "Prague/Sys/Thread.hh"
 #include "Prague/Sys/Plugin.hh"
 #include <vector>
 #include <string>
+#include <map>
 #include <multimap.h>
 
-class ServerContextManagerImpl : implements(ServerContextManager)
-//. the ServerContextManager just hands out new ServerContexts to
+class ServerContextImpl;
+
+class ServerImpl : implements(Server)
+//. the Server just hands out new ServerContexts to
 //. people who are connecting.  it might want to do some checking on
 //. the incoming ClientContext's credentials, but at the moment it doesn't.
 {
+  friend class ServerContextImpl;
   typedef vector<ServerContextImpl *> clist_t;
-  typedef multimap<string, Prague::Plugin<KitFactory> *> flist_t;
-public:
-  ServerContextManagerImpl();
-  ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
-  void setSingleton(const char *, CORBA::Object_ptr)
+  typedef multimap<string, Prague::Plugin<KitFactory> *> fmap_t;
+  typedef multimap<string, KitImpl *> kmap_t;
+  typedef map<string, CORBA::Object_var> smap_t;
+ public:
+  ServerImpl();
+  virtual ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
+  virtual void setSingleton(const char *, CORBA::Object_ptr)
     throw (SecurityException, SingletonFailureException);
-  void delSingleton(const char *)
+  virtual void delSingleton(const char *)
     throw (SecurityException, SingletonFailureException);
-  CORBA::Object_ptr getSingleton(const char *) 
+  virtual CORBA::Object_ptr getSingleton(const char *) 
     throw (SecurityException, SingletonFailureException);
+  
+  template <class K>
+  typename K::_ptr_type resolve(const char *, const Kit::PropertySeq &);
   void ping();
   // this builds the plugin table
   void scan(const string &);
   void clear();
   void start();
-protected:
+ protected:
+  KitImpl *create(const char *, const Kit::PropertySeq &);
+ private:
   static void *run(void *);
-  map<string, CORBA::Object_var> singletons;
+  smap_t  singletons;
   clist_t contexts;
-  flist_t factories;
+  fmap_t  factories;
+  kmap_t  kits;
   Prague::Thread thread;
   Prague::Mutex mutex;
 };
+
+template <class K>
+typename K::_ptr_type ServerImpl::resolve(const char *type, const Kit::PropertySeq &properties)
+{
+  KitImpl *kit = create(type, properties);
+  if (!kit) return K::_nil();
+  kit->_obj_is_ready(_boa());
+  typename K::_var_type reference;
+  try
+    {
+      reference = K::_narrow(Kit_var(kit->_this()));
+    }
+  catch (CORBA::Exception e)
+    {
+      cerr << "Cannot narrow reference: " << e << endl;
+      return K::_nil();
+    }
+  if (CORBA::is_nil(reference))
+   {
+     cerr << "Reference has incorrect type" << endl;
+     return K::_nil();
+   }
+  kits.insert(kmap_t::value_type(type, kit));
+  return reference._retn();
+}
 
 #endif

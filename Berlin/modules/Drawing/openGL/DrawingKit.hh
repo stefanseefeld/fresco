@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -24,10 +24,10 @@
 #define _GLDrawingKit_hh
 
 #include <Drawing/DrawingKitBase.hh>
-#include <Berlin/CloneableImpl.hh>
 #include <Drawing/openGL/GLFont.hh>
 #include <Drawing/openGL/GLRaster.hh>
-#include <Berlin/Thread.hh>
+#include <Prague/Sys/Thread.hh>
+#include <Berlin/KitImpl.hh>
 #include <Berlin/ObjectCache.hh>
 #include <Berlin/GGI.hh>
 #include <Berlin/TransformImpl.hh>
@@ -38,11 +38,11 @@
 #include <string>
 #include <vector>
 
-class GLDrawingKit : public DrawingKitBase, public CloneableImpl
+class GLDrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
-  GLDrawingKit();
-  ~GLDrawingKit();
+  GLDrawingKit(KitFactory *, const PropertySeq &);
+  virtual ~GLDrawingKit();
 
   virtual void transformation(Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Transform_ptr transformation() { return Transform::_duplicate(tr);}
@@ -103,7 +103,7 @@ public:
  private:
   GGI::Drawable *drawable;
   GGIMesaContext context;
-  Mutex mutex;
+  Prague::Mutex  mutex;
   Transform_var  tr;
   Region_var     cl;
   Color          fg;

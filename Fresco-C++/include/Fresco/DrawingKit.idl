@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -23,7 +23,7 @@
 #ifndef _DrawingKit_idl
 #define _DrawingKit_idl
 
-#include "Cloneable.idl"
+#include "Kit.idl"
 #include "Metrics.idl"
 #include "Graphic.idl"
 
@@ -31,7 +31,7 @@ interface Transform;
 interface Region;
 interface Raster;
 
-interface DrawingKit : Cloneable 
+interface DrawingKit : Kit
 {
   enum Endstyle { butt, cap, round};
   enum Fillstyle { outline, solid, textured, gradient};

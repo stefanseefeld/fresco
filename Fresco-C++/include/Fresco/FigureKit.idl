@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 #define _FigureKit_idl
 
 #include "Types.idl"
-#include "Cloneable.idl"
+#include "Kit.idl"
 #include "Figure.idl"
 
 interface BoundedValue;
@@ -38,7 +38,7 @@ interface Image;
 // back an object which will draw the specified type of object when it
 // is traversed.
 
-interface FigureKit : Cloneable
+interface FigureKit : Kit
 {
   Graphic root(in Graphic g);
   //. Return a graphic that centers its body by transformation.

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,31 +19,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextKit_idl
-#define _TextKit_idl
+#include "Warsaw/ClientContextImpl.hh"
+#include <iostream>
+#include <string>
 
-#include "Kit.idl"
-#include "Graphic.idl"
-#include "Types.idl"
-
-
-interface TextBuffer;
-
-interface TextKit : Kit
-//. TextKit produces text chunks (flyweights) as well as decorators which set the
-//. current font state as a traversal passes through them.
+ClientContextImpl::ClientContextImpl()
+//. This is a handle to a client application that the display server holds. It
+//. provides the display server with enough mechanisms to check to see if the
+//. client is alive and to determine the client's security rights. It is
+//. instantiated within the client address space.
+  : user(new Prague::User())
+{};  
+  
+Unistring *ClientContextImpl::userName()
 {
-  Graphic chunk(in Unistring u);    
-  Graphic simpleViewer(in TextBuffer buf);
-
-  Graphic size(in Graphic body, in unsigned long ems);
-  Graphic weight(in Graphic body, in unsigned long wt);
-  Graphic family(in Graphic body, in Unistring fam);
-  Graphic subFamily(in Graphic body, in Unistring fam);
-  Graphic fullName(in Graphic body, in Unistring name);
-  Graphic style(in Graphic body, in Unistring sty);
-  Graphic fontAttr(in Graphic body, in NVPair nvp);
-
-};
-
-#endif
+  string name = user->name();
+  Unistring *ustring = new Unistring;
+  ustring->length(name.length());
+  for(unsigned int i = 0; i < name.length(); i++) ustring[i] = name[i];
+  return ustring;
+}

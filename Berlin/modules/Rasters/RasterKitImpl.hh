@@ -3,6 +3,7 @@
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,15 +28,15 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/ImageKit.hh>
 #include <Warsaw/Raster.hh>
-#include <Berlin/CloneableImpl.hh>
+#include <Berlin/KitImpl.hh>
 #include <vector>
 
 class RasterImpl;
 
-class ImageKitImpl : lcimplements(ImageKit), virtual public CloneableImpl
+class ImageKitImpl : implements(ImageKit), public KitImpl
 {
 public:
-  ImageKitImpl();
+  ImageKitImpl(KitFactory *, const PropertySeq &);
   virtual ~ImageKitImpl();
 
   Raster_ptr empty();

@@ -23,9 +23,9 @@
 #ifndef _WidgetKit_idl
 #define _WidgetKit_idl
 
-#include "Cloneable.idl"
 #include "Types.idl"
 #include "Telltale.idl"
+#include "Kit.idl"
 
 interface TelltaleConstraint;
 interface BoundedValue;
@@ -38,7 +38,7 @@ interface Controller;
 interface Command;
 interface Trigger;
 
-interface WidgetKit : Cloneable
+interface WidgetKit : Kit
 //. this kit is a layer on top of the Graphic interface and
 //. CommandKit. It is responsible for creating subjects, and binding
 //. views and controller strategies to the subjects. These amalgams

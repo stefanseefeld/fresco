@@ -26,7 +26,7 @@
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/libArt/LibArtFont.hh>
 #include <Drawing/libArt/LibArtRaster.hh>
-#include <Berlin/CloneableImpl.hh>
+#include <Berlin/KitImpl.hh>
 #include <Berlin/Thread.hh>
 #include <Berlin/ObjectCache.hh>
 #include <Berlin/GGI.hh>
@@ -42,10 +42,10 @@
 #include <string>
 #include <vector>
 
-class LibArtDrawingKit : public DrawingKitBase, public CloneableImpl
+class LibArtDrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
-  LibArtDrawingKit();
+  LibArtDrawingKit(KitFactory *, const PropertySeq &);
   virtual ~LibArtDrawingKit();
 
   virtual void transformation(Transform_ptr t) { DrawingKitBase::transformation(t);}

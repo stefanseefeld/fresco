@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,27 +20,28 @@
  * MA 02139, USA.
  */
 
+#include <Warsaw/Server.hh>
 #include "Desktop/DesktopKitImpl.hh"
 #include "Desktop/WindowImpl.hh"
 #include "Berlin/Logger.hh"
-#include "Berlin/Plugin.hh"
 
-DesktopKitImpl::DesktopKitImpl() {}
+DesktopKitImpl::DesktopKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 DesktopKitImpl::~DesktopKitImpl()
 {
-//   cout << "DesktopKitImpl::~DesktopKitImpl" << endl;
   for (vector<WindowImpl *>::iterator i = windows.begin(); i != windows.end(); i++)
     (*i)->_dispose();
 }
 
 void DesktopKitImpl::bind(ServerContext_ptr sc)
 {
-  CloneableImpl::bind(sc);
+  KitImpl::bind(sc);
   CORBA::Object_var object = sc->getSingleton(interface(Desktop));
   desktop = Desktop::_narrow(object);
   
-  lk = obtain(sc, LayoutKit);
-  wk = obtain(sc, WidgetKit);
+  PropertySeq props;
+  props.length(0);
+  lk = obtain(sc, LayoutKit, props);
+  wk = obtain(sc, WidgetKit, props);
 }
 
 Desktop_ptr DesktopKitImpl::desk()
@@ -195,4 +196,8 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   return window->_this();
 }
 
-EXPORT_PLUGIN(DesktopKitImpl,interface(DesktopKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "DesktopKitImpl"};
+  return new KitFactoryImpl<DesktopKitImpl> (interface(DesktopKit), properties, 1);
+}

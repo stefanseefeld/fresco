@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefelds <seefelds@magellan.umontreal.ca>
+ * Copyright (C) 1999 Stefan Seefelds <stefan@berlin-consortium.org>
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -59,7 +59,6 @@
 #include "Layout/Placement.hh"
 #include "Layout/ShapeOf.hh"
 #include "Layout/ViewportImpl.hh"
-#include "Berlin/Plugin.hh"
 
 template <class I, class P>
 P create(I *i, LayoutKitImpl *kit)
@@ -69,7 +68,7 @@ P create(I *i, LayoutKitImpl *kit)
   return i->_this();
 }
 
-LayoutKitImpl::LayoutKitImpl() { fil_ = GraphicImpl::infinity;}
+LayoutKitImpl::LayoutKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p), fil_(GraphicImpl::infinity) {}
 LayoutKitImpl::~LayoutKitImpl()
 {
   for (vector<GraphicImpl *>::iterator i = graphics.begin(); i != graphics.end(); i++) (*i)->_dispose();
@@ -520,4 +519,8 @@ Graphic_ptr LayoutKitImpl::tmarginFlexible(Graphic_ptr g, Coord natural, Coord s
   return marginLRBTFlexible(g, 0., 0., 0., 0., 0., 0., 0., 0., 0., natural, stretch, shrink);
 }
 
-EXPORT_PLUGIN(LayoutKitImpl,interface(LayoutKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "LayoutKitImpl"};
+  return new KitFactoryImpl<LayoutKitImpl> (interface(LayoutKit), properties, 1);
+}

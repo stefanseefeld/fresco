@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -29,15 +29,15 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/LayoutKit.hh"
-#include "Berlin/CloneableImpl.hh"
+#include "Berlin/KitImpl.hh"
 #include <vector>
 
 class GraphicImpl;
 
-class LayoutKitImpl : lcimplements(LayoutKit), virtual public CloneableImpl
+class LayoutKitImpl : implements(LayoutKit), public KitImpl
 {
 public:
-  LayoutKitImpl();
+  LayoutKitImpl(KitFactory *, const PropertySeq &);
   ~LayoutKitImpl();
   virtual Coord fil();
   virtual void fil(Coord);

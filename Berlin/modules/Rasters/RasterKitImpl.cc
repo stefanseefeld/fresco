@@ -3,6 +3,7 @@
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent A. Fulgham <bfulgham@debian.org>
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,12 +23,11 @@
  */
 
 #include "Warsaw/config.hh"
-#include "Berlin/Plugin.hh"
 #include "Berlin/Logger.hh"
 #include "Image/ImageKitImpl.hh"
 #include "Image/RasterImpl.hh"
 
-ImageKitImpl::ImageKitImpl() {}
+ImageKitImpl::ImageKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 ImageKitImpl::~ImageKitImpl() {}
 
 Raster_ptr ImageKitImpl::empty()
@@ -48,4 +48,8 @@ Raster_ptr ImageKitImpl::create(const char *file)
   return raster->_this();
 }
 
-EXPORT_PLUGIN(ImageKitImpl, interface(ImageKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "ImageKitImpl"};
+  return new KitFactoryImpl<ImageKitImpl> (interface(ImageKit), properties, 1);
+}

@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Brent Fulgham <bfulgham@debian.org>
- * Copyright (C) 1999 Stefan Seefeld <seefelds@MAGELLAN.UMontreal.CA>
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 #define _ImageKit_idl
 
 #include "Types.idl"
-#include "Cloneable.idl"
+#include "Kit.idl"
 #include "Raster.idl"
 
 /*
@@ -37,10 +37,10 @@
  *
  */
 
-interface ImageKit : Cloneable
+interface ImageKit : Kit
 {
-	Raster empty();				// Returns a null raster
-	Raster create(in string file);		// Create from a file
+  Raster empty();				// Returns a null raster
+  Raster create(in string file);		// Create from a file
 };
 
 #endif /* _ImageKit_idl */

@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -32,12 +32,13 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS) $(GGI_INCLUDES)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague $(GGI_LIBS) #$(ORBLIBS)
 
-SRC 	= GGI.cc Pointer.cc Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
+# GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc
+SRC 	= GGI.cc Pointer.cc Logger.cc\
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc AllocationImpl.cc GraphicImpl.cc \
 	  MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc \
 	  ControllerImpl.cc DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc \
-	  SubjectImpl.cc ServerContextImpl.cc ClientContextImpl.cc ServerContextManagerImpl.cc
+	  SubjectImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc
 
 TARGET	= $(lpath)/libBerlin.so
 

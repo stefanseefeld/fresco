@@ -2,7 +2,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -64,7 +64,7 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -ldl -lz -lpthread
 
-ALL        =   DataType Plugin1.so Plugin2.so Loader
+ALL        =   DataType Plugin1.so Plugin2.so Loader GetOpt
 
 world:		$(ALL)
 
@@ -85,6 +85,9 @@ Plugin2.so:	Plugin2.o
 
 Loader:		Plugin1.so Plugin2.so Loader.o
 		$(CXX) $(LDFLAGS) -o $@ Loader.o $(LIBS)
+
+GetOpt:		GetOpt.o
+		$(CXX) $(LDFLAGS) -o $@ GetOpt.o $(LIBS)
 
 clean:	
 		$(RM) *.o *~

@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -29,11 +29,10 @@
 #include "Figure/Figures.hh"
 #include "Figure/ImageImpl.hh"
 #include "Figure/Transformer.hh"
-#include "Berlin/Plugin.hh"
 
 using namespace Figures;
 
-FigureKitImpl::FigureKitImpl() {}
+FigureKitImpl::FigureKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 FigureKitImpl::~FigureKitImpl() {}
 
 Graphic_ptr FigureKitImpl::root(Graphic_ptr child)
@@ -152,4 +151,8 @@ Graphic_ptr FigureKitImpl::projection(Graphic_ptr g)
   return transformer->_this();
 }
 
-EXPORT_PLUGIN(FigureKitImpl, interface(FigureKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "FigureKitImpl"};
+  return new KitFactoryImpl<FigureKitImpl> (interface(FigureKit), properties, 1);
+}

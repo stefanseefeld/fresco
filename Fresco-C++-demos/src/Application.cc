@@ -48,16 +48,16 @@ class ExitCommand : implements(Command)
   }
 };
 
-Application::Application(ServerContextManager_ptr manager)
+Application::Application(Server_ptr server)
   : client(new ClientContextImpl),
-    server(manager->newServerContext(ClientContext_var(client->_this()))),
-    tk(resolve<TextKit>(server, TextKit_IntfRepoID)),
-    dk(resolve<DesktopKit>(server, DesktopKit_IntfRepoID)),
-    lk(resolve<LayoutKit>(server, LayoutKit_IntfRepoID)),
-    wk(resolve<WidgetKit>(server, WidgetKit_IntfRepoID)),
-    fk(resolve<FigureKit>(server, FigureKit_IntfRepoID)),
-    ck(resolve<CommandKit>(server, CommandKit_IntfRepoID)),
-    ik(resolve<ImageKit>(server, ImageKit_IntfRepoID)),
+    context(server->newServerContext(ClientContext_var(client->_this()))),
+    tk(resolve<TextKit>(context, TextKit_IntfRepoID)),
+    dk(resolve<DesktopKit>(context, DesktopKit_IntfRepoID)),
+    lk(resolve<LayoutKit>(context, LayoutKit_IntfRepoID)),
+    wk(resolve<WidgetKit>(context, WidgetKit_IntfRepoID)),
+    fk(resolve<FigureKit>(context, FigureKit_IntfRepoID)),
+    ck(resolve<CommandKit>(context, CommandKit_IntfRepoID)),
+    ik(resolve<ImageKit>(context, ImageKit_IntfRepoID)),
     vbox(lk->vbox()),
     exclusive(wk->exclusive()),
     mapper(new Mapper(examples))
@@ -95,10 +95,8 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   button->action(unmap);
   examples.push_back(item(toggle, Command_var(window->map(true))));
   hbox = lk->hbox();
-  Logger::log(Logger::text) << "pre text in append" << endl;
   Graphic_var space = lk->hspace(200.);
   Graphic_var label = tk->chunk(Unicode::toCORBA(name));
-  Logger::log(Logger::text) << "post text in append" << endl;
   hbox->append(Graphic_var(lk->align(toggle, 0., 0.)));
   hbox->append(space);
   hbox->append(label);

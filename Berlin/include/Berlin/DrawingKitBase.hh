@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -30,7 +30,7 @@
 #include <Warsaw/Raster.hh>
 #include <stack>
 
-class DrawingKitBase : lcimplements(DrawingKit)
+class DrawingKitBase : implements(DrawingKit)
 {
  public:
   void continueRestoring()

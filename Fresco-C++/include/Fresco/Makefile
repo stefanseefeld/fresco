@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -35,40 +35,33 @@ CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
 
-DYNINT	= Types.idl TextBuffer.idl BoundedRange.idl
-STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
+DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl 
+STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
-	  Input.idl Focus.idl \
-	  Figure.idl Image.idl \
-	  Grid.idl Viewport.idl Stage.idl \
-	  Command.idl \
-	  Subject.idl Controller.idl View.idl \
-	  Telltale.idl BoundedValue.idl StreamBuffer.idl \
-	  Trigger.idl \
-	  Metrics.idl \
-	  Raster.idl \
-	  Desktop.idl Window.idl  
-#\
-#	  Registrar.idl
-LCINT	= LifeCycle.idl Cloneable.idl DrawingKit.idl FigureKit.idl LayoutKit.idl CommandKit.idl \
-	  WidgetKit.idl TextKit.idl ImageKit.idl DesktopKit.idl
+	  Input.idl Focus.idl Subject.idl Controller.idl View.idl \
+	  DrawingKit.idl \
+	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
+	  Telltale.idl StreamBuffer.idl Trigger.idl WidgetKit.idl \
+	  Raster.idl ImageKit.idl \
+	  Figure.idl Image.idl FigureKit.idl \
+	  Command.idl CommandKit.idl \
+	  Metrics.idl TextKit.idl \
+	  Desktop.idl Window.idl DesktopKit.idl
 
-INT	= $(DYNINT) $(STATINT) $(LCINT)
+INT	= $(DYNINT) $(STATINT)
 
 DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
 
 DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
 DYNSTATSRC = $(patsubst %.idl, %SK.cc, $(DYNINT)) 
 STATSRC	= $(patsubst %.idl, %SK.cc, $(STATINT))
-LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
 
-UTIL	= Warsaw.cc Unicode.cc
+UTIL	= Warsaw.cc Unicode.cc ClientContextImpl.cc
 
-SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(LCSRC) $(UTIL)
+SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(UTIL)
 
 DYNHDR	= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR	= $(patsubst %.idl, %.hh, $(STATINT))
-LCHDR	= $(patsubst %.idl, %.hh, $(LCINT))
 HDR	= $(DYNHDR) $(STATHDR) $(LCHDR)
 
 OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
@@ -103,23 +96,19 @@ $(STATHDR): %.hh:		%.idl
 		$(IDL) $(IDLFLAGS) $<
 $(DYNHDR): %.hh:	%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(LCHDR): %.hh:	%.idl
-		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
 $(STATSRC): %SK.cc:		%.idl
 		$(IDL) $(IDLFLAGS) $<
 $(DYNSTATSRC): %SK.cc: 	%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 $(DYNSRC): %DynSK.cc:	%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(LCSRC): %SK.cc:	%.idl
-		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
 $(opath)/%.o:	%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:	
 		rm -f $(opath)/*.o $(dpath)/*.d
-		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) $(DYNHDR) $(STATHDR) $(LCHDR) *~
+		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) $(DYNHDR) $(STATHDR) *~
 
 distclean:	clean
 		rm -f $(TARGET)

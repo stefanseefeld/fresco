@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -80,6 +80,9 @@ int GetOpt::parse(int argc, char **argv)
   int begin_unknown = 0, end_unknown = 0, optind = 0;
   while (optind < argc)
      {
+//        cout << "parsing next argument" << endl;
+//        for (int i = 0; i != argc - optind; i++) cout << argv[i] << ' ';
+//        cout << endl;
        int consumed = 0;
        if (argv[0][0] == '-') // option
 	 {
@@ -90,11 +93,11 @@ int GetOpt::parse(int argc, char **argv)
 		   optind++;
 		   return optind;
 		 }
-	       else consumed = getlongopt(argc, argv);
+	       else consumed = getlongopt(argc - optind, argv);
 	     }
-	   else consumed = getopt(argc, argv);
+	   else consumed = getopt(argc - optind, argv);
 	 }
-       if (!consumed) argc--, argv++, end_unknown++, optind++;
+       if (!consumed) argv++, end_unknown++, optind++;
        else
 	 {
 	   optind += consumed;
@@ -103,7 +106,7 @@ int GetOpt::parse(int argc, char **argv)
 	       exchange(argv + begin_unknown, argv + end_unknown, argv + optind);
 	       begin_unknown = end_unknown, end_unknown = optind;
 	     }
-	   argc -= consumed, argv += consumed;
+	   argv += consumed;
 	 }
      }
   return optind;
@@ -178,8 +181,8 @@ void GetOpt::usage() const
       if ((*i).o && (*i).option.length()) cout << '-' << (*i).o << ", --" << (*i).option;
       else if ((*i).o) cout << '-' << (*i).o << '\t';
       else if ((*i).option.length()) cout << ", --" << (*i).option;
-      if ((*i).t == mandatory) cout << " <$val>";
-      else if ((*i).t == optional) cout << " [$val]";
+      if ((*i).t == mandatory) cout << " <value>";
+      else if ((*i).t == optional) cout << " [value]";
       cout << " (" << (*i).description << ")\n";
     }
   cout.flush();

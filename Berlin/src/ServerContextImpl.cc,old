@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,10 +21,13 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/GenericFactoryImpl.hh"
-#include "Berlin/ClientContextImpl.hh"
-#include "Berlin/ServerContextManagerImpl.hh"
+#include "Warsaw/ClientContext.hh"
+#include "Berlin/ServerContextImpl.hh"
+#include "Berlin/ServerImpl.hh"
+#include "Berlin/KitImpl.hh"
 #include "Berlin/Logger.hh"
+#include "Prague/Sys/Plugin.hh"
+#include "Prague/Sys/Directory.hh"
 
 using namespace Prague;
 
@@ -31,74 +35,64 @@ using namespace Prague;
 // (for garbage collection), does security checks for new allocation, and
 // occasionally pings the client to make sure it's still there.
 
-ServerContextImpl::ServerContextImpl(ServerContextManagerImpl *m, CosLifeCycle::FactoryFinder_ptr ff, ClientContext_ptr c)
-  : manager(m), ffinder(ff), cContext(ClientContext::_duplicate(c)) 
+ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
+  : server(s), cContext(ClientContext::_duplicate(c)) 
 {}
 
-ServerContextImpl::~ServerContextImpl()
-{
-}
-
-CosLifeCycle::FactoryFinder_ptr ServerContextImpl::factoryFinder()
-{
-  return CosLifeCycle::FactoryFinder::_duplicate(ffinder);
-}
-
-ClientContext_ptr ServerContextImpl::client()
-{
-  return ClientContext::_duplicate(cContext);
-}
+ServerContextImpl::~ServerContextImpl() {}
+ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(cContext);}
 
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
 void ServerContextImpl::setSingleton(const char *name, CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException)
 {
-  manager->setSingleton(name, singleton);
+  server->setSingleton(name, singleton);
 }
 
 void ServerContextImpl::delSingleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  manager->delSingleton(name);
+  server->delSingleton(name);
 }
 
 CORBA::Object_ptr ServerContextImpl::getSingleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  return manager->getSingleton(name);
+  return server->getSingleton(name);
 }
 
 // this method should eventually do some kind of checking on the
 // ClientContext to make sure they are allowed to construct objects on
 // this server.
 
-CORBA::Object_ptr ServerContextImpl::create(const char *interfaceName)    
+Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &properties)    
   throw (SecurityException, CreationFailureException)
 {
-  CosLifeCycle::Key key;
-  key.length(1);
-  key[0].id   =  interfaceName; 
-  key[0].kind = (const char*) "Object"; 
-
-  CosLifeCycle::Criteria criteria;
-  
-  CosLifeCycle::Factories *factories = ffinder->find_factories(key);
-  CosLifeCycle::GenericFactory_var factory = CosLifeCycle::GenericFactory::_narrow((*factories)[0]);
-
-  if (CORBA::is_nil(factory)) throw CreationFailureException();
-  CORBA::Object_var object = factory->create_object(key, criteria);
-
-  Cloneable_var cloneable = Cloneable::_narrow(object);
-  if (!CORBA::is_nil(cloneable)) cloneable->bind(ServerContext_var(_this()));
-  // save a reference for future destroying purposes  
-  MutexGuard guard(mutex);
-  objects.push_back(object);
-  return CORBA::Object::_duplicate(object);
+  /*
+   * look for loaded kits first
+   */
+  klist_t::iterator k1 = kits.lower_bound(type), k2 = kits.upper_bound(type);
+  for (klist_t::iterator i = k1; i != k2; i++)
+    if ((*i).second->supports(properties))
+      {
+	(*i).second->increment();
+	return (*i).second->_this();
+      }
+  /*
+   * now try the factories
+   */
+  KitImpl *kit = server->create(type, properties);
+  if (!kit) throw CreationFailureException();
+  kit->_obj_is_ready(_boa());
+  kit->bind(ServerContext_var(_this()));
+  kit->increment();
+  kits.insert(klist_t::value_type(type, kit));
+  return kit->_this();
 }
 
 // this will nuke all allocated objects if the client has died, and then tell the caller 
-// (ServerContextManager) who will most likely destroy this ServerContext.
+// (Server) who will most likely destroy this ServerContext.
 
 bool ServerContextImpl::ping()
 {
@@ -114,12 +108,10 @@ bool ServerContextImpl::ping()
       alive = false;
     }
   if (!alive)
-    {
-      for(olist_t::iterator i = objects.begin(); i != objects.end(); i++)
-	{
-	  CosLifeCycle::LifeCycleObject_var p = CosLifeCycle::LifeCycleObject::_narrow(*i);
-	  if (!CORBA::is_nil(p)) p->remove();
-	}
-    }
+    for(klist_t::iterator i = kits.begin(); i != kits.end(); i++)
+      {
+	(*i).second->_dispose();
+	kits.erase(i);
+      }
   return alive;
 }

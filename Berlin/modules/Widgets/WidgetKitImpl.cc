@@ -23,6 +23,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/LayoutKit.hh"
+#include "Warsaw/Server.hh"
 #include "Widget/WidgetKitImpl.hh"
 #include "Widget/TelltaleImpl.hh"
 #include "Widget/BoundedValueImpl.hh"
@@ -42,20 +43,16 @@
 #include "Widget/Scrollbar.hh"
 #include "Widget/TextInput.hh"
 #include "Berlin/DebugGraphic.hh"
-#include "Berlin/Plugin.hh"
 
-WidgetKitImpl::WidgetKitImpl()
-{
-}
-
-WidgetKitImpl::~WidgetKitImpl()
-{
-}
+WidgetKitImpl::WidgetKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
+WidgetKitImpl::~WidgetKitImpl() {}
 
 void WidgetKitImpl::bind(ServerContext_ptr sc)
 {
-  CloneableImpl::bind(sc);
-  lk = obtain(sc, LayoutKit);
+  KitImpl::bind(sc);
+  PropertySeq props;
+  props.length(0);
+  lk = obtain(sc, LayoutKit, props);
 }
 
 TelltaleConstraint_ptr WidgetKitImpl::exclusive()
@@ -340,4 +337,8 @@ Controller_ptr WidgetKitImpl::scrollbar(const Color &bg, BoundedRange_ptr x, Axi
   return scrollbar->_this();
 }
 
-EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "WidgetKitImpl", "style", "none :)"};
+  return new KitFactoryImpl<WidgetKitImpl> (interface(WidgetKit), properties, 2);
+}

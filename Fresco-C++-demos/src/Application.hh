@@ -31,10 +31,9 @@
 #include <Warsaw/DesktopKit.hh>
 #include <Warsaw/ImageKit.hh>
 #include <Warsaw/Trigger.hh>
-#include <Warsaw/ServerContext.hh>
-#include <Berlin/ClientContextImpl.hh>
-#include <Berlin/ImplVar.hh>
-#include <Berlin/Logger.hh>
+#include <Warsaw/Server.hh>
+#include <Warsaw/ImplVar.hh>
+#include <Warsaw/ClientContextImpl.hh>
 #include <Prague/Sys/Signal.hh>
 #include <Warsaw/Unicode.hh>
 #include <unistd.h>
@@ -61,7 +60,7 @@ class Application
   };
   friend class Mapper;
 public:
-  Application(ServerContextManager_ptr);
+  Application(Server_ptr);
   TextKit_ptr text() { return TextKit::_duplicate(tk);}
   DesktopKit_ptr desktop() { return DesktopKit::_duplicate(dk);}
   LayoutKit_ptr layout() { return LayoutKit::_duplicate(lk);}
@@ -74,7 +73,7 @@ public:
 protected:
 private:
   Impl_var<ClientContextImpl> client;
-  ServerContext_var server;
+  ServerContext_var  context;
   TextKit_var tk;
   DesktopKit_var dk;
   LayoutKit_var lk;

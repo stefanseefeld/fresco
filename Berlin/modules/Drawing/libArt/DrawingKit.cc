@@ -24,7 +24,6 @@
 #include <Drawing/libArt/LibArtDrawingKit.hh>
 #include <Drawing/libArt/LibArtUnifont.hh>
 #include <Warsaw/Transform.hh>
-#include <Berlin/Plugin.hh>
 
 extern "C"
 {
@@ -43,12 +42,13 @@ extern "C"
 
 
 LibArtDrawingKit::~LibArtDrawingKit() {}
-LibArtDrawingKit::LibArtDrawingKit() : 
-  drawable(GGI::drawable()), 
-  tr(new TransformImpl), 
-  cl(new RegionImpl), 
-  font(new LibArtUnifont),
-  rasters(500)
+LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
+  : KitImpl(f, p),
+    drawable(GGI::drawable()), 
+    tr(new TransformImpl), 
+    cl(new RegionImpl), 
+    font(new LibArtUnifont),
+    rasters(500)
   // textures(100), 
   // tx(0)
 {
@@ -288,5 +288,8 @@ void LibArtDrawingKit::flush() {
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;  
 }
 
-EXPORT_PLUGIN(LibArtDrawingKit, interface(DrawingKit))
-
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "LibArtDrawingKit"};
+  return new KitFactoryImpl<LibArtDrawingKit> (interface(DrawingKit), properties, 1);
+}

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 #ifndef _resolve_hh
 #define _resolve_hh
 
-#include <ServerContext.hh>
+#include <Server.hh>
 #include <exception.hh>
 
 template <class T>
@@ -130,8 +130,9 @@ typename T::_ptr_type resolve(ServerContext_ptr context, const char *name)
   CORBA::Object_ptr object;
   try
     {
-      //       context->resolve(name);
-      object = context->create(name);
+      Kit::PropertySeq props;
+      props.length(0);
+      object = context->resolve(name, props);
     }
   catch(const CORBA::Exception &e)
     {

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,34 +19,34 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DesktopKitImpl_hh
-#define _DesktopKitImpl_hh
+#ifndef _KitFactory_hh
+#define _KitFactory_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/DesktopKit.hh>
-#include <Warsaw/LayoutKit.hh>
-#include <Warsaw/WidgetKit.hh>
-#include <Warsaw/Desktop.hh>
-#include <Berlin/KitImpl.hh>
-#include <vector>
+#include <Warsaw/Kit.hh>
+#include <string>
 
-class WindowImpl;
-class DesktopImpl;
+class ServerContextImpl;
+class KitImpl;
 
-class DesktopKitImpl : implements(DesktopKit), public KitImpl
+class KitFactory
 {
- public:
-  DesktopKitImpl(KitFactory *, const PropertySeq &);
-  virtual ~DesktopKitImpl();
-  virtual void bind(ServerContext_ptr);
-  virtual Desktop_ptr desk();
-  virtual Window_ptr shell(Controller_ptr);
-  virtual Window_ptr transient(Controller_ptr);
- private:
-  Desktop_var   desktop;
-  LayoutKit_var lk;
-  WidgetKit_var wk;
-  vector<WindowImpl *> windows;
+  friend class KitImpl;
+public:
+  KitFactory(const string &, const string *, unsigned short);
+  virtual ~KitFactory() { delete props;}
+  const string &type() const { return id;}
+  Kit::PropertySeq *properties() const { return new Kit::PropertySeq(*props);}  
+  virtual KitImpl *create(const Kit::PropertySeq &p) = 0;
+  virtual bool supports(const Kit::PropertySeq &p) { return supports(*props, p);}
+  static bool supports(const Kit::PropertySeq &, const Kit::PropertySeq &);
+protected:
+  void increment() { counter++;}
+  void decrement() { counter--;}
+  Kit::PropertySeq *props;
+private:
+  const string      id;
+  unsigned short    counter;
 };
 
-#endif /* _DesktopKitImpl_hh */
+#endif

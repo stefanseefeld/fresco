@@ -28,7 +28,7 @@
 #include <Text/TextChunk.hh>           // for our chunks
 #include <Berlin/MonoGraphic.hh>       // for our decorators
 #include <Prague/Unicode/Unistring.hh> // for Unicode::String
-#include <Berlin/CloneableImpl.hh>     // for our parent impl
+#include <Berlin/KitImpl.hh>           // for our parent impl
 #include <Berlin/Thread.hh>            // for the mutex
 #include <Berlin/ImplVar.hh>           // for the impls
 #include <map>                         // for the cache
@@ -38,8 +38,7 @@ declare_corba_ptr_type(DrawingKit)
 
 class Compositor;
 
-class TextKitImpl : lcimplements(TextKit), 
-		    public virtual CloneableImpl 
+class TextKitImpl : implements(TextKit),  public KitImpl
 {
   static Mutex staticMutex;
   static map< Unicode::String, Impl_var<TextChunk> > chunkCache;
@@ -50,7 +49,7 @@ class TextKitImpl : lcimplements(TextKit),
   vector<GraphicImpl *> myAllocations;
 
  public:
-  TextKitImpl();
+  TextKitImpl(KitFactory *, const PropertySeq &);
   virtual ~TextKitImpl();
   virtual void bind(ServerContext_ptr);
 

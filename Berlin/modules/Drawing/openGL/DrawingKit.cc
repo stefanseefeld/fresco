@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -27,25 +27,20 @@
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/GLUnifont.hh"
 #include "Berlin/Logger.hh"
-#include "Berlin/Plugin.hh"
 #include "Warsaw/Warsaw.hh"
 
-// #include <GL/glu.h>
 #include <strstream>
 #include <iostream>
 
-GLDrawingKit::GLDrawingKit()
-  : drawable(GGI::drawable()),
-//     tr(new TransformImpl),
-//     cl(new RegionImpl),
+GLDrawingKit::GLDrawingKit(KitFactory *f, const PropertySeq &p)
+  : KitImpl(f, p),
+    drawable(GGI::drawable()),
     tx(0),
     font(new GLUnifont),
     textures(100),
     images(500)
 {
-//   tr->_obj_is_ready(_boa());
-//   cl->_obj_is_ready(_boa());
-
+  cout << "!!!!" << endl;
   context = GGIMesaCreateContext();
   if (!context)
     {
@@ -274,4 +269,8 @@ void GLDrawingKit::drawText(const Unistring &us)
   font->drawText(us, origin);
 }
 
-EXPORT_PLUGIN(GLDrawingKit, interface(DrawingKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "GLDrawingKit"};
+  return new KitFactoryImpl<GLDrawingKit> (interface(DrawingKit), properties, 1);
+}

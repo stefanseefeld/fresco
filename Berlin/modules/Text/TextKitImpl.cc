@@ -21,6 +21,7 @@
 //
 //
 
+#include <Warsaw/Server.hh>
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
 #include <Warsaw/TextBuffer.hh>           // for TextBuffer type
@@ -29,20 +30,13 @@
 #include <Text/TextViewer.hh>           // the viewer polygraphic type
 #include <Text/Compositor.hh>           // the compositor strategy
 #include <Drawing/DrawDecorator.hh> // the decorator monographic template
-#include <Berlin/Plugin.hh>
 
 Mutex TextKitImpl::staticMutex;
 map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
 DrawingKit_var TextKitImpl::canonicalDK;
 
-TextKitImpl::TextKitImpl() : 
-  myCompositor(new IdentityCompositor(xaxis)) 
-{
-}
-
-TextKitImpl::~TextKitImpl() {
-  delete myCompositor;
-}
+TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p), myCompositor(new IdentityCompositor(xaxis)) {}
+TextKitImpl::~TextKitImpl() { delete myCompositor;}
 
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
@@ -139,6 +133,8 @@ Graphic_ptr TextKitImpl::fontAttr(Graphic_ptr body, const NVPair & nvp) {
   return decor.release()->_this();
 }
 
-
-
-EXPORT_PLUGIN(TextKitImpl, interface(TextKit))
+extern "C" KitFactory *load()
+{
+  static string properties[] = {"implementation", "TextKitImpl", "locale", "latin",};
+  return new KitFactoryImpl<TextKitImpl>(interface(TextKit), properties, 2);
+} 

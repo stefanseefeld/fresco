@@ -24,8 +24,6 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Command.hh"
 #include "Warsaw/Desktop.hh"
-#include "Berlin/TransformImpl.hh"
-#include "Berlin/ImplVar.hh"
 
 Rotator::Rotator(BoundedValue_ptr v, Graphic_ptr c, Graphic_ptr p, Coord d)
   : value(BoundedValue::_duplicate(v)),

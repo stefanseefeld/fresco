@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -28,14 +28,13 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
-#include <Berlin/FactoryFinderImpl.hh>
-#include <Berlin/GenericFactoryImpl.hh>
-#include <Berlin/ServerContextManagerImpl.hh>
+#include <Berlin/ServerImpl.hh>
 #include <Berlin/Logger.hh>
 #include <Berlin/DesktopImpl.hh>
 #include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Timer.hh>
+#include <Prague/Sys/GetOpt.hh>
 
 #ifdef JPROF
 // probably need to change include path
@@ -51,25 +50,10 @@ struct Dump : Signal::Notifier
       switch (signo)
 	{
 	case Signal::hangup: Profiler::dump(cerr); break;
-// 	case Signal::interrupt: exit(0);
 	case Signal::abort:
 	case Signal::segv: Logger::dump(cerr); exit(-1);
 	}
     }
-};
-
-template <class T>
-typename T::_ptr_type create(GenericFactoryImpl *factory, const char *name)
-{
-  CosLifeCycle::Key key;
-  key.length(1);
-  key[0].id   =  name; 
-  key[0].kind = (const char*) "Object"; 
-
-  CosLifeCycle::Criteria criteria;
-  
-  CORBA::Object_var object = factory->create_object(key, criteria);
-  return T::_narrow(object);
 };
 
 int main(int argc, char **argv)
@@ -78,32 +62,48 @@ int main(int argc, char **argv)
   Signal::set(Signal::abort, dump);
   Signal::set(Signal::segv, dump);
   Signal::set(Signal::hangup, dump);
-//   Signal::set(Signal::interrupt, dump);
-#if 0
-  Logger::set(Logger::corba);
-  Logger::set(Logger::focus);
-  Logger::set(Logger::image);
-  Logger::set(Logger::loader);
-  Logger::set(Logger::subject);
-  Logger::set(Logger::layout);
-  Logger::set(Logger::picking);
-  Logger::set(Logger::drawing);
-  Logger::set(Logger::traversal);
-  Logger::set(Logger::widget);
-#endif
-
-#ifdef JPROF
-  setupProfilingStuff();
-#endif
 
   CORBA::ORB_ptr orb = CORBA::ORB_init(argc,argv,"omniORB2");
   CORBA::BOA_ptr boa = orb->BOA_init(argc,argv,"omniORB2_BOA");
-  boa->impl_is_ready(0,1);
-  Logger::log(Logger::corba) << "[0/5] hooked up to corba library" << endl;
 
-  // initialize COS lifecycle service
-  GenericFactoryImpl * factory = new GenericFactoryImpl();
-  factory->_obj_is_ready(boa);
+  GetOpt getopt(argv[0], "a berlin display server");
+  getopt.add('v', "version", GetOpt::novalue, "version number");
+  getopt.add('h', "help", GetOpt::novalue, "help message");
+  getopt.add('l', "logging", GetOpt::novalue, "switch logging on");
+  getopt.add('p', "profiling", GetOpt::novalue, "switch profiling on");
+  getopt.add('d', "drawing", GetOpt::mandatory, "the DrawingKit to choose");
+  getopt.parse(argc - 1, argv + 1);
+  string value;
+  getopt.get("version", &value);
+  if (value == "true") { cout << "version is " << "0.2" << endl; exit(0);}
+  getopt.get("help", &value);
+  if (value == "true") { getopt.usage(); exit(0);}
+  
+  getopt.get("logging", &value);
+  if (value == "true")
+    {
+      Logger::set(Logger::corba);
+      Logger::set(Logger::focus);
+      Logger::set(Logger::image);
+      Logger::set(Logger::loader);
+      Logger::set(Logger::subject);
+      Logger::set(Logger::layout);
+      Logger::set(Logger::picking);
+      Logger::set(Logger::drawing);
+      Logger::set(Logger::traversal);
+      Logger::set(Logger::widget);
+    }
+
+#ifdef JPROF
+  getopt.get("profiling", &value);
+  if (value == "true") setupProfilingStuff();
+#endif
+
+  boa->impl_is_ready(0,1);
+  Logger::log(Logger::corba) << "[0/5] BOA is running" << endl;
+
+  ServerImpl *server = new ServerImpl;
+
   char *pluginDir = getenv("BERLIN_ROOT");
   if (!pluginDir)
     {
@@ -111,40 +111,49 @@ int main(int argc, char **argv)
       exit(-1);
     }
   string modules = string(pluginDir) + "/modules";
-  factory->scan(modules.c_str());
+  server->scan(modules.c_str());
 
   Logger::log(Logger::loader) << "[1/5] initialized loadable modules" << endl;
 
-  DrawingKit_var dk = create<DrawingKit>(factory, DrawingKit_IntfRepoID);
+  Kit::PropertySeq props;
+  props.length(1);
+  props[0].name = CORBA::string_dup("implementation");
+  getopt.get("drawing", &value);
+  if (!value.empty()) props[0].value = CORBA::string_dup(value.c_str());
+  else props[0].value = CORBA::string_dup("GLDrawingKit");
+  DrawingKit_var drawing = server->resolve<DrawingKit>(interface(DrawingKit), props);
+  if (CORBA::is_nil(drawing))
+    {
+      cerr << "unable to open " << interface(DrawingKit) << " with " << props[0].name << '=' << props[0].value << endl;
+      exit(-1);
+    }
 
   Logger::log(Logger::drawing) << "[2/5] built drawing system" << endl;
 
   // make a Screen graphic to hold this server's scene graph
-  ScreenImpl *screen = new ScreenImpl(dk);
+  ScreenImpl *screen = new ScreenImpl(drawing);
   screen->_obj_is_ready(boa);
   
   DesktopImpl *desktop = new DesktopImpl;
   desktop->_obj_is_ready(boa);
   screen->body(Desktop_var(desktop->_this()));
   screen->appendController(Desktop_var(desktop->_this()));
-  LayoutKit_var lk = create<LayoutKit>(factory, LayoutKit_IntfRepoID);
-  Stage_var stage = lk->createStage();
+  props.length(0);
+  LayoutKit_var layout = server->resolve<LayoutKit>(interface(LayoutKit), props);
+  Stage_var stage = layout->createStage();
   desktop->init(stage);
 
   Logger::log(Logger::layout) << "[3/5] created desktop" << endl;
 
   // initialize the client listener
-  ServerContextManagerImpl *scmanager = new ServerContextManagerImpl(factory);
-  Logger::log(Logger::layout) << "built scm" << endl;
-  scmanager->_obj_is_ready(boa);
-  Logger::log(Logger::layout) << "activated scm" << endl;
-  scmanager->setSingleton(interface(Desktop), Desktop_var(desktop->_this()));
-  Logger::log(Logger::layout) << "set desktop" << endl;
-  scmanager->setSingleton(interface(DrawingKit), dk);
-  Logger::log(Logger::layout) << "set dk" << endl;
-  scmanager->start();
-  Logger::log(Logger::layout) << "started scm" << endl;
-  bind_name(orb, ServerContextManager_var(scmanager->_this()), interface(ServerContextManager));
+  server->setSingleton(interface(Desktop), Desktop_var(desktop->_this()));
+  server->setSingleton(interface(DrawingKit), drawing);
+  server->_obj_is_ready(boa);
+  server->start();
+
+  Logger::log(Logger::layout) << "started server" << endl;
+  bind_name(orb, Server_var(server->_this()), interface(Server));
+
   Logger::log(Logger::corba) << "[4/5] listening for clients" << endl;
   // initialize the event distributor and draw thread
   ScreenManager *smanager = screen->manager();

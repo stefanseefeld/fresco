@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,28 +27,14 @@ interface Command;
 
 interface Command
 //. commands are anonymous encapsulated actions. 
-//. you never know what they'll do.
 {
   void execute(in any a);
 };
 
-// interface Reactor : MessageListener
-// //. a reactor is a listener which has configurable behaviour based on the
-// //. Message types it receives
-// {
-//   void bind(in CORBA::TypeCode ty, in Command c);
-//   void unbind(in CORBA::TypeCode ty, in Command c);
-//   attribute boolean active;
-// };
-
-struct ReactorBinding
-//. ReactorBinding is just a helper to make the sequence-initialization below a
-//. little simpler.
+interface MacroCommand : Command
 {
-  CORBA::TypeCode ty;
-  Command cmd;
+  void append(in Command c);
+  void prepend(in Command c);
 };
-
-typedef sequence<ReactorBinding> ReactorBindingList;
 
 #endif /* _Command_idl */

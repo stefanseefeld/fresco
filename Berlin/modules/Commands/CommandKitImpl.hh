@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -24,19 +25,20 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/CommandKit.hh>
-#include <Berlin/CloneableImpl.hh>
+#include <Berlin/KitImpl.hh>
+#include <vector>
 
-class CommandKitImpl : lcimplements(CommandKit), virtual public CloneableImpl
+class CommandImpl;
+
+class CommandKitImpl : implements(CommandKit), public KitImpl
 {
-public:
-  
-  CommandKitImpl();
+ public:
+  CommandKitImpl(KitFactory *, const PropertySeq &);
   virtual ~CommandKitImpl();
-//   Reactor_ptr asyncReactor(const ReactorBindingList &);
-//   Reactor_ptr syncReactor(const ReactorBindingList &);
-//   Command_ptr sendMessage(const Message &, MessageListener_ptr);
-//   Command_ptr forwardMessage(MessageListener_ptr);
   Command_ptr log(const char *);
+  MacroCommand_ptr composite();
+ private:
+  vector<CommandImpl *> commands;
 };
 
 #endif
