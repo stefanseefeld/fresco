@@ -24,10 +24,7 @@
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/Tracer.hh>
 #include <Berlin/RCManager.hh>
-#include "Console/GGI/GGI.hh"
-#include "Console/Renderer.hh"
-#include "Console/DirectBuffer.hh"
-#include "Console/GLContext.hh"
+#include "Console/GGI/Console.hh"
 #include <strstream.h>
 
 using namespace Prague;
@@ -84,63 +81,6 @@ void write_event(ggi_event &e)
     }
   std::cout << std::endl;
 }
-};
-
-class GGIExtension : virtual public Console::Extension
-{
-public:
-  GGIExtension(GGIDrawable *drawable) : _drawable(drawable) {}
-  GGIDrawable *drawable() { return _drawable;}
-private:
-  GGIDrawable *_drawable;
-};
-
-class GGIRenderer : public GGIExtension,
-		    virtual public Renderer
-{
-public:
-  GGIRenderer(GGIDrawable *drawable) : GGIExtension(drawable) {}
-  virtual void set_color(const Color &c)
-  {
-    ggiSetGCForeground(drawable()->visual(), drawable()->map(c));
-  }
-  virtual void draw_pixel(PixelCoord x, PixelCoord y)
-  {
-    ggiDrawPixel(drawable()->visual(), x, y);
-  }
-  virtual void draw_hline(PixelCoord x, PixelCoord y, PixelCoord w)
-  {
-    ggiDrawHLine(drawable()->visual(), x, y, w);
-  }
-  virtual void draw_vline(PixelCoord x, PixelCoord y, PixelCoord h)
-  {
-    ggiDrawVLine(drawable()->visual(), x, y, h);
-  }
-  virtual void draw_line(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
-  {
-    ggiDrawLine(drawable()->visual(), x, y, x + w, y + h);
-  }
-  virtual void draw_box(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
-  {
-    ggiDrawBox(drawable()->visual(), x, y, w, h);
-  }
-};
-
-class GGIDirectBuffer : public GGIExtension,
-			virtual public DirectBuffer
-{
-public:
-  GGIDirectBuffer(GGIDrawable *drawable) : GGIExtension(drawable) {}
-  virtual Guard read_buffer()
-  {
-    Guard guard(drawable(), static_cast<Console::Drawable::data_type *>(ggiDBGetBuffer(drawable()->visual(), 0)->read));
-    return guard;
-  }
-  virtual Guard write_buffer()
-  {
-    Guard guard(drawable(), static_cast<Console::Drawable::data_type *>(ggiDBGetBuffer(drawable()->visual(), 0)->write));
-    return guard;
-  }
 };
 
 GGIConsole::GGIConsole(int &argc, char **argv)
