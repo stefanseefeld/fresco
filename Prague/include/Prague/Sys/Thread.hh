@@ -23,6 +23,7 @@
 #define _Prague_Thread_hh
 
 #include <Prague/Sys/Time.hh>
+#define __USE_UNIX98
 #include <pthread.h>
 #include <semaphore.h>
 #include <cerrno>
@@ -105,6 +106,24 @@ private:
   SemaphoreGuard(const SemaphoreGuard &);
   SemaphoreGuard &operator = (const SemaphoreGuard &);
   Semaphore &semaphore;
+};
+
+class RWLock : public pthread_rwlock_t
+{
+public:
+  class Attribute : public pthread_rwlockattr_t
+  {
+  public:
+    Attribute() { pthread_rwlockattr_init (this);}
+    ~Attribute() { pthread_rwlockattr_destroy(this);}
+  };
+  RWLock() { pthread_rwlock_init(this, 0);}
+  ~RWLock() { pthread_rwlock_destroy(this);}
+  void rlock() { pthread_rwlock_rdlock(this);}
+  void wlock() { pthread_rwlock_wrlock(this);}
+  void unlock() { pthread_rwlock_unlock(this);}
+  bool tryrlock() { return pthread_rwlock_tryrdlock(this);}
+  bool trywlock() { return pthread_rwlock_trywrlock(this);}
 };
 
 class Thread
