@@ -74,12 +74,12 @@ void Panner::allocate(Tag, const Allocation::Info &info)
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
   Coord lower = allocation->lower.x;
   Coord scale = allocation->upper.x - allocation->lower.x;
-  allocation->lower.x = lower + scale*_offset[xaxis].lower;
-  allocation->upper.x = lower + scale*_offset[xaxis].upper;
+  allocation->lower.x = lower + scale;
+  allocation->upper.x = lower + scale;
   lower = allocation->lower.y;
   scale = allocation->upper.y - allocation->lower.y;
-  allocation->lower.y = lower + scale*_offset[yaxis].lower;
-  allocation->upper.y = lower + scale*_offset[yaxis].upper;
+  allocation->lower.y = lower + scale;
+  allocation->upper.y = lower + scale;
   allocation->lower.z = allocation->upper.z = 0.;
   
   allocation->normalize(info.transformation);
