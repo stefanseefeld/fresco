@@ -123,6 +123,6 @@ maintainer-clean: distclean
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Babylon,linker=Babylon $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), config doc install-doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

@@ -158,6 +158,6 @@ DataTypeManager.o:	DataTypeManager.cc
 	@echo parsing $(^F)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague $(SFLAGS) -o $@ $?
 
-ifeq (,$(findstring $(MAKECMDGOALS), config doc clean distclean maintainer-clean))
+ifeq (,$(findstring $(MAKECMDGOALS), config doc install-doc clean distclean maintainer-clean))
 -include $(DEP)
 endif

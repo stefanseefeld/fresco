@@ -39,7 +39,7 @@ CPPFLAGS	+= -DVERSION='"$(VERSION)"'
 endif
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
-TARGETS		:= ../bin/server ../bin/kits ../bin/devices
+TARGETS		:= ../bin/server ../bin/kits ../bin/devices ../etc/berlinrc
 
 ifeq ($(JPROF),yes)
 JPROFTARGETS	:= ../lib/libjprof.so ../bin/jprof
@@ -80,6 +80,11 @@ endif
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+../etc/berlinrc: $(top_srcdir)/config/berlinrc.in
+	$(EDIT) -e 's,@prefix\@,$(abs_top_builddir),g' \
+	   $^ > $@
+	chmod 644 $@
+
 install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
@@ -96,6 +101,9 @@ install:	all
 	    echo "$(DESTDIR)$(datadir)/Fresco/PNG/$$image is up to date"; \
 	  fi; \
 	done
+	$(EDIT) -e 's,@prefix\@,$(prefix),g' \
+	  $(top_srcdir)/config/berlinrc.in > $(DESTDIR)/$(sysconfdir)/berlinrc
+	chmod 644 $(DESTDIR)/$(sysconfdir)/berlinrc
 
 install-doc: #do nothing
 
@@ -109,7 +117,7 @@ clean:
 	rm -f *.o
 
 distclean:	clean
-	rm -f Makefile
+	rm -f Makefile ../etc/berlinrc
 
 maintainer-clean: distclean
 

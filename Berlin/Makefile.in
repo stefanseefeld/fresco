@@ -21,7 +21,7 @@
 
 SHELL	:= /bin/sh
 
-subdirs:= src modules server
+subdirs:= src server modules
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.

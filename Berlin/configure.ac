@@ -129,7 +129,7 @@ for kit in Drawing/PostScript $enabled_drawing_kits Layout Commands Tools Images
 done
 
 AC_CONFIG_FILES([config/local.mk config/module.mk config/synopsis.py])
-AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile etc/berlinrc:config/berlinrc.in])
+AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile])
 
 mkdir -p lib
 mkdir -p etc
