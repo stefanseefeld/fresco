@@ -1,64 +1,44 @@
 #!/usr/bin/env python
 
-import sys
+import sys, time
 import string
 
-# Import the CORBA module
-from omniORB import CORBA
-import CosNaming
-
-# Import the Warsaw stubs
+# Import Warsaw generated stuff
 import Warsaw
-import Warsaw__POA
-# Define an implementation of the ClientContext interface
-class ClientContextImpl (Warsaw__POA.ClientContext):
-    def userName(self): return "joe"
-    def ping(self): return
+
+# Import berlin client lib
+import berlin
+from berlin import Label, Callback, nullAny
+
+class DemoApp (berlin.App):
+    def run(self):
+	terminal   = kits.widget.terminal()
+	scrollable = kits.widget.scrollable(kits.tool.rgb(terminal, 0., 0., 0.))
+	scrollable.append_controller(terminal)
+	outset     = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
+	size_fixer = kits.layout.fixed_size(scrollable, 4000., 3000.)
+	frame      = kits.tool.frame(size_fixer, 20., outset, 1)
+	group      = kits.tool.group(frame)
+	group.append_controller(scrollable)
+	shell      = kits.desktop.shell(group)
+    
 
 def main():
-    # Initialise the ORB
-    orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
-    # Find the POA
-    poa = orb.resolve_initial_references("RootPOA")
-    # Activate the POA
-    poaManager = poa._get_the_POAManager()
-    poaManager.activate()
-    # Create an ClientContext
-    ci = ClientContextImpl()
-    # Create an object reference, and implicitly activate the object
-    client = ci._this()
+    # Create singletons
+    global app, kits, connection
+    connection = berlin.get_connection()
+    kits = berlin.get_kits()
+    app = DemoApp()
 
-    # get a server context
-    object = orb.resolve_initial_references("NameService");
-    context = object._narrow(CosNaming.NamingContext)
-    name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
-    object = context.resolve(name)
-    server = object._narrow(Warsaw.Server)
-    context  = server.create_server_context(client)
+    app.run()
 
-    # get some kits
-    properties = []
-    object  = context.resolve("IDL:Warsaw/ToolKit:1.0", properties)
-    tool    = object._narrow(Warsaw.ToolKit)
-    object  = context.resolve("IDL:Warsaw/DesktopKit:1.0", properties)
-    desktop = object._narrow(Warsaw.DesktopKit)
-    object  = context.resolve("IDL:Warsaw/LayoutKit:1.0", properties)
-    layout  = object._narrow(Warsaw.LayoutKit)
-    object  = context.resolve("IDL:Warsaw/WidgetKit:1.0", properties)
-    widget  = object._narrow(Warsaw.WidgetKit)
-    object  = context.resolve("IDL:Warsaw/TextKit:1.0", properties)
-    text    = object._narrow(Warsaw.TextKit)
+    # Wait for the quit event
+    app.quit.wait()
 
-    terminal   = widget.terminal()
-    scrollable = widget.scrollable(tool.rgb(terminal, 0., 0., 0.))
-    scrollable.append_controller(terminal)
-    outset     = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
-    group      = tool.group(tool.frame(layout.fixed_size(scrollable, 4000., 3000.), 20., outset, 1))
-    group.append_controller(scrollable)
-    shell      = desktop.shell(group)
-    while 1:
-	line = sys.stdin.readline()
-	if len(line) == 1: break
+    # Tell the orb to shutdown (and wait for pending calls to complete)
+    connection.orb.shutdown(1)
 
 if __name__ == '__main__':
     main()
+
+# vim: ts=8:sts=4:sw=4

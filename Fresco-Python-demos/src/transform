@@ -1,78 +1,60 @@
 #!/usr/bin/env python
 
-import sys
+import sys, time
 import string
 
-# Import the CORBA module
-from omniORB import CORBA
-
-# Import the Warsaw stubs
+# Import Warsaw generated interface
 import Warsaw
-import Warsaw__POA
-import CosNaming
-# Define an implementation of the ClientContext interface
-class ClientContextImpl (Warsaw__POA.ClientContext):
-    def userName(self): return "joe"
-    def ping(self): return
+import Figure
+
+# Import berlin client lib
+import berlin
+from berlin import Label, Callback, nullAny
+
+class DemoApp (berlin.App):
+    def run(self):
+	vbox   = kits.layout.vbox();
+	adjustable1 = kits.command.bvalue(0., 90., 0., 10., 10.)
+	adjustable2 = kits.command.bvalue(0., 90., 0., 10., 10.)
+	vbox.append_graphic(kits.layout.align(kits.widget.slider(adjustable1, Warsaw.xaxis), 0.0, 0.0))
+	vbox.append_graphic(kits.layout.align(kits.widget.slider(adjustable2, Warsaw.xaxis), 0.0, 0.0))
+	hbox = kits.layout.vbox()
+	rectangle = kits.figure.rectangle(0., 0., 50., 50.)
+	rectangle._set_type(Figure.fill)
+	rectangle._set_foreground(Warsaw.Color(1., 1., 0., 0.9))
+	rectangle._set_background(Warsaw.Color(1., 0.5, 0.5, 0.9))
+	rectangle = kits.tool.rgb(rectangle, 1., 0., 0.)
+	hbox.append_graphic(kits.widget.button(rectangle, Warsaw.Command._nil))
+	# hbox.append(layout.align(gadget.rotator(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable1, Warsaw.yaxis), adjustable2, Warsaw.yaxis), 0., 0.))
+	rect_align = kits.layout.align(rectangle, 1.0, 1.0)
+	rect_align = kits.tool.debugger(rect_align, 'rect_debug')
+	z_rotator = kits.gadget.rotator(rect_align, adjustable1, Warsaw.zaxis)
+	z_rotator = kits.tool.debugger(z_rotator, 'zrotator_debug')
+	y_rotator = kits.gadget.rotator(z_rotator, adjustable2, Warsaw.yaxis)
+	y_rotator = kits.tool.debugger(y_rotator, 'yrotator_debug')
+	hbox.append_graphic(kits.layout.align(y_rotator, 0., 0.))
+	hbox.append_graphic(kits.widget.button(rectangle, Warsaw.Command._nil))
+	vbox.append_graphic(hbox)
+	outset = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
+	shell = kits.desktop.shell(kits.tool.group(kits.tool.frame(vbox, 20., outset, 1)))
+       
 
 def main():
-    # Initialise the ORB
-    orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
-    # Find the POA
-    poa = orb.resolve_initial_references("RootPOA")
-    # Activate the POA
-    poaManager = poa._get_the_POAManager()
-    poaManager.activate()
-    # Create an ClientContext
-    ci = ClientContextImpl()
-    # Create an object reference, and implicitly activate the object
-    client = ci._this()
+    # Create singletons
+    global app, kits, connection
+    connection = berlin.get_connection()
+    kits = berlin.get_kits()
+    app = DemoApp()
 
-    # get a server context
-    context = orb.resolve_initial_references("NameService")
-    name = [CosNaming.NameComponent("IDL:Server:1.0", "Object")]
-    server = context.resolve(name)
-    context  = server.newServerContext(client)
+    app.run()
 
-    # get some kits
-    properties = []
-    object  = context.resolve("IDL:DesktopKit:1.0", properties)
-    desktop = object._narrow(Warsaw.DesktopKit)
-    object  = context.resolve("IDL:ToolKit:1.0", properties)
-    tool    = object._narrow(Warsaw.ToolKit)
-    object  = context.resolve("IDL:CommandKit:1.0", properties)
-    command = object._narrow(Warsaw.CommandKit)
-    object  = context.resolve("IDL:LayoutKit:1.0", properties)
-    layout  = object._narrow(Warsaw.LayoutKit)
-    object  = context.resolve("IDL:WidgetKit:1.0", properties)
-    widget  = object._narrow(Warsaw.WidgetKit)
-    object  = context.resolve("IDL:FigureKit:1.0", properties)
-    figure  = object._narrow(Warsaw.FigureKit)
-    object  = context.resolve("IDL:ImageKit:1.0", properties)
-    image   = object._narrow(Warsaw.ImageKit)
-    object  = context.resolve("IDL:GadgetKit:1.0", properties)
-    gadget  = object._narrow(Warsaw.GadgetKit)
+    # Wait for the quit event
+    app.quit.wait()
 
-    vbox   = layout.vbox();
-    adjustable1 = command.bvalue(0., 360., 0., 10., 10.)
-    adjustable2 = command.bvalue(0., 360., 0., 10., 10.)
-    vbox.append(layout.align(widget.slider(adjustable1, Warsaw.xaxis), 0.0, 0.0))
-    vbox.append(layout.align(widget.slider(adjustable2, Warsaw.xaxis), 0.0, 0.0))
-    hbox = layout.vbox()
-    rectangle = figure.rectangle(0., 0., 1000., 1000.)
-    rectangle._set_type(Warsaw.Figure.fill)
-    rectangle._set_foreground(Warsaw.Color(1., 1., 1., 0.9))
-    rectangle._set_background(Warsaw.Color(1., 0.5, 0.5, 0.9))
-    hbox.append(widget.button(rectangle, Warsaw.Command._nil))
-#    hbox.append(layout.align(gadget.rotator(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable1, Warsaw.yaxis), adjustable2, Warsaw.yaxis), 0., 0.))
-    hbox.append(layout.align(gadget.rotator(gadget.rotator(layout.align(rectangle, 0.5, 0.5), adjustable1, Warsaw.zaxis), adjustable2, Warsaw.yaxis), 0., 0.))
-    hbox.append(widget.button(rectangle, Warsaw.Command._nil))
-    vbox.append(hbox)
-    outset = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
-    shell = desktop.shell(tool.group(tool.frame(vbox, 20., outset, 1)))
-    while 1:
-	line = sys.stdin.readline()
-	if len(line) == 1: break
+    # Tell the orb to shutdown (and wait for pending calls to complete)
+    connection.orb.shutdown(1)
 
 if __name__ == '__main__':
     main()
+
+# vim: ts=8:sts=4:sw=4
